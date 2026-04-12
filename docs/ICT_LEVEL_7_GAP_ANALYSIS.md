@@ -123,7 +123,7 @@ This report identifies **all improvement gaps** preventing the project from achi
      }
    }
    ```
-3. Run `npm run check` after each fix to verify
+3. Run `pnpm run check` after each fix to verify
 
 ---
 
@@ -158,7 +158,7 @@ This report identifies **all improvement gaps** preventing the project from achi
 
 4. **Verification**
    ```bash
-   cd frontend && npm run lint
+   cd frontend && pnpm run lint
    # Should show warnings for all console usage
    ```
 
@@ -392,7 +392,7 @@ rules: {
 - ✅ 24 frontend packages updated
 - ✅ 26 backend packages updated
 - ✅ Zero build errors
-- ✅ Only 2 low-severity npm vulnerabilities (acceptable)
+- ✅ Only 2 low-severity package vulnerabilities (acceptable)
 
 **Recommendation:** No action needed
 
@@ -473,10 +473,10 @@ rules: {
 4. **Start with Critical gaps** (TypeScript, Console, Components)
 5. **Run automated checks** after each fix:
    ```bash
-   npm run check      # TypeScript
-   npm run lint       # ESLint
-   npm run test       # Tests
-   npm run build      # Build verification
+   pnpm run check      # TypeScript
+   pnpm run lint       # ESLint
+   pnpm run test       # Tests
+   pnpm run build      # Build verification
    ```
 
 ---

@@ -221,6 +221,8 @@
 			<img
 				src={thumbnailUrl}
 				alt={video.title}
+				width="400"
+				height="225"
 				loading={loadingPriority === 'high' ? 'eager' : 'lazy'}
 				decoding="async"
 				fetchpriority={loadingPriority}
@@ -248,7 +250,7 @@
 		<!-- Tags -->
 		{#if video.tag_details && video.tag_details.length > 0}
 			<div class="video-card__tags">
-				{#each video.tag_details.slice(0, 3) as tag}
+				{#each video.tag_details.slice(0, 3) as tag (tag.name)}
 					<span class="video-card__tag" style="background-color: {tag.color}">{tag.name}</span>
 				{/each}
 			</div>

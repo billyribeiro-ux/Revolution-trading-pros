@@ -842,7 +842,7 @@
 	<meta property="og:image:height" content={String(ogImageHeight)} />
 	<meta property="og:image:alt" content={ogImageAlt || title} />
 	<meta property="og:locale" content={ogLocale} />
-	{#each ogAlternateLocales as locale}
+	{#each ogAlternateLocales as locale (locale)}
 		<meta property="og:locale:alternate" content={locale} />
 	{/each}
 	{#if facebookAppId}
@@ -866,7 +866,7 @@
 		{#if section}
 			<meta property="article:section" content={section} />
 		{/if}
-		{#each tags as tag}
+		{#each tags as tag (tag)}
 			<meta property="article:tag" content={tag} />
 		{/each}
 	{/if}
@@ -934,15 +934,15 @@
 	<!-- Performance Hints -->
 	<!-- ═══════════════════════════════════════════════════════════════════════════ -->
 
-	{#each preconnect as url}
+	{#each preconnect as url (url)}
 		<link rel="preconnect" href={url} crossorigin="anonymous" />
 	{/each}
 
-	{#each dnsPrefetch as url}
+	{#each dnsPrefetch as url (url)}
 		<link rel="dns-prefetch" href={url} />
 	{/each}
 
-	{#each preload as resource}
+	{#each preload as resource (resource.href)}
 		<link
 			rel="preload"
 			href={resource.href}
@@ -952,11 +952,11 @@
 		/>
 	{/each}
 
-	{#each prefetch as url}
+	{#each prefetch as url (url)}
 		<link rel="prefetch" href={url} />
 	{/each}
 
-	{#each modulePreload as url}
+	{#each modulePreload as url (url)}
 		<link rel="modulepreload" href={url} />
 	{/each}
 
@@ -964,7 +964,7 @@
 	<!-- JSON-LD Structured Data -->
 	<!-- ═══════════════════════════════════════════════════════════════════════════ -->
 
-	{#each allSchemas as schemaItem}
+	{#each allSchemas as schemaItem (schemaItem)}
 		{@html generateJsonLdScript(schemaItem)}
 	{/each}
 

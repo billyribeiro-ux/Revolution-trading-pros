@@ -8,15 +8,15 @@
 		onchange?: (value: boolean) => void;
 	}
 
-	let props: Props = $props();
+	let { field, value, error, onchange }: Props = $props();
 
-	const onLabel = $derived(props.field.attributes?.on_label || 'Yes');
-	const offLabel = $derived(props.field.attributes?.off_label || 'No');
-	const showLabels = $derived(props.field.attributes?.show_labels !== false);
-	const size = $derived<'sm' | 'md' | 'lg'>(props.field.attributes?.size || 'md');
+	const onLabel = $derived(field.attributes?.on_label || 'Yes');
+	const offLabel = $derived(field.attributes?.off_label || 'No');
+	const showLabels = $derived(field.attributes?.show_labels !== false);
+	const size = $derived<'sm' | 'md' | 'lg'>(field.attributes?.size || 'md');
 
 	function handleToggle() {
-		props.onchange?.(!(props.value ?? false));
+		onchange?.(!(value ?? false));
 	}
 
 	function handleKeyDown(event: KeyboardEvent) {
@@ -28,29 +28,29 @@
 </script>
 
 <div class="toggle-field">
-	<label for="toggle-{props.field.name}" class="field-label">
-		{props.field.label}
-		{#if props.field.required}
+	<label for="toggle-{field.name}" class="field-label">
+		{field.label}
+		{#if field.required}
 			<span class="required">*</span>
 		{/if}
 	</label>
 
-	{#if props.field.help_text}
-		<p class="field-help">{props.field.help_text}</p>
+	{#if field.help_text}
+		<p class="field-help">{field.help_text}</p>
 	{/if}
 
 	<div class="toggle-wrapper">
 		{#if showLabels}
-			<span class="toggle-label off" class:active={!(props.value ?? false)}>{offLabel}</span>
+			<span class="toggle-label off" class:active={!(value ?? false)}>{offLabel}</span>
 		{/if}
 
 		<button
 			type="button"
 			class={`toggle-switch ${size}`}
-			class:active={props.value}
+			class:active={value}
 			role="switch"
-			aria-checked={props.value}
-			aria-label="{props.field.label} toggle"
+			aria-checked={value}
+			aria-label="{field.label} toggle"
 			onclick={handleToggle}
 			onkeydown={handleKeyDown}
 		>
@@ -60,20 +60,15 @@
 		</button>
 
 		{#if showLabels}
-			<span class="toggle-label on" class:active={props.value}>{onLabel}</span>
+			<span class="toggle-label on" class:active={value}>{onLabel}</span>
 		{/if}
 	</div>
 
-	<input
-		id="toggle-{props.field.name}"
-		type="hidden"
-		name={props.field.name}
-		value={props.value ? '1' : '0'}
-	/>
+	<input id="toggle-{field.name}" type="hidden" name={field.name} value={value ? '1' : '0'} />
 
-	{#if props.error && props.error.length > 0}
+	{#if error && error.length > 0}
 		<div class="field-error">
-			{#each props.error as err}
+			{#each error as err, i (i)}
 				<p>{err}</p>
 			{/each}
 		</div>

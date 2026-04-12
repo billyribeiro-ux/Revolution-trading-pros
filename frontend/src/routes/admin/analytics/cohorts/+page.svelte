@@ -145,8 +145,10 @@
 	<title>Cohort Analysis | Analytics</title>
 </svelte:head>
 
-<div class="bg-linear-to-br from-slate-950 via-slate-900 to-slate-950">
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+	<div
+		class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 py-8"
+	>
 		<!-- Apple ICT7 Grade Header -->
 		<header class="flex items-center justify-between mb-8">
 			<div class="flex items-center gap-4">
@@ -265,7 +267,7 @@
 		{:else}
 			<!-- Cohort Selector -->
 			<div class="flex gap-2 mb-8 overflow-x-auto pb-2">
-				{#each cohorts as cohort}
+				{#each cohorts as cohort (cohort.key)}
 					<button
 						onclick={() => (selectedCohort = cohort)}
 						class="px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all

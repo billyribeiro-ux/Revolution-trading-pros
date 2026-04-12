@@ -3,30 +3,13 @@
 	import { cubicOut } from 'svelte/easing';
 	import { slide } from 'svelte/transition';
 	import { browser } from '$app/environment';
+	import { domRef } from '$lib/svelte/domAttachment';
 
 	// GSAP loaded dynamically for SSR safety
 	let gsapInstance: typeof import('gsap').gsap | null = null;
 
 	// --- ICONS ---
 	// Assumed existing component based on your snippet
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-	import {
-		Icon,
-		IconActivity,
-		IconArrowRight,
-		IconBolt,
-		IconBrain,
-		IconChartCandle,
-		IconChartLine,
-		IconCheck,
-		IconChevronDown,
-		IconRocket,
-		IconSchool,
-		IconShield,
-		IconTrendingUp,
-		IconX
-	} from '$lib/icons';
-
 	// --- TYPES ---
 
 	interface Course {
@@ -179,7 +162,7 @@
 	let openFaqIndex = $state<number | null>(0);
 
 	// Canvas Ref
-	let canvasRef: HTMLCanvasElement;
+	let canvasRef: HTMLCanvasElement | undefined;
 
 	// --- PARTICLE CLASS (moved to top level to avoid nested class warning) ---
 
@@ -382,7 +365,11 @@
 >
 	<section class="relative min-h-[95vh] flex items-center justify-center overflow-hidden pt-20">
 		<div class="absolute inset-0 z-0 opacity-40">
-			<canvas bind:this={canvasRef} width={innerWidth} height={innerHeight} class="w-full h-full"
+			<canvas
+				{@attach domRef<HTMLCanvasElement>((el) => (canvasRef = el))}
+				width={innerWidth}
+				height={innerHeight}
+				class="w-full h-full"
 			></canvas>
 		</div>
 
@@ -469,7 +456,7 @@
 			class="ticker-bar absolute bottom-0 left-0 w-full border-t border-white/10 bg-black/40 backdrop-blur-md overflow-hidden py-3 z-20"
 		>
 			<div class="flex animate-marquee whitespace-nowrap">
-				{#each Array(8) as _}
+				{#each Array(8) as _, i (i)}
 					<div class="flex items-center gap-8 px-4">
 						<span class="flex items-center gap-2 text-xs font-mono text-emerald-400"
 							><Icon icon={IconTrendingUp} size={14} /> SPY $542.30 +1.2%</span
@@ -490,11 +477,13 @@
 		</div>
 	</section>
 
-	<section class="py-32 relative z-10">
-		<div class="container mx-auto px-6">
-			<div class="grid lg:grid-cols-2 gap-16 items-center">
-				<div class="space-y-8">
-					<h2 class="text-4xl md:text-5xl font-bold tracking-tight text-white">
+	<section class="py-20 sm:py-32 relative z-10">
+		<div class="container mx-auto px-4 sm:px-6">
+			<div class="grid lg:grid-cols-2 gap-10 sm:gap-16 items-center">
+				<div class="space-y-6 sm:space-y-8">
+					<h2
+						class="text-3xl xs:text-4xl md:text-5xl font-bold tracking-tight text-white break-words"
+					>
 						The <span class="text-blue-500">Retail</span> Trap.
 					</h2>
 					<p class="text-xl text-slate-400 leading-relaxed">
@@ -539,7 +528,7 @@
 								<div class="text-[10px] font-mono text-slate-500 uppercase">System: Active</div>
 							</div>
 							<div class="flex-1 flex items-end gap-1">
-								{#each Array(20) as _, i}
+								{#each Array(20) as _, i (i)}
 									<div
 										class="flex-1 bg-blue-500/50 rounded-t-sm animate-pulse"
 										style="height: {30 + Math.random() * 60}%; animation-delay: {i *
@@ -560,7 +549,9 @@
 				<span class="text-blue-500 font-mono text-xs uppercase tracking-[0.3em] mb-4 block"
 					>Classified Intel</span
 				>
-				<h2 class="text-4xl md:text-6xl font-bold tracking-tighter text-white mb-6">
+				<h2
+					class="text-3xl xs:text-4xl md:text-6xl font-bold tracking-tighter text-white mb-6 break-words"
+				>
 					Master The Setup.
 				</h2>
 				<p class="text-slate-400 text-lg">
@@ -569,9 +560,11 @@
 				</p>
 			</div>
 
-			<div class="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-6xl mx-auto">
-				{#each courses as course}
-					{@const iconStr = course.icon}
+			<div
+				class="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-6xl 3xl:max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto"
+			>
+				{#each courses as course (course.id)}
+					{@const Icon = course.icon}
 					{@const colors = course.colorClasses}
 					<div
 						class="spotlight-card group relative h-full bg-black border border-white/10 rounded-3xl overflow-hidden hover:border-white/20 transition-colors duration-500"
@@ -584,7 +577,7 @@
 						></div>
 
 						<div
-							class="relative z-10 p-8 md:p-10 flex flex-col h-full bg-black/40 backdrop-blur-sm"
+							class="relative z-10 p-6 sm:p-8 md:p-10 flex flex-col h-full bg-black/40 backdrop-blur-sm"
 						>
 							<div class="flex justify-between items-start mb-8">
 								<div class={`p-3 rounded-2xl ${colors.bg} ${colors.border} border ${colors.text}`}>
@@ -609,7 +602,7 @@
 							<p class="text-slate-400 leading-relaxed mb-8 grow">{course.description}</p>
 
 							<div class="space-y-3 mb-8">
-								{#each course.features as feature}
+								{#each course.features as feature, fi (course.id + '-' + fi)}
 									<div class="flex items-center gap-3 text-sm text-slate-300">
 										<Icon icon={IconCheck} size={16} class={colors.icon} />
 										{feature}
@@ -641,7 +634,7 @@
 			<h2 class="text-3xl font-bold text-white mb-12 text-center">Protocol FAQ</h2>
 
 			<div class="space-y-4">
-				{#each faqs as faq, i}
+				{#each faqs as faq, i (i)}
 					<button
 						onclick={() => toggleFaq(i)}
 						class="w-full text-left group bg-white/2 hover:bg-white/4 border border-white/5 rounded-xl transition-all duration-300 overflow-hidden"
@@ -675,13 +668,10 @@
 		<div class="absolute inset-0 bg-blue-600/5 blur-[100px]"></div>
 
 		<div class="container mx-auto px-6 relative z-10 text-center">
-			<Icon
-				icon={IconRocket}
-				size={48}
-				stroke={1}
-				class="mx-auto text-blue-500 mb-8 animate-bounce"
-			/>
-			<h2 class="text-5xl md:text-7xl font-black tracking-tighter text-white mb-8">
+			<IconRocket size={48} stroke={1} class="mx-auto text-blue-500 mb-8 animate-bounce" />
+			<h2
+				class="text-4xl xs:text-5xl md:text-7xl font-black tracking-tighter text-white mb-8 break-words"
+			>
 				Market Opens In... Now.
 			</h2>
 			<p class="text-xl text-slate-400 mb-12 max-w-xl mx-auto">
@@ -690,7 +680,7 @@
 
 			<a
 				href="#curriculum"
-				class="inline-flex items-center gap-3 px-10 py-5 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-bold text-lg transition-all shadow-[0_0_40px_rgba(37,99,235,0.3)] hover:shadow-[0_0_60px_rgba(37,99,235,0.5)]"
+				class="inline-flex items-center gap-3 px-6 sm:px-10 py-4 sm:py-5 min-h-11 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-bold text-base sm:text-lg transition-all shadow-[0_0_40px_rgba(37,99,235,0.3)] hover:shadow-[0_0_60px_rgba(37,99,235,0.5)]"
 			>
 				<Icon icon={IconSchool} size={24} />
 				Enroll Now
@@ -698,8 +688,6 @@
 		</div>
 	</section>
 </div>
-
-<MarketingFooter />
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════

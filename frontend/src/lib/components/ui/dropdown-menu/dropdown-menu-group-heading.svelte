@@ -6,21 +6,12 @@
 		inset?: boolean;
 	};
 
-	let props: GroupHeadingProps = $props();
-	let ref = $state<HTMLElement | null>(null);
-	let className = $derived(props.class);
-	let inset = $derived(props.inset);
-
-	$effect(() => {
-		if (props.ref !== undefined && props.ref !== ref) {
-			ref = props.ref;
-		}
-	});
-
-	let restProps = $derived.by(() => {
-		const { ref: _, class: __, inset: ___, ...rest } = props;
-		return rest;
-	});
+	let {
+		ref = $bindable(null),
+		class: className,
+		inset,
+		...restProps
+	}: GroupHeadingProps = $props();
 </script>
 
 <DropdownMenuPrimitive.GroupHeading

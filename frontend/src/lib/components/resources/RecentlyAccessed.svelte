@@ -103,12 +103,12 @@
 	{/if}
 
 	{#if loading}
-		<div class="ra-scroll">
+		<div class="flex gap-4 overflow-x-auto pb-2">
 			{#each Array(4) as _, i (i)}
-				<div class="ra-item-skel" data-compact={compact || undefined}>
-					<div class="ra-skel-thumb"></div>
-					<div class="ra-skel-line ra-skel-w34"></div>
-					<div class="ra-skel-line ra-skel-w12"></div>
+				<div class="w-40 flex-shrink-0 animate-pulse {compact ? '' : 'w-48'}">
+					<div class="aspect-video rounded-lg bg-gray-200 dark:bg-gray-700"></div>
+					<div class="mt-2 h-4 w-3/4 rounded bg-gray-200 dark:bg-gray-700"></div>
+					<div class="mt-1 h-3 w-1/2 rounded bg-gray-200 dark:bg-gray-700"></div>
 				</div>
 			{/each}
 		</div>
@@ -143,8 +143,11 @@
 							<img
 								src={item.resource_thumbnail}
 								alt={item.resource_title}
-								class="ra-thumb-img"
+								width="400"
+								height="225"
 								loading="lazy"
+								decoding="async"
+								class="h-full w-full object-cover transition-transform group-hover:scale-105"
 							/>
 						{:else}
 							<div class="ra-thumb-placeholder">

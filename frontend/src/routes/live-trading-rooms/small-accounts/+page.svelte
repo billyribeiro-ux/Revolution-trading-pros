@@ -3,7 +3,7 @@
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
+	import { revealAllDataGsapTargets } from '$lib/motion/gsapScrollReveal';
 
 	// --- Pricing State (Svelte 5 Runes) ---
 	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = $state('quarterly');
@@ -19,46 +19,48 @@
 		let ctx: ReturnType<typeof import('gsap').gsap.context> | null = null;
 
 		(async () => {
-			const { gsap } = await import('gsap');
-			const { ScrollTrigger } = await import('gsap/ScrollTrigger');
-			gsap.registerPlugin(ScrollTrigger);
+			try {
+				const { gsap } = await import('gsap');
+				const { ScrollTrigger } = await import('gsap/ScrollTrigger');
+				gsap.registerPlugin(ScrollTrigger);
 
-			const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+				const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-			if (prefersReducedMotion) {
-				gsap.set('[data-gsap]', { opacity: 1, y: 0 });
-				return;
+				if (prefersReducedMotion) {
+					gsap.set('[data-gsap]', { opacity: 1, y: 0 });
+					return;
+				}
+
+				ctx = gsap.context(() => {
+					const elements = document.querySelectorAll('[data-gsap]');
+					elements.forEach((el) => {
+						const rect = el.getBoundingClientRect();
+						const isInViewport = rect.top < window.innerHeight * 0.85;
+						if (!isInViewport) {
+							gsap.set(el, { opacity: 0, y: 30 });
+						}
+					});
+
+					ScrollTrigger.batch('[data-gsap]', {
+						onEnter: (batch) => {
+							gsap.to(batch, {
+								opacity: 1,
+								y: 0,
+								duration: 0.8,
+								ease: 'power3.out',
+								stagger: 0.1,
+								overwrite: true
+							});
+						},
+						start: 'top 85%',
+						once: true
+					});
+
+					ScrollTrigger.refresh();
+				});
+			} catch {
+				revealAllDataGsapTargets();
 			}
-
-			// Use gsap.context() for scoped cleanup - prevents global ScrollTrigger destruction
-			ctx = gsap.context(() => {
-				// Only set initial hidden state for elements NOT yet in viewport
-				const elements = document.querySelectorAll('[data-gsap]');
-				elements.forEach((el) => {
-					const rect = el.getBoundingClientRect();
-					const isInViewport = rect.top < window.innerHeight * 0.85;
-					if (!isInViewport) {
-						gsap.set(el, { opacity: 0, y: 30 });
-					}
-				});
-
-				ScrollTrigger.batch('[data-gsap]', {
-					onEnter: (batch) => {
-						gsap.to(batch, {
-							opacity: 1,
-							y: 0,
-							duration: 0.8,
-							ease: 'power3.out',
-							stagger: 0.1,
-							overwrite: true
-						});
-					},
-					start: 'top 85%',
-					once: true
-				});
-
-				ScrollTrigger.refresh();
-			});
 		})();
 
 		return () => ctx?.revert();
@@ -203,7 +205,7 @@
 		</div>
 
 		<div
-			class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center"
+			class="relative z-10 max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center"
 		>
 			<div class="text-center lg:text-left">
 				<div
@@ -223,7 +225,7 @@
 
 				<h1
 					data-gsap
-					class="text-4xl md:text-6xl font-heading font-extrabold mb-6 leading-tight tracking-tight"
+					class="text-3xl xs:text-4xl md:text-6xl font-heading font-extrabold mb-6 leading-tight tracking-tight break-words"
 				>
 					Master <span
 						class="text-transparent bg-clip-text bg-linear-to-r from-rtp-primary to-emerald-400"
@@ -328,7 +330,9 @@
 	</section>
 
 	<section class="bg-rtp-surface border-y border-rtp-border py-12">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div
+			class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8"
+		>
 			<div
 				class="grid grid-cols-2 md:grid-cols-4 gap-8 divide-x-0 md:divide-x divide-rtp-border/50"
 			>
@@ -377,7 +381,9 @@
 	</section>
 
 	<section class="py-24 bg-rtp-bg">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div
+			class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8"
+		>
 			<div class="grid lg:grid-cols-2 gap-16 items-center">
 				<div>
 					<span class="text-emerald-500 font-bold uppercase tracking-wider text-sm mb-2 block"
@@ -460,7 +466,9 @@
 	</section>
 
 	<section id="inside-the-room" class="py-24 bg-rtp-surface border-y border-rtp-border">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div
+			class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8"
+		>
 			<div class="text-center mb-16">
 				<h2 data-gsap class="text-3xl md:text-5xl font-heading font-bold text-rtp-text mb-6">
 					Inside The Room
@@ -706,7 +714,9 @@
 	</section>
 
 	<section id="pricing" class="py-24 bg-rtp-bg">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div
+			class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8"
+		>
 			<div class="text-center mb-16">
 				<span class="text-rtp-primary font-bold uppercase tracking-wider text-sm mb-2 block"
 					>Investment</span
@@ -756,7 +766,9 @@
 				</div>
 			</div>
 
-			<div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto items-center">
+			<div
+				class="grid md:grid-cols-3 gap-8 max-w-6xl 3xl:max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto items-center"
+			>
 				<div
 					class="bg-rtp-surface p-8 rounded-2xl border transition-all duration-300 {selectedPlan ===
 					'monthly'
@@ -893,12 +905,12 @@
 				Frequently Asked Questions
 			</h2>
 			<div class="space-y-4">
-				{#each faqList as faq, i}
+				{#each faqList as faq, i (faq.question)}
 					<div
 						class="border border-rtp-border rounded-xl bg-rtp-bg overflow-hidden hover:border-rtp-primary/30 transition-colors"
 					>
 						<button
-							class="w-full text-left px-6 py-5 font-bold flex justify-between items-center focus:outline-none hover:bg-white/5 transition-colors text-rtp-text"
+							class="w-full text-left px-6 py-5 font-bold flex justify-between items-center min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rtp-primary focus-visible:ring-offset-2 focus-visible:ring-offset-rtp-bg hover:bg-white/5 transition-colors text-rtp-text"
 							onclick={() => toggleFaq(i)}
 							aria-expanded={openFaq === i}
 						>
@@ -955,5 +967,3 @@
 		</div>
 	</section>
 </div>
-
-<MarketingFooter />

@@ -13,20 +13,14 @@
 	@version 1.0.0
 -->
 <script lang="ts">
-	import type { PageData } from './$types';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
+	import type { PageProps } from './$types';
 
-	// Svelte 5 props with SvelteKit typing
-	interface Props {
-		data: PageData;
-	}
-
-	let props: Props = $props();
+	let { data }: PageProps = $props();
 
 	// Derived state
-	let tosTutorials = $derived(props.data.tosTutorials ?? []);
-	let tradestationTutorials = $derived(props.data.tradestationTutorials ?? []);
-	let pagination = $derived(props.data.tosPagination);
+	let tosTutorials = $derived(data.tosTutorials ?? []);
+	let tradestationTutorials = $derived(data.tradestationTutorials ?? []);
+	let pagination = $derived(data.tosPagination);
 
 	// Generate pagination URL
 	function getPageUrl(page: number): string {
@@ -107,7 +101,11 @@
 									<p>{tutorial.excerpt}</p>
 								</div>
 								<div class="fl-post-more-link">
-									<a href={tutorial.url} title="Read More...">Read More...</a>
+									<a
+										href={tutorial.url}
+										title="Read More..."
+										aria-label="Read more about {tutorial.title}">Read More...</a
+									>
 								</div>
 							</div>
 						</div>
@@ -119,7 +117,7 @@
 				{#if pagination.totalPages > 1}
 					<div class="fl-builder-pagination">
 						<ul class="page-numbers">
-							{#each Array.from({ length: pagination.totalPages }, (_, i) => i + 1) as pageNum}
+							{#each Array.from({ length: pagination.totalPages }, (_, i) => i + 1) as pageNum (pageNum)}
 								{#if pageNum === pagination.page}
 									<li><span aria-current="page" class="page-numbers current">{pageNum}</span></li>
 								{:else}
@@ -172,7 +170,11 @@
 									<p>{tutorial.excerpt}</p>
 								</div>
 								<div class="fl-post-more-link">
-									<a href={tutorial.url} title="Read More...">Read More...</a>
+									<a
+										href={tutorial.url}
+										title="Read More..."
+										aria-label="Read more about {tutorial.title}">Read More...</a
+									>
 								</div>
 							</div>
 						</div>
@@ -183,8 +185,6 @@
 		</div>
 	</div>
 </div>
-
-<MarketingFooter />
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════

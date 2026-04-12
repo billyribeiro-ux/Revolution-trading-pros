@@ -291,7 +291,7 @@
 					<Icon icon={IconWorld} size={20} />
 				</label>
 				<select id="region-filter" bind:value={selectedRegion} class="filter-select">
-					{#each regions as region}
+					{#each regions as region (region)}
 						<option value={region}>{region === 'all' ? 'All Regions' : region}</option>
 					{/each}
 				</select>
@@ -321,7 +321,7 @@
 						<div class="index-card__etfs">
 							<span class="index-card__etfs-label">Related ETFs:</span>
 							<div class="index-card__etfs-list">
-								{#each index.etfs as etf}
+								{#each index.etfs as etf (etf)}
 									<a
 										href="https://www.tradingview.com/symbols/AMEX-{etf}/"
 										target="_blank"
@@ -350,7 +350,7 @@
 			</div>
 
 			<div class="faq-list">
-				{#each faqItems as faq, i}
+				{#each faqItems as faq, i (faq.question)}
 					<div class="faq-item" class:faq-item--expanded={expandedFaq === i}>
 						<button class="faq-item__question" onclick={() => toggleFaq(i)}>
 							<Icon icon={IconQuestionMark} size={20} class="faq-item__icon" />
@@ -371,7 +371,7 @@
 						</button>
 						{#if expandedFaq === i}
 							<div class="faq-item__answer" in:fly={{ y: -10, duration: 200 }}>
-								{#each faq.answer.split('\n') as line}
+								{#each faq.answer.split('\n') as line (line)}
 									<p>{line}</p>
 								{/each}
 							</div>

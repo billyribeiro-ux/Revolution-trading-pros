@@ -158,15 +158,20 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let {
+		block,
+		blockId: blockIdProp,
+		isSelected = false,
+		isEditing = true,
+		onUpdate,
+		onError
+	}: Props = $props();
 
 	// Derive blockId from block.id if not provided
-	const blockId = $derived(props.blockId ?? props.block.id);
-	const isSelected = $derived(props.isSelected ?? false);
-	const isEditing = $derived(props.isEditing ?? true);
+	const blockId = $derived(blockIdProp ?? block.id);
 
 	// Get the component for this block type
-	const BlockComponent = $derived(blockComponentMap[props.block.type]);
+	const BlockComponent = $derived(blockComponentMap[block.type]);
 </script>
 
 <!-- ============================================ -->
@@ -174,18 +179,11 @@
 <!-- ============================================ -->
 
 {#if BlockComponent}
-	<BlockComponent
-		block={props.block}
-		{blockId}
-		{isSelected}
-		{isEditing}
-		onUpdate={props.onUpdate}
-		onError={props.onError}
-	/>
+	<BlockComponent {block} {blockId} {isSelected} {isEditing} {onUpdate} {onError} />
 {:else}
 	<div class="unknown-block">
 		<span class="unknown-block__icon">?</span>
-		<span>Unknown block type: <code>{props.block.type}</code></span>
+		<span>Unknown block type: <code>{block.type}</code></span>
 	</div>
 {/if}
 

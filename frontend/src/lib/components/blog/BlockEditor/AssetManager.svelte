@@ -83,13 +83,14 @@
 		initialFolder?: string | null;
 	}
 
-	let props: Props = $props();
-	const isOpen = $derived(props.isOpen);
-	const onClose = $derived(props.onClose);
-	const onSelect = $derived(props.onSelect);
-	const allowMultiple = $derived(props.allowMultiple ?? false);
-	const acceptTypes = $derived(props.acceptTypes ?? ['image', 'video', 'audio', 'document']);
-	const initialFolder = $derived(props.initialFolder ?? null);
+	let {
+		isOpen,
+		onClose,
+		onSelect,
+		allowMultiple = false,
+		acceptTypes = ['image', 'video', 'audio', 'document'],
+		initialFolder = null
+	}: Props = $props();
 
 	// ============================================================================
 	// State
@@ -1033,7 +1034,7 @@
 									</svg>
 									<span>All Assets</span>
 								</button>
-								{#each folders.filter((f) => f.parent_id === null) as folder}
+								{#each folders.filter((f) => f.parent_id === null) as folder (folder.id)}
 									<button
 										class="folder-item"
 										class:active={currentFolderId === folder.id}
@@ -1064,7 +1065,7 @@
 							{#if folderStack.length > 0}
 								<div class="breadcrumb" transition:slide={{ duration: 200 }}>
 									<button onclick={() => navigateToFolder(null)}>All Assets</button>
-									{#each folderStack as folder, i}
+									{#each folderStack as folder, i (folder.id)}
 										<svg
 											width="12"
 											height="12"
@@ -1172,7 +1173,10 @@
 														<img
 															src={asset.thumbnail_url || asset.cdn_url}
 															alt={asset.alt_text || asset.filename}
+															width="200"
+															height="200"
 															loading="lazy"
+															decoding="async"
 														/>
 													{:else if getAssetType(asset.mime_type) === 'video'}
 														<div class="type-preview video">
@@ -1294,7 +1298,14 @@
 													>
 														<td class="td-preview">
 															{#if getAssetType(asset.mime_type) === 'image'}
-																<img src={asset.thumbnail_url || asset.cdn_url} alt="" />
+																<img
+																	src={asset.thumbnail_url || asset.cdn_url}
+																	alt=""
+																	width="80"
+																	height="80"
+																	loading="lazy"
+																	decoding="async"
+																/>
 															{:else}
 																<div class="type-icon {getAssetType(asset.mime_type)}">
 																	<svg
@@ -1401,6 +1412,10 @@
 										<img
 											src={selectedAsset.cdn_url}
 											alt={selectedAsset.alt_text || selectedAsset.filename}
+											width="800"
+											height="600"
+											loading="lazy"
+											decoding="async"
 										/>
 									{:else if getAssetType(selectedAsset.mime_type) === 'video'}
 										<!-- svelte-ignore a11y_media_has_caption -->
@@ -1525,7 +1540,7 @@
 												<dt>Tags</dt>
 												<dd>
 													<div class="tags">
-														{#each selectedAsset.tags as tag}
+														{#each selectedAsset.tags as tag (tag)}
 															<span class="tag">{tag}</span>
 														{/each}
 													</div>
@@ -1544,7 +1559,7 @@
 										<p class="no-usage">Not used in any content</p>
 									{:else}
 										<ul class="usage-list">
-											{#each assetUsage as usage}
+											{#each assetUsage as usage (usage.content_type)}
 												<li>
 													<span class="usage-type">{usage.content_type}</span>
 													<span class="usage-title">{usage.content_title || usage.content_id}</span>
@@ -1654,7 +1669,14 @@
 										>
 											<div class="item-preview">
 												{#if item.previewUrl}
-													<img src={item.previewUrl} alt="" />
+													<img
+														src={item.previewUrl}
+														alt=""
+														width="60"
+														height="60"
+														loading="lazy"
+														decoding="async"
+													/>
 												{:else}
 													<div class="file-icon">
 														<svg

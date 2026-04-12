@@ -222,7 +222,7 @@
 								<a href="/analytics/funnels" class="view-all-link">View All →</a>
 							</div>
 							<div class="funnels-grid">
-								{#each dashboard.funnels.slice(0, 2) as funnel}
+								{#each dashboard.funnels.slice(0, 2) as funnel (funnel.name)}
 									<FunnelChart steps={funnel.steps} title={funnel.name} />
 								{/each}
 							</div>
@@ -244,7 +244,7 @@
 
 					{#if dashboard.funnels && dashboard.funnels.length > 0}
 						<div class="funnels-list">
-							{#each dashboard.funnels as funnel}
+							{#each dashboard.funnels as funnel (funnel.name)}
 								<FunnelChart steps={funnel.steps} title={funnel.name} />
 							{/each}
 						</div>
@@ -272,7 +272,7 @@
 
 					{#if dashboard.cohorts && dashboard.cohorts.length > 0}
 						<div class="cohorts-list">
-							{#each dashboard.cohorts as cohort}
+							{#each dashboard.cohorts as cohort (cohort.name)}
 								{@const transformedData = cohort.retention_matrix.map((row) => ({
 									cohort_date: row.cohort,
 									cohort_size: row.size,
@@ -343,7 +343,7 @@
 							<div class="behavior-card">
 								<h3 class="card-title">Top Pages</h3>
 								<div class="page-list">
-									{#each dashboard.top_pages as page}
+									{#each dashboard.top_pages as page (page.page_path)}
 										<div class="page-item">
 											<span class="page-path">{page.page_path}</span>
 											<span class="page-views">{page.views.toLocaleString()} views</span>
@@ -358,7 +358,7 @@
 							<div class="behavior-card">
 								<h3 class="card-title">Top Events</h3>
 								<div class="event-list">
-									{#each dashboard.top_events as event}
+									{#each dashboard.top_events as event (event.event_name)}
 										<div class="event-item">
 											<span class="event-name">{event.event_name}</span>
 											<span class="event-count">{event.count.toLocaleString()}</span>
@@ -381,7 +381,7 @@
 					<div class="revenue-grid">
 						<!-- Revenue KPIs -->
 						<div class="revenue-kpis">
-							{#each dashboard.kpis.filter((k) => k.category === 'revenue') as kpi}
+							{#each dashboard.kpis.filter((k) => k.category === 'revenue') as kpi (kpi.name)}
 								<div class="revenue-kpi-card">
 									<div class="kpi-label">{kpi.name}</div>
 									<div class="kpi-value">{kpi.formatted_value}</div>

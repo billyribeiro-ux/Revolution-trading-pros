@@ -180,13 +180,21 @@
 							<img
 								src={upload.result.thumbnailUrl}
 								alt="Thumbnail preview of {upload.file.name}"
-								class="up-thumb-img"
+								width="48"
+								height="48"
+								loading="lazy"
+								decoding="async"
+								class="w-full h-full object-cover"
 							/>
 						{:else if upload.file.type.startsWith('image/')}
 							<img
 								src={getFileThumbnail(upload.file)}
 								alt="Preview of {upload.file.name}"
-								class="up-thumb-img"
+								width="48"
+								height="48"
+								loading="lazy"
+								decoding="async"
+								class="w-full h-full object-cover"
 							/>
 						{:else}
 							<svg

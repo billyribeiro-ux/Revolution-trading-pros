@@ -54,7 +54,7 @@
 	import { logger } from '$lib/utils/logger';
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { scale, fade } from 'svelte/transition';
-	import { spring, tweened } from 'svelte/motion';
+	import { Spring, Tween } from 'svelte/motion';
 	import { popupStore, activePopup, type Popup } from '$lib/stores/popups.svelte';
 	import { browser } from '$app/environment';
 	import { page } from '$app/state';
@@ -92,11 +92,12 @@
 	let visibilityListener: (() => void) | null = null;
 	let idleTimer: number | null = null;
 
-	// Animation states
-	const modalScale = spring(0, { stiffness: 0.1, damping: 0.25 });
-	const overlayOpacity = tweened(0, { duration: 300 });
-	const contentOffset = spring({ x: 0, y: 0 }, { stiffness: 0.2, damping: 0.5 });
-	const shakeAnimation = spring(0, { stiffness: 0.3, damping: 0.1 });
+	// Animation states — `Tween` / `Spring` class API (Svelte 5.8+) replaces
+	// the deprecated `tweened` / `spring` factory stores. Read via `.current`.
+	const modalScale = new Spring(0, { stiffness: 0.1, damping: 0.25 });
+	const overlayOpacity = new Tween(0, { duration: 300 });
+	const contentOffset = new Spring({ x: 0, y: 0 }, { stiffness: 0.2, damping: 0.5 });
+	const shakeAnimation = new Spring(0, { stiffness: 0.3, damping: 0.1 });
 
 	// A/B Testing
 	let variantId: string | null = null;
@@ -1001,7 +1002,7 @@
 	<!-- Overlay -->
 	<div
 		class="popup-overlay"
-		style="background-color: {currentPopup.overlayColor}; opacity: {$overlayOpacity};"
+		style="background-color: {currentPopup.overlayColor}; opacity: {overlayOpacity.current};"
 		role="button"
 		tabindex="0"
 		aria-label="Close popup"
@@ -1015,8 +1016,9 @@
 	<div
 		bind:this={modalElement}
 		class="popup-container {deviceType}"
-		class:shake={$shakeAnimation > 0}
-		style="transform: translate(-50%, -50%) scale({$modalScale}) translateX({$contentOffset.x}px) translateY({$contentOffset.y}px);"
+		class:shake={shakeAnimation.current > 0}
+		style="transform: translate(-50%, -50%) scale({modalScale.current}) translateX({contentOffset
+			.current.x}px) translateY({contentOffset.current.y}px);"
 		role="dialog"
 		aria-modal="true"
 		aria-labelledby="popup-title"
@@ -1124,7 +1126,7 @@
 				<!-- Form Fields -->
 				{#if currentPopup.formFields && currentPopup.formFields.length > 0}
 					<form class="popup-form" onsubmit={handleFormSubmit}>
-						{#each currentPopup.formFields as field}
+						{#each currentPopup.formFields as field (field.name)}
 							<div class="form-field">
 								{#if field.label}
 									<label for={field.name} class="form-label">{field.label}</label>
@@ -1153,7 +1155,7 @@
 										aria-invalid={formErrors[field.name] ? 'true' : 'false'}
 									>
 										<option value="">{field.placeholder}</option>
-										{#each field.options || [] as option}
+										{#each field.options || [] as option (typeof option === 'string' ? option : (option.value ?? option.label ?? ''))}
 											{#if typeof option === 'string'}
 												<option value={option}>{option}</option>
 											{:else}
@@ -1210,7 +1212,7 @@
 				<!-- Buttons -->
 				{#if currentPopup.buttons.length > 0}
 					<div class="popup-buttons">
-						{#each currentPopup.buttons as button}
+						{#each currentPopup.buttons as button (button.text)}
 							<button
 								class="popup-btn {button.style} {button.customClass || ''}"
 								onclick={() => handleButtonClick(button)}

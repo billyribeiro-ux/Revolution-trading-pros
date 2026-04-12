@@ -209,36 +209,26 @@ vi.mock('$app/navigation', () => ({
 }));
 
 /**
- * Mock SvelteKit stores
+ * Mock SvelteKit `$app/state` (the SvelteKit-2.12+ rune-based replacement
+ * for the deprecated `$app/stores` module). Tests should always import
+ * `page` / `navigating` / `updated` from `$app/state` for consistency
+ * with production code.
  */
-vi.mock('$app/stores', () => ({
-	page: {
-		subscribe: vi.fn((fn) => {
-			fn({
-				url: new URL('http://localhost:5174/dashboard/explosive-swings'),
-				params: {},
-				route: { id: '/dashboard/explosive-swings' },
-				status: 200,
-				error: null,
-				data: {},
-				form: null
-			});
-			return () => {};
-		})
-	},
-	navigating: {
-		subscribe: vi.fn((fn) => {
-			fn(null);
-			return () => {};
-		})
-	},
-	updated: {
-		subscribe: vi.fn((fn) => {
-			fn(false);
-			return () => {};
-		}),
-		check: vi.fn(() => Promise.resolve(false))
-	}
+const mockPageState = {
+	url: new URL('http://localhost:5174/dashboard/explosive-swings'),
+	params: {},
+	route: { id: '/dashboard/explosive-swings' },
+	status: 200,
+	error: null,
+	data: {},
+	form: null,
+	state: {}
+};
+
+vi.mock('$app/state', () => ({
+	page: mockPageState,
+	navigating: null,
+	updated: { current: false, check: vi.fn(() => Promise.resolve(false)) }
 }));
 
 /**

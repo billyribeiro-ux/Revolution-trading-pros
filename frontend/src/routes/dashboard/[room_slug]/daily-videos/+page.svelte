@@ -13,12 +13,10 @@
 -->
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import type { PageData } from './+page.server';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
+	import type { PageProps } from './$types';
 
-	// Server-loaded data
-	let props: { data: PageData } = $props();
-	let data = $derived(props.data);
+	let { data }: PageProps = $props();
 
 	// Reactive state from server data
 	const displayedVideos = $derived(data.videos || []);
@@ -178,7 +176,7 @@
 
 			{#if isDropdownOpen}
 				<div class="dropdown-menu" role="menu">
-					{#each tradingRooms as room}
+					{#each tradingRooms as room (room.name)}
 						<a href={room.href} class="dropdown-item" onclick={closeDropdown} role="menuitem">
 							<span class="dropdown-item__icon">
 								<RtpIcon name={room.icon} size={20} />
@@ -254,6 +252,7 @@
 										height="183"
 										alt={video.title}
 										loading="lazy"
+										decoding="async"
 									/>
 								</a>
 							</figure>
@@ -286,7 +285,7 @@
 			</div>
 			<div class="facetwp-pagination">
 				<div class="facetwp-pager">
-					{#each getPaginationRange() as pageNum}
+					{#each getPaginationRange() as pageNum (pageNum)}
 						{#if pageNum === '...'}
 							<span class="facetwp-page dots">…</span>
 						{:else if pageNum === currentPage}

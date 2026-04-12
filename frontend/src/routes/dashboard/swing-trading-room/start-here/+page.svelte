@@ -291,6 +291,8 @@
 										alt="ThinkorSwim"
 										width="184"
 										height="71"
+										loading="lazy"
+										decoding="async"
 									/>
 								</div>
 								<div class="copy-column">
@@ -309,6 +311,8 @@
 										alt="tastytrade"
 										width="200"
 										height="37"
+										loading="lazy"
+										decoding="async"
 									/>
 								</div>
 								<div class="copy-column">
@@ -326,6 +330,8 @@
 										alt="TradeStation"
 										width="184"
 										height="71"
+										loading="lazy"
+										decoding="async"
 									/>
 								</div>
 								<div class="copy-column">
@@ -375,10 +381,17 @@
 							</p>
 
 							<div class="trader-team--container">
-								{#each traders as trader}
+								{#each traders as trader (trader.slug)}
 									<div class="team_member">
 										<a href="/traders/{trader.slug}">
-											<img src={trader.image} alt={trader.name} />
+											<img
+												src={trader.image}
+												alt={trader.name}
+												width="200"
+												height="200"
+												loading="lazy"
+												decoding="async"
+											/>
 										</a>
 										<div class="trader-info">
 											<h3>
@@ -458,6 +471,8 @@
 														alt="Apple App Store"
 														width="149"
 														height="46"
+														loading="lazy"
+														decoding="async"
 													/>
 												</a>
 												<a
@@ -470,6 +485,8 @@
 														alt="Google Play Store"
 														width="149"
 														height="47"
+														loading="lazy"
+														decoding="async"
 													/>
 												</a>
 											</div>
@@ -490,6 +507,8 @@
 										alt="Trade Alerts Phone"
 										width="240"
 										height="297"
+										loading="lazy"
+										decoding="async"
 									/>
 									<div class="app-images">
 										<a
@@ -502,6 +521,8 @@
 												alt="Apple App Store"
 												width="149"
 												height="46"
+												loading="lazy"
+												decoding="async"
 											/>
 										</a>
 										<a
@@ -514,6 +535,8 @@
 												alt="Google Play Store"
 												width="149"
 												height="47"
+												loading="lazy"
+												decoding="async"
 											/>
 										</a>
 									</div>
@@ -566,6 +589,10 @@
 								<img
 									src="https://cdn.simplertrading.com/2025/05/01151648/SCR-20250501-mrti.png"
 									alt="Trading Room Schedule"
+									width="1200"
+									height="675"
+									loading="lazy"
+									decoding="async"
 									class="schedule-screenshot"
 								/>
 							</p>

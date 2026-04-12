@@ -15,23 +15,9 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
-	import type { VideoResponse } from './+page.server';
+	import type { PageProps } from './$types';
 
-	interface PageData {
-		videos: VideoResponse[];
-		meta: {
-			current_page: number;
-			per_page: number;
-			total: number;
-			last_page: number;
-		};
-		activeFilter: string;
-		error: string | null;
-	}
-
-	// Server-side data
-	let props: { data: PageData } = $props();
-	let data = $derived(props.data);
+	let { data }: PageProps = $props();
 
 	// Reactive state from server data
 	let videos = $derived(data.videos || []);
@@ -490,12 +476,15 @@
 									<img
 										src="https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg"
 										alt={video.title}
+										width="325"
+										height="183"
 										loading="lazy"
+										decoding="async"
 									/>
 								</figure>
 
 								<div class="article-card__type">
-									{#each video.tag_details as tag}
+									{#each video.tag_details as tag (tag.name)}
 										<span class="label label--info" style="background-color: {tag.color}"
 											>{tag.name}</span
 										>
@@ -546,7 +535,7 @@
 						</li>
 					{/if}
 
-					{#each getPaginationRange() as pageNum}
+					{#each getPaginationRange() as pageNum (pageNum)}
 						<li>
 							{#if pageNum === '...'}
 								<span class="page-numbers dots">…</span>

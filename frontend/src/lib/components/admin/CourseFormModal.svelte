@@ -31,15 +31,7 @@
 		onClose: () => void;
 	}
 
-	let props: Props = $props();
-
-	// Destructure with defaults for internal use
-	const isOpen = $derived(props.isOpen);
-	const modeProp = $derived(props.mode);
-	const course = $derived(props.course ?? null);
-	const onSave = $derived(props.onSave);
-	const onSaved = $derived(props.onSaved);
-	const onClose = $derived(props.onClose);
+	let { isOpen, mode: modeProp, course = null, onSave, onSaved, onClose }: Props = $props();
 
 	// Derive mode from props
 	let mode = $derived(modeProp ?? (course ? 'edit' : 'create'));
@@ -406,7 +398,7 @@
 						<div class="form-group">
 							<label for="level" class="form-label">Difficulty Level</label>
 							<select id="level" class="form-select" bind:value={level} disabled={isLoading}>
-								{#each levels as lvl}
+								{#each levels as lvl (lvl.value)}
 									<option value={lvl.value}>{lvl.label}</option>
 								{/each}
 							</select>
@@ -463,7 +455,7 @@
 							<div class="form-group" role="radiogroup" aria-labelledby="badge-color-label">
 								<span id="badge-color-label" class="form-label">Badge Color</span>
 								<div class="color-options">
-									{#each badgeColors as color}
+									{#each badgeColors as color (color.value)}
 										<button
 											type="button"
 											class="color-option"

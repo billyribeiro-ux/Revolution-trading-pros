@@ -21,15 +21,15 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
 	// Derived state
-	const isChecklist = $derived(props.block.type === 'checklist');
-	const listType = $derived(props.block.content.listType || 'bullet');
+	const isChecklist = $derived(block.type === 'checklist');
+	const listType = $derived(block.content.listType || 'bullet');
 	const ListTag = $derived((listType === 'number' ? 'ol' : 'ul') as 'ol' | 'ul');
 
 	// Checklist progress calculation
-	const checklistItems = $derived(props.block.content.items || []);
+	const checklistItems = $derived(block.content.items || []);
 	const completedCount = $derived(checklistItems.filter((item) => item.checked).length);
 	const totalCount = $derived(checklistItems.length);
 	const progressPercent = $derived(
@@ -37,7 +37,7 @@
 	);
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 
 	// List type toggle
@@ -47,7 +47,7 @@
 
 	// Regular list item management
 	function addListItem(index: number): void {
-		const items = [...(props.block.content.listItems || [])];
+		const items = [...(block.content.listItems || [])];
 		items.splice(index + 1, 0, '');
 		updateContent({ listItems: items });
 
@@ -61,13 +61,13 @@
 	}
 
 	function updateListItem(index: number, value: string): void {
-		const items = [...(props.block.content.listItems || [])];
+		const items = [...(block.content.listItems || [])];
 		items[index] = value;
 		updateContent({ listItems: items });
 	}
 
 	function removeListItem(index: number): void {
-		const items = [...(props.block.content.listItems || [])];
+		const items = [...(block.content.listItems || [])];
 		if (items.length > 1) {
 			items.splice(index, 1);
 			updateContent({ listItems: items });
@@ -84,7 +84,7 @@
 	}
 
 	function handleListKeyDown(e: KeyboardEvent, index: number): void {
-		const items = props.block.content.listItems || [];
+		const items = block.content.listItems || [];
 		const currentItem = items[index] || '';
 
 		if (e.key === 'Enter') {
@@ -111,7 +111,7 @@
 	// Checklist item management
 	function toggleCheckItem(itemId: string): void {
 		const items =
-			props.block.content.items?.map((item) =>
+			block.content.items?.map((item) =>
 				item.id === itemId ? { ...item, checked: !item.checked } : item
 			) || [];
 		updateContent({ items });
@@ -119,8 +119,7 @@
 
 	function updateCheckItemText(itemId: string, text: string): void {
 		const items =
-			props.block.content.items?.map((item) => (item.id === itemId ? { ...item, text } : item)) ||
-			[];
+			block.content.items?.map((item) => (item.id === itemId ? { ...item, text } : item)) || [];
 		updateContent({ items });
 	}
 
@@ -131,7 +130,7 @@
 			checked: false
 		};
 
-		const items = [...(props.block.content.items || [])];
+		const items = [...(block.content.items || [])];
 		if (afterIndex !== undefined) {
 			items.splice(afterIndex + 1, 0, newItem);
 		} else {
@@ -150,7 +149,7 @@
 	}
 
 	function removeCheckItem(itemId: string, index: number): void {
-		const items = props.block.content.items?.filter((item) => item.id !== itemId) || [];
+		const items = block.content.items?.filter((item) => item.id !== itemId) || [];
 		if (items.length > 0) {
 			updateContent({ items });
 
@@ -166,7 +165,7 @@
 	}
 
 	function handleCheckKeyDown(e: KeyboardEvent, itemId: string, index: number): void {
-		const items = props.block.content.items || [];
+		const items = block.content.items || [];
 		const currentItem = items.find((item) => item.id === itemId);
 
 		if (e.key === 'Enter') {
@@ -227,7 +226,7 @@
 						type="checkbox"
 						checked={item.checked}
 						onchange={() => toggleCheckItem(item.id)}
-						disabled={!props.isEditing}
+						disabled={!isEditing}
 						class="list-block__checkbox-input"
 						aria-label={item.text || 'Checklist item'}
 					/>
@@ -237,7 +236,7 @@
 						{/if}
 					</span>
 					<span
-						contenteditable={props.isEditing}
+						contenteditable={isEditing}
 						class="list-block__check-text"
 						class:list-block__check-text--placeholder={!item.text}
 						oninput={(e) =>
@@ -246,13 +245,13 @@
 						onpaste={handlePaste}
 						data-placeholder="List item..."
 						data-check-item-index={index}
-						role={props.isEditing ? 'textbox' : undefined}
-						aria-label={props.isEditing ? 'Checklist item text' : undefined}
+						role={isEditing ? 'textbox' : undefined}
+						aria-label={isEditing ? 'Checklist item text' : undefined}
 						spellcheck="true"
 					>
 						{item.text}
 					</span>
-					{#if props.isEditing && checklistItems.length > 1}
+					{#if isEditing && checklistItems.length > 1}
 						<button
 							type="button"
 							class="list-block__remove-btn"
@@ -267,7 +266,7 @@
 		</div>
 
 		<!-- Add Item Button -->
-		{#if props.isEditing}
+		{#if isEditing}
 			<button
 				type="button"
 				class="list-block__add-btn"
@@ -287,7 +286,7 @@
 		aria-label={listType === 'number' ? 'Numbered list' : 'Bulleted list'}
 	>
 		<!-- List Type Toggle -->
-		{#if props.isEditing}
+		{#if isEditing}
 			<div class="list-block__toolbar">
 				<button
 					type="button"
@@ -348,10 +347,10 @@
 			class="list-block__list"
 			class:list-block__list--numbered={listType === 'number'}
 		>
-			{#each props.block.content.listItems || [''] as item, index (index)}
+			{#each block.content.listItems || [''] as item, index (index)}
 				<li class="list-block__item">
 					<span
-						contenteditable={props.isEditing}
+						contenteditable={isEditing}
 						class="list-block__item-text"
 						class:list-block__item-text--placeholder={!item}
 						oninput={(e) => updateListItem(index, (e.target as HTMLElement).textContent || '')}
@@ -359,13 +358,13 @@
 						onpaste={handlePaste}
 						data-placeholder="List item..."
 						data-list-item-index={index}
-						role={props.isEditing ? 'textbox' : undefined}
-						aria-label={props.isEditing ? 'List item text' : undefined}
+						role={isEditing ? 'textbox' : undefined}
+						aria-label={isEditing ? 'List item text' : undefined}
 						spellcheck="true"
 					>
 						{item}
 					</span>
-					{#if props.isEditing && (props.block.content.listItems?.length || 0) > 1}
+					{#if isEditing && (block.content.listItems?.length || 0) > 1}
 						<button
 							type="button"
 							class="list-block__remove-btn"
@@ -380,11 +379,11 @@
 		</svelte:element>
 
 		<!-- Add Item Button -->
-		{#if props.isEditing}
+		{#if isEditing}
 			<button
 				type="button"
 				class="list-block__add-btn"
-				onclick={() => addListItem((props.block.content.listItems?.length || 1) - 1)}
+				onclick={() => addListItem((block.content.listItems?.length || 1) - 1)}
 				aria-label="Add new list item"
 			>
 				<Icon icon={IconPlus} size={14} aria-hidden="true" />

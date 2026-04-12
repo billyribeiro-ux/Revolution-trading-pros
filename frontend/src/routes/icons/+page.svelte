@@ -260,7 +260,9 @@
 </script>
 
 <div class="bg-slate-950 text-white p-4 md:p-8">
-	<div class="max-w-7xl mx-auto">
+	<div
+		class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto"
+	>
 		<div class="mb-12 text-center">
 			<h1
 				class="text-4xl md:text-6xl font-bold mb-4 bg-linear-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
@@ -290,7 +292,7 @@
 				>
 			</div>
 			<div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-3">
-				{#each d3Charts as chart}
+				{#each d3Charts as chart (chart.name)}
 					<div
 						class="group bg-slate-900/50 border border-white/5 rounded-xl p-3 hover:border-yellow-500/30 transition-all hover:-translate-y-1"
 					>
@@ -320,7 +322,7 @@
 				>
 			</div>
 			<div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-3">
-				{#each apexCharts as chart}
+				{#each apexCharts as chart (chart.name)}
 					<div
 						class="group bg-slate-900/50 border border-white/5 rounded-xl p-3 hover:border-pink-500/30 transition-all hover:-translate-y-1"
 					>
@@ -350,7 +352,7 @@
 				>
 			</div>
 			<div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-3">
-				{#each chartJsCharts as chart}
+				{#each chartJsCharts as chart (chart.name)}
 					<div
 						class="group bg-slate-900/50 border border-white/5 rounded-xl p-3 hover:border-indigo-500/30 transition-all hover:-translate-y-1"
 					>
@@ -380,7 +382,7 @@
 				>
 			</div>
 			<div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-3">
-				{#each lightweightCharts as chart}
+				{#each lightweightCharts as chart (chart.name)}
 					<div
 						class="group bg-slate-900/50 border border-white/5 rounded-xl p-3 hover:border-teal-500/30 transition-all hover:-translate-y-1"
 					>
@@ -406,7 +408,7 @@
 				>
 			</div>
 			<div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-3">
-				{#each fontAwesomeSolid as item}
+				{#each fontAwesomeSolid as item (item.name)}
 					<div
 						class="group bg-slate-900/50 border border-white/5 rounded-xl p-3 hover:border-blue-500/30 transition-all hover:-translate-y-1"
 					>
@@ -434,7 +436,8 @@
 				>
 			</div>
 			<div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-3">
-				{#each heroicons as item}
+				{#each heroicons as item (item.name)}
+					{@const HeroIcon = item.icon}
 					<div
 						class="group bg-slate-900/50 border border-white/5 rounded-xl p-3 hover:border-purple-500/30 transition-all hover:-translate-y-1"
 					>

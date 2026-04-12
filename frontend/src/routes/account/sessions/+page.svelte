@@ -158,7 +158,9 @@
 
 {#if $authStore.user}
 	<div class="min-h-[calc(100vh-120px)] bg-gray-50 py-12 px-4">
-		<div class="max-w-4xl mx-auto">
+		<div
+			class="max-w-4xl 3xl:max-w-[1200px] 4xl:max-w-[1600px] 5xl:max-w-[2000px] 6xl:max-w-[2400px] mx-auto"
+		>
 			<!-- Header -->
 			<div class="mb-8">
 				<nav class="text-sm mb-4">
@@ -257,7 +259,7 @@
 			<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
 				{#if loading && sessions.length === 0}
 					<!-- Skeleton Loading -->
-					{#each Array(3) as _}
+					{#each Array(3) as _, i (i)}
 						<div class="p-6 border-b border-gray-100 last:border-b-0 animate-pulse">
 							<div class="flex items-start gap-4">
 								<div class="w-12 h-12 bg-gray-200 rounded-lg"></div>

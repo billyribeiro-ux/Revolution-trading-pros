@@ -744,7 +744,13 @@
 	});
 </script>
 
-<section bind:this={heroSection} id="hero" class="hero-section" class:hero-animating={isAnimating}>
+<section
+	bind:this={heroSection}
+	id="hero"
+	aria-label="Revolution Trading Pros hero"
+	class="hero-section"
+	class:hero-animating={isAnimating}
+>
 	<!-- Ambient Background Layers -->
 	<div class="hero-ambient" aria-hidden="true">
 		<div class="ambient-gradient"></div>
@@ -1065,6 +1071,39 @@
 		}
 	}
 
+	/* 4K / 5K display scaling — hero content should not look stranded on ultra-wide monitors */
+	@media (min-width: 1920px) {
+		.hero-content {
+			max-width: 112.5rem; /* 1800px */
+			padding-inline: 4rem;
+			padding-block: 6rem;
+		}
+	}
+
+	@media (min-width: 2560px) {
+		.hero-content {
+			max-width: 137.5rem; /* 2200px */
+			padding-inline: 5rem;
+			padding-block: 7rem;
+		}
+	}
+
+	@media (min-width: 3840px) {
+		.hero-content {
+			max-width: 162.5rem; /* 2600px */
+			padding-inline: 6rem;
+			padding-block: 8rem;
+		}
+	}
+
+	@media (min-width: 5120px) {
+		.hero-content {
+			max-width: 200rem; /* 3200px */
+			padding-inline: 8rem;
+			padding-block: 10rem;
+		}
+	}
+
 	.hero-slides {
 		position: relative;
 		min-height: 22rem;
@@ -1082,6 +1121,31 @@
 		transform: translateZ(0);
 	}
 
+	/* 4K / 5K display scaling for slide content width */
+	@media (min-width: 1920px) {
+		.slide {
+			max-width: 72rem; /* 1152px */
+		}
+	}
+
+	@media (min-width: 2560px) {
+		.slide {
+			max-width: 88rem; /* 1408px */
+		}
+	}
+
+	@media (min-width: 3840px) {
+		.slide {
+			max-width: 104rem; /* 1664px */
+		}
+	}
+
+	@media (min-width: 5120px) {
+		.slide {
+			max-width: 120rem; /* 1920px */
+		}
+	}
+
 	.slide--hidden {
 		display: none !important;
 		pointer-events: none;
@@ -1097,7 +1161,8 @@
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
 	.slide__title {
 		font-family: var(--font-heading, system-ui);
-		font-size: clamp(2.75rem, 9vw, 5.5rem);
+		/* Mobile-first: 320px phones get ~2.25rem (36px), scales up through 9vw to 5.5rem ceiling */
+		font-size: clamp(2.25rem, 8vw, 5.5rem);
 		font-weight: 800;
 		line-height: 1;
 		color: white;
@@ -1110,6 +1175,28 @@
 		transform: translateZ(0);
 		transform-style: preserve-3d;
 		perspective: 1000px;
+	}
+
+	/* Higher ceilings for QHD/4K/5K displays so titles don't look stranded */
+	@media (min-width: 1920px) {
+		.slide__title {
+			font-size: clamp(5.5rem, 7vw, 7.5rem);
+		}
+	}
+	@media (min-width: 2560px) {
+		.slide__title {
+			font-size: clamp(7rem, 6.5vw, 9rem);
+		}
+	}
+	@media (min-width: 3840px) {
+		.slide__title {
+			font-size: clamp(8.5rem, 6vw, 11rem);
+		}
+	}
+	@media (min-width: 5120px) {
+		.slide__title {
+			font-size: clamp(10rem, 5.5vw, 13rem);
+		}
 	}
 
 	.slide__subtitle {
@@ -1153,6 +1240,44 @@
 		margin-block-end: 2.5rem;
 		transform: translateZ(0);
 		text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+	}
+
+	/* Scale subtitle + description for QHD/4K/5K displays */
+	@media (min-width: 1920px) {
+		.slide__subtitle {
+			font-size: clamp(2.25rem, 3.5vw, 3rem);
+		}
+		.slide__description {
+			font-size: clamp(1.3rem, 1.8vw, 1.6rem);
+			max-width: 56rem;
+		}
+	}
+	@media (min-width: 2560px) {
+		.slide__subtitle {
+			font-size: clamp(2.75rem, 3vw, 3.5rem);
+		}
+		.slide__description {
+			font-size: clamp(1.55rem, 1.5vw, 1.85rem);
+			max-width: 68rem;
+		}
+	}
+	@media (min-width: 3840px) {
+		.slide__subtitle {
+			font-size: clamp(3.25rem, 2.5vw, 4rem);
+		}
+		.slide__description {
+			font-size: clamp(1.8rem, 1.2vw, 2.1rem);
+			max-width: 80rem;
+		}
+	}
+	@media (min-width: 5120px) {
+		.slide__subtitle {
+			font-size: clamp(3.75rem, 2.2vw, 4.5rem);
+		}
+		.slide__description {
+			font-size: clamp(2.05rem, 1.1vw, 2.4rem);
+			max-width: 96rem;
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════

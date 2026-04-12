@@ -183,7 +183,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each filteredTemplates as tmpl}
+				{#each filteredTemplates as tmpl (tmpl.id)}
 					<tr>
 						<td class="name-cell">{tmpl.name}</td>
 						<td class="slug-cell"><code>{tmpl.slug}</code></td>

@@ -292,7 +292,7 @@
 								<table class="switcherTable">
 									<tbody>
 										<tr>
-											{#each currentEntry.watchlistDates as dateOption, index}
+											{#each currentEntry.watchlistDates as dateOption, index (dateOption)}
 												<td
 													class:switcherItemActive={selectedDateIndex === index}
 													class:switcherItem={selectedDateIndex !== index}

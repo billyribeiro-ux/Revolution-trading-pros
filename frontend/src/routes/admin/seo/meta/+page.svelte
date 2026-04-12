@@ -59,7 +59,7 @@
 						<p class="hint">Create pages, posts, or products to optimize their SEO</p>
 					</div>
 				{:else}
-					{#each filteredEntities as entity}
+					{#each filteredEntities as entity (entity.id)}
 						<button
 							class="entity-item"
 							class:active={selectedEntity?.id === entity.id}

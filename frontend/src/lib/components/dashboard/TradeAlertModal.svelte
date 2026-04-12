@@ -40,15 +40,7 @@
 		onSave: (alert: AlertCreateInput | AlertUpdateInput, isEdit: boolean) => Promise<void>;
 	}
 
-	let props: Props = $props();
-
-	// Derived props with defaults (isOpen uses $bindable via props)
-	let isOpen = $derived(props.isOpen);
-	let roomSlug = $derived(props.roomSlug);
-	let editAlert = $derived(props.editAlert ?? null);
-	let entryAlerts = $derived(props.entryAlerts ?? []);
-	let onClose = $derived(props.onClose);
-	let onSave = $derived(props.onSave);
+	let { isOpen, roomSlug, editAlert = null, entryAlerts = [], onClose, onSave }: Props = $props();
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
@@ -300,7 +292,7 @@
 			>
 				{#if errors.length > 0}
 					<div class="error-banner">
-						{#each errors as error}
+						{#each errors as error (error)}
 							<p>{error}</p>
 						{/each}
 					</div>
@@ -482,7 +474,7 @@
 						<label for="entryAlertId">Link to Entry Alert</label>
 						<select id="entryAlertId" bind:value={entryAlertId}>
 							<option value={null}>-- Select Entry Alert --</option>
-							{#each availableEntryAlerts as entry}
+							{#each availableEntryAlerts as entry (entry.id)}
 								<option value={entry.id}>{entry.title} ({entry.tos_string})</option>
 							{/each}
 						</select>

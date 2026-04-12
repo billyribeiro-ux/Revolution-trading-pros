@@ -31,10 +31,16 @@
 
 {#if type === 'grid'}
 	<!-- Grid skeleton for gallery views -->
-	<div class="skel-grid {className}" style="--columns: {columns};">
+	<div class="media-skeleton-grid gap-4 {className}" style="--columns: {columns};">
 		{#each Array(count) as _, i (i)}
-			<div class="skel-card" style="animation-delay: {i * 0.05}s;">
-				<div class="skel-image" style="aspect-ratio: {aspectRatio};">
+			<div
+				class="skeleton-card bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden"
+				style="animation-delay: {i * 0.05}s;"
+			>
+				<div
+					class="relative bg-gray-200 dark:bg-gray-700 overflow-hidden"
+					style="aspect-ratio: {aspectRatio};"
+				>
 					<div class="skeleton-shimmer"></div>
 				</div>
 				{#if showText}
@@ -66,11 +72,14 @@
 	</div>
 {:else if type === 'list'}
 	<!-- List/table skeleton -->
-	<div class="skel-list {className}">
+	<div class="space-y-2 {className}">
 		{#each Array(count) as _, i (i)}
-			<div class="skel-row" style="animation-delay: {i * 0.05}s;">
-				<div class="skel-checkbox"></div>
-				<div class="skel-thumb">
+			<div
+				class="skeleton-row flex items-center gap-4 p-3 bg-gray-100 dark:bg-gray-800 rounded-lg"
+				style="animation-delay: {i * 0.05}s;"
+			>
+				<div class="w-5 h-5 bg-gray-200 dark:bg-gray-700 rounded"></div>
+				<div class="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-lg relative overflow-hidden">
 					<div class="skeleton-shimmer"></div>
 				</div>
 				<div class="skel-row-text">
@@ -93,8 +102,11 @@
 			</div>
 		</div>
 		{#each Array(count) as _, i (i)}
-			<div class="skel-upload-item" style="animation-delay: {i * 0.1}s;">
-				<div class="skel-thumb">
+			<div
+				class="skeleton-upload-item flex items-center gap-3 p-4 border-b border-gray-200 dark:border-gray-700 last:border-0"
+				style="animation-delay: {i * 0.1}s;"
+			>
+				<div class="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-lg relative overflow-hidden">
 					<div class="skeleton-shimmer"></div>
 				</div>
 				<div class="skel-row-text">

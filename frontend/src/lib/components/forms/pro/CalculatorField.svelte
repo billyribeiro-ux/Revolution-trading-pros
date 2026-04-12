@@ -17,14 +17,14 @@
 		onchange?: (value: number) => void;
 	}
 
-	let props: Props = $props();
+	let { field, value, formData, error, onchange }: Props = $props();
 
-	const formula = $derived(props.field.attributes?.formula || '');
-	const prefix = $derived(props.field.attributes?.prefix || '');
-	const suffix = $derived(props.field.attributes?.suffix || '');
-	const decimals = $derived(props.field.attributes?.decimals ?? 2);
-	const showFormula = $derived(props.field.attributes?.show_formula || false);
-	const variables = $derived<CalculationVariable[]>(props.field.attributes?.variables || []);
+	const formula = $derived(field.attributes?.formula || '');
+	const prefix = $derived(field.attributes?.prefix || '');
+	const suffix = $derived(field.attributes?.suffix || '');
+	const decimals = $derived(field.attributes?.decimals ?? 2);
+	const showFormula = $derived(field.attributes?.show_formula || false);
+	const variables = $derived<CalculationVariable[]>(field.attributes?.variables || []);
 
 	const calculatedValue = $derived.by(() => {
 		if (!formula) return 0;
@@ -35,7 +35,7 @@
 
 			// Replace field references like {field_name} with values from formData
 			expression = expression.replace(/\{([^}]+)\}/g, (_: string, fieldName: string) => {
-				const fieldValue = (props.formData ?? {})[fieldName];
+				const fieldValue = (formData ?? {})[fieldName];
 				if (typeof fieldValue === 'number') return String(fieldValue);
 				if (typeof fieldValue === 'string') {
 					const parsed = parseFloat(fieldValue);
@@ -66,22 +66,22 @@
 
 	$effect(() => {
 		const newValue = calculatedValue;
-		if (newValue !== props.value) {
-			props.onchange?.(newValue);
+		if (newValue !== value) {
+			onchange?.(newValue);
 		}
 	});
 </script>
 
 <div class="calculator-field">
-	<label for="calculator-{props.field.name}" class="field-label">
-		{props.field.label}
-		{#if props.field.required}
+	<label for="calculator-{field.name}" class="field-label">
+		{field.label}
+		{#if field.required}
 			<span class="required">*</span>
 		{/if}
 	</label>
 
-	{#if props.field.help_text}
-		<p class="field-help">{props.field.help_text}</p>
+	{#if field.help_text}
+		<p class="field-help">{field.help_text}</p>
 	{/if}
 
 	<div class="calculator-display">
@@ -106,7 +106,7 @@
 				<span>Calculation breakdown</span>
 			</div>
 			<div class="variables-list">
-				{#each variables as variable}
+				{#each variables as variable (variable.value)}
 					<div class="variable-row">
 						<span class="variable-label">{variable.label}:</span>
 						<span class="variable-value">{formatValue(variable.value)}</span>
@@ -122,16 +122,11 @@
 		</div>
 	{/if}
 
-	<input
-		id="calculator-{props.field.name}"
-		type="hidden"
-		name={props.field.name}
-		value={calculatedValue}
-	/>
+	<input id="calculator-{field.name}" type="hidden" name={field.name} value={calculatedValue} />
 
-	{#if props.error && props.error.length > 0}
+	{#if error && error.length > 0}
 		<div class="field-error">
-			{#each props.error as err}
+			{#each error as err (err)}
 				<p>{err}</p>
 			{/each}
 		</div>

@@ -13,7 +13,7 @@
 	</div>
 
 	<!-- Result Sections -->
-	{#each [1, 2, 3] as _section}
+	{#each [1, 2, 3] as _section (_section)}
 		<div class="skeleton-section">
 			<div class="skeleton-header">
 				<div class="skeleton-icon"></div>
@@ -22,7 +22,7 @@
 			</div>
 
 			<div class="skeleton-results">
-				{#each [1, 2, 3] as _result}
+				{#each [1, 2, 3] as _result (_result)}
 					<div class="skeleton-card">
 						<div class="skeleton-card-header">
 							<div class="skeleton-badge small"></div>

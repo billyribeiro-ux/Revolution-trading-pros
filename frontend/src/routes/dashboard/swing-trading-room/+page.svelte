@@ -15,18 +15,9 @@
 	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
 	import LatestUpdates from '$lib/components/dashboard/LatestUpdates.svelte';
 	import TradingRoomSidebar from '$lib/components/dashboard/TradingRoomSidebar.svelte';
-	import type { WatchlistResponse } from '$lib/types/watchlist';
+	import type { PageProps } from './$types';
 
-	// Props interface for SSR data - Svelte 5 best practice
-	interface Props {
-		data: {
-			watchlist?: WatchlistResponse;
-		};
-	}
-
-	// SSR data from +page.server.ts
-	let props: Props = $props();
-	let data = $derived(props.data);
+	let { data }: PageProps = $props();
 
 	// Article data - matches WordPress structure
 	const articles = [

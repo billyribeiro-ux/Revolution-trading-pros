@@ -103,8 +103,10 @@
 	<title>Click Heatmaps | Analytics</title>
 </svelte:head>
 
-<div class="bg-linear-to-br from-slate-950 via-slate-900 to-slate-950">
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+	<div
+		class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 py-8"
+	>
 		<!-- Apple ICT7 Grade Header -->
 		<header class="flex items-center justify-between mb-8">
 			<div class="flex items-center gap-4">
@@ -129,7 +131,7 @@
 				<div class="flex items-center gap-4">
 					<PeriodSelector value={selectedPeriod} onchange={handlePeriodChange} />
 					<div class="flex items-center bg-slate-800/50 rounded-xl border border-white/10 p-1">
-						{#each [{ value: 'click', label: 'Clicks' }, { value: 'scroll', label: 'Scroll' }, { value: 'move', label: 'Movement' }] as type}
+						{#each [{ value: 'click', label: 'Clicks' }, { value: 'scroll', label: 'Scroll' }, { value: 'move', label: 'Movement' }] as type (type.value)}
 							<button
 								onclick={() => (heatmapType = type.value as typeof heatmapType)}
 								class="px-4 py-2 rounded-lg text-sm font-medium transition-all
@@ -254,7 +256,7 @@
 						<h3 class="text-sm font-medium text-slate-400 uppercase tracking-wider mb-4">
 							Tracked Pages
 						</h3>
-						{#each pages as page}
+						{#each pages as page (page.id)}
 							<button
 								onclick={() => loadHeatmapData(page)}
 								class="w-full text-left bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 hover:bg-white/10 transition-all
@@ -330,7 +332,7 @@
 								<div class="p-5 border-t border-white/10">
 									<h4 class="text-sm font-medium text-slate-300 mb-4">Scroll Depth Distribution</h4>
 									<div class="space-y-2">
-										{#each [{ depth: '25%', percentage: 85 }, { depth: '50%', percentage: 62 }, { depth: '75%', percentage: 38 }, { depth: '100%', percentage: 15 }] as scroll}
+										{#each [{ depth: '25%', percentage: 85 }, { depth: '50%', percentage: 62 }, { depth: '75%', percentage: 38 }, { depth: '100%', percentage: 15 }] as scroll (scroll.depth)}
 											<div class="flex items-center gap-3">
 												<span class="text-xs text-slate-400 w-12">{scroll.depth}</span>
 												<div class="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">

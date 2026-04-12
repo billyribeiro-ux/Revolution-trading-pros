@@ -1,18 +1,7 @@
 <script lang="ts">
-	interface Order {
-		id: number;
-		number: string;
-		date: string;
-		status: string;
-		total: string;
-	}
+	import type { PageProps } from './$types';
 
-	interface PageData {
-		orders: Order[];
-	}
-
-	let props: { data: PageData } = $props();
-	let data = $derived(props.data);
+	let { data }: PageProps = $props();
 
 	const orders = $derived(data.orders || []);
 

@@ -295,7 +295,7 @@
 																<tr class="recurring-totals">
 																	<th colspan="2">Recurring Totals</th>
 																</tr>
-																{#each cartStore.items.filter((i) => i.interval) as item}
+																{#each cartStore.items.filter((i) => i.interval) as item (item.id)}
 																	<tr class="cart-subtotal recurring-total">
 																		<th rowspan="1">Subtotal</th>
 																		<td data-title="Subtotal">
@@ -331,6 +331,7 @@
 												<!-- Coupon Input -->
 												<div class="cart-coupon">
 													<div class="input-group">
+														<label for="coupon_code" class="sr-only">Coupon code</label>
 														<input
 															type="text"
 															name="coupon_code"
@@ -338,6 +339,8 @@
 															id="coupon_code"
 															bind:value={couponCode}
 															placeholder="Coupon code"
+															autocomplete="off"
+															aria-label="Coupon code"
 															disabled={applyingCoupon}
 														/>
 														<span class="input-group-btn">

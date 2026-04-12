@@ -22,7 +22,7 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 	const stateManager = getBlockStateManager();
 
 	interface TocItem {
@@ -32,19 +32,19 @@
 	}
 
 	let tocItems = $state<TocItem[]>([]);
-	let tocState = $derived(stateManager.getTocState(props.blockId));
+	let tocState = $derived(stateManager.getTocState(blockId));
 	let isCollapsed = $derived(!tocState.open);
 	let activeHeading = $derived(tocState.activeHeading);
 
-	let title = $derived(props.block.content.tocTitle || 'Table of Contents');
-	let maxLevel = $derived(props.block.settings.tocMaxLevel || 3);
+	let title = $derived(block.content.tocTitle || 'Table of Contents');
+	let maxLevel = $derived(block.settings.tocMaxLevel || 3);
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 
 	function toggleCollapse(): void {
-		stateManager.setTocState(props.blockId, { open: !tocState.open });
+		stateManager.setTocState(blockId, { open: !tocState.open });
 	}
 
 	function scrollToHeading(id: string): void {
@@ -53,7 +53,7 @@
 		const element = document.getElementById(id);
 		if (element) {
 			element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-			stateManager.setTocState(props.blockId, { activeHeading: id });
+			stateManager.setTocState(blockId, { activeHeading: id });
 		}
 	}
 
@@ -138,7 +138,7 @@
 					}
 
 					if (closestId && closestId !== activeHeading) {
-						stateManager.setTocState(props.blockId, { activeHeading: closestId });
+						stateManager.setTocState(blockId, { activeHeading: closestId });
 					}
 				}
 			},
@@ -172,7 +172,7 @@
 		isMobile = window.innerWidth < 768;
 		// Auto-collapse on mobile by default
 		if (isMobile && tocState.open) {
-			stateManager.setTocState(props.blockId, { open: false });
+			stateManager.setTocState(blockId, { open: false });
 		}
 	}
 
@@ -211,12 +211,12 @@
 		type="button"
 		class="toc-header"
 		aria-expanded={!isCollapsed}
-		aria-controls="toc-list-{props.blockId}"
+		aria-controls="toc-list-{blockId}"
 		onclick={toggleCollapse}
 	>
 		<Icon icon={IconList} size={20} aria-hidden="true" />
 
-		{#if props.isEditing}
+		{#if isEditing}
 			<span
 				contenteditable="true"
 				class="toc-title editable-content"
@@ -239,7 +239,7 @@
 		</span>
 	</button>
 
-	<div id="toc-list-{props.blockId}" class="toc-content" hidden={isCollapsed}>
+	<div id="toc-list-{blockId}" class="toc-content" hidden={isCollapsed}>
 		{#if tocItems.length > 0}
 			<ul class="toc-list" role="list">
 				{#each tocItems as item (item.id)}
@@ -255,16 +255,16 @@
 		{/if}
 	</div>
 
-	{#if props.isEditing && props.isSelected}
+	{#if isEditing && isSelected}
 		<div class="toc-settings">
 			<label class="setting-field">
 				<span>Max heading level:</span>
 				<select
 					value={maxLevel}
 					onchange={(e) =>
-						props.onUpdate({
+						onUpdate({
 							settings: {
-								...props.block.settings,
+								...block.settings,
 								tocMaxLevel: parseInt((e.target as HTMLSelectElement).value)
 							}
 						})}

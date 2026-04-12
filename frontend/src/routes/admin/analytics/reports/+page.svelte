@@ -182,8 +182,10 @@
 	<title>Reports | Analytics</title>
 </svelte:head>
 
-<div class="bg-linear-to-br from-slate-950 via-slate-900 to-slate-950">
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+	<div
+		class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 py-8"
+	>
 		<!-- Header -->
 		<div class="flex items-center justify-between mb-8">
 			<div>
@@ -215,7 +217,7 @@
 		{:else}
 			<!-- Filters -->
 			<div class="flex items-center gap-2 mb-6">
-				{#each [{ value: 'all', label: 'All Reports' }, { value: 'active', label: 'Active' }, { value: 'scheduled', label: 'Scheduled' }, { value: 'draft', label: 'Drafts' }] as filter}
+				{#each [{ value: 'all', label: 'All Reports' }, { value: 'active', label: 'Active' }, { value: 'scheduled', label: 'Scheduled' }, { value: 'draft', label: 'Drafts' }] as filter (filter.value)}
 					<button
 						onclick={() => (activeFilter = filter.value as typeof activeFilter)}
 						class="px-4 py-2 rounded-lg text-sm font-medium transition-all
@@ -259,7 +261,7 @@
 			{:else}
 				<!-- Reports Grid -->
 				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-					{#each filteredReports as report}
+					{#each filteredReports as report (report.id)}
 						<div
 							class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow"
 						>
@@ -392,7 +394,7 @@
 				<div>
 					<span class="block text-sm font-medium text-gray-700 mb-2">Metrics</span>
 					<div class="flex flex-wrap gap-2">
-						{#each availableMetrics as metric}
+						{#each availableMetrics as metric (metric.value)}
 							<button
 								onclick={() => toggleMetric(metric.value)}
 								class="px-3 py-1.5 rounded-lg text-sm transition-all
@@ -410,7 +412,7 @@
 				<div>
 					<span class="block text-sm font-medium text-gray-700 mb-2">Dimensions</span>
 					<div class="flex flex-wrap gap-2">
-						{#each availableDimensions as dimension}
+						{#each availableDimensions as dimension (dimension.value)}
 							<button
 								onclick={() => toggleDimension(dimension.value)}
 								class="px-3 py-1.5 rounded-lg text-sm transition-all

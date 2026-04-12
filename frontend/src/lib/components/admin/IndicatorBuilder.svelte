@@ -45,12 +45,7 @@
 		onClose?: () => void;
 	}
 
-	let props: Props = $props();
-
-	// Destructure for internal use
-	const propsIndicatorId = $derived(props.indicatorId);
-	const onSave = $derived(props.onSave);
-	const onClose = $derived(props.onClose);
+	let { indicatorId: propsIndicatorId, onSave, onClose }: Props = $props();
 
 	// Local mutable indicatorId (for newly created indicators)
 	let localIndicatorId = $state<number | undefined>(undefined);
@@ -514,7 +509,15 @@
 							disabled={!editMode && !!indicatorId}
 						/>
 						{#if formData.thumbnail_url}
-							<img src={formData.thumbnail_url} alt="Thumbnail" class="thumbnail-preview" />
+							<img
+								src={formData.thumbnail_url}
+								alt="Thumbnail"
+								width="400"
+								height="300"
+								loading="lazy"
+								decoding="async"
+								class="thumbnail-preview"
+							/>
 						{/if}
 					</div>
 
@@ -616,7 +619,15 @@
 						<div class="platform-card">
 							<div class="platform-header">
 								{#if platform.icon_url}
-									<img src={platform.icon_url} alt={platform.name} class="platform-icon" />
+									<img
+										src={platform.icon_url}
+										alt={platform.name}
+										width="40"
+										height="40"
+										loading="lazy"
+										decoding="async"
+										class="platform-icon"
+									/>
 								{/if}
 								<span class="platform-name">{platform.display_name}</span>
 							</div>
@@ -784,7 +795,15 @@
 								<Icon icon={IconGripVertical} size={16} />
 							</div>
 							{#if video.thumbnail_url}
-								<img src={video.thumbnail_url} alt={video.title} class="video-thumbnail" />
+								<img
+									src={video.thumbnail_url}
+									alt={video.title}
+									width="120"
+									height="68"
+									loading="lazy"
+									decoding="async"
+									class="video-thumbnail"
+								/>
 							{:else}
 								<div class="video-thumbnail placeholder">
 									<Icon icon={IconVideo} size={24} />

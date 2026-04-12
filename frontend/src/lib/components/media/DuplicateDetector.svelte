@@ -309,7 +309,14 @@
 						{#each group.files.slice(0, 4) as file (file.id)}
 							<div class="file-card">
 								<div class="file-thumbnail">
-									<img src="/storage/{file.path}" alt={file.filename} loading="lazy" />
+									<img
+										src="/storage/{file.path}"
+										alt={file.filename}
+										width="150"
+										height="150"
+										loading="lazy"
+										decoding="async"
+									/>
 								</div>
 								<div class="file-info">
 									<span class="file-name" title={file.filename}>
@@ -384,7 +391,14 @@
 								/>
 								<div class="file-option-content">
 									<div class="file-option-thumbnail">
-										<img src="/storage/{file.path}" alt={file.filename} />
+										<img
+											src="/storage/{file.path}"
+											alt={file.filename}
+											width="80"
+											height="80"
+											loading="lazy"
+											decoding="async"
+										/>
 									</div>
 									<div class="file-option-info">
 										<span class="file-option-name">{file.filename}</span>

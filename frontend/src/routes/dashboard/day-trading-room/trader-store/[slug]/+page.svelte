@@ -375,6 +375,9 @@
 															alt={store.name}
 															width="2000"
 															height="2000"
+															loading="eager"
+															fetchpriority="high"
+															decoding="sync"
 														/>
 													</div>
 												</div>
@@ -420,7 +423,7 @@
 										<div class="trader-nav__module">
 											<div class="trader-nav__module-content">
 												<div class="trader_pills">
-													{#each traderPills as pill}
+													{#each traderPills as pill (pill.label)}
 														<div class="trader_pill">
 															<a
 																href="/dashboard/day-trading-room/meet-the-traders/{store.slug}{pill.path ===
@@ -474,7 +477,14 @@
 												class="card-image"
 												style="background-image: url({product.image});"
 											>
-												<img src="https://placehold.it/540x256" alt={product.name} />
+												<img
+													src="https://placehold.it/540x256"
+													alt={product.name}
+													width="540"
+													height="256"
+													loading="lazy"
+													decoding="async"
+												/>
 											</a>
 										</figure>
 										<section class="card-body">

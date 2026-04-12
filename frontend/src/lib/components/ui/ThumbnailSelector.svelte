@@ -16,18 +16,14 @@
 		label?: string;
 	}
 
-	let props: Props = $props();
-	let thumbnails = $derived(props.thumbnails);
-	let selected = $derived(props.selected);
-	let onselect = $derived(props.onselect);
-	let label = $derived(props.label ?? 'Select Thumbnail');
+	let { thumbnails, selected, onselect, label = 'Select Thumbnail' }: Props = $props();
 </script>
 
 {#if thumbnails.length > 0}
 	<div class="thumbnail-section">
 		<span class="section-label">{label}</span>
 		<div class="thumbnail-grid">
-			{#each thumbnails as thumb, i}
+			{#each thumbnails as thumb, i (i)}
 				<button
 					type="button"
 					class="thumbnail-option"
@@ -36,7 +32,14 @@
 					aria-label="Select thumbnail {i + 1}"
 					aria-pressed={selected === i}
 				>
-					<img src={thumb} alt="Thumbnail option {i + 1}" loading="lazy" />
+					<img
+						src={thumb}
+						alt="Thumbnail option {i + 1}"
+						width="200"
+						height="112"
+						loading="lazy"
+						decoding="async"
+					/>
 					{#if selected === i}
 						<div class="thumb-check">
 							<svg

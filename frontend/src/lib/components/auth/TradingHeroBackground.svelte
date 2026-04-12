@@ -27,10 +27,7 @@
 		animated?: boolean;
 	}
 
-	let props: Props = $props();
-	const showTickers = $derived(props.showTickers ?? true);
-	const showTestimonials = $derived(props.showTestimonials ?? true);
-	const animated = $derived(props.animated ?? true);
+	let { showTickers = true, showTestimonials = true, animated = true }: Props = $props();
 
 	// Refs - Svelte 5 pattern: use $state for bind:this refs
 	let containerRef = $state<HTMLElement | null>(null);
@@ -342,7 +339,7 @@
 	<!-- Floating Tickers -->
 	{#if showTickers}
 		<div class="tickers-container" aria-hidden="true">
-			{#each tickers as ticker}
+			{#each tickers as ticker (ticker.symbol)}
 				<div
 					class="ticker-card"
 					class:bullish={ticker.positive}

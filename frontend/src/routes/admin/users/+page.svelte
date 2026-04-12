@@ -127,7 +127,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#each users as user}
+						{#each users as user (user.id)}
 							<tr>
 								<td>
 									<div class="user-info">
@@ -149,7 +149,7 @@
 								<td>
 									<div class="roles">
 										{#if user.roles && user.roles.length > 0}
-											{#each user.roles as role}
+											{#each user.roles as role (role.name)}
 												<span class="role-badge">
 													<Icon icon={IconShield} size={14} />
 													{role.name}

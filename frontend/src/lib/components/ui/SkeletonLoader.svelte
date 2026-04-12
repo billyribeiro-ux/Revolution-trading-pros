@@ -17,18 +17,19 @@
 		class?: string;
 	}
 
-	let props: Props = $props();
-	let variant = $derived(props.variant ?? 'text');
-	let width = $derived(props.width ?? '100%');
-	let height = $derived(props.height ?? 'auto');
-	let lines = $derived(props.lines ?? 1);
-	let animated = $derived(props.animated ?? true);
-	let className = $derived(props.class ?? '');
+	let {
+		variant = 'text',
+		width = '100%',
+		height = 'auto',
+		lines = 1,
+		animated = true,
+		class: className = ''
+	}: Props = $props();
 </script>
 
 {#if variant === 'text'}
-	<div class="skeleton-lines {className}" style:inline-size={width}>
-		{#each Array(lines) as _, i}
+	<div class="space-y-2 {className}" style="width: {width};">
+		{#each Array(lines) as _, i (i)}
 			<div
 				class="skeleton-bone"
 				data-animated={animated || undefined}

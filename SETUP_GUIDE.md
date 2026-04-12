@@ -72,7 +72,7 @@ Complete setup instructions for all services and infrastructure.
 ### CLI Setup (Optional)
 ```bash
 # Install Wrangler
-npm install -g wrangler
+ppnpm add -g wrangler
 
 # Login
 wrangler login

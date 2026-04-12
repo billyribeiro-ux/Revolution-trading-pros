@@ -42,7 +42,7 @@
 		onclose?: () => void;
 	}
 
-	let props: Props = $props();
+	let { isOpen = false, onclose }: Props = $props();
 
 	const menuSections = [
 		{
@@ -103,17 +103,25 @@
 	];
 
 	function closeSidebar() {
-		props.onclose?.();
+		onclose?.();
 	}
 
 	let currentPath = $derived(page.url.pathname);
 </script>
 
-<aside class="admin-sidebar" class:open={props.isOpen}>
+<aside class="admin-sidebar" class:open={isOpen}>
 	<!-- Header -->
 	<div class="sidebar-header">
 		<a href="/admin" class="sidebar-logo">
-			<img src="/revolution-trading-pros.png" alt="RTP Admin" />
+			<img
+				src="/revolution-trading-pros.png"
+				alt="RTP Admin"
+				width="200"
+				height="50"
+				loading="eager"
+				fetchpriority="high"
+				decoding="sync"
+			/>
 		</a>
 		<button class="close-btn" onclick={closeSidebar}>
 			<Icon icon={IconX} size={24} />
@@ -122,12 +130,12 @@
 
 	<!-- Navigation -->
 	<nav class="sidebar-nav">
-		{#each menuSections as section}
+		{#each menuSections as section (section.title ?? section)}
 			{#if section.title}
 				<div class="nav-section-title">{section.title}</div>
 			{/if}
-			{#each section.items as item}
-				{@const iconStr = item.icon}
+			{#each section.items as item (item.href)}
+				{@const Icon = item.icon}
 				<a
 					href={item.href}
 					class="nav-item"
@@ -160,7 +168,7 @@
 </aside>
 
 <!-- Mobile Overlay -->
-{#if props.isOpen}
+{#if isOpen}
 	<button class="sidebar-overlay" onclick={closeSidebar} aria-label="Close sidebar"></button>
 {/if}
 

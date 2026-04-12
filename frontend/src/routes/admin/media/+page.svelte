@@ -23,7 +23,7 @@
 	 */
 	import { browser } from '$app/environment';
 	import { fly, fade, scale, slide } from 'svelte/transition';
-	import { tweened } from 'svelte/motion';
+	import { Tween } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 	import DropZone from '$lib/components/media/DropZone.svelte';
 	import OptimizedImage from '$lib/components/media/OptimizedImage.svelte';
@@ -90,8 +90,8 @@
 	let aiEnabled = $state(false);
 	let isAnalyzing = $state(false);
 
-	// Animations
-	const statsProgress = tweened(0, { duration: 1000, easing: cubicOut });
+	// Animations — `Tween` class API (Svelte 5.8+); read via `.current`.
+	const statsProgress = new Tween(0, { duration: 1000, easing: cubicOut });
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Lifecycle - Svelte 5 $effect rune
@@ -824,7 +824,7 @@
 							<span class="stat-label">Total Savings</span>
 						</div>
 						<div class="stat-progress">
-							<div class="progress-bar" style="width: {$statsProgress}%"></div>
+							<div class="progress-bar" style="width: {statsProgress.current}%"></div>
 						</div>
 					</div>
 				</div>
@@ -1414,7 +1414,7 @@
 
 							{#if detailItem.custom_properties?.['ai_tags'] && Array.isArray(detailItem.custom_properties['ai_tags'])}
 								<div class="ai-tags">
-									{#each detailItem.custom_properties['ai_tags'] as tag}
+									{#each detailItem.custom_properties['ai_tags'] as tag (tag)}
 										<span class="tag">{String(tag)}</span>
 									{/each}
 								</div>

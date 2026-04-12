@@ -4,6 +4,8 @@
 	 * @standards Svelte 5 January 2026 | Apple Principal Engineer ICT 7+ | WCAG 2.1 AA
 	 */
 
+	import { domRef } from '$lib/svelte/domAttachment';
+
 	interface Props {
 		query: string;
 		suggestions: string[];
@@ -109,7 +111,7 @@
 		<input
 			id="explosive-swings-search"
 			name="explosive-swings-search"
-			bind:this={inputRef}
+			{@attach domRef<HTMLInputElement>((el) => (inputRef = el ?? null))}
 			type="text"
 			class="search-input"
 			placeholder="Search alerts, trades, trade plans..."
@@ -169,7 +171,7 @@
 			{#if showSuggestions && suggestions.length > 0}
 				<div class="dropdown-section">
 					<span class="section-label">Tickers</span>
-					{#each suggestions as suggestion}
+					{#each suggestions as suggestion (suggestion)}
 						<button
 							class="dropdown-item ticker-item"
 							onclick={() => onSuggestionSelect(suggestion)}
@@ -186,7 +188,7 @@
 						<span class="section-label">Recent Searches</span>
 						<button class="clear-history-btn" onclick={onClearHistory}> Clear </button>
 					</div>
-					{#each searchHistory.slice(0, 5) as historyItem}
+					{#each searchHistory.slice(0, 5) as historyItem (historyItem)}
 						<button
 							class="dropdown-item history-item"
 							onclick={() => onHistorySelect(historyItem)}

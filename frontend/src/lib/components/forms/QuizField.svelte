@@ -230,7 +230,14 @@
 
 				{#if option.image && imageOptions}
 					<div class="quiz-option__image">
-						<img src={option.image} alt={option.text} />
+						<img
+							src={option.image}
+							alt={option.text}
+							width="200"
+							height="200"
+							loading="lazy"
+							decoding="async"
+						/>
 					</div>
 				{/if}
 
@@ -288,7 +295,7 @@
 
 	{#if error && error.length > 0}
 		<div class="quiz-field__errors">
-			{#each error as err}
+			{#each error as err, i (i)}
 				<p class="quiz-field__error">{err}</p>
 			{/each}
 		</div>

@@ -45,7 +45,7 @@
 	// Props & State
 	// =========================================================================
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
 	let isDismissed = $state(false);
 
@@ -53,12 +53,10 @@
 	// Derived Values
 	// =========================================================================
 
-	let calloutType = $derived((props.block.settings.type as CalloutType) || 'info');
-	let title = $derived(props.block.content.title || '');
-	let description = $derived(
-		props.block.content.description || 'Enter your callout message here...'
-	);
-	let dismissible = $derived(props.block.settings.dismissible || false);
+	let calloutType = $derived((block.settings.type as CalloutType) || 'info');
+	let title = $derived(block.content.title || '');
+	let description = $derived(block.content.description || 'Enter your callout message here...');
+	let dismissible = $derived(block.settings.dismissible || false);
 
 	// =========================================================================
 	// Configuration
@@ -114,11 +112,11 @@
 	// =========================================================================
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 
 	function updateSettings(updates: Partial<BlockSettings>): void {
-		props.onUpdate({ settings: { ...props.block.settings, ...updates } });
+		onUpdate({ settings: { ...block.settings, ...updates } });
 	}
 
 	function handlePaste(e: ClipboardEvent): void {
@@ -139,7 +137,7 @@
 	}
 </script>
 
-{#if !isDismissed || props.isEditing}
+{#if !isDismissed || isEditing}
 	<div
 		class="callout-block"
 		class:dismissed={isDismissed}
@@ -165,8 +163,8 @@
 
 		<!-- Content -->
 		<div class="callout-content">
-			{#if props.isEditing}
-				{#if title || props.isSelected}
+			{#if isEditing}
+				{#if title || isSelected}
 					<strong
 						contenteditable="true"
 						class="callout-title"
@@ -193,7 +191,7 @@
 		</div>
 
 		<!-- Dismiss Button -->
-		{#if dismissible && !props.isEditing}
+		{#if dismissible && !isEditing}
 			<button
 				type="button"
 				class="callout-dismiss"
@@ -207,7 +205,7 @@
 	</div>
 
 	<!-- Settings Panel (Edit Mode) -->
-	{#if props.isEditing && props.isSelected}
+	{#if isEditing && isSelected}
 		<div class="callout-settings">
 			<label class="setting-field">
 				<span>Type:</span>

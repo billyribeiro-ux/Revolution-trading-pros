@@ -214,7 +214,7 @@
 			<!-- Tab Navigation (only show when connected) -->
 			{#if isConnected}
 				<nav class="tab-nav" in:fade={{ duration: 300, delay: 200 }}>
-					{#each tabs as tab}
+					{#each tabs as tab (tab.id)}
 						<button
 							class="tab-btn"
 							class:active={activeTab === tab.id}
@@ -257,7 +257,7 @@
 					<div class="available-services" in:fly={{ y: 20, duration: 400, delay: 200 }}>
 						<h3>Available Analytics Services</h3>
 						<div class="services-grid">
-							{#each analyticsServices as service}
+							{#each analyticsServices as service (service.key)}
 								<a
 									href="/admin/connections?connect={service.key}"
 									class="service-card"
@@ -364,7 +364,7 @@
 									<h3>Top Pages</h3>
 									{#if dashboardData.top_pages && dashboardData.top_pages.length > 0}
 										<div class="table-rows">
-											{#each dashboardData.top_pages.slice(0, 10) as page, i}
+											{#each dashboardData.top_pages.slice(0, 10) as page, i (i)}
 												<div class="table-row">
 													<span class="row-rank">{i + 1}</span>
 													<span class="row-label">{page.page_path}</span>
@@ -381,7 +381,7 @@
 									<h3>Top Events</h3>
 									{#if dashboardData.top_events && dashboardData.top_events.length > 0}
 										<div class="table-rows">
-											{#each dashboardData.top_events.slice(0, 10) as event, i}
+											{#each dashboardData.top_events.slice(0, 10) as event, i (i)}
 												<div class="table-row">
 													<span class="row-rank">{i + 1}</span>
 													<span class="row-label">{event.event_name}</span>
@@ -411,7 +411,7 @@
 
 							{#if dashboardData.funnels && dashboardData.funnels.length > 0}
 								<div class="funnels-grid">
-									{#each dashboardData.funnels as funnel}
+									{#each dashboardData.funnels as funnel (funnel.name)}
 										<FunnelChart steps={funnel.steps} title={funnel.name} showDropOff={true} />
 									{/each}
 								</div>
@@ -448,7 +448,7 @@
 							</div>
 
 							{#if dashboardData.cohorts && dashboardData.cohorts.length > 0}
-								{#each dashboardData.cohorts as cohort}
+								{#each dashboardData.cohorts as cohort (cohort.name)}
 									<CohortMatrix data={cohort.retention_matrix} title={cohort.name} />
 								{/each}
 							{:else}
@@ -503,7 +503,8 @@
 												</tr>
 											</thead>
 											<tbody>
-												{#each dashboardData.attribution.channels as channel}
+												<!-- key (i): items lack stable id -->
+												{#each dashboardData.attribution.channels as channel, i (i)}
 													<tr>
 														<td class="channel-name">{channel.channel}</td>
 														<td>{channel.first_touch_share?.toFixed(1) || '-'}%</td>

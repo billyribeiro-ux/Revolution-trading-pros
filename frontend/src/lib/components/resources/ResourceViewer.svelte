@@ -327,7 +327,12 @@
 						<img
 							src={resource.file_url}
 							alt={resource.title}
-							class="rv-preview-img"
+							width="1600"
+							height="1200"
+							loading="eager"
+							fetchpriority="high"
+							decoding="sync"
+							class="max-h-full max-w-full object-contain transition-transform duration-200"
 							style="transform: scale({imageZoom}) translate({imagePosition.x /
 								imageZoom}px, {imagePosition.y / imageZoom}px); cursor: {imageZoom > 1
 								? dragging
@@ -418,11 +423,15 @@
 				{/if}
 
 				{#if resource.tags && resource.tags.length > 0}
-					<div class="rv-sidebar-section">
-						<h3 class="rv-sidebar-heading">Tags</h3>
-						<div class="rv-tags">
+					<div class="mb-6">
+						<h3 class="mb-2 text-sm font-semibold text-gray-900 dark:text-white">Tags</h3>
+						<div class="flex flex-wrap gap-1">
 							{#each resource.tags as tag (tag)}
-								<span class="rv-tag">{tag}</span>
+								<span
+									class="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+								>
+									{tag}
+								</span>
 							{/each}
 						</div>
 					</div>
@@ -452,16 +461,16 @@
 					<div class="rv-sidebar-section">
 						<h3 class="rv-sidebar-heading">Version History</h3>
 						{#if loadingVersions}
-							<div class="rv-ver-list">
+							<div class="space-y-2">
 								{#each [1, 2, 3] as _, i (i)}
-									<div class="rv-ver-skel">
-										<div class="rv-skel-line rv-skel-w16"></div>
-										<div class="rv-skel-line rv-skel-w24"></div>
+									<div class="animate-pulse rounded-lg bg-gray-100 p-3 dark:bg-gray-800">
+										<div class="mb-1 h-4 w-16 rounded bg-gray-200 dark:bg-gray-700"></div>
+										<div class="h-3 w-24 rounded bg-gray-200 dark:bg-gray-700"></div>
 									</div>
 								{/each}
 							</div>
 						{:else if versions.length > 0}
-							<div class="rv-ver-list">
+							<div class="space-y-2">
 								{#each versions as version (version.id)}
 									<button
 										class="rv-ver-btn"

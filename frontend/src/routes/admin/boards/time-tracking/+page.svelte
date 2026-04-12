@@ -150,7 +150,9 @@
 <div class="bg-gray-50 dark:bg-gray-900">
 	<!-- Header -->
 	<div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+		<div
+			class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 py-6"
+		>
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-4">
 					<a
@@ -190,7 +192,9 @@
 		</div>
 	</div>
 
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+	<div
+		class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 py-8"
+	>
 		<!-- Stats Cards -->
 		{#if stats}
 			<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
@@ -262,7 +266,7 @@
 			<div class="flex flex-wrap items-center gap-4">
 				<!-- Date Presets -->
 				<div class="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
-					{#each [{ value: 'today', label: 'Today' }, { value: 'yesterday', label: 'Yesterday' }, { value: 'this_week', label: 'This Week' }, { value: 'last_week', label: 'Last Week' }, { value: 'this_month', label: 'This Month' }, { value: 'last_month', label: 'Last Month' }] as preset}
+					{#each [{ value: 'today', label: 'Today' }, { value: 'yesterday', label: 'Yesterday' }, { value: 'this_week', label: 'This Week' }, { value: 'last_week', label: 'Last Week' }, { value: 'this_month', label: 'This Month' }, { value: 'last_month', label: 'Last Month' }] as preset (preset.value)}
 						<button
 							onclick={() => setDatePreset(preset.value)}
 							class="px-3 py-1.5 text-sm rounded-md {datePreset === preset.value
@@ -281,7 +285,7 @@
 					class="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 				>
 					<option value={null}>All Boards</option>
-					{#each boards as board}
+					{#each boards as board (board.id)}
 						<option value={board.id}>{board.title}</option>
 					{/each}
 				</select>
@@ -377,7 +381,8 @@
 						</tr>
 					</thead>
 					<tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-						{#each timeEntries as entry}
+						<!-- key (i): items lack stable id -->
+						{#each timeEntries as entry, i (i)}
 							<tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
 								<td class="px-4 py-3">
 									<div class="flex items-center gap-2">

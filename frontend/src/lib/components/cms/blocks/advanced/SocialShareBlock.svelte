@@ -42,16 +42,16 @@
 	// Props & State
 	// =========================================================================
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 	const stateManager = getBlockStateManager();
 
 	// =========================================================================
 	// Derived Values
 	// =========================================================================
 
-	let linkCopied = $derived(stateManager.getLinkCopied(props.blockId));
+	let linkCopied = $derived(stateManager.getLinkCopied(blockId));
 	let enabledPlatforms = $derived(
-		props.block.content.sharePlatforms || ['twitter', 'facebook', 'linkedin', 'email']
+		block.content.sharePlatforms || ['twitter', 'facebook', 'linkedin', 'email']
 	);
 
 	// =========================================================================
@@ -114,11 +114,11 @@
 	// =========================================================================
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 
 	function openSharePopup(platform: Platform): void {
-		if (props.isEditing) return;
+		if (isEditing) return;
 
 		try {
 			const url = platform.getShareUrl();
@@ -128,22 +128,22 @@
 				window.open(url, '_blank', 'width=550,height=420,menubar=no,toolbar=no');
 			}
 		} catch (err) {
-			props.onError?.(err instanceof Error ? err : new Error('Failed to share'));
+			onError?.(err instanceof Error ? err : new Error('Failed to share'));
 		}
 	}
 
 	async function copyLink(): Promise<void> {
-		if (props.isEditing) return;
+		if (isEditing) return;
 
 		try {
 			await navigator.clipboard.writeText(getShareUrl());
-			stateManager.setLinkCopied(props.blockId, true);
+			stateManager.setLinkCopied(blockId, true);
 
 			setTimeout(() => {
-				stateManager.setLinkCopied(props.blockId, false);
+				stateManager.setLinkCopied(blockId, false);
 			}, 2000);
 		} catch (err) {
-			props.onError?.(err instanceof Error ? err : new Error('Failed to copy link'));
+			onError?.(err instanceof Error ? err : new Error('Failed to copy link'));
 		}
 	}
 
@@ -161,7 +161,7 @@
 
 <div
 	class="social-share-block"
-	class:disabled={props.isEditing}
+	class:disabled={isEditing}
 	role="region"
 	aria-label="Share this content"
 >
@@ -175,7 +175,7 @@
 					class="share-btn"
 					style="--btn-color: {platform.color}; --btn-hover-color: {platform.hoverColor};"
 					onclick={() => openSharePopup(platform)}
-					disabled={props.isEditing}
+					disabled={isEditing}
 					aria-label="Share on {platform.name}"
 				>
 					<span class="platform-icon">{platform.icon}</span>
@@ -188,7 +188,7 @@
 			class="share-btn copy-btn"
 			class:copied={linkCopied}
 			onclick={copyLink}
-			disabled={props.isEditing}
+			disabled={isEditing}
 			aria-label={linkCopied ? 'Copied!' : 'Copy link'}
 		>
 			{#if linkCopied}
@@ -199,7 +199,7 @@
 		</button>
 	</div>
 
-	{#if props.isEditing && props.isSelected}
+	{#if isEditing && isSelected}
 		<div class="share-settings">
 			<span class="settings-label">Show platforms:</span>
 			<div class="platform-toggles">

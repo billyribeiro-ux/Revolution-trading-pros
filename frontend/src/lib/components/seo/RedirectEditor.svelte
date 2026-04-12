@@ -156,7 +156,7 @@
 				<div class="form-group">
 					<label for="redirect-type">Redirect Type <span class="required">*</span></label>
 					<select id="redirect-type" bind:value={form.redirect_type} required>
-						{#each redirectTypes as type}
+						{#each redirectTypes as type (type.value)}
 							<option value={type.value}>
 								{type.label}
 							</option>

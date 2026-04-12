@@ -42,14 +42,14 @@
 	// Props & State
 	// =========================================================================
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
 	// Generate unique IDs for ARIA labelling
-	const quoteId = $derived(`pullquote-${props.blockId}`);
-	const captionId = $derived(`pullquote-caption-${props.blockId}`);
+	const quoteId = $derived(`pullquote-${blockId}`);
+	const captionId = $derived(`pullquote-caption-${blockId}`);
 
 	// Derived content values with defaults
-	const content = $derived(props.block.content as PullQuoteContent);
+	const content = $derived(block.content as PullQuoteContent);
 	const quoteText = $derived(content.text || '');
 	const attribution = $derived(content.attribution || '');
 	const source = $derived(content.source || '');
@@ -82,7 +82,7 @@
 	 * Updates block content with partial changes
 	 */
 	function updateContent(updates: Partial<PullQuoteContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 
 	/**
@@ -129,7 +129,7 @@
 			const nextField = field === 'attribution' ? 'source' : null;
 			if (nextField) {
 				const nextElement = document.querySelector(
-					`[data-field="${nextField}"][data-block="${props.blockId}"]`
+					`[data-field="${nextField}"][data-block="${blockId}"]`
 				) as HTMLElement;
 				nextElement?.focus();
 			}
@@ -208,15 +208,15 @@
 	<!-- Quote Text -->
 	<blockquote
 		id={quoteId}
-		contenteditable={props.isEditing}
+		contenteditable={isEditing}
 		class="pullquote-text editable-content"
 		class:placeholder={!quoteText}
 		oninput={handleQuoteInput}
 		onpaste={handlePaste}
 		onkeydown={(e) => handleKeyDown(e, 'quote')}
 		data-placeholder="Enter a memorable quote..."
-		role={props.isEditing ? 'textbox' : undefined}
-		aria-label={props.isEditing ? 'Quote text' : undefined}
+		role={isEditing ? 'textbox' : undefined}
+		aria-label={isEditing ? 'Quote text' : undefined}
 		aria-multiline="true"
 	>
 		{quoteText}
@@ -228,12 +228,12 @@
 	</div>
 
 	<!-- Attribution & Source -->
-	{#if attribution || source || props.isEditing}
+	{#if attribution || source || isEditing}
 		<figcaption id={captionId} class="pullquote-caption">
 			<span class="attribution-wrapper">
 				<span class="em-dash" aria-hidden="true">—</span>
 				<cite
-					contenteditable={props.isEditing}
+					contenteditable={isEditing}
 					class="pullquote-attribution editable-content"
 					class:placeholder={!attribution}
 					oninput={handleAttributionInput}
@@ -241,16 +241,16 @@
 					onkeydown={(e) => handleKeyDown(e, 'attribution')}
 					data-placeholder="Author name"
 					data-field="attribution"
-					data-block={props.blockId}
-					role={props.isEditing ? 'textbox' : undefined}
-					aria-label={props.isEditing ? 'Quote author' : undefined}
+					data-block={blockId}
+					role={isEditing ? 'textbox' : undefined}
+					aria-label={isEditing ? 'Quote author' : undefined}
 				>
 					{attribution}
 				</cite>
-				{#if source || props.isEditing}
+				{#if source || isEditing}
 					<span class="source-separator" aria-hidden="true">,</span>
 					<span
-						contenteditable={props.isEditing}
+						contenteditable={isEditing}
 						class="pullquote-source editable-content"
 						class:placeholder={!source}
 						oninput={handleSourceInput}
@@ -258,9 +258,9 @@
 						onkeydown={(e) => handleKeyDown(e, 'source')}
 						data-placeholder="Publication"
 						data-field="source"
-						data-block={props.blockId}
-						role={props.isEditing ? 'textbox' : undefined}
-						aria-label={props.isEditing ? 'Quote source' : undefined}
+						data-block={blockId}
+						role={isEditing ? 'textbox' : undefined}
+						aria-label={isEditing ? 'Quote source' : undefined}
 					>
 						{source}
 					</span>
@@ -271,7 +271,7 @@
 </figure>
 
 <!-- Style Controls (visible when editing and selected) -->
-{#if props.isEditing && props.isSelected}
+{#if isEditing && isSelected}
 	<div class="pullquote-controls" role="toolbar" aria-label="Quote styling options">
 		<!-- Alignment Controls -->
 		<div class="control-group" role="group" aria-label="Text alignment">
@@ -361,7 +361,7 @@
 			{#if showColorPicker}
 				<div class="color-picker-dropdown" role="listbox" aria-label="Color presets">
 					<div class="preset-colors">
-						{#each presetColors as color}
+						{#each presetColors as color (color)}
 							<button
 								type="button"
 								class="preset-color"

@@ -93,10 +93,10 @@
 			{ href: '/careers', label: 'Careers' }
 		],
 		legal: [
-			{ href: '/terms', label: 'Terms of Service' },
-			{ href: '/privacy', label: 'Privacy Policy' },
-			{ href: '/disclaimer', label: 'Risk Disclaimer' },
-			{ href: '/refund', label: 'Refund Policy' }
+			{ href: '/terms-of-service', label: 'Terms of Service' },
+			{ href: '/privacy-policy', label: 'Privacy Policy' },
+			{ href: '/cookie-policy', label: 'Cookie Policy' },
+			{ href: '/terms-of-service#risk-disclaimer', label: 'Risk Disclaimer' }
 		]
 	};
 
@@ -148,8 +148,8 @@
 					</p>
 
 					<div class="social-links" aria-label="Social links">
-						{#each socialLinks as social}
-							{@const iconStr = social.icon}
+						{#each socialLinks as social (social.label)}
+							{@const IconComponent = social.icon}
 							<a
 								href={social.href}
 								target="_blank"
@@ -167,7 +167,7 @@
 				<nav class="footer-column" aria-labelledby="footer-products">
 					<h2 class="footer-heading" id="footer-products">Products</h2>
 					<ul class="footer-list">
-						{#each footerLinks.products as link}
+						{#each footerLinks.products as link (link.href)}
 							<li><a href={link.href}>{link.label}</a></li>
 						{/each}
 					</ul>
@@ -176,7 +176,7 @@
 				<nav class="footer-column" aria-labelledby="footer-company">
 					<h2 class="footer-heading" id="footer-company">Company</h2>
 					<ul class="footer-list">
-						{#each footerLinks.company as link}
+						{#each footerLinks.company as link (link.href)}
 							<li><a href={link.href}>{link.label}</a></li>
 						{/each}
 					</ul>
@@ -185,7 +185,7 @@
 				<nav class="footer-column" aria-labelledby="footer-legal">
 					<h2 class="footer-heading" id="footer-legal">Legal</h2>
 					<ul class="footer-list">
-						{#each footerLinks.legal as link}
+						{#each footerLinks.legal as link (link.href)}
 							<li><a href={link.href}>{link.label}</a></li>
 						{/each}
 					</ul>
@@ -242,6 +242,63 @@
 		margin: 0 auto;
 		padding: 0 1.5rem;
 		min-width: 0;
+	}
+
+	/* 4K / 5K display scaling — footer should not look stranded on ultra-wide monitors */
+	@media (min-width: 1920px) {
+		.marketing-footer {
+			padding: 6rem 0 3rem;
+		}
+		.footer-container {
+			max-width: 1800px;
+			padding: 0 3rem;
+		}
+		.footer-grid {
+			gap: 4rem;
+			margin-bottom: 4rem;
+		}
+	}
+
+	@media (min-width: 2560px) {
+		.marketing-footer {
+			padding: 8rem 0 4rem;
+		}
+		.footer-container {
+			max-width: 2200px;
+			padding: 0 4rem;
+		}
+		.footer-grid {
+			gap: 5rem;
+			margin-bottom: 5rem;
+		}
+	}
+
+	@media (min-width: 3840px) {
+		.marketing-footer {
+			padding: 10rem 0 5rem;
+		}
+		.footer-container {
+			max-width: 2600px;
+			padding: 0 5rem;
+		}
+		.footer-grid {
+			gap: 6rem;
+			margin-bottom: 6rem;
+		}
+	}
+
+	@media (min-width: 5120px) {
+		.marketing-footer {
+			padding: 12rem 0 6rem;
+		}
+		.footer-container {
+			max-width: 3200px;
+			padding: 0 6rem;
+		}
+		.footer-grid {
+			gap: 8rem;
+			margin-bottom: 8rem;
+		}
 	}
 
 	.footer-grid {

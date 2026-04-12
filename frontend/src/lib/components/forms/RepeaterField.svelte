@@ -404,7 +404,7 @@
 				{#if !item.collapsed}
 					<div class="repeater-item__body" transition:slide={{ duration: 200 }}>
 						<div class="repeater-item__fields">
-							{#each fields as field}
+							{#each fields as field (field.name)}
 								<div class="repeater-item__field" style="width: {field.width || 100}%">
 									<label for="{id}-{index}-{field.name}" class="repeater-item__field-label">
 										{field.label}
@@ -427,7 +427,7 @@
 											required={field.required}
 										>
 											<option value="">Select...</option>
-											{#each field.options || [] as option}
+											{#each field.options || [] as option (option.value)}
 												<option value={option.value}>{option.label}</option>
 											{/each}
 										</select>
@@ -486,7 +486,7 @@
 
 	{#if error && error.length > 0}
 		<div class="repeater-field__errors">
-			{#each error as err}
+			{#each error as err (err)}
 				<p class="repeater-field__error">{err}</p>
 			{/each}
 		</div>

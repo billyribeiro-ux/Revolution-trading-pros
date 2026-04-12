@@ -104,13 +104,23 @@
 	});
 </script>
 
-<section bind:this={containerRef} class="tr-section">
-	<div class="tr-bg">
-		<div class="tr-grid-lines"></div>
+<section
+	bind:this={containerRef}
+	aria-label="Professional Trading Environments"
+	class="relative py-32 3xl:py-40 5xl:py-48 px-4 sm:px-6 lg:px-8 3xl:px-12 5xl:px-16 6xl:px-20 bg-zinc-950 overflow-hidden border-t border-zinc-900"
+>
+	<div class="absolute inset-0 pointer-events-none">
+		<div
+			class="absolute inset-0 bg-[linear-gradient(to_right,#18181b_1px,transparent_1px),linear-gradient(to_bottom,#18181b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-40"
+		></div>
 	</div>
 
-	<div class="tr-container">
-		<div class="tr-header">
+	<div
+		class="relative max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto z-10"
+	>
+		<div
+			class="max-w-3xl 3xl:max-w-4xl 4xl:max-w-5xl 5xl:max-w-6xl 6xl:max-w-7xl mx-auto text-center mb-20 3xl:mb-24 5xl:mb-32"
+		>
 			{#if isVisible}
 				<div in:heavySlide={{ delay: 0, duration: 1000 }} class="tr-live-badge">
 					<span class="tr-ping-wrap">
@@ -120,18 +130,28 @@
 					<span class="tr-live-label">Market Access Open</span>
 				</div>
 
-				<h2 in:heavySlide={{ delay: 100 }} class="tr-title">Professional Trading Environments</h2>
+				<h2
+					in:heavySlide={{ delay: 100 }}
+					class="text-2xl xs:text-3xl sm:text-3xl md:text-5xl 3xl:text-6xl 4xl:text-7xl 5xl:text-8xl font-medium tracking-tight text-white mb-6"
+				>
+					Professional Trading Environments
+				</h2>
 
-				<p in:heavySlide={{ delay: 200 }} class="tr-subtitle">
+				<p
+					in:heavySlide={{ delay: 200 }}
+					class="text-base md:text-lg 3xl:text-xl 5xl:text-2xl text-zinc-500 leading-relaxed font-light max-w-2xl 3xl:max-w-3xl 5xl:max-w-4xl mx-auto"
+				>
 					Select an environment tailored to your liquidity requirements.
 					<span class="tr-subtitle-light">Hover over a desk to preview data feeds.</span>
 				</p>
 			{/if}
 		</div>
 
-		<div class="tr-cards">
-			{#each products as item, i}
-				{@const iconStr = item.icon}
+		<div
+			class="grid md:grid-cols-3 gap-px 3xl:gap-1 bg-zinc-800 border border-zinc-800 rounded-lg overflow-hidden shadow-2xl shadow-black/50"
+		>
+			{#each products as item, i (item.title ?? i)}
+				{@const IconComponent = item.icon}
 				{#if isVisible}
 					<div in:heavySlide={{ delay: 300 + i * 100 }} class="tr-card" data-accent={item.accent}>
 						{#if item.type === 'candles'}
@@ -301,11 +321,18 @@
 						{/if}
 
 						{#if item.type === 'step'}
-							<div class="tr-anim-overlay">
-								<div class="tr-anim-tint" data-accent="indigo"></div>
-								<div class="tr-step-bars">
-									{#each Array(8) as _, k}
-										<div class="tr-step-bar" style="--h: {k * 10}%"></div>
+							<div
+								class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+							>
+								<div class="absolute inset-0 bg-indigo-900/10"></div>
+								<div
+									class="absolute bottom-0 left-0 right-0 h-64 flex items-end justify-around px-4 pb-0"
+								>
+									{#each Array(8) as _, k (k)}
+										<div
+											class="w-8 bg-indigo-500/20 border-t border-indigo-400/30 transition-all duration-700 ease-out group-hover:h-[calc(20%+var(--h))] h-0"
+											style="--h: {k * 10}%"
+										></div>
 									{/each}
 								</div>
 							</div>
@@ -328,12 +355,16 @@
 								<span>{item.metric}</span>
 							</div>
 
-							<div class="tr-desc-wrap">
-								<div class="tr-desc-fade">
-									<p class="tr-card-desc">{item.description}</p>
-									<div class="tr-features">
-										{#each item.features as feat}
-											<div class="tr-feature">{feat}</div>
+							<div class="relative">
+								<div
+									class="transition-all duration-500 ease-in-out group-hover:opacity-0 group-hover:-translate-y-2 group-hover:blur-sm"
+								>
+									<p class="text-sm text-zinc-400 leading-relaxed font-light mb-8">
+										{item.description}
+									</p>
+									<div class="space-y-2 border-l border-zinc-800 pl-4">
+										{#each item.features as feat (feat)}
+											<div class="text-xs text-zinc-500">{feat}</div>
 										{/each}
 									</div>
 								</div>

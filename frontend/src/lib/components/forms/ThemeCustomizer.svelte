@@ -7,16 +7,16 @@
 		onchange?: (theme: FormTheme) => void;
 	}
 
-	let props: Props = $props();
+	let { selectedTheme: selectedThemeProp, onchange }: Props = $props();
 	let selectedTheme = $state<FormTheme>(themes[0]);
 	let isCustomizing = $state(false);
 	let customTheme = $state<FormTheme>({ ...themes[0] });
 
 	// Sync from props when they change
 	$effect(() => {
-		if (props.selectedTheme) {
-			selectedTheme = props.selectedTheme;
-			customTheme = { ...props.selectedTheme };
+		if (selectedThemeProp) {
+			selectedTheme = selectedThemeProp;
+			customTheme = { ...selectedThemeProp };
 		}
 	});
 
@@ -24,7 +24,7 @@
 		selectedTheme = theme;
 		customTheme = { ...theme };
 		isCustomizing = false;
-		props.onchange?.(selectedTheme);
+		onchange?.(selectedTheme);
 	}
 
 	function enableCustomization() {
@@ -34,7 +34,7 @@
 
 	function applyCustomTheme() {
 		selectedTheme = { ...customTheme, id: 'custom', name: 'Custom Theme' };
-		props.onchange?.(selectedTheme);
+		onchange?.(selectedTheme);
 	}
 
 	function handleColorChange(property: keyof FormTheme['colors'], value: string) {
@@ -62,7 +62,7 @@
 	<div class="preset-themes">
 		<div class="themes-label">Preset Themes</div>
 		<div class="themes-grid">
-			{#each themes as theme}
+			{#each themes as theme (theme.id)}
 				<button
 					class="theme-card"
 					class:active={selectedTheme.id === theme.id && !isCustomizing}

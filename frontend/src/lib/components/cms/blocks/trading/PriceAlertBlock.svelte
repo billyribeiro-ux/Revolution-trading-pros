@@ -20,14 +20,14 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
-	let symbol = $derived(props.block.content.alertSymbol || 'SPY');
-	let direction = $derived((props.block.content.alertDirection as 'above' | 'below') || 'above');
-	let targetPrice = $derived(props.block.content.alertTarget || 480);
-	let entryPrice = $derived(props.block.content.alertEntry || 475);
-	let stopLoss = $derived(props.block.content.alertStop || 470);
-	let note = $derived(props.block.content.alertNote || '');
+	let symbol = $derived(block.content.alertSymbol || 'SPY');
+	let direction = $derived((block.content.alertDirection as 'above' | 'below') || 'above');
+	let targetPrice = $derived(block.content.alertTarget || 480);
+	let entryPrice = $derived(block.content.alertEntry || 475);
+	let stopLoss = $derived(block.content.alertStop || 470);
+	let note = $derived(block.content.alertNote || '');
 
 	let isBullish = $derived(direction === 'above');
 	let riskReward = $derived.by(() => {
@@ -37,7 +37,7 @@
 	});
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 </script>
 
@@ -53,7 +53,7 @@
 			<Icon icon={IconBell} size={20} aria-hidden="true" />
 		</div>
 		<div class="alert-title">
-			{#if props.isEditing}
+			{#if isEditing}
 				<input
 					type="text"
 					class="symbol-input"
@@ -81,8 +81,8 @@
 	<div class="alert-body">
 		<div class="price-levels">
 			<div class="level target">
-				<span class="level-label"><Icon icon={IconTarget} size={14} /> Target</span>
-				{#if props.isEditing}
+				<span class="level-label"><IconTarget size={14} /> Target</span>
+				{#if isEditing}
 					<input
 						type="number"
 						step="0.01"
@@ -96,7 +96,7 @@
 			</div>
 			<div class="level entry">
 				<span class="level-label">Entry</span>
-				{#if props.isEditing}
+				{#if isEditing}
 					<input
 						type="number"
 						step="0.01"
@@ -110,7 +110,7 @@
 			</div>
 			<div class="level stop">
 				<span class="level-label">Stop Loss</span>
-				{#if props.isEditing}
+				{#if isEditing}
 					<input
 						type="number"
 						step="0.01"
@@ -129,12 +129,12 @@
 			<span class="rr-value">{riskReward}:1</span>
 		</div>
 
-		{#if props.isEditing}
+		{#if isEditing}
 			<div class="direction-selector">
 				<label>
 					<input
 						type="radio"
-						name="direction-{props.blockId}"
+						name="direction-{blockId}"
 						value="above"
 						checked={direction === 'above'}
 						onchange={() => updateContent({ alertDirection: 'above' })}
@@ -144,7 +144,7 @@
 				<label>
 					<input
 						type="radio"
-						name="direction-{props.blockId}"
+						name="direction-{blockId}"
 						value="below"
 						checked={direction === 'below'}
 						onchange={() => updateContent({ alertDirection: 'below' })}
@@ -154,9 +154,9 @@
 			</div>
 		{/if}
 
-		{#if note || props.isEditing}
+		{#if note || isEditing}
 			<div class="alert-note">
-				{#if props.isEditing}
+				{#if isEditing}
 					<textarea
 						placeholder="Add notes about this alert..."
 						value={note}

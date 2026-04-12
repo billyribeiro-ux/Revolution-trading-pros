@@ -243,12 +243,12 @@
 				/>
 			</div>
 			<select class="filter-select" bind:value={selectedIndustry}>
-				{#each industryOptions as option}
+				{#each industryOptions as option (option.value)}
 					<option value={option.value}>{option.label}</option>
 				{/each}
 			</select>
 			<select class="filter-select" bind:value={selectedSize}>
-				{#each sizeOptions as option}
+				{#each sizeOptions as option (option.value)}
 					<option value={option.value}>{option.label}</option>
 				{/each}
 			</select>
@@ -290,13 +290,20 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#each filteredCompanies as company}
+						{#each filteredCompanies as company (company.id)}
 							<tr>
 								<td>
 									<div class="company-cell">
 										<div class="company-icon">
 											{#if company.logo_url}
-												<img src={company.logo_url} alt={company.name} />
+												<img
+													src={company.logo_url}
+													alt={company.name}
+													width="40"
+													height="40"
+													loading="lazy"
+													decoding="async"
+												/>
 											{:else}
 												<Icon icon={IconBuilding} size={20} />
 											{/if}

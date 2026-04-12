@@ -63,15 +63,14 @@
 		onSettingsChange?: (settings: StyleSettings) => void;
 	}
 
-	let props: Props = $props();
-	const previewMode = $derived(props.previewMode ?? false);
+	let { settings, previewMode = false, onSettingsChange }: Props = $props();
 
 	let currentSettings = $state<StyleSettings>({});
 	let activeTab = $state<'container' | 'inputs' | 'buttons' | 'typography'>('container');
 
 	// Sync currentSettings with settings prop
 	$effect(() => {
-		if (props.settings !== undefined) currentSettings = { ...props.settings };
+		if (settings !== undefined) currentSettings = { ...settings };
 	});
 
 	const shadowOptions = {
@@ -96,8 +95,8 @@
 
 	function updateSetting<K extends keyof StyleSettings>(key: K, value: StyleSettings[K]) {
 		currentSettings = { ...currentSettings, [key]: value };
-		if (props.onSettingsChange) {
-			props.onSettingsChange(currentSettings);
+		if (onSettingsChange) {
+			onSettingsChange(currentSettings);
 		}
 	}
 
@@ -179,8 +178,8 @@
 
 	function resetToDefaults() {
 		currentSettings = {};
-		if (props.onSettingsChange) {
-			props.onSettingsChange(currentSettings);
+		if (onSettingsChange) {
+			onSettingsChange(currentSettings);
 		}
 	}
 
@@ -536,7 +535,7 @@
 						onchange={(e: Event) =>
 							updateSetting('fontFamily', (e.target as HTMLSelectElement).value)}
 					>
-						{#each fontFamilies as font}
+						{#each fontFamilies as font (font.value)}
 							<option value={font.value}>{font.label}</option>
 						{/each}
 					</select>

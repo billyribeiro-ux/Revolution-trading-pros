@@ -27,17 +27,17 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
-	let symbol = $derived(props.block.content.tradeSymbol || 'AAPL');
-	let direction = $derived((props.block.content.tradeDirection as 'long' | 'short') || 'long');
-	let entry = $derived(props.block.content.tradeEntry || 185.0);
-	let stopLoss = $derived(props.block.content.tradeStop || 180.0);
-	let target1 = $derived(props.block.content.tradeTarget1 || 195.0);
-	let target2 = $derived(props.block.content.tradeTarget2 || 205.0);
-	let confidence = $derived(props.block.content.tradeConfidence || 75);
-	let thesis = $derived(props.block.content.tradeThesis || '');
-	let timeframe = $derived(props.block.content.tradeTimeframe || 'Swing (1-2 weeks)');
+	let symbol = $derived(block.content.tradeSymbol || 'AAPL');
+	let direction = $derived((block.content.tradeDirection as 'long' | 'short') || 'long');
+	let entry = $derived(block.content.tradeEntry || 185.0);
+	let stopLoss = $derived(block.content.tradeStop || 180.0);
+	let target1 = $derived(block.content.tradeTarget1 || 195.0);
+	let target2 = $derived(block.content.tradeTarget2 || 205.0);
+	let confidence = $derived(block.content.tradeConfidence || 75);
+	let thesis = $derived(block.content.tradeThesis || '');
+	let timeframe = $derived(block.content.tradeTimeframe || 'Swing (1-2 weeks)');
 
 	let isLong = $derived(direction === 'long');
 	let risk = $derived(Math.abs(entry - stopLoss));
@@ -47,7 +47,7 @@
 	let rr2 = $derived(risk > 0 ? (reward2 / risk).toFixed(1) : '0');
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 </script>
 
@@ -63,7 +63,7 @@
 			<Icon icon={IconChartCandle} size={24} aria-hidden="true" />
 		</div>
 		<div class="trade-info">
-			{#if props.isEditing}
+			{#if isEditing}
 				<input
 					type="text"
 					class="symbol-input"
@@ -91,7 +91,7 @@
 		<div class="levels-section">
 			<div class="level-row entry-level">
 				<span class="level-label">Entry</span>
-				{#if props.isEditing}
+				{#if isEditing}
 					<input
 						type="number"
 						step="0.01"
@@ -104,8 +104,8 @@
 				{/if}
 			</div>
 			<div class="level-row stop-level">
-				<span class="level-label"><Icon icon={IconShieldCheck} size={14} /> Stop Loss</span>
-				{#if props.isEditing}
+				<span class="level-label"><IconShieldCheck size={14} /> Stop Loss</span>
+				{#if isEditing}
 					<input
 						type="number"
 						step="0.01"
@@ -119,8 +119,8 @@
 				<span class="level-risk">Risk: ${risk.toFixed(2)}</span>
 			</div>
 			<div class="level-row target-level">
-				<span class="level-label"><Icon icon={IconTarget} size={14} /> Target 1</span>
-				{#if props.isEditing}
+				<span class="level-label"><IconTarget size={14} /> Target 1</span>
+				{#if isEditing}
 					<input
 						type="number"
 						step="0.01"
@@ -134,8 +134,8 @@
 				<span class="level-rr">{rr1}:1 R:R</span>
 			</div>
 			<div class="level-row target-level">
-				<span class="level-label"><Icon icon={IconTarget} size={14} /> Target 2</span>
-				{#if props.isEditing}
+				<span class="level-label"><IconTarget size={14} /> Target 2</span>
+				{#if isEditing}
 					<input
 						type="number"
 						step="0.01"
@@ -153,7 +153,7 @@
 		<div class="meta-section">
 			<div class="confidence-meter">
 				<span class="meta-label">Confidence</span>
-				{#if props.isEditing}
+				{#if isEditing}
 					<input
 						type="range"
 						min="0"
@@ -170,7 +170,7 @@
 			</div>
 			<div class="timeframe">
 				<span class="meta-label">Timeframe</span>
-				{#if props.isEditing}
+				{#if isEditing}
 					<select
 						value={timeframe}
 						onchange={(e) =>
@@ -187,12 +187,12 @@
 			</div>
 		</div>
 
-		{#if props.isEditing}
+		{#if isEditing}
 			<div class="direction-toggle">
 				<label
 					><input
 						type="radio"
-						name="dir-{props.blockId}"
+						name="dir-{blockId}"
 						value="long"
 						checked={isLong}
 						onchange={() => updateContent({ tradeDirection: 'long' })}
@@ -201,7 +201,7 @@
 				<label
 					><input
 						type="radio"
-						name="dir-{props.blockId}"
+						name="dir-{blockId}"
 						value="short"
 						checked={!isLong}
 						onchange={() => updateContent({ tradeDirection: 'short' })}
@@ -212,7 +212,7 @@
 
 		<div class="thesis-section">
 			<span class="meta-label">Trade Thesis</span>
-			{#if props.isEditing}
+			{#if isEditing}
 				<textarea
 					placeholder="Explain your trade reasoning..."
 					value={thesis}

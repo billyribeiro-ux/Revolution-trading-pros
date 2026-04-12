@@ -17,7 +17,7 @@
 
 	import { browser } from '$app/environment';
 	import { fade, fly, scale } from 'svelte/transition';
-	import { tweened } from 'svelte/motion';
+	import { Tween } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 	import { goto } from '$app/navigation';
 	import { adminFetch } from '$lib/utils/adminFetch';
@@ -124,8 +124,8 @@
 	const overallHealth = $derived(getOverallHealth());
 	const servicesWithErrors = $derived(getServicesWithErrors());
 
-	// Animated score display
-	const scoreDisplay = tweened(0, { duration: 1500, easing: cubicOut });
+	// Animated score display — `Tween` class API (Svelte 5.8+); read via `.current`.
+	const scoreDisplay = new Tween(0, { duration: 1500, easing: cubicOut });
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// Lifecycle
@@ -406,7 +406,7 @@
 			<!-- Health Score Card -->
 			<div class="score-section" in:scale={{ duration: 500, start: 0.9, delay: 100 }}>
 				<div class="score-card">
-					<div class="score-ring" style="--score-color: {getScoreColor($scoreDisplay)}">
+					<div class="score-ring" style="--score-color: {getScoreColor(scoreDisplay.current)}">
 						<svg viewBox="0 0 120 120">
 							<circle class="ring-bg" cx="60" cy="60" r="54" />
 							<circle
@@ -414,17 +414,17 @@
 								cx="60"
 								cy="60"
 								r="54"
-								style="stroke-dashoffset: {339.3 - (339.3 * $scoreDisplay) / 100}"
+								style="stroke-dashoffset: {339.3 - (339.3 * scoreDisplay.current) / 100}"
 							/>
 						</svg>
 						<div class="score-value">
-							<span class="score-number">{Math.round($scoreDisplay)}</span>
+							<span class="score-number">{Math.round(scoreDisplay.current)}</span>
 							<span class="score-unit">%</span>
 						</div>
 					</div>
 					<div class="score-info">
-						<h2 class="score-label" style="color: {getScoreColor($scoreDisplay)}">
-							{getScoreLabel(Math.round($scoreDisplay))}
+						<h2 class="score-label" style="color: {getScoreColor(scoreDisplay.current)}">
+							{getScoreLabel(Math.round(scoreDisplay.current))}
 						</h2>
 						<p class="score-description">
 							{#if healthData && healthData.overallScore >= 90}
@@ -479,7 +479,7 @@
 			<!-- Tabs -->
 			<div class="tabs-section" in:fly={{ y: 20, duration: 500, delay: 200 }}>
 				<div class="tabs">
-					{#each tabs as tab}
+					{#each tabs as tab (tab.id)}
 						{@const TabIcon = tab.icon}
 						<button
 							class="tab"
@@ -707,7 +707,7 @@
 						<div class="checks-section" in:fly={{ y: 20, duration: 500, delay: 400 }}>
 							<h3>All Health Checks</h3>
 							<div class="checks-list">
-								{#each healthData.checks as check, i}
+								{#each healthData.checks as check, i (check.name)}
 									{@const StatusIcon = getStatusIcon(check.status)}
 									<div
 										class="check-item"

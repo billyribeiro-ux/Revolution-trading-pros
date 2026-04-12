@@ -124,11 +124,7 @@
 		onclose: () => void;
 	}
 
-	let props: Props = $props();
-	const isOpen = $derived(props.isOpen);
-	const contentId = $derived(props.contentId);
-	const oninsert = $derived(props.oninsert);
-	const onclose = $derived(props.onclose);
+	let { isOpen, contentId, oninsert, onclose }: Props = $props();
 
 	// ==========================================================================
 	// State
@@ -592,7 +588,7 @@
 							<span class="category-count">{components.length}</span>
 						</button>
 
-						{#each Object.entries(categoryConfig) as [key, config]}
+						{#each Object.entries(categoryConfig) as [key, config] (key)}
 							{@const count = categories.find((c) => c.category === key)?.count || 0}
 							{@const iconStr = config.icon}
 							<button
@@ -664,7 +660,14 @@
 								>
 									<div class="card-thumbnail">
 										{#if component.thumbnail_url}
-											<img src={component.thumbnail_url} alt={component.name} />
+											<img
+												src={component.thumbnail_url}
+												alt={component.name}
+												width="200"
+												height="200"
+												loading="lazy"
+												decoding="async"
+											/>
 										{:else}
 											<div class="thumbnail-placeholder" style="background-color: {config.color}20">
 												<Icon icon={iconStr} size={32} />
@@ -888,7 +891,7 @@
 
 										{#if selectedComponent.tags && selectedComponent.tags.length > 0}
 											<div class="tags-list">
-												{#each selectedComponent.tags as tag}
+												{#each selectedComponent.tags as tag (tag)}
 													<span class="tag">{tag}</span>
 												{/each}
 											</div>
@@ -956,7 +959,7 @@
 					<div class="form-group">
 						<label for="comp-category">Category *</label>
 						<select id="comp-category" bind:value={formCategory}>
-							{#each Object.entries(categoryConfig) as [key, config]}
+							{#each Object.entries(categoryConfig) as [key, config] (key)}
 								<option value={key}>{config.label}</option>
 							{/each}
 						</select>

@@ -46,22 +46,22 @@ Our testing strategy ensures **zero errors/warnings** in production through comp
 cd frontend
 
 # Unit tests
-npm run test              # Run all unit tests
-npm run test:watch        # Watch mode
-npm run test:coverage     # With coverage report
+pnpm run test              # Run all unit tests
+pnpm run test:watch        # Watch mode
+pnpm run test:coverage     # With coverage report
 
 # E2E tests
-npm run test:e2e          # All E2E tests
-npm run test:e2e:ui       # Interactive UI mode
-npm run test:e2e:debug    # Debug mode
+pnpm run test:e2e          # All E2E tests
+pnpm run test:e2e:ui       # Interactive UI mode
+pnpm run test:e2e:debug    # Debug mode
 
 # Type checking
-npm run check             # Full type check
-npm run check:watch       # Watch mode
+pnpm run check             # Full type check
+pnpm run check:watch       # Watch mode
 
 # Linting
-npm run lint              # ESLint
-npm run lint:fix          # Auto-fix issues
+pnpm run lint              # ESLint
+pnpm run lint:fix          # Auto-fix issues
 ```
 
 ### E2E Test Structure
@@ -308,7 +308,7 @@ test('enroll in course', async ({ page }) => {
 ```bash
 # Frontend coverage
 cd frontend
-npm run test:coverage
+pnpm run test:coverage
 # → Open coverage/index.html
 
 # Backend coverage
@@ -332,13 +332,13 @@ All tests run automatically on:
 
 ```bash
 # Debug E2E tests
-npm run test:e2e:debug
+pnpm run test:e2e:debug
 
 # Debug specific test
-npx playwright test blog-editor.spec.ts --debug
+pnpm dlx playwright test blog-editor.spec.ts --debug
 
 # View test report
-npx playwright show-report
+pnpm dlx playwright show-report
 ```
 
 ### Backend

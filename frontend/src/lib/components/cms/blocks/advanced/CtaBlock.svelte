@@ -39,30 +39,30 @@
 	// Props & State
 	// =========================================================================
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
 	// =========================================================================
 	// Derived Values
 	// =========================================================================
 
-	let ctaHeading = $derived(props.block.content.ctaHeading || 'Ready to Transform Your Trading?');
+	let ctaHeading = $derived(block.content.ctaHeading || 'Ready to Transform Your Trading?');
 	let ctaDescription = $derived(
-		props.block.content.ctaDescription ||
+		block.content.ctaDescription ||
 			'Join thousands of successful traders who have elevated their game with our proven strategies and tools.'
 	);
 	let ctaPrimaryButton = $derived<ButtonConfig>(
-		(props.block.content.ctaPrimaryButton as ButtonConfig) || {
+		(block.content.ctaPrimaryButton as ButtonConfig) || {
 			text: 'Get Started',
 			url: '#'
 		}
 	);
 	let ctaSecondaryButton = $derived<ButtonConfig | null>(
-		(props.block.content.ctaSecondaryButton as ButtonConfig) || null
+		(block.content.ctaSecondaryButton as ButtonConfig) || null
 	);
 
 	// Settings
-	let alignment = $derived<Alignment>((props.block.settings.alignment as Alignment) || 'center');
-	let backgroundColor = $derived(props.block.settings.backgroundColor || '#3b82f6');
+	let alignment = $derived<Alignment>((block.settings.alignment as Alignment) || 'center');
+	let backgroundColor = $derived(block.settings.backgroundColor || '#3b82f6');
 
 	// Computed styles
 	let containerStyle = $derived(`background-color: ${backgroundColor};`);
@@ -73,11 +73,11 @@
 	// =========================================================================
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 
 	function updateSettings(updates: Partial<BlockSettings>): void {
-		props.onUpdate({ settings: { ...props.block.settings, ...updates } });
+		onUpdate({ settings: { ...block.settings, ...updates } });
 	}
 
 	function updatePrimaryButton(updates: Partial<ButtonConfig>): void {
@@ -101,7 +101,7 @@
 	}
 
 	function handleButtonClick(e: MouseEvent, _url: string): void {
-		if (props.isEditing) {
+		if (isEditing) {
 			e.preventDefault();
 		}
 	}
@@ -110,7 +110,7 @@
 <section class="cta-block {textAlignClass}" style={containerStyle} aria-label="Call to action">
 	<div class="cta-content">
 		<!-- Heading -->
-		{#if props.isEditing}
+		{#if isEditing}
 			<h2
 				contenteditable="true"
 				class="cta-heading"
@@ -124,7 +124,7 @@
 		{/if}
 
 		<!-- Description -->
-		{#if props.isEditing}
+		{#if isEditing}
 			<p
 				contenteditable="true"
 				class="cta-description"
@@ -141,7 +141,7 @@
 		<!-- Buttons -->
 		<div class="cta-buttons">
 			<!-- Primary Button -->
-			{#if !props.isEditing}
+			{#if !isEditing}
 				<a
 					href={sanitizeURL(ctaPrimaryButton.url) || '#'}
 					class="cta-btn cta-btn-primary"
@@ -157,7 +157,7 @@
 
 			<!-- Secondary Button -->
 			{#if ctaSecondaryButton && ctaSecondaryButton.text}
-				{#if !props.isEditing}
+				{#if !isEditing}
 					<a
 						href={sanitizeURL(ctaSecondaryButton.url) || '#'}
 						class="cta-btn cta-btn-secondary"
@@ -175,7 +175,7 @@
 	</div>
 
 	<!-- Settings Panel (Edit Mode) -->
-	{#if props.isEditing && props.isSelected}
+	{#if isEditing && isSelected}
 		<div class="cta-settings">
 			<div class="settings-section">
 				<h4 class="settings-title">Primary Button</h4>

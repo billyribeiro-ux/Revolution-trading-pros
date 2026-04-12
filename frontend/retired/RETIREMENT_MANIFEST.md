@@ -376,8 +376,8 @@ git mv src/lib/components/unused/File.svelte retired/components/File.svelte
 ### Step 3: Test
 
 ```bash
-npm run build
-npm run check
+pnpm run build
+pnpm run check
 ```
 
 ### Step 4: Commit

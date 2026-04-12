@@ -22,12 +22,7 @@
 		onCancel?: () => void;
 	}
 
-	let props: Props = $props();
-
-	// Destructure with defaults for internal use
-	const membershipId = $derived(props.membershipId ?? '');
-	const onUploadComplete = $derived(props.onUploadComplete);
-	const onCancel = $derived(props.onCancel);
+	let { membershipId = '', onUploadComplete, onCancel }: Props = $props();
 
 	// Types
 	interface UploadedVideo {
@@ -419,7 +414,14 @@
 					onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && thumbnailInput?.click()}
 				>
 					{#if thumbnailFile}
-						<img src={URL.createObjectURL(thumbnailFile)} alt="Thumbnail preview" />
+						<img
+							src={URL.createObjectURL(thumbnailFile)}
+							alt="Thumbnail preview"
+							width="320"
+							height="180"
+							loading="lazy"
+							decoding="async"
+						/>
 						<button
 							type="button"
 							class="remove-thumbnail"
@@ -502,7 +504,7 @@
 					<label for="instructor">Instructor</label>
 					<select id="instructor" bind:value={selectedInstructor}>
 						<option value="">Select instructor</option>
-						{#each instructors as instructor}
+						{#each instructors as instructor (instructor.id)}
 							<option value={instructor.id}>{instructor.name}</option>
 						{/each}
 					</select>
@@ -511,7 +513,7 @@
 				<fieldset class="form-group category-fieldset">
 					<legend>Categories</legend>
 					<div class="category-checkboxes">
-						{#each categories as category}
+						{#each categories as category (category.id)}
 							<label class="checkbox-label">
 								<input
 									type="checkbox"

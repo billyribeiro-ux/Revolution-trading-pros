@@ -20,12 +20,7 @@
 		onClose?: () => void;
 	}
 
-	let props: Props = $props();
-
-	// Destructure with defaults for internal use
-	const videoId = $derived(props.videoId);
-	const _videoDuration = $derived(props.videoDuration ?? 0);
-	const onClose = $derived(props.onClose);
+	let { videoId, videoDuration: _videoDuration = 0, onClose }: Props = $props();
 
 	let chapters = $state<VideoChapter[]>([]);
 	let isLoading = $state(true);

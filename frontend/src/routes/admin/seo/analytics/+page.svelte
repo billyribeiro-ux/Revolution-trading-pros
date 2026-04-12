@@ -212,7 +212,8 @@
 							</tr>
 						</thead>
 						<tbody>
-							{#each topPages as page}
+							<!-- key (i): items lack stable id -->
+							{#each topPages as page, i (i)}
 								<tr>
 									<td>
 										<div class="url-cell">{page.url}</div>

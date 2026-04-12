@@ -74,7 +74,7 @@ revolution-trading-pros/
 - **Rust** 1.75 or later
 - **PostgreSQL** 15+
 - **Redis** 7+
-- **npm** 10.x or later
+- **pnpm** 10.x or later
 
 ### Installation
 
@@ -83,12 +83,14 @@ revolution-trading-pros/
 git clone https://github.com/revolutiontradingpros/revolution-trading-pros.git
 cd revolution-trading-pros
 
-# Install frontend dependencies
-cd frontend
-npm install
+# Enable Corepack (ships with Node 20+) so the pinned pnpm version is used
+corepack enable
+
+# Install all JavaScript workspace dependencies (monorepo root)
+pnpm install
 
 # Install Rust dependencies (backend)
-cd ../api
+cd api
 cargo build
 
 # Set up environment variables
@@ -101,7 +103,7 @@ cp .env.example .env
 ```bash
 # Terminal 1: Start frontend dev server
 cd frontend
-npm run dev
+pnpm run dev
 # → http://localhost:5174
 
 # Terminal 2: Start backend API
@@ -115,8 +117,8 @@ cargo run
 ```bash
 # Frontend (Cloudflare Pages)
 cd frontend
-npm run build:cloudflare
-npm run deploy:cloudflare
+pnpm run build:cloudflare
+pnpm run deploy:cloudflare
 
 # Backend (Fly.io)
 cd api
@@ -132,6 +134,7 @@ fly deploy
 - **[API Documentation](docs/api/)** - Complete API reference
 - **[Architecture](docs/ARCHITECTURE.md)** - System architecture & design decisions
 - **[Contributing](CONTRIBUTING.md)** - Contribution guidelines
+- **[AGENTS.md](AGENTS.md)** - Svelte MCP usage and Svelte 5 / SvelteKit 2 conventions for AI assistants
 - **[Testing Guide](docs/TESTING.md)** - Testing strategy & best practices
 
 ### Feature Documentation
@@ -148,10 +151,10 @@ fly deploy
 ```bash
 # Frontend
 cd frontend
-npm run test              # Unit tests (Vitest)
-npm run test:e2e          # E2E tests (Playwright)
-npm run check             # Type checking
-npm run lint              # Linting
+pnpm run test              # Unit tests (Vitest)
+pnpm run test:e2e          # E2E tests (Playwright)
+pnpm run check             # Type checking
+pnpm run lint              # Linting
 
 # Backend
 cd api

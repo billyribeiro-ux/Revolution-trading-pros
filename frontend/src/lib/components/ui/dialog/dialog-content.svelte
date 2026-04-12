@@ -13,29 +13,14 @@
 		showCloseButton?: boolean;
 	};
 
-	let props: ContentProps = $props();
-	let ref = $state<HTMLElement | null>(null);
-	let className = $derived(props.class);
-	let portalProps = $derived(props.portalProps);
-	let showCloseButton = $derived(props.showCloseButton ?? true);
-
-	$effect(() => {
-		if (props.ref !== undefined && props.ref !== ref) {
-			ref = props.ref;
-		}
-	});
-
-	let restProps = $derived.by(() => {
-		const {
-			ref: _,
-			class: __,
-			portalProps: ___,
-			children: ____,
-			showCloseButton: _____,
-			...rest
-		} = props;
-		return rest;
-	});
+	let {
+		ref = $bindable(null),
+		class: className,
+		portalProps,
+		children,
+		showCloseButton = true,
+		...restProps
+	}: ContentProps = $props();
 </script>
 
 <DialogPortal {...portalProps}>
@@ -43,8 +28,11 @@
 	<DialogPrimitive.Content bind:ref data-slot="dialog-content" class={className} {...restProps}>
 		<div class="dialog-swipe-indicator" aria-hidden="true"></div>
 
-		<div class="dialog-body">
-			{@render props.children?.()}
+		<!-- Content wrapper with proper padding -->
+		<div
+			class="flex-1 overflow-y-auto overscroll-contain p-4 pt-6 sm:p-6 -webkit-overflow-scrolling-touch"
+		>
+			{@render children?.()}
 		</div>
 
 		{#if showCloseButton}

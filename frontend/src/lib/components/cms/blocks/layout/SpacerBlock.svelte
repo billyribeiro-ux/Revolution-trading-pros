@@ -21,7 +21,7 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
 	// Height presets
 	const HEIGHT_PRESETS = [
@@ -40,7 +40,7 @@
 	let dragStartHeight = $state(0);
 
 	// Derived state
-	const height = $derived((props.block.settings.height || '2.5rem') as string);
+	const height = $derived((block.settings.height || '2.5rem') as string);
 
 	// Parse height value for slider and display
 	const heightInRem = $derived.by(() => {
@@ -54,7 +54,7 @@
 	});
 
 	function updateSettings(updates: Partial<BlockSettings>): void {
-		props.onUpdate({ settings: { ...props.block.settings, ...updates } });
+		onUpdate({ settings: { ...block.settings, ...updates } });
 	}
 
 	function setHeight(value: string): void {
@@ -72,7 +72,7 @@
 	}
 
 	function handleDragStart(e: MouseEvent): void {
-		if (!props.isEditing) return;
+		if (!isEditing) return;
 
 		e.preventDefault();
 		isDragging = true;
@@ -102,7 +102,7 @@
 
 	// Keyboard support for drag handle
 	function handleKeyDown(e: KeyboardEvent): void {
-		if (!props.isEditing) return;
+		if (!isEditing) return;
 
 		const step = e.shiftKey ? 1 : 0.25;
 
@@ -119,15 +119,15 @@
 	}
 </script>
 
-{#if props.isEditing}
-	<div class="spacer-block editing" class:selected={props.isSelected} class:dragging={isDragging}>
-		{#if props.isSelected}
+{#if isEditing}
+	<div class="spacer-block editing" class:selected={isSelected} class:dragging={isDragging}>
+		{#if isSelected}
 			<div class="spacer-toolbar" role="toolbar" aria-label="Spacer settings">
 				<div class="toolbar-row">
 					<div class="toolbar-group">
 						<span class="toolbar-label">Height:</span>
 						<div class="preset-buttons">
-							{#each HEIGHT_PRESETS as preset}
+							{#each HEIGHT_PRESETS as preset (preset.value)}
 								<button
 									type="button"
 									class="preset-btn"

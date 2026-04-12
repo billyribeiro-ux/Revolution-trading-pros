@@ -225,7 +225,8 @@
 					<p>{membership.description || 'Add a description...'}</p>
 				</div>
 				<div class="features-list">
-					{#each validFeatures as feature}
+					<!-- key (i): items lack stable id -->
+					{#each validFeatures as feature, i (i)}
 						<div class="feature-item">
 							<Icon icon={IconCheck} size={18} />
 							<span>{feature.feature_name}</span>
@@ -314,7 +315,7 @@
 						</button>
 					</div>
 
-					{#each membership.features as feature, index}
+					{#each membership.features as feature, index (index)}
 						<div class="feature-form">
 							<div class="feature-inputs">
 								<input

@@ -52,17 +52,18 @@
 		labelPosition?: 'top' | 'bottom' | 'left' | 'right';
 	}
 
-	let props: Props = $props();
-	const collaborators = $derived(props.collaborators);
-	const containerRef = $derived(props.containerRef ?? null);
-	const blockElements = $derived(props.blockElements ?? new Map());
-	const showLabels = $derived(props.showLabels ?? true);
-	const showBlockSelections = $derived(props.showBlockSelections ?? true);
-	const showTextSelections = $derived(props.showTextSelections ?? true);
-	const showTypingIndicators = $derived(props.showTypingIndicators ?? true);
-	const showIdleStatus = $derived(props.showIdleStatus ?? true);
-	const zIndex = $derived(props.zIndex ?? 1000);
-	const labelPosition = $derived(props.labelPosition ?? 'top');
+	let {
+		collaborators,
+		containerRef = null,
+		blockElements = new Map(),
+		showLabels = true,
+		showBlockSelections = true,
+		showTextSelections = true,
+		showTypingIndicators = true,
+		showIdleStatus = true,
+		zIndex = 1000,
+		labelPosition = 'top'
+	}: Props = $props();
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// State
@@ -328,7 +329,15 @@
 					animate:flip={{ duration: 300 }}
 				>
 					{#if collab.avatar}
-						<img src={collab.avatar} alt={collab.name} class="typing-avatar" />
+						<img
+							src={collab.avatar}
+							alt={collab.name}
+							width="20"
+							height="20"
+							loading="lazy"
+							decoding="async"
+							class="typing-avatar"
+						/>
 					{:else}
 						<span class="typing-initials">
 							{getInitials(collab.name)}
@@ -355,7 +364,15 @@
 			out:fade={{ duration: 150 }}
 		>
 			{#if collab.avatar}
-				<img src={collab.avatar} alt={collab.name} class="avatar-image" />
+				<img
+					src={collab.avatar}
+					alt={collab.name}
+					width="32"
+					height="32"
+					loading="lazy"
+					decoding="async"
+					class="avatar-image"
+				/>
 			{:else}
 				<span
 					class="avatar-initials"

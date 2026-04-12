@@ -233,7 +233,7 @@
 				</div>
 			{:else}
 				<div class="limits-list">
-					{#each rateLimits as limit}
+					{#each rateLimits as limit (limit.service)}
 						<div class="limit-item">
 							<div class="limit-header">
 								<span class="service-name">{limit.service}</span>

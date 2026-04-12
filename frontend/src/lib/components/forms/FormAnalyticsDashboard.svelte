@@ -24,7 +24,7 @@
 		form?: Form;
 	}
 
-	let props: Props = $props();
+	let { formId, form }: Props = $props();
 
 	// Analytics state
 	let stats = $state<{
@@ -70,7 +70,7 @@
 		isLoading = true;
 
 		try {
-			const response = await fetch(`/api/forms/${props.formId}/analytics?range=${dateRange}`, {
+			const response = await fetch(`/api/forms/${formId}/analytics?range=${dateRange}`, {
 				headers: {
 					Authorization: `Bearer ${localStorage.getItem('access_token')}`
 				}
@@ -171,7 +171,7 @@
 	async function exportReport(format: 'csv' | 'pdf') {
 		try {
 			const response = await fetch(
-				`/api/forms/${props.formId}/analytics/export?format=${format}&range=${dateRange}`,
+				`/api/forms/${formId}/analytics/export?format=${format}&range=${dateRange}`,
 				{
 					headers: {
 						Authorization: `Bearer ${localStorage.getItem('access_token')}`
@@ -185,7 +185,7 @@
 			const url = URL.createObjectURL(blob);
 			const a = document.createElement('a');
 			a.href = url;
-			a.download = `form-analytics-${props.formId}-${dateRange}.${format}`;
+			a.download = `form-analytics-${formId}-${dateRange}.${format}`;
 			a.click();
 			URL.revokeObjectURL(url);
 		} catch (err) {
@@ -207,8 +207,8 @@
 	<div class="dashboard-header">
 		<div class="header-left">
 			<h2>Form Analytics</h2>
-			{#if props.form}
-				<span class="form-name">{props.form.title}</span>
+			{#if form}
+				<span class="form-name">{form.title}</span>
 			{/if}
 		</div>
 		<div class="header-right">
@@ -301,7 +301,7 @@
 			<h3>Submission Trend</h3>
 			<div class="trend-chart">
 				<div class="chart-bars">
-					{#each trendData as point, i}
+					{#each trendData as point, i (point)}
 						<div class="bar-container">
 							<div
 								class="bar"
@@ -334,7 +334,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#each fieldStats as field}
+						{#each fieldStats as field (field.label)}
 							<tr>
 								<td class="field-name">{field.label}</td>
 								<td>
@@ -360,7 +360,7 @@
 			<div class="breakdown-card">
 				<h3>Devices</h3>
 				<div class="donut-chart">
-					{#each Object.entries(deviceBreakdown) as [device, percentage], i}
+					{#each Object.entries(deviceBreakdown) as [device, percentage], i (device)}
 						<div class="donut-item">
 							<span class="donut-color" style="background: {['#2563eb', '#16a34a', '#f59e0b'][i]}"
 							></span>
@@ -375,7 +375,7 @@
 			<div class="breakdown-card">
 				<h3>Browsers</h3>
 				<div class="donut-chart">
-					{#each Object.entries(browserBreakdown) as [browser, percentage], i}
+					{#each Object.entries(browserBreakdown) as [browser, percentage], i (browser)}
 						<div class="donut-item">
 							<span
 								class="donut-color"
@@ -392,7 +392,7 @@
 			<div class="breakdown-card">
 				<h3>Traffic Sources</h3>
 				<div class="donut-chart">
-					{#each Object.entries(sourceBreakdown) as [source, percentage], i}
+					{#each Object.entries(sourceBreakdown) as [source, percentage], i (source)}
 						<div class="donut-item">
 							<span
 								class="donut-color"

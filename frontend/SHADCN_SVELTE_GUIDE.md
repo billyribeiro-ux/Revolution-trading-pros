@@ -331,19 +331,19 @@ Edit `src/app.css` to change colors:
 
 ```bash
 # See all available components
-npx shadcn-svelte@latest add
+pnpm dlx shadcn-svelte@latest add
 
 # Add specific components
-npx shadcn-svelte@latest add alert
-npx shadcn-svelte@latest add toast
-npx shadcn-svelte@latest add tabs
-npx shadcn-svelte@latest add accordion
-npx shadcn-svelte@latest add calendar
-npx shadcn-svelte@latest add date-picker
-npx shadcn-svelte@latest add command
-npx shadcn-svelte@latest add popover
-npx shadcn-svelte@latest add sheet
-npx shadcn-svelte@latest add tooltip
+pnpm dlx shadcn-svelte@latest add alert
+pnpm dlx shadcn-svelte@latest add toast
+pnpm dlx shadcn-svelte@latest add tabs
+pnpm dlx shadcn-svelte@latest add accordion
+pnpm dlx shadcn-svelte@latest add calendar
+pnpm dlx shadcn-svelte@latest add date-picker
+pnpm dlx shadcn-svelte@latest add command
+pnpm dlx shadcn-svelte@latest add popover
+pnpm dlx shadcn-svelte@latest add sheet
+pnpm dlx shadcn-svelte@latest add tooltip
 ```
 
 ---

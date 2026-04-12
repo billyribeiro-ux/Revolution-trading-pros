@@ -456,7 +456,7 @@
 				</div>
 			{:else}
 				<div class="metrics-grid">
-					{#each [{ label: 'Sessions', value: analytics.sessions.value, change: analytics.sessions.change, trend: analytics.sessions.trend, icon: IconEye, color: 'blue' }, { label: 'Pageviews', value: analytics.pageviews.value, change: analytics.pageviews.change, trend: analytics.pageviews.trend, icon: IconClick, color: 'purple' }, { label: 'Avg. Duration', value: analytics.avgSessionDuration.value, change: analytics.avgSessionDuration.change, trend: analytics.avgSessionDuration.trend, icon: IconClock, color: 'cyan', isText: true }, { label: 'Total Users', value: analytics.totalUsers.value, change: analytics.totalUsers.change, trend: analytics.totalUsers.trend, icon: IconUsers, color: 'green' }, { label: 'Bounce Rate', value: analytics.bounceRate.value, change: analytics.bounceRate.change, trend: analytics.bounceRate.trend, icon: IconActivity, color: 'orange', suffix: '%', invertTrend: true }, { label: 'New Users', value: analytics.newUsers.value, change: analytics.newUsers.change, trend: analytics.newUsers.trend, icon: IconUserCircle, color: 'pink' }] as metric, i}
+					{#each [{ label: 'Sessions', value: analytics.sessions.value, change: analytics.sessions.change, trend: analytics.sessions.trend, icon: IconEye, color: 'blue' }, { label: 'Pageviews', value: analytics.pageviews.value, change: analytics.pageviews.change, trend: analytics.pageviews.trend, icon: IconClick, color: 'purple' }, { label: 'Avg. Duration', value: analytics.avgSessionDuration.value, change: analytics.avgSessionDuration.change, trend: analytics.avgSessionDuration.trend, icon: IconClock, color: 'cyan', isText: true }, { label: 'Total Users', value: analytics.totalUsers.value, change: analytics.totalUsers.change, trend: analytics.totalUsers.trend, icon: IconUsers, color: 'green' }, { label: 'Bounce Rate', value: analytics.bounceRate.value, change: analytics.bounceRate.change, trend: analytics.bounceRate.trend, icon: IconActivity, color: 'orange', suffix: '%', invertTrend: true }, { label: 'New Users', value: analytics.newUsers.value, change: analytics.newUsers.change, trend: analytics.newUsers.trend, icon: IconUserCircle, color: 'pink' }] as metric, i (metric.label)}
 						{@const MetricIcon = metric.icon}
 						<div
 							class="metric-card {metric.color}"
@@ -777,7 +777,7 @@
 			</div>
 
 			<div class="business-grid">
-				{#each [{ href: '/admin/members', icon: IconUserCircle, value: stats.totalMembers, label: 'Total Members', color: 'indigo' }, { href: '/admin/subscriptions', icon: IconReceipt, value: stats.activeSubscriptions, label: 'Active Subscriptions', color: 'teal' }, { href: '/admin/products', icon: IconShoppingCart, value: stats.totalProducts, label: 'Products', color: 'emerald' }, { href: '/admin/blog', icon: IconNews, value: stats.totalPosts, label: 'Blog Posts', color: 'blue' }, { href: '/admin/coupons', icon: IconTicket, value: stats.activeCoupons, label: 'Active Coupons', color: 'amber' }] as item, i}
+				{#each [{ href: '/admin/members', icon: IconUserCircle, value: stats.totalMembers, label: 'Total Members', color: 'indigo' }, { href: '/admin/subscriptions', icon: IconReceipt, value: stats.activeSubscriptions, label: 'Active Subscriptions', color: 'teal' }, { href: '/admin/products', icon: IconShoppingCart, value: stats.totalProducts, label: 'Products', color: 'emerald' }, { href: '/admin/blog', icon: IconNews, value: stats.totalPosts, label: 'Blog Posts', color: 'blue' }, { href: '/admin/coupons', icon: IconTicket, value: stats.activeCoupons, label: 'Active Coupons', color: 'amber' }] as item, i (item.href)}
 					{@const BusinessIcon = item.icon}
 					<a
 						href={item.href}
@@ -819,7 +819,7 @@
 			</div>
 
 			<div class="quick-actions-grid">
-				{#each [{ href: '/admin/email', icon: IconMail, label: 'Email', color: 'blue' }, { href: '/admin/forms', icon: IconForms, label: 'Forms', color: 'purple' }, { href: '/admin/notifications', icon: IconBellRinging, label: 'Notifications', color: 'amber' }, { href: '/admin/media', icon: IconPhoto, label: 'Media', color: 'pink' }, { href: '/admin/videos', icon: IconVideo, label: 'Videos', color: 'red' }, { href: '/admin/categories', icon: IconTag, label: 'Tags', color: 'green' }, { href: '/admin/seo', icon: IconSeo, label: 'SEO', color: 'orange' }, { href: '/admin/links', icon: IconLink, label: 'Links', color: 'cyan' }, { href: '/admin/filters', icon: IconFilter, label: 'Filters', color: 'indigo' }, { href: '/admin/broadcast', icon: IconSend, label: 'Broadcast', color: 'teal' }, { href: '/admin/international', icon: IconWorld, label: 'Global', color: 'slate' }, { href: '/admin/alerts', icon: IconAlertTriangle, label: 'Alerts', color: 'yellow' }] as action, i}
+				{#each [{ href: '/admin/email', icon: IconMail, label: 'Email', color: 'blue' }, { href: '/admin/forms', icon: IconForms, label: 'Forms', color: 'purple' }, { href: '/admin/notifications', icon: IconBellRinging, label: 'Notifications', color: 'amber' }, { href: '/admin/media', icon: IconPhoto, label: 'Media', color: 'pink' }, { href: '/admin/videos', icon: IconVideo, label: 'Videos', color: 'red' }, { href: '/admin/categories', icon: IconTag, label: 'Tags', color: 'green' }, { href: '/admin/seo', icon: IconSeo, label: 'SEO', color: 'orange' }, { href: '/admin/links', icon: IconLink, label: 'Links', color: 'cyan' }, { href: '/admin/filters', icon: IconFilter, label: 'Filters', color: 'indigo' }, { href: '/admin/broadcast', icon: IconSend, label: 'Broadcast', color: 'teal' }, { href: '/admin/international', icon: IconWorld, label: 'Global', color: 'slate' }, { href: '/admin/alerts', icon: IconAlertTriangle, label: 'Alerts', color: 'yellow' }] as action, i (action.href)}
 					{@const ActionIcon = action.icon}
 					<a
 						href={action.href}
@@ -855,7 +855,7 @@
 					</div>
 				</div>
 				<div class="top-pages-list">
-					{#each topPages as page, i}
+					{#each topPages as page, i (i)}
 						<div class="top-page-item" in:fly={{ x: -10, duration: 300, delay: 550 + i * 50 }}>
 							<span class="top-page-rank">{i + 1}</span>
 							<span class="top-page-path">{page.path}</span>
@@ -1456,13 +1456,13 @@
 		gap: 1rem;
 	}
 
-	@media (max-width: calc(var(--breakpoint-2xl) - 136px)) {
+	@media (max-width: 1400px) {
 		.metrics-grid {
 			grid-template-columns: repeat(3, 1fr);
 		}
 	}
 
-	@media (max-width: calc(var(--breakpoint-md) - 1px)) {
+	@media (max-width: 767px) {
 		.metrics-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}
@@ -1629,7 +1629,7 @@
 		margin-bottom: 1.5rem;
 	}
 
-	@media (max-width: calc(var(--breakpoint-lg) + 76px)) {
+	@media (max-width: 1100px) {
 		.dual-panel-row {
 			grid-template-columns: 1fr;
 		}
@@ -1642,7 +1642,7 @@
 		gap: 1rem;
 	}
 
-	@media (max-width: calc(var(--breakpoint-md) - 1px)) {
+	@media (max-width: 767px) {
 		.seo-metrics-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}
@@ -1667,7 +1667,7 @@
 		border-color: rgba(230, 184, 0, 0.2);
 	}
 
-	@media (max-width: calc(var(--breakpoint-md) - 1px)) {
+	@media (max-width: 767px) {
 		.seo-metric-card.primary {
 			grid-column: span 2;
 		}
@@ -1847,13 +1847,13 @@
 		gap: 1rem;
 	}
 
-	@media (max-width: calc(var(--breakpoint-xl) - 1px)) {
+	@media (max-width: 1279px) {
 		.business-grid {
 			grid-template-columns: repeat(3, 1fr);
 		}
 	}
 
-	@media (max-width: calc(var(--breakpoint-md) - 1px)) {
+	@media (max-width: 767px) {
 		.business-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}
@@ -1972,7 +1972,7 @@
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	/* Small Mobile (< 480px) */
-	@media (max-width: calc(var(--breakpoint-sm) - 160px)) {
+	@media (max-width: 480px) {
 		.admin-page-container {
 			padding: 1rem;
 		}
@@ -2056,7 +2056,7 @@
 	}
 
 	/* Mobile Landscape / Large Mobile (481px - 640px) */
-	@media (min-width: calc(var(--breakpoint-sm) - 159px)) and (max-width: calc(var(--breakpoint-sm) - 1px)) {
+	@media (min-width: 481px) and (max-width: 639px) {
 		.metrics-grid,
 		.seo-metrics-grid {
 			grid-template-columns: repeat(2, 1fr);
@@ -2068,7 +2068,7 @@
 	}
 
 	/* Tablet Portrait (641px - 768px) */
-	@media (min-width: var(--breakpoint-sm)) and (max-width: calc(var(--breakpoint-md) - 1px)) {
+	@media (min-width: 640px) and (max-width: 767px) {
 		.metrics-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}
@@ -2087,7 +2087,7 @@
 	}
 
 	/* Tablet Landscape (769px - 1024px) */
-	@media (min-width: var(--breakpoint-md)) and (max-width: calc(var(--breakpoint-lg) - 1px)) {
+	@media (min-width: 768px) and (max-width: 1023px) {
 		.metrics-grid {
 			grid-template-columns: repeat(3, 1fr);
 		}

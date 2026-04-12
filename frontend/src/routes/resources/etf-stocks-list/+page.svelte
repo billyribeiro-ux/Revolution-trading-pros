@@ -325,7 +325,7 @@
 
 			<!-- Benefits Grid -->
 			<div class="benefits-grid">
-				{#each etfBenefits as benefit, i}
+				{#each etfBenefits as benefit, i (benefit.title)}
 					<div class="benefit-card" in:fly={{ y: 20, delay: 100 * i, duration: 400 }}>
 						<div class="benefit-card__icon">
 							<Icon icon={IconCheck} size={24} />
@@ -340,7 +340,7 @@
 			<div class="types-section">
 				<h3 class="types-title">Types of ETFs</h3>
 				<div class="types-grid">
-					{#each etfTypes as type, i}
+					{#each etfTypes as type, i (type)}
 						<div class="type-card" in:fly={{ x: -20, delay: 100 * i, duration: 400 }}>
 							<h4 class="type-card__title">{type.type}</h4>
 							<p class="type-card__text">{type.description}</p>
@@ -363,7 +363,7 @@
 			</div>
 
 			<div class="etf-grid">
-				{#each featuredETFs as etf, i}
+				{#each featuredETFs as etf, i (etf.name)}
 					<div class="etf-card" in:fly={{ y: 20, delay: 50 * i, duration: 400 }}>
 						<div class="etf-card__header">
 							<span class="etf-card__symbol">{etf.symbol}</span>
@@ -380,7 +380,7 @@
 						<h3 class="etf-card__name">{etf.name}</h3>
 						<p class="etf-card__description">{etf.description}</p>
 						<div class="etf-card__features">
-							{#each etf.features as feature}
+							{#each etf.features as feature (feature)}
 								<span class="etf-card__feature">{feature}</span>
 							{/each}
 						</div>
@@ -402,15 +402,15 @@
 			</div>
 
 			<div class="sector-grid">
-				{#each sectorETFs as sector, i}
-					{@const iconStr = sector.icon}
+				{#each sectorETFs as sector, i (sector.sector)}
+					{@const Icon = sector.icon}
 					<div class="sector-card" in:fly={{ y: 20, delay: 50 * i, duration: 400 }}>
 						<div class="sector-card__icon bg-linear-to-br {sector.color}">
 							<Icon icon={iconStr} size={28} />
 						</div>
 						<h3 class="sector-card__title">{sector.sector}</h3>
 						<div class="sector-card__etfs">
-							{#each sector.etfs as etf}
+							{#each sector.etfs as etf (etf)}
 								<a
 									href="https://www.tradingview.com/symbols/AMEX-{etf}/"
 									target="_blank"
@@ -448,7 +448,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#each comparisonData as row}
+						{#each comparisonData as row (row.feature)}
 							<tr>
 								<td class="comparison-table__feature">{row.feature}</td>
 								<td

@@ -98,7 +98,7 @@
 
 	<!-- Folder Tree -->
 	<div class="folder-list">
-		{#each folderTree as folder}
+		{#each folderTree as folder (folder.id)}
 			{@const { level, isExpanded, isSelected, hasChildren } = renderFolder(folder)}
 			<div class="folder-group">
 				<div class="folder-item-wrapper">
@@ -131,7 +131,7 @@
 				</div>
 
 				{#if hasChildren && isExpanded && folder.children}
-					{#each folder.children as child}
+					{#each folder.children as child (child.id)}
 						{@const childData = renderFolder(child, level + 1)}
 						<div class="folder-item-wrapper">
 							{#if childData.hasChildren}

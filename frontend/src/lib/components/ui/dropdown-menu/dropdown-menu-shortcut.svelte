@@ -2,24 +2,21 @@
 	import type { HTMLAttributes } from 'svelte/elements';
 	import type { WithElementRef } from '$lib/utils.js';
 
-	let props: WithElementRef<HTMLAttributes<HTMLSpanElement>> = $props();
-	let ref = $state<HTMLSpanElement | null>(null);
-	let className = $derived(props.class);
-
-	$effect(() => {
-		if (props.ref !== undefined && props.ref !== ref) {
-			ref = props.ref;
-		}
-	});
-
-	let restProps = $derived.by(() => {
-		const { ref: _, class: __, children: ___, ...rest } = props;
-		return rest;
-	});
+	let {
+		ref = $bindable(null),
+		class: className,
+		children,
+		...restProps
+	}: WithElementRef<HTMLAttributes<HTMLSpanElement>> = $props();
 </script>
 
-<span bind:this={ref} data-slot="dropdown-menu-shortcut" class={className} {...restProps}>
-	{@render props.children?.()}
+<span
+	bind:this={ref}
+	data-slot="dropdown-menu-shortcut"
+	class={cn('text-muted-foreground ms-auto text-xs tracking-widest', className)}
+	{...restProps}
+>
+	{@render children?.()}
 </span>
 
 <style>

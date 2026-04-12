@@ -20,13 +20,7 @@
 		data: {
 			slug: string;
 			courseData: unknown;
-			seo: {
-				title: string;
-				description: string;
-				ogImage: string;
-				ogType: string;
-				canonical: string;
-			};
+			// SEO is owned by the unified <Seo> layer via +layout.svelte.
 			classData: {
 				id: number | string;
 				title: string;
@@ -51,7 +45,6 @@
 
 	let { data }: Props = $props();
 	let classData = $derived(data.classData);
-	let _seo = $derived(data.seo);
 	let slug = $derived(data.slug);
 	let mounted = $state(false);
 

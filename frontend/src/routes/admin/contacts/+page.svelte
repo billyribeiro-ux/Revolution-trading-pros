@@ -5,7 +5,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { Card, Badge, Table, Input, Select } from '$lib/components/ui';
-	import { addToast } from '$lib/utils/toast';
+	import { addToast } from '$lib/stores/toast.svelte';
 	import { crmAPI } from '$lib/api/crm';
 	import type { Contact, ContactStatus } from '$lib/crm/types';
 	import { Icon, IconMail, IconPhone, IconPlus } from '$lib/icons';
@@ -166,7 +166,7 @@
 				<Table
 					headers={['Name', 'Email', 'Phone', 'Job Title', 'Status', 'Lead Score', 'Last Activity']}
 				>
-					{#each contacts as contact}
+					{#each contacts as contact (contact.id)}
 						<tr>
 							<td>
 								<a href="/admin/contacts/{contact.id}" class="contact-name-link">

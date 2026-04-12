@@ -15,7 +15,7 @@
  * @version 3.0.0 - ICT 11+ Server-Side Auth + November 2025 Standards
  */
 
-import type { Handle } from '@sveltejs/kit';
+import type { Handle, HandleServerError } from '@sveltejs/kit';
 import { redirect, isRedirect } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { env } from '$env/dynamic/private';
@@ -507,6 +507,7 @@ const performanceHandler: Handle = async ({ event, resolve }) => {
 		transformPageChunk: ({ html }) => {
 			// Light minification: collapse whitespace between tags only
 			// Preserves whitespace inside <pre>, <code>, <textarea>, <script>
+			if (typeof html !== 'string') return html;
 			if (import.meta.env.PROD) {
 				return html.replace(/>\s+</g, '> <');
 			}
@@ -547,3 +548,28 @@ export const handle: Handle = sequence(
 	securityHeaders,
 	performanceHandler
 );
+
+/**
+ * Logs SSR / server route failures so the failing pathname shows up in the dev terminal.
+ * Check the Network tab for the same path (or the failed resource URL) when you see a 500 in the browser.
+ */
+export const handleError: HandleServerError = ({ error, event, status, message }) => {
+	try {
+		const err = error instanceof Error ? error : new Error(String(error));
+		logger.error('[hooks.server] handleError', {
+			status,
+			message,
+			path: event.url.pathname,
+			method: event.request.method,
+			name: err.name,
+			detail: err.message,
+			...(import.meta.env.DEV && err.stack && { stack: err.stack })
+		});
+	} catch {
+		// handleError must never throw (SvelteKit requirement)
+		console.error('[hooks.server] handleError logging failed', error);
+	}
+	return {
+		message: import.meta.env.DEV ? `${message} (${event.url.pathname})` : message
+	};
+};

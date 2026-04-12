@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import type { PageProps } from './$types';
 
 	interface PaymentHistory {
 		id: string;
@@ -47,19 +48,7 @@
 		ltv: number;
 	}
 
-	interface PageData {
-		subscription: Subscription;
-	}
-
-	interface ActionData {
-		success?: boolean;
-		message?: string;
-		error?: string;
-	}
-
-	let props: { data: PageData; form?: ActionData } = $props();
-	let data = $derived(props.data);
-	let form = $derived(props.form);
+	let { data, form }: PageProps = $props();
 
 	let subscription = $derived(data.subscription);
 	let isSubmitting = $state(false);

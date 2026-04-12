@@ -106,8 +106,6 @@ export const SERVICE_KEYS = {
 	ANTHROPIC: 'anthropic',
 
 	// Monitoring
-	SENTRY: 'sentry',
-	DATADOG: 'datadog',
 	NEW_RELIC: 'new_relic'
 } as const;
 
@@ -157,7 +155,7 @@ export const FEATURE_SERVICES: Record<string, ServiceKey[]> = {
 		SERVICE_KEYS.LINKEDIN,
 		SERVICE_KEYS.INSTAGRAM
 	],
-	monitoring: [SERVICE_KEYS.SENTRY, SERVICE_KEYS.DATADOG, SERVICE_KEYS.NEW_RELIC],
+	monitoring: [SERVICE_KEYS.NEW_RELIC],
 	behavior: [
 		SERVICE_KEYS.GOOGLE_ANALYTICS,
 		SERVICE_KEYS.MIXPANEL,

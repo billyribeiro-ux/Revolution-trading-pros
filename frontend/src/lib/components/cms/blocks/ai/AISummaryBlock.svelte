@@ -20,29 +20,29 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 	const stateManager = getBlockStateManager();
 
-	let aiState = $derived(stateManager.getAISummaryState(props.blockId));
+	let aiState = $derived(stateManager.getAISummaryState(blockId));
 	let isExpanded = $state(true);
 
-	let sourceContent = $derived(props.block.content.summarySource || '');
+	let sourceContent = $derived(block.content.summarySource || '');
 	let summaryLength = $derived(
-		(props.block.content.summaryLength as 'short' | 'medium' | 'long') || 'medium'
+		(block.content.summaryLength as 'short' | 'medium' | 'long') || 'medium'
 	);
-	let summaryOutput = $derived(props.block.content.summaryOutput || aiState.output || '');
+	let summaryOutput = $derived(block.content.summaryOutput || aiState.output || '');
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 
 	async function generateSummary(): Promise<void> {
 		if (!sourceContent.trim()) {
-			props.onError?.(new Error('Please provide content to summarize'));
+			onError?.(new Error('Please provide content to summarize'));
 			return;
 		}
 
-		stateManager.setAISummaryState(props.blockId, { loading: true, error: null });
+		stateManager.setAISummaryState(blockId, { loading: true, error: null });
 
 		try {
 			await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -52,7 +52,7 @@
 			const words = sourceContent.split(/\s+/).slice(0, targetLength).join(' ');
 			const simulatedSummary = `TL;DR: ${words}${sourceContent.split(/\s+/).length > targetLength ? '...' : ''}`;
 
-			stateManager.setAISummaryState(props.blockId, {
+			stateManager.setAISummaryState(blockId, {
 				loading: false,
 				output: simulatedSummary,
 				lastGenerated: Date.now()
@@ -60,8 +60,8 @@
 			updateContent({ summaryOutput: simulatedSummary });
 		} catch (error) {
 			const errorMessage = error instanceof Error ? error.message : 'Failed to generate summary';
-			stateManager.setAISummaryState(props.blockId, { loading: false, error: errorMessage });
-			props.onError?.(new Error(errorMessage));
+			stateManager.setAISummaryState(blockId, { loading: false, error: errorMessage });
+			onError?.(new Error(errorMessage));
 		}
 	}
 
@@ -89,7 +89,7 @@
 
 	{#if isExpanded}
 		<div class="summary-content">
-			{#if props.isEditing}
+			{#if isEditing}
 				<div class="source-section">
 					<label>
 						<span class="label-text">Content to Summarize</span>
@@ -145,7 +145,7 @@
 
 			{#if summaryOutput}
 				<div class="output-section">
-					{#if props.isEditing}
+					{#if isEditing}
 						<div class="output-header">
 							<span>Summary</span>
 							<button
@@ -160,7 +160,7 @@
 					{/if}
 					<div
 						class="summary-text"
-						contenteditable={props.isEditing}
+						contenteditable={isEditing}
 						oninput={(e) =>
 							updateContent({ summaryOutput: (e.target as HTMLElement).textContent || '' })}
 						onpaste={handlePaste}
@@ -168,7 +168,7 @@
 						{summaryOutput}
 					</div>
 				</div>
-			{:else if !props.isEditing}
+			{:else if !isEditing}
 				<div class="no-summary">No summary available</div>
 			{/if}
 		</div>

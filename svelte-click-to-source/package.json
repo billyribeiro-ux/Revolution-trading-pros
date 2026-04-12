@@ -4,6 +4,7 @@
   "description": "Alt+Click any element in dev mode to open its source in your editor",
   "author": "Welber Ribeiro",
   "license": "MIT",
+  "packageManager": "pnpm@10.8.0",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -14,26 +15,34 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts --clean",
     "dev": "tsup src/index.ts --format esm --dts --watch",
     "prepublishOnly": "pnpm run build"
   },
-  "keywords": ["svelte", "sveltekit", "vite", "developer-tools", "click-to-source"],
+  "keywords": [
+    "svelte",
+    "sveltekit",
+    "vite",
+    "developer-tools",
+    "click-to-source"
+  ],
   "peerDependencies": {
     "svelte": "^4.0.0 || ^5.0.0 || ^5.25.0",
     "vite": "^5.0.0 || ^6.0.0 || ^7.5.0"
   },
   "packageManager": "pnpm@10.8.0",
   "devDependencies": {
-    "@types/node": "^22.14.0",
-    "svelte": "^5.25.6",
-    "tsup": "^8.4.0",
-    "typescript": "^5.8.3",
-    "vite": "^7.5.0"
+    "@types/node": "^25.6.0",
+    "svelte": "^5.55.3",
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.8"
   },
   "dependencies": {
-    "magic-string": "^0.30.17"
+    "magic-string": "^0.30.21"
   }
 }

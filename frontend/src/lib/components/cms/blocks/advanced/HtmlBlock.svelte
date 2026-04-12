@@ -44,7 +44,7 @@
 	// Props & State
 	// =========================================================================
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
 	let viewMode = $state<ViewMode>('edit');
 	let isExpanded = $state(false);
@@ -53,9 +53,9 @@
 	// Derived Values
 	// =========================================================================
 
-	let rawHtml = $derived(props.block.content.html || '');
-	let editorHeight = $derived((props.block.settings.htmlEditorHeight as EditorHeight) || 'medium');
-	let showWarning = $derived(props.block.settings.htmlShowWarning !== false);
+	let rawHtml = $derived(block.content.html || '');
+	let editorHeight = $derived((block.settings.htmlEditorHeight as EditorHeight) || 'medium');
+	let showWarning = $derived(block.settings.htmlShowWarning !== false);
 
 	// Sanitize HTML using DOMPurify with custom mode for extended tags
 	let safeHtml = $derived(sanitizeHTML(rawHtml || '', { mode: 'custom' }));
@@ -78,11 +78,11 @@
 	// =========================================================================
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 
 	function updateSettings(updates: Partial<BlockSettings>): void {
-		props.onUpdate({ settings: { ...props.block.settings, ...updates } });
+		onUpdate({ settings: { ...block.settings, ...updates } });
 	}
 
 	function handleInput(e: Event): void {
@@ -118,7 +118,7 @@
 </script>
 
 <div class="html-block" class:expanded={isExpanded} role="region" aria-label="Custom HTML block">
-	{#if props.isEditing}
+	{#if isEditing}
 		<!-- Edit Mode Header -->
 		<header class="html-header">
 			<div class="header-title">
@@ -195,9 +195,9 @@
 			<!-- Code Editor -->
 			{#if viewMode === 'edit' || viewMode === 'split'}
 				<div class="editor-pane">
-					<label class="sr-only" for="html-editor-{props.blockId}"> HTML Code Editor </label>
+					<label class="sr-only" for="html-editor-{blockId}"> HTML Code Editor </label>
 					<textarea
-						id="html-editor-{props.blockId}"
+						id="html-editor-{blockId}"
 						class="html-textarea"
 						style:height={editorHeightValue}
 						style:min-height={editorHeightValue}
@@ -250,7 +250,7 @@ Example:
 		</div>
 
 		<!-- Settings Panel -->
-		{#if props.isSelected}
+		{#if isSelected}
 			<div class="html-settings">
 				<label class="setting-field">
 					<span>Editor Height:</span>

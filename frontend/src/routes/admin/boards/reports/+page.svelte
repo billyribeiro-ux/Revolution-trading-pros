@@ -88,7 +88,9 @@
 <div class="bg-gray-50 dark:bg-gray-900">
 	<!-- Header -->
 	<div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+		<div
+			class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 py-6"
+		>
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-4">
 					<a
@@ -130,20 +132,22 @@
 		</div>
 	</div>
 
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+	<div
+		class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 py-8"
+	>
 		<!-- Filters -->
 		<div class="flex items-center gap-4 mb-8">
 			<select
 				bind:value={selectedBoardId}
 				class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
 			>
-				{#each boards as board}
+				{#each boards as board (board.id)}
 					<option value={board.id}>{board.title}</option>
 				{/each}
 			</select>
 
 			<div class="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
-				{#each [{ value: 'week', label: 'Week' }, { value: 'month', label: 'Month' }, { value: 'quarter', label: 'Quarter' }, { value: 'year', label: 'Year' }] as p}
+				{#each [{ value: 'week', label: 'Week' }, { value: 'month', label: 'Month' }, { value: 'quarter', label: 'Quarter' }, { value: 'year', label: 'Year' }] as p (p.value)}
 					<button
 						onclick={() => (period = p.value as ReportPeriod)}
 						class="px-4 py-2 text-sm rounded-md {period === p.value
@@ -259,7 +263,8 @@
 				>
 					<h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Tasks by Stage</h3>
 					<div class="space-y-4">
-						{#each report.tasks_by_stage as stage}
+						<!-- key (i): items lack stable id -->
+						{#each report.tasks_by_stage as stage, i (i)}
 							<div>
 								<div class="flex items-center justify-between mb-1">
 									<span class="text-sm text-gray-700 dark:text-gray-300">{stage.stage_title}</span>
@@ -286,7 +291,8 @@
 						Tasks by Priority
 					</h3>
 					<div class="space-y-4">
-						{#each report.tasks_by_priority as priority}
+						<!-- key (i): items lack stable id -->
+						{#each report.tasks_by_priority as priority, i (i)}
 							{@const colors = {
 								urgent: 'bg-red-500',
 								high: 'bg-orange-500',
@@ -322,7 +328,8 @@
 				>
 					<h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Team Performance</h3>
 					<div class="space-y-4">
-						{#each report.tasks_by_assignee as assignee}
+						<!-- key (i): items lack stable id -->
+						{#each report.tasks_by_assignee as assignee, i (i)}
 							<div
 								class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
 							>
@@ -360,7 +367,8 @@
 						Labels Distribution
 					</h3>
 					<div class="flex flex-wrap gap-3">
-						{#each report.tasks_by_label as label}
+						<!-- key (i): items lack stable id -->
+						{#each report.tasks_by_label as label, i (i)}
 							<div
 								class="px-3 py-2 rounded-lg text-white text-sm"
 								style="background-color: {label.label_color}"

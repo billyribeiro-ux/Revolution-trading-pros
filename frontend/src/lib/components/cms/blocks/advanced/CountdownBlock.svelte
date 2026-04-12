@@ -37,7 +37,7 @@
 	// Props & State
 	// =========================================================================
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 	const stateManager = getBlockStateManager();
 
 	// Local state for countdown values
@@ -54,11 +54,11 @@
 
 	// State manager syncs countdown state globally - accessed via stateManager methods
 	// @ts-ignore - Reactive binding used by state manager
-	let _countdownState = $derived<CountdownState>(stateManager.getCountdownState(props.blockId));
-	let targetDate = $derived(props.block.content.countdownTarget || '');
-	let title = $derived(props.block.content.countdownTitle || 'Offer Ends In');
+	let _countdownState = $derived<CountdownState>(stateManager.getCountdownState(blockId));
+	let targetDate = $derived(block.content.countdownTarget || '');
+	let title = $derived(block.content.countdownTitle || 'Offer Ends In');
 	let expiredMessage = $derived(
-		props.block.content.countdownExpiredMessage || 'Time is up! Celebration time!'
+		block.content.countdownExpiredMessage || 'Time is up! Celebration time!'
 	);
 
 	// =========================================================================
@@ -66,7 +66,7 @@
 	// =========================================================================
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 
 	function calculateTimeLeft(): void {
@@ -84,7 +84,7 @@
 				isExpired = true;
 				days = hours = minutes = seconds = 0;
 				// Update state manager
-				stateManager.setCountdownState(props.blockId, {
+				stateManager.setCountdownState(blockId, {
 					days: 0,
 					hours: 0,
 					minutes: 0,
@@ -100,15 +100,15 @@
 			seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
 			// Update state manager
-			stateManager.setCountdownState(props.blockId, {
+			stateManager.setCountdownState(blockId, {
 				days,
 				hours,
 				minutes,
 				seconds
 			});
 		} catch (error) {
-			if (props.onError && error instanceof Error) {
-				props.onError(error);
+			if (onError && error instanceof Error) {
+				onError(error);
 			}
 			isExpired = true;
 		}
@@ -136,7 +136,7 @@
 		intervalId = setInterval(calculateTimeLeft, 1000);
 
 		// Register with state manager
-		stateManager.startCountdown(props.blockId, targetDate);
+		stateManager.startCountdown(blockId, targetDate);
 	});
 
 	onDestroy(() => {
@@ -147,7 +147,7 @@
 		}
 
 		// Cleanup state manager resources
-		stateManager.cleanup(props.blockId);
+		stateManager.cleanup(blockId);
 	});
 
 	// Watch for target date changes
@@ -155,14 +155,14 @@
 		if (targetDate) {
 			calculateTimeLeft();
 			// Restart the countdown in state manager with new target
-			stateManager.startCountdown(props.blockId, targetDate);
+			stateManager.startCountdown(blockId, targetDate);
 		}
 	});
 </script>
 
 <div class="countdown-block" role="timer" aria-label="Countdown timer" aria-live="polite">
 	<!-- Title -->
-	{#if props.isEditing}
+	{#if isEditing}
 		<h3
 			contenteditable="true"
 			class="countdown-title"
@@ -177,7 +177,7 @@
 	{/if}
 
 	<!-- Expired State with Celebration -->
-	{#if isExpired && !props.isEditing}
+	{#if isExpired && !isEditing}
 		<div class="countdown-expired" role="status" aria-label="Countdown complete">
 			<div class="celebration-icons">
 				<Icon icon={IconSparkles} size={32} aria-hidden="true" />
@@ -212,7 +212,7 @@
 	{/if}
 
 	<!-- Settings Panel (Edit Mode) -->
-	{#if props.isEditing && props.isSelected}
+	{#if isEditing && isSelected}
 		<div class="countdown-settings">
 			<div class="settings-section">
 				<h4 class="settings-title">Countdown Settings</h4>

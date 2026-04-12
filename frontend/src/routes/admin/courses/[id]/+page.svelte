@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { logger } from '$lib/utils/logger';
+	import { domRef } from '$lib/svelte/domAttachment';
 	/**
 	 * Admin Course Editor Page
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
@@ -553,7 +554,7 @@
 						</button>
 					</div>
 
-					{#each modules as mod}
+					{#each modules as mod (mod.id)}
 						<div class="module-card">
 							<div class="module-header">
 								<h3>{mod.title}</h3>
@@ -590,7 +591,7 @@
 								</div>
 							</div>
 							<ul class="lesson-list">
-								{#each mod.lessons as lesson}
+								{#each mod.lessons as lesson (lesson.id)}
 									<li>
 										<a href="/admin/courses/{courseId}/lessons/{lesson.id}">
 											<svg
@@ -642,7 +643,7 @@
 								<h3>Unassigned Lessons</h3>
 							</div>
 							<ul class="lesson-list">
-								{#each unassignedLessons as lesson}
+								{#each unassignedLessons as lesson (lesson.id)}
 									<li>
 										<a href="/admin/courses/{courseId}/lessons/{lesson.id}">
 											<svg
@@ -701,7 +702,7 @@
 							id="page-file"
 							name="page-file"
 							type="file"
-							bind:this={fileInput}
+							{@attach domRef<HTMLInputElement>((el) => (fileInput = el ?? null))}
 							onchange={handleFileUpload}
 							style="display: none;"
 						/>
@@ -745,7 +746,7 @@
 						</div>
 					{:else}
 						<ul class="downloads-list">
-							{#each downloads as dl}
+							{#each downloads as dl (dl.id)}
 								<li>
 									<span class="dl-title">{dl.title}</span>
 									<span class="dl-meta">

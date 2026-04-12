@@ -15,7 +15,7 @@
 
 	import { browser } from '$app/environment';
 	import { fade, fly } from 'svelte/transition';
-	import { spring } from 'svelte/motion';
+	import { Spring } from 'svelte/motion';
 	import { goto } from '$app/navigation';
 	import { connections, getIsSeoConnected, SERVICE_KEYS } from '$lib/stores/connections.svelte';
 	import {
@@ -86,8 +86,8 @@
 		};
 	}
 
-	// Spring animation for metrics
-	const metricsSpring = spring(0, { stiffness: 0.1, damping: 0.8 });
+	// Spring animation for metrics — `Spring` class API (Svelte 5.8+); read via `.current`.
+	const metricsSpring = new Spring(0, { stiffness: 0.1, damping: 0.8 });
 
 	// SEO sections for navigation
 	const sections = [
@@ -455,7 +455,7 @@
 				<div class="connected-services" in:fly={{ y: 20, duration: 500, delay: 200 }}>
 					<h3>Connected Services</h3>
 					<div class="connected-services-list">
-						{#each seoServices as service}
+						{#each seoServices as service (service.key)}
 							{@const status = getConnectionStatus(service.key)}
 							{#if status?.isConnected}
 								<div class="connected-service">
@@ -478,7 +478,7 @@
 		<div class="sections-wrapper" in:fly={{ y: 20, duration: 500, delay: 300 }}>
 			<h2 class="sections-title">SEO Tools</h2>
 			<div class="sections-grid">
-				{#each sections as section, i}
+				{#each sections as section, i (section.href)}
 					{@const SectionIcon = section.icon}
 					<a
 						href={section.href}

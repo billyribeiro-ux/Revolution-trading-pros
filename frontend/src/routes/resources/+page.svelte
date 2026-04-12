@@ -3,8 +3,6 @@
 -->
 
 <script lang="ts">
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-
 	// Resources page structured data
 	const _resourcesSchema = [
 		{
@@ -60,7 +58,9 @@
 	class="resources-hero relative bg-linear-to-br from-rtp-blue via-rtp-primary to-rtp-emerald text-white"
 >
 	<div class="absolute inset-0 bg-black/20"></div>
-	<div class="resources-hero__content relative max-w-7xl mx-auto text-center">
+	<div
+		class="resources-hero__content relative max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto text-center"
+	>
 		<h1 class="resources-hero__title font-heading font-bold">Free Trading Resources</h1>
 		<p class="resources-hero__subtitle text-white/90 max-w-3xl mx-auto">
 			Everything you need to start your trading journey. Guides, tools, and educational content.
@@ -70,7 +70,9 @@
 
 <!-- Resource Categories - 2026 Mobile-First Responsive -->
 <section class="resources-section bg-rtp-bg">
-	<div class="resources-container max-w-7xl mx-auto">
+	<div
+		class="resources-container max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto"
+	>
 		<div class="resources-grid">
 			<!-- Beginner Guides -->
 			<div
@@ -93,7 +95,7 @@
 						/>
 					</svg>
 				</div>
-				<h3 class="resource-card__title font-heading font-bold text-rtp-text">Beginner Guides</h3>
+				<h2 class="resource-card__title font-heading font-bold text-rtp-text">Beginner Guides</h2>
 				<ul class="resource-card__list text-rtp-muted">
 					<li class="resource-card__item flex items-start gap-2">
 						<svg
@@ -175,7 +177,7 @@
 						/>
 					</svg>
 				</div>
-				<h3 class="text-2xl font-heading font-bold text-rtp-text mb-4">Free Tools</h3>
+				<h2 class="text-2xl font-heading font-bold text-rtp-text mb-4">Free Tools</h2>
 				<ul class="space-y-3 text-rtp-muted">
 					<li class="flex items-start gap-2">
 						<svg
@@ -253,7 +255,7 @@
 						/>
 					</svg>
 				</div>
-				<h3 class="text-2xl font-heading font-bold text-rtp-text mb-4">Video Tutorials</h3>
+				<h2 class="text-2xl font-heading font-bold text-rtp-text mb-4">Video Tutorials</h2>
 				<ul class="space-y-3 text-rtp-muted">
 					<li class="flex items-start gap-2">
 						<svg
@@ -326,7 +328,7 @@
 						/>
 					</svg>
 				</div>
-				<h3 class="text-2xl font-heading font-bold text-rtp-text mb-4">Market Analysis</h3>
+				<h2 class="text-2xl font-heading font-bold text-rtp-text mb-4">Market Analysis</h2>
 				<ul class="space-y-3 text-rtp-muted">
 					<li class="flex items-start gap-2">
 						<svg
@@ -404,7 +406,7 @@
 						/>
 					</svg>
 				</div>
-				<h3 class="text-2xl font-heading font-bold text-rtp-text mb-4">Trading Psychology</h3>
+				<h2 class="text-2xl font-heading font-bold text-rtp-text mb-4">Trading Psychology</h2>
 				<ul class="space-y-3 text-rtp-muted">
 					<li class="flex items-start gap-2">
 						<svg
@@ -482,7 +484,7 @@
 						/>
 					</svg>
 				</div>
-				<h3 class="text-2xl font-heading font-bold text-rtp-text mb-4">FAQ & Support</h3>
+				<h2 class="text-2xl font-heading font-bold text-rtp-text mb-4">FAQ & Support</h2>
 				<ul class="space-y-3 text-rtp-muted">
 					<li class="flex items-start gap-2">
 						<svg
@@ -561,8 +563,6 @@
 		</a>
 	</div>
 </section>
-
-<MarketingFooter />
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════

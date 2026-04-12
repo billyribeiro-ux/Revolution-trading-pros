@@ -211,7 +211,7 @@
 
 	{#if loading}
 		<div class="loading-grid">
-			{#each [1, 2, 3, 4] as _}
+			{#each [1, 2, 3, 4] as _ (_)}
 				<div class="skeleton skeleton-metric"></div>
 			{/each}
 		</div>
@@ -305,7 +305,8 @@
 					</div>
 				{:else}
 					<div class="submissions-list">
-						{#each recentSubmissions as submission}
+						<!-- key (i): items lack stable id -->
+						{#each recentSubmissions as submission, i (i)}
 							<div class="submission-item">
 								<div class="submission-status" class:success={submission.success}>
 									{#if submission.success}
@@ -344,7 +345,8 @@
 					</div>
 				{:else}
 					<div class="queries-list">
-						{#each topQueries as query}
+						<!-- key (i): items lack stable id -->
+						{#each topQueries as query, i (i)}
 							<div class="query-item">
 								<div class="query-info">
 									<div class="query-text">{query.query}</div>

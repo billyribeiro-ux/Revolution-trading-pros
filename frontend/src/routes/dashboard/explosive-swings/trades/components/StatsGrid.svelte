@@ -19,7 +19,7 @@
 
 <section class="stats-grid" aria-label="Trading performance statistics">
 	{#if isLoading}
-		{#each Array(8)}
+		{#each Array(8) as _, i (i)}
 			<div class="stat-card skeleton" aria-hidden="true">
 				<div class="skeleton-value"></div>
 				<div class="skeleton-label"></div>

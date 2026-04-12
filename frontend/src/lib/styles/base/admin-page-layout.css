@@ -79,6 +79,34 @@
 	padding: 2rem;
 }
 
+/* Large-display scaling — grow the admin column on HD/QHD/4K/5K displays
+   so content doesn't become a narrow strip in the middle of a huge screen.
+   Mobile and laptop widths remain unchanged. */
+@media (min-width: 1920px) {
+	.admin-page-container {
+		max-width: 1800px;
+		padding: 2.5rem;
+	}
+}
+@media (min-width: 2560px) {
+	.admin-page-container {
+		max-width: 2200px;
+		padding: 3rem;
+	}
+}
+@media (min-width: 3840px) {
+	.admin-page-container {
+		max-width: 2800px;
+		padding: 4rem;
+	}
+}
+@media (min-width: 5120px) {
+	.admin-page-container {
+		max-width: 3400px;
+		padding: 5rem;
+	}
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════
  * ANIMATED BACKGROUND EFFECTS
  * ═══════════════════════════════════════════════════════════════════════════ */
@@ -155,7 +183,7 @@
 }
 
 .page-header h1 {
-	font-size: 1.75rem;
+	font-size: clamp(1.75rem, 1.5rem + 0.5vw, 2.5rem);
 	font-weight: 700;
 	color: var(--text-primary);
 	margin: 0 0 0.5rem 0;

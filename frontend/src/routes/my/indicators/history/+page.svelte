@@ -144,7 +144,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#each downloads as download}
+						{#each downloads as download (download.indicator_slug)}
 							<tr>
 								<td>
 									<a href="/dashboard/indicators/{download.indicator_slug}" class="indicator-link">
@@ -182,7 +182,7 @@
 							</li>
 						{/if}
 
-						{#each Array.from({ length: totalPages }, (_, i) => i + 1) as page}
+						{#each Array.from({ length: totalPages }, (_, i) => i + 1) as page (page)}
 							{#if page === currentPage}
 								<li>
 									<span class="page-numbers current" aria-current="page">{page}</span>

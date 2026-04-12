@@ -194,7 +194,9 @@
 	<title>Invoice Settings | Admin</title>
 </svelte:head>
 
-<div class="container mx-auto px-4 py-8 max-w-6xl">
+<div
+	class="container mx-auto px-4 py-8 max-w-6xl 3xl:max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px]"
+>
 	<!-- Header -->
 	<div class="flex flex-wrap items-center justify-between gap-4 mb-8">
 		<div>
@@ -316,7 +318,7 @@
 				>
 					<div class="border-b border-gray-200 dark:border-gray-700">
 						<nav class="flex overflow-x-auto">
-							{#each tabs as tab}
+							{#each tabs as tab (tab.id)}
 								<button
 									onclick={() => (activeTab = tab.id)}
 									class="px-6 py-4 text-sm font-medium whitespace-nowrap transition-colors
@@ -347,6 +349,10 @@
 												<img
 													src={logoUrl}
 													alt="Logo"
+													width="160"
+													height="96"
+													loading="lazy"
+													decoding="async"
 													class="max-w-full max-h-full object-contain"
 												/>
 											{:else}
@@ -495,7 +501,7 @@
 										bind:value={settings.font_family}
 										class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 									>
-										{#each fonts as font}
+										{#each fonts as font (font.value)}
 											<option value={font.value}>{font.label}</option>
 										{/each}
 									</select>
@@ -649,7 +655,7 @@
 											bind:value={settings.company_country}
 											class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 										>
-											{#each Object.entries(countries) as [code, name]}
+											{#each Object.entries(countries) as [code, name] (code)}
 												<option value={code}>{name}</option>
 											{/each}
 										</select>
@@ -905,7 +911,15 @@
 									>
 										<div>
 											{#if settings.show_logo && logoUrl}
-												<img src={logoUrl} alt="Logo" class="h-6 object-contain" />
+												<img
+													src={logoUrl}
+													alt="Logo"
+													width="96"
+													height="24"
+													loading="lazy"
+													decoding="async"
+													class="h-6 object-contain"
+												/>
 											{:else}
 												<div class="font-bold text-[8px]" style="color: {settings.primary_color};">
 													{settings.company_name || 'Company'}

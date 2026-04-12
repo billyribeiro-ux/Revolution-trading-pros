@@ -30,12 +30,7 @@
 		layout?: '3x1' | '2x1';
 	}
 
-	let props: Props = $props();
-
-	// Derived props with defaults
-	let cards = $derived(props.cards ?? []);
-	let className = $derived(props.className ?? '');
-	let layout = $derived(props.layout ?? '3x1');
+	let { cards = [], className = '', layout = '3x1' }: Props = $props();
 </script>
 
 <section class="dashboard__content-section-member {className}">

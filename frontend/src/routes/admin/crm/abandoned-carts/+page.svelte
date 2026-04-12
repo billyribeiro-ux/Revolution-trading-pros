@@ -331,7 +331,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					{#each filteredCarts as cart}
+					{#each filteredCarts as cart (cart.id)}
 						<tr>
 							<td class="checkbox-col">
 								<input
@@ -345,7 +345,15 @@
 							<td>
 								<div class="customer-cell">
 									{#if cart.customer_avatar}
-										<img src={cart.customer_avatar} alt="" class="customer-avatar" />
+										<img
+											src={cart.customer_avatar}
+											alt=""
+											width="32"
+											height="32"
+											loading="lazy"
+											decoding="async"
+											class="customer-avatar"
+										/>
 									{:else}
 										<div class="customer-avatar-placeholder">
 											<Icon icon={IconUser} size={16} />

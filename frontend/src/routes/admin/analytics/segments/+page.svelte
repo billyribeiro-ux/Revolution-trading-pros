@@ -158,8 +158,10 @@
 	<title>User Segments | Analytics</title>
 </svelte:head>
 
-<div class="bg-linear-to-br from-slate-950 via-slate-900 to-slate-950">
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+	<div
+		class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 py-8"
+	>
 		<!-- Apple ICT7 Grade Header -->
 		<header class="flex items-center justify-between mb-8">
 			<div class="flex items-center gap-4">
@@ -327,7 +329,7 @@
 			{:else if viewMode === 'grid'}
 				<!-- Grid View -->
 				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-					{#each segments as segment}
+					{#each segments as segment (segment.key)}
 						<div
 							role="button"
 							tabindex="0"
@@ -433,7 +435,7 @@
 							</tr>
 						</thead>
 						<tbody class="divide-y divide-white/5">
-							{#each segments as segment}
+							{#each segments as segment (segment.key)}
 								<tr
 									class="hover:bg-white/5 cursor-pointer transition-colors"
 									onclick={() => (selectedSegment = segment)}
@@ -577,7 +579,7 @@
 				<div>
 					<span class="block text-sm font-medium text-slate-300 mb-3">Segment Type</span>
 					<div class="grid grid-cols-3 gap-3">
-						{#each [{ value: 'dynamic', label: 'Dynamic', desc: 'Auto-updates based on rules' }, { value: 'static', label: 'Static', desc: 'Manual user list' }, { value: 'computed', label: 'Computed', desc: 'Based on calculations' }] as type}
+						{#each [{ value: 'dynamic', label: 'Dynamic', desc: 'Auto-updates based on rules' }, { value: 'static', label: 'Static', desc: 'Manual user list' }, { value: 'computed', label: 'Computed', desc: 'Based on calculations' }] as type (type.value)}
 							<button
 								onclick={() => (newSegment.type = type.value as typeof newSegment.type)}
 								class="p-4 rounded-xl border-2 text-left transition-all
@@ -605,7 +607,7 @@
 					</div>
 
 					<div class="space-y-3">
-						{#each newSegment.rules as rule, index}
+						{#each newSegment.rules as rule, index (rule.value)}
 							<div
 								class="flex items-center gap-2 p-4 bg-slate-800/30 rounded-xl border border-white/5"
 							>
@@ -614,7 +616,7 @@
 									class="flex-1 px-3 py-2.5 bg-slate-800/50 border border-white/10 rounded-lg text-sm text-white focus:ring-2 focus:ring-cyan-500/50 outline-none"
 								>
 									<option value="">Select field...</option>
-									{#each ruleFields as field}
+									{#each ruleFields as field (field.value)}
 										<option value={field.value}>{field.label}</option>
 									{/each}
 								</select>
@@ -623,7 +625,7 @@
 									bind:value={rule.operator}
 									class="px-3 py-2.5 bg-slate-800/50 border border-white/10 rounded-lg text-sm text-white focus:ring-2 focus:ring-cyan-500/50 outline-none"
 								>
-									{#each operators as op}
+									{#each operators as op (op.value)}
 										<option value={op.value}>{op.label}</option>
 									{/each}
 								</select>

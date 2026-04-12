@@ -20,19 +20,19 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 	const stateManager = getBlockStateManager();
 
-	let defaultOpen = $derived(props.block.settings.defaultOpen || false);
-	let iconStyle = $derived<'chevron' | 'plusminus'>(props.block.settings.iconStyle || 'chevron');
-	let isOpen = $derived(stateManager.getToggleState(props.blockId, defaultOpen));
+	let defaultOpen = $derived(block.settings.defaultOpen || false);
+	let iconStyle = $derived<'chevron' | 'plusminus'>(block.settings.iconStyle || 'chevron');
+	let isOpen = $derived(stateManager.getToggleState(blockId, defaultOpen));
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 
 	function toggle(): void {
-		stateManager.toggleToggle(props.blockId);
+		stateManager.toggleToggle(blockId);
 	}
 
 	function handleTitleInput(e: Event): void {
@@ -51,8 +51,8 @@
 		document.execCommand('insertText', false, text);
 	}
 
-	let title = $derived(props.block.content.toggleTitle || 'Click to expand');
-	let content = $derived(props.block.content.toggleContent || '');
+	let title = $derived(block.content.toggleTitle || 'Click to expand');
+	let content = $derived(block.content.toggleContent || '');
 </script>
 
 <div class="toggle-block" class:open={isOpen}>
@@ -60,10 +60,10 @@
 		type="button"
 		class="toggle-header"
 		aria-expanded={isOpen}
-		aria-controls="toggle-content-{props.blockId}"
+		aria-controls="toggle-content-{blockId}"
 		onclick={toggle}
 	>
-		{#if props.isEditing}
+		{#if isEditing}
 			<span
 				contenteditable="true"
 				class="toggle-title editable-content"
@@ -94,8 +94,8 @@
 		</span>
 	</button>
 
-	<div id="toggle-content-{props.blockId}" class="toggle-content-wrapper" hidden={!isOpen}>
-		{#if props.isEditing}
+	<div id="toggle-content-{blockId}" class="toggle-content-wrapper" hidden={!isOpen}>
+		{#if isEditing}
 			<div
 				contenteditable="true"
 				class="toggle-content editable-content"
@@ -113,16 +113,16 @@
 		{/if}
 	</div>
 
-	{#if props.isEditing && props.isSelected}
+	{#if isEditing && isSelected}
 		<div class="toggle-settings">
 			<label class="setting-checkbox">
 				<input
 					type="checkbox"
 					checked={defaultOpen}
 					onchange={(e) =>
-						props.onUpdate({
+						onUpdate({
 							settings: {
-								...props.block.settings,
+								...block.settings,
 								defaultOpen: (e.target as HTMLInputElement).checked
 							}
 						})}
@@ -135,9 +135,9 @@
 				<select
 					value={iconStyle}
 					onchange={(e) =>
-						props.onUpdate({
+						onUpdate({
 							settings: {
-								...props.block.settings,
+								...block.settings,
 								iconStyle: (e.target as HTMLSelectElement).value as 'chevron' | 'plusminus'
 							}
 						})}

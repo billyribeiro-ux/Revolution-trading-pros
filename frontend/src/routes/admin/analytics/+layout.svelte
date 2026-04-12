@@ -1,16 +1,12 @@
 <script lang="ts">
 	/**
 	 * Analytics Layout - Shared navigation for analytics section
-	 * Updated to Svelte 5 syntax (November 2025)
+	 * Updated to Svelte 5.55+ destructured `$props()` (April 2026)
 	 */
 	import { page } from '$app/state';
-	import type { Snippet } from 'svelte';
+	import type { LayoutProps } from './$types';
 
-	// Svelte 5: Props - no destructuring
-	interface Props {
-		children: Snippet;
-	}
-	let props: Props = $props();
+	let { children }: LayoutProps = $props();
 
 	const navItems = [
 		{ href: '/admin/analytics', label: 'Dashboard', icon: '📊' },
@@ -29,9 +25,11 @@
 <div class="bg-gray-50">
 	<!-- Secondary Navigation -->
 	<div class="bg-white border-b border-gray-200 sticky top-0 z-10">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div
+			class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8"
+		>
 			<nav class="flex items-center gap-1 -mb-px overflow-x-auto">
-				{#each navItems as item}
+				{#each navItems as item (item.href)}
 					<a
 						href={item.href}
 						class="flex items-center gap-2 px-4 py-4 text-sm font-medium border-b-2 whitespace-nowrap transition-colors
@@ -47,5 +45,5 @@
 		</div>
 	</div>
 
-	{@render props.children()}
+	{@render children()}
 </div>

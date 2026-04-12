@@ -218,7 +218,7 @@
 						<p>You're all caught up!</p>
 					</div>
 				{:else}
-					{#each groupedNotifications as [group, items], groupIndex}
+					{#each groupedNotifications as [group, items], groupIndex (group)}
 						<div
 							class="notification-group"
 							in:fly={{ y: 20, duration: 200, delay: groupIndex * 50 }}

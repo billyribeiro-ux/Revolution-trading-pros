@@ -8,17 +8,17 @@
 		onchange?: (value: number | [number, number]) => void;
 	}
 
-	let props: Props = $props();
+	let { field, value, error, onchange }: Props = $props();
 
-	const min = $derived(props.field.validation?.min ?? 0);
-	const max = $derived(props.field.validation?.max ?? 100);
-	const step = $derived(props.field.validation?.step ?? 1);
-	const isRange = $derived(props.field.attributes?.range_type === 'range');
-	const showValue = $derived(props.field.attributes?.show_value !== false);
-	const showTicks = $derived(props.field.attributes?.show_ticks || false);
-	const prefix = $derived(props.field.attributes?.prefix || '');
-	const suffix = $derived(props.field.attributes?.suffix || '');
-	const tickCount = $derived(props.field.attributes?.tick_count || 5);
+	const min = $derived(field.validation?.min ?? 0);
+	const max = $derived(field.validation?.max ?? 100);
+	const step = $derived(field.validation?.step ?? 1);
+	const isRange = $derived(field.attributes?.range_type === 'range');
+	const showValue = $derived(field.attributes?.show_value !== false);
+	const showTicks = $derived(field.attributes?.show_ticks || false);
+	const prefix = $derived(field.attributes?.prefix || '');
+	const suffix = $derived(field.attributes?.suffix || '');
+	const tickCount = $derived(field.attributes?.tick_count || 5);
 
 	let singleValue = $state<number>(0);
 	let rangeStart = $state<number>(0);
@@ -38,11 +38,11 @@
 
 	// Sync state values with value prop changes
 	$effect(() => {
-		if (typeof props.value === 'number') {
-			singleValue = props.value as number;
-		} else if (Array.isArray(props.value)) {
-			rangeStart = (props.value as [number, number])[0];
-			rangeEnd = (props.value as [number, number])[1];
+		if (typeof value === 'number') {
+			singleValue = value as number;
+		} else if (Array.isArray(value)) {
+			rangeStart = (value as [number, number])[0];
+			rangeEnd = (value as [number, number])[1];
 		} else {
 			// Initialize from defaults if no value provided
 			singleValue = min;
@@ -58,19 +58,19 @@
 	function handleSingleChange(event: Event) {
 		const target = event.target as HTMLInputElement;
 		singleValue = parseFloat(target.value);
-		props.onchange?.(singleValue);
+		onchange?.(singleValue);
 	}
 
 	function handleRangeStartChange(event: Event) {
 		const target = event.target as HTMLInputElement;
 		rangeStart = Math.min(parseFloat(target.value), rangeEnd - step);
-		props.onchange?.([rangeStart, rangeEnd]);
+		onchange?.([rangeStart, rangeEnd]);
 	}
 
 	function handleRangeEndChange(event: Event) {
 		const target = event.target as HTMLInputElement;
 		rangeEnd = Math.max(parseFloat(target.value), rangeStart + step);
-		props.onchange?.([rangeStart, rangeEnd]);
+		onchange?.([rangeStart, rangeEnd]);
 	}
 
 	function generateTicks(): number[] {
@@ -94,15 +94,15 @@
 </script>
 
 <div class="range-slider-field">
-	<label class="field-label" for={`field-${props.field.name}`}>
-		{props.field.label}
-		{#if props.field.required}
+	<label class="field-label" for={`field-${field.name}`}>
+		{field.label}
+		{#if field.required}
 			<span class="required">*</span>
 		{/if}
 	</label>
 
-	{#if props.field.help_text}
-		<p class="field-help">{props.field.help_text}</p>
+	{#if field.help_text}
+		<p class="field-help">{field.help_text}</p>
 	{/if}
 
 	<div class="slider-container">
@@ -123,33 +123,33 @@
 				<div class="range-track" style={`background: ${getFilledPercentage()}`}></div>
 				<input
 					type="range"
-					id={`${props.field.name}-start`}
-					name={`${props.field.name}[start]`}
+					id={`${field.name}-start`}
+					name={`${field.name}[start]`}
 					{min}
 					{max}
 					{step}
 					value={rangeStart}
 					class="range-input range-start"
 					oninput={handleRangeStartChange}
-					aria-label={`${props.field.label} start value`}
+					aria-label={`${field.label} start value`}
 				/>
 				<input
 					type="range"
-					id={`${props.field.name}-end`}
-					name={`${props.field.name}[end]`}
+					id={`${field.name}-end`}
+					name={`${field.name}[end]`}
 					{min}
 					{max}
 					{step}
 					value={rangeEnd}
 					class="range-input range-end"
 					oninput={handleRangeEndChange}
-					aria-label={`${props.field.label} end value`}
+					aria-label={`${field.label} end value`}
 				/>
 			{:else}
 				<input
 					type="range"
-					id={`field-${props.field.name}`}
-					name={props.field.name}
+					id={`field-${field.name}`}
+					name={field.name}
 					{min}
 					{max}
 					{step}
@@ -163,7 +163,7 @@
 
 		{#if showTicks}
 			<div class="tick-marks">
-				{#each generateTicks() as tick}
+				{#each generateTicks() as tick (tick)}
 					<div class="tick">
 						<span class="tick-mark"></span>
 						<span class="tick-label">{formatValue(tick)}</span>
@@ -178,9 +178,9 @@
 		{/if}
 	</div>
 
-	{#if props.error && props.error.length > 0}
+	{#if error && error.length > 0}
 		<div class="field-error">
-			{#each props.error as err}
+			{#each error as err (err)}
 				<p>{err}</p>
 			{/each}
 		</div>

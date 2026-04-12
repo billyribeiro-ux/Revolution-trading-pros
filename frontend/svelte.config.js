@@ -4,6 +4,15 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	preprocess: vitePreprocess(),
+	// Opt into Svelte 5.36+ top-level `await` in components, `$derived(await ...)`,
+	// and async expressions in markup. Required for `<svelte:boundary pending>` flows
+	// and for fully-streamed SSR with `$effect.pending()` / `settled()`.
+	// The flag will be removed in Svelte 6 once stable.
+	compilerOptions: {
+		experimental: {
+			async: true
+		}
+	},
 	dynamicCompileOptions({ filename }) {
 		if (filename.includes('node_modules')) {
 			return { runes: false };
@@ -20,23 +29,19 @@ const config = {
 			},
 			routes: {
 				include: ['/*'],
-				exclude: [
-					'/favicon.ico',
-					'/favicon.png',
-					'/apple-touch-icon.png',
-					'/apple-touch-icon-precomposed.png',
-					'/manifest.json',
-					'/robots.txt',
-					'/sitemap.xml',
-					'/sitemap-*.xml',
-					'/_app/*',
-					'/images/*',
-					'/icons/*',
-					'/logos/*',
-					'/fonts/*',
-					'/uploads/*',
-					'/static/*'
-				]
+				// Use the placeholder groups exposed by `@sveltejs/adapter-cloudflare`
+				// so newly added static files and prerendered routes are excluded
+				// from the Cloudflare Function automatically. The previous explicit
+				// list missed `/avatars/*`, `/data/*`, `/textures/*`, `/icon-{192,512}.png`,
+				// `/grid-pattern.svg`, `/offline.html`, `/trading-room-rules.pdf`, plus
+				// every prerendered route (sitemaps, blog, etc.), causing them to be
+				// served by the Worker instead of straight from the edge.
+				//
+				//   <build>       — `.svelte-kit` build artifacts (covers `/_app/*`)
+				//   <files>       — contents of `static/`
+				//   <prerendered> — all prerendered routes (sitemap.xml, robots.txt, posts, ...)
+				//   <redirects>   — paths declared in the root `_redirects` file
+				exclude: ['<build>', '<files>', '<prerendered>', '<redirects>']
 			}
 		}),
 		alias: {
@@ -65,7 +70,12 @@ const config = {
 			crawl: true,
 			entries: ['*', '/robots.txt']
 		},
-		inlineStyleThreshold: 0,
+		// Inline component styles smaller than this size (bytes) directly into
+		// the HTML instead of emitting a separate render-blocking <link>. This
+		// significantly improves FCP / LCP on slow networks because small per-
+		// component CSS (most of our marketing sections) ships with the document.
+		// 5 KB is the industry-standard sweet spot (PageSpeed / web.dev).
+		inlineStyleThreshold: 5120,
 		csp: {
 			mode: 'auto',
 			directives: {

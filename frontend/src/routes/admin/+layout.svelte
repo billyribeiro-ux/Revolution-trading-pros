@@ -24,21 +24,10 @@
 	import ConnectionHealthPanel from '$lib/components/ConnectionHealthPanel.svelte';
 	import OfflineIndicator from '$lib/components/OfflineIndicator.svelte';
 
-	import type { Snippet } from 'svelte';
-	import {
-		Icon,
-		IconBell,
-		IconCommand,
-		IconMenu2,
-		IconPlugConnected,
-		IconSearch
-	} from '$lib/icons';
+	import type { LayoutProps } from './$types';
 
-	// Props (Svelte 5 - no destructuring)
-	interface Props {
-		children: Snippet;
-	}
-	let props: Props = $props();
+	// Destructured `$props()` typed via SvelteKit-generated `LayoutProps`
+	let { children }: LayoutProps = $props();
 
 	// Local derived from getters
 	const unreadCount = $derived(getUnreadCount());
@@ -213,7 +202,7 @@
 
 		<!-- Content -->
 		<main id="main-content" class="admin-content">
-			{@render props.children()}
+			{@render children()}
 		</main>
 	</div>
 </div>
@@ -433,7 +422,7 @@
 	   RESPONSIVE - Tablet (< lg: 1024px)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	@media (max-width: calc(var(--breakpoint-lg) - 1px)) {
+	@media (max-width: 1023px) {
 		.admin-main {
 			margin-left: 0;
 		}
@@ -451,7 +440,7 @@
 	   RESPONSIVE - Mobile Landscape (< md: 768px)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	@media (max-width: calc(var(--breakpoint-md) - 1px)) {
+	@media (max-width: 767px) {
 		.desktop-only {
 			display: none !important;
 		}
@@ -475,7 +464,7 @@
 	   RESPONSIVE - Mobile Portrait (< sm: 640px)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	@media (max-width: calc(var(--breakpoint-sm) - 1px)) {
+	@media (max-width: 639px) {
 		.admin-header {
 			padding: 0 var(--space-4);
 			height: 60px;

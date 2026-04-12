@@ -27,16 +27,16 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
 	// Determine if this is a pullquote (based on block type)
-	const isPullQuote = $derived(props.block.type === 'pullquote');
+	const isPullQuote = $derived(block.type === 'pullquote');
 
 	// Derive text alignment from settings
-	const textAlign = $derived(props.block.settings.textAlign || (isPullQuote ? 'center' : 'left'));
+	const textAlign = $derived(block.settings.textAlign || (isPullQuote ? 'center' : 'left'));
 
 	// Derive text color from settings
-	const textColor = $derived(props.block.settings.textColor || '');
+	const textColor = $derived(block.settings.textColor || '');
 
 	// Build inline styles for quote text
 	const quoteStyles = $derived.by(() => {
@@ -54,7 +54,7 @@
 	 * Update block content with partial updates
 	 */
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 
 	/**
@@ -95,7 +95,7 @@
 
 {#if isPullQuote}
 	<!-- Pull Quote Variant -->
-	<figure class="quote-block quote-block--pullquote" class:quote-block--selected={props.isSelected}>
+	<figure class="quote-block quote-block--pullquote" class:quote-block--selected={isSelected}>
 		<!-- Decorative Quote Icon -->
 		<div class="quote-block__icon" aria-hidden="true">
 			<Icon icon={IconQuote} size={32} />
@@ -103,34 +103,34 @@
 
 		<!-- Quote Text -->
 		<blockquote
-			contenteditable={props.isEditing}
+			contenteditable={isEditing}
 			class="quote-block__pullquote-text"
-			class:quote-block__pullquote-text--editing={props.isEditing}
-			class:quote-block__pullquote-text--placeholder={!props.block.content.text}
+			class:quote-block__pullquote-text--editing={isEditing}
+			class:quote-block__pullquote-text--placeholder={!block.content.text}
 			style={quoteStyles}
 			oninput={handleTextInput}
 			onpaste={handlePaste}
 			onkeydown={handleKeydown}
 			data-placeholder="Add a notable quote..."
-			role={props.isEditing ? 'textbox' : undefined}
-			aria-label={props.isEditing ? 'Quote text' : undefined}
+			role={isEditing ? 'textbox' : undefined}
+			aria-label={isEditing ? 'Quote text' : undefined}
 		>
-			{props.block.content.text || ''}
+			{block.content.text || ''}
 		</blockquote>
 
 		<!-- Citation (optional) -->
-		{#if props.block.content.html || props.isEditing}
+		{#if block.content.html || isEditing}
 			<figcaption
-				contenteditable={props.isEditing}
+				contenteditable={isEditing}
 				class="quote-block__cite quote-block__cite--pullquote"
-				class:quote-block__cite--placeholder={!props.block.content.html}
+				class:quote-block__cite--placeholder={!block.content.html}
 				oninput={handleCiteInput}
 				onpaste={handlePaste}
 				data-placeholder="Source or author"
-				role={props.isEditing ? 'textbox' : undefined}
-				aria-label={props.isEditing ? 'Quote attribution' : undefined}
+				role={isEditing ? 'textbox' : undefined}
+				aria-label={isEditing ? 'Quote attribution' : undefined}
 			>
-				{props.block.content.html || ''}
+				{block.content.html || ''}
 			</figcaption>
 		{/if}
 	</figure>
@@ -138,39 +138,39 @@
 	<!-- Standard Quote -->
 	<blockquote
 		class="quote-block quote-block--standard"
-		class:quote-block--selected={props.isSelected}
+		class:quote-block--selected={isSelected}
 		role="blockquote"
 	>
 		<!-- Quote Text -->
 		<div
-			contenteditable={props.isEditing}
+			contenteditable={isEditing}
 			class="quote-block__text"
-			class:quote-block__text--editing={props.isEditing}
-			class:quote-block__text--placeholder={!props.block.content.text}
+			class:quote-block__text--editing={isEditing}
+			class:quote-block__text--placeholder={!block.content.text}
 			style={quoteStyles}
 			oninput={handleTextInput}
 			onpaste={handlePaste}
 			onkeydown={handleKeydown}
 			data-placeholder="Write a quote..."
-			role={props.isEditing ? 'textbox' : undefined}
-			aria-label={props.isEditing ? 'Quote text' : undefined}
+			role={isEditing ? 'textbox' : undefined}
+			aria-label={isEditing ? 'Quote text' : undefined}
 		>
-			{props.block.content.text || ''}
+			{block.content.text || ''}
 		</div>
 
 		<!-- Citation (shown when has content or editing) -->
-		{#if props.block.content.html || props.isEditing}
+		{#if block.content.html || isEditing}
 			<cite
-				contenteditable={props.isEditing}
+				contenteditable={isEditing}
 				class="quote-block__cite"
-				class:quote-block__cite--placeholder={!props.block.content.html}
+				class:quote-block__cite--placeholder={!block.content.html}
 				oninput={handleCiteInput}
 				onpaste={handlePaste}
 				data-placeholder="Author name"
-				role={props.isEditing ? 'textbox' : undefined}
-				aria-label={props.isEditing ? 'Quote author' : undefined}
+				role={isEditing ? 'textbox' : undefined}
+				aria-label={isEditing ? 'Quote author' : undefined}
 			>
-				{props.block.content.html || ''}
+				{block.content.html || ''}
 			</cite>
 		{/if}
 	</blockquote>

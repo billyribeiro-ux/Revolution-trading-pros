@@ -17,10 +17,7 @@
 		statusText?: string;
 	}
 
-	let props: Props = $props();
-	let progress = $derived(props.progress);
-	let status = $derived(props.status);
-	let statusText = $derived(props.statusText);
+	let { progress, status, statusText }: Props = $props();
 
 	// Derived
 	let isIndeterminate = $derived(status === 'preparing' || status === 'processing');

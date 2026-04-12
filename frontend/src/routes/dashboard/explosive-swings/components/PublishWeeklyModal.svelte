@@ -28,6 +28,7 @@
 -->
 <script lang="ts">
 	import { logger } from '$lib/utils/logger';
+	import { domRef } from '$lib/svelte/domAttachment';
 	import {
 		weeklyVideoApi,
 		tradePlanApi,
@@ -398,7 +399,11 @@
 		onkeydown={handleKeydown}
 	>
 		<!-- Modal Container -->
-		<div class="modal-container" bind:this={modalRef} tabindex="-1">
+		<div
+			class="modal-container"
+			{@attach domRef<HTMLDivElement>((el) => (modalRef = el ?? null))}
+			tabindex="-1"
+		>
 			<!-- Modal Header -->
 			<header class="modal-header">
 				<h2 id="publish-modal-title">Publish Weekly Breakdown</h2>

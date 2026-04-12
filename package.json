@@ -2,34 +2,14 @@
   "name": "revolution-trading-pros-monorepo",
   "version": "2.0.0",
   "private": true,
-  "engines": {
-    "node": ">=24.14.1 || >=25.9.0",
-    "pnpm": ">=10.8.0"
-  },
   "packageManager": "pnpm@10.8.0",
   "scripts": {
-    "dev": "pnpm --filter frontend dev",
-    "build": "pnpm --filter frontend build",
-    "preview": "pnpm --filter frontend preview",
-    "check": "pnpm --filter frontend check",
-    "lint": "pnpm --filter frontend lint",
-    "format": "pnpm --filter frontend format",
-    "test": "pnpm --filter frontend test"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild",
-      "workerd"
-    ],
-    "overrides": {
-      "@tanstack/svelte-table>svelte": "^5.55.1"
-    },
-    "peerDependencyRules": {
-      "ignoreMissing": ["@sveltejs/vite-plugin-svelte", "vite"],
-      "allowedVersions": {
-        "typescript": "6",
-        "vite": "7"
-      }
-    }
+    "dev": "pnpm --filter revolution-svelte dev",
+    "build": "pnpm --filter revolution-svelte build",
+    "preview": "pnpm --filter revolution-svelte preview",
+    "check": "pnpm --filter revolution-svelte check",
+    "lint": "pnpm --filter revolution-svelte lint",
+    "format": "pnpm --filter revolution-svelte format",
+    "test": "pnpm --filter revolution-svelte test"
   }
 }

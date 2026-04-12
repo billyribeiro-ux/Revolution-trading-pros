@@ -8,7 +8,7 @@
 		form: Form;
 	}
 
-	let props: Props = $props();
+	let { form }: Props = $props();
 
 	let stats: any = $state(null);
 	let loading = $state(true);
@@ -23,12 +23,12 @@
 		loading = true;
 
 		try {
-			if (props.form.id) {
+			if (form.id) {
 				// Load basic stats
-				stats = await getSubmissionStats(props.form.id);
+				stats = await getSubmissionStats(form.id);
 
 				// Load recent submissions for trend analysis
-				const submissions = await getSubmissions(props.form.id, 1, 100);
+				const submissions = await getSubmissions(form.id, 1, 100);
 
 				// Calculate submission trend (last 30 days)
 				submissionTrend = calculateSubmissionTrend(submissions.submissions);
@@ -77,12 +77,12 @@
 	}
 
 	function analyzeFieldCompletion(submissions: any[]) {
-		if (!props.form.fields || submissions.length === 0) return [];
+		if (!form.fields || submissions.length === 0) return [];
 
 		const fieldStats: Record<string, { filled: number; total: number; field: any }> = {};
 
 		// Initialize field stats
-		props.form.fields.forEach((field) => {
+		form.fields.forEach((field) => {
 			fieldStats[field.name] = {
 				filled: 0,
 				total: submissions.length,
@@ -231,7 +231,7 @@
 			<div class="chart-card">
 				<h3>Submission Trend (Last 30 Days)</h3>
 				<div class="trend-chart">
-					{#each submissionTrend.slice(-7) as day}
+					{#each submissionTrend.slice(-7) as day (day)}
 						<div class="trend-bar">
 							<div
 								class="bar"
@@ -258,7 +258,9 @@
 			<div class="chart-card">
 				<h3>Field Completion Rates</h3>
 				<div class="field-completion">
-					{#each fieldAnalytics.filter((f) => f.completionRate > 0).slice(0, 10) as field}
+					{#each fieldAnalytics
+						.filter((f) => f.completionRate > 0)
+						.slice(0, 10) as field (field.label)}
 						<div class="completion-row">
 							<div class="field-name">{field.label}</div>
 							<div class="completion-bar">

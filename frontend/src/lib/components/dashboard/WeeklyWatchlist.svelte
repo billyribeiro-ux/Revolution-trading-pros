@@ -42,13 +42,7 @@
 		className?: string;
 	}
 
-	let props: Props = $props();
-
-	// Derived props with defaults
-	let data = $derived(props.data ?? null);
-	let roomSlug = $derived(props.roomSlug);
-	let href = $derived(props.href);
-	let className = $derived(props.className ?? '');
+	let { data = null, roomSlug, href, className = '' }: Props = $props();
 
 	// Client-side state (only used if no SSR data)
 	let clientData = $state<WatchlistData | null>(null);
@@ -137,8 +131,12 @@
 						<img
 							src={displayImage}
 							alt="Weekly Watchlist"
-							class="u--border-radius"
+							width="640"
+							height="360"
 							loading="eager"
+							fetchpriority="high"
+							decoding="sync"
+							class="u--border-radius"
 						/>
 					</a>
 				</div>
@@ -150,7 +148,16 @@
 			</div>
 			<div class="col-right desktop-only">
 				<a href={displayHref}>
-					<img src={displayImage} alt="Weekly Watchlist" class="u--border-radius" loading="eager" />
+					<img
+						src={displayImage}
+						alt="Weekly Watchlist"
+						width="640"
+						height="360"
+						loading="eager"
+						fetchpriority="high"
+						decoding="sync"
+						class="u--border-radius"
+					/>
 				</a>
 			</div>
 		</div>

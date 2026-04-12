@@ -489,7 +489,7 @@
 
 					<!-- Members -->
 					<div class="flex items-center -space-x-2">
-						{#each members.slice(0, 4) as member}
+						{#each members.slice(0, 4) as member (member.name)}
 							<div
 								class="w-8 h-8 rounded-full bg-[#E6B800] flex items-center justify-center text-[#0D1117] text-sm font-medium border-2 border-white dark:border-gray-800"
 								title={member.name}
@@ -531,7 +531,7 @@
 						class="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 					>
 						<option value={null}>All assignees</option>
-						{#each members as member}
+						{#each members as member (member.name)}
 							<option value={member.user_id}>{member.name}</option>
 						{/each}
 					</select>
@@ -540,7 +540,7 @@
 						class="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 					>
 						<option value={null}>All labels</option>
-						{#each labels as label}
+						{#each labels as label (label.id)}
 							<option value={label.id}>{label.title}</option>
 						{/each}
 					</select>
@@ -580,7 +580,7 @@
 			</div>
 		{:else}
 			<div class="flex gap-4 h-full min-h-[calc(100vh-180px)]">
-				{#each stages as stage}
+				{#each stages as stage (stage.id)}
 					<div
 						class="shrink-0 w-72 bg-gray-200/50 dark:bg-gray-800/50 rounded-xl flex flex-col max-h-full"
 					>
@@ -613,7 +613,7 @@
 							role="region"
 							aria-label="Task drop zone"
 						>
-							{#each tasksByStage[stage.id] || [] as task, index}
+							{#each tasksByStage[stage.id] || [] as task, index (task.id)}
 								<div
 									draggable="true"
 									ondragstart={(e: DragEvent) => handleDragStart(e, task)}
@@ -638,7 +638,8 @@
 									<!-- Labels -->
 									{#if task.labels && task.labels.length > 0}
 										<div class="flex flex-wrap gap-1 mb-2">
-											{#each task.labels as label}
+											<!-- key (i): items lack stable id -->
+											{#each task.labels as label, i (i)}
 												<span
 													class="px-2 py-0.5 text-xs rounded text-white"
 													style="background-color: {label.color}"
@@ -695,7 +696,7 @@
 											{/if}
 											{#if task.assignees && task.assignees.length > 0}
 												<div class="flex -space-x-1">
-													{#each task.assignees.slice(0, 2) as assigneeId}
+													{#each task.assignees.slice(0, 2) as assigneeId (assigneeId)}
 														{@const assignee = members.find((m) => m.user_id === assigneeId)}
 														{#if assignee}
 															<div
@@ -947,7 +948,8 @@
 								{/if}
 							</h3>
 							<div class="space-y-2">
-								{#each taskSubtasks as subtask}
+								<!-- key (i): items lack stable id -->
+								{#each taskSubtasks as subtask, i (i)}
 									<div class="flex items-center gap-2 group">
 										<button
 											onclick={() => toggleSubtask(subtask)}
@@ -1000,7 +1002,8 @@
 								Comments ({taskComments.length})
 							</h3>
 							<div class="space-y-3">
-								{#each taskComments as comment}
+								<!-- key (i): items lack stable id -->
+								{#each taskComments as comment, i (i)}
 									<div class="flex gap-3">
 										<div
 											class="w-8 h-8 rounded-full bg-[#E6B800] flex items-center justify-center text-[#0D1117] text-sm shrink-0"
@@ -1082,7 +1085,7 @@
 								Assignees
 							</h4>
 							<div class="flex flex-wrap gap-2">
-								{#each selectedTask.assignees || [] as assigneeId}
+								{#each selectedTask.assignees || [] as assigneeId (assigneeId)}
 									{@const assignee = members.find((m) => m.user_id === assigneeId)}
 									{#if assignee}
 										<div
@@ -1146,7 +1149,8 @@
 								Labels
 							</h4>
 							<div class="flex flex-wrap gap-1">
-								{#each selectedTask.labels || [] as label}
+								<!-- key (i): items lack stable id -->
+								{#each selectedTask.labels || [] as label, i (i)}
 									<span
 										class="px-2 py-0.5 text-xs rounded text-white"
 										style="background-color: {label.color}"
@@ -1168,7 +1172,8 @@
 								Attachments ({taskAttachments.length})
 							</h4>
 							<div class="space-y-1">
-								{#each taskAttachments as attachment}
+								<!-- key (i): items lack stable id -->
+								{#each taskAttachments as attachment, i (i)}
 									<a
 										href={attachment.url}
 										target="_blank"

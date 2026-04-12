@@ -297,7 +297,7 @@
 
 	<!-- Navigation Tabs -->
 	<nav class="tabs">
-		{#each tabs as tab}
+		{#each tabs as tab (tab.id)}
 			<button class="tab" class:active={activeTab === tab.id} onclick={() => (activeTab = tab.id)}>
 				<span class="tab-icon"
 					>{tab.icon === 'settings'
@@ -594,7 +594,7 @@
 						<div class="script-categories">
 							<div class="script-category">
 								<h3>Analytics Scripts</h3>
-								{#each scriptBlockingOptions.filter((s) => s.category === 'analytics') as script}
+								{#each scriptBlockingOptions.filter((s) => s.category === 'analytics') as script (script.key)}
 									<label class="setting-row toggle-row compact">
 										<div class="setting-info">
 											<span class="setting-label">{script.label}</span>
@@ -615,7 +615,7 @@
 
 							<div class="script-category">
 								<h3>Marketing Scripts</h3>
-								{#each scriptBlockingOptions.filter((s) => s.category === 'marketing') as script}
+								{#each scriptBlockingOptions.filter((s) => s.category === 'marketing') as script (script.key)}
 									<label class="setting-row toggle-row compact">
 										<div class="setting-info">
 											<span class="setting-label">{script.label}</span>
@@ -636,7 +636,7 @@
 
 							<div class="script-category">
 								<h3>Embedded Content</h3>
-								{#each scriptBlockingOptions.filter((s) => s.category === 'embedded_video') as script}
+								{#each scriptBlockingOptions.filter((s) => s.category === 'embedded_video') as script (script.key)}
 									<label class="setting-row toggle-row compact">
 										<div class="setting-info">
 											<span class="setting-label">{script.label}</span>

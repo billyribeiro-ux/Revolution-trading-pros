@@ -80,7 +80,7 @@
 
 	{#if isLoading}
 		<div class="skeleton-table">
-			{#each Array(5) as _}
+			{#each Array(5) as _, i (i)}
 				<div class="skel-row"></div>
 			{/each}
 		</div>
@@ -93,7 +93,7 @@
 			<table class="data-table">
 				<thead>
 					<tr>
-						{#each columns as col}
+						{#each columns as col (col.key)}
 							<th
 								class="sortable"
 								class:sorted={sortKey === col.key}
@@ -115,7 +115,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					{#each sortedData as ticker, index}
+					{#each sortedData as ticker, index (index)}
 						<tr class:even={index % 2 === 0}>
 							<td class="ticker-cell">
 								<span class="ticker-rank">{index + 1}</span>

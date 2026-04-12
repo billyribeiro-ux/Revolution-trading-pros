@@ -3,7 +3,7 @@
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
+	import { revealAllDataGsapTargets } from '$lib/motion/gsapScrollReveal';
 
 	// --- Pricing State (Svelte 5 Runes) ---
 	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = $state('quarterly');
@@ -19,46 +19,48 @@
 		let ctx: ReturnType<typeof import('gsap').gsap.context> | null = null;
 
 		(async () => {
-			const { gsap } = await import('gsap');
-			const { ScrollTrigger } = await import('gsap/ScrollTrigger');
-			gsap.registerPlugin(ScrollTrigger);
+			try {
+				const { gsap } = await import('gsap');
+				const { ScrollTrigger } = await import('gsap/ScrollTrigger');
+				gsap.registerPlugin(ScrollTrigger);
 
-			const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+				const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-			if (prefersReducedMotion) {
-				gsap.set('[data-gsap]', { opacity: 1, y: 0 });
-				return;
+				if (prefersReducedMotion) {
+					gsap.set('[data-gsap]', { opacity: 1, y: 0 });
+					return;
+				}
+
+				ctx = gsap.context(() => {
+					const elements = document.querySelectorAll('[data-gsap]');
+					elements.forEach((el) => {
+						const rect = el.getBoundingClientRect();
+						const isInViewport = rect.top < window.innerHeight * 0.85;
+						if (!isInViewport) {
+							gsap.set(el, { opacity: 0, y: 30 });
+						}
+					});
+
+					ScrollTrigger.batch('[data-gsap]', {
+						onEnter: (batch) => {
+							gsap.to(batch, {
+								opacity: 1,
+								y: 0,
+								duration: 0.8,
+								ease: 'power3.out',
+								stagger: 0.1,
+								overwrite: true
+							});
+						},
+						start: 'top 85%',
+						once: true
+					});
+
+					ScrollTrigger.refresh();
+				});
+			} catch {
+				revealAllDataGsapTargets();
 			}
-
-			// Use gsap.context() for scoped cleanup - prevents global ScrollTrigger destruction
-			ctx = gsap.context(() => {
-				// Only set initial hidden state for elements NOT yet in viewport
-				const elements = document.querySelectorAll('[data-gsap]');
-				elements.forEach((el) => {
-					const rect = el.getBoundingClientRect();
-					const isInViewport = rect.top < window.innerHeight * 0.85;
-					if (!isInViewport) {
-						gsap.set(el, { opacity: 0, y: 30 });
-					}
-				});
-
-				ScrollTrigger.batch('[data-gsap]', {
-					onEnter: (batch) => {
-						gsap.to(batch, {
-							opacity: 1,
-							y: 0,
-							duration: 0.8,
-							ease: 'power3.out',
-							stagger: 0.1,
-							overwrite: true
-						});
-					},
-					start: 'top 85%',
-					once: true
-				});
-
-				ScrollTrigger.refresh();
-			});
 		})();
 
 		return () => ctx?.revert();
@@ -208,7 +210,7 @@
 		</div>
 
 		<div
-			class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-16 items-center"
+			class="relative z-10 max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-16 items-center"
 		>
 			<div class="text-center lg:text-left space-y-8">
 				<div
@@ -228,7 +230,7 @@
 
 				<h1
 					data-gsap
-					class="text-5xl md:text-7xl font-heading font-extrabold leading-tight tracking-tight"
+					class="text-4xl xs:text-5xl md:text-7xl font-heading font-extrabold leading-tight tracking-tight break-words"
 				>
 					Never Trade <br />
 					<span
@@ -246,7 +248,7 @@
 				<div data-gsap class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
 					<a
 						href="#pricing"
-						class="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-200 bg-rtp-primary rounded-xl hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rtp-primary offset-rtp-bg shadow-lg hover:shadow-rtp-primary/25 hover:-translate-y-1"
+						class="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-200 bg-rtp-primary rounded-xl hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-rtp-bg focus:ring-rtp-primary shadow-lg hover:shadow-rtp-primary/25 hover:-translate-y-1"
 					>
 						Join the Room
 						<svg
@@ -418,7 +420,9 @@
 	</section>
 
 	<section class="bg-rtp-surface border-y border-rtp-border relative z-20">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+		<div
+			class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 py-12"
+		>
 			<div class="grid grid-cols-2 md:grid-cols-4 gap-8">
 				<div class="text-center group cursor-default">
 					<div
@@ -464,7 +468,9 @@
 
 	<section class="py-24 bg-rtp-bg relative overflow-hidden">
 		<div class="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-5 pointer-events-none"></div>
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+		<div
+			class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10"
+		>
 			<div class="text-center max-w-3xl mx-auto mb-20">
 				<span class="text-rtp-primary font-bold uppercase tracking-wider text-sm mb-2 block"
 					>The Experience</span
@@ -564,7 +570,9 @@
 	</section>
 
 	<section class="py-20 bg-rtp-surface border-y border-rtp-border">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div
+			class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8"
+		>
 			<div class="grid lg:grid-cols-2 gap-12 items-center">
 				<div>
 					<h2 data-gsap class="text-3xl md:text-4xl font-heading font-bold text-white mb-6">
@@ -583,7 +591,7 @@
 								✓
 							</div>
 							<div>
-								<h4 class="text-white font-bold">Favorable Tax Treatment</h4>
+								<h3 class="text-white font-bold">Favorable Tax Treatment</h3>
 								<p class="text-sm text-rtp-muted">
 									SPX options fall under Section 1256, meaning 60% of gains are taxed at the lower
 									long-term capital gains rate, regardless of holding period.
@@ -597,7 +605,7 @@
 								✓
 							</div>
 							<div>
-								<h4 class="text-white font-bold">Cash Settled & No Early Assignment</h4>
+								<h3 class="text-white font-bold">Cash Settled & No Early Assignment</h3>
 								<p class="text-sm text-rtp-muted">
 									You can never be assigned shares. The index settles to cash, eliminating the risk
 									of overnight gap risk in physical shares.
@@ -611,7 +619,7 @@
 								✓
 							</div>
 							<div>
-								<h4 class="text-white font-bold">Institutional Liquidity</h4>
+								<h3 class="text-white font-bold">Institutional Liquidity</h3>
 								<p class="text-sm text-rtp-muted">
 									Massive volume ensures tight bid/ask spreads, allowing for rapid entries and exits
 									even with large position sizes.
@@ -785,7 +793,9 @@
 	</section>
 
 	<section id="pricing" class="py-24 bg-rtp-surface relative">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div
+			class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8"
+		>
 			<div class="text-center mb-16">
 				<span class="text-rtp-primary font-bold uppercase tracking-wider text-sm mb-2 block"
 					>Investment</span
@@ -836,7 +846,9 @@
 				</div>
 			</div>
 
-			<div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto items-center">
+			<div
+				class="grid md:grid-cols-3 gap-8 max-w-6xl 3xl:max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto items-center"
+			>
 				<div
 					class="bg-rtp-bg p-8 rounded-2xl border transition-all duration-300 {selectedPlan ===
 					'monthly'
@@ -867,7 +879,7 @@
 				</div>
 
 				<div
-					class="bg-rtp-bg p-10 rounded-3xl border-2 shadow-2xl transform relative z-10 transition-all duration-300 {selectedPlan ===
+					class="bg-rtp-bg p-6 sm:p-10 rounded-2xl sm:rounded-3xl border-2 shadow-2xl transform relative z-10 transition-all duration-300 {selectedPlan ===
 					'quarterly'
 						? 'border-rtp-primary shadow-rtp-primary/20 md:scale-110 opacity-100'
 						: 'border-rtp-border shadow-rtp-border/10 md:scale-100 opacity-70 hover:opacity-100'}"
@@ -970,12 +982,12 @@
 				Frequently Asked Questions
 			</h2>
 			<div class="space-y-4">
-				{#each faqList as faq, i}
+				{#each faqList as faq, i (faq.question)}
 					<div
 						class="border border-rtp-border rounded-xl bg-rtp-surface overflow-hidden hover:border-rtp-primary/30 transition-colors"
 					>
 						<button
-							class="w-full text-left px-6 py-5 font-bold flex justify-between items-center focus:outline-none hover:bg-white/5 transition-colors text-white"
+							class="w-full text-left px-6 py-5 font-bold flex justify-between items-center min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rtp-primary focus-visible:ring-offset-2 focus-visible:ring-offset-rtp-bg hover:bg-white/5 transition-colors text-white"
 							onclick={() => toggleFaq(i)}
 							aria-expanded={openFaq === i}
 						>
@@ -1015,16 +1027,16 @@
 	>
 		<div class="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10"></div>
 		<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-			<h2 class="text-4xl md:text-6xl font-heading font-extrabold mb-6">
+			<h2 class="text-3xl xs:text-4xl md:text-6xl font-heading font-extrabold mb-6 break-words">
 				Markets Open at 9:30 AM.
 			</h2>
-			<p class="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
+			<p class="text-base sm:text-xl text-blue-100 mb-8 sm:mb-10 max-w-2xl mx-auto">
 				Don't miss the next opening bell. Join the room today and be ready for tomorrow's session.
 			</p>
 			<div class="flex flex-col sm:flex-row gap-4 justify-center">
 				<a
 					href="#pricing"
-					class="bg-white text-rtp-primary px-10 py-4 rounded-xl font-bold text-lg hover:bg-blue-50 transition-all shadow-2xl hover:-translate-y-1"
+					class="bg-white text-rtp-primary px-6 sm:px-10 py-4 min-h-11 rounded-xl font-bold text-base sm:text-lg hover:bg-blue-50 transition-all shadow-2xl hover:-translate-y-1"
 				>
 					Get Access Now
 				</a>
@@ -1033,5 +1045,3 @@
 		</div>
 	</section>
 </div>
-
-<MarketingFooter />

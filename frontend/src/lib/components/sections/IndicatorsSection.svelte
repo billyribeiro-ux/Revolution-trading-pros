@@ -398,34 +398,67 @@
 	}
 </script>
 
-<section bind:this={sectionRef} class="is-section">
-	<div class="is-bg">
-		<div class="is-orb is-orb-blue"></div>
-		<div class="is-orb is-orb-violet" style="animation-delay: 1s;"></div>
-		<div class="is-grid-lines"></div>
-		<div class="is-radial-fade"></div>
+<section
+	bind:this={sectionRef}
+	aria-label="Indicator Suite"
+	class="relative py-16 sm:py-24 lg:py-32 3xl:py-40 5xl:py-48 overflow-hidden bg-linear-to-b from-zinc-950 via-zinc-900 to-zinc-950"
+>
+	<!-- Ambient Background -->
+	<div class="absolute inset-0 pointer-events-none">
+		<!-- Gradient orbs - smaller on mobile -->
+		<div
+			class="absolute top-1/4 -left-16 sm:-left-32 w-48 sm:w-96 h-48 sm:h-96 bg-blue-500/10 rounded-full blur-[80px] sm:blur-[128px] animate-pulse"
+		></div>
+		<div
+			class="absolute bottom-1/4 -right-16 sm:-right-32 w-48 sm:w-96 h-48 sm:h-96 bg-violet-500/10 rounded-full blur-[80px] sm:blur-[128px] animate-pulse"
+			style="animation-delay: 1s;"
+		></div>
+
+		<!-- Grid pattern - larger on mobile for performance -->
+		<div
+			class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-size-[32px_32px] sm:bg-size-[64px_64px]"
+		></div>
+
+		<!-- Radial fade -->
+		<div
+			class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(9,9,11,0.8)_70%)]"
+		></div>
 	</div>
 
-	<div class="is-container">
+	<div
+		class="relative max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 3xl:px-12 5xl:px-16 6xl:px-20"
+	>
+		<!-- Section Header -->
 		{#if isVisible}
-			<div class="is-header" in:slideUp={{ delay: 0, duration: prefersReducedMotion ? 0 : 800 }}>
-				<div class="is-badge">
-					<Icon icon={IconSparkles} size={14} />
+			<div
+				class="max-w-4xl 3xl:max-w-[1200px] 4xl:max-w-[1600px] 5xl:max-w-[2000px] 6xl:max-w-[2400px] mx-auto text-center mb-24 3xl:mb-32 5xl:mb-40"
+				in:slideUp={{ delay: 0, duration: prefersReducedMotion ? 0 : 800 }}
+			>
+				<div
+					class="inline-flex items-center gap-3 px-4 py-1.5 border border-blue-900/30 bg-blue-950/10 text-blue-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm"
+				>
+					<IconSparkles class="w-3.5 h-3.5" />
 					Technical Edge
 				</div>
 
-				<h2 class="is-title">
-					Indicator <span class="is-title-muted">Suite.</span>
+				<h2
+					class="text-4xl xs:text-5xl sm:text-5xl md:text-7xl 3xl:text-8xl 4xl:text-9xl 5xl:text-[10rem] font-serif text-white mb-8 tracking-tight"
+				>
+					Indicator <span class="text-slate-700">Suite.</span>
 				</h2>
 
-				<p class="is-subtitle">
+				<p
+					class="text-lg 3xl:text-xl 5xl:text-2xl text-slate-400 font-light leading-relaxed max-w-2xl 3xl:max-w-3xl 5xl:max-w-4xl mx-auto"
+				>
 					We don't offer retail indicators. We provide institutional-grade analysis tools. Verified
 					by quantitative funds and professional trading desks.
 				</p>
 			</div>
 		{/if}
 
-		<div class="is-grid">
+		<!-- Main Content Grid - Stack on mobile -->
+		<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 3xl:gap-20 5xl:gap-24 items-center">
+			<!-- Chart Visualization - Order 2 on mobile, 1 on desktop -->
 			{#if isVisible}
 				<div
 					in:scaleIn={{
@@ -477,8 +510,8 @@
 						duration: prefersReducedMotion ? 0 : 600
 					}}
 				>
-					{#each indicators as indicator, i}
-						{@const iconStr = indicator.icon}
+					{#each indicators as indicator, i (indicator.href ?? i)}
+						{@const IconComponent = indicator.icon}
 						<a
 							href={indicator.href}
 							class="indicator-card is-card"

@@ -128,7 +128,7 @@
 <div class="media-grid" style="--columns: {columns}">
 	{#if loading}
 		<!-- Loading skeleton -->
-		{#each Array(8) as _}
+		{#each Array(8) as _, i (i)}
 			<div class="grid-item skeleton">
 				<div class="skeleton-image"></div>
 				<div class="skeleton-text"></div>
@@ -183,7 +183,10 @@
 						<img
 							src={item.thumbnail_url || item.url}
 							alt={item.alt_text || item.filename}
+							width="240"
+							height="240"
 							loading="lazy"
+							decoding="async"
 						/>
 					{:else if item.file_type === 'video'}
 						<div class="type-icon video">

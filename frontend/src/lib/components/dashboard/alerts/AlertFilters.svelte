@@ -23,13 +23,7 @@
 		showCounts?: boolean;
 	}
 
-	let props: Props = $props();
-
-	// Derived props with defaults
-	let selected = $derived(props.selected);
-	let onFilterChange = $derived(props.onFilterChange);
-	let counts = $derived(props.counts);
-	let showCounts = $derived(props.showCounts ?? false);
+	let { selected, onFilterChange, counts, showCounts = false }: Props = $props();
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// FILTER OPTIONS
@@ -54,7 +48,7 @@
 </script>
 
 <div class="filter-pills" role="tablist" aria-label="Filter alerts by type">
-	{#each filters as filter}
+	{#each filters as filter (filter.value)}
 		<button
 			class="pill"
 			class:active={selected === filter.value}

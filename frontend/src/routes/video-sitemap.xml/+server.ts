@@ -1,5 +1,7 @@
 /**
+ * ═══════════════════════════════════════════════════════════════════════════════
  * Dedicated Google Video Sitemap Generator
+ * ═══════════════════════════════════════════════════════════════════════════════
  * Following Google Video Sitemap Guidelines (November 2025)
  *
  * Features:
@@ -11,9 +13,15 @@
  * - Geographic restrictions support
  * - Live video support
  * - Subscription/purchase requirements
+ * - Fetches API-managed video resources at request time via
+ *   `$lib/seo/dynamic-routes` and merges them with the curated evergreen
+ *   fallback list below
  *
- * @version 1.0.0 - November 2025 Google Video Standards
+ * @version 2.0.0 - API-backed, Cloudflare-edge-cached
  */
+
+import type { RequestHandler } from '@sveltejs/kit';
+import { fetchVideoResources, type VideoResourceEntry } from '$lib/seo/dynamic-routes';
 
 // Use environment variable - configure VITE_SITE_URL for your domain
 const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://revolution-trading-pros.pages.dev';
@@ -84,10 +92,12 @@ function getPlatformPlayerUrl(platform: VideoEntry['platform'], videoId: string)
 }
 
 /**
- * Get video entries from content
- * In production, this would fetch from a database
+ * Evergreen curated video entries. These are static, editorially-owned videos
+ * (course landing pages, live-room teasers) that we always want in the video
+ * sitemap regardless of API state. They are merged with — and de-duplicated
+ * against — the API-managed videos fetched by `fetchVideoResources()`.
  */
-function getVideoEntries(): VideoEntry[] {
+function getFallbackVideoEntries(): VideoEntry[] {
 	const videos: VideoEntry[] = [
 		{
 			pageUrl: '/courses/day-trading-masterclass',
@@ -319,10 +329,30 @@ function generateVideoEntry(video: VideoEntry): string {
 }
 
 /**
+ * Merge the curated fallback list with API-managed video resources, favouring
+ * the fallback entry when the same `pageUrl` appears in both (editorial copy
+ * typically has richer metadata than a raw video row).
+ */
+function mergeVideoEntries(fallback: VideoEntry[], apiEntries: VideoEntry[]): VideoEntry[] {
+	const seen = new Set<string>();
+	const merged: VideoEntry[] = [];
+	for (const v of fallback) {
+		if (!v.pageUrl || seen.has(v.pageUrl)) continue;
+		seen.add(v.pageUrl);
+		merged.push(v);
+	}
+	for (const v of apiEntries) {
+		if (!v.pageUrl || seen.has(v.pageUrl)) continue;
+		seen.add(v.pageUrl);
+		merged.push(v);
+	}
+	return merged;
+}
+
+/**
  * Generate complete Google Video sitemap
  */
-function generateVideoSitemap(): string {
-	const videos = getVideoEntries();
+function generateVideoSitemap(videos: VideoEntry[]): string {
 	const urlEntries = videos.map((video) => generateVideoEntry(video)).join('');
 	const generatedDate = new Date().toISOString();
 
@@ -344,15 +374,43 @@ function generateVideoSitemap(): string {
 </urlset>`;
 }
 
-export const GET = async () => {
-	const sitemap = generateVideoSitemap();
+/**
+ * Coerce a raw VideoResourceEntry from the API layer into the richer
+ * VideoEntry shape this sitemap generator understands. Missing fields are
+ * back-filled with sensible Google-compliant defaults.
+ */
+function apiEntryToVideoEntry(v: VideoResourceEntry): VideoEntry {
+	return {
+		pageUrl: v.pageUrl,
+		title: v.title,
+		description: v.description,
+		thumbnailUrl: v.thumbnailUrl,
+		playerUrl: v.playerUrl,
+		duration: v.duration,
+		publicationDate: v.publicationDate,
+		familyFriendly: true,
+		tags: v.tags,
+		category: 'Education',
+		platform: v.platform,
+		videoId: v.videoId,
+		uploader: 'Revolution Trading Pros',
+		uploaderUrl: `${SITE_URL}/about`
+	};
+}
+
+export const GET: RequestHandler = async ({ fetch }) => {
+	// API-managed videos are fetched at request time; the fetcher is defensive
+	// and returns [] on any failure, so the curated fallback list always ships
+	// even if the Rust API is unreachable.
+	const apiVideos = (await fetchVideoResources(fetch)).map(apiEntryToVideoEntry);
+	const videos = mergeVideoEntries(getFallbackVideoEntries(), apiVideos);
+	const sitemap = generateVideoSitemap(videos);
 
 	return new Response(sitemap, {
 		headers: {
 			'Content-Type': 'application/xml; charset=utf-8',
 			'Cache-Control': 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800',
-			'X-Content-Type-Options': 'nosniff',
-			'X-Robots-Tag': 'noindex'
+			'X-Content-Type-Options': 'nosniff'
 		}
 	});
 };

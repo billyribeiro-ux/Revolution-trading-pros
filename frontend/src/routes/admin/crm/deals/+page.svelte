@@ -469,7 +469,7 @@
 
 			{#if pipelines.length > 0}
 				<select class="filter-select" bind:value={selectedPipeline}>
-					{#each pipelines as pipeline}
+					{#each pipelines as pipeline (pipeline.name)}
 						<option value={pipeline}>{pipeline.name}</option>
 					{/each}
 				</select>

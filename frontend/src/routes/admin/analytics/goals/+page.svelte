@@ -167,8 +167,10 @@
 	<title>Conversion Goals | Analytics</title>
 </svelte:head>
 
-<div class="bg-linear-to-br from-slate-950 via-slate-900 to-slate-950">
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+	<div
+		class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 py-8"
+	>
 		<!-- Apple ICT7 Grade Header -->
 		<header class="flex items-center justify-between mb-8">
 			<div class="flex items-center gap-4">
@@ -239,7 +241,7 @@
 
 			<!-- Filters -->
 			<div class="flex items-center gap-2 mb-6">
-				{#each [{ value: 'all', label: 'All Goals' }, { value: 'active', label: 'Active' }, { value: 'paused', label: 'Paused' }, { value: 'completed', label: 'Completed' }] as filter}
+				{#each [{ value: 'all', label: 'All Goals' }, { value: 'active', label: 'Active' }, { value: 'paused', label: 'Paused' }, { value: 'completed', label: 'Completed' }] as filter (filter.value)}
 					<button
 						onclick={() => (activeFilter = filter.value as typeof activeFilter)}
 						class="px-4 py-2 rounded-xl text-sm font-medium transition-all
@@ -318,7 +320,7 @@
 			{:else}
 				<!-- Goals Grid -->
 				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-					{#each filteredGoals as goal}
+					{#each filteredGoals as goal (goal.name)}
 						<div
 							class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 hover:bg-white/10 transition-all"
 						>
@@ -456,7 +458,7 @@
 				<div>
 					<span class="block text-sm font-medium text-slate-300 mb-3">Goal Type</span>
 					<div class="grid grid-cols-2 gap-3">
-						{#each goalTypes as type}
+						{#each goalTypes as type (type.value)}
 							<button
 								onclick={() => (newGoal.type = type.value as typeof newGoal.type)}
 								class="p-4 rounded-xl border-2 text-left transition-all

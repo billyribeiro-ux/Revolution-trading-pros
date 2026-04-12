@@ -2,25 +2,22 @@
 	import type { HTMLTableAttributes } from 'svelte/elements';
 	import type { WithElementRef } from '$lib/utils.js';
 
-	let props: WithElementRef<HTMLTableAttributes> = $props();
-	let ref = $state<HTMLElement | null>(null);
-	let className = $derived(props.class);
-
-	$effect(() => {
-		if (props.ref !== undefined && props.ref !== ref) {
-			ref = props.ref;
-		}
-	});
-
-	let restProps = $derived.by(() => {
-		const { ref: _, class: __, children: ___, ...rest } = props;
-		return rest;
-	});
+	let {
+		ref = $bindable(null),
+		class: className,
+		children,
+		...restProps
+	}: WithElementRef<HTMLTableAttributes> = $props();
 </script>
 
-<div data-slot="table-container">
-	<table bind:this={ref} data-slot="table" class={className} {...restProps}>
-		{@render props.children?.()}
+<div data-slot="table-container" class="relative w-full overflow-x-auto">
+	<table
+		bind:this={ref}
+		data-slot="table"
+		class={cn('w-full caption-bottom text-sm', className)}
+		{...restProps}
+	>
+		{@render children?.()}
 	</table>
 </div>
 

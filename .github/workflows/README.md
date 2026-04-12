@@ -144,13 +144,13 @@ See `TECHNICAL_NOTES.md` for complete analysis including:
 ### Run E2E Tests Locally
 ```bash
 cd frontend
-npm run test:e2e:smoke
+pnpm run test:e2e:smoke
 ```
 
 ### Build for Cloudflare
 ```bash
 cd frontend
-DEPLOY_TARGET=cloudflare npm run build
+DEPLOY_TARGET=cloudflare pnpm run build
 ```
 
 ## Maintenance

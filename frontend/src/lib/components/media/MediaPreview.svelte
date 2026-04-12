@@ -151,7 +151,14 @@
 						<!-- Image preview -->
 						<div class="preview-image">
 							{#if item.file_type === 'image'}
-								<img src={selectedVariant?.url || item.url} alt={item.alt_text || item.filename} />
+								<img
+									src={selectedVariant?.url || item.url}
+									alt={item.alt_text || item.filename}
+									width="1200"
+									height="800"
+									loading="eager"
+									decoding="async"
+								/>
 							{:else if item.file_type === 'video'}
 								<video controls src={item.url}>
 									<track kind="captions" />
@@ -287,7 +294,7 @@
 				{:else if activeTab === 'variants'}
 					<!-- Variants comparison -->
 					<div class="variants-grid">
-						{#each item.variants || [] as variant}
+						{#each item.variants || [] as variant (variant.url)}
 							<div
 								class="variant-card"
 								class:selected={selectedVariant === variant}
@@ -300,7 +307,14 @@
 								onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && (selectedVariant = variant)}
 							>
 								<div class="variant-preview">
-									<img src={variant.url} alt="{variant.type} variant" loading="lazy" />
+									<img
+										src={variant.url}
+										alt="{variant.type} variant"
+										width="120"
+										height="120"
+										loading="lazy"
+										decoding="async"
+									/>
 								</div>
 								<div class="variant-info">
 									<span class="variant-type">
@@ -327,7 +341,7 @@
 							<div class="metadata-section">
 								<h3>EXIF Data</h3>
 								<dl class="metadata-list">
-									{#each Object.entries(item.exif) as [key, value]}
+									{#each Object.entries(item.exif) as [key, value] (key)}
 										{#if value}
 											<dt>{key}</dt>
 											<dd>{value}</dd>
@@ -348,7 +362,7 @@
 							<div class="metadata-section">
 								<h3>Tags</h3>
 								<div class="tags-list">
-									{#each item.tags as tag}
+									{#each item.tags as tag (tag)}
 										<span class="tag">{tag}</span>
 									{/each}
 								</div>

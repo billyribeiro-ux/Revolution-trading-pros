@@ -14,9 +14,12 @@
 
 import { env } from '$env/dynamic/private';
 import type { PageServerLoad } from './$types';
+import type { SEOInput } from '$lib/seo/types';
+import { breadcrumbSchema } from '$lib/seo/jsonld';
 import { logger } from '$lib/utils/logger';
 
 const API_URL = env.API_URL || 'https://revolution-trading-pros-api.fly.dev';
+const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://revolution-trading-pros.pages.dev';
 
 interface Lesson {
 	id: string;
@@ -108,21 +111,81 @@ export const load: PageServerLoad = async ({ params, cookies, fetch }) => {
 	const description =
 		courseData?.course?.meta_description ||
 		courseData?.course?.description ||
-		`Learn ${formatTitle(slug)} trading strategies`;
+		`Learn ${formatTitle(slug)} trading strategies with institutional-grade instruction from Revolution Trading Pros.`;
 	const ogImage =
-		courseData?.course?.og_image_url || courseData?.course?.card_image_url || '/logos/rtp-logo.png';
+		courseData?.course?.og_image_url ||
+		courseData?.course?.card_image_url ||
+		`${SITE_URL}/og-default.png`;
+	const instructorName = courseData?.course?.instructor_name || 'Revolution Trading Pros';
+	const classUrl = `${SITE_URL}/classes/${slug}`;
+
+	const seo: SEOInput = {
+		title,
+		description: description.slice(0, 158),
+		canonical: classUrl,
+		og: {
+			type: 'article',
+			title,
+			description: description.slice(0, 158),
+			image: ogImage,
+			imageAlt: title
+		},
+		twitter: {
+			title,
+			description: description.slice(0, 158),
+			image: ogImage,
+			imageAlt: title
+		},
+		jsonld: [
+			{
+				'@context': 'https://schema.org',
+				'@type': 'Course',
+				'@id': `${classUrl}#course`,
+				name: title,
+				description,
+				url: classUrl,
+				inLanguage: 'en-US',
+				image: ogImage,
+				provider: {
+					'@type': 'Organization',
+					'@id': `${SITE_URL}/#organization`,
+					name: 'Revolution Trading Pros',
+					sameAs: SITE_URL
+				},
+				instructor: {
+					'@type': 'Person',
+					name: instructorName
+				},
+				hasCourseInstance: {
+					'@type': 'CourseInstance',
+					courseMode: 'Online',
+					courseWorkload: 'PT10H',
+					inLanguage: 'en-US'
+				},
+				offers: {
+					'@type': 'Offer',
+					category: 'Paid',
+					priceCurrency: 'USD',
+					availability: 'https://schema.org/InStock',
+					url: classUrl
+				}
+			},
+			breadcrumbSchema(
+				[
+					{ name: 'Home', url: SITE_URL },
+					{ name: 'Classes', url: `${SITE_URL}/classes` },
+					{ name: title, url: classUrl }
+				],
+				`${classUrl}#breadcrumb`
+			)
+		]
+	};
 
 	return {
 		slug,
 		courseData,
 		error,
-		seo: {
-			title: `${title} - Revolution Trading Pros`,
-			description,
-			ogImage,
-			ogType: 'article',
-			canonical: `https://revolution-trading-pros.com/classes/${slug}`
-		},
+		seo,
 		// Legacy support for existing page structure
 		classData: courseData
 			? {

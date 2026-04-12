@@ -251,7 +251,7 @@
 			<div class="panel-content">
 				{#if activeTab === 'overview'}
 					<div class="services-list" in:fade={{ duration: 150 }}>
-						{#each Object.entries(allConnectionStatuses) as [service, status]}
+						{#each Object.entries(allConnectionStatuses) as [service, status] (service)}
 							{@const metrics = mockMetrics[service] || {
 								responseTime: 0,
 								uptime: 0,
@@ -318,7 +318,7 @@
 					</div>
 				{:else}
 					<div class="metrics-view" in:fade={{ duration: 150 }}>
-						{#each Object.entries(allConnectionStatuses) as [service, status]}
+						{#each Object.entries(allConnectionStatuses) as [service, status] (service)}
 							{@const metrics = mockMetrics[service] || {
 								responseTime: 0,
 								uptime: 0,

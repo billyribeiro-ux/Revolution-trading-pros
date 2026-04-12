@@ -3,7 +3,7 @@
 	import { cubicOut } from 'svelte/easing';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
+	import { revealAllDataGsapTargets } from '$lib/motion/gsapScrollReveal';
 
 	// --- Pricing State ---
 	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = $state('quarterly');
@@ -54,48 +54,48 @@
 		let ctx: ReturnType<typeof import('gsap').gsap.context> | null = null;
 
 		(async () => {
-			const { gsap } = await import('gsap');
-			const { ScrollTrigger } = await import('gsap/ScrollTrigger');
-			gsap.registerPlugin(ScrollTrigger);
+			try {
+				const { gsap } = await import('gsap');
+				const { ScrollTrigger } = await import('gsap/ScrollTrigger');
+				gsap.registerPlugin(ScrollTrigger);
 
-			// Respect reduced motion preference
-			const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+				const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-			if (prefersReducedMotion) {
-				gsap.set('[data-gsap]', { opacity: 1, y: 0 });
-				return;
+				if (prefersReducedMotion) {
+					gsap.set('[data-gsap]', { opacity: 1, y: 0 });
+					return;
+				}
+
+				ctx = gsap.context(() => {
+					const elements = document.querySelectorAll('[data-gsap]');
+					elements.forEach((el) => {
+						const rect = el.getBoundingClientRect();
+						const isInViewport = rect.top < window.innerHeight * 0.85;
+						if (!isInViewport) {
+							gsap.set(el, { opacity: 0, y: 30 });
+						}
+					});
+
+					ScrollTrigger.batch('[data-gsap]', {
+						onEnter: (batch) => {
+							gsap.to(batch, {
+								opacity: 1,
+								y: 0,
+								duration: 0.8,
+								ease: 'power3.out',
+								stagger: 0.1,
+								overwrite: true
+							});
+						},
+						start: 'top 85%',
+						once: true
+					});
+
+					ScrollTrigger.refresh();
+				});
+			} catch {
+				revealAllDataGsapTargets();
 			}
-
-			// Use gsap.context() for scoped cleanup - prevents global ScrollTrigger destruction
-			ctx = gsap.context(() => {
-				// Only set initial hidden state for elements NOT yet in viewport
-				const elements = document.querySelectorAll('[data-gsap]');
-				elements.forEach((el) => {
-					const rect = el.getBoundingClientRect();
-					const isInViewport = rect.top < window.innerHeight * 0.85;
-					if (!isInViewport) {
-						gsap.set(el, { opacity: 0, y: 30 });
-					}
-				});
-
-				// Create ScrollTrigger batch for optimal performance
-				ScrollTrigger.batch('[data-gsap]', {
-					onEnter: (batch) => {
-						gsap.to(batch, {
-							opacity: 1,
-							y: 0,
-							duration: 0.8,
-							ease: 'power3.out',
-							stagger: 0.1,
-							overwrite: true
-						});
-					},
-					start: 'top 85%',
-					once: true
-				});
-
-				ScrollTrigger.refresh();
-			});
 		})();
 
 		return () => ctx?.revert();
@@ -199,7 +199,7 @@
 </script>
 
 <div
-	class="w-full bg-slate-950 text-slate-200 font-sans selection:bg-emerald-500/30 selection:text-emerald-200"
+	class="w-full bg-rtp-bg text-rtp-text font-sans selection:bg-emerald-500/30 selection:text-emerald-200"
 >
 	<section class="relative min-h-[90vh] flex items-center py-20 lg:py-0">
 		<div class="absolute inset-0 z-0 pointer-events-none">
@@ -215,7 +215,7 @@
 		</div>
 
 		<div
-			class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-16 items-center"
+			class="relative z-10 max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-16 items-center"
 		>
 			<div class="text-center lg:text-left">
 				<div
@@ -235,7 +235,7 @@
 
 				<h1
 					data-gsap
-					class="text-5xl md:text-7xl font-heading font-extrabold mb-6 leading-tight tracking-tight text-white"
+					class="text-4xl xs:text-5xl md:text-7xl font-heading font-extrabold mb-6 leading-tight tracking-tight text-white break-words"
 				>
 					Catch the <br />
 					<span
@@ -257,7 +257,7 @@
 				>
 					<a
 						href="#pricing"
-						class="group relative w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-slate-950 transition-all duration-200 bg-emerald-500 rounded-xl hover:bg-emerald-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 focus:ring-offset-slate-900 shadow-lg hover:shadow-emerald-500/25 hover:-translate-y-1"
+						class="group relative w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-slate-950 transition-all duration-200 bg-emerald-500 rounded-xl hover:bg-emerald-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 focus:ring-offset-rtp-bg shadow-lg hover:shadow-emerald-500/25 hover:-translate-y-1"
 					>
 						Start Trading Swings
 						<svg
@@ -347,7 +347,7 @@
 				>
 					<div class="flex justify-between items-center mb-8">
 						<div>
-							<h3 class="text-2xl font-bold text-white">Swing Alert 🚀</h3>
+							<h2 class="text-2xl font-bold text-white">Swing Alert 🚀</h2>
 							<p class="text-emerald-500 text-sm font-bold">Confirmed Breakout Setup</p>
 						</div>
 						<div
@@ -403,7 +403,9 @@
 	</section>
 
 	<section class="bg-slate-900 border-y border-slate-800 relative z-20">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+		<div
+			class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 py-12"
+		>
 			<dl class="grid grid-cols-2 md:grid-cols-4 gap-8">
 				<div class="text-center">
 					<dt class="text-slate-500 font-medium text-xs uppercase tracking-wider mb-2">
@@ -436,7 +438,9 @@
 	</section>
 
 	<section class="py-24 bg-slate-950 relative overflow-hidden">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div
+			class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8"
+		>
 			<div class="text-center mb-16">
 				<h2 data-gsap class="text-3xl md:text-5xl font-heading font-bold text-white mb-6">
 					Choose Your Trading Lifestyle
@@ -579,7 +583,9 @@
 	</section>
 
 	<section id="methodology" class="py-24 bg-slate-900 border-t border-slate-800">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div
+			class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8"
+		>
 			<div class="mb-16 md:text-center max-w-3xl mx-auto">
 				<span class="text-emerald-500 font-bold uppercase tracking-wider text-sm">The Strategy</span
 				>
@@ -714,7 +720,9 @@
 	</section>
 
 	<section class="py-24 bg-slate-950">
-		<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div
+			class="max-w-6xl 3xl:max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto px-4 sm:px-6 lg:px-8"
+		>
 			<div class="mb-10 flex flex-col md:flex-row justify-between items-end gap-4">
 				<div>
 					<h2 class="text-3xl font-heading font-bold text-white mb-2">Recent Swing Performance</h2>
@@ -810,7 +818,7 @@
 						1
 					</div>
 					<div>
-						<h4 class="text-white font-bold mb-1">Professionals with Day Jobs</h4>
+						<h3 class="text-white font-bold mb-1">Professionals with Day Jobs</h3>
 						<p class="text-slate-400 text-sm leading-relaxed">
 							You can't watch the screen from 9:30 to 4:00. You need a strategy that lets you enter
 							trades on your lunch break or from your phone without panic.
@@ -824,7 +832,7 @@
 						2
 					</div>
 					<div>
-						<h4 class="text-white font-bold mb-1">Small Account Builders</h4>
+						<h3 class="text-white font-bold mb-1">Small Account Builders</h3>
 						<p class="text-slate-400 text-sm leading-relaxed">
 							You want to grow a $2k - $10k account aggressively but safely, avoiding the "PDT Rule"
 							that restricts day traders.
@@ -838,7 +846,7 @@
 						3
 					</div>
 					<div>
-						<h4 class="text-white font-bold mb-1">Failed Day Traders</h4>
+						<h3 class="text-white font-bold mb-1">Failed Day Traders</h3>
 						<p class="text-slate-400 text-sm leading-relaxed">
 							You've tried scalping and lost money to churn and fees. You're ready for a calmer,
 							more statistical approach to the markets.
@@ -852,7 +860,7 @@
 						4
 					</div>
 					<div>
-						<h4 class="text-white font-bold mb-1">Options Buyers</h4>
+						<h3 class="text-white font-bold mb-1">Options Buyers</h3>
 						<p class="text-slate-400 text-sm leading-relaxed">
 							You understand the power of leverage. You want to turn a 5% stock move into a 50%
 							option gain using safe, defined-risk structures.
@@ -864,7 +872,9 @@
 	</section>
 
 	<section id="pricing" class="py-24 bg-slate-900 border-t border-slate-800 overflow-hidden">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div
+			class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8"
+		>
 			<div class="text-center mb-16">
 				<h2 class="text-3xl md:text-5xl font-heading font-bold text-white mb-6">Simple Pricing</h2>
 				<p class="text-xl text-slate-400 max-w-3xl mx-auto">
@@ -874,7 +884,7 @@
 
 			<div class="flex justify-center mb-16">
 				<div
-					class="bg-rtp-surface bg-slate-950 p-1.5 rounded-xl border border-slate-700/50 inline-flex relative"
+					class="bg-rtp-surface p-1.5 rounded-xl border border-rtp-border/50 inline-flex relative"
 				>
 					<button
 						type="button"
@@ -912,7 +922,9 @@
 				</div>
 			</div>
 
-			<div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto items-center overflow-visible">
+			<div
+				class="grid md:grid-cols-3 gap-8 max-w-6xl 3xl:max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto items-center overflow-visible"
+			>
 				<div
 					class="bg-slate-900 p-8 rounded-2xl border transition-all {selectedPlan === 'monthly'
 						? 'border-emerald-500 opacity-100 scale-105 shadow-xl shadow-emerald-500/10'
@@ -1054,11 +1066,11 @@
 			</p>
 
 			<div class="space-y-4">
-				{#each faqData as item, i}
+				{#each faqData as item, i (item.q)}
 					<div class="border border-slate-800 rounded-xl bg-slate-900 overflow-hidden">
 						<button
 							type="button"
-							class="w-full text-left px-6 py-5 font-bold flex justify-between items-center focus:outline-none hover:bg-white/5 transition-colors text-slate-200"
+							class="w-full text-left px-6 py-5 font-bold flex justify-between items-center min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 hover:bg-white/5 transition-colors text-slate-200"
 							onclick={() => toggleFaq(i)}
 							aria-expanded={openFaq === i}
 						>
@@ -1129,5 +1141,3 @@
 		</div>
 	</section>
 </div>
-
-<MarketingFooter />

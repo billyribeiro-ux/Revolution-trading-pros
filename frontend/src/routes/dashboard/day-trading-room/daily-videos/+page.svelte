@@ -14,17 +14,11 @@
 	@version 1.0.0 - January 2026
 -->
 <script lang="ts">
-	import type { PageData } from './$types';
-	import type { DailyVideo } from './+page.server';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
+	import type { DailyVideo } from './+page.server';
+	import type { PageProps } from './$types';
 
-	// Svelte 5 props with SvelteKit typing
-	interface Props {
-		data: PageData;
-	}
-
-	let props: Props = $props();
-	let data = $derived(props.data);
+	let { data }: PageProps = $props();
 
 	// Derived state for reactive computed values
 	let videos = $derived(data.videos ?? []);
@@ -110,7 +104,14 @@
 									class="card-image"
 									style="background-image: url({video.thumbnail});"
 								>
-									<img class="default-background" width="325" height="183" alt={video.title} />
+									<img
+										class="default-background"
+										width="325"
+										height="183"
+										loading="lazy"
+										decoding="async"
+										alt={video.title}
+									/>
 								</a>
 							</figure>
 							<section class="card-body">
@@ -140,7 +141,7 @@
 		<!-- Pagination -->
 		{#if pagination.totalPages > 1}
 			<nav class="facetwp-pager" aria-label="Pagination">
-				{#each Array.from({ length: pagination.totalPages }, (_, i) => i + 1) as pageNum}
+				{#each Array.from({ length: pagination.totalPages }, (_, i) => i + 1) as pageNum (pageNum)}
 					{#if pageNum === pagination.page}
 						<a
 							class="facetwp-page active"

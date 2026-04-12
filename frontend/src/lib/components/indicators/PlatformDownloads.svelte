@@ -25,7 +25,7 @@
 </script>
 
 <div class="st_box {platform.toLowerCase()}">
-	<img width="250" src={logo} alt={platform} />
+	<img width="250" height="100" src={logo} alt={platform} loading="lazy" decoding="async" />
 
 	{#if files.length > 0}
 		<table>
@@ -34,7 +34,7 @@
 					<th>{platform} Install File:</th>
 					<th></th>
 				</tr>
-				{#each files as file}
+				{#each files as file (file.name)}
 					<tr>
 						<td>{file.name}</td>
 						<td class="text-right">

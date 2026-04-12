@@ -8,8 +8,8 @@
 import DOMPurify from 'isomorphic-dompurify';
 import { logger } from '$lib/utils/logger';
 
-// DOMPurify Config type - based on DOMPurify API
-type DOMPurifyConfig = Record<string, any>;
+/** DOMPurify sanitize options (types are not re-exported by isomorphic-dompurify) */
+type DOMPurifyConfig = NonNullable<Parameters<typeof DOMPurify.sanitize>[1]>;
 
 // ============================================================================
 // Types
@@ -294,8 +294,9 @@ export function sanitizeHTML(html: string, options: SanitizeOptions = {}): strin
 		...config
 	};
 
-	// Sanitize
-	let sanitized = String(DOMPurify.sanitize(content, finalConfig));
+	// Sanitize (return type may be string or TrustedHTML depending on environment)
+	const raw = DOMPurify.sanitize(content, finalConfig);
+	let sanitized = typeof raw === 'string' ? raw : String(raw);
 
 	// Add security attributes to links
 	if (secureLinks && mode !== 'strict') {

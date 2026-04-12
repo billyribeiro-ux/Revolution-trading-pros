@@ -156,7 +156,8 @@
 			<div class="sites-section">
 				<h2>Available Sites</h2>
 				<div class="sites-list">
-					{#each sites as site}
+					<!-- key (i): items lack stable id -->
+					{#each sites as site, i (i)}
 						<div class="site-card">
 							<div class="site-url">{site.site_url}</div>
 							<div class="site-permission">{site.permission_level}</div>

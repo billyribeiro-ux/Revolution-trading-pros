@@ -249,35 +249,70 @@
 
 <svelte:window onmousemove={handleMouseMove} />
 
-<section bind:this={sectionRef} class="cs-section">
-	<div class="cs-bg">
-		<div class="cs-noise" style="background-image: url('/textures/noise.svg');"></div>
-		<div class="cs-orb cs-orb-violet"></div>
-		<div class="cs-orb cs-orb-cyan"></div>
-		<div class="cs-grid-lines"></div>
+<section
+	bind:this={sectionRef}
+	aria-label="Trading Curriculum"
+	class="relative py-20 sm:py-32 3xl:py-40 5xl:py-48 overflow-hidden bg-[#050812] selection:bg-violet-500/30 selection:text-violet-200"
+>
+	<div class="absolute inset-0 pointer-events-none">
+		<div
+			class="absolute inset-0 opacity-[0.03] mix-blend-overlay"
+			style="background-image: url('/textures/noise.svg');"
+		></div>
+
+		<div
+			class="absolute top-[-10%] left-[-10%] w-[800px] h-[800px] bg-violet-600/10 rounded-full blur-[120px] mix-blend-screen animate-pulse-slow"
+		></div>
+		<div
+			class="absolute bottom-[-10%] right-[-10%] w-[800px] h-[800px] bg-cyan-600/10 rounded-full blur-[120px] mix-blend-screen animate-pulse-slow delay-1000"
+		></div>
+
+		<div
+			class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_80%)]"
+		></div>
 	</div>
 
-	<div class="cs-container">
+	<div
+		class="relative max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 3xl:px-12 5xl:px-16 6xl:px-20 z-10"
+	>
 		{#if isVisible}
-			<div class="cs-header" in:slideUp={{ delay: 0, duration: 1000 }}>
-				<div class="cs-badge">
-					<Icon icon={IconSchool} size={16} />
+			<div
+				class="max-w-4xl 3xl:max-w-[1200px] 4xl:max-w-[1600px] 5xl:max-w-[2000px] 6xl:max-w-[2400px] mx-auto text-center mb-24 3xl:mb-32 5xl:mb-40"
+				in:slideUp={{ delay: 0, duration: 1000 }}
+			>
+				<div
+					class="inline-flex items-center gap-3 px-4 py-1.5 border border-violet-900/30 bg-violet-950/10 text-violet-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm"
+				>
+					<IconSchool class="w-4 h-4" />
 					Professional Education
 				</div>
 
-				<h2 class="cs-title">
-					Trading <span class="cs-title-muted">Curriculum.</span>
+				<h2
+					class="text-4xl xs:text-5xl sm:text-5xl md:text-7xl 3xl:text-8xl 4xl:text-9xl 5xl:text-[10rem] font-serif text-white mb-8 tracking-tight"
+				>
+					Trading <span class="text-slate-700">Curriculum.</span>
 				</h2>
 
-				<p class="cs-subtitle">
+				<p
+					class="text-lg 3xl:text-xl 5xl:text-2xl text-slate-400 font-light leading-relaxed max-w-2xl 3xl:max-w-3xl 5xl:max-w-4xl mx-auto"
+				>
 					We don't sell courses. We provide institutional-grade trading education. Verified by
 					funded traders and prop firm graduates worldwide.
 				</p>
 
-				<div class="cs-stats" in:slideUp={{ delay: 200, duration: 800 }}>
-					<div class="cs-stat">
-						<div class="cs-stat-value">12k+</div>
-						<div class="cs-stat-label">Students</div>
+				<div
+					class="grid grid-cols-2 md:grid-cols-4 gap-6 3xl:gap-8 5xl:gap-12 max-w-4xl 3xl:max-w-[1200px] 4xl:max-w-[1600px] 5xl:max-w-[2000px] 6xl:max-w-[2400px] mx-auto mt-12 pt-8 border-t border-white/5"
+					in:slideUp={{ delay: 200, duration: 800 }}
+				>
+					<div class="text-center group cursor-default">
+						<div
+							class="text-3xl font-bold text-white tabular-nums group-hover:scale-110 transition-transform duration-300"
+						>
+							12k+
+						</div>
+						<div class="text-xs font-medium text-zinc-500 uppercase tracking-wider mt-1">
+							Students
+						</div>
 					</div>
 					<div class="cs-stat">
 						<div class="cs-stat-value">4.9</div>
@@ -297,7 +332,7 @@
 
 		<div
 			bind:this={cardsRef}
-			class="cs-cards"
+			class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 3xl:gap-12 5xl:gap-16 relative"
 			style="--mouse-x: {mouseX}px; --mouse-y: {mouseY}px;"
 		>
 			<div
@@ -305,8 +340,11 @@
 				style="background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), oklch(0.55 0.2 300 / 0.08), transparent 40%);"
 			></div>
 
-			{#each courses as course}
-				<a href={course.href} class="course-card cs-card">
+			{#each courses as course (course.href ?? course.title)}
+				<a
+					href={course.href}
+					class="course-card group relative rounded-[2rem] overflow-hidden bg-zinc-900/40 border border-white/5 hover:border-white/10 transition-all duration-500 hover:shadow-2xl hover:shadow-violet-900/20 active:scale-[0.99] z-10 isolate"
+				>
 					<div
 						class="cs-card-blur"
 						style="background: {course.imagePattern}; filter: blur(40px);"
@@ -339,9 +377,13 @@
 
 						<p class="cs-card-desc">{course.description}</p>
 
-						<div class="cs-features-scroll">
-							{#each course.features as feature}
-								<span class="cs-feature-tag">{feature}</span>
+						<div class="flex gap-2 mb-8 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-hide snap-x">
+							{#each course.features as feature (feature)}
+								<span
+									class="snap-start flex-shrink-0 px-3 py-1.5 text-xs font-medium rounded-lg bg-white/5 text-zinc-300 border border-white/5 whitespace-nowrap group-hover:border-white/20 transition-colors"
+								>
+									{feature}
+								</span>
 							{/each}
 						</div>
 
@@ -1053,8 +1095,136 @@
 		100% {
 			opacity: 1;
 		}
-		50% {
-			opacity: 0.4;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * EXTRA SMALL DEVICES (< 360px)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	@media (max-width: 359px) {
+		section {
+			padding-top: 3rem !important;
+			padding-bottom: 3rem !important;
+		}
+
+		:global(.course-card) {
+			border-radius: 1rem !important;
+		}
+
+		:global(.course-card .p-6),
+		:global(.course-card .p-8),
+		:global(.course-card .p-10) {
+			padding: 1rem !important;
+		}
+
+		:global(.text-5xl),
+		:global(.text-7xl) {
+			font-size: 1.75rem !important;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * SMALL MOBILE (360px - 639px)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	@media (min-width: 360px) and (max-width: 639px) {
+		section {
+			padding-top: 4rem !important;
+			padding-bottom: 4rem !important;
+		}
+
+		:global(.course-card .p-6),
+		:global(.course-card .p-8) {
+			padding: 1.25rem !important;
+		}
+
+		:global(.grid-cols-2) {
+			grid-template-columns: 1fr !important;
+		}
+
+		:global(.gap-6),
+		:global(.gap-8) {
+			gap: 1rem !important;
+		}
+
+		:global(.text-5xl),
+		:global(.text-7xl) {
+			font-size: 2rem !important;
+		}
+
+		:global(.text-2xl) {
+			font-size: 1.25rem !important;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * TABLET (640px - 767px)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	@media (min-width: 640px) and (max-width: 767px) {
+		:global(.grid-cols-2) {
+			grid-template-columns: 1fr !important;
+		}
+
+		:global(.gap-6),
+		:global(.gap-8) {
+			gap: 1.25rem !important;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * MEDIUM DEVICES (768px - 1023px)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	@media (min-width: 768px) and (max-width: 1023px) {
+		:global([class*='grid-cols-2']) {
+			grid-template-columns: repeat(2, 1fr) !important;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * DYNAMIC VIEWPORT HEIGHT - Use dvh for modern mobile browsers
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	@supports (min-height: 100dvh) {
+		section {
+			min-height: auto;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * REDUCED MOTION - Accessibility
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	@media (prefers-reduced-motion: reduce) {
+		.animate-pulse-slow {
+			animation: none;
+		}
+
+		:global(.course-card) {
+			transition: none !important;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * LANDSCAPE MOBILE - Optimize for horizontal orientation
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	@media (max-height: 500px) and (orientation: landscape) {
+		section {
+			padding-top: 2rem !important;
+			padding-bottom: 2rem !important;
+		}
+
+		:global(.mb-24) {
+			margin-bottom: 2rem !important;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * FEATURE TAGS - Horizontal scroll on mobile
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	@media (max-width: 767px) {
+		:global(.snap-x) {
+			scroll-snap-type: x mandatory;
+			-webkit-overflow-scrolling: touch;
+		}
+
+		:global(.snap-start) {
+			scroll-snap-align: start;
 		}
 	}
 </style>

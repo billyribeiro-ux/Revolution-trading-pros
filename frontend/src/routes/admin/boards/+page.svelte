@@ -237,7 +237,9 @@
 
 	<!-- Header -->
 	<div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+		<div
+			class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 py-6"
+		>
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-3">
 					<div class="p-2 bg-[#E6B800]/10 dark:bg-[#E6B800]/20 rounded-lg">
@@ -283,7 +285,9 @@
 		</div>
 	</div>
 
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+	<div
+		class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 py-8"
+	>
 		<!-- Stats Cards -->
 		<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8">
 			<div
@@ -389,7 +393,7 @@
 								>{boards.filter((b) => !b.is_archived).length}</span
 							>
 						</button>
-						{#each folders as folder}
+						{#each folders as folder (folder.id)}
 							<button
 								onclick={() => (selectedFolder = folder.id)}
 								class="w-full px-3 py-2 text-left rounded-lg flex items-center gap-2 {selectedFolder ===
@@ -417,7 +421,7 @@
 							Due Today
 						</h3>
 						<div class="space-y-2">
-							{#each tasksDueToday.slice(0, 5) as task}
+							{#each tasksDueToday.slice(0, 5) as task (task.id)}
 								<a
 									href="/admin/boards/{task.board_id}?task={task.id}"
 									class="block p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
@@ -444,7 +448,7 @@
 							Overdue Tasks
 						</h3>
 						<div class="space-y-2">
-							{#each overdueTasks.slice(0, 5) as task}
+							{#each overdueTasks.slice(0, 5) as task (task.id)}
 								<a
 									href="/admin/boards/{task.board_id}?task={task.id}"
 									class="block p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
@@ -471,7 +475,7 @@
 							My Tasks
 						</h3>
 						<div class="space-y-2">
-							{#each myTasks.slice(0, 5) as task}
+							{#each myTasks.slice(0, 5) as task (task.id)}
 								<a
 									href="/admin/boards/{task.board_id}?task={task.id}"
 									class="block p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
@@ -498,7 +502,8 @@
 							Recent Activity
 						</h3>
 						<div class="space-y-2">
-							{#each recentActivity.slice(0, 5) as activity}
+							<!-- key (i): items lack stable id -->
+							{#each recentActivity.slice(0, 5) as activity, i (i)}
 								<div class="text-xs text-gray-600 dark:text-gray-400">
 									<span class="font-medium">{activity.user?.name || 'Someone'}</span>
 									{activity.description}
@@ -576,7 +581,7 @@
 							Favorites
 						</h3>
 						<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-							{#each favoriteBoards as board}
+							{#each favoriteBoards as board (board.id)}
 								<a
 									href="/admin/boards/{board.id}"
 									class="group bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:shadow-lg hover:border-[#E6B800] dark:hover:border-[#FFD11A] transition-all"
@@ -644,7 +649,7 @@
 						</div>
 					{:else if viewMode === 'grid'}
 						<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-							{#each filteredBoards as board}
+							{#each filteredBoards as board (board.id)}
 								<div
 									class="group bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-lg hover:border-[#E6B800] dark:hover:border-[#FFD11A] transition-all overflow-hidden"
 								>
@@ -763,7 +768,7 @@
 									</tr>
 								</thead>
 								<tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-									{#each filteredBoards as board}
+									{#each filteredBoards as board (board.id)}
 										<tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
 											<td class="px-4 py-3">
 												<a href="/admin/boards/{board.id}" class="flex items-center gap-3">
@@ -905,7 +910,7 @@
 								class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#E6B800]"
 							>
 								<option value={null}>No folder</option>
-								{#each folders as folder}
+								{#each folders as folder (folder.id)}
 									<option value={folder.id}>{folder.title}</option>
 								{/each}
 							</select>

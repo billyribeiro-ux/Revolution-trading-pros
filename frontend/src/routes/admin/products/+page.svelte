@@ -209,8 +209,8 @@
 		<!-- Type Filter Bar -->
 		<div class="filter-bar">
 			<div class="type-filter">
-				{#each productTypes as type}
-					{@const iconStr = type.icon}
+				{#each productTypes as type (type.value)}
+					{@const Icon = type.icon}
 					<button
 						class="type-btn"
 						class:active={selectedType === type.value}
@@ -291,7 +291,14 @@
 
 						{#if product.thumbnail}
 							<div class="product-thumbnail">
-								<img src={product.thumbnail} alt={product.name} />
+								<img
+									src={product.thumbnail}
+									alt={product.name}
+									width="300"
+									height="300"
+									loading="lazy"
+									decoding="async"
+								/>
 							</div>
 						{/if}
 

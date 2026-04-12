@@ -9,6 +9,7 @@
 	 * @standards Apple Principal Engineer ICT 7+ Standards
 	 */
 	import type { Video } from '../types';
+	import { domRef } from '$lib/svelte/domAttachment';
 
 	// Bunny.net URL validation
 	function isValidBunnyUrl(url: string): boolean {
@@ -73,7 +74,7 @@
 
 {#if isOpen && video}
 	<div
-		bind:this={modalRef}
+		{@attach domRef<HTMLDivElement>((el) => (modalRef = el ?? null))}
 		class="modal-backdrop"
 		onclick={handleBackdropClick}
 		onkeydown={handleKeydown}

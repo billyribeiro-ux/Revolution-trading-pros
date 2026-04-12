@@ -63,14 +63,12 @@
 		}
 	];
 
-	let props: Props = $props();
+	let { field, value, error, availableMethods, onchange }: Props = $props();
 
-	const enabledMethods = $derived(
-		(props.availableMethods ?? defaultMethods).filter((m) => m.enabled)
-	);
+	const enabledMethods = $derived((availableMethods ?? defaultMethods).filter((m) => m.enabled));
 
 	function handleSelect(methodId: string) {
-		props.onchange?.(methodId);
+		onchange?.(methodId);
 	}
 
 	function getMethodIcon(iconType: string): string {
@@ -87,39 +85,50 @@
 	}
 </script>
 
-<div class="pms-wrap">
-	<label class="pms-label" for="payment-method-{props.field.name}">
-		{props.field.label || 'Payment Method'}
-		{#if props.field.required}
-			<span class="pms-required">*</span>
+<!-- Responsive Payment Method Selector - Mobile-first design -->
+<div
+	class="flex flex-col gap-2 sm:gap-3 w-full max-w-full sm:max-w-lg md:max-w-xl lg:max-w-2xl mx-auto p-3 sm:p-4 md:p-6 pb-[env(safe-area-inset-bottom)]"
+>
+	<label class="text-sm sm:text-base font-medium text-gray-700" for="payment-method-{field.name}">
+		{field.label || 'Payment Method'}
+		{#if field.required}
+			<span class="text-red-600 ml-1">*</span>
 		{/if}
 	</label>
 
-	{#if props.field.help_text}
-		<p class="pms-help">{props.field.help_text}</p>
+	{#if field.help_text}
+		<p class="text-xs sm:text-sm text-gray-500 m-0">{field.help_text}</p>
 	{/if}
 
 	<div class="pms-list">
 		{#each enabledMethods as method (method.id)}
 			<button
 				type="button"
-				class="pms-method"
-				data-selected={(props.value ?? '') === method.id ? '' : undefined}
+				class="flex items-center gap-3 sm:gap-4 w-full min-h-[56px] sm:min-h-[64px] md:min-h-[72px] p-3 sm:p-4 border-2 rounded-lg bg-white cursor-pointer transition-all duration-200 text-left touch-manipulation active:scale-[0.98] hover:border-gray-400 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+				class:border-blue-600={(value ?? '') === method.id}
+				class:bg-blue-50={(value ?? '') === method.id}
+				class:border-gray-200={(value ?? '') !== method.id}
 				onclick={() => handleSelect(method.id)}
 			>
 				<input
 					id="payment-method-{method.id}"
 					type="radio"
-					name={props.field.name}
+					name={field.name}
 					value={method.id}
-					checked={(props.value ?? '') === method.id}
+					checked={(value ?? '') === method.id}
 					class="sr-only"
 					onchange={() => handleSelect(method.id)}
 				/>
 
-				<span class="pms-radio" data-selected={(props.value ?? '') === method.id ? '' : undefined}>
-					{#if (props.value ?? '') === method.id}
-						<span class="pms-radio-dot"></span>
+				<!-- Custom radio indicator -->
+				<span
+					class="flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 flex items-center justify-center transition-colors"
+					class:border-blue-600={(value ?? '') === method.id}
+					class:bg-blue-600={(value ?? '') === method.id}
+					class:border-gray-300={(value ?? '') !== method.id}
+				>
+					{#if (value ?? '') === method.id}
+						<span class="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-white rounded-full"></span>
 					{/if}
 				</span>
 
@@ -142,8 +151,11 @@
 					{/if}
 				</div>
 
-				{#if (props.value ?? '') === method.id}
-					<span class="pms-check">
+				<!-- Checkmark for selected -->
+				{#if (value ?? '') === method.id}
+					<span
+						class="flex-shrink-0 w-6 h-6 sm:w-7 sm:h-7 bg-blue-600 rounded-full flex items-center justify-center"
+					>
 						<svg
 							class="pms-check-icon"
 							viewBox="0 0 24 24"
@@ -159,11 +171,15 @@
 		{/each}
 	</div>
 
-	{#if (props.value ?? '') === 'stripe'}
-		<div class="pms-info pms-info-indigo">
-			<div class="pms-cards">
-				{#each ['Visa', 'Mastercard', 'Amex', 'Discover'] as cardType}
-					<span class="pms-card-badge">
+	<!-- Payment method specific info - Responsive cards -->
+	{#if (value ?? '') === 'stripe'}
+		<div class="mt-2 sm:mt-3 p-3 sm:p-4 bg-gray-50 rounded-lg border-l-4 border-indigo-500">
+			<!-- Card Icons - Responsive grid -->
+			<div class="flex flex-wrap gap-2 sm:gap-3 mb-3 sm:mb-4">
+				{#each ['Visa', 'Mastercard', 'Amex', 'Discover'] as cardType (cardType)}
+					<span
+						class="inline-flex items-center gap-1.5 text-xs sm:text-sm text-gray-600 px-2 sm:px-3 py-1 sm:py-1.5 bg-white rounded border border-gray-200"
+					>
 						<svg
 							class="pms-card-icon"
 							fill="none"
@@ -195,9 +211,9 @@
 				<span>Secured by Stripe. Your card details are encrypted.</span>
 			</p>
 		</div>
-	{:else if (props.value ?? '') === 'paypal'}
-		<div class="pms-info pms-info-amber">
-			<p class="pms-security">
+	{:else if (value ?? '') === 'paypal'}
+		<div class="mt-2 sm:mt-3 p-3 sm:p-4 bg-gray-50 rounded-lg border-l-4 border-amber-500">
+			<p class="flex items-center gap-2 text-xs sm:text-sm text-gray-600 m-0">
 				<svg
 					class="pms-sec-icon"
 					viewBox="0 0 24 24"
@@ -212,10 +228,11 @@
 		</div>
 	{/if}
 
-	{#if props.error && props.error.length > 0}
-		<div class="pms-error">
-			{#each props.error as err}
-				<p class="pms-error-text">{err}</p>
+	<!-- Error Messages -->
+	{#if error && error.length > 0}
+		<div class="mt-2 p-3 sm:p-4 bg-red-50 border border-red-200 rounded-lg">
+			{#each error as err (err)}
+				<p class="text-xs sm:text-sm text-red-600 m-0">{err}</p>
 			{/each}
 		</div>
 	{/if}

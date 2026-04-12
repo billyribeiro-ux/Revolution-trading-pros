@@ -27,18 +27,18 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 	const stateManager = getBlockStateManager();
 
-	let aiState = $derived(stateManager.getAITranslationState(props.blockId));
+	let aiState = $derived(stateManager.getAITranslationState(blockId));
 	let copied = $state(false);
 
-	let sourceText = $derived(props.block.content.translationSource || '');
-	let sourceLang = $derived(props.block.content.translationSourceLang || 'en');
-	let targetLang = $derived(props.block.content.translationTargetLang || 'es');
-	let translatedText = $derived(props.block.content.translationOutput || aiState.output || '');
+	let sourceText = $derived(block.content.translationSource || '');
+	let sourceLang = $derived(block.content.translationSourceLang || 'en');
+	let targetLang = $derived(block.content.translationTargetLang || 'es');
+	let translatedText = $derived(block.content.translationOutput || aiState.output || '');
 	let viewMode = $derived(
-		(props.block.content.translationView as 'stacked' | 'side-by-side') || 'stacked'
+		(block.content.translationView as 'stacked' | 'side-by-side') || 'stacked'
 	);
 
 	const languages = [
@@ -56,23 +56,23 @@
 	];
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 
 	async function translate(): Promise<void> {
 		if (!sourceText.trim()) {
-			props.onError?.(new Error('Please enter text to translate'));
+			onError?.(new Error('Please enter text to translate'));
 			return;
 		}
 
-		stateManager.setAITranslationState(props.blockId, { loading: true, error: null });
+		stateManager.setAITranslationState(blockId, { loading: true, error: null });
 
 		try {
 			await new Promise((resolve) => setTimeout(resolve, 1500));
 			const targetName = languages.find((l) => l.code === targetLang)?.name || targetLang;
 			const simulated = `[${targetName} translation of]: ${sourceText}`;
 
-			stateManager.setAITranslationState(props.blockId, {
+			stateManager.setAITranslationState(blockId, {
 				loading: false,
 				output: simulated,
 				lastGenerated: Date.now()
@@ -80,8 +80,8 @@
 			updateContent({ translationOutput: simulated });
 		} catch (error) {
 			const msg = error instanceof Error ? error.message : 'Translation failed';
-			stateManager.setAITranslationState(props.blockId, { loading: false, error: msg });
-			props.onError?.(new Error(msg));
+			stateManager.setAITranslationState(blockId, { loading: false, error: msg });
+			onError?.(new Error(msg));
 		}
 	}
 
@@ -149,7 +149,7 @@
 			<div class="panel-header">
 				<span>{languages.find((l) => l.code === sourceLang)?.name || 'Source'}</span>
 			</div>
-			{#if props.isEditing}
+			{#if isEditing}
 				<textarea
 					class="panel-content"
 					placeholder="Enter text to translate..."
@@ -197,7 +197,7 @@
 		<div class="translation-error" role="alert">{aiState.error}</div>
 	{/if}
 
-	{#if props.isEditing}
+	{#if isEditing}
 		<div class="translation-actions">
 			<button
 				type="button"
@@ -216,7 +216,7 @@
 				<label>
 					<input
 						type="radio"
-						name="view-{props.blockId}"
+						name="view-{blockId}"
 						value="stacked"
 						checked={viewMode === 'stacked'}
 						onchange={() => updateContent({ translationView: 'stacked' })}
@@ -226,7 +226,7 @@
 				<label>
 					<input
 						type="radio"
-						name="view-{props.blockId}"
+						name="view-{blockId}"
 						value="side-by-side"
 						checked={viewMode === 'side-by-side'}
 						onchange={() => updateContent({ translationView: 'side-by-side' })}

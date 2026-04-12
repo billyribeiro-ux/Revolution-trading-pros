@@ -74,17 +74,32 @@ export default defineConfig({
 		screenshot: 'only-on-failure',
 		video: 'retain-on-failure'
 	},
-	projects,
-	...(useExternalServer || apiOnly
-		? {}
-		: {
-				webServer: {
-					command: 'pnpm run dev',
-					url: 'http://localhost:5173',
-					reuseExistingServer: !isCI,
-					timeout: 180000,
-					stdout: 'pipe',
-					stderr: 'pipe'
-				}
-			})
+	projects: [
+		{
+			name: 'chromium',
+			use: { ...devices['Desktop Chrome'] }
+		},
+		{
+			name: 'firefox',
+			use: { ...devices['Desktop Firefox'] }
+		},
+		{
+			name: 'webkit',
+			use: { ...devices['Desktop Safari'] }
+		},
+		{
+			name: 'Mobile Chrome',
+			use: { ...devices['Pixel 5'] }
+		},
+		{
+			name: 'Mobile Safari',
+			use: { ...devices['iPhone 12'] }
+		}
+	],
+	webServer: {
+		command: 'pnpm run dev',
+		url: 'http://localhost:5173',
+		reuseExistingServer: !process.env.CI,
+		timeout: 120000
+	}
 });

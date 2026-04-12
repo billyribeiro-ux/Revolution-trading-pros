@@ -62,7 +62,10 @@
 				<img
 					src="https://downloads.intercomcdn.com/i/o/258328594/bff0055e0282c1edd00ced72/image.png"
 					alt="Chart Setup Example"
+					width="1200"
+					height="800"
 					loading="lazy"
+					decoding="async"
 				/>
 			</div>
 
@@ -165,6 +168,7 @@
 					srcset="https://cdn.simplertrading.com/2023/06/20151402/image-57.png 2546w, https://cdn.simplertrading.com/2023/06/20151402/image-57-300x169.png 300w, https://cdn.simplertrading.com/2023/06/20151402/image-57-1024x576.png 1024w, https://cdn.simplertrading.com/2023/06/20151402/image-57-150x84.png 150w, https://cdn.simplertrading.com/2023/06/20151402/image-57-768x432.png 768w, https://cdn.simplertrading.com/2023/06/20151402/image-57-1536x865.png 1536w, https://cdn.simplertrading.com/2023/06/20151402/image-57-2048x1153.png 2048w, https://cdn.simplertrading.com/2023/06/20151402/image-57-400x225.png 400w"
 					sizes="(max-width: 2546px) 100vw, 2546px"
 					loading="lazy"
+					decoding="async"
 				/>
 			</div>
 

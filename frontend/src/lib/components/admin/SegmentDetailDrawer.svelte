@@ -73,15 +73,7 @@
 		onExport?: (segment: Segment) => void;
 	}
 
-	let props: Props = $props();
-
-	// Destructure for internal use
-	const isOpen = $derived(props.isOpen);
-	const segment = $derived(props.segment);
-	const onClose = $derived(props.onClose);
-	const onEdit = $derived(props.onEdit);
-	const onDelete = $derived(props.onDelete);
-	const onExport = $derived(props.onExport);
+	let { isOpen, segment, onClose, onEdit, onDelete, onExport }: Props = $props();
 
 	// State
 	let activeTab = $state<'overview' | 'members' | 'analytics'>('overview');
@@ -426,7 +418,7 @@
 						<section class="info-section">
 							<h3 class="section-title">Conditions</h3>
 							<div class="conditions-list">
-								{#each segment.conditions as condition, i}
+								{#each segment.conditions as condition, i (condition)}
 									<div class="condition-item">
 										{#if i > 0}
 											<span class="condition-connector">AND</span>
@@ -478,7 +470,7 @@
 							</div>
 
 							<div class="members-list">
-								{#each memberPreviews as member}
+								{#each memberPreviews as member (member.name)}
 									<div class="member-row">
 										<div class="member-avatar">
 											{getMemberInitials(member)}
@@ -531,7 +523,7 @@
 						<section class="info-section">
 							<h3 class="section-title">Top Products</h3>
 							<div class="products-list">
-								{#each analytics.top_products as product, i}
+								{#each analytics.top_products as product, i (product.name)}
 									<div class="product-row">
 										<span class="product-rank">#{i + 1}</span>
 										<span class="product-name">{product.name}</span>

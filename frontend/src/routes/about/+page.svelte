@@ -9,22 +9,20 @@
 	import { browser } from '$app/environment';
 	// GSAP imported dynamically in onMount to avoid SSR issues
 
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-	import {
-		Icon,
-		IconActivity,
-		IconArrowRight,
-		IconBroadcast,
-		IconBuildingBank,
-		IconCheck,
-		IconChevronDown,
-		IconId,
-		IconMessageCircle,
-		IconScale,
-		IconSchool,
-		IconShieldLock,
-		IconUsersGroup
-	} from '$lib/icons';
+	// Icons
+	import IconBuildingBank from '@tabler/icons-svelte-runes/icons/building-bank';
+	import IconShieldLock from '@tabler/icons-svelte-runes/icons/shield-lock';
+	import IconUsersGroup from '@tabler/icons-svelte-runes/icons/users-group';
+	import IconScale from '@tabler/icons-svelte-runes/icons/scale';
+	import IconId from '@tabler/icons-svelte-runes/icons/id';
+	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
+	import IconBroadcast from '@tabler/icons-svelte-runes/icons/broadcast';
+	import IconSchool from '@tabler/icons-svelte-runes/icons/school';
+	import IconMessageCircle from '@tabler/icons-svelte-runes/icons/message-circle';
+	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
+	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
+	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
+	import { domRef } from '$lib/svelte/domAttachment';
 
 	// --- Animation Logic (Svelte 5 Runes) ---
 	let containerRef: HTMLElement | undefined = $state();
@@ -304,7 +302,7 @@
 </svelte:head>
 
 <div
-	bind:this={containerRef}
+	{@attach domRef((el) => (containerRef = el))}
 	onmousemove={handleMouseMove}
 	role="main"
 	class="relative bg-[#010203] text-slate-400 font-sans selection:bg-amber-700/50 selection:text-white"
@@ -329,7 +327,7 @@
 	>
 		<div class="ticker-wrap text-[10px] font-mono uppercase tracking-widest text-slate-500">
 			<div class="ticker-move">
-				{#each [...tickerItems, ...tickerItems, ...tickerItems, ...tickerItems] as item}
+				{#each [...tickerItems, ...tickerItems, ...tickerItems, ...tickerItems] as item (item)}
 					<span class="inline-block px-8 group cursor-default hover:text-white transition-colors">
 						<span
 							class="{item.includes('+')
@@ -343,8 +341,13 @@
 		</div>
 	</div>
 
-	<section id="about-content" class="relative z-10 pt-32 pb-24 px-6 lg:px-8">
-		<section class="max-w-[1600px] mx-auto mb-32 lg:mb-48 relative">
+	<section
+		id="about-content"
+		class="relative z-10 pt-24 sm:pt-32 pb-16 sm:pb-24 px-4 sm:px-6 lg:px-8"
+	>
+		<section
+			class="max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto mb-32 lg:mb-48 relative"
+		>
 			<div
 				class="absolute top-20 -left-[20%] -right-[20%] h-[500px] grid-floor pointer-events-none parallax-layer z-0"
 			></div>
@@ -375,7 +378,7 @@
 						</div>
 
 						<h1
-							class="text-6xl sm:text-7xl lg:text-9xl font-serif text-white tracking-tighter leading-[0.9] mb-10 mix-blend-screen drop-shadow-2xl"
+							class="text-4xl xs:text-5xl sm:text-7xl lg:text-9xl font-serif text-white tracking-tighter leading-[0.95] xs:leading-[0.9] mb-8 sm:mb-10 mix-blend-screen drop-shadow-2xl break-words"
 						>
 							Trade Real <span
 								class="text-transparent bg-clip-text bg-linear-to-r from-slate-100 to-slate-600"
@@ -389,7 +392,7 @@
 						</h1>
 
 						<p
-							class="text-xl text-slate-400 font-light leading-relaxed max-w-2xl border-l-2 border-amber-600/50 pl-6 mb-12 bg-linear-to-r from-white/5 to-transparent py-4 backdrop-blur-sm rounded-r-lg"
+							class="text-base sm:text-xl text-slate-400 font-light leading-relaxed max-w-2xl border-l-2 border-amber-600/50 pl-4 sm:pl-6 mb-8 sm:mb-12 bg-gradient-to-r from-white/5 to-transparent py-4 backdrop-blur-sm rounded-r-lg break-words"
 						>
 							Stop guessing. Join a professional trading floor where we share screens, explain the
 							'why' behind every move, and fight for profitability together. No hindsight. No
@@ -399,7 +402,7 @@
 						<div class="flex flex-col sm:flex-row gap-4">
 							<a
 								href="/join"
-								class="group relative inline-flex justify-center items-center gap-3 px-10 py-5 bg-linear-to-br from-amber-700 to-amber-900 text-white font-bold text-xs uppercase tracking-[0.2em] transition-all overflow-hidden border border-amber-600/50 hover:border-amber-400 hover:shadow-[0_0_40px_rgba(245,158,11,0.3)]"
+								class="group relative inline-flex justify-center items-center gap-3 px-6 sm:px-10 py-4 sm:py-5 min-h-11 bg-gradient-to-br from-amber-700 to-amber-900 text-white font-bold text-xs uppercase tracking-[0.2em] transition-all overflow-hidden border border-amber-600/50 hover:border-amber-400 hover:shadow-[0_0_40px_rgba(245,158,11,0.3)]"
 							>
 								<span
 									class="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-500 ease-in-out"
@@ -413,7 +416,7 @@
 							</a>
 							<a
 								href="#how-it-works"
-								class="group inline-flex justify-center items-center gap-2 px-10 py-5 border border-white/10 hover:bg-white/5 text-slate-300 font-bold text-xs uppercase tracking-[0.2em] transition-all backdrop-blur-sm"
+								class="group inline-flex justify-center items-center gap-2 px-6 sm:px-10 py-4 sm:py-5 min-h-11 border border-white/10 hover:bg-white/5 text-slate-300 font-bold text-xs uppercase tracking-[0.2em] transition-all backdrop-blur-sm"
 							>
 								<span class="group-hover:text-white transition-colors">See How It Works</span>
 							</a>
@@ -423,8 +426,8 @@
 					<div
 						class="lg:w-1/3 grid grid-cols-2 gap-px bg-white/10 border border-white/10 backdrop-blur-md shadow-2xl rounded-sm overflow-hidden"
 					>
-						{#each stats as stat}
-							{@const iconStr = stat.icon}
+						{#each stats as stat (stat.value)}
+							{@const Icon = stat.icon}
 							<div
 								class="bg-[#050505]/90 p-6 group hover:bg-[#0A0A0A] transition-colors relative overflow-hidden interactive-card"
 							>
@@ -452,7 +455,9 @@
 			{/if}
 		</section>
 
-		<section class="max-w-[1400px] mx-auto mb-32 lg:mb-48 grid lg:grid-cols-2 gap-24 items-center">
+		<section
+			class="max-w-[1400px] 4xl:max-w-[1800px] 5xl:max-w-[2200px] 6xl:max-w-[2600px] mx-auto mb-32 lg:mb-48 grid lg:grid-cols-2 gap-24 items-center"
+		>
 			{#if isVisible}
 				<div
 					in:heavySlide={{ delay: 200 }}
@@ -515,7 +520,9 @@
 				</div>
 
 				<div in:heavySlide={{ delay: 300 }} class="order-1 lg:order-2">
-					<h2 class="text-4xl lg:text-5xl font-serif text-white mb-8 tracking-tight">
+					<h2
+						class="text-3xl xs:text-4xl lg:text-5xl font-serif text-white mb-6 sm:mb-8 tracking-tight break-words"
+					>
 						You Shouldn't Have to <br /><span class="text-amber-600 italic">Trade Alone.</span>
 					</h2>
 					<div class="space-y-6 text-lg font-light leading-relaxed text-slate-400">
@@ -534,7 +541,7 @@
 							accountable, and a system that prioritizes long-term survival over gambling.
 						</p>
 						<ul class="space-y-4 mt-8">
-							{#each ['No pump and dumps', 'No fake P&L screenshots', 'Real-time voice commentary'] as item}
+							{#each ['No pump and dumps', 'No fake P&L screenshots', 'Real-time voice commentary'] as item (item)}
 								<li
 									class="flex items-center gap-4 text-sm text-amber-500 font-mono uppercase tracking-wider group cursor-default"
 								>
@@ -554,7 +561,10 @@
 			{/if}
 		</section>
 
-		<section id="how-it-works" class="max-w-[1600px] mx-auto mb-32 lg:mb-48">
+		<section
+			id="how-it-works"
+			class="max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto mb-32 lg:mb-48"
+		>
 			{#if isVisible}
 				<div in:heavySlide={{ delay: 400 }} class="border-t border-white/10 pt-20">
 					<div class="flex flex-col md:flex-row justify-between items-end mb-20 gap-6">
@@ -564,7 +574,9 @@
 							>
 								<span class="w-8 h-px bg-amber-600"></span> The Ecosystem
 							</span>
-							<h2 class="text-4xl md:text-6xl font-serif text-white tracking-tight">
+							<h2
+								class="text-3xl xs:text-4xl md:text-6xl font-serif text-white tracking-tight break-words"
+							>
 								Everything You Need<br />To Succeed.
 							</h2>
 						</div>
@@ -576,10 +588,10 @@
 					</div>
 
 					<div class="grid md:grid-cols-3 gap-6">
-						{#each features as feat, i}
-							{@const iconStr = feat.icon}
+						{#each features as feat, i (feat.title)}
+							{@const Icon = feat.icon}
 							<div
-								class="group interactive-card bg-[#050505] border border-white/10 p-10 hover:border-amber-600/40 transition-all duration-500 relative overflow-hidden flex flex-col h-full rounded-xl"
+								class="group interactive-card bg-[#050505] border border-white/10 p-6 sm:p-10 hover:border-amber-600/40 transition-all duration-500 relative overflow-hidden flex flex-col h-full rounded-xl"
 							>
 								<div
 									class="absolute -top-6 -right-6 text-white opacity-[0.02] group-hover:opacity-[0.05] transition-all duration-700 pointer-events-none transform group-hover:scale-110 group-hover:-rotate-12"
@@ -619,28 +631,32 @@
 			{/if}
 		</section>
 
-		<section class="max-w-[1600px] mx-auto mb-32 lg:mb-48">
+		<section
+			class="max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto mb-32 lg:mb-48"
+		>
 			{#if isVisible}
 				<div in:heavySlide={{ delay: 500 }} class="border-t border-white/10 pt-20">
 					<div class="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8">
 						<div>
-							<h2 class="text-4xl font-serif text-white mb-4">Meet Your Mentors.</h2>
+							<h2 class="text-3xl xs:text-4xl font-serif text-white mb-4 break-words">
+								Meet Your Mentors.
+							</h2>
 							<p class="text-slate-400 max-w-2xl font-light text-lg">
 								We aren't anonymous admins hiding behind screens. We're real traders in the chat
 								with you every single day—calling moves, answering questions, and helping you grow.
 							</p>
 						</div>
 						<div class="hidden md:flex gap-2">
-							{#each team as _}<div
+							{#each team as _, i (i)}<div
 									class="w-1.5 h-1.5 rounded-full bg-emerald-500/50 animate-pulse"
 								></div>{/each}
 						</div>
 					</div>
 
 					<div class="grid gap-px bg-white/5 border border-white/10 overflow-hidden rounded-lg">
-						{#each team as member}
+						{#each team as member (member.id)}
 							<div
-								class="group bg-[#050505] p-8 md:p-12 grid md:grid-cols-12 gap-8 items-center hover:bg-[#080808] transition-colors duration-300 relative overflow-hidden interactive-card"
+								class="group bg-[#050505] p-5 sm:p-8 md:p-12 grid md:grid-cols-12 gap-6 sm:gap-8 items-center hover:bg-[#080808] transition-colors duration-300 relative overflow-hidden interactive-card"
 							>
 								<div
 									class="absolute left-0 top-0 bottom-0 w-1.5 bg-amber-600 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"
@@ -681,7 +697,7 @@
 								</div>
 
 								<div class="md:col-span-2 flex flex-col items-end gap-3 relative z-10">
-									{#each member.specialties as spec}
+									{#each member.specialties as spec (spec)}
 										<span
 											class="px-3 py-1.5 bg-white/5 border border-white/5 text-[9px] text-slate-300 font-mono uppercase tracking-wider rounded-sm hover:border-amber-600/50 hover:text-amber-500 hover:bg-amber-900/10 transition-colors cursor-default whitespace-nowrap"
 										>
@@ -710,7 +726,7 @@
 
 				<div in:heavySlide={{ delay: 700 }} class="grid md:grid-cols-2 gap-8">
 					<div
-						class="bg-[#080808]/80 backdrop-blur-xl p-10 border border-white/5 rounded-xl relative hover:border-amber-600/30 transition-colors duration-500 interactive-card"
+						class="bg-[#080808]/80 backdrop-blur-xl p-6 sm:p-10 border border-white/5 rounded-xl relative hover:border-amber-600/30 transition-colors duration-500 interactive-card"
 					>
 						<div class="absolute -top-4 -left-4 text-amber-900/20">
 							<Icon icon={IconMessageCircle} size={80} />
@@ -718,7 +734,7 @@
 
 						<div class="relative z-10">
 							<div class="flex gap-1 mb-6 text-amber-600">
-								{#each Array(5) as _}<Icon icon={IconScale} size={12} class="fill-current" />{/each}
+								{#each Array(5) as _, i (i)}<IconScale size={12} class="fill-current" />{/each}
 							</div>
 							<p class="text-lg text-slate-300 font-light italic mb-8 leading-relaxed">
 								"I spent years jumping from one alert service to another, losing money. Revolution
@@ -742,7 +758,7 @@
 					</div>
 
 					<div
-						class="bg-[#080808]/80 backdrop-blur-xl p-10 border border-white/5 rounded-xl relative hover:border-amber-600/30 transition-colors duration-500 interactive-card"
+						class="bg-[#080808]/80 backdrop-blur-xl p-6 sm:p-10 border border-white/5 rounded-xl relative hover:border-amber-600/30 transition-colors duration-500 interactive-card"
 					>
 						<div class="absolute -top-4 -left-4 text-amber-900/20">
 							<Icon icon={IconMessageCircle} size={80} />
@@ -750,7 +766,7 @@
 
 						<div class="relative z-10">
 							<div class="flex gap-1 mb-6 text-amber-600">
-								{#each Array(5) as _}<Icon icon={IconScale} size={12} class="fill-current" />{/each}
+								{#each Array(5) as _, i (i)}<IconScale size={12} class="fill-current" />{/each}
 							</div>
 							<p class="text-lg text-slate-300 font-light italic mb-8 leading-relaxed">
 								"The morning voice chat is a game changer. Hearing Billy explain his thought process
@@ -780,14 +796,16 @@
 			{#if isVisible}
 				<div in:heavySlide={{ delay: 800 }} class="border-t border-white/10 pt-20">
 					<div class="text-center mb-16">
-						<h2 class="text-4xl font-serif text-white mb-2">Frequently Asked Questions</h2>
+						<h2 class="text-3xl xs:text-4xl font-serif text-white mb-2 break-words">
+							Frequently Asked Questions
+						</h2>
 						<div
 							class="h-1 w-20 bg-amber-600 mx-auto rounded-full mt-6 shadow-[0_0_15px_rgba(217,119,6,0.5)]"
 						></div>
 					</div>
 
 					<div class="space-y-4">
-						{#each faqs as faq}
+						{#each faqs as faq (faq.q)}
 							<details
 								class="group bg-[#050505] border border-white/10 open:border-amber-600/30 transition-all duration-300 rounded-lg overflow-hidden"
 							>
@@ -832,19 +850,23 @@
 					class="mx-auto text-amber-600 mb-8 opacity-80 drop-shadow-[0_0_20px_rgba(217,119,6,0.4)]"
 					stroke={0.8}
 				/>
-				<h2 class="text-5xl md:text-8xl font-serif text-white mb-8 tracking-tighter">
+				<h2
+					class="text-4xl xs:text-5xl md:text-8xl font-serif text-white mb-8 tracking-tighter break-words"
+				>
 					Ready to <span
 						class="italic text-transparent bg-clip-text bg-linear-to-r from-amber-400 to-amber-700"
 						>Turn Pro?</span
 					>
 				</h2>
-				<p class="text-slate-400 text-xl mb-12 max-w-xl mx-auto font-light leading-relaxed">
+				<p
+					class="text-base sm:text-xl text-slate-400 mb-10 sm:mb-12 max-w-xl mx-auto font-light leading-relaxed"
+				>
 					The market is open. The team is ready. <br />The only thing missing is you.
 				</p>
-				<div class="flex flex-col sm:flex-row justify-center gap-6">
+				<div class="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6">
 					<a
 						href="/join"
-						class="group relative flex justify-center items-center gap-4 px-12 py-6 bg-linear-to-r from-amber-800 to-amber-900 text-white font-bold text-sm uppercase tracking-[0.2em] transition-all shadow-[0_0_40px_rgba(180,83,9,0.2)] hover:shadow-[0_0_60px_rgba(180,83,9,0.4)] overflow-hidden rounded-sm border border-amber-700/50"
+						class="group relative flex justify-center items-center gap-4 px-8 sm:px-12 py-4 sm:py-6 min-h-11 bg-gradient-to-r from-amber-800 to-amber-900 text-white font-bold text-sm uppercase tracking-[0.2em] transition-all shadow-[0_0_40px_rgba(180,83,9,0.2)] hover:shadow-[0_0_60px_rgba(180,83,9,0.4)] overflow-hidden rounded-sm border border-amber-700/50"
 					>
 						<span
 							class="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"
@@ -872,5 +894,3 @@
 		</section>
 	</section>
 </div>
-
-<MarketingFooter />

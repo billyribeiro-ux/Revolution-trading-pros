@@ -31,7 +31,7 @@
 </script>
 
 <div class="filter-section" role="group" aria-label="Filter trades by result">
-	{#each filters as filter}
+	{#each filters as filter (filter.value)}
 		<button
 			type="button"
 			class="filter-btn"

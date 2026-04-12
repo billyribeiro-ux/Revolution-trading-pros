@@ -220,7 +220,7 @@
 			role="menu"
 			tabindex="-1"
 		>
-			{#each formats as format}
+			{#each formats as format (format)}
 				{@const FormatIcon = getFormatIcon(format)}
 				<button
 					class="dropdown-item"

@@ -7,21 +7,13 @@
 		size?: 'sm' | 'default';
 	};
 
-	let props: TriggerProps = $props();
-	let ref = $state<HTMLElement | null>(null);
-	let className = $derived(props.class);
-	let size = $derived(props.size ?? 'default');
-
-	$effect(() => {
-		if (props.ref !== undefined && props.ref !== ref) {
-			ref = props.ref;
-		}
-	});
-
-	let restProps = $derived.by(() => {
-		const { ref: _, class: __, children: ___, size: ____, ...rest } = props;
-		return rest;
-	});
+	let {
+		ref = $bindable(null),
+		class: className,
+		children,
+		size = 'default',
+		...restProps
+	}: TriggerProps = $props();
 </script>
 
 <SelectPrimitive.Trigger
@@ -31,8 +23,8 @@
 	class={className}
 	{...restProps}
 >
-	{@render props.children?.()}
-	<ChevronDownIcon class="select-chevron" />
+	{@render children?.()}
+	<ChevronDownIcon class="size-4 opacity-50" />
 </SelectPrimitive.Trigger>
 
 <style>

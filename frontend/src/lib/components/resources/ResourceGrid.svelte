@@ -236,19 +236,36 @@
 			{/if}
 
 			{#if showFilters}
-				<div class="rg-filter-group">
-					<select bind:value={selectedType} onchange={handleFilterChange} class="rg-select">
-						{#each resourceTypes as type}
+				<div class="flex flex-wrap gap-2">
+					<!-- Type filter -->
+					<select
+						bind:value={selectedType}
+						onchange={handleFilterChange}
+						class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+					>
+						{#each resourceTypes as type (type.value)}
 							<option value={type.value}>{type.label}</option>
 						{/each}
 					</select>
-					<select bind:value={selectedSection} onchange={handleFilterChange} class="rg-select">
-						{#each sectionOptions as opt}
+
+					<!-- Section filter -->
+					<select
+						bind:value={selectedSection}
+						onchange={handleFilterChange}
+						class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+					>
+						{#each sectionOptions as opt (opt.value)}
 							<option value={opt.value}>{opt.label}</option>
 						{/each}
 					</select>
-					<select bind:value={selectedAccessLevel} onchange={handleFilterChange} class="rg-select">
-						{#each accessLevelOptions as opt}
+
+					<!-- Access level filter -->
+					<select
+						bind:value={selectedAccessLevel}
+						onchange={handleFilterChange}
+						class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+					>
+						{#each accessLevelOptions as opt (opt.value)}
 							<option value={opt.value}>{opt.label}</option>
 						{/each}
 					</select>
@@ -265,16 +282,16 @@
 	{/if}
 
 	{#if loading}
-		<div class="rg-grid" data-columns={columns}>
+		<div class="grid {gridClasses} gap-6">
 			{#each Array(perPage) as _, i (i)}
-				<div class="rg-skel">
-					<div class="rg-skel-thumb"></div>
-					<div class="rg-skel-body">
-						<div class="rg-skel-line rg-skel-w34"></div>
-						<div class="rg-skel-line rg-skel-wfull"></div>
-						<div class="rg-skel-tags">
-							<div class="rg-skel-tag"></div>
-							<div class="rg-skel-tag"></div>
+				<div class="animate-pulse">
+					<div class="aspect-video rounded-t-xl bg-gray-200 dark:bg-gray-700"></div>
+					<div class="rounded-b-xl border border-t-0 border-gray-200 p-4 dark:border-gray-700">
+						<div class="mb-2 h-4 w-3/4 rounded bg-gray-200 dark:bg-gray-700"></div>
+						<div class="mb-3 h-3 w-full rounded bg-gray-200 dark:bg-gray-700"></div>
+						<div class="flex gap-2">
+							<div class="h-5 w-16 rounded bg-gray-200 dark:bg-gray-700"></div>
+							<div class="h-5 w-16 rounded bg-gray-200 dark:bg-gray-700"></div>
 						</div>
 					</div>
 				</div>
@@ -355,7 +372,8 @@
 					onclick={() => handlePageChange(currentPage - 1)}>Previous</button
 				>
 
-				{#each Array(Math.min(5, totalPages)) as _, i}
+				<!-- Page numbers -->
+				{#each Array(Math.min(5, totalPages)) as _, i (i)}
 					{@const pageNum = currentPage <= 3 ? i + 1 : currentPage + i - 2}
 					{#if pageNum > 0 && pageNum <= totalPages}
 						<button

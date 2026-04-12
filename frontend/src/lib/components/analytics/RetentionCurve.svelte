@@ -67,7 +67,7 @@
 	<div class="curve-header">
 		<h3 class="curve-title">Retention Curve</h3>
 		<div class="curve-legend">
-			{#each cohorts as cohort}
+			{#each cohorts as cohort (cohort.name)}
 				<div class="legend-item">
 					<div class="legend-color" style="background-color: {cohort.color}"></div>
 					<span class="legend-label">{cohort.name}</span>
@@ -79,7 +79,7 @@
 	<svg {width} {height} class="curve-chart">
 		<g transform="translate({padding.left}, {padding.top})">
 			<!-- Grid lines -->
-			{#each [0, 25, 50, 75, 100] as tick}
+			{#each [0, 25, 50, 75, 100] as tick (tick)}
 				<line
 					x1="0"
 					y1={getYScale(tick, chartHeight)}
@@ -101,7 +101,7 @@
 			{/each}
 
 			<!-- X-axis labels -->
-			{#each [0, 7, 14, 30, 60, 90] as day}
+			{#each [0, 7, 14, 30, 60, 90] as day (day)}
 				{#if day <= maxDay}
 					<text
 						x={getXScale(day, maxDay, chartWidth)}
@@ -115,7 +115,7 @@
 			{/each}
 
 			<!-- Retention curves -->
-			{#each cohorts as cohort}
+			{#each cohorts as cohort (cohort.name)}
 				<path
 					d={generatePath(cohort.data)}
 					fill="none"
@@ -125,7 +125,7 @@
 				/>
 
 				<!-- Data points -->
-				{#each cohort.data as point}
+				{#each cohort.data as point (point.day)}
 					<circle
 						cx={getXScale(point.day, maxDay, chartWidth)}
 						cy={getYScale(point.retention, chartHeight)}
@@ -142,7 +142,7 @@
 
 	<!-- Insights -->
 	<div class="curve-insights">
-		{#each cohorts as cohort}
+		{#each cohorts as cohort (cohort.name)}
 			{@const day30 = cohort.data.find((d) => d.day === 30)}
 			{@const day90 = cohort.data.find((d) => d.day === 90)}
 			<div class="insight-item">

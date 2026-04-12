@@ -12,7 +12,7 @@
 	 * @version 2.0.0 - Svelte 5 Runes
 	 */
 	import { onMount } from 'svelte';
-	import { spring } from 'svelte/motion';
+	import { Spring } from 'svelte/motion';
 
 	// Props - Svelte 5 syntax
 	interface Props {
@@ -42,8 +42,10 @@
 	let panX = $state(0);
 	let panY = $state(0);
 
-	// Animated slider position (0-100)
-	const sliderPosition = spring(50, { stiffness: 0.3, damping: 0.8 });
+	// Animated slider position (0-100). `Spring` class API (Svelte 5.8+)
+	// replaces the deprecated `spring` store. Read via `.current` instead
+	// of `$store`; `.set()` keeps the same signature.
+	const sliderPosition = new Spring(50, { stiffness: 0.3, damping: 0.8 });
 
 	// Computed values - Svelte 5 derived
 	let savings = $derived(
@@ -235,25 +237,44 @@
 				ontouchmove={handleTouchMove}
 				role="slider"
 				aria-label="Image comparison slider"
-				aria-valuenow={$sliderPosition}
+				aria-valuenow={sliderPosition.current}
 				aria-valuemin="0"
 				aria-valuemax="100"
 				tabindex="0"
 			>
 				<!-- Optimized (Background) -->
 				<div class="image-layer optimized">
-					<img src={optimizedSrc} alt="Optimized version" draggable="false" />
+					<img
+						src={optimizedSrc}
+						alt="Optimized version"
+						width="800"
+						height="600"
+						loading="lazy"
+						decoding="async"
+						draggable="false"
+					/>
 					<span class="image-label">Optimized</span>
 				</div>
 
 				<!-- Original (Clipped) -->
-				<div class="image-layer original" style="clip-path: inset(0 {100 - $sliderPosition}% 0 0);">
-					<img src={originalSrc} alt="Original version" draggable="false" />
+				<div
+					class="image-layer original"
+					style="clip-path: inset(0 {100 - sliderPosition.current}% 0 0);"
+				>
+					<img
+						src={originalSrc}
+						alt="Original version"
+						width="800"
+						height="600"
+						loading="lazy"
+						decoding="async"
+						draggable="false"
+					/>
 					<span class="image-label">Original</span>
 				</div>
 
 				<!-- Slider Handle -->
-				<div class="slider-handle" style="left: {$sliderPosition}%;">
+				<div class="slider-handle" style="left: {sliderPosition.current}%;">
 					<div class="handle-line"></div>
 					<div class="handle-grip">
 						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -266,12 +287,28 @@
 			<!-- Side by Side Mode -->
 			<div class="side-by-side-wrapper">
 				<div class="side-panel">
-					<img src={originalSrc} alt="Original version" draggable="false" />
+					<img
+						src={originalSrc}
+						alt="Original version"
+						width="800"
+						height="600"
+						loading="lazy"
+						decoding="async"
+						draggable="false"
+					/>
 					<span class="image-label">Original</span>
 					<span class="size-badge">{formatBytes(originalSize)}</span>
 				</div>
 				<div class="side-panel">
-					<img src={optimizedSrc} alt="Optimized version" draggable="false" />
+					<img
+						src={optimizedSrc}
+						alt="Optimized version"
+						width="800"
+						height="600"
+						loading="lazy"
+						decoding="async"
+						draggable="false"
+					/>
 					<span class="image-label">Optimized</span>
 					<span class="size-badge">{formatBytes(optimizedSize)}</span>
 				</div>
@@ -287,11 +324,27 @@
 				tabindex="0"
 			>
 				<div class="image-layer" class:visible={!showOriginal}>
-					<img src={optimizedSrc} alt="Optimized version" draggable="false" />
+					<img
+						src={optimizedSrc}
+						alt="Optimized version"
+						width="800"
+						height="600"
+						loading="lazy"
+						decoding="async"
+						draggable="false"
+					/>
 					<span class="image-label">Optimized</span>
 				</div>
 				<div class="image-layer" class:visible={showOriginal}>
-					<img src={originalSrc} alt="Original version" draggable="false" />
+					<img
+						src={originalSrc}
+						alt="Original version"
+						width="800"
+						height="600"
+						loading="lazy"
+						decoding="async"
+						draggable="false"
+					/>
 					<span class="image-label">Original</span>
 				</div>
 				<div class="toggle-hint">

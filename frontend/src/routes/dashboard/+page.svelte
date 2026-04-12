@@ -25,10 +25,10 @@
 	import { getUserMemberships, type UserMembershipsResponse } from '$lib/api/user-memberships';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
 	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
+	import type { PageProps } from './$types';
 
-	// SSR data from +page.server.ts
-	let props = $props();
-	let data = $derived(props.data);
+	// Destructured `$props()` typed via SvelteKit-generated `PageProps`
+	let { data }: PageProps = $props();
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
@@ -318,7 +318,7 @@
 
 				{#if isDropdownOpen}
 					<div class="dropdown-menu" role="menu">
-						{#each tradingRooms as room}
+						{#each tradingRooms as room (room.variant)}
 							<a
 								href={room.href}
 								class="dropdown-item dropdown-item--{room.variant}"
@@ -360,7 +360,7 @@
 		<section class="dashboard__content-section">
 			<h2 class="section-title">Memberships</h2>
 			<div class="membership-cards">
-				{#each membershipCards as card}
+				{#each membershipCards as card (card.href)}
 					<div class="membership-card-col">
 						<article class="membership-card membership-card--{card.variant}">
 							<a href={card.href} class="membership-card__header">
@@ -393,7 +393,7 @@
 		<section class="dashboard__content-section">
 			<h2 class="section-title">Mentorship</h2>
 			<div class="membership-cards">
-				{#each mentorshipCards as card}
+				{#each mentorshipCards as card (card.href)}
 					<div class="membership-card-col">
 						<article class="membership-card membership-card--{card.variant}">
 							<a href={card.href} class="membership-card__header">
@@ -426,7 +426,7 @@
 		<section class="dashboard__content-section">
 			<h2 class="section-title">Scanners</h2>
 			<div class="membership-cards">
-				{#each scannerCards as card}
+				{#each scannerCards as card (card.href)}
 					<div class="membership-card-col">
 						<article class="membership-card membership-card--{card.variant}">
 							<a href={card.href} class="membership-card__header">
@@ -455,7 +455,7 @@
 	<section class="dashboard__content-section">
 		<h2 class="section-title">Tools</h2>
 		<div class="membership-cards">
-			{#each toolsCards as card}
+			{#each toolsCards as card (card.href)}
 				<div class="membership-card-col">
 					<article class="membership-card membership-card--{card.variant}">
 						<a href={card.href} class="membership-card__header">

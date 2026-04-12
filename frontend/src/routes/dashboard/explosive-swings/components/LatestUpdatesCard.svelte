@@ -40,7 +40,7 @@
 
 	{#if isLoading}
 		<div class="updates-grid">
-			{#each [1, 2, 3] as _}
+			{#each [1, 2, 3] as _ (_)}
 				<div class="update-skeleton">
 					<div class="skeleton-thumb"></div>
 					<div class="skeleton-title"></div>

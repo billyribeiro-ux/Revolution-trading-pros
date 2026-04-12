@@ -16,14 +16,10 @@
 		size?: 'sm' | 'md' | 'lg';
 	}
 
-	let props: Props = $props();
+	let { collaborators, maxVisible = 5, showNames = false, size = 'md' }: Props = $props();
 
-	let maxVisible = $derived(props.maxVisible ?? 5);
-	let showNames = $derived(props.showNames ?? false);
-	let size = $derived(props.size ?? 'md');
-
-	let visibleCollaborators = $derived(props.collaborators.slice(0, maxVisible));
-	let hiddenCount = $derived(Math.max(0, props.collaborators.length - maxVisible));
+	let visibleCollaborators = $derived(collaborators.slice(0, maxVisible));
+	let hiddenCount = $derived(Math.max(0, collaborators.length - maxVisible));
 
 	let sizeClasses = $derived(
 		{
@@ -52,7 +48,7 @@
 	}
 </script>
 
-{#if props.collaborators.length > 0}
+{#if collaborators.length > 0}
 	<div class="presence-avatars" role="group" aria-label="Active collaborators">
 		<div class="avatar-stack">
 			{#each visibleCollaborators as collaborator (collaborator.clientId)}

@@ -371,7 +371,8 @@
 					<div class="webhook-events">
 						<span class="events-label">Events:</span>
 						<div class="events-list">
-							{#each (webhook.events || []).slice(0, 3) as event}
+							<!-- key (i): items lack stable id -->
+							{#each (webhook.events || []).slice(0, 3) as event, i (i)}
 								<span class="event-badge">{event.replace(/_/g, ' ')}</span>
 							{/each}
 							{#if webhook.events.length > 3}

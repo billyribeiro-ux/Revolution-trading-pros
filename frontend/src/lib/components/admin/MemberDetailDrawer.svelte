@@ -37,14 +37,7 @@
 		onRefresh?: () => void;
 	}
 
-	let props: Props = $props();
-
-	// Destructure for internal use
-	const isOpen = $derived(props.isOpen);
-	const memberId = $derived(props.memberId);
-	const onClose = $derived(props.onClose);
-	const onEdit = $derived(props.onEdit);
-	const onRefresh = $derived(props.onRefresh);
+	let { isOpen, memberId, onClose, onEdit, onEmail, onRefresh }: Props = $props();
 
 	// State
 	let data = $state<MemberFullDetails | null>(null);
@@ -281,7 +274,7 @@
 							>
 								{data.member.status}
 							</span>
-							{#each data.member.tags || [] as tag}
+							{#each data.member.tags || [] as tag (tag)}
 								<span class="tag-badge">{tag}</span>
 							{/each}
 						</div>
@@ -464,7 +457,7 @@
 							<section class="info-section">
 								<h3 class="section-title">Timeline</h3>
 								<div class="timeline">
-									{#each data.timeline.slice(0, 5) as event}
+									{#each data.timeline.slice(0, 5) as event (event.title)}
 										<div class="timeline-item">
 											<div
 												class="timeline-dot"
@@ -488,7 +481,7 @@
 								</div>
 							{:else}
 								<div class="cards-list">
-									{#each data.subscriptions as sub}
+									{#each data.subscriptions as sub (sub.product_name)}
 										<div class="card">
 											<div class="card-header">
 												<span class="card-title">{sub.product_name || 'Subscription'}</span>
@@ -535,7 +528,7 @@
 								</div>
 							{:else}
 								<div class="cards-list">
-									{#each data.orders as order}
+									{#each data.orders as order (order.id)}
 										<div class="card">
 											<div class="card-header">
 												<span class="card-title">#{order.order_number || order.id}</span>
@@ -570,7 +563,7 @@
 								</div>
 							{:else}
 								<div class="activity-list">
-									{#each data.activity as act}
+									{#each data.activity as act (act.action)}
 										<div class="activity-item">
 											<div class="activity-icon">
 												<Icon icon={IconActivity} size={14} />
@@ -620,7 +613,7 @@
 								</div>
 							{:else}
 								<div class="notes-list">
-									{#each data.notes as note}
+									{#each data.notes as note (note.id)}
 										<div class="note-item">
 											<div class="note-content">{note.content}</div>
 											<div class="note-meta">

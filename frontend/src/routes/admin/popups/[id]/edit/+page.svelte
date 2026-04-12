@@ -1,12 +1,10 @@
-<!-- @migration-task Error while migrating Svelte code: Can only bind to an Identifier or MemberExpression or a `{get, set}` pair
-https://svelte.dev/e/bind_invalid_expression -->
 <script lang="ts">
 	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { Card, Button, Input, Select } from '$lib/components/ui';
-	import { addToast } from '$lib/utils/toast';
+	import { addToast } from '$lib/stores/toast.svelte';
 	import { popupsApi, type Popup } from '$lib/api/popups';
 
 	const popupId = parseInt(page.params['id'] ?? '0');
@@ -241,7 +239,9 @@ https://svelte.dev/e/bind_invalid_expression -->
 		</div>
 	</div>
 {:else}
-	<div class="max-w-5xl mx-auto">
+	<div
+		class="max-w-5xl 3xl:max-w-[1400px] 4xl:max-w-[1800px] 5xl:max-w-[2200px] 6xl:max-w-[2600px] mx-auto"
+	>
 		<!-- Header -->
 		<div class="mb-6">
 			<h1 class="text-3xl font-bold text-gray-900">Edit Popup</h1>

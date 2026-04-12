@@ -31,7 +31,7 @@
 		relation_type?: string;
 	}
 
-	let props: Props = $props();
+	let { formId, limit = 5, showTrending = false }: Props = $props();
 
 	// State
 	let relatedForms = $state<RelatedForm[]>([]);
@@ -43,7 +43,7 @@
 	async function fetchRelatedForms() {
 		try {
 			const token = getAuthToken();
-			const response = await fetch(`/api/forms/${props.formId}/related?limit=${props.limit ?? 5}`, {
+			const response = await fetch(`/api/forms/${formId}/related?limit=${limit}`, {
 				headers: { Authorization: `Bearer ${token}` }
 			});
 
@@ -59,7 +59,7 @@
 	async function fetchTrendingForms() {
 		try {
 			const token = getAuthToken();
-			const response = await fetch(`/api/forms/trending?limit=${props.limit ?? 5}`, {
+			const response = await fetch(`/api/forms/trending?limit=${limit}`, {
 				headers: { Authorization: `Bearer ${token}` }
 			});
 
@@ -104,7 +104,7 @@
 		loading = true;
 		await Promise.all([
 			fetchRelatedForms(),
-			props.showTrending ? fetchTrendingForms() : Promise.resolve()
+			showTrending ? fetchTrendingForms() : Promise.resolve()
 		]);
 		loading = false;
 	});
@@ -115,7 +115,7 @@
 		<h3>Discover More</h3>
 	</div>
 
-	{#if props.showTrending}
+	{#if showTrending}
 		<div class="tabs">
 			<button
 				class="tab"
@@ -143,7 +143,7 @@
 		{:else if activeTab === 'related'}
 			{#if relatedForms.length > 0}
 				<div class="forms-list">
-					{#each relatedForms as form}
+					{#each relatedForms as form (form.slug)}
 						<a href="/forms/{form.slug}" class="form-card">
 							<div class="form-header">
 								<span
@@ -177,7 +177,7 @@
 		{:else if activeTab === 'trending'}
 			{#if trendingForms.length > 0}
 				<div class="forms-list">
-					{#each trendingForms as form, index}
+					{#each trendingForms as form, index (form.slug)}
 						<a href="/forms/{form.slug}" class="form-card trending">
 							<div class="rank-badge">#{index + 1}</div>
 							<div class="form-info">

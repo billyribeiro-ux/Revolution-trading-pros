@@ -101,8 +101,20 @@
 	}
 </script>
 
+<!--
+  Error pages must NEVER be indexed by search engines (Google penalises soft-404s
+  if they leak into the index) and must announce themselves to assistive tech.
+  The status-aware <title> also gives users a meaningful browser tab.
+-->
+<svelte:head>
+	<title>{config.title} ({status}) — Revolution Trading Pros</title>
+	<meta name="robots" content="noindex, nofollow, noarchive" />
+	<meta name="googlebot" content="noindex, nofollow" />
+	<meta name="description" content={config.description} />
+</svelte:head>
+
 <!-- ICT11+ Fix: Changed from <main> to <div> - root layout provides <main> -->
-<div class="error-page">
+<div class="error-page" role="alert" aria-live="assertive" aria-atomic="true">
 	<div class="error-container">
 		<!-- Error Icon -->
 		<div class="error-icon" aria-hidden="true">
@@ -156,13 +168,39 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		min-height: 100vh;
+		min-height: 100dvh;
 		background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-		padding: 2rem;
+		padding: 1rem;
+	}
+
+	@media (min-width: 640px) {
+		.error-page {
+			padding: 2rem;
+		}
 	}
 
 	.error-container {
 		max-width: 480px;
 		text-align: center;
+	}
+
+	/* HD / 4K / 5K large-display tiers — keep the error card readable on
+	   wide monitors without leaving giant whitespace. */
+	@media (min-width: 1920px) {
+		.error-container {
+			max-width: 560px;
+		}
+	}
+	@media (min-width: 2560px) {
+		.error-container {
+			max-width: 640px;
+		}
+	}
+	@media (min-width: 3840px) {
+		.error-container {
+			max-width: 800px;
+		}
 	}
 
 	.error-icon {

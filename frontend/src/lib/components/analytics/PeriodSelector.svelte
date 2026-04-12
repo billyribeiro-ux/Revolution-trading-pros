@@ -27,7 +27,7 @@
 	}
 </script>
 
-<div class="period-selector">
+<div class="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
 	{#each periods as period (period.value)}
 		<button
 			class="period-btn"

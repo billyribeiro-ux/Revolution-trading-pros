@@ -44,7 +44,9 @@
 </svelte:head>
 
 <div class="bg-slate-950/95 text-slate-50">
-	<div class="mx-auto max-w-5xl px-6 py-6">
+	<div
+		class="mx-auto max-w-5xl 3xl:max-w-[1400px] 4xl:max-w-[1800px] 5xl:max-w-[2200px] 6xl:max-w-[2600px] px-6 py-6"
+	>
 		<button
 			class="mb-4 inline-flex items-center gap-2 text-xs text-slate-400 hover:text-slate-200"
 			onclick={goBack}

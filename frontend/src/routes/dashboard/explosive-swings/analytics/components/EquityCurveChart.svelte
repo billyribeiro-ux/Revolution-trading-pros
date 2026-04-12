@@ -9,6 +9,7 @@
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA | Svelte 5
 	 */
 	import { onMount, onDestroy } from 'svelte';
+	import { domRef } from '$lib/svelte/domAttachment';
 	import type { EquityPoint } from '../analytics.state.svelte';
 
 	interface Props {
@@ -20,7 +21,7 @@
 
 	// DOM reference for responsive width measurement (not reactive)
 	// svelte-ignore non_reactive_update
-	let containerEl: HTMLDivElement;
+	let containerEl: HTMLDivElement | undefined;
 	let width = $state(600);
 	let hoveredIndex: number | null = $state(null);
 	let tooltipX = $state(0);
@@ -162,7 +163,7 @@
 		</div>
 	{:else}
 		<div
-			bind:this={containerEl}
+			{@attach domRef<HTMLDivElement>((el) => (containerEl = el))}
 			class="chart-container"
 			onmousemove={handleMouseMove}
 			onmouseleave={handleMouseLeave}
@@ -178,7 +179,8 @@
 				</defs>
 
 				<!-- Grid lines -->
-				{#each yTicks as tick}
+				<!-- key (i): items lack stable id -->
+				{#each yTicks as tick, i (i)}
 					<line
 						x1={padding.left}
 						y1={tick.y}
@@ -200,7 +202,7 @@
 				/>
 
 				<!-- Y-axis labels -->
-				{#each yTicks as tick}
+				{#each yTicks as tick (tick.value)}
 					<text
 						x={padding.left - 8}
 						y={tick.y}
@@ -213,7 +215,8 @@
 				{/each}
 
 				<!-- X-axis labels -->
-				{#each xLabels as item}
+				<!-- key (i): items lack stable id -->
+				{#each xLabels as item, i (i)}
 					{@const index = data.indexOf(item)}
 					<text x={scaleX(index)} y={height - 8} text-anchor="middle" class="axis-label">
 						{formatDate(item.date)}

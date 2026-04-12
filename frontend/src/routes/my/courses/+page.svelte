@@ -163,7 +163,7 @@
 		</div>
 	{:else}
 		<div class="courses-grid">
-			{#each filteredEnrollments as enrollment}
+			{#each filteredEnrollments as enrollment (enrollment.course)}
 				<div class="enrollment-card">
 					<CourseCard
 						course={enrollment.course}

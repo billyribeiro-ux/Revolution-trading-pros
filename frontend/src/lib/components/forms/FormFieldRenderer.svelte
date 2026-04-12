@@ -194,7 +194,7 @@
 				{...(field.attributes as Record<string, any>) || {}}
 			>
 				<option value="">-- Select --</option>
-				{#each selectOptions as option}
+				{#each selectOptions as option (typeof option === 'string' ? option : option.value)}
 					<option value={typeof option === 'string' ? option : option.value}>
 						{typeof option === 'string' ? option : option.label}
 					</option>
@@ -205,7 +205,7 @@
 		{:else if field.field_type === 'radio'}
 			{@const radioOptions = Array.isArray(field.options) ? field.options : []}
 			<div class="radio-group">
-				{#each radioOptions as option}
+				{#each radioOptions as option (typeof option === 'string' ? option : option.value)}
 					{@const optionValue = typeof option === 'string' ? option : option.value}
 					{@const optionLabel = typeof option === 'string' ? option : option.label}
 					<label class="radio-label">
@@ -227,7 +227,7 @@
 		{:else if field.field_type === 'checkbox'}
 			{@const checkboxOptions = Array.isArray(field.options) ? field.options : []}
 			<div class="checkbox-group">
-				{#each checkboxOptions as option}
+				{#each checkboxOptions as option (typeof option === 'string' ? option : option.value)}
 					{@const optionValue = typeof option === 'string' ? option : option.value}
 					{@const optionLabel = typeof option === 'string' ? option : option.label}
 					<label class="checkbox-label">
@@ -348,7 +348,7 @@
 			<!-- Rating (Stars) -->
 		{:else if field.field_type === 'rating'}
 			<div class="rating-wrapper">
-				{#each Array(field.validation?.max || 5) as _, i}
+				{#each Array(field.validation?.max || 5) as _, i (i)}
 					<button
 						type="button"
 						class="star-button"
@@ -402,7 +402,7 @@
 		{:else if field.field_type === 'newsletter_categories'}
 			<div class="newsletter-categories-wrapper">
 				{#if field.options && Array.isArray(field.options)}
-					{#each field.options as option}
+					{#each field.options as option (typeof option === 'string' ? option : option.value)}
 						{@const optionValue = typeof option === 'string' ? option : option.value}
 						{@const optionLabel = typeof option === 'string' ? option : option.label}
 						{@const optionDescription = typeof option === 'object' ? option.description : ''}
@@ -460,7 +460,7 @@
 				{...(field.attributes as Record<string, any>) || {}}
 			>
 				{#if field.options && Array.isArray(field.options)}
-					{#each field.options as option}
+					{#each field.options as option (typeof option === 'string' ? option : option.value)}
 						{@const optionValue = typeof option === 'string' ? option : option.value}
 						{@const optionLabel = typeof option === 'string' ? option : option.label}
 						<option value={optionValue}>{optionLabel}</option>
@@ -476,7 +476,7 @@
 
 		{#if error && error.length > 0}
 			<div class="field-error">
-				{#each error as err}
+				{#each error as err (err)}
 					<p>{err}</p>
 				{/each}
 			</div>

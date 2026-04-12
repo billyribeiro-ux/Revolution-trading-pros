@@ -40,7 +40,7 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Content Interfaces
@@ -95,22 +95,22 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	let style = $derived<RiskDisclaimerContent['style']>(
-		(props.block.content.disclaimerStyle as RiskDisclaimerContent['style']) || 'warning'
+		(block.content.disclaimerStyle as RiskDisclaimerContent['style']) || 'warning'
 	);
 	let preset = $derived<NonNullable<RiskDisclaimerContent['preset']>>(
-		(props.block.content.disclaimerPreset as RiskDisclaimerContent['preset']) || 'general'
+		(block.content.disclaimerPreset as RiskDisclaimerContent['preset']) || 'general'
 	);
 	let text = $derived(
-		props.block.content.disclaimerText ||
+		block.content.disclaimerText ||
 			(preset && preset !== 'custom' ? PRESET_DISCLAIMERS[preset]?.text : '') ||
 			''
 	);
 	let expandedText = $derived(
-		props.block.content.disclaimerExpandedText ||
+		block.content.disclaimerExpandedText ||
 			(preset && preset !== 'custom' ? PRESET_DISCLAIMERS[preset]?.expandedText : '') ||
 			''
 	);
-	let requireAcknowledgment = $derived(props.block.content.disclaimerRequireAck === true);
+	let requireAcknowledgment = $derived(block.content.disclaimerRequireAck === true);
 
 	// Style configurations
 	let styleConfig = $derived.by(() => {
@@ -168,8 +168,8 @@
 	let hasExpandedContent = $derived(expandedText && expandedText.length > 0);
 
 	// Generate unique IDs for accessibility
-	let contentId = $derived(`disclaimer-content-${props.blockId}`);
-	let expandedId = $derived(`disclaimer-expanded-${props.blockId}`);
+	let contentId = $derived(`disclaimer-content-${blockId}`);
+	let expandedId = $derived(`disclaimer-expanded-${blockId}`);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Lifecycle
@@ -177,7 +177,7 @@
 
 	onMount(() => {
 		// Check if acknowledgment was previously stored (e.g., in sessionStorage)
-		const storageKey = `risk-ack-${props.blockId}`;
+		const storageKey = `risk-ack-${blockId}`;
 		const wasAcknowledged = sessionStorage.getItem(storageKey);
 		if (wasAcknowledged === 'true') {
 			isAcknowledged = true;
@@ -189,7 +189,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 
 	function handlePresetChange(e: Event): void {
@@ -250,7 +250,7 @@
 		animateCheckbox = true;
 
 		// Store acknowledgment in session
-		const storageKey = `risk-ack-${props.blockId}`;
+		const storageKey = `risk-ack-${blockId}`;
 		if (isAcknowledged) {
 			sessionStorage.setItem(storageKey, 'true');
 		} else {
@@ -295,7 +295,7 @@
 	"
 >
 	<!-- Settings Panel (Edit Mode) -->
-	{#if props.isEditing && props.isSelected}
+	{#if isEditing && isSelected}
 		<div class="disclaimer-settings">
 			<div class="settings-header">
 				<Icon icon={IconEdit} size={16} aria-hidden="true" />
@@ -365,9 +365,9 @@
 		<div class="disclaimer-content">
 			<!-- Main Text -->
 			<div id={contentId} class="disclaimer-main">
-				{#if props.isEditing && !props.isSelected}
+				{#if isEditing && !isSelected}
 					<p class="main-text">{text}</p>
-				{:else if !props.isEditing}
+				{:else if !isEditing}
 					<p class="main-text">{text}</p>
 				{:else}
 					<p class="main-text editing-preview">{text || 'Enter warning text...'}</p>
@@ -407,7 +407,7 @@
 			{/if}
 
 			<!-- Acknowledgment Checkbox -->
-			{#if requireAcknowledgment && !props.isEditing}
+			{#if requireAcknowledgment && !isEditing}
 				<div class="acknowledgment-section">
 					<div class="divider"></div>
 					<label
@@ -441,7 +441,7 @@
 				</div>
 			{/if}
 
-			{#if requireAcknowledgment && props.isEditing}
+			{#if requireAcknowledgment && isEditing}
 				<div class="acknowledgment-preview">
 					<Icon icon={IconSquare} size={18} aria-hidden="true" />
 					<span>I understand and acknowledge the risks involved</span>
@@ -452,7 +452,7 @@
 	</div>
 
 	<!-- Style Indicator Badge -->
-	{#if props.isEditing}
+	{#if isEditing}
 		<div class="style-badge">
 			<Icon icon={iconComponentStr} size={14} aria-hidden="true" />
 			<span>{style.charAt(0).toUpperCase() + style.slice(1)}</span>

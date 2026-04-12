@@ -205,11 +205,18 @@
 			</div>
 		{:else}
 			<div class="managers-list">
-				{#each managers as manager}
+				{#each managers as manager (manager.id)}
 					<div class="manager-card">
 						<div class="manager-avatar">
 							{#if manager.avatar}
-								<img src={manager.avatar} alt={manager.name} />
+								<img
+									src={manager.avatar}
+									alt={manager.name}
+									width="48"
+									height="48"
+									loading="lazy"
+									decoding="async"
+								/>
 							{:else}
 								<Icon icon={IconUser} size={24} />
 							{/if}
@@ -257,7 +264,7 @@
 			</div>
 		{:else}
 			<div class="roles-grid">
-				{#each roles as role}
+				{#each roles as role (role.id)}
 					<div class="role-card">
 						<div class="role-header">
 							<div class="role-icon">
@@ -286,7 +293,8 @@
 						<div class="role-permissions">
 							<span class="permissions-label">Permissions:</span>
 							<div class="permissions-tags">
-								{#each role.permissions.filter((p) => p.allowed).slice(0, 4) as perm}
+								<!-- key (i): items lack stable id -->
+								{#each role.permissions.filter((p) => p.allowed).slice(0, 4) as perm, i (i)}
 									<span class="permission-tag">{perm.module} ({perm.action})</span>
 								{/each}
 								{#if role.permissions.filter((p) => p.allowed).length > 4}

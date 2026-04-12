@@ -533,7 +533,7 @@
 			<select class="filter-select" bind:value={parentFilter}>
 				<option value={null}>All Categories</option>
 				<option value={0}>Root Categories Only</option>
-				{#each parentCategories as parent}
+				{#each parentCategories as parent (parent.id)}
 					<option value={parent.id}>{parent.name} & Children</option>
 				{/each}
 			</select>
@@ -742,7 +742,7 @@
 					<div class="error-banner">
 						<Icon icon={IconAlertCircle} size={18} />
 						<div>
-							{#each formErrors as error}
+							{#each formErrors as error (error)}
 								<p>{error}</p>
 							{/each}
 						</div>
@@ -779,7 +779,7 @@
 						<label for="cat-parent">Parent Category</label>
 						<select id="cat-parent" bind:value={categoryForm.parent_id}>
 							<option value={null}>None (Root Category)</option>
-							{#each parentCategories.filter((c) => c.id !== editingCategory?.id) as parent}
+							{#each parentCategories.filter((c) => c.id !== editingCategory?.id) as parent (parent.id)}
 								<option value={parent.id}>{parent.name}</option>
 							{/each}
 						</select>
@@ -889,7 +889,7 @@
 					<label for="merge-target">Target Category *</label>
 					<select id="merge-target" bind:value={mergeForm.targetId}>
 						<option value={null}>Select target category...</option>
-						{#each mergeTargetOptions as category}
+						{#each mergeTargetOptions as category (category.id)}
 							<option value={category.id}>{category.name}</option>
 						{/each}
 					</select>

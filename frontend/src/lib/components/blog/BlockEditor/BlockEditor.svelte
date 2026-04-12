@@ -90,17 +90,21 @@
 		readOnly?: boolean;
 	}
 
-	let { blocks = $bindable([]), ...props }: Props = $props();
-	const contentId = $derived(props.contentId ?? '');
-	const postTitle = $derived(props.postTitle ?? '');
-	const postSlug = $derived(props.postSlug ?? '');
-	const metaDescription = $derived(props.metaDescription ?? '');
-	const focusKeyword = $derived(props.focusKeyword ?? '');
-	const onchange = $derived(props.onchange);
-	const onsave = $derived(props.onsave);
-	const onpublish = $derived(props.onpublish);
-	const autosaveInterval = $derived(props.autosaveInterval ?? 30000);
-	const readOnly = $derived(props.readOnly ?? false);
+	let {
+		blocks = $bindable([]),
+		contentId = '',
+		postTitle = '',
+		postSlug = '',
+		postExcerpt: _postExcerpt,
+		metaTitle: _metaTitle,
+		metaDescription = '',
+		focusKeyword = '',
+		onchange,
+		onsave,
+		onpublish,
+		autosaveInterval = 30000,
+		readOnly = false
+	}: Props = $props();
 
 	// ==========================================================================
 	// State
@@ -813,14 +817,11 @@
 		if (index === -1) return;
 
 		let newIndex: number;
-		let direction: string;
 
 		if (e.key === 'ArrowUp' && index > 0) {
 			newIndex = index - 1;
-			direction = 'up';
 		} else if (e.key === 'ArrowDown' && index < editorState.blocks.length - 1) {
 			newIndex = index + 1;
-			direction = 'down';
 		} else {
 			return;
 		}
@@ -837,7 +838,8 @@
 
 			// Announce for screen readers
 			const blockName = BLOCK_DEFINITIONS[blockA.type]?.name || blockA.type;
-			announce(`${blockName} moved ${direction} to position ${newIndex + 1}`, 'polite');
+			const dir = newIndex < index ? 'up' : 'down';
+			announce(`${blockName} moved ${dir} to position ${newIndex + 1}`, 'polite');
 
 			// Focus the moved block
 			tick().then(() => {
@@ -1882,7 +1884,7 @@
 
 <!-- Screen Reader Live Region for Drag-Drop Announcements -->
 <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
-	{#each announcements as announcement}
+	{#each announcements as announcement, i (i)}
 		<p>{announcement}</p>
 	{/each}
 </div>

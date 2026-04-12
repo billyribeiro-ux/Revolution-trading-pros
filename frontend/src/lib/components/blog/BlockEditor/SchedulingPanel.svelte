@@ -31,12 +31,7 @@
 		onScheduleCreated?: (schedule: Schedule) => void;
 	}
 
-	let props: Props = $props();
-	const contentId = $derived(props.contentId);
-	const contentTitle = $derived(props.contentTitle ?? 'Content');
-	const isOpen = $derived(props.isOpen);
-	const onClose = $derived(props.onClose);
-	const onScheduleCreated = $derived(props.onScheduleCreated);
+	let { contentId, contentTitle = 'Content', isOpen, onClose, onScheduleCreated }: Props = $props();
 
 	// Types
 	interface Schedule {
@@ -628,7 +623,7 @@
 							<div class="form-group">
 								<label for="schedule-timezone">Timezone</label>
 								<select id="schedule-timezone" bind:value={scheduleTimezone}>
-									{#each commonTimezones as tz}
+									{#each commonTimezones as tz (tz)}
 										<option value={tz}>{tz.replace('_', ' ')}</option>
 									{/each}
 								</select>
@@ -664,7 +659,7 @@
 							<div class="pending-schedules">
 								<h3>Pending Schedules</h3>
 								<div class="schedule-list">
-									{#each pendingSchedules as schedule}
+									{#each pendingSchedules as schedule (schedule.id)}
 										<div class="schedule-item">
 											<div class="schedule-info">
 												<span class="action-badge {getActionColor(schedule.action)}">
@@ -743,7 +738,7 @@
 									<p class="hint">Create a release to bundle multiple content changes together.</p>
 								</div>
 							{:else}
-								{#each releases as release}
+								{#each releases as release (release.id)}
 									<div class="release-item">
 										<div class="release-header">
 											<h4>{release.name}</h4>
@@ -809,12 +804,12 @@
 
 						<div class="calendar-grid">
 							<div class="calendar-weekdays">
-								{#each ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as day}
+								{#each ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as day (day)}
 									<div class="weekday">{day}</div>
 								{/each}
 							</div>
 							<div class="calendar-days">
-								{#each getCalendarDays() as day}
+								{#each getCalendarDays() as day (day === null ? 'empty' : day.toDateString())}
 									{#if day === null}
 										<div class="calendar-day empty"></div>
 									{:else}
@@ -827,7 +822,7 @@
 											<span class="day-number">{day.getDate()}</span>
 											{#if entries.length > 0}
 												<div class="day-entries">
-													{#each entries.slice(0, 2) as entry}
+													{#each entries.slice(0, 2) as entry (entry.is_release)}
 														<div
 															class="entry-dot"
 															class:is-release={entry.is_release}
@@ -868,7 +863,7 @@
 							</div>
 						{:else}
 							<div class="history-list">
-								{#each scheduleHistory as item}
+								{#each scheduleHistory as item (item.event_type)}
 									<div class="history-item">
 										<div class="history-icon">
 											<svg width="16" height="16" viewBox="0 0 16 16" fill="none">

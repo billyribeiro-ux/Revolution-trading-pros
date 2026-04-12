@@ -6,22 +6,13 @@
 		variant?: 'default' | 'destructive';
 	};
 
-	let props: ItemProps = $props();
-	let ref = $state<HTMLElement | null>(null);
-	let className = $derived(props.class);
-	let inset = $derived(props.inset);
-	let variant = $derived(props.variant ?? 'default');
-
-	$effect(() => {
-		if (props.ref !== undefined && props.ref !== ref) {
-			ref = props.ref;
-		}
-	});
-
-	let restProps = $derived.by(() => {
-		const { ref: _, class: __, inset: ___, variant: ____, ...rest } = props;
-		return rest;
-	});
+	let {
+		ref = $bindable(null),
+		class: className,
+		inset,
+		variant = 'default',
+		...restProps
+	}: ItemProps = $props();
 </script>
 
 <DropdownMenuPrimitive.Item

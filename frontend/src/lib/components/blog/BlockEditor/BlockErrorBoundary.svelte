@@ -68,15 +68,16 @@
 		>;
 	}
 
-	let props: Props = $props();
-	const block = $derived(props.block);
-	const onRetry = $derived(props.onRetry);
-	const onReset = $derived(props.onReset);
-	const onDelete = $derived(props.onDelete);
-	const children = $derived(props.children);
-	const isNested = $derived(props.isNested ?? false);
-	const errorContext = $derived(props.errorContext ?? {});
-	const fallback = $derived(props.fallback);
+	let {
+		block,
+		onRetry,
+		onReset,
+		onDelete,
+		children,
+		isNested = false,
+		errorContext = {},
+		fallback
+	}: Props = $props();
 
 	// ==========================================================================
 	// State

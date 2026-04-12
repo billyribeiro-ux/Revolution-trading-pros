@@ -67,7 +67,7 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
 	// Map block types to components
 	const componentMap: Record<string, any> = {
@@ -123,22 +123,15 @@
 		callout: CalloutBlock
 	};
 
-	const BlockComponent = $derived(componentMap[props.block.type]);
+	const BlockComponent = $derived(componentMap[block.type]);
 </script>
 
 {#if BlockComponent}
-	<BlockComponent
-		block={props.block}
-		blockId={props.blockId}
-		isSelected={props.isSelected}
-		isEditing={props.isEditing}
-		onUpdate={props.onUpdate}
-		onError={props.onError}
-	/>
+	<BlockComponent {block} {blockId} {isSelected} {isEditing} {onUpdate} {onError} />
 {:else}
 	<div class="block-renderer__unknown">
 		<span class="block-renderer__unknown-icon">?</span>
-		<span>Unknown block type: <code>{props.block.type}</code></span>
+		<span>Unknown block type: <code>{block.type}</code></span>
 	</div>
 {/if}
 

@@ -45,16 +45,7 @@
 		onRefresh?: () => void;
 	}
 
-	let props: Props = $props();
-
-	// Destructure for internal use
-	const isOpen = $derived(props.isOpen);
-	const courseId = $derived(props.courseId);
-	const onClose = $derived(props.onClose);
-	const onEdit = $derived(props.onEdit);
-	const onEditModule = $derived(props.onEditModule);
-	const onAddModule = $derived(props.onAddModule);
-	const onRefresh = $derived(props.onRefresh);
+	let { isOpen, courseId, onClose, onEdit, onEditModule, onAddModule, onRefresh }: Props = $props();
 
 	// State
 	let courseData = $state<CourseWithContent | null>(null);
@@ -235,7 +226,14 @@
 				<header class="drawer-header">
 					<div class="course-thumbnail">
 						{#if courseData.card_image_url}
-							<img src={courseData.card_image_url} alt={courseData.title} />
+							<img
+								src={courseData.card_image_url}
+								alt={courseData.title}
+								width="120"
+								height="68"
+								loading="lazy"
+								decoding="async"
+							/>
 						{:else}
 							<Icon icon={IconBook} size={32} />
 						{/if}
@@ -375,7 +373,7 @@
 								</div>
 							{:else}
 								<div class="modules-list">
-									{#each courseData.modules as module, idx}
+									{#each courseData.modules as module, idx (module.id)}
 										<div class="module-card" class:expanded={expandedModules.has(module.id)}>
 											<div
 												class="module-header"
@@ -437,7 +435,7 @@
 													{#if !module.lessons || module.lessons.length === 0}
 														<div class="no-lessons">No lessons in this module</div>
 													{:else}
-														{#each module.lessons as lesson}
+														{#each module.lessons as lesson (lesson.title)}
 															<div class="lesson-item">
 																<div class="lesson-icon">
 																	{#if lesson.bunny_video_guid}
@@ -600,6 +598,10 @@
 											<img
 												src={courseData.instructor_avatar_url}
 												alt={courseData.instructor_name}
+												width="80"
+												height="80"
+												loading="lazy"
+												decoding="async"
 												class="instructor-avatar"
 											/>
 										{:else}

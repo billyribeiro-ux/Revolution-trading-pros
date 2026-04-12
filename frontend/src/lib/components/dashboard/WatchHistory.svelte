@@ -47,14 +47,13 @@
 		class?: string;
 	}
 
-	let props: Props = $props();
-
-	// Derived props with defaults
-	let userId = $derived(props.userId);
-	let limit = $derived(props.limit ?? 6);
-	let title = $derived(props.title ?? 'Continue Watching');
-	let showViewAll = $derived(props.showViewAll ?? true);
-	let className = $derived(props.class ?? '');
+	let {
+		userId,
+		limit = 6,
+		title = 'Continue Watching',
+		showViewAll = true,
+		class: className = ''
+	}: Props = $props();
 
 	// ═══════════════════════════════════════════════════════════════════════
 	// STATE
@@ -141,7 +140,14 @@
 					<!-- Thumbnail -->
 					<div class="watch-card__thumbnail">
 						{#if item.thumbnail_url}
-							<img src={item.thumbnail_url} alt={item.title} loading="lazy" />
+							<img
+								src={item.thumbnail_url}
+								alt={item.title}
+								width="320"
+								height="180"
+								loading="lazy"
+								decoding="async"
+							/>
 						{:else}
 							<div class="watch-card__placeholder">
 								<svg viewBox="0 0 24 24" fill="currentColor" width="32" height="32">

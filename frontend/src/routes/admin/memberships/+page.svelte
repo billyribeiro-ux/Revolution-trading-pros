@@ -543,7 +543,7 @@
 				<div class="filter-group">
 					<label for="filter-status">Status</label>
 					<select id="filter-status" bind:value={selectedStatus}>
-						{#each statusOptions as option}
+						{#each statusOptions as option (option.value)}
 							<option value={option.value}>{option.label}</option>
 						{/each}
 					</select>
@@ -551,7 +551,7 @@
 				<div class="filter-group">
 					<label for="filter-cycle">Billing Cycle</label>
 					<select id="filter-cycle" bind:value={selectedCycle}>
-						{#each cycleOptions as option}
+						{#each cycleOptions as option (option.value)}
 							<option value={option.value}>{option.label}</option>
 						{/each}
 					</select>
@@ -559,7 +559,7 @@
 				<div class="filter-group">
 					<label for="filter-sort">Sort By</label>
 					<select id="filter-sort" bind:value={sortBy}>
-						{#each sortOptions as option}
+						{#each sortOptions as option (option.value)}
 							<option value={option.value}>{option.label}</option>
 						{/each}
 					</select>
@@ -666,7 +666,8 @@
 								{/if}
 
 								<div class="plan-features">
-									{#each (plan.features || []).slice(0, 3) as feature}
+									<!-- key (i): items lack stable id -->
+									{#each (plan.features || []).slice(0, 3) as feature, i (i)}
 										<div class="feature-item">
 											<Icon icon={IconCheck} size={14} />
 											<span>{feature.feature_name}</span>
@@ -791,7 +792,7 @@
 							</button>
 						</div>
 						<div class="features-list-edit">
-							{#each formData.features as feature, index}
+							{#each formData.features as feature, index (index)}
 								<div class="feature-row">
 									<input
 										id="page-feature-feature-name"
@@ -925,7 +926,8 @@
 						<p class="preview-description">{previewingPlan.description}</p>
 					{/if}
 					<div class="preview-features">
-						{#each previewingPlan.features as feature}
+						<!-- key (i): items lack stable id -->
+						{#each previewingPlan.features as feature, i (i)}
 							<div class="preview-feature">
 								<Icon icon={IconCheck} size={16} />
 								<span>{feature.feature_name}</span>

@@ -116,8 +116,10 @@
 	<title>Conversion Funnels | Analytics</title>
 </svelte:head>
 
-<div class="bg-linear-to-br from-slate-950 via-slate-900 to-slate-950">
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+	<div
+		class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 py-8"
+	>
 		<!-- Apple ICT7 Grade Header -->
 		<header class="flex items-center justify-between mb-8">
 			<div class="flex items-center gap-4">
@@ -229,7 +231,7 @@
 		{:else}
 			<!-- Funnel Cards -->
 			<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-				{#each funnels as funnel}
+				{#each funnels as funnel (funnel.key)}
 					<button
 						onclick={() => (selectedFunnel = funnel)}
 						class="text-left bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 hover:bg-white/10 hover:border-violet-500/30 transition-all
@@ -319,7 +321,7 @@
 									</tr>
 								</thead>
 								<tbody class="divide-y divide-white/5">
-									{#each selectedFunnel.steps as step, i}
+									{#each selectedFunnel.steps as step, i (step.name)}
 										{@const firstStep = selectedFunnel.steps[0]}
 										{@const fromStart =
 											firstStep && firstStep.count > 0 ? (step.count / firstStep.count) * 100 : 0}
@@ -443,7 +445,7 @@
 						</button>
 					</div>
 					<div class="space-y-3">
-						{#each newFunnel.steps as step, index}
+						{#each newFunnel.steps as step, index (step.name)}
 							<div
 								class="flex items-center gap-3 p-4 bg-slate-800/30 rounded-xl border border-white/5"
 							>

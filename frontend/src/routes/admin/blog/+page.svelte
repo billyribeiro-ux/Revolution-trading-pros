@@ -812,14 +812,14 @@
 
 				<!-- Filters -->
 				<select class="filter-select" bind:value={statusFilter}>
-					{#each statusOptions as option}
+					{#each statusOptions as option (option.value)}
 						<option value={option.value}>{option.label}</option>
 					{/each}
 				</select>
 
 				<select class="filter-select" bind:value={categoryFilter}>
 					<option value="all">All Categories</option>
-					{#each predefinedCategories as category}
+					{#each predefinedCategories as category (category.id)}
 						<option value={category.id}>{category.name}</option>
 					{/each}
 				</select>
@@ -827,7 +827,7 @@
 				<!-- Sort -->
 				<div class="sort-controls">
 					<select class="filter-select" bind:value={sortBy}>
-						{#each sortOptions as option}
+						{#each sortOptions as option (option.value)}
 							<option value={option.value}>{option.label}</option>
 						{/each}
 					</select>
@@ -884,7 +884,7 @@
 		{#if viewMode === 'grid'}
 			<div class="posts-grid">
 				{#if loading}
-					{#each Array(6) as _}
+					{#each Array(6) as _, i (i)}
 						<div class="post-card skeleton">
 							<div class="skeleton-image"></div>
 							<div class="skeleton-content">
@@ -1030,7 +1030,7 @@
 
 								{#if post.categories && post.categories.length > 0}
 									<div class="post-categories">
-										{#each (post.categories || []).slice(0, 3) as categoryId}
+										{#each (post.categories || []).slice(0, 3) as categoryId (categoryId)}
 											{@const category =
 												typeof categoryId === 'string'
 													? getPredefinedCategoryById(categoryId)
@@ -1179,7 +1179,7 @@
 									<td class="hidden-mobile hidden-tablet">
 										{#if post.categories?.length > 0}
 											<div class="table-category-tags">
-												{#each (post.categories || []).slice(0, 2) as categoryId}
+												{#each (post.categories || []).slice(0, 2) as categoryId (categoryId)}
 													{@const category =
 														typeof categoryId === 'string'
 															? getPredefinedCategoryById(categoryId)

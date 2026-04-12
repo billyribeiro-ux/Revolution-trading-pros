@@ -7,8 +7,16 @@
 	import { browser } from '$app/environment';
 
 	// Icons (only those used directly in template)
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-
+	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
+	import IconTarget from '@tabler/icons-svelte-runes/icons/target';
+	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
+	import IconStar from '@tabler/icons-svelte-runes/icons/star';
+	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
+	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
+	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
+	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
+	import IconSchool from '@tabler/icons-svelte-runes/icons/school';
+	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
 	// Data & types extracted for maintainability
 	import {
 		indicators,
@@ -310,8 +318,8 @@
 			</div>
 
 			<div class="setup-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-				{#each goldenSetup as item}
-					{@const iconStr = item.icon}
+				{#each goldenSetup as item (item.value)}
+					{@const Icon = item.icon}
 					<div
 						class="setup-item bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 hover:border-blue-500/30 transition-all duration-300 group"
 					>
@@ -433,7 +441,7 @@
 				These are the exact tools active in our trading room charts right now.
 			</p>
 			<div class="filter-buttons">
-				{#each categories as category}
+				{#each categories as category (category)}
 					<button
 						class="filter-button"
 						class:active={selectedCategory === category}
@@ -449,8 +457,8 @@
 	<section class="indicators-section">
 		<div class="section-container">
 			<div class="indicators-grid">
-				{#each filteredIndicators as indicator, index}
-					{@const iconStr = indicator.icon}
+				{#each filteredIndicators as indicator, index (indicator.slug)}
+					{@const Icon = indicator.icon}
 					<article
 						class="indicator-card group relative"
 						class:visible={cardsVisible[index]}
@@ -497,7 +505,7 @@
 							</div>
 
 							<ul class="card-features">
-								{#each indicator.features as feature}
+								{#each indicator.features as feature (feature)}
 									<li class="group-hover:pl-1 transition-all duration-300">
 										<Icon icon={IconCheck} size={16} stroke={2} />
 										<span>{feature}</span>
@@ -595,7 +603,7 @@
 		<div class="section-container">
 			<h2 class="section-title tracking-tight">Common Questions</h2>
 			<div class="faq-list">
-				{#each faqs as faq, i}
+				{#each faqs as faq, i (faq.question)}
 					<div class="faq-item transition-all duration-300" class:open={openFaq === i}>
 						<button
 							class="faq-question hover:text-blue-400 transition-colors"
@@ -641,8 +649,6 @@
 		</div>
 	</section>
 </div>
-
-<MarketingFooter />
 
 <style>
 	/* * RESTORED CUSTOM CSS ARCHITECTURE 

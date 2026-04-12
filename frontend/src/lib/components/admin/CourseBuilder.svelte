@@ -43,12 +43,7 @@
 		onClose?: () => void;
 	}
 
-	let props: Props = $props();
-
-	// Destructure for internal use
-	const propsCourseId = $derived(props.courseId);
-	const onSave = $derived(props.onSave);
-	const onClose = $derived(props.onClose);
+	let { courseId: propsCourseId, onSave, onClose }: Props = $props();
 
 	// Local mutable courseId (for newly created courses)
 	let localCourseId = $state<number | undefined>(undefined);
@@ -375,7 +370,7 @@
 								bind:value={formData.difficulty_level}
 								disabled={!editMode && !!courseId}
 							>
-								{#each difficultyOptions as opt}
+								{#each difficultyOptions as opt (opt.value)}
 									<option value={opt.value}>{opt.label}</option>
 								{/each}
 							</select>
@@ -414,7 +409,15 @@
 							disabled={!editMode && !!courseId}
 						/>
 						{#if formData.thumbnail_url}
-							<img src={formData.thumbnail_url} alt="Thumbnail preview" class="thumbnail-preview" />
+							<img
+								src={formData.thumbnail_url}
+								alt="Thumbnail preview"
+								width="400"
+								height="225"
+								loading="lazy"
+								decoding="async"
+								class="thumbnail-preview"
+							/>
 						{/if}
 					</div>
 

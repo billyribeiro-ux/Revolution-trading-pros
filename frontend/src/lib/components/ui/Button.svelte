@@ -27,16 +27,18 @@
 		children?: Snippet;
 	}
 
-	let props: ButtonProps = $props();
-	let variant = $derived(props.variant ?? 'primary');
-	let size = $derived(props.size ?? 'md');
-	let disabled = $derived(props.disabled ?? false);
-	let loading = $derived(props.loading ?? false);
-	let type = $derived(props.type ?? 'button');
-	let fullWidth = $derived(props.fullWidth ?? false);
-	let className = $derived(props.class ?? '');
-	let loadingText = $derived(props.loadingText);
-	let onclick = $derived(props.onclick);
+	let {
+		variant = 'primary',
+		size = 'md',
+		disabled = false,
+		loading = false,
+		type = 'button',
+		fullWidth = false,
+		class: className = '',
+		loadingText,
+		onclick,
+		children
+	}: ButtonProps = $props();
 
 	// Compute if button is truly disabled (disabled or loading)
 	let isDisabled = $derived(disabled || loading);
@@ -85,12 +87,8 @@
 			<span class="sr-only">Loading, please wait</span>
 		{/if}
 	{/if}
-	<span
-		class="standalone-btn-content"
-		class:standalone-btn-hidden={loading && !loadingText}
-		class:sr-only={loading && loadingText}
-	>
-		{@render props.children?.()}
+	<span class:opacity-0={loading && !loadingText} class:sr-only={loading && loadingText}>
+		{@render children?.()}
 	</span>
 	{#if loading && loadingText}
 		<span aria-hidden="true">{loadingText}</span>

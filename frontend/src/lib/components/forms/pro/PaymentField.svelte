@@ -17,76 +17,74 @@
 		onchange?: (value: PaymentItem[] | PaymentItem | null) => void;
 	}
 
-	let props: Props = $props();
+	let { field, value, currency = 'USD', error, onchange }: Props = $props();
 
-	const paymentType = $derived(props.field.attributes?.payment_type || 'single');
-	const items = $derived<PaymentItem[]>((props.field.options as PaymentItem[]) || []);
-	const allowQuantity = $derived(props.field.attributes?.allow_quantity || false);
+	const paymentType = $derived(field.attributes?.payment_type || 'single');
+	const items = $derived<PaymentItem[]>((field.options as PaymentItem[]) || []);
+	const allowQuantity = $derived(field.attributes?.allow_quantity || false);
 
 	function formatCurrency(amount: number): string {
 		return new Intl.NumberFormat('en-US', {
 			style: 'currency',
-			currency: props.currency ?? 'USD'
+			currency: currency
 		}).format(amount);
 	}
 
 	function handleSingleSelect(item: PaymentItem) {
-		props.onchange?.(item);
+		onchange?.(item);
 	}
 
 	function handleMultiSelect(item: PaymentItem, checked: boolean) {
-		const currentItems = Array.isArray(props.value) ? props.value : [];
+		const currentItems = Array.isArray(value) ? value : [];
 		if (checked) {
-			props.onchange?.([...currentItems, { ...item, quantity: 1 }]);
+			onchange?.([...currentItems, { ...item, quantity: 1 }]);
 		} else {
-			props.onchange?.(currentItems.filter((i: PaymentItem) => i.id !== item.id));
+			onchange?.(currentItems.filter((i: PaymentItem) => i.id !== item.id));
 		}
 	}
 
 	function handleQuantityChange(itemId: string, quantity: number) {
-		if (!Array.isArray(props.value)) return;
-		const updatedItems = props.value.map((i: PaymentItem) =>
-			i.id === itemId ? { ...i, quantity } : i
-		);
-		props.onchange?.(updatedItems);
+		if (!Array.isArray(value)) return;
+		const updatedItems = value.map((i: PaymentItem) => (i.id === itemId ? { ...i, quantity } : i));
+		onchange?.(updatedItems);
 	}
 
 	function isSelected(itemId: string): boolean {
-		if (Array.isArray(props.value)) {
-			return props.value.some((i: PaymentItem) => i.id === itemId);
+		if (Array.isArray(value)) {
+			return value.some((i: PaymentItem) => i.id === itemId);
 		}
-		return props.value?.id === itemId;
+		return value?.id === itemId;
 	}
 
 	function getQuantity(itemId: string): number {
-		if (Array.isArray(props.value)) {
-			const item = props.value.find((i: PaymentItem) => i.id === itemId);
+		if (Array.isArray(value)) {
+			const item = value.find((i: PaymentItem) => i.id === itemId);
 			return item?.quantity || 1;
 		}
 		return 1;
 	}
 
 	function calculateTotal(): number {
-		if (Array.isArray(props.value)) {
-			return props.value.reduce(
+		if (Array.isArray(value)) {
+			return value.reduce(
 				(sum: number, item: PaymentItem) => sum + item.price * (item.quantity || 1),
 				0
 			);
 		}
-		return props.value?.price || 0;
+		return value?.price || 0;
 	}
 </script>
 
 <div class="payment-field">
-	<label class="field-label" for="payment-field-{props.field.name}">
-		{props.field.label}
-		{#if props.field.required}
+	<label class="field-label" for="payment-field-{field.name}">
+		{field.label}
+		{#if field.required}
 			<span class="required">*</span>
 		{/if}
 	</label>
 
-	{#if props.field.help_text}
-		<p class="field-help">{props.field.help_text}</p>
+	{#if field.help_text}
+		<p class="field-help">{field.help_text}</p>
 	{/if}
 
 	<div class="payment-items" class:single={paymentType === 'single'}>
@@ -119,14 +117,22 @@
 					<input
 						id="payment-item-{item.id}"
 						type="radio"
-						name={props.field.name}
+						name={field.name}
 						checked={isSelected(item.id)}
 						onchange={() => handleSingleSelect(item)}
 					/>
 				{/if}
 
 				{#if item.image}
-					<img src={item.image} alt={item.label} class="item-image" />
+					<img
+						src={item.image}
+						alt={item.label}
+						width="80"
+						height="80"
+						loading="lazy"
+						decoding="async"
+						class="item-image"
+					/>
 				{/if}
 
 				<div class="item-details">
@@ -184,9 +190,9 @@
 		<span class="total-amount">{formatCurrency(calculateTotal())}</span>
 	</div>
 
-	{#if props.error && props.error.length > 0}
+	{#if error && error.length > 0}
 		<div class="field-error">
-			{#each props.error as err}
+			{#each error as err, i (i)}
 				<p>{err}</p>
 			{/each}
 		</div>

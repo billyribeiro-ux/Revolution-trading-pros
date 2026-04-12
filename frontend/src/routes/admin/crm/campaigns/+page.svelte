@@ -306,7 +306,7 @@
 			/>
 		</div>
 		<select class="filter-select" bind:value={selectedStatus}>
-			{#each statusOptions as option}
+			{#each statusOptions as option (option.value)}
 				<option value={option.value}>{option.label}</option>
 			{/each}
 		</select>
@@ -348,7 +348,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					{#each filteredCampaigns as campaign}
+					{#each filteredCampaigns as campaign (campaign.id)}
 						{@const CampaignStatusIcon = getStatusIcon(campaign.status)}
 						<tr>
 							<td>

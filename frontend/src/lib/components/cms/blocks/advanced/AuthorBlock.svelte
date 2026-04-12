@@ -26,7 +26,7 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
 	// ==========================================================================
 	// Local State
@@ -58,15 +58,14 @@
 	// Derived Values
 	// ==========================================================================
 
-	const name = $derived(props.block.content.authorName || 'Author Name');
-	const title = $derived(props.block.content.authorTitle || '');
+	const name = $derived(block.content.authorName || 'Author Name');
+	const title = $derived(block.content.authorTitle || '');
 	const bio = $derived(
-		props.block.content.authorBio ||
-			'Author bio goes here. Share a brief description about the author.'
+		block.content.authorBio || 'Author bio goes here. Share a brief description about the author.'
 	);
-	const photo = $derived(props.block.content.authorPhoto || '');
+	const photo = $derived(block.content.authorPhoto || '');
 	const socials = $derived<Array<{ platform: string; url: string }>>(
-		props.block.content.authorSocials || []
+		block.content.authorSocials || []
 	);
 	const sanitizedPhotoURL = $derived(photo ? sanitizeURL(photo) : '');
 
@@ -75,7 +74,7 @@
 	// ==========================================================================
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 
 	function handlePaste(e: ClipboardEvent): void {
@@ -119,7 +118,7 @@
 
 		if (!validation.valid) {
 			uploadError = validation.error || 'Invalid file';
-			props.onError?.(new Error(uploadError));
+			onError?.(new Error(uploadError));
 			return;
 		}
 
@@ -135,7 +134,7 @@
 		} catch (err) {
 			const error = err instanceof Error ? err.message : 'Failed to upload photo';
 			uploadError = error;
-			props.onError?.(new Error(error));
+			onError?.(new Error(error));
 		} finally {
 			isUploading = false;
 		}
@@ -201,8 +200,8 @@
 
 <div
 	class="author-block"
-	class:author-block--selected={props.isSelected}
-	class:author-block--editing={props.isEditing}
+	class:author-block--selected={isSelected}
+	class:author-block--editing={isEditing}
 	role="article"
 	aria-label="About the author"
 >
@@ -210,8 +209,15 @@
 	<div class="author-block__photo-section">
 		{#if sanitizedPhotoURL}
 			<div class="author-block__photo">
-				<img src={sanitizedPhotoURL} alt={name} loading="lazy" />
-				{#if props.isEditing && props.isSelected}
+				<img
+					src={sanitizedPhotoURL}
+					alt={name}
+					width="120"
+					height="120"
+					loading="lazy"
+					decoding="async"
+				/>
+				{#if isEditing && isSelected}
 					<button
 						type="button"
 						class="author-block__photo-remove"
@@ -222,7 +228,7 @@
 					</button>
 				{/if}
 			</div>
-		{:else if props.isEditing}
+		{:else if isEditing}
 			<div
 				class="author-block__photo-placeholder"
 				class:author-block__photo-placeholder--uploading={isUploading}
@@ -258,7 +264,7 @@
 		{/if}
 
 		<!-- Photo URL Input (Edit Mode) -->
-		{#if props.isEditing && props.isSelected && !sanitizedPhotoURL}
+		{#if isEditing && isSelected && !sanitizedPhotoURL}
 			<div class="author-block__photo-actions">
 				{#if showUrlInput}
 					<div class="author-block__url-input-wrapper">
@@ -305,7 +311,7 @@
 			<span class="author-block__label">Written by</span>
 
 			<!-- Author Name -->
-			{#if props.isEditing}
+			{#if isEditing}
 				<!-- svelte-ignore a11y_no_noninteractive_element_to_interactive_role -->
 				<h3
 					contenteditable="true"
@@ -324,8 +330,8 @@
 			{/if}
 
 			<!-- Author Title -->
-			{#if title || props.isEditing}
-				{#if props.isEditing}
+			{#if title || isEditing}
+				{#if isEditing}
 					<!-- svelte-ignore a11y_no_noninteractive_element_to_interactive_role -->
 					<p
 						contenteditable="true"
@@ -347,7 +353,7 @@
 		</div>
 
 		<!-- Author Bio -->
-		{#if props.isEditing}
+		{#if isEditing}
 			<!-- svelte-ignore a11y_no_noninteractive_element_to_interactive_role -->
 			<p
 				contenteditable="true"
@@ -365,10 +371,10 @@
 		{/if}
 
 		<!-- Social Links -->
-		{#if socials.length > 0 || props.isEditing}
+		{#if socials.length > 0 || isEditing}
 			<div class="author-block__socials">
 				{#each socials as social, index (index)}
-					{#if props.isEditing}
+					{#if isEditing}
 						<div class="author-block__social-edit">
 							<select
 								value={social.platform}
@@ -410,7 +416,7 @@
 					{/if}
 				{/each}
 
-				{#if props.isEditing}
+				{#if isEditing}
 					<button
 						type="button"
 						class="author-block__social-add"

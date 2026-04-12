@@ -21,7 +21,7 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
 	interface ButtonItem {
 		id: string;
@@ -32,7 +32,7 @@
 	}
 
 	let buttons = $derived<ButtonItem[]>(
-		props.block.content.buttonItems?.map(
+		block.content.buttonItems?.map(
 			(item: { id: string; text: string; url: string; style?: string; newTab?: boolean }) => ({
 				id: item.id,
 				text: item.text,
@@ -43,13 +43,13 @@
 		) || [{ id: 'btn_1', text: 'Learn More', url: '#', style: 'primary' as const, newTab: false }]
 	);
 
-	let layout = $derived((props.block.settings.buttonLayout as 'row' | 'column' | 'wrap') || 'row');
+	let layout = $derived((block.settings.buttonLayout as 'row' | 'column' | 'wrap') || 'row');
 	let alignment = $derived(
-		(props.block.settings.buttonAlignment as 'left' | 'center' | 'right') || 'left'
+		(block.settings.buttonAlignment as 'left' | 'center' | 'right') || 'left'
 	);
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 
 	function updateButton(index: number, updates: Partial<ButtonItem>): void {
@@ -91,7 +91,7 @@
 	<div class="buttons-container">
 		{#each buttons as button, index (button.id)}
 			<div class="button-wrapper">
-				{#if props.isEditing}
+				{#if isEditing}
 					<span
 						contenteditable="true"
 						class="btn btn-{button.style} editable-btn"
@@ -123,14 +123,14 @@
 				{/if}
 			</div>
 		{/each}
-		{#if props.isEditing}
+		{#if isEditing}
 			<button type="button" class="add-btn" onclick={addButton} aria-label="Add button">
 				<Icon icon={IconPlus} size={14} />
 			</button>
 		{/if}
 	</div>
 
-	{#if props.isEditing && props.isSelected}
+	{#if isEditing && isSelected}
 		<div class="buttons-settings">
 			{#each buttons as button, index (button.id)}
 				<div class="button-settings">
@@ -175,9 +175,9 @@
 					<select
 						value={layout}
 						onchange={(e) =>
-							props.onUpdate({
+							onUpdate({
 								settings: {
-									...props.block.settings,
+									...block.settings,
 									buttonLayout: (e.target as HTMLSelectElement).value as 'row' | 'column' | 'wrap'
 								}
 							})}
@@ -192,9 +192,9 @@
 					<select
 						value={alignment}
 						onchange={(e) =>
-							props.onUpdate({
+							onUpdate({
 								settings: {
-									...props.block.settings,
+									...block.settings,
 									buttonAlignment: (e.target as HTMLSelectElement).value as
 										| 'left'
 										| 'center'

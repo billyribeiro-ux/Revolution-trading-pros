@@ -408,7 +408,7 @@
 							</span>
 							{#if funnel.trigger_settings && Object.keys(funnel.trigger_settings).length > 0}
 								<div class="trigger-settings">
-									{#each Object.entries(funnel.trigger_settings) as [key, value]}
+									{#each Object.entries(funnel.trigger_settings) as [key, value] (key)}
 										<div class="setting-item">
 											<span class="setting-key">{key.replace(/_/g, ' ')}:</span>
 											<span class="setting-value">{value}</span>
@@ -475,7 +475,7 @@
 						</div>
 
 						<!-- Action Nodes -->
-						{#each actions as action, index}
+						{#each actions as action, index (index)}
 							{@const ActionIcon = getActionIcon(action.action_type)}
 							<div class="workflow-connector">
 								<Icon icon={IconArrowRight} size={16} />
@@ -539,7 +539,8 @@
 								</tr>
 							</thead>
 							<tbody>
-								{#each subscribers as subscriber}
+								<!-- key (i): items lack stable id -->
+								{#each subscribers as subscriber, i (i)}
 									<tr>
 										<td>
 											<div class="contact-cell">

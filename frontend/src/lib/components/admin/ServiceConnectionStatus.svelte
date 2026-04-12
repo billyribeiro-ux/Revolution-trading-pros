@@ -152,7 +152,7 @@
 			icon: '🔔',
 			color: '#362D59',
 			features: ['Error tracking', 'Performance monitoring', 'Alerts', 'Debug tools'],
-			primaryService: 'sentry'
+			primaryService: 'new_relic'
 		}
 	};
 
@@ -179,18 +179,17 @@
 		onConnected?: () => void;
 	}
 
-	let props: Props = $props();
-
-	// Destructure with defaults for internal use
-	const feature = $derived(props.feature);
-	const serviceKey = $derived(props.serviceKey);
-	const serviceName = $derived(props.serviceName);
-	const description = $derived(props.description);
-	const variant = $derived(props.variant ?? 'card');
-	const showFeatures = $derived(props.showFeatures ?? true);
-	const color = $derived(props.color);
-	const icon = $derived(props.icon);
-	const onConnected = $derived(props.onConnected);
+	let {
+		feature,
+		serviceKey,
+		serviceName,
+		description,
+		variant = 'card',
+		showFeatures = true,
+		color,
+		icon,
+		onConnected
+	}: Props = $props();
 
 	// Derive configuration from feature or custom props
 	let config = $derived.by(() => {
@@ -308,7 +307,7 @@
 					<div class="features-section" in:slide={{ duration: 300, delay: 100 }}>
 						<p class="features-label">This connection enables:</p>
 						<ul class="features-list">
-							{#each config.features as featureItem, i}
+							{#each config.features as featureItem, i (featureItem)}
 								<li in:fly={{ x: -10, duration: 200, delay: 150 + i * 50 }}>
 									<span class="check-icon" style="color: {config.color}">✓</span>
 									{featureItem}

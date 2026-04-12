@@ -84,7 +84,7 @@
 <section
 	bind:this={containerRef}
 	onmousemove={handleMouseMove}
-	class="lb-section"
+	class="relative py-32 3xl:py-40 5xl:py-48 px-6 3xl:px-12 5xl:px-16 6xl:px-20 bg-[#020202] overflow-hidden border-t border-white/10"
 	aria-label="Market Intelligence Wire"
 >
 	<div class="lb-bg">
@@ -95,19 +95,29 @@
 		></div>
 	</div>
 
-	<div class="lb-container">
-		<div class="lb-header">
+	<div
+		class="relative max-w-[1600px] 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto z-10"
+	>
+		<div
+			class="max-w-4xl 3xl:max-w-[1200px] 4xl:max-w-[1600px] 5xl:max-w-[2000px] 6xl:max-w-[2400px] mx-auto text-center mb-24 3xl:mb-32 5xl:mb-40"
+		>
 			{#if isVisible}
 				<div in:heavySlide={{ delay: 0, duration: 1000 }} class="lb-badge">
 					<Icon icon={IconNews} size={14} />
 					Intelligence Wire
 				</div>
 
-				<h2 in:heavySlide={{ delay: 100 }} class="lb-title">
-					Market <span class="lb-title-muted">Analysis.</span>
+				<h2
+					in:heavySlide={{ delay: 100 }}
+					class="text-4xl xs:text-5xl sm:text-5xl md:text-7xl 3xl:text-8xl 4xl:text-9xl 5xl:text-[10rem] font-serif text-white mb-8 tracking-tight"
+				>
+					Market <span class="text-slate-700">Analysis.</span>
 				</h2>
 
-				<p in:heavySlide={{ delay: 200 }} class="lb-subtitle">
+				<p
+					in:heavySlide={{ delay: 200 }}
+					class="text-lg 3xl:text-xl 5xl:text-2xl text-slate-400 font-light leading-relaxed max-w-2xl 3xl:max-w-3xl 5xl:max-w-4xl mx-auto"
+				>
 					We don't publish retail content. We deliver institutional-grade market intelligence.
 					Verified by quantitative analysts and professional trading desks worldwide.
 				</p>
@@ -115,7 +125,7 @@
 		</div>
 
 		{#if posts.length > 0}
-			<div class="lb-layout">
+			<div class="grid lg:grid-cols-12 gap-12 3xl:gap-16 5xl:gap-20">
 				{#if leadPost}
 					<div class="lb-lead-col">
 						{#if isVisible}
@@ -169,12 +179,20 @@
 							<span>Incoming Signals</span>
 						</div>
 
-						<div class="lb-wire-list">
-							{#each wirePosts as post}
-								<a href="/blog/{post.slug}" class="lb-wire-item">
-									<div class="lb-wire-top">
-										<span class="lb-wire-time">{getRelativeTime(post.published_at)}</span>
-										<Icon icon={IconChartCandle} size={14} class="lb-wire-candle" />
+						<div class="space-y-8">
+							{#each wirePosts as post (post.slug)}
+								<a
+									href="/blog/{post.slug}"
+									class="group block border-b border-white/5 pb-8 last:border-0 hover:pl-4 transition-all duration-300"
+								>
+									<div class="flex items-center justify-between mb-2">
+										<span class="text-[10px] font-mono text-amber-600 uppercase tracking-widest">
+											{getRelativeTime(post.published_at)}
+										</span>
+										<IconChartCandle
+											size={14}
+											class="text-slate-600 group-hover:text-amber-500 transition-colors"
+										/>
 									</div>
 									<h4 class="lb-wire-title">{post.title}</h4>
 									<div class="lb-wire-bottom">

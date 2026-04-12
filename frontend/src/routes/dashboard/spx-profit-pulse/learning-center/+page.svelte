@@ -17,23 +17,9 @@
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
-	import type { VideoResponse } from './+page.server';
+	import type { PageProps } from './$types';
 
-	interface PageData {
-		videos: VideoResponse[];
-		meta: {
-			current_page: number;
-			per_page: number;
-			total: number;
-			last_page: number;
-		};
-		activeFilter: string;
-		error: string | null;
-	}
-
-	// Server-side data
-	let props: { data: PageData } = $props();
-	let data = $derived(props.data);
+	let { data }: PageProps = $props();
 
 	// Reactive state from server data
 	let videos = $derived(data.videos || []);
@@ -166,7 +152,7 @@
 					</svg>
 				</label>
 			</div>
-			{#each categories as category}
+			{#each categories as category (category.id)}
 				<div class="filter_btn">
 					<input
 						type="radio"
@@ -210,7 +196,7 @@
 		{#if videos.length > 0}
 			<div id="response">
 				<div class="article-cards row flex-grid">
-					{#each videos as video}
+					{#each videos as video (video.slug)}
 						<div class="col-xs-12 col-sm-6 col-md-6 col-xl-4 flex-grid-item">
 							<article class="article-card">
 								<figure
@@ -222,11 +208,15 @@
 										src={video.thumbnail_url ||
 											'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg'}
 										alt={video.title}
+										width="325"
+										height="183"
+										loading="lazy"
+										decoding="async"
 									/>
 								</figure>
 								{#if video.tag_details && video.tag_details.length > 0}
 									<div class="article-card__type">
-										{#each video.tag_details as tag}
+										{#each video.tag_details as tag (tag.slug)}
 											<span id={tag.slug} class="label label--info">{tag.name}</span>
 										{/each}
 									</div>
@@ -257,7 +247,7 @@
 			<!-- Pagination -->
 			{#if totalPages > 1}
 				<div class="facetwp-pager">
-					{#each getPaginationRange() as item}
+					{#each getPaginationRange() as item (item)}
 						{#if typeof item === 'number'}
 							<button
 								type="button"

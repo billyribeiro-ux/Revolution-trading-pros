@@ -228,11 +228,19 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#each indicators as indicator}
+						{#each indicators as indicator (indicator.id)}
 							<tr>
 								<td class="indicator-cell">
 									{#if indicator.thumbnail}
-										<img src={indicator.thumbnail} alt="" class="logo" />
+										<img
+											src={indicator.thumbnail}
+											alt=""
+											width="48"
+											height="48"
+											loading="lazy"
+											decoding="async"
+											class="logo"
+										/>
 									{:else}
 										<div class="logo-placeholder">
 											<svg

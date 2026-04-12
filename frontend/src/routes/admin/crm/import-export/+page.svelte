@@ -221,7 +221,7 @@
 			<p class="section-description">Select what you want to import</p>
 
 			<div class="type-grid">
-				{#each importTypes as { type, name, icon: iconStr, description }}
+				{#each importTypes as { type, name, icon: Icon, description } (type)}
 					<a href="/admin/crm/import-export/import/{type}" class="type-card">
 						<div class="type-icon">
 							<Icon icon={iconStr} size={24} />
@@ -251,7 +251,8 @@
 							</tr>
 						</thead>
 						<tbody>
-							{#each importJobs as job}
+							<!-- key (i): items lack stable id -->
+							{#each importJobs as job, i (i)}
 								{@const StatusIcon = getStatusIcon(job.status)}
 								<tr>
 									<td>
@@ -291,7 +292,7 @@
 			<p class="section-description">Select what you want to export</p>
 
 			<div class="type-grid">
-				{#each exportTypes as { type, name, icon: iconStr, description }}
+				{#each exportTypes as { type, name, icon: Icon, description } (type)}
 					<button class="type-card" onclick={() => startExport(type)}>
 						<div class="type-icon">
 							<Icon icon={iconStr} size={24} />
@@ -321,7 +322,7 @@
 							</tr>
 						</thead>
 						<tbody>
-							{#each exportJobs as job}
+							{#each exportJobs as job (job.id)}
 								{@const ExportStatusIcon = getStatusIcon(job.status)}
 								<tr>
 									<td>

@@ -26,16 +26,16 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
 	// Derive the heading level from settings (default to H2)
-	const level = $derived((props.block.settings.level || 2) as 1 | 2 | 3 | 4 | 5 | 6);
+	const level = $derived((block.settings.level || 2) as 1 | 2 | 3 | 4 | 5 | 6);
 
 	// Derive text alignment from settings
-	const textAlign = $derived(props.block.settings.textAlign || 'left');
+	const textAlign = $derived(block.settings.textAlign || 'left');
 
 	// Derive text color from settings
-	const textColor = $derived(props.block.settings.textColor || '');
+	const textColor = $derived(block.settings.textColor || '');
 
 	/**
 	 * Generate a URL-safe anchor slug from text
@@ -45,7 +45,7 @@
 	 * - Removes consecutive hyphens
 	 */
 	const anchorSlug = $derived.by(() => {
-		const text = props.block.content.text || '';
+		const text = block.content.text || '';
 		if (!text.trim()) return '';
 
 		return text
@@ -59,7 +59,7 @@
 	});
 
 	// Use custom anchor from settings if provided, otherwise use auto-generated
-	const anchor = $derived(props.block.settings.anchor || anchorSlug);
+	const anchor = $derived(block.settings.anchor || anchorSlug);
 
 	// Build inline styles for custom settings
 	const inlineStyles = $derived.by(() => {
@@ -77,7 +77,7 @@
 	 * Update block content with partial updates
 	 */
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 
 	/**
@@ -101,8 +101,8 @@
 	 * Set the heading level
 	 */
 	function setLevel(newLevel: 1 | 2 | 3 | 4 | 5 | 6): void {
-		props.onUpdate({
-			settings: { ...props.block.settings, level: newLevel }
+		onUpdate({
+			settings: { ...block.settings, level: newLevel }
 		});
 	}
 
@@ -122,9 +122,9 @@
 
 <div class="heading-block">
 	<!-- Level Selector Toolbar (shown when editing and selected) -->
-	{#if props.isEditing && props.isSelected}
+	{#if isEditing && isSelected}
 		<div class="heading-block__toolbar" role="toolbar" aria-label="Heading level selector">
-			{#each headingLevels as lvl}
+			{#each headingLevels as lvl (lvl)}
 				<button
 					type="button"
 					class="heading-block__level-btn"
@@ -143,22 +143,22 @@
 	<!-- Dynamic Heading Element -->
 	<svelte:element
 		this={`h${level}`}
-		contenteditable={props.isEditing}
+		contenteditable={isEditing}
 		class="heading-block__content heading-block__content--level-{level}"
-		class:heading-block__content--editing={props.isEditing}
-		class:heading-block__content--selected={props.isSelected}
-		class:heading-block__content--placeholder={!props.block.content.text}
+		class:heading-block__content--editing={isEditing}
+		class:heading-block__content--selected={isSelected}
+		class:heading-block__content--placeholder={!block.content.text}
 		style={inlineStyles}
 		oninput={handleTextInput}
 		onpaste={handlePaste}
 		onkeydown={handleKeydown}
 		data-placeholder="Heading {level}"
 		id={anchor || undefined}
-		role={props.isEditing ? 'textbox' : 'heading'}
-		aria-label={props.isEditing ? `Heading ${level} text` : undefined}
+		role={isEditing ? 'textbox' : 'heading'}
+		aria-label={isEditing ? `Heading ${level} text` : undefined}
 		aria-level={level}
 	>
-		{props.block.content.text || ''}
+		{block.content.text || ''}
 	</svelte:element>
 </div>
 

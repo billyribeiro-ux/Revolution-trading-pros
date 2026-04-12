@@ -67,11 +67,13 @@
 	<div class="table-scroll">
 		<table class="cohort-table">
 			<thead>
-				<tr>
-					<th class="sticky-col"> Cohort </th>
-					<th class="center-col"> Size </th>
+				<tr class="bg-gray-50">
+					<th class="px-3 py-2 text-left font-medium text-gray-600 sticky left-0 bg-gray-50 z-10">
+						Cohort
+					</th>
+					<th class="px-3 py-2 text-center font-medium text-gray-600"> Size </th>
 					{#each periodNumbers as period (period)}
-						<th class="period-col">
+						<th class="px-2 py-2 text-center font-medium text-gray-600 min-w-[60px]">
 							{period === 0 ? 'Day 0' : `Week ${period}`}
 						</th>
 					{/each}
@@ -118,8 +120,8 @@
 							data.reduce((sum, row) => sum + (row.cohort_size || row.size || 0), 0) / data.length
 						).toLocaleString()}
 					</td>
-					{#each periodAverages as avg, i (i)}
-						<td class="cell">
+					{#each periodAverages as avg (avg)}
+						<td class="px-1 py-1">
 							{#if avg !== null}
 								<div class="heat-cell avg" data-level={getRetentionLevel(avg)}>
 									{avg.toFixed(0)}%

@@ -109,7 +109,15 @@
 	<!-- Thumbnail / Preview -->
 	<div class="rc-thumb">
 		{#if resource.thumbnail_url}
-			<img src={resource.thumbnail_url} alt={resource.title} class="rc-thumb-img" loading="lazy" />
+			<img
+				src={resource.thumbnail_url}
+				alt={resource.title}
+				width="400"
+				height="225"
+				loading="lazy"
+				decoding="async"
+				class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+			/>
 		{:else}
 			<div class="rc-thumb-placeholder">
 				<svg class="rc-icon-xl" fill="none" stroke="currentColor" viewBox="0 0 24 24">

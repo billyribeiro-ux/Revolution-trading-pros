@@ -94,7 +94,7 @@
 		></div>
 
 		<div
-			class="relative bg-slate-900/90 backdrop-blur-xl border border-purple-500/20 rounded-3xl p-10 shadow-2xl"
+			class="relative bg-slate-900/90 backdrop-blur-xl border border-purple-500/20 rounded-2xl sm:rounded-3xl p-6 sm:p-10 shadow-2xl"
 		>
 			<!-- Header -->
 			<div class="text-center mb-8">
@@ -106,7 +106,7 @@
 					</div>
 				</div>
 				<h1
-					class="text-4xl font-heading font-bold mb-3 bg-linear-to-r from-purple-300 via-pink-300 to-rose-300 bg-clip-text text-transparent"
+					class="text-2xl sm:text-4xl font-heading font-bold mb-2 sm:mb-3 bg-gradient-to-r from-purple-300 via-pink-300 to-rose-300 bg-clip-text text-transparent"
 				>
 					Reset Password
 				</h1>
@@ -139,7 +139,7 @@
 			<!-- Reset password form -->
 			<form onsubmit={handleSubmit} class="space-y-5">
 				<!-- Email field (hidden, auto-filled from URL) -->
-				<input type="hidden" name="email" id="email" bind:value={email} />
+				<input type="hidden" name="email" id="email" autocomplete="email" bind:value={email} />
 				<input type="hidden" name="token" id="token" bind:value={token} />
 
 				<!-- Email display (read-only) -->
@@ -167,6 +167,9 @@
 							type={showPassword ? 'text' : 'password'}
 							bind:value={password}
 							required
+							aria-required="true"
+							aria-invalid={errors.password ? 'true' : 'false'}
+							aria-describedby={errors.password ? 'password-error' : 'password-hint'}
 							minlength="12"
 							autocomplete="new-password"
 							class="w-full pl-12 pr-12 py-3.5 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 focus:outline-none transition-all duration-300"
@@ -188,9 +191,9 @@
 						</button>
 					</div>
 					{#if errors.password}
-						<p class="mt-2 text-sm text-red-400">{errors.password[0]}</p>
+						<p id="password-error" class="mt-2 text-sm text-red-400">{errors.password[0]}</p>
 					{:else}
-						<p class="mt-2 text-xs text-slate-500">
+						<p id="password-hint" class="mt-2 text-xs text-slate-500">
 							Minimum 12 characters with uppercase, lowercase, and number
 						</p>
 					{/if}
@@ -214,6 +217,8 @@
 							type={showConfirmPassword ? 'text' : 'password'}
 							bind:value={password_confirmation}
 							required
+							aria-required="true"
+							minlength="12"
 							autocomplete="new-password"
 							class="w-full pl-12 pr-12 py-3.5 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 focus:outline-none transition-all duration-300"
 							placeholder="••••••••"

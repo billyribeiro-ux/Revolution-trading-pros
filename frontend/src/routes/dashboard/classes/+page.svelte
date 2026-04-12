@@ -225,7 +225,10 @@
 														<img
 															src={enrollment.course.card_image_url}
 															alt={enrollment.course.title}
+															width="400"
+															height="225"
 															loading="lazy"
+															decoding="async"
 														/>
 														<div class="progress-overlay">
 															<div class="progress-bar">
@@ -287,7 +290,10 @@
 														<img
 															src={enrollment.course.card_image_url}
 															alt={enrollment.course.title}
+															width="400"
+															height="225"
 															loading="lazy"
+															decoding="async"
 														/>
 														<div class="completed-badge">
 															<svg
@@ -365,7 +371,7 @@
 												Previous
 											</button>
 										</li>
-										{#each pageNumbers as pageNum}
+										{#each pageNumbers as pageNum (pageNum)}
 											<li>
 												{#if pageNum === currentPage}
 													<span class="page-numbers current" aria-current="page">{pageNum}</span>

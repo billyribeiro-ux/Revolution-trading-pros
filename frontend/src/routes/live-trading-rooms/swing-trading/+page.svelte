@@ -3,7 +3,7 @@
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
+	import { revealAllDataGsapTargets } from '$lib/motion/gsapScrollReveal';
 
 	// --- Pricing State (Svelte 5 Runes) ---
 	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = $state('quarterly');
@@ -19,46 +19,48 @@
 		let ctx: ReturnType<typeof import('gsap').gsap.context> | null = null;
 
 		(async () => {
-			const { gsap } = await import('gsap');
-			const { ScrollTrigger } = await import('gsap/ScrollTrigger');
-			gsap.registerPlugin(ScrollTrigger);
+			try {
+				const { gsap } = await import('gsap');
+				const { ScrollTrigger } = await import('gsap/ScrollTrigger');
+				gsap.registerPlugin(ScrollTrigger);
 
-			const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+				const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-			if (prefersReducedMotion) {
-				gsap.set('[data-gsap]', { opacity: 1, y: 0 });
-				return;
+				if (prefersReducedMotion) {
+					gsap.set('[data-gsap]', { opacity: 1, y: 0 });
+					return;
+				}
+
+				ctx = gsap.context(() => {
+					const elements = document.querySelectorAll('[data-gsap]');
+					elements.forEach((el) => {
+						const rect = el.getBoundingClientRect();
+						const isInViewport = rect.top < window.innerHeight * 0.85;
+						if (!isInViewport) {
+							gsap.set(el, { opacity: 0, y: 30 });
+						}
+					});
+
+					ScrollTrigger.batch('[data-gsap]', {
+						onEnter: (batch) => {
+							gsap.to(batch, {
+								opacity: 1,
+								y: 0,
+								duration: 0.8,
+								ease: 'power3.out',
+								stagger: 0.1,
+								overwrite: true
+							});
+						},
+						start: 'top 85%',
+						once: true
+					});
+
+					ScrollTrigger.refresh();
+				});
+			} catch {
+				revealAllDataGsapTargets();
 			}
-
-			// Use gsap.context() for scoped cleanup - prevents global ScrollTrigger destruction
-			ctx = gsap.context(() => {
-				// Only set initial hidden state for elements NOT yet in viewport
-				const elements = document.querySelectorAll('[data-gsap]');
-				elements.forEach((el) => {
-					const rect = el.getBoundingClientRect();
-					const isInViewport = rect.top < window.innerHeight * 0.85;
-					if (!isInViewport) {
-						gsap.set(el, { opacity: 0, y: 30 });
-					}
-				});
-
-				ScrollTrigger.batch('[data-gsap]', {
-					onEnter: (batch) => {
-						gsap.to(batch, {
-							opacity: 1,
-							y: 0,
-							duration: 0.8,
-							ease: 'power3.out',
-							stagger: 0.1,
-							overwrite: true
-						});
-					},
-					start: 'top 85%',
-					once: true
-				});
-
-				ScrollTrigger.refresh();
-			});
 		})();
 
 		return () => ctx?.revert();
@@ -201,7 +203,7 @@
 		</div>
 
 		<div
-			class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-16 items-center"
+			class="relative z-10 max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-16 items-center"
 		>
 			<div class="text-center lg:text-left">
 				<div
@@ -221,7 +223,7 @@
 
 				<h1
 					data-gsap
-					class="text-5xl md:text-7xl font-heading font-extrabold mb-6 leading-tight tracking-tight"
+					class="text-4xl xs:text-5xl md:text-7xl font-heading font-extrabold mb-6 leading-tight tracking-tight break-words"
 				>
 					Catch the <br />
 					<span
@@ -242,7 +244,7 @@
 				>
 					<a
 						href="#pricing"
-						class="group relative w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-200 bg-rtp-emerald rounded-xl hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rtp-emerald offset-rtp-bg shadow-lg hover:shadow-emerald-500/25 hover:-translate-y-1"
+						class="group relative w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-200 bg-rtp-emerald rounded-xl hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-rtp-bg focus:ring-rtp-emerald shadow-lg hover:shadow-emerald-500/25 hover:-translate-y-1"
 					>
 						Start Trading Swings
 						<svg
@@ -328,7 +330,7 @@
 				>
 					<div class="flex justify-between items-center mb-8">
 						<div>
-							<h3 class="text-2xl font-bold text-white">Swing Alert 🚀</h3>
+							<h2 class="text-2xl font-bold text-white">Swing Alert 🚀</h2>
 							<p class="text-rtp-emerald text-sm font-bold">High Probability Setup</p>
 						</div>
 						<div
@@ -382,7 +384,9 @@
 	</section>
 
 	<section class="bg-rtp-surface border-y border-rtp-border relative z-20">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+		<div
+			class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 py-12"
+		>
 			<dl class="grid grid-cols-2 md:grid-cols-4 gap-8">
 				<div class="text-center group cursor-default">
 					<dt
@@ -423,7 +427,9 @@
 	</section>
 
 	<section class="py-24 bg-rtp-bg relative overflow-hidden">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div
+			class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8"
+		>
 			<div class="text-center mb-16">
 				<span class="text-rtp-emerald font-bold uppercase tracking-wider text-sm mb-2 block"
 					>Lifestyle First</span
@@ -551,7 +557,9 @@
 	</section>
 
 	<section id="process" class="py-24 bg-rtp-surface border-t border-rtp-border">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div
+			class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8"
+		>
 			<div class="text-center mb-16">
 				<span class="text-rtp-emerald font-bold uppercase tracking-wider text-sm mb-2 block"
 					>How It Works</span
@@ -640,7 +648,9 @@
 	</section>
 
 	<section class="py-24 bg-rtp-bg">
-		<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div
+			class="max-w-6xl 3xl:max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto px-4 sm:px-6 lg:px-8"
+		>
 			<div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
 				<div>
 					<h2 class="text-3xl font-heading font-bold text-rtp-text mb-2">Recent Verified Swings</h2>
@@ -680,6 +690,10 @@
 							<img
 								src="/logos/nvda.svg"
 								alt="NVIDIA logo"
+								width="20"
+								height="20"
+								loading="lazy"
+								decoding="async"
 								class="w-5 h-5 opacity-70 hidden sm:block"
 							/>
 							NVDA
@@ -693,7 +707,15 @@
 					</div>
 					<div class="grid grid-cols-12 p-5 items-center hover:bg-white/5 transition-colors">
 						<div class="col-span-3 md:col-span-2 font-bold text-white flex items-center gap-2">
-							<img src="/logos/amd.svg" alt="AMD logo" class="w-5 h-5 opacity-70 hidden sm:block" />
+							<img
+								src="/logos/amd.svg"
+								alt="AMD logo"
+								width="20"
+								height="20"
+								loading="lazy"
+								decoding="async"
+								class="w-5 h-5 opacity-70 hidden sm:block"
+							/>
 							AMD
 						</div>
 						<div class="col-span-3 md:col-span-2 text-emerald-400 font-bold">CALLS</div>
@@ -710,6 +732,10 @@
 							<img
 								src="/logos/tsla.svg"
 								alt="Tesla logo"
+								width="20"
+								height="20"
+								loading="lazy"
+								decoding="async"
 								class="w-5 h-5 opacity-70 hidden sm:block"
 							/>
 							TSLA
@@ -726,6 +752,10 @@
 							<img
 								src="/logos/meta.svg"
 								alt="Meta logo"
+								width="20"
+								height="20"
+								loading="lazy"
+								decoding="async"
 								class="w-5 h-5 opacity-70 hidden sm:block"
 							/>
 							META
@@ -743,7 +773,9 @@
 	</section>
 
 	<section id="pricing" class="py-24 bg-rtp-surface border-t border-rtp-border relative">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div
+			class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8"
+		>
 			<div class="text-center mb-16">
 				<span class="text-rtp-emerald font-bold uppercase tracking-wider text-sm mb-2 block"
 					>Membership</span
@@ -796,7 +828,9 @@
 				</div>
 			</div>
 
-			<div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto items-center">
+			<div
+				class="grid md:grid-cols-3 gap-8 max-w-6xl 3xl:max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto items-center"
+			>
 				<div
 					class="bg-rtp-bg p-8 rounded-2xl border transition-all duration-300 {selectedPlan ===
 					'monthly'
@@ -945,12 +979,12 @@
 				Frequently Asked Questions
 			</h2>
 			<div class="space-y-4">
-				{#each faqList as faq, i}
+				{#each faqList as faq, i (faq.question)}
 					<div
 						class="border border-rtp-border rounded-xl bg-rtp-surface overflow-hidden hover:border-rtp-emerald/30 transition-colors"
 					>
 						<button
-							class="w-full text-left px-6 py-5 font-bold flex justify-between items-center focus:outline-none hover:bg-white/5 transition-colors text-rtp-text"
+							class="w-full text-left px-6 py-5 font-bold flex justify-between items-center min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rtp-emerald focus-visible:ring-offset-2 focus-visible:ring-offset-rtp-bg hover:bg-white/5 transition-colors text-rtp-text"
 							onclick={() => toggleFaq(i)}
 							aria-expanded={openFaq === i}
 						>
@@ -1006,5 +1040,3 @@
 		</div>
 	</section>
 </div>
-
-<MarketingFooter />

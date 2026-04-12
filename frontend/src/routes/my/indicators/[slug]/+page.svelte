@@ -166,7 +166,16 @@
 			<a href="/my/indicators" class="back-link">← My Indicators</a>
 			<div class="indicator-info">
 				{#if indicator.logo_url}
-					<img src={indicator.logo_url} alt="" class="logo" />
+					<img
+						src={indicator.logo_url}
+						alt=""
+						width="80"
+						height="80"
+						loading="eager"
+						fetchpriority="high"
+						decoding="sync"
+						class="logo"
+					/>
 				{/if}
 				<div>
 					<h1>{indicator.name}</h1>
@@ -228,14 +237,14 @@
 				</div>
 			{:else}
 				<div class="platforms-grid">
-					{#each Object.entries(filesByPlatform) as [platform, platformFiles]}
+					{#each Object.entries(filesByPlatform) as [platform, platformFiles] (platform)}
 						<div class="platform-card">
 							<div class="platform-header">
 								<span class="platform-icon">{platformIcons[platform] || '📦'}</span>
 								<h3>{platformNames[platform] || platform}</h3>
 							</div>
 							<div class="platform-files">
-								{#each platformFiles as file}
+								{#each platformFiles as file (file.id)}
 									<button
 										class="download-btn"
 										onclick={() => downloadFile(file.id)}
@@ -294,7 +303,7 @@
 					Tutorial Videos
 				</h2>
 				<div class="videos-grid">
-					{#each videos as video}
+					{#each videos as video (video.title)}
 						<div class="video-card">
 							{#if video.embed_url}
 								<iframe
@@ -304,7 +313,14 @@
 									allowfullscreen
 								></iframe>
 							{:else if video.thumbnail_url}
-								<img src={video.thumbnail_url} alt={video.title} />
+								<img
+									src={video.thumbnail_url}
+									alt={video.title}
+									width="400"
+									height="225"
+									loading="lazy"
+									decoding="async"
+								/>
 							{/if}
 							<h4>{video.title}</h4>
 						</div>

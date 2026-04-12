@@ -25,13 +25,7 @@
 		size?: 'sm' | 'md';
 	}
 
-	let props: Props = $props();
-
-	// Destructure with defaults for internal use
-	const actions = $derived(props.actions);
-	const onAction = $derived(props.onAction);
-	const position = $derived(props.position ?? 'right');
-	const size = $derived(props.size ?? 'md');
+	let { actions, onAction, position = 'right', size = 'md' }: Props = $props();
 
 	let isOpen = $state(false);
 	let triggerRef = $state<HTMLButtonElement | null>(null);

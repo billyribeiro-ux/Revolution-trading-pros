@@ -10,10 +10,9 @@
 	 */
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
+	import type { PageProps } from './$types';
 
-	// SSR data from +page.server.ts
-	let props = $props();
-	let data = $derived(props.data);
+	let { data }: PageProps = $props();
 
 	const alert = $derived(data.alert);
 
@@ -79,7 +78,14 @@
 				<div class="trader-card">
 					<div class="trader-photo">
 						{#if alert.trader.photo_url}
-							<img src={alert.trader.photo_url} alt={alert.trader.name} />
+							<img
+								src={alert.trader.photo_url}
+								alt={alert.trader.name}
+								width="80"
+								height="80"
+								loading="lazy"
+								decoding="async"
+							/>
 						{:else}
 							<div class="trader-avatar">
 								{alert.trader.name[0]}
@@ -112,7 +118,7 @@
 			<section class="alert-detail__related">
 				<h2>Previous Sessions</h2>
 				<div class="related-grid">
-					{#each alert.related_alerts as related}
+					{#each alert.related_alerts as related (related.href)}
 						<a href={related.href} class="related-card">
 							<div class="related-image" style="background-image: url({related.image})">
 								<div class="related-overlay">

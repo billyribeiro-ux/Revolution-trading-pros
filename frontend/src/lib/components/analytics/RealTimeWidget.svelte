@@ -113,13 +113,13 @@
 		{#if !compact}
 			<!-- Top Pages -->
 			{#if metrics.top_pages && metrics.top_pages.length > 0}
-				<div class="rt-section">
-					<h4 class="rt-section-title">Top Pages (30m)</h4>
-					<div class="rt-list">
+				<div class="border-t border-gray-700 pt-4">
+					<h4 class="text-xs font-medium text-gray-400 mb-2">Top Pages (30m)</h4>
+					<div class="space-y-2">
 						{#each metrics.top_pages.slice(0, 5) as page (page.page_path)}
-							<div class="rt-list-item">
-								<span class="rt-page-path">{page.page_path}</span>
-								<span class="rt-page-views">{page.views}</span>
+							<div class="flex items-center justify-between text-sm">
+								<span class="text-gray-300 truncate max-w-[200px]">{page.page_path}</span>
+								<span class="text-gray-400">{page.views}</span>
 							</div>
 						{/each}
 					</div>
@@ -128,11 +128,11 @@
 
 			<!-- Top Events -->
 			{#if metrics.top_events && metrics.top_events.length > 0}
-				<div class="rt-section rt-events-section">
-					<h4 class="rt-section-title">Top Events (30m)</h4>
-					<div class="rt-tags">
+				<div class="border-t border-gray-700 pt-4 mt-4">
+					<h4 class="text-xs font-medium text-gray-400 mb-2">Top Events (30m)</h4>
+					<div class="flex flex-wrap gap-2">
 						{#each metrics.top_events.slice(0, 8) as event (event.event_name)}
-							<span class="rt-tag">
+							<span class="px-2 py-1 bg-gray-700 rounded text-xs">
 								{event.event_name}
 								<span class="rt-tag-count">{event.count}</span>
 							</span>

@@ -20,11 +20,7 @@
 		onclose: () => void;
 	}
 
-	let props: Props = $props();
-
-	// Destructure with defaults for internal use
-	const isOpen = $derived(props.isOpen ?? false);
-	const onclose = $derived(props.onclose);
+	let { isOpen = false, onclose }: Props = $props();
 
 	interface NavItem {
 		label: string;
@@ -96,8 +92,8 @@
 
 	<!-- Navigation -->
 	<nav class="sidebar-nav">
-		{#each navigation as item}
-			{@const iconStr = item.icon}
+		{#each navigation as item (item.href ?? item.label)}
+			{@const IconComponent = item.icon}
 			<div class="nav-group">
 				<a
 					href={item.href}
@@ -111,7 +107,7 @@
 
 				{#if item.children && isActive(item.href)}
 					<div class="nav-children">
-						{#each item.children as child}
+						{#each item.children as child (child.href ?? child.label)}
 							<a
 								href={child.href}
 								class="nav-child"
@@ -346,7 +342,7 @@
 	   RESPONSIVE - Mobile Drawer (< lg: 1024px)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	@media (max-width: calc(var(--breakpoint-lg) - 1px)) {
+	@media (max-width: 1023px) {
 		.admin-sidebar {
 			transform: translateX(-100%);
 		}

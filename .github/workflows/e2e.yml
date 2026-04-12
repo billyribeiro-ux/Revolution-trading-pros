@@ -64,7 +64,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install pnpm
+      - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 10.8.0
@@ -93,7 +93,7 @@ jobs:
       - name: Start preview server
         working-directory: frontend
         run: |
-          pnpm exec vite preview --host 127.0.0.1 --port 4173 &
+          pnpm run preview &
           echo $! > .preview-server.pid
           timeout 90 bash -c 'until curl -fsS http://127.0.0.1:4173/ >/dev/null 2>&1; do sleep 1; done' || exit 1
           echo "Preview server started successfully"
@@ -150,7 +150,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install pnpm
+      - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 10.8.0
@@ -179,7 +179,7 @@ jobs:
       - name: Start preview server
         working-directory: frontend
         run: |
-          pnpm exec vite preview --host 127.0.0.1 --port 4173 &
+          pnpm run preview &
           echo $! > .preview-server.pid
           timeout 90 bash -c 'until curl -fsS http://127.0.0.1:4173/ >/dev/null 2>&1; do sleep 1; done' || exit 1
           echo "Preview server started successfully"
@@ -236,7 +236,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install pnpm
+      - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 10.8.0
@@ -248,6 +248,9 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
@@ -256,8 +259,6 @@ jobs:
 
       - name: Merge HTML reports
         run: |
-          pnpm install --frozen-lockfile
-          cd frontend
           # ICT 7: Playwright merge-reports expects a single blob directory
           if [ -d "../all-results" ]; then
             echo "Skipping merge - sharded reports don't support merge-reports"
@@ -287,7 +288,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install pnpm
+      - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 10.8.0
@@ -299,7 +300,7 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
-      - name: Install frontend dependencies
+      - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Install Playwright
@@ -336,7 +337,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install pnpm
+      - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 10.8.0
@@ -365,7 +366,7 @@ jobs:
       - name: Start preview server
         working-directory: frontend
         run: |
-          pnpm exec vite preview --host 127.0.0.1 --port 4173 &
+          pnpm run preview &
           echo $! > .preview-server.pid
           timeout 90 bash -c 'until curl -fsS http://127.0.0.1:4173/ >/dev/null 2>&1; do sleep 1; done' || exit 1
           echo "Preview server started successfully"

@@ -36,17 +36,27 @@
 		onStatClick?: ((stat: StatItem) => void) | null;
 	}
 
-	let props: Props = $props();
-	let stats = $derived(props.stats ?? []);
-	let loading = $derived(props.loading ?? false);
-	let columns = $derived(props.columns ?? 4);
-	let staggerDelay = $derived(props.staggerDelay ?? 0.1);
-	let onStatClick = $derived(props.onStatClick ?? null);
+	let {
+		stats = [],
+		loading = false,
+		columns = 4,
+		staggerDelay = 0.1,
+		onStatClick = null
+	}: Props = $props();
+
+	let gridCols = $derived(
+		{
+			2: 'grid-cols-1 sm:grid-cols-2',
+			3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
+			4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4',
+			5: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'
+		}[columns]
+	);
 </script>
 
 <div class="stats-grid" style:--columns={columns}>
 	{#if loading}
-		{#each Array(columns) as _}
+		{#each Array(columns) as _, i (i)}
 			<SkeletonLoader variant="stat" />
 		{/each}
 	{:else}

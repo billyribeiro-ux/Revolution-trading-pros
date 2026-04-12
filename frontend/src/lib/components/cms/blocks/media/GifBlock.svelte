@@ -21,7 +21,7 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
 	let searchQuery = $state('');
 	let searchResults = $state<Array<{ id: string; url: string; preview: string; title: string }>>(
@@ -29,11 +29,11 @@
 	);
 	let isSearching = $state(false);
 
-	let gifUrl = $derived(props.block.content.mediaUrl || '');
-	let gifAlt = $derived(props.block.content.mediaAlt || 'Animated GIF');
+	let gifUrl = $derived(block.content.mediaUrl || '');
+	let gifAlt = $derived(block.content.mediaAlt || 'Animated GIF');
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 
 	async function searchGifs(): Promise<void> {
@@ -73,7 +73,7 @@
 				}
 			];
 		} catch (error) {
-			props.onError?.(error instanceof Error ? error : new Error('Failed to search GIFs'));
+			onError?.(error instanceof Error ? error : new Error('Failed to search GIFs'));
 			searchResults = [];
 		} finally {
 			isSearching = false;
@@ -99,10 +99,17 @@
 </script>
 
 <div class="gif-block" role="figure" aria-label={gifAlt}>
-	{#if props.isEditing}
+	{#if isEditing}
 		{#if gifUrl}
 			<div class="gif-preview">
-				<img src={sanitizeURL(gifUrl)} alt={gifAlt} />
+				<img
+					src={sanitizeURL(gifUrl)}
+					alt={gifAlt}
+					width="480"
+					height="270"
+					loading="lazy"
+					decoding="async"
+				/>
 				<button type="button" class="gif-remove" onclick={clearGif} aria-label="Remove GIF">
 					<Icon icon={IconX} size={16} />
 				</button>
@@ -170,7 +177,14 @@
 			</div>
 		{/if}
 	{:else if gifUrl}
-		<img src={sanitizeURL(gifUrl)} alt={gifAlt} loading="lazy" />
+		<img
+			src={sanitizeURL(gifUrl)}
+			alt={gifAlt}
+			width="480"
+			height="270"
+			loading="lazy"
+			decoding="async"
+		/>
 	{:else}
 		<div class="gif-empty">
 			<Icon icon={IconGif} size={48} aria-hidden="true" />

@@ -16,15 +16,9 @@
 <script lang="ts">
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 	import TradingRoomArchive from '$lib/components/dashboard/TradingRoomArchive.svelte';
-	import type { DynamicArchivePageData } from './+page.server';
+	import type { PageProps } from './$types';
 
-	// Server data - extends parent layout data
-	interface Props {
-		data: DynamicArchivePageData;
-	}
-
-	let props: Props = $props();
-	let data = $derived(props.data);
+	let { data }: PageProps = $props();
 </script>
 
 <svelte:head>

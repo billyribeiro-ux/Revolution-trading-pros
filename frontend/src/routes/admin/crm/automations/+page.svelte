@@ -615,12 +615,12 @@
 			{/if}
 		</div>
 		<select class="filter-select" bind:value={selectedStatus} aria-label="Filter by status">
-			{#each statusOptions as option}
+			{#each statusOptions as option (option.value)}
 				<option value={option.value}>{option.label}</option>
 			{/each}
 		</select>
 		<select class="filter-select" bind:value={selectedTrigger} aria-label="Filter by trigger">
-			{#each triggerOptions as option}
+			{#each triggerOptions as option (option.value)}
 				<option value={option.value}>{option.label}</option>
 			{/each}
 		</select>

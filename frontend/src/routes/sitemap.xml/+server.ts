@@ -3,17 +3,27 @@
  * Revolution Trading Pros - Sitemap Generator (super-sitemap)
  * ═══════════════════════════════════════════════════════════════════════════════
  *
- * @description super-sitemap is the SOLE sitemap owner.
- * @version 5.0.0 - Unified SEO layer integration
- * @standards Apple Principal Engineer ICT 7+ Standards
+ * @description super-sitemap is the SOLE sitemap owner. Every publicly
+ *              indexable dynamic route ( /blog/[slug], /classes/[slug],
+ *              /indicators/[id], /learning-center/[slug], ...) is resolved at
+ *              request time against the Rust API via
+ *              `$lib/seo/dynamic-routes`, so Google always sees the canonical
+ *              slug list without relying on the API-side `additionalPaths`
+ *              feed.
+ *
+ * @version 6.0.0 - Dynamic-route parity + Cloudflare edge caching
+ * @standards Google Search Essentials (Nov 2025) + Apple Principal Engineer ICT 11
  *
  * Features:
- * - super-sitemap auto-discovers routes from src/routes
+ * - super-sitemap auto-discovers static routes from src/routes
+ * - Fetches blog/class/indicator/learning-center slugs at render time
+ * - Feeds them to super-sitemap via `paramValues`
  * - Excludes private/noindex routes via excludeRoutePatterns
  * - Supports sitemap index for >50K URLs automatically
- * - 1h CDN cache, no browser cache
+ * - Cloudflare edge cache (s-maxage=86400, SWR=604800) — same strategy as
+ *   /robots.txt so the API is hit at most once per hour globally
  * - Alphabetically sorted URLs
- * - Google February 2026 compliant (no priority/changefreq)
+ * - No priority/changefreq (Google Feb 2026 compliant)
  *
  * Constraints (Google):
  * - 50,000 URLs max OR 50MB uncompressed max per sitemap file
@@ -22,16 +32,24 @@
 
 import type { RequestHandler } from '@sveltejs/kit';
 import { response } from 'super-sitemap';
+import { resolveAllDynamicRoutes } from '$lib/seo/dynamic-routes';
 
 const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://revolution-trading-pros.pages.dev';
 
-export const prerender = true;
+// Dynamic content must be fetched at request time — the prerender adapter
+// would snapshot an empty slug list at build time and ship a stale sitemap.
+export const prerender = false;
 
-export const GET: RequestHandler = async () => {
+export const GET: RequestHandler = async ({ fetch }) => {
+	// Resolve every dynamic route in parallel (max ~8s timeout per fetcher,
+	// all defensive — any API failure falls back to [] rather than 500-ing the
+	// sitemap).
+	const dynamic = await resolveAllDynamicRoutes(fetch);
+
 	return await response({
 		origin: SITE_URL,
 		excludeRoutePatterns: [
-			// Private/auth/admin routes — must never appear in sitemap
+			// ─── Private / auth / admin — MUST never appear in sitemap ────────
 			'^/account.*',
 			'^/admin.*',
 			'^/api.*',
@@ -47,7 +65,8 @@ export const GET: RequestHandler = async () => {
 			'^/my.*',
 			'^/reset-password.*',
 			'^/verify-email.*',
-			// Technical routes
+
+			// ─── Technical / feed routes ──────────────────────────────────────
 			'^/\\(dev\\).*',
 			'^/atom\\.xml.*',
 			'^/feed\\.xml.*',
@@ -64,20 +83,48 @@ export const GET: RequestHandler = async () => {
 			'^/email.*',
 			'^/workflows.*',
 			'^/chatroom-archive.*',
-			// Dynamic routes without param values provided
-			'.*\\[slug\\].*',
-			'.*\\[id\\].*',
+
+			// ─── Dynamic route segments that remain private ───────────────────
+			// Note: the PUBLIC dynamic routes (/blog/[slug], /classes/[slug],
+			// /indicators/[id], /learning-center/[slug]) are NOT excluded here —
+			// they receive concrete slug lists via `paramValues` below. Every
+			// other [param] segment (dashboard rooms, admin ids, chatroom dates)
+			// is already covered by the `^/(admin|dashboard|api|...)` excludes
+			// above, so catch-alls on `[id]`/`[room]` are no longer required.
 			'.*\\[room\\].*',
 			'.*\\[page\\].*',
 			'.*\\[room_slug\\].*',
-			'.*\\[date_slug\\].*'
+			'.*\\[date_slug\\].*',
+			// /posts/[slug] currently has no public +page.svelte (edit-only)
+			// and /posts/[slug]/edit is author-only. Exclude the whole subtree.
+			'^/posts.*'
 		],
+		paramValues: {
+			'/blog/[slug]': dynamic.blog,
+			'/classes/[slug]': dynamic.classes,
+			'/indicators/[id]': dynamic.indicators,
+			'/learning-center/[slug]': dynamic.learningCenter
+		},
 		additionalPaths: [
+			// Static marketing / landing pages that live outside the filesystem
+			// router OR that super-sitemap would otherwise miss.
 			'/about',
 			'/alerts/explosive-swings',
 			'/alerts/spx-profit-pulse',
 			'/blog',
+			'/classes',
+			'/courses',
+			'/courses/day-trading-masterclass',
+			'/courses/options-trading',
+			'/courses/risk-management',
+			'/courses/swing-trading-pro',
+			'/guides/exit-strategies',
+			'/guides/position-sizing',
+			'/guides/risk-management',
+			'/guides/swing-entry',
+			'/indicators',
 			'/indicators/volume-max-i',
+			'/learning-center',
 			'/live-trading-rooms/day-trading-room',
 			'/live-trading-rooms/explosive-swings',
 			'/live-trading-rooms/small-account-mentorship',
@@ -85,11 +132,15 @@ export const GET: RequestHandler = async () => {
 			'/live-trading-rooms/swing-trading-room',
 			'/login',
 			'/register',
-			'/tools/options-calculator'
+			'/tools/options-calculator',
+			'/tutorials'
 		],
 		sort: 'alpha',
 		headers: {
-			'Cache-Control': 'public, max-age=0, s-maxage=3600'
+			// Cloudflare edge caches for 24h, SWR for 7d → the Rust API sees at
+			// most one sitemap render per hour per edge POP even under bot load.
+			'Cache-Control': 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800',
+			'X-Content-Type-Options': 'nosniff'
 		}
 	});
 };

@@ -337,8 +337,8 @@
 						<!-- svelte-ignore a11y_label_has_associated_control -->
 						<label>Product Type *</label>
 						<div class="type-selector">
-							{#each productTypes as type}
-								{@const iconStr = type.icon}
+							{#each productTypes as type (type.value)}
+								{@const Icon = type.icon}
 								<button
 									type="button"
 									class="type-option"
@@ -474,7 +474,7 @@
 							</button>
 						</div>
 
-						{#each formData.features as feature, index}
+						{#each formData.features as feature, index (feature)}
 							<div class="feature-row">
 								<input
 									id="edit-feature-{index}"
@@ -596,7 +596,14 @@
 				<div class="product-preview-card">
 					{#if formData.thumbnail}
 						<div class="preview-thumbnail">
-							<img src={formData.thumbnail} alt={formData.name || 'Product'} />
+							<img
+								src={formData.thumbnail}
+								alt={formData.name || 'Product'}
+								width="400"
+								height="400"
+								loading="lazy"
+								decoding="async"
+							/>
 						</div>
 					{:else}
 						{@const iconStr = previewTypeIcon}
@@ -629,7 +636,7 @@
 
 						{#if validFeatures.length > 0}
 							<div class="preview-features">
-								{#each validFeatures.slice(0, 4) as feature}
+								{#each validFeatures.slice(0, 4) as feature (feature)}
 									<div class="preview-feature">
 										<Icon icon={IconCheck} size={14} />
 										<span>{feature}</span>

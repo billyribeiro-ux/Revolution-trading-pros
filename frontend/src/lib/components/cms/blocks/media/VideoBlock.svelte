@@ -33,7 +33,7 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
 	// ==========================================================================
 	// Local State
@@ -48,8 +48,8 @@
 	// Derived State with $derived.by()
 	// ==========================================================================
 
-	const mediaUrl = $derived(props.block.content.mediaUrl || '');
-	const mediaCaption = $derived(props.block.content.mediaCaption || '');
+	const mediaUrl = $derived(block.content.mediaUrl || '');
+	const mediaCaption = $derived(block.content.mediaCaption || '');
 
 	/**
 	 * Auto-detect video type from URL
@@ -132,8 +132,8 @@
 	// ==========================================================================
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({
-			content: { ...props.block.content, ...updates }
+		onUpdate({
+			content: { ...block.content, ...updates }
 		});
 	}
 
@@ -150,7 +150,7 @@
 		if (!sanitized) {
 			hasError = true;
 			errorMessage = 'Invalid URL format. Please enter a valid video URL.';
-			props.onError?.(new Error(errorMessage));
+			onError?.(new Error(errorMessage));
 			return;
 		}
 
@@ -164,7 +164,7 @@
 			hasError = true;
 			errorMessage =
 				'Unable to recognize video URL. Please use YouTube, Vimeo, or a direct video link.';
-			props.onError?.(new Error(errorMessage));
+			onError?.(new Error(errorMessage));
 			return;
 		}
 
@@ -201,7 +201,7 @@
 		isLoading = false;
 		hasError = true;
 		errorMessage = 'Failed to load video. Please check the URL and try again.';
-		props.onError?.(new Error(errorMessage));
+		onError?.(new Error(errorMessage));
 	}
 
 	function handleNativeVideoLoad(): void {
@@ -213,7 +213,7 @@
 		isLoading = false;
 		hasError = true;
 		errorMessage = 'Failed to load video file. The format may not be supported.';
-		props.onError?.(new Error(errorMessage));
+		onError?.(new Error(errorMessage));
 	}
 
 	function clearVideo(): void {
@@ -237,17 +237,17 @@
 
 	// Sync input value with block content
 	$effect(() => {
-		urlInputValue = props.block.content.mediaUrl || '';
+		urlInputValue = block.content.mediaUrl || '';
 	});
 </script>
 
 <div
 	class="video-block"
-	class:video-block--selected={props.isSelected}
-	class:video-block--editing={props.isEditing}
+	class:video-block--selected={isSelected}
+	class:video-block--editing={isEditing}
 	role="region"
 	aria-label="Video player"
-	data-block-id={props.blockId}
+	data-block-id={blockId}
 >
 	{#if hasVideo && embedUrl}
 		<!-- Video Container with 16:9 Aspect Ratio -->
@@ -300,7 +300,7 @@
 			{/if}
 
 			<!-- Edit Mode: Clear Button -->
-			{#if props.isEditing && !isLoading}
+			{#if isEditing && !isLoading}
 				<button
 					type="button"
 					class="video-clear-btn"
@@ -325,23 +325,23 @@
 		</div>
 
 		<!-- Caption -->
-		{#if mediaCaption || props.isEditing}
+		{#if mediaCaption || isEditing}
 			<!-- svelte-ignore a11y_figcaption_parent -->
 			<figcaption
-				contenteditable={props.isEditing}
+				contenteditable={isEditing}
 				class="video-caption"
-				class:video-caption--placeholder={!mediaCaption && props.isEditing}
+				class:video-caption--placeholder={!mediaCaption && isEditing}
 				oninput={handleCaptionInput}
 				onpaste={handlePaste}
 				data-placeholder="Add a caption..."
-				role={props.isEditing ? 'textbox' : undefined}
-				aria-label={props.isEditing ? 'Video caption' : undefined}
+				role={isEditing ? 'textbox' : undefined}
+				aria-label={isEditing ? 'Video caption' : undefined}
 				aria-multiline="false"
 			>
 				{mediaCaption}
 			</figcaption>
 		{/if}
-	{:else if props.isEditing}
+	{:else if isEditing}
 		<!-- Placeholder State (Edit Mode) -->
 		<div class="video-placeholder">
 			<div class="video-placeholder-icon">

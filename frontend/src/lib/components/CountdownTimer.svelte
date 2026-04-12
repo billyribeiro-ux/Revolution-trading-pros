@@ -52,7 +52,7 @@
 
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { spring, tweened } from 'svelte/motion';
+	import { Spring, Tween } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
 
@@ -224,10 +224,11 @@
 		currentColor = timerColor;
 	});
 
-	// Animation values
-	const progressValue = tweened(0, { duration: 1000, easing: cubicOut });
-	const scaleValue = spring(1, { stiffness: 0.3, damping: 0.5 });
-	const pulseValue = spring(1, { stiffness: 0.5, damping: 0.3 });
+	// Animation values — `Tween` / `Spring` class API (Svelte 5.8+) replaces
+	// the deprecated `tweened` / `spring` factory stores. Read via `.current`.
+	const progressValue = new Tween(0, { duration: 1000, easing: cubicOut });
+	const scaleValue = new Spring(1, { stiffness: 0.3, damping: 0.5 });
+	const pulseValue = new Spring(1, { stiffness: 0.5, damping: 0.3 });
 
 	// Digit flip tracking
 	let digitFlips: Record<string, boolean> = $state({});
@@ -757,7 +758,7 @@
 		--gap: {gap};
 		--border-radius: {borderRadius};
 		--font-family: {fontFamily};
-		transform: scale({$scaleValue * $pulseValue});
+		transform: scale({scaleValue.current * pulseValue.current});
 	"
 	onmouseenter={handleMouseEnter}
 	onmouseleave={handleMouseLeave}
@@ -861,7 +862,7 @@
 		<!-- Circular Progress Format -->
 		{#if format === 'circular'}
 			<div class="circular-timer">
-				{#each Object.entries(timeUnits) as [unit, max]}
+				{#each Object.entries(timeUnits) as [unit, max] (unit)}
 					{@const typedUnit = unit as TimeUnitKey}
 					{#if (typedUnit === 'days' && showDays) || (typedUnit === 'hours' && showHours) || (typedUnit === 'minutes' && showMinutes) || (typedUnit === 'seconds' && showSeconds)}
 						{@const value = timeData[typedUnit]}

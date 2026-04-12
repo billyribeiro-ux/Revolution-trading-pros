@@ -20,7 +20,7 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
 	// Padding presets
 	type PaddingSize = 'none' | 'small' | 'medium' | 'large';
@@ -54,12 +54,12 @@
 	type Alignment = 'left' | 'center' | 'right';
 
 	// Derived state
-	const backgroundColor = $derived((props.block.settings.backgroundColor || '') as string);
-	const paddingSize = $derived((props.block.settings.padding || 'medium') as PaddingSize);
-	const borderRadius = $derived((props.block.settings.borderRadius || '8px') as string);
-	const maxWidthSize = $derived((props.block.settings.maxWidth || 'full') as MaxWidthSize);
-	const alignment = $derived((props.block.settings.textAlign || 'left') as Alignment);
-	const children = $derived((props.block.content.children || []) as Block[]);
+	const backgroundColor = $derived((block.settings.backgroundColor || '') as string);
+	const paddingSize = $derived((block.settings.padding || 'medium') as PaddingSize);
+	const borderRadius = $derived((block.settings.borderRadius || '8px') as string);
+	const maxWidthSize = $derived((block.settings.maxWidth || 'full') as MaxWidthSize);
+	const alignment = $derived((block.settings.textAlign || 'left') as Alignment);
+	const children = $derived((block.content.children || []) as Block[]);
 
 	// Computed styles
 	const paddingValue = $derived(PADDING_VALUES[paddingSize] || paddingSize);
@@ -77,8 +77,19 @@
 		}
 	});
 
+	/** Single `style` string — reliable in tests + avoids Svelte 5 multi `style:` edge cases in jsdom */
+	const groupContainerStyle = $derived.by(() => {
+		const parts: string[] = [];
+		if (backgroundColor) parts.push(`background-color: ${backgroundColor}`);
+		parts.push(`padding: ${paddingValue}`);
+		parts.push(`border-radius: ${borderRadius}`);
+		parts.push(`max-width: ${maxWidthValue}`);
+		parts.push(`margin: ${marginStyle}`);
+		return parts.join('; ');
+	});
+
 	function updateSettings(updates: Partial<BlockSettings>): void {
-		props.onUpdate({ settings: { ...props.block.settings, ...updates } });
+		onUpdate({ settings: { ...block.settings, ...updates } });
 	}
 
 	function setBackgroundColor(color: string): void {
@@ -106,8 +117,8 @@
 	}
 </script>
 
-<div class="group-block-wrapper" class:editing={props.isEditing} class:selected={props.isSelected}>
-	{#if props.isEditing && props.isSelected}
+<div class="group-block-wrapper" class:editing={isEditing} class:selected={isSelected}>
+	{#if isEditing && isSelected}
 		<div class="group-toolbar" role="toolbar" aria-label="Group settings">
 			<div class="toolbar-row">
 				<div class="toolbar-group">
@@ -148,7 +159,7 @@
 				<div class="toolbar-group">
 					<span class="toolbar-label">Padding:</span>
 					<div class="button-group">
-						{#each ['none', 'small', 'medium', 'large'] as size}
+						{#each ['none', 'small', 'medium', 'large'] as size (size)}
 							<button
 								type="button"
 								class="size-btn"
@@ -171,7 +182,7 @@
 						onchange={(e) => setBorderRadius((e.target as HTMLSelectElement).value)}
 						aria-label="Border radius"
 					>
-						{#each BORDER_RADIUS_OPTIONS as option}
+						{#each BORDER_RADIUS_OPTIONS as option (option.value)}
 							<option value={option.value}>{option.label}</option>
 						{/each}
 					</select>
@@ -182,7 +193,7 @@
 				<div class="toolbar-group">
 					<span class="toolbar-label">Max Width:</span>
 					<div class="button-group">
-						{#each ['full', 'large', 'medium', 'small'] as size}
+						{#each ['full', 'large', 'medium', 'small'] as size (size)}
 							<button
 								type="button"
 								class="size-btn"
@@ -273,16 +284,12 @@
 
 	<div
 		class="group-container"
-		style:background-color={backgroundColor || undefined}
-		style:padding={paddingValue}
-		style:border-radius={borderRadius}
-		style:max-width={maxWidthValue}
-		style:margin={marginStyle}
+		style={groupContainerStyle}
 		role="group"
 		aria-label="Content group"
 	>
 		<div class="group-content">
-			{#if props.isEditing}
+			{#if isEditing}
 				<div class="nested-placeholder">
 					{#if children.length === 0}
 						<div class="placeholder-icon">

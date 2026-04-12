@@ -1,42 +1,43 @@
 <script lang="ts">
 	import { logger } from '$lib/utils/logger';
+	import { domRef } from '$lib/svelte/domAttachment';
 	import { onMount } from 'svelte';
-	import { spring } from 'svelte/motion';
+	import { Spring } from 'svelte/motion';
 	import { browser } from '$app/environment';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-
+	import type { PageProps } from './$types';
 	// GSAP types for TypeScript (actual imports are dynamic for SSR safety)
 	type GSAPInstance = typeof import('gsap').gsap;
 
 	/**
 	 * Svelte 5 Runes & SSR/SSG Pattern
 	 */
-	interface Props {
-		data: {
-			rooms: any[];
-			benefits: any[];
-			symbols: any[];
-			seo: any;
-		};
-	}
-	let { data }: Props = $props();
+	let { data }: PageProps = $props();
 
-	// Use server-loaded data for SSR/SSG
+	// Use server-loaded data for SSR/SSG. SEO is owned by the unified <Seo> layer
+	// in +layout.svelte via `page.data.seo` returned from +page.server.ts.
 	let rooms = $derived(data.rooms);
 	let benefits = $derived(data.benefits);
 	let symbols = $derived(data.symbols);
-	let _seo = $derived(data.seo);
 	let tickerItems = $derived([...symbols, ...symbols, ...symbols, ...symbols]);
 
 	/**
 	 * Action: 3D Tilt Effect
+	 *
+	 * Uses the Svelte 5.8+ `Spring` class API. The previous `spring()` factory
+	 * + `.subscribe()` cleanup pattern is replaced with `new Spring(...)` plus
+	 * a tiny `$effect` (inside an `$effect.root` so it's allowed to run inside
+	 * an action) that writes the spring's `.current` to the DOM via CSS vars.
 	 */
 	function tilt(node: HTMLElement) {
-		const x = spring(0, { stiffness: 0.05, damping: 0.25 });
-		const y = spring(0, { stiffness: 0.05, damping: 0.25 });
+		const x = new Spring(0, { stiffness: 0.05, damping: 0.25 });
+		const y = new Spring(0, { stiffness: 0.05, damping: 0.25 });
 
-		const unsubX = x.subscribe((v) => node.style.setProperty('--rotX', `${v}deg`));
-		const unsubY = y.subscribe((v) => node.style.setProperty('--rotY', `${v}deg`));
+		const stopRoot = $effect.root(() => {
+			$effect(() => {
+				node.style.setProperty('--rotX', `${x.current}deg`);
+				node.style.setProperty('--rotY', `${y.current}deg`);
+			});
+		});
 
 		function handleMove(e: MouseEvent) {
 			const rect = node.getBoundingClientRect();
@@ -56,8 +57,7 @@
 			destroy() {
 				node.removeEventListener('mousemove', handleMove);
 				node.removeEventListener('mouseleave', handleLeave);
-				unsubX();
-				unsubY();
+				stopRoot();
 			}
 		};
 	}
@@ -72,17 +72,9 @@
 		return `${x},${y}`;
 	}).join(' ');
 
-	/**
-	 * Animation Controller
-	 * ICT 11+: These variables are used in bind:this directives in the template.
-	 * TypeScript doesn't recognize bind:this as a "read" operation, causing false positive lints.
-	 * They are necessary for GSAP ScrollTrigger animations.
-	 */
-	// @ts-ignore - Used in bind:this directive at line 378 (TypeScript limitation with Svelte bindings)
+	/** GSAP ScrollTrigger targets — wired via {@attach domRef(...)} */
 	let _heroContainer: HTMLElement | undefined;
-	// @ts-ignore - Used in bind:this directive at line 441 (TypeScript limitation with Svelte bindings)
 	let _gridRef: HTMLElement | undefined;
-	// @ts-ignore - Used in bind:this directive at line 558 (TypeScript limitation with Svelte bindings)
 	let _benefitsRef: HTMLElement | undefined;
 	let ctaRef: HTMLElement | undefined;
 
@@ -271,6 +263,16 @@
 				}); // End of GSAP context
 			} catch (error) {
 				logger.warn('[Live Trading Rooms] GSAP initialization failed:', error);
+				// Ensure content stays visible if GSAP/ScrollTrigger never runs (bad selectors, load failure)
+				document.querySelectorAll('.hero-grid-plane').forEach((el) => {
+					(el as HTMLElement).style.opacity = '0.4';
+				});
+				document
+					.querySelectorAll('.hero-title, .hero-subtitle, .hero-chart, .room-card, .benefit-card')
+					.forEach((el) => {
+						(el as HTMLElement).style.opacity = '1';
+						(el as HTMLElement).style.transform = 'none';
+					});
 			}
 		})();
 
@@ -298,7 +300,7 @@
 		class="relative z-50 border-b border-white/5 bg-[#050505]/80 backdrop-blur-md h-10 flex items-center overflow-hidden"
 	>
 		<div class="ticker-track flex items-center gap-12 whitespace-nowrap px-4">
-			{#each tickerItems as item}
+			{#each tickerItems as item, i (item.sym + '-' + i)}
 				<div class="flex items-center gap-3 text-xs font-mono select-none">
 					<span class="font-bold text-zinc-300">{item.sym}</span>
 					<span class="text-zinc-500">{item.price}</span>
@@ -310,10 +312,10 @@
 
 	<div class="relative z-10 pt-0 pb-0 container mx-auto px-4 sm:px-6 lg:px-8">
 		<section
-			bind:this={_heroContainer}
+			{@attach domRef((el) => (_heroContainer = el))}
 			class="relative min-h-[85vh] flex flex-col items-center justify-center text-center perspective-hero mb-24"
 		>
-			<div class="hero-grid-plane absolute inset-0 pointer-events-none opacity-0">
+			<div class="hero-grid-plane absolute inset-0 pointer-events-none opacity-40">
 				<div
 					class="absolute inset-0 bg-linear-to-b from-[#050505] via-transparent to-[#050505] z-10"
 				></div>
@@ -321,7 +323,7 @@
 			</div>
 
 			<div
-				class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40 z-0 overflow-hidden"
+				class="hero-chart absolute inset-0 flex items-center justify-center pointer-events-none opacity-40 z-0 overflow-hidden"
 			>
 				<svg
 					class="w-[120%] h-[600px] transform translate-y-20 blur-[1px]"
@@ -381,7 +383,7 @@
 				</div>
 
 				<h1
-					class="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter leading-[0.9] mb-10 text-white"
+					class="hero-title text-5xl xs:text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter leading-[0.95] xs:leading-[0.9] mb-8 sm:mb-10 text-white break-words"
 				>
 					<div class="hero-title-line overflow-hidden">
 						<span class="block">Market</span>
@@ -395,7 +397,7 @@
 				</h1>
 
 				<p
-					class="hero-desc text-xl md:text-2xl text-zinc-400 max-w-2xl mx-auto leading-relaxed font-light"
+					class="hero-subtitle hero-desc text-xl md:text-2xl text-zinc-400 max-w-2xl mx-auto leading-relaxed font-light"
 				>
 					Step inside the <span class="text-white font-medium">Command Center</span>. Real-time
 					data, institutional signals, and a community of professional traders.
@@ -408,14 +410,14 @@
 		</section>
 
 		<div
-			bind:this={_gridRef}
+			{@attach domRef((el) => (_gridRef = el))}
 			id="rooms-section"
 			class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 perspective-container mb-32"
 		>
-			{#each rooms as room}
+			{#each rooms as room (room.id)}
 				<article
 					use:tilt
-					class="group relative h-full card-3d"
+					class="room-card group relative h-full card-3d"
 					role="region"
 					aria-label={room.name}
 				>
@@ -566,7 +568,7 @@
 								{room.description}
 							</p>
 							<ul class="space-y-3 mb-8 flex-1">
-								{#each room.features as feature}
+								{#each room.features as feature (feature)}
 									<li class="flex items-start gap-3 text-sm text-zinc-300">
 										<svg
 											class={`w-4 h-4 shrink-0 mt-[3px] 
@@ -625,7 +627,7 @@
 			<div class="absolute inset-0 bg-blue-500/5 blur-[100px] pointer-events-none"></div>
 			<div class="text-center mb-16 relative z-10">
 				<h2
-					class="text-3xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-linear-to-b from-white to-white/60"
+					class="text-2xl xs:text-3xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60 break-words px-4"
 				>
 					Why the Pros Choose Us
 				</h2>
@@ -634,10 +636,13 @@
 					technology, and community.
 				</p>
 			</div>
-			<div bind:this={_benefitsRef} class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-				{#each benefits as item}
+			<div
+				{@attach domRef((el) => (_benefitsRef = el))}
+				class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+			>
+				{#each benefits as item (item.id)}
 					<div
-						class="p-6 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/10 transition-colors duration-300 text-center group cursor-default"
+						class="benefit-card p-6 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/10 transition-colors duration-300 text-center group cursor-default"
 					>
 						<div
 							class="mx-auto w-12 h-12 mb-6 text-zinc-400 group-hover:text-blue-400 transition-colors duration-300"
@@ -703,13 +708,15 @@
 		</section>
 
 		<section
-			bind:this={ctaRef}
-			class="py-24 pb-32 text-center relative overflow-hidden rounded-3xl my-12 bg-linear-to-b from-blue-900/20 to-black border border-white/10"
+			{@attach domRef((el) => (ctaRef = el))}
+			class="py-24 pb-32 text-center relative overflow-hidden rounded-3xl my-12 bg-gradient-to-b from-blue-900/20 to-black border border-white/10"
 		>
 			<div class="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10"></div>
 			<div class="relative z-10 max-w-3xl mx-auto px-4">
-				<h2 class="text-4xl md:text-5xl font-bold text-white mb-6">Ready to Level Up?</h2>
-				<p class="text-xl text-zinc-400 mb-10">
+				<h2 class="text-3xl xs:text-4xl md:text-5xl font-bold text-white mb-6 break-words">
+					Ready to Level Up?
+				</h2>
+				<p class="text-base sm:text-xl text-zinc-400 mb-8 sm:mb-10">
 					Join thousands of traders who have transformed their results. <br
 						class="hidden md:block"
 					/>
@@ -747,8 +754,6 @@
 		</div>
 	</div>
 </div>
-
-<MarketingFooter />
 
 <style>
 	/* --- Hero Specifics --- */

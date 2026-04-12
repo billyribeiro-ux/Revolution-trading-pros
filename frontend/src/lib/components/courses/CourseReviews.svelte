@@ -44,11 +44,7 @@
 		allowSubmit?: boolean;
 	}
 
-	let props: Props = $props();
-
-	// Props with defaults
-	const isEnrolled = $derived(props.isEnrolled ?? false);
-	const allowSubmit = $derived(props.allowSubmit ?? true);
+	let { courseSlug, isEnrolled = false, allowSubmit = true }: Props = $props();
 
 	let reviews: Review[] = $state([]);
 	let summary: ReviewSummary | null = $state(null);
@@ -68,7 +64,7 @@
 	async function loadReviews() {
 		try {
 			isLoading = true;
-			const res = await apiFetch<ReviewsResponse>(`/courses/${props.courseSlug}/reviews`);
+			const res = await apiFetch<ReviewsResponse>(`/courses/${courseSlug}/reviews`);
 			if (res.success && res.data) {
 				reviews = res.data.reviews || [];
 				summary = res.data.summary || null;
@@ -86,7 +82,7 @@
 			error = '';
 			successMessage = '';
 
-			const res = await apiFetch<ApiResponse>(`/member/courses/${props.courseSlug}/reviews`, {
+			const res = await apiFetch<ApiResponse>(`/member/courses/${courseSlug}/reviews`, {
 				method: 'POST',
 				body: JSON.stringify({ rating, title, content })
 			});
@@ -112,7 +108,7 @@
 		if (!confirm('Are you sure you want to delete your review?')) return;
 
 		try {
-			const res = await apiFetch<ApiResponse>(`/member/courses/${props.courseSlug}/reviews`, {
+			const res = await apiFetch<ApiResponse>(`/member/courses/${courseSlug}/reviews`, {
 				method: 'DELETE'
 			});
 			if (res.success) {
@@ -171,7 +167,7 @@
 			<div class="rating-input">
 				<span class="label">Your Rating</span>
 				<div class="stars-input">
-					{#each [1, 2, 3, 4, 5] as star}
+					{#each [1, 2, 3, 4, 5] as star (star)}
 						<button
 							type="button"
 							class="star-btn"
@@ -243,7 +239,7 @@
 			<div class="avg-rating">
 				<span class="rating-value">{summary.avg_rating.toFixed(1)}</span>
 				<div class="rating-stars">
-					{#each [1, 2, 3, 4, 5] as star}
+					{#each [1, 2, 3, 4, 5] as star (star)}
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							width="20"
@@ -263,7 +259,7 @@
 			</div>
 
 			<div class="rating-distribution">
-				{#each ['5', '4', '3', '2', '1'] as starNum}
+				{#each ['5', '4', '3', '2', '1'] as starNum (starNum)}
 					{@const count = summary.rating_distribution[starNum] || 0}
 					{@const percent = summary.total_reviews > 0 ? (count / summary.total_reviews) * 100 : 0}
 					<div class="distribution-row">
@@ -279,7 +275,7 @@
 
 		{#if reviews.length > 0}
 			<div class="reviews-list">
-				{#each reviews as review}
+				{#each reviews as review (review.title)}
 					<div class="review-card">
 						<div class="review-header">
 							<div class="user-info">
@@ -310,7 +306,7 @@
 							<span class="review-date">{formatDate(review.created_at)}</span>
 						</div>
 						<div class="review-rating">
-							{#each [1, 2, 3, 4, 5] as star}
+							{#each [1, 2, 3, 4, 5] as star (star)}
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									width="16"

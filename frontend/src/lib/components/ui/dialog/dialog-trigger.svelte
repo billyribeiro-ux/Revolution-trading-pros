@@ -1,19 +1,7 @@
 <script lang="ts">
 	import { Dialog as DialogPrimitive } from 'bits-ui';
 
-	let props: DialogPrimitive.TriggerProps = $props();
-	let ref = $state<HTMLElement | null>(null);
-
-	$effect(() => {
-		if (props.ref !== undefined && props.ref !== ref) {
-			ref = props.ref;
-		}
-	});
-
-	let restProps = $derived.by(() => {
-		const { ref: _, ...rest } = props;
-		return rest;
-	});
+	let { ref = $bindable(null), ...restProps }: DialogPrimitive.TriggerProps = $props();
 </script>
 
 <DialogPrimitive.Trigger bind:ref data-slot="dialog-trigger" {...restProps} />

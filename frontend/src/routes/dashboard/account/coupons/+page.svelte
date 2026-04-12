@@ -16,12 +16,9 @@
 		is_expired: boolean;
 	}
 
-	interface PageData {
-		coupons: Coupon[];
-	}
+	import type { PageProps } from './$types';
 
-	let props: { data: PageData } = $props();
-	let data = $derived(props.data);
+	let { data }: PageProps = $props();
 
 	const coupons = $derived(data.coupons || []);
 	let copiedCode = $state<string | null>(null);

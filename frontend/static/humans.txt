@@ -1,0 +1,23 @@
+# humanstxt.org — the humans-not-machines authorship file
+# https://humanstxt.org
+
+/* TEAM */
+
+	Built by:        Revolution Trading Pros
+	Site:            https://revolution-trading-pros.pages.dev
+	Contact:         hello@revolution-trading-pros.com
+	Twitter:         @revtradingpros
+
+/* THANKS */
+
+	Svelte:          https://svelte.dev
+	SvelteKit:       https://kit.svelte.dev
+	Tailwind CSS:    https://tailwindcss.com
+	Cloudflare:      https://cloudflare.com
+
+/* SITE */
+
+	Last update:     2026/04/11
+	Standards:       HTML5, CSS3 (Tailwind 4), TypeScript, Svelte 5
+	Components:      Svelte 5 runes, SvelteKit 2 remote functions
+	Software:        Vite 8, pnpm, Node.js

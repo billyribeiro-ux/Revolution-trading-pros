@@ -19,7 +19,7 @@
 	 * @since January 2026
 	 */
 	import { browser } from '$app/environment';
-	import { tweened } from 'svelte/motion';
+	import { Tween } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 	import { fly, scale } from 'svelte/transition';
 
@@ -69,10 +69,11 @@
 	let isConnected = $state(false);
 	let connectionError = $state<string | null>(null);
 
-	// Animated values
-	const savingsPercent = tweened(0, { duration: 1500, easing: cubicOut });
-	const totalSavings = tweened(0, { duration: 1500, easing: cubicOut });
-	const co2Saved = tweened(0, { duration: 1500, easing: cubicOut });
+	// Animated values — `Tween` class API (Svelte 5.8+) replaces the
+	// deprecated `tweened` store. Read via `.current` instead of `$store`.
+	const savingsPercent = new Tween(0, { duration: 1500, easing: cubicOut });
+	const totalSavings = new Tween(0, { duration: 1500, easing: cubicOut });
+	const co2Saved = new Tween(0, { duration: 1500, easing: cubicOut });
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Lifecycle - Svelte 5 $effect rune
@@ -237,7 +238,7 @@
 		<div class="header-right">
 			<!-- Time Range Selector -->
 			<div class="time-selector">
-				{#each ['7d', '30d', '90d', '1y'] as range}
+				{#each ['7d', '30d', '90d', '1y'] as range (range)}
 					<button
 						class:active={timeRange === range}
 						onclick={() => handleTimeRangeChange(range as '7d' | '30d' | '90d' | '1y')}
@@ -330,7 +331,7 @@
 					</svg>
 				</div>
 				<div class="hero-content">
-					<div class="hero-value">{formatBytes($totalSavings)}</div>
+					<div class="hero-value">{formatBytes(totalSavings.current)}</div>
 					<div class="hero-label">Total Bandwidth Saved</div>
 					<div class="hero-change positive">
 						<svg viewBox="0 0 20 20" fill="currentColor">
@@ -340,7 +341,7 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						{$savingsPercent.toFixed(1)}% compression
+						{savingsPercent.current.toFixed(1)}% compression
 					</div>
 				</div>
 				<div class="hero-ring">
@@ -361,12 +362,12 @@
 							fill="none"
 							stroke="currentColor"
 							stroke-width="8"
-							stroke-dasharray={`${$savingsPercent * 2.83} 283`}
+							stroke-dasharray={`${savingsPercent.current * 2.83} 283`}
 							stroke-linecap="round"
 							transform="rotate(-90 50 50)"
 						/>
 					</svg>
-					<span>{Math.round($savingsPercent)}%</span>
+					<span>{Math.round(savingsPercent.current)}%</span>
 				</div>
 			</div>
 
@@ -392,7 +393,7 @@
 					</svg>
 				</div>
 				<div class="hero-content">
-					<div class="hero-value">{$co2Saved.toFixed(1)} kg</div>
+					<div class="hero-value">{co2Saved.current.toFixed(1)} kg</div>
 					<div class="hero-label">CO2 Emissions Saved</div>
 					<div class="hero-detail">
 						equivalent to planting {Math.round(overview.co2Saved * 0.8)} trees
@@ -586,7 +587,7 @@
 			</div>
 
 			<div class="format-grid">
-				{#each formatStats as stat, i}
+				{#each formatStats as stat, i (i)}
 					<div class="format-card" transition:scale={{ duration: 300, delay: 650 + i * 50 }}>
 						<div class="format-header">
 							<span class="format-name">{stat.format}</span>

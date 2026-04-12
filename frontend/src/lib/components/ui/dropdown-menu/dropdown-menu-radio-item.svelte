@@ -3,21 +3,12 @@
 	import { Circle as CircleIcon } from 'phosphor-svelte';
 	import type { WithoutChild } from '$lib/utils.js';
 
-	let props: WithoutChild<DropdownMenuPrimitive.RadioItemProps> = $props();
-	let ref = $state<HTMLElement | null>(null);
-	let className = $derived(props.class);
-	let childrenProp = $derived(props.children);
-
-	$effect(() => {
-		if (props.ref !== undefined && props.ref !== ref) {
-			ref = props.ref;
-		}
-	});
-
-	let restProps = $derived.by(() => {
-		const { ref: _, class: __, children: ___, ...rest } = props;
-		return rest;
-	});
+	let {
+		ref = $bindable(null),
+		class: className,
+		children: childrenProp,
+		...restProps
+	}: WithoutChild<DropdownMenuPrimitive.RadioItemProps> = $props();
 </script>
 
 <DropdownMenuPrimitive.RadioItem

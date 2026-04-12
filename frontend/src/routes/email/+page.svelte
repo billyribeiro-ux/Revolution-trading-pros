@@ -185,7 +185,7 @@
 
 				{#if emailStore.campaigns.length > 0}
 					<div class="campaigns-grid">
-						{#each emailStore.campaigns as campaign}
+						{#each emailStore.campaigns as campaign (campaign.name)}
 							<div class="campaign-card">
 								<div class="campaign-header">
 									<div class="campaign-status" class:active={campaign.status === 'sending'}>
@@ -246,7 +246,7 @@
 
 				{#if emailStore.sequences.length > 0}
 					<div class="sequences-grid">
-						{#each emailStore.sequences as sequence}
+						{#each emailStore.sequences as sequence (sequence.name)}
 							<div class="sequence-card">
 								<div class="sequence-header">
 									<h3 class="sequence-name">{sequence.name}</h3>
@@ -299,10 +299,18 @@
 
 				{#if emailStore.templates.length > 0}
 					<div class="templates-grid">
-						{#each emailStore.templates as template}
+						{#each emailStore.templates as template (template.name)}
 							<div class="template-card">
 								{#if template.thumbnail}
-									<img src={template.thumbnail} alt={template.name} class="template-thumbnail" />
+									<img
+										src={template.thumbnail}
+										alt={template.name}
+										width="300"
+										height="200"
+										loading="lazy"
+										decoding="async"
+										class="template-thumbnail"
+									/>
 								{:else}
 									<div class="template-placeholder">
 										<Icon icon={IconFileText} size={48} />

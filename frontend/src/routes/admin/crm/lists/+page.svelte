@@ -224,7 +224,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					{#each filteredLists as list}
+					{#each filteredLists as list (list.id)}
 						<tr>
 							<td>
 								<div class="list-cell">

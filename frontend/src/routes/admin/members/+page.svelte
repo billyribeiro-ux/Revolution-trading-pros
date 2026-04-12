@@ -478,7 +478,8 @@
 						</div>
 					</div>
 					<div class="stat-sparkline">
-						{#each (stats.growth_trend || []).slice(-6) as point}
+						<!-- key (i): items lack stable id -->
+						{#each (stats.growth_trend || []).slice(-6) as point, i (i)}
 							<div
 								class="sparkline-bar"
 								style="height: {(point.new /
@@ -575,7 +576,7 @@
 			<div class="top-services-section">
 				<h3>Top Services by Members</h3>
 				<div class="services-grid">
-					{#each stats.top_services as service}
+					{#each stats.top_services as service (service.id)}
 						<button
 							class="service-card"
 							onclick={() => goto(`/admin/members/service/${service.id}`)}
@@ -661,7 +662,7 @@
 						onchange={() => handleServiceFilter(serviceFilter)}
 					>
 						<option value="">All Services</option>
-						{#each services as service}
+						{#each services as service (service.id)}
 							<option value={service.id}>{service.name}</option>
 						{/each}
 					</select>
@@ -738,7 +739,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#each members as member}
+						{#each members as member (member.id)}
 							<tr class:selected={selectedMembers.has(member.id)}>
 								<td class="checkbox-col">
 									<input
@@ -856,7 +857,7 @@
 				<div class="template-selector">
 					<span class="template-label">Quick Templates</span>
 					<div class="template-buttons">
-						{#each emailStore.presetTemplates as template}
+						{#each emailStore.presetTemplates as template (template.name)}
 							<button class="template-btn" onclick={() => applyTemplate(template)}>
 								{template.name}
 							</button>
@@ -1988,14 +1989,14 @@
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	/* Tablet Landscape (< 1200px) */
-	@media (max-width: calc(var(--breakpoint-xl) - 80px)) {
+	@media (max-width: 1200px) {
 		.stats-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}
 	}
 
 	/* Tablet Portrait (< 1024px) */
-	@media (max-width: calc(var(--breakpoint-lg) - 1px)) {
+	@media (max-width: 1023px) {
 		.stats-grid {
 			grid-template-columns: repeat(2, 1fr);
 			gap: 0.75rem;
@@ -2008,7 +2009,7 @@
 	}
 
 	/* Mobile Landscape (< 768px) */
-	@media (max-width: calc(var(--breakpoint-md) - 1px)) {
+	@media (max-width: 767px) {
 		.admin-page-container {
 			padding: 1rem;
 		}
@@ -2045,7 +2046,7 @@
 	}
 
 	/* Mobile Portrait (< 640px) */
-	@media (max-width: calc(var(--breakpoint-sm) - 1px)) {
+	@media (max-width: 639px) {
 		.admin-page-container {
 			padding: 0.75rem;
 		}
@@ -2074,7 +2075,7 @@
 	}
 
 	/* Extra Small Mobile (< 380px) - iPhone SE, Galaxy Fold */
-	@media (max-width: calc(var(--breakpoint-sm) - 260px)) {
+	@media (max-width: 380px) {
 		.admin-page-container {
 			padding: 0.5rem;
 		}

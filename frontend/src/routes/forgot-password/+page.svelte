@@ -126,16 +126,21 @@
 							id="email"
 							name="email"
 							autocomplete="email"
+							inputmode="email"
+							spellcheck="false"
 							type="email"
 							bind:value={email}
 							required
+							aria-required="true"
+							aria-invalid={errors.email ? 'true' : 'false'}
+							aria-describedby={errors.email ? 'email-error' : undefined}
 							class="w-full pl-12 pr-4 py-3.5 bg-slate-800/50 border border-slate-700 rounded-xl text-white text-base placeholder-slate-500 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all duration-300 min-h-[44px]"
 							class:border-red-500={errors.email}
 							placeholder="you@example.com"
 						/>
 					</div>
 					{#if errors.email}
-						<p class="mt-2 text-sm text-red-400">{errors.email[0]}</p>
+						<p id="email-error" class="mt-2 text-sm text-red-400">{errors.email[0]}</p>
 					{/if}
 				</div>
 

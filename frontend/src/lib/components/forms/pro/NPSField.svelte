@@ -8,11 +8,11 @@
 		onchange?: (value: number) => void;
 	}
 
-	let props: Props = $props();
+	let { field, value = null, error, onchange }: Props = $props();
 
-	const minLabel = $derived(props.field.attributes?.min_label || 'Not at all likely');
-	const maxLabel = $derived(props.field.attributes?.max_label || 'Extremely likely');
-	const showLabels = $derived(props.field.attributes?.show_labels !== false);
+	const minLabel = $derived(field.attributes?.min_label || 'Not at all likely');
+	const maxLabel = $derived(field.attributes?.max_label || 'Extremely likely');
+	const showLabels = $derived(field.attributes?.show_labels !== false);
 
 	function getScoreColor(score: number): string {
 		if (score <= 6) return '#dc2626'; // Detractor - Red
@@ -28,15 +28,15 @@
 </script>
 
 <div class="nps-field">
-	<label class="field-label" for="nps-field-{props.field.name}">
-		{props.field.label}
-		{#if props.field.required}
+	<label class="field-label" for="nps-field-{field.name}">
+		{field.label}
+		{#if field.required}
 			<span class="required">*</span>
 		{/if}
 	</label>
 
-	{#if props.field.help_text}
-		<p class="field-help">{props.field.help_text}</p>
+	{#if field.help_text}
+		<p class="field-help">{field.help_text}</p>
 	{/if}
 
 	<div class="nps-scale">
@@ -45,15 +45,15 @@
 		{/if}
 
 		<div class="score-buttons">
-			{#each Array(11) as _, i}
+			{#each Array(11) as _, i (i)}
 				<button
 					type="button"
 					class="score-btn"
-					class:selected={props.value === i}
-					style={props.value === i
+					class:selected={value === i}
+					style={value === i
 						? `background-color: ${getScoreColor(i)}; color: white; border-color: ${getScoreColor(i)};`
 						: ''}
-					onclick={() => props.onchange?.(i)}
+					onclick={() => onchange?.(i)}
 					aria-label={`Score ${i}`}
 				>
 					{i}
@@ -66,10 +66,10 @@
 		{/if}
 	</div>
 
-	{#if props.value !== null}
-		<div class="score-feedback" style={`color: ${getScoreColor(props.value ?? 0)}`}>
-			<span class="score-category">{getScoreCategory(props.value ?? 0)}</span>
-			<span class="score-value">Score: {props.value}/10</span>
+	{#if value !== null}
+		<div class="score-feedback" style={`color: ${getScoreColor(value ?? 0)}`}>
+			<span class="score-category">{getScoreCategory(value ?? 0)}</span>
+			<span class="score-value">Score: {value}/10</span>
 		</div>
 	{/if}
 
@@ -88,9 +88,9 @@
 		</div>
 	</div>
 
-	{#if props.error && props.error.length > 0}
+	{#if error && error.length > 0}
 		<div class="field-error">
-			{#each props.error as err}
+			{#each error as err (err)}
 				<p>{err}</p>
 			{/each}
 		</div>

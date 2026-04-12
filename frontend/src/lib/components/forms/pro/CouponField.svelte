@@ -18,7 +18,7 @@
 		onApply?: (result: CouponResult) => void;
 	}
 
-	let props: Props = $props();
+	let { field, value, error, formId, onchange, onApply }: Props = $props();
 
 	let isValidating = $state(false);
 	let validationResult = $state<CouponResult | null>(null);
@@ -26,7 +26,7 @@
 
 	// Sync with prop value changes
 	$effect(() => {
-		inputValue = props.value ?? '';
+		inputValue = value ?? '';
 	});
 
 	async function validateCoupon() {
@@ -44,7 +44,7 @@
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					code: inputValue.trim().toUpperCase(),
-					form_id: props.formId
+					form_id: formId
 				})
 			});
 
@@ -52,8 +52,8 @@
 			validationResult = result;
 
 			if (result.valid) {
-				props.onchange?.(result.code);
-				props.onApply?.(result);
+				onchange?.(result.code);
+				onApply?.(result);
 			}
 		} catch {
 			validationResult = {
@@ -77,28 +77,28 @@
 	function clearCoupon() {
 		inputValue = '';
 		validationResult = null;
-		props.onchange?.('');
+		onchange?.('');
 	}
 </script>
 
 <div class="coupon-field">
-	<label class="field-label" for={`field-${props.field.name}`}>
-		{props.field.label || 'Coupon Code'}
-		{#if props.field.required}
+	<label class="field-label" for={`field-${field.name}`}>
+		{field.label || 'Coupon Code'}
+		{#if field.required}
 			<span class="required">*</span>
 		{/if}
 	</label>
 
-	{#if props.field.help_text}
-		<p class="field-help">{props.field.help_text}</p>
+	{#if field.help_text}
+		<p class="field-help">{field.help_text}</p>
 	{/if}
 
 	<div class="coupon-input-wrapper">
 		<input
 			type="text"
-			id={`field-${props.field.name}`}
-			name={props.field.name}
-			placeholder={props.field.placeholder || 'Enter coupon code'}
+			id={`field-${field.name}`}
+			name={field.name}
+			placeholder={field.placeholder || 'Enter coupon code'}
 			value={inputValue}
 			class="coupon-input"
 			class:valid={validationResult?.valid}
@@ -182,9 +182,9 @@
 		</div>
 	{/if}
 
-	{#if props.error && props.error.length > 0}
+	{#if error && error.length > 0}
 		<div class="field-error">
-			{#each props.error as err}
+			{#each error as err, i (i)}
 				<p>{err}</p>
 			{/each}
 		</div>

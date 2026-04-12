@@ -2,7 +2,7 @@
 	import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
 	import { Card, Button, Badge, Table } from '$lib/components/ui';
-	import { addToast } from '$lib/utils/toast';
+	import { addToast } from '$lib/stores/toast.svelte';
 	import { seoApi, type Error404 } from '$lib/api/seo';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import { Icon, IconAlertCircle, IconTrash } from '$lib/icons';
@@ -128,7 +128,8 @@
 	{:else}
 		<Card padding={false}>
 			<Table headers={['URL', 'Hit Count', 'Status', 'First Seen', 'Last Seen']}>
-				{#each errors as error}
+				<!-- key (i): items lack stable id -->
+				{#each errors as error, i (i)}
 					<tr>
 						<td class="font-mono text-sm max-w-md truncate">{error.url}</td>
 						<td>

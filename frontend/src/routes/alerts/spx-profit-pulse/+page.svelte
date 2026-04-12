@@ -3,7 +3,7 @@
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
+	import { revealAllDataGsapTargets } from '$lib/motion/gsapScrollReveal';
 
 	// --- Pricing State ---
 	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = $state('quarterly');
@@ -19,46 +19,48 @@
 		let ctx: ReturnType<typeof import('gsap').gsap.context> | null = null;
 
 		(async () => {
-			const { gsap } = await import('gsap');
-			const { ScrollTrigger } = await import('gsap/ScrollTrigger');
-			gsap.registerPlugin(ScrollTrigger);
+			try {
+				const { gsap } = await import('gsap');
+				const { ScrollTrigger } = await import('gsap/ScrollTrigger');
+				gsap.registerPlugin(ScrollTrigger);
 
-			const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+				const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-			if (prefersReducedMotion) {
-				gsap.set('[data-gsap]', { opacity: 1, y: 0 });
-				return;
+				if (prefersReducedMotion) {
+					gsap.set('[data-gsap]', { opacity: 1, y: 0 });
+					return;
+				}
+
+				ctx = gsap.context(() => {
+					const elements = document.querySelectorAll('[data-gsap]');
+					elements.forEach((el) => {
+						const rect = el.getBoundingClientRect();
+						const isInViewport = rect.top < window.innerHeight * 0.85;
+						if (!isInViewport) {
+							gsap.set(el, { opacity: 0, y: 30 });
+						}
+					});
+
+					ScrollTrigger.batch('[data-gsap]', {
+						onEnter: (batch) => {
+							gsap.to(batch, {
+								opacity: 1,
+								y: 0,
+								duration: 0.8,
+								ease: 'power3.out',
+								stagger: 0.1,
+								overwrite: true
+							});
+						},
+						start: 'top 85%',
+						once: true
+					});
+
+					ScrollTrigger.refresh();
+				});
+			} catch {
+				revealAllDataGsapTargets();
 			}
-
-			// Use gsap.context() for scoped cleanup - prevents global ScrollTrigger destruction
-			ctx = gsap.context(() => {
-				// Only set initial hidden state for elements NOT yet in viewport
-				const elements = document.querySelectorAll('[data-gsap]');
-				elements.forEach((el) => {
-					const rect = el.getBoundingClientRect();
-					const isInViewport = rect.top < window.innerHeight * 0.85;
-					if (!isInViewport) {
-						gsap.set(el, { opacity: 0, y: 30 });
-					}
-				});
-
-				ScrollTrigger.batch('[data-gsap]', {
-					onEnter: (batch) => {
-						gsap.to(batch, {
-							opacity: 1,
-							y: 0,
-							duration: 0.8,
-							ease: 'power3.out',
-							stagger: 0.1,
-							overwrite: true
-						});
-					},
-					start: 'top 85%',
-					once: true
-				});
-
-				ScrollTrigger.refresh();
-			});
 		})();
 
 		return () => ctx?.revert();
@@ -185,11 +187,9 @@
 	const _combinedSchema = [productSchema, faqSchema];
 </script>
 
-<div
-	class="w-full bg-slate-950 text-slate-200 font-sans selection:bg-indigo-600 selection:text-white"
->
+<div class="w-full bg-rtp-bg text-rtp-text font-sans selection:bg-indigo-600 selection:text-white">
 	<section class="relative min-h-[90vh] flex items-center overflow-hidden py-24 lg:py-0">
-		<div class="absolute inset-0 bg-slate-950 z-0">
+		<div class="absolute inset-0 bg-rtp-bg z-0">
 			<div
 				class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-size-[64px_64px] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"
 			></div>
@@ -202,7 +202,7 @@
 		</div>
 
 		<div
-			class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center overflow-hidden"
+			class="relative z-10 max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center overflow-hidden"
 		>
 			<div class="text-center lg:text-left space-y-8">
 				<div
@@ -222,7 +222,7 @@
 
 				<h1
 					data-gsap
-					class="text-5xl md:text-7xl font-heading font-extrabold tracking-tight leading-[1.1]"
+					class="text-4xl xs:text-5xl md:text-7xl font-heading font-extrabold tracking-tight leading-[1.1] break-words"
 				>
 					Conquer Volatility with
 					<span
@@ -239,7 +239,7 @@
 				<div data-gsap class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
 					<a
 						href="#pricing"
-						class="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-200 bg-indigo-600 rounded-xl hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 offset-slate-950 shadow-lg hover:shadow-indigo-500/25 hover:-translate-y-1"
+						class="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-200 bg-indigo-600 rounded-xl hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-950 focus:ring-indigo-600 shadow-lg hover:shadow-indigo-500/25 hover:-translate-y-1"
 					>
 						Start Your Trial
 						<svg
@@ -257,7 +257,7 @@
 					</a>
 					<a
 						href="#performance"
-						class="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-slate-200 transition-all duration-200 bg-slate-900 border border-slate-800 rounded-xl hover:bg-slate-900/80 hover:border-indigo-500/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-800 offset-slate-950"
+						class="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-slate-200 transition-all duration-200 bg-slate-900 border border-slate-800 rounded-xl hover:bg-slate-900/80 hover:border-indigo-500/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-950 focus:ring-slate-800"
 					>
 						View Results
 					</a>
@@ -387,7 +387,9 @@
 	</section>
 
 	<section class="bg-slate-900 border-y border-slate-800 relative z-20">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+		<div
+			class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 py-12"
+		>
 			<div class="grid grid-cols-2 md:grid-cols-4 gap-8">
 				<div class="text-center group">
 					<div
@@ -437,7 +439,9 @@
 	     MEMBER DASHBOARD PREVIEW - Sidebar Layout
 	     ═══════════════════════════════════════════════════════════════════════════ -->
 	<section class="py-16 bg-slate-950">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div
+			class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8"
+		>
 			<div class="grid lg:grid-cols-[1fr_380px] gap-8">
 				<!-- Main Content Area -->
 				<div class="space-y-8">
@@ -684,7 +688,7 @@
 					<div class="bg-white rounded-2xl shadow-xl p-5">
 						<h3 class="font-bold text-slate-900 text-lg mb-4">Latest Updates</h3>
 						<div class="grid grid-cols-3 gap-3">
-							{#each [{ title: 'NVDA Entry Alert...', duration: '0:58' }, { title: 'MSFT Exit...', duration: '0:38' }, { title: 'NVDA Entry Alert...', duration: '0:22' }, { title: 'NVDA Entry Alert...', duration: '0:27' }, { title: 'MSRT Entry Alert...', duration: '0:20' }, { title: 'MSFT Exit...', duration: '0:55' }] as update}
+							{#each [{ title: 'NVDA Entry Alert...', duration: '0:58' }, { title: 'MSFT Exit...', duration: '0:38' }, { title: 'NVDA Entry Alert...', duration: '0:22' }, { title: 'NVDA Entry Alert...', duration: '0:27' }, { title: 'MSRT Entry Alert...', duration: '0:20' }, { title: 'MSFT Exit...', duration: '0:55' }] as update (update.title)}
 								<button class="group text-left w-full">
 									<div class="relative bg-slate-900 rounded-lg overflow-hidden aspect-video mb-1.5">
 										<div class="absolute inset-0 bg-linear-to-t from-black/60 to-transparent"></div>
@@ -720,7 +724,9 @@
 	</section>
 
 	<section class="py-24 bg-slate-950 relative overflow-hidden">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div
+			class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8"
+		>
 			<div class="text-center max-w-3xl mx-auto mb-16">
 				<span class="text-indigo-500 font-bold uppercase tracking-wider text-sm">Why SPX?</span>
 				<h2 data-gsap class="text-3xl md:text-5xl font-heading font-bold text-slate-200 mt-2 mb-6">
@@ -768,7 +774,9 @@
 	</section>
 
 	<section class="py-24 bg-slate-900 border-y border-slate-800">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div
+			class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8"
+		>
 			<div class="grid lg:grid-cols-2 gap-16 items-center">
 				<div>
 					<span class="text-emerald-500 font-bold uppercase tracking-wider text-sm"
@@ -824,7 +832,9 @@
 	<section class="py-32 bg-slate-950 relative overflow-hidden">
 		<div class="absolute inset-0 opacity-[0.02] bg-[url('/grid-pattern.svg')]"></div>
 
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+		<div
+			class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10"
+		>
 			<div class="text-center max-w-3xl mx-auto mb-20">
 				<h2 data-gsap class="text-3xl md:text-5xl font-heading font-bold text-slate-200 mb-6">
 					Institutional Edge, Retail Accessible.
@@ -994,7 +1004,9 @@
 	</section>
 
 	<section class="py-24 bg-slate-900 border-y border-slate-800">
-		<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div
+			class="max-w-5xl 3xl:max-w-[1400px] 4xl:max-w-[1800px] 5xl:max-w-[2200px] 6xl:max-w-[2600px] mx-auto px-4 sm:px-6 lg:px-8"
+		>
 			<div class="text-center mb-16">
 				<h2 data-gsap class="text-3xl md:text-5xl font-heading font-bold text-slate-200 mb-4">
 					Crystal Clear Execution
@@ -1119,7 +1131,9 @@
 	</section>
 
 	<section id="performance" class="py-24 bg-slate-950 relative">
-		<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div
+			class="max-w-6xl 3xl:max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto px-4 sm:px-6 lg:px-8"
+		>
 			<div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
 				<div>
 					<h2 class="text-3xl md:text-4xl font-heading font-bold text-slate-200 mb-2">
@@ -1196,7 +1210,9 @@
 	</section>
 
 	<section id="pricing" class="py-24 bg-slate-900 border-t border-slate-800 overflow-hidden">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div
+			class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8"
+		>
 			<div class="text-center mb-16">
 				<h2 class="text-3xl md:text-5xl font-heading font-bold text-slate-200 mb-4">
 					Simple, Flat Pricing
@@ -1239,7 +1255,9 @@
 				</div>
 			</div>
 
-			<div class="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto items-center overflow-visible">
+			<div
+				class="grid lg:grid-cols-3 gap-8 max-w-6xl 3xl:max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto items-center overflow-visible"
+			>
 				<div
 					class="order-2 lg:order-1 bg-slate-950 p-8 rounded-2xl border transition-all {selectedPlan ===
 					'monthly'
@@ -1443,11 +1461,13 @@
 				Common questions about brokers, capital, and risk management.
 			</p>
 			<div class="space-y-4">
-				{#each faqList as faq, i}
+				{#each faqList as faq, i (faq.q)}
 					<div class="border border-slate-800 rounded-xl bg-slate-900 overflow-hidden">
 						<button
-							class="w-full text-left px-6 py-5 font-bold flex justify-between items-center focus:outline-none hover:bg-white/5 transition-colors"
+							type="button"
+							class="w-full text-left px-6 py-5 font-bold flex justify-between items-center min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 hover:bg-white/5 transition-colors"
 							onclick={() => toggleFaq(i)}
+							aria-expanded={openFaq === i}
 						>
 							<span class="pr-8">{faq.q}</span>
 							<svg
@@ -1503,5 +1523,3 @@
 		</div>
 	</section>
 </div>
-
-<MarketingFooter />

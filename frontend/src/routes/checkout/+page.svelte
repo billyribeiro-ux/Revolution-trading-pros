@@ -337,12 +337,21 @@
 											type="text"
 											id="billing_first_name"
 											name="billing_first_name"
+											autocomplete="given-name"
 											bind:value={billing.firstName}
+											required
+											aria-required="true"
+											aria-invalid={billingErrors.firstName ? 'true' : 'false'}
+											aria-describedby={billingErrors.firstName
+												? 'billing_first_name-error'
+												: undefined}
 											class="input-text"
 											class:error={billingErrors.firstName}
 										/>
 										{#if billingErrors.firstName}
-											<span class="field-error">{billingErrors.firstName}</span>
+											<span id="billing_first_name-error" class="field-error"
+												>{billingErrors.firstName}</span
+											>
 										{/if}
 									</div>
 
@@ -352,12 +361,21 @@
 											type="text"
 											id="billing_last_name"
 											name="billing_last_name"
+											autocomplete="family-name"
 											bind:value={billing.lastName}
+											required
+											aria-required="true"
+											aria-invalid={billingErrors.lastName ? 'true' : 'false'}
+											aria-describedby={billingErrors.lastName
+												? 'billing_last_name-error'
+												: undefined}
 											class="input-text"
 											class:error={billingErrors.lastName}
 										/>
 										{#if billingErrors.lastName}
-											<span class="field-error">{billingErrors.lastName}</span>
+											<span id="billing_last_name-error" class="field-error"
+												>{billingErrors.lastName}</span
+											>
 										{/if}
 									</div>
 
@@ -368,12 +386,19 @@
 											id="billing_email"
 											name="billing_email"
 											autocomplete="email"
+											inputmode="email"
+											spellcheck="false"
 											bind:value={billing.email}
+											required
+											aria-required="true"
+											aria-invalid={billingErrors.email ? 'true' : 'false'}
+											aria-describedby={billingErrors.email ? 'billing_email-error' : undefined}
 											class="input-text"
 											class:error={billingErrors.email}
 										/>
 										{#if billingErrors.email}
-											<span class="field-error">{billingErrors.email}</span>
+											<span id="billing_email-error" class="field-error">{billingErrors.email}</span
+											>
 										{/if}
 									</div>
 
@@ -385,6 +410,7 @@
 											id="billing_phone"
 											name="billing_phone"
 											autocomplete="tel"
+											inputmode="tel"
 											bind:value={billing.phone}
 											class="input-text"
 										/>
@@ -398,13 +424,22 @@
 											type="text"
 											id="billing_address_1"
 											name="billing_address_1"
+											autocomplete="address-line1"
 											bind:value={billing.address1}
+											required
+											aria-required="true"
+											aria-invalid={billingErrors.address1 ? 'true' : 'false'}
+											aria-describedby={billingErrors.address1
+												? 'billing_address_1-error'
+												: undefined}
 											placeholder="House number and street name"
 											class="input-text"
 											class:error={billingErrors.address1}
 										/>
 										{#if billingErrors.address1}
-											<span class="field-error">{billingErrors.address1}</span>
+											<span id="billing_address_1-error" class="field-error"
+												>{billingErrors.address1}</span
+											>
 										{/if}
 									</div>
 
@@ -416,6 +451,7 @@
 											type="text"
 											id="billing_address_2"
 											name="billing_address_2"
+											autocomplete="address-line2"
 											bind:value={billing.address2}
 											placeholder="Apartment, suite, unit, etc. (optional)"
 											class="input-text"
@@ -428,12 +464,17 @@
 											type="text"
 											id="billing_city"
 											name="billing_city"
+											autocomplete="address-level2"
 											bind:value={billing.city}
+											required
+											aria-required="true"
+											aria-invalid={billingErrors.city ? 'true' : 'false'}
+											aria-describedby={billingErrors.city ? 'billing_city-error' : undefined}
 											class="input-text"
 											class:error={billingErrors.city}
 										/>
 										{#if billingErrors.city}
-											<span class="field-error">{billingErrors.city}</span>
+											<span id="billing_city-error" class="field-error">{billingErrors.city}</span>
 										{/if}
 									</div>
 
@@ -443,12 +484,18 @@
 											type="text"
 											id="billing_state"
 											name="billing_state"
+											autocomplete="address-level1"
 											bind:value={billing.state}
+											required
+											aria-required="true"
+											aria-invalid={billingErrors.state ? 'true' : 'false'}
+											aria-describedby={billingErrors.state ? 'billing_state-error' : undefined}
 											class="input-text"
 											class:error={billingErrors.state}
 										/>
 										{#if billingErrors.state}
-											<span class="field-error">{billingErrors.state}</span>
+											<span id="billing_state-error" class="field-error">{billingErrors.state}</span
+											>
 										{/if}
 									</div>
 
@@ -458,12 +505,22 @@
 											type="text"
 											id="billing_postcode"
 											name="billing_postcode"
+											autocomplete="postal-code"
+											inputmode="numeric"
 											bind:value={billing.postcode}
+											required
+											aria-required="true"
+											aria-invalid={billingErrors.postcode ? 'true' : 'false'}
+											aria-describedby={billingErrors.postcode
+												? 'billing_postcode-error'
+												: undefined}
 											class="input-text"
 											class:error={billingErrors.postcode}
 										/>
 										{#if billingErrors.postcode}
-											<span class="field-error">{billingErrors.postcode}</span>
+											<span id="billing_postcode-error" class="field-error"
+												>{billingErrors.postcode}</span
+											>
 										{/if}
 									</div>
 								</div>
@@ -538,14 +595,26 @@
 											<img
 												src="https://js.stripe.com/v3/fingerprinted/img/visa-729c05c240c4bdb47b03ac81d9945bfe.svg"
 												alt="Visa"
+												width="38"
+												height="24"
+												loading="lazy"
+												decoding="async"
 											/>
 											<img
 												src="https://js.stripe.com/v3/fingerprinted/img/mastercard-4d8844094130711885b5e41b28c9848f.svg"
 												alt="Mastercard"
+												width="38"
+												height="24"
+												loading="lazy"
+												decoding="async"
 											/>
 											<img
 												src="https://js.stripe.com/v3/fingerprinted/img/amex-a49b82f46c5cd6a96a6e418a6ca1717c.svg"
 												alt="Amex"
+												width="38"
+												height="24"
+												loading="lazy"
+												decoding="async"
 											/>
 										</div>
 									</div>
@@ -703,7 +772,7 @@
 										<tr class="recurring-totals-header">
 											<th colspan="2">Recurring Totals</th>
 										</tr>
-										{#each cartStore.items.filter((i) => i.interval) as item}
+										{#each cartStore.items.filter((i) => i.interval) as item (item.price)}
 											<tr class="recurring-total">
 												<td colspan="2">
 													{formatPrice(item.price)}

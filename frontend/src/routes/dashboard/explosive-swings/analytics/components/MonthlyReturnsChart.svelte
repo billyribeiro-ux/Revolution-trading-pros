@@ -9,6 +9,7 @@
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA | Svelte 5
 	 */
 	import { onMount, onDestroy } from 'svelte';
+	import { domRef } from '$lib/svelte/domAttachment';
 	import type { MonthlyPerformance } from '../analytics.state.svelte';
 
 	interface Props {
@@ -20,7 +21,7 @@
 
 	// DOM reference for responsive width measurement (not reactive)
 	// svelte-ignore non_reactive_update
-	let containerEl: HTMLDivElement;
+	let containerEl: HTMLDivElement | undefined;
 	let width = $state(400);
 	let hoveredIndex: number | null = $state(null);
 
@@ -97,7 +98,7 @@
 	{#if isLoading}
 		<div class="skeleton-chart">
 			<div class="skel-bars">
-				{#each Array(6) as _}
+				{#each Array(6) as _, i (i)}
 					<div class="skel-bar"></div>
 				{/each}
 			</div>
@@ -107,10 +108,10 @@
 			<p>No monthly data available</p>
 		</div>
 	{:else}
-		<div bind:this={containerEl} class="chart-container">
+		<div {@attach domRef<HTMLDivElement>((el) => (containerEl = el))} class="chart-container">
 			<svg {width} {height} class="chart-svg">
 				<!-- Grid lines -->
-				{#each [-1, -0.5, 0, 0.5, 1] as tick}
+				{#each [-1, -0.5, 0, 0.5, 1] as tick (tick)}
 					{@const y = padding.top + chartHeight / 2 - (tick * chartHeight) / 2}
 					<line
 						x1={padding.left}
@@ -132,7 +133,7 @@
 				{/each}
 
 				<!-- Bars -->
-				{#each data as month, index}
+				{#each data as month, index (index)}
 					{@const barHeight = Math.abs(month.pnl_percent / maxAbsValue) * (chartHeight / 2)}
 					{@const barY = month.pnl_percent >= 0 ? scaleY(month.pnl_percent) : zeroY}
 					{@const x = scaleX(index) - barWidth / 2}

@@ -21,7 +21,7 @@
 		onchange?: (logic: ConditionalLogic | null) => void;
 	}
 
-	let props: Props = $props();
+	let { fields, currentFieldName, value, onchange }: Props = $props();
 
 	// Default logic structure
 	const defaultLogic: ConditionalLogic = {
@@ -35,8 +35,8 @@
 
 	// Sync with prop changes
 	$effect(() => {
-		if (props.value) {
-			logic = { ...defaultLogic, ...props.value };
+		if (value) {
+			logic = { ...defaultLogic, ...value };
 		}
 	});
 
@@ -69,14 +69,12 @@
 	// Filter fields that can be referenced (exclude current field)
 	$effect(() => {
 		// Update parent when logic changes
-		props.onchange?.(logic.enabled ? logic : null);
+		onchange?.(logic.enabled ? logic : null);
 	});
 
 	// Get available fields for rules
 	function getAvailableFields(): FormField[] {
-		return props.fields.filter(
-			(f) => f.name !== props.currentFieldName && !isLayoutField(f.field_type)
-		);
+		return fields.filter((f) => f.name !== currentFieldName && !isLayoutField(f.field_type));
 	}
 
 	// Check if field type is layout-only
@@ -86,7 +84,7 @@
 
 	// Get operators for a field type
 	function getOperatorsForField(fieldName: string): typeof operators {
-		const field = props.fields.find((f) => f.name === fieldName);
+		const field = fields.find((f) => f.name === fieldName);
 		if (!field) return operators.filter((op) => op.types.includes('all'));
 
 		return operators.filter(
@@ -96,7 +94,7 @@
 
 	// Get field options for value dropdown
 	function getFieldOptions(fieldName: string): string[] {
-		const field = props.fields.find((f) => f.name === fieldName);
+		const field = fields.find((f) => f.name === fieldName);
 		if (!field?.options) return [];
 
 		if (Array.isArray(field.options)) {
@@ -169,7 +167,7 @@
 
 		const rulesText = logic.rules
 			.map((rule) => {
-				const field = props.fields.find((f) => f.name === rule.field);
+				const field = fields.find((f) => f.name === rule.field);
 				const fieldLabel = field?.label || rule.field;
 				const operatorLabel =
 					operators.find((op) => op.value === rule.operator)?.label || rule.operator;
@@ -239,7 +237,7 @@
 
 		<!-- Rules List -->
 		<div class="rules-list">
-			{#each logic.rules as rule, index}
+			{#each logic.rules as rule, index (rule.value)}
 				<div class="rule-item">
 					<div class="rule-number">{index + 1}</div>
 
@@ -254,7 +252,7 @@
 								})}
 							class="rule-select field-select"
 						>
-							{#each getAvailableFields() as field}
+							{#each getAvailableFields() as field (field.name)}
 								<option value={field.name}>{field.label}</option>
 							{/each}
 						</select>
@@ -268,7 +266,7 @@
 								})}
 							class="rule-select operator-select"
 						>
-							{#each getOperatorsForField(rule.field) as op}
+							{#each getOperatorsForField(rule.field) as op (op.value)}
 								<option value={op.value}>{op.label}</option>
 							{/each}
 						</select>
@@ -284,7 +282,7 @@
 									class="rule-select value-select"
 								>
 									<option value="">Select value...</option>
-									{#each fieldOptions as option}
+									{#each fieldOptions as option (option)}
 										<option value={option}>{option}</option>
 									{/each}
 								</select>
@@ -360,7 +358,7 @@
 		<!-- Validation Errors -->
 		{#if validationErrors.length > 0}
 			<div class="validation-errors">
-				{#each validationErrors as error}
+				{#each validationErrors as error (error)}
 					<div class="error-item">{error}</div>
 				{/each}
 			</div>

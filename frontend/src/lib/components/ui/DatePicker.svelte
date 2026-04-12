@@ -33,12 +33,7 @@
 		disabled?: boolean;
 	}
 
-	let props: Props = $props();
-	let value = $derived(props.value);
-	let onchange = $derived(props.onchange);
-	let label = $derived(props.label);
-	let required = $derived(props.required ?? false);
-	let disabled = $derived(props.disabled ?? false);
+	let { value, onchange, label, required = false, disabled = false }: Props = $props();
 
 	// Local state
 	let isOpen = $state(false);
@@ -216,13 +211,13 @@
 			</div>
 
 			<div class="calendar-weekdays">
-				{#each DAYS_OF_WEEK as day}
+				{#each DAYS_OF_WEEK as day (day)}
 					<span class="weekday">{day}</span>
 				{/each}
 			</div>
 
 			<div class="calendar-days">
-				{#each days as day}
+				{#each days as day (day)}
 					{#if day === null}
 						<span class="day-empty"></span>
 					{:else}

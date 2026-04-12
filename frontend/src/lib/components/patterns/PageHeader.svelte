@@ -20,16 +20,14 @@
 		actions?: Snippet;
 	}
 
-	let props: Props = $props();
-
-	let breadcrumbs = $derived(props.breadcrumbs ?? []);
+	let { title, subtitle, breadcrumbs = [], actions }: Props = $props();
 </script>
 
 <header class="page-header">
 	{#if breadcrumbs.length > 0}
 		<nav class="breadcrumbs" aria-label="Breadcrumb">
 			<ol>
-				{#each breadcrumbs as crumb, i}
+				{#each breadcrumbs as crumb, i (crumb.label ?? i)}
 					<li>
 						{#if crumb.href && i < breadcrumbs.length - 1}
 							<a href={crumb.href}>{crumb.label}</a>
@@ -46,15 +44,15 @@
 
 	<div class="header-content">
 		<div class="header-text">
-			<h1 class="page-title">{props.title}</h1>
-			{#if props.subtitle}
-				<p class="page-subtitle">{props.subtitle}</p>
+			<h1 class="page-title">{title}</h1>
+			{#if subtitle}
+				<p class="page-subtitle">{subtitle}</p>
 			{/if}
 		</div>
 
-		{#if props.actions}
+		{#if actions}
 			<div class="header-actions">
-				{@render props.actions()}
+				{@render actions()}
 			</div>
 		{/if}
 	</div>

@@ -211,7 +211,7 @@
 		<div class="container">
 			<h2>Powerful Features</h2>
 			<div class="features-grid">
-				{#each product.features as feature}
+				{#each product.features as feature (feature.title)}
 					<!-- Svelte 5: {@const} must be immediate child of {#each} -->
 					{@const iconStr = feature.icon}
 					<div class="feature-card">
@@ -231,7 +231,7 @@
 		<div class="container">
 			<h2>What You Get</h2>
 			<div class="benefits-grid">
-				{#each product.benefits as benefit}
+				{#each product.benefits as benefit (benefit)}
 					<div class="benefit-item">
 						<Icon icon={IconCheck} size={24} class="check-icon" />
 						<span>{benefit}</span>

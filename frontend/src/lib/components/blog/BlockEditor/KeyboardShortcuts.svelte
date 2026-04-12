@@ -25,9 +25,7 @@
 		onClose: () => void;
 	}
 
-	let props: Props = $props();
-	const isOpen = $derived(props.isOpen);
-	const onClose = $derived(props.onClose);
+	let { isOpen, onClose }: Props = $props();
 
 	// Detect platform
 	const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
@@ -205,14 +203,14 @@
 			</div>
 
 			<div class="shortcuts-content">
-				{#each filteredCategories as category}
+				{#each filteredCategories as category (category.name)}
 					<div class="category">
 						<h3 class="category-name">{category.name}</h3>
 						<div class="shortcuts-list">
-							{#each category.shortcuts as shortcut}
+							{#each category.shortcuts as shortcut (shortcut.keys)}
 								<div class="shortcut-item">
 									<div class="shortcut-keys">
-										{#each shortcut.keys as key, i}
+										{#each shortcut.keys as key, i (key)}
 											<kbd class="key">{key}</kbd>
 											{#if i < shortcut.keys.length - 1}
 												<span class="plus">+</span>

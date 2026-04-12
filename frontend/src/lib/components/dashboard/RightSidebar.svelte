@@ -26,15 +26,11 @@
 		className?: string;
 	}
 
-	let props: Props = $props();
-
-	// Derived props with defaults
-	let sections = $derived(props.sections ?? []);
-	let className = $derived(props.className ?? '');
+	let { sections = [], className = '' }: Props = $props();
 </script>
 
 <aside class="dashboard__content-sidebar {className}">
-	{#each sections as section}
+	{#each sections as section (section.heading)}
 		<section class="content-sidebar__section">
 			<h4 class="content-sidebar__heading">
 				{#if section.heading.includes('Weekly Watchlist Schedule')}
@@ -53,7 +49,7 @@
 				</div>
 			{:else if section.content === 'links' && section.links}
 				<ul class="link-list">
-					{#each section.links as link}
+					{#each section.links as link (link.href ?? link.text)}
 						<li>
 							<a href={link.href} target={link.external ? '_blank' : '_self'}>
 								{link.text}

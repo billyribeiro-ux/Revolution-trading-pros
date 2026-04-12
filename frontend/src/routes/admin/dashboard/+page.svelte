@@ -202,7 +202,9 @@
 			<div class="ambient-blob ambient-blob-emerald"></div>
 		</div>
 
-		<div class="relative z-10 p-6 lg:p-8 max-w-[1800px] mx-auto">
+		<div
+			class="relative z-10 p-6 lg:p-8 max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto"
+		>
 			<!-- Header -->
 			<header class="mb-8" in:fly={{ y: -20, duration: 600, easing: quintOut }}>
 				<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">

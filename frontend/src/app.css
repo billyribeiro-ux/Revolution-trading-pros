@@ -1,81 +1,162 @@
-@import './pe7-design-system.css';
+/*
+ * OKLCH design tokens live in src/styles/design-system-oklch.css (single source of truth).
+ * Tailwind v4 remains wired for utilities + shadcn components until markup is migrated
+ * off utility-class-heavy patterns; do not add new Tailwind-only stacks for greenfield UI.
+ */
+@import './styles/design-system-oklch.css';
 
-:root {
-	--radius: 0.625rem;
-	--background: oklch(1 0 0);
-	--foreground: oklch(0.141 0.005 285.823);
-	--card: oklch(1 0 0);
-	--card-foreground: oklch(0.141 0.005 285.823);
-	--popover: oklch(1 0 0);
-	--popover-foreground: oklch(0.141 0.005 285.823);
-	--primary: oklch(0.21 0.006 285.885);
-	--primary-foreground: oklch(0.985 0 0);
-	--secondary: oklch(0.967 0.001 286.375);
-	--secondary-foreground: oklch(0.21 0.006 285.885);
-	--muted: oklch(0.967 0.001 286.375);
-	--muted-foreground: oklch(0.552 0.016 285.938);
-	--accent: oklch(0.967 0.001 286.375);
-	--accent-foreground: oklch(0.21 0.006 285.885);
-	--destructive: oklch(0.577 0.245 27.325);
-	--border: oklch(0.92 0.004 286.32);
-	--input: oklch(0.92 0.004 286.32);
-	--ring: oklch(0.705 0.015 286.067);
-	--chart-1: oklch(0.646 0.222 41.116);
-	--chart-2: oklch(0.6 0.118 184.704);
-	--chart-3: oklch(0.398 0.07 227.392);
-	--chart-4: oklch(0.828 0.189 84.429);
-	--chart-5: oklch(0.769 0.188 70.08);
-	--sidebar: oklch(0.985 0 0);
-	--sidebar-foreground: oklch(0.141 0.005 285.823);
-	--sidebar-primary: oklch(0.21 0.006 285.885);
-	--sidebar-primary-foreground: oklch(0.985 0 0);
-	--sidebar-accent: oklch(0.967 0.001 286.375);
-	--sidebar-accent-foreground: oklch(0.21 0.006 285.885);
-	--sidebar-border: oklch(0.92 0.004 286.32);
-	--sidebar-ring: oklch(0.705 0.015 286.067);
+@import 'tailwindcss';
+
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+	/*
+	 * Responsive breakpoint scale (Tailwind 4 @theme tokens).
+	 * Defaults xs/sm/md/lg/xl/2xl ship with Tailwind; 3xl..6xl added for
+	 * HD / QHD / 4K / 5K large-display scaling. Keep this scale additive —
+	 * only upper tiers should grow, never shrink lower ones.
+	 *   xs   360px   very small phones
+	 *   sm   640px   Tailwind default
+	 *   md   768px   Tailwind default
+	 *   lg   1024px  Tailwind default
+	 *   xl   1280px  Tailwind default
+	 *   2xl  1536px  Tailwind default
+	 *   3xl  1920px  HD desktop
+	 *   4xl  2560px  QHD / 2K
+	 *   5xl  3840px  4K UHD
+	 *   6xl  5120px  5K (Apple Studio Display, iMac 5K)
+	 */
+	--breakpoint-xs: 360px;
+	--breakpoint-3xl: 1920px;
+	--breakpoint-4xl: 2560px;
+	--breakpoint-5xl: 3840px;
+	--breakpoint-6xl: 5120px;
+
+	--radius-sm: calc(var(--radius) - 4px);
+	--radius-md: calc(var(--radius) - 2px);
+	--radius-lg: var(--radius);
+	--radius-xl: calc(var(--radius) + 4px);
+	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--color-card: var(--card);
+	--color-card-foreground: var(--card-foreground);
+	--color-popover: var(--popover);
+	--color-popover-foreground: var(--popover-foreground);
+	--color-primary: var(--primary);
+	--color-primary-foreground: var(--primary-foreground);
+	--color-secondary: var(--secondary);
+	--color-secondary-foreground: var(--secondary-foreground);
+	--color-muted: var(--muted);
+	--color-muted-foreground: var(--muted-foreground);
+	--color-accent: var(--accent);
+	--color-accent-foreground: var(--accent-foreground);
+	--color-destructive: var(--destructive);
+	--color-border: var(--border);
+	--color-input: var(--input);
+	--color-ring: var(--ring);
+	--color-chart-1: var(--chart-1);
+	--color-chart-2: var(--chart-2);
+	--color-chart-3: var(--chart-3);
+	--color-chart-4: var(--chart-4);
+	--color-chart-5: var(--chart-5);
+	--color-sidebar: var(--sidebar);
+	--color-sidebar-foreground: var(--sidebar-foreground);
+	--color-sidebar-primary: var(--sidebar-primary);
+	--color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+	--color-sidebar-accent: var(--sidebar-accent);
+	--color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+	--color-sidebar-border: var(--sidebar-border);
+	--color-sidebar-ring: var(--sidebar-ring);
+
+	--color-rtp-bg: var(--rtp-bg);
+	--color-rtp-text: var(--rtp-text);
+	--color-rtp-muted: var(--rtp-muted);
+	--color-rtp-surface: var(--rtp-surface);
+	--color-rtp-border: var(--rtp-border);
+	--color-rtp-primary: var(--rtp-primary);
+	--color-rtp-blue: var(--rtp-blue);
+	--color-rtp-emerald: var(--rtp-emerald);
+	--color-rtp-indigo: var(--rtp-indigo);
+	--color-rtp-primary-soft: var(--rtp-primary-soft);
+	--color-rtp-success: var(--rtp-success);
+	--color-rtp-success-soft: var(--rtp-success-soft);
+	--color-rtp-warning: var(--rtp-warning);
+	--color-rtp-warning-soft: var(--rtp-warning-soft);
+	--color-rtp-error: var(--rtp-error);
+	--color-rtp-error-soft: var(--rtp-error-soft);
+	--color-rtp-info: var(--rtp-info);
+	--color-rtp-info-soft: var(--rtp-info-soft);
 }
 
-.dark {
-	--background: oklch(0.141 0.005 285.823);
-	--foreground: oklch(0.985 0 0);
-	--card: oklch(0.21 0.006 285.885);
-	--card-foreground: oklch(0.985 0 0);
-	--popover: oklch(0.21 0.006 285.885);
-	--popover-foreground: oklch(0.985 0 0);
-	--primary: oklch(0.92 0.004 286.32);
-	--primary-foreground: oklch(0.21 0.006 285.885);
-	--secondary: oklch(0.274 0.006 286.033);
-	--secondary-foreground: oklch(0.985 0 0);
-	--muted: oklch(0.274 0.006 286.033);
-	--muted-foreground: oklch(0.705 0.015 286.067);
-	--accent: oklch(0.274 0.006 286.033);
-	--accent-foreground: oklch(0.985 0 0);
-	--destructive: oklch(0.704 0.191 22.216);
-	--border: oklch(1 0 0 / 10%);
-	--input: oklch(1 0 0 / 15%);
-	--ring: oklch(0.552 0.016 285.938);
-	--chart-1: oklch(0.488 0.243 264.376);
-	--chart-2: oklch(0.696 0.17 162.48);
-	--chart-3: oklch(0.769 0.188 70.08);
-	--chart-4: oklch(0.627 0.265 303.9);
-	--chart-5: oklch(0.645 0.246 16.439);
-	--sidebar: oklch(0.21 0.006 285.885);
-	--sidebar-foreground: oklch(0.985 0 0);
-	--sidebar-primary: oklch(0.488 0.243 264.376);
-	--sidebar-primary-foreground: oklch(0.985 0 0);
-	--sidebar-accent: oklch(0.274 0.006 286.033);
-	--sidebar-accent-foreground: oklch(0.985 0 0);
-	--sidebar-border: oklch(1 0 0 / 10%);
-	--sidebar-ring: oklch(0.552 0.016 285.938);
+@layer base {
+	* {
+		@apply border-border outline-ring/50;
+	}
+	body {
+		@apply bg-background text-foreground;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════
+	   GLOBAL FOCUS-VISIBLE BASELINE (WCAG 2.4.7)
+	   Ensures every interactive element has a visible keyboard focus ring even
+	   if a component forgets to opt in. Mouse users (`:focus` without
+	   `:focus-visible`) are unaffected.
+	   ═══════════════════════════════════════════════════════════════════════ */
+	:where(
+		a,
+		button,
+		[role='button'],
+		[role='link'],
+		input,
+		select,
+		textarea,
+		summary,
+		[tabindex]:not([tabindex='-1'])
+	):focus-visible {
+		outline: 2px solid var(--rtp-primary, #3b82f6);
+		outline-offset: 2px;
+		border-radius: 2px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════
+	   SMALL-VIEWPORT SAFETY NETS (320px+)
+	   Prevent media and long words from forcing horizontal scroll on very
+	   narrow phones. Scoped so page-level utilities can still opt out.
+	   ═══════════════════════════════════════════════════════════════════════ */
+	:where(img, video, svg, canvas, iframe) {
+		max-width: 100%;
+		height: auto;
+	}
+
+	:where(p, h1, h2, h3, h4, h5, h6, li, dt, dd, blockquote) {
+		overflow-wrap: anywhere;
+	}
 }
 
-* {
-	border-color: var(--border);
-	outline-color: oklch(from var(--ring) l c h / 50%);
-}
-body {
-	background-color: var(--background);
-	color: var(--foreground);
+@layer utilities {
+	/* Accessible skip-to-content link: visually hidden until focused via Tab */
+	.skip-to-content {
+		position: absolute;
+		left: 0;
+		top: 0;
+		z-index: 100;
+		padding: 0.75rem 1rem;
+		background: var(--rtp-primary, #1e3a8a);
+		color: #ffffff;
+		font-weight: 600;
+		text-decoration: none;
+		border-radius: 0 0 0.5rem 0;
+		transform: translateY(-110%);
+		transition: transform 0.15s ease-out;
+	}
+	.skip-to-content:focus,
+	.skip-to-content:focus-visible {
+		transform: translateY(0);
+		outline: 2px solid #ffffff;
+		outline-offset: 2px;
+	}
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -365,5 +446,185 @@ body {
 	/* Large viewport height (when browser UI is hidden) */
 	.min-h-screen-large {
 		min-height: 100lvh;
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LARGE-DISPLAY SCALING (1920px → 5120px)
+   Additive scaling for HD / QHD / 4K / 5K displays. These utilities are
+   opt-in and never affect mobile / laptop layouts.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@layer utilities {
+	/* Fluid content container — scales smoothly from laptop to 5K.
+	   Use instead of hard `max-w-7xl` on major content wrappers. */
+	.container-fluid-wide {
+		width: 100%;
+		max-width: min(100% - 2rem, clamp(80rem, 88vw, 150rem));
+		margin-inline: auto;
+	}
+
+	/* Fluid headline type — clamps between the current laptop size and a
+	   larger ceiling on 5K. Replaces manual `text-4xl 3xl:text-5xl ...`. */
+	.text-fluid-display {
+		font-size: clamp(2rem, 1.5rem + 1.8vw, 4rem);
+		line-height: 1.05;
+	}
+	.text-fluid-h1 {
+		font-size: clamp(1.75rem, 1.25rem + 1.3vw, 3rem);
+		line-height: 1.1;
+	}
+	.text-fluid-h2 {
+		font-size: clamp(1.375rem, 1rem + 0.9vw, 2.25rem);
+		line-height: 1.2;
+	}
+	.text-fluid-body {
+		font-size: clamp(1rem, 0.9rem + 0.25vw, 1.25rem);
+		line-height: 1.55;
+	}
+}
+
+/* Root font-size nudge for very large displays so rem-based spacing scales
+   without touching every utility class. Thresholds match the breakpoint
+   tokens above. */
+@media (min-width: 1920px) {
+	:root {
+		font-size: 17px;
+	}
+}
+@media (min-width: 2560px) {
+	:root {
+		font-size: 18px;
+	}
+}
+@media (min-width: 3840px) {
+	:root {
+		font-size: 20px;
+	}
+}
+@media (min-width: 5120px) {
+	:root {
+		font-size: 22px;
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   prefers-contrast: more — WCAG 2.1 SC 1.4.6 (Contrast Enhanced, AAA)
+   Users with low vision can request a higher-contrast UI in their OS.
+   We darken muted text, beef up borders, and remove background gradients
+   that hurt legibility under high-contrast mode. Lighthouse a11y rewards
+   sites that explicitly support this query.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-contrast: more) {
+	:where(:root) {
+		--rtp-muted: #1f2937; /* slate-800 instead of slate-500 */
+		--rtp-border: #000000;
+	}
+
+	:where(a, button, [role='button']) {
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
+	}
+
+	:where(:focus-visible) {
+		outline: 3px solid currentColor;
+		outline-offset: 3px;
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   prefers-reduced-data — Save-Data mode (mobile, slow networks)
+   Users on capped data plans / 2G networks can ask the browser to save data.
+   We disable background videos, hero auto-playing media, decorative animations,
+   and high-resolution background images. Service Worker still serves cached
+   content first; this is purely a "don't fetch new heavy assets" hint.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-data: reduce) {
+	:where(video[autoplay]) {
+		display: none !important;
+	}
+
+	:where(img[loading='lazy']) {
+		/* Browser already defers; this opts into the most aggressive deferral. */
+		content-visibility: auto;
+	}
+
+	:where(.hero-background, .decorative-bg, .ambient-bg) {
+		background-image: none !important;
+	}
+
+	:where(.skeleton-loader, .loading-skeleton) {
+		animation: none !important;
+		background: #1a1a1a !important;
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Print stylesheet — clean, ink-friendly output
+   When users print pages (especially blog posts and legal pages) we strip
+   navigation, hide interactive controls, force black-on-white text, and
+   expand collapsed sections so the printed page is fully readable.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media print {
+	:where(:root) {
+		color: #000;
+		background: #fff;
+	}
+
+	:where(html, body) {
+		background: #fff !important;
+		color: #000 !important;
+		font-size: 11pt;
+		line-height: 1.5;
+	}
+
+	/* Hide chrome that doesn't belong in print */
+	:where(
+		nav,
+		header.site-header,
+		footer.site-footer,
+		.navbar,
+		.skip-link,
+		.toast-container,
+		[role='dialog'],
+		[role='banner'],
+		[role='navigation'],
+		button,
+		.no-print
+	) {
+		display: none !important;
+	}
+
+	/* Make links visible by showing the URL after the link text */
+	:where(a[href^='http']):after {
+		content: ' (' attr(href) ')';
+		font-size: 0.85em;
+		color: #555;
+	}
+
+	/* Don't break headings or images across pages */
+	:where(h1, h2, h3, h4) {
+		break-after: avoid;
+		page-break-after: avoid;
+	}
+	:where(img, figure, table, pre, blockquote) {
+		break-inside: avoid;
+		page-break-inside: avoid;
+	}
+
+	/* Expand any collapsible content for print */
+	:where(details) {
+		display: block;
+	}
+	:where(details > summary) {
+		display: none;
+	}
+
+	/* Reasonable page margins */
+	@page {
+		margin: 1.5cm;
 	}
 }

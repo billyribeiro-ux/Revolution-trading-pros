@@ -1,11 +1,12 @@
 <script lang="ts">
+	import { logger } from '$lib/utils/logger';
 	import type { Form } from '$lib/api/forms';
 
 	interface Props {
 		form: Form;
 	}
 
-	let props: Props = $props();
+	let { form }: Props = $props();
 
 	let embedType: 'iframe' | 'script' | 'link' = $state('iframe');
 	let copiedMessage = $state('');
@@ -16,8 +17,8 @@
 	let directUrl = $state('');
 
 	$effect(() => {
-		embedUrl = `${baseUrl}/embed/form/${props.form.slug}`;
-		directUrl = `${baseUrl}/forms/${props.form.slug}`;
+		embedUrl = `${baseUrl}/embed/form/${form.slug}`;
+		directUrl = `${baseUrl}/forms/${form.slug}`;
 	});
 
 	// Generate embed codes
@@ -25,7 +26,7 @@
 		`<iframe src="${embedUrl}" width="100%" height="600" frameborder="0" style="border: none; max-width: 800px;"></iframe>`
 	);
 
-	let scriptCode = $derived(`<div id="form-${props.form.slug}"></div>
+	let scriptCode = $derived(`<div id="form-${form.slug}"></div>
 <script>
 (function() {
   const iframe = document.createElement('iframe');
@@ -35,11 +36,11 @@
   iframe.frameBorder = '0';
   iframe.style.border = 'none';
   iframe.style.maxWidth = '800px';
-  document.getElementById('form-${props.form.slug}').appendChild(iframe);
+  document.getElementById('form-${form.slug}').appendChild(iframe);
 
   // Listen for form submission events
   window.addEventListener('message', function(event) {
-    if (event.data.type === 'form-submitted' && event.data.formSlug === '${props.form.slug}') {
+    if (event.data.type === 'form-submitted' && event.data.formSlug === '${form.slug}') {
       logger.info('Form submitted:', event.data.submissionId);
       // You can add custom handling here
     }
@@ -49,7 +50,7 @@ ${'</'}script>`);
 
 	let directLinkCode = $derived(`<a href="${directUrl}" target="_blank">Fill out our form</a>`);
 
-	let shortcode = $derived(`[revolution_form slug="${props.form.slug}"]`);
+	let shortcode = $derived(`[revolution_form slug="${form.slug}"]`);
 
 	function copyToClipboard(text: string, type: string) {
 		navigator.clipboard

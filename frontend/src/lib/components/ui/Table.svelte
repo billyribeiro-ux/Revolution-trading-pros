@@ -8,10 +8,7 @@
 		children?: Snippet;
 	}
 
-	let props: Props = $props();
-	let headers = $derived(props.headers ?? []);
-	let striped = $derived(props.striped ?? false);
-	let hoverable = $derived(props.hoverable ?? true);
+	let { headers = [], striped = false, hoverable = true, children }: Props = $props();
 </script>
 
 <div class="standalone-table-wrap">
@@ -19,8 +16,10 @@
 		{#if headers.length > 0}
 			<thead class="standalone-table-head">
 				<tr>
-					{#each headers as header}
-						<th class="standalone-table-th">
+					{#each headers as header (header)}
+						<th
+							class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+						>
 							{header}
 						</th>
 					{/each}
@@ -33,7 +32,7 @@
 			data-striped={striped || undefined}
 			data-hoverable={hoverable || undefined}
 		>
-			{@render props.children?.()}
+			{@render children?.()}
 		</tbody>
 	</table>
 </div>

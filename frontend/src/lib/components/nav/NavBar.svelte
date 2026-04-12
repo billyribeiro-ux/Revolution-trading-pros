@@ -38,7 +38,6 @@
 
 <script lang="ts" module>
 	import { logger } from '$lib/utils/logger';
-	import { Icon, IconChevronDown, IconMenu2, IconShoppingCart, IconX } from '$lib/icons';
 	// ═══════════════════════════════════════════════════════════════════════════
 	// MODULE CONTEXT - Shared across all instances
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -192,26 +191,25 @@
 		onlogout?: () => void;
 	}
 
-	let props: Props = $props();
-
-	// Derived props with defaults (Svelte 5 January 2026 pattern)
-	const items = $derived(props.items ?? DEFAULT_NAV_ITEMS);
-	const dashboardItems = $derived(props.dashboardItems ?? DEFAULT_DASHBOARD_ITEMS);
-	const logoSrc = $derived(props.logoSrc ?? '/revolution-trading-pros.png');
-	const logoAlt = $derived(props.logoAlt ?? 'Revolution Trading Pros');
-	const logoHref = $derived(props.logoHref ?? '/');
-	const theme = $derived(props.theme ?? {});
-	const sticky = $derived(props.sticky ?? true);
-	const logo = $derived(props.logo);
-	const actions = $derived(props.actions);
-	const announcement = $derived(props.announcement ?? '');
-	const disableTransitions = $derived(props.disableTransitions ?? false);
-	const onnavclick = $derived(props.onnavclick);
-	const ondropdownopen = $derived(props.ondropdownopen);
-	const ondropdownclose = $derived(props.ondropdownclose);
-	const onmobileopen = $derived(props.onmobileopen);
-	const onmobileclose = $derived(props.onmobileclose);
-	const onlogout = $derived(props.onlogout);
+	let {
+		items = DEFAULT_NAV_ITEMS,
+		dashboardItems = DEFAULT_DASHBOARD_ITEMS,
+		logoSrc = '/revolution-trading-pros.png',
+		logoAlt = 'Revolution Trading Pros',
+		logoHref = '/',
+		theme = {},
+		sticky = true,
+		logo,
+		actions,
+		announcement = '',
+		disableTransitions = false,
+		onnavclick,
+		ondropdownopen,
+		ondropdownclose,
+		onmobileopen,
+		onmobileclose,
+		onlogout
+	}: Props = $props();
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// EVENT HELPERS (Svelte 5 callback pattern)
@@ -1119,6 +1117,35 @@
 		max-width: 100%;
 		margin: 0 auto;
 		padding-inline: var(--nav-padding-inline);
+	}
+
+	/* 4K / 5K display scaling — nav gets a max-width so content doesn't stretch edge-to-edge */
+	@media (min-width: 1920px) {
+		.navbar-container {
+			max-width: 1800px;
+			padding-inline: 3rem;
+		}
+	}
+
+	@media (min-width: 2560px) {
+		.navbar-container {
+			max-width: 2200px;
+			padding-inline: 4rem;
+		}
+	}
+
+	@media (min-width: 3840px) {
+		.navbar-container {
+			max-width: 2600px;
+			padding-inline: 5rem;
+		}
+	}
+
+	@media (min-width: 5120px) {
+		.navbar-container {
+			max-width: 3200px;
+			padding-inline: 6rem;
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -2210,6 +2237,66 @@
 		.navbar {
 			--nav-height: 104px;
 			--nav-padding-inline: 2rem;
+		}
+	}
+
+	/* 4K / 5K display scaling — navbar grows proportionally on ultra-wide monitors */
+	@media (min-width: 1920px) {
+		.navbar {
+			--nav-height: 112px;
+			--nav-padding-inline: 3rem;
+		}
+		.logo {
+			width: 220px;
+			height: 55px;
+		}
+	}
+
+	@media (min-width: 2560px) {
+		.navbar {
+			--nav-height: 128px;
+			--nav-padding-inline: 4rem;
+		}
+		.logo {
+			width: 260px;
+			height: 65px;
+		}
+		.nav-link {
+			font-size: 0.9375rem;
+			height: 44px;
+			padding: 0 1rem;
+		}
+	}
+
+	@media (min-width: 3840px) {
+		.navbar {
+			--nav-height: 160px;
+			--nav-padding-inline: 5rem;
+		}
+		.logo {
+			width: 320px;
+			height: 80px;
+		}
+		.nav-link {
+			font-size: 1.125rem;
+			height: 56px;
+			padding: 0 1.25rem;
+		}
+	}
+
+	@media (min-width: 5120px) {
+		.navbar {
+			--nav-height: 200px;
+			--nav-padding-inline: 6rem;
+		}
+		.logo {
+			width: 400px;
+			height: 100px;
+		}
+		.nav-link {
+			font-size: 1.375rem;
+			height: 70px;
+			padding: 0 1.75rem;
 		}
 	}
 

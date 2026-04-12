@@ -5,7 +5,7 @@
  * Enterprise-level validation of all analytics functions.
  * Tests every exported function, type, and integration point.
  *
- * Run with: npx vitest run src/lib/observability/__tests__/analytics.test.ts
+ * Run with: pnpm exec vitest run src/lib/observability/__tests__/analytics.test.ts
  *
  * @version 1.0.0
  */

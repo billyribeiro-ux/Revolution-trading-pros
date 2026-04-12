@@ -236,7 +236,7 @@
 
 				<div class="example-prompts">
 					<span class="examples-label">Try:</span>
-					{#each examplePrompts.slice(0, 3) as example}
+					{#each examplePrompts.slice(0, 3) as example (example)}
 						<button class="example-btn" onclick={() => (prompt = example)}>
 							{example.slice(0, 30)}...
 						</button>
@@ -260,7 +260,7 @@
 					<div class="generated-preview">
 						<h4>Generated Fields ({generatedFields.length})</h4>
 						<div class="fields-list">
-							{#each generatedFields as field}
+							{#each generatedFields as field (field.label)}
 								<div class="field-preview">
 									<span class="field-type-badge">{field.type}</span>
 									<span class="field-label">{field.label}</span>
@@ -302,7 +302,7 @@
 
 				{#if suggestions.length > 0}
 					<div class="suggestions-list">
-						{#each suggestions as suggestion}
+						{#each suggestions as suggestion (suggestion.label)}
 							<div class="suggestion-card">
 								<div class="suggestion-header">
 									<span class="field-type-badge">{suggestion.type}</span>
@@ -354,7 +354,7 @@
 						{#if analysis.issues.length > 0}
 							<div class="issues-section">
 								<h4>Issues Found</h4>
-								{#each analysis.issues as issue}
+								{#each analysis.issues as issue (issue.severity)}
 									<div
 										class="issue-item"
 										class:warning={issue.severity === 'warning'}
@@ -373,7 +373,7 @@
 						{#if analysis.recommendations.length > 0}
 							<div class="recommendations-section">
 								<h4>Recommendations</h4>
-								{#each analysis.recommendations as rec}
+								{#each analysis.recommendations as rec (rec.priority)}
 									<div class="recommendation-card">
 										<div class="rec-header">
 											<span

@@ -87,11 +87,14 @@
 
 <div class="ra-container">
 	{#if loading}
-		<div class="ra-summary-grid">
+		<!-- Loading skeleton -->
+		<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
 			{#each Array(4) as _, i (i)}
-				<div class="ra-card ra-skeleton-card">
-					<div class="ra-skel-line ra-skel-w24"></div>
-					<div class="ra-skel-line ra-skel-w16 ra-skel-tall"></div>
+				<div
+					class="animate-pulse rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-900"
+				>
+					<div class="h-4 w-24 rounded bg-gray-200 dark:bg-gray-700"></div>
+					<div class="mt-2 h-8 w-16 rounded bg-gray-200 dark:bg-gray-700"></div>
 				</div>
 			{/each}
 		</div>
@@ -197,9 +200,11 @@
 		<!-- Charts Grid -->
 		<div class="ra-charts-grid">
 			<!-- By Type -->
-			<div class="ra-card">
-				<h3 class="ra-section-title">Resources by Type</h3>
-				<div class="ra-list">
+			<div
+				class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-900"
+			>
+				<h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Resources by Type</h3>
+				<div class="space-y-3">
 					{#each analytics.by_type as item (item.resource_type)}
 						{@const percentage =
 							analytics.total_resources > 0 ? (item.count / analytics.total_resources) * 100 : 0}
@@ -231,9 +236,13 @@
 			</div>
 
 			<!-- By Access Level -->
-			<div class="ra-card">
-				<h3 class="ra-section-title">Resources by Access Level</h3>
-				<div class="ra-list">
+			<div
+				class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-900"
+			>
+				<h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
+					Resources by Access Level
+				</h3>
+				<div class="space-y-3">
 					{#each analytics.by_access_level as item (item.access_level)}
 						{@const percentage =
 							analytics.total_resources > 0 ? (item.count / analytics.total_resources) * 100 : 0}
@@ -259,42 +268,67 @@
 		</div>
 
 		<!-- Top Lists -->
-		<div class="ra-top-grid">
-			<div class="ra-card">
-				<h3 class="ra-section-title">Top Viewed</h3>
-				<div class="ra-list">
-					{#each analytics.top_viewed.slice(0, 5) as item, i (item.id)}
-						<div class="ra-top-item">
-							<span class="ra-rank">{i + 1}</span>
-							<div class="ra-item-info">
-								<p class="ra-item-title">{item.title}</p>
-								<p class="ra-item-meta">{formatNumber(item.views_count)} views</p>
+		<div class="grid gap-6 lg:grid-cols-3">
+			<!-- Top Viewed -->
+			<div
+				class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-900"
+			>
+				<h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Top Viewed</h3>
+				<div class="space-y-3">
+					{#each analytics.top_viewed.slice(0, 5) as item, i (item.title)}
+						<div class="flex items-start gap-3">
+							<span
+								class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+							>
+								{i + 1}
+							</span>
+							<div class="min-w-0 flex-1">
+								<p class="truncate text-sm font-medium text-gray-900 dark:text-white">
+									{item.title}
+								</p>
+								<p class="text-xs text-gray-500 dark:text-gray-400">
+									{formatNumber(item.views_count)} views
+								</p>
 							</div>
 						</div>
 					{/each}
 				</div>
 			</div>
 
-			<div class="ra-card">
-				<h3 class="ra-section-title">Top Downloaded</h3>
-				<div class="ra-list">
-					{#each analytics.top_downloaded.slice(0, 5) as item, i (item.id)}
-						<div class="ra-top-item">
-							<span class="ra-rank">{i + 1}</span>
-							<div class="ra-item-info">
-								<p class="ra-item-title">{item.title}</p>
-								<p class="ra-item-meta">{formatNumber(item.downloads_count)} downloads</p>
+			<!-- Top Downloaded -->
+			<div
+				class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-900"
+			>
+				<h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Top Downloaded</h3>
+				<div class="space-y-3">
+					{#each analytics.top_downloaded.slice(0, 5) as item, i (item.title)}
+						<div class="flex items-start gap-3">
+							<span
+								class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+							>
+								{i + 1}
+							</span>
+							<div class="min-w-0 flex-1">
+								<p class="truncate text-sm font-medium text-gray-900 dark:text-white">
+									{item.title}
+								</p>
+								<p class="text-xs text-gray-500 dark:text-gray-400">
+									{formatNumber(item.downloads_count)} downloads
+								</p>
 							</div>
 						</div>
 					{/each}
 				</div>
 			</div>
 
-			<div class="ra-card">
-				<h3 class="ra-section-title">Recent Uploads</h3>
-				<div class="ra-list">
-					{#each analytics.recent_uploads.slice(0, 5) as item (item.id)}
-						<div class="ra-top-item">
+			<!-- Recent Uploads -->
+			<div
+				class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-900"
+			>
+				<h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Recent Uploads</h3>
+				<div class="space-y-3">
+					{#each analytics.recent_uploads.slice(0, 5) as item (item.title)}
+						<div class="flex items-start gap-3">
 							<svg
 								class="ra-icon-sm ra-icon-muted"
 								fill="none"

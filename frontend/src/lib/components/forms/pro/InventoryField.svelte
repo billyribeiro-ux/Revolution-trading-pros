@@ -183,7 +183,7 @@
 		role="group"
 		aria-label={label}
 	>
-		{#each products as product}
+		{#each products as product (product.id)}
 			{@const stockStatus = getStockStatus(product)}
 			{@const isSelected = selections.has(product.id)}
 			{@const quantity = selections.get(product.id) ?? 0}
@@ -196,7 +196,14 @@
 			>
 				{#if product.image}
 					<div class="product-image">
-						<img src={product.image} alt={product.name} loading="lazy" />
+						<img
+							src={product.image}
+							alt={product.name}
+							width="200"
+							height="200"
+							loading="lazy"
+							decoding="async"
+						/>
 					</div>
 				{/if}
 
@@ -315,7 +322,7 @@
 	{/if}
 
 	<!-- Hidden inputs for form submission -->
-	{#each Array.from(selections.entries()) as [productId, qty], index}
+	{#each Array.from(selections.entries()) as [productId, qty], index (productId)}
 		<input type="hidden" name="{name}[{index}][product_id]" value={productId} />
 		<input type="hidden" name="{name}[{index}][quantity]" value={qty} />
 	{/each}

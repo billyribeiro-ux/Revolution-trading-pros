@@ -12,7 +12,7 @@
 
 ```bash
 rm -rf node_modules package-lock.json
-npm install
+pnpm install
 ```
 
 #### "Type error in blockState.svelte.ts"
@@ -22,7 +22,7 @@ npm install
 **Solution:** Check that all types are properly defined. Run:
 
 ```bash
-npm run check
+pnpm run check
 ```
 
 ### Runtime Errors
@@ -74,7 +74,7 @@ import { calculateVirtualScrollIndices } from '$lib/utils/performance';
 **Solution:** Check bundle analyzer:
 
 ```bash
-npm run analyze
+pnpm run analyze
 ```
 
 Remove unused dependencies and ensure code splitting is working.
@@ -86,7 +86,7 @@ Remove unused dependencies and ensure code splitting is working.
 **Solution:**
 
 ```bash
-npx prisma generate
+pnpm dlx prisma generate
 ```
 
 #### "Migration failed"
@@ -94,8 +94,8 @@ npx prisma generate
 **Solution:**
 
 ```bash
-npx prisma migrate reset
-npx prisma migrate dev
+pnpm dlx prisma migrate reset
+pnpm dlx prisma migrate dev
 ```
 
 ### API Issues
@@ -114,10 +114,10 @@ npx prisma migrate dev
 
 ```bash
 # Terminal 1
-npm run dev
+pnpm run dev
 
 # Terminal 2
-npm run test:e2e
+pnpm run test:e2e
 ```
 
 #### "Tests timeout"
@@ -133,7 +133,7 @@ timeout: 60000; // 60 seconds
 Enable debug logging:
 
 ```bash
-DEBUG=* npm run dev
+DEBUG=* pnpm run dev
 ```
 
 ## Getting Help

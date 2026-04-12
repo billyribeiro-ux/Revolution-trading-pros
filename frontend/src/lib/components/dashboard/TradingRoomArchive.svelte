@@ -67,14 +67,7 @@
 		error?: string | null;
 	}
 
-	let props: Props = $props();
-
-	// Derived props with defaults
-	let roomSlug = $derived(props.roomSlug);
-	let videos = $derived(props.videos);
-	let meta = $derived(props.meta);
-	let search = $derived(props.search ?? '');
-	let error = $derived(props.error ?? null);
+	let { roomSlug, roomName: _roomName, videos, meta, search = '', error = null }: Props = $props();
 
 	// Archive session type (transformed from API)
 	interface ArchiveSession {
@@ -359,7 +352,7 @@
 			{#if totalPages > 1}
 				<div class="fl-builder-pagination">
 					<ul class="page-numbers">
-						{#each getPageNumbers() as page}
+						{#each getPageNumbers() as page, i (i)}
 							{#if typeof page === 'number'}
 								<li>
 									<button

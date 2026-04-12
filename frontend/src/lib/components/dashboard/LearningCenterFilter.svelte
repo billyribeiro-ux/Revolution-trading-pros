@@ -23,11 +23,7 @@
 		activeFilter?: string;
 	}
 
-	let props: Props = $props();
-
-	// Derived props with defaults
-	let categories = $derived(props.categories);
-	let activeFilter = $derived(props.activeFilter ?? 'all');
+	let { categories, activeFilter = 'all' }: Props = $props();
 
 	// Filter resources by navigating to new URL with query params
 	function filterResources(categoryId: string) {
@@ -70,7 +66,7 @@
 			</svg>
 		</label>
 	</div>
-	{#each categories as category}
+	{#each categories as category (category.id)}
 		<div class="filter_btn">
 			<input
 				type="radio"

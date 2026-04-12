@@ -1,25 +1,12 @@
 import { sveltekit } from '@sveltejs/kit/vite';
-import { svelteInspector } from '@sveltejs/vite-plugin-svelte-inspector';
 import { defineConfig } from 'vitest/config';
-import devtoolsJson from 'vite-plugin-devtools-json';
-import { fileURLToPath } from 'node:url';
-import type { PluginOption } from 'vite';
+import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-	plugins: [
-		sveltekit(),
-		svelteInspector({
-			toggleKeyCombo: 'meta-shift',
-			showToggleButton: 'always',
-			toggleButtonPos: 'bottom-right'
-		}),
-		devtoolsJson()
-	] as PluginOption[],
-	resolve: {
-		// Force Svelte client bundle in tests (default resolves to server bundle
-		// which doesn't have mount/unmount needed by @testing-library/svelte)
-		conditions: ['browser']
-	},
+	plugins: [tailwindcss(), sveltekit()],
+	// Only pin `browser` during Vitest — a global `conditions: ['browser']` breaks SSR
+	// resolution for packages with Node/export maps (e.g. @iconify-json/*/icons.json).
+	resolve: process.env.VITEST ? { conditions: ['browser'] } : undefined,
 	test: {
 		globals: true,
 		environment: 'jsdom',

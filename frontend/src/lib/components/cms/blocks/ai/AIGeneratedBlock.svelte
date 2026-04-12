@@ -20,27 +20,27 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 	const stateManager = getBlockStateManager();
 
-	let aiState = $derived(stateManager.getAIGeneratedState(props.blockId));
+	let aiState = $derived(stateManager.getAIGeneratedState(blockId));
 	let copied = $state(false);
 
-	let prompt = $derived(props.block.content.aiPrompt || '');
-	let model = $derived(props.block.content.aiModel || 'gpt-4');
-	let output = $derived(props.block.content.aiOutput || aiState.output || '');
+	let prompt = $derived(block.content.aiPrompt || '');
+	let model = $derived(block.content.aiModel || 'gpt-4');
+	let output = $derived(block.content.aiOutput || aiState.output || '');
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 
 	async function generateContent(): Promise<void> {
 		if (!prompt.trim()) {
-			props.onError?.(new Error('Please enter a prompt'));
+			onError?.(new Error('Please enter a prompt'));
 			return;
 		}
 
-		stateManager.setAIGeneratedState(props.blockId, { loading: true, error: null });
+		stateManager.setAIGeneratedState(blockId, { loading: true, error: null });
 
 		try {
 			// Simulated API call - replace with actual AI service integration
@@ -48,7 +48,7 @@
 
 			const simulatedOutput = `AI-generated content based on your prompt: "${prompt}"\n\nThis is a placeholder response. In production, this would connect to your AI service (OpenAI, Claude, etc.) to generate real content based on the prompt and selected model (${model}).`;
 
-			stateManager.setAIGeneratedState(props.blockId, {
+			stateManager.setAIGeneratedState(blockId, {
 				loading: false,
 				output: simulatedOutput,
 				lastGenerated: Date.now()
@@ -56,8 +56,8 @@
 			updateContent({ aiOutput: simulatedOutput });
 		} catch (error) {
 			const errorMessage = error instanceof Error ? error.message : 'Failed to generate content';
-			stateManager.setAIGeneratedState(props.blockId, { loading: false, error: errorMessage });
-			props.onError?.(new Error(errorMessage));
+			stateManager.setAIGeneratedState(blockId, { loading: false, error: errorMessage });
+			onError?.(new Error(errorMessage));
 		}
 	}
 
@@ -90,7 +90,7 @@
 		<span class="ai-title">AI Content Generator</span>
 	</div>
 
-	{#if props.isEditing}
+	{#if isEditing}
 		<div class="ai-input-section">
 			<label class="prompt-label">
 				<span>Prompt</span>
@@ -147,7 +147,7 @@
 			<div class="output-header">
 				<span class="output-label">Generated Content</span>
 				<div class="output-actions">
-					{#if props.isEditing}
+					{#if isEditing}
 						<button
 							type="button"
 							class="action-btn"
@@ -174,16 +174,16 @@
 			</div>
 			<div
 				class="output-content"
-				contenteditable={props.isEditing}
-				role={props.isEditing ? 'textbox' : undefined}
-				aria-label={props.isEditing ? 'Edit generated content' : undefined}
+				contenteditable={isEditing}
+				role={isEditing ? 'textbox' : undefined}
+				aria-label={isEditing ? 'Edit generated content' : undefined}
 				oninput={handleOutputEdit}
 				onpaste={handlePaste}
 			>
 				{output}
 			</div>
 		</div>
-	{:else if !props.isEditing}
+	{:else if !isEditing}
 		<div class="ai-empty">
 			<Icon icon={IconSparkles} size={32} aria-hidden="true" />
 			<span>No AI content generated yet</span>

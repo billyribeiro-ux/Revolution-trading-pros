@@ -466,7 +466,7 @@
 			</div>
 			<select bind:value={selectedCategory} class="filter-select" aria-label="Filter by category">
 				<option value="">All Categories</option>
-				{#each categories as category}
+				{#each categories as category (category.slug)}
 					<option value={category.slug}>{category.name} ({category.templates_count})</option>
 				{/each}
 			</select>
@@ -617,7 +617,14 @@
 
 						<div class="template-thumbnail">
 							{#if template.thumbnail}
-								<img src={template.thumbnail} alt={`${template.title} preview`} loading="lazy" />
+								<img
+									src={template.thumbnail}
+									alt={`${template.title} preview`}
+									width="300"
+									height="200"
+									loading="lazy"
+									decoding="async"
+								/>
 							{:else}
 								<div class="thumbnail-placeholder">
 									<Icon icon={IconTemplate} size={32} />
@@ -700,7 +707,7 @@
 					</button>
 
 					<div class="pagination-pages">
-						{#each Array.from({ length: totalPages }, (_, i) => i + 1) as page}
+						{#each Array.from({ length: totalPages }, (_, i) => i + 1) as page (page)}
 							{#if page === 1 || page === totalPages || (page >= currentPage - 1 && page <= currentPage + 1)}
 								<button
 									class="pagination-page"

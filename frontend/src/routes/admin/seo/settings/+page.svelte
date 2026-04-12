@@ -115,11 +115,11 @@
 	</header>
 
 	<div class="settings-content">
-		{#each settingGroups as group}
+		{#each settingGroups as group (group.key)}
 			<div class="setting-group">
 				<h2>{group.name}</h2>
 				<div class="fields">
-					{#each group.fields as field}
+					{#each group.fields as field (field.key)}
 						<div class="field">
 							<label for={field.key}>
 								{field.label}

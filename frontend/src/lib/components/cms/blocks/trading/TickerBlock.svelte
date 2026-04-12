@@ -28,7 +28,7 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
 	interface TickerItem {
 		id: string;
@@ -38,25 +38,23 @@
 		changePercent: number;
 	}
 
-	const DEFAULT_TICKERS: TickerItem[] = [
+	const FALLBACK_TICKERS: TickerItem[] = [
 		{ id: 't1', symbol: 'SPY', price: 478.52, change: 2.34, changePercent: 0.49 },
 		{ id: 't2', symbol: 'QQQ', price: 412.18, change: -1.23, changePercent: -0.3 },
 		{ id: 't3', symbol: 'AAPL', price: 185.92, change: 3.45, changePercent: 1.89 }
 	];
 
-	let tickers = $state<TickerItem[]>(DEFAULT_TICKERS);
+	let tickers = $state<TickerItem[]>([]);
 
 	$effect(() => {
-		const items = props.block.content.tickerItems;
-		if (items && items.length > 0) {
-			tickers = items;
-		}
+		const items = block.content.tickerItems;
+		tickers = items != null ? items : FALLBACK_TICKERS;
 	});
 
-	let layout = $derived((props.block.settings.tickerLayout as 'grid' | 'list') || 'grid');
+	let layout = $derived((block.settings.tickerLayout as 'grid' | 'list') || 'grid');
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 
 	function updateTicker(index: number, updates: Partial<TickerItem>): void {
@@ -93,7 +91,7 @@
 	}
 
 	onMount(() => {
-		if (!props.isEditing) {
+		if (!isEditing) {
 			const interval = setInterval(simulatePriceUpdate, 3000);
 			return () => clearInterval(interval);
 		}
@@ -120,7 +118,7 @@
 		{#each tickers as ticker, index (ticker.id)}
 			{@const isPositive = ticker.change >= 0}
 			<div class="ticker-card" class:positive={isPositive} class:negative={!isPositive}>
-				{#if props.isEditing}
+				{#if isEditing}
 					<input
 						type="text"
 						class="ticker-symbol-input"
@@ -185,7 +183,7 @@
 			</div>
 		{/each}
 
-		{#if props.isEditing}
+		{#if isEditing}
 			<button type="button" class="add-ticker" onclick={addTicker} aria-label="Add ticker">
 				<Icon icon={IconPlus} size={20} />
 				<span>Add Ticker</span>
@@ -193,16 +191,16 @@
 		{/if}
 	</div>
 
-	{#if props.isEditing && props.isSelected}
+	{#if isEditing && isSelected}
 		<div class="ticker-settings">
 			<label class="setting-field">
 				<span>Layout:</span>
 				<select
 					value={layout}
 					onchange={(e) =>
-						props.onUpdate({
+						onUpdate({
 							settings: {
-								...props.block.settings,
+								...block.settings,
 								tickerLayout: (e.target as HTMLSelectElement).value as 'grid' | 'list'
 							}
 						})}

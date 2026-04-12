@@ -417,28 +417,6 @@
 				],
 				is_connected: false,
 				status: 'disconnected'
-			},
-			// Monitoring
-			{
-				key: 'sentry',
-				name: 'Sentry',
-				category: 'monitoring',
-				description: 'Error tracking and performance monitoring',
-				icon: 'sentry',
-				color: '#362D59',
-				docs_url: 'https://docs.sentry.io',
-				is_oauth: false,
-				fields: [
-					{
-						key: 'dsn',
-						label: 'DSN',
-						type: 'text',
-						required: true,
-						placeholder: 'https://xxx@xxx.ingest.sentry.io/xxx'
-					}
-				],
-				is_connected: false,
-				status: 'disconnected'
 			}
 		];
 
@@ -803,7 +781,7 @@
 					Google Services
 				</h2>
 				<div class="services-grid services-grid-4">
-					{#each googleServices as service, i}
+					{#each googleServices as service, i (service.name)}
 						<div
 							class="service-card"
 							in:fly={{ y: 20, duration: 400, delay: 200 + i * 50, easing: quintOut }}
@@ -874,7 +852,7 @@
 					>
 						All
 					</button>
-					{#each categoryList as [key, category]}
+					{#each categoryList as [key, category] (key)}
 						<button
 							onclick={() => (selectedCategory = key)}
 							class="filter-btn"
@@ -896,7 +874,7 @@
 			{:else}
 				<!-- Services Grid -->
 				<div class="services-grid">
-					{#each filteredServices as service, i}
+					{#each filteredServices as service, i (service.name)}
 						<div
 							class="service-card"
 							in:fly={{ y: 30, duration: 400, delay: 250 + i * 30, easing: quintOut }}
@@ -1120,7 +1098,8 @@
 							>Environment</span
 						>
 						<div class="flex gap-2" role="group" aria-labelledby="environment-label">
-							{#each selectedService.environments as env}
+							<!-- key (i): items lack stable id -->
+							{#each selectedService.environments as env, i (i)}
 								<button
 									onclick={() => (selectedEnvironment = env)}
 									aria-pressed={selectedEnvironment === env}
@@ -1137,7 +1116,7 @@
 				{/if}
 
 				<!-- Credential Fields -->
-				{#each selectedService.fields as field}
+				{#each selectedService.fields as field (field.key)}
 					<div>
 						<label for="field-{field.key}" class="block text-sm font-medium text-slate-300 mb-2">
 							{field.label}
@@ -2027,13 +2006,13 @@
 	 * RESPONSIVE BREAKPOINTS
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	@media (max-width: calc(var(--breakpoint-xl) - 1px)) {
+	@media (max-width: 1279px) {
 		.services-grid-4 {
 			grid-template-columns: repeat(2, 1fr);
 		}
 	}
 
-	@media (max-width: calc(var(--breakpoint-lg) - 1px)) {
+	@media (max-width: 1023px) {
 		.admin-page-container {
 			padding: 1.5rem;
 		}
@@ -2042,7 +2021,7 @@
 		}
 	}
 
-	@media (max-width: calc(var(--breakpoint-md) - 1px)) {
+	@media (max-width: 767px) {
 		.page-header h1 {
 			font-size: 1.5rem;
 		}
@@ -2071,7 +2050,7 @@
 		}
 	}
 
-	@media (max-width: calc(var(--breakpoint-sm) - 1px)) {
+	@media (max-width: 639px) {
 		.admin-page-container {
 			padding: 1rem;
 		}
@@ -2106,7 +2085,7 @@
 		}
 	}
 
-	@media (max-width: calc(var(--breakpoint-sm) - 160px)) {
+	@media (max-width: 480px) {
 		.admin-page-container {
 			padding: 0.75rem;
 		}

@@ -25,12 +25,7 @@
 		onToggleVisibility?: (widgetId: string, visible: boolean) => void;
 	}
 
-	let props: Props = $props();
-	let widgets = $derived(props.widgets);
-	let columns = $derived(props.columns ?? 4);
-	let gap = $derived(props.gap ?? 16);
-	let onReorder = $derived(props.onReorder);
-	let onToggleVisibility = $derived(props.onToggleVisibility);
+	let { widgets, columns = 4, gap = 16, onReorder, onToggleVisibility }: Props = $props();
 
 	let draggedWidget = $state<string | null>(null);
 

@@ -28,8 +28,6 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import type { PageData } from './+page';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PROPS - Svelte 5 $props() rune with explicit typing
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -147,7 +145,7 @@
 		<!-- Breadcrumb Navigation - SEO & UX -->
 		<nav aria-label="Breadcrumb" class="breadcrumb-nav">
 			<ol itemscope itemtype="https://schema.org/BreadcrumbList">
-				{#each breadcrumbs as crumb, index}
+				{#each breadcrumbs as crumb, index (crumb.name)}
 					<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
 						{#if index < breadcrumbs.length - 1}
 							<a href={crumb.url} itemprop="item">
@@ -174,7 +172,7 @@
 
 		<!-- Scanners Grid - Semantic Product Cards -->
 		<div class="scanners-grid" role="list">
-			{#each scanners as scanner}
+			{#each scanners as scanner (scanner.slug)}
 				<article
 					class="scanner-card"
 					role="listitem"
@@ -201,7 +199,7 @@
 
 						<!-- Features List -->
 						<ul class="features" aria-label="Key features">
-							{#each (scanner.features || []).slice(0, 3) as feature}
+							{#each (scanner.features || []).slice(0, 3) as feature (feature)}
 								<li>
 									<span aria-hidden="true">✓</span>
 									<span>{feature}</span>
@@ -235,8 +233,6 @@
 		</div>
 	</div>
 </div>
-
-<MarketingFooter />
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════

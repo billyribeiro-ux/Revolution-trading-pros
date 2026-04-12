@@ -117,7 +117,14 @@
 											class="card-image"
 											style="background-image: url({video.thumbnail});"
 										>
-											<img class="default-background" width="325" height="183" alt={video.title} />
+											<img
+												class="default-background"
+												width="325"
+												height="183"
+												loading="lazy"
+												decoding="async"
+												alt={video.title}
+											/>
 										</a>
 									</figure>
 									<section class="card-body">
@@ -144,7 +151,7 @@
 				<!-- Pagination -->
 				{#if pagination.totalPages > 1}
 					<nav class="facetwp-pager" aria-label="Pagination">
-						{#each Array.from({ length: pagination.totalPages }, (_, i) => i + 1) as pageNum}
+						{#each Array.from({ length: pagination.totalPages }, (_, i) => i + 1) as pageNum (pageNum)}
 							{#if pageNum === pagination.page}
 								<a
 									class="facetwp-page active"

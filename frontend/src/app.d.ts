@@ -1,5 +1,6 @@
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
+import type { SEOInput, RouteSEOContext, SEODefaults } from '$lib/seo/types';
 
 /**
  * Consent State interface for server-side access.
@@ -52,7 +53,19 @@ declare global {
 				user: { id: number; email: string; name?: string; role?: string } | null;
 			} | null>;
 		}
-		// interface PageData {}
+		interface PageData {
+			/**
+			 * Page-level SEO override. Set in `+page.server.ts` / `+page.ts`
+			 * `load` returns and consumed by the unified SEO layer in
+			 * `routes/+layout.svelte`. Optional because most pages inherit
+			 * from `seoDefaults`.
+			 */
+			seo?: SEOInput;
+			/** Resolved SEO context (set by root layout server load). */
+			seoContext?: RouteSEOContext;
+			/** Resolved SEO defaults (set by root layout server load). */
+			seoDefaults?: SEODefaults;
+		}
 		// interface PageState {}
 		// interface Platform {}
 	}

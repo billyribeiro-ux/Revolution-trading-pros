@@ -70,7 +70,7 @@ After adding the keys, verify they work:
 ### Test Frontend
 ```bash
 cd frontend
-npm run dev
+pnpm run dev
 ```
 
 Visit any page with payment forms - the Stripe integration should load without errors.

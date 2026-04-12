@@ -94,34 +94,49 @@
 	onmousemove={handleMouseMove}
 	role="group"
 	aria-label="Core Infrastructure Features"
-	class="ws-section"
+	class="relative py-24 lg:py-32 3xl:py-40 5xl:py-48 px-4 sm:px-6 lg:px-8 3xl:px-12 5xl:px-16 6xl:px-20 bg-zinc-950 overflow-hidden border-t border-zinc-900"
 >
 	<div class="ws-bg">
 		<div class="ws-grid-lines"></div>
 	</div>
 
-	<div class="ws-container">
-		<div class="ws-header">
+	<div
+		class="relative max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto z-10"
+	>
+		<!-- Header -->
+		<div
+			class="max-w-4xl 3xl:max-w-[1200px] 4xl:max-w-[1600px] 5xl:max-w-[2000px] 6xl:max-w-[2400px] mx-auto text-center mb-24 3xl:mb-32 5xl:mb-40"
+		>
 			{#if isVisible}
 				<div in:heavySlide={{ delay: 0, duration: 1000 }} class="ws-badge">
 					<Icon icon={IconBuilding} size={14} />
 					System Design
 				</div>
 
-				<h2 in:heavySlide={{ delay: 100 }} class="ws-title">
-					Trading <span class="ws-title-muted">Framework.</span>
+				<h2
+					in:heavySlide={{ delay: 100 }}
+					class="text-4xl xs:text-5xl sm:text-5xl md:text-7xl 3xl:text-8xl 4xl:text-9xl 5xl:text-[10rem] font-serif text-white mb-8 tracking-tight"
+				>
+					Trading <span class="text-slate-700">Framework.</span>
 				</h2>
 
-				<p in:heavySlide={{ delay: 200 }} class="ws-subtitle">
+				<p
+					in:heavySlide={{ delay: 200 }}
+					class="text-lg 3xl:text-xl 5xl:text-2xl text-slate-400 font-light leading-relaxed max-w-2xl 3xl:max-w-3xl 5xl:max-w-4xl mx-auto"
+				>
 					We don't build retail platforms. We engineer institutional trading systems. Verified by
 					quantitative funds and proprietary trading desks.
 				</p>
 			{/if}
 		</div>
 
-		<div class="ws-cards" style="--x: {mouse.x}px; --y: {mouse.y}px;">
-			{#each features as feature, i}
-				{@const iconStr = feature.icon}
+		<!-- 3-Column Grid -->
+		<div
+			class="group/grid grid md:grid-cols-3 gap-8 3xl:gap-12 5xl:gap-16"
+			style="--x: {mouse.x}px; --y: {mouse.y}px;"
+		>
+			{#each features as feature, i (feature.title ?? i)}
+				{@const IconComponent = feature.icon}
 				{#if isVisible}
 					<div
 						in:heavySlide={{ delay: 300 + i * 150 }}

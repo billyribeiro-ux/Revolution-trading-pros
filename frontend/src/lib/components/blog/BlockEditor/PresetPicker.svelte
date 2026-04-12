@@ -104,12 +104,17 @@
 		onsaveaspreset?: (data: { block: Block }) => void;
 	}
 
-	let props: Props = $props();
-	const blockType = $derived(props.blockType);
-	const currentBlock = $derived(props.currentBlock ?? null);
-	const isModal = $derived(props.isModal ?? false);
-	const position = $derived(props.position ?? null);
-	const showSaveOption = $derived(props.showSaveOption ?? true);
+	let {
+		blockType,
+		currentBlock = null,
+		isModal = false,
+		position = null,
+		showSaveOption = true,
+		onselect,
+		onapply,
+		onclose,
+		onsaveaspreset: _onsaveaspreset
+	}: Props = $props();
 
 	// ==========================================================================
 	// State
@@ -237,8 +242,8 @@
 			credentials: 'include'
 		}).catch(console.error);
 
-		props.onselect?.({ preset: fullPreset });
-		props.onapply?.({
+		onselect?.({ preset: fullPreset });
+		onapply?.({
 			content: fullPreset.preset_data.content,
 			settings: fullPreset.preset_data.settings
 		});
@@ -299,13 +304,13 @@
 			if (showSaveModal) {
 				showSaveModal = false;
 			} else {
-				props.onclose?.();
+				onclose?.();
 			}
 		}
 	}
 
 	function handleBlankOption() {
-		props.onapply?.({ content: {}, settings: {} });
+		onapply?.({ content: {}, settings: {} });
 	}
 
 	function handleSaveAsPreset() {
@@ -336,7 +341,7 @@
 	<!-- Modal Overlay -->
 	<div
 		class="preset-overlay"
-		onclick={() => props.onclose?.()}
+		onclick={() => onclose?.()}
 		onkeydown={handleKeydown}
 		role="button"
 		tabindex="0"
@@ -360,8 +365,8 @@
 					<Icon icon={IconTemplate} size={20} />
 					<span>Presets for <strong>{blockType}</strong></span>
 				</div>
-				<button type="button" class="close-btn" onclick={() => props.onclose?.()}>
-					<Icon icon={IconX} size={20} />
+				<button type="button" class="close-btn" onclick={() => onclose?.()}>
+					<IconX size={20} />
 				</button>
 			</div>
 
@@ -400,7 +405,7 @@
 					>
 						All
 					</button>
-					{#each allCategories as cat}
+					{#each allCategories as cat (cat)}
 						{@const config = CATEGORY_CONFIG[cat] || CATEGORY_CONFIG.custom}
 						{@const iconStr = config.icon}
 						<button
@@ -448,7 +453,7 @@
 					</div>
 
 					<!-- Presets by Category -->
-					{#each filteredCategories as category}
+					{#each filteredCategories as category (category.category)}
 						{@const config = CATEGORY_CONFIG[category.category] || CATEGORY_CONFIG.custom}
 						{@const iconStr = config.icon}
 						<div class="category-section" transition:fly={{ y: -10, duration: 200 }}>
@@ -460,7 +465,7 @@
 							</div>
 
 							<div class="presets-grid">
-								{#each category.presets as preset}
+								{#each category.presets as preset (preset.name)}
 									<button
 										type="button"
 										class="preset-card"
@@ -471,7 +476,14 @@
 									>
 										{#if preset.thumbnail_url}
 											<div class="preset-thumbnail">
-												<img src={preset.thumbnail_url} alt={preset.name} loading="lazy" />
+												<img
+													src={preset.thumbnail_url}
+													alt={preset.name}
+													width="200"
+													height="112"
+													loading="lazy"
+													decoding="async"
+												/>
 											</div>
 										{:else}
 											<div class="preset-thumbnail placeholder">
@@ -514,7 +526,7 @@
 					{/if}
 					{#if hoveredPreset.tags && hoveredPreset.tags.length > 0}
 						<div class="preview-tags">
-							{#each hoveredPreset.tags.slice(0, 5) as tag}
+							{#each hoveredPreset.tags.slice(0, 5) as tag (tag)}
 								<span class="tag">
 									<Icon icon={IconTag} size={10} />
 									{tag}
@@ -543,8 +555,8 @@
 			</div>
 		{:else if groupedPresets && groupedPresets.total_count > 0}
 			<div class="inline-presets">
-				{#each groupedPresets.categories.slice(0, 2) as category}
-					{#each category.presets.slice(0, 4) as preset}
+				{#each groupedPresets.categories.slice(0, 2) as category (category.presets)}
+					{#each category.presets.slice(0, 4) as preset (preset.name)}
 						<button
 							type="button"
 							class="inline-preset-btn"
@@ -617,7 +629,7 @@
 				<div class="form-field">
 					<label for="preset-category">Category</label>
 					<select id="preset-category" bind:value={savePresetCategory}>
-						{#each Object.entries(CATEGORY_CONFIG) as [key, config]}
+						{#each Object.entries(CATEGORY_CONFIG) as [key, config] (key)}
 							<option value={key}>{config.name}</option>
 						{/each}
 					</select>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Windows 8/10 IE/Edge tile configuration for the pinned-to-Start experience.
+  Referenced by `<meta name="msapplication-config">` in `src/app.html`.
+  Lighthouse "Best Practices" flags missing files referenced from HTML, so
+  this minimal stub keeps the 404 from showing up in the audit.
+-->
+<browserconfig>
+	<msapplication>
+		<tile>
+			<square150x150logo src="/icon-192.png"/>
+			<TileColor>#1a1a1a</TileColor>
+		</tile>
+	</msapplication>
+</browserconfig>

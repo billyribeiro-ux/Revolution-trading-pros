@@ -72,13 +72,13 @@
 		secondarySidebarTitle?: string; // Title for secondary sidebar
 	}
 
-	let props: Props = $props();
-
-	// Destructure with defaults for internal use
-	let user = $derived(props.user);
-	let collapsed = $derived(props.collapsed ?? false);
-	let secondaryNavItems = $derived(props.secondaryNavItems ?? []);
-	let secondarySidebarTitle = $derived(props.secondarySidebarTitle ?? '');
+	let {
+		user,
+		collapsed = false,
+		onToggle: _onToggle,
+		secondaryNavItems = [],
+		secondarySidebarTitle = ''
+	}: Props = $props();
 
 	// State for expanded submenus in secondary nav
 	let expandedSubmenus = $state<Set<string>>(new Set());
@@ -268,7 +268,7 @@
 		<ul>
 			<li></li>
 			<ul class="dash_main_links">
-				{#each mainLinks as link}
+				{#each mainLinks as link (link.href)}
 					<li class:is-active={isActive(link.href)}>
 						{#if collapsed}
 							<Tooltip text={link.text} position="right" delay={150}>
@@ -299,7 +299,7 @@
 					<p class="dashboard__nav-category">memberships</p>
 				</li>
 				<ul class="dash_main_links">
-					{#each tradingRoomLinks as link}
+					{#each tradingRoomLinks as link (link.href)}
 						<li class:is-active={isWithinSection(link.href)}>
 							{#if collapsed}
 								<Tooltip text={link.text} position="right" delay={150}>
@@ -330,7 +330,7 @@
 					<p class="dashboard__nav-category">mentorship</p>
 				</li>
 				<ul class="dash_main_links">
-					{#each mentorshipLinks as link}
+					{#each mentorshipLinks as link (link.href)}
 						<li class:is-active={isWithinSection(link.href)}>
 							{#if collapsed}
 								<Tooltip text={link.text} position="right" delay={150}>
@@ -361,7 +361,7 @@
 					<p class="dashboard__nav-category">scanners</p>
 				</li>
 				<ul class="dash_main_links">
-					{#each scannerLinks as link}
+					{#each scannerLinks as link (link.href)}
 						<li class:is-active={isWithinSection(link.href)}>
 							{#if collapsed}
 								<Tooltip text={link.text} position="right" delay={150}>
@@ -391,7 +391,7 @@
 				<p class="dashboard__nav-category">tools</p>
 			</li>
 			<ul class="dash_main_links">
-				{#each toolsLinks as link}
+				{#each toolsLinks as link (link.href)}
 					<li class:is-active={isActive(link.href)}>
 						{#if collapsed}
 							<Tooltip text={link.text} position="right" delay={150}>
@@ -428,7 +428,7 @@
 				<p class="dashboard__nav-category">account</p>
 			</li>
 			<ul class="dash_main_links">
-				{#each accountLinks as link}
+				{#each accountLinks as link (link.href)}
 					<li class:is-active={isActive(link.href)}>
 						{#if collapsed}
 							<Tooltip text={link.text} position="right" delay={150}>
@@ -456,7 +456,7 @@
 	{#if showSecondaryNav}
 		<nav class="dashboard__nav-secondary" aria-label="{secondarySidebarTitle} navigation">
 			<ul>
-				{#each secondaryNavItems as item}
+				{#each secondaryNavItems as item (item.text)}
 					<li
 						class:has-submenu={item.submenu && item.submenu.length > 0}
 						onmouseenter={() =>
@@ -491,7 +491,7 @@
 
 							{#if expandedSubmenus.has(item.text)}
 								<ul class="dashboard__nav-submenu">
-									{#each item.submenu as subitem}
+									{#each item.submenu as subitem (subitem.href)}
 										<li class:is-active={isActive(subitem.href)}>
 											<a href={subitem.href}>{subitem.text}</a>
 										</li>
@@ -605,6 +605,36 @@
 		/* ICT11+ Fix: Removed min-height: 100vh - sidebar should stretch with parent flex container */
 		align-self: stretch;
 		transition: all 0.3s ease-in-out;
+	}
+
+	/* 4K / 5K display scaling — fixed-width sidebar grows so it doesn't look stranded
+	   on ultra-wide monitors. Matches the 3xl/4xl/5xl/6xl Tailwind breakpoints. */
+	@media (min-width: 1920px) {
+		.dashboard__sidebar,
+		.dashboard__nav-primary {
+			width: 320px;
+		}
+	}
+
+	@media (min-width: 2560px) {
+		.dashboard__sidebar,
+		.dashboard__nav-primary {
+			width: 360px;
+		}
+	}
+
+	@media (min-width: 3840px) {
+		.dashboard__sidebar,
+		.dashboard__nav-primary {
+			width: 440px;
+		}
+	}
+
+	@media (min-width: 5120px) {
+		.dashboard__sidebar,
+		.dashboard__nav-primary {
+			width: 520px;
+		}
 	}
 
 	/* Scrollbar Styling */

@@ -230,7 +230,8 @@
 		<div class="platforms-section">
 			<h3>Supported Platforms</h3>
 			<div class="platforms-grid">
-				{#each ['youtube', 'vimeo', 'dailymotion', 'ted', 'wistia'] as platform}
+				<!-- key (i): items lack stable id -->
+				{#each ['youtube', 'vimeo', 'dailymotion', 'ted', 'wistia'] as platform, i (i)}
 					<label class="platform-checkbox" style="--platform-color: {getPlatformColor(platform)}">
 						<input
 							id="page-checkbox"
@@ -272,10 +273,17 @@
 			</div>
 		{:else}
 			<div class="videos-list">
-				{#each videos as video}
+				{#each videos as video (video.id)}
 					<div class="video-item">
 						<div class="video-thumbnail">
-							<img src={video.thumbnail} alt={video.title} />
+							<img
+								src={video.thumbnail}
+								alt={video.title}
+								width="160"
+								height="90"
+								loading="lazy"
+								decoding="async"
+							/>
 							<span class="duration-badge" class:live={video.isLive}>
 								{#if video.isLive}
 									<span class="live-dot"></span> LIVE

@@ -47,14 +47,7 @@
 		onRefresh?: () => void;
 	}
 
-	let props: Props = $props();
-
-	// Destructure for internal use
-	const isOpen = $derived(props.isOpen);
-	const subscription = $derived(props.subscription);
-	const onClose = $derived(props.onClose);
-	const onEdit = $derived(props.onEdit);
-	const onRefresh = $derived(props.onRefresh);
+	let { isOpen, subscription, onClose, onEdit, onRefresh }: Props = $props();
 
 	// State
 	let isLoading = $state(false);
@@ -592,7 +585,7 @@
 									Notifications Sent
 								</h3>
 								<div class="emails-list">
-									{#each subscription.emailsSent.slice(0, 5) as email}
+									{#each subscription.emailsSent.slice(0, 5) as email (email.subject)}
 										<div class="email-item">
 											<span class="email-type">{email.type.replace('-', ' ')}</span>
 											<span class="email-subject">{email.subject}</span>
@@ -617,7 +610,7 @@
 							</div>
 						{:else}
 							<div class="payments-list">
-								{#each paymentHistory.length > 0 ? paymentHistory : subscription.paymentHistory || [] as payment}
+								{#each paymentHistory.length > 0 ? paymentHistory : subscription.paymentHistory || [] as payment (payment.id)}
 									<div class="payment-card">
 										<div class="payment-header">
 											<span class="payment-amount">{formatCurrency(payment.amount)}</span>

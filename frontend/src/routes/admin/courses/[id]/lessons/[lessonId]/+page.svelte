@@ -268,7 +268,7 @@
 							<label for="module">Module</label>
 							<select id="module" bind:value={lesson.module_id}>
 								<option value={null}>No Module</option>
-								{#each modules as mod}
+								{#each modules as mod (mod.id)}
 									<option value={mod.id}>{mod.title}</option>
 								{/each}
 							</select>
@@ -431,7 +431,14 @@
 					<h3>Thumbnail</h3>
 					<div class="thumbnail-preview">
 						{#if lesson.thumbnail_url}
-							<img src={lesson.thumbnail_url} alt="Thumbnail" />
+							<img
+								src={lesson.thumbnail_url}
+								alt="Thumbnail"
+								width="400"
+								height="225"
+								loading="lazy"
+								decoding="async"
+							/>
 						{:else}
 							<div class="no-thumb">No thumbnail</div>
 						{/if}
@@ -451,7 +458,7 @@
 						<p class="empty-text">No downloads attached</p>
 					{:else}
 						<ul class="downloads-list">
-							{#each downloads as dl}
+							{#each downloads as dl (dl.id)}
 								<li class="download-item">
 									<span class="download-title">{dl.title}</span>
 									<button

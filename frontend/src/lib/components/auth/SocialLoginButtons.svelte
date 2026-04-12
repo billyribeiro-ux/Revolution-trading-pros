@@ -25,11 +25,7 @@
 		onError?: (message: string) => void;
 	}
 
-	let props: Props = $props();
-	const disabled = $derived(props.disabled ?? false);
-	const onGoogleClick = $derived(props.onGoogleClick);
-	const onAppleClick = $derived(props.onAppleClick);
-	const onError = $derived(props.onError);
+	let { disabled = false, onGoogleClick, onAppleClick, onError }: Props = $props();
 
 	let isGoogleLoading = $state(false);
 	let isAppleLoading = $state(false);

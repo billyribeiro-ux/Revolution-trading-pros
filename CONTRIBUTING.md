@@ -44,12 +44,11 @@ Thank you for your interest in contributing! This document outlines our developm
 git clone https://github.com/revolutiontradingpros/revolution-trading-pros.git
 cd revolution-trading-pros
 
-# Install frontend dependencies
-cd frontend
-npm install
+corepack enable
+pnpm install
 
 # Install Rust dependencies
-cd ../api
+cd api
 cargo build
 
 # Set up environment variables
@@ -64,6 +63,11 @@ See [SETUP_GUIDE.md](SETUP_GUIDE.md) for complete environment variable documenta
 ---
 
 ## 📐 Coding Standards
+
+### Svelte MCP & agent guidance
+
+- Enable the **Svelte MCP** remote server in your editor (`https://mcp.svelte.dev/mcp` — see `.cursor/mcp.json` and `.mcp.json`).
+- Read **[AGENTS.md](AGENTS.md)** for tool usage (`list-sections`, `get-documentation`, `svelte-autofixer`) and project-wide Svelte 5 / SvelteKit 2 conventions.
 
 ### Frontend (TypeScript/Svelte)
 
@@ -252,23 +256,23 @@ docs(api): update Stripe webhook documentation
 1. **Pass all existing tests**
 2. **Add tests for new features**
 3. **Maintain or improve coverage**
-4. **Pass type checking** (`npm run check`)
-5. **Pass linting** (`npm run lint`)
+4. **Pass type checking** (`pnpm run check`)
+5. **Pass linting** (`pnpm run lint`)
 
 ### Frontend Testing
 
 ```bash
 # Unit tests
-npm run test
+pnpm run test
 
 # E2E tests
-npm run test:e2e
+pnpm run test:e2e
 
 # Type checking
-npm run check
+pnpm run check
 
 # Linting
-npm run lint
+pnpm run lint
 ```
 
 ### Backend Testing

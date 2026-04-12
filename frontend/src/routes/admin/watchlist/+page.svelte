@@ -350,7 +350,14 @@
 									<div class="item-cell">
 										<div class="item-thumb">
 											{#if item.video.poster}
-												<img src={item.video.poster} alt="" />
+												<img
+													src={item.video.poster}
+													alt=""
+													width="120"
+													height="68"
+													loading="lazy"
+													decoding="async"
+												/>
 											{:else}
 												<div class="thumb-placeholder">
 													<Icon icon={IconVideo} size={20} />
@@ -366,7 +373,15 @@
 								<td class="col-trader">
 									<div class="trader-cell">
 										{#if item.traderImage}
-											<img src={item.traderImage} alt="" class="trader-avatar" />
+											<img
+												src={item.traderImage}
+												alt=""
+												width="32"
+												height="32"
+												loading="lazy"
+												decoding="async"
+												class="trader-avatar"
+											/>
 										{/if}
 										<span>{item.trader}</span>
 									</div>
@@ -385,7 +400,8 @@
 											<span class="rooms-badge rooms-all">All Rooms</span>
 										{:else}
 											<div class="rooms-tags">
-												{#each getRoomsByIds(item.rooms).slice(0, 2) as room}
+												<!-- key (i): items lack stable id -->
+												{#each getRoomsByIds(item.rooms).slice(0, 2) as room, i (i)}
 													<span
 														class="room-tag"
 														style="background-color: {room.color}20; color: {room.color}"

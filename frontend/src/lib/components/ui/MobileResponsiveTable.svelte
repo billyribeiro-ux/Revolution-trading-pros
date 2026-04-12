@@ -52,39 +52,23 @@
 		onrowClick?: (row: Record<string, unknown>) => void;
 	}
 
-	let props: Props = $props();
-	let columns = $derived(props.columns ?? []);
-	let data = $derived(props.data ?? []);
-	let loading = $derived(props.loading ?? false);
-	let sortBy = $state('');
-	let sortDir = $state<'asc' | 'desc'>('asc');
-	let selectable = $derived(props.selectable ?? false);
-	let selectedIds = $state<(string | number)[]>([]);
-	let idKey = $derived(props.idKey ?? 'id');
-	let exportable = $derived(props.exportable ?? false);
-	let exportFilename = $derived(props.exportFilename ?? 'export');
-	let emptyMessage = $derived(props.emptyMessage ?? 'No data available');
-	let mobileBreakpoint = $derived(props.mobileBreakpoint ?? 768);
-	let onsort = $derived(props.onsort);
-	let onselect = $derived(props.onselect);
-	let onrowClick = $derived(props.onrowClick);
-
-	// Sync with external prop changes
-	$effect(() => {
-		if (props.sortBy !== undefined && props.sortBy !== sortBy) {
-			sortBy = props.sortBy;
-		}
-	});
-	$effect(() => {
-		if (props.sortDir !== undefined && props.sortDir !== sortDir) {
-			sortDir = props.sortDir;
-		}
-	});
-	$effect(() => {
-		if (props.selectedIds !== undefined) {
-			selectedIds = props.selectedIds;
-		}
-	});
+	let {
+		columns = [],
+		data = [],
+		loading = false,
+		sortBy = $bindable(''),
+		sortDir = $bindable<'asc' | 'desc'>('asc'),
+		selectable = false,
+		selectedIds = $bindable<(string | number)[]>([]),
+		idKey = 'id',
+		exportable = false,
+		exportFilename = 'export',
+		emptyMessage = 'No data available',
+		mobileBreakpoint = 768,
+		onsort,
+		onselect,
+		onrowClick
+	}: Props = $props();
 
 	let isMobile = $state(false);
 
@@ -186,8 +170,8 @@
 	{/if}
 
 	{#if loading}
-		<div class="mrt-loading-stack">
-			{#each Array(5) as _}
+		<div class="space-y-3">
+			{#each Array(5) as _, i (i)}
 				<SkeletonLoader variant="rectangular" width="100%" height="60px" />
 			{/each}
 		</div>
@@ -231,10 +215,14 @@
 						</div>
 					{/if}
 
-					{#each visibleColumns as column}
-						<div class="mrt-card-field">
-							<span class="mrt-card-label">{column.label}</span>
-							<span class="mrt-card-value" data-align={column.align ?? 'right'}>
+					{#each visibleColumns as column (column.label)}
+						<div class="flex justify-between items-start gap-4">
+							<span class="text-xs text-slate-500 font-medium">{column.label}</span>
+							<span
+								class="text-sm text-white font-medium text-right flex-1"
+								class:text-left={column.align === 'left'}
+								class:text-center={column.align === 'center'}
+							>
 								{@html getValue(row, column)}
 							</span>
 						</div>
@@ -253,7 +241,7 @@
 								<input type="checkbox" checked={isAllSelected} onchange={toggleSelectAll} />
 							</th>
 						{/if}
-						{#each visibleColumns as column}
+						{#each visibleColumns as column (column.key)}
 							<th
 								class="mrt-th"
 								data-sortable={column.sortable || undefined}
@@ -302,8 +290,12 @@
 									/>
 								</td>
 							{/if}
-							{#each visibleColumns as column}
-								<td class="mrt-td" data-align={column.align ?? 'left'}>
+							{#each visibleColumns as column (column.align)}
+								<td
+									class="px-4 py-3 text-sm text-slate-300"
+									class:text-center={column.align === 'center'}
+									class:text-right={column.align === 'right'}
+								>
 									{@html getValue(row, column)}
 								</td>
 							{/each}

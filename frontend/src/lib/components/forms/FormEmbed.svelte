@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Form Component - FluentForm-Style Form Embedding
 	 *

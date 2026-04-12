@@ -18,10 +18,10 @@
 		children?: Snippet;
 	}
 
-	let props: Props = $props();
+	let { title, description, icon, actionLabel, size = 'md', onaction, children }: Props = $props();
 
 	function handleAction() {
-		props.onaction?.();
+		onaction?.();
 	}
 
 	const sizes = {
@@ -30,8 +30,8 @@
 		lg: { icon: 64, padding: '6rem 2rem' }
 	};
 
-	let currentSize = $derived(props.size ?? 'md');
-	let iconStr = $derived(props.icon ?? IconInbox);
+	let currentSize = $derived(size);
+	let Icon = $derived(icon ?? IconInbox);
 </script>
 
 <div class="empty-state size-{currentSize}" style="padding: {sizes[currentSize].padding}">
@@ -39,17 +39,17 @@
 		<Icon icon={iconStr} size={sizes[currentSize].icon} />
 	</div>
 
-	<h3 class="empty-title">{props.title ?? 'No data found'}</h3>
+	<h3 class="empty-title">{title ?? 'No data found'}</h3>
 
-	{#if props.description}
-		<p class="empty-description">{props.description}</p>
+	{#if description}
+		<p class="empty-description">{description}</p>
 	{/if}
 
-	{@render props.children?.()}
+	{@render children?.()}
 
-	{#if props.actionLabel}
+	{#if actionLabel}
 		<button class="empty-action" onclick={handleAction}>
-			{props.actionLabel}
+			{actionLabel}
 		</button>
 	{/if}
 </div>

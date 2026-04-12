@@ -1,25 +1,11 @@
 <script lang="ts">
 	import { DropdownMenu as DropdownMenuPrimitive } from 'bits-ui';
 
-	let props: DropdownMenuPrimitive.RadioGroupProps = $props();
-	let ref = $state<HTMLElement | null>(null);
-	let value = $state<string | undefined>(undefined);
-
-	$effect(() => {
-		if (props.ref !== undefined && props.ref !== ref) {
-			ref = props.ref;
-		}
-	});
-	$effect(() => {
-		if (props.value !== undefined && props.value !== value) {
-			value = props.value;
-		}
-	});
-
-	let restProps = $derived.by(() => {
-		const { ref: _, value: __, ...rest } = props;
-		return rest;
-	});
+	let {
+		ref = $bindable(null),
+		value = $bindable(),
+		...restProps
+	}: DropdownMenuPrimitive.RadioGroupProps = $props();
 </script>
 
 <DropdownMenuPrimitive.RadioGroup

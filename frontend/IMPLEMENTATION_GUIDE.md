@@ -626,7 +626,7 @@ router.get('/weekly-content', async (req, res) => {
 - [ ] Create admin panel
 - [ ] Test all API endpoints
 - [ ] Implement WebSocket for real-time updates
-- [ ] Set up monitoring (Sentry, LogRocket)
+- [ ] Set up monitoring / observability as needed (vendor-neutral)
 - [ ] Configure CORS properly
 - [ ] Add rate limiting
 - [ ] Set up automated backups

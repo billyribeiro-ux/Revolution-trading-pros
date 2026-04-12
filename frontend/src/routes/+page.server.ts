@@ -1,6 +1,9 @@
 import type { PageServerLoad } from './$types';
 import type { SEOInput } from '$lib/seo/types';
+import { breadcrumbSchema } from '$lib/seo/jsonld';
 import { logger } from '$lib/utils/logger';
+
+const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://revolution-trading-pros.pages.dev';
 
 // ICT11+ PRODUCTION FIX: Hardcode API URL for server-side fetch
 // Cloudflare Pages secrets not available via import.meta.env on server
@@ -17,9 +20,12 @@ export const load: PageServerLoad = async ({ fetch }) => {
 	const seo: SEOInput = {
 		title: null,
 		titleTemplate: null,
+		description:
+			'Revolution Trading Pros: institutional-grade trading education, live trading rooms, custom indicators, and professional tools trusted by 18,000+ active traders.',
 		og: {
 			type: 'website'
-		}
+		},
+		jsonld: [breadcrumbSchema([{ name: 'Home', url: SITE_URL }], `${SITE_URL}/#breadcrumb`)]
 	};
 
 	return {

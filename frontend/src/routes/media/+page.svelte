@@ -217,7 +217,7 @@
 			{:else if currentFiles.length > 0}
 				{#if viewMode === 'grid'}
 					<div class="files-grid">
-						{#each currentFiles as file}
+						{#each currentFiles as file (file.id)}
 							<div
 								class="file-card"
 								class:selected={mediaStore.selectedFiles.has(file.id)}
@@ -229,7 +229,14 @@
 							>
 								{#if file.file_type === 'image'}
 									<div class="file-thumbnail">
-										<img src={file.thumbnail_url || file.url} alt={file.alt_text || file.title} />
+										<img
+											src={file.thumbnail_url || file.url}
+											alt={file.alt_text || file.title}
+											width="200"
+											height="200"
+											loading="lazy"
+											decoding="async"
+										/>
 									</div>
 								{:else}
 									{@const FileIcon = getFileIcon(file.file_type)}
@@ -271,7 +278,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								{#each currentFiles as file}
+								{#each currentFiles as file (file.id)}
 									<tr
 										class:selected={mediaStore.selectedFiles.has(file.id)}
 										onclick={() => mediaStore.toggleFileSelection(file.id)}
@@ -290,6 +297,10 @@
 												<img
 													src={file.thumbnail_url || file.url}
 													alt={file.alt_text}
+													width="40"
+													height="40"
+													loading="lazy"
+													decoding="async"
 													class="file-thumb-small"
 												/>
 											{/if}
@@ -300,7 +311,7 @@
 										<td>{formatDate(file.created_at)}</td>
 										<td>
 											<div class="tags">
-												{#each (file.tags || []).slice(0, 3) as tag}
+												{#each (file.tags || []).slice(0, 3) as tag (tag)}
 													<span class="tag">{tag}</span>
 												{/each}
 											</div>

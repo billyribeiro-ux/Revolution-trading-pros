@@ -326,7 +326,14 @@
 				{#if posterUrl}
 					<div class="media-preview">
 						<p class="preview-label">Video Poster Preview</p>
-						<img src={posterUrl} alt="Video poster preview" />
+						<img
+							src={posterUrl}
+							alt="Video poster preview"
+							width="640"
+							height="360"
+							loading="lazy"
+							decoding="async"
+						/>
 					</div>
 				{/if}
 			</section>
@@ -368,7 +375,7 @@
 
 				{#if watchlistDates.length > 0}
 					<div class="date-list">
-						{#each watchlistDates as dateItem, index}
+						{#each watchlistDates as dateItem, index (index)}
 							<div class="date-item">
 								<div class="date-info">
 									<strong>{dateItem.date}</strong>

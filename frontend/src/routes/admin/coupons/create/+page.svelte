@@ -341,7 +341,7 @@
 		<!-- Errors -->
 		{#if errors.length > 0}
 			<div class="alerts" transition:slide={{ duration: 200 }}>
-				{#each errors as error}
+				{#each errors as error (error)}
 					<div class="alert alert-error">
 						<Icon icon={IconAlertCircle} size={20} />
 						<span>{error}</span>
@@ -595,7 +595,7 @@
 							{:else if availableProducts.length === 0}
 								<p class="no-items">No products available</p>
 							{:else}
-								{#each availableProducts as product}
+								{#each availableProducts as product (product.id)}
 									<label class="item-checkbox">
 										<input
 											id="page-checkbox"
@@ -630,7 +630,7 @@
 							{:else if availablePlans.length === 0}
 								<p class="no-items">No membership plans available</p>
 							{:else}
-								{#each availablePlans as plan}
+								{#each availablePlans as plan (plan.id)}
 									<label class="item-checkbox">
 										<input
 											id="page-checkbox"

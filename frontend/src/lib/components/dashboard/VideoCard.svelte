@@ -49,13 +49,12 @@
 		showDuration?: boolean;
 	}
 
-	let props: Props = $props();
-
-	// Derived props with defaults
-	let video = $derived(props.video);
-	let basePath = $derived(props.basePath ?? '/learning-center');
-	let showDate = $derived(props.showDate ?? false);
-	let showDuration = $derived(props.showDuration ?? false);
+	let {
+		video,
+		basePath = '/learning-center',
+		showDate = false,
+		showDuration = false
+	}: Props = $props();
 
 	const defaultThumbnail =
 		'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg';
@@ -66,14 +65,21 @@
 		class="article-card__image"
 		style="background-image: url({video.thumbnail_url || defaultThumbnail});"
 	>
-		<img src={defaultThumbnail} alt={video.title} loading="lazy" />
+		<img
+			src={defaultThumbnail}
+			alt={video.title}
+			width="325"
+			height="183"
+			loading="lazy"
+			decoding="async"
+		/>
 		{#if showDuration && video.formatted_duration}
 			<span class="article-card__duration">{video.formatted_duration}</span>
 		{/if}
 	</figure>
 
 	<div class="article-card__type">
-		{#each video.tag_details || [] as tag}
+		{#each video.tag_details || [] as tag (tag.name)}
 			<span class="label label--info" style="background-color: {tag.color}">{tag.name}</span>
 		{/each}
 	</div>

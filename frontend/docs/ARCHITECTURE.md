@@ -154,19 +154,19 @@ let safe = sanitizeHTML(userInput, { mode: 'strict' });
 ### Unit Tests (80%+ coverage)
 
 ```bash
-npm run test:unit
+pnpm run test:unit
 ```
 
 ### E2E Tests
 
 ```bash
-npm run test:e2e
+pnpm run test:e2e
 ```
 
 ### Accessibility Tests
 
 ```bash
-npm run test:a11y
+pnpm run test:a11y
 ```
 
 ## Migration Guide
@@ -176,7 +176,7 @@ npm run test:a11y
 1. Install new dependencies:
 
 ```bash
-npm install isomorphic-dompurify
+pnpm install isomorphic-dompurify
 ```
 
 2. Update imports:

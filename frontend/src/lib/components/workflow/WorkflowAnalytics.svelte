@@ -205,7 +205,7 @@
 			<div class="chart-card">
 				<h3>Execution Trend</h3>
 				<div class="line-chart">
-					{#each analytics.runs_by_day as day}
+					{#each analytics.runs_by_day as day (day)}
 						{@const maxCount = Math.max(...analytics.runs_by_day.map((d) => d.count))}
 						{@const height = (day.count / maxCount) * 100}
 						<div class="chart-bar" style="height: {height}%;" title="{day.date}: {day.count} runs">
@@ -222,7 +222,7 @@
 			<div class="chart-card">
 				<h3>Top Failure Reasons</h3>
 				<div class="failure-list">
-					{#each analytics.failure_reasons as failure}
+					{#each analytics.failure_reasons as failure (failure.reason)}
 						{@const percentage = (failure.count / analytics.failed_runs) * 100}
 						<div class="failure-item">
 							<div class="failure-info">

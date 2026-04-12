@@ -89,7 +89,7 @@
 
 		<select bind:value={selectedEventType} onchange={handleFilterChange} class="filter-select">
 			<option value="">All Event Types</option>
-			{#each eventTypes as type}
+			{#each eventTypes as type (type.name)}
 				<option value={type.name}>{type.name} ({type.count})</option>
 			{/each}
 		</select>
@@ -121,7 +121,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					{#each events as event}
+					{#each events as event (event.id ?? event.event_name + event.created_at)}
 						<tr>
 							<td class="event-name">{event.event_name}</td>
 							<td><span class="badge">{event.event_type}</span></td>

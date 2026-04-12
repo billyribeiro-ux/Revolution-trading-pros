@@ -225,7 +225,7 @@
 					<section class="section">
 						<h2>Category Consent Rates</h2>
 						<div class="category-bars">
-							{#each Object.entries(analytics.categoryRates) as [category, rate]}
+							{#each Object.entries(analytics.categoryRates) as [category, rate] (category)}
 								<div class="category-bar-item">
 									<div class="category-bar-header">
 										<span class="category-name">{category}</span>
@@ -251,7 +251,7 @@
 					<section class="section">
 						<h2>Insights</h2>
 						<div class="insights-list">
-							{#each insights as insight}
+							{#each insights as insight (insight)}
 								<div class="insight-item">
 									<span class="insight-icon">💡</span>
 									<span>{insight}</span>
@@ -313,7 +313,8 @@
 									</tr>
 								</thead>
 								<tbody>
-									{#each auditLog.slice().reverse() as entry}
+									<!-- key (i): items lack stable id -->
+									{#each auditLog.slice().reverse() as entry, i (i)}
 										<tr>
 											<td>{formatDate(entry.timestamp)}</td>
 											<td>
@@ -371,7 +372,7 @@
 						</div>
 					</section>
 
-					{#each Object.entries(cookieScan.byCategory) as [category, cookies]}
+					{#each Object.entries(cookieScan.byCategory) as [category, cookies] (category)}
 						{#if cookies.length > 0}
 							<section class="section">
 								<h2 class="category-header">
@@ -389,7 +390,7 @@
 											</tr>
 										</thead>
 										<tbody>
-											{#each cookies as cookie}
+											{#each cookies as cookie (cookie.name)}
 												<tr>
 													<td><code>{cookie.name}</code></td>
 													<td>{cookie.purpose || 'Unknown'}</td>
@@ -434,7 +435,8 @@
 									</tr>
 								</thead>
 								<tbody>
-									{#each abTestAnalytics as variant}
+									<!-- key (i): items lack stable id -->
+									{#each abTestAnalytics as variant, i (i)}
 										<tr>
 											<td><strong>{variant.variantId}</strong></td>
 											<td>{variant.impressions}</td>

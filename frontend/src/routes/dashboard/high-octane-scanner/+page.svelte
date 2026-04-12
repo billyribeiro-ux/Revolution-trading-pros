@@ -72,22 +72,10 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	// COMPONENT PROPS - Server data with types
 	// ═══════════════════════════════════════════════════════════════════════════
-	import type { WatchlistResponse } from '$lib/types/watchlist';
-	import type { RoomResource } from '$lib/api/room-resources';
+	import type { PageProps } from './$types';
 
-	// SvelteKit 2.0+ / Svelte 5: Use PageProps from generated types for full type safety
-	// Falls back to inline interface when types not yet generated
-	interface PageData {
-		watchlist?: WatchlistResponse;
-		tutorialVideo?: RoomResource | null;
-		latestUpdates?: RoomResource[];
-		documents?: RoomResource[];
-		roomId?: number;
-	}
-
-	// Svelte 5 $props() rune - the official way to receive page data
-	let props: { data: PageData } = $props();
-	let data = $derived(props.data);
+	// Svelte 5 destructured `$props()` typed via SvelteKit-generated `PageProps`.
+	let { data }: PageProps = $props();
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// REACTIVE STATE - Svelte 5 $state runes
@@ -206,14 +194,14 @@
 	const weeklyContent = $derived<WeeklyContent>(
 		data.watchlist?.video
 			? {
-					title: data.watchlist.week_title || 'This Week',
+					title: data.watchlist.title || 'This Week',
 					videoTitle: data.watchlist.video.title,
-					videoUrl: data.watchlist.video.video_url,
+					videoUrl: data.watchlist.video.src,
 					thumbnail:
-						data.watchlist.video.thumbnail_url ||
+						data.watchlist.video.poster ||
 						'https://placehold.co/1280x720/143E59/FFFFFF/png?text=Weekly+Video',
-					duration: data.watchlist.video.formatted_duration || '',
-					publishedDate: data.watchlist.video.formatted_date || ''
+					duration: '',
+					publishedDate: data.watchlist.weekOf || ''
 				}
 			: fallbackWeeklyContent
 	);
@@ -468,7 +456,8 @@
 								</tr>
 							</thead>
 							<tbody>
-								{#each tradePlan as trade}
+								<!-- key (i): items lack stable id -->
+								{#each tradePlan as trade, i (i)}
 									<tr class:has-notes-open={expandedTradeNotes.has(trade.ticker)}>
 										<td class="ticker-cell">
 											<strong>{trade.ticker}</strong>
@@ -593,7 +582,7 @@
 			</div>
 
 			<div class="alerts-list">
-				{#each filteredAlerts as alert}
+				{#each filteredAlerts as alert (alert.id)}
 					<div
 						class="alert-card"
 						class:is-new={alert.isNew}
@@ -717,7 +706,7 @@
 			<p>Video breakdowns as we enter and exit trades</p>
 		</div>
 		<div class="updates-grid">
-			{#each latestUpdates as update}
+			{#each latestUpdates as update (update.href)}
 				<a href={update.href} class="update-card">
 					<div class="update-thumbnail" style="background-image: url('{update.image}')">
 						<div class="play-overlay">

@@ -99,7 +99,7 @@
 		<div class="keywords-container">
 			{#if meta.meta_keywords && meta.meta_keywords.length > 0}
 				<div class="keywords-list">
-					{#each meta.meta_keywords as keyword}
+					{#each meta.meta_keywords as keyword (keyword)}
 						<span class="keyword-tag">
 							{keyword}
 							<button type="button" class="remove-keyword" onclick={() => removeKeyword(keyword)}>

@@ -54,7 +54,9 @@
 {#if $authStore.isInitializing || $authStore.isLoading}
 	<!-- Loading skeleton for consistent SSR/CSR output -->
 	<div class="bg-rtp-bg py-12 px-4">
-		<div class="max-w-7xl mx-auto">
+		<div
+			class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto"
+		>
 			<div
 				class="bg-rtp-surface rounded-2xl shadow-lg p-8 border border-rtp-border mb-8 animate-pulse"
 			>
@@ -66,7 +68,9 @@
 {:else if $authStore.user}
 	<!-- ICT11+ Fix: Removed min-h-[calc(100vh-120px)] - let parent flex container handle height -->
 	<div class="bg-rtp-bg py-12 px-4">
-		<div class="max-w-7xl mx-auto">
+		<div
+			class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto"
+		>
 			<!-- Header -->
 			<div class="bg-rtp-surface rounded-2xl shadow-lg p-8 border border-rtp-border mb-8">
 				<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -263,7 +267,7 @@
 							</div>
 						{:else}
 							<div class="space-y-4">
-								{#each memberships as membership}
+								{#each memberships as membership (membership.id)}
 									<div class="border border-rtp-border rounded-lg p-4">
 										<div class="flex justify-between items-start">
 											<div>
@@ -349,14 +353,14 @@
 							</div>
 						{:else}
 							<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-								{#each products as product}
+								{#each products as product (product.id)}
 									<div
 										class="border border-rtp-border rounded-lg p-4 hover:shadow-lg transition-all"
 									>
 										<div class="flex items-start justify-between mb-2">
 											<h3 class="text-lg font-bold text-rtp-text">{product.name}</h3>
 											<span
-												class="px-2 py-1 rounded text-xs font-semibold bg-rtp-primarySoft text-rtp-primary capitalize"
+												class="px-2 py-1 rounded text-xs font-semibold bg-rtp-primary-soft text-rtp-primary capitalize"
 											>
 												{product.type}
 											</span>

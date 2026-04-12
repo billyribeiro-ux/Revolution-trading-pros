@@ -87,7 +87,7 @@
 
 		<!-- Room Cards Grid -->
 		<div class="rooms-grid">
-			{#each managedRooms as room}
+			{#each managedRooms as room (room.slug)}
 				{@const RoomIcon = getIconForRoom(room.slug)}
 				<button
 					class="room-card"

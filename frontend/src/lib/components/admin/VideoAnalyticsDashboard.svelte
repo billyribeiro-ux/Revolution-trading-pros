@@ -28,11 +28,7 @@
 		onClose?: () => void;
 	}
 
-	let props: Props = $props();
-
-	// Destructure for internal use
-	const videoId = $derived(props.videoId);
-	const onClose = $derived(props.onClose);
+	let { videoId, onClose }: Props = $props();
 
 	let dashboard = $state<AnalyticsDashboard | null>(null);
 	let videoStats = $state<VideoAnalytics | null>(null);
@@ -161,7 +157,15 @@
 		<div class="video-info">
 			<h4>{videoStats.title}</h4>
 			{#if videoStats.thumbnail_url}
-				<img src={videoStats.thumbnail_url} alt={videoStats.title} class="video-thumb" />
+				<img
+					src={videoStats.thumbnail_url}
+					alt={videoStats.title}
+					width="320"
+					height="180"
+					loading="lazy"
+					decoding="async"
+					class="video-thumb"
+				/>
 			{/if}
 		</div>
 
@@ -251,7 +255,15 @@
 						<div class="top-video-item">
 							<div class="rank">#{index + 1}</div>
 							{#if video.thumbnail_url}
-								<img src={video.thumbnail_url} alt={video.title} class="top-video-thumb" />
+								<img
+									src={video.thumbnail_url}
+									alt={video.title}
+									width="120"
+									height="68"
+									loading="lazy"
+									decoding="async"
+									class="top-video-thumb"
+								/>
 							{/if}
 							<div class="top-video-info">
 								<div class="top-video-title">{video.title}</div>
@@ -268,7 +280,7 @@
 			<div class="device-section">
 				<h4>Devices</h4>
 				<div class="device-grid">
-					{#each Object.entries(dashboard.device_breakdown) as [device, count]}
+					{#each Object.entries(dashboard.device_breakdown) as [device, count] (device)}
 						{@const DeviceIcon = getDeviceIcon(device)}
 						{@const total = Object.values(dashboard.device_breakdown).reduce((a, b) => a + b, 0)}
 						<div class="device-item">

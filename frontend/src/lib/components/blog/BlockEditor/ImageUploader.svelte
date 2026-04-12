@@ -69,17 +69,18 @@
 		showRecent?: boolean;
 	}
 
-	let props: Props = $props();
-	const onUpload = $derived(props.onUpload);
-	const accept = $derived(props.accept ?? 'image/*');
-	const maxSize = $derived(props.maxSize ?? 10 * 1024 * 1024); // 10MB
-	const multiple = $derived(props.multiple ?? false);
-	const collection = $derived(props.collection ?? 'blog-images');
-	const compact = $derived(props.compact ?? false);
-	const processBeforeUpload = $derived(props.processBeforeUpload ?? true);
-	const processOptions = $derived(props.processOptions ?? {});
-	const showLibrary = $derived(props.showLibrary ?? true);
-	const showRecent = $derived(props.showRecent ?? true);
+	let {
+		onUpload,
+		accept = 'image/*',
+		maxSize = 10 * 1024 * 1024,
+		multiple = false,
+		collection = 'blog-images',
+		compact = false,
+		processBeforeUpload = true,
+		processOptions = {},
+		showLibrary = true,
+		showRecent = true
+	}: Props = $props();
 
 	// ==========================================================================
 	// State
@@ -586,7 +587,14 @@
 						onclick={() => handleRecentAssetClick(asset)}
 						title={asset.filename}
 					>
-						<img src={asset.thumbnail_url || asset.cdn_url} alt={asset.filename} loading="lazy" />
+						<img
+							src={asset.thumbnail_url || asset.cdn_url}
+							alt={asset.filename}
+							width="80"
+							height="80"
+							loading="lazy"
+							decoding="async"
+						/>
 					</button>
 				{/each}
 			</div>
@@ -686,14 +694,25 @@
 							<!-- Show blurhash placeholder during upload -->
 							<img
 								src={renderBlurhashToDataUrl(item.blurhash, 64, 64)}
-								alt="Loading placeholder"
+								alt=""
+								width="64"
+								height="64"
+								loading="lazy"
+								decoding="async"
 								class="blurhash-preview"
 							/>
 							<div class="preview-overlay">
 								<div class="spinner"></div>
 							</div>
 						{:else if item.previewUrl}
-							<img src={item.previewUrl} alt={item.file.name} />
+							<img
+								src={item.previewUrl}
+								alt={item.file.name}
+								width="200"
+								height="200"
+								loading="lazy"
+								decoding="async"
+							/>
 						{:else}
 							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 								<rect x="3" y="3" width="18" height="18" rx="2" ry="2" />

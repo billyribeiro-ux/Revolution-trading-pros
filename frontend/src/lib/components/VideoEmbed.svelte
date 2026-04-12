@@ -1388,7 +1388,15 @@
 		{#if showThumbnail && thumbnailUrl && !hasInteracted && lazyLoad}
 			<div class="thumbnail-container" transition:fade={{ duration: 300 }}>
 				{#if thumbnailLoaded}
-					<img src={thumbnailUrl} alt={title} class="thumbnail-image" />
+					<img
+						src={thumbnailUrl}
+						alt={title}
+						width="1280"
+						height="720"
+						loading="lazy"
+						decoding="async"
+						class="thumbnail-image"
+					/>
 				{/if}
 				<button
 					class="play-overlay"
@@ -1426,7 +1434,7 @@
 				{preload}
 				class="video-element"
 			>
-				{#each subtitles as track}
+				{#each subtitles as track (track.label)}
 					<track
 						kind="subtitles"
 						label={track.label}
@@ -1451,7 +1459,7 @@
 		{/if}
 
 		<!-- Interactive Overlays -->
-		{#each activeOverlays as overlay}
+		{#each activeOverlays as overlay (overlay.action)}
 			<button
 				class="video-overlay overlay-{overlay.type}"
 				style="
@@ -1596,7 +1604,7 @@
 						{#if showQualitySelector && availableQualities.length > 0}
 							<div class="settings-section">
 								<h4>Quality</h4>
-								{#each availableQualities as quality}
+								{#each availableQualities as quality (quality)}
 									<button
 										class="settings-option"
 										class:active={currentQuality === quality}
@@ -1614,7 +1622,7 @@
 						{#if showSpeedControl}
 							<div class="settings-section">
 								<h4>Speed</h4>
-								{#each [0.5, 0.75, 1, 1.25, 1.5, 2] as speed}
+								{#each [0.5, 0.75, 1, 1.25, 1.5, 2] as speed (speed)}
 									<button
 										class="settings-option"
 										class:active={playbackRate === speed}

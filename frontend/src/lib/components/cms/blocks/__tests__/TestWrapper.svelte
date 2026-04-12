@@ -15,10 +15,10 @@
 		stateManager?: BlockStateManager;
 	}
 
-	let props: Props = $props();
+	let { children, stateManager }: Props = $props();
 
 	// Use provided stateManager or create a default one
-	let resolvedStateManager = $derived(props.stateManager ?? new BlockStateManager());
+	let resolvedStateManager = $derived(stateManager ?? new BlockStateManager());
 
 	// Set the context reactively when the stateManager changes
 	$effect(() => {
@@ -26,4 +26,4 @@
 	});
 </script>
 
-{@render props.children()}
+{@render children()}

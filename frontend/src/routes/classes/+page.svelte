@@ -8,8 +8,6 @@
 
 	import { onMount } from 'svelte';
 	import { CourseCard } from '$lib/components/courses';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-
 	interface Course {
 		id: string;
 		title: string;
@@ -131,14 +129,12 @@
 		</div>
 	{:else}
 		<div class="courses-grid">
-			{#each courses as course}
+			{#each courses as course (course)}
 				<CourseCard {course} />
 			{/each}
 		</div>
 	{/if}
 </div>
-
-<MarketingFooter />
 
 <style>
 	.courses-page {

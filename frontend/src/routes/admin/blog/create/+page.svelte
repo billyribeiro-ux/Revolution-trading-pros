@@ -181,7 +181,7 @@
 						const listType = content.listType === 'ordered' ? 'ol' : 'ul';
 						return `<${listType}>${items.map((item: string) => `<li>${item}</li>`).join('')}</${listType}>`;
 					case 'image':
-						return `<figure><img src="${content.src || ''}" alt="${content.alt || ''}" />${content.caption ? `<figcaption>${content.caption}</figcaption>` : ''}</figure>`;
+						return `<figure><img src="${content.src || ''}" alt="${content.alt || ''}" width="1200" height="800" loading="lazy" decoding="async" />${content.caption ? `<figcaption>${content.caption}</figcaption>` : ''}</figure>`;
 					case 'code':
 						return `<pre><code class="language-${content.language || 'text'}">${content.code || ''}</code></pre>`;
 					case 'separator':
@@ -483,7 +483,14 @@
 					</div>
 				{:else if post.featured_image}
 					<div class="featured-image-preview">
-						<img src={post.featured_image} alt={post.featured_image_alt || 'Featured'} />
+						<img
+							src={post.featured_image}
+							alt={post.featured_image_alt || 'Featured'}
+							width="1200"
+							height="630"
+							loading="lazy"
+							decoding="async"
+						/>
 						<button type="button" class="remove-image" onclick={removeFeaturedImage}>
 							<Icon icon={IconX} size={16} />
 						</button>
@@ -559,7 +566,7 @@
 					Categories
 				</h3>
 				<div class="categories-grid">
-					{#each predefinedCategories as category}
+					{#each predefinedCategories as category (category.id)}
 						<button
 							type="button"
 							class="category-btn"
@@ -578,7 +585,7 @@
 				{#if post.categories.length > 0}
 					<div class="selected-categories">
 						<span class="selected-count">{post.categories.length} selected:</span>
-						{#each post.categories as categoryId}
+						{#each post.categories as categoryId (categoryId)}
 							{@const category = getPredefinedCategoryById(categoryId)}
 							{#if category}
 								<span class="selected-tag" style:--tag-color={category.color}>
@@ -602,7 +609,7 @@
 				<h3>Tags</h3>
 
 				<div class="tags-selected">
-					{#each post.tags as tagId}
+					{#each post.tags as tagId (tagId)}
 						{@const tag = availableTags.find((t) => t.id === tagId)}
 						{#if tag}
 							<span class="tag-badge" style="background: {tag.color}20; color: {tag.color}">
@@ -634,7 +641,7 @@
 				</div>
 
 				<div class="checkbox-list">
-					{#each availableTags as tag}
+					{#each availableTags as tag (tag.id)}
 						{#if !post.tags.includes(tag.id)}
 							<label class="checkbox-item">
 								<input

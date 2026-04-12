@@ -1,5 +1,3 @@
-<!-- @migration-task Error while migrating Svelte code: Can only bind to an Identifier or MemberExpression or a `{get, set}` pair
-https://svelte.dev/e/bind_invalid_expression -->
 <script lang="ts">
 	import { logger } from '$lib/utils/logger';
 	import type { Form, FormField } from '$lib/api/forms';
@@ -13,7 +11,7 @@ https://svelte.dev/e/bind_invalid_expression -->
 		oncancel?: () => void;
 	}
 
-	let props: Props = $props();
+	let { form = null, isEditing = false, onsave, oncancel }: Props = $props();
 
 	let formData: Partial<Form> = $state({
 		title: '',
@@ -35,7 +33,7 @@ https://svelte.dev/e/bind_invalid_expression -->
 
 	// Sync with prop changes
 	$effect(() => {
-		if (props.form) {
+		if (form) {
 			formData = {
 				title: '',
 				description: '',
@@ -44,14 +42,14 @@ https://svelte.dev/e/bind_invalid_expression -->
 					submit_text: 'Submit',
 					send_email: false,
 					email_to: '',
-					...props.form.settings
+					...form.settings
 				},
 				styles: {},
 				status: 'draft',
 				fields: [],
-				...props.form
+				...form
 			};
-			fields = props.form.fields || [];
+			fields = form.fields || [];
 		}
 	});
 	let availableFieldTypes: { type: string; label: string; icon?: string }[] = $state([]);
@@ -187,13 +185,13 @@ https://svelte.dev/e/bind_invalid_expression -->
 				)
 			};
 
-			if (props.isEditing && props.form?.id) {
-				await updateForm(props.form.id, dataToSave);
+			if (isEditing && form?.id) {
+				await updateForm(form.id, dataToSave);
 			} else {
 				await createForm(dataToSave);
 			}
 
-			props.onsave?.();
+			onsave?.();
 		} catch (err) {
 			saveError = err instanceof Error ? err.message : 'Failed to save form';
 		} finally {
@@ -202,14 +200,14 @@ https://svelte.dev/e/bind_invalid_expression -->
 	}
 
 	function handleCancel() {
-		props.oncancel?.();
+		oncancel?.();
 	}
 </script>
 
 <div class="form-builder">
 	{#if !showFieldEditor}
 		<div class="builder-header">
-			<h2>{props.isEditing ? 'Edit Form' : 'Create New Form'}</h2>
+			<h2>{isEditing ? 'Edit Form' : 'Create New Form'}</h2>
 		</div>
 
 		<div class="form-settings">
@@ -377,7 +375,7 @@ https://svelte.dev/e/bind_invalid_expression -->
 			<div class="add-field-section">
 				<h4>Add Field</h4>
 				<div class="field-types-grid">
-					{#each availableFieldTypes as { type, label }}
+					{#each availableFieldTypes as { type, label } (type)}
 						<button class="field-type-button" onclick={() => handleAddField(type)}>
 							{label}
 						</button>
@@ -393,7 +391,7 @@ https://svelte.dev/e/bind_invalid_expression -->
 		<div class="builder-actions">
 			<button class="btn btn-secondary" onclick={handleCancel}> Cancel </button>
 			<button class="btn btn-primary" onclick={handleSaveForm} disabled={isSaving}>
-				{isSaving ? 'Saving...' : props.isEditing ? 'Update Form' : 'Create Form'}
+				{isSaving ? 'Saving...' : isEditing ? 'Update Form' : 'Create Form'}
 			</button>
 		</div>
 	{:else}

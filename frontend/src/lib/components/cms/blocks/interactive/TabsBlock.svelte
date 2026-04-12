@@ -20,20 +20,20 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 	const stateManager = getBlockStateManager();
 
 	let tabs = $derived(
-		props.block.content.tabs || [
+		block.content.tabs || [
 			{ id: 'tab_1', label: 'Tab 1', content: 'Content for tab 1' },
 			{ id: 'tab_2', label: 'Tab 2', content: 'Content for tab 2' }
 		]
 	);
 
 	let defaultTabId = $derived(tabs[0]?.id || '');
-	let activeTab = $derived(stateManager.getActiveTab(props.blockId, defaultTabId));
+	let activeTab = $derived(stateManager.getActiveTab(blockId, defaultTabId));
 	let orientation = $derived(
-		(props.block.settings.tabOrientation as 'horizontal' | 'vertical') || 'horizontal'
+		(block.settings.tabOrientation as 'horizontal' | 'vertical') || 'horizontal'
 	);
 
 	// Track previous active tab for animation
@@ -41,14 +41,14 @@
 	let isTransitioning = $state(false);
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 
 	function setActiveTab(tabId: string): void {
 		if (tabId !== activeTab) {
 			previousActiveTab = activeTab;
 			isTransitioning = true;
-			stateManager.setActiveTab(props.blockId, tabId);
+			stateManager.setActiveTab(blockId, tabId);
 			// Reset transition state after animation completes
 			setTimeout(() => {
 				isTransitioning = false;
@@ -96,22 +96,22 @@
 			const nextIndex = (index + 1) % tabs.length;
 			const nextTab = tabs[nextIndex];
 			setActiveTab(nextTab.id);
-			document.getElementById(`tab-btn-${props.blockId}-${nextTab.id}`)?.focus();
+			document.getElementById(`tab-btn-${blockId}-${nextTab.id}`)?.focus();
 		} else if (e.key === prevKey) {
 			e.preventDefault();
 			const prevIndex = (index - 1 + tabs.length) % tabs.length;
 			const prevTab = tabs[prevIndex];
 			setActiveTab(prevTab.id);
-			document.getElementById(`tab-btn-${props.blockId}-${prevTab.id}`)?.focus();
+			document.getElementById(`tab-btn-${blockId}-${prevTab.id}`)?.focus();
 		} else if (e.key === 'Home') {
 			e.preventDefault();
 			setActiveTab(tabs[0].id);
-			document.getElementById(`tab-btn-${props.blockId}-${tabs[0].id}`)?.focus();
+			document.getElementById(`tab-btn-${blockId}-${tabs[0].id}`)?.focus();
 		} else if (e.key === 'End') {
 			e.preventDefault();
 			const lastTab = tabs[tabs.length - 1];
 			setActiveTab(lastTab.id);
-			document.getElementById(`tab-btn-${props.blockId}-${lastTab.id}`)?.focus();
+			document.getElementById(`tab-btn-${blockId}-${lastTab.id}`)?.focus();
 		}
 	}
 
@@ -133,17 +133,17 @@
 			<div class="tab-button-wrapper">
 				<button
 					type="button"
-					id="tab-btn-{props.blockId}-{tab.id}"
+					id="tab-btn-{blockId}-{tab.id}"
 					class="tab-button"
 					class:active={activeTab === tab.id}
 					role="tab"
 					aria-selected={activeTab === tab.id}
-					aria-controls="tab-panel-{props.blockId}-{tab.id}"
+					aria-controls="tab-panel-{blockId}-{tab.id}"
 					tabindex={activeTab === tab.id ? 0 : -1}
 					onclick={() => setActiveTab(tab.id)}
 					onkeydown={(e) => handleKeyDown(e, index)}
 				>
-					{#if props.isEditing}
+					{#if isEditing}
 						<span
 							contenteditable="true"
 							class="tab-label editable-content"
@@ -162,7 +162,7 @@
 						<span class="tab-label">{tab.label}</span>
 					{/if}
 				</button>
-				{#if props.isEditing && tabs.length > 1}
+				{#if isEditing && tabs.length > 1}
 					<button
 						type="button"
 						class="remove-tab-btn"
@@ -178,7 +178,7 @@
 			</div>
 		{/each}
 
-		{#if props.isEditing}
+		{#if isEditing}
 			<button type="button" class="add-tab-btn" onclick={addTab} aria-label="Add tab">
 				<Icon icon={IconPlus} size={14} />
 			</button>
@@ -188,17 +188,17 @@
 	<div class="tabs-panels">
 		{#each tabs as tab, index (tab.id)}
 			<div
-				id="tab-panel-{props.blockId}-{tab.id}"
+				id="tab-panel-{blockId}-{tab.id}"
 				class="tab-panel"
 				class:active={activeTab === tab.id}
 				class:fade-in={activeTab === tab.id && isTransitioning}
 				class:fade-out={previousActiveTab === tab.id && isTransitioning}
 				role="tabpanel"
-				aria-labelledby="tab-btn-{props.blockId}-{tab.id}"
+				aria-labelledby="tab-btn-{blockId}-{tab.id}"
 				hidden={activeTab !== tab.id && previousActiveTab !== tab.id}
 				tabindex={activeTab === tab.id ? 0 : -1}
 			>
-				{#if props.isEditing}
+				{#if isEditing}
 					<div
 						contenteditable="true"
 						class="tab-content editable-content"
@@ -219,19 +219,19 @@
 		{/each}
 	</div>
 
-	{#if props.isEditing && props.isSelected}
+	{#if isEditing && isSelected}
 		<div class="tabs-settings">
 			<div class="setting-radio">
 				<span class="setting-label">Orientation:</span>
 				<label>
 					<input
 						type="radio"
-						name="orientation-{props.blockId}"
+						name="orientation-{blockId}"
 						value="horizontal"
 						checked={orientation === 'horizontal'}
 						onchange={() =>
-							props.onUpdate({
-								settings: { ...props.block.settings, tabOrientation: 'horizontal' }
+							onUpdate({
+								settings: { ...block.settings, tabOrientation: 'horizontal' }
 							})}
 					/>
 					<span>Horizontal</span>
@@ -239,12 +239,12 @@
 				<label>
 					<input
 						type="radio"
-						name="orientation-{props.blockId}"
+						name="orientation-{blockId}"
 						value="vertical"
 						checked={orientation === 'vertical'}
 						onchange={() =>
-							props.onUpdate({
-								settings: { ...props.block.settings, tabOrientation: 'vertical' }
+							onUpdate({
+								settings: { ...block.settings, tabOrientation: 'vertical' }
 							})}
 					/>
 					<span>Vertical</span>

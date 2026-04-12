@@ -8,6 +8,7 @@
 	 */
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { browser } from '$app/environment';
 	import BlurHashImage from '$lib/components/ui/BlurHashImage.svelte';
 	import TableOfContents from '$lib/components/blog/TableOfContents.svelte';
@@ -17,7 +18,6 @@
 	import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
 	import type { Post } from '$lib/types/post';
 	import { sanitizeBlogContent } from '$lib/utils/sanitize';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 	import {
 		initReadingAnalytics,
 		calculateReadingTime,
@@ -89,7 +89,7 @@
 	}
 
 	function goBack() {
-		goto('/blog');
+		goto(`${base}/blog`);
 	}
 
 	interface ContentBlock {
@@ -191,7 +191,7 @@
 		</div>
 	{:else if error}
 		<div class="error" role="alert" aria-live="assertive">
-			<h2>Oops!</h2>
+			<h1>Oops!</h1>
 			<p>{error}</p>
 			<button class="btn-back" onclick={goBack} aria-label="Go back to blog listing">
 				<svg
@@ -234,7 +234,7 @@
 
 				{#if post.categories && post.categories.length > 0}
 					<div class="header-categories">
-						{#each post.categories as category}
+						{#each post.categories as category (category.name)}
 							<span class="category-badge">{category.name}</span>
 						{/each}
 					</div>
@@ -252,6 +252,10 @@
 							<img
 								src={post.author_image}
 								alt={post.author?.name ?? 'Author'}
+								width="56"
+								height="56"
+								loading="lazy"
+								decoding="async"
 								class="author-avatar"
 							/>
 						{:else if post.author}
@@ -314,12 +318,13 @@
 				<div class="content">
 					{#if post.content_blocks && post.content_blocks.length > 0}
 						<!-- Structured content blocks (sanitized for XSS protection) -->
-						{#each post.content_blocks as block}
+						{#each post.content_blocks as block (block.data)}
 							{#if block.type === 'paragraph'}
 								<p>{@html sanitizeBlogContent(block.data?.text || '')}</p>
 							{:else if block.type === 'heading'}
 								{#if block.data?.level === 1}
-									<h1>{@html sanitizeBlogContent(block.data?.text || '')}</h1>
+									<!-- SEO: demote in-content H1 to H2; the post title <h1> above is the page's canonical H1 -->
+									<h2>{@html sanitizeBlogContent(block.data?.text || '')}</h2>
 								{:else if block.data?.level === 2}
 									<h2>{@html sanitizeBlogContent(block.data?.text || '')}</h2>
 								{:else if block.data?.level === 3}
@@ -332,13 +337,13 @@
 							{:else if block.type === 'list'}
 								{#if block.data?.style === 'ordered'}
 									<ol>
-										{#each block.data?.items || [] as item}
+										{#each block.data?.items || [] as item (item)}
 											<li>{@html sanitizeBlogContent(item)}</li>
 										{/each}
 									</ol>
 								{:else}
 									<ul>
-										{#each block.data?.items || [] as item}
+										{#each block.data?.items || [] as item (item)}
 											<li>{@html sanitizeBlogContent(item)}</li>
 										{/each}
 									</ul>
@@ -371,9 +376,9 @@
 
 				{#if post.tags && post.tags.length > 0}
 					<div class="tags-section">
-						<h3>Tags</h3>
+						<h2>Tags</h2>
 						<div class="tags">
-							{#each post.tags as tag}
+							{#each post.tags as tag (tag.name)}
 								<span class="tag">{tag.name}</span>
 							{/each}
 						</div>
@@ -424,8 +429,6 @@
 		{/if}
 	{/if}
 </div>
-
-<MarketingFooter />
 
 <style>
 	/* 2026 CSS Standards: CSS Layers, oklch colors, container queries, color-mix */
@@ -763,7 +766,7 @@
 			border-top: 1px solid var(--post-border);
 		}
 
-		.tags-section h3 {
+		.tags-section h2 {
 			color: var(--post-text-primary);
 			font-size: 1.25rem;
 			font-weight: 700;
@@ -825,7 +828,7 @@
 			color: var(--error-color);
 		}
 
-		.error h2 {
+		.error h1 {
 			font-size: 2rem;
 			margin-bottom: 1rem;
 		}

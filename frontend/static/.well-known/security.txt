@@ -1,0 +1,16 @@
+# Security Policy for Revolution Trading Pros
+# RFC 9116 — A File Format to Aid in Security Vulnerability Disclosure
+# https://www.rfc-editor.org/rfc/rfc9116.html
+#
+# Lighthouse Best Practices and many security scanners check this file.
+# Bug-bounty platforms and Google's web security team also use it as a
+# canonical contact point for responsible disclosure.
+#
+# Only fields with real, resolvable destinations are included — RFC 9116
+# permits omitting optional fields when no real resource exists, and
+# Lighthouse penalises dead `Encryption:` / `Policy:` URLs.
+
+Contact: mailto:security@revolution-trading-pros.com
+Expires: 2027-04-11T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://revolution-trading-pros.pages.dev/.well-known/security.txt

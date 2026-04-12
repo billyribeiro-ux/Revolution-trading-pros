@@ -96,7 +96,7 @@
 
 			<div class="ticker-pills-scroll" role="list" aria-label="Closed trades this week">
 				{#if isLoading}
-					{#each Array(5) as _, i}
+					{#each Array(5) as _, i (i)}
 						<div class="ticker-pill-skeleton" style="animation-delay: {i * 0.1}s"></div>
 					{/each}
 				{:else}
@@ -139,7 +139,7 @@
 
 			<div class="positions-grid">
 				{#if isLoading}
-					{#each Array(2) as _, i}
+					{#each Array(2) as _, i (i)}
 						<div class="position-skeleton" style="animation-delay: {i * 0.15}s"></div>
 					{/each}
 				{:else if activePositions.length === 0 && isAdmin}

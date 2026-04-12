@@ -10,12 +10,17 @@
   - WebP/AVIF format negotiation
   - Lazy loading with Intersection Observer
 
-  @version 2.0.0 - Svelte 5 Runes Migration
+  @version 3.0.0 - Svelte 5.55+ sweep (April 2026)
+    - `use:action` + `bind:this` + `onMount`/`onDestroy` collapsed
+      into `{@attach}` callbacks (Svelte 5.29+) so the canvas paint
+      and the IntersectionObserver lifecycle are colocated with the
+      element they observe — no manual ref tracking, no two-step
+      mount/destroy choreography.
 -->
 <script lang="ts">
-	import { logger } from '$lib/utils/logger';
-	import { onMount, onDestroy } from 'svelte';
+	import type { Attachment } from 'svelte/attachments';
 	import { decode } from 'blurhash';
+	import { logger } from '$lib/utils/logger';
 
 	// Props - Svelte 5 $props() pattern with interface
 	interface Props {
@@ -57,9 +62,13 @@
 	// State - Svelte 5 $state() pattern
 	let loaded = $state(false);
 	let hasError = $state(false);
-	let containerRef = $state<HTMLDivElement | null>(null);
-	let isInView = $state(false);
-	let observer: IntersectionObserver | null = null;
+
+	// `inViewObserved` is the only mutable piece — it flips to true when the
+	// IntersectionObserver fires. The actual `isInView` value is `$derived`
+	// so it stays reactive to the `priority` / `loading` props (e.g. a
+	// parent toggling eager loading post-mount).
+	let inViewObserved = $state(false);
+	const isInView = $derived(inViewObserved || priority || loading === 'eager');
 
 	// Computed aspect ratio style - Svelte 5 $derived() pattern
 	let aspectRatioStyle = $derived(
@@ -70,22 +79,57 @@
 				: ''
 	);
 
-	// Decode BlurHash to canvas
-	function renderBlurhash(node: HTMLCanvasElement) {
-		if (!blurhash || !node) return;
-
+	/**
+	 * Inline `{@attach}` that paints the BlurHash placeholder onto the
+	 * canvas as soon as it mounts. Returns nothing (no cleanup needed —
+	 * the canvas is removed from the DOM by Svelte when `loaded` flips).
+	 *
+	 * Re-runs automatically when `blurhash` changes because the closure
+	 * reads it; the previous `use:renderBlurhash` action would not.
+	 */
+	const paintBlurhash: Attachment<HTMLCanvasElement> = (canvas) => {
+		if (!blurhash) return;
 		try {
 			const pixels = decode(blurhash, 32, 32);
-			const ctx = node.getContext('2d');
+			const ctx = canvas.getContext('2d');
 			if (!ctx) return;
-
 			const imageData = ctx.createImageData(32, 32);
 			imageData.data.set(pixels);
 			ctx.putImageData(imageData, 0, 0);
 		} catch (err) {
 			logger.warn('BlurHash decode failed:', err);
 		}
-	}
+	};
+
+	/**
+	 * Inline `{@attach}` that wires an IntersectionObserver onto the
+	 * container `<div>` for lazy loading. Replaces the previous
+	 * `bind:this={containerRef}` + `onMount` setup + `onDestroy`
+	 * cleanup trio with a single colocated callback that returns its
+	 * own teardown thunk — the canonical Svelte 5.29+ pattern.
+	 *
+	 * The early-return for `priority`/`eager` images means the
+	 * observer is never created at all in those cases.
+	 */
+	const observeViewport: Attachment<HTMLDivElement> = (container) => {
+		// Already-in-view modes never need an observer.
+		if (priority || loading === 'eager') return;
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					if (entry.isIntersecting) {
+						inViewObserved = true;
+						observer.disconnect();
+					}
+				}
+			},
+			{ rootMargin: '50px', threshold: 0.01 }
+		);
+		observer.observe(container);
+
+		return () => observer.disconnect();
+	};
 
 	// Build srcset string
 	function buildSrcset(): string | undefined {
@@ -110,44 +154,17 @@
 		hasError = true;
 		onErrorCallback?.(new Error('Image failed to load'));
 	}
-
-	// Setup Intersection Observer for lazy loading
-	onMount(() => {
-		if (priority || loading === 'eager') {
-			isInView = true;
-			return;
-		}
-
-		observer = new IntersectionObserver(
-			(entries) => {
-				entries.forEach((entry) => {
-					if (entry.isIntersecting) {
-						isInView = true;
-						observer?.disconnect();
-					}
-				});
-			},
-			{
-				rootMargin: '50px',
-				threshold: 0.01
-			}
-		);
-
-		if (containerRef) {
-			observer.observe(containerRef);
-		}
-	});
-
-	onDestroy(() => {
-		observer?.disconnect();
-	});
 </script>
 
-<div bind:this={containerRef} class="oi-container {className}" style={aspectRatioStyle}>
+<div
+	{@attach observeViewport}
+	class="optimized-image-container relative overflow-hidden {className}"
+	style={aspectRatioStyle}
+>
 	<!-- BlurHash placeholder canvas -->
 	{#if blurhash && !loaded}
 		<canvas
-			use:renderBlurhash
+			{@attach paintBlurhash}
 			width="32"
 			height="32"
 			class={['oi-placeholder oi-blurhash', loaded && 'oi-hidden']}
@@ -167,7 +184,7 @@
 	{/if}
 
 	<!-- Main image with picture element for format negotiation -->
-	{#if isInView || priority}
+	{#if isInView}
 		<picture>
 			<!-- AVIF source (best compression) -->
 			{#if srcset?.['avif']}

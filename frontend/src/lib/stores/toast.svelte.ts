@@ -7,8 +7,15 @@
  * - Type-safe toast types
  * - Loading toast support
  *
- * @version 3.0.0 - Svelte 5 Runes Migration (February 2026)
+ * @version 3.1.0 - Svelte 5.55+ (April 2026 sweep)
+ *  - Replace built-in Map with `SvelteMap` for the cleanup tracker
+ *    (recommended pattern for reactive `.svelte.ts` modules).
+ *  - Provide a back-compat `addToast(...)` shim so the old
+ *    `$lib/utils/toast` writable-store callers can migrate by
+ *    swapping a single import path.
  */
+
+import { SvelteMap } from 'svelte/reactivity';
 
 // =============================================================================
 // Types
@@ -49,14 +56,16 @@ const toastsValue = $derived(storeState.toasts);
 // =============================================================================
 
 let idCounter = 0;
-// Track timeout IDs for cleanup
-const timeoutIds = new Map<string, ReturnType<typeof setTimeout>>();
+// Track timeout IDs for cleanup. Uses `SvelteMap` (vs. the built-in `Map`)
+// per Svelte 5 best practice for any mutable Map living in a `.svelte.ts`
+// module — keeps reactive consumers consistent if any reads are added later.
+const timeoutIds = new SvelteMap<string, ReturnType<typeof setTimeout>>();
 
 function generateId(): string {
 	return `toast-${Date.now()}-${++idCounter}`;
 }
 
-function addToast(toast: Omit<Toast, 'id'>): string {
+function pushToast(toast: Omit<Toast, 'id'>): string {
 	const id = generateId();
 	const newToast: Toast = { ...toast, id };
 
@@ -147,7 +156,7 @@ export const toastStore = {
 	 * Show a success toast
 	 */
 	success(message: string, duration = DEFAULT_DURATION): string {
-		return addToast({
+		return pushToast({
 			type: 'success',
 			message,
 			duration,
@@ -159,7 +168,7 @@ export const toastStore = {
 	 * Show an error toast (longer duration by default)
 	 */
 	error(message: string, duration = 6000): string {
-		return addToast({
+		return pushToast({
 			type: 'error',
 			message,
 			duration,
@@ -171,7 +180,7 @@ export const toastStore = {
 	 * Show a warning toast
 	 */
 	warning(message: string, duration = 5000): string {
-		return addToast({
+		return pushToast({
 			type: 'warning',
 			message,
 			duration,
@@ -183,7 +192,7 @@ export const toastStore = {
 	 * Show an info toast
 	 */
 	info(message: string, duration = DEFAULT_DURATION): string {
-		return addToast({
+		return pushToast({
 			type: 'info',
 			message,
 			duration,
@@ -196,7 +205,7 @@ export const toastStore = {
 	 * Returns ID so you can update it later
 	 */
 	loading(message: string): string {
-		return addToast({
+		return pushToast({
 			type: 'loading',
 			message,
 			duration: 0, // No auto-dismiss
@@ -208,7 +217,7 @@ export const toastStore = {
 	 * Show a custom toast
 	 */
 	show(options: Partial<Omit<Toast, 'id'>> & { message: string }): string {
-		return addToast({
+		return pushToast({
 			type: options.type ?? 'info',
 			message: options.message,
 			duration: options.duration ?? DEFAULT_DURATION,
@@ -233,7 +242,7 @@ export const toastStore = {
 			error: string | ((err: unknown) => string);
 		}
 	): Promise<T> {
-		const id = addToast({
+		const id = pushToast({
 			type: 'loading',
 			message: options.loading,
 			duration: 0,
@@ -294,5 +303,29 @@ export const { success, error, warning, info, loading, show, promise } = toastSt
 
 // Alias for component usage
 export const removeToast = toastStore.dismiss;
+
+/**
+ * Legacy `addToast({ type, message, duration? })` shim.
+ *
+ * Pre-runes call sites import this from the now-removed `$lib/utils/toast`
+ * module. The function is preserved here so the migration is purely a
+ * single-line import-path swap, with no behavioural change at the call site.
+ *
+ * Prefer the typed shortcuts (`toastStore.success`, `toastStore.error`, ...)
+ * for new code.
+ */
+export function addToast(toast: {
+	type?: ToastType;
+	message: string;
+	duration?: number;
+	dismissible?: boolean;
+}): string {
+	return toastStore.show({
+		type: toast.type ?? 'info',
+		message: toast.message,
+		duration: toast.duration,
+		dismissible: toast.dismissible
+	});
+}
 
 export default toastStore;

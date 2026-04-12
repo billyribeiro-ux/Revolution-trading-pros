@@ -177,7 +177,7 @@
 		</div>
 
 		<div class="filter-tabs">
-			{#each filterTypes as type}
+			{#each filterTypes as type (type)}
 				<button
 					class="filter-tab"
 					class:active={activeFilter === type}
@@ -224,7 +224,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					{#each filteredRedirects as redirect}
+					{#each filteredRedirects as redirect (redirect.id)}
 						<tr>
 							<td>
 								<input

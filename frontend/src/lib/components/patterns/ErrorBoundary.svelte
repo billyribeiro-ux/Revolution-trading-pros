@@ -15,14 +15,14 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { children, fallback, onError }: Props = $props();
 
 	let error = $state<Error | null>(null);
 
 	function handleError(e: unknown) {
 		const err = e instanceof Error ? e : new Error(String(e));
 		error = err;
-		props.onError?.(err);
+		onError?.(err);
 		logger.error('[ErrorBoundary] Caught error:', err);
 	}
 
@@ -33,8 +33,8 @@
 
 <svelte:boundary onerror={handleError}>
 	{#if error}
-		{#if props.fallback}
-			{@render props.fallback(error)}
+		{#if fallback}
+			{@render fallback(error)}
 		{:else}
 			<div class="error-boundary">
 				<div class="error-icon">⚠️</div>
@@ -44,7 +44,7 @@
 			</div>
 		{/if}
 	{:else}
-		{@render props.children()}
+		{@render children()}
 	{/if}
 </svelte:boundary>
 

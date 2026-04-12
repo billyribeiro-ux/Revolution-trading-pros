@@ -20,7 +20,7 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
 	// Height presets matching the spec
 	const HEIGHT_PRESETS = {
@@ -34,7 +34,7 @@
 
 	// Derived state
 	const currentSize = $derived.by<HeightSize>(() => {
-		const height = props.block.settings.height as string;
+		const height = block.settings.height as string;
 		for (const [size, value] of Object.entries(HEIGHT_PRESETS)) {
 			if (height === value) return size as HeightSize;
 		}
@@ -50,7 +50,7 @@
 	});
 
 	function updateSettings(updates: Partial<BlockSettings>): void {
-		props.onUpdate({ settings: { ...props.block.settings, ...updates } });
+		onUpdate({ settings: { ...block.settings, ...updates } });
 	}
 
 	function setSize(size: HeightSize): void {
@@ -70,20 +70,20 @@
 
 <div
 	class="spacer-block"
-	class:editing={props.isEditing}
-	class:selected={props.isSelected}
+	class:editing={isEditing}
+	class:selected={isSelected}
 	style:height
 	role="separator"
 	aria-label="Vertical spacing: {currentSize}"
 >
-	{#if props.isEditing}
+	{#if isEditing}
 		<div class="spacer-indicator">
 			<span class="spacer-label">{heightInPx}px</span>
 		</div>
 
-		{#if props.isSelected}
+		{#if isSelected}
 			<div class="size-selector" role="toolbar" aria-label="Spacer size options">
-				{#each Object.keys(HEIGHT_PRESETS) as size}
+				{#each Object.keys(HEIGHT_PRESETS) as size (size)}
 					<button
 						type="button"
 						class="size-btn"

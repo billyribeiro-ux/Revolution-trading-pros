@@ -15,10 +15,7 @@
 		position?: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left';
 	}
 
-	let props: Props = $props();
-
-	let visible = $derived(props.visible ?? true);
-	let position = $derived(props.position ?? 'bottom-right');
+	let { visible = true, position = 'bottom-right' }: Props = $props();
 
 	let fps = $state(0);
 	let memory = $state({ used: 0, total: 0, percent: 0 });

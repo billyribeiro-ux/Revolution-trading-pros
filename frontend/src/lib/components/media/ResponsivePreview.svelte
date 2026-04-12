@@ -143,8 +143,11 @@
 					<img
 						src={variant.url}
 						alt="{variant.sizeName} preview"
+						width={variant.width}
+						height={variant.height}
 						loading="lazy"
-						class="rp-thumb-img"
+						decoding="async"
+						class="w-full h-full object-cover"
 					/>
 				</div>
 
@@ -183,11 +186,14 @@
 			<div class="rp-chart-label">
 				<span>Size Comparison</span>
 			</div>
-			<div class="rp-chart">
+			<div class="flex items-end justify-center gap-2 h-20">
 				{#each sortedVariants as variant (variant.sizeName)}
-					<div class="rp-bar-col">
-						<div class="rp-bar" style="height: {(variant.size / originalSize) * 100}%"></div>
-						<span class="rp-bar-label">{variant.sizeName}</span>
+					<div class="flex flex-col items-center gap-1">
+						<div
+							class="w-4 bg-blue-500 rounded-t transition-all duration-300"
+							style="height: {(variant.size / originalSize) * 100}%"
+						></div>
+						<span class="text-[10px] text-gray-500">{variant.sizeName}</span>
 					</div>
 				{/each}
 				<div class="rp-bar-col">
@@ -205,10 +211,20 @@
 			style="left: {previewPosition.x}px; top: {previewPosition.y}px;"
 			transition:fade={{ duration: 150 }}
 		>
-			<img src={hoveredVariant.url} alt="Preview" class="rp-tooltip-img" />
-			<div class="rp-tooltip-footer">
-				<span class="rp-tooltip-dim">{hoveredVariant.width}x{hoveredVariant.height}</span>
-				<span class="rp-tooltip-size">{formatBytes(hoveredVariant.size)}</span>
+			<img
+				src={hoveredVariant.url}
+				alt="Preview"
+				width="200"
+				height="150"
+				loading="eager"
+				decoding="async"
+				class="max-w-[200px] max-h-[150px] object-contain"
+			/>
+			<div
+				class="flex items-center justify-between gap-2 px-2 py-1 text-xs bg-gray-50 dark:bg-gray-900"
+			>
+				<span class="font-medium">{hoveredVariant.width}x{hoveredVariant.height}</span>
+				<span class="text-gray-500">{formatBytes(hoveredVariant.size)}</span>
 			</div>
 		</div>
 	{/if}

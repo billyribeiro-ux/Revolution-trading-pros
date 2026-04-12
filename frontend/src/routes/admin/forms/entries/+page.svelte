@@ -5,7 +5,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { Card, Button, Badge, Table, Select } from '$lib/components/ui';
-	import { addToast } from '$lib/utils/toast';
+	import { addToast } from '$lib/stores/toast.svelte';
 	import {
 		getForms,
 		getSubmissions,
@@ -142,7 +142,7 @@
 	{:else}
 		<Card padding={false}>
 			<Table headers={['ID', 'Status', 'Submitted', 'Preview', 'Actions']}>
-				{#each entries as entry}
+				{#each entries as entry (entry.id)}
 					<tr>
 						<td class="font-mono">#{entry.id}</td>
 						<td>

@@ -8,10 +8,7 @@
 		children?: Snippet;
 	}
 
-	let props: Props = $props();
-	let padding = $derived(props.padding ?? true);
-	let hover = $derived(props.hover ?? false);
-	let className = $derived(props.class ?? '');
+	let { padding = true, hover = false, class: className = '', children }: Props = $props();
 </script>
 
 <div
@@ -19,7 +16,7 @@
 	data-padding={padding || undefined}
 	data-hover={hover || undefined}
 >
-	{@render props.children?.()}
+	{@render children?.()}
 </div>
 
 <style>

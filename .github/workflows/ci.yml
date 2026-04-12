@@ -10,9 +10,6 @@ env:
   NODE_VERSION: "24.14.1"
 
 jobs:
-  # ============================================================================
-  # Quality Checks
-  # ============================================================================
   lint:
     name: Lint & Format Check
     runs-on: ubuntu-latest
@@ -20,7 +17,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install pnpm
+      - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 10.8.0
@@ -36,16 +33,11 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run ESLint
-        working-directory: frontend
-        run: pnpm run lint
+        run: pnpm --filter revolution-svelte run lint
 
       - name: Check formatting
-        working-directory: frontend
-        run: pnpm run format:check
+        run: pnpm --filter revolution-svelte run format:check
 
-  # ============================================================================
-  # Type Checking
-  # ============================================================================
   typecheck:
     name: TypeScript Type Check
     runs-on: ubuntu-latest
@@ -53,7 +45,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install pnpm
+      - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 10.8.0
@@ -69,12 +61,8 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run type check
-        working-directory: frontend
-        run: pnpm run check
+        run: pnpm --filter revolution-svelte run check
 
-  # ============================================================================
-  # Unit Tests
-  # ============================================================================
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
@@ -82,7 +70,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install pnpm
+      - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 10.8.0
@@ -98,14 +86,15 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run unit tests
-        working-directory: frontend
-        run: pnpm run test:unit
+        run: pnpm --filter revolution-svelte run test:unit
 
-  # ============================================================================
-  # E2E Tests — handled by dedicated e2e.yml workflow
-  # ============================================================================
-  # Build & Deploy
-  # ============================================================================
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./frontend/coverage/lcov.info
+          flags: unit
+          name: unit-tests
+
   build:
     name: Build Application
     runs-on: ubuntu-latest
@@ -114,7 +103,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install pnpm
+      - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 10.8.0
@@ -130,8 +119,9 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build
-        working-directory: frontend
-        run: pnpm run build
+        run: pnpm --filter revolution-svelte run build
+        env:
+          VITE_ANTHROPIC_API_KEY: ${{ secrets.VITE_ANTHROPIC_API_KEY || '' }}
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -139,4 +129,82 @@ jobs:
           name: build
           path: frontend/.svelte-kit/
 
-  # Deployment is handled by deploy-cloudflare.yml (wrangler-action@v3)
+  deploy-preview:
+    name: Deploy Preview (Cloudflare Pages)
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.8.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm --filter revolution-svelte run build
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: revolution-trading-pros
+          directory: frontend/.svelte-kit/cloudflare
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy-production:
+    name: Deploy Production
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: production
+      url: https://revolutiontradingpros.com
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.8.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build production
+        run: pnpm --filter revolution-svelte run build
+        env:
+          VITE_ANTHROPIC_API_KEY: ${{ secrets.VITE_ANTHROPIC_API_KEY || '' }}
+          VITE_PUBLIC_SUPABASE_URL: ${{ secrets.VITE_PUBLIC_SUPABASE_URL || '' }}
+          VITE_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.VITE_PUBLIC_SUPABASE_ANON_KEY || '' }}
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: revolution-trading-pros
+          directory: frontend/.svelte-kit/cloudflare
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          branch: main

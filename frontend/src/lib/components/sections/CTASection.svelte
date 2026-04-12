@@ -79,22 +79,24 @@
 <section
 	bind:this={containerRef}
 	onmousemove={handleMouseMove}
-	class="cta-section"
+	class="relative py-32 3xl:py-40 5xl:py-48 px-6 3xl:px-12 5xl:px-16 6xl:px-20 bg-[#020202] overflow-hidden border-t border-white/10"
 	aria-label="Account Creation Terminal"
 >
-	<div class="cta-depth-bg">
-		<div class="cta-depth-col cta-depth-bid">
-			{#each [...marketDepth, ...marketDepth] as tick}
-				<div class="cta-tick">
+	<div
+		class="absolute inset-0 pointer-events-none opacity-[0.03] overflow-hidden flex justify-between px-10"
+	>
+		<div class="flex flex-col text-[10px] font-mono text-emerald-500 animate-scroll-up">
+			{#each [...marketDepth, ...marketDepth] as tick, i (i)}
+				<div class="flex gap-8 my-1">
 					<span>{tick.price}</span>
 					<span class="cta-tick-dim">{tick.size}</span>
 				</div>
 			{/each}
 		</div>
-		<div class="cta-depth-col cta-depth-ask">
-			{#each [...marketDepth, ...marketDepth] as tick}
-				<div class="cta-tick cta-tick-end">
-					<span class="cta-tick-dim">{tick.size}</span>
+		<div class="flex flex-col text-[10px] font-mono text-amber-600 animate-scroll-down text-right">
+			{#each [...marketDepth, ...marketDepth] as tick, i (i)}
+				<div class="flex gap-8 my-1 justify-end">
+					<span class="opacity-50">{tick.size}</span>
 					<span>{tick.price}</span>
 				</div>
 			{/each}
@@ -106,8 +108,10 @@
 		style="background: radial-gradient(800px circle at var(--x) var(--y), oklch(1 0 0 / 0.03), transparent 60%);"
 	></div>
 
-	<div class="cta-container">
-		<div class="cta-center">
+	<div
+		class="relative max-w-4xl 3xl:max-w-[1200px] 4xl:max-w-[1600px] 5xl:max-w-[2000px] 6xl:max-w-[2400px] mx-auto z-10"
+	>
+		<div class="text-center">
 			{#if isVisible}
 				<div in:heavySlide={{ delay: 0, duration: 1000 }} class="cta-status-row">
 					<span class="cta-ping-wrap">
@@ -119,12 +123,18 @@
 					</span>
 				</div>
 
-				<h2 in:heavySlide={{ delay: 100 }} class="cta-heading">
+				<h2
+					in:heavySlide={{ delay: 100 }}
+					class="text-4xl xs:text-5xl sm:text-5xl md:text-7xl 3xl:text-8xl 4xl:text-9xl 5xl:text-[10rem] font-serif text-white mb-8 tracking-tight leading-[0.95]"
+				>
 					Professional <br />
 					<span class="cta-heading-muted">Execution</span> Only.
 				</h2>
 
-				<p in:heavySlide={{ delay: 200 }} class="cta-subtext">
+				<p
+					in:heavySlide={{ delay: 200 }}
+					class="text-lg 3xl:text-xl 5xl:text-2xl text-slate-400 font-light leading-relaxed max-w-2xl 3xl:max-w-3xl 5xl:max-w-4xl mx-auto mb-16"
+				>
 					This is not a game. It is a business. Authenticate now to access institutional-grade
 					alerts, live mentorship, and proprietary indicators.
 				</p>

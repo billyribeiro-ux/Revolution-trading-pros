@@ -612,7 +612,7 @@
 
 		{#if loading}
 			<div class="loading-grid">
-				{#each [1, 2, 3, 4] as _}
+				{#each [1, 2, 3, 4] as _ (_)}
 					<div class="skeleton skeleton-card"></div>
 				{/each}
 			</div>
@@ -620,7 +620,7 @@
 			<!-- Segments Tab -->
 			{#if activeTab === 'segments'}
 				<div class="segments-grid">
-					{#each segments as segment}
+					{#each segments as segment (segment.name)}
 						<div
 							class="segment-card"
 							class:system={segment.isSystem}
@@ -645,7 +645,7 @@
 							<p class="segment-description">{segment.description}</p>
 
 							<div class="segment-conditions">
-								{#each segment.conditions as condition}
+								{#each segment.conditions as condition (condition.value)}
 									<span class="condition-tag">
 										{conditionFields.find((f) => f.value === condition.field)?.label ||
 											condition.field}
@@ -721,7 +721,7 @@
 			<!-- Tags Tab -->
 			{#if activeTab === 'tags'}
 				<div class="tags-grid">
-					{#each tags as tag}
+					{#each tags as tag (tag.id)}
 						<div class="tag-card">
 							<div class="tag-header">
 								<div class="tag-name" style="--tag-color: {tag.color}">
@@ -762,7 +762,7 @@
 			<!-- Saved Filters Tab -->
 			{#if activeTab === 'saved'}
 				<div class="filters-list">
-					{#each savedFilters as filter}
+					{#each savedFilters as filter (filter.name)}
 						<div class="filter-card">
 							<div class="filter-info">
 								<h3>{filter.name}</h3>
@@ -773,7 +773,7 @@
 							</div>
 
 							<div class="filter-pills">
-								{#each Object.entries(filter.filters) as [key, value]}
+								{#each Object.entries(filter.filters) as [key, value] (key)}
 									<span class="filter-pill">
 										{key}: {value}
 									</span>
@@ -869,10 +869,10 @@
 						<span class="match-label">Members must match ALL conditions</span>
 					</div>
 
-					{#each newSegment.conditions as condition, index}
+					{#each newSegment.conditions as condition, index (condition.value)}
 						<div class="condition-row">
 							<select bind:value={condition.field}>
-								{#each conditionFields as field}
+								{#each conditionFields as field (field.value)}
 									<option value={field.value}>
 										{#if field.value === 'total_spent'}
 											<Icon icon={IconCurrencyDollar} size={14} />
@@ -883,7 +883,7 @@
 							</select>
 
 							<select bind:value={condition.operator}>
-								{#each conditionOperators[condition.field] || [] as op}
+								{#each conditionOperators[condition.field] || [] as op (op.value)}
 									<option value={op.value}>{op.label}</option>
 								{/each}
 							</select>
@@ -961,7 +961,7 @@
 				<div class="form-group">
 					<span class="form-label">Tag Color</span>
 					<div class="color-picker">
-						{#each tagColors as color}
+						{#each tagColors as color (color)}
 							<button
 								class="color-option"
 								class:selected={newTag.color === color}

@@ -418,7 +418,8 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each filteredSubscriptions as sub}
+				<!-- key (i): items lack stable id -->
+				{#each filteredSubscriptions as sub, i (i)}
 					<tr>
 						<td class="customer-cell">
 							<div class="customer-name">{sub.customer?.name || 'Unknown'}</div>
