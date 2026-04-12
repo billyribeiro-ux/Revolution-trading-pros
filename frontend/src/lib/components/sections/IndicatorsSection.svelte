@@ -511,7 +511,7 @@
 					}}
 				>
 					{#each indicators as indicator, i (indicator.href ?? i)}
-						{@const IconComponent = indicator.icon}
+						
 						<a
 							href={indicator.href}
 							class="indicator-card is-card"
@@ -522,7 +522,7 @@
 						>
 							<div class="is-card-row">
 								<div class="is-card-icon">
-									<Icon icon={iconStr} size={24} />
+									<Icon icon={indicator.icon} size={24} />
 								</div>
 
 								<div class="is-card-content">

@@ -164,7 +164,7 @@
 		return validationErrors[field]?.[0];
 	}
 
-	const svelteComponent_1Str = $derived(previewTypeIcon);
+
 </script>
 
 <svelte:head>
@@ -472,16 +472,15 @@
 						/>
 					</div>
 				{:else}
-					{@const iconStr = previewTypeIcon}
-					<div class="preview-thumbnail placeholder">
-						<!-- svelte-ignore svelte_component_deprecated -->
-						<Icon icon={iconStr} size={48} />
+				<div class="preview-thumbnail placeholder">
+					<!-- svelte-ignore svelte_component_deprecated -->
+					<Icon icon={previewTypeIcon} size={48} />
 					</div>
 				{/if}
 
 				<div class="preview-badge" style="background: {previewTypeColor}">
 					<!-- svelte-ignore svelte_component_deprecated -->
-					<Icon icon={svelteComponent_1Str} size={14} />
+					<Icon icon={previewTypeIcon} size={14} />
 					{formData.type}
 				</div>
 
