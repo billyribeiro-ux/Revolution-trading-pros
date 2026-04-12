@@ -469,6 +469,39 @@ const serviceDefinitions: ServiceDefinition[] = [
 		is_oauth: false,
 		fields: [{ key: 'api_key', label: 'API Key', type: 'password', required: true }]
 	},
+	{
+		key: 'theta_data',
+		name: 'ThetaData',
+		category: 'Trading',
+		description: 'Options-focused market data with real-time greeks and analytics',
+		icon: 'trending-up',
+		color: '#10B981',
+		docs_url: 'https://www.thetadata.net/docs',
+		is_oauth: false,
+		fields: [{ key: 'api_key', label: 'API Key', type: 'password', required: true }]
+	},
+	{
+		key: 'yahoo_finance',
+		name: 'Yahoo Finance',
+		category: 'Trading',
+		description: 'Free stock quotes and basic options data (no API key needed)',
+		icon: 'trending-up',
+		color: '#6001D2',
+		is_oauth: false,
+		is_builtin: true,
+		fields: []
+	},
+	{
+		key: 'fred',
+		name: 'FRED (Federal Reserve)',
+		category: 'Trading',
+		description: 'Treasury yield curves and economic data for risk-free rates',
+		icon: 'trending-up',
+		color: '#1E40AF',
+		docs_url: 'https://fred.stlouisfed.org/docs/api/fred/',
+		is_oauth: false,
+		fields: [{ key: 'api_key', label: 'API Key', type: 'password', required: true }]
+	},
 
 	// Video & Media
 	{

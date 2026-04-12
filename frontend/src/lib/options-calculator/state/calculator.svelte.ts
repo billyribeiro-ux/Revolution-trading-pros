@@ -227,8 +227,20 @@ export function createCalculatorState() {
 	// ── Phase 2: Monte Carlo Methods ────────────────────
 	async function runMC() {
 		isMonteCarloRunning = true;
-		await new Promise((resolve) => setTimeout(resolve, 10));
-		monteCarloResult = runMonteCarlo(inputs, monteCarloConfig);
+		try {
+			const worker = new Worker(
+				new URL('../engine/monte-carlo.worker.ts', import.meta.url),
+				{ type: 'module' }
+			);
+			monteCarloResult = await new Promise((resolve, reject) => {
+				worker.onmessage = (e) => { resolve(e.data); worker.terminate(); };
+				worker.onerror = (e) => { reject(e); worker.terminate(); };
+				worker.postMessage({ inputs, config: monteCarloConfig });
+			});
+		} catch {
+			// Fallback to main thread if worker fails (e.g., SSR or unsupported)
+			monteCarloResult = runMonteCarlo(inputs, monteCarloConfig);
+		}
 		isMonteCarloRunning = false;
 	}
 

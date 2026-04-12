@@ -4,10 +4,13 @@
 // Single point of contact for all market data needs.
 // ============================================================
 
-import { createProviderRouter } from './provider-router.js';
+import { createProviderRouter, type ProviderRouter } from './provider-router.js';
 import { createCache, CACHE_TTL } from './cache.js';
 import { createMockAdapter } from './adapters/mock.js';
 import { createPolygonAdapter } from './adapters/polygon.js';
+import { createTradierAdapter } from './adapters/tradier.js';
+import { createThetaDataAdapter } from './adapters/theta-data.js';
+import { createYahooAdapter } from './adapters/yahoo.js';
 import { createFREDAdapter } from './adapters/fred.js';
 import { logger } from '$lib/utils/logger';
 import type {
@@ -50,24 +53,58 @@ export function createMarketDataService() {
 	const cache = createCache();
 	const mockAdapter = createMockAdapter();
 
-	const router = createProviderRouter({
-		providers: [createPolygonAdapter(), mockAdapter],
-		maxRetries: 1,
-		timeoutMs: 8000,
-		onFallback(from, to, error) {
-			logger.warn(`[MarketData] Falling back from ${from} to ${to}: ${error.message}`);
-		},
-		onAllFailed(capability, errors) {
-			logger.error(`[MarketData] All providers failed for ${capability}:`, errors);
-			lastError = `Unable to fetch ${capability}. Please try again.`;
-		}
-	});
+	// All available adapters
+	const allAdapters = {
+		polygon: createPolygonAdapter(),
+		tradier: createTradierAdapter(),
+		theta_data: createThetaDataAdapter(),
+		yahoo: createYahooAdapter(),
+		mock: mockAdapter
+	};
+
+	function buildRouter(preferredProvider?: string): ProviderRouter {
+		const preferred = preferredProvider && allAdapters[preferredProvider as keyof typeof allAdapters];
+		const providers = preferred
+			? [preferred, ...Object.values(allAdapters).filter((a) => a !== preferred)]
+			: [allAdapters.polygon, allAdapters.tradier, allAdapters.yahoo, mockAdapter];
+
+		return createProviderRouter({
+			providers,
+			maxRetries: 1,
+			timeoutMs: 8000,
+			onFallback(from, to, error) {
+				logger.warn(`[MarketData] Falling back from ${from} to ${to}: ${error.message}`);
+			},
+			onAllFailed(capability, errors) {
+				logger.error(`[MarketData] All providers failed for ${capability}:`, errors);
+				lastError = `Unable to fetch ${capability}. Please try again.`;
+			}
+		});
+	}
+
+	let router = buildRouter();
 
 	const fredRouter = createProviderRouter({
 		providers: [createFREDAdapter(), mockAdapter],
 		maxRetries: 1,
 		timeoutMs: 5000
 	});
+
+	/** Fetch admin-configured active provider and rebuild router */
+	async function refreshActiveProvider(): Promise<void> {
+		try {
+			const res = await fetch('/api/admin/options-calculator');
+			if (res.ok) {
+				const data = await res.json();
+				if (data.activeProvider) {
+					router = buildRouter(data.activeProvider);
+					logger.info(`[MarketData] Active provider set to ${data.activeProvider}`);
+				}
+			}
+		} catch (err) {
+			logger.warn('[MarketData] Could not fetch active provider config:', err);
+		}
+	}
 
 	// ── Debounce utility ─────────────────────────────────
 	let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
@@ -357,6 +394,7 @@ export function createMarketDataService() {
 		fetchEarnings,
 		fetchHistoricalVol,
 		refreshProviderStatuses,
+		refreshActiveProvider,
 		setDataMode,
 		clearData,
 		cache

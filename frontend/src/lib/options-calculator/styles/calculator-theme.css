@@ -302,3 +302,127 @@
 		gap: 8px;
 	}
 }
+
+/* ── Glassmorphism Depth Layers & Extended Tokens ─────────── */
+:root {
+	/* Glassmorphism depth layers */
+	--calc-glass-depth-1: rgba(255, 255, 255, 0.03);
+	--calc-glass-depth-2: rgba(255, 255, 255, 0.06);
+	--calc-glass-depth-3: rgba(255, 255, 255, 0.1);
+	--calc-shimmer: linear-gradient(110deg, transparent 25%, rgba(255,255,255,0.05) 37%, transparent 63%);
+
+	/* Hero section typography */
+	--calc-hero-title: clamp(2rem, 5vw + 1rem, 4.5rem);
+	--calc-hero-subtitle: clamp(1rem, 2vw + 0.5rem, 1.5rem);
+
+	/* Animation timing */
+	--calc-transition-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+	--calc-transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Extended Keyframe Animations ─────────────────────────── */
+@keyframes calc-glow-pulse {
+	0%, 100% { box-shadow: 0 0 20px var(--calc-accent-glow); }
+	50% { box-shadow: 0 0 40px var(--calc-accent-glow), 0 0 80px var(--calc-accent-glow); }
+}
+
+@keyframes calc-border-rotate {
+	from { --border-angle: 0deg; }
+	to { --border-angle: 360deg; }
+}
+
+@keyframes calc-float {
+	0%, 100% { transform: translateY(0); }
+	50% { transform: translateY(-8px); }
+}
+
+@keyframes calc-shimmer {
+	from { background-position: -200% center; }
+	to { background-position: 200% center; }
+}
+
+@keyframes calc-fade-in-up {
+	from { opacity: 0; transform: translateY(20px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes calc-scale-in {
+	from { opacity: 0; transform: scale(0.95); }
+	to { opacity: 1; transform: scale(1); }
+}
+
+/* ── Animation & Glass Utility Classes ────────────────────── */
+.calc-animate-glow { animation: calc-glow-pulse 3s ease-in-out infinite; }
+.calc-animate-float { animation: calc-float 4s ease-in-out infinite; }
+.calc-animate-shimmer {
+	background: var(--calc-shimmer);
+	background-size: 200% 100%;
+	animation: calc-shimmer 2s linear infinite;
+}
+.calc-animate-fade-in { animation: calc-fade-in-up 0.6s var(--calc-transition-smooth) forwards; }
+.calc-animate-scale-in { animation: calc-scale-in 0.4s var(--calc-transition-spring) forwards; }
+.calc-glass-depth-1 { background: var(--calc-glass-depth-1); backdrop-filter: blur(12px); }
+.calc-glass-depth-2 { background: var(--calc-glass-depth-2); backdrop-filter: blur(16px); }
+.calc-glass-depth-3 { background: var(--calc-glass-depth-3); backdrop-filter: blur(24px); }
+
+/* ── Hero Section ─────────────────────────────────────────── */
+.calc-hero {
+	position: relative;
+	min-height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+	background: linear-gradient(135deg, #0a0f1a 0%, #143e59 50%, #0d1f33 100%);
+}
+
+.calc-hero__content {
+	position: relative;
+	z-index: 10;
+	text-align: center;
+	padding: 2rem;
+	max-width: 800px;
+}
+
+.calc-hero__title {
+	font-size: var(--calc-hero-title);
+	font-weight: 800;
+	background: linear-gradient(135deg, #ffffff 0%, #f69532 50%, #6366f1 100%);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	background-clip: text;
+	line-height: 1.1;
+}
+
+.calc-hero__subtitle {
+	font-size: var(--calc-hero-subtitle);
+	color: rgba(255, 255, 255, 0.7);
+	margin-top: 1rem;
+	font-weight: 400;
+}
+
+.calc-hero__canvas {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+}
+
+.calc-hero__scroll-indicator {
+	position: absolute;
+	bottom: 2rem;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 10;
+	animation: calc-float 2s ease-in-out infinite;
+}
+
+/* ── Reduced Motion Override ──────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+	.calc-animate-glow,
+	.calc-animate-float,
+	.calc-animate-shimmer,
+	.calc-animate-fade-in,
+	.calc-animate-scale-in {
+		animation: none !important;
+	}
+}

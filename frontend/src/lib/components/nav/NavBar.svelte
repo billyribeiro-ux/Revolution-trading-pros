@@ -142,6 +142,7 @@
 			id: 'resources',
 			label: 'Resources',
 			submenu: [
+				{ href: '/tools/options-calculator', label: 'Options Calculator' },
 				{ href: '/resources/etf-stocks-list', label: 'ETF Stocks List' },
 				{ href: '/resources/stock-indexes-list', label: 'Stock Indexes List' }
 			]
