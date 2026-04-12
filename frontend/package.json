@@ -86,6 +86,7 @@
 		"isomorphic-dompurify": "^3.8.0",
 		"lightweight-charts": "^5.1.0",
 		"lottie-web": "^5.13.0",
+		"phosphor-svelte": "3.1.0",
 		"svelte-click-to-source": "workspace:*",
 		"three": "^0.183.2",
 		"tus-js-client": "^4.3.1",

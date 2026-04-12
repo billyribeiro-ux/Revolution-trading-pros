@@ -2,8 +2,8 @@
 
 # 🚨 ZERO ERRORS. ZERO WARNINGS. ZERO REGRESSIONS.
 
-## STACK (Latest Versions)
-Svelte 5.55 · SvelteKit 2.55 · Vite 7.3 · TS 5.9 strict · Axum 0.8 · PostgreSQL · Redis · GSAP 3.14 · Three.js 0.182 + @threlte/core 8.3 + @threlte/extras 9.7 · Vitest 4.x · @testing-library/svelte 5.3 · Playwright 1.58 · Valibot 1.3 · Bits UI 2.16 · better-auth 1.5 · @sentry/sveltekit 10.45 · @tiptap/core 3.22 · sveltekit-superforms 2.29 · LayerChart 1.0 · pnpm
+## STACK (Latest Versions — verified April 12, 2026)
+Svelte 5.55 · SvelteKit 2.57 · Vite 8.0 (Rolldown) · TS 6.0 strict · Axum 0.8 · PostgreSQL · Redis · GSAP 3.14 · Three.js 0.183 + @threlte/core 8.5 + @threlte/extras 9.14 · Vitest 4.1 · @testing-library/svelte 5.3 · Playwright 1.59 · Valibot 1.3 · Bits UI 2.17 · better-auth 1.6 · @tiptap/core 3.22 · sveltekit-superforms 2.30 · LayerChart 1.0 · pnpm
 
 ## PE7 CSS (NON-NEGOTIABLE)
 - OKLCH only — no hex/hsl/rgb
@@ -125,13 +125,13 @@ LayerChart (D3-based) · D3 direct when needed · @tanstack/svelte-table · @tan
 `svelte-meta-tags` (OG, Twitter, JSON-LD) · `super-sitemap` · Unique title + description + canonical per page · JSON-LD for articles/products/breadcrumbs · No duplicate `<head>` ownership
 
 ## FORMS
-`sveltekit-superforms` 2.29 (existing) · Remote Functions `form()` (new) · `formsnap` (a11y) · Valibot schemas shared frontend/backend
+`sveltekit-superforms` 2.30 (existing) · Remote Functions `form()` (new) · `formsnap` (a11y) · Valibot schemas shared frontend/backend
 
 ## AUTH & SECURITY
-`better-auth` 1.5 · `altcha` (CAPTCHA) · No secrets in client · No direct DB from client · Validate all input · Rate-limit mutations (governor/tower_governor) · Log failures w/ request IDs · Patch advisories
+`better-auth` 1.6 · `altcha` (CAPTCHA) · No secrets in client · No direct DB from client · Validate all input · Rate-limit mutations (governor/tower_governor) · Log failures w/ request IDs · Patch advisories
 
 ## MONITORING
-`@sentry/sveltekit` 10.45 · SvelteKit 2.31+ observability for auto-instrumented spans · Core Web Vitals tracking
+SvelteKit 2.31+ observability for auto-instrumented spans · Core Web Vitals tracking
 
 ## BACKEND (RUST/AXUM 0.8)
 Axum 0.8 (native async traits, `{param}` syntax) · Tokio · SQLx 0.8 (`sqlx::query!` compile-time checked) · PostgreSQL · Redis · Tower + tower-http · governor + tower_governor · tracing + tracing-subscriber · serde/serde_json · jsonwebtoken · argon2 · utoipa + utoipa-swagger-ui · tokio-cron-scheduler · reqwest · rust_decimal · uuid + chrono · sqlx-cli · axum-test · Docker (20-50mb images)
@@ -150,13 +150,16 @@ ALL must pass. Task is INCOMPLETE until green.
 Output: 1) Changed files + reasons 2) Gate evidence (check/lint/build/test) 3) Regression risk 4) Boundary decision (Remote vs API) 5) CSS compliance (PE7) 6) Status: `COMPLETE` or `INCOMPLETE`
 
 ## PLATFORM NOTES (April 2026)
-1. Svelte 5.55 — {@attach} 5.29, createContext 5.40, hydratable/await/fork 5.36-5.42, writable $derived 5.25, $props.id() 5.20, server error boundaries kit 2.54, type-narrowed params kit 2.55
-2. Axum 0.8 stable (Mar 2026) — Rust 2024 edition, 0.9 in dev
-3. GSAP 3.14 — 100% free including all plugins
-4. TipTap 3.22 — MIT, 10 Pro extensions open-sourced
-5. 5 Svelte CVEs patched Jan 2026 — keep updated
-6. svelte.config.js supports functions for options (5.54+)
-7. Svelte MCP via `sv` CLI + OpenCode
+1. Svelte 5.55 — {@attach} 5.29, createContext 5.40, hydratable/await/fork 5.36-5.42, writable $derived 5.25, $props.id() 5.20, server error boundaries kit 2.54, type-narrowed params kit 2.55, isValidationError kit 2.57
+2. Vite 8.0 stable (Mar 12, 2026) — Rolldown replaces esbuild/Rollup, Rust 2024 edition toolchain
+3. TypeScript 6.0 stable (Mar 23, 2026) — last JS-based compiler, bridge to Go-based TS 7.0; ES5 target dropped, default `types` array is now empty (add `"types": ["*"]` to restore old behavior)
+4. Axum 0.8 stable (Mar 2026) — Rust 2024 edition, 0.9 in dev
+5. GSAP 3.14 — 100% free including all plugins
+6. TipTap 3.22 — MIT, 10 Pro extensions open-sourced
+7. 5 Svelte CVEs patched Jan 2026 — keep updated
+8. svelte.config.js supports functions for options (5.54+)
+9. Svelte MCP via `sv` CLI + OpenCode
+10. better-auth is now an official addon in Svelte CLI (sv@0.12.0)
 
 ## CHECKLIST
 - [ ] Svelte 5 runes only
@@ -168,7 +171,6 @@ Output: 1) Changed files + reasons 2) Gate evidence (check/lint/build/test) 3) R
 - [ ] Images: alt, title, loading strategy
 - [ ] No duplicate `<head>` ownership
 - [ ] Sitemap updated for new routes
-- [ ] Sentry verified for new routes
 - [ ] createContext for shared state (not stores)
 - [ ] {@attach} where appropriate
 - [ ] check/lint/build/test green
