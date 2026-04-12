@@ -403,10 +403,9 @@
 
 			<div class="sector-grid">
 				{#each sectorETFs as sector, i (sector.sector)}
-					{@const Icon = sector.icon}
 					<div class="sector-card" in:fly={{ y: 20, delay: 50 * i, duration: 400 }}>
 						<div class="sector-card__icon bg-linear-to-br {sector.color}">
-							<Icon icon={iconStr} size={28} />
+							<Icon icon={sector.icon} size={28} />
 						</div>
 						<h3 class="sector-card__title">{sector.sector}</h3>
 						<div class="sector-card__etfs">

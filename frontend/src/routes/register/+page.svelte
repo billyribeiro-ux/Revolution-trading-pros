@@ -19,7 +19,6 @@
 		IconUser,
 		IconUserPlus
 	} from '$lib/icons';
-	import { browser } from '$app/environment';
 	import { domRef } from '$lib/svelte/domAttachment';
 
 	// Svelte 5 state runes

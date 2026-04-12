@@ -19,7 +19,7 @@
 		color?: 'blue' | 'green' | 'purple' | 'amber';
 	}
 
-	let { title, value, icon: Icon, trend = '', trendUp = true, color = 'blue' }: Props = $props();
+	let { title, value, icon, trend = '', trendUp = true, color = 'blue' }: Props = $props();
 </script>
 
 <div class="stat-card">
@@ -35,7 +35,7 @@
 			{/if}
 		</div>
 		<div class="stat-icon {color}">
-			<Icon icon={iconStr} size={24} />
+			<Icon {icon} size={24} />
 		</div>
 	</div>
 </div>
