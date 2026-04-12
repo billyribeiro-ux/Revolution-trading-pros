@@ -33,7 +33,11 @@
 		// Detect mobile for fallback
 		isMobile = window.innerWidth < 768 || /Mobi|Android/i.test(navigator.userAgent);
 
+		// Respect reduced motion preference
+		const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 		let scrollTriggerRef: typeof import('gsap/ScrollTrigger').ScrollTrigger | null = null;
+		const tweens: any[] = [];
 
 		(async () => {
 		const gsap = (await import('gsap')).default;
@@ -41,11 +45,19 @@
 		gsap.registerPlugin(ScrollTrigger);
 		scrollTriggerRef = ScrollTrigger;
 
+		if (prefersReducedMotion) {
+			// Show everything instantly without animation
+			if (titleEl) gsap.set(titleEl.querySelectorAll('.hero-word'), { opacity: 1, y: 0, rotateX: 0 });
+			if (subtitleEl) gsap.set(subtitleEl, { opacity: 1, y: 0 });
+			if (featuresEl) gsap.set(featuresEl.querySelectorAll('.hero-feature'), { opacity: 1, y: 0, scale: 1 });
+			if (ctaEl) gsap.set(ctaEl, { opacity: 1, y: 0 });
+			if (scrollIndicatorEl) gsap.set(scrollIndicatorEl, { opacity: 1 });
+		} else {
 		// --- Title stagger animation (word by word) ---
 		if (titleEl) {
 			const words = titleEl.querySelectorAll('.hero-word');
 			gsap.set(words, { opacity: 0, y: 30, rotateX: -40 });
-			gsap.to(words, {
+			tweens.push(gsap.to(words, {
 				opacity: 1,
 				y: 0,
 				rotateX: 0,
@@ -53,26 +65,26 @@
 				stagger: 0.1,
 				ease: 'power3.out',
 				delay: 0.3
-			});
+			}));
 		}
 
 		// --- Subtitle fade in after title ---
 		if (subtitleEl) {
 			gsap.set(subtitleEl, { opacity: 0, y: 20 });
-			gsap.to(subtitleEl, {
+			tweens.push(gsap.to(subtitleEl, {
 				opacity: 1,
 				y: 0,
 				duration: 0.8,
 				ease: 'power2.out',
 				delay: 1.1
-			});
+			}));
 		}
 
 		// --- Feature pills stagger ---
 		if (featuresEl) {
 			const items = featuresEl.querySelectorAll('.hero-feature');
 			gsap.set(items, { opacity: 0, y: 20, scale: 0.9 });
-			gsap.to(items, {
+			tweens.push(gsap.to(items, {
 				opacity: 1,
 				y: 0,
 				scale: 1,
@@ -80,37 +92,37 @@
 				stagger: 0.12,
 				ease: 'back.out(1.4)',
 				delay: 1.5
-			});
+			}));
 		}
 
 		// --- CTA button entrance ---
 		if (ctaEl) {
 			gsap.set(ctaEl, { opacity: 0, y: 15 });
-			gsap.to(ctaEl, {
+			tweens.push(gsap.to(ctaEl, {
 				opacity: 1,
 				y: 0,
 				duration: 0.6,
 				ease: 'power2.out',
 				delay: 2.1
-			});
+			}));
 		}
 
 		// --- Scroll indicator bounce ---
 		if (scrollIndicatorEl) {
 			gsap.set(scrollIndicatorEl, { opacity: 0 });
-			gsap.to(scrollIndicatorEl, {
+			tweens.push(gsap.to(scrollIndicatorEl, {
 				opacity: 1,
 				duration: 0.5,
 				delay: 2.5
-			});
-			gsap.to(scrollIndicatorEl, {
+			}));
+			tweens.push(gsap.to(scrollIndicatorEl, {
 				y: 8,
 				duration: 1.2,
 				ease: 'power1.inOut',
 				yoyo: true,
 				repeat: -1,
 				delay: 2.8
-			});
+			}));
 		}
 
 		// --- ScrollTrigger: fade out hero with parallax on scroll ---
@@ -129,6 +141,7 @@
 				}
 			});
 		}
+		} // end if (!prefersReducedMotion)
 
 		// --- Lazy load 3D background or 2D particle fallback ---
 		try {
@@ -147,6 +160,7 @@
 		})();
 
 		return () => {
+			tweens.forEach((t: any) => t.kill());
 			scrollTriggerRef?.getAll().forEach((t: any) => t.kill());
 		};
 	});

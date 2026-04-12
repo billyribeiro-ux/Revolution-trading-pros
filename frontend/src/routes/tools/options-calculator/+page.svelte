@@ -36,23 +36,8 @@
 			calculatorVisible = true;
 		}, 300);
 
-		// Refresh active provider from admin config
-		try {
-			const { createMarketDataService } = await import(
-				'$lib/options-calculator/data/market-data-service.svelte.js'
-			);
-			// The service refreshes on creation in the Calculator component
-		} catch {
-			// Non-critical
-		}
 	});
 
-	function scrollToCalculator() {
-		const el = document.getElementById('calculator');
-		if (el) {
-			el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-		}
-	}
 </script>
 
 <svelte:head>

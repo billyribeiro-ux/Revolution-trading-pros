@@ -93,7 +93,7 @@
 
 	$effect(() => {
 		void calc.activeTab;
-		updateSlider();
+		if (gsapLib) updateSlider();
 	});
 </script>
 

@@ -12,7 +12,11 @@ interface WorkerMessage {
 }
 
 self.onmessage = (event: MessageEvent<WorkerMessage>) => {
-	const { inputs, config } = event.data;
-	const result = runMonteCarlo(inputs, config);
-	self.postMessage(result);
+	try {
+		const { inputs, config } = event.data;
+		const result = runMonteCarlo(inputs, config);
+		self.postMessage(result);
+	} catch (err) {
+		self.postMessage({ error: err instanceof Error ? err.message : String(err) });
+	}
 };

@@ -28,6 +28,8 @@
 	let displayText = $state('');
 	let prevValue: number | null = $state(null);
 	let flashClass = $state('');
+	let flashTimeout: ReturnType<typeof setTimeout> | undefined;
+	let activeTween: gsap.core.Tween | undefined;
 
 	let colorClass = $derived(
 		colorize ? (value > 0.0001 ? 'text-call' : value < -0.0001 ? 'text-put' : '') : ''
@@ -53,10 +55,10 @@
 		// Direction change flash
 		if (prevValue !== null && targetVal !== prevValue) {
 			flashClass = targetVal > prevValue ? 'flash-up' : 'flash-down';
-			const timeout = setTimeout(() => {
+			clearTimeout(flashTimeout);
+			flashTimeout = setTimeout(() => {
 				flashClass = '';
 			}, 500);
-			// cleanup handled by next effect run
 		}
 		prevValue = targetVal;
 
@@ -66,7 +68,8 @@
 			return;
 		}
 
-		gsap.to(tweenObj, {
+		activeTween?.kill();
+		activeTween = gsap.to(tweenObj, {
 			val: targetVal,
 			duration: dur,
 			ease: 'power2.out',
@@ -74,6 +77,11 @@
 				displayText = `${pfx}${tweenObj.val.toFixed(dec)}${sfx}`;
 			}
 		});
+
+		return () => {
+			clearTimeout(flashTimeout);
+			activeTween?.kill();
+		};
 	});
 </script>
 

@@ -24,10 +24,12 @@
 
 	let cardEl: HTMLDivElement | undefined = $state();
 	let gsapInstance: typeof import('gsap').default | undefined;
+	let entranceTween: gsap.core.Tween | undefined;
 
 	$effect(() => {
 		if (animate && cardEl) {
-			cardEntrance(cardEl, delay);
+			entranceTween?.kill();
+			entranceTween = cardEntrance(cardEl, delay);
 		}
 	});
 
@@ -60,12 +62,14 @@
 	}
 
 	// --- GSAP glow pulse on mount ---
+	let glowTween: gsap.core.Tween | undefined;
+
 	onMount(() => {
 		if (!browser) return;
 		(async () => {
 			gsapInstance = (await import('gsap')).default;
 			if (glow !== 'none' && cardEl && gsapInstance) {
-				gsapInstance.to(cardEl, {
+				glowTween = gsapInstance.to(cardEl, {
 					boxShadow:
 						glow === 'call'
 							? '0 0 30px rgba(34,197,94,0.25), 0 0 60px rgba(34,197,94,0.10)'
@@ -79,6 +83,11 @@
 				});
 			}
 		})();
+
+		return () => {
+			glowTween?.kill();
+			entranceTween?.kill();
+		};
 	});
 </script>
 

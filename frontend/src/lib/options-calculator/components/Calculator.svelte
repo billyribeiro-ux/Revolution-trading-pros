@@ -71,7 +71,7 @@
 	}
 
 	// --- GSAP ScrollTrigger stagger entrance + scroll progress indicator ---
-	onMount(async () => {
+	onMount(() => {
 		if (!browser) return;
 
 		// Fetch admin-configured active provider
@@ -79,6 +79,9 @@
 		const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 		if (prefersReducedMotion) return;
 
+		const scrollTriggers: globalThis.ScrollTrigger[] = [];
+
+		(async () => {
 		const gsap = (await import('gsap')).default;
 		const { ScrollTrigger } = await import('gsap/ScrollTrigger');
 		gsap.registerPlugin(ScrollTrigger);
@@ -88,7 +91,7 @@
 		if (sections?.length) {
 			gsap.set(sections, { opacity: 0, y: 30 });
 			sections.forEach((section, i) => {
-				gsap.to(section, {
+				const tween = gsap.to(section, {
 					opacity: 1,
 					y: 0,
 					duration: 0.7,
@@ -100,12 +103,14 @@
 						toggleActions: 'play none none none'
 					}
 				});
+				const st = tween.scrollTrigger;
+				if (st) scrollTriggers.push(st);
 			});
 		}
 
 		// Scroll progress bar
 		if (progressBarEl && calculatorEl) {
-			gsap.to(progressBarEl, {
+			const tween = gsap.to(progressBarEl, {
 				scaleX: 1,
 				ease: 'none',
 				scrollTrigger: {
@@ -115,7 +120,14 @@
 					scrub: true
 				}
 			});
+			const st = tween.scrollTrigger;
+			if (st) scrollTriggers.push(st);
 		}
+		})();
+
+		return () => {
+			scrollTriggers.forEach((st) => st.kill());
+		};
 	});
 
 	// --- Micro-interaction: ripple coordinate tracking ---

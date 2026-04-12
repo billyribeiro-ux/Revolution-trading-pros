@@ -64,6 +64,7 @@
 			history = [...history.slice(-(10 - 1)), v];
 			// GSAP spring bounce
 			if (prevValue !== null && gsapInstance && metricEl) {
+				gsapInstance.killTweensOf(metricEl);
 				gsapInstance.fromTo(
 					metricEl,
 					{ scale: 1 },

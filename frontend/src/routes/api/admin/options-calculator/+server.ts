@@ -38,7 +38,19 @@ export function setActiveProvider(provider: ActiveProvider): void {
 	};
 }
 
-export const GET: RequestHandler = async () => {
+export const GET: RequestHandler = async ({ locals }) => {
+	const user = (locals as any).user;
+	const isAdmin = user && ['admin', 'super-admin', 'developer'].includes(user.role);
+
+	// Non-admin: return only the active provider name (non-sensitive)
+	if (!isAdmin) {
+		return json({
+			success: true,
+			activeProvider: calculatorConfig.activeProvider
+		});
+	}
+
+	// Admin: return full provider statuses including configuration info
 	const providerStatuses = Object.entries(PROVIDER_META).map(([key, meta]) => {
 		const hasKey = meta.requiresKey ? !!(env as Record<string, string | undefined>)[meta.envKey] : true;
 		return {
@@ -58,7 +70,13 @@ export const GET: RequestHandler = async () => {
 	});
 };
 
-export const PUT: RequestHandler = async ({ request }) => {
+export const PUT: RequestHandler = async ({ request, locals }) => {
+	// Auth check: require authenticated user with admin/developer role
+	const user = (locals as any).user;
+	if (!user || !['admin', 'super-admin', 'developer'].includes(user.role)) {
+		return error(401, 'Unauthorized: admin access required');
+	}
+
 	const body = await request.json();
 	const { active_provider } = body;
 

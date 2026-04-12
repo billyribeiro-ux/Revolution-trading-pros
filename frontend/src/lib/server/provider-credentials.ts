@@ -5,17 +5,20 @@ import {
 } from '../../routes/api/admin/options-calculator/+server';
 
 interface ProviderCredentials {
-	provider: ActiveProvider;
+	provider: ActiveProvider | 'fred';
 	apiKey: string;
 	isConfigured: boolean;
 }
 
-const ENV_KEY_MAP: Record<ActiveProvider, string> = {
+const ENV_KEY_MAP: Record<string, string> = {
 	polygon: 'POLYGON_API_KEY',
 	tradier: 'TRADIER_ACCESS_TOKEN',
 	theta_data: 'THETA_DATA_API_KEY',
-	yahoo: ''
+	yahoo: '',
+	fred: 'FRED_API_KEY'
 };
+
+const VALID_PROVIDERS = new Set(Object.keys(ENV_KEY_MAP));
 
 /**
  * Resolve the active market data provider and its credentials.
@@ -26,7 +29,10 @@ const ENV_KEY_MAP: Record<ActiveProvider, string> = {
  * 3. Falls back to environment variables for the API key
  */
 export function resolveProviderCredentials(providerOverride?: string): ProviderCredentials {
-	const provider = (providerOverride as ActiveProvider) || getActiveProvider();
+	// Validate provider override is a known provider
+	const provider = (providerOverride && VALID_PROVIDERS.has(providerOverride))
+		? providerOverride
+		: getActiveProvider();
 
 	if (provider === 'yahoo') {
 		return { provider, apiKey: '', isConfigured: true };
@@ -36,7 +42,7 @@ export function resolveProviderCredentials(providerOverride?: string): ProviderC
 	const apiKey = envKey ? ((env as Record<string, string | undefined>)[envKey] ?? '') : '';
 
 	return {
-		provider,
+		provider: provider as ActiveProvider | 'fred',
 		apiKey,
 		isConfigured: !!apiKey
 	};
