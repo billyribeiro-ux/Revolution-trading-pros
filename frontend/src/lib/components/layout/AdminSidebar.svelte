@@ -67,6 +67,7 @@
 				{ icon: IconTrendingUp, label: 'Indicators', href: '/admin/indicators' },
 				{ icon: IconChartBar, label: 'Trading Rooms', href: '/admin/trading-rooms' },
 				{ icon: IconFileText, label: 'Resources', href: '/admin/resources' },
+				{ icon: IconChartBar, label: 'Market Data', href: '/admin/settings/market-data' },
 				{ icon: IconTag, label: 'Categories', href: '/admin/blog/categories' },
 				{ icon: IconPhoto, label: 'Media Library', href: '/admin/media' },
 				{ icon: IconVideo, label: 'Videos', href: '/admin/videos' },

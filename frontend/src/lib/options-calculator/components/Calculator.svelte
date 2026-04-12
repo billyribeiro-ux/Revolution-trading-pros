@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { createCalculatorState } from '../state/calculator.svelte.js';
 	import { createMarketDataService } from '../data/market-data-service.svelte.js';
 	import InputPanel from './InputPanel.svelte';
@@ -27,6 +29,7 @@
 	import KeyboardShortcuts from './power-user/KeyboardShortcuts.svelte';
 	import CTABanner from './growth/CTABanner.svelte';
 	import LeadCaptureModal from './growth/LeadCaptureModal.svelte';
+	import LazySection from '$lib/components/LazySection.svelte';
 	import { Calculator as CalculatorIcon, Lightning as Zap, FolderOpen } from 'phosphor-svelte';
 	import type { MarketSnapshot } from '../data/types.js';
 
@@ -35,6 +38,7 @@
 
 	let exportCSVRef: ExportCSV | undefined = $state();
 	let calculatorEl: HTMLDivElement | undefined = $state();
+	let progressBarEl: HTMLDivElement | undefined = $state();
 
 	function handleSnapshot(snapshot: MarketSnapshot) {
 		calc.applyMarketSnapshot(snapshot);
@@ -44,6 +48,17 @@
 		const t = calc.theme;
 		if (typeof document !== 'undefined') {
 			document.documentElement.setAttribute('data-calc-theme', t);
+			// Subtle flash transition on theme change
+			if (browser && calculatorEl) {
+				import('gsap').then(({ default: gsap }) => {
+					if (!calculatorEl) return;
+					gsap.fromTo(
+						calculatorEl,
+						{ opacity: 0.85 },
+						{ opacity: 1, duration: 0.4, ease: 'power2.out' }
+					);
+				});
+			}
 		}
 	});
 
@@ -54,9 +69,70 @@
 	function handleSavedConfigsRefresh(): void {
 		// Placeholder for any refresh logic after saving
 	}
+
+	// --- GSAP ScrollTrigger stagger entrance + scroll progress indicator ---
+	onMount(async () => {
+		if (!browser) return;
+
+		// Fetch admin-configured active provider
+		marketData.refreshActiveProvider();
+		const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		if (prefersReducedMotion) return;
+
+		const gsap = (await import('gsap')).default;
+		const { ScrollTrigger } = await import('gsap/ScrollTrigger');
+		gsap.registerPlugin(ScrollTrigger);
+
+		// Stagger entrance for all GlassCard sections
+		const sections = calculatorEl?.querySelectorAll('.glass-card');
+		if (sections?.length) {
+			gsap.set(sections, { opacity: 0, y: 30 });
+			sections.forEach((section, i) => {
+				gsap.to(section, {
+					opacity: 1,
+					y: 0,
+					duration: 0.7,
+					delay: i * 0.12,
+					ease: 'power2.out',
+					scrollTrigger: {
+						trigger: section,
+						start: 'top 85%',
+						toggleActions: 'play none none none'
+					}
+				});
+			});
+		}
+
+		// Scroll progress bar
+		if (progressBarEl && calculatorEl) {
+			gsap.to(progressBarEl, {
+				scaleX: 1,
+				ease: 'none',
+				scrollTrigger: {
+					trigger: calculatorEl,
+					start: 'top top',
+					end: 'bottom bottom',
+					scrub: true
+				}
+			});
+		}
+	});
+
+	// --- Micro-interaction: ripple coordinate tracking ---
+	function handleRippleMove(e: PointerEvent) {
+		const target = e.currentTarget as HTMLElement;
+		const rect = target.getBoundingClientRect();
+		const x = ((e.clientX - rect.left) / rect.width) * 100;
+		const y = ((e.clientY - rect.top) / rect.height) * 100;
+		target.style.setProperty('--ripple-x', `${x}%`);
+		target.style.setProperty('--ripple-y', `${y}%`);
+	}
 </script>
 
-<div class="calc-layout">
+<div class="calc-layout" bind:this={calculatorEl}>
+	<!-- Scroll progress indicator -->
+	<div class="calc-scroll-progress col-span-full" bind:this={progressBarEl}></div>
+
 	<!-- Header -->
 	<div class="col-span-full flex items-center justify-between px-1">
 		<div class="flex items-center gap-3">
@@ -91,14 +167,16 @@
 			<div class="flex rounded-lg overflow-hidden" style="border: 1px solid var(--calc-border);">
 				<button
 					onclick={() => (calc.calculatorMode = 'single')}
-					class="text-[10px] font-medium px-2.5 py-1 transition-colors cursor-pointer"
+					onpointermove={handleRippleMove}
+					class="calc-ripple text-[10px] font-medium px-2.5 py-1 transition-colors cursor-pointer"
 					style={calc.calculatorMode === 'single'
 						? 'background: var(--calc-accent-glow); color: var(--calc-accent);'
 						: 'color: var(--calc-text-muted);'}>Single</button
 				>
 				<button
 					onclick={() => (calc.calculatorMode = 'strategy')}
-					class="text-[10px] font-medium px-2.5 py-1 transition-colors cursor-pointer"
+					onpointermove={handleRippleMove}
+					class="calc-ripple text-[10px] font-medium px-2.5 py-1 transition-colors cursor-pointer"
 					style={calc.calculatorMode === 'strategy'
 						? 'background: var(--calc-accent-glow); color: var(--calc-accent);'
 						: 'color: var(--calc-text-muted);'}>Strategy</button
@@ -108,7 +186,8 @@
 			<!-- Scenario Toggle -->
 			<button
 				onclick={() => (calc.isScenarioPanelOpen = !calc.isScenarioPanelOpen)}
-				class="flex items-center gap-1 text-[10px] font-medium px-2 py-1 rounded-lg transition-colors cursor-pointer"
+				onpointermove={handleRippleMove}
+				class="calc-ripple flex items-center gap-1 text-[10px] font-medium px-2 py-1 rounded-lg transition-colors cursor-pointer"
 				style={calc.isScenarioPanelOpen
 					? 'background: var(--calc-warning); color: white;'
 					: 'background: var(--calc-surface); color: var(--calc-text-muted); border: 1px solid var(--calc-border);'}
@@ -205,14 +284,18 @@
 		{/if}
 
 		<!-- Visualizations -->
-		<GlassCard animate={true} delay={0.4}>
-			<VisualizationTabs {calc} {marketData} />
-		</GlassCard>
+		<LazySection rootMargin="300px">
+			<GlassCard animate={true} delay={0.4}>
+				<VisualizationTabs {calc} {marketData} />
+			</GlassCard>
+		</LazySection>
 
 		<!-- Time Machine -->
-		<GlassCard animate={true} delay={0.45}>
-			<TimeMachine {calc} />
-		</GlassCard>
+		<LazySection rootMargin="300px">
+			<GlassCard animate={true} delay={0.45}>
+				<TimeMachine {calc} />
+			</GlassCard>
+		</LazySection>
 
 		<!-- Phase 4: CTA Banner -->
 		<CTABanner />
@@ -230,3 +313,39 @@
 <SaveConfigModal {calc} onSaved={handleSavedConfigsRefresh} />
 <SavedConfigs {calc} />
 <LeadCaptureModal />
+
+<style>
+	/* Scroll progress indicator */
+	.calc-scroll-progress {
+		position: sticky;
+		top: 0;
+		height: 3px;
+		background: var(--calc-accent);
+		z-index: 50;
+		transform-origin: left;
+		transform: scaleX(0);
+		border-radius: 0 2px 2px 0;
+	}
+
+	/* Micro-interaction: button hover ripple */
+	:global(.calc-ripple) {
+		position: relative;
+		overflow: hidden;
+	}
+	:global(.calc-ripple)::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: radial-gradient(
+			circle at var(--ripple-x, 50%) var(--ripple-y, 50%),
+			rgba(255, 255, 255, 0.15) 0%,
+			transparent 60%
+		);
+		opacity: 0;
+		transition: opacity 0.3s;
+		pointer-events: none;
+	}
+	:global(.calc-ripple):hover::after {
+		opacity: 1;
+	}
+</style>

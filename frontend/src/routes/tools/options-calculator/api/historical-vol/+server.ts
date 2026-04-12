@@ -1,18 +1,19 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { env } from '$env/dynamic/private';
+import { resolveProviderCredentials } from '$lib/server/provider-credentials';
 
 export const GET: RequestHandler = async ({ url }) => {
 	const ticker = url.searchParams.get('ticker');
-	const provider = url.searchParams.get('provider') ?? 'polygon';
+	const providerParam = url.searchParams.get('provider');
 	const type = url.searchParams.get('type') ?? 'vol';
 
 	if (!ticker) {
 		return error(400, 'Missing ticker parameter');
 	}
 
+	const { provider, apiKey } = resolveProviderCredentials(providerParam ?? undefined);
+
 	if (provider === 'polygon') {
-		const apiKey = env.POLYGON_API_KEY;
 		if (!apiKey) return error(401, 'Polygon API key not configured');
 
 		try {

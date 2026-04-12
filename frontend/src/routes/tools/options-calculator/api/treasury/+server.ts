@@ -1,6 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { env } from '$env/dynamic/private';
+import { resolveProviderCredentials } from '$lib/server/provider-credentials';
 
 const FRED_SERIES: Record<string, string> = {
 	rate1M: 'DGS1MO',
@@ -12,56 +12,53 @@ const FRED_SERIES: Record<string, string> = {
 };
 
 export const GET: RequestHandler = async ({ url }) => {
-	const provider = url.searchParams.get('provider') ?? 'fred';
 	const healthcheck = url.searchParams.get('healthcheck');
 
-	if (provider === 'fred') {
-		const apiKey = env.FRED_API_KEY;
-		if (!apiKey) return error(401, 'FRED API key not configured');
+	// Treasury data always uses FRED
+	const { apiKey } = resolveProviderCredentials('fred');
 
-		if (healthcheck) return json({ ok: true });
+	if (!apiKey) return error(401, 'FRED API key not configured');
 
-		try {
-			const results: Record<string, number> = {};
-			let latestDate = '';
+	if (healthcheck) return json({ ok: true });
 
-			const fetches = Object.entries(FRED_SERIES).map(async ([key, seriesId]) => {
-				const response = await fetch(
-					`https://api.stlouisfed.org/fred/series/observations?series_id=${seriesId}&api_key=${apiKey}&file_type=json&sort_order=desc&limit=5`
-				);
+	try {
+		const results: Record<string, number> = {};
+		let latestDate = '';
 
-				if (!response.ok) return;
+		const fetches = Object.entries(FRED_SERIES).map(async ([key, seriesId]) => {
+			const response = await fetch(
+				`https://api.stlouisfed.org/fred/series/observations?series_id=${seriesId}&api_key=${apiKey}&file_type=json&sort_order=desc&limit=5`
+			);
 
-				const data = await response.json();
-				const observations = data.observations ?? [];
+			if (!response.ok) return;
 
-				for (const obs of observations) {
-					if (obs.value !== '.') {
-						results[key] = parseFloat(obs.value) / 100;
-						if (!latestDate || obs.date > latestDate) {
-							latestDate = obs.date;
-						}
-						break;
+			const data = await response.json();
+			const observations = data.observations ?? [];
+
+			for (const obs of observations) {
+				if (obs.value !== '.') {
+					results[key] = parseFloat(obs.value) / 100;
+					if (!latestDate || obs.date > latestDate) {
+						latestDate = obs.date;
 					}
+					break;
 				}
-			});
+			}
+		});
 
-			await Promise.all(fetches);
+		await Promise.all(fetches);
 
-			return json({
-				rate1M: results.rate1M ?? 0.043,
-				rate3M: results.rate3M ?? 0.043,
-				rate6M: results.rate6M ?? 0.042,
-				rate1Y: results.rate1Y ?? 0.04,
-				rate2Y: results.rate2Y ?? 0.039,
-				rate10Y: results.rate10Y ?? 0.04,
-				date: latestDate || new Date().toISOString().split('T')[0],
-				source: 'fred'
-			});
-		} catch (err) {
-			return error(502, `FRED request failed: ${err instanceof Error ? err.message : 'Unknown'}`);
-		}
+		return json({
+			rate1M: results.rate1M ?? 0.043,
+			rate3M: results.rate3M ?? 0.043,
+			rate6M: results.rate6M ?? 0.042,
+			rate1Y: results.rate1Y ?? 0.04,
+			rate2Y: results.rate2Y ?? 0.039,
+			rate10Y: results.rate10Y ?? 0.04,
+			date: latestDate || new Date().toISOString().split('T')[0],
+			source: 'fred'
+		});
+	} catch (err) {
+		return error(502, `FRED request failed: ${err instanceof Error ? err.message : 'Unknown'}`);
 	}
-
-	return error(400, `Unsupported provider: ${provider}`);
 };

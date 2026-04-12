@@ -35,7 +35,18 @@ export default defineConfig({
 	},
 	build: {
 		target: 'es2022',
-		chunkSizeWarningLimit: 500
+		chunkSizeWarningLimit: 500,
+		rollupOptions: {
+			output: {
+				manualChunks(id) {
+					if (id.includes('three') || id.includes('@threlte')) return 'vendor-three';
+					if (id.includes('d3-') || id.includes('d3/')) return 'vendor-d3';
+					if (id.includes('gsap')) return 'vendor-gsap';
+					if (id.includes('options-calculator/engine')) return 'options-engine';
+					return undefined;
+				}
+			}
+		}
 	},
 	optimizeDeps: {
 		exclude: [

@@ -3,6 +3,7 @@
 	import MetricCard from './ui/MetricCard.svelte';
 	import gsap from 'gsap';
 	import type { CalculatorState } from '../state/calculator.svelte.js';
+	import type { Component } from 'svelte';
 
 	interface Props {
 		calc: CalculatorState;
@@ -11,6 +12,14 @@
 	let { calc }: Props = $props();
 
 	let expandEl: HTMLDivElement | undefined = $state();
+	let is3DView = $state(false);
+	let GreeksOrbit3D: Component<{ delta: number; gamma: number; theta: number; vega: number; rho: number }> | null = $state(null);
+
+	$effect(() => {
+		if (is3DView && !GreeksOrbit3D) {
+			import('./charts/GreeksOrbit3D.svelte').then((m) => (GreeksOrbit3D = m.default));
+		}
+	});
 
 	$effect(() => {
 		const show = calc.showAdvancedGreeks;
@@ -60,19 +69,42 @@
 		>
 			First-Order Greeks
 		</h3>
+		<button
+			onclick={() => (is3DView = !is3DView)}
+			class="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider rounded-md px-2 py-1 transition-colors cursor-pointer"
+			style="background: var(--calc-surface); border: 1px solid var(--calc-border); color: var(--calc-text-muted);"
+		>
+			<span style:opacity={is3DView ? '0.5' : '1'}>2D</span>
+			<span style="opacity: 0.3;">|</span>
+			<span style:opacity={is3DView ? '1' : '0.5'}>3D</span>
+		</button>
 	</div>
 
-	<div class="grid grid-cols-5 gap-2">
-		{#each FIRST_ORDER as greek (greek.key)}
-			<MetricCard
-				label={greek.label}
-				value={calc.currentGreeks.first[greek.key]}
-				decimals={greek.decimals}
-				tooltip={greek.desc}
-				colorize
-			/>
-		{/each}
-	</div>
+	{#if is3DView && GreeksOrbit3D}
+		<GreeksOrbit3D
+			delta={calc.currentGreeks.first.delta}
+			gamma={calc.currentGreeks.first.gamma}
+			theta={calc.currentGreeks.first.theta}
+			vega={calc.currentGreeks.first.vega}
+			rho={calc.currentGreeks.first.rho}
+		/>
+	{:else if is3DView && !GreeksOrbit3D}
+		<div class="flex items-center justify-center h-[300px] text-sm opacity-50" style="color: var(--calc-text-muted);">
+			Loading 3D view...
+		</div>
+	{:else}
+		<div class="grid grid-cols-5 gap-2">
+			{#each FIRST_ORDER as greek (greek.key)}
+				<MetricCard
+					label={greek.label}
+					value={calc.currentGreeks.first[greek.key]}
+					decimals={greek.decimals}
+					tooltip={greek.desc}
+					colorize
+				/>
+			{/each}
+		</div>
+	{/if}
 
 	<!-- Toggle Advanced -->
 	<button
