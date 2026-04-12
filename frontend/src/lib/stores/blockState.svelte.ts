@@ -3,7 +3,7 @@
  * Centralized state for all block types with proper cleanup and reactivity
  */
 
-import { getContext, setContext } from 'svelte';
+import { createContext } from 'svelte';
 
 // Types
 export type BlockId = string & { readonly __brand: 'BlockId' };
@@ -444,22 +444,10 @@ export class BlockStateManager {
 	}
 }
 
-// Context API
-const BLOCK_STATE_KEY = Symbol('BLOCK_STATE_MANAGER');
+// Context API — Svelte 5.40+ createContext (replaces set/getContext)
+const [getBlockStateManager, setBlockStateManager] = createContext<BlockStateManager>();
 
-export function setBlockStateManager(manager: BlockStateManager): void {
-	setContext(BLOCK_STATE_KEY, manager);
-}
-
-export function getBlockStateManager(): BlockStateManager {
-	const manager = getContext<BlockStateManager | undefined>(BLOCK_STATE_KEY);
-	if (!manager) {
-		throw new Error(
-			'BlockStateManager not found in context. Did you forget to call setBlockStateManager?'
-		);
-	}
-	return manager;
-}
+export { getBlockStateManager, setBlockStateManager };
 
 // Utility Functions
 export function createBlockId(id: string): BlockId {

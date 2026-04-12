@@ -4,8 +4,9 @@
 	 * CoursesSection - Apple/Netflix Cinematic Design
 	 * Upgraded with ICT9+ Layout, Motion, and Interaction Physics
 	 */
-	import { onMount, tick } from 'svelte';
+	import { tick } from 'svelte';
 	import { browser } from '$app/environment';
+	import { MediaQuery } from 'svelte/reactivity';
 	import { cubicOut } from 'svelte/easing';
 	import {
 		Icon,
@@ -128,7 +129,7 @@
 	// ICT11+ Fix: Start false, set true in onMount to trigger in: transitions
 	let isVisible = $state(false);
 	let scrollTriggerInstance: any = null;
-	let prefersReducedMotion = $state(false);
+	const prefersReducedMotion = new MediaQuery('(prefers-reduced-motion: reduce)');
 
 	// Mouse Tracking for Spotlight Effect
 	let mouseX = $state(0);
@@ -137,34 +138,33 @@
 	// ============================================================================
 	// LIFECYCLE
 	// ============================================================================
-	onMount(() => {
-		if (!browser) return;
-
-		// Check for reduced motion preference
-		prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-		// Trigger entrance animations when section scrolls into viewport
-		queueMicrotask(() => {
-			if (sectionRef) {
-				const visibilityObserver = new IntersectionObserver(
-					(entries) => {
-						if (entries[0]?.isIntersecting) {
-							isVisible = true;
-							visibilityObserver.disconnect();
-						}
-					},
-					{ threshold: 0.1, rootMargin: '50px' }
-				);
-				visibilityObserver.observe(sectionRef);
-			} else {
-				isVisible = true;
-			}
-		});
-
-		// Load GSAP asynchronously
-		if (!prefersReducedMotion) {
-			loadGSAP();
+	// Trigger entrance animations when section scrolls into viewport
+	$effect(() => {
+		if (!browser || !sectionRef) {
+			isVisible = true;
+			return;
 		}
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				if (entries[0]?.isIntersecting) {
+					isVisible = true;
+					observer.disconnect();
+				}
+			},
+			{ threshold: 0.1, rootMargin: '50px' }
+		);
+
+		observer.observe(sectionRef);
+
+		return () => observer.disconnect();
+	});
+
+	// Load GSAP asynchronously + scoped cleanup
+	$effect(() => {
+		if (!browser || prefersReducedMotion.current) return;
+
+		loadGSAP();
 
 		return () => {
 			// ICT11+ Fix: Kill only ScrollTriggers scoped to this component

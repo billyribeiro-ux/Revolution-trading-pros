@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
 	import {
@@ -107,30 +106,25 @@
 	}
 
 	// Trigger entrance animations when section scrolls into viewport
-	onMount(() => {
-		if (!browser) {
+	$effect(() => {
+		if (!browser || !containerRef) {
 			isVisible = true;
 			return;
 		}
 
-		queueMicrotask(() => {
-			if (!containerRef) {
-				isVisible = true;
-				return;
-			}
+		const observer = new IntersectionObserver(
+			(entries) => {
+				if (entries[0]?.isIntersecting) {
+					isVisible = true;
+					observer.disconnect();
+				}
+			},
+			{ threshold: 0.1, rootMargin: '50px' }
+		);
 
-			const visibilityObserver = new IntersectionObserver(
-				(entries) => {
-					if (entries[0]?.isIntersecting) {
-						isVisible = true;
-						visibilityObserver.disconnect();
-					}
-				},
-				{ threshold: 0.1, rootMargin: '50px' }
-			);
+		observer.observe(containerRef);
 
-			visibilityObserver.observe(containerRef);
-		});
+		return () => observer.disconnect();
 	});
 
 	// Ticker Tape Data

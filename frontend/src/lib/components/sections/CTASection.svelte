@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
 	import {
@@ -37,34 +36,25 @@
 	}
 
 	// Trigger entrance animations when section scrolls into viewport
-	let observer: IntersectionObserver | null = null;
-
-	onMount(() => {
-		if (!browser) {
+	$effect(() => {
+		if (!browser || !containerRef) {
 			isVisible = true;
 			return;
 		}
 
-		queueMicrotask(() => {
-			if (!containerRef) {
-				isVisible = true;
-				return;
-			}
+		const observer = new IntersectionObserver(
+			(entries) => {
+				if (entries[0]?.isIntersecting) {
+					isVisible = true;
+					observer.disconnect();
+				}
+			},
+			{ threshold: 0.1, rootMargin: '50px' }
+		);
 
-			observer = new IntersectionObserver(
-				(entries) => {
-					if (entries[0]?.isIntersecting) {
-						isVisible = true;
-						observer?.disconnect();
-					}
-				},
-				{ threshold: 0.1, rootMargin: '50px' }
-			);
+		observer.observe(containerRef);
 
-			observer.observe(containerRef);
-		});
-
-		return () => observer?.disconnect();
+		return () => observer.disconnect();
 	});
 
 	// Mock data for the background "Depth of Market" animation

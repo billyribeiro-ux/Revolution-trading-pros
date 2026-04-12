@@ -12,8 +12,10 @@
 	 * ✓ Reduced motion support
 	 * ══════════════════════════════════════════════════════════════════════════════
 	 */
-	import { onMount, onDestroy, tick } from 'svelte';
+	import { tick } from 'svelte';
 	import { cubicOut, backOut } from 'svelte/easing';
+	import { browser } from '$app/environment';
+	import { MediaQuery } from 'svelte/reactivity';
 	import {
 		Icon,
 		IconActivity,
@@ -85,7 +87,7 @@
 	let animationFrame: number;
 	let chartCtx: CanvasRenderingContext2D | null = null;
 	let canvasRef = $state<HTMLCanvasElement | null>(null);
-	let prefersReducedMotion = $state(false);
+	const prefersReducedMotion = new MediaQuery('(prefers-reduced-motion: reduce)');
 
 	// Chart animation state
 	let chartProgress = $state(0);
@@ -214,30 +216,33 @@
 	let rotationInterval: ReturnType<typeof setInterval> | null = null;
 	let resizeObserver: ResizeObserver | null = null;
 
-	onMount(() => {
-		// Check for reduced motion preference
-		prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+	// Trigger entrance animations when section scrolls into viewport
+	$effect(() => {
+		if (!browser || !sectionRef) {
+			isVisible = true;
+			return;
+		}
 
-		// Trigger entrance animations when section scrolls into viewport
-		queueMicrotask(() => {
-			if (sectionRef) {
-				const visibilityObserver = new IntersectionObserver(
-					(entries) => {
-						if (entries[0]?.isIntersecting) {
-							isVisible = true;
-							visibilityObserver.disconnect();
-						}
-					},
-					{ threshold: 0.1, rootMargin: '50px' }
-				);
-				visibilityObserver.observe(sectionRef);
-			} else {
-				isVisible = true;
-			}
-		});
+		const observer = new IntersectionObserver(
+			(entries) => {
+				if (entries[0]?.isIntersecting) {
+					isVisible = true;
+					observer.disconnect();
+				}
+			},
+			{ threshold: 0.1, rootMargin: '50px' }
+		);
 
-		// Load GSAP asynchronously
-		if (!prefersReducedMotion) {
+		observer.observe(sectionRef);
+
+		return () => observer.disconnect();
+	});
+
+	// Load GSAP asynchronously + auto-rotate indicators
+	$effect(() => {
+		if (!browser) return;
+
+		if (!prefersReducedMotion.current) {
 			loadGSAP();
 		}
 
@@ -360,16 +365,19 @@
 		}
 	}
 
-	onDestroy(() => {
-		if (animationFrame) cancelAnimationFrame(animationFrame);
-		// Kill only ScrollTriggers associated with this section
-		if (scrollTriggerInstance && sectionRef) {
-			scrollTriggerInstance.getAll().forEach((st: any) => {
-				if (st.trigger === sectionRef || sectionRef?.contains(st.trigger)) {
-					st.kill();
-				}
-			});
-		}
+	// Cleanup animation frame and ScrollTriggers
+	$effect(() => {
+		return () => {
+			if (animationFrame) cancelAnimationFrame(animationFrame);
+			// Kill only ScrollTriggers associated with this section
+			if (scrollTriggerInstance && sectionRef) {
+				scrollTriggerInstance.getAll().forEach((st: any) => {
+					if (st.trigger === sectionRef || sectionRef?.contains(st.trigger)) {
+						st.kill();
+					}
+				});
+			}
+		};
 	});
 
 	// ============================================================================

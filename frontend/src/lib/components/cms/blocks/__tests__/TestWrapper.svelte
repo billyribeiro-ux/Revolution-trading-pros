@@ -17,13 +17,8 @@
 
 	let { children, stateManager }: Props = $props();
 
-	// Use provided stateManager or create a default one
-	let resolvedStateManager = $derived(stateManager ?? new BlockStateManager());
-
-	// Set the context reactively when the stateManager changes
-	$effect(() => {
-		setBlockStateManager(resolvedStateManager);
-	});
+	// Set context during component init (createContext pattern)
+	setBlockStateManager(stateManager ?? new BlockStateManager());
 </script>
 
 {@render children()}

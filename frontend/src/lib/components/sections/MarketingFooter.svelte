@@ -16,7 +16,6 @@
 	 * @version 2.0.0 - Svelte 5 Runes + MentorshipSection Pattern
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 */
-	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
 	import {
@@ -46,37 +45,28 @@
 	}
 
 	// --- Intersection Observer for Viewport Detection ---
-	let observer: IntersectionObserver | null = null;
-
-	onMount(() => {
-		// Ensures correct year even if the page is prerendered at build time.
-		currentYear = new Date().getFullYear();
-
-		if (!browser) {
+	$effect(() => {
+		if (!browser || !containerRef) {
 			isVisible = true;
 			return;
 		}
 
-		queueMicrotask(() => {
-			if (!containerRef) {
-				isVisible = true;
-				return;
-			}
+		// Ensures correct year even if the page is prerendered at build time.
+		currentYear = new Date().getFullYear();
 
-			observer = new IntersectionObserver(
-				(entries) => {
-					if (entries[0]?.isIntersecting) {
-						isVisible = true;
-						observer?.disconnect();
-					}
-				},
-				{ threshold: 0.1, rootMargin: '50px' }
-			);
+		const observer = new IntersectionObserver(
+			(entries) => {
+				if (entries[0]?.isIntersecting) {
+					isVisible = true;
+					observer.disconnect();
+				}
+			},
+			{ threshold: 0.1, rootMargin: '50px' }
+		);
 
-			observer.observe(containerRef);
-		});
+		observer.observe(containerRef);
 
-		return () => observer?.disconnect();
+		return () => observer.disconnect();
 	});
 
 	const footerLinks = {

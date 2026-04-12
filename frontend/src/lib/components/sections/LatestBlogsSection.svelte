@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { cubicOut } from 'svelte/easing';
+	import { browser } from '$app/environment';
 	import type { Post } from '$lib/types/post';
 	import { Icon, IconArrowRight, IconChartCandle, IconClock, IconNews } from '$lib/icons';
 
@@ -18,7 +18,7 @@
 	let wirePosts = $derived(posts.length > 1 ? posts.slice(1, 4) : []);
 
 	// --- Animation Logic ---
-	let containerRef: HTMLElement;
+	let containerRef = $state<HTMLElement | null>(null);
 	// ICT11+ Fix: Start false, set true via IntersectionObserver to trigger in: transitions
 	let isVisible = $state(false);
 	let mouse = $state({ x: 0, y: 0 });
@@ -30,33 +30,26 @@
 		mouse.y = e.clientY - rect.top;
 	};
 
-	onMount(() => {
-		// Use queueMicrotask to ensure binding is complete
-		queueMicrotask(() => {
-			if (!containerRef) {
-				isVisible = true; // Fallback: show content
-				return;
-			}
+	// Trigger entrance animations when section scrolls into viewport
+	$effect(() => {
+		if (!browser || !containerRef) {
+			isVisible = true;
+			return;
+		}
 
-			// Check if already in viewport
-			const rect = containerRef.getBoundingClientRect();
-			const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-			if (rect.top < viewportHeight + 200) {
-				isVisible = true;
-				return;
-			}
+		const observer = new IntersectionObserver(
+			(entries) => {
+				if (entries[0]?.isIntersecting) {
+					isVisible = true;
+					observer.disconnect();
+				}
+			},
+			{ threshold: 0.1, rootMargin: '200px' }
+		);
 
-			const visibilityObserver = new IntersectionObserver(
-				(entries) => {
-					if (entries[0]?.isIntersecting) {
-						isVisible = true;
-						visibilityObserver.disconnect();
-					}
-				},
-				{ threshold: 0.1 }
-			);
-			visibilityObserver.observe(containerRef);
-		});
+		observer.observe(containerRef);
+
+		return () => observer.disconnect();
 	});
 
 	function heavySlide(_node: Element, { delay = 0, duration = 1000 }) {

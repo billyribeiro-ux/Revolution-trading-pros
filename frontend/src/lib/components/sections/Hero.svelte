@@ -12,7 +12,7 @@
 	 * - Premium button interactions
 	 * ══════════════════════════════════════════════════════════════════════════════
 	 */
-	import { onMount, onDestroy, tick } from 'svelte';
+	import { tick } from 'svelte';
 	import { browser } from '$app/environment';
 
 	// ============================================================================
@@ -684,63 +684,62 @@
 	// ============================================================================
 	// LIFECYCLE
 	// ============================================================================
-	onMount(async () => {
-		if (!browser) return;
+	// Main initialization $effect — runs once heroSection is bound
+	$effect(() => {
+		if (!browser || !heroSection) return;
 
 		currentSlide = 0;
 		previousSlide = -1;
 
-		// Wait for DOM bindings to be ready
-		await tick();
-
-		if (heroSection && typeof ResizeObserver !== 'undefined') {
+		// Setup resize observer
+		if (typeof ResizeObserver !== 'undefined') {
 			resizeObserver = new ResizeObserver(handleResize);
 			resizeObserver.observe(heroSection);
 		}
 
-		if (heroSection) {
-			setupVisibilityObserver();
-		}
+		// Setup visibility observer
+		setupVisibilityObserver();
 
-		if (chartContainer && heroSection) {
-			// ICT 7: Await the async function to properly handle any rejections
+		// Init chart + GSAP asynchronously
+		(async () => {
+			if (chartContainer && heroSection) {
+				try {
+					await initChart();
+				} catch {
+					// Chart initialization failed - continue without chart
+				}
+			}
+
 			try {
-				await initChart();
-			} catch {
-				// Chart initialization failed - continue without chart
+				const gsapModule = await import('gsap');
+				gsapLib = gsapModule?.gsap || gsapModule?.default || null;
+				if (gsapLib) {
+					gsapLoaded = true;
+					await tick();
+					animateSlideIn(currentSlide);
+				}
+			} catch (e) {
+				logger.warn('GSAP failed to load:', e);
 			}
-		}
-
-		try {
-			const gsapModule = await import('gsap');
-			gsapLib = gsapModule?.gsap || gsapModule?.default || null;
-			if (gsapLib) {
-				gsapLoaded = true;
-				// Wait another tick to ensure slide elements are in DOM
-				await tick();
-				animateSlideIn(currentSlide);
-			}
-		} catch (e) {
-			logger.warn('GSAP failed to load:', e);
-		}
+		})();
 
 		// Start slide rotation
 		slideInterval = setInterval(nextSlide, 7000);
 		startProgressTimer();
-	});
 
-	onDestroy(() => {
-		if (slideInterval) clearInterval(slideInterval);
-		if (replayInterval) clearInterval(replayInterval);
-		if (progressInterval) clearInterval(progressInterval);
-		if (timeline) timeline.kill();
-		if (chart) chart.remove();
-		if (resizeObserver) resizeObserver.disconnect();
-		if (visibilityObserver) visibilityObserver.disconnect();
+		return () => {
+			if (slideInterval) clearInterval(slideInterval);
+			if (replayInterval) clearInterval(replayInterval);
+			if (progressInterval) clearInterval(progressInterval);
+			if (timeline) timeline.kill();
+			if (chart) chart.remove();
+			if (resizeObserver) resizeObserver.disconnect();
+			if (visibilityObserver) visibilityObserver.disconnect();
 
-		chart = null;
-		series = null;
-		timeline = null;
+			chart = null;
+			series = null;
+			timeline = null;
+		};
 	});
 </script>
 
