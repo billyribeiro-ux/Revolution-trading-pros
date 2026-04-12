@@ -11,6 +11,7 @@
 -->
 <script lang="ts">
 	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
+	import { Icon, IconChevronRight } from '$lib/icons';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();

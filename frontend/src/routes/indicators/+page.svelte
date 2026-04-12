@@ -319,14 +319,13 @@
 
 			<div class="setup-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 				{#each goldenSetup as item (item.value)}
-					{@const Icon = item.icon}
 					<div
 						class="setup-item bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 hover:border-blue-500/30 transition-all duration-300 group"
 					>
 						<div
 							class="setup-icon-wrapper mb-4 w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center group-hover:scale-110 transition-transform"
 						>
-							<Icon icon={iconStr} size={24} class="text-blue-400" />
+							<Icon icon={item.icon} size={24} class="text-blue-400" />
 						</div>
 						<h3 class="text-slate-400 text-sm font-medium uppercase tracking-wide mb-2">
 							{item.title}
@@ -458,7 +457,6 @@
 		<div class="section-container">
 			<div class="indicators-grid">
 				{#each filteredIndicators as indicator, index (indicator.slug)}
-					{@const Icon = indicator.icon}
 					<article
 						class="indicator-card group relative"
 						class:visible={cardsVisible[index]}
@@ -479,7 +477,7 @@
 							<div
 								class="card-icon relative z-10 transform transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3"
 							>
-								<Icon icon={iconStr} size={48} stroke={1.5} />
+								<Icon icon={indicator.icon} size={48} stroke={1.5} />
 							</div>
 							<div class="card-category shadow-lg">{indicator.category}</div>
 						</div>

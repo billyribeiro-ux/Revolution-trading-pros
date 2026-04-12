@@ -153,7 +153,6 @@
 			style="--x: {mouse.x}px; --y: {mouse.y}px;"
 		>
 			{#each signals as item, i (item.title ?? i)}
-				{@const IconComponent = item.icon}
 				{#if isVisible}
 					<div in:heavySlide={{ delay: 300 + i * 150 }} class="as-card" data-accent={item.accent}>
 						<div
@@ -254,7 +253,7 @@
 							<div class="as-card-top">
 								<div class="as-card-info">
 									<div class="as-icon-box">
-										<Icon icon={iconStr} size={20} />
+										<Icon icon={item.icon} size={20} />
 									</div>
 									<div>
 										<h3 class="as-card-title">{item.title}</h3>

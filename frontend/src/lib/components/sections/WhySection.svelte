@@ -136,7 +136,6 @@
 			style="--x: {mouse.x}px; --y: {mouse.y}px;"
 		>
 			{#each features as feature, i (feature.title ?? i)}
-				{@const IconComponent = feature.icon}
 				{#if isVisible}
 					<div
 						in:heavySlide={{ delay: 300 + i * 150 }}
@@ -173,7 +172,7 @@
 
 						<div class="ws-icon-wrap">
 							<div class="ws-icon-box">
-								<Icon icon={iconStr} size={28} stroke={1.5} />
+								<Icon icon={feature.icon} size={28} stroke={1.5} />
 							</div>
 							<div class="ws-icon-line"></div>
 						</div>

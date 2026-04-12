@@ -210,13 +210,12 @@
 		<div class="filter-bar">
 			<div class="type-filter">
 				{#each productTypes as type (type.value)}
-					{@const Icon = type.icon}
 					<button
 						class="type-btn"
 						class:active={selectedType === type.value}
 						onclick={() => (selectedType = type.value)}
 					>
-						<Icon icon={iconStr} size={18} />
+						<Icon icon={type.icon} size={18} />
 						{type.label}
 						{#if type.value !== 'all' && productCountByType[type.value]}
 							<span class="count-badge">{productCountByType[type.value]}</span>

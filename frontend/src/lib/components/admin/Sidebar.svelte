@@ -93,7 +93,6 @@
 	<!-- Navigation -->
 	<nav class="sidebar-nav">
 		{#each navigation as item (item.href ?? item.label)}
-			{@const IconComponent = item.icon}
 			<div class="nav-group">
 				<a
 					href={item.href}
@@ -101,7 +100,7 @@
 					class:active={isActive(item.href)}
 					onclick={handleNavClick}
 				>
-					<Icon icon={iconStr} size={20} />
+					<Icon icon={item.icon} size={20} />
 					<span class="nav-label">{item.label}</span>
 				</a>
 

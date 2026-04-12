@@ -45,9 +45,8 @@
 
 <div class="stat-card">
 	{#if icon}
-		{@const IconComponent = icon}
 		<div class="stat-icon {iconColors[iconColor]}">
-			<Icon icon={iconStr} size={24} />
+			<Icon {icon} size={24} />
 		</div>
 	{/if}
 

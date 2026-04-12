@@ -31,12 +31,12 @@
 	};
 
 	let currentSize = $derived(size);
-	let Icon = $derived(icon ?? IconInbox);
+	let resolvedIcon = $derived(icon ?? IconInbox);
 </script>
 
 <div class="empty-state size-{currentSize}" style="padding: {sizes[currentSize].padding}">
 	<div class="empty-icon">
-		<Icon icon={iconStr} size={sizes[currentSize].icon} />
+		<Icon icon={resolvedIcon} size={sizes[currentSize].icon} />
 	</div>
 
 	<h3 class="empty-title">{title ?? 'No data found'}</h3>

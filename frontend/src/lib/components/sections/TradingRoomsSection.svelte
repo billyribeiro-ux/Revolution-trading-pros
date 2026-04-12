@@ -151,7 +151,6 @@
 			class="grid md:grid-cols-3 gap-px 3xl:gap-1 bg-zinc-800 border border-zinc-800 rounded-lg overflow-hidden shadow-2xl shadow-black/50"
 		>
 			{#each products as item, i (item.title ?? i)}
-				{@const IconComponent = item.icon}
 				{#if isVisible}
 					<div in:heavySlide={{ delay: 300 + i * 100 }} class="tr-card" data-accent={item.accent}>
 						{#if item.type === 'candles'}
@@ -342,7 +341,7 @@
 
 						<div class="tr-card-top">
 							<div class="tr-icon-box">
-								<Icon icon={iconStr} size={24} stroke={1.25} />
+								<Icon icon={item.icon} size={24} stroke={1.25} />
 							</div>
 							<span class="tr-label-badge">{item.label}</span>
 						</div>

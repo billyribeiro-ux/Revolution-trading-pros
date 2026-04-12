@@ -564,7 +564,6 @@
 				class="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-6xl 3xl:max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto"
 			>
 				{#each courses as course (course.id)}
-					{@const Icon = course.icon}
 					{@const colors = course.colorClasses}
 					<div
 						class="spotlight-card group relative h-full bg-black border border-white/10 rounded-3xl overflow-hidden hover:border-white/20 transition-colors duration-500"
@@ -581,7 +580,7 @@
 						>
 							<div class="flex justify-between items-start mb-8">
 								<div class={`p-3 rounded-2xl ${colors.bg} ${colors.border} border ${colors.text}`}>
-									<Icon icon={iconStr} size={32} stroke={1.5} />
+									<Icon icon={course.icon} size={32} stroke={1.5} />
 								</div>
 								<span
 									class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-white/5 border border-white/10 text-slate-300"

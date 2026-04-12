@@ -9,15 +9,6 @@
 
 <script lang="ts">
 	import { logger } from '$lib/utils/logger';
-	import {
-		IconPlayerPlay,
-		IconPlayerPause,
-		IconVolume,
-		IconVolumeOff,
-		IconWaveSine,
-		IconAlertCircle,
-		IconUpload
-	} from '$lib/icons';
 	import { useMediaControls } from '../hooks/useMediaControls.svelte';
 	import { sanitizeURL, validateFile } from '$lib/utils/sanitization';
 	import type { Block, BlockContent } from '../types';

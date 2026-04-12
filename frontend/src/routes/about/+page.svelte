@@ -426,19 +426,18 @@
 					<div
 						class="lg:w-1/3 grid grid-cols-2 gap-px bg-white/10 border border-white/10 backdrop-blur-md shadow-2xl rounded-sm overflow-hidden"
 					>
-						{#each stats as stat (stat.value)}
-							{@const Icon = stat.icon}
+					{#each stats as stat (stat.value)}
+						<div
+							class="bg-[#050505]/90 p-6 group hover:bg-[#0A0A0A] transition-colors relative overflow-hidden interactive-card"
+						>
 							<div
-								class="bg-[#050505]/90 p-6 group hover:bg-[#0A0A0A] transition-colors relative overflow-hidden interactive-card"
-							>
-								<div
-									class="absolute top-0 left-0 w-full h-[2px] bg-linear-to-r from-transparent via-amber-500 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"
-								></div>
+								class="absolute top-0 left-0 w-full h-[2px] bg-linear-to-r from-transparent via-amber-500 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"
+							></div>
 
-								<div
-									class="text-amber-600 mb-3 opacity-60 group-hover:opacity-100 transition-opacity group-hover:scale-110 duration-300 origin-left"
-								>
-									<Icon icon={iconStr} size={24} stroke={1.5} />
+							<div
+								class="text-amber-600 mb-3 opacity-60 group-hover:opacity-100 transition-opacity group-hover:scale-110 duration-300 origin-left"
+							>
+								<Icon icon={stat.icon} size={24} stroke={1.5} />
 								</div>
 								<div
 									class="text-3xl font-serif text-white mb-1 tabular-nums tracking-tight group-hover:text-amber-500 transition-colors"
@@ -589,21 +588,20 @@
 
 					<div class="grid md:grid-cols-3 gap-6">
 						{#each features as feat, i (feat.title)}
-							{@const Icon = feat.icon}
 							<div
 								class="group interactive-card bg-[#050505] border border-white/10 p-6 sm:p-10 hover:border-amber-600/40 transition-all duration-500 relative overflow-hidden flex flex-col h-full rounded-xl"
 							>
 								<div
 									class="absolute -top-6 -right-6 text-white opacity-[0.02] group-hover:opacity-[0.05] transition-all duration-700 pointer-events-none transform group-hover:scale-110 group-hover:-rotate-12"
 								>
-									<Icon icon={iconStr} size={200} />
+									<Icon icon={feat.icon} size={200} />
 								</div>
 
 								<div class="flex justify-between items-start mb-8 relative z-10">
 									<div
 										class="p-4 bg-white/5 border border-white/5 text-amber-600 group-hover:bg-amber-600 group-hover:text-black transition-all duration-300 rounded-lg shadow-lg group-hover:shadow-amber-600/20"
 									>
-										<Icon icon={iconStr} size={28} stroke={1.5} />
+										<Icon icon={feat.icon} size={28} stroke={1.5} />
 									</div>
 									<span class="font-mono text-[10px] text-slate-700">0{i + 1}</span>
 								</div>

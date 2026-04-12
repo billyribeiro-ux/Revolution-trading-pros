@@ -221,10 +221,10 @@
 			<p class="section-description">Select what you want to import</p>
 
 			<div class="type-grid">
-				{#each importTypes as { type, name, icon: Icon, description } (type)}
+				{#each importTypes as { type, name, icon, description } (type)}
 					<a href="/admin/crm/import-export/import/{type}" class="type-card">
 						<div class="type-icon">
-							<Icon icon={iconStr} size={24} />
+							<Icon {icon} size={24} />
 						</div>
 						<div class="type-info">
 							<h3>{name}</h3>
@@ -292,10 +292,10 @@
 			<p class="section-description">Select what you want to export</p>
 
 			<div class="type-grid">
-				{#each exportTypes as { type, name, icon: Icon, description } (type)}
+				{#each exportTypes as { type, name, icon, description } (type)}
 					<button class="type-card" onclick={() => startExport(type)}>
 						<div class="type-icon">
-							<Icon icon={iconStr} size={24} />
+							<Icon {icon} size={24} />
 						</div>
 						<div class="type-info">
 							<h3>{name}</h3>

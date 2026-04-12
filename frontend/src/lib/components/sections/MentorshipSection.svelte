@@ -142,7 +142,6 @@
 			style="--x: {mouse.x}px; --y: {mouse.y}px;"
 		>
 			{#each features as feature, i (feature.title ?? i)}
-				{@const IconComponent = feature.icon}
 				{#if isVisible}
 					<div in:heavySlide={{ delay: 300 + i * 150 }} class="ms-card">
 						<div
@@ -175,7 +174,7 @@
 
 						<div class="ms-card-top">
 							<div class="ms-icon-box">
-								<Icon icon={iconStr} size={24} stroke={1.5} />
+								<Icon icon={feature.icon} size={24} stroke={1.5} />
 							</div>
 							<span class="ms-card-id">{feature.id}</span>
 						</div>

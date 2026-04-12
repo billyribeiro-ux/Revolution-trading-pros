@@ -9,7 +9,7 @@
 	 * @svelte5 Fully compliant with Svelte 5 Nov/Dec 2025 best practices
 	 */
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
-	import { IconSearch } from '$lib/icons';
+	import { Icon, IconSearch } from '$lib/icons';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();

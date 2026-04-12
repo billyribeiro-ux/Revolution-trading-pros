@@ -149,7 +149,6 @@
 
 					<div class="social-links" aria-label="Social links">
 						{#each socialLinks as social (social.label)}
-							{@const IconComponent = social.icon}
 							<a
 								href={social.href}
 								target="_blank"
@@ -158,7 +157,7 @@
 								aria-label={social.label}
 								title={social.label}
 							>
-								<Icon icon={iconStr} size={20} />
+								<Icon icon={social.icon} size={20} />
 							</a>
 						{/each}
 					</div>

@@ -63,10 +63,9 @@
 	<div class="insights-list">
 		{#if insights.length > 0}
 			{#each insights as insight (insight.id)}
-				{@const Icon = getIcon(insight.type)}
-				<div class="insight-card {getSeverityClass(insight.severity)}">
+					<div class="insight-card {getSeverityClass(insight.severity)}">
 					<div class="insight-icon">
-						<Icon icon={iconStr} size={20} />
+						<Icon icon={getIcon(insight.type)} size={20} />
 					</div>
 
 					<div class="insight-content">

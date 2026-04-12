@@ -101,6 +101,7 @@
 	import { authStore, isAuthenticated, user } from '$lib/stores/auth.svelte';
 	import { getCartItemCount } from '$lib/stores/cart.svelte';
 	import { logout as logoutApi } from '$lib/api/auth';
+	import { Icon, IconChevronDown, IconShoppingCart, IconMenu2, IconX } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DEFAULT CONFIGURATION (Must be before Props destructuring)

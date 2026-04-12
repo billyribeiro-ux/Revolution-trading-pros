@@ -135,14 +135,13 @@
 				<div class="nav-section-title">{section.title}</div>
 			{/if}
 			{#each section.items as item (item.href)}
-				{@const Icon = item.icon}
 				<a
 					href={item.href}
 					class="nav-item"
 					class:active={currentPath === item.href}
 					onclick={closeSidebar}
 				>
-					<Icon icon={iconStr} size={20} />
+					<Icon icon={item.icon} size={20} />
 					<span>{item.label}</span>
 				</a>
 			{/each}

@@ -204,7 +204,6 @@
 					<label>Product Type *</label>
 					<div class="type-selector">
 						{#each productTypes as type (type.value)}
-							{@const Icon = type.icon}
 							<button
 								type="button"
 								class="type-option"
@@ -212,7 +211,7 @@
 								onclick={() => (formData.type = type.value)}
 								style="--type-color: {type.color}"
 							>
-								<Icon icon={iconStr} size={24} />
+								<Icon icon={type.icon} size={24} />
 								<span>{type.label}</span>
 							</button>
 						{/each}
