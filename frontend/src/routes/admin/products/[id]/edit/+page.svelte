@@ -320,7 +320,7 @@
 			</div>
 		{/if}
 
-	<div class="content-grid">
+		<div class="content-grid">
 			<!-- Main Form -->
 			<div class="form-section">
 				<div class="form-card">
@@ -604,9 +604,9 @@
 							/>
 						</div>
 					{:else}
-				<div class="preview-thumbnail placeholder">
-					<!-- svelte-ignore svelte_component_deprecated -->
-					<Icon icon={previewTypeIcon} size={48} />
+						<div class="preview-thumbnail placeholder">
+							<!-- svelte-ignore svelte_component_deprecated -->
+							<Icon icon={previewTypeIcon} size={48} />
 						</div>
 					{/if}
 

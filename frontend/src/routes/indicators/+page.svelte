@@ -6,25 +6,7 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 
-	// Icons (only those used directly in template)
-	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
-	import IconTarget from '@tabler/icons-svelte-runes/icons/target';
-	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
-	import IconStar from '@tabler/icons-svelte-runes/icons/star';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
-	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
-	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
-	import IconSchool from '@tabler/icons-svelte-runes/icons/school';
-	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
-	// Data & types extracted for maintainability
-	import {
-		indicators,
-		goldenSetup,
-		faqs,
-		categories,
-		indicatorsSchema as _indicatorsSchema
-	} from './data';
+	// Icons (Iconify string constants via $lib/icons)
 	import {
 		Icon,
 		IconAlertTriangle,
@@ -38,6 +20,15 @@
 		IconTarget,
 		IconUsers
 	} from '$lib/icons';
+
+	// Data & types extracted for maintainability
+	import {
+		indicators,
+		goldenSetup,
+		faqs,
+		categories,
+		indicatorsSchema as _indicatorsSchema
+	} from './data';
 
 	// --- State Management (Svelte 5 Runes) ---
 	let heroVisible = $state(false);

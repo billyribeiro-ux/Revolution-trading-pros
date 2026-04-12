@@ -68,6 +68,22 @@
 		if (percent >= 30) return 'fair';
 		return 'low';
 	}
+
+	// Get color class for savings percentage text
+	function getSavingsColor(percent: number): string {
+		if (percent >= 70) return 'text-emerald-500';
+		if (percent >= 50) return 'text-green-500';
+		if (percent >= 30) return 'text-yellow-500';
+		return 'text-orange-500';
+	}
+
+	// Get stroke color class for the ring SVG
+	function getRingColor(percent: number): string {
+		if (percent >= 70) return 'stroke-emerald-500';
+		if (percent >= 50) return 'stroke-green-500';
+		if (percent >= 30) return 'stroke-yellow-500';
+		return 'stroke-orange-500';
+	}
 </script>
 
 {#if compact}

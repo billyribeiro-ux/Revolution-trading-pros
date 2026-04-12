@@ -282,12 +282,7 @@
 		</div>
 	{/if}
 
-	<div
-		class="group-container"
-		style={groupContainerStyle}
-		role="group"
-		aria-label="Content group"
-	>
+	<div class="group-container" style={groupContainerStyle} role="group" aria-label="Content group">
 		<div class="group-content">
 			{#if isEditing}
 				<div class="nested-placeholder">

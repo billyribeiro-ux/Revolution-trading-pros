@@ -81,7 +81,7 @@
 	<div class="alert-body">
 		<div class="price-levels">
 			<div class="level target">
-				<span class="level-label"><IconTarget size={14} /> Target</span>
+				<span class="level-label"><Icon icon={IconTarget} size={14} /> Target</span>
 				{#if isEditing}
 					<input
 						type="number"

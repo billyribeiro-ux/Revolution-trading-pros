@@ -104,7 +104,7 @@
 				{/if}
 			</div>
 			<div class="level-row stop-level">
-				<span class="level-label"><IconShieldCheck size={14} /> Stop Loss</span>
+				<span class="level-label"><Icon icon={IconShieldCheck} size={14} /> Stop Loss</span>
 				{#if isEditing}
 					<input
 						type="number"
@@ -119,7 +119,7 @@
 				<span class="level-risk">Risk: ${risk.toFixed(2)}</span>
 			</div>
 			<div class="level-row target-level">
-				<span class="level-label"><IconTarget size={14} /> Target 1</span>
+				<span class="level-label"><Icon icon={IconTarget} size={14} /> Target 1</span>
 				{#if isEditing}
 					<input
 						type="number"
@@ -134,7 +134,7 @@
 				<span class="level-rr">{rr1}:1 R:R</span>
 			</div>
 			<div class="level-row target-level">
-				<span class="level-label"><IconTarget size={14} /> Target 2</span>
+				<span class="level-label"><Icon icon={IconTarget} size={14} /> Target 2</span>
 				{#if isEditing}
 					<input
 						type="number"

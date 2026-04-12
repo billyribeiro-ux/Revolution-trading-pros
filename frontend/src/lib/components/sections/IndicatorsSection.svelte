@@ -445,7 +445,7 @@
 				<div
 					class="inline-flex items-center gap-3 px-4 py-1.5 border border-blue-900/30 bg-blue-950/10 text-blue-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm"
 				>
-					<IconSparkles class="w-3.5 h-3.5" />
+					<Icon icon={IconSparkles} size={14} />
 					Technical Edge
 				</div>
 
@@ -519,7 +519,6 @@
 					}}
 				>
 					{#each indicators as indicator, i (indicator.href ?? i)}
-						
 						<a
 							href={indicator.href}
 							class="indicator-card is-card"

@@ -8,8 +8,24 @@
 	// GSAP loaded dynamically for SSR safety
 	let gsapInstance: typeof import('gsap').gsap | null = null;
 
-	// --- ICONS ---
-	// Assumed existing component based on your snippet
+	// Icons (Iconify string constants via $lib/icons)
+	import {
+		Icon,
+		IconChartCandle,
+		IconChartLine,
+		IconBrain,
+		IconShield,
+		IconArrowRight,
+		IconTrendingUp,
+		IconActivity,
+		IconBolt,
+		IconX,
+		IconCheck,
+		IconChevronDown,
+		IconSchool,
+		IconRocket
+	} from '$lib/icons';
+
 	// --- TYPES ---
 
 	interface Course {
@@ -667,7 +683,7 @@
 		<div class="absolute inset-0 bg-blue-600/5 blur-[100px]"></div>
 
 		<div class="container mx-auto px-6 relative z-10 text-center">
-			<IconRocket size={48} stroke={1} class="mx-auto text-blue-500 mb-8 animate-bounce" />
+			<Icon icon={IconRocket} size={48} class="mx-auto text-blue-500 mb-8 animate-bounce" />
 			<h2
 				class="text-4xl xs:text-5xl md:text-7xl font-black tracking-tighter text-white mb-8 break-words"
 			>

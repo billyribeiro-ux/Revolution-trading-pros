@@ -638,10 +638,10 @@
 								</div>
 							{:else}
 								<!-- key (i): items lack stable id -->
-							{#each timeline as event, i (i)}
-								<div class="timeline-item">
-									<div class="timeline-icon">
-										<Icon icon={getTimelineIcon(event.type)} size={16} />
+								{#each timeline as event, i (i)}
+									<div class="timeline-item">
+										<div class="timeline-icon">
+											<Icon icon={getTimelineIcon(event.type)} size={16} />
 										</div>
 										<div class="timeline-content">
 											<div class="timeline-title">{event.title}</div>

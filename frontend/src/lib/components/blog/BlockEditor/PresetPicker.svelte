@@ -366,7 +366,7 @@
 					<span>Presets for <strong>{blockType}</strong></span>
 				</div>
 				<button type="button" class="close-btn" onclick={() => onclose?.()}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 

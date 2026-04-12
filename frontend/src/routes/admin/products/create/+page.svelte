@@ -163,8 +163,6 @@
 	function getFieldError(field: string): string | undefined {
 		return validationErrors[field]?.[0];
 	}
-
-
 </script>
 
 <svelte:head>
@@ -472,9 +470,9 @@
 						/>
 					</div>
 				{:else}
-				<div class="preview-thumbnail placeholder">
-					<!-- svelte-ignore svelte_component_deprecated -->
-					<Icon icon={previewTypeIcon} size={48} />
+					<div class="preview-thumbnail placeholder">
+						<!-- svelte-ignore svelte_component_deprecated -->
+						<Icon icon={previewTypeIcon} size={48} />
 					</div>
 				{/if}
 

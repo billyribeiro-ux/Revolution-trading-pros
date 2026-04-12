@@ -9,19 +9,22 @@
 	import { browser } from '$app/environment';
 	// GSAP imported dynamically in onMount to avoid SSR issues
 
-	// Icons
-	import IconBuildingBank from '@tabler/icons-svelte-runes/icons/building-bank';
-	import IconShieldLock from '@tabler/icons-svelte-runes/icons/shield-lock';
-	import IconUsersGroup from '@tabler/icons-svelte-runes/icons/users-group';
-	import IconScale from '@tabler/icons-svelte-runes/icons/scale';
-	import IconId from '@tabler/icons-svelte-runes/icons/id';
-	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
-	import IconBroadcast from '@tabler/icons-svelte-runes/icons/broadcast';
-	import IconSchool from '@tabler/icons-svelte-runes/icons/school';
-	import IconMessageCircle from '@tabler/icons-svelte-runes/icons/message-circle';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
-	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
+	// Icons (Iconify string constants via $lib/icons)
+	import {
+		Icon,
+		IconBuildingBank,
+		IconShieldLock,
+		IconUsersGroup,
+		IconScale,
+		IconId,
+		IconArrowRight,
+		IconBroadcast,
+		IconSchool,
+		IconMessageCircle,
+		IconCheck,
+		IconChevronDown,
+		IconActivity
+	} from '$lib/icons';
 	import { domRef } from '$lib/svelte/domAttachment';
 
 	// --- Animation Logic (Svelte 5 Runes) ---
@@ -426,18 +429,18 @@
 					<div
 						class="lg:w-1/3 grid grid-cols-2 gap-px bg-white/10 border border-white/10 backdrop-blur-md shadow-2xl rounded-sm overflow-hidden"
 					>
-					{#each stats as stat (stat.value)}
-						<div
-							class="bg-[#050505]/90 p-6 group hover:bg-[#0A0A0A] transition-colors relative overflow-hidden interactive-card"
-						>
+						{#each stats as stat (stat.value)}
 							<div
-								class="absolute top-0 left-0 w-full h-[2px] bg-linear-to-r from-transparent via-amber-500 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"
-							></div>
-
-							<div
-								class="text-amber-600 mb-3 opacity-60 group-hover:opacity-100 transition-opacity group-hover:scale-110 duration-300 origin-left"
+								class="bg-[#050505]/90 p-6 group hover:bg-[#0A0A0A] transition-colors relative overflow-hidden interactive-card"
 							>
-								<Icon icon={stat.icon} size={24} stroke={1.5} />
+								<div
+									class="absolute top-0 left-0 w-full h-[2px] bg-linear-to-r from-transparent via-amber-500 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"
+								></div>
+
+								<div
+									class="text-amber-600 mb-3 opacity-60 group-hover:opacity-100 transition-opacity group-hover:scale-110 duration-300 origin-left"
+								>
+									<Icon icon={stat.icon} size={24} stroke={1.5} />
 								</div>
 								<div
 									class="text-3xl font-serif text-white mb-1 tabular-nums tracking-tight group-hover:text-amber-500 transition-colors"
@@ -732,7 +735,11 @@
 
 						<div class="relative z-10">
 							<div class="flex gap-1 mb-6 text-amber-600">
-								{#each Array(5) as _, i (i)}<IconScale size={12} class="fill-current" />{/each}
+								{#each Array(5) as _, i (i)}<Icon
+										icon={IconScale}
+										size={12}
+										class="fill-current"
+									/>{/each}
 							</div>
 							<p class="text-lg text-slate-300 font-light italic mb-8 leading-relaxed">
 								"I spent years jumping from one alert service to another, losing money. Revolution
@@ -764,7 +771,11 @@
 
 						<div class="relative z-10">
 							<div class="flex gap-1 mb-6 text-amber-600">
-								{#each Array(5) as _, i (i)}<IconScale size={12} class="fill-current" />{/each}
+								{#each Array(5) as _, i (i)}<Icon
+										icon={IconScale}
+										size={12}
+										class="fill-current"
+									/>{/each}
 							</div>
 							<p class="text-lg text-slate-300 font-light italic mb-8 leading-relaxed">
 								"The morning voice chat is a game changer. Hearing Billy explain his thought process

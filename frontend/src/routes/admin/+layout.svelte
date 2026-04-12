@@ -15,7 +15,14 @@
 	import { getUnreadCount } from '$lib/stores/notifications.svelte';
 	import { keyboard } from '$lib/stores/keyboard.svelte';
 
-	import { Icon, IconMenu2, IconSearch, IconBell, IconPlugConnected, IconCommand } from '$lib/icons';
+	import {
+		Icon,
+		IconMenu2,
+		IconSearch,
+		IconBell,
+		IconPlugConnected,
+		IconCommand
+	} from '$lib/icons';
 	import { AdminSidebar } from '$lib/components/layout';
 	import Toast from '$lib/components/Toast.svelte';
 	import CommandPalette from '$lib/components/CommandPalette.svelte';

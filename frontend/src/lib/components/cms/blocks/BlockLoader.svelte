@@ -105,7 +105,7 @@
 
 {#if isLoading}
 	<div class="block-loader" aria-busy="true" aria-label="Loading block">
-		<IconLoader2 size={24} class="spinner" />
+		<Icon icon={IconLoader2} size={24} class="spinner" />
 		<span>Loading {block.type}...</span>
 	</div>
 {:else if loadError}

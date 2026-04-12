@@ -35,6 +35,19 @@
 
 	let { insights = [] }: Props = $props();
 
+	function getSeverityClass(severity: string): string {
+		switch (severity) {
+			case 'critical':
+				return 'severity-critical';
+			case 'warning':
+				return 'severity-warning';
+			case 'info':
+				return 'severity-info';
+			default:
+				return '';
+		}
+	}
+
 	function getIcon(type: string) {
 		switch (type) {
 			case 'anomaly':
@@ -63,7 +76,7 @@
 	<div class="insights-list">
 		{#if insights.length > 0}
 			{#each insights as insight (insight.id)}
-					<div class="insight-card {getSeverityClass(insight.severity)}">
+				<div class="insight-card {getSeverityClass(insight.severity)}">
 					<div class="insight-icon">
 						<Icon icon={getIcon(insight.type)} size={20} />
 					</div>

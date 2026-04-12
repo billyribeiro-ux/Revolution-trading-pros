@@ -23,4 +23,13 @@
 	}: Props = $props();
 </script>
 
-<IconifyIcon {icon} width={size} height={size} {color} class={className} {style} {...rest} />
+<!-- @ts-expect-error @iconify/svelte ships Svelte 4 class-component types; our Props.icon is string -->
+<IconifyIcon
+	icon={icon as any}
+	width={size}
+	height={size}
+	{color}
+	class={className}
+	{style}
+	{...rest}
+/>

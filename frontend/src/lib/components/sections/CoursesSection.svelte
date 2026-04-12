@@ -283,7 +283,7 @@
 				<div
 					class="inline-flex items-center gap-3 px-4 py-1.5 border border-violet-900/30 bg-violet-950/10 text-violet-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm"
 				>
-					<IconSchool class="w-4 h-4" />
+					<Icon icon={IconSchool} size={16} />
 					Professional Education
 				</div>
 

@@ -182,7 +182,8 @@
 										<span class="text-[10px] font-mono text-amber-600 uppercase tracking-widest">
 											{getRelativeTime(post.published_at)}
 										</span>
-										<IconChartCandle
+										<Icon
+											icon={IconChartCandle}
 											size={14}
 											class="text-slate-600 group-hover:text-amber-500 transition-colors"
 										/>

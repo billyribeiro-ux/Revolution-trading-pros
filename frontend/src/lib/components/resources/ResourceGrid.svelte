@@ -99,6 +99,15 @@
 		}
 	});
 
+	// Grid column classes based on columns prop
+	let gridClasses = $derived(
+		columns === 4
+			? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
+			: columns === 2
+				? 'grid-cols-1 sm:grid-cols-2'
+				: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+	);
+
 	// Resource type options
 	const resourceTypes: { value: ResourceType | ''; label: string }[] = [
 		{ value: '', label: 'All Types' },
