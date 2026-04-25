@@ -153,57 +153,62 @@
 			</div>
 
 			<div class="header-actions">
-				<!-- Search -->
+				<!-- Search — Linear/Vercel pattern: looks like a placeholder input,
+				     opens the command palette. Wide click target on desktop, icon-only on mobile. -->
 				<button
 					type="button"
-					class="header-btn"
+					class="search-trigger"
 					onclick={() => (isCommandPaletteOpen = true)}
 					title="Search (⌘K)"
 					aria-label="Open search"
 				>
-					<IconSearch size={18} />
-					<span class="btn-label desktop-only">Search</span>
+					<IconSearch size={16} aria-hidden="true" />
+					<span class="search-trigger__label desktop-only">Search…</span>
 					<kbd class="kbd desktop-only">⌘K</kbd>
 				</button>
 
-				<!-- Notifications -->
-				<button
-					type="button"
-					class="header-btn notification-btn"
-					onclick={() => (isNotificationCenterOpen = true)}
-					title="Notifications"
-					aria-label="Open notifications"
-				>
-					<IconBell size={18} />
-					{#if unreadCount > 0}
-						<span class="notification-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>
-					{/if}
-				</button>
+				<!-- Icon-only utility cluster (notifications · connection · rate · shortcuts).
+				     Grouped together visually so the row reads as one toolbar, not 5 stand-alone buttons. -->
+				<div class="header-utility-group" role="group" aria-label="Admin utilities">
+					<!-- Notifications -->
+					<button
+						type="button"
+						class="icon-btn notification-btn"
+						onclick={() => (isNotificationCenterOpen = true)}
+						title="Notifications"
+						aria-label="Open notifications"
+					>
+						<IconBell size={18} aria-hidden="true" />
+						{#if unreadCount > 0}
+							<span class="notification-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>
+						{/if}
+					</button>
 
-				<!-- Connection Health -->
-				<button
-					type="button"
-					class="header-btn"
-					onclick={() => (isConnectionHealthOpen = true)}
-					title="API Connection Status"
-					aria-label="View API connection status"
-				>
-					<IconPlugConnected size={18} />
-				</button>
+					<!-- Connection Health -->
+					<button
+						type="button"
+						class="icon-btn"
+						onclick={() => (isConnectionHealthOpen = true)}
+						title="API Connection Status"
+						aria-label="View API connection status"
+					>
+						<IconPlugConnected size={18} aria-hidden="true" />
+					</button>
 
-				<!-- Rate Limit -->
-				<RateLimitIndicator />
+					<!-- Rate Limit -->
+					<RateLimitIndicator />
 
-				<!-- Keyboard Shortcuts -->
-				<button
-					type="button"
-					class="header-btn desktop-only"
-					onclick={() => (isKeyboardHelpOpen = true)}
-					title="Keyboard Shortcuts (?)"
-					aria-label="View keyboard shortcuts"
-				>
-					<IconCommand size={18} />
-				</button>
+					<!-- Keyboard Shortcuts -->
+					<button
+						type="button"
+						class="icon-btn desktop-only"
+						onclick={() => (isKeyboardHelpOpen = true)}
+						title="Keyboard Shortcuts (?)"
+						aria-label="View keyboard shortcuts"
+					>
+						<IconCommand size={18} aria-hidden="true" />
+					</button>
+				</div>
 
 				<a href="/" class="view-site-btn" title="View main website">View Site</a>
 			</div>
@@ -308,40 +313,40 @@
 		gap: var(--space-3);
 	}
 
-	.header-btn {
-		display: flex;
+	/* Search trigger — Linear/Vercel pattern: looks like a placeholder input,
+	   opens the command palette. ~280px wide so it visually anchors the right
+	   side of the header without competing with the icon-only utility cluster. */
+	.search-trigger {
+		display: inline-flex;
 		align-items: center;
 		gap: var(--space-2);
-		padding: var(--space-2) var(--space-3);
-		background: var(--admin-btn-bg);
+		min-height: 36px;
+		padding: 0 var(--space-3);
+		background: var(--admin-surface-sunken, var(--admin-btn-bg));
 		border: 1px solid var(--admin-btn-border);
 		border-radius: var(--radius-md);
-		color: var(--admin-btn-text);
-		cursor: pointer;
+		color: var(--admin-text-muted);
+		cursor: text;
 		transition: var(--transition-all);
-		position: relative;
 	}
 
-	.header-btn:hover {
-		background: var(--admin-btn-bg-hover);
+	.search-trigger:hover {
 		border-color: var(--admin-btn-border-hover);
-		color: var(--admin-btn-text-hover);
+		color: var(--admin-text-primary);
 	}
 
-	.header-btn:focus-visible {
+	.search-trigger:focus-visible {
 		box-shadow: var(--admin-focus-ring);
 		outline: none;
 	}
 
-	.header-btn:active {
-		background: var(--admin-btn-bg-active);
-		transform: scale(0.98);
-	}
-
-	.btn-label {
+	.search-trigger__label {
+		flex: 1;
+		min-width: 200px;
+		text-align: left;
 		font-family: var(--font-sans);
 		font-size: var(--text-sm);
-		font-weight: var(--font-medium);
+		font-weight: var(--font-normal);
 		letter-spacing: var(--tracking-normal);
 	}
 
@@ -354,6 +359,49 @@
 		font-weight: var(--font-semibold);
 		color: var(--admin-kbd-text);
 		font-family: var(--font-mono);
+	}
+
+	/* Utility cluster — notifications, connection, rate limit, shortcuts.
+	   Visually grouped via a shared sunken surface so the row reads as one
+	   toolbar instead of five orphan buttons. */
+	.header-utility-group {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--space-1);
+		padding: 4px;
+		background: var(--admin-surface-sunken, transparent);
+		border: 1px solid var(--admin-btn-border);
+		border-radius: var(--radius-md);
+	}
+
+	.icon-btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 32px;
+		height: 32px;
+		padding: 0;
+		background: transparent;
+		border: none;
+		border-radius: var(--radius-sm);
+		color: var(--admin-text-muted);
+		cursor: pointer;
+		transition: var(--transition-all);
+		position: relative;
+	}
+
+	.icon-btn:hover {
+		background: var(--admin-btn-bg-hover);
+		color: var(--admin-text-primary);
+	}
+
+	.icon-btn:focus-visible {
+		box-shadow: var(--admin-focus-ring);
+		outline: none;
+	}
+
+	.icon-btn:active {
+		transform: scale(0.96);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -454,13 +502,14 @@
 			display: none !important;
 		}
 
-		.header-btn .btn-label,
-		.header-btn .kbd {
-			display: none;
-		}
-
-		.header-btn {
-			padding: var(--space-2);
+		/* Search collapses to icon-only on small screens — the placeholder text
+		   and ⌘K hint hide via .desktop-only above. */
+		.search-trigger {
+			min-width: 0;
+			padding: 0 var(--space-2);
+			min-height: 36px;
+			width: 36px;
+			justify-content: center;
 		}
 
 		.view-site-btn {
@@ -510,10 +559,6 @@
 			gap: var(--space-1);
 		}
 
-		.header-btn {
-			padding: var(--space-2);
-		}
-
 		.view-site-btn {
 			padding: var(--space-2) var(--space-3);
 			font-size: var(--text-xs);
@@ -529,15 +574,17 @@
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	@media (hover: none) and (pointer: coarse) {
-		.header-btn,
+		.search-trigger,
+		.icon-btn,
 		.mobile-menu-btn,
 		.view-site-btn {
 			min-height: 44px;
 			min-width: 44px;
 		}
 
-		.header-btn {
-			padding: var(--space-3);
+		.icon-btn {
+			width: 44px;
+			height: 44px;
 		}
 
 		.view-site-btn {
@@ -556,7 +603,8 @@
 	@media (prefers-reduced-motion: reduce) {
 		.admin-layout,
 		.admin-header,
-		.header-btn,
+		.search-trigger,
+		.icon-btn,
 		.mobile-menu-btn,
 		.view-site-btn {
 			transition: none;
@@ -573,7 +621,8 @@
 			border-bottom-width: 2px;
 		}
 
-		.header-btn,
+		.search-trigger,
+		.header-utility-group,
 		.view-site-btn {
 			border-width: 2px;
 		}
