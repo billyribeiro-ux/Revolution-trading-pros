@@ -1,48 +1,17 @@
-# Revolution Trading Pros - Development Environment
-# ICT 11+ Principal Engineer Grade
-# Rust/Axum Backend + SvelteKit Frontend
-
-version: '3.8'
+# Revolution Trading Pros — local dev stack (backend only).
+# Frontend is run natively via `pnpm --filter revolution-svelte dev`.
+#
+# Bring up:    docker compose up -d db redis api
+# Tear down:   docker compose down            # keeps volumes
+#              docker compose down -v         # wipes volumes
+# Seed admin:  ./api/scripts/seed-local-admin.sh
+#
+# Why no `version:` field — Compose v2 ignores it and warns.
 
 services:
-  # ==========================================================================
-  # RUST API BACKEND
-  # ==========================================================================
-  api:
-    build:
-      context: ./api
-      dockerfile: Dockerfile
-    container_name: rtp-api
-    ports:
-      - "8080:8080"
-    environment:
-      - DATABASE_URL=postgres://rtp:rtp_password@db:5432/revolution_trading_pros
-      - REDIS_URL=redis://redis:6379
-      - JWT_SECRET=${JWT_SECRET:-development-secret-key-min-32-chars}
-      - RUST_LOG=info,sqlx=warn,tower_http=debug
-      - HOST=0.0.0.0
-      - PORT=8080
-      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY:-}
-      - STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY:-}
-      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET:-}
-    depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_started
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/api/health/live"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-    restart: unless-stopped
-    networks:
-      - rtp-network
-
-  # ==========================================================================
-  # POSTGRESQL DATABASE
-  # ==========================================================================
+  # ──────────────────────────────────────────────────────────────────────
+  # PostgreSQL 16
+  # ──────────────────────────────────────────────────────────────────────
   db:
     image: postgres:16-alpine
     container_name: rtp-db
@@ -58,14 +27,13 @@ services:
       test: ["CMD-SHELL", "pg_isready -U rtp -d revolution_trading_pros"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
     restart: unless-stopped
-    networks:
-      - rtp-network
+    networks: [rtp-network]
 
-  # ==========================================================================
-  # REDIS CACHE
-  # ==========================================================================
+  # ──────────────────────────────────────────────────────────────────────
+  # Redis 7
+  # ──────────────────────────────────────────────────────────────────────
   redis:
     image: redis:7-alpine
     container_name: rtp-redis
@@ -78,31 +46,46 @@ services:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
     restart: unless-stopped
-    networks:
-      - rtp-network
+    networks: [rtp-network]
 
-  # ==========================================================================
-  # SVELTEKIT FRONTEND (Development)
-  # ==========================================================================
-  frontend:
+  # ──────────────────────────────────────────────────────────────────────
+  # Rust + Axum API (binds 8080 on host)
+  # ──────────────────────────────────────────────────────────────────────
+  api:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile.dev
-    container_name: rtp-frontend
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: rtp-api
     ports:
-      - "5173:5173"
+      - "8080:8080"
     environment:
-      - VITE_API_URL=http://api:8080
-      - PUBLIC_API_URL=http://localhost:8080
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
+      DATABASE_URL: postgres://rtp:rtp_password@db:5432/revolution_trading_pros
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:-development-secret-key-min-32-chars-long-enough-for-hs256}
+      JWT_EXPIRES_IN: "24"
+      RUST_LOG: info,sqlx=warn,tower_http=debug
+      HOST: 0.0.0.0
+      PORT: "8080"
+      ENVIRONMENT: development
+      CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
+      # Stripe / R2 / Bunny / Postmark / Meilisearch are unset — features that need
+      # them will return errors gracefully; auth + posts + admin work without them.
     depends_on:
-      - api
-    networks:
-      - rtp-network
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    healthcheck:
+      # API exposes /health (no /api prefix). /health/detailed checks DB+Redis+storage.
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+    restart: unless-stopped
+    networks: [rtp-network]
 
 volumes:
   postgres_data:

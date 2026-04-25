@@ -9,8 +9,10 @@
 
 import { redirect, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { env } from '$env/dynamic/private';
 
-const API_URL = 'https://revolution-trading-pros-api.fly.dev';
+const API_URL =
+	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
 /**
  * Apple Sign-In uses form_post response mode, sending a POST request

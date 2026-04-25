@@ -1,9 +1,11 @@
 import type { PageServerLoad } from './$types';
 import type { SEOInput } from '$lib/seo/types';
+import { env } from '$env/dynamic/private';
 
-// ICT11+ PRODUCTION FIX: Hardcode API URL for server-side fetch
-// Cloudflare Pages secrets not available via import.meta.env on server
-const PRODUCTION_API_URL = 'https://revolution-trading-pros-api.fly.dev';
+// API base resolves from runtime env (reads .env.local in dev, secrets in prod)
+// with a Fly fallback so prerender / Cloudflare deploys still work without env vars.
+const API_BASE_URL =
+	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
 /**
  * ICT11+ Performance: Simple server load without streaming
@@ -32,7 +34,7 @@ async function fetchPosts(fetch: typeof globalThis.fetch) {
 		const controller = new AbortController();
 		const timeoutId = setTimeout(() => controller.abort(), 5000); // Increased timeout
 
-		const url = `${PRODUCTION_API_URL}/api/posts?per_page=6`;
+		const url = `${API_BASE_URL}/api/posts?per_page=6`;
 		console.log('[SSR] Fetching posts from:', url);
 
 		const response = await fetch(url, {

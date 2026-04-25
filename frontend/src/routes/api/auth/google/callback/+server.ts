@@ -10,8 +10,10 @@
 
 import { redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { env } from '$env/dynamic/private';
 
-const API_URL = 'https://revolution-trading-pros-api.fly.dev';
+const API_URL =
+	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
 export const GET: RequestHandler = async ({ url }) => {
 	// Forward all query parameters to backend callback handler
