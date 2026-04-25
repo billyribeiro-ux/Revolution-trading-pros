@@ -192,16 +192,19 @@ let isInitialized = false;
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function handleKeyDown(event: KeyboardEvent) {
-	// Ignore if typing in input/textarea
-	const target = event.target as HTMLElement;
-	if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
-		// Allow escape and certain meta shortcuts
-		if (event.key !== 'Escape' && !(event.metaKey || event.ctrlKey)) {
-			return;
-		}
-	}
-
 	const key = event.key;
+
+	// When the user is typing in an input / textarea / contenteditable, only
+	// Escape and platform-modifier shortcuts (Cmd / Ctrl) should fire. Plain
+	// letter sequences like "g" then "d" must NOT trigger navigation while
+	// the user is composing prose. Bug pre-fix: typing "good" anywhere with a
+	// focused textarea fired goto-dashboard.
+	const target = event.target as HTMLElement | null;
+	const inEditableField =
+		!!target &&
+		(target.tagName === 'INPUT' ||
+			target.tagName === 'TEXTAREA' ||
+			target.isContentEditable);
 
 	// Build modifier string
 	const modifiers: string[] = [];
@@ -210,7 +213,7 @@ function handleKeyDown(event: KeyboardEvent) {
 	if (event.shiftKey) modifiers.push('Shift');
 	if (event.altKey) modifiers.push('Alt');
 
-	// Check for modifier-based shortcuts first
+	// 1. Modifier-based shortcuts (Cmd+K, Cmd+S, etc.) — work even in inputs.
 	if (modifiers.length > 0) {
 		const shortcut = storeState.shortcuts.find((s) => {
 			if (!s.enabled) return false;
@@ -230,19 +233,27 @@ function handleKeyDown(event: KeyboardEvent) {
 		}
 	}
 
-	// Handle key sequences (e.g., 'g' then 'd')
+	// 2. Escape — fires regardless of focus context, no preventDefault so the
+	//    browser's native Escape handling (e.g. cancelling form composition)
+	//    still works.
+	if (key === 'Escape') {
+		const shortcut = storeState.shortcuts.find((s) => s.id === 'escape' && s.enabled);
+		if (shortcut) shortcut.action();
+		return;
+	}
+
+	// 3. Plain key sequences (g→d, g→a). Suppressed inside editable fields so
+	//    typing in inputs doesn't navigate the app.
+	if (inEditableField) return;
+
 	if (modifiers.length === 0 && key.length === 1) {
-		// Clear sequence after timeout
-		if (sequenceTimeout) {
-			clearTimeout(sequenceTimeout);
-		}
+		if (sequenceTimeout) clearTimeout(sequenceTimeout);
 
 		keySequence.push(key.toLowerCase());
 		sequenceTimeout = setTimeout(() => {
 			keySequence = [];
 		}, 500);
 
-		// Check for sequence match
 		const shortcut = storeState.shortcuts.find((s) => {
 			if (!s.enabled) return false;
 			if (s.keys.some((k) => ['Meta', 'Control', 'Shift', 'Alt'].includes(k))) return false;
@@ -258,19 +269,6 @@ function handleKeyDown(event: KeyboardEvent) {
 			if (sequenceTimeout) clearTimeout(sequenceTimeout);
 			shortcut.action();
 		}
-	}
-
-	// Handle special keys
-	if (key === 'Escape') {
-		const shortcut = storeState.shortcuts.find((s) => s.id === 'escape' && s.enabled);
-		if (shortcut) {
-			shortcut.action();
-		}
-	}
-
-	if (key === '?' && event.shiftKey) {
-		event.preventDefault();
-		storeState = { ...storeState, isHelpOpen: !storeState.isHelpOpen };
 	}
 }
 

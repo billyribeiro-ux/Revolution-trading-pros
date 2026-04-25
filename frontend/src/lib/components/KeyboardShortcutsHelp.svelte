@@ -52,7 +52,12 @@
 		}
 	}
 
-	// Sync with store
+	// One-way sync from the keyboard store → component prop. Pre-fix this was
+	// a guarded two-way write that caused effect feedback loops (the parent
+	// would push back into the store, which re-fired this effect). Now: store
+	// is the source of truth for "should the help be visible right now?"; the
+	// `isOpen` prop is the bindable mirror so parents that prefer prop-driven
+	// control still work. We never write *back* to the store from here.
 	$effect(() => {
 		if (isHelpOpen !== isOpen) {
 			isOpen = isHelpOpen;

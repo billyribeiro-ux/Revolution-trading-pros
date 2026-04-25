@@ -11,8 +11,7 @@
 	 */
 
 	import { browser } from '$app/environment';
-	import { fade, fly, scale } from 'svelte/transition';
-	import { quintOut } from 'svelte/easing';
+	import { fade } from 'svelte/transition';
 	import { analyticsApi, type DashboardData } from '$lib/api/analytics';
 	import {
 		connections,
@@ -177,15 +176,8 @@
 
 <div class="analytics-dashboard">
 	<div class="admin-page-container">
-		<!-- Animated Background -->
-		<div class="bg-effects">
-			<div class="bg-blob bg-blob-1"></div>
-			<div class="bg-blob bg-blob-2"></div>
-			<div class="bg-blob bg-blob-3"></div>
-		</div>
-
 		<!-- Header -->
-		<header class="page-header" in:fly={{ y: -20, duration: 500, easing: quintOut }}>
+		<header class="page-header" in:fade={{ duration: 200 }}>
 			<h1>Analytics Dashboard</h1>
 			<p class="subtitle">Enterprise insights and performance metrics</p>
 			{#if isConnected}
@@ -238,7 +230,7 @@
 				</div>
 			{:else if !isConnected}
 				<!-- Not Connected State -->
-				<div class="not-connected-state" in:scale={{ duration: 400, start: 0.95 }}>
+				<div class="not-connected-state" in:fade={{ duration: 200 }}>
 					<ApiNotConnected
 						serviceName="Analytics"
 						description="Connect an analytics service to view real-time data, track user behavior, and measure conversions."
@@ -254,7 +246,7 @@
 					/>
 
 					<!-- Available Services -->
-					<div class="available-services" in:fly={{ y: 20, duration: 400, delay: 200 }}>
+					<div class="available-services" in:fade={{ duration: 200, delay: 100 }}>
 						<h3>Available Analytics Services</h3>
 						<div class="services-grid">
 							{#each analyticsServices as service}
@@ -534,67 +526,15 @@
 </div>
 
 <style>
+	/* Flat, professional surface — no animated blobs / gradient washes.
+	   Per PE7 conventions (Linear, Vercel, Stripe), analytics dashboards
+	   use solid surfaces + subtle borders to keep data legible and let
+	   the metrics themselves carry the visual interest. */
 	.analytics-dashboard {
-		background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+		background: #0f172a;
 		color: white;
 		position: relative;
 		overflow: hidden;
-	}
-
-	/* Background Effects */
-	.bg-effects {
-		position: fixed;
-		inset: 0;
-		pointer-events: none;
-		overflow: hidden;
-	}
-
-	.bg-blob {
-		position: absolute;
-		border-radius: 50%;
-		filter: blur(80px);
-		opacity: 0.15;
-	}
-
-	.bg-blob-1 {
-		width: 600px;
-		height: 600px;
-		top: -200px;
-		right: -200px;
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
-		animation: float 20s ease-in-out infinite;
-	}
-
-	.bg-blob-2 {
-		width: 500px;
-		height: 500px;
-		bottom: -150px;
-		left: -150px;
-		background: linear-gradient(135deg, #3b82f6, var(--primary-600));
-		animation: float 25s ease-in-out infinite reverse;
-	}
-
-	.bg-blob-3 {
-		width: 400px;
-		height: 400px;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		background: linear-gradient(135deg, #10b981, #14b8a6);
-		animation: float 30s ease-in-out infinite;
-	}
-
-	@keyframes float {
-		0%,
-		100% {
-			transform: translate(0, 0) scale(1);
-		}
-		33% {
-			transform: translate(30px, -30px) scale(1.05);
-		}
-		66% {
-			transform: translate(-20px, 20px) scale(0.95);
-		}
 	}
 
 	/* Header */

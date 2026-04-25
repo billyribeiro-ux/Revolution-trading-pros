@@ -26,6 +26,9 @@ Status legend: ✅ done · 🟡 in-flight · ⬜ pending · ⛔ blocked.
 | 6 | AdminSidebar: real sign-out via `$lib/api/auth.logout()` + `goto('/')` (was a passive `<a href="/">` leaving the session intact) | `frontend/src/lib/components/layout/AdminSidebar.svelte` | ✅ |
 | 7 | AdminSidebar: derive role label from `$user`, with `isSuperadmin` mapping to "Super Admin" (was hardcoded "Administrator") | `frontend/src/lib/components/layout/AdminSidebar.svelte` | ✅ |
 | 8 | AdminSidebar: `aria-label` on `<nav>`, `aria-current="page"` on active link, `aria-hidden="true"` on every decorative icon | `frontend/src/lib/components/layout/AdminSidebar.svelte` | ✅ |
+| 8a | Keyboard shortcut handler: don't fire `g→d`/`g→a` sequences while typing in `<input>`/`<textarea>`/contenteditable (typing "good" triggered goto-dashboard); remove duplicate `Shift+?` handler that double-toggled help; `Escape` exits cleanly without preventDefault | `frontend/src/lib/stores/keyboard.svelte.ts:194-275` | ✅ |
+| 8b | `KeyboardShortcutsHelp.svelte` — clarified the one-way store→prop sync (was opaque); confirmed no feedback loop | `frontend/src/lib/components/KeyboardShortcutsHelp.svelte:56-60` | ✅ |
+| 8c | **Analytics dashboard background — strip animated blob effects.** PE7 mandate: no childish decorations on data dashboards. Removed 3 blob divs + `@keyframes float` + gradient-wash background from `admin/analytics/+page.svelte`; flat `#0f172a` surface. Same treatment to `admin/dashboard/+page.svelte` (3 ambient-blob divs + selectors). Replaced `in:fly`/`in:scale` entrance animations with `in:fade` (200ms). | `frontend/src/routes/admin/analytics/+page.svelte`, `frontend/src/routes/admin/dashboard/+page.svelte` | ✅ |
 
 ---
 

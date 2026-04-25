@@ -195,13 +195,6 @@
 
 <div class="dashboard-container">
 	<div class="admin-page-container">
-		<!-- Ambient Background Effects - Theme aware -->
-		<div class="ambient-effects">
-			<div class="ambient-blob ambient-blob-purple"></div>
-			<div class="ambient-blob ambient-blob-blue"></div>
-			<div class="ambient-blob ambient-blob-emerald"></div>
-		</div>
-
 		<div class="relative z-10 p-6 lg:p-8 max-w-[1800px] mx-auto">
 			<!-- Header -->
 			<header class="mb-8" in:fly={{ y: -20, duration: 600, easing: quintOut }}>
@@ -697,48 +690,11 @@
 	 * Theme-aware styles with bulletproof light/dark support
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* Dashboard Container */
+	/* Dashboard Container — flat surface, no ambient blob effects.
+	   Per PE7 conventions (Linear, Vercel, Stripe), the data carries the
+	   visual interest, not decorative animations. */
 	.dashboard-container {
 		position: relative;
-	}
-
-	/* Ambient Background Effects */
-	.ambient-effects {
-		position: fixed;
-		inset: 0;
-		overflow: hidden;
-		pointer-events: none;
-		opacity: 0.5;
-	}
-
-	.ambient-blob {
-		position: absolute;
-		border-radius: 9999px;
-		filter: blur(60px);
-	}
-
-	.ambient-blob-purple {
-		top: -10rem;
-		right: -10rem;
-		width: 24rem;
-		height: 24rem;
-		background: var(--admin-widget-purple-bg);
-	}
-
-	.ambient-blob-blue {
-		bottom: -10rem;
-		left: -10rem;
-		width: 24rem;
-		height: 24rem;
-		background: var(--admin-widget-blue-bg);
-	}
-
-	.ambient-blob-emerald {
-		top: 50%;
-		left: 50%;
-		width: 16rem;
-		height: 16rem;
-		background: var(--admin-widget-emerald-bg);
 	}
 
 	/* Dashboard Title */
