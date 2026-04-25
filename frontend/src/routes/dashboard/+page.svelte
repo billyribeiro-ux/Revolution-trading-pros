@@ -53,24 +53,25 @@
 	// Render cards from actual API data instead of hardcoded slugs
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Trading rooms for the dropdown button - Only show Day Trading Room, Swing Trading Room, and Small Accounts
+	// Trading rooms for the dropdown button. Hrefs match the dashboard route
+	// slugs (frontend/src/routes/dashboard/<slug>/+page.svelte).
 	const tradingRooms = $derived.by(() => {
 		const rooms: { name: string; href: string; icon: string; variant: string }[] = [
 			{
 				name: 'Day Trading Room',
-				href: '#', // TODO: Provide URL
+				href: '/dashboard/day-trading-room',
 				icon: 'bolt',
 				variant: 'day-trading'
 			},
 			{
 				name: 'Swing Trading Room',
-				href: '#', // TODO: Provide URL
+				href: '/dashboard/swing-trading-room',
 				icon: 'trending-up',
 				variant: 'swing-trading'
 			},
 			{
 				name: 'Small Accounts Mentorship',
-				href: '#', // TODO: Provide URL
+				href: '/dashboard/small-account-mentorship',
 				icon: 'piggy-bank',
 				variant: 'small-accounts'
 			}

@@ -2,6 +2,8 @@
 	import { goto } from '$app/navigation';
 	import { couponsApi, AdminApiError, type Coupon } from '$lib/api/admin';
 	import { IconEdit, IconTrash, IconPlus, IconRefresh, IconSearch, IconFilter } from '$lib/icons';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { toastStore } from '$lib/stores/toast.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// State Management - Svelte 5 Runes
@@ -13,6 +15,8 @@
 	let error = $state('');
 	let searchQuery = $state('');
 	let filterStatus = $state<'all' | 'active' | 'inactive'>('all');
+	let showDeleteConfirm = $state(false);
+	let pendingDeleteId = $state<number | null>(null);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Derived State - Svelte 5 Runes
@@ -80,19 +84,32 @@
 		}
 	}
 
-	async function deleteCoupon(id: number) {
-		if (!confirm('Are you sure you want to delete this coupon? This action cannot be undone.'))
-			return;
+	function requestDeleteCoupon(id: number) {
+		pendingDeleteId = id;
+		showDeleteConfirm = true;
+	}
+
+	function cancelDeleteCoupon() {
+		showDeleteConfirm = false;
+		pendingDeleteId = null;
+	}
+
+	async function handleConfirmDelete() {
+		if (pendingDeleteId === null) return;
+		const id = pendingDeleteId;
+		showDeleteConfirm = false;
+		pendingDeleteId = null;
 
 		deleting = id;
 		try {
 			await couponsApi.delete(id);
 			coupons = coupons.filter((c) => c.id !== id);
+			toastStore.success('Coupon deleted successfully');
 		} catch (err) {
 			if (err instanceof AdminApiError) {
-				alert(`Failed to delete coupon: ${err.message}`);
+				toastStore.error(`Failed to delete coupon: ${err.message}`);
 			} else {
-				alert('Failed to delete coupon. Please try again.');
+				toastStore.error('Failed to delete coupon. Please try again.');
 			}
 			console.error('Delete coupon error:', err);
 		} finally {
@@ -106,7 +123,7 @@
 			coupons = coupons.map((c) => (c.id === coupon.id ? { ...c, is_active: !c.is_active } : c));
 		} catch (err) {
 			console.error('Toggle status error:', err);
-			alert('Failed to update coupon status');
+			toastStore.error('Failed to update coupon status');
 		}
 	}
 
@@ -187,6 +204,7 @@
 		{#if !loading && coupons.length > 0}
 			<div class="filters-bar">
 				<div class="search-box">
+					<label for="search-coupons" class="visually-hidden">Search coupons</label>
 					<IconSearch size={18} />
 					<input
 						type="text"
@@ -307,7 +325,7 @@
 							</button>
 							<button
 								class="action-btn delete"
-								onclick={() => deleteCoupon(coupon.id)}
+								onclick={() => requestDeleteCoupon(coupon.id)}
 								disabled={deleting === coupon.id}
 							>
 								{#if deleting === coupon.id}
@@ -325,6 +343,16 @@
 	</div>
 	<!-- End admin-page-container -->
 </div>
+
+<ConfirmationModal
+	isOpen={showDeleteConfirm}
+	title="Delete Coupon"
+	message="Are you sure you want to delete this coupon? This action cannot be undone."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={handleConfirmDelete}
+	onCancel={cancelDeleteCoupon}
+/>
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════

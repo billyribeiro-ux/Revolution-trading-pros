@@ -12,6 +12,10 @@
 	import { gsap } from 'gsap';
 	import { browser } from '$app/environment';
 	import type { KpiValue } from '$lib/api/analytics';
+	import Icon from '$lib/components/Icon.svelte';
+	import * as Icons from '$lib/icons';
+
+	type IconName = keyof typeof Icons;
 
 	interface Props {
 		kpi: KpiValue;
@@ -70,20 +74,25 @@
 		return () => observer.disconnect();
 	});
 
-	// Icon mapping
-	const iconMap: Record<string, string> = {
-		'currency-dollar': '💰',
-		'shopping-cart': '🛒',
-		users: '👥',
-		clock: '⏱️',
-		target: '🎯',
-		'trending-up': '📈',
-		'user-plus': '➕',
-		'check-circle': '✅',
-		heart: '❤️',
-		crown: '👑',
-		star: '⭐'
+	// Icon mapping: KPI key → Tabler icon name from `$lib/icons`.
+	const iconMap: Record<string, IconName> = {
+		'currency-dollar': 'IconCurrencyDollar',
+		'shopping-cart': 'IconShoppingCart',
+		users: 'IconUsers',
+		clock: 'IconClock',
+		target: 'IconTarget',
+		'trending-up': 'IconTrendingUp',
+		'user-plus': 'IconUserPlus',
+		'check-circle': 'IconCircleCheck',
+		heart: 'IconHeart',
+		crown: 'IconCrown',
+		star: 'IconStar'
 	};
+
+	function resolveIcon(key: string | undefined | null): IconName {
+		if (key && iconMap[key]) return iconMap[key];
+		return 'IconChartBar';
+	}
 
 	// Color classes based on KPI color
 	const colorClasses: Record<string, string> = {
@@ -159,7 +168,9 @@
 	<div class="flex items-center justify-between mb-2">
 		<div class="flex items-center gap-2">
 			{#if kpi.icon}
-				<span class="text-lg">{iconMap[kpi.icon] || '📊'}</span>
+				<span class="kpi-card-icon" aria-hidden="true">
+					<Icon name={resolveIcon(kpi.icon)} size="md" />
+				</span>
 			{/if}
 			<span class="text-sm font-medium opacity-80">{kpi.name}</span>
 		</div>

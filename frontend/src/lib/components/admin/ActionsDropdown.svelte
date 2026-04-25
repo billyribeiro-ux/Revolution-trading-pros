@@ -161,7 +161,7 @@
 	.dropdown-menu {
 		position: absolute;
 		top: 100%;
-		z-index: 50;
+		z-index: var(--z-dropdown);
 		min-width: 180px;
 		background: #1e293b;
 		border: 1px solid rgba(148, 163, 184, 0.2);

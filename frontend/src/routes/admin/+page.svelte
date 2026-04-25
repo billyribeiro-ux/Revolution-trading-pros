@@ -894,7 +894,7 @@
 	/* Inner Container */
 	.admin-page-container {
 		position: relative;
-		z-index: 10;
+		z-index: 1;
 		max-width: 1400px;
 		margin: 0 auto;
 		padding: 2rem;
@@ -915,9 +915,12 @@
 		opacity: 0.15;
 	}
 
+	/* Decorative blobs — fluid widths so they don't overflow on phones.
+	   Old hardcoded 600/500/400px overflowed iPhone (375px) viewport; clamp()
+	   caps growth on desktop while keeping the blob proportional on mobile. */
 	.bg-blob-1 {
-		width: 600px;
-		height: 600px;
+		width: clamp(240px, 70vw, 600px);
+		aspect-ratio: 1;
 		top: -200px;
 		right: -200px;
 		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
@@ -925,8 +928,8 @@
 	}
 
 	.bg-blob-2 {
-		width: 500px;
-		height: 500px;
+		width: clamp(200px, 60vw, 500px);
+		aspect-ratio: 1;
 		bottom: -150px;
 		left: -150px;
 		background: linear-gradient(135deg, var(--secondary-500), var(--primary-600));
@@ -934,8 +937,8 @@
 	}
 
 	.bg-blob-3 {
-		width: 400px;
-		height: 400px;
+		width: clamp(160px, 50vw, 400px);
+		aspect-ratio: 1;
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -50%);

@@ -8,8 +8,19 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { Block, BlockType } from '$lib/components/cms/blocks/types';
-import { toBlockId, type BlockId } from '$lib/stores/blockState.svelte';
+	import {
+		BlockStateManager,
+		setBlockStateManager,
+		toBlockId,
+		type BlockId
+	} from '$lib/stores/blockState.svelte';
 	import BlockLoader from '$lib/components/cms/blocks/BlockLoader.svelte';
+
+	// Initialize the BlockStateManager in context BEFORE any block renders.
+	// Several block components (ImageBlock, VideoBlock, etc.) call
+	// `getBlockStateManager()` synchronously and will crash if it isn't set.
+	// Must run during component init, NOT inside onMount.
+	setBlockStateManager(new BlockStateManager());
 
 	// State
 	let blocks = $state<Block[]>([]);
@@ -245,8 +256,17 @@ import { toBlockId, type BlockId } from '$lib/stores/blockState.svelte';
 		transition: opacity 0.15s;
 	}
 
-	.editor__block:hover .editor__block-actions {
+	.editor__block:hover .editor__block-actions,
+	.editor__block:focus-within .editor__block-actions,
+	.editor__block--selected .editor__block-actions {
 		opacity: 1;
+	}
+
+	/* Touch devices have no hover — keep actions visible at all times. */
+	@media (hover: none) {
+		.editor__block-actions {
+			opacity: 1;
+		}
 	}
 
 	.editor__block-delete {
@@ -271,6 +291,35 @@ import { toBlockId, type BlockId } from '$lib/stores/blockState.svelte';
 		text-align: center;
 		padding: 3rem;
 		color: #6b7280;
+	}
+
+	/* Mobile — toolbar tightens, labels hide on phones, delete button is bigger
+	   and always visible (touch devices have no hover). */
+	@media (max-width: 640px) {
+		.editor {
+			padding: 1rem;
+		}
+		.editor__title {
+			font-size: 1.25rem;
+		}
+		.editor__toolbar {
+			padding: 0.5rem;
+			gap: 0.375rem;
+		}
+		.editor__add-btn {
+			padding: 0.5rem;
+			min-width: 44px;
+			min-height: 44px;
+			justify-content: center;
+		}
+		.editor__add-label {
+			display: none;
+		}
+		.editor__block-delete {
+			width: 2.25rem;
+			height: 2.25rem;
+			font-size: 1.125rem;
+		}
 	}
 
 	/* Dark mode */

@@ -7,7 +7,10 @@
 	 * @author Revolution Trading Pros
 	 */
 	import { page } from '$app/state';
+	import { goto } from '$app/navigation';
 	import { user } from '$lib/stores/auth.svelte';
+	import { logout } from '$lib/api/auth';
+	import { isSuperadmin } from '$lib/config/roles';
 	import {
 		IconDashboard,
 		IconReceipt,
@@ -106,6 +109,49 @@
 	}
 
 	let currentPath = $derived(page.url.pathname);
+
+	// Best-active-href: longest matching prefix.
+	// Fixes nested-route highlighting — `/admin/members/123` should highlight
+	// `/admin/members`, and `/admin/members/segments` should pick `/segments`
+	// (not `/members`) because it's a longer match.
+	let bestActiveHref = $derived.by(() => {
+		const allHrefs = menuSections.flatMap((s) => s.items.map((i) => i.href));
+		let best = '';
+		for (const href of allHrefs) {
+			if (currentPath === href || currentPath.startsWith(href + '/')) {
+				if (href.length > best.length) best = href;
+			}
+		}
+		return best;
+	});
+
+	// Real role display, with friendly labels — no more hardcoded "Administrator".
+	let displayRole = $derived.by(() => {
+		const u = $user;
+		if (!u) return 'User';
+		if (isSuperadmin(u)) return 'Super Admin';
+		const role = (u as { role?: string }).role;
+		if (typeof role === 'string' && role.length > 0) {
+			return role
+				.split(/[_-]/)
+				.map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+				.join(' ');
+		}
+		return 'Member';
+	});
+
+	// Real sign-out — clears the auth session, then routes home.
+	// Replaces the old <a href="/"> which only navigated and left tokens intact.
+	async function handleSignOut() {
+		try {
+			await logout();
+		} catch (err) {
+			// Even if the API logout 500s, drop client state and move on.
+			console.warn('[AdminSidebar] logout API failed; signing out client-side anyway', err);
+		}
+		closeSidebar();
+		await goto('/');
+	}
 </script>
 
 <aside class="admin-sidebar" class:open={props.isOpen}>
@@ -120,20 +166,22 @@
 	</div>
 
 	<!-- Navigation -->
-	<nav class="sidebar-nav">
+	<nav class="sidebar-nav" aria-label="Admin primary navigation">
 		{#each menuSections as section}
 			{#if section.title}
 				<div class="nav-section-title">{section.title}</div>
 			{/if}
 			{#each section.items as item}
 				{@const Icon = item.icon}
+				{@const active = item.href === bestActiveHref}
 				<a
 					href={item.href}
 					class="nav-item"
-					class:active={currentPath === item.href}
+					class:active
+					aria-current={active ? 'page' : undefined}
 					onclick={closeSidebar}
 				>
-					<Icon size={20} />
+					<Icon size={20} aria-hidden="true" />
 					<span>{item.label}</span>
 				</a>
 			{/each}
@@ -143,18 +191,18 @@
 	<!-- User Section -->
 	<div class="sidebar-footer">
 		<div class="user-info">
-			<div class="user-avatar">
+			<div class="user-avatar" aria-hidden="true">
 				{$user?.name?.[0]?.toUpperCase() || 'A'}
 			</div>
 			<div class="user-details">
 				<span class="user-name">{$user?.name || 'Admin'}</span>
-				<span class="user-role">Administrator</span>
+				<span class="user-role">{displayRole}</span>
 			</div>
 		</div>
-		<a href="/" class="exit-btn">
-			<IconLogout size={18} />
-			<span>Exit Admin</span>
-		</a>
+		<button type="button" class="exit-btn" onclick={handleSignOut}>
+			<IconLogout size={18} aria-hidden="true" />
+			<span>Sign Out</span>
+		</button>
 	</div>
 </aside>
 

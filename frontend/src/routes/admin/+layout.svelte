@@ -128,7 +128,7 @@
 </script>
 
 <svelte:head>
-	<title>Admin Dashboard | Revolution Trading Pros</title>
+	<title>{formatPageTitle(page.url.pathname)} · Admin · Revolution Trading Pros</title>
 </svelte:head>
 
 <div class="admin-layout admin">
