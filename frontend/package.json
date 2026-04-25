@@ -147,7 +147,6 @@
 		"prettier": "^3.8.3",
 		"prettier-plugin-svelte": "^3.5.1",
 		"super-sitemap": "^1.0.12",
-		"sv-agentation": "0.2.6",
 		"svelte": "^5.55.5",
 		"svelte-check": "^4.4.6",
 		"svelte-inspect-value": "0.11.1",

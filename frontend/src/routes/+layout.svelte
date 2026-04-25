@@ -28,7 +28,7 @@
 	import { onMount } from 'svelte';
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
-	import { browser, dev } from '$app/environment';
+	import { dev } from '$app/environment';
 	import { registerServiceWorker } from '$lib/utils/registerServiceWorker';
 	import { initPerformanceMonitoring } from '$lib/utils/performance';
 	import { isAdminUser } from '$lib/stores/auth.svelte';
@@ -36,10 +36,6 @@
 	import type { Snippet } from 'svelte';
 	import { initializeConsent } from '$lib/consent';
 	import { trackPageView } from '$lib/consent/vendors/ga4';
-	// sv-agentation — dev-only inspector that surfaces Svelte component sources
-	// for AI agents. Lazy-loaded so it never lands in the production bundle.
-	let AgentationComponent = $state<any>(null);
-	const AGENTATION_WORKSPACE_ROOT = '/Users/billyribeiro/Desktop/my-websites/Revolution-trading-pros';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PROPS - Svelte 5 $props() Pattern (no destructuring)
@@ -109,17 +105,6 @@
 	onMount(() => {
 		mounted = true;
 
-		// Dev tooling — client-side only (prevents hydration mismatch).
-		if (dev) {
-			import('sv-agentation')
-				.then((mod) => {
-					AgentationComponent = mod.Agentation;
-				})
-				.catch(() => {
-					// Package not installed — silently skip.
-				});
-		}
-
 		// All initializers wrapped in try/catch to prevent render interruption
 		initializeAuth().catch((err) => {
 			console.debug('[Layout] Auth init failed (non-critical):', err);
@@ -168,13 +153,6 @@
 		href="/atom.xml"
 	/>
 </svelte:head>
-
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     DEVELOPMENT TOOLS - Svelte DevTools (development only)
-     ═══════════════════════════════════════════════════════════════════════════ -->
-{#if browser && dev && AgentationComponent}
-	<AgentationComponent workspaceRoot={AGENTATION_WORKSPACE_ROOT} />
-{/if}
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
      TEMPLATE - Svelte 5 {@render} Pattern (replaces <slot>)
