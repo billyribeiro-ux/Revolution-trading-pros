@@ -16,9 +16,12 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import { env } from '$env/dynamic/private';
 
-// ICT 7: Centralized configuration with fallback
-const API_URL = process.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev';
+// SvelteKit-canonical server-side env read (replaces process.env.VITE_API_URL,
+// which only worked because Node fell back to process.env in the dev server).
+const API_URL =
+	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
 // ICT 7: Type-safe response structure
 interface SubscriptionsResponse {

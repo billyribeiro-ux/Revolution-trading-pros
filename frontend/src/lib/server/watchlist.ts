@@ -7,8 +7,17 @@
  * Server-side data fetching for 0ms loading delay.
  * Use in +page.server.ts load functions to pre-fetch watchlist data.
  *
- * @version 1.0.0
+ * @version 1.1.0 — apiBaseUrl default now reads $env/dynamic/private
  */
+
+import { env } from '$env/dynamic/private';
+
+/**
+ * Resolved API base URL — checks server env first, falls back to Fly prod.
+ * Local dev points this at http://localhost:8080 via frontend/.env.local.
+ */
+const DEFAULT_API_BASE_URL =
+	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
 export interface WatchlistData {
 	id: number;
@@ -40,7 +49,7 @@ export interface WatchlistResponse {
 export async function getLatestWatchlist(
 	roomSlug?: string,
 	fetchFn: typeof fetch = fetch,
-	apiBaseUrl: string = 'https://revolution-trading-pros-api.fly.dev',
+	apiBaseUrl: string = DEFAULT_API_BASE_URL,
 	accessToken?: string
 ): Promise<WatchlistData | null> {
 	try {
@@ -95,7 +104,7 @@ export async function getLatestWatchlist(
 export async function getWatchlistBySlug(
 	slug: string,
 	fetchFn: typeof fetch = fetch,
-	apiBaseUrl: string = 'https://revolution-trading-pros-api.fly.dev',
+	apiBaseUrl: string = DEFAULT_API_BASE_URL,
 	accessToken?: string
 ): Promise<WatchlistData | null> {
 	try {

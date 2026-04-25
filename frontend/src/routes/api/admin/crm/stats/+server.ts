@@ -9,7 +9,9 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
-const PROD_BACKEND = 'https://revolution-trading-pros-api.fly.dev';
+import { env } from '$env/dynamic/private';
+const PROD_BACKEND =
+	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
 export const GET: RequestHandler = async ({ request }) => {
 	const backendUrl = PROD_BACKEND;

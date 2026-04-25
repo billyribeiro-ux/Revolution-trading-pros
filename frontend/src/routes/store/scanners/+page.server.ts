@@ -57,7 +57,9 @@ export const load = async ({
 			environment: process.env.NODE_ENV || 'development'
 		},
 
-		// Performance hints for browser
+		// Performance hints for browser. These are <link rel="preconnect">
+		// targets — a literal hostname here is correct, not an env-var bug.
+		// (Browser hints don't get the env-var fallback chain; only API calls do.)
 		preconnect: [
 			'https://fonts.googleapis.com',
 			'https://fonts.gstatic.com',

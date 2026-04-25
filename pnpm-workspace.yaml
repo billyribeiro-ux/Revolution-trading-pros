@@ -1,3 +1,5 @@
 packages:
   - frontend
   - svelte-click-to-source
+onlyBuiltDependencies:
+  - esbuild

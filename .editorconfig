@@ -1,0 +1,33 @@
+# https://editorconfig.org/
+# Keeps formatting consistent across editors / IDEs.
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = tab
+indent_size = 4
+
+# JS / TS / JSON / Svelte / YAML / CSS — match Prettier config (tabs, width 2)
+[*.{js,jsx,ts,tsx,svelte,json,jsonc,yaml,yml,css,scss}]
+indent_style = tab
+indent_size = 2
+
+# Markdown preserves trailing whitespace (line breaks)
+[*.md]
+trim_trailing_whitespace = false
+indent_style = space
+indent_size = 2
+
+# Rust uses spaces by convention
+[*.rs]
+indent_style = space
+indent_size = 4
+max_line_length = 100
+
+# Makefiles need real tabs
+[Makefile]
+indent_style = tab

@@ -21,6 +21,7 @@
  */
 
 import { fail, type RequestEvent } from '@sveltejs/kit';
+import { env } from '$env/dynamic/private';
 import {
 	accountApi,
 	type UpdateProfileRequest,
@@ -102,7 +103,10 @@ export const load: PageServerLoad = async ({
 	try {
 		// ICT 7 FIX: Fetch account data using server-side fetch with token
 		// This uses SvelteKit's fetch which handles cookies and headers correctly
-		const API_BASE_URL = process.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev';
+		// SvelteKit-canonical server env read (was process.env.VITE_API_URL,
+		// which only worked because Node's process.env happens to expose it).
+		const API_BASE_URL =
+			env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 		const profileResponse = await fetch(`${API_BASE_URL}/api/user/profile`, {
 			headers: {
 				Authorization: `Bearer ${accessToken}`,

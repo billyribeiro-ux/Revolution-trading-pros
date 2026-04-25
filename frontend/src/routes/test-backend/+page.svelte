@@ -1,5 +1,10 @@
 <!--
 	URL: /test-backend
+
+	Diagnostic page for verifying production-backend reachability.
+	The Fly URL is intentionally hardcoded here — the page's purpose is
+	to confirm the *production* backend is up, not whatever local API
+	happens to be running. Don't refactor these to env-driven URLs.
 -->
 
 <script lang="ts">

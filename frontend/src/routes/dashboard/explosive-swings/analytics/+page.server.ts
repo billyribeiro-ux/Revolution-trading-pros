@@ -90,7 +90,8 @@ interface AnalyticsPageData {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const LOG_PREFIX = '[analytics-ssr]';
-const DEFAULT_API_URL = 'https://revolution-trading-pros-api.fly.dev';
+const DEFAULT_API_URL =
+	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 const DEFAULT_PERIOD = '30d';
 
 // ═══════════════════════════════════════════════════════════════════════════════

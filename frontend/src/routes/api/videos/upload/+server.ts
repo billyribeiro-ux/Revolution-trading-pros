@@ -11,7 +11,9 @@ import { json, error, type RequestEvent } from '@sveltejs/kit';
 
 // Production fallback - Rust API on Fly.io
 // ICT 7 FIX: VITE_API_URL does NOT include /api suffix - we add it here
-const PROD_API_ROOT = 'https://revolution-trading-pros-api.fly.dev';
+import { env } from '$env/dynamic/private';
+const PROD_API_ROOT =
+	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
 // API Base URL - use environment variable or fallback to production
 const getApiUrl = () => {

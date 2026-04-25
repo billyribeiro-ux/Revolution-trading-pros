@@ -20,8 +20,10 @@ import { redirect, isRedirect } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { env } from '$env/dynamic/private';
 
-// API URL for server-side token validation
-const API_BASE_URL = env.API_BASE_URL || 'https://revolution-trading-pros-api.fly.dev';
+// API URL for server-side token validation. Precedence matches every
+// +server.ts proxy and lib/server/axum/client.ts.
+const API_BASE_URL =
+	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
 /**
  * Protected routes that require authentication

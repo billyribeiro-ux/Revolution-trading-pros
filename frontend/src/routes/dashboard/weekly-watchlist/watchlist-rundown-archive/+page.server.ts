@@ -11,6 +11,7 @@
  */
 
 import type { ServerLoadEvent } from '@sveltejs/kit';
+import { env } from '$env/dynamic/private';
 
 /** API response structure from backend */
 interface WatchlistApiEntry {
@@ -107,9 +108,9 @@ const MOCK_VIDEOS: WatchlistVideo[] = [
 
 export async function load({ fetch }: ServerLoadEvent) {
 	try {
-		const response = await fetch(
-			'https://revolution-trading-pros-api.fly.dev/api/watchlist/entries'
-		);
+		const apiBase =
+			env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+		const response = await fetch(`${apiBase}/api/watchlist/entries`);
 
 		if (!response.ok) {
 			console.error('[WatchlistRundown] API error:', response.status, '- using mock data');

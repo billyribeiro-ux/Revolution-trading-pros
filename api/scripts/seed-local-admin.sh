@@ -62,17 +62,28 @@ fi
 
 echo "✓ argon2id hash generated"
 
-# Upsert into the local Postgres. The users table is created by migration
-# 000_bootstrap_users.sql. role = super_admin gives admin + superadmin both.
-docker exec -i rtp-db psql -U rtp -d revolution_trading_pros -v ON_ERROR_STOP=1 <<SQL
+# Upsert into the local Postgres. We pass values via psql's :'var' substitution
+# (parameterized) instead of inlining into the SQL string — that way an email
+# or name containing a single quote can't break the script or inject SQL.
+# `-v ON_ERROR_STOP=1` ensures any failure aborts the script.
+docker exec -i \
+  -e PSQL_NAME="$NAME" \
+  -e PSQL_EMAIL="$EMAIL" \
+  -e PSQL_HASH="$HASH" \
+  rtp-db \
+  psql -U rtp -d revolution_trading_pros \
+    -v ON_ERROR_STOP=1 \
+    -v "name=$NAME" \
+    -v "email=$EMAIL" \
+    -v "hash=$HASH" <<'SQL'
 INSERT INTO users (name, email, password_hash, role, email_verified_at, created_at, updated_at)
-VALUES ('$NAME', '$EMAIL', '$HASH', 'super_admin', NOW(), NOW(), NOW())
+VALUES (:'name', :'email', :'hash', 'super_admin', NOW(), NOW(), NOW())
 ON CONFLICT (email) DO UPDATE
-SET name          = EXCLUDED.name,
-    password_hash = EXCLUDED.password_hash,
-    role          = 'super_admin',
+SET name              = EXCLUDED.name,
+    password_hash     = EXCLUDED.password_hash,
+    role              = 'super_admin',
     email_verified_at = COALESCE(users.email_verified_at, NOW()),
-    updated_at    = NOW();
+    updated_at        = NOW();
 SQL
 
 echo "✓ user upserted: $EMAIL (role=super_admin, email_verified)"

@@ -52,7 +52,8 @@ interface RoomResourcesResponse {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const LOG_PREFIX = '[explosive-swings]';
-const DEFAULT_API_URL = 'https://revolution-trading-pros-api.fly.dev';
+const DEFAULT_API_URL =
+	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // HELPER FUNCTIONS - ICT 7 Clean Architecture

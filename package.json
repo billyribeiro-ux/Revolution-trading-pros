@@ -12,7 +12,9 @@
     "format": "pnpm --filter revolution-svelte format",
     "test": "pnpm --filter revolution-svelte test"
   },
-  "dependencies": {},
+  "dependencies": {
+    
+  },
   "pnpm": {
     "onlyBuiltDependencies": [
       "@sentry/cli",

@@ -1,551 +1,100 @@
-# ═══════════════════════════════════════════════════════════════════════════════
-# Revolution Trading Pros - Cloudflare Pages Deployment
-# ═══════════════════════════════════════════════════════════════════════════════
-#
-# Apple Principal Engineer ICT11+ CI/CD Pipeline
-#
-# Triggers:
-# - Push to main: Deploy to production
-# - Push to develop: Deploy to staging
-# - Push to claude/*: Deploy to preview
-# - Pull request: Deploy preview with comment
-#
-# ═══════════════════════════════════════════════════════════════════════════════
-# CONFIGURATION:
-# - API_URL and CDN_URL use hardcoded defaults (see env block below)
-# - Required secrets: CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID
-# - Optional features: Lighthouse audits, cache purging (auto-handled by Pages)
-# ═══════════════════════════════════════════════════════════════════════════════
-
 name: Deploy Frontend (Cloudflare Pages)
 
+# This workflow is a SECONDARY deploy path. The Cloudflare Pages dashboard
+# Git integration is the primary one — it builds and deploys every push to
+# main automatically and is the source of truth for production.
+#
+# This workflow exists for:
+#   - workflow_dispatch (manual deploy of a specific branch / commit)
+#   - PR preview deploys (Cloudflare Pages dashboard handles these for the
+#     main project; this is a backup path)
+#
+# Required repo secrets:
+#   - CLOUDFLARE_API_TOKEN  — token with "Pages: Edit" permission
+#   - CLOUDFLARE_ACCOUNT_ID — from the Cloudflare dashboard
+
 on:
-  push:
-    branches:
-      - main
-      - develop
-      - 'claude/**'
-    paths:
-      - 'frontend/**'
-      - '.github/workflows/deploy-cloudflare.yml'
-  pull_request:
-    branches:
-      - main
-      - develop
-    paths:
-      - 'frontend/**'
   workflow_dispatch:
     inputs:
-      environment:
-        description: 'Deployment environment'
-        required: true
-        default: 'preview'
-        type: choice
-        options:
-          - preview
-          - staging
-          - production
+      branch:
+        description: "Cloudflare Pages branch (production / preview / staging / pr-N)"
+        required: false
+        default: "preview"
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - "frontend/**"
+      - ".github/workflows/deploy-cloudflare.yml"
+      - "pnpm-lock.yaml"
 
 env:
-  NODE_VERSION: '20'
-  CLOUDFLARE_PROJECT_NAME: 'revolution-trading-pros'
-  # Default URLs - can be overridden by repository variables
-  DEFAULT_API_URL: 'https://revolution-trading-pros-api.fly.dev'
-  DEFAULT_CDN_URL: 'https://pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev'
+  NODE_VERSION: "22"
+  PNPM_VERSION: "10.33.2"
+  CLOUDFLARE_PROJECT_NAME: revolution-trading-pros
 
 jobs:
-  # ═══════════════════════════════════════════════════════════════════════════
-  # SETUP - Determine Environment & Configuration
-  # ═══════════════════════════════════════════════════════════════════════════
-
-  setup:
-    name: Setup Environment
+  build-and-deploy:
+    name: Build + Deploy
     runs-on: ubuntu-latest
-    timeout-minutes: 2
-
-    outputs:
-      environment: ${{ steps.config.outputs.environment }}
-      branch-flag: ${{ steps.config.outputs.branch_flag }}
-      site-url: ${{ steps.config.outputs.site_url }}
-      api-url: ${{ steps.config.outputs.api_url }}
-      should-purge-cache: ${{ steps.config.outputs.should_purge_cache }}
-      should-run-lighthouse: ${{ steps.config.outputs.should_run_lighthouse }}
-
-    steps:
-      - name: Determine deployment configuration
-        id: config
-        run: |
-          # Determine environment and branch flag based on trigger
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            echo "environment=preview" >> $GITHUB_OUTPUT
-            echo "branch_flag=--branch=pr-${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
-            echo "site_url=https://pr-${{ github.event.pull_request.number }}.${PROJECT_NAME}.pages.dev" >> $GITHUB_OUTPUT
-            echo "should_purge_cache=false" >> $GITHUB_OUTPUT
-            echo "should_run_lighthouse=false" >> $GITHUB_OUTPUT
-
-          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            SELECTED_ENV="${{ github.event.inputs.environment }}"
-            echo "environment=${SELECTED_ENV}" >> $GITHUB_OUTPUT
-
-            case "${SELECTED_ENV}" in
-              production)
-                echo "branch_flag=" >> $GITHUB_OUTPUT
-                echo "site_url=https://${PROJECT_NAME}.pages.dev" >> $GITHUB_OUTPUT
-                echo "should_purge_cache=true" >> $GITHUB_OUTPUT
-                echo "should_run_lighthouse=true" >> $GITHUB_OUTPUT
-                ;;
-              staging)
-                echo "branch_flag=--branch=staging" >> $GITHUB_OUTPUT
-                echo "site_url=https://staging.${PROJECT_NAME}.pages.dev" >> $GITHUB_OUTPUT
-                echo "should_purge_cache=false" >> $GITHUB_OUTPUT
-                echo "should_run_lighthouse=false" >> $GITHUB_OUTPUT
-                ;;
-              *)
-                echo "branch_flag=--branch=preview" >> $GITHUB_OUTPUT
-                echo "site_url=https://preview.${PROJECT_NAME}.pages.dev" >> $GITHUB_OUTPUT
-                echo "should_purge_cache=false" >> $GITHUB_OUTPUT
-                echo "should_run_lighthouse=false" >> $GITHUB_OUTPUT
-                ;;
-            esac
-
-          elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            echo "environment=production" >> $GITHUB_OUTPUT
-            echo "branch_flag=" >> $GITHUB_OUTPUT
-            echo "site_url=https://${PROJECT_NAME}.pages.dev" >> $GITHUB_OUTPUT
-            echo "should_purge_cache=true" >> $GITHUB_OUTPUT
-            echo "should_run_lighthouse=true" >> $GITHUB_OUTPUT
-
-          elif [ "${{ github.ref }}" = "refs/heads/develop" ]; then
-            echo "environment=staging" >> $GITHUB_OUTPUT
-            echo "branch_flag=--branch=staging" >> $GITHUB_OUTPUT
-            echo "site_url=https://staging.${PROJECT_NAME}.pages.dev" >> $GITHUB_OUTPUT
-            echo "should_purge_cache=false" >> $GITHUB_OUTPUT
-            echo "should_run_lighthouse=false" >> $GITHUB_OUTPUT
-
-          else
-            # Handle claude/* and other branches - sanitize branch name
-            SAFE_BRANCH=$(echo "${{ github.ref_name }}" | sed 's/[\/]/-/g' | sed 's/[^a-zA-Z0-9-]//g' | cut -c1-28)
-            echo "environment=preview" >> $GITHUB_OUTPUT
-            echo "branch_flag=--branch=${SAFE_BRANCH}" >> $GITHUB_OUTPUT
-            echo "site_url=https://${SAFE_BRANCH}.${PROJECT_NAME}.pages.dev" >> $GITHUB_OUTPUT
-            echo "should_purge_cache=false" >> $GITHUB_OUTPUT
-            echo "should_run_lighthouse=false" >> $GITHUB_OUTPUT
-          fi
-
-          # API URL - hardcoded default
-          echo "api_url=${{ env.DEFAULT_API_URL }}" >> $GITHUB_OUTPUT
-        env:
-          PROJECT_NAME: ${{ env.CLOUDFLARE_PROJECT_NAME }}
-
-      - name: Log configuration
-        run: |
-          echo "## Deployment Configuration" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Setting | Value |" >> $GITHUB_STEP_SUMMARY
-          echo "|---------|-------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Environment | ${{ steps.config.outputs.environment }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Branch Flag | \`${{ steps.config.outputs.branch_flag || '(production)' }}\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| Site URL | ${{ steps.config.outputs.site_url }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| API URL | ${{ steps.config.outputs.api_url }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Purge Cache | ${{ steps.config.outputs.should_purge_cache }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Run Lighthouse | ${{ steps.config.outputs.should_run_lighthouse }} |" >> $GITHUB_STEP_SUMMARY
-
-  # ═══════════════════════════════════════════════════════════════════════════
-  # QUALITY CHECKS - Type Check & Lint
-  # ═══════════════════════════════════════════════════════════════════════════
-
-  quality:
-    name: Quality Checks
-    runs-on: ubuntu-latest
-    needs: setup
-    timeout-minutes: 10
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
-
-      - name: Install dependencies
-        working-directory: frontend
-        run: npm ci
-
-      - name: Generate SvelteKit types
-        working-directory: frontend
-        run: npm run build
-        env:
-          # Build to generate .svelte-kit/tsconfig.json for type checking
-          VITE_API_URL: ${{ needs.setup.outputs.api-url }}
-          VITE_CDN_URL: ${{ env.DEFAULT_CDN_URL }}
-
-      - name: Type check
-        working-directory: frontend
-        run: npm run check
-        # Production deployments must pass type checks
-        continue-on-error: ${{ needs.setup.outputs.environment != 'production' }}
-
-      - name: Lint
-        working-directory: frontend
-        run: npm run lint
-        # Allow lint to pass with warnings - pre-existing ESLint issues should not block deployment
-        # TODO: Fix ESLint errors and restore strict linting for production
-        continue-on-error: true
-
-  # ═══════════════════════════════════════════════════════════════════════════
-  # BUILD
-  # ═══════════════════════════════════════════════════════════════════════════
-
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    needs: [setup, quality]
     timeout-minutes: 15
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    # Hoist the secrets into a job-level env so step `if:` expressions can
+    # reference them. The `secrets` context is only valid in `with:`/`env:`
+    # bindings and `with:` inputs, not directly in `if:` conditions.
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
+          cache: pnpm
 
-      - name: Install dependencies
-        working-directory: frontend
-        run: npm ci
+      - name: Install
+        run: pnpm install --frozen-lockfile
 
-      - name: Build for Cloudflare
-        working-directory: frontend
-        run: npm run build
+      - name: Build (production)
+        run: pnpm --filter revolution-svelte build
         env:
-          DEPLOY_TARGET: cloudflare
-          VITE_SITE_NAME: "Revolution Trading Pros"
-          VITE_SITE_URL: ${{ needs.setup.outputs.site-url }}
-          # ICT 7 FIX: VITE_API_URL must NOT include /api suffix
-          # API_ENDPOINTS in config.ts already include /api prefix in each path
-          VITE_API_URL: ${{ needs.setup.outputs.api-url }}
-          VITE_API_BASE_URL: ${{ needs.setup.outputs.api-url }}
-          VITE_CDN_URL: ${{ env.DEFAULT_CDN_URL }}
+          API_BASE_URL: https://revolution-trading-pros-api.fly.dev
+          BACKEND_URL: https://revolution-trading-pros-api.fly.dev
 
-      - name: Verify build output
-        working-directory: frontend
+      # Branch resolution: PRs go to pr-N, manual dispatch uses the chosen
+      # input, anything else lands on the "preview" branch.
+      - name: Determine deploy branch
+        id: branch
         run: |
-          if [ ! -d ".svelte-kit/cloudflare" ]; then
-            echo "::error::Build output directory not found: .svelte-kit/cloudflare"
-            exit 1
-          fi
-
-          # Check for essential files
-          if [ ! -f ".svelte-kit/cloudflare/_worker.js" ] && [ ! -f ".svelte-kit/cloudflare/index.html" ]; then
-            echo "::error::Build output appears incomplete - missing essential files"
-            ls -la .svelte-kit/cloudflare/
-            exit 1
-          fi
-
-          echo "Build output verified successfully"
-          echo "Contents:"
-          ls -la .svelte-kit/cloudflare/
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: cloudflare-build
-          # Upload entire .svelte-kit directory - _worker.js references ../output and ../cloudflare-tmp
-          path: frontend/.svelte-kit
-          retention-days: 1
-          if-no-files-found: error
-          # .svelte-kit starts with a dot (hidden), must include hidden files
-          include-hidden-files: true
-
-  # ═══════════════════════════════════════════════════════════════════════════
-  # DEPLOY TO CLOUDFLARE PAGES
-  # ═══════════════════════════════════════════════════════════════════════════
-
-  deploy:
-    name: Deploy to Cloudflare
-    runs-on: ubuntu-latest
-    needs: [setup, build]
-    timeout-minutes: 10
-
-    environment:
-      name: ${{ needs.setup.outputs.environment }}
-      url: ${{ steps.deploy.outputs.deployment-url || steps.deploy.outputs.url }}
-
-    outputs:
-      deployment-url: ${{ steps.deploy.outputs.deployment-url || steps.deploy.outputs.url }}
-      environment: ${{ needs.setup.outputs.environment }}
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: cloudflare-build
-          # Download entire .svelte-kit directory to match upload path
-          path: frontend/.svelte-kit
-
-      - name: Verify downloaded artifacts
-        run: |
-          echo "Downloaded artifacts structure:"
-          ls -la frontend/.svelte-kit/
-          echo "Cloudflare directory:"
-          ls -la frontend/.svelte-kit/cloudflare/
-
-      - name: Check Cloudflare secrets
-        id: check-secrets
-        run: |
-          MISSING=""
-          if [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ]; then
-            MISSING="${MISSING}CLOUDFLARE_API_TOKEN "
-          fi
-          if [ -z "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" ]; then
-            MISSING="${MISSING}CLOUDFLARE_ACCOUNT_ID "
-          fi
-
-          if [ -n "${MISSING}" ]; then
-            echo "::warning::Missing secrets: ${MISSING}"
-            echo "has_secrets=false" >> $GITHUB_OUTPUT
-            echo "missing=${MISSING}" >> $GITHUB_OUTPUT
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "name=pr-${{ github.event.pull_request.number }}" >> "$GITHUB_OUTPUT"
           else
-            echo "has_secrets=true" >> $GITHUB_OUTPUT
+            echo "name=${{ github.event.inputs.branch || 'preview' }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Skip if Cloudflare secrets missing
+        id: gate
+        run: |
+          if [[ -z "$CLOUDFLARE_API_TOKEN" || -z "$CLOUDFLARE_ACCOUNT_ID" ]]; then
+            echo "::warning::CLOUDFLARE_API_TOKEN or CLOUDFLARE_ACCOUNT_ID secret is not configured. Skipping deploy."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Deploy to Cloudflare Pages
-        id: deploy
-        if: steps.check-secrets.outputs.has_secrets == 'true'
+        if: steps.gate.outputs.ready == 'true'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: frontend
-          command: pages deploy .svelte-kit/cloudflare --project-name=${{ env.CLOUDFLARE_PROJECT_NAME }} ${{ needs.setup.outputs.branch-flag }}
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-
-      - name: Skip deployment notice
-        if: steps.check-secrets.outputs.has_secrets == 'false'
-        run: |
-          echo "::notice::Cloudflare deployment skipped - secrets not configured"
-          echo "## ⚠️ Deployment Skipped" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Cloudflare secrets are not configured in repository settings." >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Missing secrets:** ${{ steps.check-secrets.outputs.missing }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### How to configure:" >> $GITHUB_STEP_SUMMARY
-          echo "1. Go to **Settings** → **Secrets and variables** → **Actions**" >> $GITHUB_STEP_SUMMARY
-          echo "2. Add the following repository secrets:" >> $GITHUB_STEP_SUMMARY
-          echo "   - \`CLOUDFLARE_API_TOKEN\` - Create at [Cloudflare Dashboard](https://dash.cloudflare.com/profile/api-tokens)" >> $GITHUB_STEP_SUMMARY
-          echo "   - \`CLOUDFLARE_ACCOUNT_ID\` - Found in Cloudflare Dashboard URL or Workers & Pages overview" >> $GITHUB_STEP_SUMMARY
-          exit 1
-
-      - name: Output deployment URL
-        if: steps.deploy.outcome == 'success'
-        run: |
-          DEPLOY_URL="${{ steps.deploy.outputs.deployment-url || steps.deploy.outputs.url }}"
-          echo "## ✅ Deployment Complete" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
-          echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
-          echo "| **URL** | [${DEPLOY_URL}](${DEPLOY_URL}) |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Environment** | ${{ needs.setup.outputs.environment }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Branch** | \`${{ github.ref_name }}\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Commit** | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
-
-  # ═══════════════════════════════════════════════════════════════════════════
-  # PR COMMENT (Preview Deployments)
-  # ═══════════════════════════════════════════════════════════════════════════
-
-  comment:
-    name: Comment on PR
-    runs-on: ubuntu-latest
-    needs: [setup, deploy]
-    if: github.event_name == 'pull_request' && needs.deploy.outputs.deployment-url
-    permissions:
-      pull-requests: write
-
-    steps:
-      - name: Comment with deployment URL
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const deploymentUrl = '${{ needs.deploy.outputs.deployment-url }}';
-            const environment = '${{ needs.setup.outputs.environment }}';
-            const sha = '${{ github.event.pull_request.head.sha }}'.substring(0, 7);
-
-            if (!deploymentUrl) {
-              console.log('No deployment URL available, skipping comment');
-              return;
-            }
-
-            const body = `## 🚀 Cloudflare Pages Preview
-
-            | Status | Environment | Commit |
-            |--------|-------------|--------|
-            | ✅ Deployed | ${environment} | \`${sha}\` |
-
-            ### 🔗 Preview URL
-            **${deploymentUrl}**
-
-            ### 📍 Quick Links
-            | Page | Link |
-            |------|------|
-            | Homepage | [Open](${deploymentUrl}) |
-            | Dashboard | [Open](${deploymentUrl}/dashboard) |
-            | SEO Tool | [Open](${deploymentUrl}/seo) |
-            | Pricing | [Open](${deploymentUrl}/pricing) |
-
-            ---
-            <sub>🤖 Deployed automatically via GitHub Actions • Updated ${new Date().toISOString()}</sub>`;
-
-            // Find existing comment
-            const { data: comments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-            });
-
-            const existingComment = comments.find(comment =>
-              comment.user.login === 'github-actions[bot]' &&
-              comment.body.includes('Cloudflare Pages Preview')
-            );
-
-            if (existingComment) {
-              await github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: existingComment.id,
-                body: body
-              });
-              console.log(`Updated existing comment: ${existingComment.id}`);
-            } else {
-              const { data: newComment } = await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.issue.number,
-                body: body
-              });
-              console.log(`Created new comment: ${newComment.id}`);
-            }
-
-  # ═══════════════════════════════════════════════════════════════════════════
-  # LIGHTHOUSE AUDIT (Production Only)
-  # ═══════════════════════════════════════════════════════════════════════════
-
-  lighthouse:
-    name: Lighthouse Audit
-    runs-on: ubuntu-latest
-    needs: [setup, deploy]
-    if: needs.setup.outputs.should-run-lighthouse == 'true' && needs.deploy.outputs.deployment-url
-    timeout-minutes: 10
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Wait for deployment to be accessible
-        run: |
-          DEPLOY_URL="${{ needs.deploy.outputs.deployment-url }}"
-          echo "Waiting for ${DEPLOY_URL} to be accessible..."
-
-          for i in {1..30}; do
-            if curl -s -o /dev/null -w "%{http_code}" "${DEPLOY_URL}" | grep -q "200\|301\|302"; then
-              echo "✅ Site is accessible"
-              exit 0
-            fi
-            echo "Attempt ${i}/30 - waiting 10s..."
-            sleep 10
-          done
-
-          echo "::warning::Site may not be fully accessible yet, proceeding with Lighthouse anyway"
-
-      - name: Run Lighthouse CI
-        uses: treosh/lighthouse-ci-action@v11
-        with:
-          urls: |
-            ${{ needs.deploy.outputs.deployment-url }}
-            ${{ needs.deploy.outputs.deployment-url }}/pricing
-            ${{ needs.deploy.outputs.deployment-url }}/seo
-          uploadArtifacts: true
-          temporaryPublicStorage: true
-        continue-on-error: true
-
-      - name: Lighthouse results summary
-        if: always()
-        run: |
-          echo "## 🔦 Lighthouse Audit Complete" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Results have been uploaded to temporary public storage." >> $GITHUB_STEP_SUMMARY
-          echo "Check the workflow artifacts for detailed reports." >> $GITHUB_STEP_SUMMARY
-
-  # ═══════════════════════════════════════════════════════════════════════════
-  # PURGE CLOUDFLARE CACHE (Production Only)
-  # ═══════════════════════════════════════════════════════════════════════════
-
-  purge-cache:
-    name: Purge CDN Cache
-    runs-on: ubuntu-latest
-    needs: [setup, deploy]
-    if: needs.setup.outputs.should-purge-cache == 'true'
-    timeout-minutes: 5
-
-    steps:
-      - name: Purge Cloudflare cache
-        run: |
-          echo "Purging Cloudflare cache..."
-          echo "## ℹ️ Cache Purge" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Cloudflare Pages automatically invalidates cache on deployment." >> $GITHUB_STEP_SUMMARY
-          echo "Manual cache purge skipped - configure CLOUDFLARE_ZONE_ID if needed." >> $GITHUB_STEP_SUMMARY
-
-  # ═══════════════════════════════════════════════════════════════════════════
-  # WORKFLOW SUMMARY
-  # ═══════════════════════════════════════════════════════════════════════════
-
-  summary:
-    name: Workflow Summary
-    runs-on: ubuntu-latest
-    needs: [setup, quality, build, deploy]
-    if: always()
-
-    steps:
-      - name: Generate workflow summary
-        run: |
-          echo "# 📋 Deployment Workflow Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-          echo "## Job Results" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
-          echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Setup | ${{ needs.setup.result == 'success' && '✅ Success' || needs.setup.result == 'skipped' && '⏭️ Skipped' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Quality | ${{ needs.quality.result == 'success' && '✅ Success' || needs.quality.result == 'skipped' && '⏭️ Skipped' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Build | ${{ needs.build.result == 'success' && '✅ Success' || needs.build.result == 'skipped' && '⏭️ Skipped' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Deploy | ${{ needs.deploy.result == 'success' && '✅ Success' || needs.deploy.result == 'skipped' && '⏭️ Skipped' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-          if [ "${{ needs.deploy.result }}" = "success" ]; then
-            echo "## 🎉 Deployment Successful" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "**Environment:** ${{ needs.setup.outputs.environment }}" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "**URL:** ${{ needs.deploy.outputs.deployment-url }}" >> $GITHUB_STEP_SUMMARY
-          elif [ "${{ needs.deploy.result }}" = "failure" ]; then
-            echo "## ❌ Deployment Failed" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "Check the deploy job logs for details." >> $GITHUB_STEP_SUMMARY
-          fi
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# END OF WORKFLOW
-# ═══════════════════════════════════════════════════════════════════════════════
+          command: >-
+            pages deploy .svelte-kit/cloudflare
+            --project-name=${{ env.CLOUDFLARE_PROJECT_NAME }}
+            --branch=${{ steps.branch.outputs.name }}

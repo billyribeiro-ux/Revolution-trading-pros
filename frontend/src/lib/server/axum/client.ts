@@ -27,7 +27,9 @@ import { getRequestEvent } from '$app/server';
 const PROD_API_ROOT = 'https://revolution-trading-pros-api.fly.dev';
 
 function getApiRoot(): string {
-	return env.API_BASE_URL || env.VITE_API_URL || env.BACKEND_URL || PROD_API_ROOT;
+	// Server-side ONLY — VITE_* vars belong in client bundles. Match the
+	// precedence used by every +server.ts proxy so dev/prod is consistent.
+	return env.API_BASE_URL || env.BACKEND_URL || PROD_API_ROOT;
 }
 
 const MAX_RETRIES = 3;
