@@ -28,6 +28,8 @@ All notable changes to this project. Format roughly follows [Keep a Changelog](h
 - **Moved** stray shell scripts from the root into `scripts/`.
 - **Removed** 9 one-shot frontend migration scripts that had completed their job (recoverable from git history).
 - **Removed** stale `.build-trigger` placeholder.
+- **Removed** `pa11y-ci` (sole source of glob@7 / inflight / whatwg-encoding deprecation warnings; superseded by Svelte's compile-time a11y rules + `@axe-core/playwright` for runtime checks). −122 transitive packages.
+- **Confirmed** Storybook is not installed and never was; no story files, no `.storybook/` config. Nothing to remove.
 
 ### Documentation
 

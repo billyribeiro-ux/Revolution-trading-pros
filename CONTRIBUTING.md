@@ -88,6 +88,18 @@ See [`docs/development/ENV_VARS.md`](docs/development/ENV_VARS.md) for the full 
    ```
 4. Commit `api/.sqlx/` along with the migration.
 
+## What's NOT in the active build
+
+`frontend/Implementation/`, `frontend/Do's/`, `frontend/SimpletTGWatkins/`, and `frontend/blogsample/` are reference / design-mockup material kept in tree
+for historical context. They are:
+
+- **Tracked** in git (so they're not lost)
+- **Excluded** from `frontend/tsconfig.json` (so svelte-check / TypeScript ignore them)
+- **Excluded** from the active import graph (so the production bundle never picks them up)
+
+Don't grep these for code patterns when auditing — they will produce false
+positives. Real code lives under `frontend/src/**`.
+
 ## When you touch `seed-local-admin.sh` or any shell that talks to Postgres
 
 Use `psql -v key=value <<'SQL' … :'key' …` parameter substitution. Do **not** inline shell variables into SQL strings — that's an SQL injection vector even in scripts that only run locally.
