@@ -62,6 +62,16 @@
 	const pathname = $derived(page.url.pathname);
 	const isAdminArea = $derived(pathname.startsWith('/admin'));
 	const isEmbedArea = $derived(pathname.startsWith('/embed'));
+	const isCmsArea = $derived(pathname.startsWith('/cms'));
+	const isDashboardArea = $derived(pathname.startsWith('/dashboard'));
+	// `.marketing-page-root` opts a route INTO the global app.css light theme
+	// (body bg + universal border color). Backend surfaces (admin, dashboard,
+	// cms, embed) are intentionally NOT marketing pages — they paint their
+	// own surfaces and must remain isolated from the global theme. See
+	// docs/audits/CSS_CASCADE_AUDIT_2026-04-25.md.
+	const isMarketingPage = $derived(
+		!isAdminArea && !isDashboardArea && !isCmsArea && !isEmbedArea
+	);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// SEO - Unified SEO resolution (single ownership layer)
@@ -170,14 +180,21 @@
      TEMPLATE - Svelte 5 {@render} Pattern (replaces <slot>)
      DRY Principle: Single shared layout for dashboard + marketing pages
      ═══════════════════════════════════════════════════════════════════════════ -->
-{#if isAdminArea || isEmbedArea}
-	<!-- Admin/Embed: Own layouts, no shared chrome -->
+{#if isAdminArea || isEmbedArea || isCmsArea}
+	<!-- Admin/Embed/CMS: Own layouts, no shared chrome, no marketing-page theme.
+	     The `.marketing-page-root` class is intentionally absent here so the
+	     `app.css` body/universal rules don't apply. See
+	     docs/audits/CSS_CASCADE_AUDIT_2026-04-25.md. -->
 	{@render props.children()}
 {:else}
-	<!-- Dashboard + Marketing: Shared layout with NavBar -->
-	<!-- Pages control their own backgrounds (no forced bg-white) -->
-	<!-- Footer moved to individual pages for better control -->
-	<div class="min-h-screen flex flex-col min-w-0" class:has-admin-toolbar={showAdminToolbar}>
+	<!-- Dashboard + Marketing: Shared layout with NavBar.
+	     Only marketing pages get the `marketing-page-root` class; dashboard
+	     keeps its own theme via lib/styles/dashboard.css. -->
+	<div
+		class="min-h-screen flex flex-col min-w-0"
+		class:marketing-page-root={isMarketingPage}
+		class:has-admin-toolbar={showAdminToolbar}
+	>
 		<!-- ICT Level 7: ClientOnly prevents hydration mismatch for auth-dependent AdminToolbar -->
 		<ClientOnly>
 			{#if showAdminToolbar}

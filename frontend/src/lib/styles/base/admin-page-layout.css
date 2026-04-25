@@ -1,27 +1,29 @@
 /**
  * RTP Admin Page Layout - Standard Layout Classes
  * ═══════════════════════════════════════════════════════════════════════════
- * Provides consistent layout structure for all admin pages
- * Reference: /admin (Overview) page layout
- * 
+ * Provides consistent layout structure for all admin pages.
+ * Reference: /admin (Overview) page layout.
+ *
  * Usage:
- * <div class="admin-page">
- *   <div class="bg-effects">
- *     <div class="bg-blob bg-blob-1"></div>
- *     <div class="bg-blob bg-blob-2"></div>
- *     <div class="bg-blob bg-blob-3"></div>
+ *   <div class="admin-page">
+ *     <div class="admin-page-container">
+ *       <header class="page-header">
+ *         <h1>Page Title</h1>
+ *         <p class="subtitle">Page description</p>
+ *         <div class="header-actions">...</div>
+ *       </header>
+ *       <!-- Content -->
+ *     </div>
  *   </div>
- *   <div class="admin-page-container">
- *     <header class="page-header">
- *       <h1>Page Title</h1>
- *       <p class="subtitle">Page description</p>
- *       <div class="header-actions">...</div>
- *     </header>
- *     <!-- Content -->
- *   </div>
- * </div>
- * 
- * @version 1.0.0
+ *
+ * NOTE (2026-04-25): The earlier convention also rendered three animated
+ * `.bg-blob` divs inside `.bg-effects`. Per the PE7 mandate "no childish
+ * effects on data dashboards", those rules and `@keyframes admin-float`
+ * have been removed. Admin pages that still ship `<div class="bg-effects">…`
+ * markup will render empty divs (no visible effect) until the markup is
+ * stripped — a separate, mechanical cleanup PR (46 pages affected).
+ *
+ * @version 2.0.0
  * @author Revolution Trading Pros
  */
 
@@ -79,71 +81,25 @@
 	padding: 2rem;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
- * ANIMATED BACKGROUND EFFECTS
- * ═══════════════════════════════════════════════════════════════════════════ */
-
-.bg-effects {
-	position: fixed;
-	inset: 0;
-	pointer-events: none;
-	overflow: hidden;
-	z-index: 1;
-}
-
-.bg-blob {
-	position: absolute;
-	border-radius: 50%;
-	filter: blur(80px);
-	opacity: 0.15;
-}
-
-.bg-blob-1 {
-	width: 600px;
-	height: 600px;
-	top: -200px;
-	right: -200px;
-	background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
-	animation: admin-float 20s ease-in-out infinite;
-}
-
-.bg-blob-2 {
-	width: 500px;
-	height: 500px;
-	bottom: -150px;
-	left: -150px;
-	background: linear-gradient(135deg, var(--secondary-500), var(--primary-600));
-	animation: admin-float 25s ease-in-out infinite reverse;
-}
-
-.bg-blob-3 {
-	width: 400px;
-	height: 400px;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	background: linear-gradient(135deg, var(--success-base), var(--success-emphasis));
-	animation: admin-float 30s ease-in-out infinite;
-}
-
-/* ✅ NAMESPACED: admin-float (was float)
- * USED BY: Admin Dashboard - Decorative particles
- * PAGES: /admin/* (all admin pages)
- * PURPOSE: Complex 3D floating animation with rotation and scale for background particles
- * NO CONFLICT: Namespaced to avoid collision with trading-float in performance.css
- */
-@keyframes admin-float {
-	0%,
-	100% {
-		transform: translate(0, 0) scale(1);
-	}
-	33% {
-		transform: translate(30px, -30px) scale(1.05);
-	}
-	66% {
-		transform: translate(-20px, 20px) scale(0.95);
-	}
-}
+/* ─────────────────────────────────────────────────────────────────────────
+ * BACKGROUND-EFFECTS DECONSTRUCTION (2026-04-25)
+ *
+ * The 46 admin pages following the original convention rendered:
+ *   <div class="bg-effects">
+ *     <div class="bg-blob bg-blob-1"></div>
+ *     <div class="bg-blob bg-blob-2"></div>
+ *     <div class="bg-blob bg-blob-3"></div>
+ *   </div>
+ *
+ * Those rules were `position: fixed; filter: blur(80px); animation: admin-float`
+ * — purely decorative, completely incompatible with the PE7 "no childish
+ * effects on backend dashboards" mandate.
+ *
+ * The CSS rules + the `@keyframes admin-float` are deliberately deleted
+ * here so that admin pages still shipping the markup render empty,
+ * non-visible divs. The markup itself is being mechanically stripped from
+ * the 46 affected pages in a separate sweep.
+ * ──────────────────────────────────────────────────────────────────────── */
 
 /* ═══════════════════════════════════════════════════════════════════════════
  * PAGE HEADER - CENTERED
