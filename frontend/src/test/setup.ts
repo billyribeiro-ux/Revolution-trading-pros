@@ -77,7 +77,8 @@ HTMLCanvasElement.prototype.toDataURL = function (type?: string) {
 
 // Mock HTMLCanvasElement.getContext - jsdom returns null; tests with image upload helpers
 // trigger production code that throws "Failed to get canvas context" otherwise.
-HTMLCanvasElement.prototype.getContext = function () {
+// The cast is wide because getContext is overloaded across multiple context kinds.
+(HTMLCanvasElement.prototype as { getContext: unknown }).getContext = function () {
 	return {
 		drawImage: () => {},
 		fillRect: () => {},
@@ -102,8 +103,8 @@ HTMLCanvasElement.prototype.getContext = function () {
 		scale: () => {},
 		rotate: () => {},
 		translate: () => {}
-	} as unknown as CanvasRenderingContext2D;
-} as typeof HTMLCanvasElement.prototype.getContext;
+	};
+};
 
 // Polyfill DataTransfer (not available in JSDOM)
 if (typeof globalThis.DataTransfer === 'undefined') {
