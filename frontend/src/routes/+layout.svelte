@@ -28,7 +28,7 @@
 	import { onMount } from 'svelte';
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
-	import { dev } from '$app/environment';
+	import { browser, dev } from '$app/environment';
 	import { registerServiceWorker } from '$lib/utils/registerServiceWorker';
 	import { initPerformanceMonitoring } from '$lib/utils/performance';
 	import { isAdminUser } from '$lib/stores/auth.svelte';
@@ -36,8 +36,10 @@
 	import type { Snippet } from 'svelte';
 	import { initializeConsent } from '$lib/consent';
 	import { trackPageView } from '$lib/consent/vendors/ga4';
-	// ICT 7: Dynamic import — svelte-render-scan is dev-only and must not run during SSR
-	let RenderScanComponent = $state<any>(null);
+	// sv-agentation — dev-only inspector that surfaces Svelte component sources
+	// for AI agents. Lazy-loaded so it never lands in the production bundle.
+	let AgentationComponent = $state<any>(null);
+	const AGENTATION_WORKSPACE_ROOT = '/Users/billyribeiro/Desktop/my-websites/Revolution-trading-pros';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PROPS - Svelte 5 $props() Pattern (no destructuring)
@@ -97,14 +99,14 @@
 	onMount(() => {
 		mounted = true;
 
-		// ICT 7: Load dev tooling client-side only (prevents hydration mismatch)
+		// Dev tooling — client-side only (prevents hydration mismatch).
 		if (dev) {
-			import('svelte-render-scan')
+			import('sv-agentation')
 				.then((mod) => {
-					RenderScanComponent = mod.RenderScan;
+					AgentationComponent = mod.Agentation;
 				})
 				.catch(() => {
-					// Package not installed — silently skip
+					// Package not installed — silently skip.
 				});
 		}
 
@@ -160,8 +162,8 @@
 <!-- ═══════════════════════════════════════════════════════════════════════════
      DEVELOPMENT TOOLS - Svelte DevTools (development only)
      ═══════════════════════════════════════════════════════════════════════════ -->
-{#if dev && RenderScanComponent}
-	<RenderScanComponent initialEnabled={false} offsetLeft={60} duration={1500} />
+{#if browser && dev && AgentationComponent}
+	<AgentationComponent workspaceRoot={AGENTATION_WORKSPACE_ROOT} />
 {/if}
 
 <!-- ═══════════════════════════════════════════════════════════════════════════

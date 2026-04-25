@@ -23,7 +23,11 @@
 
 	// Local derived from getters
 	const shortcuts = $derived(keyboard.shortcuts);
-	const isHelpOpen = $derived(keyboard.isHelpOpen);
+	// Visibility comes from EITHER the parent's `isOpen` bind OR the keyboard
+	// store's `isHelpOpen` flag. We do NOT mirror them via $effect — that
+	// caused effect_update_depth_exceeded (parent set true → effect set
+	// isOpen ← store false → parent set true → loop).
+	const visible = $derived(isOpen || keyboard.isHelpOpen);
 
 	let groupedShortcuts = $derived(
 		shortcuts
@@ -52,20 +56,12 @@
 		}
 	}
 
-	// One-way sync from the keyboard store → component prop. Pre-fix this was
-	// a guarded two-way write that caused effect feedback loops (the parent
-	// would push back into the store, which re-fired this effect). Now: store
-	// is the source of truth for "should the help be visible right now?"; the
-	// `isOpen` prop is the bindable mirror so parents that prefer prop-driven
-	// control still work. We never write *back* to the store from here.
-	$effect(() => {
-		if (isHelpOpen !== isOpen) {
-			isOpen = isHelpOpen;
-		}
-	});
+	// No $effect mirror between `isOpen` and `keyboard.isHelpOpen`. They are
+	// independent inputs to `visible` ($derived). When closing, `close()`
+	// writes both — that's the only place state mutates.
 </script>
 
-{#if isOpen}
+{#if visible}
 	<div
 		class="shortcuts-overlay"
 		transition:fade={{ duration: 150 }}
