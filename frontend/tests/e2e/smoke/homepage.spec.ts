@@ -42,10 +42,12 @@ test.describe('Homepage Smoke Tests', () => {
 			}
 		});
 
-		await page.goto('/');
+		await page.goto('/', { waitUntil: 'domcontentloaded' });
 
-		// Wait for page to settle
-		await page.waitForLoadState('networkidle');
+		// Allow client hydration and a tick for any synchronous error paths to surface.
+		// Avoid 'networkidle' — GSAP's RAF loop keeps the network event stream busy on this
+		// site, so networkidle never fires.
+		await page.waitForLoadState('load');
 
 		// Filter out known non-critical errors (CORS, extensions, API failures during tests, etc.)
 		// ICT 7: These are infrastructure/browser errors, not application bugs

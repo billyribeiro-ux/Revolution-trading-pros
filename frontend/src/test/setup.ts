@@ -75,6 +75,36 @@ HTMLCanvasElement.prototype.toDataURL = function (type?: string) {
 	return `data:${type || 'image/png'};base64,`;
 };
 
+// Mock HTMLCanvasElement.getContext - jsdom returns null; tests with image upload helpers
+// trigger production code that throws "Failed to get canvas context" otherwise.
+HTMLCanvasElement.prototype.getContext = function () {
+	return {
+		drawImage: () => {},
+		fillRect: () => {},
+		clearRect: () => {},
+		getImageData: () => ({ data: new Uint8ClampedArray() }),
+		putImageData: () => {},
+		createImageData: () => ({ data: new Uint8ClampedArray() }),
+		setTransform: () => {},
+		fillText: () => {},
+		strokeText: () => {},
+		measureText: () => ({ width: 0 }),
+		beginPath: () => {},
+		closePath: () => {},
+		moveTo: () => {},
+		lineTo: () => {},
+		stroke: () => {},
+		fill: () => {},
+		arc: () => {},
+		rect: () => {},
+		save: () => {},
+		restore: () => {},
+		scale: () => {},
+		rotate: () => {},
+		translate: () => {}
+	} as unknown as CanvasRenderingContext2D;
+} as typeof HTMLCanvasElement.prototype.getContext;
+
 // Polyfill DataTransfer (not available in JSDOM)
 if (typeof globalThis.DataTransfer === 'undefined') {
 	globalThis.DataTransfer = class DataTransfer {
@@ -97,6 +127,11 @@ if (typeof globalThis.DataTransfer === 'undefined') {
 		}
 		setDragImage() {}
 	} as any;
+}
+
+// Polyfill document.execCommand (removed in jsdom 29 — still used by ParagraphBlock paste handler)
+if (typeof document !== 'undefined' && typeof document.execCommand !== 'function') {
+	document.execCommand = (() => true) as typeof document.execCommand;
 }
 
 // Polyfill ClipboardEvent (not available in JSDOM)

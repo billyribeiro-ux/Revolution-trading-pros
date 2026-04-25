@@ -90,10 +90,11 @@ global.Image = class MockImage {
 	}
 } as unknown as typeof Image;
 
-// Mock HTMLCanvasElement.getContext and toBlob
-HTMLCanvasElement.prototype.getContext = vi.fn().mockReturnValue({
-	drawImage: vi.fn()
-}) as any;
+// Mock HTMLCanvasElement.getContext (use plain function so vi.clearAllMocks() can't strip the
+// mockReturnValue — vitest 4 changed this behavior versus vitest 3).
+HTMLCanvasElement.prototype.getContext = function () {
+	return { drawImage: () => {} };
+} as unknown as typeof HTMLCanvasElement.prototype.getContext;
 HTMLCanvasElement.prototype.toBlob = vi.fn(function (
 	this: HTMLCanvasElement,
 	callback: BlobCallback

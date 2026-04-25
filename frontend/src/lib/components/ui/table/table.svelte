@@ -2,20 +2,13 @@
 	import type { HTMLTableAttributes } from 'svelte/elements';
 	import { cn, type WithElementRef } from '$lib/utils.js';
 
-	let props: WithElementRef<HTMLTableAttributes> = $props();
-	let ref = $state<HTMLElement | null>(props.ref ?? null);
-	let className = $derived(props.class);
+	let {
+		ref = $bindable(null),
+		class: className,
+		children,
+		...restProps
+	}: WithElementRef<HTMLTableAttributes> = $props();
 
-	$effect(() => {
-		if (props.ref !== undefined && props.ref !== ref) {
-			ref = props.ref;
-		}
-	});
-
-	let restProps = $derived.by(() => {
-		const { ref: _, class: __, children: ___, ...rest } = props;
-		return rest;
-	});
 </script>
 
 <div data-slot="table-container" class="relative w-full overflow-x-auto">
@@ -25,6 +18,6 @@
 		class={cn('w-full caption-bottom text-sm', className)}
 		{...restProps}
 	>
-		{@render props.children?.()}
+		{@render children?.()}
 	</table>
 </div>

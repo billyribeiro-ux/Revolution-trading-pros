@@ -39,7 +39,10 @@
 	// Local State
 	// ==========================================================================
 
-	let urlInputValue = $state(props.block.content.mediaUrl || '');
+	let urlInputValue = $state('');
+	$effect(() => {
+		urlInputValue = props.block.content.mediaUrl || '';
+	});
 	let isLoading = $state(false);
 	let hasError = $state(false);
 	let errorMessage = $state('');

@@ -2,20 +2,13 @@
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { cn, type WithElementRef } from '$lib/utils.js';
 
-	let props: WithElementRef<HTMLAttributes<HTMLParagraphElement>> = $props();
-	let ref = $state<HTMLElement | null>(props.ref ?? null);
-	let className = $derived(props.class);
+	let {
+		ref = $bindable(null),
+		class: className,
+		children,
+		...restProps
+	}: WithElementRef<HTMLAttributes<HTMLParagraphElement>> = $props();
 
-	$effect(() => {
-		if (props.ref !== undefined && props.ref !== ref) {
-			ref = props.ref;
-		}
-	});
-
-	let restProps = $derived.by(() => {
-		const { ref: _, class: __, children: ___, ...rest } = props;
-		return rest;
-	});
 </script>
 
 <p
@@ -24,5 +17,5 @@
 	class={cn('text-muted-foreground text-sm', className)}
 	{...restProps}
 >
-	{@render props.children?.()}
+	{@render children?.()}
 </p>

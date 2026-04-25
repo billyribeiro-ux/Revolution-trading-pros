@@ -2,20 +2,13 @@
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { cn, type WithElementRef } from '$lib/utils.js';
 
-	let props: WithElementRef<HTMLAttributes<HTMLDivElement>> = $props();
-	let ref = $state<HTMLElement | null>(props.ref ?? null);
-	let className = $derived(props.class);
+	let {
+		ref = $bindable(null),
+		class: className,
+		children,
+		...restProps
+	}: WithElementRef<HTMLAttributes<HTMLDivElement>> = $props();
 
-	$effect(() => {
-		if (props.ref !== undefined && props.ref !== ref) {
-			ref = props.ref;
-		}
-	});
-
-	let restProps = $derived.by(() => {
-		const { ref: _, class: __, children: ___, ...rest } = props;
-		return rest;
-	});
 </script>
 
 <div
@@ -36,5 +29,5 @@
 	)}
 	{...restProps}
 >
-	{@render props.children?.()}
+	{@render children?.()}
 </div>

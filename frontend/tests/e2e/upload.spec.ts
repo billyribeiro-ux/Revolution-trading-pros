@@ -94,7 +94,21 @@ async function createTestImage(): Promise<Buffer> {
 	return pngHeader;
 }
 
+// Skip API-backed describes locally when the Rust API isn't reachable. CI sets the API URL.
+async function apiAvailable(request: import('@playwright/test').APIRequestContext) {
+	try {
+		const res = await request.get('/api/health', { timeout: 3000 });
+		return res.ok();
+	} catch {
+		return false;
+	}
+}
+
 test.describe('Upload API Tests', () => {
+	test.beforeAll(async ({ request }) => {
+		test.skip(!(await apiAvailable(request)), 'Backend /api/health is not reachable from this runner');
+	});
+
 	test('media upload endpoint accepts multipart form data', async ({ request }) => {
 		// Create test image buffer
 		const imageBuffer = await createTestImage();
@@ -312,6 +326,10 @@ test.describe('Admin Course Create Page', () => {
 });
 
 test.describe('Media Library API', () => {
+	test.beforeAll(async ({ request }) => {
+		test.skip(!(await apiAvailable(request)), 'Backend /api/health is not reachable from this runner');
+	});
+
 	test('media list endpoint returns valid response', async ({ request }) => {
 		const response = await request.get(`${BASE_URL}/api/admin/media`);
 

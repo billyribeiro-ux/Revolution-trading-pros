@@ -13,29 +13,15 @@
 		showCloseButton?: boolean;
 	};
 
-	let props: ContentProps = $props();
-	let ref = $state<HTMLElement | null>(props.ref ?? null);
-	let className = $derived(props.class);
-	let portalProps = $derived(props.portalProps);
-	let showCloseButton = $derived(props.showCloseButton ?? true);
+	let {
+		ref = $bindable(null),
+		class: className,
+		portalProps,
+		showCloseButton = true,
+		children,
+		...restProps
+	}: ContentProps = $props();
 
-	$effect(() => {
-		if (props.ref !== undefined && props.ref !== ref) {
-			ref = props.ref;
-		}
-	});
-
-	let restProps = $derived.by(() => {
-		const {
-			ref: _,
-			class: __,
-			portalProps: ___,
-			children: ____,
-			showCloseButton: _____,
-			...rest
-		} = props;
-		return rest;
-	});
 </script>
 
 <DialogPortal {...portalProps}>
@@ -73,7 +59,7 @@
 		<div
 			class="flex-1 overflow-y-auto overscroll-contain p-4 pt-6 sm:p-6 -webkit-overflow-scrolling-touch"
 		>
-			{@render props.children?.()}
+			{@render children?.()}
 		</div>
 
 		{#if showCloseButton}

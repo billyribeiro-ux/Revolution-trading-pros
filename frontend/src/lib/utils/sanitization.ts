@@ -5,7 +5,8 @@
  * input validation, and Content Security Policy management.
  */
 
-import DOMPurify, { type Config } from 'isomorphic-dompurify';
+import DOMPurify from 'isomorphic-dompurify';
+import type { Config } from 'dompurify';
 
 // ============================================================================
 // Types
@@ -291,7 +292,7 @@ export function sanitizeHTML(html: string, options: SanitizeOptions = {}): strin
 	};
 
 	// Sanitize
-	let sanitized = DOMPurify.sanitize(content, finalConfig) as string;
+	let sanitized = DOMPurify.sanitize(content, finalConfig) as unknown as string;
 
 	// Add security attributes to links
 	if (secureLinks && mode !== 'strict') {

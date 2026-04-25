@@ -827,7 +827,11 @@ describe('createPresignedUploader', () => {
 			status: 200
 		};
 
-		global.XMLHttpRequest = vi.fn(() => mockXHR) as any;
+		global.XMLHttpRequest = class MockXMLHttpRequest {
+			constructor() {
+				return mockXHR as any;
+			}
+		} as any;
 	});
 
 	afterEach(() => {

@@ -1,19 +1,11 @@
 <script lang="ts">
 	import { DropdownMenu as DropdownMenuPrimitive } from 'bits-ui';
 
-	let props: DropdownMenuPrimitive.GroupProps = $props();
-	let ref = $state<HTMLElement | null>(props.ref ?? null);
+	let {
+		ref = $bindable(null),
+		...restProps
+	}: DropdownMenuPrimitive.GroupProps = $props();
 
-	$effect(() => {
-		if (props.ref !== undefined && props.ref !== ref) {
-			ref = props.ref;
-		}
-	});
-
-	let restProps = $derived.by(() => {
-		const { ref: _, ...rest } = props;
-		return rest;
-	});
 </script>
 
 <DropdownMenuPrimitive.Group bind:ref data-slot="dropdown-menu-group" {...restProps} />
