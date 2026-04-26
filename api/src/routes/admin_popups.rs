@@ -74,6 +74,10 @@ async fn list_popups(
         format!(" AND {}", conditions.join(" AND "))
     };
 
+    // SAFETY: `where_clause` is composed entirely of `${idx}` placeholders
+    // produced above (status / popup_type / search) — no user input is
+    // formatted into the SQL text itself. ORDER BY uses literal column
+    // names. LIMIT and OFFSET are bound through `param_idx` placeholders.
     let sql = format!(
         r#"
         SELECT id, name, type as popup_type, status, priority, title, content,
@@ -93,6 +97,8 @@ async fn list_popups(
         param_idx,
         param_idx + 1
     );
+    // SAFETY: see comment on `sql` above — `where_clause` carries only
+    // bind-parameter placeholders, never user input.
     let count_sql = format!("SELECT COUNT(*) FROM popups WHERE 1=1{}", where_clause);
 
     // Bind parameters for the main query

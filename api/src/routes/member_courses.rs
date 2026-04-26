@@ -1139,7 +1139,12 @@ async fn start_quiz(
         }
     }
 
-    // Get questions
+    // Get questions.
+    //
+    // SAFETY: `order_clause` is a binary choice between two literal SQL
+    // fragments (`"RANDOM()"` and `"sort_order"`) selected by the
+    // `shuffle_questions` boolean column from the DB — no user input
+    // reaches this format string. `quiz_id` is bound below as `$1`.
     let order_clause = if quiz.4 { "RANDOM()" } else { "sort_order" };
     let questions: Vec<serde_json::Value> = sqlx::query_as::<_, (i64, String, String, i32)>(
         &format!("SELECT id, question_type, question_text, points FROM quiz_questions WHERE quiz_id = $1 ORDER BY {}", order_clause)
@@ -1159,6 +1164,10 @@ async fn start_quiz(
     let mut questions_with_answers = Vec::new();
     for mut question in questions {
         let question_id = question["id"].as_i64().unwrap_or(0);
+        // SAFETY: `answer_order` is a binary choice between two literal SQL
+        // fragments (`"RANDOM()"` and `"sort_order"`) selected by the
+        // `shuffle_answers` boolean column from the DB — no user input
+        // reaches this format string. `question_id` is bound below as `$1`.
         let answer_order = if quiz.5 { "RANDOM()" } else { "sort_order" };
         let answers: Vec<serde_json::Value> = sqlx::query_as::<_, (i64, String)>(&format!(
             "SELECT id, answer_text FROM quiz_answers WHERE question_id = $1 ORDER BY {}",

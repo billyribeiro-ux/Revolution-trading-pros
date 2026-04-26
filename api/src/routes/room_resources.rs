@@ -1448,6 +1448,12 @@ async fn bulk_update_resources(
         .collect::<Vec<_>>()
         .join(",");
 
+    // SAFETY: `updates` is composed of literal `column = $idx` fragments
+    // built above from a fixed allow-list of column names
+    // (is_published / is_featured / is_pinned / access_level / category /
+    // section). `ids_placeholder` is a comma-separated list of `${idx}`
+    // placeholders. No user input is formatted into the SQL text — every
+    // value is bound below.
     let query_str = format!(
         "UPDATE room_resources SET {}, updated_at = NOW() WHERE id IN ({}) AND deleted_at IS NULL",
         updates.join(", "),
@@ -1784,10 +1790,17 @@ async fn list_stock_lists(
         format!(" AND {}", conditions.join(" AND "))
     };
 
+    // SAFETY: `where_clause` is composed entirely of `${idx}` bind
+    // placeholders produced above (room_id / list_type / is_active /
+    // week_of) — no user input is formatted into the SQL text. ORDER BY
+    // uses literal column names. LIMIT and OFFSET are bound via
+    // `param_idx` placeholders below.
     let sql = format!(
         "SELECT * FROM stock_lists WHERE 1=1{} ORDER BY is_featured DESC, week_of DESC NULLS LAST, created_at DESC LIMIT ${} OFFSET ${}",
         where_clause, param_idx, param_idx + 1
     );
+    // SAFETY: see comment on `sql` above — `where_clause` carries only
+    // bind-parameter placeholders.
     let count_sql = format!("SELECT COUNT(*) FROM stock_lists WHERE 1=1{}", where_clause);
 
     // Bind parameters for the main query

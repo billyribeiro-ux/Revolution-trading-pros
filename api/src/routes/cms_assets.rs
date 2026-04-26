@@ -589,7 +589,12 @@ pub async fn list_assets(
     }
     let total: i64 = count_q.fetch_one(state.db.pool()).await.unwrap_or(0);
 
-    // Get assets
+    // Get assets.
+    //
+    // SAFETY: `sort_column` and `sort_direction` are checked against the
+    // `allowed_columns` allow-list and a binary ASC/DESC choice above.
+    // Format-string injection through them is therefore impossible. LIMIT
+    // and OFFSET are bound as parameters below — never formatted in.
     let query = format!(
         r#"
         SELECT id, folder_id, filename, mime_type, file_size, cdn_url,
@@ -597,15 +602,20 @@ pub async fn list_assets(
                tags, usage_count, created_at
         FROM cms_assets{}
         ORDER BY {} {}
-        LIMIT {} OFFSET {}
+        LIMIT ${} OFFSET ${}
         "#,
-        where_clause, sort_column, sort_direction, per_page, offset
+        where_clause,
+        sort_column,
+        sort_direction,
+        bind_values.len() + 1,
+        bind_values.len() + 2,
     );
 
     let mut main_q = sqlx::query_as::<_, AssetSummary>(&query);
     for val in &bind_values {
         main_q = main_q.bind(val);
     }
+    main_q = main_q.bind(per_page).bind(offset);
 
     let assets: Vec<AssetSummary> = main_q
         .fetch_all(state.db.pool())
