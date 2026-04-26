@@ -17,6 +17,8 @@
 	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
 	import IconDownload from '@tabler/icons-svelte-runes/icons/download';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	// FIX-2026-04-26: replaced native alert() calls with toastStore for non-blocking UX.
+	import { toastStore } from '$lib/stores/toast.svelte';
 
 	interface Module {
 		id: number;
@@ -132,10 +134,14 @@
 			if (data.success) {
 				course = data.data;
 			} else {
-				alert(data.error || 'Failed to save course');
+				// FIX-2026-04-26: replaced native alert() with toastStore.error.
+				// Old: alert(data.error || 'Failed to save course');
+				toastStore.error(data.error || 'Failed to save course');
 			}
 		} catch {
-			alert('Failed to save course');
+			// FIX-2026-04-26: replaced native alert() with toastStore.error.
+			// Old: alert('Failed to save course');
+			toastStore.error('Failed to save course');
 		} finally {
 			saving = false;
 		}
@@ -153,7 +159,9 @@
 				course = data.data;
 			}
 		} catch {
-			alert('Failed to update publish status');
+			// FIX-2026-04-26: replaced native alert() with toastStore.error.
+			// Old: alert('Failed to update publish status');
+			toastStore.error('Failed to update publish status');
 		}
 	};
 
@@ -170,7 +178,9 @@
 				modules = [...modules, { ...data.data, lessons: [] }];
 			}
 		} catch {
-			alert('Failed to create module');
+			// FIX-2026-04-26: replaced native alert() with toastStore.error.
+			// Old: alert('Failed to create module');
+			toastStore.error('Failed to create module');
 		}
 	};
 
@@ -212,7 +222,9 @@
 				}
 			}
 		} catch {
-			alert('Failed to create lesson');
+			// FIX-2026-04-26: replaced native alert() with toastStore.error.
+			// Old: alert('Failed to create lesson');
+			toastStore.error('Failed to create lesson');
 		}
 	};
 
@@ -231,7 +243,9 @@
 			});
 
 			if (!urlData.success) {
-				alert(urlData.error || 'Failed to get upload URL');
+				// FIX-2026-04-26: replaced native alert() with toastStore.error.
+				// Old: alert(urlData.error || 'Failed to get upload URL');
+				toastStore.error(urlData.error || 'Failed to get upload URL');
 				return;
 			}
 
@@ -246,7 +260,9 @@
 			});
 
 			if (!uploadRes.ok) {
-				alert('Failed to upload file to storage');
+				// FIX-2026-04-26: replaced native alert() with toastStore.error.
+				// Old: alert('Failed to upload file to storage');
+				toastStore.error('Failed to upload file to storage');
 				return;
 			}
 
@@ -267,11 +283,15 @@
 			if (createData.success) {
 				downloads = [...downloads, createData.data];
 			} else {
-				alert(createData.error || 'Failed to create download record');
+				// FIX-2026-04-26: replaced native alert() with toastStore.error.
+				// Old: alert(createData.error || 'Failed to create download record');
+				toastStore.error(createData.error || 'Failed to create download record');
 			}
 		} catch (e) {
 			console.error('Upload error:', e);
-			alert('Failed to upload file');
+			// FIX-2026-04-26: replaced native alert() with toastStore.error.
+			// Old: alert('Failed to upload file');
+			toastStore.error('Failed to upload file');
 		} finally {
 			uploading = false;
 			input.value = '';

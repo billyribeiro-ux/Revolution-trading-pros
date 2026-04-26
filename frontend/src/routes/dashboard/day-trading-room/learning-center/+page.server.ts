@@ -8,7 +8,13 @@
  * Supports filtering by category/tags
  */
 
+import { env } from '$env/dynamic/private';
 import type { PageServerLoad } from './$types';
+
+// FIX-2026-04-26: canonical private-env URL pattern (CLAUDE.md house style).
+const API_ROOT =
+	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+const ROOM_SLUG = 'day-trading-room';
 
 export interface VideoResponse {
 	id: number;
@@ -45,18 +51,88 @@ export interface ApiResponse {
 	};
 }
 
-export const load: PageServerLoad = async ({ url }) => {
+export const load: PageServerLoad = async ({ url, fetch }) => {
 	const page = parseInt(url.searchParams.get('page') || '1');
-	void page;
 	const category = url.searchParams.get('category');
 	const perPage = 9;
 
-	// TODO: Implement new video fetching approach
-	// Returning empty data until new implementation is ready
-	return {
-		videos: [],
-		meta: { current_page: 1, per_page: perPage, total: 0, last_page: 1 },
+	// FIX-2026-04-26: was a hard-coded empty stub with `// TODO: Implement new
+	// video fetching approach`. Now wired to /api/videos with content_type=
+	// learning_center, room=day-trading-room. Old body kept commented per
+	// CLAUDE.md "comment-don't-delete" rule.
+	//
+	// // OLD STUB (do not delete — see FIX-2026-04-26):
+	// // return {
+	// //     videos: [],
+	// //     meta: { current_page: 1, per_page: perPage, total: 0, last_page: 1 },
+	// //     activeFilter: category || 'all',
+	// //     error: null
+	// // };
+
+	const baseReturn = {
 		activeFilter: category || 'all',
-		error: null
+		error: null as string | null
 	};
+
+	try {
+		const roomRes = await fetch(`${API_ROOT}/api/trading-rooms/${ROOM_SLUG}`);
+		if (!roomRes.ok) {
+			return {
+				...baseReturn,
+				videos: [] as VideoResponse[],
+				meta: { current_page: page, per_page: perPage, total: 0, last_page: 1 },
+				dataUnavailable: true,
+				reason: `Room lookup returned ${roomRes.status}`
+			};
+		}
+		const roomBody = (await roomRes.json()) as { data?: { id?: number } };
+		const roomId = roomBody?.data?.id;
+		if (!roomId) {
+			return {
+				...baseReturn,
+				videos: [] as VideoResponse[],
+				meta: { current_page: page, per_page: perPage, total: 0, last_page: 1 },
+				dataUnavailable: true,
+				reason: 'Trading room not found'
+			};
+		}
+
+		const qs = new URLSearchParams({
+			room_id: String(roomId),
+			content_type: 'learning_center',
+			page: String(page),
+			per_page: String(perPage)
+		});
+		if (category && category !== 'all' && category !== '0') {
+			qs.set('tags', category);
+		}
+
+		const vidRes = await fetch(`${API_ROOT}/api/videos?${qs.toString()}`);
+		if (!vidRes.ok) {
+			return {
+				...baseReturn,
+				videos: [] as VideoResponse[],
+				meta: { current_page: page, per_page: perPage, total: 0, last_page: 1 },
+				dataUnavailable: true,
+				reason: `Backend returned ${vidRes.status}`
+			};
+		}
+		const body = (await vidRes.json()) as ApiResponse;
+		return {
+			...baseReturn,
+			videos: body.data ?? [],
+			meta:
+				body.meta ?? { current_page: page, per_page: perPage, total: 0, last_page: 1 },
+			dataUnavailable: false
+		};
+	} catch (e) {
+		console.error('[dashboard/day-trading-room/learning-center] video fetch failed:', e);
+		return {
+			...baseReturn,
+			videos: [] as VideoResponse[],
+			meta: { current_page: page, per_page: perPage, total: 0, last_page: 1 },
+			dataUnavailable: true,
+			reason: 'Network error contacting video backend'
+		};
+	}
 };

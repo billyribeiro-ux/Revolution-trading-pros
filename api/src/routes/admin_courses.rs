@@ -2208,6 +2208,176 @@ async fn get_enrollment_stats(
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════════
+// COURSE ANALYTICS — wires CourseDetailDrawer "Analytics" tab to real DB rows.
+// FIX-2026-04-26: New handler — replaces the hard-coded `-` placeholders the drawer
+// previously rendered for Total Views / Unique Visitors / Conversion / Avg Time /
+// Drop-off / Revenue. Aggregates over `analytics_events`, `user_course_enrollments`,
+// `user_lesson_progress`, and `orders` + `order_items`.
+// ═══════════════════════════════════════════════════════════════════════════════════
+
+async fn get_course_analytics(
+    _admin: AdminUser,
+    State(state): State<AppState>,
+    Path(course_id): Path<Uuid>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    // Total Views: count of analytics_events where event_type='course_view'
+    // and properties->>'course_id' matches. We use ::text comparison so this works
+    // whether the property is stored as a string or a uuid.
+    // TODO: implement dedicated `course_views` table for higher-fidelity tracking.
+    let total_views: (i64,) = sqlx::query_as(
+        r#"
+        SELECT COUNT(*)::bigint
+        FROM analytics_events
+        WHERE event_type IN ('course_view', 'page_view')
+          AND (properties->>'course_id') = $1::text
+        "#,
+    )
+    .bind(course_id)
+    .fetch_one(&state.db.pool)
+    .await
+    .unwrap_or((0,));
+
+    // Unique Visitors: distinct sessions (or users) who viewed this course.
+    let unique_visitors: (i64,) = sqlx::query_as(
+        r#"
+        SELECT COUNT(DISTINCT COALESCE(session_id, user_id::text))::bigint
+        FROM analytics_events
+        WHERE event_type IN ('course_view', 'page_view')
+          AND (properties->>'course_id') = $1::text
+        "#,
+    )
+    .bind(course_id)
+    .fetch_one(&state.db.pool)
+    .await
+    .unwrap_or((0,));
+
+    // Total enrollments — denominator for conversion rate.
+    let total_enrollments: (i64,) =
+        sqlx::query_as("SELECT COUNT(*)::bigint FROM user_course_enrollments WHERE course_id = $1")
+            .bind(course_id)
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
+
+    // Conversion Rate = enrollments / unique_visitors * 100. Guarded against /0.
+    let conversion_rate = if unique_visitors.0 > 0 {
+        (total_enrollments.0 as f64 / unique_visitors.0 as f64) * 100.0
+    } else {
+        0.0
+    };
+
+    // Avg Time on Course (seconds) = mean of per-user total watch time.
+    // Falls back to 0 when no progress rows exist.
+    let avg_time: (Option<f64>,) = sqlx::query_as(
+        r#"
+        SELECT AVG(per_user_total)::float8
+        FROM (
+            SELECT user_id, SUM(watch_time_total_seconds)::bigint AS per_user_total
+            FROM user_lesson_progress
+            WHERE course_id = $1
+            GROUP BY user_id
+        ) t
+        "#,
+    )
+    .bind(course_id)
+    .fetch_one(&state.db.pool)
+    .await
+    .unwrap_or((None,));
+    let avg_time_seconds = avg_time.0.unwrap_or(0.0).round() as i64;
+
+    // Drop-off Rate = (started_but_not_completed) / started * 100.
+    // "Started" = enrollment row exists with progress_percent > 0.
+    let started: (i64,) = sqlx::query_as(
+        "SELECT COUNT(*)::bigint FROM user_course_enrollments
+         WHERE course_id = $1 AND progress_percent > 0",
+    )
+    .bind(course_id)
+    .fetch_one(&state.db.pool)
+    .await
+    .unwrap_or((0,));
+    let dropped: (i64,) = sqlx::query_as(
+        "SELECT COUNT(*)::bigint FROM user_course_enrollments
+         WHERE course_id = $1
+           AND progress_percent > 0
+           AND progress_percent < 100
+           AND completed_at IS NULL",
+    )
+    .bind(course_id)
+    .fetch_one(&state.db.pool)
+    .await
+    .unwrap_or((0,));
+    let drop_off_rate = if started.0 > 0 {
+        (dropped.0 as f64 / started.0 as f64) * 100.0
+    } else {
+        0.0
+    };
+
+    // Revenue (cents): sum of completed order_items for this course.
+    // Joins order_items -> orders, filters status='completed'. Stores totals as
+    // DECIMAL — multiply by 100 and cast to bigint for cents.
+    // TODO: when order_items.course_id column lands, swap the metadata-JSON path
+    // for a direct FK match. For now we look at order_items.metadata->>'course_id'.
+    let revenue: (Option<f64>,) = sqlx::query_as(
+        r#"
+        SELECT COALESCE(SUM(oi.total), 0)::float8
+        FROM order_items oi
+        JOIN orders o ON o.id = oi.order_id
+        WHERE o.status = 'completed'
+          AND (oi.metadata->>'course_id') = $1::text
+        "#,
+    )
+    .bind(course_id)
+    .fetch_one(&state.db.pool)
+    .await
+    .unwrap_or((Some(0.0),));
+    let revenue_cents = (revenue.0.unwrap_or(0.0) * 100.0).round() as i64;
+
+    // Recent Enrollments (last 5) — wires the "Enrollment data coming soon" empty
+    // state in the Enrollments tab. Returns user email + enrolled_at.
+    #[allow(clippy::type_complexity)]
+    let recent_rows: Vec<(i64, Option<String>, Option<chrono::DateTime<chrono::Utc>>)> =
+        sqlx::query_as(
+            r#"
+            SELECT e.user_id, u.email, e.enrolled_at
+            FROM user_course_enrollments e
+            LEFT JOIN users u ON u.id = e.user_id
+            WHERE e.course_id = $1
+            ORDER BY e.enrolled_at DESC NULLS LAST
+            LIMIT 5
+            "#,
+        )
+        .bind(course_id)
+        .fetch_all(&state.db.pool)
+        .await
+        .unwrap_or_default();
+
+    let recent_enrollments: Vec<serde_json::Value> = recent_rows
+        .into_iter()
+        .map(|(uid, email, ts)| {
+            json!({
+                "user_id": uid,
+                "email": email,
+                "enrolled_at": ts,
+            })
+        })
+        .collect();
+
+    Ok(Json(json!({
+        "success": true,
+        "data": {
+            "course_id": course_id,
+            "total_views": total_views.0,
+            "unique_visitors": unique_visitors.0,
+            "conversion_rate": conversion_rate,
+            "avg_time_seconds": avg_time_seconds,
+            "drop_off_rate": drop_off_rate,
+            "revenue_cents": revenue_cents,
+            "recent_enrollments": recent_enrollments,
+        }
+    })))
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════════
 // HELPER FUNCTIONS
 // ═══════════════════════════════════════════════════════════════════════════════════
 
@@ -2253,6 +2423,8 @@ pub fn router() -> Router<AppState> {
             axum::routing::delete(remove_enrollment),
         )
         .route("/:course_id/stats", get(get_enrollment_stats))
+        // FIX-2026-04-26: New endpoint backing CourseDetailDrawer Analytics tab.
+        .route("/:course_id/analytics", get(get_course_analytics))
         // Modules
         .route("/:course_id/modules", get(list_modules).post(create_module))
         .route(

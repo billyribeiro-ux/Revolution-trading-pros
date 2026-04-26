@@ -46,6 +46,15 @@ export const GET: RequestHandler = async ({ url, request }) => {
 		const search = url.searchParams.get('search');
 		const platform = url.searchParams.get('platform');
 		const published = url.searchParams.get('published');
+		// FIX-2026-04-26: forward content_type/room_id/tags so dashboard
+		// member loaders (learning-center, daily-videos, trading-room-archive)
+		// can filter by room and content category. Previous proxy silently
+		// dropped these — backend never saw the filter, all queries returned
+		// the entire unified_videos table.
+		const content_type = url.searchParams.get('content_type');
+		const room_id = url.searchParams.get('room_id');
+		const tags = url.searchParams.get('tags');
+		const difficulty_level = url.searchParams.get('difficulty_level');
 
 		if (page) queryParams.set('page', page);
 		if (limit) queryParams.set('per_page', limit);
@@ -54,6 +63,11 @@ export const GET: RequestHandler = async ({ url, request }) => {
 		if (search) queryParams.set('search', search);
 		if (platform) queryParams.set('platform', platform);
 		if (published) queryParams.set('is_published', published);
+		// FIX-2026-04-26: new pass-throughs (see comment block above).
+		if (content_type) queryParams.set('content_type', content_type);
+		if (room_id) queryParams.set('room_id', room_id);
+		if (tags) queryParams.set('tags', tags);
+		if (difficulty_level) queryParams.set('difficulty_level', difficulty_level);
 
 		const backendUrl = `${BACKEND_URL}/videos${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
 

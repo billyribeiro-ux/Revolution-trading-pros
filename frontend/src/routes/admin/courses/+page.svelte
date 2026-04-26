@@ -31,6 +31,8 @@
 	import ModuleFormModal from '$lib/components/admin/ModuleFormModal.svelte';
 	import type { Course as APICourse, CourseModule } from '$lib/api/courses';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	// FIX-2026-04-26: replaced native alert() with toastStore.
+	import { toastStore } from '$lib/stores/toast.svelte';
 
 	interface Course {
 		id: string;
@@ -225,7 +227,9 @@
 				courses = [...courses];
 			}
 		} catch {
-			alert('Failed to update course status');
+			// FIX-2026-04-26: replaced native alert() with toastStore.error.
+			// Old: alert('Failed to update course status');
+			toastStore.error('Failed to update course status');
 		}
 	};
 

@@ -34,6 +34,26 @@
 	} from '$lib/icons';
 	import ConfirmationModal from './ConfirmationModal.svelte';
 
+	// FIX-2026-04-26: Analytics tab now wired to real backend data via
+	// GET /api/admin/courses/:id/analytics. Previously the metric rows below
+	// rendered literal `-` placeholders and Revenue rendered "Coming soon".
+	interface RecentEnrollment {
+		user_id: number;
+		email: string | null;
+		enrolled_at: string | null;
+	}
+
+	interface CourseAnalytics {
+		course_id: string;
+		total_views: number;
+		unique_visitors: number;
+		conversion_rate: number;
+		avg_time_seconds: number;
+		drop_off_rate: number;
+		revenue_cents: number;
+		recent_enrollments: RecentEnrollment[];
+	}
+
 	interface Props {
 		isOpen: boolean;
 		courseId: string | null;
@@ -70,6 +90,10 @@
 	// Expanded modules
 	let expandedModules = $state<Set<number>>(new Set());
 
+	// FIX-2026-04-26: analytics for the Analytics tab. Loaded alongside course
+	// data; safe to render `null` (we fall back to em-dash while loading).
+	let analytics = $state<CourseAnalytics | null>(null);
+
 	// Load course data when drawer opens
 	$effect(() => {
 		if (isOpen && courseId) {
@@ -79,6 +103,7 @@
 			activeTab = 'modules';
 			error = '';
 			expandedModules = new Set();
+			analytics = null;
 		}
 	});
 
@@ -105,11 +130,59 @@
 			if (courseData.modules.length > 0) {
 				expandedModules = new Set([courseData.modules[0].id]);
 			}
+			// FIX-2026-04-26: fetch analytics in parallel-ish (after course load so
+			// we have the canonical course id). Failure is non-fatal — drawer keeps
+			// rendering with em-dash placeholders.
+			loadAnalytics(courseData.id);
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load course data';
 		} finally {
 			isLoading = false;
 		}
+	}
+
+	async function loadAnalytics(id: string) {
+		try {
+			const res = await fetch(`/api/admin/courses/${id}/analytics`);
+			const payload: { success: boolean; data?: CourseAnalytics; error?: string } =
+				await res.json();
+			if (payload.success && payload.data) {
+				analytics = payload.data;
+			} else {
+				analytics = null;
+			}
+		} catch (err) {
+			console.error('[CourseDetailDrawer] analytics fetch failed:', err);
+			analytics = null;
+		}
+	}
+
+	function formatPercent(value: number | undefined | null): string {
+		if (value === null || value === undefined || Number.isNaN(value)) return '—';
+		return `${value.toFixed(1)}%`;
+	}
+
+	function formatSeconds(value: number | undefined | null): string {
+		if (value === null || value === undefined || Number.isNaN(value)) return '—';
+		if (value <= 0) return '0s';
+		const hours = Math.floor(value / 3600);
+		const minutes = Math.floor((value % 3600) / 60);
+		const seconds = Math.floor(value % 60);
+		if (hours > 0) return `${hours}h ${minutes}m`;
+		if (minutes > 0) return `${minutes}m ${seconds}s`;
+		return `${seconds}s`;
+	}
+
+	function formatCount(value: number | undefined | null): string {
+		if (value === null || value === undefined || Number.isNaN(value)) return '—';
+		return new Intl.NumberFormat('en-US').format(value);
+	}
+
+	function formatEnrolledAt(ts: string | null | undefined): string {
+		if (!ts) return '';
+		const d = new Date(ts);
+		if (Number.isNaN(d.getTime())) return '';
+		return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 	}
 
 	async function handlePublishToggle() {
@@ -507,10 +580,42 @@
 
 							<div class="info-section">
 								<h3 class="section-title">Recent Enrollments</h3>
+								<!-- FIX-2026-04-26: was hard-coded "Enrollment data coming soon" empty state.
+								     Now wired to analytics.recent_enrollments (top 5 by enrolled_at DESC).
 								<div class="empty-state small">
 									<IconUsers size={32} />
 									<p>Enrollment data coming soon</p>
 								</div>
+								-->
+								{#if analytics === null}
+									<div class="empty-state small">
+										<IconUsers size={32} />
+										<p>Loading enrollments…</p>
+									</div>
+								{:else if analytics.recent_enrollments.length === 0}
+									<div class="empty-state small">
+										<IconUsers size={32} />
+										<p>No enrollments yet</p>
+									</div>
+								{:else}
+									<ul class="recent-enrollments-list">
+										{#each analytics.recent_enrollments as enrollment (enrollment.user_id)}
+											<li class="recent-enrollment-item">
+												<div class="recent-enrollment-avatar">
+													<IconUsers size={14} />
+												</div>
+												<div class="recent-enrollment-info">
+													<span class="recent-enrollment-email"
+														>{enrollment.email ?? `User #${enrollment.user_id}`}</span
+													>
+													<span class="recent-enrollment-date"
+														>{formatEnrolledAt(enrollment.enrolled_at)}</span
+													>
+												</div>
+											</li>
+										{/each}
+									</ul>
+								{/if}
 							</div>
 						</div>
 					{:else if activeTab === 'analytics'}
@@ -521,15 +626,18 @@
 									<div class="analytics-metrics">
 										<div class="metric-row">
 											<span class="metric-label">Total Views</span>
-											<span class="metric-value">-</span>
+											<!-- FIX-2026-04-26: was <span class="metric-value">-</span> (literal hyphen placeholder). -->
+											<span class="metric-value">{formatCount(analytics?.total_views)}</span>
 										</div>
 										<div class="metric-row">
 											<span class="metric-label">Unique Visitors</span>
-											<span class="metric-value">-</span>
+											<!-- FIX-2026-04-26: was <span class="metric-value">-</span> (literal hyphen placeholder). -->
+											<span class="metric-value">{formatCount(analytics?.unique_visitors)}</span>
 										</div>
 										<div class="metric-row">
 											<span class="metric-label">Conversion Rate</span>
-											<span class="metric-value">-</span>
+											<!-- FIX-2026-04-26: was <span class="metric-value">-</span> (literal hyphen placeholder). -->
+											<span class="metric-value">{formatPercent(analytics?.conversion_rate)}</span>
 										</div>
 									</div>
 								</div>
@@ -539,7 +647,8 @@
 									<div class="analytics-metrics">
 										<div class="metric-row">
 											<span class="metric-label">Avg Time on Course</span>
-											<span class="metric-value">-</span>
+											<!-- FIX-2026-04-26: was <span class="metric-value">-</span> (literal hyphen placeholder). -->
+											<span class="metric-value">{formatSeconds(analytics?.avg_time_seconds)}</span>
 										</div>
 										<div class="metric-row">
 											<span class="metric-label">Lesson Completion</span>
@@ -547,7 +656,8 @@
 										</div>
 										<div class="metric-row">
 											<span class="metric-label">Drop-off Rate</span>
-											<span class="metric-value">-</span>
+											<!-- FIX-2026-04-26: was <span class="metric-value">-</span> (literal hyphen placeholder). -->
+											<span class="metric-value">{formatPercent(analytics?.drop_off_rate)}</span>
 										</div>
 									</div>
 								</div>
@@ -585,7 +695,11 @@
 										<IconCurrencyDollar size={16} />
 										<div>
 											<span class="info-label">Revenue</span>
-											<span class="info-value">Coming soon</span>
+											<!-- FIX-2026-04-26: was hard-coded "Coming soon".
+											     Now sums completed order_items.total joined to orders. -->
+											<span class="info-value"
+												>{analytics ? formatCurrency(analytics.revenue_cents) : '—'}</span
+											>
 										</div>
 									</div>
 								</div>
@@ -1375,6 +1489,58 @@
 
 	.instructor-title {
 		font-size: 0.8125rem;
+		color: var(--admin-text-muted);
+	}
+
+	/* FIX-2026-04-26: Recent enrollments list (Enrollments tab) */
+	.recent-enrollments-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	.recent-enrollment-item {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0.625rem 0.75rem;
+		background: var(--admin-surface-sunken);
+		border: 1px solid var(--admin-border-subtle);
+		border-radius: var(--radius-sm, 0.25rem);
+	}
+
+	.recent-enrollment-avatar {
+		width: 28px;
+		height: 28px;
+		border-radius: 50%;
+		background: var(--admin-accent-bg);
+		color: var(--admin-accent-primary);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+	}
+
+	.recent-enrollment-info {
+		display: flex;
+		flex-direction: column;
+		min-width: 0;
+		flex: 1;
+	}
+
+	.recent-enrollment-email {
+		font-size: 0.8125rem;
+		color: var(--admin-text-primary);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.recent-enrollment-date {
+		font-size: 0.6875rem;
 		color: var(--admin-text-muted);
 	}
 

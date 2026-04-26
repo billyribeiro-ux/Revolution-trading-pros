@@ -11,6 +11,11 @@
 import { env } from '$env/dynamic/private';
 import type { PageServerLoad } from './$types';
 
+// FIX-2026-04-26: canonical private-env URL pattern (CLAUDE.md house style).
+const API_ROOT =
+	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+const ROOM_SLUG = 'small-account-mentorship';
+
 // Video response from API
 interface VideoResponse {
 	id: number;
@@ -50,22 +55,93 @@ export interface ArchivePageData {
 	};
 	search: string;
 	error: string | null;
+	dataUnavailable?: boolean;
+	reason?: string;
 }
 
-export const load: PageServerLoad = async ({ url }): Promise<ArchivePageData> => {
-	void env;
-
+export const load: PageServerLoad = async ({ url, fetch }): Promise<ArchivePageData> => {
 	// Get query params
-	const page = url.searchParams.get('page') || '1';
-	void page;
+	const page = parseInt(url.searchParams.get('page') || '1');
 	const search = url.searchParams.get('search') || '';
+	const perPage = 50;
 
-	// TODO: Implement new video fetching approach
-	// Returning empty data until new implementation is ready
-	return {
-		videos: [],
-		meta: { current_page: 1, per_page: 50, total: 0, last_page: 1 },
+	// FIX-2026-04-26: was a hard-coded empty stub with `// TODO: Implement new
+	// video fetching approach`. Now wired to /api/videos with content_type=
+	// archive, room=small-account-mentorship. Old body kept commented per
+	// CLAUDE.md "comment-don't-delete" rule.
+	//
+	// // OLD STUB (do not delete — see FIX-2026-04-26):
+	// // return {
+	// //     videos: [],
+	// //     meta: { current_page: 1, per_page: 50, total: 0, last_page: 1 },
+	// //     search,
+	// //     error: null
+	// // };
+
+	const baseReturn = {
 		search,
-		error: null
+		error: null as string | null
 	};
+
+	try {
+		const roomRes = await fetch(`${API_ROOT}/api/trading-rooms/${ROOM_SLUG}`);
+		if (!roomRes.ok) {
+			return {
+				...baseReturn,
+				videos: [],
+				meta: { current_page: page, per_page: perPage, total: 0, last_page: 1 },
+				dataUnavailable: true,
+				reason: `Room lookup returned ${roomRes.status}`
+			};
+		}
+		const roomBody = (await roomRes.json()) as { data?: { id?: number } };
+		const roomId = roomBody?.data?.id;
+		if (!roomId) {
+			return {
+				...baseReturn,
+				videos: [],
+				meta: { current_page: page, per_page: perPage, total: 0, last_page: 1 },
+				dataUnavailable: true,
+				reason: 'Trading room not found'
+			};
+		}
+
+		const qs = new URLSearchParams({
+			room_id: String(roomId),
+			content_type: 'archive',
+			page: String(page),
+			per_page: String(perPage)
+		});
+		if (search) qs.set('search', search);
+
+		const vidRes = await fetch(`${API_ROOT}/api/videos?${qs.toString()}`);
+		if (!vidRes.ok) {
+			return {
+				...baseReturn,
+				videos: [],
+				meta: { current_page: page, per_page: perPage, total: 0, last_page: 1 },
+				dataUnavailable: true,
+				reason: `Backend returned ${vidRes.status}`
+			};
+		}
+		const body = (await vidRes.json()) as {
+			data?: VideoResponse[];
+			meta?: { current_page: number; per_page: number; total: number; last_page: number };
+		};
+		return {
+			...baseReturn,
+			videos: body.data ?? [],
+			meta: body.meta ?? { current_page: page, per_page: perPage, total: 0, last_page: 1 },
+			dataUnavailable: false
+		};
+	} catch (e) {
+		console.error('[dashboard/small-account-mentorship/trading-room-archive] video fetch failed:', e);
+		return {
+			...baseReturn,
+			videos: [],
+			meta: { current_page: page, per_page: perPage, total: 0, last_page: 1 },
+			dataUnavailable: true,
+			reason: 'Network error contacting video backend'
+		};
+	}
 };

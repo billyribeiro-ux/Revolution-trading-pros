@@ -28,6 +28,10 @@
 	const totalItems = $derived(data.pagination?.total || 0);
 	const roomSlug = $derived(data.roomSlug);
 	const roomName = $derived(data.roomName);
+	// FIX-2026-04-26: surface backend-unavailable state instead of pretending
+	// "no videos found" when the request failed.
+	const dataUnavailable = $derived(Boolean(data.dataUnavailable));
+	const unavailableReason = $derived(data.reason);
 
 	// Dropdown state
 	let isDropdownOpen = $state(false);
@@ -232,6 +236,16 @@
 			</button>
 		</div>
 	</div>
+	<!-- FIX-2026-04-26: data-unavailable banner so empty grid isn't mistaken for "no content". -->
+	{#if dataUnavailable}
+		<div class="data-unavailable" role="status" aria-live="polite">
+			<p>Video data temporarily unavailable. Check back soon.</p>
+			{#if unavailableReason}
+				<p class="data-unavailable__reason">({unavailableReason})</p>
+			{/if}
+		</div>
+	{/if}
+
 	<div id="products-list" class="facetwp-template">
 		{#if displayedVideos.length === 0}
 			<div class="empty-state">
@@ -785,6 +799,27 @@
 	.empty-state p {
 		font-size: 1.1rem;
 		margin: 0;
+	}
+
+	/* FIX-2026-04-26: info-style banner for backend-unavailable state. */
+	.data-unavailable {
+		background: #eff6ff;
+		border: 1px solid #bfdbfe;
+		border-radius: 8px;
+		padding: 16px 20px;
+		margin: 0 1.5rem 1rem;
+		text-align: center;
+	}
+
+	.data-unavailable p {
+		margin: 0;
+		color: #1e40af;
+	}
+
+	.data-unavailable__reason {
+		font-size: 12px;
+		color: #6b7280;
+		margin-top: 6px;
 	}
 
 	/* Responsive Grid */

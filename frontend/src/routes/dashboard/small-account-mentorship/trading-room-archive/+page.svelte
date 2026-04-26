@@ -39,6 +39,16 @@
 	startHereUrl="/dashboard/small-account-mentorship/start-here"
 />
 
+<!-- FIX-2026-04-26: data-unavailable banner so empty grid isn't mistaken for "no content". -->
+{#if data.dataUnavailable}
+	<div class="data-unavailable" role="status" aria-live="polite">
+		<p>Video data temporarily unavailable. Check back soon.</p>
+		{#if data.reason}
+			<p class="data-unavailable__reason">({data.reason})</p>
+		{/if}
+	</div>
+{/if}
+
 <TradingRoomArchive
 	roomSlug="small-account-mentorship"
 	roomName="Small Account Mentorship"
@@ -47,3 +57,26 @@
 	search={data.search}
 	error={data.error}
 />
+
+<style>
+	/* FIX-2026-04-26: info-style banner for backend-unavailable state. */
+	.data-unavailable {
+		background: #eff6ff;
+		border: 1px solid #bfdbfe;
+		border-radius: 8px;
+		padding: 16px 20px;
+		margin: 1rem 1.5rem;
+		text-align: center;
+	}
+
+	.data-unavailable p {
+		margin: 0;
+		color: #1e40af;
+	}
+
+	.data-unavailable__reason {
+		font-size: 12px;
+		color: #6b7280;
+		margin-top: 6px;
+	}
+</style>

@@ -18,6 +18,7 @@
 	import { fade, scale, fly } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
+	import { toastStore } from '$lib/stores/toast.svelte';
 	import {
 		IconSearch,
 		IconCode,
@@ -188,9 +189,28 @@
 		{
 			id: 'clear-cache',
 			label: 'Clear Cache',
+			// FIX-2026-04-26: was `localStorage.clear()` + `window.location.reload()` which wiped
+			// auth tokens (rtp_access_token, rtp_refresh_token, auth_user) hydrated by the auth
+			// store, instantly logging the operator out. Switched to Option A from the fix plan:
+			// scope the clear to non-auth cache keys only (preserve rtp_*, authStore*, auth_*),
+			// also clear sessionStorage (no auth state lives there), and toast on success
+			// instead of a full page reload so the operator stays in-app and signed in.
+			// Old:
+			//   action: () => {
+			//   	localStorage.clear();
+			//   	window.location.reload();
+			//   },
 			action: () => {
-				localStorage.clear();
-				window.location.reload();
+				if (!browser) return;
+				const RESERVED_PREFIXES = ['rtp_', 'authStore', 'auth_'];
+				for (const key of Object.keys(localStorage)) {
+					if (!RESERVED_PREFIXES.some((p) => key.startsWith(p))) {
+						localStorage.removeItem(key);
+					}
+				}
+				// sessionStorage does not hold auth state; safe to clear wholesale.
+				sessionStorage.clear();
+				toastStore.success('Cache cleared');
 			},
 			icon: IconDatabase,
 			category: 'Quick Actions'

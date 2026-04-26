@@ -250,6 +250,11 @@ async function fetchConnectionStatus(): Promise<Record<string, ConnectionStatus>
 
 let refreshInterval: ReturnType<typeof setInterval> | null = null;
 
+// FIX-2026-04-26: visibility listener handle for visibility-gated polling.
+// Stored at module scope so `stopAutoRefresh()` can detach it cleanly.
+// See `startAutoRefresh()` below for the full rationale.
+let visibilityListener: (() => void) | null = null;
+
 // FIX-2026-04-26: in-flight Promise guard makes `load()` safe-inside-$effect.
 // When a $effect re-runs (because the rune was written + getIs*Connected was
 // read in the same flush), the second `load()` call returns this promise
@@ -423,22 +428,95 @@ export const connections = {
 
 	/**
 	 * Start background refresh
+	 *
+	 * FIX-2026-04-26: was an unconditional `setInterval(this.load, 60s)` that
+	 * kept ticking even when the tab was backgrounded — wasting battery,
+	 * bandwidth, and (per CASCADE_ROOT_CAUSE_REPORT.md §5.2) generating high-
+	 * frequency rune churn that re-fired every `$derived` and `getIs*Connected`
+	 * downstream of `connectionsState`. Now gated on `document.visibilityState`:
+	 * the interval only runs while the tab is visible and is paused/resumed via
+	 * a `visibilitychange` listener. The in-flight Promise guard on `load()`
+	 * (Change 1A) still de-dupes any concurrent calls.
+	 *
+	 * Old code (kept for one revision per FIX-2026-04-26 marker — delete in follow-up):
+	 *
+	 *   startAutoRefresh(): void {
+	 *       if (!browser || refreshInterval) return;
+	 *
+	 *       refreshInterval = setInterval(() => {
+	 *           this.load(true);
+	 *       }, REFRESH_INTERVAL);
+	 *   },
 	 */
 	startAutoRefresh(): void {
-		if (!browser || refreshInterval) return;
+		if (!browser) return;
+		if (refreshInterval || visibilityListener) return; // idempotent
 
-		refreshInterval = setInterval(() => {
-			this.load(true);
-		}, REFRESH_INTERVAL);
+		const tick = () => {
+			// Cache-bypass refresh; in-flight guard on `load()` coalesces
+			// concurrent calls (e.g. from a near-simultaneous user-initiated
+			// refresh) into a single fetch + single rune write.
+			void this.load(true);
+		};
+
+		const startInterval = () => {
+			if (refreshInterval) return;
+			refreshInterval = setInterval(tick, REFRESH_INTERVAL);
+		};
+
+		const stopInterval = () => {
+			if (refreshInterval) {
+				clearInterval(refreshInterval);
+				refreshInterval = null;
+			}
+		};
+
+		// Initial state — only start the interval if the tab is currently
+		// visible. If the user opened site-health then immediately switched
+		// away, we wait until they return before ticking.
+		if (document.visibilityState === 'visible') {
+			startInterval();
+		}
+
+		// Toggle interval based on visibility. On returning to a previously
+		// hidden tab we also fire an immediate tick so the user sees fresh
+		// data without waiting up to REFRESH_INTERVAL.
+		visibilityListener = () => {
+			if (document.visibilityState === 'visible') {
+				startInterval();
+				tick();
+			} else {
+				stopInterval();
+			}
+		};
+		document.addEventListener('visibilitychange', visibilityListener);
 	},
 
 	/**
 	 * Stop background refresh
+	 *
+	 * FIX-2026-04-26: now also detaches the `visibilitychange` listener
+	 * registered by `startAutoRefresh()`. Without this, a navigation away
+	 * from /admin/site-health would leak the listener and keep flipping
+	 * the (now-null) interval on every tab focus change.
+	 *
+	 * Old code (kept for one revision per FIX-2026-04-26 marker — delete in follow-up):
+	 *
+	 *   stopAutoRefresh(): void {
+	 *       if (refreshInterval) {
+	 *           clearInterval(refreshInterval);
+	 *           refreshInterval = null;
+	 *       }
+	 *   },
 	 */
 	stopAutoRefresh(): void {
 		if (refreshInterval) {
 			clearInterval(refreshInterval);
 			refreshInterval = null;
+		}
+		if (browser && visibilityListener) {
+			document.removeEventListener('visibilitychange', visibilityListener);
+			visibilityListener = null;
 		}
 	},
 

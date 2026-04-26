@@ -29,6 +29,8 @@
 		};
 		activeFilter: string;
 		error: string | null;
+		dataUnavailable?: boolean;
+		reason?: string;
 	}
 
 	// Server-side data
@@ -40,6 +42,10 @@
 	let meta = $derived(data.meta || { current_page: 1, per_page: 9, total: 0, last_page: 1 });
 	let activeFilter = $derived(data.activeFilter || 'all');
 	let error = $derived(data.error);
+	// FIX-2026-04-26: surface backend-unavailable state instead of pretending
+	// "no learning resources available" when the request failed.
+	let dataUnavailable = $derived(Boolean(data.dataUnavailable));
+	let unavailableReason = $derived(data.reason);
 
 	// Pagination derived values
 	let currentPage = $derived(meta.current_page);
@@ -203,6 +209,16 @@
 			<div class="error-message">
 				<p>Unable to load videos. Please try again later.</p>
 				<p class="error-detail">{error}</p>
+			</div>
+		{/if}
+
+		<!-- FIX-2026-04-26: data-unavailable banner so empty grid isn't mistaken for "no content". -->
+		{#if dataUnavailable}
+			<div class="data-unavailable" role="status" aria-live="polite">
+				<p>Video data temporarily unavailable. Check back soon.</p>
+				{#if unavailableReason}
+					<p class="data-unavailable__reason">({unavailableReason})</p>
+				{/if}
 			</div>
 		{/if}
 
@@ -691,6 +707,27 @@
 	.error-detail {
 		font-size: 0.875rem;
 		opacity: 0.8;
+	}
+
+	/* FIX-2026-04-26: info-style banner for backend-unavailable state. */
+	.data-unavailable {
+		background: #eff6ff;
+		border: 1px solid #bfdbfe;
+		border-radius: 8px;
+		padding: 16px 20px;
+		margin: 20px;
+		text-align: center;
+	}
+
+	.data-unavailable p {
+		margin: 0;
+		color: #1e40af;
+	}
+
+	.data-unavailable__reason {
+		font-size: 12px;
+		color: #6b7280;
+		margin-top: 6px;
 	}
 
 	/* Responsive */

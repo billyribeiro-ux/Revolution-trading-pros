@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { membersStore, emailStore } from '$lib/stores/members.svelte';
 	import type { Member, MemberFilters, MemberFullDetails } from '$lib/api/members';
+	// FIX-2026-04-26: alert() calls replaced with existing toastStore import below.
 	import {
 		IconUsers,
 		IconTrendingUp,
@@ -166,12 +167,16 @@
 				body: emailBody,
 				personalize: true
 			});
-			alert(result.message);
+			// FIX-2026-04-26: replaced native alert() with toastStore.success.
+			// Old: alert(result.message);
+			toastStore.success(result.message);
 			showEmailModal = false;
 			selectedMembers.clear();
 			selectedMembers = selectedMembers;
 		} catch {
-			alert('Failed to send emails');
+			// FIX-2026-04-26: replaced native alert() with toastStore.error.
+			// Old: alert('Failed to send emails');
+			toastStore.error('Failed to send emails');
 		}
 	}
 

@@ -9,7 +9,12 @@
  * @version 5.0.0 - January 2026
  */
 
+import { env } from '$env/dynamic/private';
 import type { PageServerLoad } from './$types';
+
+// FIX-2026-04-26: canonical private-env URL pattern (CLAUDE.md house style).
+const API_ROOT =
+	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
 export interface DailyVideo {
 	id: number;
@@ -34,17 +39,105 @@ export interface PageData {
 	roomSlug: string;
 	roomName: string;
 	error?: string;
+	dataUnavailable?: boolean;
+	reason?: string;
 }
 
-export const load: PageServerLoad = async ({ params, url }): Promise<PageData> => {
+// FIX-2026-04-26: thin shape of the backend video row we actually consume here.
+// (Full shape lives in api/src/models/video.rs::VideoResponse.)
+interface BackendVideo {
+	id: number;
+	title: string;
+	slug: string;
+	description: string | null;
+	thumbnail_url: string | null;
+	formatted_date: string;
+	formatted_duration: string;
+	trader: { id: number; name: string; slug: string } | null;
+}
+
+export const load: PageServerLoad = async ({ params, url, fetch }): Promise<PageData> => {
 	const { room_slug } = params;
 	const page = parseInt(url.searchParams.get('page') || '1');
 	const search = url.searchParams.get('search') || '';
 	const perPage = 12;
 
-	// TODO: Implement new video fetching approach
-	// Using mock data until new implementation is ready
-	return getMockData(room_slug as string, page, perPage, search);
+	// FIX-2026-04-26: was mock data with `// TODO: Implement new video fetching
+	// approach`. Now wired to /api/videos with content_type=daily_video filter,
+	// resolving room slug → room id via /api/trading-rooms/:slug.
+	// Old mock-data path kept (commented) below per CLAUDE.md "comment-don't-delete"
+	// rule until production traffic confirms wiring.
+	//
+	// // OLD STUB (do not delete — see FIX-2026-04-26):
+	// // return getMockData(room_slug as string, page, perPage, search);
+
+	const roomName = getRoomName(room_slug as string);
+	const baseError = (
+		reason: string,
+		actualPage = page
+	): PageData => ({
+		videos: [],
+		pagination: { page: actualPage, perPage, total: 0, totalPages: 1 },
+		roomSlug: room_slug as string,
+		roomName,
+		dataUnavailable: true,
+		reason
+	});
+
+	try {
+		const roomRes = await fetch(`${API_ROOT}/api/trading-rooms/${encodeURIComponent(room_slug as string)}`);
+		if (!roomRes.ok) return baseError(`Room lookup returned ${roomRes.status}`);
+		const roomBody = (await roomRes.json()) as { data?: { id?: number } };
+		const roomId = roomBody?.data?.id;
+		if (!roomId) return baseError('Trading room not found');
+
+		const qs = new URLSearchParams({
+			room_id: String(roomId),
+			content_type: 'daily_video',
+			page: String(page),
+			per_page: String(perPage)
+		});
+		if (search) qs.set('search', search);
+
+		const vidRes = await fetch(`${API_ROOT}/api/videos?${qs.toString()}`);
+		if (!vidRes.ok) return baseError(`Backend returned ${vidRes.status}`);
+
+		const body = (await vidRes.json()) as {
+			data?: BackendVideo[];
+			meta?: { current_page: number; per_page: number; total: number; last_page: number };
+		};
+
+		const videos: DailyVideo[] = (body.data ?? []).map((v) => ({
+			id: v.id,
+			title: v.title,
+			slug: v.slug,
+			date: v.formatted_date,
+			trader: v.trader?.name ?? '',
+			excerpt: v.description ?? '',
+			thumbnail:
+				v.thumbnail_url ||
+				'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
+			duration: v.formatted_duration || undefined,
+			isVideo: true
+		}));
+
+		const meta = body.meta ?? { current_page: page, per_page: perPage, total: 0, last_page: 1 };
+		return {
+			videos,
+			pagination: {
+				page: meta.current_page,
+				perPage: meta.per_page,
+				total: meta.total,
+				totalPages: meta.last_page
+			},
+			roomSlug: room_slug as string,
+			roomName,
+			dataUnavailable: false
+		};
+	} catch (e) {
+		console.error('[dashboard/[room_slug]/daily-videos] video fetch failed:', e);
+		return baseError('Network error contacting video backend');
+	}
 };
 
 function getRoomName(slug: string): string {
@@ -63,6 +156,9 @@ function getRoomName(slug: string): string {
 	);
 }
 
+// FIX-2026-04-26: getMockData kept (commented usage above) per CLAUDE.md
+// "comment-don't-delete" rule. Suppress unused-warning until proven safe to remove.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getMockData(roomSlug: string, page: number, perPage: number, search: string): PageData {
 	// Mock video data for development when backend is unavailable
 	const allVideos: DailyVideo[] = [

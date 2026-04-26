@@ -14,7 +14,14 @@
 	import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left';
 	import IconCircleCheckFilled from '@tabler/icons-svelte-runes/icons/circle-check-filled';
 	import IconCircleXFilled from '@tabler/icons-svelte-runes/icons/circle-x-filled';
-	import IconLayers from '@tabler/icons-svelte-runes/icons/layers';
+	// FIX-2026-04-26: was `import IconLayers from '@tabler/icons-svelte-runes/icons/layers'`
+	// — that icon path doesn't exist in @tabler/icons-svelte-runes@3.41.1 (only
+	// layers-difference, layers-intersect, layers-linked, layers-off,
+	// layers-selected, layers-subtract are exported). Build was failing with
+	// "Rollup cannot resolve" since commit 99b9583d2 (the Tabler-SVG sweep).
+	// Using `layers-linked` as the closest semantic match for a "Total Plans"
+	// stat icon.
+	import IconLayers from '@tabler/icons-svelte-runes/icons/layers-linked';
 	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
 	import IconCircleCheck from '@tabler/icons-svelte-runes/icons/circle-check';
 	import IconCreditCard from '@tabler/icons-svelte-runes/icons/credit-card';

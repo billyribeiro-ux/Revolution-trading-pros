@@ -27,6 +27,8 @@
 	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
 	import { crmAPI } from '$lib/api/crm';
 	import type { ImportJob, ExportJob } from '$lib/crm/types';
+	// FIX-2026-04-26: replaced native alert() with toastStore.
+	import { toastStore } from '$lib/stores/toast.svelte';
 
 	let importJobs = $state<ImportJob[]>([]);
 	let exportJobs = $state<ExportJob[]>([]);
@@ -112,7 +114,9 @@
 		try {
 			const job = await crmAPI.createExportJob(type);
 			await loadJobs();
-			alert(`Export started. Job ID: ${job.id}`);
+			// FIX-2026-04-26: replaced native alert() with toastStore.success.
+			// Old: alert(`Export started. Job ID: ${job.id}`);
+			toastStore.success(`Export started. Job ID: ${job.id}`);
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to start export';
 		}

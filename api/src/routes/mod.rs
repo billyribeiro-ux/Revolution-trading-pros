@@ -42,6 +42,7 @@ pub mod admin_courses;
 pub mod admin_indicators;
 pub mod admin_member_management; // ICT 11+: Full member CRUD, ban, export
 pub mod admin_members; // ICT 7: Member segments, tags, and filters
+pub mod admin_orders; // FIX-2026-04-26: canonical /admin/orders mount (CSV export + stats + reuses orders.rs admin_*)
 pub mod admin_page_layouts;
 pub mod admin_popups;
 pub mod admin_videos;
@@ -130,6 +131,10 @@ pub fn api_router() -> Router<AppState> {
         .nest("/admin/popups", admin_popups::router())
         .nest("/trading-rooms", trading_rooms::router())
         .nest("/admin/trading-rooms", trading_rooms::admin_router())
+        // FIX-2026-04-26: short-prefix admin rooms router; backs the
+        // /admin/dashboard call to GET /api/admin/rooms/stats. Mounted
+        // separately to avoid colliding with /admin/trading-rooms above.
+        .nest("/admin/rooms", trading_rooms::admin_rooms_router())
         .nest("/admin/courses", admin_courses::router())
         .nest("/courses", member_courses::public_router())
         .nest("/my/courses", member_courses::member_router())
@@ -181,6 +186,8 @@ pub fn api_router() -> Router<AppState> {
         .nest("/admin/connections", connections::admin_router())
         // Consent Management Settings - FIX-2026-04-26
         .nest("/admin/consent", consent::router())
+        // Admin Orders - FIX-2026-04-26 (canonical mount; reuses orders.rs admin_* + adds /export, /stats)
+        .nest("/admin/orders", admin_orders::router())
         // Admin Members - Segments, Tags, Filters - ICT 7 Grade
         .nest("/admin/members", admin_members::router())
         // Admin Member Management - Full CRUD, Ban, Export - ICT 11+ Grade

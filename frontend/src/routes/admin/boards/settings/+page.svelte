@@ -4,6 +4,8 @@ https://svelte.dev/e/bind_invalid_expression -->
 	import { onMount } from 'svelte';
 	import { boardsAPI } from '$lib/api/boards';
 	import type { BoardsSettings, StorageConfig } from '$lib/boards/types';
+	// FIX-2026-04-26: replaced native alert() with toastStore.
+	import { toastStore } from '$lib/stores/toast.svelte';
 	import {
 		IconLayoutKanban,
 		IconArrowLeft,
@@ -76,10 +78,14 @@ https://svelte.dev/e/bind_invalid_expression -->
 		saving = true;
 		try {
 			await boardsAPI.updateSettings(settings);
-			alert('Settings saved successfully!');
+			// FIX-2026-04-26: replaced native alert() with toastStore.success.
+			// Old: alert('Settings saved successfully!');
+			toastStore.success('Settings saved successfully!');
 		} catch (error) {
 			console.error('Failed to save settings:', error);
-			alert('Failed to save settings');
+			// FIX-2026-04-26: replaced native alert() with toastStore.error.
+			// Old: alert('Failed to save settings');
+			toastStore.error('Failed to save settings');
 		} finally {
 			saving = false;
 		}
@@ -90,10 +96,14 @@ https://svelte.dev/e/bind_invalid_expression -->
 		saving = true;
 		try {
 			await boardsAPI.updateStorageConfig(storageConfig);
-			alert('Storage configuration saved!');
+			// FIX-2026-04-26: replaced native alert() with toastStore.success.
+			// Old: alert('Storage configuration saved!');
+			toastStore.success('Storage configuration saved!');
 		} catch (error) {
 			console.error('Failed to save storage config:', error);
-			alert('Failed to save storage configuration');
+			// FIX-2026-04-26: replaced native alert() with toastStore.error.
+			// Old: alert('Failed to save storage configuration');
+			toastStore.error('Failed to save storage configuration');
 		} finally {
 			saving = false;
 		}

@@ -3,6 +3,8 @@
 	import { goto } from '$app/navigation';
 	import { churnedStore, emailStore } from '$lib/stores/members.svelte';
 	import type { Member } from '$lib/api/members';
+	// FIX-2026-04-26: replaced native alert() with toastStore.
+	import { toastStore } from '$lib/stores/toast.svelte';
 	import {
 		IconArrowLeft,
 		IconHeart,
@@ -90,12 +92,16 @@
 				campaign_type: campaignType,
 				personalize: true
 			});
-			alert(result.message);
+			// FIX-2026-04-26: replaced native alert() with toastStore.success.
+			// Old: alert(result.message);
+			toastStore.success(result.message);
 			showEmailModal = false;
 			selectedMembers.clear();
 			selectedMembers = selectedMembers;
 		} catch {
-			alert('Failed to send emails');
+			// FIX-2026-04-26: replaced native alert() with toastStore.error.
+			// Old: alert('Failed to send emails');
+			toastStore.error('Failed to send emails');
 		}
 	}
 
