@@ -21,13 +21,18 @@
 </div>
 
 <style>
+	/* PRINCIPAL-2026-04-26: comment-out, verify, delete in follow-up.
+	   `--color-rtp-bg` is undefined repo-wide (rtp-* token namespace removed
+	   in earlier refactor). The inner LoginLayout component paints its own
+	   background via `--auth-bg`. The body.light/html.light selectors never
+	   match — no code applies those classes. Concealed dead style. */
+	/*
 	.auth-page {
 		background: var(--color-rtp-bg);
 	}
-
-	/* Ensure proper dark/light theme handling */
 	:global(html.light) .auth-page,
 	:global(body.light) .auth-page {
 		background: #f5f5f7;
 	}
+	*/
 </style>

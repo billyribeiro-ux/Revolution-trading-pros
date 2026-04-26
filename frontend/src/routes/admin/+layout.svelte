@@ -21,6 +21,8 @@
 	import IconPlugConnected from '@tabler/icons-svelte-runes/icons/plug-connected';
 	import IconCommand from '@tabler/icons-svelte-runes/icons/command';
 
+	// PRINCIPAL-2026-04-26: onMount imported for auth-guard conversion (see line ~52).
+	import { onMount } from 'svelte';
 	import { AdminSidebar } from '$lib/components/layout';
 	import Toast from '$lib/components/Toast.svelte';
 	import CommandPalette from '$lib/components/CommandPalette.svelte';
@@ -48,9 +50,27 @@
 	let isKeyboardHelpOpen = $state(false);
 	let isConnectionHealthOpen = $state(false);
 
-	// Auth guard
-	$effect(() => {
-		if (browser && !$isAuthenticated) {
+	// PRINCIPAL-2026-04-26: auth-guard converted from $effect to onMount.
+	// The previous $effect read $isAuthenticated, which under Svelte 5 compiles
+	// to a `legacy_pre_subscribe` call that synchronously fires fn(getSnapshot())
+	// — and getSnapshot() reads the _user $state rune. That synchronous write
+	// to the compiler-generated subscriber rune INSIDE a running $effect is the
+	// classic write-while-reading-tracked-dep pattern that trips
+	// effect_update_depth_exceeded on the post-login goto('/admin',
+	// { invalidateAll: true }) flush. Identical fix to dashboard/+layout.svelte:
+	// the dashboard layout converted its equivalent guard to onMount with the
+	// same reasoning. Admin was missed in that sweep (commit 01c4eecfe).
+	// See https://svelte.dev/docs/svelte/$effect#When-not-to-use-$effect.
+	//
+	// Old code (kept for one revision per PRINCIPAL-2026-04-26 marker — delete in follow-up):
+	// $effect(() => {
+	// 	if (browser && !$isAuthenticated) {
+	// 		goto('/login?redirect=/admin');
+	// 	}
+	// });
+	onMount(() => {
+		if (!browser) return;
+		if (!$isAuthenticated) {
 			goto('/login?redirect=/admin');
 		}
 	});

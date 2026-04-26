@@ -1,0 +1,45 @@
+/**
+ * Marketing Stylesheet — applied to marketing routes only via `.marketing-shell` class.
+ * ════════════════════════════════════════════════════════════════════════════
+ * Architectural contract (PRINCIPAL-2026-04-26):
+ *   - Imported once by frontend/src/routes/+layout.svelte. Loads on every
+ *     route, but rules only fire where `.marketing-shell` class is applied
+ *     (marketing routes — see `class:marketing-shell={isMarketingPage}` in
+ *     +layout.svelte). Admin/dashboard/cms routes get zero visual effect.
+ *   - Reason for global import (not chunked-per-component): the prior
+ *     extracted MarketingShell.svelte component caused effect_update_depth_
+ *     exceeded on /login → /admin transitions (component teardown coincided
+ *     with the auth store fan-out). Importing CSS at the root keeps the
+ *     layout tree topology stable across route changes.
+ *   - Defines NO `body` or `html` selectors. Background lives on
+ *     `.marketing-shell`. Replaces the unlayered `body { background: #0a0a0a }`
+ *     hack that lived in app.html.
+ *   - No dependency on app.css (no shadcn tokens). Marketing components
+ *     self-paint their sections; this sheet sets the canvas plus a universal
+ *     border default for bare HTML elements (input, hr, fieldset) that don't
+ *     carry component styles.
+ * ════════════════════════════════════════════════════════════════════════════
+ */
+
+@import 'tailwindcss';
+
+/* Marketing canvas — replaces app.html:98's unlayered body color rule.
+   Background-color and text-color only; layout geometry (min-h-screen,
+   flex flex-col, min-w-0) comes from existing Tailwind classes on the
+   wrapper div in +layout.svelte. */
+.marketing-shell {
+	background-color: #0a0a0a;
+	color: #f5f5f5;
+}
+
+/* Universal border + outline default for marketing-only descendants.
+   Replaces the `.marketing-page-root *` rule that previously lived in app.css.
+   Hex values are inlined (not @apply'd from app.css tokens) so this sheet
+   has zero dependency on the shadcn theme. Values match what
+   `border-border` / `outline-ring/50` resolved to under app.css's light theme. */
+.marketing-shell *,
+.marketing-shell *::before,
+.marketing-shell *::after {
+	border-color: oklch(0.92 0.004 286.32);
+	outline-color: oklch(0.705 0.015 286.067 / 0.5);
+}

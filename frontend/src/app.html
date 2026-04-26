@@ -92,11 +92,20 @@
 				scrollbar-gutter: stable;
 			}
 
+			/* PRINCIPAL-2026-04-26: comment-out, verify, delete in follow-up.
+			   Body theming moves to per-area sheets so each area owns its own canvas:
+			     - marketing → frontend/src/marketing.css (.marketing-shell)
+			     - admin     → already painted via .admin-layout (admin/+layout.svelte)
+			     - dashboard → already painted via .dashboard__main (dashboard/+layout.svelte)
+			   Body keeps only structural reset (margin/padding/min-height); defer
+			   color to UA otherwise. The unlayered `background-color: #0a0a0a` line
+			   was the load-bearing dark canvas for marketing — replaced by
+			   `.marketing-shell { background-color: #0a0a0a }` in MarketingShell. */
 			body {
 				margin: 0;
 				padding: 0;
-				background-color: #0a0a0a;
-				color: #f5f5f5;
+				/* background-color: #0a0a0a; */
+				/* color: #f5f5f5; */
 				min-height: 100vh;
 				min-height: 100dvh;
 			}

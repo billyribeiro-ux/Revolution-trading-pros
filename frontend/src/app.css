@@ -115,31 +115,25 @@
 }
 
 @layer base {
-	/* Marketing-only universal border/outline default. Scoped to
-	   `.marketing-page-root` so admin / dashboard / cms layouts (which never
-	   apply the wrapper) are isolated from the global cascade. Inside
-	   `@layer base` so Tailwind utilities in `@layer utilities` still win on
-	   layer-order regardless of specificity.
-	   See docs/audits/CSS_ISOLATION_PLAN_2026-04-25.md (2026-04-25 +
-	   2026-04-26 amendment). */
+	/* PRINCIPAL-2026-04-26: comment-out, verify, delete in follow-up.
+	   Architectural shift — app.css is no longer imported by the root layout.
+	     - Marketing now owns its CSS via frontend/src/marketing.css
+	       (.marketing-shell paints background + universal border default).
+	     - Admin/dashboard/cms self-import their CSS chains in their nested
+	       +layout.svelte files.
+	     - app.css is preserved on disk for any route that wants shadcn tokens;
+	       opt in via local import.
+	   The `.marketing-page-root` selector is no longer applied anywhere
+	   (removed from routes/+layout.svelte). The `body { @apply bg-background }`
+	   rule is unreachable in the marketing chunk and unwanted globally. */
+	/*
 	.marketing-page-root * {
 		@apply border-border outline-ring/50;
 	}
-
-	/* Body theme defaults are applied to <body>, NOT to the wrapper div.
-	   Reason: app.html ships an unlayered `body { background-color: #0a0a0a }`
-	   inline style that wins over any `@layer base` rule (cascade-layer order:
-	   unlayered > layered). Marketing's dark canvas comes from that unlayered
-	   inline rule. Backend layouts (admin / dashboard / cms) paint their own
-	   surfaces on their root containers, which beat inherited body styles via
-	   compound-class specificity — no `!important` required.
-
-	   The previous wrapper-scoped `bg-background` rule (2026-04-25) was a
-	   regression: it painted the marketing wrapper div WHITE on top of body's
-	   dark canvas, stripping the design. Restored to body here. */
 	body {
 		@apply bg-background text-foreground;
 	}
+	*/
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════

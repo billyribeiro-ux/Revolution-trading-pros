@@ -18,7 +18,21 @@
 	 * @author Revolution Trading Pros
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 */
-	import '../app.css';
+	// PRINCIPAL-2026-04-26: comment-out, verify, delete in follow-up.
+	// app.css carried shadcn light-theme tokens that conflicted with marketing's
+	// dark canvas (`bg-background` resolves to white). Replaced by marketing.css
+	// imported below. Admin/dashboard/cms self-contain their CSS in their nested
+	// +layout.svelte files. app.css is preserved on disk for any route that
+	// still wants shadcn tokens — opt in via local import.
+	// import '../app.css';
+
+	// Marketing CSS — imported at the root so the layout tree topology stays
+	// stable across route transitions (no component mount/unmount on
+	// /login → /admin etc., which previously triggered the auth-store fan-out
+	// cascade — see commit 01c4eecfe). The `.marketing-shell` class is only
+	// applied on marketing pages, so admin/dashboard/cms get zero visual
+	// effect from this import (rules don't match their DOM).
+	import '../marketing.css';
 	import AdminToolbar from '$lib/components/AdminToolbar.svelte';
 	import ClientOnly from '$lib/components/ssr/ClientOnly.svelte';
 	import Seo from '$lib/seo/Seo.svelte';
@@ -159,18 +173,20 @@
      DRY Principle: Single shared layout for dashboard + marketing pages
      ═══════════════════════════════════════════════════════════════════════════ -->
 {#if isAdminArea || isEmbedArea || isCmsArea}
-	<!-- Admin/Embed/CMS: Own layouts, no shared chrome, no marketing-page theme.
-	     The `.marketing-page-root` class is intentionally absent here so the
-	     `app.css` body/universal rules don't apply. See
+	<!-- Admin/Embed/CMS: Own layouts, no shared chrome, no marketing theme.
+	     Marketing CSS is loaded globally (above) but inert here because the
+	     `.marketing-shell` class is not applied. See
 	     docs/audits/CSS_CASCADE_AUDIT_2026-04-25.md. -->
 	{@render props.children()}
 {:else}
-	<!-- Dashboard + Marketing: Shared layout with NavBar.
-	     Only marketing pages get the `marketing-page-root` class; dashboard
-	     keeps its own theme via lib/styles/dashboard.css. -->
+	<!-- Marketing + Dashboard: Shared wrapper. Stable topology across route
+	     transitions (commit 01c4eecfe deliberately kept the wrapper mounted
+	     to avoid effect_update_depth_exceeded on the auth fan-out). The
+	     marketing-shell class is what flips marketing routes into their dark
+	     canvas; dashboard routes keep their own surfaces from dashboard.css. -->
 	<div
 		class="min-h-screen flex flex-col min-w-0"
-		class:marketing-page-root={isMarketingPage}
+		class:marketing-shell={isMarketingPage}
 		class:has-admin-toolbar={showAdminToolbar}
 	>
 		<!-- ICT Level 7: ClientOnly prevents hydration mismatch for auth-dependent AdminToolbar -->
