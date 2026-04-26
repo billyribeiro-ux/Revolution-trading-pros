@@ -11,6 +11,7 @@ pub mod cms_scheduler;
 pub mod cms_upload;
 pub mod cms_webhooks;
 pub mod cms_workflow;
+pub mod credential_resolver; // PE7 invariant 2A: DB-backed credential lookup with env fallback
 pub mod email;
 pub mod event_broadcaster; // ICT 7+ Phase 3: Unified WebSocket + SSE event broadcasting
 pub mod export; // ICT 7+ Phase 4: Export Functionality
@@ -41,6 +42,10 @@ pub struct Services {
     pub cache: CacheService,
     /// Cache invalidation helper
     pub cache_invalidator: CacheInvalidator,
+    /// PE7 invariant 2A: DB-first / env-fallback credential resolver. Used
+    /// by every Stripe-touching endpoint so admin paste in /admin/settings
+    /// takes effect without a redeploy.
+    pub credentials: credential_resolver::CredentialResolver,
 }
 
 impl Services {
@@ -135,14 +140,28 @@ impl Services {
             "Cache service initialized"
         );
 
+        // Build the static stripe service from env (legacy; kept for code paths
+        // not yet migrated to the resolver). New code SHOULD prefer
+        // `services.credentials.stripe_client(pool, env).await` so DB-stored
+        // keys win over env at request time.
+        let stripe = stripe::StripeService::new(&config.stripe_secret_key);
+        let stripe = if config.stripe_webhook_secret.is_empty() {
+            stripe
+        } else {
+            stripe.with_webhook_secret(&config.stripe_webhook_secret)
+        };
+
+        let credentials = credential_resolver::CredentialResolver::new(config.clone());
+
         Ok(Self {
             redis,
             storage: storage::StorageService::new(config).await?,
-            stripe: stripe::StripeService::new(&config.stripe_secret_key),
+            stripe,
             search,
             email,
             cache,
             cache_invalidator,
+            credentials,
         })
     }
 }

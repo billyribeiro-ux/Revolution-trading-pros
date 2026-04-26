@@ -1020,10 +1020,7 @@ impl StripeService {
         ];
 
         if proration_behavior == "none" {
-            params.push((
-                "billing_cycle_anchor".to_string(),
-                "unchanged".to_string(),
-            ));
+            params.push(("billing_cycle_anchor".to_string(), "unchanged".to_string()));
         }
 
         let response = self

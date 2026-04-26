@@ -349,12 +349,17 @@ async fn webhook(
             )
         })?;
 
-    // ICT 7 Fix: Actually verify webhook signature for production security
-    match state
+    // PE7 invariant 2A: prefer DB-stored webhook secret over env, so admin
+    // rotation in /admin/settings takes effect without a redeploy.
+    let env_scope = state.config.environment.clone();
+    let stripe_for_webhook = state
         .services
-        .stripe
-        .verify_webhook(body.as_bytes(), signature)
-    {
+        .credentials
+        .stripe_client(&state.db.pool, &env_scope)
+        .await;
+
+    // ICT 7 Fix: Actually verify webhook signature for production security
+    match stripe_for_webhook.verify_webhook(body.as_bytes(), signature) {
         Ok(true) => {
             tracing::debug!(target: "payments", "Webhook signature verified successfully");
         }

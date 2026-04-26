@@ -68,10 +68,7 @@ async fn create_test_customer(client: &reqwest::Client, secret: &str) -> String 
     client
         .post(format!("{}/customers/{}", STRIPE_API_BASE, customer_id))
         .basic_auth(secret, None::<&str>)
-        .form(&[(
-            "invoice_settings[default_payment_method]",
-            "pm_card_visa",
-        )])
+        .form(&[("invoice_settings[default_payment_method]", "pm_card_visa")])
         .send()
         .await
         .expect("set default PM")
@@ -154,7 +151,10 @@ async fn migrate_subscription_no_proration_swaps_price() {
     // 2. customer + sub
     let customer = create_test_customer(&client, &secret).await;
     let sub_id = create_subscription(&client, &secret, &customer, &old_price.id).await;
-    assert_eq!(current_price_id(&client, &secret, &sub_id).await, old_price.id);
+    assert_eq!(
+        current_price_id(&client, &secret, &sub_id).await,
+        old_price.id
+    );
 
     // 3. migrate with proration_behavior=none
     svc.migrate_subscription_to_price(&sub_id, &new_price.id, "none")
@@ -193,7 +193,10 @@ async fn migrate_subscription_immediate_proration_swaps_price() {
 
     let customer = create_test_customer(&client, &secret).await;
     let sub_id = create_subscription(&client, &secret, &customer, &old_price.id).await;
-    assert_eq!(current_price_id(&client, &secret, &sub_id).await, old_price.id);
+    assert_eq!(
+        current_price_id(&client, &secret, &sub_id).await,
+        old_price.id
+    );
 
     svc.migrate_subscription_to_price(&sub_id, &new_price.id, "create_prorations")
         .await
@@ -220,7 +223,10 @@ async fn migrate_subscription_immediate_proration_swaps_price() {
         .expect("parse invoices");
 
     assert!(
-        invoices["data"].as_array().map(|a| !a.is_empty()).unwrap_or(false),
+        invoices["data"]
+            .as_array()
+            .map(|a| !a.is_empty())
+            .unwrap_or(false),
         "expected at least one invoice for the customer, got: {}",
         invoices
     );

@@ -841,6 +841,14 @@ async fn connect_service(
     )
     .await;
 
+    // PE7 invariant 2A: drop any cached creds so the next request reads the
+    // freshly-pasted keys without waiting on the 60s TTL.
+    state
+        .services
+        .credentials
+        .invalidate(&key, input.environment.as_deref().unwrap_or(""))
+        .await;
+
     tracing::info!(
         admin_id = admin.0.id,
         service_key = %key,
@@ -1094,6 +1102,14 @@ async fn disconnect_service(
     )
     .await;
 
+    // PE7 invariant 2A: drop cached creds. Disconnecting an environment must
+    // immediately stop the runtime from using its keys.
+    state
+        .services
+        .credentials
+        .invalidate(&key, connection.environment.as_deref().unwrap_or(""))
+        .await;
+
     tracing::info!(
         admin_id = admin.0.id,
         service_key = %key,
@@ -1195,6 +1211,13 @@ async fn delete_connection(
         None,
     )
     .await;
+
+    // PE7 invariant 2A: invalidate cached creds.
+    state
+        .services
+        .credentials
+        .invalidate(&key, connection.environment.as_deref().unwrap_or(""))
+        .await;
 
     tracing::info!(
         admin_id = admin.0.id,
