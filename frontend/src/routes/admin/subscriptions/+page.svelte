@@ -344,7 +344,7 @@
 				<div class="spinner"></div>
 				<p>Checking connection...</p>
 			</div>
-		{:else if !getIsPaymentConnected}
+		{:else if !getIsPaymentConnected()}
 			<ServiceConnectionStatus feature="payment" variant="card" showFeatures={true} />
 		{:else}
 			{#if error}

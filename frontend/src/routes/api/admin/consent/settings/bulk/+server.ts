@@ -32,7 +32,7 @@ export const POST: RequestHandler = async ({ cookies, fetch, request }) => {
 	});
 
 	const text = await upstream.text();
-	let parsed: unknown = {};
+	let parsed: unknown;
 	try {
 		parsed = text ? JSON.parse(text) : {};
 	} catch {

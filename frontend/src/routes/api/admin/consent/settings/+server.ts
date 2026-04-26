@@ -31,7 +31,7 @@ export const GET: RequestHandler = async ({ cookies, fetch, url }) => {
 	});
 
 	const text = await upstream.text();
-	let body: unknown = {};
+	let body: unknown;
 	try {
 		body = text ? JSON.parse(text) : {};
 	} catch {
