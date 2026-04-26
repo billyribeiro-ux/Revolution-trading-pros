@@ -388,3 +388,92 @@ Configure exceptions per-file via `// stylelint-disable declaration-no-important
 ## 11. Tracking
 
 This plan is row #37 in [`MASTER_UIUX_BACKLOG.md`](MASTER_UIUX_BACKLOG.md) (added now).
+
+---
+
+## 12. 2026-04-26 amendment — wrapper background regression
+
+**Reported by:** end user. **Fixed by:** PE7 forensic agent.
+
+### Symptom
+
+Every marketing page rendered with a white background. The Hero, sections,
+and footer dark-canvas designs appeared "stripped" — marketing components
+expect to paint dark gradients on top of `body { background-color: #0a0a0a }`
+(set unlayered in `frontend/src/app.html:95-102`). Backend surfaces
+(admin/dashboard/cms) were unaffected.
+
+### Root cause
+
+Phase 1 (Step 1.1) of this plan moved BOTH
+
+```css
+* { @apply border-border outline-ring/50; }
+body { @apply bg-background text-foreground; }
+```
+
+into a `.marketing-page-root`-scoped block:
+
+```css
+.marketing-page-root * { @apply border-border outline-ring/50; }
+.marketing-page-root   { @apply bg-background text-foreground; }
+```
+
+Scoping the universal `*` rule was correct (admin/dashboard isolation).
+Scoping `bg-background` to the wrapper was the defect: the wrapper div is
+a child of `<body>`, and Tailwind's `bg-background` resolves to
+`oklch(1 0 0)` (white) in light mode (the default). The wrapper therefore
+painted a white rectangle directly on top of body's dark canvas, hiding
+it. The original layered `body { @apply bg-background }` was *also*
+"white" by token, but it lost on cascade-layer order to the unlayered
+inline `body { background-color: #0a0a0a }` in `app.html` — so marketing
+stayed dark. The wrapper rule had no such unlayered competitor on the div
+itself, so white won.
+
+### Fix
+
+`frontend/src/app.css` — restore the `body` target for `bg-background`
+while keeping the universal-border rule wrapper-scoped. Diff:
+
+```diff
+ @layer base {
+-    .marketing-page-root * {
+-        @apply border-border outline-ring/50;
+-    }
+-    .marketing-page-root {
+-        @apply bg-background text-foreground;
+-    }
++    .marketing-page-root * {
++        @apply border-border outline-ring/50;
++    }
++    body {
++        @apply bg-background text-foreground;
++    }
+ }
+```
+
+Cascade reasoning (post-fix):
+
+1. `body { @apply bg-background }` is in `@layer base` (layered).
+2. `app.html`'s inline `body { background-color: #0a0a0a }` is unlayered.
+3. Unlayered beats layered → marketing body stays dark.
+4. Admin / dashboard / cms layouts paint their own root container
+   backgrounds (`.admin-layout`, `.dashboard__main`, etc.); compound-class
+   specificity (≥ 0,1,0) beats the inherited body style without
+   `!important`.
+5. The universal `*` border rule remains scoped to `.marketing-page-root`,
+   so it does not bleed into admin/dashboard descendants.
+
+### Verification
+
+- `grep -rn ': .*!important;' frontend/src --include='*.css' --include='*.svelte' | wc -l` → 0.
+- `pnpm --filter revolution-svelte check` → 0 errors / 0 warnings.
+- `bash scripts/pe7_gate.sh`: `!important` invariant passes (full gate
+  also runs the Rust toolchain).
+- Manual smoke (when dev server is up): `/`, `/courses`, `/indicators`,
+  `/auth/login` paint dark; `/admin`, `/dashboard/*`, `/cms/editor`
+  paint their own backend themes.
+
+### Risk
+
+LOW. Single-line scope change in `app.css`. Trivially revertable.
