@@ -104,6 +104,15 @@
 	let pendingDeleteDownloadId = $state<number | null>(null);
 	let pendingDeleteLesson = $state<{ id: string; moduleId?: number } | null>(null);
 
+	// FIX-2026-04-26 (P0-3): replace native prompt() flows with ConfirmationModal
+	// (input variant). prompt() is blocked in modern browser embed contexts and
+	// has zero validation; this surfaces a real modal with trim/length checks.
+	let showAddModuleModal = $state(false);
+	let addModuleTitle = $state('');
+	let showAddLessonModal = $state(false);
+	let addLessonTitle = $state('');
+	let pendingAddLessonModuleId = $state<number | undefined>(undefined);
+
 	const fetchCourse = async () => {
 		loading = true;
 		try {
@@ -165,21 +174,33 @@
 		}
 	};
 
-	const addModule = async () => {
-		const title = prompt('Enter module title:');
-		if (!title) return;
+	// FIX-2026-04-26 (P0-3): open input modal instead of native prompt().
+	// Old: const title = prompt('Enter module title:');
+	const addModule = () => {
+		addModuleTitle = '';
+		showAddModuleModal = true;
+	};
+
+	const confirmAddModule = async (value?: string) => {
+		const title = (value ?? '').trim();
+		if (!title) {
+			toastStore.error('Module title is required');
+			return;
+		}
+		showAddModuleModal = false;
 		try {
-			// ICT 7 FIX: Use adminFetch for absolute URL on Pages.dev
 			const data = await adminFetch(`/api/admin/courses/${courseId}/modules`, {
 				method: 'POST',
 				body: JSON.stringify({ title })
 			});
-			if (data.success) {
-				modules = [...modules, { ...data.data, lessons: [] }];
+			// FIX-2026-04-26 (P0-2): tolerate envelope variations.
+			const created = data?.data ?? data;
+			if (created && (data.success === undefined || data.success)) {
+				modules = [...modules, { ...created, lessons: [] }];
+			} else {
+				toastStore.error(data?.error || data?.message || 'Failed to create module');
 			}
 		} catch {
-			// FIX-2026-04-26: replaced native alert() with toastStore.error.
-			// Old: alert('Failed to create module');
 			toastStore.error('Failed to create module');
 		}
 	};

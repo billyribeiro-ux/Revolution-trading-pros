@@ -3,6 +3,7 @@
 -->
 
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import {
 		IconEye,
@@ -11,11 +12,9 @@
 		IconClock,
 		IconChartBar,
 		IconRefresh,
-		IconArrowUpRight,
 		IconPlay,
 		IconClick
 	} from '$lib/icons';
-	import { api } from '$lib/api/config';
 	import { connections, getIsBehaviorConnected } from '$lib/stores/connections.svelte';
 	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
 	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
@@ -40,13 +39,23 @@
 	let topScrolls = $state<{ page: string; avgDepth: number; views: number }[]>([]);
 	let recordings = $state<{ id: string; duration: string; pages: number; date: string }[]>([]);
 
+	// FIX-2026-04-26 (P2-10): route through SvelteKit proxy instead of `api.get`
+	// (which prepends the hardcoded fly.dev URL and bypasses the cookie-based
+	// auth attached by `+server.ts`). The proxy stub at
+	// `/api/admin/analytics/behavior/+server.ts` handles auth + URL injection.
 	async function loadData() {
 		isLoading = true;
 		error = '';
 
 		try {
-			const response = await api.get(`/api/admin/analytics/behavior?period=${selectedPeriod}`);
-			const data = response?.data || response;
+			const response = await fetch(
+				`/api/admin/analytics/behavior?period=${encodeURIComponent(selectedPeriod)}`
+			);
+			if (!response.ok) {
+				throw new Error(`HTTP ${response.status}`);
+			}
+			const payload = await response.json();
+			const data = payload?.data || payload;
 
 			if (data) {
 				metrics = {
@@ -74,23 +83,30 @@
 		loadData();
 	}
 
-	// Svelte 5: Initialize on mount
-	$effect(() => {
+	// FIX-2026-04-26 (P1-3): $derived restores reactivity past helper's `untrack`.
+	let isBehaviorConnected = $derived(getIsBehaviorConnected());
+
+	// FIX-2026-04-26 (P1-1): onMount replaces the $effect cascade pattern.
+	onMount(() => {
 		if (!browser) return;
 
-		const init = async () => {
-			// Load connection status first
-			await connections.load();
-			connectionLoading = false;
+		(async () => {
+			try {
+				await connections.load();
+			} catch (e) {
+				if (import.meta.env.DEV) {
+					console.error('[Behavior] Failed to load connection status:', e);
+				}
+			} finally {
+				connectionLoading = false;
+			}
 
-			// Only load data if behavior tracking is connected
 			if (getIsBehaviorConnected()) {
 				await loadData();
 			} else {
 				isLoading = false;
 			}
-		};
-		init();
+		})();
 	});
 </script>
 
@@ -111,7 +127,7 @@
 		<header class="page-header">
 			<h1>Behavior Tracking</h1>
 			<p class="subtitle">Analyze user interactions, clicks, scrolls, and session recordings</p>
-			{#if getIsBehaviorConnected()}
+			{#if isBehaviorConnected}
 				<div class="header-actions">
 					<div class="period-selector">
 						<button class:active={selectedPeriod === '24h'} onclick={() => changePeriod('24h')}
@@ -164,10 +180,9 @@
 						<span class="metric-value">{metrics.totalSessions.toLocaleString()}</span>
 						<span class="metric-label">Total Sessions</span>
 					</div>
-					<div class="metric-trend positive">
-						<IconArrowUpRight size={14} />
-						<span>12.5%</span>
-					</div>
+					<!-- FIX-2026-04-26 (P1-5): removed hardcoded "12.5% / 8.3% / …" trend pills.
+					     These were template literals, never bound to data. Reintroduce only
+					     when the backend returns a real period-over-period delta. -->
 				</div>
 
 				<div class="metric-card">
@@ -177,10 +192,6 @@
 					<div class="metric-content">
 						<span class="metric-value">{metrics.avgSessionDuration}</span>
 						<span class="metric-label">Avg. Session Duration</span>
-					</div>
-					<div class="metric-trend positive">
-						<IconArrowUpRight size={14} />
-						<span>8.3%</span>
 					</div>
 				</div>
 
@@ -192,10 +203,6 @@
 						<span class="metric-value">{metrics.pagesPerSession.toFixed(1)}</span>
 						<span class="metric-label">Pages / Session</span>
 					</div>
-					<div class="metric-trend positive">
-						<IconArrowUpRight size={14} />
-						<span>5.2%</span>
-					</div>
 				</div>
 
 				<div class="metric-card">
@@ -205,10 +212,6 @@
 					<div class="metric-content">
 						<span class="metric-value">{metrics.scrollDepth}%</span>
 						<span class="metric-label">Avg. Scroll Depth</span>
-					</div>
-					<div class="metric-trend positive">
-						<IconArrowUpRight size={14} />
-						<span>3.1%</span>
 					</div>
 				</div>
 
@@ -220,10 +223,6 @@
 						<span class="metric-value">{metrics.clickRate}%</span>
 						<span class="metric-label">Click Rate</span>
 					</div>
-					<div class="metric-trend negative">
-						<IconArrowUpRight size={14} />
-						<span>1.2%</span>
-					</div>
 				</div>
 
 				<div class="metric-card">
@@ -233,10 +232,6 @@
 					<div class="metric-content">
 						<span class="metric-value">{metrics.heatmapViews.toLocaleString()}</span>
 						<span class="metric-label">Heatmap Views</span>
-					</div>
-					<div class="metric-trend positive">
-						<IconArrowUpRight size={14} />
-						<span>15.7%</span>
 					</div>
 				</div>
 			</div>
@@ -612,28 +607,9 @@
 		color: #64748b;
 	}
 
-	.metric-trend {
-		position: absolute;
-		top: 1rem;
-		right: 1rem;
-		display: flex;
-		align-items: center;
-		gap: 0.25rem;
-		font-size: 0.75rem;
-		font-weight: 600;
-		padding: 0.25rem 0.5rem;
-		border-radius: 6px;
-	}
-
-	.metric-trend.positive {
-		color: #4ade80;
-		background: rgba(34, 197, 94, 0.15);
-	}
-
-	.metric-trend.negative {
-		color: #f87171;
-		background: rgba(239, 68, 68, 0.15);
-	}
+	/* FIX-2026-04-26 (P1-5): .metric-trend / .positive / .negative removed
+	   along with the hardcoded trend pills they styled. Reintroduce when the
+	   backend returns a real period-over-period delta. */
 
 	/* Content Grid */
 	.content-grid {

@@ -15,13 +15,17 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 
-const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+// FIX-2026-04-26-audit: align with repo-wide proxy env-var chain.
+const BACKEND_URL =
+	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+// FIX-2026-04-26-audit (P3): make the default Bunny library id env-driven (was a magic 585929).
+const DEFAULT_BUNNY_LIBRARY_ID = env.BUNNY_VIDEO_LIBRARY_ID || '585929';
 
 // PUT - Upload video file to Bunny.net via backend
 export const PUT: RequestHandler = async ({ request, cookies }) => {
-	const accessToken = cookies.get('rtp_access_token');
+	const cookieToken = cookies.get('rtp_access_token');
 
-	if (!accessToken) {
+	if (!cookieToken) {
 		error(401, 'Authentication required');
 	}
 
@@ -29,7 +33,7 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 		// Get the video GUID and library ID from URL params
 		const url = new URL(request.url);
 		const videoGuid = url.searchParams.get('video_guid');
-		const libraryId = url.searchParams.get('library_id') || '585929';
+		const libraryId = url.searchParams.get('library_id') || DEFAULT_BUNNY_LIBRARY_ID;
 
 		if (!videoGuid) {
 			error(400, 'video_guid is required');
@@ -43,8 +47,6 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 			error(400, 'No file data provided');
 		}
 
-		console.log(`[Bunny Upload] Uploading ${fileBuffer.byteLength} bytes to video ${videoGuid}`);
-
 		// Forward to backend upload endpoint
 		const uploadUrl = `${BACKEND_URL}/api/admin/bunny/upload?video_guid=${videoGuid}&library_id=${libraryId}`;
 
@@ -52,7 +54,7 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 			method: 'PUT',
 			headers: {
 				'Content-Type': contentType,
-				Authorization: `Bearer ${accessToken}`,
+				Authorization: `Bearer ${cookieToken}`,
 				'Content-Length': fileBuffer.byteLength.toString()
 			},
 			body: fileBuffer

@@ -6,7 +6,7 @@
  * @version 2.0.0 - January 2026
  */
 
-import { json, error } from '@sveltejs/kit';
+import { json, error, isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 import { env } from '$env/dynamic/private';
@@ -85,11 +85,19 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		});
 
 		if (status >= 400) {
-			error(status, 'Failed to create category');
+			// FIX-2026-04-26 (P0-1): forward backend status + message instead of generic 400.
+			const message =
+				(data && typeof data === 'object' && ('message' in data || 'error' in data)
+					? (data as { message?: string; error?: string }).message ||
+						(data as { error?: string }).error
+					: undefined) || 'Failed to create category';
+			error(status, message);
 		}
 
 		return json(data);
 	} catch (err) {
+		// FIX-2026-04-26 (P0-1): rethrow HttpError so backend status/message reach the client.
+		if (isHttpError(err)) throw err;
 		console.error('POST /api/admin/categories error:', err);
 		error(400, 'Invalid request body');
 	}

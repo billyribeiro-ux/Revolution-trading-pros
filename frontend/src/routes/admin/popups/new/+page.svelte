@@ -5,6 +5,11 @@ https://svelte.dev/e/bind_invalid_expression -->
 	import { Card, Input, Select } from '$lib/components/ui';
 	import { addToast } from '$lib/utils/toast';
 	import { popupsApi, type Popup } from '$lib/api/popups';
+	// FIX-2026-04-26 (07-marketing P0-5): the popup content textarea accepts
+	// raw HTML and the live preview rendered it via {@html} unsanitized.
+	// Multi-admin = stored XSS in the admin's own session. Route through
+	// sanitizeHtml so any <script>/on*/javascript: gets stripped before render.
+	import { sanitizeHtml } from '$lib/utils/sanitize';
 
 	// Form state
 	let formData = $state<Partial<Popup>>({
@@ -579,7 +584,7 @@ https://svelte.dev/e/bind_invalid_expression -->
 							class="preview-popup-content"
 							style="color: {formData.design?.textColor || '#4b5563'}"
 						>
-							{@html formData.content}
+							{@html sanitizeHtml(formData.content, 'rich')}
 						</div>
 					{/if}
 					{#if formData.cta_text}

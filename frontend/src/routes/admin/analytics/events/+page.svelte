@@ -6,6 +6,8 @@
 	 * Browse, search, and analyze tracked events with
 	 * filtering, grouping, and visualization capabilities.
 	 */
+	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { analyticsApi, type AnalyticsEvent } from '$lib/api/analytics';
 	import { connections, getIsAnalyticsConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
@@ -88,23 +90,36 @@
 	}
 
 	function formatProperties(props: Record<string, unknown>): string {
+		// FIX-2026-04-26 (P3-5): stringify once, not twice.
 		if (!props || Object.keys(props).length === 0) return '-';
-		return JSON.stringify(props).slice(0, 100) + (JSON.stringify(props).length > 100 ? '...' : '');
+		const json = JSON.stringify(props);
+		return json.slice(0, 100) + (json.length > 100 ? '...' : '');
 	}
 
-	// Svelte 5 - $effect replaces onMount for reactive initialization
-	$effect(() => {
-		async function init() {
-			await connections.load();
-			connectionLoading = false;
+	// FIX-2026-04-26 (P1-3): $derived restores reactivity past helper's `untrack`.
+	let isAnalyticsConnected = $derived(getIsAnalyticsConnected());
+
+	// FIX-2026-04-26 (P1-1): onMount replaces the $effect cascade pattern.
+	onMount(() => {
+		if (!browser) return;
+
+		(async () => {
+			try {
+				await connections.load();
+			} catch (e) {
+				if (import.meta.env.DEV) {
+					console.error('[Events] Failed to load connection status:', e);
+				}
+			} finally {
+				connectionLoading = false;
+			}
 
 			if (getIsAnalyticsConnected()) {
 				await loadEvents();
 			} else {
 				loading = false;
 			}
-		}
-		init();
+		})();
 	});
 </script>
 
@@ -140,7 +155,7 @@
 					></div>
 				</div>
 			</div>
-		{:else if !getIsAnalyticsConnected}
+		{:else if !isAnalyticsConnected}
 			<ServiceConnectionStatus feature="analytics" variant="card" showFeatures={true} />
 		{:else}
 			<!-- Filters - Glass morphism card -->

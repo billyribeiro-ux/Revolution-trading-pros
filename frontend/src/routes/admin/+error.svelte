@@ -230,11 +230,18 @@
 
 <style>
 	.admin-error-page {
+		/* FIX P0-3 (audits/admin-2026-04-26/01-shell-and-dashboard.md):
+		   without an explicit min-height the flex container collapsed to the
+		   error card's intrinsic height, leaving the centered card stuck flush
+		   to the top of the admin content viewport. Use 100dvh minus the admin
+		   header height (70px on desktop, 60px on mobile, 56px on extra-small
+		   — fall back to 70px via the CSS variable below). */
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		background: var(--bg-base);
 		padding: 2rem;
+		min-height: calc(100dvh - var(--admin-header-height, 70px));
 	}
 
 	.error-card {

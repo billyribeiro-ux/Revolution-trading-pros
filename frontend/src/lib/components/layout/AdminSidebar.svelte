@@ -37,7 +37,13 @@
 		IconPlugConnected,
 		IconBook,
 		IconFileText,
-		IconTrendingUp
+		IconTrendingUp,
+		IconLayoutKanban,
+		IconBookmark,
+		IconClock,
+		IconShieldLock,
+		IconGauge,
+		IconPackage
 	} from '$lib/icons';
 	interface Props {
 		isOpen?: boolean;
@@ -58,7 +64,9 @@
 				{ icon: IconFilter, label: 'Segments', href: '/admin/members/segments' },
 				{ icon: IconReceipt, label: 'Subscriptions', href: '/admin/subscriptions' },
 				{ icon: IconShoppingCart, label: 'Products', href: '/admin/products' },
-				{ icon: IconTicket, label: 'Coupons', href: '/admin/coupons' }
+				{ icon: IconTicket, label: 'Coupons', href: '/admin/coupons' },
+				{ icon: IconPackage, label: 'Orders', href: '/admin/orders' },
+				{ icon: IconShoppingCart, label: 'Abandoned Carts', href: '/admin/cart/abandoned' }
 			]
 		},
 		{
@@ -73,7 +81,9 @@
 				{ icon: IconPhoto, label: 'Media Library', href: '/admin/media' },
 				{ icon: IconVideo, label: 'Videos', href: '/admin/videos' },
 				{ icon: IconBellRinging, label: 'Popups', href: '/admin/popups' },
-				{ icon: IconForms, label: 'Forms', href: '/admin/forms' }
+				{ icon: IconForms, label: 'Forms', href: '/admin/forms' },
+				{ icon: IconBookmark, label: 'Watchlist', href: '/admin/watchlist' },
+				{ icon: IconLayoutKanban, label: 'Boards', href: '/admin/boards' }
 			]
 		},
 		{
@@ -82,6 +92,7 @@
 				{ icon: IconSend, label: 'Campaigns', href: '/admin/email/campaigns' },
 				{ icon: IconMail, label: 'Email Templates', href: '/admin/email/templates' },
 				{ icon: IconMail, label: 'Email Settings', href: '/admin/email/smtp' },
+				{ icon: IconUsers, label: 'Subscribers', href: '/admin/email/subscribers' },
 				{ icon: IconSeo, label: 'SEO', href: '/admin/seo' }
 			]
 		},
@@ -90,7 +101,8 @@
 			items: [
 				{ icon: IconChartBar, label: 'Dashboard', href: '/admin/analytics' },
 				{ icon: IconEye, label: 'Behavior', href: '/admin/behavior' },
-				{ icon: IconUsers, label: 'CRM', href: '/admin/crm' }
+				{ icon: IconUsers, label: 'CRM', href: '/admin/crm' },
+				{ icon: IconGauge, label: 'Performance', href: '/admin/performance' }
 			]
 		},
 		{
@@ -99,6 +111,8 @@
 				{ icon: IconHeartbeat, label: 'Site Health', href: '/admin/site-health' },
 				{ icon: IconPlugConnected, label: 'Connections', href: '/admin/connections' },
 				{ icon: IconUsers, label: 'Admin Users', href: '/admin/users' },
+				{ icon: IconClock, label: 'Schedules', href: '/admin/schedules' },
+				{ icon: IconShieldLock, label: 'Consent', href: '/admin/consent' },
 				{ icon: IconSettings, label: 'Settings', href: '/admin/settings' }
 			]
 		}
@@ -160,7 +174,21 @@
 		closeSidebar();
 		await goto('/');
 	}
+
+	// FIX-2026-04-26: Esc-to-close on mobile drawer.
+	// Audit P3 nit: a user on mobile-with-keyboard couldn't dismiss the drawer
+	// with Escape. The layout's keyboard.init() escape action only closes the
+	// command palette / notification center / shortcuts help / connection-health
+	// panel — not the sidebar drawer itself. Listening on window keeps focus
+	// requirements minimal (drawer doesn't need to own focus to receive Esc).
+	function handleKeydown(event: KeyboardEvent) {
+		if (event.key === 'Escape' && props.isOpen) {
+			closeSidebar();
+		}
+	}
 </script>
+
+<svelte:window onkeydown={handleKeydown} />
 
 <aside class="admin-sidebar" class:open={props.isOpen}>
 	<!-- Header -->

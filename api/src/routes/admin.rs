@@ -589,6 +589,134 @@ async fn delete_coupon(
     Ok(Json(json!({"message": "Coupon deleted successfully"})))
 }
 
+// FIX-2026-04-26 (P0-1, CC-1): Add the missing GET /admin/coupons/:id and
+// PUT /admin/coupons/:id handlers so the admin coupon edit page can load and
+// save coupons against the migration-correct schema.
+
+/// Get a single coupon by ID (admin)
+/// ICT 7 FIX: Use explicit column list with FLOAT8 casting for DECIMAL columns
+async fn get_coupon(
+    State(state): State<AppState>,
+    user: User,
+    Path(id): Path<i64>,
+) -> Result<Json<CouponRow>, (StatusCode, Json<serde_json::Value>)> {
+    require_admin(&user)?;
+
+    let coupon: Option<CouponRow> = sqlx::query_as(
+        r#"SELECT
+            id, code, description, discount_type,
+            discount_value::FLOAT8 as discount_value,
+            min_purchase::FLOAT8 as min_purchase,
+            max_discount::FLOAT8 as max_discount,
+            usage_limit, usage_count, is_active, starts_at, expires_at,
+            applicable_products, applicable_plans, created_at, updated_at
+        FROM coupons WHERE id = $1"#,
+    )
+    .bind(id)
+    .fetch_optional(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!(target: "admin", "get_coupon error: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
+
+    coupon.map(Json).ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Coupon not found"})),
+        )
+    })
+}
+
+/// Update coupon (admin)
+/// ICT 7 FIX: Schema-aligned UPDATE matching the migration columns.
+/// Uses COALESCE so partial updates leave untouched columns alone, except for
+/// nullable date fields where the caller may want to clear them by sending null.
+async fn update_coupon(
+    State(state): State<AppState>,
+    user: User,
+    Path(id): Path<i64>,
+    Json(input): Json<CreateCouponRequest>,
+) -> Result<Json<CouponRow>, (StatusCode, Json<serde_json::Value>)> {
+    require_admin(&user)?;
+
+    // Validate discount_type if provided.
+    if !input.discount_type.is_empty()
+        && input.discount_type != "percentage"
+        && input.discount_type != "fixed"
+    {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "Discount type must be 'percentage' or 'fixed'"})),
+        ));
+    }
+
+    let coupon: Option<CouponRow> = sqlx::query_as(
+        r#"
+        UPDATE coupons SET
+            code = COALESCE(NULLIF(UPPER($2), ''), code),
+            description = COALESCE($3, description),
+            discount_type = COALESCE(NULLIF($4, ''), discount_type),
+            discount_value = COALESCE($5, discount_value),
+            min_purchase = COALESCE($6, min_purchase),
+            max_discount = COALESCE($7, max_discount),
+            usage_limit = COALESCE($8, usage_limit),
+            is_active = COALESCE($9, is_active),
+            starts_at = COALESCE($10, starts_at),
+            expires_at = COALESCE($11, expires_at),
+            applicable_products = COALESCE($12, applicable_products),
+            applicable_plans = COALESCE($13, applicable_plans),
+            updated_at = NOW()
+        WHERE id = $1
+        RETURNING id, code, description, discount_type,
+            discount_value::FLOAT8 as discount_value,
+            min_purchase::FLOAT8 as min_purchase,
+            max_discount::FLOAT8 as max_discount,
+            usage_limit, usage_count, is_active, starts_at, expires_at,
+            applicable_products, applicable_plans, created_at, updated_at
+        "#,
+    )
+    .bind(id)
+    .bind(&input.code)
+    .bind(&input.description)
+    .bind(&input.discount_type)
+    .bind(input.discount_value)
+    .bind(input.min_purchase)
+    .bind(input.max_discount)
+    .bind(input.usage_limit)
+    .bind(input.is_active)
+    .bind(&input.starts_at)
+    .bind(&input.expires_at)
+    .bind(&input.applicable_products)
+    .bind(&input.applicable_plans)
+    .fetch_optional(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!(target: "admin", "update_coupon error: {}", e);
+        if e.to_string().contains("duplicate") {
+            (
+                StatusCode::CONFLICT,
+                Json(json!({"error": "Coupon code already exists"})),
+            )
+        } else {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        }
+    })?;
+
+    coupon.map(Json).ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Coupon not found"})),
+        )
+    })
+}
+
 /// Validate coupon (public)
 /// ICT 7 FIX: Use explicit column list with FLOAT8 casting for DECIMAL columns
 async fn validate_coupon(

@@ -1,6 +1,14 @@
 /**
  * Admin Membership Plans API Proxy
- * Forwards requests to backend /api/admin/membership-plans endpoint
+ * Forwards requests to backend /api/admin/membership-plans (GET — list)
+ * and /api/admin/subscriptions/plans (POST — create) endpoints.
+ *
+ * FIX-2026-04-26 (P0-3): Added POST handler. The page also expects
+ * PUT/PATCH/DELETE — those live in `[id]/+server.ts` since they take a path
+ * param. The Rust CRUD lives at /admin/subscriptions/plans (see
+ * subscriptions_admin.rs::plans_router); the GET list is also exposed at
+ * /admin/membership-plans (admin.rs::list_all_plans), so the GET path stays
+ * as-is for backward compatibility.
  */
 
 import { json } from '@sveltejs/kit';
@@ -10,23 +18,32 @@ import { env } from '$env/dynamic/private';
 const API_URL =
 	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
-export const GET: RequestHandler = async ({ cookies }) => {
+function authHeaderFrom({
+	cookies,
+	request
+}: {
+	cookies: { get: (name: string) => string | undefined };
+	request: Request;
+}): string | null {
+	const cookieToken = cookies.get('rtp_access_token');
+	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
+	const token = cookieToken || headerToken;
+	return token ? `Bearer ${token}` : null;
+}
+
+export const GET: RequestHandler = async ({ cookies, request }) => {
 	try {
-		// FIX-2026-04-26: comment-out, verify, delete in follow-up. Wrong cookie name — login proxy sets rtp_access_token, not auth_token.
-		// const token = cookies.get('auth_token');
-		const token = cookies.get('rtp_access_token');
+		const auth = authHeaderFrom({ cookies, request });
 
 		const response = await fetch(`${API_URL}/api/admin/membership-plans`, {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
-				...(token ? { Authorization: `Bearer ${token}` } : {})
+				...(auth ? { Authorization: auth } : {})
 			}
 		});
 
-		// ICT 7 FIX: Check response.ok BEFORE parsing JSON to avoid 500 on auth errors
 		if (!response.ok) {
-			// Try to parse error response, fallback to status text
 			let errorData;
 			try {
 				errorData = await response.json();
@@ -41,5 +58,45 @@ export const GET: RequestHandler = async ({ cookies }) => {
 	} catch (err) {
 		console.error('[API Proxy] Failed to fetch membership plans:', err);
 		return json({ error: 'Failed to fetch membership plans' }, { status: 500 });
+	}
+};
+
+/**
+ * POST /api/admin/membership-plans
+ * Forwards to backend /api/admin/subscriptions/plans (the Rust CRUD root for
+ * plans — see subscriptions_admin.rs::create_plan).
+ */
+export const POST: RequestHandler = async ({ cookies, request }) => {
+	try {
+		const auth = authHeaderFrom({ cookies, request });
+		if (!auth) {
+			return json({ error: 'Missing or invalid authorization header' }, { status: 401 });
+		}
+		const body = await request.json();
+
+		const response = await fetch(`${API_URL}/api/admin/subscriptions/plans`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Accept: 'application/json',
+				Authorization: auth
+			},
+			body: JSON.stringify(body)
+		});
+
+		const text = await response.text();
+		if (!text) {
+			return json({ error: 'Empty response from server' }, { status: response.status || 500 });
+		}
+
+		try {
+			const data = JSON.parse(text);
+			return json(data, { status: response.status });
+		} catch {
+			return json({ error: 'Invalid response from server' }, { status: 500 });
+		}
+	} catch (err) {
+		console.error('[API Proxy] Failed to create membership plan:', err);
+		return json({ error: 'Failed to create membership plan' }, { status: 500 });
 	}
 };

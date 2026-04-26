@@ -52,6 +52,8 @@
 	import { connections, getIsCrmConnected } from '$lib/stores/connections.svelte';
 	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
 	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { onMount } from 'svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES
@@ -134,6 +136,15 @@
 	let editingLead = $state<Lead | null>(null);
 	let deletingLead = $state<Lead | null>(null);
 	let convertingLead = $state<Lead | null>(null);
+
+	// Bulk-action confirmation modal state — every destructive bulk op
+	// goes through ConfirmationModal so the user has to acknowledge the
+	// blast radius (was previously fire-and-forget; see audit P0 #3).
+	let showBulkDeleteModal = $state(false);
+	let bulkDeleteLoading = $state(false);
+	let showBulkStatusModal = $state(false);
+	let bulkStatusLoading = $state(false);
+	let pendingBulkStatus = $state<string>('');
 
 	// Form state
 	let formData = $state({
@@ -420,34 +431,60 @@
 		}
 	}
 
-	async function bulkDelete() {
+	function requestBulkDelete() {
 		if (selectedLeads.size === 0) return;
+		showBulkDeleteModal = true;
+	}
 
+	async function confirmBulkDelete() {
+		if (selectedLeads.size === 0) {
+			showBulkDeleteModal = false;
+			return;
+		}
+
+		bulkDeleteLoading = true;
 		try {
 			await api.post('/api/admin/crm/leads/bulk-delete', {
 				ids: Array.from(selectedLeads)
 			});
 			selectedLeads = new Set();
+			showBulkDeleteModal = false;
 			await loadData();
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to delete leads';
 			console.error('Bulk delete error:', err);
+		} finally {
+			bulkDeleteLoading = false;
 		}
 	}
 
-	async function bulkUpdateStatus(status: string) {
+	function requestBulkUpdateStatus(status: string) {
 		if (selectedLeads.size === 0) return;
+		pendingBulkStatus = status;
+		showBulkStatusModal = true;
+	}
 
+	async function confirmBulkUpdateStatus() {
+		if (selectedLeads.size === 0 || !pendingBulkStatus) {
+			showBulkStatusModal = false;
+			return;
+		}
+
+		bulkStatusLoading = true;
 		try {
 			await api.post('/api/admin/crm/leads/bulk-status', {
 				ids: Array.from(selectedLeads),
-				status
+				status: pendingBulkStatus
 			});
 			selectedLeads = new Set();
+			showBulkStatusModal = false;
+			pendingBulkStatus = '';
 			await loadData();
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to update leads';
 			console.error('Bulk update error:', err);
+		} finally {
+			bulkStatusLoading = false;
 		}
 	}
 
@@ -555,11 +592,15 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Svelte 5: Initialize on mount
-	$effect(() => {
+	// Svelte 5: Initialize on mount.
+	// Was previously a `$effect` that read `getIsCrmConnected()` after writing
+	// to `connections.load()` — same write-while-reading-tracked-dep cascade
+	// that was fixed elsewhere in commit 34a0bd070. Migrating to `onMount`
+	// to keep the lifecycle init off the reactive graph.
+	onMount(() => {
 		if (!browser) return;
 
-		const init = async () => {
+		(async () => {
 			await connections.load();
 			connectionLoading = false;
 
@@ -568,8 +609,7 @@
 			} else {
 				isLoading = false;
 			}
-		};
-		init();
+		})();
 	});
 </script>
 
@@ -695,10 +735,10 @@
 					{#if selectedLeads.size > 0}
 						<div class="bulk-actions">
 							<span class="selected-count">{selectedLeads.size} selected</span>
-							<button class="btn-bulk" onclick={() => bulkUpdateStatus('qualified')}>
+							<button class="btn-bulk" onclick={() => requestBulkUpdateStatus('qualified')}>
 								Mark Qualified
 							</button>
-							<button class="btn-bulk danger" onclick={bulkDelete}> Delete </button>
+							<button class="btn-bulk danger" onclick={requestBulkDelete}> Delete </button>
 						</div>
 					{/if}
 
@@ -1306,6 +1346,33 @@
 		</div>
 	</div>
 {/if}
+
+<!-- Bulk Delete Confirmation (audit P0 #3) -->
+<ConfirmationModal
+	isOpen={showBulkDeleteModal}
+	title="Delete {selectedLeads.size} lead{selectedLeads.size === 1 ? '' : 's'}?"
+	message="This will permanently delete the selected leads and all associated notes, activities, and tags. This action cannot be undone."
+	confirmText="Delete {selectedLeads.size} lead{selectedLeads.size === 1 ? '' : 's'}"
+	variant="danger"
+	isLoading={bulkDeleteLoading}
+	onConfirm={confirmBulkDelete}
+	onCancel={() => (showBulkDeleteModal = false)}
+/>
+
+<!-- Bulk Status Update Confirmation -->
+<ConfirmationModal
+	isOpen={showBulkStatusModal}
+	title="Update {selectedLeads.size} lead{selectedLeads.size === 1 ? '' : 's'}?"
+	message="Change the status of the selected leads to '{pendingBulkStatus}'? This will fire any automation rules tied to that status."
+	confirmText="Update {selectedLeads.size} lead{selectedLeads.size === 1 ? '' : 's'}"
+	variant="warning"
+	isLoading={bulkStatusLoading}
+	onConfirm={confirmBulkUpdateStatus}
+	onCancel={() => {
+		showBulkStatusModal = false;
+		pendingBulkStatus = '';
+	}}
+/>
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════

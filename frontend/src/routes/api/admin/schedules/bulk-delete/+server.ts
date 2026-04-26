@@ -1,22 +1,30 @@
 /**
  * Admin Schedules API - Bulk Delete Endpoint
  * ═══════════════════════════════════════════════════════════════════════════════════
- * Apple Principal Engineer ICT 11+ Grade - January 2026
  *
- * @version 1.0.0
+ * FIX-2026-04-26 (P0-2): Removed mock fallback that fabricated `deleted_count: ids.length`
+ * regardless of what the backend actually did. Now forwards the upstream count and
+ * status verbatim so partial failures surface to the caller.
+ *
+ * @version 2.0.0
  */
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
-// Production fallback - Rust API on Fly.io
 import { env } from '$env/dynamic/private';
 const PROD_BACKEND =
 	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
-async function fetchFromBackend(endpoint: string, options?: RequestInit): Promise<any | null> {
+interface BackendResult {
+	data: unknown;
+	status: number;
+	reachable: boolean;
+}
+
+async function callBackend(endpoint: string, options?: RequestInit): Promise<BackendResult> {
 	const BACKEND_URL = PROD_BACKEND;
-	if (!BACKEND_URL) return null;
+	if (!BACKEND_URL) return { data: null, status: 0, reachable: false };
 
 	try {
 		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
@@ -28,11 +36,29 @@ async function fetchFromBackend(endpoint: string, options?: RequestInit): Promis
 			}
 		});
 
-		if (!response.ok) return null;
-		return await response.json();
-	} catch {
-		return null;
+		let parsed: unknown = null;
+		const text = await response.text();
+		if (text) {
+			try {
+				parsed = JSON.parse(text);
+			} catch {
+				parsed = { message: text };
+			}
+		}
+		return { data: parsed, status: response.status, reachable: true };
+	} catch (err) {
+		console.warn(`Schedule bulk-delete backend unreachable:`, err);
+		return { data: null, status: 0, reachable: false };
 	}
+}
+
+function extractErrorMessage(data: unknown, fallback: string): string {
+	if (data && typeof data === 'object') {
+		const obj = data as { message?: unknown; error?: unknown };
+		if (typeof obj.message === 'string') return obj.message;
+		if (typeof obj.error === 'string') return obj.error;
+	}
+	return fallback;
 }
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
@@ -41,40 +67,38 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 
 	if (!ids || !Array.isArray(ids) || ids.length === 0) {
 		return json(
-			{
-				success: false,
-				error: 'Missing or invalid ids array'
-			},
+			{ success: false, error: 'Missing or invalid ids array' },
 			{ status: 400 }
 		);
 	}
 
-	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
-	// Old: headers: { Authorization: request.headers.get('Authorization') || '' }
 	const cookieToken = cookies.get('rtp_access_token');
 	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
 	const token = cookieToken || headerToken;
 	if (!token) error(401, 'Unauthorized');
 
-	// Try backend first
-	const backendData = await fetchFromBackend('/api/admin/schedules/bulk-delete', {
+	const result = await callBackend('/api/admin/schedules/bulk-delete', {
 		method: 'POST',
 		headers: { Authorization: `Bearer ${token}` },
 		body: JSON.stringify(body)
 	});
 
-	if (backendData?.success) {
-		return json(backendData);
+	// FIX-2026-04-26 (P0-2): Forward the upstream response (including its real
+	// {deleted_count, deleted_ids, failed_ids}) without fabricating counts.
+	if (result.reachable && result.status >= 200 && result.status < 300) {
+		return json(result.data);
 	}
 
-	// Mock response - in production, this would delete from database
-	return json({
-		success: true,
-		data: {
-			deleted_count: ids.length,
-			deleted_ids: ids
+	if (result.reachable) {
+		error(result.status, extractErrorMessage(result.data, 'Failed to delete schedules'));
+	}
+
+	return json(
+		{
+			success: false,
+			error: 'Schedules backend is not reachable. No schedules were deleted.',
+			_degraded: true
 		},
-		message: `${ids.length} schedules deleted successfully`,
-		_mock: true
-	});
+		{ status: 503 }
+	);
 };

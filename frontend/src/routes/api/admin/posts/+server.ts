@@ -7,7 +7,7 @@
  * @version 3.0.0 - January 2026
  */
 
-import { json, error } from '@sveltejs/kit';
+import { json, error, isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 import { env } from '$env/dynamic/private';
@@ -88,11 +88,20 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		});
 
 		if (status >= 400) {
-			error(status, 'Failed to create post');
+			// FIX-2026-04-26 (P0-1): pass through backend's actual error message/status
+			// rather than collapsing into a generic 400. The browser reads result.message.
+			const message =
+				(data && typeof data === 'object' && ('message' in data || 'error' in data)
+					? (data as { message?: string; error?: string }).message ||
+						(data as { error?: string }).error
+					: undefined) || 'Failed to create post';
+			error(status, message);
 		}
 
 		return json(data);
 	} catch (err) {
+		// FIX-2026-04-26 (P0-1): rethrow HttpError so backend status/message reach the client.
+		if (isHttpError(err)) throw err;
 		console.error('POST /api/admin/posts error:', err);
 		error(400, 'Invalid request body');
 	}
@@ -123,11 +132,19 @@ export const PUT: RequestHandler = async ({ request, url, cookies }) => {
 		});
 
 		if (status >= 400) {
-			error(status, 'Failed to update post');
+			// FIX-2026-04-26 (P0-1): forward backend status + message instead of generic 400.
+			const message =
+				(data && typeof data === 'object' && ('message' in data || 'error' in data)
+					? (data as { message?: string; error?: string }).message ||
+						(data as { error?: string }).error
+					: undefined) || 'Failed to update post';
+			error(status, message);
 		}
 
 		return json(data);
 	} catch (err) {
+		// FIX-2026-04-26 (P0-1): rethrow HttpError so backend status/message reach the client.
+		if (isHttpError(err)) throw err;
 		console.error('PUT /api/admin/posts error:', err);
 		error(400, 'Invalid request body');
 	}

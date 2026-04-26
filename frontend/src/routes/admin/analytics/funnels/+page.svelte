@@ -6,6 +6,8 @@
 	 * Create, manage, and analyze multi-step conversion funnels
 	 * with detailed drop-off analysis.
 	 */
+	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { analyticsApi } from '$lib/api/analytics';
 	import { connections, getIsAnalyticsConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
@@ -103,19 +105,30 @@
 		return `${(seconds / 3600).toFixed(1)}h`;
 	}
 
-	// Svelte 5 - $effect replaces onMount
-	$effect(() => {
-		async function init() {
-			await connections.load();
-			connectionLoading = false;
+	// FIX-2026-04-26 (P1-3): $derived restores reactivity past helper's `untrack`.
+	let isAnalyticsConnected = $derived(getIsAnalyticsConnected());
+
+	// FIX-2026-04-26 (P1-1): onMount replaces the $effect cascade pattern.
+	onMount(() => {
+		if (!browser) return;
+
+		(async () => {
+			try {
+				await connections.load();
+			} catch (e) {
+				if (import.meta.env.DEV) {
+					console.error('[Funnels] Failed to load connection status:', e);
+				}
+			} finally {
+				connectionLoading = false;
+			}
 
 			if (getIsAnalyticsConnected()) {
 				await loadFunnels();
 			} else {
 				loading = false;
 			}
-		}
-		init();
+		})();
 	});
 </script>
 
@@ -139,7 +152,7 @@
 					<p class="text-sm text-slate-400">Track and optimize user conversion journeys</p>
 				</div>
 			</div>
-			{#if getIsAnalyticsConnected()}
+			{#if isAnalyticsConnected}
 				<div class="flex items-center gap-4">
 					<PeriodSelector value={selectedPeriod} onchange={handlePeriodChange} />
 					<button
@@ -162,7 +175,7 @@
 					></div>
 				</div>
 			</div>
-		{:else if !getIsAnalyticsConnected}
+		{:else if !isAnalyticsConnected}
 			<ServiceConnectionStatus feature="analytics" variant="card" showFeatures={true} />
 		{:else if loading}
 			<div class="flex items-center justify-center py-20">

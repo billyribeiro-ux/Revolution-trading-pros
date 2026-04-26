@@ -1,18 +1,28 @@
 /**
  * Admin Schedules API Endpoint
  * ═══════════════════════════════════════════════════════════════════════════════════
- * Apple Principal Engineer ICT 11+ Grade - January 2026
  *
  * Handles trading room schedule management with full CRUD operations.
- * Returns mock data when backend is not connected.
  *
- * @version 1.0.0
+ * FIX-2026-04-26 (P0-1): The previous implementation tried the backend, then on any
+ * non-2xx response (including 4xx validation, 5xx server errors) silently fell back
+ * to a process-scoped in-memory mock array and returned `success: true`. This lied
+ * to clients about persistence (mock writes are lost on every dyno cycle and not
+ * shared between proxy files). The new contract:
+ *
+ *   - Always proxy to the Rust backend.
+ *   - Forward upstream status + body verbatim on errors so the frontend can render
+ *     a real toast/alert instead of seeing fake success.
+ *   - Only fall through to a stub when the backend is unreachable (network error or
+ *     no `BACKEND_URL` configured) — and even then, return 503 so the caller knows
+ *     the data was NOT persisted.
+ *
+ * @version 2.0.0
  */
 
 import { json, error as kitError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
-// Production fallback - Rust API on Fly.io
 import { env } from '$env/dynamic/private';
 const PROD_BACKEND =
 	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
@@ -34,304 +44,41 @@ interface ScheduleEvent {
 	is_active: boolean;
 	room_type: 'live' | 'recorded' | 'hybrid';
 	recurrence: 'weekly' | 'biweekly' | 'monthly' | null;
-	exceptions: any[];
+	exceptions: ScheduleException[];
 	created_at: string;
 	updated_at: string;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// MOCK DATA
-// ═══════════════════════════════════════════════════════════════════════════
+interface ScheduleException {
+	id: number;
+	schedule_id: number;
+	date: string;
+	type: string;
+	reason: string | null;
+}
 
-const mockSchedules: ScheduleEvent[] = [
-	// Day Trading Room Schedules
-	{
-		id: 1,
-		room_id: 'day-trading-room',
-		title: 'Pre-Market Analysis',
-		description: 'Daily pre-market analysis and game plan for the trading day.',
-		trader_name: 'Taylor Horton',
-		day_of_week: 1, // Monday
-		start_time: '08:30',
-		end_time: '09:15',
-		timezone: 'America/New_York',
-		is_active: true,
-		room_type: 'live',
-		recurrence: 'weekly',
-		exceptions: [],
-		created_at: '2025-12-01T00:00:00Z',
-		updated_at: '2025-12-01T00:00:00Z'
-	},
-	{
-		id: 2,
-		room_id: 'day-trading-room',
-		title: 'Morning Trading Session',
-		description: 'Live trading during market open with real-time entries and exits.',
-		trader_name: 'Taylor Horton',
-		day_of_week: 1,
-		start_time: '09:30',
-		end_time: '11:30',
-		timezone: 'America/New_York',
-		is_active: true,
-		room_type: 'live',
-		recurrence: 'weekly',
-		exceptions: [],
-		created_at: '2025-12-01T00:00:00Z',
-		updated_at: '2025-12-01T00:00:00Z'
-	},
-	{
-		id: 3,
-		room_id: 'day-trading-room',
-		title: 'Pre-Market Analysis',
-		description: 'Daily pre-market analysis and game plan.',
-		trader_name: 'Taylor Horton',
-		day_of_week: 2, // Tuesday
-		start_time: '08:30',
-		end_time: '09:15',
-		timezone: 'America/New_York',
-		is_active: true,
-		room_type: 'live',
-		recurrence: 'weekly',
-		exceptions: [],
-		created_at: '2025-12-01T00:00:00Z',
-		updated_at: '2025-12-01T00:00:00Z'
-	},
-	{
-		id: 4,
-		room_id: 'day-trading-room',
-		title: 'Morning Trading Session',
-		description: 'Live trading during market open.',
-		trader_name: 'Taylor Horton',
-		day_of_week: 2,
-		start_time: '09:30',
-		end_time: '11:30',
-		timezone: 'America/New_York',
-		is_active: true,
-		room_type: 'live',
-		recurrence: 'weekly',
-		exceptions: [],
-		created_at: '2025-12-01T00:00:00Z',
-		updated_at: '2025-12-01T00:00:00Z'
-	},
-	{
-		id: 5,
-		room_id: 'day-trading-room',
-		title: 'Pre-Market Analysis',
-		description: 'Daily pre-market analysis and game plan.',
-		trader_name: 'Taylor Horton',
-		day_of_week: 3, // Wednesday
-		start_time: '08:30',
-		end_time: '09:15',
-		timezone: 'America/New_York',
-		is_active: true,
-		room_type: 'live',
-		recurrence: 'weekly',
-		exceptions: [],
-		created_at: '2025-12-01T00:00:00Z',
-		updated_at: '2025-12-01T00:00:00Z'
-	},
-	{
-		id: 6,
-		room_id: 'day-trading-room',
-		title: 'Morning Trading Session',
-		description: 'Live trading during market open.',
-		trader_name: 'Taylor Horton',
-		day_of_week: 3,
-		start_time: '09:30',
-		end_time: '11:30',
-		timezone: 'America/New_York',
-		is_active: true,
-		room_type: 'live',
-		recurrence: 'weekly',
-		exceptions: [],
-		created_at: '2025-12-01T00:00:00Z',
-		updated_at: '2025-12-01T00:00:00Z'
-	},
-	{
-		id: 7,
-		room_id: 'day-trading-room',
-		title: 'Pre-Market Analysis',
-		description: 'Daily pre-market analysis and game plan.',
-		trader_name: 'Taylor Horton',
-		day_of_week: 4, // Thursday
-		start_time: '08:30',
-		end_time: '09:15',
-		timezone: 'America/New_York',
-		is_active: true,
-		room_type: 'live',
-		recurrence: 'weekly',
-		exceptions: [],
-		created_at: '2025-12-01T00:00:00Z',
-		updated_at: '2025-12-01T00:00:00Z'
-	},
-	{
-		id: 8,
-		room_id: 'day-trading-room',
-		title: 'Morning Trading Session',
-		description: 'Live trading during market open.',
-		trader_name: 'Taylor Horton',
-		day_of_week: 4,
-		start_time: '09:30',
-		end_time: '11:30',
-		timezone: 'America/New_York',
-		is_active: true,
-		room_type: 'live',
-		recurrence: 'weekly',
-		exceptions: [],
-		created_at: '2025-12-01T00:00:00Z',
-		updated_at: '2025-12-01T00:00:00Z'
-	},
-	{
-		id: 9,
-		room_id: 'day-trading-room',
-		title: 'Pre-Market Analysis',
-		description: 'Daily pre-market analysis and game plan.',
-		trader_name: 'Taylor Horton',
-		day_of_week: 5, // Friday
-		start_time: '08:30',
-		end_time: '09:15',
-		timezone: 'America/New_York',
-		is_active: true,
-		room_type: 'live',
-		recurrence: 'weekly',
-		exceptions: [],
-		created_at: '2025-12-01T00:00:00Z',
-		updated_at: '2025-12-01T00:00:00Z'
-	},
-	{
-		id: 10,
-		room_id: 'day-trading-room',
-		title: 'Morning Trading Session',
-		description: 'Live trading during market open.',
-		trader_name: 'Taylor Horton',
-		day_of_week: 5,
-		start_time: '09:30',
-		end_time: '11:30',
-		timezone: 'America/New_York',
-		is_active: true,
-		room_type: 'live',
-		recurrence: 'weekly',
-		exceptions: [],
-		created_at: '2025-12-01T00:00:00Z',
-		updated_at: '2025-12-01T00:00:00Z'
-	},
-	// Swing Trading Room
-	{
-		id: 11,
-		room_id: 'swing-trading-room',
-		title: 'Weekly Swing Setup Review',
-		description: 'Review of potential swing trade setups for the week.',
-		trader_name: 'Michael Chen',
-		day_of_week: 1,
-		start_time: '16:00',
-		end_time: '17:00',
-		timezone: 'America/New_York',
-		is_active: true,
-		room_type: 'live',
-		recurrence: 'weekly',
-		exceptions: [],
-		created_at: '2025-12-01T00:00:00Z',
-		updated_at: '2025-12-01T00:00:00Z'
-	},
-	{
-		id: 12,
-		room_id: 'swing-trading-room',
-		title: 'Mid-Week Position Update',
-		description: 'Update on current swing positions and adjustments.',
-		trader_name: 'Michael Chen',
-		day_of_week: 3,
-		start_time: '16:00',
-		end_time: '16:45',
-		timezone: 'America/New_York',
-		is_active: true,
-		room_type: 'live',
-		recurrence: 'weekly',
-		exceptions: [],
-		created_at: '2025-12-01T00:00:00Z',
-		updated_at: '2025-12-01T00:00:00Z'
-	},
-	// Small Account Mentorship
-	{
-		id: 13,
-		room_id: 'small-account-mentorship',
-		title: 'Small Account Strategy Session',
-		description: 'Focused session on building small accounts with proper risk management.',
-		trader_name: 'Sarah Johnson',
-		day_of_week: 2,
-		start_time: '19:00',
-		end_time: '20:30',
-		timezone: 'America/New_York',
-		is_active: true,
-		room_type: 'live',
-		recurrence: 'weekly',
-		exceptions: [],
-		created_at: '2025-12-01T00:00:00Z',
-		updated_at: '2025-12-01T00:00:00Z'
-	},
-	{
-		id: 14,
-		room_id: 'small-account-mentorship',
-		title: 'Q&A and Trade Review',
-		description: 'Member Q&A and review of trade ideas.',
-		trader_name: 'Sarah Johnson',
-		day_of_week: 4,
-		start_time: '19:00',
-		end_time: '20:00',
-		timezone: 'America/New_York',
-		is_active: true,
-		room_type: 'live',
-		recurrence: 'weekly',
-		exceptions: [],
-		created_at: '2025-12-01T00:00:00Z',
-		updated_at: '2025-12-01T00:00:00Z'
-	},
-	// SPX Profit Pulse
-	{
-		id: 15,
-		room_id: 'spx-profit-pulse',
-		title: 'SPX Morning Prep',
-		description: 'SPX levels and trade plan for the day.',
-		trader_name: 'Alex Rivera',
-		day_of_week: 1,
-		start_time: '09:00',
-		end_time: '09:25',
-		timezone: 'America/New_York',
-		is_active: true,
-		room_type: 'recorded',
-		recurrence: 'weekly',
-		exceptions: [],
-		created_at: '2025-12-01T00:00:00Z',
-		updated_at: '2025-12-01T00:00:00Z'
-	},
-	// Explosive Swings
-	{
-		id: 16,
-		room_id: 'explosive-swings',
-		title: 'Weekly Watchlist Release',
-		description: 'New weekly watchlist with explosive swing candidates.',
-		trader_name: 'David Park',
-		day_of_week: 0, // Sunday
-		start_time: '18:00',
-		end_time: '19:00',
-		timezone: 'America/New_York',
-		is_active: true,
-		room_type: 'recorded',
-		recurrence: 'weekly',
-		exceptions: [],
-		created_at: '2025-12-01T00:00:00Z',
-		updated_at: '2025-12-01T00:00:00Z'
-	}
-];
-
-let scheduleIdCounter = mockSchedules.length + 1;
+// TODO(2026-04-26-audit): Remove the read-only seed list below once the Rust
+// backend ships GET /api/admin/schedules. Today the backend route is missing,
+// so we keep this as a *read-only* seed for the room selector to render. We do
+// NOT mutate this list anymore — every write is propagated to the backend or
+// returns a real error.
+const SEED_SCHEDULES: ReadonlyArray<ScheduleEvent> = [];
 
 // ═══════════════════════════════════════════════════════════════════════════
 // BACKEND HELPER
 // ═══════════════════════════════════════════════════════════════════════════
 
-async function fetchFromBackend(endpoint: string, options?: RequestInit): Promise<any | null> {
+interface BackendResult {
+	data: unknown;
+	status: number;
+	reachable: boolean;
+}
+
+async function callBackend(endpoint: string, options?: RequestInit): Promise<BackendResult> {
 	const BACKEND_URL = PROD_BACKEND;
-	if (!BACKEND_URL) return null;
+	if (!BACKEND_URL) {
+		return { data: null, status: 0, reachable: false };
+	}
 
 	try {
 		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
@@ -343,16 +90,30 @@ async function fetchFromBackend(endpoint: string, options?: RequestInit): Promis
 			}
 		});
 
-		if (!response.ok) {
-			console.warn(`Backend returned ${response.status} for ${endpoint}`);
-			return null;
+		let parsed: unknown = null;
+		const text = await response.text();
+		if (text) {
+			try {
+				parsed = JSON.parse(text);
+			} catch {
+				parsed = { message: text };
+			}
 		}
 
-		return await response.json();
-	} catch (error) {
-		console.warn(`Failed to fetch from backend: ${error}`);
-		return null;
+		return { data: parsed, status: response.status, reachable: true };
+	} catch (err) {
+		console.warn(`Schedule backend unreachable for ${endpoint}:`, err);
+		return { data: null, status: 0, reachable: false };
 	}
+}
+
+function extractErrorMessage(data: unknown, fallback: string): string {
+	if (data && typeof data === 'object') {
+		const obj = data as { message?: unknown; error?: unknown };
+		if (typeof obj.message === 'string') return obj.message;
+		if (typeof obj.error === 'string') return obj.error;
+	}
+	return fallback;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -364,58 +125,49 @@ export const GET: RequestHandler = async ({ url, request, cookies }) => {
 	const activeOnly = url.searchParams.get('active_only') === 'true';
 	const dayOfWeek = url.searchParams.get('day_of_week');
 
-	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
-	// Old: headers: { Authorization: request.headers.get('Authorization') || '' }
 	const cookieToken = cookies.get('rtp_access_token');
 	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
 	const token = cookieToken || headerToken;
 	if (!token) kitError(401, 'Unauthorized');
 
-	// Try backend first
-	const backendData = await fetchFromBackend(
-		`/api/admin/schedules?${url.searchParams.toString()}`,
-		{
-			headers: { Authorization: `Bearer ${token}` }
-		}
+	const result = await callBackend(`/api/admin/schedules?${url.searchParams.toString()}`, {
+		headers: { Authorization: `Bearer ${token}` }
+	});
+
+	if (result.reachable && result.status >= 200 && result.status < 300) {
+		return json(result.data);
+	}
+
+	// FIX-2026-04-26 (P0-1): if the backend is reachable but returned an error,
+	// surface the upstream status instead of swallowing into a fake-success mock.
+	if (result.reachable) {
+		kitError(result.status, extractErrorMessage(result.data, 'Failed to load schedules'));
+	}
+
+	// Backend unreachable (no network / no env). Render seed list read-only so the
+	// admin UI doesn't blow up, but flag clearly that this is degraded mode.
+	let filtered = [...SEED_SCHEDULES];
+	if (roomId) filtered = filtered.filter((s) => s.room_id === roomId);
+	if (activeOnly) filtered = filtered.filter((s) => s.is_active);
+	if (dayOfWeek !== null && dayOfWeek !== '') {
+		filtered = filtered.filter((s) => s.day_of_week === parseInt(dayOfWeek));
+	}
+	filtered.sort((a, b) =>
+		a.day_of_week !== b.day_of_week
+			? a.day_of_week - b.day_of_week
+			: a.start_time.localeCompare(b.start_time)
 	);
 
-	if (backendData?.success) {
-		return json(backendData);
-	}
-
-	// Fallback to mock data
-	let filteredSchedules = [...mockSchedules];
-
-	if (roomId) {
-		filteredSchedules = filteredSchedules.filter((s) => s.room_id === roomId);
-	}
-
-	if (activeOnly) {
-		filteredSchedules = filteredSchedules.filter((s) => s.is_active);
-	}
-
-	if (dayOfWeek !== null && dayOfWeek !== '') {
-		filteredSchedules = filteredSchedules.filter((s) => s.day_of_week === parseInt(dayOfWeek));
-	}
-
-	// Sort by day of week, then by start time
-	filteredSchedules.sort((a, b) => {
-		if (a.day_of_week !== b.day_of_week) {
-			return a.day_of_week - b.day_of_week;
-		}
-		return a.start_time.localeCompare(b.start_time);
-	});
-
-	return json({
-		success: true,
-		data: filteredSchedules,
-		meta: {
-			total: filteredSchedules.length,
-			room_id: roomId
+	return json(
+		{
+			success: false,
+			data: filtered,
+			meta: { total: filtered.length, room_id: roomId },
+			_degraded: true,
+			error: 'Schedules backend is not reachable. Showing read-only seed data.'
 		},
-		_mock: true,
-		_message: 'Using mock data. Connect backend for full functionality.'
-	});
+		{ status: 503 }
+	);
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -425,29 +177,16 @@ export const GET: RequestHandler = async ({ url, request, cookies }) => {
 export const POST: RequestHandler = async ({ request, cookies }) => {
 	const body = await request.json();
 
-	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
-	// Old: headers: { Authorization: request.headers.get('Authorization') || '' }
 	const cookieToken = cookies.get('rtp_access_token');
 	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
 	const token = cookieToken || headerToken;
 	if (!token) kitError(401, 'Unauthorized');
 
-	// Try backend first
-	const backendData = await fetchFromBackend('/api/admin/schedules', {
-		method: 'POST',
-		headers: { Authorization: `Bearer ${token}` },
-		body: JSON.stringify(body)
-	});
-
-	if (backendData?.success) {
-		return json(backendData);
-	}
-
-	// Validate required fields
 	if (
 		!body.room_id ||
 		!body.title ||
 		body.day_of_week === undefined ||
+		body.day_of_week === null ||
 		!body.start_time ||
 		!body.end_time
 	) {
@@ -460,31 +199,28 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		);
 	}
 
-	// Create new schedule
-	const newSchedule: ScheduleEvent = {
-		id: scheduleIdCounter++,
-		room_id: body.room_id,
-		title: body.title,
-		description: body.description || null,
-		trader_name: body.trader_name || null,
-		day_of_week: body.day_of_week,
-		start_time: body.start_time,
-		end_time: body.end_time,
-		timezone: body.timezone || 'America/New_York',
-		is_active: body.is_active ?? true,
-		room_type: body.room_type || 'live',
-		recurrence: body.recurrence || 'weekly',
-		exceptions: [],
-		created_at: new Date().toISOString(),
-		updated_at: new Date().toISOString()
-	};
-
-	mockSchedules.push(newSchedule);
-
-	return json({
-		success: true,
-		data: newSchedule,
-		message: 'Schedule created successfully',
-		_mock: true
+	const result = await callBackend('/api/admin/schedules', {
+		method: 'POST',
+		headers: { Authorization: `Bearer ${token}` },
+		body: JSON.stringify(body)
 	});
+
+	if (result.reachable && result.status >= 200 && result.status < 300) {
+		return json(result.data);
+	}
+
+	if (result.reachable) {
+		// FIX-2026-04-26 (P0-1): never lie about persistence. Forward the real error.
+		kitError(result.status, extractErrorMessage(result.data, 'Failed to create schedule'));
+	}
+
+	// Backend unreachable — refuse the write rather than fabricate success.
+	return json(
+		{
+			success: false,
+			error: 'Schedules backend is not reachable. Schedule was NOT created.',
+			_degraded: true
+		},
+		{ status: 503 }
+	);
 };

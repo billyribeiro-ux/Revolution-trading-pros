@@ -95,7 +95,14 @@
 	// TRADE PLAN STATE
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	let tradePlanEntries = $state<TradePlanEntry[]>([]);
+	// FIX-2026-04-26-audit (P0-7): seed local state from SSR `data.initialData` ONCE
+	// at construction. The previous `$effect` shadow pattern (banned by CLAUDE.md)
+	// re-clobbered local edits any time `data` changed. `untrack` silences the
+	// `state_referenced_locally` warning since we DO want a one-shot initial value
+	// (mutated by load functions / optimistic updates afterwards, not synced).
+	let tradePlanEntries = $state<TradePlanEntry[]>(
+		untrack(() => data.initialData?.tradePlan ?? [])
+	);
 	let isLoadingTradePlan = $state(false);
 	let showTradePlanModal = $state(false);
 	let editingTradePlan = $state<TradePlanEntry | null>(null);
@@ -119,7 +126,8 @@
 	// ALERTS STATE
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	let alerts = $state<RoomAlert[]>([]);
+	// FIX-2026-04-26-audit (P0-7): seed from SSR data.initialData via untrack.
+	let alerts = $state<RoomAlert[]>(untrack(() => data.initialData?.alerts ?? []));
 	let isLoadingAlerts = $state(false);
 	let showAlertModal = $state(false);
 	let editingAlert = $state<RoomAlert | null>(null);
@@ -154,7 +162,10 @@
 	// WEEKLY VIDEO STATE
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	let currentVideo = $state<WeeklyVideo | null>(null);
+	// FIX-2026-04-26-audit (P0-7): seed currentVideo from SSR via untrack.
+	let currentVideo = $state<WeeklyVideo | null>(
+		untrack(() => data.initialData?.weeklyVideo ?? null)
+	);
 	let archivedVideos = $state<WeeklyVideo[]>([]);
 	let isLoadingVideo = $state(false);
 	let showVideoModal = $state(false);
@@ -175,14 +186,16 @@
 	// ROOM STATS STATE
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	let roomStats = $state<RoomStats | null>(null);
+	// FIX-2026-04-26-audit (P0-7): seed roomStats from SSR via untrack.
+	let roomStats = $state<RoomStats | null>(untrack(() => data.initialData?.roomStats ?? null));
 	let isLoadingStats = $state(false);
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// TRADE TRACKER STATE
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	let trades = $state<RoomTrade[]>([]);
+	// FIX-2026-04-26-audit (P0-7): seed trades from SSR via untrack.
+	let trades = $state<RoomTrade[]>(untrack(() => data.initialData?.trades ?? []));
 	let isLoadingTrades = $state(false);
 	let tradeFilter = $state<TradeStatus | 'all'>('all');
 	let showCloseTradeModal = $state(false);
@@ -199,7 +212,10 @@
 	// VIDEO LIBRARY STATE
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	let videoResources = $state<RoomResource[]>([]);
+	// FIX-2026-04-26-audit (P0-7): seed videoResources from SSR via untrack.
+	let videoResources = $state<RoomResource[]>(
+		untrack(() => data.initialData?.videoResources ?? [])
+	);
 	let isLoadingVideos = $state(false);
 	let videoFilter = $state<string>('all');
 
@@ -554,17 +570,17 @@
 			title: alert.title || '',
 			message: alert.message,
 			notes: alert.notes || '',
-			trade_type: (alert as any).trade_type || '',
-			action: (alert as any).action || '',
-			quantity: (alert as any).quantity?.toString() || '',
-			option_type: (alert as any).option_type || '',
-			strike: (alert as any).strike?.toString() || '',
-			expiration: (alert as any).expiration || '',
-			contract_type: (alert as any).contract_type || '',
-			order_type: (alert as any).order_type || '',
-			limit_price: (alert as any).limit_price?.toString() || '',
-			fill_price: (alert as any).fill_price?.toString() || '',
-			tos_string: (alert as any).tos_string || '',
+			trade_type: alert.trade_type || '',
+			action: alert.action || '',
+			quantity: alert.quantity?.toString() || '',
+			option_type: alert.option_type || '',
+			strike: alert.strike?.toString() || '',
+			expiration: alert.expiration || '',
+			contract_type: alert.contract_type || '',
+			order_type: alert.order_type || '',
+			limit_price: alert.limit_price?.toString() || '',
+			fill_price: alert.fill_price?.toString() || '',
+			tos_string: alert.tos_string || '',
 			is_new: alert.is_new,
 			is_published: alert.is_published
 		};

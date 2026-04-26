@@ -59,6 +59,20 @@ export interface RoomAlert {
 	published_at: string;
 	created_at: string;
 	updated_at: string;
+	// FIX-2026-04-26 (audit §F.1): trade-detail fields used by the admin
+	// trading-rooms/[slug] edit form. Backend may omit them on simple alerts;
+	// keep them optional so existing rows still parse.
+	trade_type?: string | null;
+	action?: string | null;
+	quantity?: number | string | null;
+	option_type?: string | null;
+	strike?: number | string | null;
+	expiration?: string | null;
+	contract_type?: string | null;
+	order_type?: string | null;
+	limit_price?: number | string | null;
+	fill_price?: number | string | null;
+	tos_string?: string | null;
 }
 
 export interface WeeklyVideo {

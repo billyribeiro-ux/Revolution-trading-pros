@@ -13,13 +13,15 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 
-const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+// FIX-2026-04-26-audit: align with repo-wide proxy env-var chain.
+const BACKEND_URL =
+	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
 // POST - Create video entry on Bunny.net
 export const POST: RequestHandler = async ({ request, cookies }) => {
-	const accessToken = cookies.get('rtp_access_token');
+	const cookieToken = cookies.get('rtp_access_token');
 
-	if (!accessToken) {
+	if (!cookieToken) {
 		error(401, 'Authentication required');
 	}
 
@@ -36,7 +38,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 			headers: {
 				'Content-Type': 'application/json',
 				Accept: 'application/json',
-				Authorization: `Bearer ${accessToken}`
+				Authorization: `Bearer ${cookieToken}`
 			},
 			body: JSON.stringify({
 				title: body.title,

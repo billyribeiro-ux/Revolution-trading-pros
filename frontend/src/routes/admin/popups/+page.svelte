@@ -12,12 +12,17 @@
 	} from '$lib/icons';
 	import { getAllPopups, deletePopup, togglePopupStatus, duplicatePopup } from '$lib/api/popups';
 	import type { Popup } from '$lib/stores/popups.svelte';
+	// FIX-2026-04-26 (07-marketing P0-4): the delete button used to set a
+	// `_showDeleteModal` flag with no actual modal rendered — clicking
+	// "Delete" did nothing visible. Wire up the shared ConfirmationModal.
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	let popups = $state<Popup[]>([]);
 	let loading = $state(true);
 	let selectedTab = $state<'active' | 'inactive' | 'all'>('all');
-	let _showDeleteModal = $state(false);
+	let showDeleteModal = $state(false);
 	let pendingDeleteId = $state<string | null>(null);
+	let deleting = $state(false);
 
 	// Svelte 5: Initialize on mount
 	$effect(() => {
@@ -60,19 +65,27 @@
 
 	function handleDelete(popupId: string) {
 		pendingDeleteId = popupId;
-		_showDeleteModal = true;
+		showDeleteModal = true;
 	}
 
-	async function _confirmDeletePopup() {
-		if (!pendingDeleteId) return;
-		_showDeleteModal = false;
-		const popupId = pendingDeleteId;
+	function cancelDelete() {
+		showDeleteModal = false;
 		pendingDeleteId = null;
+	}
+
+	async function confirmDeletePopup() {
+		if (!pendingDeleteId) return;
+		const popupId = pendingDeleteId;
+		deleting = true;
 		try {
 			await deletePopup(popupId);
 			await loadPopups();
+			showDeleteModal = false;
+			pendingDeleteId = null;
 		} catch (error) {
 			console.error('Error deleting popup:', error);
+		} finally {
+			deleting = false;
 		}
 	}
 
@@ -254,6 +267,19 @@
 	</div>
 	<!-- End admin-page-container -->
 </div>
+
+<!-- FIX-2026-04-26 (07-marketing P0-4): wire up the delete confirmation modal. -->
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete popup?"
+	message="This will permanently remove the popup and its analytics. This action cannot be undone."
+	confirmText="Delete"
+	cancelText="Cancel"
+	variant="danger"
+	isLoading={deleting}
+	onConfirm={confirmDeletePopup}
+	onCancel={cancelDelete}
+/>
 
 <style>
 	.admin-popups {

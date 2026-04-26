@@ -6,6 +6,8 @@
 	 * Watch how users interact with your site
 	 * through recorded session playback.
 	 */
+	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { connections, getIsAnalyticsConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 	import PeriodSelector from '$lib/components/analytics/PeriodSelector.svelte';
@@ -103,19 +105,36 @@
 		}
 	}
 
-	// Svelte 5 - $effect replaces onMount
-	$effect(() => {
-		async function init() {
-			await connections.load();
-			connectionLoading = false;
+	// FIX-2026-04-26 (P1-3): $derived(...) installs tracking at the proxy
+	// boundary BEFORE the helper's `untrack` runs, so this stays reactive when
+	// connectionsState mutates after mount. Bare `getIsAnalyticsConnected()`
+	// calls in templates do not — they read the helper's untracked return.
+	let isAnalyticsConnected = $derived(getIsAnalyticsConnected());
+
+	// FIX-2026-04-26 (P1-1): use `onMount` instead of `$effect` for one-shot
+	// init. The previous `$effect` read `getIsAnalyticsConnected()` then
+	// synchronously called `connections.load()` which mutates the same rune —
+	// the classic write-while-reading-tracked-dep cascade.
+	onMount(() => {
+		if (!browser) return;
+
+		(async () => {
+			try {
+				await connections.load();
+			} catch (e) {
+				if (import.meta.env.DEV) {
+					console.error('[Recordings] Failed to load connection status:', e);
+				}
+			} finally {
+				connectionLoading = false;
+			}
 
 			if (getIsAnalyticsConnected()) {
 				await loadRecordings();
 			} else {
 				loading = false;
 			}
-		}
-		init();
+		})();
 	});
 
 	// Derived stats
@@ -150,7 +169,7 @@
 					<p class="text-sm text-slate-400">Watch how users interact with your site</p>
 				</div>
 			</div>
-			{#if getIsAnalyticsConnected()}
+			{#if isAnalyticsConnected}
 				<PeriodSelector value={selectedPeriod} onchange={handlePeriodChange} />
 			{/if}
 		</header>
@@ -165,7 +184,7 @@
 					></div>
 				</div>
 			</div>
-		{:else if !getIsAnalyticsConnected}
+		{:else if !isAnalyticsConnected}
 			<ServiceConnectionStatus feature="analytics" variant="card" showFeatures={true} />
 		{:else}
 			<!-- Stats Grid -->

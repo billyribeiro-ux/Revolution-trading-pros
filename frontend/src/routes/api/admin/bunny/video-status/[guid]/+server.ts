@@ -6,18 +6,28 @@
  *
  * Proxies to backend at /api/admin/bunny/video-status/:guid
  *
- * @version 1.0.0 - ICT 7 Principal Engineer Grade
+ * @version 1.1.0 - 2026-04-26 audit fix
+ *
+ * FIX-2026-04-26-audit (P1-1): Stop swallowing every backend error as
+ * `{ status: 'processing' }`. The poller had no way to ever stop, so videos
+ * appeared to hang forever on auth failures, deletions, or backend outages.
+ * Now we propagate `success: false` with the upstream status so the client
+ * can stop polling.
  */
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 
-const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+const BACKEND_URL =
+	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
 // GET - Check video processing status
-export const GET: RequestHandler = async ({ params, cookies }) => {
-	const accessToken = cookies.get('rtp_access_token');
+export const GET: RequestHandler = async ({ params, cookies, request }) => {
+	// FIX-2026-04-26-audit: prefer canonical rtp_access_token cookie, fall back to header.
+	const cookieToken = cookies.get('rtp_access_token');
+	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
+	const token = cookieToken || headerToken;
 	const guid = (params as { guid: string }).guid;
 
 	if (!guid) {
@@ -29,57 +39,44 @@ export const GET: RequestHandler = async ({ params, cookies }) => {
 			'Content-Type': 'application/json',
 			Accept: 'application/json'
 		};
+		if (token) headers.Authorization = `Bearer ${token}`;
 
-		if (accessToken) {
-			headers['Authorization'] = `Bearer ${accessToken}`;
-		}
-
-		console.log(`[Bunny API] Fetching: ${BACKEND_URL}/api/admin/bunny/video-status/${guid}`);
 		const response = await fetch(`${BACKEND_URL}/api/admin/bunny/video-status/${guid}`, {
 			headers
 		});
 
+		const text = await response.text();
+		let payload: unknown = null;
+		if (text) {
+			try {
+				payload = JSON.parse(text);
+			} catch {
+				payload = { error: text };
+			}
+		}
+
 		if (!response.ok) {
-			console.error(`[Bunny API] Backend error: ${response.status}`);
-			// Return pending status if backend unavailable
-			return json({
-				success: true,
-				status: 'processing',
-				status_code: 3,
-				video_url: null,
-				embed_url: null,
-				thumbnail_url: null,
-				duration: null
-			});
+			console.error(`[Bunny video-status] Backend error ${response.status}:`, text);
+			return json(
+				{
+					success: false,
+					error:
+						(payload as { error?: string })?.error || `Backend returned ${response.status}`,
+					status_code: response.status
+				},
+				{ status: response.status }
+			);
 		}
 
-		const backendData = await response.json();
-
-		if (backendData?.success) {
-			return json(backendData);
-		}
-
-		// Return pending status if backend unavailable
-		return json({
-			success: true,
-			status: 'processing',
-			status_code: 3,
-			video_url: null,
-			embed_url: null,
-			thumbnail_url: null,
-			duration: null
-		});
+		return json(payload ?? { success: false, error: 'Empty response from backend' });
 	} catch (err) {
-		console.error('[Bunny API] Error:', err);
-		// Return pending status on error
-		return json({
-			success: true,
-			status: 'processing',
-			status_code: 3,
-			video_url: null,
-			embed_url: null,
-			thumbnail_url: null,
-			duration: null
-		});
+		console.error('[Bunny video-status] Fetch failed:', err);
+		return json(
+			{
+				success: false,
+				error: err instanceof Error ? err.message : 'Failed to reach backend'
+			},
+			{ status: 502 }
+		);
 	}
 };

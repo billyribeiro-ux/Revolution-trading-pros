@@ -205,7 +205,7 @@
 					<IconTrendingUp size={24} />
 				</div>
 				<div class="stat-content">
-					<span class="stat-value">{@html stats.recovered_revenue.value}</span>
+					<span class="stat-value">{stats.recovered_revenue.value}</span>
 					<span class="stat-label">{stats.recovered_revenue.title}</span>
 					<span class="stat-count">{stats.recovered_revenue.count} carts</span>
 				</div>
@@ -215,7 +215,7 @@
 					<IconShoppingCart size={24} />
 				</div>
 				<div class="stat-content">
-					<span class="stat-value">{@html stats.processing_revenue.value}</span>
+					<span class="stat-value">{stats.processing_revenue.value}</span>
 					<span class="stat-label">{stats.processing_revenue.title}</span>
 					<span class="stat-count">{stats.processing_revenue.count} carts</span>
 				</div>
@@ -225,7 +225,7 @@
 					<IconTrendingDown size={24} />
 				</div>
 				<div class="stat-content">
-					<span class="stat-value">{@html stats.lost_revenue.value}</span>
+					<span class="stat-value">{stats.lost_revenue.value}</span>
 					<span class="stat-label">{stats.lost_revenue.title}</span>
 					<span class="stat-count">{stats.lost_revenue.count} carts</span>
 				</div>

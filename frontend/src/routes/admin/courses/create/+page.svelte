@@ -1515,9 +1515,8 @@
 		hasUnsavedChanges = true;
 	}
 
-	function showNotification(message: string) {
-		// Implementation would show toast notification
-		console.log('Notification:', message);
+	function showNotification(_message: string) {
+		// FIX-2026-04-26: dropped console.log per audit §E. TODO: wire up real toast.
 	}
 
 	function getCompletionStatus() {

@@ -8,24 +8,42 @@
  * - SEO-friendly (content rendered on first paint)
  * - Auth validation at server level
  *
- * @version 1.0.0
+ * @version 1.1.0
+ *
+ * FIX-2026-04-26-audit (P0-8):
+ * - Read the canonical `rtp_access_token` cookie. The previous `session_token` is
+ *   never set anywhere in the codebase, so every authenticated admin was being
+ *   redirected to /login on each SSR pass.
+ * - Forward the bearer token on every SSR fetch so the API actually returns data
+ *   instead of silently 401-ing into "no SSR data, fall back to client".
  */
 
-import { error, redirect } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
+import { error as kitError } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params, fetch, cookies }) => {
 	const { slug } = params;
 
 	if (!slug) {
-		error(400, 'Room slug is required');
+		kitError(400, 'Room slug is required');
 	}
 
-	// Verify admin session exists
-	const sessionToken = cookies.get('session_token');
+	// FIX-2026-04-26-audit (P0-8): the canonical session cookie is `rtp_access_token`
+	// (set by the login proxy — see commit e2356fa46 / CLAUDE.md). The previous code
+	// looked for `session_token`, which is never set, so this redirected every admin.
+	const sessionToken = cookies.get('rtp_access_token');
 	if (!sessionToken) {
 		redirect(302, '/login?redirect=/admin/trading-rooms/' + slug);
 	}
+
+	// FIX-2026-04-26-audit (P0-8): forward the bearer token to each SSR fetch so the
+	// backend doesn't 401 silently. Without this, every SSR fetch returned null and
+	// the admin only saw data after the second client-side load.
+	const authHeaders: HeadersInit = {
+		Authorization: `Bearer ${sessionToken}`,
+		Accept: 'application/json'
+	};
 
 	// Parallel data fetching for performance
 	const [
@@ -36,14 +54,24 @@ export const load: PageServerLoad = async ({ params, fetch, cookies }) => {
 		tradesResult,
 		videoResourcesResult
 	] = await Promise.allSettled([
-		fetch(`/api/trade-plans/${slug}?per_page=50`).then((r) => (r.ok ? r.json() : null)),
-		fetch(`/api/alerts/${slug}?per_page=50`).then((r) => (r.ok ? r.json() : null)),
-		fetch(`/api/weekly-video/${slug}`).then((r) => (r.ok ? r.json() : null)),
-		fetch(`/api/room-stats/${slug}`).then((r) => (r.ok ? r.json() : null)),
-		fetch(`/api/trades/${slug}?per_page=100`).then((r) => (r.ok ? r.json() : null)),
-		fetch(`/api/room-resources?room_slug=${slug}&content_type=video&per_page=50`).then((r) =>
+		fetch(`/api/trade-plans/${slug}?per_page=50`, { headers: authHeaders }).then((r) =>
 			r.ok ? r.json() : null
-		)
+		),
+		fetch(`/api/alerts/${slug}?per_page=50`, { headers: authHeaders }).then((r) =>
+			r.ok ? r.json() : null
+		),
+		fetch(`/api/weekly-video/${slug}`, { headers: authHeaders }).then((r) =>
+			r.ok ? r.json() : null
+		),
+		fetch(`/api/room-stats/${slug}`, { headers: authHeaders }).then((r) =>
+			r.ok ? r.json() : null
+		),
+		fetch(`/api/trades/${slug}?per_page=100`, { headers: authHeaders }).then((r) =>
+			r.ok ? r.json() : null
+		),
+		fetch(`/api/room-resources?room_slug=${slug}&content_type=video&per_page=50`, {
+			headers: authHeaders
+		}).then((r) => (r.ok ? r.json() : null))
 	]);
 
 	// Extract successful results with fallbacks

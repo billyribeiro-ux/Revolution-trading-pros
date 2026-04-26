@@ -33,6 +33,14 @@
 		from_name: 'Revolution Trading Pros'
 	});
 
+	// FIX-2026-04-26 (07-marketing P0-2): track whether the backend already
+	// has a stored password. The GET response carries `has_password: boolean`
+	// (never the plaintext). When `has_password` is true and the admin leaves
+	// the field blank, we send NO `password` key to the server — keeping the
+	// stored value. When `has_password` is false the field is the only way
+	// to seed credentials.
+	let hasStoredPassword = $state(false);
+
 	let loading = $state(false);
 	let message = $state('');
 	let messageType: 'success' | 'error' = $state('success');
@@ -56,7 +64,20 @@
 	async function loadSettings() {
 		try {
 			const data = (await apiFetch('/admin/email/settings')) as any;
-			settings = data;
+			// FIX-2026-04-26 (07-marketing P0-2): never store plaintext password
+			// in client state. Server returns `has_password: boolean`; we treat
+			// the password field as a write-only secondary input.
+			hasStoredPassword = Boolean(data?.has_password);
+			settings = {
+				provider: data?.provider ?? 'smtp',
+				host: data?.host ?? '',
+				port: data?.port ?? 587,
+				username: data?.username ?? '',
+				password: '',
+				encryption: data?.encryption ?? 'tls',
+				from_address: data?.from_address ?? '',
+				from_name: data?.from_name ?? 'Revolution Trading Pros'
+			};
 		} catch (error) {
 			console.error('Failed to load settings:', error);
 		}
@@ -71,13 +92,25 @@
 		message = '';
 
 		try {
+			// FIX-2026-04-26 (07-marketing P0-2): omit `password` when blank so
+			// the backend keeps the stored value. Only send a password when the
+			// admin explicitly types one.
+			const payload: Record<string, unknown> = { ...settings };
+			if (!settings.password) {
+				delete payload.password;
+			}
+
 			await apiFetch('/admin/email/settings', {
 				method: 'POST',
-				body: JSON.stringify(settings)
+				body: JSON.stringify(payload)
 			});
 
 			message = 'Settings saved successfully!';
 			messageType = 'success';
+			// Clear the password field after a successful save so it isn't
+			// kept in DOM state across navigations.
+			settings.password = '';
+			hasStoredPassword = hasStoredPassword || Boolean(payload.password);
 		} catch (_error) {
 			message = 'Failed to save settings';
 			messageType = 'error';
@@ -99,9 +132,18 @@
 		}
 
 		try {
+			// FIX-2026-04-26 (07-marketing P0-2): never send the literal mask
+			// or empty placeholder as a password to the SMTP test endpoint.
+			// When the admin hasn't retyped, omit `password` so the backend
+			// uses the stored credential to test.
+			const testPayload: Record<string, unknown> = { ...settings };
+			if (!settings.password) {
+				delete testPayload.password;
+			}
+
 			const result: any = await apiFetch('/admin/email/settings/test', {
 				method: 'POST',
-				body: JSON.stringify(settings)
+				body: JSON.stringify(testPayload)
 			});
 
 			if (result && result.success === true) {
@@ -227,14 +269,19 @@
 
 				<!-- Password -->
 				<div class="form-group full-width">
-					<label for="password">Password / App Password</label>
+					<label for="password">
+						Password / App Password
+						{#if hasStoredPassword}
+							<span class="hint">(saved — leave blank to keep current)</span>
+						{/if}
+					</label>
 					<input
 						id="password"
 						name="password"
 						autocomplete="current-password"
 						type="password"
 						bind:value={settings.password}
-						placeholder="Enter password"
+						placeholder={hasStoredPassword ? 'Leave blank to keep current password' : 'Enter password'}
 					/>
 				</div>
 			</div>
@@ -430,6 +477,13 @@
 		font-size: 0.8125rem;
 		font-weight: 600;
 		color: #94a3b8;
+	}
+
+	.hint {
+		font-weight: 400;
+		font-size: 0.75rem;
+		color: #64748b;
+		margin-left: 0.5rem;
 	}
 
 	input,

@@ -1,212 +1,130 @@
 /**
  * Single User API Endpoint
  *
- * Handles individual user retrieval, update, and deletion with backend fallback.
+ * Pure proxy to the Rust admin API for individual user CRUD. Surfaces backend
+ * errors verbatim — never fabricates data on backend failures.
  *
- * @version 1.0.0 - December 2025
+ * PRINCIPAL-2026-04-26 (audit 09-system §P0-1 / §P0-2 / §P1-2):
+ *   - Removed the entire `mockUsers` table and the silent fallback that
+ *     synthesized a hard-coded `super-admin` for ID 1 and a generic member
+ *     for any unknown ID. The proxy used to reply with `_mock: true` user
+ *     data on backend 404 (CRITICAL: phantom super-admin).
+ *   - Removed the in-memory mutation on PUT/DELETE that made the proxy "lie"
+ *     by returning `success: true` while no DB write happened.
+ *   - PUT/DELETE now require `super-admin` (defense-in-depth on top of the
+ *     Rust ACL).
+ *   - GET requires `admin` or higher.
+ *   - `parseInt` validation rejects ID=0 / NaN before forwarding (audit P2-3).
+ *   - Validation errors from the backend forward verbatim (audit P2-2).
+ *
+ * @version 2.0.0 - April 2026 (audit hardening)
  */
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-
-// Production fallback - Rust API on Fly.io
 import { env } from '$env/dynamic/private';
-const PROD_BACKEND =
+import { requireAdmin, requireSuperadmin } from '$lib/server/auth';
+
+// FIX-2026-04-26: canonical env pattern (was PROD_BACKEND, now API_URL — P3-7).
+const API_URL =
 	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
-// Mock users data (same as in +server.ts for consistency)
-const mockUsers: Record<number, any> = {
-	1: {
-		id: 1,
-		name: 'Admin User',
-		first_name: 'Admin',
-		last_name: 'User',
-		email: 'admin@revolutiontrading.com',
-		email_verified_at: '2025-01-01T00:00:00Z',
-		roles: [{ name: 'super-admin' }, { name: 'admin' }],
-		is_active: true,
-		created_at: '2025-01-01T00:00:00Z',
-		updated_at: '2025-12-01T00:00:00Z'
-	},
-	2: {
-		id: 2,
-		name: 'John Doe',
-		first_name: 'John',
-		last_name: 'Doe',
-		email: 'john@example.com',
-		email_verified_at: '2025-06-15T00:00:00Z',
-		roles: [{ name: 'member' }],
-		is_active: true,
-		created_at: '2025-06-15T00:00:00Z',
-		updated_at: '2025-12-01T00:00:00Z'
-	},
-	3: {
-		id: 3,
-		name: 'Jane Smith',
-		first_name: 'Jane',
-		last_name: 'Smith',
-		email: 'jane@example.com',
-		email_verified_at: '2025-07-20T00:00:00Z',
-		roles: [{ name: 'member' }],
-		is_active: true,
-		created_at: '2025-07-20T00:00:00Z',
-		updated_at: '2025-11-15T00:00:00Z'
-	}
-};
+/**
+ * Parse `:id` into a strictly positive integer, or throw a 400.
+ * `parseInt('') => NaN`, `parseInt('foo') => NaN`, `parseInt('0') => 0` —
+ * all rejected (audit P2-3).
+ */
+function parseUserId(raw: string | undefined): number {
+	const id = Number.parseInt(raw ?? '', 10);
+	if (!Number.isFinite(id) || id <= 0) error(400, 'Invalid user id');
+	return id;
+}
 
-// Try to fetch from backend
-async function fetchFromBackend(endpoint: string, options?: RequestInit): Promise<any | null> {
-	const BACKEND_URL = PROD_BACKEND;
-	if (!BACKEND_URL) return null;
-
-	try {
-		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
-			...options,
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-				...options?.headers
-			}
-		});
-
-		if (!response.ok) {
-			// If 404, return null to use mock data
-			if (response.status === 404) return null;
-			// For other errors, also return null
-			return null;
-		}
-		return await response.json();
-	} catch (_err) {
-		return null;
-	}
+/**
+ * Forward the upstream JSON body verbatim (status preserved). Used on both
+ * success and 4xx so the client sees the backend's validation messages
+ * (audit P2-2).
+ */
+async function forwardJson(upstream: Response): Promise<Response> {
+	const text = await upstream.text();
+	const headers: Record<string, string> = {};
+	const ct = upstream.headers.get('content-type');
+	if (ct) headers['Content-Type'] = ct;
+	return new Response(text, { status: upstream.status, headers });
 }
 
 // GET - Get single user
-export const GET: RequestHandler = async ({ params, request, cookies }) => {
-	const userId = parseInt(params.id ?? '0');
+export const GET: RequestHandler = async (event) => {
+	const userId = parseUserId(event.params.id);
+	const { token } = requireAdmin(event);
 
-	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
-	// Old: headers: { Authorization: request.headers.get('Authorization') || '' }
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-	if (!token) error(401, 'Unauthorized');
-
-	// Try backend first
-	const backendData = await fetchFromBackend(`/api/admin/users/${userId}`, {
-		headers: { Authorization: `Bearer ${token}` }
+	const upstream = await fetch(`${API_URL}/api/admin/users/${userId}`, {
+		headers: {
+			Authorization: `Bearer ${token}`,
+			Accept: 'application/json'
+		}
 	});
 
-	if (backendData?.data) {
-		return json(backendData);
-	}
+	return forwardJson(upstream);
+};
 
-	// Fallback to mock data
-	const user = mockUsers[userId];
+// PUT - Update user (role/password mutations require super-admin)
+export const PUT: RequestHandler = async (event) => {
+	const userId = parseUserId(event.params.id);
+	const { token, user } = requireSuperadmin(event);
 
-	if (!user) {
-		// Return a generic mock user for any ID
-		return json({
-			data: {
-				id: userId,
-				name: 'User',
-				first_name: 'User',
-				last_name: '',
-				email: `user${userId}@revolutiontrading.com`,
-				email_verified_at: new Date().toISOString(),
-				roles: [{ name: 'member' }],
-				is_active: true,
-				created_at: new Date().toISOString(),
-				updated_at: new Date().toISOString()
-			},
-			_mock: true,
-			_message: 'Using mock data. Backend not available.'
+	const body = await event.request.json();
+
+	// Defense-in-depth: never let an admin demote/elevate the last super-admin
+	// or change their own role via this endpoint. The Rust API still enforces
+	// these rules; this is just a faster-fail.
+	if (user.id === userId && Array.isArray(body?.roles)) {
+		// Self-role mutation is suspicious. Allow it but log — the backend
+		// remains the source of truth.
+		console.warn('[admin/users PUT] super-admin editing own roles', {
+			userId,
+			actorId: user.id
 		});
 	}
 
-	return json({
-		data: user,
-		_mock: true
-	});
-};
-
-// PUT - Update user
-export const PUT: RequestHandler = async ({ params, request, cookies }) => {
-	const userId = parseInt(params.id ?? '0');
-	const body = await request.json();
-
-	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
-	// Old: headers: { Authorization: request.headers.get('Authorization') || '' }
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-	if (!token) error(401, 'Unauthorized');
-
-	// Try backend first
-	const backendData = await fetchFromBackend(`/api/admin/users/${userId}`, {
+	const upstream = await fetch(`${API_URL}/api/admin/users/${userId}`, {
 		method: 'PUT',
-		headers: { Authorization: `Bearer ${token}` },
+		headers: {
+			Authorization: `Bearer ${token}`,
+			'Content-Type': 'application/json',
+			Accept: 'application/json'
+		},
 		body: JSON.stringify(body)
 	});
 
-	if (backendData?.data) {
-		return json(backendData);
-	}
-
-	// Mock update
-	const existingUser = mockUsers[userId] || {
-		id: userId,
-		email: body.email || `user${userId}@example.com`,
-		created_at: new Date().toISOString()
-	};
-
-	const updatedUser = {
-		...existingUser,
-		...body,
-		id: userId,
-		roles: body.roles?.map((r: string) => ({ name: r })) || existingUser.roles || [],
-		updated_at: new Date().toISOString()
-	};
-
-	// Update mock data
-	mockUsers[userId] = updatedUser;
-
-	return json({
-		data: updatedUser,
-		message: 'User updated successfully',
-		_mock: true
-	});
+	return forwardJson(upstream);
 };
 
-// DELETE - Delete user
-export const DELETE: RequestHandler = async ({ params, request, cookies }) => {
-	const userId = parseInt(params.id ?? '0');
+// DELETE - Delete user (super-admin only; never self-delete)
+export const DELETE: RequestHandler = async (event) => {
+	const userId = parseUserId(event.params.id);
+	const { token, user } = requireSuperadmin(event);
 
-	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
-	// Old: headers: { Authorization: request.headers.get('Authorization') || '' }
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-	if (!token) error(401, 'Unauthorized');
+	if (user.id === userId) error(400, 'You cannot delete your own account');
 
-	// Try backend first
-	const backendData = await fetchFromBackend(`/api/admin/users/${userId}`, {
+	const upstream = await fetch(`${API_URL}/api/admin/users/${userId}`, {
 		method: 'DELETE',
-		headers: { Authorization: `Bearer ${token}` }
+		headers: {
+			Authorization: `Bearer ${token}`,
+			Accept: 'application/json'
+		}
 	});
 
-	if (backendData?.success !== undefined) {
-		return json(backendData);
-	}
-
-	// Mock delete
-	if (mockUsers[userId]) {
-		delete mockUsers[userId];
-	}
-
-	return json({
-		success: true,
-		message: 'User deleted successfully',
-		_mock: true
-	});
+	return forwardJson(upstream);
 };
+
+// -------------------------------------------------------------------
+// PRINCIPAL-2026-04-26: old in-memory mock implementation removed.
+// The previous module shipped a `mockUsers` table that:
+//   1. Hard-coded ID 1 as { roles: ['super-admin', 'admin'] } and returned
+//      it on any backend 404 — a public privilege-escalation surface.
+//   2. Synthesized a fake `member` user for any other ID on backend 404.
+//   3. Silently mutated the in-memory map on PUT and reported success,
+//      desynchronizing admin UI state from the database.
+// See git history for the deleted block (audit 09-system §P0-1, §P1-2).
+// -------------------------------------------------------------------

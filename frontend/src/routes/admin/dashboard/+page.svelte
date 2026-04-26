@@ -11,6 +11,7 @@
 
 	import { fade, fly, scale } from 'svelte/transition';
 	import { quintOut, backOut } from 'svelte/easing';
+	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import { ROOMS, type Room } from '$lib/config/rooms';
@@ -71,19 +72,44 @@
 	let lastUpdated = $state<Date | null>(null);
 	let refreshInterval: ReturnType<typeof setInterval> | null = null;
 
+	// FIX P1-8 (audits/admin-2026-04-26/01-shell-and-dashboard.md): replace
+	// `(connections as any)[conn.key] = true` with a typed reset+merge so:
+	//  1) `as any` no longer discards `ConnectionStatus` (typo'd keys are dropped),
+	//  2) we replace the proxy in one assignment instead of mutating in place,
+	//  3) services that were *previously* connected but are no longer reported
+	//     as connected get reset to false (was: stale-true forever).
+	const CONNECTION_KEYS: readonly (keyof ConnectionStatus)[] = [
+		'google_analytics',
+		'google_search_console',
+		'google_tag_manager',
+		'google_ads',
+		'stripe',
+		'sendgrid'
+	];
+
 	// Fetch connection status
 	async function fetchConnectionStatus() {
 		try {
 			const data = await adminFetch('/api/admin/connections/summary');
-			if (data) {
-				// Map connected services
-				if (data.connections) {
-					for (const conn of data.connections) {
-						if (conn.is_connected) {
-							(connections as any)[conn.key] = true;
-						}
+			if (data?.connections && Array.isArray(data.connections)) {
+				const next: ConnectionStatus = {
+					google_analytics: false,
+					google_search_console: false,
+					google_tag_manager: false,
+					google_ads: false,
+					stripe: false,
+					sendgrid: false
+				};
+				for (const conn of data.connections) {
+					if (
+						conn?.is_connected &&
+						typeof conn.key === 'string' &&
+						(CONNECTION_KEYS as readonly string[]).includes(conn.key)
+					) {
+						next[conn.key as keyof ConnectionStatus] = true;
 					}
 				}
+				connections = next;
 			}
 		} catch (e) {
 			console.warn('Failed to fetch connection status:', e);

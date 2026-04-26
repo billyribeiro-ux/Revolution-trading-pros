@@ -1,39 +1,48 @@
 /**
  * Disconnect Service Endpoint — Backend Proxy
- * FIX-2026-04-26: replaced standalone in-memory implementation with real backend proxy.
+ *
+ * PRINCIPAL-2026-04-26 (audit 09-system §P0-2 / §P1-4):
+ *   - Now requires `super-admin`. Disconnecting privilege-bearing
+ *     integrations (e.g. `stripe`, `aws_s3`) is irreversible without the
+ *     credentials.
+ *   - Validates `:key` against `/^[a-z][a-z0-9_]*$/`.
+ *   - 4xx responses forward upstream JSON verbatim.
  */
 
 import { env } from '$env/dynamic/private';
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireSuperadmin } from '$lib/server/auth';
 
-// FIX-2026-04-26: canonical env pattern
 const API_URL =
 	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
+const SERVICE_KEY_RE = /^[a-z][a-z0-9_]*$/;
+
 // POST - Disconnect a service
-export const POST: RequestHandler = async ({ params, cookies, fetch }) => {
-	const { key } = params;
+export const POST: RequestHandler = async (event) => {
+	const { token } = requireSuperadmin(event);
 
-	const token = cookies.get('rtp_access_token');
-	if (!token) error(401, 'Unauthorized');
+	const key = event.params.key;
+	if (!key || !SERVICE_KEY_RE.test(key)) {
+		error(400, 'Invalid service key');
+	}
 
-	const res = await fetch(`${API_URL}/api/admin/connections/${key}/disconnect`, {
+	const upstream = await fetch(`${API_URL}/api/admin/connections/${key}/disconnect`, {
 		method: 'POST',
-		headers: { Authorization: `Bearer ${token}` }
+		headers: {
+			Authorization: `Bearer ${token}`,
+			Accept: 'application/json'
+		}
 	});
-	if (!res.ok) error(res.status as Parameters<typeof error>[0], `Backend returned ${res.status}`);
-	return json(await res.json(), { status: res.status });
+
+	const text = await upstream.text();
+	const headers: Record<string, string> = {};
+	const ct = upstream.headers.get('content-type');
+	if (ct) headers['Content-Type'] = ct;
+	return new Response(text, { status: upstream.status, headers });
 };
 
 // -------------------------------------------------------------------
-// FIX-2026-04-26: old standalone in-memory implementation follows
+// FIX-2026-04-26: old standalone in-memory implementation removed.
 // -------------------------------------------------------------------
-// const connections: Map<string, any> = new Map();
-// export const POST: RequestHandler = async ({ params }) => {
-//   const { key } = params;
-//   const connection = connections.get(key ?? '');
-//   if (!connection) { error(404, `No connection found for service '${key}'`); }
-//   connections.delete(key ?? '');
-//   return json({ success: true, data: { service_key: key, disconnected_at: new Date().toISOString() } });
-// };

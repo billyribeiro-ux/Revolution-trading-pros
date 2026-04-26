@@ -11,7 +11,8 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
-	import { isAuthenticated } from '$lib/stores/auth.svelte';
+	import { isAuthenticated, user, isInitializing } from '$lib/stores/auth.svelte';
+	import { isAdmin as checkIsAdmin } from '$lib/config/roles';
 	import { getUnreadCount } from '$lib/stores/notifications.svelte';
 	import { keyboard } from '$lib/stores/keyboard.svelte';
 
@@ -75,11 +76,45 @@
 	// `authStore.subscribers` that participates in every post-login fan-out.
 	// Removing the autosubscribe shrinks the fan-out volume.
 	// Old: if (!$isAuthenticated) { goto('/login?redirect=/admin'); }
+	//
+	// FIX P0-2 (audits/admin-2026-04-26/01-shell-and-dashboard.md): role-based
+	// guard added. Previously the shell only checked "any authenticated session"
+	// and relied on the Rust API to 403 on each admin endpoint. We now also gate
+	// at the route level: if the user is not admin/superadmin, send them to /
+	// (route them to /admin/+error 403 via the home redirect message). We wait
+	// for auth initialization to complete so we don't bounce a real admin whose
+	// session is still being hydrated from the cookie.
 	onMount(() => {
 		if (!browser) return;
-		if (!isAuthenticated.current) {
-			goto('/login?redirect=/admin');
-		}
+
+		// If auth is still initializing, defer the role check; subscribe once and
+		// re-evaluate when initialization settles. The subscribe call here is a
+		// one-shot guard — it runs outside any reactive scope (onMount, not
+		// $effect), so there is no write-while-reading hazard.
+		const evaluate = () => {
+			if (isInitializing.current) return false;
+			if (!isAuthenticated.current) {
+				goto('/login?redirect=/admin');
+				return true;
+			}
+			if (!checkIsAdmin(user.current)) {
+				// Not an admin → kick out. Use replaceState so back button doesn't
+				// trap the user in a redirect loop on /admin.
+				goto('/?error=admin_required', { replaceState: true });
+				return true;
+			}
+			return true;
+		};
+
+		if (evaluate()) return;
+
+		// Wait for auth init to complete, then evaluate exactly once.
+		const unsub = isInitializing.subscribe(() => {
+			if (evaluate()) {
+				queueMicrotask(() => unsub());
+			}
+		});
+		return () => unsub();
 	});
 
 	// FIX-2026-04-26: keyboard-shortcut bootstrap converted from $effect to onMount.

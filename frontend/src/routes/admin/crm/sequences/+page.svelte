@@ -172,16 +172,22 @@
 		sendEmailForm.success = false;
 
 		try {
-			// Get the first email from the sequence to send as test
+			// Audit P1 #4: this used to fake a `setTimeout` "success" so the
+			// user saw "Test email sent successfully" even though nothing was
+			// dispatched. Now we actually POST to the test-email endpoint and
+			// surface whatever the backend returns. If the endpoint isn't yet
+			// wired up server-side, the user sees an honest error instead of
+			// a green checkmark.
 			const emails = await crmAPI.getSequenceEmails(selectedSequence.id);
 			if (emails.length === 0) {
 				sendEmailForm.error = 'This sequence has no emails to send';
 				return;
 			}
 
-			// Subscribe a test contact (this would typically be a dedicated test endpoint)
-			// For now, we'll simulate success - in production, you'd have a proper test email endpoint
-			await new Promise((resolve) => setTimeout(resolve, 1000));
+			await api.post(`/api/admin/crm/sequences/${selectedSequence.id}/test`, {
+				email: sendEmailForm.testEmail,
+				email_id: emails[0]?.id
+			});
 
 			sendEmailForm.success = true;
 			setTimeout(() => {

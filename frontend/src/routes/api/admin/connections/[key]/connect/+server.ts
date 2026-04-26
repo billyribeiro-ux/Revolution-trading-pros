@@ -1,50 +1,64 @@
 /**
  * Connect Service Endpoint — Backend Proxy
- * FIX-2026-04-26: replaced standalone in-memory implementation with real backend proxy.
+ *
+ * PRINCIPAL-2026-04-26 (audit 09-system §P0-2 / §P1-4):
+ *   - Now requires `super-admin` (was: any cookie). Connecting third-party
+ *     credentials (Stripe, AWS, Salesforce…) is privilege-bearing.
+ *   - Validates `:key` against `/^[a-z][a-z0-9_]*$/` before forwarding to
+ *     prevent path-traversal-shaped service keys (P1-4 #2).
+ *   - Caps request body at 64 KiB (P1-4 #1) — credential payloads should be
+ *     well under this; anything larger is hostile.
+ *   - 4xx responses now forward upstream JSON verbatim (P2-5).
  */
 
 import { env } from '$env/dynamic/private';
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireSuperadmin } from '$lib/server/auth';
 
-// FIX-2026-04-26: canonical env pattern
 const API_URL =
 	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
+const SERVICE_KEY_RE = /^[a-z][a-z0-9_]*$/;
+const MAX_BODY_BYTES = 64 * 1024; // 64 KiB — credential payloads are tiny
+
 // POST - Connect to a service
-export const POST: RequestHandler = async ({ params, cookies, fetch, request }) => {
-	const { key } = params;
+export const POST: RequestHandler = async (event) => {
+	const { token } = requireSuperadmin(event);
 
-	const token = cookies.get('rtp_access_token');
-	if (!token) error(401, 'Unauthorized');
+	const key = event.params.key;
+	if (!key || !SERVICE_KEY_RE.test(key)) {
+		error(400, 'Invalid service key');
+	}
 
-	const body = await request.json();
-	const res = await fetch(`${API_URL}/api/admin/connections/${key}/connect`, {
+	const lengthHeader = event.request.headers.get('content-length');
+	if (lengthHeader && Number(lengthHeader) > MAX_BODY_BYTES) {
+		error(413, 'Request body too large');
+	}
+
+	const raw = await event.request.text();
+	if (raw.length > MAX_BODY_BYTES) {
+		error(413, 'Request body too large');
+	}
+
+	const upstream = await fetch(`${API_URL}/api/admin/connections/${key}/connect`, {
 		method: 'POST',
 		headers: {
 			Authorization: `Bearer ${token}`,
-			'Content-Type': 'application/json'
+			'Content-Type': 'application/json',
+			Accept: 'application/json'
 		},
-		body: JSON.stringify(body)
+		body: raw
 	});
-	if (!res.ok) error(res.status as Parameters<typeof error>[0], `Backend returned ${res.status}`);
-	return json(await res.json(), { status: res.status });
+
+	const text = await upstream.text();
+	const headers: Record<string, string> = {};
+	const ct = upstream.headers.get('content-type');
+	if (ct) headers['Content-Type'] = ct;
+	return new Response(text, { status: upstream.status, headers });
 };
 
 // -------------------------------------------------------------------
-// FIX-2026-04-26: old standalone in-memory implementation follows
+// FIX-2026-04-26: old standalone in-memory implementation removed.
+// See git history for the deleted block.
 // -------------------------------------------------------------------
-// const connections: Map<string, any> = new Map();
-// export const POST: RequestHandler = async ({ params, request }) => {
-//   const { key } = params;
-//   const body = await request.json();
-//   const { credentials, environment = 'production' } = body;
-//   if (!credentials || Object.keys(credentials).length === 0) { ... }
-//   const validationError = await validateConnectionCredentials(key ?? '', credentials);
-//   if (validationError) { ... }
-//   const connection = { id: `conn_${Date.now()}...`, ... };
-//   connections.set(key ?? '', connection);
-//   return json({ success: true, data: { ... } });
-// };
-// async function validateConnectionCredentials(...) { ... }
-// function encryptCredentials(...) { ... }

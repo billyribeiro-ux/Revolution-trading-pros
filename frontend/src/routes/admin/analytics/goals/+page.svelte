@@ -6,6 +6,8 @@
 	 * Create, manage, and track conversion goals
 	 * with real-time progress monitoring.
 	 */
+	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { connections, getIsAnalyticsConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 	import PeriodSelector from '$lib/components/analytics/PeriodSelector.svelte';
@@ -136,19 +138,31 @@
 		return 'from-orange-500 to-red-500';
 	}
 
-	// Svelte 5 - $effect replaces onMount
-	$effect(() => {
-		async function init() {
-			await connections.load();
-			connectionLoading = false;
+	// FIX-2026-04-26 (P1-3): see analytics/+page.svelte — $derived restores
+	// reactivity that the helper's `untrack` would otherwise discard.
+	let isAnalyticsConnected = $derived(getIsAnalyticsConnected());
+
+	// FIX-2026-04-26 (P1-1): onMount replaces the $effect cascade pattern.
+	onMount(() => {
+		if (!browser) return;
+
+		(async () => {
+			try {
+				await connections.load();
+			} catch (e) {
+				if (import.meta.env.DEV) {
+					console.error('[Goals] Failed to load connection status:', e);
+				}
+			} finally {
+				connectionLoading = false;
+			}
 
 			if (getIsAnalyticsConnected()) {
 				await loadGoals();
 			} else {
 				loading = false;
 			}
-		}
-		init();
+		})();
 	});
 
 	// Derived filtered goals
@@ -188,7 +202,7 @@
 					<p class="text-sm text-slate-400">Track and measure your conversion objectives</p>
 				</div>
 			</div>
-			{#if getIsAnalyticsConnected()}
+			{#if isAnalyticsConnected}
 				<div class="flex items-center gap-4">
 					<PeriodSelector value={selectedPeriod} onchange={handlePeriodChange} />
 					<button
@@ -211,7 +225,7 @@
 					></div>
 				</div>
 			</div>
-		{:else if !getIsAnalyticsConnected}
+		{:else if !isAnalyticsConnected}
 			<ServiceConnectionStatus feature="analytics" variant="card" showFeatures={true} />
 		{:else}
 			<!-- Stats Grid -->

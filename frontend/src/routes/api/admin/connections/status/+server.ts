@@ -2,13 +2,27 @@
  * Connection Status API
  *
  * Returns the status of all API connections including built-in services.
- * The built-in RevolutionCRM is always marked as connected.
  *
- * @version 1.0.0 - December 2025
+ * PRINCIPAL-2026-04-26 (audit 09-system §P0-3 / §P1-1):
+ *   - PRE-FIX: this endpoint was publicly reachable with NO auth at all and
+ *     leaked the full third-party service inventory (Stripe/SendGrid/AWS/
+ *     HubSpot/Salesforce/Sentry/Datadog/Twilio/Tradier/Polygon, plus the
+ *     built-in Fluent suite) — reconnaissance gold.
+ *   - POST-FIX: requires admin-or-higher cookie auth via `requireAdmin`. The
+ *     orphan-callers concern (P1-1) is addressed separately in the audit
+ *     RESULTS doc; the file is preserved per the CREATE-not-DELETE rule.
+ *
+ * NOTE: this file remains a *standalone* in-memory mock today (not a Rust
+ * proxy). The canonical truth is `/api/admin/connections` (the proxy in the
+ * sibling +server.ts). Until callers consolidate on the proxy, we keep this
+ * file behind an admin gate so it cannot be read anonymously.
+ *
+ * @version 1.1.0 - April 2026 (audit hardening)
  */
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import { requireAdmin } from '$lib/server/auth';
 
 interface ConnectionStatus {
 	key: string;
@@ -22,64 +36,70 @@ interface ConnectionStatus {
 	is_builtin?: boolean;
 }
 
-// Built-in Fluent Ecosystem services that are always available
-const BUILTIN_SERVICES: ConnectionStatus[] = [
-	{
-		key: 'fluent_forms_pro',
-		name: 'FluentForms Pro',
-		category: 'Fluent',
-		is_connected: true,
-		status: 'connected',
-		health_score: 100,
-		last_verified_at: new Date().toISOString(),
-		last_error: null,
-		is_builtin: true
-	},
-	{
-		key: 'fluent_crm_pro',
-		name: 'FluentCRM Pro',
-		category: 'Fluent',
-		is_connected: true,
-		status: 'connected',
-		health_score: 100,
-		last_verified_at: new Date().toISOString(),
-		last_error: null,
-		is_builtin: true
-	},
-	{
-		key: 'fluent_smtp',
-		name: 'FluentSMTP',
-		category: 'Fluent',
-		is_connected: true,
-		status: 'connected',
-		health_score: 100,
-		last_verified_at: new Date().toISOString(),
-		last_error: null,
-		is_builtin: true
-	},
-	{
-		key: 'fluent_support',
-		name: 'FluentSupport',
-		category: 'Fluent',
-		is_connected: true,
-		status: 'connected',
-		health_score: 100,
-		last_verified_at: new Date().toISOString(),
-		last_error: null,
-		is_builtin: true
-	},
-	{
-		key: 'fluent_booking',
-		name: 'FluentBooking',
-		category: 'Fluent',
-		is_connected: true,
-		status: 'connected',
-		health_score: 100,
-		last_verified_at: new Date().toISOString(),
-		last_error: null,
-		is_builtin: true
-	}
-];
+/**
+ * Build the built-in services list at request time so `last_verified_at`
+ * reflects the moment of the request, not module load (audit P3-5).
+ */
+function buildBuiltinServices(): ConnectionStatus[] {
+	const now = new Date().toISOString();
+	return [
+		{
+			key: 'fluent_forms_pro',
+			name: 'FluentForms Pro',
+			category: 'Fluent',
+			is_connected: true,
+			status: 'connected',
+			health_score: 100,
+			last_verified_at: now,
+			last_error: null,
+			is_builtin: true
+		},
+		{
+			key: 'fluent_crm_pro',
+			name: 'FluentCRM Pro',
+			category: 'Fluent',
+			is_connected: true,
+			status: 'connected',
+			health_score: 100,
+			last_verified_at: now,
+			last_error: null,
+			is_builtin: true
+		},
+		{
+			key: 'fluent_smtp',
+			name: 'FluentSMTP',
+			category: 'Fluent',
+			is_connected: true,
+			status: 'connected',
+			health_score: 100,
+			last_verified_at: now,
+			last_error: null,
+			is_builtin: true
+		},
+		{
+			key: 'fluent_support',
+			name: 'FluentSupport',
+			category: 'Fluent',
+			is_connected: true,
+			status: 'connected',
+			health_score: 100,
+			last_verified_at: now,
+			last_error: null,
+			is_builtin: true
+		},
+		{
+			key: 'fluent_booking',
+			name: 'FluentBooking',
+			category: 'Fluent',
+			is_connected: true,
+			status: 'connected',
+			health_score: 100,
+			last_verified_at: now,
+			last_error: null,
+			is_builtin: true
+		}
+	];
+}
 
 // In-memory connection storage (in production, from database)
 const storedConnections: Map<string, ConnectionStatus> = new Map();
@@ -157,11 +177,14 @@ const EXTERNAL_SERVICES: Omit<
 	{ key: 'vimeo', name: 'Vimeo', category: 'Media' }
 ];
 
-export const GET: RequestHandler = async () => {
+export const GET: RequestHandler = async (event) => {
+	// PRINCIPAL-2026-04-26 (P0-3): require admin-or-higher cookie auth.
+	requireAdmin(event);
+
 	// Build connections list combining built-in and external services
 	const connections: ConnectionStatus[] = [
 		// Built-in services are always connected
-		...BUILTIN_SERVICES,
+		...buildBuiltinServices(),
 
 		// External services - check stored connection status
 		...EXTERNAL_SERVICES.map((service) => {

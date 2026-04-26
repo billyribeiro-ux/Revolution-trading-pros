@@ -6,59 +6,75 @@
  *
  * Proxies to backend at /api/admin/bunny/uploads
  *
- * @version 1.0.0 - ICT 7 Principal Engineer Grade
+ * @version 1.1.0 - 2026-04-26 audit fix
+ *
+ * FIX-2026-04-26-audit (P0-9, P2-9, P3 env-var):
+ * - Use the `API_BASE_URL || BACKEND_URL || …` env chain (was just BACKEND_URL).
+ * - Forward auth as `Authorization: Bearer <rtp_access_token>` (was a malformed
+ *   `Cookie: session=<jwt>` that the backend never reads).
+ * - Surface real backend errors instead of returning a fake `{ success: true, data: [] }`
+ *   on failure — admins were seeing an empty list whenever the backend hiccuped.
  */
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 
-const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+const BACKEND_URL =
+	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
-async function fetchFromBackend(
-	endpoint: string,
-	cookies?: { get: (name: string) => string | undefined }
-): Promise<any | null> {
+// GET - List recent uploads
+export const GET: RequestHandler = async ({ cookies, request }) => {
+	// FIX-2026-04-26-audit: prefer the canonical rtp_access_token cookie set by
+	// the login proxy; fall back to a Bearer header for service callers.
+	const cookieToken = cookies.get('rtp_access_token');
+	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
+	const token = cookieToken || headerToken;
+
+	if (!token) {
+		return json({ success: false, error: 'Authentication required' }, { status: 401 });
+	}
+
 	try {
-		const headers: Record<string, string> = {
-			'Content-Type': 'application/json',
-			Accept: 'application/json'
-		};
+		const response = await fetch(`${BACKEND_URL}/api/admin/bunny/uploads`, {
+			headers: {
+				'Content-Type': 'application/json',
+				Accept: 'application/json',
+				Authorization: `Bearer ${token}`
+			}
+		});
 
-		if (cookies) {
-			// FIX-2026-04-26: comment-out, verify, delete in follow-up. Wrong cookie name — login proxy sets rtp_access_token, not session.
-			// const session = cookies.get('session');
-			const session = cookies.get('rtp_access_token');
-			if (session) {
-				headers['Cookie'] = `session=${session}`;
+		const text = await response.text();
+		let payload: unknown = null;
+		if (text) {
+			try {
+				payload = JSON.parse(text);
+			} catch {
+				payload = { error: text };
 			}
 		}
 
-		const response = await fetch(`${BACKEND_URL}${endpoint}`, { headers });
-
 		if (!response.ok) {
-			console.error(`[Bunny API] Backend error: ${response.status}`);
-			return null;
+			console.error(`[Bunny Uploads] Backend error ${response.status}:`, text);
+			return json(
+				{
+					success: false,
+					error: (payload as { error?: string })?.error || `Backend returned ${response.status}`
+				},
+				{ status: response.status }
+			);
 		}
 
-		return await response.json();
+		return json(payload ?? { success: true, data: [] });
 	} catch (err) {
-		console.error('[Bunny API] Backend fetch failed:', err);
-		return null;
+		console.error('[Bunny Uploads] Fetch failed:', err);
+		// FIX-2026-04-26-audit (P2-9): no more lying success — surface the failure.
+		return json(
+			{
+				success: false,
+				error: err instanceof Error ? err.message : 'Failed to reach backend'
+			},
+			{ status: 502 }
+		);
 	}
-}
-
-// GET - List recent uploads
-export const GET: RequestHandler = async ({ cookies }) => {
-	const backendData = await fetchFromBackend('/api/admin/bunny/uploads', cookies);
-
-	if (backendData?.success) {
-		return json(backendData);
-	}
-
-	// Return empty list if backend unavailable
-	return json({
-		success: true,
-		data: []
-	});
 };

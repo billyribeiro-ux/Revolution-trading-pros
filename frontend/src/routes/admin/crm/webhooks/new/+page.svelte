@@ -25,6 +25,11 @@
 	import { onMount } from 'svelte';
 	import { crmAPI } from '$lib/api/crm';
 	import type { WebhookEvent } from '$lib/crm/types';
+	import {
+		generateWebhookSecret,
+		isValidWebhookUrl,
+		validateWebhookUrl
+	} from '$lib/utils/webhookSecurity';
 
 	// =====================================================
 	// STATE MANAGEMENT - Svelte 5 Runes
@@ -53,7 +58,10 @@
 	// =====================================================
 
 	let isFormValid = $derived(
-		name.trim().length > 0 && url.trim().length > 0 && isValidUrl(url) && selectedEvents.size > 0
+		name.trim().length > 0 &&
+			url.trim().length > 0 &&
+			isValidWebhookUrl(url) &&
+			selectedEvents.size > 0
 	);
 
 	let selectedCount = $derived(selectedEvents.size);
@@ -101,8 +109,11 @@
 		}
 		if (!url.trim()) {
 			fieldErrors.url = 'Webhook URL is required';
-		} else if (!isValidUrl(url)) {
-			fieldErrors.url = 'Please enter a valid URL (must start with https://)';
+		} else {
+			const urlCheck = validateWebhookUrl(url);
+			if (!urlCheck.ok) {
+				fieldErrors.url = urlCheck.message ?? 'Please enter a valid https:// URL';
+			}
 		}
 		if (selectedEvents.size === 0) {
 			fieldErrors.events = 'Please select at least one event';
@@ -148,22 +159,11 @@
 	// HELPER FUNCTIONS
 	// =====================================================
 
-	function isValidUrl(urlString: string): boolean {
-		try {
-			const url = new URL(urlString);
-			return url.protocol === 'https:' || url.protocol === 'http:';
-		} catch {
-			return false;
-		}
-	}
-
 	function generateSecret() {
-		const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-		let result = '';
-		for (let i = 0; i < 32; i++) {
-			result += chars.charAt(Math.floor(Math.random() * chars.length));
-		}
-		secret = result;
+		// Cryptographically secure secret — uses crypto.getRandomValues under the hood.
+		// Replaces the previous Math.random() loop, which was predictable and unsafe
+		// for HMAC-signed webhook payloads.
+		secret = generateWebhookSecret(32);
 	}
 
 	function toggleEvent(event: WebhookEvent) {

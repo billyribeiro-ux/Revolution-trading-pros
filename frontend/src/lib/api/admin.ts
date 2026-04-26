@@ -553,12 +553,16 @@ async function makeRequest<T = any>(
 		if (cached) return cached;
 	}
 
-	// Deduplicate identical requests
-	const dedupeKey = `${fetchOptions.method || 'GET'}:${endpoint}`;
+	// FIX-2026-04-26 (P0-9): Only deduplicate idempotent (GET) requests.
+	// Previously the dedupe key was `${method}:${endpoint}` ignoring the body.
+	// Two concurrent POST/PUT/DELETE calls with different bodies would collapse
+	// onto the first request's response, silently corrupting concurrent mutations.
+	const method = (fetchOptions.method || 'GET').toUpperCase();
+	const isIdempotent = method === 'GET' || method === 'HEAD';
 
-	return requestManager.deduplicateRequest(dedupeKey, async () => {
-		return requestManager.queueRequest(async () => {
-			return executeRequestWithRetry<T>(
+	const requestExecutor = async () =>
+		requestManager.queueRequest(async () =>
+			executeRequestWithRetry<T>(
 				url,
 				{
 					...fetchOptions,
@@ -572,9 +576,16 @@ async function makeRequest<T = any>(
 				retries,
 				endpoint,
 				cacheTTL
-			);
-		});
-	});
+			)
+		);
+
+	if (!isIdempotent) {
+		// Skip dedupe entirely for mutating verbs.
+		return requestExecutor();
+	}
+
+	const dedupeKey = `${method}:${endpoint}`;
+	return requestManager.deduplicateRequest(dedupeKey, requestExecutor);
 }
 
 /**

@@ -999,14 +999,12 @@
 		};
 	}
 
-	async function sendNotifications(user: any) {
-		// Mock notification sending
-		console.log('Sending notifications for user:', user);
+	async function sendNotifications(_user: any) {
+		// FIX-2026-04-26: dropped console.log per audit §E. TODO: wire to notification svc.
 	}
 
-	function trackUserCreation(user: any) {
-		// Analytics tracking
-		console.log('Tracking user creation:', user);
+	function trackUserCreation(_user: any) {
+		// FIX-2026-04-26: dropped console.log per audit §E. TODO: wire to analytics.
 	}
 
 	function shouldCreateAnother(): boolean {
@@ -1048,9 +1046,8 @@
 		errors = [{ field: 'general', message, severity: 'error' }];
 	}
 
-	function showSuccessMessage(message: string) {
-		console.log('Success:', message);
-		// Could use a toast notification system here
+	function showSuccessMessage(_message: string) {
+		// FIX-2026-04-26: dropped console.log per audit §E. TODO: toast notification.
 	}
 
 	// Reactive statements for real-time validation

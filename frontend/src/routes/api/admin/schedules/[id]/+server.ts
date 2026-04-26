@@ -1,60 +1,37 @@
 /**
  * Admin Schedules API - Individual Schedule Endpoint
  * ═══════════════════════════════════════════════════════════════════════════════════
- * Apple Principal Engineer ICT 11+ Grade - January 2026
  *
- * Handles individual schedule operations: GET, PUT, DELETE
+ * Handles individual schedule operations: GET, PUT, DELETE.
  *
- * @version 1.0.0
+ * FIX-2026-04-26 (P0-1): Removed mock fallback that fabricated `success: true`
+ * responses for missing/failed schedules. Now forwards backend status verbatim.
+ *
+ * @version 2.0.0
  */
 
 import { json, error as kitError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
-// Production fallback - Rust API on Fly.io
 import { env } from '$env/dynamic/private';
 const PROD_BACKEND =
 	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
 // ═══════════════════════════════════════════════════════════════════════════
-// SHARED MOCK DATA STORE (in real app, this would be a database)
-// ═══════════════════════════════════════════════════════════════════════════
-
-// Import mock data reference - in production this would be database queries
-const mockSchedules: any[] = [];
-
-// Initialize with some data
-function getOrInitMockData(): any[] {
-	if (mockSchedules.length === 0) {
-		// Default mock schedules
-		mockSchedules.push({
-			id: 1,
-			room_id: 'day-trading-room',
-			title: 'Pre-Market Analysis',
-			description: 'Daily pre-market analysis and game plan for the trading day.',
-			trader_name: 'Taylor Horton',
-			day_of_week: 1,
-			start_time: '08:30',
-			end_time: '09:15',
-			timezone: 'America/New_York',
-			is_active: true,
-			room_type: 'live',
-			recurrence: 'weekly',
-			exceptions: [],
-			created_at: '2025-12-01T00:00:00Z',
-			updated_at: '2025-12-01T00:00:00Z'
-		});
-	}
-	return mockSchedules;
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
 // BACKEND HELPER
 // ═══════════════════════════════════════════════════════════════════════════
 
-async function fetchFromBackend(endpoint: string, options?: RequestInit): Promise<any | null> {
+interface BackendResult {
+	data: unknown;
+	status: number;
+	reachable: boolean;
+}
+
+async function callBackend(endpoint: string, options?: RequestInit): Promise<BackendResult> {
 	const BACKEND_URL = PROD_BACKEND;
-	if (!BACKEND_URL) return null;
+	if (!BACKEND_URL) {
+		return { data: null, status: 0, reachable: false };
+	}
 
 	try {
 		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
@@ -66,16 +43,29 @@ async function fetchFromBackend(endpoint: string, options?: RequestInit): Promis
 			}
 		});
 
-		if (!response.ok) {
-			console.warn(`Backend returned ${response.status} for ${endpoint}`);
-			return null;
+		let parsed: unknown = null;
+		const text = await response.text();
+		if (text) {
+			try {
+				parsed = JSON.parse(text);
+			} catch {
+				parsed = { message: text };
+			}
 		}
-
-		return await response.json();
-	} catch (error) {
-		console.warn(`Failed to fetch from backend: ${error}`);
-		return null;
+		return { data: parsed, status: response.status, reachable: true };
+	} catch (err) {
+		console.warn(`Schedule backend unreachable for ${endpoint}:`, err);
+		return { data: null, status: 0, reachable: false };
 	}
+}
+
+function extractErrorMessage(data: unknown, fallback: string): string {
+	if (data && typeof data === 'object') {
+		const obj = data as { message?: unknown; error?: unknown };
+		if (typeof obj.message === 'string') return obj.message;
+		if (typeof obj.error === 'string') return obj.error;
+	}
+	return fallback;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -85,41 +75,27 @@ async function fetchFromBackend(endpoint: string, options?: RequestInit): Promis
 export const GET: RequestHandler = async ({ params, request, cookies }) => {
 	const id = parseInt(params.id || '0');
 
-	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
-	// Old: headers: { Authorization: request.headers.get('Authorization') || '' }
 	const cookieToken = cookies.get('rtp_access_token');
 	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
 	const token = cookieToken || headerToken;
 	if (!token) kitError(401, 'Unauthorized');
 
-	// Try backend first
-	const backendData = await fetchFromBackend(`/api/admin/schedules/${id}`, {
+	const result = await callBackend(`/api/admin/schedules/${id}`, {
 		headers: { Authorization: `Bearer ${token}` }
 	});
 
-	if (backendData?.success) {
-		return json(backendData);
+	if (result.reachable && result.status >= 200 && result.status < 300) {
+		return json(result.data);
 	}
 
-	// Fallback to mock data
-	const schedules = getOrInitMockData();
-	const schedule = schedules.find((s) => s.id === id);
-
-	if (!schedule) {
-		return json(
-			{
-				success: false,
-				error: 'Schedule not found'
-			},
-			{ status: 404 }
-		);
+	if (result.reachable) {
+		kitError(result.status, extractErrorMessage(result.data, 'Schedule not found'));
 	}
 
-	return json({
-		success: true,
-		data: schedule,
-		_mock: true
-	});
+	return json(
+		{ success: false, error: 'Schedules backend is not reachable.', _degraded: true },
+		{ status: 503 }
+	);
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -130,54 +106,33 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 	const id = parseInt(params.id || '0');
 	const body = await request.json();
 
-	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
-	// Old: headers: { Authorization: request.headers.get('Authorization') || '' }
 	const cookieToken = cookies.get('rtp_access_token');
 	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
 	const token = cookieToken || headerToken;
 	if (!token) kitError(401, 'Unauthorized');
 
-	// Try backend first
-	const backendData = await fetchFromBackend(`/api/admin/schedules/${id}`, {
+	const result = await callBackend(`/api/admin/schedules/${id}`, {
 		method: 'PUT',
 		headers: { Authorization: `Bearer ${token}` },
 		body: JSON.stringify(body)
 	});
 
-	if (backendData?.success) {
-		return json(backendData);
+	if (result.reachable && result.status >= 200 && result.status < 300) {
+		return json(result.data);
 	}
 
-	// Fallback to mock data
-	const schedules = getOrInitMockData();
-	const scheduleIndex = schedules.findIndex((s) => s.id === id);
-
-	if (scheduleIndex === -1) {
-		return json(
-			{
-				success: false,
-				error: 'Schedule not found'
-			},
-			{ status: 404 }
-		);
+	if (result.reachable) {
+		kitError(result.status, extractErrorMessage(result.data, 'Failed to update schedule'));
 	}
 
-	// Update the schedule
-	const updatedSchedule = {
-		...schedules[scheduleIndex],
-		...body,
-		id: schedules[scheduleIndex].id, // Preserve ID
-		updated_at: new Date().toISOString()
-	};
-
-	schedules[scheduleIndex] = updatedSchedule;
-
-	return json({
-		success: true,
-		data: updatedSchedule,
-		message: 'Schedule updated successfully',
-		_mock: true
-	});
+	return json(
+		{
+			success: false,
+			error: 'Schedules backend is not reachable. Schedule was NOT updated.',
+			_degraded: true
+		},
+		{ status: 503 }
+	);
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -187,43 +142,30 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 export const DELETE: RequestHandler = async ({ params, request, cookies }) => {
 	const id = parseInt(params.id || '0');
 
-	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
-	// Old: headers: { Authorization: request.headers.get('Authorization') || '' }
 	const cookieToken = cookies.get('rtp_access_token');
 	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
 	const token = cookieToken || headerToken;
 	if (!token) kitError(401, 'Unauthorized');
 
-	// Try backend first
-	const backendData = await fetchFromBackend(`/api/admin/schedules/${id}`, {
+	const result = await callBackend(`/api/admin/schedules/${id}`, {
 		method: 'DELETE',
 		headers: { Authorization: `Bearer ${token}` }
 	});
 
-	if (backendData?.success) {
-		return json(backendData);
+	if (result.reachable && result.status >= 200 && result.status < 300) {
+		return json(result.data);
 	}
 
-	// Fallback to mock data
-	const schedules = getOrInitMockData();
-	const scheduleIndex = schedules.findIndex((s) => s.id === id);
-
-	if (scheduleIndex === -1) {
-		return json(
-			{
-				success: false,
-				error: 'Schedule not found'
-			},
-			{ status: 404 }
-		);
+	if (result.reachable) {
+		kitError(result.status, extractErrorMessage(result.data, 'Failed to delete schedule'));
 	}
 
-	// Remove the schedule
-	schedules.splice(scheduleIndex, 1);
-
-	return json({
-		success: true,
-		message: 'Schedule deleted successfully',
-		_mock: true
-	});
+	return json(
+		{
+			success: false,
+			error: 'Schedules backend is not reachable. Schedule was NOT deleted.',
+			_degraded: true
+		},
+		{ status: 503 }
+	);
 };

@@ -37,6 +37,7 @@
 	import { crmAPI } from '$lib/api/crm';
 	import type { EmailTemplate, TemplateCategory } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { sanitizeHtml } from '$lib/utils/sanitize';
 
 	// =====================================================
 	// STATE MANAGEMENT - Svelte 5 Runes
@@ -786,8 +787,16 @@
 					</div>
 					<div class="preview-content">
 						<h3>Email Content</h3>
+						<!--
+							Stored XSS guard (audit P1 #8): admin-authored HTML is run through
+							DOMPurify ('rich' profile) before {@html} so an attacker who edits a
+							template can't inject script that runs in another admin's session.
+						-->
 						<div class="preview-frame">
-							{@html previewTemplate.content || '<p class="no-content">No content available</p>'}
+							{@html sanitizeHtml(
+								previewTemplate.content || '<p class="no-content">No content available</p>',
+								'rich'
+							)}
 						</div>
 					</div>
 				{/if}

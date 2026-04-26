@@ -15,6 +15,7 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import { weeklyVideoApi, type WeeklyVideo } from '$lib/api/room-content';
+	import { adminFetch } from '$lib/utils/adminFetch';
 
 	// Icons
 	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
@@ -175,37 +176,78 @@
 		uploadProgress = 0;
 
 		try {
-			// Step 1: Create video entry on Bunny.net
-			const createRes = await fetch('/api/admin/bunny/create-video', {
+			// FIX-2026-04-26-audit (P0-1, P0-2, P0-3):
+			// Old flow tried to read a non-existent `upload_url` from /api/admin/bunny/create-video,
+			// then PUT directly to it without auth, then wrote the literal string "VIDEO_LIBRARY_ID"
+			// into the embed URL (no interpolation). Replace with the real two-step proxy flow:
+			//   1. POST /api/admin/bunny/create-video → { video_id, library_id, embed_url }
+			//   2. PUT  /api/admin/bunny/upload?video_guid=...&library_id=... (server forwards with Bearer + Bunny key)
+			// adminFetch attaches the rtp_access_token Bearer header for both requests.
+
+			// Step 1: Create the Bunny video entry via the server proxy.
+			const createRes = await adminFetch('/api/admin/bunny/create-video', {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					title: form.video_title || uploadFile.name,
 					collection_id: roomSlug
 				})
 			});
 
-			if (!createRes.ok) throw new Error('Failed to create video entry');
-			const { video_id, upload_url } = await createRes.json();
+			if (!createRes?.success) {
+				throw new Error(createRes?.error || 'Failed to create video entry');
+			}
 
-			// Step 2: Upload file to Bunny.net
-			const uploadRes = await fetch(upload_url, {
-				method: 'PUT',
-				headers: { 'Content-Type': 'application/octet-stream' },
-				body: uploadFile
+			// The backend returns shape: { success, data: { video_id|guid, library_id, embed_url? } }
+			// or, in some legacy responses, the fields at the top level. Handle both.
+			const payload = createRes.data ?? createRes;
+			const videoId: string | undefined = payload.video_id ?? payload.guid;
+			const libraryId: string | number | undefined = payload.library_id;
+			const embedUrlFromBackend: string | undefined = payload.embed_url;
+
+			if (!videoId || !libraryId) {
+				throw new Error('Backend did not return video_id/library_id');
+			}
+
+			uploadProgress = 25;
+
+			// Step 2: Upload the bytes through our PUT proxy (NOT directly to Bunny — API key never leaves server).
+			// Use XHR to get progress events; the proxy reads the body via arrayBuffer().
+			await new Promise<void>((resolve, reject) => {
+				const xhr = new XMLHttpRequest();
+				xhr.open(
+					'PUT',
+					`/api/admin/bunny/upload?video_guid=${encodeURIComponent(videoId)}&library_id=${encodeURIComponent(String(libraryId))}`
+				);
+				xhr.setRequestHeader('Content-Type', uploadFile?.type || 'video/mp4');
+				xhr.withCredentials = true;
+				xhr.upload.addEventListener('progress', (e) => {
+					if (e.lengthComputable && uploadFile) {
+						// Reserve 25-95 for upload, 95-100 for the API confirmation.
+						uploadProgress = 25 + Math.round((e.loaded / e.total) * 70);
+					}
+				});
+				xhr.addEventListener('load', () => {
+					if (xhr.status >= 200 && xhr.status < 300) resolve();
+					else reject(new Error(`Upload failed (${xhr.status})`));
+				});
+				xhr.addEventListener('error', () => reject(new Error('Upload network error')));
+				xhr.send(uploadFile);
 			});
 
-			if (!uploadRes.ok) throw new Error('Failed to upload video');
-
-			// Step 3: Update form with Bunny URL
-			form.video_url = `https://iframe.mediadelivery.net/embed/VIDEO_LIBRARY_ID/${video_id}`;
+			// Step 3: Update form with the real Bunny embed URL (interpolating the actual library_id).
+			form.video_url =
+				embedUrlFromBackend ||
+				`https://iframe.mediadelivery.net/embed/${libraryId}/${videoId}`;
 			form.video_platform = 'bunny';
 
 			uploadProgress = 100;
 			onSuccess?.('Video uploaded to Bunny.net');
 		} catch (err) {
-			onError?.('Failed to upload video');
-			console.error(err);
+			// FIX-2026-04-26-audit: surface the real error instead of a generic message so the admin
+			// knows whether it was auth, network, or backend.
+			const message = err instanceof Error ? err.message : 'Failed to upload video';
+			onError?.(message);
+			console.error('[WeeklyVideoUploader] uploadToBunny failed:', err);
 		} finally {
 			isUploading = false;
 		}
