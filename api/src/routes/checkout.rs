@@ -249,12 +249,26 @@ async fn create_checkout(
         uuid::Uuid::new_v4().to_string()[..8].to_uppercase()
     );
 
+    // FIX-2026-04-26 (Priority 5, CRITICAL): wrap orders + order_items + coupon-usage
+    // increment in a single transaction. Commit BEFORE the external Stripe API call so
+    // a Stripe failure doesn't leave half-written rows. The post-Stripe
+    // `UPDATE orders SET stripe_session_id = ...` is intentionally a single-statement
+    // query that runs OUTSIDE this tx (it's a backfill, not a multi-step mutation).
+    let mut tx = state.db.pool.begin().await.map_err(|e| {
+        tracing::error!(target: "checkout", error = %e, "Failed to begin transaction");
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
+    })?;
+
     // Create order in database - ICT 7 FIX: Include coupon_id and coupon_code
     #[derive(sqlx::FromRow)]
     struct OrderId {
         id: i64,
     }
 
+    // Original pool reference: .fetch_one(&state.db.pool)
     let order: OrderId = sqlx::query_as(
         r#"
         INSERT INTO orders (user_id, order_number, status, subtotal, discount, tax, total, currency,
@@ -274,7 +288,7 @@ async fn create_checkout(
     .bind(&input.billing_address)
     .bind(applied_coupon_id)
     .bind(&input.coupon_code)
-    .fetch_one(&state.db.pool)
+    .fetch_one(&mut *tx)
     .await
     .map_err(|e| {
         tracing::error!(target: "checkout", error = %e, "Failed to create order");
@@ -282,17 +296,19 @@ async fn create_checkout(
     })?;
 
     // ICT 7 FIX: Increment coupon usage if applied
+    // Original pool reference: .execute(&state.db.pool)
     if let Some(coupon_id) = applied_coupon_id {
         sqlx::query(
             "UPDATE coupons SET current_uses = current_uses + 1, updated_at = NOW() WHERE id = $1",
         )
         .bind(coupon_id)
-        .execute(&state.db.pool)
+        .execute(&mut *tx)
         .await
         .ok(); // Log but don't fail order creation
     }
 
     // Insert order items
+    // Original pool reference: .execute(&state.db.pool)
     for item in &line_items {
         sqlx::query(
             r#"
@@ -307,10 +323,19 @@ async fn create_checkout(
         .bind(item.get("quantity").and_then(|q| q.as_i64()).unwrap_or(1) as i32)
         .bind(item.get("price").and_then(|p| p.as_f64()).unwrap_or(0.0))
         .bind(item.get("total").and_then(|t| t.as_f64()).unwrap_or(0.0))
-        .execute(&state.db.pool)
+        .execute(&mut *tx)
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
     }
+
+    // FIX-2026-04-26 (Priority 5): COMMIT BEFORE external Stripe HTTP call.
+    tx.commit().await.map_err(|e| {
+        tracing::error!(target: "checkout", error = %e, "Failed to commit checkout transaction");
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
+    })?;
 
     // ICT 7 Fix: Create Stripe checkout session for payment
     let success_url = input

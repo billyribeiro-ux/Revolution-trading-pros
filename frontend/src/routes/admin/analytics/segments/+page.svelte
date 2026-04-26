@@ -284,19 +284,8 @@
 					<div
 						class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-cyan-500/10 flex items-center justify-center"
 					>
-						<svg
-							class="w-8 h-8 text-cyan-400"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"
-							/>
-						</svg>
+						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: users (no segments empty state) -->
+						<IconUsers size={32} aria-hidden="true" />
 					</div>
 					<h3 class="text-lg font-medium text-white mb-2">No Segments Yet</h3>
 					<p class="text-slate-400 mb-6">Create your first segment to organize your users</p>
@@ -324,19 +313,8 @@
 									class="w-10 h-10 rounded-xl bg-gradient-to-br {segmentColors[segment.type] ||
 										'from-gray-500 to-gray-600'} flex items-center justify-center"
 								>
-									<svg
-										class="w-5 h-5 text-white"
-										fill="none"
-										stroke="currentColor"
-										viewBox="0 0 24 24"
-									>
-										<path
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											stroke-width="2"
-											d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"
-										/>
-									</svg>
+									<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: users (grid card) -->
+									<IconUsers size={20} aria-hidden="true" />
 								</div>
 								{#if segment.is_system}
 									<span
@@ -421,19 +399,8 @@
 												class="w-8 h-8 rounded-lg bg-gradient-to-br {segmentColors[segment.type] ||
 													'from-gray-500 to-gray-600'} flex items-center justify-center"
 											>
-												<svg
-													class="w-4 h-4 text-white"
-													fill="none"
-													stroke="currentColor"
-													viewBox="0 0 24 24"
-												>
-													<path
-														stroke-linecap="round"
-														stroke-linejoin="round"
-														stroke-width="2"
-														d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7"
-													/>
-												</svg>
+												<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: users (list row) -->
+												<IconUsers size={16} aria-hidden="true" />
 											</div>
 											<div>
 												<span class="font-medium text-white">{segment.name}</span>

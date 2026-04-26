@@ -285,19 +285,8 @@
 					<div
 						class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-emerald-500/10 flex items-center justify-center"
 					>
-						<svg
-							class="w-8 h-8 text-emerald-400"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-							/>
-						</svg>
+						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-check (no goals empty state) -->
+						<IconCircleCheck size={32} aria-hidden="true" />
 					</div>
 					<h3 class="text-lg font-medium text-white mb-2">No Goals Configured</h3>
 					<p class="text-slate-400 mb-6">Set up conversion goals to track important user actions</p>

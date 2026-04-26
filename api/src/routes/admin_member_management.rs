@@ -434,14 +434,29 @@ async fn create_member(
             .collect()
     });
 
-    let password_hash = bcrypt::hash(&password, bcrypt::DEFAULT_COST).map_err(|e| {
+    // FIX-2026-04-26 (Priority 7): use Argon2id (crate::utils::hash_password) instead of
+    // bcrypt to standardize on the same hashing algorithm as auth.rs::register.
+    // Original line:
+    // let password_hash = bcrypt::hash(&password, bcrypt::DEFAULT_COST).map_err(|e| {
+    //     (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": format!("Failed to hash password: {}", e)})))
+    // })?;
+    let password_hash = crate::utils::hash_password(&password).map_err(|e| {
         (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(json!({"error": format!("Failed to hash password: {}", e)})),
         )
     })?;
 
+    // FIX-2026-04-26 (Priority 5): wrap user-insert + activity-log-insert in a tx.
+    let mut tx = state.db.pool.begin().await.map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("Database error: {}", e)})),
+        )
+    })?;
+
     // Create user
+    // Original pool reference: .fetch_one(&state.db.pool)
     let member: MemberDetail = sqlx::query_as(
         r#"
         INSERT INTO users (name, email, password_hash, role, created_at, updated_at)
@@ -453,7 +468,7 @@ async fn create_member(
     .bind(&input.email)
     .bind(&password_hash)
     .bind(input.role.as_deref().unwrap_or("user"))
-    .fetch_one(&state.db.pool)
+    .fetch_one(&mut *tx)
     .await
     .map_err(|e| {
         (
@@ -463,6 +478,7 @@ async fn create_member(
     })?;
 
     // Log activity
+    // Original pool reference: .execute(&state.db.pool)
     let _ = sqlx::query(
         r#"
         INSERT INTO user_activity_log (user_id, action, description, created_at)
@@ -470,8 +486,16 @@ async fn create_member(
         "#,
     )
     .bind(member.id)
-    .execute(&state.db.pool)
+    .execute(&mut *tx)
     .await;
+
+    // FIX-2026-04-26 (Priority 5): commit the create-member transaction.
+    tx.commit().await.map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("Database error: {}", e)})),
+        )
+    })?;
 
     Ok(Json(json!({
         "message": "Member created successfully",
@@ -591,7 +615,12 @@ async fn update_member(
         query = query.bind(avatar_url);
     }
     if let Some(ref password) = input.password {
-        let hash = bcrypt::hash(password, bcrypt::DEFAULT_COST).map_err(|e| {
+        // FIX-2026-04-26 (Priority 7): use Argon2id instead of bcrypt — same standardization.
+        // Original line:
+        // let hash = bcrypt::hash(password, bcrypt::DEFAULT_COST).map_err(|e| {
+        //     (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": format!("Failed to hash password: {}", e)})))
+        // })?;
+        let hash = crate::utils::hash_password(password).map_err(|e| {
             (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 Json(json!({"error": format!("Failed to hash password: {}", e)})),
@@ -744,7 +773,16 @@ async fn ban_member(
         .duration_days
         .map(|days| Utc::now().naive_utc() + chrono::Duration::days(days as i64));
 
+    // FIX-2026-04-26 (Priority 5): wrap user_status upsert + activity log in a tx.
+    let mut tx = state.db.pool.begin().await.map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("Database error: {}", e)})),
+        )
+    })?;
+
     // Upsert user status
+    // Original pool reference: .execute(&state.db.pool)
     sqlx::query(
         r#"
         INSERT INTO user_status (user_id, status, banned_until, ban_reason, updated_at)
@@ -759,7 +797,7 @@ async fn ban_member(
     .bind(id)
     .bind(banned_until)
     .bind(&input.reason)
-    .execute(&state.db.pool)
+    .execute(&mut *tx)
     .await
     .map_err(|e| {
         (
@@ -769,6 +807,7 @@ async fn ban_member(
     })?;
 
     // Log activity
+    // Original pool reference: .execute(&state.db.pool)
     let _ = sqlx::query(
         r#"
         INSERT INTO user_activity_log (user_id, action, description, metadata, created_at)
@@ -788,8 +827,16 @@ async fn ban_member(
         "duration_days": input.duration_days,
         "banned_by": admin.0.id
     }))
-    .execute(&state.db.pool)
+    .execute(&mut *tx)
     .await;
+
+    // FIX-2026-04-26 (Priority 5): commit ban transaction.
+    tx.commit().await.map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("Database error: {}", e)})),
+        )
+    })?;
 
     Ok(Json(json!({
         "message": "Member banned successfully",
@@ -816,6 +863,15 @@ async fn suspend_member(
         .duration_days
         .map(|days| Utc::now().naive_utc() + chrono::Duration::days(days as i64));
 
+    // FIX-2026-04-26 (Priority 5): wrap user_status upsert + activity log in a tx.
+    let mut tx = state.db.pool.begin().await.map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("Database error: {}", e)})),
+        )
+    })?;
+
+    // Original pool reference: .execute(&state.db.pool)
     sqlx::query(
         r#"
         INSERT INTO user_status (user_id, status, banned_until, ban_reason, updated_at)
@@ -830,7 +886,7 @@ async fn suspend_member(
     .bind(id)
     .bind(suspended_until)
     .bind(&input.reason)
-    .execute(&state.db.pool)
+    .execute(&mut *tx)
     .await
     .map_err(|e| {
         (
@@ -839,6 +895,7 @@ async fn suspend_member(
         )
     })?;
 
+    // Original pool reference: .execute(&state.db.pool)
     let _ = sqlx::query(
         r#"
         INSERT INTO user_activity_log (user_id, action, description, metadata, created_at)
@@ -858,8 +915,16 @@ async fn suspend_member(
         "duration_days": input.duration_days,
         "suspended_by": admin.0.id
     }))
-    .execute(&state.db.pool)
+    .execute(&mut *tx)
     .await;
+
+    // FIX-2026-04-26 (Priority 5): commit suspend transaction.
+    tx.commit().await.map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("Database error: {}", e)})),
+        )
+    })?;
 
     Ok(Json(json!({
         "message": "Member suspended successfully",
@@ -874,6 +939,15 @@ async fn unban_member(
     admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    // FIX-2026-04-26 (Priority 5): wrap user_status update + activity log in a tx.
+    let mut tx = state.db.pool.begin().await.map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("Database error: {}", e)})),
+        )
+    })?;
+
+    // Original pool reference: .execute(&state.db.pool)
     sqlx::query(
         r#"
         UPDATE user_status
@@ -882,7 +956,7 @@ async fn unban_member(
         "#,
     )
     .bind(id)
-    .execute(&state.db.pool)
+    .execute(&mut *tx)
     .await
     .map_err(|e| {
         (
@@ -891,6 +965,7 @@ async fn unban_member(
         )
     })?;
 
+    // Original pool reference: .execute(&state.db.pool)
     let _ = sqlx::query(
         r#"
         INSERT INTO user_activity_log (user_id, action, description, metadata, created_at)
@@ -899,8 +974,16 @@ async fn unban_member(
     )
     .bind(id)
     .bind(json!({"unbanned_by": admin.0.id}))
-    .execute(&state.db.pool)
+    .execute(&mut *tx)
     .await;
+
+    // FIX-2026-04-26 (Priority 5): commit unban transaction.
+    tx.commit().await.map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("Database error: {}", e)})),
+        )
+    })?;
 
     Ok(Json(json!({
         "message": "Member unbanned successfully"
