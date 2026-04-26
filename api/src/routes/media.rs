@@ -194,19 +194,29 @@ pub async fn index(
         .await
         .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
-    // Build main query
+    // Build main query.
+    //
+    // SAFETY: `sort_column` and `sort_direction` are checked against the
+    // `allowed_columns` allow-list and a binary ASC/DESC choice above.
+    // Format-string injection through them is therefore impossible. LIMIT
+    // and OFFSET are bound as parameters below — never formatted in.
     let query = format!(
         "SELECT id, filename, original_filename, mime_type, size, path, url,
                 title, alt_text, caption, description, collection, is_optimized,
                 width, height, created_at, updated_at
-         FROM media WHERE 1=1{} ORDER BY {} {} LIMIT {} OFFSET {}",
-        where_clause, sort_column, sort_direction, per_page, offset
+         FROM media WHERE 1=1{} ORDER BY {} {} LIMIT ${} OFFSET ${}",
+        where_clause,
+        sort_column,
+        sort_direction,
+        bind_values.len() + 1,
+        bind_values.len() + 2,
     );
 
     let mut main_q = sqlx::query_as::<_, Media>(&query);
     for val in &bind_values {
         main_q = main_q.bind(val);
     }
+    main_q = main_q.bind(per_page).bind(offset);
 
     let media: Vec<Media> = main_q
         .fetch_all(state.db.pool())
