@@ -321,7 +321,18 @@ export const keyboard = {
 				})
 		}));
 
-		storeState = { ...storeState, shortcuts };
+		// FIX-2026-04-26: assign the rune ONCE, no spread-read of itself.
+		// The previous `storeState = { ...storeState, shortcuts }` read+wrote the
+		// same rune in one statement; if a caller wraps init() inside a tracked
+		// context (e.g. $effect), that's a self-dependency and the depth guard
+		// will trip on the first cleanup. We rebuild the snapshot from known
+		// initial fields so there's zero read of `storeState` here.
+		// Old: storeState = { ...storeState, shortcuts };
+		storeState = {
+			shortcuts,
+			isHelpOpen: false,
+			activeContext: 'global'
+		};
 
 		// Add event listener
 		window.addEventListener('keydown', handleKeyDown);
@@ -334,7 +345,13 @@ export const keyboard = {
 	destroy() {
 		if (!browser) return;
 		window.removeEventListener('keydown', handleKeyDown);
-		isInitialized = false;
+		// FIX-2026-04-26: do NOT reset isInitialized here. The gate exists to keep
+		// init() idempotent for the lifetime of the module. Clearing it on destroy
+		// means any caller that follows the `init()` … `destroy()` pattern from
+		// inside a tracked context (the canonical bug) will re-enter init on the
+		// next reactive flush. The listener detach above is the only thing
+		// destroy() actually needs to do.
+		// Old: isInitialized = false;
 	},
 
 	/**

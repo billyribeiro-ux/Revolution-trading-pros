@@ -75,8 +75,38 @@
 		}
 	});
 
-	// Keyboard shortcuts
-	$effect(() => {
+	// FIX-2026-04-26: keyboard-shortcut bootstrap converted from $effect to onMount.
+	// The previous $effect called keyboard.init(), whose body executes
+	// `storeState = { ...storeState, shortcuts }` — that's a READ+WRITE of the
+	// same $state rune inside the effect's reactive scope. The cleanup return
+	// `() => keyboard.destroy()` unconditionally sets `isInitialized = false`,
+	// defeating the gate that was supposed to make init() idempotent — so each
+	// scheduled re-run re-enters init, re-writes storeState, schedules another
+	// re-run … and Svelte's depth guard throws after ~16 frames. onMount has
+	// no dependency tracking, so the read inside the spread is harmless.
+	// See https://svelte.dev/docs/svelte/$effect#When-not-to-use-$effect.
+	//
+	// Old code (kept for one revision per FIX-2026-04-26 marker — delete in follow-up):
+	// $effect(() => {
+	// 	if (!browser) return;
+	// 	keyboard.init({
+	// 		search: () => (isCommandPaletteOpen = true),
+	// 		'search-alt': () => (isCommandPaletteOpen = true),
+	// 		help: () => (isKeyboardHelpOpen = true),
+	// 		'goto-dashboard': () => goto('/admin'),
+	// 		'goto-analytics': () => goto('/admin/analytics'),
+	// 		'goto-blog': () => goto('/admin/blog'),
+	// 		'goto-settings': () => goto('/admin/settings'),
+	// 		escape: () => {
+	// 			isCommandPaletteOpen = false;
+	// 			isNotificationCenterOpen = false;
+	// 			isKeyboardHelpOpen = false;
+	// 			isConnectionHealthOpen = false;
+	// 		}
+	// 	});
+	// 	return () => keyboard.destroy();
+	// });
+	onMount(() => {
 		if (!browser) return;
 
 		keyboard.init({

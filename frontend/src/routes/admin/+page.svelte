@@ -94,7 +94,18 @@
 		}
 	}
 
+	// FIX-2026-04-26: stop spinning Refresh button on first paint.
+	// Old `isLoading = $state(true)` made the Refresh button spin from first paint
+	// until onMount → fetchDashboardStats() settled (up to 10s in the worst case).
+	// Users reasonably reported "the Refresh button won't stop spinning" before
+	// they ever clicked it. Decouple user-initiated spin from initial fetch:
+	//   - `isLoading`: drives metric-card skeletons; starts true so cards show
+	//     skeletons during initial fetch.
+	//   - `isUserRefreshing`: drives the Refresh button's spin; starts false,
+	//     flips true ONLY when the user clicks Refresh or a period pill.
+	// Old: let isLoading = $state(true);
 	let isLoading = $state(true);
+	let isUserRefreshing = $state(false);
 	let lastUpdated = $state<Date | null>(null);
 	let error = $state<string | null>(null);
 	let selectedPeriod = $state('30d');
@@ -167,8 +178,10 @@
 		requestAnimationFrame(animate);
 	}
 
-	async function fetchDashboardStats() {
+	async function fetchDashboardStats({ userInitiated = false } = {}) {
 		isLoading = true;
+		// FIX-2026-04-26: spinner only fires for user-initiated refreshes.
+		if (userInitiated) isUserRefreshing = true;
 		error = null;
 
 		// Built-in analytics - always try to fetch (no external connection required)
@@ -335,6 +348,7 @@
 			error = 'Failed to load some statistics. Please try again.';
 		} finally {
 			isLoading = false;
+			isUserRefreshing = false;
 		}
 	}
 
@@ -353,7 +367,8 @@
 
 	function changePeriod(period: string) {
 		selectedPeriod = period;
-		fetchDashboardStats();
+		// FIX-2026-04-26: clicking 7D/30D/90D pills is user-initiated → spin the button.
+		fetchDashboardStats({ userInitiated: true });
 	}
 
 	// Derived: Get active connection count from connections store
@@ -398,9 +413,9 @@
 				</div>
 				<button
 					class="btn-secondary"
-					onclick={fetchDashboardStats}
-					disabled={isLoading}
-					class:loading={isLoading}
+					onclick={() => fetchDashboardStats({ userInitiated: true })}
+					disabled={isUserRefreshing}
+					class:loading={isUserRefreshing}
 				>
 					<IconRefresh size={18} />
 					Refresh
@@ -415,8 +430,8 @@
 				<button
 					type="button"
 					class="error-banner__retry"
-					onclick={fetchDashboardStats}
-					disabled={isLoading}
+					onclick={() => fetchDashboardStats({ userInitiated: true })}
+					disabled={isUserRefreshing}
 				>
 					<IconRefresh size={14} aria-hidden="true" />
 					Retry
