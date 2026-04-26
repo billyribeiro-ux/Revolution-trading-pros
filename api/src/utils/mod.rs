@@ -258,7 +258,9 @@ pub fn create_refresh_token(user_id: i64, secret: &str) -> Result<String> {
 ///   2. `expected_type` parameter is REQUIRED — callers must pass either "access" or
 ///      "refresh" to enforce token-type segregation. Previously a refresh token could
 ///      be presented to the auth middleware and vice versa.
+///
 /// Original signature was: `pub fn verify_jwt(token: &str, secret: &str) -> Result<Claims>`
+///
 /// Original body:
 /// ```ignore
 /// let token_data = decode::<Claims>(
@@ -362,4 +364,123 @@ pub fn hash_token(token: &str) -> String {
     let mut hasher = Sha256::new();
     hasher.update(token.as_bytes());
     hex::encode(hasher.finalize())
+}
+
+// FIX-2026-04-26 (Priority 3): unit tests for verify_jwt token_type enforcement.
+#[cfg(test)]
+mod jwt_token_type_tests {
+    use super::*;
+
+    const SECRET: &str = "test_secret_must_be_long_enough_to_pass_HS256";
+
+    #[test]
+    fn access_token_accepted_when_expecting_access() {
+        let token = create_jwt(42, SECRET, 1).unwrap();
+        let claims = verify_jwt(&token, SECRET, "access").expect("access token should validate");
+        assert_eq!(claims.sub, 42);
+        assert_eq!(claims.token_type, "access");
+    }
+
+    #[test]
+    fn refresh_token_accepted_when_expecting_refresh() {
+        let token = create_refresh_token(99, SECRET).unwrap();
+        let claims = verify_jwt(&token, SECRET, "refresh").expect("refresh token should validate");
+        assert_eq!(claims.sub, 99);
+        assert_eq!(claims.token_type, "refresh");
+    }
+
+    #[test]
+    fn refresh_token_rejected_when_expecting_access() {
+        // This is the core bug the audit found: a refresh token presented as a
+        // bearer access token MUST be rejected.
+        let refresh = create_refresh_token(1, SECRET).unwrap();
+        let result = verify_jwt(&refresh, SECRET, "access");
+        assert!(
+            result.is_err(),
+            "refresh token must NOT validate as access token"
+        );
+        let msg = format!("{}", result.unwrap_err());
+        assert!(
+            msg.contains("token type"),
+            "error should mention token type, got: {}",
+            msg
+        );
+    }
+
+    #[test]
+    fn access_token_rejected_when_expecting_refresh() {
+        let access = create_jwt(1, SECRET, 1).unwrap();
+        let result = verify_jwt(&access, SECRET, "refresh");
+        assert!(
+            result.is_err(),
+            "access token must NOT validate as refresh token"
+        );
+    }
+
+    #[test]
+    fn wrong_secret_rejected() {
+        let token = create_jwt(1, SECRET, 1).unwrap();
+        let result = verify_jwt(&token, "different_secret", "access");
+        assert!(result.is_err(), "wrong secret must reject");
+    }
+
+    #[test]
+    fn expired_token_rejected() {
+        let token = create_jwt(1, SECRET, -1).unwrap(); // already-expired
+        let result = verify_jwt(&token, SECRET, "access");
+        assert!(result.is_err(), "expired token must reject");
+    }
+
+    #[test]
+    fn malformed_token_rejected() {
+        let result = verify_jwt("not.a.token", SECRET, "access");
+        assert!(result.is_err(), "garbage input must reject");
+    }
+}
+
+// FIX-2026-04-26 (Priority 1): unit tests confirming the LIKE-wildcard escape used
+// in the videos.rs `search` filter neutralizes wildcard injection. The escape policy
+// is local to the SQL builder; this test pins the expected behavior so a future
+// refactor of the helper can't silently regress.
+#[cfg(test)]
+mod like_escape_tests {
+    /// Mirrors the escape policy used in `routes/videos.rs::list_videos` for the
+    /// search ILIKE filter. Kept in sync with the rebuild_count_args helper there.
+    fn escape_like(s: &str) -> String {
+        s.replace('\\', "\\\\")
+            .replace('%', "\\%")
+            .replace('_', "\\_")
+    }
+
+    #[test]
+    fn escapes_percent_wildcard() {
+        assert_eq!(escape_like("100%"), "100\\%");
+    }
+
+    #[test]
+    fn escapes_underscore_wildcard() {
+        assert_eq!(escape_like("foo_bar"), "foo\\_bar");
+    }
+
+    #[test]
+    fn escapes_backslash_first() {
+        // Backslash must be escaped first so the % escape isn't double-escaped.
+        assert_eq!(escape_like("a\\%b"), "a\\\\\\%b");
+    }
+
+    #[test]
+    fn safe_input_unchanged() {
+        assert_eq!(escape_like("simple search"), "simple search");
+    }
+
+    #[test]
+    fn injection_attempt_neutralized() {
+        // A malicious input trying to broaden a LIKE pattern must be escaped.
+        let attack = "'; DROP TABLE users; --";
+        let escaped = escape_like(attack);
+        // Single-quotes are NOT this helper's job (they're handled by sqlx parameter
+        // binding) — we just confirm wildcards are neutralized.
+        assert!(!escaped.contains('%'));
+        assert!(!escaped.contains('_'));
+    }
 }

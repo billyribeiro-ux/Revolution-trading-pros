@@ -18,6 +18,9 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { adminFetch } from '$lib/utils/adminFetch';
+	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
+	import IconCircleCheck from '@tabler/icons-svelte-runes/icons/circle-check';
+	import IconCircleX from '@tabler/icons-svelte-runes/icons/circle-x';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// Reset confirmation modal state
@@ -911,32 +914,11 @@
 	{#if notification}
 		<div class="notification" class:error={notificationType === 'error'}>
 			{#if notificationType === 'success'}
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="18"
-					height="18"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-				>
-					<path d="m9 12 2 2 4-4" />
-					<circle cx="12" cy="12" r="10" />
-				</svg>
+				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-check (success notification) -->
+				<IconCircleCheck size={18} aria-hidden="true" />
 			{:else}
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="18"
-					height="18"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-				>
-					<circle cx="12" cy="12" r="10" />
-					<line x1="15" y1="9" x2="9" y2="15" />
-					<line x1="9" y1="9" x2="15" y2="15" />
-				</svg>
+				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-x (error notification) -->
+				<IconCircleX size={18} aria-hidden="true" />
 			{/if}
 			{notification}
 		</div>

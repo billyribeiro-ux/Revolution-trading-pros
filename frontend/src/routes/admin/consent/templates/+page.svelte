@@ -10,6 +10,12 @@
 	 * - Setting active template
 	 */
 	import { onMount } from 'svelte';
+	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
+	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
+	import IconDownload from '@tabler/icons-svelte-runes/icons/download';
+	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
+	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
+	import IconCircleCheck from '@tabler/icons-svelte-runes/icons/circle-check';
 	import { browser } from '$app/environment';
 	import {
 		BANNER_TEMPLATES,
@@ -201,50 +207,18 @@
 		</div>
 		<div class="header-actions">
 			<button class="btn btn-secondary" onclick={handleExport}>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="16"
-					height="16"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-				>
-					<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-					<polyline points="17 8 12 3 7 8" />
-					<line x1="12" y1="3" x2="12" y2="15" />
-				</svg>
+				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: upload/export -->
+				<IconUpload size={16} aria-hidden="true" />
 				Export
 			</button>
 			<button class="btn btn-secondary" onclick={handleImport}>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="16"
-					height="16"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-				>
-					<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-					<polyline points="7 10 12 15 17 10" />
-					<line x1="12" y1="15" x2="12" y2="3" />
-				</svg>
+				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: download/import -->
+				<IconDownload size={16} aria-hidden="true" />
 				Import
 			</button>
 			<button class="btn btn-primary" onclick={handleCreateNew}>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="16"
-					height="16"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-				>
-					<path d="M5 12h14" />
-					<path d="M12 5v14" />
-				</svg>
+				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: plus (create new) -->
+				<IconPlus size={16} aria-hidden="true" />
 				Create New
 			</button>
 		</div>
@@ -253,18 +227,8 @@
 	<!-- Filters -->
 	<div class="filters">
 		<div class="search-box">
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				width="18"
-				height="18"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-			>
-				<circle cx="11" cy="11" r="8" />
-				<path d="m21 21-4.3-4.3" />
-			</svg>
+			<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: search -->
+			<IconSearch size={18} aria-hidden="true" />
 			<input
 				type="text"
 				id="search-templates"
@@ -385,18 +349,8 @@
 	<!-- Notification -->
 	{#if notification}
 		<div class="notification">
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				width="18"
-				height="18"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-			>
-				<path d="m9 12 2 2 4-4" />
-				<circle cx="12" cy="12" r="10" />
-			</svg>
+			<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-check (notification) -->
+			<IconCircleCheck size={18} aria-hidden="true" />
 			{notification}
 		</div>
 	{/if}
@@ -498,7 +452,7 @@
 		margin-bottom: 1rem;
 	}
 
-	.search-box svg {
+	.search-box :global(svg) {
 		color: #64748b;
 	}
 

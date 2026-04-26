@@ -752,36 +752,14 @@
 					>
 						<div class="flex items-center gap-2">
 							{#if testResult.success}
-								<svg
-									class="w-4 h-4 text-emerald-400"
-									fill="none"
-									stroke="currentColor"
-									viewBox="0 0 24 24"
-								>
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M5 13l4 4L19 7"
-									/>
-								</svg>
+								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: check (test success) -->
+								<IconCheck size={16} aria-hidden="true" />
 								<span class="text-sm text-emerald-400"
 									>{testResult.message || 'Connection successful'}</span
 								>
 							{:else}
-								<svg
-									class="w-4 h-4 text-red-400"
-									fill="none"
-									stroke="currentColor"
-									viewBox="0 0 24 24"
-								>
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M6 18L18 6M6 6l12 12"
-									/>
-								</svg>
+								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: x (test failure) -->
+								<IconX size={16} aria-hidden="true" />
 								<span class="text-sm text-red-400">{testResult.error || 'Connection failed'}</span>
 							{/if}
 						</div>

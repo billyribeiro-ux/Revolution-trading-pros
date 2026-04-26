@@ -373,11 +373,20 @@ async fn webhook(
         Err(e) => {
             // If webhook secret not configured, reject in production, warn in dev
             if e.to_string().contains("not configured") {
-                let environment =
-                    std::env::var("ENVIRONMENT").unwrap_or_else(|_| "production".to_string());
-                if environment != "development" && environment != "dev" {
+                // FIX-2026-04-26 (Priority 8): read environment from state.config (parsed
+                // once at startup) instead of std::env::var per-request. Eliminates
+                // race conditions where the env-var name diverges from runtime config and
+                // ensures webhook dev-mode bypass never accidentally triggers in prod due
+                // to per-request env mutation.
+                // Original lines:
+                // let environment = std::env::var("ENVIRONMENT").unwrap_or_else(|_| "production".to_string());
+                // if environment != "development" && environment != "dev" {
+                let env_name = state.config.environment.as_str();
+                let is_dev = env_name.starts_with("dev");
+                if !is_dev {
                     tracing::error!(
                         target: "payments",
+                        environment = %env_name,
                         "Webhook secret not configured in production - rejecting webhook"
                     );
                     return Err((
@@ -387,6 +396,7 @@ async fn webhook(
                 }
                 tracing::warn!(
                     target: "payments",
+                    environment = %env_name,
                     "Webhook secret not configured - skipping signature verification (dev mode)"
                 );
             } else {
@@ -612,19 +622,31 @@ async fn handle_checkout_completed(
                     .ok();
 
                 if let Some(sub) = stripe_sub {
-                    // Find the plan from order items
-                    let plan_id: Option<i64> = sqlx::query_scalar(
+                    // FIX-2026-04-26: was `.ok().flatten()` which silently dropped DB errors
+                    // on the plan-id lookup. Now logs the error and proceeds without
+                    // creating the membership (rather than 500'ing the webhook).
+                    // Old: .fetch_optional(&state.db.pool).await.ok().flatten()
+                    let plan_id: Option<i64> = match sqlx::query_scalar::<_, i64>(
                         "SELECT plan_id FROM order_items WHERE order_id = $1 AND plan_id IS NOT NULL LIMIT 1"
                     )
                     .bind(order_id)
                     .fetch_optional(&state.db.pool)
-                    .await
-                    .ok()
-                    .flatten();
+                    .await {
+                        Ok(p) => p,
+                        Err(e) => {
+                            tracing::error!(target: "payments", order_id = %order_id, "plan_id lookup failed in webhook: {}", e);
+                            None
+                        }
+                    };
 
                     if let Some(plan_id) = plan_id {
-                        // Create user membership
-                        sqlx::query(
+                        // FIX-2026-04-26: was `.execute(&state.db.pool).await.ok();` — silently
+                        // dropping membership-creation failures meant the user paid Stripe
+                        // but got no membership and no error logged. Now logs failure
+                        // explicitly. Future: wrap in transaction with the access-grant
+                        // loop below for true atomicity.
+                        // Old: .execute(&state.db.pool).await.ok();
+                        if let Err(e) = sqlx::query(
                             r#"INSERT INTO user_memberships (
                                 user_id, plan_id, starts_at, status,
                                 payment_provider, stripe_subscription_id, stripe_customer_id,
@@ -647,21 +669,25 @@ async fn handle_checkout_completed(
                         .bind(chrono::DateTime::from_timestamp(sub.current_period_start, 0).map(|d| d.naive_utc()))
                         .bind(chrono::DateTime::from_timestamp(sub.current_period_end, 0).map(|d| d.naive_utc()))
                         .execute(&state.db.pool)
-                        .await
-                        .ok();
+                        .await {
+                            tracing::error!(target: "payments", user_id = %user_id, plan_id = %plan_id, "Failed to create user_membership: {}", e);
+                        }
                     }
                 }
             }
         }
 
-        // Increment coupon usage if applicable
-        sqlx::query(
+        // FIX-2026-04-26: was `.execute(&state.db.pool).await.ok();` — silently
+        // swallowed coupon-usage update failures. Logged now.
+        // Old: .execute(&state.db.pool).await.ok();
+        if let Err(e) = sqlx::query(
             "UPDATE coupons SET usage_count = usage_count + 1, updated_at = NOW() WHERE id = (SELECT coupon_id FROM orders WHERE id = $1)"
         )
         .bind(order_id)
         .execute(&state.db.pool)
-        .await
-        .ok();
+        .await {
+            tracing::error!(target: "payments", order_id = %order_id, "Failed to increment coupon usage: {}", e);
+        }
 
         // ═══════════════════════════════════════════════════════════════════════════
         // ACCESS GRANTING - Apple ICT 11+ Principal Engineer Grade
@@ -704,20 +730,31 @@ async fn handle_checkout_completed(
                         indicator_id: Option<i64>,
                     }
 
-                    let product_info: Option<ProductInfo> = sqlx::query_as(
+                    // FIX-2026-04-26: was `.ok().flatten()` — silently dropped product
+                    // lookup errors. Now logged.
+                    // Old: .fetch_optional(&state.db.pool).await.ok().flatten();
+                    let product_info: Option<ProductInfo> = match sqlx::query_as::<_, ProductInfo>(
                         "SELECT type as product_type, course_id, indicator_id FROM products WHERE id = $1",
                     )
                     .bind(product_id)
                     .fetch_optional(&state.db.pool)
                     .await
-                    .ok()
-                    .flatten();
+                    {
+                        Ok(p) => p,
+                        Err(e) => {
+                            tracing::error!(target: "payments", product_id = %product_id, "products lookup failed: {}", e);
+                            None
+                        }
+                    };
 
                     if let Some(info) = product_info {
                         // ─────────────────────────────────────────────────────────
                         // 1. Create user_products record for ownership tracking
                         // ─────────────────────────────────────────────────────────
-                        sqlx::query(
+                        // FIX-2026-04-26: was `.ok();` — silently dropped user_products
+                        // INSERT failures (paid customer, no ownership row). Now logged.
+                        // Old: .execute(&state.db.pool).await.ok();
+                        if let Err(e) = sqlx::query(
                             r#"INSERT INTO user_products (user_id, product_id, purchased_at, order_id)
                                VALUES ($1, $2, NOW(), $3)
                                ON CONFLICT (user_id, product_id) DO UPDATE SET
@@ -728,8 +765,9 @@ async fn handle_checkout_completed(
                         .bind(product_id)
                         .bind(order_id)
                         .execute(&state.db.pool)
-                        .await
-                        .ok();
+                        .await {
+                            tracing::error!(target: "payments", user_id = %user_id, product_id = %product_id, order_id = %order_id, "user_products INSERT failed: {}", e);
+                        }
 
                         tracing::info!(
                             target: "payments",
@@ -744,7 +782,10 @@ async fn handle_checkout_completed(
                         // 2. Course enrollment
                         // ─────────────────────────────────────────────────────────
                         if let Some(course_id) = info.course_id {
-                            sqlx::query(
+                            // FIX-2026-04-26: was `.ok();` — silently dropped course
+                            // enrollment failures. Now logged.
+                            // Old: .execute(&state.db.pool).await.ok();
+                            if let Err(e) = sqlx::query(
                                 r#"INSERT INTO user_course_enrollments (user_id, course_id, status, enrolled_at)
                                    VALUES ($1, $2, 'active', NOW())
                                    ON CONFLICT (user_id, course_id) DO UPDATE SET
@@ -754,8 +795,9 @@ async fn handle_checkout_completed(
                             .bind(user_id)
                             .bind(course_id)
                             .execute(&state.db.pool)
-                            .await
-                            .ok();
+                            .await {
+                                tracing::error!(target: "payments", user_id = %user_id, course_id = %course_id, "user_course_enrollments INSERT failed: {}", e);
+                            }
 
                             tracing::info!(
                                 target: "payments",
@@ -771,7 +813,10 @@ async fn handle_checkout_completed(
                         // 3. Indicator access
                         // ─────────────────────────────────────────────────────────
                         if let Some(indicator_id) = info.indicator_id {
-                            sqlx::query(
+                            // FIX-2026-04-26: was `.ok();` — silently dropped indicator
+                            // access INSERT failures. Now logged.
+                            // Old: .execute(&state.db.pool).await.ok();
+                            if let Err(e) = sqlx::query(
                                 r#"INSERT INTO user_indicator_access (user_id, indicator_id, is_active, granted_at)
                                    VALUES ($1, $2, true, NOW())
                                    ON CONFLICT (user_id, indicator_id) DO UPDATE SET
@@ -781,8 +826,9 @@ async fn handle_checkout_completed(
                             .bind(user_id)
                             .bind(indicator_id)
                             .execute(&state.db.pool)
-                            .await
-                            .ok();
+                            .await {
+                                tracing::error!(target: "payments", user_id = %user_id, indicator_id = %indicator_id, "user_indicator_access INSERT failed: {}", e);
+                            }
 
                             tracing::info!(
                                 target: "payments",
@@ -808,13 +854,21 @@ async fn handle_checkout_completed(
                                    LIMIT 1"#
                             )
                             .bind(product_id)
+                            // FIX-2026-04-26: was `.ok().flatten()` — silently dropped
+                            // indicator-by-name lookup errors. Now logged.
+                            // Old: .fetch_optional(&state.db.pool).await.ok().flatten();
                             .fetch_optional(&state.db.pool)
                             .await
-                            .ok()
-                            .flatten();
+                            .unwrap_or_else(|e| {
+                                tracing::error!(target: "payments", product_id = %product_id, "indicator-by-name lookup failed: {}", e);
+                                None
+                            });
 
                             if let Some(ind_id) = indicator_id {
-                                sqlx::query(
+                                // FIX-2026-04-26: was `.ok();` — silently dropped indicator
+                                // access (by-type) INSERT failures. Now logged.
+                                // Old: .execute(&state.db.pool).await.ok();
+                                if let Err(e) = sqlx::query(
                                     r#"INSERT INTO user_indicator_access (user_id, indicator_id, is_active, granted_at)
                                        VALUES ($1, $2, true, NOW())
                                        ON CONFLICT (user_id, indicator_id) DO UPDATE SET
@@ -824,8 +878,9 @@ async fn handle_checkout_completed(
                                 .bind(user_id)
                                 .bind(ind_id)
                                 .execute(&state.db.pool)
-                                .await
-                                .ok();
+                                .await {
+                                    tracing::error!(target: "payments", user_id = %user_id, indicator_id = %ind_id, "user_indicator_access (by-type) INSERT failed: {}", e);
+                                }
 
                                 tracing::info!(
                                     target: "payments",

@@ -170,7 +170,7 @@ async fn list_videos(
     use sqlx::Arguments;
 
     let page = query.page.unwrap_or(1).max(1);
-    let per_page = query.per_page.unwrap_or(20).min(100).max(1);
+    let per_page = query.per_page.unwrap_or(20).clamp(1, 100);
     let offset = (page - 1) * per_page;
 
     // Static base — no user input.
@@ -234,7 +234,10 @@ async fn list_videos(
 
     // search — ILIKE with bound term; escape LIKE wildcards in the input
     if let Some(ref search) = query.search {
-        let escaped = search.replace('\\', "\\\\").replace('%', "\\%").replace('_', "\\_");
+        let escaped = search
+            .replace('\\', "\\\\")
+            .replace('%', "\\%")
+            .replace('_', "\\_");
         let pattern = format!("%{}%", escaped);
         let ph = next_placeholder!();
         // Bind once, reference twice — second reference re-uses same placeholder index.
@@ -319,7 +322,11 @@ fn rebuild_count_args(
         args.add(room_id).map_err(args_err)?;
     }
     if let Some(ref tags) = query.tags {
-        for tag in tags.split(',').map(|t| t.trim().to_string()).filter(|t| !t.is_empty()) {
+        for tag in tags
+            .split(',')
+            .map(|t| t.trim().to_string())
+            .filter(|t| !t.is_empty())
+        {
             let json_arr = serde_json::Value::Array(vec![serde_json::Value::String(tag)]);
             args.add(json_arr).map_err(args_err)?;
         }
@@ -328,7 +335,10 @@ fn rebuild_count_args(
         args.add(difficulty.clone()).map_err(args_err)?;
     }
     if let Some(ref search) = query.search {
-        let escaped = search.replace('\\', "\\\\").replace('%', "\\%").replace('_', "\\_");
+        let escaped = search
+            .replace('\\', "\\\\")
+            .replace('%', "\\%")
+            .replace('_', "\\_");
         let pattern = format!("%{}%", escaped);
         args.add(pattern).map_err(args_err)?;
     }

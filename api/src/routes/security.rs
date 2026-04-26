@@ -138,15 +138,27 @@ async fn get_security_events(
 
     query_builder = query_builder.bind(per_page).bind(offset);
 
-    let events = query_builder
-        .fetch_all(&state.db.pool)
-        .await
-        .unwrap_or_default();
+    // FIX-2026-04-26: silently swallowing DB errors on a SECURITY AUDIT LOG is the
+    // worst place for fail-open behaviour — admins lose forensic visibility while
+    // still seeing HTTP 200. Propagate via AppError-equivalent tuple so admins
+    // see the failure and can investigate.
+    // Old: let events = query_builder.fetch_all(&state.db.pool).await.unwrap_or_default();
+    let events = query_builder.fetch_all(&state.db.pool).await.map_err(|e| {
+        tracing::error!("security_events fetch failed: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Failed to fetch security events"})),
+        )
+    })?;
 
-    let total = count_builder
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
+    // Old: let total = count_builder.fetch_one(&state.db.pool).await.unwrap_or((0,));
+    let total: (i64,) = count_builder.fetch_one(&state.db.pool).await.map_err(|e| {
+        tracing::error!("security_events count failed: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Failed to count security events"})),
+        )
+    })?;
 
     Ok(Json(json!({
         "data": events,
@@ -174,26 +186,39 @@ async fn get_security_stats(
         ));
     }
 
+    // FIX-2026-04-26: same rationale — propagate, don't swallow, on the security
+    // audit log. Better to 500 the admin dashboard than show false zeros.
+    // Old: .unwrap_or((0,)) on each of the 4 queries below.
+    let stats_err = |label: &'static str| {
+        move |e: sqlx::Error| {
+            tracing::error!("security_stats {} failed: {}", label, e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": format!("Failed to fetch {label}")})),
+            )
+        }
+    };
+
     let total_events: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM security_events")
         .fetch_one(&state.db.pool)
         .await
-        .unwrap_or((0,));
+        .map_err(stats_err("total_events"))?;
 
     let critical_events: (i64,) =
         sqlx::query_as("SELECT COUNT(*) FROM security_events WHERE severity = 'critical'")
             .fetch_one(&state.db.pool)
             .await
-            .unwrap_or((0,));
+            .map_err(stats_err("critical_events"))?;
 
     let recent_logins: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM security_events WHERE event_type = 'login_success' AND created_at > NOW() - INTERVAL '24 hours'")
         .fetch_one(&state.db.pool)
         .await
-        .unwrap_or((0,));
+        .map_err(stats_err("recent_logins"))?;
 
     let failed_logins: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM security_events WHERE event_type = 'login_failed' AND created_at > NOW() - INTERVAL '24 hours'")
         .fetch_one(&state.db.pool)
         .await
-        .unwrap_or((0,));
+        .map_err(stats_err("failed_logins"))?;
 
     Ok(Json(json!({
         "total_events": total_events.0,

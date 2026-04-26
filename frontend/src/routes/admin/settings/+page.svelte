@@ -28,6 +28,7 @@
 	import IconExternalLink from '@tabler/icons-svelte-runes/icons/external-link';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
+	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
 
 	// Types
 	interface ServiceField {
@@ -1151,36 +1152,14 @@
 					>
 						<div class="flex items-center gap-2">
 							{#if testResult.success}
-								<svg
-									class="w-5 h-5 text-emerald-400"
-									fill="none"
-									stroke="currentColor"
-									viewBox="0 0 24 24"
-								>
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M5 13l4 4L19 7"
-									/>
-								</svg>
+								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: check (test success) -->
+								<IconCheck size={20} aria-hidden="true" />
 								<span class="text-emerald-400 font-medium"
 									>{testResult.message || 'Connection successful!'}</span
 								>
 							{:else}
-								<svg
-									class="w-5 h-5 text-red-400"
-									fill="none"
-									stroke="currentColor"
-									viewBox="0 0 24 24"
-								>
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M6 18L18 6M6 6l12 12"
-									/>
-								</svg>
+								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: x (test failure) -->
+								<IconX size={20} aria-hidden="true" />
 								<span class="text-red-400 font-medium"
 									>{testResult.error || 'Connection failed'}</span
 								>

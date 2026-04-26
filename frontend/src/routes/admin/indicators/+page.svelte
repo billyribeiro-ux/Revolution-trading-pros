@@ -5,6 +5,14 @@
 	 */
 
 	import { onMount, untrack } from 'svelte';
+	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
+	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
+	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
+	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
+	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
+	import IconPencil from '@tabler/icons-svelte-runes/icons/pencil';
+	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
+	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
 	import { adminFetch } from '$lib/utils/adminFetch';
 
 	// ICT 7 FIX: Match actual backend schema (admin_indicators.rs)
@@ -124,17 +132,8 @@
 			<p class="subtitle">{total} total indicators</p>
 			<div class="actions-row">
 				<a href="/admin/indicators/create" class="btn-primary">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="20"
-						height="20"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<line x1="12" x2="12" y1="5" y2="19" /><line x1="5" x2="19" y1="12" y2="12" />
-					</svg>
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: plus (new indicator) -->
+				<IconPlus size={20} aria-hidden="true" />
 					New Indicator
 				</a>
 			</div>
@@ -142,17 +141,8 @@
 
 		<div class="filters">
 			<div class="search-box">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="20"
-					height="20"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-				>
-					<circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
-				</svg>
+				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: search -->
+				<IconSearch size={20} aria-hidden="true" />
 				<input
 					id="search-indicators"
 					name="search-indicators"
@@ -174,19 +164,8 @@
 				<option value="false">Inactive</option>
 			</select>
 			<button class="btn-secondary" onclick={fetchIndicators}>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="16"
-					height="16"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-				>
-					<path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" /><path
-						d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"
-					/><path d="M16 16h5v5" />
-				</svg>
+				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: refresh -->
+				<IconRefresh size={16} aria-hidden="true" />
 				Refresh
 			</button>
 		</div>
@@ -198,17 +177,8 @@
 			</div>
 		{:else if indicators.length === 0}
 			<div class="empty-state">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="64"
-					height="64"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="1"
-				>
-					<path d="M3 3v18h18" /><path d="m19 9-5 5-4-4-3 3" />
-				</svg>
+				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chart-line (empty state) -->
+				<IconChartLine size={64} aria-hidden="true" />
 				<h3>No indicators yet</h3>
 				<p>Create your first trading indicator to get started.</p>
 				<a href="/admin/indicators/create" class="btn-primary">Create Indicator</a>
@@ -234,17 +204,8 @@
 										<img src={indicator.thumbnail} alt="" class="logo" />
 									{:else}
 										<div class="logo-placeholder">
-											<svg
-												xmlns="http://www.w3.org/2000/svg"
-												width="24"
-												height="24"
-												viewBox="0 0 24 24"
-												fill="none"
-												stroke="currentColor"
-												stroke-width="2"
-											>
-												<path d="M3 3v18h18" /><path d="m19 9-5 5-4-4-3 3" />
-											</svg>
+											<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chart-line (logo placeholder) -->
+											<IconChartLine size={24} aria-hidden="true" />
 										</div>
 									{/if}
 									<div class="indicator-info">
@@ -277,17 +238,8 @@
 										title="Edit"
 										aria-label="Edit {indicator.name}"
 									>
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											width="18"
-											height="18"
-											viewBox="0 0 24 24"
-											fill="none"
-											stroke="currentColor"
-											stroke-width="2"
-										>
-											<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-										</svg>
+										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: pencil (edit) -->
+										<IconPencil size={18} aria-hidden="true" />
 									</a>
 									<a
 										href="/indicators/{indicator.slug}"
@@ -296,21 +248,8 @@
 										title="View"
 										aria-label="View {indicator.name}"
 									>
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											width="18"
-											height="18"
-											viewBox="0 0 24 24"
-											fill="none"
-											stroke="currentColor"
-											stroke-width="2"
-										>
-											<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle
-												cx="12"
-												cy="12"
-												r="3"
-											/>
-										</svg>
+										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: eye (view) -->
+										<IconEye size={18} aria-hidden="true" />
 									</a>
 									<button
 										class="btn-icon btn-danger"
@@ -322,19 +261,8 @@
 										{#if deleting === indicator.id.toString()}
 											<div class="spinner-small"></div>
 										{:else}
-											<svg
-												xmlns="http://www.w3.org/2000/svg"
-												width="18"
-												height="18"
-												viewBox="0 0 24 24"
-												fill="none"
-												stroke="currentColor"
-												stroke-width="2"
-											>
-												<path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path
-													d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"
-												/>
-											</svg>
+											<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: trash (delete) -->
+											<IconTrash size={18} aria-hidden="true" />
 										{/if}
 									</button>
 								</td>
@@ -478,7 +406,7 @@
 		max-width: 400px;
 	}
 
-	.search-box svg {
+	.search-box :global(svg) {
 		color: #64748b;
 		flex-shrink: 0;
 	}
@@ -524,7 +452,7 @@
 		border-radius: 8px;
 	}
 
-	.empty-state svg {
+	.empty-state :global(svg) {
 		color: #64748b;
 		margin-bottom: 1rem;
 	}

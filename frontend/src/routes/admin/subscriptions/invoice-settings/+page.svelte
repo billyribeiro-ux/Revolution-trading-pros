@@ -8,6 +8,8 @@
 	import IconCircleCheckFilled from '@tabler/icons-svelte-runes/icons/circle-check-filled';
 	import IconCircleXFilled from '@tabler/icons-svelte-runes/icons/circle-x-filled';
 	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
+	import IconPhoto from '@tabler/icons-svelte-runes/icons/photo';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
 
 	// API URL
 	const API_BASE = '/api/admin/invoice-settings';
@@ -320,19 +322,8 @@
 													class="max-w-full max-h-full object-contain"
 												/>
 											{:else}
-												<svg
-													class="w-10 h-10 text-gray-400"
-													fill="none"
-													stroke="currentColor"
-													viewBox="0 0 24 24"
-												>
-													<path
-														stroke-linecap="round"
-														stroke-linejoin="round"
-														stroke-width="2"
-														d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-													/>
-												</svg>
+												<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: photo (logo placeholder) -->
+											<IconPhoto size={40} aria-hidden="true" />
 											{/if}
 										</div>
 										<div class="flex-1">
@@ -978,19 +969,8 @@
 						class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition"
 						aria-label="Close preview"
 					>
-						<svg
-							class="w-5 h-5 text-gray-500"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M6 18L18 6M6 6l12 12"
-							/>
-						</svg>
+						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: x (close preview) -->
+						<IconX size={20} aria-hidden="true" />
 					</button>
 				</div>
 				<div class="flex-1 overflow-auto p-6 bg-gray-100 dark:bg-gray-900">

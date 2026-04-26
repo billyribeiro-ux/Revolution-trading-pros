@@ -12,6 +12,8 @@
 	import PeriodSelector from '$lib/components/analytics/PeriodSelector.svelte';
 	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
 	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
+	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
+	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
 
 	// Svelte 5 Runes - State
 	let events = $state<AnalyticsEvent[]>([]);
@@ -168,19 +170,8 @@
 								placeholder="Search events..."
 								class="w-full px-4 py-2.5 pl-11 bg-slate-800/50 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 outline-none transition-all"
 							/>
-							<svg
-								class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-							>
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-								/>
-							</svg>
+							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: search (search input) -->
+							<IconSearch size={16} class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" aria-hidden="true" />
 						</div>
 					</div>
 
@@ -248,19 +239,8 @@
 						<div
 							class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-red-500/10 flex items-center justify-center"
 						>
-							<svg
-								class="w-8 h-8 text-red-400"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-							>
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-								/>
-							</svg>
+							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: alert-circle (error state) -->
+							<IconAlertCircle size={32} aria-hidden="true" />
 						</div>
 						<p class="text-red-400 mb-4">{error}</p>
 						<button
@@ -275,19 +255,8 @@
 						<div
 							class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-amber-500/10 flex items-center justify-center"
 						>
-							<svg
-								class="w-8 h-8 text-amber-400"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-							>
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="M13 10V3L4 14h7v7l9-11h-7z"
-								/>
-							</svg>
+							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: bolt (no events empty state) -->
+							<IconBolt size={32} aria-hidden="true" />
 						</div>
 						<h3 class="text-lg font-medium text-white mb-2">No Events Found</h3>
 						<p class="text-slate-400">Try adjusting your filters or time range</p>

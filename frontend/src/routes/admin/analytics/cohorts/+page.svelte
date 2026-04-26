@@ -231,19 +231,8 @@
 				<div
 					class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-purple-500/10 flex items-center justify-center"
 				>
-					<svg
-						class="w-8 h-8 text-purple-400"
-						fill="none"
-						stroke="currentColor"
-						viewBox="0 0 24 24"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"
-						/>
-					</svg>
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: users (no cohorts empty state) -->
+					<IconUsers size={32} aria-hidden="true" />
 				</div>
 				<h3 class="text-lg font-medium text-white mb-2">No Cohorts Yet</h3>
 				<p class="text-slate-400 mb-6">Create your first cohort to analyze user retention</p>

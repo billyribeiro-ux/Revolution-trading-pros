@@ -14,6 +14,11 @@
 	import { goto } from '$app/navigation';
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import BunnyVideoUploader from '$lib/components/admin/BunnyVideoUploader.svelte';
+	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
+	import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left';
+	import IconVideo from '@tabler/icons-svelte-runes/icons/video';
+	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	interface Lesson {
@@ -225,15 +230,8 @@
 		<header class="editor-header">
 			<div class="header-left">
 				<a href="/admin/courses/{courseId}" class="back-link">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="20"
-						height="20"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"><path d="m15 18-6-6 6-6" /></svg
-					>
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chevron-left (back link) -->
+				<IconChevronLeft size={20} aria-hidden="true" />
 					Back to Course
 				</a>
 				<h1>{lesson.title}</h1>
@@ -338,36 +336,16 @@
 										</button>
 									</div>
 								{:else}
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										width="48"
-										height="48"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										stroke-width="1.5"
-										><path
-											d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"
-										/><rect x="2" y="6" width="14" height="12" rx="2" /></svg
-									>
+									<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: video (video placeholder) -->
+										<IconVideo size={48} aria-hidden="true" />
 									<p>Upload a video or enter a Bunny.net Video GUID</p>
 									<button
 										type="button"
 										class="btn-upload-video"
 										onclick={() => (showVideoUploader = true)}
 									>
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											width="20"
-											height="20"
-											viewBox="0 0 24 24"
-											fill="none"
-											stroke="currentColor"
-											stroke-width="2"
-											><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline
-												points="17 8 12 3 7 8"
-											/><line x1="12" x2="12" y1="3" y2="15" /></svg
-										>
+										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: upload (upload video btn) -->
+										<IconUpload size={20} aria-hidden="true" />
 										Upload Video
 									</button>
 									<span class="divider">or</span>
@@ -459,21 +437,8 @@
 										onclick={() => removeDownload(dl.id)}
 										aria-label="Remove download"
 									>
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											width="14"
-											height="14"
-											viewBox="0 0 24 24"
-											fill="none"
-											stroke="currentColor"
-											stroke-width="2"
-											><line x1="18" x2="6" y1="6" y2="18" /><line
-												x1="6"
-												x2="18"
-												y1="6"
-												y2="18"
-											/></svg
-										>
+										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: x (remove download) -->
+									<IconX size={14} aria-hidden="true" />
 									</button>
 								</li>
 							{/each}
@@ -708,7 +673,7 @@
 		border-radius: 8px;
 		text-align: center;
 	}
-	.upload-area svg {
+	.upload-area :global(svg) {
 		color: #9ca3af;
 	}
 	.upload-area p {

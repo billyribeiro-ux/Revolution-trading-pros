@@ -16,7 +16,8 @@ use axum::{
     // FIX-2026-04-26 (Priority 4): pull in HeaderMap to extract client IP for rate-limiting.
     http::{HeaderMap, StatusCode},
     routing::{get, post},
-    Json, Router,
+    Json,
+    Router,
 };
 use axum_extra::{
     headers::{authorization::Bearer, Authorization},
@@ -89,7 +90,10 @@ async fn enforce_ip_rate_limit_strict(
 
     // Scope key by bucket + IP so register/forgot/reset are independently throttled.
     let key = format!("{}:{}", bucket_key, ip);
-    match redis.check_ip_rate_limit(&key, max_requests, window_seconds).await {
+    match redis
+        .check_ip_rate_limit(&key, max_requests, window_seconds)
+        .await
+    {
         Ok(result) => {
             if !result.allowed {
                 tracing::warn!(
@@ -899,6 +903,14 @@ async fn login(
 
 /// Refresh access token
 /// POST /api/auth/refresh
+///
+/// FIX-2026-04-26 (Priority 6): Refresh-token reuse detection.
+///   1. Hash the presented refresh token; check Redis blacklist FIRST.
+///      If already blacklisted -> a stolen-and-replayed token. Per RFC 6749 §10.4 and
+///      OAuth 2.0 BCP, invalidate ALL of the user's sessions/refresh tokens (chain
+///      invalidation) and return 401.
+///   2. After successful verification + rotation, blacklist the OLD refresh token in
+///      Redis with TTL = remaining validity (max 7 days).
 async fn refresh(
     State(state): State<AppState>,
     Json(input): Json<RefreshTokenRequest>,
@@ -907,13 +919,56 @@ async fn refresh(
     // FIX-2026-04-26 (Priority 3): pass "refresh" expected_type so an access token
     // cannot be used as a refresh token.
     // Original: let claims = verify_jwt(&input.refresh_token, &state.config.jwt_secret).map_err(|e| {
-    let claims = verify_jwt(&input.refresh_token, &state.config.jwt_secret, "refresh").map_err(|e| {
-        tracing::warn!("Invalid refresh token: {}", e);
-        (
-            StatusCode::UNAUTHORIZED,
-            Json(json!({"error": "Invalid or expired refresh token"})),
-        )
-    })?;
+    let claims =
+        verify_jwt(&input.refresh_token, &state.config.jwt_secret, "refresh").map_err(|e| {
+            tracing::warn!("Invalid refresh token: {}", e);
+            (
+                StatusCode::UNAUTHORIZED,
+                Json(json!({"error": "Invalid or expired refresh token"})),
+            )
+        })?;
+
+    // FIX-2026-04-26 (Priority 6): hash the presented refresh token for blacklist lookup.
+    let token_hash = hash_token_for_blacklist(&input.refresh_token);
+
+    if let Some(redis) = state.services.redis.as_ref() {
+        match redis.is_token_blacklisted(&token_hash).await {
+            Ok(true) => {
+                // REUSE DETECTED — chain invalidation per RFC 6749 §10.4.
+                tracing::warn!(
+                    target: "security_audit",
+                    event = "refresh_token_reuse_detected",
+                    user_id = %claims.sub,
+                    "Refresh-token reuse detected — invalidating all sessions for user"
+                );
+                // Best-effort: invalidate every active session for the subject. This forces
+                // re-auth across all devices and breaks the attacker's chain.
+                let _ = redis.invalidate_all_user_sessions(claims.sub).await;
+                return Err((
+                    StatusCode::UNAUTHORIZED,
+                    Json(json!({
+                        "error": "Refresh token reuse detected; all sessions invalidated. Please log in again.",
+                        "code": "REFRESH_TOKEN_REUSE",
+                    })),
+                ));
+            }
+            Ok(false) => {
+                // Not previously seen — proceed with rotation.
+            }
+            Err(e) => {
+                // Redis transient failure — log but continue (fail-open) to preserve
+                // refresh availability. The audit explicitly accepts this trade-off
+                // for non-write-side rate-limit checks.
+                tracing::warn!(
+                    target: "security",
+                    event = "refresh_blacklist_check_failed",
+                    user_id = %claims.sub,
+                    error = %e,
+                    "Refresh-token blacklist check failed; continuing"
+                );
+            }
+        }
+    }
 
     // Verify user still exists
     let user_exists: Option<(i64,)> = sqlx::query_as("SELECT id FROM users WHERE id = $1")
@@ -958,6 +1013,23 @@ async fn refresh(
                 Json(json!({"error": "Refresh token creation failed"})),
             )
         })?;
+
+    // FIX-2026-04-26 (Priority 6): blacklist OLD refresh token in Redis so a re-presentation
+    // is detected. TTL = remaining validity window (clamp to refresh-token lifetime = 7d).
+    if let Some(redis) = state.services.redis.as_ref() {
+        let now_ts = chrono::Utc::now().timestamp();
+        let remaining = (claims.exp - now_ts).max(0) as u64;
+        let ttl = remaining.min(7 * 24 * 3600);
+        if let Err(e) = redis.blacklist_token(&token_hash, ttl).await {
+            tracing::warn!(
+                target: "security",
+                event = "refresh_blacklist_write_failed",
+                user_id = %claims.sub,
+                error = %e,
+                "Failed to blacklist old refresh token"
+            );
+        }
+    }
 
     tracing::debug!("Token refreshed for user: {}", claims.sub);
 

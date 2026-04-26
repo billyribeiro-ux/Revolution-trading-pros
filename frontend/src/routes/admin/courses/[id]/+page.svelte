@@ -6,6 +6,16 @@
 
 	import { onMount } from 'svelte';
 	import { adminFetch } from '$lib/utils/adminFetch';
+	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
+	import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left';
+	import IconLayoutGrid from '@tabler/icons-svelte-runes/icons/layout-grid';
+	import IconExternalLink from '@tabler/icons-svelte-runes/icons/external-link';
+	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
+	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
+	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
+	import IconDownload from '@tabler/icons-svelte-runes/icons/download';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	interface Module {
@@ -338,15 +348,8 @@
 		<header class="editor-header">
 			<div class="header-left">
 				<a href="/admin/courses" class="back-link">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="20"
-						height="20"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"><path d="m15 18-6-6 6-6" /></svg
-					>
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chevron-left (back link) -->
+					<IconChevronLeft size={20} aria-hidden="true" />
 					Back to Courses
 				</a>
 				<h1>{course.title}</h1>
@@ -356,43 +359,13 @@
 			</div>
 			<div class="header-actions">
 				<a href="/admin/page-builder?course={course.id}" class="btn-builder">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="16"
-						height="16"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-						><rect width="7" height="7" x="3" y="3" rx="1" /><rect
-							width="7"
-							height="7"
-							x="14"
-							y="3"
-							rx="1"
-						/><rect width="7" height="7" x="14" y="14" rx="1" /><rect
-							width="7"
-							height="7"
-							x="3"
-							y="14"
-							rx="1"
-						/></svg
-					>
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: layout-grid (page builder btn) -->
+					<IconLayoutGrid size={16} aria-hidden="true" />
 					Page Builder
 				</a>
 				<a href="/classes/{course.slug}" target="_blank" class="btn-secondary">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="16"
-						height="16"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-						><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline
-							points="15 3 21 3 21 9"
-						/><line x1="10" x2="21" y1="14" y2="3" /></svg
-					>
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: external-link (preview) -->
+					<IconExternalLink size={16} aria-hidden="true" />
 					Preview
 				</a>
 				<button class="btn-secondary" onclick={publishCourse}>
@@ -538,16 +511,8 @@
 					<div class="content-header">
 						<h2>Modules & Lessons</h2>
 						<button class="btn-secondary" onclick={addModule}>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								width="16"
-								height="16"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
-								><line x1="12" x2="12" y1="5" y2="19" /><line x1="5" x2="19" y1="12" y2="12" /></svg
-							>
+							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: plus (add module) -->
+							<IconPlus size={16} aria-hidden="true" />
 							Add Module
 						</button>
 					</div>
@@ -558,33 +523,12 @@
 								<h3>{mod.title}</h3>
 								<div class="module-actions">
 									<button onclick={() => addLesson(mod.id)} aria-label="Add lesson">
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											width="16"
-											height="16"
-											viewBox="0 0 24 24"
-											fill="none"
-											stroke="currentColor"
-											stroke-width="2"
-											><line x1="12" x2="12" y1="5" y2="19" /><line
-												x1="5"
-												x2="19"
-												y1="12"
-												y2="12"
-											/></svg
-										>
+										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: plus (add lesson) -->
+										<IconPlus size={16} aria-hidden="true" />
 									</button>
 									<button onclick={() => deleteModule(mod.id)} aria-label="Delete module">
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											width="16"
-											height="16"
-											viewBox="0 0 24 24"
-											fill="none"
-											stroke="currentColor"
-											stroke-width="2"
-											><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /></svg
-										>
+										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: trash (delete module) -->
+										<IconTrash size={16} aria-hidden="true" />
 									</button>
 								</div>
 							</div>
@@ -592,15 +536,8 @@
 								{#each mod.lessons as lesson}
 									<li>
 										<a href="/admin/courses/{courseId}/lessons/{lesson.id}">
-											<svg
-												xmlns="http://www.w3.org/2000/svg"
-												width="16"
-												height="16"
-												viewBox="0 0 24 24"
-												fill="none"
-												stroke="currentColor"
-												stroke-width="2"><polygon points="5 3 19 12 5 21 5 3" /></svg
-											>
+											<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: player-play (lesson) -->
+										<IconPlayerPlay size={16} aria-hidden="true" />
 											<span>{lesson.title}</span>
 											{#if lesson.duration_minutes}
 												<span class="duration">{lesson.duration_minutes}m</span>
@@ -610,21 +547,8 @@
 											onclick={() => deleteLesson(lesson.id, mod.id)}
 											aria-label="Delete lesson"
 										>
-											<svg
-												xmlns="http://www.w3.org/2000/svg"
-												width="14"
-												height="14"
-												viewBox="0 0 24 24"
-												fill="none"
-												stroke="currentColor"
-												stroke-width="2"
-												><line x1="18" x2="6" y1="6" y2="18" /><line
-													x1="6"
-													x2="18"
-													y1="6"
-													y2="18"
-												/></svg
-											>
+											<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: x (delete lesson 1) -->
+											<IconX size={14} aria-hidden="true" />
 										</button>
 									</li>
 								{/each}
@@ -644,33 +568,13 @@
 								{#each unassignedLessons as lesson}
 									<li>
 										<a href="/admin/courses/{courseId}/lessons/{lesson.id}">
-											<svg
-												xmlns="http://www.w3.org/2000/svg"
-												width="16"
-												height="16"
-												viewBox="0 0 24 24"
-												fill="none"
-												stroke="currentColor"
-												stroke-width="2"><polygon points="5 3 19 12 5 21 5 3" /></svg
-											>
+											<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: player-play (unassigned lesson) -->
+											<IconPlayerPlay size={16} aria-hidden="true" />
 											<span>{lesson.title}</span>
 										</a>
 										<button onclick={() => deleteLesson(lesson.id)} aria-label="Delete lesson">
-											<svg
-												xmlns="http://www.w3.org/2000/svg"
-												width="14"
-												height="14"
-												viewBox="0 0 24 24"
-												fill="none"
-												stroke="currentColor"
-												stroke-width="2"
-												><line x1="18" x2="6" y1="6" y2="18" /><line
-													x1="6"
-													x2="18"
-													y1="6"
-													y2="18"
-												/></svg
-											>
+											<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: x (delete lesson 2) -->
+											<IconX size={14} aria-hidden="true" />
 										</button>
 									</li>
 								{/each}
@@ -679,16 +583,8 @@
 					{/if}
 
 					<button class="btn-add-lesson" onclick={() => addLesson()}>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="20"
-							height="20"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-							><line x1="12" x2="12" y1="5" y2="19" /><line x1="5" x2="19" y1="12" y2="12" /></svg
-						>
+						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: plus (add lesson no module) -->
+						<IconPlus size={20} aria-hidden="true" />
 						Add Lesson (No Module)
 					</button>
 				</div>
@@ -709,18 +605,8 @@
 								<span class="spinner-small"></span>
 								Uploading...
 							{:else}
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									width="16"
-									height="16"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-									><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline
-										points="17 8 12 3 7 8"
-									/><line x1="12" x2="12" y1="3" y2="15" /></svg
-								>
+								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: upload (upload file btn) -->
+								<IconUpload size={16} aria-hidden="true" />
 								Upload File
 							{/if}
 						</button>
@@ -728,18 +614,8 @@
 
 					{#if downloads.length === 0}
 						<div class="empty-downloads">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								width="48"
-								height="48"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="1.5"
-								><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline
-									points="7 10 12 15 17 10"
-								/><line x1="12" x2="12" y1="15" y2="3" /></svg
-							>
+							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: download (empty downloads) -->
+							<IconDownload size={48} aria-hidden="true" />
 							<p>No downloads yet. Upload files to make them available to enrolled students.</p>
 						</div>
 					{:else}
@@ -752,16 +628,8 @@
 										<span class="dl-size">{formatFileSize(dl.file_size_bytes)}</span>
 									</span>
 									<button onclick={() => deleteDownload(dl.id)} aria-label="Delete download">
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											width="16"
-											height="16"
-											viewBox="0 0 24 24"
-											fill="none"
-											stroke="currentColor"
-											stroke-width="2"
-											><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /></svg
-										>
+										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: trash (delete download) -->
+										<IconTrash size={16} aria-hidden="true" />
 									</button>
 								</li>
 							{/each}
@@ -1168,7 +1036,7 @@
 		padding: 48px;
 		color: #6b7280;
 	}
-	.empty-downloads svg {
+	.empty-downloads :global(svg) {
 		margin-bottom: 16px;
 		opacity: 0.5;
 	}

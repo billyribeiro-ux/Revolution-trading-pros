@@ -9,6 +9,21 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { adminFetch } from '$lib/utils/adminFetch';
+	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
+	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
+	import IconFileDescription from '@tabler/icons-svelte-runes/icons/file-description';
+	import IconBox from '@tabler/icons-svelte-runes/icons/box';
+	import IconFile from '@tabler/icons-svelte-runes/icons/file';
+	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
+	import IconBook from '@tabler/icons-svelte-runes/icons/book';
+	import IconCurrencyDollar from '@tabler/icons-svelte-runes/icons/currency-dollar';
+	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
+	import IconInfoCircle from '@tabler/icons-svelte-runes/icons/info-circle';
+	import IconPhoto from '@tabler/icons-svelte-runes/icons/photo';
+	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
+	import IconStar from '@tabler/icons-svelte-runes/icons/star';
+	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
+	import IconCircleCheck from '@tabler/icons-svelte-runes/icons/circle-check';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES
@@ -604,17 +619,8 @@
 		<!-- Header -->
 		<header class="page-header">
 			<div class="header-icon">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="48"
-					height="48"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"><path d="M3 3v18h18" /><path d="m19 9-5 5-4-4-3 3" /></svg
-				>
+				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chart-line (header icon) -->
+				<IconChartLine size={48} aria-hidden="true" />
 			</div>
 			<h1>Create New Indicator</h1>
 			<p class="subtitle">Build a downloadable indicator product for your members</p>
@@ -628,25 +634,8 @@
 				<section class="form-card">
 					<h2 class="card-title">
 						<span class="title-icon"
-							><svg
-								xmlns="http://www.w3.org/2000/svg"
-								width="18"
-								height="18"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								><path
-									d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"
-								/><polyline points="14 2 14 8 20 8" /><line x1="16" x2="8" y1="13" y2="13" /><line
-									x1="16"
-									x2="8"
-									y1="17"
-									y2="17"
-								/><line x1="10" x2="8" y1="9" y2="9" /></svg
-							></span
+							><!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: file-description (basic info title) -->
+							><IconFileDescription size={18} aria-hidden="true" /></span
 						>
 						Basic Information
 					</h2>
@@ -778,20 +767,8 @@
 					<section class="form-card">
 						<h2 class="card-title">
 							<span class="title-icon"
-								><svg
-									xmlns="http://www.w3.org/2000/svg"
-									width="18"
-									height="18"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									><path
-										d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"
-									/><path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" /></svg
-								></span
+								><!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: box (platform files title) -->
+								><IconBox size={18} aria-hidden="true" /></span
 							>
 							Platform Files
 						</h2>
@@ -828,18 +805,8 @@
 											{:else if pf.file}
 												<div class="file-info">
 													<span class="file-icon"
-														><svg
-															xmlns="http://www.w3.org/2000/svg"
-															width="16"
-															height="16"
-															viewBox="0 0 24 24"
-															fill="none"
-															stroke="currentColor"
-															stroke-width="2"
-															><path
-																d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"
-															/><polyline points="14 2 14 8 20 8" /></svg
-														></span
+														><!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: file (file attached icon) -->
+														><IconFile size={16} aria-hidden="true" /></span
 													>
 													<div class="file-details">
 														<span class="file-name">{pf.file.name}</span>
@@ -858,18 +825,8 @@
 											{:else}
 												<div class="drop-content">
 													<span class="drop-icon"
-														><svg
-															xmlns="http://www.w3.org/2000/svg"
-															width="24"
-															height="24"
-															viewBox="0 0 24 24"
-															fill="none"
-															stroke="currentColor"
-															stroke-width="2"
-															><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline
-																points="17 8 12 3 7 8"
-															/><line x1="12" x2="12" y1="3" y2="15" /></svg
-														></span
+														><!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: upload (drop zone upload) -->
+														><IconUpload size={24} aria-hidden="true" /></span
 													>
 													<span class="drop-text">Drop file here or click to browse</span>
 												</div>
@@ -908,18 +865,8 @@
 				<section class="form-card">
 					<h2 class="card-title">
 						<span class="title-icon"
-							><svg
-								xmlns="http://www.w3.org/2000/svg"
-								width="18"
-								height="18"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" /></svg
-							></span
+							><!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: book (documentation title) -->
+							><IconBook size={18} aria-hidden="true" /></span
 						>
 						Documentation
 					</h2>
@@ -1003,20 +950,8 @@
 				<section class="form-card">
 					<h2 class="card-title">
 						<span class="title-icon"
-							><svg
-								xmlns="http://www.w3.org/2000/svg"
-								width="18"
-								height="18"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								><line x1="12" x2="12" y1="2" y2="22" /><path
-									d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"
-								/></svg
-							></span
+							><!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: currency-dollar (pricing title) -->
+							><IconCurrencyDollar size={18} aria-hidden="true" /></span
 						>
 						Pricing
 					</h2>
@@ -1056,17 +991,8 @@
 					<section class="form-card">
 						<h2 class="card-title">
 							<span class="title-icon"
-								><svg
-									xmlns="http://www.w3.org/2000/svg"
-									width="18"
-									height="18"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-									stroke-linecap="round"
-									stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2" /></svg
-								></span
+								><!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: activity (tradingview title) -->
+								><IconActivity size={18} aria-hidden="true" /></span
 							>
 							TradingView Access
 						</h2>
@@ -1099,18 +1025,8 @@
 				<section class="form-card">
 					<h2 class="card-title">
 						<span class="title-icon"
-							><svg
-								xmlns="http://www.w3.org/2000/svg"
-								width="18"
-								height="18"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg
-							></span
+							><!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: info-circle (publishing title) -->
+							><IconInfoCircle size={18} aria-hidden="true" /></span
 						>
 						Publishing
 					</h2>
@@ -1155,22 +1071,8 @@
 				<section class="form-card sticky">
 					<h2 class="card-title">
 						<span class="title-icon"
-							><svg
-								xmlns="http://www.w3.org/2000/svg"
-								width="18"
-								height="18"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								><rect width="18" height="18" x="3" y="3" rx="2" ry="2" /><circle
-									cx="9"
-									cy="9"
-									r="2"
-								/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" /></svg
-							></span
+							><!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: photo (thumbnail title) -->
+							><IconPhoto size={18} aria-hidden="true" /></span
 						>
 						Thumbnail
 					</h2>
@@ -1203,18 +1105,8 @@
 						{:else}
 							<div class="drop-placeholder">
 								<span class="drop-icon-large"
-									><svg
-										xmlns="http://www.w3.org/2000/svg"
-										width="32"
-										height="32"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										stroke-width="1.5"
-										><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline
-											points="17 8 12 3 7 8"
-										/><line x1="12" x2="12" y1="3" y2="15" /></svg
-									></span
+									><!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: upload (thumbnail drop zone) -->
+									><IconUpload size={32} aria-hidden="true" /></span
 								>
 								<span class="drop-title">Drop image here</span>
 								<span class="drop-subtitle">or click to browse</span>
@@ -1241,22 +1133,8 @@
 				<section class="form-card sticky-preview">
 					<h2 class="card-title">
 						<span class="title-icon"
-							><svg
-								xmlns="http://www.w3.org/2000/svg"
-								width="18"
-								height="18"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle
-									cx="12"
-									cy="12"
-									r="3"
-								/></svg
-							></span
+							><!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: eye (live preview title) -->
+							><IconEye size={18} aria-hidden="true" /></span
 						>
 						Live Preview
 					</h2>
@@ -1267,31 +1145,14 @@
 								<img src={indicator.thumbnail_url} alt="Preview" />
 							{:else}
 								<div class="preview-placeholder">
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										width="32"
-										height="32"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										stroke-width="1.5"><path d="M3 3v18h18" /><path d="m19 9-5 5-4-4-3 3" /></svg
-									>
+									<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chart-line (preview placeholder) -->
+									<IconChartLine size={32} aria-hidden="true" />
 								</div>
 							{/if}
 							{#if indicator.is_featured}
 								<span class="featured-badge"
-									><svg
-										xmlns="http://www.w3.org/2000/svg"
-										width="12"
-										height="12"
-										viewBox="0 0 24 24"
-										fill="currentColor"
-										stroke="currentColor"
-										stroke-width="2"
-										><polygon
-											points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
-										/></svg
-									> Featured</span
+									><!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: star (featured badge) -->
+									><IconStar size={12} aria-hidden="true" /> Featured</span
 								>
 							{/if}
 						</div>
@@ -1333,18 +1194,8 @@
 		{#if formError}
 			<div class="form-message error">
 				<span class="message-icon"
-					><svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="18"
-						height="18"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-						><path
-							d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"
-						/><path d="M12 9v4" /><path d="M12 17h.01" /></svg
-					></span
+					><!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: alert-triangle (form error) -->
+					><IconAlertTriangle size={18} aria-hidden="true" /></span
 				>
 				{formError}
 			</div>
@@ -1353,18 +1204,8 @@
 		{#if successMessage}
 			<div class="form-message success">
 				<span class="message-icon"
-					><svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="18"
-						height="18"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-						><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline
-							points="22 4 12 14.01 9 11.01"
-						/></svg
-					></span
+					><!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-check (form success) -->
+					><IconCircleCheck size={18} aria-hidden="true" /></span
 				>
 				{successMessage}
 			</div>
@@ -1479,7 +1320,7 @@
 		box-shadow: 0 8px 32px rgba(230, 184, 0, 0.3);
 	}
 
-	.header-icon svg {
+	.header-icon :global(svg) {
 		width: 48px;
 		height: 48px;
 	}
@@ -1558,7 +1399,7 @@
 		color: var(--primary-500);
 	}
 
-	.title-icon svg {
+	.title-icon :global(svg) {
 		width: 18px;
 		height: 18px;
 	}

@@ -84,7 +84,11 @@ pub struct ResetPasswordRequest {
     pub email: String,
     #[validate(length(min = 12, max = 128, message = "Password must be 12-128 chars"))]
     pub password: String,
-    #[validate(length(min = 12, max = 128, message = "Password confirmation must be 12-128 chars"))]
+    #[validate(length(
+        min = 12,
+        max = 128,
+        message = "Password confirmation must be 12-128 chars"
+    ))]
     pub password_confirmation: String,
 }
 

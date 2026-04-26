@@ -12,6 +12,20 @@
 	import { goto } from '$app/navigation';
 	import { CourseCard } from '$lib/components/courses';
 	import { adminFetch } from '$lib/utils/adminFetch';
+	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
+	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
+	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
+	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
+	import IconBook from '@tabler/icons-svelte-runes/icons/book';
+	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
+	import IconEyeOff from '@tabler/icons-svelte-runes/icons/eye-off';
+	import IconPencil from '@tabler/icons-svelte-runes/icons/pencil';
+	import IconLayoutGrid from '@tabler/icons-svelte-runes/icons/layout-grid';
+	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
+	import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left';
+	import IconChevronRight from '@tabler/icons-svelte-runes/icons/chevron-right';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import IconInfoCircle from '@tabler/icons-svelte-runes/icons/info-circle';
 	import CourseDetailDrawer from '$lib/components/admin/CourseDetailDrawer.svelte';
 	import CourseFormModal from '$lib/components/admin/CourseFormModal.svelte';
 	import ModuleFormModal from '$lib/components/admin/ModuleFormModal.svelte';
@@ -284,16 +298,8 @@
 
 		<div class="actions-row">
 			<div class="search-box">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="20"
-					height="20"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-					><circle cx="11" cy="11" r="8" /><line x1="21" x2="16.65" y1="21" y2="16.65" /></svg
-				>
+				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: search -->
+				<IconSearch size={20} aria-hidden="true" />
 				<input
 					id="courses-searchquery"
 					name="courses-searchquery"
@@ -310,16 +316,8 @@
 				<option value="archived">Archived</option>
 			</select>
 			<button class="btn-primary" onclick={() => (showQuickCreate = true)}>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="18"
-					height="18"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-					><line x1="12" x2="12" y1="5" y2="19" /><line x1="5" x2="19" y1="12" y2="12" /></svg
-				>
+				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: plus -->
+				<IconPlus size={18} aria-hidden="true" />
 				Create Course
 			</button>
 		</div>
@@ -333,36 +331,15 @@
 			</div>
 		{:else if error}
 			<div class="error-state">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="48"
-					height="48"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-					><circle cx="12" cy="12" r="10" /><line x1="12" x2="12" y1="8" y2="12" /><line
-						x1="12"
-						x2="12.01"
-						y1="16"
-						y2="16"
-					/></svg
-				>
+				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: alert-circle (error state) -->
+				<IconAlertCircle size={48} aria-hidden="true" />
 				<p>{error}</p>
 				<button onclick={fetchCourses}>Retry</button>
 			</div>
 		{:else if courses.length === 0}
 			<div class="empty-state">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="64"
-					height="64"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="1.5"
-					><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" /></svg
-				>
+				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: book (empty state) -->
+				<IconBook size={64} aria-hidden="true" />
 				<h3>No courses found</h3>
 				<p>Get started by creating your first course</p>
 				<button class="btn-primary" onclick={() => (showQuickCreate = true)}>Create Course</button>
@@ -378,90 +355,28 @@
 						<CourseCard {course} variant="default" />
 						<div class="card-actions">
 							<button class="action-btn view" onclick={() => openCourseDetail(course)}>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									width="16"
-									height="16"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-									><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle
-										cx="12"
-										cy="12"
-										r="3"
-									/></svg
-								>
+								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: eye (view) -->
+								<IconEye size={16} aria-hidden="true" />
 								View
 							</button>
 							<a href="/admin/courses/{course.id}" class="action-btn edit">
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									width="16"
-									height="16"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-									><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" /></svg
-								>
+								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: pencil (edit) -->
+								<IconPencil size={16} aria-hidden="true" />
 								Edit
 							</a>
 							<a href="/admin/page-builder?course={course.id}" class="action-btn builder">
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									width="16"
-									height="16"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-									><rect width="7" height="7" x="3" y="3" rx="1" /><rect
-										width="7"
-										height="7"
-										x="14"
-										y="3"
-										rx="1"
-									/><rect width="7" height="7" x="14" y="14" rx="1" /><rect
-										width="7"
-										height="7"
-										x="3"
-										y="14"
-										rx="1"
-									/></svg
-								>
+								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: layout-grid (builder) -->
+								<IconLayoutGrid size={16} aria-hidden="true" />
 								Builder
 							</a>
 							<button class="action-btn publish" onclick={() => handlePublish(course)}>
 								{#if course.is_published}
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										width="16"
-										height="16"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										stroke-width="2"
-										><path
-											d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"
-										/><line x1="1" x2="23" y1="1" y2="23" /></svg
-									>
+									<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: eye-off (unpublish) -->
+									<IconEyeOff size={16} aria-hidden="true" />
 									Unpublish
 								{:else}
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										width="16"
-										height="16"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										stroke-width="2"
-										><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle
-											cx="12"
-											cy="12"
-											r="3"
-										/></svg
-									>
+									<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: eye (publish) -->
+									<IconEye size={16} aria-hidden="true" />
 									Publish
 								{/if}
 							</button>
@@ -470,18 +385,8 @@
 								onclick={() => handleDelete(course.id)}
 								aria-label="Delete course"
 							>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									width="16"
-									height="16"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-									><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path
-										d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"
-									/></svg
-								>
+								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: trash (delete) -->
+								<IconTrash size={16} aria-hidden="true" />
 							</button>
 						</div>
 					</div>
@@ -498,15 +403,8 @@
 						}}
 						aria-label="Previous page"
 					>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="16"
-							height="16"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"><path d="m15 18-6-6 6-6" /></svg
-						>
+						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chevron-left (pagination prev) -->
+						<IconChevronLeft size={16} aria-hidden="true" />
 					</button>
 					<span>Page {currentPage} of {totalPages}</span>
 					<button
@@ -517,15 +415,8 @@
 						}}
 						aria-label="Next page"
 					>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="16"
-							height="16"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"><path d="m9 18 6-6-6-6" /></svg
-						>
+						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chevron-right (pagination next) -->
+						<IconChevronRight size={16} aria-hidden="true" />
 					</button>
 				</div>
 			{/if}
@@ -549,40 +440,13 @@
 	>
 		<div class="modal" role="document">
 			<button class="modal-close" onclick={closeQuickCreate} aria-label="Close">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="20"
-					height="20"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg
-				>
+				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: x (modal close) -->
+				<IconX size={20} aria-hidden="true" />
 			</button>
 
 			<div class="modal-icon">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="32"
-					height="32"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-					><rect width="7" height="7" x="3" y="3" rx="1" /><rect
-						width="7"
-						height="7"
-						x="14"
-						y="3"
-						rx="1"
-					/><rect width="7" height="7" x="14" y="14" rx="1" /><rect
-						width="7"
-						height="7"
-						x="3"
-						y="14"
-						rx="1"
-					/></svg
-				>
+				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: layout-grid (modal icon) -->
+				<IconLayoutGrid size={32} aria-hidden="true" />
 			</div>
 
 			<h2 id="modal-title">Create New Course</h2>
@@ -590,21 +454,8 @@
 
 			{#if quickCreateError}
 				<div class="modal-error">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="16"
-						height="16"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-						><circle cx="12" cy="12" r="10" /><line x1="12" x2="12" y1="8" y2="12" /><line
-							x1="12"
-							x2="12.01"
-							y1="16"
-							y2="16"
-						/></svg
-					>
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: alert-circle (modal error) -->
+					<IconAlertCircle size={16} aria-hidden="true" />
 					{quickCreateError}
 				</div>
 			{/if}
@@ -664,44 +515,16 @@
 						<span class="spinner-small"></span>
 						Creating...
 					{:else}
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="18"
-							height="18"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-							><rect width="7" height="7" x="3" y="3" rx="1" /><rect
-								width="7"
-								height="7"
-								x="14"
-								y="3"
-								rx="1"
-							/><rect width="7" height="7" x="14" y="14" rx="1" /><rect
-								width="7"
-								height="7"
-								x="3"
-								y="14"
-								rx="1"
-							/></svg
-						>
+						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: layout-grid (open in builder btn) -->
+						<IconLayoutGrid size={18} aria-hidden="true" />
 						Open in Builder
 					{/if}
 				</button>
 			</div>
 
 			<p class="modal-hint">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="14"
-					height="14"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-					><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg
-				>
+				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: info-circle (hint) -->
+				<IconInfoCircle size={14} aria-hidden="true" />
 				You can add pricing, modules, and videos in the builder
 			</p>
 		</div>
@@ -811,7 +634,7 @@
 		min-width: 280px;
 	}
 
-	.search-box svg {
+	.search-box :global(svg) {
 		flex-shrink: 0;
 		color: #64748b;
 	}
@@ -885,8 +708,8 @@
 		}
 	}
 
-	.error-state svg,
-	.empty-state svg {
+	.error-state :global(svg),
+	.empty-state :global(svg) {
 		color: #94a3b8;
 		margin-bottom: 16px;
 	}
