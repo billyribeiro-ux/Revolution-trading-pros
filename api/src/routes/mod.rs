@@ -55,6 +55,7 @@ pub mod cms_reusable_blocks;
 pub mod cms_scheduling; // ICT 7+: Content scheduling and releases
 pub mod cms_seo; // ICT 11+: Server-side SEO validation
 pub mod connections;
+pub mod consent; // FIX-2026-04-26: Admin consent management settings backend
 pub mod crm; // ICT 7: CRM Admin Routes - FluentCRM Pro equivalent
 pub mod email_templates;
 pub mod export; // ICT 7+ Phase 4: Export Functionality (CSV/PDF)
@@ -178,6 +179,8 @@ pub fn api_router() -> Router<AppState> {
         .nest("/admin/crm", crm::router())
         // Connections Status - ICT 7 Grade
         .nest("/admin/connections", connections::admin_router())
+        // Consent Management Settings - FIX-2026-04-26
+        .nest("/admin/consent", consent::router())
         // Admin Members - Segments, Tags, Filters - ICT 7 Grade
         .nest("/admin/members", admin_members::router())
         // Admin Member Management - Full CRUD, Ban, Export - ICT 11+ Grade

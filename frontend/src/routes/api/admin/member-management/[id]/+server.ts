@@ -17,13 +17,18 @@ const PROD_BACKEND =
  * DELETE /api/admin/member-management/:id
  * Soft delete member (anonymizes data, keeps record for audit)
  */
-export const DELETE: RequestHandler = async ({ params, request }) => {
+export const DELETE: RequestHandler = async ({ params, request, cookies }) => {
 	const memberId = params.id;
-	const authHeader = request.headers.get('Authorization') || '';
+	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
+	// Old: const authHeader = request.headers.get('Authorization') || '';
+	const cookieToken = cookies.get('rtp_access_token');
+	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
+	const token = cookieToken || headerToken;
 
-	if (!authHeader) {
+	if (!token) {
 		return json({ error: 'Missing or invalid authorization header' }, { status: 401 });
 	}
+	const authHeader = `Bearer ${token}`;
 
 	try {
 		const response = await fetch(`${PROD_BACKEND}/api/admin/member-management/${memberId}`, {
@@ -56,13 +61,18 @@ export const DELETE: RequestHandler = async ({ params, request }) => {
  * GET /api/admin/member-management/:id
  * Get member with full details
  */
-export const GET: RequestHandler = async ({ params, request }) => {
+export const GET: RequestHandler = async ({ params, request, cookies }) => {
 	const memberId = params.id;
-	const authHeader = request.headers.get('Authorization') || '';
+	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
+	// Old: const authHeader = request.headers.get('Authorization') || '';
+	const cookieToken = cookies.get('rtp_access_token');
+	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
+	const token = cookieToken || headerToken;
 
-	if (!authHeader) {
+	if (!token) {
 		return json({ error: 'Missing or invalid authorization header' }, { status: 401 });
 	}
+	const authHeader = `Bearer ${token}`;
 
 	try {
 		const response = await fetch(`${PROD_BACKEND}/api/admin/member-management/${memberId}`, {
@@ -95,14 +105,19 @@ export const GET: RequestHandler = async ({ params, request }) => {
  * PUT /api/admin/member-management/:id
  * Update member details
  */
-export const PUT: RequestHandler = async ({ params, request }) => {
+export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 	const memberId = params.id;
-	const authHeader = request.headers.get('Authorization') || '';
+	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
+	// Old: const authHeader = request.headers.get('Authorization') || '';
+	const cookieToken = cookies.get('rtp_access_token');
+	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
+	const token = cookieToken || headerToken;
 	const body = await request.json();
 
-	if (!authHeader) {
+	if (!token) {
 		return json({ error: 'Missing or invalid authorization header' }, { status: 401 });
 	}
+	const authHeader = `Bearer ${token}`;
 
 	try {
 		const response = await fetch(`${PROD_BACKEND}/api/admin/member-management/${memberId}`, {

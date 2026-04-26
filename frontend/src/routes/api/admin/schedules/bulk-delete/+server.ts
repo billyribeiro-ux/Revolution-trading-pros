@@ -6,7 +6,7 @@
  * @version 1.0.0
  */
 
-import { json } from '@sveltejs/kit';
+import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 // Production fallback - Rust API on Fly.io
@@ -35,7 +35,7 @@ async function fetchFromBackend(endpoint: string, options?: RequestInit): Promis
 	}
 }
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, cookies }) => {
 	const body = await request.json();
 	const { ids } = body;
 
@@ -49,10 +49,17 @@ export const POST: RequestHandler = async ({ request }) => {
 		);
 	}
 
+	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
+	// Old: headers: { Authorization: request.headers.get('Authorization') || '' }
+	const cookieToken = cookies.get('rtp_access_token');
+	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
+	const token = cookieToken || headerToken;
+	if (!token) error(401, 'Unauthorized');
+
 	// Try backend first
 	const backendData = await fetchFromBackend('/api/admin/schedules/bulk-delete', {
 		method: 'POST',
-		headers: { Authorization: request.headers.get('Authorization') || '' },
+		headers: { Authorization: `Bearer ${token}` },
 		body: JSON.stringify(body)
 	});
 

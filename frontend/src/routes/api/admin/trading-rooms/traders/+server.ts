@@ -7,7 +7,7 @@
  * @version 1.0.0 - December 2025
  */
 
-import { json } from '@sveltejs/kit';
+import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 // Production fallback - Rust API on Fly.io
@@ -106,14 +106,21 @@ async function fetchFromBackend(endpoint: string, options?: RequestInit): Promis
 }
 
 // GET - List traders
-export const GET: RequestHandler = async ({ url, request }) => {
+export const GET: RequestHandler = async ({ url, request, cookies }) => {
 	const activeOnly = url.searchParams.get('active_only') === 'true';
+
+	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
+	// Old: headers: { Authorization: request.headers.get('Authorization') || '' }
+	const cookieToken = cookies.get('rtp_access_token');
+	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
+	const token = cookieToken || headerToken;
+	if (!token) error(401, 'Unauthorized');
 
 	// Try backend first
 	const backendData = await fetchFromBackend(
 		`/api/admin/trading-rooms/traders?${url.searchParams.toString()}`,
 		{
-			headers: { Authorization: request.headers.get('Authorization') || '' }
+			headers: { Authorization: `Bearer ${token}` }
 		}
 	);
 
@@ -138,13 +145,20 @@ export const GET: RequestHandler = async ({ url, request }) => {
 };
 
 // POST - Create trader
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, cookies }) => {
 	const body = await request.json();
+
+	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
+	// Old: headers: { Authorization: request.headers.get('Authorization') || '' }
+	const cookieToken = cookies.get('rtp_access_token');
+	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
+	const token = cookieToken || headerToken;
+	if (!token) error(401, 'Unauthorized');
 
 	// Try backend first
 	const backendData = await fetchFromBackend('/api/admin/trading-rooms/traders', {
 		method: 'POST',
-		headers: { Authorization: request.headers.get('Authorization') || '' },
+		headers: { Authorization: `Bearer ${token}` },
 		body: JSON.stringify(body)
 	});
 

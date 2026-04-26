@@ -322,26 +322,38 @@
 					icon: 'school',
 					text: 'Learning Center'
 				},
+				// FIX-2026-04-26: Hardcoded `jonathan-mckeever` slug replaced with
+				// `billy-ribeiro` — only `billy-ribeiro/` directory exists under
+				// `routes/dashboard/spx-profit-pulse/`. Old 4 broken links sent
+				// every SPX member to 404s.
+				// (Note: `trading-strategies` and `trader-store` sub-paths under
+				// the new slug still don't exist either — those need follow-up
+				// either by creating the routes or removing those submenu items.
+				// At minimum the "Overview" link now resolves.)
+				// Old hrefs (kept for one revision per FIX-2026-04-26 marker — delete in follow-up):
+				// '/dashboard/spx-profit-pulse/jonathan-mckeever'
+				// '/dashboard/spx-profit-pulse/jonathan-mckeever/trading-strategies'
+				// '/dashboard/spx-profit-pulse/jonathan-mckeever/trader-store'
 				{
 					href: '#',
 					icon: 'users',
-					text: 'Meet Jonathan',
+					text: 'Meet Billy',
 					submenu: [
-						{ href: '/dashboard/spx-profit-pulse/jonathan-mckeever', icon: '', text: 'Overview' },
+						{ href: '/dashboard/spx-profit-pulse/billy-ribeiro', icon: '', text: 'Overview' },
 						{
-							href: '/dashboard/spx-profit-pulse/jonathan-mckeever/trading-strategies',
+							href: '/dashboard/spx-profit-pulse/billy-ribeiro/trading-strategies',
 							icon: '',
 							text: 'Trading Strategies'
 						},
 						{
-							href: '/dashboard/spx-profit-pulse/jonathan-mckeever/trader-store',
+							href: '/dashboard/spx-profit-pulse/billy-ribeiro/trader-store',
 							icon: '',
 							text: 'Trader Store'
 						}
 					]
 				},
 				{
-					href: '/dashboard/spx-profit-pulse/jonathan-mckeever/trader-store',
+					href: '/dashboard/spx-profit-pulse/billy-ribeiro/trader-store',
 					icon: 'shopping-cart',
 					text: 'Trader Store'
 				}

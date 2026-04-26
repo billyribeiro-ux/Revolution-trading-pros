@@ -8,7 +8,7 @@
  * @version 1.0.0
  */
 
-import { json } from '@sveltejs/kit';
+import { json, error as kitError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 // Production fallback - Rust API on Fly.io
@@ -82,12 +82,19 @@ async function fetchFromBackend(endpoint: string, options?: RequestInit): Promis
 // GET - Get single schedule by ID
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const GET: RequestHandler = async ({ params, request }) => {
+export const GET: RequestHandler = async ({ params, request, cookies }) => {
 	const id = parseInt(params.id || '0');
+
+	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
+	// Old: headers: { Authorization: request.headers.get('Authorization') || '' }
+	const cookieToken = cookies.get('rtp_access_token');
+	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
+	const token = cookieToken || headerToken;
+	if (!token) kitError(401, 'Unauthorized');
 
 	// Try backend first
 	const backendData = await fetchFromBackend(`/api/admin/schedules/${id}`, {
-		headers: { Authorization: request.headers.get('Authorization') || '' }
+		headers: { Authorization: `Bearer ${token}` }
 	});
 
 	if (backendData?.success) {
@@ -119,14 +126,21 @@ export const GET: RequestHandler = async ({ params, request }) => {
 // PUT - Update schedule
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const PUT: RequestHandler = async ({ params, request }) => {
+export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 	const id = parseInt(params.id || '0');
 	const body = await request.json();
+
+	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
+	// Old: headers: { Authorization: request.headers.get('Authorization') || '' }
+	const cookieToken = cookies.get('rtp_access_token');
+	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
+	const token = cookieToken || headerToken;
+	if (!token) kitError(401, 'Unauthorized');
 
 	// Try backend first
 	const backendData = await fetchFromBackend(`/api/admin/schedules/${id}`, {
 		method: 'PUT',
-		headers: { Authorization: request.headers.get('Authorization') || '' },
+		headers: { Authorization: `Bearer ${token}` },
 		body: JSON.stringify(body)
 	});
 
@@ -170,13 +184,20 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 // DELETE - Delete schedule
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const DELETE: RequestHandler = async ({ params, request }) => {
+export const DELETE: RequestHandler = async ({ params, request, cookies }) => {
 	const id = parseInt(params.id || '0');
+
+	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
+	// Old: headers: { Authorization: request.headers.get('Authorization') || '' }
+	const cookieToken = cookies.get('rtp_access_token');
+	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
+	const token = cookieToken || headerToken;
+	if (!token) kitError(401, 'Unauthorized');
 
 	// Try backend first
 	const backendData = await fetchFromBackend(`/api/admin/schedules/${id}`, {
 		method: 'DELETE',
-		headers: { Authorization: request.headers.get('Authorization') || '' }
+		headers: { Authorization: `Bearer ${token}` }
 	});
 
 	if (backendData?.success) {

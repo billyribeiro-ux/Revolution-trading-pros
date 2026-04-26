@@ -39,8 +39,14 @@ async function fetchFromBackend(
 }
 
 // GET - List users
-export const GET: RequestHandler = async ({ url, request }) => {
-	const authHeader = request.headers.get('Authorization') || '';
+export const GET: RequestHandler = async ({ url, request, cookies }) => {
+	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
+	// Old: const authHeader = request.headers.get('Authorization') || '';
+	const cookieToken = cookies.get('rtp_access_token');
+	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
+	const token = cookieToken || headerToken;
+	if (!token) error(401, 'Unauthorized');
+	const authHeader = `Bearer ${token}`;
 	const queryParams = url.searchParams.toString();
 	const endpoint = `/admin/users${queryParams ? `?${queryParams}` : ''}`;
 
@@ -60,8 +66,14 @@ export const GET: RequestHandler = async ({ url, request }) => {
 };
 
 // POST - Create user
-export const POST: RequestHandler = async ({ request }) => {
-	const authHeader = request.headers.get('Authorization') || '';
+export const POST: RequestHandler = async ({ request, cookies }) => {
+	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
+	// Old: const authHeader = request.headers.get('Authorization') || '';
+	const cookieToken = cookies.get('rtp_access_token');
+	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
+	const token = cookieToken || headerToken;
+	if (!token) error(401, 'Unauthorized');
+	const authHeader = `Bearer ${token}`;
 
 	try {
 		const body = await request.json();

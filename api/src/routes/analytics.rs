@@ -15,7 +15,7 @@ use axum::{
     Json, Router,
 };
 use chrono::NaiveDate;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use serde_json::json;
 
 use crate::{
@@ -340,6 +340,161 @@ async fn get_ticker_analytics(
     }
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// REALTIME DASHBOARD METRICS
+// ═══════════════════════════════════════════════════════════════════════════
+
+/// Top page entry returned by `/api/analytics/realtime`.
+#[derive(Debug, Serialize)]
+struct TopPage {
+    path: String,
+    views: i64,
+}
+
+/// Realtime analytics summary consumed by the admin dashboard widgets.
+///
+/// FIX-2026-04-26: shape is hand-tuned to satisfy the `DashboardMetrics`
+/// fields the page mixes into its state (visitors, sessions, pageviews,
+/// bounce_rate). Extra fields (`top_pages`, `events_per_minute`,
+/// `last_updated`, `active_visitors`) are additive — the page's `...data`
+/// spread tolerates them.
+#[derive(Debug, Serialize)]
+struct RealtimeStats {
+    active_visitors: i64,
+    visitors: i64,
+    sessions: i64,
+    pageviews: i64,
+    bounce_rate: f64,
+    events_per_minute: i64,
+    top_pages: Vec<TopPage>,
+    last_updated: chrono::DateTime<chrono::Utc>,
+}
+
+/// Get realtime analytics snapshot for the admin dashboard.
+/// GET /api/analytics/realtime
+///
+/// Aggregates from the `analytics_events` table:
+/// - `active_visitors`: distinct sessions in the last 5 minutes
+/// - `visitors`: distinct sessions today (UTC)
+/// - `sessions`: same denominator (kept for the dashboard's
+///   `DashboardMetrics.sessions` field)
+/// - `pageviews`: count of `event_type = 'pageview'` today
+/// - `events_per_minute`: events in the last minute
+/// - `top_pages`: top 5 page paths today by view count
+/// - `bounce_rate`: defaulted to 0.0 — accurate computation requires
+///   session-duration aggregation that the current schema does not
+///   capture. TODO: integrate with full analytics service for bounce rate.
+async fn get_realtime(
+    State(state): State<AppState>,
+    _admin: AdminUser,
+) -> Result<Json<RealtimeStats>, (StatusCode, Json<serde_json::Value>)> {
+    // Active visitors: distinct sessions in the last 5 minutes.
+    let active_visitors: i64 = sqlx::query_scalar(
+        r#"SELECT COALESCE(COUNT(DISTINCT session_id), 0)::BIGINT
+           FROM analytics_events
+           WHERE created_at >= NOW() - INTERVAL '5 minutes'
+             AND session_id IS NOT NULL"#,
+    )
+    .fetch_one(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!(target: "analytics", "active_visitors query failed: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("active_visitors query failed: {}", e)})),
+        )
+    })?;
+
+    // Distinct sessions today (UTC) — used for both `visitors` and `sessions`.
+    let visitors: i64 = sqlx::query_scalar(
+        r#"SELECT COALESCE(COUNT(DISTINCT session_id), 0)::BIGINT
+           FROM analytics_events
+           WHERE created_at >= DATE_TRUNC('day', NOW())
+             AND session_id IS NOT NULL"#,
+    )
+    .fetch_one(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!(target: "analytics", "visitors query failed: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("visitors query failed: {}", e)})),
+        )
+    })?;
+
+    // Pageviews today.
+    let pageviews: i64 = sqlx::query_scalar(
+        r#"SELECT COALESCE(COUNT(*), 0)::BIGINT
+           FROM analytics_events
+           WHERE event_type = 'pageview'
+             AND created_at >= DATE_TRUNC('day', NOW())"#,
+    )
+    .fetch_one(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!(target: "analytics", "pageviews query failed: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("pageviews query failed: {}", e)})),
+        )
+    })?;
+
+    // Events per minute over the last minute.
+    let events_per_minute: i64 = sqlx::query_scalar(
+        r#"SELECT COALESCE(COUNT(*), 0)::BIGINT
+           FROM analytics_events
+           WHERE created_at >= NOW() - INTERVAL '1 minute'"#,
+    )
+    .fetch_one(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!(target: "analytics", "events_per_minute query failed: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("events_per_minute query failed: {}", e)})),
+        )
+    })?;
+
+    // Top 5 pages today by view count.
+    let top_page_rows: Vec<(Option<String>, i64)> = sqlx::query_as(
+        r#"SELECT page_url, COUNT(*)::BIGINT AS views
+           FROM analytics_events
+           WHERE event_type = 'pageview'
+             AND created_at >= DATE_TRUNC('day', NOW())
+             AND page_url IS NOT NULL
+           GROUP BY page_url
+           ORDER BY views DESC
+           LIMIT 5"#,
+    )
+    .fetch_all(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!(target: "analytics", "top_pages query failed: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("top_pages query failed: {}", e)})),
+        )
+    })?;
+
+    let top_pages: Vec<TopPage> = top_page_rows
+        .into_iter()
+        .filter_map(|(path, views)| path.map(|p| TopPage { path: p, views }))
+        .collect();
+
+    Ok(Json(RealtimeStats {
+        active_visitors,
+        visitors,
+        sessions: visitors,
+        pageviews,
+        // TODO: integrate with full analytics service to compute true bounce rate
+        // (requires per-session pageview counts and time-on-page).
+        bounce_rate: 0.0,
+        events_per_minute,
+        top_pages,
+        last_updated: chrono::Utc::now(),
+    }))
+}
+
 pub fn router() -> Router<AppState> {
     Router::new()
         // Event tracking (public)
@@ -348,6 +503,9 @@ pub fn router() -> Router<AppState> {
         .route("/performance", post(track_performance))
         // Overview (admin)
         .route("/overview", get(get_overview))
+        // FIX-2026-04-26: realtime dashboard metrics — replaces 404 from
+        // /admin/dashboard's `fetchMetrics` call.
+        .route("/realtime", get(get_realtime))
         // Room analytics (authenticated users)
         .route("/room/:room_slug", get(get_room_analytics))
         .route("/room/:room_slug/equity-curve", get(get_equity_curve))

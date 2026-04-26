@@ -9,7 +9,7 @@
  * @version 1.0.0
  */
 
-import { json } from '@sveltejs/kit';
+import { json, error as kitError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 // Production fallback - Rust API on Fly.io
@@ -359,16 +359,23 @@ async function fetchFromBackend(endpoint: string, options?: RequestInit): Promis
 // GET - List schedules (with optional room_id filter)
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const GET: RequestHandler = async ({ url, request }) => {
+export const GET: RequestHandler = async ({ url, request, cookies }) => {
 	const roomId = url.searchParams.get('room_id');
 	const activeOnly = url.searchParams.get('active_only') === 'true';
 	const dayOfWeek = url.searchParams.get('day_of_week');
+
+	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
+	// Old: headers: { Authorization: request.headers.get('Authorization') || '' }
+	const cookieToken = cookies.get('rtp_access_token');
+	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
+	const token = cookieToken || headerToken;
+	if (!token) kitError(401, 'Unauthorized');
 
 	// Try backend first
 	const backendData = await fetchFromBackend(
 		`/api/admin/schedules?${url.searchParams.toString()}`,
 		{
-			headers: { Authorization: request.headers.get('Authorization') || '' }
+			headers: { Authorization: `Bearer ${token}` }
 		}
 	);
 
@@ -415,13 +422,20 @@ export const GET: RequestHandler = async ({ url, request }) => {
 // POST - Create schedule
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, cookies }) => {
 	const body = await request.json();
+
+	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
+	// Old: headers: { Authorization: request.headers.get('Authorization') || '' }
+	const cookieToken = cookies.get('rtp_access_token');
+	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
+	const token = cookieToken || headerToken;
+	if (!token) kitError(401, 'Unauthorized');
 
 	// Try backend first
 	const backendData = await fetchFromBackend('/api/admin/schedules', {
 		method: 'POST',
-		headers: { Authorization: request.headers.get('Authorization') || '' },
+		headers: { Authorization: `Bearer ${token}` },
 		body: JSON.stringify(body)
 	});
 

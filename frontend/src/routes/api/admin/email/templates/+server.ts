@@ -38,8 +38,14 @@ async function fetchFromBackend(
 	}
 }
 
-export const GET: RequestHandler = async ({ request }) => {
-	const authHeader = request.headers.get('Authorization') || '';
+export const GET: RequestHandler = async ({ request, cookies }) => {
+	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
+	// Old: const authHeader = request.headers.get('Authorization') || '';
+	const cookieToken = cookies.get('rtp_access_token');
+	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
+	const token = cookieToken || headerToken;
+	if (!token) error(401, 'Unauthorized');
+	const authHeader = `Bearer ${token}`;
 
 	const { data, status } = await fetchFromBackend('/admin/email/templates', {
 		headers: { Authorization: authHeader }
@@ -57,8 +63,14 @@ export const GET: RequestHandler = async ({ request }) => {
 	return json(data);
 };
 
-export const POST: RequestHandler = async ({ request }) => {
-	const authHeader = request.headers.get('Authorization') || '';
+export const POST: RequestHandler = async ({ request, cookies }) => {
+	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
+	// Old: const authHeader = request.headers.get('Authorization') || '';
+	const cookieToken = cookies.get('rtp_access_token');
+	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
+	const token = cookieToken || headerToken;
+	if (!token) error(401, 'Unauthorized');
+	const authHeader = `Bearer ${token}`;
 
 	try {
 		const body = await request.json();

@@ -18,6 +18,7 @@ use serde_json::json;
 use std::collections::HashMap;
 
 use crate::{
+    middleware::admin::AdminUser,
     models::User,
     services::stripe::{CheckoutConfig, LineItem},
     AppState,
@@ -1532,6 +1533,166 @@ async fn retry_payment(
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
+// PAYMENT SUMMARY (Admin Dashboard)
+// ═══════════════════════════════════════════════════════════════════════════
+
+/// Aggregated payment metrics returned to the admin dashboard.
+///
+/// FIX-2026-04-26: shape is hand-tuned for `/admin/dashboard/+page.svelte`
+/// which reads `data.revenue` and `data.mrr`. Both are returned as decimal
+/// dollar amounts (not cents) so the frontend's `formatCurrency` helper
+/// renders them directly. Counts (`pending_count`, `failed_count`) are
+/// included for future widgets — additive fields are tolerated by the
+/// page's `...data` spread.
+#[derive(Debug, Serialize)]
+struct PaymentSummary {
+    /// Sum of completed `orders.total` for the current calendar month (USD).
+    /// The page treats this as "Revenue This Month".
+    revenue: f64,
+    /// Revenue today (USD), for future use by the dashboard.
+    revenue_today: f64,
+    /// Revenue over the last 7 days (USD), for future use.
+    revenue_week: f64,
+    /// Revenue over the current calendar month (USD) — alias of `revenue`.
+    revenue_month: f64,
+    /// Estimated monthly recurring revenue (USD) summed from active
+    /// memberships' plan prices, normalized by `billing_cycle`.
+    mrr: f64,
+    /// Count of `orders.status = 'pending'`.
+    pending_count: i64,
+    /// Count of `orders.status = 'failed'`.
+    failed_count: i64,
+    /// Server timestamp the snapshot was generated at.
+    last_updated: chrono::DateTime<chrono::Utc>,
+}
+
+/// Get aggregate payment metrics for the admin dashboard.
+/// GET /api/payments/summary
+async fn get_summary(
+    State(state): State<AppState>,
+    _admin: AdminUser,
+) -> Result<Json<PaymentSummary>, (StatusCode, Json<serde_json::Value>)> {
+    // Revenue today (UTC).
+    let revenue_today: f64 = sqlx::query_scalar(
+        r#"SELECT COALESCE(SUM(total), 0)::FLOAT8
+           FROM orders
+           WHERE status = 'completed'
+             AND completed_at >= DATE_TRUNC('day', NOW())"#,
+    )
+    .fetch_one(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!(target: "payments", "revenue_today query failed: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("revenue_today query failed: {}", e)})),
+        )
+    })?;
+
+    // Revenue last 7 days.
+    let revenue_week: f64 = sqlx::query_scalar(
+        r#"SELECT COALESCE(SUM(total), 0)::FLOAT8
+           FROM orders
+           WHERE status = 'completed'
+             AND completed_at >= NOW() - INTERVAL '7 days'"#,
+    )
+    .fetch_one(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!(target: "payments", "revenue_week query failed: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("revenue_week query failed: {}", e)})),
+        )
+    })?;
+
+    // Revenue current calendar month.
+    let revenue_month: f64 = sqlx::query_scalar(
+        r#"SELECT COALESCE(SUM(total), 0)::FLOAT8
+           FROM orders
+           WHERE status = 'completed'
+             AND completed_at >= DATE_TRUNC('month', NOW())"#,
+    )
+    .fetch_one(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!(target: "payments", "revenue_month query failed: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("revenue_month query failed: {}", e)})),
+        )
+    })?;
+
+    // MRR: sum active membership plan prices, normalized by billing cycle.
+    // monthly => *1, quarterly => /3, annual/yearly => /12.
+    let mrr: f64 = sqlx::query_scalar(
+        r#"SELECT COALESCE(SUM(
+                CASE LOWER(mp.billing_cycle)
+                    WHEN 'monthly'   THEN mp.price
+                    WHEN 'quarterly' THEN mp.price / 3.0
+                    WHEN 'annual'    THEN mp.price / 12.0
+                    WHEN 'yearly'    THEN mp.price / 12.0
+                    ELSE mp.price
+                END
+           ), 0)::FLOAT8
+           FROM user_memberships um
+           JOIN membership_plans mp ON mp.id = um.plan_id
+           WHERE um.status = 'active'"#,
+    )
+    .fetch_one(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!(target: "payments", "mrr query failed: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("mrr query failed: {}", e)})),
+        )
+    })?;
+
+    // Pending and failed order counts.
+    let pending_count: i64 = sqlx::query_scalar(
+        r#"SELECT COALESCE(COUNT(*), 0)::BIGINT
+           FROM orders
+           WHERE status = 'pending'"#,
+    )
+    .fetch_one(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!(target: "payments", "pending_count query failed: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("pending_count query failed: {}", e)})),
+        )
+    })?;
+
+    let failed_count: i64 = sqlx::query_scalar(
+        r#"SELECT COALESCE(COUNT(*), 0)::BIGINT
+           FROM orders
+           WHERE status = 'failed'"#,
+    )
+    .fetch_one(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!(target: "payments", "failed_count query failed: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("failed_count query failed: {}", e)})),
+        )
+    })?;
+
+    Ok(Json(PaymentSummary {
+        revenue: revenue_month,
+        revenue_today,
+        revenue_week,
+        revenue_month,
+        mrr,
+        pending_count,
+        failed_count,
+        last_updated: chrono::Utc::now(),
+    }))
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
 // Router
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -1544,4 +1705,7 @@ pub fn router() -> Router<AppState> {
         .route("/config", get(get_config))
         .route("/invoice", post(generate_invoice))
         .route("/retry", post(retry_payment))
+        // FIX-2026-04-26: payment summary for /admin/dashboard — replaces 404
+        // when the page calls GET /api/payments/summary.
+        .route("/summary", get(get_summary))
 }

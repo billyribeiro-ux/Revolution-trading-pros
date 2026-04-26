@@ -27,15 +27,19 @@ function getBackendUrl(): string {
 	return PROD_BACKEND;
 }
 
-export const GET: RequestHandler = async ({ request }) => {
+export const GET: RequestHandler = async ({ request, cookies }) => {
 	try {
 		const backendUrl = getBackendUrl();
-		const authHeader = request.headers.get('Authorization') || '';
-
-		// If no auth, return empty data silently
-		if (!authHeader) {
+		// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
+		// Old: const authHeader = request.headers.get('Authorization') || '';
+		const cookieToken = cookies.get('rtp_access_token');
+		const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
+		const token = cookieToken || headerToken;
+		// If no auth, return empty data silently (preserve original behavior)
+		if (!token) {
 			return json(EMPTY_DATA);
 		}
+		const authHeader = `Bearer ${token}`;
 
 		const response = await fetch(`${backendUrl}/api/admin/coupons`, {
 			method: 'GET',
@@ -66,10 +70,18 @@ export const GET: RequestHandler = async ({ request }) => {
 	}
 };
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, cookies }) => {
 	try {
 		const backendUrl = getBackendUrl();
-		const authHeader = request.headers.get('Authorization') || '';
+		// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
+		// Old: const authHeader = request.headers.get('Authorization') || '';
+		const cookieToken = cookies.get('rtp_access_token');
+		const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
+		const token = cookieToken || headerToken;
+		if (!token) {
+			return json({ message: 'Unauthorized' }, { status: 401 });
+		}
+		const authHeader = `Bearer ${token}`;
 		const body = await request.json();
 
 		const response = await fetch(`${backendUrl}/api/admin/coupons`, {

@@ -13,6 +13,12 @@
  */
 
 import { browser } from '$app/environment';
+// FIX-2026-04-26: untrack imported for the read-helper shield (Change 1B in
+// PRINCIPAL_FIX_PLAN_2026-04-26.md). Wrapping the rune read inside each
+// getIs*Connected() helper prevents a $effect caller from installing
+// connectionsState as a tracked dep — eliminating the cascade-prone
+// read+write pattern that bit 13 admin pages.
+import { untrack } from 'svelte';
 import { getAuthToken } from '$lib/stores/auth.svelte';
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -244,6 +250,13 @@ async function fetchConnectionStatus(): Promise<Record<string, ConnectionStatus>
 
 let refreshInterval: ReturnType<typeof setInterval> | null = null;
 
+// FIX-2026-04-26: in-flight Promise guard makes `load()` safe-inside-$effect.
+// When a $effect re-runs (because the rune was written + getIs*Connected was
+// read in the same flush), the second `load()` call returns this promise
+// instead of starting a second concurrent fetch. Net result: one rune write
+// per page mount, no cascade. See CASCADE_ROOT_CAUSE_REPORT.md §6 Change A.
+let inFlightLoad: Promise<void> | null = null;
+
 export const connections = {
 	get state() {
 		return connectionsState;
@@ -263,9 +276,36 @@ export const connections = {
 
 	/**
 	 * Load connection status (with caching)
+	 *
+	 * FIX-2026-04-26: rewritten with an in-flight Promise guard so concurrent
+	 * calls coalesce into a single fetch + single rune write. This makes
+	 * `load()` safe to call from inside a $effect — the recipe that 13 admin
+	 * pages used (and that tripped `effect_update_depth_exceeded` on
+	 * post-login). See CASCADE_ROOT_CAUSE_REPORT.md §6 Change A.
+	 *
+	 * Old code (kept for one revision per FIX-2026-04-26 marker — delete in follow-up):
+	 *
+	 *   async load(force = false): Promise<void> {
+	 *       if (!force && connectionsState.lastFetched && Date.now() - connectionsState.lastFetched < CACHE_TTL) {
+	 *           return;
+	 *       }
+	 *       connectionsState = { ...connectionsState, isLoading: true, error: null };
+	 *       try {
+	 *           const connectionData = await fetchConnectionStatus();
+	 *           connectionsState = {
+	 *               ...connectionsState,
+	 *               connections: connectionData,
+	 *               isLoading: false,
+	 *               lastFetched: Date.now(),
+	 *               error: null
+	 *           };
+	 *       } catch (error) {
+	 *           // ... (default-connections fallback verbatim, see below)
+	 *       }
+	 *   }
 	 */
 	async load(force = false): Promise<void> {
-		// Check cache
+		// Cache TTL guard (existing behaviour) — unchanged.
 		if (
 			!force &&
 			connectionsState.lastFetched &&
@@ -274,61 +314,79 @@ export const connections = {
 			return;
 		}
 
-		connectionsState = { ...connectionsState, isLoading: true, error: null };
-
-		try {
-			const connectionData = await fetchConnectionStatus();
-
-			connectionsState = {
-				...connectionsState,
-				connections: connectionData,
-				isLoading: false,
-				lastFetched: Date.now(),
-				error: null
-			};
-		} catch (error) {
-			// On error, set default state with built-in services marked as connected
-			const defaultConnections: Record<string, ConnectionStatus> = {
-				fluent_crm_pro: {
-					key: 'fluent_crm_pro',
-					name: 'FluentCRM Pro',
-					category: 'Fluent',
-					isConnected: true,
-					status: 'connected',
-					healthScore: 100,
-					lastVerified: new Date().toISOString(),
-					error: null
-				},
-				fluent_forms_pro: {
-					key: 'fluent_forms_pro',
-					name: 'FluentForms Pro',
-					category: 'Fluent',
-					isConnected: true,
-					status: 'connected',
-					healthScore: 100,
-					lastVerified: new Date().toISOString(),
-					error: null
-				},
-				fluent_smtp: {
-					key: 'fluent_smtp',
-					name: 'FluentSMTP',
-					category: 'Fluent',
-					isConnected: true,
-					status: 'connected',
-					healthScore: 100,
-					lastVerified: new Date().toISOString(),
-					error: null
-				}
-			};
-
-			connectionsState = {
-				...connectionsState,
-				connections: defaultConnections,
-				isLoading: false,
-				lastFetched: Date.now(),
-				error: error instanceof Error ? error.message : 'Failed to load connections'
-			};
+		// FIX-2026-04-26: concurrent-call guard. If another `load()` is already
+		// in flight, return its promise rather than starting a second fetch.
+		// This is what makes `load()` safe to call from inside a $effect —
+		// re-runs of the effect will await the same fetch and produce a
+		// single rune write per mount.
+		if (inFlightLoad) {
+			return inFlightLoad;
 		}
+
+		inFlightLoad = (async () => {
+			connectionsState = { ...connectionsState, isLoading: true, error: null };
+
+			try {
+				const connectionData = await fetchConnectionStatus();
+
+				connectionsState = {
+					...connectionsState,
+					connections: connectionData,
+					isLoading: false,
+					lastFetched: Date.now(),
+					error: null
+				};
+			} catch (error) {
+				// On error, set default state with built-in services marked as connected.
+				const defaultConnections: Record<string, ConnectionStatus> = {
+					fluent_crm_pro: {
+						key: 'fluent_crm_pro',
+						name: 'FluentCRM Pro',
+						category: 'Fluent',
+						isConnected: true,
+						status: 'connected',
+						healthScore: 100,
+						lastVerified: new Date().toISOString(),
+						error: null
+					},
+					fluent_forms_pro: {
+						key: 'fluent_forms_pro',
+						name: 'FluentForms Pro',
+						category: 'Fluent',
+						isConnected: true,
+						status: 'connected',
+						healthScore: 100,
+						lastVerified: new Date().toISOString(),
+						error: null
+					},
+					fluent_smtp: {
+						key: 'fluent_smtp',
+						name: 'FluentSMTP',
+						category: 'Fluent',
+						isConnected: true,
+						status: 'connected',
+						healthScore: 100,
+						lastVerified: new Date().toISOString(),
+						error: null
+					}
+				};
+
+				connectionsState = {
+					...connectionsState,
+					connections: defaultConnections,
+					isLoading: false,
+					lastFetched: Date.now(),
+					error: error instanceof Error ? error.message : 'Failed to load connections'
+				};
+			} finally {
+				// FIX-2026-04-26: clear the in-flight guard so subsequent `load()`
+				// calls (after cache-TTL expiry or on `force=true`) can start a
+				// fresh fetch.
+				inFlightLoad = null;
+			}
+		})();
+
+		return inFlightLoad;
 	},
 
 	/**
@@ -396,105 +454,140 @@ export const connections = {
 // ═══════════════════════════════════════════════════════════════════════════════
 // Connection Check Functions (Svelte 5 - cannot export $derived from modules)
 // ═══════════════════════════════════════════════════════════════════════════════
+//
+// FIX-2026-04-26: every helper below wraps its rune read in `untrack(...)`.
+// This shields callers from accidentally installing `connectionsState` as a
+// tracked dep — the recipe that 13 admin pages copy-pasted (`$effect → await
+// connections.load() → if (getIsXConnected())`) and that tripped
+// `effect_update_depth_exceeded` on post-login. `$derived(getXConnected())`
+// continues to work: $derived installs tracking at the proxy boundary,
+// before `untrack` runs inside the helper body. Verified Svelte 5 semantics.
+// See CASCADE_ROOT_CAUSE_REPORT.md §6 Change B.
 
 /**
  * Check if analytics is connected
  */
 export function getIsAnalyticsConnected(): boolean {
-	const analyticsServices = FEATURE_SERVICES['analytics'];
-	return analyticsServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false;
+	return untrack(() => {
+		const analyticsServices = FEATURE_SERVICES['analytics'];
+		return (
+			analyticsServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false
+		);
+	});
 }
 
 /**
  * Check if SEO tools are connected
  */
 export function getIsSeoConnected(): boolean {
-	const seoServices = FEATURE_SERVICES['seo'];
-	return seoServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false;
+	return untrack(() => {
+		const seoServices = FEATURE_SERVICES['seo'];
+		return seoServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false;
+	});
 }
 
 /**
  * Check if email is connected
  */
 export function getIsEmailConnected(): boolean {
-	const emailServices = FEATURE_SERVICES['email'];
-	return emailServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false;
+	return untrack(() => {
+		const emailServices = FEATURE_SERVICES['email'];
+		return emailServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false;
+	});
 }
 
 /**
  * Check if payment is connected
  */
 export function getIsPaymentConnected(): boolean {
-	const paymentServices = FEATURE_SERVICES['payment'];
-	return paymentServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false;
+	return untrack(() => {
+		const paymentServices = FEATURE_SERVICES['payment'];
+		return paymentServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false;
+	});
 }
 
 /**
  * Check if CRM is connected
  */
 export function getIsCrmConnected(): boolean {
-	const crmServices = FEATURE_SERVICES['crm'];
-	return crmServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false;
+	return untrack(() => {
+		const crmServices = FEATURE_SERVICES['crm'];
+		return crmServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false;
+	});
 }
 
 /**
  * Check if Fluent ecosystem is connected (any Fluent product)
  */
 export function getIsFluentConnected(): boolean {
-	const fluentServices = FEATURE_SERVICES['fluent'];
-	return fluentServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false;
+	return untrack(() => {
+		const fluentServices = FEATURE_SERVICES['fluent'];
+		return fluentServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false;
+	});
 }
 
 /**
  * Check if Forms is connected (FluentForms Pro)
  */
 export function getIsFormsConnected(): boolean {
-	const formsServices = FEATURE_SERVICES['forms'];
-	return formsServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false;
+	return untrack(() => {
+		const formsServices = FEATURE_SERVICES['forms'];
+		return formsServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false;
+	});
 }
 
 /**
  * Check if behavior tracking is connected
  */
 export function getIsBehaviorConnected(): boolean {
-	const behaviorServices = FEATURE_SERVICES['behavior'];
-	return behaviorServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false;
+	return untrack(() => {
+		const behaviorServices = FEATURE_SERVICES['behavior'];
+		return behaviorServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false;
+	});
 }
 
 /**
  * Get all connection statuses (for connection health panel)
  */
 export function getAllConnectionStatuses(): Record<string, ConnectionState> {
-	const statuses: Record<string, ConnectionState> = {};
-	for (const [key, conn] of Object.entries(connectionsState.connections)) {
-		statuses[key] = conn.status;
-	}
-	return statuses;
+	return untrack(() => {
+		const statuses: Record<string, ConnectionState> = {};
+		for (const [key, conn] of Object.entries(connectionsState.connections)) {
+			statuses[key] = conn.status;
+		}
+		return statuses;
+	});
 }
 
 /**
  * Get all connected services count
  */
 export function getConnectedCount(): number {
-	return Object.values(connectionsState.connections).filter((c) => c.isConnected).length;
+	return untrack(
+		() => Object.values(connectionsState.connections).filter((c) => c.isConnected).length
+	);
 }
 
 /**
  * Get services with errors
  */
 export function getServicesWithErrors(): ConnectionStatus[] {
-	return Object.values(connectionsState.connections).filter((c) => c.status === 'error');
+	return untrack(() =>
+		Object.values(connectionsState.connections).filter((c) => c.status === 'error')
+	);
 }
 
 /**
  * Overall connection health
  */
 export function getOverallHealth(): number {
-	const connected = Object.values(connectionsState.connections).filter((c) => c.isConnected);
-	if (connected.length === 0) return 0;
+	return untrack(() => {
+		const connected = Object.values(connectionsState.connections).filter((c) => c.isConnected);
+		if (connected.length === 0) return 0;
 
-	const totalHealth = connected.reduce((sum, c) => sum + c.healthScore, 0);
-	return Math.round(totalHealth / connected.length);
+		const totalHealth = connected.reduce((sum, c) => sum + c.healthScore, 0);
+		return Math.round(totalHealth / connected.length);
+	});
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════

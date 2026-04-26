@@ -19,20 +19,35 @@ const BACKEND_URL = PROD_BACKEND;
 /**
  * Get authorization headers from request
  */
-function getAuthHeaders(request: Request): HeadersInit {
-	const authHeader = request.headers.get('Authorization');
-	const headers: HeadersInit = {
+// FIX-2026-04-26: replaced request-based auth header builder with token-preferring
+// builder to support cookie-based auth fallback.
+// Old:
+// function getAuthHeaders(request: Request): HeadersInit {
+// 	const authHeader = request.headers.get('Authorization');
+// 	const headers: HeadersInit = {
+// 		'Content-Type': 'application/json',
+// 		Accept: 'application/json'
+// 	};
+// 	if (authHeader) {
+// 		headers['Authorization'] = authHeader;
+// 	}
+// 	return headers;
+// }
+function getAuthHeaders(token: string): HeadersInit {
+	return {
 		'Content-Type': 'application/json',
-		Accept: 'application/json'
+		Accept: 'application/json',
+		Authorization: `Bearer ${token}`
 	};
-	if (authHeader) {
-		headers['Authorization'] = authHeader;
-	}
-	return headers;
 }
 
 // GET - List deals (proxies to backend)
-export const GET: RequestHandler = async ({ url, request }) => {
+export const GET: RequestHandler = async ({ url, request, cookies }) => {
+	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
+	const cookieToken = cookies.get('rtp_access_token');
+	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
+	const token = cookieToken || headerToken;
+	if (!token) error(401, 'Unauthorized');
 	try {
 		// Forward query params to backend
 		const queryParams = new URLSearchParams();
@@ -57,7 +72,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
 
 		const response = await fetch(backendUrl, {
 			method: 'GET',
-			headers: getAuthHeaders(request)
+			headers: getAuthHeaders(token)
 		});
 
 		if (!response.ok) {
@@ -101,7 +116,12 @@ export const GET: RequestHandler = async ({ url, request }) => {
 };
 
 // POST - Create deal (proxies to backend)
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, cookies }) => {
+	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
+	const cookieToken = cookies.get('rtp_access_token');
+	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
+	const token = cookieToken || headerToken;
+	if (!token) error(401, 'Unauthorized');
 	try {
 		const body = await request.json();
 
@@ -112,7 +132,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		const response = await fetch(`${BACKEND_URL}/api/admin/crm/deals`, {
 			method: 'POST',
-			headers: getAuthHeaders(request),
+			headers: getAuthHeaders(token),
 			body: JSON.stringify({
 				name: body.name,
 				contact_id: body.contact_id,

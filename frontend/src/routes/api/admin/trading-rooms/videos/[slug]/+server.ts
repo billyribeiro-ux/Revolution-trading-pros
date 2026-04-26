@@ -155,7 +155,7 @@ async function fetchFromBackend(endpoint: string, options?: RequestInit): Promis
 }
 
 // GET - List videos for a specific room by slug
-export const GET: RequestHandler = async ({ params, url, request }) => {
+export const GET: RequestHandler = async ({ params, url, request, cookies }) => {
 	const { slug } = params;
 	const traderId = url.searchParams.get('trader_id');
 	const search = url.searchParams.get('search');
@@ -163,11 +163,18 @@ export const GET: RequestHandler = async ({ params, url, request }) => {
 	const page = parseInt(url.searchParams.get('page') || '1');
 	const perPage = parseInt(url.searchParams.get('per_page') || '20');
 
+	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
+	// Old: headers: { Authorization: request.headers.get('Authorization') || '' }
+	const cookieToken = cookies.get('rtp_access_token');
+	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
+	const token = cookieToken || headerToken;
+	if (!token) error(401, 'Unauthorized');
+
 	// Try backend first
 	const backendData = await fetchFromBackend(
 		`/api/admin/trading-rooms/videos/${slug}?${url.searchParams.toString()}`,
 		{
-			headers: { Authorization: request.headers.get('Authorization') || '' }
+			headers: { Authorization: `Bearer ${token}` }
 		}
 	);
 

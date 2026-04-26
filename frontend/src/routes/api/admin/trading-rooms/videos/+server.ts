@@ -7,7 +7,7 @@
  * @version 1.0.0 - December 2025
  */
 
-import { json } from '@sveltejs/kit';
+import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 // Production fallback - Rust API on Fly.io
@@ -142,18 +142,25 @@ async function fetchFromBackend(endpoint: string, options?: RequestInit): Promis
 }
 
 // GET - List videos
-export const GET: RequestHandler = async ({ url, request }) => {
+export const GET: RequestHandler = async ({ url, request, cookies }) => {
 	const roomId = url.searchParams.get('trading_room_id');
 	const traderId = url.searchParams.get('trader_id');
 	const publishedOnly = url.searchParams.get('published_only') !== 'false';
 	const page = parseInt(url.searchParams.get('page') || '1');
 	const perPage = parseInt(url.searchParams.get('per_page') || '20');
 
+	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
+	// Old: headers: { Authorization: request.headers.get('Authorization') || '' }
+	const cookieToken = cookies.get('rtp_access_token');
+	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
+	const token = cookieToken || headerToken;
+	if (!token) error(401, 'Unauthorized');
+
 	// Try backend first
 	const backendData = await fetchFromBackend(
 		`/api/admin/trading-rooms/videos?${url.searchParams.toString()}`,
 		{
-			headers: { Authorization: request.headers.get('Authorization') || '' }
+			headers: { Authorization: `Bearer ${token}` }
 		}
 	);
 
@@ -200,13 +207,20 @@ export const GET: RequestHandler = async ({ url, request }) => {
 };
 
 // POST - Create video
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, cookies }) => {
 	const body = await request.json();
+
+	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
+	// Old: headers: { Authorization: request.headers.get('Authorization') || '' }
+	const cookieToken = cookies.get('rtp_access_token');
+	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
+	const token = cookieToken || headerToken;
+	if (!token) error(401, 'Unauthorized');
 
 	// Try backend first
 	const backendData = await fetchFromBackend('/api/admin/trading-rooms/videos', {
 		method: 'POST',
-		headers: { Authorization: request.headers.get('Authorization') || '' },
+		headers: { Authorization: `Bearer ${token}` },
 		body: JSON.stringify(body)
 	});
 

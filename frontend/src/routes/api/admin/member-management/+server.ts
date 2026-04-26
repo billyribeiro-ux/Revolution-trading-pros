@@ -36,13 +36,18 @@ export const GET: RequestHandler = async () => {
  * POST /api/admin/member-management
  * Create new member
  */
-export const POST: RequestHandler = async ({ request }) => {
-	const authHeader = request.headers.get('Authorization') || '';
+export const POST: RequestHandler = async ({ request, cookies }) => {
+	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
+	// Old: const authHeader = request.headers.get('Authorization') || '';
+	const cookieToken = cookies.get('rtp_access_token');
+	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
+	const token = cookieToken || headerToken;
 	const body = await request.json();
 
-	if (!authHeader) {
+	if (!token) {
 		return json({ error: 'Missing or invalid authorization header' }, { status: 401 });
 	}
+	const authHeader = `Bearer ${token}`;
 
 	try {
 		const response = await fetch(`${PROD_BACKEND}/api/admin/member-management`, {

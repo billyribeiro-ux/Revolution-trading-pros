@@ -34,12 +34,20 @@ export const load = async ({ locals, cookies, fetch }: RequestEvent) => {
 		}
 	}
 
-	// Clear all auth-related cookies - ICT 11 Protocol: Complete cleanup
+	// FIX-2026-04-26: cookie names corrected. The previous 4 names
+	// (auth_token, session_id, refresh_token, access_token) were NEVER set by
+	// the login proxy — only `rtp_access_token` and `rtp_refresh_token` are.
+	// Result: the dashboard sidebar's "Log out" link routed here, "deleted"
+	// 4 cookies that didn't exist, and the actual session survived. Real
+	// security-grade silent bug.
+	// Old code (kept for one revision per FIX-2026-04-26 marker — delete in follow-up):
+	// cookies.delete('auth_token', cookieOptions);
+	// cookies.delete('session_id', cookieOptions);
+	// cookies.delete('refresh_token', cookieOptions);
+	// cookies.delete('access_token', cookieOptions);
 	const cookieOptions = { path: '/', secure: true, httpOnly: true };
-	cookies.delete('auth_token', cookieOptions);
-	cookies.delete('session_id', cookieOptions);
-	cookies.delete('refresh_token', cookieOptions);
-	cookies.delete('access_token', cookieOptions);
+	cookies.delete('rtp_access_token', cookieOptions);
+	cookies.delete('rtp_refresh_token', cookieOptions);
 
 	// Redirect to home page with logged out message
 	redirect(303, '/?message=logged_out');
