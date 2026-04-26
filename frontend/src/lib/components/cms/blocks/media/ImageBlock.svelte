@@ -411,7 +411,13 @@
 					onerror={handleImageError}
 				/>
 			{:else}
-				<button type="button" class="image-block__lightbox-btn" onclick={handleImageClick} onkeydown={handleImageKeyDown} aria-label={`View ${imageAlt || 'image'} in lightbox`}>
+				<button
+					type="button"
+					class="image-block__lightbox-btn"
+					onclick={handleImageClick}
+					onkeydown={handleImageKeyDown}
+					aria-label={`View ${imageAlt || 'image'} in lightbox`}
+				>
 					<img
 						src={sanitizedURL}
 						{srcset}

@@ -116,7 +116,9 @@
 						await new Promise((resolve) => setTimeout(resolve, delay));
 						return loadPosts(page, retry + 1);
 					} else {
-						throw new Error('Request timed out. Please check your connection and try again.');
+						throw new Error('Request timed out. Please check your connection and try again.', {
+							cause: fetchError
+						});
 					}
 				}
 

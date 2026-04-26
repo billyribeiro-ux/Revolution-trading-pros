@@ -52,7 +52,14 @@ vi.mock('../commands.remote', () => ({
 
 // Import after mocking
 import { createPageState } from '../page.state.svelte';
-import { getAlerts, getTradePlan, getStats, getTrades, getWeeklyVideo, getAdminStatus } from '../data.remote';
+import {
+	getAlerts,
+	getTradePlan,
+	getStats,
+	getTrades,
+	getWeeklyVideo,
+	getAdminStatus
+} from '../data.remote';
 import { deleteTrade } from '../commands.remote';
 
 // ===============================================================================
@@ -212,7 +219,7 @@ describe('createPageState()', () => {
 			const mockAlerts = [createMockAlert(), createMockAlert({ id: 2, ticker: 'TSLA' })];
 			void createMockAlertsResponse(mockAlerts);
 
-				vi.mocked(getAlerts).mockResolvedValueOnce({
+			vi.mocked(getAlerts).mockResolvedValueOnce({
 				alerts: mockAlerts.map((a) => ({
 					...a,
 					notes: a.notes || ''

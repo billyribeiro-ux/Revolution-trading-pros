@@ -25,9 +25,14 @@
 		<!-- Call Price -->
 		<div
 			class="flex flex-col gap-1 rounded-xl p-4 transition-all"
-			style="background: var(--calc-call-bg); border: 1px solid {calc.optionType === 'call' ? 'var(--calc-call)' : 'transparent'};"
+			style="background: var(--calc-call-bg); border: 1px solid {calc.optionType === 'call'
+				? 'var(--calc-call)'
+				: 'transparent'};"
 		>
-			<span class="text-[10px] font-medium uppercase tracking-wider" style="color: var(--calc-text-muted);">
+			<span
+				class="text-[10px] font-medium uppercase tracking-wider"
+				style="color: var(--calc-text-muted);"
+			>
 				Call Price
 			</span>
 			<AnimatedNumber
@@ -42,9 +47,14 @@
 		<!-- Put Price -->
 		<div
 			class="flex flex-col gap-1 rounded-xl p-4 transition-all"
-			style="background: var(--calc-put-bg); border: 1px solid {calc.optionType === 'put' ? 'var(--calc-put)' : 'transparent'};"
+			style="background: var(--calc-put-bg); border: 1px solid {calc.optionType === 'put'
+				? 'var(--calc-put)'
+				: 'transparent'};"
 		>
-			<span class="text-[10px] font-medium uppercase tracking-wider" style="color: var(--calc-text-muted);">
+			<span
+				class="text-[10px] font-medium uppercase tracking-wider"
+				style="color: var(--calc-text-muted);"
+			>
 				Put Price
 			</span>
 			<AnimatedNumber
@@ -68,15 +78,24 @@
 		</span>
 
 		<!-- Intrinsic / Extrinsic -->
-		<span class="text-xs" style="color: var(--calc-text-secondary); font-family: var(--calc-font-mono);">
+		<span
+			class="text-xs"
+			style="color: var(--calc-text-secondary); font-family: var(--calc-font-mono);"
+		>
 			Intrinsic: {formatCurrency(calc.currentIntrinsic)}
 		</span>
 		<span class="text-xs" style="color: var(--calc-text-muted);">|</span>
-		<span class="text-xs" style="color: var(--calc-text-secondary); font-family: var(--calc-font-mono);">
+		<span
+			class="text-xs"
+			style="color: var(--calc-text-secondary); font-family: var(--calc-font-mono);"
+		>
 			Extrinsic: {formatCurrency(calc.currentExtrinsic)}
 		</span>
 		<span class="text-xs" style="color: var(--calc-text-muted);">|</span>
-		<span class="text-xs" style="color: var(--calc-text-secondary); font-family: var(--calc-font-mono);">
+		<span
+			class="text-xs"
+			style="color: var(--calc-text-secondary); font-family: var(--calc-font-mono);"
+		>
 			B/E: {formatCurrency(calc.currentBreakeven)}
 		</span>
 	</div>
@@ -96,8 +115,13 @@
 			class="flex flex-col gap-0.5 rounded-lg px-3 py-2"
 			style="background: var(--calc-surface); border: 1px solid var(--calc-border);"
 		>
-			<span class="text-[10px] uppercase tracking-wider" style="color: var(--calc-text-muted);">P(ITM)</span>
-			<span class="text-sm font-semibold" style="color: var(--calc-call); font-family: var(--calc-font-mono);">
+			<span class="text-[10px] uppercase tracking-wider" style="color: var(--calc-text-muted);"
+				>P(ITM)</span
+			>
+			<span
+				class="text-sm font-semibold"
+				style="color: var(--calc-call); font-family: var(--calc-font-mono);"
+			>
 				{formatPercent(calc.probabilities.probabilityITM)}
 			</span>
 		</div>
@@ -105,8 +129,13 @@
 			class="flex flex-col gap-0.5 rounded-lg px-3 py-2"
 			style="background: var(--calc-surface); border: 1px solid var(--calc-border);"
 		>
-			<span class="text-[10px] uppercase tracking-wider" style="color: var(--calc-text-muted);">Expected Move</span>
-			<span class="text-sm font-semibold" style="color: var(--calc-accent); font-family: var(--calc-font-mono);">
+			<span class="text-[10px] uppercase tracking-wider" style="color: var(--calc-text-muted);"
+				>Expected Move</span
+			>
+			<span
+				class="text-sm font-semibold"
+				style="color: var(--calc-accent); font-family: var(--calc-font-mono);"
+			>
 				±{formatCurrency(calc.probabilities.expectedMove)}
 			</span>
 		</div>
@@ -114,9 +143,16 @@
 			class="flex flex-col gap-0.5 rounded-lg px-3 py-2"
 			style="background: var(--calc-surface); border: 1px solid var(--calc-border);"
 		>
-			<span class="text-[10px] uppercase tracking-wider" style="color: var(--calc-text-muted);">1σ Range</span>
-			<span class="text-xs font-semibold" style="color: var(--calc-text-secondary); font-family: var(--calc-font-mono);">
-				{formatCurrency(calc.probabilities.oneSDRange[0])} – {formatCurrency(calc.probabilities.oneSDRange[1])}
+			<span class="text-[10px] uppercase tracking-wider" style="color: var(--calc-text-muted);"
+				>1σ Range</span
+			>
+			<span
+				class="text-xs font-semibold"
+				style="color: var(--calc-text-secondary); font-family: var(--calc-font-mono);"
+			>
+				{formatCurrency(calc.probabilities.oneSDRange[0])} – {formatCurrency(
+					calc.probabilities.oneSDRange[1]
+				)}
 			</span>
 		</div>
 	</div>

@@ -28,9 +28,7 @@ export interface AxumWeeklyVideo {
  * Fetch weekly video for a trading room.
  * Returns null on 404 (no video published yet).
  */
-export async function fetchWeeklyVideo(
-	roomSlug: string
-): Promise<AxumWeeklyVideo | null> {
+export async function fetchWeeklyVideo(roomSlug: string): Promise<AxumWeeklyVideo | null> {
 	try {
 		return await axum.get<AxumWeeklyVideo>(`/api/weekly-video/${roomSlug}`);
 	} catch (err) {

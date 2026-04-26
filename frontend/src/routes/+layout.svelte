@@ -42,7 +42,6 @@
 	import { onMount } from 'svelte';
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
-	import { dev } from '$app/environment';
 	import { registerServiceWorker } from '$lib/utils/registerServiceWorker';
 	import { initPerformanceMonitoring } from '$lib/utils/performance';
 	import { isAdminUser } from '$lib/stores/auth.svelte';
@@ -79,9 +78,7 @@
 	// cms, embed) are intentionally NOT marketing pages — they paint their
 	// own surfaces and must remain isolated from the global theme. See
 	// docs/audits/CSS_CASCADE_AUDIT_2026-04-25.md.
-	const isMarketingPage = $derived(
-		!isAdminArea && !isDashboardArea && !isCmsArea && !isEmbedArea
-	);
+	const isMarketingPage = $derived(!isAdminArea && !isDashboardArea && !isCmsArea && !isEmbedArea);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// SEO - Unified SEO resolution (single ownership layer)

@@ -98,6 +98,9 @@ pub enum WorkflowError {
 
     #[error("Content validation failed: {0}")]
     ValidationFailed(String),
+
+    #[error("Workflow invariant violation: {message}")]
+    InvariantViolation { message: String },
 }
 
 /// Transition definition
@@ -311,7 +314,18 @@ impl WorkflowStateMachine {
         // Validate action is allowed
         self.can_perform_action(current_status, action, user_role)?;
 
-        let transition = self.transitions.get(&(current_status, action)).unwrap();
+        // FIX-2026-04-26: let transition = self.transitions.get(&(current_status, action)).unwrap();
+        // Safety: can_perform_action above already verified this key exists; this
+        // branch is an internal invariant violation and should never happen in practice.
+        let transition = self
+            .transitions
+            .get(&(current_status, action))
+            .ok_or_else(|| WorkflowError::InvariantViolation {
+                message: format!(
+                    "transition ({:?}, {:?}) missing after can_perform_action succeeded",
+                    current_status, action
+                ),
+            })?;
 
         // Validate comment if required
         if transition.requires_comment && comment.map(|c| c.trim().is_empty()).unwrap_or(true) {

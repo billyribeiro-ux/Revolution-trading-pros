@@ -50,7 +50,13 @@
 	description="Tutorials, Tips and Platform Features for ThinkorSwim and TradeStation trading platforms. Step-by-step guides for traders of all levels."
 	canonical="/tutorials"
 	ogType="website"
-	keywords={['ThinkorSwim tutorials', 'TradeStation tutorials', 'trading platform setup', 'platform tips', 'trading tools']}
+	keywords={[
+		'ThinkorSwim tutorials',
+		'TradeStation tutorials',
+		'trading platform setup',
+		'platform tips',
+		'trading tools'
+	]}
 />
 
 <div class="fl-builder-content">

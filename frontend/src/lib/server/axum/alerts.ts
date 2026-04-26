@@ -42,10 +42,9 @@ export async function fetchAlerts(
 	limit: number,
 	offset: number
 ): Promise<AxumAlertsResponse> {
-	const data = await axum.get<AxumAlertsResponse | AxumAlert[]>(
-		`/api/alerts/${roomSlug}`,
-		{ params: { limit, offset } }
-	);
+	const data = await axum.get<AxumAlertsResponse | AxumAlert[]>(`/api/alerts/${roomSlug}`, {
+		params: { limit, offset }
+	});
 
 	// Handle both response shapes: array or {data, total}
 	if (Array.isArray(data)) {
@@ -61,10 +60,7 @@ export async function fetchAlerts(
 /**
  * Fetch a single alert by ID.
  */
-export async function fetchAlert(
-	roomSlug: string,
-	alertId: number
-): Promise<AxumAlert | null> {
+export async function fetchAlert(roomSlug: string, alertId: number): Promise<AxumAlert | null> {
 	try {
 		return await axum.get<AxumAlert>(`/api/alerts/${roomSlug}/${alertId}`);
 	} catch (err) {
@@ -97,9 +93,6 @@ export async function updateAlert(
 /**
  * Delete an alert.
  */
-export async function deleteAlert(
-	roomSlug: string,
-	alertId: number
-): Promise<void> {
+export async function deleteAlert(roomSlug: string, alertId: number): Promise<void> {
 	await axum.delete(`/api/alerts/${roomSlug}/${alertId}`);
 }

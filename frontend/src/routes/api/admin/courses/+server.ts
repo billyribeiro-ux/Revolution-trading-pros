@@ -13,7 +13,9 @@ const BACKEND_URL = PROD_BACKEND;
 
 export const GET: RequestHandler = async ({ cookies, fetch, url }) => {
 	try {
-		const token = cookies.get('auth_token');
+		// FIX-2026-04-26: comment-out, verify, delete in follow-up. Wrong cookie name — login proxy sets rtp_access_token, not auth_token.
+		// const token = cookies.get('auth_token');
+		const token = cookies.get('rtp_access_token');
 		const queryString = url.search || '';
 
 		const response = await fetch(`${BACKEND_URL}/api/admin/courses${queryString}`, {
@@ -62,7 +64,9 @@ export const GET: RequestHandler = async ({ cookies, fetch, url }) => {
 
 export const POST: RequestHandler = async ({ cookies, fetch, request }) => {
 	try {
-		const token = cookies.get('auth_token');
+		// FIX-2026-04-26: comment-out, verify, delete in follow-up. Wrong cookie name — login proxy sets rtp_access_token, not auth_token.
+		// const token = cookies.get('auth_token');
+		const token = cookies.get('rtp_access_token');
 		const body = await request.json();
 
 		const response = await fetch(`${BACKEND_URL}/api/admin/courses`, {

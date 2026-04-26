@@ -24,11 +24,7 @@ export const IdSchema = v.pipe(
 );
 
 /** Page number (1-indexed) */
-export const PageSchema = v.pipe(
-	v.number(),
-	v.integer(),
-	v.minValue(1, 'Page must be at least 1')
-);
+export const PageSchema = v.pipe(v.number(), v.integer(), v.minValue(1, 'Page must be at least 1'));
 
 /** Items per page limit */
 export const LimitSchema = v.pipe(
@@ -52,16 +48,10 @@ export const TickerSchema = v.pipe(
 );
 
 /** ISO 8601 date string */
-export const DateStringSchema = v.pipe(
-	v.string(),
-	v.nonEmpty('Date is required')
-);
+export const DateStringSchema = v.pipe(v.string(), v.nonEmpty('Date is required'));
 
 /** Price value (positive number) */
-export const PriceSchema = v.pipe(
-	v.number(),
-	v.minValue(0, 'Price must be non-negative')
-);
+export const PriceSchema = v.pipe(v.number(), v.minValue(0, 'Price must be non-negative'));
 
 /** Optional string that defaults to empty */
 export const OptionalStringSchema = v.optional(v.string(), '');

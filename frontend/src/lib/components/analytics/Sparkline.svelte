@@ -51,7 +51,7 @@
 		<polyline
 			points={normalized.line}
 			fill="none"
-			stroke={stroke}
+			{stroke}
 			stroke-width="1.5"
 			stroke-linecap="round"
 			stroke-linejoin="round"

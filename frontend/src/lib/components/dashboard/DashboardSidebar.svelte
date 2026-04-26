@@ -241,7 +241,7 @@
 	role="navigation"
 	aria-label="Dashboard navigation"
 >
-	<nav class="dashboard__nav-primary">
+	<nav class="dashboard__nav-primary" aria-label="Dashboard sections">
 		<!-- User Profile Section -->
 		{#if collapsed}
 			<Tooltip text={user.name} position="right" delay={150}>

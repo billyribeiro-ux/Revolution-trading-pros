@@ -33,7 +33,7 @@ export function getSavedConfigs(): SavedConfig[] {
  * Prepends to list (newest first) and trims to MAX_CONFIGS.
  */
 export function saveConfig(
-	config: Omit<SavedConfig, 'id' | 'createdAt' | 'updatedAt'>,
+	config: Omit<SavedConfig, 'id' | 'createdAt' | 'updatedAt'>
 ): SavedConfig {
 	const configs = getSavedConfigs();
 	const now = new Date().toISOString();
@@ -41,7 +41,7 @@ export function saveConfig(
 		...config,
 		id: crypto.randomUUID(),
 		createdAt: now,
-		updatedAt: now,
+		updatedAt: now
 	};
 
 	configs.unshift(newConfig);
@@ -57,7 +57,7 @@ export function saveConfig(
  */
 export function updateConfig(
 	id: string,
-	updates: Partial<Omit<SavedConfig, 'id' | 'createdAt'>>,
+	updates: Partial<Omit<SavedConfig, 'id' | 'createdAt'>>
 ): SavedConfig | null {
 	const configs = getSavedConfigs();
 	const idx = configs.findIndex((c) => c.id === id);
@@ -66,7 +66,7 @@ export function updateConfig(
 	configs[idx] = {
 		...configs[idx],
 		...updates,
-		updatedAt: new Date().toISOString(),
+		updatedAt: new Date().toISOString()
 	};
 
 	localStorage.setItem(STORAGE_KEY, JSON.stringify(configs));

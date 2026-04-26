@@ -31,7 +31,7 @@ export function encodeState(state: ShareableState): string {
 		const legsEncoded = state.strategyLegs
 			.map(
 				(leg) =>
-					`${leg.type[0]}${leg.position > 0 ? '+' : '-'}${leg.strike}x${leg.quantity}@${leg.expiry}`,
+					`${leg.type[0]}${leg.position > 0 ? '+' : '-'}${leg.strike}x${leg.quantity}@${leg.expiry}`
 			)
 			.join('|');
 		params.set('legs', legsEncoded);
@@ -61,7 +61,7 @@ export function decodeState(searchParams: URLSearchParams): Partial<ShareableSta
 			volatility: v ? parseFloat(v) : DEFAULT_INPUTS.volatility,
 			timeToExpiry: t ? parseFloat(t) : DEFAULT_INPUTS.timeToExpiry,
 			riskFreeRate: r ? parseFloat(r) : DEFAULT_INPUTS.riskFreeRate,
-			dividendYield: q ? parseFloat(q) : DEFAULT_INPUTS.dividendYield,
+			dividendYield: q ? parseFloat(q) : DEFAULT_INPUTS.dividendYield
 		};
 	}
 
@@ -93,7 +93,7 @@ export function decodeState(searchParams: URLSearchParams): Partial<ShareableSta
 					strike: parseFloat(strike),
 					quantity: parseInt(quantity) || 1,
 					expiry: parseFloat(expiry),
-					premium: 0,
+					premium: 0
 				};
 			});
 		} catch {

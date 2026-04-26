@@ -1,5 +1,11 @@
 <script lang="ts">
-	import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from '@lucide/svelte';
+	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
+	// import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from '@lucide/svelte';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import IconCircleCheck from '@tabler/icons-svelte-runes/icons/circle-check';
+	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
+	import IconInfoCircle from '@tabler/icons-svelte-runes/icons/info-circle';
+	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
 	import gsap from 'gsap';
 	import type { ToastType } from '../../engine/types.js';
 	import type { CalculatorState } from '../../state/calculator.svelte.js';
@@ -35,22 +41,22 @@
 		gsap.fromTo(
 			el,
 			{ x: 80, opacity: 0, scale: 0.9 },
-			{ x: 0, opacity: 1, scale: 1, duration: 0.35, ease: 'back.out(1.5)' },
+			{ x: 0, opacity: 1, scale: 1, duration: 0.35, ease: 'back.out(1.5)' }
 		);
 	}
 
-	const ICONS: Record<ToastType, typeof CheckCircle> = {
-		success: CheckCircle,
-		error: AlertCircle,
-		info: Info,
-		warning: AlertTriangle,
+	const ICONS: Record<ToastType, typeof IconCircleCheck> = {
+		success: IconCircleCheck,
+		error: IconAlertCircle,
+		info: IconInfoCircle,
+		warning: IconAlertTriangle
 	};
 
 	const COLORS: Record<ToastType, { bg: string; border: string; icon: string }> = {
 		success: { bg: 'rgba(16,185,129,0.08)', border: 'rgba(16,185,129,0.25)', icon: '#10b981' },
 		error: { bg: 'rgba(239,68,68,0.08)', border: 'rgba(239,68,68,0.25)', icon: '#ef4444' },
 		info: { bg: 'rgba(99,102,241,0.08)', border: 'rgba(99,102,241,0.25)', icon: '#6366f1' },
-		warning: { bg: 'rgba(245,158,11,0.08)', border: 'rgba(245,158,11,0.25)', icon: '#f59e0b' },
+		warning: { bg: 'rgba(245,158,11,0.08)', border: 'rgba(245,158,11,0.25)', icon: '#f59e0b' }
 	};
 
 	function handleDismiss(id: string, el: HTMLElement) {
@@ -60,7 +66,7 @@
 			scale: 0.9,
 			duration: 0.2,
 			ease: 'power2.in',
-			onComplete: () => calc.removeToast(id),
+			onComplete: () => calc.removeToast(id)
 		});
 	}
 </script>
@@ -93,7 +99,7 @@
 					style="color: var(--calc-text-muted);"
 					aria-label="Dismiss notification"
 				>
-					<X size={12} />
+					<IconX size={12} />
 				</button>
 			</div>
 		{/each}

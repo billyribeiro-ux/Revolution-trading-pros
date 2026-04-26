@@ -922,7 +922,7 @@ describe('PullQuoteBlock - Accessibility', () => {
 		});
 
 		const buttons = screen.getAllByRole('button');
-		const pressedButtons = buttons.filter(btn => btn.hasAttribute('aria-pressed'));
+		const pressedButtons = buttons.filter((btn) => btn.hasAttribute('aria-pressed'));
 		expect(pressedButtons.length).toBeGreaterThan(0);
 	});
 

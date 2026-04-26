@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { DropdownMenu as DropdownMenuPrimitive } from 'bits-ui';
-	import CircleIcon from '@lucide/svelte/icons/circle';
+	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
+	// import CircleIcon from '@lucide/svelte/icons/circle';
+	import CircleIcon from '@tabler/icons-svelte-runes/icons/circle';
 	import { cn, type WithoutChild } from '$lib/utils.js';
 
 	let {
@@ -9,7 +11,6 @@
 		children: childrenProp,
 		...restProps
 	}: WithoutChild<DropdownMenuPrimitive.RadioItemProps> = $props();
-
 </script>
 
 <DropdownMenuPrimitive.RadioItem

@@ -17,7 +17,7 @@ export const GET: RequestHandler = async ({ url }) => {
 
 		try {
 			const response = await fetch(
-				`https://api.polygon.io/v3/reference/tickers?search=${encodeURIComponent(query)}&active=true&limit=${limit}&apiKey=${apiKey}`,
+				`https://api.polygon.io/v3/reference/tickers?search=${encodeURIComponent(query)}&active=true&limit=${limit}&apiKey=${apiKey}`
 			);
 
 			if (!response.ok) {
@@ -30,12 +30,15 @@ export const GET: RequestHandler = async ({ url }) => {
 				name: r.name,
 				type: r.type === 'ETF' ? 'etf' : 'stock',
 				exchange: r.primary_exchange ?? '',
-				primaryExchange: r.primary_exchange,
+				primaryExchange: r.primary_exchange
 			}));
 
 			return json(results);
 		} catch (err) {
-			return error(502, `Polygon request failed: ${err instanceof Error ? err.message : 'Unknown'}`);
+			return error(
+				502,
+				`Polygon request failed: ${err instanceof Error ? err.message : 'Unknown'}`
+			);
 		}
 	}
 

@@ -1,7 +1,10 @@
 <script lang="ts">
 	import { DropdownMenu as DropdownMenuPrimitive } from 'bits-ui';
-	import CheckIcon from '@lucide/svelte/icons/check';
-	import MinusIcon from '@lucide/svelte/icons/minus';
+	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
+	// import CheckIcon from '@lucide/svelte/icons/check';
+	// import MinusIcon from '@lucide/svelte/icons/minus';
+	import CheckIcon from '@tabler/icons-svelte-runes/icons/check';
+	import MinusIcon from '@tabler/icons-svelte-runes/icons/minus';
 	import { cn, type WithoutChildrenOrChild } from '$lib/utils.js';
 	import type { Snippet } from 'svelte';
 
@@ -17,7 +20,6 @@
 		children: childrenProp,
 		...restProps
 	}: CheckboxItemProps = $props();
-
 </script>
 
 <DropdownMenuPrimitive.CheckboxItem

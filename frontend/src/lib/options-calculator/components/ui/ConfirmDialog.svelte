@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { AlertTriangle } from '@lucide/svelte';
+	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
+	// import { AlertTriangle } from '@lucide/svelte';
+	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
 	import gsap from 'gsap';
 
 	interface Props {
@@ -21,7 +23,7 @@
 		cancelText = 'Cancel',
 		variant = 'default',
 		onConfirm,
-		onCancel,
+		onCancel
 	}: Props = $props();
 
 	let dialogEl: HTMLDivElement | undefined = $state();
@@ -31,7 +33,7 @@
 			gsap.fromTo(
 				dialogEl,
 				{ scale: 0.9, opacity: 0 },
-				{ scale: 1, opacity: 1, duration: 0.25, ease: 'back.out(1.7)' },
+				{ scale: 1, opacity: 1, duration: 0.25, ease: 'back.out(1.7)' }
 			);
 		}
 	});
@@ -47,9 +49,7 @@
 		}
 	}
 
-	let confirmBg = $derived(
-		variant === 'danger' ? 'var(--calc-put)' : 'var(--calc-accent)',
-	);
+	let confirmBg = $derived(variant === 'danger' ? 'var(--calc-put)' : 'var(--calc-accent)');
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
@@ -84,7 +84,7 @@
 						class="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center"
 						style="background: rgba(239,68,68,0.1);"
 					>
-						<AlertTriangle size={18} style="color: #ef4444;" />
+						<IconAlertTriangle size={18} style="color: #ef4444;" />
 					</div>
 				{/if}
 				<div class="flex flex-col gap-1">

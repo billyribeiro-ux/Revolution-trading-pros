@@ -126,171 +126,152 @@
 <svelte:window onkeydown={handleKeyDown} onkeyup={handleKeyUp} />
 
 <div class="media-grid-wrap" style:--columns={columns}>
-<div class="media-grid">
-	{#if loading}
-		<!-- Loading skeleton -->
-		{#each Array(8) as _}
-			<div class="grid-item skeleton">
-				<div class="skeleton-image"></div>
-				<div class="skeleton-text"></div>
+	<div class="media-grid">
+		{#if loading}
+			<!-- Loading skeleton -->
+			{#each Array(8) as _}
+				<div class="grid-item skeleton">
+					<div class="skeleton-image"></div>
+					<div class="skeleton-text"></div>
+				</div>
+			{/each}
+		{:else if items.length === 0}
+			<!-- Empty state -->
+			<div class="empty-state">
+				<svg
+					width="64"
+					height="64"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1.5"
+				>
+					<rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+					<circle cx="8.5" cy="8.5" r="1.5" />
+					<path d="M21 15l-5-5L5 21" />
+				</svg>
+				<span>No media found</span>
 			</div>
-		{/each}
-	{:else if items.length === 0}
-		<!-- Empty state -->
-		<div class="empty-state">
-			<svg
-				width="64"
-				height="64"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="1.5"
-			>
-				<rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-				<circle cx="8.5" cy="8.5" r="1.5" />
-				<path d="M21 15l-5-5L5 21" />
-			</svg>
-			<span>No media found</span>
-		</div>
-	{:else}
-		{#each items as item (item.id)}
-			{@const isSelected = selectedIds.includes(item.id)}
-			<div
-				class="grid-item"
-				class:selected={isSelected}
-				role="button"
-				tabindex="0"
-				onclick={(e: MouseEvent) => handleItemClick(item, e)}
-				onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && onselect?.(item)}
-			>
-				<!-- Selection checkbox -->
-				{#if selectable}
-					<div class="item-checkbox">
-						<input
-							type="checkbox"
-							checked={isSelected}
-							onclick={(e: MouseEvent) => {
-								e.stopPropagation();
-								toggleSelection(item);
-							}}
-							onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
-						/>
-					</div>
-				{/if}
-
-				<!-- Thumbnail -->
-				<div class="item-thumbnail">
-					{#if item.file_type === 'image'}
-						<img
-							src={item.thumbnail_url || item.url}
-							alt={item.alt_text || item.filename}
-							loading="lazy"
-						/>
-					{:else if item.file_type === 'video'}
-						<div class="type-icon video">
-							<svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
-								<path d="M8 5v14l11-7z" />
-							</svg>
-						</div>
-					{:else if item.file_type === 'document'}
-						<div class="type-icon document">
-							<svg
-								width="32"
-								height="32"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
-							>
-								<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
-								<path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" />
-							</svg>
-						</div>
-					{:else}
-						<div class="type-icon other">
-							<svg
-								width="32"
-								height="32"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
-							>
-								<path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z" />
-								<path d="M13 2v7h7" />
-							</svg>
+		{:else}
+			{#each items as item (item.id)}
+				{@const isSelected = selectedIds.includes(item.id)}
+				<div
+					class="grid-item"
+					class:selected={isSelected}
+					role="button"
+					tabindex="0"
+					onclick={(e: MouseEvent) => handleItemClick(item, e)}
+					onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && onselect?.(item)}
+				>
+					<!-- Selection checkbox -->
+					{#if selectable}
+						<div class="item-checkbox">
+							<input
+								type="checkbox"
+								checked={isSelected}
+								onclick={(e: MouseEvent) => {
+									e.stopPropagation();
+									toggleSelection(item);
+								}}
+								onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+							/>
 						</div>
 					{/if}
 
-					<!-- Optimization status badge -->
-					{#if showStatus && item.file_type === 'image'}
-						<div
-							class="status-badge"
-							style="background: {getStatusColor(item.processing_status || 'pending')}"
-						>
-							{#if item.is_optimized}
-								<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-									<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+					<!-- Thumbnail -->
+					<div class="item-thumbnail">
+						{#if item.file_type === 'image'}
+							<img
+								src={item.thumbnail_url || item.url}
+								alt={item.alt_text || item.filename}
+								loading="lazy"
+							/>
+						{:else if item.file_type === 'video'}
+							<div class="type-icon video">
+								<svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+									<path d="M8 5v14l11-7z" />
 								</svg>
-							{:else if item.processing_status === 'processing'}
+							</div>
+						{:else if item.file_type === 'document'}
+							<div class="type-icon document">
 								<svg
-									class="animate-spin"
-									width="12"
-									height="12"
+									width="32"
+									height="32"
 									viewBox="0 0 24 24"
 									fill="none"
 									stroke="currentColor"
-									stroke-width="3"
+									stroke-width="2"
 								>
-									<circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="32" />
+									<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+									<path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" />
 								</svg>
-							{:else if item.processing_status === 'failed'}
-								<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-									<path
-										d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-									/>
-								</svg>
-							{:else}
+							</div>
+						{:else}
+							<div class="type-icon other">
 								<svg
-									width="12"
-									height="12"
+									width="32"
+									height="32"
 									viewBox="0 0 24 24"
 									fill="none"
 									stroke="currentColor"
-									stroke-width="3"
+									stroke-width="2"
 								>
-									<circle cx="12" cy="12" r="10" />
+									<path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z" />
+									<path d="M13 2v7h7" />
 								</svg>
-							{/if}
-						</div>
-					{/if}
+							</div>
+						{/if}
 
-					<!-- Actions overlay -->
-					<div class="item-actions">
-						<button
-							type="button"
-							class="action-btn"
-							title="Preview"
-							onclick={(e: MouseEvent) => handlePreview(item, e)}
-						>
-							<svg
-								width="16"
-								height="16"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
+						<!-- Optimization status badge -->
+						{#if showStatus && item.file_type === 'image'}
+							<div
+								class="status-badge"
+								style="background: {getStatusColor(item.processing_status || 'pending')}"
 							>
-								<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-								<circle cx="12" cy="12" r="3" />
-							</svg>
-						</button>
-						{#if item.file_type === 'image' && !item.is_optimized}
+								{#if item.is_optimized}
+									<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+										<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+									</svg>
+								{:else if item.processing_status === 'processing'}
+									<svg
+										class="animate-spin"
+										width="12"
+										height="12"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="3"
+									>
+										<circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="32" />
+									</svg>
+								{:else if item.processing_status === 'failed'}
+									<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+										<path
+											d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+										/>
+									</svg>
+								{:else}
+									<svg
+										width="12"
+										height="12"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="3"
+									>
+										<circle cx="12" cy="12" r="10" />
+									</svg>
+								{/if}
+							</div>
+						{/if}
+
+						<!-- Actions overlay -->
+						<div class="item-actions">
 							<button
 								type="button"
-								class="action-btn optimize"
-								title="Optimize"
-								onclick={(e: MouseEvent) => handleOptimize(item, e)}
+								class="action-btn"
+								title="Preview"
+								onclick={(e: MouseEvent) => handlePreview(item, e)}
 							>
 								<svg
 									width="16"
@@ -300,46 +281,65 @@
 									stroke="currentColor"
 									stroke-width="2"
 								>
-									<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+									<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+									<circle cx="12" cy="12" r="3" />
 								</svg>
 							</button>
-						{/if}
-						<button
-							type="button"
-							class="action-btn delete"
-							title="Delete"
-							onclick={(e: MouseEvent) => handleDelete(item, e)}
-						>
-							<svg
-								width="16"
-								height="16"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
+							{#if item.file_type === 'image' && !item.is_optimized}
+								<button
+									type="button"
+									class="action-btn optimize"
+									title="Optimize"
+									onclick={(e: MouseEvent) => handleOptimize(item, e)}
+								>
+									<svg
+										width="16"
+										height="16"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="2"
+									>
+										<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+									</svg>
+								</button>
+							{/if}
+							<button
+								type="button"
+								class="action-btn delete"
+								title="Delete"
+								onclick={(e: MouseEvent) => handleDelete(item, e)}
 							>
-								<path
-									d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"
-								/>
-							</svg>
-						</button>
+								<svg
+									width="16"
+									height="16"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+								>
+									<path
+										d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"
+									/>
+								</svg>
+							</button>
+						</div>
 					</div>
-				</div>
 
-				<!-- Item info -->
-				<div class="item-info">
-					<span class="item-name" title={item.filename}>{item.filename}</span>
-					<div class="item-meta">
-						{#if item.width && item.height}
-							<span>{item.width}x{item.height}</span>
-						{/if}
-						<span>{formatBytes(item.file_size)}</span>
+					<!-- Item info -->
+					<div class="item-info">
+						<span class="item-name" title={item.filename}>{item.filename}</span>
+						<div class="item-meta">
+							{#if item.width && item.height}
+								<span>{item.width}x{item.height}</span>
+							{/if}
+							<span>{formatBytes(item.file_size)}</span>
+						</div>
 					</div>
 				</div>
-			</div>
-		{/each}
-	{/if}
-</div>
+			{/each}
+		{/if}
+	</div>
 </div>
 
 <style>

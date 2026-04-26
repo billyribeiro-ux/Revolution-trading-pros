@@ -259,6 +259,7 @@
 									class:active={addTags.includes(tag.slug)}
 									onclick={() => toggleAddTag(tag.slug)}
 									title="Add tag"
+									aria-label="Add tag"
 								>
 									<IconPlus size={14} />
 								</button>
@@ -268,6 +269,7 @@
 									class:active={removeTags.includes(tag.slug)}
 									onclick={() => toggleRemoveTag(tag.slug)}
 									title="Remove tag"
+									aria-label="Remove tag"
 								>
 									<IconMinus size={14} />
 								</button>
@@ -293,6 +295,7 @@
 									class:active={addRoomIds.includes(room.id)}
 									onclick={() => toggleAddRoom(room.id)}
 									title="Add to room"
+									aria-label="Add to room"
 								>
 									<IconPlus size={14} />
 								</button>
@@ -302,6 +305,7 @@
 									class:active={removeRoomIds.includes(room.id)}
 									onclick={() => toggleRemoveRoom(room.id)}
 									title="Remove from room"
+									aria-label="Remove from room"
 								>
 									<IconMinus size={14} />
 								</button>

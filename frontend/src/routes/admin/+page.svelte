@@ -956,16 +956,8 @@
 		z-index: -1;
 		pointer-events: none;
 		background:
-			radial-gradient(
-				ellipse 800px 600px at 100% 0%,
-				rgba(230, 184, 0, 0.06),
-				transparent 60%
-			),
-			radial-gradient(
-				ellipse 700px 500px at 0% 100%,
-				rgba(61, 90, 153, 0.05),
-				transparent 60%
-			);
+			radial-gradient(ellipse 800px 600px at 100% 0%, rgba(230, 184, 0, 0.06), transparent 60%),
+			radial-gradient(ellipse 700px 500px at 0% 100%, rgba(61, 90, 153, 0.05), transparent 60%);
 	}
 
 	/* Inner Container */

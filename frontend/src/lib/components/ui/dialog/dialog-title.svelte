@@ -7,7 +7,6 @@
 		class: className,
 		...restProps
 	}: DialogPrimitive.TitleProps = $props();
-
 </script>
 
 <DialogPrimitive.Title

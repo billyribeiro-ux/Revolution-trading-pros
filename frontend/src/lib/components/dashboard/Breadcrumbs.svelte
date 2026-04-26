@@ -70,7 +70,11 @@
 
 <!-- JSON-LD Schema Markup -->
 <svelte:head>
-	{@html '<scr' + 'ipt type="application/ld+json">' + JSON.stringify(breadcrumbSchema) + '</scr' + 'ipt>'}
+	{@html '<scr' +
+		'ipt type="application/ld+json">' +
+		JSON.stringify(breadcrumbSchema) +
+		'</scr' +
+		'ipt>'}
 </svelte:head>
 
 <!-- Breadcrumbs Navigation -->

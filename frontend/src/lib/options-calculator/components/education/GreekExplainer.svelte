@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { Lightbulb } from '@lucide/svelte';
+	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
+	// import { Lightbulb } from '@lucide/svelte';
+	import IconBulb from '@tabler/icons-svelte-runes/icons/bulb';
 	import gsap from 'gsap';
 	import { GREEK_EDUCATION } from './education-content.js';
 	import type { EducationEntry } from '../../engine/types.js';
@@ -20,7 +22,7 @@
 			gsap.fromTo(
 				cardEl,
 				{ y: 12, opacity: 0 },
-				{ y: 0, opacity: 1, duration: 0.3, ease: 'power2.out' },
+				{ y: 0, opacity: 1, duration: 0.3, ease: 'power2.out' }
 			);
 		}
 	});
@@ -73,8 +75,8 @@
 						background: var(--calc-accent-glow);
 						color: var(--calc-accent);
 						font-family: var(--calc-font-mono);
-					"
-				>{entry.symbol}</span>
+					">{entry.symbol}</span
+				>
 			{/if}
 			<span class="text-xs font-semibold" style="color: var(--calc-text);">
 				{entry.term}
@@ -97,7 +99,7 @@
 			class="flex items-start gap-1.5 rounded-lg px-2.5 py-2"
 			style="background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.1);"
 		>
-			<Lightbulb size={10} style="color: #f59e0b; flex-shrink: 0; margin-top: 2px;" />
+			<IconBulb size={10} style="color: #f59e0b; flex-shrink: 0; margin-top: 2px;" />
 			<p class="text-[9px] leading-relaxed" style="color: var(--calc-text-muted);">
 				{entry.proTip}
 			</p>

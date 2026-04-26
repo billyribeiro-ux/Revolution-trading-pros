@@ -16,23 +16,23 @@
 		showLogo = true,
 		showInfoBar = true,
 		showFrame = true,
-		isDark = true,
+		isDark = true
 	}: Props = $props();
 
 	let dateStr = $derived(
 		new Date().toLocaleDateString('en-US', {
 			month: 'short',
 			day: 'numeric',
-			year: 'numeric',
-		}),
+			year: 'numeric'
+		})
 	);
 
 	let timeStr = $derived(
 		new Date().toLocaleTimeString('en-US', {
 			hour: 'numeric',
 			minute: '2-digit',
-			timeZoneName: 'short',
-		}),
+			timeZoneName: 'short'
+		})
 	);
 
 	let logoFailed = $state(false);
@@ -55,20 +55,29 @@
 					{#if ticker}
 						<span
 							class="text-sm font-bold"
-							style="color: {isDark ? '#e8e8f0' : '#111827'}; font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;"
-						>{ticker}</span>
+							style="color: {isDark
+								? '#e8e8f0'
+								: '#111827'}; font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;"
+							>{ticker}</span
+						>
 					{/if}
 					{#if summaryText}
 						<span
 							class="text-xs"
-							style="color: {isDark ? '#8888aa' : '#6b7280'}; font-family: 'JetBrains Mono', 'Fira Code', monospace;"
-						>|&nbsp;&nbsp;{summaryText}</span>
+							style="color: {isDark
+								? '#8888aa'
+								: '#6b7280'}; font-family: 'JetBrains Mono', 'Fira Code', monospace;"
+							>|&nbsp;&nbsp;{summaryText}</span
+						>
 					{/if}
 				</div>
 				<span
 					class="text-[11px]"
-					style="color: {isDark ? '#8888aa' : '#6b7280'}; font-family: 'Inter', system-ui, sans-serif;"
-				>{dateStr} &bull; {timeStr}</span>
+					style="color: {isDark
+						? '#8888aa'
+						: '#6b7280'}; font-family: 'Inter', system-ui, sans-serif;"
+					>{dateStr} &bull; {timeStr}</span
+				>
 			</div>
 		{/if}
 
@@ -92,14 +101,20 @@
 					{:else}
 						<span
 							class="text-xs font-bold"
-							style="color: {isDark ? '#e8e8f0' : '#111827'}; font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;"
-						>Revolution Trading Pros</span>
+							style="color: {isDark
+								? '#e8e8f0'
+								: '#111827'}; font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;"
+							>Revolution Trading Pros</span
+						>
 					{/if}
 				</div>
 				<span
 					class="text-[11px]"
-					style="color: {isDark ? '#6366f1' : '#4f46e5'}; font-family: 'Inter', system-ui, sans-serif;"
-				>revolutiontradingpros.com</span>
+					style="color: {isDark
+						? '#6366f1'
+						: '#4f46e5'}; font-family: 'Inter', system-ui, sans-serif;"
+					>revolutiontradingpros.com</span
+				>
 			</div>
 		{/if}
 	</div>

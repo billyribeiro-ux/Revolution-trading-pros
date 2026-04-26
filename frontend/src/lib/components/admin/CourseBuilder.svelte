@@ -572,6 +572,7 @@
 										class="btn-icon"
 										onclick={() => openLessonForm(section.id)}
 										title="Add lesson"
+										aria-label="Add lesson"
 									>
 										<IconPlus size={16} />
 									</button>
@@ -580,6 +581,7 @@
 										class="btn-icon danger"
 										onclick={() => deleteSection(section.id)}
 										title="Delete section"
+										aria-label="Delete section"
 									>
 										<IconTrash size={16} />
 									</button>
@@ -615,7 +617,12 @@
 												{/if}
 											</div>
 											<div class="lesson-actions">
-												<button type="button" class="btn-icon" title="Edit lesson">
+												<button
+													type="button"
+													class="btn-icon"
+													title="Edit lesson"
+													aria-label="Edit lesson"
+												>
 													<IconEdit size={14} />
 												</button>
 												<button
@@ -623,6 +630,7 @@
 													class="btn-icon danger"
 													onclick={() => deleteLesson(lesson.id)}
 													title="Delete lesson"
+													aria-label="Delete lesson"
 												>
 													<IconTrash size={14} />
 												</button>
@@ -759,11 +767,21 @@
 							</div>
 							<div class="session-actions">
 								{#if session.embed_url}
-									<button type="button" class="btn-icon" title="Preview">
+									<button
+										type="button"
+										class="btn-icon"
+										title="Preview"
+										aria-label="Preview session"
+									>
 										<IconPlayerPlay size={16} />
 									</button>
 								{/if}
-								<button type="button" class="btn-icon danger" title="Delete">
+								<button
+									type="button"
+									class="btn-icon danger"
+									title="Delete"
+									aria-label="Delete session"
+								>
 									<IconTrash size={16} />
 								</button>
 							</div>
@@ -802,10 +820,21 @@
 								</span>
 							</div>
 							<div class="resource-actions">
-								<a href={resource.file_url} target="_blank" class="btn-icon" title="Download">
+								<a
+									href={resource.file_url}
+									target="_blank"
+									class="btn-icon"
+									title="Download"
+									aria-label="Download {resource.title}"
+								>
 									<IconEye size={16} />
 								</a>
-								<button type="button" class="btn-icon danger" title="Delete">
+								<button
+									type="button"
+									class="btn-icon danger"
+									title="Delete"
+									aria-label="Delete {resource.title}"
+								>
 									<IconTrash size={16} />
 								</button>
 							</div>

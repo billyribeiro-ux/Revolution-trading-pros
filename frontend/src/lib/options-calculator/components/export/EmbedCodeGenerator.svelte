@@ -1,5 +1,9 @@
 <script lang="ts">
-	import { Code2, Copy, X } from '@lucide/svelte';
+	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
+	// import { Code2, Copy, X } from '@lucide/svelte';
+	import IconCode from '@tabler/icons-svelte-runes/icons/code';
+	import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import gsap from 'gsap';
 	import { copyToClipboard } from '../../utils/share-utils.js';
 	import type { CalculatorState } from '../../state/calculator.svelte.js';
@@ -22,15 +26,16 @@
 			gsap.fromTo(
 				modalEl,
 				{ scale: 0.92, opacity: 0 },
-				{ scale: 1, opacity: 1, duration: 0.25, ease: 'back.out(1.5)' },
+				{ scale: 1, opacity: 1, duration: 0.25, ease: 'back.out(1.5)' }
 			);
 		}
 	});
 
 	let embedURL = $derived.by(() => {
-		const base = typeof window !== 'undefined'
-			? `${window.location.origin}/tools/options-calculator/embed`
-			: '/tools/options-calculator/embed';
+		const base =
+			typeof window !== 'undefined'
+				? `${window.location.origin}/tools/options-calculator/embed`
+				: '/tools/options-calculator/embed';
 		const params = new URLSearchParams();
 		params.set('theme', embedTheme);
 		if (calc.activeTicker) params.set('ticker', calc.activeTicker);
@@ -38,7 +43,7 @@
 	});
 
 	let embedCode = $derived(
-		`<iframe src="${embedURL}" width="${embedWidth}" height="${embedHeight}px" frameborder="0" style="border-radius:12px;border:1px solid #2a2a3a;" title="Black-Scholes Options Calculator" loading="lazy"></iframe>\n<p style="font-size:11px;color:#888;margin-top:4px;">Powered by <a href="https://revolutiontradingpros.com" target="_blank" rel="noopener">Revolution Trading Pros</a></p>`,
+		`<iframe src="${embedURL}" width="${embedWidth}" height="${embedHeight}px" frameborder="0" style="border-radius:12px;border:1px solid #2a2a3a;" title="Black-Scholes Options Calculator" loading="lazy"></iframe>\n<p style="font-size:11px;color:#888;margin-top:4px;">Powered by <a href="https://revolutiontradingpros.com" target="_blank" rel="noopener">Revolution Trading Pros</a></p>`
 	);
 
 	async function handleCopy(): Promise<void> {
@@ -91,11 +96,13 @@
 			<!-- Header -->
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-2">
-					<Code2 size={16} style="color: var(--calc-accent);" />
+					<IconCode size={16} style="color: var(--calc-accent);" />
 					<h3
 						class="text-sm font-semibold"
 						style="color: var(--calc-text); font-family: var(--calc-font-display);"
-					>Embed Calculator</h3>
+					>
+						Embed Calculator
+					</h3>
 				</div>
 				<button
 					onclick={handleClose}
@@ -103,14 +110,17 @@
 					style="color: var(--calc-text-muted);"
 					aria-label="Close"
 				>
-					<X size={16} />
+					<IconX size={16} />
 				</button>
 			</div>
 
 			<!-- Customization Options -->
 			<div class="grid grid-cols-3 gap-3">
 				<label class="flex flex-col gap-1">
-					<span class="text-[10px] uppercase tracking-wider font-medium" style="color: var(--calc-text-muted);">Width</span>
+					<span
+						class="text-[10px] uppercase tracking-wider font-medium"
+						style="color: var(--calc-text-muted);">Width</span
+					>
 					<input
 						type="text"
 						bind:value={embedWidth}
@@ -119,7 +129,10 @@
 					/>
 				</label>
 				<label class="flex flex-col gap-1">
-					<span class="text-[10px] uppercase tracking-wider font-medium" style="color: var(--calc-text-muted);">Height (px)</span>
+					<span
+						class="text-[10px] uppercase tracking-wider font-medium"
+						style="color: var(--calc-text-muted);">Height (px)</span
+					>
 					<input
 						type="text"
 						bind:value={embedHeight}
@@ -128,7 +141,10 @@
 					/>
 				</label>
 				<label class="flex flex-col gap-1">
-					<span class="text-[10px] uppercase tracking-wider font-medium" style="color: var(--calc-text-muted);">Theme</span>
+					<span
+						class="text-[10px] uppercase tracking-wider font-medium"
+						style="color: var(--calc-text-muted);">Theme</span
+					>
 					<select
 						bind:value={embedTheme}
 						class="text-xs px-2 py-1.5 rounded-lg outline-none cursor-pointer"
@@ -147,8 +163,7 @@
 			>
 				<pre
 					class="text-[10px] whitespace-pre-wrap break-all leading-relaxed"
-					style="color: var(--calc-text-secondary); font-family: var(--calc-font-mono);"
-				>{embedCode}</pre>
+					style="color: var(--calc-text-secondary); font-family: var(--calc-font-mono);">{embedCode}</pre>
 			</div>
 
 			<!-- Copy Button -->
@@ -157,7 +172,7 @@
 				class="flex items-center justify-center gap-1.5 w-full py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition-all duration-200"
 				style="background: var(--calc-accent); color: white;"
 			>
-				<Copy size={13} />
+				<IconCopy size={13} />
 				{copied ? 'Copied!' : 'Copy Embed Code'}
 			</button>
 		</div>

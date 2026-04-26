@@ -9,22 +9,17 @@
 
 import { json, error, type RequestEvent } from '@sveltejs/kit';
 
-// Production fallback - Rust API on Fly.io
-// ICT 7 FIX: VITE_API_URL does NOT include /api suffix - we add it here
 import { env } from '$env/dynamic/private';
-const PROD_API_ROOT =
-	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
-
-// API Base URL - use environment variable or fallback to production
-const getApiUrl = () => {
-	if (typeof process !== 'undefined' && process.env?.VITE_API_URL) {
-		return `${process.env.VITE_API_URL}/api`;
-	}
-	return `${PROD_API_ROOT}/api`;
-};
-
-// API Base URL (includes /api suffix)
-const API_URL = getApiUrl();
+// FIX-2026-04-26: process.env.VITE_API_URL → canonical private env pattern
+// const PROD_API_ROOT = env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+// const getApiUrl = () => {
+//   if (typeof process !== 'undefined' && process.env?.VITE_API_URL) {
+//     return `${process.env.VITE_API_URL}/api`;
+//   }
+//   return `${PROD_API_ROOT}/api`;
+// };
+// const API_URL = getApiUrl();
+const API_URL = `${env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev'}/api`;
 
 // Upload configuration
 const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB

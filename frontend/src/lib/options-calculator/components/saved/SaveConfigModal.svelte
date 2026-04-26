@@ -1,5 +1,8 @@
 <script lang="ts">
-	import { Save, X } from '@lucide/svelte';
+	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
+	// import { Save, X } from '@lucide/svelte';
+	import IconDeviceFloppy from '@tabler/icons-svelte-runes/icons/device-floppy';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import gsap from 'gsap';
 	import { saveConfig } from '../../utils/saved-configs.js';
 	import { formatCurrency } from '../../utils/formatters.js';
@@ -31,7 +34,7 @@
 					gsap.fromTo(
 						modalEl,
 						{ scale: 0.92, opacity: 0 },
-						{ scale: 1, opacity: 1, duration: 0.25, ease: 'back.out(1.5)' },
+						{ scale: 1, opacity: 1, duration: 0.25, ease: 'back.out(1.5)' }
 					);
 				}
 				nameInputEl?.focus();
@@ -53,8 +56,11 @@
 			ticker: calc.activeTicker || undefined,
 			strategyLegs: calc.strategyLegs.length > 0 ? [...calc.strategyLegs] : undefined,
 			tags: tags.trim()
-				? tags.split(',').map((t) => t.trim()).filter(Boolean)
-				: undefined,
+				? tags
+						.split(',')
+						.map((t) => t.trim())
+						.filter(Boolean)
+				: undefined
 		});
 
 		calc.addToast('success', `Configuration "${trimmedName}" saved!`);
@@ -107,11 +113,13 @@
 			<!-- Header -->
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-2">
-					<Save size={16} style="color: var(--calc-accent);" />
+					<IconDeviceFloppy size={16} style="color: var(--calc-accent);" />
 					<h3
 						class="text-sm font-semibold"
 						style="color: var(--calc-text); font-family: var(--calc-font-display);"
-					>Save Configuration</h3>
+					>
+						Save Configuration
+					</h3>
 				</div>
 				<button
 					onclick={handleClose}
@@ -119,7 +127,7 @@
 					style="color: var(--calc-text-muted);"
 					aria-label="Close"
 				>
-					<X size={16} />
+					<IconX size={16} />
 				</button>
 			</div>
 
@@ -136,7 +144,10 @@
 
 			<!-- Name field -->
 			<label class="flex flex-col gap-1">
-				<span class="text-[10px] uppercase tracking-wider font-medium" style="color: var(--calc-text-muted);">
+				<span
+					class="text-[10px] uppercase tracking-wider font-medium"
+					style="color: var(--calc-text-muted);"
+				>
 					Name *
 				</span>
 				<input
@@ -151,7 +162,10 @@
 
 			<!-- Description field -->
 			<label class="flex flex-col gap-1">
-				<span class="text-[10px] uppercase tracking-wider font-medium" style="color: var(--calc-text-muted);">
+				<span
+					class="text-[10px] uppercase tracking-wider font-medium"
+					style="color: var(--calc-text-muted);"
+				>
 					Description
 				</span>
 				<input
@@ -165,7 +179,10 @@
 
 			<!-- Tags field -->
 			<label class="flex flex-col gap-1">
-				<span class="text-[10px] uppercase tracking-wider font-medium" style="color: var(--calc-text-muted);">
+				<span
+					class="text-[10px] uppercase tracking-wider font-medium"
+					style="color: var(--calc-text-muted);"
+				>
 					Tags (comma-separated)
 				</span>
 				<input
@@ -183,14 +200,15 @@
 					onclick={handleClose}
 					class="flex-1 text-xs py-2.5 rounded-lg cursor-pointer"
 					style="color: var(--calc-text-muted); border: 1px solid var(--calc-border);"
-				>Cancel</button>
+					>Cancel</button
+				>
 				<button
 					onclick={handleSave}
 					disabled={!canSave}
 					class="flex-1 flex items-center justify-center gap-1.5 text-xs font-semibold py-2.5 rounded-lg cursor-pointer transition-all duration-150"
 					style="background: var(--calc-accent); color: white; opacity: {canSave ? 1 : 0.5};"
 				>
-					<Save size={12} />
+					<IconDeviceFloppy size={12} />
 					Save
 				</button>
 			</div>

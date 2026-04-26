@@ -13,7 +13,7 @@
 	 * @version 1.0.0
 	 */
 
-	import { onDestroy } from 'svelte';
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { fade, scale, fly } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
@@ -322,16 +322,32 @@
 	});
 
 	// Initialize global keyboard shortcut
-	$effect(() => {
-		if (browser) {
-			window.addEventListener('keydown', handleGlobalKeydown);
-		}
-	});
+	// FIX-2026-04-26: comment-out, verify, delete in follow-up.
+	// The old $effect below re-fires on every reactive run and adds a NEW keydown listener
+	// each time without first removing the previous one — causing listener accumulation.
+	// The separate onDestroy only cleaned up on component destroy, not between re-runs.
+	// Replaced with onMount + cleanup return so the listener is registered once and torn
+	// down correctly when the component is destroyed.
+	// $effect(() => {
+	// 	if (browser) {
+	// 		window.addEventListener('keydown', handleGlobalKeydown);
+	// 	}
+	// });
+	//
+	// FIX-2026-04-26: comment-out, verify, delete in follow-up.
+	// Superseded by the cleanup return inside onMount below.
+	// onDestroy(() => {
+	// 	if (browser) {
+	// 		window.removeEventListener('keydown', handleGlobalKeydown);
+	// 	}
+	// });
 
-	onDestroy(() => {
-		if (browser) {
+	onMount(() => {
+		// onMount only runs in the browser; no `browser` guard needed.
+		window.addEventListener('keydown', handleGlobalKeydown);
+		return () => {
 			window.removeEventListener('keydown', handleGlobalKeydown);
-		}
+		};
 	});
 </script>
 
@@ -355,6 +371,7 @@
 				<div class="search-icon">
 					<IconSearch size={20} />
 				</div>
+				<label for="command-palette-search" class="sr-only">Search commands</label>
 				<input
 					bind:this={inputRef}
 					type="text"

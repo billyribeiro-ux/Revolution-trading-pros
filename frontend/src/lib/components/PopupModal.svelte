@@ -1184,6 +1184,7 @@
 										bind:value={formData[field.name]}
 										class="form-input"
 										class:error={formErrors[field.name]}
+										aria-label={field.label || field.placeholder || field.name}
 										aria-invalid={formErrors[field.name] ? 'true' : 'false'}
 										aria-describedby={formErrors[field.name] ? `${field.name}-error` : undefined}
 									/>

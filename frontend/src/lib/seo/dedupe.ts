@@ -26,7 +26,13 @@ import { jsonLdHash } from './jsonld';
 // TAG REPRESENTATION
 // ═══════════════════════════════════════════════════════════════════════════════
 
-export type HeadTagType = 'title' | 'meta-name' | 'meta-property' | 'link-canonical' | 'link-alternate' | 'jsonld';
+export type HeadTagType =
+	| 'title'
+	| 'meta-name'
+	| 'meta-property'
+	| 'link-canonical'
+	| 'link-alternate'
+	| 'jsonld';
 
 export interface HeadTag {
 	type: HeadTagType;

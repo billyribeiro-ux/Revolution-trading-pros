@@ -76,7 +76,10 @@ services:
       db:
         condition: service_healthy
       redis:
-        condition: service_started
+        # FIX-2026-04-26: upgraded from service_started to service_healthy so
+        # the API waits for Redis to be ready (Phase 7.9)
+        # condition: service_started
+        condition: service_healthy
     healthcheck:
       # API exposes /health (no /api prefix). /health/detailed checks DB+Redis+storage.
       test: ["CMD", "curl", "-fsS", "http://localhost:8080/health"]

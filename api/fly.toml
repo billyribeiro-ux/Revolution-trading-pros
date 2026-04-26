@@ -1,6 +1,17 @@
 # fly.toml - Revolution Trading Pros API
 # Fly.io Best Practices Configuration - January 2026
 # See https://fly.io/docs/reference/configuration/
+#
+# Required Fly secrets (set via `fly secrets set KEY=value`):
+#   DATABASE_URL          — PostgreSQL connection string
+#   JWT_SECRET            — HS256 signing secret (≥32 chars)
+#   CORS_ORIGINS          — Comma-separated allowed origins
+#   R2_ACCESS_KEY_ID      — Cloudflare R2 access key
+#   R2_SECRET_ACCESS_KEY  — Cloudflare R2 secret key
+#   MEILI_URL             — Meilisearch instance URL
+#   MEILI_MASTER_KEY      — Meilisearch master key
+#   STRIPE_SECRET_KEY     — Stripe secret key (sk_live_... or sk_test_...)
+#   STRIPE_WEBHOOK_SECRET — Stripe webhook signing secret (whsec_...)
 
 app = 'revolution-trading-pros-api'
 primary_region = 'iad'

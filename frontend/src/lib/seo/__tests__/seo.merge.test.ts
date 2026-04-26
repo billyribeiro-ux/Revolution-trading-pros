@@ -94,14 +94,10 @@ describe('mergeSEO', () => {
 
 	it('deduplicates JSON-LD by @id', () => {
 		const a: SEOInput = {
-			jsonld: [
-				{ '@type': 'Organization', '@id': '#org', name: 'Old', url: 'https://old.com' }
-			]
+			jsonld: [{ '@type': 'Organization', '@id': '#org', name: 'Old', url: 'https://old.com' }]
 		};
 		const b: SEOInput = {
-			jsonld: [
-				{ '@type': 'Organization', '@id': '#org', name: 'New', url: 'https://new.com' }
-			]
+			jsonld: [{ '@type': 'Organization', '@id': '#org', name: 'New', url: 'https://new.com' }]
 		};
 		const result = mergeSEO(a, b);
 		expect(result.jsonld).toHaveLength(1);

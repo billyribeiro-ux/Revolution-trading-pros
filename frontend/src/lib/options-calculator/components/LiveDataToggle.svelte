@@ -17,7 +17,7 @@
 			gsap.to(indicatorEl, {
 				x: mode === 'live' ? '100%' : '0%',
 				duration: 0.25,
-				ease: 'power2.out',
+				ease: 'power2.out'
 			});
 		}
 	}
@@ -34,7 +34,9 @@
 		<div
 			bind:this={indicatorEl}
 			class="absolute top-0 left-0 w-1/2 h-full rounded-lg pointer-events-none transition-transform"
-			style="background: {isLive ? 'var(--calc-accent-glow)' : 'var(--calc-surface-hover)'}; transform: translateX({isLive ? '100%' : '0%'});"
+			style="background: {isLive
+				? 'var(--calc-accent-glow)'
+				: 'var(--calc-surface-hover)'}; transform: translateX({isLive ? '100%' : '0%'});"
 		></div>
 
 		<button
@@ -54,6 +56,7 @@
 	</div>
 
 	{#if isLive}
-		<span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background: var(--calc-call);"></span>
+		<span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background: var(--calc-call);"
+		></span>
 	{/if}
 </div>

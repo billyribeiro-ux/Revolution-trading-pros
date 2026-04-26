@@ -339,7 +339,7 @@
 
 		const issues: SEOAnalysis['issues'] = [];
 		const suggestions: string[] = [];
-		let overallScore = 100;
+		let overallScore: number;
 
 		// Extract plain text from content
 		const plainText = stripHtml(content);

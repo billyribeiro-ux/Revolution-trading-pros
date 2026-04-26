@@ -252,6 +252,7 @@
 										class="hide-btn"
 										onclick={() => widgetStore.toggleWidget(widget.id)}
 										title="Hide widget"
+										aria-label="Hide widget"
 									>
 										<IconEyeOff size={16} />
 									</button>
@@ -288,6 +289,7 @@
 										class="show-btn"
 										onclick={() => widgetStore.toggleWidget(widget.id)}
 										title="Show widget"
+										aria-label="Show widget"
 									>
 										<IconEye size={16} />
 										Show

@@ -181,16 +181,13 @@
 		priceHistoryLoading = true;
 		try {
 			const token = getAuthToken();
-			const response = await fetch(
-				`/api/admin/subscriptions/plans/${planId}/price-history`,
-				{
-					headers: {
-						Authorization: `Bearer ${token}`,
-						'Content-Type': 'application/json'
-					},
-					credentials: 'include'
-				}
-			);
+			const response = await fetch(`/api/admin/subscriptions/plans/${planId}/price-history`, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'Content-Type': 'application/json'
+				},
+				credentials: 'include'
+			});
 			if (response.ok) {
 				const data = await response.json();
 				priceHistory = (data.data || []) as PriceHistoryEntry[];
@@ -217,23 +214,20 @@
 		try {
 			const token = getAuthToken();
 			const amountCents = Math.round(priceAmount * 100);
-			const response = await fetch(
-				`/api/admin/subscriptions/plans/${priceTargetPlan.id}/price`,
-				{
-					method: 'POST',
-					headers: {
-						Authorization: `Bearer ${token}`,
-						'Content-Type': 'application/json'
-					},
-					credentials: 'include',
-					body: JSON.stringify({
-						amount_cents: amountCents,
-						currency: 'usd',
-						billing_interval: priceInterval,
-						apply_to: priceApplyTo
-					})
-				}
-			);
+			const response = await fetch(`/api/admin/subscriptions/plans/${priceTargetPlan.id}/price`, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'Content-Type': 'application/json'
+				},
+				credentials: 'include',
+				body: JSON.stringify({
+					amount_cents: amountCents,
+					currency: 'usd',
+					billing_interval: priceInterval,
+					apply_to: priceApplyTo
+				})
+			});
 
 			if (!response.ok) {
 				const errData = await response.json().catch(() => ({}));
@@ -863,24 +857,19 @@
 							<span class="apply-content">
 								<strong>New members only</strong>
 								<span class="apply-help">
-									Existing subscribers stay on the old price forever (grandfathered).
-									Only checkouts started after this change will see the new price.
+									Existing subscribers stay on the old price forever (grandfathered). Only checkouts
+									started after this change will see the new price.
 								</span>
 							</span>
 						</label>
 
 						<label class="apply-option" class:selected={priceApplyTo === 'next_renewal'}>
-							<input
-								type="radio"
-								name="apply-to"
-								value="next_renewal"
-								bind:group={priceApplyTo}
-							/>
+							<input type="radio" name="apply-to" value="next_renewal" bind:group={priceApplyTo} />
 							<span class="apply-content">
 								<strong>Everyone, on next renewal</strong>
 								<span class="apply-help">
-									Existing subscribers move to the new price at their next billing date.
-									No proration. Renewal date is preserved.
+									Existing subscribers move to the new price at their next billing date. No
+									proration. Renewal date is preserved.
 								</span>
 							</span>
 						</label>
@@ -895,8 +884,8 @@
 							<span class="apply-content">
 								<strong>Everyone, immediately (with proration)</strong>
 								<span class="apply-help">
-									Existing subscribers switch right now. Stripe issues a prorated charge
-									or credit on their next invoice for the unused portion of the old price.
+									Existing subscribers switch right now. Stripe issues a prorated charge or credit
+									on their next invoice for the unused portion of the old price.
 								</span>
 							</span>
 						</label>
@@ -963,8 +952,8 @@
 						</dl>
 						{#if priceApplyTo === 'immediate_proration'}
 							<p class="warn-text">
-								Heads up: Stripe will charge or credit existing subscribers right away.
-								Make sure your CS team is briefed.
+								Heads up: Stripe will charge or credit existing subscribers right away. Make sure
+								your CS team is briefed.
 							</p>
 						{/if}
 					</div>
@@ -973,11 +962,7 @@
 
 			<div class="modal-footer">
 				{#if !showPriceConfirm}
-					<button
-						class="btn-cancel"
-						onclick={closePriceModal}
-						disabled={priceSubmitting}
-					>
+					<button class="btn-cancel" onclick={closePriceModal} disabled={priceSubmitting}>
 						Cancel
 					</button>
 					<button
@@ -1409,7 +1394,9 @@
 		border-radius: 8px;
 		cursor: pointer;
 		border: 1px solid transparent;
-		transition: background 0.15s, border-color 0.15s;
+		transition:
+			background 0.15s,
+			border-color 0.15s;
 	}
 
 	.apply-option:hover {

@@ -7,6 +7,7 @@
 	 * Signup Page - Svelte 5 Runes Implementation
 	 * @version 2.0.0 - November 2025
 	 */
+	import { onMount } from 'svelte';
 	import { authStore } from '$lib/stores/auth.svelte';
 	import { registerAndLogin } from '$lib/api/auth';
 	import { goto } from '$app/navigation';
@@ -21,11 +22,19 @@
 	let errorMessage = $state('');
 	let validationErrors = $state<Record<string, string[]>>({});
 
-	// Redirect if already logged in - Svelte 5 effect
-	$effect(() => {
-		if ($authStore.user) {
-			goto('/account');
-		}
+	// Redirect if already logged in
+	// FIX-2026-04-26: comment-out, verify, delete in follow-up.
+	// The old $effect below is the same legacy_pre_subscribe cascade pattern that was
+	// fixed in admin/+layout.svelte — $effect re-fires on every reactive run that reads
+	// $authStore, which can cause multiple redundant goto() calls during store hydration.
+	// Replaced with onMount so the redirect fires exactly once, after the component mounts.
+	// $effect(() => {
+	// 	if ($authStore.user) {
+	// 		goto('/account');
+	// 	}
+	// });
+	onMount(() => {
+		if ($authStore.user) goto('/account');
 	});
 
 	async function handleSignup(e: Event) {
@@ -99,8 +108,8 @@
 					<p class="text-red-800 text-sm">{errorMessage}</p>
 					{#if Object.keys(validationErrors).length > 0}
 						<ul class="mt-2 list-disc list-inside text-red-700 text-sm">
-							{#each Object.entries(validationErrors) as [, errors]}
-								{#each errors as error}
+							{#each Object.entries(validationErrors) as [field, errors] (field)}
+								{#each errors as error (error)}
 									<li>{error}</li>
 								{/each}
 							{/each}

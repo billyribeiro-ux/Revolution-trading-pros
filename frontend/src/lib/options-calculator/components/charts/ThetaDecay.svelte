@@ -54,9 +54,7 @@
 			.attr('transform', `translate(${margin.left},${margin.top})`);
 
 		const totalDays = snapshots[snapshots.length - 1].daysFromNow;
-		const maxPrice = Math.max(
-			...snapshots.map((s) => Math.max(s.callPrice, s.putPrice)),
-		) * 1.1;
+		const maxPrice = Math.max(...snapshots.map((s) => Math.max(s.callPrice, s.putPrice))) * 1.1;
 
 		const x = scaleLinear().domain([0, totalDays]).range([0, innerW]);
 		const y = scaleLinear().domain([0, maxPrice]).range([innerH, 0]);
@@ -79,16 +77,22 @@
 
 		// Intrinsic value line
 		g.append('line')
-			.attr('x1', 0).attr('x2', innerW)
-			.attr('y1', y(intrinsicVal)).attr('y2', y(intrinsicVal))
+			.attr('x1', 0)
+			.attr('x2', innerW)
+			.attr('y1', y(intrinsicVal))
+			.attr('y2', y(intrinsicVal))
 			.attr('stroke', 'var(--calc-text-muted)')
-			.attr('stroke-width', 1).attr('stroke-dasharray', '4,4').attr('opacity', 0.5);
+			.attr('stroke-width', 1)
+			.attr('stroke-dasharray', '4,4')
+			.attr('opacity', 0.5);
 
 		g.append('text')
-			.attr('x', innerW - 4).attr('y', y(intrinsicVal) - 6)
+			.attr('x', innerW - 4)
+			.attr('y', y(intrinsicVal) - 6)
 			.attr('text-anchor', 'end')
 			.attr('fill', 'var(--calc-text-muted)')
-			.attr('font-size', '9px').attr('font-family', 'var(--calc-font-mono)')
+			.attr('font-size', '9px')
+			.attr('font-family', 'var(--calc-font-mono)')
 			.text(`Intrinsic $${intrinsicVal.toFixed(2)}`);
 
 		// Call decay line
@@ -129,16 +133,22 @@
 			const dayFromNow = totalDays - dte;
 			if (dayFromNow > 0 && dayFromNow < totalDays) {
 				g.append('line')
-					.attr('x1', x(dayFromNow)).attr('x2', x(dayFromNow))
-					.attr('y1', 0).attr('y2', innerH)
+					.attr('x1', x(dayFromNow))
+					.attr('x2', x(dayFromNow))
+					.attr('y1', 0)
+					.attr('y2', innerH)
 					.attr('stroke', 'var(--calc-border)')
-					.attr('stroke-width', 1).attr('stroke-dasharray', '2,4').attr('opacity', 0.4);
+					.attr('stroke-width', 1)
+					.attr('stroke-dasharray', '2,4')
+					.attr('opacity', 0.4);
 
 				g.append('text')
-					.attr('x', x(dayFromNow)).attr('y', -6)
+					.attr('x', x(dayFromNow))
+					.attr('y', -6)
 					.attr('text-anchor', 'middle')
 					.attr('fill', 'var(--calc-text-muted)')
-					.attr('font-size', '8px').attr('font-family', 'var(--calc-font-mono)')
+					.attr('font-size', '8px')
+					.attr('font-family', 'var(--calc-font-mono)')
 					.text(`${dte}d`);
 			}
 		}
@@ -155,9 +165,11 @@
 				.attr('opacity', 0.03);
 
 			g.append('text')
-				.attr('x', x(accelDay) + 4).attr('y', 14)
+				.attr('x', x(accelDay) + 4)
+				.attr('y', 14)
 				.attr('fill', 'var(--calc-warning)')
-				.attr('font-size', '9px').attr('font-family', 'var(--calc-font-body)')
+				.attr('font-size', '9px')
+				.attr('font-family', 'var(--calc-font-body)')
 				.attr('opacity', 0.7)
 				.text('Theta acceleration zone');
 		}
@@ -165,38 +177,51 @@
 		// Current time machine position
 		if (currentDay > 0) {
 			g.append('line')
-				.attr('x1', x(currentDay)).attr('x2', x(currentDay))
-				.attr('y1', 0).attr('y2', innerH)
+				.attr('x1', x(currentDay))
+				.attr('x2', x(currentDay))
+				.attr('y1', 0)
+				.attr('y2', innerH)
 				.attr('stroke', 'var(--calc-accent)')
-				.attr('stroke-width', 2).attr('opacity', 0.8);
+				.attr('stroke-width', 2)
+				.attr('opacity', 0.8);
 
 			g.append('text')
-				.attr('x', x(currentDay) + 4).attr('y', innerH - 4)
+				.attr('x', x(currentDay) + 4)
+				.attr('y', innerH - 4)
 				.attr('fill', 'var(--calc-accent)')
-				.attr('font-size', '9px').attr('font-family', 'var(--calc-font-mono)')
+				.attr('font-size', '9px')
+				.attr('font-family', 'var(--calc-font-mono)')
 				.text(`Day ${currentDay}`);
 		}
 
 		// Axes
-		const xAxisGen = axisBottom(x).ticks(8).tickFormat((d) => `${Number(d).toFixed(0)}d`);
-		const yAxisGen = axisLeft(y).ticks(6).tickFormat((d) => `$${Number(d).toFixed(1)}`);
+		const xAxisGen = axisBottom(x)
+			.ticks(8)
+			.tickFormat((d) => `${Number(d).toFixed(0)}d`);
+		const yAxisGen = axisLeft(y)
+			.ticks(6)
+			.tickFormat((d) => `$${Number(d).toFixed(1)}`);
 
 		g.append('g')
 			.attr('transform', `translate(0,${innerH})`)
 			.call(xAxisGen)
 			.attr('color', 'var(--calc-text-muted)')
-			.attr('font-family', 'var(--calc-font-mono)').attr('font-size', '10px');
+			.attr('font-family', 'var(--calc-font-mono)')
+			.attr('font-size', '10px');
 
 		g.append('g')
 			.call(yAxisGen)
 			.attr('color', 'var(--calc-text-muted)')
-			.attr('font-family', 'var(--calc-font-mono)').attr('font-size', '10px');
+			.attr('font-family', 'var(--calc-font-mono)')
+			.attr('font-size', '10px');
 
 		g.append('text')
-			.attr('x', innerW / 2).attr('y', innerH + 38)
+			.attr('x', innerW / 2)
+			.attr('y', innerH + 38)
 			.attr('text-anchor', 'middle')
 			.attr('fill', 'var(--calc-text-muted)')
-			.attr('font-size', '11px').attr('font-family', 'var(--calc-font-body)')
+			.attr('font-size', '11px')
+			.attr('font-family', 'var(--calc-font-body)')
 			.text('Days from Now');
 	});
 </script>
@@ -215,7 +240,10 @@
 		</button>
 
 		{#if calc.currentTimeMachineSnapshot}
-			<span class="text-xs" style="color: var(--calc-text-secondary); font-family: var(--calc-font-mono);">
+			<span
+				class="text-xs"
+				style="color: var(--calc-text-secondary); font-family: var(--calc-font-mono);"
+			>
 				Daily \u03b8: {formatCurrency(calc.currentGreeks.first.theta)}
 			</span>
 		{/if}

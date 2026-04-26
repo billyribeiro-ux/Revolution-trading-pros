@@ -6,8 +6,11 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 
-const PROD_API_ROOT = 'https://revolution-trading-pros-api.fly.dev';
-const API_ROOT = env.VITE_API_URL || env.BACKEND_URL || PROD_API_ROOT;
+// FIX-2026-04-26: env.VITE_API_URL → canonical pattern
+// const PROD_API_ROOT = 'https://revolution-trading-pros-api.fly.dev';
+// const API_ROOT = env.VITE_API_URL || env.BACKEND_URL || PROD_API_ROOT;
+const API_ROOT =
+	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
 export const POST: RequestHandler = async ({ request, fetch, cookies }) => {
 	try {

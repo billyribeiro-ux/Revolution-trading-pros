@@ -632,7 +632,13 @@
 											</span>
 										</div>
 										<div class="file-actions">
-											<a href={file.file_url} target="_blank" class="btn-icon" title="Download">
+											<a
+												href={file.file_url}
+												target="_blank"
+												class="btn-icon"
+												title="Download"
+												aria-label="Download file"
+											>
 												<IconDownload size={16} />
 											</a>
 											<button
@@ -640,6 +646,7 @@
 												class="btn-icon danger"
 												onclick={() => deleteFile(file.id)}
 												title="Delete"
+												aria-label="Delete file"
 											>
 												<IconTrash size={16} />
 											</button>
@@ -807,7 +814,13 @@
 							</div>
 							<div class="video-actions">
 								{#if video.embed_url}
-									<a href={video.embed_url} target="_blank" class="btn-icon" title="Watch">
+									<a
+										href={video.embed_url}
+										target="_blank"
+										class="btn-icon"
+										title="Watch"
+										aria-label="Watch video"
+									>
 										<IconPlayerPlay size={16} />
 									</a>
 								{/if}
@@ -816,6 +829,7 @@
 									class="btn-icon danger"
 									onclick={() => deleteVideo(video.id)}
 									title="Delete"
+									aria-label="Delete video"
 								>
 									<IconTrash size={16} />
 								</button>
@@ -941,10 +955,15 @@
 								<span class="doc-type">{doc.doc_type}</span>
 							</div>
 							<div class="doc-actions">
-								<button type="button" class="btn-icon" title="Edit">
+								<button type="button" class="btn-icon" title="Edit" aria-label="Edit document">
 									<IconEdit size={16} />
 								</button>
-								<button type="button" class="btn-icon danger" title="Delete">
+								<button
+									type="button"
+									class="btn-icon danger"
+									title="Delete"
+									aria-label="Delete document"
+								>
 									<IconTrash size={16} />
 								</button>
 							</div>
@@ -1011,6 +1030,7 @@
 										class="btn-icon danger"
 										onclick={() => revokeTvAccess(access.id)}
 										title="Revoke access"
+										aria-label="Revoke access"
 									>
 										<IconX size={16} />
 									</button>

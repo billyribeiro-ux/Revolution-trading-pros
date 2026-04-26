@@ -1,4 +1,16 @@
 /**
+ * ⚠️ FIX-2026-04-26: ORPHAN — no matching backend route exists.
+ * This client file was identified by the 2026-04-26 audit as having no Rust
+ * handler under api/src/routes/. Calls from this file will 404.
+ *
+ * Decision required: either build the matching backend route or delete this
+ * client. For now, exports are kept for git history; importers should not
+ * call into this file in production code paths.
+ *
+ * See AUDIT_REPORT.md §10 Finding 2 + §12 Finding 1.
+ */
+
+/**
  * Fluent Boards Pro - API Client
  * Complete project management API
  */

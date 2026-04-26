@@ -8,7 +8,6 @@
 		children,
 		...restProps
 	}: WithElementRef<HTMLAttributes<HTMLDivElement>> = $props();
-
 </script>
 
 <div

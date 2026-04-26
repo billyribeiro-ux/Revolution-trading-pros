@@ -2037,3 +2037,130 @@ pub fn admin_router() -> Router<AppState> {
         // Stats
         .route("/rooms/:room_slug/stats", get(get_room_stats))
 }
+
+// ═══════════════════════════════════════════════════════════════════════════════════
+// TESTS
+// ═══════════════════════════════════════════════════════════════════════════════════
+
+#[cfg(test)]
+mod tests {
+    use chrono::NaiveDate;
+
+    // ── TOS format string helpers ─────────────────────────────────────────────────
+    // Mirrors the TosFormatter helpers that live in the integration test fixtures
+    // (api/tests/explosive_swings/fixtures.rs).  The originals in that file are
+    // commented out with a FIX-2026-04-26 marker.  These are the canonical
+    // source-side copies; they only exist inside #[cfg(test)] because the
+    // application itself stores the pre-formatted string rather than generating it.
+    // FIX-2026-04-26: moved from api/tests/explosive_swings/alerts_test.rs
+
+    #[allow(clippy::too_many_arguments)]
+    fn tos_options(
+        action: &str,
+        quantity: i32,
+        ticker: &str,
+        shares_per_contract: i32,
+        contract_type: &str,
+        expiration: &NaiveDate,
+        strike: f64,
+        option_type: &str,
+        order_type: &str,
+        limit_price: Option<f64>,
+    ) -> String {
+        let qty_prefix = if action == "BUY" { "+" } else { "-" };
+        let exp_str = expiration.format("%d %b %y").to_string().to_uppercase();
+        let price_str = match (order_type, limit_price) {
+            ("LMT", Some(price)) => format!("@{:.2} LMT", price),
+            _ => "@MKT".to_string(),
+        };
+        format!(
+            "{} {}{} {} {} ({}) {} {} {} {}",
+            action,
+            qty_prefix,
+            quantity,
+            ticker,
+            shares_per_contract,
+            contract_type,
+            exp_str,
+            strike,
+            option_type,
+            price_str
+        )
+    }
+
+    fn tos_shares(
+        action: &str,
+        quantity: i32,
+        ticker: &str,
+        order_type: &str,
+        limit_price: Option<f64>,
+    ) -> String {
+        let qty_prefix = if action == "BUY" { "+" } else { "-" };
+        let price_str = match (order_type, limit_price) {
+            ("LMT", Some(price)) => format!("@{:.2} LMT", price),
+            _ => "@MKT".to_string(),
+        };
+        format!(
+            "{} {}{} {} {}",
+            action, qty_prefix, quantity, ticker, price_str
+        )
+    }
+
+    // ── TOS formatter unit tests ──────────────────────────────────────────────────
+
+    #[test]
+    fn test_tos_formatter_options_market_order() {
+        let expiration = NaiveDate::from_ymd_opt(2026, 1, 31).unwrap();
+        let tos_string = tos_options(
+            "BUY",
+            1,
+            "SPY",
+            100,
+            "Weeklys",
+            &expiration,
+            500.0,
+            "CALL",
+            "MKT",
+            None,
+        );
+        assert!(tos_string.contains("BUY +1 SPY"));
+        assert!(tos_string.contains("Weeklys"));
+        assert!(tos_string.contains("500"));
+        assert!(tos_string.contains("CALL"));
+        assert!(tos_string.contains("@MKT"));
+    }
+
+    #[test]
+    fn test_tos_formatter_options_limit_order() {
+        let expiration = NaiveDate::from_ymd_opt(2026, 2, 21).unwrap();
+        let tos_string = tos_options(
+            "SELL",
+            5,
+            "AAPL",
+            100,
+            "Monthly",
+            &expiration,
+            175.0,
+            "PUT",
+            "LMT",
+            Some(2.50),
+        );
+        assert!(tos_string.contains("SELL -5 AAPL"));
+        assert!(tos_string.contains("Monthly"));
+        assert!(tos_string.contains("175"));
+        assert!(tos_string.contains("PUT"));
+        assert!(tos_string.contains("@2.50 LMT"));
+    }
+
+    #[test]
+    fn test_tos_formatter_shares() {
+        let tos_string = tos_shares("BUY", 100, "GOOG", "MKT", None);
+        assert_eq!(tos_string, "BUY +100 GOOG @MKT");
+    }
+
+    #[test]
+    fn test_tos_formatter_shares_limit() {
+        let tos_string = tos_shares("SELL", 50, "MSFT", "LMT", Some(400.00));
+        assert_eq!(tos_string, "SELL -50 MSFT @400.00 LMT");
+    }
+}

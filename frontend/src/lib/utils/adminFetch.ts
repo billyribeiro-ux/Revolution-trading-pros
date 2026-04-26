@@ -93,7 +93,6 @@ export async function adminFetch<T = any>(
 		if (response.status === 401 && !skipAuthRedirect && browser) {
 			// Redirect to login with return URL
 			const returnUrl = encodeURIComponent(window.location.pathname);
-			// eslint-disable-next-line svelte/no-navigation-without-resolve -- base path is prepended
 			goto(`${base}/login?redirect=${returnUrl}`);
 			throw new AdminApiError('Unauthorized', 401);
 		}

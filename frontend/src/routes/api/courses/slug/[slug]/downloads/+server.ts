@@ -9,7 +9,10 @@
 import { json, type RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 
-const API_URL = env.API_URL || 'https://revolution-trading-pros-api.fly.dev';
+// FIX-2026-04-26: env.API_URL → canonical pattern
+// const API_URL = env.API_URL || 'https://revolution-trading-pros-api.fly.dev';
+const API_URL =
+	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
 export const GET: RequestHandler = async ({ params, cookies, fetch }) => {
 	const { slug } = params;
@@ -20,7 +23,9 @@ export const GET: RequestHandler = async ({ params, cookies, fetch }) => {
 
 	try {
 		// Get auth token from cookies if available
-		const accessToken = cookies.get('access_token');
+		// FIX-2026-04-26: comment-out, verify, delete in follow-up. Wrong cookie name — login proxy sets rtp_access_token, not access_token.
+		// const accessToken = cookies.get('access_token');
+		const accessToken = cookies.get('rtp_access_token');
 
 		const headers: Record<string, string> = {
 			'Content-Type': 'application/json'

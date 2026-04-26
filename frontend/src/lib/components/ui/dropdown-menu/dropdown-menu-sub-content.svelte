@@ -7,7 +7,6 @@
 		class: className,
 		...restProps
 	}: DropdownMenuPrimitive.SubContentProps = $props();
-
 </script>
 
 <DropdownMenuPrimitive.SubContent

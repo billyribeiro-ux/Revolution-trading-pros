@@ -294,7 +294,7 @@
 			</div>
 
 			<!-- Section Tabs -->
-			<nav class="section-tabs">
+			<nav class="section-tabs" aria-label="Form sections">
 				<button
 					type="button"
 					class="section-tab"

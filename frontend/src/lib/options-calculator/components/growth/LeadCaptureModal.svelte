@@ -1,5 +1,9 @@
 <script lang="ts">
-	import { Mail, X, TrendingUp } from '@lucide/svelte';
+	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
+	// import { Mail, X, TrendingUp } from '@lucide/svelte';
+	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
 	import gsap from 'gsap';
 
 	let modalEl: HTMLDivElement | undefined = $state();
@@ -40,7 +44,7 @@
 			gsap.fromTo(
 				modalEl,
 				{ scale: 0.9, opacity: 0, y: 20 },
-				{ scale: 1, opacity: 1, y: 0, duration: 0.3, ease: 'back.out(1.7)' },
+				{ scale: 1, opacity: 1, y: 0, duration: 0.3, ease: 'back.out(1.7)' }
 			);
 		}
 	});
@@ -56,7 +60,7 @@
 				onComplete: () => {
 					showModal = false;
 					localStorage.setItem(DISMISS_KEY, Date.now().toString());
-				},
+				}
 			});
 		} else {
 			showModal = false;
@@ -76,7 +80,7 @@
 			await fetch('/api/newsletter/subscribe', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ email: trimmed, source: 'options-calculator' }),
+				body: JSON.stringify({ email: trimmed, source: 'options-calculator' })
 			});
 		} catch {
 			// Silently fail — don't block UX for newsletter
@@ -139,7 +143,7 @@
 				style="color: var(--calc-text-muted);"
 				aria-label="Close"
 			>
-				<X size={16} />
+				<IconX size={16} />
 			</button>
 
 			{#if !submitted}
@@ -148,7 +152,7 @@
 					class="w-14 h-14 rounded-full flex items-center justify-center"
 					style="background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(0,212,170,0.15));"
 				>
-					<TrendingUp size={24} style="color: var(--calc-accent);" />
+					<IconTrendingUp size={24} style="color: var(--calc-accent);" />
 				</div>
 
 				<!-- Heading -->
@@ -160,7 +164,8 @@
 				</h3>
 
 				<p class="text-xs text-center leading-relaxed" style="color: var(--calc-text-muted);">
-					Join 18,000+ traders receiving actionable options insights, strategy breakdowns, and market analysis every week.
+					Join 18,000+ traders receiving actionable options insights, strategy breakdowns, and
+					market analysis every week.
 				</p>
 
 				<!-- Email Input -->
@@ -168,7 +173,7 @@
 					<span class="sr-only">Email address</span>
 					<div class="flex gap-2">
 						<div class="relative flex-1">
-							<Mail
+							<IconMail
 								size={14}
 								class="absolute left-3 top-1/2 -translate-y-1/2"
 								style="color: var(--calc-text-muted);"
@@ -185,7 +190,10 @@
 							onclick={handleSubmit}
 							disabled={!isValidEmail || isSubmitting}
 							class="text-xs font-semibold px-4 py-2.5 rounded-lg cursor-pointer transition-all duration-200 flex-shrink-0"
-							style="background: var(--calc-accent); color: white; opacity: {isValidEmail && !isSubmitting ? 1 : 0.5};"
+							style="background: var(--calc-accent); color: white; opacity: {isValidEmail &&
+							!isSubmitting
+								? 1
+								: 0.5};"
 						>
 							{isSubmitting ? '...' : 'Subscribe'}
 						</button>
@@ -206,7 +214,7 @@
 					class="w-14 h-14 rounded-full flex items-center justify-center"
 					style="background: rgba(16,185,129,0.1);"
 				>
-					<Mail size={24} style="color: #10b981;" />
+					<IconMail size={24} style="color: #10b981;" />
 				</div>
 				<h3
 					class="text-base font-bold text-center"

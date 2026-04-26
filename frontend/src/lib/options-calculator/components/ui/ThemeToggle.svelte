@@ -1,5 +1,8 @@
 <script lang="ts">
-	import { Sun, Moon } from '@lucide/svelte';
+	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
+	// import { Sun, Moon } from '@lucide/svelte';
+	import IconSun from '@tabler/icons-svelte-runes/icons/sun';
+	import IconMoon from '@tabler/icons-svelte-runes/icons/moon';
 	import gsap from 'gsap';
 
 	interface Props {
@@ -31,9 +34,9 @@
 >
 	<span bind:this={iconEl} class="flex items-center justify-center">
 		{#if theme === 'dark'}
-			<Sun size={16} />
+			<IconSun size={16} />
 		{:else}
-			<Moon size={16} />
+			<IconMoon size={16} />
 		{/if}
 	</span>
 </button>

@@ -40,6 +40,7 @@ impl Default for SchedulerConfig {
     }
 }
 
+// FIX-2026-04-26: ORPHAN — defined but never registered/called. Either wire up via routes/mod.rs / main.rs or delete in follow-up.
 /// Start the scheduler as a background task
 pub fn start_scheduler(pool: Arc<PgPool>, config: SchedulerConfig) {
     tokio::spawn(async move {

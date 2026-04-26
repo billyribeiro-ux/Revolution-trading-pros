@@ -1,5 +1,8 @@
 <script lang="ts">
-	import { X, Keyboard } from '@lucide/svelte';
+	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
+	// import { X, Keyboard } from '@lucide/svelte';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import IconKeyboard from '@tabler/icons-svelte-runes/icons/keyboard';
 	import gsap from 'gsap';
 	import { SHORTCUTS, CATEGORY_LABELS, matchesShortcut, isInputFocused } from './shortcuts.js';
 	import type { CalculatorState } from '../../state/calculator.svelte.js';
@@ -19,7 +22,7 @@
 			gsap.fromTo(
 				overlayEl,
 				{ scale: 0.92, opacity: 0 },
-				{ scale: 1, opacity: 1, duration: 0.25, ease: 'back.out(1.5)' },
+				{ scale: 1, opacity: 1, duration: 0.25, ease: 'back.out(1.5)' }
 			);
 		}
 	});
@@ -42,7 +45,7 @@
 		'tab-volsmile': 'volsmile',
 		'tab-theta': 'theta',
 		'tab-sensitivity': 'sensitivity',
-		'tab-chain': 'chain',
+		'tab-chain': 'chain'
 	};
 
 	/**
@@ -148,11 +151,13 @@
 			<!-- Header -->
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-2">
-					<Keyboard size={16} style="color: var(--calc-accent);" />
+					<IconKeyboard size={16} style="color: var(--calc-accent);" />
 					<h3
 						class="text-sm font-semibold"
 						style="color: var(--calc-text); font-family: var(--calc-font-display);"
-					>Keyboard Shortcuts</h3>
+					>
+						Keyboard Shortcuts
+					</h3>
 				</div>
 				<button
 					onclick={() => (calc.showShortcutsHelp = false)}
@@ -160,7 +165,7 @@
 					style="color: var(--calc-text-muted);"
 					aria-label="Close"
 				>
-					<X size={16} />
+					<IconX size={16} />
 				</button>
 			</div>
 
@@ -170,7 +175,9 @@
 					<h4
 						class="text-[10px] uppercase tracking-wider font-semibold"
 						style="color: var(--calc-text-muted);"
-					>{CATEGORY_LABELS[category as keyof typeof CATEGORY_LABELS] ?? category}</h4>
+					>
+						{CATEGORY_LABELS[category as keyof typeof CATEGORY_LABELS] ?? category}
+					</h4>
 
 					{#each shortcuts as shortcut (shortcut.id)}
 						<div
@@ -189,8 +196,8 @@
 									font-family: var(--calc-font-mono);
 									min-width: 28px;
 									text-align: center;
-								"
-							>{shortcut.display}</kbd>
+								">{shortcut.display}</kbd
+							>
 						</div>
 					{/each}
 				</div>

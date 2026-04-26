@@ -6,10 +6,7 @@
 	 * channel performance across the customer journey.
 	 */
 	import { browser } from '$app/environment';
-	import {
-		analyticsApi,
-		type AttributionReport
-	} from '$lib/api/analytics';
+	import { analyticsApi, type AttributionReport } from '$lib/api/analytics';
 	import AttributionChart from '$lib/components/analytics/AttributionChart.svelte';
 	import PeriodSelector from '$lib/components/analytics/PeriodSelector.svelte';
 

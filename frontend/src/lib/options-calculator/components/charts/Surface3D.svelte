@@ -103,9 +103,8 @@
 					const testInputs: BSInputs = { ...inputs, strikePrice: strike, timeToExpiry: tte };
 					const pricing = bsPrice(testInputs);
 					const optionPrice = optType === 'call' ? pricing.callPrice : pricing.putPrice;
-					const currentPremium = optType === 'call'
-						? bsPrice(inputs).callPrice
-						: bsPrice(inputs).putPrice;
+					const currentPremium =
+						optType === 'call' ? bsPrice(inputs).callPrice : bsPrice(inputs).putPrice;
 					const pl = optionPrice - currentPremium;
 
 					plValues.push(pl);
@@ -146,7 +145,7 @@
 					side: THREE.DoubleSide,
 					shininess: 40,
 					transparent: true,
-					opacity: 0.92,
+					opacity: 0.92
 				});
 
 				const mesh = new THREE.Mesh(geometry, material);
@@ -159,7 +158,7 @@
 					color: 0xffffff,
 					wireframe: true,
 					transparent: true,
-					opacity: 0.06,
+					opacity: 0.06
 				});
 				const wireMesh = new THREE.Mesh(geometry.clone(), wireMat);
 				wireMesh.name = 'plWireframe';
@@ -243,17 +242,29 @@
 		>
 			{autoRotate ? 'Auto-Rotate: ON' : 'Auto-Rotate: OFF'}
 		</button>
-		<span class="text-[10px]" style="color: var(--calc-text-muted); font-family: var(--calc-font-body);">
+		<span
+			class="text-[10px]"
+			style="color: var(--calc-text-muted); font-family: var(--calc-font-body);"
+		>
 			Drag to rotate · Scroll to zoom · Right-click to pan
 		</span>
 	</div>
 
 	<!-- 3D Canvas -->
-	<div bind:this={containerEl} class="relative w-full rounded-xl overflow-hidden" style="min-height: 320px; background: #0a0e1a;">
+	<div
+		bind:this={containerEl}
+		class="relative w-full rounded-xl overflow-hidden"
+		style="min-height: 320px; background: #0a0e1a;"
+	>
 		{#if isLoading}
-			<div class="absolute inset-0 flex items-center justify-center" style="color: var(--calc-text-muted);">
+			<div
+				class="absolute inset-0 flex items-center justify-center"
+				style="color: var(--calc-text-muted);"
+			>
 				<div class="flex flex-col items-center gap-2">
-					<div class="w-6 h-6 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+					<div
+						class="w-6 h-6 border-2 border-current border-t-transparent rounded-full animate-spin"
+					></div>
 					<span class="text-xs">Loading 3D surface...</span>
 				</div>
 			</div>

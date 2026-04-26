@@ -27,7 +27,11 @@
 	import KeyboardShortcuts from './power-user/KeyboardShortcuts.svelte';
 	import CTABanner from './growth/CTABanner.svelte';
 	import LeadCaptureModal from './growth/LeadCaptureModal.svelte';
-	import { Calculator as CalculatorIcon, Zap, FolderOpen } from '@lucide/svelte';
+	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
+	// import { Calculator as CalculatorIcon, Zap, FolderOpen } from '@lucide/svelte';
+	import IconCalculator from '@tabler/icons-svelte-runes/icons/calculator';
+	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
+	import IconFolderOpen from '@tabler/icons-svelte-runes/icons/folder-open';
 	import type { MarketSnapshot } from '../data/types.js';
 
 	const calc = createCalculatorState();
@@ -64,7 +68,7 @@
 				class="flex items-center justify-center w-9 h-9 rounded-xl"
 				style="background: var(--calc-accent-glow); color: var(--calc-accent);"
 			>
-				<CalculatorIcon size={20} />
+				<IconCalculator size={20} />
 			</div>
 			<div>
 				<h1
@@ -94,15 +98,15 @@
 					class="text-[10px] font-medium px-2.5 py-1 transition-colors cursor-pointer"
 					style={calc.calculatorMode === 'single'
 						? 'background: var(--calc-accent-glow); color: var(--calc-accent);'
-						: 'color: var(--calc-text-muted);'}
-				>Single</button>
+						: 'color: var(--calc-text-muted);'}>Single</button
+				>
 				<button
 					onclick={() => (calc.calculatorMode = 'strategy')}
 					class="text-[10px] font-medium px-2.5 py-1 transition-colors cursor-pointer"
 					style={calc.calculatorMode === 'strategy'
 						? 'background: var(--calc-accent-glow); color: var(--calc-accent);'
-						: 'color: var(--calc-text-muted);'}
-				>Strategy</button>
+						: 'color: var(--calc-text-muted);'}>Strategy</button
+				>
 			</div>
 
 			<!-- Scenario Toggle -->
@@ -113,14 +117,14 @@
 					? 'background: var(--calc-warning); color: white;'
 					: 'background: var(--calc-surface); color: var(--calc-text-muted); border: 1px solid var(--calc-border);'}
 			>
-				<Zap size={10} />
+				<IconBolt size={10} />
 				Scenarios
 			</button>
 
 			<!-- Data Source Badge -->
 			<DataSourceBadge {marketData} />
 
-				<!-- Phase 4: Education Toggle -->
+			<!-- Phase 4: Education Toggle -->
 			<EducationOverlay {calc} />
 
 			<!-- Phase 4: Export Menu -->
@@ -138,7 +142,7 @@
 				style="background: var(--calc-surface); color: var(--calc-text-muted); border: 1px solid var(--calc-border);"
 				title="Saved configurations"
 			>
-				<FolderOpen size={11} />
+				<IconFolderOpen size={11} />
 				<span class="hidden sm:inline">Saved</span>
 			</button>
 

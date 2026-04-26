@@ -7,7 +7,6 @@
 		class: className,
 		...restProps
 	}: DropdownMenuPrimitive.SeparatorProps = $props();
-
 </script>
 
 <DropdownMenuPrimitive.Separator

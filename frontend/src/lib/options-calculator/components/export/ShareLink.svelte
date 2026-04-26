@@ -1,5 +1,10 @@
 <script lang="ts">
-	import { Link2, Copy, ExternalLink, X } from '@lucide/svelte';
+	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
+	// import { Link2, Copy, ExternalLink, X } from '@lucide/svelte';
+	import IconLink from '@tabler/icons-svelte-runes/icons/link';
+	import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
+	import IconExternalLink from '@tabler/icons-svelte-runes/icons/external-link';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import gsap from 'gsap';
 	import { generateShareURL, copyToClipboard } from '../../utils/share-utils.js';
 	import type { CalculatorState } from '../../state/calculator.svelte.js';
@@ -20,13 +25,11 @@
 			mode: calc.calculatorMode,
 			activeTab: calc.activeTab,
 			ticker: calc.activeTicker || undefined,
-			strategyLegs: calc.strategyLegs.length > 0 ? calc.strategyLegs : undefined,
-		}),
+			strategyLegs: calc.strategyLegs.length > 0 ? calc.strategyLegs : undefined
+		})
 	);
 
-	let displayURL = $derived(
-		shareURL.length > 80 ? shareURL.slice(0, 77) + '\u2026' : shareURL,
-	);
+	let displayURL = $derived(shareURL.length > 80 ? shareURL.slice(0, 77) + '\u2026' : shareURL);
 
 	$effect(() => {
 		if (calc.showShareLink && modalEl) {
@@ -34,7 +37,7 @@
 			gsap.fromTo(
 				modalEl,
 				{ scale: 0.92, opacity: 0 },
-				{ scale: 1, opacity: 1, duration: 0.25, ease: 'back.out(1.5)' },
+				{ scale: 1, opacity: 1, duration: 0.25, ease: 'back.out(1.5)' }
 			);
 		}
 	});
@@ -93,11 +96,13 @@
 			<!-- Header -->
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-2">
-					<Link2 size={16} style="color: var(--calc-accent);" />
+					<IconLink size={16} style="color: var(--calc-accent);" />
 					<h3
 						class="text-sm font-semibold"
 						style="color: var(--calc-text); font-family: var(--calc-font-display);"
-					>Share Calculator</h3>
+					>
+						Share Calculator
+					</h3>
 				</div>
 				<button
 					onclick={handleClose}
@@ -105,7 +110,7 @@
 					style="color: var(--calc-text-muted);"
 					aria-label="Close"
 				>
-					<X size={16} />
+					<IconX size={16} />
 				</button>
 			</div>
 
@@ -133,7 +138,7 @@
 					class="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-xs font-semibold cursor-pointer transition-all duration-200"
 					style="background: var(--calc-accent); color: white;"
 				>
-					<Copy size={13} />
+					<IconCopy size={13} />
 					{copied ? 'Copied!' : 'Copy Link'}
 				</button>
 				<button
@@ -141,7 +146,7 @@
 					class="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg text-xs font-medium cursor-pointer"
 					style="background: var(--calc-surface-hover); color: var(--calc-text-secondary); border: 1px solid var(--calc-border);"
 				>
-					<ExternalLink size={13} />
+					<IconExternalLink size={13} />
 					Open
 				</button>
 			</div>

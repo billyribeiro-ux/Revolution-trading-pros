@@ -7,7 +7,6 @@
 		class: className,
 		...restProps
 	}: DialogPrimitive.OverlayProps = $props();
-
 </script>
 
 <DialogPrimitive.Overlay

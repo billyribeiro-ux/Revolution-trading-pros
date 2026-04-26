@@ -1,5 +1,10 @@
 <script lang="ts">
-	import { Lightbulb, TrendingUp, TrendingDown, X } from '@lucide/svelte';
+	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
+	// import { Lightbulb, TrendingUp, TrendingDown, X } from '@lucide/svelte';
+	import IconBulb from '@tabler/icons-svelte-runes/icons/bulb';
+	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
+	import IconTrendingDown from '@tabler/icons-svelte-runes/icons/trending-down';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import gsap from 'gsap';
 	import type { EducationEntry } from '../../engine/types.js';
 
@@ -20,7 +25,7 @@
 			gsap.fromTo(
 				cardEl,
 				{ scale: 0.85, opacity: 0, y: 8 },
-				{ scale: 1, opacity: 1, y: 0, duration: 0.3, ease: 'back.out(2)' },
+				{ scale: 1, opacity: 1, y: 0, duration: 0.3, ease: 'back.out(2)' }
 			);
 		}
 	});
@@ -36,14 +41,14 @@
 			y: 8,
 			duration: 0.15,
 			ease: 'power2.in',
-			onComplete: onClose,
+			onComplete: onClose
 		});
 	}
 
 	let truncatedExplanation = $derived(
 		entry.fullExplanation.length > 200 && !isExpanded
 			? entry.fullExplanation.slice(0, 200) + '...'
-			: entry.fullExplanation,
+			: entry.fullExplanation
 	);
 </script>
 
@@ -69,8 +74,8 @@
 							background: var(--calc-accent-glow);
 							color: var(--calc-accent);
 							font-family: var(--calc-font-mono);
-						"
-					>{entry.symbol}</span>
+						">{entry.symbol}</span
+					>
 				{/if}
 				<h4
 					class="text-sm font-semibold"
@@ -85,7 +90,7 @@
 				style="color: var(--calc-text-muted);"
 				aria-label="Close tooltip"
 			>
-				<X size={14} />
+				<IconX size={14} />
 			</button>
 		</div>
 
@@ -113,7 +118,10 @@
 			<div class="flex flex-col gap-1.5">
 				{#if entry.whenIncreases}
 					<div class="flex items-start gap-1.5">
-						<TrendingUp size={11} style="color: var(--calc-call); flex-shrink: 0; margin-top: 1px;" />
+						<IconTrendingUp
+							size={11}
+							style="color: var(--calc-call); flex-shrink: 0; margin-top: 1px;"
+						/>
 						<span class="text-[10px] leading-relaxed" style="color: var(--calc-text-muted);">
 							{entry.whenIncreases}
 						</span>
@@ -121,7 +129,10 @@
 				{/if}
 				{#if entry.whenDecreases}
 					<div class="flex items-start gap-1.5">
-						<TrendingDown size={11} style="color: var(--calc-put); flex-shrink: 0; margin-top: 1px;" />
+						<IconTrendingDown
+							size={11}
+							style="color: var(--calc-put); flex-shrink: 0; margin-top: 1px;"
+						/>
 						<span class="text-[10px] leading-relaxed" style="color: var(--calc-text-muted);">
 							{entry.whenDecreases}
 						</span>
@@ -135,7 +146,7 @@
 			class="flex items-start gap-2 rounded-lg px-3 py-2"
 			style="background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.12);"
 		>
-			<Lightbulb size={12} style="color: #f59e0b; flex-shrink: 0; margin-top: 1px;" />
+			<IconBulb size={12} style="color: #f59e0b; flex-shrink: 0; margin-top: 1px;" />
 			<p class="text-[10px] leading-relaxed" style="color: var(--calc-text-secondary);">
 				<span class="font-semibold" style="color: #f59e0b;">Pro Tip:</span>
 				{entry.proTip}
@@ -145,7 +156,10 @@
 		<!-- Related terms -->
 		{#if entry.relatedTerms && entry.relatedTerms.length > 0}
 			<div class="flex items-center gap-1.5 flex-wrap">
-				<span class="text-[9px] uppercase tracking-wider font-medium" style="color: var(--calc-text-muted);">
+				<span
+					class="text-[9px] uppercase tracking-wider font-medium"
+					style="color: var(--calc-text-muted);"
+				>
 					Related:
 				</span>
 				{#each entry.relatedTerms as termId (termId)}

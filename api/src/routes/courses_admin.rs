@@ -151,7 +151,13 @@ async fn get_course(
             .bind(course_id)
             .fetch_all(&state.db.pool)
             .await
-            .unwrap_or_default();
+            // FIX-2026-04-26: .unwrap_or_default();
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
 
     // Get lessons grouped by section
     let lessons: Vec<CourseLesson> =
@@ -159,7 +165,13 @@ async fn get_course(
             .bind(course_id)
             .fetch_all(&state.db.pool)
             .await
-            .unwrap_or_default();
+            // FIX-2026-04-26: .unwrap_or_default();
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
 
     // Get resources grouped by section/lesson
     let resources: Vec<CourseResource> =
@@ -167,7 +179,13 @@ async fn get_course(
             .bind(course_id)
             .fetch_all(&state.db.pool)
             .await
-            .unwrap_or_default();
+            // FIX-2026-04-26: .unwrap_or_default();
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
 
     // Get live sessions
     let live_sessions: Vec<CourseLiveSession> = sqlx::query_as(
@@ -176,7 +194,8 @@ async fn get_course(
     .bind(course_id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    // FIX-2026-04-26: .unwrap_or_default();
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))? ;
 
     // Build section responses with nested lessons and resources
     let section_responses: Vec<serde_json::Value> = sections
@@ -1269,7 +1288,13 @@ async fn get_enrollments(
     .bind(offset)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    // FIX-2026-04-26: .unwrap_or_default();
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     let total: (i64,) = sqlx::query_as(
         "SELECT COUNT(*) FROM user_course_enrollments WHERE course_id = $1 AND is_active = true",
@@ -1416,7 +1441,13 @@ async fn get_user_progress(
             .bind(course_id)
             .fetch_all(&state.db.pool)
             .await
-            .unwrap_or_default();
+            // FIX-2026-04-26: .unwrap_or_default();
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
 
     let progress_map: Vec<serde_json::Value> = lesson_progress
         .iter()
@@ -1461,7 +1492,8 @@ async fn get_categories(
     )
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    // FIX-2026-04-26: .unwrap_or_default();
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
 
     let cat_list: Vec<serde_json::Value> = categories
         .iter()
@@ -1591,7 +1623,13 @@ async fn clone_course(
             .bind(course_id)
             .fetch_all(&state.db.pool)
             .await
-            .unwrap_or_default();
+            // FIX-2026-04-26: .unwrap_or_default();
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
 
     let mut section_map: std::collections::HashMap<i64, i64> = std::collections::HashMap::new();
 
@@ -1627,7 +1665,13 @@ async fn clone_course(
             .bind(course_id)
             .fetch_all(&state.db.pool)
             .await
-            .unwrap_or_default();
+            // FIX-2026-04-26: .unwrap_or_default();
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
 
     for lesson in &lessons {
         if let Some(&new_section_id) = section_map.get(&lesson.section_id) {

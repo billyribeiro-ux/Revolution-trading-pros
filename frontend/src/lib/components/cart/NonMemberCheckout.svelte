@@ -475,6 +475,7 @@
 														name="coupon_code"
 														class="input-text"
 														placeholder="Coupon code"
+														aria-label="Coupon code"
 														bind:value={couponCode}
 													/>
 													<button type="submit" class="btn btn-default"> Apply coupon </button>

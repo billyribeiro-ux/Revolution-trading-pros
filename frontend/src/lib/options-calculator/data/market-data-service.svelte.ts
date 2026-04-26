@@ -20,7 +20,7 @@ import type {
 	HistoricalVolData,
 	MarketSnapshot,
 	ProviderStatus,
-	DataMode,
+	DataMode
 } from './types.js';
 
 /**
@@ -50,10 +50,7 @@ export function createMarketDataService() {
 	const mockAdapter = createMockAdapter();
 
 	const router = createProviderRouter({
-		providers: [
-			createPolygonAdapter(),
-			mockAdapter,
-		],
+		providers: [createPolygonAdapter(), mockAdapter],
 		maxRetries: 1,
 		timeoutMs: 8000,
 		onFallback(from, to, error) {
@@ -62,13 +59,13 @@ export function createMarketDataService() {
 		onAllFailed(capability, errors) {
 			console.error(`[MarketData] All providers failed for ${capability}:`, errors);
 			lastError = `Unable to fetch ${capability}. Please try again.`;
-		},
+		}
 	});
 
 	const fredRouter = createProviderRouter({
 		providers: [createFREDAdapter(), mockAdapter],
 		maxRetries: 1,
-		timeoutMs: 5000,
+		timeoutMs: 5000
 	});
 
 	// ── Debounce utility ─────────────────────────────────
@@ -120,7 +117,7 @@ export function createMarketDataService() {
 				fetchDividend(activeTicker),
 				fetchEarnings(activeTicker),
 				fetchHistoricalVol(activeTicker),
-				fetchRiskFreeRate(),
+				fetchRiskFreeRate()
 			]);
 
 			const quoteData = quote.status === 'fulfilled' ? quote.value : null;
@@ -139,27 +136,41 @@ export function createMarketDataService() {
 			const snapshot: MarketSnapshot = {
 				quote: quoteData,
 				dividends: divData ?? {
-					ticker: activeTicker, annualDividend: 0, dividendYield: 0,
-					frequency: 'none', source: 'mock',
+					ticker: activeTicker,
+					annualDividend: 0,
+					dividendYield: 0,
+					frequency: 'none',
+					source: 'mock'
 				},
 				earnings: earningsData ?? {
-					ticker: activeTicker, source: 'mock',
+					ticker: activeTicker,
+					source: 'mock'
 				},
 				historicalVol: hvData ?? {
-					ticker: activeTicker, hv10: 0.25, hv20: 0.25, hv30: 0.25,
-					hv60: 0.25, hv90: 0.25, source: 'mock',
+					ticker: activeTicker,
+					hv10: 0.25,
+					hv20: 0.25,
+					hv30: 0.25,
+					hv60: 0.25,
+					hv90: 0.25,
+					source: 'mock'
 				},
 				riskFreeRate: rateData ?? {
-					rate1M: 0.043, rate3M: 0.043, rate6M: 0.042, rate1Y: 0.04,
-					rate2Y: 0.039, rate10Y: 0.04,
-					date: new Date().toISOString().split('T')[0], source: 'mock',
+					rate1M: 0.043,
+					rate3M: 0.043,
+					rate6M: 0.042,
+					rate1Y: 0.04,
+					rate2Y: 0.039,
+					rate10Y: 0.04,
+					date: new Date().toISOString().split('T')[0],
+					source: 'mock'
 				},
 				suggestedInputs: {
 					spotPrice: quoteData.price,
 					volatility: hvData?.hv30 ?? 0.25,
 					dividendYield: divData?.dividendYield ?? 0,
-					riskFreeRate: rateData?.rate3M ?? 0.043,
-				},
+					riskFreeRate: rateData?.rate3M ?? 0.043
+				}
 			};
 
 			return snapshot;
@@ -175,7 +186,10 @@ export function createMarketDataService() {
 	async function fetchQuote(ticker: string): Promise<StockQuote> {
 		const cacheKey = cache.makeKey('quote', ticker);
 		const cached = cache.get<StockQuote>(cacheKey);
-		if (cached) { currentQuote = cached; return cached; }
+		if (cached) {
+			currentQuote = cached;
+			return cached;
+		}
 
 		const quote = await router.route('getQuote', (p) => p.getQuote(ticker));
 		cache.set(cacheKey, quote, CACHE_TTL.QUOTE, quote.source);
@@ -186,7 +200,10 @@ export function createMarketDataService() {
 	async function fetchExpirations(ticker: string): Promise<ExpirationList> {
 		const cacheKey = cache.makeKey('expirations', ticker);
 		const cached = cache.get<ExpirationList>(cacheKey);
-		if (cached) { currentExpirations = cached; return cached; }
+		if (cached) {
+			currentExpirations = cached;
+			return cached;
+		}
 
 		const expirations = await router.route('getExpirations', (p) => p.getExpirations(ticker));
 		cache.set(cacheKey, expirations, CACHE_TTL.EXPIRATIONS, expirations.source);
@@ -197,9 +214,14 @@ export function createMarketDataService() {
 	async function fetchOptionsChain(ticker: string, expiration: string): Promise<OptionsChain> {
 		const cacheKey = cache.makeKey('chain', ticker, expiration);
 		const cached = cache.get<OptionsChain>(cacheKey);
-		if (cached) { currentChain = cached; return cached; }
+		if (cached) {
+			currentChain = cached;
+			return cached;
+		}
 
-		const chain = await router.route('getOptionsChain', (p) => p.getOptionsChain(ticker, expiration));
+		const chain = await router.route('getOptionsChain', (p) =>
+			p.getOptionsChain(ticker, expiration)
+		);
 		cache.set(cacheKey, chain, CACHE_TTL.OPTIONS_CHAIN, chain.source);
 		currentChain = chain;
 		return chain;
@@ -208,7 +230,10 @@ export function createMarketDataService() {
 	async function fetchRiskFreeRate(): Promise<RiskFreeRateData> {
 		const cacheKey = cache.makeKey('riskfree', 'treasury');
 		const cached = cache.get<RiskFreeRateData>(cacheKey);
-		if (cached) { currentRiskFreeRate = cached; return cached; }
+		if (cached) {
+			currentRiskFreeRate = cached;
+			return cached;
+		}
 
 		const rate = await fredRouter.route('getRiskFreeRate', (p) => p.getRiskFreeRate());
 		cache.set(cacheKey, rate, CACHE_TTL.RISK_FREE_RATE, rate.source);
@@ -219,7 +244,10 @@ export function createMarketDataService() {
 	async function fetchDividend(ticker: string): Promise<DividendInfo> {
 		const cacheKey = cache.makeKey('dividend', ticker);
 		const cached = cache.get<DividendInfo>(cacheKey);
-		if (cached) { currentDividend = cached; return cached; }
+		if (cached) {
+			currentDividend = cached;
+			return cached;
+		}
 
 		const div = await router.route('getDividendInfo', (p) => p.getDividendInfo(ticker));
 		cache.set(cacheKey, div, CACHE_TTL.DIVIDEND, div.source);
@@ -230,7 +258,10 @@ export function createMarketDataService() {
 	async function fetchEarnings(ticker: string): Promise<EarningsInfo> {
 		const cacheKey = cache.makeKey('earnings', ticker);
 		const cached = cache.get<EarningsInfo>(cacheKey);
-		if (cached) { currentEarnings = cached; return cached; }
+		if (cached) {
+			currentEarnings = cached;
+			return cached;
+		}
 
 		const earnings = await router.route('getEarningsInfo', (p) => p.getEarningsInfo(ticker));
 		cache.set(cacheKey, earnings, CACHE_TTL.EARNINGS, earnings.source);
@@ -241,7 +272,10 @@ export function createMarketDataService() {
 	async function fetchHistoricalVol(ticker: string): Promise<HistoricalVolData> {
 		const cacheKey = cache.makeKey('hv', ticker);
 		const cached = cache.get<HistoricalVolData>(cacheKey);
-		if (cached) { currentHistoricalVol = cached; return cached; }
+		if (cached) {
+			currentHistoricalVol = cached;
+			return cached;
+		}
 
 		const hv = await router.route('getHistoricalVol', (p) => p.getHistoricalVol(ticker));
 		cache.set(cacheKey, hv, CACHE_TTL.HISTORICAL_VOL, hv.source);
@@ -269,20 +303,48 @@ export function createMarketDataService() {
 	}
 
 	return {
-		get dataMode() { return dataMode; },
-		get activeTicker() { return activeTicker; },
-		get isLoading() { return isLoading; },
-		get lastError() { return lastError; },
-		get providerStatuses() { return providerStatuses; },
-		get currentQuote() { return currentQuote; },
-		get currentExpirations() { return currentExpirations; },
-		get currentChain() { return currentChain; },
-		get currentRiskFreeRate() { return currentRiskFreeRate; },
-		get currentDividend() { return currentDividend; },
-		get currentEarnings() { return currentEarnings; },
-		get currentHistoricalVol() { return currentHistoricalVol; },
-		get searchResults() { return searchResults; },
-		get isSearching() { return isSearching; },
+		get dataMode() {
+			return dataMode;
+		},
+		get activeTicker() {
+			return activeTicker;
+		},
+		get isLoading() {
+			return isLoading;
+		},
+		get lastError() {
+			return lastError;
+		},
+		get providerStatuses() {
+			return providerStatuses;
+		},
+		get currentQuote() {
+			return currentQuote;
+		},
+		get currentExpirations() {
+			return currentExpirations;
+		},
+		get currentChain() {
+			return currentChain;
+		},
+		get currentRiskFreeRate() {
+			return currentRiskFreeRate;
+		},
+		get currentDividend() {
+			return currentDividend;
+		},
+		get currentEarnings() {
+			return currentEarnings;
+		},
+		get currentHistoricalVol() {
+			return currentHistoricalVol;
+		},
+		get searchResults() {
+			return searchResults;
+		},
+		get isSearching() {
+			return isSearching;
+		},
 
 		searchTicker,
 		selectTicker,
@@ -296,7 +358,7 @@ export function createMarketDataService() {
 		refreshProviderStatuses,
 		setDataMode,
 		clearData,
-		cache,
+		cache
 	};
 }
 

@@ -27,7 +27,7 @@ export function animateNumber(
 			const formatted = obj.value.toFixed(decimals);
 			element.textContent = `${prefix}${formatted}${suffix}`;
 			onUpdate?.(obj.value);
-		},
+		}
 	});
 }
 
@@ -45,14 +45,14 @@ export function staggerEntrance(
 		from = { opacity: 0, y: 20, scale: 0.95 },
 		duration = 0.5,
 		stagger = 0.08,
-		ease = 'power3.out',
+		ease = 'power3.out'
 	} = options;
 
 	return gsap.from(elements, {
 		...from,
 		duration,
 		stagger,
-		ease,
+		ease
 	});
 }
 
@@ -66,13 +66,13 @@ export function pulseHighlight(
 		boxShadow: `0 0 20px ${color}44, 0 0 40px ${color}22`,
 		scale: 1.02,
 		duration: 0.15,
-		ease: 'power2.out',
+		ease: 'power2.out'
 	});
 	tl.to(element, {
 		boxShadow: '0 0 0px transparent',
 		scale: 1,
 		duration: 0.4,
-		ease: 'power2.inOut',
+		ease: 'power2.inOut'
 	});
 	return tl;
 }
@@ -85,6 +85,6 @@ export function cardEntrance(element: HTMLElement, delay: number = 0): gsap.core
 		scale: 0.97,
 		duration: 0.6,
 		delay,
-		ease: 'power3.out',
+		ease: 'power3.out'
 	});
 }

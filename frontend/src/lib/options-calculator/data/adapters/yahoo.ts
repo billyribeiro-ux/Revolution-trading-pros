@@ -17,7 +17,7 @@ import type {
 	DividendInfo,
 	EarningsInfo,
 	HistoricalVolData,
-	OHLCV,
+	OHLCV
 } from '../types.js';
 
 export function createYahooAdapter(): MarketDataProvider {
@@ -43,7 +43,7 @@ export function createYahooAdapter(): MarketDataProvider {
 		earnings: true,
 		riskFreeRate: false,
 		tickerSearch: true,
-		streaming: false,
+		streaming: false
 	};
 
 	return {
@@ -55,12 +55,19 @@ export function createYahooAdapter(): MarketDataProvider {
 			try {
 				const res = await fetch(`${BASE}/quote?provider=yahoo&ticker=AAPL&healthcheck=true`);
 				return res.ok;
-			} catch { return false; }
+			} catch {
+				return false;
+			}
 		},
 
 		async getStatus(): Promise<ProviderStatus> {
 			const available = await this.isAvailable();
-			return { name: 'yahoo', displayName: 'Yahoo Finance', isAvailable: available, isConfigured: true };
+			return {
+				name: 'yahoo',
+				displayName: 'Yahoo Finance',
+				isAvailable: available,
+				isConfigured: true
+			};
 		},
 
 		async getQuote(ticker: string): Promise<StockQuote> {
@@ -97,6 +104,6 @@ export function createYahooAdapter(): MarketDataProvider {
 
 		async searchTickers(query: string, limit: number = 10): Promise<TickerSearchResult[]> {
 			return fetchAPI<TickerSearchResult[]>(`${BASE}/search`, { q: query, limit: String(limit) });
-		},
+		}
 	};
 }

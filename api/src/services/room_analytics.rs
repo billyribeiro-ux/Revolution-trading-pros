@@ -741,6 +741,33 @@ impl RoomAnalyticsService {
 mod tests {
     use super::*;
 
+    // ── helpers mirroring the inline logic in get_analytics_summary ──────────────
+
+    /// Calculate win rate from raw counts (mirrors inline logic, line ~251-255).
+    fn calculate_win_rate(wins: i32, losses: i32) -> f64 {
+        let total = wins + losses;
+        if total == 0 {
+            0.0
+        } else {
+            (wins as f64 / total as f64) * 100.0
+        }
+    }
+
+    /// Calculate profit factor from raw PnL totals (mirrors inline logic, line ~257-263).
+    fn calculate_profit_factor(total_wins: f64, total_losses: f64) -> f64 {
+        if total_losses == 0.0 {
+            if total_wins > 0.0 {
+                f64::INFINITY
+            } else {
+                0.0
+            }
+        } else {
+            total_wins / total_losses.abs()
+        }
+    }
+
+    // ── date-filter tests ─────────────────────────────────────────────────────────
+
     #[test]
     fn test_build_date_filter_no_dates() {
         let filter = RoomAnalyticsService::build_date_filter("exit_date", None, None);
@@ -768,5 +795,64 @@ mod tests {
         assert_eq!(summary.total_trades, 0);
         assert_eq!(summary.win_rate, 0.0);
         assert_eq!(summary.streak_type, "");
+    }
+
+    // ── profit-factor unit tests (ported from integration binary) ─────────────────
+    // FIX-2026-04-26: moved from api/tests/explosive_swings/stats_test.rs
+
+    #[test]
+    fn test_profit_factor_2_0() {
+        // Profit Factor = Total Wins / Total Losses
+        // If wins = $1000, losses = $500, profit factor = 2.0
+        let profit_factor = calculate_profit_factor(1000.0, 500.0);
+        assert!((profit_factor - 2.0).abs() < 0.01);
+    }
+
+    #[test]
+    fn test_profit_factor_infinite() {
+        // Profit Factor is infinite when there are no losses
+        let profit_factor = calculate_profit_factor(1000.0, 0.0);
+        assert!(profit_factor.is_infinite());
+        assert!(profit_factor.is_sign_positive());
+    }
+
+    #[test]
+    fn test_profit_factor_zero() {
+        // Profit Factor is 0 when there are no wins but there are losses
+        let profit_factor = calculate_profit_factor(0.0, 500.0);
+        assert_eq!(profit_factor, 0.0);
+    }
+
+    #[test]
+    fn test_profit_factor_less_than_one() {
+        // Profit Factor < 1 when losses exceed wins
+        let profit_factor = calculate_profit_factor(300.0, 600.0);
+        assert!((profit_factor - 0.5).abs() < 0.01);
+    }
+
+    // ── win-rate unit tests ───────────────────────────────────────────────────────
+
+    #[test]
+    fn test_win_rate_70_percent() {
+        let rate = calculate_win_rate(7, 3);
+        assert!((rate - 70.0).abs() < 0.01);
+    }
+
+    #[test]
+    fn test_win_rate_100_percent() {
+        let rate = calculate_win_rate(5, 0);
+        assert_eq!(rate, 100.0);
+    }
+
+    #[test]
+    fn test_win_rate_0_percent() {
+        let rate = calculate_win_rate(0, 3);
+        assert_eq!(rate, 0.0);
+    }
+
+    #[test]
+    fn test_win_rate_zero_trades() {
+        let rate = calculate_win_rate(0, 0);
+        assert_eq!(rate, 0.0);
     }
 }

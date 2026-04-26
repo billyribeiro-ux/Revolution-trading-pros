@@ -11,7 +11,6 @@
 
 import type { PageServerLoad } from './$types';
 
-
 export interface DailyVideo {
 	id: number;
 	title: string;
@@ -47,7 +46,6 @@ export const load: PageServerLoad = async ({ params, url }): Promise<PageData> =
 	// Using mock data until new implementation is ready
 	return getMockData(room_slug as string, page, perPage, search);
 };
-
 
 function getRoomName(slug: string): string {
 	const roomNames: Record<string, string> = {

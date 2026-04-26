@@ -15,7 +15,6 @@
 		class: className,
 		...restProps
 	}: ContentProps = $props();
-
 </script>
 
 <DropdownMenuPortal {...portalProps}>

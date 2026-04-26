@@ -4,7 +4,7 @@
 	import {
 		generateStructuredData,
 		generateFAQStructuredData,
-		generateOGMeta,
+		generateOGMeta
 	} from '$lib/options-calculator/utils/seo.js';
 
 	const structuredData = generateStructuredData();
@@ -35,8 +35,8 @@
 	<meta name="twitter:image" content={ogMeta['twitter:image']} />
 
 	<!-- Structured Data -->
-	{@html `<script type="application/ld+json">${JSON.stringify(structuredData)}</script>`}
-	{@html `<script type="application/ld+json">${JSON.stringify(faqData)}</script>`}
+	{@html '<script type="application/ld+json">' + JSON.stringify(structuredData) + '<' + '/script>'}
+	{@html '<script type="application/ld+json">' + JSON.stringify(faqData) + '<' + '/script>'}
 
 	<!-- Fonts -->
 	<link rel="preconnect" href="https://fonts.googleapis.com" />

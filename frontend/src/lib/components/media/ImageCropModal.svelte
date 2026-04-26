@@ -451,7 +451,12 @@
 			<div class="toolbar-group">
 				<span class="toolbar-label">Transform</span>
 				<div class="transform-buttons">
-					<button class="transform-btn" onclick={() => handleRotate(-90)} title="Rotate left">
+					<button
+						class="transform-btn"
+						onclick={() => handleRotate(-90)}
+						title="Rotate left"
+						aria-label="Rotate left"
+					>
 						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path
 								stroke-linecap="round"
@@ -461,7 +466,12 @@
 							/>
 						</svg>
 					</button>
-					<button class="transform-btn" onclick={() => handleRotate(90)} title="Rotate right">
+					<button
+						class="transform-btn"
+						onclick={() => handleRotate(90)}
+						title="Rotate right"
+						aria-label="Rotate right"
+					>
 						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path
 								stroke-linecap="round"
@@ -476,6 +486,7 @@
 						class:active={flipH}
 						onclick={handleFlipH}
 						title="Flip horizontal"
+						aria-label="Flip horizontal"
 					>
 						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path
@@ -491,6 +502,7 @@
 						class:active={flipV}
 						onclick={handleFlipV}
 						title="Flip vertical"
+						aria-label="Flip vertical"
 					>
 						<svg class="w-5 h-5 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path

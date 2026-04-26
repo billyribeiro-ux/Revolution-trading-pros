@@ -10,7 +10,6 @@
 
 import type { PageServerLoad } from './$types';
 
-
 export interface VideoResponse {
 	id: number;
 	title: string;
@@ -45,7 +44,6 @@ export interface ApiResponse {
 		last_page: number;
 	};
 }
-
 
 export const load: PageServerLoad = async ({ url }) => {
 	const page = parseInt(url.searchParams.get('page') || '1');

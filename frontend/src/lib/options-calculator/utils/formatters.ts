@@ -6,26 +6,26 @@ const currencyFormatter = new Intl.NumberFormat('en-US', {
 	style: 'currency',
 	currency: 'USD',
 	minimumFractionDigits: 2,
-	maximumFractionDigits: 2,
+	maximumFractionDigits: 2
 });
 
 const precisionCurrencyFormatter = new Intl.NumberFormat('en-US', {
 	style: 'currency',
 	currency: 'USD',
 	minimumFractionDigits: 4,
-	maximumFractionDigits: 4,
+	maximumFractionDigits: 4
 });
 
 const percentFormatter = new Intl.NumberFormat('en-US', {
 	style: 'percent',
 	minimumFractionDigits: 1,
-	maximumFractionDigits: 1,
+	maximumFractionDigits: 1
 });
 
 const precisionPercentFormatter = new Intl.NumberFormat('en-US', {
 	style: 'percent',
 	minimumFractionDigits: 2,
-	maximumFractionDigits: 2,
+	maximumFractionDigits: 2
 });
 
 /** Format as currency: $1,234.56 */

@@ -15,7 +15,7 @@ use axum::{
     body::Body,
     http::{header, Request, StatusCode},
 };
-use chrono::{Duration, NaiveDate, Utc};
+use chrono::{Duration, Utc};
 use serde_json::json;
 use tower::ServiceExt;
 
@@ -1152,65 +1152,69 @@ async fn test_developer_can_manage_alerts() {
 // TOS FORMAT STRING TESTS
 // ═══════════════════════════════════════════════════════════════════════════════════
 
-#[tokio::test]
-async fn test_tos_formatter_options_market_order() {
-    let expiration = NaiveDate::from_ymd_opt(2026, 1, 31).unwrap();
-    let tos_string = TosFormatter::options(
-        "BUY",
-        1,
-        "SPY",
-        100,
-        "Weeklys",
-        &expiration,
-        500.0,
-        "CALL",
-        "MKT",
-        None,
-    );
+// FIX-2026-04-26: moved to api/src/routes/room_content.rs (tests::test_tos_formatter_options_market_order)
+// #[tokio::test]
+// async fn test_tos_formatter_options_market_order() {
+//     let expiration = NaiveDate::from_ymd_opt(2026, 1, 31).unwrap();
+//     let tos_string = TosFormatter::options(
+//         "BUY",
+//         1,
+//         "SPY",
+//         100,
+//         "Weeklys",
+//         &expiration,
+//         500.0,
+//         "CALL",
+//         "MKT",
+//         None,
+//     );
+//
+//     assert!(tos_string.contains("BUY +1 SPY"));
+//     assert!(tos_string.contains("Weeklys"));
+//     assert!(tos_string.contains("500"));
+//     assert!(tos_string.contains("CALL"));
+//     assert!(tos_string.contains("@MKT"));
+// }
 
-    assert!(tos_string.contains("BUY +1 SPY"));
-    assert!(tos_string.contains("Weeklys"));
-    assert!(tos_string.contains("500"));
-    assert!(tos_string.contains("CALL"));
-    assert!(tos_string.contains("@MKT"));
-}
+// FIX-2026-04-26: moved to api/src/routes/room_content.rs (tests::test_tos_formatter_options_limit_order)
+// #[tokio::test]
+// async fn test_tos_formatter_options_limit_order() {
+//     let expiration = NaiveDate::from_ymd_opt(2026, 2, 21).unwrap();
+//     let tos_string = TosFormatter::options(
+//         "SELL",
+//         5,
+//         "AAPL",
+//         100,
+//         "Monthly",
+//         &expiration,
+//         175.0,
+//         "PUT",
+//         "LMT",
+//         Some(2.50),
+//     );
+//
+//     assert!(tos_string.contains("SELL -5 AAPL"));
+//     assert!(tos_string.contains("Monthly"));
+//     assert!(tos_string.contains("175"));
+//     assert!(tos_string.contains("PUT"));
+//     assert!(tos_string.contains("@2.50 LMT"));
+// }
 
-#[tokio::test]
-async fn test_tos_formatter_options_limit_order() {
-    let expiration = NaiveDate::from_ymd_opt(2026, 2, 21).unwrap();
-    let tos_string = TosFormatter::options(
-        "SELL",
-        5,
-        "AAPL",
-        100,
-        "Monthly",
-        &expiration,
-        175.0,
-        "PUT",
-        "LMT",
-        Some(2.50),
-    );
+// FIX-2026-04-26: moved to api/src/routes/room_content.rs (tests::test_tos_formatter_shares)
+// #[tokio::test]
+// async fn test_tos_formatter_shares() {
+//     let tos_string = TosFormatter::shares("BUY", 100, "GOOG", "MKT", None);
+//
+//     assert_eq!(tos_string, "BUY +100 GOOG @MKT");
+// }
 
-    assert!(tos_string.contains("SELL -5 AAPL"));
-    assert!(tos_string.contains("Monthly"));
-    assert!(tos_string.contains("175"));
-    assert!(tos_string.contains("PUT"));
-    assert!(tos_string.contains("@2.50 LMT"));
-}
-
-#[tokio::test]
-async fn test_tos_formatter_shares() {
-    let tos_string = TosFormatter::shares("BUY", 100, "GOOG", "MKT", None);
-
-    assert_eq!(tos_string, "BUY +100 GOOG @MKT");
-}
-
-#[tokio::test]
-async fn test_tos_formatter_shares_limit() {
-    let tos_string = TosFormatter::shares("SELL", 50, "MSFT", "LMT", Some(400.00));
-
-    assert_eq!(tos_string, "SELL -50 MSFT @400.00 LMT");
-}
+// FIX-2026-04-26: moved to api/src/routes/room_content.rs (tests::test_tos_formatter_shares_limit)
+// #[tokio::test]
+// async fn test_tos_formatter_shares_limit() {
+//     let tos_string = TosFormatter::shares("SELL", 50, "MSFT", "LMT", Some(400.00));
+//
+//     assert_eq!(tos_string, "SELL -50 MSFT @400.00 LMT");
+// }
 
 // ═══════════════════════════════════════════════════════════════════════════════════
 // ALERT TYPE VALIDATION TESTS

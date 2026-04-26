@@ -80,7 +80,6 @@ class MockMutationObserver {
 	takeRecords() {
 		return [];
 	}
-	constructor(_callback: MutationCallback) {}
 }
 
 beforeEach(() => {

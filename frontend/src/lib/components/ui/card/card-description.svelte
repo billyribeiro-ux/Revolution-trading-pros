@@ -8,7 +8,6 @@
 		children,
 		...restProps
 	}: WithElementRef<HTMLAttributes<HTMLParagraphElement>> = $props();
-
 </script>
 
 <p

@@ -143,11 +143,16 @@ impl Config {
             redis_url: std::env::var("REDIS_URL")
                 .unwrap_or_else(|_| "redis://localhost:6379".to_string()),
 
-            r2_endpoint: std::env::var("R2_ENDPOINT").unwrap_or_default(),
-            r2_access_key_id: std::env::var("R2_ACCESS_KEY_ID").unwrap_or_default(),
-            r2_secret_access_key: std::env::var("R2_SECRET_ACCESS_KEY").unwrap_or_default(),
-            r2_bucket: std::env::var("R2_BUCKET")
-                .unwrap_or_else(|_| "revolution-trading-media".to_string()),
+            // FIX-2026-04-26: r2_endpoint: std::env::var("R2_ENDPOINT").unwrap_or_default(),
+            r2_endpoint: std::env::var("R2_ENDPOINT").context("R2_ENDPOINT is required")?,
+            // FIX-2026-04-26: r2_access_key_id: std::env::var("R2_ACCESS_KEY_ID").unwrap_or_default(),
+            r2_access_key_id: std::env::var("R2_ACCESS_KEY_ID")
+                .context("R2_ACCESS_KEY_ID is required")?,
+            // FIX-2026-04-26: r2_secret_access_key: std::env::var("R2_SECRET_ACCESS_KEY").unwrap_or_default(),
+            r2_secret_access_key: std::env::var("R2_SECRET_ACCESS_KEY")
+                .context("R2_SECRET_ACCESS_KEY is required")?,
+            // FIX-2026-04-26: r2_bucket: std::env::var("R2_BUCKET").unwrap_or_else(|_| "revolution-trading-media".to_string()),
+            r2_bucket: std::env::var("R2_BUCKET").context("R2_BUCKET is required")?,
             r2_public_url: std::env::var("R2_PUBLIC_URL").unwrap_or_else(|_| {
                 "https://pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev".to_string()
             }),
@@ -158,18 +163,16 @@ impl Config {
                 .parse()
                 .unwrap_or(24),
 
-            stripe_secret_key: std::env::var("STRIPE_SECRET").unwrap_or_else(|_| {
-                tracing::warn!("STRIPE_SECRET not set - payment features will not work");
-                String::new()
-            }),
+            // FIX-2026-04-26: stripe_secret_key: std::env::var("STRIPE_SECRET").unwrap_or_else(|_| { warn(...); String::new() })
+            stripe_secret_key: std::env::var("STRIPE_SECRET")
+                .context("STRIPE_SECRET is required")?,
             stripe_publishable_key: std::env::var("STRIPE_PUBLISHABLE_KEY").unwrap_or_else(|_| {
                 tracing::warn!("STRIPE_PUBLISHABLE_KEY not set - payment features will not work");
                 String::new()
             }),
-            stripe_webhook_secret: std::env::var("STRIPE_WEBHOOK_SECRET").unwrap_or_else(|_| {
-                tracing::warn!("STRIPE_WEBHOOK_SECRET not set - webhook verification disabled");
-                String::new()
-            }),
+            // FIX-2026-04-26: stripe_webhook_secret: std::env::var("STRIPE_WEBHOOK_SECRET").unwrap_or_else(|_| { warn(...); String::new() })
+            stripe_webhook_secret: std::env::var("STRIPE_WEBHOOK_SECRET")
+                .context("STRIPE_WEBHOOK_SECRET is required")?,
 
             cors_origins: std::env::var("CORS_ORIGINS")
                 .unwrap_or_else(|_| {
@@ -198,7 +201,9 @@ impl Config {
 
             meilisearch_host: std::env::var("MEILISEARCH_HOST")
                 .unwrap_or_else(|_| "http://localhost:7700".to_string()),
-            meilisearch_api_key: std::env::var("MEILISEARCH_API_KEY").unwrap_or_default(),
+            // FIX-2026-04-26: meilisearch_api_key: std::env::var("MEILISEARCH_API_KEY").unwrap_or_default(),
+            meilisearch_api_key: std::env::var("MEILISEARCH_API_KEY")
+                .context("MEILISEARCH_API_KEY is required")?,
 
             // ICT 11+: NO HARDCODED EMAILS - must be set via environment variables
             superadmin_emails: std::env::var("SUPERADMIN_EMAILS")

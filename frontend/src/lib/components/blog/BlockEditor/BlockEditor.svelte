@@ -810,8 +810,8 @@
 		const index = editorState.blocks.findIndex((b) => b.id === blockId);
 		if (index === -1) return;
 
-		let newIndex = index;
-		let direction = '';
+		let newIndex: number;
+		let direction: string;
 
 		if (e.key === 'ArrowUp' && index > 0) {
 			newIndex = index - 1;

@@ -6,7 +6,6 @@
 		value = $bindable(undefined),
 		...restProps
 	}: DropdownMenuPrimitive.RadioGroupProps = $props();
-
 </script>
 
 <DropdownMenuPrimitive.RadioGroup

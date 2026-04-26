@@ -776,6 +776,7 @@ async fn refresh(
     tracing::debug!("Token refreshed for user: {}", claims.sub);
 
     Ok(Json(RefreshTokenResponse {
+        access_token: token.clone(),
         token,
         refresh_token: new_refresh_token,
         expires_in: state.config.jwt_expires_in * 3600,

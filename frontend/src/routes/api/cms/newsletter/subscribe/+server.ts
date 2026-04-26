@@ -1,6 +1,9 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { API_URL } from '$lib/config';
+// FIX-2026-04-26: '$lib/config' reads import.meta.env.VITE_API_URL (client env) — replaced with canonical private env pattern
+// import { API_URL } from '$lib/config';
+import { env } from '$env/dynamic/private';
+const API_URL = `${env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev'}/api`;
 
 interface SubscribeRequest {
 	email: string;
@@ -37,7 +40,9 @@ export const POST: RequestHandler = async ({ request, fetch, cookies }) => {
 		}
 
 		// Get auth token if available
-		const token = cookies.get('auth_token');
+		// FIX-2026-04-26: comment-out, verify, delete in follow-up. Wrong cookie name — login proxy sets rtp_access_token, not auth_token.
+		// const token = cookies.get('auth_token');
+		const token = cookies.get('rtp_access_token');
 
 		// Forward to backend API
 		const response = await fetch(`${API_URL}/newsletter/subscribe`, {

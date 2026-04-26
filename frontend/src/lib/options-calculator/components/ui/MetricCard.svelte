@@ -20,17 +20,11 @@
 		suffix = '',
 		tooltip = '',
 		colorize = true,
-		class: className = '',
+		class: className = ''
 	}: Props = $props();
 
 	let glowClass = $derived(
-		colorize
-			? value > 0.0001
-				? 'metric-positive'
-				: value < -0.0001
-					? 'metric-negative'
-					: ''
-			: ''
+		colorize ? (value > 0.0001 ? 'metric-positive' : value < -0.0001 ? 'metric-negative' : '') : ''
 	);
 </script>
 
@@ -45,12 +39,5 @@
 	>
 		{label}
 	</span>
-	<AnimatedNumber
-		{value}
-		{decimals}
-		{prefix}
-		{suffix}
-		{colorize}
-		class="text-sm font-semibold"
-	/>
+	<AnimatedNumber {value} {decimals} {prefix} {suffix} {colorize} class="text-sm font-semibold" />
 </div>

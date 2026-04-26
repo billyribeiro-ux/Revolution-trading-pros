@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { Info } from '@lucide/svelte';
+	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
+	// import { Info } from '@lucide/svelte';
+	import IconInfoCircle from '@tabler/icons-svelte-runes/icons/info-circle';
 
 	interface Props {
 		content: string;
@@ -21,7 +23,7 @@
 	tabindex="0"
 	aria-label="More information"
 >
-	<Info size={14} style="color: var(--calc-text-muted);" />
+	<IconInfoCircle size={14} style="color: var(--calc-text-muted);" />
 
 	{#if isVisible}
 		<div

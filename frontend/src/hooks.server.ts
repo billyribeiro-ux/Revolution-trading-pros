@@ -15,7 +15,7 @@
  * @version 3.0.0 - ICT 11+ Server-Side Auth + November 2025 Standards
  */
 
-import type { Handle } from '@sveltejs/kit';
+import type { Handle, HandleServerError } from '@sveltejs/kit';
 import { redirect, isRedirect } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { env } from '$env/dynamic/private';
@@ -186,8 +186,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 
 				// Set new access token cookie (backend sends access_token, not token)
 				const newToken = refreshData.access_token || refreshData.token;
-				const isSecure =
-					import.meta.env.PROD || !event.url.hostname.includes('localhost');
+				const isSecure = import.meta.env.PROD || !event.url.hostname.includes('localhost');
 				event.cookies.set('rtp_access_token', newToken, {
 					path: '/',
 					httpOnly: true,
@@ -291,15 +290,20 @@ const authHandler: Handle = async ({ event, resolve }) => {
 				console.warn('[Auth Hook] Could not decode token:', decodeError);
 			}
 
-			// Fallback: If token decode fails, still preserve session with minimal data
-			// This prevents logout during transient failures
-			event.locals.user = {
-				id: 0, // Fallback ID for transient failures
-				email: 'session@preserved.local',
-				name: 'Session Preserved',
-				role: 'user'
-			};
-			console.log('[Auth Hook] Session preserved with fallback user');
+			// FIX-2026-04-26: Synthetic fallback user replaced with null — forces
+			// re-authentication on transient API failure (correct security behaviour).
+			// Old block preserved below for reference:
+			// event.locals.user = {
+			// 	id: 0, // Fallback ID for transient failures
+			// 	email: 'session@preserved.local',
+			// 	name: 'Session Preserved',
+			// 	role: 'user'
+			// };
+			// console.log('[Auth Hook] Session preserved with fallback user');
+			event.locals.user = null;
+			console.warn(
+				'[Auth Hook] Token decode failed during transient failure — user set to null, re-auth required'
+			);
 		} else {
 			// ICT 7: Permanent failure or no tokens - redirect to login
 			console.error('[Auth Hook] Permanent auth failure:', error);
@@ -510,3 +514,69 @@ export const handle: Handle = sequence(
 	securityHeaders,
 	performanceHandler
 );
+
+/**
+ * Server-side error handler — Phase 6.4
+ *
+ * - Generates a unique error ID per occurrence.
+ * - Logs full details (URL, method, message, stack, ID) to console.error.
+ * - In production, forwards to VITE_ERROR_TRACKING_URL if configured
+ *   (mirrors hooks.client.ts:128 — server has no window.gtag).
+ * - Returns a safe, sanitized payload: never leaks stack to the browser.
+ */
+export const handleError: HandleServerError = async ({ error, event, status }) => {
+	const errorId = crypto.randomUUID();
+
+	const url = event.url?.toString() ?? 'unknown';
+	const method = event.request?.method ?? 'unknown';
+	const message = error instanceof Error ? error.message : String(error);
+	const stack = error instanceof Error ? (error.stack ?? '') : '';
+
+	// Always log full details on the server.
+	console.error('[handleError]', {
+		errorId,
+		status,
+		method,
+		url,
+		message,
+		stack
+	});
+
+	// In production, forward to the configured error-tracking endpoint
+	// (server-side equivalent of the gtag + fetch block in hooks.client.ts:128).
+	const isProduction =
+		(typeof process !== 'undefined' && process.env.NODE_ENV === 'production') ||
+		import.meta.env.PROD;
+
+	if (isProduction) {
+		const errorEndpoint = env.VITE_ERROR_TRACKING_URL;
+		if (errorEndpoint) {
+			try {
+				await fetch(errorEndpoint, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						errorId,
+						status,
+						method,
+						url,
+						message,
+						// Do NOT include stack in the outbound payload — it may contain
+						// internal file paths. Log it locally above instead.
+						timestamp: new Date().toISOString(),
+						source: 'server'
+					})
+				});
+			} catch (trackingError) {
+				// Don't let tracking failures cascade into the error handler itself.
+				console.warn('[handleError] Failed to forward to error tracking:', trackingError);
+			}
+		}
+	}
+
+	return {
+		message: 'Internal error',
+		errorId,
+		status: status >= 500 ? 500 : status
+	};
+};

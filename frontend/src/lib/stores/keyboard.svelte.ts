@@ -202,9 +202,7 @@ function handleKeyDown(event: KeyboardEvent) {
 	const target = event.target as HTMLElement | null;
 	const inEditableField =
 		!!target &&
-		(target.tagName === 'INPUT' ||
-			target.tagName === 'TEXTAREA' ||
-			target.isContentEditable);
+		(target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable);
 
 	// Build modifier string
 	const modifiers: string[] = [];

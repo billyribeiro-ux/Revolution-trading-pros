@@ -5,36 +5,38 @@
 Master component that renders all block types.
 
 ### Props
+
 ```typescript
 interface Props {
-  block: Block;           // Block data
-  isEditing?: boolean;    // Edit mode
-  isSelected?: boolean;   // Selection state
-  onUpdate?: (updates: Partial<Block>) => void;
-  onError?: (error: Error) => void;
+	block: Block; // Block data
+	isEditing?: boolean; // Edit mode
+	isSelected?: boolean; // Selection state
+	onUpdate?: (updates: Partial<Block>) => void;
+	onError?: (error: Error) => void;
 }
 ```
 
 ### Usage
+
 ```svelte
 <script>
-  import BlockRenderer from '$lib/components/cms/blocks/BlockRenderer.svelte';
+	import BlockRenderer from '$lib/components/cms/blocks/BlockRenderer.svelte';
 
-  let block = {
-    id: '1',
-    type: 'paragraph',
-    content: { text: 'Hello world' },
-    settings: {},
-    metadata: {}
-  };
+	let block = {
+		id: '1',
+		type: 'paragraph',
+		content: { text: 'Hello world' },
+		settings: {},
+		metadata: {}
+	};
 </script>
 
 <BlockRenderer
-  {block}
-  isEditing={true}
-  onUpdate={(updates) => {
-    block = { ...block, ...updates };
-  }}
+	{block}
+	isEditing={true}
+	onUpdate={(updates) => {
+		block = { ...block, ...updates };
+	}}
 />
 ```
 
@@ -43,6 +45,7 @@ interface Props {
 Centralized state management for all blocks.
 
 ### Methods
+
 ```typescript
 // Initialize
 const stateManager = new BlockStateManager();
@@ -78,12 +81,13 @@ manager.cleanupAll();
 ### useMediaControls
 
 Media player control hook.
+
 ```typescript
 const controls = useMediaControls({
-  blockId,
-  mediaElement: audioElement,
-  onEnded: () => console.log('Playback ended'),
-  onError: (error) => console.error(error)
+	blockId,
+	mediaElement: audioElement,
+	onEnded: () => console.log('Playback ended'),
+	onError: (error) => console.error(error)
 });
 
 // Usage
@@ -95,12 +99,13 @@ controls.seek(30);
 ### useAIGeneration
 
 AI content generation hook.
+
 ```typescript
 const ai = useAIGeneration({
-  blockId,
-  type: 'generate',
-  onSuccess: (output) => console.log(output),
-  onError: (error) => console.error(error)
+	blockId,
+	type: 'generate',
+	onSuccess: (output) => console.log(output),
+	onError: (error) => console.error(error)
 });
 
 // Usage
@@ -110,6 +115,7 @@ await ai.generate('Write about trading');
 ## Utilities
 
 ### Sanitization
+
 ```typescript
 import { sanitizeHTML, sanitizeURL, validateFile } from '$lib/utils/sanitization';
 
@@ -121,12 +127,13 @@ const safeUrl = sanitizeURL(userUrl);
 
 // File validation
 const validation = validateFile(file, {
-  maxSize: 10 * 1024 * 1024,
-  allowedTypes: ['image/jpeg']
+	maxSize: 10 * 1024 * 1024,
+	allowedTypes: ['image/jpeg']
 });
 ```
 
 ### Block Utilities
+
 ```typescript
 import { createBlock, cloneBlock, flattenBlocks } from '$lib/utils/blocks';
 

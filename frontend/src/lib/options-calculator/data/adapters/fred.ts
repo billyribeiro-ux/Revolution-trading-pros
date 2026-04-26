@@ -17,7 +17,7 @@ import type {
 	DividendInfo,
 	EarningsInfo,
 	HistoricalVolData,
-	OHLCV,
+	OHLCV
 } from '../types.js';
 
 export function createFREDAdapter(): MarketDataProvider {
@@ -32,7 +32,7 @@ export function createFREDAdapter(): MarketDataProvider {
 		earnings: false,
 		riskFreeRate: true,
 		tickerSearch: false,
-		streaming: false,
+		streaming: false
 	};
 
 	return {
@@ -55,7 +55,7 @@ export function createFREDAdapter(): MarketDataProvider {
 				name: 'fred',
 				displayName: 'FRED (Federal Reserve)',
 				isAvailable: available,
-				isConfigured: available,
+				isConfigured: available
 			};
 		},
 
@@ -96,6 +96,6 @@ export function createFREDAdapter(): MarketDataProvider {
 
 		async searchTickers(_query: string, _limit?: number): Promise<TickerSearchResult[]> {
 			throw new CapabilityNotSupportedError('fred', 'tickerSearch');
-		},
+		}
 	};
 }

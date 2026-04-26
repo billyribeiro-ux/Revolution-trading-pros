@@ -45,7 +45,9 @@
 
 	function handleQuantityChange(itemId: string, quantity: number) {
 		if (!Array.isArray(props.value)) return;
-		const updatedItems = props.value.map((i: PaymentItem) => (i.id === itemId ? { ...i, quantity } : i));
+		const updatedItems = props.value.map((i: PaymentItem) =>
+			i.id === itemId ? { ...i, quantity } : i
+		);
 		props.onchange?.(updatedItems);
 	}
 
@@ -66,7 +68,10 @@
 
 	function calculateTotal(): number {
 		if (Array.isArray(props.value)) {
-			return props.value.reduce((sum: number, item: PaymentItem) => sum + item.price * (item.quantity || 1), 0);
+			return props.value.reduce(
+				(sum: number, item: PaymentItem) => sum + item.price * (item.quantity || 1),
+				0
+			);
 		}
 		return props.value?.price || 0;
 	}

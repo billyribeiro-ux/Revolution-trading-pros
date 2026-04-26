@@ -37,12 +37,12 @@ export function calculateProbabilities(inputs: BSInputs, type: OptionType): Prob
 
 	const oneSDRange: [number, number] = [
 		spotPrice * Math.exp(-volSqrtT),
-		spotPrice * Math.exp(volSqrtT),
+		spotPrice * Math.exp(volSqrtT)
 	];
 
 	const twoSDRange: [number, number] = [
 		spotPrice * Math.exp(-2 * volSqrtT),
-		spotPrice * Math.exp(2 * volSqrtT),
+		spotPrice * Math.exp(2 * volSqrtT)
 	];
 
 	return {
@@ -52,6 +52,6 @@ export function calculateProbabilities(inputs: BSInputs, type: OptionType): Prob
 		expectedMove,
 		expectedMovePercent,
 		oneSDRange,
-		twoSDRange,
+		twoSDRange
 	};
 }

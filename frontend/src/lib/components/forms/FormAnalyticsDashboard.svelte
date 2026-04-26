@@ -15,7 +15,6 @@
 	 * @version 2.0.0
 	 */
 
-	import { onMount } from 'svelte';
 	import type { Form } from '$lib/api/forms';
 
 	interface Props {
@@ -192,9 +191,14 @@
 		}
 	}
 
-	onMount(() => {
-		fetchAnalytics();
-	});
+	// FIX-2026-04-26: comment-out, verify, delete in follow-up.
+	// onMount was redundant because the $effect below already fires on mount and whenever
+	// dateRange (or props.formId) changes. Keeping both caused a double-fetch on initial
+	// render. The $effect is the correct driver here since dateRange reactivity must
+	// trigger a refetch whenever the user changes the date range selector.
+	// onMount(() => {
+	// 	fetchAnalytics();
+	// });
 
 	$effect(() => {
 		fetchAnalytics();

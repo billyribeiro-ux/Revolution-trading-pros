@@ -16,7 +16,7 @@ import type {
 	DividendInfo,
 	EarningsInfo,
 	HistoricalVolData,
-	OHLCV,
+	OHLCV
 } from './types.js';
 
 /**

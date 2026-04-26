@@ -22,7 +22,10 @@ test.describe('CMS Editor Accessibility', () => {
 
 		// Log any violations for debugging
 		if (accessibilityScanResults.violations.length > 0) {
-			console.log('Accessibility violations:', JSON.stringify(accessibilityScanResults.violations, null, 2));
+			console.log(
+				'Accessibility violations:',
+				JSON.stringify(accessibilityScanResults.violations, null, 2)
+			);
 		}
 
 		expect(accessibilityScanResults.violations).toEqual([]);
@@ -75,7 +78,9 @@ test.describe('CMS Editor Accessibility', () => {
 				focusStyles.border !== 'none';
 
 			if (!hasFocusIndicator) {
-				console.warn(`Element may lack focus indicator: ${await element.evaluate((el) => el.outerHTML.slice(0, 100))}`);
+				console.warn(
+					`Element may lack focus indicator: ${await element.evaluate((el) => el.outerHTML.slice(0, 100))}`
+				);
 			}
 		}
 	});
@@ -162,14 +167,18 @@ test.describe('CMS Editor Accessibility', () => {
 			return;
 		}
 
-		const focusableInModal = await modal.$$('button, a, input, select, textarea, [tabindex]:not([tabindex="-1"])');
+		const focusableInModal = await modal.$$(
+			'button, a, input, select, textarea, [tabindex]:not([tabindex="-1"])'
+		);
 
 		// Tab through all elements
 		for (let i = 0; i < focusableInModal.length + 2; i++) {
 			await page.keyboard.press('Tab');
 
 			// Check that focus stays within modal
-			const activeElement = await page.evaluate(() => document.activeElement?.closest('[role="dialog"]'));
+			const activeElement = await page.evaluate(() =>
+				document.activeElement?.closest('[role="dialog"]')
+			);
 			expect(activeElement).not.toBeNull();
 		}
 	});
@@ -258,7 +267,9 @@ test.describe('Block Component Accessibility', () => {
 
 			// Right arrow should move to next tab
 			await page.keyboard.press('ArrowRight');
-			const focused = await page.evaluate(() => document.activeElement?.getAttribute('aria-selected'));
+			const focused = await page.evaluate(() =>
+				document.activeElement?.getAttribute('aria-selected')
+			);
 			expect(focused).toBeTruthy();
 		}
 	});

@@ -95,10 +95,8 @@ describe('useImageUpload', () => {
 		// Mock XMLHttpRequest with a proper class constructor
 		mockXHR = createMockXHR();
 		originalXHR = global.XMLHttpRequest;
-		global.XMLHttpRequest = class MockXMLHttpRequest {
-			constructor() {
-				return mockXHR as any;
-			}
+		global.XMLHttpRequest = function MockXMLHttpRequest() {
+			return mockXHR;
 		} as any;
 	});
 
@@ -827,10 +825,8 @@ describe('createPresignedUploader', () => {
 			status: 200
 		};
 
-		global.XMLHttpRequest = class MockXMLHttpRequest {
-			constructor() {
-				return mockXHR as any;
-			}
+		global.XMLHttpRequest = function MockXMLHttpRequest() {
+			return mockXHR;
 		} as any;
 	});
 
@@ -947,10 +943,8 @@ describe('Edge Cases', () => {
 
 		const mockXHR = createMockXHR();
 		const originalXHR = global.XMLHttpRequest;
-		global.XMLHttpRequest = class MockXMLHttpRequest {
-			constructor() {
-				return mockXHR as any;
-			}
+		global.XMLHttpRequest = function MockXMLHttpRequest() {
+			return mockXHR;
 		} as any;
 
 		try {

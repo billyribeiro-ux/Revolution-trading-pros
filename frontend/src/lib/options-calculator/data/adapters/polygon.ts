@@ -5,7 +5,11 @@
 // ============================================================
 
 import type { MarketDataProvider } from '../provider-interface.js';
-import { CapabilityNotSupportedError, AuthenticationError, RateLimitExceededError } from '../provider-interface.js';
+import {
+	CapabilityNotSupportedError,
+	AuthenticationError,
+	RateLimitExceededError
+} from '../provider-interface.js';
 import type {
 	ProviderCapabilities,
 	ProviderStatus,
@@ -17,7 +21,7 @@ import type {
 	DividendInfo,
 	EarningsInfo,
 	HistoricalVolData,
-	OHLCV,
+	OHLCV
 } from '../types.js';
 
 export function createPolygonAdapter(): MarketDataProvider {
@@ -53,7 +57,7 @@ export function createPolygonAdapter(): MarketDataProvider {
 		earnings: false,
 		riskFreeRate: false,
 		tickerSearch: true,
-		streaming: true,
+		streaming: true
 	};
 
 	return {
@@ -76,7 +80,7 @@ export function createPolygonAdapter(): MarketDataProvider {
 				name: 'polygon',
 				displayName: 'Polygon.io',
 				isAvailable: available,
-				isConfigured: available,
+				isConfigured: available
 			};
 		},
 
@@ -114,6 +118,6 @@ export function createPolygonAdapter(): MarketDataProvider {
 
 		async searchTickers(query: string, limit: number = 10): Promise<TickerSearchResult[]> {
 			return fetchAPI<TickerSearchResult[]>(`${BASE}/search`, { q: query, limit: String(limit) });
-		},
+		}
 	};
 }

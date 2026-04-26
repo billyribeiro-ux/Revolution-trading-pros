@@ -1,8 +1,9 @@
 # Revolution Trading Pros - Rust API
 # Multi-stage build for minimal image size
 
-# Build stage - Rust latest (AWS SDK requires 1.88+)
-FROM rust:latest AS builder
+# FIX-2026-04-26: pinned from rust:latest to explicit version (Phase 7.3)
+# FROM rust:latest AS builder
+FROM rust:1.87-bookworm AS builder
 
 # Install build dependencies (Debian-based image)
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -29,9 +30,10 @@ COPY .sqlx ./.sqlx
 ENV SQLX_OFFLINE=true
 RUN touch src/main.rs && cargo build --release
 
-# Runtime stage - ICT 11+ Fix: Use Debian Trixie for GLIBC 2.38+ compatibility
-# rust:latest uses GLIBC 2.38+ which requires Debian Trixie (testing) or newer
-FROM debian:trixie-slim AS runtime
+# FIX-2026-04-26: switched from trixie-slim (unstable) to bookworm-slim (stable LTS) (Phase 7.3)
+# rust:1.87-bookworm builder uses GLIBC 2.36 (bookworm), so bookworm-slim is the correct match
+# FROM debian:trixie-slim AS runtime
+FROM debian:bookworm-slim AS runtime
 
 # Install runtime dependencies (OpenSSL, CA certs, curl for health checks)
 RUN apt-get update && apt-get install -y --no-install-recommends \

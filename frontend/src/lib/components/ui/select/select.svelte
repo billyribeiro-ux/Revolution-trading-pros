@@ -8,7 +8,6 @@ https://svelte.dev/e/bind_invalid_expression -->
 		value = $bindable(undefined),
 		...restProps
 	}: SelectPrimitive.RootProps = $props();
-
 </script>
 
 <SelectPrimitive.Root bind:open bind:value={value as never} {...restProps} />

@@ -223,7 +223,7 @@ export function getCsrfHeaders(method: string): Record<string, string> {
  * Call this when server sends a new token in response header
  */
 export function handleCsrfTokenFromResponse(headers: Headers | Record<string, string>): void {
-	let newToken: string | null = null;
+	let newToken: string | null;
 
 	if (headers instanceof Headers) {
 		newToken = headers.get(CSRF_HEADER_NAME) || headers.get(CSRF_HEADER_NAME.toLowerCase());

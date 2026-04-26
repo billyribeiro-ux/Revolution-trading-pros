@@ -721,7 +721,8 @@
 				aria-selected={selectedBlockId === block.id}
 				tabindex={selectedBlockId === block.id ? 0 : -1}
 				onclick={() => handleBlockClick(block.id)}
-				onkeydown={(e: KeyboardEvent) => (e.key === 'Enter' || e.key === ' ') && handleBlockClick(block.id)}
+				onkeydown={(e: KeyboardEvent) =>
+					(e.key === 'Enter' || e.key === ' ') && handleBlockClick(block.id)}
 				ondragstart={(e) => handleDragStart(e, block.id, index)}
 				ondragover={(e) => handleDragOver(e, index)}
 				ondragend={handleDragEnd}

@@ -13,7 +13,6 @@
 		inset,
 		...restProps
 	}: GroupHeadingProps = $props();
-
 </script>
 
 <DropdownMenuPrimitive.GroupHeading

@@ -1,5 +1,9 @@
 <script lang="ts">
-	import { Search, X, Loader2 } from '@lucide/svelte';
+	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
+	// import { Search, X, Loader2 } from '@lucide/svelte';
+	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import IconLoader2 from '@tabler/icons-svelte-runes/icons/loader-2';
 	import gsap from 'gsap';
 	import { formatCurrency } from '../utils/formatters.js';
 	import type { MarketDataService } from '../data/market-data-service.svelte.js';
@@ -93,14 +97,17 @@
 	}
 
 	function handleBlur() {
-		setTimeout(() => { isOpen = false; }, 200);
+		setTimeout(() => {
+			isOpen = false;
+		}, 200);
 	}
 
 	$effect(() => {
 		if (isOpen && dropdownEl) {
-			gsap.fromTo(dropdownEl,
+			gsap.fromTo(
+				dropdownEl,
 				{ y: -8, opacity: 0 },
-				{ y: 0, opacity: 1, duration: 0.2, ease: 'power2.out' },
+				{ y: 0, opacity: 1, duration: 0.2, ease: 'power2.out' }
 			);
 		}
 	});
@@ -109,7 +116,11 @@
 <div class="relative w-full max-w-xs">
 	<!-- Input -->
 	<div class="relative flex items-center">
-		<Search size={14} class="absolute left-2.5 pointer-events-none" style="color: var(--calc-text-muted);" />
+		<IconSearch
+			size={14}
+			class="absolute left-2.5 pointer-events-none"
+			style="color: var(--calc-text-muted);"
+		/>
 		<input
 			bind:this={inputEl}
 			type="text"
@@ -120,7 +131,9 @@
 			onblur={handleBlur}
 			placeholder="Search ticker..."
 			class="w-full text-xs pl-8 pr-8 py-1.5 rounded-lg outline-none transition-all"
-			style="background: var(--calc-surface); color: var(--calc-text); border: 1px solid {isOpen ? 'var(--calc-accent)' : 'var(--calc-border)'}; font-family: var(--calc-font-mono);"
+			style="background: var(--calc-surface); color: var(--calc-text); border: 1px solid {isOpen
+				? 'var(--calc-accent)'
+				: 'var(--calc-border)'}; font-family: var(--calc-font-mono);"
 			autocomplete="off"
 			spellcheck="false"
 			role="combobox"
@@ -131,7 +144,11 @@
 		/>
 
 		{#if searching}
-			<Loader2 size={12} class="absolute right-2.5 animate-spin" style="color: var(--calc-accent);" />
+			<IconLoader2
+				size={12}
+				class="absolute right-2.5 animate-spin"
+				style="color: var(--calc-accent);"
+			/>
 		{:else if activeTicker}
 			<button
 				onclick={clearTicker}
@@ -139,7 +156,7 @@
 				style="color: var(--calc-text-muted);"
 				aria-label="Clear ticker"
 			>
-				<X size={12} />
+				<IconX size={12} />
 			</button>
 		{/if}
 	</div>
@@ -147,15 +164,23 @@
 	<!-- Active Ticker Display -->
 	{#if activeTicker && activeQuote && !isOpen}
 		<div class="flex items-center gap-2 mt-1.5 px-1">
-			<span class="text-xs font-bold" style="color: var(--calc-text); font-family: var(--calc-font-mono);">
+			<span
+				class="text-xs font-bold"
+				style="color: var(--calc-text); font-family: var(--calc-font-mono);"
+			>
 				{activeTicker}
 			</span>
-			<span class="text-xs" style="color: var(--calc-text-secondary); font-family: var(--calc-font-mono);">
+			<span
+				class="text-xs"
+				style="color: var(--calc-text-secondary); font-family: var(--calc-font-mono);"
+			>
 				{formatCurrency(activeQuote.price)}
 			</span>
 			<span
 				class="text-[10px] font-medium"
-				style="color: {activeQuote.change >= 0 ? 'var(--calc-call)' : 'var(--calc-put)'}; font-family: var(--calc-font-mono);"
+				style="color: {activeQuote.change >= 0
+					? 'var(--calc-call)'
+					: 'var(--calc-put)'}; font-family: var(--calc-font-mono);"
 			>
 				{activeQuote.change >= 0 ? '+' : ''}{activeQuote.change.toFixed(2)}
 				({activeQuote.changePercent >= 0 ? '+' : ''}{activeQuote.changePercent.toFixed(2)}%)
@@ -173,7 +198,7 @@
 		>
 			{#if searching && results.length === 0}
 				<div class="flex items-center justify-center py-4">
-					<Loader2 size={16} class="animate-spin" style="color: var(--calc-accent);" />
+					<IconLoader2 size={16} class="animate-spin" style="color: var(--calc-accent);" />
 					<span class="ml-2 text-xs" style="color: var(--calc-text-muted);">Searching...</span>
 				</div>
 			{:else}
@@ -185,7 +210,10 @@
 						role="option"
 						aria-selected={i === selectedIndex}
 					>
-						<span class="text-xs font-bold min-w-[3.5rem]" style="color: var(--calc-accent); font-family: var(--calc-font-mono);">
+						<span
+							class="text-xs font-bold min-w-[3.5rem]"
+							style="color: var(--calc-accent); font-family: var(--calc-font-mono);"
+						>
 							{result.ticker}
 						</span>
 						<span class="text-xs truncate flex-1" style="color: var(--calc-text-secondary);">
@@ -202,7 +230,10 @@
 			{/if}
 
 			<!-- Provider attribution -->
-			<div class="px-3 py-1.5 text-[9px] border-t" style="color: var(--calc-text-muted); border-color: var(--calc-border);">
+			<div
+				class="px-3 py-1.5 text-[9px] border-t"
+				style="color: var(--calc-text-muted); border-color: var(--calc-border);"
+			>
 				Powered by {marketData.currentQuote?.source ?? 'Mock Data'}
 			</div>
 		</div>

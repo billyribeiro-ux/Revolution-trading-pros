@@ -10,7 +10,7 @@ import type {
 	OptionType,
 	FirstOrderGreeks,
 	SecondOrderGreeks,
-	AllGreeks,
+	AllGreeks
 } from './types.js';
 
 /**
@@ -26,7 +26,7 @@ export function firstOrderGreeks(inputs: BSInputs, type: OptionType): FirstOrder
 			gamma: 0,
 			theta: 0,
 			vega: 0,
-			rho: 0,
+			rho: 0
 		};
 	}
 
@@ -148,7 +148,7 @@ export function secondOrderGreeks(inputs: BSInputs, type: OptionType): SecondOrd
 		veta: vetaDaily,
 		speed,
 		color: colorDaily,
-		zomma,
+		zomma
 	};
 }
 
@@ -158,7 +158,7 @@ export function secondOrderGreeks(inputs: BSInputs, type: OptionType): SecondOrd
 export function allGreeks(inputs: BSInputs, type: OptionType): AllGreeks {
 	return {
 		first: firstOrderGreeks(inputs, type),
-		second: secondOrderGreeks(inputs, type),
+		second: secondOrderGreeks(inputs, type)
 	};
 }
 

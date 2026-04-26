@@ -27,9 +27,7 @@
 	});
 
 	function initSignatureCanvas() {
-		signatureCanvas = document.getElementById(
-			`field-${props.field.name}`
-		) as HTMLCanvasElement;
+		signatureCanvas = document.getElementById(`field-${props.field.name}`) as HTMLCanvasElement;
 		if (!signatureCanvas) return;
 
 		signatureCtx = signatureCanvas.getContext('2d');
@@ -504,7 +502,8 @@
 
 			<!-- ICT 7 Fix: Address Field - Complete multi-part address input -->
 		{:else if props.field.field_type === 'address'}
-			{@const addressValue = typeof props.value === 'object' && props.value !== null ? props.value : {}}
+			{@const addressValue =
+				typeof props.value === 'object' && props.value !== null ? props.value : {}}
 			<div class="address-wrapper">
 				<div class="address-fields">
 					<div class="address-row full-width">
@@ -670,7 +669,10 @@
 						type="checkbox"
 						id={`field-${props.field.name}`}
 						name={props.field.name}
-						checked={props.value === true || props.value === '1' || props.value === 'yes' || props.value === 'on'}
+						checked={props.value === true ||
+							props.value === '1' ||
+							props.value === 'yes' ||
+							props.value === 'on'}
 						onchange={(e: Event) => props.onchange?.((e.currentTarget as HTMLInputElement).checked)}
 						{...(props.field.attributes as Record<string, any>) || {}}
 					/>

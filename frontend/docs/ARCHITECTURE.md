@@ -58,7 +58,7 @@ Each block component handles ONE block type only:
 ```svelte
 <!-- ParagraphBlock.svelte - Does ONE thing well -->
 <script lang="ts">
-  // Only paragraph-specific logic
+	// Only paragraph-specific logic
 </script>
 ```
 
@@ -115,8 +115,8 @@ onUpdate Callback (propagates to parent)
 ```typescript
 // Expensive computations cached
 let blockStyles = $derived.by(() => {
-  // Only recomputes when block.settings changes
-  return computeStyles(block.settings);
+	// Only recomputes when block.settings changes
+	return computeStyles(block.settings);
 });
 ```
 
@@ -193,10 +193,10 @@ import BlockRenderer from './BlockRenderer.svelte';
 
 ```svelte
 <script>
-import { BlockStateManager, setBlockStateManager } from '$lib/stores/blockState.svelte';
+	import { BlockStateManager, setBlockStateManager } from '$lib/stores/blockState.svelte';
 
-const stateManager = new BlockStateManager();
-setBlockStateManager(stateManager);
+	const stateManager = new BlockStateManager();
+	setBlockStateManager(stateManager);
 </script>
 ```
 

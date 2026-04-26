@@ -11,7 +11,7 @@ import type {
 	Scenario,
 	ScenarioResult,
 	TimeMachineSnapshot,
-	SensitivityData,
+	SensitivityData
 } from './types.js';
 
 /** Pre-defined scenario templates */
@@ -21,99 +21,99 @@ export const SCENARIO_PRESETS: Scenario[] = [
 		name: 'Gap Up 5%',
 		description: 'Stock gaps up 5% overnight',
 		adjustments: { spotPriceChangePct: 5 },
-		color: '#00d4aa',
+		color: '#00d4aa'
 	},
 	{
 		id: 'gap-up-10',
 		name: 'Gap Up 10%',
 		description: 'Stock gaps up 10% (strong earnings beat)',
 		adjustments: { spotPriceChangePct: 10 },
-		color: '#00b894',
+		color: '#00b894'
 	},
 	{
 		id: 'gap-down-5',
 		name: 'Gap Down 5%',
 		description: 'Stock gaps down 5% overnight',
 		adjustments: { spotPriceChangePct: -5 },
-		color: '#ff4477',
+		color: '#ff4477'
 	},
 	{
 		id: 'gap-down-10',
 		name: 'Gap Down 10%',
 		description: 'Stock gaps down 10% (earnings miss)',
 		adjustments: { spotPriceChangePct: -10 },
-		color: '#e74c3c',
+		color: '#e74c3c'
 	},
 	{
 		id: 'iv-crush-light',
 		name: 'IV Crush (Light)',
 		description: 'Implied volatility drops 15% after earnings',
 		adjustments: { volatilityChange: -0.15 },
-		color: '#f39c12',
+		color: '#f39c12'
 	},
 	{
 		id: 'iv-crush-heavy',
 		name: 'IV Crush (Heavy)',
 		description: 'Implied volatility drops 35% after earnings',
 		adjustments: { volatilityChange: -0.35 },
-		color: '#e67e22',
+		color: '#e67e22'
 	},
 	{
 		id: 'iv-expansion',
 		name: 'IV Expansion',
 		description: 'Implied volatility increases 20% (fear event)',
 		adjustments: { volatilityChange: 0.2 },
-		color: '#9b59b6',
+		color: '#9b59b6'
 	},
 	{
 		id: 'one-week-passes',
 		name: '1 Week Passes',
 		description: 'Time decay: 7 calendar days elapse',
 		adjustments: { timeChange: -7 },
-		color: '#3498db',
+		color: '#3498db'
 	},
 	{
 		id: 'one-month-passes',
 		name: '1 Month Passes',
 		description: 'Time decay: 30 calendar days elapse',
 		adjustments: { timeChange: -30 },
-		color: '#2980b9',
+		color: '#2980b9'
 	},
 	{
 		id: 'rate-hike',
 		name: 'Rate Hike 25bp',
 		description: 'Fed raises rates by 25 basis points',
 		adjustments: { rateChange: 0.0025 },
-		color: '#1abc9c',
+		color: '#1abc9c'
 	},
 	{
 		id: 'earnings-bull',
 		name: 'Earnings: Bull Case',
 		description: 'Stock +8%, IV crush -30%',
 		adjustments: { spotPriceChangePct: 8, volatilityChange: -0.3 },
-		color: '#27ae60',
+		color: '#27ae60'
 	},
 	{
 		id: 'earnings-bear',
 		name: 'Earnings: Bear Case',
 		description: 'Stock -8%, IV crush -25%',
 		adjustments: { spotPriceChangePct: -8, volatilityChange: -0.25 },
-		color: '#c0392b',
+		color: '#c0392b'
 	},
 	{
 		id: 'black-swan',
 		name: 'Black Swan',
 		description: 'Stock -20%, IV +50%',
 		adjustments: { spotPriceChangePct: -20, volatilityChange: 0.5 },
-		color: '#2c3e50',
+		color: '#2c3e50'
 	},
 	{
 		id: 'melt-up',
 		name: 'Melt Up',
 		description: 'Stock +15%, IV -10%',
 		adjustments: { spotPriceChangePct: 15, volatilityChange: -0.1 },
-		color: '#00d4aa',
-	},
+		color: '#00d4aa'
+	}
 ];
 
 /**
@@ -147,7 +147,7 @@ export function applyScenario(baseInputs: BSInputs, scenario: Scenario): BSInput
 		spotPrice: Math.max(0.01, newSpot),
 		volatility: newVol,
 		timeToExpiry: newTime,
-		riskFreeRate: newRate,
+		riskFreeRate: newRate
 	};
 }
 
@@ -157,7 +157,7 @@ export function applyScenario(baseInputs: BSInputs, scenario: Scenario): BSInput
 export function calculateScenario(
 	baseInputs: BSInputs,
 	scenario: Scenario,
-	type: OptionType,
+	type: OptionType
 ): ScenarioResult {
 	const basePricing = price(baseInputs);
 	const scenarioInputs = applyScenario(baseInputs, scenario);
@@ -179,7 +179,7 @@ export function calculateScenario(
 			basePricing.putPrice > 0.001
 				? ((scenarioPricing.putPrice - basePricing.putPrice) / basePricing.putPrice) * 100
 				: 0,
-		greeks: scenarioGreeks,
+		greeks: scenarioGreeks
 	};
 }
 
@@ -189,7 +189,7 @@ export function calculateScenario(
 export function calculateScenarios(
 	baseInputs: BSInputs,
 	scenarios: Scenario[],
-	type: OptionType,
+	type: OptionType
 ): ScenarioResult[] {
 	return scenarios.map((scenario) => calculateScenario(baseInputs, scenario, type));
 }
@@ -200,7 +200,7 @@ export function calculateScenarios(
 export function generateTimeMachineSnapshots(
 	inputs: BSInputs,
 	type: OptionType,
-	numSnapshots: number = 50,
+	numSnapshots: number = 50
 ): TimeMachineSnapshot[] {
 	const totalDays = inputs.timeToExpiry * 365;
 	const snapshots: TimeMachineSnapshot[] = [];
@@ -220,7 +220,7 @@ export function generateTimeMachineSnapshots(
 			callPrice: pricing.callPrice,
 			putPrice: pricing.putPrice,
 			greeks,
-			probabilities: probs,
+			probabilities: probs
 		});
 	}
 
@@ -241,7 +241,7 @@ export function generateSensitivityData(inputs: BSInputs): SensitivityData[] {
 		{ key: 'volatility', label: 'Volatility', rangePct: 0.5, steps: 40 },
 		{ key: 'timeToExpiry', label: 'Time to Expiry', rangePct: 0.8, steps: 40 },
 		{ key: 'riskFreeRate', label: 'Interest Rate', rangePct: 1.0, steps: 40 },
-		{ key: 'dividendYield', label: 'Dividend Yield', rangePct: 1.0, steps: 40 },
+		{ key: 'dividendYield', label: 'Dividend Yield', rangePct: 1.0, steps: 40 }
 	];
 
 	return parameters.map(({ key, label, rangePct, steps }) => {
@@ -269,7 +269,7 @@ export function generateSensitivityData(inputs: BSInputs): SensitivityData[] {
 
 		const callElasticity =
 			basePricing.callPrice > 0.001
-				? ((bumpedPricing.callPrice - basePricing.callPrice) / basePricing.callPrice) / 0.01
+				? (bumpedPricing.callPrice - basePricing.callPrice) / basePricing.callPrice / 0.01
 				: 0;
 
 		return {
@@ -279,7 +279,7 @@ export function generateSensitivityData(inputs: BSInputs): SensitivityData[] {
 			range,
 			callPrices,
 			putPrices,
-			sensitivity: Math.abs(callElasticity),
+			sensitivity: Math.abs(callElasticity)
 		};
 	});
 }

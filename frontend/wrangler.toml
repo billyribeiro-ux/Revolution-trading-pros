@@ -1,5 +1,11 @@
 # Cloudflare Pages configuration for SvelteKit
 # Revolution Trading Pros
+#
+# FIX-2026-04-26 (Phase 7.4): VITE_* values come from .env.production at
+# BUILD TIME (Vite replaces them statically). Listing them in [vars] / [env.*.vars]
+# is misleading — Cloudflare Pages runtime vars cannot override build-time
+# substitutions. Only non-VITE_ vars (e.g. ENVIRONMENT) are meaningful at runtime.
+# The VITE_* lines below have been commented-out to avoid confusion.
 
 name = "revolution-trading-pros"
 compatibility_date = "2024-12-01"
@@ -7,22 +13,25 @@ compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".svelte-kit/cloudflare"
 
 [vars]
-VITE_SITE_NAME = "Revolution Trading Pros"
-VITE_API_URL = "https://revolution-trading-pros-api.fly.dev"
-VITE_CDN_URL = "https://pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev"
-VITE_SITE_URL = "https://revolution-trading-pros.pages.dev"
+# FIX-2026-04-26: VITE_* are build-time — dead as runtime vars (Phase 7.4)
+# VITE_SITE_NAME = "Revolution Trading Pros"
+# VITE_API_URL = "https://revolution-trading-pros-api.fly.dev"
+# VITE_CDN_URL = "https://pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev"
+# VITE_SITE_URL = "https://revolution-trading-pros.pages.dev"
 ENVIRONMENT = "production"
 
 [env.preview.vars]
-VITE_SITE_NAME = "Revolution Trading Pros (Preview)"
-VITE_API_URL = "https://revolution-trading-pros-api.fly.dev"
-VITE_CDN_URL = "https://pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev"
-VITE_SITE_URL = "https://revolution-trading-pros.pages.dev"
+# FIX-2026-04-26: VITE_* are build-time — dead as runtime vars (Phase 7.4)
+# VITE_SITE_NAME = "Revolution Trading Pros (Preview)"
+# VITE_API_URL = "https://revolution-trading-pros-api.fly.dev"
+# VITE_CDN_URL = "https://pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev"
+# VITE_SITE_URL = "https://revolution-trading-pros.pages.dev"
 ENVIRONMENT = "preview"
 
 [env.production.vars]
-VITE_SITE_NAME = "Revolution Trading Pros"
-VITE_API_URL = "https://revolution-trading-pros-api.fly.dev"
-VITE_CDN_URL = "https://pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev"
-VITE_SITE_URL = "https://revolution-trading-pros.pages.dev"
+# FIX-2026-04-26: VITE_* are build-time — dead as runtime vars (Phase 7.4)
+# VITE_SITE_NAME = "Revolution Trading Pros"
+# VITE_API_URL = "https://revolution-trading-pros-api.fly.dev"
+# VITE_CDN_URL = "https://pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev"
+# VITE_SITE_URL = "https://revolution-trading-pros.pages.dev"
 ENVIRONMENT = "production"

@@ -2302,6 +2302,7 @@ pub fn router() -> Router<AppState> {
         .route("/:course_id/video-upload", post(create_video_upload))
 }
 
+// FIX-2026-04-26: ORPHAN — defined but never registered/called. Either wire up via routes/mod.rs / main.rs or delete in follow-up.
 /// Separate router for global category/tag management
 pub fn taxonomy_router() -> Router<AppState> {
     Router::new()

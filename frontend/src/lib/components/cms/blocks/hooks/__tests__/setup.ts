@@ -18,7 +18,10 @@
 import { expect, afterEach, vi, beforeAll, afterAll } from 'vitest';
 import { cleanup } from '@testing-library/svelte';
 import * as matchers from '@testing-library/jest-dom/matchers';
-import { applySvelteInternalMock, runEffectCleanups } from '../../../../../../test/svelte-internal-mock';
+import {
+	applySvelteInternalMock,
+	runEffectCleanups
+} from '../../../../../../test/svelte-internal-mock';
 
 // Apply the Svelte internal mock BEFORE any .svelte.ts imports
 applySvelteInternalMock();

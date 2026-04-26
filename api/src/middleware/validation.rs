@@ -74,6 +74,7 @@ pub fn sanitize_string(input: &str) -> String {
         .replace('/', "&#x2F;")
 }
 
+// FIX-2026-04-26: UNUSED HELPER — zero callers in src/. Either wire into route handlers or delete in follow-up.
 /// Sanitize string for SQL LIKE patterns (escape wildcards)
 pub fn sanitize_like_pattern(input: &str) -> String {
     input
@@ -82,6 +83,7 @@ pub fn sanitize_like_pattern(input: &str) -> String {
         .replace('_', "\\_")
 }
 
+// FIX-2026-04-26: UNUSED HELPER — zero callers in src/. Either wire into route handlers or delete in follow-up.
 /// Validate that a string contains only alphanumeric characters and common punctuation
 pub fn is_safe_string(input: &str) -> bool {
     input.chars().all(|c| {
@@ -123,11 +125,13 @@ pub fn is_valid_slug(slug: &str) -> bool {
         && !slug.contains("--")
 }
 
+// FIX-2026-04-26: UNUSED HELPER — zero callers in src/. Either wire into route handlers or delete in follow-up.
 /// Validate UUID format
 pub fn is_valid_uuid(input: &str) -> bool {
     uuid::Uuid::parse_str(input).is_ok()
 }
 
+// FIX-2026-04-26: UNUSED HELPER — zero callers in src/. Either wire into route handlers or delete in follow-up.
 /// Validate positive integer
 pub fn is_positive_integer(input: &str) -> bool {
     input.parse::<u64>().is_ok()

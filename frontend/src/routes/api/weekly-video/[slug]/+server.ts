@@ -133,7 +133,9 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
 
 	// Get auth headers
 	const authHeader = request.headers.get('Authorization');
-	const sessionCookie = cookies.get('session');
+	// FIX-2026-04-26: comment-out, verify, delete in follow-up. Wrong cookie name — login proxy sets rtp_access_token, not session.
+	// const sessionCookie = cookies.get('session');
+	const sessionCookie = cookies.get('rtp_access_token');
 	const headers: Record<string, string> = {};
 
 	if (authHeader) {
@@ -172,7 +174,9 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
 export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	const { slug } = params;
 	const authHeader = request.headers.get('Authorization');
-	const sessionCookie = cookies.get('session');
+	// FIX-2026-04-26: comment-out, verify, delete in follow-up. Wrong cookie name — login proxy sets rtp_access_token, not session.
+	// const sessionCookie = cookies.get('session');
+	const sessionCookie = cookies.get('rtp_access_token');
 
 	if (!authHeader && !sessionCookie) {
 		error(401, 'Authentication required');

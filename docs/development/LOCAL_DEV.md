@@ -238,6 +238,34 @@ What's stubbed in local dev that works in production (when Fly is up):
 
 All of these are configurable via env vars in `docker-compose.yml`.
 
+## Running Rust integration tests locally
+
+Rust integration tests at `api/tests/` require a Postgres `test` role with a
+`test_db` database. To provision that alongside the existing dev DB, use the
+test overlay file:
+
+```sh
+docker compose -f docker-compose.yml -f docker-compose.test.yml up db -d
+# then run integration tests
+cargo test --manifest-path api/Cargo.toml --all-targets
+```
+
+> **One-time setup:** `docker-entrypoint-initdb.d` scripts only run when the
+> Postgres data volume is first created.  If you already have a running dev
+> volume you will need to `docker compose down -v` (wipes all data) and then
+> boot with the overlay, or manually run the SQL in the script:
+> ```sql
+> CREATE ROLE test WITH LOGIN PASSWORD 'test';
+> CREATE DATABASE test_db OWNER test;
+> GRANT ALL PRIVILEGES ON DATABASE test_db TO test;
+> ```
+
+The no-DB tests (per CLAUDE.md) are always safe to run without Docker:
+
+```sh
+cd api && cargo test --test utils_test --test stripe_test
+```
+
 ## Deploying
 
 See [`docs/setup/DEPLOYMENT_GUIDE.md`](../setup/DEPLOYMENT_GUIDE.md) for the

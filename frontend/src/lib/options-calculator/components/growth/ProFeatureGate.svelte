@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { Lock } from '@lucide/svelte';
+	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
+	// import { Lock } from '@lucide/svelte';
+	import IconLock from '@tabler/icons-svelte-runes/icons/lock';
 	import gsap from 'gsap';
 	import type { Snippet } from 'svelte';
 
@@ -15,11 +17,7 @@
 
 	$effect(() => {
 		if (isLocked && overlayEl) {
-			gsap.fromTo(
-				overlayEl,
-				{ opacity: 0 },
-				{ opacity: 1, duration: 0.3, ease: 'power2.out' },
-			);
+			gsap.fromTo(overlayEl, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'power2.out' });
 		}
 	});
 </script>
@@ -41,7 +39,7 @@
 				class="w-12 h-12 rounded-full flex items-center justify-center"
 				style="background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.2);"
 			>
-				<Lock size={20} style="color: var(--calc-accent);" />
+				<IconLock size={20} style="color: var(--calc-accent);" />
 			</div>
 			<p class="text-xs font-semibold text-center px-4" style="color: var(--calc-text);">
 				Unlock {feature}

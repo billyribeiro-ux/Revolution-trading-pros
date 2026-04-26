@@ -10,7 +10,7 @@ import {
 	calculateStrategyPayoff,
 	findBreakevens,
 	findMaxProfitLoss,
-	generatePriceRange,
+	generatePriceRange
 } from '../engine/strategies.js';
 import { DEFAULT_INPUTS } from '../engine/constants.js';
 import { runMonteCarlo, runLightMonteCarlo } from '../engine/monte-carlo.js';
@@ -18,7 +18,7 @@ import {
 	SCENARIO_PRESETS,
 	calculateScenarios,
 	generateTimeMachineSnapshots,
-	generateSensitivityData,
+	generateSensitivityData
 } from '../engine/scenarios.js';
 import type {
 	BSInputs,
@@ -39,7 +39,7 @@ import type {
 	TimeMachineSnapshot,
 	SensitivityData,
 	ToastItem,
-	ToastType,
+	ToastType
 } from '../engine/types.js';
 import type { DataMode, MarketSnapshot } from '../data/types.js';
 
@@ -76,7 +76,7 @@ export function createCalculatorState() {
 		volatility,
 		timeToExpiry,
 		riskFreeRate,
-		dividendYield,
+		dividendYield
 	});
 
 	// ── Derived: Pricing ─────────────────────────────────
@@ -112,7 +112,7 @@ export function createCalculatorState() {
 				expiry: timeToExpiry,
 				position: 1,
 				quantity: 1,
-				premium: -currentPrice,
+				premium: -currentPrice
 			};
 			return calculateStrategyPayoff([singleLeg], priceRange);
 		} else {
@@ -134,20 +134,20 @@ export function createCalculatorState() {
 	// ── Phase 2: Scenario State ─────────────────────────
 	let activeScenarios = $state<Scenario[]>([]);
 	let scenarioResults = $derived<ScenarioResult[]>(
-		activeScenarios.length > 0 ? calculateScenarios(inputs, activeScenarios, optionType) : [],
+		activeScenarios.length > 0 ? calculateScenarios(inputs, activeScenarios, optionType) : []
 	);
 
 	// ── Phase 2: Time Machine State ─────────────────────
 	let timeMachineDay = $state(0);
 	let timeMachineMaxDays = $derived(Math.max(1, Math.round(timeToExpiry * 365)));
 	let timeMachineSnapshots = $derived<TimeMachineSnapshot[]>(
-		generateTimeMachineSnapshots(inputs, optionType, 100),
+		generateTimeMachineSnapshots(inputs, optionType, 100)
 	);
 	let currentTimeMachineSnapshot = $derived.by<TimeMachineSnapshot | null>(() => {
 		if (timeMachineSnapshots.length === 0) return null;
 		const idx = Math.min(
 			Math.round((timeMachineDay / timeMachineMaxDays) * (timeMachineSnapshots.length - 1)),
-			timeMachineSnapshots.length - 1,
+			timeMachineSnapshots.length - 1
 		);
 		return timeMachineSnapshots[Math.max(0, idx)];
 	});
@@ -410,69 +410,143 @@ export function createCalculatorState() {
 		},
 
 		// Phase 2: Monte Carlo
-		get monteCarloConfig() { return monteCarloConfig; },
-		set monteCarloConfig(v: MonteCarloConfig) { monteCarloConfig = v; },
-		get monteCarloResult() { return monteCarloResult; },
-		get isMonteCarloRunning() { return isMonteCarloRunning; },
+		get monteCarloConfig() {
+			return monteCarloConfig;
+		},
+		set monteCarloConfig(v: MonteCarloConfig) {
+			monteCarloConfig = v;
+		},
+		get monteCarloResult() {
+			return monteCarloResult;
+		},
+		get isMonteCarloRunning() {
+			return isMonteCarloRunning;
+		},
 		runMC,
 		runLightMC,
 
 		// Phase 2: Scenarios
-		get activeScenarios() { return activeScenarios; },
-		get scenarioResults() { return scenarioResults; },
-		get scenarioPresets() { return SCENARIO_PRESETS; },
+		get activeScenarios() {
+			return activeScenarios;
+		},
+		get scenarioResults() {
+			return scenarioResults;
+		},
+		get scenarioPresets() {
+			return SCENARIO_PRESETS;
+		},
 		toggleScenario,
 		clearScenarios,
-		get isScenarioPanelOpen() { return isScenarioPanelOpen; },
-		set isScenarioPanelOpen(v: boolean) { isScenarioPanelOpen = v; },
+		get isScenarioPanelOpen() {
+			return isScenarioPanelOpen;
+		},
+		set isScenarioPanelOpen(v: boolean) {
+			isScenarioPanelOpen = v;
+		},
 
 		// Phase 2: Time Machine
-		get timeMachineDay() { return timeMachineDay; },
-		set timeMachineDay(v: number) { timeMachineDay = v; },
-		get timeMachineMaxDays() { return timeMachineMaxDays; },
-		get timeMachineSnapshots() { return timeMachineSnapshots; },
-		get currentTimeMachineSnapshot() { return currentTimeMachineSnapshot; },
+		get timeMachineDay() {
+			return timeMachineDay;
+		},
+		set timeMachineDay(v: number) {
+			timeMachineDay = v;
+		},
+		get timeMachineMaxDays() {
+			return timeMachineMaxDays;
+		},
+		get timeMachineSnapshots() {
+			return timeMachineSnapshots;
+		},
+		get currentTimeMachineSnapshot() {
+			return currentTimeMachineSnapshot;
+		},
 
 		// Phase 2: Sensitivity
-		get sensitivityData() { return sensitivityData; },
+		get sensitivityData() {
+			return sensitivityData;
+		},
 
 		// Phase 3: Market Data
-		get dataMode() { return dataMode; },
-		set dataMode(v: DataMode) { dataMode = v; },
-		get activeTicker() { return activeTicker; },
-		set activeTicker(v: string) { activeTicker = v; },
-		get liveOverrides() { return liveOverrides; },
+		get dataMode() {
+			return dataMode;
+		},
+		set dataMode(v: DataMode) {
+			dataMode = v;
+		},
+		get activeTicker() {
+			return activeTicker;
+		},
+		set activeTicker(v: string) {
+			activeTicker = v;
+		},
+		get liveOverrides() {
+			return liveOverrides;
+		},
 		applyMarketSnapshot,
 		clearLiveOverride,
 		isLivePopulated,
 
 		// Phase 4: Education, Export, UI
-		get educationMode() { return educationMode; },
-		set educationMode(v: boolean) { educationMode = v; },
-		get toasts() { return toasts; },
+		get educationMode() {
+			return educationMode;
+		},
+		set educationMode(v: boolean) {
+			educationMode = v;
+		},
+		get toasts() {
+			return toasts;
+		},
 		addToast,
 		removeToast,
-		get showCommandPalette() { return showCommandPalette; },
-		set showCommandPalette(v: boolean) { showCommandPalette = v; },
-		get showShortcutsHelp() { return showShortcutsHelp; },
-		set showShortcutsHelp(v: boolean) { showShortcutsHelp = v; },
-		get showSaveModal() { return showSaveModal; },
-		set showSaveModal(v: boolean) { showSaveModal = v; },
-		get showSavedConfigs() { return showSavedConfigs; },
-		set showSavedConfigs(v: boolean) { showSavedConfigs = v; },
-		get showExportPNG() { return showExportPNG; },
-		set showExportPNG(v: boolean) { showExportPNG = v; },
-		get showShareLink() { return showShareLink; },
-		set showShareLink(v: boolean) { showShareLink = v; },
-		get showEmbedCode() { return showEmbedCode; },
-		set showEmbedCode(v: boolean) { showEmbedCode = v; },
+		get showCommandPalette() {
+			return showCommandPalette;
+		},
+		set showCommandPalette(v: boolean) {
+			showCommandPalette = v;
+		},
+		get showShortcutsHelp() {
+			return showShortcutsHelp;
+		},
+		set showShortcutsHelp(v: boolean) {
+			showShortcutsHelp = v;
+		},
+		get showSaveModal() {
+			return showSaveModal;
+		},
+		set showSaveModal(v: boolean) {
+			showSaveModal = v;
+		},
+		get showSavedConfigs() {
+			return showSavedConfigs;
+		},
+		set showSavedConfigs(v: boolean) {
+			showSavedConfigs = v;
+		},
+		get showExportPNG() {
+			return showExportPNG;
+		},
+		set showExportPNG(v: boolean) {
+			showExportPNG = v;
+		},
+		get showShareLink() {
+			return showShareLink;
+		},
+		set showShareLink(v: boolean) {
+			showShareLink = v;
+		},
+		get showEmbedCode() {
+			return showEmbedCode;
+		},
+		set showEmbedCode(v: boolean) {
+			showEmbedCode = v;
+		},
 
 		updateInput,
 		resetInputs,
 		toggleTheme,
 		addStrategyLeg,
 		removeStrategyLeg,
-		clearStrategy,
+		clearStrategy
 	};
 }
 

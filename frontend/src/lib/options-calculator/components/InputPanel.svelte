@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { RotateCcw } from '@lucide/svelte';
+	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
+	// import { RotateCcw } from '@lucide/svelte';
+	import IconRotate2 from '@tabler/icons-svelte-runes/icons/rotate-2';
 	import AnimatedSlider from './ui/AnimatedSlider.svelte';
 	import InfoTooltip from './ui/InfoTooltip.svelte';
 	import { INPUT_FIELDS } from '../engine/constants.js';
@@ -23,7 +25,7 @@
 		volatility: 'σ',
 		timeToExpiry: 'T',
 		riskFreeRate: 'r',
-		dividendYield: 'q',
+		dividendYield: 'q'
 	};
 
 	function handleOptionTypeChange(type: OptionType) {
@@ -64,7 +66,7 @@
 			style="background: var(--calc-surface-hover); color: var(--calc-text-secondary); border: 1px solid var(--calc-border);"
 			aria-label="Reset all inputs"
 		>
-			<RotateCcw size={12} />
+			<IconRotate2 size={12} />
 			Reset
 		</button>
 	</div>
@@ -101,8 +103,8 @@
 				{#if calc.isLivePopulated(field.key)}
 					<span
 						class="absolute -top-1 right-0 text-[8px] font-bold px-1 py-0.5 rounded z-10"
-						style="background: var(--calc-call-bg); color: var(--calc-call);"
-					>LIVE</span>
+						style="background: var(--calc-call-bg); color: var(--calc-call);">LIVE</span
+					>
 				{/if}
 				<AnimatedSlider
 					value={calc[field.key] as number}
@@ -145,7 +147,9 @@
 			>
 				IV Solver
 			</span>
-			<InfoTooltip content="Enter a market price to reverse-engineer the implied volatility using Newton-Raphson iteration." />
+			<InfoTooltip
+				content="Enter a market price to reverse-engineer the implied volatility using Newton-Raphson iteration."
+			/>
 		</div>
 		<div class="flex gap-2">
 			<input
@@ -166,7 +170,9 @@
 		{#if ivResult}
 			<div
 				class="text-xs"
-				style="color: {ivResult.converged ? 'var(--calc-call)' : 'var(--calc-warning)'}; font-family: var(--calc-font-mono);"
+				style="color: {ivResult.converged
+					? 'var(--calc-call)'
+					: 'var(--calc-warning)'}; font-family: var(--calc-font-mono);"
 			>
 				{#if ivResult.converged}
 					IV = {(ivResult.iv * 100).toFixed(2)}% ✓

@@ -113,7 +113,7 @@ describe('HtmlBlock - HTML Sanitization', () => {
 			content: { html: '<div onclick="alert(\'xss\')">Click me</div>' }
 		});
 
-		const { container } = render(HtmlBlock, {
+		render(HtmlBlock, {
 			props: {
 				block,
 				blockId: toBlockId('html-1'),

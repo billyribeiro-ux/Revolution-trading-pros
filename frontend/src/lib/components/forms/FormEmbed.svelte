@@ -149,7 +149,7 @@
 
 		logic.rules?.forEach((rule: any) => {
 			const fieldValue = formData[rule.field];
-			let result = false;
+			let result: boolean;
 
 			switch (rule.operator) {
 				case 'equals':

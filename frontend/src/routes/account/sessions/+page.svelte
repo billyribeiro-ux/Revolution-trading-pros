@@ -7,6 +7,7 @@
 	 * @author Revolution Trading Pros
 	 * @level L8 Principal Engineer
 	 */
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import {
@@ -30,10 +31,24 @@
 	let showLogoutOtherModal = $state(false);
 	let pendingSessionId = $state<string | null>(null);
 
-	$effect(() => {
+	// FIX-2026-04-26: comment-out, verify, delete in follow-up.
+	// The old $effect below is the same legacy_pre_subscribe cascade pattern that was
+	// fixed in admin/+layout.svelte — $effect re-fires on every reactive run that reads
+	// $authStore / $isAuthenticated, which can trigger multiple loadSessions() calls and
+	// redundant redirects during store hydration. Replaced with onMount so the auth guard
+	// and initial data fetch fire exactly once after the component mounts.
+	// $effect(() => {
+	// 	if (!browser) return;
+	//
+	// 	// Auth guard - redirect if not authenticated (user interaction: page load)
+	// 	if (!$isAuthenticated && !$authStore.isLoading && !$authStore.isInitializing) {
+	// 		goto('/login?redirect=/account/sessions', { replaceState: true });
+	// 		return;
+	// 	}
+	// 	loadSessions();
+	// });
+	onMount(() => {
 		if (!browser) return;
-
-		// Auth guard - redirect if not authenticated (user interaction: page load)
 		if (!$isAuthenticated && !$authStore.isLoading && !$authStore.isInitializing) {
 			goto('/login?redirect=/account/sessions', { replaceState: true });
 			return;

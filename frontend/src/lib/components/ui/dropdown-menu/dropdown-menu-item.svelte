@@ -14,7 +14,6 @@
 		variant = 'default',
 		...restProps
 	}: ItemProps = $props();
-
 </script>
 
 <DropdownMenuPrimitive.Item

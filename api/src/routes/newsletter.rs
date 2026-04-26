@@ -29,7 +29,8 @@ type HmacSha256 = Hmac<Sha256>;
 /// Generate a secure HMAC-based token for email actions
 fn generate_secure_token(subscriber_id: i64, email: &str, action: &str, secret: &[u8]) -> String {
     let data = format!("{}:{}:{}", subscriber_id, email, action);
-    let mut mac = HmacSha256::new_from_slice(secret).expect("HMAC can take key of any size");
+    let mut mac = HmacSha256::new_from_slice(secret)
+        .expect("HMAC-SHA256 accepts any key length per RFC 2104");
     mac.update(data.as_bytes());
     let result = mac.finalize();
     let signature = URL_SAFE_NO_PAD.encode(result.into_bytes());

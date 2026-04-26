@@ -13,7 +13,14 @@
 
 import * as v from 'valibot';
 import { query } from '$app/server';
-import { axumAlerts, axumTrades, axumTradePlans, axumStats, axumVideos, axumAuth } from '$lib/server/axum';
+import {
+	axumAlerts,
+	axumTrades,
+	axumTradePlans,
+	axumStats,
+	axumVideos,
+	axumAuth
+} from '$lib/server/axum';
 import {
 	FetchAlertsInputSchema,
 	FetchTradePlanInputSchema,
@@ -168,13 +175,10 @@ export const getTradePlan = query(
 /**
  * Fetch quick stats for a trading room.
  */
-export const getStats = query(
-	FetchStatsInputSchema,
-	async ({ roomSlug }): Promise<QuickStats> => {
-		const raw = await axumStats.fetchStats(roomSlug);
-		return formatStats(raw);
-	}
-);
+export const getStats = query(FetchStatsInputSchema, async ({ roomSlug }): Promise<QuickStats> => {
+	const raw = await axumStats.fetchStats(roomSlug);
+	return formatStats(raw);
+});
 
 /**
  * Fetch all trades for a trading room.

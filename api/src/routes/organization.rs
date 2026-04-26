@@ -1212,6 +1212,7 @@ pub fn departments_router() -> Router<AppState> {
         )
 }
 
+// FIX-2026-04-26: ORPHAN — defined but never registered/called. Either wire up via routes/mod.rs / main.rs or delete in follow-up.
 /// Organization profile router
 pub fn profile_router() -> Router<AppState> {
     Router::new().route(

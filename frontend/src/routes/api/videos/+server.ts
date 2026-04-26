@@ -10,12 +10,12 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
-// Production fallback - Rust API on Fly.io
-// ICT 7 FIX: VITE_API_URL does NOT include /api suffix - we add it here
 import { env } from '$env/dynamic/private';
-const PROD_API_ROOT =
+// FIX-2026-04-26: import.meta.env.VITE_API_URL → canonical private env pattern
+// const PROD_API_ROOT = env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+// const API_ROOT = import.meta.env.VITE_API_URL || PROD_API_ROOT;
+const API_ROOT =
 	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
-const API_ROOT = import.meta.env.VITE_API_URL || PROD_API_ROOT;
 const BACKEND_URL = `${API_ROOT}/api`;
 
 /**

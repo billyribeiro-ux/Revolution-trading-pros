@@ -50,7 +50,6 @@
 		target.style.setProperty('--mouse-y', `${y}px`);
 	}
 
-
 	onMount(() => {
 		let heroObserver: IntersectionObserver;
 		let cardObserver: IntersectionObserver;

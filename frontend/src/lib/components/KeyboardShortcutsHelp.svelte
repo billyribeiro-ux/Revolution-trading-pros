@@ -69,6 +69,7 @@
 		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && close()}
 		role="dialog"
 		aria-modal="true"
+		aria-labelledby="keyboard-shortcuts-title"
 		tabindex="-1"
 	>
 		<div
@@ -79,7 +80,7 @@
 			<div class="modal-header">
 				<div class="header-title">
 					<IconCommand size={24} />
-					<h2>Keyboard Shortcuts</h2>
+					<h2 id="keyboard-shortcuts-title">Keyboard Shortcuts</h2>
 				</div>
 				<button class="close-btn" onclick={close}>
 					<IconX size={20} />
@@ -88,15 +89,15 @@
 
 			<!-- Content -->
 			<div class="modal-content">
-				{#each Object.entries(groupedShortcuts) as [category, shortcuts]}
+				{#each Object.entries(groupedShortcuts) as [category, shortcuts] (category)}
 					<div class="shortcut-group">
 						<h3 class="group-title">{category}</h3>
 						<div class="shortcuts-list">
-							{#each shortcuts as shortcut}
+							{#each shortcuts as shortcut (shortcut.description)}
 								<div class="shortcut-item">
 									<span class="shortcut-description">{shortcut.description}</span>
 									<div class="shortcut-keys">
-										{#each shortcut.keys as key, keyIndex}
+										{#each shortcut.keys as key, keyIndex (keyIndex)}
 											{#if keyIndex > 0}
 												<span class="key-separator">+</span>
 											{/if}

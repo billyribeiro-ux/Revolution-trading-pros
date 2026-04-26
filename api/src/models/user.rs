@@ -86,6 +86,8 @@ pub struct AuthResponse {
 #[derive(Debug, Serialize)]
 pub struct RefreshTokenResponse {
     pub token: String,
+    /// Alias of `token` for parity with `AuthResponse`. Frontend prefers this name.
+    pub access_token: String,
     pub refresh_token: String,
     pub expires_in: i64,
 }

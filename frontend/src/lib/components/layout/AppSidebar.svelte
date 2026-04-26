@@ -45,7 +45,7 @@
 		</div>
 	{/if}
 
-	<nav class="sidebar-nav">
+	<nav class="sidebar-nav" aria-label="Primary navigation">
 		<ul>
 			{#each props.items ?? [] as item}
 				<li>

@@ -94,7 +94,7 @@
 	</div>
 
 	<!-- Navigation -->
-	<nav class="sidebar-nav">
+	<nav class="sidebar-nav" aria-label="Admin sidebar">
 		{#each navigation as item}
 			{@const IconComponent = item.icon}
 			<div class="nav-group">

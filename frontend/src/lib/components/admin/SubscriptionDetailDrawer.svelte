@@ -376,7 +376,7 @@
 			</div>
 
 			<!-- Tabs -->
-			<nav class="drawer-tabs">
+			<nav class="drawer-tabs" aria-label="Detail tabs">
 				<button
 					type="button"
 					class="tab"

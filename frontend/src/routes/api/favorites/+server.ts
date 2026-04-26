@@ -29,7 +29,9 @@ async function fetchFromBackend(
 
 		// Add auth cookie if available
 		if (cookies) {
-			const session = cookies.get('session');
+			// FIX-2026-04-26: comment-out, verify, delete in follow-up. Wrong cookie name — login proxy sets rtp_access_token, not session.
+			// const session = cookies.get('session');
+			const session = cookies.get('rtp_access_token');
 			if (session) {
 				headers['Cookie'] = `session=${session}`;
 			}

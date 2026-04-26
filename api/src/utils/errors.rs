@@ -76,6 +76,7 @@ impl ApiError {
         self
     }
 
+    // FIX-2026-04-26: UNUSED HELPER — zero callers in src/. Either wire into route handlers or delete in follow-up.
     /// Add request ID for tracking
     pub fn with_request_id(mut self, request_id: impl Into<String>) -> Self {
         self.request_id = Some(request_id.into());
@@ -102,6 +103,7 @@ impl ApiError {
         Self::new(StatusCode::INTERNAL_SERVER_ERROR, message)
     }
 
+    // FIX-2026-04-26: UNUSED HELPER — zero callers in src/. Either wire into route handlers or delete in follow-up.
     /// Convert to Axum response tuple
     pub fn into_response_tuple(self) -> (StatusCode, Json<Self>) {
         let status = StatusCode::from_u16(self.status.parse().unwrap_or(500))
@@ -125,6 +127,7 @@ pub type ApiResult<T> = Result<T, ApiError>;
 // Convenience constructors for common errors
 // ═══════════════════════════════════════════════════════════════════════════
 
+// FIX-2026-04-26: UNUSED HELPER — zero callers in src/. Either wire into route handlers or delete in follow-up.
 /// 400 Bad Request
 pub fn bad_request(message: impl Into<String>) -> ApiError {
     ApiError::new(StatusCode::BAD_REQUEST, message).with_code("BAD_REQUEST")
@@ -135,6 +138,7 @@ pub fn unauthorized(message: impl Into<String>) -> ApiError {
     ApiError::new(StatusCode::UNAUTHORIZED, message).with_code("UNAUTHORIZED")
 }
 
+// FIX-2026-04-26: UNUSED HELPER — zero callers in src/. Either wire into route handlers or delete in follow-up.
 /// 403 Forbidden
 pub fn forbidden(message: impl Into<String>) -> ApiError {
     ApiError::new(StatusCode::FORBIDDEN, message).with_code("FORBIDDEN")
@@ -193,6 +197,7 @@ pub fn internal_error(message: impl Into<String>) -> ApiError {
     ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, safe_message).with_code("INTERNAL_ERROR")
 }
 
+// FIX-2026-04-26: UNUSED HELPER — zero callers in src/. Either wire into route handlers or delete in follow-up.
 /// 503 Service Unavailable
 pub fn service_unavailable(message: impl Into<String>) -> ApiError {
     ApiError::new(StatusCode::SERVICE_UNAVAILABLE, message).with_code("SERVICE_UNAVAILABLE")
@@ -232,6 +237,7 @@ impl From<anyhow::Error> for ApiError {
 // Validation helpers
 // ═══════════════════════════════════════════════════════════════════════════
 
+// FIX-2026-04-26: UNUSED HELPER — zero callers in src/. Either wire into route handlers or delete in follow-up.
 /// Validate that a field is not empty
 pub fn validate_not_empty(field: &str, value: &str) -> Result<(), (String, String)> {
     if value.trim().is_empty() {
@@ -241,6 +247,7 @@ pub fn validate_not_empty(field: &str, value: &str) -> Result<(), (String, Strin
     }
 }
 
+// FIX-2026-04-26: UNUSED HELPER — zero callers in src/. Either wire into route handlers or delete in follow-up.
 /// Validate email format
 pub fn validate_email(email: &str) -> Result<(), (String, String)> {
     if !email.contains('@') || !email.contains('.') {
@@ -250,6 +257,7 @@ pub fn validate_email(email: &str) -> Result<(), (String, String)> {
     }
 }
 
+// FIX-2026-04-26: UNUSED HELPER — zero callers in src/. Either wire into route handlers or delete in follow-up.
 /// Validate minimum length
 pub fn validate_min_length(field: &str, value: &str, min: usize) -> Result<(), (String, String)> {
     if value.len() < min {
@@ -262,6 +270,7 @@ pub fn validate_min_length(field: &str, value: &str, min: usize) -> Result<(), (
     }
 }
 
+// FIX-2026-04-26: UNUSED HELPER — zero callers in src/. Either wire into route handlers or delete in follow-up.
 /// Validate maximum length
 pub fn validate_max_length(field: &str, value: &str, max: usize) -> Result<(), (String, String)> {
     if value.len() > max {
@@ -274,6 +283,7 @@ pub fn validate_max_length(field: &str, value: &str, max: usize) -> Result<(), (
     }
 }
 
+// FIX-2026-04-26: UNUSED HELPER — zero callers in src/. Either wire into route handlers or delete in follow-up.
 /// Collect validation errors and return ApiError if any
 #[allow(clippy::result_large_err)]
 pub fn collect_validation_errors(

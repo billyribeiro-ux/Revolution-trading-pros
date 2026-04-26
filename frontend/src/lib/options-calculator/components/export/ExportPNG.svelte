@@ -1,5 +1,14 @@
 <script lang="ts">
-	import { Camera, X, Copy, Download, Monitor, BarChart3, LineChart, Maximize } from '@lucide/svelte';
+	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
+	// import { Camera, X, Copy, Download, Monitor, BarChart3, LineChart, Maximize } from '@lucide/svelte';
+	import IconCamera from '@tabler/icons-svelte-runes/icons/camera';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
+	import IconDownload from '@tabler/icons-svelte-runes/icons/download';
+	import IconDeviceDesktop from '@tabler/icons-svelte-runes/icons/device-desktop';
+	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
+	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
+	import IconMaximize from '@tabler/icons-svelte-runes/icons/maximize';
 	import gsap from 'gsap';
 	import { captureScreenshot } from '../../utils/export-utils.js';
 	import type { CaptureZone, AspectRatio, ScreenshotConfig } from '../../engine/types.js';
@@ -34,7 +43,7 @@
 			gsap.fromTo(
 				modalEl,
 				{ scale: 0.92, opacity: 0 },
-				{ scale: 1, opacity: 1, duration: 0.25, ease: 'back.out(1.5)' },
+				{ scale: 1, opacity: 1, duration: 0.25, ease: 'back.out(1.5)' }
 			);
 		}
 	});
@@ -42,14 +51,14 @@
 	interface ZoneOption {
 		id: CaptureZone;
 		label: string;
-		icon: typeof Monitor;
+		icon: typeof IconDeviceDesktop;
 	}
 
 	const ZONES: ZoneOption[] = [
-		{ id: 'results-only', label: 'Results', icon: BarChart3 },
-		{ id: 'results-chart', label: 'Results + Chart', icon: LineChart },
-		{ id: 'chart-only', label: 'Chart Only', icon: LineChart },
-		{ id: 'full-calculator', label: 'Full', icon: Maximize },
+		{ id: 'results-only', label: 'Results', icon: IconChartBar },
+		{ id: 'results-chart', label: 'Results + Chart', icon: IconChartLine },
+		{ id: 'chart-only', label: 'Chart Only', icon: IconChartLine },
+		{ id: 'full-calculator', label: 'Full', icon: IconMaximize }
 	];
 
 	interface RatioOption {
@@ -61,7 +70,7 @@
 		{ id: 'auto', label: 'Auto' },
 		{ id: '16:9', label: '16:9' },
 		{ id: '4:5', label: '4:5' },
-		{ id: '1:1', label: '1:1' },
+		{ id: '1:1', label: '1:1' }
 	];
 
 	function buildSummaryText(): string {
@@ -87,7 +96,7 @@
 			showFrame,
 			ticker: calc.activeTicker || undefined,
 			summaryText: buildSummaryText(),
-			theme: calc.theme,
+			theme: calc.theme
 		};
 
 		const blob = await captureScreenshot(captureElement, config);
@@ -104,9 +113,7 @@
 	async function copyToClipboard(): Promise<void> {
 		if (!capturedBlob) return;
 		try {
-			await navigator.clipboard.write([
-				new ClipboardItem({ 'image/png': capturedBlob }),
-			]);
+			await navigator.clipboard.write([new ClipboardItem({ 'image/png': capturedBlob })]);
 			calc.addToast('success', 'Copied to clipboard!');
 		} catch {
 			calc.addToast('error', 'Copy failed \u2014 try saving instead.');
@@ -159,11 +166,13 @@
 			<!-- Header -->
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-2">
-					<Camera size={16} style="color: var(--calc-accent);" />
+					<IconCamera size={16} style="color: var(--calc-accent);" />
 					<h3
 						class="text-sm font-semibold"
 						style="color: var(--calc-text); font-family: var(--calc-font-display);"
-					>Export Screenshot</h3>
+					>
+						Export Screenshot
+					</h3>
 				</div>
 				<button
 					onclick={handleClose}
@@ -171,7 +180,7 @@
 					style="color: var(--calc-text-muted);"
 					aria-label="Close"
 				>
-					<X size={16} />
+					<IconX size={16} />
 				</button>
 			</div>
 
@@ -180,8 +189,8 @@
 				<div class="flex flex-col gap-1.5">
 					<span
 						class="text-[10px] uppercase tracking-wider font-medium"
-						style="color: var(--calc-text-muted);"
-					>Capture Zone</span>
+						style="color: var(--calc-text-muted);">Capture Zone</span
+					>
 					<div class="grid grid-cols-4 gap-1.5">
 						{#each ZONES as z (z.id)}
 							{@const Icon = z.icon}
@@ -203,8 +212,8 @@
 				<div class="flex flex-col gap-1.5">
 					<span
 						class="text-[10px] uppercase tracking-wider font-medium"
-						style="color: var(--calc-text-muted);"
-					>Aspect Ratio</span>
+						style="color: var(--calc-text-muted);">Aspect Ratio</span
+					>
 					<div class="grid grid-cols-4 gap-1.5">
 						{#each RATIOS as r (r.id)}
 							<button
@@ -224,17 +233,26 @@
 				<div class="flex flex-col gap-2">
 					<span
 						class="text-[10px] uppercase tracking-wider font-medium"
-						style="color: var(--calc-text-muted);"
-					>Branding</span>
-					<label class="flex items-center gap-2 text-xs cursor-pointer" style="color: var(--calc-text-secondary);">
+						style="color: var(--calc-text-muted);">Branding</span
+					>
+					<label
+						class="flex items-center gap-2 text-xs cursor-pointer"
+						style="color: var(--calc-text-secondary);"
+					>
 						<input type="checkbox" bind:checked={showLogo} class="accent-[var(--calc-accent)]" />
 						Show RTP Logo
 					</label>
-					<label class="flex items-center gap-2 text-xs cursor-pointer" style="color: var(--calc-text-secondary);">
+					<label
+						class="flex items-center gap-2 text-xs cursor-pointer"
+						style="color: var(--calc-text-secondary);"
+					>
 						<input type="checkbox" bind:checked={showInfoBar} class="accent-[var(--calc-accent)]" />
 						Show Info Bar (ticker, price, timestamp)
 					</label>
-					<label class="flex items-center gap-2 text-xs cursor-pointer" style="color: var(--calc-text-secondary);">
+					<label
+						class="flex items-center gap-2 text-xs cursor-pointer"
+						style="color: var(--calc-text-secondary);"
+					>
 						<input type="checkbox" bind:checked={showFrame} class="accent-[var(--calc-accent)]" />
 						Show Gradient Frame
 					</label>
@@ -248,10 +266,12 @@
 					style="background: var(--calc-accent); color: white; opacity: {isCapturing ? 0.6 : 1};"
 				>
 					{#if isCapturing}
-						<div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+						<div
+							class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
+						></div>
 						Capturing...
 					{:else}
-						<Camera size={16} />
+						<IconCamera size={16} />
 						Capture Screenshot
 					{/if}
 				</button>
@@ -262,11 +282,9 @@
 						class="w-14 h-14 rounded-full flex items-center justify-center"
 						style="background: rgba(16,185,129,0.1);"
 					>
-						<Camera size={24} style="color: #10b981;" />
+						<IconCamera size={24} style="color: #10b981;" />
 					</div>
-					<p class="text-sm font-semibold" style="color: var(--calc-text);">
-						Screenshot Ready!
-					</p>
+					<p class="text-sm font-semibold" style="color: var(--calc-text);">Screenshot Ready!</p>
 				</div>
 
 				<div class="grid grid-cols-2 gap-2">
@@ -275,7 +293,7 @@
 						class="flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-xs font-medium cursor-pointer"
 						style="background: var(--calc-surface-hover); color: var(--calc-text-secondary); border: 1px solid var(--calc-border);"
 					>
-						<Copy size={13} />
+						<IconCopy size={13} />
 						Copy to Clipboard
 					</button>
 					<button
@@ -283,7 +301,7 @@
 						class="flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-xs font-medium cursor-pointer"
 						style="background: var(--calc-accent); color: white;"
 					>
-						<Download size={13} />
+						<IconDownload size={13} />
 						Save to Device
 					</button>
 				</div>

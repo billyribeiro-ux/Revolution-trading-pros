@@ -241,6 +241,10 @@ fn read_password(prompt: &str) -> String {
 
         // Get current terminal settings
         let mut termios = std::mem::MaybeUninit::uninit();
+        // SAFETY: This is a single-threaded dev-only binary; there are no concurrent
+        // threads that could invalidate the fd.  File descriptor 0 (stdin) is guaranteed
+        // valid by POSIX for the entire lifetime of the process.  libc::tcgetattr is
+        // safe to call on any valid, open file descriptor — exactly what fd 0 is here.
         unsafe {
             if libc::tcgetattr(stdin_fd, termios.as_mut_ptr()) == 0 {
                 let mut termios = termios.assume_init();

@@ -26,7 +26,6 @@ export async function addItemToCart(
 
 	// Navigate to cart if requested
 	if (navigateToCart) {
-		// eslint-disable-next-line svelte/no-navigation-without-resolve -- base path is prepended
 		await goto(`${base}/cart`);
 	}
 }

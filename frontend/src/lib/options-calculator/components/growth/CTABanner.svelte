@@ -1,5 +1,8 @@
 <script lang="ts">
-	import { X, ArrowRight } from '@lucide/svelte';
+	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
+	// import { X, ArrowRight } from '@lucide/svelte';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
 	import gsap from 'gsap';
 
 	let bannerEl: HTMLDivElement | undefined = $state();
@@ -24,7 +27,7 @@
 			gsap.fromTo(
 				bannerEl,
 				{ y: 20, opacity: 0 },
-				{ y: 0, opacity: 1, duration: 0.4, ease: 'power2.out', delay: 2 },
+				{ y: 0, opacity: 1, duration: 0.4, ease: 'power2.out', delay: 2 }
 			);
 		}
 	});
@@ -39,7 +42,7 @@
 				onComplete: () => {
 					dismissed = true;
 					localStorage.setItem(DISMISS_KEY, Date.now().toString());
-				},
+				}
 			});
 		} else {
 			dismissed = true;
@@ -76,7 +79,7 @@
 			style="background: var(--calc-accent); color: white;"
 		>
 			Learn More
-			<ArrowRight size={10} />
+			<IconArrowRight size={10} />
 		</a>
 
 		<!-- Dismiss -->
@@ -86,7 +89,7 @@
 			style="color: var(--calc-text-muted);"
 			aria-label="Dismiss banner"
 		>
-			<X size={12} />
+			<IconX size={12} />
 		</button>
 	</div>
 {/if}

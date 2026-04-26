@@ -16,8 +16,8 @@ use serde_json::json;
 use tower::ServiceExt;
 
 use super::fixtures::{
-    assert_status_and_json, body_to_json, calculate_profit_factor, calculate_win_rate,
-    cleanup_room_data, TestContext, TestTradingRoom, TestUser, TradeBuilder,
+    assert_status_and_json, body_to_json, calculate_win_rate, cleanup_room_data, TestContext,
+    TestTradingRoom, TestUser, TradeBuilder,
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -352,35 +352,39 @@ async fn test_win_rate_0_percent() {
 // PROFIT FACTOR CALCULATION TESTS
 // ═══════════════════════════════════════════════════════════════════════════════════
 
-#[tokio::test]
-async fn test_profit_factor_2_0() {
-    // Profit Factor = Total Wins / Total Losses
-    // If wins = $1000, losses = $500, profit factor = 2.0
-    let profit_factor = calculate_profit_factor(1000.0, 500.0);
-    assert!((profit_factor - 2.0).abs() < 0.01);
-}
+// FIX-2026-04-26: moved to api/src/services/room_analytics.rs (tests::test_profit_factor_2_0)
+// #[tokio::test]
+// async fn test_profit_factor_2_0() {
+//     // Profit Factor = Total Wins / Total Losses
+//     // If wins = $1000, losses = $500, profit factor = 2.0
+//     let profit_factor = calculate_profit_factor(1000.0, 500.0);
+//     assert!((profit_factor - 2.0).abs() < 0.01);
+// }
 
-#[tokio::test]
-async fn test_profit_factor_infinite() {
-    // Profit Factor is infinite when there are no losses
-    let profit_factor = calculate_profit_factor(1000.0, 0.0);
-    assert!(profit_factor.is_infinite());
-    assert!(profit_factor.is_sign_positive());
-}
+// FIX-2026-04-26: moved to api/src/services/room_analytics.rs (tests::test_profit_factor_infinite)
+// #[tokio::test]
+// async fn test_profit_factor_infinite() {
+//     // Profit Factor is infinite when there are no losses
+//     let profit_factor = calculate_profit_factor(1000.0, 0.0);
+//     assert!(profit_factor.is_infinite());
+//     assert!(profit_factor.is_sign_positive());
+// }
 
-#[tokio::test]
-async fn test_profit_factor_zero() {
-    // Profit Factor is 0 when there are no wins but there are losses
-    let profit_factor = calculate_profit_factor(0.0, 500.0);
-    assert_eq!(profit_factor, 0.0);
-}
+// FIX-2026-04-26: moved to api/src/services/room_analytics.rs (tests::test_profit_factor_zero)
+// #[tokio::test]
+// async fn test_profit_factor_zero() {
+//     // Profit Factor is 0 when there are no wins but there are losses
+//     let profit_factor = calculate_profit_factor(0.0, 500.0);
+//     assert_eq!(profit_factor, 0.0);
+// }
 
-#[tokio::test]
-async fn test_profit_factor_less_than_one() {
-    // Profit Factor < 1 when losses exceed wins
-    let profit_factor = calculate_profit_factor(300.0, 600.0);
-    assert!((profit_factor - 0.5).abs() < 0.01);
-}
+// FIX-2026-04-26: moved to api/src/services/room_analytics.rs (tests::test_profit_factor_less_than_one)
+// #[tokio::test]
+// async fn test_profit_factor_less_than_one() {
+//     // Profit Factor < 1 when losses exceed wins
+//     let profit_factor = calculate_profit_factor(300.0, 600.0);
+//     assert!((profit_factor - 0.5).abs() < 0.01);
+// }
 
 // ═══════════════════════════════════════════════════════════════════════════════════
 // P&L CALCULATION TESTS

@@ -29,8 +29,7 @@ export function normalCDF(x: number): number {
 	const t4 = t3 * t;
 	const t5 = t4 * t;
 
-	const y =
-		1.0 - (a1 * t + a2 * t2 + a3 * t3 + a4 * t4 + a5 * t5) * Math.exp((-absX * absX) / 2);
+	const y = 1.0 - (a1 * t + a2 * t2 + a3 * t3 + a4 * t4 + a5 * t5) * Math.exp((-absX * absX) / 2);
 
 	return 0.5 * (1.0 + sign * y);
 }
@@ -87,7 +86,7 @@ export function price(inputs: BSInputs): BSPricingResult {
 			putPrice: putIntrinsic,
 			d1: spotPrice > strikePrice ? Infinity : -Infinity,
 			d2: spotPrice > strikePrice ? Infinity : -Infinity,
-			parityCheck: 0,
+			parityCheck: 0
 		};
 	}
 
@@ -101,8 +100,7 @@ export function price(inputs: BSInputs): BSPricingResult {
 		spotPrice * dividendDiscount * normalCDF(d1) - strikePrice * discountFactor * normalCDF(d2);
 
 	const putPrice =
-		strikePrice * discountFactor * normalCDF(-d2) -
-		spotPrice * dividendDiscount * normalCDF(-d1);
+		strikePrice * discountFactor * normalCDF(-d2) - spotPrice * dividendDiscount * normalCDF(-d1);
 
 	const parityLHS = callPrice - putPrice;
 	const parityRHS = spotPrice * dividendDiscount - strikePrice * discountFactor;
@@ -113,7 +111,7 @@ export function price(inputs: BSInputs): BSPricingResult {
 		putPrice: Math.max(putPrice, 0),
 		d1,
 		d2,
-		parityCheck,
+		parityCheck
 	};
 }
 

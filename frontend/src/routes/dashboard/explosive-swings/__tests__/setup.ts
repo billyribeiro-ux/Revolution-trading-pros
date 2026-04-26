@@ -182,7 +182,8 @@ vi.mock('$lib/api/errors', () => ({
 		}
 	},
 	isApiError: (err: unknown) => err instanceof Error && err.name === 'ApiError',
-	getUserFriendlyMessage: (err: unknown) => err instanceof Error ? err.message : 'An error occurred'
+	getUserFriendlyMessage: (err: unknown) =>
+		err instanceof Error ? err.message : 'An error occurred'
 }));
 
 vi.mock('$lib/api/cache', () => ({

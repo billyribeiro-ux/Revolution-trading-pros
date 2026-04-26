@@ -172,7 +172,7 @@
 						<span class="unread-badge">{unreadCount}</span>
 					{/if}
 				</div>
-				<button class="close-btn" onclick={close}>
+				<button class="close-btn" onclick={close} aria-label="Close notifications">
 					<IconX size={20} />
 				</button>
 			</div>

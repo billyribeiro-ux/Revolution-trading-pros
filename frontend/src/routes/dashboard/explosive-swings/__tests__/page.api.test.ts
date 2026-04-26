@@ -332,10 +332,7 @@ describe('fetchStats()', () => {
 
 			await fetchStats('explosive-swings');
 
-			expect(mockApiGet).toHaveBeenCalledWith(
-				'/api/stats/explosive-swings',
-				expect.any(Object)
-			);
+			expect(mockApiGet).toHaveBeenCalledWith('/api/stats/explosive-swings', expect.any(Object));
 		});
 
 		it('should transform snake_case to camelCase', async () => {

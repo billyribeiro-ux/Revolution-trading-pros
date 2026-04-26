@@ -13,7 +13,6 @@
 		children,
 		...restProps
 	}: LabelProps = $props();
-
 </script>
 
 <div

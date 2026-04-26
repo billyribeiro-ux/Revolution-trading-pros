@@ -575,7 +575,7 @@ class FormsService {
 			// Queue for offline processing if network error
 			if (this.isNetworkError(error)) {
 				this.queueOfflineRequest({ url, options });
-				throw new Error('Request queued for offline processing');
+				throw new Error('Request queued for offline processing', { cause: error });
 			}
 
 			throw error;

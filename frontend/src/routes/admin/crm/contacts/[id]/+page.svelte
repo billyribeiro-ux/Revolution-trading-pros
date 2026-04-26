@@ -1016,10 +1016,7 @@
 		aria-labelledby="add-tag-title"
 		tabindex="-1"
 	>
-		<div
-			class="modal"
-			role="document"
-		>
+		<div class="modal" role="document">
 			<div class="modal-header">
 				<h3 id="add-tag-title">Add Tag</h3>
 				<button class="modal-close" onclick={() => (showAddTagModal = false)}>
@@ -1055,10 +1052,7 @@
 		aria-labelledby="add-list-title"
 		tabindex="-1"
 	>
-		<div
-			class="modal"
-			role="document"
-		>
+		<div class="modal" role="document">
 			<div class="modal-header">
 				<h3 id="add-list-title">Add to List</h3>
 				<button class="modal-close" onclick={() => (showAddListModal = false)}>
@@ -1094,10 +1088,7 @@
 		aria-labelledby="add-note-title"
 		tabindex="-1"
 	>
-		<div
-			class="modal"
-			role="document"
-		>
+		<div class="modal" role="document">
 			<div class="modal-header">
 				<h3 id="add-note-title">Add Note</h3>
 				<button class="modal-close" onclick={() => (showAddNoteModal = false)}>
@@ -1134,10 +1125,7 @@
 		aria-labelledby="send-email-title"
 		tabindex="-1"
 	>
-		<div
-			class="modal modal-large"
-			role="document"
-		>
+		<div class="modal modal-large" role="document">
 			<div class="modal-header">
 				<div class="modal-title-section">
 					<h3 id="send-email-title">

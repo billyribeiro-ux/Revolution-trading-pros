@@ -12,7 +12,7 @@
 		height = '16px',
 		borderRadius = '8px',
 		count = 1,
-		gap = '8px',
+		gap = '8px'
 	}: Props = $props();
 </script>
 

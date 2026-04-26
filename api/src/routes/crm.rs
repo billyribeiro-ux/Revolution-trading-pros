@@ -536,7 +536,13 @@ async fn list_contact_lists(
     .bind(per_page)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    // FIX-2026-04-26: .unwrap_or_default();
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({
         "data": lists,
@@ -641,7 +647,13 @@ async fn list_contact_tags(
     .bind(per_page)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    // FIX-2026-04-26: .unwrap_or_default();
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({
         "data": tags,
@@ -727,7 +739,13 @@ async fn list_segments(
     .bind(per_page)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    // FIX-2026-04-26: .unwrap_or_default();
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({
         "data": segments,
@@ -852,7 +870,13 @@ async fn list_sequences(
     .bind(per_page)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    // FIX-2026-04-26: .unwrap_or_default();
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({
         "data": sequences,
@@ -953,7 +977,8 @@ async fn list_campaigns(
     .bind(per_page)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    // FIX-2026-04-26: .unwrap_or_default();
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
 
     Ok(Json(json!({
         "data": campaigns,
@@ -1049,7 +1074,13 @@ async fn list_recurring_campaigns(
     .bind(per_page)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    // FIX-2026-04-26: .unwrap_or_default();
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({
         "data": campaigns,
@@ -1083,7 +1114,13 @@ async fn list_automations(
     .bind(per_page)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    // FIX-2026-04-26: .unwrap_or_default();
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({
         "data": automations,
@@ -1182,7 +1219,13 @@ async fn list_smart_links(
     .bind(per_page)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    // FIX-2026-04-26: .unwrap_or_default();
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({
         "data": links,
@@ -1266,7 +1309,13 @@ async fn list_templates(
     .bind(per_page)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    // FIX-2026-04-26: .unwrap_or_default();
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({
         "data": templates,
@@ -1367,7 +1416,13 @@ async fn list_webhooks(
     .bind(per_page)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    // FIX-2026-04-26: .unwrap_or_default();
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({
         "data": webhooks,
@@ -1460,7 +1515,13 @@ async fn list_companies(
     .bind(per_page)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    // FIX-2026-04-26: .unwrap_or_default();
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({
         "data": companies,
@@ -1724,7 +1785,8 @@ async fn list_leads(
     .bind(offset)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    // FIX-2026-04-26: .unwrap_or_default();
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
 
     // Transform to match frontend Lead interface
     let transformed_leads: Vec<serde_json::Value> = leads
@@ -2323,7 +2385,8 @@ async fn list_pipelines(
     )
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    // FIX-2026-04-26: .unwrap_or_default();
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
 
     // For each pipeline, get its stages and stats
     let mut result = Vec::new();
@@ -2340,7 +2403,8 @@ async fn list_pipelines(
         .bind(pipeline.id)
         .fetch_all(&state.db.pool)
         .await
-        .unwrap_or_default();
+        // FIX-2026-04-26: .unwrap_or_default();
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))? ;
 
         let deals_count: (i64,) =
             sqlx::query_as("SELECT COUNT(*) FROM crm_deals WHERE pipeline_id = $1")
@@ -2416,7 +2480,13 @@ async fn get_pipeline(
     .bind(id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    // FIX-2026-04-26: .unwrap_or_default();
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({
         "id": pipeline.id.to_string(),
@@ -2634,7 +2704,13 @@ async fn list_deals(
     .bind(offset)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    // FIX-2026-04-26: .unwrap_or_default();
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     let total: (i64,) = sqlx::query_as(
         r#"
@@ -3155,7 +3231,13 @@ async fn get_deal_forecast(
     .bind(end_date)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    // FIX-2026-04-26: .unwrap_or_default();
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     let deals_count = forecast_deals.len() as i64;
     let mut commit = 0.0f64;

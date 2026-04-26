@@ -33,6 +33,7 @@ use tokio::sync::{broadcast, mpsc, RwLock};
 use tracing::{debug, error, info, warn};
 
 use crate::middleware::admin::AdminUser;
+use crate::utils::verify_jwt;
 use crate::AppState;
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -348,13 +349,33 @@ pub struct WsParams {
 }
 
 /// WebSocket upgrade handler
+///
+/// If a `token` query parameter is present it is validated against the configured
+/// `jwt_secret`.  An invalid or expired token causes the connection to be refused
+/// with HTTP 401 **before** the WebSocket handshake is completed.  Missing token is
+/// allowed so that public (unauthenticated) room subscriptions keep working.
 pub async fn ws_handler(
     ws: WebSocketUpgrade,
     State(state): State<AppState>,
     Query(params): Query<WsParams>,
 ) -> impl IntoResponse {
+    // TODO: Validate JWT token — validation now happens here.
+    // If a token is supplied, it must be a valid, non-expired JWT signed with
+    // the application's JWT_SECRET.  Reject with close code 4001 on failure.
+    if let Some(ref token) = params.token {
+        if let Err(err) = verify_jwt(token, &state.config.jwt_secret) {
+            warn!(error = %err, "WebSocket connection rejected: invalid JWT token");
+            return (
+                StatusCode::UNAUTHORIZED,
+                Json(json!({"error": "Unauthorized", "code": 4001})),
+            )
+                .into_response();
+        }
+    }
+
     ws.max_message_size(MAX_MESSAGE_SIZE)
         .on_upgrade(move |socket| handle_socket(socket, state, params))
+        .into_response()
 }
 
 /// Handle an individual WebSocket connection

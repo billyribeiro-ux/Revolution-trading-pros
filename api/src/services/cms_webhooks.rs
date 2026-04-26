@@ -84,8 +84,8 @@ pub struct DeliveryResult {
 
 /// Generate HMAC-SHA256 signature for webhook payload
 pub fn generate_signature(payload: &str, secret: &str) -> String {
-    let mut mac =
-        HmacSha256::new_from_slice(secret.as_bytes()).expect("HMAC can take key of any size");
+    let mut mac = HmacSha256::new_from_slice(secret.as_bytes())
+        .expect("HMAC-SHA256 accepts any key length per RFC 2104");
     mac.update(payload.as_bytes());
     let result = mac.finalize();
     hex::encode(result.into_bytes())

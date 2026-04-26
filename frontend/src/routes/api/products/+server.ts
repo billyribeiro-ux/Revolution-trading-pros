@@ -12,7 +12,9 @@ const API_URL =
 
 export const GET: RequestHandler = async ({ url, cookies }) => {
 	try {
-		const token = cookies.get('auth_token');
+		// FIX-2026-04-26: comment-out, verify, delete in follow-up. Wrong cookie name — login proxy sets rtp_access_token, not auth_token.
+		// const token = cookies.get('auth_token');
+		const token = cookies.get('rtp_access_token');
 
 		// Forward query parameters
 		const queryParams = url.searchParams.toString();

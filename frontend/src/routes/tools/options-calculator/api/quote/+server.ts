@@ -19,7 +19,7 @@ export const GET: RequestHandler = async ({ url }) => {
 
 		try {
 			const response = await fetch(
-				`https://api.polygon.io/v2/snapshot/locale/us/markets/stocks/tickers/${ticker}?apiKey=${apiKey}`,
+				`https://api.polygon.io/v2/snapshot/locale/us/markets/stocks/tickers/${ticker}?apiKey=${apiKey}`
 			);
 
 			if (!response.ok) {
@@ -41,12 +41,15 @@ export const GET: RequestHandler = async ({ url }) => {
 				change: (snap?.lastTrade?.p ?? 0) - (snap?.prevDay?.c ?? 0),
 				changePercent: snap?.todaysChangePerc ?? 0,
 				timestamp: new Date().toISOString(),
-				source: 'polygon',
+				source: 'polygon'
 			};
 
 			return json(quote);
 		} catch (err) {
-			return error(502, `Polygon request failed: ${err instanceof Error ? err.message : 'Unknown'}`);
+			return error(
+				502,
+				`Polygon request failed: ${err instanceof Error ? err.message : 'Unknown'}`
+			);
 		}
 	}
 
