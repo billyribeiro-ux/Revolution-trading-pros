@@ -10,7 +10,11 @@
     "check": "pnpm --filter revolution-svelte check",
     "lint": "pnpm --filter revolution-svelte lint",
     "format": "pnpm --filter revolution-svelte format",
-    "test": "pnpm --filter revolution-svelte test"
+    "test": "pnpm --filter revolution-svelte test",
+    "api:lint": "cd api && cargo machete && cargo deny check && cargo clippy --locked --all-targets -- -D warnings",
+    "api:lint:machete": "cd api && cargo machete",
+    "api:lint:deny": "cd api && cargo deny check",
+    "api:lint:clippy": "cd api && cargo clippy --locked --all-targets -- -D warnings"
   },
   "dependencies": {
     

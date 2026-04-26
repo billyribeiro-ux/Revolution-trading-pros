@@ -60,6 +60,60 @@ const SLUG_MAX_LENGTH: usize = 75;
 const WORDS_PER_MINUTE: u32 = 200;
 
 // ═══════════════════════════════════════════════════════════════════════════════════════
+// COMPILED REGEX PATTERNS (hoisted to avoid per-request recompilation)
+//
+// House style: this repo uses `lazy_static!` (see api/src/routes/sitemap.rs and
+// robots.rs). The `.expect("static regex must compile")` runs once at startup,
+// so a panic there is a build-time bug, not a per-request hazard.
+// ═══════════════════════════════════════════════════════════════════════════════════════
+
+lazy_static::lazy_static! {
+    /// Strip HTML tags (e.g. `<p>`, `<a href="...">`).
+    static ref HTML_TAG_RE: Regex =
+        Regex::new(r"<[^>]*>").expect("static regex must compile");
+
+    /// Collapse runs of whitespace to a single space.
+    static ref WHITESPACE_RE: Regex =
+        Regex::new(r"\s+").expect("static regex must compile");
+
+    /// Sentence-ending punctuation.
+    static ref SENTENCE_END_RE: Regex =
+        Regex::new(r"[.!?]+").expect("static regex must compile");
+
+    /// Naive passive-voice detector (e.g. "was written", "is loved").
+    static ref PASSIVE_VOICE_RE: Regex =
+        Regex::new(r"\b(was|were|is|are|been|being)\s+\w+ed\b")
+            .expect("static regex must compile");
+
+    /// Match `<h2 ...>...</h2>` blocks.
+    static ref H2_RE: Regex =
+        Regex::new(r"<h2[^>]*>(.*?)</h2>").expect("static regex must compile");
+
+    /// Match all `<img ...>` tags.
+    static ref IMG_TOTAL_RE: Regex =
+        Regex::new(r#"<img[^>]*>"#).expect("static regex must compile");
+
+    /// Match `<img>` tags that have a non-empty `alt="..."`.
+    static ref IMG_WITH_ALT_RE: Regex =
+        Regex::new(r#"<img[^>]*alt="[^"]+""#).expect("static regex must compile");
+
+    /// Match anchors with internal hrefs (`/...` or `#...`).
+    static ref INTERNAL_LINK_RE: Regex =
+        Regex::new(r#"<a[^>]*href="(/[^"]*|#[^"]*)""#)
+            .expect("static regex must compile");
+
+    /// Match anchors with external `http(s)://` hrefs.
+    static ref EXTERNAL_LINK_RE: Regex =
+        Regex::new(r#"<a[^>]*href="https?://[^"]*""#)
+            .expect("static regex must compile");
+
+    /// Match anchors carrying a `rel="...nofollow..."`.
+    static ref NOFOLLOW_LINK_RE: Regex =
+        Regex::new(r#"<a[^>]*rel="[^"]*nofollow[^"]*""#)
+            .expect("static regex must compile");
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════════════
 // TYPES AND ENUMS
 // ═══════════════════════════════════════════════════════════════════════════════════════
 
@@ -348,11 +402,9 @@ fn extract_html_from_blocks(blocks: &[JsonValue]) -> String {
 
 /// Strip HTML tags from text
 fn strip_html(html: &str) -> String {
-    let re = Regex::new(r"<[^>]*>").unwrap();
-    let text = re.replace_all(html, " ");
+    let text = HTML_TAG_RE.replace_all(html, " ");
     // Normalize whitespace
-    let whitespace_re = Regex::new(r"\s+").unwrap();
-    whitespace_re.replace_all(&text, " ").trim().to_string()
+    WHITESPACE_RE.replace_all(&text, " ").trim().to_string()
 }
 
 /// Count words in text
@@ -362,8 +414,7 @@ fn count_words(text: &str) -> u32 {
 
 /// Count sentences in text
 fn count_sentences(text: &str) -> u32 {
-    let re = Regex::new(r"[.!?]+").unwrap();
-    let count = re.find_iter(text).count();
+    let count = SENTENCE_END_RE.find_iter(text).count();
     if count == 0 {
         1
     } else {
@@ -966,8 +1017,7 @@ fn analyze_readability(
     }
 
     // Passive voice check (simplified)
-    let passive_re = Regex::new(r"\b(was|were|is|are|been|being)\s+\w+ed\b").unwrap();
-    let passive_count = passive_re.find_iter(&text_lower).count();
+    let passive_count = PASSIVE_VOICE_RE.find_iter(&text_lower).count();
     let passive_percentage = if sentence_count > 0 {
         (passive_count as f32 / sentence_count as f32) * 100.0
     } else {
@@ -1164,8 +1214,7 @@ fn analyze_structure(
     }
 
     // Also check HTML content for headings
-    let h2_regex = Regex::new(r"<h2[^>]*>(.*?)</h2>").unwrap();
-    h2_count += h2_regex.find_iter(html).count() as u32;
+    h2_count += H2_RE.find_iter(html).count() as u32;
 
     // H1 check (for blog posts, usually title handles H1)
     if h1_count > 1 {
@@ -1269,10 +1318,8 @@ fn analyze_structure(
     }
 
     // Also check HTML for images
-    let img_total_regex = Regex::new(r#"<img[^>]*>"#).unwrap();
-    let img_with_alt_regex = Regex::new(r#"<img[^>]*alt="[^"]+""#).unwrap();
-    let total_img = img_total_regex.find_iter(html).count() as u32;
-    let img_with_alt = img_with_alt_regex.find_iter(html).count() as u32;
+    let total_img = IMG_TOTAL_RE.find_iter(html).count() as u32;
+    let img_with_alt = IMG_WITH_ALT_RE.find_iter(html).count() as u32;
     images_without_alt += total_img.saturating_sub(img_with_alt);
 
     if images_without_alt > 0 {
@@ -1306,13 +1353,9 @@ fn analyze_links(
     issues: &mut Vec<SeoIssue>,
     suggestions: &mut Vec<String>,
 ) -> LinksAnalysis {
-    let internal_regex = Regex::new(r#"<a[^>]*href="(/[^"]*|#[^"]*)""#).unwrap();
-    let external_regex = Regex::new(r#"<a[^>]*href="https?://[^"]*""#).unwrap();
-    let nofollow_regex = Regex::new(r#"<a[^>]*rel="[^"]*nofollow[^"]*""#).unwrap();
-
-    let internal_count = internal_regex.find_iter(html).count() as u32;
-    let external_count = external_regex.find_iter(html).count() as u32;
-    let nofollow_count = nofollow_regex.find_iter(html).count() as u32;
+    let internal_count = INTERNAL_LINK_RE.find_iter(html).count() as u32;
+    let external_count = EXTERNAL_LINK_RE.find_iter(html).count() as u32;
+    let nofollow_count = NOFOLLOW_LINK_RE.find_iter(html).count() as u32;
 
     let total_links = internal_count + external_count;
     let ratio = if total_links > 0 {
