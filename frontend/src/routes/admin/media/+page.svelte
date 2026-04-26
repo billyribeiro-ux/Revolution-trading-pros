@@ -33,6 +33,36 @@
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import { API_BASE_URL, API_ENDPOINTS } from '$lib/api/config';
 
+	// FIX-2026-04-26: Tabler icons replace 43 raw inline <svg> blocks for
+	// consistent professional styling per CLAUDE.md icon-system standard.
+	import IconLayoutGrid from '@tabler/icons-svelte-runes/icons/layout-grid';
+	import IconList from '@tabler/icons-svelte-runes/icons/list';
+	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
+	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
+	import IconPhoto from '@tabler/icons-svelte-runes/icons/photo';
+	import IconCircleCheck from '@tabler/icons-svelte-runes/icons/circle-check';
+	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
+	import IconBox from '@tabler/icons-svelte-runes/icons/box';
+	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
+	import IconChevronUp from '@tabler/icons-svelte-runes/icons/chevron-up';
+	import IconArrowUp from '@tabler/icons-svelte-runes/icons/arrow-up';
+	import IconArrowDown from '@tabler/icons-svelte-runes/icons/arrow-down';
+	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import IconCircleCheckFilled from '@tabler/icons-svelte-runes/icons/circle-check-filled';
+	import IconCircleXFilled from '@tabler/icons-svelte-runes/icons/circle-x-filled';
+	import IconChevronsLeft from '@tabler/icons-svelte-runes/icons/chevrons-left';
+	import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left';
+	import IconChevronRight from '@tabler/icons-svelte-runes/icons/chevron-right';
+	import IconChevronsRight from '@tabler/icons-svelte-runes/icons/chevrons-right';
+	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
+	import IconCrop from '@tabler/icons-svelte-runes/icons/crop';
+	import IconDevices from '@tabler/icons-svelte-runes/icons/devices';
+	import IconDownload from '@tabler/icons-svelte-runes/icons/download';
+	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
+	import IconClipboardCopy from '@tabler/icons-svelte-runes/icons/clipboard-copy';
+	import IconInfoCircle from '@tabler/icons-svelte-runes/icons/info-circle';
+
 	// ═══════════════════════════════════════════════════════════════════════════
 	// State
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -711,42 +741,26 @@
 						onclick={() => (viewMode = 'grid')}
 						title="Grid view"
 					>
-						<svg viewBox="0 0 20 20" fill="currentColor">
-							<path
-								d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
-							/>
-						</svg>
+						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: grid 4-squares SVG -->
+						<IconLayoutGrid size={20} aria-hidden="true" />
 					</button>
 					<button
 						class:active={viewMode === 'list'}
 						onclick={() => (viewMode = 'list')}
 						title="List view"
 					>
-						<svg viewBox="0 0 20 20" fill="currentColor">
-							<path
-								fill-rule="evenodd"
-								d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
-								clip-rule="evenodd"
-							/>
-						</svg>
+						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: list 4-lines SVG -->
+						<IconList size={20} aria-hidden="true" />
 					</button>
 				</div>
 				<a href="/admin/media/analytics" class="btn-secondary" title="View bandwidth analytics">
-					<svg viewBox="0 0 20 20" fill="currentColor">
-						<path
-							d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"
-						/>
-					</svg>
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chart-bar 3-bar SVG -->
+					<IconChartBar size={20} aria-hidden="true" />
 					Analytics
 				</a>
 				<button class="btn-primary" onclick={() => (showUploadPanel = !showUploadPanel)}>
-					<svg viewBox="0 0 20 20" fill="currentColor">
-						<path
-							fill-rule="evenodd"
-							d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"
-							clip-rule="evenodd"
-						/>
-					</svg>
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: upload arrow SVG -->
+					<IconUpload size={20} aria-hidden="true" />
 					Upload
 				</button>
 			</div>
@@ -760,11 +774,8 @@
 				<div class="stats-grid">
 					<div class="stat-card">
 						<div class="stat-icon blue">
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-								<rect x="3" y="3" width="18" height="18" rx="2" />
-								<circle cx="8.5" cy="8.5" r="1.5" />
-								<path d="M21 15l-5-5L5 21" />
-							</svg>
+							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: photo/image SVG -->
+							<IconPhoto size={24} aria-hidden="true" />
 						</div>
 						<div class="stat-info">
 							<span class="stat-value">{statistics.total_images}</span>
@@ -774,10 +785,8 @@
 
 					<div class="stat-card">
 						<div class="stat-icon green">
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-								<path d="M9 12l2 2 4-4" />
-								<circle cx="12" cy="12" r="10" />
-							</svg>
+							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-check SVG -->
+							<IconCircleCheck size={24} aria-hidden="true" />
 						</div>
 						<div class="stat-info">
 							<span class="stat-value">{statistics.optimized_images}</span>
@@ -787,10 +796,8 @@
 
 					<div class="stat-card">
 						<div class="stat-icon orange">
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-								<circle cx="12" cy="12" r="10" />
-								<path d="M12 6v6l4 2" />
-							</svg>
+							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: clock SVG -->
+							<IconClock size={24} aria-hidden="true" />
 						</div>
 						<div class="stat-info">
 							<span class="stat-value">{statistics.pending_optimization}</span>
@@ -800,11 +807,8 @@
 
 					<div class="stat-card">
 						<div class="stat-icon gold">
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-								<path
-									d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"
-								/>
-							</svg>
+							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: box/package SVG -->
+							<IconBox size={24} aria-hidden="true" />
 						</div>
 						<div class="stat-info">
 							<span class="stat-value">{formatBytes(statistics.total_storage)}</span>
@@ -814,9 +818,8 @@
 
 					<div class="stat-card highlight">
 						<div class="stat-icon emerald">
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-								<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-							</svg>
+							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: bolt/lightning SVG -->
+							<IconBolt size={24} aria-hidden="true" />
 						</div>
 						<div class="stat-info">
 							<span class="stat-value">{formatBytes(statistics.total_savings_bytes)}</span>
@@ -833,22 +836,14 @@
 					onclick={() => (showStatsPanel = false)}
 					aria-label="Hide statistics"
 				>
-					<svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-						<path
-							fill-rule="evenodd"
-							d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
-							clip-rule="evenodd"
-						/>
-					</svg>
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chevron-up SVG -->
+					<IconChevronUp size={20} aria-hidden="true" />
 				</button>
 			</div>
 		{:else}
 			<button class="stats-show" onclick={() => (showStatsPanel = true)}>
-				<svg viewBox="0 0 20 20" fill="currentColor">
-					<path
-						d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"
-					/>
-				</svg>
+				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chart-bar SVG -->
+				<IconChartBar size={20} aria-hidden="true" />
 				Show Statistics
 			</button>
 		{/if}
@@ -875,21 +870,11 @@
 							>
 								<div class="upload-icon">
 									{#if upload.status === 'complete'}
-										<svg viewBox="0 0 20 20" fill="currentColor" class="text-green">
-											<path
-												fill-rule="evenodd"
-												d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-												clip-rule="evenodd"
-											/>
-										</svg>
+										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-check-filled (upload complete) -->
+										<IconCircleCheckFilled size={20} aria-hidden="true" class="text-green" />
 									{:else if upload.status === 'error'}
-										<svg viewBox="0 0 20 20" fill="currentColor" class="text-red">
-											<path
-												fill-rule="evenodd"
-												d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-												clip-rule="evenodd"
-											/>
-										</svg>
+										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-x-filled (upload error) -->
+										<IconCircleXFilled size={20} aria-hidden="true" class="text-red" />
 									{:else}
 										<div class="upload-spinner"></div>
 									{/if}
@@ -946,21 +931,11 @@
 					}}
 				>
 					{#if sortDir === 'asc'}
-						<svg viewBox="0 0 20 20" fill="currentColor">
-							<path
-								fill-rule="evenodd"
-								d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z"
-								clip-rule="evenodd"
-							/>
-						</svg>
+						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: arrow-up sort asc -->
+						<IconArrowUp size={20} aria-hidden="true" />
 					{:else}
-						<svg viewBox="0 0 20 20" fill="currentColor">
-							<path
-								fill-rule="evenodd"
-								d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z"
-								clip-rule="evenodd"
-							/>
-						</svg>
+						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: arrow-down sort desc -->
+						<IconArrowDown size={20} aria-hidden="true" />
 					{/if}
 				</button>
 			</div>
@@ -973,33 +948,18 @@
 							{selectedIds.size === items.length ? 'Deselect All' : 'Select All'}
 						</button>
 						<button class="btn-primary btn-sm" onclick={bulkOptimize}>
-							<svg viewBox="0 0 20 20" fill="currentColor">
-								<path
-									fill-rule="evenodd"
-									d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"
-									clip-rule="evenodd"
-								/>
-							</svg>
+							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: bolt (optimize) -->
+							<IconBolt size={20} aria-hidden="true" />
 							Optimize
 						</button>
 						<button class="btn-secondary btn-sm" onclick={bulkDownload}>
-							<svg viewBox="0 0 20 20" fill="currentColor">
-								<path
-									fill-rule="evenodd"
-									d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
-									clip-rule="evenodd"
-								/>
-							</svg>
+							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: download -->
+							<IconDownload size={20} aria-hidden="true" />
 							Download
 						</button>
 						<button class="btn-danger btn-sm" onclick={bulkDelete}>
-							<svg viewBox="0 0 20 20" fill="currentColor">
-								<path
-									fill-rule="evenodd"
-									d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-									clip-rule="evenodd"
-								/>
-							</svg>
+							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: trash (bulk delete) -->
+							<IconTrash size={20} aria-hidden="true" />
 							Delete
 						</button>
 					</div>
@@ -1016,11 +976,8 @@
 					<MediaSkeleton type={viewMode as 'grid' | 'list'} count={perPage} />
 				{:else if items.length === 0}
 					<div class="empty-state">
-						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-							<path
-								d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
-							/>
-						</svg>
+						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: upload (empty state) -->
+						<IconUpload size={48} aria-hidden="true" />
 						<h3>No media files</h3>
 						<p>Upload files to get started</p>
 						<button class="btn-primary" onclick={() => (showUploadPanel = true)}>
@@ -1060,13 +1017,8 @@
 										<div class="item-badges">
 											{#if item.is_optimized}
 												<span class="badge badge-green" title="Optimized">
-													<svg viewBox="0 0 20 20" fill="currentColor">
-														<path
-															fill-rule="evenodd"
-															d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-															clip-rule="evenodd"
-														/>
-													</svg>
+													<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: check (optimized badge) -->
+													<IconCheck size={12} aria-hidden="true" />
 												</span>
 											{/if}
 											{#if item.processing_status === 'processing'}
@@ -1163,13 +1115,8 @@
 											}}
 											title="Optimize"
 										>
-											<svg viewBox="0 0 20 20" fill="currentColor">
-												<path
-													fill-rule="evenodd"
-													d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"
-													clip-rule="evenodd"
-												/>
-											</svg>
+											<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: bolt (optimize) -->
+											<IconBolt size={16} aria-hidden="true" />
 										</button>
 										<button
 											class="btn-icon-sm"
@@ -1179,13 +1126,8 @@
 											}}
 											title="Delete"
 										>
-											<svg viewBox="0 0 20 20" fill="currentColor">
-												<path
-													fill-rule="evenodd"
-													d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-													clip-rule="evenodd"
-												/>
-											</svg>
+											<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: trash (delete) -->
+											<IconTrash size={16} aria-hidden="true" />
 										</button>
 									</div>
 								{/if}
@@ -1206,13 +1148,8 @@
 							}}
 							aria-label="First page"
 						>
-							<svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-								<path
-									fill-rule="evenodd"
-									d="M15.707 15.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 010 1.414zm-6 0a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 011.414 1.414L5.414 10l4.293 4.293a1 1 0 010 1.414z"
-									clip-rule="evenodd"
-								/>
-							</svg>
+							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chevrons-left (first page) -->
+							<IconChevronsLeft size={20} aria-hidden="true" />
 						</button>
 						<button
 							class="btn-icon"
@@ -1223,13 +1160,8 @@
 							}}
 							aria-label="Previous page"
 						>
-							<svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-								<path
-									fill-rule="evenodd"
-									d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-									clip-rule="evenodd"
-								/>
-							</svg>
+							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chevron-left (prev page) -->
+							<IconChevronLeft size={20} aria-hidden="true" />
 						</button>
 
 						<span class="page-info">
@@ -1245,13 +1177,8 @@
 							}}
 							aria-label="Next page"
 						>
-							<svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-								<path
-									fill-rule="evenodd"
-									d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-									clip-rule="evenodd"
-								/>
-							</svg>
+							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chevron-right (next page) -->
+							<IconChevronRight size={20} aria-hidden="true" />
 						</button>
 						<button
 							class="btn-icon"
@@ -1262,18 +1189,8 @@
 							}}
 							aria-label="Last page"
 						>
-							<svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-								<path
-									fill-rule="evenodd"
-									d="M10.293 15.707a1 1 0 010-1.414L14.586 10l-4.293-4.293a1 1 0 111.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z"
-									clip-rule="evenodd"
-								/>
-								<path
-									fill-rule="evenodd"
-									d="M4.293 15.707a1 1 0 010-1.414L8.586 10 4.293 5.707a1 1 0 011.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z"
-									clip-rule="evenodd"
-								/>
-							</svg>
+							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chevrons-right (last page) -->
+							<IconChevronsRight size={20} aria-hidden="true" />
 						</button>
 					</div>
 				{/if}
@@ -1291,13 +1208,8 @@
 							onclick={() => (showDetailsPanel = false)}
 							aria-label="Close details panel"
 						>
-							<svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-								<path
-									fill-rule="evenodd"
-									d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-									clip-rule="evenodd"
-								/>
-							</svg>
+							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: x (close details) -->
+							<IconX size={20} aria-hidden="true" />
 						</button>
 					</div>
 
@@ -1365,14 +1277,8 @@
 									{#if isAnalyzing}
 										<div class="spinner-mini"></div>
 									{:else}
-										<svg viewBox="0 0 20 20" fill="currentColor">
-											<path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-											<path
-												fill-rule="evenodd"
-												d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
-												clip-rule="evenodd"
-											/>
-										</svg>
+										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: eye (generate AI) -->
+										<IconEye size={20} aria-hidden="true" />
 										Generate with AI
 									{/if}
 								</button>
@@ -1427,40 +1333,24 @@
 					<div class="details-actions">
 						{#if detailItem.file_type === 'image'}
 							<button class="btn-secondary" onclick={() => detailItem && handleCrop(detailItem)}>
-								<svg viewBox="0 0 20 20" fill="currentColor">
-									<path
-										d="M4 3a1 1 0 011 1v2h2a1 1 0 010 2H4a1 1 0 01-1-1V4a1 1 0 011-1zm12 0a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 110-2h2V4a1 1 0 011-1zM3 12a1 1 0 011-1h3a1 1 0 110 2H5v2a1 1 0 11-2 0v-3zm14 0a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 110-2h2v-2a1 1 0 011-1z"
-									/>
-								</svg>
+								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: crop -->
+								<IconCrop size={20} aria-hidden="true" />
 								Crop
 							</button>
 							<button class="btn-secondary" onclick={() => (showPreviewModal = true)}>
-								<svg viewBox="0 0 20 20" fill="currentColor">
-									<path
-										d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z"
-									/>
-								</svg>
+								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: devices (responsive preview) -->
+								<IconDevices size={20} aria-hidden="true" />
 								Responsive Preview
 							</button>
 						{/if}
 						<button class="btn-primary" onclick={() => detailItem && handleOptimize(detailItem)}>
-							<svg viewBox="0 0 20 20" fill="currentColor">
-								<path
-									fill-rule="evenodd"
-									d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"
-									clip-rule="evenodd"
-								/>
-							</svg>
+							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: bolt (optimize) -->
+							<IconBolt size={20} aria-hidden="true" />
 							Optimize
 						</button>
 						<button class="btn-danger" onclick={() => detailItem && handleDelete(detailItem)}>
-							<svg viewBox="0 0 20 20" fill="currentColor">
-								<path
-									fill-rule="evenodd"
-									d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-									clip-rule="evenodd"
-								/>
-							</svg>
+							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: trash (delete) -->
+							<IconTrash size={20} aria-hidden="true" />
 							Delete
 						</button>
 					</div>
@@ -1483,14 +1373,8 @@
 						contextMenu = null;
 					}}
 				>
-					<svg viewBox="0 0 20 20" fill="currentColor">
-						<path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-						<path
-							fill-rule="evenodd"
-							d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
-							clip-rule="evenodd"
-						/>
-					</svg>
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: eye (view) -->
+					<IconEye size={16} aria-hidden="true" />
 					View
 				</button>
 				{#if contextMenu.item.file_type === 'image'}
@@ -1500,13 +1384,8 @@
 							contextMenu = null;
 						}}
 					>
-						<svg viewBox="0 0 20 20" fill="currentColor">
-							<path
-								fill-rule="evenodd"
-								d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"
-								clip-rule="evenodd"
-							/>
-						</svg>
+						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: bolt (optimize) -->
+						<IconBolt size={16} aria-hidden="true" />
 						Optimize
 					</button>
 					<button
@@ -1515,11 +1394,8 @@
 							contextMenu = null;
 						}}
 					>
-						<svg viewBox="0 0 20 20" fill="currentColor">
-							<path
-								d="M4 3a1 1 0 011 1v2h2a1 1 0 010 2H4a1 1 0 01-1-1V4a1 1 0 011-1zm12 0a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 110-2h2V4a1 1 0 011-1zM3 12a1 1 0 011-1h3a1 1 0 110 2H5v2a1 1 0 11-2 0v-3zm14 0a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 110-2h2v-2a1 1 0 011-1z"
-							/>
-						</svg>
+						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: crop -->
+						<IconCrop size={16} aria-hidden="true" />
 						Crop
 					</button>
 					{#if aiEnabled}
@@ -1529,27 +1405,16 @@
 								contextMenu = null;
 							}}
 						>
-							<svg viewBox="0 0 20 20" fill="currentColor">
-								<path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-								<path
-									fill-rule="evenodd"
-									d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
-									clip-rule="evenodd"
-								/>
-							</svg>
+							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: eye (AI analyze) -->
+							<IconEye size={16} aria-hidden="true" />
 							AI Analyze
 						</button>
 					{/if}
 				{/if}
 				<hr />
 				<a href={contextMenu.item.url} download={contextMenu.item.filename}>
-					<svg viewBox="0 0 20 20" fill="currentColor">
-						<path
-							fill-rule="evenodd"
-							d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
-							clip-rule="evenodd"
-						/>
-					</svg>
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: download -->
+					<IconDownload size={16} aria-hidden="true" />
 					Download
 				</a>
 				<button
@@ -1559,12 +1424,8 @@
 						contextMenu = null;
 					}}
 				>
-					<svg viewBox="0 0 20 20" fill="currentColor">
-						<path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
-						<path
-							d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"
-						/>
-					</svg>
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: clipboard (copy URL) -->
+					<IconClipboardCopy size={16} aria-hidden="true" />
 					Copy URL
 				</button>
 				<hr />
@@ -1575,13 +1436,8 @@
 						contextMenu = null;
 					}}
 				>
-					<svg viewBox="0 0 20 20" fill="currentColor">
-						<path
-							fill-rule="evenodd"
-							d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-							clip-rule="evenodd"
-						/>
-					</svg>
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: trash (delete) -->
+					<IconTrash size={16} aria-hidden="true" />
 					Delete
 				</button>
 			</div>
@@ -1594,29 +1450,14 @@
 			{#each toasts as toast (toast.id)}
 				<div class="toast toast-{toast.type}" transition:fly={{ y: 20, duration: 300 }}>
 					{#if toast.type === 'success'}
-						<svg viewBox="0 0 20 20" fill="currentColor">
-							<path
-								fill-rule="evenodd"
-								d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-								clip-rule="evenodd"
-							/>
-						</svg>
+						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-check-filled (toast success) -->
+						<IconCircleCheckFilled size={20} aria-hidden="true" />
 					{:else if toast.type === 'error'}
-						<svg viewBox="0 0 20 20" fill="currentColor">
-							<path
-								fill-rule="evenodd"
-								d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-								clip-rule="evenodd"
-							/>
-						</svg>
+						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-x-filled (toast error) -->
+						<IconCircleXFilled size={20} aria-hidden="true" />
 					{:else}
-						<svg viewBox="0 0 20 20" fill="currentColor">
-							<path
-								fill-rule="evenodd"
-								d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-								clip-rule="evenodd"
-							/>
-						</svg>
+						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: info-circle (toast info) -->
+						<IconInfoCircle size={20} aria-hidden="true" />
 					{/if}
 					<span>{toast.message}</span>
 				</div>
@@ -1661,13 +1502,8 @@
 					onclick={() => (showPreviewModal = false)}
 					aria-label="Close preview"
 				>
-					<svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-						<path
-							fill-rule="evenodd"
-							d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-							clip-rule="evenodd"
-						/>
-					</svg>
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: x (close modal) -->
+					<IconX size={20} aria-hidden="true" />
 				</button>
 			</div>
 			<ResponsivePreview variants={(detailItem.variants as any) || []} />
@@ -1791,7 +1627,8 @@
 		background: rgba(148, 163, 184, 0.1);
 	}
 
-	.view-toggle button svg {
+	/* FIX-2026-04-26: wrapped in :global() so styles reach Tabler's internal <svg> */
+	.view-toggle button :global(svg) {
 		width: 18px;
 		height: 18px;
 	}
@@ -1839,7 +1676,8 @@
 		justify-content: center;
 	}
 
-	.stat-icon svg {
+	/* FIX-2026-04-26: :global() so styles reach Tabler's internal <svg> */
+	.stat-icon :global(svg) {
 		width: 20px;
 		height: 20px;
 	}
@@ -1913,7 +1751,8 @@
 		background: rgba(148, 163, 184, 0.2);
 	}
 
-	.stats-toggle svg {
+	/* FIX-2026-04-26: :global() so styles reach Tabler's internal <svg> */
+	.stats-toggle :global(svg) {
 		width: 16px;
 		height: 16px;
 	}
@@ -1939,7 +1778,8 @@
 		border-color: rgba(99, 102, 241, 0.3);
 	}
 
-	.stats-show svg {
+	/* FIX-2026-04-26: :global() so styles reach Tabler's internal <svg> */
+	.stats-show :global(svg) {
 		width: 16px;
 		height: 16px;
 	}
@@ -1990,15 +1830,17 @@
 		justify-content: center;
 	}
 
-	.upload-icon svg {
+	/* FIX-2026-04-26: :global() so styles reach Tabler's internal <svg> */
+	.upload-icon :global(svg) {
 		width: 20px;
 		height: 20px;
 	}
 
-	.upload-icon .text-green {
+	/* FIX-2026-04-26: wrapped in :global() so styles reach Tabler's internal <svg> */
+	.upload-icon :global(.text-green) {
 		color: #22c55e;
 	}
-	.upload-icon .text-red {
+	.upload-icon :global(.text-red) {
 		color: #ef4444;
 	}
 
@@ -2104,7 +1946,8 @@
 		cursor: not-allowed;
 	}
 
-	.btn-icon svg {
+	/* FIX-2026-04-26: :global() so styles reach Tabler's internal <svg> */
+	.btn-icon :global(svg) {
 		width: 18px;
 		height: 18px;
 	}
@@ -2192,10 +2035,11 @@
 		background: rgba(99, 102, 241, 0.1);
 	}
 
-	.btn-primary svg,
-	.btn-secondary svg,
-	.btn-danger svg,
-	.btn-text svg {
+	/* FIX-2026-04-26: :global() so styles reach Tabler's internal <svg> */
+	.btn-primary :global(svg),
+	.btn-secondary :global(svg),
+	.btn-danger :global(svg),
+	.btn-text :global(svg) {
 		width: 14px;
 		height: 14px;
 	}
@@ -2230,7 +2074,8 @@
 		color: #94a3b8;
 	}
 
-	.empty-state svg {
+	/* FIX-2026-04-26: :global() so styles reach Tabler's internal <svg> */
+	.empty-state :global(svg) {
 		width: 64px;
 		height: 64px;
 		margin-bottom: 1rem;
@@ -2322,7 +2167,8 @@
 		-webkit-backdrop-filter: blur(10px);
 	}
 
-	.badge svg {
+	/* FIX-2026-04-26: :global() so styles reach Tabler's internal <svg> */
+	.badge :global(svg) {
 		width: 14px;
 		height: 14px;
 	}
@@ -2518,7 +2364,8 @@
 		color: #a5b4fc;
 	}
 
-	.btn-icon-sm svg {
+	/* FIX-2026-04-26: :global() so styles reach Tabler's internal <svg> */
+	.btn-icon-sm :global(svg) {
 		width: 16px;
 		height: 16px;
 	}
@@ -2737,19 +2584,20 @@
 		background: rgba(239, 68, 68, 0.15);
 	}
 
-	.context-menu button svg,
-	.context-menu a svg {
+	/* FIX-2026-04-26: wrapped in :global() so styles reach Tabler's internal <svg> */
+	.context-menu button :global(svg),
+	.context-menu a :global(svg) {
 		width: 16px;
 		height: 16px;
 		color: #94a3b8;
 	}
 
-	.context-menu button:hover svg,
-	.context-menu a:hover svg {
+	.context-menu button:hover :global(svg),
+	.context-menu a:hover :global(svg) {
 		color: #a5b4fc;
 	}
 
-	.context-menu button.danger svg {
+	.context-menu button.danger :global(svg) {
 		color: #f87171;
 	}
 
@@ -2787,20 +2635,21 @@
 		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 	}
 
-	.toast svg {
+	/* FIX-2026-04-26: :global() so styles reach Tabler's internal <svg> */
+	.toast :global(svg) {
 		width: 18px;
 		height: 18px;
 	}
 
-	.toast-success svg {
+	.toast-success :global(svg) {
 		color: #22c55e;
 	}
 
-	.toast-error svg {
+	.toast-error :global(svg) {
 		color: #ef4444;
 	}
 
-	.toast-info svg {
+	.toast-info :global(svg) {
 		color: var(--primary-500);
 	}
 

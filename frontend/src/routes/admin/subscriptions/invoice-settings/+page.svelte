@@ -2,6 +2,12 @@
 	import { fade, slide } from 'svelte/transition';
 	import { browser } from '$app/environment';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
+	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
+	import IconFileDownload from '@tabler/icons-svelte-runes/icons/file-download';
+	import IconCircleCheckFilled from '@tabler/icons-svelte-runes/icons/circle-check-filled';
+	import IconCircleXFilled from '@tabler/icons-svelte-runes/icons/circle-x-filled';
+	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
 
 	// API URL
 	const API_BASE = '/api/admin/invoice-settings';
@@ -206,34 +212,16 @@
 				onclick={loadPreview}
 				class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition flex items-center gap-2"
 			>
-				<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-					/>
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-					/>
-				</svg>
+								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: eye (preview) -->
+				<IconEye size={20} aria-hidden="true" />
 				Preview
 			</button>
 			<button
 				onclick={downloadPreview}
 				class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition flex items-center gap-2"
 			>
-				<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-					/>
-				</svg>
+								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: file-download -->
+				<IconFileDownload size={20} aria-hidden="true" />
 				Download PDF
 			</button>
 			<button
@@ -253,14 +241,8 @@
 					</svg>
 					Saving...
 				{:else}
-					<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M5 13l4 4L19 7"
-						/>
-					</svg>
+										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: check (saved) -->
+					<IconCheck size={20} aria-hidden="true" />
 					Save Changes
 				{/if}
 			</button>
@@ -273,13 +255,8 @@
 			transition:slide
 			class="mb-6 p-4 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-lg flex items-center gap-3"
 		>
-			<svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-				<path
-					fill-rule="evenodd"
-					d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-					clip-rule="evenodd"
-				/>
-			</svg>
+						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-x error -->
+			<IconCircleXFilled size={20} aria-hidden="true" />
 			{error}
 		</div>
 	{/if}
@@ -289,13 +266,8 @@
 			transition:slide
 			class="mb-6 p-4 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-lg flex items-center gap-3"
 		>
-			<svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-				<path
-					fill-rule="evenodd"
-					d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-					clip-rule="evenodd"
-				/>
-			</svg>
+						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-check success -->
+			<IconCircleCheckFilled size={20} aria-hidden="true" />
 			{success}
 		</div>
 	{/if}

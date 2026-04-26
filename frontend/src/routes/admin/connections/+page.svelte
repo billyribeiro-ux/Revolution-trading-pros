@@ -15,6 +15,19 @@
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import { adminFetch } from '$lib/utils/adminFetch';
 
+	// FIX-2026-04-26: Tabler icons replace 11 raw inline <svg> blocks for
+	// consistent professional styling per CLAUDE.md icon-system standard.
+	import IconLayoutGrid from '@tabler/icons-svelte-runes/icons/layout-grid';
+	import IconList from '@tabler/icons-svelte-runes/icons/list';
+	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
+	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
+	import IconLink from '@tabler/icons-svelte-runes/icons/link';
+	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import IconUserPlus from '@tabler/icons-svelte-runes/icons/user-plus';
+	import IconFileText from '@tabler/icons-svelte-runes/icons/file-text';
+	import IconInfoCircle from '@tabler/icons-svelte-runes/icons/info-circle';
+
 	// Types
 	interface ServiceField {
 		key: string;
@@ -325,28 +338,14 @@
 							class="view-btn {viewMode === 'grid' ? 'active' : ''}"
 							aria-label="Grid view"
 						>
-							<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
-								/>
-							</svg>
+							<IconLayoutGrid size={16} aria-hidden="true" />
 						</button>
 						<button
 							onclick={() => (viewMode = 'list')}
 							class="view-btn {viewMode === 'list' ? 'active' : ''}"
 							aria-label="List view"
 						>
-							<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="M4 6h16M4 12h16M4 18h16"
-								/>
-							</svg>
+							<IconList size={16} aria-hidden="true" />
 						</button>
 					</div>
 
@@ -360,14 +359,9 @@
 							bind:value={searchQuery}
 							class="search-input"
 						/>
-						<svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-							/>
-						</svg>
+						<span class="search-icon" aria-hidden="true">
+							<IconSearch size={18} />
+						</span>
 					</div>
 				</div>
 			</div>
@@ -393,14 +387,7 @@
 				>
 					<div class="section-header-row">
 						<div class="section-icon-wrapper builtin">
-							<svg class="section-icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="M5 13l4 4L19 7"
-								/>
-							</svg>
+							<IconCheck size={22} class="section-icon-svg" aria-hidden="true" />
 						</div>
 						<div>
 							<h2 class="section-heading">Built-in Features</h2>
@@ -440,14 +427,7 @@
 				>
 					<div class="section-header-row">
 						<div class="section-icon-wrapper connected">
-							<svg class="section-icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
-								/>
-							</svg>
+							<IconLink size={22} class="section-icon-svg" aria-hidden="true" />
 						</div>
 						<div>
 							<h2 class="section-heading">Connected</h2>
@@ -529,14 +509,7 @@
 				<div class="available-header">
 					<div class="section-header-row">
 						<div class="section-icon-wrapper available">
-							<svg class="section-icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-								/>
-							</svg>
+							<IconPlus size={22} class="section-icon-svg" aria-hidden="true" />
 						</div>
 						<div>
 							<h2 class="section-heading">Available Integrations</h2>
@@ -631,14 +604,7 @@
 				{#if filteredConnections.length === 0}
 					<div class="empty-state">
 						<div class="empty-state-icon">
-							<svg class="empty-icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="1.5"
-									d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-								/>
-							</svg>
+							<IconSearch size={48} class="empty-icon-svg" aria-hidden="true" />
 						</div>
 						<h3 class="empty-state-title">No services found</h3>
 						<p class="empty-state-text">
@@ -691,14 +657,7 @@
 						class="text-gray-500 hover:text-white transition-colors"
 						aria-label="Close"
 					>
-						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M6 18L18 6M6 6l12 12"
-							/>
-						</svg>
+						<IconX size={20} aria-hidden="true" />
 					</button>
 				</div>
 
@@ -712,14 +671,7 @@
 								rel="noopener"
 								class="text-xs text-gray-400 hover:text-white transition-colors flex items-center gap-1"
 							>
-								<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-									/>
-								</svg>
+								<IconUserPlus size={14} aria-hidden="true" />
 								Create account
 							</a>
 						{/if}
@@ -730,14 +682,7 @@
 								rel="noopener"
 								class="text-xs text-gray-400 hover:text-white transition-colors flex items-center gap-1"
 							>
-								<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-									/>
-								</svg>
+								<IconFileText size={14} aria-hidden="true" />
 								Documentation
 							</a>
 						{/if}
@@ -904,14 +849,7 @@
 				<div
 					class="w-14 h-14 mx-auto mb-4 bg-red-500/10 rounded-full flex items-center justify-center"
 				>
-					<svg class="w-7 h-7 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-						/>
-					</svg>
+					<IconInfoCircle size={28} class="text-red-400" aria-hidden="true" />
 				</div>
 				<h3 class="text-lg font-semibold text-white mb-2">
 					Disconnect {disconnectingService.name}?
@@ -1123,20 +1061,25 @@
 		background: var(--bg-hover, var(--bg-hover));
 	}
 
-	.section-icon-svg {
-		width: 1rem;
-		height: 1rem;
+	/* FIX-2026-04-26: :global() wrapping needed because Tabler icon component
+	   renders its own <svg> with a Svelte hash from inside its own component
+	   scope; the .section-icon-svg class lands on that internal SVG and isn't
+	   reachable from this parent's scoped style without :global(). Tagged
+	   :global to keep the visual styling working post-icon-swap. */
+	:global(.section-icon-wrapper .section-icon-svg) {
+		width: 1.375rem;
+		height: 1.375rem;
 	}
 
-	.section-icon-wrapper.builtin .section-icon-svg {
+	:global(.section-icon-wrapper.builtin .section-icon-svg) {
 		color: var(--success-emphasis, #3fb950);
 	}
 
-	.section-icon-wrapper.connected .section-icon-svg {
+	:global(.section-icon-wrapper.connected .section-icon-svg) {
 		color: var(--info-emphasis, #58a6ff);
 	}
 
-	.section-icon-wrapper.available .section-icon-svg {
+	:global(.section-icon-wrapper.available .section-icon-svg) {
 		color: var(--text-tertiary, var(--text-tertiary));
 	}
 
@@ -1822,9 +1765,10 @@
 		justify-content: center;
 	}
 
-	.empty-icon-svg {
-		width: 2rem;
-		height: 2rem;
+	/* FIX-2026-04-26: :global() wrapper — see above note re: Tabler icon hashing. */
+	:global(.empty-state-icon .empty-icon-svg) {
+		width: 3rem;
+		height: 3rem;
 		color: var(--text-tertiary, var(--text-tertiary));
 	}
 

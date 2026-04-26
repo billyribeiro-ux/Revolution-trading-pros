@@ -13,7 +13,8 @@
 
 use axum::{
     extract::{Query, State},
-    http::StatusCode,
+    // FIX-2026-04-26 (Priority 4): pull in HeaderMap to extract client IP for rate-limiting.
+    http::{HeaderMap, StatusCode},
     routing::{get, post},
     Json, Router,
 };
@@ -25,6 +26,8 @@ use serde::Deserialize;
 use serde_json::json;
 
 use crate::{
+    // FIX-2026-04-26 (Priority 2): pull in ValidatedJson extractor for hot-path handlers.
+    middleware::validated_json::ValidatedJson,
     models::{
         AuthResponse, CreateUser, ForgotPasswordRequest, LoginUser, MessageResponse,
         RefreshTokenRequest, RefreshTokenResponse, ResetPasswordRequest, User, UserResponse,
@@ -36,6 +39,93 @@ use crate::{
     },
     AppState,
 };
+
+/// FIX-2026-04-26 (Priority 4): client IP extraction helper.
+/// Reads `x-forwarded-for` (first hop), then `x-real-ip`, then falls back to `"unknown"`.
+/// Used to scope per-IP rate limits on register/forgot-password/reset-password and to
+/// add per-IP scope to login (in addition to the existing per-email scope).
+fn client_ip(headers: &HeaderMap) -> String {
+    if let Some(xff) = headers.get("x-forwarded-for").and_then(|v| v.to_str().ok()) {
+        if let Some(first) = xff.split(',').next() {
+            let ip = first.trim();
+            if !ip.is_empty() {
+                return ip.to_string();
+            }
+        }
+    }
+    if let Some(real_ip) = headers.get("x-real-ip").and_then(|v| v.to_str().ok()) {
+        let ip = real_ip.trim();
+        if !ip.is_empty() {
+            return ip.to_string();
+        }
+    }
+    "unknown".to_string()
+}
+
+/// FIX-2026-04-26 (Priority 4): per-IP rate limit gate.
+/// FAIL-CLOSED on Redis outage for register/forgot/reset (sensitive endpoints).
+/// Returns Err if rate limit exceeded OR if Redis is unreachable.
+async fn enforce_ip_rate_limit_strict(
+    state: &AppState,
+    ip: &str,
+    bucket_key: &str,
+    max_requests: i64,
+    window_seconds: u64,
+) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
+    let Some(redis) = state.services.redis.as_ref() else {
+        // No Redis configured at all — fail closed for these sensitive endpoints.
+        tracing::error!(
+            target: "security",
+            event = "rate_limit_redis_unavailable_fail_closed",
+            bucket = %bucket_key,
+            ip = %ip,
+            "Redis service not configured; rejecting sensitive request"
+        );
+        return Err((
+            StatusCode::SERVICE_UNAVAILABLE,
+            Json(json!({"error": "Service temporarily unavailable, please try again"})),
+        ));
+    };
+
+    // Scope key by bucket + IP so register/forgot/reset are independently throttled.
+    let key = format!("{}:{}", bucket_key, ip);
+    match redis.check_ip_rate_limit(&key, max_requests, window_seconds).await {
+        Ok(result) => {
+            if !result.allowed {
+                tracing::warn!(
+                    target: "security",
+                    event = "ip_rate_limit_exceeded",
+                    bucket = %bucket_key,
+                    ip = %ip,
+                    "IP rate limit exceeded for sensitive endpoint"
+                );
+                return Err((
+                    StatusCode::TOO_MANY_REQUESTS,
+                    Json(json!({
+                        "error": "Too many requests, please try again later",
+                        "retry_after": result.retry_after,
+                    })),
+                ));
+            }
+            Ok(())
+        }
+        Err(e) => {
+            // FAIL-CLOSED: Redis transient failure must not become a free pass for abuse.
+            tracing::error!(
+                target: "security",
+                event = "rate_limit_check_failed_fail_closed",
+                bucket = %bucket_key,
+                ip = %ip,
+                error = %e,
+                "Rate limit Redis check failed; rejecting request (fail-closed)"
+            );
+            Err((
+                StatusCode::SERVICE_UNAVAILABLE,
+                Json(json!({"error": "Service temporarily unavailable, please try again"})),
+            ))
+        }
+    }
+}
 
 /// Query params for email verification
 #[derive(Debug, Deserialize)]
@@ -59,10 +149,19 @@ struct RegisterResponse {
 
 /// Register a new user
 /// POST /api/auth/register
+// FIX-2026-04-26 (Priority 2): migrated Json<CreateUser> -> ValidatedJson<CreateUser>.
+// FIX-2026-04-26 (Priority 4): added HeaderMap + per-IP rate limit (5 / 15min).
+// Original signature: async fn register(State(state): State<AppState>, Json(input): Json<CreateUser>)
 async fn register(
     State(state): State<AppState>,
-    Json(input): Json<CreateUser>,
+    headers: HeaderMap,
+    ValidatedJson(input): ValidatedJson<CreateUser>,
 ) -> Result<Json<RegisterResponse>, (StatusCode, Json<serde_json::Value>)> {
+    // FIX-2026-04-26 (Priority 4): per-IP rate limit BEFORE Argon2 hashing
+    // (otherwise an attacker can DOS by burning CPU on hash attempts).
+    let ip = client_ip(&headers);
+    enforce_ip_rate_limit_strict(&state, &ip, "register", 5, 900).await?;
+
     // Validate email format
     if !input.email.contains('@') || !input.email.contains('.') {
         return Err((
@@ -125,7 +224,20 @@ async fn register(
         )
     })?;
 
+    // FIX-2026-04-26 (Priority 5): wrap user-insert + verification-token-insert in a
+    // single Postgres transaction. Previously a crash between the two writes (or a
+    // unique-violation on retry) yielded an account that could not self-verify.
+    // Reference pattern: routes/user.rs::update_profile.
+    let mut tx = state.db.pool.begin().await.map_err(|e| {
+        tracing::error!("Failed to begin transaction: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
+    })?;
+
     // Create user with email_verified_at = NULL (unverified)
+    // Original pool reference: .fetch_one(&state.db.pool)
     let user: User = sqlx::query_as(
         r#"
         INSERT INTO users (email, password_hash, name, role, email_verified_at, created_at, updated_at)
@@ -136,7 +248,7 @@ async fn register(
     .bind(&input.email)
     .bind(&password_hash)
     .bind(&input.name)
-    .fetch_one(&state.db.pool)
+    .fetch_one(&mut *tx)
     .await
     .map_err(|e| {
         tracing::error!("User creation error: {}", e);
@@ -150,6 +262,7 @@ async fn register(
     let (raw_token, hashed_token) = generate_verification_token();
 
     // Store verification token (expires in 24 hours)
+    // Original pool reference: .execute(&state.db.pool)
     sqlx::query(
         r#"
         INSERT INTO email_verification_tokens (user_id, token, expires_at)
@@ -158,13 +271,22 @@ async fn register(
     )
     .bind(user.id)
     .bind(&hashed_token)
-    .execute(&state.db.pool)
+    .execute(&mut *tx)
     .await
     .map_err(|e| {
         tracing::error!("Failed to create verification token: {}", e);
         (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(json!({"error": "Failed to create verification token"})),
+        )
+    })?;
+
+    // FIX-2026-04-26 (Priority 5): commit BEFORE any external HTTP calls (email send).
+    tx.commit().await.map_err(|e| {
+        tracing::error!("Failed to commit registration transaction: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
         )
     })?;
 
@@ -394,10 +516,20 @@ async fn resend_verification(
         }));
     }
 
+    // FIX-2026-04-26 (Priority 5): wrap delete-old + insert-new verification token in tx.
+    let mut tx = state.db.pool.begin().await.map_err(|e| {
+        tracing::error!("Failed to begin transaction: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
+    })?;
+
     // ICT 11+ SECURITY: Delete any existing verification tokens (prevent token accumulation)
+    // Original pool reference: .execute(&state.db.pool)
     sqlx::query("DELETE FROM email_verification_tokens WHERE user_id = $1")
         .bind(user.id)
-        .execute(&state.db.pool)
+        .execute(&mut *tx)
         .await
         .ok();
 
@@ -405,6 +537,7 @@ async fn resend_verification(
     let (raw_token, hashed_token) = generate_verification_token();
 
     // ICT 11+ SECURITY: Store verification token with 24-hour expiry
+    // Original pool reference: .execute(&state.db.pool)
     sqlx::query(
         r#"
         INSERT INTO email_verification_tokens (user_id, token, expires_at)
@@ -413,13 +546,22 @@ async fn resend_verification(
     )
     .bind(user.id)
     .bind(&hashed_token)
-    .execute(&state.db.pool)
+    .execute(&mut *tx)
     .await
     .map_err(|e| {
         tracing::error!("Failed to create verification token: {}", e);
         (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(json!({"error": "Failed to create verification token"})),
+        )
+    })?;
+
+    // FIX-2026-04-26 (Priority 5): commit BEFORE external email HTTP call.
+    tx.commit().await.map_err(|e| {
+        tracing::error!("Failed to commit resend-verification transaction: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
         )
     })?;
 
@@ -462,9 +604,16 @@ async fn resend_verification(
 /// Login user
 /// POST /api/auth/login
 /// ICT L11+ Security: Rate limiting, timing attack prevention, session management
+// FIX-2026-04-26 (Priority 2): migrated Json<LoginUser> -> ValidatedJson<LoginUser>.
+// FIX-2026-04-26 (Priority 4): added per-IP rate limit (10 / 15min) ALONGSIDE existing
+// per-email rate limit. Per-email alone is bypassable by an attacker rotating emails;
+// per-IP catches that pattern. Login keeps fail-OPEN behavior (per audit) — only the
+// per-IP additional check uses fail-OPEN here for availability of the auth surface.
+// Original signature: async fn login(State(state): State<AppState>, Json(input): Json<LoginUser>)
 async fn login(
     State(state): State<AppState>,
-    Json(input): Json<LoginUser>,
+    headers: HeaderMap,
+    ValidatedJson(input): ValidatedJson<LoginUser>,
 ) -> Result<Json<AuthResponse>, (StatusCode, Json<serde_json::Value>)> {
     // Security audit logging
     tracing::info!(
@@ -473,6 +622,40 @@ async fn login(
         email = %input.email,
         "Login attempt initiated"
     );
+
+    // FIX-2026-04-26 (Priority 4): per-IP rate limit (10 attempts / 15 min). Fail-open.
+    let ip = client_ip(&headers);
+    if let Some(redis) = state.services.redis.as_ref() {
+        let key = format!("login_ip:{}", ip);
+        match redis.check_ip_rate_limit(&key, 10, 900).await {
+            Ok(result) => {
+                if !result.allowed {
+                    tracing::warn!(
+                        target: "security",
+                        event = "login_ip_rate_limited",
+                        ip = %ip,
+                        "Login blocked - per-IP rate limit exceeded"
+                    );
+                    return Err((
+                        StatusCode::TOO_MANY_REQUESTS,
+                        Json(json!({
+                            "error": "Too many login attempts from this network. Please wait before trying again.",
+                            "retry_after": result.retry_after,
+                        })),
+                    ));
+                }
+            }
+            Err(e) => {
+                tracing::warn!(
+                    target: "security",
+                    event = "login_ip_rate_limit_check_failed",
+                    ip = %ip,
+                    error = %e,
+                    "Per-IP rate limit check failed (fail-open for login availability)"
+                );
+            }
+        }
+    }
 
     // ICT L11+ Security: Check rate limit BEFORE any processing
     // Gracefully degrade if Redis is unavailable
@@ -721,7 +904,10 @@ async fn refresh(
     Json(input): Json<RefreshTokenRequest>,
 ) -> Result<Json<RefreshTokenResponse>, (StatusCode, Json<serde_json::Value>)> {
     // Verify the refresh token
-    let claims = verify_jwt(&input.refresh_token, &state.config.jwt_secret).map_err(|e| {
+    // FIX-2026-04-26 (Priority 3): pass "refresh" expected_type so an access token
+    // cannot be used as a refresh token.
+    // Original: let claims = verify_jwt(&input.refresh_token, &state.config.jwt_secret).map_err(|e| {
+    let claims = verify_jwt(&input.refresh_token, &state.config.jwt_secret, "refresh").map_err(|e| {
         tracing::warn!("Invalid refresh token: {}", e);
         (
             StatusCode::UNAUTHORIZED,
@@ -895,10 +1081,17 @@ async fn logout_all(
 
 /// Request password reset
 /// POST /api/auth/forgot-password
+// FIX-2026-04-26 (Priority 4): added HeaderMap + per-IP rate limit (3 / hour).
+// Original signature: async fn forgot_password(State(state): State<AppState>, Json(input): Json<ForgotPasswordRequest>)
 async fn forgot_password(
     State(state): State<AppState>,
+    headers: HeaderMap,
     Json(input): Json<ForgotPasswordRequest>,
 ) -> Result<Json<MessageResponse>, (StatusCode, Json<serde_json::Value>)> {
+    // FIX-2026-04-26 (Priority 4): per-IP rate limit (3/hour) — fail-closed.
+    let ip = client_ip(&headers);
+    enforce_ip_rate_limit_strict(&state, &ip, "forgot_password", 3, 3600).await?;
+
     // Find user (but don't reveal if they exist)
     let user: Option<User> = sqlx::query_as(
         "SELECT id, email, password_hash, name, role, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at FROM users WHERE email = $1"
@@ -916,10 +1109,20 @@ async fn forgot_password(
 
     // If user exists, create reset token and send email
     if let Some(user) = user {
+        // FIX-2026-04-26 (Priority 5): wrap delete-old + insert-new reset token in tx.
+        let mut tx = state.db.pool.begin().await.map_err(|e| {
+            tracing::error!("Failed to begin transaction: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": "Database error"})),
+            )
+        })?;
+
         // Delete any existing reset tokens for this user
+        // Original pool reference: .execute(&state.db.pool)
         sqlx::query("DELETE FROM password_resets WHERE email = $1")
             .bind(&user.email)
-            .execute(&state.db.pool)
+            .execute(&mut *tx)
             .await
             .ok();
 
@@ -927,6 +1130,7 @@ async fn forgot_password(
         let (raw_token, hashed_token) = generate_verification_token();
 
         // Store reset token (expires in 1 hour)
+        // Original pool reference: .execute(&state.db.pool)
         sqlx::query(
             r#"
             INSERT INTO password_resets (id, email, token, expires_at, created_at)
@@ -935,13 +1139,22 @@ async fn forgot_password(
         )
         .bind(&user.email)
         .bind(&hashed_token)
-        .execute(&state.db.pool)
+        .execute(&mut *tx)
         .await
         .map_err(|e| {
             tracing::error!("Failed to create reset token: {}", e);
             (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 Json(json!({"error": "Failed to create reset token"})),
+            )
+        })?;
+
+        // FIX-2026-04-26 (Priority 5): commit BEFORE external email HTTP call.
+        tx.commit().await.map_err(|e| {
+            tracing::error!("Failed to commit forgot-password transaction: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": "Database error"})),
             )
         })?;
 
@@ -968,10 +1181,18 @@ async fn forgot_password(
 
 /// Reset password with token
 /// POST /api/auth/reset-password
+// FIX-2026-04-26 (Priority 2): migrated Json<ResetPasswordRequest> -> ValidatedJson<...>.
+// FIX-2026-04-26 (Priority 4): added HeaderMap + per-IP rate limit (5 / hour).
+// Original signature: async fn reset_password(State(state): State<AppState>, Json(input): Json<ResetPasswordRequest>)
 async fn reset_password(
     State(state): State<AppState>,
-    Json(input): Json<ResetPasswordRequest>,
+    headers: HeaderMap,
+    ValidatedJson(input): ValidatedJson<ResetPasswordRequest>,
 ) -> Result<Json<MessageResponse>, (StatusCode, Json<serde_json::Value>)> {
+    // FIX-2026-04-26 (Priority 4): per-IP rate limit (5/hour) — fail-closed.
+    let ip = client_ip(&headers);
+    enforce_ip_rate_limit_strict(&state, &ip, "reset_password", 5, 3600).await?;
+
     // Validate passwords match
     if input.password != input.password_confirmation {
         return Err((

@@ -9,6 +9,11 @@
 	import { connections, getIsAnalyticsConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 	import PeriodSelector from '$lib/components/analytics/PeriodSelector.svelte';
+	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
+	import IconCircleCheck from '@tabler/icons-svelte-runes/icons/circle-check';
+	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
+	import IconDots from '@tabler/icons-svelte-runes/icons/dots-vertical';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
 
 	interface Goal {
 		id: string;
@@ -175,14 +180,8 @@
 				<div
 					class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-2xl shadow-lg shadow-emerald-500/20"
 				>
-					<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-						/>
-					</svg>
+										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-check (goal) -->
+					<IconCircleCheck size={24} aria-hidden="true" />
 				</div>
 				<div>
 					<h1 class="text-2xl font-bold text-white tracking-tight">Conversion Goals</h1>
@@ -268,14 +267,8 @@
 					<div
 						class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-red-500/10 flex items-center justify-center"
 					>
-						<svg class="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-							/>
-						</svg>
+												<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: alert-circle error -->
+						<IconAlertCircle size={32} aria-hidden="true" />
 					</div>
 					<p class="text-red-400 mb-4">{error}</p>
 					<button
@@ -357,11 +350,8 @@
 									</div>
 								</div>
 								<button class="text-slate-400 hover:text-white" aria-label="More options">
-									<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-										<path
-											d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
-										/>
-									</svg>
+																		<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: dots-vertical (menu) -->
+									<IconDots size={20} aria-hidden="true" />
 								</button>
 							</div>
 
@@ -411,14 +401,8 @@
 						class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
 						aria-label="Close modal"
 					>
-						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M6 18L18 6M6 6l12 12"
-							/>
-						</svg>
+												<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: x (close) -->
+						<IconX size={20} aria-hidden="true" />
 					</button>
 				</div>
 			</div>

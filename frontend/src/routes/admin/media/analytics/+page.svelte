@@ -22,6 +22,24 @@
 	import { cubicOut } from 'svelte/easing';
 	import { fly, scale } from 'svelte/transition';
 
+	// FIX-2026-04-26: Tabler icons replace 17 raw inline <svg> blocks.
+	import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left';
+	import IconDownload from '@tabler/icons-svelte-runes/icons/download';
+	import IconLoader from '@tabler/icons-svelte-runes/icons/loader';
+	import IconSettings from '@tabler/icons-svelte-runes/icons/settings';
+	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
+	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
+	import IconCurrencyDollar from '@tabler/icons-svelte-runes/icons/currency-dollar';
+	import IconLeaf from '@tabler/icons-svelte-runes/icons/leaf';
+	import IconArrowUp from '@tabler/icons-svelte-runes/icons/arrow-up';
+	import IconPhoto from '@tabler/icons-svelte-runes/icons/photo';
+	import IconCircleCheck from '@tabler/icons-svelte-runes/icons/circle-check';
+	import IconBox from '@tabler/icons-svelte-runes/icons/box';
+	import IconBookmark from '@tabler/icons-svelte-runes/icons/bookmark';
+	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
+	import IconCircleCheckFilled from '@tabler/icons-svelte-runes/icons/circle-check-filled';
+	import IconInfoCircle from '@tabler/icons-svelte-runes/icons/info-circle';
+
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Types
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -219,13 +237,8 @@
 	<header class="header">
 		<div class="header-left">
 			<a href="/admin/media" class="back-link" aria-label="Back to Media Library">
-				<svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-					<path
-						fill-rule="evenodd"
-						d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-						clip-rule="evenodd"
-					/>
-				</svg>
+				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chevron-left (back) -->
+				<IconChevronLeft size={20} aria-hidden="true" />
 			</a>
 			<div>
 				<h1>Bandwidth Analytics</h1>
@@ -253,13 +266,8 @@
 			</div>
 
 			<button class="btn-export" onclick={() => {}}>
-				<svg viewBox="0 0 20 20" fill="currentColor">
-					<path
-						fill-rule="evenodd"
-						d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
-						clip-rule="evenodd"
-					/>
-				</svg>
+				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: download (export) -->
+				<IconDownload size={16} aria-hidden="true" />
 				Export
 			</button>
 		</div>
@@ -275,11 +283,8 @@
 		<div class="not-connected-state">
 			<div class="not-connected-card">
 				<div class="not-connected-icon">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<path
-							d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"
-						/>
-					</svg>
+										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: loader (not connected) -->
+					<IconLoader size={48} aria-hidden="true" />
 				</div>
 				<h2>Media Analytics Not Connected</h2>
 				<p>
@@ -288,23 +293,13 @@
 				</p>
 				<div class="not-connected-actions">
 					<a href="/admin/connections" class="btn-primary">
-						<svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
-							<path
-								fill-rule="evenodd"
-								d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
-								clip-rule="evenodd"
-							/>
-						</svg>
+												<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: settings (connect service) -->
+						<IconSettings size={16} aria-hidden="true" />
 						Connect Service
 					</a>
 					<button class="btn-secondary" onclick={loadData}>
-						<svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
-							<path
-								fill-rule="evenodd"
-								d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
-								clip-rule="evenodd"
-							/>
-						</svg>
+												<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: refresh (retry) -->
+						<IconRefresh size={16} aria-hidden="true" />
 						Retry
 					</button>
 				</div>
@@ -324,21 +319,15 @@
 		<div class="hero-stats">
 			<div class="hero-card savings" transition:fly={{ y: 20, duration: 500 }}>
 				<div class="hero-icon">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-					</svg>
+										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: bolt (savings) -->
+					<IconBolt size={32} aria-hidden="true" />
 				</div>
 				<div class="hero-content">
 					<div class="hero-value">{formatBytes($totalSavings)}</div>
 					<div class="hero-label">Total Bandwidth Saved</div>
 					<div class="hero-change positive">
-						<svg viewBox="0 0 20 20" fill="currentColor">
-							<path
-								fill-rule="evenodd"
-								d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z"
-								clip-rule="evenodd"
-							/>
-						</svg>
+						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: arrow-up (change) -->
+						<IconArrowUp size={16} aria-hidden="true" />
 						{$savingsPercent.toFixed(1)}% compression
 					</div>
 				</div>
@@ -371,9 +360,8 @@
 
 			<div class="hero-card cost" transition:fly={{ y: 20, duration: 500, delay: 100 }}>
 				<div class="hero-icon">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
-					</svg>
+										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: currency-dollar (cost) -->
+					<IconCurrencyDollar size={32} aria-hidden="true" />
 				</div>
 				<div class="hero-content">
 					<div class="hero-value">{formatCurrency(overview.estimatedCostSavings)}</div>
@@ -384,11 +372,8 @@
 
 			<div class="hero-card eco" transition:fly={{ y: 20, duration: 500, delay: 200 }}>
 				<div class="hero-icon">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<path
-							d="M12 3v18M5.5 8.5c2.5-2 4-3.5 6.5-3.5s4 1.5 6.5 3.5M7 13c1.5-1.5 3-2 5-2s3.5.5 5 2M9 17c1-.5 2-1 3-1s2 .5 3 1"
-						/>
-					</svg>
+										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: leaf (eco) -->
+					<IconLeaf size={32} aria-hidden="true" />
 				</div>
 				<div class="hero-content">
 					<div class="hero-value">{$co2Saved.toFixed(1)} kg</div>
@@ -404,11 +389,8 @@
 		<div class="stats-grid">
 			<div class="stat-card" transition:fly={{ y: 20, duration: 400, delay: 300 }}>
 				<div class="stat-icon blue">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<rect x="3" y="3" width="18" height="18" rx="2" />
-						<circle cx="8.5" cy="8.5" r="1.5" />
-						<path d="M21 15l-5-5L5 21" />
-					</svg>
+										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: photo (total images) -->
+					<IconPhoto size={24} aria-hidden="true" />
 				</div>
 				<div class="stat-info">
 					<span class="stat-value">{formatNumber(overview.totalImages)}</span>
@@ -418,10 +400,8 @@
 
 			<div class="stat-card" transition:fly={{ y: 20, duration: 400, delay: 350 }}>
 				<div class="stat-icon green">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<path d="M9 12l2 2 4-4" />
-						<circle cx="12" cy="12" r="10" />
-					</svg>
+										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-check (optimized) -->
+					<IconCircleCheck size={24} aria-hidden="true" />
 				</div>
 				<div class="stat-info">
 					<span class="stat-value">{formatNumber(overview.optimizedImages)}</span>
@@ -431,11 +411,8 @@
 
 			<div class="stat-card" transition:fly={{ y: 20, duration: 400, delay: 400 }}>
 				<div class="stat-icon purple">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<path
-							d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"
-						/>
-					</svg>
+										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: box (original size) -->
+					<IconBox size={24} aria-hidden="true" />
 				</div>
 				<div class="stat-info">
 					<span class="stat-value">{formatBytes(overview.totalOriginal)}</span>
@@ -445,9 +422,8 @@
 
 			<div class="stat-card" transition:fly={{ y: 20, duration: 400, delay: 450 }}>
 				<div class="stat-icon orange">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z" />
-					</svg>
+										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: bookmark (optimized size) -->
+					<IconBookmark size={24} aria-hidden="true" />
 				</div>
 				<div class="stat-info">
 					<span class="stat-value">{formatBytes(overview.totalOptimized)}</span>
@@ -457,9 +433,8 @@
 
 			<div class="stat-card" transition:fly={{ y: 20, duration: 400, delay: 500 }}>
 				<div class="stat-icon cyan">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-					</svg>
+										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: activity (compression) -->
+					<IconActivity size={24} aria-hidden="true" />
 				</div>
 				<div class="stat-info">
 					<span class="stat-value">{overview.avgCompressionRatio.toFixed(1)}x</span>
@@ -619,13 +594,8 @@
 			<div class="insights-grid">
 				<div class="insight-card">
 					<div class="insight-icon green">
-						<svg viewBox="0 0 20 20" fill="currentColor">
-							<path
-								fill-rule="evenodd"
-								d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-								clip-rule="evenodd"
-							/>
-						</svg>
+												<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-check-filled (excellent) -->
+						<IconCircleCheckFilled size={24} aria-hidden="true" />
 					</div>
 					<div class="insight-content">
 						<h3>Excellent Compression</h3>
@@ -638,13 +608,8 @@
 
 				<div class="insight-card">
 					<div class="insight-icon blue">
-						<svg viewBox="0 0 20 20" fill="currentColor">
-							<path
-								fill-rule="evenodd"
-								d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"
-								clip-rule="evenodd"
-							/>
-						</svg>
+						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: bolt (fast load) -->
+						<IconBolt size={20} aria-hidden="true" />
 					</div>
 					<div class="insight-content">
 						<h3>Fast Load Times</h3>
@@ -659,13 +624,8 @@
 
 				<div class="insight-card">
 					<div class="insight-icon orange">
-						<svg viewBox="0 0 20 20" fill="currentColor">
-							<path
-								fill-rule="evenodd"
-								d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-								clip-rule="evenodd"
-							/>
-						</svg>
+												<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: info-circle (recommendation) -->
+						<IconInfoCircle size={24} aria-hidden="true" />
 					</div>
 					<div class="insight-content">
 						<h3>Recommendation</h3>
@@ -728,7 +688,8 @@
 		background: #e8e8ed;
 	}
 
-	.back-link svg {
+	/* FIX-2026-04-26: :global() so styles reach Tabler's internal <svg> */
+	.back-link :global(svg) {
 		width: 20px;
 		height: 20px;
 	}
@@ -796,7 +757,8 @@
 		background: #e8e8ed;
 	}
 
-	.btn-export svg {
+	/* FIX-2026-04-26: :global() so styles reach Tabler's internal <svg> */
+	.btn-export :global(svg) {
 		width: 16px;
 		height: 16px;
 	}
@@ -842,7 +804,8 @@
 		color: white;
 	}
 
-	.not-connected-icon svg {
+	/* FIX-2026-04-26: :global() so styles reach Tabler's internal <svg> */
+	.not-connected-icon :global(svg) {
 		width: 40px;
 		height: 40px;
 	}
@@ -998,7 +961,8 @@
 		justify-content: center;
 	}
 
-	.hero-icon svg {
+	/* FIX-2026-04-26: :global() so styles reach Tabler's internal <svg> */
+	.hero-icon :global(svg) {
 		width: 28px;
 		height: 28px;
 	}
@@ -1031,7 +995,8 @@
 		width: fit-content;
 	}
 
-	.hero-change svg {
+	/* FIX-2026-04-26: :global() so styles reach Tabler's internal <svg> */
+	.hero-change :global(svg) {
 		width: 14px;
 		height: 14px;
 	}
@@ -1090,7 +1055,8 @@
 		justify-content: center;
 	}
 
-	.stat-icon svg {
+	/* FIX-2026-04-26: :global() so styles reach Tabler's internal <svg> */
+	.stat-icon :global(svg) {
 		width: 24px;
 		height: 24px;
 	}
@@ -1353,7 +1319,8 @@
 		flex-shrink: 0;
 	}
 
-	.insight-icon svg {
+	/* FIX-2026-04-26: :global() so styles reach Tabler's internal <svg> */
+	.insight-icon :global(svg) {
 		width: 20px;
 		height: 20px;
 	}

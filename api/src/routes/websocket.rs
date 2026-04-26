@@ -362,8 +362,20 @@ pub async fn ws_handler(
     // TODO: Validate JWT token — validation now happens here.
     // If a token is supplied, it must be a valid, non-expired JWT signed with
     // the application's JWT_SECRET.  Reject with close code 4001 on failure.
+    // FIX-2026-04-26 (Priority 9): Require JWT for room subscriptions.
+    // Anonymous (no-token) connections are now rejected if any room is requested.
+    // Public/global broadcast connections (no rooms requested) remain allowed for
+    // backwards compatibility with public health/heartbeat consumers.
+    let has_room_request = params
+        .rooms
+        .as_ref()
+        .map(|r| r.split(',').any(|s| !s.trim().is_empty()))
+        .unwrap_or(false);
+
+    // FIX-2026-04-26 (Priority 3): pass "access" expected_type to verify_jwt.
+    // Original: if let Err(err) = verify_jwt(token, &state.config.jwt_secret) {
     if let Some(ref token) = params.token {
-        if let Err(err) = verify_jwt(token, &state.config.jwt_secret) {
+        if let Err(err) = verify_jwt(token, &state.config.jwt_secret, "access") {
             warn!(error = %err, "WebSocket connection rejected: invalid JWT token");
             return (
                 StatusCode::UNAUTHORIZED,
@@ -371,6 +383,14 @@ pub async fn ws_handler(
             )
                 .into_response();
         }
+    } else if has_room_request {
+        // FIX-2026-04-26 (Priority 9): no token + room subscription request = reject.
+        warn!("WebSocket connection rejected: room subscription requires JWT token");
+        return (
+            StatusCode::UNAUTHORIZED,
+            Json(json!({"error": "Unauthorized", "code": 4001, "reason": "room subscription requires authentication"})),
+        )
+            .into_response();
     }
 
     ws.max_message_size(MAX_MESSAGE_SIZE)

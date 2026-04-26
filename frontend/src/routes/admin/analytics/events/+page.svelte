@@ -10,6 +10,8 @@
 	import { connections, getIsAnalyticsConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 	import PeriodSelector from '$lib/components/analytics/PeriodSelector.svelte';
+	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
+	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
 
 	// Svelte 5 Runes - State
 	let events = $state<AnalyticsEvent[]>([]);
@@ -116,14 +118,8 @@
 				<div
 					class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-2xl shadow-lg shadow-amber-500/20"
 				>
-					<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M13 10V3L4 14h7v7l9-11h-7z"
-						/>
-					</svg>
+										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: bolt (events) -->
+					<IconBolt size={24} aria-hidden="true" />
 				</div>
 				<div>
 					<h1 class="text-2xl font-bold text-white tracking-tight">Event Explorer</h1>

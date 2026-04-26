@@ -145,77 +145,127 @@ fn video_to_response(video: UnifiedVideoRow) -> VideoResponse {
 }
 
 /// List videos (public) - supports filtering by content_type, room, tags
+///
+/// FIX-2026-04-26 (Priority 1, CRITICAL): SQL injection vector eliminated.
+/// Original implementation built raw SQL via `format!()` and naive `.replace('\'', "''")`
+/// escape on user-controlled query params — a textbook 2nd-order injection vector
+/// because PostgreSQL's `''` escape only handles literal single quotes, and the
+/// surrounding single-quote-delimited string contexts (`'%...%'`, `'["...""]'`,
+/// `difficulty_level = '...'`) could be broken with non-`'` payloads such as
+/// backslash escapes, multi-byte sequences, or DB collation quirks.
+///
+/// Original snippet (commented for reference):
+/// ```ignore
+/// let filter = format!(" AND v.content_type = '{}'", content_type.replace('\'', "''"));
+/// // ... and similar `format!()` interpolations for tags, difficulty_level, search
+/// ```
+///
+/// New implementation builds the WHERE clause as `Vec<String>` of `${N}` placeholders
+/// only — column names are static literals; values bind via `sqlx::query_as_with`.
+/// Tag containment uses bound JSONB; ILIKE search escapes `%` and `_` wildcards.
 async fn list_videos(
     State(state): State<AppState>,
     Query(query): Query<VideoListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    use sqlx::Arguments;
+
     let page = query.page.unwrap_or(1).max(1);
-    let per_page = query.per_page.unwrap_or(20).min(100);
+    let per_page = query.per_page.unwrap_or(20).min(100).max(1);
     let offset = (page - 1) * per_page;
 
-    let mut sql = String::from(
-        "SELECT v.* FROM unified_videos v WHERE v.is_published = true AND v.deleted_at IS NULL",
-    );
-    let mut count_sql = String::from(
-        "SELECT COUNT(*) FROM unified_videos v WHERE v.is_published = true AND v.deleted_at IS NULL"
-    );
+    // Static base — no user input.
+    let mut where_clauses: Vec<String> = vec![
+        "v.is_published = true".to_string(),
+        "v.deleted_at IS NULL".to_string(),
+    ];
 
-    // Filter by content_type (e.g., learning_center)
+    // Sqlx Postgres arguments: bound values, never string-spliced.
+    let mut args = sqlx::postgres::PgArguments::default();
+    let mut idx: i32 = 0;
+
+    // Helper to push a placeholder reference like "$N".
+    macro_rules! next_placeholder {
+        () => {{
+            idx += 1;
+            format!("${}", idx)
+        }};
+    }
+
+    // content_type — string equality
     if let Some(ref content_type) = query.content_type {
-        let filter = format!(
-            " AND v.content_type = '{}'",
-            content_type.replace('\'', "''")
-        );
-        sql.push_str(&filter);
-        count_sql.push_str(&filter);
+        let ph = next_placeholder!();
+        where_clauses.push(format!("v.content_type = {}", ph));
+        args.add(content_type.clone()).map_err(args_err)?;
     }
 
-    // Filter by room
+    // room_id — i64 equality via EXISTS subquery (column names static)
     if let Some(room_id) = query.room_id {
-        let filter = format!(
-            " AND EXISTS (SELECT 1 FROM video_room_assignments vra WHERE vra.video_id = v.id AND vra.trading_room_id = {})",
-            room_id
-        );
-        sql.push_str(&filter);
-        count_sql.push_str(&filter);
+        let ph = next_placeholder!();
+        where_clauses.push(format!(
+            "EXISTS (SELECT 1 FROM video_room_assignments vra \
+             WHERE vra.video_id = v.id AND vra.trading_room_id = {})",
+            ph
+        ));
+        args.add(room_id).map_err(args_err)?;
     }
 
-    // Filter by tags
-    // ICT 7 FIX: Corrected JSONB containment syntax (was '[\"{}\"]]' - double bracket bug)
+    // tags — JSONB containment, bound as a JSON array
     if let Some(ref tags) = query.tags {
-        let tag_list: Vec<&str> = tags.split(',').collect();
+        let tag_list: Vec<String> = tags
+            .split(',')
+            .map(|t| t.trim().to_string())
+            .filter(|t| !t.is_empty())
+            .collect();
         for tag in tag_list {
-            let filter = format!(" AND v.tags @> '[\"{}\"]'", tag.trim().replace('\'', "''"));
-            sql.push_str(&filter);
-            count_sql.push_str(&filter);
+            let ph = next_placeholder!();
+            where_clauses.push(format!("v.tags @> {}::jsonb", ph));
+            // Bind a single-element JSON array containing the tag string.
+            let json_arr = serde_json::Value::Array(vec![serde_json::Value::String(tag)]);
+            args.add(json_arr).map_err(args_err)?;
         }
     }
 
-    // Filter by difficulty
+    // difficulty_level — string equality
     if let Some(ref difficulty) = query.difficulty_level {
-        let filter = format!(
-            " AND v.difficulty_level = '{}'",
-            difficulty.replace('\'', "''")
-        );
-        sql.push_str(&filter);
-        count_sql.push_str(&filter);
+        let ph = next_placeholder!();
+        where_clauses.push(format!("v.difficulty_level = {}", ph));
+        args.add(difficulty.clone()).map_err(args_err)?;
     }
 
-    // Search
+    // search — ILIKE with bound term; escape LIKE wildcards in the input
     if let Some(ref search) = query.search {
-        let search_term = search.replace('\'', "''");
-        let filter = format!(
-            " AND (v.title ILIKE '%{}%' OR v.description ILIKE '%{}%')",
-            search_term, search_term
-        );
-        sql.push_str(&filter);
-        count_sql.push_str(&filter);
+        let escaped = search.replace('\\', "\\\\").replace('%', "\\%").replace('_', "\\_");
+        let pattern = format!("%{}%", escaped);
+        let ph = next_placeholder!();
+        // Bind once, reference twice — second reference re-uses same placeholder index.
+        where_clauses.push(format!(
+            "(v.title ILIKE {ph} ESCAPE '\\' OR v.description ILIKE {ph} ESCAPE '\\')",
+            ph = ph
+        ));
+        args.add(pattern).map_err(args_err)?;
     }
 
-    sql.push_str(" ORDER BY v.video_date DESC, v.created_at DESC");
-    sql.push_str(&format!(" LIMIT {} OFFSET {}", per_page, offset));
+    // LIMIT and OFFSET — bound, even though they're already clamped i64.
+    let limit_ph = next_placeholder!();
+    let offset_ph = next_placeholder!();
+    args.add(per_page).map_err(args_err)?;
+    args.add(offset).map_err(args_err)?;
 
-    let videos: Vec<UnifiedVideoRow> = sqlx::query_as(&sql)
+    let where_sql = where_clauses.join(" AND ");
+    let sql = format!(
+        "SELECT v.* FROM unified_videos v WHERE {} \
+         ORDER BY v.video_date DESC, v.created_at DESC \
+         LIMIT {} OFFSET {}",
+        where_sql, limit_ph, offset_ph
+    );
+
+    // Build a separate args bag for the COUNT query (sqlx PgArguments isn't Clone).
+    // `where_sql` only contains AND-joined clauses (no LIMIT/OFFSET), so we reuse it as-is.
+    let mut count_args = sqlx::postgres::PgArguments::default();
+    rebuild_count_args(&mut count_args, &query)?;
+    let count_sql = format!("SELECT COUNT(*) FROM unified_videos v WHERE {}", where_sql);
+
+    let videos: Vec<UnifiedVideoRow> = sqlx::query_as_with(&sql, args)
         .fetch_all(&state.db.pool)
         .await
         .map_err(|e| {
@@ -225,7 +275,7 @@ async fn list_videos(
             )
         })?;
 
-    let total: (i64,) = sqlx::query_as(&count_sql)
+    let total: (i64,) = sqlx::query_as_with(&count_sql, count_args)
         .fetch_one(&state.db.pool)
         .await
         .unwrap_or((0,));
@@ -243,6 +293,46 @@ async fn list_videos(
             last_page,
         }
     })))
+}
+
+// FIX-2026-04-26 (Priority 1): error helper for sqlx::Arguments::add()
+fn args_err(e: sqlx::error::BoxDynError) -> (StatusCode, Json<serde_json::Value>) {
+    tracing::error!(target: "videos", "PgArguments bind failed: {}", e);
+    (
+        StatusCode::INTERNAL_SERVER_ERROR,
+        Json(json!({"error": "Failed to bind query parameters"})),
+    )
+}
+
+// FIX-2026-04-26 (Priority 1): rebuild bound args for the COUNT query.
+// Mirrors the bind order in `list_videos` exactly (must stay in sync).
+fn rebuild_count_args(
+    args: &mut sqlx::postgres::PgArguments,
+    query: &VideoListQuery,
+) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
+    use sqlx::Arguments;
+
+    if let Some(ref content_type) = query.content_type {
+        args.add(content_type.clone()).map_err(args_err)?;
+    }
+    if let Some(room_id) = query.room_id {
+        args.add(room_id).map_err(args_err)?;
+    }
+    if let Some(ref tags) = query.tags {
+        for tag in tags.split(',').map(|t| t.trim().to_string()).filter(|t| !t.is_empty()) {
+            let json_arr = serde_json::Value::Array(vec![serde_json::Value::String(tag)]);
+            args.add(json_arr).map_err(args_err)?;
+        }
+    }
+    if let Some(ref difficulty) = query.difficulty_level {
+        args.add(difficulty.clone()).map_err(args_err)?;
+    }
+    if let Some(ref search) = query.search {
+        let escaped = search.replace('\\', "\\\\").replace('%', "\\%").replace('_', "\\_");
+        let pattern = format!("%{}%", escaped);
+        args.add(pattern).map_err(args_err)?;
+    }
+    Ok(())
 }
 
 /// Get video by ID or slug

@@ -10,6 +10,13 @@
 	import { connections, getIsAnalyticsConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
+	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
+	import IconLayoutGrid from '@tabler/icons-svelte-runes/icons/layout-grid';
+	import IconList from '@tabler/icons-svelte-runes/icons/list';
+	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
+	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
 
 	// Svelte 5 Runes - State
 	let segments = $state<Segment[]>([]);
@@ -166,14 +173,8 @@
 				<div
 					class="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-2xl shadow-lg shadow-cyan-500/20"
 				>
-					<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-						/>
-					</svg>
+										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: users -->
+					<IconUsers size={24} aria-hidden="true" />
 				</div>
 				<div>
 					<h1 class="text-2xl font-bold text-white tracking-tight">User Segments</h1>
@@ -190,14 +191,8 @@
 								? 'bg-white/10 text-white'
 								: 'text-slate-400 hover:text-white'}"
 						>
-							<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
-								/>
-							</svg>
+														<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: grid -->
+							<IconLayoutGrid size={16} aria-hidden="true" />
 						</button>
 						<button
 							onclick={() => (viewMode = 'list')}
@@ -206,14 +201,8 @@
 								? 'bg-white/10 text-white'
 								: 'text-slate-400 hover:text-white'}"
 						>
-							<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="M4 6h16M4 10h16M4 14h16M4 18h16"
-								/>
-							</svg>
+														<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: list -->
+							<IconList size={16} aria-hidden="true" />
 						</button>
 					</div>
 					<button
@@ -277,14 +266,8 @@
 					<div
 						class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-red-500/10 flex items-center justify-center"
 					>
-						<svg class="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-							/>
-						</svg>
+												<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: alert-circle error -->
+						<IconAlertCircle size={32} aria-hidden="true" />
 					</div>
 					<p class="text-red-400 mb-4">{error}</p>
 					<button
@@ -369,14 +352,8 @@
 										aria-label="Delete segment"
 										class="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
 									>
-										<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-											<path
-												stroke-linecap="round"
-												stroke-linejoin="round"
-												stroke-width="2"
-												d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-											/>
-										</svg>
+																				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: trash -->
+										<IconTrash size={16} aria-hidden="true" />
 									</button>
 								{/if}
 							</div>
@@ -496,14 +473,8 @@
 												aria-label="Delete segment"
 												class="p-2 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
 											>
-												<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-													<path
-														stroke-linecap="round"
-														stroke-linejoin="round"
-														stroke-width="2"
-														d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-													/>
-												</svg>
+																								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: trash (2nd) -->
+												<IconTrash size={16} aria-hidden="true" />
 											</button>
 										{/if}
 									</td>
@@ -531,14 +502,8 @@
 						aria-label="Close modal"
 						class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
 					>
-						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M6 18L18 6M6 6l12 12"
-							/>
-						</svg>
+												<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: x (close) -->
+						<IconX size={20} aria-hidden="true" />
 					</button>
 				</div>
 			</div>
@@ -643,14 +608,8 @@
 										aria-label="Remove rule"
 										class="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors"
 									>
-										<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-											<path
-												stroke-linecap="round"
-												stroke-linejoin="round"
-												stroke-width="2"
-												d="M6 18L18 6M6 6l12 12"
-											/>
-										</svg>
+																				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: x (close 2nd) -->
+										<IconX size={16} aria-hidden="true" />
 									</button>
 								{/if}
 							</div>

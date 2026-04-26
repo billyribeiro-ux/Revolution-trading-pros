@@ -46,7 +46,10 @@ impl FromRequestParts<AppState> for User {
             })?;
 
         // Verify JWT
-        let claims = verify_jwt(bearer.token(), &state.config.jwt_secret).map_err(|e| {
+        // FIX-2026-04-26 (Priority 3): pass "access" expected_type so a refresh token
+        // presented as a bearer access token is rejected.
+        // Original line: let claims = verify_jwt(bearer.token(), &state.config.jwt_secret).map_err(|e| {
+        let claims = verify_jwt(bearer.token(), &state.config.jwt_secret, "access").map_err(|e| {
             tracing::warn!("JWT verification failed: {:?}", e);
             (StatusCode::UNAUTHORIZED, "Invalid or expired token")
         })?;

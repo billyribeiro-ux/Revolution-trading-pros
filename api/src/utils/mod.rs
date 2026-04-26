@@ -22,7 +22,12 @@ use argon2::{
     Algorithm, Argon2, Params, Version,
 };
 use chrono::{Duration, Utc};
-use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
+// FIX-2026-04-26: pin algorithm via Validation::new(JwtAlgorithm::HS256) — was Validation::default()
+// (aliased to avoid name conflict with argon2::Algorithm imported above)
+// use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
+use jsonwebtoken::{
+    decode, encode, Algorithm as JwtAlgorithm, DecodingKey, EncodingKey, Header, Validation,
+};
 use serde::{Deserialize, Serialize};
 
 /// JWT claims for access tokens
@@ -246,12 +251,39 @@ pub fn create_refresh_token(user_id: i64, secret: &str) -> Result<String> {
 }
 
 /// Verify and decode a JWT token
-pub fn verify_jwt(token: &str, secret: &str) -> Result<Claims> {
+///
+/// FIX-2026-04-26 (Priority 3): SECURITY HARDENING
+///   1. Algorithm is pinned to HS256 (was Validation::default() which is too permissive
+///      for forward-compat; explicit pinning prevents alg-confusion regressions).
+///   2. `expected_type` parameter is REQUIRED — callers must pass either "access" or
+///      "refresh" to enforce token-type segregation. Previously a refresh token could
+///      be presented to the auth middleware and vice versa.
+/// Original signature was: `pub fn verify_jwt(token: &str, secret: &str) -> Result<Claims>`
+/// Original body:
+/// ```ignore
+/// let token_data = decode::<Claims>(
+///     token,
+///     &DecodingKey::from_secret(secret.as_bytes()),
+///     &Validation::default(),
+/// )?;
+/// Ok(token_data.claims)
+/// ```
+pub fn verify_jwt(token: &str, secret: &str, expected_type: &str) -> Result<Claims> {
+    let validation = Validation::new(JwtAlgorithm::HS256);
     let token_data = decode::<Claims>(
         token,
         &DecodingKey::from_secret(secret.as_bytes()),
-        &Validation::default(),
+        &validation,
     )?;
+
+    // FIX-2026-04-26 (Priority 3): enforce token_type segregation
+    if token_data.claims.token_type != expected_type {
+        return Err(anyhow::anyhow!(
+            "Invalid token type: expected '{}', got '{}'",
+            expected_type,
+            token_data.claims.token_type
+        ));
+    }
 
     Ok(token_data.claims)
 }

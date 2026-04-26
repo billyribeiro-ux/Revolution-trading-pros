@@ -9,6 +9,9 @@
 	import { connections, getIsAnalyticsConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 	import PeriodSelector from '$lib/components/analytics/PeriodSelector.svelte';
+	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
+	import IconPointer from '@tabler/icons-svelte-runes/icons/pointer';
+	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
 
 	interface HeatmapPage {
 		id: string;
@@ -111,14 +114,8 @@
 				<div
 					class="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center text-2xl shadow-lg shadow-rose-500/20"
 				>
-					<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"
-						/>
-					</svg>
+										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: pointer/cursor (heatmap) -->
+					<IconPointer size={24} aria-hidden="true" />
 				</div>
 				<div>
 					<h1 class="text-2xl font-bold text-white tracking-tight">Click Heatmaps</h1>
@@ -198,14 +195,8 @@
 					<div
 						class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-red-500/10 flex items-center justify-center"
 					>
-						<svg class="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-							/>
-						</svg>
+												<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: alert-circle error -->
+						<IconAlertCircle size={32} aria-hidden="true" />
 					</div>
 					<p class="text-red-400 mb-4">{error}</p>
 					<button

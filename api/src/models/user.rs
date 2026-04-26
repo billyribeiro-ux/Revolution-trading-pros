@@ -7,6 +7,9 @@
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
+// FIX-2026-04-26 (Priority 2): wire validator::Validate so ValidatedJson<T>
+// extractor can enforce constraints on auth request bodies.
+use validator::Validate;
 
 /// User database model
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
@@ -29,17 +32,26 @@ pub struct User {
 }
 
 /// Request to create a new user
-#[derive(Debug, Deserialize)]
+// FIX-2026-04-26 (Priority 2): added Validate + #[validate(...)] attributes.
+#[derive(Debug, Deserialize, Validate)]
 pub struct CreateUser {
+    #[validate(email(message = "Invalid email format"))]
+    #[validate(length(max = 254, message = "Email too long"))]
     pub email: String,
+    #[validate(length(min = 12, max = 128, message = "Password must be 12-128 chars"))]
     pub password: String,
+    #[validate(length(min = 1, max = 200, message = "Name must be 1-200 chars"))]
     pub name: String,
 }
 
 /// Request to login
-#[derive(Debug, Deserialize)]
+// FIX-2026-04-26 (Priority 2): added Validate + #[validate(...)] attributes.
+#[derive(Debug, Deserialize, Validate)]
 pub struct LoginUser {
+    #[validate(email(message = "Invalid email format"))]
+    #[validate(length(max = 254, message = "Email too long"))]
     pub email: String,
+    #[validate(length(min = 1, max = 128, message = "Password required"))]
     pub password: String,
     #[serde(default)]
     pub remember: Option<bool>,
@@ -62,11 +74,17 @@ pub struct ForgotPasswordRequest {
 }
 
 /// Request to reset password with token
-#[derive(Debug, Deserialize)]
+// FIX-2026-04-26 (Priority 2): added Validate + #[validate(...)] attributes.
+#[derive(Debug, Deserialize, Validate)]
 pub struct ResetPasswordRequest {
+    #[validate(length(min = 32, max = 128, message = "Invalid token"))]
     pub token: String,
+    #[validate(email(message = "Invalid email format"))]
+    #[validate(length(max = 254, message = "Email too long"))]
     pub email: String,
+    #[validate(length(min = 12, max = 128, message = "Password must be 12-128 chars"))]
     pub password: String,
+    #[validate(length(min = 12, max = 128, message = "Password confirmation must be 12-128 chars"))]
     pub password_confirmation: String,
 }
 

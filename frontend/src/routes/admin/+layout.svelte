@@ -68,9 +68,16 @@
 	// 		goto('/login?redirect=/admin');
 	// 	}
 	// });
+	// FIX-2026-04-26: replaced legacy `$isAuthenticated` autosubscribe with
+	// `isAuthenticated.current` rune-getter. Even though the read sits in
+	// onMount (untracked), the Svelte compiler hoists `legacy_pre_subscribe`
+	// to component init, which adds a long-lived subscriber on
+	// `authStore.subscribers` that participates in every post-login fan-out.
+	// Removing the autosubscribe shrinks the fan-out volume.
+	// Old: if (!$isAuthenticated) { goto('/login?redirect=/admin'); }
 	onMount(() => {
 		if (!browser) return;
-		if (!$isAuthenticated) {
+		if (!isAuthenticated.current) {
 			goto('/login?redirect=/admin');
 		}
 	});

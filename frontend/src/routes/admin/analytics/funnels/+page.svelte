@@ -11,6 +11,13 @@
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 	import FunnelChart from '$lib/components/analytics/FunnelChart.svelte';
 	import PeriodSelector from '$lib/components/analytics/PeriodSelector.svelte';
+	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
+	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
+	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
+	import IconList from '@tabler/icons-svelte-runes/icons/list';
+	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
 
 	interface Funnel {
 		key: string;
@@ -124,14 +131,8 @@
 				<div
 					class="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-2xl shadow-lg shadow-violet-500/20"
 				>
-					<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M19 9l-7 7-7-7"
-						/>
-					</svg>
+										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chevron-down -->
+					<IconChevronDown size={24} aria-hidden="true" />
 				</div>
 				<div>
 					<h1 class="text-2xl font-bold text-white tracking-tight">Conversion Funnels</h1>
@@ -179,14 +180,8 @@
 				<div
 					class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-red-500/10 flex items-center justify-center"
 				>
-					<svg class="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-						/>
-					</svg>
+										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: alert-circle error -->
+					<IconAlertCircle size={32} aria-hidden="true" />
 				</div>
 				<p class="text-red-400 mb-4">{error}</p>
 				<button
@@ -201,19 +196,8 @@
 				<div
 					class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-violet-500/10 flex items-center justify-center"
 				>
-					<svg
-						class="w-8 h-8 text-violet-400"
-						fill="none"
-						stroke="currentColor"
-						viewBox="0 0 24 24"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M19 9l-7 7-7-7"
-						/>
-					</svg>
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chevron-down (no funnels empty state) -->
+					<IconChevronDown size={32} aria-hidden="true" />
 				</div>
 				<h3 class="text-lg font-medium text-white mb-2">No Funnels Yet</h3>
 				<p class="text-slate-400 mb-6">
@@ -248,26 +232,14 @@
 						{/if}
 						<div class="flex items-center gap-4 text-sm text-slate-500">
 							<span class="flex items-center gap-1.5">
-								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M4 6h16M4 10h16M4 14h16M4 18h16"
-									/>
-								</svg>
+																<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: list -->
+								<IconList size={16} aria-hidden="true" />
 								{funnel.steps.length} steps
 							</span>
 							{#if funnel.avg_completion_time}
 								<span class="flex items-center gap-1.5">
-									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-										<path
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											stroke-width="2"
-											d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-										/>
-									</svg>
+																		<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: clock -->
+									<IconClock size={16} aria-hidden="true" />
 									Avg: {formatTime(funnel.avg_completion_time)}
 								</span>
 							{/if}
@@ -389,14 +361,8 @@
 						class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
 						aria-label="Close modal"
 					>
-						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M6 18L18 6M6 6l12 12"
-							/>
-						</svg>
+												<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: x (close) -->
+						<IconX size={20} aria-hidden="true" />
 					</button>
 				</div>
 			</div>
@@ -474,14 +440,8 @@
 										class="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors"
 										aria-label="Remove step"
 									>
-										<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-											<path
-												stroke-linecap="round"
-												stroke-linejoin="round"
-												stroke-width="2"
-												d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-											/>
-										</svg>
+																				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: trash -->
+										<IconTrash size={16} aria-hidden="true" />
 									</button>
 								{/if}
 							</div>

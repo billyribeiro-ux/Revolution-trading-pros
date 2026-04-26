@@ -20,6 +20,10 @@
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 	import SubscriptionDetailDrawer from '$lib/components/admin/SubscriptionDetailDrawer.svelte';
 	import SubscriptionFormModal from '$lib/components/admin/SubscriptionFormModal.svelte';
+	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
+	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
+	import IconCircleXFilled from '@tabler/icons-svelte-runes/icons/circle-x-filled';
+	import IconClockHour3 from '@tabler/icons-svelte-runes/icons/clock-hour-3';
 
 	// State
 	let connectionLoading = $state(true);
@@ -322,14 +326,8 @@
 			{#if getIsPaymentConnected()}
 				<div class="header-actions">
 					<button class="btn-primary" onclick={openCreateModal}>
-						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M12 4v16m8-8H4"
-							/>
-						</svg>
+												<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: plus -->
+						<IconPlus size={20} aria-hidden="true" />
 						Create Subscription
 					</button>
 				</div>
@@ -458,13 +456,8 @@
 			{#if failedPayments.length > 0}
 				<div class="bg-red-500/10 border border-red-500/20 rounded-xl p-6 mb-6">
 					<h3 class="text-red-400 font-semibold mb-3 flex items-center gap-2">
-						<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-							<path
-								fill-rule="evenodd"
-								d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-								clip-rule="evenodd"
-							/>
-						</svg>
+												<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-x error -->
+						<IconCircleXFilled size={20} aria-hidden="true" />
 						{failedPayments.length} Failed Payment{failedPayments.length > 1 ? 's' : ''}
 					</h3>
 					<div class="space-y-2">
@@ -486,13 +479,8 @@
 			{#if upcomingRenewals.length > 0}
 				<div class="bg-blue-500/10 border border-blue-500/20 rounded-xl p-6 mb-6">
 					<h3 class="text-blue-400 font-semibold mb-3 flex items-center gap-2">
-						<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-							<path
-								fill-rule="evenodd"
-								d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-								clip-rule="evenodd"
-							/>
-						</svg>
+												<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: clock-hour (pending) -->
+						<IconClockHour3 size={20} aria-hidden="true" />
 						{upcomingRenewals.length} Renewal{upcomingRenewals.length > 1 ? 's' : ''} in Next 7 Days
 					</h3>
 					<div class="space-y-2">

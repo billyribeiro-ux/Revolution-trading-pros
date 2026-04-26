@@ -10,6 +10,12 @@
 
 	import { onMount } from 'svelte';
 	import { getAuthToken } from '$lib/stores/auth.svelte';
+	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
+	import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left';
+	import IconCircleCheckFilled from '@tabler/icons-svelte-runes/icons/circle-check-filled';
+	import IconCircleXFilled from '@tabler/icons-svelte-runes/icons/circle-x-filled';
+	import IconLayers from '@tabler/icons-svelte-runes/icons/layers';
+	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
 
 	// Types
 	interface SubscriptionPlan {
@@ -387,14 +393,8 @@
 					<p class="subtitle">Manage membership plans and Stripe integration</p>
 				</div>
 				<a href="/admin/subscriptions" class="btn-secondary">
-					<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M15 19l-7-7 7-7"
-						/>
-					</svg>
+										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chevron-left (back) -->
+					<IconChevronLeft size={20} aria-hidden="true" />
 					Back to Subscriptions
 				</a>
 			</div>
@@ -403,13 +403,8 @@
 		<!-- Success Message -->
 		{#if successMessage}
 			<div class="success-banner">
-				<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-					<path
-						fill-rule="evenodd"
-						d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-						clip-rule="evenodd"
-					/>
-				</svg>
+								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-check success -->
+				<IconCircleCheckFilled size={20} aria-hidden="true" />
 				{successMessage}
 			</div>
 		{/if}
@@ -417,13 +412,8 @@
 		<!-- Error Banner -->
 		{#if error}
 			<div class="error-banner">
-				<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-					<path
-						fill-rule="evenodd"
-						d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-						clip-rule="evenodd"
-					/>
-				</svg>
+								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-x error -->
+				<IconCircleXFilled size={20} aria-hidden="true" />
 				{error}
 				<button onclick={() => (error = '')} class="ml-auto text-red-300 hover:text-white">×</button
 				>
@@ -434,14 +424,8 @@
 		<div class="stats-grid">
 			<div class="stat-card">
 				<div class="stat-icon bg-blue-500/10">
-					<svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-						/>
-					</svg>
+										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: layers (archive) -->
+					<IconLayers size={24} aria-hidden="true" />
 				</div>
 				<div class="stat-content">
 					<p class="stat-label">Total Plans</p>
@@ -608,13 +592,8 @@
 										<code class="stripe-id">{plan.stripe_price_id}</code>
 									{:else}
 										<span class="missing-stripe">
-											<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-												<path
-													fill-rule="evenodd"
-													d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-													clip-rule="evenodd"
-												/>
-											</svg>
+																						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: alert-triangle warning -->
+											<IconAlertTriangle size={16} aria-hidden="true" />
 											Not Set
 										</span>
 									{/if}
