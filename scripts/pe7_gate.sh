@@ -34,10 +34,13 @@ bold "▸ Rust no-DB tests ..."
 (cd api && cargo test --test utils_test --test stripe_test)
 
 bold "▸ !important sweep (must be 0) ..."
-# `grep` exits 1 on no-match which, under `set -euo pipefail`, would abort the
-# whole script — but zero matches is exactly the success state we want here.
-# `|| true` neutralises that without masking real grep errors (exit ≥2).
-COUNT=$(grep -rn ': .*!important;' frontend/src --include='*.css' --include='*.svelte' 2>/dev/null | wc -l | tr -d ' ' || true)
+# `grep` exits 1 on no-match which, under `set -euo pipefail`, would abort
+# the whole script — but zero matches is exactly the success state we want.
+# Wrap grep in `{ … || true; }` so the no-match exit is neutralised at the
+# producer stage; `wc -l` then gets a clean stdin and its own real exit
+# status is preserved. Don't apply `|| true` to the whole pipeline — that
+# would mask real `wc` errors too.
+COUNT=$( { grep -rn ': .*!important;' frontend/src --include='*.css' --include='*.svelte' 2>/dev/null || true; } | wc -l | tr -d ' ')
 if [ "$COUNT" != "0" ]; then
 	red "✗ Found $COUNT !important declarations."
 	red "  See frontend/src/lib/styles/IMPORTANT_USAGE.md — repo contract is zero."
@@ -46,10 +49,11 @@ fi
 green "  0 !important declarations — clean."
 
 bold "▸ Result.unwrap_or_default sweep (informational; manual triage) ..."
-# Same no-match guard as the !important sweep above.
-RESULT_UNWRAPS=$(grep -rn '\.unwrap_or_default()' api/src --include='*.rs' 2>/dev/null \
-	| grep -v -E '(_test\.rs|tests/)' \
-	| wc -l | tr -d ' ' || true)
+# Same no-match guard as the !important sweep above; applied at each stage
+# of the pipeline so individual `grep` zero-matches don't abort the script.
+RESULT_UNWRAPS=$( { grep -rn '\.unwrap_or_default()' api/src --include='*.rs' 2>/dev/null || true; } \
+	| { grep -v -E '(_test\.rs|tests/)' || true; } \
+	| wc -l | tr -d ' ')
 yellow "  $RESULT_UNWRAPS occurrences in api/src (Option<T> ok; Result<T,E> not — see audit issue #1)"
 
 green ""

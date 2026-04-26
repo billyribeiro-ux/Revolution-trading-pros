@@ -784,12 +784,20 @@ async fn change_plan_price(
     let old_price_id = plan.stripe_price_id.clone();
     let old_amount_cents: i64 = (plan.price * 100.0).round() as i64;
 
+    // ── Resolve a Stripe client from DB-stored creds (env fallback) ─────────
+    // PE7 invariant 2A: prefer admin-pasted keys over env vars so price
+    // changes work without a redeploy after Stripe rotation.
+    let env_scope = state.config.environment.clone();
+    let stripe = state
+        .services
+        .credentials
+        .stripe_client(&state.db.pool, &env_scope)
+        .await;
+
     // ── Ensure we have a Stripe Product to attach the new Price to ──────────
     let product_id = match plan.stripe_product_id.clone() {
         Some(pid) => pid,
-        None => state
-            .services
-            .stripe
+        None => stripe
             .create_product(&plan.name)
             .await
             .map_err(|e| {
@@ -802,9 +810,7 @@ async fn change_plan_price(
     };
 
     // ── Create the new Stripe Price ─────────────────────────────────────────
-    let new_price = state
-        .services
-        .stripe
+    let new_price = stripe
         .create_price(
             &product_id,
             input.amount_cents,
@@ -933,19 +939,19 @@ async fn change_plan_price(
         };
 
         for (sub_id,) in active_subs {
-            match state
-                .services
-                .stripe
+            match stripe
                 .migrate_subscription_to_price(&sub_id, &new_price_id, proration_behavior)
                 .await
             {
                 Ok(()) => {
                     migrated += 1;
                     tracing::info!(
-                        target: "stripe_price",
+                        target: "stripe.price_change",
                         event = "sub_migrated",
                         subscription_id = %sub_id,
-                        new_price_id = %new_price_id,
+                        old_price = ?old_price_id,
+                        new_price = %new_price_id,
+                        mode = %input.apply_to,
                         proration = %proration_behavior,
                         "Subscription migrated to new price"
                     );

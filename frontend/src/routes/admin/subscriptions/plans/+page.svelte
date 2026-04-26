@@ -46,6 +46,32 @@
 	let editingPlan = $state<SubscriptionPlan | null>(null);
 	let saving = $state(false);
 
+	// Price-change modal state (Stripe-syncing, no dashboard required)
+	type ApplyTo = 'new_only' | 'next_renewal' | 'immediate_proration';
+	let showPriceModal = $state(false);
+	let priceTargetPlan = $state<SubscriptionPlan | null>(null);
+	let priceAmount = $state(0); // dollars in the input; converted to cents at submit
+	let priceInterval = $state<'month' | 'year' | 'one_time'>('month');
+	let priceApplyTo = $state<ApplyTo>('new_only');
+	let priceSubmitting = $state(false);
+	let showPriceConfirm = $state(false);
+	let priceHistory = $state<PriceHistoryEntry[]>([]);
+	let priceHistoryLoading = $state(false);
+
+	interface PriceHistoryEntry {
+		id: number;
+		old_stripe_price_id: string | null;
+		new_stripe_price_id: string;
+		old_amount_cents: number | null;
+		new_amount_cents: number;
+		currency: string;
+		billing_interval: string;
+		apply_to: ApplyTo;
+		subscriptions_migrated: number;
+		subscriptions_failed: number;
+		changed_at: string;
+	}
+
 	// Filter state
 	let filterActive = $state<'all' | 'active' | 'inactive'>('all');
 	let filterBillingCycle = $state<'all' | 'monthly' | 'quarterly' | 'annual'>('all');
@@ -117,6 +143,125 @@
 	function closeEditModal() {
 		showEditModal = false;
 		editingPlan = null;
+	}
+
+	// ── Price-change modal ──────────────────────────────────────────────────
+	function intervalForPlan(plan: SubscriptionPlan): 'month' | 'year' | 'one_time' {
+		switch (plan.billing_cycle) {
+			case 'annual':
+			case 'yearly':
+				return 'year';
+			case 'monthly':
+			case 'quarterly':
+				return 'month';
+			default:
+				return 'month';
+		}
+	}
+
+	async function openPriceModal(plan: SubscriptionPlan) {
+		priceTargetPlan = plan;
+		priceAmount = Math.round(plan.price * 100) / 100;
+		priceInterval = intervalForPlan(plan);
+		priceApplyTo = 'new_only';
+		showPriceConfirm = false;
+		showPriceModal = true;
+		successMessage = '';
+		await loadPriceHistory(plan.id);
+	}
+
+	function closePriceModal() {
+		showPriceModal = false;
+		priceTargetPlan = null;
+		showPriceConfirm = false;
+		priceHistory = [];
+	}
+
+	async function loadPriceHistory(planId: number) {
+		priceHistoryLoading = true;
+		try {
+			const token = getAuthToken();
+			const response = await fetch(
+				`/api/admin/subscriptions/plans/${planId}/price-history`,
+				{
+					headers: {
+						Authorization: `Bearer ${token}`,
+						'Content-Type': 'application/json'
+					},
+					credentials: 'include'
+				}
+			);
+			if (response.ok) {
+				const data = await response.json();
+				priceHistory = (data.data || []) as PriceHistoryEntry[];
+			} else {
+				priceHistory = [];
+			}
+		} catch (err) {
+			console.error('[Plans] Failed to load price history', err);
+			priceHistory = [];
+		} finally {
+			priceHistoryLoading = false;
+		}
+	}
+
+	async function submitPriceChange() {
+		if (!priceTargetPlan) return;
+		if (priceAmount <= 0) {
+			error = 'Amount must be greater than zero';
+			return;
+		}
+
+		priceSubmitting = true;
+		error = '';
+		try {
+			const token = getAuthToken();
+			const amountCents = Math.round(priceAmount * 100);
+			const response = await fetch(
+				`/api/admin/subscriptions/plans/${priceTargetPlan.id}/price`,
+				{
+					method: 'POST',
+					headers: {
+						Authorization: `Bearer ${token}`,
+						'Content-Type': 'application/json'
+					},
+					credentials: 'include',
+					body: JSON.stringify({
+						amount_cents: amountCents,
+						currency: 'usd',
+						billing_interval: priceInterval,
+						apply_to: priceApplyTo
+					})
+				}
+			);
+
+			if (!response.ok) {
+				const errData = await response.json().catch(() => ({}));
+				throw new Error(errData.error || `Failed to change price: ${response.status}`);
+			}
+
+			const data = await response.json();
+			const planName = priceTargetPlan.name;
+			let detail = '';
+			if (priceApplyTo === 'new_only') {
+				detail = 'New members only — existing subscribers stay on the old price.';
+			} else if (priceApplyTo === 'next_renewal') {
+				detail = `${data.subscriptions_migrated} existing subscriber(s) will switch at next renewal (no proration).`;
+			} else {
+				detail = `${data.subscriptions_migrated} existing subscriber(s) migrated immediately with proration.`;
+			}
+			if (data.subscriptions_failed > 0) {
+				detail += ` ${data.subscriptions_failed} migration(s) failed — see audit log.`;
+			}
+			successMessage = `Price for "${planName}" updated. ${detail}`;
+			closePriceModal();
+			await loadPlans();
+			setTimeout(() => (successMessage = ''), 6000);
+		} catch (err) {
+			error = err instanceof Error ? err.message : 'Failed to change price';
+		} finally {
+			priceSubmitting = false;
+		}
 	}
 
 	async function savePlan() {
@@ -492,7 +637,16 @@
 									</button>
 								</td>
 								<td>
-									<button class="btn-edit" onclick={() => openEditModal(plan)}> Edit </button>
+									<div class="row-actions">
+										<button class="btn-edit" onclick={() => openEditModal(plan)}>Edit</button>
+										<button
+											class="btn-price"
+											onclick={() => openPriceModal(plan)}
+											title="Change Stripe price with grandfathering options"
+										>
+											Change Price
+										</button>
+									</div>
 								</td>
 							</tr>
 						{/each}
@@ -645,6 +799,215 @@
 						Save Changes
 					{/if}
 				</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
+<!-- Change Price Modal -->
+{#if showPriceModal && priceTargetPlan}
+	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+	<div
+		class="modal-overlay"
+		onclick={closePriceModal}
+		onkeydown={(e) => {
+			if (e.key === 'Escape') {
+				e.preventDefault();
+				closePriceModal();
+			}
+		}}
+		role="dialog"
+		aria-modal="true"
+		aria-label="Change plan price"
+		tabindex="0"
+	>
+		<div class="modal price-modal" onmousedown={(e) => e.stopPropagation()} role="document">
+			<div class="modal-header">
+				<h2>Change Price — {priceTargetPlan.name}</h2>
+				<button class="modal-close" onclick={closePriceModal} aria-label="Close">×</button>
+			</div>
+
+			<div class="modal-body">
+				{#if !showPriceConfirm}
+					<div class="form-row">
+						<div class="form-group">
+							<label for="price-amount">New Price (USD)</label>
+							<input
+								id="price-amount"
+								type="number"
+								step="0.01"
+								min="0.01"
+								bind:value={priceAmount}
+								class="form-input"
+							/>
+							<p class="form-hint">
+								Stored as {Math.round(priceAmount * 100)} cents in Stripe.
+							</p>
+						</div>
+
+						<div class="form-group">
+							<label for="price-interval">Billing Interval</label>
+							<select id="price-interval" bind:value={priceInterval} class="form-input">
+								<option value="month">Monthly</option>
+								<option value="year">Yearly</option>
+								<option value="one_time">One-time (no recurring)</option>
+							</select>
+						</div>
+					</div>
+
+					<fieldset class="apply-to-group">
+						<legend>Who does this new price apply to?</legend>
+
+						<label class="apply-option" class:selected={priceApplyTo === 'new_only'}>
+							<input type="radio" name="apply-to" value="new_only" bind:group={priceApplyTo} />
+							<span class="apply-content">
+								<strong>New members only</strong>
+								<span class="apply-help">
+									Existing subscribers stay on the old price forever (grandfathered).
+									Only checkouts started after this change will see the new price.
+								</span>
+							</span>
+						</label>
+
+						<label class="apply-option" class:selected={priceApplyTo === 'next_renewal'}>
+							<input
+								type="radio"
+								name="apply-to"
+								value="next_renewal"
+								bind:group={priceApplyTo}
+							/>
+							<span class="apply-content">
+								<strong>Everyone, on next renewal</strong>
+								<span class="apply-help">
+									Existing subscribers move to the new price at their next billing date.
+									No proration. Renewal date is preserved.
+								</span>
+							</span>
+						</label>
+
+						<label class="apply-option" class:selected={priceApplyTo === 'immediate_proration'}>
+							<input
+								type="radio"
+								name="apply-to"
+								value="immediate_proration"
+								bind:group={priceApplyTo}
+							/>
+							<span class="apply-content">
+								<strong>Everyone, immediately (with proration)</strong>
+								<span class="apply-help">
+									Existing subscribers switch right now. Stripe issues a prorated charge
+									or credit on their next invoice for the unused portion of the old price.
+								</span>
+							</span>
+						</label>
+					</fieldset>
+
+					<div class="price-history-section">
+						<h3>Recent Price Changes</h3>
+						{#if priceHistoryLoading}
+							<p class="form-hint">Loading history…</p>
+						{:else if priceHistory.length === 0}
+							<p class="form-hint">No previous price changes for this plan.</p>
+						{:else}
+							<table class="history-table">
+								<thead>
+									<tr>
+										<th>Changed</th>
+										<th>From → To</th>
+										<th>Apply To</th>
+										<th>Migrated</th>
+									</tr>
+								</thead>
+								<tbody>
+									{#each priceHistory.slice(0, 5) as h (h.id)}
+										<tr>
+											<td>{new Date(h.changed_at).toLocaleString()}</td>
+											<td class="font-mono">
+												{h.old_amount_cents !== null
+													? `${(h.old_amount_cents / 100).toFixed(2)}`
+													: '—'}
+												→ ${(h.new_amount_cents / 100).toFixed(2)}
+											</td>
+											<td>{h.apply_to.replace('_', ' ')}</td>
+											<td>
+												{h.subscriptions_migrated}
+												{#if h.subscriptions_failed > 0}
+													<span class="failure-badge">+{h.subscriptions_failed} failed</span>
+												{/if}
+											</td>
+										</tr>
+									{/each}
+								</tbody>
+							</table>
+						{/if}
+					</div>
+				{:else}
+					<!-- Confirmation step -->
+					<div class="confirm-block">
+						<h3>Confirm price change</h3>
+						<dl class="confirm-list">
+							<dt>Plan</dt>
+							<dd>{priceTargetPlan.name}</dd>
+							<dt>New price</dt>
+							<dd>${priceAmount.toFixed(2)} / {priceInterval}</dd>
+							<dt>Apply to</dt>
+							<dd>
+								{#if priceApplyTo === 'new_only'}
+									New members only (existing subscribers grandfathered)
+								{:else if priceApplyTo === 'next_renewal'}
+									Everyone, on next renewal (no proration)
+								{:else}
+									Everyone, immediately (Stripe issues proration)
+								{/if}
+							</dd>
+						</dl>
+						{#if priceApplyTo === 'immediate_proration'}
+							<p class="warn-text">
+								Heads up: Stripe will charge or credit existing subscribers right away.
+								Make sure your CS team is briefed.
+							</p>
+						{/if}
+					</div>
+				{/if}
+			</div>
+
+			<div class="modal-footer">
+				{#if !showPriceConfirm}
+					<button
+						class="btn-cancel"
+						onclick={closePriceModal}
+						disabled={priceSubmitting}
+					>
+						Cancel
+					</button>
+					<button
+						class="btn-save"
+						onclick={() => (showPriceConfirm = true)}
+						disabled={priceSubmitting || priceAmount <= 0}
+					>
+						Continue
+					</button>
+				{:else}
+					<button
+						class="btn-cancel"
+						onclick={() => (showPriceConfirm = false)}
+						disabled={priceSubmitting}
+					>
+						Back
+					</button>
+					<button
+						class="btn-save"
+						class:btn-destructive={priceApplyTo === 'immediate_proration'}
+						onclick={submitPriceChange}
+						disabled={priceSubmitting}
+					>
+						{#if priceSubmitting}
+							Applying…
+						{:else}
+							Apply Price Change
+						{/if}
+					</button>
+				{/if}
 			</div>
 		</div>
 	</div>
@@ -995,6 +1358,156 @@
 	.btn-edit:hover {
 		background: rgba(99, 102, 241, 0.25);
 		color: white;
+	}
+
+	.row-actions {
+		display: flex;
+		gap: 0.5rem;
+		flex-wrap: wrap;
+	}
+
+	.btn-price {
+		padding: 0.5rem 1rem;
+		background: rgba(16, 185, 129, 0.15);
+		border: 1px solid rgba(16, 185, 129, 0.3);
+		border-radius: 6px;
+		color: #6ee7b7;
+		font-size: 0.85rem;
+		font-weight: 500;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.btn-price:hover {
+		background: rgba(16, 185, 129, 0.25);
+		color: white;
+	}
+
+	/* Price-change modal */
+	.price-modal {
+		max-width: 720px;
+	}
+
+	.apply-to-group {
+		border: 1px solid rgba(71, 85, 105, 0.4);
+		border-radius: 10px;
+		padding: 1rem 1.25rem;
+		margin: 1rem 0 0;
+	}
+
+	.apply-to-group legend {
+		font-size: 0.85rem;
+		font-weight: 600;
+		color: #cbd5e1;
+		padding: 0 0.5rem;
+	}
+
+	.apply-option {
+		display: flex;
+		gap: 0.75rem;
+		padding: 0.75rem;
+		border-radius: 8px;
+		cursor: pointer;
+		border: 1px solid transparent;
+		transition: background 0.15s, border-color 0.15s;
+	}
+
+	.apply-option:hover {
+		background: rgba(99, 102, 241, 0.06);
+	}
+
+	.apply-option.selected {
+		background: rgba(99, 102, 241, 0.12);
+		border-color: rgba(99, 102, 241, 0.4);
+	}
+
+	.apply-content {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+	}
+
+	.apply-content strong {
+		color: #f1f5f9;
+		font-size: 0.95rem;
+	}
+
+	.apply-help {
+		color: #94a3b8;
+		font-size: 0.85rem;
+		line-height: 1.45;
+	}
+
+	.price-history-section {
+		margin-top: 1.5rem;
+	}
+
+	.price-history-section h3 {
+		font-size: 0.95rem;
+		font-weight: 600;
+		color: #e2e8f0;
+		margin: 0 0 0.5rem;
+	}
+
+	.history-table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 0.85rem;
+	}
+
+	.history-table th,
+	.history-table td {
+		text-align: left;
+		padding: 0.5rem 0.6rem;
+		border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+		color: #cbd5e1;
+	}
+
+	.history-table th {
+		color: #94a3b8;
+		font-weight: 500;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		font-size: 0.7rem;
+	}
+
+	.failure-badge {
+		margin-left: 0.25rem;
+		color: #f87171;
+		font-size: 0.75rem;
+	}
+
+	.confirm-block dl.confirm-list {
+		display: grid;
+		grid-template-columns: 140px 1fr;
+		gap: 0.5rem 1rem;
+		margin: 1rem 0;
+	}
+
+	.confirm-block dt {
+		color: #94a3b8;
+		font-size: 0.85rem;
+	}
+
+	.confirm-block dd {
+		margin: 0;
+		color: #f1f5f9;
+		font-size: 0.95rem;
+	}
+
+	.warn-text {
+		color: #fbbf24;
+		background: rgba(251, 191, 36, 0.1);
+		border: 1px solid rgba(251, 191, 36, 0.3);
+		border-radius: 8px;
+		padding: 0.75rem 1rem;
+		font-size: 0.875rem;
+	}
+
+	.btn-destructive {
+		background: linear-gradient(135deg, #ef4444, #b91c1c);
+		border: 1px solid rgba(220, 38, 38, 0.5);
+		color: #fff;
 	}
 
 	/* Loading & Empty States */
