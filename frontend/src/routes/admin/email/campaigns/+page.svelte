@@ -13,6 +13,8 @@
 	 * @version 2.0.0 - Svelte 5 Migration (Dec 2025)
 	 */
 
+	// FIX-2026-04-26: onMount imported for $effect-cascade fix below.
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import { adminFetch } from '$lib/utils/adminFetch';
@@ -112,10 +114,22 @@
 	let draftCount = $derived(campaigns.filter((c) => c.status === 'draft').length);
 
 	// ═══════════════════════════════════════════════════════════════════════════════
-	// Lifecycle - Svelte 5 $effect
+	// Lifecycle - onMount (NOT $effect)
 	// ═══════════════════════════════════════════════════════════════════════════════
-
-	$effect(() => {
+	// FIX-2026-04-26: converted from $effect to onMount.
+	// `initializeData()` calls `connections.load()` which mutates `connectionsState`
+	// AND reads it back via `getIsEmailConnected()`. Inside an $effect that's the
+	// classic write-while-reading-tracked-dep pattern that fires
+	// effect_update_depth_exceeded on the post-login `goto('/admin/email/campaigns')`
+	// flush. Same recipe as the dashboard fix at admin/analytics/+page.svelte:131-163
+	// (commit dad9af2cf).
+	// See https://svelte.dev/docs/svelte/$effect#When-not-to-use-$effect.
+	//
+	// Old code (kept for one revision per FIX-2026-04-26 marker — delete in follow-up):
+	// $effect(() => {
+	// 	initializeData();
+	// });
+	onMount(() => {
 		initializeData();
 	});
 

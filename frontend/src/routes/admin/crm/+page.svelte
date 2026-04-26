@@ -24,6 +24,7 @@
 	 */
 
 	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import {
 		IconUsers,
 		IconUserPlus,
@@ -270,8 +271,23 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Svelte 5: Initialize on mount
-	$effect(() => {
+	// FIX-2026-04-26: $effect → onMount; calling connections.load() (writes connectionsState) AND reading via getIsCrmConnected() inside $effect is the classic write-while-reading-tracked-dep cascade.
+	// $effect(() => {
+	// 	if (!browser) return;
+	//
+	// 	const init = async () => {
+	// 		await connections.load();
+	// 		connectionLoading = false;
+	//
+	// 		if (getIsCrmConnected()) {
+	// 			await loadData();
+	// 		} else {
+	// 			isLoading = false;
+	// 		}
+	// 	};
+	// 	init();
+	// });
+	onMount(() => {
 		if (!browser) return;
 
 		const init = async () => {

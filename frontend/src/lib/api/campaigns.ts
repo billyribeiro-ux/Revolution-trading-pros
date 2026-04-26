@@ -10,6 +10,18 @@
  * - Real-time updates
  *
  * @version 1.0.0
+ *
+ * ⚠️ FIX-2026-04-26: ORPHAN — no matching backend route exists.
+ * This client calls `/api/admin/email/campaigns/*` (~10 endpoints) but neither
+ * the SvelteKit proxy at frontend/src/routes/api/admin/email/campaigns/ nor a
+ * Rust handler under api/src/routes/ exist. Every call from this file 404/400s.
+ *
+ * Decision required: either build the matching backend (Rust handlers + proxies)
+ * or remove the campaigns page (frontend/src/routes/admin/email/campaigns/+page.svelte).
+ * Until then, the campaigns page emits "Failed to load campaigns" toasts on every
+ * mount.
+ *
+ * See AUDIT_REPORT.md §10 Finding 2 + ADMIN_DASHBOARD_REPORT.md (orphan API clients).
  */
 
 import { get as _get } from 'svelte/store';
