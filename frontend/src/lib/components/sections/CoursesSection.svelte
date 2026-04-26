@@ -127,9 +127,8 @@
 	let scrollTriggerInstance: any = null;
 	let prefersReducedMotion = $state(false);
 
-	// Mouse Tracking for Spotlight Effect
-	let mouseX = $state(0);
-	let mouseY = $state(0);
+	// FIX-2026-04-26: cursor-follow spotlight removed per user request — disabled to fix UX bug.
+	// mouseX / mouseY state and handleMouseMove have been removed entirely.
 
 	// ============================================================================
 	// LIFECYCLE
@@ -182,13 +181,14 @@
 		};
 	});
 
-	function handleMouseMove(e: MouseEvent) {
-		if (cardsRef) {
-			const rect = cardsRef.getBoundingClientRect();
-			mouseX = e.clientX - rect.left;
-			mouseY = e.clientY - rect.top;
-		}
-	}
+	// FIX-2026-04-26: cursor-follow spotlight removed per user request — disabled to fix UX bug.
+	// function handleMouseMove(e: MouseEvent) {
+	// 	if (cardsRef) {
+	// 		const rect = cardsRef.getBoundingClientRect();
+	// 		mouseX = e.clientX - rect.left;
+	// 		mouseY = e.clientY - rect.top;
+	// 	}
+	// }
 
 	async function loadGSAP() {
 		try {
@@ -244,7 +244,8 @@
 	}
 </script>
 
-<svelte:window onmousemove={handleMouseMove} />
+<!-- FIX-2026-04-26: cursor-follow spotlight removed per user request — disabled to fix UX bug. -->
+<!-- <svelte:window onmousemove={handleMouseMove} /> -->
 
 <section
 	bind:this={sectionRef}
@@ -338,12 +339,12 @@
 		<div
 			bind:this={cardsRef}
 			class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 relative"
-			style="--mouse-x: {mouseX}px; --mouse-y: {mouseY}px;"
 		>
-			<div
+			<!-- FIX-2026-04-26: cursor-follow spotlight removed per user request — disabled to fix UX bug. -->
+			<!-- <div
 				class="pointer-events-none absolute -inset-px opacity-0 md:opacity-100 transition-opacity duration-300 z-0 rounded-3xl"
 				style="background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(139, 92, 246, 0.08), transparent 40%);"
-			></div>
+			></div> -->
 
 			{#each courses as course}
 				<a

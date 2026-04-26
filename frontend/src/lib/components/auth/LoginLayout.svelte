@@ -24,9 +24,8 @@
 
 	let props: Props = $props();
 
-	// Mouse position for spotlight effect
-	let mouseX = $state(50);
-	let mouseY = $state(50);
+	// FIX-2026-04-26: cursor-follow spotlight removed per user request — disabled to fix UX bug.
+	// mouseX / mouseY state and the mousemove listener have been removed entirely.
 	let isMobile = $state(false);
 
 	onMount(() => {
@@ -39,20 +38,21 @@
 		checkMobile();
 		window.addEventListener('resize', checkMobile);
 
-		const handleMouseMove = (e: MouseEvent) => {
-			mouseX = (e.clientX / window.innerWidth) * 100;
-			mouseY = (e.clientY / window.innerHeight) * 100;
-		};
+		// FIX-2026-04-26: cursor-follow spotlight removed per user request — disabled to fix UX bug.
+		// const handleMouseMove = (e: MouseEvent) => {
+		// 	mouseX = (e.clientX / window.innerWidth) * 100;
+		// 	mouseY = (e.clientY / window.innerHeight) * 100;
+		// };
+		// window.addEventListener('mousemove', handleMouseMove);
 
-		window.addEventListener('mousemove', handleMouseMove);
 		return () => {
-			window.removeEventListener('mousemove', handleMouseMove);
+			// window.removeEventListener('mousemove', handleMouseMove);
 			window.removeEventListener('resize', checkMobile);
 		};
 	});
 </script>
 
-<div class="login-layout" style="--mouse-x: {mouseX}%; --mouse-y: {mouseY}%;">
+<div class="login-layout">
 	<!-- Mobile Background (shown on mobile only) -->
 	{#if isMobile}
 		<MobileBackground />
@@ -61,8 +61,8 @@
 	<!-- Background Grid -->
 	<div class="grid-overlay" aria-hidden="true"></div>
 
-	<!-- Spotlight Effect -->
-	<div class="spotlight" aria-hidden="true"></div>
+	<!-- FIX-2026-04-26: cursor-follow spotlight removed per user request — disabled to fix UX bug. -->
+	<!-- <div class="spotlight" aria-hidden="true"></div> -->
 
 	<!-- Hero Panel (Desktop/Tablet) -->
 	<div class="hero-panel">
@@ -113,19 +113,8 @@
 		z-index: 1;
 	}
 
-	/* Spotlight Effect */
-	.spotlight {
-		position: fixed;
-		inset: 0;
-		background: radial-gradient(
-			circle 800px at var(--mouse-x) var(--mouse-y),
-			var(--auth-spotlight),
-			transparent 70%
-		);
-		pointer-events: none;
-		z-index: 2;
-		transition: background 0.3s ease;
-	}
+	/* FIX-2026-04-26: cursor-follow spotlight removed per user request — disabled to fix UX bug. */
+	/* .spotlight { ... } — deleted; spotlight div also removed from template. */
 
 	/* Hero Panel */
 	.hero-panel {
