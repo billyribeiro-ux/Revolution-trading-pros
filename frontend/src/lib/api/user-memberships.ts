@@ -11,7 +11,7 @@
  * @version 3.0.0 (SvelteKit / December 2025)
  */
 
-import { browser } from '$app/environment';
+import { browser, dev } from '$app/environment';
 import { authStore } from '$lib/stores/auth.svelte';
 import { apiCache, buildCacheKey, invalidateCache } from './cache';
 import { isSuperadminEmail, isDeveloperEmail } from '$lib/config/roles';
@@ -244,12 +244,12 @@ export async function getUserMemberships(options?: {
 	// If no token AND no user in store, we're truly not authenticated
 	// But if we have a user (from server sync), try the API with cookies
 	if (!token && !storeUser) {
-		console.log('[UserMemberships] No auth token or user - not authenticated');
+		if (dev) console.debug('[UserMemberships] No auth token or user - not authenticated');
 		return categorizeMemberships([]);
 	}
 
-	if (!token) {
-		console.log('[UserMemberships] No in-memory token - will use cookies for auth');
+	if (!token && dev) {
+		console.debug('[UserMemberships] No in-memory token - will use cookies for auth');
 	}
 
 	// ICT 7: ENTERPRISE DEVELOPER ACCESS - Check via environment-based config
@@ -258,7 +258,8 @@ export async function getUserMemberships(options?: {
 		storeUser && (isDeveloperEmail(storeUser.email) || isSuperadminEmail(storeUser.email));
 
 	if (isDeveloper) {
-		console.debug('[UserMemberships] Developer/Superadmin detected - unlocking all memberships');
+		if (dev)
+			console.debug('[UserMemberships] Developer/Superadmin detected - unlocking all memberships');
 		// Skip cache to always get latest products
 		return await getDeveloperMemberships();
 	}
@@ -436,7 +437,7 @@ async function getDeveloperMemberships(): Promise<UserMembershipsResponse> {
 			}
 
 			// STRATEGY 2: Fallback to products proxy endpoint
-			console.debug('[Developer] membership-plans empty, trying products endpoint');
+			if (dev) console.debug('[Developer] membership-plans empty, trying products endpoint');
 			const productsResponse = await fetch('/api/products?product_type=membership&per_page=100', {
 				method: 'GET',
 				headers: await getAuthHeaders(),
@@ -452,10 +453,10 @@ async function getDeveloperMemberships(): Promise<UserMembershipsResponse> {
 			}
 
 			// STRATEGY 3: Return mock data — backend not ready yet (expected)
-			console.debug('[Developer] API endpoints not ready, using mock memberships');
+			if (dev) console.debug('[Developer] API endpoints not ready, using mock memberships');
 			return getDeveloperMockMemberships();
 		} catch (_error) {
-			console.debug('[Developer] API unavailable, using mock memberships');
+			if (dev) console.debug('[Developer] API unavailable, using mock memberships');
 			return getDeveloperMockMemberships();
 		} finally {
 			developerMembershipsPromise = null;
@@ -542,7 +543,7 @@ function getDefaultIcon(type: MembershipType): string {
  * Ensures developers always have access even if API is down
  */
 function getDeveloperMockMemberships(): UserMembershipsResponse {
-	console.debug('[Developer] Using mock membership data (API not ready)');
+	if (dev) console.debug('[Developer] Using mock membership data (API not ready)');
 
 	const mockMemberships: UserMembership[] = [
 		// ═══════════════════════════════════════════════════════════════════════════

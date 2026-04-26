@@ -28,7 +28,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { browser } from '$app/environment';
+	import { browser, dev } from '$app/environment';
 	import { authStore, isAuthenticated, user } from '$lib/stores/auth.svelte';
 	import {
 		getUserMemberships,
@@ -455,7 +455,7 @@
 			// but client store may be empty. Restore client auth state before
 			// any membership API call.
 			if (data.user && !$isAuthenticated) {
-				console.debug('[Dashboard] Server auth valid, syncing to client store...');
+				if (dev) console.debug('[Dashboard] Server auth valid, syncing to client store...');
 
 				const serverUser = {
 					id: parseInt(data.user.id) || 0,
@@ -465,15 +465,16 @@
 					created_at: new Date().toISOString()
 				};
 				authStore.setUser(serverUser);
-				console.debug('[Dashboard] User synced to client store:', serverUser.email);
+				if (dev) console.debug('[Dashboard] User synced to client store:', serverUser.email);
 
 				try {
 					const refreshed = await authStore.refreshToken();
-					console.debug(
-						refreshed
-							? '[Dashboard] Token refreshed successfully'
-							: '[Dashboard] Token refresh failed, will use cookies for API calls'
-					);
+					if (dev)
+						console.debug(
+							refreshed
+								? '[Dashboard] Token refreshed successfully'
+								: '[Dashboard] Token refresh failed, will use cookies for API calls'
+						);
 				} catch (error) {
 					console.warn('[Dashboard] Token refresh error (will use cookies):', error);
 				}

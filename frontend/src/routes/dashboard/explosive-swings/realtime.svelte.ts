@@ -16,7 +16,7 @@
  * Built for the next 10 years with extensibility in mind.
  */
 
-import { browser } from '$app/environment';
+import { browser, dev } from '$app/environment';
 import {
 	createWebSocketService,
 	type AlertPayload,
@@ -112,8 +112,10 @@ function showToast(options: ToastOptions): void {
 	});
 	window.dispatchEvent(event);
 
-	// Console log for development
-	console.log(`[Toast] ${options.type.toUpperCase()}: ${options.title} - ${options.message}`);
+	// Console log for development only
+	if (dev) {
+		console.debug(`[Toast] ${options.type.toUpperCase()}: ${options.title} - ${options.message}`);
+	}
 }
 
 /**

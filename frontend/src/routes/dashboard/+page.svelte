@@ -20,6 +20,7 @@
 -->
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { dev } from '$app/environment';
 	import { user, isAuthenticated, isInitializing } from '$lib/stores/auth.svelte';
 	import { getUserMemberships, type UserMembershipsResponse } from '$lib/api/user-memberships';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
@@ -243,9 +244,11 @@
 
 		isLoading = true;
 		try {
-			console.log('[Dashboard] Loading memberships for user:', $user?.email);
+			if (dev) console.debug('[Dashboard] Loading memberships for user:', $user?.email);
 			membershipsData = await getUserMemberships();
-			console.log('[Dashboard] Memberships loaded:', membershipsData);
+			// Use $state.snapshot() — logging the proxy itself fires Svelte's
+			// console_log_state warning. snapshot() emits a plain JS object.
+			if (dev) console.debug('[Dashboard] Memberships loaded:', $state.snapshot(membershipsData));
 		} catch (error) {
 			console.error('[Dashboard] Failed to load memberships:', error);
 			membershipsData = null;

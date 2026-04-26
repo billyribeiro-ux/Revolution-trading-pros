@@ -20,7 +20,7 @@
 -->
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser, dev } from '$app/environment';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPE DEFINITIONS - ICT 11+ TypeScript Best Practice
@@ -149,13 +149,15 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	function logCalendarAPI(log: CalendarAPILog): void {
-		if (browser && typeof console !== 'undefined') {
+		// Dev-only structured log; previously shipped to prod console on every
+		// dashboard mount, contributing to the "hidden errors" noise.
+		if (dev && browser && typeof console !== 'undefined') {
 			const logEntry = {
 				...log,
 				component: 'TradingRoomSidebar',
 				version: '2.0.0-ICT11'
 			};
-			console.log('[ICT11 Calendar API]', logEntry);
+			console.debug('[ICT11 Calendar API]', logEntry);
 		}
 	}
 
