@@ -268,16 +268,34 @@ async fn delete_form(
         "Admin deleting form"
     );
 
+    // ICT 7 SAFETY: wrap submissions+forms cascade delete in a transaction so a
+    // crash between the two DELETEs cannot leave submissions rows orphaned with
+    // their form already gone (or, worse, the inverse: form gone but submissions
+    // still referenced by stale FKs).
+    let mut tx = state.db.pool.begin().await.map_err(|e| {
+        tracing::error!("tx start (delete_form): {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
+    })?;
+
     // Delete submissions first
     sqlx::query("DELETE FROM form_submissions WHERE form_id = $1")
         .bind(id)
-        .execute(&state.db.pool)
+        .execute(&mut *tx)
         .await
-        .ok();
+        .map_err(|e| {
+            tracing::error!("Failed to delete form_submissions: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": "Failed to delete submissions"})),
+            )
+        })?;
 
     let result = sqlx::query("DELETE FROM forms WHERE id = $1")
         .bind(id)
-        .execute(&state.db.pool)
+        .execute(&mut *tx)
         .await
         .map_err(|e| {
             (
@@ -292,6 +310,14 @@ async fn delete_form(
             Json(json!({"error": "Form not found"})),
         ));
     }
+
+    tx.commit().await.map_err(|e| {
+        tracing::error!("tx commit (delete_form): {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
+    })?;
 
     Ok(Json(json!({"message": "Form deleted successfully"})))
 }
@@ -556,10 +582,21 @@ async fn delete_submission(
         "Admin deleting submission"
     );
 
+    // ICT 7 SAFETY: the DELETE on form_submissions and the counter UPDATE on
+    // forms must agree atomically — otherwise the counter drifts forever on a
+    // crash between the two statements.
+    let mut tx = state.db.pool.begin().await.map_err(|e| {
+        tracing::error!("tx start (delete_submission): {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
+    })?;
+
     let result = sqlx::query("DELETE FROM form_submissions WHERE id = $1 AND form_id = $2")
         .bind(submission_id)
         .bind(form_id)
-        .execute(&state.db.pool)
+        .execute(&mut *tx)
         .await
         .map_err(|e| {
             (
@@ -578,9 +615,23 @@ async fn delete_submission(
     // Update submission count
     sqlx::query("UPDATE forms SET submission_count = submission_count - 1 WHERE id = $1")
         .bind(form_id)
-        .execute(&state.db.pool)
+        .execute(&mut *tx)
         .await
-        .ok();
+        .map_err(|e| {
+            tracing::error!("Failed to decrement form submission_count: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": "Failed to update submission count"})),
+            )
+        })?;
+
+    tx.commit().await.map_err(|e| {
+        tracing::error!("tx commit (delete_submission): {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
+    })?;
 
     Ok(Json(json!({"message": "Submission deleted successfully"})))
 }
@@ -749,7 +800,18 @@ async fn bulk_delete_submissions(
         q = q.bind(id);
     }
 
-    let result = q.execute(&state.db.pool).await.map_err(|e| {
+    // ICT 7 SAFETY: bulk DELETE on form_submissions plus the counter UPDATE on
+    // forms must commit atomically; otherwise a crash between them permanently
+    // desyncs the counter.
+    let mut tx = state.db.pool.begin().await.map_err(|e| {
+        tracing::error!("tx start (bulk_delete_submissions): {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
+    })?;
+
+    let result = q.execute(&mut *tx).await.map_err(|e| {
         (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(json!({"error": e.to_string()})),
@@ -760,9 +822,23 @@ async fn bulk_delete_submissions(
     sqlx::query("UPDATE forms SET submission_count = submission_count - $1 WHERE id = $2")
         .bind(result.rows_affected() as i32)
         .bind(form_id)
-        .execute(&state.db.pool)
+        .execute(&mut *tx)
         .await
-        .ok();
+        .map_err(|e| {
+            tracing::error!("Failed to decrement form submission_count (bulk): {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": "Failed to update submission count"})),
+            )
+        })?;
+
+    tx.commit().await.map_err(|e| {
+        tracing::error!("tx commit (bulk_delete_submissions): {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
+    })?;
 
     Ok(Json(json!({
         "success": true,
@@ -1066,13 +1142,24 @@ async fn submit_form(
         ));
     }
 
+    // ICT 7 SAFETY: insert the submission and bump the counter atomically. The
+    // external email + webhook fire AFTER commit so we never hold a DB tx across
+    // an HTTP call (and the counter never drifts on a crash mid-flow).
+    let mut tx = state.db.pool.begin().await.map_err(|e| {
+        tracing::error!("tx start (submit_form): {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
+    })?;
+
     // Insert submission
     let submission_result: (i64,) = sqlx::query_as(
         "INSERT INTO form_submissions (form_id, data, status, created_at) VALUES ($1, $2, 'unread', NOW()) RETURNING id"
     )
         .bind(form.id)
         .bind(&clean_data)
-        .fetch_one(&state.db.pool)
+        .fetch_one(&mut *tx)
         .await
         .map_err(|e| {
             (
@@ -1084,11 +1171,25 @@ async fn submit_form(
     // Update submission count
     sqlx::query("UPDATE forms SET submission_count = submission_count + 1 WHERE id = $1")
         .bind(form.id)
-        .execute(&state.db.pool)
+        .execute(&mut *tx)
         .await
-        .ok();
+        .map_err(|e| {
+            tracing::error!("Failed to increment form submission_count: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": "Failed to update submission count"})),
+            )
+        })?;
 
-    // ICT 7 Fix: Email notification via Postmark
+    tx.commit().await.map_err(|e| {
+        tracing::error!("tx commit (submit_form): {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
+    })?;
+
+    // ICT 7 Fix: Email notification via Postmark (post-commit; do not hold a DB tx across HTTP)
     if let Some(settings) = form.settings.as_object() {
         if settings
             .get("send_email")

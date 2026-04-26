@@ -65,6 +65,31 @@ pub struct StripeRefund {
     pub reason: Option<String>,
 }
 
+/// Stripe Price object (subset of fields we use)
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct StripePrice {
+    pub id: String,
+    pub product: Option<String>,
+    pub unit_amount: Option<i64>,
+    pub currency: String,
+    pub active: bool,
+    pub recurring: Option<StripePriceRecurring>,
+}
+
+/// Recurring portion of a Stripe Price
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct StripePriceRecurring {
+    pub interval: String,
+    pub interval_count: i64,
+}
+
+/// Single subscription item (we read `id` and `price.id` for migrations)
+#[derive(Debug, Deserialize, Clone)]
+pub struct StripeSubscriptionItem {
+    pub id: String,
+    pub price: StripePrice,
+}
+
 /// Stripe payment method response - ICT 7 Fix: Payment Methods Management
 #[derive(Debug, Serialize, Deserialize)]
 pub struct StripePaymentMethod {
@@ -804,6 +829,230 @@ impl StripeService {
             .await?;
 
         Ok(response)
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // PRICE & PRODUCT MANAGEMENT (Admin Price Changes)
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    /// Create a new Stripe Product. Returns the product ID.
+    pub async fn create_product(&self, name: &str) -> Result<String> {
+        let response = self
+            .client
+            .post(format!("{}/products", STRIPE_API_BASE))
+            .basic_auth(&self.secret_key, None::<&str>)
+            .header("Stripe-Version", STRIPE_API_VERSION)
+            .form(&[("name", name)])
+            .send()
+            .await?;
+
+        if !response.status().is_success() {
+            let body: serde_json::Value = response.json().await?;
+            return Err(anyhow!(
+                "Stripe error creating product: {}",
+                body["error"]["message"].as_str().unwrap_or("unknown")
+            ));
+        }
+
+        let body: serde_json::Value = response.json().await?;
+        body["id"]
+            .as_str()
+            .map(|s| s.to_string())
+            .ok_or_else(|| anyhow!("Stripe product response missing id"))
+    }
+
+    /// Create a new Stripe Price.
+    ///
+    /// `billing_interval` accepts:
+    ///   - "month" | "year" → recurring price
+    ///   - "one_time"        → non-recurring price
+    pub async fn create_price(
+        &self,
+        product_id: &str,
+        unit_amount_cents: i64,
+        currency: &str,
+        billing_interval: &str,
+    ) -> Result<StripePrice> {
+        let mut params: Vec<(String, String)> = vec![
+            ("product".to_string(), product_id.to_string()),
+            ("unit_amount".to_string(), unit_amount_cents.to_string()),
+            ("currency".to_string(), currency.to_lowercase()),
+        ];
+
+        match billing_interval {
+            "month" | "year" => {
+                params.push((
+                    "recurring[interval]".to_string(),
+                    billing_interval.to_string(),
+                ));
+                params.push(("recurring[interval_count]".to_string(), "1".to_string()));
+            }
+            "one_time" => {} // No recurring stanza
+            other => {
+                return Err(anyhow!(
+                    "Unsupported billing_interval '{}': expected month|year|one_time",
+                    other
+                ));
+            }
+        }
+
+        let response = self
+            .client
+            .post(format!("{}/prices", STRIPE_API_BASE))
+            .basic_auth(&self.secret_key, None::<&str>)
+            .header("Stripe-Version", STRIPE_API_VERSION)
+            .form(
+                &params
+                    .iter()
+                    .map(|(k, v)| (k.as_str(), v.as_str()))
+                    .collect::<Vec<_>>(),
+            )
+            .send()
+            .await?;
+
+        if !response.status().is_success() {
+            let body: serde_json::Value = response.json().await?;
+            return Err(anyhow!(
+                "Stripe error creating price: {}",
+                body["error"]["message"].as_str().unwrap_or("unknown")
+            ));
+        }
+
+        Ok(response.json().await?)
+    }
+
+    /// Retrieve a Stripe Price by ID.
+    pub async fn get_price(&self, price_id: &str) -> Result<StripePrice> {
+        let response = self
+            .client
+            .get(format!("{}/prices/{}", STRIPE_API_BASE, price_id))
+            .basic_auth(&self.secret_key, None::<&str>)
+            .header("Stripe-Version", STRIPE_API_VERSION)
+            .send()
+            .await?;
+
+        if !response.status().is_success() {
+            let body: serde_json::Value = response.json().await?;
+            return Err(anyhow!(
+                "Stripe error retrieving price: {}",
+                body["error"]["message"].as_str().unwrap_or("unknown")
+            ));
+        }
+
+        Ok(response.json().await?)
+    }
+
+    /// Mark a Stripe Price as inactive. Existing subscriptions on this price
+    /// are unaffected.
+    pub async fn deactivate_price(&self, price_id: &str) -> Result<()> {
+        self.client
+            .post(format!("{}/prices/{}", STRIPE_API_BASE, price_id))
+            .basic_auth(&self.secret_key, None::<&str>)
+            .header("Stripe-Version", STRIPE_API_VERSION)
+            .form(&[("active", "false")])
+            .send()
+            .await?
+            .error_for_status()?;
+        Ok(())
+    }
+
+    /// List subscription items (so we know which item-id to PATCH when
+    /// migrating to a new price).
+    pub async fn list_subscription_items(
+        &self,
+        subscription_id: &str,
+    ) -> Result<Vec<StripeSubscriptionItem>> {
+        #[derive(Deserialize)]
+        struct ItemsResp {
+            data: Vec<StripeSubscriptionItem>,
+        }
+
+        let response = self
+            .client
+            .get(format!("{}/subscription_items", STRIPE_API_BASE))
+            .basic_auth(&self.secret_key, None::<&str>)
+            .header("Stripe-Version", STRIPE_API_VERSION)
+            .query(&[("subscription", subscription_id), ("limit", "100")])
+            .send()
+            .await?;
+
+        if !response.status().is_success() {
+            let body: serde_json::Value = response.json().await?;
+            return Err(anyhow!(
+                "Stripe error listing subscription items: {}",
+                body["error"]["message"].as_str().unwrap_or("unknown")
+            ));
+        }
+
+        let parsed: ItemsResp = response.json().await?;
+        Ok(parsed.data)
+    }
+
+    /// Migrate an existing subscription onto a new Stripe Price.
+    ///
+    /// `proration_behavior`:
+    ///   - "none"               → take effect at next billing cycle (no proration)
+    ///   - "create_prorations"  → take effect immediately, prorated
+    ///
+    /// For the no-proration path we additionally pin
+    /// `billing_cycle_anchor=unchanged` so the renewal date does not jump.
+    pub async fn migrate_subscription_to_price(
+        &self,
+        subscription_id: &str,
+        new_price_id: &str,
+        proration_behavior: &str,
+    ) -> Result<()> {
+        let items = self.list_subscription_items(subscription_id).await?;
+        let item = items.first().ok_or_else(|| {
+            anyhow!(
+                "Subscription {} has no items; cannot migrate price",
+                subscription_id
+            )
+        })?;
+
+        let mut params: Vec<(String, String)> = vec![
+            ("items[0][id]".to_string(), item.id.clone()),
+            ("items[0][price]".to_string(), new_price_id.to_string()),
+            (
+                "proration_behavior".to_string(),
+                proration_behavior.to_string(),
+            ),
+        ];
+
+        if proration_behavior == "none" {
+            params.push((
+                "billing_cycle_anchor".to_string(),
+                "unchanged".to_string(),
+            ));
+        }
+
+        let response = self
+            .client
+            .post(format!(
+                "{}/subscriptions/{}",
+                STRIPE_API_BASE, subscription_id
+            ))
+            .basic_auth(&self.secret_key, None::<&str>)
+            .header("Stripe-Version", STRIPE_API_VERSION)
+            .form(
+                &params
+                    .iter()
+                    .map(|(k, v)| (k.as_str(), v.as_str()))
+                    .collect::<Vec<_>>(),
+            )
+            .send()
+            .await?;
+
+        if !response.status().is_success() {
+            let body: serde_json::Value = response.json().await?;
+            return Err(anyhow!(
+                "Stripe error migrating subscription {}: {}",
+                subscription_id,
+                body["error"]["message"].as_str().unwrap_or("unknown")
+            ));
+        }
+
+        Ok(())
     }
 
     /// Get customer's default payment method

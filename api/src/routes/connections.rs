@@ -1137,26 +1137,52 @@ async fn delete_connection(
         ));
     };
 
+    // ICT 7 SAFETY: wrap multi-table mutation in a transaction so a crash mid-flow
+    // can't leave webhook rows orphaned with their parent connection already gone
+    // (or vice-versa).
+    let mut tx = state.db.pool().begin().await.map_err(|e| {
+        tracing::error!("tx start (delete_connection): {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
+    })?;
+
     // Delete associated webhooks first
     sqlx::query("DELETE FROM integration_webhooks WHERE connection_id = $1")
         .bind(connection.id)
-        .execute(state.db.pool())
+        .execute(&mut *tx)
         .await
-        .ok();
+        .map_err(|e| {
+            tracing::error!("Failed to delete integration_webhooks: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": "Failed to delete webhooks"})),
+            )
+        })?;
 
     // Delete connection
     sqlx::query("DELETE FROM service_connections WHERE service_key = $1")
         .bind(&key)
-        .execute(state.db.pool())
+        .execute(&mut *tx)
         .await
         .map_err(|e| {
+            tracing::error!("Failed to delete service_connection: {}", e);
             (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 Json(json!({"error": e.to_string()})),
             )
         })?;
 
-    // Audit log
+    tx.commit().await.map_err(|e| {
+        tracing::error!("tx commit (delete_connection): {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
+    })?;
+
+    // Audit log (best-effort, fire-and-forget after the tx is durably committed)
     log_connection_audit(
         state.db.pool(),
         admin.0.id,

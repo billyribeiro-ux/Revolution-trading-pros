@@ -272,10 +272,9 @@ impl MfaService {
         let mfa_secret =
             mfa_secret.ok_or_else(|| ApiError::new(StatusCode::BAD_REQUEST, "MFA not enabled"))?;
 
-        // Try TOTP first
+        // Try TOTP first — single-write path; just record the attempt against the pool.
         if verify_totp(&mfa_secret.totp_secret, code)? {
-            self.record_mfa_attempt(user_id, ip_address, true, "totp")
-                .await?;
+            Self::record_mfa_attempt(&self.pool, user_id, ip_address, true, "totp").await?;
             return Ok(MfaVerifyResult {
                 success: true,
                 method: "totp".to_string(),
@@ -307,6 +306,15 @@ impl MfaService {
                     ))
                 })?;
 
+                // ICT 7 SAFETY: consuming a backup code mutates user_mfa_secrets AND
+                // mfa_attempts; both must commit atomically so we never debit a code
+                // without recording the attempt (allowing infinite re-use) or record an
+                // attempt that didn't actually consume the code (locking the user out).
+                let mut tx = self.pool.begin().await.map_err(|e| {
+                    tracing::error!("tx start (verify_mfa backup): {}", e);
+                    ApiError::database_error(&e.to_string())
+                })?;
+
                 sqlx::query(
                     r#"
                     UPDATE user_mfa_secrets
@@ -316,12 +324,16 @@ impl MfaService {
                 )
                 .bind(updated_codes_json)
                 .bind(user_id)
-                .execute(&self.pool)
+                .execute(&mut *tx)
                 .await
                 .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
-                self.record_mfa_attempt(user_id, ip_address, true, "backup")
-                    .await?;
+                Self::record_mfa_attempt(&mut *tx, user_id, ip_address, true, "backup").await?;
+
+                tx.commit().await.map_err(|e| {
+                    tracing::error!("tx commit (verify_mfa backup): {}", e);
+                    ApiError::database_error(&e.to_string())
+                })?;
 
                 return Ok(MfaVerifyResult {
                     success: true,
@@ -331,9 +343,8 @@ impl MfaService {
             }
         }
 
-        // Failed verification
-        self.record_mfa_attempt(user_id, ip_address, false, "totp")
-            .await?;
+        // Failed verification — single-write path against the pool.
+        Self::record_mfa_attempt(&self.pool, user_id, ip_address, false, "totp").await?;
 
         Ok(MfaVerifyResult {
             success: false,
@@ -344,17 +355,32 @@ impl MfaService {
 
     /// Disable MFA for a user
     pub async fn disable_mfa(&self, user_id: i64) -> Result<(), ApiError> {
+        // ICT 7 SAFETY: clearing user_mfa_secrets and unsetting users.mfa_enabled
+        // must commit atomically. A crash between them would leave a user flagged
+        // as MFA-enabled with no secret to verify against — i.e. permanently
+        // locked out — or its dual: MFA disabled on `users` while a stale secret
+        // still grants 2FA bypass.
+        let mut tx = self.pool.begin().await.map_err(|e| {
+            tracing::error!("tx start (disable_mfa): {}", e);
+            ApiError::database_error(&e.to_string())
+        })?;
+
         sqlx::query("DELETE FROM user_mfa_secrets WHERE user_id = $1")
             .bind(user_id)
-            .execute(&self.pool)
+            .execute(&mut *tx)
             .await
             .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
         sqlx::query("UPDATE users SET mfa_enabled = false, updated_at = NOW() WHERE id = $1")
             .bind(user_id)
-            .execute(&self.pool)
+            .execute(&mut *tx)
             .await
             .map_err(|e| ApiError::database_error(&e.to_string()))?;
+
+        tx.commit().await.map_err(|e| {
+            tracing::error!("tx commit (disable_mfa): {}", e);
+            ApiError::database_error(&e.to_string())
+        })?;
 
         Ok(())
     }
@@ -392,14 +418,23 @@ impl MfaService {
         Ok(result.map(|(enabled,)| enabled).unwrap_or(false))
     }
 
-    /// Record MFA attempt for rate limiting
-    async fn record_mfa_attempt(
-        &self,
+    /// Record MFA attempt for rate limiting.
+    ///
+    /// ICT 7 REFACTOR: takes a generic `sqlx::Executor` instead of `&PgPool` so
+    /// callers that also mutate `user_mfa_secrets` (the backup-code flow) can
+    /// run this INSERT inside their transaction. `&PgPool` and `&mut *tx` (i.e.
+    /// `&mut PgConnection`) both satisfy the bound, so call sites stay
+    /// ergonomic.
+    async fn record_mfa_attempt<'c, E>(
+        executor: E,
         user_id: i64,
         ip_address: Option<&str>,
         success: bool,
         attempt_type: &str,
-    ) -> Result<(), ApiError> {
+    ) -> Result<(), ApiError>
+    where
+        E: sqlx::Executor<'c, Database = sqlx::Postgres>,
+    {
         sqlx::query(
             r#"
             INSERT INTO mfa_attempts (user_id, ip_address, success, attempt_type)
@@ -410,7 +445,7 @@ impl MfaService {
         .bind(ip_address.unwrap_or("0.0.0.0"))
         .bind(success)
         .bind(attempt_type)
-        .execute(&self.pool)
+        .execute(executor)
         .await
         .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
