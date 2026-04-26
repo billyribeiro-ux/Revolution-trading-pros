@@ -57,7 +57,9 @@ export interface CacheConfig {
 	readonly persist?: boolean;
 }
 
-/** Internal cache entry structure */
+/** Internal cache entry structure — fully immutable. Revalidation state is
+   tracked in a separate `RequestCache#revalidating: Set<string>` because the
+   entry itself is `Object.freeze`d and mutating it throws in strict mode. */
 interface CacheEntry<T> {
 	/** Cached data (frozen) */
 	readonly data: T;
@@ -67,8 +69,6 @@ interface CacheEntry<T> {
 	readonly ttl: number;
 	/** Tags for grouped invalidation */
 	readonly tags: readonly string[];
-	/** Whether entry is currently being revalidated */
-	isRevalidating: boolean;
 	/** ETag for conditional requests */
 	readonly etag?: string;
 }
@@ -138,6 +138,9 @@ export interface CachedResponse<T> {
  */
 export class RequestCache implements Disposable {
 	private readonly cache: Map<string, CacheEntry<unknown>> = new Map();
+	/** Keys currently being revalidated in the background (SWR pattern).
+	   Held outside the frozen CacheEntry so we can mutate it freely. */
+	private readonly revalidating: Set<string> = new Set();
 	private readonly maxSize: number;
 	private readonly defaultTtl: number;
 	private readonly accessOrder: string[] = [];
@@ -177,6 +180,7 @@ export class RequestCache implements Disposable {
 			this.cleanupInterval = null;
 		}
 		this.cache.clear();
+		this.revalidating.clear();
 		this.accessOrder.length = 0;
 		this.listeners.clear();
 	}
@@ -246,8 +250,7 @@ export class RequestCache implements Disposable {
 			data: Object.freeze(data) as T,
 			timestamp: Date.now(),
 			ttl,
-			tags: Object.freeze([...tags]),
-			isRevalidating: false
+			tags: Object.freeze([...tags])
 		});
 
 		this.cache.set(key, entry as CacheEntry<unknown>);
@@ -496,10 +499,12 @@ export class RequestCache implements Disposable {
 		config?: Partial<CacheConfig>
 	): void {
 		const entry = this.cache.get(key);
-		if (!entry || entry.isRevalidating) return;
+		if (!entry || this.revalidating.has(key)) return;
 
-		// Mark as revalidating to prevent duplicate fetches
-		(entry as { isRevalidating: boolean }).isRevalidating = true;
+		// Mark as revalidating to prevent duplicate fetches. Tracked in a
+		// separate Set instead of mutating the (frozen) entry — see comment on
+		// CacheEntry for the strict-mode crash this prevents.
+		this.revalidating.add(key);
 
 		fetcher()
 			.then((data) => {
@@ -509,10 +514,7 @@ export class RequestCache implements Disposable {
 				// Silent failure for background revalidation
 			})
 			.finally(() => {
-				const currentEntry = this.cache.get(key);
-				if (currentEntry) {
-					(currentEntry as { isRevalidating: boolean }).isRevalidating = false;
-				}
+				this.revalidating.delete(key);
 			});
 	}
 
@@ -647,13 +649,12 @@ export class RequestCache implements Disposable {
 
 					const key = storageKey.slice(STORAGE_PREFIX.length);
 
-					const entry: CacheEntry<unknown> = {
+					const entry: CacheEntry<unknown> = Object.freeze({
 						data: Object.freeze(parsed.data),
 						timestamp: parsed.timestamp,
 						ttl: parsed.ttl,
-						tags: Object.freeze(parsed.tags ?? []),
-						isRevalidating: false
-					};
+						tags: Object.freeze(parsed.tags ?? [])
+					});
 
 					this.cache.set(key, entry);
 					this.accessOrder.push(key);
