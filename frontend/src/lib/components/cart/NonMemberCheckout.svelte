@@ -802,7 +802,7 @@
 		align-items: center;
 		gap: 8px;
 		cursor: pointer;
-		font-weight: 500 !important;
+		font-weight: 500;
 	}
 
 	/* Checkbox - 2026 Mobile-First with touch target */
@@ -1012,12 +1012,12 @@
 		font-size: 12px;
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
-		color: var(--st-text-muted) !important;
+		color: var(--st-text-muted);
 		padding-top: 16px;
 	}
 
 	.rtp-recurring-total td {
-		text-align: left !important;
+		text-align: left;
 		font-size: 13px;
 	}
 

@@ -271,7 +271,7 @@
 .popup-container,
 table,
 .table-wrapper {
-	border-radius: 12px !important;
+	border-radius: 12px;
 	overflow: hidden;
 }
 
@@ -289,7 +289,7 @@ textarea,
 select,
 .input-field,
 .select-field {
-	border-radius: 8px !important;
+	border-radius: 8px;
 }
 
 /* Buttons already have border-radius in their definitions above */

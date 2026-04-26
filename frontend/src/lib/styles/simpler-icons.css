@@ -36,7 +36,7 @@
 /* Base icon class */
 [class^='st-icon-'],
 [class*=' st-icon-'] {
-	font-family: 'simplertrading-icons' !important;
+	font-family: 'simplertrading-icons';
 	speak: never;
 	font-style: normal;
 	font-weight: normal;

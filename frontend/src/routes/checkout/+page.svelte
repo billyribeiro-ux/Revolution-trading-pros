@@ -1411,11 +1411,11 @@
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
-		color: var(--checkout-text-muted) !important;
+		color: var(--checkout-text-muted);
 	}
 
 	.recurring-total td {
-		text-align: left !important;
+		text-align: left;
 		font-size: 13px;
 	}
 

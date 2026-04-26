@@ -640,7 +640,7 @@
 		padding-top: 30px;
 		flex: 0 0 80px;
 		width: 80px;
-		overflow-x: visible !important; /* CRITICAL: Allow tooltip to extend beyond 80px boundary */
+		overflow-x: visible; /* Allow tooltip to extend beyond 80px boundary */
 		overflow-y: auto;
 	}
 

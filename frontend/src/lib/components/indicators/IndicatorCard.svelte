@@ -305,8 +305,8 @@
 	/* lg: Large devices (≥ 1024px) - 3 columns */
 	@media (min-width: 1024px) {
 		:global(.col-lg-4) {
-			width: 33.333333% !important;
-			max-width: 33.333333% !important;
+			width: 33.333333%;
+			max-width: 33.333333%;
 		}
 
 		.card:hover {

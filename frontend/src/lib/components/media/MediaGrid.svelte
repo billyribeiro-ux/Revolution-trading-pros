@@ -348,6 +348,10 @@
 		padding: 1rem 0;
 	}
 
+	/* `!important` is required here: the markup sets `--columns` via an inline
+	   `style=` attribute (line 128), which has higher specificity than any
+	   stylesheet rule. Responsive overrides need `!important` to win against
+	   the inline style. Documented in IMPORTANT_USAGE.md. */
 	@media (max-width: 1024px) {
 		.media-grid {
 			--columns: 3 !important;

@@ -295,7 +295,10 @@
 		min-height: 100px;
 	}
 
-	/* Mobile stacking */
+	/* Mobile stacking — `!important` is required: line 160 sets
+	   `style:grid-template-columns` and `style:gap` via inline attributes
+	   (specificity 1,0,0,0). Documented in IMPORTANT_USAGE.md as a legitimate
+	   inline-style override. */
 	@media (max-width: 767px) {
 		.columns-container {
 			grid-template-columns: 1fr !important;

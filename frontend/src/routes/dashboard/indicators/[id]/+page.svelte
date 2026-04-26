@@ -1032,7 +1032,7 @@ https://svelte.dev/e/element_unclosed -->
 		.downloads-table thead th {
 			display: block;
 			width: 100%;
-			text-align: left !important;
+			text-align: left;
 		}
 
 		.downloads-table thead {
@@ -1052,7 +1052,7 @@ https://svelte.dev/e/element_unclosed -->
 		}
 
 		.downloads-table td.text-right {
-			text-align: left !important;
+			text-align: left;
 			margin-top: 10px;
 		}
 

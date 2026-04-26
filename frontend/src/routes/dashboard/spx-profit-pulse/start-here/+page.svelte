@@ -315,7 +315,7 @@
 	.start-card__link {
 		display: inline-block;
 		background: #143e59;
-		color: #ffffff !important;
+		color: #ffffff;
 		padding: 10px 16px;
 		border-radius: 4px;
 		text-decoration: none;
@@ -331,7 +331,7 @@
 	.start-card__link:hover {
 		background: #0c2638;
 		border-color: #0c2638;
-		color: #ffffff !important;
+		color: #ffffff;
 	}
 
 	/* Welcome Heading */

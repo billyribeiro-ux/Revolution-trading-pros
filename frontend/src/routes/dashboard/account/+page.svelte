@@ -159,7 +159,7 @@
 	}
 
 	.account-text--no-margin {
-		margin-bottom: 0 !important;
+		margin-bottom: 0;
 	}
 
 	/* WooCommerce Content */

@@ -509,7 +509,9 @@
 	 * Source: DASHBOARD_DESIGN_SPECIFICATIONS.md
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* ICT 7: FULL WIDTH - NO GAPS EVER */
+	/* Dashboard header — full-width, no gaps. `!important` removed 2026-04-25
+	   per CSS_ISOLATION_PLAN; previously fighting global cascade now scoped
+	   to `.marketing-page-root` in app.css. */
 	.dashboard__header {
 		display: flex;
 		flex-wrap: wrap;
@@ -518,36 +520,36 @@
 		border-bottom: 1px solid #dbdbdb;
 		border-right: 1px solid #dbdbdb;
 		padding: 20px;
-		margin: 0 !important;
-		width: 100% !important;
-		max-width: none !important;
+		margin: 0;
+		width: 100%;
+		max-width: none;
 		box-sizing: border-box;
 	}
 
 	@media (min-width: 1024px) {
 		.dashboard__header {
 			padding: 30px;
-			width: 100% !important;
-			max-width: none !important;
-			margin: 0 !important;
+			width: 100%;
+			max-width: none;
+			margin: 0;
 		}
 	}
 
 	@media (min-width: 1440px) {
 		.dashboard__header {
 			padding: 30px 40px;
-			width: 100% !important;
-			max-width: none !important;
-			margin: 0 !important;
+			width: 100%;
+			max-width: none;
+			margin: 0;
 		}
 	}
 
 	@media (min-width: 1920px) {
 		.dashboard__header {
 			padding: 40px 60px;
-			width: 100% !important;
-			max-width: none !important;
-			margin: 0 !important;
+			width: 100%;
+			max-width: none;
+			margin: 0;
 		}
 	}
 

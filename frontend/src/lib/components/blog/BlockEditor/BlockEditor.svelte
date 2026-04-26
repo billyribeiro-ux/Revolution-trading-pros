@@ -2532,7 +2532,7 @@
 	}
 
 	.preview-mode .block-wrapper {
-		outline: none !important;
+		outline: none;
 	}
 
 	/* Animations */

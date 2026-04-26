@@ -235,6 +235,9 @@
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.admin-layout {
+		/* Sidebar width defaults to 240px (full mode); collapses at the
+		   compact-rail breakpoint and to 0 on mobile (drawer overlays). */
+		--admin-sidebar-width: 240px;
 		display: flex;
 		background: var(--admin-bg);
 		color: var(--admin-text-primary);
@@ -245,9 +248,24 @@
 
 	.admin-main {
 		flex: 1;
-		margin-left: var(--admin-sidebar-width, 240px);
+		margin-left: var(--admin-sidebar-width);
 		display: flex;
 		flex-direction: column;
+		transition: margin-left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	/* Compact rail breakpoint — sidebar shrinks to icon-only at 1024–1279px. */
+	@media (min-width: 1024px) and (max-width: 1279px) {
+		.admin-layout {
+			--admin-sidebar-width: 72px;
+		}
+	}
+
+	/* Mobile drawer — sidebar overlays content, no left offset. */
+	@media (max-width: 1023px) {
+		.admin-layout {
+			--admin-sidebar-width: 0px;
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -498,8 +516,8 @@
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	@media (max-width: calc(var(--breakpoint-md) - 1px)) {
-		.desktop-only {
-			display: none !important;
+		:where(.desktop-only) {
+			display: none;
 		}
 
 		/* Search collapses to icon-only on small screens — the placeholder text

@@ -1082,12 +1082,12 @@
 	}
 
 	.slide--hidden {
-		display: none !important;
+		display: none;
 		pointer-events: none;
 	}
 
 	.slide--active {
-		display: block !important;
+		display: block;
 		pointer-events: auto;
 	}
 

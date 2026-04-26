@@ -532,20 +532,20 @@
 		}
 	}
 
-	/* CRITICAL: Hide sidebar on SPX Profit Pulse pages */
+	/* Hide sidebar + force full-width main. Component `<style>` is unlayered,
+	   beats `@layer utilities`; `!important` removed 2026-04-25. */
 	:global(.dashboard__content-sidebar) {
-		display: none !important;
+		display: none;
 	}
 
-	/* Ensure main content takes full width without sidebar */
 	.dashboard__content {
-		display: block !important;
-		width: 100% !important;
+		display: block;
+		width: 100%;
 	}
 
 	.dashboard__content-main {
-		width: 100% !important;
-		max-width: 100% !important;
-		flex: none !important;
+		width: 100%;
+		max-width: 100%;
+		flex: none;
 	}
 </style>

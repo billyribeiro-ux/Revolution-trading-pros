@@ -1086,14 +1086,14 @@
 
 	/* Row highlight when notes open */
 	tr.has-notes-open td {
-		background: #f0f9ff !important;
+		background: #f0f9ff;
 	}
 
 	/* Expandable Notes Row */
 	.notes-row.expanded td {
 		text-align: left;
 		padding: 0;
-		background: transparent !important;
+		background: transparent;
 		border-bottom: 2px solid #143e59;
 	}
 

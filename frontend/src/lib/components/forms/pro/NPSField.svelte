@@ -239,7 +239,7 @@
 		}
 
 		.scale-label {
-			text-align: left !important;
+			text-align: left;
 		}
 
 		.score-btn {

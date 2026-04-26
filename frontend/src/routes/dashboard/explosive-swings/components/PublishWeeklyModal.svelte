@@ -1293,7 +1293,7 @@
 
 	/* Notes Row */
 	.notes-row {
-		background: #fffbeb !important;
+		background: #fffbeb;
 	}
 
 	.trade-notes-panel {

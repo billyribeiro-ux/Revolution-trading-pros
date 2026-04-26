@@ -1732,10 +1732,10 @@
 	.tag-input {
 		flex: 1;
 		min-width: 100px;
-		background: none !important;
-		border: none !important;
-		padding: 0.25rem !important;
-		box-shadow: none !important;
+		background: none;
+		border: none;
+		padding: 0.25rem;
+		box-shadow: none;
 	}
 
 	/* Platform Toggle List */

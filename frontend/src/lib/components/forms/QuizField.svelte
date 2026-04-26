@@ -373,13 +373,13 @@
 	}
 
 	.quiz-option--correct {
-		border-color: #10b981 !important;
-		background: #d1fae5 !important;
+		border-color: #10b981;
+		background: #d1fae5;
 	}
 
 	.quiz-option--incorrect {
-		border-color: #ef4444 !important;
-		background: #fee2e2 !important;
+		border-color: #ef4444;
+		background: #fee2e2;
 	}
 
 	.quiz-option--show-correct:not(.quiz-option--selected) {

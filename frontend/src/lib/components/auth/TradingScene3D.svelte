@@ -48,6 +48,10 @@
 		height: 100%;
 	}
 
+	/* Three.js's WebGLRenderer.setSize() writes width/height to the canvas's
+	   inline `style` attribute, which has higher specificity than any rule.
+	   `!important` is the only way to override it. Documented in
+	   IMPORTANT_USAGE.md (legitimate inline-style override). */
 	.scene-container :global(canvas) {
 		width: 100% !important;
 		height: 100% !important;

@@ -974,7 +974,7 @@
 	/* Compact inputs for targets row */
 	.form-input-sm {
 		padding: 8px 10px;
-		padding-left: 22px !important;
+		padding-left: 22px;
 		border: 2px solid var(--color-border-default);
 		border-radius: 8px;
 		font-size: 13px;
@@ -1034,7 +1034,7 @@
 	}
 
 	.price-input {
-		padding-left: 28px !important;
+		padding-left: 28px;
 	}
 
 	.stop-wrapper .price-prefix {

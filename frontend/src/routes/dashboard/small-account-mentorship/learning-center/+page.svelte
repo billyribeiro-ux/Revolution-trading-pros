@@ -702,7 +702,7 @@
 	.error-detail {
 		font-size: 12px;
 		color: #6b7280;
-		margin-top: 8px !important;
+		margin-top: 8px;
 	}
 
 	.empty-state {

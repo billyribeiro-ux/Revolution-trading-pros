@@ -1560,7 +1560,7 @@
 
 	.btn-danger,
 	.btn-primary.btn-danger {
-		background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+		background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
 	}
 
 	.btn-danger:hover,
@@ -2162,7 +2162,7 @@
 	}
 
 	.text-muted {
-		color: #64748b !important;
+		color: #64748b;
 		font-size: 0.875rem;
 	}
 

@@ -176,9 +176,9 @@
 		padding-top: max(16px, env(safe-area-inset-top, 16px));
 		padding-left: max(16px, env(safe-area-inset-left, 16px));
 		padding-right: max(16px, env(safe-area-inset-right, 16px));
-		margin: 0 !important;
-		width: 100% !important;
-		max-width: none !important;
+		margin: 0;
+		width: 100%;
+		max-width: none;
 		box-sizing: border-box;
 	}
 

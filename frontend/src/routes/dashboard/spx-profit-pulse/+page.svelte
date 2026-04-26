@@ -346,7 +346,7 @@
 
 	/* Card Buttons - Exact WordPress Match */
 	.featured_cards a {
-		color: #fff !important;
+		color: #fff;
 		display: inline-block;
 		font-family: 'Open Sans Condensed', sans-serif;
 		font-weight: 700;
@@ -421,8 +421,8 @@
 		}
 	}
 
-	.u--background-color-white {
-		background-color: #fff !important;
+	:where(.u--background-color-white) {
+		background-color: #fff;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════

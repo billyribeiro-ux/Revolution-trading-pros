@@ -739,40 +739,36 @@
 		}
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * EXTRA SMALL DEVICES (< 360px) - Base mobile styles
-	 * ═══════════════════════════════════════════════════════════════════════════ */
+	/* Responsive overrides — component `<style>` is unlayered, beats Tailwind
+	   `@layer utilities` on layer-order; `!important` removed 2026-04-25. */
 	@media (max-width: 359px) {
 		:global(.container) {
-			padding-left: 0.75rem !important;
-			padding-right: 0.75rem !important;
+			padding-left: 0.75rem;
+			padding-right: 0.75rem;
 		}
 
 		:global(.hero-title-line) {
-			font-size: 11vw !important;
+			font-size: 11vw;
 		}
 
 		:global(.spotlight-card) {
-			border-radius: 1rem !important;
+			border-radius: 1rem;
 		}
 
 		:global(.spotlight-card .p-8) {
-			padding: 1rem !important;
+			padding: 1rem;
 		}
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * SMALL MOBILE (360px - 639px)
-	 * ═══════════════════════════════════════════════════════════════════════════ */
 	@media (min-width: 360px) and (max-width: 639px) {
 		:global(.container) {
-			padding-left: 1rem !important;
-			padding-right: 1rem !important;
+			padding-left: 1rem;
+			padding-right: 1rem;
 		}
 
 		:global(.hero-stats) {
-			flex-direction: column !important;
-			gap: 1rem !important;
+			flex-direction: column;
+			gap: 1rem;
 		}
 
 		:global(.hero-stats a) {
@@ -781,31 +777,25 @@
 		}
 
 		:global(.spotlight-card) {
-			border-radius: 1.25rem !important;
+			border-radius: 1.25rem;
 		}
 
 		:global(.ticker-bar) {
-			font-size: 0.7rem !important;
+			font-size: 0.7rem;
 		}
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * TABLET (640px - 767px)
-	 * ═══════════════════════════════════════════════════════════════════════════ */
 	@media (min-width: 640px) and (max-width: 767px) {
 		:global(.hero-stats) {
-			flex-direction: row !important;
+			flex-direction: row;
 			flex-wrap: wrap;
 			justify-content: center;
 		}
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * MEDIUM DEVICES (768px - 1023px)
-	 * ═══════════════════════════════════════════════════════════════════════════ */
 	@media (min-width: 768px) and (max-width: 1023px) {
 		:global(.spotlight-card .p-8) {
-			padding: 1.5rem !important;
+			padding: 1.5rem;
 		}
 	}
 

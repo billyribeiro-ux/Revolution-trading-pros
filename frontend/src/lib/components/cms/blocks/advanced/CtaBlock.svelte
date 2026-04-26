@@ -529,8 +529,8 @@
 	}
 
 	.color-input {
-		width: 90px !important;
-		flex: 0 0 auto !important;
+		width: 90px;
+		flex: 0 0 auto;
 		font-family: monospace;
 	}
 

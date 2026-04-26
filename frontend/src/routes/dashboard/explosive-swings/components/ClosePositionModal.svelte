@@ -584,7 +584,7 @@
 	}
 
 	.price-input {
-		padding-left: 28px !important;
+		padding-left: 28px;
 	}
 
 	.form-textarea {

@@ -379,8 +379,8 @@
 	/* Force full width on small screens regardless of field width setting */
 	@media (max-width: 639px) {
 		.field-wrapper {
-			width: 100% !important;
-			flex-basis: 100% !important;
+			width: 100%;
+			flex-basis: 100%;
 		}
 	}
 

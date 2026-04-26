@@ -926,13 +926,13 @@
 	/* Responsive */
 	@media (max-width: 640px) {
 		.popup-panel {
-			max-width: 100% !important;
-			border-radius: 16px 16px 0 0 !important;
+			max-width: 100%;
+			border-radius: 16px 16px 0 0;
 			max-height: 85vh;
 		}
 
 		.popup-backdrop {
-			align-items: flex-end !important;
+			align-items: flex-end;
 			padding: 0;
 		}
 

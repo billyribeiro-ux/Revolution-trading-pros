@@ -253,7 +253,7 @@
 		align-items: center;
 		text-align: center;
 		padding: 30px 40px;
-		background-color: #ffffff !important;
+		background-color: #ffffff;
 		max-width: 1180px;
 		min-height: 148px;
 		margin: 0 auto;

@@ -590,6 +590,10 @@
 		border-radius: 0;
 	}
 
+	/* Fullscreen overlay — `!important` is required: line 451 sets the chart
+	   container's height via inline `style="height: ..."` from a JS-computed
+	   value. Documented in IMPORTANT_USAGE.md as a legitimate inline-style
+	   override. */
 	.chart-block.fullscreen .chart-container {
 		height: 100vh !important;
 	}

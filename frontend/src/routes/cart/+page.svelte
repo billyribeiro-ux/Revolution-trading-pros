@@ -777,7 +777,7 @@
 		font-size: 12px;
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
-		color: var(--st-text-muted) !important;
+		color: var(--st-text-muted);
 		font-weight: 600;
 	}
 

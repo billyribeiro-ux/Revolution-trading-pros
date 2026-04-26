@@ -115,10 +115,15 @@
 }
 
 @layer base {
-	* {
+	/* Marketing-only defaults. Scoped to `.marketing-page-root` so admin /
+	   dashboard / cms layouts (which never apply the wrapper) are isolated
+	   from the global cascade. Inside `@layer base` so Tailwind utilities
+	   in `@layer utilities` still win on layer-order regardless of specificity.
+	   See docs/audits/CSS_ISOLATION_PLAN_2026-04-25.md (2026-04-25). */
+	.marketing-page-root * {
 		@apply border-border outline-ring/50;
 	}
-	body {
+	.marketing-page-root {
 		@apply bg-background text-foreground;
 	}
 }

@@ -436,21 +436,27 @@
 	// EFFECTS - Svelte 5 Pattern (Aligned with Admin Layout)
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Auth sync - runs once on mount (NO membership loading here)
-	$effect(() => {
+	// Auth sync — runs once on mount. Not an `$effect`: this code reads
+	// `data.user` / `$isAuthenticated` and then synchronously writes
+	// `authStore.setUser(...)`, which mutates the same auth store that
+	// `$isAuthenticated` is derived from. Inside an `$effect`, that's the
+	// classic write-while-reading-tracked-dep pattern that fires
+	// `effect_update_depth_exceeded` when the redirect from /login lands here
+	// and the auth store hydrates within the same microtask. `onMount` runs
+	// exactly once with no dependency tracking — same outcome, no loop.
+	// See https://svelte.dev/docs/svelte/$effect#When-not-to-use-$effect.
+	onMount(() => {
 		if (!browser) return;
 		if (isInitialized) return;
-
 		isInitialized = true;
 
-		// Async IIFE for auth sync only
 		(async () => {
-			// ICT 11+ FIX: On page refresh, server has validated auth but client store is empty
-			// We need to restore auth state before making API calls that require token
+			// On page refresh / post-login redirect, server has validated auth
+			// but client store may be empty. Restore client auth state before
+			// any membership API call.
 			if (data.user && !$isAuthenticated) {
 				console.debug('[Dashboard] Server auth valid, syncing to client store...');
 
-				// ALWAYS set user first from server data - this is the source of truth
 				const serverUser = {
 					id: parseInt(data.user.id) || 0,
 					name: data.user.name || data.user.email?.split('@')[0] || 'Member',
@@ -461,22 +467,18 @@
 				authStore.setUser(serverUser);
 				console.debug('[Dashboard] User synced to client store:', serverUser.email);
 
-				// Try to refresh the token to get a valid access token in memory
-				// The refresh token is persisted in localStorage
 				try {
 					const refreshed = await authStore.refreshToken();
-					if (refreshed) {
-						console.debug('[Dashboard] Token refreshed successfully');
-					} else {
-						console.debug('[Dashboard] Token refresh failed, will use cookies for API calls');
-					}
+					console.debug(
+						refreshed
+							? '[Dashboard] Token refreshed successfully'
+							: '[Dashboard] Token refresh failed, will use cookies for API calls'
+					);
 				} catch (error) {
 					console.warn('[Dashboard] Token refresh error (will use cookies):', error);
 				}
 			}
 
-			// ICT 11+ FIX: Load memberships for sidebar display
-			// This is separate from +page.svelte membership loading
 			await loadMembershipsData();
 		})();
 	});
@@ -643,7 +645,9 @@
 	 * Container query support for component-level responsiveness
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* ICT 7: Main container - FULL WIDTH NO GAPS */
+	/* Main container — full width, no gaps. `!important` removed 2026-04-25
+	   per CSS_ISOLATION_PLAN; defensive flags were fighting the global cascade
+	   bleed that's now scoped to `.marketing-page-root` in app.css. */
 	.dashboard__main {
 		flex: 1 1 auto;
 		min-inline-size: 0;
@@ -651,37 +655,29 @@
 		position: relative;
 		container-type: inline-size;
 		container-name: dashboard-main;
-		width: 100% !important;
-		max-width: none !important;
-		margin: 0 !important;
-		padding: 0 !important;
+		width: 100%;
+		max-width: none;
+		margin: 0;
+		padding: 0;
 	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Content Wrapper - ICT 7: FULL WIDTH NO GAPS
-	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__content {
 		display: flex;
 		flex-flow: row nowrap;
-		width: 100% !important;
-		max-width: none !important;
-		margin: 0 !important;
-		padding: 0 !important;
+		width: 100%;
+		max-width: none;
+		margin: 0;
+		padding: 0;
 	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Content Main - ICT 7: FULL WIDTH NO GAPS
-	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__content-main {
 		flex: 1 1 auto;
 		min-width: 0;
 		border-right: 1px solid #dbdbdb;
-		width: 100% !important;
-		max-width: none !important;
-		margin: 0 !important;
-		padding: 0 !important;
+		width: 100%;
+		max-width: none;
+		margin: 0;
+		padding: 0;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════

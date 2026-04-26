@@ -1261,13 +1261,13 @@
 	}
 
 	tr.has-notes-open td {
-		background: #f0f9ff !important;
+		background: #f0f9ff;
 	}
 
 	.notes-row.expanded td {
 		text-align: left;
 		padding: 0;
-		background: transparent !important;
+		background: transparent;
 		border-bottom: 2px solid var(--color-brand-primary);
 	}
 

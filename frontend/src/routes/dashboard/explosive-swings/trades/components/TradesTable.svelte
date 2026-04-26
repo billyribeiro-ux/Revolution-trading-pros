@@ -718,16 +718,16 @@
 	}
 
 	@media (min-width: 768px) {
-		.md\:hidden {
-			display: none !important;
+		:where(.md\:hidden) {
+			display: none;
 		}
 
-		.md\:block {
-			display: block !important;
+		:where(.md\:block) {
+			display: block;
 		}
 
-		.md\:table-cell {
-			display: table-cell !important;
+		:where(.md\:table-cell) {
+			display: table-cell;
 		}
 	}
 </style>

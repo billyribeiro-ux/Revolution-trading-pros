@@ -713,7 +713,7 @@
 
 	@media (max-width: 640px) {
 		.repeater-item__field {
-			width: 100% !important;
+			width: 100%;
 		}
 	}
 </style>

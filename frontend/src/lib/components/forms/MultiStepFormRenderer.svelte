@@ -821,7 +821,7 @@
 
 	@media (max-width: 768px) {
 		.field-wrapper {
-			width: 100% !important;
+			width: 100%;
 		}
 
 		.step-connector {
@@ -881,7 +881,7 @@
 	.btn:disabled {
 		opacity: 0.5;
 		cursor: not-allowed;
-		transform: none !important;
+		transform: none;
 	}
 
 	.spinner {

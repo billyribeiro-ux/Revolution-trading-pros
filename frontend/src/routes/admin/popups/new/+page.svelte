@@ -1437,7 +1437,7 @@ https://svelte.dev/e/bind_invalid_expression -->
 
 	/* Template Selector */
 	:global(.template-selector) {
-		margin-bottom: 1.5rem !important;
+		margin-bottom: 1.5rem;
 	}
 
 	.template-grid {
@@ -1592,79 +1592,77 @@ https://svelte.dev/e/bind_invalid_expression -->
 		cursor: not-allowed;
 	}
 
-	/* Override Card component styles for dark theme */
+	/* Dark-theme overrides for shared form/Card primitives. Compound selectors
+	   (`.page .text-…`) are specificity (0,2,0) — wins over single-class
+	   Tailwind utilities (0,1,0). Unlayered component rules also win against
+	   `@layer utilities` on layer-order, so `!important` is unnecessary. */
 	:global(.page .space-y-6 > div) {
-		background: rgba(30, 41, 59, 0.4) !important;
-		border: 1px solid rgba(148, 163, 184, 0.1) !important;
-		border-radius: 8px !important;
+		background: rgba(30, 41, 59, 0.4);
+		border: 1px solid rgba(148, 163, 184, 0.1);
+		border-radius: 8px;
 	}
 
-	/* Form labels and text */
 	:global(.page label),
 	:global(.page .text-sm.font-medium) {
-		color: #e2e8f0 !important;
+		color: #e2e8f0;
 	}
 
 	:global(.page .text-gray-700),
 	:global(.page .text-gray-600),
 	:global(.page .text-gray-500) {
-		color: #94a3b8 !important;
+		color: #94a3b8;
 	}
 
 	:global(.page .text-gray-900),
 	:global(.page .text-gray-800) {
-		color: #f1f5f9 !important;
+		color: #f1f5f9;
 	}
 
 	:global(.page h2) {
-		color: #f1f5f9 !important;
+		color: #f1f5f9;
 	}
 
 	:global(.page h3) {
-		color: #e2e8f0 !important;
+		color: #e2e8f0;
 	}
 
-	/* Form inputs */
 	:global(.page input[type='text']),
 	:global(.page input[type='number']),
 	:global(.page input[type='color']),
 	:global(.page textarea),
 	:global(.page select) {
-		background: rgba(15, 23, 42, 0.6) !important;
-		border: 1px solid rgba(148, 163, 184, 0.2) !important;
-		border-radius: 6px !important;
-		color: #f1f5f9 !important;
+		background: rgba(15, 23, 42, 0.6);
+		border: 1px solid rgba(148, 163, 184, 0.2);
+		border-radius: 6px;
+		color: #f1f5f9;
 	}
 
 	:global(.page input:focus),
 	:global(.page textarea:focus),
 	:global(.page select:focus) {
-		border-color: rgba(99, 102, 241, 0.5) !important;
-		outline: none !important;
+		border-color: rgba(99, 102, 241, 0.5);
+		outline: none;
 	}
 
-	/* Checkboxes */
 	:global(.page input[type='checkbox']) {
 		accent-color: var(--primary-500);
 	}
 
-	/* Info boxes */
 	:global(.page .bg-blue-50) {
-		background: rgba(99, 102, 241, 0.1) !important;
-		border-color: rgba(99, 102, 241, 0.3) !important;
+		background: rgba(99, 102, 241, 0.1);
+		border-color: rgba(99, 102, 241, 0.3);
 	}
 
 	:global(.page .text-blue-800) {
-		color: #a5b4fc !important;
+		color: #a5b4fc;
 	}
 
-	/* Error states */
 	:global(.page .text-red-600) {
-		color: #f87171 !important;
+		color: #f87171;
 	}
 
 	:global(.admin-popups-new .border-red-500) {
-		border-color: rgba(239, 68, 68, 0.5) !important;
+		border-color: rgba(239, 68, 68, 0.5);
 	}
 
 	@media (max-width: 768px) {

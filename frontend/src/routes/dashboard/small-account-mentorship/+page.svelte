@@ -330,8 +330,8 @@
 	}
 
 	/* Weekly Watchlist Section */
-	.u--background-color-white {
-		background-color: #fff !important;
+	:where(.u--background-color-white) {
+		background-color: #fff;
 	}
 
 	/* Sidebar styling handled by TradingRoomSidebar component */

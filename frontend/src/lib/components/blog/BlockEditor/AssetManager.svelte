@@ -2934,7 +2934,7 @@
 
 	.upload-hint {
 		font-size: 0.75rem;
-		margin-top: 1rem !important;
+		margin-top: 1rem;
 	}
 
 	/* Upload Queue */

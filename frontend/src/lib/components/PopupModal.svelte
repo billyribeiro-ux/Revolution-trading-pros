@@ -1583,9 +1583,9 @@
 	/* Mobile (default) */
 	@media (max-width: 639px) {
 		.popup-content {
-			padding: 1.5rem !important;
-			padding-top: calc(1.5rem + env(safe-area-inset-top, 0)) !important;
-			padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0)) !important;
+			padding: 1.5rem;
+			padding-top: calc(1.5rem + env(safe-area-inset-top, 0));
+			padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0));
 		}
 
 		.popup-buttons {
@@ -1647,7 +1647,7 @@
 		}
 
 		.popup-content {
-			padding: 1rem !important;
+			padding: 1rem;
 		}
 	}
 

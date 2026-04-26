@@ -539,84 +539,76 @@
 		}
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * EXTRA SMALL DEVICES (< 360px)
-	 * ═══════════════════════════════════════════════════════════════════════════ */
+	/* Responsive overrides for nested Tailwind utilities. Component `<style>`
+	   rules are unlayered (win over `@layer utilities` on layer-order); the
+	   compound `.course-card .p-6` selector also outspecs single-class
+	   utilities. `!important` removed 2026-04-25 per CSS_ISOLATION_PLAN. */
 	@media (max-width: 359px) {
 		section {
-			padding-top: 3rem !important;
-			padding-bottom: 3rem !important;
+			padding-top: 3rem;
+			padding-bottom: 3rem;
 		}
 
 		:global(.course-card) {
-			border-radius: 1rem !important;
+			border-radius: 1rem;
 		}
 
 		:global(.course-card .p-6),
 		:global(.course-card .p-8),
 		:global(.course-card .p-10) {
-			padding: 1rem !important;
+			padding: 1rem;
 		}
 
 		:global(.text-5xl),
 		:global(.text-7xl) {
-			font-size: 1.75rem !important;
+			font-size: 1.75rem;
 		}
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * SMALL MOBILE (360px - 639px)
-	 * ═══════════════════════════════════════════════════════════════════════════ */
 	@media (min-width: 360px) and (max-width: 639px) {
 		section {
-			padding-top: 4rem !important;
-			padding-bottom: 4rem !important;
+			padding-top: 4rem;
+			padding-bottom: 4rem;
 		}
 
 		:global(.course-card .p-6),
 		:global(.course-card .p-8) {
-			padding: 1.25rem !important;
+			padding: 1.25rem;
 		}
 
 		:global(.grid-cols-2) {
-			grid-template-columns: 1fr !important;
+			grid-template-columns: 1fr;
 		}
 
 		:global(.gap-6),
 		:global(.gap-8) {
-			gap: 1rem !important;
+			gap: 1rem;
 		}
 
 		:global(.text-5xl),
 		:global(.text-7xl) {
-			font-size: 2rem !important;
+			font-size: 2rem;
 		}
 
 		:global(.text-2xl) {
-			font-size: 1.25rem !important;
+			font-size: 1.25rem;
 		}
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * TABLET (640px - 767px)
-	 * ═══════════════════════════════════════════════════════════════════════════ */
 	@media (min-width: 640px) and (max-width: 767px) {
 		:global(.grid-cols-2) {
-			grid-template-columns: 1fr !important;
+			grid-template-columns: 1fr;
 		}
 
 		:global(.gap-6),
 		:global(.gap-8) {
-			gap: 1.25rem !important;
+			gap: 1.25rem;
 		}
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * MEDIUM DEVICES (768px - 1023px)
-	 * ═══════════════════════════════════════════════════════════════════════════ */
 	@media (min-width: 768px) and (max-width: 1023px) {
 		:global(.md\\:grid-cols-2) {
-			grid-template-columns: repeat(2, 1fr) !important;
+			grid-template-columns: repeat(2, 1fr);
 		}
 	}
 
@@ -642,17 +634,16 @@
 		}
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * LANDSCAPE MOBILE - Optimize for horizontal orientation
-	 * ═══════════════════════════════════════════════════════════════════════════ */
+	/* Landscape mobile — overrides for horizontal orientation. Component
+	   `<style>` is unlayered, beats `@layer utilities` on layer-order. */
 	@media (max-height: 500px) and (orientation: landscape) {
 		section {
-			padding-top: 2rem !important;
-			padding-bottom: 2rem !important;
+			padding-top: 2rem;
+			padding-bottom: 2rem;
 		}
 
 		:global(.mb-24) {
-			margin-bottom: 2rem !important;
+			margin-bottom: 2rem;
 		}
 	}
 

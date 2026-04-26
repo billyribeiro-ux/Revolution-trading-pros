@@ -167,11 +167,11 @@
 
 	<!-- Navigation -->
 	<nav class="sidebar-nav" aria-label="Admin primary navigation">
-		{#each menuSections as section}
+		{#each menuSections as section (section.title ?? '__top__')}
 			{#if section.title}
 				<div class="nav-section-title">{section.title}</div>
 			{/if}
-			{#each section.items as item}
+			{#each section.items as item (item.href)}
 				{@const Icon = item.icon}
 				{@const active = item.href === bestActiveHref}
 				<a
@@ -179,6 +179,7 @@
 					class="nav-item"
 					class:active
 					aria-current={active ? 'page' : undefined}
+					data-tooltip={item.label}
 					onclick={closeSidebar}
 				>
 					<Icon size={20} aria-hidden="true" />
@@ -474,9 +475,152 @@
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * RESPONSIVE BREAKPOINTS
+	 *
+	 * Three layout modes:
+	 *   • >= 1280px       full sidebar (240px, labels visible)
+	 *   • 1024–1279px     compact rail (72px, icons only — Linear/Vercel pattern)
+	 *   • <  1024px       off-canvas drawer (slides in via .open)
+	 *
+	 * The compact rail keeps the sidebar visible at midrange widths instead of
+	 * forcing a drawer pattern, so admins on 13–14" laptops still get persistent
+	 * navigation. `.admin-main` reads `--admin-sidebar-width` for its left
+	 * offset, so flipping the variable is enough to keep the layout in sync.
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	@media (max-width: 1024px) {
+	/* Compact rail — labels collapse to icons only. CSS-only tooltips appear
+	   on hover/focus to expose the missing label; group titles hide entirely.
+	   No JS / no portal — same pattern Linear, Vercel, and GitHub use for icon
+	   rails. The tooltip only renders inside this breakpoint, so the full
+	   sidebar (>=1280px) and the mobile drawer (<1024px) never show it. */
+	@media (min-width: 1024px) and (max-width: 1279px) {
+		.admin-sidebar {
+			width: 72px;
+		}
+
+		.sidebar-logo img {
+			height: 28px;
+		}
+
+		.sidebar-nav {
+			padding: 0.5rem 0.5rem;
+		}
+
+		.nav-section-title {
+			display: none;
+		}
+
+		.nav-item {
+			justify-content: center;
+			gap: 0;
+			padding: 0.6rem 0;
+			/* Allow the absolutely-positioned tooltip pseudo-element to escape
+			   the 72px rail. The .admin-sidebar itself has overflow-y: auto on
+			   .sidebar-nav, so the tooltip lives on .nav-item's stacking
+			   context but is positioned via `left: calc(100% + …)`. */
+			position: relative;
+		}
+
+		.nav-item span {
+			display: none;
+		}
+
+		/* CSS tooltip — shows the data-tooltip attribute on hover/focus.
+		   Positioned to the right of the rail, with a small arrow. Hidden by
+		   default; opacity transition for a subtle fade-in. */
+		.nav-item[data-tooltip]::after {
+			content: attr(data-tooltip);
+			position: absolute;
+			left: calc(100% + 0.75rem);
+			top: 50%;
+			transform: translateY(-50%);
+			padding: 0.4rem 0.625rem;
+			background: var(--admin-tooltip-bg, #0f1419);
+			color: var(--admin-tooltip-text, #f0f6fc);
+			border: 1px solid var(--admin-tooltip-border, rgba(230, 184, 0, 0.25));
+			border-radius: 0.375rem;
+			font-family: var(--font-body), 'Roboto', sans-serif;
+			font-size: 0.8125rem;
+			font-weight: 500;
+			letter-spacing: 0.01em;
+			white-space: nowrap;
+			pointer-events: none;
+			opacity: 0;
+			visibility: hidden;
+			transition:
+				opacity 0.15s ease-out,
+				visibility 0.15s ease-out;
+			z-index: 1000;
+			box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+		}
+
+		.nav-item[data-tooltip]:hover::after,
+		.nav-item[data-tooltip]:focus-visible::after {
+			opacity: 1;
+			visibility: visible;
+		}
+
+		.user-info {
+			justify-content: center;
+			padding: 0.5rem;
+		}
+
+		.user-details {
+			display: none;
+		}
+
+		.exit-btn {
+			padding: 0.625rem 0;
+			gap: 0;
+			position: relative;
+		}
+
+		.exit-btn span {
+			display: none;
+		}
+
+		/* Mirror the tooltip pattern for the sign-out button. */
+		.exit-btn::after {
+			content: 'Sign Out';
+			position: absolute;
+			left: calc(100% + 0.75rem);
+			top: 50%;
+			transform: translateY(-50%);
+			padding: 0.4rem 0.625rem;
+			background: var(--admin-tooltip-bg, #0f1419);
+			color: var(--admin-tooltip-text, #f0f6fc);
+			border: 1px solid var(--admin-tooltip-border, rgba(230, 184, 0, 0.25));
+			border-radius: 0.375rem;
+			font-family: var(--font-body), 'Roboto', sans-serif;
+			font-size: 0.8125rem;
+			font-weight: 500;
+			white-space: nowrap;
+			pointer-events: none;
+			opacity: 0;
+			visibility: hidden;
+			transition:
+				opacity 0.15s ease-out,
+				visibility 0.15s ease-out;
+			z-index: 1000;
+			box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+		}
+
+		.exit-btn:hover::after,
+		.exit-btn:focus-visible::after {
+			opacity: 1;
+			visibility: visible;
+		}
+	}
+
+	/* Honour reduced-motion: skip the fade so tooltips appear instantly. */
+	@media (prefers-reduced-motion: reduce) {
+		.nav-item[data-tooltip]::after,
+		.exit-btn::after {
+			transition: none;
+		}
+	}
+
+	/* Mobile / tablet — off-canvas drawer, requires explicit open toggle. */
+	@media (max-width: 1023px) {
 		.admin-sidebar {
 			transform: translateX(-100%);
 		}

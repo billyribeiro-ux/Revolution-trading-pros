@@ -2296,7 +2296,7 @@
 	}
 
 	.text-muted {
-		color: var(--text-tertiary) !important;
+		color: var(--text-tertiary);
 		font-size: 0.875rem;
 	}
 
@@ -3466,7 +3466,7 @@
 	}
 
 	tr.selected {
-		background: rgba(99, 102, 241, 0.1) !important;
+		background: rgba(99, 102, 241, 0.1);
 	}
 
 	tr.selected td {

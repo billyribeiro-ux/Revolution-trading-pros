@@ -200,8 +200,8 @@
 
 	/* Global styles for portaled tooltip */
 	:global(.tooltip-portal) {
-		position: fixed !important;
-		z-index: 99999 !important;
+		position: fixed;
+		z-index: 99999;
 		pointer-events: none;
 		animation: tooltipFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 	}

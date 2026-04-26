@@ -822,11 +822,11 @@
 	}
 
 	.input-error {
-		border-color: #dc2626 !important;
+		border-color: #dc2626;
 	}
 
 	.input-error:focus {
-		box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1) !important;
+		box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
 	}
 
 	textarea.form-input {

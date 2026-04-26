@@ -187,7 +187,7 @@
 		}
 
 		.widget-container {
-			grid-column: span 1 !important;
+			grid-column: span 1;
 		}
 	}
 

@@ -2793,8 +2793,8 @@
 		}
 
 		/* Table responsive - hide non-essential columns */
-		.hidden-mobile {
-			display: none !important;
+		:where(.hidden-mobile) {
+			display: none;
 		}
 
 		/* Show mobile status badge inline with title */
@@ -2880,8 +2880,8 @@
 
 	/* Tablet (< 1024px) - hide extra columns */
 	@media (max-width: 1024px) {
-		.hidden-tablet {
-			display: none !important;
+		:where(.hidden-tablet) {
+			display: none;
 		}
 	}
 

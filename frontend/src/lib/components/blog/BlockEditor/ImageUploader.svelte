@@ -1059,7 +1059,7 @@
 
 	.progress-fill.indeterminate {
 		animation: indeterminate 1.5s infinite;
-		width: 30% !important;
+		width: 30%;
 	}
 
 	.progress-text {

@@ -285,7 +285,7 @@
 	}
 
 	.input-error {
-		border-color: #dc2626 !important;
+		border-color: #dc2626;
 	}
 
 	select.address-input {

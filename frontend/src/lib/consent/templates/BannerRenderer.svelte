@@ -608,6 +608,9 @@
 			margin-top: 0.5rem;
 		}
 
+		/* Mobile max-width override — `!important` is required because the
+		   banner's `max-width` is also set via inline `style=` (built in
+		   the JS at lines 84/86/88). Documented in IMPORTANT_USAGE.md. */
 		.position-bottom-left,
 		.position-bottom-right {
 			left: 0.5rem;

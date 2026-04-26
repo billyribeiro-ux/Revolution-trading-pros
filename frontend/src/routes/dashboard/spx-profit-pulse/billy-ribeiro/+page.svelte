@@ -407,20 +407,23 @@
 		box-shadow: 0 4px 12px rgba(198, 128, 0, 0.4);
 	}
 
-	/* CRITICAL: Hide sidebar on SPX Profit Pulse pages */
+	/* Hide sidebar + force full-width main on SPX Profit Pulse pages.
+	   Component `<style>` is unlayered and beats Tailwind `@layer utilities`
+	   on layer-order; the dashboard layout's `.dashboard__content` rule is
+	   single-class so this rule wins on cascade order (component loads
+	   later). `!important` removed 2026-04-25 per CSS_ISOLATION_PLAN. */
 	:global(.dashboard__content-sidebar) {
-		display: none !important;
+		display: none;
 	}
 
-	/* Ensure main content takes full width without sidebar */
 	.dashboard__content {
-		display: block !important;
-		width: 100% !important;
+		display: block;
+		width: 100%;
 	}
 
 	.dashboard__content-main {
-		width: 100% !important;
-		max-width: 100% !important;
-		flex: none !important;
+		width: 100%;
+		max-width: 100%;
+		flex: none;
 	}
 </style>

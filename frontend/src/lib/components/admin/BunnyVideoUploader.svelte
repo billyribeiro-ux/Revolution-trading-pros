@@ -497,7 +497,7 @@
 	}
 
 	.progress-fill.indeterminate {
-		width: 100% !important;
+		width: 100%;
 		animation: indeterminate 1.5s infinite ease-in-out;
 		background: linear-gradient(
 			90deg,

@@ -394,7 +394,7 @@
 
 	@media (max-width: 640px) {
 		.field-wrapper {
-			width: 100% !important;
+			width: 100%;
 		}
 	}
 

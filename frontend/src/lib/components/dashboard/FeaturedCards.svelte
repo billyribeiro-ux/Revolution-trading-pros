@@ -108,7 +108,7 @@
 	}
 
 	.featured_cards a {
-		color: #fff !important;
+		color: #fff;
 		display: inline-block;
 		font-family: 'Open Sans Condensed', sans-serif;
 		font-weight: 700;

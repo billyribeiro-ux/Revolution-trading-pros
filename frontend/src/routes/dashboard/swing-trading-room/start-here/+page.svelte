@@ -955,8 +955,8 @@
 
 	.download-link,
 	.resource-link {
-		color: #ffb412 !important;
-		text-decoration: underline !important;
+		color: #ffb412;
+		text-decoration: underline;
 		font-weight: 600;
 	}
 

@@ -541,10 +541,10 @@
 
 	/* Empty state inside table */
 	.empty-state-cell {
-		padding: 60px 24px !important;
+		padding: 60px 24px;
 		text-align: center;
-		background: #ffffff !important;
-		border-bottom: none !important;
+		background: #ffffff;
+		border-bottom: none;
 	}
 
 	.empty-state-content {
@@ -682,7 +682,7 @@
 
 	/* Empty State - Mobile */
 	.empty-state-cell {
-		padding: 2.5rem 1rem !important;
+		padding: 2.5rem 1rem;
 	}
 
 	.empty-state-content svg {
@@ -748,7 +748,7 @@
 		}
 
 		.empty-state-cell {
-			padding: 3rem 1.5rem !important;
+			padding: 3rem 1.5rem;
 		}
 
 		.empty-state-content svg {
@@ -816,7 +816,7 @@
 		}
 
 		.empty-state-cell {
-			padding: 3.75rem 1.5rem !important;
+			padding: 3.75rem 1.5rem;
 		}
 
 		.empty-state-content svg {

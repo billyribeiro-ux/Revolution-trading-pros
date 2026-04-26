@@ -1083,7 +1083,7 @@
 	/* Empty state */
 	.empty-state {
 		text-align: center;
-		padding: 60px 20px !important;
+		padding: 60px 20px;
 		color: #64748b;
 	}
 
