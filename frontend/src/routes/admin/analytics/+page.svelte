@@ -11,6 +11,7 @@
 	 */
 
 	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import { analyticsApi, type DashboardData } from '$lib/api/analytics';
 	import {
@@ -127,28 +128,38 @@
 		loadDashboard();
 	}
 
-	// Svelte 5: Initialize on mount with cleanup
-	$effect(() => {
+	// Svelte 5: Initialize on mount — NOT $effect.
+	//
+	// The previous `$effect` read `getIsAnalyticsConnected()` (which reads the
+	// `connectionsState` rune) and then synchronously called `connections.load()`
+	// which mutates that same rune. That's the classic write-while-reading-
+	// tracked-dep pattern that produces an `effect_update_depth_exceeded` cascade
+	// on /admin login. `onMount` runs exactly once with no dependency tracking —
+	// same outcome, zero loop risk.
+	// See https://svelte.dev/docs/svelte/$effect#When-not-to-use-$effect.
+	onMount(() => {
 		if (!browser) return;
 
-		// Check analytics connection status
-		isConnected = getIsAnalyticsConnected();
-
-		// Load connection status
-		const initDashboard = async () => {
+		(async () => {
 			connectionsLoading = true;
-			await connections.load();
-			connectionsLoading = false;
-
-			// Re-check after load
-			isConnected = getIsAnalyticsConnected();
-
-			// Load dashboard if connected
-			if (isConnected) {
-				loadDashboard();
+			try {
+				await connections.load();
+			} catch (e) {
+				// connections.load() already swallows network errors and falls back to
+				// defaults; this catch is belt-and-braces so a thrown error doesn't
+				// leave `connectionsLoading` stuck true.
+				if (import.meta.env.DEV) {
+					console.error('[Analytics] Failed to load connection status:', e);
+				}
+			} finally {
+				connectionsLoading = false;
 			}
-		};
-		initDashboard();
+
+			isConnected = getIsAnalyticsConnected();
+			if (isConnected) {
+				await loadDashboard();
+			}
+		})();
 	});
 
 	// Format time series data

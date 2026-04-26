@@ -224,6 +224,12 @@ class AuthStoreClass {
 	// Subscribers for backward compatibility with $store syntax
 	private subscribers = new Set<Subscriber<AuthStateSnapshot>>();
 
+	// Microtask coalescing — when multiple state mutations happen in the same
+	// tick (e.g. setUser → setLoading → completeInitialization on the post-login
+	// redirect path), we want to fan out *once*, not three times. A pending flag
+	// guards re-entry.
+	private notifyScheduled = false;
+
 	// ==========================================================================
 	// Subscribe method for backward compatibility with $authStore syntax
 	// ==========================================================================
@@ -234,7 +240,8 @@ class AuthStoreClass {
 	 */
 	subscribe(fn: Subscriber<AuthStateSnapshot>): Unsubscriber {
 		this.subscribers.add(fn);
-		// Immediately call with current state
+		// Immediately call with current state — synchronous initial snapshot is
+		// required by the Svelte store contract; consumers depend on it.
 		fn(this.getSnapshot());
 		// Return unsubscribe function
 		return () => {
@@ -255,9 +262,44 @@ class AuthStoreClass {
 		};
 	}
 
+	/**
+	 * Notify subscribers of state changes.
+	 *
+	 * **Why microtask?** The original implementation fanned out synchronously,
+	 * which meant a single `setUser()` call could trigger 5–7 components
+	 * (NavBar, AdminToolbar, AdminSidebar, root layout, dashboard layout, etc.)
+	 * to *each* write Svelte 5 `$state` runes inside the same flush. Each rune
+	 * write schedules another effect — Svelte's depth guard cuts in around
+	 * 190 frames and throws `effect_update_depth_exceeded`.
+	 *
+	 * Deferring the fan-out via `queueMicrotask` batches consecutive mutations
+	 * into a single notification *and* moves the writes outside whatever
+	 * effect/render flush triggered them. The microtask still runs before the
+	 * next paint, so consumer reactivity stays tight.
+	 *
+	 * The synchronous `fn(this.getSnapshot())` inside `subscribe()` is
+	 * intentionally left synchronous — that's the Svelte store contract for
+	 * the initial value and removing it would break every `$authStore` use site.
+	 */
 	private notifySubscribers(): void {
-		const snapshot = this.getSnapshot();
-		this.subscribers.forEach((fn) => fn(snapshot));
+		if (this.notifyScheduled) return;
+		this.notifyScheduled = true;
+		queueMicrotask(() => {
+			this.notifyScheduled = false;
+			const snapshot = this.getSnapshot();
+			// Snapshot the subscriber set to a stable iteration order in case a
+			// callback unsubscribes during fan-out.
+			const targets = Array.from(this.subscribers);
+			for (const fn of targets) {
+				try {
+					fn(snapshot);
+				} catch (err) {
+					if (import.meta.env.DEV) {
+						console.error('[Auth] subscriber threw during notification:', err);
+					}
+				}
+			}
+		});
 	}
 
 	// ==========================================================================

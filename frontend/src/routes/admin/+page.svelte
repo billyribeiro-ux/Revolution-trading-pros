@@ -362,13 +362,6 @@
 
 <div class="admin-dashboard">
 	<div class="admin-page-container">
-		<!-- Animated Background -->
-		<div class="bg-effects">
-			<div class="bg-blob bg-blob-1"></div>
-			<div class="bg-blob bg-blob-2"></div>
-			<div class="bg-blob bg-blob-3"></div>
-		</div>
-
 		<!-- Header - Centered Style -->
 		<header class="page-header" in:fly={{ y: -20, duration: 400 }}>
 			<h1>Analytics Dashboard</h1>
@@ -403,9 +396,18 @@
 		</header>
 
 		{#if error}
-			<div class="error-banner" in:fly={{ y: -10, duration: 300 }}>
-				<IconAlertCircle size={20} />
-				<span>{error}</span>
+			<div class="error-banner" role="alert" in:fly={{ y: -10, duration: 300 }}>
+				<IconAlertCircle size={20} aria-hidden="true" />
+				<span class="error-banner__message">{error}</span>
+				<button
+					type="button"
+					class="error-banner__retry"
+					onclick={fetchDashboardStats}
+					disabled={isLoading}
+				>
+					<IconRefresh size={14} aria-hidden="true" />
+					Retry
+				</button>
 			</div>
 		{/if}
 
@@ -468,7 +470,8 @@
 								<div class="metric-value-row">
 									<span class="metric-value">
 										{#if isLoading}
-											<span class="loading-dots">...</span>
+											<span class="skeleton-bar skeleton-bar--value" aria-hidden="true"></span>
+											<span class="sr-only">Loading {metric.label}</span>
 										{:else if metric.value === null}
 											<span class="no-data">—</span>
 										{:else if metric.isText}
@@ -553,9 +556,14 @@
 								<span>Search Traffic</span>
 							</div>
 							<div class="seo-metric-value">
-								{seoMetrics.searchTraffic.value !== null
-									? formatNumber(seoMetrics.searchTraffic.value)
-									: '—'}
+								{#if isLoading && seoMetrics.searchTraffic.value === null}
+									<span class="skeleton-bar skeleton-bar--value" aria-hidden="true"></span>
+									<span class="sr-only">Loading Search Traffic</span>
+								{:else}
+									{seoMetrics.searchTraffic.value !== null
+										? formatNumber(seoMetrics.searchTraffic.value)
+										: '—'}
+								{/if}
 							</div>
 							{#if seoMetrics.searchTraffic.value !== null && seoMetrics.searchTraffic.change !== 0}
 								<div class="seo-metric-change positive">
@@ -577,9 +585,14 @@
 								<span>Impressions</span>
 							</div>
 							<div class="seo-metric-value">
-								{seoMetrics.totalImpressions.value !== null
-									? formatNumber(seoMetrics.totalImpressions.value)
-									: '—'}
+								{#if isLoading && seoMetrics.totalImpressions.value === null}
+									<span class="skeleton-bar skeleton-bar--value" aria-hidden="true"></span>
+									<span class="sr-only">Loading Impressions</span>
+								{:else}
+									{seoMetrics.totalImpressions.value !== null
+										? formatNumber(seoMetrics.totalImpressions.value)
+										: '—'}
+								{/if}
 							</div>
 							{#if seoMetrics.totalImpressions.value !== null && seoMetrics.totalImpressions.change !== 0}
 								<div class="seo-metric-change positive">
@@ -595,9 +608,14 @@
 								<span>Clicks</span>
 							</div>
 							<div class="seo-metric-value">
-								{seoMetrics.totalClicks.value !== null
-									? formatNumber(seoMetrics.totalClicks.value)
-									: '—'}
+								{#if isLoading && seoMetrics.totalClicks.value === null}
+									<span class="skeleton-bar skeleton-bar--value" aria-hidden="true"></span>
+									<span class="sr-only">Loading Clicks</span>
+								{:else}
+									{seoMetrics.totalClicks.value !== null
+										? formatNumber(seoMetrics.totalClicks.value)
+										: '—'}
+								{/if}
 							</div>
 							{#if seoMetrics.totalClicks.value !== null && seoMetrics.totalClicks.change !== 0}
 								<div class="seo-metric-change positive">
@@ -613,7 +631,14 @@
 								<span>Avg CTR</span>
 							</div>
 							<div class="seo-metric-value">
-								{seoMetrics.avgCTR.value !== null ? seoMetrics.avgCTR.value.toFixed(1) + '%' : '—'}
+								{#if isLoading && seoMetrics.avgCTR.value === null}
+									<span class="skeleton-bar skeleton-bar--value" aria-hidden="true"></span>
+									<span class="sr-only">Loading Average CTR</span>
+								{:else}
+									{seoMetrics.avgCTR.value !== null
+										? seoMetrics.avgCTR.value.toFixed(1) + '%'
+										: '—'}
+								{/if}
 							</div>
 							{#if seoMetrics.avgCTR.value !== null && seoMetrics.avgCTR.change !== 0}
 								<div class="seo-metric-change positive">
@@ -629,9 +654,14 @@
 								<span>Keywords</span>
 							</div>
 							<div class="seo-metric-value">
-								{seoMetrics.totalKeywords.value !== null
-									? formatNumber(seoMetrics.totalKeywords.value)
-									: '—'}
+								{#if isLoading && seoMetrics.totalKeywords.value === null}
+									<span class="skeleton-bar skeleton-bar--value" aria-hidden="true"></span>
+									<span class="sr-only">Loading Keywords</span>
+								{:else}
+									{seoMetrics.totalKeywords.value !== null
+										? formatNumber(seoMetrics.totalKeywords.value)
+										: '—'}
+								{/if}
 							</div>
 							{#if seoMetrics.totalKeywords.value !== null && seoMetrics.totalKeywords.change !== 0}
 								<div class="seo-metric-change positive">
@@ -647,9 +677,14 @@
 								<span>Avg Position</span>
 							</div>
 							<div class="seo-metric-value">
-								{seoMetrics.avgPosition.value !== null
-									? seoMetrics.avgPosition.value.toFixed(1)
-									: '—'}
+								{#if isLoading && seoMetrics.avgPosition.value === null}
+									<span class="skeleton-bar skeleton-bar--value" aria-hidden="true"></span>
+									<span class="sr-only">Loading Average Position</span>
+								{:else}
+									{seoMetrics.avgPosition.value !== null
+										? seoMetrics.avgPosition.value.toFixed(1)
+										: '—'}
+								{/if}
 							</div>
 							{#if seoMetrics.avgPosition.value !== null && seoMetrics.avgPosition.change !== 0}
 								<div
@@ -787,7 +822,10 @@
 						</div>
 						<div class="business-card-content">
 							<span class="business-card-value">
-								{#if isLoading}...{:else}{formatNumber(item.value)}{/if}
+								{#if isLoading}
+									<span class="skeleton-bar skeleton-bar--value" aria-hidden="true"></span>
+									<span class="sr-only">Loading {item.label}</span>
+								{:else}{formatNumber(item.value)}{/if}
 							</span>
 							<span class="business-card-label">{item.label}</span>
 						</div>
@@ -817,7 +855,11 @@
 			</div>
 
 			<div class="quick-actions-grid">
-				{#each [{ href: '/admin/email', icon: IconMail, label: 'Email', color: 'blue' }, { href: '/admin/forms', icon: IconForms, label: 'Forms', color: 'purple' }, { href: '/admin/notifications', icon: IconBellRinging, label: 'Notifications', color: 'amber' }, { href: '/admin/media', icon: IconPhoto, label: 'Media', color: 'pink' }, { href: '/admin/videos', icon: IconVideo, label: 'Videos', color: 'red' }, { href: '/admin/categories', icon: IconTag, label: 'Tags', color: 'green' }, { href: '/admin/seo', icon: IconSeo, label: 'SEO', color: 'orange' }, { href: '/admin/links', icon: IconLink, label: 'Links', color: 'cyan' }, { href: '/admin/filters', icon: IconFilter, label: 'Filters', color: 'indigo' }, { href: '/admin/broadcast', icon: IconSend, label: 'Broadcast', color: 'teal' }, { href: '/admin/international', icon: IconWorld, label: 'Global', color: 'slate' }, { href: '/admin/alerts', icon: IconAlertTriangle, label: 'Alerts', color: 'yellow' }] as action, i}
+				<!-- Quick action destinations are validated against the route tree.
+				     Tiles whose dedicated routes don't yet exist are aliased to the
+				     closest existing surface (see docs/audits/ADMIN_QUICK_ACTIONS_BACKLOG.md
+				     for the full mapping and what's missing). -->
+				{#each [{ href: '/admin/email', icon: IconMail, label: 'Email', color: 'blue' }, { href: '/admin/forms', icon: IconForms, label: 'Forms', color: 'purple' }, { href: '/admin/popups', icon: IconBellRinging, label: 'Notifications', color: 'amber' }, { href: '/admin/media', icon: IconPhoto, label: 'Media', color: 'pink' }, { href: '/admin/videos', icon: IconVideo, label: 'Videos', color: 'red' }, { href: '/admin/categories', icon: IconTag, label: 'Tags', color: 'green' }, { href: '/admin/seo', icon: IconSeo, label: 'SEO', color: 'orange' }, { href: '/admin/seo', icon: IconLink, label: 'Links', color: 'cyan' }, { href: '/admin/categories', icon: IconFilter, label: 'Filters', color: 'indigo' }, { href: '/admin/email', icon: IconSend, label: 'Broadcast', color: 'teal' }, { href: '/admin/settings', icon: IconWorld, label: 'Global', color: 'slate' }, { href: '/admin/indicators', icon: IconAlertTriangle, label: 'Alerts', color: 'yellow' }] as action, i}
 					{@const ActionIcon = action.icon}
 					<a
 						href={action.href}
@@ -878,17 +920,39 @@
 	 * Consistent with Analytics Dashboard styling
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* Outer Container with Gradient Background */
+	/* Outer Container — flat surface with one subtle radial accent.
+	   Per the team's "no childish blob effects" rule (see
+	   docs/audits/MASTER_UIUX_BACKLOG.md item 8c), animated decorative blobs
+	   are out. We follow the Stripe / Linear / Vercel pattern: a single fixed
+	   radial gradient anchored top-right adds depth without distracting from
+	   the metrics that the dashboard exists to surface. The gradient lives on
+	   the container ::before so it scrolls with the page (cheaper than a
+	   fixed-position layer) and uses pointer-events:none so it never
+	   intercepts clicks. */
 	.admin-dashboard {
-		background: linear-gradient(
-			135deg,
-			var(--bg-base) 0%,
-			var(--bg-elevated) 50%,
-			var(--bg-base) 100%
-		);
+		background: var(--bg-base);
 		color: var(--text-primary);
 		position: relative;
-		overflow: hidden;
+		isolation: isolate;
+	}
+
+	.admin-dashboard::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		pointer-events: none;
+		background:
+			radial-gradient(
+				ellipse 800px 600px at 100% 0%,
+				rgba(230, 184, 0, 0.06),
+				transparent 60%
+			),
+			radial-gradient(
+				ellipse 700px 500px at 0% 100%,
+				rgba(61, 90, 153, 0.05),
+				transparent 60%
+			);
 	}
 
 	/* Inner Container */
@@ -898,65 +962,6 @@
 		max-width: 1400px;
 		margin: 0 auto;
 		padding: 2rem;
-	}
-
-	/* Background Effects - Animated Blobs */
-	.bg-effects {
-		position: fixed;
-		inset: 0;
-		pointer-events: none;
-		overflow: hidden;
-	}
-
-	.bg-blob {
-		position: absolute;
-		border-radius: 50%;
-		filter: blur(80px);
-		opacity: 0.15;
-	}
-
-	/* Decorative blobs — fluid widths so they don't overflow on phones.
-	   Old hardcoded 600/500/400px overflowed iPhone (375px) viewport; clamp()
-	   caps growth on desktop while keeping the blob proportional on mobile. */
-	.bg-blob-1 {
-		width: clamp(240px, 70vw, 600px);
-		aspect-ratio: 1;
-		top: -200px;
-		right: -200px;
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
-		animation: float 20s ease-in-out infinite;
-	}
-
-	.bg-blob-2 {
-		width: clamp(200px, 60vw, 500px);
-		aspect-ratio: 1;
-		bottom: -150px;
-		left: -150px;
-		background: linear-gradient(135deg, var(--secondary-500), var(--primary-600));
-		animation: float 25s ease-in-out infinite reverse;
-	}
-
-	.bg-blob-3 {
-		width: clamp(160px, 50vw, 400px);
-		aspect-ratio: 1;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		background: linear-gradient(135deg, var(--success-base), var(--success-emphasis));
-		animation: float 30s ease-in-out infinite;
-	}
-
-	@keyframes float {
-		0%,
-		100% {
-			transform: translate(0, 0) scale(1);
-		}
-		33% {
-			transform: translate(30px, -30px) scale(1.05);
-		}
-		66% {
-			transform: translate(-20px, 20px) scale(0.95);
-		}
 	}
 
 	/* Page Header - CENTERED */
@@ -1598,8 +1603,86 @@
 		line-height: 1;
 	}
 
-	.loading-dots {
-		opacity: 0.5;
+	/* Skeleton shimmer — Stripe / Linear / Vercel pattern. Replaces the
+	   amateurish "..." placeholder with a tasteful gradient pulse that
+	   gives users visual confirmation work is happening. Disabled under
+	   prefers-reduced-motion (block stays visible, but doesn't pulse). */
+	.skeleton-bar {
+		display: inline-block;
+		vertical-align: middle;
+		background: linear-gradient(
+			90deg,
+			rgba(148, 163, 184, 0.08) 0%,
+			rgba(148, 163, 184, 0.18) 50%,
+			rgba(148, 163, 184, 0.08) 100%
+		);
+		background-size: 200% 100%;
+		border-radius: 4px;
+		animation: skeleton-shimmer 1.4s ease-in-out infinite;
+	}
+
+	.skeleton-bar--value {
+		width: 64px;
+		height: 1.5rem;
+	}
+
+	@keyframes skeleton-shimmer {
+		0% {
+			background-position: 200% 0;
+		}
+		100% {
+			background-position: -200% 0;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.skeleton-bar {
+			animation: none;
+			background: rgba(148, 163, 184, 0.12);
+		}
+	}
+
+	/* Visually-hidden helper for screen-reader-only loading announcements.
+	   Matches the WCAG-recommended sr-only pattern. */
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
+	}
+
+	/* Error banner retry button — actionable error, not just a notice. */
+	.error-banner__message {
+		flex: 1;
+	}
+
+	.error-banner__retry {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.375rem;
+		padding: 0.375rem 0.75rem;
+		background: transparent;
+		color: var(--error-emphasis);
+		border: 1px solid currentColor;
+		border-radius: 6px;
+		font-size: 0.8125rem;
+		font-weight: 600;
+		cursor: pointer;
+		transition: var(--transition-all, all 0.2s);
+	}
+
+	.error-banner__retry:hover {
+		background: var(--error-soft);
+	}
+
+	.error-banner__retry:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
 	}
 
 	.metric-trend {
