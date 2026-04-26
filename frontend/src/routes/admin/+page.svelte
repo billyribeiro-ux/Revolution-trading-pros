@@ -46,6 +46,7 @@
 		IconPlugConnected
 	} from '$lib/icons';
 	import { onMount } from 'svelte';
+	import { dev } from '$app/environment';
 	import {
 		connections,
 		getIsAnalyticsConnected,
@@ -53,7 +54,11 @@
 	} from '$lib/stores/connections.svelte';
 	import { getAuthToken } from '$lib/stores/auth.svelte';
 
-	// ICT 11+ CORB Fix: Use same-origin SvelteKit proxy endpoints
+	// Per-request timeout — without this, `Promise.allSettled` would wait
+	// forever on a single hung endpoint and `isLoading` would never settle,
+	// keeping the Refresh button's spinner spinning indefinitely.
+	const FETCH_TIMEOUT_MS = 10_000;
+
 	async function localFetch<T = any>(endpoint: string): Promise<T> {
 		const url = endpoint.startsWith('http')
 			? endpoint
@@ -70,15 +75,23 @@
 			headers['Authorization'] = `Bearer ${token}`;
 		}
 
-		const response = await fetch(url, {
-			method: 'GET',
-			headers,
-			credentials: 'include'
-		});
-		if (!response.ok) {
-			throw new Error(`HTTP ${response.status}`);
+		const controller = new AbortController();
+		const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+
+		try {
+			const response = await fetch(url, {
+				method: 'GET',
+				headers,
+				credentials: 'include',
+				signal: controller.signal
+			});
+			if (!response.ok) {
+				throw new Error(`HTTP ${response.status}`);
+			}
+			return response.json();
+		} finally {
+			clearTimeout(timeout);
 		}
-		return response.json();
 	}
 
 	let isLoading = $state(true);
@@ -354,8 +367,8 @@
 		// Check real connection status from store
 		analyticsConnected = getIsAnalyticsConnected();
 		seoConnected = getIsSeoConnected();
-		// Log active connections for debugging
-		console.debug(`[Admin Dashboard] Active connections: ${activeConnectionCount}`);
+		// Dev-only diagnostic — Vite tree-shakes this branch out of prod bundle.
+		if (dev) console.debug(`[Admin Dashboard] Active connections: ${activeConnectionCount}`);
 		fetchDashboardStats();
 	});
 </script>
