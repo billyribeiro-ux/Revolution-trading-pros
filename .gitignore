@@ -36,6 +36,9 @@ Thumbs.db
 *.swo
 *~
 
+# Claude Code worktrees + agent scratch
+.claude/
+
 # Database
 *.sqlite
 *.sqlite-journal
