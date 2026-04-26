@@ -1100,8 +1100,8 @@
 
 	.navbar.reduced-motion,
 	.navbar.reduced-motion * {
-		transition-duration: 0.01ms !important;
-		animation-duration: 0.01ms !important;
+		transition-duration: 0.01ms;
+		animation-duration: 0.01ms;
 	}
 
 	.navbar.high-contrast {
@@ -2271,17 +2271,18 @@
 		.cta-btn,
 		.mobile-backdrop,
 		.mobile-panel {
-			display: none !important;
+			display: none;
 		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		*,
-		*::before,
-		*::after {
-			animation-duration: 0.01ms !important;
-			animation-iteration-count: 1 !important;
-			transition-duration: 0.01ms !important;
+		.navbar,
+		.navbar *,
+		.navbar *::before,
+		.navbar *::after {
+			animation-duration: 0.01ms;
+			animation-iteration-count: 1;
+			transition-duration: 0.01ms;
 		}
 	}
 

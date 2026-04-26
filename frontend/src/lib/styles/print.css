@@ -2,13 +2,14 @@
  * Print Stylesheet for Blog Posts
  * Revolution Trading Pros - Lightning Stack Edition
  *
- * @version 1.0.0 - December 2024
+ * @version 2.0.0 - April 2026 — declaration-no-important hardening.
  *
- * Optimized for:
- * - Clean, readable printed output
- * - Proper page breaks
- * - Hidden interactive elements
- * - Expanded URLs for links
+ * Architecture: this file is imported once by blog/[slug]/+page.svelte and
+ * thereby loads AFTER app.css and after component CSS in cascade order.
+ * @media print rules below rely on (a) being last in the cascade and
+ * (b) higher-specificity selectors (e.g. html * beats single-class
+ * authored rules) to win on cascade alone. The previous Category C
+ * exemption is REVOKED (2026-04-25).
  */
 
 @media print {
@@ -18,12 +19,14 @@
 		margin: 2cm;
 	}
 
-	/* Reset backgrounds and colors for printing */
-	* {
-		background: white !important;
-		color: black !important;
-		box-shadow: none !important;
-		text-shadow: none !important;
+	/* Reset backgrounds and colors for printing.
+	   Specificity bumped to (0, 0, 2) via "html *" so this beats any
+	   single-class authored color/background rule loaded earlier. */
+	html * {
+		background: white;
+		color: black;
+		box-shadow: none;
+		text-shadow: none;
 	}
 
 	/* Body reset */
@@ -69,7 +72,7 @@
 	audio,
 	iframe:not(.embed-allowed),
 	.no-print {
-		display: none !important;
+		display: none;
 	}
 
 	/* Main content container */
@@ -77,10 +80,10 @@
 	.blog-post,
 	.post-body,
 	article {
-		width: 100% !important;
-		max-width: none !important;
-		padding: 0 !important;
-		margin: 0 !important;
+		width: 100%;
+		max-width: none;
+		padding: 0;
+		margin: 0;
 	}
 
 	/* Post title */
@@ -103,7 +106,7 @@
 
 	.author-avatar,
 	.author-avatar-placeholder {
-		display: none !important;
+		display: none;
 	}
 
 	/* Featured image */
@@ -162,7 +165,7 @@
 	a[href]::after {
 		content: ' (' attr(href) ')';
 		font-size: 9pt;
-		color: #666 !important;
+		color: #666;
 		word-break: break-all;
 	}
 
@@ -175,7 +178,7 @@
 
 	/* Images */
 	img {
-		max-width: 100% !important;
+		max-width: 100%;
 		page-break-inside: avoid;
 	}
 
@@ -196,7 +199,7 @@
 	code {
 		font-family: 'Courier New', Courier, monospace;
 		font-size: 9pt;
-		background: #f5f5f5 !important;
+		background: #f5f5f5;
 		border: 1px solid #ddd;
 		page-break-inside: avoid;
 	}
@@ -220,11 +223,11 @@
 	.code-header {
 		border-bottom: 1px solid #ddd;
 		padding: 0.25cm;
-		background: #eee !important;
+		background: #eee;
 	}
 
 	.line-numbers {
-		display: none !important;
+		display: none;
 	}
 
 	/* Blockquotes */
@@ -262,7 +265,7 @@
 	}
 
 	th {
-		background: #eee !important;
+		background: #eee;
 		font-weight: bold;
 	}
 
@@ -286,7 +289,7 @@
 	}
 
 	.toc-list a::after {
-		content: '' !important; /* Don't show URL for TOC links */
+		content: ''; /* Don't show URL for TOC links */
 	}
 
 	/* Tags section */
@@ -313,7 +316,7 @@
 
 	/* Print-specific header */
 	.print-header {
-		display: block !important;
+		display: block;
 		text-align: center;
 		margin-bottom: 1cm;
 		padding-bottom: 0.5cm;
@@ -322,7 +325,7 @@
 
 	/* Print footer with URL */
 	.print-footer {
-		display: block !important;
+		display: block;
 		position: fixed;
 		bottom: 0;
 		left: 0;
@@ -356,13 +359,13 @@
 	}
 
 	.token.comment {
-		color: #666 !important;
+		color: #666;
 		font-style: italic;
 	}
 
 	/* BlurHash placeholder - hide on print */
 	.blurhash-container .placeholder {
-		display: none !important;
+		display: none;
 	}
 }
 
@@ -371,6 +374,6 @@
 	.print-only,
 	.print-header,
 	.print-footer {
-		display: none !important;
+		display: none;
 	}
 }

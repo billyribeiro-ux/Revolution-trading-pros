@@ -949,7 +949,7 @@
 	/* Accessibility: Reduced motion */
 	@media (prefers-reduced-motion: reduce) {
 		.popup-panel {
-			animation: none !important;
+			animation: none;
 		}
 
 		.popup-cta {

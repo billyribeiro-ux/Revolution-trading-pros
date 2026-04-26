@@ -645,9 +645,9 @@
 	 * Container query support for component-level responsiveness
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* Main container — full width, no gaps. `!important` removed 2026-04-25
-	   per CSS_ISOLATION_PLAN; defensive flags were fighting the global cascade
-	   bleed that's now scoped to `.marketing-page-root` in app.css. */
+	/* Main container — full width, no gaps. Hardened 2026-04-25
+	   per CSS_ISOLATION_PLAN; defensive overrides were fighting the global
+	   cascade bleed that's now scoped to `.marketing-page-root` in app.css. */
 	.dashboard__main {
 		flex: 1 1 auto;
 		min-inline-size: 0;
@@ -757,10 +757,11 @@
 			animation: none;
 		}
 
-		* {
-			animation-duration: 0.01ms !important;
-			animation-iteration-count: 1 !important;
-			transition-duration: 0.01ms !important;
+		.dashboard,
+		.dashboard * {
+			animation-duration: 0.01ms;
+			animation-iteration-count: 1;
+			transition-duration: 0.01ms;
 		}
 	}
 

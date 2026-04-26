@@ -739,8 +739,8 @@
 		}
 	}
 
-	/* Responsive overrides — component `<style>` is unlayered, beats Tailwind
-	   `@layer utilities` on layer-order; `!important` removed 2026-04-25. */
+	/* Responsive overrides — component <style> is unlayered, beats Tailwind
+	   @layer utilities by layer-order; hardened 2026-04-25. */
 	@media (max-width: 359px) {
 		:global(.container) {
 			padding-left: 0.75rem;

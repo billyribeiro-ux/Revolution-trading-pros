@@ -1595,7 +1595,7 @@ https://svelte.dev/e/bind_invalid_expression -->
 	/* Dark-theme overrides for shared form/Card primitives. Compound selectors
 	   (`.page .text-…`) are specificity (0,2,0) — wins over single-class
 	   Tailwind utilities (0,1,0). Unlayered component rules also win against
-	   `@layer utilities` on layer-order, so `!important` is unnecessary. */
+	   @layer utilities on layer-order. */
 	:global(.page .space-y-6 > div) {
 		background: rgba(30, 41, 59, 0.4);
 		border: 1px solid rgba(148, 163, 184, 0.1);

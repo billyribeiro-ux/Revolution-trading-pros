@@ -79,12 +79,16 @@
 		// Text color
 		styles.push(`color: ${template.colors.text}`);
 
-		// Max width
-		if (isMobile) {
-			styles.push('max-width: 100%');
-		} else if (isTablet) {
+		// Max width.
+		// On mobile we deliberately DO NOT push an inline `max-width` — the
+		// stylesheet's `@media (max-width: 640px)` rules below set max-width
+		// per banner position (e.g. `calc(100% - 1rem)` for side-anchored
+		// banners). Pushing an inline `max-width: 100%` here would force the
+		// stylesheet rule to fight inline-style specificity; emitting nothing
+		// lets the media-query rule win on the cascade alone. (2026-04-25.)
+		if (isTablet) {
 			styles.push(`max-width: ${template.tablet.maxWidth}`);
-		} else if (!['bottom', 'top', 'fullscreen'].includes(position)) {
+		} else if (!isMobile && !['bottom', 'top', 'fullscreen'].includes(position)) {
 			styles.push(`max-width: ${template.maxWidth}`);
 		}
 
@@ -598,7 +602,8 @@
 		transform: translateY(0);
 	}
 
-	/* Responsive adjustments */
+	/* Responsive adjustments. On mobile the JS no longer pushes an inline
+	   `max-width`, so these rules win on the cascade alone. */
 	@media (max-width: 640px) {
 		.content-wrapper {
 			flex-direction: column;
@@ -608,15 +613,16 @@
 			margin-top: 0.5rem;
 		}
 
-		/* Mobile max-width override — `!important` is required because the
-		   banner's `max-width` is also set via inline `style=` (built in
-		   the JS at lines 84/86/88). Documented in IMPORTANT_USAGE.md. */
+		.consent-banner {
+			max-width: 100%;
+		}
+
 		.position-bottom-left,
 		.position-bottom-right {
 			left: 0.5rem;
 			right: 0.5rem;
 			bottom: 0.5rem;
-			max-width: calc(100% - 1rem) !important;
+			max-width: calc(100% - 1rem);
 		}
 
 		.position-top-left,
@@ -624,7 +630,7 @@
 			left: 0.5rem;
 			right: 0.5rem;
 			top: 0.5rem;
-			max-width: calc(100% - 1rem) !important;
+			max-width: calc(100% - 1rem);
 		}
 	}
 

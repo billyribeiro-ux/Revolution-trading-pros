@@ -509,7 +509,7 @@
 	 * Source: DASHBOARD_DESIGN_SPECIFICATIONS.md
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* Dashboard header — full-width, no gaps. `!important` removed 2026-04-25
+	/* Dashboard header — full-width, no gaps. Hardened 2026-04-25
 	   per CSS_ISOLATION_PLAN; previously fighting global cascade now scoped
 	   to `.marketing-page-root` in app.css. */
 	.dashboard__header {

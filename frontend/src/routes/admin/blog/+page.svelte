@@ -3063,7 +3063,7 @@
 		.controls-bar,
 		.action-buttons,
 		.keyboard-shortcuts {
-			display: none !important;
+			display: none;
 		}
 
 		.post-card,

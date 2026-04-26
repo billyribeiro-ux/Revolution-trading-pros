@@ -1673,8 +1673,8 @@
 		.popup-container,
 		.popup-btn,
 		.form-input {
-			transition: none !important;
-			animation: none !important;
+			transition: none;
+			animation: none;
 		}
 	}
 

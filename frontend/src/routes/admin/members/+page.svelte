@@ -2189,7 +2189,7 @@
 		.header-actions,
 		.toolbar,
 		.pagination {
-			display: none !important;
+			display: none;
 		}
 
 		.members-table {

@@ -532,8 +532,8 @@
 		}
 	}
 
-	/* Hide sidebar + force full-width main. Component `<style>` is unlayered,
-	   beats `@layer utilities`; `!important` removed 2026-04-25. */
+	/* Hide sidebar + force full-width main. Component <style> is unlayered,
+	   beats @layer utilities by layer-order; hardened 2026-04-25. */
 	:global(.dashboard__content-sidebar) {
 		display: none;
 	}

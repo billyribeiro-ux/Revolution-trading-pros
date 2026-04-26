@@ -197,13 +197,14 @@
 	 * REDUCED MOTION
 	 * ───────────────────────────────────────────────────────────────────────────── */
 	@media (prefers-reduced-motion: reduce) {
-		*,
-		*::before,
-		*::after {
-			animation-duration: 0.01ms !important;
-			animation-iteration-count: 1 !important;
-			transition-duration: 0.01ms !important;
-			scroll-behavior: auto !important;
+		#page,
+		#page *,
+		#page *::before,
+		#page *::after {
+			animation-duration: 0.01ms;
+			animation-iteration-count: 1;
+			transition-duration: 0.01ms;
+			scroll-behavior: auto;
 		}
 	}
 
@@ -446,16 +447,16 @@
 	/* Print */
 	@media print {
 		#page {
-			background-color: white !important;
+			background-color: white;
 		}
 
 		.video-player-wrapper {
-			background-color: #f0f0f0 !important;
+			background-color: #f0f0f0;
 		}
 
 		.class-player-header,
 		.current-title {
-			color: black !important;
+			color: black;
 		}
 	}
 

@@ -657,7 +657,7 @@
 	@media print {
 		.admin-header,
 		.mobile-menu-btn {
-			display: none !important;
+			display: none;
 		}
 
 		.admin-main {

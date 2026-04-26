@@ -103,6 +103,8 @@
 	class:selected={props.isSelected}
 	role="group"
 	aria-label="Column layout with {columns.length} columns"
+	style:--columns-template={gridTemplate}
+	style:--columns-gap={gap}
 >
 	{#if props.isEditing && props.isSelected}
 		<div class="columns-toolbar" role="toolbar" aria-label="Column settings">
@@ -157,7 +159,7 @@
 		</div>
 	{/if}
 
-	<div class="columns-container" style:grid-template-columns={gridTemplate} style:gap>
+	<div class="columns-container">
 		{#each columns as column (column.index)}
 			<div
 				class="column"
@@ -293,16 +295,19 @@
 	.columns-container {
 		display: grid;
 		min-height: 100px;
+		grid-template-columns: var(--columns-template, 1fr);
+		gap: var(--columns-gap, 1rem);
 	}
 
-	/* Mobile stacking — `!important` is required: line 160 sets
-	   `style:grid-template-columns` and `style:gap` via inline attributes
-	   (specificity 1,0,0,0). Documented in IMPORTANT_USAGE.md as a legitimate
-	   inline-style override. */
+	/* Mobile stacking. The inline `style:--columns-template` is set on
+	   `.columns-block` (the parent), so on `.columns-container` the value is
+	   *inherited*. This rule sets `--columns-template` directly on
+	   `.columns-container`, which has higher cascade priority than an inherited
+	   value from any ancestor (clean specificity-based win). */
 	@media (max-width: 767px) {
 		.columns-container {
-			grid-template-columns: 1fr !important;
-			gap: 1rem !important;
+			--columns-template: 1fr;
+			--columns-gap: 1rem;
 		}
 	}
 

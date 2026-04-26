@@ -1291,8 +1291,8 @@
 		.time-unit,
 		.time-value,
 		.bar-fill {
-			animation: none !important;
-			transition: none !important;
+			animation: none;
+			transition: none;
 		}
 	}
 

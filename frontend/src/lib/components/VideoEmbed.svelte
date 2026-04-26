@@ -1858,22 +1858,24 @@
 		pointer-events: none;
 	}
 
-	/* Fullscreen Styles */
+	/* Fullscreen Styles. Compound selector .video-embed-container.fullscreen
+	   is specificity (0, 2, 0) which beats every other rule targeting
+	   .video-embed-container (0, 1, 0). */
 	.video-embed-container.fullscreen {
-		position: fixed !important;
-		top: 0 !important;
-		left: 0 !important;
-		right: 0 !important;
-		bottom: 0 !important;
-		width: 100% !important;
-		height: 100% !important;
-		max-width: none !important;
-		border-radius: 0 !important;
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		width: 100%;
+		height: 100%;
+		max-width: none;
+		border-radius: 0;
 		z-index: 9999;
 	}
 
 	.video-embed-container.fullscreen .video-wrapper {
-		padding-bottom: 0 !important;
+		padding-bottom: 0;
 		height: 100%;
 	}
 
@@ -2074,8 +2076,8 @@
 		.video-embed-container,
 		.play-overlay,
 		.custom-controls {
-			transition: none !important;
-			animation: none !important;
+			transition: none;
+			animation: none;
 		}
 	}
 

@@ -211,27 +211,31 @@ img {
 /* ============================================================================
    ACCESSIBILITY - Print and reduced motion optimizations
    ============================================================================ */
+/* Reduced-motion override. Specificity bumped to (0, 0, 2) via "html *"
+   so this beats any single-class component animation rule loaded earlier
+   in the cascade. */
 @media (prefers-reduced-motion: reduce) {
-	*,
-	*::before,
-	*::after {
-		animation-duration: 0.01ms !important;
-		animation-iteration-count: 1 !important;
-		transition-duration: 0.01ms !important;
-		scroll-behavior: auto !important;
+	html *,
+	html *::before,
+	html *::after {
+		animation-duration: 0.01ms;
+		animation-iteration-count: 1;
+		transition-duration: 0.01ms;
+		scroll-behavior: auto;
 	}
 }
 
+/* Print color reset. Same specificity-bump strategy as print.css. */
 @media print {
-	* {
-		background: white !important;
-		color: black !important;
+	html * {
+		background: white;
+		color: black;
 	}
 
 	.hero-title,
 	.hero-subtitle {
-		color: black !important;
-		-webkit-text-fill-color: black !important;
+		color: black;
+		-webkit-text-fill-color: black;
 	}
 }
 

@@ -539,10 +539,10 @@
 		}
 	}
 
-	/* Responsive overrides for nested Tailwind utilities. Component `<style>`
-	   rules are unlayered (win over `@layer utilities` on layer-order); the
+	/* Responsive overrides for nested Tailwind utilities. Component <style>
+	   rules are unlayered (win over @layer utilities on layer-order); the
 	   compound `.course-card .p-6` selector also outspecs single-class
-	   utilities. `!important` removed 2026-04-25 per CSS_ISOLATION_PLAN. */
+	   utilities. Hardened 2026-04-25 per CSS_ISOLATION_PLAN. */
 	@media (max-width: 359px) {
 		section {
 			padding-top: 3rem;
@@ -630,7 +630,7 @@
 		}
 
 		:global(.course-card) {
-			transition: none !important;
+			transition: none;
 		}
 	}
 

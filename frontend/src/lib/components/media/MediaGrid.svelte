@@ -125,7 +125,8 @@
 
 <svelte:window onkeydown={handleKeyDown} onkeyup={handleKeyUp} />
 
-<div class="media-grid" style="--columns: {columns}">
+<div class="media-grid-wrap" style:--columns={columns}>
+<div class="media-grid">
 	{#if loading}
 		<!-- Loading skeleton -->
 		{#each Array(8) as _}
@@ -339,8 +340,13 @@
 		{/each}
 	{/if}
 </div>
+</div>
 
 <style>
+	.media-grid-wrap {
+		display: contents;
+	}
+
 	.media-grid {
 		display: grid;
 		grid-template-columns: repeat(var(--columns), 1fr);
@@ -348,25 +354,25 @@
 		padding: 1rem 0;
 	}
 
-	/* `!important` is required here: the markup sets `--columns` via an inline
-	   `style=` attribute (line 128), which has higher specificity than any
-	   stylesheet rule. Responsive overrides need `!important` to win against
-	   the inline style. Documented in IMPORTANT_USAGE.md. */
+	/* Responsive column overrides. Inline `style:--columns` is set on the
+	   `.media-grid-wrap` *parent*; on `.media-grid` the value is inherited.
+	   Direct declarations on `.media-grid` (below) override an inherited
+	   value cleanly via specificity. */
 	@media (max-width: 1024px) {
 		.media-grid {
-			--columns: 3 !important;
+			--columns: 3;
 		}
 	}
 
 	@media (max-width: 768px) {
 		.media-grid {
-			--columns: 2 !important;
+			--columns: 2;
 		}
 	}
 
 	@media (max-width: 480px) {
 		.media-grid {
-			--columns: 1 !important;
+			--columns: 1;
 		}
 	}
 

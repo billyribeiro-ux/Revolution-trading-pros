@@ -10,7 +10,7 @@
 	FIXES APPLIED (ICT 11+ Forensic Investigation):
 	1. Secondary nav desktop positioning - removed position:fixed bleed-through
 	2. Icon/text alignment in secondary nav - switched to flexbox layout
-	3. Removed !important wars causing cascade conflicts
+	3. Removed cascade-conflict overrides (formerly fought via the bang-priority flag)
 	4. Added proper padding-top alignment for secondary nav
 
 	Svelte 5 Features Used:
@@ -583,7 +583,7 @@
 	 * VERSION 2.2.0 - ICT 11+ FIXES APPLIED:
 	 * - FIX #1: Secondary nav positioning (removed position:fixed bleed-through)
 	 * - FIX #2: Icon/text alignment (flexbox instead of absolute positioning)
-	 * - FIX #3: Removed !important cascade conflicts
+	 * - FIX #3: Removed cascade-conflict overrides (formerly bang-priority flag)
 	 * - FIX #4: Proper padding-top alignment
 	 *
 	 * LAYOUT PATTERN (Industry Standard Breakpoints - Jan 2026):

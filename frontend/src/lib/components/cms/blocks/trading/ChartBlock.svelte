@@ -319,6 +319,7 @@
 	class:theme-dark={resolvedTheme === 'dark'}
 	role="img"
 	aria-label={chartAriaLabel}
+	style:--chart-height="{heightValue}px"
 >
 	<!-- Header with controls -->
 	{#if props.isEditing && props.isSelected}
@@ -447,8 +448,10 @@
 		</div>
 	{/if}
 
-	<!-- Chart Display Area -->
-	<div class="chart-container" style="height: {heightValue}px;">
+	<!-- Chart Display Area. Height is plumbed via CSS variable on `.chart-block`
+	     (parent) and inherited here, so the fullscreen override can win on
+	     `.chart-block.fullscreen .chart-container` cleanly. -->
+	<div class="chart-container">
 		{#if mode === 'embed'}
 			{#if !isValidSymbol}
 				<div class="chart-placeholder">
@@ -590,12 +593,12 @@
 		border-radius: 0;
 	}
 
-	/* Fullscreen overlay — `!important` is required: line 451 sets the chart
-	   container's height via inline `style="height: ..."` from a JS-computed
-	   value. Documented in IMPORTANT_USAGE.md as a legitimate inline-style
-	   override. */
+	/* Fullscreen overlay. The `--chart-height` variable is set via inline
+	   style on `.chart-block`; this rule sets the same variable on the more-
+	   specific `.chart-block.fullscreen .chart-container` (specificity 0,3,0)
+	   so it wins cleanly over the inherited inline value. */
 	.chart-block.fullscreen .chart-container {
-		height: 100vh !important;
+		--chart-height: 100vh;
 	}
 
 	/* Settings Panel */
@@ -735,10 +738,13 @@
 		background: #bae6fd;
 	}
 
-	/* Chart Container */
+	/* Chart Container. Height comes from `--chart-height` (set inline on
+	   `.chart-block` parent and inherited here). Fullscreen sets the variable
+	   on a more-specific selector below. */
 	.chart-container {
 		position: relative;
 		width: 100%;
+		height: var(--chart-height, 500px);
 		background: #0f172a;
 		overflow: hidden;
 	}

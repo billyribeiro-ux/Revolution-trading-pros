@@ -334,8 +334,8 @@
 	@media (prefers-reduced-motion: reduce) {
 		.indicators,
 		.indicators :global(*) {
-			transition: none !important;
-			animation: none !important;
+			transition: none;
+			animation: none;
 		}
 	}
 

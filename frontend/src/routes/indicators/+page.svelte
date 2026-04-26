@@ -1499,14 +1499,14 @@
 		.animate-float,
 		.indicator-card,
 		.confluence-connector :global(svg) {
-			animation: none !important;
+			animation: none;
 		}
 
 		.indicator-card,
 		.cta-button,
 		.filter-button,
 		.card-button {
-			transition: none !important;
+			transition: none;
 		}
 
 		.perspective-grid {
@@ -1559,7 +1559,7 @@
 		.chart-lines,
 		.perspective-grid,
 		.spotlight-overlay {
-			display: none !important;
+			display: none;
 		}
 
 		.indicators-page {

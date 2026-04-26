@@ -1244,7 +1244,7 @@
 		}
 
 		.header-actions {
-			display: none !important;
+			display: none;
 		}
 
 		.widget-large,

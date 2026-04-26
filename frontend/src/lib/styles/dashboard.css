@@ -8,7 +8,7 @@
 
 /* Dashboard headers — full-width with no gaps. The compound class chain wins
    on specificity (0,2,0) over any inherited body cascade (0,0,1) or single-
-   class component rule. `!important` removed 2026-04-25 per CSS_ISOLATION_PLAN. */
+   class component rule. Hardened 2026-04-25 per CSS_ISOLATION_PLAN. */
 .dashboard__main .dashboard__header,
 .dashboard__main header.dashboard__header,
 .dashboard__content .dashboard__header,
@@ -246,7 +246,7 @@ header[class*='dashboard__header'] {
 }
 
 /* Bootstrap Display Utilities — wrapped in :where() for zero-specificity (0,0,0)
-   so any component-authored `display:` rule can override without `!important`.
+   so any component-authored display rule can override cleanly via specificity.
    The cascade-order rule guarantees the last-loaded wins; since dashboard.css
    loads after components, the "utility wins by default" contract still holds. */
 :where(.hidden-xs) {

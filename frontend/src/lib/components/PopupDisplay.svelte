@@ -970,8 +970,8 @@
 		.popup-backdrop,
 		.popup-cta-button,
 		.popup-close-button {
-			animation: none !important;
-			transition: none !important;
+			animation: none;
+			transition: none;
 		}
 	}
 

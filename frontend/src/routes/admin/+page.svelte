@@ -2246,7 +2246,7 @@
 
 		.header-actions,
 		.business-card-arrow {
-			display: none !important;
+			display: none;
 		}
 
 		.business-card,
