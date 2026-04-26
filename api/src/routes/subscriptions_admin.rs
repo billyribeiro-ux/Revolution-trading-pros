@@ -727,7 +727,10 @@ async fn change_plan_price(
             Json(json!({"error": "amount_cents must be > 0"})),
         ));
     }
-    if !matches!(input.billing_interval.as_str(), "month" | "year" | "one_time") {
+    if !matches!(
+        input.billing_interval.as_str(),
+        "month" | "year" | "one_time"
+    ) {
         return Err((
             StatusCode::BAD_REQUEST,
             Json(json!({"error": "billing_interval must be month|year|one_time"})),

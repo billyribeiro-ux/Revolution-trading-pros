@@ -34,7 +34,10 @@ bold "▸ Rust no-DB tests ..."
 (cd api && cargo test --test utils_test --test stripe_test)
 
 bold "▸ !important sweep (must be 0) ..."
-COUNT=$(grep -rn ': .*!important;' frontend/src --include='*.css' --include='*.svelte' 2>/dev/null | wc -l | tr -d ' ')
+# `grep` exits 1 on no-match which, under `set -euo pipefail`, would abort the
+# whole script — but zero matches is exactly the success state we want here.
+# `|| true` neutralises that without masking real grep errors (exit ≥2).
+COUNT=$(grep -rn ': .*!important;' frontend/src --include='*.css' --include='*.svelte' 2>/dev/null | wc -l | tr -d ' ' || true)
 if [ "$COUNT" != "0" ]; then
 	red "✗ Found $COUNT !important declarations."
 	red "  See frontend/src/lib/styles/IMPORTANT_USAGE.md — repo contract is zero."
@@ -43,9 +46,10 @@ fi
 green "  0 !important declarations — clean."
 
 bold "▸ Result.unwrap_or_default sweep (informational; manual triage) ..."
+# Same no-match guard as the !important sweep above.
 RESULT_UNWRAPS=$(grep -rn '\.unwrap_or_default()' api/src --include='*.rs' 2>/dev/null \
 	| grep -v -E '(_test\.rs|tests/)' \
-	| wc -l | tr -d ' ')
+	| wc -l | tr -d ' ' || true)
 yellow "  $RESULT_UNWRAPS occurrences in api/src (Option<T> ok; Result<T,E> not — see audit issue #1)"
 
 green ""
