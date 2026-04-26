@@ -208,7 +208,13 @@ pub async fn index(
         .bind(&order_ids)
         .fetch_all(&state.db.pool)
         .await
-        .unwrap_or_default()
+        .map_err(|e| {
+            tracing::error!("Failed to fetch order item counts: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(serde_json::json!({"error": "Failed to fetch order item counts"})),
+            )
+        })?
         .into_iter()
         .collect()
     } else {
@@ -383,7 +389,13 @@ async fn build_order_detail(
         .bind(&product_ids)
         .fetch_all(&state.db.pool)
         .await
-        .unwrap_or_default()
+        .map_err(|e| {
+            tracing::error!("Failed to fetch product metadata for order: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(serde_json::json!({"error": "Failed to fetch product metadata"})),
+            )
+        })?
         .into_iter()
         .map(|(id, product_type, slug, thumbnail)| {
             (

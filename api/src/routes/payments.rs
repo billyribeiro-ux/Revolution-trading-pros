@@ -675,7 +675,19 @@ async fn handle_checkout_completed(
             .bind(order_id)
             .fetch_all(&state.db.pool)
             .await
-            .unwrap_or_default();
+            .map_err(|e| {
+                tracing::error!(
+                    target: "payments",
+                    event = "access_grant_query_failed",
+                    order_id = %order_id,
+                    "Failed to fetch order items for access grant: {}",
+                    e
+                );
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": "Failed to fetch order items for access grant"})),
+                )
+            })?;
 
             for item in product_items {
                 if let Some(product_id) = item.product_id {
