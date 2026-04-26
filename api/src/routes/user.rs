@@ -532,8 +532,18 @@ async fn deactivate_account(
     user: User,
     Json(input): Json<DeactivateAccountRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    // Verify password
-    if !crate::utils::verify_password(&input.password, &user.password_hash).unwrap_or(false) {
+    // Verify password — surface a 500 on hash-format / library failures rather
+    // than masquerading them as a wrong-password 400, but never leak the
+    // internal error to the caller.
+    let password_valid = crate::utils::verify_password(&input.password, &user.password_hash)
+        .map_err(|e| {
+            tracing::error!(user_id = user.id, "Password verification error: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({ "error": "Password verification failed" })),
+            )
+        })?;
+    if !password_valid {
         return Err((
             StatusCode::BAD_REQUEST,
             Json(json!({
@@ -682,8 +692,18 @@ async fn update_profile(
     if let (Some(current_password), Some(new_password)) =
         (&input.current_password, &input.new_password)
     {
-        // Verify current password
-        if !crate::utils::verify_password(current_password, &user.password_hash).unwrap_or(false) {
+        // Verify current password — propagate library / hash-format failures
+        // as 500 so they get logged and alerted, instead of silently treating
+        // them as a wrong-password 400.
+        let password_valid = crate::utils::verify_password(current_password, &user.password_hash)
+            .map_err(|e| {
+            tracing::error!(user_id = user.id, "Password verification error: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({ "error": "Password verification failed" })),
+            )
+        })?;
+        if !password_valid {
             return Err((
                 StatusCode::BAD_REQUEST,
                 Json(json!({

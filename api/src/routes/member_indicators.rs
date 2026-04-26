@@ -548,20 +548,58 @@ async fn download_file(
         .await
         .ok();
 
-    // Redirect to actual file (CDN URL)
+    // Redirect to actual file (CDN URL).
+    // ICT 7 SECURITY: file_name is sanitized into the Content-Disposition header to
+    // prevent CRLF injection / response-splitting via crafted filenames. Quotes and
+    // backslashes are escaped per RFC 6266, and any control char triggers a generic
+    // fallback. Header construction is fallible — never `.unwrap()` on user-derived
+    // bytes (DoS vector).
     let cdn_url = file.cdn_url.unwrap_or_else(|| file.file_path.clone());
+
+    let safe_name = sanitize_filename_for_disposition(&file.file_name);
+    let disposition = format!("attachment; filename=\"{}\"", safe_name);
 
     let response = Response::builder()
         .status(StatusCode::FOUND)
         .header(header::LOCATION, cdn_url)
-        .header(
-            header::CONTENT_DISPOSITION,
-            format!("attachment; filename=\"{}\"", file.file_name),
-        )
+        .header(header::CONTENT_DISPOSITION, disposition)
         .body(axum::body::Body::empty())
-        .unwrap();
+        .map_err(|e| {
+            tracing::error!(
+                file_id = file_id,
+                "Failed to build download response: {}",
+                e
+            );
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": "Failed to build download response"})),
+            )
+        })?;
 
     Ok(response)
+}
+
+/// Sanitize a filename for inclusion in a `Content-Disposition: attachment;
+/// filename="..."` header. Drops control characters (which can break header
+/// parsing or enable response-splitting), escapes `"` and `\`, and falls back
+/// to `download` if the result is empty.
+fn sanitize_filename_for_disposition(name: &str) -> String {
+    let mut out = String::with_capacity(name.len());
+    for ch in name.chars() {
+        if ch.is_control() {
+            continue;
+        }
+        match ch {
+            '"' => out.push_str("\\\""),
+            '\\' => out.push_str("\\\\"),
+            _ => out.push(ch),
+        }
+    }
+    if out.trim().is_empty() {
+        "download".to_string()
+    } else {
+        out
+    }
 }
 
 #[derive(Debug, serde::Deserialize)]

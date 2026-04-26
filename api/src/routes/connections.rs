@@ -1049,14 +1049,12 @@ async fn disconnect_service(
             .ok()
             .flatten();
 
-    if connection.is_none() {
+    let Some(connection) = connection else {
         return Err((
             StatusCode::NOT_FOUND,
             Json(json!({"error": "Connection not found"})),
         ));
-    }
-
-    let connection = connection.unwrap();
+    };
 
     // Clear credentials and update status
     sqlx::query(
@@ -1132,14 +1130,12 @@ async fn delete_connection(
             .ok()
             .flatten();
 
-    if connection.is_none() {
+    let Some(connection) = connection else {
         return Err((
             StatusCode::NOT_FOUND,
             Json(json!({"error": "Connection not found"})),
         ));
-    }
-
-    let connection = connection.unwrap();
+    };
 
     // Delete associated webhooks first
     sqlx::query("DELETE FROM integration_webhooks WHERE connection_id = $1")

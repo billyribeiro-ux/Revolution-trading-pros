@@ -1238,9 +1238,8 @@ fn validate_form_submission(
 
             let value = data.get(field_name);
             let value_str = value.and_then(|v| v.as_str()).unwrap_or("");
-            let is_empty = value.is_none()
-                || value_str.is_empty()
-                || (value.is_some() && value.unwrap().is_null());
+            let is_empty =
+                value.is_none() || value_str.is_empty() || value.is_some_and(|v| v.is_null());
 
             // Required field validation
             if required && is_empty {

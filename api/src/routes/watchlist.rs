@@ -245,13 +245,27 @@ async fn create_watchlist(
             "high-octane-scanner".to_string(),
         ]
     });
-    let rooms_json = serde_json::to_value(&rooms).unwrap();
+    let rooms_json = serde_json::to_value(&rooms).map_err(|e| {
+        tracing::error!("Failed to serialize rooms list: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"success": false, "message": "Internal serialization error"})),
+        )
+    })?;
 
     // Convert watchlist_dates to JSON
     let watchlist_dates_json = body
         .watchlist_dates
         .as_ref()
-        .map(|dates| serde_json::to_value(dates).unwrap());
+        .map(serde_json::to_value)
+        .transpose()
+        .map_err(|e| {
+            tracing::error!("Failed to serialize watchlist_dates: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"success": false, "message": "Internal serialization error"})),
+            )
+        })?;
 
     // Insert into database
     let result = sqlx::query_as::<_, WatchlistEntry>(

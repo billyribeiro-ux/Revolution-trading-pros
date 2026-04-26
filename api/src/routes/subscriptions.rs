@@ -856,10 +856,16 @@ async fn export_subscriptions(
             )
             .collect();
 
-        let response = (
-            [(header::CONTENT_TYPE, "application/json")],
-            serde_json::to_string(&json_data).unwrap_or_default(),
-        );
+        // ICT 7: Surface a serialization failure as a 500 instead of returning
+        // an empty 200 body — silent failure here would mask a real defect.
+        let body = serde_json::to_string(&json_data).map_err(|e| {
+            tracing::error!("Failed to serialize subscription export JSON: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": "Failed to encode export"})),
+            )
+        })?;
+        let response = ([(header::CONTENT_TYPE, "application/json")], body);
         return Ok(response.into_response());
     }
 

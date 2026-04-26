@@ -297,6 +297,16 @@ impl MfaService {
                 let mut updated_codes = backup_codes.clone();
                 updated_codes.remove(idx);
 
+                // ICT 7 SECURITY: Vec<String> serialization is infallible in practice,
+                // but propagate the error rather than panic — a corrupted MFA flow must
+                // surface as a 500, not crash the worker.
+                let updated_codes_json = serde_json::to_value(&updated_codes).map_err(|e| {
+                    ApiError::internal_error(&format!(
+                        "Failed to serialize updated backup codes: {}",
+                        e
+                    ))
+                })?;
+
                 sqlx::query(
                     r#"
                     UPDATE user_mfa_secrets
@@ -304,7 +314,7 @@ impl MfaService {
                     WHERE user_id = $2
                     "#,
                 )
-                .bind(serde_json::to_value(&updated_codes).unwrap())
+                .bind(updated_codes_json)
                 .bind(user_id)
                 .execute(&self.pool)
                 .await

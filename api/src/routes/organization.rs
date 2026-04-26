@@ -614,14 +614,12 @@ async fn update_team(
     .ok()
     .flatten();
 
-    if old_team.is_none() {
+    let Some(old_team) = old_team else {
         return Err((
             StatusCode::NOT_FOUND,
             Json(json!({"error": "Team not found"})),
         ));
-    }
-
-    let old_team = old_team.unwrap();
+    };
     let old_value = json!({"name": old_team.name, "is_active": old_team.is_active});
 
     // Generate new slug if name changes
@@ -698,14 +696,12 @@ async fn delete_team(
     .ok()
     .flatten();
 
-    if old_team.is_none() {
+    let Some(old_team) = old_team else {
         return Err((
             StatusCode::NOT_FOUND,
             Json(json!({"error": "Team not found"})),
         ));
-    }
-
-    let old_team = old_team.unwrap();
+    };
 
     // Check if team has members
     let member_count: i64 =
@@ -1022,14 +1018,12 @@ async fn update_department(
     .ok()
     .flatten();
 
-    if old_dept.is_none() {
+    let Some(old_dept) = old_dept else {
         return Err((
             StatusCode::NOT_FOUND,
             Json(json!({"error": "Department not found"})),
         ));
-    }
-
-    let old_dept = old_dept.unwrap();
+    };
     let old_value = json!({"name": old_dept.name, "is_active": old_dept.is_active, "parent_id": old_dept.parent_id});
 
     let new_slug = input.name.as_ref().map(|n| generate_slug(n));
@@ -1111,14 +1105,12 @@ async fn delete_department(
     .ok()
     .flatten();
 
-    if old_dept.is_none() {
+    let Some(old_dept) = old_dept else {
         return Err((
             StatusCode::NOT_FOUND,
             Json(json!({"error": "Department not found"})),
         ));
-    }
-
-    let old_dept = old_dept.unwrap();
+    };
 
     // Check for child departments
     let child_count: i64 =

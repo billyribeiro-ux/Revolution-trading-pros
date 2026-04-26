@@ -437,15 +437,20 @@ async fn get_popup_analytics(
     Path(id): Path<i32>,
 ) -> Result<Json<PopupAnalytics>, (StatusCode, Json<serde_json::Value>)> {
     let now = Utc::now();
-    let today_start = now.date_naive().and_hms_opt(0, 0, 0).unwrap();
+    // 00:00:00 is always a valid wall-clock time; `expect` documents the
+    // invariant for reviewers instead of an opaque `.unwrap()`.
+    let today_start = now
+        .date_naive()
+        .and_hms_opt(0, 0, 0)
+        .expect("00:00:00 is a valid time");
     let week_start = (now - Duration::days(7))
         .date_naive()
         .and_hms_opt(0, 0, 0)
-        .unwrap();
+        .expect("00:00:00 is a valid time");
     let month_start = (now - Duration::days(30))
         .date_naive()
         .and_hms_opt(0, 0, 0)
-        .unwrap();
+        .expect("00:00:00 is a valid time");
 
     // Get popup basic stats
     let popup_stats: Option<(i64, i64, f64)> = sqlx::query_as(
