@@ -900,21 +900,28 @@
 		}
 	}
 
-	// Clear selection when videos change
+	// FIX-2026-04-26-audit (P2-2, P2-10):
+	//   P2-10: run unconditionally so the last-video-deleted case prunes stale
+	//          selection IDs (the previous `if (videos.length)` guard left
+	//          stale IDs in selectedVideoIds when videos.length === 0).
+	//   P2-2:  short-circuit when nothing actually needs pruning so we don't
+	//          allocate a fresh Set on every video reload.
 	$effect(() => {
-		if (videos.length) {
-			// Keep only valid selections
-			const validIds = new Set(videos.map((v) => v.id));
-			const newSelection = new Set<number>();
-			for (const id of selectedVideoIds) {
-				if (validIds.has(id)) {
-					newSelection.add(id);
-				}
-			}
-			if (newSelection.size !== selectedVideoIds.size) {
-				selectedVideoIds = newSelection;
+		if (selectedVideoIds.size === 0) return;
+		const validIds = new Set(videos.map((v) => v.id));
+		let allValid = true;
+		for (const id of selectedVideoIds) {
+			if (!validIds.has(id)) {
+				allValid = false;
+				break;
 			}
 		}
+		if (allValid) return;
+		const newSelection = new Set<number>();
+		for (const id of selectedVideoIds) {
+			if (validIds.has(id)) newSelection.add(id);
+		}
+		selectedVideoIds = newSelection;
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════

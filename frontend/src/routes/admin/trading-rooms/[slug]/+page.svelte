@@ -322,23 +322,32 @@
 
 	// SSR data is already loaded from +page.server.ts
 	// Only refresh on client when slug changes (navigation)
+	//
+	// FIX-2026-04-26-audit (P1-12): the previous condition was
+	// `data.slug !== currentSlug`, but `slug` is `$derived(data.slug ?? …)` —
+	// so `currentSlug === data.slug` whenever `data.slug` is set, meaning the
+	// branch was unreachable in normal navigation. Track the last loaded slug
+	// in a local module variable instead, so we refetch exactly once per
+	// real navigation transition. Seed it with the initial SSR slug (read via
+	// untrack to silence Svelte's state_referenced_locally warning) so the
+	// first effect run is a no-op (SSR already populated all six lists).
+	let lastLoadedSlug: string | null = untrack(() => data.slug ?? null);
+
 	$effect(() => {
 		if (!browser) return;
-
-		// Track slug changes for client-side navigation
 		const currentSlug = slug;
+		if (!currentSlug) return;
+		if (currentSlug === lastLoadedSlug) return;
 
-		// Only reload if navigating to a different room
-		if (currentSlug && data.slug !== currentSlug) {
-			untrack(() => {
-				loadTradePlan();
-				loadAlerts();
-				loadWeeklyVideo();
-				loadRoomStats();
-				loadTrades();
-				loadVideoResources();
-			});
-		}
+		lastLoadedSlug = currentSlug;
+		untrack(() => {
+			loadTradePlan();
+			loadAlerts();
+			loadWeeklyVideo();
+			loadRoomStats();
+			loadTrades();
+			loadVideoResources();
+		});
 	});
 
 	async function loadTradePlan() {

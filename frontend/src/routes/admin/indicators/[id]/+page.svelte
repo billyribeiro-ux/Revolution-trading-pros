@@ -8,6 +8,10 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { adminFetch } from '$lib/utils/adminFetch';
+	// FIX-2026-04-26-audit (P2-3): replace native window.confirm() with the
+	// shared ConfirmationModal used everywhere else in the admin. The native
+	// dialog is blocked in some sandboxed contexts and is inconsistent UX.
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// ICT 7: Match actual backend schema
 	interface Indicator {
@@ -247,10 +251,22 @@
 		}
 	};
 
-	// ICT 7: Delete file
-	const deleteFile = async (fileId: number) => {
-		if (!confirm('Are you sure you want to delete this file?')) return;
+	// FIX-2026-04-26-audit (P2-3): swap native confirm() for the shared
+	// ConfirmationModal — consistent UX with the rest of the admin and works
+	// in sandboxed/iframe contexts where window.confirm is suppressed.
+	let showDeleteFileModal = $state(false);
+	let pendingDeleteFileId = $state<number | null>(null);
+	let isDeletingFile = $state(false);
 
+	const deleteFile = (fileId: number) => {
+		pendingDeleteFileId = fileId;
+		showDeleteFileModal = true;
+	};
+
+	const confirmDeleteFile = async () => {
+		const fileId = pendingDeleteFileId;
+		if (fileId == null) return;
+		isDeletingFile = true;
 		try {
 			const data = await adminFetch(`/api/admin/indicators/${indicatorId}/files/${fileId}`, {
 				method: 'DELETE'
@@ -265,7 +281,16 @@
 			}
 		} catch (_e) {
 			error = 'Failed to delete file';
+		} finally {
+			isDeletingFile = false;
+			showDeleteFileModal = false;
+			pendingDeleteFileId = null;
 		}
+	};
+
+	const cancelDeleteFile = () => {
+		showDeleteFileModal = false;
+		pendingDeleteFileId = null;
 	};
 
 	// ICT 7: Toggle file active status
@@ -320,10 +345,20 @@
 		}
 	};
 
-	// ICT 7: Delete video
-	const deleteVideo = async (videoId: number) => {
-		if (!confirm('Are you sure you want to delete this video?')) return;
+	// FIX-2026-04-26-audit (P2-3): see deleteFile above.
+	let showDeleteVideoModal = $state(false);
+	let pendingDeleteVideoId = $state<number | null>(null);
+	let isDeletingVideo = $state(false);
 
+	const deleteVideo = (videoId: number) => {
+		pendingDeleteVideoId = videoId;
+		showDeleteVideoModal = true;
+	};
+
+	const confirmDeleteVideo = async () => {
+		const videoId = pendingDeleteVideoId;
+		if (videoId == null) return;
+		isDeletingVideo = true;
 		try {
 			const data = await adminFetch(`/api/admin/indicators/${indicatorId}/videos/${videoId}`, {
 				method: 'DELETE'
@@ -338,7 +373,16 @@
 			}
 		} catch (_e) {
 			error = 'Failed to delete video';
+		} finally {
+			isDeletingVideo = false;
+			showDeleteVideoModal = false;
+			pendingDeleteVideoId = null;
 		}
+	};
+
+	const cancelDeleteVideo = () => {
+		showDeleteVideoModal = false;
+		pendingDeleteVideoId = null;
 	};
 
 	// Format file size for display
