@@ -59,7 +59,7 @@
 		title: '',
 		slug: '',
 		excerpt: '',
-		content_blocks: [] as any[],
+		content_blocks: [] as Pick<Block, 'type' | 'content' | 'settings'>[],
 		featured_image: '',
 		featured_image_alt: '',
 		featured_image_title: '',
@@ -209,7 +209,9 @@
 	function blocksToHtml(blocks: Block[]): string {
 		return blocks
 			.map((block) => {
-				const content = block.content as any; // Type assertion for flexible content access
+				// BlockContent is a wide union; index dynamically as a generic record so
+				// legacy fields (level/src/alt/items/caption) resolve at runtime.
+				const content = block.content as Record<string, unknown>;
 				switch (block.type) {
 					case 'paragraph':
 						return `<p>${content.text || ''}</p>`;
@@ -219,7 +221,7 @@
 					case 'quote':
 						return `<blockquote>${content.text || ''}</blockquote>`;
 					case 'list':
-						const items = content.items || [];
+						const items = (content.items as string[] | undefined) || [];
 						const listType = content.listType === 'ordered' ? 'ol' : 'ul';
 						return `<${listType}>${items.map((item: string) => `<li>${item}</li>`).join('')}</${listType}>`;
 					case 'image':
@@ -230,7 +232,7 @@
 						return '<hr />';
 					case 'html':
 						// FIX-2026-04-26 (P2-4): sanitize raw-HTML blocks.
-						return sanitizeBlogContent(content.html || '');
+						return sanitizeBlogContent(String(content.html || ''));
 					default:
 						return content.text ? `<p>${content.text}</p>` : '';
 				}
