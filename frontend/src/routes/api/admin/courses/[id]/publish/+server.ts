@@ -3,34 +3,54 @@
  * ICT 7 Grade - Routes requests to Rust API backend
  */
 
-import { json } from '@sveltejs/kit';
+import { json, isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import { requireAdminToken } from '$lib/server/auth';
 
 import { env } from '$env/dynamic/private';
 const PROD_BACKEND =
 	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 const BACKEND_URL = PROD_BACKEND;
 
-export const POST: RequestHandler = async ({ cookies, fetch, params }) => {
-	try {
-		// FIX-2026-04-26: comment-out, verify, delete in follow-up. Wrong cookie name — login proxy sets rtp_access_token, not auth_token.
-		// const token = cookies.get('auth_token');
-		const token = cookies.get('rtp_access_token');
-		const { id } = params;
+function envelope(
+	raw: unknown,
+	status: number
+): { success: boolean; data?: unknown; error?: string; message?: string } {
+	if (raw && typeof raw === 'object') {
+		const obj = raw as Record<string, unknown>;
+		if (typeof obj.success === 'boolean') {
+			return obj as { success: boolean; data?: unknown; error?: string; message?: string };
+		}
+		if (status < 400) return { success: true, data: obj };
+		const message =
+			(typeof obj.message === 'string' && obj.message) ||
+			(typeof obj.error === 'string' && obj.error) ||
+			'Request failed';
+		return { success: false, error: message, message };
+	}
+	if (status < 400) return { success: true, data: raw };
+	return { success: false, error: 'Request failed' };
+}
 
-		const response = await fetch(`${BACKEND_URL}/api/admin/courses/${id}/publish`, {
+export const POST: RequestHandler = async (event) => {
+	// FIX-2026-04-26 (P1-1): require token via shared helper.
+	const token = requireAdminToken(event);
+	const { id } = event.params;
+	try {
+		const response = await event.fetch(`${BACKEND_URL}/api/admin/courses/${id}/publish`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 				Accept: 'application/json',
-				...(token ? { Authorization: `Bearer ${token}` } : {})
+				Authorization: `Bearer ${token}`
 			}
 		});
 
-		const data = await response.json();
-		return json(data, { status: response.status });
-	} catch (error) {
-		console.error('[API] Admin course publish error:', error);
+		const raw = await response.json().catch(() => null);
+		return json(envelope(raw, response.status), { status: response.status });
+	} catch (err) {
+		if (isHttpError(err)) throw err;
+		console.error('[API] Admin course publish error:', err);
 		return json({ success: false, error: 'Failed to publish course' }, { status: 500 });
 	}
 };

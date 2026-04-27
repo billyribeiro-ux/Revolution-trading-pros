@@ -286,11 +286,23 @@ export async function apiFetch<T>(
 	// If endpoint already starts with http, use it as-is
 	// If endpoint starts with /api, prepend API_BASE_URL
 	// Otherwise, prepend API_BASE_URL and /api
+	//
+	// FIX-2026-04-26 (cross-cutting audit §D): admin pages MUST go through the
+	// SvelteKit `+server.ts` proxy at `/api/admin/*` so the proxy can attach
+	// `rtp_access_token` from the HttpOnly cookie. If we let `apiFetch` route
+	// `/admin/...` calls to the prod backend directly, we bypass the proxy
+	// (skipping auth, validation, and `last_verified_at` request-time logic)
+	// and rely on the in-memory `getAuthToken()` instead — which is empty on
+	// SSR and on first paint. Short-circuit `/admin/*` to same-origin.
 	let url: string;
 	if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) {
 		url = endpoint;
 	} else if (endpoint.startsWith('/api/')) {
 		url = `${API_BASE_URL}${endpoint}`;
+	} else if (endpoint.startsWith('/admin/') || endpoint.startsWith('admin/')) {
+		// Same-origin: hits the SK proxy at /api/admin/* (cookie-authed).
+		const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+		url = `/api${path}`;
 	} else if (endpoint.startsWith('/')) {
 		url = `${API_BASE_URL}/api${endpoint}`;
 	} else {

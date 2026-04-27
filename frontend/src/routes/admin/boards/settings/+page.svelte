@@ -42,6 +42,14 @@ https://svelte.dev/e/bind_invalid_expression -->
 	});
 
 	let storageConfig = $state<StorageConfig | null>(null);
+	// FIX-2026-04-26 (P0-3): keep new credential entries in separate write-only buffers.
+	// The backend never round-trips raw credentials; the page never binds the GET'd
+	// (possibly redacted) value into a password field. Only send a credential field
+	// on save when the user actually typed a new value into these buffers.
+	let newAccessKeyBuffer = $state('');
+	let newSecretKeyBuffer = $state('');
+	let hasStoredAccessKey = $state(false);
+	let hasStoredSecretKey = $state(false);
 	let loading = $state(true);
 	let saving = $state(false);
 	let testingStorage = $state(false);
@@ -66,7 +74,21 @@ https://svelte.dev/e/bind_invalid_expression -->
 				boardsAPI.getStorageConfig()
 			]);
 			settings = settingsRes;
-			storageConfig = storageRes;
+			// FIX-2026-04-26 (P0-3): Note whether the backend reports stored credentials
+			// (the proxy redacts secret_key/access_key to a placeholder string when set).
+			// Then null those values out of the bound state so they NEVER live in the
+			// browser's bound input. The user types into separate buffers to update.
+			hasStoredAccessKey = !!storageRes?.access_key;
+			hasStoredSecretKey = !!storageRes?.secret_key;
+			storageConfig = storageRes
+				? {
+						...storageRes,
+						access_key: '',
+						secret_key: ''
+					}
+				: null;
+			newAccessKeyBuffer = '';
+			newSecretKeyBuffer = '';
 		} catch (error) {
 			console.error('Failed to load settings:', error);
 		} finally {
@@ -95,7 +117,20 @@ https://svelte.dev/e/bind_invalid_expression -->
 		if (!storageConfig) return;
 		saving = true;
 		try {
-			await boardsAPI.updateStorageConfig(storageConfig);
+			// FIX-2026-04-26 (P0-3): Build the payload by merging only the buffers the
+			// user actually populated. Empty buffer = "leave the stored credential
+			// untouched" — the proxy strips the empty fields before forwarding.
+			const payload: StorageConfig = {
+				...storageConfig,
+				...(newAccessKeyBuffer ? { access_key: newAccessKeyBuffer } : { access_key: '' }),
+				...(newSecretKeyBuffer ? { secret_key: newSecretKeyBuffer } : { secret_key: '' })
+			};
+			await boardsAPI.updateStorageConfig(payload);
+			// Clear write-only buffers and refresh stored-presence flags.
+			newAccessKeyBuffer = '';
+			newSecretKeyBuffer = '';
+			hasStoredAccessKey = hasStoredAccessKey || !!payload.access_key;
+			hasStoredSecretKey = hasStoredSecretKey || !!payload.secret_key;
 			// FIX-2026-04-26: replaced native alert() with toastStore.success.
 			// Old: alert('Storage configuration saved!');
 			toastStore.success('Storage configuration saved!');
