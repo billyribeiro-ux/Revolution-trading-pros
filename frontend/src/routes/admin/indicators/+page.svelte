@@ -35,7 +35,9 @@
 	let page = $state(1);
 	let perPage = $state(20);
 	let search = $state('');
-	// @ts-ignore write-only state
+	// FIX-2026-04-26-audit (P3): the previous `@ts-ignore write-only state` comment
+	// was wrong — `statusFilter` is bound via `bind:value` on the status <select>
+	// further down, so it is read both in the markup and in fetchIndicators().
 	let statusFilter = $state('');
 	let deleting = $state<string | null>(null);
 
@@ -99,7 +101,8 @@
 
 	// ICT 7: Reset page when filters change, then re-fetch
 	// Uses untrack on fetchIndicators to prevent circular dependency
-	// @ts-ignore write-only state
+	// FIX-2026-04-26-audit (P3): `searchDebounceTimer` is read by clearTimeout()
+	// — not write-only. Removed the misleading @ts-ignore comment.
 	let searchDebounceTimer: ReturnType<typeof setTimeout>;
 	$effect(() => {
 		// Explicitly subscribe to search and statusFilter as reactive dependencies

@@ -12,6 +12,8 @@
 	// shared ConfirmationModal used everywhere else in the admin. The native
 	// dialog is blocked in some sandboxed contexts and is inconsistent UX.
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	// FIX-2026-04-26-audit (P3): use the shared close icon instead of a literal "X" character.
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
 
 	// ICT 7: Match actual backend schema
 	interface Indicator {
@@ -624,8 +626,10 @@
 													class="btn-icon btn-danger"
 													onclick={() => deleteFile(file.id)}
 													title="Delete file"
+													aria-label="Delete file"
 												>
-													X
+													<!-- FIX-2026-04-26-audit (P3): replaced literal "X" with shared icon. -->
+													<IconX size={16} aria-hidden="true" />
 												</button>
 											</td>
 										</tr>
@@ -730,7 +734,13 @@
 		>
 			<div class="modal-header">
 				<h2>Upload Indicator File</h2>
-				<button class="btn-close" onclick={() => (showFileModal = false)}>X</button>
+				<button
+					class="btn-close"
+					onclick={() => (showFileModal = false)}
+					aria-label="Close modal"
+				>
+					<IconX size={20} aria-hidden="true" />
+				</button>
 			</div>
 			<div class="modal-body">
 				<div class="form-group">
@@ -792,7 +802,13 @@
 		>
 			<div class="modal-header">
 				<h2>Add Tutorial Video</h2>
-				<button class="btn-close" onclick={() => (showVideoModal = false)}>X</button>
+				<button
+					class="btn-close"
+					onclick={() => (showVideoModal = false)}
+					aria-label="Close modal"
+				>
+					<IconX size={20} aria-hidden="true" />
+				</button>
 			</div>
 			<div class="modal-body">
 				<div class="form-group">
@@ -850,6 +866,29 @@
 		</div>
 	</div>
 {/if}
+
+<!-- FIX-2026-04-26-audit (P2-3): ConfirmationModal replaces native confirm() -->
+<ConfirmationModal
+	isOpen={showDeleteFileModal}
+	title="Delete file?"
+	message="Are you sure you want to delete this file? This action cannot be undone."
+	confirmText="Delete"
+	variant="danger"
+	isLoading={isDeletingFile}
+	onConfirm={confirmDeleteFile}
+	onCancel={cancelDeleteFile}
+/>
+
+<ConfirmationModal
+	isOpen={showDeleteVideoModal}
+	title="Delete video?"
+	message="Are you sure you want to delete this tutorial video? This action cannot be undone."
+	confirmText="Delete"
+	variant="danger"
+	isLoading={isDeletingVideo}
+	onConfirm={confirmDeleteVideo}
+	onCancel={cancelDeleteVideo}
+/>
 
 <style>
 	.editor-page {

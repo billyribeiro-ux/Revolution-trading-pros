@@ -278,14 +278,15 @@
 			}
 			throw new Error(response.message || 'Upload failed');
 		} catch (error: any) {
-			// Fallback: Create local blob URL for preview (will need proper upload later)
-			console.warn('Server upload failed, using local preview:', error.message);
-			return {
-				name: file.name,
-				url: URL.createObjectURL(file),
-				size: file.size,
-				type: file.type
-			};
+			// FIX-2026-04-26-audit (P3): the previous fallback returned a
+			// `URL.createObjectURL(file)` blob URL that is only valid for the
+			// current tab — saving the indicator persisted a dead-on-reload URL
+			// to the database. Re-throw instead so the caller surfaces the error
+			// and the admin retries; never silently persist a transient blob URL.
+			console.error('Server upload failed:', error?.message ?? error);
+			throw new Error(
+				`Upload failed: ${error?.message ?? 'unknown error'}. Please retry — the file was not saved.`
+			);
 		}
 	}
 

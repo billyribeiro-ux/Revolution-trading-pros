@@ -32,8 +32,12 @@
 	/**
 	 * All trading rooms and alert services
 	 * Shows all 6 rooms: 3 live trading rooms + 3 alert services
+	 *
+	 * FIX-2026-04-26-audit (P3): ROOMS is a static module-level constant — wrapping
+	 * it in $derived() costs an extra reactive subscription on every render with
+	 * zero benefit. Plain const is correct.
 	 */
-	const managedRooms = $derived(ROOMS);
+	const managedRooms: Room[] = ROOMS;
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// HANDLERS

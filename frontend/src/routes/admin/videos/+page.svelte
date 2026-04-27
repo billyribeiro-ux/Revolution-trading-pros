@@ -317,8 +317,17 @@
 			video_url: video.video_url,
 			video_platform: video.video_platform,
 			thumbnail_url: video.thumbnail_url || '',
-			video_date:
-				typeof video.video_date === 'string' ? video.video_date.split('T')[0] : video.video_date,
+			// FIX-2026-04-26-audit (P2-5): always normalise to a YYYY-MM-DD string so
+			// the <input type="date"> binding never receives a Date/number that the
+			// browser silently rejects. Strings: trim the time portion. Anything
+			// else: coerce through Date and slice to ISO date. Invalid → today.
+			video_date: (() => {
+				if (typeof video.video_date === 'string') return video.video_date.split('T')[0];
+				if (video.video_date == null) return new Date().toISOString().split('T')[0];
+				const d = new Date(video.video_date as unknown as string | number | Date);
+				if (Number.isNaN(d.getTime())) return new Date().toISOString().split('T')[0];
+				return d.toISOString().split('T')[0];
+			})(),
 			is_published: video.is_published,
 			is_featured: video.is_featured,
 			categories: video.categories || []
@@ -603,10 +612,48 @@
 			xhr.addEventListener('error', () => reject(new Error('Network error during upload')));
 			xhr.addEventListener('abort', () => reject(new Error('Upload aborted')));
 
-			xhr.open('PUT', uploadUrl);
+			// FIX-2026-04-26-audit (P2-6): defense-in-depth — never PUT directly to a
+			// non-same-origin URL. If the backend ever returns a presigned Bunny URL
+			// with the API key embedded as a query parameter, that key would land in
+			// the browser's network panel. Force every cross-origin upload through
+			// our local /api/admin/bunny/upload proxy (which carries the Bunny key
+			// server-side per repo convention).
+			const safeUrl = sanitizeBunnyUploadUrl(uploadUrl);
+			xhr.open('PUT', safeUrl);
 			xhr.setRequestHeader('Content-Type', file.type || 'video/mp4');
 			xhr.send(file);
 		});
+	}
+
+	/**
+	 * Returns a same-origin upload URL. If the backend handed back an external
+	 * URL (e.g. a Bunny presigned PUT), we extract the video_guid + library_id
+	 * and re-route through our server proxy so the Bunny API key never leaves
+	 * the server.
+	 */
+	function sanitizeBunnyUploadUrl(url: string): string {
+		// Already same-origin? Pass through.
+		if (url.startsWith('/')) return url;
+		try {
+			const parsed = new URL(url, window.location.origin);
+			if (parsed.origin === window.location.origin) return parsed.pathname + parsed.search;
+			// External — extract guid/library from the path or query and rebuild.
+			// Bunny upload paths look like /library/{libraryId}/videos/{guid}
+			const m = parsed.pathname.match(/\/library\/(\d+)\/videos\/([a-z0-9-]+)/i);
+			if (m) {
+				const [, libraryId, guid] = m;
+				return `/api/admin/bunny/upload?video_guid=${encodeURIComponent(guid)}&library_id=${encodeURIComponent(libraryId)}`;
+			}
+			// Fall back to the raw URL but strip any auth-bearing query params so
+			// the API key (if any) does not surface in fetch metadata.
+			parsed.searchParams.delete('AccessKey');
+			parsed.searchParams.delete('access_key');
+			parsed.searchParams.delete('api_key');
+			console.warn('[uploadFileToBunny] non-proxy upload URL detected; stripping auth query params');
+			return parsed.toString();
+		} catch {
+			return url;
+		}
 	}
 
 	// FIX-2026-04-26-audit (P1-3): AbortController-backed polling so navigation
