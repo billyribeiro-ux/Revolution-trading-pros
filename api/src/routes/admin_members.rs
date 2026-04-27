@@ -21,7 +21,11 @@ use crate::{models::User, AppState};
 // AUTHORIZATION
 // ===============================================================================
 
-/// Check if user has admin privileges (admin, super-admin, or developer role)
+/// Check if user has admin privileges (admin, super-admin, or developer role).
+///
+/// Used for read-only endpoints. For destructive operations (delete segment,
+/// delete tag, delete filter, bulk-assign tags) prefer
+/// [`require_superadmin`] per audit 02 §P1-10.
 fn require_admin(user: &User) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
     let role = user.role.as_deref().unwrap_or("user");
     if role == "admin" || role == "super-admin" || role == "super_admin" || role == "developer" {
@@ -32,6 +36,26 @@ fn require_admin(user: &User) -> Result<(), (StatusCode, Json<serde_json::Value>
             Json(json!({
                 "error": "Access denied",
                 "message": "This action requires admin privileges"
+            })),
+        ))
+    }
+}
+
+/// FIX-2026-04-26 (audit 02 §P1-10): Strict super-admin gate for
+/// destructive / privilege-bearing operations. The base `require_admin`
+/// covers `admin`, `developer` and `super-admin` — none of which should be
+/// allowed to permanently delete segments/tags/filters or bulk-mutate
+/// thousands of users.
+fn require_superadmin(user: &User) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
+    let role = user.role.as_deref().unwrap_or("user");
+    if role == "super-admin" || role == "super_admin" || role == "superadmin" {
+        Ok(())
+    } else {
+        Err((
+            StatusCode::FORBIDDEN,
+            Json(json!({
+                "error": "Access denied",
+                "message": "This action requires super-admin privileges"
             })),
         ))
     }
@@ -293,12 +317,14 @@ async fn update_segment(
 }
 
 /// DELETE /admin/members/segments/:id - Delete segment
+///
+/// FIX-2026-04-26 (audit 02 §P1-10): Destructive — super-admin only.
 async fn delete_segment(
     State(state): State<AppState>,
     user: User,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
+    require_superadmin(&user)?;
 
     let result = sqlx::query("DELETE FROM member_segments WHERE id = $1")
         .bind(id)
@@ -560,12 +586,14 @@ async fn update_member_tag(
 }
 
 /// DELETE /admin/members/tags/:id - Delete tag
+///
+/// FIX-2026-04-26 (audit 02 §P1-10): Destructive — super-admin only.
 async fn delete_member_tag(
     State(state): State<AppState>,
     user: User,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
+    require_superadmin(&user)?;
 
     let result = sqlx::query("DELETE FROM member_tags WHERE id = $1")
         .bind(id)
@@ -830,12 +858,14 @@ async fn update_member_filter(
 }
 
 /// DELETE /admin/members/filters/:id - Delete filter
+///
+/// FIX-2026-04-26 (audit 02 §P1-10): Destructive — super-admin only.
 async fn delete_member_filter(
     State(state): State<AppState>,
     user: User,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
+    require_superadmin(&user)?;
 
     let result = sqlx::query("DELETE FROM member_filters WHERE id = $1")
         .bind(id)
@@ -945,12 +975,14 @@ async fn unassign_tag_from_user(
 }
 
 /// POST /admin/members/tags/bulk-assign - Bulk assign tags to users
+///
+/// FIX-2026-04-26 (audit 02 §P1-10): Bulk privileged write — super-admin only.
 async fn bulk_assign_tags(
     State(state): State<AppState>,
     user: User,
     Json(input): Json<BulkAssignTagsRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
+    require_superadmin(&user)?;
 
     let mut assigned_count = 0;
 

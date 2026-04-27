@@ -15,6 +15,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { ROOMS } from '$lib/config/rooms';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
@@ -225,39 +226,100 @@
 	/**
 	 * Detect schedule conflicts (overlapping times on same day)
 	 */
+	// FIX-2026-04-26 (P1): Convert per-event "HH:MM" + IANA timezone to absolute
+	// UTC minutes within the week so two events at 09:30 ET and 09:30 PT (3 hours
+	// apart in real time) no longer string-lex compare as conflicting, and 23:30
+	// in one zone vs 02:30 in another are correctly detected as adjacent/overlapping.
+	function toUtcMinutesForWeek(
+		dayOfWeek: number,
+		hhmm: string,
+		timezone: string
+	): { start: number; end: number } | null {
+		const [hStr, mStr] = (hhmm || '').split(':');
+		const h = parseInt(hStr ?? '');
+		const m = parseInt(mStr ?? '');
+		if (Number.isNaN(h) || Number.isNaN(m)) return null;
+
+		// Anchor the schedule to a fixed reference week (Sunday, 2024-01-07) so
+		// `dayOfWeek` becomes a real wall-clock instant, then ask Intl what the
+		// timezone offset is at that instant. Returns minutes-since-week-start in UTC.
+		const baseSundayUtcMs = Date.UTC(2024, 0, 7);
+		const wallUtcMs = baseSundayUtcMs + dayOfWeek * 86400000 + h * 3600000 + m * 60000;
+		try {
+			// Intl.DateTimeFormat lets us compute the tz offset at an instant.
+			const dtf = new Intl.DateTimeFormat('en-US', {
+				timeZone: timezone || 'UTC',
+				year: 'numeric',
+				month: '2-digit',
+				day: '2-digit',
+				hour: '2-digit',
+				minute: '2-digit',
+				second: '2-digit',
+				hour12: false
+			});
+			const parts = dtf.formatToParts(new Date(wallUtcMs));
+			const get = (t: string) => parts.find((p) => p.type === t)?.value ?? '0';
+			const asUtcOfLocal = Date.UTC(
+				parseInt(get('year')),
+				parseInt(get('month')) - 1,
+				parseInt(get('day')),
+				parseInt(get('hour')) % 24,
+				parseInt(get('minute')),
+				parseInt(get('second'))
+			);
+			const offsetMs = asUtcOfLocal - wallUtcMs;
+			// Real instant = wall - offset (wall is interpreted in the named tz).
+			return { start: wallUtcMs - offsetMs, end: 0 };
+		} catch {
+			return null;
+		}
+	}
+
+	function scheduleToUtcRange(s: ScheduleEvent): { start: number; end: number } | null {
+		const startInfo = toUtcMinutesForWeek(s.day_of_week, s.start_time, s.timezone || 'UTC');
+		const endInfo = toUtcMinutesForWeek(s.day_of_week, s.end_time, s.timezone || 'UTC');
+		if (!startInfo || !endInfo) return null;
+		let start = startInfo.start;
+		let end = endInfo.start;
+		// Wrap past midnight: 23:30 → 02:30 should not yield negative range.
+		if (end <= start) end += 86400000;
+		return { start, end };
+	}
+
 	const conflicts = $derived.by(() => {
 		const conflictPairs: Array<[ScheduleEvent, ScheduleEvent]> = [];
-
-		for (const day of Object.keys(schedulesByDay)) {
-			const daySchedules = schedulesByDay[Number(day)];
-			for (let i = 0; i < daySchedules.length; i++) {
-				for (let j = i + 1; j < daySchedules.length; j++) {
-					const a = daySchedules[i];
-					const b = daySchedules[j];
-
-					// Check for overlap
-					if (a.start_time < b.end_time && b.start_time < a.end_time) {
-						conflictPairs.push([a, b]);
-					}
+		const ranges = schedules
+			.filter((s) => s.is_active)
+			.map((s) => ({ s, range: scheduleToUtcRange(s) }))
+			.filter((x): x is { s: ScheduleEvent; range: { start: number; end: number } } =>
+				x.range !== null
+			);
+		for (let i = 0; i < ranges.length; i++) {
+			for (let j = i + 1; j < ranges.length; j++) {
+				const a = ranges[i];
+				const b = ranges[j];
+				// True overlap on absolute UTC instants.
+				if (a.range.start < b.range.end && b.range.start < a.range.end) {
+					conflictPairs.push([a.s, b.s]);
 				}
 			}
 		}
-
 		return conflictPairs;
 	});
 
 	const hasConflicts = $derived(conflicts.length > 0);
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// EFFECTS - Svelte 5 $effect
+	// EFFECTS - Svelte 5 runes
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	/**
-	 * Load schedules when selected room changes
-	 */
-	$effect(() => {
+	// FIX-2026-04-26 (P2): one-shot data load. Was `$effect` keyed on selectedRoomId
+	// which fires write-while-reading cascades on first paint (see commit 34a0bd070).
+	// We still need to reload when the user switches rooms; that is wired via the
+	// <select onchange> handler `selectRoom()` below.
+	onMount(() => {
 		if (selectedRoomId) {
-			loadSchedules();
+			void loadSchedules();
 		}
 	});
 
@@ -279,6 +341,15 @@
 	 */
 	$effect(() => {
 		showBulkActions = selectedIds.size > 0;
+	});
+
+	// FIX-2026-04-26 (P2-7): clear bulk selection when filters change so the user
+	// can never bulk-delete a schedule that's no longer rendered.
+	$effect(() => {
+		// Track filter inputs so the effect re-runs when they change.
+		void filterActive;
+		void filterDay;
+		selectedIds = new Set();
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -354,8 +425,35 @@
 		}
 	}
 
+	// FIX-2026-04-26 (P1): require start_time < end_time. Compares minutes-of-day
+	// since cross-midnight schedules aren't representable in this single-day form
+	// (a cross-midnight session must be split into two day_of_week entries).
+	function validateForm(form: ScheduleForm): string | null {
+		const [sh, sm] = (form.start_time || '').split(':').map((n) => parseInt(n));
+		const [eh, em] = (form.end_time || '').split(':').map((n) => parseInt(n));
+		if (
+			Number.isNaN(sh) ||
+			Number.isNaN(sm) ||
+			Number.isNaN(eh) ||
+			Number.isNaN(em)
+		) {
+			return 'Start and end times are required (HH:MM).';
+		}
+		const startMin = sh * 60 + sm;
+		const endMin = eh * 60 + em;
+		if (endMin <= startMin) {
+			return 'End time must be after start time.';
+		}
+		return null;
+	}
+
 	async function createSchedule() {
 		if (!selectedRoom) return;
+		const validationError = validateForm(formData);
+		if (validationError) {
+			error = validationError;
+			return;
+		}
 		saving = true;
 		error = null;
 
@@ -387,6 +485,11 @@
 
 	async function updateSchedule() {
 		if (!editingSchedule) return;
+		const validationError = validateForm(formData);
+		if (validationError) {
+			error = validationError;
+			return;
+		}
 		saving = true;
 		error = null;
 
@@ -534,7 +637,11 @@
 
 	function selectRoom(roomId: string) {
 		selectedRoomId = roomId;
+		// FIX-2026-04-26 (P2-7): clear bulk selection so a hidden ID can't be bulk-deleted.
 		selectedIds = new Set();
+		// FIX-2026-04-26 (P2): Was previously $effect(()=>{ if(selectedRoomId) loadSchedules() })
+		// — replaced with explicit reload here to break the write-while-reading cascade.
+		void loadSchedules();
 	}
 
 	function openCreateModal() {

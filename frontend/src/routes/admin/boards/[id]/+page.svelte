@@ -36,6 +36,8 @@
 		IconSubtask
 	} from '$lib/icons';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	// FIX-2026-04-26 (P0-4): toast for drop-failure surfacing.
+	import { toastStore } from '$lib/stores/toast.svelte';
 
 	// Get board ID from URL
 	const boardId = $derived(page.params['id'] ?? '');
@@ -77,6 +79,8 @@
 	let draggedTask = $state<Task | null>(null);
 	let dragOverStage = $state<string | null>(null);
 	let dragOverPosition = $state<number | null>(null);
+	// FIX-2026-04-26 (P0-4): per-board reorder lock to prevent racing concurrent drops.
+	let dropInFlight = $state(false);
 
 	// Timer state
 	let activeTimer = $state<{ taskId: string; startedAt: Date } | null>(null);
@@ -112,16 +116,18 @@
 	});
 
 	onMount(() => {
-		loadBoard();
-
-		// Check for task in URL query
-		const taskId = page.url.searchParams.get('task');
-		if (taskId) {
-			const task = tasks.find((t) => t.id === taskId);
-			if (task) {
-				openTaskModal(task);
+		// FIX-2026-04-26 (P1-6): await loadBoard() before processing the ?task= deep-link
+		// so the lookup runs against populated `tasks`, not the empty initial array.
+		void (async () => {
+			await loadBoard();
+			const taskId = page.url.searchParams.get('task');
+			if (taskId) {
+				const task = tasks.find((t) => t.id === taskId);
+				if (task) {
+					openTaskModal(task);
+				}
 			}
-		}
+		})();
 
 		// Start timer interval
 		const timerInterval = setInterval(() => {
@@ -352,23 +358,51 @@
 		event.preventDefault();
 		if (!draggedTask) return;
 
-		try {
-			const updated = await boardsAPI.moveTask(boardId, draggedTask.id, stageId, position);
-			tasks = tasks.map((t) => (t.id === draggedTask!.id ? updated : t));
+		// FIX-2026-04-26 (P0-4):
+		//  - Capture draggedTask into a local const before any await so concurrent
+		//    drops can't trample the module-level reference (also kills the `!`
+		//    non-null-assertion crashes).
+		//  - Add a per-board lock so a fast double-drop doesn't fire two requests.
+		//  - Optimistically reorder, then on failure refetch + show error toast.
+		//  - Always reassign `tasks = [...tasks]` so Svelte 5's deep proxy notices.
+		if (dropInFlight) return;
+		const moving = draggedTask;
+		dropInFlight = true;
 
-			// Reorder other tasks in the stage
-			const stageTasks = tasks.filter((t) => t.stage_id === stageId && t.id !== draggedTask!.id);
-			stageTasks.forEach((t, i) => {
-				if (i >= position) {
-					t.position = i + 1;
+		// Snapshot for rollback.
+		const snapshot = tasks.map((t) => ({ ...t }));
+
+		try {
+			// Optimistic: shift sibling positions in the source array (not a filtered copy).
+			const next = tasks.map((t) => {
+				if (t.id === moving.id) {
+					return { ...t, stage_id: stageId, position };
 				}
+				if (t.stage_id === stageId && t.position >= position) {
+					return { ...t, position: t.position + 1 };
+				}
+				return t;
 			});
+			tasks = next;
+
+			const updated = await boardsAPI.moveTask(boardId, moving.id, stageId, position);
+			// Reconcile with backend's authoritative view of the moved task.
+			tasks = tasks.map((t) => (t.id === moving.id ? updated : t));
 		} catch (error) {
 			console.error('Failed to move task:', error);
+			// Roll back to pre-drop state, then refetch to be sure we're in sync.
+			tasks = snapshot;
+			toastStore.error('Failed to move task. Reloading board.');
+			try {
+				await loadBoard();
+			} catch (reloadErr) {
+				console.error('Failed to reload board after drop failure:', reloadErr);
+			}
 		} finally {
 			draggedTask = null;
 			dragOverStage = null;
 			dragOverPosition = null;
+			dropInFlight = false;
 		}
 	}
 

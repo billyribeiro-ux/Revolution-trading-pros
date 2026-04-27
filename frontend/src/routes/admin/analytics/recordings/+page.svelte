@@ -5,6 +5,35 @@
 	 *
 	 * Watch how users interact with your site
 	 * through recorded session playback.
+	 *
+	 * ──────────────────────────────────────────────────────────────────────
+	 * ⚠ PII REDACTION REQUIRED BEFORE INTEGRATING A REAL SESSION-REPLAY LIB
+	 * ──────────────────────────────────────────────────────────────────────
+	 *
+	 * TODO(2026-04-26-audit-08-P0-3): Before wiring the placeholder player at
+	 * `<!-- Player Area -->` to a real provider (rrweb, FullStory, Hotjar,
+	 * OpenReplay, …) you MUST land an input-redaction policy first:
+	 *
+	 *   1. Mask all `<input>`, `<textarea>`, `[contenteditable]` content.
+	 *      rrweb supports this via `maskAllInputs: true` or a per-field
+	 *      `data-rr-mask` allowlist. NEVER ship `maskAllInputs: false`.
+	 *   2. Block password / payment fields by attribute selector at the
+	 *      recorder level — opt in, not opt out (autocomplete="cc-number",
+	 *      type="password", `[data-payment]`, `[data-sensitive]`).
+	 *   3. Strip `user_email`, full names, phone numbers, billing addresses,
+	 *      and KYC fields from the page DOM before the recorder serializes
+	 *      it. Today this page already exposes `recording.user_email` raw
+	 *      (table line 325, modal line 442) — that surface needs masking
+	 *      OR a role check (super-admin only) before any real recording
+	 *      lands.
+	 *   4. Honor the existing consent banner (`/api/admin/consent`) — do
+	 *      not record sessions for users who have opted out.
+	 *   5. Add a server-side TTL (≤ 90 days) and a "delete by user_id"
+	 *      endpoint for GDPR/CCPA right-to-erasure.
+	 *
+	 * The audit (docs/audits/admin-2026-04-26/08-analytics.md §P0-3) flags
+	 * this as P0 because the moment a recorder ships, it instantly starts
+	 * capturing raw form inputs. Build the redaction policy FIRST.
 	 */
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
@@ -47,19 +76,24 @@
 		loading = true;
 		error = null;
 		try {
-			// Prepared for future API integration
-			const response = await fetch(
-				`/api/admin/analytics/recordings?period=${selectedPeriod}&filter=${activeFilter}&page=${page}`
-			);
-			if (response.ok) {
-				const data = await response.json();
-				recordings = data.recordings || [];
-				totalPages = data.pagination?.total_pages || 1;
-			} else {
-				recordings = [];
+			const params = new URLSearchParams({
+				period: selectedPeriod,
+				filter: activeFilter,
+				page: String(page)
+			});
+			const response = await fetch(`/api/admin/analytics/recordings?${params.toString()}`);
+			if (!response.ok) {
+				// FIX-2026-04-26 (audit 08-analytics §P1-4): surface real upstream
+				// status instead of silently zeroing the list. The previous
+				// `recordings = []` masked the orphan-endpoint bug — admins saw
+				// "No recordings" forever even when the backend was returning 404.
+				throw new Error(`Failed to load recordings (HTTP ${response.status})`);
 			}
-		} catch (_e) {
-			// For now, set empty array since API might not exist yet
+			const data = await response.json();
+			recordings = data.recordings || [];
+			totalPages = data.pagination?.total_pages || 1;
+		} catch (e) {
+			error = e instanceof Error ? e.message : 'Failed to load recordings';
 			recordings = [];
 		} finally {
 			loading = false;

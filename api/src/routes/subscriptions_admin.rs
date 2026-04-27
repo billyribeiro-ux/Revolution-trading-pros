@@ -178,6 +178,8 @@ async fn list_subscriptions(
         )
     })?;
 
+    // FIX-2026-04-26 (audit 02 §P1-11): propagate DB errors instead of
+    // silently rendering `total: 0` on connection drop.
     let total: (i64,) = sqlx::query_as(
         r#"
         SELECT COUNT(*) FROM user_memberships
@@ -191,7 +193,13 @@ async fn list_subscriptions(
     .bind(query.plan_id)
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or((0,));
+    .map_err(|e| {
+        tracing::error!(target: "list_subscriptions", error = %e, "total count query failed");
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
+    })?;
 
     Ok(Json(json!({
         "data": subscriptions,
@@ -508,13 +516,20 @@ async fn list_plans(
         )
     })?;
 
+    // FIX-2026-04-26 (audit 02 §P1-11): propagate errors instead of `0`.
     let total: (i64,) = sqlx::query_as(
         "SELECT COUNT(*) FROM membership_plans WHERE ($1::boolean IS NULL OR is_active = $1)",
     )
     .bind(query.is_active)
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or((0,));
+    .map_err(|e| {
+        tracing::error!(target: "list_plans", error = %e, "total count query failed");
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
+    })?;
 
     Ok(Json(json!({
         "data": plans,
@@ -1048,6 +1063,13 @@ async fn list_plan_price_history(
 }
 
 /// Get plan stats (admin)
+///
+/// FIX-2026-04-26 (audit 02 §P1-11): the previous body used
+/// `.unwrap_or((0,))` on three separate queries. A real DB outage or schema
+/// drift would silently render `0/0/0` in the dashboard — masked as
+/// "membership plans operating normally". Per CLAUDE.md ("Don't swallow
+/// errors with `unwrap_or_default()` on `Result<T, E>` — propagate via `?`")
+/// we now propagate via `?` and log on failure so the frontend gets a 500.
 async fn plan_stats(
     State(state): State<AppState>,
     AdminUser(_user): AdminUser,
@@ -1055,19 +1077,37 @@ async fn plan_stats(
     let total_plans: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM membership_plans")
         .fetch_one(&state.db.pool)
         .await
-        .unwrap_or((0,));
+        .map_err(|e| {
+            tracing::error!(target: "plan_stats", error = %e, "total_plans query failed");
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": "Failed to load plan stats"})),
+            )
+        })?;
 
     let active_plans: (i64,) =
         sqlx::query_as("SELECT COUNT(*) FROM membership_plans WHERE is_active = true")
             .fetch_one(&state.db.pool)
             .await
-            .unwrap_or((0,));
+            .map_err(|e| {
+                tracing::error!(target: "plan_stats", error = %e, "active_plans query failed");
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": "Failed to load plan stats"})),
+                )
+            })?;
 
     let total_subscriptions: (i64,) =
         sqlx::query_as("SELECT COUNT(*) FROM user_memberships WHERE status = 'active'")
             .fetch_one(&state.db.pool)
             .await
-            .unwrap_or((0,));
+            .map_err(|e| {
+                tracing::error!(target: "plan_stats", error = %e, "active subscriptions count query failed");
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": "Failed to load plan stats"})),
+                )
+            })?;
 
     Ok(Json(json!({
         "data": {

@@ -552,13 +552,39 @@
 		return new Promise((resolve, reject) => {
 			const xhr = new XMLHttpRequest();
 
-			xhr.upload.addEventListener('progress', async (e) => {
-				if (e.lengthComputable) {
-					const progress = Math.round((e.loaded / e.total) * 100);
-					await bulkUploadApi.updateItemStatus(itemId, {
-						status: 'uploading',
-						progress_percent: progress
-					});
+			// FIX-2026-04-26-audit (P1-4): throttle progress updates to one HTTP call per second.
+			// XHR `progress` fires many times per second; previously every event issued an
+			// updateItemStatus() call, producing hundreds of HTTP requests per file and
+			// hammering the backend. Coalesce to ~1Hz with a trailing flush guarantee.
+			let lastSentAt = 0;
+			let lastSentPercent = -1;
+			let pendingPercent: number | null = null;
+			const MIN_INTERVAL_MS = 1000;
+
+			const sendProgress = (percent: number) => {
+				lastSentAt = Date.now();
+				lastSentPercent = percent;
+				pendingPercent = null;
+				bulkUploadApi
+					.updateItemStatus(itemId, { status: 'uploading', progress_percent: percent })
+					.catch((e) => console.warn('[uploadFileToBunny] progress update failed:', e));
+			};
+
+			xhr.upload.addEventListener('progress', (e) => {
+				if (!e.lengthComputable) return;
+				const progress = Math.round((e.loaded / e.total) * 100);
+				if (progress === lastSentPercent) return;
+				const now = Date.now();
+				if (now - lastSentAt >= MIN_INTERVAL_MS) {
+					sendProgress(progress);
+				} else {
+					// Defer until the throttle window closes; a single trailing call captures
+					// the latest percent so the bar still finishes at 100.
+					pendingPercent = progress;
+					const delay = MIN_INTERVAL_MS - (now - lastSentAt);
+					setTimeout(() => {
+						if (pendingPercent !== null) sendProgress(pendingPercent);
+					}, delay);
 				}
 			});
 
@@ -628,10 +654,12 @@
 	}
 
 	function toggleAnalyticsPanel() {
+		// FIX-2026-04-26-audit (P2-1): the open-handler used to call loadAnalytics()
+		// directly AND a separate $effect on (showAnalyticsPanel, analyticsPeriod)
+		// fired the same call, producing a duplicate fetch on first open. The effect
+		// below is now the single fetch path, triggered both on open and on period
+		// change. Toggling closed simply hides the panel.
 		showAnalyticsPanel = !showAnalyticsPanel;
-		if (showAnalyticsPanel && !analyticsData) {
-			loadAnalytics();
-		}
 	}
 
 	async function fetchVideoDuration(videoId: number) {

@@ -213,8 +213,10 @@
 
 		const uploadItem = uploadQueue[idx];
 		if (!uploadItem) return;
+		// FIX-2026-04-26-audit (P3): in Svelte 5 $state proxies, mutating a property
+		// of an item in the array already triggers reactivity. The `uploadQueue = uploadQueue`
+		// self-assignment was a Svelte 4 idiom that is now noise.
 		uploadItem.status = 'uploading';
-		uploadQueue = uploadQueue;
 
 		try {
 			const formData = new FormData();
@@ -228,7 +230,6 @@
 					const item = uploadQueue[idx];
 					if (item) {
 						item.progress = progress;
-						uploadQueue = uploadQueue;
 					}
 				}
 			};
@@ -252,7 +253,6 @@
 				completedItem.status = 'complete';
 				completedItem.result = result;
 			}
-			uploadQueue = uploadQueue;
 
 			// Add to items list
 			items = [result, ...items];
@@ -264,7 +264,6 @@
 				errorItem.status = 'error';
 				errorItem.error = e.message || 'Upload failed';
 			}
-			uploadQueue = uploadQueue;
 		}
 
 		// Check if all uploads complete

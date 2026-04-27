@@ -167,18 +167,39 @@
 	let successMessage = $state('');
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// REACTIVE SLUG GENERATION - Instant as you type
+	// REACTIVE SLUG GENERATION - Instant as you type, but stops once user edits.
+	//
+	// FIX-2026-04-26-audit (P2-8): the previous unconditional $effect rewrote
+	// indicator.slug on every keystroke into the name field, clobbering any value
+	// the admin had typed manually into the slug field. Track an `slugEdited` flag
+	// — once the user touches the slug, we stop auto-syncing. Resetting the slug
+	// to empty re-enables auto-sync.
 	// ═══════════════════════════════════════════════════════════════════════════
 
+	let slugEdited = $state(false);
+
+	function autoSlug(name: string): string {
+		return name
+			.toLowerCase()
+			.replace(/[^a-z0-9]+/g, '-')
+			.replace(/^-+|-+$/g, '')
+			.substring(0, 100);
+	}
+
 	$effect(() => {
-		if (indicator.name) {
-			indicator.slug = indicator.name
-				.toLowerCase()
-				.replace(/[^a-z0-9]+/g, '-')
-				.replace(/^-+|-+$/g, '')
-				.substring(0, 100);
+		if (indicator.name && !slugEdited) {
+			indicator.slug = autoSlug(indicator.name);
 		}
 	});
+
+	/** Wire this to the slug input's `oninput` once a slug field is added.
+	 *  Empty slug re-enables auto-sync from the name field. */
+	function onSlugInput(value: string) {
+		indicator.slug = value;
+		slugEdited = value.trim().length > 0;
+	}
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	void onSlugInput;
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PLATFORM SELECTION

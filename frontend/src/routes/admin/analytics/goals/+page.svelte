@@ -83,18 +83,17 @@
 		loading = true;
 		error = null;
 		try {
-			// Using a mock structure since goals API isn't defined yet
-			// This prepares for future API integration
-			const response = await fetch(`/api/admin/analytics/goals?period=${selectedPeriod}`);
-			if (response.ok) {
-				const data = await response.json();
-				goals = data.goals || [];
-			} else {
-				// Fallback to empty for demo
-				goals = [];
+			const params = new URLSearchParams({ period: selectedPeriod });
+			const response = await fetch(`/api/admin/analytics/goals?${params.toString()}`);
+			if (!response.ok) {
+				// FIX-2026-04-26 (audit 08-analytics §P1-4): surface real upstream
+				// status instead of silently zeroing the list.
+				throw new Error(`Failed to load goals (HTTP ${response.status})`);
 			}
-		} catch (_e) {
-			// For now, set empty goals array since API might not exist yet
+			const data = await response.json();
+			goals = data.goals || [];
+		} catch (e) {
+			error = e instanceof Error ? e.message : 'Failed to load goals';
 			goals = [];
 		} finally {
 			loading = false;

@@ -15,12 +15,17 @@ const PROD_BACKEND =
 	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
 // Room slug to ID mapping
+// FIX-2026-04-26-audit (P2-4): the rooms config and the trading-rooms admin page
+// use the plural 'explosive-swings'. The previous singular 'explosive-swing' key
+// was unreachable, sending that room down the 404 mock-data path on any backend
+// hiccup. Keep the singular alias for backward-compat with anything legacy.
 const roomSlugToId: Record<string, number> = {
 	'day-trading-room': 1,
 	'swing-trading-room': 2,
 	'small-account-mentorship': 3,
 	'spx-profit-pulse': 4,
-	'explosive-swing': 5
+	'explosive-swings': 5,
+	'explosive-swing': 5 // legacy alias — TODO(2026-04-26-audit): remove once no callers reference it
 };
 
 // Mock videos data (same as parent endpoint)

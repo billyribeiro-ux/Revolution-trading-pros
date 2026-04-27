@@ -150,7 +150,7 @@
 		<!-- Connection Check -->
 		{#if connectionLoading}
 			<SkeletonLoader variant="dashboard" />
-		{:else if !getIsBehaviorConnected}
+		{:else if !isBehaviorConnected}
 			<ApiNotConnected
 				serviceName="Behavior Analytics"
 				description="Connect an analytics platform to track user behavior, record sessions, and generate heatmaps for deeper insights."
