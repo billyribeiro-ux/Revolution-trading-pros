@@ -17,7 +17,7 @@
 	 * @version 4.0.0 - December 2025 - Real API Integration
 	 */
 
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import {
 		IconVideo,
 		IconSearch,
@@ -609,22 +609,52 @@
 		});
 	}
 
+	// FIX-2026-04-26-audit (P1-3): AbortController-backed polling so navigation
+	// away from this page (or starting a new batch) cleanly cancels the loop.
+	// Without this, the previous implementation kept polling the backend every
+	// 5 s for up to 5 min after unmount and would mutate `bunnyUploadStatus`
+	// on a state-detached component, throwing Svelte runtime warnings.
+	let pollAbortController: AbortController | null = null;
+
 	async function pollBatchStatus(batchId: string): Promise<void> {
-		let attempts = 0;
+		// Cancel any in-flight poll for an older batch.
+		pollAbortController?.abort();
+		const controller = new AbortController();
+		pollAbortController = controller;
+
 		const maxAttempts = 60; // 5 minutes with 5-second intervals
+		const intervalMs = 5000;
 
-		while (attempts < maxAttempts) {
-			const response = await bulkUploadApi.getBatchStatus(batchId);
-			if (response.success && response.data) {
-				bunnyUploadStatus = response.data;
+		try {
+			for (let attempt = 0; attempt < maxAttempts; attempt++) {
+				if (controller.signal.aborted) return;
 
-				if (response.data.pending === 0 && response.data.in_progress === 0) {
-					return; // All uploads complete
+				const response = await bulkUploadApi.getBatchStatus(batchId);
+				if (controller.signal.aborted) return;
+
+				if (response.success && response.data) {
+					bunnyUploadStatus = response.data;
+					if (response.data.pending === 0 && response.data.in_progress === 0) {
+						return; // All uploads complete
+					}
 				}
-			}
 
-			await new Promise((resolve) => setTimeout(resolve, 5000));
-			attempts++;
+				// Abortable sleep — resolve immediately on abort so we exit the loop.
+				await new Promise<void>((resolve) => {
+					if (controller.signal.aborted) return resolve();
+					const timer = setTimeout(resolve, intervalMs);
+					controller.signal.addEventListener(
+						'abort',
+						() => {
+							clearTimeout(timer);
+							resolve();
+						},
+						{ once: true }
+					);
+				});
+			}
+		} finally {
+			if (pollAbortController === controller) pollAbortController = null;
 		}
 	}
 
@@ -993,6 +1023,12 @@
 		if (selectedRoom) {
 			await loadVideos();
 		}
+	});
+
+	// FIX-2026-04-26-audit (P1-3): cancel any in-flight bulk-upload poll on unmount
+	// so we never mutate state on a detached component.
+	onDestroy(() => {
+		pollAbortController?.abort();
 	});
 </script>
 

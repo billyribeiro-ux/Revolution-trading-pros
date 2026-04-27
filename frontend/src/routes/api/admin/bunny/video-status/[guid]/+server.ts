@@ -37,9 +37,9 @@ export const GET: RequestHandler = async (event) => {
 	try {
 		const headers: Record<string, string> = {
 			'Content-Type': 'application/json',
-			Accept: 'application/json'
+			Accept: 'application/json',
+			Authorization: `Bearer ${token}`
 		};
-		if (token) headers.Authorization = `Bearer ${token}`;
 
 		const response = await fetch(`${BACKEND_URL}/api/admin/bunny/video-status/${guid}`, {
 			headers

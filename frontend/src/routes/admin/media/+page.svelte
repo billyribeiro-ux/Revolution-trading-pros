@@ -31,7 +31,10 @@
 	import MediaSkeleton from '$lib/components/media/MediaSkeleton.svelte';
 	import { mediaApi, type MediaItem, type OptimizationStatistics } from '$lib/api/media';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { API_BASE_URL, API_ENDPOINTS } from '$lib/api/config';
+	// FIX-2026-04-26-audit (P1-7): media uploads, AI calls, and replace now route through
+	// same-origin /api/admin/media/* proxies (see frontend/src/routes/api/admin/media/*).
+	// Cross-origin XHRs to API_BASE_URL silently 401'd because the rtp_access_token cookie
+	// is scoped to the frontend host; no need for those imports any more.
 
 	// FIX-2026-04-26: Tabler icons replace 43 raw inline <svg> blocks for
 	// consistent professional styling per CLAUDE.md icon-system standard.
@@ -243,8 +246,10 @@
 					}
 				};
 				xhr.onerror = () => reject(new Error('Upload failed'));
-				xhr.open('POST', `${API_BASE_URL}${API_ENDPOINTS.admin.media.upload}`);
-				xhr.withCredentials = true; // ICT 7+ CORS credentials support
+				// FIX-2026-04-26-audit (P1-7): same-origin proxy. The proxy at
+				// frontend/src/routes/api/admin/media/upload/+server.ts forwards the
+				// multipart body verbatim with the Bearer header attached server-side.
+				xhr.open('POST', '/api/admin/media/upload');
 				xhr.send(formData);
 			});
 
