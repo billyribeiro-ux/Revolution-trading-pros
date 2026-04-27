@@ -155,8 +155,26 @@
 		})
 	);
 
+	let isInitialized = $state(false);
+
 	onMount(() => {
-		loadCompanies();
+		(async () => {
+			await loadCompanies();
+			isInitialized = true;
+		})();
+	});
+
+	// Audit P1 #6: backend filters (search, industry, size) only fired on
+	// the initial mount fetch — switching them never re-ran the query, so
+	// any matching company outside page-1 was invisible. Now we explicitly
+	// track the three filter fields and refetch on change.
+	$effect(() => {
+		searchQuery;
+		selectedIndustry;
+		selectedSize;
+		if (isInitialized) {
+			loadCompanies();
+		}
 	});
 </script>
 

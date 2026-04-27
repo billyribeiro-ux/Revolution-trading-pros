@@ -541,7 +541,12 @@
 								</tr>
 							</thead>
 							<tbody>
-								{#each orderDetail.items as item}
+								<!--
+									FIX-2026-04-26 (P2-4): defensive guard. Some legacy orders
+									may return without a populated `items` array; the previous
+									`{#each orderDetail.items}` would throw on undefined.
+								-->
+								{#each orderDetail.items ?? [] as item}
 									<tr>
 										<td>{item.name}</td>
 										<td>{item.quantity}</td>

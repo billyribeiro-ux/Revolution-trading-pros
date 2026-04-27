@@ -73,8 +73,12 @@
 
 	let validFeatures = $derived(membership.features.filter((f) => f.feature_name.trim()));
 
+	// FIX-2026-04-26 (audit 02 §P3-3): standardize on `Number()` instead of
+	// mixing `parseFloat`. `Number('5abc')` is `NaN` (which the `|| 0` catches),
+	// vs. `parseFloat('5abc')` which would silently return 5 — surprising and
+	// error-prone for an admin pricing form.
 	let isFormValid = $derived(
-		membership.name.trim() !== '' && membership.price !== '' && parseFloat(membership.price) >= 0
+		membership.name.trim() !== '' && membership.price !== '' && Number(membership.price) >= 0
 	);
 
 	let formattedPrice = $derived(
@@ -83,7 +87,7 @@
 					style: 'currency',
 					currency: 'USD',
 					minimumFractionDigits: 0
-				}).format(parseFloat(membership.price) || 0)
+				}).format(Number(membership.price) || 0)
 			: '$0'
 	);
 
@@ -99,15 +103,22 @@
 	// EFFECTS - Svelte 5 $effect
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	$effect(() => {
-		// Auto-generate slug from name if not manually edited
-		if (!slugManuallyEdited && membership.name) {
-			membership.slug = membership.name
-				.toLowerCase()
-				.replace(/[^a-z0-9]+/g, '-')
-				.replace(/^-+|-+$/g, '');
+	// FIX-2026-04-26 (audit 02 §P1-6): the previous $effect read
+	// `membership.name` + `slugManuallyEdited` and wrote `membership.slug` —
+	// classic write-while-read cascade. Slug auto-generation is now wired
+	// directly to the name input's `oninput` handler below (`handleNameInput`).
+	function slugify(value: string): string {
+		return value
+			.toLowerCase()
+			.replace(/[^a-z0-9]+/g, '-')
+			.replace(/^-+|-+$/g, '');
+	}
+
+	function handleNameInput() {
+		if (!slugManuallyEdited) {
+			membership.slug = slugify(membership.name);
 		}
-	});
+	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// FUNCTIONS
@@ -146,7 +157,7 @@
 				method: 'POST',
 				body: JSON.stringify({
 					...membership,
-					price: parseFloat(membership.price) || 0,
+					price: Number(membership.price) || 0,
 					features: validFeatures
 				})
 			});
@@ -242,6 +253,7 @@
 						name="name"
 						type="text"
 						bind:value={membership.name}
+						oninput={handleNameInput}
 						placeholder="e.g., Pro Membership"
 					/>
 				</div>

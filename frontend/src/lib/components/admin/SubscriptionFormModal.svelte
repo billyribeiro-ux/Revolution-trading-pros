@@ -67,9 +67,16 @@
 		{ value: 'yearly', label: 'Yearly', description: 'Billed annually' }
 	];
 
-	// Initialize form when subscription changes
+	// FIX P2-2 (audits/admin-2026-04-26/01-shell-and-dashboard.md):
+	// Gate the reset on a real false → true transition of `isOpen` so the
+	// admin's half-typed input survives parent re-renders.
+	let wasOpen = false;
 	$effect(() => {
-		if (isOpen && mode === 'edit' && subscription) {
+		const opening = isOpen && !wasOpen;
+		wasOpen = isOpen;
+		if (!opening) return;
+
+		if (mode === 'edit' && subscription) {
 			userId = subscription.userId || '';
 			productId = subscription.productId || '';
 			productName = subscription.productName || '';
@@ -78,7 +85,7 @@
 			autoRenew = subscription.autoRenew ?? true;
 			notes = subscription.notes || '';
 			trialDays = 0;
-		} else if (isOpen && mode === 'create') {
+		} else if (mode === 'create') {
 			userId = '';
 			productId = '';
 			productName = '';

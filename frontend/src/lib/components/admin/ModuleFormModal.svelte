@@ -56,16 +56,22 @@
 	let isLoading = $state(false);
 	let error = $state('');
 
-	// Initialize form when module changes
+	// FIX P2-2 (audits/admin-2026-04-26/01-shell-and-dashboard.md):
+	// Gate the reset on a real false → true transition of `isOpen`.
+	let wasOpen = false;
 	$effect(() => {
-		if (isOpen && mode === 'edit' && module) {
+		const opening = isOpen && !wasOpen;
+		wasOpen = isOpen;
+		if (!opening) return;
+
+		if (mode === 'edit' && module) {
 			title = module.title || '';
 			description = module.description || '';
 			sortOrder = module.sort_order || 1;
 			isPublished = module.is_published ?? true;
 			dripEnabled = module.drip_enabled ?? false;
 			dripDays = module.drip_days || 0;
-		} else if (isOpen && mode === 'create') {
+		} else if (mode === 'create') {
 			title = '';
 			description = '';
 			sortOrder = nextSortOrder;

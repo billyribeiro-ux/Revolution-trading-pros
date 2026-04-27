@@ -60,7 +60,14 @@
 
 	let activeTab = $state<'overview' | 'workflow' | 'subscribers'>('overview');
 
-	const funnelId = page.params.id ?? '';
+	// Audit P2 #14: this used to be `const funnelId = page.params.id ?? ''`,
+	// which captured the route param at component-init time only. SvelteKit
+	// reuses `+page.svelte` instances when navigating between
+	// `/automations/A` and `/automations/B`, so subsequent
+	// `crmAPI.updateAutomationFunnel(funnelId, …)` calls would silently
+	// mutate the *original* funnel — a real data-integrity bug. Switching
+	// to `$derived` rebinds on every param change.
+	let funnelId = $derived(page.params.id ?? '');
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// API FUNCTIONS

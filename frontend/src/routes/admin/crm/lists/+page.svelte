@@ -103,8 +103,28 @@
 		})
 	);
 
+	let isInitialized = $state(false);
+
 	onMount(() => {
-		loadLists();
+		(async () => {
+			await loadLists();
+			isInitialized = true;
+		})();
+	});
+
+	// Audit P1 #6: previously `searchQuery` and `filterPublic` were passed to
+	// the backend on the initial fetch only — switching public/private (or
+	// changing the search) never re-fired against the server, so anything
+	// outside the page-1 result set was invisible. Now we explicitly track
+	// both filters and re-run `loadLists()` on change.
+	$effect(() => {
+		// Reactive reads:
+		searchQuery;
+		filterPublic;
+
+		if (isInitialized) {
+			loadLists();
+		}
 	});
 </script>
 

@@ -134,27 +134,33 @@
 	// REACTIVE DATA LOADING - $effect
 	// =====================================================
 
+	// Audit P2 #11: previously two effects interacted — one called
+	// `loadTemplates()` on (debouncedSearch | selectedCategory | currentPage |
+	// perPage) and a second wrote `currentPage = 1` whenever the filters
+	// changed, which then re-triggered the first effect. Two backend calls
+	// per filter change. We now reset `currentPage` synchronously on the
+	// search/category change inside this single effect (using `untrack` for
+	// the write so we don't self-trigger), then issue exactly one
+	// `loadTemplates()` call.
+	let prevSearchKey = $state('');
 	$effect(() => {
-		// Dependencies: debouncedSearch, selectedCategory, currentPage, perPage
-		debouncedSearch;
-		selectedCategory;
+		const filterKey = `${debouncedSearch}|${selectedCategory}`;
+		// Read pagination deps so the effect also re-fires on page changes.
 		currentPage;
 		perPage;
 
-		// Skip initial load (handled by onMount)
 		if (isInitialLoad) return;
 
-		loadTemplates();
-	});
-
-	// Reset to page 1 when filters change
-	$effect(() => {
-		debouncedSearch;
-		selectedCategory;
-
-		if (!isInitialLoad) {
-			currentPage = 1;
+		if (filterKey !== prevSearchKey) {
+			prevSearchKey = filterKey;
+			// Reset to page 1 without re-triggering this effect.
+			if (currentPage !== 1) {
+				currentPage = 1;
+				return; // The page change will retrigger and we'll fetch then.
+			}
 		}
+
+		loadTemplates();
 	});
 
 	// =====================================================
@@ -231,17 +237,21 @@
 		showBulkDeleteModal = false;
 
 		isBulkDeleting = true;
-		let successCount = 0;
-		let failCount = 0;
 
-		for (const id of selectedTemplates) {
-			try {
-				await crmAPI.deleteEmailTemplate(id);
-				successCount++;
-			} catch {
-				failCount++;
-			}
-		}
+		// Audit P2 #12: previously this issued N sequential DELETE requests
+		// in a `for ... await` loop — selecting 50 templates fired 50
+		// round-trips, partial failures were unrecoverable, and there was
+		// no transaction boundary. Until the backend exposes a real
+		// `POST /api/admin/crm/templates/bulk-delete` endpoint (tracked in
+		// 06-crm-DEFERRED.md), we at least parallelize via `Promise.allSettled`
+		// so latency is N round-trips of wall-clock max, not sum, and we
+		// surface accurate success/fail counts.
+		const ids = Array.from(selectedTemplates);
+		const results = await Promise.allSettled(
+			ids.map((id) => crmAPI.deleteEmailTemplate(id))
+		);
+		const successCount = results.filter((r) => r.status === 'fulfilled').length;
+		const failCount = results.length - successCount;
 
 		isBulkDeleting = false;
 		selectedTemplates = new Set();

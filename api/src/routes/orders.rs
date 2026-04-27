@@ -606,11 +606,68 @@ pub async fn admin_index(
         )
     })?;
 
-    // Get total count
-    let total_count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM orders")
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or(0);
+    // FIX-2026-04-26 (P1-2): the unfiltered `SELECT COUNT(*) FROM orders`
+    // produced a paginator that let admins click into empty pages whenever
+    // a `status` or `search` filter was active. Mirror the same WHERE
+    // clauses used in the list query so the paginator math matches the
+    // visible result set. Errors propagate via `?` instead of being
+    // swallowed by `unwrap_or(0)` (per CLAUDE.md error-handling rule).
+    let mut count_sql = String::from(
+        r#"SELECT COUNT(DISTINCT o.id)
+           FROM orders o
+           LEFT JOIN users u ON o.user_id = u.id
+           WHERE 1=1"#,
+    );
+    let mut count_bind_count = 0;
+    if let Some(ref status) = query.status {
+        if !status.is_empty() {
+            count_bind_count += 1;
+            count_sql.push_str(&format!(" AND o.status = ${}", count_bind_count));
+        }
+    }
+    if let Some(ref search) = query.search {
+        if !search.is_empty() {
+            count_bind_count += 1;
+            count_sql.push_str(&format!(
+                " AND (o.order_number ILIKE ${0} OR u.email ILIKE ${0} OR u.name ILIKE ${0})",
+                count_bind_count
+            ));
+        }
+    }
+
+    let total_count: i64 = match (&query.status, &query.search) {
+        (Some(status), Some(search)) if !status.is_empty() && !search.is_empty() => {
+            let search_pattern = format!("%{}%", search);
+            sqlx::query_scalar(&count_sql)
+                .bind(status)
+                .bind(&search_pattern)
+                .fetch_one(&state.db.pool)
+                .await
+        }
+        (Some(status), _) if !status.is_empty() => {
+            sqlx::query_scalar(&count_sql)
+                .bind(status)
+                .fetch_one(&state.db.pool)
+                .await
+        }
+        (_, Some(search)) if !search.is_empty() => {
+            let search_pattern = format!("%{}%", search);
+            sqlx::query_scalar(&count_sql)
+                .bind(&search_pattern)
+                .fetch_one(&state.db.pool)
+                .await
+        }
+        _ => sqlx::query_scalar("SELECT COUNT(*) FROM orders")
+            .fetch_one(&state.db.pool)
+            .await,
+    }
+    .map_err(|e| {
+        tracing::error!("Failed to count admin orders: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(serde_json::json!({"error": "Failed to count orders"})),
+        )
+    })?;
 
     // Get stats
     let stats = get_admin_order_stats(&state)

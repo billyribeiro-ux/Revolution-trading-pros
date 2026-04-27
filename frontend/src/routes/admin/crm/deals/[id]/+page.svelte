@@ -30,6 +30,7 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	// Svelte 5 individual icon imports (Dec 2025 pattern)
+	import { onMount } from 'svelte';
 	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
 	import IconBriefcase from '@tabler/icons-svelte-runes/icons/briefcase';
 	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
@@ -320,8 +321,9 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Svelte 5: Initialize on mount with $effect
-	$effect(() => {
+	// Audit P2 #10: was a bare `$effect(() => loadDeal())`. Migrated to
+	// `onMount` to keep one-shot init off the reactive graph.
+	onMount(() => {
 		loadDeal();
 	});
 </script>

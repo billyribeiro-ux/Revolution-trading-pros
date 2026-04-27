@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { membersStore, emailStore } from '$lib/stores/members.svelte';
@@ -91,9 +92,11 @@
 		}, 300); // 300ms debounce
 	}
 
-	// Initialize - Use Promise.allSettled to prevent stuck loading if one API fails
-	// Svelte 5: $effect for initialization
-	$effect(() => {
+	// FIX-2026-04-26 (audit 02 §P2-8 / §P2-9 / CLAUDE.md commit 34a0bd070):
+	// initialization is `onMount` (not `$effect`) and the search debounce
+	// timer is cleared on destroy so a navigate-away mid-typing can't fire a
+	// store update on a destroyed component.
+	onMount(() => {
 		if (!browser) return;
 
 		const init = async () => {
@@ -105,7 +108,6 @@
 				emailStore.loadTemplates()
 			]);
 
-			// Check for critical failures
 			const [membersResult] = results;
 			if (membersResult.status === 'rejected') {
 				initError = 'Failed to load members. Please refresh the page.';
@@ -113,6 +115,13 @@
 			}
 		};
 		init();
+
+		return () => {
+			if (searchDebounceTimer) {
+				clearTimeout(searchDebounceTimer);
+				searchDebounceTimer = null;
+			}
+		};
 	});
 
 	// Handlers
@@ -219,12 +228,20 @@
 		}
 		importing = true;
 		try {
-			// Simulate import - in production this would call the API
-			await new Promise((r) => setTimeout(r, 1500));
-			toastStore.success(`Imported ${Math.floor(Math.random() * 50) + 10} members successfully`);
+			// FIX-2026-04-26 (audit 02 §P1-8): the previous body was a 1.5s
+			// `setTimeout` followed by `Math.floor(Math.random() * 50) + 10` —
+			// admins were shown a fake import-success count for an upload that
+			// never happened. Real CSV import wiring is tracked in
+			// `02-members-subscriptions-DEFERRED.md` §D3 (multipart/form-data
+			// upload + Rust handler). Until then, surface the missing wiring
+			// honestly instead of lying.
+			toastStore.warning(
+				'Member CSV import is not yet wired to the backend. ' +
+					'Upload a file with the JSON Grant API instead, or contact engineering. ' +
+					'Tracked in audit 02 §P1-8.'
+			);
 			showImportModal = false;
 			importFile = null;
-			await membersStore.loadMembers();
 		} catch {
 			toastStore.error('Failed to import members');
 		} finally {
@@ -269,11 +286,21 @@
 		}
 	}
 
+	// FIX-2026-04-26 (audit 02 §P1-9): the previous toast inlined the plaintext
+	// `temporaryPassword`. Toasts can be auto-dismissed before an admin reads
+	// them, are read aloud by screen-readers, and end up in browser
+	// accessibility trees / support screenshots. We now stash the password
+	// briefly and surface it through a one-time modal where the admin must
+	// explicitly copy it before dismissing. Token is wiped when the modal
+	// closes; we never log it.
+	let temporaryPasswordToReveal = $state<string | null>(null);
+	let temporaryPasswordMember = $state<string | null>(null);
+
 	function handleMemberSaved(savedMember: Member, temporaryPassword?: string) {
 		if (temporaryPassword) {
-			toastStore.success(
-				`Member ${savedMember.name} created! Temporary password: ${temporaryPassword}`
-			);
+			temporaryPasswordToReveal = temporaryPassword;
+			temporaryPasswordMember = savedMember.name;
+			toastStore.success(`Member ${savedMember.name} created — see password modal.`);
 		} else {
 			toastStore.success(`Member ${savedMember.name} saved successfully`);
 		}
@@ -281,6 +308,21 @@
 		showEditModal = false;
 		membersStore.loadMembers();
 		membersStore.loadStats();
+	}
+
+	async function copyTemporaryPassword() {
+		if (!temporaryPasswordToReveal) return;
+		try {
+			await navigator.clipboard.writeText(temporaryPasswordToReveal);
+			toastStore.success('Temporary password copied to clipboard');
+		} catch {
+			toastStore.error('Could not copy automatically — please select and copy manually.');
+		}
+	}
+
+	function dismissTemporaryPassword() {
+		temporaryPasswordToReveal = null;
+		temporaryPasswordMember = null;
 	}
 
 	async function handleExportAdvanced(format: 'csv' | 'xlsx' | 'pdf') {
@@ -523,16 +565,19 @@
 								fill="none"
 								stroke="currentColor"
 								stroke-width="3"
-								stroke-dasharray="{(stats.subscriptions.active / stats.overview.total_members) *
-									100} 100"
+								stroke-dasharray="{stats.overview.total_members > 0
+									? (stats.subscriptions.active / stats.overview.total_members) * 100
+									: 0} 100"
 								stroke-linecap="round"
 								transform="rotate(-90 18 18)"
 							></circle>
 						</svg>
 						<span
-							>{Math.round(
-								(stats.subscriptions.active / stats.overview.total_members) * 100
-							)}%</span
+							>{stats.overview.total_members > 0
+								? Math.round(
+										(stats.subscriptions.active / stats.overview.total_members) * 100
+									)
+								: 0}%</span
 						>
 					</div>
 				</div>
@@ -799,7 +844,11 @@
 				{#if pagination}
 					<div class="pagination">
 						<div class="pagination-info">
-							Showing {(pagination.current_page - 1) * pagination.per_page + 1} to {Math.min(
+							<!-- FIX-2026-04-26 (audit 02 §P2-7): off-by-one on empty list
+								(used to show "Showing 1 to 0 of 0 members"). -->
+							Showing {pagination.total === 0
+								? 0
+								: (pagination.current_page - 1) * pagination.per_page + 1} to {Math.min(
 								pagination.current_page * pagination.per_page,
 								pagination.total
 							)} of {pagination.total} members
@@ -813,11 +862,12 @@
 								<IconChevronLeft size={18} />
 							</button>
 							<span class="page-indicator"
-								>Page {pagination.current_page} of {pagination.last_page}</span
+								>Page {pagination.current_page} of {Math.max(pagination.last_page, 1)}</span
 							>
 							<button
 								class="page-btn"
-								disabled={pagination.current_page === pagination.last_page}
+								disabled={pagination.current_page >= Math.max(pagination.last_page, 1) ||
+									pagination.total === 0}
 								onclick={() => membersStore.goToPage(pagination.current_page + 1)}
 							>
 								<IconChevronRight size={18} />
@@ -1034,7 +1084,7 @@
 	/>
 {/if}
 
-<!-- Delete Confirmation Modal -->
+	<!-- Delete Confirmation Modal -->
 {#if showDeleteModal && selectedMemberForDelete}
 	<ConfirmationModal
 		isOpen={showDeleteModal}
@@ -1050,6 +1100,37 @@
 			selectedMemberForDelete = null;
 		}}
 	/>
+{/if}
+
+<!-- FIX-2026-04-26 (audit 02 §P1-9): one-time temporary-password reveal modal.
+     Replaces the old plaintext-password-in-toast pattern. The modal is the
+     ONLY surface that ever renders the password (no logging, no toast). -->
+{#if temporaryPasswordToReveal}
+	<div
+		class="temp-password-overlay"
+		role="dialog"
+		aria-modal="true"
+		aria-labelledby="temp-password-title"
+	>
+		<div class="temp-password-modal">
+			<h2 id="temp-password-title">Temporary password</h2>
+			<p class="temp-password-subtitle">
+				One-time view for <strong>{temporaryPasswordMember}</strong>. Copy it now — it will
+				not be shown again, and we never store it server-side after creation.
+			</p>
+			<div class="temp-password-value">
+				<code>{temporaryPasswordToReveal}</code>
+			</div>
+			<div class="temp-password-actions">
+				<button type="button" class="btn-primary" onclick={copyTemporaryPassword}>
+					Copy to clipboard
+				</button>
+				<button type="button" class="btn-secondary" onclick={dismissTemporaryPassword}>
+					I have recorded this — close
+				</button>
+			</div>
+		</div>
+	</div>
 {/if}
 
 <style>

@@ -13,6 +13,7 @@
 
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 	import IconShare from '@tabler/icons-svelte-runes/icons/share';
 	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
 	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
@@ -322,7 +323,9 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	$effect(() => {
+	// Audit P2 #10: was a bare `$effect(() => loadDependencies())`. Migrated
+	// to `onMount` to keep one-shot init off the reactive graph.
+	onMount(() => {
 		loadDependencies();
 	});
 </script>

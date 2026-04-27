@@ -185,7 +185,6 @@
 	async function addNote() {
 		if (!newNote.trim()) return;
 		try {
-			// Save note to API
 			const response = await fetch(`/api/admin/members/${memberId}/notes`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -198,21 +197,23 @@
 				newNote = '';
 				showNoteModal = false;
 				toastStore.success('Note added');
-			} else {
-				// If API fails, still add locally but warn user
-				notes = [
-					{
-						id: Date.now(),
-						content: newNote,
-						created_at: new Date().toISOString(),
-						author: 'Admin'
-					},
-					...notes
-				];
-				newNote = '';
-				showNoteModal = false;
-				toastStore.warning('Note added locally - sync pending');
+				return;
 			}
+
+			// FIX-2026-04-26 (audit 02 §P1-1): the previous else-branch inserted a
+			// fake `id: Date.now()` note into local state and showed a "Note added
+			// locally - sync pending" toast — but no sync ever happened, so the
+			// admin would believe the note was saved while the next refresh would
+			// silently drop it. Now we surface the real error and leave the input
+			// populated so the admin can retry.
+			let detail = `Backend returned ${response.status}`;
+			try {
+				const data = await response.json();
+				if (data?.error) detail = String(data.error);
+			} catch {
+				// non-JSON error body — keep the status-code default
+			}
+			toastStore.error(`Failed to save note: ${detail}`);
 		} catch (err) {
 			console.error('Failed to save note:', err);
 			toastStore.error('Failed to save note');
@@ -264,7 +265,11 @@
 		}
 	}
 
-	function formatCurrency(amount: number): string {
+	function formatCurrency(amount: number | null | undefined): string {
+		// FIX-2026-04-26 (audit 02 §P3-4): null/undefined/NaN guard. The
+		// `Member.total_spent` API field is nullable for never-paid users — the
+		// previous version rendered "$NaN" via `Intl.NumberFormat.format(null)`.
+		if (amount === null || amount === undefined || Number.isNaN(amount)) return '$0';
 		return new Intl.NumberFormat('en-US', {
 			style: 'currency',
 			currency: 'USD',

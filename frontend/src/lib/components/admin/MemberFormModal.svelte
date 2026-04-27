@@ -144,8 +144,28 @@
 	] as const;
 
 	// Initialize form when member changes
+	// FIX P2-2 (audits/admin-2026-04-26/01-shell-and-dashboard.md):
+	// Gate the reset on a real false → true transition of `isOpen`. The
+	// previous effect re-ran whenever `member`'s reference changed,
+	// blowing away half-typed input.
+	//
+	// FIX P2-3: 14 of these fields (phone, company, jobTitle, bio,
+	// timezone, subscriptionTier, accountStatus, expirationDate, tags,
+	// enableTwoFactor, emailNotifications, smsNotifications,
+	// marketingEmails, adminNotes) are NOT included in the
+	// `CreateMemberRequest` payload — admins type data, click Save, and
+	// nothing happens. Per CREATE-not-DELETE, we keep the state hooks but
+	// the audit RESULTS doc lists them as ghost fields so a follow-up
+	// can either wire them through or remove from the template.
+	// TODO(2026-04-26-audit): wire ghost profile fields into the API
+	// payload OR remove their inputs from the template.
+	let wasOpen = false;
 	$effect(() => {
-		if (isOpen && mode === 'edit' && member) {
+		const opening = isOpen && !wasOpen;
+		wasOpen = isOpen;
+		if (!opening) return;
+
+		if (mode === 'edit' && member) {
 			name = member.name || '';
 			email = member.email || '';
 			role = 'user';
@@ -165,7 +185,7 @@
 			smsNotifications = false;
 			marketingEmails = false;
 			adminNotes = '';
-		} else if (isOpen && mode === 'create') {
+		} else if (mode === 'create') {
 			name = '';
 			email = '';
 			password = '';

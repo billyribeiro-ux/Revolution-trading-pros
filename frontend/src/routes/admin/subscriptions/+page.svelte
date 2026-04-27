@@ -608,9 +608,16 @@
 											{formatDate(subscription.nextPaymentDate)}
 										</td>
 										<td class="px-6 py-4">
+											<!-- FIX-2026-04-26 (audit 02 §P2-3): action buttons used to bubble
+											     into the row's openSubscriptionDetail handler — clicking Cancel
+											     opened both the cancel modal and the detail drawer. Each handler
+											     now stopPropagation()s. -->
 											<div class="flex items-center gap-2">
 												<button
-													onclick={() => openSubscriptionDetail(subscription)}
+													onclick={(e) => {
+														e.stopPropagation();
+														openSubscriptionDetail(subscription);
+													}}
 													class="text-blue-400 hover:text-blue-300 text-sm font-medium"
 													title="View Details"
 												>
@@ -618,14 +625,20 @@
 												</button>
 												{#if subscription.status === 'active'}
 													<button
-														onclick={() => handlePause(subscription)}
+														onclick={(e) => {
+															e.stopPropagation();
+															handlePause(subscription);
+														}}
 														class="text-orange-400 hover:text-orange-300 text-sm font-medium"
 														title="Pause"
 													>
 														Pause
 													</button>
 													<button
-														onclick={() => handleCancel(subscription)}
+														onclick={(e) => {
+															e.stopPropagation();
+															handleCancel(subscription);
+														}}
 														class="text-red-400 hover:text-red-300 text-sm font-medium"
 														title="Cancel"
 													>
@@ -633,14 +646,20 @@
 													</button>
 												{:else if subscription.status === 'on-hold'}
 													<button
-														onclick={() => handleResume(subscription)}
+														onclick={(e) => {
+															e.stopPropagation();
+															handleResume(subscription);
+														}}
 														class="text-emerald-400 hover:text-emerald-300 text-sm font-medium"
 														title="Resume"
 													>
 														Resume
 													</button>
 													<button
-														onclick={() => handleCancel(subscription)}
+														onclick={(e) => {
+															e.stopPropagation();
+															handleCancel(subscription);
+														}}
 														class="text-red-400 hover:text-red-300 text-sm font-medium"
 														title="Cancel"
 													>
@@ -648,7 +667,10 @@
 													</button>
 												{:else if subscription.status === 'cancelled'}
 													<button
-														onclick={() => handleReactivate(subscription)}
+														onclick={(e) => {
+															e.stopPropagation();
+															handleReactivate(subscription);
+														}}
 														class="text-emerald-400 hover:text-emerald-300 text-sm font-medium"
 														title="Reactivate"
 													>

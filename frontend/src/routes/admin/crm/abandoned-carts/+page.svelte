@@ -170,8 +170,25 @@
 		})
 	);
 
+	let isInitialized = $state(false);
+
 	onMount(() => {
-		loadCarts();
+		(async () => {
+			await loadCarts();
+			isInitialized = true;
+		})();
+	});
+
+	// Audit P1 #6: backend filters (status, search, date range) only fired
+	// on the initial mount fetch. Now we explicitly track the filters and
+	// re-run `loadCarts()` whenever they change.
+	$effect(() => {
+		statusFilter;
+		searchQuery;
+		dateRange;
+		if (isInitialized) {
+			loadCarts();
+		}
 	});
 </script>
 

@@ -13,6 +13,7 @@
 
 <script lang="ts">
 	import { page } from '$app/state';
+	import { onMount } from 'svelte';
 	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
@@ -68,7 +69,9 @@
 	let availableLists = $state<{ id: string; title: string }[]>([]);
 	let availableSequences = $state<{ id: string; title: string }[]>([]);
 
-	const funnelId = page.params.id ?? '';
+	// Audit P2 #14: rebind on every param change so navigating between two
+	// edit URLs without a remount can't mutate the wrong funnel.
+	let funnelId = $derived(page.params.id ?? '');
 
 	const actionTypeOptions = [
 		{
@@ -396,8 +399,9 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Svelte 5: Initialize on mount with $effect
-	$effect(() => {
+	// Audit P2 #10: was a bare `$effect(() => loadFunnel())`. Migrated to
+	// `onMount` to keep one-shot init off the reactive graph.
+	onMount(() => {
 		loadFunnel();
 	});
 </script>

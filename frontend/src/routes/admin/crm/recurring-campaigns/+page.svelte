@@ -145,8 +145,23 @@
 		})
 	);
 
+	let isInitialized = $state(false);
+
 	onMount(() => {
-		loadCampaigns();
+		(async () => {
+			await loadCampaigns();
+			isInitialized = true;
+		})();
+	});
+
+	// Audit P1 #6: re-fetch from backend whenever search/status filters
+	// change — previously only the initial mount honored these filters.
+	$effect(() => {
+		searchQuery;
+		selectedStatus;
+		if (isInitialized) {
+			loadCampaigns();
+		}
 	});
 </script>
 
