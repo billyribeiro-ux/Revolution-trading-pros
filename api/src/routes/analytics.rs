@@ -9,6 +9,7 @@
 //! - Equity curves and P&L analysis
 
 use axum::{
+    body::Bytes,
     extract::{Path, Query, State},
     http::StatusCode,
     routing::{get, post},
@@ -33,11 +34,49 @@ pub struct TrackRequest {
     pub properties: Option<serde_json::Value>,
 }
 
+/// Parsed shape of a reading-analytics event coming from the browser.
+///
+/// The client (`readingAnalytics.ts`) ships these via `navigator.sendBeacon`,
+/// which forces `Content-Type: text/plain` to dodge the CORS preflight. Axum's
+/// `Json<T>` extractor would refuse that → 415. So `track_reading` reads the
+/// raw bytes itself and runs them through this struct, which accepts both
+/// snake_case and the camelCase the client sends today.
+///
+/// Only `post_id` (or its camelCase alias `postId`) is required so we can
+/// associate the row with a post. Everything else is preserved into JSONB
+/// so future analytics fields don't need another schema change.
+/// `post_id` arrives as either a JSON number or a string (the client's TS
+/// type is `string | number`; numbers are normal but defensive parsing keeps
+/// us from rejecting the rare string variant).
 #[derive(Debug, Deserialize)]
+#[serde(untagged)]
+pub enum FlexibleId {
+    Number(i64),
+    Stringy(String),
+}
+
+impl FlexibleId {
+    fn as_i64(&self) -> Option<i64> {
+        match self {
+            FlexibleId::Number(n) => Some(*n),
+            FlexibleId::Stringy(s) => s.parse().ok(),
+        }
+    }
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ReadingTrackRequest {
-    pub post_id: i64,
+    #[serde(alias = "post_id")]
+    pub post_id: FlexibleId,
+    #[serde(default, alias = "scroll_depth")]
     pub scroll_depth: Option<i32>,
+    #[serde(default, alias = "time_on_page")]
     pub time_on_page: Option<i32>,
+    /// Anything else the client sends (event, slug, engagementScore, …) is
+    /// captured here verbatim and round-tripped into properties JSONB.
+    #[serde(flatten)]
+    pub extras: std::collections::BTreeMap<String, serde_json::Value>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -70,22 +109,61 @@ async fn track_event(
     Ok(Json(json!({"status": "ok"})))
 }
 
-/// Track reading analytics (public)
+/// Track reading analytics (public).
+///
+/// FIX-2026-04-27: previously used `Json<ReadingTrackRequest>`, which 415's on
+/// `Content-Type: text/plain` — the only content-type `navigator.sendBeacon`
+/// can ship without triggering a CORS preflight. The browser was getting
+/// blanket 415s and zero `reading` rows ever landed in `analytics_events`.
+///
+/// Now reads raw bytes and parses JSON manually, so it works regardless of
+/// content-type. The body shape is also widened (see `ReadingTrackRequest`)
+/// to accept the client's actual camelCase payload.
 async fn track_reading(
     State(state): State<AppState>,
-    Json(input): Json<ReadingTrackRequest>,
+    body: Bytes,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let input: ReadingTrackRequest = serde_json::from_slice(&body).map_err(|e| {
+        (
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": format!("invalid reading event payload: {e}")})),
+        )
+    })?;
+
+    // Round-trip the full payload (including any extra client-supplied fields)
+    // into properties JSONB so we can analyze whatever the client cares about
+    // without round-tripping through another schema migration.
+    let post_id_num = input.post_id.as_i64();
+    let mut props = serde_json::Map::new();
+    if let Some(n) = post_id_num {
+        props.insert("post_id".into(), json!(n));
+    }
+    if let Some(v) = input.scroll_depth {
+        props.insert("scroll_depth".into(), json!(v));
+    }
+    if let Some(v) = input.time_on_page {
+        props.insert("time_on_page".into(), json!(v));
+    }
+    for (k, v) in input.extras {
+        props.insert(k, v);
+    }
+
+    // Pull the event_name out of `props.event` if the client supplied one
+    // (e.g. "reading_start", "reading_completion"). Fall back to "page_read".
+    let event_name = props
+        .get("event")
+        .and_then(|v| v.as_str())
+        .unwrap_or("page_read")
+        .to_string();
+
     sqlx::query(
         r#"
         INSERT INTO analytics_events (event_type, event_name, properties, created_at)
-        VALUES ('reading', 'page_read', $1, NOW())
+        VALUES ('reading', $1, $2, NOW())
         "#,
     )
-    .bind(json!({
-        "post_id": input.post_id,
-        "scroll_depth": input.scroll_depth,
-        "time_on_page": input.time_on_page
-    }))
+    .bind(&event_name)
+    .bind(serde_json::Value::Object(props))
     .execute(&state.db.pool)
     .await
     .map_err(|e| {
