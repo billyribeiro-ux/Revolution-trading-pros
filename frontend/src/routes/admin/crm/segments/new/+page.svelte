@@ -8,17 +8,17 @@
 </script>
 
 <svelte:head>
-	<title>Create New Sequence — Coming Soon | Admin</title>
+	<title>Create New Segment — Coming Soon | Admin</title>
 </svelte:head>
 
 <div class="stub-page">
 	<header class="page-header">
-		<a href="/admin/crm/sequences" class="back-link">
+		<a href="/admin/crm/segments" class="back-link">
 			<IconArrowLeft size={18} />
-			<span>Back to Sequences</span>
+			<span>Back to Segments</span>
 		</a>
-		<h1>Create New Sequence</h1>
-		<p class="page-description">Configure a multi-step email sequence.</p>
+		<h1>Create New Segment</h1>
+		<p class="page-description">Define a dynamic contact segment by criteria.</p>
 	</header>
 
 	<section class="stub-card">
@@ -32,7 +32,7 @@
 			>
 			for the integration plan.
 		</p>
-		<a href="/admin/crm/sequences" class="btn-back">Return to Sequences</a>
+		<a href="/admin/crm/segments" class="btn-back">Return to Segments</a>
 	</section>
 </div>
 

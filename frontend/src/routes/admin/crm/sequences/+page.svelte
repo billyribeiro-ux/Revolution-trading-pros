@@ -15,7 +15,7 @@
 -->
 
 <script lang="ts">
-	import { untrack } from 'svelte';
+	import { untrack, onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import {
 		IconMail,
@@ -37,6 +37,7 @@
 		IconAlertCircle
 	} from '$lib/icons';
 	import { crmAPI } from '$lib/api/crm';
+	import { api } from '$lib/api/config';
 	import type { EmailSequence, SequenceFilters, SequenceStatus } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
@@ -299,13 +300,18 @@
 	// EFFECTS
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Auto-refresh when filters change (after initial load)
+	// Audit P1 #5: the previous filter `$effect` declared no reactive reads
+	// (only a comment said so), so it ran once when `isInitialized` flipped
+	// and then never again — search/status changes never refetched. Now we
+	// explicitly read `searchQuery` and `selectedStatus` so the effect
+	// re-fires whenever either changes; `untrack` keeps the loadSequences
+	// writes off the dependency graph.
 	$effect(() => {
-		// Track the reactive dependencies
+		// Reactive reads that drive refetch:
+		searchQuery;
+		selectedStatus;
 
-		// Only reload if already initialized (skip the initial load)
 		if (isInitialized) {
-			// Use untrack to prevent infinite loops when loadSequences updates state
 			untrack(() => {
 				loadSequences();
 			});
@@ -327,15 +333,16 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Svelte 5: Initialize on mount
-	$effect(() => {
+	// Svelte 5: Initialize on mount.
+	// Was previously a `$effect` — migrated to `onMount` per audit P2 #10
+	// to keep one-shot init off the reactive graph.
+	onMount(() => {
 		if (!browser) return;
 
-		const init = async () => {
+		(async () => {
 			await loadSequences();
 			isInitialized = true;
-		};
-		init();
+		})();
 	});
 </script>
 

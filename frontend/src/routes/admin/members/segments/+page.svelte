@@ -12,6 +12,7 @@
 	 * @version 2.0.0 - Svelte 5 Migration (Dec 2025)
 	 */
 
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import { adminFetch } from '$lib/utils/adminFetch';
@@ -176,7 +177,6 @@
 
 	// FIX-2026-04-26 (audit 02 §P2-9 / CLAUDE.md commit 34a0bd070):
 	// initialization should run once on mount, not in a `$effect`.
-	import { onMount } from 'svelte';
 	onMount(() => {
 		loadData();
 	});
@@ -434,46 +434,41 @@
 	async function handleConfirmDelete() {
 		if (!deleteTarget) return;
 
-		// Save reference before nullifying
 		const targetType = deleteTarget.type;
 		const targetItem = deleteTarget.item;
 
 		isDeleting = true;
 		try {
+			// FIX-2026-04-26 (audit 02 §P2-4): the previous version swallowed
+			// the API error and applied the local mutation regardless. With the
+			// proxies now wired up, an HTTP 5xx would have left the UI showing
+			// the row gone while the DB still had it. Now we re-throw on
+			// failure, leave UI in place, and call `loadData()` to re-sync.
 			if (targetType === 'segment') {
 				const segment = targetItem as Segment;
-				// Try API first
-				try {
-					await adminFetch(`/api/admin/members/segments/${segment.id}`, { method: 'DELETE' });
-				} catch {
-					// Fallback to local state
-				}
+				await adminFetch(`/api/admin/members/segments/${segment.id}`, { method: 'DELETE' });
 				segments = segments.filter((s) => s.id !== segment.id);
 				toastStore.success('Segment deleted');
 
-				// Close drawer if this segment was deleted from there
 				if (selectedSegment && selectedSegment.id === segment.id) {
 					closeSegmentDrawer();
 				}
 			} else if (targetType === 'tag') {
 				const tag = targetItem as Tag;
-				try {
-					await adminFetch(`/api/admin/members/tags/${tag.id}`, { method: 'DELETE' });
-				} catch {
-					// Fallback to local state
-				}
+				await adminFetch(`/api/admin/members/tags/${tag.id}`, { method: 'DELETE' });
 				tags = tags.filter((t) => t.id !== tag.id);
 				toastStore.success('Tag deleted');
 			} else if (targetType === 'filter') {
 				const filter = targetItem as SavedFilter;
-				try {
-					await adminFetch(`/api/admin/members/filters/${filter.id}`, { method: 'DELETE' });
-				} catch {
-					// Fallback to local state
-				}
+				await adminFetch(`/api/admin/members/filters/${filter.id}`, { method: 'DELETE' });
 				savedFilters = savedFilters.filter((f) => f.id !== filter.id);
 				toastStore.success('Filter deleted');
 			}
+		} catch (err) {
+			console.error('Delete failed:', err);
+			toastStore.error(err instanceof Error ? err.message : 'Delete failed — re-syncing');
+			// Pull canonical state back so the UI never disagrees with the DB.
+			await loadData();
 		} finally {
 			isDeleting = false;
 			showDeleteModal = false;
@@ -685,11 +680,17 @@
 										</span>
 									{/if}
 								</div>
+								<!-- FIX-2026-04-26 (audit 02 §P2-3): action buttons used to bubble
+								     into the card's openSegmentDrawer handler. Each onclick now
+								     stopPropagation()s before invoking its action. -->
 								<div class="segment-actions">
 									<button
 										class="btn-icon"
 										type="button"
-										onclick={() => viewSegmentMembers(segment)}
+										onclick={(e) => {
+											e.stopPropagation();
+											viewSegmentMembers(segment);
+										}}
 										title="View members"
 									>
 										<IconUsers size={16} />
@@ -697,7 +698,10 @@
 									<button
 										class="btn-icon"
 										type="button"
-										onclick={() => openSegmentDrawer(segment)}
+										onclick={(e) => {
+											e.stopPropagation();
+											openSegmentDrawer(segment);
+										}}
 										title="View analytics"
 									>
 										<IconChartBar size={16} />
@@ -705,22 +709,38 @@
 									<button
 										class="btn-icon"
 										type="button"
-										onclick={() => exportSegmentData(segment)}
+										onclick={(e) => {
+											e.stopPropagation();
+											exportSegmentData(segment);
+										}}
 										title="Export data"
 									>
 										<IconDownload size={16} />
 									</button>
-									<button class="btn-icon" type="button" title="Send campaign">
+									<button
+										class="btn-icon"
+										type="button"
+										title="Send campaign"
+										onclick={(e) => e.stopPropagation()}
+									>
 										<IconMail size={16} />
 									</button>
 									{#if !segment.isSystem}
-										<button class="btn-icon" type="button" title="Edit">
+										<button
+											class="btn-icon"
+											type="button"
+											title="Edit"
+											onclick={(e) => e.stopPropagation()}
+										>
 											<IconEdit size={16} />
 										</button>
 										<button
 											class="btn-icon danger"
 											type="button"
-											onclick={() => confirmDeleteSegment(segment)}
+											onclick={(e) => {
+												e.stopPropagation();
+												confirmDeleteSegment(segment);
+											}}
 											title="Delete"
 										>
 											<IconTrash size={16} />

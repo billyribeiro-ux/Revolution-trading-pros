@@ -136,7 +136,9 @@
 		showEmailModal = true;
 	}
 
-	function formatCurrency(amount: number): string {
+	function formatCurrency(amount: number | null | undefined): string {
+		// FIX-2026-04-26 (audit 02 §P3-4): null/NaN guard.
+		if (amount === null || amount === undefined || Number.isNaN(amount)) return '$0';
 		return new Intl.NumberFormat('en-US', {
 			style: 'currency',
 			currency: 'USD',
@@ -363,9 +365,12 @@
 				<thead>
 					<tr>
 						<th class="checkbox-col">
+							<!-- FIX-2026-04-26 (audit 02 §P2-11): unique id replaces the
+							     mass-duplicated `id="page-checkbox"` that broke <label for>
+							     and Playwright selectors. -->
 							<input
-								id="page-checkbox"
-								name="page-checkbox"
+								id="select-all-churned"
+								name="select-all-churned"
 								type="checkbox"
 								checked={selectedMembers.size === members.length && members.length > 0}
 								onchange={selectAllMembers}
@@ -385,9 +390,10 @@
 					{#each members as member}
 						<tr class:selected={selectedMembers.has(member.id)}>
 							<td class="checkbox-col">
+								<!-- FIX-2026-04-26 (audit 02 §P2-11): per-row unique id. -->
 								<input
-									id="page-checkbox"
-									name="page-checkbox"
+									id="select-churned-{member.id}"
+									name="select-churned-{member.id}"
 									type="checkbox"
 									checked={selectedMembers.has(member.id)}
 									onchange={() => toggleMemberSelection(member.id)}
@@ -473,7 +479,10 @@
 			{#if pagination}
 				<div class="pagination">
 					<div class="pagination-info">
-						Showing {(pagination.current_page - 1) * pagination.per_page + 1} to {Math.min(
+						<!-- FIX-2026-04-26 (audit 02 §P2-7): off-by-one on empty list. -->
+						Showing {pagination.total === 0
+							? 0
+							: (pagination.current_page - 1) * pagination.per_page + 1} to {Math.min(
 							pagination.current_page * pagination.per_page,
 							pagination.total
 						)} of {pagination.total}

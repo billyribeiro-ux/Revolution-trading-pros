@@ -8,17 +8,17 @@
 </script>
 
 <svelte:head>
-	<title>Create New Sequence — Coming Soon | Admin</title>
+	<title>New Import — Coming Soon | Admin</title>
 </svelte:head>
 
 <div class="stub-page">
 	<header class="page-header">
-		<a href="/admin/crm/sequences" class="back-link">
+		<a href="/admin/crm/import-export" class="back-link">
 			<IconArrowLeft size={18} />
-			<span>Back to Sequences</span>
+			<span>Back to Import / Export</span>
 		</a>
-		<h1>Create New Sequence</h1>
-		<p class="page-description">Configure a multi-step email sequence.</p>
+		<h1>New Import</h1>
+		<p class="page-description">Start a new bulk import of contacts, leads, or companies.</p>
 	</header>
 
 	<section class="stub-card">
@@ -32,7 +32,7 @@
 			>
 			for the integration plan.
 		</p>
-		<a href="/admin/crm/sequences" class="btn-back">Return to Sequences</a>
+		<a href="/admin/crm/import-export" class="btn-back">Return to Import / Export</a>
 	</section>
 </div>
 

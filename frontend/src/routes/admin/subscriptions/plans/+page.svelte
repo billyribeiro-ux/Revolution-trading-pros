@@ -127,12 +127,12 @@
 		error = '';
 
 		try {
-			const token = getAuthToken();
+			// FIX-2026-04-26 (audit 02 §P3-6): the SvelteKit proxy reads the
+			// `rtp_access_token` cookie (commit e2356fa46), so the manual Bearer
+			// header was redundant with `credentials: 'include'`. Dropping it
+			// keeps the wire shape consistent with the rest of the codebase.
 			const response = await fetch('/api/admin/subscriptions/plans?per_page=100', {
-				headers: {
-					Authorization: `Bearer ${token}`,
-					'Content-Type': 'application/json'
-				},
+				headers: { 'Content-Type': 'application/json' },
 				credentials: 'include'
 			});
 

@@ -395,7 +395,10 @@
 		formData.features = formData.features.filter((_, i) => i !== index);
 	}
 
-	function formatCurrency(amount: number): string {
+	function formatCurrency(amount: number | null | undefined): string {
+		// FIX-2026-04-26 (audit 02 §P3-4): null/NaN guard so MRR cards never
+		// render `$NaN` if a plan price comes back null.
+		if (amount === null || amount === undefined || Number.isNaN(amount)) return '$0';
 		return new Intl.NumberFormat('en-US', {
 			style: 'currency',
 			currency: 'USD',
@@ -796,18 +799,21 @@
 						</div>
 						<div class="features-list-edit">
 							{#each formData.features as feature, index}
+								<!-- FIX-2026-04-26 (audit 02 §P2-11): per-feature unique ids; the
+								     two `page-feature-*` ids used to repeat for every row, breaking
+								     <label for> association and Playwright selectors. -->
 								<div class="feature-row">
 									<input
-										id="page-feature-feature-name"
-										name="page-feature-feature-name"
+										id="feature-name-{index}"
+										name="feature-name-{index}"
 										type="text"
 										bind:value={feature.feature_name}
 										placeholder="Feature name"
 										class="feature-input"
 									/>
 									<input
-										id="page-feature-description"
-										name="page-feature-description"
+										id="feature-description-{index}"
+										name="feature-description-{index}"
 										type="text"
 										bind:value={feature.description}
 										placeholder="Description (optional)"
