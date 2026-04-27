@@ -94,20 +94,46 @@ export interface FilterParams {
 }
 
 // Entity types
+//
+// FIX-2026-04-26 (P0-3, P2-10, P2-11, CC-1): align with the migration-correct
+// `coupons` table schema and the `admin.rs::CouponRow` response shape:
+//   discount_type, discount_value, min_purchase, max_discount,
+//   usage_limit, usage_count, starts_at, expires_at,
+//   applicable_products, applicable_plans
+//
+// Legacy aliases (`type`, `value`, `valid_from`, `valid_until`,
+// `minimum_amount`, `max_discount_amount`) are preserved as optional
+// read-only fields so older consumers (list-page formatter, edit-page
+// loader) keep compiling while they migrate to the canonical names.
 export interface Coupon {
 	id: number;
 	code: string;
-	type: 'fixed' | 'percentage';
-	value: number;
-	minimum_amount?: number;
-	usage_limit?: number;
+	description?: string | null;
+	// Canonical (matches backend CouponRow)
+	discount_type: 'fixed' | 'percentage';
+	discount_value: number;
+	min_purchase?: number | null;
+	max_discount?: number | null;
+	usage_limit?: number | null;
 	usage_count: number;
-	valid_from?: string;
-	valid_until?: string;
+	starts_at?: string | null;
+	expires_at?: string | null;
+	applicable_products?: unknown;
+	applicable_plans?: unknown;
 	is_active: boolean;
-	stackable?: boolean;
 	created_at: string;
 	updated_at: string;
+
+	// Legacy aliases (DO NOT WRITE) — kept so existing UI code compiles.
+	// These will read `undefined` from the backend and should be removed in a
+	// follow-up that purges every `coupon.type` / `coupon.value` callsite.
+	type?: 'fixed' | 'percentage' | 'free_shipping';
+	value?: number;
+	minimum_amount?: number | null;
+	max_discount_amount?: number | null;
+	valid_from?: string | null;
+	valid_until?: string | null;
+	stackable?: boolean;
 }
 
 export interface EmailTemplate {
@@ -258,9 +284,28 @@ export interface Tag {
 }
 
 // Request types
+// FIX-2026-04-26 (P0-3, CC-1): the canonical create payload matches
+// `admin.rs::CreateCouponRequest`. Legacy field aliases (`type`/`value`/
+// `valid_from`/`valid_until`/`minimum_amount`/`max_discount_amount`) are
+// kept optional so older callers compile, but new code MUST use the
+// canonical names; old aliases are dropped on the wire.
 export interface CouponCreateData {
 	code: string;
-	type:
+	description?: string;
+	// Canonical (matches backend CreateCouponRequest)
+	discount_type: 'fixed' | 'percentage';
+	discount_value: number;
+	min_purchase?: number | null;
+	max_discount?: number | null;
+	usage_limit?: number | null;
+	is_active?: boolean;
+	starts_at?: string | null;
+	expires_at?: string | null;
+	applicable_products?: unknown;
+	applicable_plans?: unknown;
+
+	// Legacy aliases (DO NOT WRITE) — kept so existing UI code compiles.
+	type?:
 		| 'fixed'
 		| 'percentage'
 		| 'bogo'
@@ -269,19 +314,15 @@ export interface CouponCreateData {
 		| 'bundle'
 		| 'cashback'
 		| 'points';
-	value: number;
+	value?: number;
 	display_name?: string;
-	description?: string;
 	internal_notes?: string;
 	minimum_amount?: number;
 	max_discount_amount?: number;
-	usage_limit?: number;
 	valid_from?: string;
 	valid_until?: string;
 	start_date?: string;
 	expiry_date?: string;
-	is_active?: boolean;
-	applicable_products?: string[];
 	applicable_categories?: string[];
 	restrictions?: Record<string, any>;
 	campaign_id?: string;
@@ -748,6 +789,55 @@ function buildQueryString(params: Record<string, any>): string {
 /**
  * Coupons API
  */
+/**
+ * FIX-2026-04-26 (P0-3, CC-1): translate legacy frontend field names
+ * (`type`, `value`, `valid_from`, `valid_until`, `minimum_amount`,
+ * `max_discount_amount`) to the canonical backend names
+ * (`discount_type`, `discount_value`, `starts_at`, `expires_at`,
+ * `min_purchase`, `max_discount`) before sending to the wire. Legacy keys
+ * are stripped so the backend `serde::Deserialize` doesn't see them.
+ */
+function normalizeCouponPayload(input: CouponCreateData | CouponUpdateData): Record<string, any> {
+	const src = input as Record<string, any>;
+	const out: Record<string, any> = { ...src };
+
+	const move = (legacy: string, canonical: string) => {
+		if (out[canonical] === undefined && out[legacy] !== undefined) {
+			out[canonical] = out[legacy];
+		}
+		delete out[legacy];
+	};
+
+	move('type', 'discount_type');
+	move('value', 'discount_value');
+	move('minimum_amount', 'min_purchase');
+	move('max_discount_amount', 'max_discount');
+	move('valid_from', 'starts_at');
+	move('valid_until', 'expires_at');
+
+	// Drop fields that the backend `CreateCouponRequest` does not accept.
+	delete out.display_name;
+	delete out.internal_notes;
+	delete out.start_date;
+	delete out.expiry_date;
+	delete out.applicable_categories;
+	delete out.restrictions;
+	delete out.campaign_id;
+	delete out.segments;
+	delete out.rules;
+	delete out.stackable;
+	delete out.priority;
+	delete out.referral_source;
+	delete out.affiliate_id;
+	delete out.influencer_id;
+	delete out.tags;
+	delete out.meta;
+	delete out.ab_test;
+	delete out.tiers;
+
+	return out;
+}
+
 export const couponsApi = {
 	async list(params?: PaginationParams & FilterParams): Promise<ApiResponse<Coupon[]>> {
 		const query = params ? buildQueryString(params) : '';
@@ -761,7 +851,7 @@ export const couponsApi = {
 	async create(data: CouponCreateData): Promise<ApiResponse<Coupon>> {
 		const response = await makeRequest<Coupon>('/admin/coupons', {
 			method: 'POST',
-			body: JSON.stringify(data)
+			body: JSON.stringify(normalizeCouponPayload(data))
 		});
 		requestManager.clearCache('/admin/coupons');
 		return response;
@@ -770,7 +860,7 @@ export const couponsApi = {
 	async update(id: number, data: CouponUpdateData): Promise<ApiResponse<Coupon>> {
 		const response = await makeRequest<Coupon>(`/admin/coupons/${id}`, {
 			method: 'PUT',
-			body: JSON.stringify(data)
+			body: JSON.stringify(normalizeCouponPayload(data))
 		});
 		requestManager.clearCache('/admin/coupons');
 		return response;

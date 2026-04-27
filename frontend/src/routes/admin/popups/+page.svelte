@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import {
 		IconPlus,
 		IconEdit,
@@ -24,22 +24,20 @@
 	let pendingDeleteId = $state<string | null>(null);
 	let deleting = $state(false);
 
-	// Svelte 5: Initialize on mount
-	$effect(() => {
-		if (!browser) return;
-
-		const init = async () => {
-			await loadPopups();
-			const { gsap } = await import('gsap');
-			gsap.from('.popup-card', {
-				opacity: 0,
-				y: 20,
-				duration: 0.5,
-				stagger: 0.1,
-				ease: 'power3.out'
-			});
-		};
-		init();
+	// FIX-2026-04-26 (07-marketing P2-9): replaced $effect + browser guard with
+	// onMount — correct pattern for one-shot side effects that assign state.
+	// GSAP animation runs once after load so the stagger doesn't replay on
+	// every reactive re-render.
+	onMount(async () => {
+		await loadPopups();
+		const { gsap } = await import('gsap');
+		gsap.from('.popup-card', {
+			opacity: 0,
+			y: 20,
+			duration: 0.5,
+			stagger: 0.1,
+			ease: 'power3.out'
+		});
 	});
 
 	async function loadPopups() {

@@ -52,31 +52,51 @@
 		getIsAnalyticsConnected,
 		getIsSeoConnected
 	} from '$lib/stores/connections.svelte';
-	import { getAuthToken } from '$lib/stores/auth.svelte';
 
 	// Per-request timeout — without this, `Promise.allSettled` would wait
 	// forever on a single hung endpoint and `isLoading` would never settle,
 	// keeping the Refresh button's spinner spinning indefinitely.
 	const FETCH_TIMEOUT_MS = 10_000;
 
-	async function localFetch<T = any>(endpoint: string): Promise<T> {
+	// FIX P1-5 (audits/admin-2026-04-26/01-shell-and-dashboard.md):
+	// AbortController held at module scope, refreshed each `fetchDashboardStats`
+	// call. Stale period responses (e.g. 30D landing after the user clicked
+	// 7D) used to overwrite newer data; now the previous fetch is aborted
+	// before a new one starts.
+	let inflightFetchAbort: AbortController | null = null;
+
+	// FIX P1-3 (audits/admin-2026-04-26/01-shell-and-dashboard.md):
+	// `localFetch` previously sent both `Authorization: Bearer …` AND
+	// `credentials: 'include'`. Per commit e2356fa46 the canonical admin
+	// auth is the `rtp_access_token` cookie; the duplicate Bearer header
+	// caused two-token races where the proxy could prefer one over the
+	// other (a known cause of "logged out but still rendering admin"
+	// reports). Removed the Authorization header and the getAuthToken
+	// import — cookie alone is sufficient because every endpoint here is
+	// same-origin (paths begin with `/api/`) and the proxies translate
+	// the cookie server-side.
+	//
+	// FIX P1-4: include the failing endpoint + statusText in the thrown
+	// error so the dashboard banner can show something more useful than
+	// "Failed to load some statistics".
+	async function localFetch<T = any>(endpoint: string, signal?: AbortSignal): Promise<T> {
 		const url = endpoint.startsWith('http')
 			? endpoint
 			: endpoint.startsWith('/api/')
 				? endpoint
 				: `/api${endpoint}`;
 
-		const token = getAuthToken();
 		const headers: Record<string, string> = {
 			'Content-Type': 'application/json',
 			Accept: 'application/json'
 		};
-		if (token) {
-			headers['Authorization'] = `Bearer ${token}`;
-		}
 
 		const controller = new AbortController();
 		const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+
+		// If a parent signal aborts, propagate to our per-request controller.
+		const onParentAbort = () => controller.abort();
+		signal?.addEventListener('abort', onParentAbort);
 
 		try {
 			const response = await fetch(url, {
@@ -86,11 +106,12 @@
 				signal: controller.signal
 			});
 			if (!response.ok) {
-				throw new Error(`HTTP ${response.status}`);
+				throw new Error(`HTTP ${response.status} ${response.statusText} for ${endpoint}`);
 			}
 			return response.json();
 		} finally {
 			clearTimeout(timeout);
+			signal?.removeEventListener('abort', onParentAbort);
 		}
 	}
 

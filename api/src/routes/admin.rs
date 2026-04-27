@@ -1796,8 +1796,14 @@ pub fn router() -> Router<AppState> {
         .route("/campaigns", get(list_campaigns).post(create_campaign))
         .route("/campaigns/:id", delete(delete_campaign))
         // Coupons
+        // FIX-2026-04-26 (P0-1, CC-1): mount the missing GET/PUT for /coupons/:id
+        // so the admin coupon-edit page can load and save against the
+        // migration-correct schema. See get_coupon/update_coupon above.
         .route("/coupons", get(list_coupons).post(create_coupon))
-        .route("/coupons/:id", delete(delete_coupon))
+        .route(
+            "/coupons/:id",
+            get(get_coupon).put(update_coupon).delete(delete_coupon),
+        )
         .route("/coupons/validate/:code", get(validate_coupon))
         // Settings
         .route("/settings", get(get_settings))

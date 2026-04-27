@@ -33,12 +33,14 @@
 		}
 
 		// Filter by search query
+		// FIX-2026-04-26 (P2-10): backend returns `discount_type`, not `type`.
+		// Read `discount_type` first and fall back to legacy `type`.
 		if (searchQuery.trim()) {
 			const query = searchQuery.toLowerCase();
-			result = result.filter(
-				(c) =>
-					c.code.toLowerCase().includes(query) || (c.type && c.type.toLowerCase().includes(query))
-			);
+			result = result.filter((c) => {
+				const dtype = c.discount_type ?? c.type;
+				return c.code.toLowerCase().includes(query) || !!dtype?.toLowerCase().includes(query);
+			});
 		}
 
 		return result;
@@ -131,18 +133,23 @@
 	// Helper Functions
 	// ═══════════════════════════════════════════════════════════════════════════
 
+	// FIX-2026-04-26 (P2-10, CC-1): backend response shape is
+	// `discount_type` / `discount_value` (not `type` / `value`).
+	// Read canonical first; fall back to legacy aliases for old payloads.
 	function formatDiscountValue(coupon: Coupon): string {
-		if (coupon.type === 'percentage') {
-			return `${coupon.value}% off`;
-		} else if (coupon.type === 'fixed') {
-			return `$${coupon.value} off`;
-		} else if (coupon.type === 'free_shipping') {
+		const dtype = coupon.discount_type ?? coupon.type;
+		const dvalue = coupon.discount_value ?? coupon.value ?? 0;
+		if (dtype === 'percentage') {
+			return `${dvalue}% off`;
+		} else if (dtype === 'fixed') {
+			return `$${dvalue} off`;
+		} else if (dtype === 'free_shipping') {
 			return 'Free Shipping';
 		}
-		return `${coupon.value}`;
+		return `${dvalue}`;
 	}
 
-	function formatDate(dateString: string | undefined): string {
+	function formatDate(dateString: string | null | undefined): string {
 		if (!dateString) return 'No expiry';
 		return new Date(dateString).toLocaleDateString('en-US', {
 			month: 'short',
@@ -151,7 +158,7 @@
 		});
 	}
 
-	function isExpired(dateString: string | undefined): boolean {
+	function isExpired(dateString: string | null | undefined): boolean {
 		if (!dateString) return false;
 		return new Date(dateString) < new Date();
 	}
@@ -279,7 +286,10 @@
 		{:else}
 			<div class="coupons-grid">
 				{#each filteredCoupons as coupon (coupon.id)}
-					<div class="coupon-card" class:expired={isExpired(coupon.valid_until)}>
+					{@const expiresAt = coupon.expires_at ?? coupon.valid_until}
+					{@const minPurchase = coupon.min_purchase ?? coupon.minimum_amount}
+					{@const discountTypeLabel = coupon.discount_type ?? coupon.type ?? '—'}
+					<div class="coupon-card" class:expired={isExpired(expiresAt)}>
 						<div class="coupon-header">
 							<div class="coupon-code">{coupon.code}</div>
 							<button
@@ -293,7 +303,7 @@
 						</div>
 
 						<div class="coupon-details">
-							<span class="coupon-type">{coupon.type}</span>
+							<span class="coupon-type">{discountTypeLabel}</span>
 							<span class="coupon-value">{formatDiscountValue(coupon)}</span>
 						</div>
 
@@ -303,14 +313,14 @@
 									Uses: {coupon.usage_count}/{coupon.usage_limit}
 								</span>
 							{/if}
-							{#if coupon.valid_until}
-								<span class="meta-item" class:expired={isExpired(coupon.valid_until)}>
-									Expires: {formatDate(coupon.valid_until)}
+							{#if expiresAt}
+								<span class="meta-item" class:expired={isExpired(expiresAt)}>
+									Expires: {formatDate(expiresAt)}
 								</span>
 							{/if}
-							{#if coupon.minimum_amount}
+							{#if minPurchase}
 								<span class="meta-item">
-									Min: ${coupon.minimum_amount}
+									Min: ${minPurchase}
 								</span>
 							{/if}
 						</div>

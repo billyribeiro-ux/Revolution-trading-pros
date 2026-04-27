@@ -41,7 +41,16 @@
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
-	import { authStore, user as userStore } from '$lib/stores/auth.svelte';
+	// FIX P1-1 (audits/admin-2026-04-26/01-shell-and-dashboard.md):
+	// Replaced legacy `$authStore` / `$userStore` autosubscribes throughout
+	// this file with `authStore.isAuthenticated` and `user.current` rune
+	// getters. The `$store` shorthand compiles to `legacy_pre_subscribe`
+	// which fires `fn(getSnapshot())` synchronously at component init,
+	// installing a long-lived subscriber on the auth store; combined with
+	// the same component's `$derived` blocks, this participated in the
+	// post-login cascade fixed in `+layout.svelte` / `AdminSidebar.svelte`
+	// commit 05acf3231. AdminToolbar was the last hold-out.
+	import { authStore, user, isAuthenticated } from '$lib/stores/auth.svelte';
 	import type { User } from '$lib/stores/auth.svelte';
 	import { isSuperadmin, isAdmin as checkIsAdmin, hasPermission } from '$lib/config/roles';
 	import { getUser, logout as apiLogout } from '$lib/api/auth';
@@ -187,14 +196,14 @@
 	// Computed State (Reactive) - Using Centralized Role System
 	// ─────────────────────────────────────────────────────────────────────────────
 
-	const currentUser = $derived($userStore as AdminUser | null);
+	const currentUser = $derived(user.current as AdminUser | null);
 
 	// Use centralized role checking from $lib/config/roles
 	const isSuperadminUser = $derived(isSuperadmin(currentUser));
 	const isAdmin = $derived(
 		(() => {
 			// Must be authenticated first
-			if (!$authStore.isAuthenticated) return false;
+			if (!isAuthenticated.current) return false;
 
 			if (!currentUser) {
 				console.debug('[AdminToolbar] No user data yet, checking auth...');
@@ -247,7 +256,7 @@
 	// ─────────────────────────────────────────────────────────────────────────────
 
 	async function checkSession(): Promise<void> {
-		if (!browser || !$authStore.isAuthenticated) return;
+		if (!browser || !isAuthenticated.current) return;
 
 		try {
 			// Verify session is still valid by fetching user data
@@ -584,15 +593,15 @@
 			const token = authStore.getToken();
 
 			// Only load user if we already have a valid token
-			if (token && !$userStore) {
+			if (token && !user.current) {
 				console.debug('[AdminToolbar] Loading user data...');
 				isLoading = true;
 				try {
 					await getUser();
 					// Type-safe access with proper null checking
-					const user = $userStore as AdminUser | null;
-					if (user?.email) {
-						console.debug('[AdminToolbar] User loaded:', user.email);
+					const loaded = user.current as AdminUser | null;
+					if (loaded?.email) {
+						console.debug('[AdminToolbar] User loaded:', loaded.email);
 					}
 				} catch (error) {
 					console.error('[AdminToolbar] Failed to load user:', error);

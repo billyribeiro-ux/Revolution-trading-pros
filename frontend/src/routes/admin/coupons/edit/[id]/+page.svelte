@@ -95,16 +95,21 @@
 	// Derived State - Svelte 5 Runes
 	// ═══════════════════════════════════════════════════════════════════════════
 
+	// FIX-2026-04-26 (P2-11, CC-1): compare against canonical backend fields
+	// with legacy fallback so the dirty-state check works for both shapes.
 	let hasChanges = $derived.by(() => {
 		if (!originalCoupon) return false;
+		const origType = originalCoupon.discount_type ?? originalCoupon.type;
+		const origValue = originalCoupon.discount_value ?? originalCoupon.value ?? 0;
+		const origMin = originalCoupon.min_purchase ?? originalCoupon.minimum_amount ?? null;
 		return (
 			formData.code !== originalCoupon.code ||
-			formData.type !== originalCoupon.type ||
-			formData.value !== originalCoupon.value ||
+			formData.type !== origType ||
+			formData.value !== origValue ||
 			formData.is_active !== originalCoupon.is_active ||
 			formData.stackable !== (originalCoupon.stackable || false) ||
-			formData.minimum_amount !== (originalCoupon.minimum_amount || null) ||
-			formData.usage_limit !== (originalCoupon.usage_limit || null)
+			formData.minimum_amount !== origMin ||
+			formData.usage_limit !== (originalCoupon.usage_limit ?? null)
 		);
 	});
 
@@ -141,17 +146,27 @@
 			const coupon = response.data;
 			originalCoupon = coupon;
 
+			// FIX-2026-04-26 (P2-11, CC-1): backend returns canonical
+			// discount_type/discount_value/min_purchase/starts_at/expires_at.
+			// Read those first; fall back to legacy aliases for old payloads.
+			const dtype = (coupon.discount_type ?? coupon.type ?? 'percentage') as CouponFormData['type'];
+			const dvalue = coupon.discount_value ?? coupon.value ?? 0;
+			const minPurchase = coupon.min_purchase ?? coupon.minimum_amount ?? null;
+			const maxDiscount = coupon.max_discount ?? coupon.max_discount_amount ?? null;
+			const startsAt = coupon.starts_at ?? coupon.valid_from ?? '';
+			const expiresAt = coupon.expires_at ?? coupon.valid_until ?? '';
+
 			// Populate form data
 			formData = {
 				code: coupon.code,
-				type: coupon.type,
-				value: coupon.value,
-				description: '',
-				minimum_amount: coupon.minimum_amount || null,
-				max_discount_amount: null,
-				usage_limit: coupon.usage_limit || null,
-				valid_from: coupon.valid_from ? formatDateTimeLocal(new Date(coupon.valid_from)) : '',
-				valid_until: coupon.valid_until ? formatDateTimeLocal(new Date(coupon.valid_until)) : '',
+				type: dtype,
+				value: dvalue,
+				description: coupon.description ?? '',
+				minimum_amount: minPurchase,
+				max_discount_amount: maxDiscount,
+				usage_limit: coupon.usage_limit ?? null,
+				valid_from: startsAt ? formatDateTimeLocal(new Date(startsAt)) : '',
+				valid_until: expiresAt ? formatDateTimeLocal(new Date(expiresAt)) : '',
 				is_active: coupon.is_active,
 				stackable: coupon.stackable || false
 			};
@@ -203,20 +218,32 @@
 
 		saving = true;
 		try {
-			// Prepare update data
+			// FIX-2026-04-26 (P0-3, P2-11, CC-1): send canonical field names to
+			// the backend (admin.rs::CreateCouponRequest). The legacy aliases
+			// (`type`/`value`/`minimum_amount`/...) are silently dropped by
+			// serde, so the previous payload corrupted every update.
+			// `couponsApi.update` also normalizes these via
+			// `normalizeCouponPayload`, but we send canonical to make the wire
+			// shape obvious here.
+			//
+			// Edit page only models 'percentage' / 'fixed'; the type union is
+			// wider for legacy reasons (P3-5) so coerce defensively.
+			const dtype: 'percentage' | 'fixed' =
+				formData.type === 'percentage' ? 'percentage' : 'fixed';
+
 			const updateData: CouponUpdateData = {
-				code: formData.code,
-				type: formData.type,
-				value: formData.value,
-				minimum_amount: formData.minimum_amount || undefined,
-				max_discount_amount: formData.max_discount_amount || undefined,
-				usage_limit: formData.usage_limit || undefined,
-				valid_from: formData.valid_from ? new Date(formData.valid_from).toISOString() : undefined,
-				valid_until: formData.valid_until
+				code: formData.code.trim().toUpperCase(),
+				discount_type: dtype,
+				discount_value: formData.value,
+				description: formData.description || undefined,
+				min_purchase: formData.minimum_amount ?? undefined,
+				max_discount: formData.max_discount_amount ?? undefined,
+				usage_limit: formData.usage_limit ?? undefined,
+				starts_at: formData.valid_from ? new Date(formData.valid_from).toISOString() : undefined,
+				expires_at: formData.valid_until
 					? new Date(formData.valid_until).toISOString()
 					: undefined,
-				is_active: formData.is_active,
-				stackable: formData.stackable
+				is_active: formData.is_active
 			};
 
 			// Update coupon

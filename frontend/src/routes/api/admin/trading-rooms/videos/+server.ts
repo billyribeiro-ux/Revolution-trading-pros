@@ -168,42 +168,18 @@ export const GET: RequestHandler = async ({ url, request, cookies }) => {
 		return json(backendData);
 	}
 
-	// Fallback to mock data
-	let filteredVideos = [...mockVideos];
-
-	if (roomId) {
-		filteredVideos = filteredVideos.filter((v) => v.trading_room_id.toString() === roomId);
-	}
-
-	if (traderId && traderId !== 'all') {
-		filteredVideos = filteredVideos.filter((v) => v.trader_id?.toString() === traderId);
-	}
-
-	if (publishedOnly) {
-		filteredVideos = filteredVideos.filter((v) => v.is_published);
-	}
-
-	// Sort by date descending
-	filteredVideos.sort(
-		(a, b) => new Date(b.video_date).getTime() - new Date(a.video_date).getTime()
-	);
-
-	// Paginate
-	const total = filteredVideos.length;
-	const start = (page - 1) * perPage;
-	const paginatedVideos = filteredVideos.slice(start, start + perPage);
-
-	return json({
-		success: true,
-		data: {
-			data: paginatedVideos,
-			current_page: page,
-			per_page: perPage,
-			total,
-			last_page: Math.ceil(total / perPage)
+	// FIX-2026-04-26-audit (P1-11): surface backend failure instead of returning phantom
+	// mock videos. Admins were seeing fake data with no indication of a real failure.
+	// TODO(2026-04-26-audit): gate mock on env.ENABLE_MOCK_DATA if needed for local dev.
+	console.error('[Trading-rooms videos proxy] Backend unavailable or non-success:', backendData);
+	return json(
+		{
+			success: false,
+			error: 'Unable to load videos from backend. Please check the API connection.',
+			_mock: false
 		},
-		_mock: true
-	});
+		{ status: 502 }
+	);
 };
 
 // POST - Create video
@@ -228,21 +204,14 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		return json(backendData);
 	}
 
-	// Mock response
-	const newVideo = {
-		id: mockVideos.length + 1,
-		...body,
-		views_count: 0,
-		created_at: new Date().toISOString(),
-		updated_at: new Date().toISOString()
-	};
-
-	mockVideos.push(newVideo);
-
-	return json({
-		success: true,
-		data: newVideo,
-		message: 'Video created successfully',
-		_mock: true
-	});
+	// FIX-2026-04-26-audit (P1-11): surface POST failure — a silent mock-create would
+	// persist nothing to the DB while appearing to succeed.
+	console.error('[Trading-rooms videos proxy POST] Backend unavailable or non-success:', backendData);
+	return json(
+		{
+			success: false,
+			error: 'Unable to create video — backend is unavailable. Please try again.'
+		},
+		{ status: 502 }
+	);
 };

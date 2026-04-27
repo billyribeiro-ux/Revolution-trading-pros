@@ -68,8 +68,14 @@ export function exportToCSV(options: ExportOptions): void {
 			.map((col) => {
 				const value = row[col.key];
 				const formatted = col.format ? col.format(value) : String(value ?? '');
-				// Escape quotes and wrap in quotes
-				return `"${formatted.replace(/"/g, '""')}"`;
+				// FIX-2026-04-26 (07-marketing P2): CSV injection guard.
+				// Excel / Sheets treat cells starting with =, +, -, @, TAB, CR as
+				// formula prefixes — a classic RCE vector in exported spreadsheets.
+				// Prefix any such value with a single quote so the cell is rendered
+				// as plain text by spreadsheet applications.
+				const safe = /^[=+\-@\t\r]/.test(formatted) ? `'${formatted}` : formatted;
+				// Escape double-quotes and wrap in quotes
+				return `"${safe.replace(/"/g, '""')}"`;
 			})
 			.join(',');
 	});

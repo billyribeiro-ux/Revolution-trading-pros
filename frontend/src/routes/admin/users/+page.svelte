@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 	import { usersApi, AdminApiError } from '$lib/api/admin';
 	import { IconPlus, IconUser, IconEdit, IconTrash, IconShield } from '$lib/icons';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
@@ -10,8 +11,8 @@
 	let showDeleteModal = $state(false);
 	let pendingDeleteId = $state<number | null>(null);
 
-	// Load users on mount
-	$effect(() => {
+	// P1-6: load once on mount — $effect re-ran on every re-instantiation
+	onMount(() => {
 		loadUsers();
 	});
 

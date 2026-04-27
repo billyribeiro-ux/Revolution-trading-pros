@@ -17,7 +17,7 @@
 	 * @version 4.0.0 - December 2025 - Real API Integration
 	 */
 
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import {
 		IconVideo,
 		IconSearch,
@@ -951,25 +951,19 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Svelte 5: Initialize on mount
-	$effect(() => {
-		if (!browser) return;
-
-		const init = async () => {
-			// Load rooms and traders first
-			await loadRoomsAndTraders();
-			// Then load videos for selected room
-			if (selectedRoom) {
-				await loadVideos();
-			}
-		};
-		init();
-	});
-
-	// Load videos when selected room changes
-	$effect(() => {
-		if (selectedRoom && !isLoadingRooms) {
-			loadVideos();
+	// FIX-2026-04-26-audit (P0-6): Consolidate to a single onMount call.
+	// The previous two $effect blocks caused triple-fire on initial render:
+	//   (A) $effect init: loadRoomsAndTraders() → sets selectedRoom → loadVideos() [fetch #1]
+	//   (B) $effect on selectedRoom change → loadVideos() [fetch #2]
+	// Plus selectRoom() called loadVideos() directly [fetch #3 on tab click].
+	// Now: onMount fires exactly once; selectRoom() is the only path that re-fetches
+	// on room change (no reactive $effect needed — user initiated).
+	onMount(async () => {
+		await loadRoomsAndTraders();
+		// loadRoomsAndTraders() sets selectedRoom to the first room.
+		// Fetch videos once here; subsequent room changes go through selectRoom().
+		if (selectedRoom) {
+			await loadVideos();
 		}
 	});
 </script>

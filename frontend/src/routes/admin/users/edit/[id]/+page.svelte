@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { IconCheck, IconX, IconUser } from '$lib/icons';
 
@@ -20,8 +21,8 @@
 
 	let userId = $derived(parseInt(page.params.id!));
 
-	// Load user on mount
-	$effect(() => {
+	// P1-6: load once on mount — $effect re-ran on every re-instantiation
+	onMount(() => {
 		loadUser();
 	});
 

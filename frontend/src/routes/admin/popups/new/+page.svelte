@@ -2,6 +2,7 @@
 https://svelte.dev/e/bind_invalid_expression -->
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 	import { Card, Input, Select } from '$lib/components/ui';
 	import { addToast } from '$lib/utils/toast';
 	import { popupsApi, type Popup } from '$lib/api/popups';
@@ -80,8 +81,9 @@ https://svelte.dev/e/bind_invalid_expression -->
 	let selectedFormId = $state<string | null>(null);
 	let availableForms = $state<Array<{ id: string; name: string }>>([]);
 
-	// Fetch available forms on mount
-	$effect(() => {
+	// FIX-2026-04-26 (07-marketing P2-9): $effect calling a state-assigning
+	// function is malpractice. Use onMount for a one-shot fetch.
+	onMount(() => {
 		loadForms();
 	});
 

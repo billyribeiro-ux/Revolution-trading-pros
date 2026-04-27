@@ -32,7 +32,15 @@
 	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
 	import IconCloudUpload from '@tabler/icons-svelte-runes/icons/cloud-upload';
 	import IconLoader from '@tabler/icons-svelte-runes/icons/loader-2';
-	import { API_BASE_URL, API_ENDPOINTS } from '$lib/api/config';
+	// FIX P0-4 (audits/admin-2026-04-26/01-shell-and-dashboard.md): switched
+	// from cross-origin `${API_BASE_URL}/api/...` (which dropped the
+	// rtp_access_token cookie under cross-origin XHR + withCredentials) to
+	// same-origin `/api/admin/...` proxies. The proxies live at
+	// `frontend/src/routes/api/admin/{media/upload, bunny/create-video,
+	// bunny/upload, bunny/video-status/[guid]}` and translate the cookie
+	// to a Bearer header server-side. `API_ENDPOINTS` import is no longer
+	// needed here.
+	const ADMIN_API_BASE = '/api/admin';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES & PROPS
@@ -309,8 +317,9 @@
 
 			xhr.onerror = () => reject(new Error('Network error during upload'));
 
-			xhr.open('POST', `${API_BASE_URL}${API_ENDPOINTS.admin.media.upload}`);
-			xhr.withCredentials = true;
+			// FIX P0-4: same-origin proxy. Cookie auth flows naturally; no
+			// need for `withCredentials` since we're already same-origin.
+			xhr.open('POST', `${ADMIN_API_BASE}/media/upload`);
 			xhr.send(formData);
 		});
 	}
@@ -322,11 +331,10 @@
 		uploadQueue[idx].status = 'uploading';
 		uploadQueue = uploadQueue;
 
-		// Step 1: Create video on Bunny.net
-		const createResponse = await fetch(`${API_BASE_URL}${API_ENDPOINTS.admin.bunny.createVideo}`, {
+		// FIX P0-4: same-origin proxy at /api/admin/bunny/create-video.
+		const createResponse = await fetch(`${ADMIN_API_BASE}/bunny/create-video`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			credentials: 'include',
 			body: JSON.stringify({
 				title: item.file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' '),
 				room_id: roomId
@@ -383,10 +391,8 @@
 		let attempts = 0;
 
 		while (attempts < maxAttempts) {
-			const response = await fetch(
-				`${API_BASE_URL}${API_ENDPOINTS.admin.bunny.videoStatus(videoGuid)}`,
-				{ credentials: 'include' }
-			);
+			// FIX P0-4: same-origin proxy at /api/admin/bunny/video-status/[guid].
+			const response = await fetch(`${ADMIN_API_BASE}/bunny/video-status/${videoGuid}`);
 
 			if (response.ok) {
 				const data = await response.json();

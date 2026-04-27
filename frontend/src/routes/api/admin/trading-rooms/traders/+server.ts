@@ -128,20 +128,19 @@ export const GET: RequestHandler = async ({ url, request, cookies }) => {
 		return json(backendData);
 	}
 
-	// Fallback to mock data
-	let filteredTraders = [...mockTraders];
-
-	if (activeOnly) {
-		filteredTraders = filteredTraders.filter((t) => t.is_active);
-	}
-
-	filteredTraders.sort((a, b) => a.sort_order - b.sort_order);
-
-	return json({
-		success: true,
-		data: filteredTraders,
-		_mock: true
-	});
+	// FIX-2026-04-26-audit (P1-11): surface backend failure instead of returning phantom
+	// mock traders (Mike/Sarah/James/Emily). Admins were seeing fake dropdowns on any
+	// backend hiccup with no indication that real data was unavailable.
+	// TODO(2026-04-26-audit): gate mock on env.ENABLE_MOCK_DATA if needed for local dev.
+	console.error('[Trading-rooms traders proxy] Backend unavailable or non-success:', backendData);
+	return json(
+		{
+			success: false,
+			error: 'Unable to load traders from backend. Please check the API connection.',
+			_mock: false
+		},
+		{ status: 502 }
+	);
 };
 
 // POST - Create trader
@@ -166,23 +165,14 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		return json(backendData);
 	}
 
-	// Mock response
-	const newTrader = {
-		id: mockTraders.length + 1,
-		...body,
-		slug: body.slug || body.name.toLowerCase().replace(/\s+/g, '-'),
-		is_active: body.is_active ?? true,
-		sort_order: mockTraders.length + 1,
-		daily_videos_count: 0,
-		created_at: new Date().toISOString(),
-		updated_at: new Date().toISOString()
-	};
-
-	mockTraders.push(newTrader);
-
-	return json({
-		success: true,
-		data: newTrader,
-		_mock: true
-	});
+	// FIX-2026-04-26-audit (P1-11): surface backend failure on POST — a silent mock-create
+	// would persist nothing to the DB while appearing to succeed.
+	console.error('[Trading-rooms traders proxy POST] Backend unavailable or non-success:', backendData);
+	return json(
+		{
+			success: false,
+			error: 'Unable to create trader — backend is unavailable. Please try again.'
+		},
+		{ status: 502 }
+	);
 };

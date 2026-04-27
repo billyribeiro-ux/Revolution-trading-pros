@@ -309,33 +309,12 @@
 	);
 
 	// ═══════════════════════════════════════════════════════════════════════════════
-	// SYNC STATE FROM PAGE DATA (SSR)
+	// NOTE: Shadow-state $effect blocks removed 2026-04-26-audit (P0-7).
+	// Each state variable is seeded from SSR data via `untrack()` in its declaration.
+	// Re-syncing through $effects would clobber optimistic local mutations whenever
+	// SvelteKit re-runs the load function. To reload from the server after a mutation,
+	// call the individual load*() functions explicitly.
 	// ═══════════════════════════════════════════════════════════════════════════════
-
-	// Sync state from page data when it changes (e.g., on navigation)
-	$effect(() => {
-		tradePlanEntries = data.initialData?.tradePlan ?? [];
-	});
-
-	$effect(() => {
-		alerts = data.initialData?.alerts ?? [];
-	});
-
-	$effect(() => {
-		currentVideo = data.initialData?.weeklyVideo ?? null;
-	});
-
-	$effect(() => {
-		roomStats = data.initialData?.roomStats ?? null;
-	});
-
-	$effect(() => {
-		trades = data.initialData?.trades ?? [];
-	});
-
-	$effect(() => {
-		videoResources = data.initialData?.videoResources ?? [];
-	});
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// DATA FETCHING
@@ -570,14 +549,14 @@
 			title: alert.title || '',
 			message: alert.message,
 			notes: alert.notes || '',
-			trade_type: alert.trade_type || '',
-			action: alert.action || '',
+			trade_type: (alert.trade_type || '') as '' | 'options' | 'shares',
+			action: (alert.action || '') as '' | 'BUY' | 'SELL',
 			quantity: alert.quantity?.toString() || '',
-			option_type: alert.option_type || '',
+			option_type: (alert.option_type || '') as '' | 'CALL' | 'PUT',
 			strike: alert.strike?.toString() || '',
 			expiration: alert.expiration || '',
-			contract_type: alert.contract_type || '',
-			order_type: alert.order_type || '',
+			contract_type: (alert.contract_type || '') as '' | 'Weeklys' | 'Monthly' | 'LEAPS',
+			order_type: (alert.order_type || '') as '' | 'MKT' | 'LMT',
 			limit_price: alert.limit_price?.toString() || '',
 			fill_price: alert.fill_price?.toString() || '',
 			tos_string: alert.tos_string || '',
