@@ -14,6 +14,8 @@
 
 <script lang="ts">
 	import { browser } from '$app/environment';
+	// FIX-2026-04-26 (CLAUDE.md / P3-13): init belongs in onMount, not $effect.
+	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import IconFolder from '@tabler/icons-svelte-runes/icons/folder';
 	import IconFolderPlus from '@tabler/icons-svelte-runes/icons/folder-plus';
@@ -453,8 +455,9 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Svelte 5: Initialize on mount
-	$effect(() => {
+	// FIX-2026-04-26 (CLAUDE.md): init belongs in onMount, not $effect.
+	// Old: $effect(() => { if (browser) loadCategories(); });
+	onMount(() => {
 		if (browser) loadCategories();
 	});
 </script>

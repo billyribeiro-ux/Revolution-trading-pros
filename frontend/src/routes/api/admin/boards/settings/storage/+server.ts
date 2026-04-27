@@ -24,7 +24,7 @@ import { json, error as kitError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 import { env } from '$env/dynamic/private';
-const PROD_BACKEND =
+const BACKEND_URL =
 	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
 const REDACTED_PLACEHOLDER = '__SECRET_UNCHANGED__';
@@ -37,7 +37,6 @@ interface BackendResult {
 }
 
 async function callBackend(endpoint: string, options?: RequestInit): Promise<BackendResult> {
-	const BACKEND_URL = PROD_BACKEND;
 	if (!BACKEND_URL) return { data: null, status: 0, reachable: false };
 
 	try {

@@ -87,9 +87,6 @@
 	// parsing window.location.pathname (mount-only).
 	let courseId = $derived(page.params.id ?? '');
 
-	onMount(() => {
-		fetchCourse();
-	});
 	let course = $state<Course | null>(null);
 	let modules = $state<Module[]>([]);
 	let unassignedLessons = $state<Lesson[]>([]);

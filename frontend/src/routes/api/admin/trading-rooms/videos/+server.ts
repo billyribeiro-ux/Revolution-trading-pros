@@ -12,7 +12,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 
 // Production fallback - Rust API on Fly.io
 import { env } from '$env/dynamic/private';
-const PROD_BACKEND =
+const BACKEND_URL =
 	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
 // Mock videos data
@@ -121,7 +121,6 @@ const mockVideos = [
 
 // Try to fetch from backend
 async function fetchFromBackend(endpoint: string, options?: RequestInit): Promise<any | null> {
-	const BACKEND_URL = PROD_BACKEND;
 	if (!BACKEND_URL) return null;
 
 	try {

@@ -468,6 +468,18 @@
 					break;
 
 				case 'curriculum':
+					// FIX-2026-04-26 (P3-5): require explicit confirmation before
+					// blowing away whatever modules the user has already authored.
+					// Old code silently overwrote without prompt.
+					if (
+						course.modules.length > 0 &&
+						!confirm(
+							'This will replace your existing modules with a sample curriculum. Continue?'
+						)
+					) {
+						generating = false;
+						return;
+					}
 					course.modules = [
 						{
 							id: generateId(),
@@ -1278,10 +1290,22 @@
 
 		if (draftStr && draftDate) {
 			try {
-				const draft = JSON.parse(draftStr);
+				const parsed = JSON.parse(draftStr);
 				const date = new Date(draftDate);
-
-				pendingDraft = { course: draft.course || draft, date };
+				// FIX-2026-04-26 (P2-5): validate the draft shape before applying.
+				// Previously `draft.course || draft` accepted ANY top-level JSON
+				// (including a stale schema) and clobbered the entire `course` rune.
+				const candidate = parsed?.course ?? parsed;
+				const isValidShape =
+					candidate &&
+					typeof candidate === 'object' &&
+					'name' in candidate &&
+					Array.isArray(candidate.modules);
+				if (!isValidShape) {
+					console.warn('[course-draft] discarding draft with unrecognized shape');
+					return;
+				}
+				pendingDraft = { course: candidate, date };
 				showLoadDraftModal = true;
 			} catch (e) {
 				console.error('Failed to load draft:', e);
@@ -1318,6 +1342,14 @@
 			formError = 'Please add at least one module';
 			activeTab = 'curriculum';
 			return;
+		}
+
+		// FIX-2026-04-26 (P2-9): regenerate slug from name if it's still empty —
+		// users who type the title and click Publish before the title input
+		// loses focus would otherwise submit slug:undefined and rely entirely
+		// on the backend slugifier with no client-side preview.
+		if (!course.slug?.trim() && course.name) {
+			generateSlug();
 		}
 
 		saving = true;
@@ -1562,6 +1594,10 @@
 
 	// Reactive statements
 	let completionStatus = $derived(getCompletionStatus());
+	// TODO(2026-04-26-audit P3-13): updateCourseDuration() and validateAll()
+	// both write to runes that the effect also depends on (write-while-read).
+	// Refactor to $derived after the validation rune layout is stabilized;
+	// converting now risks regressing form validation in the four-tab wizard.
 	$effect(() => {
 		if (course.modules) updateCourseDuration();
 	});

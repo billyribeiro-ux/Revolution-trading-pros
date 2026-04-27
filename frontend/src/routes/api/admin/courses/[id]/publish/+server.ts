@@ -8,9 +8,8 @@ import type { RequestHandler } from '@sveltejs/kit';
 import { requireAdminToken } from '$lib/server/auth';
 
 import { env } from '$env/dynamic/private';
-const PROD_BACKEND =
+const BACKEND_URL =
 	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
-const BACKEND_URL = PROD_BACKEND;
 
 function envelope(
 	raw: unknown,
