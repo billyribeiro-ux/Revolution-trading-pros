@@ -5,6 +5,10 @@
 	 */
 
 	import { onMount } from 'svelte';
+	// FIX-2026-04-26 (P1-5): use SvelteKit router state for params instead of
+	// parsing window.location.pathname (which doesn't react to client-side nav).
+	import { page } from '$app/state';
+	import { beforeNavigate } from '$app/navigation';
 	import { adminFetch } from '$lib/utils/adminFetch';
 	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
 	import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left';
@@ -79,11 +83,11 @@
 		bunny_library_id?: number;
 	}
 
-	let courseId = $state('');
+	// FIX-2026-04-26 (P1-5): derive from page.params (reactive) rather than
+	// parsing window.location.pathname (mount-only).
+	let courseId = $derived(page.params.id ?? '');
 
 	onMount(() => {
-		const pathParts = window.location.pathname.split('/');
-		courseId = pathParts[pathParts.length - 1];
 		fetchCourse();
 	});
 	let course = $state<Course | null>(null);
@@ -113,6 +117,33 @@
 	let addLessonTitle = $state('');
 	let pendingAddLessonModuleId = $state<number | undefined>(undefined);
 
+	// FIX-2026-04-26 (P1-6): unsaved-changes guard. Snapshot course on load /
+	// after each save; compare against current state to know if dirty.
+	let lastSavedSnapshot = $state<string>('');
+	let hasUnsavedChanges = $derived(
+		course ? JSON.stringify(course) !== lastSavedSnapshot : false
+	);
+
+	beforeNavigate((nav) => {
+		if (
+			hasUnsavedChanges &&
+			!nav.willUnload &&
+			!confirm('You have unsaved changes. Discard and leave?')
+		) {
+			nav.cancel();
+		}
+	});
+
+	onMount(() => {
+		const handler = (e: BeforeUnloadEvent) => {
+			if (hasUnsavedChanges) {
+				e.preventDefault();
+			}
+		};
+		window.addEventListener('beforeunload', handler);
+		return () => window.removeEventListener('beforeunload', handler);
+	});
+
 	const fetchCourse = async () => {
 		loading = true;
 		try {
@@ -123,6 +154,8 @@
 				modules = data.data.modules || [];
 				unassignedLessons = data.data.unassigned_lessons || [];
 				downloads = data.data.downloads || [];
+				// FIX-2026-04-26 (P1-6): snapshot for dirty tracking.
+				lastSavedSnapshot = JSON.stringify(course);
 			}
 		} catch (e) {
 			console.error('Failed to fetch course:', e);
@@ -141,7 +174,15 @@
 				body: JSON.stringify(course)
 			});
 			if (data.success) {
-				course = data.data;
+				// FIX-2026-04-26 (P2-10): merge instead of overwrite. The publish
+				// endpoint sometimes returns just the course header, blanking the
+				// rich state (modules/downloads) built up by fetchCourse.
+				const returned = data.data?.course ?? data.data;
+				if (returned && typeof returned === 'object') {
+					course = { ...course, ...returned };
+				}
+				lastSavedSnapshot = JSON.stringify(course);
+				toastStore.success('Course saved');
 			} else {
 				// FIX-2026-04-26: replaced native alert() with toastStore.error.
 				// Old: alert(data.error || 'Failed to save course');
@@ -165,7 +206,18 @@
 				method: 'POST'
 			});
 			if (data.success) {
-				course = data.data;
+				// FIX-2026-04-26 (P2-10): merge response into course rather than
+				// overwriting whole rune (which blanked sub-tabs). Refetch full
+				// tree to be safe so modules/downloads stay populated.
+				const returned = data.data?.course ?? data.data;
+				if (returned && typeof returned === 'object') {
+					course = { ...course, ...returned };
+				}
+				lastSavedSnapshot = JSON.stringify(course);
+				await fetchCourse();
+			} else {
+				// FIX-2026-04-26 (P3-7): show error when publish fails non-throwing.
+				toastStore.error(data.error || data.message || 'Failed to update publish status');
 			}
 		} catch {
 			// FIX-2026-04-26: replaced native alert() with toastStore.error.
@@ -224,23 +276,42 @@
 		}
 	};
 
-	const addLesson = async (moduleId?: number) => {
-		const title = prompt('Enter lesson title:');
-		if (!title) return;
+	// FIX-2026-04-26 (P0-3): open input modal instead of native prompt() —
+	// prompt() is blocked in modern browser embed contexts and accepts
+	// empty/garbage input with no validation.
+	const addLesson = (moduleId?: number) => {
+		pendingAddLessonModuleId = moduleId;
+		addLessonTitle = '';
+		showAddLessonModal = true;
+	};
+
+	const confirmAddLesson = async (value?: string) => {
+		const title = (value ?? '').trim();
+		if (!title) {
+			toastStore.error('Lesson title is required');
+			return;
+		}
+		const moduleId = pendingAddLessonModuleId;
+		showAddLessonModal = false;
+		pendingAddLessonModuleId = undefined;
 		try {
 			// ICT 7 FIX: Use adminFetch for absolute URL on Pages.dev
 			const data = await adminFetch(`/api/admin/courses/${courseId}/lessons`, {
 				method: 'POST',
 				body: JSON.stringify({ title, module_id: moduleId })
 			});
-			if (data.success) {
+			// FIX-2026-04-26 (P0-2): tolerate envelope variations.
+			const created = data?.data ?? data;
+			if (created && (data.success === undefined || data.success)) {
 				if (moduleId) {
 					const mod = modules.find((m) => m.id === moduleId);
-					if (mod) mod.lessons = [...mod.lessons, data.data];
+					if (mod) mod.lessons = [...mod.lessons, created];
 					modules = [...modules];
 				} else {
-					unassignedLessons = [...unassignedLessons, data.data];
+					unassignedLessons = [...unassignedLessons, created];
 				}
+			} else {
+				toastStore.error(data?.error || data?.message || 'Failed to create lesson');
 			}
 		} catch {
 			// FIX-2026-04-26: replaced native alert() with toastStore.error.
@@ -747,6 +818,42 @@
 	onCancel={() => {
 		showDeleteLessonModal = false;
 		pendingDeleteLesson = null;
+	}}
+/>
+
+<!-- FIX-2026-04-26 (P0-3): input modal replacements for native prompt() flows. -->
+<ConfirmationModal
+	isOpen={showAddModuleModal}
+	title="Add Module"
+	message="Enter a title for the new module."
+	confirmText="Create"
+	variant="info"
+	showInput={true}
+	inputLabel="Module title"
+	inputPlaceholder="e.g. Introduction"
+	bind:inputValue={addModuleTitle}
+	onConfirm={confirmAddModule}
+	onCancel={() => {
+		showAddModuleModal = false;
+		addModuleTitle = '';
+	}}
+/>
+
+<ConfirmationModal
+	isOpen={showAddLessonModal}
+	title="Add Lesson"
+	message="Enter a title for the new lesson."
+	confirmText="Create"
+	variant="info"
+	showInput={true}
+	inputLabel="Lesson title"
+	inputPlaceholder="e.g. Getting Started"
+	bind:inputValue={addLessonTitle}
+	onConfirm={confirmAddLesson}
+	onCancel={() => {
+		showAddLessonModal = false;
+		addLessonTitle = '';
+		pendingAddLessonModuleId = undefined;
 	}}
 />
 

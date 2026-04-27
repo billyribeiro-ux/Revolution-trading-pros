@@ -641,13 +641,19 @@ https://svelte.dev/e/bind_invalid_expression -->
 											for="access-key"
 										>
 											Access Key
+											{#if hasStoredAccessKey}
+												<span class="text-xs text-green-600 dark:text-green-400 ml-2">
+													(stored — leave blank to keep current value)
+												</span>
+											{/if}
 										</label>
 										<input
 											type="password"
 											id="access-key"
 											name="access-key"
-											autocomplete="current-password"
-											bind:value={storageConfig.access_key}
+											autocomplete="new-password"
+											bind:value={newAccessKeyBuffer}
+											placeholder={hasStoredAccessKey ? '••••••••' : 'AKIA...'}
 											class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 										/>
 									</div>
@@ -658,13 +664,19 @@ https://svelte.dev/e/bind_invalid_expression -->
 											for="secret-key"
 										>
 											Secret Key
+											{#if hasStoredSecretKey}
+												<span class="text-xs text-green-600 dark:text-green-400 ml-2">
+													(stored — leave blank to keep current value)
+												</span>
+											{/if}
 										</label>
 										<input
 											type="password"
 											id="secret-key"
 											name="secret-key"
-											autocomplete="current-password"
-											bind:value={storageConfig.secret_key}
+											autocomplete="new-password"
+											bind:value={newSecretKeyBuffer}
+											placeholder={hasStoredSecretKey ? '••••••••' : 'Enter secret key'}
 											class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 										/>
 									</div>

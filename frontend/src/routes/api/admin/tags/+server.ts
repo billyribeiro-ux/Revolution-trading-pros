@@ -7,29 +7,31 @@
  * @version 2.0.0 - January 2026
  */
 
-import { json, error } from '@sveltejs/kit';
+import { json, error, isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 import { env } from '$env/dynamic/private';
-const PROD_BACKEND =
+const API_URL =
 	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
-export const GET: RequestHandler = async ({ request, cookies }) => {
-	const backendUrl = PROD_BACKEND;
+function readToken(request: Request, cookies: Parameters<RequestHandler>[0]['cookies']): string {
 	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
-	// Old: const authHeader = request.headers.get('Authorization') || '';
 	const cookieToken = cookies.get('rtp_access_token');
 	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
 	const token = cookieToken || headerToken;
 	if (!token) error(401, 'Unauthorized');
-	const authHeader = `Bearer ${token}`;
+	return token;
+}
+
+export const GET: RequestHandler = async ({ request, cookies }) => {
+	const token = readToken(request, cookies);
 
 	try {
-		const response = await fetch(`${backendUrl}/api/admin/tags`, {
+		const response = await fetch(`${API_URL}/api/admin/tags`, {
 			headers: {
 				'Content-Type': 'application/json',
 				Accept: 'application/json',
-				Authorization: authHeader
+				Authorization: `Bearer ${token}`
 			}
 		});
 
@@ -48,4 +50,50 @@ export const GET: RequestHandler = async ({ request, cookies }) => {
 		data: [],
 		error: 'Failed to fetch tags from backend'
 	});
+};
+
+// FIX-2026-04-26 (cross-cutting audit §I.3 method-coverage gap): admin/blog/{create,edit}
+// pages POST new tags via api.post('/api/admin/tags', { name }). Without this handler,
+// the SK router returns 405 because the bare-path proxy only declared GET.
+export const POST: RequestHandler = async ({ request, cookies }) => {
+	const cookieToken = readToken(request, cookies);
+
+	try {
+		const body = await request.json();
+
+		const upstream = await fetch(`${API_URL}/api/admin/tags`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Accept: 'application/json',
+				Authorization: `Bearer ${cookieToken}`
+			},
+			body: JSON.stringify(body)
+		});
+
+		const text = await upstream.text();
+		let data: unknown = null;
+		if (text) {
+			try {
+				data = JSON.parse(text);
+			} catch {
+				data = { error: text };
+			}
+		}
+
+		if (!upstream.ok) {
+			const message =
+				(data && typeof data === 'object' && ('message' in data || 'error' in data)
+					? (data as { message?: string; error?: string }).message ||
+						(data as { error?: string }).error
+					: undefined) || 'Failed to create tag';
+			error(upstream.status, message);
+		}
+
+		return json(data ?? { success: true });
+	} catch (err) {
+		if (isHttpError(err)) throw err;
+		console.error('POST /api/admin/tags error:', err);
+		error(400, 'Invalid request body');
+	}
 };
