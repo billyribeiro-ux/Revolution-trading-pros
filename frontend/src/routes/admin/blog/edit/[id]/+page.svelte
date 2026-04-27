@@ -22,41 +22,10 @@
 	import { api } from '$lib/api/config';
 	import { mediaApi } from '$lib/api/media';
 	import { adminFetch } from '$lib/utils/adminFetch';
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// PREDEFINED BLOG CATEGORIES (same system as videos)
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	interface BlogCategory {
-		id: string;
-		name: string;
-		color: string;
-	}
-
-	const predefinedCategories: BlogCategory[] = [
-		{ id: 'market-analysis', name: 'Market Analysis', color: '#3b82f6' },
-		{ id: 'trading-strategies', name: 'Trading Strategies', color: '#10b981' },
-		{ id: 'risk-management', name: 'Risk Management', color: '#ef4444' },
-		{ id: 'options-trading', name: 'Options Trading', color: '#f59e0b' },
-		{ id: 'technical-analysis', name: 'Technical Analysis', color: '#6366f1' },
-		{ id: 'fundamental-analysis', name: 'Fundamental Analysis', color: '#ec4899' },
-		{ id: 'psychology', name: 'Psychology', color: '#8b5cf6' },
-		{ id: 'education', name: 'Education', color: '#14b8a6' },
-		{ id: 'news', name: 'News & Updates', color: '#06b6d4' },
-		{ id: 'earnings', name: 'Earnings', color: '#f97316' },
-		{ id: 'stocks', name: 'Stocks', color: '#84cc16' },
-		{ id: 'futures', name: 'Futures', color: '#22c55e' },
-		{ id: 'forex', name: 'Forex', color: '#0ea5e9' },
-		{ id: 'crypto', name: 'Crypto', color: '#a855f7' },
-		{ id: 'small-accounts', name: 'Small Accounts', color: '#eab308' },
-		{ id: 'day-trading', name: 'Day Trading', color: '#d946ef' },
-		{ id: 'swing-trading', name: 'Swing Trading', color: '#64748b' },
-		{ id: 'beginners', name: 'Beginners Guide', color: '#fb7185' }
-	];
-
-	function getPredefinedCategoryById(id: string): BlogCategory | undefined {
-		return predefinedCategories.find((c) => c.id === id);
-	}
+	import {
+		predefinedCategories,
+		getPredefinedCategoryById
+	} from '$lib/data/predefined-categories';
 
 	// Get post ID from URL params
 	const postId = $derived(page.params.id);

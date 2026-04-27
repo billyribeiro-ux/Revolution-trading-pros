@@ -46,6 +46,14 @@ pub struct PostRow {
     pub schema_markup: Option<serde_json::Value>,
     pub created_at: chrono::NaiveDateTime,
     pub updated_at: chrono::NaiveDateTime,
+    // Added in migration 045 — admin form sends these and now the API persists them.
+    pub featured_media_id: Option<i64>,
+    pub featured_image_alt: Option<String>,
+    pub featured_image_caption: Option<String>,
+    pub featured_image_title: Option<String>,
+    pub featured_image_description: Option<String>,
+    pub meta_keywords: Option<Vec<String>>,
+    pub allow_comments: bool,
 }
 
 /// Post with author info
@@ -71,6 +79,18 @@ pub struct CreatePostRequest {
     pub indexable: Option<bool>,
     pub canonical_url: Option<String>,
     pub schema_markup: Option<serde_json::Value>,
+    // Featured-image metadata (matches frontend admin form fields).
+    pub featured_media_id: Option<i64>,
+    pub featured_image_alt: Option<String>,
+    pub featured_image_caption: Option<String>,
+    pub featured_image_title: Option<String>,
+    pub featured_image_description: Option<String>,
+    pub meta_keywords: Option<Vec<String>>,
+    pub allow_comments: Option<bool>,
+    // Taxonomy: category slugs (resolved server-side via the categories table).
+    pub categories: Option<Vec<String>>,
+    // Tag names (created on demand via tags table; joined via post_tags).
+    pub tags: Option<Vec<String>>,
 }
 
 /// Update post request
@@ -87,6 +107,90 @@ pub struct UpdatePostRequest {
     pub indexable: Option<bool>,
     pub canonical_url: Option<String>,
     pub schema_markup: Option<serde_json::Value>,
+    pub featured_media_id: Option<i64>,
+    pub featured_image_alt: Option<String>,
+    pub featured_image_caption: Option<String>,
+    pub featured_image_title: Option<String>,
+    pub featured_image_description: Option<String>,
+    pub meta_keywords: Option<Vec<String>>,
+    pub allow_comments: Option<bool>,
+    pub categories: Option<Vec<String>>,
+    pub tags: Option<Vec<String>>,
+}
+
+/// Resolve category slugs to IDs and rewrite post_categories. Unknown slugs are
+/// dropped silently; the admin UI uses a closed set seeded by migration 045.
+async fn sync_post_categories(
+    pool: &sqlx::PgPool,
+    post_id: i64,
+    slugs: &[String],
+) -> Result<(), sqlx::Error> {
+    sqlx::query("DELETE FROM post_categories WHERE post_id = $1")
+        .bind(post_id)
+        .execute(pool)
+        .await?;
+    if slugs.is_empty() {
+        return Ok(());
+    }
+    let ids: Vec<i64> = sqlx::query_scalar(
+        "SELECT id FROM categories WHERE slug = ANY($1)",
+    )
+    .bind(slugs)
+    .fetch_all(pool)
+    .await?;
+    for cid in ids {
+        sqlx::query("INSERT INTO post_categories (post_id, category_id) VALUES ($1, $2) ON CONFLICT DO NOTHING")
+            .bind(post_id)
+            .bind(cid)
+            .execute(pool)
+            .await?;
+    }
+    Ok(())
+}
+
+/// Resolve tag names to IDs (creating any that don't exist) and rewrite post_tags.
+async fn sync_post_tags(
+    pool: &sqlx::PgPool,
+    post_id: i64,
+    names: &[String],
+) -> Result<(), sqlx::Error> {
+    sqlx::query("DELETE FROM post_tags WHERE post_id = $1")
+        .bind(post_id)
+        .execute(pool)
+        .await?;
+    if names.is_empty() {
+        return Ok(());
+    }
+    let mut ids: Vec<i64> = Vec::with_capacity(names.len());
+    for name in names {
+        let trimmed = name.trim();
+        if trimmed.is_empty() {
+            continue;
+        }
+        let tag_slug = slug::slugify(trimmed);
+        // Upsert (create-if-missing). RETURNING from ON CONFLICT skips on no-op,
+        // so do an explicit second SELECT to resolve the id either way.
+        sqlx::query("INSERT INTO tags (name, slug) VALUES ($1, $2) ON CONFLICT (slug) DO NOTHING")
+            .bind(trimmed)
+            .bind(&tag_slug)
+            .execute(pool)
+            .await?;
+        let id: Option<i64> = sqlx::query_scalar("SELECT id FROM tags WHERE slug = $1")
+            .bind(&tag_slug)
+            .fetch_optional(pool)
+            .await?;
+        if let Some(id) = id {
+            ids.push(id);
+        }
+    }
+    for tid in ids {
+        sqlx::query("INSERT INTO post_tags (post_id, tag_id) VALUES ($1, $2) ON CONFLICT DO NOTHING")
+            .bind(post_id)
+            .bind(tid)
+            .execute(pool)
+            .await?;
+    }
+    Ok(())
 }
 
 /// List published posts (public)
@@ -197,11 +301,37 @@ async fn list_posts(
     })))
 }
 
+/// Load category slugs and tag names joined to a post id.
+async fn load_post_taxonomy(
+    pool: &sqlx::PgPool,
+    post_id: i64,
+) -> Result<(Vec<String>, Vec<String>), sqlx::Error> {
+    let categories: Vec<String> = sqlx::query_scalar(
+        "SELECT c.slug FROM categories c
+         JOIN post_categories pc ON pc.category_id = c.id
+         WHERE pc.post_id = $1
+         ORDER BY c.name",
+    )
+    .bind(post_id)
+    .fetch_all(pool)
+    .await?;
+    let tags: Vec<String> = sqlx::query_scalar(
+        "SELECT t.name FROM tags t
+         JOIN post_tags pt ON pt.tag_id = t.id
+         WHERE pt.post_id = $1
+         ORDER BY t.name",
+    )
+    .bind(post_id)
+    .fetch_all(pool)
+    .await?;
+    Ok((categories, tags))
+}
+
 /// Get post by slug (public)
 async fn get_post(
     State(state): State<AppState>,
     Path(slug): Path<String>,
-) -> Result<Json<PostRow>, (StatusCode, Json<serde_json::Value>)> {
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let post: PostRow =
         sqlx::query_as("SELECT * FROM posts WHERE slug = $1 AND status = 'published'")
             .bind(&slug)
@@ -220,7 +350,15 @@ async fn get_post(
                 )
             })?;
 
-    Ok(Json(post))
+    let (categories, tags) = load_post_taxonomy(&state.db.pool, post.id)
+        .await
+        .unwrap_or_default();
+    let mut value = serde_json::to_value(post).unwrap_or_else(|_| json!({}));
+    if let Some(obj) = value.as_object_mut() {
+        obj.insert("categories".into(), serde_json::Value::from(categories));
+        obj.insert("tags".into(), serde_json::Value::from(tags));
+    }
+    Ok(Json(value))
 }
 
 /// Create post (admin only) - ICT 7: AdminUser required + slug uniqueness
@@ -277,10 +415,30 @@ async fn create_post(
         ));
     }
 
+    // FIX-2026-04-27: auto-stamp published_at when creating a published post
+    // without an explicit timestamp. Without this, published rows had NULL
+    // published_at, breaking date-aware sorting and JSON-LD article schemas.
+    let published_at = match (&status[..], input.published_at) {
+        ("published", None) => Some(chrono::Utc::now().naive_utc()),
+        (_, explicit) => explicit,
+    };
+
     let post: PostRow = sqlx::query_as(
         r#"
-        INSERT INTO posts (author_id, title, slug, excerpt, content_blocks, featured_image, status, published_at, meta_title, meta_description, indexable, canonical_url, schema_markup, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, NOW(), NOW())
+        INSERT INTO posts (
+            author_id, title, slug, excerpt, content_blocks, featured_image,
+            status, published_at, meta_title, meta_description, indexable,
+            canonical_url, schema_markup,
+            featured_media_id, featured_image_alt, featured_image_caption,
+            featured_image_title, featured_image_description, meta_keywords,
+            allow_comments,
+            created_at, updated_at
+        )
+        VALUES (
+            $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13,
+            $14, $15, $16, $17, $18, $19, $20,
+            NOW(), NOW()
+        )
         RETURNING *
         "#,
     )
@@ -291,15 +449,37 @@ async fn create_post(
     .bind(&input.content_blocks)
     .bind(&input.featured_image)
     .bind(&status)
-    .bind(&input.published_at)
+    .bind(&published_at)
     .bind(&input.meta_title)
     .bind(&input.meta_description)
     .bind(input.indexable.unwrap_or(true))
     .bind(&input.canonical_url)
     .bind(&input.schema_markup)
+    .bind(&input.featured_media_id)
+    .bind(&input.featured_image_alt)
+    .bind(&input.featured_image_caption)
+    .bind(&input.featured_image_title)
+    .bind(&input.featured_image_description)
+    .bind(&input.meta_keywords)
+    .bind(input.allow_comments.unwrap_or(true))
     .fetch_one(&state.db.pool)
     .await
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+
+    // Resolve & write categories/tags joins (best-effort: a join failure should
+    // not roll back a successful post insert; surface the error if it fails).
+    if let Some(ref cats) = input.categories {
+        sync_post_categories(&state.db.pool, post.id, cats).await.map_err(|e| (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("category sync failed: {}", e)})),
+        ))?;
+    }
+    if let Some(ref tags) = input.tags {
+        sync_post_tags(&state.db.pool, post.id, tags).await.map_err(|e| (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("tag sync failed: {}", e)})),
+        ))?;
+    }
 
     Ok(Json(post))
 }
@@ -371,6 +551,7 @@ async fn update_post(
     };
 
     // Validate status if provided
+    let prev_status = current.status.clone();
     let status = input.status.unwrap_or(current.status);
     if !["draft", "published", "archived"].contains(&status.as_str()) {
         return Err((
@@ -387,15 +568,39 @@ async fn update_post(
     let meta_description = input.meta_description.or(current.meta_description);
     let canonical_url = input.canonical_url.or(current.canonical_url);
     let schema_markup = input.schema_markup.or(current.schema_markup);
-    let published_at = input.published_at.or(current.published_at);
+    // FIX-2026-04-27: when transitioning TO 'published' from a non-published status,
+    // and there's no published_at on either side, stamp it now. Same rationale as
+    // create_post — keeps date-aware queries and Article schema correct.
+    let published_at = {
+        let merged = input.published_at.or(current.published_at);
+        if status == "published" && prev_status != "published" && merged.is_none() {
+            Some(chrono::Utc::now().naive_utc())
+        } else {
+            merged
+        }
+    };
+    let featured_media_id = input.featured_media_id.or(current.featured_media_id);
+    let featured_image_alt = input.featured_image_alt.or(current.featured_image_alt);
+    let featured_image_caption = input.featured_image_caption.or(current.featured_image_caption);
+    let featured_image_title = input.featured_image_title.or(current.featured_image_title);
+    let featured_image_description = input
+        .featured_image_description
+        .or(current.featured_image_description);
+    let meta_keywords = input.meta_keywords.or(current.meta_keywords);
+    let allow_comments = input.allow_comments.unwrap_or(current.allow_comments);
 
     let post: PostRow = sqlx::query_as(
         r#"UPDATE posts SET
             title = $1, slug = $2, excerpt = $3, status = $4, indexable = $5,
             content_blocks = $6, featured_image = $7, meta_title = $8,
             meta_description = $9, canonical_url = $10, schema_markup = $11,
-            published_at = $12, updated_at = NOW()
-        WHERE id = $13 RETURNING *"#,
+            published_at = $12,
+            featured_media_id = $13, featured_image_alt = $14,
+            featured_image_caption = $15, featured_image_title = $16,
+            featured_image_description = $17, meta_keywords = $18,
+            allow_comments = $19,
+            updated_at = NOW()
+        WHERE id = $20 RETURNING *"#,
     )
     .bind(&title)
     .bind(&final_slug)
@@ -409,6 +614,13 @@ async fn update_post(
     .bind(&canonical_url)
     .bind(&schema_markup)
     .bind(&published_at)
+    .bind(&featured_media_id)
+    .bind(&featured_image_alt)
+    .bind(&featured_image_caption)
+    .bind(&featured_image_title)
+    .bind(&featured_image_description)
+    .bind(&meta_keywords)
+    .bind(allow_comments)
     .bind(id)
     .fetch_one(&state.db.pool)
     .await
@@ -418,6 +630,21 @@ async fn update_post(
             Json(json!({"error": e.to_string()})),
         )
     })?;
+
+    // Resolve & rewrite categories/tags joins. None means "leave as-is";
+    // an explicit empty array clears them.
+    if let Some(ref cats) = input.categories {
+        sync_post_categories(&state.db.pool, post.id, cats).await.map_err(|e| (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("category sync failed: {}", e)})),
+        ))?;
+    }
+    if let Some(ref tags) = input.tags {
+        sync_post_tags(&state.db.pool, post.id, tags).await.map_err(|e| (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("tag sync failed: {}", e)})),
+        ))?;
+    }
 
     Ok(Json(post))
 }
@@ -479,7 +706,7 @@ async fn get_post_by_id(
     _admin: AdminUser,
     State(state): State<AppState>,
     Path(id): Path<i64>,
-) -> Result<Json<PostRow>, (StatusCode, Json<serde_json::Value>)> {
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let post: PostRow = sqlx::query_as("SELECT * FROM posts WHERE id = $1")
         .bind(id)
         .fetch_optional(&state.db.pool)
@@ -497,7 +724,15 @@ async fn get_post_by_id(
             )
         })?;
 
-    Ok(Json(post))
+    let (categories, tags) = load_post_taxonomy(&state.db.pool, post.id)
+        .await
+        .unwrap_or_default();
+    let mut value = serde_json::to_value(post).unwrap_or_else(|_| json!({}));
+    if let Some(obj) = value.as_object_mut() {
+        obj.insert("categories".into(), serde_json::Value::from(categories));
+        obj.insert("tags".into(), serde_json::Value::from(tags));
+    }
+    Ok(Json(value))
 }
 
 /// POST /admin/posts/:id/publish - Publish a post (ICT 7: draft/publish workflow)

@@ -57,9 +57,15 @@
 	// Derived values from page store
 	let slug = $derived(page.params['slug']!);
 
-	// Load post when slug changes
+	// Load post when slug changes. Gate on a tracked slug so the effect
+	// only fires when the param actually changes, not on every reactive
+	// reread (loadPost writes loading/error/post — those don't feed back
+	// into this effect today, but the gate is defensive against future
+	// readers being added inside the effect).
+	let loadedSlug = $state<string | null>(null);
 	$effect(() => {
-		if (slug) {
+		if (slug && slug !== loadedSlug) {
+			loadedSlug = slug;
 			loadPost(slug);
 		}
 	});
@@ -94,10 +100,20 @@
 
 	interface ContentBlock {
 		type: string;
-		data?: {
-			text?: string;
-			items?: string[];
-			[key: string]: unknown;
+		data?: Record<string, unknown>;
+		content?: Record<string, unknown>;
+	}
+
+	// Editor saves blocks as { type, content: {...} }; older posts have { type, data: {...} }.
+	// Read through this helper so both shapes work and so image fields map across the rename
+	// (mediaUrl -> url, mediaCaption -> caption, mediaAlt -> alt).
+	function blockData(block: ContentBlock): Record<string, unknown> {
+		const raw = (block.data ?? block.content ?? {}) as Record<string, unknown>;
+		return {
+			...raw,
+			url: raw['url'] ?? raw['mediaUrl'],
+			caption: raw['caption'] ?? raw['mediaCaption'],
+			alt: raw['alt'] ?? raw['mediaAlt']
 		};
 	}
 
@@ -108,11 +124,12 @@
 		const text =
 			post.content_blocks
 				?.map((block: ContentBlock) => {
+					const d = blockData(block);
 					if (block.type === 'paragraph' || block.type === 'heading') {
-						return block.data?.text || '';
+						return (d['text'] as string) || '';
 					}
 					if (block.type === 'list') {
-						return (block.data?.items || []).join(' ');
+						return ((d['items'] as string[]) || []).join(' ');
 					}
 					return '';
 				})
@@ -122,21 +139,26 @@
 		return calculateReadingTime(text);
 	});
 
-	// Initialize reading analytics when post loads
+	// Initialize reading analytics ONCE per post. Gating on a tracked id
+	// prevents this effect from re-running every time `post` is reassigned
+	// (which was the source of the effect_update_depth_exceeded warning:
+	// the effect kept tearing down and recreating its scroll listeners,
+	// and one of those interactions ended up causing recursive scheduling).
+	let trackedPostId = $state<string | number | null>(null);
 	$effect(() => {
 		if (!browser || !post) return;
-		{
-			const cleanup = initReadingAnalytics({
-				postId: post.id,
-				slug: post.slug,
-				contentSelector: '.post-body',
-				options: {
-					debug: import.meta.env.DEV,
-					endpoint: '/api/analytics/reading'
-				}
-			});
-			return cleanup;
-		}
+		if (post.id === trackedPostId) return;
+		trackedPostId = post.id;
+		const cleanup = initReadingAnalytics({
+			postId: post.id,
+			slug: post.slug,
+			contentSelector: '.post-body',
+			options: {
+				debug: import.meta.env.DEV,
+				endpoint: '/api/analytics/reading'
+			}
+		});
+		return cleanup;
 	});
 
 	// Track social shares
@@ -326,54 +348,99 @@
 
 				<div class="content">
 					{#if post.content_blocks && post.content_blocks.length > 0}
-						<!-- Structured content blocks (sanitized for XSS protection) -->
+						<!-- Structured content blocks (sanitized for XSS protection).
+						     Reads via blockData() so both legacy {data} and editor {content} shapes work. -->
 						{#each post.content_blocks as block}
+							{@const d = blockData(block)}
 							{#if block.type === 'paragraph'}
-								<p>{@html sanitizeBlogContent(block.data?.text || '')}</p>
+								<p>{@html sanitizeBlogContent((d['text'] as string) || '')}</p>
 							{:else if block.type === 'heading'}
-								{#if block.data?.level === 1}
-									<h1>{@html sanitizeBlogContent(block.data?.text || '')}</h1>
-								{:else if block.data?.level === 2}
-									<h2>{@html sanitizeBlogContent(block.data?.text || '')}</h2>
-								{:else if block.data?.level === 3}
-									<h3>{@html sanitizeBlogContent(block.data?.text || '')}</h3>
-								{:else if block.data?.level === 4}
-									<h4>{@html sanitizeBlogContent(block.data?.text || '')}</h4>
+								{#if d['level'] === 1}
+									<h1>{@html sanitizeBlogContent((d['text'] as string) || '')}</h1>
+								{:else if d['level'] === 2}
+									<h2>{@html sanitizeBlogContent((d['text'] as string) || '')}</h2>
+								{:else if d['level'] === 3}
+									<h3>{@html sanitizeBlogContent((d['text'] as string) || '')}</h3>
+								{:else if d['level'] === 4}
+									<h4>{@html sanitizeBlogContent((d['text'] as string) || '')}</h4>
 								{:else}
-									<h5>{@html sanitizeBlogContent(block.data?.text || '')}</h5>
+									<h5>{@html sanitizeBlogContent((d['text'] as string) || '')}</h5>
 								{/if}
 							{:else if block.type === 'list'}
-								{#if block.data?.style === 'ordered'}
+								{#if d['style'] === 'ordered'}
 									<ol>
-										{#each block.data?.items || [] as item}
+										{#each (d['items'] as string[]) || [] as item}
 											<li>{@html sanitizeBlogContent(item)}</li>
 										{/each}
 									</ol>
 								{:else}
 									<ul>
-										{#each block.data?.items || [] as item}
+										{#each (d['items'] as string[]) || [] as item}
 											<li>{@html sanitizeBlogContent(item)}</li>
 										{/each}
 									</ul>
 								{/if}
-							{:else if block.type === 'quote'}
-								<blockquote>{@html sanitizeBlogContent(block.data?.text || '')}</blockquote>
-							{:else if block.type === 'code'}
-								<pre><code>{block.data?.code || ''}</code></pre>
+							{:else if block.type === 'checklist'}
+								<ul class="checklist">
+									{#each (d['checklistItems'] as Array<{ text: string; checked: boolean }>) || [] as item}
+										<li class:checked={item.checked}>
+											<input type="checkbox" checked={item.checked} disabled />
+											{@html sanitizeBlogContent(item.text)}
+										</li>
+									{/each}
+								</ul>
+							{:else if block.type === 'quote' || block.type === 'pullquote'}
+								<blockquote>{@html sanitizeBlogContent((d['text'] as string) || '')}</blockquote>
+							{:else if block.type === 'code' || block.type === 'preformatted'}
+								<pre><code>{(d['code'] as string) || (d['text'] as string) || ''}</code></pre>
 							{:else if block.type === 'image'}
-								<figure aria-label={block.data?.caption || 'Blog image'}>
+								<figure aria-label={(d['caption'] as string) || 'Blog image'}>
 									<img
-										src={block.data?.url || ''}
-										alt={block.data?.caption || 'Blog post image'}
+										src={(d['url'] as string) || ''}
+										alt={(d['alt'] as string) || (d['caption'] as string) || 'Blog post image'}
 										loading="lazy"
 										decoding="async"
-										width={block.data?.width || undefined}
-										height={block.data?.height || undefined}
+										width={(d['width'] as number) || undefined}
+										height={(d['height'] as number) || undefined}
 									/>
-									{#if block.data?.caption}
-										<figcaption>{block.data.caption}</figcaption>
+									{#if d['caption']}
+										<figcaption>{d['caption']}</figcaption>
 									{/if}
 								</figure>
+							{:else if block.type === 'video' || block.type === 'embed'}
+								{#if d['url']}
+									<div class="video-embed">
+										<iframe
+											src={d['url'] as string}
+											title={(d['caption'] as string) || 'Embedded video'}
+											frameborder="0"
+											allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+											allowfullscreen
+										></iframe>
+									</div>
+								{/if}
+							{:else if block.type === 'callout'}
+								<aside class="callout callout--{(d['type'] as string) || 'info'}">
+									{#if d['title']}<strong>{d['title']}</strong>{/if}
+									<div>
+										{@html sanitizeBlogContent(
+											(d['text'] as string) || (d['content'] as string) || ''
+										)}
+									</div>
+								</aside>
+							{:else if block.type === 'html'}
+								<!-- Raw HTML block — sanitized -->
+								<div>{@html sanitizeBlogContent((d['html'] as string) || '')}</div>
+							{:else if block.type === 'separator' || block.type === 'divider'}
+								<hr />
+							{:else if block.type === 'spacer'}
+								<div style:height="{(d['height'] as number) || 24}px"></div>
+							{:else if block.type === 'button'}
+								{#if d['url']}
+									<a class="block-button" href={d['url'] as string}>
+										{(d['text'] as string) || (d['label'] as string) || 'Learn more'}
+									</a>
+								{/if}
 							{/if}
 						{/each}
 					{:else}

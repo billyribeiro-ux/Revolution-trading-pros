@@ -36,37 +36,7 @@
 		IconLayoutGrid
 	} from '$lib/icons';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// PREDEFINED BLOG CATEGORIES (same system as videos)
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	interface BlogCategory {
-		id: string;
-		name: string;
-		color: string;
-	}
-
-	const predefinedCategories: BlogCategory[] = [
-		{ id: 'market-analysis', name: 'Market Analysis', color: '#3b82f6' },
-		{ id: 'trading-strategies', name: 'Trading Strategies', color: '#10b981' },
-		{ id: 'risk-management', name: 'Risk Management', color: '#ef4444' },
-		{ id: 'options-trading', name: 'Options Trading', color: '#f59e0b' },
-		{ id: 'technical-analysis', name: 'Technical Analysis', color: '#E6B800' },
-		{ id: 'fundamental-analysis', name: 'Fundamental Analysis', color: '#ec4899' },
-		{ id: 'psychology', name: 'Psychology', color: '#B38F00' },
-		{ id: 'education', name: 'Education', color: '#14b8a6' },
-		{ id: 'news', name: 'News & Updates', color: '#06b6d4' },
-		{ id: 'earnings', name: 'Earnings', color: '#f97316' },
-		{ id: 'stocks', name: 'Stocks', color: '#84cc16' },
-		{ id: 'futures', name: 'Futures', color: '#22c55e' },
-		{ id: 'forex', name: 'Forex', color: '#0ea5e9' },
-		{ id: 'crypto', name: 'Crypto', color: '#a855f7' },
-		{ id: 'small-accounts', name: 'Small Accounts', color: '#eab308' },
-		{ id: 'day-trading', name: 'Day Trading', color: '#d946ef' },
-		{ id: 'swing-trading', name: 'Swing Trading', color: '#64748b' },
-		{ id: 'beginners', name: 'Beginners Guide', color: '#fb7185' }
-	];
+	import { predefinedCategories, type BlogCategory } from '$lib/data/predefined-categories';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// State Management
@@ -96,8 +66,7 @@
 	let ws = $state<WebSocket | null>(null);
 	let showExportModal = $state(false);
 	let exportFormat = $state<'csv' | 'json' | 'wordpress'>('csv');
-	let showScheduleModal = $state(false);
-	let schedulePost = $state<any>(null);
+	// Schedule modal state removed 2026-04-27 with the modal itself; see TODO marker below.
 	let showAnalyticsModal = $state(false);
 	let analyticsPost = $state<any>(null);
 	let refreshInterval = $state<ReturnType<typeof setInterval> | undefined>(undefined);
@@ -1116,15 +1085,13 @@
 													<IconCopy size={16} />
 													Duplicate
 												</button>
-												<button
-													onclick={() => {
-														schedulePost = post;
-														showScheduleModal = true;
-													}}
-												>
-													<IconClock size={16} />
-													Schedule
-												</button>
+												<!--
+													TODO: Re-add schedule button + modal when a scheduler worker exists.
+													See BLOG_SYSTEM_AUDIT.md §7. Needs a tokio::spawn loop in
+													api/src/main.rs that polls posts WHERE status='scheduled'
+													AND scheduled_publish_at <= NOW() and flips them to 'published'.
+												-->
+
 												<button onclick={() => loadPostAnalytics(post)}>
 													<IconChartBar size={16} />
 													Analytics
@@ -1398,61 +1365,11 @@
 			</div>
 		{/if}
 
-		<!-- Schedule Modal -->
-		{#if showScheduleModal && schedulePost}
-			<div
-				class="modal-overlay"
-				role="button"
-				tabindex="0"
-				onclick={() => (showScheduleModal = false)}
-				onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showScheduleModal = false)}
-			>
-				<div
-					class="modal"
-					role="dialog"
-					aria-modal="true"
-					tabindex="-1"
-					onclick={(e: MouseEvent) => e.stopPropagation()}
-					onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
-				>
-					<div class="modal-header">
-						<h2>Schedule Post</h2>
-						<button class="btn-icon" onclick={() => (showScheduleModal = false)}>
-							<IconX size={20} />
-						</button>
-					</div>
-					<div class="modal-content">
-						<p class="schedule-info">Schedule "{schedulePost.title}" for publication</p>
-						<div class="schedule-form">
-							<label>
-								<span>Publish Date & Time</span>
-								<input
-									id="schedule-datetime"
-									name="schedule-datetime"
-									type="datetime-local"
-									class="schedule-input"
-									min={new Date().toISOString().slice(0, 16)}
-								/>
-							</label>
-						</div>
-					</div>
-					<div class="modal-actions">
-						<button class="btn-secondary" onclick={() => (showScheduleModal = false)}>Cancel</button
-						>
-						<button
-							class="btn-primary"
-							onclick={() => {
-								showNotification('info', 'Scheduling feature coming soon');
-								showScheduleModal = false;
-							}}
-						>
-							<IconCalendar size={18} />
-							Schedule
-						</button>
-					</div>
-				</div>
-			</div>
-		{/if}
+		<!--
+			TODO: Re-add schedule modal when scheduler worker exists.
+			See BLOG_SYSTEM_AUDIT.md §7. Removed 2026-04-27: the previous
+			modal here only showed a "coming soon" toast on submit.
+		-->
 
 		<!-- Analytics Modal -->
 		{#if showAnalyticsModal && analyticsPost}
@@ -2678,37 +2595,7 @@
 		border-radius: 8px;
 	}
 
-	/* Schedule Modal */
-	.schedule-info {
-		color: #f1f5f9;
-		font-size: 1rem;
-		margin-bottom: 1.5rem;
-	}
-
-	.schedule-form label {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-	}
-
-	.schedule-form label span {
-		color: #94a3b8;
-		font-size: 0.9rem;
-	}
-
-	.schedule-input {
-		padding: 0.75rem 1rem;
-		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.3);
-		border-radius: 8px;
-		color: #f1f5f9;
-		font-size: 1rem;
-	}
-
-	.schedule-input:focus {
-		outline: none;
-		border-color: #3b82f6;
-	}
+	/* Schedule modal CSS removed 2026-04-27 along with the modal markup. */
 
 	/* Analytics Modal */
 	.analytics-grid {

@@ -8,7 +8,14 @@
 
 	interface ContentBlock {
 		type: string;
+		// Two shapes coexist: legacy { data: {...} }, editor { content: {...} }.
 		data?: {
+			level?: number;
+			text?: string;
+			items?: string[];
+			[key: string]: unknown;
+		};
+		content?: {
 			level?: number;
 			text?: string;
 			items?: string[];
@@ -88,24 +95,24 @@
 		return `toc-${slug}-${index}`;
 	}
 
-	// Extract headings from content blocks
-	function extractHeadings(): TocItem[] {
+	// Extract headings from content blocks. Read from either legacy `data` or editor `content`.
+	function extractHeadings(): { nested: TocItem[]; flat: TocItem[] } {
 		const headings: { id: string; text: string; level: number }[] = [];
 		let index = 0;
 
 		contentBlocks.forEach((block) => {
+			const d = block.data ?? block.content ?? {};
 			if (
 				block.type === 'heading' &&
-				block.data &&
-				(block.data.level ?? 0) >= 2 &&
-				(block.data.level ?? 0) <= maxDepth
+				(d.level ?? 0) >= 2 &&
+				(d.level ?? 0) <= maxDepth
 			) {
-				const text = block.data?.text || '';
+				const text = d.text || '';
 				const id = generateSlug(text, index);
 				headings.push({
 					id,
 					text: stripHtml(text),
-					level: block.data.level ?? 2
+					level: d.level ?? 2
 				});
 				index++;
 			}
@@ -114,9 +121,18 @@
 		return buildHierarchy(headings);
 	}
 
-	// Build nested hierarchy from flat headings
-	function buildHierarchy(headings: { id: string; text: string; level: number }[]): TocItem[] {
+	// Build nested hierarchy from flat headings.
+	// FIX-2026-04-27: previously mutated `flatItems` (a $state array) directly via
+	// .push, which made the calling $effect both read and write `flatItems` on the
+	// same tick — Svelte 5 schedules a rerun on every push, infinite loop, hence
+	// effect_update_depth_exceeded. Build a local array and return it; the caller
+	// assigns to `flatItems` once.
+	function buildHierarchy(headings: { id: string; text: string; level: number }[]): {
+		nested: TocItem[];
+		flat: TocItem[];
+	} {
 		const result: TocItem[] = [];
+		const flat: TocItem[] = [];
 		const stack: { item: TocItem; level: number }[] = [];
 		let counters: number[] = [0, 0, 0, 0, 0, 0];
 
@@ -152,8 +168,8 @@
 				number: numberParts.join('.')
 			};
 
-			// Add to flat list for easy access
-			flatItems.push(item);
+			// Add to flat list for easy access (local — caller assigns to `flatItems`)
+			flat.push(item);
 
 			// Find parent
 			while (stack.length > 0 && (stack[stack.length - 1]?.level ?? 0) >= level) {
@@ -172,7 +188,7 @@
 			stack.push({ item, level });
 		});
 
-		return result;
+		return { nested: result, flat };
 	}
 
 	// Scroll to heading
@@ -280,10 +296,12 @@
 	// Svelte 5: Derived value for shouldShow
 	let shouldShow = $derived(flatItems.length >= minHeadings);
 
-	// Svelte 5: Effect for extracting headings when contentBlocks change
+	// Svelte 5: Effect for extracting headings when contentBlocks change.
+	// Single batch of writes per content change — no per-heading mutations of $state.
 	$effect(() => {
-		flatItems = [];
-		tocItems = extractHeadings();
+		const { nested, flat } = extractHeadings();
+		flatItems = flat;
+		tocItems = nested;
 	});
 
 	// Svelte 5: Effect for initialization and cleanup

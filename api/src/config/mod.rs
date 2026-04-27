@@ -132,27 +132,71 @@ impl std::fmt::Debug for Config {
 
 impl Config {
     pub fn from_env() -> Result<Self> {
+        let environment =
+            std::env::var("ENVIRONMENT").unwrap_or_else(|_| "development".to_string());
+        let is_dev = environment == "development";
+
+        // FIX-2026-04-27: defence-in-depth. The dev-only fallback below would
+        // silently use placeholder R2/Stripe/Meili creds if ENVIRONMENT=development
+        // ever landed in production secrets by accident. Refuse to boot when
+        // ENVIRONMENT is "development" but APP_URL points at a known prod host.
+        if is_dev {
+            let app_url = std::env::var("APP_URL").unwrap_or_default();
+            const PROD_INDICATORS: &[&str] = &[
+                "revolution-trading-pros.pages.dev",
+                "revolution-trading-pros-api.fly.dev",
+                "revolutiontradingpros.com",
+            ];
+            if PROD_INDICATORS.iter().any(|d| app_url.contains(d)) {
+                panic!(
+                    "FATAL: ENVIRONMENT=development but APP_URL ({}) looks like production. \
+                     Refusing to start with placeholder credentials in production. \
+                     Set ENVIRONMENT=production or fix APP_URL.",
+                    app_url
+                );
+            }
+        }
+
+        // FIX-2026-04-27: dev-only fallback. In production these still hard-fail
+        // via `.context(...)?`; in development we accept missing values so the
+        // local stack can boot without R2/Stripe/Meili creds. Real uploads /
+        // payments / search will still 500 at the call site if used.
+        fn required_or_dev(key: &str, dev: bool, fallback: &str) -> Result<String> {
+            match std::env::var(key) {
+                Ok(v) => Ok(v),
+                Err(_) if dev => {
+                    tracing::warn!(
+                        "{key} not set - using development fallback. Feature using {key} will not work end-to-end."
+                    );
+                    Ok(fallback.to_string())
+                }
+                Err(e) => Err(anyhow::Error::new(e).context(format!("{key} is required"))),
+            }
+        }
+
         Ok(Self {
             port: std::env::var("PORT")
                 .unwrap_or_else(|_| "8080".to_string())
                 .parse()
                 .context("Invalid PORT")?,
-            environment: std::env::var("ENVIRONMENT").unwrap_or_else(|_| "development".to_string()),
+            environment: environment.clone(),
 
             database_url: std::env::var("DATABASE_URL").context("DATABASE_URL required")?,
             redis_url: std::env::var("REDIS_URL")
                 .unwrap_or_else(|_| "redis://localhost:6379".to_string()),
 
-            // FIX-2026-04-26: r2_endpoint: std::env::var("R2_ENDPOINT").unwrap_or_default(),
-            r2_endpoint: std::env::var("R2_ENDPOINT").context("R2_ENDPOINT is required")?,
-            // FIX-2026-04-26: r2_access_key_id: std::env::var("R2_ACCESS_KEY_ID").unwrap_or_default(),
-            r2_access_key_id: std::env::var("R2_ACCESS_KEY_ID")
-                .context("R2_ACCESS_KEY_ID is required")?,
-            // FIX-2026-04-26: r2_secret_access_key: std::env::var("R2_SECRET_ACCESS_KEY").unwrap_or_default(),
-            r2_secret_access_key: std::env::var("R2_SECRET_ACCESS_KEY")
-                .context("R2_SECRET_ACCESS_KEY is required")?,
-            // FIX-2026-04-26: r2_bucket: std::env::var("R2_BUCKET").unwrap_or_else(|_| "revolution-trading-media".to_string()),
-            r2_bucket: std::env::var("R2_BUCKET").context("R2_BUCKET is required")?,
+            r2_endpoint: required_or_dev(
+                "R2_ENDPOINT",
+                is_dev,
+                "https://example-account.r2.cloudflarestorage.com",
+            )?,
+            r2_access_key_id: required_or_dev("R2_ACCESS_KEY_ID", is_dev, "dev-placeholder")?,
+            r2_secret_access_key: required_or_dev(
+                "R2_SECRET_ACCESS_KEY",
+                is_dev,
+                "dev-placeholder",
+            )?,
+            r2_bucket: required_or_dev("R2_BUCKET", is_dev, "revolution-trading-media")?,
             r2_public_url: std::env::var("R2_PUBLIC_URL").unwrap_or_else(|_| {
                 "https://pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev".to_string()
             }),
@@ -163,16 +207,16 @@ impl Config {
                 .parse()
                 .unwrap_or(24),
 
-            // FIX-2026-04-26: stripe_secret_key: std::env::var("STRIPE_SECRET").unwrap_or_else(|_| { warn(...); String::new() })
-            stripe_secret_key: std::env::var("STRIPE_SECRET")
-                .context("STRIPE_SECRET is required")?,
+            stripe_secret_key: required_or_dev("STRIPE_SECRET", is_dev, "sk_test_placeholder")?,
             stripe_publishable_key: std::env::var("STRIPE_PUBLISHABLE_KEY").unwrap_or_else(|_| {
                 tracing::warn!("STRIPE_PUBLISHABLE_KEY not set - payment features will not work");
                 String::new()
             }),
-            // FIX-2026-04-26: stripe_webhook_secret: std::env::var("STRIPE_WEBHOOK_SECRET").unwrap_or_else(|_| { warn(...); String::new() })
-            stripe_webhook_secret: std::env::var("STRIPE_WEBHOOK_SECRET")
-                .context("STRIPE_WEBHOOK_SECRET is required")?,
+            stripe_webhook_secret: required_or_dev(
+                "STRIPE_WEBHOOK_SECRET",
+                is_dev,
+                "whsec_placeholder",
+            )?,
 
             cors_origins: std::env::var("CORS_ORIGINS")
                 .unwrap_or_else(|_| {
@@ -201,9 +245,7 @@ impl Config {
 
             meilisearch_host: std::env::var("MEILISEARCH_HOST")
                 .unwrap_or_else(|_| "http://localhost:7700".to_string()),
-            // FIX-2026-04-26: meilisearch_api_key: std::env::var("MEILISEARCH_API_KEY").unwrap_or_default(),
-            meilisearch_api_key: std::env::var("MEILISEARCH_API_KEY")
-                .context("MEILISEARCH_API_KEY is required")?,
+            meilisearch_api_key: required_or_dev("MEILISEARCH_API_KEY", is_dev, "dev-placeholder")?,
 
             // ICT 11+: NO HARDCODED EMAILS - must be set via environment variables
             superadmin_emails: std::env::var("SUPERADMIN_EMAILS")

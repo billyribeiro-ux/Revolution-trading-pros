@@ -70,8 +70,10 @@ services:
       PORT: "8080"
       ENVIRONMENT: development
       CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
-      # Stripe / R2 / Bunny / Postmark / Meilisearch are unset — features that need
-      # them will return errors gracefully; auth + posts + admin work without them.
+      # Stripe / R2 / Bunny / Postmark / Meilisearch are unset — the API now
+      # accepts missing values when ENVIRONMENT=development (config/mod.rs
+      # `required_or_dev` helper). Features needing these still fail at the
+      # call site, but auth + posts + admin work without them.
     depends_on:
       db:
         condition: service_healthy
