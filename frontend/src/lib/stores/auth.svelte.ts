@@ -213,7 +213,23 @@ class AuthStoreClass {
 	private _user = $state<User | null>(null);
 	private _sessionId = $state<string | null>(getInitialSessionId());
 	private _tokenExpiry = $state<number | null>(getInitialTokenExpiry());
-	private _isInitializing = $state(!!getInitialSessionId()); // True if we need to validate
+	// FIX-2026-04-27: always start in `isInitializing = true` and let
+	// `initializeAuth()` (called from the root +layout.svelte onMount) flip it
+	// to false once the cookie/session probe completes. The previous gate
+	// (`!!getInitialSessionId()`) only flagged init when localStorage had a
+	// session id — but the auth cookie is httpOnly, so a freshly-arrived
+	// browser context (Playwright `page.request.post('/api/auth/login')`,
+	// OAuth redirect with Set-Cookie, magic-link landing, etc.) has the
+	// cookie WITHOUT the localStorage marker. Those flows previously raced
+	// against the admin layout's `evaluate()` guard: the layout saw
+	// `isInitializing = false` + `isAuthenticated = false` and bounced to
+	// /login before initializeAuth had a chance to hydrate the user from /me.
+	// Starting in `true` and only clearing when init resolves is the
+	// principled fix — guards that already wait on isInitializing
+	// (admin/+layout.svelte, dashboard/+page.svelte, account/+page.svelte)
+	// continue to work correctly; the cost for anonymous visitors is one
+	// cheap /me round-trip on first paint.
+	private _isInitializing = $state(true);
 	private _isLoading = $state(false);
 	private _sessionInvalidated = $state(false);
 	private _invalidationReason = $state<string | null>(null);

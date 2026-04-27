@@ -1430,20 +1430,50 @@ export const getSecurityEvents = () => authService.getSecurityEvents();
 export async function initializeAuth(): Promise<boolean> {
 	if (!browser) return false;
 
-	const sessionId = authStore.getSessionId();
-
-	// No stored session - nothing to restore
-	if (!sessionId) {
-		authStore.completeInitialization(false);
-		return false;
-	}
-
 	// ICT11+ Performance: Add timeout to prevent blocking UI
 	const AUTH_TIMEOUT = 5000; // 5 second timeout
 
 	const timeoutPromise = new Promise<never>((_, reject) => {
 		setTimeout(() => reject(new Error('Auth initialization timeout')), AUTH_TIMEOUT);
 	});
+
+	const sessionId = authStore.getSessionId();
+
+	// FIX-2026-04-27: cookie-only session probe.
+	// ───────────────────────────────────────────────────────────────────────────
+	// Previously this function short-circuited (`completeInitialization(false)`)
+	// when localStorage had no `rtp_session_id`. That made the admin layout's
+	// onMount guard see `isAuthenticated.current === false` and bounce to
+	// /login?redirect=/admin even when a valid `rtp_access_token` cookie was
+	// already on the browser context — i.e. anything that authenticates via
+	// `POST /api/auth/login` without then also touching the UI form (Playwright
+	// `page.request.post`, server-set cookie via OAuth callback, prerendered
+	// magic-link landing, etc).
+	//
+	// The cookie is httpOnly so we can't peek at it from JS; the only way to
+	// know whether a valid cookie is on the wire is to ask the API. So when
+	// there's no localStorage session we still issue a single cookie-bearing
+	// `/api/auth/me` request. If it 200s, hydrate the store and we're done. If
+	// it 401s (anonymous visitor — the common case), we fall through to
+	// `completeInitialization(false)` exactly as before. Net cost for anonymous
+	// users: one cheap `/me` round-trip on first visit; the response is short
+	// and the request is parallelized with the rest of layout init.
+	//
+	// hooks.server.ts already does the same probe SSR-side for protected
+	// routes — the admin layout has `ssr = false`, so that data never reaches
+	// the client store; this client-side probe is the symmetric fix.
+	if (!sessionId) {
+		try {
+			const user = await Promise.race([authService.getUser(), timeoutPromise]);
+			console.debug('[Auth] Session restored from cookie (no localStorage session id)');
+			return !!user;
+		} catch {
+			// 401 / network / timeout — proceed as anonymous, identical to the
+			// previous fast-path behaviour.
+			authStore.completeInitialization(false);
+			return false;
+		}
+	}
 
 	try {
 		// Race between auth refresh and timeout

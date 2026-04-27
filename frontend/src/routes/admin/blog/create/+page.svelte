@@ -243,6 +243,10 @@
 				...post,
 				status,
 				content: htmlContent, // HTML for backward compatibility
+				// Map tag IDs → names; backend expects Vec<String> (tag names), not IDs.
+				tags: post.tags
+					.map((id) => availableTags.find((t) => t.id === id)?.name)
+					.filter((name): name is string => !!name),
 				blocks: contentBlocks.map((b) => ({
 					id: b.id,
 					type: b.type,

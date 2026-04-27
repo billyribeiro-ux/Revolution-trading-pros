@@ -5,6 +5,7 @@
  */
 
 @import './colors.css';
+@import './admin-surfaces.css';
 @import './typography.css';
 @import './spacing.css';
 @import './shadows.css';

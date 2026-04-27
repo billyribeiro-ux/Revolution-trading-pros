@@ -1,0 +1,134 @@
+/**
+ * RTP Admin Design System — Surface Tokens
+ * ═══════════════════════════════════════════════════════════════════════════
+ * Defines the `--admin-*` token namespace consumed by:
+ *   • frontend/src/routes/admin/+layout.svelte (header, search, utility group)
+ *   • frontend/src/lib/components/layout/AdminSidebar.svelte
+ *   • dozens of components under frontend/src/lib/components/admin/
+ *
+ * These tokens were referenced site-wide but never defined, which left the
+ * admin header buttons with empty backgrounds/borders/colors and the rate-
+ * limit pill (which has its own hardcoded styles) standing out as a single
+ * pill against an otherwise invisible toolbar.
+ *
+ * Each token is mapped to the canonical palette in `colors.css`.
+ * SCOPED to `.admin-layout, .admin-page-container` to match the rest of
+ * the admin token system and avoid leaking into marketing pages.
+ */
+
+.admin-layout,
+.admin-page-container {
+	/* ───── Surface layers ───── */
+	--admin-bg: var(--bg-base);
+	--admin-bg-muted: var(--bg-elevated);
+	--admin-surface-primary: var(--bg-elevated);
+	--admin-surface-elevated: var(--bg-surface);
+	--admin-surface-sunken: var(--bg-surface);
+	--admin-surface-hover: var(--bg-hover);
+
+	/* ───── Header ───── */
+	--admin-header-bg: var(--bg-elevated);
+	--admin-header-border: var(--border-default);
+	--admin-header-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+	--admin-header-height: 70px;
+	--admin-toolbar-height: 46px;
+
+	/* ───── Sidebar ───── */
+	--admin-sidebar-bg: var(--sidebar-bg);
+	--admin-sidebar-border: var(--sidebar-border);
+	--admin-nav-bg-hover: var(--sidebar-hover);
+	--admin-nav-text: var(--sidebar-text);
+	--admin-nav-text-hover: var(--text-primary);
+	--admin-nav-section-title: var(--text-tertiary);
+
+	/* ───── Text ───── */
+	--admin-text-primary: var(--text-primary);
+	--admin-text-secondary: var(--text-secondary);
+	--admin-text-muted: var(--text-tertiary);
+
+	/* ───── Borders ───── */
+	--admin-border: var(--border-default);
+	--admin-border-light: var(--border-muted);
+	--admin-border-subtle: var(--border-muted);
+	--admin-border-interactive: var(--border-emphasis);
+
+	/* ───── Buttons / icon-buttons ───── */
+	--admin-btn-bg: var(--bg-surface);
+	--admin-btn-bg-hover: var(--bg-hover);
+	--admin-btn-border: var(--border-default);
+	--admin-btn-border-hover: var(--border-emphasis);
+	--admin-btn-primary-text: #0d1117;
+
+	/* ───── Cards ───── */
+	--admin-card-bg: var(--bg-elevated);
+	--admin-card-border: var(--border-default);
+	--admin-card-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+	--admin-card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.35);
+
+	/* ───── Keyboard hint chip (⌘K) ───── */
+	--admin-kbd-bg: var(--bg-base);
+	--admin-kbd-border: var(--border-default);
+	--admin-kbd-text: var(--text-secondary);
+
+	/* ───── Focus ring ───── */
+	--admin-focus-ring: 0 0 0 3px rgba(230, 184, 0, 0.35);
+
+	/* ───── Accents (gold brand) ───── */
+	--admin-accent-primary: var(--primary-500);
+	--admin-accent-primary-hover: var(--primary-400);
+	--admin-accent-primary-soft: var(--primary-50);
+	--admin-accent-secondary: var(--secondary-500);
+	--admin-accent-secondary-hover: var(--secondary-400);
+	--admin-accent-tertiary: var(--secondary-300);
+	--admin-accent-bg: rgba(230, 184, 0, 0.1);
+	--admin-accent-glow: rgba(230, 184, 0, 0.25);
+
+	/* ───── Status colors ───── */
+	--admin-success: var(--success-emphasis);
+	--admin-success-text: var(--success-emphasis);
+	--admin-success-bg: var(--success-soft);
+	--admin-success-border: var(--success-base);
+
+	--admin-warning: var(--warning-emphasis);
+	--admin-warning-text: var(--warning-emphasis);
+	--admin-warning-bg: var(--warning-soft);
+	--admin-warning-border: var(--warning-base);
+
+	--admin-error: var(--error-emphasis);
+	--admin-error-text: var(--error-emphasis);
+	--admin-error-bg: var(--error-soft);
+	--admin-error-border: var(--error-base);
+
+	--admin-info: var(--info-emphasis);
+	--admin-info-text: var(--info-emphasis);
+	--admin-info-bg: var(--info-soft);
+	--admin-info-border: var(--info-base);
+
+	/* ───── Badges ───── */
+	--admin-badge-default-bg: var(--bg-surface);
+
+	/* ───── Tooltip ───── */
+	--admin-tooltip-bg: #0f1419;
+	--admin-tooltip-text: var(--text-primary);
+	--admin-tooltip-border: var(--border-default);
+
+	/* ───── Stat-card widget tints (used by StatCard / dashboard widgets) ───── */
+	--admin-widget-gold-bg: rgba(230, 184, 0, 0.12);
+	--admin-widget-gold-icon: var(--primary-400);
+	--admin-widget-amber-bg: rgba(245, 158, 11, 0.12);
+	--admin-widget-amber-icon: #f59e0b;
+	--admin-widget-orange-bg: rgba(249, 115, 22, 0.12);
+	--admin-widget-orange-icon: #f97316;
+	--admin-widget-emerald-bg: rgba(16, 185, 129, 0.12);
+	--admin-widget-emerald-icon: #10b981;
+	--admin-widget-green-bg: rgba(46, 160, 67, 0.12);
+	--admin-widget-green-icon: var(--success-emphasis);
+	--admin-widget-blue-bg: rgba(56, 139, 253, 0.12);
+	--admin-widget-blue-icon: var(--info-emphasis);
+	--admin-widget-purple-bg: rgba(139, 92, 246, 0.12);
+	--admin-widget-purple-icon: #8b5cf6;
+	--admin-widget-red-bg: rgba(239, 68, 68, 0.12);
+	--admin-widget-red-icon: var(--error-emphasis);
+	--admin-widget-muted-bg: rgba(139, 148, 158, 0.12);
+	--admin-widget-muted-icon: var(--text-tertiary);
+}

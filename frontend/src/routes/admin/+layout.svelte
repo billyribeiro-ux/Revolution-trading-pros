@@ -484,6 +484,29 @@
 		border-radius: var(--radius-md);
 	}
 
+	/* RateLimitIndicator ships its own pill styling (green/amber/red bg +
+	   1px border) so it can stand alone elsewhere. Inside this toolbar we
+	   neutralize the pill chrome so it visually conforms to the surrounding
+	   .icon-btn row — color is preserved (still semantic) but background,
+	   border, and padding match the flat icon-btn shape. */
+	.header-utility-group :global(.rate-limit-btn) {
+		background: transparent;
+		border: none;
+		padding: 0 var(--space-2);
+		min-height: 32px;
+		border-radius: var(--radius-sm);
+		gap: 4px;
+	}
+
+	.header-utility-group :global(.rate-limit-btn:hover) {
+		background: var(--admin-btn-bg-hover);
+	}
+
+	.header-utility-group :global(.rate-limit-btn .limit-percentage) {
+		font-size: var(--text-xs);
+		font-weight: var(--font-semibold);
+	}
+
 	.icon-btn {
 		display: inline-flex;
 		align-items: center;
