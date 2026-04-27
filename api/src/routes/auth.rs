@@ -505,17 +505,19 @@ async fn resend_verification(
         }));
     };
 
-    // ICT 11+ SECURITY: Check if already verified
+    // FIX-2026-04-27 (M-2): Return identical generic message for already-verified users
+    // to prevent email enumeration. Do NOT send another email — it is wasted work.
     if user.email_verified_at.is_some() {
         tracing::info!(
             target: "security_audit",
             event = "resend_verification_already_verified",
             user_id = %user.id,
             email = %user.email,
-            "ICT 11+ AUDIT: Verification resend requested for already verified user"
+            "Verification resend suppressed - email already verified"
         );
         return Ok(Json(MessageResponse {
-            message: "Your email is already verified. You can log in.".to_string(),
+            message: "If your email is registered, you will receive a verification link shortly."
+                .to_string(),
             success: Some(true),
         }));
     }
@@ -627,82 +629,57 @@ async fn login(
         "Login attempt initiated"
     );
 
-    // FIX-2026-04-26 (Priority 4): per-IP rate limit (10 attempts / 15 min). Fail-open.
+    // FIX-2026-04-27 (H-2): Both per-IP and per-email checks now FAIL CLOSED.
+    // A Redis outage must not become a free pass for brute-force attacks.
     let ip = client_ip(&headers);
-    if let Some(redis) = state.services.redis.as_ref() {
-        let key = format!("login_ip:{}", ip);
-        match redis.check_ip_rate_limit(&key, 10, 900).await {
-            Ok(result) => {
-                if !result.allowed {
-                    tracing::warn!(
-                        target: "security",
-                        event = "login_ip_rate_limited",
-                        ip = %ip,
-                        "Login blocked - per-IP rate limit exceeded"
-                    );
-                    return Err((
-                        StatusCode::TOO_MANY_REQUESTS,
-                        Json(json!({
-                            "error": "Too many login attempts from this network. Please wait before trying again.",
-                            "retry_after": result.retry_after,
-                        })),
-                    ));
-                }
-            }
-            Err(e) => {
-                tracing::warn!(
-                    target: "security",
-                    event = "login_ip_rate_limit_check_failed",
-                    ip = %ip,
-                    error = %e,
-                    "Per-IP rate limit check failed (fail-open for login availability)"
-                );
-            }
-        }
-    }
+    enforce_ip_rate_limit_strict(&state, &ip, "login_ip", 10, 900).await?;
 
-    // ICT L11+ Security: Check rate limit BEFORE any processing
-    // Gracefully degrade if Redis is unavailable
-    let rate_limit_result = if let Some(redis) = &state.services.redis {
-        redis.check_login_rate_limit(&input.email).await
-    } else {
-        Ok(crate::services::redis::RateLimitResult {
-            allowed: true,
-            remaining: 999,
-            retry_after: None,
-            locked: false,
-        })
+    let Some(ref redis) = state.services.redis else {
+        tracing::error!(
+            target: "security",
+            event = "login_rate_limit_redis_unavailable",
+            "Redis unavailable for login rate limit check - rejecting request (fail-closed)"
+        );
+        return Err((
+            StatusCode::SERVICE_UNAVAILABLE,
+            Json(json!({"error": "Service temporarily unavailable, please try again"})),
+        ));
     };
 
-    match rate_limit_result {
-        Ok(rate_limit) => {
-            if !rate_limit.allowed {
-                let error_msg = if rate_limit.locked {
-                    "Account temporarily locked due to too many failed attempts"
-                } else {
-                    "Too many login attempts. Please wait before trying again"
-                };
-
-                return Err((
-                    StatusCode::TOO_MANY_REQUESTS,
-                    Json(json!({
-                        "error": error_msg,
-                        "retry_after": rate_limit.retry_after,
-                        "locked": rate_limit.locked
-                    })),
-                ));
-            }
+    match redis.check_login_rate_limit(&input.email).await {
+        Ok(rate_limit) if !rate_limit.allowed => {
+            let error_msg = if rate_limit.locked {
+                "Account temporarily locked due to too many failed attempts"
+            } else {
+                "Too many login attempts. Please wait before trying again"
+            };
+            return Err((
+                StatusCode::TOO_MANY_REQUESTS,
+                Json(json!({
+                    "error": error_msg,
+                    "retry_after": rate_limit.retry_after,
+                    "locked": rate_limit.locked
+                })),
+            ));
         }
+        Ok(_) => {}
         Err(e) => {
-            // Redis unavailable - log warning but continue with login
-            // This ensures the system remains operational even if Redis is down
-            tracing::warn!("Rate limit check failed (Redis unavailable): {} - continuing without rate limiting", e);
+            tracing::error!(
+                target: "security",
+                event = "login_email_rate_limit_failed_closed",
+                error = %e,
+                "Per-email rate limit Redis check failed - rejecting request (fail-closed)"
+            );
+            return Err((
+                StatusCode::SERVICE_UNAVAILABLE,
+                Json(json!({"error": "Service temporarily unavailable, please try again"})),
+            ));
         }
     }
 
     // Find user
     let user_result: Option<User> = sqlx::query_as(
-        "SELECT id, email, password_hash, name, role, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at FROM users WHERE email = $1"
+        "SELECT id, email, password_hash, name, role, is_active, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at FROM users WHERE email = $1"
     )
         .bind(&input.email)
         .fetch_optional(&state.db.pool)
@@ -772,6 +749,23 @@ async fn login(
     // Clear failed login attempts on successful authentication
     if let Some(redis) = &state.services.redis {
         let _ = redis.clear_login_attempts(&input.email).await;
+    }
+
+    // FIX-2026-04-27 (C-1): Block banned/deactivated accounts at login.
+    // is_active == Some(false) means an admin explicitly banned this account.
+    // NULL (legacy rows) and Some(true) are both treated as active.
+    if user.is_active == Some(false) {
+        tracing::warn!(
+            target: "security_audit",
+            event = "login_blocked_banned",
+            user_id = %user.id,
+            email = %user.email,
+            "Login blocked - account is banned/deactivated"
+        );
+        return Err((
+            StatusCode::UNAUTHORIZED,
+            Json(json!({"error": "Invalid credentials"})),
+        ));
     }
 
     // ICT 11+ ENTERPRISE SECURITY: Email Verification Enforcement

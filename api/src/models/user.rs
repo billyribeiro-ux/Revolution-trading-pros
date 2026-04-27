@@ -22,6 +22,8 @@ pub struct User {
     #[sqlx(default)]
     pub role: Option<String>,
     #[sqlx(default)]
+    pub is_active: Option<bool>,
+    #[sqlx(default)]
     pub email_verified_at: Option<NaiveDateTime>,
     #[sqlx(default)]
     pub avatar_url: Option<String>,

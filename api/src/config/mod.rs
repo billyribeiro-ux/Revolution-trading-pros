@@ -202,10 +202,12 @@ impl Config {
             }),
 
             jwt_secret: std::env::var("JWT_SECRET").context("JWT_SECRET required")?,
+            // FIX-2026-04-27 (H-1): Default TTL reduced from 24h to 1h.
+            // 24h is excessive for a site handling PII/payments; OWASP guidance is 15-60 min.
             jwt_expires_in: std::env::var("JWT_EXPIRES_IN")
-                .unwrap_or_else(|_| "24".to_string())
+                .unwrap_or_else(|_| "1".to_string())
                 .parse()
-                .unwrap_or(24),
+                .unwrap_or(1),
 
             stripe_secret_key: required_or_dev("STRIPE_SECRET", is_dev, "sk_test_placeholder")?,
             stripe_publishable_key: std::env::var("STRIPE_PUBLISHABLE_KEY").unwrap_or_else(|_| {

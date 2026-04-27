@@ -80,7 +80,12 @@ const config = {
 					'https://www.google-analytics.com',
 					'https://static.cloudflareinsights.com',
 					'https://*.mediadelivery.net',
-					'https://vz-5a23b520-193.b-cdn.net'
+					'https://vz-5a23b520-193.b-cdn.net',
+					// Dev-only: allow direct calls to the local Rust API and Vite dev servers.
+					// NODE_ENV is 'development' during `pnpm dev`; never set in production builds.
+					...(process.env.NODE_ENV === 'development'
+						? ['http://localhost:8080', 'http://localhost:5173', 'http://localhost:5174']
+						: [])
 				],
 				'frame-src': ['self', 'https://iframe.mediadelivery.net', 'https://*.mediadelivery.net'],
 				'frame-ancestors': ['none'],

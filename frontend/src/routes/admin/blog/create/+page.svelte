@@ -97,7 +97,12 @@
 
 	async function loadTags() {
 		try {
-			const data = await api.get('/api/admin/tags');
+			// Use same-origin fetch so the SvelteKit proxy attaches rtp_access_token
+			// from the httpOnly cookie. api.get('/api/admin/...') would bypass the
+			// proxy by routing directly to API_BASE_URL.
+			const resp = await fetch('/api/admin/tags', { credentials: 'include' });
+			if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+			const data = await resp.json();
 			availableTags = data.data || data || [];
 		} catch (error) {
 			console.error('Failed to load tags:', error);
@@ -254,10 +259,13 @@
 					settings: b.settings,
 					metadata: b.metadata
 				})),
+				// Backend expects NaiveDateTime (no Z, no ms): "2026-04-27T12:00:00"
 				published_at:
 					status === 'published' && !post.published_at
-						? new Date().toISOString()
-						: post.published_at || null
+						? new Date().toISOString().replace(/\.\d{3}Z$/, '')
+						: post.published_at
+							? post.published_at.replace(/\.\d{3}Z$/, '').replace('Z', '')
+							: null
 			};
 
 			// Use SvelteKit proxy endpoint (relative URL)

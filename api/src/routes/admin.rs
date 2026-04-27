@@ -214,6 +214,16 @@ async fn create_user(
 ) -> Result<Json<AdminUserRow>, (StatusCode, Json<serde_json::Value>)> {
     require_admin(&user)?;
 
+    // FIX-2026-04-27 (H-4): Validate password strength before hashing.
+    // Previously hash_password was called without validate_password, so admins
+    // could create accounts with passwords like "a" that bypass the policy.
+    crate::utils::validate_password(&input.password).map_err(|e| {
+        (
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": e})),
+        )
+    })?;
+
     let password_hash = crate::utils::hash_password(&input.password).map_err(|e| {
         (
             StatusCode::INTERNAL_SERVER_ERROR,
@@ -257,6 +267,40 @@ async fn update_user(
     Json(input): Json<UpdateUserRequest>,
 ) -> Result<Json<AdminUserRow>, (StatusCode, Json<serde_json::Value>)> {
     require_admin(&user)?;
+
+    // FIX-2026-04-27 (H-7): Only super_admin may grant privileged roles.
+    // A regular admin promoting anyone to developer/super_admin is a privilege escalation path.
+    if let Some(ref new_role) = input.role {
+        let privileged = matches!(
+            new_role.as_str(),
+            "developer" | "super_admin" | "super-admin"
+        );
+        if privileged {
+            let actor_role = user.role.as_deref().unwrap_or("user");
+            let actor_is_super = actor_role == "super_admin" || actor_role == "super-admin";
+            if !actor_is_super {
+                return Err((
+                    StatusCode::FORBIDDEN,
+                    Json(json!({"error": "Only super_admin can grant developer or super_admin roles"})),
+                ));
+            }
+        }
+    }
+
+    // Fetch old role for the audit log before the update
+    let old_role: Option<(Option<String>,)> =
+        sqlx::query_as("SELECT role FROM users WHERE id = $1")
+            .bind(id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e| {
+                tracing::error!("Failed to fetch user role for audit: {}", e);
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": "Database error"})),
+                )
+            })?;
+
     // Build UPDATE query with parameterized values
     let mut set_clauses = Vec::new();
     let mut param_count = 1;
@@ -307,7 +351,7 @@ async fn update_user(
         query_builder = query_builder.bind(is_active);
     }
 
-    let user = query_builder
+    let updated = query_builder
         .fetch_one(&state.db.pool)
         .await
         .map_err(|_e| {
@@ -317,7 +361,38 @@ async fn update_user(
             )
         })?;
 
-    Ok(Json(user))
+    // FIX-2026-04-27 (H-7): Write audit log row for every role change.
+    if let Some(ref new_role) = input.role {
+        let prev_role = old_role
+            .and_then(|(r,)| r)
+            .unwrap_or_else(|| "user".to_string());
+        let details = serde_json::json!({
+            "old_role": prev_role,
+            "new_role": new_role,
+            "actor_id": user.id,
+            "target_user_id": id
+        });
+        if let Err(e) = sqlx::query(
+            r#"INSERT INTO security_events (user_id, event_type, event_category, severity, details)
+               VALUES ($1, 'role_change', 'access_control', 'high', $2)"#,
+        )
+        .bind(id)
+        .bind(&details)
+        .execute(&state.db.pool)
+        .await
+        {
+            tracing::error!(
+                target: "security_audit",
+                event = "role_change_audit_write_failed",
+                actor_id = %user.id,
+                target_user_id = %id,
+                error = %e,
+                "Failed to write role change audit log"
+            );
+        }
+    }
+
+    Ok(Json(updated))
 }
 
 /// Delete user (admin)
@@ -362,6 +437,31 @@ async fn ban_user(
                 Json(json!({"error": e.to_string()})),
             )
         })?;
+
+    // FIX-2026-04-27 (H-6): Invalidate all active sessions and the user cache so
+    // banned users are kicked out immediately, not just on next token refresh.
+    // Tolerate Redis failure — the ban is already persisted in the DB and Fix C-1
+    // will block the user on the next DB fetch.
+    if let Some(ref redis) = state.services.redis {
+        if let Err(e) = redis.invalidate_all_user_sessions(id).await {
+            tracing::warn!(
+                target: "security_audit",
+                event = "ban_session_invalidation_failed",
+                user_id = %id,
+                error = %e,
+                "Could not invalidate sessions for banned user (Redis unavailable) - DB ban still effective"
+            );
+        }
+        if let Err(e) = redis.invalidate_user_cache(id).await {
+            tracing::warn!(
+                target: "security_audit",
+                event = "ban_cache_invalidation_failed",
+                user_id = %id,
+                error = %e,
+                "Could not invalidate user cache for banned user"
+            );
+        }
+    }
 
     Ok(Json(json!({"message": "User banned successfully"})))
 }

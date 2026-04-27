@@ -101,8 +101,8 @@ impl FromRequestParts<AppState> for User {
         // ICT 7 FIX: Use explicit column list to avoid SQLx FromRow deserialization errors
         // when database has additional columns not present in User struct
         let user: User = sqlx::query_as(
-            r#"SELECT id, email, password_hash, name, role, email_verified_at, 
-                      avatar_url, mfa_enabled, created_at, updated_at 
+            r#"SELECT id, email, password_hash, name, role, is_active, email_verified_at,
+                      avatar_url, mfa_enabled, created_at, updated_at
                FROM users WHERE id = $1"#,
         )
         .bind(claims.sub)
@@ -116,6 +116,19 @@ impl FromRequestParts<AppState> for User {
             tracing::warn!("User not found for id: {}", claims.sub);
             (StatusCode::UNAUTHORIZED, "User not found")
         })?;
+
+        // FIX-2026-04-27 (C-1): Reject banned/deactivated users on every request.
+        // is_active defaults to true when NULL (older rows before the column existed).
+        if user.is_active == Some(false) {
+            tracing::warn!(
+                target: "security_audit",
+                event = "banned_user_request_rejected",
+                user_id = %user.id,
+                email = %user.email,
+                "Rejected request from banned/deactivated user"
+            );
+            return Err((StatusCode::UNAUTHORIZED, "Account is disabled"));
+        }
 
         // ICT 7+: Cache user in Redis for subsequent requests
         if let Some(ref redis) = state.services.redis {
