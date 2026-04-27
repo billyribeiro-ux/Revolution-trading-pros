@@ -15,7 +15,8 @@
 -->
 
 <script lang="ts">
-	import { untrack } from 'svelte';
+	import { untrack, onMount } from 'svelte';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import { browser } from '$app/environment';
 	import {
 		IconPlus,
@@ -194,9 +195,24 @@
 		}
 	}
 
-	async function deleteFunnel(id: string) {
-		if (!confirm('Are you sure you want to delete this automation? This action cannot be undone.'))
-			return;
+	// Audit P3 #18: replaced native `confirm()` (which differs across
+	// browsers, isn't keyboard-trap-safe, and visually clashes with the
+	// admin chrome) with the project's standard `<ConfirmationModal>`
+	// component. Every other CRM page uses ConfirmationModal — this was
+	// the lone outlier.
+	let showDeleteFunnelModal = $state(false);
+	let pendingDeleteFunnelId = $state<string | null>(null);
+
+	function deleteFunnel(id: string) {
+		pendingDeleteFunnelId = id;
+		showDeleteFunnelModal = true;
+	}
+
+	async function confirmDeleteFunnel() {
+		if (!pendingDeleteFunnelId) return;
+		const id = pendingDeleteFunnelId;
+		showDeleteFunnelModal = false;
+		pendingDeleteFunnelId = null;
 
 		actionInProgress = id;
 		error = '';
@@ -485,15 +501,15 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Svelte 5: Initialize on mount
-	$effect(() => {
+	// Audit P2 #10: was a `$effect` with browser guard. Migrated to
+	// `onMount` so the lifecycle init isn't on the reactive graph.
+	onMount(() => {
 		if (!browser) return;
 
-		const init = async () => {
+		(async () => {
 			await loadFunnels();
 			isInitialized = true;
-		};
-		init();
+		})();
 	});
 </script>
 
@@ -941,6 +957,22 @@ contact_789"
 		</div>
 	</div>
 {/if}
+
+<!--
+	Audit P3 #18: standard ConfirmationModal in place of native confirm().
+-->
+<ConfirmationModal
+	isOpen={showDeleteFunnelModal}
+	title="Delete Automation"
+	message="Are you sure you want to delete this automation? This action cannot be undone."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteFunnel}
+	onCancel={() => {
+		showDeleteFunnelModal = false;
+		pendingDeleteFunnelId = null;
+	}}
+/>
 
 <style>
 	.page {

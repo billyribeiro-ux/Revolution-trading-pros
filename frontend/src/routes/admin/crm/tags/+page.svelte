@@ -186,8 +186,23 @@
 		})
 	);
 
+	let isInitialized = $state(false);
+
 	onMount(() => {
-		loadTags();
+		(async () => {
+			await loadTags();
+			isInitialized = true;
+		})();
+	});
+
+	// Audit P1 #6: re-fetch tags from the backend whenever the search query
+	// changes — previously `searchQuery` was only sent on the first mount
+	// fetch, so server-side search never re-fired for paginated results.
+	$effect(() => {
+		searchQuery;
+		if (isInitialized) {
+			loadTags();
+		}
 	});
 </script>
 

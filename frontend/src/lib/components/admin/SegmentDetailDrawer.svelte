@@ -25,13 +25,16 @@
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import { goto } from '$app/navigation';
 
+	// FIX-2026-04-26 (audit 02 §P1-4): keep `memberCount` nullable so admins
+	// see a real "—" when the count isn't known, rather than the parent page
+	// forging a `Math.random()` placeholder.
 	interface Segment {
 		id: number;
 		name: string;
 		description: string;
 		type: 'smart' | 'static';
 		conditions: Condition[];
-		memberCount: number;
+		memberCount: number | null;
 		lastUpdated: string;
 		isSystem: boolean;
 	}
@@ -315,7 +318,11 @@
 			<div class="stat">
 				<IconUsers size={20} />
 				<div class="stat-content">
-					<span class="stat-value">{segment.memberCount.toLocaleString()}</span>
+					<span class="stat-value"
+						>{segment.memberCount === null || segment.memberCount === undefined
+							? '—'
+							: segment.memberCount.toLocaleString()}</span
+					>
 					<span class="stat-label">Members</span>
 				</div>
 			</div>

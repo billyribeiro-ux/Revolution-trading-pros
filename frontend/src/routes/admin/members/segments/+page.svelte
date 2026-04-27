@@ -74,13 +74,16 @@
 	let newTag = $state({ name: '', color: '#6366f1' });
 	let newFilter = $state({ name: '', filters: {} as Record<string, string | number> });
 
+	// FIX-2026-04-26 (audit 02 §P1-4 / §P3-2): `memberCount` is now nullable
+	// because the backend doesn't always return it (and the page used to fake
+	// it with `Math.random()`). UI renders "—" when null.
 	interface Segment {
 		id: number;
 		name: string;
 		description: string;
 		type: 'smart' | 'static';
 		conditions: Condition[];
-		memberCount: number;
+		memberCount: number | null;
 		lastUpdated: string;
 		isSystem: boolean;
 	}
@@ -95,7 +98,7 @@
 		id: number;
 		name: string;
 		color: string;
-		memberCount: number;
+		memberCount: number | null;
 	}
 
 	interface SavedFilter {
@@ -171,7 +174,10 @@
 	// Lifecycle - Svelte 5 $effect
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	$effect(() => {
+	// FIX-2026-04-26 (audit 02 §P2-9 / CLAUDE.md commit 34a0bd070):
+	// initialization should run once on mount, not in a `$effect`.
+	import { onMount } from 'svelte';
+	onMount(() => {
 		loadData();
 	});
 
@@ -303,7 +309,11 @@
 		}
 	}
 
-	function formatNumber(num: number): string {
+	function formatNumber(num: number | null | undefined): string {
+		// FIX-2026-04-26 (audit 02 §P1-4): the page used to forge member counts
+		// with `Math.random()`. Now we accept `null` from the backend and render
+		// an em-dash so admins can tell "we don't know yet" from "zero".
+		if (num === null || num === undefined || Number.isNaN(num)) return '—';
 		return num.toLocaleString();
 	}
 
@@ -337,13 +347,17 @@
 			return;
 		}
 
+		// FIX-2026-04-26 (audit 02 §P3-2 / §P1-4): the previous body forged a
+		// `Math.random() * 1000 + 100` member count. We now leave the count
+		// `null` so the UI renders "—" until the backend reports the real
+		// audience size (the create endpoint may not return it yet).
 		const segment: Segment = {
 			id: segments.length + 1,
 			name: newSegment.name,
 			description: newSegment.description,
 			type: 'smart',
 			conditions: newSegment.conditions,
-			memberCount: Math.floor(Math.random() * 1000) + 100,
+			memberCount: null,
 			lastUpdated: new Date().toISOString(),
 			isSystem: false
 		};
@@ -360,11 +374,14 @@
 			return;
 		}
 
+		// FIX-2026-04-26 (audit 02 §P1-4): leave count null until the backend
+		// reports it — `0` is a real, distinct value here ("tag exists, no
+		// members tagged").
 		const tag: Tag = {
 			id: tags.length + 1,
 			name: newTag.name,
 			color: newTag.color,
-			memberCount: 0
+			memberCount: null
 		};
 
 		tags = [...tags, tag];
@@ -512,7 +529,7 @@
 
 	function exportSegmentData(segment: Segment) {
 		// Export segment members as CSV
-		toastStore.success(`Exporting ${segment.memberCount} members from "${segment.name}"...`);
+		toastStore.success(`Exporting ${formatNumber(segment.memberCount)} members from "${segment.name}"...`);
 		// TODO: Implement actual CSV export
 	}
 
@@ -661,7 +678,7 @@
 										<IconCalendar size={12} />
 										Updated {formatDate(segment.lastUpdated)}
 									</span>
-									{#if segment.memberCount > 1000}
+									{#if (segment.memberCount ?? 0) > 1000}
 										<span class="growth-badge">
 											<IconTrendingUp size={12} />
 											High Volume

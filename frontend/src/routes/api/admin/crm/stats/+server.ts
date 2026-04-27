@@ -23,6 +23,11 @@ export const GET: RequestHandler = async ({ request, cookies }) => {
 	if (!token) error(401, 'Unauthorized');
 	const authHeader = `Bearer ${token}`;
 
+	// Audit P2 #13: this proxy used to swallow upstream 5xx errors and
+	// return `success: true` with all-zero stats. The dashboard then showed
+	// "0 contacts, $0 revenue" — visually indistinguishable from a real
+	// empty CRM. We now propagate the upstream status so the frontend can
+	// render an explicit "API down" banner instead of silently lying.
 	try {
 		const response = await fetch(`${backendUrl}/api/admin/crm/stats`, {
 			headers: {
@@ -38,39 +43,15 @@ export const GET: RequestHandler = async ({ request, cookies }) => {
 		}
 
 		console.warn(`Backend CRM stats returned ${response.status}`);
+		const body = await response.text();
+		return new Response(body || JSON.stringify({ success: false, error: 'Upstream error' }), {
+			status: response.status,
+			headers: { 'Content-Type': 'application/json' }
+		});
 	} catch (err) {
 		console.warn('Backend CRM stats not available:', err);
+		// Network/transport failure — surface a 502 so callers can
+		// distinguish "real empty CRM" from "backend unreachable".
+		error(502, 'Backend CRM stats endpoint unreachable');
 	}
-
-	// Return empty stats on error
-	return json({
-		success: true,
-		data: {
-			total_contacts: 0,
-			new_this_month: 0,
-			contacts_by_status: {},
-			contacts_by_source: {},
-			active_deals: 0,
-			deal_value: 0,
-			won_deals_this_month: 0,
-			won_value_this_month: 0,
-			average_deal_size: 0,
-			win_rate: 0,
-			average_sales_cycle: 0,
-			pipeline_stages: [],
-			activities_this_week: 0,
-			emails_sent: 0,
-			meetings_scheduled: 0,
-			tasks_completed: 0,
-			total_revenue: 0,
-			mrr: 0,
-			arr: 0,
-			lifetime_value_avg: 0,
-			avg_lead_score: 0,
-			avg_health_score: 0,
-			contacts_at_risk: 0,
-			contacts_engaged: 0,
-			trends: { contacts_growth: 0, deals_growth: 0, revenue_growth: 0 }
-		}
-	});
 };
