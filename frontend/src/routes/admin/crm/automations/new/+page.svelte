@@ -33,7 +33,7 @@
 	import IconCode from '@tabler/icons-svelte-runes/icons/code';
 	import IconLoader2 from '@tabler/icons-svelte-runes/icons/loader-2';
 	import { crmAPI } from '$lib/api/crm';
-	import type { TriggerType, FunnelStatus } from '$lib/crm/types';
+	import type { TriggerType, FunnelStatus, SegmentCondition } from '$lib/crm/types';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
@@ -50,7 +50,7 @@
 		description: '',
 		trigger_type: '' as TriggerType | '',
 		trigger_settings: {} as Record<string, any>,
-		conditions: [] as any[],
+		conditions: [] as SegmentCondition[],
 		status: 'draft' as FunnelStatus
 	});
 

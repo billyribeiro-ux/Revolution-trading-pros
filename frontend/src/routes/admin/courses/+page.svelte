@@ -233,6 +233,10 @@
 				course.is_published = !course.is_published;
 				course.status = course.is_published ? 'published' : 'draft';
 				courses = [...courses];
+			} else {
+				// FIX-2026-04-26 (P3-7): surface error when publish fails non-throwing.
+				// Old: silent no-op left users wondering why nothing happened.
+				toastStore.error(data?.error || data?.message || 'Failed to update course status');
 			}
 		} catch {
 			// FIX-2026-04-26: replaced native alert() with toastStore.error.

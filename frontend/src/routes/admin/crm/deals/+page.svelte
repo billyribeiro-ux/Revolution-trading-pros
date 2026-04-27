@@ -236,7 +236,7 @@
 		pendingDeleteDeal = null;
 
 		try {
-			await crmAPI.updateDeal(deal.id, { status: 'abandoned' } as any);
+			await crmAPI.updateDeal(deal.id, { status: 'abandoned' });
 			await loadData();
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to delete deal';

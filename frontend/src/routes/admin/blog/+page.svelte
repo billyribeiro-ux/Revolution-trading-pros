@@ -257,18 +257,19 @@
 	}
 
 	function updatePostMetric(postId: number, metric: string, value: any) {
+		// FIX-2026-04-26 (P2-2): drop `posts = posts;` self-assignment — array
+		// element mutation is reactive in Svelte 5 runes.
 		const post = posts.find((p) => p.id === postId);
 		if (post) {
 			post[metric] = value;
-			posts = posts; // Trigger reactivity
 		}
 	}
 
 	function updatePostStatus(postId: number, status: string) {
+		// FIX-2026-04-26 (P2-2): drop `posts = posts;` self-assignment.
 		const post = posts.find((p) => p.id === postId);
 		if (post) {
 			post.status = status;
-			posts = posts;
 			loadStats();
 		}
 	}
@@ -288,16 +289,18 @@
 	}
 
 	function togglePostSelection(postId: number) {
+		// FIX-2026-04-26 (P2-2): drop self-assignment hacks; Set/array mutations
+		// are reactive in Svelte 5 runes. Reassigning the Set with new Set keeps
+		// downstream `$derived` consumers consistent.
 		if (selectedPosts.has(postId)) {
 			selectedPosts.delete(postId);
 		} else {
 			selectedPosts.add(postId);
 		}
-		selectedPosts = selectedPosts;
+		selectedPosts = new Set(selectedPosts);
 
 		const post = posts.find((p) => p.id === postId);
 		if (post) post.selected = !post.selected;
-		posts = posts;
 
 		// FIX-2026-04-26 (P1-2): guard against the empty-list case where 0 === 0
 		// would otherwise flip selectAll true with nothing actually selected.
@@ -400,8 +403,8 @@
 				method: 'PATCH',
 				body: JSON.stringify({ status: newStatus })
 			});
+			// FIX-2026-04-26 (P2-2): drop self-assignment hack.
 			post.status = newStatus;
-			posts = posts;
 			loadStats();
 			showNotification('success', `Post ${newStatus}`);
 		} catch (error) {
@@ -416,8 +419,8 @@
 				method: 'PATCH',
 				body: JSON.stringify({ featured: !post.featured })
 			});
+			// FIX-2026-04-26 (P2-2): drop self-assignment hack.
 			post.featured = !post.featured;
-			posts = posts;
 			showNotification('success', post.featured ? 'Post featured' : 'Post unfeatured');
 		} catch (error) {
 			console.error('Failed to toggle featured:', error);

@@ -599,8 +599,9 @@
 			const result = await bulkUpdateResources(ids, updates);
 			if (result.success) {
 				showSuccess(`Updated ${result.updated_count} resources`);
-				selectedResources.clear();
-				selectedResources = new Set(selectedResources);
+				// FIX-2026-04-26 (P3-9): clear+self-reassign is dead in Svelte 5;
+				// just reassign a fresh empty Set.
+				selectedResources = new Set();
 				await loadResources();
 			}
 		} catch (err) {

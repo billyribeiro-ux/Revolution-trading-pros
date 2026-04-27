@@ -231,7 +231,7 @@
 		showDeleteModal = false;
 
 		try {
-			await crmAPI.updateDeal(deal.id, { status: 'abandoned' } as any);
+			await crmAPI.updateDeal(deal.id, { status: 'abandoned' });
 			showToast('success', 'Deal deleted');
 			goto('/admin/crm/deals');
 		} catch (_e) {
