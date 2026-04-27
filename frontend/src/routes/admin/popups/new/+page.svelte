@@ -1159,7 +1159,7 @@ https://svelte.dev/e/bind_invalid_expression -->
 							id="popup-start-date"
 							label="Start Date"
 							type="datetime-local"
-							bind:value={(formData as any).start_date}
+							bind:value={formData.start_date}
 						/>
 						<p class="text-xs text-gray-500 mt-1">When the popup should start showing</p>
 					</div>
@@ -1169,7 +1169,7 @@ https://svelte.dev/e/bind_invalid_expression -->
 							id="popup-end-date"
 							label="End Date"
 							type="datetime-local"
-							bind:value={(formData as any).end_date}
+							bind:value={formData.end_date}
 						/>
 						<p class="text-xs text-gray-500 mt-1">When the popup should stop showing</p>
 					</div>

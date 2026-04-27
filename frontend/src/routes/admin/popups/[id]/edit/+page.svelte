@@ -709,7 +709,7 @@ https://svelte.dev/e/bind_invalid_expression -->
 								id="popup-start-date"
 								label="Start Date"
 								type="datetime-local"
-								bind:value={(formData as any).start_date}
+								bind:value={formData.start_date}
 							/>
 							<p class="text-xs text-gray-500 mt-1">When the popup should start showing</p>
 						</div>
@@ -719,26 +719,26 @@ https://svelte.dev/e/bind_invalid_expression -->
 								id="popup-end-date"
 								label="End Date"
 								type="datetime-local"
-								bind:value={(formData as any).end_date}
+								bind:value={formData.end_date}
 							/>
 							<p class="text-xs text-gray-500 mt-1">When the popup should stop showing</p>
 						</div>
 					</div>
 
-					{#if (formData as any).start_date || (formData as any).end_date}
+					{#if formData.start_date || formData.end_date}
 						<div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
 							<h4 class="text-sm font-semibold text-blue-800 mb-1">Schedule Preview</h4>
 							<p class="text-sm text-blue-700">
-								{#if (formData as any).start_date && (formData as any).end_date}
+								{#if formData.start_date && formData.end_date}
 									Active from <strong
-										>{new Date((formData as any).start_date).toLocaleString()}</strong
+										>{new Date(formData.start_date).toLocaleString()}</strong
 									>
-									to <strong>{new Date((formData as any).end_date).toLocaleString()}</strong>
-								{:else if (formData as any).start_date}
-									Starts <strong>{new Date((formData as any).start_date).toLocaleString()}</strong>
+									to <strong>{new Date(formData.end_date).toLocaleString()}</strong>
+								{:else if formData.start_date}
+									Starts <strong>{new Date(formData.start_date).toLocaleString()}</strong>
 									(no end date)
-								{:else if (formData as any).end_date}
-									Ends <strong>{new Date((formData as any).end_date).toLocaleString()}</strong>
+								{:else if formData.end_date}
+									Ends <strong>{new Date(formData.end_date).toLocaleString()}</strong>
 									(already started)
 								{/if}
 							</p>

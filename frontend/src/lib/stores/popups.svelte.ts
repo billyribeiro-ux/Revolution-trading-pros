@@ -225,6 +225,13 @@ export interface Popup {
 	total_views?: number;
 	total_conversions?: number;
 	conversion_rate?: number;
+
+	// FIX-2026-04-26 (cross-cutting audit §F top-10 #7): scheduled show window
+	// (ISO datetime strings). Driven from the popup edit/new pages — without
+	// these typed here, ~12 `as any` casts around `formData.start_date` /
+	// `formData.end_date` are needed in the templates.
+	start_date?: string;
+	end_date?: string;
 }
 
 // Default popup configuration for easy creation

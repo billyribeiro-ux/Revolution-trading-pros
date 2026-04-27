@@ -28,26 +28,31 @@
 	let datePreset = $state('this_week');
 
 	onMount(async () => {
+		// FIX-2026-04-26 (P2-2): Boards list is invariant for the lifetime of this view.
+		// Was previously re-fetched on every filter change inside loadData(); now we load
+		// it once on mount and re-use the result. loadData() only re-fetches entries.
+		try {
+			const boardsRes = await boardsAPI.getBoards();
+			boards = boardsRes.data;
+		} catch (error) {
+			console.error('Failed to load boards:', error);
+		}
 		await loadData();
 	});
 
 	async function loadData() {
 		loading = true;
 		try {
-			const [entriesRes, boardsRes] = await Promise.all([
-				boardsAPI.getTimeEntries({
-					board_id: filterBoardId || undefined,
-					user_id: filterUserId || undefined,
-					date_from: filterDateFrom || undefined,
-					date_to: filterDateTo || undefined,
-					is_billable: filterBillable ?? undefined,
-					per_page: 100
-				}),
-				boardsAPI.getBoards()
-			]);
+			const entriesRes = await boardsAPI.getTimeEntries({
+				board_id: filterBoardId || undefined,
+				user_id: filterUserId || undefined,
+				date_from: filterDateFrom || undefined,
+				date_to: filterDateTo || undefined,
+				is_billable: filterBillable ?? undefined,
+				per_page: 100
+			});
 
 			timeEntries = entriesRes.data;
-			boards = boardsRes.data;
 
 			// Calculate stats
 			const totalMinutes = timeEntries.reduce((sum, e) => sum + e.minutes, 0);
