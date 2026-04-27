@@ -515,12 +515,13 @@
 		try {
 			const submitData = await prepareSubmitData();
 
+			let payload: typeof submitData & { profile_photo?: string } = submitData;
 			if (profilePhotoFile) {
 				const photoUrl = await uploadProfilePhoto(profilePhotoFile);
-				(submitData as any).profile_photo = photoUrl;
+				payload = { ...submitData, profile_photo: photoUrl };
 			}
 
-			const user = await usersApi.create(submitData);
+			const user = await usersApi.create(payload);
 
 			await sendNotifications(user);
 			trackUserCreation(user);

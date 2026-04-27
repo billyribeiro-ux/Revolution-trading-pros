@@ -324,7 +324,10 @@
 			video_date: (() => {
 				if (typeof video.video_date === 'string') return video.video_date.split('T')[0];
 				if (video.video_date == null) return new Date().toISOString().split('T')[0];
-				const d = new Date(video.video_date as unknown as string | number | Date);
+				// type: at this point video_date is neither string nor nullish; coerce
+				// through Date which tolerates Date|number|object. unknown is the
+				// minimal safe input for the Date constructor.
+				const d = new Date(video.video_date as Date | number);
 				if (Number.isNaN(d.getTime())) return new Date().toISOString().split('T')[0];
 				return d.toISOString().split('T')[0];
 			})(),

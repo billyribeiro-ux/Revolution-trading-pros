@@ -163,7 +163,7 @@
 
 		// Bonuses & Resources
 		bonuses: [] as Bonus[],
-		resources: [] as any[]
+		resources: [] as unknown[]
 	});
 
 	// UI State Management

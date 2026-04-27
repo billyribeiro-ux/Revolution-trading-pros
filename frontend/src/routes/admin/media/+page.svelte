@@ -1514,7 +1514,15 @@
 					<IconX size={20} aria-hidden="true" />
 				</button>
 			</div>
-			<ResponsivePreview variants={(detailItem.variants as any) || []} />
+			<ResponsivePreview
+				variants={(detailItem.variants ?? []).map((v) => ({
+					sizeName: v.size ?? v.type,
+					width: v.width,
+					height: v.height,
+					url: v.url,
+					size: v.file_size
+				}))}
+			/>
 		</div>
 	</div>
 {/if}

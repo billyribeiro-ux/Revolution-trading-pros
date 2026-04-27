@@ -6,6 +6,7 @@
 		Board,
 		Stage,
 		Task,
+		TaskPriority,
 		Label,
 		BoardMember,
 		Comment,
@@ -1160,7 +1161,9 @@
 							<select
 								value={selectedTask.priority}
 								onchange={(e: Event) =>
-									updateTask({ priority: (e.currentTarget as HTMLSelectElement).value as any })}
+									updateTask({
+									priority: (e.currentTarget as HTMLSelectElement).value as TaskPriority
+								})}
 								class="w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 							>
 								<option value="none">None</option>

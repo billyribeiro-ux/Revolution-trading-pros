@@ -61,9 +61,20 @@
 	// Data Loading
 	// ═══════════════════════════════════════════════════════════════════════════════
 
+	interface EmailSettingsResponse {
+		provider?: string;
+		host?: string;
+		port?: number;
+		username?: string;
+		encryption?: string;
+		from_address?: string;
+		from_name?: string;
+		has_password?: boolean;
+	}
+
 	async function loadSettings() {
 		try {
-			const data = (await apiFetch('/admin/email/settings')) as any;
+			const data = (await apiFetch('/admin/email/settings')) as EmailSettingsResponse;
 			// FIX-2026-04-26 (07-marketing P0-2): never store plaintext password
 			// in client state. Server returns `has_password: boolean`; we treat
 			// the password field as a write-only secondary input.

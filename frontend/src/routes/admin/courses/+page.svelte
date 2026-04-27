@@ -248,6 +248,8 @@
 	// Enterprise component handlers
 	const openCourseDetail = (course: Course) => {
 		selectedCourseId = course.id;
+		// type: local Course is a UI-shaped subset of APICourse (missing updated_at,
+		// metadata, enrollments_count, …); double-cast is the correct narrow.
 		selectedCourse = course as unknown as APICourse;
 		showDetailDrawer = true;
 	};

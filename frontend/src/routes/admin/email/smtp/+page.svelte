@@ -34,9 +34,20 @@
 		await loadSettings();
 	});
 
+	interface EmailSettingsResponse {
+		provider?: string;
+		host?: string;
+		port?: number;
+		username?: string;
+		encryption?: string;
+		from_address?: string;
+		from_name?: string;
+		has_password?: boolean;
+	}
+
 	async function loadSettings() {
 		try {
-			const data = (await apiFetch('/admin/email/settings')) as any;
+			const data = (await apiFetch('/admin/email/settings')) as EmailSettingsResponse;
 			hasStoredPassword = Boolean(data?.has_password);
 			settings = {
 				provider: data?.provider ?? 'smtp',

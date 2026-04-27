@@ -45,8 +45,13 @@
 
 	async function loadStats() {
 		try {
-			const response = await seoApi.get404Stats();
-			stats = response as any;
+			const response = (await seoApi.get404Stats()) as {
+				total: number;
+				resolved: number;
+				unresolved: number;
+				total_hits: number;
+			};
+			stats = response;
 		} catch (error) {
 			console.error('Failed to load stats:', error);
 		}
