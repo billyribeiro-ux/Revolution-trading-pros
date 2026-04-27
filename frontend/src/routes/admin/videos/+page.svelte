@@ -953,12 +953,16 @@
 		return 'direct';
 	}
 
-	// Auto-detect platform when URL changes
-	$effect(() => {
+	// FIX-2026-04-26-audit (P1-10): the previous $effect retriggered on every
+	// formData.* mutation (Svelte 5 deep proxy tracking) and also fired during
+	// the manual reset paths in openUploadModal() / openEditModal(). Replace
+	// with an explicit imperative handler wired to the URL field's `oninput`,
+	// so platform detection only fires when the user actually changes the URL.
+	function handleVideoUrlInput() {
 		if (formData.video_url) {
 			formData.video_platform = detectPlatform(formData.video_url);
 		}
-	});
+	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED
@@ -1628,6 +1632,7 @@
 						name="video-url"
 						placeholder="https://vimeo.com/..."
 						bind:value={formData.video_url}
+						oninput={handleVideoUrlInput}
 					/>
 					<span class="form-hint">
 						Supports: Vimeo, YouTube, Bunny.net, Wistia, or direct URL

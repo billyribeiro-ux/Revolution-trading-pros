@@ -13,7 +13,7 @@
 	@version 1.0.0
 -->
 <script lang="ts">
-	import { untrack } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import { weeklyVideoApi, type WeeklyVideo } from '$lib/api/room-content';
 	import { adminFetch } from '$lib/utils/adminFetch';
 
@@ -127,18 +127,27 @@
 	// ═══════════════════════════════════════════════════════════════════════════════
 
 	async function loadVideos() {
+		// FIX-2026-04-26-audit (P1-9): cancel any prior in-flight load so a fast
+		// roomSlug change doesn't race two responses.
+		loadAbortController?.abort();
+		const controller = new AbortController();
+		loadAbortController = controller;
+
 		isLoading = true;
 		try {
 			const [currentRes, archived] = await Promise.all([
 				weeklyVideoApi.getCurrent(roomSlug),
 				weeklyVideoApi.list(roomSlug)
 			]);
+			if (controller.signal.aborted) return;
 			currentVideo = currentRes.data ?? null;
 			archivedVideos = archived.data.filter((v) => !v.is_current);
 		} catch (err) {
+			if (controller.signal.aborted) return;
 			console.error('Failed to load videos:', err);
 		} finally {
-			isLoading = false;
+			if (loadAbortController === controller) loadAbortController = null;
+			if (!controller.signal.aborted) isLoading = false;
 		}
 	}
 
@@ -319,11 +328,34 @@
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════════
+	//
+	// FIX-2026-04-26-audit (P1-9): the previous `$effect` on `roomSlug` had no
+	// cleanup path and used `untrack(loadVideos)`, leaving an in-flight fetch
+	// running after unmount. We now (1) initialise via `onMount`, (2) refetch
+	// when roomSlug changes via an explicit derived-tracked side effect, and
+	// (3) carry an AbortController that `onDestroy` cancels.
+
+	let lastLoadedRoomSlug: string | null = null;
+	let loadAbortController: AbortController | null = null;
+
+	onMount(() => {
+		if (roomSlug) {
+			lastLoadedRoomSlug = roomSlug;
+			loadVideos();
+		}
+	});
 
 	$effect(() => {
-		if (roomSlug) {
-			untrack(() => loadVideos());
-		}
+		// React only when the slug actually changes after mount.
+		if (!roomSlug || roomSlug === lastLoadedRoomSlug) return;
+		lastLoadedRoomSlug = roomSlug;
+		loadVideos();
+	});
+
+	onDestroy(() => {
+		// Abort any in-flight load so we don't mutate state on a detached component.
+		loadAbortController?.abort();
+		loadAbortController = null;
 	});
 </script>
 

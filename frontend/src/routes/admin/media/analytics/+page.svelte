@@ -110,11 +110,14 @@
 		connectionError = null;
 
 		try {
-			// Load all data in parallel using Promise.allSettled for resilience
+			// FIX-2026-04-26-audit (P1-8): same-origin admin proxy at
+			// /api/admin/media/analytics/<rest>. The previous calls hit a
+			// non-existent /api/media/analytics/* route and silently 404'd,
+			// leaving the dashboard in its "Connection error" state forever.
 			const [overviewRes, bandwidthRes, formatsRes] = await Promise.allSettled([
-				fetch('/api/media/analytics/overview'),
-				fetch(`/api/media/analytics/bandwidth?range=${timeRange}`),
-				fetch('/api/media/analytics/formats')
+				fetch('/api/admin/media/analytics/overview'),
+				fetch(`/api/admin/media/analytics/bandwidth?range=${timeRange}`),
+				fetch('/api/admin/media/analytics/formats')
 			]);
 
 			// Check if any request succeeded - that means we're connected

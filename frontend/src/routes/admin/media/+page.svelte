@@ -382,7 +382,9 @@
 		isAnalyzing = true;
 
 		try {
-			const response = await fetch(`/api/media/ai/analyze/${item.id}`, {
+			// FIX-2026-04-26-audit (P1-7): same-origin admin proxy; was hitting an
+			// orphan `/api/media/ai/analyze/{id}` route that 404'd in production.
+			const response = await fetch(`/api/admin/media/ai/analyze/${item.id}`, {
 				method: 'POST'
 			});
 
@@ -418,7 +420,8 @@
 		isAnalyzing = true;
 
 		try {
-			const response = await fetch(`/api/media/ai/alt-text/${item.id}`, {
+			// FIX-2026-04-26-audit (P1-7): same-origin admin proxy.
+			const response = await fetch(`/api/admin/media/ai/alt-text/${item.id}`, {
 				method: 'POST'
 			});
 
@@ -457,7 +460,8 @@
 			const formData = new FormData();
 			formData.append('file', cropResult.blob, detailItem.filename);
 
-			const response = await fetch(`/api/media/${detailItem.id}/replace`, {
+			// FIX-2026-04-26-audit (P1-7): same-origin admin proxy; multipart streamed verbatim.
+			const response = await fetch(`/api/admin/media/${detailItem.id}/replace`, {
 				method: 'POST',
 				body: formData
 			});
