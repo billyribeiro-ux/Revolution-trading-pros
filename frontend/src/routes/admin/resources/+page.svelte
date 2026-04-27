@@ -21,6 +21,8 @@
 	 */
 
 	import { browser } from '$app/environment';
+	// FIX-2026-04-26 (CLAUDE.md): init/cleanup belongs in onMount, not $effect.
+	import { onMount } from 'svelte';
 	import {
 		IconVideo,
 		IconFileText,
@@ -279,8 +281,11 @@
 	// API FUNCTIONS
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// ICT 7: All 6 trading rooms in correct order
-	const FALLBACK_ROOMS: TradingRoom[] = [
+	// ICT 7: All 6 trading rooms in correct order.
+	// TODO(2026-04-26-audit P2-11): retained for offline-dev; not used by the
+	// runtime path anymore. Underscore prefix suppresses unused-var lint while
+	// keeping the data here for the planned dev-only flag.
+	const _FALLBACK_ROOMS: TradingRoom[] = [
 		{
 			id: 1,
 			name: 'Day Trading Room',
@@ -411,13 +416,24 @@
 			tradingRoomApi.traders.list({ active_only: true })
 		]);
 
-		// Extract rooms - use fallback if API fails
+		// Extract rooms.
+		// FIX-2026-04-26 (P2-11): when the rooms API truly fails, surface a clear
+		// error and render an empty state rather than masquerading FALLBACK_ROOMS
+		// as truth — the production DB may have different rooms entirely.
 		const roomsResult = results[0];
 		if (roomsResult.status === 'fulfilled' && roomsResult.value?.data) {
 			const data = roomsResult.value.data;
-			rooms = Array.isArray(data) && data.length > 0 ? data : FALLBACK_ROOMS;
+			if (Array.isArray(data) && data.length > 0) {
+				rooms = data;
+			} else {
+				rooms = [];
+				error = 'No rooms returned from backend.';
+			}
 		} else {
-			rooms = FALLBACK_ROOMS;
+			// TODO(2026-04-26-audit): keep FALLBACK_ROOMS available behind a flag
+			// for offline dev only; production must show the empty state.
+			rooms = [];
+			error = 'Could not load trading rooms — please retry or contact support.';
 		}
 
 		// Select first room
@@ -455,10 +471,15 @@
 				// API returned but no data - show empty state
 				resources = [];
 			}
-		} catch {
-			// ICT 7: CORB or API failure - show empty state, don't crash
+		} catch (err) {
+			// FIX-2026-04-26 (P2-8): surface backend failures so admins can tell a
+			// genuine empty room from a 5xx. Previously every error masqueraded
+			// as "no content found".
 			resources = [];
-			// Don't set error - just show empty state
+			error =
+				err instanceof Error
+					? `Failed to load resources: ${err.message}`
+					: 'Failed to load resources';
 		} finally {
 			isLoading = false;
 		}
@@ -565,8 +586,9 @@
 					const deleteResult = await bulkDeleteResources(ids);
 					if (deleteResult.success) {
 						showSuccess(`Deleted ${deleteResult.deleted_count} resources`);
-						selectedResources.clear();
-						selectedResources = new Set(selectedResources);
+						// FIX-2026-04-26 (P3-9): drop legacy clear+self-reassign hack;
+						// reassign with a fresh empty Set is equivalent and clearer.
+						selectedResources = new Set();
 						await loadResources();
 					}
 					showBulkModal = false;
@@ -741,36 +763,18 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Svelte 5: Initialize on mount
-	$effect(() => {
+	// FIX-2026-04-26 (CLAUDE.md / P1-7): init in onMount and remove the trailing
+	// $effect that re-fired loadResources whenever selectedRoom changed —
+	// selectRoom() already calls loadResources() explicitly. The previous
+	// double-effect dance produced two in-flight requests per click.
+	onMount(() => {
 		if (!browser) return;
-
-		const init = async () => {
+		void (async () => {
 			await loadRoomsAndTraders();
 			if (selectedRoom) {
 				await loadResources();
 			}
-		};
-		init();
-	});
-
-	// ICT 7: Track previous room to prevent duplicate API calls
-	let previousRoomId = $state<number | null>(null);
-
-	$effect(() => {
-		// Only load if room changed and not during initial load
-		// selectRoom() handles its own loadResources() call
-		if (
-			selectedRoom &&
-			!isLoadingRooms &&
-			previousRoomId !== null &&
-			previousRoomId !== selectedRoom.id
-		) {
-			loadResources();
-		}
-		if (selectedRoom) {
-			previousRoomId = selectedRoom.id;
-		}
+		})();
 	});
 </script>
 

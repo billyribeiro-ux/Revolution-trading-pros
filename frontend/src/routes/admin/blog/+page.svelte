@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
+	// FIX-2026-04-26 (CLAUDE.md): init/cleanup belongs in onMount, not $effect.
+	import { onMount } from 'svelte';
 	import { fly, slide, scale } from 'svelte/transition';
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import {
@@ -132,8 +134,11 @@
 	// Lifecycle
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Svelte 5: Initialize on mount with cleanup
-	$effect(() => {
+	// FIX-2026-04-26 (CLAUDE.md / P1-8 / P2-7): init in onMount, not $effect.
+	// Adds visibility gate so polling doesn't hammer expired sessions in
+	// background tabs, plus an AbortController-style poll-stop on 401.
+	let pollAuthBlocked = $state(false);
+	onMount(() => {
 		if (!browser) return;
 
 		loadPosts();
@@ -141,13 +146,15 @@
 		setupWebSocket();
 		setupKeyboardShortcuts();
 
-		// Auto-refresh every 30 seconds
 		refreshInterval = setInterval(() => {
+			// FIX-2026-04-26 (P1-8): only poll when tab is visible AND a previous
+			// load hasn't disabled polling due to auth failure.
+			if (pollAuthBlocked) return;
+			if (typeof document !== 'undefined' && document.visibilityState !== 'visible') return;
 			loadStats();
 			if (viewMode === 'list') loadPosts();
 		}, 30000);
 
-		// Cleanup on destroy
 		return () => {
 			if (ws) ws.close();
 			if (refreshInterval) clearInterval(refreshInterval);
@@ -180,9 +187,16 @@
 				engagement_rate: calculateEngagementRate(post),
 				selected: selectedPosts.has(post.id)
 			}));
-		} catch (error) {
+		} catch (error: any) {
 			console.error('Failed to load posts:', error);
-			showNotification('error', 'Failed to load posts');
+			// FIX-2026-04-26 (P1-8): on 401, stop polling so we don't blast the
+			// expired session every 30s.
+			if (error?.status === 401 || /401|Unauthorized/i.test(String(error?.message || ''))) {
+				pollAuthBlocked = true;
+				showNotification('error', 'Session expired — please re-login');
+			} else {
+				showNotification('error', 'Failed to load posts');
+			}
 		} finally {
 			loading = false;
 		}
@@ -203,7 +217,8 @@
 	function setupWebSocket() {
 		// ICT 11+ FIX: Only attempt WebSocket if VITE_WS_URL is explicitly configured
 		// Fly.io doesn't support WebSockets by default - this is optional functionality
-		const configuredWsUrl = import.meta.env['VITE_WS_URL'];
+		// FIX-2026-04-26 (P3-6): use dot-property form so Vite static replaces.
+		const configuredWsUrl = import.meta.env.VITE_WS_URL;
 		if (!configuredWsUrl) {
 			// Silently skip - WebSocket is optional, use polling instead
 			return;
@@ -284,7 +299,9 @@
 		if (post) post.selected = !post.selected;
 		posts = posts;
 
-		selectAll = selectedPosts.size === posts.length;
+		// FIX-2026-04-26 (P1-2): guard against the empty-list case where 0 === 0
+		// would otherwise flip selectAll true with nothing actually selected.
+		selectAll = posts.length > 0 && selectedPosts.size === posts.length;
 	}
 
 	function bulkDelete() {
@@ -320,6 +337,9 @@
 			return;
 		}
 
+		// FIX-2026-04-26 (P1-3): capture the count BEFORE clearing the set; the
+		// previous code read it after .clear() and always reported "Updated 0".
+		const count = selectedPosts.size;
 		try {
 			await adminFetch('/api/admin/posts/bulk-status', {
 				method: 'POST',
@@ -329,7 +349,7 @@
 			loadStats();
 			selectedPosts.clear();
 			selectAll = false;
-			showNotification('success', `Updated ${selectedPosts.size} posts to ${newStatus}`);
+			showNotification('success', `Updated ${count} posts to ${newStatus}`);
 		} catch (error) {
 			console.error('Failed to bulk update status:', error);
 			showNotification('error', 'Failed to update posts');
@@ -606,7 +626,12 @@
 	}
 
 	function showNotification(type: 'success' | 'error' | 'warning' | 'info', message: string) {
-		const id = Date.now();
+		// FIX-2026-04-26 (P3-3): Date.now() collides when two notifications fire
+		// in the same ms. Use crypto.randomUUID() for guaranteed uniqueness.
+		const id =
+			typeof crypto !== 'undefined' && 'randomUUID' in crypto
+				? crypto.randomUUID()
+				: `${Date.now()}-${Math.random()}`;
 		notifications = [...notifications, { id, type, message }];
 
 		setTimeout(() => {
@@ -917,10 +942,11 @@
 					</div>
 
 					{#each posts as post (post.id)}
+						<!-- FIX-2026-04-26 (P3-10): drop per-card transition:scale; running 50+
+						     scale animations on every filter change is a perf hit. -->
 						<div
 							class="post-card"
 							class:selected={selectedPosts.has(post.id)}
-							transition:scale={{ duration: 200 }}
 						>
 							<!-- Selection Checkbox -->
 							<div class="post-select">
@@ -1282,7 +1308,13 @@
 						</button>
 					</div>
 					<div class="modal-content">
-						<iframe src="/blog/{previewPost.slug}?preview=true" title="Post Preview"></iframe>
+						<!-- FIX-2026-04-26 (P1-9): URL-encode the slug before interpolating
+						     to prevent a stray `?`/`&`/`<` in DB-stored slug from
+						     hijacking the iframe URL. -->
+						<iframe
+							src="/blog/{encodeURIComponent(previewPost.slug)}?preview=true"
+							title="Post Preview"
+						></iframe>
 					</div>
 				</div>
 			</div>

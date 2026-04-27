@@ -118,21 +118,31 @@
 	// EFFECTS - Svelte 5 $effect
 	// ═══════════════════════════════════════════════════════════════════════════
 
+	// FIX-2026-04-26 (P0-4): track manual slug edits so the auto-generator
+	// stops clobbering user-typed slugs.
+	let categorySlugEdited = $state(false);
+	function handleCategorySlugInput() {
+		categorySlugEdited = true;
+	}
+
 	// Auto-generate slug when name changes for new categories
 	$effect(() => {
-		if (categoryForm.name && !editingCategory) {
+		if (categoryForm.name && !editingCategory && !categorySlugEdited) {
 			categoryForm.slug = generateSlug(categoryForm.name);
 		}
 	});
 
-	// Update stats when categories change
+	// FIX-2026-04-26 (P3-13): convert effect-derived stats to $derived to remove
+	// the write-while-reading "shadow-state" cascade.
+	let computedStats = $derived({
+		total: categories.length,
+		visible: categories.filter((c) => c.is_visible).length,
+		hidden: categories.filter((c) => !c.is_visible).length,
+		withPosts: categories.filter((c) => c.post_count > 0).length
+	});
+	// Keep the existing `stats` rune in sync via a plain effect (one-direction).
 	$effect(() => {
-		stats = {
-			total: categories.length,
-			visible: categories.filter((c) => c.is_visible).length,
-			hidden: categories.filter((c) => !c.is_visible).length,
-			withPosts: categories.filter((c) => c.post_count > 0).length
-		};
+		stats = computedStats;
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -244,36 +254,49 @@
 		showBulkDeleteModal = true;
 	}
 
-	async function confirmBulkDelete() {
-		showBulkDeleteModal = false;
+	// FIX-2026-04-26 (P2-6): in-progress gate so two rapid bulk-action clicks
+	// don't race with each other or operate on a cleared selection.
+	let bulkOpInFlight = $state(false);
 
+	async function confirmBulkDelete() {
+		if (bulkOpInFlight) return;
+		bulkOpInFlight = true;
+		showBulkDeleteModal = false;
+		// FIX-2026-04-26 (P1-3): capture count BEFORE clearing for accurate toast.
+		const count = selectedIds.size;
 		try {
 			await categoriesApi.bulkDelete(Array.from(selectedIds));
-			showToastMessage(`${selectedIds.size} categories deleted successfully`, 'success');
 			selectedIds = new Set();
+			showToastMessage(`${count} categories deleted successfully`, 'success');
 			await loadCategories();
 		} catch (err) {
 			if (err instanceof AdminApiError) {
 				showToastMessage(err.message, 'error');
 			}
+		} finally {
+			bulkOpInFlight = false;
 		}
 	}
 
 	async function bulkToggleVisibility(visible: boolean) {
-		if (selectedIds.size === 0) return;
-
+		if (selectedIds.size === 0 || bulkOpInFlight) return;
+		bulkOpInFlight = true;
+		// FIX-2026-04-26 (P1-3): capture count BEFORE clearing.
+		const count = selectedIds.size;
 		try {
 			await categoriesApi.bulkUpdateVisibility(Array.from(selectedIds), visible);
+			selectedIds = new Set();
 			showToastMessage(
-				`${selectedIds.size} categories ${visible ? 'shown' : 'hidden'} successfully`,
+				`${count} categories ${visible ? 'shown' : 'hidden'} successfully`,
 				'success'
 			);
-			selectedIds = new Set();
 			await loadCategories();
 		} catch (err) {
 			if (err instanceof AdminApiError) {
 				showToastMessage(err.message, 'error');
 			}
+		} finally {
+			bulkOpInFlight = false;
 		}
 	}
 
@@ -296,14 +319,20 @@
 
 	async function exportCategories() {
 		try {
+			// FIX-2026-04-26 (P3-12): backend `/admin/categories/export` returns
+			// `{ data: { data, filename } }` JSON (not a content-disposition
+			// stream). Re-serialize the inner `data` array — not the wrapper —
+			// so the downloaded file contains just the export rows.
 			const response = await categoriesApi.export();
-			const blob = new Blob([JSON.stringify(response.data, null, 2)], {
+			const exportPayload = response.data?.data ?? response.data ?? [];
+			const filename = response.data?.filename || 'categories-export.json';
+			const blob = new Blob([JSON.stringify(exportPayload, null, 2)], {
 				type: 'application/json'
 			});
 			const url = URL.createObjectURL(blob);
 			const a = document.createElement('a');
 			a.href = url;
-			a.download = response.data?.filename || 'categories-export.json';
+			a.download = filename;
 			document.body.appendChild(a);
 			a.click();
 			document.body.removeChild(a);
@@ -333,6 +362,8 @@
 				meta_title: category.meta_title || '',
 				meta_description: category.meta_description || ''
 			};
+			// FIX-2026-04-26 (P0-4): editing — slug is curated, never auto-overwrite.
+			categorySlugEdited = true;
 		} else {
 			editingCategory = null;
 			categoryForm = {
@@ -345,6 +376,7 @@
 				meta_title: '',
 				meta_description: ''
 			};
+			categorySlugEdited = false;
 		}
 		formErrors = [];
 		showCategoryModal = true;
@@ -361,7 +393,10 @@
 		if (!categoryForm.name.trim()) formErrors.push('Name is required');
 		if (!categoryForm.slug.trim()) formErrors.push('Slug is required');
 		else if (!/^[a-z0-9-]+$/.test(categoryForm.slug)) {
-			formErrors.push('Slug can only contain lowercase letters, numbers, and hyphens');
+			// FIX-2026-04-26 (P2-3): include offending characters in the error.
+			const bad = categoryForm.slug.replace(/[a-z0-9-]/g, '');
+			const detail = bad ? ` (invalid: "${[...new Set(bad.split(''))].join('')}")` : '';
+			formErrors.push(`Slug can only contain lowercase letters, numbers, and hyphens${detail}`);
 		}
 		return formErrors.length === 0;
 	}
@@ -760,11 +795,13 @@
 
 					<div class="form-group">
 						<label for="cat-slug">Slug *</label>
+						<!-- FIX-2026-04-26 (P0-4): mark as user-edited on input. -->
 						<input
 							id="cat-slug"
 							name="cat-slug"
 							type="text"
 							bind:value={categoryForm.slug}
+							oninput={handleCategorySlugInput}
 							placeholder="category-slug"
 							required
 						/>

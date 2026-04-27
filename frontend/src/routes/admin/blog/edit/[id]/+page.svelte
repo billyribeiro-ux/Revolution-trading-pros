@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { goto } from '$app/navigation';
+	import { goto, beforeNavigate } from '$app/navigation';
 	import { onMount } from 'svelte';
+	// FIX-2026-04-26 (P2-4): sanitize raw-HTML blog blocks before send.
+	import { sanitizeBlogContent } from '$lib/utils/sanitize';
 	import IconDeviceFloppy from '@tabler/icons-svelte-runes/icons/device-floppy';
 	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
 	import IconPhoto from '@tabler/icons-svelte-runes/icons/photo';
@@ -104,6 +106,10 @@
 	let contentBlocks = $state<Block[]>([]);
 
 	let availableTags: any[] = $state([]);
+	// FIX-2026-04-26 (P3-4): explicit loading state for tags so the post-edit UI
+	// can render a placeholder until tag names resolve, instead of silently
+	// rendering raw IDs / no-ops on availableTags.find lookups.
+	let tagsLoading = $state(true);
 	let loading = $state(true);
 	let saving = $state(false);
 	let saveError = $state('');
@@ -114,8 +120,34 @@
 	let uploadError = $state('');
 	let isFullscreen = $state(false);
 
-	onMount(async () => {
-		await Promise.all([loadPost(), loadTags()]);
+	// FIX-2026-04-26 (P1-6): unsaved-changes guard.
+	let lastSavedSnapshot = $state<string>('');
+	let hasUnsavedChanges = $derived(
+		!loading && JSON.stringify({ post, contentBlocks }) !== lastSavedSnapshot
+	);
+
+	beforeNavigate((nav) => {
+		if (
+			hasUnsavedChanges &&
+			!nav.willUnload &&
+			!confirm('You have unsaved changes. Discard and leave?')
+		) {
+			nav.cancel();
+		}
+	});
+
+	onMount(() => {
+		void Promise.all([loadPost(), loadTags()]).then(() => {
+			// Snapshot once both loads complete.
+			lastSavedSnapshot = JSON.stringify({ post, contentBlocks });
+		});
+		const handler = (e: BeforeUnloadEvent) => {
+			if (hasUnsavedChanges) {
+				e.preventDefault();
+			}
+		};
+		window.addEventListener('beforeunload', handler);
+		return () => window.removeEventListener('beforeunload', handler);
 	});
 
 	async function loadPost() {
@@ -148,7 +180,13 @@
 				indexable: postData.indexable ?? true,
 				canonical_url: postData.canonical_url || '',
 				categories: postData.categories || [],
-				tags: postData.tags?.map((t: any) => (typeof t === 'object' ? t.id : t)) || []
+				// FIX-2026-04-26 (P3-11): backend returns either bare ids or {id,...}
+				// objects; normalize to ids here. The polymorphism still papers over
+				// a backend-shape mismatch — track in API contract notes.
+				tags:
+					postData.tags?.map((t: any) =>
+						t && typeof t === 'object' && 'id' in t ? t.id : t
+					) || []
 			};
 
 			// Load blocks from the post data
@@ -189,11 +227,14 @@
 	}
 
 	async function loadTags() {
+		tagsLoading = true;
 		try {
 			const data = await api.get('/api/admin/tags');
 			availableTags = data.data || data || [];
 		} catch (error) {
 			console.error('Failed to load tags:', error);
+		} finally {
+			tagsLoading = false;
 		}
 	}
 
@@ -247,7 +288,8 @@
 					case 'separator':
 						return '<hr />';
 					case 'html':
-						return content.html || '';
+						// FIX-2026-04-26 (P2-4): sanitize raw-HTML blocks (DOMPurify).
+						return sanitizeBlogContent(content.html || '');
 					default:
 						return content.text ? `<p>${content.text}</p>` : '';
 				}
@@ -315,6 +357,8 @@
 			}
 
 			saveSuccess = status === 'published' ? 'Post published!' : 'Changes saved!';
+			// FIX-2026-04-26 (P1-6): refresh the unsaved-changes baseline.
+			lastSavedSnapshot = JSON.stringify({ post, contentBlocks });
 
 			// Clear success message after a delay
 			setTimeout(() => {
@@ -701,24 +745,35 @@
 					</div>
 
 					<div class="checkbox-list">
-						{#each availableTags as tag}
-							{#if !post.tags.includes(tag.id)}
-								<label class="checkbox-item">
-									<input
-										id="page-checkbox"
-										name="page-checkbox"
-										type="checkbox"
-										value={tag.id}
-										onchange={(e: Event) => {
-											if ((e.currentTarget as HTMLInputElement).checked) {
-												post.tags = [...post.tags, tag.id];
-											}
-										}}
-									/>
-									<span style="color: {tag.color}">{tag.name}</span>
-								</label>
-							{/if}
-						{/each}
+						{#if tagsLoading}
+							<!-- FIX-2026-04-26 (P3-4): show explicit loading state for tags
+							     so an empty availableTags list mid-load isn't confused with
+							     "no tags exist". -->
+							<p class="help-text">Loading tags…</p>
+						{:else if availableTags.length === 0}
+							<p class="help-text">No tags yet — type a name above to create one.</p>
+						{:else}
+							{#each availableTags as tag}
+								{#if !post.tags.includes(tag.id)}
+									<label class="checkbox-item">
+										<!-- FIX-2026-04-26 (P3-2): unique id per tag row instead of
+										     duplicate id="page-checkbox". -->
+										<input
+											id="tag-checkbox-{tag.id}"
+											name="tag-checkbox-{tag.id}"
+											type="checkbox"
+											value={tag.id}
+											onchange={(e: Event) => {
+												if ((e.currentTarget as HTMLInputElement).checked) {
+													post.tags = [...post.tags, tag.id];
+												}
+											}}
+										/>
+										<span style="color: {tag.color}">{tag.name}</span>
+									</label>
+								{/if}
+							{/each}
+						{/if}
 					</div>
 				</div>
 			</div>

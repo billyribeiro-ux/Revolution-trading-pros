@@ -17,6 +17,8 @@
 	import SeoMetaFields from '$lib/components/blog/SeoMetaFields.svelte';
 	import { api } from '$lib/api/config';
 	import { mediaApi } from '$lib/api/media';
+	// FIX-2026-04-26 (P2-4): sanitize raw-HTML blog blocks before send.
+	import { sanitizeBlogContent } from '$lib/utils/sanitize';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PREDEFINED BLOG CATEGORIES (same system as videos)
@@ -132,13 +134,53 @@
 		}
 	}
 
+	// FIX-2026-04-26 (P0-4): track manual slug edits — once true, never
+	// auto-overwrite from the title.
+	let slugEdited = $state(false);
+	// FIX-2026-04-26 (P1-4): debounced slug uniqueness probe state.
+	let slugCheckStatus = $state<'idle' | 'checking' | 'available' | 'taken' | 'error'>('idle');
+	let slugCheckTimer: ReturnType<typeof setTimeout> | null = null;
+
+	function handleSlugInput() {
+		slugEdited = true;
+		scheduleSlugUniquenessCheck();
+	}
+
 	function generateSlug() {
 		if (!post.slug && post.title) {
 			post.slug = post.title
 				.toLowerCase()
 				.replace(/[^a-z0-9]+/g, '-')
 				.replace(/^-+|-+$/g, '');
+			scheduleSlugUniquenessCheck();
 		}
+	}
+
+	function scheduleSlugUniquenessCheck() {
+		if (slugCheckTimer) clearTimeout(slugCheckTimer);
+		const slug = post.slug?.trim();
+		if (!slug) {
+			slugCheckStatus = 'idle';
+			return;
+		}
+		slugCheckStatus = 'checking';
+		slugCheckTimer = setTimeout(async () => {
+			try {
+				const res = await fetch(
+					`/api/admin/posts?slug=${encodeURIComponent(slug)}&per_page=1`
+				);
+				if (!res.ok) {
+					slugCheckStatus = 'error';
+					return;
+				}
+				const body = await res.json();
+				const items: any[] = body?.data ?? [];
+				const taken = items.some((p) => p.slug === slug);
+				slugCheckStatus = taken ? 'taken' : 'available';
+			} catch {
+				slugCheckStatus = 'error';
+			}
+		}, 400);
 	}
 
 	// Handle block editor changes
@@ -159,7 +201,11 @@
 		savePost('draft');
 	}
 
-	// Convert blocks to HTML for backward compatibility
+	// Convert blocks to HTML for backward compatibility.
+	// FIX-2026-04-26 (P2-4): user-controlled `html` blocks are now passed through
+	// sanitizeBlogContent (DOMPurify, rich profile) so an admin compromise cannot
+	// inject `<script>` etc. into the public blog. Defense-in-depth — server
+	// should also sanitize.
 	function blocksToHtml(blocks: Block[]): string {
 		return blocks
 			.map((block) => {
@@ -183,7 +229,8 @@
 					case 'separator':
 						return '<hr />';
 					case 'html':
-						return content.html || '';
+						// FIX-2026-04-26 (P2-4): sanitize raw-HTML blocks.
+						return sanitizeBlogContent(content.html || '');
 					default:
 						return content.text ? `<p>${content.text}</p>` : '';
 				}
@@ -304,8 +351,11 @@
 		post.featured_media_id = null;
 	}
 
+	// FIX-2026-04-26 (P0-4): only auto-generate slug if user hasn't manually
+	// edited the slug field; previous code would clobber a deliberate slug on
+	// every title keystroke if the user ever cleared the slug field.
 	$effect(() => {
-		if (post.title) {
+		if (post.title && !slugEdited) {
 			generateSlug();
 		}
 	});
@@ -358,15 +408,27 @@
 				<label for="slug">URL Slug</label>
 				<div class="slug-input">
 					<span class="slug-prefix">your-site.com/blog/</span>
+					<!-- FIX-2026-04-26 (P0-4 / P1-4): mark slug as user-edited on input
+					     and trigger debounced uniqueness probe against the API. -->
 					<input
 						id="slug"
 						name="slug"
 						type="text"
 						bind:value={post.slug}
+						oninput={handleSlugInput}
 						placeholder="post-url-slug"
 						autocomplete="off"
 					/>
 				</div>
+				{#if slugCheckStatus === 'checking'}
+					<p class="help-text">Checking availability…</p>
+				{:else if slugCheckStatus === 'taken'}
+					<p class="help-text" style="color:#dc2626">This slug is already taken</p>
+				{:else if slugCheckStatus === 'available'}
+					<p class="help-text" style="color:#059669">Slug is available</p>
+				{:else if slugCheckStatus === 'error'}
+					<p class="help-text" style="color:#92400e">Could not verify slug</p>
+				{/if}
 			</div>
 
 			<div class="form-group">

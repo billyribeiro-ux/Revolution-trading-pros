@@ -158,9 +158,14 @@
 				color: category.color,
 				is_visible: category.is_visible
 			};
+			// FIX-2026-04-26 (P0-4): editing an existing category — slug is
+			// already user-curated, never auto-overwrite.
+			categorySlugEdited = true;
 		} else {
 			editingCategory = null;
 			categoryForm = { name: '', slug: '', description: '', color: '#3b82f6', is_visible: true };
+			// New category — let auto-slug fire until user types in the slug input.
+			categorySlugEdited = false;
 		}
 		categoryErrors = [];
 		showCategoryModal = true;
@@ -175,9 +180,12 @@
 				color: tag.color,
 				is_visible: tag.is_visible
 			};
+			// FIX-2026-04-26 (P0-4): editing — never auto-overwrite slug.
+			tagSlugEdited = true;
 		} else {
 			editingTag = null;
 			tagForm = { name: '', slug: '', color: '#10b981', is_visible: true };
+			tagSlugEdited = false;
 		}
 		tagErrors = [];
 		showTagModal = true;
@@ -188,7 +196,13 @@
 		if (!categoryForm.name.trim()) categoryErrors.push('Name is required');
 		if (!categoryForm.slug.trim()) categoryErrors.push('Slug is required');
 		else if (!/^[a-z0-9-]+$/.test(categoryForm.slug)) {
-			categoryErrors.push('Slug can only contain lowercase letters, numbers, and hyphens');
+			// FIX-2026-04-26 (P2-3): include the offending characters so legacy
+			// data (uppercase, underscores) can be diagnosed.
+			const bad = categoryForm.slug.replace(/[a-z0-9-]/g, '');
+			const detail = bad ? ` (invalid: "${[...new Set(bad.split(''))].join('')}")` : '';
+			categoryErrors.push(
+				`Slug can only contain lowercase letters, numbers, and hyphens${detail}`
+			);
 		}
 		return categoryErrors.length === 0;
 	}
@@ -228,7 +242,10 @@
 		if (!tagForm.name.trim()) tagErrors.push('Name is required');
 		if (!tagForm.slug.trim()) tagErrors.push('Slug is required');
 		else if (!/^[a-z0-9-]+$/.test(tagForm.slug)) {
-			tagErrors.push('Slug can only contain lowercase letters, numbers, and hyphens');
+			// FIX-2026-04-26 (P2-3): include offending characters in the error.
+			const bad = tagForm.slug.replace(/[a-z0-9-]/g, '');
+			const detail = bad ? ` (invalid: "${[...new Set(bad.split(''))].join('')}")` : '';
+			tagErrors.push(`Slug can only contain lowercase letters, numbers, and hyphens${detail}`);
 		}
 		return tagErrors.length === 0;
 	}
@@ -326,8 +343,9 @@
 		try {
 			await categoriesApi.bulkDelete(Array.from(selectedCategories));
 			showToastMessage('Categories deleted successfully', 'success');
-			selectedCategories.clear();
-			selectedCategories = selectedCategories;
+			// FIX-2026-04-26 (P2-2): Set mutations are reactive in Svelte 5 — drop
+			// the legacy self-assignment hack and reassign with a fresh Set.
+			selectedCategories = new Set();
 			await loadCategories();
 		} catch (error) {
 			if (error instanceof AdminApiError) {
@@ -346,8 +364,8 @@
 		try {
 			await tagsApi.bulkDelete(Array.from(selectedTags));
 			showToastMessage('Tags deleted successfully', 'success');
-			selectedTags.clear();
-			selectedTags = selectedTags;
+			// FIX-2026-04-26 (P2-2): drop legacy self-assignment hack.
+			selectedTags = new Set();
 			await loadTags();
 		} catch (error) {
 			if (error instanceof AdminApiError) {
@@ -375,16 +393,28 @@
 		}, 5000);
 	}
 
+	// FIX-2026-04-26 (P0-4): once a user manually edits the slug, stop
+	// clobbering it on every name keystroke. Tracked per-form.
+	let categorySlugEdited = $state(false);
+	let tagSlugEdited = $state(false);
+
+	function handleCategorySlugInput() {
+		categorySlugEdited = true;
+	}
+	function handleTagSlugInput() {
+		tagSlugEdited = true;
+	}
+
 	// Auto-generate slug when name changes for categories
 	$effect(() => {
-		if (categoryForm.name && !editingCategory) {
+		if (categoryForm.name && !editingCategory && !categorySlugEdited) {
 			categoryForm.slug = generateSlug(categoryForm.name);
 		}
 	});
 
 	// Auto-generate slug when name changes for tags
 	$effect(() => {
-		if (tagForm.name && !editingTag) {
+		if (tagForm.name && !editingTag && !tagSlugEdited) {
 			tagForm.slug = generateSlug(tagForm.name);
 		}
 	});
@@ -485,9 +515,13 @@
 					{#each filteredCategories as category (category.id)}
 						<div class="item-card" transition:fade>
 							<label class="checkbox-wrapper">
+								<!-- FIX-2026-04-26 (P3-2): unique id per row; previously every row
+								     shared id="page-checkbox" — invalid HTML, breaks <label for=…>. -->
+								<!-- FIX-2026-04-26 (P2-2): drop self-assignment; Set mutations are
+								     reactive in Svelte 5. Reassign with new Set to be explicit. -->
 								<input
-									id="page-checkbox"
-									name="page-checkbox"
+									id="cat-checkbox-{category.id}"
+									name="cat-checkbox-{category.id}"
 									type="checkbox"
 									checked={selectedCategories.has(category.id)}
 									onchange={(e: Event) => {
@@ -496,7 +530,7 @@
 										} else {
 											selectedCategories.delete(category.id);
 										}
-										selectedCategories = selectedCategories;
+										selectedCategories = new Set(selectedCategories);
 									}}
 								/>
 							</label>
@@ -586,9 +620,11 @@
 					{#each filteredTags as tag (tag.id)}
 						<div class="item-card" transition:fade>
 							<label class="checkbox-wrapper">
+								<!-- FIX-2026-04-26 (P3-2): unique id per row. -->
+								<!-- FIX-2026-04-26 (P2-2): drop self-assignment hack. -->
 								<input
-									id="page-checkbox"
-									name="page-checkbox"
+									id="tag-checkbox-{tag.id}"
+									name="tag-checkbox-{tag.id}"
 									type="checkbox"
 									checked={selectedTags.has(tag.id)}
 									onchange={(e: Event) => {
@@ -597,7 +633,7 @@
 										} else {
 											selectedTags.delete(tag.id);
 										}
-										selectedTags = selectedTags;
+										selectedTags = new Set(selectedTags);
 									}}
 								/>
 							</label>
@@ -691,11 +727,14 @@
 
 				<div class="form-group">
 					<label for="cat-slug">Slug *</label>
+					<!-- FIX-2026-04-26 (P0-4): mark as user-edited on input so the
+					     auto-generator stops clobbering manual slug edits. -->
 					<input
 						id="cat-slug"
 						name="cat-slug"
 						type="text"
 						bind:value={categoryForm.slug}
+						oninput={handleCategorySlugInput}
 						placeholder="category-slug"
 						required
 					/>
@@ -797,11 +836,13 @@
 
 				<div class="form-group">
 					<label for="tag-slug">Slug *</label>
+					<!-- FIX-2026-04-26 (P0-4): mark as user-edited on input. -->
 					<input
 						id="tag-slug"
 						name="tag-slug"
 						type="text"
 						bind:value={tagForm.slug}
+						oninput={handleTagSlugInput}
 						placeholder="tag-slug"
 						required
 					/>
