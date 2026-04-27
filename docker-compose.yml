@@ -60,6 +60,12 @@ services:
     container_name: rtp-api
     ports:
       - "8080:8080"
+    # FIX-2026-04-27: load real R2/Stripe/Meili creds (and anything else) from
+    # api/.env. The values in the explicit `environment:` block below win on
+    # conflict, so docker-compose-managed defaults stay authoritative for DB,
+    # Redis, JWT, etc., but secrets in api/.env reach the container.
+    env_file:
+      - ./api/.env
     environment:
       DATABASE_URL: postgres://rtp:rtp_password@db:5432/revolution_trading_pros
       REDIS_URL: redis://redis:6379
@@ -70,10 +76,6 @@ services:
       PORT: "8080"
       ENVIRONMENT: development
       CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
-      # Stripe / R2 / Bunny / Postmark / Meilisearch are unset — the API now
-      # accepts missing values when ENVIRONMENT=development (config/mod.rs
-      # `required_or_dev` helper). Features needing these still fail at the
-      # call site, but auth + posts + admin work without them.
     depends_on:
       db:
         condition: service_healthy
