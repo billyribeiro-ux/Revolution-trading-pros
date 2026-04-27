@@ -132,6 +132,7 @@
 	});
 
 	onMount(() => {
+		fetchCourse();
 		const handler = (e: BeforeUnloadEvent) => {
 			if (hasUnsavedChanges) {
 				e.preventDefault();

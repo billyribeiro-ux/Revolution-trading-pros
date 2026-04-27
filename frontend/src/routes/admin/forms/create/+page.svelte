@@ -7,7 +7,7 @@
 	import FormBuilder from '$lib/components/forms/FormBuilder.svelte';
 	import FormTemplateSelector from '$lib/components/forms/FormTemplateSelector.svelte';
 	import ThemeCustomizer from '$lib/components/forms/ThemeCustomizer.svelte';
-	import type { Form } from '$lib/api/forms';
+	import type { Form, FormField } from '$lib/api/forms';
 	import type { FormTemplate, FormTheme } from '$lib/data/formTemplates';
 
 	// Svelte 5 runes for reactive state
@@ -27,14 +27,17 @@
 		formData = {
 			title: selectedTemplate.name,
 			description: selectedTemplate.description,
-			fields: selectedTemplate.fields.map((field, index) => ({
-				...field,
-				id: index + 1,
-				order: index,
-				field_group_id: null,
-				created_at: new Date().toISOString(),
-				updated_at: new Date().toISOString()
-			})) as any,
+			fields: selectedTemplate.fields.map(
+				(field, index) =>
+					({
+						...field,
+						id: index + 1,
+						order: index,
+						field_group_id: null,
+						created_at: new Date().toISOString(),
+						updated_at: new Date().toISOString()
+					}) as FormField
+			),
 			settings: {
 				...selectedTemplate.settings,
 				theme: selectedTheme
