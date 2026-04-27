@@ -11,7 +11,10 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import { goto } from '$app/navigation';
+	// FIX-2026-04-26 (P1-5/P1-6): use SvelteKit router state for params; add
+	// beforeNavigate to guard unsaved changes.
+	import { goto, beforeNavigate } from '$app/navigation';
+	import { page } from '$app/state';
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import BunnyVideoUploader from '$lib/components/admin/BunnyVideoUploader.svelte';
 	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
@@ -52,27 +55,81 @@
 		title: string;
 	}
 
-	let courseId = $state('');
-	let lessonId = $state('');
+	// FIX-2026-04-26 (P1-5): derive params from page.params (reactive across
+	// client-side navigation) instead of parsing window.location.pathname.
+	let courseId = $derived(page.params.id ?? '');
+	let lessonId = $derived(page.params.lessonId ?? '');
 
-	onMount(() => {
-		const pathParts = window.location.pathname.split('/');
-		// URL: /admin/courses/[id]/lessons/[lessonId]
-		lessonId = pathParts[pathParts.length - 1];
-		courseId = pathParts[pathParts.length - 3];
-		fetchLesson();
-	});
 	let lesson = $state<Lesson | null>(null);
 	let downloads = $state<Download[]>([]);
 	let modules = $state<Module[]>([]);
 	let loading = $state(true);
 	let saving = $state(false);
-	let _errorMessage = $state('');
+	// FIX-2026-04-26 (P3-8): renamed from `errorMessage` (which by convention
+	// signaled "unused") so the existing writes flow into UI.
+	let errorMessage = $state('');
 
 	// Delete confirmation modal state
 	let showDeleteLessonModal = $state(false);
 	let showRemoveDownloadModal = $state(false);
 	let pendingRemoveDownloadId = $state<number | null>(null);
+
+	// FIX-2026-04-26 (P0-3): input modal replacements for native prompt() flows
+	// for Add Download (title + URL).
+	let showAddDownloadModal = $state(false);
+	let addDownloadStep = $state<'title' | 'url'>('title');
+	let addDownloadTitle = $state('');
+	let addDownloadUrl = $state('');
+
+	// FIX-2026-04-26 (P1-9): validate Bunny GUID looks like a UUID/hex pattern;
+	// validate thumbnail URL is https:// or relative — prevents `javascript:`
+	// scheme + odd characters from leaking into the iframe `src`.
+	const BUNNY_GUID_RE = /^[a-fA-F0-9-]{32,40}$/;
+	let safeBunnyGuid = $derived(
+		lesson?.bunny_video_guid && BUNNY_GUID_RE.test(lesson.bunny_video_guid)
+			? lesson.bunny_video_guid
+			: null
+	);
+	function isSafeImgUrl(url: string | undefined | null): boolean {
+		if (!url) return false;
+		if (url.startsWith('/')) return true;
+		try {
+			const u = new URL(url);
+			return u.protocol === 'https:' || u.protocol === 'http:';
+		} catch {
+			return false;
+		}
+	}
+	let safeThumbnailUrl = $derived(
+		lesson?.thumbnail_url && isSafeImgUrl(lesson.thumbnail_url) ? lesson.thumbnail_url : null
+	);
+
+	// FIX-2026-04-26 (P1-6): unsaved-changes guard.
+	let lastSavedSnapshot = $state<string>('');
+	let hasUnsavedChanges = $derived(
+		lesson ? JSON.stringify(lesson) !== lastSavedSnapshot : false
+	);
+
+	beforeNavigate((nav) => {
+		if (
+			hasUnsavedChanges &&
+			!nav.willUnload &&
+			!confirm('You have unsaved changes. Discard and leave?')
+		) {
+			nav.cancel();
+		}
+	});
+
+	onMount(() => {
+		fetchLesson();
+		const handler = (e: BeforeUnloadEvent) => {
+			if (hasUnsavedChanges) {
+				e.preventDefault();
+			}
+		};
+		window.addEventListener('beforeunload', handler);
+		return () => window.removeEventListener('beforeunload', handler);
+	});
 
 	const fetchLesson = async () => {
 		loading = true;
@@ -86,6 +143,8 @@
 			if (lessonData.success) {
 				lesson = lessonData.data.lesson;
 				downloads = lessonData.data.downloads || [];
+				// FIX-2026-04-26 (P1-6): snapshot for dirty tracking.
+				lastSavedSnapshot = JSON.stringify(lesson);
 			}
 			if (modulesData.success) {
 				modules = modulesData.data || [];
@@ -109,10 +168,10 @@
 			if (data.success) {
 				lesson = data.data;
 			} else {
-				_errorMessage = data.error || 'Failed to save lesson';
+				errorMessage = data.error || 'Failed to save lesson';
 			}
 		} catch {
-			_errorMessage = 'Failed to save lesson';
+			errorMessage = 'Failed to save lesson';
 		} finally {
 			saving = false;
 		}
@@ -129,7 +188,7 @@
 			await adminFetch(`/api/admin/courses/${courseId}/lessons/${lessonId}`, { method: 'DELETE' });
 			goto(`/admin/courses/${courseId}`);
 		} catch {
-			_errorMessage = 'Failed to delete lesson';
+			errorMessage = 'Failed to delete lesson';
 		}
 	};
 
@@ -158,35 +217,56 @@
 
 	// Handle video upload error
 	const handleVideoUploadError = (error: string) => {
-		_errorMessage = `Video upload failed: ${error}`;
+		errorMessage = `Video upload failed: ${error}`;
 	};
 
-	// Add download to lesson
-	const addDownload = async () => {
-		const title = prompt('Enter download title:');
-		if (!title) return;
+	// FIX-2026-04-26 (P0-3): replace native prompt() flows with multi-step
+	// modal. Step 1 captures title; Step 2 captures URL with validation.
+	const addDownload = () => {
+		addDownloadTitle = '';
+		addDownloadUrl = '';
+		addDownloadStep = 'title';
+		showAddDownloadModal = true;
+	};
 
-		const fileUrl = prompt('Enter file URL (or leave empty to use course downloads):');
-
+	const confirmAddDownloadStep = async (value?: string) => {
+		const v = (value ?? '').trim();
+		if (addDownloadStep === 'title') {
+			if (!v) {
+				errorMessage = 'Download title is required';
+				return;
+			}
+			addDownloadTitle = v;
+			addDownloadStep = 'url';
+			return;
+		}
+		// URL step — optional, but if provided must be a valid http(s) URL.
+		if (v && !isSafeImgUrl(v)) {
+			errorMessage = 'URL must start with http:// or https://';
+			return;
+		}
+		const title = addDownloadTitle;
+		const fileUrl = v || undefined;
+		showAddDownloadModal = false;
+		addDownloadStep = 'title';
 		try {
 			const data = await adminFetch(
 				`/api/admin/courses/${courseId}/lessons/${lessonId}/downloads`,
 				{
 					method: 'POST',
-					body: JSON.stringify({
-						title,
-						file_url: fileUrl || undefined
-					})
+					body: JSON.stringify({ title, file_url: fileUrl })
 				}
 			);
 
-			if (data.success) {
-				downloads = [...downloads, data.data];
+			// FIX-2026-04-26 (P0-2): tolerate envelope variations.
+			const created = data?.data ?? data;
+			if (created && (data.success === undefined || data.success)) {
+				downloads = [...downloads, created];
 			} else {
-				_errorMessage = data.error || 'Failed to add download';
+				errorMessage = data?.error || data?.message || 'Failed to add download';
 			}
 		} catch {
-			_errorMessage = 'Failed to add download';
+			errorMessage = 'Failed to add download';
 		}
 	};
 
@@ -211,7 +291,7 @@
 			);
 			downloads = downloads.filter((d) => d.id !== downloadId);
 		} catch {
-			_errorMessage = 'Failed to remove download';
+			errorMessage = 'Failed to remove download';
 		}
 	};
 </script>
@@ -221,6 +301,15 @@
 </svelte:head>
 
 <div class="lesson-editor">
+	{#if errorMessage}
+		<!-- FIX-2026-04-26 (P3-8): surface previously-silent errorMessage. -->
+		<div class="error-banner" role="alert">
+			<span>{errorMessage}</span>
+			<button type="button" aria-label="Dismiss" onclick={() => (errorMessage = '')}>
+				<IconX size={14} aria-hidden="true" />
+			</button>
+		</div>
+	{/if}
 	{#if loading}
 		<div class="loading">
 			<div class="spinner"></div>
@@ -301,12 +390,20 @@
 					<div class="video-section">
 						{#if lesson.bunny_video_guid}
 							<div class="video-preview">
-								<iframe
-									src="https://iframe.mediadelivery.net/embed/{lesson.bunny_video_guid}"
-									title={lesson.title}
-									allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-									allowfullscreen
-								></iframe>
+								<!-- FIX-2026-04-26 (P1-9): only render iframe when GUID matches the
+								     UUID/hex pattern; otherwise show a validation hint. -->
+								{#if safeBunnyGuid}
+									<iframe
+										src="https://iframe.mediadelivery.net/embed/{safeBunnyGuid}"
+										title={lesson.title}
+										allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+										allowfullscreen
+									></iframe>
+								{:else}
+									<div class="video-invalid">
+										Invalid Bunny Video GUID. Expected hex/UUID-style identifier.
+									</div>
+								{/if}
 							</div>
 							<div class="video-info">
 								<p><strong>Video GUID:</strong> {lesson.bunny_video_guid}</p>
@@ -407,8 +504,12 @@
 				<section class="panel-section">
 					<h3>Thumbnail</h3>
 					<div class="thumbnail-preview">
-						{#if lesson.thumbnail_url}
-							<img src={lesson.thumbnail_url} alt="Thumbnail" />
+						<!-- FIX-2026-04-26 (P1-9): only render <img> when URL passes
+						     scheme validation (https://, http://, or relative). -->
+						{#if safeThumbnailUrl}
+							<img src={safeThumbnailUrl} alt="Thumbnail" />
+						{:else if lesson.thumbnail_url}
+							<div class="no-thumb">Invalid thumbnail URL</div>
 						{:else}
 							<div class="no-thumb">No thumbnail</div>
 						{/if}
@@ -474,7 +575,77 @@
 	}}
 />
 
+<!-- FIX-2026-04-26 (P0-3): two-step input modal replacement for native prompts. -->
+<ConfirmationModal
+	isOpen={showAddDownloadModal && addDownloadStep === 'title'}
+	title="Add Download — Title"
+	message="Enter a title for this download."
+	confirmText="Next"
+	variant="info"
+	showInput={true}
+	inputLabel="Download title"
+	inputPlaceholder="e.g. Worksheet PDF"
+	bind:inputValue={addDownloadTitle}
+	onConfirm={confirmAddDownloadStep}
+	onCancel={() => {
+		showAddDownloadModal = false;
+		addDownloadStep = 'title';
+		addDownloadTitle = '';
+		addDownloadUrl = '';
+	}}
+/>
+
+<ConfirmationModal
+	isOpen={showAddDownloadModal && addDownloadStep === 'url'}
+	title="Add Download — File URL"
+	message="Enter the file URL (https:// or relative path). Leave empty to attach later."
+	confirmText="Add"
+	variant="info"
+	showInput={true}
+	inputLabel="File URL (optional)"
+	inputPlaceholder="https://cdn.example.com/file.pdf"
+	bind:inputValue={addDownloadUrl}
+	onConfirm={confirmAddDownloadStep}
+	onCancel={() => {
+		showAddDownloadModal = false;
+		addDownloadStep = 'title';
+		addDownloadTitle = '';
+		addDownloadUrl = '';
+	}}
+/>
+
 <style>
+	.error-banner {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+		background: #fee2e2;
+		color: #991b1b;
+		border: 1px solid #fecaca;
+		padding: 10px 14px;
+		border-radius: 8px;
+		margin-bottom: 16px;
+		font-size: 14px;
+	}
+	.error-banner button {
+		background: transparent;
+		border: none;
+		color: inherit;
+		cursor: pointer;
+		padding: 4px;
+		display: flex;
+		align-items: center;
+	}
+	.video-invalid {
+		padding: 16px;
+		background: #fef3c7;
+		color: #92400e;
+		border: 1px dashed #fbbf24;
+		border-radius: 6px;
+		font-size: 14px;
+	}
+
 	.lesson-editor {
 		padding: 24px;
 		max-width: 1400px;
