@@ -9,7 +9,8 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import { getAuthToken } from '$lib/stores/auth.svelte';
+	// FIX-2026-04-26 (audit 02 §P3-6): no longer reading the auth token here —
+	// the SvelteKit proxy reads `rtp_access_token` directly from cookies.
 	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
 	import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left';
 	import IconCircleCheckFilled from '@tabler/icons-svelte-runes/icons/circle-check-filled';
@@ -196,12 +197,10 @@
 	async function loadPriceHistory(planId: number) {
 		priceHistoryLoading = true;
 		try {
-			const token = getAuthToken();
+			// FIX-2026-04-26 (audit 02 §P3-6): cookie-authed proxy — drop the
+			// redundant Bearer header.
 			const response = await fetch(`/api/admin/subscriptions/plans/${planId}/price-history`, {
-				headers: {
-					Authorization: `Bearer ${token}`,
-					'Content-Type': 'application/json'
-				},
+				headers: { 'Content-Type': 'application/json' },
 				credentials: 'include'
 			});
 			if (response.ok) {
@@ -228,14 +227,11 @@
 		priceSubmitting = true;
 		error = '';
 		try {
-			const token = getAuthToken();
+			// FIX-2026-04-26 (audit 02 §P3-6): cookie-authed proxy.
 			const amountCents = Math.round(priceAmount * 100);
 			const response = await fetch(`/api/admin/subscriptions/plans/${priceTargetPlan.id}/price`, {
 				method: 'POST',
-				headers: {
-					Authorization: `Bearer ${token}`,
-					'Content-Type': 'application/json'
-				},
+				headers: { 'Content-Type': 'application/json' },
 				credentials: 'include',
 				body: JSON.stringify({
 					amount_cents: amountCents,
@@ -281,13 +277,10 @@
 		error = '';
 
 		try {
-			const token = getAuthToken();
+			// FIX-2026-04-26 (audit 02 §P3-6): cookie-authed proxy.
 			const response = await fetch(`/api/admin/subscriptions/plans/${editingPlan.id}`, {
 				method: 'PUT',
-				headers: {
-					Authorization: `Bearer ${token}`,
-					'Content-Type': 'application/json'
-				},
+				headers: { 'Content-Type': 'application/json' },
 				credentials: 'include',
 				body: JSON.stringify({
 					name: editingPlan.name,
@@ -320,13 +313,10 @@
 
 	async function togglePlanActive(plan: SubscriptionPlan) {
 		try {
-			const token = getAuthToken();
+			// FIX-2026-04-26 (audit 02 §P3-6): cookie-authed proxy.
 			const response = await fetch(`/api/admin/subscriptions/plans/${plan.id}`, {
 				method: 'PUT',
-				headers: {
-					Authorization: `Bearer ${token}`,
-					'Content-Type': 'application/json'
-				},
+				headers: { 'Content-Type': 'application/json' },
 				credentials: 'include',
 				body: JSON.stringify({ is_active: !plan.is_active })
 			});

@@ -10,6 +10,12 @@
 	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
 	import IconPhoto from '@tabler/icons-svelte-runes/icons/photo';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	// FIX-2026-04-26 (audit 02 §P3-8): the invoice preview HTML is generated
+	// from a server template that interpolates Stripe webhook payloads and
+	// admin-uploaded company info. Trust boundary is "our own backend" but
+	// not zero, so route through DOMPurify (`sanitizeHtml`, profile `rich`)
+	// before `{@html}`.
+	import { sanitizeHtml } from '$lib/utils/sanitize';
 
 	// API URL
 	const API_BASE = '/api/admin/invoice-settings';
@@ -975,7 +981,8 @@
 				</div>
 				<div class="flex-1 overflow-auto p-6 bg-gray-100 dark:bg-gray-900">
 					<div class="bg-white shadow-lg mx-auto" style="max-width: 800px;">
-						{@html previewHtml}
+						<!-- FIX-2026-04-26 (audit 02 §P3-8): DOMPurify sanitization. -->
+						{@html sanitizeHtml(previewHtml, 'rich')}
 					</div>
 				</div>
 			</div>
