@@ -86,6 +86,19 @@
 		if (ms < 1000) return `${ms}ms`;
 		return `${(ms / 1000).toFixed(1)}s`;
 	}
+
+	// FIX-2026-04-26 (P2-5): basic PII redaction before audit-log entries land in the
+	// DOM. Catches obvious email + (US) phone shapes in the freeform `method` field
+	// and any future `meta`/`user_agent` fields. This is defense-in-depth — backend
+	// should also redact at write-time, but the GDPR/CCPA-compliant viewer must not
+	// ship unredacted PII into the page DOM.
+	const PII_EMAIL = /[\w.+-]+@[\w-]+(?:\.[\w-]+)+/g;
+	const PII_PHONE = /(?:\+?\d{1,3}[\s.-]?)?(?:\(?\d{3}\)?[\s.-]?)\d{3}[\s.-]?\d{4}/g;
+	function redactPii(value: unknown): string {
+		if (value === null || value === undefined) return 'N/A';
+		const text = String(value);
+		return text.replace(PII_EMAIL, '[redacted-email]').replace(PII_PHONE, '[redacted-phone]');
+	}
 </script>
 
 <svelte:head>
@@ -306,7 +319,8 @@
 													{entry.action.replace('consent_', '')}
 												</span>
 											</td>
-											<td>{entry.method || 'N/A'}</td>
+											<!-- FIX-2026-04-26 (P2-5): scrub email/phone before rendering. -->
+											<td>{redactPii(entry.method)}</td>
 											<td>
 												{#if entry.categories}
 													<span class="categories-list">

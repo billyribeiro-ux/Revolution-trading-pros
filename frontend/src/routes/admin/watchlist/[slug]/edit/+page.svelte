@@ -21,8 +21,7 @@
 
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { browser } from '$app/environment';
-	import { untrack } from 'svelte';
+	import { onMount } from 'svelte';
 	import { watchlistApi, type WatchlistItem } from '$lib/api/watchlist';
 	import { ALL_ROOM_IDS } from '$lib/config/rooms';
 	import RoomSelector from '$lib/components/admin/RoomSelector.svelte';
@@ -56,17 +55,25 @@
 
 	let originalItem = $state<WatchlistItem | null>(null);
 
-	// Load existing item when slug changes (Svelte 5 $effect pattern)
+	// FIX-2026-04-26 (P1-8): Was an `$effect` + `untrack` dance to read `slug` and
+	// avoid infinite loops on `loadWatchlistItem` writes. The pattern is fragile —
+	// any future state-read inside `loadWatchlistItem` reintroduces the loop. The
+	// rest of the audit settled on plain onMount, matching commit 34a0bd070's
+	// CRM/campaigns migration. The slug is part of the URL so this page remounts
+	// when slug changes; no manual reload guard is needed.
+	let lastLoadedSlug = $state<string | null>(null);
+	onMount(() => {
+		if (slug) {
+			lastLoadedSlug = slug;
+			void loadWatchlistItem(slug);
+		}
+	});
+	// Defensive: if Kit reuses the component for a different slug, reload once.
 	$effect(() => {
-		if (!browser) return;
-
-		// Track slug dependency
-		const currentSlug = slug;
-
-		// Use untrack to avoid infinite loops when setting state
-		untrack(() => {
-			loadWatchlistItem(currentSlug);
-		});
+		if (slug && lastLoadedSlug !== null && slug !== lastLoadedSlug) {
+			lastLoadedSlug = slug;
+			void loadWatchlistItem(slug);
+		}
 	});
 
 	async function loadWatchlistItem(itemSlug: string) {
@@ -137,13 +144,16 @@
 
 	// Delete item
 	async function handleDelete() {
+		// FIX-2026-04-26 (P1-4): close the modal *before* awaiting goto so a slow/
+		// failed navigation doesn't leave the user staring at a stale "are you sure?"
+		// modal with no clue what happened.
+		showDeleteModal = false;
 		try {
 			await watchlistApi.delete(slug);
 			await goto('/admin/watchlist');
 		} catch (err) {
 			console.error('Failed to delete:', err);
 			error = err instanceof Error ? err.message : 'Failed to delete item';
-			showDeleteModal = false;
 		}
 	}
 

@@ -31,8 +31,11 @@
 	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
 	import IconLock from '@tabler/icons-svelte-runes/icons/lock';
 	import IconWorld from '@tabler/icons-svelte-runes/icons/world';
-	import { API_BASE_URL } from '$lib/api/config';
-	import { getAuthToken } from '$lib/stores/auth.svelte';
+	// FIX-2026-04-26 (P1-7): use the same-origin SvelteKit proxy so the rtp_access_token
+	// cookie is forwarded by the server, matching every other admin surface. No more
+	// direct API_BASE_URL calls from the browser, no more getAuthToken bearer fetches.
+	// TODO(2026-04-26-audit): remove unused $lib/api/config + auth.svelte imports here
+	// once the page is fully migrated.
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// Types
@@ -148,18 +151,22 @@
 		)
 	);
 
+	// FIX-2026-04-26 (P1-7): API_BASE prefix used to be `${API_BASE_URL}/cms` going
+	// straight to the Rust backend. Now points at the SvelteKit proxy, which forwards
+	// the rtp_access_token cookie as Bearer to the same backend route.
+	const API_BASE = '/api/admin/cms/datasources';
+
 	// API Functions
 	async function fetchDatasources() {
 		isLoading = true;
 		error = '';
 
 		try {
-			const token = getAuthToken();
 			const response = await fetch(
-				`${API_BASE_URL}/cms/datasources?limit=${pagination.limit}&offset=${pagination.offset}`,
+				`${API_BASE}?limit=${pagination.limit}&offset=${pagination.offset}`,
 				{
+					credentials: 'include',
 					headers: {
-						Authorization: `Bearer ${token}`,
 						'Content-Type': 'application/json'
 					}
 				}
@@ -183,18 +190,20 @@
 
 		isLoading = true;
 		try {
-			const token = getAuthToken();
-			const url = `${API_BASE_URL}/cms/datasources/${selectedDatasource.id}/entries?dimension=${selectedDimension}&limit=${entriesPagination.limit}&offset=${entriesPagination.offset}`;
-
-			if (entrySearchQuery) {
-				// Add search parameter
-			}
+			// FIX-2026-04-26 (P3-4): build query with URLSearchParams so the
+			// previously dead `if (entrySearchQuery) { /* Add search parameter */ }`
+			// branch becomes a real backend `q=` filter.
+			const params = new URLSearchParams({
+				dimension: selectedDimension,
+				limit: String(entriesPagination.limit),
+				offset: String(entriesPagination.offset)
+			});
+			if (entrySearchQuery) params.set('q', entrySearchQuery);
+			const url = `${API_BASE}/${selectedDatasource.id}/entries?${params.toString()}`;
 
 			const response = await fetch(url, {
-				headers: {
-					Authorization: `Bearer ${token}`,
-					'Content-Type': 'application/json'
-				}
+				credentials: 'include',
+				headers: { 'Content-Type': 'application/json' }
 			});
 
 			if (!response.ok) throw new Error('Failed to fetch entries');
@@ -213,18 +222,13 @@
 	async function saveDatasource() {
 		isSaving = true;
 		try {
-			const token = getAuthToken();
 			const method = editingDatasource ? 'PUT' : 'POST';
-			const url = editingDatasource
-				? `${API_BASE_URL}/cms/datasources/${editingDatasource.id}`
-				: `${API_BASE_URL}/cms/datasources`;
+			const url = editingDatasource ? `${API_BASE}/${editingDatasource.id}` : API_BASE;
 
 			const response = await fetch(url, {
 				method,
-				headers: {
-					Authorization: `Bearer ${token}`,
-					'Content-Type': 'application/json'
-				},
+				credentials: 'include',
+				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					name: datasourceForm.name,
 					slug: datasourceForm.slug || undefined,
@@ -271,12 +275,9 @@
 		const id = pendingDeleteDatasource.id;
 		pendingDeleteDatasource = null;
 		try {
-			const token = getAuthToken();
-			const response = await fetch(`${API_BASE_URL}/cms/datasources/${id}`, {
+			const response = await fetch(`${API_BASE}/${id}`, {
 				method: 'DELETE',
-				headers: {
-					Authorization: `Bearer ${token}`
-				}
+				credentials: 'include'
 			});
 
 			if (!response.ok) throw new Error('Failed to delete datasource');
@@ -290,12 +291,9 @@
 
 	async function duplicateDatasource(id: string) {
 		try {
-			const token = getAuthToken();
-			const response = await fetch(`${API_BASE_URL}/cms/datasources/${id}/duplicate`, {
+			const response = await fetch(`${API_BASE}/${id}/duplicate`, {
 				method: 'POST',
-				headers: {
-					Authorization: `Bearer ${token}`
-				}
+				credentials: 'include'
 			});
 
 			if (!response.ok) throw new Error('Failed to duplicate datasource');
@@ -312,18 +310,15 @@
 
 		isSaving = true;
 		try {
-			const token = getAuthToken();
 			const method = editingEntry ? 'PUT' : 'POST';
 			const url = editingEntry
-				? `${API_BASE_URL}/cms/datasources/${selectedDatasource.id}/entries/${editingEntry.id}`
-				: `${API_BASE_URL}/cms/datasources/${selectedDatasource.id}/entries`;
+				? `${API_BASE}/${selectedDatasource.id}/entries/${editingEntry.id}`
+				: `${API_BASE}/${selectedDatasource.id}/entries`;
 
 			const response = await fetch(url, {
 				method,
-				headers: {
-					Authorization: `Bearer ${token}`,
-					'Content-Type': 'application/json'
-				},
+				credentials: 'include',
+				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					name: entryForm.name,
 					value: entryForm.value,
@@ -363,14 +358,11 @@
 		const entryId = pendingDeleteEntry.id;
 		pendingDeleteEntry = null;
 		try {
-			const token = getAuthToken();
 			const response = await fetch(
-				`${API_BASE_URL}/cms/datasources/${selectedDatasource.id}/entries/${entryId}`,
+				`${API_BASE}/${selectedDatasource.id}/entries/${entryId}`,
 				{
 					method: 'DELETE',
-					headers: {
-						Authorization: `Bearer ${token}`
-					}
+					credentials: 'include'
 				}
 			);
 
@@ -386,30 +378,32 @@
 	async function reorderEntries(newOrder: string[]) {
 		if (!selectedDatasource) return;
 
+		// FIX-2026-04-26 (P2-8): optimistic update so the dragged row visually lands
+		// in its new slot immediately. Snapshot the current order so we can roll back
+		// without a full refetch in the common-success case.
+		const snapshot = entries.slice();
+		const orderedEntries = newOrder
+			.map((id) => entries.find((e) => e.id === id))
+			.filter((e): e is DatasourceEntry => e !== undefined);
+		entries = orderedEntries;
+
 		try {
-			const token = getAuthToken();
 			const response = await fetch(
-				`${API_BASE_URL}/cms/datasources/${selectedDatasource.id}/entries/reorder`,
+				`${API_BASE}/${selectedDatasource.id}/entries/reorder`,
 				{
 					method: 'PUT',
-					headers: {
-						Authorization: `Bearer ${token}`,
-						'Content-Type': 'application/json'
-					},
+					credentials: 'include',
+					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({ entry_ids: newOrder })
 				}
 			);
 
 			if (!response.ok) throw new Error('Failed to reorder entries');
-
-			// Update local state
-			const orderedEntries = newOrder
-				.map((id) => entries.find((e) => e.id === id))
-				.filter((e): e is DatasourceEntry => e !== undefined);
-			entries = orderedEntries;
 		} catch (_err) {
+			// Roll back to pre-drop order, then fetch authoritative state.
+			entries = snapshot;
 			showToastMessage('Failed to reorder entries', 'error');
-			await fetchEntries(); // Refresh to get correct order
+			await fetchEntries();
 		}
 	}
 
@@ -417,15 +411,9 @@
 		if (!selectedDatasource) return;
 
 		try {
-			const token = getAuthToken();
-			const response = await fetch(
-				`${API_BASE_URL}/cms/datasources/${selectedDatasource.id}/export`,
-				{
-					headers: {
-						Authorization: `Bearer ${token}`
-					}
-				}
-			);
+			const response = await fetch(`${API_BASE}/${selectedDatasource.id}/export`, {
+				credentials: 'include'
+			});
 
 			if (!response.ok) throw new Error('Failed to export');
 
@@ -450,20 +438,14 @@
 
 		isSaving = true;
 		try {
-			const token = getAuthToken();
 			const formData = new FormData();
 			formData.append('file', importFile);
 
-			const response = await fetch(
-				`${API_BASE_URL}/cms/datasources/${selectedDatasource.id}/import`,
-				{
-					method: 'POST',
-					headers: {
-						Authorization: `Bearer ${token}`
-					},
-					body: formData
-				}
-			);
+			const response = await fetch(`${API_BASE}/${selectedDatasource.id}/import`, {
+				method: 'POST',
+				credentials: 'include',
+				body: formData
+			});
 
 			if (!response.ok) throw new Error('Failed to import');
 

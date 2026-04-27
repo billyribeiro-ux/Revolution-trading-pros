@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import {
@@ -29,8 +30,10 @@
 	let recommendations = $state<OptimizationRecommendation[]>([]);
 	let warmingCaches = $state(false);
 
-	// Svelte 5: Initialize on mount
-	$effect(() => {
+	// FIX-2026-04-26 (audit 08-analytics §P1-1): use `onMount` instead of
+	// `$effect` for one-shot init. Matches the migration done in commit
+	// 34a0bd070 across the analytics tree.
+	onMount(() => {
 		if (browser) loadData();
 	});
 
@@ -81,6 +84,13 @@
 				return { color: 'slate', icon: IconClock, label: 'N/A' };
 		}
 	}
+
+	// FIX-2026-04-26 (audit 08-analytics §P1-6): pre-compute rating once per
+	// vital instead of inline `{@const}` inside dead `{#if true}` wrappers.
+	const lcpRating = $derived(getVitalRating(coreWebVitals?.lcp_rating));
+	const fidRating = $derived(getVitalRating(coreWebVitals?.fid_rating));
+	const clsRating = $derived(getVitalRating(coreWebVitals?.cls_rating));
+	const inpRating = $derived(getVitalRating(coreWebVitals?.inp_rating));
 
 	function formatMs(ms: number | undefined): string {
 		if (!ms) return '-';
@@ -168,70 +178,62 @@
 					rankings.
 				</p>
 
+				<!-- FIX-2026-04-26 (audit 08-analytics §P1-6): the four `{#if true}`
+				     wrappers around `{@const}` declarations were dead syntax — left
+				     over from a copy-paste pattern. Lifted into top-level `$derived`
+				     above so each card reads its rating directly without the wrapper. -->
 				<div class="vitals-grid">
-					{#if true}
-						{@const lcpRating = getVitalRating(coreWebVitals?.lcp_rating)}
-						<div class="vital-card">
-							<div class="vital-header">
-								<span class="vital-name">LCP</span>
-								<span class="vital-label">Largest Contentful Paint</span>
-							</div>
-							<div class="vital-value">{formatMs(coreWebVitals?.lcp)}</div>
-							<div class="vital-rating {lcpRating.color}">
-								<lcpRating.icon size={16} />
-								{lcpRating.label}
-							</div>
-							<div class="vital-target">Target: &lt; 2.5s</div>
+					<div class="vital-card">
+						<div class="vital-header">
+							<span class="vital-name">LCP</span>
+							<span class="vital-label">Largest Contentful Paint</span>
 						</div>
-					{/if}
+						<div class="vital-value">{formatMs(coreWebVitals?.lcp)}</div>
+						<div class="vital-rating {lcpRating.color}">
+							<lcpRating.icon size={16} />
+							{lcpRating.label}
+						</div>
+						<div class="vital-target">Target: &lt; 2.5s</div>
+					</div>
 
-					{#if true}
-						{@const fidRating = getVitalRating(coreWebVitals?.fid_rating)}
-						<div class="vital-card">
-							<div class="vital-header">
-								<span class="vital-name">FID</span>
-								<span class="vital-label">First Input Delay</span>
-							</div>
-							<div class="vital-value">{formatMs(coreWebVitals?.fid)}</div>
-							<div class="vital-rating {fidRating.color}">
-								<fidRating.icon size={16} />
-								{fidRating.label}
-							</div>
-							<div class="vital-target">Target: &lt; 100ms</div>
+					<div class="vital-card">
+						<div class="vital-header">
+							<span class="vital-name">FID</span>
+							<span class="vital-label">First Input Delay</span>
 						</div>
-					{/if}
+						<div class="vital-value">{formatMs(coreWebVitals?.fid)}</div>
+						<div class="vital-rating {fidRating.color}">
+							<fidRating.icon size={16} />
+							{fidRating.label}
+						</div>
+						<div class="vital-target">Target: &lt; 100ms</div>
+					</div>
 
-					{#if true}
-						{@const clsRating = getVitalRating(coreWebVitals?.cls_rating)}
-						<div class="vital-card">
-							<div class="vital-header">
-								<span class="vital-name">CLS</span>
-								<span class="vital-label">Cumulative Layout Shift</span>
-							</div>
-							<div class="vital-value">{coreWebVitals?.cls?.toFixed(3) || '-'}</div>
-							<div class="vital-rating {clsRating.color}">
-								<clsRating.icon size={16} />
-								{clsRating.label}
-							</div>
-							<div class="vital-target">Target: &lt; 0.1</div>
+					<div class="vital-card">
+						<div class="vital-header">
+							<span class="vital-name">CLS</span>
+							<span class="vital-label">Cumulative Layout Shift</span>
 						</div>
-					{/if}
+						<div class="vital-value">{coreWebVitals?.cls?.toFixed(3) || '-'}</div>
+						<div class="vital-rating {clsRating.color}">
+							<clsRating.icon size={16} />
+							{clsRating.label}
+						</div>
+						<div class="vital-target">Target: &lt; 0.1</div>
+					</div>
 
-					{#if true}
-						{@const inpRating = getVitalRating(coreWebVitals?.inp_rating)}
-						<div class="vital-card">
-							<div class="vital-header">
-								<span class="vital-name">INP</span>
-								<span class="vital-label">Interaction to Next Paint</span>
-							</div>
-							<div class="vital-value">{formatMs(coreWebVitals?.inp)}</div>
-							<div class="vital-rating {inpRating.color}">
-								<inpRating.icon size={16} />
-								{inpRating.label}
-							</div>
-							<div class="vital-target">Target: &lt; 200ms</div>
+					<div class="vital-card">
+						<div class="vital-header">
+							<span class="vital-name">INP</span>
+							<span class="vital-label">Interaction to Next Paint</span>
 						</div>
-					{/if}
+						<div class="vital-value">{formatMs(coreWebVitals?.inp)}</div>
+						<div class="vital-rating {inpRating.color}">
+							<inpRating.icon size={16} />
+							{inpRating.label}
+						</div>
+						<div class="vital-target">Target: &lt; 200ms</div>
+					</div>
 				</div>
 			</div>
 

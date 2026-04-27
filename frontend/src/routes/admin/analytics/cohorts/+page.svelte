@@ -8,6 +8,7 @@
 	 */
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
+	import { page } from '$app/state';
 	import { analyticsApi } from '$lib/api/analytics';
 	import { connections, getIsAnalyticsConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
@@ -18,12 +19,16 @@
 	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 
+	// FIX-2026-04-26 (audit 08-analytics §P2-4): widened `type` and `granularity`
+	// to `string`. The backend returns `string` (not the strict literal union),
+	// and the previous `as any` cast at the assign site papered over the
+	// mismatch — making any backend rename silently break the UI.
 	interface Cohort {
 		key: string;
 		name: string;
 		description?: string;
-		type: 'signup' | 'first_purchase' | 'custom';
-		granularity: 'daily' | 'weekly' | 'monthly';
+		type: string;
+		granularity: string;
 		retention_matrix: Array<{
 			cohort: string;
 			size: number;
@@ -64,7 +69,10 @@
 				period: selectedPeriod,
 				granularity: selectedGranularity
 			});
-			cohorts = (response.cohorts || []) as any;
+			// FIX-2026-04-26 (audit 08-analytics §P2-4): drop `as any`. The
+			// API surface returned from `analyticsApi.getCohorts()` is a
+			// structurally compatible shape — TypeScript can verify it.
+			cohorts = response.cohorts || [];
 			if (cohorts.length > 0 && !selectedCohort) {
 				selectedCohort = cohorts[0];
 			}
@@ -77,6 +85,10 @@
 
 	function handlePeriodChange(value: string) {
 		selectedPeriod = value;
+		// FIX-2026-04-26 (audit 08-analytics §P2-6): reset selection on period
+		// change. Stale references mismatch when the new period yields a
+		// different cohort set.
+		selectedCohort = null;
 		loadCohorts();
 	}
 
@@ -131,6 +143,12 @@
 				await loadCohorts();
 			} else {
 				loading = false;
+			}
+
+			// FIX-2026-04-26 (audit 08-analytics §P3-6): the stub create page at
+			// `/admin/analytics/cohorts/create` redirects here with `?create=1`.
+			if (page.url.searchParams.get('create') === '1') {
+				showCreateModal = true;
 			}
 		})();
 	});

@@ -217,13 +217,18 @@
 			goto(`/admin/boards/${board.id}`);
 		} catch (error) {
 			console.error('Failed to create board from template:', error);
-			// Fallback: Create board manually with template config
+			// FIX-2026-04-26 (P1-3): manual fallback — if any stage/label creation fails
+			// mid-flight, roll back the partially-created board so admins don't end up
+			// with orphaned half-built boards. Best-effort: a delete failure is logged
+			// but the original error is preserved as the user-visible reason.
+			let createdBoardId: string | null = null;
 			try {
 				const board = await boardsAPI.createBoard({
 					title: template.title,
 					description: template.description,
 					type: 'kanban'
 				});
+				createdBoardId = board.id;
 
 				// Create stages
 				for (const stage of template.stages) {
@@ -238,6 +243,19 @@
 				goto(`/admin/boards/${board.id}`);
 			} catch (err) {
 				console.error('Failed to create board:', err);
+				// Compensating delete to keep state consistent.
+				if (createdBoardId) {
+					try {
+						await boardsAPI.deleteBoard(createdBoardId);
+					} catch (rollbackErr) {
+						console.error(
+							'Failed to roll back partially-created board ',
+							createdBoardId,
+							rollbackErr
+						);
+					}
+				}
+				// TODO(2026-04-26-audit): replace console-only failure with toast surface.
 			}
 		} finally {
 			creatingBoard = null;

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onDestroy } from 'svelte';
 	import { boardsAPI } from '$lib/api/boards';
 	import type { ImportJob, ImportSource } from '$lib/boards/types';
 	import {
@@ -100,16 +101,26 @@
 		}
 	}
 
+	// FIX-2026-04-26 (P1-5): track the in-flight setTimeout so we can cancel on
+	// unmount. Previously, navigating away during an import left poll() recursing
+	// forever, calling `importJob = job` against a defunct component (Svelte 5
+	// raises `state_unsafe_mutation` warnings).
+	let pollTimer: ReturnType<typeof setTimeout> | null = null;
+	let pollCancelled = false;
+
 	async function pollImportStatus() {
 		if (!importJob) return;
+		pollCancelled = false;
 
 		const poll = async () => {
+			if (pollCancelled || !importJob) return;
 			try {
-				const job = await boardsAPI.getImportJob(importJob!.id);
+				const job = await boardsAPI.getImportJob(importJob.id);
+				if (pollCancelled) return;
 				importJob = job;
 
 				if (job.status === 'processing' || job.status === 'pending') {
-					setTimeout(poll, 2000);
+					pollTimer = setTimeout(poll, 2000);
 				}
 			} catch (err) {
 				console.error('Failed to poll import status:', err);
@@ -118,6 +129,14 @@
 
 		poll();
 	}
+
+	onDestroy(() => {
+		pollCancelled = true;
+		if (pollTimer) {
+			clearTimeout(pollTimer);
+			pollTimer = null;
+		}
+	});
 
 	function resetImport() {
 		selectedSource = null;

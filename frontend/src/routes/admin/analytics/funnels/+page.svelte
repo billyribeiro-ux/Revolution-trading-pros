@@ -8,6 +8,7 @@
 	 */
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
+	import { page } from '$app/state';
 	import { analyticsApi } from '$lib/api/analytics';
 	import { connections, getIsAnalyticsConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
@@ -66,6 +67,11 @@
 
 	function handlePeriodChange(value: string) {
 		selectedPeriod = value;
+		// FIX-2026-04-26 (audit 08-analytics §P2-6): reset selection on period
+		// change. Previously `selectedFunnel` could point at a stale funnel
+		// object that wasn't present in the new period, breaking the
+		// `selectedFunnel?.key === funnel.key` test.
+		selectedFunnel = null;
 		loadFunnels();
 	}
 
@@ -127,6 +133,13 @@
 				await loadFunnels();
 			} else {
 				loading = false;
+			}
+
+			// FIX-2026-04-26 (audit 08-analytics §P3-6): the stub create page at
+			// `/admin/analytics/funnels/create` redirects here with `?create=1`
+			// so the modal opens itself. Same hook covers any other deep link.
+			if (page.url.searchParams.get('create') === '1') {
+				showCreateModal = true;
 			}
 		})();
 	});

@@ -276,6 +276,23 @@
 </svelte:head>
 
 <div class="settings-page">
+	<!-- FIX-2026-04-26 (P2-6): visible warning banner whenever test_mode is on so an
+	     admin who flips the toggle and walks away can't silently disable consent
+	     collection site-wide without leaving an obvious indicator. -->
+	{#if settings.test_mode}
+		<div
+			class="test-mode-banner"
+			role="alert"
+			style="background:#fef3c7;border:1px solid #f59e0b;color:#92400e;padding:0.75rem 1rem;border-radius:8px;margin-bottom:1rem;font-weight:600;display:flex;gap:0.5rem;align-items:center;"
+		>
+			<span aria-hidden="true">⚠</span>
+			<span>
+				TEST MODE active — consent banner is shown to admins only. Public visitors are
+				NOT being prompted and consent is NOT being collected.
+			</span>
+		</div>
+	{/if}
+
 	<!-- Header -->
 	<header class="page-header">
 		<div class="header-content">

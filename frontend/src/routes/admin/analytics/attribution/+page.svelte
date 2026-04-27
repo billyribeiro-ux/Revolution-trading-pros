@@ -5,6 +5,7 @@
 	 * Compare attribution models and analyze marketing
 	 * channel performance across the customer journey.
 	 */
+	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { analyticsApi, type AttributionReport } from '$lib/api/analytics';
 	import AttributionChart from '$lib/components/analytics/AttributionChart.svelte';
@@ -55,8 +56,12 @@
 		return '$' + num.toFixed(0);
 	}
 
-	// Svelte 5: Initialize on mount
-	$effect(() => {
+	// FIX-2026-04-26 (audit 08-analytics §P1-1): use `onMount` instead of
+	// `$effect` for one-shot init. The previous `$effect` would re-run if any
+	// `$state` read added inside `loadAttribution` participated in tracking,
+	// producing the cascade that 12 other pages were explicitly migrated away
+	// from in commit 34a0bd070.
+	onMount(() => {
 		if (browser) loadAttribution();
 	});
 

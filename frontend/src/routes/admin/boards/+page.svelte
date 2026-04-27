@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { boardsAPI } from '$lib/api/boards';
 	import type { Board, Folder, Activity, Task } from '$lib/boards/types';
@@ -97,9 +97,11 @@
 	// Favorite boards
 	let favoriteBoards = $derived.by(() => boards.filter((b) => b.is_favorite && !b.is_archived));
 
-	// Svelte 5: Initialize on mount
-	$effect(() => {
-		if (browser) loadData();
+	// FIX-2026-04-26 (P2-1): Was `$effect(() => { if (browser) loadData(); })` — the
+	// exact pattern that produced write-while-reading cascades on CRM/campaigns and
+	// was systematically replaced with onMount in commit 34a0bd070. Same fix here.
+	onMount(() => {
+		void loadData();
 	});
 
 	async function loadData() {

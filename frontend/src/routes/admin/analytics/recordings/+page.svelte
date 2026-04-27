@@ -119,12 +119,17 @@
 	}
 
 	function formatDate(dateStr: string): string {
+		// FIX-2026-04-26 (audit 08-analytics §P2-5): render in UTC so a backend
+		// timestamp like `2026-04-26T00:00:00Z` doesn't read as `Apr 25` in
+		// PST (the classic off-by-one). Calendar-day intent is UTC.
 		const date = new Date(dateStr);
 		return date.toLocaleString('en-US', {
 			month: 'short',
 			day: 'numeric',
 			hour: '2-digit',
-			minute: '2-digit'
+			minute: '2-digit',
+			timeZone: 'UTC',
+			timeZoneName: 'short'
 		});
 	}
 

@@ -22,8 +22,10 @@
 	 * @version 2.0.0 (January 2026) - Added ICT7 header
 	 */
 
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { watchlistApi, type WatchlistItem } from '$lib/api/watchlist';
+	// FIX-2026-04-26 (P3-2): replace native alert() with the standard toast surface.
+	import { toastStore } from '$lib/stores/toast.svelte';
 	import { ALL_ROOM_IDS, isAllRooms, getRoomsByIds } from '$lib/config/rooms';
 	import RoomSelector from '$lib/components/admin/RoomSelector.svelte';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
@@ -72,12 +74,11 @@
 	// DATA FETCHING
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Initial data load using $effect
-	$effect(() => {
-		if (!browser) return;
-
-		// Fetch watchlist items on mount
-		loadWatchlistItems();
+	// FIX-2026-04-26 (P2): Was `$effect(() => { if (!browser) return; loadWatchlistItems() })`.
+	// Replaced with onMount to match the migration in commit 34a0bd070 and avoid the
+	// write-while-reading cascade $effect produces on first paint.
+	onMount(() => {
+		void loadWatchlistItems();
 	});
 
 	async function loadWatchlistItems() {
@@ -206,7 +207,8 @@
 		}
 
 		if (newItem.rooms.length === 0) {
-			alert('Please select at least one room');
+			// FIX-2026-04-26 (P3-2): replaced `alert('Please select at least one room')` with toast.
+			toastStore.error('Please select at least one room');
 			return;
 		}
 

@@ -12,6 +12,10 @@
 	}
 	let props: Props = $props();
 
+	// FIX-2026-04-26 (audit 08-analytics §P1-7): added goals, heatmaps,
+	// recordings — all three exist as `+page.svelte` siblings but were
+	// previously only reachable via the dashboard's Quick Actions panel or
+	// deep links from elsewhere.
 	const navItems = [
 		{ href: '/admin/analytics', label: 'Dashboard', icon: '📊' },
 		{ href: '/admin/analytics/events', label: 'Events', icon: '⚡' },
@@ -19,6 +23,9 @@
 		{ href: '/admin/analytics/cohorts', label: 'Cohorts', icon: '👥' },
 		{ href: '/admin/analytics/segments', label: 'Segments', icon: '🎯' },
 		{ href: '/admin/analytics/attribution', label: 'Attribution', icon: '📍' },
+		{ href: '/admin/analytics/goals', label: 'Goals', icon: '🎯' },
+		{ href: '/admin/analytics/heatmaps', label: 'Heatmaps', icon: '🔥' },
+		{ href: '/admin/analytics/recordings', label: 'Recordings', icon: '🎥' },
 		{ href: '/admin/analytics/reports', label: 'Reports', icon: '📈' }
 	];
 

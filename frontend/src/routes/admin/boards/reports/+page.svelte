@@ -50,9 +50,16 @@
 		}
 	}
 
+	// FIX-2026-04-26 (P2): convert free-form `$effect` to a tracked $derived sentinel
+	// + manual loader so the reload only runs on actual board/period change. The
+	// previous $effect would also re-fire whenever any state read inside loadReport
+	// indirectly tracked a dependency.
+	const reportKey = $derived(selectedBoardId ? `${selectedBoardId}::${period}` : '');
+	let lastLoadedKey = $state<string>('');
 	$effect(() => {
-		if (selectedBoardId && period) {
-			loadReport();
+		if (reportKey && reportKey !== lastLoadedKey) {
+			lastLoadedKey = reportKey;
+			void loadReport();
 		}
 	});
 
