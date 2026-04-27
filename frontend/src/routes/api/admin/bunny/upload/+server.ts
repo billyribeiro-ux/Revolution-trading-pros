@@ -14,6 +14,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
+import { requireAdmin } from '$lib/server/auth';
 
 // FIX-2026-04-26-audit: align with repo-wide proxy env-var chain.
 const BACKEND_URL =
@@ -22,12 +23,11 @@ const BACKEND_URL =
 const DEFAULT_BUNNY_LIBRARY_ID = env.BUNNY_VIDEO_LIBRARY_ID || '585929';
 
 // PUT - Upload video file to Bunny.net via backend
-export const PUT: RequestHandler = async ({ request, cookies }) => {
-	const cookieToken = cookies.get('rtp_access_token');
+export const PUT: RequestHandler = async (event) => {
+	const { request } = event;
 
-	if (!cookieToken) {
-		error(401, 'Authentication required');
-	}
+	// FIX-2026-04-26-audit (P1-2): defense-in-depth admin gate.
+	const { token: cookieToken } = requireAdmin(event);
 
 	try {
 		// Get the video GUID and library ID from URL params

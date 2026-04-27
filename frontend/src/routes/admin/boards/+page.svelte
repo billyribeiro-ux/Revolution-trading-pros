@@ -97,6 +97,16 @@
 	// Favorite boards
 	let favoriteBoards = $derived.by(() => boards.filter((b) => b.is_favorite && !b.is_archived));
 
+	// FIX-2026-04-26 (P3-7): defense-in-depth — `background_color` is user-controlled
+	// and rendered into a `style="border-left: ... {color}"` template. If the backend
+	// ever skips validation, an admin could inject CSS via something like
+	// `red; }/* … */`. Validate as a strict 6-digit hex on read; fall back to brand
+	// color otherwise.
+	const HEX_RE = /^#[0-9a-fA-F]{6}$/;
+	function safeColor(value: string | null | undefined, fallback = '#E6B800'): string {
+		return typeof value === 'string' && HEX_RE.test(value) ? value : fallback;
+	}
+
 	// FIX-2026-04-26 (P2-1): Was `$effect(() => { if (browser) loadData(); })` — the
 	// exact pattern that produced write-while-reading cascades on CRM/campaigns and
 	// was systematically replaced with onMount in commit 34a0bd070. Same fix here.
@@ -577,7 +587,7 @@
 								<a
 									href="/admin/boards/{board.id}"
 									class="group bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:shadow-lg hover:border-[#E6B800] dark:hover:border-[#FFD11A] transition-all"
-									style="border-left: 4px solid {board.background_color || '#E6B800'}"
+									style="border-left: 4px solid {safeColor(board.background_color)}"
 								>
 									<div class="flex items-start justify-between mb-3">
 										<h4
@@ -648,7 +658,7 @@
 									<a
 										href="/admin/boards/{board.id}"
 										class="block p-4"
-										style="border-left: 4px solid {board.background_color || '#E6B800'}"
+										style="border-left: 4px solid {safeColor(board.background_color)}"
 									>
 										<div class="flex items-start justify-between mb-3">
 											<h4
@@ -766,7 +776,7 @@
 												<a href="/admin/boards/{board.id}" class="flex items-center gap-3">
 													<div
 														class="w-2 h-8 rounded"
-														style="background-color: {board.background_color || '#E6B800'}"
+														style="background-color: {safeColor(board.background_color)}"
 													></div>
 													<div>
 														<div
@@ -901,7 +911,8 @@
 								bind:value={newBoard.folder_id}
 								class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#E6B800]"
 							>
-								<option value={null}>No folder</option>
+								<!-- FIX-2026-04-26 (P3-3): <option value={null}> silently coerces to "" — use explicit empty string. -->
+								<option value="">No folder</option>
 								{#each folders as folder}
 									<option value={folder.id}>{folder.title}</option>
 								{/each}

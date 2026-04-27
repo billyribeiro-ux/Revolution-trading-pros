@@ -829,7 +829,8 @@
 				</select>
 
 				<select bind:value={filterDay} class="filter-select">
-					<option value={null}>All Days</option>
+					<!-- FIX-2026-04-26 (P3-3): <option value={null}> silently coerces to "" — use explicit empty string. -->
+					<option value="">All Days</option>
 					{#each DAYS as day, index}
 						<option value={index}>{day}</option>
 					{/each}
@@ -900,9 +901,11 @@
 										class:conflict={isConflicting(event.id)}
 									>
 										<div class="event-checkbox">
+											<!-- FIX-2026-04-26 (P3-1): unique id+name per event so a11y label
+											     association and DOM-test selectors stop colliding. -->
 											<input
-												id="page-checkbox"
-												name="page-checkbox"
+												id={`schedule-checkbox-${event.id}`}
+												name={`schedule-checkbox-${event.id}`}
 												type="checkbox"
 												checked={selectedIds.has(event.id)}
 												onchange={() => toggleSelection(event.id)}
@@ -1115,7 +1118,8 @@
 							<option value="weekly">Weekly</option>
 							<option value="biweekly">Bi-weekly</option>
 							<option value="monthly">Monthly</option>
-							<option value={null}>One-time</option>
+							<!-- FIX-2026-04-26 (P3-3): <option value={null}> silently coerces to "" — use explicit empty string. -->
+					<option value="">One-time</option>
 						</select>
 					</div>
 				</div>

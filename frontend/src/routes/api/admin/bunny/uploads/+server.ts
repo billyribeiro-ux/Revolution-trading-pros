@@ -19,21 +19,16 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
+import { requireAdmin } from '$lib/server/auth';
 
 const BACKEND_URL =
 	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
 // GET - List recent uploads
-export const GET: RequestHandler = async ({ cookies, request }) => {
-	// FIX-2026-04-26-audit: prefer the canonical rtp_access_token cookie set by
-	// the login proxy; fall back to a Bearer header for service callers.
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-
-	if (!token) {
-		return json({ success: false, error: 'Authentication required' }, { status: 401 });
-	}
+export const GET: RequestHandler = async (event) => {
+	// FIX-2026-04-26-audit (P1-2): defense-in-depth admin gate via shared helper.
+	// Throws 401/403 before any backend call — local check, works even if backend is down.
+	const { token } = requireAdmin(event);
 
 	try {
 		const response = await fetch(`${BACKEND_URL}/api/admin/bunny/uploads`, {

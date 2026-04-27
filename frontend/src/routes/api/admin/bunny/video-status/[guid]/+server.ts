@@ -18,16 +18,16 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
+import { requireAdmin } from '$lib/server/auth';
 
 const BACKEND_URL =
 	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
 // GET - Check video processing status
-export const GET: RequestHandler = async ({ params, cookies, request }) => {
-	// FIX-2026-04-26-audit: prefer canonical rtp_access_token cookie, fall back to header.
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
+export const GET: RequestHandler = async (event) => {
+	const { params } = event;
+	// FIX-2026-04-26-audit (P1-2): defense-in-depth admin gate.
+	const { token } = requireAdmin(event);
 	const guid = (params as { guid: string }).guid;
 
 	if (!guid) {
