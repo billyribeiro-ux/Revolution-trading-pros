@@ -138,28 +138,36 @@
 	let hasRealAnalyticsData = $state(false);
 	let hasRealSeoData = $state(false);
 
-	// Real stats data
-	let stats = {
+	// FIX P2-5 (audits/admin-2026-04-26/01-shell-and-dashboard.md):
+	// `stats`, `analytics`, `seoMetrics`, and `deviceBreakdown` were plain
+	// objects (not `$state`), so deep mutation like
+	// `seoMetrics.searchTraffic.value = data.seo.search_traffic` did not
+	// trigger reactivity. The dashboard happened to re-render whenever
+	// `isLoading` flipped (which IS `$state`), creating a hidden coupling:
+	// if the loading state was short-circuited (e.g. cached fetch), the
+	// metric panels stayed blank. Wrapping in `$state(...)` makes deep
+	// writes properly reactive via Svelte 5's proxy semantics.
+	let stats = $state({
 		activeSubscriptions: 0,
 		monthlyRevenue: 0,
 		activeCoupons: 0,
 		totalMembers: 0,
 		totalPosts: 0,
 		totalProducts: 0
-	};
+	});
 
 	// Analytics metrics - ALL VALUES START AT NULL (no fake data!)
-	let analytics = {
+	let analytics = $state({
 		sessions: { value: null as number | null, change: 0, trend: 'up' as 'up' | 'down' },
 		pageviews: { value: null as number | null, change: 0, trend: 'up' as 'up' | 'down' },
 		avgSessionDuration: { value: null as string | null, change: 0, trend: 'up' as 'up' | 'down' },
 		totalUsers: { value: null as number | null, change: 0, trend: 'up' as 'up' | 'down' },
 		bounceRate: { value: null as number | null, change: 0, trend: 'up' as 'up' | 'down' },
 		newUsers: { value: null as number | null, change: 0, trend: 'up' as 'up' | 'down' }
-	};
+	});
 
 	// SEO metrics - ALL VALUES START AT NULL (no fake data!)
-	let seoMetrics = {
+	let seoMetrics = $state({
 		searchTraffic: { value: null as number | null, change: 0 },
 		totalImpressions: { value: null as number | null, change: 0 },
 		totalClicks: { value: null as number | null, change: 0 },
@@ -169,14 +177,14 @@
 		indexedPages: { value: null as number | null, change: 0 },
 		error404Count: { value: null as number | null, hits: 0 },
 		redirections: { count: null as number | null, hits: 0 }
-	};
+	});
 
 	// Device breakdown - default values to prevent null access errors
-	let deviceBreakdown: { desktop: number; mobile: number; tablet: number } = {
+	let deviceBreakdown = $state<{ desktop: number; mobile: number; tablet: number }>({
 		desktop: 0,
 		mobile: 0,
 		tablet: 0
-	};
+	});
 
 	// Top pages
 	let topPages = $state<{ path: string; views: number; change: number }[]>([]);
@@ -200,25 +208,40 @@
 	}
 
 	async function fetchDashboardStats({ userInitiated = false } = {}) {
+		// FIX P1-5: cancel any in-flight prior fetch (a slow 30D response
+		// must not overwrite the user's just-clicked 7D state).
+		inflightFetchAbort?.abort();
+		const abort = new AbortController();
+		inflightFetchAbort = abort;
+
 		isLoading = true;
 		// FIX-2026-04-26: spinner only fires for user-initiated refreshes.
 		if (userInitiated) isUserRefreshing = true;
 		error = null;
 
-		// Built-in analytics - always try to fetch (no external connection required)
-		analyticsConnected = true; // Platform has built-in analytics
-		seoConnected = true; // Platform has built-in SEO
+		// FIX P1-6: re-derive connection flags from the connections store on
+		// every fetch. Previously we hard-coded `analyticsConnected = true`
+		// here (overriding `getIsAnalyticsConnected()` from onMount), which
+		// made the "Connect Analytics" CTA unreachable. The platform's
+		// built-in analytics is captured by the same store keys; if the
+		// admin disconnects a service, this re-runs and reflects the new
+		// state on the next refresh tick.
+		analyticsConnected = getIsAnalyticsConnected();
+		seoConnected = getIsSeoConnected();
 
 		try {
 			// ICT 7: Use correct backend endpoints
 			const [membersRes, couponsRes, postsRes, productsRes, analyticsRes] =
 				await Promise.allSettled([
-					localFetch('/api/admin/members/stats'),
-					localFetch('/api/admin/coupons'),
-					localFetch('/api/admin/posts/stats'),
-					localFetch('/api/admin/products/stats'),
-					localFetch(`/api/admin/analytics/dashboard?period=${selectedPeriod}`)
+					localFetch('/api/admin/members/stats', abort.signal),
+					localFetch('/api/admin/coupons', abort.signal),
+					localFetch('/api/admin/posts/stats', abort.signal),
+					localFetch('/api/admin/products/stats', abort.signal),
+					localFetch(`/api/admin/analytics/dashboard?period=${selectedPeriod}`, abort.signal)
 				]);
+
+			// If a newer fetch superseded us, drop our results on the floor.
+			if (abort.signal.aborted) return;
 
 			// Members stats
 			if (membersRes.status === 'fulfilled') {
@@ -365,11 +388,20 @@
 
 			lastUpdated = new Date();
 		} catch (err) {
+			// FIX P1-5: don't surface errors from a fetch we just superseded.
+			if (abort.signal.aborted) return;
 			console.error('Failed to fetch dashboard stats:', err);
-			error = 'Failed to load some statistics. Please try again.';
+			// FIX P1-4: include the underlying error so admins can debug
+			// without opening devtools.
+			const detail = err instanceof Error ? err.message : String(err);
+			error = `Failed to load some statistics: ${detail}`;
 		} finally {
-			isLoading = false;
-			isUserRefreshing = false;
+			// Only flip loading flags if we're the latest fetch.
+			if (inflightFetchAbort === abort) {
+				inflightFetchAbort = null;
+				isLoading = false;
+				isUserRefreshing = false;
+			}
 		}
 	}
 

@@ -50,8 +50,17 @@ export const GET: RequestHandler = async ({ request, cookies }) => {
 			}
 		});
 
+		// FIX-2026-04-26 (P2-1): forward real backend status. Previously a 5xx
+		// was silently masked as 200 + EMPTY_DATA, which made the list page
+		// render "No coupons yet" and let admins create duplicates of coupons
+		// that already exist. Forward the status so the page's retry path
+		// (admin/coupons/+page.svelte) can fire.
 		if (!response.ok) {
-			return json(EMPTY_DATA);
+			const text = await response.text();
+			return new Response(text || JSON.stringify(EMPTY_DATA), {
+				status: response.status,
+				headers: { 'Content-Type': 'application/json' }
+			});
 		}
 
 		const text = await response.text();
@@ -65,8 +74,11 @@ export const GET: RequestHandler = async ({ request, cookies }) => {
 		} catch {
 			return json(EMPTY_DATA);
 		}
-	} catch {
-		return json(EMPTY_DATA);
+	} catch (error) {
+		// Network-level failure — surface 502 so the page knows the upstream
+		// is unreachable instead of treating it as "no coupons exist".
+		console.error('[API] List coupons error:', error);
+		return json({ message: 'Backend unavailable' }, { status: 502 });
 	}
 };
 

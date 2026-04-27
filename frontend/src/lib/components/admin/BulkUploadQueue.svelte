@@ -4,6 +4,11 @@
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
 	 */
 
+	// FIX P2-10 (audits/admin-2026-04-26/01-shell-and-dashboard.md):
+	// `onDestroy` imported so we can register the polling cleanup as an
+	// explicit unmount hook instead of via the more cryptic
+	// `$effect(() => () => stopPolling())` pattern.
+	import { onDestroy } from 'svelte';
 	import { bulkUploadApi, type BatchStatus, type UploadQueueItem } from '$lib/api/video-advanced';
 	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
 	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
@@ -248,10 +253,11 @@
 		}
 	}
 
-	$effect(() => {
-		return () => {
-			stopPolling();
-		};
+	// FIX P2-10: explicit unmount hook is clearer than
+	// `$effect(() => () => stopPolling())` and avoids the effect's
+	// dependency-tracking semantics for what is purely a teardown.
+	onDestroy(() => {
+		stopPolling();
 	});
 </script>
 

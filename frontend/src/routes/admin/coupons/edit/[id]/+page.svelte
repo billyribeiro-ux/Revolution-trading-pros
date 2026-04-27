@@ -475,6 +475,14 @@
 						Coupon Code *
 						<span class="label-hint">Unique identifier</span>
 					</label>
+					<!--
+						FIX-2026-04-26 (P0-7): the previous `oninput` re-wrote the
+						input on every keystroke which caused cursor-jump on
+						platforms where `oninput` fires before `bind:value` flushes
+						(and corrupted slow paste). Display the value uppercase via
+						CSS `text-transform`; coerce `.toUpperCase()` only at submit
+						time. This matches the create page's pattern.
+					-->
 					<input
 						type="text"
 						id="code"
@@ -484,7 +492,7 @@
 						class="input input-large"
 						class:error={getFieldError('code')}
 						required
-						oninput={() => (formData.code = formData.code.toUpperCase())}
+						style="text-transform: uppercase;"
 					/>
 					{#if getFieldError('code')}
 						<span class="field-error">{getFieldError('code')}</span>

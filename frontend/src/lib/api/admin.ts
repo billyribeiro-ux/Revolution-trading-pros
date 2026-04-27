@@ -1339,6 +1339,45 @@ export const subscriptionsApi = {
 /**
  * Products API
  */
+/**
+ * FIX-2026-04-26 (P0-4, P2-3): translate frontend product fields to the
+ * shape `api/src/models/product.rs::CreateProduct` actually accepts.
+ *
+ * - `type` is renamed to `product_type` (the backend struct field).
+ * - `sale_price`, `currency`, `features`, and `slug` are tucked into
+ *   `metadata` (the backend's catch-all `Option<serde_json::Value>`)
+ *   so they round-trip without crashing the deserializer. The
+ *   long-term fix is a schema migration adding those columns; until
+ *   then this preserves the data.
+ */
+function normalizeProductPayload(input: Partial<Product>): Record<string, any> {
+	const src = input as Record<string, any>;
+	const out: Record<string, any> = { ...src };
+
+	if (out.product_type === undefined && out.type !== undefined) {
+		out.product_type = out.type;
+	}
+	delete out.type;
+
+	const extraKeys = ['sale_price', 'currency', 'features', 'slug'] as const;
+	const extras: Record<string, any> = {};
+	let hasExtras = false;
+	for (const key of extraKeys) {
+		if (out[key] !== undefined && out[key] !== null) {
+			extras[key] = out[key];
+			hasExtras = true;
+		}
+		delete out[key];
+	}
+	if (hasExtras) {
+		const baseMeta =
+			out.metadata && typeof out.metadata === 'object' ? { ...out.metadata } : {};
+		out.metadata = { ...baseMeta, ...extras };
+	}
+
+	return out;
+}
+
 export const productsApi = {
 	async list(params?: PaginationParams & FilterParams): Promise<ApiResponse<Product[]>> {
 		const query = params ? buildQueryString(params) : '';
@@ -1352,7 +1391,7 @@ export const productsApi = {
 	async create(data: Partial<Product>): Promise<ApiResponse<Product>> {
 		const response = await makeRequest<Product>('/admin/products', {
 			method: 'POST',
-			body: JSON.stringify(data)
+			body: JSON.stringify(normalizeProductPayload(data))
 		});
 		requestManager.clearCache('/admin/products');
 		return response;
@@ -1361,7 +1400,7 @@ export const productsApi = {
 	async update(id: number, data: Partial<Product>): Promise<ApiResponse<Product>> {
 		const response = await makeRequest<Product>(`/admin/products/${id}`, {
 			method: 'PUT',
-			body: JSON.stringify(data)
+			body: JSON.stringify(normalizeProductPayload(data))
 		});
 		requestManager.clearCache('/admin/products');
 		return response;

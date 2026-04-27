@@ -72,7 +72,10 @@
 		try {
 			const params: Record<string, string> = {};
 			if (selectedType !== 'all') {
-				params.type = selectedType;
+				// FIX-2026-04-26 (P0-4): backend `ProductListQuery` expects
+				// `product_type`, not `type`. The previous param was silently
+				// dropped, so the type filter never worked.
+				params.product_type = selectedType;
 			}
 			const response = await productsApi.list(params);
 			products = response.data || [];
@@ -156,10 +159,16 @@
 		return { original: `$${price.toFixed(2)}`, sale: null };
 	}
 
-	// Effect: Load products when type filter changes
+	// FIX-2026-04-26 (P0-5): the previous `untrack(() => loadProducts())`
+	// swallowed the dependency on `selectedType`, so the effect ran exactly
+	// once on mount and clicking a type tab never refetched. Read
+	// `selectedType` *outside* `untrack` so the effect re-runs on filter
+	// change, while the actual fetch (which writes `products`) stays
+	// untracked to avoid a re-fetch loop on the products array.
 	$effect(() => {
-		// Track selectedType for reactivity
-		// Use untrack to avoid infinite loops when updating products
+		// Reading these inside the effect (but outside `untrack`) is what
+		// registers the dependency.
+		void selectedType;
 		untrack(() => {
 			loadProducts();
 		});

@@ -341,8 +341,27 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 
+	let isInitialized = $state(false);
+
 	onMount(() => {
-		loadData();
+		(async () => {
+			await loadData();
+			isInitialized = true;
+		})();
+	});
+
+	// Audit P1 #6: previously `selectedStatus` was passed to the backend on
+	// initial fetch but never re-fired — switching `open` → `won` left
+	// already-fetched-but-not-shown deals invisible. Now the effect tracks
+	// `selectedStatus` and re-runs `loadData()` for any backend-side filter
+	// change. `isInitialized` gate prevents a duplicate first-mount fetch.
+	$effect(() => {
+		// Reactive read:
+		selectedStatus;
+
+		if (isInitialized) {
+			loadData();
+		}
 	});
 </script>
 
@@ -725,9 +744,15 @@
 											<a href="/admin/crm/deals/{deal.id}/edit" class="btn-icon" title="Edit">
 												<IconEdit size={16} />
 											</a>
+											<!--
+												Audit P2 #15: this button used to say "Delete" but the
+												confirmDeleteDeal handler only soft-archives by setting
+												status: 'abandoned'. Renamed to "Archive" so the UI
+												matches what the action actually does.
+											-->
 											<button
 												class="btn-icon danger"
-												title="Delete"
+												title="Archive"
 												onclick={() => deleteDeal(deal)}
 											>
 												<IconTrash size={16} />
@@ -902,11 +927,11 @@
 
 <ConfirmationModal
 	isOpen={showDeleteModal}
-	title="Delete Deal"
+	title="Archive Deal"
 	message={pendingDeleteDeal
-		? `Are you sure you want to delete "${pendingDeleteDeal.name}"? This action cannot be undone.`
+		? `Archive "${pendingDeleteDeal.name}"? It will be marked as abandoned and removed from active pipelines (you can restore it later from the abandoned filter).`
 		: ''}
-	confirmText="Delete"
+	confirmText="Archive"
 	variant="danger"
 	onConfirm={confirmDeleteDeal}
 	onCancel={() => {

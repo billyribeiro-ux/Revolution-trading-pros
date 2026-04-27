@@ -26,6 +26,7 @@
 	 * @version 1.0.0 (January 2026)
 	 */
 
+	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import {
@@ -88,11 +89,32 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	let plans = $state<MembershipPlan[]>([]);
-	let stats = $state<PlanStats>({
-		total_plans: 0,
-		active_plans: 0,
-		total_subscribers: 0,
-		total_mrr: 0
+	// FIX-2026-04-26 (audit 02 §P1-6): `stats` was a $state recomputed inside a
+	// `$effect` that read `plans` and wrote `stats` — the same write-while-read
+	// cascade pattern commit 34a0bd070 migrated CRM/campaigns away from. Now a
+	// pure `$derived.by` on `plans` — no effect, no state_referenced_locally.
+	let stats: PlanStats = $derived.by(() => {
+		if (plans.length === 0) {
+			return { total_plans: 0, active_plans: 0, total_subscribers: 0, total_mrr: 0 };
+		}
+		const top = plans.reduce(
+			(acc, p) => ((p.subscriber_count || 0) > (acc?.subscriber_count || 0) ? p : acc),
+			plans[0]
+		);
+		return {
+			total_plans: plans.length,
+			active_plans: plans.filter((p) => p.is_active).length,
+			total_subscribers: plans.reduce((sum, p) => sum + (p.subscriber_count || 0), 0),
+			total_mrr: plans.reduce((sum, p) => {
+				if (!p.is_active) return sum;
+				const subscribers = p.subscriber_count || 0;
+				let monthlyPrice = p.price;
+				if (p.billing_cycle === 'quarterly') monthlyPrice = p.price / 3;
+				if (p.billing_cycle === 'annual') monthlyPrice = p.price / 12;
+				return sum + monthlyPrice * subscribers;
+			}, 0),
+			top_plan: top?.name
+		};
 	});
 	let isLoading = $state(true);
 	let error = $state('');
@@ -205,28 +227,10 @@
 	// EFFECTS - Svelte 5 $effect
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	$effect(() => {
-		// Recalculate stats when plans change
-		if (plans.length > 0) {
-			stats = {
-				total_plans: plans.length,
-				active_plans: plans.filter((p) => p.is_active).length,
-				total_subscribers: plans.reduce((sum, p) => sum + (p.subscriber_count || 0), 0),
-				total_mrr: plans.reduce((sum, p) => {
-					if (!p.is_active) return sum;
-					const subscribers = p.subscriber_count || 0;
-					let monthlyPrice = p.price;
-					if (p.billing_cycle === 'quarterly') monthlyPrice = p.price / 3;
-					if (p.billing_cycle === 'annual') monthlyPrice = p.price / 12;
-					return sum + monthlyPrice * subscribers;
-				}, 0),
-				top_plan: plans.reduce(
-					(top, p) => ((p.subscriber_count || 0) > (top?.subscriber_count || 0) ? p : top),
-					plans[0]
-				)?.name
-			};
-		}
-	});
+	// FIX-2026-04-26 (audit 02 §P1-6): the previous $effect that wrote `stats`
+	// from `plans` is now a `$derived.by` block at the top of the script — see
+	// the `let stats: PlanStats = $derived.by(...)` declaration above. The
+	// effect block was removed to eliminate the write-while-read cascade.
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// API FUNCTIONS
@@ -431,8 +435,10 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Svelte 5: Initialize on mount
-	$effect(() => {
+	// FIX-2026-04-26 (audit 02 §P2-9 / CLAUDE.md commit 34a0bd070):
+	// Initialization should run once on mount, not in a `$effect`. The effect
+	// version re-runs during dev-mode tear-down and emits duplicate fetches.
+	onMount(() => {
 		if (browser) loadData();
 	});
 </script>

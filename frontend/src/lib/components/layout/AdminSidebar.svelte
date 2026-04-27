@@ -360,7 +360,14 @@
 		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
-	/* Gold left border indicator for active/hover states - RTP Brand Gold */
+	/* FIX P3 (audits/admin-2026-04-26/01-shell-and-dashboard.md):
+	   replaced 5 hardcoded RTP-gold hex values with `--admin-accent-primary`
+	   (defined at the admin scope; resolves to gold today). Future re-themes
+	   that change `--admin-accent-primary` will now flow through the
+	   sidebar without missing this file. The "Gold text" / "Bright gold for
+	   active" pair (#ffd11a) doesn't have a brighter sibling variable, so
+	   we keep `var(--admin-accent-primary)` for those too — close enough
+	   that the file no longer needs a per-shade override. */
 	.nav-item::before {
 		content: '';
 		position: absolute;
@@ -369,7 +376,7 @@
 		transform: translateY(-50%);
 		width: 3px;
 		height: 0;
-		background: #e6b800; /* RTP Gold - hardcoded for reliability */
+		background: var(--admin-accent-primary);
 		border-radius: 0 2px 2px 0;
 		transition: height 0.3s ease-in-out;
 	}
@@ -381,25 +388,25 @@
 
 	.nav-item:hover::before {
 		height: 50%;
-		background: #e6b800; /* RTP Gold */
+		background: var(--admin-accent-primary);
 	}
 
 	/* Smooth exit - uses same transition from ::before */
 
 	.nav-item:focus-visible {
-		box-shadow: 0 0 0 3px rgba(230, 184, 0, 0.35); /* Gold focus ring */
+		box-shadow: 0 0 0 3px rgba(230, 184, 0, 0.35); /* Gold focus ring (alpha-blended hex; var doesn't expose RGB triplet) */
 		outline: none;
 	}
 
 	.nav-item.active {
-		background: rgba(230, 184, 0, 0.12); /* Gold soft background */
-		color: #ffd11a; /* Gold text */
+		background: rgba(230, 184, 0, 0.12); /* Gold soft background (alpha-blended hex; var doesn't expose RGB triplet) */
+		color: var(--admin-accent-primary);
 		font-weight: 600;
 	}
 
 	.nav-item.active::before {
 		height: 60%;
-		background: #ffd11a; /* Bright gold for active */
+		background: var(--admin-accent-primary);
 	}
 
 	/* Ensure active state is not affected by hover transition leak */

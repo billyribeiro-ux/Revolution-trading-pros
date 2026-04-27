@@ -11,6 +11,9 @@
 	 * - Progress tracking
 	 */
 
+	// FIX P2-1 (audits/admin-2026-04-26/01-shell-and-dashboard.md):
+	// `onMount` imported to replace the init-as-effect pattern below.
+	import { onMount } from 'svelte';
 	import {
 		coursesApi,
 		sectionsApi,
@@ -94,7 +97,11 @@
 		required_watch_percent: 80
 	});
 
-	$effect(() => {
+	// FIX P2-1: one-shot init via onMount, not $effect. `loadCourse` writes
+	// to multiple `$state` runes; running it inside an effect created the
+	// classic write-while-reading hazard that caused the cascade fixed in
+	// `+layout.svelte`.
+	onMount(() => {
 		loadCourse();
 	});
 

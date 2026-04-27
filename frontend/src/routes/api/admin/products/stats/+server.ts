@@ -45,8 +45,20 @@ export const GET: RequestHandler = async ({ cookies, fetch }) => {
 			}
 		});
 
+		// FIX-2026-04-26 (P2-2): forward auth failures (401/403) so the
+		// admin shell can redirect to login instead of showing "0 products"
+		// to a user whose token expired. Continue to mask 5xx as mock data
+		// to keep the dashboard rendering when the backend hiccups.
+		if (response.status === 401 || response.status === 403) {
+			const text = await response.text();
+			return new Response(text || JSON.stringify({ message: 'Unauthorized' }), {
+				status: response.status,
+				headers: { 'Content-Type': 'application/json' }
+			});
+		}
+
 		if (!response.ok) {
-			// Return mock data for all error cases - graceful degradation
+			// Return mock data for non-auth error cases - graceful degradation
 			return json(mockData);
 		}
 

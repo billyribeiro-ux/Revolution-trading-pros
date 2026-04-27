@@ -4,6 +4,9 @@
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
 	 */
 
+	// FIX P2-1 (audits/admin-2026-04-26/01-shell-and-dashboard.md):
+	// onMount imported to replace one-shot init-as-effect.
+	import { onMount } from 'svelte';
 	import { chaptersApi, parseTimeToSeconds, type VideoChapter } from '$lib/api/video-advanced';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
@@ -47,7 +50,10 @@
 		endTime: ''
 	});
 
-	$effect(() => {
+	// FIX P2-1: one-shot init via onMount, not $effect. `loadChapters`
+	// writes to `$state` runes (chapters, isLoading, error); running it
+	// inside an effect would re-trigger reactively and risk a cascade.
+	onMount(() => {
 		loadChapters();
 	});
 

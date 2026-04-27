@@ -258,20 +258,33 @@
 		saving = true;
 
 		try {
-			// Build the payload for the API - match CouponCreateData interface
+			// FIX-2026-04-26 (P0-3, P1-7, CC-1): send canonical backend field
+			// names (`discount_type`, `discount_value`, `min_purchase`,
+			// `max_discount`, `starts_at`, `expires_at`, `applicable_plans`).
+			// Previously every key was renamed away from what
+			// `admin.rs::CreateCouponRequest` expects, so serde dropped them
+			// and silently inserted a coupon with empty discount_type and
+			// discount_value=0.
+			//
+			// Also wire `applicable_plans` (P1-7), which the UI collected in
+			// `selectedPlans` but never sent.
 			const payload = {
 				code: formData.code.toUpperCase(),
-				type: formData.discount_type, // 'fixed' or 'percentage'
-				value: formData.discount_value,
 				description: formData.description || undefined,
-				minimum_amount: formData.min_purchase || undefined,
-				max_discount_amount: formData.max_discount || undefined,
-				usage_limit: formData.usage_limit || undefined,
-				valid_from: formData.starts_at ? new Date(formData.starts_at).toISOString() : undefined,
-				valid_until: formData.expires_at ? new Date(formData.expires_at).toISOString() : undefined,
+				discount_type: formData.discount_type, // 'fixed' or 'percentage'
+				discount_value: formData.discount_value,
+				min_purchase: formData.min_purchase ?? undefined,
+				max_discount: formData.max_discount ?? undefined,
+				usage_limit: formData.usage_limit ?? undefined,
+				starts_at: formData.starts_at ? new Date(formData.starts_at).toISOString() : undefined,
+				expires_at: formData.expires_at ? new Date(formData.expires_at).toISOString() : undefined,
 				applicable_products:
 					restrictionTab === 'include' && selectedProducts.size > 0
-						? Array.from(selectedProducts).map(String)
+						? Array.from(selectedProducts)
+						: undefined,
+				applicable_plans:
+					restrictionTab === 'include' && selectedPlans.size > 0
+						? Array.from(selectedPlans)
 						: undefined,
 				is_active: formData.is_active
 			};

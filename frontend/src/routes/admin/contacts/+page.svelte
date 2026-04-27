@@ -4,6 +4,7 @@
 
 <script lang="ts">
 	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { Card, Badge, Table, Input, Select } from '$lib/components/ui';
 	import { addToast } from '$lib/utils/toast';
 	import { crmAPI } from '$lib/api/crm';
@@ -29,8 +30,10 @@
 		{ value: 'unqualified', label: 'Unqualified' }
 	];
 
-	// Svelte 5: Initialize on mount
-	$effect(() => {
+	// Svelte 5: Initialize on mount.
+	// Was previously a `$effect` with a `browser` guard — migrated to `onMount`
+	// to keep init off the reactive graph (audit P2 #10).
+	onMount(() => {
 		if (browser) loadContacts();
 	});
 
@@ -72,12 +75,14 @@
 		}
 	}
 
-	// Reload contacts when filter changes
-	$effect(() => {
-		if (statusFilter !== '') {
-			loadContacts();
-		}
-	});
+	// Audit P1 #7: filter dead-zone — the previous `$effect` only refetched
+	// when `statusFilter !== ''`, so clearing the filter back to "All Statuses"
+	// (`''`) silently kept stale results on screen. Now we explicitly call
+	// `loadContacts()` from the Select's `onchange` handler so every filter
+	// change — including switching back to "All" — triggers a fresh request.
+	function handleStatusChange() {
+		loadContacts();
+	}
 
 	// Debounced search
 	let searchTimeout: ReturnType<typeof setTimeout>;
@@ -117,7 +122,12 @@
 		<!-- Filters -->
 		<div class="filters-grid">
 			<Input placeholder="Search contacts..." bind:value={searchQuery} oninput={handleSearch} />
-			<Select options={statusOptions} bind:value={statusFilter} placeholder="Filter by status" />
+			<Select
+				options={statusOptions}
+				bind:value={statusFilter}
+				placeholder="Filter by status"
+				onchange={handleStatusChange}
+			/>
 		</div>
 
 		<!-- Contact Stats -->

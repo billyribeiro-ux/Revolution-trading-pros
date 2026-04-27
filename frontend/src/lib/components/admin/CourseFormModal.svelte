@@ -86,9 +86,20 @@
 		{ value: '#ec4899', label: 'Pink' }
 	];
 
-	// Initialize form when course changes
+	// FIX P2-2 (audits/admin-2026-04-26/01-shell-and-dashboard.md):
+	// Gate the reset on a real false → true transition of `isOpen`. The
+	// previous effect re-ran whenever `course`'s reference changed (which
+	// happens any time the parent invalidates a SvelteKit load), wiping
+	// half-typed user input. We now track the previous open state and
+	// only repopulate when the modal is freshly opened. Errors and the
+	// active-section reset are tied to the same gate.
+	let wasOpen = false;
 	$effect(() => {
-		if (isOpen && mode === 'edit' && course) {
+		const opening = isOpen && !wasOpen;
+		wasOpen = isOpen;
+		if (!opening) return;
+
+		if (mode === 'edit' && course) {
 			title = course.title || '';
 			slug = course.slug || '';
 			description = course.description || '';
@@ -103,7 +114,7 @@
 			cardBadgeColor = course.card_badge_color || '#6366f1';
 			metaTitle = course.meta_title || '';
 			metaDescription = course.meta_description || '';
-		} else if (isOpen && mode === 'create') {
+		} else if (mode === 'create') {
 			title = '';
 			slug = '';
 			description = '';
