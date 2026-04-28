@@ -449,7 +449,7 @@
 		/>
 	{:else if loading}
 		<div class="loading-grid">
-			{#each [1, 2, 3, 4] as _}
+			{#each [1, 2, 3, 4] as _, i (i)}
 				<div class="skeleton skeleton-metric"></div>
 			{/each}
 		</div>
@@ -522,7 +522,7 @@
 
 		<!-- Campaigns List -->
 		<div class="campaigns-list">
-			{#each filteredCampaigns as campaign}
+			{#each filteredCampaigns as campaign (campaign.id)}
 				<div class="campaign-card">
 					<div class="campaign-header">
 						<div class="campaign-info">
@@ -750,7 +750,7 @@
 						<label for="campaign-segment">Target Segment</label>
 						<select id="campaign-segment" bind:value={newCampaign.segmentId}>
 							<option value="">Select segment...</option>
-							{#each segments as segment}
+							{#each segments as segment (segment.id)}
 								<option value={segment.id}>{segment.name} ({formatNumber(segment.count)})</option>
 							{/each}
 						</select>
@@ -760,7 +760,7 @@
 						<label for="campaign-template">Email Template</label>
 						<select id="campaign-template" bind:value={newCampaign.templateId}>
 							<option value="">Select template...</option>
-							{#each templates as template}
+							{#each templates as template (template.id)}
 								<option value={template.id}>{template.name}</option>
 							{/each}
 						</select>

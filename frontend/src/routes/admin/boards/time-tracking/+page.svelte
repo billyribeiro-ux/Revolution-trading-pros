@@ -262,7 +262,7 @@
 			<div class="flex flex-wrap items-center gap-4">
 				<!-- Date Presets -->
 				<div class="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
-					{#each [{ value: 'today', label: 'Today' }, { value: 'yesterday', label: 'Yesterday' }, { value: 'this_week', label: 'This Week' }, { value: 'last_week', label: 'Last Week' }, { value: 'this_month', label: 'This Month' }, { value: 'last_month', label: 'Last Month' }] as preset}
+					{#each [{ value: 'today', label: 'Today' }, { value: 'yesterday', label: 'Yesterday' }, { value: 'this_week', label: 'This Week' }, { value: 'last_week', label: 'Last Week' }, { value: 'this_month', label: 'This Month' }, { value: 'last_month', label: 'Last Month' }] as preset (preset.value)}
 						<button
 							onclick={() => setDatePreset(preset.value)}
 							class="px-3 py-1.5 text-sm rounded-md {datePreset === preset.value
@@ -281,7 +281,7 @@
 					class="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 				>
 					<option value={null}>All Boards</option>
-					{#each boards as board}
+					{#each boards as board (board.id)}
 						<option value={board.id}>{board.title}</option>
 					{/each}
 				</select>
@@ -377,7 +377,7 @@
 						</tr>
 					</thead>
 					<tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-						{#each timeEntries as entry}
+						{#each timeEntries as entry (entry.id)}
 							<tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
 								<td class="px-4 py-3">
 									<div class="flex items-center gap-2">

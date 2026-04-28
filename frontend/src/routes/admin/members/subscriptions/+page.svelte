@@ -416,7 +416,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each filteredSubscriptions as sub}
+				{#each filteredSubscriptions as sub (sub.id)}
 					<tr>
 						<td class="customer-cell">
 							<div class="customer-name">{sub.customer?.name || 'Unknown'}</div>

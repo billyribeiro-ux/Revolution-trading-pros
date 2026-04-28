@@ -252,7 +252,7 @@
 		<div class="header-right">
 			<!-- Time Range Selector -->
 			<div class="time-selector">
-				{#each ['7d', '30d', '90d', '1y'] as range}
+				{#each ['7d', '30d', '90d', '1y'] as range (range)}
 					<button
 						class:active={timeRange === range}
 						onclick={() => handleTimeRangeChange(range as '7d' | '30d' | '90d' | '1y')}
@@ -563,7 +563,7 @@
 			</div>
 
 			<div class="format-grid">
-				{#each formatStats as stat, i}
+				{#each formatStats as stat, i (stat.format)}
 					<div class="format-card" transition:scale={{ duration: 300, delay: 650 + i * 50 }}>
 						<div class="format-header">
 							<span class="format-name">{stat.format}</span>

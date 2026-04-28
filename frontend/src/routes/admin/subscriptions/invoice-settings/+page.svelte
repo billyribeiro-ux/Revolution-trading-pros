@@ -294,7 +294,7 @@
 				>
 					<div class="border-b border-gray-200 dark:border-gray-700">
 						<nav class="flex overflow-x-auto">
-							{#each tabs as tab}
+							{#each tabs as tab (tab.id)}
 								<button
 									onclick={() => (activeTab = tab.id)}
 									class="px-6 py-4 text-sm font-medium whitespace-nowrap transition-colors
@@ -462,7 +462,7 @@
 										bind:value={settings.font_family}
 										class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 									>
-										{#each fonts as font}
+										{#each fonts as font (font.value)}
 											<option value={font.value}>{font.label}</option>
 										{/each}
 									</select>
@@ -616,7 +616,7 @@
 											bind:value={settings.company_country}
 											class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 										>
-											{#each Object.entries(countries) as [code, name]}
+											{#each Object.entries(countries) as [code, name] (code)}
 												<option value={code}>{name}</option>
 											{/each}
 										</select>

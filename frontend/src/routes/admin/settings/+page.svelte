@@ -808,7 +808,7 @@
 					Google Services
 				</h2>
 				<div class="services-grid services-grid-4">
-					{#each googleServices as service, i}
+					{#each googleServices as service, i (service.key)}
 						<div
 							class="service-card"
 							in:fly={{ y: 20, duration: 400, delay: 200 + i * 50, easing: quintOut }}
@@ -873,7 +873,7 @@
 					>
 						All
 					</button>
-					{#each categoryList as [key, category]}
+					{#each categoryList as [key, category] (key)}
 						<button
 							onclick={() => (selectedCategory = key)}
 							class="filter-btn"
@@ -895,7 +895,7 @@
 			{:else}
 				<!-- Services Grid -->
 				<div class="services-grid">
-					{#each filteredServices as service, i}
+					{#each filteredServices as service, i (service.key)}
 						<div
 							class="service-card"
 							in:fly={{ y: 30, duration: 400, delay: 250 + i * 30, easing: quintOut }}
@@ -1107,7 +1107,7 @@
 							>Environment</span
 						>
 						<div class="flex gap-2" role="group" aria-labelledby="environment-label">
-							{#each selectedService.environments as env}
+							{#each selectedService.environments as env (env)}
 								<button
 									onclick={() => (selectedEnvironment = env)}
 									aria-pressed={selectedEnvironment === env}
@@ -1124,7 +1124,7 @@
 				{/if}
 
 				<!-- Credential Fields -->
-				{#each selectedService.fields as field}
+				{#each selectedService.fields as field (field.key)}
 					<div>
 						<label for="field-{field.key}" class="block text-sm font-medium text-slate-300 mb-2">
 							{field.label}

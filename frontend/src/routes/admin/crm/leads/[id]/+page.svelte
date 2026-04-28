@@ -635,7 +635,7 @@
 						</div>
 						<div class="tags-list">
 							{#if lead.tags && lead.tags.length > 0}
-								{#each lead.tags as tag}
+								{#each lead.tags as tag (tag.id)}
 									<span
 										class="tag-pill"
 										style="background-color: {tag.color || '#f97316'}20; color: {tag.color ||
@@ -683,7 +683,7 @@
 						</div>
 					{:else}
 						<div class="timeline">
-							{#each timeline as event}
+							{#each timeline as event (event.id)}
 								<div class="timeline-item">
 									<div class="timeline-dot {event.type}"></div>
 									<div class="timeline-content">
@@ -730,7 +730,7 @@
 						</div>
 					{:else}
 						<div class="notes-list">
-							{#each notes as note}
+							{#each notes as note (note.id)}
 								<div class="note-item">
 									<div class="note-header">
 										<span class="note-author">

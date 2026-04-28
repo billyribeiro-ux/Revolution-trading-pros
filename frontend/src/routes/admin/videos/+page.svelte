@@ -1172,7 +1172,7 @@
 						Trading Rooms
 					</h3>
 					<div class="room-tabs">
-						{#each tradingRooms as room}
+						{#each tradingRooms as room (room.id)}
 							<button
 								class="room-tab"
 								class:active={selectedRoom?.id === room.id}
@@ -1196,7 +1196,7 @@
 						Alert Services
 					</h3>
 					<div class="room-tabs">
-						{#each alertServices as service}
+						{#each alertServices as service (service.id)}
 							<button
 								class="room-tab"
 								class:active={selectedRoom?.id === service.id}
@@ -1289,7 +1289,7 @@
 						<div class="top-videos-section">
 							<h4>Top Performing Videos</h4>
 							<div class="top-videos-list">
-								{#each analyticsData.top_videos.slice(0, 5) as topVideo, index}
+								{#each analyticsData.top_videos.slice(0, 5) as topVideo, index (topVideo.video_id)}
 									<div class="top-video-item">
 										<span class="rank">#{index + 1}</span>
 										<span class="title">{topVideo.title}</span>
@@ -1305,7 +1305,7 @@
 						<div class="categories-stats-section">
 							<h4>Categories in Use</h4>
 							<div class="used-categories-tags">
-								{#each usedCategories as category}
+								{#each usedCategories as category (category.id)}
 									<span class="category-tag" style:--tag-color={category.color}>
 										{category.name}
 									</span>
@@ -1338,7 +1338,7 @@
 				<label for="category-filter" class="sr-only">Filter by category</label>
 				<select id="category-filter" class="filter-select" bind:value={selectedCategory}>
 					<option value="all">All Categories</option>
-					{#each availableCategories as category}
+					{#each availableCategories as category (category.id)}
 						<option value={category.id}>{category.name}</option>
 					{/each}
 				</select>
@@ -1347,7 +1347,7 @@
 				<label for="trader-filter" class="sr-only">Filter by trader</label>
 				<select id="trader-filter" class="filter-select" bind:value={selectedTrader}>
 					<option value="all">All Traders</option>
-					{#each traders as trader}
+					{#each traders as trader (trader.id)}
 						<option value={trader.id.toString()}>{trader.name}</option>
 					{/each}
 				</select>
@@ -1484,7 +1484,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#each filteredVideos as video}
+						{#each filteredVideos as video (video.id)}
 							<tr class:selected={selectedVideoIds.has(video.id)}>
 								<td class="checkbox-col">
 									<button
@@ -1519,7 +1519,7 @@
 								</td>
 								<td class="categories-cell">
 									<div class="category-tags">
-										{#each (video.categories || []).slice(0, 3) as categoryId}
+										{#each (video.categories || []).slice(0, 3) as categoryId (categoryId)}
 											{@const category = getCategoryById(categoryId)}
 											{#if category}
 												<span class="category-tag" style:--tag-color={category.color}>
@@ -1667,12 +1667,12 @@
 						<label for="room-select">Upload to Room/Service</label>
 						<select id="room-select" bind:value={formData.trading_room_id}>
 							<optgroup label="Trading Rooms">
-								{#each tradingRooms as room}
+								{#each tradingRooms as room (room.id)}
 									<option value={room.id}>{room.name}</option>
 								{/each}
 							</optgroup>
 							<optgroup label="Alert Services">
-								{#each alertServices as service}
+								{#each alertServices as service (service.id)}
 									<option value={service.id}>{service.name}</option>
 								{/each}
 							</optgroup>
@@ -1732,7 +1732,7 @@
 						Categories (select all that apply)
 					</label>
 					<div class="categories-grid">
-						{#each availableCategories as category}
+						{#each availableCategories as category (category.id)}
 							<button
 								type="button"
 								class="category-btn"
@@ -1750,7 +1750,7 @@
 					{#if formData.categories.length > 0}
 						<div class="selected-categories">
 							<span class="selected-count">{formData.categories.length} selected:</span>
-							{#each formData.categories as categoryId}
+							{#each formData.categories as categoryId (categoryId)}
 								{@const category = getCategoryById(categoryId)}
 								{#if category}
 									<span class="selected-tag" style:--tag-color={category.color}>
@@ -1775,7 +1775,7 @@
 						<label for="trader-select">Trader</label>
 						<select id="trader-select" bind:value={formData.trader_id}>
 							<option value={null}>Select trader...</option>
-							{#each traders as trader}
+							{#each traders as trader (trader.id)}
 								<option value={trader.id}>{trader.name}</option>
 							{/each}
 						</select>
@@ -2013,7 +2013,7 @@
 						<div class="selected-files">
 							<h4><IconProgressCheck size={20} /> {bunnyUploadFiles.length} file(s) selected</h4>
 							<ul class="file-list">
-								{#each bunnyUploadFiles as file, index}
+								{#each bunnyUploadFiles as file, index (index)}
 									<li>
 										<span class="file-name">{file.name}</span>
 										<span class="file-size">{(file.size / (1024 * 1024)).toFixed(1)} MB</span>
@@ -2125,7 +2125,7 @@
 						Tags to Add
 					</label>
 					<div class="bulk-tags-grid">
-						{#each availableCategories as category}
+						{#each availableCategories as category (category.id)}
 							<button
 								type="button"
 								class="bulk-tag-btn add"
@@ -2152,7 +2152,7 @@
 						Tags to Remove
 					</label>
 					<div class="bulk-tags-grid">
-						{#each availableCategories as category}
+						{#each availableCategories as category (category.id)}
 							<button
 								type="button"
 								class="bulk-tag-btn remove"

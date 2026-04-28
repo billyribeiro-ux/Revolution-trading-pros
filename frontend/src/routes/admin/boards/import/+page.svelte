@@ -384,7 +384,7 @@
 					Choose Import Source
 				</h2>
 
-				{#each sources as source}
+				{#each sources as source (source.id)}
 					<button
 						onclick={() => (selectedSource = source.id)}
 						class="w-full bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 text-left hover:border-indigo-300 dark:hover:border-indigo-700 hover:shadow-md transition-all flex items-center gap-4"

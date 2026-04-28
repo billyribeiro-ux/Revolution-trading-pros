@@ -244,7 +244,7 @@
 					<section class="section">
 						<h2>Insights</h2>
 						<div class="insights-list">
-							{#each insights as insight}
+							{#each insights as insight (insight)}
 								<div class="insight-item">
 									<span class="insight-icon">💡</span>
 									<span>{insight}</span>
@@ -383,7 +383,7 @@
 											</tr>
 										</thead>
 										<tbody>
-											{#each cookies as cookie}
+											{#each cookies as cookie (cookie.name)}
 												<tr>
 													<td><code>{cookie.name}</code></td>
 													<td>{cookie.purpose || 'Unknown'}</td>
@@ -428,7 +428,7 @@
 									</tr>
 								</thead>
 								<tbody>
-									{#each abTestAnalytics as variant}
+									{#each abTestAnalytics as variant (variant.variantId)}
 										<tr>
 											<td><strong>{variant.variantId}</strong></td>
 											<td>{variant.impressions}</td>

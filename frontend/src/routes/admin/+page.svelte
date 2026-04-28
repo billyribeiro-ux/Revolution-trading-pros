@@ -537,7 +537,7 @@
 				</div>
 			{:else}
 				<div class="metrics-grid">
-					{#each [{ label: 'Sessions', value: analytics.sessions.value, change: analytics.sessions.change, trend: analytics.sessions.trend, icon: IconEye, color: 'blue' }, { label: 'Pageviews', value: analytics.pageviews.value, change: analytics.pageviews.change, trend: analytics.pageviews.trend, icon: IconClick, color: 'purple' }, { label: 'Avg. Duration', value: analytics.avgSessionDuration.value, change: analytics.avgSessionDuration.change, trend: analytics.avgSessionDuration.trend, icon: IconClock, color: 'cyan', isText: true }, { label: 'Total Users', value: analytics.totalUsers.value, change: analytics.totalUsers.change, trend: analytics.totalUsers.trend, icon: IconUsers, color: 'green' }, { label: 'Bounce Rate', value: analytics.bounceRate.value, change: analytics.bounceRate.change, trend: analytics.bounceRate.trend, icon: IconActivity, color: 'orange', suffix: '%', invertTrend: true }, { label: 'New Users', value: analytics.newUsers.value, change: analytics.newUsers.change, trend: analytics.newUsers.trend, icon: IconUserCircle, color: 'pink' }] as metric, i}
+					{#each [{ label: 'Sessions', value: analytics.sessions.value, change: analytics.sessions.change, trend: analytics.sessions.trend, icon: IconEye, color: 'blue' }, { label: 'Pageviews', value: analytics.pageviews.value, change: analytics.pageviews.change, trend: analytics.pageviews.trend, icon: IconClick, color: 'purple' }, { label: 'Avg. Duration', value: analytics.avgSessionDuration.value, change: analytics.avgSessionDuration.change, trend: analytics.avgSessionDuration.trend, icon: IconClock, color: 'cyan', isText: true }, { label: 'Total Users', value: analytics.totalUsers.value, change: analytics.totalUsers.change, trend: analytics.totalUsers.trend, icon: IconUsers, color: 'green' }, { label: 'Bounce Rate', value: analytics.bounceRate.value, change: analytics.bounceRate.change, trend: analytics.bounceRate.trend, icon: IconActivity, color: 'orange', suffix: '%', invertTrend: true }, { label: 'New Users', value: analytics.newUsers.value, change: analytics.newUsers.change, trend: analytics.newUsers.trend, icon: IconUserCircle, color: 'pink' }] as metric, i (i)}
 						{@const MetricIcon = metric.icon}
 						<div
 							class="metric-card {metric.color}"
@@ -891,7 +891,7 @@
 			</div>
 
 			<div class="business-grid">
-				{#each [{ href: '/admin/members', icon: IconUserCircle, value: stats.totalMembers, label: 'Total Members', color: 'indigo' }, { href: '/admin/subscriptions', icon: IconReceipt, value: stats.activeSubscriptions, label: 'Active Subscriptions', color: 'teal' }, { href: '/admin/products', icon: IconShoppingCart, value: stats.totalProducts, label: 'Products', color: 'emerald' }, { href: '/admin/blog', icon: IconNews, value: stats.totalPosts, label: 'Blog Posts', color: 'blue' }, { href: '/admin/coupons', icon: IconTicket, value: stats.activeCoupons, label: 'Active Coupons', color: 'amber' }] as item, i}
+				{#each [{ href: '/admin/members', icon: IconUserCircle, value: stats.totalMembers, label: 'Total Members', color: 'indigo' }, { href: '/admin/subscriptions', icon: IconReceipt, value: stats.activeSubscriptions, label: 'Active Subscriptions', color: 'teal' }, { href: '/admin/products', icon: IconShoppingCart, value: stats.totalProducts, label: 'Products', color: 'emerald' }, { href: '/admin/blog', icon: IconNews, value: stats.totalPosts, label: 'Blog Posts', color: 'blue' }, { href: '/admin/coupons', icon: IconTicket, value: stats.activeCoupons, label: 'Active Coupons', color: 'amber' }] as item, i (i)}
 					{@const BusinessIcon = item.icon}
 					<a
 						href={item.href}
@@ -940,7 +940,7 @@
 				     Tiles whose dedicated routes don't yet exist are aliased to the
 				     closest existing surface (see docs/audits/ADMIN_QUICK_ACTIONS_BACKLOG.md
 				     for the full mapping and what's missing). -->
-				{#each [{ href: '/admin/email', icon: IconMail, label: 'Email', color: 'blue' }, { href: '/admin/forms', icon: IconForms, label: 'Forms', color: 'purple' }, { href: '/admin/popups', icon: IconBellRinging, label: 'Notifications', color: 'amber' }, { href: '/admin/media', icon: IconPhoto, label: 'Media', color: 'pink' }, { href: '/admin/videos', icon: IconVideo, label: 'Videos', color: 'red' }, { href: '/admin/categories', icon: IconTag, label: 'Tags', color: 'green' }, { href: '/admin/seo', icon: IconSeo, label: 'SEO', color: 'orange' }, { href: '/admin/seo', icon: IconLink, label: 'Links', color: 'cyan' }, { href: '/admin/categories', icon: IconFilter, label: 'Filters', color: 'indigo' }, { href: '/admin/email', icon: IconSend, label: 'Broadcast', color: 'teal' }, { href: '/admin/settings', icon: IconWorld, label: 'Global', color: 'slate' }, { href: '/admin/indicators', icon: IconAlertTriangle, label: 'Alerts', color: 'yellow' }] as action, i}
+				{#each [{ href: '/admin/email', icon: IconMail, label: 'Email', color: 'blue' }, { href: '/admin/forms', icon: IconForms, label: 'Forms', color: 'purple' }, { href: '/admin/popups', icon: IconBellRinging, label: 'Notifications', color: 'amber' }, { href: '/admin/media', icon: IconPhoto, label: 'Media', color: 'pink' }, { href: '/admin/videos', icon: IconVideo, label: 'Videos', color: 'red' }, { href: '/admin/categories', icon: IconTag, label: 'Tags', color: 'green' }, { href: '/admin/seo', icon: IconSeo, label: 'SEO', color: 'orange' }, { href: '/admin/seo', icon: IconLink, label: 'Links', color: 'cyan' }, { href: '/admin/categories', icon: IconFilter, label: 'Filters', color: 'indigo' }, { href: '/admin/email', icon: IconSend, label: 'Broadcast', color: 'teal' }, { href: '/admin/settings', icon: IconWorld, label: 'Global', color: 'slate' }, { href: '/admin/indicators', icon: IconAlertTriangle, label: 'Alerts', color: 'yellow' }] as action, i (i)}
 					{@const ActionIcon = action.icon}
 					<a
 						href={action.href}
@@ -976,7 +976,7 @@
 					</div>
 				</div>
 				<div class="top-pages-list">
-					{#each topPages as page, i}
+					{#each topPages as page, i (page.path)}
 						<div class="top-page-item" in:fly={{ x: -10, duration: 300, delay: 550 + i * 50 }}>
 							<span class="top-page-rank">{i + 1}</span>
 							<span class="top-page-path">{page.path}</span>

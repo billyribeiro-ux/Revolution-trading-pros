@@ -478,7 +478,7 @@
 						</div>
 
 						<!-- Action Nodes -->
-						{#each actions as action, index}
+						{#each actions as action, index (action.id)}
 							{@const ActionIcon = getActionIcon(action.action_type)}
 							<div class="workflow-connector">
 								<IconArrowRight size={16} />
@@ -542,7 +542,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								{#each subscribers as subscriber}
+								{#each subscribers as subscriber (subscriber.id)}
 									<tr>
 										<td>
 											<div class="contact-cell">

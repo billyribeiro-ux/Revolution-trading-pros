@@ -771,7 +771,7 @@
 					<div class="filter-group">
 						<label for="filter-status">Status</label>
 						<select id="filter-status" bind:value={selectedStatus}>
-							{#each statusOptions as option}
+							{#each statusOptions as option (option.value)}
 								<option value={option.value}>{option.label}</option>
 							{/each}
 						</select>
@@ -779,7 +779,7 @@
 					<div class="filter-group">
 						<label for="filter-source">Source</label>
 						<select id="filter-source" bind:value={selectedSource}>
-							{#each sourceOptions as option}
+							{#each sourceOptions as option (option.value)}
 								<option value={option.value}>{option.label}</option>
 							{/each}
 						</select>
@@ -787,7 +787,7 @@
 					<div class="filter-group">
 						<label for="filter-sort">Sort By</label>
 						<select id="filter-sort" bind:value={sortBy}>
-							{#each sortOptions as option}
+							{#each sortOptions as option (option.value)}
 								<option value={option.value}>{option.label}</option>
 							{/each}
 						</select>

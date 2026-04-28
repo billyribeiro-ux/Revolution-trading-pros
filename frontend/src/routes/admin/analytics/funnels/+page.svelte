@@ -239,7 +239,7 @@
 		{:else}
 			<!-- Funnel Cards -->
 			<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-				{#each funnels as funnel}
+				{#each funnels as funnel (funnel.key)}
 					<button
 						onclick={() => (selectedFunnel = funnel)}
 						class="text-left bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 hover:bg-white/10 hover:border-violet-500/30 transition-all
@@ -317,7 +317,7 @@
 									</tr>
 								</thead>
 								<tbody class="divide-y divide-white/5">
-									{#each selectedFunnel.steps as step, i}
+									{#each selectedFunnel.steps as step, i (i)}
 										{@const firstStep = selectedFunnel.steps[0]}
 										{@const fromStart =
 											firstStep && firstStep.count > 0 ? (step.count / firstStep.count) * 100 : 0}
@@ -435,7 +435,7 @@
 						</button>
 					</div>
 					<div class="space-y-3">
-						{#each newFunnel.steps as step, index}
+						{#each newFunnel.steps as step, index (index)}
 							<div
 								class="flex items-center gap-3 p-4 bg-slate-800/30 rounded-xl border border-white/5"
 							>

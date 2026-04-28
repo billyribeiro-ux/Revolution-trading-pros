@@ -858,7 +858,7 @@
 				</div>
 				{#if dimensions.length > 1}
 					<select class="dimension-select" bind:value={selectedDimension}>
-						{#each dimensions as dim}
+						{#each dimensions as dim (dim)}
 							<option value={dim}>{dim === 'default' ? 'Default' : dim}</option>
 						{/each}
 					</select>

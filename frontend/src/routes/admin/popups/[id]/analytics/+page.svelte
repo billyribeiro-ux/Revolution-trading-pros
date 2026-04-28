@@ -370,7 +370,7 @@
 
 				{#if analytics.top_pages && analytics.top_pages.length > 0}
 					<div class="space-y-3">
-						{#each analytics.top_pages as pageData, index}
+						{#each analytics.top_pages as pageData, index (index)}
 							<div
 								class="border-l-4 {index === 0
 									? 'border-yellow-500'

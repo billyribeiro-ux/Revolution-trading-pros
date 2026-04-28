@@ -365,7 +365,7 @@
 
 				{#if watchlistDates.length > 0}
 					<div class="date-list">
-						{#each watchlistDates as dateItem, index}
+						{#each watchlistDates as dateItem, index (dateItem.date)}
 							<div class="date-item">
 								<div class="date-info">
 									<strong>{dateItem.date}</strong>

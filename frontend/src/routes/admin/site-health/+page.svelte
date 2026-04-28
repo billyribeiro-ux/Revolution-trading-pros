@@ -475,7 +475,7 @@
 			<!-- Tabs -->
 			<div class="tabs-section" in:fly={{ y: 20, duration: 500, delay: 200 }}>
 				<div class="tabs">
-					{#each tabs as tab}
+					{#each tabs as tab (tab.id)}
 						{@const TabIcon = tab.icon}
 						<button
 							class="tab"
@@ -703,7 +703,7 @@
 						<div class="checks-section" in:fly={{ y: 20, duration: 500, delay: 400 }}>
 							<h3>All Health Checks</h3>
 							<div class="checks-list">
-								{#each healthData.checks as check, i}
+								{#each healthData.checks as check, i (check.id)}
 									{@const StatusIcon = getStatusIcon(check.status)}
 									<div
 										class="check-item"

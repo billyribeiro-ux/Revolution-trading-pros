@@ -455,7 +455,7 @@
 		<!-- Validation Errors -->
 		{#if errors.length > 0}
 			<div class="alerts" transition:slide={{ duration: 300 }}>
-				{#each errors as error}
+				{#each errors as error (error.message)}
 					<div class="alert alert-{error.severity}">
 						<IconAlertCircle size={20} />
 						<span>{error.message}</span>

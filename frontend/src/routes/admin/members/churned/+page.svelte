@@ -387,7 +387,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					{#each members as member}
+					{#each members as member (member.id)}
 						<tr class:selected={selectedMembers.has(member.id)}>
 							<td class="checkbox-col">
 								<!-- FIX-2026-04-26 (audit 02 §P2-11): per-row unique id. -->

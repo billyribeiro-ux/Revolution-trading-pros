@@ -1327,7 +1327,7 @@
 
 							{#if detailItem.custom_properties?.['ai_tags'] && Array.isArray(detailItem.custom_properties['ai_tags'])}
 								<div class="ai-tags">
-									{#each detailItem.custom_properties['ai_tags'] as tag}
+									{#each detailItem.custom_properties['ai_tags'] as tag, ti (ti)}
 										<span class="tag">{String(tag)}</span>
 									{/each}
 								</div>

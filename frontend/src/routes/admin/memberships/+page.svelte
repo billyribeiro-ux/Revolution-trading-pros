@@ -550,7 +550,7 @@
 				<div class="filter-group">
 					<label for="filter-status">Status</label>
 					<select id="filter-status" bind:value={selectedStatus}>
-						{#each statusOptions as option}
+						{#each statusOptions as option (option.value)}
 							<option value={option.value}>{option.label}</option>
 						{/each}
 					</select>
@@ -558,7 +558,7 @@
 				<div class="filter-group">
 					<label for="filter-cycle">Billing Cycle</label>
 					<select id="filter-cycle" bind:value={selectedCycle}>
-						{#each cycleOptions as option}
+						{#each cycleOptions as option (option.value)}
 							<option value={option.value}>{option.label}</option>
 						{/each}
 					</select>
@@ -566,7 +566,7 @@
 				<div class="filter-group">
 					<label for="filter-sort">Sort By</label>
 					<select id="filter-sort" bind:value={sortBy}>
-						{#each sortOptions as option}
+						{#each sortOptions as option (option.value)}
 							<option value={option.value}>{option.label}</option>
 						{/each}
 					</select>
@@ -798,7 +798,7 @@
 							</button>
 						</div>
 						<div class="features-list-edit">
-							{#each formData.features as feature, index}
+							{#each formData.features as feature, index (index)}
 								<!-- FIX-2026-04-26 (audit 02 §P2-11): per-feature unique ids; the
 								     two `page-feature-*` ids used to repeat for every row, breaking
 								     <label for> association and Playwright selectors. -->
@@ -935,7 +935,7 @@
 						<p class="preview-description">{previewingPlan.description}</p>
 					{/if}
 					<div class="preview-features">
-						{#each previewingPlan.features as feature}
+						{#each previewingPlan.features as feature (feature.feature_code)}
 							<div class="preview-feature">
 								<IconCheck size={16} />
 								<span>{feature.feature_name}</span>

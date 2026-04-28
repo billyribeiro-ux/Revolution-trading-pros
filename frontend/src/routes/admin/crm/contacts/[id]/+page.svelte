@@ -796,7 +796,7 @@
 						</div>
 						<div class="tags-list">
 							{#if contact.tags && contact.tags.length > 0}
-								{#each contact.tags as tag}
+								{#each contact.tags as tag (tag.id)}
 									<span
 										class="tag-pill"
 										style="background-color: {tag.color || '#E6B800'}20; color: {tag.color ||
@@ -828,7 +828,7 @@
 						</div>
 						<div class="lists-section">
 							{#if contact.lists && contact.lists.length > 0}
-								{#each contact.lists as list}
+								{#each contact.lists as list (list.id)}
 									<div class="list-item">
 										<IconList size={16} />
 										<span>{list.name}</span>
@@ -891,7 +891,7 @@
 						</div>
 					{:else}
 						<div class="emails-list">
-							{#each emailHistory as email}
+							{#each emailHistory as email (email.id)}
 								<div class="email-item">
 									<div class="email-icon">
 										<IconMail size={20} />
@@ -944,7 +944,7 @@
 						</div>
 					{:else}
 						<div class="notes-list">
-							{#each notes as note}
+							{#each notes as note (note.id)}
 								<div class="note-item">
 									<div class="note-header">
 										<span class="note-author">{note.created_by?.name || 'Unknown'}</span>
@@ -973,7 +973,7 @@
 						</div>
 					{:else}
 						<div class="timeline">
-							{#each timeline as event}
+							{#each timeline as event (event.id)}
 								<div class="timeline-item">
 									<div class="timeline-dot"></div>
 									<div class="timeline-content">
@@ -1028,7 +1028,7 @@
 					<p class="empty-text">No tags available</p>
 				{:else}
 					<div class="tag-options">
-						{#each availableTags as tag}
+						{#each availableTags as tag (tag.id)}
 							<button class="tag-option" onclick={() => addTag(tag.id)}>
 								<IconTag size={16} />
 								{tag.name}
@@ -1064,7 +1064,7 @@
 					<p class="empty-text">No lists available</p>
 				{:else}
 					<div class="list-options">
-						{#each availableLists as list}
+						{#each availableLists as list (list.id)}
 							<button class="list-option" onclick={() => addToList(list.id)}>
 								<IconList size={16} />
 								{list.name}
@@ -1161,7 +1161,7 @@
 						<option value="">
 							{loadingTemplates ? 'Loading templates...' : '-- Select a template --'}
 						</option>
-						{#each availableEmailTemplates as template}
+						{#each availableEmailTemplates as template (template.id)}
 							<option value={template.id}>{template.name}</option>
 						{/each}
 					</select>

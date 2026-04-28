@@ -238,7 +238,7 @@
 			/>
 		</div>
 		<div class="category-tabs">
-			{#each categories as category}
+			{#each categories as category (category)}
 				<button
 					class="category-tab"
 					class:active={selectedCategory === category}

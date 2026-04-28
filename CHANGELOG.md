@@ -2,6 +2,26 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-04-27 (h) — Svelte MCP autofixer pass: routes/ (non-admin)
+
+### Fixed
+
+Ran `svelte-autofixer` on all `.svelte` files under `frontend/src/routes/` outside of `routes/admin/`. All issues were missing `{#each}` key expressions. Folders fixed: `(dev)/workbench`, `about`, `account`, `alerts`, `analytics`, `behavior`, `blog`, `cart`, `checkout`, `classes`, `cookie-policy`, `courses`, `crm`, `dashboard` (including all nested explosive-swings, spx-profit-pulse, swing-trading-room, day-trading-room, small-account-mentorship components), `email`, `indicators`, `learning-center`, `live-trading-rooms`, `media`, `mentorship`, `my`, `our-mission`, `resources`, `store`, `tutorials`, `watchlist`, `workflows`.
+
+`pnpm check` after all changes: **0 errors / 0 warnings / 5215 files**.
+
+---
+
+## [Unreleased] — 2026-04-27 (g) — Svelte MCP autofixer pass: routes/admin/
+
+### Fixed
+
+Ran `svelte-autofixer` on all `.svelte` files under `frontend/src/routes/admin/`. All issues were missing `{#each}` key expressions. Subfolders covered: `analytics`, `behavior`, `blog`, `boards`, `cart`, `categories`, `cms`, `connections`, `consent`, `contacts`, `coupons`, `courses`, `crm`, `email`, `forms`, `indicators`, `media`, `members`, `memberships`, `orders`, `performance`, `popups`, `products`, `resources`, `schedules`, `seo`, `settings`, `site-health`, `subscriptions`, `trading-rooms`, `users`, `videos`, `watchlist`.
+
+`pnpm check` after all changes: **0 errors / 0 warnings / 5215 files**.
+
+---
+
 ## [Unreleased] — 2026-04-27 (f) — Svelte MCP autofixer pass: lib/ (non-components)
 
 ### Fixed

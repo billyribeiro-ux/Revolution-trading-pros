@@ -393,7 +393,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					{#each subscribers as subscriber}
+					{#each subscribers as subscriber (subscriber.id)}
 						<tr>
 							<td class="checkbox-col">
 								<input
@@ -425,7 +425,7 @@
 							</td>
 							<td>
 								<div class="tags-list">
-									{#each (subscriber.tags || []).slice(0, 3) as tag}
+									{#each (subscriber.tags || []).slice(0, 3) as tag (tag)}
 										<span class="tag">{tag}</span>
 									{/each}
 									{#if (subscriber.tags || []).length > 3}

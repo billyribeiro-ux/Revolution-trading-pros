@@ -500,7 +500,7 @@
 						<div class="form-group">
 							<label for="platform">Platform</label>
 							<select id="platform" bind:value={indicator.platform}>
-								{#each platformOptions as opt}
+								{#each platformOptions as opt (opt.value)}
 									<option value={opt.value}>{opt.label}</option>
 								{/each}
 							</select>
@@ -605,7 +605,7 @@
 									</tr>
 								</thead>
 								<tbody>
-									{#each files as file}
+									{#each files as file (file.id)}
 										<tr>
 											<td class="platform">{file.platform}</td>
 											<td class="file-name">{file.display_name || file.file_name}</td>
@@ -658,7 +658,7 @@
 						</div>
 					{:else}
 						<div class="videos-grid">
-							{#each videos as video}
+							{#each videos as video (video.id)}
 								<div class="video-card">
 									{#if video.thumbnail_url}
 										<img src={video.thumbnail_url} alt={video.title} class="thumbnail" />
@@ -746,7 +746,7 @@
 				<div class="form-group">
 					<label for="file-platform">Platform *</label>
 					<select id="file-platform" bind:value={newFile.platform}>
-						{#each platformOptions as opt}
+						{#each platformOptions as opt (opt.value)}
 							<option value={opt.value}>{opt.label}</option>
 						{/each}
 					</select>

@@ -627,7 +627,7 @@
 						</button>
 					</div>
 
-					{#each modules as mod}
+					{#each modules as mod (mod.id)}
 						<div class="module-card">
 							<div class="module-header">
 								<h3>{mod.title}</h3>
@@ -643,7 +643,7 @@
 								</div>
 							</div>
 							<ul class="lesson-list">
-								{#each mod.lessons as lesson}
+								{#each mod.lessons as lesson (lesson.id)}
 									<li>
 										<a href="/admin/courses/{courseId}/lessons/{lesson.id}">
 											<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: player-play (lesson) -->
@@ -675,7 +675,7 @@
 								<h3>Unassigned Lessons</h3>
 							</div>
 							<ul class="lesson-list">
-								{#each unassignedLessons as lesson}
+								{#each unassignedLessons as lesson (lesson.id)}
 									<li>
 										<a href="/admin/courses/{courseId}/lessons/{lesson.id}">
 											<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: player-play (unassigned lesson) -->
@@ -730,7 +730,7 @@
 						</div>
 					{:else}
 						<ul class="downloads-list">
-							{#each downloads as dl}
+							{#each downloads as dl (dl.id)}
 								<li>
 									<span class="dl-title">{dl.title}</span>
 									<span class="dl-meta">

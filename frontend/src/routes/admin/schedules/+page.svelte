@@ -780,7 +780,7 @@
 		<!-- Room Selector Tabs -->
 		<div class="room-selector">
 			<div class="room-tabs" role="tablist">
-				{#each ROOMS as room}
+				{#each ROOMS as room (room.id)}
 					<button
 						class="room-tab"
 						class:active={selectedRoomId === room.id}
@@ -831,7 +831,7 @@
 				<select bind:value={filterDay} class="filter-select">
 					<!-- FIX-2026-04-26 (P3-3): <option value={null}> silently coerces to "" — use explicit empty string. -->
 					<option value="">All Days</option>
-					{#each DAYS as day, index}
+					{#each DAYS as day, index (index)}
 						<option value={index}>{day}</option>
 					{/each}
 				</select>
@@ -884,7 +884,7 @@
 			{:else}
 				<!-- Weekly Calendar Grid -->
 				<div class="weekly-grid">
-					{#each [1, 2, 3, 4, 5] as dayIndex}
+					{#each [1, 2, 3, 4, 5] as dayIndex (dayIndex)}
 						{@const daySchedules = schedulesByDay[dayIndex] || []}
 						{@const dayDate = weekDates[dayIndex]}
 						<div class="day-column">
@@ -893,7 +893,7 @@
 								<span class="day-date">{formatDate(dayDate)}</span>
 							</div>
 							<div class="day-events">
-								{#each daySchedules as event}
+								{#each daySchedules as event (event.id)}
 									<div
 										class="event-card"
 										class:inactive={!event.is_active}
@@ -991,14 +991,14 @@
 						</span>
 					</summary>
 					<div class="weekend-grid">
-						{#each [6, 0] as dayIndex}
+						{#each [6, 0] as dayIndex (dayIndex)}
 							{@const daySchedules = schedulesByDay[dayIndex] || []}
 							<div class="day-column">
 								<div class="day-header">
 									<span class="day-name">{DAYS[dayIndex]}</span>
 								</div>
 								<div class="day-events">
-									{#each daySchedules as event}
+									{#each daySchedules as event (event.id)}
 										<div class="event-card" class:inactive={!event.is_active}>
 											<div class="event-content">
 												<div class="event-time">
@@ -1095,7 +1095,7 @@
 					<div class="form-group">
 						<label for="room_type">Session Type</label>
 						<select id="room_type" bind:value={formData.room_type}>
-							{#each ROOM_TYPES as type}
+							{#each ROOM_TYPES as type (type.value)}
 								<option value={type.value}>{type.label}</option>
 							{/each}
 						</select>
@@ -1106,7 +1106,7 @@
 					<div class="form-group">
 						<label for="day_of_week">Day of Week <span class="required">*</span></label>
 						<select id="day_of_week" bind:value={formData.day_of_week} required>
-							{#each DAYS as day, index}
+							{#each DAYS as day, index (index)}
 								<option value={index}>{day}</option>
 							{/each}
 						</select>
@@ -1151,7 +1151,7 @@
 				<div class="form-group">
 					<label for="timezone">Timezone</label>
 					<select id="timezone" bind:value={formData.timezone}>
-						{#each TIMEZONES as tz}
+						{#each TIMEZONES as tz (tz.value)}
 							<option value={tz.value}>{tz.label}</option>
 						{/each}
 					</select>

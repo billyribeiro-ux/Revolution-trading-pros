@@ -421,7 +421,7 @@
 						{failedPayments.length} Failed Payment{failedPayments.length > 1 ? 's' : ''}
 					</h3>
 					<div class="space-y-2">
-						{#each failedPayments.slice(0, 3) as payment}
+						{#each failedPayments.slice(0, 3) as payment (payment.id)}
 							<div class="flex items-center justify-between text-sm">
 								<span class="text-slate-300">{payment.subscriptionId}</span>
 								<button
@@ -444,7 +444,7 @@
 						{upcomingRenewals.length} Renewal{upcomingRenewals.length > 1 ? 's' : ''} in Next 7 Days
 					</h3>
 					<div class="space-y-2">
-						{#each upcomingRenewals.slice(0, 3) as renewal}
+						{#each upcomingRenewals.slice(0, 3) as renewal (renewal.id)}
 							<div class="flex items-center justify-between text-sm">
 								<span class="text-slate-300">{renewal.productName}</span>
 								<span class="text-blue-400">{formatDate(renewal.nextPaymentDate)}</span>
@@ -577,7 +577,7 @@
 									</td>
 								</tr>
 							{:else}
-								{#each getFilteredSubscriptions as subscription}
+								{#each getFilteredSubscriptions as subscription (subscription.id)}
 									<tr
 										class="hover:bg-slate-700/30 transition-colors cursor-pointer"
 										onclick={() => openSubscriptionDetail(subscription)}

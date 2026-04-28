@@ -364,7 +364,7 @@
 			</div>
 		{:else}
 			<div class="courses-grid">
-				{#each courses as course}
+				{#each courses as course (course.id)}
 					<div class="course-card-wrapper">
 						<div class="card-status" class:published={course.is_published}>
 							<span class="status-dot"></span>

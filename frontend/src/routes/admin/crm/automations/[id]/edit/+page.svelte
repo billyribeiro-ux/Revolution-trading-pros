@@ -613,7 +613,7 @@
 				{#if !actionForm.action_type && !editingAction}
 					<p class="modal-description">Choose what this action should do:</p>
 					<div class="action-type-grid">
-						{#each actionTypeOptions as actionType}
+						{#each actionTypeOptions as actionType (actionType.value)}
 							{@const TypeIcon = actionType.icon}
 							<button
 								class="action-type-card"
@@ -687,7 +687,7 @@
 								<label for="tag-select">Select Tag</label>
 								<select id="tag-select" bind:value={actionForm.settings.tag_id}>
 									<option value="">Choose a tag...</option>
-									{#each availableTags as tag}
+									{#each availableTags as tag (tag.id)}
 										<option value={tag.id}>{tag.title}</option>
 									{/each}
 								</select>
@@ -697,7 +697,7 @@
 								<label for="list-select">Select List</label>
 								<select id="list-select" bind:value={actionForm.settings.list_id}>
 									<option value="">Choose a list...</option>
-									{#each availableLists as list}
+									{#each availableLists as list (list.id)}
 										<option value={list.id}>{list.title}</option>
 									{/each}
 								</select>
@@ -707,7 +707,7 @@
 								<label for="sequence-select">Select Sequence</label>
 								<select id="sequence-select" bind:value={actionForm.settings.sequence_id}>
 									<option value="">Choose a sequence...</option>
-									{#each availableSequences as seq}
+									{#each availableSequences as seq (seq.id)}
 										<option value={seq.id}>{seq.title}</option>
 									{/each}
 								</select>

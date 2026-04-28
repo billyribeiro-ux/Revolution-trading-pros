@@ -473,7 +473,7 @@
 			</div>
 			<select bind:value={selectedCategory} class="filter-select" aria-label="Filter by category">
 				<option value="">All Categories</option>
-				{#each categories as category}
+				{#each categories as category (category.slug)}
 					<option value={category.slug}>{category.name} ({category.templates_count})</option>
 				{/each}
 			</select>

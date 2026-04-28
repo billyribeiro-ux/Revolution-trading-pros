@@ -807,14 +807,14 @@
 
 				<!-- Filters -->
 				<select class="filter-select" bind:value={statusFilter}>
-					{#each statusOptions as option}
+					{#each statusOptions as option (option.value)}
 						<option value={option.value}>{option.label}</option>
 					{/each}
 				</select>
 
 				<select class="filter-select" bind:value={categoryFilter}>
 					<option value="all">All Categories</option>
-					{#each predefinedCategories as category}
+					{#each predefinedCategories as category (category.id)}
 						<option value={category.id}>{category.name}</option>
 					{/each}
 				</select>
@@ -822,7 +822,7 @@
 				<!-- Sort -->
 				<div class="sort-controls">
 					<select class="filter-select" bind:value={sortBy}>
-						{#each sortOptions as option}
+						{#each sortOptions as option (option.value)}
 							<option value={option.value}>{option.label}</option>
 						{/each}
 					</select>

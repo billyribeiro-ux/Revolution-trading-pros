@@ -324,7 +324,7 @@
 				>
 					All
 				</button>
-				{#each categories as category}
+				{#each categories as category (category.id)}
 					<button
 						onclick={() => (selectedCategory = category.id)}
 						class="px-4 py-2 text-sm whitespace-nowrap rounded-lg flex items-center gap-2 {selectedCategory ===
@@ -354,7 +354,7 @@
 			</div>
 		{:else}
 			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-				{#each filteredTemplates as template}
+				{#each filteredTemplates as template (template.id)}
 					{@const CategoryIcon = getCategoryIcon(template.category)}
 					<div
 						class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow"

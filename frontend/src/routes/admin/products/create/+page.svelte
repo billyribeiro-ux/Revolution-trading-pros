@@ -201,7 +201,7 @@
 					<!-- svelte-ignore a11y_label_has_associated_control -->
 					<label>Product Type *</label>
 					<div class="type-selector">
-						{#each productTypes as type}
+						{#each productTypes as type (type.value)}
 							{@const Icon = type.icon}
 							<button
 								type="button"
@@ -339,7 +339,7 @@
 						</button>
 					</div>
 
-					{#each formData.features as feature, index}
+					{#each formData.features as feature, index (index)}
 						<div class="feature-row">
 							<input
 								id="feature-{index}"
@@ -466,13 +466,11 @@
 				{:else}
 					{@const SvelteComponent = previewTypeIcon}
 					<div class="preview-thumbnail placeholder">
-						<!-- svelte-ignore svelte_component_deprecated -->
 						<SvelteComponent size={48} />
 					</div>
 				{/if}
 
 				<div class="preview-badge" style="background: {previewTypeColor}">
-					<!-- svelte-ignore svelte_component_deprecated -->
 					<SvelteComponent_1 size={14} />
 					{formData.type}
 				</div>
@@ -494,7 +492,7 @@
 
 					{#if validFeatures.length > 0}
 						<div class="preview-features">
-							{#each validFeatures.slice(0, 4) as feature}
+							{#each validFeatures.slice(0, 4) as feature (feature)}
 								<div class="preview-feature">
 									<IconCheck size={14} />
 									<span>{feature}</span>

@@ -367,7 +367,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#each orders as order}
+						{#each orders as order (order.id)}
 							<tr>
 								<td>
 									<span class="order-number">{order.order_number}</span>
@@ -546,7 +546,7 @@
 									may return without a populated `items` array; the previous
 									`{#each orderDetail.items}` would throw on undefined.
 								-->
-								{#each orderDetail.items ?? [] as item}
+								{#each orderDetail.items ?? [] as item, i (i)}
 									<tr>
 										<td>{item.name}</td>
 										<td>{item.quantity}</td>

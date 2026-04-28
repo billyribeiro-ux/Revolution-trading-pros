@@ -350,7 +350,7 @@
 
 	<!-- Progress Steps -->
 	<div class="progress-steps">
-		{#each steps as step}
+		{#each steps as step (step.number)}
 			<button
 				class="step"
 				class:active={currentStep === step.number}
@@ -431,7 +431,7 @@
 				<p class="section-description">Choose what event will start this automation.</p>
 
 				<div class="trigger-grid">
-					{#each triggerTypes as trigger}
+					{#each triggerTypes as trigger (trigger.value)}
 						{@const TriggerIcon = trigger.icon}
 						<button
 							class="trigger-card"
@@ -473,7 +473,7 @@
 						<label for="tag-select">Select Tag <span class="required">*</span></label>
 						<select id="tag-select" bind:value={formData.trigger_settings.tag_id}>
 							<option value="">Choose a tag...</option>
-							{#each availableTags as tag}
+							{#each availableTags as tag (tag.id)}
 								<option value={tag.id}>{tag.title}</option>
 							{/each}
 						</select>
@@ -483,7 +483,7 @@
 						<label for="list-select">Select List <span class="required">*</span></label>
 						<select id="list-select" bind:value={formData.trigger_settings.list_id}>
 							<option value="">Choose a list...</option>
-							{#each availableLists as list}
+							{#each availableLists as list (list.id)}
 								<option value={list.id}>{list.title}</option>
 							{/each}
 						</select>

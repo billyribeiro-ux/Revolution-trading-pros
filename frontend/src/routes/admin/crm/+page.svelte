@@ -354,7 +354,7 @@
 		{:else}
 			<!-- Quick Links Navigation -->
 			<nav class="quick-links-bar">
-				{#each quickLinks as link}
+				{#each quickLinks as link (link.href)}
 					{@const LinkIcon = link.icon}
 					<a
 						href={link.href}
@@ -426,7 +426,7 @@
 					class="filter-select"
 					bind:value={selectedStatus}
 				>
-					{#each statusOptions as option}
+					{#each statusOptions as option (option.value)}
 						<option value={option.value}>{option.label}</option>
 					{/each}
 				</select>
@@ -436,7 +436,7 @@
 					class="filter-select"
 					bind:value={selectedLifecycle}
 				>
-					{#each lifecycleStages as stage}
+					{#each lifecycleStages as stage (stage.value)}
 						<option value={stage.value}>{stage.label}</option>
 					{/each}
 				</select>

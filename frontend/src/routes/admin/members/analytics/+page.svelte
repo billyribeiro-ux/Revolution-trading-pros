@@ -227,7 +227,7 @@
 
 	{#if loading}
 		<div class="loading-grid">
-			{#each [1, 2, 3, 4] as _}
+			{#each [1, 2, 3, 4] as _, i (i)}
 				<div class="skeleton skeleton-metric"></div>
 			{/each}
 		</div>
@@ -356,7 +356,7 @@
 				</div>
 				<div class="chart-body">
 					<div class="bar-chart">
-						{#each growthData as data}
+						{#each growthData as data (data.month)}
 							<div class="bar-group">
 								<div class="bar-container">
 									<div
@@ -395,7 +395,7 @@
 					<div class="line-chart">
 						<svg viewBox="0 0 600 200" class="line-chart-svg">
 							<!-- Grid lines -->
-							{#each [0, 1, 2, 3, 4] as i}
+							{#each [0, 1, 2, 3, 4] as i (i)}
 								<line
 									x1="0"
 									y1={i * 50}
@@ -436,7 +436,7 @@
 							/>
 
 							<!-- Points -->
-							{#each revenueData as d, i}
+							{#each revenueData as d, i (d.month)}
 								<circle
 									cx={(i / (revenueData.length - 1)) * 600}
 									cy={200 - (d.mrr / 100000) * 180}
@@ -454,7 +454,7 @@
 							</defs>
 						</svg>
 						<div class="line-chart-labels">
-							{#each revenueData as d}
+							{#each revenueData as d (d.month)}
 								<span>{d.month}</span>
 							{/each}
 						</div>
@@ -484,7 +484,7 @@
 							</tr>
 						</thead>
 						<tbody>
-							{#each cohortData as row}
+							{#each cohortData as row (row.cohort)}
 								<tr>
 									<td class="cohort-name">{row.cohort}</td>
 									<td class={getRetentionColor(row.m0)}>{row.m0}%</td>
@@ -510,7 +510,7 @@
 				</div>
 				<div class="chart-body">
 					<div class="reasons-list">
-						{#each churnReasons as reason}
+						{#each churnReasons as reason (reason.reason)}
 							<div class="reason-item">
 								<div class="reason-info">
 									<span class="reason-name">{reason.reason}</span>
@@ -543,7 +543,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								{#each segmentData as segment}
+								{#each segmentData as segment (segment.segment)}
 									<tr>
 										<td class="segment-name">{segment.segment}</td>
 										<td>{formatNumber(segment.count)}</td>

@@ -447,7 +447,7 @@
 
 				{#if customHeaders.length > 0}
 					<div class="headers-list">
-						{#each customHeaders as header, index}
+						{#each customHeaders as header, index (index)}
 							<div class="header-row">
 								<input
 									id="page-header-name"

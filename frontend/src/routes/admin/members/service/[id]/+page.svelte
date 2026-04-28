@@ -266,7 +266,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					{#each members as member}
+					{#each members as member (member.id)}
 						<tr class:selected={selectedMembers.has(member.id)}>
 							<td class="checkbox-col">
 								<input
@@ -398,7 +398,7 @@
 				<div class="template-selector">
 					<span class="selector-label">Quick Templates</span>
 					<div class="template-buttons">
-						{#each emailPresetTemplates as template}
+						{#each emailPresetTemplates as template (template.name)}
 							<button class="template-btn" onclick={() => applyTemplate(template)}>
 								{template.name}
 							</button>

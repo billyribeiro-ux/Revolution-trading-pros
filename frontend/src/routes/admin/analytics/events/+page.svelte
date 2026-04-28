@@ -169,7 +169,7 @@
 						class="px-4 py-2.5 bg-slate-800/50 border border-white/10 rounded-xl text-sm text-white focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 outline-none transition-all"
 					>
 						<option value="">All Event Types</option>
-						{#each eventTypes as type}
+						{#each eventTypes as type (type.name)}
 							<option value={type.name}>{type.name} ({type.count})</option>
 						{/each}
 					</select>
@@ -308,7 +308,7 @@
 								</tr>
 							</thead>
 							<tbody class="divide-y divide-white/5">
-								{#each events as event}
+								{#each events as event (event.id)}
 									<tr class="hover:bg-white/5 cursor-pointer transition-colors">
 										<td class="py-4 px-5">
 											<span

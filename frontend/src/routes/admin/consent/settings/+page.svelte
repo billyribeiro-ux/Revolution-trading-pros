@@ -316,7 +316,7 @@
 
 	<!-- Navigation Tabs -->
 	<nav class="tabs">
-		{#each tabs as tab}
+		{#each tabs as tab (tab.id)}
 			<button class="tab" class:active={activeTab === tab.id} onclick={() => (activeTab = tab.id)}>
 				<span class="tab-icon"
 					>{tab.icon === 'settings'

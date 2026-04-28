@@ -514,7 +514,7 @@
 						</div>
 						<p class="member-email">{member.email || ''}</p>
 						<div class="member-tags">
-							{#each tags as tag}
+							{#each tags as tag (tag)}
 								<span class="tag">
 									{tag}
 									<button class="tag-remove" onclick={() => removeTag(tag)}>
@@ -633,7 +633,7 @@
 									<p>No activity recorded yet</p>
 								</div>
 							{:else}
-								{#each timeline as event}
+								{#each timeline as event, i (i)}
 									{@const Icon = getTimelineIcon(event.type)}
 									<div class="timeline-item">
 										<div class="timeline-icon">
@@ -705,7 +705,7 @@
 						</div>
 					{:else}
 						<div class="subscriptions-list">
-							{#each member.subscriptions as sub}
+							{#each member.subscriptions as sub (sub.id)}
 								<div class="subscription-card">
 									<div class="subscription-header">
 										<div class="subscription-product">
@@ -784,7 +784,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								{#each member.orders as order}
+								{#each member.orders as order (order.id)}
 									<tr>
 										<td class="order-number">{order.number}</td>
 										<td>{formatDate(order.created_at)}</td>
@@ -826,7 +826,7 @@
 						</div>
 					{:else}
 						<div class="email-list">
-							{#each emailHistory as email}
+							{#each emailHistory as email (email.id)}
 								<div class="email-item">
 									<div class="email-icon {getEmailStatusColor(email.status)}">
 										<IconMail size={20} />
@@ -875,7 +875,7 @@
 						</div>
 					{:else}
 						<div class="notes-list">
-							{#each notes as note}
+							{#each notes as note (note.id)}
 								<div class="note-item">
 									<div class="note-content">{note.content}</div>
 									<div class="note-meta">
@@ -1026,7 +1026,7 @@
 				<div class="available-tags">
 					<span class="tags-label">Available Tags</span>
 					<div class="tags-grid">
-						{#each availableTags as tag}
+						{#each availableTags as tag (tag)}
 							<button
 								class="tag-option"
 								class:selected={tags.includes(tag)}
@@ -1096,7 +1096,7 @@
 				<div class="form-group">
 					<label for="extend-days">Extend by (days)</label>
 					<div class="extend-options">
-						{#each [7, 14, 30, 60, 90, 365] as days}
+						{#each [7, 14, 30, 60, 90, 365] as days (days)}
 							<button
 								type="button"
 								class="extend-option"
@@ -1175,7 +1175,7 @@
 					<label for="grant-plan">Select Plan</label>
 					<select id="grant-plan" bind:value={selectedPlanId}>
 						<option value={null}>Select a plan...</option>
-						{#each availablePlans as plan}
+						{#each availablePlans as plan (plan.id)}
 							<option value={plan.id}>{plan.name}</option>
 						{/each}
 					</select>

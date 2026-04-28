@@ -100,7 +100,7 @@
 	<div class="bg-white rounded-xl border border-gray-200 p-6 mb-8">
 		<h3 class="text-lg font-semibold text-gray-900 mb-4">Attribution Model</h3>
 		<div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-			{#each models as model}
+			{#each models as model (model.value)}
 				<button
 					onclick={() => {
 						selectedModel = model.value;
@@ -182,7 +182,7 @@
 							</tr>
 						</thead>
 						<tbody class="divide-y divide-gray-100">
-							{#each report.channels as channel}
+							{#each report.channels as channel (channel.channel)}
 								<tr class="hover:bg-gray-50">
 									<td class="py-3 px-4">
 										<span class="font-medium text-gray-900 capitalize">{channel.channel}</span>
@@ -250,7 +250,7 @@
 							<div class="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
 								<span class="text-sm text-gray-400 w-6">{i + 1}.</span>
 								<div class="flex-1 flex items-center gap-2 flex-wrap">
-									{#each path.channels as channel, j}
+									{#each path.channels as channel, j (j)}
 										<span
 											class="px-2 py-1 bg-white border border-gray-200 rounded text-sm capitalize"
 										>

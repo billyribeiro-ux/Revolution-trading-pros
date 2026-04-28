@@ -142,13 +142,13 @@
 				bind:value={selectedBoardId}
 				class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
 			>
-				{#each boards as board}
+				{#each boards as board (board.id)}
 					<option value={board.id}>{board.title}</option>
 				{/each}
 			</select>
 
 			<div class="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
-				{#each [{ value: 'week', label: 'Week' }, { value: 'month', label: 'Month' }, { value: 'quarter', label: 'Quarter' }, { value: 'year', label: 'Year' }] as p}
+				{#each [{ value: 'week', label: 'Week' }, { value: 'month', label: 'Month' }, { value: 'quarter', label: 'Quarter' }, { value: 'year', label: 'Year' }] as p (p.value)}
 					<button
 						onclick={() => (period = p.value as ReportPeriod)}
 						class="px-4 py-2 text-sm rounded-md {period === p.value
@@ -264,7 +264,7 @@
 				>
 					<h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Tasks by Stage</h3>
 					<div class="space-y-4">
-						{#each report.tasks_by_stage as stage}
+						{#each report.tasks_by_stage as stage (stage.stage_id)}
 							<div>
 								<div class="flex items-center justify-between mb-1">
 									<span class="text-sm text-gray-700 dark:text-gray-300">{stage.stage_title}</span>
@@ -291,7 +291,7 @@
 						Tasks by Priority
 					</h3>
 					<div class="space-y-4">
-						{#each report.tasks_by_priority as priority}
+						{#each report.tasks_by_priority as priority (priority.priority)}
 							{@const colors = {
 								urgent: 'bg-red-500',
 								high: 'bg-orange-500',
@@ -327,7 +327,7 @@
 				>
 					<h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Team Performance</h3>
 					<div class="space-y-4">
-						{#each report.tasks_by_assignee as assignee}
+						{#each report.tasks_by_assignee as assignee (assignee.user_id)}
 							<div
 								class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
 							>
@@ -365,7 +365,7 @@
 						Labels Distribution
 					</h3>
 					<div class="flex flex-wrap gap-3">
-						{#each report.tasks_by_label as label}
+						{#each report.tasks_by_label as label (label.label_id)}
 							<div
 								class="px-3 py-2 rounded-lg text-white text-sm"
 								style="background-color: {label.label_color}"

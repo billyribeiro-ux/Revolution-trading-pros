@@ -838,7 +838,7 @@
 			</div>
 		{:else}
 			<div class="room-tabs">
-				{#each rooms as room}
+				{#each rooms as room (room.id)}
 					<button
 						class="room-tab"
 						class:active={selectedRoom?.id === room.id}
@@ -900,20 +900,20 @@
 			<div class="filter-group">
 				<select bind:value={selectedResourceType}>
 					<option value="all">All Types</option>
-					{#each RESOURCE_TYPES as type}
+					{#each RESOURCE_TYPES as type (type.id)}
 						<option value={type.id}>{type.name}</option>
 					{/each}
 				</select>
 				<select bind:value={selectedContentType}>
 					<option value="all">All Content</option>
-					{#each CONTENT_TYPES as type}
+					{#each CONTENT_TYPES as type (type.id)}
 						<option value={type.id}>{type.name}</option>
 					{/each}
 				</select>
 				<!-- ICT 7: Section filter -->
 				<select bind:value={selectedSection}>
 					<option value="all">All Sections</option>
-					{#each availableSections as section}
+					{#each availableSections as section (section.id)}
 						<option value={section.id}>{section.name}</option>
 					{/each}
 				</select>
@@ -938,7 +938,7 @@
 			</div>
 		{:else}
 			<div class="resources-grid">
-				{#each filteredResources as resource}
+				{#each filteredResources as resource (resource.id)}
 					<div
 						class="resource-card"
 						class:featured={resource.is_featured}
@@ -985,7 +985,7 @@
 							</div>
 							{#if resource.tags && resource.tags.length > 0}
 								<div class="resource-tags">
-									{#each (resource.tags || []).slice(0, 3) as tagId}
+									{#each (resource.tags || []).slice(0, 3) as tagId (tagId)}
 										{@const tag = getCategoryById(tagId)}
 										{#if tag}
 											<span class="tag" style:--tag-color={tag.color}>{tag.name}</span>
@@ -1113,7 +1113,7 @@
 					<div class="form-group">
 						<label for="resource-type">Resource Type *</label>
 						<select id="resource-type" bind:value={formData.resource_type}>
-							{#each RESOURCE_TYPES as type}
+							{#each RESOURCE_TYPES as type (type.id)}
 								<option value={type.id}>{type.name}</option>
 							{/each}
 						</select>
@@ -1121,7 +1121,7 @@
 					<div class="form-group">
 						<label for="content-type">Content Type *</label>
 						<select id="content-type" bind:value={formData.content_type}>
-							{#each availableContentTypes as type}
+							{#each availableContentTypes as type (type.id)}
 								<option value={type.id}>{type.name}</option>
 							{/each}
 						</select>
@@ -1133,7 +1133,7 @@
 					<div class="form-group">
 						<label for="section">Dashboard Section</label>
 						<select id="section" bind:value={formData.section}>
-							{#each availableSections as section}
+							{#each availableSections as section (section.id)}
 								<option value={section.id}>{section.name}</option>
 							{/each}
 						</select>
@@ -1143,7 +1143,7 @@
 					<div class="form-group">
 						<label for="access-level">Access Level</label>
 						<select id="access-level" bind:value={formData.access_level}>
-							{#each ACCESS_LEVELS as level}
+							{#each ACCESS_LEVELS as level (level.id)}
 								<option value={level.id}>{level.name}</option>
 							{/each}
 						</select>
@@ -1175,7 +1175,7 @@
 						<div class="form-group">
 							<label for="video-platform">Video Platform</label>
 							<select id="video-platform" bind:value={formData.video_platform}>
-								{#each VIDEO_PLATFORMS as platform}
+								{#each VIDEO_PLATFORMS as platform (platform.id)}
 									<option value={platform.id}>{platform.name}</option>
 								{/each}
 							</select>
@@ -1184,7 +1184,7 @@
 							<label for="trader">Trader</label>
 							<select id="trader" bind:value={formData.trader_id}>
 								<option value={undefined}>Select trader...</option>
-								{#each traders as trader}
+								{#each traders as trader (trader.id)}
 									<option value={trader.id}>{trader.name}</option>
 								{/each}
 							</select>
@@ -1220,7 +1220,7 @@
 					<!-- svelte-ignore a11y_label_has_associated_control -->
 					<label>Categories/Tags</label>
 					<div class="tags-grid">
-						{#each CATEGORIES as category}
+						{#each CATEGORIES as category (category.id)}
 							<button
 								type="button"
 								class="tag-btn"
@@ -1411,7 +1411,7 @@
 					<div class="form-group">
 						<label for="bulk-access">Access Level</label>
 						<select id="bulk-access" bind:value={bulkAccessLevel}>
-							{#each ACCESS_LEVELS as level}
+							{#each ACCESS_LEVELS as level (level.id)}
 								<option value={level.id}>{level.name}</option>
 							{/each}
 						</select>

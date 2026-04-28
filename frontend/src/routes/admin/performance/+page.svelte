@@ -162,7 +162,7 @@
 
 		{#if loading}
 			<div class="loading-grid">
-				{#each [1, 2, 3, 4] as _}
+				{#each [1, 2, 3, 4] as _, i (i)}
 					<div class="skeleton skeleton-metric"></div>
 				{/each}
 			</div>
@@ -368,7 +368,7 @@
 					</div>
 				{:else}
 					<div class="recommendations-list">
-						{#each recommendations as rec}
+						{#each recommendations as rec (rec.title)}
 							<div class="recommendation-card">
 								<div class="rec-priority {getPriorityColor(rec.priority)}">
 									{rec.priority}

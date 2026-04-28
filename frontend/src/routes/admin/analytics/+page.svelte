@@ -217,7 +217,7 @@
 			<!-- Tab Navigation (only show when connected) -->
 			{#if isConnected}
 				<nav class="tab-nav" in:fade={{ duration: 300, delay: 200 }}>
-					{#each tabs as tab}
+					{#each tabs as tab (tab.id)}
 						<button
 							class="tab-btn"
 							class:active={activeTab === tab.id}
@@ -260,7 +260,7 @@
 					<div class="available-services" in:fade={{ duration: 200, delay: 100 }}>
 						<h3>Available Analytics Services</h3>
 						<div class="services-grid">
-							{#each analyticsServices as service}
+							{#each analyticsServices as service (service.key)}
 								<a
 									href="/admin/connections?connect={service.key}"
 									class="service-card"
@@ -414,7 +414,7 @@
 
 							{#if dashboardData.funnels && dashboardData.funnels.length > 0}
 								<div class="funnels-grid">
-									{#each dashboardData.funnels as funnel}
+									{#each dashboardData.funnels as funnel (funnel.name)}
 										<FunnelChart steps={funnel.steps} title={funnel.name} showDropOff={true} />
 									{/each}
 								</div>
@@ -451,7 +451,7 @@
 							</div>
 
 							{#if dashboardData.cohorts && dashboardData.cohorts.length > 0}
-								{#each dashboardData.cohorts as cohort}
+								{#each dashboardData.cohorts as cohort (cohort.name)}
 									<CohortMatrix data={cohort.retention_matrix} title={cohort.name} />
 								{/each}
 							{:else}
@@ -506,7 +506,7 @@
 												</tr>
 											</thead>
 											<tbody>
-												{#each dashboardData.attribution.channels as channel}
+												{#each dashboardData.attribution.channels as channel (channel.channel)}
 													<tr>
 														<td class="channel-name">{channel.channel}</td>
 														<td>{channel.first_touch_share?.toFixed(1) || '-'}%</td>

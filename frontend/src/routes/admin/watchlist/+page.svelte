@@ -384,7 +384,7 @@
 											<span class="rooms-badge rooms-all">All Rooms</span>
 										{:else}
 											<div class="rooms-tags">
-												{#each getRoomsByIds(item.rooms).slice(0, 2) as room}
+												{#each getRoomsByIds(item.rooms).slice(0, 2) as room (room.id)}
 													<span
 														class="room-tag"
 														style="background-color: {room.color}20; color: {room.color}"

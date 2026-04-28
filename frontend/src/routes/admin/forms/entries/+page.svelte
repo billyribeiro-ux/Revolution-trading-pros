@@ -142,7 +142,7 @@
 	{:else}
 		<Card padding={false}>
 			<Table headers={['ID', 'Status', 'Submitted', 'Preview', 'Actions']}>
-				{#each entries as entry}
+				{#each entries as entry (entry.id)}
 					<tr>
 						<td class="font-mono">#{entry.id}</td>
 						<td>

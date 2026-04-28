@@ -396,7 +396,7 @@
 					</div>
 
 					<div class="services-grid">
-						{#each builtInServices as service, index}
+						{#each builtInServices as service, index (service.key)}
 							<div
 								class="service-card builtin-card"
 								in:fly={{ y: 20, duration: 400, delay: 150 + index * 50, easing: cubicOut }}
@@ -440,7 +440,7 @@
 					</div>
 
 					<div class="services-grid">
-						{#each connectedExternal as service, index}
+						{#each connectedExternal as service, index (service.key)}
 							<div
 								class="service-card connected-card"
 								in:fly={{ y: 20, duration: 400, delay: 200 + index * 50, easing: cubicOut }}
@@ -527,7 +527,7 @@
 						>
 							All
 						</button>
-						{#each categoryList as [key, category]}
+						{#each categoryList as [key, category] (key)}
 							<button
 								onclick={() => (selectedCategory = key)}
 								class="category-pill {selectedCategory === key ? 'active' : ''}"
@@ -541,7 +541,7 @@
 				<!-- Services Grid/List -->
 				{#if viewMode === 'grid'}
 					<div class="services-grid available">
-						{#each filteredConnections as service, index}
+						{#each filteredConnections as service, index (service.key)}
 							<div
 								class="service-card available-card"
 								in:fly={{ y: 20, duration: 400, delay: 300 + index * 30, easing: cubicOut }}
@@ -572,7 +572,7 @@
 				{:else}
 					<!-- List View -->
 					<div class="services-list">
-						{#each filteredConnections as service, index}
+						{#each filteredConnections as service, index (service.key)}
 							<div
 								class="service-list-item"
 								in:fly={{ x: -20, duration: 400, delay: 300 + index * 30, easing: cubicOut }}
@@ -704,7 +704,7 @@
 							>Environment</legend
 						>
 						<div class="grid grid-cols-2 gap-2" role="group">
-							{#each selectedService.environments as env}
+							{#each selectedService.environments as env (env)}
 								<button
 									type="button"
 									onclick={() => (selectedEnvironment = env)}
@@ -719,7 +719,7 @@
 					</fieldset>
 				{/if}
 
-				{#each selectedService.fields as field}
+				{#each selectedService.fields as field (field.key)}
 					<div>
 						<label
 							for="field-{field.key}"
