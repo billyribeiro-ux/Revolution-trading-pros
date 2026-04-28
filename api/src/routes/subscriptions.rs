@@ -264,7 +264,7 @@ async fn get_my_subscriptions(
             um.current_period_end,
             um.cancel_at_period_end,
             um.grace_period_end,
-            um.failed_payment_count,
+            um.payment_failure_count AS failed_payment_count,
             um.created_at,
             um.updated_at,
             mp.name as plan_name,
@@ -369,7 +369,7 @@ async fn get_my_subscriptions(
     Ok(Json(json!({
         "subscriptions": mapped,
         "total": mapped.len(),
-        "hasActiveSubscription": subscriptions.iter().any(|s| s.status == "active")
+        "hasActiveSubscription": subscriptions.iter().any(|s| s.status == "active" || s.status == "trialing")
     })))
 }
 

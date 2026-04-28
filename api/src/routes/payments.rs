@@ -151,7 +151,7 @@ async fn create_checkout(
             (row.name, row.price)
         } else if let Some(product_id) = item.product_id {
             let row: ProductRow = sqlx::query_as(
-                "SELECT name, price FROM products WHERE id = $1 AND is_active = true",
+                "SELECT name, price::FLOAT8 as price FROM products WHERE id = $1 AND is_active = true",
             )
             .bind(product_id)
             .fetch_optional(&state.db.pool)
@@ -930,11 +930,10 @@ async fn handle_checkout_completed(
                             // enrollment failures. Now logged.
                             // Old: .execute(&state.db.pool).await.ok();
                             if let Err(e) = sqlx::query(
-                                r#"INSERT INTO user_course_enrollments (user_id, course_id, status, enrolled_at)
-                                   VALUES ($1, $2, 'active', NOW())
+                                r#"INSERT INTO user_course_enrollments (user_id, course_id, is_active, enrolled_at)
+                                   VALUES ($1, $2, true, NOW())
                                    ON CONFLICT (user_id, course_id) DO UPDATE SET
-                                       status = 'active',
-                                       updated_at = NOW()"#
+                                       is_active = true"#
                             )
                             .bind(user_id)
                             .bind(course_id)
