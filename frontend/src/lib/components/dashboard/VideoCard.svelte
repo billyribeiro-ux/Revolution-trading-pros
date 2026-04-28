@@ -73,7 +73,7 @@
 	</figure>
 
 	<div class="article-card__type">
-		{#each video.tag_details || [] as tag}
+		{#each video.tag_details || [] as tag (tag.name)}
 			<span class="label label--info" style="background-color: {tag.color}">{tag.name}</span>
 		{/each}
 	</div>

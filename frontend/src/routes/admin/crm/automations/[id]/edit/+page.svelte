@@ -506,7 +506,7 @@
 				</div>
 				{#if funnel.trigger_settings && Object.keys(funnel.trigger_settings).length > 0}
 					<div class="card-settings">
-						{#each Object.entries(funnel.trigger_settings) as [key, value]}
+						{#each Object.entries(funnel.trigger_settings) as [key, value] (key)}
 							<span class="setting-chip">{key}: {value}</span>
 						{/each}
 					</div>
@@ -556,7 +556,7 @@
 					{/if}
 					{#if action.settings && Object.keys(action.settings).length > 0}
 						<div class="card-settings">
-							{#each Object.entries(action.settings).slice(0, 3) as [key, value]}
+							{#each Object.entries(action.settings).slice(0, 3) as [key, value] (key)}
 								<span class="setting-chip">{key}: {value}</span>
 							{/each}
 						</div>

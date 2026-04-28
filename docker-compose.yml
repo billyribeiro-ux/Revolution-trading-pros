@@ -86,8 +86,14 @@ services:
     # api/.env. The values in the explicit `environment:` block below win on
     # conflict, so docker-compose-managed defaults stay authoritative for DB,
     # Redis, JWT, etc., but secrets in api/.env reach the container.
+    # FIX-2026-04-28: also load api/.env.local so Stripe test keys (sk_test_,
+    # pk_test_, whsec_) reach the container without being committed to git.
+    # api/.env.local overrides api/.env on conflict (list order: last wins).
+    # Both files are gitignored (api/.gitignore lines 7-8).
     env_file:
       - ./api/.env
+      - path: ./api/.env.local
+        required: false
     environment:
       DATABASE_URL: postgres://rtp:rtp_password@db:5432/revolution_trading_pros
       REDIS_URL: redis://redis:6379

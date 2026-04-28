@@ -264,7 +264,7 @@ async fn get_my_subscriptions(
             um.current_period_end,
             um.cancel_at_period_end,
             um.grace_period_end,
-            um.failed_payment_count,
+            um.payment_failure_count AS failed_payment_count,
             um.created_at,
             um.updated_at,
             mp.name as plan_name,
@@ -369,7 +369,7 @@ async fn get_my_subscriptions(
     Ok(Json(json!({
         "subscriptions": mapped,
         "total": mapped.len(),
-        "hasActiveSubscription": subscriptions.iter().any(|s| s.status == "active")
+        "hasActiveSubscription": subscriptions.iter().any(|s| s.status == "active" || s.status == "trialing")
     })))
 }
 
@@ -379,7 +379,7 @@ async fn get_active_subscription(
     user: User,
 ) -> Result<Json<Option<UserSubscriptionRow>>, (StatusCode, Json<serde_json::Value>)> {
     let subscription: Option<UserSubscriptionRow> = sqlx::query_as(
-        "SELECT * FROM user_memberships WHERE user_id = $1 AND status = 'active' ORDER BY created_at DESC LIMIT 1"
+        "SELECT * FROM user_memberships WHERE user_id = $1 AND status IN ('active', 'trialing') ORDER BY created_at DESC LIMIT 1"
     )
     .bind(user.id)
     .fetch_optional(&state.db.pool)
@@ -421,7 +421,7 @@ async fn create_subscription(
 
     // Check if user already has active subscription
     let existing: Option<(i64,)> =
-        sqlx::query_as("SELECT id FROM user_memberships WHERE user_id = $1 AND status = 'active'")
+        sqlx::query_as("SELECT id FROM user_memberships WHERE user_id = $1 AND status IN ('active', 'trialing')")
             .bind(user.id)
             .fetch_optional(&state.db.pool)
             .await
@@ -1057,7 +1057,7 @@ async fn preview_plan_change(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Get current subscription
     let subscription: UserSubscriptionRow = sqlx::query_as(
-        "SELECT * FROM user_memberships WHERE id = $1 AND user_id = $2 AND status = 'active'",
+        "SELECT * FROM user_memberships WHERE id = $1 AND user_id = $2 AND status IN ('active', 'trialing')",
     )
     .bind(subscription_id)
     .bind(user.id)
@@ -1201,61 +1201,61 @@ async fn reactivate_subscription(
                 )
             })?;
 
-    if subscription.status == "active" {
+    if subscription.status == "active" && !subscription.cancel_at_period_end.unwrap_or(false) {
         return Err((
             StatusCode::BAD_REQUEST,
             Json(json!({"error": "Subscription is already active"})),
         ));
     }
 
-    // If cancel_at_period_end was true, just unset it
-    if subscription.cancel_at_period_end.unwrap_or(false) && subscription.status == "active" {
-        sqlx::query("UPDATE user_memberships SET cancel_at_period_end = false, updated_at = NOW() WHERE id = $1")
-            .bind(id)
-            .execute(&state.db.pool)
+    // Legitimate path: scheduled cancellation — un-flag via Stripe, then update DB
+    if subscription.cancel_at_period_end.unwrap_or(false) {
+        let stripe_sub_id = subscription.stripe_subscription_id.as_deref().ok_or_else(|| {
+            (
+                StatusCode::BAD_REQUEST,
+                Json(json!({"error": "Subscription has no Stripe ID"})),
+            )
+        })?;
+
+        let env_scope = state.config.environment.clone();
+        let stripe = state
+            .services
+            .credentials
+            .stripe_client(&state.db.pool, &env_scope)
+            .await;
+
+        stripe
+            .update_subscription(stripe_sub_id, &[("cancel_at_period_end", "false")])
             .await
-            .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": format!("Stripe error: {}", e)})),
+                )
+            })?;
+
+        sqlx::query(
+            "UPDATE user_memberships SET cancel_at_period_end = false, updated_at = NOW() WHERE id = $1",
+        )
+        .bind(id)
+        .execute(&state.db.pool)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
 
         return Ok(Json(
             json!({"success": true, "message": "Subscription reactivated"}),
         ));
     }
 
-    // For fully cancelled subscriptions, need to re-subscribe
-    // This would typically involve creating a new Stripe subscription
-    // For now, just reactivate it directly
-    let now = chrono::Utc::now().naive_utc();
-    let period_end = now + chrono::Duration::days(30); // Default to 30 days
-
-    sqlx::query(
-        r#"
-        UPDATE user_memberships
-        SET status = 'active',
-            cancelled_at = NULL,
-            cancel_at_period_end = false,
-            current_period_start = $1,
-            current_period_end = $2,
-            updated_at = NOW()
-        WHERE id = $3
-        "#,
-    )
-    .bind(now)
-    .bind(period_end)
-    .bind(id)
-    .execute(&state.db.pool)
-    .await
-    .map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": e.to_string()})),
-        )
-    })?;
-
-    Ok(Json(json!({
-        "success": true,
-        "message": "Subscription reactivated",
-        "current_period_end": period_end.format("%Y-%m-%d").to_string()
-    })))
+    // Fully cancelled subscription — must re-subscribe through checkout; do NOT grant free access
+    Err((
+        StatusCode::BAD_REQUEST,
+        Json(json!({
+            "error": "Subscription has fully ended. Please re-subscribe to restart.",
+            "resubscribe": true,
+            "plan_id": subscription.plan_id
+        })),
+    ))
 }
 
 // ═══════════════════════════════════════════════════════════════════════════

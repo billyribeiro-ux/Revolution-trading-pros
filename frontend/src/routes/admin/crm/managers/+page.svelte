@@ -285,7 +285,7 @@
 						<div class="role-permissions">
 							<span class="permissions-label">Permissions:</span>
 							<div class="permissions-tags">
-								{#each role.permissions.filter((p) => p.allowed).slice(0, 4) as perm}
+								{#each role.permissions.filter((p) => p.allowed).slice(0, 4) as perm, i (i)}
 									<span class="permission-tag">{perm.module} ({perm.action})</span>
 								{/each}
 								{#if role.permissions.filter((p) => p.allowed).length > 4}

@@ -95,7 +95,7 @@
 		onemblaInit={onInit}
 	>
 		<div class="carousel-container">
-			{#each testimonials as testimonial}
+			{#each testimonials as testimonial (testimonial.name)}
 				<div class="carousel-slide">
 					<div class="testimonial-card">
 						<!-- Quote Icon -->
@@ -133,7 +133,7 @@
 
 	<!-- Dots -->
 	<div class="carousel-dots">
-		{#each testimonials as _, i}
+		{#each testimonials as _, i (i)}
 			<button
 				type="button"
 				class="carousel-dot"

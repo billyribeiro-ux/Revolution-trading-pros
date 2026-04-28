@@ -312,7 +312,7 @@
 			>
 				<option value="">-- Select --</option>
 				{#if props.field.options}
-					{#each props.field.options as option}
+					{#each props.field.options as option (option)}
 						<option value={option}>{option}</option>
 					{/each}
 				{/if}
@@ -322,7 +322,7 @@
 		{:else if props.field.field_type === 'radio'}
 			<div class="radio-group">
 				{#if props.field.options}
-					{#each props.field.options as option}
+					{#each props.field.options as option (option)}
 						<label class="radio-label">
 							<input
 								type="radio"
@@ -343,7 +343,7 @@
 		{:else if props.field.field_type === 'checkbox'}
 			<div class="checkbox-group">
 				{#if props.field.options}
-					{#each props.field.options as option}
+					{#each props.field.options as option, i (i)}
 						{@const optionValue = typeof option === 'string' ? option : option.value}
 						{@const optionLabel = typeof option === 'string' ? option : option.label}
 						<label class="checkbox-label">
@@ -696,7 +696,7 @@
 		{:else if props.field.field_type === 'newsletter_categories'}
 			<div class="newsletter-categories-wrapper">
 				{#if props.field.options && Array.isArray(props.field.options)}
-					{#each props.field.options as option}
+					{#each props.field.options as option, i (i)}
 						{@const optionValue = typeof option === 'string' ? option : option.value}
 						{@const optionLabel = typeof option === 'string' ? option : option.label}
 						{@const optionDescription = typeof option === 'object' ? option.description : ''}
@@ -754,7 +754,7 @@
 				{...(props.field.attributes as Record<string, any>) || {}}
 			>
 				{#if props.field.options && Array.isArray(props.field.options)}
-					{#each props.field.options as option}
+					{#each props.field.options as option, i (i)}
 						{@const optionValue = typeof option === 'string' ? option : option.value}
 						{@const optionLabel = typeof option === 'string' ? option : option.label}
 						<option value={optionValue}>{optionLabel}</option>
@@ -770,7 +770,7 @@
 
 		{#if props.error && props.error.length > 0}
 			<div class="field-error">
-				{#each props.error as err}
+				{#each props.error as err (err)}
 					<p>{err}</p>
 				{/each}
 			</div>

@@ -656,7 +656,7 @@
 							value={columns}
 							onchange={(e) => handleColumnsChange(parseInt((e.target as HTMLSelectElement).value))}
 						>
-							{#each [2, 3, 4] as col}
+							{#each [2, 3, 4] as col (col)}
 								<option value={col}>{col}</option>
 							{/each}
 						</select>

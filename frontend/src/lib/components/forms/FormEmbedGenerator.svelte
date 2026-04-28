@@ -153,7 +153,7 @@
 		<div class="section">
 			<h3 class="section-label">Embed Type</h3>
 			<div class="embed-types">
-				{#each embedTypes as type}
+				{#each embedTypes as type (type.value)}
 					<button
 						class="type-option"
 						class:selected={selectedType === type.value}

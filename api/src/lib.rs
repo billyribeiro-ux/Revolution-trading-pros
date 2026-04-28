@@ -12,6 +12,7 @@ pub mod config;
 pub mod db;
 pub mod docs;
 pub mod domain;
+pub mod jobs;
 pub mod middleware;
 pub mod models;
 pub mod monitoring;

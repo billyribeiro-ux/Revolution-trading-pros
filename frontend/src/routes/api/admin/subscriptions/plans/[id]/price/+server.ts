@@ -1,39 +1,60 @@
 /**
- * Admin Subscription Plan Price-Change API Proxy (STUB — 501)
+ * Admin Subscription Plan Price-Change API Proxy
  *
- * FIX-2026-04-26 (audit 02 §P0-4): The Subscription Plans page POSTs to
- * `/api/admin/subscriptions/plans/:id/price` to change a plan's price.
- * Backend exists at `subscriptions_admin.rs::change_plan_price` but the
- * operation TOUCHES STRIPE (creates a new Stripe Price, optionally migrates
- * existing subscribers with proration).
+ * Wires POST /api/admin/subscriptions/plans/:id/price through to
+ * subscriptions_admin.rs::change_plan_price. Creates a new Stripe Price,
+ * flips the DB pointer, and optionally migrates existing subscribers.
  *
- * Per task instructions for this audit cluster (P0-4):
- *   "Build a stub proxy that returns proper 501 'not implemented' rather
- *    than the page hanging."
- *
- * The stub keeps the page from hanging on a 405 from SvelteKit and gives
- * the admin a clear "wired-but-unwired" signal. Wiring this proxy through to
- * the backend should happen as part of the deferred Stripe-state-machine
- * pass tracked in `02-members-subscriptions-DEFERRED.md` §D1, not here —
- * accidentally double-charging or migrating the wrong customers is too high
- * blast-radius for a single principal-engineer pass.
+ * Requires super_admin — immediate_proration triggers real-money movement.
  */
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import { env } from '$env/dynamic/private';
 import { requireSuperadmin } from '$lib/server/auth';
 
+const API_URL =
+	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+
+async function relay(response: Response): Promise<Response> {
+	const text = await response.text();
+	if (!text) {
+		return json(
+			{ error: 'Empty response from backend' },
+			{ status: response.status >= 400 ? response.status : 502 }
+		);
+	}
+	try {
+		const data = JSON.parse(text);
+		return json(data, { status: response.status });
+	} catch {
+		return json({ error: 'Invalid JSON from backend' }, { status: 502 });
+	}
+}
+
 export const POST: RequestHandler = async (event) => {
-	// Auth-gate even the stub so unauthorized callers can't probe the surface.
-	requireSuperadmin(event);
-	return json(
-		{
-			error: 'Not implemented',
-			detail:
-				'Plan price changes touch Stripe (create new Price, optionally migrate ' +
-				'subscribers with proration). Deferred per audit 02 §P0-4. See ' +
-				'docs/audits/admin-2026-04-26/02-members-subscriptions-DEFERRED.md §D1.'
-		},
-		{ status: 501 }
-	);
+	const id = event.params.id;
+	if (!id) return json({ error: 'Missing plan id' }, { status: 400 });
+
+	const { token } = requireSuperadmin(event);
+
+	try {
+		const body = await event.request.json();
+		const response = await fetch(
+			`${API_URL}/api/admin/subscriptions/plans/${id}/price`,
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Accept: 'application/json',
+					Authorization: `Bearer ${token}`
+				},
+				body: JSON.stringify(body)
+			}
+		);
+		return relay(response);
+	} catch (err) {
+		console.error('[API Proxy] plan price change error:', err);
+		return json({ error: 'Backend unreachable' }, { status: 502 });
+	}
 };

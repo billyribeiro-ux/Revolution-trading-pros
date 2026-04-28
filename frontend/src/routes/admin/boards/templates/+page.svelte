@@ -362,7 +362,7 @@
 						<!-- Preview Header -->
 						<div class="h-32 bg-gradient-to-br from-[#E6B800] to-[#B38F00] p-4 flex items-end">
 							<div class="flex gap-2">
-								{#each template.stages.slice(0, 4) as stage}
+								{#each template.stages.slice(0, 4) as stage, i (i)}
 									<div
 										class="w-16 h-20 rounded-t-lg opacity-90"
 										style="background-color: {stage.color}"
@@ -418,7 +418,7 @@
 
 							<!-- Labels Preview -->
 							<div class="flex flex-wrap gap-1 mb-4">
-								{#each template.labels.slice(0, 4) as label}
+								{#each template.labels.slice(0, 4) as label, i (i)}
 									<span
 										class="px-2 py-0.5 text-xs text-white rounded"
 										style="background-color: {label.color}"

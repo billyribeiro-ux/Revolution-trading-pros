@@ -536,7 +536,7 @@
 						onchange={(e: Event) =>
 							updateSetting('fontFamily', (e.target as HTMLSelectElement).value)}
 					>
-						{#each fontFamilies as font}
+						{#each fontFamilies as font (font.value)}
 							<option value={font.value}>{font.label}</option>
 						{/each}
 					</select>

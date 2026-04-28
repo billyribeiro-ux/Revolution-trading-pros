@@ -43,6 +43,8 @@
 		stripe_product_id?: string;
 		features?: string[];
 		trial_days?: number;
+		trial_period_days?: number | null;
+		trial_requires_payment_method?: boolean;
 		room_id?: number;
 		room_name?: string;
 		savings_percent?: number;
@@ -289,7 +291,9 @@
 					billing_cycle: editingPlan.billing_cycle,
 					is_active: editingPlan.is_active,
 					stripe_price_id: editingPlan.stripe_price_id || null,
-					trial_days: editingPlan.trial_days
+					trial_days: editingPlan.trial_days,
+					trial_period_days: editingPlan.trial_period_days ?? null,
+					trial_requires_payment_method: editingPlan.trial_requires_payment_method ?? true
 				})
 			});
 
@@ -705,6 +709,38 @@
 						style="max-width: 120px"
 					/>
 				</div>
+
+				<div class="form-group">
+					<label for="edit-trial-period">Stripe Trial Period</label>
+					<select
+						id="edit-trial-period"
+						bind:value={editingPlan.trial_period_days}
+						class="form-input"
+						style="max-width: 160px"
+					>
+						<option value={null}>None</option>
+						<option value={7}>7 days</option>
+						<option value={14}>14 days</option>
+						<option value={30}>30 days</option>
+					</select>
+				</div>
+
+				{#if editingPlan.trial_period_days}
+					<div class="form-group">
+						<label class="checkbox-label">
+							<input
+								id="edit-trial-requires-pm"
+								name="edit-trial-requires-pm"
+								type="checkbox"
+								bind:checked={editingPlan.trial_requires_payment_method}
+							/>
+							<span>Require payment method to start trial</span>
+						</label>
+						<small style="color: var(--color-text-muted, #888); display:block; margin-top:4px">
+							Uncheck to allow card-free trials (card collected only if trial converts)
+						</small>
+					</div>
+				{/if}
 
 				<div class="form-group">
 					<label class="checkbox-label">

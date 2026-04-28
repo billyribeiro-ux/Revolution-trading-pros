@@ -8,6 +8,7 @@
 //! - Refund processing
 
 use axum::{
+    body::Bytes,
     extract::State,
     http::{HeaderMap, StatusCode},
     routing::{get, post},
@@ -31,8 +32,9 @@ use crate::{
 #[derive(Deserialize)]
 pub struct CreateCheckoutRequest {
     pub items: Vec<CheckoutItem>,
-    pub success_url: String,
-    pub cancel_url: String,
+    // success_path / cancel_path must start with "/" — URLs are built server-side from app_url
+    pub success_path: Option<String>,
+    pub cancel_path: Option<String>,
     pub coupon_code: Option<String>,
     pub billing_name: Option<String>,
     pub billing_email: Option<String>,
@@ -44,7 +46,7 @@ pub struct CheckoutItem {
     pub product_id: Option<i64>,
     pub plan_id: Option<i64>,
     pub name: String,
-    pub price: f64,
+    // price is intentionally NOT accepted from the client; it is looked up from the DB
     pub quantity: i32,
     pub is_subscription: bool,
     pub interval: Option<String>,
@@ -100,15 +102,69 @@ async fn create_checkout(
         ));
     }
 
-    // Calculate totals
+    // Look up authoritative prices from DB — never trust client-supplied price
+    #[derive(sqlx::FromRow)]
+    struct PlanRow {
+        name: String,
+        price: f64,
+        trial_period_days: Option<i32>,
+        trial_requires_payment_method: bool,
+    }
+    #[derive(sqlx::FromRow)]
+    struct ProductRow {
+        name: String,
+        price: f64,
+    }
+
+    // resolved_items: (product_id, plan_id, db_name, db_price, quantity, is_subscription, interval)
+    struct ResolvedItem {
+        product_id: Option<i64>,
+        plan_id: Option<i64>,
+        db_name: String,
+        db_price: f64,
+        quantity: i32,
+        is_subscription: bool,
+        interval: Option<String>,
+    }
+
+    let mut resolved_items: Vec<ResolvedItem> = Vec::new();
     let mut subtotal = 0.0_f64;
     let mut line_items: Vec<LineItem> = Vec::new();
+    // Trial settings from first subscription plan found (only one plan per checkout expected)
+    let mut checkout_trial_days: Option<i64> = None;
+    let mut checkout_trial_requires_pm: bool = true;
 
     for item in &input.items {
-        let item_total = item.price * item.quantity as f64;
-        subtotal += item_total;
+        let (db_name, db_price): (String, f64) = if let Some(plan_id) = item.plan_id {
+            let row: PlanRow = sqlx::query_as(
+                "SELECT name, price::FLOAT8 as price, trial_period_days, trial_requires_payment_method FROM membership_plans WHERE id = $1 AND is_active = true",
+            )
+            .bind(plan_id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
+            .ok_or_else(|| (StatusCode::BAD_REQUEST, Json(json!({"error": format!("Plan {} not found or inactive", plan_id)}))))?;
+            if checkout_trial_days.is_none() {
+                checkout_trial_days = row.trial_period_days.map(|d| d as i64);
+                checkout_trial_requires_pm = row.trial_requires_payment_method;
+            }
+            (row.name, row.price)
+        } else if let Some(product_id) = item.product_id {
+            let row: ProductRow = sqlx::query_as(
+                "SELECT name, price::FLOAT8 as price FROM products WHERE id = $1 AND is_active = true",
+            )
+            .bind(product_id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
+            .ok_or_else(|| (StatusCode::BAD_REQUEST, Json(json!({"error": format!("Product {} not found or inactive", product_id)}))))?;
+            (row.name, row.price)
+        } else {
+            return Err((StatusCode::BAD_REQUEST, Json(json!({"error": "Each item must have either plan_id or product_id"}))));
+        };
 
-        // Determine interval for subscriptions
+        subtotal += db_price * item.quantity as f64;
+
         let (interval, interval_count) = match item.interval.as_deref() {
             Some("monthly") => (Some("month".to_string()), Some(1)),
             Some("quarterly") => (Some("month".to_string()), Some(3)),
@@ -117,15 +173,25 @@ async fn create_checkout(
         };
 
         line_items.push(LineItem {
-            price_id: None, // We create ad-hoc prices
-            name: item.name.clone(),
+            price_id: None,
+            name: db_name.clone(),
             description: None,
-            amount: (item.price * 100.0).round() as i64, // Convert to cents (round to avoid truncation)
+            amount: (db_price * 100.0).round() as i64,
             currency: "usd".to_string(),
             quantity: item.quantity as i64,
             is_subscription: item.is_subscription,
             interval,
             interval_count,
+        });
+
+        resolved_items.push(ResolvedItem {
+            product_id: item.product_id,
+            plan_id: item.plan_id,
+            db_name,
+            db_price,
+            quantity: item.quantity,
+            is_subscription: item.is_subscription,
+            interval: item.interval.clone(),
         });
     }
 
@@ -212,20 +278,20 @@ async fn create_checkout(
         )
     })?;
 
-    // Insert order items
-    for item in &input.items {
+    // Insert order items using DB-sourced prices
+    for ri in &resolved_items {
         sqlx::query(
             r#"INSERT INTO order_items (
                 order_id, product_id, plan_id, name, quantity, unit_price, total, created_at
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())"#,
         )
         .bind(order_id)
-        .bind(item.product_id)
-        .bind(item.plan_id)
-        .bind(&item.name)
-        .bind(item.quantity)
-        .bind(item.price)
-        .bind(item.price * item.quantity as f64)
+        .bind(ri.product_id)
+        .bind(ri.plan_id)
+        .bind(&ri.db_name)
+        .bind(ri.quantity)
+        .bind(ri.db_price)
+        .bind(ri.db_price * ri.quantity as f64)
         .execute(&state.db.pool)
         .await
         .map_err(|e| {
@@ -242,15 +308,27 @@ async fn create_checkout(
     metadata.insert("order_number".to_string(), order_number.clone());
     metadata.insert("user_id".to_string(), user.id.to_string());
 
+    // Validate and sanitize paths — must start with "/" to prevent open redirect
+    let success_path = input.success_path.as_deref().unwrap_or("/checkout/success");
+    let cancel_path = input.cancel_path.as_deref().unwrap_or("/checkout/cancel");
+    if !success_path.starts_with('/') || !cancel_path.starts_with('/') {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "success_path and cancel_path must start with /"})),
+        ));
+    }
+    let app_url = state.config.app_url.trim_end_matches('/');
     let config = CheckoutConfig {
         customer_email: input.billing_email.unwrap_or(user.email.clone()),
         customer_name: input.billing_name,
         line_items,
-        success_url: format!("{}?order={}", input.success_url, order_number),
-        cancel_url: input.cancel_url,
+        success_url: format!("{}{}?order={}", app_url, success_path, order_number),
+        cancel_url: format!("{}{}", app_url, cancel_path),
         metadata,
-        allow_promotion_codes: input.coupon_code.is_none(), // Only if no coupon already applied
+        allow_promotion_codes: input.coupon_code.is_none(),
         billing_address_collection: true,
+        trial_period_days: checkout_trial_days,
+        trial_requires_payment_method: checkout_trial_requires_pm,
     };
 
     let session = state
@@ -337,7 +415,7 @@ async fn create_portal(
 async fn webhook(
     State(state): State<AppState>,
     headers: HeaderMap,
-    body: String,
+    body: Bytes,
 ) -> Result<StatusCode, (StatusCode, Json<serde_json::Value>)> {
     // Get signature header
     let signature = headers
@@ -360,7 +438,7 @@ async fn webhook(
         .await;
 
     // ICT 7 Fix: Actually verify webhook signature for production security
-    match stripe_for_webhook.verify_webhook(body.as_bytes(), signature) {
+    match stripe_for_webhook.verify_webhook(&body, signature) {
         Ok(true) => {
             tracing::debug!(target: "payments", "Webhook signature verified successfully");
         }
@@ -410,11 +488,17 @@ async fn webhook(
         }
     }
 
-    // Parse the webhook event
+    // Parse the webhook event — require valid UTF-8 (Stripe always sends UTF-8 JSON)
+    let body_str = std::str::from_utf8(&body).map_err(|_| {
+        (
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "Webhook payload is not valid UTF-8"})),
+        )
+    })?;
     let event = state
         .services
         .stripe
-        .parse_webhook_event(&body)
+        .parse_webhook_event(body_str)
         .map_err(|e| {
             tracing::error!("Webhook parse error: {}", e);
             (
@@ -430,6 +514,38 @@ async fn webhook(
         event_id = %event.id,
         "Processing Stripe webhook"
     );
+
+    // Idempotency: record the event; skip processing if already seen
+    let payload_value: serde_json::Value =
+        serde_json::from_str(body_str).unwrap_or(serde_json::Value::Null);
+    let inserted: Option<i64> = sqlx::query_scalar(
+        r#"INSERT INTO webhook_events (event_id, event_type, payload)
+           VALUES ($1, $2, $3)
+           ON CONFLICT (event_id) DO NOTHING
+           RETURNING 1::BIGINT"#,
+    )
+    .bind(&event.id)
+    .bind(&event.event_type)
+    .bind(&payload_value)
+    .fetch_optional(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!(target: "payments", "Failed to record webhook event: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error recording webhook"})),
+        )
+    })?
+    .flatten();
+
+    if inserted.is_none() {
+        tracing::info!(
+            target: "payments",
+            event_id = %event.id,
+            "Duplicate webhook event — skipping"
+        );
+        return Ok(StatusCode::OK);
+    }
 
     // Handle different event types
     match event.event_type.as_str() {
@@ -454,10 +570,31 @@ async fn webhook(
         "charge.refunded" => {
             handle_refund(&state, &event).await?;
         }
+        "charge.dispute.created" => {
+            handle_dispute_created(&state, &event).await?;
+        }
+        "customer.subscription.trial_will_end" => {
+            handle_trial_will_end(&state, &event).await?;
+        }
         _ => {
             tracing::debug!("Unhandled webhook event: {}", event.event_type);
         }
     }
+
+    // Mark event as processed
+    sqlx::query(
+        "UPDATE webhook_events SET processed_at = NOW() WHERE event_id = $1",
+    )
+    .bind(&event.id)
+    .execute(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!(target: "payments", "Failed to mark webhook processed: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Failed to finalize webhook processing"})),
+        )
+    })?;
 
     Ok(StatusCode::OK)
 }
@@ -667,8 +804,14 @@ async fn handle_checkout_completed(
                         .bind(plan_id)
                         .bind(&sub.id)
                         .bind(&sub.customer)
-                        .bind(chrono::DateTime::from_timestamp(sub.current_period_start, 0).map(|d| d.naive_utc()))
-                        .bind(chrono::DateTime::from_timestamp(sub.current_period_end, 0).map(|d| d.naive_utc()))
+                        .bind({
+                            let (start, _) = sub.get_current_period();
+                            chrono::DateTime::from_timestamp(start, 0).map(|d| d.naive_utc())
+                        })
+                        .bind({
+                            let (_, end) = sub.get_current_period();
+                            chrono::DateTime::from_timestamp(end, 0).map(|d| d.naive_utc())
+                        })
                         .execute(&state.db.pool)
                         .await {
                             tracing::error!(target: "payments", user_id = %user_id, plan_id = %plan_id, "Failed to create user_membership: {}", e);
@@ -787,11 +930,10 @@ async fn handle_checkout_completed(
                             // enrollment failures. Now logged.
                             // Old: .execute(&state.db.pool).await.ok();
                             if let Err(e) = sqlx::query(
-                                r#"INSERT INTO user_course_enrollments (user_id, course_id, status, enrolled_at)
-                                   VALUES ($1, $2, 'active', NOW())
+                                r#"INSERT INTO user_course_enrollments (user_id, course_id, is_active, enrolled_at)
+                                   VALUES ($1, $2, true, NOW())
                                    ON CONFLICT (user_id, course_id) DO UPDATE SET
-                                       status = 'active',
-                                       updated_at = NOW()"#
+                                       is_active = true"#
                             )
                             .bind(user_id)
                             .bind(course_id)
@@ -993,13 +1135,14 @@ async fn handle_subscription_updated(
         WHERE stripe_subscription_id = $6"#,
     )
     .bind(status)
-    .bind(
-        chrono::DateTime::from_timestamp(subscription.current_period_start, 0)
-            .map(|d| d.naive_utc()),
-    )
-    .bind(
-        chrono::DateTime::from_timestamp(subscription.current_period_end, 0).map(|d| d.naive_utc()),
-    )
+    .bind({
+        let (start, _) = subscription.get_current_period();
+        chrono::DateTime::from_timestamp(start, 0).map(|d| d.naive_utc())
+    })
+    .bind({
+        let (_, end) = subscription.get_current_period();
+        chrono::DateTime::from_timestamp(end, 0).map(|d| d.naive_utc())
+    })
     .bind(subscription.cancel_at_period_end)
     .bind(
         subscription
@@ -1009,7 +1152,18 @@ async fn handle_subscription_updated(
     .bind(&subscription.id)
     .execute(&state.db.pool)
     .await
-    .ok();
+    .map_err(|e| {
+        tracing::error!(
+            target: "payments",
+            subscription_id = %subscription.id,
+            error = %e,
+            "DB write failed in subscription_updated — Stripe will retry"
+        );
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Failed to update subscription"})),
+        )
+    })?;
 
     tracing::info!(
         target: "payments",
@@ -1039,7 +1193,18 @@ async fn handle_subscription_deleted(
     .bind(&subscription.id)
     .execute(&state.db.pool)
     .await
-    .ok();
+    .map_err(|e| {
+        tracing::error!(
+            target: "payments",
+            subscription_id = %subscription.id,
+            error = %e,
+            "DB write failed in subscription_deleted — Stripe will retry"
+        );
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Failed to cancel subscription"})),
+        )
+    })?;
 
     tracing::info!(
         target: "payments",
@@ -1212,19 +1377,17 @@ async fn handle_refund(
     let charge = &event.data.object;
     let payment_intent = charge["payment_intent"].as_str();
 
-    // ICT 7 Fix: Distinguish between full and partial refunds
     let refund_amount = charge["amount_refunded"].as_i64().unwrap_or(0);
     let total_amount = charge["amount"].as_i64().unwrap_or(0);
+    let is_full_refund = refund_amount > 0 && refund_amount >= total_amount;
 
     if let Some(pi) = payment_intent {
-        // Determine refund status: partial_refund vs refunded
-        let refund_status = if refund_amount > 0 && refund_amount < total_amount {
-            "partial_refund"
-        } else {
+        let refund_status = if is_full_refund {
             "refunded"
+        } else {
+            "partial_refund"
         };
 
-        // Calculate refund amount in dollars for storage
         let refund_amount_dollars = refund_amount as f64 / 100.0;
 
         sqlx::query(
@@ -1240,7 +1403,60 @@ async fn handle_refund(
         .bind(pi)
         .execute(&state.db.pool)
         .await
-        .ok();
+        .map_err(|e| {
+            tracing::error!(target: "payments", error = %e, "Failed to update order on refund");
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": "Failed to record refund"})),
+            )
+        })?;
+
+        // Full refund: revoke access for subscriptions, courses, and indicators
+        if is_full_refund {
+            // Revoke subscription membership
+            sqlx::query(
+                r#"UPDATE user_memberships SET status = 'cancelled', cancelled_at = NOW(), updated_at = NOW()
+                   WHERE id IN (
+                       SELECT um.id FROM user_memberships um
+                       JOIN orders o ON o.user_id = um.user_id
+                       WHERE o.payment_intent_id = $1
+                         AND um.status != 'cancelled'
+                   )"#,
+            )
+            .bind(pi)
+            .execute(&state.db.pool)
+            .await
+            .ok(); // Non-fatal — best-effort revocation
+
+            // Revoke course enrollment access
+            sqlx::query(
+                r#"UPDATE user_course_enrollments SET is_active = false
+                   WHERE user_id = (SELECT user_id FROM orders WHERE payment_intent_id = $1 LIMIT 1)
+                     AND is_active = true"#,
+            )
+            .bind(pi)
+            .execute(&state.db.pool)
+            .await
+            .ok();
+
+            // Revoke indicator access
+            sqlx::query(
+                r#"UPDATE user_indicator_access SET is_active = false
+                   WHERE user_id = (SELECT user_id FROM orders WHERE payment_intent_id = $1 LIMIT 1)
+                     AND is_active = true"#,
+            )
+            .bind(pi)
+            .execute(&state.db.pool)
+            .await
+            .ok();
+
+            tracing::info!(
+                target: "payments",
+                event = "access_revoked_on_refund",
+                payment_intent = %pi,
+                "Access revoked following full refund"
+            );
+        }
 
         tracing::info!(
             target: "payments",
@@ -1253,6 +1469,129 @@ async fn handle_refund(
             "Refund processed"
         );
     }
+
+    Ok(())
+}
+
+async fn handle_dispute_created(
+    state: &AppState,
+    event: &crate::services::stripe::WebhookEvent,
+) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
+    let dispute = &event.data.object;
+
+    let dispute_id = dispute["id"].as_str().unwrap_or("unknown");
+    let charge_id = dispute["charge"].as_str().unwrap_or("unknown");
+    let reason = dispute["reason"].as_str().unwrap_or("unknown");
+    let status = dispute["status"].as_str().unwrap_or("unknown");
+    let amount_cents = dispute["amount"].as_i64().unwrap_or(0);
+    let currency = dispute["currency"].as_str().unwrap_or("usd");
+    let response_deadline = dispute["evidence_details"]["due_by"]
+        .as_i64()
+        .and_then(|ts| chrono::DateTime::from_timestamp(ts, 0));
+
+    // Insert dispute record
+    sqlx::query(
+        r#"INSERT INTO payment_disputes
+           (stripe_dispute_id, stripe_charge_id, reason, status, amount_cents, currency, response_deadline)
+           VALUES ($1, $2, $3, $4, $5, $6, $7)
+           ON CONFLICT (stripe_dispute_id) DO NOTHING"#,
+    )
+    .bind(dispute_id)
+    .bind(charge_id)
+    .bind(reason)
+    .bind(status)
+    .bind(amount_cents)
+    .bind(currency)
+    .bind(response_deadline.map(|d| d.naive_utc()))
+    .execute(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!(target: "payments", error = %e, "Failed to insert dispute record");
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Failed to record dispute"})),
+        )
+    })?;
+
+    // Log to security_events
+    sqlx::query(
+        r#"INSERT INTO security_events (event_type, details, created_at)
+           VALUES ('chargeback_dispute', $1, NOW())"#,
+    )
+    .bind(json!({
+        "dispute_id": dispute_id,
+        "charge_id": charge_id,
+        "reason": reason,
+        "amount_cents": amount_cents,
+        "currency": currency,
+        "status": status,
+        "severity": "high"
+    }))
+    .execute(&state.db.pool)
+    .await
+    .ok(); // Log failure is non-fatal
+
+    tracing::warn!(
+        target: "payments",
+        event = "dispute_created",
+        dispute_id = %dispute_id,
+        charge_id = %charge_id,
+        reason = %reason,
+        amount_cents = %amount_cents,
+        "Chargeback dispute created — admin notification required"
+    );
+
+    Ok(())
+}
+
+/// Log trial-ending soon event; email notification handled by Task 4 (Postmark).
+async fn handle_trial_will_end(
+    state: &AppState,
+    event: &crate::services::stripe::WebhookEvent,
+) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
+    let sub = &event.data.object;
+    let subscription_id = sub["id"].as_str().unwrap_or("unknown");
+    let customer_id = sub["customer"].as_str().unwrap_or("unknown");
+    let trial_end = sub["trial_end"].as_i64();
+
+    // Look up the user by stripe_customer_id
+    let user_id: Option<i64> = sqlx::query_scalar(
+        "SELECT user_id FROM user_memberships WHERE stripe_customer_id = $1 LIMIT 1",
+    )
+    .bind(customer_id)
+    .fetch_optional(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!(target: "payments", error = %e, "trial_will_end user lookup failed");
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "DB error during trial_will_end"})),
+        )
+    })?
+    .flatten();
+
+    sqlx::query(
+        r#"INSERT INTO security_events (user_id, event_type, event_category, severity, details, created_at)
+           VALUES ($1, 'trial_will_end', 'billing', 'low', $2, NOW())"#,
+    )
+    .bind(user_id)
+    .bind(json!({
+        "subscription_id": subscription_id,
+        "customer_id": customer_id,
+        "trial_end_ts": trial_end,
+        // TODO Task 4: send Postmark "trial ending soon" email to user
+    }))
+    .execute(&state.db.pool)
+    .await
+    .ok(); // non-fatal
+
+    tracing::info!(
+        target: "payments",
+        event = "trial_will_end",
+        subscription_id = %subscription_id,
+        customer_id = %customer_id,
+        "Trial ending in 3 days — email notification pending Task 4"
+    );
 
     Ok(())
 }

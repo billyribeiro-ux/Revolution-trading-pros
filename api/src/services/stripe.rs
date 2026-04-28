@@ -39,11 +39,30 @@ pub struct StripeSubscription {
     pub id: String,
     pub status: String,
     pub customer: String,
+    /// Stripe 2026 API: period timestamps moved to items.data[0].
+    /// These top-level fields are kept as #[serde(default)] fallback for older fixtures/mocks.
+    #[serde(default)]
     pub current_period_start: i64,
+    #[serde(default)]
     pub current_period_end: i64,
     pub cancel_at_period_end: bool,
     pub canceled_at: Option<i64>,
     pub metadata: Option<HashMap<String, String>>,
+    /// Items list — present in real API responses and live webhook payloads.
+    pub items: Option<StripeSubscriptionItemList>,
+}
+
+impl StripeSubscription {
+    /// Returns (current_period_start, current_period_end) as Unix timestamps.
+    /// Reads from items.data[0] first (Stripe 2026+), falls back to top-level fields.
+    pub fn get_current_period(&self) -> (i64, i64) {
+        if let Some(item) = self.items.as_ref().and_then(|l| l.data.first()) {
+            if item.current_period_start != 0 || item.current_period_end != 0 {
+                return (item.current_period_start, item.current_period_end);
+            }
+        }
+        (self.current_period_start, self.current_period_end)
+    }
 }
 
 /// Stripe customer response
@@ -83,11 +102,21 @@ pub struct StripePriceRecurring {
     pub interval_count: i64,
 }
 
-/// Single subscription item (we read `id` and `price.id` for migrations)
-#[derive(Debug, Deserialize, Clone)]
+/// Single subscription item — includes period timestamps (Stripe moved them here in 2026 API)
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct StripeSubscriptionItem {
     pub id: String,
     pub price: StripePrice,
+    #[serde(default)]
+    pub current_period_start: i64,
+    #[serde(default)]
+    pub current_period_end: i64,
+}
+
+/// Paginated list of subscription items (Stripe wraps them in a list object)
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct StripeSubscriptionItemList {
+    pub data: Vec<StripeSubscriptionItem>,
 }
 
 /// Stripe payment method response - ICT 7 Fix: Payment Methods Management
@@ -179,6 +208,10 @@ pub struct CheckoutConfig {
     pub metadata: HashMap<String, String>,
     pub allow_promotion_codes: bool,
     pub billing_address_collection: bool,
+    /// If set, Stripe will start the subscription in trial mode for this many days.
+    pub trial_period_days: Option<i64>,
+    /// If false, card collection is deferred until trial converts (payment_method_collection=if_required).
+    pub trial_requires_payment_method: bool,
 }
 
 #[derive(Clone)]
@@ -365,6 +398,27 @@ impl StripeService {
             ));
         }
 
+        // Trial support
+        if let Some(trial_days) = config.trial_period_days {
+            if trial_days > 0 {
+                form_params.push((
+                    "subscription_data[trial_period_days]".to_string(),
+                    trial_days.to_string(),
+                ));
+                if !config.trial_requires_payment_method {
+                    form_params.push((
+                        "payment_method_collection".to_string(),
+                        "if_required".to_string(),
+                    ));
+                    form_params.push((
+                        "subscription_data[trial_settings][end_behavior][missing_payment_method]"
+                            .to_string(),
+                        "cancel".to_string(),
+                    ));
+                }
+            }
+        }
+
         // Payment method types
         form_params.push(("payment_method_types[0]".to_string(), "card".to_string()));
 
@@ -422,6 +476,8 @@ impl StripeService {
             metadata: HashMap::new(),
             allow_promotion_codes: true,
             billing_address_collection: false,
+            trial_period_days: None,
+            trial_requires_payment_method: true,
         };
 
         let session = self.create_checkout_session(config).await?;
@@ -529,6 +585,29 @@ impl StripeService {
         }
     }
 
+    /// Update subscription fields via Stripe PATCH
+    pub async fn update_subscription(
+        &self,
+        subscription_id: &str,
+        params: &[(&str, &str)],
+    ) -> Result<StripeSubscription> {
+        let response: StripeSubscription = self
+            .client
+            .post(format!(
+                "{}/subscriptions/{}",
+                STRIPE_API_BASE, subscription_id
+            ))
+            .basic_auth(&self.secret_key, None::<&str>)
+            .header("Stripe-Version", STRIPE_API_VERSION)
+            .form(params)
+            .send()
+            .await?
+            .json()
+            .await?;
+
+        Ok(response)
+    }
+
     /// Create refund
     pub async fn create_refund(
         &self,
@@ -609,8 +688,10 @@ impl StripeService {
             return Err(anyhow!("Timestamp outside tolerance window"));
         }
 
-        // Compute expected signature
-        let signed_payload = format!("{}.{}", timestamp, String::from_utf8_lossy(payload));
+        // Compute expected signature — payload must be exact bytes; lossy conversion breaks HMAC
+        let payload_str = std::str::from_utf8(payload)
+            .map_err(|_| anyhow!("Webhook payload contains invalid UTF-8"))?;
+        let signed_payload = format!("{}.{}", timestamp, payload_str);
 
         type HmacSha256 = Hmac<Sha256>;
         let mut mac = HmacSha256::new_from_slice(webhook_secret.as_bytes())
@@ -1050,6 +1131,50 @@ impl StripeService {
         }
 
         Ok(())
+    }
+
+    /// List all subscriptions with the given status, paginated.
+    /// Returns every subscription page until Stripe says has_more=false.
+    pub async fn list_subscriptions(&self, status: &str) -> Result<Vec<StripeSubscription>> {
+        #[derive(Deserialize)]
+        struct Page {
+            data: Vec<StripeSubscription>,
+            has_more: bool,
+        }
+
+        let mut all: Vec<StripeSubscription> = Vec::new();
+        let mut starting_after: Option<String> = None;
+
+        loop {
+            let mut params = vec![
+                ("status".to_string(), status.to_string()),
+                ("limit".to_string(), "100".to_string()),
+            ];
+            if let Some(ref cursor) = starting_after {
+                params.push(("starting_after".to_string(), cursor.clone()));
+            }
+
+            let page: Page = self
+                .client
+                .get(format!("{}/subscriptions", STRIPE_API_BASE))
+                .basic_auth(&self.secret_key, None::<&str>)
+                .header("Stripe-Version", STRIPE_API_VERSION)
+                .query(&params)
+                .send()
+                .await?
+                .json()
+                .await?;
+
+            let has_more = page.has_more;
+            starting_after = page.data.last().map(|s| s.id.clone());
+            all.extend(page.data);
+
+            if !has_more {
+                break;
+            }
+        }
+
+        Ok(all)
     }
 
     /// Get customer's default payment method

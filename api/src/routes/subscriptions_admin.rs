@@ -76,6 +76,8 @@ pub struct SubscriptionPlanRow {
     pub stripe_price_id: Option<String>,
     pub features: Option<serde_json::Value>,
     pub trial_days: Option<i32>,
+    pub trial_period_days: Option<i32>,
+    pub trial_requires_payment_method: bool,
     pub created_at: chrono::NaiveDateTime,
     pub updated_at: chrono::NaiveDateTime,
 }
@@ -123,6 +125,8 @@ pub struct CreatePlanRequest {
     pub stripe_price_id: Option<String>,
     pub features: Option<serde_json::Value>,
     pub trial_days: Option<i32>,
+    pub trial_period_days: Option<i32>,
+    pub trial_requires_payment_method: Option<bool>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -135,6 +139,8 @@ pub struct UpdatePlanRequest {
     pub stripe_price_id: Option<String>,
     pub features: Option<serde_json::Value>,
     pub trial_days: Option<i32>,
+    pub trial_period_days: Option<i32>,
+    pub trial_requires_payment_method: Option<bool>,
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -496,7 +502,8 @@ async fn list_plans(
     let plans: Vec<SubscriptionPlanRow> = sqlx::query_as(
         r#"
         SELECT id, name, slug, description, price::FLOAT8 as price, billing_cycle, is_active,
-               stripe_price_id, features, trial_days, created_at, updated_at
+               stripe_price_id, features, trial_days, trial_period_days,
+               trial_requires_payment_method, created_at, updated_at
         FROM membership_plans
         WHERE ($1::boolean IS NULL OR is_active = $1)
         ORDER BY price ASC
@@ -552,7 +559,8 @@ async fn get_plan(
     let plan: SubscriptionPlanRow = sqlx::query_as(
         r#"
         SELECT id, name, slug, description, price::FLOAT8 as price, billing_cycle, is_active,
-               stripe_price_id, features, trial_days, created_at, updated_at
+               stripe_price_id, features, trial_days, trial_period_days,
+               trial_requires_payment_method, created_at, updated_at
         FROM membership_plans WHERE id = $1
         "#,
     )
@@ -595,9 +603,9 @@ async fn create_plan(
     // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
     let plan: SubscriptionPlanRow = sqlx::query_as(
         r#"
-        INSERT INTO membership_plans (name, slug, description, price, billing_cycle, is_active, stripe_price_id, features, trial_days, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())
-        RETURNING id, name, slug, description, price::FLOAT8 as price, billing_cycle, is_active, stripe_price_id, features, trial_days, created_at, updated_at
+        INSERT INTO membership_plans (name, slug, description, price, billing_cycle, is_active, stripe_price_id, features, trial_days, trial_period_days, trial_requires_payment_method, created_at, updated_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(), NOW())
+        RETURNING id, name, slug, description, price::FLOAT8 as price, billing_cycle, is_active, stripe_price_id, features, trial_days, trial_period_days, trial_requires_payment_method, created_at, updated_at
         "#
     )
     .bind(&input.name)
@@ -609,6 +617,8 @@ async fn create_plan(
     .bind(&input.stripe_price_id)
     .bind(&features)
     .bind(input.trial_days)
+    .bind(input.trial_period_days)
+    .bind(input.trial_requires_payment_method.unwrap_or(true))
     .fetch_one(&state.db.pool)
     .await
     .map_err(|e| {
@@ -649,9 +659,11 @@ async fn update_plan(
             stripe_price_id = COALESCE($7, stripe_price_id),
             features = COALESCE($8, features),
             trial_days = COALESCE($9, trial_days),
+            trial_period_days = COALESCE($10, trial_period_days),
+            trial_requires_payment_method = COALESCE($11, trial_requires_payment_method),
             updated_at = NOW()
         WHERE id = $1
-        RETURNING id, name, slug, description, price::FLOAT8 as price, billing_cycle, is_active, stripe_price_id, features, trial_days, created_at, updated_at
+        RETURNING id, name, slug, description, price::FLOAT8 as price, billing_cycle, is_active, stripe_price_id, features, trial_days, trial_period_days, trial_requires_payment_method, created_at, updated_at
         "#
     )
     .bind(id)
@@ -663,6 +675,8 @@ async fn update_plan(
     .bind(&input.stripe_price_id)
     .bind(&input.features)
     .bind(input.trial_days)
+    .bind(input.trial_period_days)
+    .bind(input.trial_requires_payment_method)
     .fetch_optional(&state.db.pool)
     .await
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?

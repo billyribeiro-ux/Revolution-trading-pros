@@ -815,7 +815,7 @@
 						<label for="cat-parent">Parent Category</label>
 						<select id="cat-parent" bind:value={categoryForm.parent_id}>
 							<option value={null}>None (Root Category)</option>
-							{#each parentCategories.filter((c) => c.id !== editingCategory?.id) as parent}
+							{#each parentCategories.filter((c) => c.id !== editingCategory?.id) as parent (parent.id)}
 								<option value={parent.id}>{parent.name}</option>
 							{/each}
 						</select>

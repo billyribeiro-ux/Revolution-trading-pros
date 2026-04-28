@@ -357,12 +357,12 @@ https://svelte.dev/e/bind_invalid_expression -->
 					</div>
 
 					<div class="conditional-rules">
-						{#each fieldData.conditional_logic.rules as rule, index}
+						{#each fieldData.conditional_logic.rules as rule, index (index)}
 							<div class="rule-row">
 								<label for="rule-field-{index}" class="sr-only">Rule field</label>
 								<select id="rule-field-{index}" bind:value={rule.field} class="form-input">
 									<option value="">Select field...</option>
-									{#each props.availableFields ?? [] as availField}
+									{#each props.availableFields ?? [] as availField (availField.name)}
 										<option value={availField.name}>{availField.label}</option>
 									{/each}
 								</select>

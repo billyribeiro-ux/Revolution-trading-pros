@@ -879,7 +879,7 @@
 		{#if viewMode === 'grid'}
 			<div class="posts-grid">
 				{#if loading}
-					{#each Array(6) as _}
+					{#each Array(6) as _, i (i)}
 						<div class="post-card skeleton">
 							<div class="skeleton-image"></div>
 							<div class="skeleton-content">
@@ -1026,7 +1026,7 @@
 
 								{#if post.categories && post.categories.length > 0}
 									<div class="post-categories">
-										{#each (post.categories || []).slice(0, 3) as categoryId}
+										{#each (post.categories || []).slice(0, 3) as categoryId, i (i)}
 											{@const category =
 												typeof categoryId === 'string'
 													? getPredefinedCategoryById(categoryId)
@@ -1173,7 +1173,7 @@
 									<td class="hidden-mobile hidden-tablet">
 										{#if post.categories?.length > 0}
 											<div class="table-category-tags">
-												{#each (post.categories || []).slice(0, 2) as categoryId}
+												{#each (post.categories || []).slice(0, 2) as categoryId, i (i)}
 													{@const category =
 														typeof categoryId === 'string'
 															? getPredefinedCategoryById(categoryId)

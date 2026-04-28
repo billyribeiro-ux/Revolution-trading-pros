@@ -1193,7 +1193,7 @@
 								{#if indicator.category}
 									<span class="meta-tag">{indicator.category}</span>
 								{/if}
-								{#each indicator.platforms.slice(0, 3) as pid}
+								{#each indicator.platforms.slice(0, 3) as pid (pid)}
 									{@const p = getPlatformById(pid)}
 									{#if p}
 										<span class="meta-platform">{p.icon}</span>

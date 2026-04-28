@@ -108,7 +108,6 @@
 		editedTemplate.colors.text = preset.text;
 		editedTemplate.colors.accent = preset.accent;
 		editedTemplate.colors.acceptButton = preset.accent;
-		editedTemplate = editedTemplate;
 	}
 
 	function handleSave() {
@@ -239,7 +238,7 @@
 							<label class="form-label">
 								Position
 								<select class="form-select" bind:value={editedTemplate.position}>
-									{#each positionOptions as opt}
+									{#each positionOptions as opt (opt.value)}
 										<option value={opt.value}>{opt.label}</option>
 									{/each}
 								</select>
@@ -289,7 +288,7 @@
 							<label class="form-label">
 								Icon Type
 								<select class="form-select" bind:value={editedTemplate.iconType}>
-									{#each iconOptions as opt}
+									{#each iconOptions as opt (opt.value)}
 										<option value={opt.value}>{opt.label}</option>
 									{/each}
 								</select>
@@ -305,7 +304,7 @@
 							<label class="form-label">
 								Animation Type
 								<select class="form-select" bind:value={editedTemplate.animation}>
-									{#each animationOptions as opt}
+									{#each animationOptions as opt (opt.value)}
 										<option value={opt.value}>{opt.label}</option>
 									{/each}
 								</select>
@@ -335,7 +334,7 @@
 				<div class="form-section">
 					<h3>Color Presets</h3>
 					<div class="color-presets">
-						{#each colorPresets as preset}
+						{#each colorPresets as preset (preset.name)}
 							<button
 								class="preset-btn"
 								style="background: {preset.bg}; color: {preset.text}"
@@ -683,7 +682,7 @@
 						<label class="form-label">
 							Button Variant
 							<select class="form-select" bind:value={editedTemplate.buttonVariant}>
-								{#each buttonVariantOptions as opt}
+								{#each buttonVariantOptions as opt (opt.value)}
 									<option value={opt.value}>{opt.label}</option>
 								{/each}
 							</select>
@@ -850,7 +849,7 @@
 									copyFromTemplate((e.currentTarget as HTMLInputElement).value)}
 							>
 								<option value="">Select a template...</option>
-								{#each BANNER_TEMPLATES as t}
+								{#each BANNER_TEMPLATES as t (t.id)}
 									<option value={t.id}>{t.name}</option>
 								{/each}
 							</select>

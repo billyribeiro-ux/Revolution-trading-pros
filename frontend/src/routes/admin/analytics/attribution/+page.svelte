@@ -246,7 +246,7 @@
 				<div class="bg-white rounded-xl border border-gray-200 p-6">
 					<h3 class="text-lg font-semibold text-gray-900 mb-4">Top Conversion Paths</h3>
 					<div class="space-y-3">
-						{#each report.conversion_paths.slice(0, 10) as path, i}
+						{#each report.conversion_paths.slice(0, 10) as path, i (i)}
 							<div class="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
 								<span class="text-sm text-gray-400 w-6">{i + 1}.</span>
 								<div class="flex-1 flex items-center gap-2 flex-wrap">

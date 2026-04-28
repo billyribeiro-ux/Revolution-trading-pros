@@ -132,7 +132,7 @@
 	{:else}
 		<Card padding={false}>
 			<Table headers={['URL', 'Hit Count', 'Status', 'First Seen', 'Last Seen']}>
-				{#each errors as error}
+				{#each errors as error (error.id)}
 					<tr>
 						<td class="font-mono text-sm max-w-md truncate">{error.url}</td>
 						<td>

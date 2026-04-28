@@ -81,7 +81,7 @@
 			<meta property="article:section" content={seo.og.article.section} />
 		{/if}
 		{#if seo.og.article.tags}
-			{#each seo.og.article.tags as tag}
+			{#each seo.og.article.tags as tag (tag)}
 				<meta property="article:tag" content={tag} />
 			{/each}
 		{/if}
@@ -106,7 +106,7 @@
 	{/if}
 
 	<!-- Alternate Links (hreflang) -->
-	{#each seo.alternates as alt}
+	{#each seo.alternates as alt (alt.hreflang)}
 		<link rel="alternate" hreflang={alt.hreflang} href={alt.href} />
 	{/each}
 

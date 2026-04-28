@@ -367,7 +367,7 @@
 									<h3>Top Pages</h3>
 									{#if dashboardData.top_pages && dashboardData.top_pages.length > 0}
 										<div class="table-rows">
-											{#each dashboardData.top_pages.slice(0, 10) as page, i}
+											{#each dashboardData.top_pages.slice(0, 10) as page, i (page.page_path)}
 												<div class="table-row">
 													<span class="row-rank">{i + 1}</span>
 													<span class="row-label">{page.page_path}</span>
@@ -384,7 +384,7 @@
 									<h3>Top Events</h3>
 									{#if dashboardData.top_events && dashboardData.top_events.length > 0}
 										<div class="table-rows">
-											{#each dashboardData.top_events.slice(0, 10) as event, i}
+											{#each dashboardData.top_events.slice(0, 10) as event, i (event.event_name)}
 												<div class="table-row">
 													<span class="row-rank">{i + 1}</span>
 													<span class="row-label">{event.event_name}</span>

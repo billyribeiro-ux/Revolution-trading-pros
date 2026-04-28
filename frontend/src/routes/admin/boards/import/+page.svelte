@@ -280,7 +280,7 @@
 							{importJob.errors.length} items could not be imported:
 						</h4>
 						<ul class="text-sm text-yellow-700 dark:text-yellow-300 space-y-1">
-							{#each importJob.errors.slice(0, 5) as err}
+							{#each importJob.errors.slice(0, 5) as err, i (i)}
 								<li>• {err.message}</li>
 							{/each}
 							{#if importJob.errors.length > 5}

@@ -613,7 +613,7 @@
 						<div class="script-categories">
 							<div class="script-category">
 								<h3>Analytics Scripts</h3>
-								{#each scriptBlockingOptions.filter((s) => s.category === 'analytics') as script}
+								{#each scriptBlockingOptions.filter((s) => s.category === 'analytics') as script (script.label)}
 									<label class="setting-row toggle-row compact">
 										<div class="setting-info">
 											<span class="setting-label">{script.label}</span>
@@ -634,7 +634,7 @@
 
 							<div class="script-category">
 								<h3>Marketing Scripts</h3>
-								{#each scriptBlockingOptions.filter((s) => s.category === 'marketing') as script}
+								{#each scriptBlockingOptions.filter((s) => s.category === 'marketing') as script (script.label)}
 									<label class="setting-row toggle-row compact">
 										<div class="setting-info">
 											<span class="setting-label">{script.label}</span>
@@ -655,7 +655,7 @@
 
 							<div class="script-category">
 								<h3>Embedded Content</h3>
-								{#each scriptBlockingOptions.filter((s) => s.category === 'embedded_video') as script}
+								{#each scriptBlockingOptions.filter((s) => s.category === 'embedded_video') as script (script.label)}
 									<label class="setting-row toggle-row compact">
 										<div class="setting-info">
 											<span class="setting-label">{script.label}</span>

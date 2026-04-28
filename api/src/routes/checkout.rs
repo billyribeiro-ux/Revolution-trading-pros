@@ -30,8 +30,9 @@ pub struct CheckoutRequest {
     pub billing_name: Option<String>,
     pub billing_email: Option<String>,
     pub billing_address: Option<serde_json::Value>,
-    pub success_url: Option<String>,
-    pub cancel_url: Option<String>,
+    // success_path / cancel_path must start with "/" — full URLs are built server-side
+    pub success_path: Option<String>,
+    pub cancel_path: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -56,6 +57,8 @@ struct PlanPrice {
     id: i64,
     name: String,
     price: f64,
+    stripe_price_id: Option<String>,
+    billing_cycle: String,
 }
 
 /// Create checkout session
@@ -111,9 +114,8 @@ async fn create_checkout(
         }
 
         if let Some(plan_id) = item.plan_id {
-            // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
             let plan: PlanPrice = sqlx::query_as(
-                "SELECT id, name, price::FLOAT8 as price FROM membership_plans WHERE id = $1 AND is_active = true",
+                "SELECT id, name, price::FLOAT8 as price, stripe_price_id, billing_cycle FROM membership_plans WHERE id = $1 AND is_active = true",
             )
             .bind(plan_id)
             .fetch_optional(&state.db.pool)
@@ -131,6 +133,14 @@ async fn create_checkout(
                 )
             })?;
 
+            // Require a Stripe price ID — ad-hoc pricing is forbidden by PAYMENTS_ARCHITECTURE_STANDARD §1
+            if plan.stripe_price_id.is_none() {
+                return Err((
+                    StatusCode::UNPROCESSABLE_ENTITY,
+                    Json(json!({"error": format!("Plan {} has no Stripe price configured", plan_id)})),
+                ));
+            }
+
             subtotal += plan.price;
 
             line_items.push(json!({
@@ -138,6 +148,8 @@ async fn create_checkout(
                 "id": plan.id,
                 "name": plan.name,
                 "price": plan.price,
+                "stripe_price_id": plan.stripe_price_id,
+                "billing_cycle": plan.billing_cycle,
                 "quantity": 1,
                 "total": plan.price
             }));
@@ -337,21 +349,38 @@ async fn create_checkout(
         )
     })?;
 
-    // ICT 7 Fix: Create Stripe checkout session for payment
-    let success_url = input
-        .success_url
-        .unwrap_or_else(|| format!("{}/checkout/success", state.config.app_url));
-    let cancel_url = input
-        .cancel_url
-        .unwrap_or_else(|| format!("{}/checkout/cancel", state.config.app_url));
+    // Build URLs server-side — validate paths to prevent open redirect
+    let success_path = input.success_path.as_deref().unwrap_or("/checkout/success");
+    let cancel_path = input.cancel_path.as_deref().unwrap_or("/checkout/cancel");
+    if !success_path.starts_with('/') || !cancel_path.starts_with('/') {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "success_path and cancel_path must start with /"})),
+        ));
+    }
+    let app_url = state.config.app_url.trim_end_matches('/');
+    let success_url = format!("{}{}", app_url, success_path);
+    let cancel_url = format!("{}{}", app_url, cancel_path);
 
     // Build Stripe line items from our cart items
+    // Subscriptions use stripe_price_id (the price is Stripe-authoritative).
+    // One-time products use ad-hoc pricing until products also carry stripe_price_id.
     let mut stripe_line_items: Vec<crate::services::stripe::LineItem> = Vec::new();
 
     for item in &line_items {
         let is_subscription = item.get("type").and_then(|t| t.as_str()) == Some("subscription");
+        let stripe_price_id = item.get("stripe_price_id").and_then(|v| v.as_str()).map(|s| s.to_string());
+
+        // Derive interval from billing_cycle for metadata purposes (Stripe already knows from price_id)
+        let billing_cycle = item.get("billing_cycle").and_then(|v| v.as_str()).unwrap_or("monthly");
+        let (interval, interval_count) = match billing_cycle {
+            "quarterly" => ("month", 3),
+            "annual"    => ("year", 1),
+            _           => ("month", 1),
+        };
+
         stripe_line_items.push(crate::services::stripe::LineItem {
-            price_id: None, // Ad-hoc pricing
+            price_id: stripe_price_id, // Use Stripe price ID for subscriptions (Stripe-authoritative pricing)
             name: item
                 .get("name")
                 .and_then(|n| n.as_str())
@@ -362,12 +391,8 @@ async fn create_checkout(
             currency: "usd".to_string(),
             quantity: item.get("quantity").and_then(|q| q.as_i64()).unwrap_or(1),
             is_subscription,
-            interval: if is_subscription {
-                Some("month".to_string())
-            } else {
-                None
-            },
-            interval_count: if is_subscription { Some(1) } else { None },
+            interval: if is_subscription { Some(interval.to_string()) } else { None },
+            interval_count: if is_subscription { Some(interval_count) } else { None },
         });
     }
 
@@ -389,6 +414,8 @@ async fn create_checkout(
         metadata,
         allow_promotion_codes: input.coupon_code.is_none(),
         billing_address_collection: true,
+        trial_period_days: None,
+        trial_requires_payment_method: true,
     };
 
     // Create Stripe session

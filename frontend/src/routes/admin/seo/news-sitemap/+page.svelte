@@ -181,7 +181,7 @@
 			</div>
 		{:else}
 			<div class="articles-list">
-				{#each articles as article}
+				{#each articles as article (article.id)}
 					<div class="article-item">
 						<div class="article-status" class:included={article.inSitemap}>
 							{#if article.inSitemap}
