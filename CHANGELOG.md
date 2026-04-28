@@ -2,9 +2,53 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
-## [Unreleased] — 2026-04-28
+## [Unreleased] — 2026-04-28 (b) — Infrastructure & Dev Stack
 
-Comprehensive auth/authorization security hardening. All 7 findings verified live against the running Docker stack. Full audit in `AUTH_AUDIT.md`; fix details and HTTP evidence in `AUTH_FIX_RESULT.md`.
+Migration system reconciliation, Meilisearch local stack, and Fly.io config cleanup.
+
+### Fixed
+
+- **Migration checksum mismatch (permanent startup abort).** `030_room_fulltext_search_indexes.sql` was alphabetically prior to `030_room_search_indexes.sql`, causing sqlx to compare the wrong SHA-384 on every API boot and abort all pending migrations silently. Root cause: duplicate version numbers across 4 pairs/triples (030, 037, 040, 041). Fix: renamed the 5 intruding files to unique version numbers (050–054). All renamed files' DDL was already applied; renaming only affects sqlx's compile-time embedding, not the DB schema.
+- **Migrations 031–045 unregistered in `_sqlx_migrations`.** All 15 migrations were applied to the DB (via psql or dump restoration) but never recorded in `_sqlx_migrations`, so sqlx would attempt to re-apply them after any fix to the v30 mismatch. Fix: inserted 19 rows directly into `_sqlx_migrations` with correct SHA-384 checksums and `success=true`. Max registered version is now 54.
+- **Meilisearch startup warning on every API boot.** `SearchService::setup_indexes()` fires in a background tokio task at startup; with no Meilisearch container in the local stack it logged `WARN Failed to setup search indexes: HTTP request failed: builder error` on every start. Fix: added `getmeili/meilisearch:v1.7` as a first-class service in `docker-compose.yml` with a healthcheck; the API `depends_on` it as `service_healthy`. Zero warnings on startup after fix.
+- **`fly.toml` Meilisearch secret names wrong.** Comments listed `MEILI_URL` / `MEILI_MASTER_KEY` but `api/src/config/mod.rs` reads `MEILISEARCH_HOST` / `MEILISEARCH_API_KEY`. Corrected to match the code. Also corrected `RUST_LOG` (was `revolution_api=debug` — overly verbose for prod; changed to `sqlx=warn,tower_http=info`).
+- **`fly.toml` missing required non-secret env vars.** `HOST`, `PORT`, `ENVIRONMENT`, and `JWT_EXPIRES_IN` were only set in `docker-compose.yml`. Added to `fly.toml [env]` block so production picks them up without a `fly secrets set` call.
+
+### Added
+
+- **Meilisearch service in local dev stack** (`docker-compose.yml`): `getmeili/meilisearch:v1.7`, dev master key `dev-meili-master-key`, persistent `meili_data` volume, port 7700. The api service `environment:` block injects `MEILISEARCH_HOST=http://meili:7700` and `MEILISEARCH_API_KEY=dev-meili-master-key` — these take precedence over the intentionally blank values in `api/.env`, which are left blank so prod secrets aren't needed for local dev.
+- **`fly.toml` prod migration repair note.** Inline comment references `docs/audits/MIGRATION_REPAIR_2026-04-28.md` with the exact `INSERT` block to run against the production DB before the next `fly deploy`.
+
+### Changed
+
+- **Bring-up command in `docker-compose.yml` header** updated: `docker compose up -d db redis api` → `docker compose up -d db redis meili api`.
+- **`api/.env.example`** Meilisearch comment updated to explain that blank values are intentional for local dev (docker-compose `environment:` block provides them).
+- **5 migration files renamed** (no SQL content changed):
+  - `030_room_fulltext_search_indexes.sql` → `050_room_fulltext_search_indexes.sql`
+  - `037_video_system_ict7_complete.sql` → `051_video_system_ict7_complete.sql`
+  - `040_crm_deals_pipelines.sql` → `052_crm_deals_pipelines.sql`
+  - `040_subscription_notifications_ict7.sql` → `053_subscription_notifications_ict7.sql`
+  - `041_cms_scheduling_releases.sql` → `054_cms_scheduling_releases.sql`
+
+---
+
+## [Unreleased] — 2026-04-28 (a) — Auth Security Hardening
+
+Comprehensive auth/authorization security hardening. All 7 findings verified live against the running Docker stack. Full audit in `AUTH_AUDIT.md`.
+
+### Security
+
+- **C-1 — Banned user auth bypass closed.** `is_active` added to `User` struct (`api/src/models/user.rs`) and to both SELECT queries (login handler + auth middleware). Login blocks banned accounts before JWT issuance; middleware rejects every subsequent request from a banned user regardless of token validity.
+- **H-1 — JWT access token TTL reduced from 24h to 1h.** Default changed in `api/src/config/mod.rs`; `docker-compose.yml` and `api/.env.example` updated to match. `exp - iat = 3600` confirmed live. Production: set `JWT_EXPIRES_IN=1` in Fly secrets (or rely on `fly.toml [env]` after this release).
+- **H-2 — Login rate limiter now fails closed on Redis outage.** Both the per-IP and per-email rate limit blocks in `api/src/routes/auth.rs` previously passed all logins through on Redis error. Both now return HTTP 503. Also fixed a pre-existing type error in `api/src/services/redis.rs::incr()`: the Redis pipeline result was typed as `i64` but the crate returns `Vec<i64>`; changed to `Vec<i64>` + `.into_iter().next()`. This bug had been silently masked by the fail-open code.
+- **H-4 — Admin `create_user` now validates password strength.** `api/src/routes/admin.rs` calls `validate_password` before `hash_password`; weak passwords now return HTTP 400 instead of being hashed and stored.
+- **H-5 — `resend_verification` email enumeration closed.** The already-verified branch previously returned a distinct message confirming both account existence and verification state. Now returns the same generic message as the unknown-email branch with no email sent.
+- **H-6 — `ban_user` now invalidates active sessions immediately.** After the DB `is_active = false` update, `ban_user` calls `redis.invalidate_all_user_sessions` and `redis.invalidate_user_cache` (tolerating Redis failure with a warning log). Combined with C-1's middleware check, banned users lose access on their next request rather than after the cache TTL.
+- **H-7 — Developer/super_admin role assignment restricted to super_admin actors.** `update_user` in `api/src/routes/admin.rs` now rejects role changes to `developer`, `super_admin`, or `super-admin` from any non-super_admin actor with HTTP 403. All role changes are logged to `security_events` with `event_type='role_change'`, `old_role`, `new_role`, and `actor_id`.
+
+### Fixed
+
+- **`redis::incr()` pipeline deserialization** (`api/src/services/redis.rs`): `redis::pipe().atomic().incr().expire()` returns `Vec<i64>`, not a bare `i64`. The broken type annotation caused `check_ip_rate_limit` to always return `Err(...)`, which the old fail-open login handler silently swallowed. Fixed by deserializing as `Vec<i64>` and taking the first element.
 
 ### Security
 
@@ -24,7 +68,7 @@ Comprehensive auth/authorization security hardening. All 7 findings verified liv
 
 ## [Unreleased] — 2026-04-27
 
-End-to-end repair of the blog/CMS path: public renderer, admin write path, R2 media routing, scheduling-claim cleanup, and analytics ingestion. Verified live with a real admin login and a real R2 round-trip.
+End-to-end repair of the blog/CMS path: public renderer, admin write path, R2 media routing, scheduling-claim cleanup, analytics ingestion, and dev-stack port consistency. Verified live with a real admin login and a real R2 round-trip.
 
 ### Fixed
 
@@ -65,6 +109,14 @@ End-to-end repair of the blog/CMS path: public renderer, admin write path, R2 me
 - **Schedule modal markup + state + CSS** in [`frontend/src/routes/admin/blog/+page.svelte`](frontend/src/routes/admin/blog/+page.svelte) (~97 lines): modal only fired a "coming soon" toast on submit. TODO marker in place pointing at the missing scheduler worker.
 - **`frontend/tests/e2e/block-editor.spec.ts`** (93 lines): targeted the deleted `/cms/editor` demo. Three of its four tests were already `test.fixme`'d.
 - **`predefinedCategories` array duplications** across 3 admin pages with color drift (`Technical Analysis` and `Psychology` had different hex codes between edit vs list/create). Single source now lives in `lib/data/predefined-categories.ts`.
+
+### Changed (dev stack — port consistency)
+
+- **`frontend/vite.config.ts`**: added `server: { port: 5173, strictPort: true, host: 'localhost' }`. Dev server now fails fast if 5173 is taken rather than silently drifting to 5174 and breaking CORS.
+- **`frontend/package.json`**: added `ports:check`, `dev:clean`, and `dev:fresh` scripts for diagnosing and recovering from port conflicts.
+- **`frontend/.env.example`**: added `FRONTEND_URL=http://localhost:5173` as the canonical dev-origin variable consumed by Playwright and preview scripts.
+- **`frontend/playwright.config.ts`**: `BASE_URL` reads `FRONTEND_URL || E2E_BASE_URL || localhost:5173`; `webServer.timeout` set to 120 s to accommodate cold Vite starts.
+- **`frontend/tests/e2e/verify_tag_fix.spec.ts`** and **`frontend/scripts/preview-component.js`**: hardcoded `localhost:5173` strings replaced with env-var reads matching the pattern above.
 
 ### Test evidence (this date)
 
