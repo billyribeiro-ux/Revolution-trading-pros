@@ -229,6 +229,15 @@
 		}
 	}
 
+	// Normalize any date string to the "YYYY-MM-DDTHH:MM:SS" format the Rust
+	// backend requires (NaiveDateTime — no Z, no ms, seconds always present).
+	function toNaiveDateTime(value: string | null): string | null {
+		if (!value) return null;
+		const s = value.replace(/\.\d+Z?$/, '').replace('Z', '');
+		// datetime-local gives "YYYY-MM-DDTHH:MM" — pad missing seconds
+		return /T\d{2}:\d{2}$/.test(s) ? `${s}:00` : s;
+	}
+
 	async function savePost(status: string) {
 		saving = true;
 		saveError = '';
@@ -259,13 +268,13 @@
 					settings: b.settings,
 					metadata: b.metadata
 				})),
-				// Backend expects NaiveDateTime (no Z, no ms): "2026-04-27T12:00:00"
-				published_at:
+				// Backend expects NaiveDateTime "YYYY-MM-DDTHH:MM:SS" — no Z, no ms.
+				// datetime-local inputs give "YYYY-MM-DDTHH:MM" (no seconds); pad them.
+				published_at: toNaiveDateTime(
 					status === 'published' && !post.published_at
-						? new Date().toISOString().replace(/\.\d{3}Z$/, '')
-						: post.published_at
-							? post.published_at.replace(/\.\d{3}Z$/, '').replace('Z', '')
-							: null
+						? new Date().toISOString()
+						: post.published_at || null
+				)
 			};
 
 			// Use SvelteKit proxy endpoint (relative URL)

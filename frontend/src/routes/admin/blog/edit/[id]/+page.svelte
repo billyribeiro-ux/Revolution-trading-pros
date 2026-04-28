@@ -21,7 +21,6 @@
 	import SeoMetaFields from '$lib/components/blog/SeoMetaFields.svelte';
 	import { api } from '$lib/api/config';
 	import { mediaApi } from '$lib/api/media';
-	import { adminFetch } from '$lib/utils/adminFetch';
 	import {
 		predefinedCategories,
 		getPredefinedCategoryById
@@ -122,7 +121,12 @@
 	async function loadPost() {
 		loading = true;
 		try {
-			const data = await adminFetch(`/api/admin/posts/${postId}`);
+			// Use same-origin fetch so the SvelteKit proxy attaches rtp_access_token
+			// from the httpOnly cookie. adminFetch relies on in-memory token which may
+			// be null on fresh page load before the auth store restores.
+			const resp = await fetch(`/api/admin/posts/${postId}`, { credentials: 'include' });
+			if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+			const data = await resp.json();
 			const postData = data.data || data;
 
 			// Map post data to our state
@@ -287,6 +291,12 @@
 		}
 	}
 
+	function toNaiveDateTime(value: string | null): string | null {
+		if (!value) return null;
+		const s = value.replace(/\.\d+Z?$/, '').replace('Z', '');
+		return /T\d{2}:\d{2}$/.test(s) ? `${s}:00` : s;
+	}
+
 	async function savePost(status: string) {
 		saving = true;
 		saveError = '';
@@ -317,13 +327,12 @@
 					settings: b.settings,
 					metadata: b.metadata
 				})),
-				// Backend expects NaiveDateTime (no Z, no ms): "2026-04-27T12:00:00"
-				published_at:
+				// Backend expects NaiveDateTime "YYYY-MM-DDTHH:MM:SS" — no Z, no ms.
+				published_at: toNaiveDateTime(
 					status === 'published' && !post.published_at
-						? new Date().toISOString().replace(/\.\d{3}Z$/, '')
-						: post.published_at
-							? post.published_at.replace(/\.\d{3}Z$/, '').replace('Z', '')
-							: null
+						? new Date().toISOString()
+						: post.published_at || null
+				)
 			};
 
 			// Update existing post

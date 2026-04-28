@@ -2,6 +2,22 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-04-28 (c) — Blog admin: tag CSP + type-mismatch fixes
+
+### Fixed
+
+- **CSP blocked tags dropdown in dev (`connect-src`).** `loadTags()` called `api.get('/api/admin/tags')` which routed to `http://localhost:8080` (direct backend) — blocked by CSP before the request left the browser. Root cause: `apiFetch` routes `/api/*` to `API_BASE_URL` (localhost:8080), bypassing the SvelteKit proxy. Fix (two parts): (1) `svelte.config.js` now extends `connect-src` with `http://localhost:8080`, `http://localhost:5173`, `http://localhost:5174` when `process.env.NODE_ENV === 'development'` — production CSP unchanged; (2) `loadTags()` in both create and edit pages now calls `fetch('/api/admin/tags', { credentials: 'include' })` (same-origin SvelteKit proxy, cookie-authed) instead of `api.get(...)`.
+- **Tags sent as `number[]` instead of `string[]` → HTTP 422.** `post.tags` stored tag IDs (numbers); `CreatePostRequest.tags: Option<Vec<String>>` expects names. serde rejects integers with 422 "expected a string". Fix: `savePost()` in both create and edit pages now maps `post.tags` (IDs) → tag names via `availableTags.find(t => t.id === id)?.name` before building the request body.
+- **`published_at` format rejected by Rust serde (`NaiveDateTime`).** `new Date().toISOString()` produces `"YYYY-MM-DDTHH:MM:SS.mmmZ"`; `datetime-local` inputs produce `"YYYY-MM-DDTHH:MM"` (no seconds). Both fail serde's `NaiveDateTime` parser (rejects milliseconds, Z suffix, and missing seconds). Fix: new `toNaiveDateTime()` helper in both pages strips ms/Z and pads missing seconds to `:00`.
+- **`loadPost()` fails on fresh page load (`Failed to fetch`).** `adminFetch` relies on an in-memory auth token that is null until the auth store restores from the refresh cookie. On a full page navigation the token is gone, so `adminFetch` sends no Authorization header; the backend returns 401; the plain-text 401 body causes `response.json()` to throw inside `fetchFromBackend`, which returns `{data:null, status:500}`. Fix: `loadPost()` now calls `fetch('/api/admin/posts/${postId}', { credentials: 'include' })` (same-origin, cookie-authed SvelteKit proxy) instead of `adminFetch`. Unused `adminFetch` import removed.
+- **`createProxyShim` response caused `ERR_CONTENT_DECODING_FAILED`.** The shim streamed the upstream response with all original headers including `content-encoding: gzip`. Node's `fetch` (server-side) already decompresses the body, so the browser received uncompressed bytes labelled as gzip and failed to decode them. Fix: `createProxyShim.ts` now strips `content-encoding` and `transfer-encoding` before returning the response to the browser.
+
+### Added
+
+- **`frontend/tests/e2e/tags_csp_fix.spec.ts`** — end-to-end verification spec: API-based login (no UI flake), confirms tags dropdown populates (CSP fix), tags sent as strings (type-mismatch fix), POST/PUT both return 200, public `/blog/<slug>` returns 200, edit page title loads correctly (loadPost fix). Cleanup in `finally` block.
+
+---
+
 ## [Unreleased] — 2026-04-28 (b) — Infrastructure & Dev Stack
 
 Migration system reconciliation, Meilisearch local stack, and Fly.io config cleanup.

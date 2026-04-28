@@ -71,10 +71,16 @@ export function createProxyShim(basePath: string): {
 				body
 			});
 
-			// Stream the response through unchanged (preserves status, content-type, etc.)
+			// Forward response. Strip hop-by-hop encoding headers: the SvelteKit
+			// server-side fetch already decompresses the body, so re-sending
+			// content-encoding/transfer-encoding causes ERR_CONTENT_DECODING_FAILED
+			// in the browser (double-decompression).
+			const responseHeaders = new Headers(upstream.headers);
+			responseHeaders.delete('content-encoding');
+			responseHeaders.delete('transfer-encoding');
 			return new Response(upstream.body, {
 				status: upstream.status,
-				headers: upstream.headers
+				headers: responseHeaders
 			});
 		};
 
