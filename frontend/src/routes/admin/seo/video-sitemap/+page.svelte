@@ -229,7 +229,7 @@
 		<div class="platforms-section">
 			<h3>Supported Platforms</h3>
 			<div class="platforms-grid">
-				{#each ['youtube', 'vimeo', 'dailymotion', 'ted', 'wistia'] as platform}
+				{#each ['youtube', 'vimeo', 'dailymotion', 'ted', 'wistia'] as platform (platform)}
 					<label class="platform-checkbox" style="--platform-color: {getPlatformColor(platform)}">
 						<input
 							id="page-checkbox"
@@ -271,7 +271,7 @@
 			</div>
 		{:else}
 			<div class="videos-list">
-				{#each videos as video}
+				{#each videos as video (video.id)}
 					<div class="video-item">
 						<div class="video-thumbnail">
 							<img src={video.thumbnail} alt={video.title} />

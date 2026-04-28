@@ -304,7 +304,7 @@
 			<h3>Submission Trend</h3>
 			<div class="trend-chart">
 				<div class="chart-bars">
-					{#each trendData as point, i}
+					{#each trendData as point, i (point.date)}
 						<div class="bar-container">
 							<div
 								class="bar"
@@ -337,7 +337,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#each fieldStats as field}
+						{#each fieldStats as field (field.field_name)}
 							<tr>
 								<td class="field-name">{field.label}</td>
 								<td>

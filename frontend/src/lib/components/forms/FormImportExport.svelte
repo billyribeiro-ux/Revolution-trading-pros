@@ -235,7 +235,7 @@
 				<div class="option-group">
 					<label class="option-label" for="export-format-group">Format</label>
 					<div class="format-options" id="export-format-group" role="group">
-						{#each exportFormats as format}
+						{#each exportFormats as format (format.value)}
 							<button
 								class="format-btn"
 								class:selected={exportFormat === format.value}
@@ -299,7 +299,7 @@
 				<div class="option-group">
 					<label class="option-label" for="import-source-group">Import from</label>
 					<div class="source-options" id="import-source-group" role="group">
-						{#each importSources as source}
+						{#each importSources as source (source.value)}
 							<button
 								class="source-btn"
 								class:selected={importSource === source.value}

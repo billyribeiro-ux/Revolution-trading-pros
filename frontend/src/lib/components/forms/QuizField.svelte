@@ -288,7 +288,7 @@
 
 	{#if error && error.length > 0}
 		<div class="quiz-field__errors">
-			{#each error as err}
+			{#each error as err (err)}
 				<p class="quiz-field__error">{err}</p>
 			{/each}
 		</div>

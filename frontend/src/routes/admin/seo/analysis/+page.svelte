@@ -212,7 +212,7 @@
 				<Card>
 					<h3 class="text-lg font-bold text-gray-900 mb-4">Improvement Suggestions</h3>
 					<ul class="space-y-3">
-						{#each analysis.suggestions as suggestion}
+						{#each analysis.suggestions as suggestion (suggestion)}
 							<li class="flex items-start gap-3">
 								<span class="text-yellow-500 mt-1">⚠</span>
 								<span class="text-gray-700">{suggestion}</span>
@@ -227,7 +227,7 @@
 				<Card>
 					<h3 class="text-lg font-bold text-gray-900 mb-4">Analysis Details</h3>
 					<ul class="space-y-2">
-						{#each analysis.analysis_results as result}
+						{#each analysis.analysis_results as result (result)}
 							<li class="flex items-start gap-3">
 								<span class="text-green-500 mt-1">✓</span>
 								<span class="text-gray-700">{result}</span>

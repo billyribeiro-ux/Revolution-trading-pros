@@ -100,7 +100,7 @@
 	{#if isOpen}
 		<nav class="dropdown-menu dropdown-menu--full-width" aria-label="Trading Rooms">
 			<ul class="dropdown-menu__menu">
-				{#each tradingRooms as room}
+				{#each tradingRooms as room (room.name)}
 					<li>
 						<a href={room.url} target="_blank" rel="nofollow">
 							<span class="{room.icon} icon icon--md"></span>

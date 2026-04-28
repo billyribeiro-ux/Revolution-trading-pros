@@ -2,6 +2,34 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-04-28 (j) — Svelte MCP autofixer pass: payments-fix-2026-04 branch
+
+### Fixed
+
+Full Svelte autofixer + grep sweep on the `payments-fix-2026-04` branch. 98 missing `{#each}` key expressions across 42 files — all keys chosen by reading the actual data shape (`.id`, `.value`, `.href`, `.name`, primitive identity, or index as last resort).
+
+Folders fixed:
+
+| Folder | Files | Instances |
+|---|---|---|
+| `lib/components/forms/` (+ `pro/`) | 10 | 27 |
+| `lib/components/auth/` | 3 | 4 |
+| `lib/components/blog/BlockEditor/` | 2 | 3 |
+| `lib/components/cms/blocks/` | 2 | 3 |
+| `lib/components/courses/` | 1 | 3 |
+| `lib/components/dashboard/` (+ `alerts/`) | 6 | 13 |
+| `lib/consent/components/` | 1 | 4 |
+| `lib/consent/templates/` | 1 | 6 |
+| `lib/seo/` | 1 | 2 |
+| `routes/my/subscriptions/` | 1 | 1 |
+| `routes/admin/seo/` | 14 | 32 |
+| **Total** | **42** | **98** |
+
+Final grep for unkeyed `{#each}` blocks: **zero results.**
+`pnpm check` after all changes: **0 errors / 0 warnings / 5217 files**.
+
+---
+
 ## [Unreleased] — 2026-04-27 (i) — Svelte MCP autofixer pass: straggler fixes
 
 ### Fixed

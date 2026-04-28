@@ -125,7 +125,7 @@
 
 				{#if isDropdownOpen}
 					<div class="dropdown-menu" role="menu">
-						{#each displayRooms as room}
+						{#each displayRooms as room (room.name)}
 							<a href={room.href} class="dropdown-item" onclick={closeDropdown} role="menuitem">
 								<span class="dropdown-item__icon">
 									<RtpIcon name={room.icon} size={20} />

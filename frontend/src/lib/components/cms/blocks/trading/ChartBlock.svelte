@@ -352,7 +352,7 @@
 					<label class="setting-field">
 						<span>Height:</span>
 						<select value={height} onchange={handleHeightChange}>
-							{#each heightOptions as option}
+							{#each heightOptions as option (option.value)}
 								<option value={option.value}>{option.label}</option>
 							{/each}
 						</select>
@@ -377,7 +377,7 @@
 					<label class="setting-field">
 						<span>Interval:</span>
 						<select value={interval} onchange={handleIntervalChange}>
-							{#each intervalOptions as option}
+							{#each intervalOptions as option (option.value)}
 								<option value={option.value}>{option.label}</option>
 							{/each}
 						</select>

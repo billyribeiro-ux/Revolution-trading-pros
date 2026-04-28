@@ -651,7 +651,7 @@
 				</p>
 
 				<div class="plans-grid">
-					{#each availablePlans.filter((p) => p.id !== selectedSubscription?.planId && p.is_active) as plan}
+					{#each availablePlans.filter((p) => p.id !== selectedSubscription?.planId && p.is_active) as plan (plan.id)}
 						<button
 							class="plan-option"
 							class:selected={selectedNewPlanId === plan.id}

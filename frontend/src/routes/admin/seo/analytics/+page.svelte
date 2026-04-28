@@ -210,7 +210,7 @@
 							</tr>
 						</thead>
 						<tbody>
-							{#each topPages as page}
+							{#each topPages as page (page.url)}
 								<tr>
 									<td>
 										<div class="url-cell">{page.url}</div>

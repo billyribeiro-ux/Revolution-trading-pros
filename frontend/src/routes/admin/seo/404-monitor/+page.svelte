@@ -174,7 +174,7 @@
 		</div>
 
 		<select class="sort-select" bind:value={sortBy}>
-			{#each sortOptions as option}
+			{#each sortOptions as option (option.value)}
 				<option value={option.value}>{option.label}</option>
 			{/each}
 		</select>
@@ -211,7 +211,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					{#each filteredLogs as log}
+					{#each filteredLogs as log (log.id)}
 						<tr>
 							<td>
 								<input

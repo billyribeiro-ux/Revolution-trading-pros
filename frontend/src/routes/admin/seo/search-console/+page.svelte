@@ -154,7 +154,7 @@
 			<div class="sites-section">
 				<h2>Available Sites</h2>
 				<div class="sites-list">
-					{#each sites as site}
+					{#each sites as site (site.site_url)}
 						<div class="site-card">
 							<div class="site-url">{site.site_url}</div>
 							<div class="site-permission">{site.permission_level}</div>

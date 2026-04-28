@@ -281,7 +281,7 @@
 				<div class="question-results">
 					<h3>Question Results</h3>
 					<div class="results-grid">
-						{#each result.results as qr, i}
+						{#each result.results as qr, i (i)}
 							<div class="question-result" class:correct={qr.correct} class:incorrect={!qr.correct}>
 								<span class="q-num">Q{i + 1}</span>
 								<span class="q-status">{qr.correct ? '+' : '-'}{qr.points}</span>
@@ -323,7 +323,7 @@
 		</div>
 
 		<div class="question-nav">
-			{#each quizData.questions as q, i}
+			{#each quizData.questions as q, i (i)}
 				<button
 					class="nav-dot"
 					class:current={i === currentQuestionIndex}
@@ -346,7 +346,7 @@
 			<h3 class="question-text">{currentQuestion.question_text}</h3>
 
 			<div class="answers">
-				{#each currentQuestion.answers as answer}
+				{#each currentQuestion.answers as answer (answer.id)}
 					<button
 						class="answer-option"
 						class:selected={selectedAnswers.get(currentQuestion.id) === answer.id}
