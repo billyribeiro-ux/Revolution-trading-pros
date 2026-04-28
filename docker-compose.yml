@@ -70,7 +70,7 @@ services:
       DATABASE_URL: postgres://rtp:rtp_password@db:5432/revolution_trading_pros
       REDIS_URL: redis://redis:6379
       JWT_SECRET: ${JWT_SECRET:-development-secret-key-min-32-chars-long-enough-for-hs256}
-      JWT_EXPIRES_IN: "24"
+      JWT_EXPIRES_IN: "1"
       RUST_LOG: info,sqlx=warn,tower_http=debug
       HOST: 0.0.0.0
       PORT: "8080"

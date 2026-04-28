@@ -2,6 +2,26 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-04-28
+
+Comprehensive auth/authorization security hardening. All 7 findings verified live against the running Docker stack. Full audit in `AUTH_AUDIT.md`; fix details and HTTP evidence in `AUTH_FIX_RESULT.md`.
+
+### Security
+
+- **C-1 — Banned user auth bypass closed.** `is_active` added to `User` struct (`api/src/models/user.rs`) and to both SELECT queries (login handler + auth middleware). Login blocks banned accounts before JWT issuance; middleware rejects every subsequent request from a banned user regardless of token validity.
+- **H-1 — JWT access token TTL reduced from 24h to 1h.** Default changed in `api/src/config/mod.rs`; `docker-compose.yml` and `api/.env.example` updated to match. `exp - iat = 3600` confirmed live. Production: set or remove `JWT_EXPIRES_IN` in Fly secrets.
+- **H-2 — Login rate limiter now fails closed on Redis outage.** Both the per-IP and per-email rate limit blocks in `api/src/routes/auth.rs` previously passed all logins through on Redis error. Both now return HTTP 503. Also fixed a pre-existing type error in `api/src/services/redis.rs::incr()`: the Redis pipeline result was typed as `i64` but the crate returns `Vec<i64>`; changed to `Vec<i64>` + `.into_iter().next()`. This bug had been silently masked by the fail-open code.
+- **H-4 — Admin `create_user` now validates password strength.** `api/src/routes/admin.rs` calls `validate_password` before `hash_password`; weak passwords (e.g. `"a"`) now return HTTP 400 instead of being hashed and stored.
+- **H-5 — `resend_verification` email enumeration closed.** The already-verified branch previously returned `"Your email is already verified. You can log in."` — a distinct message that confirmed both account existence and verification state. Now returns the same generic message as the unknown-email branch. No email is sent for verified accounts. Verified byte-identical across all three branches live.
+- **H-6 — `ban_user` now invalidates active sessions immediately.** After the DB `is_active = false` update, `ban_user` calls `redis.invalidate_all_user_sessions` and `redis.invalidate_user_cache` (tolerating Redis failure with a warning log). Combined with C-1's middleware check, banned users lose access on their next request rather than after the cache TTL.
+- **H-7 — Developer/super_admin role assignment restricted to super_admin actors.** `update_user` in `api/src/routes/admin.rs` now rejects role changes to `developer`, `super_admin`, or `super-admin` from any non-super_admin actor with HTTP 403. All role changes (privileged or not) are logged to `security_events` with `event_type='role_change'`, `old_role`, `new_role`, and `actor_id`.
+
+### Fixed
+
+- **`redis::incr()` pipeline deserialization** (`api/src/services/redis.rs`): `redis::pipe().atomic().incr().expire()` returns `Vec<i64>`, not a bare `i64`. The broken type annotation caused `check_ip_rate_limit` to always return `Err(...)`, which the old fail-open login handler silently swallowed. Fixed by deserializing as `Vec<i64>` and taking the first element.
+
+---
+
 ## [Unreleased] — 2026-04-27
 
 End-to-end repair of the blog/CMS path: public renderer, admin write path, R2 media routing, scheduling-claim cleanup, and analytics ingestion. Verified live with a real admin login and a real R2 round-trip.

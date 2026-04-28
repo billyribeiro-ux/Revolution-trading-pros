@@ -92,14 +92,16 @@ impl RedisService {
     /// Increment a counter (for rate limiting)
     pub async fn incr(&self, key: &str, expire_seconds: u64) -> Result<i64> {
         let mut conn = self.conn.clone();
-        let count: i64 = redis::pipe()
+        // FIX-2026-04-28: pipeline returns Vec<i64> (one element per command),
+        // not a bare i64. Removed .ignore() so EXPIRE result is included in
+        // the Vec; take the first element (INCR result).
+        let result: Vec<i64> = redis::pipe()
             .atomic()
             .incr(key, 1)
             .expire(key, expire_seconds as i64)
-            .ignore()
             .query_async(&mut conn)
             .await?;
-        Ok(count)
+        Ok(result.into_iter().next().unwrap_or(0))
     }
 
     /// Check rate limit
