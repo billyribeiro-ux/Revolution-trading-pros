@@ -29,6 +29,8 @@ export interface SubscriptionPlan {
 	stripe_product_id?: string;
 	features?: string[] | Record<string, unknown>;
 	trial_days?: number;
+	trial_period_days?: number | null;
+	trial_requires_payment_method?: boolean;
 	sort_order?: number;
 	room_id?: number;
 	room_name?: string;

@@ -379,7 +379,7 @@ async fn get_active_subscription(
     user: User,
 ) -> Result<Json<Option<UserSubscriptionRow>>, (StatusCode, Json<serde_json::Value>)> {
     let subscription: Option<UserSubscriptionRow> = sqlx::query_as(
-        "SELECT * FROM user_memberships WHERE user_id = $1 AND status = 'active' ORDER BY created_at DESC LIMIT 1"
+        "SELECT * FROM user_memberships WHERE user_id = $1 AND status IN ('active', 'trialing') ORDER BY created_at DESC LIMIT 1"
     )
     .bind(user.id)
     .fetch_optional(&state.db.pool)
@@ -421,7 +421,7 @@ async fn create_subscription(
 
     // Check if user already has active subscription
     let existing: Option<(i64,)> =
-        sqlx::query_as("SELECT id FROM user_memberships WHERE user_id = $1 AND status = 'active'")
+        sqlx::query_as("SELECT id FROM user_memberships WHERE user_id = $1 AND status IN ('active', 'trialing')")
             .bind(user.id)
             .fetch_optional(&state.db.pool)
             .await
@@ -1057,7 +1057,7 @@ async fn preview_plan_change(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Get current subscription
     let subscription: UserSubscriptionRow = sqlx::query_as(
-        "SELECT * FROM user_memberships WHERE id = $1 AND user_id = $2 AND status = 'active'",
+        "SELECT * FROM user_memberships WHERE id = $1 AND user_id = $2 AND status IN ('active', 'trialing')",
     )
     .bind(subscription_id)
     .bind(user.id)

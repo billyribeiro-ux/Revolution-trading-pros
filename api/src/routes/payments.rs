@@ -107,6 +107,8 @@ async fn create_checkout(
     struct PlanRow {
         name: String,
         price: f64,
+        trial_period_days: Option<i32>,
+        trial_requires_payment_method: bool,
     }
     #[derive(sqlx::FromRow)]
     struct ProductRow {
@@ -128,17 +130,24 @@ async fn create_checkout(
     let mut resolved_items: Vec<ResolvedItem> = Vec::new();
     let mut subtotal = 0.0_f64;
     let mut line_items: Vec<LineItem> = Vec::new();
+    // Trial settings from first subscription plan found (only one plan per checkout expected)
+    let mut checkout_trial_days: Option<i64> = None;
+    let mut checkout_trial_requires_pm: bool = true;
 
     for item in &input.items {
         let (db_name, db_price): (String, f64) = if let Some(plan_id) = item.plan_id {
             let row: PlanRow = sqlx::query_as(
-                "SELECT name, price FROM membership_plans WHERE id = $1 AND is_active = true",
+                "SELECT name, price::FLOAT8 as price, trial_period_days, trial_requires_payment_method FROM membership_plans WHERE id = $1 AND is_active = true",
             )
             .bind(plan_id)
             .fetch_optional(&state.db.pool)
             .await
             .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
             .ok_or_else(|| (StatusCode::BAD_REQUEST, Json(json!({"error": format!("Plan {} not found or inactive", plan_id)}))))?;
+            if checkout_trial_days.is_none() {
+                checkout_trial_days = row.trial_period_days.map(|d| d as i64);
+                checkout_trial_requires_pm = row.trial_requires_payment_method;
+            }
             (row.name, row.price)
         } else if let Some(product_id) = item.product_id {
             let row: ProductRow = sqlx::query_as(
@@ -318,6 +327,8 @@ async fn create_checkout(
         metadata,
         allow_promotion_codes: input.coupon_code.is_none(),
         billing_address_collection: true,
+        trial_period_days: checkout_trial_days,
+        trial_requires_payment_method: checkout_trial_requires_pm,
     };
 
     let session = state
@@ -561,6 +572,9 @@ async fn webhook(
         }
         "charge.dispute.created" => {
             handle_dispute_created(&state, &event).await?;
+        }
+        "customer.subscription.trial_will_end" => {
+            handle_trial_will_end(&state, &event).await?;
         }
         _ => {
             tracing::debug!("Unhandled webhook event: {}", event.event_type);
@@ -1526,6 +1540,58 @@ async fn handle_dispute_created(
         reason = %reason,
         amount_cents = %amount_cents,
         "Chargeback dispute created — admin notification required"
+    );
+
+    Ok(())
+}
+
+/// Log trial-ending soon event; email notification handled by Task 4 (Postmark).
+async fn handle_trial_will_end(
+    state: &AppState,
+    event: &crate::services::stripe::WebhookEvent,
+) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
+    let sub = &event.data.object;
+    let subscription_id = sub["id"].as_str().unwrap_or("unknown");
+    let customer_id = sub["customer"].as_str().unwrap_or("unknown");
+    let trial_end = sub["trial_end"].as_i64();
+
+    // Look up the user by stripe_customer_id
+    let user_id: Option<i64> = sqlx::query_scalar(
+        "SELECT user_id FROM user_memberships WHERE stripe_customer_id = $1 LIMIT 1",
+    )
+    .bind(customer_id)
+    .fetch_optional(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!(target: "payments", error = %e, "trial_will_end user lookup failed");
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "DB error during trial_will_end"})),
+        )
+    })?
+    .flatten();
+
+    sqlx::query(
+        r#"INSERT INTO security_events (user_id, event_type, event_category, severity, details, created_at)
+           VALUES ($1, 'trial_will_end', 'billing', 'low', $2, NOW())"#,
+    )
+    .bind(user_id)
+    .bind(json!({
+        "subscription_id": subscription_id,
+        "customer_id": customer_id,
+        "trial_end_ts": trial_end,
+        // TODO Task 4: send Postmark "trial ending soon" email to user
+    }))
+    .execute(&state.db.pool)
+    .await
+    .ok(); // non-fatal
+
+    tracing::info!(
+        target: "payments",
+        event = "trial_will_end",
+        subscription_id = %subscription_id,
+        customer_id = %customer_id,
+        "Trial ending in 3 days — email notification pending Task 4"
     );
 
     Ok(())

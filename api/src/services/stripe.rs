@@ -208,6 +208,10 @@ pub struct CheckoutConfig {
     pub metadata: HashMap<String, String>,
     pub allow_promotion_codes: bool,
     pub billing_address_collection: bool,
+    /// If set, Stripe will start the subscription in trial mode for this many days.
+    pub trial_period_days: Option<i64>,
+    /// If false, card collection is deferred until trial converts (payment_method_collection=if_required).
+    pub trial_requires_payment_method: bool,
 }
 
 #[derive(Clone)]
@@ -394,6 +398,27 @@ impl StripeService {
             ));
         }
 
+        // Trial support
+        if let Some(trial_days) = config.trial_period_days {
+            if trial_days > 0 {
+                form_params.push((
+                    "subscription_data[trial_period_days]".to_string(),
+                    trial_days.to_string(),
+                ));
+                if !config.trial_requires_payment_method {
+                    form_params.push((
+                        "payment_method_collection".to_string(),
+                        "if_required".to_string(),
+                    ));
+                    form_params.push((
+                        "subscription_data[trial_settings][end_behavior][missing_payment_method]"
+                            .to_string(),
+                        "cancel".to_string(),
+                    ));
+                }
+            }
+        }
+
         // Payment method types
         form_params.push(("payment_method_types[0]".to_string(), "card".to_string()));
 
@@ -451,6 +476,8 @@ impl StripeService {
             metadata: HashMap::new(),
             allow_promotion_codes: true,
             billing_address_collection: false,
+            trial_period_days: None,
+            trial_requires_payment_method: true,
         };
 
         let session = self.create_checkout_session(config).await?;

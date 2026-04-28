@@ -414,6 +414,8 @@ async fn create_checkout(
         metadata,
         allow_promotion_codes: input.coupon_code.is_none(),
         billing_address_collection: true,
+        trial_period_days: None,
+        trial_requires_payment_method: true,
     };
 
     // Create Stripe session
