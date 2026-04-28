@@ -39,11 +39,30 @@ pub struct StripeSubscription {
     pub id: String,
     pub status: String,
     pub customer: String,
+    /// Stripe 2026 API: period timestamps moved to items.data[0].
+    /// These top-level fields are kept as #[serde(default)] fallback for older fixtures/mocks.
+    #[serde(default)]
     pub current_period_start: i64,
+    #[serde(default)]
     pub current_period_end: i64,
     pub cancel_at_period_end: bool,
     pub canceled_at: Option<i64>,
     pub metadata: Option<HashMap<String, String>>,
+    /// Items list — present in real API responses and live webhook payloads.
+    pub items: Option<StripeSubscriptionItemList>,
+}
+
+impl StripeSubscription {
+    /// Returns (current_period_start, current_period_end) as Unix timestamps.
+    /// Reads from items.data[0] first (Stripe 2026+), falls back to top-level fields.
+    pub fn get_current_period(&self) -> (i64, i64) {
+        if let Some(item) = self.items.as_ref().and_then(|l| l.data.first()) {
+            if item.current_period_start != 0 || item.current_period_end != 0 {
+                return (item.current_period_start, item.current_period_end);
+            }
+        }
+        (self.current_period_start, self.current_period_end)
+    }
 }
 
 /// Stripe customer response
@@ -83,11 +102,21 @@ pub struct StripePriceRecurring {
     pub interval_count: i64,
 }
 
-/// Single subscription item (we read `id` and `price.id` for migrations)
-#[derive(Debug, Deserialize, Clone)]
+/// Single subscription item — includes period timestamps (Stripe moved them here in 2026 API)
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct StripeSubscriptionItem {
     pub id: String,
     pub price: StripePrice,
+    #[serde(default)]
+    pub current_period_start: i64,
+    #[serde(default)]
+    pub current_period_end: i64,
+}
+
+/// Paginated list of subscription items (Stripe wraps them in a list object)
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct StripeSubscriptionItemList {
+    pub data: Vec<StripeSubscriptionItem>,
 }
 
 /// Stripe payment method response - ICT 7 Fix: Payment Methods Management

@@ -57,6 +57,8 @@ struct PlanPrice {
     id: i64,
     name: String,
     price: f64,
+    stripe_price_id: Option<String>,
+    billing_cycle: String,
 }
 
 /// Create checkout session
@@ -112,9 +114,8 @@ async fn create_checkout(
         }
 
         if let Some(plan_id) = item.plan_id {
-            // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
             let plan: PlanPrice = sqlx::query_as(
-                "SELECT id, name, price::FLOAT8 as price FROM membership_plans WHERE id = $1 AND is_active = true",
+                "SELECT id, name, price::FLOAT8 as price, stripe_price_id, billing_cycle FROM membership_plans WHERE id = $1 AND is_active = true",
             )
             .bind(plan_id)
             .fetch_optional(&state.db.pool)
@@ -132,6 +133,14 @@ async fn create_checkout(
                 )
             })?;
 
+            // Require a Stripe price ID — ad-hoc pricing is forbidden by PAYMENTS_ARCHITECTURE_STANDARD §1
+            if plan.stripe_price_id.is_none() {
+                return Err((
+                    StatusCode::UNPROCESSABLE_ENTITY,
+                    Json(json!({"error": format!("Plan {} has no Stripe price configured", plan_id)})),
+                ));
+            }
+
             subtotal += plan.price;
 
             line_items.push(json!({
@@ -139,6 +148,8 @@ async fn create_checkout(
                 "id": plan.id,
                 "name": plan.name,
                 "price": plan.price,
+                "stripe_price_id": plan.stripe_price_id,
+                "billing_cycle": plan.billing_cycle,
                 "quantity": 1,
                 "total": plan.price
             }));
@@ -352,12 +363,24 @@ async fn create_checkout(
     let cancel_url = format!("{}{}", app_url, cancel_path);
 
     // Build Stripe line items from our cart items
+    // Subscriptions use stripe_price_id (the price is Stripe-authoritative).
+    // One-time products use ad-hoc pricing until products also carry stripe_price_id.
     let mut stripe_line_items: Vec<crate::services::stripe::LineItem> = Vec::new();
 
     for item in &line_items {
         let is_subscription = item.get("type").and_then(|t| t.as_str()) == Some("subscription");
+        let stripe_price_id = item.get("stripe_price_id").and_then(|v| v.as_str()).map(|s| s.to_string());
+
+        // Derive interval from billing_cycle for metadata purposes (Stripe already knows from price_id)
+        let billing_cycle = item.get("billing_cycle").and_then(|v| v.as_str()).unwrap_or("monthly");
+        let (interval, interval_count) = match billing_cycle {
+            "quarterly" => ("month", 3),
+            "annual"    => ("year", 1),
+            _           => ("month", 1),
+        };
+
         stripe_line_items.push(crate::services::stripe::LineItem {
-            price_id: None, // Ad-hoc pricing
+            price_id: stripe_price_id, // Use Stripe price ID for subscriptions (Stripe-authoritative pricing)
             name: item
                 .get("name")
                 .and_then(|n| n.as_str())
@@ -368,12 +391,8 @@ async fn create_checkout(
             currency: "usd".to_string(),
             quantity: item.get("quantity").and_then(|q| q.as_i64()).unwrap_or(1),
             is_subscription,
-            interval: if is_subscription {
-                Some("month".to_string())
-            } else {
-                None
-            },
-            interval_count: if is_subscription { Some(1) } else { None },
+            interval: if is_subscription { Some(interval.to_string()) } else { None },
+            interval_count: if is_subscription { Some(interval_count) } else { None },
         });
     }
 

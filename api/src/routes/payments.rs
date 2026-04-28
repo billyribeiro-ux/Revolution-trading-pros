@@ -511,7 +511,7 @@ async fn webhook(
         r#"INSERT INTO webhook_events (event_id, event_type, payload)
            VALUES ($1, $2, $3)
            ON CONFLICT (event_id) DO NOTHING
-           RETURNING 1"#,
+           RETURNING 1::BIGINT"#,
     )
     .bind(&event.id)
     .bind(&event.event_type)
@@ -790,8 +790,14 @@ async fn handle_checkout_completed(
                         .bind(plan_id)
                         .bind(&sub.id)
                         .bind(&sub.customer)
-                        .bind(chrono::DateTime::from_timestamp(sub.current_period_start, 0).map(|d| d.naive_utc()))
-                        .bind(chrono::DateTime::from_timestamp(sub.current_period_end, 0).map(|d| d.naive_utc()))
+                        .bind({
+                            let (start, _) = sub.get_current_period();
+                            chrono::DateTime::from_timestamp(start, 0).map(|d| d.naive_utc())
+                        })
+                        .bind({
+                            let (_, end) = sub.get_current_period();
+                            chrono::DateTime::from_timestamp(end, 0).map(|d| d.naive_utc())
+                        })
                         .execute(&state.db.pool)
                         .await {
                             tracing::error!(target: "payments", user_id = %user_id, plan_id = %plan_id, "Failed to create user_membership: {}", e);
@@ -1116,13 +1122,14 @@ async fn handle_subscription_updated(
         WHERE stripe_subscription_id = $6"#,
     )
     .bind(status)
-    .bind(
-        chrono::DateTime::from_timestamp(subscription.current_period_start, 0)
-            .map(|d| d.naive_utc()),
-    )
-    .bind(
-        chrono::DateTime::from_timestamp(subscription.current_period_end, 0).map(|d| d.naive_utc()),
-    )
+    .bind({
+        let (start, _) = subscription.get_current_period();
+        chrono::DateTime::from_timestamp(start, 0).map(|d| d.naive_utc())
+    })
+    .bind({
+        let (_, end) = subscription.get_current_period();
+        chrono::DateTime::from_timestamp(end, 0).map(|d| d.naive_utc())
+    })
     .bind(subscription.cancel_at_period_end)
     .bind(
         subscription

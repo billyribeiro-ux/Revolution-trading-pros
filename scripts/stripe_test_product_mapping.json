@@ -1,0 +1,22 @@
+[
+  {"plan_id": 1,  "name": "Day Trading Room",                    "billing_cycle": "monthly",   "price_cents": 19700, "stripe_product_id": "prod_UQ6mJCccLV7yy4", "stripe_price_id": "price_1TRGYa9HsGkDuN3bM9imRHBy"},
+  {"plan_id": 2,  "name": "Swing Trading Room",                  "billing_cycle": "monthly",   "price_cents": 14700, "stripe_product_id": "prod_UQ6mepjBwxWfGj", "stripe_price_id": "price_1TRGYb9HsGkDuN3b7pxCtjri"},
+  {"plan_id": 3,  "name": "Small Account Mentorship",            "billing_cycle": "monthly",   "price_cents":  9700, "stripe_product_id": "prod_UQ6mYSKctVDjeD", "stripe_price_id": "price_1TRGYc9HsGkDuN3ba3AcLXb5"},
+  {"plan_id": 4,  "name": "Alerts Only",                         "billing_cycle": "monthly",   "price_cents":  9700, "stripe_product_id": "prod_UQ6m37hEWkfEot", "stripe_price_id": "price_1TRGYc9HsGkDuN3bmSCuXITr"},
+  {"plan_id": 5,  "name": "Explosive Swing",                     "billing_cycle": "monthly",   "price_cents": 14700, "stripe_product_id": "prod_UQ6m9OFKcQPQLe", "stripe_price_id": "price_1TRGYd9HsGkDuN3bJV9px1Rf"},
+  {"plan_id": 6,  "name": "SPX Profit Pulse",                    "billing_cycle": "monthly",   "price_cents": 19700, "stripe_product_id": "prod_UQ6m9YQMC1eZXP", "stripe_price_id": "price_1TRGYe9HsGkDuN3bcybkk2TS"},
+  {"plan_id": 7,  "name": "Weekly Watchlist",                    "billing_cycle": "monthly",   "price_cents":  4700, "stripe_product_id": "prod_UQ6m6e0eyE7MMb", "stripe_price_id": "price_1TRGYe9HsGkDuN3bf3srws7T"},
+  {"plan_id": 8,  "name": "Day Trading Room - Quarterly",        "billing_cycle": "quarterly", "price_cents": 52900, "stripe_product_id": "prod_UQ6moib0aWrGEC", "stripe_price_id": "price_1TRGYf9HsGkDuN3bMSvtZAYA"},
+  {"plan_id": 9,  "name": "Day Trading Room - Annual",           "billing_cycle": "annual",    "price_cents": 172700,"stripe_product_id": "prod_UQ6mrh9AaFPySz", "stripe_price_id": "price_1TRGYg9HsGkDuN3bvd45jsTS"},
+  {"plan_id": 10, "name": "Swing Trading Room - Quarterly",      "billing_cycle": "quarterly", "price_cents": 39700, "stripe_product_id": "prod_UQ6mkQvBds1g3G", "stripe_price_id": "price_1TRGYh9HsGkDuN3bL13gZwrk"},
+  {"plan_id": 11, "name": "Swing Trading Room - Annual",         "billing_cycle": "annual",    "price_cents": 129700,"stripe_product_id": "prod_UQ6mUonEiApT2E", "stripe_price_id": "price_1TRGYi9HsGkDuN3b6zZY8MNw"},
+  {"plan_id": 12, "name": "Small Account Mentorship - Quarterly","billing_cycle": "quarterly", "price_cents": 26200, "stripe_product_id": "prod_UQ6mCNij7Clymh", "stripe_price_id": "price_1TRGYi9HsGkDuN3bK9GUA9OE"},
+  {"plan_id": 13, "name": "Small Account Mentorship - Annual",   "billing_cycle": "annual",    "price_cents": 85700, "stripe_product_id": "prod_UQ6mCem2lnr8xX", "stripe_price_id": "price_1TRGYj9HsGkDuN3bPTWMj1PQ"},
+  {"plan_id": 14, "name": "Explosive Swings - Quarterly",        "billing_cycle": "quarterly", "price_cents": 39700, "stripe_product_id": "prod_UQ6mtt6XIsEqln", "stripe_price_id": "price_1TRGYj9HsGkDuN3bUCUJvFiW"},
+  {"plan_id": 15, "name": "Explosive Swings - Annual",           "billing_cycle": "annual",    "price_cents": 129700,"stripe_product_id": "prod_UQ6meDodTa38TE", "stripe_price_id": "price_1TRGYk9HsGkDuN3b52m90yNx"},
+  {"plan_id": 16, "name": "SPX Profit Pulse - Quarterly",        "billing_cycle": "quarterly", "price_cents": 52900, "stripe_product_id": "prod_UQ6mdXrY9wNixu", "stripe_price_id": "price_1TRGYl9HsGkDuN3biAVubEiJ"},
+  {"plan_id": 17, "name": "SPX Profit Pulse - Annual",           "billing_cycle": "annual",    "price_cents": 172700,"stripe_product_id": "prod_UQ6mYJ7MBGr78Z", "stripe_price_id": "price_1TRGYl9HsGkDuN3bcNYYBmF2"},
+  {"plan_id": 18, "name": "High Octane Scanner - Monthly",       "billing_cycle": "monthly",   "price_cents":  9700, "stripe_product_id": "prod_UQ6mdObnD8RCRP", "stripe_price_id": "price_1TRGYm9HsGkDuN3bpWfYXpGS"},
+  {"plan_id": 19, "name": "High Octane Scanner - Quarterly",     "billing_cycle": "quarterly", "price_cents": 26200, "stripe_product_id": "prod_UQ6mB3dGnB13uM", "stripe_price_id": "price_1TRGYn9HsGkDuN3b3Ne2Zt3Y"},
+  {"plan_id": 20, "name": "High Octane Scanner - Annual",        "billing_cycle": "annual",    "price_cents": 85700, "stripe_product_id": "prod_UQ6muttBicgxr7", "stripe_price_id": "price_1TRGYn9HsGkDuN3b4HVb7Z1Y"}
+]
