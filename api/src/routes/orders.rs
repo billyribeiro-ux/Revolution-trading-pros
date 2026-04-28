@@ -40,10 +40,10 @@ pub struct OrderDetailResponse {
     pub id: i64,
     pub order_number: String,
     pub status: String,
-    pub subtotal: f64,
-    pub discount: f64,
-    pub tax: f64,
-    pub total: f64,
+    pub subtotal_cents: i64,
+    pub discount_cents: i64,
+    pub tax_cents: i64,
+    pub total_cents: i64,
     pub currency: String,
     pub billing_name: Option<String>,
     pub billing_email: Option<String>,
@@ -62,8 +62,8 @@ pub struct OrderItemDetailResponse {
     pub plan_id: Option<i64>,
     pub name: String,
     pub quantity: i32,
-    pub unit_price: f64,
-    pub total: f64,
+    pub unit_price_cents: i64,
+    pub total_cents: i64,
     pub product_type: Option<String>,
     pub product_slug: Option<String>,
     pub thumbnail: Option<String>,
@@ -94,10 +94,10 @@ struct OrderRow {
     id: i64,
     order_number: String,
     status: String,
-    subtotal: f64,
-    discount: f64,
-    tax: f64,
-    total: f64,
+    subtotal_cents: i64,
+    discount_cents: i64,
+    tax_cents: i64,
+    total_cents: i64,
     currency: String,
     billing_name: Option<String>,
     billing_email: Option<String>,
@@ -115,8 +115,8 @@ struct OrderItemRow {
     plan_id: Option<i64>,
     name: String,
     quantity: i32,
-    unit_price: f64,
-    total: f64,
+    unit_price_cents: i64,
+    total_cents: i64,
 }
 
 #[derive(Debug, sqlx::FromRow)]
@@ -144,8 +144,8 @@ pub async fn index(
     // Build query with optional status filter
     let orders: Vec<OrderRow> = if let Some(ref status) = query.status {
         sqlx::query_as::<_, OrderRow>(
-            r#"SELECT id, order_number, status, subtotal::FLOAT8 as subtotal, discount::FLOAT8 as discount,
-                      tax::FLOAT8 as tax, total::FLOAT8 as total, currency,
+            r#"SELECT id, order_number, status, (subtotal * 100)::BIGINT AS subtotal_cents, (discount * 100)::BIGINT AS discount_cents,
+                      (tax * 100)::BIGINT AS tax_cents, (total * 100)::BIGINT AS total_cents, currency,
                       billing_name, billing_email, billing_address, payment_provider,
                       coupon_code, created_at, completed_at
                FROM orders
@@ -161,8 +161,8 @@ pub async fn index(
         .await
     } else {
         sqlx::query_as::<_, OrderRow>(
-            r#"SELECT id, order_number, status, subtotal::FLOAT8 as subtotal, discount::FLOAT8 as discount,
-                      tax::FLOAT8 as tax, total::FLOAT8 as total, currency,
+            r#"SELECT id, order_number, status, (subtotal * 100)::BIGINT AS subtotal_cents, (discount * 100)::BIGINT AS discount_cents,
+                      (tax * 100)::BIGINT AS tax_cents, (total * 100)::BIGINT AS total_cents, currency,
                       billing_name, billing_email, billing_address, payment_provider,
                       coupon_code, created_at, completed_at
                FROM orders
@@ -230,7 +230,7 @@ pub async fn index(
                 number: o.order_number,
                 date: o.created_at.and_utc().to_rfc3339(),
                 status: o.status,
-                total: format!("{:.2}", o.total),
+                total: format!("{:.2}", o.total_cents as f64 / 100.0), // display only — OrderResponse.total is a String
                 currency: o.currency,
                 item_count,
             }
@@ -259,8 +259,8 @@ pub async fn show(
     // Try to parse as i64 ID first, then as UUID
     let order: Option<OrderRow> = if let Ok(order_id) = id.parse::<i64>() {
         sqlx::query_as::<_, OrderRow>(
-            r#"SELECT id, order_number, status, subtotal::FLOAT8 as subtotal, discount::FLOAT8 as discount,
-                      tax::FLOAT8 as tax, total::FLOAT8 as total, currency,
+            r#"SELECT id, order_number, status, (subtotal * 100)::BIGINT AS subtotal_cents, (discount * 100)::BIGINT AS discount_cents,
+                      (tax * 100)::BIGINT AS tax_cents, (total * 100)::BIGINT AS total_cents, currency,
                       billing_name, billing_email, billing_address, payment_provider,
                       coupon_code, created_at, completed_at
                FROM orders
@@ -273,8 +273,8 @@ pub async fn show(
     } else if let Ok(uuid) = Uuid::parse_str(&id) {
         // Legacy UUID support
         sqlx::query_as::<_, OrderRow>(
-            r#"SELECT id, order_number, status, subtotal::FLOAT8 as subtotal, discount::FLOAT8 as discount,
-                      tax::FLOAT8 as tax, total::FLOAT8 as total, currency,
+            r#"SELECT id, order_number, status, (subtotal * 100)::BIGINT AS subtotal_cents, (discount * 100)::BIGINT AS discount_cents,
+                      (tax * 100)::BIGINT AS tax_cents, (total * 100)::BIGINT AS total_cents, currency,
                       billing_name, billing_email, billing_address, payment_provider,
                       coupon_code, created_at, completed_at
                FROM orders
@@ -319,8 +319,8 @@ pub async fn show_by_number(
     Path(order_number): Path<String>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let order: Option<OrderRow> = sqlx::query_as::<_, OrderRow>(
-        r#"SELECT id, order_number, status, subtotal::FLOAT8 as subtotal, discount::FLOAT8 as discount,
-                  tax::FLOAT8 as tax, total::FLOAT8 as total, currency,
+        r#"SELECT id, order_number, status, (subtotal * 100)::BIGINT AS subtotal_cents, (discount * 100)::BIGINT AS discount_cents,
+                  (tax * 100)::BIGINT AS tax_cents, (total * 100)::BIGINT AS total_cents, currency,
                   billing_name, billing_email, billing_address, payment_provider,
                   coupon_code, created_at, completed_at
            FROM orders
@@ -364,7 +364,7 @@ async fn build_order_detail(
 ) -> Result<OrderDetailResponse, (StatusCode, Json<serde_json::Value>)> {
     // Fetch order items
     let items: Vec<OrderItemRow> = sqlx::query_as::<_, OrderItemRow>(
-        r#"SELECT id, product_id, plan_id, name, quantity, unit_price::FLOAT8 as unit_price, total::FLOAT8 as total
+        r#"SELECT id, product_id, plan_id, name, quantity, (unit_price * 100)::BIGINT AS unit_price_cents, (total * 100)::BIGINT AS total_cents
            FROM order_items
            WHERE order_id = $1
            ORDER BY id"#,
@@ -423,8 +423,8 @@ async fn build_order_detail(
                 plan_id: item.plan_id,
                 name: item.name,
                 quantity: item.quantity,
-                unit_price: item.unit_price,
-                total: item.total,
+                unit_price_cents: item.unit_price_cents,
+                total_cents: item.total_cents,
                 product_type: meta.and_then(|m| m.product_type.clone()),
                 product_slug: meta.and_then(|m| m.slug.clone()),
                 thumbnail: meta.and_then(|m| m.thumbnail.clone()),
@@ -436,10 +436,10 @@ async fn build_order_detail(
         id: order.id,
         order_number: order.order_number,
         status: order.status,
-        subtotal: order.subtotal,
-        discount: order.discount,
-        tax: order.tax,
-        total: order.total,
+        subtotal_cents: order.subtotal_cents,
+        discount_cents: order.discount_cents,
+        tax_cents: order.tax_cents,
+        total_cents: order.total_cents,
         currency: order.currency,
         billing_name: order.billing_name,
         billing_email: order.billing_email,
@@ -462,7 +462,7 @@ pub struct AdminOrderResponse {
     pub id: i64,
     pub order_number: String,
     pub status: String,
-    pub total: f64,
+    pub total_cents: i64,
     pub currency: String,
     pub user_email: String,
     pub user_name: Option<String>,
@@ -483,16 +483,16 @@ pub struct AdminOrderListQuery {
     pub date_to: Option<String>,
 }
 
-/// Admin order stats
+/// Admin order stats (monetary fields in integer cents)
 #[derive(Debug, Serialize)]
 pub struct AdminOrderStats {
     pub total_orders: i64,
     pub completed_orders: i64,
     pub pending_orders: i64,
     pub refunded_orders: i64,
-    pub total_revenue: f64,
-    pub revenue_this_month: f64,
-    pub average_order_value: f64,
+    pub total_revenue_cents: i64,
+    pub revenue_this_month_cents: i64,
+    pub average_order_value_cents: i64,
 }
 
 /// GET /api/admin/orders - List all orders with pagination (Admin only)
@@ -509,7 +509,7 @@ pub async fn admin_index(
 
     // Build query with filters
     let mut sql = String::from(
-        r#"SELECT o.id, o.order_number, o.status, o.total::FLOAT8 as total, o.currency,
+        r#"SELECT o.id, o.order_number, o.status, (o.total * 100)::BIGINT AS total_cents, o.currency,
                   u.email as user_email, u.name as user_name, o.payment_provider,
                   o.created_at, o.completed_at,
                   COUNT(oi.id)::INT as item_count
@@ -546,7 +546,7 @@ pub async fn admin_index(
         id: i64,
         order_number: String,
         status: String,
-        total: f64,
+        total_cents: i64,
         currency: String,
         user_email: String,
         user_name: Option<String>,
@@ -581,7 +581,7 @@ pub async fn admin_index(
         }
         _ => {
             sqlx::query_as::<_, AdminOrderRow>(
-                r#"SELECT o.id, o.order_number, o.status, o.total::FLOAT8 as total, o.currency,
+                r#"SELECT o.id, o.order_number, o.status, (o.total * 100)::BIGINT AS total_cents, o.currency,
                           u.email as user_email, u.name as user_name, o.payment_provider,
                           o.created_at, o.completed_at,
                           COUNT(oi.id)::INT as item_count
@@ -677,9 +677,9 @@ pub async fn admin_index(
             completed_orders: 0,
             pending_orders: 0,
             refunded_orders: 0,
-            total_revenue: 0.0,
-            revenue_this_month: 0.0,
-            average_order_value: 0.0,
+            total_revenue_cents: 0,
+            revenue_this_month_cents: 0,
+            average_order_value_cents: 0,
         });
 
     let order_responses: Vec<AdminOrderResponse> = orders
@@ -688,7 +688,7 @@ pub async fn admin_index(
             id: o.id,
             order_number: o.order_number,
             status: o.status,
-            total: o.total,
+            total_cents: o.total_cents,
             currency: o.currency,
             user_email: o.user_email,
             user_name: o.user_name,
@@ -712,7 +712,7 @@ pub async fn admin_index(
     })))
 }
 
-/// Get admin order stats helper
+/// Get admin order stats helper (revenue figures in integer cents)
 async fn get_admin_order_stats(state: &AppState) -> Result<AdminOrderStats, sqlx::Error> {
     #[derive(sqlx::FromRow)]
     struct StatsRow {
@@ -720,7 +720,7 @@ async fn get_admin_order_stats(state: &AppState) -> Result<AdminOrderStats, sqlx
         completed_orders: i64,
         pending_orders: i64,
         refunded_orders: i64,
-        total_revenue: f64,
+        total_revenue_cents: i64,
     }
 
     let stats: StatsRow = sqlx::query_as(
@@ -729,26 +729,26 @@ async fn get_admin_order_stats(state: &AppState) -> Result<AdminOrderStats, sqlx
             COUNT(*) FILTER (WHERE status = 'completed') as completed_orders,
             COUNT(*) FILTER (WHERE status = 'pending') as pending_orders,
             COUNT(*) FILTER (WHERE status IN ('refunded', 'partial_refund')) as refunded_orders,
-            COALESCE(SUM(total) FILTER (WHERE status = 'completed'), 0)::FLOAT8 as total_revenue
+            COALESCE(SUM((total * 100)::BIGINT) FILTER (WHERE status = 'completed'), 0)::BIGINT as total_revenue_cents
            FROM orders"#,
     )
     .fetch_one(&state.db.pool)
     .await?;
 
-    let revenue_this_month: f64 = sqlx::query_scalar(
-        r#"SELECT COALESCE(SUM(total), 0)::FLOAT8
+    let revenue_this_month_cents: i64 = sqlx::query_scalar(
+        r#"SELECT COALESCE(SUM((total * 100)::BIGINT), 0)::BIGINT
            FROM orders
            WHERE status = 'completed'
            AND created_at >= DATE_TRUNC('month', CURRENT_DATE)"#,
     )
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or(0.0);
+    .unwrap_or(0);
 
-    let avg_order_value = if stats.completed_orders > 0 {
-        stats.total_revenue / stats.completed_orders as f64
+    let avg_order_value_cents: i64 = if stats.completed_orders > 0 {
+        stats.total_revenue_cents / stats.completed_orders
     } else {
-        0.0
+        0
     };
 
     Ok(AdminOrderStats {
@@ -756,9 +756,9 @@ async fn get_admin_order_stats(state: &AppState) -> Result<AdminOrderStats, sqlx
         completed_orders: stats.completed_orders,
         pending_orders: stats.pending_orders,
         refunded_orders: stats.refunded_orders,
-        total_revenue: stats.total_revenue,
-        revenue_this_month,
-        average_order_value: avg_order_value,
+        total_revenue_cents: stats.total_revenue_cents,
+        revenue_this_month_cents,
+        average_order_value_cents: avg_order_value_cents,
     })
 }
 
@@ -771,8 +771,8 @@ pub async fn admin_show(
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let order: Option<OrderRow> = sqlx::query_as::<_, OrderRow>(
-        r#"SELECT id, order_number, status, subtotal::FLOAT8 as subtotal, discount::FLOAT8 as discount,
-                  tax::FLOAT8 as tax, total::FLOAT8 as total, currency,
+        r#"SELECT id, order_number, status, (subtotal * 100)::BIGINT AS subtotal_cents, (discount * 100)::BIGINT AS discount_cents,
+                  (tax * 100)::BIGINT AS tax_cents, (total * 100)::BIGINT AS total_cents, currency,
                   billing_name, billing_email, billing_address, payment_provider,
                   coupon_code, created_at, completed_at
            FROM orders
@@ -841,10 +841,10 @@ pub struct UpdateOrderStatusRequest {
     pub notes: Option<String>,
 }
 
-/// Refund order request
+/// Refund order request (amount in integer cents; None = full refund)
 #[derive(Debug, Deserialize)]
 pub struct RefundOrderRequest {
-    pub amount: Option<f64>, // None = full refund
+    pub amount_cents: Option<i64>,
     pub reason: Option<String>,
 }
 
@@ -1019,16 +1019,16 @@ pub async fn admin_refund(
     Path(id): Path<i64>,
     Json(input): Json<RefundOrderRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    // Get order details
+    // Get order details (total in integer cents)
     #[derive(sqlx::FromRow)]
     struct OrderInfo {
         status: String,
-        total: f64,
+        total_cents: i64,
         payment_intent_id: Option<String>,
     }
 
     let order: OrderInfo = sqlx::query_as(
-        "SELECT status, total::FLOAT8 as total, payment_intent_id FROM orders WHERE id = $1",
+        "SELECT status, (total * 100)::BIGINT AS total_cents, payment_intent_id FROM orders WHERE id = $1",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -1060,17 +1060,17 @@ pub async fn admin_refund(
         ));
     }
 
-    let refund_amount = input.amount.unwrap_or(order.total);
+    let refund_amount_cents: i64 = input.amount_cents.unwrap_or(order.total_cents);
 
     // Validate refund amount
-    if refund_amount <= 0.0 || refund_amount > order.total {
+    if refund_amount_cents <= 0 || refund_amount_cents > order.total_cents {
         return Err((
             StatusCode::BAD_REQUEST,
             Json(serde_json::json!({"error": "Invalid refund amount"})),
         ));
     }
 
-    let new_status = if (refund_amount - order.total).abs() < 0.01 {
+    let new_status = if refund_amount_cents == order.total_cents {
         "refunded"
     } else {
         "partial_refund"
@@ -1078,13 +1078,13 @@ pub async fn admin_refund(
 
     // If we have a payment intent, attempt Stripe refund
     if let Some(ref payment_intent_id) = order.payment_intent_id {
-        // Attempt Stripe refund
+        // Attempt Stripe refund (amount already in cents)
         let refund_result = state
             .services
             .stripe
             .create_refund(
                 payment_intent_id,
-                Some((refund_amount * 100.0) as i64),
+                Some(refund_amount_cents),
                 input.reason.as_deref(),
             )
             .await;
@@ -1125,7 +1125,7 @@ pub async fn admin_refund(
         target: "orders",
         event = "order_refunded",
         order_id = %id,
-        refund_amount = %refund_amount,
+        refund_amount_cents = %refund_amount_cents,
         new_status = %new_status,
         admin_id = %admin.id,
         reason = ?input.reason,
@@ -1136,7 +1136,7 @@ pub async fn admin_refund(
         "success": true,
         "message": "Order refunded successfully",
         "order_id": id,
-        "refund_amount": refund_amount,
+        "refund_amount_cents": refund_amount_cents,
         "new_status": new_status
     })))
 }

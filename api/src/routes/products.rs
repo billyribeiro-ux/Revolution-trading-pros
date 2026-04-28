@@ -36,7 +36,7 @@ pub struct ProductRow {
     pub product_type: String,
     pub description: Option<String>,
     pub long_description: Option<String>,
-    pub price: f64,
+    pub price_cents: i64,
     pub is_active: bool,
     pub metadata: Option<serde_json::Value>,
     pub thumbnail: Option<String>,
@@ -66,7 +66,7 @@ async fn list_products(
             // Both type and search filters
             let search_pattern = format!("%{}%", search);
             let products: Vec<ProductRow> = sqlx::query_as(
-                "SELECT * FROM products WHERE is_active = $1 AND type = $2 AND (name ILIKE $3 OR description ILIKE $3) ORDER BY created_at DESC LIMIT $4 OFFSET $5"
+                "SELECT id, name, slug, type, description, long_description, (price * 100)::BIGINT AS price_cents, is_active, metadata, thumbnail, meta_title, meta_description, indexable, canonical_url, created_at, updated_at FROM products WHERE is_active = $1 AND type = $2 AND (name ILIKE $3 OR description ILIKE $3) ORDER BY created_at DESC LIMIT $4 OFFSET $5"
             )
             .bind(is_active)
             .bind(product_type)
@@ -91,7 +91,7 @@ async fn list_products(
         } else {
             // Only type filter
             let products: Vec<ProductRow> = sqlx::query_as(
-                "SELECT * FROM products WHERE is_active = $1 AND type = $2 ORDER BY created_at DESC LIMIT $3 OFFSET $4"
+                "SELECT id, name, slug, type, description, long_description, (price * 100)::BIGINT AS price_cents, is_active, metadata, thumbnail, meta_title, meta_description, indexable, canonical_url, created_at, updated_at FROM products WHERE is_active = $1 AND type = $2 ORDER BY created_at DESC LIMIT $3 OFFSET $4"
             )
             .bind(is_active)
             .bind(product_type)
@@ -120,7 +120,7 @@ async fn list_products(
         // Only search filter
         let search_pattern = format!("%{}%", search);
         let products: Vec<ProductRow> = sqlx::query_as(
-            "SELECT * FROM products WHERE is_active = $1 AND (name ILIKE $2 OR description ILIKE $2) ORDER BY created_at DESC LIMIT $3 OFFSET $4"
+            "SELECT id, name, slug, type, description, long_description, (price * 100)::BIGINT AS price_cents, is_active, metadata, thumbnail, meta_title, meta_description, indexable, canonical_url, created_at, updated_at FROM products WHERE is_active = $1 AND (name ILIKE $2 OR description ILIKE $2) ORDER BY created_at DESC LIMIT $3 OFFSET $4"
         )
         .bind(is_active)
         .bind(&search_pattern)
@@ -143,7 +143,7 @@ async fn list_products(
     } else {
         // No filters except is_active
         let products: Vec<ProductRow> = sqlx::query_as(
-            "SELECT * FROM products WHERE is_active = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3"
+            "SELECT id, name, slug, type, description, long_description, (price * 100)::BIGINT AS price_cents, is_active, metadata, thumbnail, meta_title, meta_description, indexable, canonical_url, created_at, updated_at FROM products WHERE is_active = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3"
         )
         .bind(is_active)
         .bind(per_page)
@@ -182,7 +182,7 @@ async fn get_product(
     State(state): State<AppState>,
     Path(slug): Path<String>,
 ) -> Result<Json<ProductRow>, (StatusCode, Json<serde_json::Value>)> {
-    let product: ProductRow = sqlx::query_as("SELECT * FROM products WHERE slug = $1")
+    let product: ProductRow = sqlx::query_as("SELECT id, name, slug, type, description, long_description, (price * 100)::BIGINT AS price_cents, is_active, metadata, thumbnail, meta_title, meta_description, indexable, canonical_url, created_at, updated_at FROM products WHERE slug = $1")
         .bind(&slug)
         .fetch_optional(&state.db.pool)
         .await
@@ -219,11 +219,13 @@ async fn create_product(
 
     let slug = slug::slugify(&input.name);
 
+    // Input price is integer cents per architecture standard. NUMERIC column receives
+    // cents/100 at the SQL boundary; Rust math stays in i64.
     let product: ProductRow = sqlx::query_as(
         r#"
         INSERT INTO products (name, slug, type, description, long_description, price, is_active, metadata, thumbnail, meta_title, meta_description, indexable, canonical_url, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, NOW(), NOW())
-        RETURNING *
+        VALUES ($1, $2, $3, $4, $5, $6::BIGINT / 100.0, $7, $8, $9, $10, $11, $12, $13, NOW(), NOW())
+        RETURNING id, name, slug, type, description, long_description, (price * 100)::BIGINT AS price_cents, is_active, metadata, thumbnail, meta_title, meta_description, indexable, canonical_url, created_at, updated_at
         "#,
     )
     .bind(&input.name)
@@ -231,7 +233,7 @@ async fn create_product(
     .bind(&input.product_type)
     .bind(&input.description)
     .bind(&input.long_description)
-    .bind(input.price)
+    .bind(input.price_cents)
     .bind(input.is_active.unwrap_or(true))
     .bind(&input.metadata)
     .bind(&input.thumbnail)
@@ -275,7 +277,7 @@ async fn update_product(
             type = COALESCE($4, type),
             description = COALESCE($5, description),
             long_description = COALESCE($6, long_description),
-            price = COALESCE($7, price),
+            price = COALESCE($7::BIGINT / 100.0, price),
             is_active = COALESCE($8, is_active),
             metadata = COALESCE($9, metadata),
             thumbnail = COALESCE($10, thumbnail),
@@ -285,7 +287,7 @@ async fn update_product(
             canonical_url = COALESCE($14, canonical_url),
             updated_at = NOW()
         WHERE id = $1
-        RETURNING *
+        RETURNING id, name, slug, type, description, long_description, (price * 100)::BIGINT AS price_cents, is_active, metadata, thumbnail, meta_title, meta_description, indexable, canonical_url, created_at, updated_at
         "#,
     )
     .bind(id)
@@ -294,7 +296,7 @@ async fn update_product(
     .bind(&input.product_type)
     .bind(&input.description)
     .bind(&input.long_description)
-    .bind(input.price)
+    .bind(input.price_cents)
     .bind(input.is_active)
     .bind(&input.metadata)
     .bind(&input.thumbnail)
@@ -525,7 +527,7 @@ async fn list_products_admin(
 
     let products: Vec<ProductRow> = sqlx::query_as(
         r#"
-        SELECT * FROM products
+        SELECT id, name, slug, type, description, long_description, (price * 100)::BIGINT AS price_cents, is_active, metadata, thumbnail, meta_title, meta_description, indexable, canonical_url, created_at, updated_at FROM products
         WHERE ($1::text IS NULL OR type = $1)
           AND ($2::boolean IS NULL OR is_active = $2)
           AND ($3::text IS NULL OR name ILIKE $3 OR description ILIKE $3)
@@ -586,7 +588,7 @@ async fn get_product_by_id(
     AdminUser(_user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<ProductRow>, (StatusCode, Json<serde_json::Value>)> {
-    let product: ProductRow = sqlx::query_as("SELECT * FROM products WHERE id = $1")
+    let product: ProductRow = sqlx::query_as("SELECT id, name, slug, type, description, long_description, (price * 100)::BIGINT AS price_cents, is_active, metadata, thumbnail, meta_title, meta_description, indexable, canonical_url, created_at, updated_at FROM products WHERE id = $1")
         .bind(id)
         .fetch_optional(&state.db.pool)
         .await

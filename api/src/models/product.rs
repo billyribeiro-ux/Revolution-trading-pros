@@ -18,7 +18,10 @@ pub enum ProductType {
     Bundle,
 }
 
-/// Product entity - represents courses, indicators, and bundles
+/// Product entity - represents courses, indicators, and bundles.
+/// Monetary values are integer cents per architecture standard §1.2.
+/// SQL queries reading from `products.price` (NUMERIC) must alias as
+/// `(price * 100)::BIGINT AS price_cents`.
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct Product {
     pub id: i64,
@@ -28,7 +31,7 @@ pub struct Product {
     pub product_type: String,
     pub description: Option<String>,
     pub long_description: Option<String>,
-    pub price: f64,
+    pub price_cents: i64,
     pub is_active: bool,
     pub metadata: Option<serde_json::Value>,
     pub thumbnail: Option<String>,
@@ -41,7 +44,7 @@ pub struct Product {
     pub updated_at: NaiveDateTime,
 }
 
-/// Product response for API (simplified decimal handling)
+/// Product response for API. Monetary values are integer cents.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ProductResponse {
     pub id: i64,
@@ -50,7 +53,7 @@ pub struct ProductResponse {
     pub product_type: String,
     pub description: Option<String>,
     pub long_description: Option<String>,
-    pub price: f64,
+    pub price_cents: i64,
     pub is_active: bool,
     pub metadata: Option<serde_json::Value>,
     pub thumbnail: Option<String>,
@@ -62,7 +65,7 @@ pub struct ProductResponse {
     pub updated_at: NaiveDateTime,
 }
 
-/// Create product request
+/// Create product request. Price is integer cents.
 #[derive(Debug, Deserialize, Validate)]
 pub struct CreateProduct {
     #[validate(length(min = 1, max = 255, message = "Name must be 1-255 characters"))]
@@ -75,8 +78,8 @@ pub struct CreateProduct {
     pub product_type: String,
     pub description: Option<String>,
     pub long_description: Option<String>,
-    #[validate(range(min = 0.0, message = "Price must be non-negative"))]
-    pub price: f64,
+    #[validate(range(min = 0, message = "Price must be non-negative"))]
+    pub price_cents: i64,
     pub is_active: Option<bool>,
     pub metadata: Option<serde_json::Value>,
     pub thumbnail: Option<String>,
@@ -86,7 +89,7 @@ pub struct CreateProduct {
     pub canonical_url: Option<String>,
 }
 
-/// Update product request
+/// Update product request. Price is integer cents.
 #[derive(Debug, Deserialize, Validate)]
 pub struct UpdateProduct {
     #[validate(length(min = 1, max = 255, message = "Name must be 1-255 characters"))]
@@ -94,7 +97,7 @@ pub struct UpdateProduct {
     pub product_type: Option<String>,
     pub description: Option<String>,
     pub long_description: Option<String>,
-    pub price: Option<f64>,
+    pub price_cents: Option<i64>,
     pub is_active: Option<bool>,
     pub metadata: Option<serde_json::Value>,
     pub thumbnail: Option<String>,

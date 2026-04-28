@@ -19,11 +19,11 @@ impl<'a> OrderService<'a> {
     pub async fn get_user_orders(&self, user_id: Uuid) -> Result<Vec<OrderSummary>, ApiError> {
         let orders = sqlx::query_as::<_, OrderSummary>(
             r#"
-            SELECT 
+            SELECT
                 o.id,
                 o.order_number,
                 o.status,
-                o.total,
+                (o.total * 100)::BIGINT AS total_cents,
                 o.currency,
                 o.created_at,
                 COUNT(oi.id)::int as item_count
@@ -52,15 +52,16 @@ impl<'a> OrderService<'a> {
         user_id: Uuid,
         order_id: Uuid,
     ) -> Result<Option<OrderWithItems>, ApiError> {
+        // Money is integer cents per arch standard §1.2; SQL converts NUMERIC at the boundary.
         #[derive(sqlx::FromRow)]
         struct OrderQueryRow {
             id: Uuid,
             order_number: String,
             status: String,
-            subtotal: f64,
-            tax: f64,
-            discount: f64,
-            total: f64,
+            subtotal_cents: i64,
+            tax_cents: i64,
+            discount_cents: i64,
+            total_cents: i64,
             currency: String,
             payment_method: Option<String>,
             billing_address: Option<serde_json::Value>,
@@ -72,20 +73,20 @@ impl<'a> OrderService<'a> {
             id: Uuid,
             name: String,
             quantity: i32,
-            unit_price: f64,
-            total: f64,
+            unit_price_cents: i64,
+            total_cents: i64,
         }
 
         let order = sqlx::query_as::<_, OrderQueryRow>(
             r#"
-            SELECT 
+            SELECT
                 id,
                 order_number,
                 status,
-                subtotal,
-                tax,
-                discount,
-                total,
+                (subtotal * 100)::BIGINT AS subtotal_cents,
+                (tax * 100)::BIGINT      AS tax_cents,
+                (discount * 100)::BIGINT AS discount_cents,
+                (total * 100)::BIGINT    AS total_cents,
                 currency,
                 payment_method,
                 billing_address,
@@ -111,12 +112,12 @@ impl<'a> OrderService<'a> {
 
         let items = sqlx::query_as::<_, OrderItemQueryRow>(
             r#"
-            SELECT 
+            SELECT
                 id,
                 name,
                 quantity,
-                unit_price,
-                total
+                (unit_price * 100)::BIGINT AS unit_price_cents,
+                (total * 100)::BIGINT      AS total_cents
             FROM order_items
             WHERE order_id = $1
             ORDER BY created_at
@@ -136,10 +137,10 @@ impl<'a> OrderService<'a> {
             id: order.id,
             order_number: order.order_number,
             status: order.status,
-            subtotal: order.subtotal,
-            tax: order.tax,
-            discount: order.discount,
-            total: order.total,
+            subtotal_cents: order.subtotal_cents,
+            tax_cents: order.tax_cents,
+            discount_cents: order.discount_cents,
+            total_cents: order.total_cents,
             currency: order.currency,
             payment_method: order.payment_method,
             billing_address: order.billing_address,
@@ -150,8 +151,8 @@ impl<'a> OrderService<'a> {
                     id: i.id,
                     name: i.name,
                     quantity: i.quantity,
-                    price: i.unit_price,
-                    total: i.total,
+                    unit_price_cents: i.unit_price_cents,
+                    total_cents: i.total_cents,
                 })
                 .collect(),
         }))

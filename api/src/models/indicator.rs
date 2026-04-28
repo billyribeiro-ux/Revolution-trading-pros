@@ -19,7 +19,9 @@ use validator::Validate;
 // ═══════════════════════════════════════════════════════════════════════════════════
 
 /// Indicator entity matching existing database schema
-/// Database uses BIGINT id and has different column set
+/// Database uses BIGINT id; price stored in `price_cents` column (BIGINT) per
+/// architecture standard §1.2. Legacy NUMERIC `price` is read via
+/// `(price * 100)::BIGINT AS price_cents` alias when querying.
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct Indicator {
     pub id: i64,
@@ -27,7 +29,7 @@ pub struct Indicator {
     pub slug: String,
     pub description: Option<String>,
     pub long_description: Option<String>,
-    pub price: Option<f64>,
+    pub price_cents: Option<i64>,
     pub is_active: Option<bool>,
     pub platform: Option<String>,
     pub version: Option<String>,
@@ -43,14 +45,14 @@ pub struct Indicator {
     pub updated_at: Option<NaiveDateTime>,
 }
 
-/// IndicatorListItem matching existing database schema  
+/// IndicatorListItem. Monetary values are integer cents.
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct IndicatorListItem {
     pub id: i64,
     pub name: String,
     pub slug: String,
     pub description: Option<String>,
-    pub price: Option<f64>,
+    pub price_cents: Option<i64>,
     pub is_active: Option<bool>,
     pub platform: Option<String>,
     pub thumbnail: Option<String>,
@@ -353,15 +355,15 @@ pub struct DailyDownloads {
 // LEGACY COMPATIBILITY (Keep old struct for existing code)
 // ═══════════════════════════════════════════════════════════════════════════════════
 
-/// Create indicator request
+/// Create indicator request. Price is integer cents.
 #[derive(Debug, Deserialize, Validate)]
 pub struct CreateIndicator {
     #[validate(length(min = 1, max = 255))]
     pub name: String,
     pub description: Option<String>,
     pub long_description: Option<String>,
-    #[validate(range(min = 0.0))]
-    pub price: f64,
+    #[validate(range(min = 0))]
+    pub price_cents: i64,
     pub is_active: Option<bool>,
     #[validate(length(min = 1, max = 50))]
     pub platform: String,
@@ -376,13 +378,13 @@ pub struct CreateIndicator {
     pub meta_description: Option<String>,
 }
 
-/// Update indicator request
+/// Update indicator request. Price is integer cents.
 #[derive(Debug, Deserialize, Validate)]
 pub struct UpdateIndicator {
     pub name: Option<String>,
     pub description: Option<String>,
     pub long_description: Option<String>,
-    pub price: Option<f64>,
+    pub price_cents: Option<i64>,
     pub is_active: Option<bool>,
     pub platform: Option<String>,
     pub version: Option<String>,

@@ -29,14 +29,14 @@ pub enum SubscriptionStatus {
     Paused,
 }
 
-/// Membership plan entity
+/// Membership plan entity. Monetary values are integer cents per architecture standard §1.2.
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct MembershipPlan {
     pub id: i64,
     pub name: String,
     pub slug: String,
     pub description: Option<String>,
-    pub price: f64,
+    pub price_cents: i64,
     pub billing_cycle: String,
     pub is_active: bool,
     pub metadata: Option<serde_json::Value>,
@@ -53,8 +53,8 @@ pub struct CreateMembershipPlan {
     #[validate(length(min = 1, max = 255))]
     pub name: String,
     pub description: Option<String>,
-    #[validate(range(min = 0.0))]
-    pub price: f64,
+    #[validate(range(min = 0))]
+    pub price_cents: i64,
     #[validate(length(min = 1, max = 20))]
     pub billing_cycle: String,
     pub is_active: Option<bool>,
@@ -69,7 +69,7 @@ pub struct CreateMembershipPlan {
 pub struct UpdateMembershipPlan {
     pub name: Option<String>,
     pub description: Option<String>,
-    pub price: Option<f64>,
+    pub price_cents: Option<i64>,
     pub billing_cycle: Option<String>,
     pub is_active: Option<bool>,
     pub metadata: Option<serde_json::Value>,
@@ -98,14 +98,14 @@ pub struct UserSubscription {
     pub updated_at: NaiveDateTime,
 }
 
-/// User subscription with plan details
+/// User subscription with plan details. Monetary values are integer cents.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UserSubscriptionWithPlan {
     pub id: i64,
     pub user_id: i64,
     pub plan_id: i64,
     pub plan_name: String,
-    pub plan_price: f64,
+    pub plan_price_cents: i64,
     pub billing_cycle: String,
     pub starts_at: NaiveDateTime,
     pub expires_at: Option<NaiveDateTime>,
@@ -134,14 +134,15 @@ pub struct CancelSubscription {
     pub reason: Option<String>,
 }
 
-/// Subscription metrics response
+/// Subscription metrics response. Monetary values are integer cents.
 #[derive(Debug, Serialize)]
 pub struct SubscriptionMetrics {
     pub total_active: i64,
     pub total_cancelled: i64,
     pub total_expired: i64,
-    pub mrr: f64, // Monthly Recurring Revenue
-    pub arr: f64, // Annual Recurring Revenue
+    pub mrr_cents: i64,
+    pub arr_cents: i64,
+    /// Churn rate is a unit-less percentage (0.0 to 100.0); not money.
     pub churn_rate: f64,
     pub new_this_month: i64,
     pub cancelled_this_month: i64,

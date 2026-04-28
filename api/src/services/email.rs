@@ -525,16 +525,19 @@ impl EmailService {
         self.send(to, subject, &html, Some(&text)).await
     }
 
-    /// Send payment failed with grace period email
+    /// Send payment failed with grace period email.
+    /// `amount_cents` is integer cents (per architecture standard). Formatted to dollars for display only.
     pub async fn send_payment_failed_with_grace(
         &self,
         to: &str,
         name: &str,
         plan_name: &str,
-        amount: f64,
+        amount_cents: i64,
         grace_period_end: &str,
         retry_count: i32,
     ) -> Result<()> {
+        let amount = amount_cents as f64 / 100.0; // display only
+
         let subject = "Action Required: Payment Failed";
         let update_url = format!("{}/my/subscriptions", self.app_url);
 
@@ -590,15 +593,17 @@ impl EmailService {
         self.send(to, subject, &html, Some(&text)).await
     }
 
-    /// Send renewal reminder email
+    /// Send renewal reminder email.
+    /// `amount_cents` is integer cents (per architecture standard). Formatted to dollars for display.
     pub async fn send_renewal_reminder(
         &self,
         to: &str,
         name: &str,
         plan_name: &str,
-        amount: f64,
+        amount_cents: i64,
         renewal_date: &str,
     ) -> Result<()> {
+        let amount = amount_cents as f64 / 100.0; // display only
         let subject = format!("Subscription Renewal Reminder - {}", plan_name);
         let manage_url = format!("{}/my/subscriptions", self.app_url);
 
@@ -650,9 +655,10 @@ impl EmailService {
         name: &str,
         plan_name: &str,
         trial_end_date: &str,
-        price: f64,
+        price_cents: i64,
         billing_cycle: &str,
     ) -> Result<()> {
+        let price = price_cents as f64 / 100.0; // display only
         let subject = "Your Trial Ends Soon - Revolution Trading Pros";
         let manage_url = format!("{}/my/subscriptions", self.app_url);
 

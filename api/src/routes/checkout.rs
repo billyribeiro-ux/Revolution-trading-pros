@@ -43,20 +43,20 @@ pub struct CalculateTaxRequest {
     pub postal_code: Option<String>,
 }
 
-/// Product row for cart calculations
+/// Product row for cart calculations (price in integer cents)
 #[derive(Debug, sqlx::FromRow)]
 struct ProductPrice {
     id: i64,
     name: String,
-    price: f64,
+    price_cents: i64,
 }
 
-/// Plan row for cart calculations
+/// Plan row for cart calculations (price in integer cents)
 #[derive(Debug, sqlx::FromRow)]
 struct PlanPrice {
     id: i64,
     name: String,
-    price: f64,
+    price_cents: i64,
     stripe_price_id: Option<String>,
     billing_cycle: String,
 }
@@ -75,13 +75,13 @@ async fn create_checkout(
     }
 
     let mut line_items = Vec::new();
-    let mut subtotal = 0.0_f64;
+    let mut subtotal_cents: i64 = 0;
 
     // Calculate totals from products
     for item in &input.items {
         if let Some(product_id) = item.product_id {
             let product: ProductPrice = sqlx::query_as(
-                "SELECT id, name, price FROM products WHERE id = $1 AND is_active = true",
+                "SELECT id, name, (price * 100)::BIGINT AS price_cents FROM products WHERE id = $1 AND is_active = true",
             )
             .bind(product_id)
             .fetch_optional(&state.db.pool)
@@ -100,22 +100,22 @@ async fn create_checkout(
             })?;
 
             let qty = item.quantity.unwrap_or(1);
-            let item_total = product.price * qty as f64;
-            subtotal += item_total;
+            let line_total_cents: i64 = product.price_cents.saturating_mul(qty as i64);
+            subtotal_cents = subtotal_cents.saturating_add(line_total_cents);
 
             line_items.push(json!({
                 "type": "product",
                 "id": product.id,
                 "name": product.name,
-                "price": product.price,
+                "price_cents": product.price_cents,
                 "quantity": qty,
-                "total": item_total
+                "total_cents": line_total_cents
             }));
         }
 
         if let Some(plan_id) = item.plan_id {
             let plan: PlanPrice = sqlx::query_as(
-                "SELECT id, name, price::FLOAT8 as price, stripe_price_id, billing_cycle FROM membership_plans WHERE id = $1 AND is_active = true",
+                "SELECT id, name, (price * 100)::BIGINT AS price_cents, stripe_price_id, billing_cycle FROM membership_plans WHERE id = $1 AND is_active = true",
             )
             .bind(plan_id)
             .fetch_optional(&state.db.pool)
@@ -141,23 +141,23 @@ async fn create_checkout(
                 ));
             }
 
-            subtotal += plan.price;
+            subtotal_cents = subtotal_cents.saturating_add(plan.price_cents);
 
             line_items.push(json!({
                 "type": "subscription",
                 "id": plan.id,
                 "name": plan.name,
-                "price": plan.price,
+                "price_cents": plan.price_cents,
                 "stripe_price_id": plan.stripe_price_id,
                 "billing_cycle": plan.billing_cycle,
                 "quantity": 1,
-                "total": plan.price
+                "total_cents": plan.price_cents
             }));
         }
     }
 
-    // Apply coupon if provided - ICT 7 FIX: Complete coupon validation
-    let mut discount = 0.0_f64;
+    // Apply coupon if provided - all math in integer cents
+    let mut discount_cents: i64 = 0;
     let mut coupon_info = None;
     let mut applied_coupon_id: Option<i64> = None;
 
@@ -168,17 +168,18 @@ async fn create_checkout(
             code: String,
             #[sqlx(rename = "type")]
             coupon_type: String,
-            value: f64,
+            value_cents: i64,
             max_uses: i32,
             current_uses: i32,
             expiry_date: Option<chrono::NaiveDateTime>,
-            min_purchase_amount: f64,
+            min_purchase_amount_cents: i64,
         }
 
-        // ICT 7 FIX: Use Laravel production schema column names
         let coupon: Option<CouponInfo> = sqlx::query_as(
-            r#"SELECT id, code, type, value::FLOAT8 as value, max_uses, current_uses,
-                      expiry_date, min_purchase_amount::FLOAT8 as min_purchase_amount
+            r#"SELECT id, code, type,
+                      (value * 100)::BIGINT                AS value_cents,
+                      max_uses, current_uses, expiry_date,
+                      (min_purchase_amount * 100)::BIGINT  AS min_purchase_amount_cents
                FROM coupons
                WHERE UPPER(code) = UPPER($1) AND is_active = true"#,
         )
@@ -194,7 +195,6 @@ async fn create_checkout(
         })?;
 
         if let Some(c) = coupon {
-            // Validate expiry
             if let Some(expiry) = c.expiry_date {
                 if expiry < chrono::Utc::now().naive_utc() {
                     return Err((
@@ -204,7 +204,6 @@ async fn create_checkout(
                 }
             }
 
-            // Validate usage limits
             if c.max_uses > 0 && c.current_uses >= c.max_uses {
                 return Err((
                     StatusCode::BAD_REQUEST,
@@ -212,26 +211,26 @@ async fn create_checkout(
                 ));
             }
 
-            // Validate minimum purchase
-            if c.min_purchase_amount > 0.0 && subtotal < c.min_purchase_amount {
+            if c.min_purchase_amount_cents > 0 && subtotal_cents < c.min_purchase_amount_cents {
+                let dollars = c.min_purchase_amount_cents as f64 / 100.0; // display only
                 return Err((
                     StatusCode::BAD_REQUEST,
                     Json(
-                        json!({"error": format!("Minimum purchase of ${:.2} required for this coupon", c.min_purchase_amount)}),
+                        json!({"error": format!("Minimum purchase of ${:.2} required for this coupon", dollars)}),
                     ),
                 ));
             }
 
-            // Calculate discount
-            discount = if c.coupon_type == "percentage" {
-                subtotal * (c.value / 100.0)
+            // For percent coupons, value is stored as e.g. 50.00 (i.e. value_cents=5000) representing 50%
+            discount_cents = if c.coupon_type == "percentage" {
+                let percent = c.value_cents / 100; // 5000 → 50
+                (subtotal_cents.saturating_mul(percent)) / 100
             } else {
-                c.value
+                c.value_cents
             };
 
-            // Ensure discount doesn't exceed subtotal
-            if discount > subtotal {
-                discount = subtotal;
+            if discount_cents > subtotal_cents {
+                discount_cents = subtotal_cents;
             }
 
             applied_coupon_id = Some(c.id);
@@ -239,8 +238,8 @@ async fn create_checkout(
                 "id": c.id,
                 "code": c.code,
                 "type": c.coupon_type,
-                "value": c.value,
-                "discount": discount
+                "value_cents": c.value_cents,
+                "discount_cents": discount_cents
             }));
         } else {
             return Err((
@@ -250,9 +249,9 @@ async fn create_checkout(
         }
     }
 
-    // Calculate tax (simplified - 0% for now, should integrate with tax service)
-    let tax = 0.0_f64;
-    let total = subtotal - discount + tax;
+    // Tax (simplified - 0% for now, should integrate with tax service)
+    let tax_cents: i64 = 0;
+    let total_cents: i64 = subtotal_cents.saturating_sub(discount_cents).saturating_add(tax_cents);
 
     // Generate order number
     let order_number = format!(
@@ -281,20 +280,23 @@ async fn create_checkout(
     }
 
     // Original pool reference: .fetch_one(&state.db.pool)
+    // DB columns are NUMERIC(10,2); convert from cents at the SQL boundary
     let order: OrderId = sqlx::query_as(
         r#"
         INSERT INTO orders (user_id, order_number, status, subtotal, discount, tax, total, currency,
                            billing_name, billing_email, billing_address, coupon_id, coupon_code, created_at, updated_at)
-        VALUES ($1, $2, 'pending', $3, $4, $5, $6, 'USD', $7, $8, $9, $10, $11, NOW(), NOW())
+        VALUES ($1, $2, 'pending',
+                $3::BIGINT / 100.0, $4::BIGINT / 100.0, $5::BIGINT / 100.0, $6::BIGINT / 100.0,
+                'USD', $7, $8, $9, $10, $11, NOW(), NOW())
         RETURNING id
         "#
     )
     .bind(user.id)
     .bind(&order_number)
-    .bind(subtotal)
-    .bind(discount)
-    .bind(tax)
-    .bind(total)
+    .bind(subtotal_cents)
+    .bind(discount_cents)
+    .bind(tax_cents)
+    .bind(total_cents)
     .bind(&input.billing_name)
     .bind(&input.billing_email)
     .bind(&input.billing_address)
@@ -319,13 +321,14 @@ async fn create_checkout(
         .ok(); // Log but don't fail order creation
     }
 
-    // Insert order items
-    // Original pool reference: .execute(&state.db.pool)
+    // Insert order items — convert cents → NUMERIC(10,2) at SQL boundary
     for item in &line_items {
+        let price_cents = item.get("price_cents").and_then(|p| p.as_i64()).unwrap_or(0);
+        let total_cents_li = item.get("total_cents").and_then(|t| t.as_i64()).unwrap_or(0);
         sqlx::query(
             r#"
             INSERT INTO order_items (order_id, product_id, plan_id, name, quantity, unit_price, total, created_at)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
+            VALUES ($1, $2, $3, $4, $5, $6::BIGINT / 100.0, $7::BIGINT / 100.0, NOW())
             "#
         )
         .bind(order.id)
@@ -333,8 +336,8 @@ async fn create_checkout(
         .bind(item.get("type").and_then(|t| if t == "subscription" { item.get("id").and_then(|i| i.as_i64()) } else { None }))
         .bind(item.get("name").and_then(|n| n.as_str()).unwrap_or(""))
         .bind(item.get("quantity").and_then(|q| q.as_i64()).unwrap_or(1) as i32)
-        .bind(item.get("price").and_then(|p| p.as_f64()).unwrap_or(0.0))
-        .bind(item.get("total").and_then(|t| t.as_f64()).unwrap_or(0.0))
+        .bind(price_cents)
+        .bind(total_cents_li)
         .execute(&mut *tx)
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
@@ -387,7 +390,7 @@ async fn create_checkout(
                 .unwrap_or("Item")
                 .to_string(),
             description: None,
-            amount: (item.get("price").and_then(|p| p.as_f64()).unwrap_or(0.0) * 100.0) as i64,
+            amount: item.get("price_cents").and_then(|p| p.as_i64()).unwrap_or(0),
             currency: "usd".to_string(),
             quantity: item.get("quantity").and_then(|q| q.as_i64()).unwrap_or(1),
             is_subscription,
@@ -447,7 +450,7 @@ async fn create_checkout(
         order_number = %order_number,
         user_id = %user.id,
         stripe_session_id = %stripe_session.id,
-        total = %total,
+        total_cents = %total_cents,
         "Stripe checkout session created"
     );
 
@@ -455,11 +458,11 @@ async fn create_checkout(
         "order_id": order.id,
         "order_number": order_number,
         "line_items": line_items,
-        "subtotal": subtotal,
-        "discount": discount,
+        "subtotal_cents": subtotal_cents,
+        "discount_cents": discount_cents,
         "coupon": coupon_info,
-        "tax": tax,
-        "total": total,
+        "tax_cents": tax_cents,
+        "total_cents": total_cents,
         "currency": "USD",
         "stripe_session_id": stripe_session.id,
         "checkout_url": stripe_session.url,
@@ -506,10 +509,10 @@ async fn get_order(
         user_id: i64,
         order_number: String,
         status: String,
-        subtotal: f64,
-        discount: f64,
-        tax: f64,
-        total: f64,
+        subtotal_cents: i64,
+        discount_cents: i64,
+        tax_cents: i64,
+        total_cents: i64,
         currency: String,
         coupon_code: Option<String>,
         billing_name: Option<String>,
@@ -519,7 +522,14 @@ async fn get_order(
     }
 
     let order: OrderRow = sqlx::query_as(
-        "SELECT id, user_id, order_number, status, subtotal, discount, tax, total, currency, coupon_code, billing_name, billing_email, completed_at, created_at FROM orders WHERE order_number = $1 AND user_id = $2"
+        r#"SELECT id, user_id, order_number, status,
+                  (subtotal * 100)::BIGINT AS subtotal_cents,
+                  (discount * 100)::BIGINT AS discount_cents,
+                  (tax * 100)::BIGINT      AS tax_cents,
+                  (total * 100)::BIGINT    AS total_cents,
+                  currency, coupon_code, billing_name, billing_email,
+                  completed_at, created_at
+           FROM orders WHERE order_number = $1 AND user_id = $2"#
     )
     .bind(&order_number)
     .bind(user.id)
@@ -535,12 +545,15 @@ async fn get_order(
         plan_id: Option<i64>,
         name: String,
         quantity: i32,
-        unit_price: f64,
-        total: f64,
+        unit_price_cents: i64,
+        total_cents: i64,
     }
 
     let items: Vec<OrderItemRow> = sqlx::query_as(
-        "SELECT id, product_id, plan_id, name, quantity, unit_price, total FROM order_items WHERE order_id = $1"
+        r#"SELECT id, product_id, plan_id, name, quantity,
+                  (unit_price * 100)::BIGINT AS unit_price_cents,
+                  (total      * 100)::BIGINT AS total_cents
+           FROM order_items WHERE order_id = $1"#
     )
     .bind(order.id)
     .fetch_all(&state.db.pool)
@@ -563,13 +576,16 @@ async fn get_orders(
         id: i64,
         order_number: String,
         status: String,
-        total: f64,
+        total_cents: i64,
         currency: String,
         created_at: chrono::NaiveDateTime,
     }
 
     let orders: Vec<OrderSummary> = sqlx::query_as(
-        "SELECT id, order_number, status, total, currency, created_at FROM orders WHERE user_id = $1 ORDER BY created_at DESC"
+        r#"SELECT id, order_number, status,
+                  (total * 100)::BIGINT AS total_cents,
+                  currency, created_at
+           FROM orders WHERE user_id = $1 ORDER BY created_at DESC"#
     )
     .bind(user.id)
     .fetch_all(&state.db.pool)
