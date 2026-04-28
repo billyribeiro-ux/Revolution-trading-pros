@@ -62,7 +62,7 @@
 	<div class="preset-themes">
 		<div class="themes-label">Preset Themes</div>
 		<div class="themes-grid">
-			{#each themes as theme}
+			{#each themes as theme (theme.id)}
 				<button
 					class="theme-card"
 					class:active={selectedTheme.id === theme.id && !isCustomizing}

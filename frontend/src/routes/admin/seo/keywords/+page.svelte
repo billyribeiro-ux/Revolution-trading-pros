@@ -173,7 +173,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					{#each filteredKeywords as keyword}
+					{#each filteredKeywords as keyword (keyword.keyword)}
 						<tr>
 							<td>
 								<div class="keyword-cell">{keyword.keyword}</div>
@@ -232,7 +232,7 @@
 		<div class="top-keywords-section">
 			<h2>Top Performing Keywords</h2>
 			<div class="top-keywords-grid">
-				{#each stats.top_keywords as keyword}
+				{#each stats.top_keywords as keyword (keyword.keyword)}
 					<div class="top-keyword-card">
 						<div class="keyword-rank">#{keyword.current_rank}</div>
 						<div class="keyword-name">{keyword.keyword}</div>
@@ -248,7 +248,7 @@
 			<h2>Quick Win Opportunities</h2>
 			<p class="section-desc">Keywords ranking 11-30 with high potential</p>
 			<div class="opportunities-grid">
-				{#each stats.opportunity_keywords as keyword}
+				{#each stats.opportunity_keywords as keyword (keyword.keyword)}
 					<div class="opportunity-card">
 						<div class="opp-header">
 							<span class="rank-badge top-20">#{keyword.current_rank}</span>

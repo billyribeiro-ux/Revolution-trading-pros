@@ -2,6 +2,33 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-04-27 (i) — Svelte MCP autofixer pass: straggler fixes
+
+### Fixed
+
+Two `lib/components/` files missed in pass (e): `BatchOperations.svelte` and `forms/ThemeCustomizer.svelte` — both missing `{#each}` key expressions. Added `(action.id)` and `(theme.id)` respectively.
+
+`pnpm check` after all changes: **0 errors / 0 warnings / 5215 files**.
+
+---
+
+## [Unreleased] — 2026-04-28 (i) — Svelte MCP autofixer pass: straggler fixes
+
+### Fixed
+
+Six files missed in earlier passes — all missing `{#each}` key expressions:
+
+- `lib/components/BatchOperations.svelte` — added `(action.id)`
+- `lib/components/forms/FormBuilder.svelte` — added `(type)` key on field types loop
+- `lib/components/forms/MultiStepFormRenderer.svelte` — added `(step.id)` on steps loop
+- `lib/components/forms/ThemeCustomizer.svelte` — added `(theme.id)`
+- `routes/admin/seo/keywords/+page.svelte` — added `(keyword.keyword)` on 3 loops
+- `routes/admin/seo/redirects/+page.svelte` — added `(type)` and `(redirect.id)`
+
+`pnpm check` after all changes: **0 errors / 0 warnings / 5215 files**.
+
+---
+
 ## [Unreleased] — 2026-04-27 (h) — Svelte MCP autofixer pass: routes/ (non-admin)
 
 ### Fixed

@@ -376,7 +376,7 @@ https://svelte.dev/e/bind_invalid_expression -->
 			<div class="add-field-section">
 				<h4>Add Field</h4>
 				<div class="field-types-grid">
-					{#each availableFieldTypes as { type, label }}
+					{#each availableFieldTypes as { type, label } (type)}
 						<button class="field-type-button" onclick={() => handleAddField(type)}>
 							{label}
 						</button>
