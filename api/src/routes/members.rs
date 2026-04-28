@@ -230,26 +230,33 @@ pub async fn stats(
     .await
     .unwrap_or(0);
 
-    // MRR calculation (simplified)
-    let mrr: f64 = sqlx::query_scalar(
-        "SELECT COALESCE(SUM(
-            CASE
-                WHEN billing_period = 'yearly' THEN price / 12
-                WHEN billing_period = 'quarterly' THEN price / 3
-                ELSE price
-            END
-        ), 0) FROM user_memberships WHERE status = 'active'",
+    // MRR — integer cents, joined to membership_plans (user_memberships has no price/billing_period columns)
+    let mrr_cents: i64 = sqlx::query_scalar(
+        r#"SELECT COALESCE(SUM(
+              CASE LOWER(mp.billing_cycle)
+                  WHEN 'yearly'    THEN ((mp.price * 100) / 12)::BIGINT
+                  WHEN 'annual'    THEN ((mp.price * 100) / 12)::BIGINT
+                  WHEN 'quarterly' THEN ((mp.price * 100) / 3)::BIGINT
+                  ELSE                  (mp.price * 100)::BIGINT
+              END
+           ), 0)::BIGINT
+           FROM user_memberships um
+           JOIN membership_plans mp ON mp.id = um.plan_id
+           WHERE um.status IN ('active', 'trialing')"#,
     )
     .fetch_one(state.db.pool())
     .await
-    .unwrap_or(0.0);
+    .unwrap_or(0);
 
-    // Total revenue
-    let total_revenue: f64 =
-        sqlx::query_scalar("SELECT COALESCE(SUM(price), 0) FROM user_memberships")
-            .fetch_one(state.db.pool())
-            .await
-            .unwrap_or(0.0);
+    // Total revenue (cents) — sum across ALL memberships (lifetime), joined to plans
+    let total_revenue_cents: i64 = sqlx::query_scalar(
+        r#"SELECT COALESCE(SUM((mp.price * 100)::BIGINT), 0)::BIGINT
+           FROM user_memberships um
+           JOIN membership_plans mp ON mp.id = um.plan_id"#,
+    )
+    .fetch_one(state.db.pool())
+    .await
+    .unwrap_or(0);
 
     Ok(Json(serde_json::json!({
         "overview": {
@@ -262,12 +269,12 @@ pub async fn stats(
             "active": active_subscribers,
             "trial": trial_members,
             "churned": churned_members,
-            "churn_rate": 0.0 // Would need more complex calculation
+            "churn_rate": 0.0
         },
         "revenue": {
-            "mrr": (mrr * 100.0).round() / 100.0,
-            "total": (total_revenue * 100.0).round() / 100.0,
-            "avg_ltv": 0.0 // Would need more complex calculation
+            "mrr_cents": mrr_cents,
+            "total_cents": total_revenue_cents,
+            "avg_ltv_cents": 0_i64
         }
     })))
 }
@@ -278,18 +285,19 @@ pub async fn services(
     State(state): State<AppState>,
     _admin: AdminUser,
 ) -> Result<Json<serde_json::Value>, ApiError> {
-    // Get distinct products/services that members can subscribe to
-    let services: Vec<(i64, Option<String>, Option<String>, Option<f64>, i64)> = sqlx::query_as(
+    // Distinct services. user_memberships has no product_id/product_name/price; canonical is membership_plans.
+    let services: Vec<(i64, Option<String>, Option<String>, Option<i64>, i64)> = sqlx::query_as(
         r#"
         SELECT
-            COALESCE(us.product_id, us.id) as id,
-            us.product_name as name,
+            mp.id as id,
+            mp.name as name,
             'subscription' as type,
-            us.price,
-            COUNT(DISTINCT us.user_id) as members_count
-        FROM user_memberships us
-        WHERE us.status = 'active'
-        GROUP BY COALESCE(us.product_id, us.id), us.product_name, us.price
+            (mp.price * 100)::BIGINT as price_cents,
+            COUNT(DISTINCT um.user_id) as members_count
+        FROM user_memberships um
+        JOIN membership_plans mp ON mp.id = um.plan_id
+        WHERE um.status IN ('active', 'trialing')
+        GROUP BY mp.id, mp.name, mp.price
         ORDER BY members_count DESC
         LIMIT 50
         "#,
@@ -300,12 +308,12 @@ pub async fn services(
 
     let services_json: Vec<serde_json::Value> = services
         .into_iter()
-        .map(|(id, name, svc_type, price, count)| {
+        .map(|(id, name, svc_type, price_cents, count)| {
             serde_json::json!({
                 "id": id,
                 "name": name.unwrap_or_else(|| format!("Service {}", id)),
                 "type": svc_type.unwrap_or_else(|| "subscription".to_string()),
-                "price": price.unwrap_or(0.0),
+                "price_cents": price_cents.unwrap_or(0),
                 "is_active": true,
                 "members_count": count
             })
@@ -382,10 +390,9 @@ pub async fn members_by_service(
     Path(service_id): Path<i64>,
     Query(params): Query<MemberQuery>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
-    // Get service info using parameterized query
+    // Get service info — service_id is a membership_plans.id (canonical)
     let service_info: Option<(i64, Option<String>, Option<String>)> = sqlx::query_as(
-        "SELECT DISTINCT COALESCE(product_id, id) as id, product_name, 'subscription' as type
-         FROM user_memberships WHERE COALESCE(product_id, id) = $1 LIMIT 1",
+        "SELECT id, name, 'subscription' as type FROM membership_plans WHERE id = $1 LIMIT 1",
     )
     .bind(service_id)
     .fetch_optional(state.db.pool())
@@ -417,7 +424,7 @@ pub async fn members_by_service(
         SELECT DISTINCT u.id, u.name, u.email, u.created_at, u.updated_at
         FROM users u
         JOIN user_memberships us ON u.id = us.user_id
-        WHERE (us.product_id = $1 OR us.id = $1)
+        WHERE (us.plan_id = $1)
             AND ($2::TEXT IS NULL OR us.status = $2)
             AND ($3::TEXT IS NULL OR (u.name ILIKE $3 OR u.email ILIKE $3))
         ORDER BY u.created_at DESC
@@ -439,7 +446,7 @@ pub async fn members_by_service(
         SELECT COUNT(DISTINCT u.id)
         FROM users u
         JOIN user_memberships us ON u.id = us.user_id
-        WHERE (us.product_id = $1 OR us.id = $1)
+        WHERE (us.plan_id = $1)
             AND ($2::TEXT IS NULL OR us.status = $2)
             AND ($3::TEXT IS NULL OR (u.name ILIKE $3 OR u.email ILIKE $3))
         "#,
@@ -456,7 +463,7 @@ pub async fn members_by_service(
         r#"
         SELECT COUNT(DISTINCT u.id) FROM users u
         JOIN user_memberships us ON u.id = us.user_id
-        WHERE (us.product_id = $1 OR us.id = $1) AND us.status = 'active'
+        WHERE (us.plan_id = $1) AND us.status = 'active'
         "#,
     )
     .bind(service_id)
@@ -468,7 +475,7 @@ pub async fn members_by_service(
         r#"
         SELECT COUNT(DISTINCT u.id) FROM users u
         JOIN user_memberships us ON u.id = us.user_id
-        WHERE (us.product_id = $1 OR us.id = $1) AND us.status = 'trial'
+        WHERE (us.plan_id = $1) AND us.status = 'trial'
         "#,
     )
     .bind(service_id)
@@ -476,16 +483,19 @@ pub async fn members_by_service(
     .await
     .unwrap_or(0);
 
-    let total_revenue: f64 = sqlx::query_scalar(
+    // Service revenue (cents) — joined to membership_plans for canonical price
+    let total_revenue_cents: i64 = sqlx::query_scalar(
         r#"
-        SELECT COALESCE(SUM(us.price), 0) FROM user_memberships us
-        WHERE us.product_id = $1 OR us.id = $1
+        SELECT COALESCE(SUM((mp.price * 100)::BIGINT), 0)::BIGINT
+        FROM user_memberships um
+        JOIN membership_plans mp ON mp.id = um.plan_id
+        WHERE um.plan_id = $1
         "#,
     )
     .bind(service_id)
     .fetch_one(state.db.pool())
     .await
-    .unwrap_or(0.0);
+    .unwrap_or(0);
 
     let last_page = (total as f64 / per_page as f64).ceil() as i64;
 
@@ -500,7 +510,7 @@ pub async fn members_by_service(
             "active_members": active_count,
             "trial_members": trial_count,
             "churned_members": total - active_count - trial_count,
-            "total_revenue": (total_revenue * 100.0).round() / 100.0
+            "total_revenue_cents": total_revenue_cents
         },
         "members": members,
         "pagination": {
@@ -601,15 +611,15 @@ pub async fn churned_members(
     .await
     .unwrap_or(0);
 
-    let lost_revenue: f64 = sqlx::query_scalar(
-        "SELECT COALESCE(SUM(mp.price), 0)
-         FROM user_memberships um
-         JOIN membership_plans mp ON um.plan_id = mp.id
-         WHERE um.status IN ('cancelled', 'expired')",
+    let lost_revenue_cents: i64 = sqlx::query_scalar(
+        r#"SELECT COALESCE(SUM((mp.price * 100)::BIGINT), 0)::BIGINT
+           FROM user_memberships um
+           JOIN membership_plans mp ON um.plan_id = mp.id
+           WHERE um.status IN ('cancelled', 'expired')"#,
     )
     .fetch_one(state.db.pool())
     .await
-    .unwrap_or(0.0);
+    .unwrap_or(0);
 
     let last_page = (total as f64 / per_page as f64).ceil() as i64;
 
@@ -617,8 +627,8 @@ pub async fn churned_members(
         "stats": {
             "total_churned": total,
             "churned_this_month": this_month,
-            "lost_revenue": (lost_revenue * 100.0).round() / 100.0,
-            "avg_lifetime_days": 0 // Would need more complex calculation
+            "lost_revenue_cents": lost_revenue_cents,
+            "avg_lifetime_days": 0
         },
         "members": members,
         "pagination": {
@@ -755,30 +765,36 @@ pub async fn show(
 
     match member {
         Some(m) => {
-            // Get subscription info using parameterized query
+            // Subscription info — joined with membership_plans (canonical price + billing_cycle)
             let subscriptions: Vec<serde_json::Value> = sqlx::query_as::<
                 _,
                 (
                     i64,
                     String,
-                    Option<f64>,
+                    Option<i64>,
                     Option<String>,
                     Option<NaiveDateTime>,
                 ),
             >(
-                "SELECT id, status, price, billing_period, created_at
-                 FROM user_memberships WHERE user_id = $1 ORDER BY created_at DESC",
+                r#"SELECT um.id, um.status,
+                          (mp.price * 100)::BIGINT AS price_cents,
+                          mp.billing_cycle AS billing_period,
+                          um.created_at
+                   FROM user_memberships um
+                   LEFT JOIN membership_plans mp ON mp.id = um.plan_id
+                   WHERE um.user_id = $1
+                   ORDER BY um.created_at DESC"#,
             )
             .bind(id)
             .fetch_all(state.db.pool())
             .await
             .unwrap_or_default()
             .into_iter()
-            .map(|(id, status, price, period, created)| {
+            .map(|(id, status, price_cents, period, created)| {
                 serde_json::json!({
                     "id": id,
                     "status": status,
-                    "price": price,
+                    "price_cents": price_cents,
                     "billing_period": period,
                     "created_at": created
                 })

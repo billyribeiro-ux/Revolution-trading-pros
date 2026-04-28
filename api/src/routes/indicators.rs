@@ -24,7 +24,7 @@ pub struct IndicatorListQuery {
     pub is_active: Option<bool>,
 }
 
-/// Indicator row from database
+/// Indicator row from database. Money is integer cents.
 #[derive(Debug, serde::Serialize, sqlx::FromRow)]
 pub struct IndicatorRow {
     pub id: i64,
@@ -32,7 +32,7 @@ pub struct IndicatorRow {
     pub slug: String,
     pub description: Option<String>,
     pub long_description: Option<String>,
-    pub price: f64,
+    pub price_cents: i64,
     pub is_active: bool,
     pub platform: String,
     pub version: String,
@@ -48,13 +48,19 @@ pub struct IndicatorRow {
     pub updated_at: chrono::NaiveDateTime,
 }
 
+const INDICATOR_SELECT_COLS: &str = r#"id, name, slug, description, long_description,
+    price_cents,
+    is_active, platform, version, download_url, documentation_url,
+    thumbnail, screenshots, features, requirements,
+    meta_title, meta_description, created_at, updated_at"#;
+
 /// Create indicator request
 #[derive(Debug, Deserialize)]
 pub struct CreateIndicatorRequest {
     pub name: String,
     pub description: Option<String>,
     pub long_description: Option<String>,
-    pub price: f64,
+    pub price_cents: i64,
     pub is_active: Option<bool>,
     pub platform: String,
     pub version: Option<String>,
@@ -90,16 +96,20 @@ async fn list_indicators(
         }
     });
 
-    // ICT 7: Use fully parameterized queries
-    let indicators: Vec<IndicatorRow> = sqlx::query_as(
+    // ICT 7: Use fully parameterized queries; project explicit columns so
+    // FromRow matches IndicatorRow.
+    let list_sql = format!(
         r#"
-        SELECT * FROM indicators
+        SELECT {cols}
+        FROM indicators
         WHERE ($1::BOOLEAN IS FALSE OR is_active = true)
         AND ($2::TEXT IS NULL OR platform = $2)
         ORDER BY created_at DESC
         LIMIT $3 OFFSET $4
         "#,
-    )
+        cols = INDICATOR_SELECT_COLS
+    );
+    let indicators: Vec<IndicatorRow> = sqlx::query_as(&list_sql)
     .bind(is_active)
     .bind(&platform)
     .bind(per_page)
@@ -137,7 +147,11 @@ async fn get_indicator(
     State(state): State<AppState>,
     Path(slug): Path<String>,
 ) -> Result<Json<IndicatorRow>, (StatusCode, Json<serde_json::Value>)> {
-    let indicator: IndicatorRow = sqlx::query_as("SELECT * FROM indicators WHERE slug = $1")
+    let by_slug_sql = format!(
+        "SELECT {cols} FROM indicators WHERE slug = $1",
+        cols = INDICATOR_SELECT_COLS
+    );
+    let indicator: IndicatorRow = sqlx::query_as(&by_slug_sql)
         .bind(&slug)
         .fetch_optional(&state.db.pool)
         .await
@@ -164,18 +178,27 @@ async fn create_indicator(
     let slug = slug::slugify(&input.name);
     let version = input.version.unwrap_or_else(|| "1.0.0".to_string());
 
-    let indicator: IndicatorRow = sqlx::query_as(
+    // Money is integer cents. Migration 061 drops the legacy NUMERIC `price`.
+    let insert_sql = format!(
         r#"
-        INSERT INTO indicators (name, slug, description, long_description, price, is_active, platform, version, download_url, documentation_url, thumbnail, screenshots, features, requirements, meta_title, meta_description, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, NOW(), NOW())
-        RETURNING *
+        INSERT INTO indicators (name, slug, description, long_description,
+            price_cents,
+            is_active, platform, version, download_url, documentation_url,
+            thumbnail, screenshots, features, requirements,
+            meta_title, meta_description, created_at, updated_at)
+        VALUES ($1, $2, $3, $4,
+            $5::BIGINT,
+            $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, NOW(), NOW())
+        RETURNING {cols}
         "#,
-    )
+        cols = INDICATOR_SELECT_COLS
+    );
+    let indicator: IndicatorRow = sqlx::query_as(&insert_sql)
     .bind(&input.name)
     .bind(&slug)
     .bind(&input.description)
     .bind(&input.long_description)
-    .bind(input.price)
+    .bind(input.price_cents)
     .bind(input.is_active.unwrap_or(true))
     .bind(&input.platform)
     .bind(&version)
@@ -199,14 +222,20 @@ async fn get_user_indicators(
     State(state): State<AppState>,
     user: User,
 ) -> Result<Json<Vec<IndicatorRow>>, (StatusCode, Json<serde_json::Value>)> {
-    let indicators: Vec<IndicatorRow> = sqlx::query_as(
+    let user_indicators_sql = format!(
         r#"
-        SELECT i.* FROM indicators i
-        INNER JOIN user_indicators ui ON i.id = ui.indicator_id
-        WHERE ui.user_id = $1
-        ORDER BY ui.purchased_at DESC
-        "#
-    )
+        SELECT {cols}
+        FROM (
+            SELECT i.*
+            FROM indicators i
+            INNER JOIN user_indicators ui ON i.id = ui.indicator_id
+            WHERE ui.user_id = $1
+            ORDER BY ui.purchased_at DESC
+        ) indicators
+        "#,
+        cols = INDICATOR_SELECT_COLS
+    );
+    let indicators: Vec<IndicatorRow> = sqlx::query_as(&user_indicators_sql)
     .bind(user.id)
     .fetch_all(&state.db.pool)
     .await
@@ -236,7 +265,11 @@ async fn download_indicator(
     }
 
     // Get download URL
-    let indicator: IndicatorRow = sqlx::query_as("SELECT * FROM indicators WHERE id = $1")
+    let by_id_sql = format!(
+        "SELECT {cols} FROM indicators WHERE id = $1",
+        cols = INDICATOR_SELECT_COLS
+    );
+    let indicator: IndicatorRow = sqlx::query_as(&by_id_sql)
         .bind(id)
         .fetch_one(&state.db.pool)
         .await
