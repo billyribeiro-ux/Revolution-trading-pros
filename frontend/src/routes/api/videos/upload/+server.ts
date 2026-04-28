@@ -11,7 +11,7 @@ import { json, error, type RequestEvent } from '@sveltejs/kit';
 
 import { env } from '$env/dynamic/private';
 // FIX-2026-04-26: process.env.VITE_API_URL → canonical private env pattern
-// const PROD_API_ROOT = env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+// const PROD_API_ROOT = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 // const getApiUrl = () => {
 //   if (typeof process !== 'undefined' && process.env?.VITE_API_URL) {
 //     return `${process.env.VITE_API_URL}/api`;
@@ -19,7 +19,7 @@ import { env } from '$env/dynamic/private';
 //   return `${PROD_API_ROOT}/api`;
 // };
 // const API_URL = getApiUrl();
-const API_URL = `${env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev'}/api`;
+const API_URL = `${env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080'}/api`;
 
 // Upload configuration
 const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB

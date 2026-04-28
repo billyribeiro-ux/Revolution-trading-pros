@@ -453,7 +453,7 @@ There's no idempotency-key mechanism on POST/PUT/DELETE in the admin surface. A 
 
 ### CC-6 — `+server.ts` proxies all use `$env/dynamic/private` ✓
 
-I checked every commerce proxy. All use the canonical `env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev'` pattern. Compliance: 100% within scope. No regressions here.
+I checked every commerce proxy. All use the canonical `env.API_BASE_URL || env.BACKEND_URL || '<your-api-host>'` pattern. Compliance: 100% within scope. No regressions here.
 
 ### CC-7 — Duplicate `id` attributes on table-row inputs
 

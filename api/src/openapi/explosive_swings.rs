@@ -553,14 +553,13 @@ pub struct ApiErrorResponse {
     info(
         title = "Explosive Swings API",
         version = "1.0.0",
-        description = "Trading room API for Explosive Swings - Comprehensive trade alerts, tracking, and analytics.\n\n## Authentication\nAll endpoints require Bearer token authentication: `Authorization: Bearer <token>`\n\n## Rate Limiting\nAPI requests are rate-limited to prevent abuse. See response headers for limit information.\n\n## Base URLs\n- Production: https://revolution-trading-pros-api.fly.dev\n- Development: http://localhost:8080",
+        description = "Trading room API for Explosive Swings - Comprehensive trade alerts, tracking, and analytics.\n\n## Authentication\nAll endpoints require Bearer token authentication: `Authorization: Bearer <token>`\n\n## Rate Limiting\nAPI requests are rate-limited to prevent abuse. See response headers for limit information.\n\n## Base URLs\n- Development: http://localhost:8080\n- Production: TBD (deploy target deferred)",
         contact(
             name = "Revolution Trading Pros",
             email = "support@revolutiontradingpros.com"
         )
     ),
     servers(
-        (url = "https://revolution-trading-pros-api.fly.dev", description = "Production"),
         (url = "http://localhost:8080", description = "Development")
     ),
     paths(

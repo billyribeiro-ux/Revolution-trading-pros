@@ -5,7 +5,7 @@ import { env } from '$env/dynamic/private';
 // API base resolves from runtime env (reads .env.local in dev, secrets in prod)
 // with a Fly fallback so prerender / Cloudflare deploys still work without env vars.
 const API_BASE_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 /**
  * ICT11+ Performance: Simple server load without streaming

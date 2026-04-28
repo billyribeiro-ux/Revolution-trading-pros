@@ -1,5 +1,7 @@
 # Session Continuity — pick up here next time
 
+> **Note (2026-04-28):** Fly.io references in this document are historical. The Fly.io deployment was removed; deploy target is TBD. See `backups/fly-io-removed-2026-04-28.md` for original Fly configuration.
+
 ## What was completed this session (2026-04-28)
 
 ### Svelte MCP autofixer full sweep — ALL folders done ✅
@@ -35,7 +37,7 @@ Source of truth: `docs/audits/DISTINGUISHED_ENGINEER_AUDIT_2026-04-25.md` §9
 - [ ] WebSocket JWT validation — `api/src/websocket.rs:344`
 - [ ] Sanitize 3 unsanitized `{@html}` components (grep for `{@html` — exclude JSON-LD which is safe)
 - [ ] Rate-limit register + forgot-password + reset-password endpoints
-- [ ] Centralize 14 hardcoded `fly.dev` URLs into `frontend/src/lib/config/api.ts`
+- [x] ~~Centralize 14 hardcoded `fly.dev` URLs into `frontend/src/lib/config/api.ts`~~ — Fly.io references removed 2026-04-28; deploy target deferred. Hardcoded URLs replaced with `http://localhost:8080` fallbacks.
 - [ ] Unify env-var precedence between catch-all proxy and Axum client
 - [ ] Remove unused deps: `vivus`, `lottie-web`
 - [ ] Fix `SETUP_GUIDE.md:75` doc drift

@@ -112,7 +112,7 @@ function dateToSlug(date: Date): string {
 }
 
 export const load: PageServerLoad = async ({ params, fetch }): Promise<ArchiveDetailPageData> => {
-	const API_URL = env.API_URL || 'https://revolution-trading-pros-api.fly.dev';
+	const API_URL = env.API_URL || 'http://localhost:8080';
 	const roomSlug = params.room_slug as string;
 	const dateSlug = params.date_slug as string;
 

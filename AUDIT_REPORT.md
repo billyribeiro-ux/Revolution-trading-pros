@@ -1,5 +1,7 @@
 # Comprehensive Full-Stack Audit Report
 
+> **Note (2026-04-28):** Fly.io references in this document are historical. The Fly.io deployment was removed; deploy target is TBD. See `backups/fly-io-removed-2026-04-28.md` for original Fly configuration.
+
 **Repo:** Revolution Trading Pros
 **Date:** 2026-04-26
 **Scope:** Frontend (SvelteKit 2.x + Svelte 5 + Tailwind v4) + Backend (Rust / Axum) + Contract

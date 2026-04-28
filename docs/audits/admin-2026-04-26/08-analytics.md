@@ -268,9 +268,9 @@ const backendData = await fetchFromBackend(`/api/admin/analytics/dashboard?perio
 
 `period` flows from `url.searchParams.get('period')` unsanitized. `period = "30d&secret_admin_param=true"` would be appended verbatim. Use `URLSearchParams` per [config.ts:354-360 pattern](../../../frontend/src/lib/api/config.ts).
 
-### P2-10 — Behavior page directly calls Rust API at `revolution-trading-pros-api.fly.dev` instead of going through a proxy.
+### P2-10 — Behavior page directly calls Rust API at `<your-api-host>` instead of going through a proxy.
 
-[`behavior/+page.svelte:48`](../../../frontend/src/routes/admin/behavior/+page.svelte): `await api.get(\`/api/admin/analytics/behavior?period=${selectedPeriod}\`)`. The `api` object from [`config.ts:293`](../../../frontend/src/lib/api/config.ts) prepends `API_BASE_URL` which is hardcoded to `https://revolution-trading-pros-api.fly.dev`. This bypasses the SvelteKit proxy layer that every other page uses, exposing the admin panel to CORS / CORB risk and making local-dev backend swaps impossible.
+[`behavior/+page.svelte:48`](../../../frontend/src/routes/admin/behavior/+page.svelte): `await api.get(\`/api/admin/analytics/behavior?period=${selectedPeriod}\`)`. The `api` object from [`config.ts:293`](../../../frontend/src/lib/api/config.ts) prepends `API_BASE_URL` which is hardcoded to `<your-api-host>`. This bypasses the SvelteKit proxy layer that every other page uses, exposing the admin panel to CORS / CORB risk and making local-dev backend swaps impossible.
 
 ---
 
@@ -333,7 +333,7 @@ Every `Date` parse uses browser-local TZ implicitly. Backend timestamps need exp
 
 ### Auth
 
-The single proxy ([`api/admin/analytics/dashboard/+server.ts`](../../../frontend/src/routes/api/admin/analytics/dashboard/+server.ts)) follows the project pattern correctly: prefer `rtp_access_token` cookie, fall back to header, 401 if missing — exactly matches commit `e2356fa46`. Endpoint URL is read from `env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev'` per CLAUDE.md. **No URL hardcoding here.** ✅
+The single proxy ([`api/admin/analytics/dashboard/+server.ts`](../../../frontend/src/routes/api/admin/analytics/dashboard/+server.ts)) follows the project pattern correctly: prefer `rtp_access_token` cookie, fall back to header, 401 if missing — exactly matches commit `e2356fa46`. Endpoint URL is read from `env.API_BASE_URL || env.BACKEND_URL || '<your-api-host>'` per CLAUDE.md. **No URL hardcoding here.** ✅
 
 Pages talking directly to the Rust API (e.g. `behavior/+page.svelte`, P2-10) bypass this auth layer entirely and rely on the `api.get` helper attaching tokens — needs separate review.
 

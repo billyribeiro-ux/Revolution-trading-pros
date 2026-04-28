@@ -44,8 +44,8 @@ jobs:
       - name: Production build
         run: pnpm --filter revolution-svelte build
         env:
-          API_BASE_URL: https://revolution-trading-pros-api.fly.dev
-          BACKEND_URL: https://revolution-trading-pros-api.fly.dev
+          API_BASE_URL: <your-api-host>
+          BACKEND_URL: <your-api-host>
 
   # ───────────────────────────────────────────────────────────────────────
   # Frontend: end-to-end (Playwright, chromium only — fastest meaningful gate)

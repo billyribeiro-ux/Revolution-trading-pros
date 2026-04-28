@@ -10,9 +10,9 @@ import { json, type RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 
 // FIX-2026-04-26: env.API_URL → canonical pattern
-// const API_URL = env.API_URL || 'https://revolution-trading-pros-api.fly.dev';
+// const API_URL = env.API_URL || 'http://localhost:8080';
 const API_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 export const GET: RequestHandler = async ({ params, cookies, fetch }) => {
 	const { id } = params;

@@ -104,7 +104,7 @@ const mockTrades: Record<string, Trade[]> = {
 // ═══════════════════════════════════════════════════════════════════════════
 
 async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Promise<any | null> {
-	const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+	const BACKEND_URL = env.BACKEND_URL || 'http://localhost:8080';
 
 	try {
 		const response = await fetch(`${BACKEND_URL}${endpoint}`, {

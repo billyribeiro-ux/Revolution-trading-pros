@@ -176,7 +176,7 @@ This section closes all three items left in the **Deferred** list above.
 
 Strategy: keep `BACKEND_URL` as the single canonical name in every proxy.
 
-- For 8 files where the rebinding lived adjacent to the env-chain: collapsed to one `const BACKEND_URL = env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';`.
+- For 8 files where the rebinding lived adjacent to the env-chain: collapsed to one `const BACKEND_URL = env.API_BASE_URL || env.BACKEND_URL || '<your-api-host>';`.
 - For 10 files where `PROD_BACKEND` was a top-level const and `const BACKEND_URL = PROD_BACKEND;` lived inside a function: renamed top-level `PROD_BACKEND` → `BACKEND_URL`, removed the inner rebinding, swept any remaining references.
 
 Files updated:

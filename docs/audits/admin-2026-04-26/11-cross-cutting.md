@@ -1,5 +1,7 @@
 # 11 — Cross-cutting Audit (whole admin surface)
 
+> **Note (2026-04-28):** Fly.io references in this document are historical. The Fly.io deployment was removed; deploy target is TBD. See `backups/fly-io-removed-2026-04-28.md` for original Fly configuration.
+
 Scope: `frontend/src/routes/admin/**` and `frontend/src/routes/api/admin/**`
 Method: read-only horizontal grep sweep, exhaustive enumeration.
 
@@ -16,7 +18,7 @@ CLAUDE.md asserts that the canonical shape is:
 
 ```ts
 import { env } from '$env/dynamic/private';
-const API_URL = env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+const API_URL = env.API_BASE_URL || env.BACKEND_URL || '<your-api-host>';
 ```
 
 **Result**: of the 53 admin proxies, **49 follow the canonical pattern**, **4 deviate**, and **0 use a hardcoded URL with no `env` lookup at all**.
@@ -27,7 +29,7 @@ These 4 files miss the `env.API_BASE_URL` first-fallback half of the canonical p
 
 | # | File | Line |
 |---|------|------|
-| 1 | [api/admin/bunny/uploads/+server.ts:16](../../../frontend/src/routes/api/admin/bunny/uploads/+server.ts#L16) | `const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';` |
+| 1 | [api/admin/bunny/uploads/+server.ts:16](../../../frontend/src/routes/api/admin/bunny/uploads/+server.ts#L16) | `const BACKEND_URL = env.BACKEND_URL || '<your-api-host>';` |
 | 2 | [api/admin/bunny/create-video/+server.ts:16](../../../frontend/src/routes/api/admin/bunny/create-video/+server.ts#L16) | same |
 | 3 | [api/admin/bunny/upload/+server.ts:18](../../../frontend/src/routes/api/admin/bunny/upload/+server.ts#L18) | same |
 | 4 | [api/admin/bunny/video-status/[guid]/+server.ts:16](../../../frontend/src/routes/api/admin/bunny/video-status/[guid]/+server.ts#L16) | same |
@@ -137,7 +139,7 @@ Per the user's `comment-out, don't delete` rule these are intentional. Per CLAUD
 grep -rEn --include="*.svelte" --include="*.ts" "fetch\(['\"\`]https?:" frontend/src/routes/admin/   # 0
 ```
 
-However, there is an **indirect violation**: the helper `apiFetch` from [lib/api/config.ts:273](../../../frontend/src/lib/api/config.ts#L273) routes calls through `API_BASE_URL` (i.e. `https://revolution-trading-pros-api.fly.dev` in prod) directly, bypassing every SvelteKit `+server.ts` proxy in this repo. Five admin call sites do this:
+However, there is an **indirect violation**: the helper `apiFetch` from [lib/api/config.ts:273](../../../frontend/src/lib/api/config.ts#L273) routes calls through `API_BASE_URL` (i.e. `<your-api-host>` in prod) directly, bypassing every SvelteKit `+server.ts` proxy in this repo. Five admin call sites do this:
 
 | Page | Endpoint | Line |
 |------|----------|------|
@@ -148,7 +150,7 @@ However, there is an **indirect violation**: the helper `apiFetch` from [lib/api
 | [admin/email/templates/edit/[id]/+page.svelte:15](../../../frontend/src/routes/admin/email/templates/edit/[id]/+page.svelte#L15) | `apiFetch('/admin/email/templates/${id}')` | 15 |
 | [admin/email/templates/preview/[id]/+page.svelte:16](../../../frontend/src/routes/admin/email/templates/preview/[id]/+page.svelte#L16) | `apiFetch('/admin/email/templates/${id}/preview')` | 16 |
 
-`apiFetch` resolves these to `https://revolution-trading-pros-api.fly.dev/api/admin/...` — the SK admin proxies at the same path are bypassed.
+`apiFetch` resolves these to `<your-api-host>/api/admin/...` — the SK admin proxies at the same path are bypassed.
 
 Mitigations the team should consider:
 - Replace these with `fetch('/api/admin/...')` (same-origin, hits the proxy).

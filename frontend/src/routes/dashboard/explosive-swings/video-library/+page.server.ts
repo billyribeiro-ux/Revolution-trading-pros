@@ -13,7 +13,7 @@ import type { PageServerLoad } from './$types';
 const ROOM_SLUG = 'explosive-swings';
 
 export const load: PageServerLoad = async ({ fetch }) => {
-	const baseUrl = env.API_BASE_URL || 'https://revolution-trading-pros-api.fly.dev/api';
+	const baseUrl = env.API_BASE_URL || 'http://localhost:8080/api';
 
 	try {
 		const videosRes = await fetch(

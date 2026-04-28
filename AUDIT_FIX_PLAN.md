@@ -1,5 +1,7 @@
 # Audit Fix Plan — Phased
 
+> **Note (2026-04-28):** Fly.io references in this document are historical. The Fly.io deployment was removed; deploy target is TBD. See `backups/fly-io-removed-2026-04-28.md` for original Fly configuration.
+
 **Source:** `./AUDIT_REPORT.md`
 **Goal:** Restore production correctness, then enforce standards.
 **Dependency rule:** Phase N must complete and pass its verification before Phase N+1 starts unless marked `parallel-safe`.
@@ -164,7 +166,7 @@
 **Change:** Every server proxy uses canonical pattern from CLAUDE.md:
 ```ts
 import { env } from '$env/dynamic/private';
-const API_URL = env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+const API_URL = env.API_BASE_URL || env.BACKEND_URL || '<your-api-host>';
 ```
 Rip out `import.meta.env.VITE_*`, `process.env.VITE_*`, `env.API_URL`, and `env.VITE_API_URL` first-position uses.
 **Verification:** grep for `VITE_API_URL` in `frontend/src/routes/api/` — 0 results in `+server.ts` files.

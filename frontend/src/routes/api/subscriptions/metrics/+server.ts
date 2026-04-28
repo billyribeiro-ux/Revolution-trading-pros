@@ -8,7 +8,7 @@ import type { RequestHandler } from './$types';
 
 // FIX-2026-04-26: was hardcoded zeros stub; now real proxy to backend
 const API_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 // FIX-2026-04-26: old hardcoded-zeros body commented out below
 // export const GET: RequestHandler = async () => {

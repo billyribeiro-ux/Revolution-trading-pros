@@ -15,7 +15,7 @@
 import { env } from '$env/dynamic/private';
 import type { PageServerLoad } from './$types';
 
-const API_URL = env.API_URL || 'https://revolution-trading-pros-api.fly.dev';
+const API_URL = env.API_URL || 'http://localhost:8080';
 
 interface Lesson {
 	id: string;

@@ -40,7 +40,7 @@ Complete setup instructions for all services and infrastructure.
    ```
 
 ### Webhook Configuration
-**Endpoint:** `https://revolution-trading-pros-api.fly.dev/api/webhooks/bunny/video-status`
+**Endpoint:** `<your-api-host>/api/webhooks/bunny/video-status`
 **Events:** Video encoding complete, upload complete
 
 ---
@@ -105,7 +105,7 @@ wrangler r2 token create revolution-trading-media-token --read --write
    ```
 
 ### Webhook Configuration
-**Endpoint:** `https://revolution-trading-pros-api.fly.dev/api/webhooks/stripe`
+**Endpoint:** `<your-api-host>/api/webhooks/stripe`
 **Events:**
 - `checkout.session.completed`
 - `invoice.payment_succeeded`
@@ -117,16 +117,16 @@ wrangler r2 token create revolution-trading-media-token --read --write
 ## Database & Redis
 
 ### PostgreSQL (Fly.io)
-**App:** revolution-db
-**Connection String:** `postgres://postgres:PASSWORD@revolution-db.flycast:5432/postgres?sslmode=disable`
+**App:** <your-db-host>
+**Connection String:** `postgres://postgres:PASSWORD@<your-db-host>:5432/postgres?sslmode=disable`
 
 #### Get Credentials
 ```bash
 # Connect to database
-fly postgres connect -a revolution-db
+# fly postgres connect — deploy target deferred
 
 # Get connection string
-fly secrets list -a revolution-trading-pros-api | grep DATABASE_URL
+# fly secrets list — deploy target deferred
 ```
 
 ### Redis (Upstash)
@@ -172,12 +172,12 @@ fly secrets list -a revolution-trading-pros-api | grep DATABASE_URL
 ### Backend Secrets (Fly.io)
 ```bash
 # Set individual secrets
-fly secrets set DATABASE_URL="postgres://..." -a revolution-trading-pros-api
-fly secrets set REDIS_URL="rediss://..." -a revolution-trading-pros-api
-fly secrets set JWT_SECRET="your-secret" -a revolution-trading-pros-api
+# fly secrets set DATABASE_URL="postgres://..." — deploy target deferred
+# fly secrets set REDIS_URL="rediss://..." — deploy target deferred
+# fly secrets set JWT_SECRET="your-secret" — deploy target deferred
 
 # Import from .env file
-fly secrets import < api/.env -a revolution-trading-pros-api
+# fly secrets import — deploy target deferred
 ```
 
 ### Frontend Secrets (Cloudflare Pages)

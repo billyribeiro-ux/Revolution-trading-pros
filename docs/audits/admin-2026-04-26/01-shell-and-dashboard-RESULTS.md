@@ -1,5 +1,7 @@
 # 01 — Admin Shell + Dashboard — RESULTS (2026-04-26)
 
+> **Note (2026-04-28):** Fly.io references in this document are historical. The Fly.io deployment was removed; deploy target is TBD. See `backups/fly-io-removed-2026-04-28.md` for original Fly configuration.
+
 Implementer: Principal-engineer pass.
 Source audit: [01-shell-and-dashboard.md](01-shell-and-dashboard.md).
 Branch: `main` (no commits made — author awaits approval).
@@ -29,7 +31,7 @@ Conventions:
   with the `FIX P0-3` marker. Verified.
 
 ### P0-4 — Cross-origin `withCredentials` uploads — FIXED
-- **New file:** `frontend/src/routes/api/admin/media/upload/+server.ts` — same-origin proxy that translates the `rtp_access_token` cookie to a `Bearer` header server-side and forwards the multipart body to `${BACKEND_URL}/api/admin/media/upload`. Uses the canonical `env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev'` chain.
+- **New file:** `frontend/src/routes/api/admin/media/upload/+server.ts` — same-origin proxy that translates the `rtp_access_token` cookie to a `Bearer` header server-side and forwards the multipart body to `${BACKEND_URL}/api/admin/media/upload`. Uses the canonical `env.API_BASE_URL || env.BACKEND_URL || '<your-api-host>'` chain.
 - **`frontend/src/lib/components/admin/MediaUploadHub.svelte`** — three call sites rewritten to use same-origin paths:
   - `xhr.open('POST', '/api/admin/media/upload')` + dropped `xhr.withCredentials = true`.
   - `fetch('/api/admin/bunny/create-video', …)` (proxy already existed) + dropped `credentials: 'include'`.

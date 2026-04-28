@@ -65,7 +65,7 @@ export interface ArchivePageData {
 }
 
 export const load: PageServerLoad = async ({ url, fetch }): Promise<ArchivePageData> => {
-	const API_URL = env.API_URL || 'https://revolution-trading-pros-api.fly.dev';
+	const API_URL = env.API_URL || 'http://localhost:8080';
 	const ROOM_SLUG = 'day-trading-room';
 
 	// Get query params

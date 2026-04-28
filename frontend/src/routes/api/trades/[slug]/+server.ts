@@ -19,7 +19,7 @@ import type { Trade, TradeCreateInput, TradeStatus } from '$lib/types/trading';
 // BACKEND CONFIGURATION
 // ═══════════════════════════════════════════════════════════════════════════
 
-const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+const BACKEND_URL = env.BACKEND_URL || 'http://localhost:8080';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // BACKEND FETCH HELPER

@@ -7,7 +7,7 @@
 set -e
 
 # Configuration
-API_BASE="${API_BASE:-https://revolution-trading-pros-api.fly.dev}"
+API_BASE="${API_BASE:-http://localhost:8080}"
 OUTPUT_DIR="./test_results"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 RESULTS_FILE="${OUTPUT_DIR}/e2e_results_${TIMESTAMP}.md"

@@ -68,7 +68,7 @@ Tokens are obtained through the authentication flow. Contact support for API acc
 
 | Environment | URL |
 |-------------|-----|
-| Production  | `https://revolution-trading-pros-api.fly.dev` |
+| Production  | `<your-api-host>` |
 | Development | `http://localhost:8080` |
 
 ---
@@ -97,7 +97,7 @@ Retrieve paginated alerts for a trading room.
 **Example Request:**
 
 ```bash
-curl -X GET "https://revolution-trading-pros-api.fly.dev/api/room-content/rooms/explosive-swings/alerts?page=1&per_page=10" \
+curl -X GET "<your-api-host>/api/room-content/rooms/explosive-swings/alerts?page=1&per_page=10" \
   -H "Authorization: Bearer <token>"
 ```
 
@@ -546,7 +546,7 @@ Search room content.
 **Example Request:**
 
 ```bash
-curl -X GET "https://revolution-trading-pros-api.fly.dev/api/search/explosive-swings?q=NVDA%20call" \
+curl -X GET "<your-api-host>/api/search/explosive-swings?q=NVDA%20call" \
   -H "Authorization: Bearer <token>"
 ```
 

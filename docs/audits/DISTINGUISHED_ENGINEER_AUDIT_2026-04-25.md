@@ -1,5 +1,7 @@
 # Distinguished Engineer Audit — Anti-Patterns, Tests, Dead Code, Perf, Security, A11y/SEO/Observability
 
+> **Note (2026-04-28):** Fly.io references in this document are historical. The Fly.io deployment was removed; deploy target is TBD. See `backups/fly-io-removed-2026-04-28.md` for original Fly configuration.
+
 **Auditor:** Claude (Opus 4.7) acting as a panel of distinguished-engineer reviewers
 **Date:** 2026-04-25 · **Commit:** `52e64a3b2` (with one mid-audit fix to `setup.ts:80` documented in §0.2)
 **Scope:** six parallel read-only sweeps + live verification of all four test gates.

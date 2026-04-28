@@ -1,5 +1,7 @@
 # Local development runbook
 
+> **Note (2026-04-28):** Fly.io references in this document are historical. The Fly.io deployment was removed; deploy target is TBD. See `backups/fly-io-removed-2026-04-28.md` for original Fly configuration.
+
 This is the canonical guide for running the full stack on your laptop, against
 local Docker Postgres + Redis + Rust API + native SvelteKit dev server. It
 takes ~10 minutes the first time (Rust release build of the API is the long

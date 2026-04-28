@@ -62,13 +62,13 @@ CLAUDE.md contains the project-specific Svelte MCP tooling rules (use the
 
 ## When you add a new SvelteKit `+server.ts` proxy
 
-It's tempting to copy the existing `const API_URL = 'https://...fly.dev';` shape. **Don't.** The PE7 pattern is:
+It's tempting to copy a hardcoded production URL into `const API_URL`. **Don't.** The PE7 pattern is:
 
 ```ts
 import { env } from '$env/dynamic/private';
 
 const API_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 ```
 
 This way the proxy works against:
@@ -120,7 +120,7 @@ urge to dump audit content there.
 - [ ] Branch is up-to-date with `main`
 - [ ] Commits follow Conventional Commits
 - [ ] All four gates pass locally (typecheck, vitest, playwright, cargo)
-- [ ] No new hardcoded `revolution-trading-pros-api.fly.dev` URLs
+- [ ] No new hardcoded production URLs (use `env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080'` pattern)
 - [ ] No new `as any` casts in TypeScript without justification in a comment
 - [ ] No new `unwrap_or_default()` on `Result<T, E>` in Rust without justification
 - [ ] No secrets committed (run `git diff` against `frontend/.env.production` and `api/.env*`)

@@ -142,9 +142,8 @@ impl Config {
         // ENVIRONMENT is "development" but APP_URL points at a known prod host.
         if is_dev {
             let app_url = std::env::var("APP_URL").unwrap_or_default();
+            // Deploy target deferred — extend this list when production hosts are chosen.
             const PROD_INDICATORS: &[&str] = &[
-                "revolution-trading-pros.pages.dev",
-                "revolution-trading-pros-api.fly.dev",
                 "revolutiontradingpros.com",
             ];
             if PROD_INDICATORS.iter().any(|d| app_url.contains(d)) {

@@ -13,7 +13,7 @@ import type { PageServerLoad } from './$types';
 
 // FIX-2026-04-26: canonical private-env URL pattern (CLAUDE.md house style).
 const API_ROOT =
-	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 const ROOM_SLUG = 'small-account-mentorship';
 
 // Video response from API

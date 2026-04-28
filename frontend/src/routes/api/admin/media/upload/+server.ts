@@ -23,7 +23,7 @@ import { env } from '$env/dynamic/private';
 
 // CLAUDE.md house style: API_BASE_URL || BACKEND_URL || prod fly URL.
 const BACKEND_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
 	const cookieToken = cookies.get('rtp_access_token');

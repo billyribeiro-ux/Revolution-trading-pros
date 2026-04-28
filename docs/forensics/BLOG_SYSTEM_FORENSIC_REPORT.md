@@ -144,7 +144,7 @@ posts: {
 }
 ```
 
-**API Base URL:** `https://revolution-trading-pros-api.fly.dev`
+**API Base URL:** `<your-api-host>`
 
 ### 2.5 Type Definitions
 
@@ -505,7 +505,7 @@ CREATE TABLE cms_ai_assist_history (
 2. SERVER-SIDE LOAD:
    ├── /blog/[slug]/+page.ts:load()
    ├── apiFetch(API_ENDPOINTS.posts.single(slug))
-   └── GET https://revolution-trading-pros-api.fly.dev/api/posts/{slug}
+   └── GET <your-api-host>/api/posts/{slug}
 
 3. BACKEND PROCESSING:
    ├── /api/src/routes/posts.rs:get_post()

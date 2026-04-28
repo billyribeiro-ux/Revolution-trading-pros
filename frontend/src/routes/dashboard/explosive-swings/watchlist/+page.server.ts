@@ -24,7 +24,7 @@ import { ROOM_SLUG } from '../constants';
 
 const LOG_PREFIX = '[explosive-swings/watchlist]';
 const DEFAULT_API_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // LOAD FUNCTION - ICT 7 Server-Side Rendering

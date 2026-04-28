@@ -74,7 +74,7 @@ const config = {
 					'self',
 					'ws:',
 					'wss:',
-					'https://revolution-trading-pros-api.fly.dev',
+					'http://localhost:8080',
 					'https://revolution-trading-pros.pages.dev',
 					'https://www.googleapis.com',
 					'https://www.google-analytics.com',

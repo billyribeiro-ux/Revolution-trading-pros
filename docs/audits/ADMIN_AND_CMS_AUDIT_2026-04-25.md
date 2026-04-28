@@ -1,5 +1,7 @@
 # Admin Backend & Headless CMS — End-to-End Audit
 
+> **Note (2026-04-28):** Fly.io references in this document are historical. The Fly.io deployment was removed; deploy target is TBD. See `backups/fly-io-removed-2026-04-28.md` for original Fly configuration.
+
 **Auditor:** Claude (Opus 4.7) · **Date:** 2026-04-25 · **Commit:** `08cf8605c`
 **Scope:** four parallel read-only sweeps —
 - backend admin (`api/src/routes/admin*.rs` + `routes/{courses,indicators,subscriptions}_admin.rs` + `middleware/admin.rs` + `migrate.rs` + `security.rs` + `settings.rs`),
@@ -26,7 +28,7 @@ Ranked by user impact:
 | 5 | **WebSocket accepts any client.** `// TODO: Validate JWT tokens` at `websocket.rs:344`. Anyone with the URL can subscribe to the live alert stream. | `api/src/routes/websocket.rs:344` | High — leaks paid content. |
 | 6 | **Admin auth pattern is split.** `admin.rs` mostly uses `User + require_admin()`; the rest of `admin_*.rs` modules use the `AdminUser` extractor. Two paths to maintain, two ways to get role checks wrong. | `api/src/middleware/admin.rs` + `api/src/routes/admin.rs` | High — maintenance + audit risk. |
 | 7 | **No transactions on multi-step admin mutations.** `grant_membership`, `bulk_assign_tags`, etc. can leave the DB partially updated. | `api/src/routes/admin.rs:958-1037`, `admin_members.rs:948-992` | High — data integrity. |
-| 8 | **14 hardcoded `revolution-trading-pros-api.fly.dev` URLs in the frontend.** Spread across `+page.server.ts` files, `lib/server/watchlist.ts`, `hooks.server.ts:24`, `lib/api/config.ts`. Migration to a different API URL today touches 14 files. | inventory in [§5.4](#54-hardcoded-urls) | Medium — bites on every env change. |
+| 8 | **14 hardcoded `<your-api-host>` URLs in the frontend.** Spread across `+page.server.ts` files, `lib/server/watchlist.ts`, `hooks.server.ts:24`, `lib/api/config.ts`. Migration to a different API URL today touches 14 files. | inventory in [§5.4](#54-hardcoded-urls) | Medium — bites on every env change. |
 | 9 | **Three separate retry implementations.** Catch-all proxy, Axum client, `lib/api/admin.ts`. Three places to debug a retry storm. | [§5.5](#55-retry-and-circuit-breaker) | Medium. |
 | 10 | **Production API reports `environment: "development"`.** Which probably relaxes cookie / CORS / log defaults. | observed live | Medium — security hygiene. |
 | 11 | **Existing `.remote.ts` files have correctness issues.** Hard-coded refresh keys + unawaited `.refresh()` promises. | [`commands.remote.ts:71, 89`](frontend/src/routes/dashboard/explosive-swings/commands.remote.ts) | Medium — already detailed in the previous audit. |
@@ -360,7 +362,7 @@ flag every remaining `state_referenced_locally` warning.
 | Pattern | File count | Where | Notes |
 |---------|-----------|-------|-------|
 | Catch-all proxy `/api/[...path]/+server.ts` | 1 generic + ~96 specialized | `frontend/src/routes/api/**` | retry + circuit breaker; consistent error shape; **bypassed** by both other patterns |
-| Direct fetch in `+page.server.ts` `load` | 61 files | scattered | mostly hits `event.fetch('/api/...')`, but **14 files hardcode `https://revolution-trading-pros-api.fly.dev/...` directly** |
+| Direct fetch in `+page.server.ts` `load` | 61 files | scattered | mostly hits `event.fetch('/api/...')`, but **14 files hardcode `<your-api-host>/...` directly** |
 | `.remote.ts` (Svelte 5 Remote Functions) | 2 | `dashboard/explosive-swings/{data,commands}.remote.ts` | only fully-typed end-to-end pattern |
 
 ### 4.2 The catch-all proxy
@@ -435,7 +437,7 @@ that it would be a non-breaking refactor.
 | B | Env-var precedence mismatch | catch-all uses `VITE_API_URL || BACKEND_URL`; Axum client uses `API_BASE_URL || VITE_API_URL || BACKEND_URL` | High — silent split-brain in dev |
 | C | Hardcoded fly.dev URLs | 14 files (§4.4) | Medium |
 | D | Retry implemented 3× | proxy + client + admin.ts (§4.5) | Medium |
-| E | Watchlist endpoint **bypasses the proxy entirely** | `frontend/src/routes/api/watchlist/...` direct-fetches `https://revolution-trading-pros-api.fly.dev/api/watchlist/entries` | Medium |
+| E | Watchlist endpoint **bypasses the proxy entirely** | `frontend/src/routes/api/watchlist/...` direct-fetches `<your-api-host>/api/watchlist/entries` | Medium |
 | F | Logout proxy returns 200 even when backend logout fails | `frontend/src/routes/api/logout/+server.ts:50` | Low — defensive cookie deletion is intentional |
 | G | Token-refresh logic exists in 3 places that must stay in sync | hooks.server.ts + auth store + `lib/api/auth.ts` | Low — already documented in source comments |
 

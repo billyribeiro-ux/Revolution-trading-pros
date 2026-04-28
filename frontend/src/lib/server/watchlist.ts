@@ -17,7 +17,7 @@ import { env } from '$env/dynamic/private';
  * Local dev points this at http://localhost:8080 via frontend/.env.local.
  */
 const DEFAULT_API_BASE_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 export interface WatchlistData {
 	id: number;

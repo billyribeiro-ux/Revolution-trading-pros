@@ -21,7 +21,7 @@ export const csr = true; // Enable client-side hydration
 export const prerender = false; // Dynamic content - cannot prerender
 
 // ICT 7 FIX: VITE_API_URL does NOT include /api suffix - we add it here
-const API_ROOT = import.meta.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev';
+const API_ROOT = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 const BACKEND_URL = `${API_ROOT}/api`;
 
 export interface DailyVideo {

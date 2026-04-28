@@ -1,5 +1,7 @@
 # GitHub Actions IDE Warnings - Technical Analysis
 
+> **Note (2026-04-28):** Fly.io references in this document are historical. The Fly.io deployment was removed; deploy target is TBD. See `backups/fly-io-removed-2026-04-28.md` for original Fly configuration.
+
 ## Executive Summary
 
 **Status:** ✅ Production-Ready with Expected IDE Warnings
@@ -66,8 +68,6 @@ Our workflows use **defense-in-depth** validation:
 
 | Line | Secret | Usage | Safe? | Reason |
 |------|--------|-------|-------|--------|
-| 46 | `secrets.FLY_API_TOKEN` | Token validation env | ✅ Yes | In env block, shell validates before use |
-| 58 | `secrets.FLY_API_TOKEN` | Deployment env | ✅ Yes | Conditional execution, fails fast if missing |
 
 **Note:** Unlike Cloudflare deployment, Fly.io deployment **requires** the token and will fail fast with clear error if missing. This is intentional for production API deployments.
 
@@ -188,8 +188,6 @@ For each secret/variable access, we ensure:
 
 | Scenario | Expected Behavior | Actual Behavior |
 |----------|-------------------|-----------------|
-| FLY_API_TOKEN configured | ✅ Full deployment | ✅ Works |
-| Missing FLY_API_TOKEN | ❌ Fails with clear error | ✅ Works |
 
 ---
 

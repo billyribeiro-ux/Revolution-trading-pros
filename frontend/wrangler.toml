@@ -15,7 +15,7 @@ pages_build_output_dir = ".svelte-kit/cloudflare"
 [vars]
 # FIX-2026-04-26: VITE_* are build-time — dead as runtime vars (Phase 7.4)
 # VITE_SITE_NAME = "Revolution Trading Pros"
-# VITE_API_URL = "https://revolution-trading-pros-api.fly.dev"
+# VITE_API_URL = "http://localhost:8080"
 # VITE_CDN_URL = "https://pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev"
 # VITE_SITE_URL = "https://revolution-trading-pros.pages.dev"
 ENVIRONMENT = "production"
@@ -23,7 +23,7 @@ ENVIRONMENT = "production"
 [env.preview.vars]
 # FIX-2026-04-26: VITE_* are build-time — dead as runtime vars (Phase 7.4)
 # VITE_SITE_NAME = "Revolution Trading Pros (Preview)"
-# VITE_API_URL = "https://revolution-trading-pros-api.fly.dev"
+# VITE_API_URL = "http://localhost:8080"
 # VITE_CDN_URL = "https://pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev"
 # VITE_SITE_URL = "https://revolution-trading-pros.pages.dev"
 ENVIRONMENT = "preview"
@@ -31,7 +31,7 @@ ENVIRONMENT = "preview"
 [env.production.vars]
 # FIX-2026-04-26: VITE_* are build-time — dead as runtime vars (Phase 7.4)
 # VITE_SITE_NAME = "Revolution Trading Pros"
-# VITE_API_URL = "https://revolution-trading-pros-api.fly.dev"
+# VITE_API_URL = "http://localhost:8080"
 # VITE_CDN_URL = "https://pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev"
 # VITE_SITE_URL = "https://revolution-trading-pros.pages.dev"
 ENVIRONMENT = "production"

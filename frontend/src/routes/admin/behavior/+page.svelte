@@ -40,7 +40,7 @@
 	let recordings = $state<{ id: string; duration: string; pages: number; date: string }[]>([]);
 
 	// FIX-2026-04-26 (P2-10): route through SvelteKit proxy instead of `api.get`
-	// (which prepends the hardcoded fly.dev URL and bypasses the cookie-based
+	// (which prepends the hardcoded backend URL and bypasses the cookie-based
 	// auth attached by `+server.ts`). The proxy stub at
 	// `/api/admin/analytics/behavior/+server.ts` handles auth + URL injection.
 	async function loadData() {

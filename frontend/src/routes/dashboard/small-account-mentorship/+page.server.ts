@@ -21,7 +21,7 @@ import type { RoomResource } from '$lib/api/room-resources';
 const SMALL_ACCOUNT_MENTORSHIP_ID = 1;
 
 export const load: ServerLoad = async ({ fetch, locals }) => {
-	const baseUrl = env.API_BASE_URL || 'https://revolution-trading-pros-api.fly.dev';
+	const baseUrl = env.API_BASE_URL || 'http://localhost:8080';
 	// ICT 7 FIX: Pass access token from locals for authenticated API calls
 	const accessToken = (locals as { accessToken?: string }).accessToken ?? undefined;
 

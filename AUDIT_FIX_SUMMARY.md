@@ -1,5 +1,7 @@
 # Audit Fix — Implementation Summary
 
+> **Note (2026-04-28):** Fly.io references in this document are historical. The Fly.io deployment was removed; deploy target is TBD. See `backups/fly-io-removed-2026-04-28.md` for original Fly configuration.
+
 **Date:** 2026-04-26
 **Plan:** [AUDIT_FIX_PLAN.md](AUDIT_FIX_PLAN.md) (8 phases)
 **Audit:** [AUDIT_REPORT.md](AUDIT_REPORT.md)

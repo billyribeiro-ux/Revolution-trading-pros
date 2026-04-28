@@ -1,4 +1,6 @@
 # ICT 7 Principal Engineer - Login 500 Error Postmortem
+
+> **Note (2026-04-28):** Fly.io references in this document are historical. The Fly.io deployment was removed; deploy target is TBD. See `backups/fly-io-removed-2026-04-28.md` for original Fly configuration.
 **Apple ICT 7 Grade Standards - Production Incident Resolution**
 
 ## Executive Summary
@@ -17,7 +19,7 @@
 **What We Did:**
 ```bash
 # Step 1: Confirmed API is running
-curl https://revolution-trading-pros-api.fly.dev/api/health/live
+curl <your-api-host>/api/health/live
 # Result: 200 OK - App running
 
 # Step 2: Reproduced error with exact request
@@ -25,7 +27,7 @@ curl -X POST /api/auth/login -d '{"email":"test@test.com","password":"test123"}'
 # Result: 500 "database error"
 
 # Step 3: Retrieved production logs
-flyctl logs -a revolution-trading-pros-api | grep ERROR
+# flyctl logs -a <your-app>  # deploy target TBD; was: flyctl logs | grep ERROR
 # Result: "column \"password\" does not exist" - Position 25 in SQL query
 ```
 

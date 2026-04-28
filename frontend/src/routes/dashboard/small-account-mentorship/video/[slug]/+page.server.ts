@@ -12,7 +12,7 @@ import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 // ICT 7 FIX: VITE_API_URL does NOT include /api suffix - we add it here
-const API_ROOT = import.meta.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev';
+const API_ROOT = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 const BACKEND_URL = `${API_ROOT}/api`;
 
 export interface VideoNavReference {

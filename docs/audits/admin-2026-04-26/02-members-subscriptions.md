@@ -529,7 +529,7 @@ P1-10 covers the specific issue. A second-pass audit should map every backend ro
 
 ## Summary
 
-The Members / Subscriptions / Memberships surface is in worse shape than the recently-clean proxy snapshots imply. The proxy file directory itself looks fine — every existing `+server.ts` already follows the `env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev'` rule and the `rtp_access_token` cookie convention. **The problem is that 70-80 % of the admin pages in this scope call proxy paths that don't have a `+server.ts` at all.** The pages compile, render, and seem to work in dev because Promise.allSettled / `.catch()` quietly swallows the 404s and shows empty states.
+The Members / Subscriptions / Memberships surface is in worse shape than the recently-clean proxy snapshots imply. The proxy file directory itself looks fine — every existing `+server.ts` already follows the `env.API_BASE_URL || env.BACKEND_URL || '<your-api-host>'` rule and the `rtp_access_token` cookie convention. **The problem is that 70-80 % of the admin pages in this scope call proxy paths that don't have a `+server.ts` at all.** The pages compile, render, and seem to work in dev because Promise.allSettled / `.catch()` quietly swallows the 404s and shows empty states.
 
 The two genuine code-correctness bugs are:
 1. The Subscription Management page's connection guard tests a function reference (P0-1) — the page literally never renders its own data block.

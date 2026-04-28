@@ -1,5 +1,7 @@
 # Product & Authentication End-to-End Audit
 
+> **Note (2026-04-28):** Fly.io references in this document are historical. The Fly.io deployment was removed; deploy target is TBD. See `backups/fly-io-removed-2026-04-28.md` for original Fly configuration.
+
 **Auditor:** Claude (Opus 4.7) · **Date:** 2026-04-25 · **Commit:** `9e4a86eb6`
 **Scope:** authentication, RBAC, ABAC, CRUD coverage, and the four product
 verticals (indicators, courses, trading rooms, services / pricing).
@@ -406,10 +408,10 @@ Found in source via grep:
   body `{"error":"Database error"}`. Diagnosis: Fly.io Postgres app is
   stopped, out of connections, or the Flycast tunnel is wedged. The API
   process itself is fine.
-  - **Action:** `flyctl status -a revolution-db`,
-    `flyctl logs -a revolution-db | tail -200`. Then
-    `flyctl machines restart -a revolution-db`, then
-    `flyctl apps restart revolution-trading-pros-api` to reset the API's
+  - **Action:** `flyctl status -a <your-db-host>` _(historical; deploy target TBD)_,
+    `flyctl logs -a <your-db-host> | tail -200`. Then
+    `flyctl machines restart -a <your-db-host>` _(historical)_, then
+    `flyctl apps restart <your-app>` _(historical)_ to reset the API's
     connection pool.
 - **CSP blocks `cloudflareinsights.com/cdn-cgi/rum`.** Cosmetic, but worth
   cleaning up. Either widen `connect-src` to include the bare host or

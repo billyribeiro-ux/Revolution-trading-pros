@@ -19,7 +19,7 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 
-const PROD_API_ROOT = 'https://revolution-trading-pros-api.fly.dev';
+const PROD_API_ROOT = 'http://localhost:8080';
 const API_ROOT = env.VITE_API_URL || env.BACKEND_URL || PROD_API_ROOT;
 const API_URL = `${API_ROOT}/api`;
 

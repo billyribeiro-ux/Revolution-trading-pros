@@ -1,5 +1,7 @@
 # Port Flexibility Result
 
+> **Note (2026-04-28):** Fly.io references in this document are historical. The Fly.io deployment was removed; deploy target is TBD. See `backups/fly-io-removed-2026-04-28.md` for original Fly configuration.
+
 **Date:** 2026-04-27  
 **Branch:** main  
 **Gates:** pnpm check 0/0 errors/warnings ✓ | cargo check clean ✓
