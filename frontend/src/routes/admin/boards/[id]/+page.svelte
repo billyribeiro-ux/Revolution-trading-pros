@@ -521,7 +521,7 @@
 
 					<!-- Members -->
 					<div class="flex items-center -space-x-2">
-						{#each members.slice(0, 4) as member}
+						{#each members.slice(0, 4) as member, i (i)}
 							<div
 								class="w-8 h-8 rounded-full bg-[#E6B800] flex items-center justify-center text-[#0D1117] text-sm font-medium border-2 border-white dark:border-gray-800"
 								title={member.name}
@@ -727,7 +727,7 @@
 											{/if}
 											{#if task.assignees && task.assignees.length > 0}
 												<div class="flex -space-x-1">
-													{#each task.assignees.slice(0, 2) as assigneeId}
+													{#each task.assignees.slice(0, 2) as assigneeId (assigneeId)}
 														{@const assignee = members.find((m) => m.user_id === assigneeId)}
 														{#if assignee}
 															<div

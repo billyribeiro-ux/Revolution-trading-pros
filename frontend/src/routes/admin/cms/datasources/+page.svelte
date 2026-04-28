@@ -1088,7 +1088,7 @@
 					<label for="entry-dimension">Dimension</label>
 					<select id="entry-dimension" bind:value={entryForm.dimension}>
 						<option value="default">Default</option>
-						{#each dimensions.filter((d) => d !== 'default') as dim}
+						{#each dimensions.filter((d) => d !== 'default') as dim (dim)}
 							<option value={dim}>{dim}</option>
 						{/each}
 					</select>

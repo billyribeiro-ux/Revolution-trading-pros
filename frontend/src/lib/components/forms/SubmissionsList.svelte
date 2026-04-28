@@ -267,7 +267,7 @@
 							<td>
 								<div class="field-data">
 									{#if submission.data}
-										{#each submission.data.slice(0, 3) as data}
+										{#each submission.data.slice(0, 3) as data (data.field_name)}
 											<div class="field-item">
 												<strong>{data.field?.label || data.field_name}:</strong>
 												{data.value.substring(0, 50)}{data.value.length > 50 ? '...' : ''}

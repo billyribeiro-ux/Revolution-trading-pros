@@ -108,7 +108,6 @@
 		editedTemplate.colors.text = preset.text;
 		editedTemplate.colors.accent = preset.accent;
 		editedTemplate.colors.acceptButton = preset.accent;
-		editedTemplate = editedTemplate;
 	}
 
 	function handleSave() {

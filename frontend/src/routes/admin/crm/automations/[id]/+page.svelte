@@ -411,7 +411,7 @@
 							</span>
 							{#if funnel.trigger_settings && Object.keys(funnel.trigger_settings).length > 0}
 								<div class="trigger-settings">
-									{#each Object.entries(funnel.trigger_settings) as [key, value]}
+									{#each Object.entries(funnel.trigger_settings) as [key, value] (key)}
 										<div class="setting-item">
 											<span class="setting-key">{key.replace(/_/g, ' ')}:</span>
 											<span class="setting-value">{value}</span>

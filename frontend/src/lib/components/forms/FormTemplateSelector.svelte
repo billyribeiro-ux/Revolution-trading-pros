@@ -112,7 +112,7 @@
 					</div>
 					<div class="template-preview">
 						<div class="preview-fields">
-							{#each template.fields.slice(0, 3) as field}
+							{#each template.fields.slice(0, 3) as field (field.name)}
 								<div class="preview-field">
 									<div class="preview-label">{field.label}</div>
 									<div class="preview-input"></div>

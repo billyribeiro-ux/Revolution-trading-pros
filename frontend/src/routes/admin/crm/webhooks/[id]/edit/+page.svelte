@@ -415,7 +415,7 @@
 					</div>
 				{:else}
 					<div class="events-grid">
-						{#each Object.entries(availableEvents) as [event, label]}
+						{#each Object.entries(availableEvents) as [event, label] (event)}
 							<button
 								type="button"
 								class="event-chip"

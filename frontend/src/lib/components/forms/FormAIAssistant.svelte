@@ -230,7 +230,7 @@
 
 				<div class="example-prompts">
 					<span class="examples-label">Try:</span>
-					{#each examplePrompts.slice(0, 3) as example}
+					{#each examplePrompts.slice(0, 3) as example (example)}
 						<button class="example-btn" onclick={() => (prompt = example)}>
 							{example.slice(0, 30)}...
 						</button>

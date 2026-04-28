@@ -204,7 +204,7 @@
 				<div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 mb-6">
 					<h3 class="text-lg font-semibold text-white mb-4">Event Distribution</h3>
 					<div class="flex flex-wrap gap-2">
-						{#each eventTypes.slice(0, 12) as type}
+						{#each eventTypes.slice(0, 12) as type (type.name)}
 							<button
 								onclick={() => {
 									selectedEventType = type.name;

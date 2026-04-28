@@ -918,7 +918,7 @@
 											onchange={(e) =>
 												updateLeadStatus(lead.id, (e.target as HTMLSelectElement).value)}
 										>
-											{#each statusOptions.filter((o) => o.value !== 'all') as option}
+											{#each statusOptions.filter((o) => o.value !== 'all') as option (option.value)}
 												<option value={option.value}>{option.label}</option>
 											{/each}
 										</select>
@@ -1092,7 +1092,7 @@
 					<div class="form-group">
 						<label for="source">Lead Source</label>
 						<select id="source" bind:value={formData.source}>
-							{#each sourceOptions.filter((o) => o.value !== 'all') as option}
+							{#each sourceOptions.filter((o) => o.value !== 'all') as option (option.value)}
 								<option value={option.value}>{option.label}</option>
 							{/each}
 						</select>
@@ -1225,7 +1225,7 @@
 					<div class="form-group">
 						<label for="edit_source">Lead Source</label>
 						<select id="edit_source" bind:value={formData.source}>
-							{#each sourceOptions.filter((o) => o.value !== 'all') as option}
+							{#each sourceOptions.filter((o) => o.value !== 'all') as option (option.value)}
 								<option value={option.value}>{option.label}</option>
 							{/each}
 						</select>

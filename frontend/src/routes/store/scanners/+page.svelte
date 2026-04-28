@@ -264,7 +264,7 @@
 
 						<!-- Features List -->
 						<ul class="features" aria-label="Key features">
-							{#each (scanner.features || []).slice(0, 3) as feature}
+							{#each (scanner.features || []).slice(0, 3) as feature (feature)}
 								<li>
 									<span aria-hidden="true">✓</span>
 									<span>{feature}</span>

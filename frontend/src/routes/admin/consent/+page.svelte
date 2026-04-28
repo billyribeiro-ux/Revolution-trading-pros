@@ -218,7 +218,7 @@
 					<section class="section">
 						<h2>Category Consent Rates</h2>
 						<div class="category-bars">
-							{#each Object.entries(analytics.categoryRates) as [category, rate]}
+							{#each Object.entries(analytics.categoryRates) as [category, rate] (category)}
 								<div class="category-bar-item">
 									<div class="category-bar-header">
 										<span class="category-name">{category}</span>
@@ -306,7 +306,7 @@
 									</tr>
 								</thead>
 								<tbody>
-									{#each auditLog.slice().reverse() as entry}
+									{#each auditLog.slice().reverse() as entry, i (i)}
 										<tr>
 											<td>{formatDate(entry.timestamp)}</td>
 											<td>
@@ -365,7 +365,7 @@
 						</div>
 					</section>
 
-					{#each Object.entries(cookieScan.byCategory) as [category, cookies]}
+					{#each Object.entries(cookieScan.byCategory) as [category, cookies] (category)}
 						{#if cookies.length > 0}
 							<section class="section">
 								<h2 class="category-header">
