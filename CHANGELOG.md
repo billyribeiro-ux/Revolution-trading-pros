@@ -2,6 +2,24 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-04-27 (f) — Svelte MCP autofixer pass: lib/ (non-components)
+
+### Fixed
+
+Ran `svelte-autofixer` on all `.svelte` files under `frontend/src/lib/` outside of `lib/components/` (already covered in pass (e)). Folders audited:
+
+| Folder | Files audited | Files fixed |
+|---|---|---|
+| `lib/consent/components/` + `lib/consent/templates/` | 8 | 2 (`ConsentPreferencesModal`, `BannerRenderer` — missing `{#each}` keys) |
+| `lib/icons/` | 24 | 0 |
+| `lib/monitoring/` | 1 | 0 |
+| `lib/options-calculator/components/` (all subdirs) | 48 | 1 (`StrategyBuilder` — missing `{#each}` key on breakevens loop) |
+| `lib/seo/` | 1 | 0 (autofixer flags `{@html}` JSON-LD as XSS warning — content is sanitized via `safeJsonLdSerialize`, accepted as safe) |
+
+`pnpm check` after all changes: **0 errors / 0 warnings / 5215 files**.
+
+---
+
 ## [Unreleased] — 2026-04-27 (e) — Svelte MCP autofixer full pass: lib/components/
 
 ### Fixed
