@@ -1,5 +1,6 @@
 //! Order Service Types
-//! Simplified types for order service queries
+//! Simplified types for order service queries.
+//! All monetary values are integer cents per architecture standard §1.2.
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
@@ -10,7 +11,7 @@ pub struct OrderSummary {
     pub id: Uuid,
     pub order_number: String,
     pub status: String,
-    pub total: f64,
+    pub total_cents: i64,
     pub currency: String,
     pub created_at: DateTime<Utc>,
     pub item_count: i32,
@@ -21,10 +22,10 @@ pub struct OrderWithItems {
     pub id: Uuid,
     pub order_number: String,
     pub status: String,
-    pub subtotal: f64,
-    pub tax: f64,
-    pub discount: f64,
-    pub total: f64,
+    pub subtotal_cents: i64,
+    pub tax_cents: i64,
+    pub discount_cents: i64,
+    pub total_cents: i64,
     pub currency: String,
     pub payment_method: Option<String>,
     pub billing_address: Option<serde_json::Value>,
@@ -37,6 +38,6 @@ pub struct OrderItemData {
     pub id: Uuid,
     pub name: String,
     pub quantity: i32,
-    pub price: f64,
-    pub total: f64,
+    pub unit_price_cents: i64,
+    pub total_cents: i64,
 }

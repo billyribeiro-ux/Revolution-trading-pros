@@ -20,17 +20,18 @@ pub enum OrderStatus {
     Cancelled,
 }
 
-/// Order entity
+/// Order entity. Monetary values are integer cents per architecture standard §1.2.
+/// SQL queries reading the legacy NUMERIC columns must alias as `(col * 100)::BIGINT AS col_cents`.
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct Order {
     pub id: i64,
     pub user_id: i64,
     pub order_number: String,
     pub status: String,
-    pub subtotal: f64,
-    pub discount: f64,
-    pub tax: f64,
-    pub total: f64,
+    pub subtotal_cents: i64,
+    pub discount_cents: i64,
+    pub tax_cents: i64,
+    pub total_cents: i64,
     pub currency: String,
     pub payment_provider: Option<String>,
     pub payment_intent_id: Option<String>,
@@ -47,7 +48,7 @@ pub struct Order {
     pub updated_at: NaiveDateTime,
 }
 
-/// Order item entity
+/// Order item entity. Monetary values are integer cents.
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct OrderItem {
     pub id: i64,
@@ -57,8 +58,8 @@ pub struct OrderItem {
     pub name: String,
     pub description: Option<String>,
     pub quantity: i32,
-    pub unit_price: f64,
-    pub total: f64,
+    pub unit_price_cents: i64,
+    pub total_cents: i64,
     pub metadata: Option<serde_json::Value>,
     pub created_at: NaiveDateTime,
 }
@@ -118,7 +119,9 @@ pub struct Coupon {
     pub updated_at: NaiveDateTime,
 }
 
-/// Create coupon request
+/// Create coupon request. Monetary values are integer cents per architecture standard §1.2.
+/// For percent coupons: `discount_value_cents = percent * 100` (e.g. 5000 = 50%).
+/// For fixed coupons: `discount_value_cents` is the discount amount in cents.
 #[derive(Debug, Deserialize, Validate)]
 pub struct CreateCoupon {
     #[validate(length(min = 3, max = 50))]
@@ -126,10 +129,10 @@ pub struct CreateCoupon {
     pub description: Option<String>,
     #[validate(length(min = 1, max = 20))]
     pub discount_type: String,
-    #[validate(range(min = 0.0))]
-    pub discount_value: f64,
-    pub min_purchase: Option<f64>,
-    pub max_discount: Option<f64>,
+    #[validate(range(min = 0))]
+    pub discount_value_cents: i64,
+    pub min_purchase_cents: Option<i64>,
+    pub max_discount_cents: Option<i64>,
     pub usage_limit: Option<i32>,
     pub is_active: Option<bool>,
     pub starts_at: Option<NaiveDateTime>,
@@ -138,16 +141,16 @@ pub struct CreateCoupon {
     pub applicable_plans: Option<serde_json::Value>,
 }
 
-/// Validate coupon response
+/// Validate coupon response. Discount is integer cents.
 #[derive(Debug, Serialize)]
 pub struct ValidateCouponResponse {
     pub valid: bool,
     pub coupon: Option<Coupon>,
     pub error: Option<String>,
-    pub discount_amount: Option<f64>,
+    pub discount_amount_cents: Option<i64>,
 }
 
-/// Invoice entity
+/// Invoice entity. Monetary values are integer cents.
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct Invoice {
     pub id: i64,
@@ -156,10 +159,10 @@ pub struct Invoice {
     pub order_id: Option<i64>,
     pub invoice_number: String,
     pub status: String,
-    pub subtotal: f64,
-    pub discount: f64,
-    pub tax: f64,
-    pub total: f64,
+    pub subtotal_cents: i64,
+    pub discount_cents: i64,
+    pub tax_cents: i64,
+    pub total_cents: i64,
     pub currency: String,
     pub stripe_invoice_id: Option<String>,
     pub pdf_url: Option<String>,

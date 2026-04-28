@@ -35,7 +35,7 @@ use crate::{
 #[derive(Deserialize)]
 pub struct ValidateCouponRequest {
     pub code: String,
-    pub subtotal: Option<f64>,
+    pub subtotal_cents: Option<i64>,
     pub product_ids: Option<Vec<i64>>,
     pub plan_ids: Option<Vec<i64>>,
 }
@@ -44,19 +44,21 @@ pub struct ValidateCouponRequest {
 pub struct ValidateCouponResponse {
     pub valid: bool,
     pub coupon: Option<CouponInfo>,
-    pub discount_amount: Option<f64>,
+    pub discount_amount_cents: Option<i64>,
     pub error: Option<String>,
 }
 
-/// CouponInfo - matches Laravel production schema
+/// CouponInfo (monetary fields in integer cents per architecture standard)
 #[derive(Serialize)]
 pub struct CouponInfo {
     pub id: i64,
     pub code: String,
     #[serde(rename = "type")]
     pub coupon_type: String,
-    pub value: f64,
-    pub min_purchase_amount: f64,
+    /// For percent coupons: value_cents/100 = percent (e.g. 5000 = 50%).
+    /// For fixed coupons: value_cents = the discount in cents.
+    pub value_cents: i64,
+    pub min_purchase_amount_cents: i64,
     pub expiry_date: Option<String>,
 }
 
@@ -112,7 +114,7 @@ async fn validate_coupon(
         return Ok(Json(ValidateCouponResponse {
             valid: false,
             coupon: None,
-            discount_amount: None,
+            discount_amount_cents: None,
             error: Some("Coupon code is required".to_string()),
         }));
     }
@@ -141,7 +143,7 @@ async fn validate_coupon(
             return Ok(Json(ValidateCouponResponse {
                 valid: false,
                 coupon: None,
-                discount_amount: None,
+                discount_amount_cents: None,
                 error: Some("Invalid coupon code".to_string()),
             }));
         }
@@ -152,7 +154,7 @@ async fn validate_coupon(
         return Ok(Json(ValidateCouponResponse {
             valid: false,
             coupon: None,
-            discount_amount: None,
+            discount_amount_cents: None,
             error: Some("This coupon is no longer active".to_string()),
         }));
     }
@@ -163,7 +165,7 @@ async fn validate_coupon(
             return Ok(Json(ValidateCouponResponse {
                 valid: false,
                 coupon: None,
-                discount_amount: None,
+                discount_amount_cents: None,
                 error: Some("This coupon has expired".to_string()),
             }));
         }
@@ -175,24 +177,25 @@ async fn validate_coupon(
             return Ok(Json(ValidateCouponResponse {
                 valid: false,
                 coupon: None,
-                discount_amount: None,
+                discount_amount_cents: None,
                 error: Some("This coupon has reached its usage limit".to_string()),
             }));
         }
     }
 
-    // Check minimum purchase - Laravel uses min_purchase_amount
-    let min_purchase_f64 = coupon.min_purchase_amount.to_f64().unwrap_or(0.0);
-    if min_purchase_f64 > 0.0 {
-        if let Some(subtotal) = input.subtotal {
-            if subtotal < min_purchase_f64 {
+    // Check minimum purchase — convert NUMERIC → cents at the boundary
+    let min_purchase_cents: i64 = (coupon.min_purchase_amount.to_f64().unwrap_or(0.0) * 100.0).round() as i64;
+    if min_purchase_cents > 0 {
+        if let Some(subtotal_cents) = input.subtotal_cents {
+            if subtotal_cents < min_purchase_cents {
+                let min_purchase_dollars = min_purchase_cents as f64 / 100.0; // display only
                 return Ok(Json(ValidateCouponResponse {
                     valid: false,
                     coupon: None,
-                    discount_amount: None,
+                    discount_amount_cents: None,
                     error: Some(format!(
                         "Minimum purchase of ${:.2} required",
-                        min_purchase_f64
+                        min_purchase_dollars
                     )),
                 }));
             }
@@ -210,7 +213,7 @@ async fn validate_coupon(
                     return Ok(Json(ValidateCouponResponse {
                         valid: false,
                         coupon: None,
-                        discount_amount: None,
+                        discount_amount_cents: None,
                         error: Some(
                             "This coupon is not valid for the selected products".to_string(),
                         ),
@@ -222,15 +225,17 @@ async fn validate_coupon(
 
     // Note: Laravel schema doesn't have applicable_plans column
 
-    // Calculate discount - Laravel uses 'type' (percentage/fixed) and 'value'
-    let coupon_value_f64 = coupon.value.to_f64().unwrap_or(0.0);
-    let discount_amount = if let Some(subtotal) = input.subtotal {
-        let discount = if coupon.coupon_type == "percentage" {
-            subtotal * (coupon_value_f64 / 100.0)
+    // Calculate discount — value stored as DECIMAL (e.g. 50.00 = 50% or $50);
+    // we represent as cents for transport: percent coupons use value_cents / 100 = percent.
+    let coupon_value_cents: i64 = (coupon.value.to_f64().unwrap_or(0.0) * 100.0).round() as i64;
+    let discount_amount_cents = if let Some(subtotal_cents) = input.subtotal_cents {
+        let discount_cents: i64 = if coupon.coupon_type == "percentage" {
+            let percent = coupon_value_cents / 100; // 5000 → 50
+            (subtotal_cents.saturating_mul(percent)) / 100
         } else {
-            coupon_value_f64
+            coupon_value_cents
         };
-        Some(discount)
+        Some(discount_cents)
     } else {
         None
     };
@@ -241,11 +246,11 @@ async fn validate_coupon(
             id: coupon.id,
             code: coupon.code,
             coupon_type: coupon.coupon_type,
-            value: coupon_value_f64,
-            min_purchase_amount: min_purchase_f64,
+            value_cents: coupon_value_cents,
+            min_purchase_amount_cents: min_purchase_cents,
             expiry_date: coupon.expiry_date.map(|d| d.to_string()),
         }),
-        discount_amount,
+        discount_amount_cents,
         error: None,
     }))
 }

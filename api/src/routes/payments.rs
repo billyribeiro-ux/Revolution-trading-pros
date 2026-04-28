@@ -102,42 +102,42 @@ async fn create_checkout(
         ));
     }
 
-    // Look up authoritative prices from DB — never trust client-supplied price
+    // Look up authoritative prices from DB as integer cents — never trust client-supplied price.
+    // SQL does the NUMERIC→cents conversion at the boundary; in-Rust math is i64 cents only.
     #[derive(sqlx::FromRow)]
     struct PlanRow {
         name: String,
-        price: f64,
+        price_cents: i64,
         trial_period_days: Option<i32>,
         trial_requires_payment_method: bool,
     }
     #[derive(sqlx::FromRow)]
     struct ProductRow {
         name: String,
-        price: f64,
+        price_cents: i64,
     }
 
-    // resolved_items: (product_id, plan_id, db_name, db_price, quantity, is_subscription, interval)
     struct ResolvedItem {
         product_id: Option<i64>,
         plan_id: Option<i64>,
         db_name: String,
-        db_price: f64,
+        db_price_cents: i64,
         quantity: i32,
         is_subscription: bool,
         interval: Option<String>,
     }
 
     let mut resolved_items: Vec<ResolvedItem> = Vec::new();
-    let mut subtotal = 0.0_f64;
+    let mut subtotal_cents: i64 = 0;
     let mut line_items: Vec<LineItem> = Vec::new();
     // Trial settings from first subscription plan found (only one plan per checkout expected)
     let mut checkout_trial_days: Option<i64> = None;
     let mut checkout_trial_requires_pm: bool = true;
 
     for item in &input.items {
-        let (db_name, db_price): (String, f64) = if let Some(plan_id) = item.plan_id {
+        let (db_name, db_price_cents): (String, i64) = if let Some(plan_id) = item.plan_id {
             let row: PlanRow = sqlx::query_as(
-                "SELECT name, price::FLOAT8 as price, trial_period_days, trial_requires_payment_method FROM membership_plans WHERE id = $1 AND is_active = true",
+                "SELECT name, (price * 100)::BIGINT AS price_cents, trial_period_days, trial_requires_payment_method FROM membership_plans WHERE id = $1 AND is_active = true",
             )
             .bind(plan_id)
             .fetch_optional(&state.db.pool)
@@ -148,22 +148,22 @@ async fn create_checkout(
                 checkout_trial_days = row.trial_period_days.map(|d| d as i64);
                 checkout_trial_requires_pm = row.trial_requires_payment_method;
             }
-            (row.name, row.price)
+            (row.name, row.price_cents)
         } else if let Some(product_id) = item.product_id {
             let row: ProductRow = sqlx::query_as(
-                "SELECT name, price::FLOAT8 as price FROM products WHERE id = $1 AND is_active = true",
+                "SELECT name, (price * 100)::BIGINT AS price_cents FROM products WHERE id = $1 AND is_active = true",
             )
             .bind(product_id)
             .fetch_optional(&state.db.pool)
             .await
             .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
             .ok_or_else(|| (StatusCode::BAD_REQUEST, Json(json!({"error": format!("Product {} not found or inactive", product_id)}))))?;
-            (row.name, row.price)
+            (row.name, row.price_cents)
         } else {
             return Err((StatusCode::BAD_REQUEST, Json(json!({"error": "Each item must have either plan_id or product_id"}))));
         };
 
-        subtotal += db_price * item.quantity as f64;
+        subtotal_cents = subtotal_cents.saturating_add(db_price_cents * item.quantity as i64);
 
         let (interval, interval_count) = match item.interval.as_deref() {
             Some("monthly") => (Some("month".to_string()), Some(1)),
@@ -176,7 +176,7 @@ async fn create_checkout(
             price_id: None,
             name: db_name.clone(),
             description: None,
-            amount: (db_price * 100.0).round() as i64,
+            amount: db_price_cents,
             currency: "usd".to_string(),
             quantity: item.quantity as i64,
             is_subscription: item.is_subscription,
@@ -188,15 +188,15 @@ async fn create_checkout(
             product_id: item.product_id,
             plan_id: item.plan_id,
             db_name,
-            db_price,
+            db_price_cents,
             quantity: item.quantity,
             is_subscription: item.is_subscription,
             interval: item.interval.clone(),
         });
     }
 
-    // Apply coupon if provided
-    let mut discount = 0.0_f64;
+    // Apply coupon if provided — all math in integer cents
+    let mut discount_cents: i64 = 0;
     let mut coupon_id: Option<i64> = None;
 
     if let Some(ref code) = input.coupon_code {
@@ -204,12 +204,14 @@ async fn create_checkout(
         struct CouponInfo {
             id: i64,
             discount_type: String,
-            discount_value: f64,
-            max_discount: Option<f64>,
+            discount_value_cents: i64,
+            max_discount_cents: Option<i64>,
         }
 
         let coupon: Option<CouponInfo> = sqlx::query_as(
-            r#"SELECT id, discount_type, discount_value, max_discount
+            r#"SELECT id, discount_type,
+                      (discount_value * 100)::BIGINT AS discount_value_cents,
+                      (max_discount   * 100)::BIGINT AS max_discount_cents
                FROM coupons
                WHERE UPPER(code) = UPPER($1)
                AND is_active = true
@@ -227,21 +229,25 @@ async fn create_checkout(
         })?;
 
         if let Some(c) = coupon {
-            discount = if c.discount_type == "percent" {
-                subtotal * (c.discount_value / 100.0)
+            // For percent coupons the value is stored in dollars (e.g. 50.00 = 50%);
+            // multiply (subtotal_cents * percent_int) / 100. For fixed-amount coupons
+            // the cents value is the discount.
+            discount_cents = if c.discount_type == "percent" {
+                let percent = c.discount_value_cents / 100; // 50.00 → 50
+                (subtotal_cents.saturating_mul(percent)) / 100
             } else {
-                c.discount_value
+                c.discount_value_cents
             };
 
-            if let Some(max) = c.max_discount {
-                discount = discount.min(max);
+            if let Some(max) = c.max_discount_cents {
+                discount_cents = discount_cents.min(max);
             }
 
             coupon_id = Some(c.id);
         }
     }
 
-    let total = subtotal - discount;
+    let total_cents: i64 = subtotal_cents.saturating_sub(discount_cents);
 
     // Generate order number
     let order_number = format!(
@@ -250,20 +256,22 @@ async fn create_checkout(
         uuid::Uuid::new_v4().to_string()[..8].to_uppercase()
     );
 
-    // Create order in database
+    // Create order in database — DB columns are NUMERIC(10,2) display cache,
+    // we pass cents/100 at the SQL boundary; in-Rust math stays in i64 cents.
     let order_id: i64 = sqlx::query_scalar(
         r#"INSERT INTO orders (
             user_id, order_number, status, subtotal, discount, tax, total,
             currency, coupon_id, coupon_code, billing_name, billing_email,
             billing_address, created_at, updated_at
-        ) VALUES ($1, $2, 'pending', $3, $4, 0, $5, 'USD', $6, $7, $8, $9, $10, NOW(), NOW())
+        ) VALUES ($1, $2, 'pending', $3::BIGINT / 100.0, $4::BIGINT / 100.0, 0, $5::BIGINT / 100.0,
+                  'USD', $6, $7, $8, $9, $10, NOW(), NOW())
         RETURNING id"#,
     )
     .bind(user.id)
     .bind(&order_number)
-    .bind(subtotal)
-    .bind(discount)
-    .bind(total)
+    .bind(subtotal_cents)
+    .bind(discount_cents)
+    .bind(total_cents)
     .bind(coupon_id)
     .bind(&input.coupon_code)
     .bind(&input.billing_name)
@@ -278,20 +286,21 @@ async fn create_checkout(
         )
     })?;
 
-    // Insert order items using DB-sourced prices
+    // Insert order items using DB-sourced prices in cents
     for ri in &resolved_items {
+        let line_total_cents: i64 = ri.db_price_cents.saturating_mul(ri.quantity as i64);
         sqlx::query(
             r#"INSERT INTO order_items (
                 order_id, product_id, plan_id, name, quantity, unit_price, total, created_at
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())"#,
+            ) VALUES ($1, $2, $3, $4, $5, $6::BIGINT / 100.0, $7::BIGINT / 100.0, NOW())"#,
         )
         .bind(order_id)
         .bind(ri.product_id)
         .bind(ri.plan_id)
         .bind(&ri.db_name)
         .bind(ri.quantity)
-        .bind(ri.db_price)
-        .bind(ri.db_price * ri.quantity as f64)
+        .bind(ri.db_price_cents)
+        .bind(line_total_cents)
         .execute(&state.db.pool)
         .await
         .map_err(|e| {
@@ -358,7 +367,7 @@ async fn create_checkout(
         order_id = %order_id,
         order_number = %order_number,
         user_id = %user.id,
-        amount = %total,
+        amount_cents = %total_cents,
         "Checkout session created"
     );
 
@@ -1252,9 +1261,9 @@ async fn handle_payment_failed(
     let subscription_id = invoice["subscription"].as_str();
     let customer_email = invoice["customer_email"].as_str();
 
-    // Get payment attempt count and amount from invoice
+    // Get payment attempt count and amount from invoice (Stripe stores invoice amounts in cents)
     let attempt_count: i32 = invoice["attempt_count"].as_i64().unwrap_or(1) as i32;
-    let amount_due: f64 = invoice["amount_due"].as_i64().unwrap_or(0) as f64 / 100.0;
+    let amount_due_cents: i64 = invoice["amount_due"].as_i64().unwrap_or(0);
 
     // ICT 7 Fix: Calculate grace period end (7 days from now for standard grace period)
     // Stripe typically retries 3-4 times over ~3 weeks, so 7 days is a reasonable initial grace period
@@ -1291,13 +1300,13 @@ async fn handle_payment_failed(
                 email: String,
                 name: String,
                 plan_name: String,
-                price: Option<f64>,
+                price_cents: Option<i64>,
             }
 
             let user_info: Option<UserSubscription> = sqlx::query_as(
                 r#"SELECT u.email, COALESCE(u.name, u.email) as name,
                    COALESCE(mp.name, 'Subscription') as plan_name,
-                   mp.price::FLOAT8 as price
+                   (mp.price * 100)::BIGINT as price_cents
                    FROM user_memberships um
                    JOIN users u ON um.user_id = u.id
                    LEFT JOIN membership_plans mp ON um.plan_id = mp.id
@@ -1311,11 +1320,11 @@ async fn handle_payment_failed(
             .flatten();
 
             if let Some(info) = user_info {
-                // Use amount from invoice, fallback to plan price
-                let payment_amount = if amount_due > 0.0 {
-                    amount_due
+                // Use amount from invoice, fallback to plan price (all cents)
+                let payment_amount_cents: i64 = if amount_due_cents > 0 {
+                    amount_due_cents
                 } else {
-                    info.price.unwrap_or(0.0)
+                    info.price_cents.unwrap_or(0)
                 };
                 let grace_end_str = grace_period_end.format("%B %d, %Y").to_string();
 
@@ -1324,7 +1333,7 @@ async fn handle_payment_failed(
                         &info.email,
                         &info.name,
                         &info.plan_name,
-                        payment_amount,
+                        payment_amount_cents,
                         &grace_end_str,
                         attempt_count,
                     )
@@ -1347,7 +1356,7 @@ async fn handle_payment_failed(
                         email,
                         "Valued Customer",
                         "your subscription",
-                        amount_due,
+                        amount_due_cents,
                         &grace_end_str,
                         attempt_count,
                     )
@@ -1362,7 +1371,7 @@ async fn handle_payment_failed(
         invoice_id = %invoice["id"].as_str().unwrap_or("unknown"),
         subscription_id = ?subscription_id,
         attempt_count = %attempt_count,
-        amount_due = %amount_due,
+        amount_due_cents = %amount_due_cents,
         grace_period_end = %grace_period_end.format("%Y-%m-%d"),
         "Payment failed - grace period initialized"
     );
@@ -1377,9 +1386,10 @@ async fn handle_refund(
     let charge = &event.data.object;
     let payment_intent = charge["payment_intent"].as_str();
 
-    let refund_amount = charge["amount_refunded"].as_i64().unwrap_or(0);
-    let total_amount = charge["amount"].as_i64().unwrap_or(0);
-    let is_full_refund = refund_amount > 0 && refund_amount >= total_amount;
+    // Stripe stores charge.amount and charge.amount_refunded in integer cents
+    let refund_amount_cents: i64 = charge["amount_refunded"].as_i64().unwrap_or(0);
+    let total_amount_cents: i64 = charge["amount"].as_i64().unwrap_or(0);
+    let is_full_refund = refund_amount_cents > 0 && refund_amount_cents >= total_amount_cents;
 
     if let Some(pi) = payment_intent {
         let refund_status = if is_full_refund {
@@ -1388,18 +1398,16 @@ async fn handle_refund(
             "partial_refund"
         };
 
-        let refund_amount_dollars = refund_amount as f64 / 100.0;
-
         sqlx::query(
             r#"UPDATE orders SET
                status = $1,
-               refund_amount = COALESCE(refund_amount, 0) + $2,
+               refund_amount = COALESCE(refund_amount, 0) + ($2::BIGINT / 100.0),
                refunded_at = CASE WHEN $1 = 'refunded' THEN NOW() ELSE refunded_at END,
                updated_at = NOW()
                WHERE payment_intent_id = $3"#,
         )
         .bind(refund_status)
-        .bind(refund_amount_dollars)
+        .bind(refund_amount_cents)
         .bind(pi)
         .execute(&state.db.pool)
         .await
@@ -1463,8 +1471,8 @@ async fn handle_refund(
             event = "charge_refunded",
             charge_id = %charge["id"].as_str().unwrap_or("unknown"),
             payment_intent = %pi,
-            refund_amount_cents = %refund_amount,
-            total_amount_cents = %total_amount,
+            refund_amount_cents = %refund_amount_cents,
+            total_amount_cents = %total_amount_cents,
             refund_status = %refund_status,
             "Refund processed"
         );
@@ -1613,17 +1621,17 @@ async fn generate_invoice(
     user: User,
     Json(input): Json<GenerateInvoiceRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    // Verify order belongs to user
+    // Verify order belongs to user. All monetary values are integer cents.
     #[derive(sqlx::FromRow)]
     struct OrderInvoiceData {
         id: i64,
         order_number: String,
         user_id: i64,
         status: String,
-        subtotal: f64,
-        discount: f64,
-        tax: f64,
-        total: f64,
+        subtotal_cents: i64,
+        discount_cents: i64,
+        tax_cents: i64,
+        total_cents: i64,
         currency: String,
         billing_name: Option<String>,
         billing_email: Option<String>,
@@ -1634,8 +1642,12 @@ async fn generate_invoice(
     }
 
     let order: OrderInvoiceData = sqlx::query_as(
-        r#"SELECT id, order_number, user_id, status, subtotal::FLOAT8 as subtotal, discount::FLOAT8 as discount,
-                  tax::FLOAT8 as tax, total::FLOAT8 as total, currency, billing_name, billing_email,
+        r#"SELECT id, order_number, user_id, status,
+                  (subtotal * 100)::BIGINT AS subtotal_cents,
+                  (discount * 100)::BIGINT AS discount_cents,
+                  (tax * 100)::BIGINT      AS tax_cents,
+                  (total * 100)::BIGINT    AS total_cents,
+                  currency, billing_name, billing_email,
                   billing_address, coupon_code, created_at, completed_at
            FROM orders WHERE id = $1"#
     )
@@ -1665,17 +1677,20 @@ async fn generate_invoice(
         ));
     }
 
-    // Fetch order items
+    // Fetch order items (all monetary values in integer cents)
     #[derive(sqlx::FromRow, serde::Serialize)]
     struct OrderItem {
         name: String,
         quantity: i32,
-        unit_price: f64,
-        total: f64,
+        unit_price_cents: i64,
+        total_cents: i64,
     }
 
     let items: Vec<OrderItem> = sqlx::query_as(
-        "SELECT name, quantity, unit_price::FLOAT8 as unit_price, total::FLOAT8 as total FROM order_items WHERE order_id = $1"
+        "SELECT name, quantity,
+                (unit_price * 100)::BIGINT AS unit_price_cents,
+                (total      * 100)::BIGINT AS total_cents
+         FROM order_items WHERE order_id = $1"
     )
     .bind(order.id)
     .fetch_all(&state.db.pool)
@@ -1707,11 +1722,11 @@ async fn generate_invoice(
             "address": order.billing_address
         },
         "items": items,
-        "subtotal": order.subtotal,
-        "discount": order.discount,
+        "subtotal_cents": order.subtotal_cents,
+        "discount_cents": order.discount_cents,
         "coupon_code": order.coupon_code,
-        "tax": order.tax,
-        "total": order.total,
+        "tax_cents": order.tax_cents,
+        "total_cents": order.total_cents,
         "currency": order.currency,
         "company": {
             "name": "Revolution Trading Pros",
@@ -1877,26 +1892,20 @@ async fn retry_payment(
 
 /// Aggregated payment metrics returned to the admin dashboard.
 ///
-/// FIX-2026-04-26: shape is hand-tuned for `/admin/dashboard/+page.svelte`
-/// which reads `data.revenue` and `data.mrr`. Both are returned as decimal
-/// dollar amounts (not cents) so the frontend's `formatCurrency` helper
-/// renders them directly. Counts (`pending_count`, `failed_count`) are
-/// included for future widgets — additive fields are tolerated by the
-/// page's `...data` spread.
+/// All monetary values are integer cents per architecture standard §1.2.
+/// Frontend formatCurrency helper handles cents→dollars at render.
 #[derive(Debug, Serialize)]
 struct PaymentSummary {
-    /// Sum of completed `orders.total` for the current calendar month (USD).
-    /// The page treats this as "Revenue This Month".
-    revenue: f64,
-    /// Revenue today (USD), for future use by the dashboard.
-    revenue_today: f64,
-    /// Revenue over the last 7 days (USD), for future use.
-    revenue_week: f64,
-    /// Revenue over the current calendar month (USD) — alias of `revenue`.
-    revenue_month: f64,
-    /// Estimated monthly recurring revenue (USD) summed from active
-    /// memberships' plan prices, normalized by `billing_cycle`.
-    mrr: f64,
+    /// Revenue this month (alias of `revenue_month_cents`), in cents.
+    revenue_cents: i64,
+    /// Revenue today (cents).
+    revenue_today_cents: i64,
+    /// Revenue over the last 7 days (cents).
+    revenue_week_cents: i64,
+    /// Revenue over the current calendar month (cents).
+    revenue_month_cents: i64,
+    /// Monthly recurring revenue (cents).
+    mrr_cents: i64,
     /// Count of `orders.status = 'pending'`.
     pending_count: i64,
     /// Count of `orders.status = 'failed'`.
@@ -1911,9 +1920,9 @@ async fn get_summary(
     State(state): State<AppState>,
     _admin: AdminUser,
 ) -> Result<Json<PaymentSummary>, (StatusCode, Json<serde_json::Value>)> {
-    // Revenue today (UTC).
-    let revenue_today: f64 = sqlx::query_scalar(
-        r#"SELECT COALESCE(SUM(total), 0)::FLOAT8
+    // Revenue today (UTC) — integer cents.
+    let revenue_today_cents: i64 = sqlx::query_scalar(
+        r#"SELECT COALESCE(SUM((total * 100)::BIGINT), 0)::BIGINT
            FROM orders
            WHERE status = 'completed'
              AND completed_at >= DATE_TRUNC('day', NOW())"#,
@@ -1928,9 +1937,9 @@ async fn get_summary(
         )
     })?;
 
-    // Revenue last 7 days.
-    let revenue_week: f64 = sqlx::query_scalar(
-        r#"SELECT COALESCE(SUM(total), 0)::FLOAT8
+    // Revenue last 7 days — integer cents.
+    let revenue_week_cents: i64 = sqlx::query_scalar(
+        r#"SELECT COALESCE(SUM((total * 100)::BIGINT), 0)::BIGINT
            FROM orders
            WHERE status = 'completed'
              AND completed_at >= NOW() - INTERVAL '7 days'"#,
@@ -1945,9 +1954,9 @@ async fn get_summary(
         )
     })?;
 
-    // Revenue current calendar month.
-    let revenue_month: f64 = sqlx::query_scalar(
-        r#"SELECT COALESCE(SUM(total), 0)::FLOAT8
+    // Revenue current calendar month — integer cents.
+    let revenue_month_cents: i64 = sqlx::query_scalar(
+        r#"SELECT COALESCE(SUM((total * 100)::BIGINT), 0)::BIGINT
            FROM orders
            WHERE status = 'completed'
              AND completed_at >= DATE_TRUNC('month', NOW())"#,
@@ -1962,21 +1971,21 @@ async fn get_summary(
         )
     })?;
 
-    // MRR: sum active membership plan prices, normalized by billing cycle.
-    // monthly => *1, quarterly => /3, annual/yearly => /12.
-    let mrr: f64 = sqlx::query_scalar(
+    // MRR: sum active+trialing memberships' plan prices, normalized to monthly,
+    // returned in integer cents.
+    let mrr_cents: i64 = sqlx::query_scalar(
         r#"SELECT COALESCE(SUM(
                 CASE LOWER(mp.billing_cycle)
-                    WHEN 'monthly'   THEN mp.price
-                    WHEN 'quarterly' THEN mp.price / 3.0
-                    WHEN 'annual'    THEN mp.price / 12.0
-                    WHEN 'yearly'    THEN mp.price / 12.0
-                    ELSE mp.price
+                    WHEN 'monthly'   THEN (mp.price * 100)::BIGINT
+                    WHEN 'quarterly' THEN ((mp.price * 100) / 3)::BIGINT
+                    WHEN 'annual'    THEN ((mp.price * 100) / 12)::BIGINT
+                    WHEN 'yearly'    THEN ((mp.price * 100) / 12)::BIGINT
+                    ELSE (mp.price * 100)::BIGINT
                 END
-           ), 0)::FLOAT8
+           ), 0)::BIGINT
            FROM user_memberships um
            JOIN membership_plans mp ON mp.id = um.plan_id
-           WHERE um.status = 'active'"#,
+           WHERE um.status IN ('active', 'trialing')"#,
     )
     .fetch_one(&state.db.pool)
     .await
@@ -2020,11 +2029,11 @@ async fn get_summary(
     })?;
 
     Ok(Json(PaymentSummary {
-        revenue: revenue_month,
-        revenue_today,
-        revenue_week,
-        revenue_month,
-        mrr,
+        revenue_cents: revenue_month_cents,
+        revenue_today_cents,
+        revenue_week_cents,
+        revenue_month_cents,
+        mrr_cents,
         pending_count,
         failed_count,
         last_updated: chrono::Utc::now(),

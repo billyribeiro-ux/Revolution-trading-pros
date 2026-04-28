@@ -13,14 +13,14 @@ use serde_json::json;
 // ICT 7 SECURITY FIX: Added AdminUser for admin-only endpoints
 use crate::{middleware::admin::AdminUser, models::User, AppState};
 
-/// Membership plan row
+/// Membership plan row (price in integer cents per architecture standard §1.2)
 #[derive(Debug, serde::Serialize, sqlx::FromRow)]
 pub struct MembershipPlanRow {
     pub id: i64,
     pub name: String,
     pub slug: String,
     pub description: Option<String>,
-    pub price: f64,
+    pub price_cents: i64,
     pub billing_cycle: String,
     pub is_active: bool,
     pub metadata: Option<serde_json::Value>,
@@ -31,7 +31,7 @@ pub struct MembershipPlanRow {
     pub updated_at: chrono::NaiveDateTime,
 }
 
-/// Extended membership plan with room info (for room-based queries)
+/// Extended membership plan with room info (price in integer cents)
 #[derive(Debug, serde::Serialize, sqlx::FromRow)]
 pub struct MembershipPlanExtended {
     pub id: i64,
@@ -39,7 +39,7 @@ pub struct MembershipPlanExtended {
     pub slug: String,
     pub display_name: Option<String>,
     pub description: Option<String>,
-    pub price: f64,
+    pub price_cents: i64,
     pub billing_cycle: String,
     pub interval_count: Option<i32>,
     pub savings_percent: Option<i32>,
@@ -98,12 +98,12 @@ pub struct ChangePlanRequest {
     pub prorate: Option<bool>,
 }
 
-/// Proration calculation result
+/// Proration calculation result (all monetary in integer cents)
 #[derive(Debug, serde::Serialize)]
 pub struct ProrationPreview {
-    pub current_plan_credit: f64,
-    pub new_plan_cost: f64,
-    pub proration_amount: f64,
+    pub current_plan_credit_cents: i64,
+    pub new_plan_cost_cents: i64,
+    pub proration_amount_cents: i64,
     pub effective_date: String,
     pub billing_cycle_days_remaining: i64,
 }
@@ -114,7 +114,7 @@ async fn list_plans(
 ) -> Result<Json<Vec<MembershipPlanRow>>, (StatusCode, Json<serde_json::Value>)> {
     // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
     let plans: Vec<MembershipPlanRow> = sqlx::query_as(
-        r#"SELECT id, name, slug, description, price::FLOAT8 as price, billing_cycle,
+        r#"SELECT id, name, slug, description, (price * 100)::BIGINT AS price_cents, billing_cycle,
            is_active, metadata, stripe_price_id, features, trial_days, created_at, updated_at
            FROM membership_plans WHERE is_active = true ORDER BY price ASC"#,
     )
@@ -137,7 +137,7 @@ async fn get_plan(
 ) -> Result<Json<MembershipPlanRow>, (StatusCode, Json<serde_json::Value>)> {
     // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
     let plan: MembershipPlanRow = sqlx::query_as(
-        r#"SELECT id, name, slug, description, price::FLOAT8 as price, billing_cycle,
+        r#"SELECT id, name, slug, description, (price * 100)::BIGINT AS price_cents, billing_cycle,
            is_active, metadata, stripe_price_id, features, trial_days, created_at, updated_at
            FROM membership_plans WHERE slug = $1"#,
     )
@@ -169,7 +169,7 @@ async fn get_room_plans(
     let plans: Vec<MembershipPlanExtended> = sqlx::query_as(
         r#"SELECT 
             mp.id, mp.name, mp.slug, mp.display_name, mp.description,
-            mp.price::FLOAT8 as price, mp.billing_cycle,
+            (mp.price * 100)::BIGINT AS price_cents, mp.billing_cycle,
             mp.interval_count, mp.savings_percent, mp.is_popular,
             mp.is_active, mp.metadata, mp.stripe_price_id, mp.stripe_product_id,
             mp.features, mp.trial_days, mp.sort_order, mp.room_id,
@@ -233,7 +233,7 @@ pub struct UserSubscriptionWithPlanRow {
     pub updated_at: Option<chrono::NaiveDateTime>,
     // Plan details (joined)
     pub plan_name: Option<String>,
-    pub plan_price: Option<f64>,
+    pub plan_price_cents: Option<i64>,
     pub plan_billing_cycle: Option<String>,
     pub plan_features: Option<serde_json::Value>,
     pub plan_trial_days: Option<i32>,
@@ -268,7 +268,7 @@ async fn get_my_subscriptions(
             um.created_at,
             um.updated_at,
             mp.name as plan_name,
-            mp.price::FLOAT8 as plan_price,
+            (mp.price * 100)::BIGINT as plan_price_cents,
             mp.billing_cycle as plan_billing_cycle,
             mp.features as plan_features,
             mp.trial_days as plan_trial_days
@@ -288,9 +288,9 @@ async fn get_my_subscriptions(
         )
     })?;
 
-    // Map to frontend format with full plan details
+    // Map to frontend format with full plan details (price in integer cents)
     let mapped: Vec<serde_json::Value> = subscriptions.iter().map(|sub| {
-        let price = sub.plan_price.unwrap_or(0.0);
+        let price_cents: i64 = sub.plan_price_cents.unwrap_or(0);
         let billing_cycle = sub.plan_billing_cycle.clone().unwrap_or_else(|| "monthly".to_string());
         let now = chrono::Utc::now().naive_utc();
 
@@ -345,17 +345,16 @@ async fn get_my_subscriptions(
             "currentPeriodEnd": sub.current_period_end.map(|d| d.format("%Y-%m-%d").to_string()),
             "daysRemaining": days_remaining,
 
-            // Plan details
+            // Plan details (monetary in integer cents per arch standard)
             "productName": sub.plan_name.clone().unwrap_or_else(|| "Unknown Plan".to_string()),
-            "price": price,
-            "total": format!("${:.2}", price),
+            "priceCents": price_cents,
             "interval": billing_cycle.clone(),
             "features": sub.plan_features.clone().unwrap_or(json!([])),
 
             // Items array for frontend compatibility
             "items": [{
                 "name": sub.plan_name.clone().unwrap_or_else(|| "Subscription".to_string()),
-                "price": price,
+                "priceCents": price_cents,
                 "billingCycle": billing_cycle,
                 "quantity": 1
             }],
@@ -399,7 +398,7 @@ async fn create_subscription(
     // Get the plan
     // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
     let plan: MembershipPlanRow = sqlx::query_as(
-        r#"SELECT id, name, slug, description, price::FLOAT8 as price, billing_cycle,
+        r#"SELECT id, name, slug, description, (price * 100)::BIGINT AS price_cents, billing_cycle,
            is_active, metadata, stripe_price_id, features, trial_days, created_at, updated_at
            FROM membership_plans WHERE id = $1 AND is_active = true"#,
     )
@@ -511,7 +510,7 @@ async fn create_subscription(
         "plan": {
             "id": plan.id,
             "name": plan.name,
-            "price": plan.price,
+            "price_cents": plan.price_cents,
             "billing_cycle": plan.billing_cycle,
             "trial_days": trial_days
         },
@@ -648,30 +647,29 @@ async fn get_metrics(
             .await
             .unwrap_or((0,));
 
-    // ICT 7+ Enterprise: Calculate MRR by summing active subscription values
-    // Normalize all billing cycles to monthly equivalent
-    let mrr_result: Option<(f64,)> = sqlx::query_as(
+    // MRR in integer cents — sum active+trialing memberships' plan prices, normalized to monthly
+    let mrr_result: Option<(i64,)> = sqlx::query_as(
         r#"
         SELECT COALESCE(SUM(
             CASE mp.billing_cycle
-                WHEN 'monthly' THEN mp.price::FLOAT8
-                WHEN 'quarterly' THEN mp.price::FLOAT8 / 3.0
-                WHEN 'annual' THEN mp.price::FLOAT8 / 12.0
-                WHEN 'yearly' THEN mp.price::FLOAT8 / 12.0
-                ELSE mp.price::FLOAT8
+                WHEN 'monthly'   THEN (mp.price * 100)::BIGINT
+                WHEN 'quarterly' THEN ((mp.price * 100) / 3)::BIGINT
+                WHEN 'annual'    THEN ((mp.price * 100) / 12)::BIGINT
+                WHEN 'yearly'    THEN ((mp.price * 100) / 12)::BIGINT
+                ELSE (mp.price * 100)::BIGINT
             END
-        ), 0) as mrr
+        ), 0)::BIGINT as mrr_cents
         FROM user_memberships um
         JOIN membership_plans mp ON um.plan_id = mp.id
-        WHERE um.status = 'active'
+        WHERE um.status IN ('active', 'trialing')
         "#,
     )
     .fetch_optional(&state.db.pool)
     .await
     .unwrap_or(None);
 
-    let mrr = mrr_result.map(|r| r.0).unwrap_or(0.0);
-    let arr = mrr * 12.0;
+    let mrr_cents: i64 = mrr_result.map(|r| r.0).unwrap_or(0);
+    let arr_cents: i64 = mrr_cents.saturating_mul(12);
 
     // New subscriptions this month
     let new_this_month: (i64,) = sqlx::query_as(
@@ -725,12 +723,14 @@ async fn get_metrics(
     .unwrap_or(None);
 
     let avg_subscription_months = avg_duration_months.map(|r| r.0).unwrap_or(0.0);
-    let arpu = if active.0 > 0 {
-        mrr / active.0 as f64
+    // ARPU and LTV in integer cents (avg-months × ARPU is fractional → keep float for the
+    // ARPU-derived figures, but the inputs and the final reported amounts are cents).
+    let arpu_cents: i64 = if active.0 > 0 {
+        mrr_cents / active.0
     } else {
-        0.0
+        0
     };
-    let ltv = avg_subscription_months * arpu;
+    let ltv_cents: i64 = (avg_subscription_months * arpu_cents as f64).round() as i64;
 
     // Failed payments (subscriptions in grace period or past_due)
     let failed_payments: (i64,) = sqlx::query_as(
@@ -757,11 +757,11 @@ async fn get_metrics(
         "total_paused": paused.0,
         "pending_cancel": pending_cancel.0,
 
-        // Revenue metrics
-        "mrr": (mrr * 100.0).round() / 100.0,
-        "arr": (arr * 100.0).round() / 100.0,
-        "monthly_recurring_revenue": (mrr * 100.0).round() / 100.0,
-        "annual_recurring_revenue": (arr * 100.0).round() / 100.0,
+        // Revenue metrics — integer cents
+        "mrr_cents": mrr_cents,
+        "arr_cents": arr_cents,
+        "monthly_recurring_revenue_cents": mrr_cents,
+        "annual_recurring_revenue_cents": arr_cents,
 
         // Growth metrics
         "new_this_month": new_this_month.0,
@@ -771,10 +771,10 @@ async fn get_metrics(
         // Churn metrics
         "churn_rate": (churn_rate * 100.0).round() / 100.0,
 
-        // LTV metrics
-        "average_lifetime_value": (ltv * 100.0).round() / 100.0,
+        // LTV metrics — integer cents
+        "average_lifetime_value_cents": ltv_cents,
         "average_subscription_months": (avg_subscription_months * 10.0).round() / 10.0,
-        "arpu": (arpu * 100.0).round() / 100.0,
+        "arpu_cents": arpu_cents,
 
         // Health metrics
         "failed_payments": failed_payments.0,
@@ -923,7 +923,7 @@ async fn change_plan(
 
     // Get current plan
     let current_plan: MembershipPlanRow = sqlx::query_as(
-        r#"SELECT id, name, slug, description, price::FLOAT8 as price, billing_cycle,
+        r#"SELECT id, name, slug, description, (price * 100)::BIGINT AS price_cents, billing_cycle,
            is_active, metadata, stripe_price_id, features, trial_days, created_at, updated_at
            FROM membership_plans WHERE id = $1"#,
     )
@@ -945,7 +945,7 @@ async fn change_plan(
 
     // Get new plan
     let new_plan: MembershipPlanRow = sqlx::query_as(
-        r#"SELECT id, name, slug, description, price::FLOAT8 as price, billing_cycle,
+        r#"SELECT id, name, slug, description, (price * 100)::BIGINT AS price_cents, billing_cycle,
            is_active, metadata, stripe_price_id, features, trial_days, created_at, updated_at
            FROM membership_plans WHERE id = $1 AND is_active = true"#,
     )
@@ -975,38 +975,31 @@ async fn change_plan(
     let prorate = input.prorate.unwrap_or(true);
     let now = chrono::Utc::now().naive_utc();
 
-    // Calculate proration if enabled
+    // Calculate proration if enabled — all integer cents
     let proration = if let (true, Some(period_end)) = (prorate, subscription.current_period_end) {
         let period_start = subscription.current_period_start.unwrap_or(now);
 
         // Days in billing cycle
-        let total_days = (period_end - period_start).num_days().max(1) as f64;
-        let days_remaining = (period_end - now).num_days().max(0) as f64;
-        let days_used = total_days - days_remaining;
+        let total_days: i64 = (period_end - period_start).num_days().max(1);
+        let days_remaining: i64 = (period_end - now).num_days().max(0);
 
-        // Calculate credit for unused portion of current plan
-        let daily_rate_current = current_plan.price / total_days;
-        let credit = daily_rate_current * days_remaining;
-
-        // Calculate cost for new plan (prorated for remaining period)
-        let daily_rate_new = new_plan.price / total_days;
-        let new_cost = daily_rate_new * days_remaining;
-
-        // Proration amount (positive = owe money, negative = credit)
-        let proration_amount = new_cost - credit;
+        // credit_cents = (current_plan.price_cents * days_remaining) / total_days
+        let credit_cents: i64 = (current_plan.price_cents.saturating_mul(days_remaining)) / total_days;
+        let new_cost_cents: i64 = (new_plan.price_cents.saturating_mul(days_remaining)) / total_days;
+        let proration_amount_cents: i64 = new_cost_cents - credit_cents;
 
         Some(ProrationPreview {
-            current_plan_credit: (credit * 100.0).round() / 100.0,
-            new_plan_cost: (new_cost * 100.0).round() / 100.0,
-            proration_amount: (proration_amount * 100.0).round() / 100.0,
+            current_plan_credit_cents: credit_cents,
+            new_plan_cost_cents: new_cost_cents,
+            proration_amount_cents,
             effective_date: now.format("%Y-%m-%d").to_string(),
-            billing_cycle_days_remaining: days_remaining as i64,
+            billing_cycle_days_remaining: days_remaining,
         })
     } else {
         None
     };
 
-    let is_upgrade = new_plan.price > current_plan.price;
+    let is_upgrade = new_plan.price_cents > current_plan.price_cents;
     let change_type = if is_upgrade { "upgrade" } else { "downgrade" };
 
     // Update the subscription to new plan
@@ -1034,13 +1027,13 @@ async fn change_plan(
         "previous_plan": {
             "id": current_plan.id,
             "name": current_plan.name,
-            "price": current_plan.price,
+            "price_cents": current_plan.price_cents,
             "billing_cycle": current_plan.billing_cycle
         },
         "new_plan": {
             "id": new_plan.id,
             "name": new_plan.name,
-            "price": new_plan.price,
+            "price_cents": new_plan.price_cents,
             "billing_cycle": new_plan.billing_cycle
         },
         "proration": proration,
@@ -1078,7 +1071,7 @@ async fn preview_plan_change(
 
     // Get current plan
     let current_plan: MembershipPlanRow = sqlx::query_as(
-        r#"SELECT id, name, slug, description, price::FLOAT8 as price, billing_cycle,
+        r#"SELECT id, name, slug, description, (price * 100)::BIGINT AS price_cents, billing_cycle,
            is_active, metadata, stripe_price_id, features, trial_days, created_at, updated_at
            FROM membership_plans WHERE id = $1"#,
     )
@@ -1100,7 +1093,7 @@ async fn preview_plan_change(
 
     // Get new plan
     let new_plan: MembershipPlanRow = sqlx::query_as(
-        r#"SELECT id, name, slug, description, price::FLOAT8 as price, billing_cycle,
+        r#"SELECT id, name, slug, description, (price * 100)::BIGINT AS price_cents, billing_cycle,
            is_active, metadata, stripe_price_id, features, trial_days, created_at, updated_at
            FROM membership_plans WHERE id = $1 AND is_active = true"#,
     )
@@ -1124,53 +1117,53 @@ async fn preview_plan_change(
 
     let proration = if let Some(period_end) = subscription.current_period_end {
         let period_start = subscription.current_period_start.unwrap_or(now);
-        let total_days = (period_end - period_start).num_days().max(1) as f64;
-        let days_remaining = (period_end - now).num_days().max(0) as f64;
+        let total_days: i64 = (period_end - period_start).num_days().max(1);
+        let days_remaining: i64 = (period_end - now).num_days().max(0);
 
-        let daily_rate_current = current_plan.price / total_days;
-        let credit = daily_rate_current * days_remaining;
-        let daily_rate_new = new_plan.price / total_days;
-        let new_cost = daily_rate_new * days_remaining;
-        let proration_amount = new_cost - credit;
+        let credit_cents: i64 = (current_plan.price_cents.saturating_mul(days_remaining)) / total_days;
+        let new_cost_cents: i64 = (new_plan.price_cents.saturating_mul(days_remaining)) / total_days;
+        let proration_amount_cents: i64 = new_cost_cents - credit_cents;
 
         ProrationPreview {
-            current_plan_credit: (credit * 100.0).round() / 100.0,
-            new_plan_cost: (new_cost * 100.0).round() / 100.0,
-            proration_amount: (proration_amount * 100.0).round() / 100.0,
+            current_plan_credit_cents: credit_cents,
+            new_plan_cost_cents: new_cost_cents,
+            proration_amount_cents,
             effective_date: now.format("%Y-%m-%d").to_string(),
-            billing_cycle_days_remaining: days_remaining as i64,
+            billing_cycle_days_remaining: days_remaining,
         }
     } else {
         ProrationPreview {
-            current_plan_credit: 0.0,
-            new_plan_cost: new_plan.price,
-            proration_amount: new_plan.price,
+            current_plan_credit_cents: 0,
+            new_plan_cost_cents: new_plan.price_cents,
+            proration_amount_cents: new_plan.price_cents,
             effective_date: now.format("%Y-%m-%d").to_string(),
             billing_cycle_days_remaining: 0,
         }
     };
 
-    let is_upgrade = new_plan.price > current_plan.price;
+    let is_upgrade = new_plan.price_cents > current_plan.price_cents;
+    let proration_amount_cents = proration.proration_amount_cents;
+    let proration_amount_dollars = proration_amount_cents as f64 / 100.0; // display only
 
     Ok(Json(json!({
         "current_plan": {
             "id": current_plan.id,
             "name": current_plan.name,
-            "price": current_plan.price,
+            "price_cents": current_plan.price_cents,
             "billing_cycle": current_plan.billing_cycle
         },
         "new_plan": {
             "id": new_plan.id,
             "name": new_plan.name,
-            "price": new_plan.price,
+            "price_cents": new_plan.price_cents,
             "billing_cycle": new_plan.billing_cycle
         },
         "is_upgrade": is_upgrade,
         "proration": proration,
-        "summary": if proration.proration_amount >= 0.0 {
-            format!("You will be charged ${:.2} today", proration.proration_amount)
+        "summary": if proration_amount_cents >= 0 {
+            format!("You will be charged ${:.2} today", proration_amount_dollars)
         } else {
-            format!("You will receive a ${:.2} credit", proration.proration_amount.abs())
+            format!("You will receive a ${:.2} credit", proration_amount_dollars.abs())
         }
     })))
 }
@@ -1283,7 +1276,7 @@ async fn send_renewal_reminders(
         user_email: String,
         user_name: String,
         plan_name: String,
-        plan_price: f64,
+        plan_price_cents: i64,
         current_period_end: chrono::NaiveDateTime,
     }
 
@@ -1294,7 +1287,7 @@ async fn send_renewal_reminders(
             u.email as user_email,
             COALESCE(u.name, u.email) as user_name,
             mp.name as plan_name,
-            mp.price::FLOAT8 as plan_price,
+            (mp.price * 100)::BIGINT as plan_price_cents,
             um.current_period_end
         FROM user_memberships um
         JOIN users u ON um.user_id = u.id
@@ -1327,7 +1320,7 @@ async fn send_renewal_reminders(
                 &sub.user_email,
                 &sub.user_name,
                 &sub.plan_name,
-                sub.plan_price,
+                sub.plan_price_cents,
                 &renewal_date,
             )
             .await
@@ -1393,7 +1386,7 @@ async fn send_trial_ending_notifications(
         user_email: String,
         user_name: String,
         plan_name: String,
-        plan_price: f64,
+        plan_price_cents: i64,
         billing_cycle: String,
         trial_ends_at: chrono::NaiveDateTime,
     }
@@ -1405,13 +1398,13 @@ async fn send_trial_ending_notifications(
             u.email as user_email,
             COALESCE(u.name, u.email) as user_name,
             mp.name as plan_name,
-            mp.price::FLOAT8 as plan_price,
+            (mp.price * 100)::BIGINT as plan_price_cents,
             mp.billing_cycle,
             um.trial_ends_at
         FROM user_memberships um
         JOIN users u ON um.user_id = u.id
         JOIN membership_plans mp ON um.plan_id = mp.id
-        WHERE um.status = 'trial'
+        WHERE um.status IN ('trial', 'trialing')
         AND um.trial_ends_at BETWEEN NOW() AND NOW() + INTERVAL '2 days'
         AND um.trial_ending_reminder_sent_at IS NULL
         ORDER BY um.trial_ends_at ASC
@@ -1439,7 +1432,7 @@ async fn send_trial_ending_notifications(
                 &sub.user_name,
                 &sub.plan_name,
                 &trial_end_date,
-                sub.plan_price,
+                sub.plan_price_cents,
                 &sub.billing_cycle,
             )
             .await
