@@ -269,7 +269,7 @@
 
 				{#if post.categories && post.categories.length > 0}
 					<div class="header-categories">
-						{#each post.categories as category}
+						{#each post.categories as category (category.id)}
 							<span class="category-badge">{category.name}</span>
 						{/each}
 					</div>
@@ -350,7 +350,7 @@
 					{#if post.content_blocks && post.content_blocks.length > 0}
 						<!-- Structured content blocks (sanitized for XSS protection).
 						     Reads via blockData() so both legacy {data} and editor {content} shapes work. -->
-						{#each post.content_blocks as block}
+						{#each post.content_blocks as block, _bi (_bi)}
 							{@const d = blockData(block)}
 							{#if block.type === 'paragraph'}
 								<p>{@html sanitizeBlogContent((d['text'] as string) || '')}</p>
@@ -369,20 +369,20 @@
 							{:else if block.type === 'list'}
 								{#if d['style'] === 'ordered'}
 									<ol>
-										{#each (d['items'] as string[]) || [] as item}
+										{#each (d['items'] as string[]) || [] as item, _ii (_ii)}
 											<li>{@html sanitizeBlogContent(item)}</li>
 										{/each}
 									</ol>
 								{:else}
 									<ul>
-										{#each (d['items'] as string[]) || [] as item}
+										{#each (d['items'] as string[]) || [] as item, _ii (_ii)}
 											<li>{@html sanitizeBlogContent(item)}</li>
 										{/each}
 									</ul>
 								{/if}
 							{:else if block.type === 'checklist'}
 								<ul class="checklist">
-									{#each (d['checklistItems'] as Array<{ text: string; checked: boolean }>) || [] as item}
+									{#each (d['checklistItems'] as Array<{ text: string; checked: boolean }>) || [] as item, _ci (_ci)}
 										<li class:checked={item.checked}>
 											<input type="checkbox" checked={item.checked} disabled />
 											{@html sanitizeBlogContent(item.text)}
@@ -453,7 +453,7 @@
 					<div class="tags-section">
 						<h3>Tags</h3>
 						<div class="tags">
-							{#each post.tags as tag}
+							{#each post.tags as tag (tag.id)}
 								<span class="tag">{tag.name}</span>
 							{/each}
 						</div>

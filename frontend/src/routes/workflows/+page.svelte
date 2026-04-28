@@ -103,7 +103,7 @@
 		</div>
 	{:else}
 		<div class="workflows-grid">
-			{#each filteredWorkflows as workflow}
+			{#each filteredWorkflows as workflow (workflow.id)}
 				<div class="workflow-card">
 					<div class="card-header">
 						<h3>{workflow.name}</h3>

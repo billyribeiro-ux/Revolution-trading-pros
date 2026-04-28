@@ -336,7 +336,7 @@
 	>
 		<div class="ticker-wrap text-[10px] font-mono uppercase tracking-widest text-slate-500">
 			<div class="ticker-move">
-				{#each [...tickerItems, ...tickerItems, ...tickerItems, ...tickerItems] as item}
+				{#each [...tickerItems, ...tickerItems, ...tickerItems, ...tickerItems] as item, i (`ticker-${i}`)}
 					<span class="inline-block px-8 group cursor-default hover:text-white transition-colors">
 						<span
 							class="{item.includes('+')
@@ -429,7 +429,7 @@
 					<div
 						class="lg:w-1/3 grid grid-cols-2 gap-px bg-white/10 border border-white/10 backdrop-blur-md shadow-2xl rounded-sm overflow-hidden"
 					>
-						{#each stats as stat}
+						{#each stats as stat (stat.label)}
 							{@const Icon = stat.icon}
 							<div
 								class="bg-[#050505]/90 p-6 group hover:bg-[#0A0A0A] transition-colors relative overflow-hidden interactive-card"
@@ -540,7 +540,7 @@
 							accountable, and a system that prioritizes long-term survival over gambling.
 						</p>
 						<ul class="space-y-4 mt-8">
-							{#each ['No pump and dumps', 'No fake P&L screenshots', 'Real-time voice commentary'] as item}
+							{#each ['No pump and dumps', 'No fake P&L screenshots', 'Real-time voice commentary'] as item (item)}
 								<li
 									class="flex items-center gap-4 text-sm text-amber-500 font-mono uppercase tracking-wider group cursor-default"
 								>
@@ -582,7 +582,7 @@
 					</div>
 
 					<div class="grid md:grid-cols-3 gap-6">
-						{#each features as feat, i}
+						{#each features as feat, i (feat.title)}
 							{@const Icon = feat.icon}
 							<div
 								class="group interactive-card bg-[#050505] border border-white/10 p-10 hover:border-amber-600/40 transition-all duration-500 relative overflow-hidden flex flex-col h-full rounded-xl"
@@ -637,14 +637,14 @@
 							</p>
 						</div>
 						<div class="hidden md:flex gap-2">
-							{#each team as _}<div
+							{#each team as _, i (i)}<div
 									class="w-1.5 h-1.5 rounded-full bg-emerald-500/50 animate-pulse"
 								></div>{/each}
 						</div>
 					</div>
 
 					<div class="grid gap-px bg-white/5 border border-white/10 overflow-hidden rounded-lg">
-						{#each team as member}
+						{#each team as member (member.name)}
 							<div
 								class="group bg-[#050505] p-8 md:p-12 grid md:grid-cols-12 gap-8 items-center hover:bg-[#080808] transition-colors duration-300 relative overflow-hidden interactive-card"
 							>
@@ -687,7 +687,7 @@
 								</div>
 
 								<div class="md:col-span-2 flex flex-col items-end gap-3 relative z-10">
-									{#each member.specialties as spec}
+									{#each member.specialties as spec (spec)}
 										<span
 											class="px-3 py-1.5 bg-white/5 border border-white/5 text-[9px] text-slate-300 font-mono uppercase tracking-wider rounded-sm hover:border-amber-600/50 hover:text-amber-500 hover:bg-amber-900/10 transition-colors cursor-default whitespace-nowrap"
 										>
@@ -724,7 +724,7 @@
 
 						<div class="relative z-10">
 							<div class="flex gap-1 mb-6 text-amber-600">
-								{#each Array(5) as _}<IconScale size={12} class="fill-current" />{/each}
+								{#each Array(5) as _, i (i)}<IconScale size={12} class="fill-current" />{/each}
 							</div>
 							<p class="text-lg text-slate-300 font-light italic mb-8 leading-relaxed">
 								"I spent years jumping from one alert service to another, losing money. Revolution
@@ -756,7 +756,7 @@
 
 						<div class="relative z-10">
 							<div class="flex gap-1 mb-6 text-amber-600">
-								{#each Array(5) as _}<IconScale size={12} class="fill-current" />{/each}
+								{#each Array(5) as _, i (i)}<IconScale size={12} class="fill-current" />{/each}
 							</div>
 							<p class="text-lg text-slate-300 font-light italic mb-8 leading-relaxed">
 								"The morning voice chat is a game changer. Hearing Billy explain his thought process
@@ -793,7 +793,7 @@
 					</div>
 
 					<div class="space-y-4">
-						{#each faqs as faq}
+						{#each faqs as faq (faq.q)}
 							<details
 								class="group bg-[#050505] border border-white/10 open:border-amber-600/30 transition-all duration-300 rounded-lg overflow-hidden"
 							>

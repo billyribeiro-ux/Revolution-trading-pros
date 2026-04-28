@@ -415,7 +415,7 @@
 
 		<!-- Demo Grid -->
 		<div class="demo-grid">
-			{#each demoPopups as popup}
+			{#each demoPopups as popup (popup.id)}
 				<div class="demo-card">
 					<div class="card-header">
 						<h3 class="card-title">{popup.name}</h3>

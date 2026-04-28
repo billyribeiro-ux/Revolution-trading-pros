@@ -170,7 +170,7 @@
 		<p class="no-props">No props defined</p>
 	{:else}
 		<div class="props-list">
-			{#each props as prop}
+			{#each props as prop (prop.name)}
 				{@const inputType = detectInputType(prop)}
 				{@const currentValue = values[prop.name] ?? getDefaultValue(prop, inputType)}
 
@@ -210,7 +210,7 @@
 								onchange={(e) => handleSelectChange(prop, e)}
 								class="input input--select"
 							>
-								{#each options as option}
+								{#each options as option (option)}
 									<option value={option}>{option}</option>
 								{/each}
 							</select>

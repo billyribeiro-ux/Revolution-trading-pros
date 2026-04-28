@@ -219,7 +219,7 @@
 			{:else if currentFiles.length > 0}
 				{#if viewMode === 'grid'}
 					<div class="files-grid">
-						{#each currentFiles as file}
+						{#each currentFiles as file (file.id)}
 							<div
 								class="file-card"
 								class:selected={mediaStore.selectedFiles.has(file.id)}
@@ -273,7 +273,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								{#each currentFiles as file}
+								{#each currentFiles as file (file.id)}
 									<tr
 										class:selected={mediaStore.selectedFiles.has(file.id)}
 										onclick={() => mediaStore.toggleFileSelection(file.id)}

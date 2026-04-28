@@ -81,7 +81,7 @@
 	</div>
 
 	<nav class="links-list">
-		{#each resources as resource, index}
+		{#each resources as resource, index (resource.href)}
 			<a
 				href={resource.href}
 				class="resource-link"

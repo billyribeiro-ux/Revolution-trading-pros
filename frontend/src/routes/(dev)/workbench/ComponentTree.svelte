@@ -9,6 +9,7 @@
 	 * @standards Apple Principal Engineer ICT Level 7+
 	 */
 	import type { ComponentInfo, ComponentTree } from './+page.server';
+	import { SvelteSet } from 'svelte/reactivity';
 
 	interface Props {
 		tree: ComponentTree;
@@ -23,8 +24,8 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	let searchQuery = $state('');
-	let expandedFolders = $state<Set<string>>(new Set(['root']));
-	let favorites = $state<Set<string>>(new Set());
+	let expandedFolders = $state<SvelteSet<string>>(new SvelteSet(['root']));
+	let favorites = $state<SvelteSet<string>>(new SvelteSet());
 	let recentComponents = $state<string[]>([]);
 
 	// Load favorites and recent from localStorage
@@ -34,7 +35,7 @@
 			const savedRecent = localStorage.getItem('workbench-recent');
 
 			if (savedFavorites) {
-				favorites = new Set(JSON.parse(savedFavorites));
+				favorites = new SvelteSet(JSON.parse(savedFavorites));
 			}
 			if (savedRecent) {
 				recentComponents = JSON.parse(savedRecent);
@@ -105,7 +106,7 @@
 		} else {
 			expandedFolders.add(folder);
 		}
-		expandedFolders = new Set(expandedFolders);
+		expandedFolders = new SvelteSet(expandedFolders);
 	}
 
 	function handleSelect(component: ComponentInfo) {
@@ -130,7 +131,7 @@
 		} else {
 			favorites.add(component.relativePath);
 		}
-		favorites = new Set(favorites);
+		favorites = new SvelteSet(favorites);
 
 		if (typeof window !== 'undefined') {
 			localStorage.setItem('workbench-favorites', JSON.stringify([...favorites]));
@@ -163,7 +164,7 @@
 				Favorites
 			</h3>
 			<ul class="component-list">
-				{#each favoriteComponents as component}
+				{#each favoriteComponents as component (component.relativePath)}
 					<li>
 						<button
 							class="component-item"
@@ -187,7 +188,7 @@
 				Recent
 			</h3>
 			<ul class="component-list">
-				{#each recentComponentsInfo as component}
+				{#each recentComponentsInfo as component (component.relativePath)}
 					<li>
 						<button
 							class="component-item"
@@ -210,7 +211,7 @@
 			Components
 		</h3>
 
-		{#each Object.entries(filteredTree) as [folder, components]}
+		{#each Object.entries(filteredTree) as [folder, components] (folder)}
 			<div class="folder">
 				<button class="folder-header" onclick={() => toggleFolder(folder)}>
 					<span class="folder-icon">
@@ -222,7 +223,7 @@
 
 				{#if expandedFolders.has(folder)}
 					<ul class="component-list">
-						{#each components as component}
+						{#each components as component (component.relativePath)}
 							<li>
 								<button
 									class="component-item"

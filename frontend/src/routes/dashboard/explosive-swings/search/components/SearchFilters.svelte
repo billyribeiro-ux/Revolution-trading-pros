@@ -83,7 +83,7 @@
 	<div class="filter-group">
 		<span class="filter-label">Show:</span>
 		<div class="type-filters">
-			{#each ['alerts', 'trades', 'trade_plans'] as const as type}
+			{#each ['alerts', 'trades', 'trade_plans'] as const as type (type)}
 				<button
 					class="type-btn"
 					class:active={selectedTypes.includes(type)}

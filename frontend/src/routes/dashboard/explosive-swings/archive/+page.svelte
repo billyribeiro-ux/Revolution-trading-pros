@@ -150,7 +150,7 @@
 
 		<!-- Year Filter -->
 		<div class="year-filter">
-			{#each availableYears as year}
+			{#each availableYears as year (year)}
 				<button
 					type="button"
 					class="year-btn"
@@ -204,7 +204,7 @@
 				<p>Check back later or select a different year.</p>
 			</div>
 		{:else}
-			{#each monthKeys as month}
+			{#each monthKeys as month (month)}
 				<div class="month-group">
 					<h2 class="month-header">{month}</h2>
 

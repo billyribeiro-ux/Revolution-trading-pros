@@ -293,7 +293,7 @@
 																<tr class="recurring-totals">
 																	<th colspan="2">Recurring Totals</th>
 																</tr>
-																{#each cartStore.items.filter((i) => i.interval) as item}
+																{#each cartStore.items.filter((i) => i.interval) as item (item.id + (item.interval || ''))}
 																	<tr class="cart-subtotal recurring-total">
 																		<th rowspan="1">Subtotal</th>
 																		<td data-title="Subtotal">

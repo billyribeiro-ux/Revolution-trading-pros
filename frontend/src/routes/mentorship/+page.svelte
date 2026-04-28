@@ -362,7 +362,7 @@
 				</div>
 
 				<div class="space-y-8">
-					{#each sessionBreakdown as item}
+					{#each sessionBreakdown as item (item.time)}
 						<div class="group gsap-reveal-item">
 							<div
 								class="flex flex-col md:flex-row gap-8 md:gap-16 p-8 hover:bg-white/[0.02] transition-colors border-l-2 border-white/10 hover:border-amber-600"

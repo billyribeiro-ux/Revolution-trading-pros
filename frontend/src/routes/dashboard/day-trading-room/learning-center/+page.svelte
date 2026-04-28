@@ -511,7 +511,7 @@
 								</figure>
 
 								<div class="article-card__type">
-									{#each video.tag_details as tag}
+									{#each video.tag_details as tag (tag.name)}
 										<span class="label label--info" style="background-color: {tag.color}"
 											>{tag.name}</span
 										>
@@ -562,7 +562,7 @@
 						</li>
 					{/if}
 
-					{#each getPaginationRange() as pageNum}
+					{#each getPaginationRange() as pageNum, _pi (_pi)}
 						<li>
 							{#if pageNum === '...'}
 								<span class="page-numbers dots">…</span>

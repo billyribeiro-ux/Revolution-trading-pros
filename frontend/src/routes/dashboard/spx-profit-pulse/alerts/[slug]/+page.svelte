@@ -112,7 +112,7 @@
 			<section class="alert-detail__related">
 				<h2>Previous Sessions</h2>
 				<div class="related-grid">
-					{#each alert.related_alerts as related}
+					{#each alert.related_alerts as related (related.href)}
 						<a href={related.href} class="related-card">
 							<div class="related-image" style="background-image: url({related.image})">
 								<div class="related-overlay">

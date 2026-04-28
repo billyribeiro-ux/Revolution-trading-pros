@@ -405,7 +405,7 @@
 		class="relative z-50 border-b border-white/5 bg-[#050505]/80 backdrop-blur-md h-10 flex items-center overflow-hidden"
 	>
 		<div class="ticker-track flex items-center gap-12 whitespace-nowrap px-4">
-			{#each tickerItems as item}
+			{#each tickerItems as item, _ti (_ti)}
 				<div class="flex items-center gap-3 text-xs font-mono select-none">
 					<span class="font-bold text-zinc-300">{item.sym}</span>
 					<span class="text-zinc-500">{item.price}</span>
@@ -519,7 +519,7 @@
 			id="rooms-section"
 			class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 perspective-container mb-32"
 		>
-			{#each rooms as room}
+			{#each rooms as room (room.id)}
 				<article
 					use:tilt
 					class="group relative h-full card-3d"
@@ -673,7 +673,7 @@
 								{room.description}
 							</p>
 							<ul class="space-y-3 mb-8 flex-1">
-								{#each room.features as feature}
+								{#each room.features as feature (feature)}
 									<li class="flex items-start gap-3 text-sm text-zinc-300">
 										<svg
 											class={`w-4 h-4 shrink-0 mt-[3px] 
@@ -742,7 +742,7 @@
 				</p>
 			</div>
 			<div bind:this={_benefitsRef} class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-				{#each benefits as item}
+				{#each benefits as item (item.title)}
 					<div
 						class="p-6 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/10 transition-colors duration-300 text-center group cursor-default"
 					>

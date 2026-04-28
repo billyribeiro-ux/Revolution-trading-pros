@@ -452,7 +452,7 @@
 							<div class="features-section">
 								<h3 class="features-title">Included Features</h3>
 								<ul class="features-list">
-									{#each sub.features.slice(0, 4) as feature}
+									{#each sub.features.slice(0, 4) as feature (feature)}
 										<li>
 											<svg class="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
 												<path

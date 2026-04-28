@@ -82,13 +82,13 @@
 
 	<!-- Trading Plan Sections -->
 	<div class="trading-plan-sections">
-		{#each tradingPlanSections as section, index}
+		{#each tradingPlanSections as section, index (section.title)}
 			<div class="plan-section">
 				<div class="section-number">{index + 1}</div>
 				<div class="section-content">
 					<h3 class="plan-section-title">{section.title}</h3>
 					<ul class="section-list">
-						{#each section.content as item}
+						{#each section.content as item (item)}
 							<li>{item}</li>
 						{/each}
 					</ul>

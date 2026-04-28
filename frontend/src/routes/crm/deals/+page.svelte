@@ -162,7 +162,7 @@
 
 		<!-- Pipelines Selector -->
 		<div class="mb-4 flex flex-wrap items-center gap-2 text-xs">
-			{#each crmStore.pipelines as pipeline}
+			{#each crmStore.pipelines as pipeline (pipeline.id)}
 				<button
 					class={`rounded-full border px-3 py-1 ${
 						crmStore.selectedPipeline && crmStore.selectedPipeline.id === pipeline.id

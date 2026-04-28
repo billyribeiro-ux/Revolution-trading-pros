@@ -917,7 +917,7 @@
 				Frequently Asked Questions
 			</h2>
 			<div class="space-y-4">
-				{#each faqList as faq, i}
+				{#each faqList as faq, i (i)}
 					<div
 						class="border border-rtp-border rounded-xl bg-rtp-bg overflow-hidden hover:border-rtp-primary/30 transition-colors"
 					>

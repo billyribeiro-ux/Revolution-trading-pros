@@ -162,7 +162,7 @@
 				</div>
 
 				<div class="friction-list">
-					{#each dashboard.friction_heatmap as item}
+					{#each dashboard.friction_heatmap as item (item.page_url)}
 						<div class="friction-item">
 							<div class="friction-info">
 								<div class="friction-url">{item.page_url}</div>
@@ -192,7 +192,7 @@
 				</div>
 
 				<div class="timeline-chart">
-					{#each dashboard.session_timeline as point}
+					{#each dashboard.session_timeline as point (point.timestamp)}
 						<div class="timeline-bar">
 							<div
 								class="bar-fill"

@@ -128,7 +128,7 @@
 					<div class="key-points">
 						<h4>Key Points</h4>
 						<ul>
-							{#each strategy.keyPoints as point}
+							{#each strategy.keyPoints as point (point)}
 								<li>{point}</li>
 							{/each}
 						</ul>

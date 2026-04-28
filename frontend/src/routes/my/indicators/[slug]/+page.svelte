@@ -227,14 +227,14 @@
 				</div>
 			{:else}
 				<div class="platforms-grid">
-					{#each Object.entries(filesByPlatform) as [platform, platformFiles]}
+					{#each Object.entries(filesByPlatform) as [platform, platformFiles] (platform)}
 						<div class="platform-card">
 							<div class="platform-header">
 								<span class="platform-icon">{platformIcons[platform] || '📦'}</span>
 								<h3>{platformNames[platform] || platform}</h3>
 							</div>
 							<div class="platform-files">
-								{#each platformFiles as file}
+								{#each platformFiles as file (file.id)}
 									<button
 										class="download-btn"
 										onclick={() => downloadFile(file.id)}
@@ -293,7 +293,7 @@
 					Tutorial Videos
 				</h2>
 				<div class="videos-grid">
-					{#each videos as video}
+					{#each videos as video (video.id)}
 						<div class="video-card">
 							{#if video.embed_url}
 								<iframe

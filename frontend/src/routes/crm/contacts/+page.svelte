@@ -136,7 +136,7 @@
 					class="rounded-lg border border-slate-800 bg-slate-900/80 px-2 py-1 text-xs"
 					bind:value={localStatus}
 				>
-					{#each statusOptions as opt}
+					{#each statusOptions as opt (opt.value)}
 						<option value={opt.value}>{opt.label}</option>
 					{/each}
 				</select>
@@ -144,7 +144,7 @@
 					class="rounded-lg border border-slate-800 bg-slate-900/80 px-2 py-1 text-xs"
 					bind:value={localStage}
 				>
-					{#each stageOptions as opt}
+					{#each stageOptions as opt (opt.value)}
 						<option value={opt.value}>{opt.label}</option>
 					{/each}
 				</select>

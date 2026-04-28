@@ -210,7 +210,7 @@
 		<!-- Breadcrumb Navigation - SEO & UX -->
 		<nav aria-label="Breadcrumb" class="breadcrumb-nav">
 			<ol itemscope itemtype="https://schema.org/BreadcrumbList">
-				{#each breadcrumbs as crumb, index}
+				{#each breadcrumbs as crumb, index (crumb.name)}
 					<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
 						{#if index < breadcrumbs.length - 1}
 							<a href={crumb.url} itemprop="item">
@@ -237,7 +237,7 @@
 
 		<!-- Scanners Grid - Semantic Product Cards -->
 		<div class="scanners-grid" role="list">
-			{#each scanners as scanner}
+			{#each scanners as scanner (scanner.id)}
 				<article
 					class="scanner-card"
 					role="listitem"

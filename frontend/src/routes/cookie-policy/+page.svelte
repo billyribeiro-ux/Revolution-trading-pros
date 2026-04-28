@@ -106,7 +106,7 @@
 			<div class="header-top">
 				<h1>{$t.cookiePolicyTitle}</h1>
 				<select class="language-select" value={$currentLanguage} onchange={handleLanguageChange}>
-					{#each getSupportedLanguages().slice(0, 7) as lang}
+					{#each getSupportedLanguages().slice(0, 7) as lang (lang)}
 						<option value={lang}>{languageNames[lang]}</option>
 					{/each}
 				</select>
@@ -273,7 +273,7 @@
 					</div>
 				</div>
 
-				{#each Object.entries(cookieScan.byCategory) as [category, cookies]}
+				{#each Object.entries(cookieScan.byCategory) as [category, cookies] (category)}
 					{#if cookies.length > 0}
 						<div class="cookie-category-section">
 							<h3 class="category-title">
@@ -295,7 +295,7 @@
 										</tr>
 									</thead>
 									<tbody>
-										{#each cookies as cookie}
+										{#each cookies as cookie (cookie.name)}
 											<tr>
 												<td class="cookie-name"><code>{cookie.name}</code></td>
 												<td>{cookie.purpose || 'Not specified'}</td>
@@ -326,7 +326,7 @@
 			<section class="section">
 				<h2>Third-Party Services</h2>
 				<div class="vendor-grid">
-					{#each vendorList as vendor}
+					{#each vendorList as vendor (vendor.name)}
 						<div class="vendor-card">
 							<h3>{vendor.name}</h3>
 							<p>{vendor.description}</p>

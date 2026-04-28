@@ -202,7 +202,7 @@
 				<TrainingVideosSection videos={indicator.trainingVideos} />
 
 				<!-- Platform Downloads Components -->
-				{#each indicator.downloads as platformDownload}
+				{#each indicator.downloads as platformDownload (platformDownload.platform)}
 					<PlatformDownloads
 						platform={platformDownload.platform}
 						logo={platformDownload.logo}

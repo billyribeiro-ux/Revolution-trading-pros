@@ -77,7 +77,7 @@
 				<!-- Templates -->
 				<div class="templates">
 					<span class="templates-label">Templates:</span>
-					{#each templates as template}
+					{#each templates as template (template.name)}
 						<button class="template-btn" onclick={() => applyTemplate(template.content)}>
 							{template.name}
 						</button>
@@ -100,11 +100,11 @@
 					</div>
 				</div>
 
-				<!-- Preview -->
+				<!-- Preview: dev-only tool; content is authored by the developer, not user-controlled -->
 				<div class="preview">
-					<span class="preview-label">Preview:</span>
+					<span class="preview-label">Preview (raw):</span>
 					<div class="preview-content">
-						{@html value || '<em>No content</em>'}
+						{value || '(No content)'}
 					</div>
 				</div>
 			{/if}

@@ -329,7 +329,7 @@ https://svelte.dev/e/element_unclosed -->
 					{/if}
 
 					<!-- Download Sections by Platform - ICT 7: From real API -->
-					{#each downloadsByPlatform as platformDownload}
+					{#each downloadsByPlatform as platformDownload (platformDownload.platform)}
 						<section class="st_box {platformDownload.platform.toLowerCase().replace(/\s+/g, '')}">
 							<div class="platform-header">
 								<img
@@ -352,7 +352,7 @@ https://svelte.dev/e/element_unclosed -->
 										</tr>
 									</thead>
 									<tbody>
-										{#each platformDownload.files as file}
+										{#each platformDownload.files as file (file.id)}
 											<tr>
 												<td>{file.name}</td>
 												<td class="text-right">
@@ -466,7 +466,7 @@ https://svelte.dev/e/element_unclosed -->
 						<section class="st_box">
 							<h2><strong>Installation Guides</strong></h2>
 							<div class="install-guide-buttons">
-								{#each downloadsByPlatform as platformDownload}
+								{#each downloadsByPlatform as platformDownload (platformDownload.platform)}
 									<button
 										class="btn btn-outline"
 										onclick={() => fetchInstallGuide(platformDownload.platform)}

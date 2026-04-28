@@ -88,7 +88,7 @@
 
 	{#if isLoading}
 		<div class="skeleton-grid">
-			{#each Array(8) as _}
+			{#each Array(8) as _, _i (_i)}
 				<div class="skel-cell"></div>
 			{/each}
 		</div>
@@ -100,7 +100,7 @@
 		<!-- Heatmap Grid for All -->
 		{#if activeTab === 'all'}
 			<div class="heatmap-grid">
-				{#each sortedData as ticker}
+				{#each sortedData as ticker (ticker.ticker)}
 					<div
 						class="heatmap-cell"
 						style="background-color: {getBackgroundColor(ticker.total_pnl_percent)}"
@@ -130,7 +130,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					{#each topPerformers as ticker, index}
+					{#each topPerformers as ticker, index (ticker.ticker)}
 						<tr>
 							<td class="ticker-cell">
 								<span class="rank profit">{index + 1}</span>
@@ -159,7 +159,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					{#each worstPerformers as ticker, index}
+					{#each worstPerformers as ticker, index (ticker.ticker)}
 						<tr>
 							<td class="ticker-cell">
 								<span class="rank loss">{index + 1}</span>

@@ -137,7 +137,7 @@
 					<div class="form-group">
 						<label for="reason">Reason</label>
 						<select id="reason" bind:value={selectedReason}>
-							{#each reasons as r}
+							{#each reasons as r (r)}
 								<option value={r}>{r}</option>
 							{/each}
 						</select>

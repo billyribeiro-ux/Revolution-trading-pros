@@ -146,7 +146,7 @@
 		</div>
 	{:else}
 		<div class="courses-grid">
-			{#each courses as course}
+			{#each courses as course (course.id)}
 				<CourseCard {course} />
 			{/each}
 		</div>

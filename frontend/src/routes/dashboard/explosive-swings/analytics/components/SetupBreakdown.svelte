@@ -97,7 +97,7 @@
 		<div class="skeleton-content">
 			<div class="skel-pie"></div>
 			<div class="skel-legend">
-				{#each Array(4) as _}
+				{#each Array(4) as _, _i (_i)}
 					<div class="skel-item"></div>
 				{/each}
 			</div>
@@ -111,7 +111,7 @@
 			<!-- Pie Chart -->
 			<div class="pie-chart-container">
 				<svg viewBox="0 0 160 160" class="pie-chart">
-					{#each pieSlices as slice}
+					{#each pieSlices as slice (slice.setup)}
 						<path
 							d={slice.path}
 							fill={slice.color}
@@ -133,7 +133,7 @@
 
 			<!-- Legend & Details -->
 			<div class="legend-section">
-				{#each pieData as setup}
+				{#each pieData as setup (setup.setup)}
 					<div
 						class="legend-item"
 						class:hovered={hoveredSetup === setup.setup}

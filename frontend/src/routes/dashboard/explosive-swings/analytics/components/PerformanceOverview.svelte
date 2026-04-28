@@ -146,7 +146,7 @@
 	</div>
 
 	<div class="metrics-grid">
-		{#each metrics as metric}
+		{#each metrics as metric (metric.label)}
 			<div class="metric-card" class:loading={isLoading}>
 				{#if isLoading}
 					<div class="skeleton">

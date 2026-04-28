@@ -178,7 +178,7 @@
 				</defs>
 
 				<!-- Grid lines -->
-				{#each yTicks as tick}
+				{#each yTicks as tick (tick.value)}
 					<line
 						x1={padding.left}
 						y1={tick.y}
@@ -200,7 +200,7 @@
 				/>
 
 				<!-- Y-axis labels -->
-				{#each yTicks as tick}
+				{#each yTicks as tick (tick.value)}
 					<text
 						x={padding.left - 8}
 						y={tick.y}
@@ -213,7 +213,7 @@
 				{/each}
 
 				<!-- X-axis labels -->
-				{#each xLabels as item}
+				{#each xLabels as item (item.date)}
 					{@const index = data.indexOf(item)}
 					<text x={scaleX(index)} y={height - 8} text-anchor="middle" class="axis-label">
 						{formatDate(item.date)}

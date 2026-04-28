@@ -420,7 +420,7 @@
 										<div class="trader-nav__module">
 											<div class="trader-nav__module-content">
 												<div class="trader_pills">
-													{#each traderPills as pill}
+													{#each traderPills as pill (pill.path)}
 														<div class="trader_pill">
 															<a
 																href="/dashboard/day-trading-room/meet-the-traders/{store.slug}{pill.path ===

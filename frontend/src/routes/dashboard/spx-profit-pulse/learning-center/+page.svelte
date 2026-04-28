@@ -172,7 +172,7 @@
 					</svg>
 				</label>
 			</div>
-			{#each categories as category}
+			{#each categories as category (category.id)}
 				<div class="filter_btn">
 					<input
 						type="radio"
@@ -226,7 +226,7 @@
 		{#if videos.length > 0}
 			<div id="response">
 				<div class="article-cards row flex-grid">
-					{#each videos as video}
+					{#each videos as video (video.id)}
 						<div class="col-xs-12 col-sm-6 col-md-6 col-xl-4 flex-grid-item">
 							<article class="article-card">
 								<figure
@@ -242,7 +242,7 @@
 								</figure>
 								{#if video.tag_details && video.tag_details.length > 0}
 									<div class="article-card__type">
-										{#each video.tag_details as tag}
+										{#each video.tag_details as tag (tag.name)}
 											<span id={tag.slug} class="label label--info">{tag.name}</span>
 										{/each}
 									</div>
@@ -273,7 +273,7 @@
 			<!-- Pagination -->
 			{#if totalPages > 1}
 				<div class="facetwp-pager">
-					{#each getPaginationRange() as item}
+					{#each getPaginationRange() as item, _pi (_pi)}
 						{#if typeof item === 'number'}
 							<button
 								type="button"

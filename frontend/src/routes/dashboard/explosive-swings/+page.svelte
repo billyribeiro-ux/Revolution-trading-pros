@@ -266,7 +266,7 @@
 
 			<div class="alerts-list">
 				{#if ps.isLoadingAlerts}
-					{#each Array(3) as _}
+					{#each Array(3) as _, _i (_i)}
 						<div class="alert-skeleton"></div>
 					{/each}
 				{:else if ps.filteredAlerts.length === 0}

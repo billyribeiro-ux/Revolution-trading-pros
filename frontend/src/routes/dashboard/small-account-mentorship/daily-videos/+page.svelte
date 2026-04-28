@@ -139,7 +139,7 @@
 		<!-- Pagination -->
 		{#if pagination.totalPages > 1}
 			<nav class="facetwp-pager" aria-label="Pagination">
-				{#each Array.from({ length: pagination.totalPages }, (_, i) => i + 1) as pageNum}
+				{#each Array.from({ length: pagination.totalPages }, (_, i) => i + 1) as pageNum (pageNum)}
 					{#if pageNum === pagination.page}
 						<a
 							class="facetwp-page active"

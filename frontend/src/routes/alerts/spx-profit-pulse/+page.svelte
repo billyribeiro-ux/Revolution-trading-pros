@@ -710,7 +710,7 @@
 					<div class="bg-white rounded-2xl shadow-xl p-5">
 						<h3 class="font-bold text-slate-900 text-lg mb-4">Latest Updates</h3>
 						<div class="grid grid-cols-3 gap-3">
-							{#each [{ title: 'NVDA Entry Alert...', duration: '0:58' }, { title: 'MSFT Exit...', duration: '0:38' }, { title: 'NVDA Entry Alert...', duration: '0:22' }, { title: 'NVDA Entry Alert...', duration: '0:27' }, { title: 'MSRT Entry Alert...', duration: '0:20' }, { title: 'MSFT Exit...', duration: '0:55' }] as update}
+							{#each [{ title: 'NVDA Entry Alert...', duration: '0:58' }, { title: 'MSFT Exit...', duration: '0:38' }, { title: 'NVDA Entry Alert...', duration: '0:22' }, { title: 'NVDA Entry Alert...', duration: '0:27' }, { title: 'MSRT Entry Alert...', duration: '0:20' }, { title: 'MSFT Exit...', duration: '0:55' }] as update, i (i)}
 								<button class="group text-left w-full">
 									<div class="relative bg-slate-900 rounded-lg overflow-hidden aspect-video mb-1.5">
 										<div
@@ -1471,7 +1471,7 @@
 				Common questions about brokers, capital, and risk management.
 			</p>
 			<div class="space-y-4">
-				{#each faqList as faq, i}
+				{#each faqList as faq, i (faq.q)}
 					<div class="border border-slate-800 rounded-xl bg-slate-900 overflow-hidden">
 						<button
 							class="w-full text-left px-6 py-5 font-bold flex justify-between items-center focus:outline-none hover:bg-white/5 transition-colors"

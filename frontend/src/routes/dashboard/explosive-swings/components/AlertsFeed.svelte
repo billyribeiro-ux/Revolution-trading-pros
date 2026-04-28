@@ -81,7 +81,7 @@
 
 	<!-- Filter Tabs -->
 	<div class="filter-tabs" role="tablist" aria-label="Filter alerts by type">
-		{#each filterOptions as option}
+		{#each filterOptions as option (option.value)}
 			<button
 				class="filter-tab"
 				class:active={activeFilter === option.value}
@@ -100,7 +100,7 @@
 	<!-- Alerts List -->
 	<div class="alerts-list" role="feed" aria-busy={isLoading}>
 		{#if isLoading}
-			{#each Array(3) as _}
+			{#each Array(3) as _, _i (_i)}
 				<div class="alert-skeleton"></div>
 			{/each}
 		{:else if filteredAlerts.length === 0}

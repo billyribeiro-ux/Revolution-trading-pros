@@ -152,7 +152,7 @@
 		</div>
 
 		<div class="services-grid">
-			{#each alertServices as service, i}
+			{#each alertServices as service, i (service.id)}
 				<article class="service-card service-card--{service.color}" data-gsap={{ delay: i * 150 }}>
 					<div class="service-header">
 						<span class="service-icon">{service.icon}</span>
@@ -182,7 +182,7 @@
 
 					<!-- Features -->
 					<ul class="service-features">
-						{#each service.features as feature}
+						{#each service.features as feature (feature)}
 							<li>
 								<svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
 									<path

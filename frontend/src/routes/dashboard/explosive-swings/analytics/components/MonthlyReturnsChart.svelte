@@ -97,7 +97,7 @@
 	{#if isLoading}
 		<div class="skeleton-chart">
 			<div class="skel-bars">
-				{#each Array(6) as _}
+				{#each Array(6) as _, _i (_i)}
 					<div class="skel-bar"></div>
 				{/each}
 			</div>
@@ -110,7 +110,7 @@
 		<div bind:this={containerEl} class="chart-container">
 			<svg {width} {height} class="chart-svg">
 				<!-- Grid lines -->
-				{#each [-1, -0.5, 0, 0.5, 1] as tick}
+				{#each [-1, -0.5, 0, 0.5, 1] as tick (tick)}
 					{@const y = padding.top + chartHeight / 2 - (tick * chartHeight) / 2}
 					<line
 						x1={padding.left}
@@ -132,7 +132,7 @@
 				{/each}
 
 				<!-- Bars -->
-				{#each data as month, index}
+				{#each data as month, index (`${month.year}-${month.month}`)}
 					{@const barHeight = Math.abs(month.pnl_percent / maxAbsValue) * (chartHeight / 2)}
 					{@const barY = month.pnl_percent >= 0 ? scaleY(month.pnl_percent) : zeroY}
 					{@const x = scaleX(index) - barWidth / 2}

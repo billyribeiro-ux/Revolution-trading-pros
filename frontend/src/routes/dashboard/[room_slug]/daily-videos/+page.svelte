@@ -182,7 +182,7 @@
 
 			{#if isDropdownOpen}
 				<div class="dropdown-menu" role="menu">
-					{#each tradingRooms as room}
+					{#each tradingRooms as room (room.name)}
 						<a href={room.href} class="dropdown-item" onclick={closeDropdown} role="menuitem">
 							<span class="dropdown-item__icon">
 								<RtpIcon name={room.icon} size={20} />
@@ -300,7 +300,7 @@
 			</div>
 			<div class="facetwp-pagination">
 				<div class="facetwp-pager">
-					{#each getPaginationRange() as pageNum}
+					{#each getPaginationRange() as pageNum, _pi (_pi)}
 						{#if pageNum === '...'}
 							<span class="facetwp-page dots">…</span>
 						{:else if pageNum === currentPage}

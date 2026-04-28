@@ -227,7 +227,7 @@
 				<div class="typ-order-items">
 					<h3 class="typ-order-items__title">Items Purchased</h3>
 					<div class="typ-order-items__list">
-						{#each orderDetail.items as item}
+						{#each orderDetail.items as item (item.id)}
 							<div class="typ-order-item">
 								<div class="typ-order-item__image">
 									{#if item.thumbnail}
@@ -440,7 +440,7 @@
 				</p>
 			</div>
 			<div class="row">
-				{#each upsellProducts as product}
+				{#each upsellProducts as product (product.id)}
 					<div class="col-md-6">
 						<div class="typ-upsell-card">
 							{#if product.badge}
