@@ -750,7 +750,7 @@
 							class="mx-auto w-12 h-12 mb-6 text-zinc-400 group-hover:text-blue-400 transition-colors duration-300"
 						>
 							{#if item.iconType === 'analysis'}
-								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+								<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
 									<circle
 										cx="12"
 										cy="12"
@@ -767,12 +767,12 @@
 									/>
 								</svg>
 							{:else if item.iconType === 'radar'}
-								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+								<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
 									<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
 									<path class="group-hover:animate-pulse" d="M12 8v4l3 3" stroke-linecap="round" />
 								</svg>
 							{:else if item.iconType === 'strategy'}
-								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+								<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
 									<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
 									<path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
 									<path
@@ -784,7 +784,7 @@
 									/>
 								</svg>
 							{:else if item.iconType === 'network'}
-								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+								<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
 									<circle cx="12" cy="5" r="2" class="group-hover:fill-current" />
 									<circle
 										cx="5"

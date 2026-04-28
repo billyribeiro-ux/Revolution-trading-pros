@@ -143,7 +143,7 @@
 							<img src={item.thumbnail_url} alt={item.title} loading="lazy" />
 						{:else}
 							<div class="watch-card__placeholder">
-								<svg viewBox="0 0 24 24" fill="currentColor" width="32" height="32">
+								<svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" width="32" height="32">
 									<path d="M8 5v14l11-7z" />
 								</svg>
 							</div>
@@ -160,7 +160,7 @@
 						<!-- Resume button overlay -->
 						<div class="watch-card__resume-overlay">
 							<div class="watch-card__resume-btn">
-								<svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+								<svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
 									<path d="M8 5v14l11-7z" />
 								</svg>
 							</div>

@@ -145,7 +145,7 @@
 				<div class="text-center">
 					<p class="text-sm text-gray-600 mb-2">SEO Score</p>
 					<div class="relative inline-flex items-center justify-center w-32 h-32">
-						<svg class="transform -rotate-90 w-32 h-32">
+						<svg aria-hidden="true" class="transform -rotate-90 w-32 h-32">
 							<circle
 								cx="64"
 								cy="64"

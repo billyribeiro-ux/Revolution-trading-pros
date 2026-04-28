@@ -272,7 +272,7 @@
 						</span>
 					</div>
 					<div class="perf-sparkline">
-						<svg width="100%" height="24" preserveAspectRatio="none">
+						<svg aria-hidden="true" width="100%" height="24" preserveAspectRatio="none">
 							<path
 								d={getSparklinePath(fpsHistory, 280, 24, 60)}
 								fill="none"
@@ -331,7 +331,7 @@
 							></div>
 						</div>
 						<div class="perf-sparkline">
-							<svg width="100%" height="24" preserveAspectRatio="none">
+							<svg aria-hidden="true" width="100%" height="24" preserveAspectRatio="none">
 								<path
 									d={getSparklinePath(memoryHistory, 280, 24, 100)}
 									fill="none"

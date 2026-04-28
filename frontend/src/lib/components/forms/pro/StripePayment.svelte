@@ -386,7 +386,7 @@
 		<div
 			class="flex items-center gap-3 sm:gap-4 p-4 sm:p-5 md:p-6 bg-gray-50 border border-gray-200 rounded-lg text-gray-500 text-sm sm:text-base"
 		>
-			<svg class="w-5 h-5 sm:w-6 sm:h-6 animate-spin flex-shrink-0" viewBox="0 0 24 24">
+			<svg aria-hidden="true" class="w-5 h-5 sm:w-6 sm:h-6 animate-spin flex-shrink-0" viewBox="0 0 24 24">
 				<circle
 					cx="12"
 					cy="12"
@@ -432,7 +432,7 @@
 			disabled={disabled || processing || !cardComplete}
 		>
 			{#if processing}
-				<svg class="w-5 h-5 sm:w-6 sm:h-6 animate-spin flex-shrink-0" viewBox="0 0 24 24">
+				<svg aria-hidden="true" class="w-5 h-5 sm:w-6 sm:h-6 animate-spin flex-shrink-0" viewBox="0 0 24 24">
 					<circle
 						cx="12"
 						cy="12"

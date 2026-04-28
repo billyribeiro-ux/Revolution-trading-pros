@@ -177,7 +177,7 @@
 		</div>
 	{:else if data.length === 0}
 		<div class="flex flex-col items-center justify-center py-12 text-slate-500">
-			<svg class="w-16 h-16 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+			<svg aria-hidden="true" class="w-16 h-16 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 				<path
 					stroke-linecap="round"
 					stroke-linejoin="round"

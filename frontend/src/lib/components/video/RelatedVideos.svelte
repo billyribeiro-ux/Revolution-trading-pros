@@ -128,7 +128,7 @@
 							<img src={video.thumbnail_url} alt={video.title} loading="lazy" />
 						{:else}
 							<div class="related-card__placeholder">
-								<svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+								<svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
 									<path d="M8 5v14l11-7z" />
 								</svg>
 							</div>

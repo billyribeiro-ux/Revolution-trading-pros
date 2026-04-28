@@ -258,7 +258,7 @@
 				<p class="text-sm">Click "Run Simulation" to generate Monte Carlo paths</p>
 			</div>
 		{:else}
-			<svg bind:this={svgEl}></svg>
+			<svg aria-hidden="true" bind:this={svgEl}></svg>
 		{/if}
 	</div>
 

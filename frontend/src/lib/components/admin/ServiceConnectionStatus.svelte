@@ -376,7 +376,7 @@
 				</div>
 				<button class="banner-button" onclick={handleConnect} style="--btn-color: {config.color}">
 					<span>Connect Now</span>
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 						<path d="M5 12h14M12 5l7 7-7 7" />
 					</svg>
 				</button>
@@ -386,7 +386,7 @@
 		<!-- Inline Variant - For within content -->
 		<div class="service-status-inline" in:fade={{ duration: 300 }} role="alert">
 			<div class="inline-icon" style="color: {config.color}">
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 					<circle cx="12" cy="12" r="10" />
 					<line x1="12" y1="8" x2="12" y2="12" />
 					<line x1="12" y1="16" x2="12.01" y2="16" />
@@ -395,7 +395,7 @@
 			<span class="inline-message">{config.name} not connected</span>
 			<button class="inline-button" onclick={handleConnect}>
 				Connect
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 					<path d="M5 12h14M12 5l7 7-7 7" />
 				</svg>
 			</button>
@@ -419,7 +419,7 @@
 			in:fade={{ duration: 200 }}
 			style="--btn-color: {config.color}"
 		>
-			<svg class="plug-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+			<svg aria-hidden="true" class="plug-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 				<path d="M18.36 6.64a9 9 0 1 1-12.73 0" />
 				<line x1="12" y1="2" x2="12" y2="12" />
 			</svg>

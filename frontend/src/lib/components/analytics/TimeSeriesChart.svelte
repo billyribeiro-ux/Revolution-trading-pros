@@ -146,7 +146,7 @@
 		role="img"
 		aria-label="Time series chart"
 	>
-		<svg {width} {height} class="overflow-visible">
+		<svg aria-hidden="true" {width} {height} class="overflow-visible">
 			<!-- Grid lines -->
 			{#each yTicks as tick (tick.value)}
 				<line

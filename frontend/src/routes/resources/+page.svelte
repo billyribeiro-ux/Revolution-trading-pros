@@ -340,7 +340,7 @@
 			<!-- Market Analysis -->
 			<div class="bg-rtp-surface rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all">
 				<div class="w-16 h-16 bg-rtp-blue/10 rounded-xl flex items-center justify-center mb-6">
-					<svg class="w-8 h-8 text-rtp-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<svg aria-hidden="true" class="w-8 h-8 text-rtp-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path
 							stroke-linecap="round"
 							stroke-linejoin="round"

@@ -38,7 +38,7 @@
 </script>
 
 {#if fromNode && toNode}
-	<svg class="workflow-edge">
+	<svg aria-hidden="true" class="workflow-edge">
 		<defs>
 			<marker
 				id="arrowhead-{edge.id}"

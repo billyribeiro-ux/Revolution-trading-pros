@@ -393,7 +393,7 @@
 				</div>
 				<div class="chart-body">
 					<div class="line-chart">
-						<svg viewBox="0 0 600 200" class="line-chart-svg">
+						<svg aria-hidden="true" viewBox="0 0 600 200" class="line-chart-svg">
 							<!-- Grid lines -->
 							{#each [0, 1, 2, 3, 4] as i (i)}
 								<line

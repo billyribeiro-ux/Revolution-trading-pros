@@ -151,7 +151,7 @@
 			title="Slider comparison"
 			aria-label="Slider comparison"
 		>
-			<svg viewBox="0 0 20 20" fill="currentColor">
+			<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor">
 				<path d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" />
 				<path d="M10 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1z" />
 			</svg>
@@ -162,7 +162,7 @@
 			title="Side by side"
 			aria-label="Side by side comparison"
 		>
-			<svg viewBox="0 0 20 20" fill="currentColor">
+			<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor">
 				<path
 					d="M2 4a1 1 0 011-1h6a1 1 0 011 1v12a1 1 0 01-1 1H3a1 1 0 01-1-1V4zM12 4a1 1 0 011-1h4a1 1 0 011 1v12a1 1 0 01-1 1h-4a1 1 0 01-1-1V4z"
 				/>
@@ -174,7 +174,7 @@
 			title="Toggle view"
 			aria-label="Toggle view"
 		>
-			<svg viewBox="0 0 20 20" fill="currentColor">
+			<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor">
 				<path
 					fill-rule="evenodd"
 					d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
@@ -191,7 +191,7 @@
 			disabled={zoomLevel <= 1}
 			aria-label="Zoom out"
 		>
-			<svg viewBox="0 0 20 20" fill="currentColor">
+			<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor">
 				<path
 					fill-rule="evenodd"
 					d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
@@ -205,7 +205,7 @@
 			disabled={zoomLevel >= 5}
 			aria-label="Zoom in"
 		>
-			<svg viewBox="0 0 20 20" fill="currentColor">
+			<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor">
 				<path
 					fill-rule="evenodd"
 					d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
@@ -256,7 +256,7 @@
 				<div class="slider-handle" style="left: {$sliderPosition}%;">
 					<div class="handle-line"></div>
 					<div class="handle-grip">
-						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 							<path d="M8 12h8M12 8v8" />
 						</svg>
 					</div>

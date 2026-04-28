@@ -188,7 +188,7 @@
 		class="relative w-full flex justify-center"
 		style="min-height: 300px;"
 	>
-		<svg bind:this={svgEl}></svg>
+		<svg aria-hidden="true" bind:this={svgEl}></svg>
 	</div>
 
 	<!-- Legend -->

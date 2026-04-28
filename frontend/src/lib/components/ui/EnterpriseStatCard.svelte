@@ -252,7 +252,7 @@
 		<!-- Sparkline -->
 		{#if sparklineData.length > 1}
 			<div class="mt-4 opacity-60">
-				<svg width="100" height="30" class="w-full" preserveAspectRatio="none">
+				<svg aria-hidden="true" width="100" height="30" class="w-full" preserveAspectRatio="none">
 					<path
 						d={generateSparklinePath(sparklineData)}
 						fill="none"

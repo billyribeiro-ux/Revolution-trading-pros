@@ -15,6 +15,7 @@
 	import { t } from '../i18n';
 	import { recordImpression, recordDecision } from '../ab-testing';
 	import type { BannerTemplate } from './types';
+	import { sanitizeHtml } from '$lib/sanitize';
 
 	// Svelte 5: Props using $props() rune
 	interface Props {
@@ -316,7 +317,7 @@
 			<!-- Icon -->
 			{#if template.showIcon}
 				<div class="icon" style="color: {template.colors.accent}">
-						{@html getIcon(template)}
+						{@html sanitizeHtml(getIcon(template))}
 				</div>
 			{/if}
 

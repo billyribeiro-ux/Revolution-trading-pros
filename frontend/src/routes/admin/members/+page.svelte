@@ -548,7 +548,7 @@
 						</div>
 					</div>
 					<div class="stat-ring">
-						<svg viewBox="0 0 36 36">
+						<svg aria-hidden="true" viewBox="0 0 36 36">
 							<circle
 								cx="18"
 								cy="18"

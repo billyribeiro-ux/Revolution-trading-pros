@@ -85,7 +85,7 @@
 		<div class="modal-container">
 			<!-- Close Button -->
 			<button class="close-btn" onclick={onClose} aria-label="Close video">
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 					<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
 				</svg>
 			</button>
@@ -122,7 +122,7 @@
 				<h2 id="video-modal-title" class="video-title">{video.title}</h2>
 				<div class="video-details">
 					<span class="duration">
-						<svg viewBox="0 0 20 20" fill="currentColor">
+						<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor">
 							<path
 								fill-rule="evenodd"
 								d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z"

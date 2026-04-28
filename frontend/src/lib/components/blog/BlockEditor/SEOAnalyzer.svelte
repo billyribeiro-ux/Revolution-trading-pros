@@ -1013,7 +1013,7 @@
 		<!-- Overall Score -->
 		<div class="score-section">
 			<div class="score-circle" style="--score-color: {getScoreColor(analysis.score)}">
-				<svg viewBox="0 0 100 100">
+				<svg aria-hidden="true" viewBox="0 0 100 100">
 					<circle class="score-bg" cx="50" cy="50" r="45" />
 					<circle
 						class="score-progress"

@@ -118,7 +118,7 @@
 			aria-controls="notes-{alert.id}"
 		>
 			<span class="notes-label">Notes</span>
-			<svg class="chevron" viewBox="0 0 20 20" fill="currentColor">
+			<svg aria-hidden="true" class="chevron" viewBox="0 0 20 20" fill="currentColor">
 				<path
 					fill-rule="evenodd"
 					d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
@@ -176,7 +176,7 @@
 			<code class="tos-string">{alert.tosString}</code>
 			<button class="tos-copy" onclick={handleCopy} aria-label="Copy ThinkOrSwim string">
 				{#if isCopied}
-					<svg viewBox="0 0 20 20" fill="currentColor">
+					<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor">
 						<path
 							fill-rule="evenodd"
 							d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
@@ -184,7 +184,7 @@
 						/>
 					</svg>
 				{:else}
-					<svg viewBox="0 0 20 20" fill="currentColor">
+					<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor">
 						<path
 							d="M7 3.5A1.5 1.5 0 018.5 2h3.879a1.5 1.5 0 011.06.44l3.122 3.12A1.5 1.5 0 0117 6.622V12.5a1.5 1.5 0 01-1.5 1.5h-1v-3.379a3 3 0 00-.879-2.121L10.5 5.379A3 3 0 008.379 4.5H7v-1z"
 						/>
@@ -201,7 +201,7 @@
 	<div class="actions-row">
 		<button class="action-btn copy-btn" class:copied={isCopied} onclick={handleCopy}>
 			{#if isCopied}
-				<svg viewBox="0 0 20 20" fill="currentColor">
+				<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor">
 					<path
 						fill-rule="evenodd"
 						d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
@@ -210,7 +210,7 @@
 				</svg>
 				Copied!
 			{:else}
-				<svg viewBox="0 0 20 20" fill="currentColor">
+				<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor">
 					<path
 						d="M7 3.5A1.5 1.5 0 018.5 2h3.879a1.5 1.5 0 011.06.44l3.122 3.12A1.5 1.5 0 0117 6.622V12.5a1.5 1.5 0 01-1.5 1.5h-1v-3.379a3 3 0 00-.879-2.121L10.5 5.379A3 3 0 008.379 4.5H7v-1z"
 					/>
@@ -225,7 +225,7 @@
 		{#if alert.type === 'ENTRY' && onViewTradePlan}
 			<button class="action-btn primary" onclick={() => onViewTradePlan(alert)}>
 				View Trade Plan
-				<svg viewBox="0 0 20 20" fill="currentColor">
+				<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor">
 					<path
 						fill-rule="evenodd"
 						d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z"

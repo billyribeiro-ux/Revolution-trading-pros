@@ -4,6 +4,7 @@
 	 * @standards Svelte 5 January 2026 | Apple Principal Engineer ICT 7+
 	 */
 	import type { AlertSearchResult } from '../search.state.svelte';
+	import { sanitizeHtml } from '$lib/sanitize';
 
 	interface Props {
 		alert: AlertSearchResult;
@@ -51,7 +52,7 @@
 		<span class="type-badge {style.bg}">{alert.alert_type}</span>
 		<span class="date">{formatDate(alert.published_at)}</span>
 		<span class="relevance" title="Relevance score">
-			<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+			<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
 				<polygon
 					points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
 				/>
@@ -61,15 +62,15 @@
 	</div>
 
 	{#if alert.title}
-		<h3 class="card-title">{@html highlightMatch(alert.title)}</h3>
+		<h3 class="card-title">{@html sanitizeHtml(highlightMatch(alert.title))}</h3>
 	{/if}
 
 	<div class="card-highlight">
-		{@html alert.highlight}
+		{@html sanitizeHtml(alert.highlight)}
 	</div>
 
 	<div class="card-message">
-		{@html highlightMatch(alert.message)}
+		{@html sanitizeHtml(highlightMatch(alert.message))}
 	</div>
 </article>
 

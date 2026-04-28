@@ -223,7 +223,7 @@
 			<div class="absolute inset-0 perspective-grid opacity-20"></div>
 
 			<div class="chart-lines">
-				<svg class="absolute inset-0 w-full h-full" preserveAspectRatio="none">
+				<svg aria-hidden="true" class="absolute inset-0 w-full h-full" preserveAspectRatio="none">
 					<path
 						class="chart-line-svg line-1"
 						d="M0,300 Q400,250 800,350 T1600,200"
@@ -392,7 +392,7 @@
 							<div class="text-xs font-mono text-slate-500">M15 • ES_F</div>
 						</div>
 						<div class="chart-mockup h-[220px] relative w-full">
-							<svg class="w-full h-full overflow-visible" viewBox="0 0 400 200">
+							<svg aria-hidden="true" class="w-full h-full overflow-visible" viewBox="0 0 400 200">
 								<defs>
 									<linearGradient id="chartGrad" x1="0%" y1="0%" x2="0%" y2="100%">
 										<stop offset="0%" stop-color="#2e8eff" stop-opacity="0.3" />

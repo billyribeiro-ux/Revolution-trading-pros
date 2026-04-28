@@ -475,7 +475,7 @@
 					<p class="content-name">{contentTitle}</p>
 				</div>
 				<button class="close-btn" onclick={onClose} aria-label="Close">
-					<svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+					<svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none">
 						<path
 							d="M15 5L5 15M5 5L15 15"
 							stroke="currentColor"
@@ -493,7 +493,7 @@
 					class:active={activeTab === 'schedule'}
 					onclick={() => switchTab('schedule')}
 				>
-					<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+					<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none">
 						<circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5" />
 						<path
 							d="M8 4.5V8L10.5 10"
@@ -509,7 +509,7 @@
 					class:active={activeTab === 'releases'}
 					onclick={() => switchTab('releases')}
 				>
-					<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+					<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none">
 						<rect x="2" y="4" width="12" height="2" rx="1" fill="currentColor" />
 						<rect x="2" y="7" width="12" height="2" rx="1" fill="currentColor" />
 						<rect x="2" y="10" width="12" height="2" rx="1" fill="currentColor" />
@@ -521,7 +521,7 @@
 					class:active={activeTab === 'calendar'}
 					onclick={() => switchTab('calendar')}
 				>
-					<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+					<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none">
 						<rect
 							x="2"
 							y="3"
@@ -542,7 +542,7 @@
 					class:active={activeTab === 'history'}
 					onclick={() => switchTab('history')}
 				>
-					<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+					<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none">
 						<path d="M8 14A6 6 0 108 2a6 6 0 000 12z" stroke="currentColor" stroke-width="1.5" />
 						<path
 							d="M3.5 8H2M8 3.5V2"
@@ -782,7 +782,7 @@
 					<div class="calendar-section" transition:fade>
 						<div class="calendar-header">
 							<button class="calendar-nav" onclick={prevMonth} aria-label="Previous month">
-								<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+								<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none">
 									<path
 										d="M10 12L6 8L10 4"
 										stroke="currentColor"
@@ -795,7 +795,7 @@
 								{calendarMonth.toLocaleString('en-US', { month: 'long', year: 'numeric' })}
 							</h3>
 							<button class="calendar-nav" onclick={nextMonth} aria-label="Next month">
-								<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+								<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none">
 									<path
 										d="M6 4L10 8L6 12"
 										stroke="currentColor"
@@ -870,7 +870,7 @@
 								{#each scheduleHistory as item (item.id ?? item)}
 									<div class="history-item">
 										<div class="history-icon">
-											<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+											<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none">
 												<circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5" />
 												<path
 													d="M8 4.5V8L10 10"

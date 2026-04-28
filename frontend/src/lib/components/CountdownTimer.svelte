@@ -55,6 +55,7 @@
 	import { spring, tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
+	import { sanitizeHtml } from '$lib/sanitize';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Props
@@ -867,7 +868,7 @@
 						{@const value = timeData[typedUnit]}
 						{@const { radius, circumference, offset } = getCircleProps(value, max)}
 						<div class="circular-unit">
-							<svg width="100" height="100">
+							<svg aria-hidden="true" width="100" height="100">
 								<circle
 									cx="50"
 									cy="50"
@@ -953,7 +954,7 @@
 		<!-- Custom Format -->
 		{#if format === 'custom' && customFormatter}
 			<div class="custom-timer">
-				{@html customFormatter(timeData)}
+				{@html sanitizeHtml(customFormatter(timeData))}
 			</div>
 		{/if}
 

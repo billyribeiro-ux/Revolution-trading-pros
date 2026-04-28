@@ -1853,7 +1853,7 @@
 			<div class="validation-card">
 				<h3>Quality Score</h3>
 				<div class="score-circle">
-					<svg viewBox="0 0 100 100">
+					<svg aria-hidden="true" viewBox="0 0 100 100">
 						<circle cx="50" cy="50" r="45" fill="none" stroke="#1e293b" stroke-width="8" />
 						<circle
 							cx="50"

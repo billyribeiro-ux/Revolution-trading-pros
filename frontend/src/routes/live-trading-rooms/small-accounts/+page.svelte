@@ -268,7 +268,7 @@
 						class="bg-rtp-primary text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-600 transition-all shadow-lg shadow-rtp-primary/25 hover:-translate-y-1 flex items-center justify-center gap-2"
 					>
 						Join the Live Room
-						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+						<svg aria-hidden="true" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
 							><path
 								stroke-linecap="round"
 								stroke-linejoin="round"
@@ -601,7 +601,7 @@
 					<div
 						class="flex items-center justify-center w-10 h-10 rounded-full border border-rtp-primary bg-rtp-surface group-hover:bg-rtp-primary group-hover:text-white shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow text-rtp-primary transition-colors z-10"
 					>
-						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+						<svg aria-hidden="true" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
 							><path
 								stroke-linecap="round"
 								stroke-linejoin="round"
@@ -634,7 +634,7 @@
 					<div
 						class="flex items-center justify-center w-10 h-10 rounded-full border border-emerald-500 bg-emerald-500/10 group-hover:bg-emerald-500 group-hover:text-white shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow text-emerald-500 transition-colors z-10"
 					>
-						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+						<svg aria-hidden="true" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
 							><path
 								stroke-linecap="round"
 								stroke-linejoin="round"
@@ -667,7 +667,7 @@
 					<div
 						class="flex items-center justify-center w-10 h-10 rounded-full border border-rtp-indigo bg-rtp-surface group-hover:bg-rtp-indigo group-hover:text-white shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow text-rtp-indigo transition-colors z-10"
 					>
-						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+						<svg aria-hidden="true" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
 							><path
 								stroke-linecap="round"
 								stroke-linejoin="round"
@@ -700,7 +700,7 @@
 					<div
 						class="flex items-center justify-center w-10 h-10 rounded-full border border-rtp-blue bg-rtp-surface group-hover:bg-rtp-blue group-hover:text-white shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow text-rtp-blue transition-colors z-10"
 					>
-						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+						<svg aria-hidden="true" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
 							><path
 								stroke-linecap="round"
 								stroke-linejoin="round"

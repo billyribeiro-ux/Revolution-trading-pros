@@ -354,6 +354,7 @@
 				{#if videoFile}
 					<div class="file-preview">
 						<svg
+							aria-hidden="true"
 							class="file-icon"
 							viewBox="0 0 24 24"
 							fill="none"
@@ -376,7 +377,7 @@
 							aria-label="Remove video file"
 							onclick={() => (videoFile = null)}
 						>
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 								<line x1="18" y1="6" x2="6" y2="18"></line>
 								<line x1="6" y1="6" x2="18" y2="18"></line>
 							</svg>
@@ -384,6 +385,7 @@
 					</div>
 				{:else}
 					<svg
+						aria-hidden="true"
 						class="upload-icon"
 						viewBox="0 0 24 24"
 						fill="none"
@@ -425,13 +427,13 @@
 							aria-label="Remove thumbnail"
 							onclick={() => (thumbnailFile = null)}
 						>
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 								<line x1="18" y1="6" x2="6" y2="18"></line>
 								<line x1="6" y1="6" x2="18" y2="18"></line>
 							</svg>
 						</button>
 					{:else}
-						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 							<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
 							<circle cx="8.5" cy="8.5" r="1.5"></circle>
 							<polyline points="21 15 16 10 5 21"></polyline>
@@ -565,7 +567,7 @@
 	{#if step === 'complete'}
 		<div class="complete-step">
 			<div class="success-icon">
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 					<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
 					<polyline points="22 4 12 14.01 9 11.01"></polyline>
 				</svg>

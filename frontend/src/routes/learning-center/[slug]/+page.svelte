@@ -13,6 +13,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
+	import { sanitizeHtml } from '$lib/sanitize';
 
 	interface LearningResource {
 		id: number;
@@ -289,7 +290,7 @@
 
 						<!-- Content -->
 						<div class="resource-content">
-							{@html resource.content}
+							{@html sanitizeHtml(resource.content ?? '', 'rich')}
 						</div>
 
 						<!-- Back Link -->

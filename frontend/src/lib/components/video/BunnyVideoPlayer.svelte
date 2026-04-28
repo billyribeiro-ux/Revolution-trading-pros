@@ -378,7 +378,7 @@
 					onclick={handlePlayClick}
 					aria-label="Play video: {title}"
 				>
-					<svg viewBox="0 0 24 24" fill="currentColor" width="64" height="64">
+					<svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" width="64" height="64">
 						<path d="M8 5v14l11-7z" />
 					</svg>
 				</button>

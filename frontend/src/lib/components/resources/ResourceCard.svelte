@@ -177,7 +177,7 @@
 					onclick={handlePreview}
 					aria-label="Play video"
 				>
-					<svg class="h-8 w-8 pl-1" fill="currentColor" viewBox="0 0 24 24">
+					<svg aria-hidden="true" class="h-8 w-8 pl-1" fill="currentColor" viewBox="0 0 24 24">
 						<path d="M8 5v14l11-7z" />
 					</svg>
 				</button>
@@ -212,7 +212,7 @@
 			<!-- File size -->
 			{#if formattedSize}
 				<span class="flex items-center gap-1">
-					<svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<svg aria-hidden="true" class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path
 							stroke-linecap="round"
 							stroke-linejoin="round"
@@ -226,7 +226,7 @@
 
 			<!-- Date -->
 			<span class="flex items-center gap-1">
-				<svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<svg aria-hidden="true" class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 					<path
 						stroke-linecap="round"
 						stroke-linejoin="round"
@@ -240,7 +240,7 @@
 			<!-- Version -->
 			{#if showVersion && hasVersion}
 				<span class="flex items-center gap-1 text-blue-600 dark:text-blue-400">
-					<svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<svg aria-hidden="true" class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path
 							stroke-linecap="round"
 							stroke-linejoin="round"
@@ -257,7 +257,7 @@
 		<div class="mb-3 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
 			<div class="flex items-center gap-4">
 				<span class="flex items-center gap-1">
-					<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<svg aria-hidden="true" class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path
 							stroke-linecap="round"
 							stroke-linejoin="round"
@@ -274,7 +274,7 @@
 					{resource.views_count}
 				</span>
 				<span class="flex items-center gap-1">
-					<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<svg aria-hidden="true" class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path
 							stroke-linecap="round"
 							stroke-linejoin="round"

@@ -167,7 +167,7 @@
 			role="img"
 			aria-label="Drawdown area chart"
 		>
-			<svg {width} {height} class="chart-svg">
+			<svg aria-hidden="true" {width} {height} class="chart-svg">
 				<defs>
 					<linearGradient id="drawdownGradient" x1="0%" y1="0%" x2="0%" y2="100%">
 						<stop offset="0%" stop-color="var(--color-loss)" stop-opacity="0.1" />

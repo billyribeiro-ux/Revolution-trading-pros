@@ -81,7 +81,7 @@
 	<!-- Compact inline version -->
 	<div class="inline-flex items-center gap-2 text-sm {className}" transition:fade>
 		<span class="text-gray-400 line-through">{formatBytes(stats.originalSize)}</span>
-		<svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+		<svg aria-hidden="true" class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 			<path
 				stroke-linecap="round"
 				stroke-linejoin="round"
@@ -111,7 +111,7 @@
 			class="flex items-center gap-3 p-4 bg-green-100/50 dark:bg-green-900/30 border-b border-green-200 dark:border-green-800"
 		>
 			<div class="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center">
-				<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<svg aria-hidden="true" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 					<path
 						stroke-linecap="round"
 						stroke-linejoin="round"
@@ -136,7 +136,7 @@
 		<div class="flex items-center justify-around p-6 gap-6">
 			<!-- Circular progress -->
 			<div class="relative flex items-center justify-center">
-				<svg viewBox="0 0 100 100" class="w-24 h-24">
+				<svg aria-hidden="true" viewBox="0 0 100 100" class="w-24 h-24">
 					<!-- Background ring -->
 					<circle
 						cx="50"
@@ -181,7 +181,7 @@
 					{/if}
 				</div>
 				<div class="py-1">
-					<svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<svg aria-hidden="true" class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path
 							stroke-linecap="round"
 							stroke-linejoin="round"
@@ -211,7 +211,7 @@
 				class="flex items-center justify-center gap-6 px-4 py-3 border-t border-green-200 dark:border-green-800 text-xs text-gray-600 dark:text-gray-400"
 			>
 				<div class="flex items-center gap-1.5">
-					<svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<svg aria-hidden="true" class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path
 							stroke-linecap="round"
 							stroke-linejoin="round"
@@ -240,7 +240,7 @@
 					</div>
 				{/if}
 				<div class="flex items-center gap-1.5">
-					<svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<svg aria-hidden="true" class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path
 							stroke-linecap="round"
 							stroke-linejoin="round"
