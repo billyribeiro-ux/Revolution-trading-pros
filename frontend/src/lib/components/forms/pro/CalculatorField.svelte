@@ -105,7 +105,7 @@
 				<span>Calculation breakdown</span>
 			</div>
 			<div class="variables-list">
-				{#each variables as variable}
+				{#each variables as variable (variable.name)}
 					<div class="variable-row">
 						<span class="variable-label">{variable.label}:</span>
 						<span class="variable-value">{formatValue(variable.value)}</span>
@@ -130,7 +130,7 @@
 
 	{#if props.error && props.error.length > 0}
 		<div class="field-error">
-			{#each props.error as err}
+			{#each props.error as err (err)}
 				<p>{err}</p>
 			{/each}
 		</div>

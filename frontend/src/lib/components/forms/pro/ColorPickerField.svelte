@@ -157,7 +157,7 @@
 
 	{#if presets.length > 0}
 		<div class="presets">
-			{#each presets as preset}
+			{#each presets as preset (preset)}
 				<button
 					type="button"
 					class="preset-btn"

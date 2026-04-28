@@ -111,7 +111,7 @@
 		class:layout-grid={layout === 'grid'}
 		style={layout === 'grid' ? `--columns: ${columns}` : ''}
 	>
-		{#each options as option}
+		{#each options as option (option.value)}
 			<label
 				class="checkbox-option"
 				class:disabled={disabled || (isAtMaxLimit() && !selectedValues.includes(option.value))}

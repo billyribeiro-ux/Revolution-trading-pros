@@ -223,7 +223,7 @@
 				<!-- Row Content -->
 				{#if !row.collapsed}
 					<div class="row-content">
-						{#each subFields as subField}
+						{#each subFields as subField (subField.name)}
 							{#if subField.name}
 								<div class="sub-field" style="width: {subField.width ?? 100}%">
 									<label class="sub-field-label" for="{props.field.name}_{row.id}_{subField.name}">
@@ -317,7 +317,7 @@
 										>
 											<option value="">Select...</option>
 											{#if Array.isArray(subField.options)}
-												{#each subField.options as opt}
+												{#each subField.options as opt (typeof opt === 'string' ? opt : opt.value)}
 													<option value={typeof opt === 'string' ? opt : opt.value}>
 														{typeof opt === 'string' ? opt : opt.label}
 													</option>
@@ -381,7 +381,7 @@
 	<!-- Errors -->
 	{#if props.error && props.error.length > 0}
 		<div class="field-errors">
-			{#each props.error as err}
+			{#each props.error as err (err)}
 				<p>{err}</p>
 			{/each}
 		</div>

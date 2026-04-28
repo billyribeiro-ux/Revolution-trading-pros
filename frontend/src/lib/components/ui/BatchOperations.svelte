@@ -54,7 +54,7 @@
 		</div>
 
 		<div class="action-buttons">
-			{#each actions as action}
+			{#each actions as action (action.id)}
 				<button
 					type="button"
 					class="action-btn variant-{action.variant ?? 'default'}"

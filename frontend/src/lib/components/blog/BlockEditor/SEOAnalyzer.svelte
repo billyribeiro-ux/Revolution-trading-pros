@@ -1071,7 +1071,7 @@
 				</button>
 				{#if expandedCategories.has('title')}
 					<div class="category-content">
-						{#each getIssuesByCategory('title') as issue}
+						{#each getIssuesByCategory('title') as issue (issue.message)}
 							<div class="issue {issue.type}">
 								<span class="issue-icon">{getIssueIcon(issue.type)}</span>
 								<span class="issue-message">{issue.message}</span>
@@ -1094,7 +1094,7 @@
 				</button>
 				{#if expandedCategories.has('meta')}
 					<div class="category-content">
-						{#each getIssuesByCategory('meta') as issue}
+						{#each getIssuesByCategory('meta') as issue (issue.message)}
 							<div class="issue {issue.type}">
 								<span class="issue-icon">{getIssueIcon(issue.type)}</span>
 								<span class="issue-message">{issue.message}</span>
@@ -1117,7 +1117,7 @@
 				</button>
 				{#if expandedCategories.has('content')}
 					<div class="category-content">
-						{#each getIssuesByCategory('content') as issue}
+						{#each getIssuesByCategory('content') as issue (issue.message)}
 							<div class="issue {issue.type}">
 								<span class="issue-icon">{getIssueIcon(issue.type)}</span>
 								<span class="issue-message">{issue.message}</span>
@@ -1143,7 +1143,7 @@
 				</button>
 				{#if expandedCategories.has('readability')}
 					<div class="category-content">
-						{#each getIssuesByCategory('readability') as issue}
+						{#each getIssuesByCategory('readability') as issue (issue.message)}
 							<div class="issue {issue.type}">
 								<span class="issue-icon">{getIssueIcon(issue.type)}</span>
 								<span class="issue-message">{issue.message}</span>
@@ -1163,7 +1163,7 @@
 				</button>
 				{#if expandedCategories.has('keyword')}
 					<div class="category-content">
-						{#each getIssuesByCategory('keyword') as issue}
+						{#each getIssuesByCategory('keyword') as issue (issue.message)}
 							<div class="issue {issue.type}">
 								<span class="issue-icon">{getIssueIcon(issue.type)}</span>
 								<span class="issue-message">{issue.message}</span>
@@ -1183,7 +1183,7 @@
 				</button>
 				{#if expandedCategories.has('structure')}
 					<div class="category-content">
-						{#each getIssuesByCategory('structure') as issue}
+						{#each getIssuesByCategory('structure') as issue (issue.message)}
 							<div class="issue {issue.type}">
 								<span class="issue-icon">{getIssueIcon(issue.type)}</span>
 								<span class="issue-message">{issue.message}</span>
@@ -1204,7 +1204,7 @@
 					</button>
 					{#if expandedCategories.has('slug')}
 						<div class="category-content">
-							{#each getIssuesByCategory('slug') as issue}
+							{#each getIssuesByCategory('slug') as issue (issue.message)}
 								<div class="issue {issue.type}">
 									<span class="issue-icon">{getIssueIcon(issue.type)}</span>
 									<span class="issue-message">{issue.message}</span>
@@ -1221,7 +1221,7 @@
 			<div class="suggestions">
 				<h4>Improvement Suggestions</h4>
 				<ul>
-					{#each analysis.suggestions as suggestion}
+					{#each analysis.suggestions as suggestion (suggestion)}
 						<li>{suggestion}</li>
 					{/each}
 				</ul>

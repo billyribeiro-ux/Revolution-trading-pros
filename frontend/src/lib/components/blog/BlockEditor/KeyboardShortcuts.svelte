@@ -205,14 +205,14 @@
 			</div>
 
 			<div class="shortcuts-content">
-				{#each filteredCategories as category}
+				{#each filteredCategories as category (category.name)}
 					<div class="category">
 						<h3 class="category-name">{category.name}</h3>
 						<div class="shortcuts-list">
-							{#each category.shortcuts as shortcut}
+							{#each category.shortcuts as shortcut (shortcut.action)}
 								<div class="shortcut-item">
 									<div class="shortcut-keys">
-										{#each shortcut.keys as key, i}
+										{#each shortcut.keys as key, i (i)}
 											<kbd class="key">{key}</kbd>
 											{#if i < shortcut.keys.length - 1}
 												<span class="plus">+</span>

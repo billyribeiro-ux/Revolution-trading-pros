@@ -89,7 +89,7 @@
 	{#if loading}
 		<!-- Loading skeleton -->
 		<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-			{#each Array(4) as _}
+			{#each Array(4) as _, i (i)}
 				<div
 					class="animate-pulse rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-900"
 				>
@@ -261,7 +261,7 @@
 			>
 				<h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Resources by Type</h3>
 				<div class="space-y-3">
-					{#each analytics.by_type as item}
+					{#each analytics.by_type as item (item.resource_type)}
 						{@const percentage =
 							analytics.total_resources > 0 ? (item.count / analytics.total_resources) * 100 : 0}
 						<div>
@@ -308,7 +308,7 @@
 					Resources by Access Level
 				</h3>
 				<div class="space-y-3">
-					{#each analytics.by_access_level as item}
+					{#each analytics.by_access_level as item (item.access_level)}
 						{@const percentage =
 							analytics.total_resources > 0 ? (item.count / analytics.total_resources) * 100 : 0}
 						<div>
@@ -343,7 +343,7 @@
 			>
 				<h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Top Viewed</h3>
 				<div class="space-y-3">
-					{#each analytics.top_viewed.slice(0, 5) as item, i}
+					{#each analytics.top_viewed.slice(0, 5) as item, i (item.id)}
 						<div class="flex items-start gap-3">
 							<span
 								class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-400"
@@ -369,7 +369,7 @@
 			>
 				<h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Top Downloaded</h3>
 				<div class="space-y-3">
-					{#each analytics.top_downloaded.slice(0, 5) as item, i}
+					{#each analytics.top_downloaded.slice(0, 5) as item, i (item.id)}
 						<div class="flex items-start gap-3">
 							<span
 								class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-400"
@@ -395,7 +395,7 @@
 			>
 				<h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Recent Uploads</h3>
 				<div class="space-y-3">
-					{#each analytics.recent_uploads.slice(0, 5) as item}
+					{#each analytics.recent_uploads.slice(0, 5) as item (item.id)}
 						<div class="flex items-start gap-3">
 							<svg
 								class="h-5 w-5 flex-shrink-0 text-gray-400"

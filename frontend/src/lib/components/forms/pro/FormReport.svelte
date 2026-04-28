@@ -283,7 +283,7 @@
 					<h3>Field Analysis</h3>
 
 					<div class="field-tabs">
-						{#each reportData.field_reports as field, index}
+						{#each reportData.field_reports as field, index (field.field_name)}
 							<button
 								type="button"
 								class="field-tab"
@@ -304,7 +304,7 @@
 							</div>
 
 							<div class="field-chart">
-								{#each field.data.slice(0, 10) as item, itemIndex}
+								{#each field.data.slice(0, 10) as item, itemIndex (item.value)}
 									<div class="chart-row">
 										<div class="chart-label" title={item.value}>
 											{item.value || '(Empty)'}
@@ -331,7 +331,7 @@
 				<div class="top-sources">
 					<h3>Top Traffic Sources</h3>
 					<div class="sources-list">
-						{#each reportData.top_sources as source, index}
+						{#each reportData.top_sources as source, index (source.source)}
 							<div class="source-item">
 								<span class="source-rank">#{index + 1}</span>
 								<span class="source-name">{source.source}</span>

@@ -186,7 +186,7 @@
 
 	{#if props.error && props.error.length > 0}
 		<div class="field-error">
-			{#each props.error as err}
+			{#each props.error as err (err)}
 				<p>{err}</p>
 			{/each}
 		</div>

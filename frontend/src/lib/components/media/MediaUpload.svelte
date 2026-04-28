@@ -219,7 +219,7 @@
 
 				<!-- File list -->
 				<div class="file-list">
-					{#each uploadQueue as file}
+					{#each uploadQueue as file (file.name)}
 						{@const progress = uploadProgress.get(file.name) || 0}
 						<div class="file-item" class:error={progress < 0}>
 							<span class="file-name">{file.name}</span>

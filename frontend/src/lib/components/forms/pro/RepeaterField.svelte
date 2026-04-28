@@ -199,7 +199,7 @@
 				</div>
 
 				<div class="row-fields">
-					{#each fields as field}
+					{#each fields as field (field.name)}
 						<div class="field-wrapper" style="width: {getFieldWidth(field.width)}">
 							{#if field.label}
 								<label for="{name}-{index}-{field.name}" class="inner-label">
@@ -220,7 +220,7 @@
 										updateField(row.id, field.name, (e.target as HTMLSelectElement).value)}
 								>
 									<option value="">{field.placeholder || 'Select...'}</option>
-									{#each field.options || [] as option}
+									{#each field.options || [] as option (option.value)}
 										<option value={option.value}>{option.label}</option>
 									{/each}
 								</select>

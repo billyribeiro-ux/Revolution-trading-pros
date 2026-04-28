@@ -163,7 +163,7 @@
 
 		{#if showTicks}
 			<div class="tick-marks">
-				{#each generateTicks() as tick}
+				{#each generateTicks() as tick (tick)}
 					<div class="tick">
 						<span class="tick-mark"></span>
 						<span class="tick-label">{formatValue(tick)}</span>
@@ -180,7 +180,7 @@
 
 	{#if props.error && props.error.length > 0}
 		<div class="field-error">
-			{#each props.error as err}
+			{#each props.error as err (err)}
 				<p>{err}</p>
 			{/each}
 		</div>

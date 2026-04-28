@@ -300,7 +300,7 @@
 			>
 				{#if errors.length > 0}
 					<div class="error-banner">
-						{#each errors as error}
+						{#each errors as error, i (i)}
 							<p>{error}</p>
 						{/each}
 					</div>
@@ -482,7 +482,7 @@
 						<label for="entryAlertId">Link to Entry Alert</label>
 						<select id="entryAlertId" bind:value={entryAlertId}>
 							<option value={null}>-- Select Entry Alert --</option>
-							{#each availableEntryAlerts as entry}
+							{#each availableEntryAlerts as entry (entry.id)}
 								<option value={entry.id}>{entry.title} ({entry.tos_string})</option>
 							{/each}
 						</select>

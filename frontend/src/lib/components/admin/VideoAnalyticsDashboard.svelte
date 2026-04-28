@@ -266,7 +266,7 @@
 			<div class="device-section">
 				<h4>Devices</h4>
 				<div class="device-grid">
-					{#each Object.entries(dashboard.device_breakdown) as [device, count]}
+					{#each Object.entries(dashboard.device_breakdown) as [device, count] (device)}
 						{@const DeviceIcon = getDeviceIcon(device)}
 						{@const total = Object.values(dashboard.device_breakdown).reduce((a, b) => a + b, 0)}
 						<div class="device-item">

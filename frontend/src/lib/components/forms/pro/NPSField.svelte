@@ -45,7 +45,7 @@
 		{/if}
 
 		<div class="score-buttons">
-			{#each Array(11) as _, i}
+			{#each Array(11) as _, i (i)}
 				<button
 					type="button"
 					class="score-btn"
@@ -90,7 +90,7 @@
 
 	{#if props.error && props.error.length > 0}
 		<div class="field-error">
-			{#each props.error as err}
+			{#each props.error as err (err)}
 				<p>{err}</p>
 			{/each}
 		</div>

@@ -144,7 +144,7 @@
 	<div class="pdf-download-button">
 		{#if pdfList.length > 0}
 			<div class="pdf-actions">
-				{#each pdfList as pdf}
+				{#each pdfList as pdf (pdf.id)}
 					<button type="button" class="download-btn" onclick={() => downloadPdf(pdf)}>
 						<svg
 							width="18"
@@ -233,7 +233,7 @@
 			</div>
 		{:else if pdfList.length > 0}
 			<div class="pdf-list">
-				{#each pdfList as pdf}
+				{#each pdfList as pdf (pdf.id)}
 					<div class="pdf-item">
 						<div class="pdf-icon">
 							<svg
@@ -349,7 +349,7 @@
 	<!-- Inline variant -->
 	<div class="pdf-download-inline">
 		{#if pdfList.length > 0}
-			{#each pdfList as pdf}
+			{#each pdfList as pdf (pdf.id)}
 				<a href={pdf.url} class="pdf-link" download={pdf.filename} onclick={() => downloadPdf(pdf)}>
 					<svg
 						width="14"

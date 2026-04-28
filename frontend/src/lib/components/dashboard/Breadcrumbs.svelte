@@ -70,17 +70,13 @@
 
 <!-- JSON-LD Schema Markup -->
 <svelte:head>
-	{@html '<scr' +
-		'ipt type="application/ld+json">' +
-		JSON.stringify(breadcrumbSchema) +
-		'</scr' +
-		'ipt>'}
+	<script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
 </svelte:head>
 
 <!-- Breadcrumbs Navigation -->
 <nav id="breadcrumbs" class="breadcrumbs" aria-label="Breadcrumb navigation">
 	<ul>
-		{#each breadcrumbItems as item}
+		{#each breadcrumbItems as item (item.position)}
 			{#if item.href}
 				<!-- Linked breadcrumb item -->
 				<li class="item-home">

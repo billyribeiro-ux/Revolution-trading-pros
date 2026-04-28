@@ -129,7 +129,7 @@
 	<div class="media-grid">
 		{#if loading}
 			<!-- Loading skeleton -->
-			{#each Array(8) as _}
+			{#each Array(8) as _, i (i)}
 				<div class="grid-item skeleton">
 					<div class="skeleton-image"></div>
 					<div class="skeleton-text"></div>

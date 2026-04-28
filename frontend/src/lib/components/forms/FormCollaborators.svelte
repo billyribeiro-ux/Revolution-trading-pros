@@ -236,7 +236,7 @@
 					class="email-input"
 				/>
 				<select bind:value={inviteRole} class="role-select">
-					{#each roles as role}
+					{#each roles as role (role.value)}
 						<option value={role.value}>{role.label}</option>
 					{/each}
 				</select>
@@ -262,7 +262,7 @@
 					<span>{activeUsers.length} online now</span>
 				</div>
 				<div class="active-users">
-					{#each activeUsers as user}
+					{#each activeUsers as user (user.user_id)}
 						<div
 							class="user-avatar"
 							style="background-color: {user.avatar_color}"
@@ -279,7 +279,7 @@
 		<div class="section">
 			<div class="section-header">Collaborators ({collaborators.length})</div>
 			<div class="collaborators-list">
-				{#each collaborators as collab}
+				{#each collaborators as collab (collab.id)}
 					<div class="collaborator-item">
 						<div
 							class="collab-avatar"
@@ -306,7 +306,7 @@
 									updateRole(collab.id, (e.target as HTMLSelectElement).value)}
 								class="role-badge"
 							>
-								{#each roles as role}
+								{#each roles as role (role.value)}
 									<option value={role.value}>{role.label}</option>
 								{/each}
 							</select>
@@ -336,7 +336,7 @@
 		<div class="section">
 			<div class="section-header">Recent Activity</div>
 			<div class="activity-feed">
-				{#each activities.slice(0, 10) as activity}
+				{#each activities.slice(0, 10) as activity (activity.id)}
 					<div class="activity-item">
 						<div class="activity-icon">
 							{#if activity.action.includes('comment')}

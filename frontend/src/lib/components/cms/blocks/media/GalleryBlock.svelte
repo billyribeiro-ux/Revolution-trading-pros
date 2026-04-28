@@ -538,7 +538,7 @@
 						<IconChevronRight size={24} />
 					</button>
 					<div class="carousel-dots">
-						{#each images as _, dotIndex}
+						{#each images as _, dotIndex (dotIndex)}
 							<button
 								type="button"
 								class="carousel-dot"

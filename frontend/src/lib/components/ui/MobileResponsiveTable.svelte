@@ -171,7 +171,7 @@
 
 	{#if loading}
 		<div class="space-y-3">
-			{#each Array(5) as _}
+			{#each Array(5) as _, i (i)}
 				<SkeletonLoader variant="rectangular" width="100%" height="60px" />
 			{/each}
 		</div>
@@ -218,7 +218,7 @@
 						</div>
 					{/if}
 
-					{#each visibleColumns as column}
+					{#each visibleColumns as column (column.key)}
 						<div class="flex justify-between items-start gap-4">
 							<span class="text-xs text-slate-500 font-medium">{column.label}</span>
 							<span
@@ -249,7 +249,7 @@
 								/>
 							</th>
 						{/if}
-						{#each visibleColumns as column}
+						{#each visibleColumns as column (column.key)}
 							<th
 								class="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider
 									{column.sortable ? 'cursor-pointer hover:text-white transition-colors' : ''}"
@@ -304,7 +304,7 @@
 									/>
 								</td>
 							{/if}
-							{#each visibleColumns as column}
+							{#each visibleColumns as column (column.key)}
 								<td
 									class="px-4 py-3 text-sm text-slate-300"
 									class:text-center={column.align === 'center'}

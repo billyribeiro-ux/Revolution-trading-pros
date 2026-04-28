@@ -2,6 +2,30 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-04-27 (e) — Svelte MCP autofixer full pass: lib/components/
+
+### Fixed
+
+Ran `svelte-autofixer` (Svelte 5, official MCP) on every `.svelte` file under `frontend/src/lib/components/`. All issues were missing `{#each}` key expressions — Svelte requires keys for correct DOM diffing, stable component state, and working transitions. Folders audited and fixed:
+
+| Folder | Files audited | Files fixed |
+|---|---|---|
+| `lib/components/auth/` | 9 | 1 (`MobileBackground` — 2 `{#each}` keys) |
+| `lib/components/admin/` | 28 | 9 |
+| `lib/components/analytics/` | 16 | 8 |
+| `lib/components/blog/` + `blog/BlockEditor/` | 21 | 10 (26 keys) |
+| `lib/components/cart/` + `charts/` + `checkout/` + `classes/` | 7 | 1 |
+| `lib/components/cms/` (all subdirs) | 47 | 9 (15 keys) |
+| `lib/components/consent/` + `core/` + `courses/` + `crm/` + `dashboard/` | 29 | 9 |
+| `lib/components/dev/` + `forms/` + `icons/` + `indicators/` + `layout/` | ~50 | 16 |
+| `lib/components/media/` + `nav/` + `patterns/` + `popups/` + `resources/` | 31 | 15 |
+| `lib/components/sections/` + `seo/` + `ssr/` + `traders/` + `trading-room/` + `ui/` + `video/` + `workflow/` | ~120 | 31 |
+| **Total** | **~358** | **~109** |
+
+`pnpm check` after all changes: **0 errors / 0 warnings / 5215 files**.
+
+---
+
 ## [Unreleased] — 2026-04-27 (d) — Svelte autofixer pass: keyed `{#each}` blocks
 
 ### Fixed

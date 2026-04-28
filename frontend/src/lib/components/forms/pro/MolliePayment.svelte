@@ -181,7 +181,7 @@
 	</div>
 
 	<div class="methods-grid">
-		{#each filteredMethods as method}
+		{#each filteredMethods as method (method.id)}
 			<button
 				type="button"
 				class="method-btn"
@@ -212,7 +212,7 @@
 					{disabled}
 				>
 					<option value="">-- Select your bank --</option>
-					{#each issuers as issuer}
+					{#each issuers as issuer (issuer.id)}
 						<option value={issuer.id}>{issuer.name}</option>
 					{/each}
 				</select>

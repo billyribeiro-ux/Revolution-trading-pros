@@ -77,7 +77,7 @@
 						Cohort
 					</th>
 					<th class="px-3 py-2 text-center font-medium text-gray-600"> Size </th>
-					{#each periodNumbers as period}
+					{#each periodNumbers as period (period)}
 						<th class="px-2 py-2 text-center font-medium text-gray-600 min-w-[60px]">
 							{period === 0 ? 'Day 0' : `Week ${period}`}
 						</th>
@@ -93,7 +93,7 @@
 						<td class="px-3 py-2 text-center text-gray-600">
 							{(row.cohort_size ?? 0).toLocaleString()}
 						</td>
-						{#each periodNumbers as period}
+						{#each periodNumbers as period (period)}
 							{@const periodData = row.periods ? row.periods[period] : null}
 							<td class="px-1 py-1">
 								{#if periodData && typeof periodData === 'object'}
@@ -128,7 +128,7 @@
 							data.reduce((sum, row) => sum + (row.cohort_size || row.size || 0), 0) / data.length
 						).toLocaleString()}
 					</td>
-					{#each periodAverages as avg}
+					{#each periodAverages as avg, i (i)}
 						<td class="px-1 py-1">
 							{#if avg !== null}
 								<div

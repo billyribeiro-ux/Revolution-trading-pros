@@ -229,7 +229,7 @@
 			<div class="section">
 				<h3 class="section-title">Storage by Type</h3>
 				<div class="storage-breakdown">
-					{#each getStorageTypes() as item}
+					{#each getStorageTypes() as item (item.type)}
 						<div class="storage-item">
 							<div class="storage-bar" style="--color: {item.color}">
 								<div

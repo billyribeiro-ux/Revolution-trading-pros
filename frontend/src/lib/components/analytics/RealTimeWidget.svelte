@@ -116,7 +116,7 @@
 				<div class="border-t border-gray-700 pt-4">
 					<h4 class="text-xs font-medium text-gray-400 mb-2">Top Pages (30m)</h4>
 					<div class="space-y-2">
-						{#each metrics.top_pages.slice(0, 5) as page}
+						{#each metrics.top_pages.slice(0, 5) as page (page.page_path)}
 							<div class="flex items-center justify-between text-sm">
 								<span class="text-gray-300 truncate max-w-[200px]">{page.page_path}</span>
 								<span class="text-gray-400">{page.views}</span>
@@ -131,7 +131,7 @@
 				<div class="border-t border-gray-700 pt-4 mt-4">
 					<h4 class="text-xs font-medium text-gray-400 mb-2">Top Events (30m)</h4>
 					<div class="flex flex-wrap gap-2">
-						{#each metrics.top_events.slice(0, 8) as event}
+						{#each metrics.top_events.slice(0, 8) as event (event.event_name)}
 							<span class="px-2 py-1 bg-gray-700 rounded text-xs">
 								{event.event_name}
 								<span class="text-gray-400 ml-1">{event.count}</span>

@@ -706,7 +706,7 @@
 					<div class="error-banner">
 						<IconAlertCircle size={18} />
 						<div>
-							{#each categoryErrors as error}
+							{#each categoryErrors as error (error)}
 								<p>{error}</p>
 							{/each}
 						</div>
@@ -815,7 +815,7 @@
 					<div class="error-banner">
 						<IconAlertCircle size={18} />
 						<div>
-							{#each tagErrors as error}
+							{#each tagErrors as error (error)}
 								<p>{error}</p>
 							{/each}
 						</div>

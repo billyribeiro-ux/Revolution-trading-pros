@@ -151,7 +151,7 @@
 			class="group/grid grid md:grid-cols-2 gap-8 max-w-5xl mx-auto"
 			style="--x: {mouse.x}px; --y: {mouse.y}px;"
 		>
-			{#each signals as item, i}
+			{#each signals as item, i (item.id)}
 				{@const IconComponent = item.icon}
 				{#if isVisible}
 					<div
@@ -302,7 +302,7 @@
 							<div
 								class="grid grid-cols-3 gap-px bg-zinc-800 border border-zinc-800 rounded-lg overflow-hidden mb-8"
 							>
-								{#each item.metrics as metric}
+								{#each item.metrics as metric (metric.label)}
 									<div
 										class="bg-zinc-900/50 p-3 text-center group-hover/card:bg-zinc-900 transition-colors"
 									>

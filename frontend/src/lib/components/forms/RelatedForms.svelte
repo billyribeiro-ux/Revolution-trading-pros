@@ -142,7 +142,7 @@
 		{:else if activeTab === 'related'}
 			{#if relatedForms.length > 0}
 				<div class="forms-list">
-					{#each relatedForms as form}
+					{#each relatedForms as form (form.id)}
 						<a href="/forms/{form.slug}" class="form-card">
 							<div class="form-header">
 								<span
@@ -176,7 +176,7 @@
 		{:else if activeTab === 'trending'}
 			{#if trendingForms.length > 0}
 				<div class="forms-list">
-					{#each trendingForms as form, index}
+					{#each trendingForms as form, index (form.id)}
 						<a href="/forms/{form.slug}" class="form-card trending">
 							<div class="rank-badge">#{index + 1}</div>
 							<div class="form-info">

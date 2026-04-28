@@ -32,7 +32,7 @@
 					<th>{platform} Install File:</th>
 					<th></th>
 				</tr>
-				{#each files as file}
+				{#each files as file (file.name)}
 					<tr>
 						<td>{file.name}</td>
 						<td class="text-right">

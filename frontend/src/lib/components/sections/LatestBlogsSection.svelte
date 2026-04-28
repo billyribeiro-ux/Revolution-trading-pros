@@ -212,7 +212,7 @@
 						</div>
 
 						<div class="space-y-8">
-							{#each wirePosts as post}
+							{#each wirePosts as post (post.slug)}
 								<a
 									href="/blog/{post.slug}"
 									class="group block border-b border-white/5 pb-8 last:border-0 hover:pl-4 transition-all duration-300"

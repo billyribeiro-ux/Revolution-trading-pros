@@ -501,7 +501,7 @@
 					<label for="instructor">Instructor</label>
 					<select id="instructor" bind:value={selectedInstructor}>
 						<option value="">Select instructor</option>
-						{#each instructors as instructor}
+						{#each instructors as instructor (instructor.id)}
 							<option value={instructor.id}>{instructor.name}</option>
 						{/each}
 					</select>
@@ -510,7 +510,7 @@
 				<fieldset class="form-group category-fieldset">
 					<legend>Categories</legend>
 					<div class="category-checkboxes">
-						{#each categories as category}
+						{#each categories as category (category.id)}
 							<label class="checkbox-label">
 								<input
 									type="checkbox"

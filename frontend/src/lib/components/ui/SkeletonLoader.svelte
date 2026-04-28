@@ -28,7 +28,7 @@
 
 {#if variant === 'text'}
 	<div class="space-y-2 {className}" style="width: {width};">
-		{#each Array(lines) as _, i}
+		{#each Array(lines) as _, i (i)}
 			<div
 				class="skeleton-text rounded {animated ? 'animate-shimmer' : ''}"
 				style="width: {i === lines - 1 && lines > 1 ? '75%' : '100%'}; height: {height === 'auto'

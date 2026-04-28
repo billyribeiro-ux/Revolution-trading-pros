@@ -306,7 +306,7 @@
 
 			{#if showSuggestions && suggestions.length > 0}
 				<ul class="suggestions-list">
-					{#each suggestions as suggestion, index}
+					{#each suggestions as suggestion, index (suggestion.place_id)}
 						<li
 							class="suggestion-item"
 							class:selected={index === selectedIndex}
@@ -440,7 +440,7 @@
 
 	{#if props.error && props.error.length > 0}
 		<div class="field-errors">
-			{#each props.error as err}
+			{#each props.error as err (err)}
 				<p>{err}</p>
 			{/each}
 		</div>

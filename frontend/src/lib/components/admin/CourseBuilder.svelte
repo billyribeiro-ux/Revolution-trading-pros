@@ -380,7 +380,7 @@
 								bind:value={formData.difficulty_level}
 								disabled={!editMode && !!courseId}
 							>
-								{#each difficultyOptions as opt}
+								{#each difficultyOptions as opt (opt.value)}
 									<option value={opt.value}>{opt.label}</option>
 								{/each}
 							</select>

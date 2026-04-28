@@ -592,7 +592,7 @@
 							<span class="category-count">{components.length}</span>
 						</button>
 
-						{#each Object.entries(categoryConfig) as [key, config]}
+						{#each Object.entries(categoryConfig) as [key, config] (key)}
 							{@const count = categories.find((c) => c.category === key)?.count || 0}
 							{@const Icon = config.icon}
 							<button
@@ -888,7 +888,7 @@
 
 										{#if selectedComponent.tags && selectedComponent.tags.length > 0}
 											<div class="tags-list">
-												{#each selectedComponent.tags as tag}
+												{#each selectedComponent.tags as tag (tag)}
 													<span class="tag">{tag}</span>
 												{/each}
 											</div>
@@ -956,7 +956,7 @@
 					<div class="form-group">
 						<label for="comp-category">Category *</label>
 						<select id="comp-category" bind:value={formCategory}>
-							{#each Object.entries(categoryConfig) as [key, config]}
+							{#each Object.entries(categoryConfig) as [key, config] (key)}
 								<option value={key}>{config.label}</option>
 							{/each}
 						</select>

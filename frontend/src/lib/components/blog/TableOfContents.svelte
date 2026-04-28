@@ -407,7 +407,7 @@
 		{#if isExpanded && !isFloatingMinimized}
 			<div id="toc-list" class="toc-content">
 				<ul class="toc-list" role="list">
-					{#each tocItems as item}
+					{#each tocItems as item (item.id)}
 						<li class="toc-item" class:active={activeId === item.id}>
 							<button
 								class="toc-link"
@@ -422,7 +422,7 @@
 
 							{#if item.children.length > 0}
 								<ul class="toc-sublist" role="list">
-									{#each item.children as child}
+									{#each item.children as child (child.id)}
 										<li class="toc-item toc-item-child" class:active={activeId === child.id}>
 											<button
 												class="toc-link"
@@ -437,7 +437,7 @@
 
 											{#if child.children.length > 0}
 												<ul class="toc-sublist toc-sublist-deep" role="list">
-													{#each child.children as grandchild}
+													{#each child.children as grandchild (grandchild.id)}
 														<li
 															class="toc-item toc-item-grandchild"
 															class:active={activeId === grandchild.id}

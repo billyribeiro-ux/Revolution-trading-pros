@@ -151,7 +151,7 @@
 			<h4>Analysis Results</h4>
 
 			<div class="results-list">
-				{#each analysis.results as result}
+				{#each analysis.results as result (result.test)}
 					{@const StatusIcon = getStatusIcon(result.status)}
 					<div class="result-item {getStatusColor(result.status)}">
 						<div class="result-icon">

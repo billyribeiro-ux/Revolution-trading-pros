@@ -124,7 +124,7 @@
 	</div>
 
 	<div class="editor-tabs">
-		{#each tabs as tab}
+		{#each tabs as tab (tab.id)}
 			{@const TabIcon = tab.icon}
 			<button class="tab" class:active={activeTab === tab.id} onclick={() => (activeTab = tab.id)}>
 				<TabIcon size={18} />
@@ -179,7 +179,7 @@
 				<div class="form-group">
 					<label for="additional-keywords">Additional Keywords</label>
 					<div class="keywords-list" id="additional-keywords">
-						{#each meta.additional_keywords as keyword, i}
+						{#each meta.additional_keywords as keyword, i (i)}
 							<span class="keyword-tag">
 								{keyword}
 								<button type="button" onclick={() => removeKeyword(i)}>×</button>

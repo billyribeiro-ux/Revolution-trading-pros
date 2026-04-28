@@ -346,7 +346,7 @@
 				style="background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(139, 92, 246, 0.08), transparent 40%);"
 			></div> -->
 
-			{#each courses as course}
+			{#each courses as course (course.id)}
 				<a
 					href={course.href}
 					class="course-card group relative rounded-[2rem] overflow-hidden bg-zinc-900/40 border border-white/5 hover:border-white/10 transition-all duration-500 hover:shadow-2xl hover:shadow-violet-900/20 active:scale-[0.99] z-10 isolate"
@@ -406,7 +406,7 @@
 						</p>
 
 						<div class="flex gap-2 mb-8 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-hide snap-x">
-							{#each course.features as feature}
+							{#each course.features as feature (feature)}
 								<span
 									class="snap-start flex-shrink-0 px-3 py-1.5 text-xs font-medium rounded-lg bg-white/5 text-zinc-300 border border-white/5 whitespace-nowrap group-hover:border-white/20 transition-colors"
 								>

@@ -18,7 +18,7 @@
 </script>
 
 <div class="trader_pills">
-	{#each traderSubPages as pill}
+	{#each traderSubPages as pill (pill.path)}
 		<div class="trader_pill">
 			<a
 				href="/dashboard/day-trading-room/meet-the-traders/{traderSlug}{pill.path}"

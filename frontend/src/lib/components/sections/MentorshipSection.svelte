@@ -144,7 +144,7 @@
 		</div>
 
 		<div class="group/grid grid md:grid-cols-3 gap-8" style="--x: {mouse.x}px; --y: {mouse.y}px;">
-			{#each features as feature, i}
+			{#each features as feature, i (feature.id)}
 				{@const IconComponent = feature.icon}
 				{#if isVisible}
 					<div

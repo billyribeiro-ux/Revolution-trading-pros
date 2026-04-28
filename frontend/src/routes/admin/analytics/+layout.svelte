@@ -38,7 +38,7 @@
 	<div class="bg-white border-b border-gray-200 sticky top-0 z-10">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 			<nav class="flex items-center gap-1 -mb-px overflow-x-auto">
-				{#each navItems as item}
+				{#each navItems as item (item.href)}
 					<a
 						href={item.href}
 						class="flex items-center gap-2 px-4 py-4 text-sm font-medium border-b-2 whitespace-nowrap transition-colors

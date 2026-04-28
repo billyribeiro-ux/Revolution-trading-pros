@@ -124,7 +124,7 @@
 	<!-- Level Selector Toolbar (shown when editing and selected) -->
 	{#if props.isEditing && props.isSelected}
 		<div class="heading-block__toolbar" role="toolbar" aria-label="Heading level selector">
-			{#each headingLevels as lvl}
+			{#each headingLevels as lvl (lvl)}
 				<button
 					type="button"
 					class="heading-block__level-btn"

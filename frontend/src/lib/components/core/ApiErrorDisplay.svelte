@@ -102,10 +102,10 @@
 
 			{#if hasValidationErrors}
 				<ul class="validation-errors">
-					{#each Object.entries(validationErrors) as [field, messages]}
+					{#each Object.entries(validationErrors) as [field, messages] (field)}
 						<li class="validation-field">
 							<strong>{field}:</strong>
-							{#each messages as msg}
+							{#each messages as msg, i (i)}
 								<span>{msg}</span>
 							{/each}
 						</li>

@@ -112,7 +112,7 @@
 	{#if uploads.size > 0}
 		<div class="upload-list">
 			<h4 class="upload-list-title">Uploading {uploads.size} file(s)</h4>
-			{#each Array.from(uploads.entries()) as [id, upload]}
+			{#each Array.from(uploads.entries()) as [id, upload] (id)}
 				<div class="upload-item">
 					<div class="upload-item-info">
 						<div class="upload-item-icon">

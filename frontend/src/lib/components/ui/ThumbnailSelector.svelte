@@ -27,7 +27,7 @@
 	<div class="thumbnail-section">
 		<span class="section-label">{label}</span>
 		<div class="thumbnail-grid">
-			{#each thumbnails as thumb, i}
+			{#each thumbnails as thumb, i (i)}
 				<button
 					type="button"
 					class="thumbnail-option"

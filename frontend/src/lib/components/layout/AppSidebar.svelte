@@ -47,7 +47,7 @@
 
 	<nav class="sidebar-nav" aria-label="Primary navigation">
 		<ul>
-			{#each props.items ?? [] as item}
+			{#each props.items ?? [] as item (item.href)}
 				<li>
 					<a href={item.href} class="nav-item">
 						{#if item.icon}

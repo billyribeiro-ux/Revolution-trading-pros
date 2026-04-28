@@ -82,7 +82,7 @@
 
 {#if mode === 'accordion'}
 	<div class="accordion-field" class:disabled class:has-error={error}>
-		{#each sections as section}
+		{#each sections as section (section.id)}
 			<div class="accordion-item" class:open={isOpen(section.id)}>
 				<button
 					type="button"
@@ -130,7 +130,7 @@
 {:else}
 	<div class="tabs-field" class:disabled class:has-error={error}>
 		<div class="tabs-header" role="tablist">
-			{#each sections as section}
+			{#each sections as section (section.id)}
 				<button
 					type="button"
 					class="tab-button"
@@ -152,7 +152,7 @@
 			{/each}
 		</div>
 		<div class="tabs-content">
-			{#each sections as section}
+			{#each sections as section (section.id)}
 				<div
 					id="panel-{section.id}"
 					class="tab-panel"

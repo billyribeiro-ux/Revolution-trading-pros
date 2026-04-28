@@ -518,7 +518,7 @@
 						duration: prefersReducedMotion ? 0 : 600
 					}}
 				>
-					{#each indicators as indicator, i}
+					{#each indicators as indicator, i (indicator.id)}
 						{@const IconComponent = indicator.icon}
 						<a
 							href={indicator.href}
