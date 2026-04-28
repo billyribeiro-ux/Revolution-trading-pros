@@ -789,7 +789,7 @@
 									<div class="user-email">{currentUser?.email || ''}</div>
 									{#if currentUser?.roles}
 										<div class="user-roles">
-											{#each currentUser.roles.slice(0, 2) as role}
+											{#each currentUser.roles.slice(0, 2) as role (role)}
 												<span class="role-badge">{role}</span>
 											{/each}
 										</div>

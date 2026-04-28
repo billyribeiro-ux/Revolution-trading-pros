@@ -447,7 +447,7 @@
 								</div>
 							{:else}
 								<div class="modules-list">
-									{#each courseData.modules as module, idx}
+									{#each courseData.modules as module, idx (module.id)}
 										<div class="module-card" class:expanded={expandedModules.has(module.id)}>
 											<div
 												class="module-header"
@@ -509,7 +509,7 @@
 													{#if !module.lessons || module.lessons.length === 0}
 														<div class="no-lessons">No lessons in this module</div>
 													{:else}
-														{#each module.lessons as lesson}
+														{#each module.lessons as lesson (lesson.id)}
 															<div class="lesson-item">
 																<div class="lesson-icon">
 																	{#if lesson.bunny_video_guid}

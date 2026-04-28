@@ -320,7 +320,7 @@
 				<p>No revisions found</p>
 			</div>
 		{:else}
-			{#each filteredRevisions as revision, index}
+			{#each filteredRevisions as revision, index (revision.id ?? revision)}
 				{@const diff = getDiff(revision)}
 				{@const isSelected = compareMode
 					? compareRevisionA?.id === revision.id || compareRevisionB?.id === revision.id
@@ -428,7 +428,7 @@
 					<div class="preview-blocks">
 						<h6>Blocks in this revision:</h6>
 						<div class="block-list">
-							{#each selectedRevision.blocks as block}
+							{#each selectedRevision.blocks as block (block.id ?? block)}
 								<div class="block-item">
 									<span class="block-type">{block.type}</span>
 									<span class="block-preview">{getBlockPreview(block)}</span>
@@ -503,7 +503,7 @@
 					{#if detailedDiff.removed.length > 0}
 						<div class="diff-section">
 							<h5 class="section-title removed-title">Removed Blocks</h5>
-							{#each detailedDiff.removed as block}
+							{#each detailedDiff.removed as block (block.id ?? block)}
 								<div class="diff-block removed">
 									<div class="block-header">
 										<span class="block-type-badge">{block.type}</span>
@@ -521,7 +521,7 @@
 					{#if detailedDiff.added.length > 0}
 						<div class="diff-section">
 							<h5 class="section-title added-title">Added Blocks</h5>
-							{#each detailedDiff.added as block}
+							{#each detailedDiff.added as block (block.id ?? block)}
 								<div class="diff-block added">
 									<div class="block-header">
 										<span class="block-type-badge">{block.type}</span>
@@ -539,7 +539,7 @@
 					{#if detailedDiff.modified.length > 0}
 						<div class="diff-section">
 							<h5 class="section-title modified-title">Modified Blocks</h5>
-							{#each detailedDiff.modified as { before, after }}
+							{#each detailedDiff.modified as { before, after } (before.id ?? before)}
 								<div class="diff-block-pair">
 									<div class="diff-block before">
 										<div class="block-header">
@@ -573,7 +573,7 @@
 							<summary class="section-title unchanged-title">
 								{detailedDiff.unchanged.length} Unchanged Blocks
 							</summary>
-							{#each detailedDiff.unchanged as block}
+							{#each detailedDiff.unchanged as block (block.id ?? block)}
 								<div class="diff-block unchanged">
 									<div class="block-header">
 										<span class="block-type-badge">{block.type}</span>

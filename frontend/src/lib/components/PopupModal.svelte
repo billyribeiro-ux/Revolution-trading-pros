@@ -1123,7 +1123,7 @@
 				<!-- Form Fields -->
 				{#if currentPopup.formFields && currentPopup.formFields.length > 0}
 					<form class="popup-form" onsubmit={handleFormSubmit}>
-						{#each currentPopup.formFields as field}
+						{#each currentPopup.formFields as field (field.name)}
 							<div class="form-field">
 								{#if field.label}
 									<label for={field.name} class="form-label">{field.label}</label>
@@ -1152,7 +1152,7 @@
 										aria-invalid={formErrors[field.name] ? 'true' : 'false'}
 									>
 										<option value="">{field.placeholder}</option>
-										{#each field.options || [] as option}
+										{#each field.options || [] as option, optIdx (optIdx)}
 											{#if typeof option === 'string'}
 												<option value={option}>{option}</option>
 											{:else}
@@ -1210,7 +1210,7 @@
 				<!-- Buttons -->
 				{#if currentPopup.buttons.length > 0}
 					<div class="popup-buttons">
-						{#each currentPopup.buttons as button}
+						{#each currentPopup.buttons as button (button.text)}
 							<button
 								class="popup-btn {button.style} {button.customClass || ''}"
 								onclick={() => handleButtonClick(button)}

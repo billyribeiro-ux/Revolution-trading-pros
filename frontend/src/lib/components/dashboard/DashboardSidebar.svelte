@@ -23,6 +23,7 @@
 -->
 <script lang="ts">
 	import { page } from '$app/state';
+	import { SvelteSet } from 'svelte/reactivity';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
 	import Tooltip from '$lib/components/ui/Tooltip.svelte';
 	import type { MembershipType } from '$lib/api/user-memberships';
@@ -81,7 +82,7 @@
 	let secondarySidebarTitle = $derived(props.secondarySidebarTitle ?? '');
 
 	// State for expanded submenus in secondary nav
-	let expandedSubmenus = $state<Set<string>>(new Set());
+	let expandedSubmenus = new SvelteSet<string>();
 
 	// Check if secondary nav should be shown
 	// WordPress: Secondary nav shows based on route/content, not collapse state
@@ -89,13 +90,11 @@
 
 	// Toggle submenu expansion
 	function toggleSubmenu(text: string): void {
-		const newSet = new Set(expandedSubmenus);
-		if (newSet.has(text)) {
-			newSet.delete(text);
+		if (expandedSubmenus.has(text)) {
+			expandedSubmenus.delete(text);
 		} else {
-			newSet.add(text);
+			expandedSubmenus.add(text);
 		}
-		expandedSubmenus = newSet;
 	}
 
 	// Check if submenu has active item

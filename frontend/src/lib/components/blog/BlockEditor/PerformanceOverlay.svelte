@@ -288,7 +288,7 @@
 				<div class="perf-section">
 					<div class="perf-section-title">Core Web Vitals</div>
 					<div class="perf-vitals-grid">
-						{#each ['LCP', 'FCP', 'CLS', 'INP', 'TTFB'] as const as vital}
+						{#each ['LCP', 'FCP', 'CLS', 'INP', 'TTFB'] as const as vital (vital)}
 							{@const metric = snapshot.webVitals[vital]}
 							<div class="perf-vital">
 								<span class="perf-vital-name">{vital}</span>
@@ -353,7 +353,7 @@
 							<span class="perf-metric-value">{snapshot.totalBlockCount}</span>
 						</div>
 
-						{#each Object.entries(snapshot.editorMetrics).slice(0, 8) as [name, metric]}
+						{#each Object.entries(snapshot.editorMetrics).slice(0, 8) as [name, metric] (name)}
 							{@const avg = metric.count > 0 ? metric.sum / metric.count : 0}
 							{@const color = avg < 16 ? '#10b981' : avg < 50 ? '#f59e0b' : '#ef4444'}
 							<div class="perf-metric-row">
@@ -377,7 +377,7 @@
 					<div class="perf-section">
 						<div class="perf-section-title">Recent Operations</div>
 						<div class="perf-ops-list">
-							{#each snapshot.operationMetrics.slice(-5).reverse() as op}
+							{#each snapshot.operationMetrics.slice(-5).reverse() as op (op.operation ?? op)}
 								{@const color =
 									op.duration < 100 ? '#10b981' : op.duration < 500 ? '#f59e0b' : '#ef4444'}
 								<div class="perf-op-row">

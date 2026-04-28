@@ -89,7 +89,7 @@
 				<div class="features">
 					<p class="features-title">This connection enables:</p>
 					<ul class="features-list">
-						{#each features as feature}
+						{#each features as feature (feature)}
 							<li>
 								<span class="check">✓</span>
 								{feature}

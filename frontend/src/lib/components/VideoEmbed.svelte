@@ -1330,7 +1330,7 @@
 				{preload}
 				class="video-element"
 			>
-				{#each subtitles as track}
+				{#each subtitles as track (track.src)}
 					<track
 						kind="subtitles"
 						label={track.label}
@@ -1355,7 +1355,7 @@
 		{/if}
 
 		<!-- Interactive Overlays -->
-		{#each activeOverlays as overlay}
+		{#each activeOverlays as overlay (overlay.id)}
 			<button
 				class="video-overlay overlay-{overlay.type}"
 				style="
@@ -1500,7 +1500,7 @@
 						{#if showQualitySelector && availableQualities.length > 0}
 							<div class="settings-section">
 								<h4>Quality</h4>
-								{#each availableQualities as quality}
+								{#each availableQualities as quality (quality)}
 									<button
 										class="settings-option"
 										class:active={currentQuality === quality}
@@ -1518,7 +1518,7 @@
 						{#if showSpeedControl}
 							<div class="settings-section">
 								<h4>Speed</h4>
-								{#each [0.5, 0.75, 1, 1.25, 1.5, 2] as speed}
+								{#each [0.5, 0.75, 1, 1.25, 1.5, 2] as speed (speed)}
 									<button
 										class="settings-option"
 										class:active={playbackRate === speed}

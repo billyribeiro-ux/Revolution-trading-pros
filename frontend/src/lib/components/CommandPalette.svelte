@@ -416,10 +416,10 @@
 						<p>No results found for "{searchQuery}"</p>
 					</div>
 				{:else}
-					{#each Object.entries(groupedResults) as [category, items], categoryIndex}
+					{#each Object.entries(groupedResults) as [category, items], categoryIndex (category)}
 						<div class="results-group" in:fly={{ y: 10, duration: 200, delay: categoryIndex * 50 }}>
 							<div class="group-label">{category}</div>
-							{#each items as item}
+							{#each items as item (item.id)}
 								{@const globalIndex = flatResults.indexOf(item)}
 								{@const Icon = item.icon}
 								<button

@@ -2,6 +2,15 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-04-27 (d) — Svelte autofixer pass: keyed `{#each}` blocks
+
+### Fixed
+
+- **21 components missing `{#each}` keys (Svelte best-practice violation).** Every unkeyed `{#each}` block forces Svelte to rebuild DOM nodes from the end of the list on any update rather than moving existing nodes by identity — causes stale component state, broken transitions/animations, and unnecessary re-renders. The Svelte MCP autofixer was run on the 21 affected components; keys were added using the most specific available property (`item.id`, `item.service`, `item.src`, primitive value, or index for animation-ticker spreads). Components fixed: `AdminToolbar`, `ApiNotConnected`, `CommandPalette`, `ConnectionHealthPanel`, `CountdownTimer`, `ExportButton`, `NotificationCenter`, `PopupModal`, `RateLimitIndicator`, `SEOHead`, `SkeletonLoader`, `VideoEmbed`, `CourseDetailDrawer`, `RetentionCurve`, `BlockInserter`, `BlockSettingsPanel`, `PerformanceOverlay`, `RevisionHistory`, `SchedulingPanel`, `CourseReviews`, `DashboardSidebar`.
+- **`pnpm check` remains 0 errors / 0 warnings** after all changes.
+
+---
+
 ## [Unreleased] — 2026-04-28 (c) — Blog admin: tag CSP + type-mismatch fixes
 
 ### Fixed
