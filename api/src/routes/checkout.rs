@@ -30,8 +30,9 @@ pub struct CheckoutRequest {
     pub billing_name: Option<String>,
     pub billing_email: Option<String>,
     pub billing_address: Option<serde_json::Value>,
-    pub success_url: Option<String>,
-    pub cancel_url: Option<String>,
+    // success_path / cancel_path must start with "/" — full URLs are built server-side
+    pub success_path: Option<String>,
+    pub cancel_path: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -337,13 +338,18 @@ async fn create_checkout(
         )
     })?;
 
-    // ICT 7 Fix: Create Stripe checkout session for payment
-    let success_url = input
-        .success_url
-        .unwrap_or_else(|| format!("{}/checkout/success", state.config.app_url));
-    let cancel_url = input
-        .cancel_url
-        .unwrap_or_else(|| format!("{}/checkout/cancel", state.config.app_url));
+    // Build URLs server-side — validate paths to prevent open redirect
+    let success_path = input.success_path.as_deref().unwrap_or("/checkout/success");
+    let cancel_path = input.cancel_path.as_deref().unwrap_or("/checkout/cancel");
+    if !success_path.starts_with('/') || !cancel_path.starts_with('/') {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "success_path and cancel_path must start with /"})),
+        ));
+    }
+    let app_url = state.config.app_url.trim_end_matches('/');
+    let success_url = format!("{}{}", app_url, success_path);
+    let cancel_url = format!("{}{}", app_url, cancel_path);
 
     // Build Stripe line items from our cart items
     let mut stripe_line_items: Vec<crate::services::stripe::LineItem> = Vec::new();

@@ -1201,61 +1201,61 @@ async fn reactivate_subscription(
                 )
             })?;
 
-    if subscription.status == "active" {
+    if subscription.status == "active" && !subscription.cancel_at_period_end.unwrap_or(false) {
         return Err((
             StatusCode::BAD_REQUEST,
             Json(json!({"error": "Subscription is already active"})),
         ));
     }
 
-    // If cancel_at_period_end was true, just unset it
-    if subscription.cancel_at_period_end.unwrap_or(false) && subscription.status == "active" {
-        sqlx::query("UPDATE user_memberships SET cancel_at_period_end = false, updated_at = NOW() WHERE id = $1")
-            .bind(id)
-            .execute(&state.db.pool)
+    // Legitimate path: scheduled cancellation — un-flag via Stripe, then update DB
+    if subscription.cancel_at_period_end.unwrap_or(false) {
+        let stripe_sub_id = subscription.stripe_subscription_id.as_deref().ok_or_else(|| {
+            (
+                StatusCode::BAD_REQUEST,
+                Json(json!({"error": "Subscription has no Stripe ID"})),
+            )
+        })?;
+
+        let env_scope = state.config.environment.clone();
+        let stripe = state
+            .services
+            .credentials
+            .stripe_client(&state.db.pool, &env_scope)
+            .await;
+
+        stripe
+            .update_subscription(stripe_sub_id, &[("cancel_at_period_end", "false")])
             .await
-            .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": format!("Stripe error: {}", e)})),
+                )
+            })?;
+
+        sqlx::query(
+            "UPDATE user_memberships SET cancel_at_period_end = false, updated_at = NOW() WHERE id = $1",
+        )
+        .bind(id)
+        .execute(&state.db.pool)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
 
         return Ok(Json(
             json!({"success": true, "message": "Subscription reactivated"}),
         ));
     }
 
-    // For fully cancelled subscriptions, need to re-subscribe
-    // This would typically involve creating a new Stripe subscription
-    // For now, just reactivate it directly
-    let now = chrono::Utc::now().naive_utc();
-    let period_end = now + chrono::Duration::days(30); // Default to 30 days
-
-    sqlx::query(
-        r#"
-        UPDATE user_memberships
-        SET status = 'active',
-            cancelled_at = NULL,
-            cancel_at_period_end = false,
-            current_period_start = $1,
-            current_period_end = $2,
-            updated_at = NOW()
-        WHERE id = $3
-        "#,
-    )
-    .bind(now)
-    .bind(period_end)
-    .bind(id)
-    .execute(&state.db.pool)
-    .await
-    .map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": e.to_string()})),
-        )
-    })?;
-
-    Ok(Json(json!({
-        "success": true,
-        "message": "Subscription reactivated",
-        "current_period_end": period_end.format("%Y-%m-%d").to_string()
-    })))
+    // Fully cancelled subscription — must re-subscribe through checkout; do NOT grant free access
+    Err((
+        StatusCode::BAD_REQUEST,
+        Json(json!({
+            "error": "Subscription has fully ended. Please re-subscribe to restart.",
+            "resubscribe": true,
+            "plan_id": subscription.plan_id
+        })),
+    ))
 }
 
 // ═══════════════════════════════════════════════════════════════════════════

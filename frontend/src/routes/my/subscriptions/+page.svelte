@@ -224,7 +224,15 @@
 	}
 
 	// Reactivate subscription
+	// For cancel_at_period_end subs: un-flag via API.
+	// For fully cancelled subs: redirect to checkout — backend refuses to grant free access.
 	async function reactivateSubscription(sub: Subscription) {
+		// Fully cancelled (not just scheduled) → go to checkout
+		if (sub.status === 'cancelled' && !sub.cancelAtPeriodEnd) {
+			goto(`/pricing?plan=${sub.planId}`);
+			return;
+		}
+
 		processingAction = true;
 		try {
 			const token = getAuthToken();
@@ -235,6 +243,11 @@
 
 			if (!res.ok) {
 				const data = await res.json();
+				// Backstop: if server says resubscribe required, redirect to pricing
+				if (data.resubscribe && data.plan_id) {
+					goto(`/pricing?plan=${data.plan_id}`);
+					return;
+				}
 				throw new Error(data.error || 'Failed to reactivate');
 			}
 

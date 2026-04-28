@@ -103,6 +103,7 @@ pub struct CouponQuery {
 /// POST /api/coupons/validate
 async fn validate_coupon(
     State(state): State<AppState>,
+    _user: User,
     Json(input): Json<ValidateCouponRequest>,
 ) -> Result<Json<ValidateCouponResponse>, (StatusCode, Json<serde_json::Value>)> {
     let code = input.code.trim().to_uppercase();

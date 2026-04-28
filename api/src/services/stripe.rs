@@ -529,6 +529,29 @@ impl StripeService {
         }
     }
 
+    /// Update subscription fields via Stripe PATCH
+    pub async fn update_subscription(
+        &self,
+        subscription_id: &str,
+        params: &[(&str, &str)],
+    ) -> Result<StripeSubscription> {
+        let response: StripeSubscription = self
+            .client
+            .post(format!(
+                "{}/subscriptions/{}",
+                STRIPE_API_BASE, subscription_id
+            ))
+            .basic_auth(&self.secret_key, None::<&str>)
+            .header("Stripe-Version", STRIPE_API_VERSION)
+            .form(params)
+            .send()
+            .await?
+            .json()
+            .await?;
+
+        Ok(response)
+    }
+
     /// Create refund
     pub async fn create_refund(
         &self,
@@ -609,8 +632,10 @@ impl StripeService {
             return Err(anyhow!("Timestamp outside tolerance window"));
         }
 
-        // Compute expected signature
-        let signed_payload = format!("{}.{}", timestamp, String::from_utf8_lossy(payload));
+        // Compute expected signature — payload must be exact bytes; lossy conversion breaks HMAC
+        let payload_str = std::str::from_utf8(payload)
+            .map_err(|_| anyhow!("Webhook payload contains invalid UTF-8"))?;
+        let signed_payload = format!("{}.{}", timestamp, payload_str);
 
         type HmacSha256 = Hmac<Sha256>;
         let mut mac = HmacSha256::new_from_slice(webhook_secret.as_bytes())
