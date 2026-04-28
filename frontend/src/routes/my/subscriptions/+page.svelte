@@ -223,6 +223,25 @@
 		}
 	}
 
+	// Open Stripe Customer Portal
+	let openingPortal = $state(false);
+	async function openBillingPortal() {
+		openingPortal = true;
+		try {
+			const res = await fetch('/api/payments/portal', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ return_url: window.location.href })
+			});
+			const data = await res.json();
+			if (!res.ok) throw new Error(data.error || 'Failed to open billing portal');
+			window.location.href = data.url;
+		} catch (err: any) {
+			error = err.message;
+			openingPortal = false;
+		}
+	}
+
 	// Reactivate subscription
 	// For cancel_at_period_end subs: un-flag via API.
 	// For fully cancelled subs: redirect to checkout — backend refuses to grant free access.
@@ -503,9 +522,24 @@
 			</div>
 		{/if}
 
-		<!-- Browse Plans Link -->
+		<!-- Footer Actions -->
 		{#if !loading && subscriptions.length > 0}
-			<div class="browse-plans">
+			<div class="footer-actions">
+				<button
+					class="btn-manage-billing"
+					onclick={openBillingPortal}
+					disabled={openingPortal}
+				>
+					{#if openingPortal}
+						<span class="spinner-sm"></span>
+						Opening...
+					{:else}
+						<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+						</svg>
+						Manage Billing
+					{/if}
+				</button>
 				<a href="/pricing" class="browse-link">
 					<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path
@@ -980,10 +1014,49 @@
 		cursor: not-allowed;
 	}
 
-	/* Browse Plans */
-	.browse-plans {
-		text-align: center;
+	/* Footer Actions */
+	.footer-actions {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 1.5rem;
 		margin-top: 2rem;
+		flex-wrap: wrap;
+	}
+
+	.btn-manage-billing {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.625rem 1.25rem;
+		background: rgba(99, 102, 241, 0.15);
+		border: 1px solid rgba(99, 102, 241, 0.4);
+		border-radius: 8px;
+		color: #a5b4fc;
+		font-size: 0.875rem;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.btn-manage-billing:hover:not(:disabled) {
+		background: rgba(99, 102, 241, 0.25);
+		border-color: rgba(99, 102, 241, 0.6);
+	}
+
+	.btn-manage-billing:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	.spinner-sm {
+		width: 14px;
+		height: 14px;
+		border: 2px solid rgba(165, 180, 252, 0.3);
+		border-top-color: #a5b4fc;
+		border-radius: 50%;
+		animation: spin 0.7s linear infinite;
+		flex-shrink: 0;
 	}
 
 	.browse-link {
