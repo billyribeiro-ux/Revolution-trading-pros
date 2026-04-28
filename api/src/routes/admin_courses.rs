@@ -8,6 +8,7 @@ use axum::{
     Json, Router,
 };
 use chrono::NaiveDateTime;
+use serde::Deserialize;
 use serde_json::json;
 use uuid::Uuid;
 
@@ -2378,6 +2379,150 @@ async fn get_course_analytics(
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════════
+// PRICE CHANGE
+// ═══════════════════════════════════════════════════════════════════════════════════
+
+#[derive(Debug, Deserialize)]
+struct ChangeCoursePrice {
+    amount_cents: i64,
+    currency: Option<String>,
+}
+
+async fn change_course_price(
+    State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
+    Path(course_id): Path<Uuid>,
+    Json(input): Json<ChangeCoursePrice>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    if input.amount_cents <= 0 {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "amount_cents must be > 0"})),
+        ));
+    }
+    let currency = input.currency.unwrap_or_else(|| "usd".to_string());
+
+    #[derive(sqlx::FromRow)]
+    struct CourseForPriceChange {
+        id: Uuid,
+        title: String,
+        stripe_price_id: Option<String>,
+        stripe_product_id: Option<String>,
+        price_cents: i32,
+    }
+
+    let course: CourseForPriceChange = sqlx::query_as(
+        r#"SELECT id, title, stripe_price_id, stripe_product_id, price_cents
+           FROM courses WHERE id = $1"#,
+    )
+    .bind(course_id)
+    .fetch_optional(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!(target: "stripe_price", error = %e, course_id = %course_id, "DB error fetching course");
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Database error"})))
+    })?
+    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Course not found"}))))?;
+
+    let old_price_id = course.stripe_price_id.clone();
+
+    let env_scope = state.config.environment.clone();
+    let stripe = state
+        .services
+        .credentials
+        .stripe_client(&state.db.pool, &env_scope)
+        .await;
+
+    let product_id = match course.stripe_product_id.clone() {
+        Some(pid) => pid,
+        None => stripe
+            .create_product(&course.title)
+            .await
+            .map_err(|e| {
+                tracing::error!(target: "stripe_price", error = %e, course_id = %course_id, "Failed to create Stripe product");
+                (StatusCode::BAD_GATEWAY, Json(json!({"error": format!("Stripe product create failed: {}", e)})))
+            })?,
+    };
+
+    let new_price = stripe
+        .create_price(&product_id, input.amount_cents, &currency, "one_time")
+        .await
+        .map_err(|e| {
+            tracing::error!(target: "stripe_price", error = %e, course_id = %course_id, "Failed to create Stripe price");
+            (StatusCode::BAD_GATEWAY, Json(json!({"error": format!("Stripe price create failed: {}", e)})))
+        })?;
+
+    let new_price_id = new_price.id.clone();
+
+    let mut tx = state.db.pool.begin().await.map_err(|e| {
+        tracing::error!(target: "stripe_price", error = %e, "Failed to begin transaction");
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Failed to start transaction"})))
+    })?;
+
+    sqlx::query(
+        r#"UPDATE courses
+           SET stripe_price_id = $1, stripe_product_id = $2, price_cents = $3, updated_at = NOW()
+           WHERE id = $4"#,
+    )
+    .bind(&new_price_id)
+    .bind(&product_id)
+    .bind(input.amount_cents as i32)
+    .bind(course_id)
+    .execute(&mut *tx)
+    .await
+    .map_err(|e| {
+        tracing::error!(target: "stripe_price", error = %e, course_id = %course_id, "Failed to update course");
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Failed to update course"})))
+    })?;
+
+    let details = json!({
+        "course_id": course_id,
+        "old_stripe_price_id": old_price_id,
+        "new_stripe_price_id": &new_price_id,
+        "old_amount_cents": course.price_cents,
+        "new_amount_cents": input.amount_cents,
+        "currency": &currency,
+        "changed_by_user_id": admin.id,
+    });
+    if let Err(e) = sqlx::query(
+        r#"INSERT INTO security_events (user_id, event_type, event_category, severity, details)
+           VALUES ($1, 'course_price_changed', 'billing', 'medium', $2)"#,
+    )
+    .bind(admin.id)
+    .bind(&details)
+    .execute(&mut *tx)
+    .await
+    {
+        tracing::warn!(target: "stripe_price", error = %e, "Failed to insert security_event for course price change");
+    }
+
+    tx.commit().await.map_err(|e| {
+        tracing::error!(target: "stripe_price", error = %e, "Failed to commit transaction");
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Failed to commit DB changes"})))
+    })?;
+
+    tracing::info!(
+        target: "stripe_price",
+        event = "course_price_changed",
+        course_id = %course_id,
+        old_price_id = ?old_price_id,
+        new_price_id = %new_price_id,
+        amount_cents = %input.amount_cents,
+        admin_id = %admin.id,
+        "Course price updated; Stripe Price created and DB pointer flipped"
+    );
+
+    Ok(Json(json!({
+        "success": true,
+        "course_id": course_id,
+        "old_stripe_price_id": old_price_id,
+        "new_stripe_price_id": new_price_id,
+        "amount_cents": input.amount_cents,
+        "currency": currency,
+    })))
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════════
 // HELPER FUNCTIONS
 // ═══════════════════════════════════════════════════════════════════════════════════
 
@@ -2413,6 +2558,7 @@ pub fn router() -> Router<AppState> {
         .route("/:id/unpublish", post(unpublish_course))
         .route("/:id/archive", post(archive_course))
         .route("/:id/restore", post(restore_course))
+        .route("/:id/change-price", post(change_course_price))
         // Enrollments
         .route(
             "/:course_id/enrollments",
