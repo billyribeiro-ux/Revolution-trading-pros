@@ -13,7 +13,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 
-const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+const BACKEND_URL = env.BACKEND_URL || 'http://localhost:8080';
 
 async function fetchFromBackend(
 	endpoint: string,

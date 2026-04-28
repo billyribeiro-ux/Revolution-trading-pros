@@ -1,5 +1,7 @@
 # Changelog
 
+> **Note (2026-04-28):** Fly.io references in this document are historical. The Fly.io deployment was removed; deploy target is TBD. See `backups/fly-io-removed-2026-04-28.md` for original Fly configuration.
+
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
 ## [Unreleased] — 2026-04-28 (k) — Comprehensive Svelte audit: autofixer round 2, security, accessibility
@@ -272,7 +274,7 @@ End-to-end repair of the blog/CMS path: public renderer, admin write path, R2 me
 - **`api/migrations/045_blog_post_metadata_and_categories.sql`**: 7 new columns on `posts` (`featured_media_id`, `featured_image_alt`, `featured_image_caption`, `featured_image_title`, `featured_image_description`, `meta_keywords TEXT[]`, `allow_comments`); seeds the 18 predefined blog categories so the new server-side slug-resolution logic can find them.
 - **`frontend/src/lib/data/predefined-categories.ts`**: single source of truth for the 18 hardcoded blog categories. The `BlogCategory` interface and `getPredefinedCategoryById()` helper moved here; the same colors (canonical: list+create page palette) are now used by all admin views.
 - **Dev-mode config fallback** ([`api/src/config/mod.rs`](api/src/config/mod.rs) `required_or_dev` helper): when `ENVIRONMENT=development`, missing `R2_ENDPOINT` / `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` / `R2_BUCKET` / `STRIPE_SECRET` / `STRIPE_WEBHOOK_SECRET` / `MEILISEARCH_API_KEY` no longer hard-fail boot; uses a `tracing::warn!` placeholder and lets dev sessions run without prod creds. Production behaviour unchanged.
-- **Startup environment-mismatch panic** ([`api/src/config/mod.rs`](api/src/config/mod.rs)): when `ENVIRONMENT=development` and `APP_URL` contains `revolution-trading-pros.pages.dev`, `revolution-trading-pros-api.fly.dev`, or `revolutiontradingpros.com`, the API panics with a FATAL message instead of silently using the dev placeholders. Defence-in-depth against an environment-name typo in production secrets.
+- **Startup environment-mismatch panic** ([`api/src/config/mod.rs`](api/src/config/mod.rs)): when `ENVIRONMENT=development` and `APP_URL` contains `revolution-trading-pros.pages.dev`, `<your-api-host>`, or `revolutiontradingpros.com`, the API panics with a FATAL message instead of silently using the dev placeholders. Defence-in-depth against an environment-name typo in production secrets.
 - **R2 storage live** for media uploads. `docker-compose.yml` now loads `api/.env` via `env_file:`; populated R2 credentials in `api/.env`. End-to-end round-trip verified against the real bucket: `POST /api/admin/media/upload` → HTTP 200 with a real CDN URL; `GET <url>` returns the same bytes.
 
 ### Changed

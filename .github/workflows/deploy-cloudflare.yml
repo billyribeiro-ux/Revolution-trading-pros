@@ -63,8 +63,8 @@ jobs:
       - name: Build (production)
         run: pnpm --filter revolution-svelte build
         env:
-          API_BASE_URL: https://revolution-trading-pros-api.fly.dev
-          BACKEND_URL: https://revolution-trading-pros-api.fly.dev
+          API_BASE_URL: <your-api-host>
+          BACKEND_URL: <your-api-host>
 
       # Branch resolution: PRs go to pr-N, manual dispatch uses the chosen
       # input, anything else lands on the "preview" branch.

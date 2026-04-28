@@ -194,7 +194,7 @@ import { env } from '$env/dynamic/private';
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
-const API_URL = env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+const API_URL = env.API_BASE_URL || env.BACKEND_URL || '<your-api-host>';
 
 const proxy = (method: string): RequestHandler => async ({ params, request, cookies, fetch, url }) => {
     const token = cookies.get('rtp_access_token');
@@ -257,7 +257,7 @@ Replace with the canonical pattern:
 ```ts
 import { env } from '$env/dynamic/private';
 
-const API_URL = env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+const API_URL = env.API_BASE_URL || env.BACKEND_URL || '<your-api-host>';
 
 // In handler:
 const token = cookies.get('rtp_access_token');

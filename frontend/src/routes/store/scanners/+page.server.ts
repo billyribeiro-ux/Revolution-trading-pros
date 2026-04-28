@@ -63,7 +63,7 @@ export const load = async ({
 		preconnect: [
 			'https://fonts.googleapis.com',
 			'https://fonts.gstatic.com',
-			'https://revolution-trading-pros-api.fly.dev'
+			'http://localhost:8080'
 		],
 
 		// DNS prefetch for external resources

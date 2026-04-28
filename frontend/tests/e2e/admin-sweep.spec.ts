@@ -172,10 +172,10 @@ function collectPageErrors(page: Page): () => { consoleErrors: string[]; pageErr
 	page.on('console', (msg) => {
 		if (msg.type() === 'error') {
 			const text = msg.text();
-			// Suppress known noisy backend-down errors (Bunny / Fly.io 5xx) so we
+			// Suppress known noisy backend-down errors (Bunny 5xx) so we
 			// don't drown the signal — test still asserts that the page itself
 			// renders.
-			if (text.includes('bunnycdn.com') || text.includes('fly.dev')) return;
+			if (text.includes('bunnycdn.com')) return;
 			if (text.match(/HTTP (4|5)\d\d/)) return;
 			consoleErrors.push(text);
 		}

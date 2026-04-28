@@ -106,7 +106,7 @@ export const load: PageServerLoad = async ({
 		// SvelteKit-canonical server env read (was process.env.VITE_API_URL,
 		// which only worked because Node's process.env happens to expose it).
 		const API_BASE_URL =
-			env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+			env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 		const profileResponse = await fetch(`${API_BASE_URL}/api/user/profile`, {
 			headers: {
 				Authorization: `Bearer ${accessToken}`,

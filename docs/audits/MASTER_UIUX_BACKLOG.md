@@ -1,5 +1,7 @@
 # UI/UX Master Backlog — single source of truth
 
+> **Note (2026-04-28):** Fly.io references in this document are historical. The Fly.io deployment was removed; deploy target is TBD. See `backups/fly-io-removed-2026-04-28.md` for original Fly configuration.
+
 **Last updated:** 2026-04-25 (commit `<pending>`)
 
 This is the canonical "what's done / what's pending" tracker for every UI/UX
@@ -86,7 +88,7 @@ These should land as `pnpm check`-verified guard rails so they don't regress.
 
 | What | How | Status |
 |------|-----|--------|
-| No new hardcoded `revolution-trading-pros-api.fly.dev` in `frontend/src/` outside the documented exceptions (`test-backend/+page.svelte`, `store/scanners` preconnect) | ESLint rule + CI grep gate | ⬜ |
+| No new hardcoded `<your-api-host>` in `frontend/src/` outside the documented exceptions (`test-backend/+page.svelte`, `store/scanners` preconnect) | ESLint rule + CI grep gate | ⬜ |
 | No new `as any` casts without an inline justification comment | ESLint `@typescript-eslint/no-explicit-any` set to `error`, allow per-line via comment | ⬜ |
 | No new `unwrap_or_default()` on `Result<T, E>` in `api/src/routes/**` | clippy lint + CI | ⬜ |
 | Admin-side a11y enforced via `pnpm check:a11y` (already wired) | pre-existing ✅ | ✅ |

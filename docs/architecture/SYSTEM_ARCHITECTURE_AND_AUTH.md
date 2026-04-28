@@ -1,5 +1,7 @@
 # System Architecture & Authentication Reference
 
+> **Note (2026-04-28):** Fly.io references in this document are historical. The Fly.io deployment was removed; deploy target is TBD. See `backups/fly-io-removed-2026-04-28.md` for original Fly configuration.
+
 **Last verified against source: 2026-04-25, commit `66040b420` (post-pnpm-migration).**
 **Read this first when picking the project back up.** Everything below is grounded
 in the actual code at this commit; if a section disagrees with what you find, the
@@ -34,8 +36,8 @@ forward bodies.
 | Purpose | URL |
 |---------|-----|
 | Production frontend | `https://revolution-trading-pros.pages.dev` |
-| Production API | `https://revolution-trading-pros-api.fly.dev` |
-| WebSocket | `wss://revolution-trading-pros-api.fly.dev` |
+| Production API | `<your-api-host>` |
+| WebSocket | `<your-api-host-ws>` |
 | R2 public bucket | `https://pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev` |
 
 These are pinned in [`frontend/wrangler.toml`](frontend/wrangler.toml) and
@@ -177,7 +179,7 @@ API side. Verification helper: [`api/src/middleware/auth.rs`](api/src/middleware
 ```
 Browser  →  POST /api/auth/login  (frontend SvelteKit endpoint)
              ↓ proxy
-            POST https://revolution-trading-pros-api.fly.dev/api/auth/login
+            POST <your-api-host>/api/auth/login
              ↓ Rust handler login() in api/src/routes/auth.rs:465
                 - argon2 compare against users.password_hash
                 - on bcrypt-prefixed legacy hashes, fall back to bcrypt
@@ -369,7 +371,7 @@ IDs and secrets, optional Sentry DSN, etc.).
 ### Required for the frontend
 
 ```
-VITE_API_URL=https://revolution-trading-pros-api.fly.dev
+VITE_API_URL=<your-api-host>
 VITE_API_BASE_URL=…    # same as VITE_API_URL
 VITE_WS_URL=wss://…
 VITE_CDN_URL=https://pub-….r2.dev
@@ -377,7 +379,7 @@ VITE_SITE_URL=…
 VITE_SITE_NAME=…
 ```
 
-The `+server.ts` proxies hardcode `https://revolution-trading-pros-api.fly.dev`
+The `+server.ts` proxies hardcode `<your-api-host>`
 as the fallback when `env.API_BASE_URL` is unset — this is fine for production
 but means a custom local API needs `API_BASE_URL` set in
 `frontend/.env`.
@@ -405,11 +407,11 @@ but means a custom local API needs `API_BASE_URL` set in
 
 ### Backend (Fly.io)
 
-- **Source of truth:** [`api/fly.toml`](api/fly.toml) +
+- **Source of truth:** Deploy target TBD (Fly.io stripped 2026-04-28). Was previously [`api/fly.toml`](backups/fly-io-removed-2026-04-28.md). Plus
   [`api/Dockerfile`](api/Dockerfile).
 - Database (PostgreSQL) is a separate Fly app reached via Flycast
-  (`revolution-db.flycast`).
-- Deploy is currently manual: `fly deploy` from `api/` (or via the
+  (`<your-db-host>`).
+- Deploy target TBD. Was previously `fly deploy` from `api/` (now stripped; see `backups/fly-io-removed-2026-04-28.md`). Was once available via the
   `deploy-fly.yml` workflow when configured).
 - Migrations live in [`api/migrations/`](api/migrations/) and run via
   [`api/run-migrations.js`](api/run-migrations.js) on app start.

@@ -91,11 +91,13 @@ Every proxy under `frontend/src/routes/api/` reads its backend URL from
 import { env } from '$env/dynamic/private';
 
 const API_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 ```
 
-**Never** add a new proxy with a hardcoded URL. The audit found 14 of
-these on 2026-04-25 and they were all fixed; don't re-introduce them.
+**Never** add a new proxy with a hardcoded production URL. The audit found 14 of
+these on 2026-04-25 and they were all fixed; don't re-introduce them. The
+fallback `'http://localhost:8080'` is for local dev — production deploy target
+is TBD (Fly.io references stripped on 2026-04-28).
 
 ### Rust API
 

@@ -3,7 +3,7 @@ import type { RequestHandler } from './$types';
 // FIX-2026-04-26: '$lib/config' reads import.meta.env.VITE_API_URL (client env) — replaced with canonical private env pattern
 // import { API_URL } from '$lib/config';
 import { env } from '$env/dynamic/private';
-const API_URL = `${env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev'}/api`;
+const API_URL = `${env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080'}/api`;
 
 interface SubscribeRequest {
 	email: string;

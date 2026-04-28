@@ -8,9 +8,9 @@ import { getAuthToken } from '$lib/stores/auth.svelte';
 
 // ICT11+ PRODUCTION DEPLOYMENT: Always use deployed URLs
 // Backend is deployed on Fly.io (Rust + Axum)
-const PRODUCTION_API_URL = 'https://revolution-trading-pros-api.fly.dev';
+const PRODUCTION_API_URL = 'http://localhost:8080';
 const PRODUCTION_CDN_URL = 'https://pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev';
-const PRODUCTION_WS_URL = 'wss://revolution-trading-pros-api.fly.dev';
+const PRODUCTION_WS_URL = 'ws://localhost:8080';
 
 // Always use production URLs - no localhost
 export const API_BASE_URL = import.meta.env['VITE_API_URL'] || PRODUCTION_API_URL;

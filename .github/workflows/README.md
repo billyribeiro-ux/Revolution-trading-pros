@@ -1,5 +1,7 @@
 # GitHub Actions Workflows
 
+> **Note (2026-04-28):** Fly.io references in this document are historical. The Fly.io deployment was removed; deploy target is TBD. See `backups/fly-io-removed-2026-04-28.md` for original Fly configuration.
+
 ## Overview
 
 This directory contains CI/CD workflows for the Revolution Trading Pros platform.
@@ -57,7 +59,6 @@ You will see 10 IDE warnings across both workflow files:
 ⚠️ Context access might be invalid: CLOUDFLARE_ZONE_ID
 ⚠️ Context access might be invalid: CLOUDFLARE_API_TOKEN
 ⚠️ Context access might be invalid: SLACK_WEBHOOK_URL
-⚠️ Context access might be invalid: FLY_API_TOKEN
 ```
 
 ### Why These Warnings Exist

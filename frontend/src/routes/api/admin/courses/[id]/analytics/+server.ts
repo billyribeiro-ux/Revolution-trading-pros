@@ -10,7 +10,7 @@ import { requireAdminToken } from '$lib/server/auth';
 
 import { env } from '$env/dynamic/private';
 const BACKEND_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 export const GET: RequestHandler = async (event) => {
 	// FIX-2026-04-26 (P1-1): require token via shared helper.

@@ -1,5 +1,7 @@
 # 01 — Admin Shell + Dashboard Audit
 
+> **Note (2026-04-28):** Fly.io references in this document are historical. The Fly.io deployment was removed; deploy target is TBD. See `backups/fly-io-removed-2026-04-28.md` for original Fly configuration.
+
 Auditor: Principal-engineer pass, read-only.
 Date: 2026-04-26.
 Scope: admin layout/error/index, `/admin/dashboard`, `AdminSidebar`, `AdminToolbar`, every file under `frontend/src/lib/components/admin/`.
@@ -88,7 +90,7 @@ const createResponse = await fetch(`${API_BASE_URL}${API_ENDPOINTS.admin.bunny.c
 });
 ```
 
-`API_BASE_URL` resolves to `https://revolution-trading-pros-api.fly.dev` ([api/config.ts:11-17](frontend/src/lib/api/config.ts#L11)). The auth state in this app is held in the `rtp_access_token` cookie scoped to the *frontend* host; cross-origin XHR with `withCredentials` does not transmit that cookie, and even if you set up CORS+SameSite=None the cookie is HttpOnly to the frontend domain, not the API domain. Net: media + bunny uploads from the admin will silently 401 in production unless the backend skips auth for these routes (which would be its own P0). Mirror the pattern used elsewhere — proxy via `frontend/src/routes/api/admin/bunny/...` and `…/media/...` `+server.ts` shims that pull `env.API_BASE_URL || env.BACKEND_URL` from `$env/dynamic/private`.
+`API_BASE_URL` resolves to `<your-api-host>` ([api/config.ts:11-17](frontend/src/lib/api/config.ts#L11)). The auth state in this app is held in the `rtp_access_token` cookie scoped to the *frontend* host; cross-origin XHR with `withCredentials` does not transmit that cookie, and even if you set up CORS+SameSite=None the cookie is HttpOnly to the frontend domain, not the API domain. Net: media + bunny uploads from the admin will silently 401 in production unless the backend skips auth for these routes (which would be its own P0). Mirror the pattern used elsewhere — proxy via `frontend/src/routes/api/admin/bunny/...` and `…/media/...` `+server.ts` shims that pull `env.API_BASE_URL || env.BACKEND_URL` from `$env/dynamic/private`.
 
 [BunnyVideoUploader.svelte:116](frontend/src/lib/components/admin/BunnyVideoUploader.svelte#L116) and [:164](frontend/src/lib/components/admin/BunnyVideoUploader.svelte#L164) are okay by default (the prop defaults to `/api/admin/bunny`, a relative path), but the `apiBase` prop is `string`-typed and any caller can override it with the cross-origin URL — same shape of bug.
 

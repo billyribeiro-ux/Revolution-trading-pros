@@ -12,7 +12,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 // Production fallback - Rust API on Fly.io
 import { env } from '$env/dynamic/private';
 const BACKEND_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 // Room slug to ID mapping
 // FIX-2026-04-26-audit (P2-4): the rooms config and the trading-rooms admin page

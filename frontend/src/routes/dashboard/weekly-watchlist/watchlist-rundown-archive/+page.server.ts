@@ -109,7 +109,7 @@ const MOCK_VIDEOS: WatchlistVideo[] = [
 export async function load({ fetch }: ServerLoadEvent) {
 	try {
 		const apiBase =
-			env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+			env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 		const response = await fetch(`${apiBase}/api/watchlist/entries`);
 
 		if (!response.ok) {

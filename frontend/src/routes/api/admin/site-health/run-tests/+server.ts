@@ -13,7 +13,7 @@ import type { RequestHandler } from './$types';
 import { requireSuperadmin } from '$lib/server/auth';
 
 const API_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 export const POST: RequestHandler = async (event) => {
 	const { token } = requireSuperadmin(event);

@@ -1,4 +1,6 @@
 # Admin Audit + Remediation — Master Summary
+
+> **Note (2026-04-28):** Fly.io references in this document are historical. The Fly.io deployment was removed; deploy target is TBD. See `backups/fly-io-removed-2026-04-28.md` for original Fly configuration.
 **Date:** 2026-04-26
 **Scope:** Entire `/admin` surface — 155 admin source files, 53 admin API proxies, 37 admin route folders
 **Method:** 12 parallel principal-engineer audit agents → 12+ implementation agents → cross-cutting cleanup passes
@@ -39,7 +41,7 @@
 
 ### Architecture (now consistent)
 - **Auth-token canonicalization** — Created `frontend/src/lib/server/auth.ts` (`requireAdmin` + `requireSuperadmin`); rolled out across system, members, marketing, video, courses proxies.
-- **Backend URL pattern** — All 53 admin proxies now use `env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev'`. 18 redundant `BACKEND_URL = PROD_BACKEND` rebindings collapsed.
+- **Backend URL pattern** — All 53 admin proxies now use `env.API_BASE_URL || env.BACKEND_URL || '<your-api-host>'`. 18 redundant `BACKEND_URL = PROD_BACKEND` rebindings collapsed.
 - **Same-origin policy** — `apiFetch` patched to short-circuit `/admin/*` to same-origin; 5 email pages no longer bypass the SK proxy.
 - **Method-coverage** — `[...rest]` shim built for `courses/[id]/`; missing PUT on `tags/`; missing PUT on `coupons/[id]`.
 - **Build proxies, don't fake responses** — Removed silent mock-data fallbacks across schedule, products/stats, coupons, analytics, members. Proxies now surface real backend errors (502 on backend down, 401 on auth fail) instead of fabricating success.

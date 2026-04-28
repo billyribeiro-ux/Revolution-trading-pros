@@ -13,7 +13,7 @@ import type { RequestHandler } from './$types';
 import { env } from '$env/dynamic/private';
 
 const API_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 export const GET: RequestHandler = async ({ url }) => {
 	// Forward all query parameters to backend callback handler

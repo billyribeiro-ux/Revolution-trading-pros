@@ -21,7 +21,7 @@ import { buildTosString, validateTosParams } from '$lib/utils/tos-builder';
 // BACKEND CONFIGURATION
 // ═══════════════════════════════════════════════════════════════════════════
 
-const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+const BACKEND_URL = env.BACKEND_URL || 'http://localhost:8080';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // BACKEND FETCH HELPER

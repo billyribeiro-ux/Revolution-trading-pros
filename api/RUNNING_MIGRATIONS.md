@@ -1,5 +1,7 @@
 # Running Database Migrations - AI Agent Guide
 
+> **Note (2026-04-28):** Fly.io references in this document are historical. The Fly.io deployment was removed; deploy target is TBD. See `backups/fly-io-removed-2026-04-28.md` for original Fly configuration.
+
 ## Problem
 When SQLx compile-time verification fails with errors like:
 ```
@@ -19,7 +21,7 @@ SQLx performs compile-time verification by connecting to the database specified 
 This endpoint runs all pending migrations and doesn't require authentication:
 
 ```bash
-curl -X POST https://revolution-trading-pros-api.fly.dev/init-db
+curl -X POST <your-api-host>/init-db
 ```
 
 **Expected Response:**
@@ -86,7 +88,7 @@ The migrations create the following CMS v2 schema:
 
 ## Important Notes
 
-1. **Production Database Access** - The Fly.io database (`revolution-db.flycast`) is only accessible from within the Fly.io network, not from local machines.
+1. **Production Database Access** - The Fly.io database (`<your-db-host>`) is only accessible from within the Fly.io network, not from local machines.
 
 2. **Migration Files Location** - All migration SQL files are in `/api/migrations/`
 
@@ -117,7 +119,7 @@ The migrations create the following CMS v2 schema:
 
 When you encounter SQLx compilation errors about missing database objects:
 
-1. ✅ **DO**: Run `curl -X POST https://revolution-trading-pros-api.fly.dev/init-db`
+1. ✅ **DO**: Run `curl -X POST <your-api-host>/init-db`
 2. ✅ **DO**: Verify the response shows `success: true`
 3. ✅ **DO**: Trigger a new CI build with an empty commit
 4. ❌ **DON'T**: Try to run `sqlx migrate run` locally against production

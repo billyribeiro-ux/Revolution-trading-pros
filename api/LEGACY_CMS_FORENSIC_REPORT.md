@@ -153,7 +153,7 @@ grep "cms\|scheduler" api/src/main.rs
 
 **Test 1: Health Check**
 ```bash
-curl -s https://revolution-trading-pros-api.fly.dev/health
+curl -s <your-api-host>/health
 ```
 
 **Result:**

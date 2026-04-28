@@ -10,7 +10,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 
 import { env } from '$env/dynamic/private';
 const PROD_BACKEND =
-	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 export const GET: RequestHandler = async ({ request, cookies }) => {
 	const backendUrl = PROD_BACKEND;

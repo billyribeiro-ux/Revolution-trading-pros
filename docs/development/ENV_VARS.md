@@ -23,7 +23,7 @@ repo are templates; this doc is the contract.
 
 ## Backend (Rust API)
 
-Set in `api/.env` for local, `fly secrets set -a revolution-trading-pros-api KEY=value` for production.
+Set in `api/.env` for local, <deploy target TBD — set via your platform secrets manager> for production.
 
 | Var | Required? | Default | Purpose |
 |-----|-----------|---------|---------|

@@ -20,7 +20,7 @@ import { env } from '$env/dynamic/private';
 import { requireAdminToken } from '$lib/server/auth';
 
 const API_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 async function relay(response: Response): Promise<Response> {
 	const text = await response.text();

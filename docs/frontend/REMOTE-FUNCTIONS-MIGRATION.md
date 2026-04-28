@@ -68,7 +68,7 @@ Current SvelteKit version: `^2.50.2` ✅ (supports remote functions)
 │    → $lib/server/watchlist.ts                                   │
 ├─────────────────────────────────────────────────────────────────┤
 │ Rust/Axum Backend (Fly.io)                                      │
-│  revolution-trading-pros-api.fly.dev                            │
+│  <your-api-host>                            │
 │  → /api/auth/*, /api/posts/*, /api/products/*, /api/admin/*     │
 │  → /api/subscriptions/*, /api/courses/*, /api/contacts/*        │
 │  → /api/videos/*, /api/alerts/*, /api/trades/*                  │
@@ -232,7 +232,7 @@ Current SvelteKit version: `^2.50.2` ✅ (supports remote functions)
 ### Current State
 - **No centralized Axum adapter exists.** Only `$lib/server/watchlist.ts` (1 file).
 - Every `+server.ts` and `+page.server.ts` independently constructs Axum URLs and headers.
-- API base URL is duplicated across 30+ files: `env.VITE_API_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev'`
+- API base URL is duplicated across 30+ files: `env.VITE_API_URL || env.BACKEND_URL || '<your-api-host>'`
 - Auth token extraction (`cookies.get('rtp_access_token')`) is duplicated everywhere.
 
 ### Proposed Centralization

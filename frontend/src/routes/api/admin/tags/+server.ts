@@ -12,7 +12,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 
 import { env } from '$env/dynamic/private';
 const API_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 function readToken(request: Request, cookies: Parameters<RequestHandler>[0]['cookies']): string {
 	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.

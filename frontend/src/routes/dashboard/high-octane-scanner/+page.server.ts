@@ -21,7 +21,7 @@ import type { RoomResource } from '$lib/api/room-resources';
 const HIGH_OCTANE_SCANNER_ROOM_ID = 3;
 
 export const load = (async ({ fetch, locals }) => {
-	const baseUrl = env.API_BASE_URL || 'https://revolution-trading-pros-api.fly.dev';
+	const baseUrl = env.API_BASE_URL || 'http://localhost:8080';
 	// ICT 7 FIX: Pass access token from locals for authenticated API calls
 	const accessToken = locals.accessToken ?? undefined;
 

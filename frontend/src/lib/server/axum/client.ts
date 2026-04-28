@@ -24,7 +24,7 @@ import { getRequestEvent } from '$app/server';
 // Configuration — Single Source of Truth
 // ═══════════════════════════════════════════════════════════════════════════
 
-const PROD_API_ROOT = 'https://revolution-trading-pros-api.fly.dev';
+const PROD_API_ROOT = 'http://localhost:8080';
 
 function getApiRoot(): string {
 	// Server-side ONLY — VITE_* vars belong in client bundles. Match the

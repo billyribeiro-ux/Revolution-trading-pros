@@ -19,7 +19,7 @@ This document outlines how to convert the current mock data in the Explosive Swi
                  ▼
 ┌─────────────────────────────────────────────────────────────┐
 │              Backend API (Node.js/Express)                   │
-│         https://revolution-trading-pros-api.fly.dev          │
+│         <your-api-host>          │
 └────────────────┬────────────────────────────────────────────┘
                  │
                  ├─ REST Endpoints
@@ -167,7 +167,7 @@ CREATE INDEX idx_trades_exit_date ON trades_history(exit_date DESC);
 
 ## 2. Backend API Endpoints
 
-### Base URL: `https://revolution-trading-pros-api.fly.dev/api/explosive-swings`
+### Base URL: `<your-api-host>/api/explosive-swings`
 
 #### GET `/weekly-content`
 
@@ -405,7 +405,7 @@ Returns performance data for charting.
 ```typescript
 import type { ServerLoadEvent } from '@sveltejs/kit';
 
-const API_BASE = 'https://revolution-trading-pros-api.fly.dev/api/explosive-swings';
+const API_BASE = '<your-api-host>/api/explosive-swings';
 
 export async function load({ fetch }: ServerLoadEvent) {
 	try {
@@ -501,7 +501,7 @@ module.exports = { broadcastAlert };
 ```typescript
 // frontend: +page.svelte
 onMount(() => {
-	const ws = new WebSocket('wss://revolution-trading-pros-api.fly.dev/ws');
+	const ws = new WebSocket('<your-api-host-ws>/ws');
 
 	ws.onmessage = (event) => {
 		const message = JSON.parse(event.data);
@@ -676,7 +676,7 @@ REDIS_URL=redis://host:6379
 VIMEO_ACCESS_TOKEN=your_vimeo_token
 CLOUDINARY_URL=cloudinary://key:secret@cloud_name
 JWT_SECRET=your_jwt_secret
-API_BASE_URL=https://revolution-trading-pros-api.fly.dev
+API_BASE_URL=<your-api-host>
 ```
 
 ---

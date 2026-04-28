@@ -280,7 +280,7 @@ Deep-linking to a task (`/admin/boards/abc?task=xyz`) silently does nothing beca
 **File:** [`frontend/src/routes/admin/cms/datasources/+page.svelte:35`](../../../frontend/src/routes/admin/cms/datasources/+page.svelte) imports `getAuthToken` from `$lib/stores/auth.svelte` and bears it as `Authorization: Bearer ${token}` directly to `${API_BASE_URL}/cms/datasources` — **bypassing the SvelteKit proxy entirely**. Every other admin surface in this audit calls `/api/admin/...` and the proxy attaches the canonical `rtp_access_token` cookie token (per CLAUDE.md auth convention).
 
 Three concrete consequences:
-1. CORS — direct calls to `revolution-trading-pros-api.fly.dev` from the browser require the backend to allow the admin origin, while same-origin proxy calls don't. Production is currently coupling the CMS surface to a CORS contract no other surface needs.
+1. CORS — direct calls to `<your-api-host>` from the browser require the backend to allow the admin origin, while same-origin proxy calls don't. Production is currently coupling the CMS surface to a CORS contract no other surface needs.
 2. Token lifecycle drift — refresh-token rotation handled by the proxy doesn't apply.
 3. Inconsistent failure modes — when the rest of admin starts redirecting on 401, this page won't.
 

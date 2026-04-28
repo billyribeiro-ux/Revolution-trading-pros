@@ -18,7 +18,7 @@ import { env } from '$env/dynamic/private';
 // BACKEND CONFIGURATION
 // ═══════════════════════════════════════════════════════════════════════════
 
-const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+const BACKEND_URL = env.BACKEND_URL || 'http://localhost:8080';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES

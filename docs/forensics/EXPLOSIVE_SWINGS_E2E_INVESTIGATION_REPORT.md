@@ -1,4 +1,6 @@
 # EXPLOSIVE SWINGS END-TO-END INVESTIGATION REPORT
+
+> **Note (2026-04-28):** Fly.io references in this document are historical. The Fly.io deployment was removed; deploy target is TBD. See `backups/fly-io-removed-2026-04-28.md` for original Fly configuration.
 ## Apple Principal Engineer ICT Level 7 Grade Assessment
 
 **Investigation Date:** January 28, 2026
@@ -459,7 +461,7 @@ R2_BUCKET=revolution-trading-media
 
 #### Frontend (frontend/.env.example)
 ```bash
-VITE_API_URL=https://revolution-trading-pros-api.fly.dev
+VITE_API_URL=<your-api-host>
 VITE_CDN_URL=https://pub-xxxxx.r2.dev
 VITE_ANALYTICS_ENDPOINT=/api/analytics/batch
 ```

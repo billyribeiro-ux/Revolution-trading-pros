@@ -85,7 +85,7 @@
 
 		try {
 			const response = await fetch(
-				'https://revolution-trading-pros-api.fly.dev/api/newsletter/subscribe',
+				'http://localhost:8080/api/newsletter/subscribe',
 				{
 					method: 'POST',
 					headers: {
@@ -119,7 +119,7 @@
 
 		try {
 			const response = await fetch(
-				'https://revolution-trading-pros-api.fly.dev/api/newsletter/subscribe',
+				'http://localhost:8080/api/newsletter/subscribe',
 				{
 					method: 'POST',
 					headers: {
@@ -188,7 +188,7 @@
 					<IconCheck size={24} />
 				</div>
 				<h3>Backend Connected</h3>
-				<p>API running on revolution-trading-pros-api.fly.dev</p>
+				<p>API running on localhost:8080</p>
 			</div>
 
 			<div class="status-card">

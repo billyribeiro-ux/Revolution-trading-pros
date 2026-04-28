@@ -8,7 +8,7 @@ use utoipa::OpenApi;
     info(
         title = "Revolution Trading Pros API",
         version = "1.0.0",
-        description = "Enterprise Trading Platform API - Rust + Axum\n\n## Authentication\nUse Bearer token in Authorization header: `Authorization: Bearer <token>`\n\n## Base URLs\n- Production: https://revolution-trading-pros-api.fly.dev\n- Development: http://localhost:8080",
+        description = "Enterprise Trading Platform API - Rust + Axum\n\n## Authentication\nUse Bearer token in Authorization header: `Authorization: Bearer <token>`\n\n## Base URLs\n- Development: http://localhost:8080\n- Production: TBD (deploy target deferred)",
         contact(
             name = "Revolution Trading Pros",
             email = "support@revolutiontradingpros.com"
@@ -18,7 +18,6 @@ use utoipa::OpenApi;
         )
     ),
     servers(
-        (url = "https://revolution-trading-pros-api.fly.dev", description = "Production"),
         (url = "http://localhost:8080", description = "Development")
     ),
     tags(

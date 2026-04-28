@@ -19,7 +19,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 
 const BACKEND_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 function extractToken(cookies: { get: (k: string) => string | undefined }, request: Request) {
 	const cookieToken = cookies.get('rtp_access_token');

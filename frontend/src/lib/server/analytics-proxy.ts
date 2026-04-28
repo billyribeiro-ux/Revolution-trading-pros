@@ -29,7 +29,7 @@ import { env } from '$env/dynamic/private';
 import { requireAdmin } from './auth';
 
 const API_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 /**
  * Allowlist for the `period` query param. Anything outside this set is

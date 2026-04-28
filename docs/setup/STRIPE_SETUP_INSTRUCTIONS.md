@@ -1,5 +1,7 @@
 # 🔐 Stripe API Keys Setup Instructions
 
+> **Note (2026-04-28):** Fly.io references in this document are historical. The Fly.io deployment was removed; deploy target is TBD. See `backups/fly-io-removed-2026-04-28.md` for original Fly configuration.
+
 ## WHERE TO GET YOUR STRIPE KEYS
 
 ### 1. Go to Stripe Dashboard
@@ -21,7 +23,7 @@ Make sure you're in **Test Mode** for development
 
 ### 4. Get Webhook Secret (Optional for now)
 Visit: https://dashboard.stripe.com/test/webhooks
-- Create endpoint: `https://revolution-trading-pros-api.fly.dev/api/webhooks/stripe`
+- Create endpoint: `<your-api-host>/api/webhooks/stripe`
 - Copy the signing secret (starts with `whsec_`)
 
 ---
@@ -46,7 +48,7 @@ Run these commands to add secrets to your Fly.io API:
 cd /Users/billyribeiro/CascadeProjects/Revolution-trading-pros/api
 
 # Set Stripe secrets
-fly secrets set \
+# fly secrets set \  # deploy target TBD
   STRIPE_SECRET_KEY=sk_test_YOUR_ACTUAL_KEY_HERE \
   STRIPE_WEBHOOK_SECRET=whsec_YOUR_ACTUAL_SECRET_HERE \
   -a revolution-trading-pros-api

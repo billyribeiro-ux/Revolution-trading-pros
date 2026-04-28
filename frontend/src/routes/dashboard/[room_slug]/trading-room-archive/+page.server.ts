@@ -14,7 +14,7 @@ import type { PageServerLoad } from './$types';
 
 // FIX-2026-04-26: canonical private-env URL pattern (CLAUDE.md house style).
 const API_ROOT =
-	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 // Room configuration
 const ROOM_CONFIG: Record<string, { name: string; startHereUrl: string }> = {

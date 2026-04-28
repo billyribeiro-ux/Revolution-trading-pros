@@ -23,7 +23,7 @@ import { env } from '$env/dynamic/private';
 // API URL for server-side token validation. Precedence matches every
 // +server.ts proxy and lib/server/axum/client.ts.
 const API_BASE_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 /**
  * Protected routes that require authentication
