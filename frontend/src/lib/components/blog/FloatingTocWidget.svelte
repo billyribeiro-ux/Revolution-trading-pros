@@ -68,7 +68,7 @@
 	<div class="floating-toc-widget" class:open={isOpen}>
 		<!-- Toggle Button -->
 		<button class="floating-toc-toggle" onclick={toggleOpen} aria-label="Toggle table of contents">
-			<svg class="toc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+			<svg aria-hidden="true" class="toc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 				{#if isOpen}
 					<line x1="18" y1="6" x2="6" y2="18"></line>
 					<line x1="6" y1="6" x2="18" y2="18"></line>
@@ -85,7 +85,7 @@
 
 		<!-- Scroll to top button -->
 		<button class="scroll-top-btn" onclick={scrollToTop} aria-label="Scroll to top">
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+			<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 				<polyline points="18 15 12 9 6 15"></polyline>
 			</svg>
 		</button>

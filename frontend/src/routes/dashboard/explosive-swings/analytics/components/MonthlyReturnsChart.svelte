@@ -108,7 +108,7 @@
 		</div>
 	{:else}
 		<div bind:this={containerEl} class="chart-container">
-			<svg {width} {height} class="chart-svg">
+			<svg aria-hidden="true" {width} {height} class="chart-svg">
 				<!-- Grid lines -->
 				{#each [-1, -0.5, 0, 0.5, 1] as tick (tick)}
 					{@const y = padding.top + chartHeight / 2 - (tick * chartHeight) / 2}

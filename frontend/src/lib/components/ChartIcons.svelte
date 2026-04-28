@@ -274,7 +274,7 @@
 	}
 </script>
 
-<svg bind:this={svgElement} width={size} height={size} class="chart-icon"></svg>
+<svg aria-hidden="true" bind:this={svgElement} width={size} height={size} class="chart-icon"></svg>
 
 <style>
 	.chart-icon {

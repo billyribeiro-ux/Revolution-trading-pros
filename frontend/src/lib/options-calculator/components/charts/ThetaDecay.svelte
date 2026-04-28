@@ -251,6 +251,6 @@
 
 	<!-- Chart -->
 	<div bind:this={containerEl} class="relative w-full" style="min-height: 280px;">
-		<svg bind:this={svgEl}></svg>
+		<svg aria-hidden="true" bind:this={svgEl}></svg>
 	</div>
 </div>

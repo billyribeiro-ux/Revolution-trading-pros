@@ -538,7 +538,7 @@
 		<div class="library-actions" transition:fade={{ duration: 150 }}>
 			{#if showLibrary}
 				<button type="button" class="library-btn" onclick={openAssetManager}>
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 						<rect x="3" y="3" width="7" height="7" />
 						<rect x="14" y="3" width="7" height="7" />
 						<rect x="14" y="14" width="7" height="7" />
@@ -554,7 +554,7 @@
 					class:active={showRecentPanel}
 					onclick={() => (showRecentPanel = !showRecentPanel)}
 				>
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 						<circle cx="12" cy="12" r="10" />
 						<polyline points="12 6 12 12 16 14" />
 					</svg>
@@ -694,7 +694,7 @@
 						{:else if item.previewUrl}
 							<img src={item.previewUrl} alt={item.file.name} />
 						{:else}
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 								<rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
 								<circle cx="8.5" cy="8.5" r="1.5" />
 								<polyline points="21 15 16 10 5 21" />
@@ -763,8 +763,9 @@
 								class="retry-btn"
 								onclick={() => retryUpload(item.id)}
 								title="Retry upload"
+								aria-label="Retry upload"
 							>
-								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 									<polyline points="23 4 23 10 17 10" />
 									<path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
 								</svg>
@@ -781,8 +782,9 @@
 						onclick={() =>
 							item.status === 'uploading' ? cancelUpload(item.id) : removeItem(item.id)}
 						title={item.status === 'uploading' ? 'Cancel upload' : 'Remove'}
+						aria-label={item.status === 'uploading' ? 'Cancel upload' : 'Remove item'}
 					>
-						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 							<line x1="18" y1="6" x2="6" y2="18" />
 							<line x1="6" y1="6" x2="18" y2="18" />
 						</svg>

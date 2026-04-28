@@ -12,6 +12,7 @@
 <script lang="ts">
 	import type { PageData } from './+page.server';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
+	import { sanitizeHtml } from '$lib/sanitize';
 
 	// Server-loaded data with Previous/Next navigation
 	let props: { data: PageData } = $props();
@@ -199,7 +200,7 @@
 			</div>
 		</div>
 		<div class="dv-description">
-			{@html video.description}
+			{@html sanitizeHtml(video.description ?? '')}
 		</div>
 	</div>
 </section>

@@ -169,7 +169,7 @@
 			role="img"
 			aria-label="Equity curve line chart"
 		>
-			<svg {width} {height} class="chart-svg">
+			<svg aria-hidden="true" {width} {height} class="chart-svg">
 				<defs>
 					<linearGradient id="equityGradient" x1="0%" y1="0%" x2="0%" y2="100%">
 						<stop offset="0%" stop-color={lineColor} stop-opacity="0.2" />

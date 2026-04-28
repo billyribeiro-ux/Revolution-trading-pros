@@ -134,7 +134,7 @@
 				aria-expanded={menuOpen}
 				aria-haspopup="menu"
 			>
-				<svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+				<svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
 					<circle cx="12" cy="5" r="2" />
 					<circle cx="12" cy="12" r="2" />
 					<circle cx="12" cy="19" r="2" />

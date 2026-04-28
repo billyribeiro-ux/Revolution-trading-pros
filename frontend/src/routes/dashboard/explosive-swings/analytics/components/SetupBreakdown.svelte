@@ -110,7 +110,7 @@
 		<div class="content-wrapper">
 			<!-- Pie Chart -->
 			<div class="pie-chart-container">
-				<svg viewBox="0 0 160 160" class="pie-chart">
+				<svg aria-hidden="true" viewBox="0 0 160 160" class="pie-chart">
 					{#each pieSlices as slice (slice.setup)}
 						<path
 							d={slice.path}

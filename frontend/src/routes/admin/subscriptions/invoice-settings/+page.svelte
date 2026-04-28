@@ -238,7 +238,7 @@
 				class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 flex items-center gap-2"
 			>
 				{#if saving}
-					<svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+					<svg aria-hidden="true" class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
 						<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
 						></circle>
 						<path

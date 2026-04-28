@@ -15,6 +15,7 @@
 	import type { PageData } from './+page.server';
 	import BunnyVideoPlayer from '$lib/components/video/BunnyVideoPlayer.svelte';
 	import { authStore } from '$lib/stores/auth.svelte';
+	import { sanitizeHtml } from '$lib/sanitize';
 
 	// Server-loaded data with Previous/Next navigation
 	let props: { data: PageData } = $props();
@@ -127,7 +128,7 @@
 			</div>
 		</div>
 		<div class="dv-description">
-			{@html video.description}
+			{@html sanitizeHtml(video.description, 'rich')}
 		</div>
 	</div>
 </section>

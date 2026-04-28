@@ -2,6 +2,47 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-04-28 (k) — Comprehensive Svelte audit: autofixer round 2, security, accessibility
+
+A full second pass of the Svelte MCP autofixer plus targeted security and accessibility hardening across the codebase. Four discrete improvements landed in this checkpoint, each verified against `pnpm check` (0 errors / 0 warnings / 5217 files).
+
+### Fixed — Svelte autofixer round 2 (41 issues across 35 files)
+
+Parallel autofixer audit across all four major folders. Found and fixed issues missed by round 1.
+
+| Folder | Files audited | Files fixed | Issues |
+|---|---|---|---|
+| `lib/components/` | 408 | 5 | 7 missing `{#each}` keys |
+| `lib/` (non-components) | 29 | 1 | 1 dead self-assignment removed |
+| `routes/admin/` | 162 | 24 | 28 missing `{#each}` keys |
+| `routes/` (non-admin) | 239 | 5 | 5 missing `{#each}` keys |
+
+Confirmed absent across the entire codebase: legacy `on:event` directives, `export let` props, `createEventDispatcher`, `beforeUpdate`/`afterUpdate`, `<slot>`/`$$props`/`$$restProps`/`$$slots`, `<svelte:component>` deprecation, and `state(props.foo)` shadow-state anti-pattern.
+
+### Security — Wrapped 19 unsafe `{@html}` usages with `sanitizeHtml`
+
+Every `{@html}` site that rendered user-controlled or API-sourced content now passes through DOMPurify via `$lib/sanitize`. Files updated include `CountdownTimer`, `AccordionTabField`, `PostContentField`, `PlatformDownloads`, `VideoTranscript`, `BannerRenderer`, `view-order/[id]`, `[room_slug]/video/[slug]`, `learning-center/[slug]`, `swing-trading-room/video/[slug]`, `small-account-mentorship/video/[slug]`, `dashboard/indicators/[id]`, and the explosive-swings search result cards (`TradePlanResultCard`, `TradeResultCard`, `AlertResultCard`).
+
+Verified safe-as-is and untouched: hardcoded `Icons.*` SVG strings (mentorship, our-mission), JSON-LD escape pattern (SEOHead, options-calculator, store/scanners), already-sanitized renderers (`HtmlBlock.safeHtml`, `MobileResponsiveTable.getValue`).
+
+### Accessibility — Added `aria-hidden="true"` to ~282 decorative SVGs across 129 files
+
+Single-line `<svg>` openings without `aria-hidden`, `aria-label`, or `role` got `aria-hidden="true"` so screen readers skip them. Eight lone-icon buttons (where the SVG was the only child of a `<button>`) got `aria-label` on the button + `aria-hidden="true"` on the SVG instead, since the parent control needed the label: `VideoTranscript` copy button, `RepeaterField` move/remove buttons, `FileUploadField` remove button, `ImageUploader` retry/remove buttons.
+
+### Infrastructure — Upgraded `lib/components/Icon.svelte`
+
+The Tabler icon wrapper now passes `class`, `stroke`, and `color` through to the underlying Tabler component — making it a true drop-in replacement for inline `<svg>` markup that uses Tailwind sizing/coloring classes (`w-4 h-4 text-emerald-400`, etc.). Existing call sites unaffected (props are optional, defaults match the prior behavior). This unlocks the upcoming inline-SVG → Tabler migration documented in `INLINE_SVG_AUDIT.md`.
+
+### Documentation
+
+New report at [INLINE_SVG_AUDIT.md](INLINE_SVG_AUDIT.md): inventory of all 850 inline icon SVGs across 217 files (excluding `routes/dashboard/`), grouped by area (admin, marketing, lib/components), with file paths, route URLs, and the top 30 path signatures matched to Tabler equivalents. The members dashboard (`routes/dashboard/`) is permanently excluded from icon migration per product decision.
+
+### Verification
+
+`pnpm check` after all changes: **0 errors / 0 warnings / 5217 files**.
+
+---
+
 ## [Unreleased] — 2026-04-28 (j) — Svelte MCP autofixer pass: payments-fix-2026-04 branch
 
 ### Fixed

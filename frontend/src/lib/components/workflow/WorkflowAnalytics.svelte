@@ -240,7 +240,7 @@
 		<div class="success-breakdown">
 			<h3>Success vs Failure</h3>
 			<div class="pie-chart">
-				<svg viewBox="0 0 100 100">
+				<svg aria-hidden="true" viewBox="0 0 100 100">
 					<circle cx="50" cy="50" r="40" fill="#d1fae5" />
 					<circle
 						cx="50"

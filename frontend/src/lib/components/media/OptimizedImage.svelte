@@ -210,7 +210,7 @@
 	{#if hasError}
 		<div class="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
 			<div class="text-center text-gray-500 dark:text-gray-400">
-				<svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<svg aria-hidden="true" class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 					<path
 						stroke-linecap="round"
 						stroke-linejoin="round"

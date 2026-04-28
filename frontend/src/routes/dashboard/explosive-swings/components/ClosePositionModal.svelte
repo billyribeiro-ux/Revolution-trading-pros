@@ -303,7 +303,7 @@
 				<!-- Error Message -->
 				{#if errorMessage}
 					<div class="error-message">
-						<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+						<svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
 							<path
 								d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
 							/>
@@ -317,7 +317,7 @@
 					<button type="button" class="btn-cancel" onclick={handleClose}> Cancel </button>
 					<button type="submit" class="btn-close-position" disabled={isSaving || !form.exit_price}>
 						{#if isSaving}
-							<svg class="spinner" viewBox="0 0 24 24" width="18" height="18">
+							<svg aria-hidden="true" class="spinner" viewBox="0 0 24 24" width="18" height="18">
 								<circle
 									cx="12"
 									cy="12"

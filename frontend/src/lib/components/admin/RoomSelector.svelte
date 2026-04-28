@@ -115,7 +115,7 @@
 			{/if}
 			{selectionText}
 		</span>
-		<svg class="trigger-icon" class:rotated={isExpanded} viewBox="0 0 20 20" fill="currentColor">
+		<svg aria-hidden="true" class="trigger-icon" class:rotated={isExpanded} viewBox="0 0 20 20" fill="currentColor">
 			<path
 				fill-rule="evenodd"
 				d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
@@ -149,7 +149,7 @@
 						class:partial={isGroupPartial(liveTradingRooms)}
 					>
 						{#if isGroupSelected(liveTradingRooms)}
-							<svg viewBox="0 0 20 20" fill="currentColor"
+							<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor"
 								><path
 									fill-rule="evenodd"
 									d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -157,7 +157,7 @@
 								/></svg
 							>
 						{:else if isGroupPartial(liveTradingRooms)}
-							<svg viewBox="0 0 20 20" fill="currentColor"
+							<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor"
 								><path
 									fill-rule="evenodd"
 									d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
@@ -182,7 +182,7 @@
 						>
 							<div class="room-checkbox" class:checked={selectedRooms.includes(room.id)}>
 								{#if selectedRooms.includes(room.id)}
-									<svg viewBox="0 0 20 20" fill="currentColor"
+									<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor"
 										><path
 											fill-rule="evenodd"
 											d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -210,7 +210,7 @@
 						class:partial={isGroupPartial(alertsOnlyServices)}
 					>
 						{#if isGroupSelected(alertsOnlyServices)}
-							<svg viewBox="0 0 20 20" fill="currentColor"
+							<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor"
 								><path
 									fill-rule="evenodd"
 									d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -218,7 +218,7 @@
 								/></svg
 							>
 						{:else if isGroupPartial(alertsOnlyServices)}
-							<svg viewBox="0 0 20 20" fill="currentColor"
+							<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor"
 								><path
 									fill-rule="evenodd"
 									d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
@@ -243,7 +243,7 @@
 						>
 							<div class="room-checkbox" class:checked={selectedRooms.includes(room.id)}>
 								{#if selectedRooms.includes(room.id)}
-									<svg viewBox="0 0 20 20" fill="currentColor"
+									<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor"
 										><path
 											fill-rule="evenodd"
 											d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"

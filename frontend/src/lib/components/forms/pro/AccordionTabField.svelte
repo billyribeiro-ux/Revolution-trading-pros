@@ -8,6 +8,8 @@
 	 * - Tab Mode: horizontal tabs for quick navigation between sections
 	 */
 
+	import { sanitizeHtml } from '$lib/sanitize';
+
 	interface Section {
 		id: string;
 		title: string;
@@ -120,7 +122,7 @@
 				>
 					<div class="content-inner">
 						{#if section.content}
-							{@html section.content}
+							{@html sanitizeHtml(section.content, 'rich')}
 						{/if}
 					</div>
 				</div>
@@ -162,7 +164,7 @@
 					aria-labelledby="tab-{section.id}"
 				>
 					{#if section.content}
-						{@html section.content}
+						{@html sanitizeHtml(section.content, 'rich')}
 					{/if}
 				</div>
 			{/each}

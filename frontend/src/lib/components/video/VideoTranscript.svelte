@@ -19,6 +19,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
+	import { sanitizeHtml } from '$lib/sanitize';
 
 	// ═══════════════════════════════════════════════════════════════════════
 	// TYPES
@@ -233,7 +234,7 @@
 		<h3 class="transcript__title">Transcript</h3>
 		<div class="transcript__actions">
 			<div class="transcript__search">
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="16" height="16">
+				<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" width="16" height="16">
 					<path
 						stroke-linecap="round"
 						stroke-linejoin="round"
@@ -252,10 +253,11 @@
 				class="transcript__copy-btn"
 				onclick={copyTranscript}
 				title="Copy transcript"
+				aria-label={copied ? 'Transcript copied' : 'Copy transcript'}
 				disabled={transcriptCues.length === 0}
 			>
 				{#if copied}
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="18" height="18">
+					<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" width="18" height="18">
 						<path
 							stroke-linecap="round"
 							stroke-linejoin="round"
@@ -264,7 +266,7 @@
 						/>
 					</svg>
 				{:else}
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="18" height="18">
+					<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" width="18" height="18">
 						<path
 							stroke-linecap="round"
 							stroke-linejoin="round"
@@ -305,7 +307,7 @@
 					>
 						<span class="transcript__timestamp">{formatTimestamp(cue.startTime)}</span>
 						<span class="transcript__text">
-							{@html highlightSearch(cue.text)}
+							{@html sanitizeHtml(highlightSearch(cue.text))}
 						</span>
 					</button>
 				{/each}

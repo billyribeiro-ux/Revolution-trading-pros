@@ -125,7 +125,7 @@
 
 		{#if isLoading}
 			<div class="loading-spinner">
-				<svg width="20" height="20" viewBox="0 0 24 24" class="spinner">
+				<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" class="spinner">
 					<circle
 						cx="12"
 						cy="12"

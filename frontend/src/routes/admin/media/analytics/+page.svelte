@@ -335,7 +335,7 @@
 					</div>
 				</div>
 				<div class="hero-ring">
-					<svg viewBox="0 0 100 100">
+					<svg aria-hidden="true" viewBox="0 0 100 100">
 						<circle
 							cx="50"
 							cy="50"
@@ -467,7 +467,7 @@
 			</div>
 
 			<div class="chart-container">
-				<svg viewBox="0 0 100 100" preserveAspectRatio="none" class="chart">
+				<svg aria-hidden="true" viewBox="0 0 100 100" preserveAspectRatio="none" class="chart">
 					<!-- Grid lines -->
 					<line
 						x1="0"

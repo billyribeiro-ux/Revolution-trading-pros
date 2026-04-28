@@ -6,6 +6,8 @@
 	 * Supports basic formatting with toolbar.
 	 */
 
+	import { sanitizeHtml } from '$lib/sanitize';
+
 	interface Props {
 		name?: string;
 		value?: string;
@@ -191,7 +193,7 @@
 					aria-multiline="true"
 					style="min-height: {rows * 1.5}rem"
 				>
-					{@html content || `<p>${placeholder}</p>`}
+					{@html sanitizeHtml(content || `<p>${placeholder}</p>`, 'rich')}
 				</div>
 			{/if}
 		</div>

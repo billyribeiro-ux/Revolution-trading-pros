@@ -177,7 +177,7 @@
 		{#if isConnecting && connectionStart !== null}
 			{@const startNode = nodes.find((n) => n.id === connectionStart)}
 			{#if startNode}
-				<svg class="connection-line">
+				<svg aria-hidden="true" class="connection-line">
 					<line
 						x1={startNode.position_x + 100}
 						y1={startNode.position_y + 40}

@@ -198,7 +198,7 @@
 	<!-- Sparkline -->
 	{#if showSparkline && sparklineData.length > 1}
 		<div class="mt-3 opacity-60">
-			<svg width="80" height="24" class="overflow-visible">
+			<svg aria-hidden="true" width="80" height="24" class="overflow-visible">
 				<path
 					d={generateSparklinePath(sparklineData)}
 					fill="none"

@@ -358,6 +358,7 @@
 				aria-controls="toc-list"
 			>
 				<svg
+					aria-hidden="true"
 					class="toc-icon"
 					viewBox="0 0 24 24"
 					fill="none"
@@ -372,6 +373,7 @@
 				<span class="toc-count">{flatItems.length} sections</span>
 				{#if collapsible}
 					<svg
+						aria-hidden="true"
 						class="toc-chevron"
 						class:rotated={isExpanded}
 						viewBox="0 0 24 24"
@@ -386,7 +388,7 @@
 
 			{#if position === 'floating'}
 				<button class="toc-minimize-btn" onclick={toggleMinimized} aria-label="Toggle TOC">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 						{#if isFloatingMinimized}
 							<polyline points="15 3 21 3 21 9"></polyline>
 							<polyline points="9 21 3 21 3 15"></polyline>
@@ -468,7 +470,7 @@
 				{#if showProgress}
 					<div class="toc-footer">
 						<div class="toc-progress-text">
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 								<circle cx="12" cy="12" r="10"></circle>
 								<polyline points="12 6 12 12 16 14"></polyline>
 							</svg>

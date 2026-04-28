@@ -10,6 +10,7 @@
 	 * @example
 	 *   <Icon name="IconUsers" size="lg" label="Visitors" />
 	 *   <Icon name="IconSearch" size={18} />
+	 *   <Icon name="IconCheck" class="w-4 h-4 text-emerald-400" />
 	 */
 	import * as Icons from '$lib/icons';
 
@@ -18,15 +19,28 @@
 
 	interface Props {
 		name: IconName;
-		/** Numeric pixel size, or one of the named tokens. */
+		/** Numeric pixel size, or one of the named tokens. Ignored if `class` sets sizing. */
 		size?: number | SizeToken;
+		/** Stroke width (default: 2). */
+		stroke?: number | string;
+		/** Color override; defaults to currentColor (inherits from parent). */
+		color?: string;
+		/** Tailwind / utility classes. Lets the icon size & color via classes the same way the legacy inline SVGs did. */
+		class?: string;
 		/** Provide an accessible label. If omitted, the icon is decorative (aria-hidden). */
 		label?: string;
 	}
 
 	const SIZES = { xs: 14, sm: 16, md: 20, lg: 24, xl: 32 } as const;
 
-	let { name, size = 'md', label }: Props = $props();
+	let {
+		name,
+		size = 'md',
+		stroke = 2,
+		color,
+		class: className = '',
+		label
+	}: Props = $props();
 
 	const px = $derived(typeof size === 'number' ? size : SIZES[size]);
 	const Component = $derived(Icons[name]);
@@ -34,8 +48,21 @@
 
 {#if Component}
 	{#if label}
-		<Component size={px} aria-label={label} role="img" />
+		<Component
+			size={px}
+			{stroke}
+			{color}
+			class={className}
+			aria-label={label}
+			role="img"
+		/>
 	{:else}
-		<Component size={px} aria-hidden="true" />
+		<Component
+			size={px}
+			{stroke}
+			{color}
+			class={className}
+			aria-hidden="true"
+		/>
 	{/if}
 {/if}

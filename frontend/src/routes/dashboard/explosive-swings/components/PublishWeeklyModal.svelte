@@ -418,7 +418,7 @@
 			<!-- Error/Success Messages -->
 			{#if errorMessage}
 				<div class="message message--error" role="alert">
-					<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+					<svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
 						<path
 							d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
 						/>
@@ -429,7 +429,7 @@
 
 			{#if successMessage}
 				<div class="message message--success" role="status">
-					<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+					<svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
 						<path
 							d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
 						/>
@@ -444,7 +444,7 @@
 				<section class="panel panel--video">
 					<div class="panel-header">
 						<h3>
-							<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+							<svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
 								<path d="M8 5v14l11-7z" />
 							</svg>
 							Video Details

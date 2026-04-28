@@ -179,7 +179,7 @@
 		>
 			{#if uploading}
 				<div class="upload-progress">
-					<svg class="spinner" viewBox="0 0 24 24">
+					<svg aria-hidden="true" class="spinner" viewBox="0 0 24 24">
 						<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" />
 					</svg>
 					<span>Uploading...</span>

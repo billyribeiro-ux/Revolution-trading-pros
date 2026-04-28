@@ -154,8 +154,9 @@
 								disabled={index === 0 || disabled}
 								onclick={() => moveRow(index, 'up')}
 								title="Move up"
+								aria-label="Move row up"
 							>
-								<svg viewBox="0 0 20 20" fill="currentColor">
+								<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor">
 									<path
 										fill-rule="evenodd"
 										d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
@@ -169,8 +170,9 @@
 								disabled={index === rows.length - 1 || disabled}
 								onclick={() => moveRow(index, 'down')}
 								title="Move down"
+								aria-label="Move row down"
 							>
-								<svg viewBox="0 0 20 20" fill="currentColor">
+								<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor">
 									<path
 										fill-rule="evenodd"
 										d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
@@ -185,8 +187,9 @@
 								class="action-btn remove-btn"
 								onclick={() => removeRow(row.id)}
 								title={removeButtonText}
+								aria-label={removeButtonText}
 							>
-								<svg viewBox="0 0 20 20" fill="currentColor">
+								<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor">
 									<path
 										fill-rule="evenodd"
 										d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
@@ -256,7 +259,7 @@
 
 	{#if canAddRow}
 		<button type="button" class="add-row-btn" onclick={addRow} {disabled}>
-			<svg viewBox="0 0 20 20" fill="currentColor">
+			<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor">
 				<path
 					fill-rule="evenodd"
 					d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"

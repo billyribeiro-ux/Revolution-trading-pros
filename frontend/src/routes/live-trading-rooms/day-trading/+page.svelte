@@ -339,7 +339,7 @@
 					<div class="bg-[#2b2b36] p-4 border-b border-gray-700 flex items-center justify-between">
 						<div class="flex items-center gap-3">
 							<div class="text-gray-400">
-								<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+								<svg aria-hidden="true" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
 									><path
 										stroke-linecap="round"
 										stroke-linejoin="round"
@@ -975,7 +975,7 @@
 			</div>
 			<div class="mt-12 text-center">
 				<p class="text-rtp-muted text-sm flex items-center justify-center gap-2">
-					<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+					<svg aria-hidden="true" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
 						><path
 							stroke-linecap="round"
 							stroke-linejoin="round"

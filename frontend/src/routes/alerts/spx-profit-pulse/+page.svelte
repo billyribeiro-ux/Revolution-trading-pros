@@ -354,7 +354,7 @@
 							<div
 								class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-600 to-blue-500 flex items-center justify-center text-white font-bold shadow-inner"
 							>
-								<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+								<svg aria-hidden="true" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
 									><path
 										stroke-linecap="round"
 										stroke-linejoin="round"
@@ -566,7 +566,7 @@
 										aria-label="Play video"
 										class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
 									>
-										<svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"
+										<svg aria-hidden="true" class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"
 											><path d="M8 5v14l11-7z" /></svg
 										>
 									</button>
@@ -652,7 +652,7 @@
 								</div>
 							</div>
 							<!-- Chart Line -->
-							<svg class="w-full h-full" viewBox="0 0 300 100" preserveAspectRatio="none">
+							<svg aria-hidden="true" class="w-full h-full" viewBox="0 0 300 100" preserveAspectRatio="none">
 								<defs>
 									<linearGradient id="spxChartGrad" x1="0%" y1="0%" x2="0%" y2="100%">
 										<stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.3" />
@@ -952,7 +952,7 @@
 					<div
 						class="w-14 h-14 rounded-xl bg-blue-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
 					>
-						<svg class="w-7 h-7 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+						<svg aria-hidden="true" class="w-7 h-7 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"
 							><path
 								stroke-linecap="round"
 								stroke-linejoin="round"
@@ -975,7 +975,7 @@
 					<div
 						class="w-14 h-14 rounded-xl bg-red-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
 					>
-						<svg class="w-7 h-7 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+						<svg aria-hidden="true" class="w-7 h-7 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"
 							><path
 								stroke-linecap="round"
 								stroke-linejoin="round"
@@ -1450,7 +1450,7 @@
 
 			<div class="mt-12 text-center">
 				<div class="inline-flex items-center gap-2 text-sm text-slate-400">
-					<svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+					<svg aria-hidden="true" class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"
 						><path
 							stroke-linecap="round"
 							stroke-linejoin="round"

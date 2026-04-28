@@ -28,6 +28,7 @@
 		type EnhancedPopup
 	} from '$lib/api/popups';
 	import { popupStore } from '$lib/stores/popups.svelte';
+	import { sanitizePopupContent } from '$lib/sanitize';
 
 	// Props
 	interface Props {
@@ -511,7 +512,7 @@
 
 				{#if currentPopup.content}
 					<div class="popup-body">
-						{@html currentPopup.content}
+						{@html sanitizePopupContent(currentPopup.content)}
 					</div>
 				{/if}
 

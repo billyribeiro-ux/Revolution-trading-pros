@@ -275,7 +275,7 @@
 </script>
 
 <div bind:this={containerEl} class="relative w-full" style="min-height: 280px;">
-	<svg bind:this={svgEl}></svg>
+	<svg aria-hidden="true" bind:this={svgEl}></svg>
 	<div
 		bind:this={tooltipEl}
 		class="absolute pointer-events-none rounded-lg px-2.5 py-1.5 z-10"

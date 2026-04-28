@@ -188,7 +188,7 @@
 							/>
 						{:else if item.file_type === 'video'}
 							<div class="type-icon video">
-								<svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+								<svg aria-hidden="true" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
 									<path d="M8 5v14l11-7z" />
 								</svg>
 							</div>
@@ -229,7 +229,7 @@
 								style="background: {getStatusColor(item.processing_status || 'pending')}"
 							>
 								{#if item.is_optimized}
-									<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+									<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
 										<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
 									</svg>
 								{:else if item.processing_status === 'processing'}
@@ -245,7 +245,7 @@
 										<circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="32" />
 									</svg>
 								{:else if item.processing_status === 'failed'}
-									<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+									<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
 										<path
 											d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
 										/>

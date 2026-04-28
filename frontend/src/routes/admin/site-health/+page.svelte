@@ -403,7 +403,7 @@
 			<div class="score-section" in:scale={{ duration: 500, start: 0.9, delay: 100 }}>
 				<div class="score-card">
 					<div class="score-ring" style="--score-color: {getScoreColor($scoreDisplay)}">
-						<svg viewBox="0 0 120 120">
+						<svg aria-hidden="true" viewBox="0 0 120 120">
 							<circle class="ring-bg" cx="60" cy="60" r="54" />
 							<circle
 								class="ring-progress"

@@ -20,6 +20,7 @@ https://svelte.dev/e/element_unclosed -->
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
+	import { sanitizeHtml as sanitizeHtmlSafe } from '$lib/sanitize';
 
 	// Platform logo mapping
 	const platformLogos: Record<string, string> = {
@@ -383,7 +384,7 @@ https://svelte.dev/e/element_unclosed -->
 
 							{#if platformDownload.notes}
 								<div class="platform_notes">
-									{@html sanitizeHtml(platformDownload.notes)}
+									{@html sanitizeHtmlSafe(sanitizeHtml(platformDownload.notes), 'rich')}
 								</div>
 							{/if}
 						</section>
