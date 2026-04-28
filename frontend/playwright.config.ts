@@ -1,8 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
 
-// Local dev frontend port (SvelteKit dev server). Defaults to 5173 but the dev
-// server may roll to 5174 if 5173 is already taken — `E2E_BASE_URL` overrides.
-const BASE_URL = process.env.E2E_BASE_URL || 'http://localhost:5173';
+// Dev server URL. Precedence: FRONTEND_URL > E2E_BASE_URL > localhost:5173.
+// With strictPort set in vite.config.ts, the server never silently rolls to
+// a different port, so the fallback is always canonical.
+const BASE_URL = process.env.FRONTEND_URL || process.env.E2E_BASE_URL || 'http://localhost:5173';
 
 export default defineConfig({
 	testDir: './tests/e2e',
@@ -52,10 +53,9 @@ export default defineConfig({
 		}
 	],
 	webServer: {
-		// FIX-2026-04-26: use pnpm instead of npm (Phase 7.8)
 		command: 'pnpm dev',
 		url: BASE_URL,
 		reuseExistingServer: !process.env.CI,
-		timeout: 180_000
+		timeout: 120_000
 	}
 });

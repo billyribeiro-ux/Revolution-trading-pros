@@ -10,8 +10,8 @@
  */
 import { test, expect } from '@playwright/test';
 
-const BASE = 'http://localhost:5174';
-const API = 'http://localhost:8080';
+const BASE = process.env.FRONTEND_URL || process.env.E2E_BASE_URL || 'http://localhost:5173';
+const API = process.env.API_URL || process.env.VITE_API_URL || 'http://localhost:8080';
 
 test('blog create with tags sends tag names (strings), not IDs (numbers)', async ({ page, request }) => {
 	// ── Pre-setup: verify seeded tag exists via direct API ────────────────────

@@ -59,7 +59,10 @@
 		"test:blog-editor:a11y": "playwright test --project=accessibility",
 		"analyze": "vite-bundle-visualizer",
 		"deploy:cloudflare": "npm run build:cloudflare && wrangler pages deploy .svelte-kit/cloudflare",
-		"deploy:preview": "npm run build:cloudflare && wrangler pages deploy .svelte-kit/cloudflare --branch preview"
+		"deploy:preview": "npm run build:cloudflare && wrangler pages deploy .svelte-kit/cloudflare --branch preview",
+		"ports:check": "lsof -i:5173 -i:5174 -i:8080 -i:5432 -i:6379 || echo 'No processes found on those ports'",
+		"dev:clean": "lsof -ti:5173 | xargs kill -9 2>/dev/null; lsof -ti:5174 | xargs kill -9 2>/dev/null; pnpm dev",
+		"dev:fresh": "docker compose down && docker compose up -d && pnpm dev:clean"
 	},
 	"dependencies": {
 		"@anthropic-ai/sdk": "^0.91.1",

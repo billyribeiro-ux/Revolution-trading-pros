@@ -1,7 +1,7 @@
 # Revolution Trading Pros — local dev stack (backend only).
 # Frontend is run natively via `pnpm --filter revolution-svelte dev`.
 #
-# Bring up:    docker compose up -d db redis api
+# Bring up:    docker compose up -d db redis meili api
 # Tear down:   docker compose down            # keeps volumes
 #              docker compose down -v         # wipes volumes
 # Seed admin:  ./api/scripts/seed-local-admin.sh
@@ -51,6 +51,28 @@ services:
     networks: [rtp-network]
 
   # ──────────────────────────────────────────────────────────────────────
+  # Meilisearch v1 (full-text search, binds 7700 on host)
+  # Master key is dev-only; set MEILI_MASTER_KEY in api/.env for prod.
+  # ──────────────────────────────────────────────────────────────────────
+  meili:
+    image: getmeili/meilisearch:v1.7
+    container_name: rtp-meili
+    environment:
+      MEILI_MASTER_KEY: dev-meili-master-key
+      MEILI_ENV: development
+    volumes:
+      - meili_data:/meili_data
+    ports:
+      - "7700:7700"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:7700/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    networks: [rtp-network]
+
+  # ──────────────────────────────────────────────────────────────────────
   # Rust + Axum API (binds 8080 on host)
   # ──────────────────────────────────────────────────────────────────────
   api:
@@ -69,6 +91,8 @@ services:
     environment:
       DATABASE_URL: postgres://rtp:rtp_password@db:5432/revolution_trading_pros
       REDIS_URL: redis://redis:6379
+      MEILISEARCH_HOST: http://meili:7700
+      MEILISEARCH_API_KEY: dev-meili-master-key
       JWT_SECRET: ${JWT_SECRET:-development-secret-key-min-32-chars-long-enough-for-hs256}
       JWT_EXPIRES_IN: "1"
       RUST_LOG: info,sqlx=warn,tower_http=debug
@@ -80,9 +104,8 @@ services:
       db:
         condition: service_healthy
       redis:
-        # FIX-2026-04-26: upgraded from service_started to service_healthy so
-        # the API waits for Redis to be ready (Phase 7.9)
-        # condition: service_started
+        condition: service_healthy
+      meili:
         condition: service_healthy
     healthcheck:
       # API exposes /health (no /api prefix). /health/detailed checks DB+Redis+storage.
@@ -97,6 +120,7 @@ services:
 volumes:
   postgres_data:
   redis_data:
+  meili_data:
 
 networks:
   rtp-network:

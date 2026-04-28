@@ -50,6 +50,11 @@ export default defineConfig(({ mode }) => ({
 		mockReset: true,
 		restoreMocks: true
 	},
+	server: {
+		port: 5173,
+		strictPort: true,
+		host: 'localhost'
+	},
 	build: {
 		target: 'es2022',
 		chunkSizeWarningLimit: 500
