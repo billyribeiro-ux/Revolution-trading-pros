@@ -1106,6 +1106,50 @@ impl StripeService {
         Ok(())
     }
 
+    /// List all subscriptions with the given status, paginated.
+    /// Returns every subscription page until Stripe says has_more=false.
+    pub async fn list_subscriptions(&self, status: &str) -> Result<Vec<StripeSubscription>> {
+        #[derive(Deserialize)]
+        struct Page {
+            data: Vec<StripeSubscription>,
+            has_more: bool,
+        }
+
+        let mut all: Vec<StripeSubscription> = Vec::new();
+        let mut starting_after: Option<String> = None;
+
+        loop {
+            let mut params = vec![
+                ("status".to_string(), status.to_string()),
+                ("limit".to_string(), "100".to_string()),
+            ];
+            if let Some(ref cursor) = starting_after {
+                params.push(("starting_after".to_string(), cursor.clone()));
+            }
+
+            let page: Page = self
+                .client
+                .get(format!("{}/subscriptions", STRIPE_API_BASE))
+                .basic_auth(&self.secret_key, None::<&str>)
+                .header("Stripe-Version", STRIPE_API_VERSION)
+                .query(&params)
+                .send()
+                .await?
+                .json()
+                .await?;
+
+            let has_more = page.has_more;
+            starting_after = page.data.last().map(|s| s.id.clone());
+            all.extend(page.data);
+
+            if !has_more {
+                break;
+            }
+        }
+
+        Ok(all)
+    }
+
     /// Get customer's default payment method
     /// Returns the default payment method ID if set
     pub async fn get_customer_default_payment_method(
