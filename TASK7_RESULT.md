@@ -23,7 +23,7 @@ Engineer: Billy Ribeiro
 | K | Price change — new_only | **PASS** |
 | L | Price change — next_renewal | **PASS** |
 | M | Price change — immediate_proration | **PASS** |
-| N | Coupon redemption (Stripe Promotion Code) | **PASS (API-level)** — `allow_promotion_codes: true` confirmed on session; UI entry of code is Stripe-hosted |
+| N | Coupon redemption (Stripe Promotion Code) | **CORRECTED — see Addendum (Batch 3, 2026-04-28): server-applied coupon path is FAIL; DB shows discount, Stripe charges full price** |
 | O | 7-day trial with card upfront | **PASS** (API code path emits `subscription_data[trial_period_days]=7`; Stripe sub creation with same parameter verified to produce `status=trialing`, `trial_end=now+7d`) |
 | P | Trial converts to paid | **PASS** (synthesized signed `customer.subscription.updated` with status=active and new period — DB transitioned trialing→active, current_period_end advanced by 30 days) |
 | Q | 14-day trial without card | **PASS** (Stripe sub created with `trial_period_days=14` + `trial_settings[end_behavior][missing_payment_method]=cancel` succeeded, `status=trialing`) |
@@ -546,3 +546,119 @@ Pre-existing in `main`: handler code in `subscriptions.rs` and `payments.rs` ref
 3. **f64-to-cents refactor (deferred tech debt)** — Y was marked CONCERN. Replace `f64` money fields with `i64` cents or a decimal crate.
 4. **Spec clarification on E** — current architecture upserts (per UNIQUE constraint in migration 056). If spec really intends "create new row," migration 056 needs revisiting. Recommend: keep upsert, update spec.
 5. **Consider integration test coverage** for the schema-gap endpoints — the gap survived all prior audits because no test exercised `GET /my/subscriptions` against an authenticated user with a trial-ish row.
+
+---
+
+## Addendum — Batch 3 Verification Gap Closure (2026-04-28)
+
+Branch: `task7-verification-gaps` off `main`.
+
+This addendum closes the two verification gaps left open in the original
+report. **Scope: verification only**, no code changes. One previously-PASS
+verdict (N) is corrected to FAIL based on a real E2E test that exposed a
+billing defect; one new scenario (E2 = period-end via Test Clock) is added
+and PASSES.
+
+### E1 — Coupon redemption (correction of scenario N)
+
+**Previous verdict:** PASS (API-level).
+**New verdict:** **FAIL.**
+
+**Method:** Created a 10%-off `percent` coupon via `POST /api/admin/coupons`,
+called `POST /api/payments/checkout` with `coupon_code` set, then inspected
+both the resulting Stripe Checkout Session (`amount_total` field) and our
+`orders` row.
+
+**Evidence (from a $47 / month Weekly Watchlist plan):**
+
+```
+EXPECTED: subtotal=4700  discount=470  total=4230
+DB:       subtotal=4700  discount=470  total=4230  ← orders row shows 10% off
+STRIPE:   amount_total=4700  amount_discount=0     ← Stripe charges full price
+DB_MATCH:        PASS
+STRIPE_MATCH_DB: FAIL — Stripe charges full price; DB discount is decorative
+```
+
+**Defect:** in `payments.rs` (lines 175-185, 337) the LineItem `amount`
+sent to Stripe equals the full DB `db_price_cents`; the discount is only
+applied to the `orders` row total. When `coupon_code` is supplied,
+`allow_promotion_codes: false` is set so Stripe doesn't prompt either.
+The customer pays full price; our DB records them as having received the
+discount. On every coupon redemption with a 10% coupon, that's a ~10%
+revenue mismatch between what the customer was charged and what our
+records say they paid — and a worse mismatch with bigger coupons.
+
+**Why scenario N's earlier "PASS (API-level)" was wrong:** the previous
+test only confirmed the no-coupon path emits `allow_promotion_codes: true`
+on the session (the Stripe-applies-promo path). The server-applies-coupon
+path was never exercised end-to-end against Stripe until this addendum.
+
+**Disposition:** to be fixed in a separate branch (`coupon-billing-fix`,
+Batch 3.5) per architecture standard §10. Out of scope for the
+verification batch.
+
+### E2 — Period-end renewal via Stripe Test Clock
+
+**Verdict:** **PASS.**
+
+**Method:** Used Stripe Test Clocks to advance time past a real
+subscription's `current_period_end`. `stripe listen` forwarded all events
+to `/api/payments/webhook`. Sequence:
+
+1. Create Test Clock at `T0` (now).
+2. Create Customer pinned to clock + attach `pm_card_visa` as default PM.
+3. Create Subscription on `price_1TRHil9HsGkDuN3bUxF0uMUy` (Day Trading
+   Room, $227/mo) with `metadata.user_id=16`, `metadata.plan_id=1`,
+   default payment_behavior so Stripe auto-charges.
+4. Attach the new `stripe_subscription_id` to the existing
+   `user_memberships` row (matches a real-world pattern: row was
+   originally created via Checkout, sub_id is updated to track the test
+   sub for this run).
+5. Read DB `current_period_end` → seeds the "before" value.
+6. Advance clock to `T1 + 1h` (just past `current_period_end`).
+7. Wait for clock to reach `status=ready`, then for webhook delivery.
+8. Read DB row again, compare against Stripe's live state.
+
+**Webhook events observed during the advance (from `stripe listen` log):**
+
+```
+invoice.created                  → forwarded, 200
+customer.subscription.updated    → forwarded, 200   ← rolls period
+invoice_payment.paid             → forwarded, 200
+invoice.updated                  → forwarded, 200
+invoice.finalized                → forwarded, 200
+invoice.paid                     → forwarded, 200
+invoice.payment_succeeded        → forwarded, 200
+```
+
+**DB transition (real run):**
+
+```
+SUB sub_1TRLKB9HsGkDuN3bN3al0eiR status=active first_period_end=2026-05-28T23:45:53Z
+DB seeded:        5|active|2026-05-28 23:45:53      ← before advance
+ADVANCE clock to 2026-05-29T00:45:53Z
+CLOCK ready iter=7
+DB after advance: 5|active|2026-06-28 23:45:53      ← +30 days, period rolled
+Stripe period_end: 2026-06-28T23:45:53Z
+
+PERIOD_ROLLED_FORWARD: PASS   (DB > before)
+DB_MATCHES_STRIPE:     PASS   (DB == Stripe to the second)
+```
+
+**Conclusion:** the renewal pathway is correct. When Stripe issues the
+next-period invoice and emits `customer.subscription.updated`, our
+`handle_subscription_updated` (`payments.rs:1116`) executes the UPDATE on
+the membership row with the new `current_period_end` and matches Stripe
+exactly.
+
+### Updated tally
+
+After this addendum (compared to the original report):
+
+- N: PASS (API-level) → **FAIL** (corrected; defect documented; fix in
+  Batch 3.5).
+- E2 (new): **PASS** (period-end renewal via Test Clock).
+
+Final tally: **24 PASS, 1 FAIL (N — being fixed in Batch 3.5),
+1 INCONCLUSIVE (I), 1 CONCERN (Y — addressed by Batch 1+2 cents
+refactor on `main`).**
