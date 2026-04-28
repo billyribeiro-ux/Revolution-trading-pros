@@ -70,7 +70,7 @@ pub struct SubscriptionPlanRow {
     pub name: String,
     pub slug: String,
     pub description: Option<String>,
-    pub price: f64,
+    pub price_cents: i64,
     pub billing_cycle: String,
     pub is_active: bool,
     pub stripe_price_id: Option<String>,
@@ -119,7 +119,7 @@ pub struct UpdateSubscriptionRequest {
 pub struct CreatePlanRequest {
     pub name: String,
     pub description: Option<String>,
-    pub price: f64,
+    pub price_cents: i64,
     pub billing_cycle: String,
     pub is_active: Option<bool>,
     pub stripe_price_id: Option<String>,
@@ -133,7 +133,7 @@ pub struct CreatePlanRequest {
 pub struct UpdatePlanRequest {
     pub name: Option<String>,
     pub description: Option<String>,
-    pub price: Option<f64>,
+    pub price_cents: Option<i64>,
     pub billing_cycle: Option<String>,
     pub is_active: Option<bool>,
     pub stripe_price_id: Option<String>,
@@ -501,7 +501,7 @@ async fn list_plans(
     // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
     let plans: Vec<SubscriptionPlanRow> = sqlx::query_as(
         r#"
-        SELECT id, name, slug, description, price::FLOAT8 as price, billing_cycle, is_active,
+        SELECT id, name, slug, description, (price * 100)::BIGINT AS price_cents, billing_cycle, is_active,
                stripe_price_id, features, trial_days, trial_period_days,
                trial_requires_payment_method, created_at, updated_at
         FROM membership_plans
@@ -558,7 +558,7 @@ async fn get_plan(
     // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
     let plan: SubscriptionPlanRow = sqlx::query_as(
         r#"
-        SELECT id, name, slug, description, price::FLOAT8 as price, billing_cycle, is_active,
+        SELECT id, name, slug, description, (price * 100)::BIGINT AS price_cents, billing_cycle, is_active,
                stripe_price_id, features, trial_days, trial_period_days,
                trial_requires_payment_method, created_at, updated_at
         FROM membership_plans WHERE id = $1
@@ -600,18 +600,18 @@ async fn create_plan(
     let slug = slug::slugify(&input.name);
     let features = input.features.unwrap_or(json!([]));
 
-    // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
+    // Cents at the API surface; convert to NUMERIC at SQL boundary
     let plan: SubscriptionPlanRow = sqlx::query_as(
         r#"
         INSERT INTO membership_plans (name, slug, description, price, billing_cycle, is_active, stripe_price_id, features, trial_days, trial_period_days, trial_requires_payment_method, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(), NOW())
-        RETURNING id, name, slug, description, price::FLOAT8 as price, billing_cycle, is_active, stripe_price_id, features, trial_days, trial_period_days, trial_requires_payment_method, created_at, updated_at
+        VALUES ($1, $2, $3, $4::BIGINT / 100.0, $5, $6, $7, $8, $9, $10, $11, NOW(), NOW())
+        RETURNING id, name, slug, description, (price * 100)::BIGINT AS price_cents, billing_cycle, is_active, stripe_price_id, features, trial_days, trial_period_days, trial_requires_payment_method, created_at, updated_at
         "#
     )
     .bind(&input.name)
     .bind(&slug)
     .bind(&input.description)
-    .bind(input.price)
+    .bind(input.price_cents)
     .bind(&input.billing_cycle)
     .bind(input.is_active.unwrap_or(true))
     .bind(&input.stripe_price_id)
@@ -646,14 +646,13 @@ async fn update_plan(
         "Admin updating subscription plan"
     );
 
-    // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
     let plan: SubscriptionPlanRow = sqlx::query_as(
         r#"
         UPDATE membership_plans SET
             name = COALESCE($2, name),
             slug = CASE WHEN $2 IS NOT NULL THEN LOWER(REPLACE($2, ' ', '-')) ELSE slug END,
             description = COALESCE($3, description),
-            price = COALESCE($4, price),
+            price = COALESCE($4::BIGINT / 100.0, price),
             billing_cycle = COALESCE($5, billing_cycle),
             is_active = COALESCE($6, is_active),
             stripe_price_id = COALESCE($7, stripe_price_id),
@@ -663,13 +662,13 @@ async fn update_plan(
             trial_requires_payment_method = COALESCE($11, trial_requires_payment_method),
             updated_at = NOW()
         WHERE id = $1
-        RETURNING id, name, slug, description, price::FLOAT8 as price, billing_cycle, is_active, stripe_price_id, features, trial_days, trial_period_days, trial_requires_payment_method, created_at, updated_at
+        RETURNING id, name, slug, description, (price * 100)::BIGINT AS price_cents, billing_cycle, is_active, stripe_price_id, features, trial_days, trial_period_days, trial_requires_payment_method, created_at, updated_at
         "#
     )
     .bind(id)
     .bind(&input.name)
     .bind(&input.description)
-    .bind(input.price)
+    .bind(input.price_cents)
     .bind(&input.billing_cycle)
     .bind(input.is_active)
     .bind(&input.stripe_price_id)
@@ -786,11 +785,12 @@ async fn change_plan_price(
         name: String,
         stripe_price_id: Option<String>,
         stripe_product_id: Option<String>,
-        price: f64,
+        price_cents: i64,
     }
 
     let plan: PlanForPriceChange = sqlx::query_as(
-        r#"SELECT id, name, stripe_price_id, stripe_product_id, price::FLOAT8 as price
+        r#"SELECT id, name, stripe_price_id, stripe_product_id,
+                  (price * 100)::BIGINT AS price_cents
            FROM membership_plans WHERE id = $1"#,
     )
     .bind(plan_id)
@@ -811,7 +811,7 @@ async fn change_plan_price(
     })?;
 
     let old_price_id = plan.stripe_price_id.clone();
-    let old_amount_cents: i64 = (plan.price * 100.0).round() as i64;
+    let old_amount_cents: i64 = plan.price_cents;
 
     // ── Resolve a Stripe client from DB-stored creds (env fallback) ─────────
     // PE7 invariant 2A: prefer admin-pasted keys over env vars so price
@@ -868,12 +868,13 @@ async fn change_plan_price(
 
     sqlx::query(
         r#"UPDATE membership_plans
-           SET stripe_price_id = $1, stripe_product_id = $2, price = $3, updated_at = NOW()
+           SET stripe_price_id = $1, stripe_product_id = $2,
+               price = $3::BIGINT / 100.0, updated_at = NOW()
            WHERE id = $4"#,
     )
     .bind(&new_price_id)
     .bind(&product_id)
-    .bind((input.amount_cents as f64) / 100.0)
+    .bind(input.amount_cents)
     .bind(plan_id)
     .execute(&mut *tx)
     .await

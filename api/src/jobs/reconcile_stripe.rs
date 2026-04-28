@@ -100,7 +100,7 @@ pub async fn run_once(state: &AppState) -> anyhow::Result<usize> {
             }
             Err(e) => {
                 tracing::error!(target: "reconcile", status = %status, error = %e, "Failed to list Stripe subs");
-                return Err(e.into());
+                return Err(e);
             }
         }
     }
@@ -181,7 +181,7 @@ pub async fn run_once(state: &AppState) -> anyhow::Result<usize> {
                         let drift = row.current_period_end.map(|db_end| {
                             (db_end - stripe_end_naive).num_seconds().abs()
                         });
-                        if drift.map_or(true, |d| d > 60) {
+                        if drift.is_none_or(|d| d > 60) {
                             let entry = fix_period_end(
                                 state,
                                 row.id,

@@ -67,7 +67,7 @@ struct ExportRow {
     id: i64,
     order_number: String,
     status: String,
-    total: f64,
+    total_cents: i64,
     currency: String,
     user_email: Option<String>,
     user_name: Option<String>,
@@ -94,7 +94,7 @@ pub async fn admin_export(
             let pattern = format!("%{}%", search);
             sqlx::query_as::<_, ExportRow>(
                 r#"SELECT o.id, o.order_number, o.status,
-                          o.total::FLOAT8 AS total, o.currency,
+                          (o.total * 100)::BIGINT AS total_cents, o.currency,
                           u.email AS user_email, u.name AS user_name,
                           o.payment_provider, COUNT(oi.id) AS item_count,
                           o.created_at, o.completed_at
@@ -115,7 +115,7 @@ pub async fn admin_export(
         (Some(status), _) if !status.is_empty() => {
             sqlx::query_as::<_, ExportRow>(
                 r#"SELECT o.id, o.order_number, o.status,
-                          o.total::FLOAT8 AS total, o.currency,
+                          (o.total * 100)::BIGINT AS total_cents, o.currency,
                           u.email AS user_email, u.name AS user_name,
                           o.payment_provider, COUNT(oi.id) AS item_count,
                           o.created_at, o.completed_at
@@ -135,7 +135,7 @@ pub async fn admin_export(
             let pattern = format!("%{}%", search);
             sqlx::query_as::<_, ExportRow>(
                 r#"SELECT o.id, o.order_number, o.status,
-                          o.total::FLOAT8 AS total, o.currency,
+                          (o.total * 100)::BIGINT AS total_cents, o.currency,
                           u.email AS user_email, u.name AS user_name,
                           o.payment_provider, COUNT(oi.id) AS item_count,
                           o.created_at, o.completed_at
@@ -156,7 +156,7 @@ pub async fn admin_export(
         _ => {
             sqlx::query_as::<_, ExportRow>(
                 r#"SELECT o.id, o.order_number, o.status,
-                          o.total::FLOAT8 AS total, o.currency,
+                          (o.total * 100)::BIGINT AS total_cents, o.currency,
                           u.email AS user_email, u.name AS user_name,
                           o.payment_provider, COUNT(oi.id) AS item_count,
                           o.created_at, o.completed_at
@@ -186,12 +186,14 @@ pub async fn admin_export(
         "id,order_number,status,total,currency,user_email,user_name,payment_provider,item_count,created_at,completed_at\n",
     );
     for r in rows {
+        // CSV is a spreadsheet artifact; format cents → dollars for display
+        let total_dollars = r.total_cents as f64 / 100.0;
         body.push_str(&format!(
             "{},{},{},{:.2},{},{},{},{},{},{},{}\n",
             r.id,
             csv_field(&r.order_number),
             csv_field(&r.status),
-            r.total,
+            total_dollars,
             csv_field(&r.currency),
             csv_field(r.user_email.as_deref().unwrap_or("")),
             csv_field(r.user_name.as_deref().unwrap_or("")),
@@ -251,7 +253,7 @@ pub async fn admin_stats(
         completed_orders: i64,
         pending_orders: i64,
         refunded_orders: i64,
-        total_revenue: f64,
+        total_revenue_cents: i64,
     }
 
     let stats: StatsRow = sqlx::query_as(
@@ -260,7 +262,7 @@ pub async fn admin_stats(
             COUNT(*) FILTER (WHERE status = 'completed') AS completed_orders,
             COUNT(*) FILTER (WHERE status = 'pending') AS pending_orders,
             COUNT(*) FILTER (WHERE status IN ('refunded', 'partial_refund')) AS refunded_orders,
-            COALESCE(SUM(total) FILTER (WHERE status = 'completed'), 0)::FLOAT8 AS total_revenue
+            COALESCE(SUM((total * 100)::BIGINT) FILTER (WHERE status = 'completed'), 0)::BIGINT AS total_revenue_cents
            FROM orders"#,
     )
     .fetch_one(&state.db.pool)
@@ -273,20 +275,20 @@ pub async fn admin_stats(
         )
     })?;
 
-    let revenue_this_month: f64 = sqlx::query_scalar(
-        r#"SELECT COALESCE(SUM(total), 0)::FLOAT8
+    let revenue_this_month_cents: i64 = sqlx::query_scalar(
+        r#"SELECT COALESCE(SUM((total * 100)::BIGINT), 0)::BIGINT
            FROM orders
            WHERE status = 'completed'
              AND created_at >= DATE_TRUNC('month', CURRENT_DATE)"#,
     )
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or(0.0);
+    .unwrap_or(0);
 
-    let avg = if stats.completed_orders > 0 {
-        stats.total_revenue / stats.completed_orders as f64
+    let avg_order_value_cents: i64 = if stats.completed_orders > 0 {
+        stats.total_revenue_cents / stats.completed_orders
     } else {
-        0.0
+        0
     };
 
     Ok(Json(serde_json::json!({
@@ -296,9 +298,9 @@ pub async fn admin_stats(
             "completed_orders": stats.completed_orders,
             "pending_orders": stats.pending_orders,
             "refunded_orders": stats.refunded_orders,
-            "total_revenue": stats.total_revenue,
-            "revenue_this_month": revenue_this_month,
-            "average_order_value": avg
+            "total_revenue_cents": stats.total_revenue_cents,
+            "revenue_this_month_cents": revenue_this_month_cents,
+            "average_order_value_cents": avg_order_value_cents
         }
     })))
 }

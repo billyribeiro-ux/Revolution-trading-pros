@@ -1062,17 +1062,28 @@ async fn analytics_metrics(
     .await
     .unwrap_or(0);
 
-    let mrr: f64 = sqlx::query_scalar::<_, Option<f64>>(
-        "SELECT SUM(CASE WHEN billing_period = 'yearly' THEN price/12 ELSE price END) FROM user_memberships WHERE status = 'active'"
-    ).fetch_one(&state.db.pool).await.ok().flatten().unwrap_or(0.0);
+    // MRR cents — joined to membership_plans (user_memberships has no price/billing_period)
+    let mrr_cents: i64 = sqlx::query_scalar::<_, Option<i64>>(
+        r#"SELECT SUM(
+              CASE LOWER(mp.billing_cycle)
+                  WHEN 'yearly'    THEN ((mp.price * 100) / 12)::BIGINT
+                  WHEN 'annual'    THEN ((mp.price * 100) / 12)::BIGINT
+                  WHEN 'quarterly' THEN ((mp.price * 100) / 3)::BIGINT
+                  ELSE                  (mp.price * 100)::BIGINT
+              END
+           )::BIGINT
+           FROM user_memberships um
+           JOIN membership_plans mp ON mp.id = um.plan_id
+           WHERE um.status IN ('active', 'trialing')"#
+    ).fetch_one(&state.db.pool).await.ok().flatten().unwrap_or(0);
 
     Ok(Json(json!({
         "total_members": total_members,
         "active_members": active_members,
         "new_this_month": new_this_month,
-        "mrr": (mrr * 100.0).round() / 100.0,
+        "mrr_cents": mrr_cents,
         "churn_rate": 2.5,
-        "avg_ltv": 450.0
+        "avg_ltv_cents": 45000_i64
     })))
 }
 
@@ -1137,23 +1148,36 @@ async fn analytics_revenue(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     require_admin(&user)?;
 
-    let total_revenue: f64 =
-        sqlx::query_scalar::<_, Option<f64>>("SELECT SUM(price) FROM user_memberships")
-            .fetch_one(&state.db.pool)
-            .await
-            .ok()
-            .flatten()
-            .unwrap_or(0.0);
+    let total_revenue_cents: i64 = sqlx::query_scalar::<_, Option<i64>>(
+        r#"SELECT SUM((mp.price * 100)::BIGINT)::BIGINT
+           FROM user_memberships um
+           JOIN membership_plans mp ON mp.id = um.plan_id"#
+    )
+    .fetch_one(&state.db.pool)
+    .await
+    .ok()
+    .flatten()
+    .unwrap_or(0);
 
-    let mrr: f64 = sqlx::query_scalar::<_, Option<f64>>(
-        "SELECT SUM(CASE WHEN billing_period = 'yearly' THEN price/12 ELSE price END) FROM user_memberships WHERE status = 'active'"
-    ).fetch_one(&state.db.pool).await.ok().flatten().unwrap_or(0.0);
+    let mrr_cents: i64 = sqlx::query_scalar::<_, Option<i64>>(
+        r#"SELECT SUM(
+              CASE LOWER(mp.billing_cycle)
+                  WHEN 'yearly'    THEN ((mp.price * 100) / 12)::BIGINT
+                  WHEN 'annual'    THEN ((mp.price * 100) / 12)::BIGINT
+                  WHEN 'quarterly' THEN ((mp.price * 100) / 3)::BIGINT
+                  ELSE                  (mp.price * 100)::BIGINT
+              END
+           )::BIGINT
+           FROM user_memberships um
+           JOIN membership_plans mp ON mp.id = um.plan_id
+           WHERE um.status IN ('active', 'trialing')"#
+    ).fetch_one(&state.db.pool).await.ok().flatten().unwrap_or(0);
 
     Ok(Json(json!({
-        "total_revenue": (total_revenue * 100.0).round() / 100.0,
-        "mrr": (mrr * 100.0).round() / 100.0,
-        "arr": (mrr * 12.0 * 100.0).round() / 100.0,
-        "avg_order_value": 127.50,
+        "total_revenue_cents": total_revenue_cents,
+        "mrr_cents": mrr_cents,
+        "arr_cents": mrr_cents.saturating_mul(12),
+        "avg_order_value_cents": 12750_i64,
         "revenue_by_month": []
     })))
 }

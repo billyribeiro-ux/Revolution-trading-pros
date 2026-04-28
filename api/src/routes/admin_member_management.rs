@@ -43,7 +43,7 @@ pub struct MemberSubscription {
     pub id: i64,
     pub product_name: Option<String>,
     pub status: String,
-    pub price: Option<f64>,
+    pub price_cents: Option<i64>,
     pub billing_period: Option<String>,
     pub started_at: Option<NaiveDateTime>,
     pub expires_at: Option<NaiveDateTime>,
@@ -55,7 +55,7 @@ pub struct MemberSubscription {
 pub struct MemberOrder {
     pub id: i64,
     pub order_number: Option<String>,
-    pub total: Option<f64>,
+    pub total_cents: Option<i64>,
     pub status: Option<String>,
     pub created_at: NaiveDateTime,
 }
@@ -161,14 +161,22 @@ async fn get_member_full(
     })?
     .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Member not found"}))))?;
 
-    // Get subscriptions
+    // Subscriptions — joined with membership_plans for canonical price/name (cents)
     let subscriptions: Vec<MemberSubscription> = sqlx::query_as(
         r#"
-        SELECT id, product_name, status, price, billing_period,
-               started_at, expires_at, cancelled_at, created_at
-        FROM user_memberships
-        WHERE user_id = $1
-        ORDER BY created_at DESC
+        SELECT um.id,
+               mp.name AS product_name,
+               um.status,
+               (mp.price * 100)::BIGINT AS price_cents,
+               mp.billing_cycle AS billing_period,
+               um.starts_at AS started_at,
+               um.expires_at,
+               um.cancelled_at,
+               um.created_at
+        FROM user_memberships um
+        LEFT JOIN membership_plans mp ON mp.id = um.plan_id
+        WHERE um.user_id = $1
+        ORDER BY um.created_at DESC
         "#,
     )
     .bind(id)
@@ -176,12 +184,16 @@ async fn get_member_full(
     .await
     .unwrap_or_default();
 
-    // Get orders (from stripe_orders if exists, otherwise user_memberships as proxy)
+    // Orders for the user — read from `orders` table (canonical), in cents
     let orders: Vec<MemberOrder> = sqlx::query_as(
         r#"
-        SELECT id, stripe_invoice_id as order_number, price as total, status, created_at
-        FROM user_memberships
-        WHERE user_id = $1 AND price > 0
+        SELECT id,
+               order_number,
+               (total * 100)::BIGINT AS total_cents,
+               status,
+               created_at
+        FROM orders
+        WHERE user_id = $1
         ORDER BY created_at DESC
         LIMIT 50
         "#,
@@ -235,7 +247,7 @@ async fn get_member_full(
     .unwrap_or(None);
 
     // Calculate stats
-    let total_spent: f64 = subscriptions.iter().filter_map(|s| s.price).sum();
+    let total_spent_cents: i64 = subscriptions.iter().filter_map(|s| s.price_cents).sum();
     let active_subs = subscriptions
         .iter()
         .filter(|s| s.status == "active")
@@ -282,7 +294,7 @@ async fn get_member_full(
         "activity": activity,
         "notes": notes,
         "stats": {
-            "total_spent": (total_spent * 100.0).round() / 100.0,
+            "total_spent_cents": total_spent_cents,
             "active_subscriptions": active_subs,
             "total_orders": orders.len(),
             "member_since_days": (Utc::now().naive_utc() - member.created_at).num_days()
@@ -341,7 +353,7 @@ fn build_member_timeline(
             "meta": {
                 "product": sub.product_name,
                 "status": sub.status,
-                "price": sub.price
+                "price_cents": sub.price_cents
             }
         }));
     }
@@ -368,7 +380,7 @@ fn build_member_timeline(
             "date": order.created_at.to_string(),
             "icon": "order",
             "meta": {
-                "total": order.total,
+                "total_cents": order.total_cents,
                 "status": order.status
             }
         }));

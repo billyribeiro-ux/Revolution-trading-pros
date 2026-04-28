@@ -65,10 +65,11 @@ async fn list_public_indicators(
             .collect::<String>()
     });
 
-    // ICT 7: Use parameterized queries - matching actual database schema
+    // ICT 7: Use parameterized queries - matching actual database schema.
+    // Money is integer cents (Migration 061 dropped legacy NUMERIC `price`).
     let indicators: Vec<IndicatorListItem> = sqlx::query_as(
         r#"
-        SELECT id, name, slug, description, price, is_active, platform, thumbnail, created_at
+        SELECT id, name, slug, description, price_cents, is_active, platform, thumbnail, created_at
         FROM indicators
         WHERE is_active = true
         AND ($1::BOOLEAN IS NULL OR is_active = $1)

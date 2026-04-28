@@ -551,15 +551,17 @@ async fn user_stats(
 // COUPON MANAGEMENT
 // ═══════════════════════════════════════════════════════════════════════════
 
+/// Coupon row returned to admin UI. All monetary fields are integer cents.
+/// For percent coupons: `discount_value_cents = percent * 100` (e.g. 5000 = 50%).
 #[derive(Debug, serde::Serialize, sqlx::FromRow)]
 pub struct CouponRow {
     pub id: i64,
     pub code: String,
     pub description: Option<String>,
     pub discount_type: String,
-    pub discount_value: f64,
-    pub min_purchase: Option<f64>,
-    pub max_discount: Option<f64>,
+    pub discount_value_cents: i64,
+    pub min_purchase_cents: Option<i64>,
+    pub max_discount_cents: Option<i64>,
     pub usage_limit: Option<i32>,
     pub usage_count: i32,
     pub is_active: bool,
@@ -576,9 +578,9 @@ pub struct CreateCouponRequest {
     pub code: String,
     pub description: Option<String>,
     pub discount_type: String,
-    pub discount_value: f64,
-    pub min_purchase: Option<f64>,
-    pub max_discount: Option<f64>,
+    pub discount_value_cents: i64,
+    pub min_purchase_cents: Option<i64>,
+    pub max_discount_cents: Option<i64>,
     pub usage_limit: Option<i32>,
     pub is_active: Option<bool>,
     pub starts_at: Option<chrono::NaiveDateTime>,
@@ -595,13 +597,14 @@ async fn list_coupons(
 ) -> Result<Json<Vec<CouponRow>>, (StatusCode, Json<serde_json::Value>)> {
     require_admin(&user)?;
 
-    // ICT 7 FIX: DECIMAL columns must be cast to FLOAT8 for SQLx f64 compatibility
+    // Money is integer cents at the Rust boundary (architecture standard §1.2).
+    // DB columns remain NUMERIC(10,2) as a display cache; convert at the SQL edge.
     let coupons: Vec<CouponRow> = sqlx::query_as(
-        r#"SELECT 
+        r#"SELECT
             id, code, description, discount_type,
-            discount_value::FLOAT8 as discount_value,
-            min_purchase::FLOAT8 as min_purchase,
-            max_discount::FLOAT8 as max_discount,
+            (discount_value * 100)::BIGINT AS discount_value_cents,
+            (min_purchase * 100)::BIGINT AS min_purchase_cents,
+            (max_discount * 100)::BIGINT AS max_discount_cents,
             usage_limit, usage_count, is_active, starts_at, expires_at,
             applicable_products, applicable_plans, created_at, updated_at
         FROM coupons ORDER BY created_at DESC"#,
@@ -628,15 +631,15 @@ async fn create_coupon(
 ) -> Result<Json<CouponRow>, (StatusCode, Json<serde_json::Value>)> {
     require_admin(&user)?;
 
-    // ICT 7 FIX: DECIMAL columns must be cast to FLOAT8 for SQLx f64 compatibility
+    // Inputs are integer cents; convert to NUMERIC(10,2) at the SQL boundary.
     let coupon: CouponRow = sqlx::query_as(
         r#"
         INSERT INTO coupons (code, description, discount_type, discount_value, min_purchase, max_discount, usage_limit, usage_count, is_active, starts_at, expires_at, applicable_products, applicable_plans, created_at, updated_at)
-        VALUES (UPPER($1), $2, $3, $4, $5, $6, $7, 0, $8, $9, $10, $11, $12, NOW(), NOW())
+        VALUES (UPPER($1), $2, $3, $4::BIGINT / 100.0, $5::BIGINT / 100.0, $6::BIGINT / 100.0, $7, 0, $8, $9, $10, $11, $12, NOW(), NOW())
         RETURNING id, code, description, discount_type,
-            discount_value::FLOAT8 as discount_value,
-            min_purchase::FLOAT8 as min_purchase,
-            max_discount::FLOAT8 as max_discount,
+            (discount_value * 100)::BIGINT AS discount_value_cents,
+            (min_purchase * 100)::BIGINT AS min_purchase_cents,
+            (max_discount * 100)::BIGINT AS max_discount_cents,
             usage_limit, usage_count, is_active, starts_at, expires_at,
             applicable_products, applicable_plans, created_at, updated_at
         "#
@@ -644,9 +647,9 @@ async fn create_coupon(
     .bind(&input.code)
     .bind(&input.description)
     .bind(&input.discount_type)
-    .bind(input.discount_value)
-    .bind(input.min_purchase)
-    .bind(input.max_discount)
+    .bind(input.discount_value_cents)
+    .bind(input.min_purchase_cents)
+    .bind(input.max_discount_cents)
     .bind(input.usage_limit)
     .bind(input.is_active.unwrap_or(true))
     .bind(&input.starts_at)
@@ -705,9 +708,9 @@ async fn get_coupon(
     let coupon: Option<CouponRow> = sqlx::query_as(
         r#"SELECT
             id, code, description, discount_type,
-            discount_value::FLOAT8 as discount_value,
-            min_purchase::FLOAT8 as min_purchase,
-            max_discount::FLOAT8 as max_discount,
+            (discount_value * 100)::BIGINT AS discount_value_cents,
+            (min_purchase * 100)::BIGINT AS min_purchase_cents,
+            (max_discount * 100)::BIGINT AS max_discount_cents,
             usage_limit, usage_count, is_active, starts_at, expires_at,
             applicable_products, applicable_plans, created_at, updated_at
         FROM coupons WHERE id = $1"#,
@@ -760,9 +763,9 @@ async fn update_coupon(
             code = COALESCE(NULLIF(UPPER($2), ''), code),
             description = COALESCE($3, description),
             discount_type = COALESCE(NULLIF($4, ''), discount_type),
-            discount_value = COALESCE($5, discount_value),
-            min_purchase = COALESCE($6, min_purchase),
-            max_discount = COALESCE($7, max_discount),
+            discount_value = COALESCE($5::BIGINT / 100.0, discount_value),
+            min_purchase = COALESCE($6::BIGINT / 100.0, min_purchase),
+            max_discount = COALESCE($7::BIGINT / 100.0, max_discount),
             usage_limit = COALESCE($8, usage_limit),
             is_active = COALESCE($9, is_active),
             starts_at = COALESCE($10, starts_at),
@@ -772,9 +775,9 @@ async fn update_coupon(
             updated_at = NOW()
         WHERE id = $1
         RETURNING id, code, description, discount_type,
-            discount_value::FLOAT8 as discount_value,
-            min_purchase::FLOAT8 as min_purchase,
-            max_discount::FLOAT8 as max_discount,
+            (discount_value * 100)::BIGINT AS discount_value_cents,
+            (min_purchase * 100)::BIGINT AS min_purchase_cents,
+            (max_discount * 100)::BIGINT AS max_discount_cents,
             usage_limit, usage_count, is_active, starts_at, expires_at,
             applicable_products, applicable_plans, created_at, updated_at
         "#,
@@ -783,9 +786,9 @@ async fn update_coupon(
     .bind(&input.code)
     .bind(&input.description)
     .bind(&input.discount_type)
-    .bind(input.discount_value)
-    .bind(input.min_purchase)
-    .bind(input.max_discount)
+    .bind(input.discount_value_cents)
+    .bind(input.min_purchase_cents)
+    .bind(input.max_discount_cents)
     .bind(input.usage_limit)
     .bind(input.is_active)
     .bind(&input.starts_at)
@@ -823,13 +826,12 @@ async fn validate_coupon(
     State(state): State<AppState>,
     Path(code): Path<String>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    // ICT 7 FIX: DECIMAL columns must be cast to FLOAT8 for SQLx f64 compatibility
     let coupon: Option<CouponRow> = sqlx::query_as(
-        r#"SELECT 
+        r#"SELECT
             id, code, description, discount_type,
-            discount_value::FLOAT8 as discount_value,
-            min_purchase::FLOAT8 as min_purchase,
-            max_discount::FLOAT8 as max_discount,
+            (discount_value * 100)::BIGINT AS discount_value_cents,
+            (min_purchase * 100)::BIGINT AS min_purchase_cents,
+            (max_discount * 100)::BIGINT AS max_discount_cents,
             usage_limit, usage_count, is_active, starts_at, expires_at,
             applicable_products, applicable_plans, created_at, updated_at
         FROM coupons WHERE UPPER(code) = UPPER($1) AND is_active = true"#,
@@ -974,14 +976,14 @@ async fn update_setting(
 // MEMBERSHIP MANAGEMENT (Admin)
 // ═══════════════════════════════════════════════════════════════════════════
 
-/// Membership plan row (reuse from subscriptions)
+/// Membership plan row (reuse from subscriptions). Money is integer cents.
 #[derive(Debug, serde::Serialize, sqlx::FromRow)]
 pub struct MembershipPlanRow {
     pub id: i64,
     pub name: String,
     pub slug: String,
     pub description: Option<String>,
-    pub price: f64,
+    pub price_cents: i64,
     pub billing_cycle: String,
     pub is_active: bool,
     pub metadata: Option<serde_json::Value>,
@@ -1044,9 +1046,10 @@ async fn list_all_plans(
     State(state): State<AppState>,
     AdminUser(_user): AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
     let plans: Vec<MembershipPlanRow> = sqlx::query_as(
-        r#"SELECT id, name, slug, description, price::FLOAT8 as price, billing_cycle,
+        r#"SELECT id, name, slug, description,
+           (price * 100)::BIGINT AS price_cents,
+           billing_cycle,
            is_active, metadata, stripe_price_id, features, trial_days, created_at, updated_at
            FROM membership_plans ORDER BY price ASC"#,
     )
@@ -1210,9 +1213,10 @@ async fn grant_membership(
     }
 
     // Verify plan exists
-    // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
     let plan: Option<MembershipPlanRow> = sqlx::query_as(
-        r#"SELECT id, name, slug, description, price::FLOAT8 as price, billing_cycle,
+        r#"SELECT id, name, slug, description,
+           (price * 100)::BIGINT AS price_cents,
+           billing_cycle,
            is_active, metadata, stripe_price_id, features, trial_days, created_at, updated_at
            FROM membership_plans WHERE id = $1"#,
     )
@@ -1795,11 +1799,11 @@ async fn get_user_subscriptions(
         ));
     }
 
-    // Get subscriptions
+    // Subscriptions for a user — joined to membership_plans for canonical price/name
     let subscriptions: Vec<(
         i64,
         String,
-        Option<f64>,
+        Option<i64>,
         Option<String>,
         Option<String>,
         Option<chrono::NaiveDateTime>,
@@ -1808,11 +1812,15 @@ async fn get_user_subscriptions(
     )> = sqlx::query_as(
         r#"
         SELECT
-            id, status, price, product_name, billing_period,
-            starts_at, expires_at, created_at
-        FROM user_memberships
-        WHERE user_id = $1
-        ORDER BY created_at DESC
+            um.id, um.status,
+            (mp.price * 100)::BIGINT AS price_cents,
+            mp.name AS product_name,
+            mp.billing_cycle AS billing_period,
+            um.starts_at, um.expires_at, um.created_at
+        FROM user_memberships um
+        LEFT JOIN membership_plans mp ON mp.id = um.plan_id
+        WHERE um.user_id = $1
+        ORDER BY um.created_at DESC
         "#,
     )
     .bind(id)
@@ -1828,11 +1836,11 @@ async fn get_user_subscriptions(
     let subs_json: Vec<serde_json::Value> = subscriptions
         .into_iter()
         .map(
-            |(sub_id, status, price, name, period, starts, expires, created)| {
+            |(sub_id, status, price_cents, name, period, starts, expires, created)| {
                 serde_json::json!({
                     "id": sub_id,
                     "status": status,
-                    "price": price,
+                    "price_cents": price_cents,
                     "product_name": name,
                     "billing_period": period,
                     "starts_at": starts,
@@ -1844,14 +1852,17 @@ async fn get_user_subscriptions(
         .collect();
 
     let active_count = subs_json.iter().filter(|s| s["status"] == "active").count();
-    let total_revenue: f64 = subs_json.iter().filter_map(|s| s["price"].as_f64()).sum();
+    let total_revenue_cents: i64 = subs_json
+        .iter()
+        .filter_map(|s| s["price_cents"].as_i64())
+        .sum();
 
     Ok(Json(serde_json::json!({
         "subscriptions": subs_json,
         "stats": {
             "total": subs_json.len(),
             "active": active_count,
-            "total_revenue": (total_revenue * 100.0).round() / 100.0
+            "total_revenue_cents": total_revenue_cents
         }
     })))
 }

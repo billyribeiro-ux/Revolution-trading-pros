@@ -31,6 +31,7 @@ pub struct IndicatorQueryParams {
     pub platform: Option<String>,
 }
 
+/// Indicator row returned to admin UI. Money is integer cents.
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct IndicatorRow {
     pub id: i64,
@@ -38,7 +39,7 @@ pub struct IndicatorRow {
     pub slug: String,
     pub description: Option<String>,
     pub long_description: Option<String>,
-    pub price: Option<f64>,
+    pub price_cents: i64,
     pub is_active: Option<bool>,
     pub platform: Option<String>,
     pub version: Option<String>,
@@ -60,7 +61,7 @@ pub struct CreateIndicatorRequest {
     pub slug: Option<String>,
     pub description: Option<String>,
     pub long_description: Option<String>,
-    pub price: Option<f64>,
+    pub price_cents: Option<i64>,
     pub platform: Option<String>,
     pub version: Option<String>,
     pub download_url: Option<String>,
@@ -78,7 +79,7 @@ pub struct UpdateIndicatorRequest {
     pub slug: Option<String>,
     pub description: Option<String>,
     pub long_description: Option<String>,
-    pub price: Option<f64>,
+    pub price_cents: Option<i64>,
     pub is_active: Option<bool>,
     pub platform: Option<String>,
     pub version: Option<String>,
@@ -147,10 +148,17 @@ async fn list_indicators(
             .collect::<String>()
     });
 
-    // ICT 7: Use fully parameterized query - NO string concatenation
+    // ICT 7: Use fully parameterized query - NO string concatenation.
+    // Money is integer cents at the Rust boundary; project explicit columns
+    // so the FromRow shape matches IndicatorRow.
     let indicators: Vec<IndicatorRow> = sqlx::query_as(
         r#"
-        SELECT * FROM indicators
+        SELECT id, name, slug, description, long_description,
+               price_cents,
+               is_active, platform, version, download_url, documentation_url,
+               thumbnail, screenshots, features, requirements,
+               meta_title, meta_description, created_at, updated_at
+        FROM indicators
         WHERE ($1::BOOLEAN IS NULL OR is_active = $1)
         AND ($2::TEXT IS NULL OR LOWER(platform) = $2)
         AND ($3::TEXT IS NULL OR name ILIKE '%' || $3 || '%' OR description ILIKE '%' || $3 || '%')
@@ -207,13 +215,20 @@ async fn get_indicator(
     State(state): State<AppState>,
     Path(id): Path<String>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let select_cols = r#"id, name, slug, description, long_description,
+        price_cents,
+        is_active, platform, version, download_url, documentation_url,
+        thumbnail, screenshots, features, requirements,
+        meta_title, meta_description, created_at, updated_at"#;
+    let by_id_sql = format!("SELECT {} FROM indicators WHERE id = $1", select_cols);
+    let by_slug_sql = format!("SELECT {} FROM indicators WHERE slug = $1", select_cols);
     let indicator: IndicatorRow = if let Ok(numeric_id) = id.parse::<i64>() {
-        sqlx::query_as("SELECT * FROM indicators WHERE id = $1")
+        sqlx::query_as(&by_id_sql)
             .bind(numeric_id)
             .fetch_optional(&state.db.pool)
             .await
     } else {
-        sqlx::query_as("SELECT * FROM indicators WHERE slug = $1")
+        sqlx::query_as(&by_slug_sql)
             .bind(&id)
             .fetch_optional(&state.db.pool)
             .await
@@ -262,20 +277,30 @@ async fn create_indicator(
         ));
     }
 
+    // Money is integer cents. Migration 061 drops the legacy NUMERIC `price`
+    // column; we only write `price_cents` here.
     let indicator: IndicatorRow = sqlx::query_as(
         r#"INSERT INTO indicators (
-            name, slug, description, long_description, price, platform, version,
+            name, slug, description, long_description,
+            price_cents,
+            platform, version,
             download_url, documentation_url, thumbnail, features, requirements,
             meta_title, meta_description, is_active
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, true)
-        RETURNING *"#,
+        VALUES ($1, $2, $3, $4,
+            $5::BIGINT,
+            $6, $7, $8, $9, $10, $11, $12, $13, $14, true)
+        RETURNING id, name, slug, description, long_description,
+            price_cents,
+            is_active, platform, version, download_url, documentation_url,
+            thumbnail, screenshots, features, requirements,
+            meta_title, meta_description, created_at, updated_at"#,
     )
     .bind(&input.name)
     .bind(&slug)
     .bind(&input.description)
     .bind(&input.long_description)
-    .bind(input.price.unwrap_or(0.0))
+    .bind(input.price_cents.unwrap_or(0))
     .bind(&input.platform)
     .bind(input.version.as_deref().unwrap_or("1.0"))
     .bind(&input.download_url)
@@ -307,13 +332,14 @@ async fn update_indicator(
     Path(id): Path<i64>,
     Json(input): Json<UpdateIndicatorRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    // Money is integer cents (Migration 061 drops legacy NUMERIC `price`).
     let indicator: IndicatorRow = sqlx::query_as(
         r#"UPDATE indicators SET
             name = COALESCE($1, name),
             slug = COALESCE($2, slug),
             description = COALESCE($3, description),
             long_description = COALESCE($4, long_description),
-            price = COALESCE($5, price),
+            price_cents = COALESCE($5::BIGINT, price_cents),
             is_active = COALESCE($6, is_active),
             platform = COALESCE($7, platform),
             version = COALESCE($8, version),
@@ -326,13 +352,17 @@ async fn update_indicator(
             meta_description = COALESCE($15, meta_description),
             updated_at = NOW()
         WHERE id = $16
-        RETURNING *"#,
+        RETURNING id, name, slug, description, long_description,
+            price_cents,
+            is_active, platform, version, download_url, documentation_url,
+            thumbnail, screenshots, features, requirements,
+            meta_title, meta_description, created_at, updated_at"#,
     )
     .bind(&input.name)
     .bind(&input.slug)
     .bind(&input.description)
     .bind(&input.long_description)
-    .bind(input.price)
+    .bind(input.price_cents)
     .bind(input.is_active)
     .bind(&input.platform)
     .bind(&input.version)
@@ -388,10 +418,14 @@ async fn toggle_indicator(
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let indicator: IndicatorRow = sqlx::query_as(
-        r#"UPDATE indicators 
+        r#"UPDATE indicators
            SET is_active = NOT COALESCE(is_active, false), updated_at = NOW()
            WHERE id = $1
-           RETURNING *"#,
+           RETURNING id, name, slug, description, long_description,
+               price_cents,
+               is_active, platform, version, download_url, documentation_url,
+               thumbnail, screenshots, features, requirements,
+               meta_title, meta_description, created_at, updated_at"#,
     )
     .bind(id)
     .fetch_one(&state.db.pool)
@@ -910,11 +944,12 @@ async fn change_indicator_price(
         name: String,
         stripe_price_id: Option<String>,
         stripe_product_id: Option<String>,
-        price: Option<f64>,
+        price_cents: Option<i64>,
     }
 
     let indicator: IndicatorForPriceChange = sqlx::query_as(
-        r#"SELECT id, name, stripe_price_id, stripe_product_id, price::FLOAT8 as price
+        r#"SELECT id, name, stripe_price_id, stripe_product_id,
+                  COALESCE(price_cents, (price * 100)::BIGINT) AS price_cents
            FROM indicators WHERE id = $1"#,
     )
     .bind(indicator_id)
@@ -963,12 +998,15 @@ async fn change_indicator_price(
 
     sqlx::query(
         r#"UPDATE indicators
-           SET stripe_price_id = $1, stripe_product_id = $2, price = $3, updated_at = NOW()
+           SET stripe_price_id = $1,
+               stripe_product_id = $2,
+               price_cents = $3::BIGINT,
+               updated_at = NOW()
            WHERE id = $4"#,
     )
     .bind(&new_price_id)
     .bind(&product_id)
-    .bind((input.amount_cents as f64) / 100.0)
+    .bind(input.amount_cents)
     .bind(indicator_id)
     .execute(&mut *tx)
     .await
@@ -981,7 +1019,7 @@ async fn change_indicator_price(
         "indicator_id": indicator_id,
         "old_stripe_price_id": old_price_id,
         "new_stripe_price_id": &new_price_id,
-        "old_amount_cents": indicator.price.map(|p| (p * 100.0).round() as i64),
+        "old_amount_cents": indicator.price_cents,
         "new_amount_cents": input.amount_cents,
         "currency": &currency,
         "changed_by_user_id": admin.id,

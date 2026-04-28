@@ -45,8 +45,9 @@ pub struct UserMembershipResponse {
     pub next_billing_date: Option<String>,
     #[serde(rename = "expiresAt", skip_serializing_if = "Option::is_none")]
     pub expires_at: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub price: Option<f64>,
+    /// Plan price in integer cents (architecture standard §1.2).
+    #[serde(skip_serializing_if = "Option::is_none", rename = "priceCents")]
+    pub price_cents: Option<i64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub interval: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -71,13 +72,14 @@ struct UserSubscriptionDbRow {
     created_at: chrono::NaiveDateTime,
 }
 
-/// Database row for membership plan
+/// Database row for membership plan. Money is integer cents.
 #[derive(Debug, sqlx::FromRow)]
 struct MembershipPlanDbRow {
+    #[allow(dead_code)]
     id: i64,
     name: String,
     slug: String,
-    price: f64,
+    price_cents: i64,
     billing_cycle: String,
     metadata: Option<serde_json::Value>,
     features: Option<serde_json::Value>,
@@ -115,9 +117,9 @@ async fn get_memberships(
     // Fetch plan details for each subscription
     let mut memberships = Vec::new();
     for sub in subscriptions {
-        // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
+        // Money is integer cents at the Rust boundary; convert at the SQL edge.
         let plan: Option<MembershipPlanDbRow> = sqlx::query_as(
-            "SELECT id, name, slug, price::FLOAT8 as price, billing_cycle, metadata, features FROM membership_plans WHERE id = $1"
+            "SELECT id, name, slug, (price * 100)::BIGINT AS price_cents, billing_cycle, metadata, features FROM membership_plans WHERE id = $1"
         )
         .bind(sub.plan_id)
         .fetch_optional(&state.db.pool)
@@ -170,7 +172,7 @@ async fn get_memberships(
                 start_date: sub.starts_at.format("%Y-%m-%d").to_string(),
                 next_billing_date: sub.expires_at.map(|d| d.format("%Y-%m-%d").to_string()),
                 expires_at: sub.expires_at.map(|d| d.format("%Y-%m-%d").to_string()),
-                price: Some(plan.price),
+                price_cents: Some(plan.price_cents),
                 interval: Some(plan.billing_cycle),
                 features,
             };
@@ -281,9 +283,9 @@ async fn get_membership_details(
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
     .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Membership not found"}))))?;
 
-    // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
+    // Money is integer cents at the Rust boundary; convert at the SQL edge.
     let plan: MembershipPlanDbRow = sqlx::query_as(
-        "SELECT id, name, slug, price::FLOAT8 as price, billing_cycle, metadata, features FROM membership_plans WHERE id = $1"
+        "SELECT id, name, slug, (price * 100)::BIGINT AS price_cents, billing_cycle, metadata, features FROM membership_plans WHERE id = $1"
     )
     .bind(subscription.plan_id)
     .fetch_optional(&state.db.pool)
@@ -337,7 +339,7 @@ async fn get_membership_details(
         expires_at: subscription
             .expires_at
             .map(|d| d.format("%Y-%m-%d").to_string()),
-        price: Some(plan.price),
+        price_cents: Some(plan.price_cents),
         interval: Some(plan.billing_cycle),
         features,
     }))
