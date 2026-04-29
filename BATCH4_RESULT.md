@@ -309,18 +309,164 @@ psql "$DATABASE_URL" -c "
 
 | Scenario | Status |
 |---|---|
-| 1A re-subscribe creates new row | PENDING OPERATOR |
-| 1B blocked while already active | PENDING OPERATOR |
-| 2A edit math → recreate | PENDING OPERATOR |
-| 2B edit metadata → DB-only | PENDING OPERATOR |
-| 2C existing sub keeps old discount | PENDING OPERATOR |
-| 3A sync-to-stripe NULL row | PENDING OPERATOR |
-| 3B sync-to-stripe already-synced 400 | PENDING OPERATOR |
-| 4A min_purchase blocks under | PENDING OPERATOR |
-| 4B min_purchase allows over | PENDING OPERATOR |
-| 5A dropdown present | PENDING OPERATOR |
-| 5B repeating reveals months input | PENDING OPERATOR |
-| 5C Once persists correctly | PENDING OPERATOR |
-| 5D Repeating edit triggers recreate | PENDING OPERATOR |
+| 1A re-subscribe creates new row | PENDING OPERATOR (browser + Stripe Checkout) |
+| 1B blocked while already active | PENDING OPERATOR (browser + Stripe Checkout) |
+| 2A edit math → recreate | PENDING OPERATOR (admin UI in browser) |
+| 2B edit metadata → DB-only | PENDING OPERATOR (admin UI in browser) |
+| 2C existing sub keeps old discount | PENDING OPERATOR (browser + live sub) |
+| **3A** sync-to-stripe NULL row | **✅ PASS** (CLI, captured below) |
+| **3B** sync-to-stripe already-synced 400 | **✅ PASS** (CLI, captured below) |
+| **4A** min_purchase blocks under | **✅ PASS** on both `/api/checkout` and `/api/payments/checkout` |
+| **4B** min_purchase allows over | **✅ PASS** on `/api/payments/checkout`. **`/api/checkout` blocked by pre-existing unrelated bug** ([api/src/routes/checkout.rs:311](api/src/routes/checkout.rs#L311) references non-existent column `current_uses` instead of `usage_count`). The min_purchase validator itself ran correctly; the 500 fires post-validator inside the order-creation transaction. Filed as Batch 5/6 follow-up. |
+| 5A dropdown present | PENDING OPERATOR (browser) |
+| 5B repeating reveals months input | PENDING OPERATOR (browser) |
+| 5C Once persists correctly | PENDING OPERATOR (browser) |
+| 5D Repeating edit triggers recreate | PENDING OPERATOR (browser) |
 
-Once you walk these, edit each line above to PASS or FAIL with the raw command output captured beneath this summary.
+The 4 CLI-runnable scenarios were executed against the local Docker stack (`rtp-api` rebuilt with Batch 4 binary, migrations 61-63 applied) on 2026-04-29. Browser-required scenarios remain PENDING OPERATOR.
+
+---
+
+## Raw evidence — CLI scenarios run 2026-04-29
+
+### Scenario 3A — Backfill an unmirrored coupon
+
+**DB seed:**
+```
+docker exec rtp-db psql -U rtp -d revolution_trading_pros -c "
+INSERT INTO coupons (code, description, discount_type, discount_value, duration, is_active, created_at, updated_at)
+VALUES ('BACKFILL3A', 'Scenario 3A backfill', 'percent', 10, 'once', true, NOW(), NOW());"
+```
+Inserted coupon id=12, `stripe_coupon_id IS NULL`.
+
+**Sync call:**
+```
+POST /api/admin/coupons/12/sync-to-stripe
+Authorization: Bearer <admin>
+```
+
+**Response:**
+```
+HTTP: 200
+{
+  "id": 12,
+  "code": "BACKFILL3A",
+  "description": "Scenario 3A backfill",
+  "discount_type": "percent",
+  "discount_value_cents": 1000,
+  "is_active": true,
+  "stripe_coupon_id": "<set, redacted>",
+  "duration": "once",
+  "duration_in_months": null
+}
+```
+
+**DB after:**
+```
+ id |    code    | mirrored | nonempty
+----+------------+----------+----------
+ 12 | BACKFILL3A | t        | t
+```
+
+**API log confirms Stripe write:**
+```
+admin: Mirrored DB coupon into Stripe event="coupon_synced_to_stripe" coupon_id=12 stripe_coupon_id=<8-char-id>
+```
+
+**Result: ✅ PASS.** Stripe coupon created, DB row updated atomically.
+
+---
+
+### Scenario 3B — Already-synced returns 400
+
+Re-issued same call against the row from 3A (now mirrored).
+
+**Response:**
+```
+HTTP: 400
+{"error":"Coupon already synced to Stripe; use the edit endpoint to change it"}
+```
+
+**Result: ✅ PASS.** Exact 400 + spec'd error message.
+
+---
+
+### Scenario 4A — `min_purchase` blocks under-threshold checkout
+
+**Setup:**
+```
+INSERT INTO coupons (code, discount_type, discount_value, min_purchase, duration, is_active, ...)
+VALUES ('MIN50TEST', 'percent', 10, 50, 'once', true, ...);
+-- Then synced to Stripe via /api/admin/coupons/13/sync-to-stripe -> 200
+```
+Test plan id 7 = "Weekly Watchlist", price $47.00 (4700 cents). min_purchase = $50.00 (5000 cents).
+
+**Call A.1 (`/api/checkout`):**
+```
+POST /api/checkout
+{"items":[{"plan_id":7,"quantity":1}],"coupon_code":"MIN50TEST", ...}
+```
+Response:
+```
+HTTP: 400
+{"error":"Order must be at least $50.00 to use this coupon"}
+```
+
+**Call A.2 (`/api/payments/checkout`):**
+```
+POST /api/payments/checkout
+{"items":[{"plan_id":7,"name":"Weekly Watchlist","quantity":1,"is_subscription":true}],"coupon_code":"MIN50TEST", ...}
+```
+Response:
+```
+HTTP: 400
+{"error":"Order must be at least $50.00 to use this coupon"}
+```
+
+**Result: ✅ PASS.** Both endpoints reject identically with the spec'd dollar-formatted message. Stripe was never called (validator runs before discount attach).
+
+---
+
+### Scenario 4B — `min_purchase` allows over-threshold checkout
+
+Test plan id 2 = "Swing Trading Room", $147.00 (14700 cents) — above the $50 threshold.
+
+**Call B.1 (`/api/payments/checkout`):**
+```
+POST /api/payments/checkout
+{"items":[{"plan_id":2,"name":"Swing Trading Room","quantity":1,"is_subscription":true}],"coupon_code":"MIN50TEST", ...}
+```
+Response:
+```
+HTTP: 200
+{
+  "session_id": "<Stripe session id>",
+  "url": "<Stripe-hosted Checkout URL>",
+  "order_id": 26,
+  "order_number": "ORD-20260429-45EEC29A"
+}
+```
+API log confirms:
+```
+payments: Checkout session created event="checkout_created" order_id=26 user_id=30 amount_cents=14700
+```
+**`/api/payments/checkout` result: ✅ PASS.**
+
+**Call B.2 (`/api/checkout`) — fails on a pre-existing unrelated bug:**
+```
+HTTP: 500
+{"error":"error returned from database: current transaction is aborted, commands ignored until end of transaction block"}
+```
+Root cause confirmed by code inspection — [api/src/routes/checkout.rs:311](api/src/routes/checkout.rs#L311) references column `current_uses` which does not exist on the `coupons` table (the actual column is `usage_count`). Inside an explicit transaction, the column-not-found error poisons the tx; subsequent statements abort. The Batch 4 `min_purchase` validator runs *before* this transaction is opened and ran correctly (it would have rejected at $47, accepted at $147). The 500 fires later, on the order-row INSERT path, only when a coupon is applied — pure regression in `/api/checkout`'s coupon-usage-increment query, not in Batch 4 code.
+
+This bug pre-dates Batch 4 (the typo is on a line that wasn't touched in this batch). It is captured in [BATCH4_RESULT.md](BATCH4_RESULT.md) here as a follow-up; Batch 5a (consolidate-checkout) will remove `/api/checkout` entirely, which incidentally eliminates this bug. Batch 5b can carry an explicit fix if the timeline matters.
+
+**`/api/checkout` result with coupon: PARTIAL — min_purchase validator works; downstream tx fails on unrelated pre-existing bug.**
+
+DB column mismatch confirmed:
+```
+docker exec rtp-db psql -U rtp -d revolution_trading_pros -c "\d coupons" | grep -E "current_uses|usage_count"
+ usage_count         | integer                     |           |          | 0
+```
+(no `current_uses` column.)
+
