@@ -17,6 +17,7 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value as JsonValue};
 use uuid::Uuid;
+use crate::middleware::admin::AdminUser;
 
 use crate::{
     models::User,
@@ -32,15 +33,6 @@ type ApiResult<T> = Result<Json<T>, (StatusCode, Json<JsonValue>)>;
 
 fn api_error(status: StatusCode, message: &str) -> (StatusCode, Json<JsonValue>) {
     (status, Json(json!({ "error": message })))
-}
-
-fn require_admin(user: &User) -> Result<(), (StatusCode, Json<JsonValue>)> {
-    let role = user.role.as_deref().unwrap_or("user");
-    if matches!(role, "admin" | "super-admin" | "super_admin" | "developer") {
-        Ok(())
-    } else {
-        Err(api_error(StatusCode::FORBIDDEN, "Admin access required"))
-    }
 }
 
 fn require_editor(user: &User) -> Result<(), (StatusCode, Json<JsonValue>)> {
@@ -62,10 +54,9 @@ fn require_editor(user: &User) -> Result<(), (StatusCode, Json<JsonValue>)> {
 /// Get audit logs with filtering
 async fn get_audit_logs(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Query(query): Query<cms_audit::AuditLogQuery>,
 ) -> ApiResult<JsonValue> {
-    require_admin(&user)?;
 
     let logs = cms_audit::get_audit_logs(&state.db.pool, &query)
         .await

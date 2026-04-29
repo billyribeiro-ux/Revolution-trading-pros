@@ -14,6 +14,7 @@ use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sqlx::FromRow;
+use crate::middleware::admin::{AdminUser, SuperAdminUser};
 
 use crate::{models::User, AppState};
 
@@ -21,45 +22,11 @@ use crate::{models::User, AppState};
 // AUTHORIZATION
 // ===============================================================================
 
-/// Check if user has admin privileges (admin, super-admin, or developer role).
-///
-/// Used for read-only endpoints. For destructive operations (delete segment,
-/// delete tag, delete filter, bulk-assign tags) prefer
-/// [`require_superadmin`] per audit 02 §P1-10.
-fn require_admin(user: &User) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
-    let role = user.role.as_deref().unwrap_or("user");
-    if role == "admin" || role == "super-admin" || role == "super_admin" || role == "developer" {
-        Ok(())
-    } else {
-        Err((
-            StatusCode::FORBIDDEN,
-            Json(json!({
-                "error": "Access denied",
-                "message": "This action requires admin privileges"
-            })),
-        ))
-    }
-}
-
-/// FIX-2026-04-26 (audit 02 §P1-10): Strict super-admin gate for
-/// destructive / privilege-bearing operations. The base `require_admin`
-/// covers `admin`, `developer` and `super-admin` — none of which should be
-/// allowed to permanently delete segments/tags/filters or bulk-mutate
-/// thousands of users.
-fn require_superadmin(user: &User) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
-    let role = user.role.as_deref().unwrap_or("user");
-    if role == "super-admin" || role == "super_admin" || role == "superadmin" {
-        Ok(())
-    } else {
-        Err((
-            StatusCode::FORBIDDEN,
-            Json(json!({
-                "error": "Access denied",
-                "message": "This action requires super-admin privileges"
-            })),
-        ))
-    }
-}
+// Batch 5b: local `require_admin` and `require_superadmin` helpers
+// removed. Read-only admin endpoints now use the `AdminUser` extractor;
+// destructive endpoints (delete segment, delete tag, delete filter,
+// bulk-assign tags — per audit 02 §P1-10) use `SuperAdminUser`. Both
+// extractors live in `crate::middleware::admin`.
 
 // ===============================================================================
 // SEGMENTS - Member segmentation for targeted marketing
@@ -107,10 +74,9 @@ pub struct UpdateSegmentRequest {
 /// GET /admin/members/segments - List all member segments
 async fn list_segments(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Query(query): Query<SegmentQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     let page = query.page.unwrap_or(1).max(1);
     let per_page = query.per_page.unwrap_or(50).min(100);
@@ -172,10 +138,9 @@ async fn list_segments(
 /// GET /admin/members/segments/:id - Get single segment
 async fn get_segment(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<MemberSegment>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     let segment: MemberSegment = sqlx::query_as(
         "SELECT id, name, slug, description, rules, member_count, is_active, created_at, updated_at FROM member_segments WHERE id = $1"
@@ -192,10 +157,9 @@ async fn get_segment(
 /// POST /admin/members/segments - Create new segment
 async fn create_segment(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Json(input): Json<CreateSegmentRequest>,
 ) -> Result<Json<MemberSegment>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     // Generate slug if not provided
     let slug = input.slug.unwrap_or_else(|| {
@@ -236,11 +200,10 @@ async fn create_segment(
 /// PUT /admin/members/segments/:id - Update segment
 async fn update_segment(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(id): Path<i64>,
     Json(input): Json<UpdateSegmentRequest>,
 ) -> Result<Json<MemberSegment>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     // Build UPDATE query dynamically
     let mut set_clauses = Vec::new();
@@ -321,10 +284,9 @@ async fn update_segment(
 /// FIX-2026-04-26 (audit 02 §P1-10): Destructive — super-admin only.
 async fn delete_segment(
     State(state): State<AppState>,
-    user: User,
+    SuperAdminUser(user): SuperAdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_superadmin(&user)?;
 
     let result = sqlx::query("DELETE FROM member_segments WHERE id = $1")
         .bind(id)
@@ -389,10 +351,9 @@ pub struct UpdateMemberTagRequest {
 /// GET /admin/members/tags - List all member tags
 async fn list_member_tags(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Query(query): Query<MemberTagQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     let page = query.page.unwrap_or(1).max(1);
     let per_page = query.per_page.unwrap_or(100).min(500);
@@ -450,10 +411,9 @@ async fn list_member_tags(
 /// GET /admin/members/tags/:id - Get single tag
 async fn get_member_tag(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<MemberTag>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     let tag: MemberTag = sqlx::query_as(
         "SELECT id, name, slug, color, description, member_count, created_at, updated_at FROM member_tags WHERE id = $1"
@@ -470,10 +430,9 @@ async fn get_member_tag(
 /// POST /admin/members/tags - Create new tag
 async fn create_member_tag(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Json(input): Json<CreateMemberTagRequest>,
 ) -> Result<Json<MemberTag>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     // Generate slug if not provided
     let slug = input.slug.unwrap_or_else(|| {
@@ -513,11 +472,10 @@ async fn create_member_tag(
 /// PUT /admin/members/tags/:id - Update tag
 async fn update_member_tag(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(id): Path<i64>,
     Json(input): Json<UpdateMemberTagRequest>,
 ) -> Result<Json<MemberTag>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     let mut set_clauses = Vec::new();
     let mut param_count = 1;
@@ -590,10 +548,9 @@ async fn update_member_tag(
 /// FIX-2026-04-26 (audit 02 §P1-10): Destructive — super-admin only.
 async fn delete_member_tag(
     State(state): State<AppState>,
-    user: User,
+    SuperAdminUser(user): SuperAdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_superadmin(&user)?;
 
     let result = sqlx::query("DELETE FROM member_tags WHERE id = $1")
         .bind(id)
@@ -662,10 +619,9 @@ pub struct UpdateMemberFilterRequest {
 /// GET /admin/members/filters - List all saved filters
 async fn list_member_filters(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Query(query): Query<MemberFilterQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     let page = query.page.unwrap_or(1).max(1);
     let per_page = query.per_page.unwrap_or(50).min(100);
@@ -724,10 +680,9 @@ async fn list_member_filters(
 /// GET /admin/members/filters/:id - Get single filter
 async fn get_member_filter(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<MemberFilter>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     let filter: MemberFilter = sqlx::query_as(
         "SELECT id, name, description, filters, is_default, is_public, created_by, created_at, updated_at FROM member_filters WHERE id = $1"
@@ -744,10 +699,9 @@ async fn get_member_filter(
 /// POST /admin/members/filters - Create new filter
 async fn create_member_filter(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Json(input): Json<CreateMemberFilterRequest>,
 ) -> Result<Json<MemberFilter>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     let filter: MemberFilter = sqlx::query_as(
         r#"
@@ -778,11 +732,10 @@ async fn create_member_filter(
 /// PUT /admin/members/filters/:id - Update filter
 async fn update_member_filter(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(id): Path<i64>,
     Json(input): Json<UpdateMemberFilterRequest>,
 ) -> Result<Json<MemberFilter>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     let mut set_clauses = Vec::new();
     let mut param_count = 1;
@@ -862,10 +815,9 @@ async fn update_member_filter(
 /// FIX-2026-04-26 (audit 02 §P1-10): Destructive — super-admin only.
 async fn delete_member_filter(
     State(state): State<AppState>,
-    user: User,
+    SuperAdminUser(user): SuperAdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_superadmin(&user)?;
 
     let result = sqlx::query("DELETE FROM member_filters WHERE id = $1")
         .bind(id)
@@ -907,10 +859,9 @@ pub struct BulkAssignTagsRequest {
 /// POST /admin/members/tags/assign - Assign tag to user
 async fn assign_tag_to_user(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Json(input): Json<AssignTagRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     sqlx::query(
         r#"
@@ -945,10 +896,9 @@ async fn assign_tag_to_user(
 /// DELETE /admin/members/tags/unassign - Remove tag from user
 async fn unassign_tag_from_user(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Json(input): Json<AssignTagRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     sqlx::query("DELETE FROM user_member_tags WHERE user_id = $1 AND tag_id = $2")
         .bind(input.user_id)
@@ -979,10 +929,9 @@ async fn unassign_tag_from_user(
 /// FIX-2026-04-26 (audit 02 §P1-10): Bulk privileged write — super-admin only.
 async fn bulk_assign_tags(
     State(state): State<AppState>,
-    user: User,
+    SuperAdminUser(user): SuperAdminUser,
     Json(input): Json<BulkAssignTagsRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_superadmin(&user)?;
 
     let mut assigned_count = 0;
 
@@ -1035,10 +984,9 @@ pub struct AnalyticsRangeQuery {
 /// GET /admin/members/analytics/metrics - Member analytics metrics
 async fn analytics_metrics(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Query(query): Query<AnalyticsRangeQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     let _range = query.range.unwrap_or_else(|| "30d".to_string());
 
@@ -1090,10 +1038,9 @@ async fn analytics_metrics(
 /// GET /admin/members/analytics/growth - Member growth data
 async fn analytics_growth(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Query(_query): Query<AnalyticsRangeQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     // Get monthly growth data
     let growth_data: Vec<(String, i64)> = sqlx::query_as(
@@ -1124,10 +1071,9 @@ async fn analytics_growth(
 /// GET /admin/members/analytics/cohorts - Cohort analysis
 async fn analytics_cohorts(
     State(_state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Query(_query): Query<AnalyticsRangeQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     // Return cohort structure (would need complex query for real data)
     Ok(Json(json!({
@@ -1143,10 +1089,9 @@ async fn analytics_cohorts(
 /// GET /admin/members/analytics/revenue - Revenue analytics
 async fn analytics_revenue(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Query(_query): Query<AnalyticsRangeQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     let total_revenue_cents: i64 = sqlx::query_scalar::<_, Option<i64>>(
         r#"SELECT SUM((mp.price * 100)::BIGINT)::BIGINT
@@ -1185,10 +1130,9 @@ async fn analytics_revenue(
 /// GET /admin/members/analytics/churn-reasons - Churn reason analysis
 async fn analytics_churn_reasons(
     State(_state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Query(_query): Query<AnalyticsRangeQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     Ok(Json(json!({
         "reasons": [
@@ -1204,10 +1148,9 @@ async fn analytics_churn_reasons(
 /// GET /admin/members/analytics/segments - Segment analytics
 async fn analytics_segments(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Query(_query): Query<AnalyticsRangeQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     let segments: Vec<MemberSegment> = sqlx::query_as(
         "SELECT id, name, slug, description, rules, member_count, is_active, created_at, updated_at FROM member_segments WHERE is_active = true ORDER BY member_count DESC LIMIT 10"
@@ -1239,10 +1182,9 @@ pub struct CreateNoteRequest {
 /// GET /admin/members/:id/notes - Get member notes
 async fn get_member_notes(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(member_id): Path<i64>,
 ) -> Result<Json<Vec<MemberNote>>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     let notes: Vec<MemberNote> = sqlx::query_as(
         "SELECT id, user_id, content, created_by, created_at FROM member_notes WHERE user_id = $1 ORDER BY created_at DESC"
@@ -1258,11 +1200,10 @@ async fn get_member_notes(
 /// POST /admin/members/:id/notes - Create member note
 async fn create_member_note(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(member_id): Path<i64>,
     Json(input): Json<CreateNoteRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     // Try to create note, gracefully handle if table doesn't exist
     let result = sqlx::query(
@@ -1300,10 +1241,9 @@ pub struct MemberEmail {
 /// GET /admin/members/:id/emails - Get member email history
 async fn get_member_emails(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(member_id): Path<i64>,
 ) -> Result<Json<Vec<MemberEmail>>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     let emails: Vec<MemberEmail> = sqlx::query_as(
         "SELECT id, user_id, subject, status, sent_at, created_at FROM member_emails WHERE user_id = $1 ORDER BY created_at DESC LIMIT 50"
