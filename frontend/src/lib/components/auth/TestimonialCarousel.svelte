@@ -15,6 +15,7 @@
 	 */
 	import { onDestroy } from 'svelte';
 	import emblaCarouselSvelte from 'embla-carousel-svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	import Autoplay from 'embla-carousel-autoplay';
 	import type { EmblaCarouselType } from 'embla-carousel';
 
@@ -100,9 +101,7 @@
 					<div class="testimonial-card">
 						<!-- Quote Icon -->
 						<div class="quote-icon" aria-hidden="true">
-							<svg aria-hidden="true" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
-								<path d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z" />
-							</svg>
+							<Icon name="IconQuote" size={32} />
 						</div>
 
 						<!-- Quote Text -->

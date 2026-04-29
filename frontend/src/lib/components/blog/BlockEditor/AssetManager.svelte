@@ -22,6 +22,7 @@
 	import { fade, fly, slide, scale } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { flip } from 'svelte/animate';
+	import Icon from '$lib/components/Icon.svelte';
 
 	// ============================================================================
 	// Types
@@ -756,18 +757,7 @@
 				</div>
 				<div class="header-actions">
 					<label class="upload-btn">
-						<svg
-							width="16"
-							height="16"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-						>
-							<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-							<polyline points="17 8 12 3 7 8" />
-							<line x1="12" y1="3" x2="12" y2="15" />
-						</svg>
+						<Icon name="IconUpload" size={16} />
 						Upload
 						<input
 							type="file"
@@ -780,17 +770,7 @@
 						/>
 					</label>
 					<button class="close-btn" onclick={onClose} aria-label="Close">
-						<svg
-							width="20"
-							height="20"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-						>
-							<line x1="18" y1="6" x2="6" y2="18" />
-							<line x1="6" y1="6" x2="18" y2="18" />
-						</svg>
+						<Icon name="IconX" size={20} />
 					</button>
 				</div>
 			</header>
@@ -824,17 +804,7 @@
 						<div class="toolbar-left">
 							<!-- Search -->
 							<div class="search-box">
-								<svg
-									width="16"
-									height="16"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-								>
-									<circle cx="11" cy="11" r="8" />
-									<line x1="21" y1="21" x2="16.65" y2="16.65" />
-								</svg>
+								<Icon name="IconSearch" size={16} />
 								<input
 									type="text"
 									placeholder="Search assets..."
@@ -850,17 +820,7 @@
 										}}
 										aria-label="Clear search"
 									>
-										<svg
-											width="14"
-											height="14"
-											viewBox="0 0 24 24"
-											fill="none"
-											stroke="currentColor"
-											stroke-width="2"
-										>
-											<line x1="18" y1="6" x2="6" y2="18" />
-											<line x1="6" y1="6" x2="18" y2="18" />
-										</svg>
+										<Icon name="IconX" size={14} />
 									</button>
 								{/if}
 							</div>
@@ -892,19 +852,9 @@
 									fetchAssets(true);
 								}}
 								title={sortOrder === 'asc' ? 'Ascending' : 'Descending'}
+								style="transform: {sortOrder === 'asc' ? 'rotate(180deg)' : 'rotate(0)'}"
 							>
-								<svg
-									width="16"
-									height="16"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-									style="transform: {sortOrder === 'asc' ? 'rotate(180deg)' : 'rotate(0)'}"
-								>
-									<path d="M12 5v14" />
-									<path d="M19 12l-7 7-7-7" />
-								</svg>
+								<Icon name="IconArrowDown" size={16} />
 							</button>
 						</div>
 
@@ -914,36 +864,14 @@
 								<div class="bulk-actions" transition:fade={{ duration: 150 }}>
 									<span class="selected-count">{selectedAssets.size} selected</span>
 									<button class="bulk-btn danger" onclick={bulkDelete} title="Delete selected">
-										<svg
-											width="14"
-											height="14"
-											viewBox="0 0 24 24"
-											fill="none"
-											stroke="currentColor"
-											stroke-width="2"
-										>
-											<polyline points="3 6 5 6 21 6" />
-											<path
-												d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-											/>
-										</svg>
+										<Icon name="IconTrash" size={14} />
 									</button>
 									<button
 										class="bulk-btn"
 										onclick={() => (selectedAssets = new Set())}
 										title="Clear selection"
 									>
-										<svg
-											width="14"
-											height="14"
-											viewBox="0 0 24 24"
-											fill="none"
-											stroke="currentColor"
-											stroke-width="2"
-										>
-											<line x1="18" y1="6" x2="6" y2="18" />
-											<line x1="6" y1="6" x2="18" y2="18" />
-										</svg>
+										<Icon name="IconX" size={14} />
 									</button>
 								</div>
 							{/if}
@@ -955,40 +883,14 @@
 									onclick={() => (viewMode = 'grid')}
 									title="Grid view"
 								>
-									<svg
-										width="16"
-										height="16"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										stroke-width="2"
-									>
-										<rect x="3" y="3" width="7" height="7" />
-										<rect x="14" y="3" width="7" height="7" />
-										<rect x="14" y="14" width="7" height="7" />
-										<rect x="3" y="14" width="7" height="7" />
-									</svg>
+									<Icon name="IconLayoutGrid" size={16} />
 								</button>
 								<button
 									class:active={viewMode === 'list'}
 									onclick={() => (viewMode = 'list')}
 									title="List view"
 								>
-									<svg
-										width="16"
-										height="16"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										stroke-width="2"
-									>
-										<line x1="8" y1="6" x2="21" y2="6" />
-										<line x1="8" y1="12" x2="21" y2="12" />
-										<line x1="8" y1="18" x2="21" y2="18" />
-										<line x1="3" y1="6" x2="3.01" y2="6" />
-										<line x1="3" y1="12" x2="3.01" y2="12" />
-										<line x1="3" y1="18" x2="3.01" y2="18" />
-									</svg>
+									<Icon name="IconList" size={16} />
 								</button>
 							</div>
 						</div>
@@ -1001,17 +903,7 @@
 							<div class="sidebar-header">
 								<h4>Folders</h4>
 								<button class="new-folder-btn" title="New folder">
-									<svg
-										width="14"
-										height="14"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										stroke-width="2"
-									>
-										<line x1="12" y1="5" x2="12" y2="19" />
-										<line x1="5" y1="12" x2="19" y2="12" />
-									</svg>
+									<Icon name="IconPlus" size={14} />
 								</button>
 							</div>
 							<nav class="folder-tree">
@@ -1020,16 +912,7 @@
 									class:active={currentFolderId === null}
 									onclick={() => navigateToFolder(null)}
 								>
-									<svg
-										width="16"
-										height="16"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										stroke-width="2"
-									>
-										<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-									</svg>
+									<Icon name="IconHome" size={16} />
 									<span>All Assets</span>
 								</button>
 								{#each folders.filter((f) => f.parent_id === null) as folder (folder.id)}
@@ -1038,18 +921,7 @@
 										class:active={currentFolderId === folder.id}
 										onclick={() => navigateToFolder(folder)}
 									>
-										<svg
-											width="16"
-											height="16"
-											viewBox="0 0 24 24"
-											fill="none"
-											stroke={folder.color || 'currentColor'}
-											stroke-width="2"
-										>
-											<path
-												d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"
-											/>
-										</svg>
+										<Icon name="IconFolder" size={16} color={folder.color || undefined} />
 										<span>{folder.name}</span>
 										<span class="folder-count">{folder.asset_count}</span>
 									</button>
@@ -1064,16 +936,7 @@
 								<div class="breadcrumb" transition:slide={{ duration: 200 }}>
 									<button onclick={() => navigateToFolder(null)}>All Assets</button>
 									{#each folderStack as folder, i (folder.id)}
-										<svg
-											width="12"
-											height="12"
-											viewBox="0 0 24 24"
-											fill="none"
-											stroke="currentColor"
-											stroke-width="2"
-										>
-											<polyline points="9 18 15 12 9 6" />
-										</svg>
+										<Icon name="IconChevronRight" size={12} />
 										<button
 											onclick={() => {
 												folderStack = folderStack.slice(0, i + 1);
@@ -1096,18 +959,7 @@
 							{:else if assets.length === 0}
 								<!-- Empty State -->
 								<div class="empty-state">
-									<svg
-										width="48"
-										height="48"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										stroke-width="1.5"
-									>
-										<rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-										<circle cx="8.5" cy="8.5" r="1.5" />
-										<polyline points="21 15 16 10 5 21" />
-									</svg>
+									<Icon name="IconPhoto" size={48} stroke={1.5} />
 									<h4>No assets found</h4>
 									<p>Upload files or adjust your filters</p>
 									<label class="upload-cta">
@@ -1133,18 +985,7 @@
 												ondblclick={() => navigateToFolder(folder)}
 												onclick={() => {}}
 											>
-												<svg
-													width="24"
-													height="24"
-													viewBox="0 0 24 24"
-													fill="none"
-													stroke={folder.color || '#64748b'}
-													stroke-width="2"
-												>
-													<path
-														d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"
-													/>
-												</svg>
+												<Icon name="IconFolder" size={24} color={folder.color || '#64748b'} />
 												<span class="folder-name">{folder.name}</span>
 												<span class="folder-asset-count">{folder.asset_count} items</span>
 											</button>
@@ -1175,66 +1016,22 @@
 														/>
 													{:else if getAssetType(asset.mime_type) === 'video'}
 														<div class="type-preview video">
-															<svg
-																width="32"
-																height="32"
-																viewBox="0 0 24 24"
-																fill="none"
-																stroke="currentColor"
-																stroke-width="1.5"
-															>
-																<polygon points="5 3 19 12 5 21 5 3" />
-															</svg>
+															<Icon name="IconPlayerPlay" size={32} stroke={1.5} />
 														</div>
 													{:else if getAssetType(asset.mime_type) === 'audio'}
 														<div class="type-preview audio">
-															<svg
-																width="32"
-																height="32"
-																viewBox="0 0 24 24"
-																fill="none"
-																stroke="currentColor"
-																stroke-width="1.5"
-															>
-																<path d="M9 18V5l12-2v13" />
-																<circle cx="6" cy="18" r="3" />
-																<circle cx="18" cy="16" r="3" />
-															</svg>
+															<Icon name="IconVolume" size={32} stroke={1.5} />
 														</div>
 													{:else}
 														<div class="type-preview document">
-															<svg
-																width="32"
-																height="32"
-																viewBox="0 0 24 24"
-																fill="none"
-																stroke="currentColor"
-																stroke-width="1.5"
-															>
-																<path
-																	d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
-																/>
-																<polyline points="14 2 14 8 20 8" />
-																<line x1="16" y1="13" x2="8" y2="13" />
-																<line x1="16" y1="17" x2="8" y2="17" />
-																<polyline points="10 9 9 9 8 9" />
-															</svg>
+															<Icon name="IconFileText" size={32} stroke={1.5} />
 														</div>
 													{/if}
 
 													<!-- Selection Indicator -->
 													{#if selectedAssets.has(asset.id)}
 														<div class="selection-indicator" transition:scale={{ duration: 150 }}>
-															<svg
-																width="16"
-																height="16"
-																viewBox="0 0 24 24"
-																fill="none"
-																stroke="currentColor"
-																stroke-width="3"
-															>
-																<polyline points="20 6 9 17 4 12" />
-															</svg>
+															<Icon name="IconCheck" size={16} stroke={3} />
 														</div>
 													{/if}
 
@@ -1248,18 +1045,7 @@
 															}}
 															title="Details"
 														>
-															<svg
-																width="14"
-																height="14"
-																viewBox="0 0 24 24"
-																fill="none"
-																stroke="currentColor"
-																stroke-width="2"
-															>
-																<circle cx="12" cy="12" r="10" />
-																<line x1="12" y1="16" x2="12" y2="12" />
-																<line x1="12" y1="8" x2="12.01" y2="8" />
-															</svg>
+															<Icon name="IconInfoCircle" size={14} />
 														</button>
 													</div>
 												</div>
@@ -1296,25 +1082,13 @@
 																<img src={asset.thumbnail_url || asset.cdn_url} alt="" />
 															{:else}
 																<div class="type-icon {getAssetType(asset.mime_type)}">
-																	<svg
-																		width="20"
-																		height="20"
-																		viewBox="0 0 24 24"
-																		fill="none"
-																		stroke="currentColor"
-																		stroke-width="2"
-																	>
-																		{#if getAssetType(asset.mime_type) === 'video'}
-																			<polygon points="5 3 19 12 5 21 5 3" />
-																		{:else if getAssetType(asset.mime_type) === 'audio'}
-																			<path d="M9 18V5l12-2v13" />
-																		{:else}
-																			<path
-																				d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
-																			/>
-																			<polyline points="14 2 14 8 20 8" />
-																		{/if}
-																	</svg>
+																	{#if getAssetType(asset.mime_type) === 'video'}
+																		<Icon name="IconPlayerPlay" size={20} />
+																	{:else if getAssetType(asset.mime_type) === 'audio'}
+																		<Icon name="IconVolume" size={20} />
+																	{:else}
+																		<Icon name="IconFileText" size={20} />
+																	{/if}
 																</div>
 															{/if}
 														</td>

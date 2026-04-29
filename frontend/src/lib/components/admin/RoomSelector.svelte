@@ -14,6 +14,7 @@
 		isAllRooms,
 		type Room
 	} from '$lib/config/rooms';
+	import Icon from '$lib/components/Icon.svelte';
 
 	// Props interface
 	interface Props {
@@ -115,13 +116,7 @@
 			{/if}
 			{selectionText}
 		</span>
-		<svg aria-hidden="true" class="trigger-icon" class:rotated={isExpanded} viewBox="0 0 20 20" fill="currentColor">
-			<path
-				fill-rule="evenodd"
-				d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-				clip-rule="evenodd"
-			/>
-		</svg>
+		<Icon name="IconChevronDown" size={20} class={`trigger-icon${isExpanded ? ' rotated' : ''}`} />
 	</button>
 
 	<!-- Dropdown Panel -->
@@ -149,21 +144,9 @@
 						class:partial={isGroupPartial(liveTradingRooms)}
 					>
 						{#if isGroupSelected(liveTradingRooms)}
-							<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor"
-								><path
-									fill-rule="evenodd"
-									d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-									clip-rule="evenodd"
-								/></svg
-							>
+							<Icon name="IconCheck" size={12} />
 						{:else if isGroupPartial(liveTradingRooms)}
-							<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor"
-								><path
-									fill-rule="evenodd"
-									d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
-									clip-rule="evenodd"
-								/></svg
-							>
+							<Icon name="IconMinus" size={12} />
 						{/if}
 					</div>
 					<span class="group-title">Live Trading Rooms</span>
@@ -182,13 +165,7 @@
 						>
 							<div class="room-checkbox" class:checked={selectedRooms.includes(room.id)}>
 								{#if selectedRooms.includes(room.id)}
-									<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor"
-										><path
-											fill-rule="evenodd"
-											d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-											clip-rule="evenodd"
-										/></svg
-									>
+									<Icon name="IconCheck" size={12} />
 								{/if}
 							</div>
 							<span class="room-icon">{room.icon}</span>
@@ -210,21 +187,9 @@
 						class:partial={isGroupPartial(alertsOnlyServices)}
 					>
 						{#if isGroupSelected(alertsOnlyServices)}
-							<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor"
-								><path
-									fill-rule="evenodd"
-									d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-									clip-rule="evenodd"
-								/></svg
-							>
+							<Icon name="IconCheck" size={12} />
 						{:else if isGroupPartial(alertsOnlyServices)}
-							<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor"
-								><path
-									fill-rule="evenodd"
-									d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
-									clip-rule="evenodd"
-								/></svg
-							>
+							<Icon name="IconMinus" size={12} />
 						{/if}
 					</div>
 					<span class="group-title">Alerts Only Services</span>
@@ -243,13 +208,7 @@
 						>
 							<div class="room-checkbox" class:checked={selectedRooms.includes(room.id)}>
 								{#if selectedRooms.includes(room.id)}
-									<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor"
-										><path
-											fill-rule="evenodd"
-											d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-											clip-rule="evenodd"
-										/></svg
-									>
+									<Icon name="IconCheck" size={12} />
 								{/if}
 							</div>
 							<span class="room-icon">{room.icon}</span>

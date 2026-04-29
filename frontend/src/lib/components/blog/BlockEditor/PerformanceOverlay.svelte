@@ -20,6 +20,7 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import { browser, dev } from '$app/environment';
+	import Icon from '$lib/components/Icon.svelte';
 	import {
 		subscribeToMetrics,
 		getWebVitalThresholds,
@@ -203,16 +204,7 @@
 		<!-- Header -->
 		<div class="perf-header perf-drag-handle">
 			<div class="perf-title">
-				<svg
-					width="14"
-					height="14"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-				>
-					<path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-				</svg>
+				<Icon name="IconActivity" size={14} />
 				<span>Performance</span>
 			</div>
 			<div class="perf-controls">
@@ -223,40 +215,13 @@
 					aria-label={isMinimized ? 'Expand' : 'Minimize'}
 				>
 					{#if isMinimized}
-						<svg
-							width="12"
-							height="12"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-						>
-							<path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
-						</svg>
+						<Icon name="IconMaximize" size={12} />
 					{:else}
-						<svg
-							width="12"
-							height="12"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-						>
-							<path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7" />
-						</svg>
+						<Icon name="IconMinimize" size={12} />
 					{/if}
 				</button>
 				<button type="button" class="perf-btn" onclick={close} aria-label="Close">
-					<svg
-						width="12"
-						height="12"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<path d="M18 6L6 18M6 6l12 12" />
-					</svg>
+					<Icon name="IconX" size={12} />
 				</button>
 			</div>
 		</div>

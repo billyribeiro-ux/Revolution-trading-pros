@@ -14,6 +14,8 @@
 	 * @version 2.0.0 - January 2026
 	 */
 
+	import Icon from '$lib/components/Icon.svelte';
+
 	interface Props {
 		onUploadComplete?: (data: {
 			video_url: string;
@@ -248,10 +250,7 @@
 	{#if uploadStatus === 'complete'}
 		<div class="complete-state">
 			<div class="success-icon">
-				<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-					<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-					<polyline points="22 4 12 14.01 9 11.01"></polyline>
-				</svg>
+				<Icon name="IconCircleCheck" size={32} />
 			</div>
 			<p>Video uploaded successfully!</p>
 			<button type="button" class="btn-link" onclick={clearFile}> Upload another video </button>
@@ -260,10 +259,7 @@
 		<div class="file-selected">
 			<div class="file-info">
 				<div class="file-icon">
-					<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<polygon points="23 7 16 12 23 17 23 7"></polygon>
-						<rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
-					</svg>
+					<Icon name="IconVideo" size={40} />
 				</div>
 				<div class="file-details">
 					<span class="file-name">{videoFile.name}</span>
@@ -271,10 +267,7 @@
 				</div>
 				{#if !isUploading}
 					<button type="button" class="btn-remove" onclick={clearFile} aria-label="Remove file">
-						<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-							<line x1="18" y1="6" x2="6" y2="18"></line>
-							<line x1="6" y1="6" x2="18" y2="18"></line>
-						</svg>
+						<Icon name="IconX" size={16} />
 					</button>
 				{/if}
 			</div>
@@ -292,11 +285,7 @@
 				</div>
 			{:else}
 				<button type="button" class="btn-upload" onclick={startUpload}>
-					<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-						<polyline points="17 8 12 3 7 8"></polyline>
-						<line x1="12" y1="3" x2="12" y2="15"></line>
-					</svg>
+					<Icon name="IconUpload" size={20} />
 					Upload to Bunny.net
 				</button>
 			{/if}
@@ -315,11 +304,7 @@
 		>
 			<div class="drop-zone-content">
 				<div class="upload-icon">
-					<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-						<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-						<polyline points="17 8 12 3 7 8"></polyline>
-						<line x1="12" y1="3" x2="12" y2="15"></line>
-					</svg>
+					<Icon name="IconUpload" size={48} stroke={1.5} />
 				</div>
 				<p class="drop-text">Drag and drop video here</p>
 				<p class="drop-hint">or click to browse</p>
@@ -337,11 +322,7 @@
 
 	{#if error}
 		<div class="error-message">
-			<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-				<circle cx="12" cy="12" r="10"></circle>
-				<line x1="12" y1="8" x2="12" y2="12"></line>
-				<line x1="12" y1="16" x2="12.01" y2="16"></line>
-			</svg>
+			<Icon name="IconAlertCircle" size={18} />
 			{error}
 		</div>
 	{/if}

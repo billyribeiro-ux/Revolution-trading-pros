@@ -19,6 +19,7 @@
 	import { goto } from '$app/navigation';
 	import { fade, fly, scale, slide } from 'svelte/transition';
 	import { backOut, cubicOut } from 'svelte/easing';
+	import Icon from '$lib/components/Icon.svelte';
 	import {
 		connections,
 		getIsAnalyticsConnected,
@@ -279,16 +280,7 @@
 					<div class="icon-container" style="--icon-color: {config.color}">
 						<span class="service-icon">{config.icon}</span>
 						<div class="status-indicator">
-							<svg
-								class="disconnect-icon"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
-							>
-								<path d="M18.36 6.64a9 9 0 1 1-12.73 0" />
-								<line x1="12" y1="2" x2="12" y2="12" />
-							</svg>
+							<Icon name="IconPlugConnectedX" size={18} class="disconnect-icon" />
 						</div>
 					</div>
 					<div class="status-badge">
@@ -320,40 +312,14 @@
 
 				<!-- Connect Button -->
 				<button class="connect-button" onclick={handleConnect} style="--btn-color: {config.color}">
-					<svg
-						class="btn-icon"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
-						<path d="M12 6v6l4 2" />
-					</svg>
+					<Icon name="IconClock" size={20} class="btn-icon" />
 					<span>Connect {config.name}</span>
-					<svg
-						class="arrow-icon"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<path d="M5 12h14M12 5l7 7-7 7" />
-					</svg>
+					<Icon name="IconArrowRight" size={20} class="arrow-icon" />
 				</button>
 
 				<!-- Security Note -->
 				<div class="security-note">
-					<svg
-						class="lock-icon"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-						<path d="M7 11V7a5 5 0 0 1 10 0v4" />
-					</svg>
+					<Icon name="IconLock" size={14} class="lock-icon" />
 					<span>Your credentials are encrypted and stored securely</span>
 				</div>
 			</div>
@@ -376,9 +342,7 @@
 				</div>
 				<button class="banner-button" onclick={handleConnect} style="--btn-color: {config.color}">
 					<span>Connect Now</span>
-					<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<path d="M5 12h14M12 5l7 7-7 7" />
-					</svg>
+					<Icon name="IconArrowRight" size={16} />
 				</button>
 			</div>
 		</div>
@@ -386,18 +350,12 @@
 		<!-- Inline Variant - For within content -->
 		<div class="service-status-inline" in:fade={{ duration: 300 }} role="alert">
 			<div class="inline-icon" style="color: {config.color}">
-				<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-					<circle cx="12" cy="12" r="10" />
-					<line x1="12" y1="8" x2="12" y2="12" />
-					<line x1="12" y1="16" x2="12.01" y2="16" />
-				</svg>
+				<Icon name="IconAlertCircle" size={20} />
 			</div>
 			<span class="inline-message">{config.name} not connected</span>
 			<button class="inline-button" onclick={handleConnect}>
 				Connect
-				<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-					<path d="M5 12h14M12 5l7 7-7 7" />
-				</svg>
+				<Icon name="IconArrowRight" size={14} />
 			</button>
 		</div>
 	{:else if variant === 'badge'}
@@ -419,10 +377,7 @@
 			in:fade={{ duration: 200 }}
 			style="--btn-color: {config.color}"
 		>
-			<svg aria-hidden="true" class="plug-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-				<path d="M18.36 6.64a9 9 0 1 1-12.73 0" />
-				<line x1="12" y1="2" x2="12" y2="12" />
-			</svg>
+			<Icon name="IconPlugConnectedX" size={16} class="plug-icon" />
 			<span>Connect {config.name}</span>
 		</button>
 	{/if}
