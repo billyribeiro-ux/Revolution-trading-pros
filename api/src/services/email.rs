@@ -10,12 +10,28 @@
 use anyhow::Result;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
+use sqlx::PgPool;
 
-/// Email service for sending transactional emails via Postmark
+/// Email service for sending transactional emails via Postmark.
+///
+/// **Batch 6 — graceful no-op fallback.** `postmark_token` is
+/// `Option<String>`. When the token is unset or empty (the default
+/// state until the operator activates the Postmark account), every
+/// send call:
+///
+///   1. Writes a row to `email_logs` so the operator has retry
+///      visibility.
+///   2. Skips the HTTP call.
+///   3. Returns `Ok(())`.
+///
+/// As soon as `POSTMARK_TOKEN` is set in env and the API is restarted,
+/// the same call paths begin actually delivering — no code change.
 #[derive(Clone)]
 pub struct EmailService {
     client: Client,
-    token: String,
+    /// `None` until POSTMARK_TOKEN is set in env. Send calls become no-ops
+    /// (with DB row written) when this is `None`.
+    token: Option<String>,
     from_email: String,
     from_name: String,
     app_url: String,
@@ -37,6 +53,21 @@ struct PostmarkEmail {
     message_stream: String,
 }
 
+/// Postmark `email/withTemplate` request body.
+#[derive(Serialize)]
+struct PostmarkTemplateEmail<'a> {
+    #[serde(rename = "From")]
+    from: String,
+    #[serde(rename = "To")]
+    to: &'a str,
+    #[serde(rename = "TemplateAlias")]
+    template_alias: &'a str,
+    #[serde(rename = "TemplateModel")]
+    template_model: &'a serde_json::Value,
+    #[serde(rename = "MessageStream")]
+    message_stream: &'static str,
+}
+
 #[derive(Deserialize)]
 #[allow(dead_code)]
 struct PostmarkResponse {
@@ -49,18 +80,251 @@ struct PostmarkResponse {
 }
 
 impl EmailService {
-    /// Create a new EmailService instance
+    /// Construct from an explicit token string. Caller decides whether
+    /// to pass `Some` or `None`. Batch 6 prefers `from_env()` which
+    /// applies the empty-string-is-None rule automatically.
     pub fn new(token: &str, from_email: &str, app_url: &str) -> Self {
+        let token = if token.is_empty() {
+            None
+        } else {
+            Some(token.to_string())
+        };
         Self {
             client: Client::new(),
-            token: token.to_string(),
+            token,
             from_email: from_email.to_string(),
             from_name: "Revolution Trading Pros".to_string(),
             app_url: app_url.trim_end_matches('/').to_string(),
         }
     }
 
-    /// Send an email via Postmark
+    /// Batch 6 constructor: read `POSTMARK_TOKEN` and
+    /// `POSTMARK_FROM_EMAIL` from env. Empty/missing token → service
+    /// runs in skip-no-token mode (still writes `email_logs` rows; no
+    /// HTTP traffic). The `app_url` is taken from the surrounding
+    /// `Config` because email links need the canonical front-end URL.
+    pub fn from_env(app_url: &str) -> Self {
+        let token = std::env::var("POSTMARK_TOKEN")
+            .ok()
+            .filter(|s| !s.trim().is_empty());
+        let from_email = std::env::var("POSTMARK_FROM_EMAIL")
+            .unwrap_or_else(|_| "noreply@example.com".to_string());
+
+        if token.is_some() {
+            tracing::info!(
+                target: "email",
+                event = "email_service_enabled",
+                "EmailService enabled with Postmark"
+            );
+        } else {
+            tracing::info!(
+                target: "email",
+                event = "email_service_disabled",
+                "EmailService disabled: POSTMARK_TOKEN not set; emails will be logged but not sent"
+            );
+        }
+
+        Self {
+            client: Client::new(),
+            token,
+            from_email,
+            from_name: "Revolution Trading Pros".to_string(),
+            app_url: app_url.trim_end_matches('/').to_string(),
+        }
+    }
+
+    /// True when a Postmark token is configured. Used by the admin
+    /// `/api/admin/email/status` diagnostic.
+    pub fn is_enabled(&self) -> bool {
+        self.token.is_some()
+    }
+
+    /// Configured from-email. Read by `/api/admin/email/status`.
+    pub fn from_email(&self) -> &str {
+        &self.from_email
+    }
+
+    /// Batch 6 — primary new send API.
+    ///
+    /// Always writes an `email_logs` row before doing anything else;
+    /// the row's terminal status reflects what happened:
+    ///
+    ///   * `skipped_no_token` — `POSTMARK_TOKEN` unset (returns Ok)
+    ///   * `sent`             — Postmark accepted the send
+    ///   * `failed`           — Postmark non-2xx or transport error
+    ///     (also returns Err so callers can surface)
+    ///
+    /// Take `&PgPool` rather than storing one because the surrounding
+    /// `Services` struct is constructed before the pool is wrapped in
+    /// `AppState`; threading the pool through every call site is
+    /// cheaper than refactoring `Services` to own a pool clone.
+    pub async fn send_transactional(
+        &self,
+        pool: &PgPool,
+        to: &str,
+        template_alias: &str,
+        model: serde_json::Value,
+    ) -> Result<()> {
+        // 1. Write the queued row up-front so we have a paper trail
+        //    even if the Postmark call panics or the process crashes.
+        //    `email` and `template_type` are written for backward
+        //    compatibility with the legacy newsletter `EmailLog` model;
+        //    the new spec columns (`to_email`, `template_alias`,
+        //    `model`, `queued_at`) are written from the same values.
+        let log_id: i64 = match sqlx::query_scalar(
+            r#"INSERT INTO email_logs (
+                email, to_email,
+                subject,
+                template_type, template_alias,
+                model,
+                status, provider,
+                queued_at, created_at
+               ) VALUES ($1, $1, $2, $3, $3, $4, 'queued', 'postmark', NOW(), NOW())
+               RETURNING id"#,
+        )
+        .bind(to)
+        .bind(format!("[template:{}]", template_alias)) // legacy `subject` NOT NULL
+        .bind(template_alias)
+        .bind(&model)
+        .fetch_one(pool)
+        .await
+        {
+            Ok(id) => id,
+            Err(e) => {
+                tracing::error!(
+                    target: "email",
+                    error = %e,
+                    to = %to,
+                    template = %template_alias,
+                    "Failed to write email_logs row; aborting send"
+                );
+                return Err(anyhow::anyhow!("email_logs insert failed: {}", e));
+            }
+        };
+
+        // 2. Branch on token presence.
+        let Some(ref token) = self.token else {
+            // Token unset — graceful no-op. Update the row so admins
+            // can grep for skipped sends, return Ok so caller
+            // continues normally.
+            let _ = sqlx::query(
+                "UPDATE email_logs SET status = 'skipped_no_token', sent_at = NULL WHERE id = $1",
+            )
+            .bind(log_id)
+            .execute(pool)
+            .await;
+            tracing::info!(
+                target: "email",
+                event = "email_skipped_no_token",
+                to = %to,
+                template = %template_alias,
+                log_id = %log_id,
+                "Email skipped: POSTMARK_TOKEN not set"
+            );
+            return Ok(());
+        };
+
+        // 3. Token present — call Postmark `email/withTemplate`.
+        let from = format!("{} <{}>", self.from_name, self.from_email);
+        let body = PostmarkTemplateEmail {
+            from,
+            to,
+            template_alias,
+            template_model: &model,
+            message_stream: "outbound",
+        };
+
+        let result = self
+            .client
+            .post("https://api.postmarkapp.com/email/withTemplate")
+            .header("Accept", "application/json")
+            .header("Content-Type", "application/json")
+            .header("X-Postmark-Server-Token", token.as_str())
+            .json(&body)
+            .send()
+            .await;
+
+        match result {
+            Ok(resp) if resp.status().is_success() => {
+                let parsed: PostmarkResponse =
+                    resp.json().await.unwrap_or(PostmarkResponse {
+                        message_id: None,
+                        error_code: None,
+                        message: None,
+                    });
+                let _ = sqlx::query(
+                    r#"UPDATE email_logs
+                       SET status = 'sent', sent_at = NOW(), provider_message_id = $1
+                       WHERE id = $2"#,
+                )
+                .bind(parsed.message_id.as_deref())
+                .bind(log_id)
+                .execute(pool)
+                .await;
+                tracing::info!(
+                    target: "email",
+                    event = "email_sent",
+                    to = %to,
+                    template = %template_alias,
+                    log_id = %log_id,
+                    "Email sent via Postmark"
+                );
+                Ok(())
+            }
+            Ok(resp) => {
+                let status = resp.status();
+                let body = resp
+                    .text()
+                    .await
+                    .unwrap_or_else(|_| "<no response body>".to_string());
+                let err_msg = format!("Postmark HTTP {}: {}", status, body);
+                let _ = sqlx::query(
+                    r#"UPDATE email_logs
+                       SET status = 'failed', error = $1, error_message = $1
+                       WHERE id = $2"#,
+                )
+                .bind(&err_msg)
+                .bind(log_id)
+                .execute(pool)
+                .await;
+                tracing::error!(
+                    target: "email",
+                    event = "email_failed",
+                    to = %to,
+                    template = %template_alias,
+                    log_id = %log_id,
+                    error = %err_msg,
+                );
+                Err(anyhow::anyhow!(err_msg))
+            }
+            Err(e) => {
+                let err_msg = format!("Postmark transport error: {}", e);
+                let _ = sqlx::query(
+                    r#"UPDATE email_logs
+                       SET status = 'failed', error = $1, error_message = $1
+                       WHERE id = $2"#,
+                )
+                .bind(&err_msg)
+                .bind(log_id)
+                .execute(pool)
+                .await;
+                tracing::error!(
+                    target: "email",
+                    event = "email_failed",
+                    to = %to,
+                    template = %template_alias,
+                    log_id = %log_id,
+                    error = %err_msg,
+                );
+                Err(anyhow::anyhow!(err_msg))
+            }
+        }
+    }
+
+    /// Legacy raw-HTML send path. Kept so the existing 12 helper
+    /// methods (welcome, verification, etc.) keep working while the
+    /// new template-based code path is rolled out. When
+    /// `POSTMARK_TOKEN` is unset this is a no-op (returns `Ok(())`).
     pub async fn send(
         &self,
         to: &str,
@@ -68,6 +332,22 @@ impl EmailService {
         html_body: &str,
         text_body: Option<&str>,
     ) -> Result<()> {
+        // Batch 6: graceful no-op when token unset. Legacy callers
+        // (newsletter, verification email helper, etc.) hit this when
+        // the operator has not yet activated Postmark; previously the
+        // service didn't exist at all (`Option<EmailService>` = None
+        // and `if let Some(...)` skipped the call). Now we still
+        // exist, but skip the HTTP traffic.
+        let Some(ref token) = self.token else {
+            tracing::debug!(
+                target: "email",
+                event = "email_send_skipped_no_token",
+                to = %to,
+                "Legacy send() called with no Postmark token; no-op"
+            );
+            return Ok(());
+        };
+
         let from = format!("{} <{}>", self.from_name, self.from_email);
 
         let email = PostmarkEmail {
@@ -84,7 +364,7 @@ impl EmailService {
             .post("https://api.postmarkapp.com/email")
             .header("Accept", "application/json")
             .header("Content-Type", "application/json")
-            .header("X-Postmark-Server-Token", &self.token)
+            .header("X-Postmark-Server-Token", token.as_str())
             .json(&email)
             .send()
             .await?;

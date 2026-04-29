@@ -818,31 +818,98 @@ async fn handle_checkout_completed(
             }
         }
 
-        // Send order confirmation email
+        // Batch 6: send subscription-confirmation OR receipt depending
+        // on whether this checkout session created a subscription.
+        // Best-effort — webhook 200 is more important than email send.
         if let Some(user_id) = user_id {
-            if let Some(ref email_service) = state.services.email {
-                let user_email: Option<String> =
-                    sqlx::query_scalar("SELECT email FROM users WHERE id = $1")
-                        .bind(user_id)
-                        .fetch_optional(&state.db.pool)
-                        .await
-                        .ok()
-                        .flatten();
+            #[derive(sqlx::FromRow)]
+            struct UserRow {
+                email: String,
+                name: String,
+            }
+            let user_row: Option<UserRow> = sqlx::query_as(
+                "SELECT email, name FROM users WHERE id = $1",
+            )
+            .bind(user_id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .ok()
+            .flatten();
 
-                if let Some(email) = user_email {
-                    let order_number: Option<String> =
-                        sqlx::query_scalar("SELECT order_number FROM orders WHERE id = $1")
-                            .bind(order_id)
-                            .fetch_optional(&state.db.pool)
-                            .await
-                            .ok()
-                            .flatten();
+            #[derive(sqlx::FromRow)]
+            struct OrderRow {
+                order_number: String,
+                total: rust_decimal::Decimal,
+            }
+            let order_row: Option<OrderRow> = sqlx::query_as(
+                "SELECT order_number, total FROM orders WHERE id = $1",
+            )
+            .bind(order_id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .ok()
+            .flatten();
 
-                    if let Some(order_num) = order_number {
-                        let _ = email_service
-                            .send_order_confirmation(&email, &order_num)
-                            .await;
+            if let (Some(u), Some(o)) = (user_row, order_row) {
+                let amount_dollars: f64 =
+                    o.total.to_string().parse::<f64>().unwrap_or(0.0);
+                let is_subscription = session.subscription.is_some();
+                if is_subscription {
+                    // Look up the plan name + period_end for the model.
+                    #[derive(sqlx::FromRow)]
+                    struct PlanInfo {
+                        plan_name: String,
+                        current_period_end: Option<chrono::NaiveDateTime>,
                     }
+                    let plan_info: Option<PlanInfo> = sqlx::query_as(
+                        r#"SELECT mp.name AS plan_name, um.current_period_end
+                           FROM user_memberships um
+                           JOIN membership_plans mp ON mp.id = um.plan_id
+                           WHERE um.stripe_subscription_id = $1
+                           ORDER BY um.id DESC LIMIT 1"#,
+                    )
+                    .bind(session.subscription.as_deref().unwrap_or(""))
+                    .fetch_optional(&state.db.pool)
+                    .await
+                    .ok()
+                    .flatten();
+
+                    let _ = state
+                        .services
+                        .email
+                        .send_transactional(
+                            &state.db.pool,
+                            &u.email,
+                            "subscription-confirmation",
+                            json!({
+                                "name": u.name,
+                                "plan_name": plan_info.as_ref().map(|p| p.plan_name.clone())
+                                    .unwrap_or_else(|| "Membership".to_string()),
+                                "amount_dollars": amount_dollars,
+                                "period_end": plan_info.as_ref()
+                                    .and_then(|p| p.current_period_end)
+                                    .map(|t| t.and_utc().to_rfc3339()),
+                                "order_number": o.order_number,
+                            }),
+                        )
+                        .await;
+                } else {
+                    let _ = state
+                        .services
+                        .email
+                        .send_transactional(
+                            &state.db.pool,
+                            &u.email,
+                            "receipt",
+                            json!({
+                                "name": u.name,
+                                "product_name": format!("Order {}", o.order_number),
+                                "amount_dollars": amount_dollars,
+                                "order_id": order_id,
+                                "order_number": o.order_number,
+                            }),
+                        )
+                        .await;
                 }
             }
         }
@@ -1005,6 +1072,44 @@ async fn handle_subscription_deleted(
         "Subscription cancelled"
     );
 
+    // Batch 6: subscription-canceled email. Best-effort.
+    #[derive(sqlx::FromRow)]
+    struct CancelInfo {
+        email: String,
+        name: String,
+        plan_name: String,
+        current_period_end: Option<chrono::NaiveDateTime>,
+    }
+    let info: Option<CancelInfo> = sqlx::query_as(
+        r#"SELECT u.email, u.name, mp.name AS plan_name, um.current_period_end
+           FROM user_memberships um
+           JOIN users u ON u.id = um.user_id
+           JOIN membership_plans mp ON mp.id = um.plan_id
+           WHERE um.stripe_subscription_id = $1
+           ORDER BY um.id DESC LIMIT 1"#,
+    )
+    .bind(&subscription.id)
+    .fetch_optional(&state.db.pool)
+    .await
+    .ok()
+    .flatten();
+    if let Some(i) = info {
+        let _ = state
+            .services
+            .email
+            .send_transactional(
+                &state.db.pool,
+                &i.email,
+                "subscription-canceled",
+                json!({
+                    "name": i.name,
+                    "plan_name": i.plan_name,
+                    "period_end": i.current_period_end.map(|t| t.and_utc().to_rfc3339()),
+                }),
+            )
+            .await;
+    }
+
     Ok(())
 }
 
@@ -1085,7 +1190,8 @@ async fn handle_payment_failed(
         .ok();
 
         // ICT 7 Fix: Send payment failed with grace period email notification
-        if let Some(ref email_service) = state.services.email {
+        {
+        let email_service = &state.services.email;
             // Get user details from membership including plan price
             #[derive(sqlx::FromRow)]
             struct UserSubscription {
@@ -1120,14 +1226,24 @@ async fn handle_payment_failed(
                 };
                 let grace_end_str = grace_period_end.format("%B %d, %Y").to_string();
 
+                // Batch 6: failed-payment template via send_transactional.
+                let retry_link = format!(
+                    "{}/account/billing",
+                    state.config.app_url.trim_end_matches('/')
+                );
                 let _ = email_service
-                    .send_payment_failed_with_grace(
+                    .send_transactional(
+                        &state.db.pool,
                         &info.email,
-                        &info.name,
-                        &info.plan_name,
-                        payment_amount_cents,
-                        &grace_end_str,
-                        attempt_count,
+                        "failed-payment",
+                        json!({
+                            "name": info.name,
+                            "plan_name": info.plan_name,
+                            "amount_dollars": (payment_amount_cents as f64) / 100.0,
+                            "retry_link": retry_link,
+                            "dunning_period_end": grace_end_str,
+                            "attempt_count": attempt_count,
+                        }),
                     )
                     .await;
 
@@ -1138,19 +1254,28 @@ async fn handle_payment_failed(
                     subscription_id = %sub_id,
                     grace_period_end = %grace_end_str,
                     attempt_count = %attempt_count,
-                    "Payment failed notification email sent with grace period"
+                    "Payment failed notification email queued"
                 );
             } else if let Some(email) = customer_email {
-                // Fallback: use customer email from invoice if we can't find membership
+                // Fallback when membership lookup fails — still notify.
                 let grace_end_str = grace_period_end.format("%B %d, %Y").to_string();
+                let retry_link = format!(
+                    "{}/account/billing",
+                    state.config.app_url.trim_end_matches('/')
+                );
                 let _ = email_service
-                    .send_payment_failed_with_grace(
+                    .send_transactional(
+                        &state.db.pool,
                         email,
-                        "Valued Customer",
-                        "your subscription",
-                        amount_due_cents,
-                        &grace_end_str,
-                        attempt_count,
+                        "failed-payment",
+                        json!({
+                            "name": "Valued Customer",
+                            "plan_name": "your subscription",
+                            "amount_dollars": (amount_due_cents as f64) / 100.0,
+                            "retry_link": retry_link,
+                            "dunning_period_end": grace_end_str,
+                            "attempt_count": attempt_count,
+                        }),
                     )
                     .await;
             }
@@ -1273,6 +1398,49 @@ async fn handle_refund(
             refund_status = %refund_status,
             "Refund processed"
         );
+
+        // Batch 6: refund-confirmation email. Best-effort.
+        #[derive(sqlx::FromRow)]
+        struct RefundEmailInfo {
+            email: String,
+            name: String,
+            order_number: String,
+        }
+        let info: Option<RefundEmailInfo> = sqlx::query_as(
+            r#"SELECT u.email, u.name, o.order_number
+               FROM orders o
+               JOIN users u ON u.id = o.user_id
+               WHERE o.payment_intent_id = $1
+               LIMIT 1"#,
+        )
+        .bind(pi)
+        .fetch_optional(&state.db.pool)
+        .await
+        .ok()
+        .flatten();
+        if let Some(i) = info {
+            let refund_id = charge["refunds"]["data"][0]["id"]
+                .as_str()
+                .or_else(|| charge["id"].as_str())
+                .unwrap_or("unknown");
+            let _ = state
+                .services
+                .email
+                .send_transactional(
+                    &state.db.pool,
+                    &i.email,
+                    "refund-confirmation",
+                    json!({
+                        "name": i.name,
+                        "product_name": format!("Order {}", i.order_number),
+                        "amount_dollars": (refund_amount_cents as f64) / 100.0,
+                        "refund_id": refund_id,
+                        "order_number": i.order_number,
+                        "is_full_refund": is_full_refund,
+                    }),
+                )
+                .await;
+        }
     }
 
     Ok(())
@@ -1352,6 +1520,38 @@ async fn handle_dispute_created(
         "Chargeback dispute created — admin notification required"
     );
 
+    // Batch 6: notify the operator. Address comes from
+    // ADMIN_NOTIFICATION_EMAIL env var; if unset we log a warning and
+    // skip rather than send to a guessed address.
+    if let Some(admin_email) = state.config.admin_notification_email.as_deref() {
+        let _ = state
+            .services
+            .email
+            .send_transactional(
+                &state.db.pool,
+                admin_email,
+                "dispute-created",
+                json!({
+                    "dispute_id": dispute_id,
+                    "charge_id": charge_id,
+                    "amount_cents": amount_cents,
+                    "amount_dollars": (amount_cents as f64) / 100.0,
+                    "currency": currency,
+                    "reason": reason,
+                    "status": status,
+                    "response_deadline": response_deadline.map(|d| d.to_rfc3339()),
+                }),
+            )
+            .await;
+    } else {
+        tracing::warn!(
+            target: "payments",
+            event = "dispute_admin_notify_skipped",
+            dispute_id = %dispute_id,
+            "ADMIN_NOTIFICATION_EMAIL not set; dispute notification not sent"
+        );
+    }
+
     Ok(())
 }
 
@@ -1407,8 +1607,53 @@ async fn handle_trial_will_end(
         event = "trial_will_end",
         subscription_id = %subscription_id,
         customer_id = %customer_id,
-        "Trial ending in 3 days — email notification pending Task 4"
+        "Trial ending in 3 days — sending notification (Batch 6)"
     );
+
+    // Batch 6: trial-ending email. Best-effort. We dedup against the
+    // daily reminders job by checking last 24h of email_logs in the
+    // job itself; this Stripe-driven path is the primary signal.
+    #[derive(sqlx::FromRow)]
+    struct TrialInfo {
+        email: String,
+        name: String,
+        plan_name: String,
+    }
+    if let Some(uid) = user_id {
+        let info: Option<TrialInfo> = sqlx::query_as(
+            r#"SELECT u.email, u.name, mp.name AS plan_name
+               FROM user_memberships um
+               JOIN users u ON u.id = um.user_id
+               JOIN membership_plans mp ON mp.id = um.plan_id
+               WHERE um.user_id = $1 AND um.stripe_subscription_id = $2
+               ORDER BY um.id DESC LIMIT 1"#,
+        )
+        .bind(uid)
+        .bind(subscription_id)
+        .fetch_optional(&state.db.pool)
+        .await
+        .ok()
+        .flatten();
+        if let Some(i) = info {
+            let trial_end_iso = trial_end
+                .and_then(|ts| chrono::DateTime::from_timestamp(ts, 0))
+                .map(|dt| dt.to_rfc3339());
+            let _ = state
+                .services
+                .email
+                .send_transactional(
+                    &state.db.pool,
+                    &i.email,
+                    "trial-ending",
+                    json!({
+                        "name": i.name,
+                        "plan_name": i.plan_name,
+                        "trial_end_date": trial_end_iso,
+                    }),
+                )
+                .await;
+        }
+    }
 
     Ok(())
 }

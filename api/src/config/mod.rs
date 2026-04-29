@@ -39,6 +39,11 @@ pub struct Config {
     pub from_email: String,
     pub app_url: String, // Frontend URL for email links
 
+    /// Batch 6 — destination for operator-facing notifications
+    /// (currently `dispute-created`). Empty/missing → those alerts are
+    /// logged at WARN level but no email is sent.
+    pub admin_notification_email: Option<String>,
+
     // Meilisearch
     pub meilisearch_host: String,
     pub meilisearch_api_key: String,
@@ -238,11 +243,17 @@ impl Config {
                 .map(|s| s.trim().to_string())
                 .collect(),
 
-            postmark_token: std::env::var("POSTMARK_TOKEN").ok(),
-            from_email: std::env::var("FROM_EMAIL")
+            postmark_token: std::env::var("POSTMARK_TOKEN")
+                .ok()
+                .filter(|s| !s.trim().is_empty()),
+            from_email: std::env::var("POSTMARK_FROM_EMAIL")
+                .or_else(|_| std::env::var("FROM_EMAIL"))
                 .unwrap_or_else(|_| "noreply@example.com".to_string()),
             app_url: std::env::var("APP_URL")
                 .unwrap_or_else(|_| "https://revolution-trading-pros.pages.dev".to_string()),
+            admin_notification_email: std::env::var("ADMIN_NOTIFICATION_EMAIL")
+                .ok()
+                .filter(|s| !s.trim().is_empty()),
 
             meilisearch_host: std::env::var("MEILISEARCH_HOST")
                 .unwrap_or_else(|_| "http://localhost:7700".to_string()),
@@ -410,6 +421,7 @@ mod tests {
             postmark_token: None,
             from_email: "n@e".to_string(),
             app_url: "https://example.com".to_string(),
+            admin_notification_email: None,
             meilisearch_host: String::new(),
             meilisearch_api_key: String::new(),
             superadmin_emails: vec![],

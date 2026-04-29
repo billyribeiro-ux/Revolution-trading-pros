@@ -296,6 +296,7 @@ mod tests {
             postmark_token: None,
             from_email: String::new(),
             app_url: String::new(),
+            admin_notification_email: None,
             meilisearch_host: String::new(),
             meilisearch_api_key: String::new(),
             superadmin_emails: vec![],
