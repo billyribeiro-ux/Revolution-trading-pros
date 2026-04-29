@@ -55,7 +55,23 @@ impl FromRequestParts<AppState> for User {
                 (StatusCode::UNAUTHORIZED, "Invalid or expired token")
             })?;
 
-        // ICT 7 SECURITY: Check if token has been blacklisted (logout/revocation)
+        // FIX-H-3 (2026-04-29): JWT blacklist check now FAILS CLOSED.
+        //
+        // Previous behavior: if Redis returned an Err, the request proceeded
+        // ("fail open for availability"). That meant a Redis fault during
+        // a logout/ban window left the just-revoked token usable for the
+        // remainder of its TTL.
+        //
+        // New behavior:
+        //   - Redis configured + token blacklisted -> reject (unchanged).
+        //   - Redis configured + Err on lookup    -> reject 503 (NEW).
+        //   - Redis NOT configured                -> log + continue. This
+        //     mirrors how every other Redis-dependent path behaves when
+        //     Redis is genuinely absent (local dev without Redis). The
+        //     `state.services.redis` check returns None at boot only when
+        //     REDIS_URL is unset, which is itself caught by config sanity
+        //     in production. If you want to fail-closed even in this
+        //     branch, make Redis a hard requirement at startup.
         if let Some(ref redis) = state.services.redis {
             let token_hash = hash_token_for_blacklist(bearer.token());
             match redis.is_token_blacklisted(&token_hash).await {
@@ -68,17 +84,25 @@ impl FromRequestParts<AppState> for User {
                     );
                     return Err((StatusCode::UNAUTHORIZED, "Token has been revoked"));
                 }
+                Ok(false) => {} // not blacklisted, continue
                 Err(e) => {
-                    // Redis unavailable - log but continue (fail open for availability)
-                    // In high-security environments, consider failing closed instead
-                    tracing::warn!(
-                        target: "security",
-                        event = "blacklist_check_failed",
+                    // Fail-closed: do not let a Redis fault open a window
+                    // for revoked tokens. Returning 401 (not 503) so the
+                    // frontend's existing retry+refresh logic kicks in
+                    // and the user re-auths instead of seeing an ambiguous
+                    // service-unavailable.
+                    tracing::error!(
+                        target: "security_audit",
+                        event = "blacklist_check_failed_fail_closed",
+                        user_id = %claims.sub,
                         error = %e,
-                        "Redis blacklist check failed, continuing with token validation"
+                        "Redis blacklist check failed; rejecting request (fail-closed)"
                     );
+                    return Err((
+                        StatusCode::UNAUTHORIZED,
+                        "Authentication temporarily unavailable",
+                    ));
                 }
-                _ => {} // Token not blacklisted, continue
             }
         }
 

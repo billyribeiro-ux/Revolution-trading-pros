@@ -36,7 +36,6 @@ impl FromRequestParts<AppState> for AdminUser {
         tracing::info!(
             target: "auth_debug",
             user_id = user.id,
-            email = %user.email,
             role = %user_role,
             is_admin = is_admin,
             is_superadmin_email = is_superadmin,
@@ -50,7 +49,6 @@ impl FromRequestParts<AppState> for AdminUser {
                 target: "security",
                 event = "unauthorized_admin_access",
                 user_id = %user.id,
-                email = %user.email,
                 "Non-admin user attempted to access admin endpoint"
             );
             Err((StatusCode::FORBIDDEN, "Admin access required"))
@@ -86,7 +84,6 @@ impl FromRequestParts<AppState> for SuperAdminUser {
                 target: "security",
                 event = "unauthorized_superadmin_access",
                 user_id = %user.id,
-                email = %user.email,
                 "Non-superadmin user attempted to access superadmin endpoint"
             );
             Err((StatusCode::FORBIDDEN, "Super admin access required"))

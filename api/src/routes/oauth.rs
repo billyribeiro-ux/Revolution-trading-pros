@@ -14,8 +14,8 @@
 
 use axum::{
     extract::{Query, State},
-    http::StatusCode,
-    response::Redirect,
+    http::{HeaderValue, StatusCode},
+    response::{IntoResponse, Redirect, Response},
     routing::{get, post},
     Json, Router,
 };
@@ -486,7 +486,6 @@ async fn create_or_get_oauth_user(
         target: "security_audit",
         event = "oauth_user_created",
         user_id = %new_user.id,
-        email = %email,
         provider = %provider,
         "ICT 7 AUDIT: New user created via OAuth"
     );
@@ -559,6 +558,71 @@ fn create_oauth_auth_response(
         user: user.into(),
         expires_in: state.config.jwt_expires_in * 3600,
     })
+}
+
+/// FIX-C-1 (2026-04-29): build a Response that sets the access token,
+/// refresh token, and session ID as httpOnly cookies, and redirects to the
+/// frontend `/auth/callback` page WITHOUT putting credentials in the URL.
+///
+/// Why: previously the OAuth callbacks redirected to
+///   /auth/callback?provider=google&token=<JWT>&refresh_token=<JWT>&session_id=...
+/// which leaked full JWTs into Cloudflare access logs, browser history,
+/// and any third-party Referer headers. Cookies set on the redirect
+/// Response are sent with the immediately-following GET to /auth/callback
+/// because they are scoped to the same site, so the frontend has full
+/// access to the session via cookie + the existing `GET /me` flow.
+///
+/// Cookie attributes:
+///   - HttpOnly: not readable from JavaScript (XSS isolation).
+///   - Secure: only sent over HTTPS in production. We omit Secure in
+///     non-production so local-dev OAuth (http://localhost:5173) keeps
+///     working.
+///   - SameSite=Lax: required for the cookie to be sent on the top-level
+///     redirect from the OAuth provider back to our callback.
+///   - Path=/: visible to every route on the frontend origin.
+///   - Max-Age: matches token TTL.
+fn oauth_callback_response_with_cookies(
+    state: &AppState,
+    auth: &AuthResponse,
+    provider: &str,
+) -> Response {
+    let app_url = state.config.app_url.trim_end_matches('/');
+    // No tokens in the URL — only the provider name (UX, so the callback
+    // page can show "Signed in with Google" if it wants).
+    let redirect_to = format!("{}/auth/callback?provider={}", app_url, provider);
+
+    // Cookies use the SAME names hooks.server.ts already reads
+    // (rtp_access_token, rtp_refresh_token, rtp_session_id) so this
+    // change is transparent to the frontend.
+    let secure_attr = if state.config.is_production() { "; Secure" } else { "" };
+    let access_max_age = state.config.jwt_expires_in * 3600; // hours -> seconds
+    let refresh_max_age: i64 = 7 * 24 * 3600; // 7 days
+
+    let access_cookie = format!(
+        "rtp_access_token={}; HttpOnly; SameSite=Lax; Path=/; Max-Age={}{}",
+        auth.access_token, access_max_age, secure_attr
+    );
+    let refresh_cookie = format!(
+        "rtp_refresh_token={}; HttpOnly; SameSite=Lax; Path=/; Max-Age={}{}",
+        auth.refresh_token, refresh_max_age, secure_attr
+    );
+    let session_cookie = format!(
+        "rtp_session_id={}; HttpOnly; SameSite=Lax; Path=/; Max-Age={}{}",
+        auth.session_id, refresh_max_age, secure_attr
+    );
+
+    let mut response = Redirect::to(&redirect_to).into_response();
+    let headers = response.headers_mut();
+    if let Ok(v) = HeaderValue::from_str(&access_cookie) {
+        headers.append(axum::http::header::SET_COOKIE, v);
+    }
+    if let Ok(v) = HeaderValue::from_str(&refresh_cookie) {
+        headers.append(axum::http::header::SET_COOKIE, v);
+    }
+    if let Ok(v) = HeaderValue::from_str(&session_cookie) {
+        headers.append(axum::http::header::SET_COOKIE, v);
+    }
+    response
 }
 
 // =============================================================================
@@ -638,7 +702,10 @@ async fn google_init(
 async fn google_callback(
     State(state): State<AppState>,
     Query(query): Query<GoogleCallbackQuery>,
-) -> Result<Redirect, (StatusCode, Json<serde_json::Value>)> {
+) -> Result<Response, (StatusCode, Json<serde_json::Value>)> {
+    // FIX-C-1 (2026-04-29): return type changed from Redirect to Response so
+    // we can attach Set-Cookie headers on the success path. Error paths
+    // still issue plain redirects via .into_response().
     // Check for errors from Google
     if let Some(error) = query.error {
         let description = query.error_description.unwrap_or_default();
@@ -653,7 +720,8 @@ async fn google_callback(
             "{}/login?error={}",
             state.config.app_url,
             urlencoding::encode(&format!("Google sign-in failed: {}", error))
-        )));
+        ))
+        .into_response());
     }
 
     // Validate state parameter
@@ -750,7 +818,8 @@ async fn google_callback(
         return Ok(Redirect::to(&format!(
             "{}/login?error=google_token_failed",
             state.config.app_url
-        )));
+        ))
+        .into_response());
     }
 
     let tokens: GoogleTokenResponse = token_response.json().await.map_err(|e| {
@@ -788,13 +857,13 @@ async fn google_callback(
         tracing::warn!(
             target: "security_audit",
             event = "google_oauth_unverified_email",
-            email = %user_info.email,
             "Google account email not verified"
         );
         return Ok(Redirect::to(&format!(
             "{}/login?error=email_not_verified",
             state.config.app_url
-        )));
+        ))
+        .into_response());
     }
 
     // Create or get user
@@ -833,25 +902,15 @@ async fn google_callback(
         target: "security_audit",
         event = "google_oauth_success",
         user_id = %auth_response.user.id,
-        email = %auth_response.user.email,
-        "ICT 7 AUDIT: Google OAuth login successful"
+        "Google OAuth login successful"
     );
 
-    // SECURITY NOTE: Passing JWT tokens in URL query strings is a known security concern
-    // (tokens may be logged in server access logs, browser history, and Referer headers).
-    // This is an accepted trade-off for OAuth redirect flows where cookies cannot be set
-    // cross-origin. The frontend MUST extract these tokens immediately and remove them from
-    // the URL. Do not change this flow without a replacement mechanism (e.g., server-side sessions).
-    let callback_url = format!(
-        "{}/auth/callback?provider=google&token={}&refresh_token={}&session_id={}&expires_in={}",
-        state.config.app_url,
-        urlencoding::encode(&auth_response.token),
-        urlencoding::encode(&auth_response.refresh_token),
-        urlencoding::encode(&auth_response.session_id),
-        auth_response.expires_in
-    );
-
-    Ok(Redirect::to(&callback_url))
+    // FIX-C-1 (2026-04-29): tokens are now set as httpOnly cookies on the
+    // redirect Response, NOT placed in the URL query string. The frontend
+    // /auth/callback page no longer reads tokens from `?token=...`; it
+    // calls GET /api/auth/me to confirm the session. See
+    // oauth_callback_response_with_cookies() above for cookie attributes.
+    Ok(oauth_callback_response_with_cookies(&state, &auth_response, "google"))
 }
 
 // =============================================================================
@@ -934,7 +993,8 @@ async fn apple_init(
 async fn apple_callback(
     State(state): State<AppState>,
     axum::Form(body): axum::Form<AppleCallbackBody>,
-) -> Result<Redirect, (StatusCode, Json<serde_json::Value>)> {
+) -> Result<Response, (StatusCode, Json<serde_json::Value>)> {
+    // FIX-C-1 (2026-04-29): see google_callback for rationale.
     // Check for errors from Apple
     if let Some(error) = body.error {
         tracing::warn!(
@@ -947,7 +1007,8 @@ async fn apple_callback(
             "{}/login?error={}",
             state.config.app_url,
             urlencoding::encode(&format!("Apple sign-in failed: {}", error))
-        )));
+        ))
+        .into_response());
     }
 
     // Validate state parameter
@@ -1063,25 +1124,12 @@ async fn apple_callback(
         target: "security_audit",
         event = "apple_oauth_success",
         user_id = %auth_response.user.id,
-        email = %auth_response.user.email,
         "ICT 7 AUDIT: Apple Sign-In successful"
     );
 
-    // SECURITY NOTE: Passing JWT tokens in URL query strings is a known security concern
-    // (tokens may be logged in server access logs, browser history, and Referer headers).
-    // This is an accepted trade-off for OAuth redirect flows where cookies cannot be set
-    // cross-origin. The frontend MUST extract these tokens immediately and remove them from
-    // the URL. Do not change this flow without a replacement mechanism (e.g., server-side sessions).
-    let callback_url = format!(
-        "{}/auth/callback?provider=apple&token={}&refresh_token={}&session_id={}&expires_in={}",
-        state.config.app_url,
-        urlencoding::encode(&auth_response.token),
-        urlencoding::encode(&auth_response.refresh_token),
-        urlencoding::encode(&auth_response.session_id),
-        auth_response.expires_in
-    );
-
-    Ok(Redirect::to(&callback_url))
+    // FIX-C-1 (2026-04-29): tokens are now set as httpOnly cookies on the
+    // redirect Response. See google_callback for full rationale.
+    Ok(oauth_callback_response_with_cookies(&state, &auth_response, "apple"))
 }
 
 // =============================================================================

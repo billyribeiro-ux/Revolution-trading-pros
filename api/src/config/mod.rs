@@ -316,6 +316,40 @@ impl Config {
             return;
         }
 
+        // FIX-H-1 (2026-04-29): JWT_SECRET must be a real, sufficiently
+        // long random secret in production. The reader at line 208 only
+        // checks "is set" — if the placeholder string from .env.example
+        // ever leaks into a production deploy, JWTs become forgeable in
+        // minutes. We fail-fast at boot rather than serve a single request.
+        //
+        // 32 bytes is the OWASP minimum for HS256 (== HMAC key length
+        // recommended by NIST SP 800-117). Hex-encoded that is 64 chars;
+        // we accept >=32 chars to also allow base64 / random ASCII forms.
+        if self.jwt_secret.len() < 32 {
+            panic!(
+                "FATAL: ENVIRONMENT=production but JWT_SECRET is < 32 chars (got {} chars). \
+                 Refusing to boot — short secrets are brute-forceable. Generate one with \
+                 `openssl rand -hex 32` and set JWT_SECRET in your production secret store.",
+                self.jwt_secret.len()
+            );
+        }
+        // Reject the .env.example placeholder explicitly. The placeholder
+        // string is "replace-me-with-a-long-random-secret-at-least-32-characters-long"
+        // which is >= 32 chars, so the length check above does not catch it.
+        let lower = self.jwt_secret.to_ascii_lowercase();
+        if lower.contains("replace-me")
+            || lower.contains("placeholder")
+            || lower.contains("changeme")
+            || lower.contains("your-secret-here")
+        {
+            panic!(
+                "FATAL: ENVIRONMENT=production but JWT_SECRET appears to be a placeholder. \
+                 Refusing to boot — this is the value from .env.example, not a real secret. \
+                 Generate one with `openssl rand -hex 32` and rotate it in your production \
+                 secret store."
+            );
+        }
+
         // Stripe secret key
         if !self.stripe_secret_key.starts_with("sk_live_") {
             let prefix = self
@@ -412,7 +446,12 @@ mod tests {
             r2_secret_access_key: String::new(),
             r2_bucket: String::new(),
             r2_public_url: String::new(),
-            jwt_secret: "x".to_string(),
+            // FIX-H-1 (2026-04-29): live_config now provides a JWT_SECRET that
+            // satisfies the new production assertion (>=32 chars, not a placeholder).
+            // Previously was "x" (1 char) — caught by the new check.
+            jwt_secret:
+                "test-jwt-secret-thirty-two-chars-or-more-for-tests-only-not-a-real-secret"
+                    .to_string(),
             jwt_expires_in: 1,
             stripe_secret_key: format!("sk_live_{}", body),
             stripe_publishable_key: format!("pk_live_{}", body),
@@ -507,6 +546,52 @@ mod tests {
         // env var); only check the prefix when one IS set.
         let mut cfg = live_config();
         cfg.stripe_publishable_key = String::new();
+        cfg.validate_production_secrets();
+    }
+
+    // ── FIX-H-1 (2026-04-29): JWT_SECRET production assertion tests ──
+
+    #[test]
+    #[should_panic(expected = "JWT_SECRET is < 32 chars")]
+    fn validate_production_secrets_panics_on_short_jwt_secret() {
+        let mut cfg = live_config();
+        cfg.jwt_secret = "too-short".to_string();
+        cfg.validate_production_secrets();
+    }
+
+    #[test]
+    #[should_panic(expected = "JWT_SECRET is < 32 chars")]
+    fn validate_production_secrets_panics_on_empty_jwt_secret() {
+        let mut cfg = live_config();
+        cfg.jwt_secret = String::new();
+        cfg.validate_production_secrets();
+    }
+
+    #[test]
+    #[should_panic(expected = "JWT_SECRET appears to be a placeholder")]
+    fn validate_production_secrets_panics_on_replace_me_placeholder() {
+        let mut cfg = live_config();
+        // The literal placeholder from .env.example. >=32 chars so the
+        // length check is not what catches it — the substring scan is.
+        cfg.jwt_secret =
+            "replace-me-with-a-long-random-secret-at-least-32-characters-long".to_string();
+        cfg.validate_production_secrets();
+    }
+
+    #[test]
+    #[should_panic(expected = "JWT_SECRET appears to be a placeholder")]
+    fn validate_production_secrets_panics_on_placeholder_substring() {
+        let mut cfg = live_config();
+        cfg.jwt_secret =
+            "this-string-contains-the-placeholder-marker-and-is-long-enough".to_string();
+        cfg.validate_production_secrets();
+    }
+
+    #[test]
+    #[should_panic(expected = "JWT_SECRET appears to be a placeholder")]
+    fn validate_production_secrets_panics_on_changeme() {
+        let mut cfg = live_config();
+        cfg.jwt_secret = "please-changeme-this-is-not-a-real-secret-yet-no-no".to_string();
         cfg.validate_production_secrets();
     }
 }

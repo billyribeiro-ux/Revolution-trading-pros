@@ -1,17 +1,22 @@
 <script lang="ts">
 	/**
-	 * OAuth Callback Page - ICT Level 7 Principal Engineer Grade
+	 * OAuth Callback Page
 	 *
-	 * Handles OAuth callback from backend after successful authentication.
-	 * Receives tokens from URL parameters and stores them securely.
+	 * FIX-C-1 (2026-04-29): the backend OAuth callbacks now set the access
+	 * token, refresh token, and session ID as httpOnly cookies on the
+	 * 302 redirect that lands the user here. This page no longer reads
+	 * tokens from `?token=...&refresh_token=...&session_id=...` URL params,
+	 * because those URLs leaked credentials into Cloudflare logs, browser
+	 * history, and Referer headers.
 	 *
-	 * Security Features:
-	 * - Tokens passed via URL are immediately processed and cleared from history
-	 * - Access token stored in memory only (XSS-resistant)
-	 * - Refresh token stored in httpOnly cookie via server endpoint
-	 * - Redirects to dashboard after successful auth
+	 * What we do here:
+	 *   1. Read `?provider=...` (UX label) and `?error=...` (error path).
+	 *   2. On success, call GET /api/auth/me — the cookies are already set,
+	 *      so this just confirms the session and gets the user record.
+	 *   3. Hand the user to the auth store and route to /dashboard.
 	 *
-	 * @version 1.0.0 - January 2026
+	 * The previous /api/auth/set-session step is no longer needed — the
+	 * cookies are already established by the backend's Set-Cookie headers.
 	 */
 
 	import { onMount } from 'svelte';
@@ -26,95 +31,46 @@
 
 	onMount(async () => {
 		try {
-			// Get OAuth parameters from URL
 			const params = page.url.searchParams;
 			provider = params.get('provider') || 'oauth';
-			const token = params.get('token');
-			const refreshToken = params.get('refresh_token');
-			const sessionId = params.get('session_id');
-			const expiresIn = params.get('expires_in');
 			const error = params.get('error');
 
-			// Check for OAuth errors
 			if (error) {
 				status = 'error';
 				errorMessage = decodeURIComponent(error);
 				console.error('[OAuth Callback] Error from provider:', errorMessage);
-				// Redirect to login after delay
 				setTimeout(() => goto('/login?error=' + encodeURIComponent(errorMessage)), 2000);
 				return;
 			}
 
-			// Validate required parameters
-			if (!token || !sessionId) {
-				status = 'error';
-				errorMessage = 'Missing authentication parameters';
-				console.error('[OAuth Callback] Missing required parameters');
-				setTimeout(() => goto('/login?error=missing_params'), 2000);
-				return;
-			}
-
-			// ICT 7 SECURITY: Clear tokens from URL history immediately
-			// This prevents tokens from being stored in browser history
-			window.history.replaceState({}, '', '/auth/callback');
-
-			// Set session cookie via server endpoint
-			try {
-				const sessionResponse = await fetch('/api/auth/set-session', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					credentials: 'include',
-					body: JSON.stringify({
-						access_token: token,
-						refresh_token: refreshToken,
-						expires_in: expiresIn ? parseInt(expiresIn, 10) : 3600
-					})
-				});
-
-				if (!sessionResponse.ok) {
-					console.warn('[OAuth Callback] Failed to set session cookie');
-				}
-			} catch (cookieError) {
-				console.warn('[OAuth Callback] Session cookie error:', cookieError);
-				// Continue anyway - tokens are in memory
-			}
-
-			// Fetch user data
+			// Confirm session via cookie-authenticated /me. The httpOnly
+			// cookies set on the redirect Response are sent automatically
+			// because credentials:'include' + same-site.
 			const userResponse = await fetch('/api/auth/me', {
-				headers: {
-					Authorization: `Bearer ${token}`,
-					Accept: 'application/json'
-				},
+				headers: { Accept: 'application/json' },
 				credentials: 'include'
 			});
 
 			if (!userResponse.ok) {
-				throw new Error('Failed to fetch user data');
+				throw new Error(`Session not established (status ${userResponse.status})`);
 			}
 
 			const userData = await userResponse.json();
 			const user = userData.data || userData;
 
-			// Store auth in store
-			authStore.setAuth(
-				user,
-				token,
-				sessionId,
-				expiresIn ? parseInt(expiresIn, 10) : 3600,
-				refreshToken
-			);
+			// Hand the user object to the in-memory auth store. The token
+			// and session id remain in httpOnly cookies — the store does not
+			// need them for UI rendering. Pass null/empty for the cookie-
+			// only fields so the store does not try to mirror them.
+			authStore.setAuth(user, '', '', 0, '');
 
 			status = 'success';
 
 			console.info('[OAuth Callback] Authentication successful:', {
 				provider,
-				userId: user.id,
-				email: user.email
+				userId: user.id
 			});
 
-			// Redirect to dashboard after brief success message
 			setTimeout(() => {
 				goto('/dashboard', { replaceState: true });
 			}, 1000);
@@ -122,13 +78,10 @@
 			status = 'error';
 			errorMessage = error instanceof Error ? error.message : 'Authentication failed';
 			console.error('[OAuth Callback] Error:', error);
-
-			// Redirect to login after delay
 			setTimeout(() => goto('/login?error=callback_failed'), 2000);
 		}
 	});
 
-	// Format provider name for display
 	function formatProvider(p: string): string {
 		if (p === 'google') return 'Google';
 		if (p === 'apple') return 'Apple';

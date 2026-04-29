@@ -201,10 +201,38 @@ async fn main() -> anyhow::Result<()> {
             HeaderName::from_static("referrer-policy"),
             HeaderValue::from_static("strict-origin-when-cross-origin"),
         ))
-        // Content Security Policy
+        // FIX-M-1 (2026-04-29): tightened CSP for the API.
+        //   - Dropped 'unsafe-inline' from both script-src and style-src.
+        //     The API serves JSON, never HTML, so inline scripts/styles
+        //     have nothing to protect. Removing them eliminates the most
+        //     common CSP-bypass class.
+        //   - Removed `http://localhost:*` and `ws://localhost:*` from the
+        //     production connect-src. They were a dev-mode shortcut that
+        //     shipped in the production binary. The frontend talks to this
+        //     API via its real origin; localhost entries are not used in
+        //     prod and only confuse the allowlist.
+        //   - default-src is 'none' to make every directive explicit.
+        //   - frame-ancestors 'none' prevents the API ever being framed
+        //     (clickjacking defense even though it's JSON; future error
+        //     pages will inherit it).
+        //   - Kept the trading-room media origins; those are real.
+        //
+        // The frontend (SvelteKit) sets its own CSP for HTML responses;
+        // see frontend/src/hooks.server.ts.
         .layer(SetResponseHeaderLayer::overriding(
             HeaderName::from_static("content-security-policy"),
-            HeaderValue::from_static("default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; media-src 'self' https://simpler-options.s3.amazonaws.com https://cdn.simplertrading.com https://simpler-cdn.s3.amazonaws.com; connect-src 'self' http://localhost:* ws://localhost:*"),
+            HeaderValue::from_static(
+                "default-src 'none'; \
+                 script-src 'self'; \
+                 style-src 'self'; \
+                 img-src 'self' data: https:; \
+                 font-src 'self' data:; \
+                 media-src 'self' https://simpler-options.s3.amazonaws.com https://cdn.simplertrading.com https://simpler-cdn.s3.amazonaws.com; \
+                 connect-src 'self'; \
+                 frame-ancestors 'none'; \
+                 base-uri 'self'; \
+                 form-action 'self'"
+            ),
         ))
         // Strict Transport Security (HSTS) - 1 year, include subdomains
         .layer(SetResponseHeaderLayer::overriding(
