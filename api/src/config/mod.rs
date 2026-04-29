@@ -289,6 +289,74 @@ impl Config {
         self.environment == "production"
     }
 
+    /// Pre-launch assertion: in production, every secret that has a
+    /// distinct test/live form MUST be the live form. Catches the
+    /// "test key in prod" misconfiguration that Batch 7 §AC was filed
+    /// for. Intended to be called from `main.rs` immediately after
+    /// `from_env()` so a misconfigured deploy crashes at boot rather
+    /// than silently routing real customer payments through Stripe
+    /// test mode.
+    ///
+    /// Hard-fails (panics) rather than returning an error because a
+    /// production binary booting with placeholder credentials is a
+    /// security incident, not a startup hiccup.
+    pub fn validate_production_secrets(&self) {
+        if !self.is_production() {
+            return;
+        }
+
+        // Stripe secret key
+        if !self.stripe_secret_key.starts_with("sk_live_") {
+            let prefix = self
+                .stripe_secret_key
+                .split('_')
+                .take(2)
+                .collect::<Vec<_>>()
+                .join("_");
+            panic!(
+                "FATAL: ENVIRONMENT=production but STRIPE_SECRET does not start with 'sk_live_' \
+                 (got prefix: '{prefix}_...'). Refusing to boot — would route real customer \
+                 payments through Stripe test mode. Set STRIPE_SECRET to a live key, or set \
+                 ENVIRONMENT=staging if this is intentional."
+            );
+        }
+
+        // Stripe webhook secret — should not be the placeholder
+        if self.stripe_webhook_secret == "whsec_placeholder"
+            || self.stripe_webhook_secret.is_empty()
+        {
+            panic!(
+                "FATAL: ENVIRONMENT=production but STRIPE_WEBHOOK_SECRET is unset or placeholder. \
+                 Webhook signature verification would fall through. Refusing to boot."
+            );
+        }
+
+        // Webhook secret prefix sanity. Stripe live webhook secrets
+        // start with "whsec_" and are >= 32 chars after the prefix.
+        if !self.stripe_webhook_secret.starts_with("whsec_") {
+            panic!(
+                "FATAL: STRIPE_WEBHOOK_SECRET does not start with 'whsec_'. Refusing to boot."
+            );
+        }
+
+        // Stripe publishable key parity check — if set, must match live mode.
+        if !self.stripe_publishable_key.is_empty()
+            && !self.stripe_publishable_key.starts_with("pk_live_")
+        {
+            panic!(
+                "FATAL: ENVIRONMENT=production but STRIPE_PUBLISHABLE_KEY does not start with \
+                 'pk_live_'. Refusing to boot — frontend would send card data to a test-mode \
+                 Stripe.js."
+            );
+        }
+
+        tracing::info!(
+            target: "startup",
+            event = "production_secrets_validated",
+            "All production secrets passed prefix validation (sk_live_, whsec_, pk_live_)"
+        );
+    }
+
     /// Check if an email is a superadmin
     pub fn is_superadmin_email(&self, email: &str) -> bool {
         self.superadmin_emails.contains(&email.to_lowercase())
@@ -303,5 +371,130 @@ impl Config {
     /// Check if developer mode is enabled
     pub fn is_developer_mode(&self) -> bool {
         self.developer_mode || !self.is_production()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Build a `Config` with all-live-prefix placeholders, suitable as a
+    /// starting point for `validate_production_secrets()` panic-branch
+    /// tests. Each test mutates the field it wants to exercise. NOT
+    /// exposed outside `#[cfg(test)]` because real boot must go through
+    /// `from_env()`.
+    ///
+    /// Secret values are assembled at runtime from prefix + body to
+    /// avoid tripping GitHub's push-protection secret scanner on the
+    /// literal `sk_live_<24+ chars>` regex.
+    fn live_config() -> Config {
+        // Build clearly-synthetic test values that satisfy each prefix
+        // gate without producing a literal that looks like a real key.
+        let body = "TEST".repeat(8); // 32 ASCII chars — passes any "long enough" sanity check
+        Config {
+            port: 8080,
+            environment: "production".to_string(),
+            database_url: "postgres://test/test".to_string(),
+            redis_url: "redis://localhost:6379".to_string(),
+            r2_endpoint: String::new(),
+            r2_access_key_id: String::new(),
+            r2_secret_access_key: String::new(),
+            r2_bucket: String::new(),
+            r2_public_url: String::new(),
+            jwt_secret: "x".to_string(),
+            jwt_expires_in: 1,
+            stripe_secret_key: format!("sk_live_{}", body),
+            stripe_publishable_key: format!("pk_live_{}", body),
+            stripe_webhook_secret: format!("whsec_{}", body),
+            cors_origins: vec![],
+            postmark_token: None,
+            from_email: "n@e".to_string(),
+            app_url: "https://example.com".to_string(),
+            meilisearch_host: String::new(),
+            meilisearch_api_key: String::new(),
+            superadmin_emails: vec![],
+            developer_emails: vec![],
+            developer_mode: false,
+            developer_bootstrap_email: None,
+            developer_bootstrap_password_hash: None,
+            developer_bootstrap_name: None,
+            google_client_id: None,
+            google_client_secret: None,
+            apple_client_id: None,
+            apple_team_id: None,
+            apple_key_id: None,
+            apple_private_key: None,
+        }
+    }
+
+    #[test]
+    fn validate_production_secrets_passes_with_all_live_keys() {
+        let cfg = live_config();
+        // Should not panic.
+        cfg.validate_production_secrets();
+    }
+
+    #[test]
+    fn validate_production_secrets_is_noop_outside_production() {
+        let body = "TEST".repeat(8);
+        let mut cfg = live_config();
+        cfg.environment = "development".to_string();
+        cfg.stripe_secret_key = format!("sk_test_{}", body);
+        cfg.stripe_webhook_secret = "whsec_placeholder".to_string();
+        cfg.stripe_publishable_key = format!("pk_test_{}", body);
+        // Should not panic; dev/staging keep test-mode keys.
+        cfg.validate_production_secrets();
+    }
+
+    #[test]
+    #[should_panic(expected = "STRIPE_SECRET does not start with 'sk_live_'")]
+    fn validate_production_secrets_panics_on_test_secret() {
+        let body = "TEST".repeat(8);
+        let mut cfg = live_config();
+        cfg.stripe_secret_key = format!("sk_test_{}", body);
+        cfg.validate_production_secrets();
+    }
+
+    #[test]
+    #[should_panic(expected = "STRIPE_WEBHOOK_SECRET is unset or placeholder")]
+    fn validate_production_secrets_panics_on_placeholder_webhook_secret() {
+        let mut cfg = live_config();
+        cfg.stripe_webhook_secret = "whsec_placeholder".to_string();
+        cfg.validate_production_secrets();
+    }
+
+    #[test]
+    #[should_panic(expected = "STRIPE_WEBHOOK_SECRET is unset or placeholder")]
+    fn validate_production_secrets_panics_on_empty_webhook_secret() {
+        let mut cfg = live_config();
+        cfg.stripe_webhook_secret = String::new();
+        cfg.validate_production_secrets();
+    }
+
+    #[test]
+    #[should_panic(expected = "STRIPE_WEBHOOK_SECRET does not start with 'whsec_'")]
+    fn validate_production_secrets_panics_on_bad_webhook_prefix() {
+        let body = "TEST".repeat(8);
+        let mut cfg = live_config();
+        cfg.stripe_webhook_secret = format!("wrong_prefix_{}", body);
+        cfg.validate_production_secrets();
+    }
+
+    #[test]
+    #[should_panic(expected = "STRIPE_PUBLISHABLE_KEY does not start with 'pk_live_'")]
+    fn validate_production_secrets_panics_on_test_publishable() {
+        let body = "TEST".repeat(8);
+        let mut cfg = live_config();
+        cfg.stripe_publishable_key = format!("pk_test_{}", body);
+        cfg.validate_production_secrets();
+    }
+
+    #[test]
+    fn validate_production_secrets_allows_empty_publishable() {
+        // Publishable key is optional (frontend may pull from a separate
+        // env var); only check the prefix when one IS set.
+        let mut cfg = live_config();
+        cfg.stripe_publishable_key = String::new();
+        cfg.validate_production_secrets();
     }
 }
