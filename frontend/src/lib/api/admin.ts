@@ -1037,11 +1037,9 @@ export const usersApi = {
 		});
 	},
 
-	async impersonate(id: number): Promise<ApiResponse<{ token: string }>> {
-		return makeRequest<{ token: string }>(`/admin/users/${id}/impersonate`, {
-			method: 'POST'
-		});
-	}
+	// FIX-H-5 (2026-04-29): impersonate() removed. Backend endpoint
+	// /admin/users/:id/impersonate has been deleted along with this
+	// client wrapper. See SECURITY_GAPS_2026-04-29.md.
 };
 
 /**

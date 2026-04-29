@@ -304,30 +304,19 @@ async fn create_checkout(
         (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Failed to create order"})))
     })?;
 
-    // Batch 5a fix: column is `usage_count`, not `current_uses` (typo
-    // pre-dated Batch 4 and aborted the surrounding tx whenever a
-    // coupon was applied — `.ok()` swallowed the column-not-found
-    // error but Postgres had already poisoned the transaction).
-    if let Some(coupon_id) = applied_coupon_id {
-        if let Err(e) = sqlx::query(
-            "UPDATE coupons SET usage_count = usage_count + 1, updated_at = NOW() WHERE id = $1",
-        )
-        .bind(coupon_id)
-        .execute(&mut *tx)
-        .await
-        {
-            tracing::error!(
-                target: "checkout",
-                error = %e,
-                coupon_id = coupon_id,
-                "Failed to increment coupon usage_count"
-            );
-            return Err((
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": "Failed to record coupon usage"})),
-            ));
-        }
-    }
+    // FIX-H-4 (2026-04-29): coupon usage_count increment removed from this
+    // path. Previously we incremented at order-creation time AND again in
+    // the webhook handler (payments.rs::handle_checkout_completed), causing
+    // every paid order to count the coupon twice. With the order-creation
+    // increment also firing on abandoned carts, the displayed "uses
+    // remaining" was wrong by an unbounded amount.
+    //
+    // Single source of truth is now the webhook: a coupon is "used" only
+    // when Stripe confirms payment. The webhook is idempotent at the
+    // webhook_events(event_id) UNIQUE level, so retries do not double-count.
+    //
+    // See migration 065_backfill_coupon_usage.sql for historical correction.
+    let _ = applied_coupon_id; // still bound to orders.coupon_id below
 
     // Insert order items — convert cents → NUMERIC(10,2) at SQL boundary
     for item in &line_items {

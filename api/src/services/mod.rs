@@ -17,7 +17,11 @@ pub mod event_broadcaster; // ICT 7+ Phase 3: Unified WebSocket + SSE event broa
 pub mod export; // ICT 7+ Phase 4: Export Functionality
 pub mod mfa; // ICT 7: TOTP/2FA Multi-Factor Authentication
 pub mod order_service;
-pub mod rate_limit; // ICT 7: Multi-tier rate limiting with fallback
+// FIX-M-2 (2026-04-29): rate_limit module removed. The RateLimitService
+// struct it defined was never instantiated; login uses
+// state.services.redis.check_login_rate_limit directly with fail-closed
+// behavior (auth.rs:649-695). Keeping unused multi-tier code added
+// confusion without security benefit. See SECURITY_GAPS_2026-04-29.md.
 pub mod redis;
 pub mod room_analytics; // ICT 11+ Phase 5: Room Performance Analytics Service
 pub mod room_search; // ICT 7+ Phase 4: Full-Text Search for Room Content

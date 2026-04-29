@@ -265,8 +265,20 @@ async fn register(
     // Generate verification token
     let (raw_token, hashed_token) = generate_verification_token();
 
+    // FIX-L-2 (2026-04-29): defensively delete any pre-existing verification
+    // tokens for this user before inserting the new one. Matches the
+    // resend-verification handler's pattern (auth.rs:537). The
+    // email-already-registered check at line 196 makes a real collision
+    // unreachable today, but this protects against a future code path that
+    // creates a user via a different route and then issues a verification
+    // email. Idempotent — DELETE of zero rows is a no-op.
+    sqlx::query("DELETE FROM email_verification_tokens WHERE user_id = $1")
+        .bind(user.id)
+        .execute(&mut *tx)
+        .await
+        .ok();
+
     // Store verification token (expires in 24 hours)
-    // Original pool reference: .execute(&state.db.pool)
     sqlx::query(
         r#"
         INSERT INTO email_verification_tokens (user_id, token, expires_at)
@@ -334,7 +346,6 @@ async fn register(
         target: "security_audit",
         event = "user_registered",
         user_id = %user.id,
-        email = %user.email,
         verification_required = true,
         "ICT 11+ AUDIT: User registered - pending email verification"
     );
@@ -427,7 +438,6 @@ async fn verify_email(
         target: "security_audit",
         event = "email_verified_success",
         user_id = %user.id,
-        email = %user.email,
         verified_at = %chrono::Utc::now().to_rfc3339(),
         "ICT 11+ AUDIT: Email successfully verified - user can now login"
     );
@@ -446,7 +456,6 @@ async fn verify_email(
                     target: "security_audit",
                     event = "welcome_email_skipped_already_sent_at_register",
                     user_id = %user.id,
-                    email = %user.email,
                     "Welcome email was sent at register; not re-sending on verify"
                 );
             }
@@ -455,7 +464,6 @@ async fn verify_email(
                     target: "security_audit",
                     event = "welcome_email_failed",
                     user_id = %user.id,
-                    email = %user.email,
                     error = %e,
                     "ICT 11+ ALERT: Failed to send welcome email - non-critical"
                 );
@@ -496,7 +504,6 @@ async fn resend_verification(
         tracing::info!(
             target: "security_audit",
             event = "resend_verification_unknown_email",
-            email = %input.email,
             "ICT 11+ AUDIT: Verification resend requested for unknown email"
         );
         return Ok(Json(MessageResponse {
@@ -513,7 +520,6 @@ async fn resend_verification(
             target: "security_audit",
             event = "resend_verification_already_verified",
             user_id = %user.id,
-            email = %user.email,
             "Verification resend suppressed - email already verified"
         );
         return Ok(Json(MessageResponse {
@@ -599,7 +605,6 @@ async fn resend_verification(
                     target: "security_audit",
                     event = "verification_email_resent",
                     user_id = %user.id,
-                    email = %user.email,
                     token_expires = "24_hours",
                     "ICT 11+ AUDIT: Verification email resent successfully"
                 );
@@ -609,7 +614,6 @@ async fn resend_verification(
                     target: "security_audit",
                     event = "verification_email_resend_failed",
                     user_id = %user.id,
-                    email = %user.email,
                     error = %e,
                     "ICT 11+ ALERT: Failed to resend verification email"
                 );
@@ -642,7 +646,6 @@ async fn login(
     tracing::info!(
         target: "security",
         event = "login_attempt",
-        email = %input.email,
         "Login attempt initiated"
     );
 
@@ -721,7 +724,6 @@ async fn login(
                 target: "security",
                 event = "login_failed",
                 reason = "user_not_found",
-                email = %input.email,
                 "Login failed - user not found (timing protected)"
             );
             return Err((
@@ -754,7 +756,6 @@ async fn login(
             event = "login_failed",
             reason = "invalid_password",
             user_id = %user.id,
-            email = %user.email,
             "Login failed - invalid password"
         );
         return Err((
@@ -768,6 +769,57 @@ async fn login(
         let _ = redis.clear_login_attempts(&input.email).await;
     }
 
+    // FIX-M-4 (2026-04-29): silently re-hash bcrypt (Laravel legacy) into
+    // argon2id on every successful login. Bcrypt at default cost is still
+    // acceptable, but argon2id is the project standard (utils/mod.rs:151)
+    // and we should not maintain two hash schemes indefinitely.
+    //
+    // verify_password() (utils/mod.rs:180) recognizes hashes by prefix:
+    //   $2y$ / $2b$ / $2a$  -> bcrypt
+    //   $argon2             -> argon2id
+    // If the stored hash is bcrypt, we already verified it — re-hash the
+    // plaintext we have in `input.password` and overwrite the column.
+    // Best-effort: a failure here logs but does not fail the login; the
+    // user keeps a bcrypt hash and we'll try again on their next login.
+    if user.password_hash.starts_with("$2") {
+        match hash_password(&input.password) {
+            Ok(new_hash) => {
+                if let Err(e) = sqlx::query(
+                    "UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2",
+                )
+                .bind(&new_hash)
+                .bind(user.id)
+                .execute(&state.db.pool)
+                .await
+                {
+                    tracing::error!(
+                        target: "security_audit",
+                        event = "bcrypt_rehash_write_failed",
+                        user_id = %user.id,
+                        error = %e,
+                        "Could not migrate bcrypt hash to argon2id"
+                    );
+                } else {
+                    tracing::info!(
+                        target: "security_audit",
+                        event = "bcrypt_rehashed_to_argon2id",
+                        user_id = %user.id,
+                        "Migrated user from bcrypt to argon2id on successful login"
+                    );
+                }
+            }
+            Err(e) => {
+                tracing::error!(
+                    target: "security_audit",
+                    event = "bcrypt_rehash_compute_failed",
+                    user_id = %user.id,
+                    error = %e,
+                    "argon2 hash computation failed during bcrypt migration"
+                );
+            }
+        }
+    }
+
     // FIX-2026-04-27 (C-1): Block banned/deactivated accounts at login.
     // is_active == Some(false) means an admin explicitly banned this account.
     // NULL (legacy rows) and Some(true) are both treated as active.
@@ -776,7 +828,6 @@ async fn login(
             target: "security_audit",
             event = "login_blocked_banned",
             user_id = %user.id,
-            email = %user.email,
             "Login blocked - account is banned/deactivated"
         );
         return Err((
@@ -810,7 +861,6 @@ async fn login(
             target: "security_audit",
             event = "email_verification_bypassed",
             user_id = %user.id,
-            email = %user.email,
             role = %role_type,
             reason = "privileged_role_access",
             "ICT 11+ AUDIT: Email verification bypassed for privileged user"
@@ -823,7 +873,6 @@ async fn login(
             target: "security",
             event = "login_blocked_unverified",
             user_id = %user.id,
-            email = %user.email,
             attempt_timestamp = %chrono::Utc::now().to_rfc3339(),
             "ICT 11+ SECURITY: Login blocked - email not verified"
         );
@@ -851,7 +900,6 @@ async fn login(
             event = "privileged_verification_bypass",
             role = role_type,
             user_id = %user.id,
-            email = %user.email,
             "Privileged user bypassing email verification requirement"
         );
     }
@@ -897,7 +945,6 @@ async fn login(
         target: "security",
         event = "login_success",
         user_id = %user.id,
-        email = %user.email,
         session_id = %session_id,
         "Login successful"
     );
@@ -1121,7 +1168,6 @@ async fn logout(
         target: "security",
         event = "logout",
         user_id = %user.id,
-        email = %user.email,
         "User logged out"
     );
 
@@ -1150,7 +1196,6 @@ async fn logout_all(
         target: "security",
         event = "logout_all",
         user_id = %user.id,
-        email = %user.email,
         sessions_invalidated = %count,
         "User logged out from all devices"
     );
@@ -1393,7 +1438,82 @@ async fn reset_password(
         .await
         .ok();
 
-    tracing::info!("Password reset completed for: {}", input.email);
+    // FIX-H-2 (2026-04-29): a successful password reset MUST invalidate every
+    // active session and bust the user cache. Without this, a thief who
+    // already holds a valid access or refresh token continues to have access
+    // for up to 1h (access) or 7d (refresh) — exactly the window the reset
+    // was supposed to close.
+    //
+    // We need user_id; the handler so far has only used `email`. Look it up
+    // here (best-effort: a missing row at this stage means the password
+    // update we just did affected zero rows, which we already returned 422
+    // for — so this fetch should succeed).
+    let user_id_for_invalidate: Option<i64> =
+        sqlx::query_scalar("SELECT id FROM users WHERE email = $1")
+            .bind(&input.email)
+            .fetch_optional(&state.db.pool)
+            .await
+            .unwrap_or_else(|e| {
+                tracing::error!(
+                    target: "security_audit",
+                    event = "password_reset_user_lookup_failed",
+                    error = %e,
+                    "Could not look up user_id after password reset (sessions NOT invalidated)"
+                );
+                None
+            });
+
+    if let Some(uid) = user_id_for_invalidate {
+        if let Some(redis) = &state.services.redis {
+            // Best-effort: a Redis outage here logs but does not fail the
+            // reset. The password is already changed; rolling that back
+            // would be worse than leaving residual sessions.
+            if let Err(e) = redis.invalidate_all_user_sessions(uid).await {
+                tracing::error!(
+                    target: "security_audit",
+                    event = "password_reset_session_invalidation_failed",
+                    user_id = %uid,
+                    error = %e,
+                    "Could not invalidate sessions on password reset"
+                );
+            }
+            if let Err(e) = redis.invalidate_user_cache(uid).await {
+                tracing::warn!(
+                    target: "security_audit",
+                    event = "password_reset_cache_invalidation_failed",
+                    user_id = %uid,
+                    error = %e,
+                    "Could not invalidate user cache on password reset"
+                );
+            }
+        }
+
+        // Audit trail row in security_events. event_category/severity match
+        // the schema used by H-7 role_change writes (admin.rs:332-339).
+        if let Err(e) = sqlx::query(
+            r#"INSERT INTO security_events (user_id, event_type, event_category, severity, details)
+               VALUES ($1, 'password_reset', 'authentication', 'high', '{}'::jsonb)"#,
+        )
+        .bind(uid)
+        .execute(&state.db.pool)
+        .await
+        {
+            tracing::error!(
+                target: "security_audit",
+                event = "password_reset_audit_write_failed",
+                user_id = %uid,
+                error = %e,
+                "Failed to write password_reset audit event"
+            );
+        }
+    }
+
+    tracing::info!(
+        target: "security_audit",
+        event = "password_reset_completed",
+        user_id = ?user_id_for_invalidate,
+        "Password reset completed and sessions invalidated"
+    );
 
     Ok(Json(MessageResponse {
         message: "Password has been reset successfully. You can now login with your new password."

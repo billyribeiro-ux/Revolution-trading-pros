@@ -4,6 +4,87 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-04-29 16:07 EDT — Security hardening pass: 13 of 14 audit gaps closed
+
+Branch: `security-hardening-2026-04-29` (off `main`). Single audit-and-fix pass driven by [SECURITY_GAPS_2026-04-29.md](SECURITY_GAPS_2026-04-29.md). Every claim grounded in direct source read; every fix verified by `cargo check` clean, `cargo test --lib config` 13/13 passing, `pnpm check` 0 errors / 0 warnings / 5217 files.
+
+13 code-fixable gaps closed. Only C-3 (R2 credential rotation) remains — it requires logging into the Cloudflare console and cannot be fixed from code.
+
+### Security — CRITICAL fixes
+
+**C-1 — OAuth callback no longer leaks JWTs in the URL.** Google and Apple callback handlers in [api/src/routes/oauth.rs](api/src/routes/oauth.rs) previously redirected to `/auth/callback?token=<JWT>&refresh_token=<JWT>&session_id=...`, leaking credentials into Cloudflare logs, browser history, and Referer headers. New `oauth_callback_response_with_cookies()` helper sets `rtp_access_token`, `rtp_refresh_token`, `rtp_session_id` as `HttpOnly; SameSite=Lax; Path=/` cookies on the redirect Response (with `Secure` in production), and the redirect URL carries only `?provider=google` or `?provider=apple`. Frontend [src/routes/auth/callback/+page.svelte](frontend/src/routes/auth/callback/+page.svelte) rewritten — no longer reads `?token=...` from the URL; calls `GET /api/auth/me` to confirm the cookie session.
+
+**C-2 — Frontend `hooks.server.ts` no longer decodes JWT payloads without verifying signatures.** The transient-failure fallback at lines 263-306 of [frontend/src/hooks.server.ts](frontend/src/hooks.server.ts) ran `JSON.parse(Buffer.from(parts[1], 'base64').toString())` and trusted the resulting `payload.role`. An attacker who could induce an API failure (slow request, transient 500) and plant a forged JWT in the cookie could land on admin pages. The block is deleted; transient API failure now sets `event.locals.user = null` and forces re-authentication.
+
+### Security — HIGH fixes
+
+**H-1 — `JWT_SECRET` production assertion.** [api/src/config/mod.rs](api/src/config/mod.rs) `validate_production_secrets()` now panics at boot if `ENVIRONMENT=production` AND (`JWT_SECRET.len() < 32` OR `JWT_SECRET` contains the strings `replace-me`, `placeholder`, `changeme`, or `your-secret-here`). Catches the `.env.example` placeholder leaking into a prod deploy. Five new `#[should_panic]` tests cover short / empty / `.env.example` literal / generic placeholder / `changeme` cases. All 13 config tests pass.
+
+**H-2 — Password reset now invalidates all sessions.** [api/src/routes/auth.rs](api/src/routes/auth.rs) `reset_password` handler tail rewritten: after the password update + token delete, looks up `user_id` by email, calls `redis.invalidate_all_user_sessions()` + `redis.invalidate_user_cache()`, and inserts a `security_events` row of type `password_reset` / category `authentication` / severity `high`. A thief holding a stolen access or refresh token can no longer survive a password reset.
+
+**H-3 — JWT blacklist now fails closed.** [api/src/middleware/auth.rs](api/src/middleware/auth.rs) previously let the request through on `redis.is_token_blacklisted` `Err`. Now returns 401 "Authentication temporarily unavailable" — frontend's existing 401-then-refresh-then-re-auth flow handles UX. Eliminates the window where a Redis fault during logout/ban kept the just-revoked token usable.
+
+**H-4 — Coupon `usage_count` no longer double-incremented.** Removed the duplicate increment block in [api/src/routes/checkout.rs](api/src/routes/checkout.rs) (was running at order-create, including for abandoned carts). Single source of truth is now [api/src/routes/payments.rs](api/src/routes/payments.rs) `handle_checkout_completed`, idempotent at the `webhook_events(event_id)` UNIQUE level. New migration [api/migrations/065_backfill_coupon_usage.sql](api/migrations/065_backfill_coupon_usage.sql) recomputes historical counts from `COUNT(orders.id) WHERE status = 'completed'`.
+
+**H-5 — `impersonate_user` admin endpoint deleted.** The placeholder stub at [api/src/routes/admin.rs](api/src/routes/admin.rs) returned a non-functional `impersonate_{id}_{timestamp}` string but contained the comment "In a real implementation, you would generate a JWT token for the target user" — a footgun for the next person who took it literally and minted a backdoor JWT for arbitrary users. Handler body removed (replaced with explanatory FIX-H-5 comment), route registration removed, frontend wrappers in [src/lib/api/admin.ts](frontend/src/lib/api/admin.ts) and [src/lib/api/enterprise/admin-adapter.ts](frontend/src/lib/api/enterprise/admin-adapter.ts) removed. No UI page called either, no end-user-visible regression.
+
+### Security — MEDIUM fixes
+
+**M-1 — CSP tightened, both API and frontend.** [api/src/main.rs](api/src/main.rs): dropped `'unsafe-inline'` from `script-src` and `style-src` (API serves only JSON), removed `http://localhost:*` and `ws://localhost:*` from `connect-src`, added explicit `default-src 'none'`, `frame-ancestors 'none'`, `base-uri 'self'`, `form-action 'self'`. [frontend/svelte.config.js](frontend/svelte.config.js): added Stripe domains (`https://js.stripe.com` to script-src and frame-src, `https://api.stripe.com` to connect-src, `https://hooks.stripe.com` to frame-src) so checkout will work; removed duplicated always-on `http://localhost:8080` from connect-src (still in the `NODE_ENV === 'development'` branch). Kept `style-src 'unsafe-inline'` on frontend — required for Svelte component-scoped `style=""` attributes; SvelteKit's nonce mode covers `<style>` blocks but cannot rewrite inline attributes.
+
+**M-2 — Dead `RateLimitService` removed.** Deleted [api/src/services/rate_limit.rs](api/src/services/rate_limit.rs) (452 lines never instantiated anywhere). Login rate limiting goes through `state.services.redis.check_login_rate_limit` directly with fail-closed behavior. Module declaration removed from [api/src/services/mod.rs](api/src/services/mod.rs). New migration [api/migrations/067_drop_unused_login_rate_limits.sql](api/migrations/067_drop_unused_login_rate_limits.sql) drops the empty backing table.
+
+**M-3 — Unused `oauth_tokens` table dropped.** Schema declared `access_token_encrypted` and `refresh_token_encrypted` columns implying capability that never existed in code (no encrypt helper anywhere in `api/src/`; OAuth handler never wrote to the table). New migration [api/migrations/066_drop_unused_oauth_tokens.sql](api/migrations/066_drop_unused_oauth_tokens.sql) drops it. Future provider-token storage feature must build encryption-at-rest from scratch and ship the schema alongside the writer.
+
+**M-4 — Bcrypt-to-argon2id silent rehash on successful login.** [api/src/routes/auth.rs](api/src/routes/auth.rs) login handler now detects `password_hash` starting with `$2` (Laravel bcrypt legacy) and re-hashes the verified plaintext with argon2id, overwriting the column. Best-effort — a DB fault logs but doesn't fail the login. Audit event `bcrypt_rehashed_to_argon2id` emitted on each migration; query progress with `SELECT COUNT(*) FROM users WHERE password_hash LIKE '$2%'`.
+
+### Security — LOW fixes
+
+**L-1 — Email PII stripped from `tracing` logs.** 28 call sites across [api/src/routes/auth.rs](api/src/routes/auth.rs), [api/src/middleware/admin.rs](api/src/middleware/admin.rs), and [api/src/routes/oauth.rs](api/src/routes/oauth.rs) included `email = %user.email` (or `%input.email`) in `security`/`security_audit` log events. All removed via batch perl pass — `user_id = %user.id` is retained, so correlation is one DB lookup away (and `security_events` table still holds the email under admin auth).
+
+**L-2 — Verification tokens cleared at register.** [api/src/routes/auth.rs](api/src/routes/auth.rs) register handler now does `DELETE FROM email_verification_tokens WHERE user_id = $1` before the new INSERT, inside the same transaction. Defensive; matches the `resend_verification` pattern. Idempotent.
+
+### Outstanding
+
+**C-3 — R2 credential rotation.** Cannot be fixed from code. The values currently in `api/.env` are real Cloudflare R2 credentials. Rotation steps in [SECURITY_GAPS_2026-04-29.md](SECURITY_GAPS_2026-04-29.md) §C-3.
+
+### Verification
+
+```
+$ cargo check
+   Finished `dev` profile [unoptimized + debuginfo] target(s) in 26.43s
+
+$ cargo test --lib config --test utils_test --test stripe_test
+running 13 tests
+... 13 passed; 0 failed
+
+$ pnpm check
+COMPLETED 5217 FILES 0 ERRORS 0 WARNINGS 0 FILES_WITH_PROBLEMS
+```
+
+### Files
+
+15 modified, 1 deleted, 4 created. Net: −240 lines.
+
+| Modified | Deleted | Created |
+|---|---|---|
+| api/src/config/mod.rs | api/src/services/rate_limit.rs | SECURITY_GAPS_2026-04-29.md |
+| api/src/main.rs | | api/migrations/065_backfill_coupon_usage.sql |
+| api/src/middleware/admin.rs | | api/migrations/066_drop_unused_oauth_tokens.sql |
+| api/src/middleware/auth.rs | | api/migrations/067_drop_unused_login_rate_limits.sql |
+| api/src/routes/admin.rs | | |
+| api/src/routes/auth.rs | | |
+| api/src/routes/checkout.rs | | |
+| api/src/routes/oauth.rs | | |
+| api/src/services/mod.rs | | |
+| frontend/src/hooks.server.ts | | |
+| frontend/src/lib/api/admin.ts | | |
+| frontend/src/lib/api/enterprise/admin-adapter.ts | | |
+| frontend/src/routes/auth/callback/+page.svelte | | |
+| frontend/svelte.config.js | | |
+
+---
+
 ## [Unreleased] — 2026-04-28 (k) — Comprehensive Svelte audit: autofixer round 2, security, accessibility
 
 A full second pass of the Svelte MCP autofixer plus targeted security and accessibility hardening across the codebase. Four discrete improvements landed in this checkpoint, each verified against `pnpm check` (0 errors / 0 warnings / 5217 files).

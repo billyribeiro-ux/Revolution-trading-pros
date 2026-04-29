@@ -2137,62 +2137,31 @@ async fn connections_status(
     })))
 }
 
-/// POST /admin/users/:id/impersonate - Generate impersonation token
-/// ICT 7 FIX: Added missing endpoint that frontend expects
-async fn impersonate_user(
-    State(state): State<AppState>,
-    SuperAdminUser(user): SuperAdminUser,
-    Path(id): Path<i64>,
-) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    // SuperAdminUser extractor enforces super-admin role.
-
-    // Get target user
-    let target: Option<AdminUserRow> = sqlx::query_as(
-        "SELECT id, name, email, role, is_active, email_verified_at, last_login_at, created_at, updated_at
-         FROM users WHERE id = $1"
-    )
-    .bind(id)
-    .fetch_optional(state.db.pool())
-    .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({"error": e.to_string()}))))?;
-
-    match target {
-        Some(target_user) => {
-            // In a real implementation, you would generate a JWT token for the target user
-            // For now, return a placeholder token
-            let token = format!(
-                "impersonate_{}_{}",
-                target_user.id,
-                chrono::Utc::now().timestamp()
-            );
-
-            tracing::info!(
-                target: "security",
-                event = "impersonate",
-                admin_id = %user.id,
-                admin_email = %user.email,
-                target_id = %target_user.id,
-                target_email = %target_user.email,
-                "Admin impersonating user"
-            );
-
-            Ok(Json(serde_json::json!({
-                "success": true,
-                "token": token,
-                "user": {
-                    "id": target_user.id,
-                    "name": target_user.name,
-                    "email": target_user.email
-                },
-                "expires_in": 3600
-            })))
-        }
-        None => Err((
-            StatusCode::NOT_FOUND,
-            Json(serde_json::json!({"error": "User not found"})),
-        )),
-    }
-}
+// FIX-H-5 (2026-04-29): impersonate_user endpoint REMOVED.
+//
+// Previous behavior: returned a non-functional placeholder token of the form
+// "impersonate_{id}_{timestamp}" guarded by SuperAdminUser. The token was not
+// a valid JWT so the auth middleware rejected it; the endpoint was harmless.
+//
+// Why removed: the inline comment ("In a real implementation, you would
+// generate a JWT token") was a footgun. A future engineer or AI completing
+// it literally — `create_jwt(target_user.id, ...)` — would mint a real
+// admin-issued bearer JWT for arbitrary users with no audit trail, no
+// time-bound impersonation token type, no original-actor preservation, and
+// no allowlist of acceptable routes. That is a back-door, not a feature.
+//
+// If user-impersonation support is ever needed, build it deliberately:
+//   - mint a JWT with token_type = "impersonation" and TTL <= 15 min;
+//   - the auth middleware accepts it ONLY for an explicit allowlist of
+//     read-only routes; any state-changing route is forbidden;
+//   - every request seen with an impersonation token writes a
+//     security_events row carrying (actor_id, target_id, route, ip);
+//   - the frontend shows a persistent banner and a "stop impersonating"
+//     control;
+//   - the endpoint that mints the token requires SuperAdminUser AND
+//     writes its own security_events row at issuance time.
+//
+// Until that design exists, this endpoint does not.
 
 /// GET /admin/users/:id/subscriptions - Get user's subscriptions
 /// ICT 7 FIX: Added missing endpoint that frontend expects
@@ -2312,7 +2281,8 @@ pub fn router() -> Router<AppState> {
         .route("/users/:id/unban", post(unban_user))
         .route("/users/:id/memberships", get(get_user_memberships_by_user))
         .route("/users/:id/subscriptions", get(get_user_subscriptions))
-        .route("/users/:id/impersonate", post(impersonate_user))
+        // FIX-H-5 (2026-04-29): /users/:id/impersonate route removed
+        // along with the handler. See SECURITY_GAPS_2026-04-29.md.
         // Memberships (admin management)
         .route("/membership-plans", get(list_all_plans))
         .route(

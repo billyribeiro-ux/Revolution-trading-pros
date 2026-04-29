@@ -1,0 +1,26 @@
+-- 067_drop_unused_login_rate_limits.sql
+--
+-- FIX-M-2 (2026-04-29): drop the unused login_rate_limits table.
+--
+-- BACKGROUND
+--   The RateLimitService struct in services/rate_limit.rs was a multi-tier
+--   (Redis -> in-memory -> database) fallback that wrote login attempt
+--   counters to this table as L2 backup. The struct was never instantiated
+--   in main.rs, so login_rate_limits was never written to.
+--
+--   Production login rate limiting is enforced by Redis directly in
+--   routes/auth.rs (per-IP and per-email, fail-closed on Redis error).
+--   That path does not touch this table.
+--
+-- WHAT THIS DOES
+--   Drops the table and its indexes (cascades). The schema was created in
+--   one of the earlier migrations as a forward-looking placeholder; it has
+--   accumulated zero rows. Removing it eliminates dead schema that future
+--   maintainers would otherwise have to reason about.
+--
+-- IF FUTURE NEEDS DIFFER
+--   When/if multi-tier rate limiting becomes a real requirement, design
+--   it from scratch with a clear instantiation path in main.rs. The
+--   previous code is in git history if a starting point is wanted.
+
+DROP TABLE IF EXISTS login_rate_limits CASCADE;

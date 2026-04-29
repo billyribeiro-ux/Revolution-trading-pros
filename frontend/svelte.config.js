@@ -47,14 +47,25 @@ const config = {
 			entries: ['*', '/robots.txt']
 		},
 		inlineStyleThreshold: 0,
+		// FIX-M-1 (2026-04-29): tightened frontend CSP.
+		//   - Added Stripe.js to script-src and api.stripe.com to connect-src
+		//     (required for checkout flows; absence would silently break
+		//     payments). frame-src includes js.stripe.com for Stripe Elements.
+		//   - Removed the always-on http://localhost:8080 from connect-src.
+		//     The dev-only branch below already adds it when NODE_ENV=development.
+		//     Leaving it in production was harmless (browsers won't connect
+		//     localhost from a remote origin) but it bloated the allowlist.
+		//   - Kept 'unsafe-inline' on style-src: Svelte component-scoped
+		//     styles compile to `style=""` attributes which require it.
+		//     mode:'auto' adds nonces to <style> blocks but cannot rewrite
+		//     inline style attributes. Removing it would break the UI.
 		csp: {
 			mode: 'auto',
 			directives: {
 				'default-src': ['self'],
-				// FIX-2026-04-26: removed 'unsafe-inline' — nonces via mode:'auto' handle inline scripts (Phase 1.4)
-				// 'script-src': ['self', 'unsafe-inline', 'https://www.googletagmanager.com', 'https://www.google-analytics.com', 'https://static.cloudflareinsights.com', 'https://apis.google.com'],
 				'script-src': [
 					'self',
+					'https://js.stripe.com',
 					'https://www.googletagmanager.com',
 					'https://www.google-analytics.com',
 					'https://static.cloudflareinsights.com',
@@ -72,22 +83,28 @@ const config = {
 				],
 				'connect-src': [
 					'self',
-					'ws:',
 					'wss:',
-					'http://localhost:8080',
 					'https://revolution-trading-pros.pages.dev',
+					'https://api.stripe.com',
 					'https://www.googleapis.com',
 					'https://www.google-analytics.com',
 					'https://static.cloudflareinsights.com',
 					'https://*.mediadelivery.net',
 					'https://vz-5a23b520-193.b-cdn.net',
-					// Dev-only: allow direct calls to the local Rust API and Vite dev servers.
+					// Dev-only: allow direct calls to the local Rust API,
+					// Vite dev servers, and ws/wss for HMR.
 					// NODE_ENV is 'development' during `pnpm dev`; never set in production builds.
 					...(process.env.NODE_ENV === 'development'
-						? ['http://localhost:8080', 'http://localhost:5173', 'http://localhost:5174']
+						? ['ws:', 'http://localhost:8080', 'http://localhost:5173', 'http://localhost:5174']
 						: [])
 				],
-				'frame-src': ['self', 'https://iframe.mediadelivery.net', 'https://*.mediadelivery.net'],
+				'frame-src': [
+					'self',
+					'https://js.stripe.com',
+					'https://hooks.stripe.com',
+					'https://iframe.mediadelivery.net',
+					'https://*.mediadelivery.net'
+				],
 				'frame-ancestors': ['none'],
 				'base-uri': ['self'],
 				'form-action': ['self']

@@ -168,10 +168,9 @@ export const enterpriseUsersApi = {
 
 	delete: (id: number) => withEnterprise(`users.delete.${id}`, 'DELETE', () => usersApi.delete(id)),
 
-	stats: () => withEnterprise('users.stats', 'GET', () => usersApi.stats()),
-
-	impersonate: (id: number) =>
-		withEnterprise(`users.impersonate.${id}`, 'POST', () => usersApi.impersonate(id))
+	stats: () => withEnterprise('users.stats', 'GET', () => usersApi.stats())
+	// FIX-H-5 (2026-04-29): impersonate adapter removed; usersApi.impersonate
+	// no longer exists. See SECURITY_GAPS_2026-04-29.md.
 };
 
 /**

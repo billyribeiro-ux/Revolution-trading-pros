@@ -259,51 +259,31 @@ const authHandler: Handle = async ({ event, resolve }) => {
 			errorMessage.includes('API_UNEXPECTED_RESPONSE');
 
 		if (isNetworkError && (token || refreshToken)) {
-			// ICT 7: Transient failure - preserve session with graceful degradation
-			console.warn('[Auth Hook] Transient failure detected - preserving session:', errorMessage);
-
-			// Try to decode token to get user info (JWT tokens contain user data)
-			// This allows us to preserve the actual user session during transient failures
-			try {
-				const tokenToDecode = token || refreshToken;
-				if (tokenToDecode) {
-					// JWT tokens are base64 encoded: header.payload.signature
-					const parts = tokenToDecode.split('.');
-					if (parts.length === 3) {
-						const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
-
-						// ICT 7: Set user from token payload (offline validation)
-						event.locals.user = {
-							id: Number(payload.sub || payload.id || payload.user_id || 0),
-							email: payload.email || 'unknown@temp.local',
-							name: payload.name || payload.username || 'User',
-							role: payload.role || 'user'
-						};
-						console.log(
-							'[Auth Hook] Session preserved from token payload:',
-							event.locals.user.email
-						);
-						return resolve(event);
-					}
-				}
-			} catch (decodeError) {
-				console.warn('[Auth Hook] Could not decode token:', decodeError);
-			}
-
-			// FIX-2026-04-26: Synthetic fallback user replaced with null — forces
-			// re-authentication on transient API failure (correct security behaviour).
-			// Old block preserved below for reference:
-			// event.locals.user = {
-			// 	id: 0, // Fallback ID for transient failures
-			// 	email: 'session@preserved.local',
-			// 	name: 'Session Preserved',
-			// 	role: 'user'
-			// };
-			// console.log('[Auth Hook] Session preserved with fallback user');
-			event.locals.user = null;
+			// FIX-C-2 (2026-04-29): the old "decode JWT payload locally and
+			// trust it" fallback has been removed. Decoding without verifying
+			// the signature trusted the contents of any value sitting in the
+			// rtp_access_token cookie — including a forged one. Combined
+			// with a transient API failure (easy to induce), an attacker
+			// could land on admin pages whose +page.server.ts load function
+			// uses event.locals.user.role for gating.
+			//
+			// New behavior: any auth failure (transient or permanent),
+			// when we cannot reach the API, leaves event.locals.user = null
+			// and forces re-authentication. The frontend is never the
+			// authority on identity; the API is. Removing this code means:
+			//   - During a real API outage, users see "please log in" rather
+			//     than partial UI rendered with bogus identity.
+			//   - The console.log that echoed payload.email is also gone
+			//     (PII into server logs).
+			//
+			// Original block (REMOVED) included:
+			//   const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
+			//   event.locals.user = { id, email, name, role: payload.role || 'user' };
 			console.warn(
-				'[Auth Hook] Token decode failed during transient failure — user set to null, re-auth required'
+				'[Auth Hook] Transient API failure — clearing session, user must re-authenticate',
+				errorMessage
 			);
+			event.locals.user = null;
 		} else {
 			// ICT 7: Permanent failure or no tokens - redirect to login
 			console.error('[Auth Hook] Permanent auth failure:', error);

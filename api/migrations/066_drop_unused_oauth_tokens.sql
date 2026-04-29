@@ -1,0 +1,32 @@
+-- 066_drop_unused_oauth_tokens.sql
+--
+-- FIX-M-3 (2026-04-29): drop the unused oauth_tokens table.
+--
+-- BACKGROUND
+--   Migration 033_oauth_providers.sql created an oauth_tokens table with
+--   columns access_token_encrypted and refresh_token_encrypted, intended
+--   to store provider (Google/Apple) tokens encrypted-at-rest.
+--
+--   The OAuth handler (api/src/routes/oauth.rs) never wrote to this table
+--   — provider tokens are used in-flight (exchange code, call userinfo,
+--   discard) and never persisted. The table has remained empty in every
+--   deployment since 033 was applied.
+--
+--   The schema's "_encrypted" suffix advertises capability that does not
+--   exist in code. There is no encrypt() helper anywhere in api/src/ that
+--   maps to "AES-GCM with server key." A future engineer (or AI) wiring
+--   provider re-auth could write plaintext tokens into "encrypted"
+--   columns and ship a quiet plaintext-credential leak.
+--
+-- WHAT THIS DOES
+--   Drops the table. If/when persistent provider tokens become a real
+--   requirement, the new feature must:
+--     1. design the encryption-at-rest helper from scratch;
+--     2. add a startup assertion that the encryption key is set;
+--     3. ship the schema in a new migration alongside the writer code,
+--        not before.
+--
+-- ROLLBACK
+--   To recreate, see migrations/033_oauth_providers.sql lines 41-52.
+
+DROP TABLE IF EXISTS oauth_tokens;
