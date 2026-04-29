@@ -114,7 +114,21 @@ export interface Deal {
 	company_id?: string;
 	pipeline_id: string;
 	stage_id: string;
+	/**
+	 * Read-only on responses: backend serializes `crm_deals.amount`
+	 * (NUMERIC dollars) as a float here. **Do NOT send this field on
+	 * create/update**. Backend Batch 5c migrated CreateDealInput /
+	 * UpdateDealInput to expect `amount_cents: i64` integer cents.
+	 * For form submit, build a payload with `amount_cents` instead:
+	 *   `{ amount_cents: Math.round(dollars * 100) }`
+	 */
 	amount: number;
+	/**
+	 * Write-only on requests (Batch 5c). Integer cents.
+	 * Backend converts at the SQL boundary via `BIGINT / 100.0`.
+	 * Server responses do not include this field; use `amount` on read.
+	 */
+	amount_cents?: number;
 	currency: string;
 	probability: number;
 	weighted_value: number;
