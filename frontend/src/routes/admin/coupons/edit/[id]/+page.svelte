@@ -60,6 +60,9 @@
 		valid_until: string;
 		is_active: boolean;
 		stackable: boolean;
+		// Batch 3.5+ subscription duration (Stripe Coupon `duration`).
+		duration: 'once' | 'forever' | 'repeating';
+		duration_in_months: number | null;
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -85,7 +88,9 @@
 		valid_from: '',
 		valid_until: '',
 		is_active: true,
-		stackable: false
+		stackable: false,
+		duration: 'once',
+		duration_in_months: null
 	});
 
 	// Delete confirmation modal state
@@ -168,7 +173,9 @@
 				valid_from: startsAt ? formatDateTimeLocal(new Date(startsAt)) : '',
 				valid_until: expiresAt ? formatDateTimeLocal(new Date(expiresAt)) : '',
 				is_active: coupon.is_active,
-				stackable: coupon.stackable || false
+				stackable: coupon.stackable || false,
+				duration: coupon.duration ?? 'once',
+				duration_in_months: coupon.duration_in_months ?? null
 			};
 		} catch (err) {
 			if (err instanceof AdminApiError) {
@@ -243,7 +250,12 @@
 				expires_at: formData.valid_until
 					? new Date(formData.valid_until).toISOString()
 					: undefined,
-				is_active: formData.is_active
+				is_active: formData.is_active,
+				// Batch 3.5+: subscription duration. Backend recreates the Stripe
+				// Coupon when discount math (type/value/duration) changes.
+				duration: formData.duration,
+				duration_in_months:
+					formData.duration === 'repeating' ? (formData.duration_in_months ?? undefined) : undefined
 			};
 
 			// Update coupon
@@ -342,6 +354,23 @@
 			errors.push({
 				field: 'minimum_amount',
 				message: 'Minimum amount cannot be negative',
+				severity: 'error'
+			});
+		}
+
+		// Duration validation (Batch 3.5+ Stripe coupon semantics).
+		if (formData.duration === 'repeating') {
+			if (!formData.duration_in_months || formData.duration_in_months < 1) {
+				errors.push({
+					field: 'duration_in_months',
+					message: 'Repeating coupons require a duration of at least 1 month',
+					severity: 'error'
+				});
+			}
+		} else if (formData.duration_in_months !== null) {
+			errors.push({
+				field: 'duration_in_months',
+				message: 'Duration in months only applies when duration is "repeating"',
 				severity: 'error'
 			});
 		}
@@ -571,6 +600,52 @@
 							<p class="help-text">Current usage: {originalCoupon.usage_count}</p>
 						{/if}
 					</div>
+				</div>
+
+				<!-- Subscription Duration (Stripe Coupon `duration` semantics) -->
+				<div class="form-row">
+					<div class="form-group" data-field="duration">
+						<label for="coupon-duration">Subscription Duration</label>
+						<select
+							id="coupon-duration"
+							name="duration"
+							class="input"
+							bind:value={formData.duration}
+							onchange={() => {
+								if (formData.duration !== 'repeating') {
+									formData.duration_in_months = null;
+								}
+							}}
+						>
+							<option value="once">Once — first billing period only</option>
+							<option value="forever">Forever — every billing period</option>
+							<option value="repeating">Repeating — first N months</option>
+						</select>
+						<p class="help-text">
+							Editing the duration creates a new Stripe Coupon and flips the pointer; existing
+							subscribers keep their current discount.
+						</p>
+					</div>
+
+					{#if formData.duration === 'repeating'}
+						<div class="form-group" data-field="duration_in_months">
+							<label for="duration-in-months">Number of Months</label>
+							<input
+								type="number"
+								id="duration-in-months"
+								name="duration_in_months"
+								bind:value={formData.duration_in_months}
+								min="1"
+								max="36"
+								class="input"
+								class:error={getFieldError('duration_in_months')}
+								placeholder="e.g. 3"
+							/>
+							{#if getFieldError('duration_in_months')}
+								<span class="field-error">{getFieldError('duration_in_months')}</span>
+							{/if}
+						</div>
+					{/if}
 				</div>
 			</div>
 

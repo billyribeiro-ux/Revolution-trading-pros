@@ -121,6 +121,15 @@ export interface Coupon {
 	applicable_products?: unknown;
 	applicable_plans?: unknown;
 	is_active: boolean;
+
+	// Stripe mirror (Batch 3.5+) — set when admin create-coupon mirrors
+	// the row into a Stripe Coupon. Read-only; never written from a form.
+	stripe_coupon_id?: string | null;
+	// "once" | "forever" | "repeating" — how long the discount applies on
+	// subscriptions. `duration_in_months` is required when "repeating".
+	duration: 'once' | 'forever' | 'repeating';
+	duration_in_months?: number | null;
+
 	created_at: string;
 	updated_at: string;
 
@@ -303,6 +312,12 @@ export interface CouponCreateData {
 	expires_at?: string | null;
 	applicable_products?: unknown;
 	applicable_plans?: unknown;
+
+	// Stripe coupon duration semantics (Batch 3.5).
+	// "once": first billing period only; "forever": every period;
+	// "repeating": next N periods (requires `duration_in_months`).
+	duration?: 'once' | 'forever' | 'repeating';
+	duration_in_months?: number | null;
 
 	// Legacy aliases (DO NOT WRITE) — kept so existing UI code compiles.
 	type?:
@@ -814,6 +829,24 @@ function normalizeCouponPayload(input: CouponCreateData | CouponUpdateData): Rec
 	move('max_discount_amount', 'max_discount');
 	move('valid_from', 'starts_at');
 	move('valid_until', 'expires_at');
+
+	// Batch 1 cents refactor (2026-04-28): backend now expects integer cents
+	// for monetary fields. Frontend forms still capture dollars; convert here
+	// at the API boundary. For percent coupons the convention is to store
+	// `percent * 100` in `discount_value_cents` (e.g. 10% = 1000), which is
+	// exactly `dollarValue * 100` for the form's integer percent input.
+	const dollarsToCents = (key: string, centsKey: string) => {
+		if (out[centsKey] === undefined && out[key] !== undefined && out[key] !== null) {
+			const dollars = Number(out[key]);
+			if (!Number.isNaN(dollars)) {
+				out[centsKey] = Math.round(dollars * 100);
+			}
+		}
+		delete out[key];
+	};
+	dollarsToCents('discount_value', 'discount_value_cents');
+	dollarsToCents('min_purchase', 'min_purchase_cents');
+	dollarsToCents('max_discount', 'max_discount_cents');
 
 	// Drop fields that the backend `CreateCouponRequest` does not accept.
 	delete out.display_name;

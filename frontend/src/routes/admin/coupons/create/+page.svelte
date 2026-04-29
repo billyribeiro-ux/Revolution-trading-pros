@@ -55,6 +55,12 @@
 		is_active: boolean;
 		applicable_products: number[];
 		applicable_plans: number[];
+		// Batch 3.5+: how long the discount applies on subscriptions.
+		// 'once': first billing period only.
+		// 'forever': every billing period.
+		// 'repeating': next N billing periods (duration_in_months required).
+		duration: 'once' | 'forever' | 'repeating';
+		duration_in_months: number | null;
 	}
 
 	// Using Product and SubscriptionPlan types from admin API
@@ -88,7 +94,9 @@
 		expires_at: formatDateForInput(addDays(new Date(), 30)),
 		is_active: true,
 		applicable_products: [],
-		applicable_plans: []
+		applicable_plans: [],
+		duration: 'once',
+		duration_in_months: null
 	});
 
 	// Track selected items for include/exclude
@@ -236,6 +244,14 @@
 			}
 		}
 
+		if (formData.duration === 'repeating') {
+			if (!formData.duration_in_months || formData.duration_in_months < 1) {
+				errs.push('Repeating coupons require a duration of at least 1 month');
+			}
+		} else if (formData.duration_in_months !== null) {
+			errs.push('Duration in months only applies when duration is "repeating"');
+		}
+
 		return errs;
 	}
 
@@ -286,7 +302,12 @@
 					restrictionTab === 'include' && selectedPlans.size > 0
 						? Array.from(selectedPlans)
 						: undefined,
-				is_active: formData.is_active
+				is_active: formData.is_active,
+				// Batch 3.5+: subscription duration semantics. Backend validates
+				// that duration_in_months is set iff duration === 'repeating'.
+				duration: formData.duration,
+				duration_in_months:
+					formData.duration === 'repeating' ? (formData.duration_in_months ?? undefined) : undefined
 			};
 
 			// Call the API using couponsApi
@@ -484,6 +505,47 @@
 						/>
 						<span class="help-text">Caps total discount for percentage coupons</span>
 					</div>
+				</div>
+
+				<!-- Subscription Duration (Stripe Coupon `duration` semantics) -->
+				<div class="form-row">
+					<div class="form-group">
+						<label for="coupon-duration">Subscription Duration</label>
+						<select
+							id="coupon-duration"
+							name="duration"
+							class="input"
+							bind:value={formData.duration}
+							onchange={() => {
+								if (formData.duration !== 'repeating') {
+									formData.duration_in_months = null;
+								}
+							}}
+						>
+							<option value="once">Once — first billing period only</option>
+							<option value="forever">Forever — every billing period</option>
+							<option value="repeating">Repeating — first N months</option>
+						</select>
+						<span class="help-text"
+							>Applies only to subscriptions; one-time products always charge once.</span
+						>
+					</div>
+					{#if formData.duration === 'repeating'}
+						<div class="form-group">
+							<label for="duration-in-months">Number of Months</label>
+							<input
+								id="duration-in-months"
+								name="duration_in_months"
+								type="number"
+								class="input"
+								bind:value={formData.duration_in_months}
+								min="1"
+								max="36"
+								placeholder="e.g. 3"
+							/>
+							<span class="help-text">How many billing periods get the discount.</span>
+						</div>
+					{/if}
 				</div>
 
 				<!-- Usage Limits -->

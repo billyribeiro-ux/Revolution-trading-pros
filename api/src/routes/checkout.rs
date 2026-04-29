@@ -184,9 +184,12 @@ async fn create_checkout(
             expires_at: Option<chrono::NaiveDateTime>,
             usage_limit: Option<i32>,
             usage_count: i32,
+            // Batch 4: app-side gate. NULL = no minimum.
+            min_purchase_cents: Option<i64>,
         }
         let row: Option<CouponRow> = sqlx::query_as(
-            r#"SELECT id, stripe_coupon_id, is_active, expires_at, usage_limit, usage_count
+            r#"SELECT id, stripe_coupon_id, is_active, expires_at, usage_limit, usage_count,
+                      (min_purchase * 100)::BIGINT AS min_purchase_cents
                FROM coupons WHERE UPPER(code) = UPPER($1) LIMIT 1"#,
         )
         .bind(code)
@@ -197,7 +200,8 @@ async fn create_checkout(
             (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Failed to validate coupon"})))
         })?;
 
-        let err_msg: Option<&'static str> = match row {
+        // Static-message branches first.
+        let static_err: Option<&'static str> = match row {
             None => Some("Invalid coupon code"),
             Some(ref c) if !c.is_active => Some("Coupon is not active"),
             Some(ref c)
@@ -215,10 +219,24 @@ async fn create_checkout(
             }
             Some(_) => None,
         };
-        if let Some(msg) = err_msg {
+        if let Some(msg) = static_err {
             return Err((StatusCode::BAD_REQUEST, Json(json!({"error": msg}))));
         }
         let c = row.unwrap();
+
+        // Batch 4: enforce min_purchase BEFORE attaching the Stripe
+        // discount. Stripe Coupons can't gate on order subtotal, so we
+        // do it here in cents.
+        if let Some(min) = c.min_purchase_cents {
+            if min > 0 && subtotal_cents < min {
+                let msg = format!(
+                    "Order must be at least ${:.2} to use this coupon",
+                    (min as f64) / 100.0
+                );
+                return Err((StatusCode::BAD_REQUEST, Json(json!({"error": msg}))));
+            }
+        }
+
         applied_coupon_id = Some(c.id);
         server_applied_discount = Some(crate::services::stripe::DiscountSpec {
             coupon: c.stripe_coupon_id.clone(),
