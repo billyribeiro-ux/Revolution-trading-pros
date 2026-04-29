@@ -19,7 +19,12 @@ use std::collections::HashMap;
 const STRIPE_API_VERSION: &str = "2024-12-18.acacia";
 const STRIPE_API_BASE: &str = "https://api.stripe.com/v1";
 
-/// Stripe checkout session response
+/// Stripe checkout session response.
+///
+/// `amount_total` and `amount_subtotal` are the cent values actually charged to
+/// the customer after Stripe applies any promotion code. `total_details.amount_discount`
+/// is what Stripe knocked off; `total_details.breakdown.discounts[]` lists the
+/// applied promotion codes (we read the first one for `coupon_code` reconciliation).
 #[derive(Debug, Serialize, Deserialize)]
 pub struct StripeCheckoutSession {
     pub id: String,
@@ -29,8 +34,43 @@ pub struct StripeCheckoutSession {
     pub subscription: Option<String>,
     pub payment_intent: Option<String>,
     pub amount_total: Option<i64>,
+    pub amount_subtotal: Option<i64>,
     pub currency: Option<String>,
     pub metadata: Option<HashMap<String, String>>,
+    pub total_details: Option<StripeSessionTotalDetails>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Default, Clone)]
+pub struct StripeSessionTotalDetails {
+    pub amount_discount: Option<i64>,
+    pub amount_shipping: Option<i64>,
+    pub amount_tax: Option<i64>,
+    pub breakdown: Option<StripeSessionTotalBreakdown>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Default, Clone)]
+pub struct StripeSessionTotalBreakdown {
+    #[serde(default)]
+    pub discounts: Vec<StripeSessionDiscount>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Default, Clone)]
+pub struct StripeSessionDiscount {
+    pub amount: Option<i64>,
+    pub discount: Option<StripeSessionDiscountInner>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Default, Clone)]
+pub struct StripeSessionDiscountInner {
+    pub id: Option<String>,
+    pub coupon: Option<StripeCouponRef>,
+    pub promotion_code: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Default, Clone)]
+pub struct StripeCouponRef {
+    pub id: Option<String>,
+    pub name: Option<String>,
 }
 
 /// Stripe subscription response
@@ -82,6 +122,35 @@ pub struct StripeRefund {
     pub status: String,
     pub payment_intent: Option<String>,
     pub reason: Option<String>,
+}
+
+/// Stripe Coupon object (subset of fields we use). Created via the
+/// /v1/coupons endpoint and attached to a Checkout Session via `discounts[]`.
+///
+/// Stripe Coupons are immutable after creation. To "edit" a DB coupon we
+/// create a new Stripe coupon, store its id, and (optionally) delete the
+/// old one. Deletion is supported but does not invalidate already-redeemed
+/// coupons; it only stops future redemptions.
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct StripeCoupon {
+    pub id: String,
+    /// One of "once", "forever", "repeating".
+    pub duration: String,
+    /// Required when `duration == "repeating"`: number of billing periods
+    /// the coupon applies to.
+    pub duration_in_months: Option<i64>,
+    /// Set for percent-off coupons (1-100). Mutually exclusive with `amount_off`.
+    pub percent_off: Option<f64>,
+    /// Set for fixed-amount coupons (cents). Mutually exclusive with `percent_off`.
+    pub amount_off: Option<i64>,
+    /// Currency for `amount_off`. Required when `amount_off` is set.
+    pub currency: Option<String>,
+    pub valid: Option<bool>,
+    pub name: Option<String>,
+    pub max_redemptions: Option<i64>,
+    pub times_redeemed: Option<i64>,
+    pub redeem_by: Option<i64>,
+    pub created: Option<i64>,
 }
 
 /// Stripe Price object (subset of fields we use)
@@ -197,6 +266,31 @@ pub struct LineItem {
     pub interval_count: Option<i64>,
 }
 
+/// Inputs for `StripeService::create_coupon`. Exactly one of `percent_off`
+/// or `amount_off_cents` must be Some. `duration` is one of "once" /
+/// "forever" / "repeating"; when "repeating", `duration_in_months` MUST be
+/// Some(n) with n >= 1.
+#[derive(Debug, Clone)]
+pub struct CreateStripeCouponRequest {
+    pub percent_off: Option<f64>,
+    pub amount_off_cents: Option<i64>,
+    pub currency: String,
+    pub duration: String,
+    pub duration_in_months: Option<i64>,
+    pub name: Option<String>,
+    pub max_redemptions: Option<i64>,
+    pub redeem_by_unix: Option<i64>,
+}
+
+/// A single Stripe discount entry to attach to a Checkout Session via
+/// `discounts[]`. Either `coupon` or `promotion_code` must be set; we use
+/// `coupon` for the server-applied path (DB coupon mirrored into Stripe).
+#[derive(Debug, Clone)]
+pub struct DiscountSpec {
+    pub coupon: Option<String>,
+    pub promotion_code: Option<String>,
+}
+
 /// Checkout session configuration
 #[derive(Debug)]
 pub struct CheckoutConfig {
@@ -206,7 +300,14 @@ pub struct CheckoutConfig {
     pub success_url: String,
     pub cancel_url: String,
     pub metadata: HashMap<String, String>,
+    /// When true, Stripe shows a "promotion code" field on its hosted page
+    /// so the customer can enter a Stripe Promotion Code. Mutually
+    /// exclusive at runtime with `discounts` — Stripe rejects sessions that
+    /// have both.
     pub allow_promotion_codes: bool,
+    /// Server-applied discounts (DB coupons mirrored into Stripe). When
+    /// non-empty, `allow_promotion_codes` MUST be false.
+    pub discounts: Vec<DiscountSpec>,
     pub billing_address_collection: bool,
     /// If set, Stripe will start the subscription in trial mode for this many days.
     pub trial_period_days: Option<i64>,
@@ -386,8 +487,22 @@ impl StripeService {
             form_params.push((format!("metadata[{}]", k), v));
         }
 
-        // Options
-        if config.allow_promotion_codes {
+        // Discounts (server-applied via Stripe Coupon mirror) and
+        // promotion-code field (Stripe-side promo code on the hosted page).
+        // Stripe rejects sessions that have BOTH set, so the caller must pick
+        // one: server-applied (when our DB coupon was supplied) or hosted-page
+        // (when no DB coupon was supplied so the customer can type a Stripe
+        // Promotion Code).
+        if !config.discounts.is_empty() {
+            for (i, d) in config.discounts.iter().enumerate() {
+                if let Some(ref c) = d.coupon {
+                    form_params.push((format!("discounts[{}][coupon]", i), c.clone()));
+                }
+                if let Some(ref pc) = d.promotion_code {
+                    form_params.push((format!("discounts[{}][promotion_code]", i), pc.clone()));
+                }
+            }
+        } else if config.allow_promotion_codes {
             form_params.push(("allow_promotion_codes".to_string(), "true".to_string()));
         }
 
@@ -475,6 +590,7 @@ impl StripeService {
             cancel_url: cancel_url.to_string(),
             metadata: HashMap::new(),
             allow_promotion_codes: true,
+            discounts: Vec::new(),
             billing_address_collection: false,
             trial_period_days: None,
             trial_requires_payment_method: true,
@@ -525,6 +641,148 @@ impl StripeService {
             .await?;
 
         Ok(response.url)
+    }
+
+    /// Create a Stripe Coupon. The DB-side admin UI calls this when an
+    /// operator creates a new coupon; the returned id is stored as
+    /// `coupons.stripe_coupon_id`.
+    ///
+    /// Stripe Coupons are immutable. To "edit" you create a new one and
+    /// flip the pointer; the old one can be deleted to stop future
+    /// redemptions (already-redeemed subscriptions keep their discount).
+    pub async fn create_coupon(&self, req: CreateStripeCouponRequest) -> Result<StripeCoupon> {
+        if req.percent_off.is_some() == req.amount_off_cents.is_some() {
+            return Err(anyhow!(
+                "Stripe coupon: must set exactly one of percent_off or amount_off_cents"
+            ));
+        }
+        if req.duration == "repeating" && req.duration_in_months.is_none() {
+            return Err(anyhow!(
+                "Stripe coupon with duration='repeating' requires duration_in_months"
+            ));
+        }
+        if req.duration != "repeating" && req.duration_in_months.is_some() {
+            return Err(anyhow!(
+                "Stripe coupon: duration_in_months only valid when duration='repeating'"
+            ));
+        }
+        if !["once", "forever", "repeating"].contains(&req.duration.as_str()) {
+            return Err(anyhow!(
+                "Stripe coupon: duration must be once|forever|repeating, got '{}'",
+                req.duration
+            ));
+        }
+
+        let mut form: Vec<(String, String)> = vec![("duration".into(), req.duration.clone())];
+        if let Some(p) = req.percent_off {
+            form.push(("percent_off".into(), format!("{}", p)));
+        }
+        if let Some(a) = req.amount_off_cents {
+            form.push(("amount_off".into(), a.to_string()));
+            form.push(("currency".into(), req.currency.to_lowercase()));
+        }
+        if let Some(n) = req.duration_in_months {
+            form.push(("duration_in_months".into(), n.to_string()));
+        }
+        if let Some(n) = req.name.as_ref() {
+            form.push(("name".into(), n.clone()));
+        }
+        if let Some(m) = req.max_redemptions {
+            form.push(("max_redemptions".into(), m.to_string()));
+        }
+        if let Some(t) = req.redeem_by_unix {
+            form.push(("redeem_by".into(), t.to_string()));
+        }
+
+        let response = self
+            .client
+            .post(format!("{}/coupons", STRIPE_API_BASE))
+            .basic_auth(&self.secret_key, None::<&str>)
+            .header("Stripe-Version", STRIPE_API_VERSION)
+            .form(
+                &form
+                    .iter()
+                    .map(|(k, v)| (k.as_str(), v.as_str()))
+                    .collect::<Vec<_>>(),
+            )
+            .send()
+            .await?;
+        if !response.status().is_success() {
+            let err: serde_json::Value = response.json().await?;
+            return Err(anyhow!(
+                "Stripe coupon create failed: {}",
+                err["error"]["message"].as_str().unwrap_or("unknown")
+            ));
+        }
+        Ok(response.json().await?)
+    }
+
+    /// Retrieve a Stripe Coupon by id (admin diagnostic; also used at
+    /// checkout time to verify a DB-mirrored coupon still exists in Stripe
+    /// before attaching it).
+    pub async fn retrieve_coupon(&self, coupon_id: &str) -> Result<StripeCoupon> {
+        let response = self
+            .client
+            .get(format!("{}/coupons/{}", STRIPE_API_BASE, coupon_id))
+            .basic_auth(&self.secret_key, None::<&str>)
+            .header("Stripe-Version", STRIPE_API_VERSION)
+            .send()
+            .await?;
+        if !response.status().is_success() {
+            let err: serde_json::Value = response.json().await?;
+            return Err(anyhow!(
+                "Stripe coupon retrieve failed: {}",
+                err["error"]["message"].as_str().unwrap_or("unknown")
+            ));
+        }
+        Ok(response.json().await?)
+    }
+
+    /// Delete a Stripe Coupon. Stops future redemptions; existing
+    /// subscriptions that already have the discount keep it for the
+    /// remainder of its `duration`.
+    pub async fn delete_coupon(&self, coupon_id: &str) -> Result<()> {
+        let response = self
+            .client
+            .delete(format!("{}/coupons/{}", STRIPE_API_BASE, coupon_id))
+            .basic_auth(&self.secret_key, None::<&str>)
+            .header("Stripe-Version", STRIPE_API_VERSION)
+            .send()
+            .await?;
+        if !response.status().is_success() {
+            let err: serde_json::Value = response.json().await?;
+            return Err(anyhow!(
+                "Stripe coupon delete failed: {}",
+                err["error"]["message"].as_str().unwrap_or("unknown")
+            ));
+        }
+        Ok(())
+    }
+
+    /// Retrieve a Checkout Session with discount details fully expanded.
+    /// Used by `handle_checkout_completed` to reconcile `orders` with the
+    /// actual Stripe-applied amounts after promotion codes (per arch §10).
+    pub async fn retrieve_checkout_session(
+        &self,
+        session_id: &str,
+    ) -> Result<StripeCheckoutSession> {
+        let response: StripeCheckoutSession = self
+            .client
+            .get(format!(
+                "{}/checkout/sessions/{}",
+                STRIPE_API_BASE, session_id
+            ))
+            .basic_auth(&self.secret_key, None::<&str>)
+            .header("Stripe-Version", STRIPE_API_VERSION)
+            .query(&[(
+                "expand[]",
+                "total_details.breakdown.discounts.discount.coupon",
+            )])
+            .send()
+            .await?
+            .json()
+            .await?;
+        Ok(response)
     }
 
     /// Get subscription details

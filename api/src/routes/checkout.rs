@@ -156,102 +156,79 @@ async fn create_checkout(
         }
     }
 
-    // Apply coupon if provided - all math in integer cents
-    let mut discount_cents: i64 = 0;
-    let mut coupon_info = None;
+    // ─── COUPONS / DISCOUNTS ──────────────────────────────────────────────
+    // Two paths (mutually exclusive at the Stripe Session level):
+    //
+    //   1. Server-applied (Batch 3.5): caller sent `coupon_code` matching a
+    //      DB `coupons` row that has been mirrored into a Stripe Coupon
+    //      (`stripe_coupon_id` set). We attach via `discounts[0][coupon]=`.
+    //
+    //   2. Stripe-side: caller sent no `coupon_code`; we set
+    //      `allow_promotion_codes=true` so Stripe's hosted page exposes a
+    //      promotion-code field for customer-typed codes.
+    //
+    // Stripe is the source of truth for discount math in both paths.
+    // `handle_checkout_completed` reconciles `orders.subtotal/discount/total`
+    // against the actual Stripe-charged amounts.
+    let mut server_applied_discount: Option<crate::services::stripe::DiscountSpec> = None;
     let mut applied_coupon_id: Option<i64> = None;
+    let coupon_info: Option<serde_json::Value> = None;
+    let tax_cents: i64 = 0;
 
     if let Some(ref code) = input.coupon_code {
         #[derive(sqlx::FromRow)]
-        struct CouponInfo {
+        struct CouponRow {
             id: i64,
-            code: String,
-            #[sqlx(rename = "type")]
-            coupon_type: String,
-            value_cents: i64,
-            max_uses: i32,
-            current_uses: i32,
-            expiry_date: Option<chrono::NaiveDateTime>,
-            min_purchase_amount_cents: i64,
+            stripe_coupon_id: Option<String>,
+            is_active: bool,
+            expires_at: Option<chrono::NaiveDateTime>,
+            usage_limit: Option<i32>,
+            usage_count: i32,
         }
-
-        let coupon: Option<CouponInfo> = sqlx::query_as(
-            r#"SELECT id, code, type,
-                      (value * 100)::BIGINT                AS value_cents,
-                      max_uses, current_uses, expiry_date,
-                      (min_purchase_amount * 100)::BIGINT  AS min_purchase_amount_cents
-               FROM coupons
-               WHERE UPPER(code) = UPPER($1) AND is_active = true"#,
+        let row: Option<CouponRow> = sqlx::query_as(
+            r#"SELECT id, stripe_coupon_id, is_active, expires_at, usage_limit, usage_count
+               FROM coupons WHERE UPPER(code) = UPPER($1) LIMIT 1"#,
         )
         .bind(code)
         .fetch_optional(&state.db.pool)
         .await
         .map_err(|e| {
             tracing::error!(target: "checkout", error = %e, "Failed to fetch coupon");
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": "Failed to validate coupon"})),
-            )
+            (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Failed to validate coupon"})))
         })?;
 
-        if let Some(c) = coupon {
-            if let Some(expiry) = c.expiry_date {
-                if expiry < chrono::Utc::now().naive_utc() {
-                    return Err((
-                        StatusCode::BAD_REQUEST,
-                        Json(json!({"error": "Coupon has expired"})),
-                    ));
-                }
+        let err_msg: Option<&'static str> = match row {
+            None => Some("Invalid coupon code"),
+            Some(ref c) if !c.is_active => Some("Coupon is not active"),
+            Some(ref c)
+                if c.expires_at
+                    .map(|t| t < chrono::Utc::now().naive_utc())
+                    .unwrap_or(false) =>
+            {
+                Some("Coupon has expired")
             }
-
-            if c.max_uses > 0 && c.current_uses >= c.max_uses {
-                return Err((
-                    StatusCode::BAD_REQUEST,
-                    Json(json!({"error": "Coupon has reached its usage limit"})),
-                ));
+            Some(ref c) if c.usage_limit.map(|lim| c.usage_count >= lim).unwrap_or(false) => {
+                Some("Coupon usage limit reached")
             }
-
-            if c.min_purchase_amount_cents > 0 && subtotal_cents < c.min_purchase_amount_cents {
-                let dollars = c.min_purchase_amount_cents as f64 / 100.0; // display only
-                return Err((
-                    StatusCode::BAD_REQUEST,
-                    Json(
-                        json!({"error": format!("Minimum purchase of ${:.2} required for this coupon", dollars)}),
-                    ),
-                ));
+            Some(ref c) if c.stripe_coupon_id.is_none() => {
+                Some("Coupon is not yet mirrored into Stripe")
             }
-
-            // For percent coupons, value is stored as e.g. 50.00 (i.e. value_cents=5000) representing 50%
-            discount_cents = if c.coupon_type == "percentage" {
-                let percent = c.value_cents / 100; // 5000 → 50
-                (subtotal_cents.saturating_mul(percent)) / 100
-            } else {
-                c.value_cents
-            };
-
-            if discount_cents > subtotal_cents {
-                discount_cents = subtotal_cents;
-            }
-
-            applied_coupon_id = Some(c.id);
-            coupon_info = Some(json!({
-                "id": c.id,
-                "code": c.code,
-                "type": c.coupon_type,
-                "value_cents": c.value_cents,
-                "discount_cents": discount_cents
-            }));
-        } else {
-            return Err((
-                StatusCode::BAD_REQUEST,
-                Json(json!({"error": "Invalid coupon code"})),
-            ));
+            Some(_) => None,
+        };
+        if let Some(msg) = err_msg {
+            return Err((StatusCode::BAD_REQUEST, Json(json!({"error": msg}))));
         }
+        let c = row.unwrap();
+        applied_coupon_id = Some(c.id);
+        server_applied_discount = Some(crate::services::stripe::DiscountSpec {
+            coupon: c.stripe_coupon_id.clone(),
+            promotion_code: None,
+        });
     }
 
-    // Tax (simplified - 0% for now, should integrate with tax service)
-    let tax_cents: i64 = 0;
-    let total_cents: i64 = subtotal_cents.saturating_sub(discount_cents).saturating_add(tax_cents);
+    // At create time we persist subtotal=total, discount=0; webhook reconciles.
+    let discount_cents: i64 = 0;
+    let total_cents: i64 = subtotal_cents.saturating_add(tax_cents);
 
     // Generate order number
     let order_number = format!(
@@ -405,6 +382,10 @@ async fn create_checkout(
     metadata.insert("order_number".to_string(), order_number.clone());
     metadata.insert("user_id".to_string(), user.id.to_string());
 
+    let discounts = match server_applied_discount {
+        Some(d) => vec![d],
+        None => Vec::new(),
+    };
     let config = crate::services::stripe::CheckoutConfig {
         customer_email: input
             .billing_email
@@ -415,7 +396,10 @@ async fn create_checkout(
         success_url: format!("{}?order={}", success_url, order_number),
         cancel_url: cancel_url.clone(),
         metadata,
-        allow_promotion_codes: input.coupon_code.is_none(),
+        // Mutually exclusive with discounts[]. When DB-mirrored coupon is
+        // attached we turn this off; otherwise expose Stripe's promo-code field.
+        allow_promotion_codes: discounts.is_empty(),
+        discounts,
         billing_address_collection: true,
         trial_period_days: None,
         trial_requires_payment_method: true,
