@@ -1262,12 +1262,7 @@ async fn send_renewal_reminders(
     State(state): State<AppState>,
     _admin: AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let email_service = state.services.email.as_ref().ok_or_else(|| {
-        (
-            StatusCode::SERVICE_UNAVAILABLE,
-            Json(json!({"error": "Email service not configured"})),
-        )
-    })?;
+    let email_service = &state.services.email;
 
     // Find subscriptions renewing in 3 days that haven't been reminded yet
     #[derive(sqlx::FromRow)]
@@ -1372,12 +1367,7 @@ async fn send_trial_ending_notifications(
     State(state): State<AppState>,
     _admin: AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let email_service = state.services.email.as_ref().ok_or_else(|| {
-        (
-            StatusCode::SERVICE_UNAVAILABLE,
-            Json(json!({"error": "Email service not configured"})),
-        )
-    })?;
+    let email_service = &state.services.email;
 
     // Find trial subscriptions ending in 1-2 days that haven't been notified
     #[derive(sqlx::FromRow)]
@@ -1484,12 +1474,7 @@ async fn send_cancellation_email(
     user: User,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let email_service = state.services.email.as_ref().ok_or_else(|| {
-        (
-            StatusCode::SERVICE_UNAVAILABLE,
-            Json(json!({"error": "Email service not configured"})),
-        )
-    })?;
+    let email_service = &state.services.email;
 
     // Get subscription details
     #[derive(sqlx::FromRow)]

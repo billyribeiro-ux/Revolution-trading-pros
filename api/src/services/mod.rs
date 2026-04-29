@@ -37,7 +37,11 @@ pub struct Services {
     pub storage: storage::StorageService,
     pub stripe: stripe::StripeService,
     pub search: search::SearchService,
-    pub email: Option<email::EmailService>,
+    /// Batch 6: always present. Internally holds `Option<token>`; when
+    /// the token is unset the service writes `email_logs` rows with
+    /// status='skipped_no_token' and skips HTTP. Callers no longer
+    /// need to check for `None` before calling.
+    pub email: email::EmailService,
     /// Cache service for Explosive Swings content caching
     pub cache: CacheService,
     /// Cache invalidation helper
@@ -63,15 +67,11 @@ impl Services {
             }
         });
 
-        // Initialize email service (optional - requires POSTMARK_TOKEN)
-        let email = config.postmark_token.as_ref().map(|token| {
-            tracing::info!("Email service initialized with Postmark");
-            email::EmailService::new(token, &config.from_email, &config.app_url)
-        });
-
-        if email.is_none() {
-            tracing::warn!("Email service not initialized (POSTMARK_TOKEN not set)");
-        }
+        // Batch 6: EmailService always exists. The service itself
+        // decides — based on POSTMARK_TOKEN presence — whether to
+        // actually call Postmark or run as a no-op (still writing
+        // email_logs rows for retry visibility).
+        let email = email::EmailService::from_env(&config.app_url);
 
         // ICT 7+: Initialize Redis with production requirement
         // In production, Redis is REQUIRED for:

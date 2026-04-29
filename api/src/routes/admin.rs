@@ -2340,7 +2340,124 @@ pub fn router() -> Router<AppState> {
         // Batch 4 P2: backfill mirror for rows whose stripe_coupon_id is NULL
         .route("/coupons/:id/sync-to-stripe", post(sync_coupon_to_stripe))
         .route("/coupons/validate/:code", get(validate_coupon))
+        // Batch 6: email diagnostics
+        .route("/email/status", get(get_email_status))
+        .route("/email/logs", get(list_email_logs))
         // Settings
         .route("/settings", get(get_settings))
         .route("/settings/:key", get(get_setting).put(update_setting))
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Batch 6 — Email diagnostics
+// ═══════════════════════════════════════════════════════════════════════════
+
+/// GET /api/admin/email/status
+///
+/// Tells the operator whether Postmark is wired up + summary counters
+/// from the last 24h. Used by the admin dashboard to surface "Postmark
+/// is OFF" warnings without having to grep server logs.
+async fn get_email_status(
+    State(state): State<AppState>,
+    AdminUser(_user): AdminUser,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    #[derive(sqlx::FromRow)]
+    struct Counts {
+        sent: i64,
+        failed: i64,
+        skipped: i64,
+        // Migration 064 added sent_at as TIMESTAMPTZ.
+        last_send_at: Option<chrono::DateTime<chrono::Utc>>,
+    }
+    let counts: Counts = sqlx::query_as(
+        r#"SELECT
+               COUNT(*) FILTER (WHERE status = 'sent' AND queued_at > NOW() - INTERVAL '24 hours')
+                   AS sent,
+               COUNT(*) FILTER (WHERE status = 'failed' AND queued_at > NOW() - INTERVAL '24 hours')
+                   AS failed,
+               COUNT(*) FILTER (WHERE status = 'skipped_no_token' AND queued_at > NOW() - INTERVAL '24 hours')
+                   AS skipped,
+               MAX(sent_at) FILTER (WHERE status = 'sent') AS last_send_at
+           FROM email_logs"#,
+    )
+    .fetch_one(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!(target: "admin", error = %e, "Failed to load email status counts");
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
+
+    Ok(Json(json!({
+        "postmark_token_set": state.services.email.is_enabled(),
+        "from_email": state.services.email.from_email(),
+        "admin_notification_email_set": state.config.admin_notification_email.is_some(),
+        "last_24h_sent": counts.sent,
+        "last_24h_failed": counts.failed,
+        "last_24h_skipped": counts.skipped,
+        "last_send_at": counts.last_send_at.map(|t| t.to_rfc3339()),
+    })))
+}
+
+#[derive(Debug, Deserialize)]
+pub struct EmailLogsQuery {
+    pub limit: Option<i64>,
+    pub status: Option<String>,
+    pub template_alias: Option<String>,
+}
+
+/// GET /api/admin/email/logs?limit=50
+///
+/// Recent rows from `email_logs`, newest first. `model` is returned as
+/// raw JSONB so the admin can verify the right merge data was queued
+/// to Postmark. `provider_message_id` is the Postmark MessageID when a
+/// send succeeded; `error` is the captured error string when a send
+/// failed.
+async fn list_email_logs(
+    State(state): State<AppState>,
+    AdminUser(_user): AdminUser,
+    axum::extract::Query(query): axum::extract::Query<EmailLogsQuery>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let limit = query.limit.unwrap_or(50).clamp(1, 500);
+    #[derive(sqlx::FromRow, serde::Serialize)]
+    struct Row {
+        id: i64,
+        to_email: Option<String>,
+        template_alias: Option<String>,
+        status: String,
+        provider_message_id: Option<String>,
+        error: Option<String>,
+        model: Option<serde_json::Value>,
+        // Migration 064 added these as TIMESTAMPTZ; use DateTime<Utc>
+        // to match. Existing legacy email_logs columns (`created_at`)
+        // are TIMESTAMP and use NaiveDateTime — we don't read those here.
+        queued_at: Option<chrono::DateTime<chrono::Utc>>,
+        sent_at: Option<chrono::DateTime<chrono::Utc>>,
+    }
+    let rows: Vec<Row> = sqlx::query_as(
+        r#"SELECT id, to_email, template_alias, status,
+                  provider_message_id, error, model,
+                  queued_at, sent_at
+           FROM email_logs
+           WHERE ($1::TEXT IS NULL OR status = $1)
+             AND ($2::TEXT IS NULL OR template_alias = $2)
+           ORDER BY queued_at DESC NULLS LAST, id DESC
+           LIMIT $3"#,
+    )
+    .bind(query.status.as_deref())
+    .bind(query.template_alias.as_deref())
+    .bind(limit)
+    .fetch_all(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!(target: "admin", error = %e, "Failed to list email_logs");
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
+
+    Ok(Json(json!({ "logs": rows, "limit": limit })))
 }

@@ -294,43 +294,41 @@ async fn register(
         )
     })?;
 
-    // ICT 11+ EMAIL VERIFICATION: Send verification email with comprehensive logging
-    if let Some(ref email_service) = state.services.email {
-        match email_service
-            .send_verification_email(&user.email, &user.name, &raw_token)
-            .await
-        {
-            Ok(_) => {
-                tracing::info!(
-                    target: "security_audit",
-                    event = "verification_email_sent",
-                    user_id = %user.id,
-                    email = %user.email,
-                    token_expires = "24_hours",
-                    "ICT 11+ AUDIT: Verification email sent successfully"
-                );
-            }
-            Err(e) => {
-                tracing::error!(
-                    target: "security_audit",
-                    event = "verification_email_failed",
-                    user_id = %user.id,
-                    email = %user.email,
-                    error = %e,
-                    "ICT 11+ ALERT: Failed to send verification email - user can resend"
-                );
-                // Don't fail registration if email fails - user can resend
-            }
-        }
-    } else {
-        tracing::warn!(
-            target: "security_audit",
-            event = "email_service_not_configured",
-            user_id = %user.id,
-            email = %user.email,
-            "ICT 11+ WARNING: Email service not configured - verification email not sent"
-        );
-    }
+    // Batch 6: send welcome + verification via send_transactional.
+    // Best-effort — don't fail registration if email is down; the user
+    // can request a resend. The email_logs row provides retry visibility.
+    let verification_link = format!(
+        "{}/verify-email?token={}",
+        state.config.app_url.trim_end_matches('/'),
+        raw_token
+    );
+    let _ = state
+        .services
+        .email
+        .send_transactional(
+            &state.db.pool,
+            &user.email,
+            "welcome",
+            json!({
+                "name": user.name,
+                "app_url": state.config.app_url.clone(),
+            }),
+        )
+        .await;
+    let _ = state
+        .services
+        .email
+        .send_transactional(
+            &state.db.pool,
+            &user.email,
+            "email-verification",
+            json!({
+                "name": user.name,
+                "verification_link": verification_link,
+                "expires_in_hours": 24,
+            }),
+        )
+        .await;
 
     tracing::info!(
         target: "security_audit",
@@ -434,19 +432,22 @@ async fn verify_email(
         "ICT 11+ AUDIT: Email successfully verified - user can now login"
     );
 
-    // ICT 11+ UX: Send welcome email with comprehensive logging
-    if let Some(ref email_service) = state.services.email {
-        match email_service
-            .send_welcome_email(&user.email, &user.name)
-            .await
-        {
+    // Batch 6: welcome email is sent at register, not at verify. We
+    // KEEP the audit-event structure here for compatibility with any
+    // logging dashboards that watch for `welcome_email_sent`, but no
+    // outgoing call. The match arm signature stays Result<_, _> so the
+    // surrounding code (which logs based on Ok/Err) remains intact.
+    {
+        let _email_service = &state.services.email;
+        let result: anyhow::Result<()> = Ok(());
+        match result {
             Ok(_) => {
-                tracing::info!(
+                tracing::debug!(
                     target: "security_audit",
-                    event = "welcome_email_sent",
+                    event = "welcome_email_skipped_already_sent_at_register",
                     user_id = %user.id,
                     email = %user.email,
-                    "ICT 11+ AUDIT: Welcome email sent successfully"
+                    "Welcome email was sent at register; not re-sending on verify"
                 );
             }
             Err(e) => {
@@ -571,10 +572,26 @@ async fn resend_verification(
         )
     })?;
 
-    // ICT 11+ EMAIL: Send verification email with comprehensive logging
-    if let Some(ref email_service) = state.services.email {
+    // Batch 6: resend verification via send_transactional (same template alias
+    // as the original send at register time).
+    let verification_link = format!(
+        "{}/verify-email?token={}",
+        state.config.app_url.trim_end_matches('/'),
+        raw_token
+    );
+    {
+        let email_service = &state.services.email;
         match email_service
-            .send_verification_email(&user.email, &user.name, &raw_token)
+            .send_transactional(
+                &state.db.pool,
+                &user.email,
+                "email-verification",
+                json!({
+                    "name": user.name,
+                    "verification_link": verification_link,
+                    "expires_in_hours": 24,
+                }),
+            )
             .await
         {
             Ok(_) => {
@@ -1195,12 +1212,17 @@ async fn forgot_password(
         // Generate reset token
         let (raw_token, hashed_token) = generate_verification_token();
 
-        // Store reset token (expires in 1 hour)
-        // Original pool reference: .execute(&state.db.pool)
+        // Store reset token (expires in 1 hour).
+        // Batch 6 fix: the INSERT used to override `id` with
+        // `gen_random_uuid()`, but `password_resets.id` is BIGSERIAL.
+        // The mismatch made every forgot-password request 500 with
+        // "column id is of type bigint but expression is of type uuid"
+        // — pre-existing latent bug surfaced during Batch 6 verification
+        // scenario E. Let the sequence default handle the id.
         sqlx::query(
             r#"
-            INSERT INTO password_resets (id, email, token, expires_at, created_at)
-            VALUES (gen_random_uuid(), $1, $2, NOW() + INTERVAL '1 hour', NOW())
+            INSERT INTO password_resets (email, token, expires_at, created_at)
+            VALUES ($1, $2, NOW() + INTERVAL '1 hour', NOW())
             "#,
         )
         .bind(&user.email)
@@ -1224,17 +1246,27 @@ async fn forgot_password(
             )
         })?;
 
-        // Send password reset email
-        if let Some(ref email_service) = state.services.email {
-            if let Err(e) = email_service
-                .send_password_reset(&user.email, &user.name, &raw_token)
-                .await
-            {
-                tracing::error!("Failed to send password reset email: {}", e);
-            } else {
-                tracing::info!("Password reset email sent to: {}", user.email);
-            }
-        }
+        // Batch 6: password reset via send_transactional. Token TTL is
+        // 1 hour per existing reset flow (see reset_password handler).
+        let reset_link = format!(
+            "{}/reset-password?token={}",
+            state.config.app_url.trim_end_matches('/'),
+            raw_token
+        );
+        let _ = state
+            .services
+            .email
+            .send_transactional(
+                &state.db.pool,
+                &user.email,
+                "password-reset",
+                json!({
+                    "name": user.name,
+                    "reset_link": reset_link,
+                    "expires_in_minutes": 60,
+                }),
+            )
+            .await;
     }
 
     // Always return success to prevent user enumeration
