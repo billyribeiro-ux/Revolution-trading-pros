@@ -7,6 +7,7 @@
 	 */
 	import { browser } from '$app/environment';
 	import TableOfContents from './TableOfContents.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	interface ContentBlock {
 		type: string;
@@ -68,16 +69,11 @@
 	<div class="floating-toc-widget" class:open={isOpen}>
 		<!-- Toggle Button -->
 		<button class="floating-toc-toggle" onclick={toggleOpen} aria-label="Toggle table of contents">
-			<svg aria-hidden="true" class="toc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-				{#if isOpen}
-					<line x1="18" y1="6" x2="6" y2="18"></line>
-					<line x1="6" y1="6" x2="18" y2="18"></line>
-				{:else}
-					<line x1="3" y1="6" x2="21" y2="6"></line>
-					<line x1="3" y1="12" x2="15" y2="12"></line>
-					<line x1="3" y1="18" x2="18" y2="18"></line>
-				{/if}
-			</svg>
+			{#if isOpen}
+				<Icon name="IconX" size={20} />
+			{:else}
+				<Icon name="IconList" size={20} />
+			{/if}
 			{#if !isOpen}
 				<span class="toggle-label">{title}</span>
 			{/if}
@@ -85,9 +81,7 @@
 
 		<!-- Scroll to top button -->
 		<button class="scroll-top-btn" onclick={scrollToTop} aria-label="Scroll to top">
-			<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-				<polyline points="18 15 12 9 6 15"></polyline>
-			</svg>
+			<Icon name="IconChevronUp" size={20} />
 		</button>
 
 		<!-- TOC Panel -->
@@ -175,11 +169,6 @@
 			padding: 12px;
 		}
 
-		.toc-icon {
-			width: 20px;
-			height: 20px;
-		}
-
 		.toggle-label {
 			white-space: nowrap;
 		}
@@ -209,11 +198,6 @@
 		.scroll-top-btn:focus-visible {
 			outline: 2px solid var(--toc-accent-blue);
 			outline-offset: 2px;
-		}
-
-		.scroll-top-btn svg {
-			width: 20px;
-			height: 20px;
 		}
 
 		.floating-toc-panel {

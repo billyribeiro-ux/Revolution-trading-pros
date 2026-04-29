@@ -15,7 +15,7 @@ use tower_http::{
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 use revolution_api::cache::{CacheInvalidator, CacheService};
-use revolution_api::jobs::reconcile_stripe;
+use revolution_api::jobs::{email_reminders, reconcile_stripe};
 use revolution_api::routes::realtime::EventBroadcaster;
 use revolution_api::routes::websocket::WsConnectionManager;
 use revolution_api::{
@@ -119,6 +119,12 @@ async fn main() -> anyhow::Result<()> {
     // Stripe reconciliation scheduler — daily 03:00 UTC
     reconcile_stripe::spawn_scheduler(state.clone());
     tracing::info!("Stripe reconciliation scheduler started");
+
+    // Batch 6: email reminders scheduler — daily 09:00 UTC.
+    // Queues subscription-renewal-reminder + trial-ending emails.
+    // No-ops cleanly when POSTMARK_TOKEN is unset (see EmailService).
+    email_reminders::spawn_scheduler(state.clone());
+    tracing::info!("Email reminders scheduler started");
 
     // Build CORS layer - ICT 11+ CORB Fix: explicit headers required when using credentials
     // Log configured CORS origins for debugging

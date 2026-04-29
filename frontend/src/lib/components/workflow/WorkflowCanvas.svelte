@@ -4,6 +4,7 @@
 	import WorkflowNode from './WorkflowNode.svelte';
 	import WorkflowEdge from './WorkflowEdge.svelte';
 	import type { NodeType } from '$lib/types/workflow';
+	import Icon from '$lib/components/Icon.svelte';
 
 	interface Props {
 		workflowId: number;
@@ -195,28 +196,10 @@
 	<!-- Canvas controls -->
 	<div class="canvas-controls">
 		<button onclick={() => workflowCanvas.setZoom(zoom + 0.1)} aria-label="Zoom in">
-			<svg
-				width="20"
-				height="20"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-			>
-				<circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" /><path d="M11 8v6M8 11h6" />
-			</svg>
+			<Icon name="IconZoomIn" size={20} />
 		</button>
 		<button onclick={() => workflowCanvas.setZoom(zoom - 0.1)} aria-label="Zoom out">
-			<svg
-				width="20"
-				height="20"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-			>
-				<circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" /><path d="M8 11h6" />
-			</svg>
+			<Icon name="IconZoomOut" size={20} />
 		</button>
 		<button onclick={() => workflowCanvas.setZoom(1)} aria-label="Reset zoom"> Reset </button>
 		<span class="zoom-level">{Math.round(zoom * 100)}%</span>

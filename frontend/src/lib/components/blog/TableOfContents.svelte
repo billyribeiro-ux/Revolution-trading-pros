@@ -5,6 +5,7 @@
 	 * Updated: December 2025 - Migrated to Svelte 5 runes ($props, $state, $derived, $effect)
 	 */
 	import { browser } from '$app/environment';
+	import Icon from '$lib/components/Icon.svelte';
 
 	interface ContentBlock {
 		type: string;
@@ -357,50 +358,21 @@
 				aria-expanded={isExpanded}
 				aria-controls="toc-list"
 			>
-				<svg
-					aria-hidden="true"
-					class="toc-icon"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-				>
-					<line x1="3" y1="6" x2="21" y2="6"></line>
-					<line x1="3" y1="12" x2="15" y2="12"></line>
-					<line x1="3" y1="18" x2="18" y2="18"></line>
-				</svg>
+				<Icon name="IconList" size={20} />
 				<span class="toc-title">{title}</span>
 				<span class="toc-count">{flatItems.length} sections</span>
 				{#if collapsible}
-					<svg
-						aria-hidden="true"
-						class="toc-chevron"
-						class:rotated={isExpanded}
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<polyline points="6 9 12 15 18 9"></polyline>
-					</svg>
+					<Icon name="IconChevronDown" size={18} class="toc-chevron{isExpanded ? ' rotated' : ''}" />
 				{/if}
 			</button>
 
 			{#if position === 'floating'}
 				<button class="toc-minimize-btn" onclick={toggleMinimized} aria-label="Toggle TOC">
-					<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						{#if isFloatingMinimized}
-							<polyline points="15 3 21 3 21 9"></polyline>
-							<polyline points="9 21 3 21 3 15"></polyline>
-							<line x1="21" y1="3" x2="14" y2="10"></line>
-							<line x1="3" y1="21" x2="10" y2="14"></line>
-						{:else}
-							<polyline points="4 14 10 14 10 20"></polyline>
-							<polyline points="20 10 14 10 14 4"></polyline>
-							<line x1="14" y1="10" x2="21" y2="3"></line>
-							<line x1="3" y1="21" x2="10" y2="14"></line>
-						{/if}
-					</svg>
+					{#if isFloatingMinimized}
+						<Icon name="IconMaximize" size={16} />
+					{:else}
+						<Icon name="IconMinimize" size={16} />
+					{/if}
 				</button>
 			{/if}
 		</div>
@@ -470,10 +442,7 @@
 				{#if showProgress}
 					<div class="toc-footer">
 						<div class="toc-progress-text">
-							<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-								<circle cx="12" cy="12" r="10"></circle>
-								<polyline points="12 6 12 12 16 14"></polyline>
-							</svg>
+							<Icon name="IconClock" size={14} />
 							<span>{Math.round(readingProgress)}% complete</span>
 						</div>
 					</div>
@@ -575,11 +544,6 @@
 		color: var(--toc-accent);
 	}
 
-	.toc-icon {
-		width: 20px;
-		height: 20px;
-		flex-shrink: 0;
-	}
 
 	.toc-title {
 		font-size: 0.9375rem;
@@ -596,7 +560,7 @@
 		margin-left: auto;
 	}
 
-	.toc-chevron {
+	:global(.toc-chevron) {
 		width: 18px;
 		height: 18px;
 		transition: transform 0.3s ease;
@@ -604,7 +568,7 @@
 		margin-left: 0.5rem;
 	}
 
-	.toc-chevron.rotated {
+	:global(.toc-chevron.rotated) {
 		transform: rotate(180deg);
 	}
 
@@ -626,11 +590,6 @@
 	.toc-minimize-btn:hover {
 		background: var(--toc-hover-bg);
 		color: var(--toc-accent);
-	}
-
-	.toc-minimize-btn svg {
-		width: 16px;
-		height: 16px;
 	}
 
 	/* Content */
@@ -767,11 +726,6 @@
 		gap: 0.5rem;
 		font-size: 0.75rem;
 		color: var(--toc-text-muted);
-	}
-
-	.toc-progress-text svg {
-		width: 14px;
-		height: 14px;
 	}
 
 	/* Responsive */

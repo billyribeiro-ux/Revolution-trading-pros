@@ -9,6 +9,7 @@
 	 * @security XSS protection via DOMPurify sanitization
 	 */
 	import { onMount } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	import { browser } from '$app/environment';
 	import SkeletonLoader from './SkeletonLoader.svelte';
 	import ExportButton from './ExportButton.svelte';
@@ -177,14 +178,7 @@
 		</div>
 	{:else if data.length === 0}
 		<div class="flex flex-col items-center justify-center py-12 text-slate-500">
-			<svg aria-hidden="true" class="w-16 h-16 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					stroke-width="1.5"
-					d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-				/>
-			</svg>
+			<Icon name="IconFileText" size={64} class="mb-4 opacity-50" />
 			<p class="text-sm">{emptyMessage}</p>
 		</div>
 	{:else if isMobile}
@@ -263,20 +257,7 @@
 								>
 									<span>{column.label}</span>
 									{#if column.sortable && sortBy === column.key}
-										<svg
-											class="w-4 h-4 transition-transform"
-											class:rotate-180={sortDir === 'desc'}
-											fill="none"
-											stroke="currentColor"
-											viewBox="0 0 24 24"
-										>
-											<path
-												stroke-linecap="round"
-												stroke-linejoin="round"
-												stroke-width="2"
-												d="M5 15l7-7 7 7"
-											/>
-										</svg>
+										<Icon name="IconChevronUp" size={16} class="transition-transform {sortDir === 'desc' ? 'rotate-180' : ''}" />
 									{/if}
 								</div>
 							</th>

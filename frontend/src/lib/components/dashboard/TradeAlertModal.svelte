@@ -26,6 +26,7 @@
 		TosStringParams
 	} from '$lib/types/trading';
 	import { buildTosString, validateTosParams } from '$lib/utils/tos-builder';
+	import Icon from '$lib/components/Icon.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PROPS
@@ -278,16 +279,7 @@
 			<div class="modal-header">
 				<h2>{isEdit ? 'Edit Alert' : 'Create New Alert'}</h2>
 				<button class="close-btn" onclick={handleClose} aria-label="Close">
-					<svg
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-						width="24"
-						height="24"
-					>
-						<path d="M6 18L18 6M6 6l12 12" />
-					</svg>
+					<Icon name="IconX" size={24} />
 				</button>
 			</div>
 

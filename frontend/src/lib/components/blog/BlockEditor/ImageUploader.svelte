@@ -40,6 +40,7 @@
 		type ProcessOptions
 	} from './upload/image-processor';
 	import AssetManager from './AssetManager.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	// ==========================================================================
 	// Props
@@ -538,12 +539,7 @@
 		<div class="library-actions" transition:fade={{ duration: 150 }}>
 			{#if showLibrary}
 				<button type="button" class="library-btn" onclick={openAssetManager}>
-					<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<rect x="3" y="3" width="7" height="7" />
-						<rect x="14" y="3" width="7" height="7" />
-						<rect x="14" y="14" width="7" height="7" />
-						<rect x="3" y="14" width="7" height="7" />
-					</svg>
+					<Icon name="IconLayoutGrid" size={16} />
 					Choose from library
 				</button>
 			{/if}
@@ -554,21 +550,14 @@
 					class:active={showRecentPanel}
 					onclick={() => (showRecentPanel = !showRecentPanel)}
 				>
-					<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<circle cx="12" cy="12" r="10" />
-						<polyline points="12 6 12 12 16 14" />
-					</svg>
+					<Icon name="IconClock" size={16} />
 					Recent
-					<svg
+					<Icon
+						name="IconChevronDown"
+						size={14}
 						class="chevron"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-						style="transform: rotate({showRecentPanel ? 180 : 0}deg)"
-					>
-						<polyline points="6 9 12 15 18 9" />
-					</svg>
+						color={undefined}
+					/>
 				</button>
 			{/if}
 		</div>
@@ -622,32 +611,12 @@
 
 		{#if isDragging}
 			<div class="drop-indicator" in:scale={{ duration: 200, easing: elasticOut }}>
-				<svg
-					class="drop-icon"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-				>
-					<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-					<polyline points="17 8 12 3 7 8" />
-					<line x1="12" y1="3" x2="12" y2="15" />
-				</svg>
+				<Icon name="IconUpload" size={48} class="drop-icon" />
 				<span class="drop-text">Drop image here</span>
 			</div>
 		{:else if uploadQueue.length === 0}
 			<div class="empty-state">
-				<svg
-					class="upload-icon"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="1.5"
-				>
-					<rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-					<circle cx="8.5" cy="8.5" r="1.5" />
-					<polyline points="21 15 16 10 5 21" />
-				</svg>
+				<Icon name="IconPhoto" size={48} stroke={1.5} class="upload-icon" />
 				<div class="empty-text">
 					<span class="primary-text">
 						{compact ? 'Add image' : 'Drag & drop image here'}
@@ -694,11 +663,7 @@
 						{:else if item.previewUrl}
 							<img src={item.previewUrl} alt={item.file.name} />
 						{:else}
-							<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-								<rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-								<circle cx="8.5" cy="8.5" r="1.5" />
-								<polyline points="21 15 16 10 5 21" />
-							</svg>
+							<Icon name="IconPhoto" size={24} />
 						{/if}
 					</div>
 
@@ -747,16 +712,7 @@
 					<!-- Status Icon -->
 					<div class="item-status">
 						{#if item.status === 'complete'}
-							<svg
-								class="status-icon success"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
-							>
-								<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-								<polyline points="22 4 12 14.01 9 11.01" />
-							</svg>
+							<Icon name="IconCircleCheck" size={20} class="status-icon success" />
 						{:else if item.status === 'error'}
 							<button
 								type="button"
@@ -765,10 +721,7 @@
 								title="Retry upload"
 								aria-label="Retry upload"
 							>
-								<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-									<polyline points="23 4 23 10 17 10" />
-									<path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-								</svg>
+								<Icon name="IconRefresh" size={18} />
 							</button>
 						{:else if item.status === 'processing' || item.status === 'uploading'}
 							<div class="spinner small"></div>
@@ -784,10 +737,7 @@
 						title={item.status === 'uploading' ? 'Cancel upload' : 'Remove'}
 						aria-label={item.status === 'uploading' ? 'Cancel upload' : 'Remove item'}
 					>
-						<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-							<line x1="18" y1="6" x2="6" y2="18" />
-							<line x1="6" y1="6" x2="18" y2="18" />
-						</svg>
+						<Icon name="IconX" size={16} />
 					</button>
 				</div>
 			{/each}
@@ -859,7 +809,7 @@
 		color: #3b82f6;
 	}
 
-	.drop-icon {
+	:global(.drop-icon) {
 		width: 48px;
 		height: 48px;
 		animation: bounce 0.5s infinite alternate;
@@ -878,13 +828,13 @@
 		gap: 1rem;
 	}
 
-	.upload-icon {
+	:global(.upload-icon) {
 		width: 48px;
 		height: 48px;
 		color: #64748b;
 	}
 
-	.compact .upload-icon {
+	.compact :global(.upload-icon) {
 		width: 32px;
 		height: 32px;
 	}
@@ -980,7 +930,7 @@
 		object-fit: cover;
 	}
 
-	.item-preview svg {
+	.item-preview :global(svg) {
 		width: 24px;
 		height: 24px;
 		color: #64748b;
@@ -1088,12 +1038,12 @@
 		justify-content: center;
 	}
 
-	.status-icon {
+	:global(.status-icon) {
 		width: 20px;
 		height: 20px;
 	}
 
-	.status-icon.success {
+	:global(.status-icon.success) {
 		color: #22c55e;
 	}
 
@@ -1116,7 +1066,7 @@
 		transform: rotate(-30deg);
 	}
 
-	.retry-btn svg {
+	.retry-btn :global(svg) {
 		width: 18px;
 		height: 18px;
 	}
@@ -1142,7 +1092,7 @@
 		color: #ef4444;
 	}
 
-	.remove-btn svg {
+	.remove-btn :global(svg) {
 		width: 16px;
 		height: 16px;
 	}
@@ -1231,14 +1181,14 @@
 		border-color: rgba(59, 130, 246, 0.3);
 	}
 
-	.library-btn svg,
-	.recent-btn svg {
+	.library-btn :global(svg),
+	.recent-btn :global(svg) {
 		width: 16px;
 		height: 16px;
 		flex-shrink: 0;
 	}
 
-	.recent-btn .chevron {
+	.recent-btn :global(.chevron) {
 		width: 14px;
 		height: 14px;
 		margin-left: auto;

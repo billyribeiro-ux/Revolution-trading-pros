@@ -15,6 +15,7 @@
 	 */
 
 	import { loadStripe as loadStripeJS } from '@stripe/stripe-js';
+	import Icon from '$lib/components/Icon.svelte';
 	import type { Stripe, StripeElements, StripeCardElement } from '@stripe/stripe-js';
 
 	interface Props {
@@ -386,19 +387,7 @@
 		<div
 			class="flex items-center gap-3 sm:gap-4 p-4 sm:p-5 md:p-6 bg-gray-50 border border-gray-200 rounded-lg text-gray-500 text-sm sm:text-base"
 		>
-			<svg aria-hidden="true" class="w-5 h-5 sm:w-6 sm:h-6 animate-spin flex-shrink-0" viewBox="0 0 24 24">
-				<circle
-					cx="12"
-					cy="12"
-					r="10"
-					stroke="currentColor"
-					stroke-width="3"
-					fill="none"
-					stroke-dasharray="60"
-					stroke-dashoffset="45"
-					stroke-linecap="round"
-				/>
-			</svg>
+			<Icon name="IconLoader2" class="w-5 h-5 sm:w-6 sm:h-6 animate-spin flex-shrink-0" />
 			<span>Loading payment form...</span>
 		</div>
 	{:else}
@@ -432,19 +421,7 @@
 			disabled={disabled || processing || !cardComplete}
 		>
 			{#if processing}
-				<svg aria-hidden="true" class="w-5 h-5 sm:w-6 sm:h-6 animate-spin flex-shrink-0" viewBox="0 0 24 24">
-					<circle
-						cx="12"
-						cy="12"
-						r="10"
-						stroke="currentColor"
-						stroke-width="3"
-						fill="none"
-						stroke-dasharray="60"
-						stroke-dashoffset="45"
-						stroke-linecap="round"
-					/>
-				</svg>
+				<Icon name="IconLoader2" class="w-5 h-5 sm:w-6 sm:h-6 animate-spin flex-shrink-0" />
 				<span>Processing...</span>
 			{:else}
 				<span>Pay {formatAmount(amount, currency)}</span>
@@ -455,16 +432,7 @@
 		<div
 			class="flex items-center justify-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-500 py-2"
 		>
-			<svg
-				class="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-			>
-				<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-				<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-			</svg>
+			<Icon name="IconLock" class="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
 			<span>Secured by Stripe</span>
 		</div>
 	{/if}

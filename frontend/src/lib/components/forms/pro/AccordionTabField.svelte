@@ -9,6 +9,7 @@
 	 */
 
 	import { sanitizeHtml } from '$lib/sanitize';
+	import Icon from '$lib/components/Icon.svelte';
 
 	interface Section {
 		id: string;
@@ -101,17 +102,7 @@
 					{#if required}
 						<span class="required-marker">*</span>
 					{/if}
-					<svg
-						class="chevron"
-						width="16"
-						height="16"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<polyline points="6 9 12 15 18 9"></polyline>
-					</svg>
+					<Icon name="IconChevronDown" size={16} class="chevron" />
 				</button>
 				<div
 					id="section-{section.id}"
@@ -233,12 +224,12 @@
 		font-weight: 600;
 	}
 
-	.chevron {
+	:global(.chevron) {
 		transition: transform 0.2s;
 		color: #9ca3af;
 	}
 
-	.accordion-item.open .chevron {
+	.accordion-item.open :global(.chevron) {
 		transform: rotate(180deg);
 		color: #3b82f6;
 	}

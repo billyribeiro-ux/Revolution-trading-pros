@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { flip } from 'svelte/animate';
+	import Icon from '$lib/components/Icon.svelte';
 	import { slide } from 'svelte/transition';
 
 	/**
@@ -264,20 +265,7 @@
 			>
 				<div class="repeater-item__header">
 					<button type="button" class="repeater-item__drag-handle" aria-label="Drag to reorder">
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="16"
-							height="16"
-							viewBox="0 0 24 24"
-							fill="currentColor"
-						>
-							<circle cx="9" cy="6" r="1.5"></circle>
-							<circle cx="15" cy="6" r="1.5"></circle>
-							<circle cx="9" cy="12" r="1.5"></circle>
-							<circle cx="15" cy="12" r="1.5"></circle>
-							<circle cx="9" cy="18" r="1.5"></circle>
-							<circle cx="15" cy="18" r="1.5"></circle>
-						</svg>
+						<Icon name="IconGripVertical" size={16} />
 					</button>
 
 					<span class="repeater-item__title">
@@ -296,17 +284,7 @@
 							disabled={index === 0}
 							aria-label="Move up"
 						>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								width="16"
-								height="16"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
-							>
-								<polyline points="18 15 12 9 6 15"></polyline>
-							</svg>
+							<Icon name="IconChevronUp" size={16} />
 						</button>
 
 						<button
@@ -316,17 +294,7 @@
 							disabled={index === items.length - 1}
 							aria-label="Move down"
 						>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								width="16"
-								height="16"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
-							>
-								<polyline points="6 9 12 15 18 9"></polyline>
-							</svg>
+							<Icon name="IconChevronDown" size={16} />
 						</button>
 
 						{#if canAdd}
@@ -336,18 +304,7 @@
 								onclick={() => duplicateItem(index)}
 								aria-label="Duplicate"
 							>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									width="16"
-									height="16"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-								>
-									<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-									<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-								</svg>
+								<Icon name="IconCopy" size={16} />
 							</button>
 						{/if}
 
@@ -357,21 +314,9 @@
 								class="repeater-item__action"
 								onclick={() => toggleCollapse(index)}
 								aria-label={item.collapsed ? 'Expand' : 'Collapse'}
+								style="transform: rotate({item.collapsed ? -90 : 0}deg); transition: transform 0.2s"
 							>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									width="16"
-									height="16"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-									style="transform: rotate({item.collapsed
-										? -90
-										: 0}deg); transition: transform 0.2s"
-								>
-									<polyline points="6 9 12 15 18 9"></polyline>
-								</svg>
+								<Icon name="IconChevronDown" size={16} />
 							</button>
 						{/if}
 
@@ -382,20 +327,7 @@
 								onclick={() => removeItem(index)}
 								aria-label={removeButtonText}
 							>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									width="16"
-									height="16"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-								>
-									<polyline points="3 6 5 6 21 6"></polyline>
-									<path
-										d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-									></path>
-								</svg>
+								<Icon name="IconTrash" size={16} />
 							</button>
 						{/if}
 					</div>
@@ -468,18 +400,7 @@
 
 	{#if canAdd}
 		<button type="button" class="repeater-add-btn" onclick={addItem}>
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				width="16"
-				height="16"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-			>
-				<line x1="12" y1="5" x2="12" y2="19"></line>
-				<line x1="5" y1="12" x2="19" y2="12"></line>
-			</svg>
+			<Icon name="IconPlus" size={16} />
 			{addButtonText}
 		</button>
 	{/if}

@@ -6,6 +6,7 @@
 	 */
 
 	import { apiFetch } from '$lib/api/config';
+	import Icon from '$lib/components/Icon.svelte';
 
 	interface Review {
 		id: number;
@@ -148,17 +149,7 @@
 
 	{#if successMessage}
 		<div class="alert success">
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				width="20"
-				height="20"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-			>
-				<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
-			</svg>
+			<Icon name="IconCircleCheck" size={20} />
 			{successMessage}
 		</div>
 	{/if}
@@ -178,19 +169,7 @@
 							onclick={() => (rating = star)}
 							aria-label="Rate {star} stars"
 						>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								width="28"
-								height="28"
-								viewBox="0 0 24 24"
-								fill={star <= rating ? 'currentColor' : 'none'}
-								stroke="currentColor"
-								stroke-width="2"
-							>
-								<polygon
-									points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
-								/>
-							</svg>
+							<Icon name={star <= rating ? 'IconStarFilled' : 'IconStar'} size={28} />
 						</button>
 					{/each}
 				</div>
@@ -243,19 +222,11 @@
 				<span class="rating-value">{summary.avg_rating.toFixed(1)}</span>
 				<div class="rating-stars">
 					{#each [1, 2, 3, 4, 5] as star (star)}
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="20"
-							height="20"
-							viewBox="0 0 24 24"
-							fill={star <= Math.round(summary.avg_rating) ? '#fbbf24' : 'none'}
-							stroke="#fbbf24"
-							stroke-width="2"
-						>
-							<polygon
-								points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
-							/>
-						</svg>
+						<Icon
+							name={star <= Math.round(summary.avg_rating) ? 'IconStarFilled' : 'IconStar'}
+							size={20}
+							color="#fbbf24"
+						/>
 					{/each}
 				</div>
 				<span class="total-reviews">{summary.total_reviews} reviews</span>
@@ -283,21 +254,7 @@
 						<div class="review-header">
 							<div class="user-info">
 								<div class="avatar">
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										width="24"
-										height="24"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										stroke-width="2"
-									>
-										<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle
-											cx="12"
-											cy="7"
-											r="4"
-										/>
-									</svg>
+									<Icon name="IconUser" size={24} />
 								</div>
 								<div class="user-meta">
 									<span class="username">Student</span>
@@ -310,19 +267,11 @@
 						</div>
 						<div class="review-rating">
 							{#each [1, 2, 3, 4, 5] as star (star)}
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									width="16"
-									height="16"
-									viewBox="0 0 24 24"
-									fill={star <= review.rating ? '#fbbf24' : 'none'}
-									stroke="#fbbf24"
-									stroke-width="2"
-								>
-									<polygon
-										points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
-									/>
-								</svg>
+								<Icon
+									name={star <= review.rating ? 'IconStarFilled' : 'IconStar'}
+									size={16}
+									color="#fbbf24"
+								/>
 							{/each}
 						</div>
 						{#if review.title}

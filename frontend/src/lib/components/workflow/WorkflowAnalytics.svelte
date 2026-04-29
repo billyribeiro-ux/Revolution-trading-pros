@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { WorkflowAnalytics } from '$lib/types/workflow';
+	import Icon from '$lib/components/Icon.svelte';
 
 	interface Props {
 		workflowId: number;
@@ -121,16 +122,7 @@
 		<div class="metrics-grid">
 			<div class="metric-card">
 				<div class="metric-icon" style="background: #dbeafe; color: #1e40af;">
-					<svg
-						width="24"
-						height="24"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-					</svg>
+					<Icon name="IconActivity" size={24} />
 				</div>
 				<div class="metric-content">
 					<span class="metric-label">Total Runs</span>
@@ -140,17 +132,7 @@
 
 			<div class="metric-card">
 				<div class="metric-icon" style="background: #d1fae5; color: #065f46;">
-					<svg
-						width="24"
-						height="24"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-						<polyline points="22 4 12 14.01 9 11.01" />
-					</svg>
+					<Icon name="IconCircleCheck" size={24} />
 				</div>
 				<div class="metric-content">
 					<span class="metric-label">Success Rate</span>
@@ -160,17 +142,7 @@
 
 			<div class="metric-card">
 				<div class="metric-icon" style="background: #fef3c7; color: #92400e;">
-					<svg
-						width="24"
-						height="24"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<circle cx="12" cy="12" r="10" />
-						<polyline points="12 6 12 12 16 14" />
-					</svg>
+					<Icon name="IconClock" size={24} />
 				</div>
 				<div class="metric-content">
 					<span class="metric-label">Avg Duration</span>
@@ -180,18 +152,7 @@
 
 			<div class="metric-card">
 				<div class="metric-icon" style="background: #fee2e2; color: #991b1b;">
-					<svg
-						width="24"
-						height="24"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<circle cx="12" cy="12" r="10" />
-						<line x1="12" y1="8" x2="12" y2="12" />
-						<line x1="12" y1="16" x2="12.01" y2="16" />
-					</svg>
+					<Icon name="IconAlertCircle" size={24} />
 				</div>
 				<div class="metric-content">
 					<span class="metric-label">Failed Runs</span>

@@ -8,6 +8,7 @@
 	 */
 
 	import type { FormField } from '$lib/api/forms';
+	import Icon from '$lib/components/Icon.svelte';
 
 	interface PaymentMethod {
 		id: string;
@@ -171,15 +172,7 @@
 					<span
 						class="flex-shrink-0 w-6 h-6 sm:w-7 sm:h-7 bg-blue-600 rounded-full flex items-center justify-center"
 					>
-						<svg
-							class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="3"
-						>
-							<polyline points="20 6 9 17 4 12"></polyline>
-						</svg>
+						<Icon name="IconCheck" size={14} class="text-white" />
 					</span>
 				{/if}
 			</button>
@@ -195,50 +188,21 @@
 					<span
 						class="inline-flex items-center gap-1.5 text-xs sm:text-sm text-gray-600 px-2 sm:px-3 py-1 sm:py-1.5 bg-white rounded border border-gray-200"
 					>
-						<svg
-							class="w-3.5 h-3.5 sm:w-4 sm:h-4"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-							stroke-width="1.5"
-						>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
-							/>
-						</svg>
+						<Icon name="IconCreditCard" size={14} />
 						{cardType}
 					</span>
 				{/each}
 			</div>
 			<!-- Security Note -->
 			<p class="flex items-center gap-2 text-xs sm:text-sm text-gray-600 m-0">
-				<svg
-					class="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 flex-shrink-0"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-				>
-					<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-					<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-				</svg>
+				<Icon name="IconLock" size={16} class="text-emerald-600 flex-shrink-0" />
 				<span>Secured by Stripe. Your card details are encrypted.</span>
 			</p>
 		</div>
 	{:else if (props.value ?? '') === 'paypal'}
 		<div class="mt-2 sm:mt-3 p-3 sm:p-4 bg-gray-50 rounded-lg border-l-4 border-amber-500">
 			<p class="flex items-center gap-2 text-xs sm:text-sm text-gray-600 m-0">
-				<svg
-					class="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 flex-shrink-0"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-				>
-					<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-				</svg>
+				<Icon name="IconShield" size={16} class="text-emerald-600 flex-shrink-0" />
 				<span>You will be redirected to PayPal to complete your payment.</span>
 			</p>
 		</div>

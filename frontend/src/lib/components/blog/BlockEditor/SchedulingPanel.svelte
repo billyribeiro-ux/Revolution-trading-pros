@@ -20,6 +20,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { fade, slide } from 'svelte/transition';
+	import Icon from '$lib/components/Icon.svelte';
 
 	// Props
 	interface Props {
@@ -475,14 +476,7 @@
 					<p class="content-name">{contentTitle}</p>
 				</div>
 				<button class="close-btn" onclick={onClose} aria-label="Close">
-					<svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none">
-						<path
-							d="M15 5L5 15M5 5L15 15"
-							stroke="currentColor"
-							stroke-width="2"
-							stroke-linecap="round"
-						/>
-					</svg>
+					<Icon name="IconX" size={20} />
 				</button>
 			</div>
 
@@ -493,15 +487,7 @@
 					class:active={activeTab === 'schedule'}
 					onclick={() => switchTab('schedule')}
 				>
-					<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none">
-						<circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5" />
-						<path
-							d="M8 4.5V8L10.5 10"
-							stroke="currentColor"
-							stroke-width="1.5"
-							stroke-linecap="round"
-						/>
-					</svg>
+					<Icon name="IconClock" size={16} />
 					Schedule
 				</button>
 				<button
@@ -509,11 +495,7 @@
 					class:active={activeTab === 'releases'}
 					onclick={() => switchTab('releases')}
 				>
-					<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none">
-						<rect x="2" y="4" width="12" height="2" rx="1" fill="currentColor" />
-						<rect x="2" y="7" width="12" height="2" rx="1" fill="currentColor" />
-						<rect x="2" y="10" width="12" height="2" rx="1" fill="currentColor" />
-					</svg>
+					<Icon name="IconList" size={16} />
 					Releases
 				</button>
 				<button
@@ -521,20 +503,7 @@
 					class:active={activeTab === 'calendar'}
 					onclick={() => switchTab('calendar')}
 				>
-					<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none">
-						<rect
-							x="2"
-							y="3"
-							width="12"
-							height="11"
-							rx="2"
-							stroke="currentColor"
-							stroke-width="1.5"
-						/>
-						<path d="M2 6.5H14" stroke="currentColor" stroke-width="1.5" />
-						<path d="M5 1.5V4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-						<path d="M11 1.5V4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-					</svg>
+					<Icon name="IconCalendar" size={16} />
 					Calendar
 				</button>
 				<button
@@ -542,15 +511,7 @@
 					class:active={activeTab === 'history'}
 					onclick={() => switchTab('history')}
 				>
-					<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none">
-						<path d="M8 14A6 6 0 108 2a6 6 0 000 12z" stroke="currentColor" stroke-width="1.5" />
-						<path
-							d="M3.5 8H2M8 3.5V2"
-							stroke="currentColor"
-							stroke-width="1.5"
-							stroke-linecap="round"
-						/>
-					</svg>
+					<Icon name="IconHistory" size={16} />
 					History
 				</button>
 			</div>
@@ -782,27 +743,13 @@
 					<div class="calendar-section" transition:fade>
 						<div class="calendar-header">
 							<button class="calendar-nav" onclick={prevMonth} aria-label="Previous month">
-								<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none">
-									<path
-										d="M10 12L6 8L10 4"
-										stroke="currentColor"
-										stroke-width="2"
-										stroke-linecap="round"
-									/>
-								</svg>
+								<Icon name="IconChevronLeft" size={16} />
 							</button>
 							<h3>
 								{calendarMonth.toLocaleString('en-US', { month: 'long', year: 'numeric' })}
 							</h3>
 							<button class="calendar-nav" onclick={nextMonth} aria-label="Next month">
-								<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none">
-									<path
-										d="M6 4L10 8L6 12"
-										stroke="currentColor"
-										stroke-width="2"
-										stroke-linecap="round"
-									/>
-								</svg>
+								<Icon name="IconChevronRight" size={16} />
 							</button>
 						</div>
 
@@ -870,15 +817,7 @@
 								{#each scheduleHistory as item (item.id ?? item)}
 									<div class="history-item">
 										<div class="history-icon">
-											<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none">
-												<circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5" />
-												<path
-													d="M8 4.5V8L10 10"
-													stroke="currentColor"
-													stroke-width="1.5"
-													stroke-linecap="round"
-												/>
-											</svg>
+											<Icon name="IconClock" size={16} />
 										</div>
 										<div class="history-content">
 											<span class="history-event">{item.event_type.replace('_', ' ')}</span>

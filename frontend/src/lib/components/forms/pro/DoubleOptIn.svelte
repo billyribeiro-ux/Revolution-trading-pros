@@ -46,6 +46,8 @@
 		error = ''
 	}: Props = $props();
 
+	import Icon from '$lib/components/Icon.svelte';
+
 	let isResending = $state(false);
 	let resendTimer = $state(0);
 	let localError = $state('');
@@ -162,67 +164,15 @@
 		<div class="status-card" style="--status-color: {config.color}; --status-bg: {config.bgColor}">
 			<div class="status-icon">
 				{#if data.status === 'pending'}
-					<svg
-						width="24"
-						height="24"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<circle cx="12" cy="12" r="10"></circle>
-						<polyline points="12 6 12 12 16 14"></polyline>
-					</svg>
+					<Icon name="IconClock" size={24} />
 				{:else if data.status === 'sent'}
-					<svg
-						width="24"
-						height="24"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<line x1="22" y1="2" x2="11" y2="13"></line>
-						<polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-					</svg>
+					<Icon name="IconSend" size={24} />
 				{:else if data.status === 'confirmed'}
-					<svg
-						width="24"
-						height="24"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-						<polyline points="22 4 12 14.01 9 11.01"></polyline>
-					</svg>
+					<Icon name="IconCircleCheck" size={24} />
 				{:else if data.status === 'expired'}
-					<svg
-						width="24"
-						height="24"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<circle cx="12" cy="12" r="10"></circle>
-						<line x1="12" y1="8" x2="12" y2="12"></line>
-						<line x1="12" y1="16" x2="12.01" y2="16"></line>
-					</svg>
+					<Icon name="IconAlertCircle" size={24} />
 				{:else}
-					<svg
-						width="24"
-						height="24"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<circle cx="12" cy="12" r="10"></circle>
-						<line x1="15" y1="9" x2="9" y2="15"></line>
-						<line x1="9" y1="9" x2="15" y2="15"></line>
-					</svg>
+					<Icon name="IconCircleX" size={24} />
 				{/if}
 			</div>
 
@@ -231,34 +181,13 @@
 				<p class="status-description">{config.description}</p>
 
 				<div class="email-info">
-					<svg
-						width="14"
-						height="14"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
-						></path>
-						<polyline points="22,6 12,13 2,6"></polyline>
-					</svg>
+					<Icon name="IconMail" size={14} />
 					<span>{maskEmail(email || data?.email || '')}</span>
 				</div>
 
 				{#if data.status === 'sent' && data.expiresAt}
 					<div class="expiry-info">
-						<svg
-							width="14"
-							height="14"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-						>
-							<circle cx="12" cy="12" r="10"></circle>
-							<polyline points="12 6 12 12 16 14"></polyline>
-						</svg>
+						<Icon name="IconClock" size={14} />
 						<span>{getTimeRemaining()}</span>
 					</div>
 				{/if}
@@ -296,30 +225,10 @@
 					<span class="spinner"></span>
 					Sending...
 				{:else if resendTimer > 0}
-					<svg
-						width="16"
-						height="16"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<circle cx="12" cy="12" r="10"></circle>
-						<polyline points="12 6 12 12 16 14"></polyline>
-					</svg>
+					<Icon name="IconClock" size={16} />
 					Resend in {resendTimer}s
 				{:else}
-					<svg
-						width="16"
-						height="16"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<polyline points="23 4 23 10 17 10"></polyline>
-						<path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-					</svg>
+					<Icon name="IconRotateClockwise" size={16} />
 					Resend Verification Email
 				{/if}
 			</button>
@@ -328,31 +237,13 @@
 
 	{#if data.status === 'confirmed'}
 		<div class="success-banner">
-			<svg
-				width="20"
-				height="20"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-			>
-				<polyline points="20 6 9 17 4 12"></polyline>
-			</svg>
+			<Icon name="IconCheck" size={20} />
 			<span>Your subscription is now active!</span>
 		</div>
 	{/if}
 
 	<div class="gdpr-notice">
-		<svg
-			width="14"
-			height="14"
-			viewBox="0 0 24 24"
-			fill="none"
-			stroke="currentColor"
-			stroke-width="2"
-		>
-			<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-		</svg>
+		<Icon name="IconShield" size={14} />
 		<span>Your email is protected and will only be used as per our privacy policy.</span>
 	</div>
 
@@ -362,18 +253,7 @@
 
 	{#if error || localError}
 		<div class="error-message">
-			<svg
-				width="14"
-				height="14"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-			>
-				<circle cx="12" cy="12" r="10"></circle>
-				<line x1="12" y1="8" x2="12" y2="12"></line>
-				<line x1="12" y1="16" x2="12.01" y2="16"></line>
-			</svg>
+			<Icon name="IconAlertCircle" size={14} />
 			{error || localError}
 		</div>
 	{/if}
@@ -537,7 +417,7 @@
 		color: #6b7280;
 	}
 
-	.gdpr-notice svg {
+	.gdpr-notice :global(svg) {
 		flex-shrink: 0;
 		margin-top: 0.125rem;
 	}

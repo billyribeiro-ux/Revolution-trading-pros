@@ -20,6 +20,7 @@
 	import { browser } from '$app/environment';
 	import { decodeBlurhash, DEFAULT_BLURHASHES } from '$lib/utils/blurhash';
 	import { videoPreloader, type VideoPreloadInfo } from '$lib/utils/videoPreloader';
+	import Icon from '$lib/components/Icon.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════
 	// TYPES
@@ -236,9 +237,7 @@
 
 			<!-- Play Icon Overlay -->
 			<div class="video-card__play-overlay" aria-hidden="true">
-				<svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" width="48" height="48">
-					<path d="M8 5v14l11-7z" />
-				</svg>
+				<Icon name="IconPlayerPlay" size={48} />
 			</div>
 		</figure>
 	</a>
@@ -392,7 +391,7 @@
 		z-index: 4;
 	}
 
-	.video-card__play-overlay svg {
+	.video-card__play-overlay :global(svg) {
 		width: 28px;
 		height: 28px;
 		margin-left: 3px;
@@ -543,7 +542,7 @@
 			opacity: 0;
 		}
 
-		.video-card__play-overlay svg {
+		.video-card__play-overlay :global(svg) {
 			width: 32px;
 			height: 32px;
 		}
@@ -604,7 +603,7 @@
 			height: 64px;
 		}
 
-		.video-card__play-overlay svg {
+		.video-card__play-overlay :global(svg) {
 			width: 40px;
 			height: 40px;
 			margin-left: 4px;

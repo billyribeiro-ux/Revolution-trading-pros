@@ -6,6 +6,7 @@
 	 * and optimization queue integration.
 	 */
 	import { mediaApi, type MediaItem, type UploadOptions } from '$lib/api/media';
+	import Icon from '$lib/components/Icon.svelte';
 
 	interface Props {
 		collection?: string;
@@ -189,23 +190,7 @@
 			<!-- Upload progress -->
 			<div class="upload-progress">
 				<div class="progress-icon">
-					<svg
-						class="animate-spin"
-						width="48"
-						height="48"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-					>
-						<circle
-							cx="12"
-							cy="12"
-							r="10"
-							stroke-width="2"
-							stroke-dasharray="32"
-							stroke-dashoffset="32"
-						/>
-					</svg>
+					<Icon name="IconLoader2" size={48} class="animate-spin" />
 				</div>
 				<div class="progress-text">
 					<span class="progress-percent">{Math.round(totalProgress)}%</span>
@@ -237,16 +222,7 @@
 			<!-- Default state -->
 			<div class="drop-content">
 				<div class="drop-icon">
-					<svg
-						width="64"
-						height="64"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="1.5"
-					>
-						<path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-					</svg>
+					<Icon name="IconUpload" size={64} />
 				</div>
 				<div class="drop-text">
 					<span class="drop-title">
@@ -438,7 +414,7 @@
 		}
 	}
 
-	.animate-spin {
+	:global(.animate-spin) {
 		animation: spin 1s linear infinite;
 	}
 </style>

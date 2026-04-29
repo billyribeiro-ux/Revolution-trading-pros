@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { FormField } from '$lib/api/forms';
 	import { tryMathEval } from '$lib/utils/safe-math-parser';
+	import Icon from '$lib/components/Icon.svelte';
 
 	interface CalculationVariable {
 		name: string;
@@ -91,17 +92,7 @@
 	{#if showFormula && variables.length > 0}
 		<div class="formula-breakdown">
 			<div class="formula-header">
-				<svg
-					width="14"
-					height="14"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-				>
-					<polyline points="4 17 10 11 4 5"></polyline>
-					<line x1="12" y1="19" x2="20" y2="19"></line>
-				</svg>
+				<Icon name="IconCode" size={14} />
 				<span>Calculation breakdown</span>
 			</div>
 			<div class="variables-list">

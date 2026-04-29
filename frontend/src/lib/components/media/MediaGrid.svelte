@@ -6,6 +6,7 @@
 	 * preview, and bulk actions support.
 	 */
 	import type { MediaItem } from '$lib/api/media';
+	import Icon from '$lib/components/Icon.svelte';
 
 	interface Props {
 		items?: MediaItem[];
@@ -138,18 +139,7 @@
 		{:else if items.length === 0}
 			<!-- Empty state -->
 			<div class="empty-state">
-				<svg
-					width="64"
-					height="64"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="1.5"
-				>
-					<rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-					<circle cx="8.5" cy="8.5" r="1.5" />
-					<path d="M21 15l-5-5L5 21" />
-				</svg>
+				<Icon name="IconPhoto" size={64} />
 				<span>No media found</span>
 			</div>
 		{:else}
@@ -188,37 +178,15 @@
 							/>
 						{:else if item.file_type === 'video'}
 							<div class="type-icon video">
-								<svg aria-hidden="true" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
-									<path d="M8 5v14l11-7z" />
-								</svg>
+								<Icon name="IconPlayerPlay" size={32} />
 							</div>
 						{:else if item.file_type === 'document'}
 							<div class="type-icon document">
-								<svg
-									width="32"
-									height="32"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-								>
-									<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
-									<path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" />
-								</svg>
+								<Icon name="IconFileText" size={32} />
 							</div>
 						{:else}
 							<div class="type-icon other">
-								<svg
-									width="32"
-									height="32"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-								>
-									<path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z" />
-									<path d="M13 2v7h7" />
-								</svg>
+								<Icon name="IconFile" size={32} />
 							</div>
 						{/if}
 
@@ -229,38 +197,13 @@
 								style="background: {getStatusColor(item.processing_status || 'pending')}"
 							>
 								{#if item.is_optimized}
-									<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-										<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-									</svg>
+									<Icon name="IconCheck" size={12} />
 								{:else if item.processing_status === 'processing'}
-									<svg
-										class="animate-spin"
-										width="12"
-										height="12"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										stroke-width="3"
-									>
-										<circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="32" />
-									</svg>
+									<Icon name="IconLoader2" size={12} class="animate-spin" />
 								{:else if item.processing_status === 'failed'}
-									<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-										<path
-											d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-										/>
-									</svg>
+									<Icon name="IconX" size={12} />
 								{:else}
-									<svg
-										width="12"
-										height="12"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										stroke-width="3"
-									>
-										<circle cx="12" cy="12" r="10" />
-									</svg>
+									<Icon name="IconMinus" size={12} />
 								{/if}
 							</div>
 						{/if}
@@ -273,17 +216,7 @@
 								title="Preview"
 								onclick={(e: MouseEvent) => handlePreview(item, e)}
 							>
-								<svg
-									width="16"
-									height="16"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-								>
-									<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-									<circle cx="12" cy="12" r="3" />
-								</svg>
+								<Icon name="IconEye" size={16} />
 							</button>
 							{#if item.file_type === 'image' && !item.is_optimized}
 								<button
@@ -292,16 +225,7 @@
 									title="Optimize"
 									onclick={(e: MouseEvent) => handleOptimize(item, e)}
 								>
-									<svg
-										width="16"
-										height="16"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										stroke-width="2"
-									>
-										<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-									</svg>
+									<Icon name="IconBolt" size={16} />
 								</button>
 							{/if}
 							<button
@@ -310,18 +234,7 @@
 								title="Delete"
 								onclick={(e: MouseEvent) => handleDelete(item, e)}
 							>
-								<svg
-									width="16"
-									height="16"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-								>
-									<path
-										d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"
-									/>
-								</svg>
+								<Icon name="IconTrash" size={16} />
 							</button>
 						</div>
 					</div>
@@ -564,7 +477,7 @@
 		}
 	}
 
-	.animate-spin {
+	:global(.animate-spin) {
 		animation: spin 1s linear infinite;
 	}
 </style>

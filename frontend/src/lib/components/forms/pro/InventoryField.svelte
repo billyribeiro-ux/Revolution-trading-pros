@@ -55,6 +55,8 @@
 		onchange
 	}: Props = $props();
 
+	import Icon from '$lib/components/Icon.svelte';
+
 	let selections = $state<Map<string, number>>(new Map());
 
 	// Initialize selections from value prop
@@ -232,16 +234,7 @@
 								disabled={disabled || quantity <= 0}
 								aria-label="Decrease quantity"
 							>
-								<svg
-									width="16"
-									height="16"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-								>
-									<line x1="5" y1="12" x2="19" y2="12"></line>
-								</svg>
+								<Icon name="IconMinus" size={16} />
 							</button>
 							<input
 								type="number"
@@ -263,17 +256,7 @@
 								disabled={disabled || quantity >= maxQty}
 								aria-label="Increase quantity"
 							>
-								<svg
-									width="16"
-									height="16"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-								>
-									<line x1="12" y1="5" x2="12" y2="19"></line>
-									<line x1="5" y1="12" x2="19" y2="12"></line>
-								</svg>
+								<Icon name="IconPlus" size={16} />
 							</button>
 						</div>
 						{#if isSelected}
@@ -322,18 +305,7 @@
 
 	{#if error}
 		<div class="error-message">
-			<svg
-				width="14"
-				height="14"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-			>
-				<circle cx="12" cy="12" r="10"></circle>
-				<line x1="12" y1="8" x2="12" y2="12"></line>
-				<line x1="12" y1="16" x2="12.01" y2="16"></line>
-			</svg>
+			<Icon name="IconAlertCircle" size={14} />
 			{error}
 		</div>
 	{/if}

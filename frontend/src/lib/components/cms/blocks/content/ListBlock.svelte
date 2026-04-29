@@ -8,7 +8,7 @@
 -->
 
 <script lang="ts">
-	import { IconCheck, IconPlus, IconX } from '$lib/icons';
+	import { IconCheck, IconPlus, IconX, IconList, IconListNumbers } from '$lib/icons';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 
@@ -297,21 +297,7 @@
 					aria-pressed={listType === 'bullet'}
 					aria-label="Toggle bullet list"
 				>
-					<svg
-						width="16"
-						height="16"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<line x1="9" y1="6" x2="20" y2="6"></line>
-						<line x1="9" y1="12" x2="20" y2="12"></line>
-						<line x1="9" y1="18" x2="20" y2="18"></line>
-						<circle cx="4" cy="6" r="2" fill="currentColor"></circle>
-						<circle cx="4" cy="12" r="2" fill="currentColor"></circle>
-						<circle cx="4" cy="18" r="2" fill="currentColor"></circle>
-					</svg>
+					<IconList size={16} />
 					<span>Bullets</span>
 				</button>
 				<button
@@ -322,21 +308,7 @@
 					aria-pressed={listType === 'number'}
 					aria-label="Toggle numbered list"
 				>
-					<svg
-						width="16"
-						height="16"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<line x1="10" y1="6" x2="21" y2="6"></line>
-						<line x1="10" y1="12" x2="21" y2="12"></line>
-						<line x1="10" y1="18" x2="21" y2="18"></line>
-						<text x="4" y="7" font-size="8" fill="currentColor" stroke="none">1</text>
-						<text x="4" y="13" font-size="8" fill="currentColor" stroke="none">2</text>
-						<text x="4" y="19" font-size="8" fill="currentColor" stroke="none">3</text>
-					</svg>
+					<IconListNumbers size={16} />
 					<span>Numbers</span>
 				</button>
 			</div>

@@ -51,6 +51,8 @@
 		onupload
 	}: Props = $props();
 
+	import Icon from '$lib/components/Icon.svelte';
+
 	let files = $state<UploadedFile[]>([]);
 	let isDragging = $state(false);
 	let fileInput = $state<HTMLInputElement>();
@@ -218,17 +220,7 @@
 			/>
 
 			<div class="dropzone-content">
-				<svg
-					class="upload-icon"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-				>
-					<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-					<polyline points="17 8 12 3 7 8"></polyline>
-					<line x1="12" y1="3" x2="12" y2="15"></line>
-				</svg>
+				<Icon name="IconUpload" size={40} class="upload-icon" />
 				<p class="dropzone-text">
 					<span class="dropzone-link">Click to upload</span> or drag and drop
 				</p>
@@ -269,10 +261,7 @@
 						title="Remove file"
 						aria-label="Remove file"
 					>
-						<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-							<line x1="18" y1="6" x2="6" y2="18"></line>
-							<line x1="6" y1="6" x2="18" y2="18"></line>
-						</svg>
+						<Icon name="IconX" size={16} />
 					</button>
 
 					<input type="hidden" name="{name}[]" value={file.id} />
@@ -345,9 +334,7 @@
 		gap: 0.5rem;
 	}
 
-	.upload-icon {
-		width: 40px;
-		height: 40px;
+	:global(.upload-icon) {
 		color: #9ca3af;
 	}
 
@@ -469,7 +456,7 @@
 		color: #ef4444;
 	}
 
-	.remove-btn svg {
+	.remove-btn :global(svg) {
 		width: 16px;
 		height: 16px;
 	}

@@ -32,6 +32,8 @@
 		expirationYear?: string;
 	}
 
+	import Icon from '$lib/components/Icon.svelte';
+
 	let {
 		applicationId,
 		locationId,
@@ -218,9 +220,7 @@
 
 	{#if loading}
 		<div class="loading-state">
-			<svg aria-hidden="true" class="spinner" viewBox="0 0 24 24">
-				<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" />
-			</svg>
+			<Icon name="IconLoader2" size={20} class="spinner" />
 			<span>Loading payment form...</span>
 		</div>
 	{:else}
@@ -251,9 +251,7 @@
 			disabled={disabled || processing}
 		>
 			{#if processing}
-				<svg aria-hidden="true" class="button-spinner" viewBox="0 0 24 24">
-					<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" />
-				</svg>
+				<Icon name="IconLoader2" size={20} class="button-spinner" />
 				Processing...
 			{:else}
 				Pay {formatAmount(amount, currency)}
@@ -261,10 +259,7 @@
 		</button>
 
 		<div class="secure-badge">
-			<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-				<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-				<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-			</svg>
+			<Icon name="IconLock" size={14} />
 			<span>Secured by Square</span>
 		</div>
 	{/if}
@@ -308,27 +303,14 @@
 		color: #6b7280;
 	}
 
-	.spinner,
-	.button-spinner {
-		width: 20px;
-		height: 20px;
+	:global(.spinner),
+	:global(.button-spinner) {
 		animation: spin 1s linear infinite;
 	}
 
-	.spinner circle,
-	.button-spinner circle {
-		stroke-dasharray: 60;
-		stroke-dashoffset: 45;
-		stroke-linecap: round;
-	}
-
 	@keyframes spin {
-		from {
-			transform: rotate(0deg);
-		}
-		to {
-			transform: rotate(360deg);
-		}
+		from { transform: rotate(0deg); }
+		to { transform: rotate(360deg); }
 	}
 
 	.digital-wallets {
@@ -400,11 +382,6 @@
 		gap: 0.375rem;
 		font-size: 0.75rem;
 		color: #6b7280;
-	}
-
-	.secure-badge svg {
-		width: 14px;
-		height: 14px;
 	}
 
 	.error-text {

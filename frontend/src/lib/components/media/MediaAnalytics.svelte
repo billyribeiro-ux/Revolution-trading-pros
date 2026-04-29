@@ -7,6 +7,7 @@
 	 */
 	import { onMount } from 'svelte';
 	import { mediaApi, type MediaStatistics } from '$lib/api/media';
+	import Icon from '$lib/components/Icon.svelte';
 
 	interface Props {
 		compact?: boolean;
@@ -97,48 +98,21 @@
 		<div class="summary-grid">
 			<div class="summary-card primary">
 				<div class="card-icon">
-					<svg
-						width="24"
-						height="24"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-					</svg>
+					<Icon name="IconBolt" size={24} />
 				</div>
 				<div class="card-content">
 					<span class="card-value">{formatBytes(statistics.total_savings_bytes)}</span>
 					<span class="card-label">Total Savings</span>
 				</div>
 				<div class="card-trend positive">
-					<svg
-						width="16"
-						height="16"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<path d="M18 15l-6-6-6 6" />
-					</svg>
+					<Icon name="IconTrendingUp" size={16} />
 					<span>{getSavingsRate()}%</span>
 				</div>
 			</div>
 
 			<div class="summary-card">
 				<div class="card-icon storage">
-					<svg
-						width="24"
-						height="24"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<path d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7c0-2-1-3-3-3H7c-2 0-3 1-3 3z" />
-					</svg>
+					<Icon name="IconDatabase" size={24} />
 				</div>
 				<div class="card-content">
 					<span class="card-value">{formatBytes(statistics.total_storage)}</span>
@@ -148,18 +122,7 @@
 
 			<div class="summary-card">
 				<div class="card-icon images">
-					<svg
-						width="24"
-						height="24"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-						<circle cx="8.5" cy="8.5" r="1.5" />
-						<path d="M21 15l-5-5L5 21" />
-					</svg>
+					<Icon name="IconPhoto" size={24} />
 				</div>
 				<div class="card-content">
 					<span class="card-value">{formatNumber(statistics.total_images)}</span>
@@ -169,19 +132,7 @@
 
 			<div class="summary-card">
 				<div class="card-icon variants">
-					<svg
-						width="24"
-						height="24"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<rect x="2" y="2" width="8" height="8" rx="1" />
-						<rect x="14" y="2" width="8" height="8" rx="1" />
-						<rect x="2" y="14" width="8" height="8" rx="1" />
-						<rect x="14" y="14" width="8" height="8" rx="1" />
-					</svg>
+					<Icon name="IconLayoutGrid" size={24} />
 				</div>
 				<div class="card-content">
 					<span class="card-value">{formatNumber(statistics.total_variants)}</span>
@@ -209,17 +160,7 @@
 
 				{#if statistics.pending_optimization > 0}
 					<div class="pending-alert">
-						<svg
-							width="16"
-							height="16"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-						>
-							<circle cx="12" cy="12" r="10" />
-							<path d="M12 6v6l4 2" />
-						</svg>
+						<Icon name="IconClock" size={16} />
 						<span>{statistics.pending_optimization} images pending optimization</span>
 					</div>
 				{/if}

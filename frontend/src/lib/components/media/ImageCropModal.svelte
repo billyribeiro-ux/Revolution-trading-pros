@@ -15,6 +15,7 @@
 <script lang="ts">
 	import { fade, scale } from 'svelte/transition';
 	import { untrack } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Types
@@ -412,20 +413,7 @@
 				Crop & Edit Image
 			</h2>
 			<button class="close-btn" onclick={() => dispatch('cancel')} aria-label="Close modal">
-				<svg
-					class="w-5 h-5"
-					fill="none"
-					stroke="currentColor"
-					viewBox="0 0 24 24"
-					aria-hidden="true"
-				>
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M6 18L18 6M6 6l12 12"
-					/>
-				</svg>
+				<Icon name="IconX" size={20} />
 			</button>
 		</div>
 
@@ -457,14 +445,7 @@
 						title="Rotate left"
 						aria-label="Rotate left"
 					>
-						<svg aria-hidden="true" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
-							/>
-						</svg>
+						<Icon name="IconRotate" size={20} />
 					</button>
 					<button
 						class="transform-btn"
@@ -472,14 +453,7 @@
 						title="Rotate right"
 						aria-label="Rotate right"
 					>
-						<svg aria-hidden="true" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M21 10h-10a8 8 0 00-8 8v2M21 10l-6 6m6-6l-6-6"
-							/>
-						</svg>
+						<Icon name="IconRotateClockwise" size={20} />
 					</button>
 					<button
 						class="transform-btn"
@@ -488,14 +462,7 @@
 						title="Flip horizontal"
 						aria-label="Flip horizontal"
 					>
-						<svg aria-hidden="true" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M8 7h12M8 12h12M8 17h12M4 7v10"
-							/>
-						</svg>
+						<Icon name="IconArrowsLeftRight" size={20} />
 					</button>
 					<button
 						class="transform-btn"
@@ -504,14 +471,7 @@
 						title="Flip vertical"
 						aria-label="Flip vertical"
 					>
-						<svg aria-hidden="true" class="w-5 h-5 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M8 7h12M8 12h12M8 17h12M4 7v10"
-							/>
-						</svg>
+						<Icon name="IconArrowsUpDown" size={20} />
 					</button>
 				</div>
 			</div>

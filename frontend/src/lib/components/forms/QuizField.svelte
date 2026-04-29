@@ -178,6 +178,8 @@
 		return classes.join(' ');
 	}
 
+	import Icon from '$lib/components/Icon.svelte';
+
 	// Derived
 	let inputType = $derived(questionType === 'multiple' ? 'checkbox' : 'radio');
 </script>
@@ -211,18 +213,7 @@
 			>
 				<span class="quiz-option__indicator">
 					{#if inputType === 'checkbox'}
-						<svg
-							class="quiz-option__check"
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="3"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-						>
-							<polyline points="20 6 9 17 4 12"></polyline>
-						</svg>
+						<Icon name="IconCheck" size={14} stroke={3} class="quiz-option__check" />
 					{:else}
 						<span class="quiz-option__radio-dot"></span>
 					{/if}
@@ -239,28 +230,9 @@
 				{#if showFeedback && answered && selectedOptions.has(option.id)}
 					<span class="quiz-option__feedback-icon">
 						{#if option.isCorrect}
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
-							>
-								<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-								<polyline points="22 4 12 14.01 9 11.01"></polyline>
-							</svg>
+							<Icon name="IconCircleCheck" size={24} />
 						{:else}
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
-							>
-								<circle cx="12" cy="12" r="10"></circle>
-								<line x1="15" y1="9" x2="9" y2="15"></line>
-								<line x1="9" y1="9" x2="15" y2="15"></line>
-							</svg>
+							<Icon name="IconCircleX" size={24} />
 						{/if}
 					</span>
 				{/if}
@@ -426,12 +398,12 @@
 		transition: opacity 0.2s;
 	}
 
-	.quiz-option--selected .quiz-option__check,
+	.quiz-option--selected :global(.quiz-option__check),
 	.quiz-option--selected .quiz-option__radio-dot {
 		opacity: 1;
 	}
 
-	.quiz-option__check {
+	:global(.quiz-option__check) {
 		width: 14px;
 		height: 14px;
 	}
@@ -468,7 +440,7 @@
 		flex-shrink: 0;
 	}
 
-	.quiz-option__feedback-icon svg {
+	.quiz-option__feedback-icon :global(svg) {
 		width: 100%;
 		height: 100%;
 	}

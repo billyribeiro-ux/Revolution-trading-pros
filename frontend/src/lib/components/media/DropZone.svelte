@@ -13,6 +13,7 @@
 -->
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	// Svelte 5 Props with callback pattern
 	interface Props {
@@ -198,19 +199,7 @@
 		{#if isDragOver}
 			<!-- Drop active state -->
 			<div class="drop-indicator">
-				<svg
-					class="w-16 h-16 text-blue-500 animate-bounce"
-					fill="none"
-					stroke="currentColor"
-					viewBox="0 0 24 24"
-				>
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3-3m0 0l3 3m-3-3v12"
-					/>
-				</svg>
+				<Icon name="IconCloudUpload" size={64} class="text-blue-500 animate-bounce" />
 				<p class="text-lg font-medium text-blue-600">Drop files here</p>
 			</div>
 		{:else}
@@ -219,19 +208,7 @@
 				{@render children()}
 			{:else}
 				<div class="default-content">
-					<svg
-						class="w-12 h-12 text-gray-400 mb-4"
-						fill="none"
-						stroke="currentColor"
-						viewBox="0 0 24 24"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-						/>
-					</svg>
+					<Icon name="IconPhoto" size={48} class="text-gray-400 mb-4" />
 					<p class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-1">
 						Drag and drop images here
 					</p>

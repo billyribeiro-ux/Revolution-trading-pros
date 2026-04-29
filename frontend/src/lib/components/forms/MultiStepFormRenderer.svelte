@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	import type { Form, FormField } from '$lib/api/forms';
 	import { submitForm } from '$lib/api/forms';
 	import FormFieldRenderer from './FormFieldRenderer.svelte';
@@ -471,17 +472,7 @@
 <div class="multi-step-form" class:single-step={steps.length === 1}>
 	{#if submitSuccess && submitMessage}
 		<div class="alert alert-success" role="alert">
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				class="icon"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-			>
-				<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-				<polyline points="22 4 12 14.01 9 11.01" />
-			</svg>
+			<Icon name="IconCircleCheck" size={20} class="icon" />
 			<span>{submitMessage}</span>
 		</div>
 	{:else}
@@ -513,9 +504,7 @@
 							aria-label={`Go to ${step.title}`}
 						>
 							{#if index < currentStep}
-								<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-									<polyline points="20 6 9 17 4 12" />
-								</svg>
+								<Icon name="IconCheck" size={16} stroke={3} />
 							{:else}
 								{index + 1}
 							{/if}
@@ -577,17 +566,7 @@
 						onclick={previousStep}
 						disabled={isSubmitting || isAnimating}
 					>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="16"
-							height="16"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-						>
-							<polyline points="15 18 9 12 15 6" />
-						</svg>
+						<Icon name="IconChevronLeft" size={16} />
 						Previous
 					</button>
 				{:else}
@@ -611,17 +590,7 @@
 						disabled={isSubmitting || isAnimating}
 					>
 						Next
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="16"
-							height="16"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-						>
-							<polyline points="9 18 15 12 9 6" />
-						</svg>
+						<Icon name="IconChevronRight" size={16} />
 					</button>
 				{/if}
 			</div>
@@ -630,19 +599,7 @@
 		<!-- Save Progress Indicator -->
 		{#if enableSaveProgress && steps.length > 1}
 			<div class="save-indicator">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="14"
-					height="14"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-				>
-					<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
-					<polyline points="17 21 17 13 7 13 7 21" />
-					<polyline points="7 3 7 8 15 8" />
-				</svg>
+				<Icon name="IconSave" size={14} />
 				<span>Progress auto-saved</span>
 			</div>
 		{/if}
@@ -726,7 +683,7 @@
 		color: white;
 	}
 
-	.step-dot svg {
+	.step-dot :global(svg) {
 		width: 16px;
 		height: 16px;
 	}
@@ -920,7 +877,7 @@
 		border: 1px solid #fca5a5;
 	}
 
-	.alert .icon {
+	.alert :global(.icon) {
 		width: 20px;
 		height: 20px;
 		flex-shrink: 0;
@@ -936,7 +893,7 @@
 		color: #9ca3af;
 	}
 
-	.save-indicator svg {
+	.save-indicator :global(svg) {
 		color: #22c55e;
 	}
 

@@ -19,6 +19,7 @@
 	 */
 
 	import { browser } from '$app/environment';
+	import Icon from '$lib/components/Icon.svelte';
 
 	interface Download {
 		id: number;
@@ -249,20 +250,7 @@
 						<tr>
 							<td colspan={isMobile ? 2 : isTablet ? 3 : 4} class="empty-state-cell">
 								<div class="empty-state-content">
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										width="48"
-										height="48"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										stroke-width="1.5"
-										stroke-linecap="round"
-										stroke-linejoin="round"
-									>
-										<path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
-										<polyline points="13 2 13 9 20 9" />
-									</svg>
+									<Icon name="IconFile" size={48} stroke={1.5} />
 									<span class="empty-message">Nothing to download</span>
 									<span class="empty-submessage"
 										>No files are currently available for this class</span
@@ -295,19 +283,7 @@
 										aria-label="Download {dl.title || dl.file_name}"
 										disabled={!dl.download_url}
 									>
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											width="18"
-											height="18"
-											viewBox="0 0 24 24"
-											fill="none"
-											stroke="currentColor"
-											stroke-width="2"
-										>
-											<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-											<polyline points="7 10 12 15 17 10" />
-											<line x1="12" x2="12" y1="15" y2="3" />
-										</svg>
+										<Icon name="IconDownload" size={18} />
 									</button>
 								</td>
 							</tr>
@@ -554,7 +530,7 @@
 		gap: 12px;
 	}
 
-	.empty-state-content svg {
+	.empty-state-content :global(svg) {
 		color: #c1c1c1;
 		margin-bottom: 8px;
 	}
@@ -675,7 +651,7 @@
 		height: 44px;
 	}
 
-	.download-btn svg {
+	.download-btn :global(svg) {
 		width: 1.125rem;
 		height: 1.125rem;
 	}
@@ -685,7 +661,7 @@
 		padding: 2.5rem 1rem;
 	}
 
-	.empty-state-content svg {
+	.empty-state-content :global(svg) {
 		width: 2.5rem;
 		height: 2.5rem;
 	}
@@ -751,7 +727,7 @@
 			padding: 3rem 1.5rem;
 		}
 
-		.empty-state-content svg {
+		.empty-state-content :global(svg) {
 			width: 3rem;
 			height: 3rem;
 		}
@@ -819,7 +795,7 @@
 			padding: 3.75rem 1.5rem;
 		}
 
-		.empty-state-content svg {
+		.empty-state-content :global(svg) {
 			width: 3rem;
 			height: 3rem;
 		}

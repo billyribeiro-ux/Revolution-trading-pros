@@ -22,6 +22,8 @@
 		onchange?: (dataUrl: string | null) => void;
 	}
 
+	import Icon from '$lib/components/Icon.svelte';
+
 	let {
 		name,
 		label = 'Signature',
@@ -208,19 +210,7 @@
 
 		{#if !hasSignature && !disabled}
 			<div class="signature-placeholder">
-				<svg
-					width="24"
-					height="24"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="1.5"
-				>
-					<path d="M12 19l7-7 3 3-7 7-3-3z"></path>
-					<path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
-					<path d="M2 2l7.586 7.586"></path>
-					<circle cx="11" cy="11" r="2"></circle>
-				</svg>
+				<Icon name="IconPencil" size={24} />
 				<span>Sign here</span>
 			</div>
 		{/if}
@@ -235,17 +225,7 @@
 					title="Undo"
 					aria-label="Undo last stroke"
 				>
-					<svg
-						width="16"
-						height="16"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<path d="M3 7v6h6"></path>
-						<path d="M21 17a9 9 0 00-9-9 9 9 0 00-6 2.3L3 13"></path>
-					</svg>
+					<Icon name="IconArrowBackUp" size={16} />
 				</button>
 			{/if}
 			{#if showClearButton}
@@ -257,18 +237,7 @@
 					title="Clear"
 					aria-label="Clear signature"
 				>
-					<svg
-						width="16"
-						height="16"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<polyline points="3 6 5 6 21 6"></polyline>
-						<path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-						></path>
-					</svg>
+					<Icon name="IconTrash" size={16} />
 				</button>
 			{/if}
 		</div>
@@ -278,18 +247,7 @@
 
 	{#if error}
 		<div class="error-message">
-			<svg
-				width="14"
-				height="14"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-			>
-				<circle cx="12" cy="12" r="10"></circle>
-				<line x1="12" y1="8" x2="12" y2="12"></line>
-				<line x1="12" y1="16" x2="12.01" y2="16"></line>
-			</svg>
+			<Icon name="IconAlertCircle" size={14} />
 			{error}
 		</div>
 	{/if}

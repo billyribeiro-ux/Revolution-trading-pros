@@ -13,6 +13,7 @@
 	 */
 
 	import { onMount } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	// Props
 	interface Props {
@@ -353,17 +354,7 @@
 			>
 				{#if videoFile}
 					<div class="file-preview">
-						<svg
-							aria-hidden="true"
-							class="file-icon"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-						>
-							<polygon points="23 7 16 12 23 17 23 7"></polygon>
-							<rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
-						</svg>
+						<Icon name="IconVideo" size={40} class="file-icon" />
 						<div class="file-info">
 							<span class="file-name">{videoFile.name}</span>
 							<span class="file-size">{formatFileSize(videoFile.size)}</span>
@@ -377,25 +368,11 @@
 							aria-label="Remove video file"
 							onclick={() => (videoFile = null)}
 						>
-							<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-								<line x1="18" y1="6" x2="6" y2="18"></line>
-								<line x1="6" y1="6" x2="18" y2="18"></line>
-							</svg>
+							<Icon name="IconX" size={16} />
 						</button>
 					</div>
 				{:else}
-					<svg
-						aria-hidden="true"
-						class="upload-icon"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-						<polyline points="17 8 12 3 7 8"></polyline>
-						<line x1="12" y1="3" x2="12" y2="15"></line>
-					</svg>
+					<Icon name="IconUpload" size={48} class="upload-icon" />
 					<p>Drag and drop video here or click to browse</p>
 					<span class="supported-formats">MP4, WebM, QuickTime (max 500MB)</span>
 				{/if}
@@ -427,17 +404,10 @@
 							aria-label="Remove thumbnail"
 							onclick={() => (thumbnailFile = null)}
 						>
-							<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-								<line x1="18" y1="6" x2="6" y2="18"></line>
-								<line x1="6" y1="6" x2="18" y2="18"></line>
-							</svg>
+							<Icon name="IconX" size={16} />
 						</button>
 					{:else}
-						<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-							<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-							<circle cx="8.5" cy="8.5" r="1.5"></circle>
-							<polyline points="21 15 16 10 5 21"></polyline>
-						</svg>
+						<Icon name="IconPhoto" size={24} />
 						<span>Add thumbnail</span>
 					{/if}
 				</div>
@@ -567,10 +537,7 @@
 	{#if step === 'complete'}
 		<div class="complete-step">
 			<div class="success-icon">
-				<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-					<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-					<polyline points="22 4 12 14.01 9 11.01"></polyline>
-				</svg>
+				<Icon name="IconCircleCheck" size={40} />
 			</div>
 			<h2>Video Uploaded Successfully!</h2>
 			<p>Your video "{title}" has been uploaded and saved.</p>
@@ -626,7 +593,7 @@
 		padding: 1.5rem;
 	}
 
-	.upload-icon {
+	:global(.upload-icon) {
 		width: 48px;
 		height: 48px;
 		color: #64748b;
@@ -650,7 +617,7 @@
 		text-align: left;
 	}
 
-	.file-icon {
+	:global(.file-icon) {
 		width: 40px;
 		height: 40px;
 		color: #22c55e;
@@ -695,8 +662,8 @@
 		background: rgba(239, 68, 68, 0.3);
 	}
 
-	.remove-file svg,
-	.remove-thumbnail svg {
+	.remove-file :global(svg),
+	.remove-thumbnail :global(svg) {
 		width: 16px;
 		height: 16px;
 	}
@@ -730,7 +697,7 @@
 		border-color: #22c55e;
 	}
 
-	.thumbnail-drop svg {
+	.thumbnail-drop :global(svg) {
 		width: 24px;
 		height: 24px;
 		color: #64748b;
@@ -935,7 +902,7 @@
 		justify-content: center;
 	}
 
-	.success-icon svg {
+	.success-icon :global(svg) {
 		width: 40px;
 		height: 40px;
 		color: #22c55e;

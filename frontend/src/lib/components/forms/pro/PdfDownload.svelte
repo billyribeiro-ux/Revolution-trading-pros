@@ -26,6 +26,8 @@
 		variant = 'button'
 	}: Props = $props();
 
+	import Icon from '$lib/components/Icon.svelte';
+
 	let isGenerating = $state(false);
 	let isLoading = $state(false);
 	let previewUrl = $state<string | null>(null);
@@ -146,18 +148,7 @@
 			<div class="pdf-actions">
 				{#each pdfList as pdf (pdf.id)}
 					<button type="button" class="download-btn" onclick={() => downloadPdf(pdf)}>
-						<svg
-							width="18"
-							height="18"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-						>
-							<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-							<polyline points="7 10 12 15 17 10"></polyline>
-							<line x1="12" y1="15" x2="12" y2="3"></line>
-						</svg>
+						<Icon name="IconDownload" size={18} />
 						Download PDF
 					</button>
 					{#if showPreview}
@@ -167,17 +158,7 @@
 							onclick={() => previewPdf(pdf)}
 							aria-label="Preview PDF"
 						>
-							<svg
-								width="18"
-								height="18"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
-							>
-								<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-								<circle cx="12" cy="12" r="3"></circle>
-							</svg>
+							<Icon name="IconEye" size={18} />
 						</button>
 					{/if}
 				{/each}
@@ -188,19 +169,7 @@
 					<span class="spinner"></span>
 					Generating...
 				{:else}
-					<svg
-						width="18"
-						height="18"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-						<polyline points="14 2 14 8 20 8"></polyline>
-						<line x1="12" y1="18" x2="12" y2="12"></line>
-						<line x1="9" y1="15" x2="15" y2="15"></line>
-					</svg>
+					<Icon name="IconFileTypePdf" size={18} />
 					Generate PDF
 				{/if}
 			</button>
@@ -209,20 +178,7 @@
 {:else if variant === 'card'}
 	<div class="pdf-download-card">
 		<div class="card-header">
-			<svg
-				width="24"
-				height="24"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-			>
-				<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-				<polyline points="14 2 14 8 20 8"></polyline>
-				<line x1="16" y1="13" x2="8" y2="13"></line>
-				<line x1="16" y1="17" x2="8" y2="17"></line>
-				<polyline points="10 9 9 9 8 9"></polyline>
-			</svg>
+			<Icon name="IconFileTypePdf" size={24} />
 			<h3>PDF Documents</h3>
 		</div>
 
@@ -236,17 +192,7 @@
 				{#each pdfList as pdf (pdf.id)}
 					<div class="pdf-item">
 						<div class="pdf-icon">
-							<svg
-								width="32"
-								height="32"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="1.5"
-							>
-								<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-								<polyline points="14 2 14 8 20 8"></polyline>
-							</svg>
+							<Icon name="IconFile" size={32} />
 						</div>
 						<div class="pdf-info">
 							<span class="pdf-name">{pdf.filename}</span>
@@ -263,17 +209,7 @@
 									title="Preview"
 									aria-label="Preview PDF"
 								>
-									<svg
-										width="16"
-										height="16"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										stroke-width="2"
-									>
-										<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-										<circle cx="12" cy="12" r="3"></circle>
-									</svg>
+									<Icon name="IconEye" size={16} />
 								</button>
 							{/if}
 							<button
@@ -283,18 +219,7 @@
 								title="Download"
 								aria-label="Download PDF"
 							>
-								<svg
-									width="16"
-									height="16"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-								>
-									<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-									<polyline points="7 10 12 15 17 10"></polyline>
-									<line x1="12" y1="15" x2="12" y2="3"></line>
-								</svg>
+								<Icon name="IconDownload" size={16} />
 							</button>
 						</div>
 					</div>
@@ -328,17 +253,7 @@
 						<span class="spinner"></span>
 						Generating...
 					{:else}
-						<svg
-							width="16"
-							height="16"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-						>
-							<line x1="12" y1="5" x2="12" y2="19"></line>
-							<line x1="5" y1="12" x2="19" y2="12"></line>
-						</svg>
+						<Icon name="IconFileTypePdf" size={16} />
 						Generate New PDF
 					{/if}
 				</button>
@@ -351,33 +266,13 @@
 		{#if pdfList.length > 0}
 			{#each pdfList as pdf (pdf.id)}
 				<a href={pdf.url} class="pdf-link" download={pdf.filename} onclick={() => downloadPdf(pdf)}>
-					<svg
-						width="14"
-						height="14"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-						<polyline points="14 2 14 8 20 8"></polyline>
-					</svg>
+					<Icon name="IconFile" size={14} />
 					{pdf.filename}
 				</a>
 			{/each}
 		{:else if allowGenerate}
 			<button type="button" class="pdf-link" onclick={generatePdf} disabled={isGenerating}>
-				<svg
-					width="14"
-					height="14"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-				>
-					<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-					<polyline points="14 2 14 8 20 8"></polyline>
-				</svg>
+				<Icon name="IconFile" size={14} />
 				{isGenerating ? 'Generating...' : 'Generate PDF'}
 			</button>
 		{/if}
@@ -386,18 +281,7 @@
 
 {#if error}
 	<div class="error-message">
-		<svg
-			width="16"
-			height="16"
-			viewBox="0 0 24 24"
-			fill="none"
-			stroke="currentColor"
-			stroke-width="2"
-		>
-			<circle cx="12" cy="12" r="10"></circle>
-			<line x1="12" y1="8" x2="12" y2="12"></line>
-			<line x1="12" y1="16" x2="12.01" y2="16"></line>
-		</svg>
+		<Icon name="IconAlertCircle" size={16} />
 		{error}
 	</div>
 {/if}
@@ -423,17 +307,7 @@
 			<div class="preview-header">
 				<h3>PDF Preview</h3>
 				<button type="button" class="close-btn" onclick={closePreview} aria-label="Close preview">
-					<svg
-						width="20"
-						height="20"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<line x1="18" y1="6" x2="6" y2="18"></line>
-						<line x1="6" y1="6" x2="18" y2="18"></line>
-					</svg>
+					<Icon name="IconX" size={20} />
 				</button>
 			</div>
 			<div class="preview-content">
@@ -520,7 +394,7 @@
 		border-bottom: 1px solid #e5e7eb;
 	}
 
-	.card-header svg {
+	.card-header :global(svg) {
 		color: #dc2626;
 	}
 
@@ -781,7 +655,7 @@
 		gap: 0.625rem;
 	}
 
-	.card-header svg {
+	.card-header :global(svg) {
 		width: 1.25rem;
 		height: 1.25rem;
 	}
@@ -806,7 +680,7 @@
 		height: 2.5rem;
 	}
 
-	.pdf-icon svg {
+	.pdf-icon :global(svg) {
 		width: 1.5rem;
 		height: 1.5rem;
 	}
@@ -956,7 +830,7 @@
 			padding: 1rem;
 		}
 
-		.card-header svg {
+		.card-header :global(svg) {
 			width: 1.5rem;
 			height: 1.5rem;
 		}
@@ -970,7 +844,7 @@
 			height: 3rem;
 		}
 
-		.pdf-icon svg {
+		.pdf-icon :global(svg) {
 			width: 2rem;
 			height: 2rem;
 		}

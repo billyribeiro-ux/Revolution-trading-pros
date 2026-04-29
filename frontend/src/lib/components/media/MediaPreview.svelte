@@ -6,6 +6,7 @@
 	 * variant comparison, and optimization controls.
 	 */
 	import type { MediaItem, MediaVariant } from '$lib/api/media';
+	import Icon from '$lib/components/Icon.svelte';
 
 	interface Props {
 		item?: MediaItem | null;
@@ -101,16 +102,7 @@
 			<div class="preview-header">
 				<h2 class="preview-title">{item.filename}</h2>
 				<button type="button" class="close-btn" onclick={handleClose} aria-label="Close">
-					<svg
-						width="24"
-						height="24"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<path d="M18 6L6 18M6 6l12 12" />
-					</svg>
+					<Icon name="IconX" size={24} />
 				</button>
 			</div>
 
@@ -158,17 +150,7 @@
 								</video>
 							{:else}
 								<div class="file-preview">
-									<svg
-										width="64"
-										height="64"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										stroke-width="1.5"
-									>
-										<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
-										<path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" />
-									</svg>
+									<Icon name="IconFileText" size={64} />
 									<span>{item.filename}</span>
 								</div>
 							{/if}

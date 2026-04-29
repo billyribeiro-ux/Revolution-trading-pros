@@ -78,6 +78,8 @@
 		fetchEndpoint = '/api/forms/dynamic-field'
 	}: Props = $props();
 
+	import Icon from '$lib/components/Icon.svelte';
+
 	let options = $state<DynamicOption[]>([]);
 	let loading = $state(true);
 	let fetchError = $state('');
@@ -191,9 +193,7 @@
 
 	{#if loading}
 		<div class="loading-state">
-			<svg aria-hidden="true" class="spinner" viewBox="0 0 24 24">
-				<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" />
-			</svg>
+			<Icon name="IconLoader" size={20} class="spinner" />
 			<span>Loading {sourceLabel}...</span>
 		</div>
 	{:else if fetchError}
@@ -313,16 +313,10 @@
 		color: #6b7280;
 	}
 
-	.spinner {
+	:global(.spinner) {
 		width: 20px;
 		height: 20px;
 		animation: spin 1s linear infinite;
-	}
-
-	.spinner circle {
-		stroke-dasharray: 60;
-		stroke-dashoffset: 45;
-		stroke-linecap: round;
 	}
 
 	@keyframes spin {

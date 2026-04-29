@@ -7,6 +7,7 @@
 	 */
 
 	import { flip } from 'svelte/animate';
+	import Icon from '$lib/components/Icon.svelte';
 
 	interface FieldConfig {
 		name: string;
@@ -156,13 +157,7 @@
 								title="Move up"
 								aria-label="Move row up"
 							>
-								<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor">
-									<path
-										fill-rule="evenodd"
-										d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
-										clip-rule="evenodd"
-									/>
-								</svg>
+								<Icon name="IconChevronUp" size={16} />
 							</button>
 							<button
 								type="button"
@@ -172,13 +167,7 @@
 								title="Move down"
 								aria-label="Move row down"
 							>
-								<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor">
-									<path
-										fill-rule="evenodd"
-										d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-										clip-rule="evenodd"
-									/>
-								</svg>
+								<Icon name="IconChevronDown" size={16} />
 							</button>
 						{/if}
 						{#if canRemoveRow}
@@ -189,13 +178,7 @@
 								title={removeButtonText}
 								aria-label={removeButtonText}
 							>
-								<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor">
-									<path
-										fill-rule="evenodd"
-										d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-										clip-rule="evenodd"
-									/>
-								</svg>
+								<Icon name="IconX" size={16} />
 							</button>
 						{/if}
 					</div>
@@ -259,14 +242,8 @@
 
 	{#if canAddRow}
 		<button type="button" class="add-row-btn" onclick={addRow} {disabled}>
-			<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor">
-				<path
-					fill-rule="evenodd"
-					d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-					clip-rule="evenodd"
-				/>
-			</svg>
-			{addButtonText}
+			<Icon name="IconPlus" size={18} />
+		{addButtonText}
 		</button>
 	{/if}
 
@@ -359,11 +336,6 @@
 		cursor: not-allowed;
 	}
 
-	.action-btn svg {
-		width: 16px;
-		height: 16px;
-	}
-
 	.remove-btn:hover:not(:disabled) {
 		background-color: #fee2e2;
 		color: #dc2626;
@@ -446,11 +418,6 @@
 	.add-row-btn:disabled {
 		opacity: 0.5;
 		cursor: not-allowed;
-	}
-
-	.add-row-btn svg {
-		width: 18px;
-		height: 18px;
 	}
 
 	.max-rows-notice {

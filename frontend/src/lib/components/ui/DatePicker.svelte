@@ -9,6 +9,8 @@
 	@version 1.0.0
 -->
 <script lang="ts">
+	import Icon from '$lib/components/Icon.svelte';
+
 	const DAYS_OF_WEEK = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'] as const;
 	const MONTHS = [
 		'January',
@@ -163,20 +165,7 @@
 		aria-labelledby={label ? 'date-picker-label' : undefined}
 	>
 		<span class="date-picker-value">{formattedValue}</span>
-		<svg
-			viewBox="0 0 24 24"
-			fill="none"
-			stroke="currentColor"
-			stroke-width="2"
-			width="18"
-			height="18"
-			aria-hidden="true"
-		>
-			<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-			<line x1="16" y1="2" x2="16" y2="6"></line>
-			<line x1="8" y1="2" x2="8" y2="6"></line>
-			<line x1="3" y1="10" x2="21" y2="10"></line>
-		</svg>
+		<Icon name="IconCalendar" size={18} />
 	</button>
 
 	{#if isOpen}
@@ -189,29 +178,11 @@
 		>
 			<div class="calendar-header">
 				<button type="button" class="calendar-nav" onclick={prevMonth} aria-label="Previous month">
-					<svg
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-						width="18"
-						height="18"
-					>
-						<path d="M15 18l-6-6 6-6" />
-					</svg>
+					<Icon name="IconChevronLeft" size={18} />
 				</button>
 				<span class="calendar-title">{monthYear}</span>
 				<button type="button" class="calendar-nav" onclick={nextMonth} aria-label="Next month">
-					<svg
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-						width="18"
-						height="18"
-					>
-						<path d="M9 18l6-6-6-6" />
-					</svg>
+					<Icon name="IconChevronRight" size={18} />
 				</button>
 			</div>
 
@@ -301,7 +272,7 @@
 		flex: 1;
 	}
 
-	.date-picker-trigger svg {
+	.date-picker-trigger :global(svg) {
 		color: #64748b;
 		flex-shrink: 0;
 	}

@@ -50,6 +50,8 @@
 		variant = 'full'
 	}: Props = $props();
 
+	import Icon from '$lib/components/Icon.svelte';
+
 	let reportData = $state<ReportData | null>(null);
 	let isLoading = $state(true);
 	let error = $state<string | null>(null);
@@ -138,18 +140,7 @@
 		</div>
 	{:else if error}
 		<div class="error-state">
-			<svg
-				width="20"
-				height="20"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-			>
-				<circle cx="12" cy="12" r="10"></circle>
-				<line x1="12" y1="8" x2="12" y2="12"></line>
-				<line x1="12" y1="16" x2="12.01" y2="16"></line>
-			</svg>
+			<Icon name="IconAlertCircle" size={20} />
 			<span>{error}</span>
 			<button type="button" class="retry-btn" onclick={loadReport}>Try Again</button>
 		</div>
@@ -167,18 +158,7 @@
 						<span class="spinner small"></span>
 						Exporting...
 					{:else}
-						<svg
-							width="16"
-							height="16"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-						>
-							<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-							<polyline points="7 10 12 15 17 10"></polyline>
-							<line x1="12" y1="15" x2="12" y2="3"></line>
-						</svg>
+						<Icon name="IconDownload" size={16} />
 						Export PDF
 					{/if}
 				</button>
@@ -189,19 +169,7 @@
 		<div class="stats-grid">
 			<div class="stat-card">
 				<div class="stat-icon submissions">
-					<svg
-						width="24"
-						height="24"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-						<polyline points="14 2 14 8 20 8"></polyline>
-						<line x1="16" y1="13" x2="8" y2="13"></line>
-						<line x1="16" y1="17" x2="8" y2="17"></line>
-					</svg>
+					<Icon name="IconFileText" size={24} />
 				</div>
 				<div class="stat-content">
 					<div class="stat-value">{reportData.total_submissions.toLocaleString()}</div>
@@ -212,17 +180,7 @@
 			{#if reportData.conversion_rate !== undefined}
 				<div class="stat-card">
 					<div class="stat-icon conversion">
-						<svg
-							width="24"
-							height="24"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-						>
-							<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
-							<polyline points="17 6 23 6 23 12"></polyline>
-						</svg>
+						<Icon name="IconTrendingUp" size={24} />
 					</div>
 					<div class="stat-content">
 						<div class="stat-value">{reportData.conversion_rate.toFixed(1)}%</div>
@@ -234,17 +192,7 @@
 			{#if reportData.avg_completion_time}
 				<div class="stat-card">
 					<div class="stat-icon time">
-						<svg
-							width="24"
-							height="24"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-						>
-							<circle cx="12" cy="12" r="10"></circle>
-							<polyline points="12 6 12 12 16 14"></polyline>
-						</svg>
+						<Icon name="IconClock" size={24} />
 					</div>
 					<div class="stat-content">
 						<div class="stat-value">{reportData.avg_completion_time}</div>
@@ -255,19 +203,7 @@
 
 			<div class="stat-card">
 				<div class="stat-icon fields">
-					<svg
-						width="24"
-						height="24"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<rect x="3" y="3" width="7" height="7"></rect>
-						<rect x="14" y="3" width="7" height="7"></rect>
-						<rect x="14" y="14" width="7" height="7"></rect>
-						<rect x="3" y="14" width="7" height="7"></rect>
-					</svg>
+					<Icon name="IconLayoutGrid" size={24} />
 				</div>
 				<div class="stat-content">
 					<div class="stat-value">{reportData.field_reports.length}</div>
@@ -344,17 +280,7 @@
 		{/if}
 	{:else}
 		<div class="empty-state">
-			<svg
-				width="48"
-				height="48"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="1"
-			>
-				<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-				<polyline points="14 2 14 8 20 8"></polyline>
-			</svg>
+			<Icon name="IconFile" size={48} />
 			<p>No report data available</p>
 		</div>
 	{/if}

@@ -17,6 +17,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
+	import Icon from '$lib/components/Icon.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════
 	// PROPS
@@ -143,9 +144,7 @@
 							<img src={item.thumbnail_url} alt={item.title} loading="lazy" />
 						{:else}
 							<div class="watch-card__placeholder">
-								<svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" width="32" height="32">
-									<path d="M8 5v14l11-7z" />
-								</svg>
+								<Icon name="IconPlayerPlay" size={32} />
 							</div>
 						{/if}
 
@@ -160,9 +159,7 @@
 						<!-- Resume button overlay -->
 						<div class="watch-card__resume-overlay">
 							<div class="watch-card__resume-btn">
-								<svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
-									<path d="M8 5v14l11-7z" />
-								</svg>
+								<Icon name="IconPlayerPlay" size={24} />
 							</div>
 						</div>
 
@@ -324,7 +321,7 @@
 		color: #1f2937;
 	}
 
-	.watch-card__resume-btn svg {
+	.watch-card__resume-btn :global(svg) {
 		margin-left: 3px;
 	}
 
