@@ -304,16 +304,29 @@ async fn create_checkout(
         (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Failed to create order"})))
     })?;
 
-    // ICT 7 FIX: Increment coupon usage if applied
-    // Original pool reference: .execute(&state.db.pool)
+    // Batch 5a fix: column is `usage_count`, not `current_uses` (typo
+    // pre-dated Batch 4 and aborted the surrounding tx whenever a
+    // coupon was applied — `.ok()` swallowed the column-not-found
+    // error but Postgres had already poisoned the transaction).
     if let Some(coupon_id) = applied_coupon_id {
-        sqlx::query(
-            "UPDATE coupons SET current_uses = current_uses + 1, updated_at = NOW() WHERE id = $1",
+        if let Err(e) = sqlx::query(
+            "UPDATE coupons SET usage_count = usage_count + 1, updated_at = NOW() WHERE id = $1",
         )
         .bind(coupon_id)
         .execute(&mut *tx)
         .await
-        .ok(); // Log but don't fail order creation
+        {
+            tracing::error!(
+                target: "checkout",
+                error = %e,
+                coupon_id = coupon_id,
+                "Failed to increment coupon usage_count"
+            );
+            return Err((
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": "Failed to record coupon usage"})),
+            ));
+        }
     }
 
     // Insert order items — convert cents → NUMERIC(10,2) at SQL boundary
