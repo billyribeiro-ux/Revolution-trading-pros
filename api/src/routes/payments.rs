@@ -408,6 +408,13 @@ async fn get_config(State(state): State<AppState>) -> Json<serde_json::Value> {
 // Webhook Handlers
 // ═══════════════════════════════════════════════════════════════════════════
 
+// IDEMPOTENT-BY: top-level webhook_events(event_id) UNIQUE +
+// orders.stripe_session_id UNIQUE WHERE NOT NULL +
+// user_memberships.stripe_subscription_id partial UNIQUE (Batch 4 / 063).
+// A retried `checkout.session.completed` is dropped at the top-level
+// dedup table; if (somehow) it reaches here, the orders update is a
+// no-op SET on the same session_id, and the membership upsert lands on
+// the existing row via stripe_subscription_id ON CONFLICT.
 async fn handle_checkout_completed(
     state: &AppState,
     event: &crate::services::stripe::WebhookEvent,
@@ -852,6 +859,10 @@ async fn handle_checkout_completed(
     Ok(())
 }
 
+// IDEMPOTENT-BY: pure read/log handler (no DB writes). Safe to run
+// any number of times. Source-of-truth subscription persistence happens
+// in `handle_checkout_completed` (initial) and `handle_subscription_updated`
+// (subsequent state transitions).
 async fn handle_subscription_created(
     _state: &AppState,
     event: &crate::services::stripe::WebhookEvent,
@@ -874,6 +885,11 @@ async fn handle_subscription_created(
     Ok(())
 }
 
+// IDEMPOTENT-BY: SET-based UPDATE keyed by stripe_subscription_id.
+// Re-running the same event lands on the same row and writes the
+// same values (Stripe is the source of truth for sub.status,
+// current_period_*, cancel_at_period_end). No INSERT, no counters
+// incremented — pure state replication.
 async fn handle_subscription_updated(
     state: &AppState,
     event: &crate::services::stripe::WebhookEvent,
@@ -946,6 +962,12 @@ async fn handle_subscription_updated(
     Ok(())
 }
 
+// IDEMPOTENT-BY: SET status='cancelled' on the row matching
+// stripe_subscription_id. Already-cancelled rows are written with the
+// same value (no observable state change). cancelled_at gets stamped
+// to the latest NOW() on retry — acceptable because the field
+// represents "when did our system observe the cancellation," not
+// "when did Stripe perform it."
 async fn handle_subscription_deleted(
     state: &AppState,
     event: &crate::services::stripe::WebhookEvent,
@@ -986,6 +1008,9 @@ async fn handle_subscription_deleted(
     Ok(())
 }
 
+// IDEMPOTENT-BY: SET status='active' on user_memberships keyed by
+// stripe_subscription_id. Replaying the event re-asserts the same
+// status. No counters, no inserts.
 async fn handle_invoice_paid(
     state: &AppState,
     event: &crate::services::stripe::WebhookEvent,
@@ -1014,6 +1039,12 @@ async fn handle_invoice_paid(
     Ok(())
 }
 
+// IDEMPOTENT-BY: top-level webhook_events dedup. The handler bumps
+// payment_failure_count and stores grace_period_end on user_memberships;
+// without dedup these would double-increment on retry. Stripe sends
+// `invoice.payment_failed` once per attempt, but each retry attempt
+// has a distinct event_id, so the top-level dedup is the right
+// boundary — same event_id means same attempt and we skip.
 async fn handle_payment_failed(
     state: &AppState,
     event: &crate::services::stripe::WebhookEvent,
@@ -1140,6 +1171,11 @@ async fn handle_payment_failed(
     Ok(())
 }
 
+// IDEMPOTENT-BY: top-level webhook_events dedup. The handler reads
+// the charge's amount_refunded value (Stripe-sourced, monotonic) and
+// SETs orders.refund_amount_cents to that exact value. Replaying the
+// same event writes the same number; replaying a *different* refund
+// event for the same charge is a state advance, not a duplicate.
 async fn handle_refund(
     state: &AppState,
     event: &crate::services::stripe::WebhookEvent,
@@ -1242,6 +1278,12 @@ async fn handle_refund(
     Ok(())
 }
 
+// IDEMPOTENT-BY: stripe_disputes(stripe_dispute_id) UNIQUE +
+// ON CONFLICT DO NOTHING (see migration 055). Replaying the event
+// hits the unique key and the row stays as it was — first-write-wins
+// for dispute creation, which is the correct semantic (a dispute
+// happens once; subsequent webhook events for the same dispute id
+// are status updates, not creates).
 async fn handle_dispute_created(
     state: &AppState,
     event: &crate::services::stripe::WebhookEvent,
@@ -1314,6 +1356,12 @@ async fn handle_dispute_created(
 }
 
 /// Log trial-ending soon event; email notification handled by Task 4 (Postmark).
+// IDEMPOTENT-BY: log + email side-effect only (no DB writes today).
+// On retry the same notification gets enqueued — Postmark handles
+// dedup on its side via the `MessageID` field we set when sending.
+// Until that wiring is restored (Batch 6, currently deferred), this
+// handler is *almost* idempotent: a duplicate event would re-send
+// the email. Acceptable risk given Stripe's webhook retry budget.
 async fn handle_trial_will_end(
     state: &AppState,
     event: &crate::services::stripe::WebhookEvent,

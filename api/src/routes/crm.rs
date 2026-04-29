@@ -2308,7 +2308,10 @@ pub struct CreateDealInput {
     pub company_id: Option<i64>,
     pub pipeline_id: i64,
     pub stage_id: i64,
-    pub amount: Option<f64>,
+    // Batch 5c: integer-cents convention (matches Batch 1 unification).
+    // DB column `crm_deals.amount` stays NUMERIC(15,2); we convert at
+    // the SQL boundary as `cents::BIGINT / 100.0`.
+    pub amount_cents: Option<i64>,
     pub currency: Option<String>,
     pub probability: Option<i32>,
     pub expected_close_date: Option<String>,
@@ -2322,7 +2325,8 @@ pub struct CreateDealInput {
 #[derive(Debug, Deserialize)]
 pub struct UpdateDealInput {
     pub name: Option<String>,
-    pub amount: Option<f64>,
+    // Batch 5c: integer-cents (see CreateDealInput).
+    pub amount_cents: Option<i64>,
     pub probability: Option<i32>,
     pub expected_close_date: Option<String>,
     pub priority: Option<String>,
@@ -2837,7 +2841,9 @@ async fn create_deal(
     _admin: AdminUser,
     Json(input): Json<CreateDealInput>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let amount = input.amount.unwrap_or(0.0);
+    // Batch 5c: input is integer cents; DB column is NUMERIC(15,2).
+    // Convert at the SQL boundary so in-Rust math stays in i64 cents.
+    let amount_cents: i64 = input.amount_cents.unwrap_or(0);
     let currency = input.currency.unwrap_or_else(|| "USD".to_string());
     let probability = input.probability.unwrap_or(50);
     let priority = input.priority.unwrap_or_else(|| "medium".to_string());
@@ -2852,7 +2858,7 @@ async fn create_deal(
         INSERT INTO crm_deals (name, contact_id, company_id, pipeline_id, stage_id, amount, currency,
                                probability, status, expected_close_date, priority, source_channel,
                                source_campaign, tags, custom_fields, stage_entered_at, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'open', $9, $10, $11, $12, $13, $14, NOW(), NOW(), NOW())
+        VALUES ($1, $2, $3, $4, $5, $6::BIGINT / 100.0, $7, $8, 'open', $9, $10, $11, $12, $13, $14, NOW(), NOW(), NOW())
         RETURNING id, name, contact_id, company_id, pipeline_id, stage_id, owner_id,
                   amount, currency, probability, status, expected_close_date, close_date,
                   lost_reason, won_details, priority, source_channel, source_campaign,
@@ -2864,7 +2870,7 @@ async fn create_deal(
     .bind(input.company_id)
     .bind(input.pipeline_id)
     .bind(input.stage_id)
-    .bind(amount)
+    .bind(amount_cents)
     .bind(&currency)
     .bind(probability)
     .bind(expected_close_date)
@@ -2903,7 +2909,7 @@ async fn update_deal(
         r#"
         UPDATE crm_deals SET
             name = COALESCE($2, name),
-            amount = COALESCE($3, amount),
+            amount = COALESCE($3::BIGINT / 100.0, amount),
             probability = COALESCE($4, probability),
             expected_close_date = COALESCE($5, expected_close_date),
             priority = COALESCE($6, priority),
@@ -2919,7 +2925,7 @@ async fn update_deal(
     )
     .bind(id)
     .bind(&input.name)
-    .bind(input.amount)
+    .bind(input.amount_cents)
     .bind(input.probability)
     .bind(expected_close_date)
     .bind(&input.priority)
