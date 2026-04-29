@@ -483,6 +483,32 @@ A user who has canceled but is still within their paid period can resume:
 
 A user whose subscription has fully ended re-subscribes by going through the full checkout flow. New Stripe Checkout session, new payment, new entitlement. There is no "reactivate" code path that bypasses Stripe.
 
+**Storage semantics (Batch 4 — migration 063):** every re-subscription
+creates a **new** `user_memberships` row. The prior cancelled row is left
+intact for history. Concretely:
+
+* Migration 063 dropped the `(user_id, plan_id)` unique constraint added
+  in 056 and replaced it with a *partial* unique index
+  `uq_user_memberships_active_plan ON (user_id, plan_id) WHERE status IN
+  ('active','trialing','past_due')`. Cancelled / expired / failed rows
+  no longer collide with a fresh active row.
+* `handle_checkout_completed` therefore stops upserting on `(user_id,
+  plan_id)`. It writes a brand-new row with the new
+  `stripe_subscription_id`, `current_period_start`, and
+  `current_period_end`.
+* The same migration adds a partial unique on `stripe_subscription_id`
+  (NULLs excluded). The webhook uses
+  `ON CONFLICT (stripe_subscription_id) DO UPDATE` purely as
+  idempotency for retried `checkout.session.completed` deliveries — it
+  never overwrites a *different* row, because Stripe assigns one
+  subscription id per subscription.
+
+After a subscribe → cancel → re-subscribe cycle for the same plan,
+`SELECT id, stripe_subscription_id, status, starts_at FROM
+user_memberships WHERE user_id = X AND plan_id = Y ORDER BY id` returns
+two rows: one historical (`status='cancelled'`) and one current
+(`status='active'`).
+
 ### Plan changes (upgrade / downgrade / interval change)
 
 When a user changes plan:

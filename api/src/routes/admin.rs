@@ -881,6 +881,24 @@ async fn get_coupon(
 /// ICT 7 FIX: Schema-aligned UPDATE matching the migration columns.
 /// Uses COALESCE so partial updates leave untouched columns alone, except for
 /// nullable date fields where the caller may want to clear them by sending null.
+/// Update coupon (admin).
+///
+/// Two paths:
+///
+///   1. **Metadata-only edits** (description, expires_at, applicable_*,
+///      usage_limit, is_active, code rename): just update the DB row.
+///      The Stripe coupon stays as-is. Cheap.
+///
+///   2. **Discount-math edits** (discount_type, discount_value_cents,
+///      duration, duration_in_months): Stripe Coupons are immutable, so we
+///      create a NEW Stripe Coupon, flip `stripe_coupon_id` on the DB row,
+///      then best-effort delete the old Stripe coupon. Existing customers
+///      who already redeemed the old code keep their discount per Stripe's
+///      `duration` semantics — that is the correct, audited behavior.
+///
+/// On Stripe-side failure during recreate, the DB row is left unchanged
+/// (no half-state). On DB-side failure after Stripe recreate, the new
+/// orphan Stripe coupon is deleted.
 async fn update_coupon(
     State(state): State<AppState>,
     user: User,
@@ -889,24 +907,149 @@ async fn update_coupon(
 ) -> Result<Json<CouponRow>, (StatusCode, Json<serde_json::Value>)> {
     require_admin(&user)?;
 
-    // Validate discount_type if provided.
+    // ── Validate discount_type if provided ──────────────────────────────
     if !input.discount_type.is_empty()
+        && input.discount_type != "percent"
         && input.discount_type != "percentage"
         && input.discount_type != "fixed"
     {
         return Err((
             StatusCode::BAD_REQUEST,
-            Json(json!({"error": "Discount type must be 'percentage' or 'fixed'"})),
+            Json(json!({"error": "Discount type must be 'percent' or 'fixed'"})),
         ));
     }
 
-    let coupon: Option<CouponRow> = sqlx::query_as(
+    // ── Validate duration semantics if provided ─────────────────────────
+    if let Some(ref d) = input.duration {
+        if !matches!(d.as_str(), "once" | "forever" | "repeating") {
+            return Err((
+                StatusCode::BAD_REQUEST,
+                Json(json!({"error": "duration must be 'once', 'forever', or 'repeating'"})),
+            ));
+        }
+        if d == "repeating" && input.duration_in_months.unwrap_or(0) <= 0 {
+            return Err((
+                StatusCode::BAD_REQUEST,
+                Json(json!({"error": "duration_in_months > 0 required when duration='repeating'"})),
+            ));
+        }
+        if d != "repeating" && input.duration_in_months.is_some() {
+            return Err((
+                StatusCode::BAD_REQUEST,
+                Json(json!({"error": "duration_in_months only valid when duration='repeating'"})),
+            ));
+        }
+    }
+
+    // ── Snapshot current row so we can detect discount-math edits ───────
+    #[derive(sqlx::FromRow)]
+    struct ExistingCoupon {
+        discount_type: String,
+        discount_value_cents: i64,
+        duration: String,
+        duration_in_months: Option<i32>,
+        stripe_coupon_id: Option<String>,
+    }
+    let existing: ExistingCoupon = sqlx::query_as(
+        r#"SELECT discount_type,
+                  (discount_value * 100)::BIGINT AS discount_value_cents,
+                  duration, duration_in_months, stripe_coupon_id
+           FROM coupons WHERE id = $1"#,
+    )
+    .bind(id)
+    .fetch_optional(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!(target: "admin", "update_coupon snapshot error: {}", e);
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
+    })?
+    .ok_or((StatusCode::NOT_FOUND, Json(json!({"error": "Coupon not found"}))))?;
+
+    // Resolve effective new discount-math fields. Empty/None means "keep".
+    let new_discount_type: String = if !input.discount_type.is_empty() {
+        // Normalize 'percentage' → 'percent' for Stripe semantics.
+        let dt = if input.discount_type == "percentage" {
+            "percent"
+        } else {
+            input.discount_type.as_str()
+        };
+        dt.to_string()
+    } else {
+        existing.discount_type.clone()
+    };
+    let new_discount_value_cents: i64 = if input.discount_value_cents != 0 {
+        input.discount_value_cents
+    } else {
+        existing.discount_value_cents
+    };
+    let new_duration: String = input
+        .duration
+        .clone()
+        .unwrap_or_else(|| existing.duration.clone());
+    let new_duration_in_months: Option<i32> = if input.duration.is_some() {
+        input.duration_in_months
+    } else {
+        existing.duration_in_months
+    };
+
+    let math_changed = new_discount_type != existing.discount_type
+        || new_discount_value_cents != existing.discount_value_cents
+        || new_duration != existing.duration
+        || new_duration_in_months != existing.duration_in_months
+        || existing.stripe_coupon_id.is_none();
+
+    // ── If math changed, create a new Stripe Coupon BEFORE the DB update.
+    let mut new_stripe_coupon_id: Option<String> = None;
+    if math_changed {
+        let (percent_off, amount_off_cents) = match new_discount_type.as_str() {
+            "percent" | "percentage" => {
+                let percent = (new_discount_value_cents as f64) / 100.0;
+                if percent <= 0.0 || percent > 100.0 {
+                    return Err((
+                        StatusCode::BAD_REQUEST,
+                        Json(json!({"error": "percent must be > 0 and <= 100"})),
+                    ));
+                }
+                (Some(percent), None)
+            }
+            _ => {
+                if new_discount_value_cents <= 0 {
+                    return Err((
+                        StatusCode::BAD_REQUEST,
+                        Json(json!({"error": "discount_value_cents must be > 0 for fixed coupons"})),
+                    ));
+                }
+                (None, Some(new_discount_value_cents))
+            }
+        };
+        let req = crate::services::stripe::CreateStripeCouponRequest {
+            percent_off,
+            amount_off_cents,
+            currency: "usd".into(),
+            duration: new_duration.clone(),
+            duration_in_months: new_duration_in_months.map(|n| n as i64),
+            name: Some(input.code.to_uppercase()),
+            max_redemptions: input.usage_limit.map(|n| n as i64),
+            redeem_by_unix: input.expires_at.map(|t| t.and_utc().timestamp()),
+        };
+        let created = state.services.stripe.create_coupon(req).await.map_err(|e| {
+            tracing::error!(target: "admin", "Stripe coupon recreate failed: {}", e);
+            (
+                StatusCode::BAD_GATEWAY,
+                Json(json!({"error": format!("Stripe coupon recreate failed: {}", e)})),
+            )
+        })?;
+        new_stripe_coupon_id = Some(created.id);
+    }
+
+    // ── DB UPDATE ───────────────────────────────────────────────────────
+    let coupon_result: Result<Option<CouponRow>, sqlx::Error> = sqlx::query_as(
         r#"
         UPDATE coupons SET
             code = COALESCE(NULLIF(UPPER($2), ''), code),
             description = COALESCE($3, description),
             discount_type = COALESCE(NULLIF($4, ''), discount_type),
-            discount_value = COALESCE($5::BIGINT / 100.0, discount_value),
+            discount_value = COALESCE(NULLIF($5, 0)::BIGINT / 100.0, discount_value),
             min_purchase = COALESCE($6::BIGINT / 100.0, min_purchase),
             max_discount = COALESCE($7::BIGINT / 100.0, max_discount),
             usage_limit = COALESCE($8, usage_limit),
@@ -915,6 +1058,9 @@ async fn update_coupon(
             expires_at = COALESCE($11, expires_at),
             applicable_products = COALESCE($12, applicable_products),
             applicable_plans = COALESCE($13, applicable_plans),
+            duration = COALESCE($14, duration),
+            duration_in_months = CASE WHEN $14 IS NOT NULL THEN $15 ELSE duration_in_months END,
+            stripe_coupon_id = COALESCE($16, stripe_coupon_id),
             updated_at = NOW()
         WHERE id = $1
         RETURNING id, code, description, discount_type,
@@ -938,29 +1084,235 @@ async fn update_coupon(
     .bind(&input.expires_at)
     .bind(&input.applicable_products)
     .bind(&input.applicable_plans)
+    .bind(input.duration.as_deref())
+    .bind(input.duration_in_months)
+    .bind(new_stripe_coupon_id.as_deref())
+    .fetch_optional(&state.db.pool)
+    .await;
+
+    match coupon_result {
+        Ok(Some(coupon)) => {
+            // DB success. If math changed, best-effort delete old Stripe coupon.
+            if math_changed {
+                if let Some(ref old) = existing.stripe_coupon_id {
+                    if Some(old) != new_stripe_coupon_id.as_ref() {
+                        if let Err(e) = state.services.stripe.delete_coupon(old).await {
+                            tracing::warn!(
+                                target: "admin",
+                                "DB coupon {} updated; new Stripe coupon attached but old Stripe coupon {} delete failed: {}; manual cleanup may be needed",
+                                id, old, e
+                            );
+                        }
+                    }
+                }
+
+                // Batch 4: write an audit row for the recreate-and-swap so
+                // we have a permanent paper trail of who flipped the
+                // pointer and when — useful for support, billing
+                // disputes, and compliance review. Best-effort: failure
+                // here does NOT roll back the Stripe + DB swap.
+                let mut fields_changed: Vec<&'static str> = Vec::new();
+                if new_discount_type != existing.discount_type {
+                    fields_changed.push("discount_type");
+                }
+                if new_discount_value_cents != existing.discount_value_cents {
+                    fields_changed.push("discount_value_cents");
+                }
+                if new_duration != existing.duration {
+                    fields_changed.push("duration");
+                }
+                if new_duration_in_months != existing.duration_in_months {
+                    fields_changed.push("duration_in_months");
+                }
+                if let Err(e) = sqlx::query(
+                    r#"INSERT INTO security_events (user_id, event_type, details, created_at)
+                       VALUES ($1, 'coupon_recreated', $2::JSONB, NOW())"#,
+                )
+                .bind(user.id)
+                .bind(json!({
+                    "coupon_id": id,
+                    "old_stripe_coupon_id": existing.stripe_coupon_id,
+                    "new_stripe_coupon_id": new_stripe_coupon_id,
+                    "fields_changed": fields_changed,
+                }))
+                .execute(&state.db.pool)
+                .await
+                {
+                    tracing::warn!(
+                        target: "admin",
+                        "coupon recreate audit log write failed for coupon {}: {}",
+                        id, e
+                    );
+                }
+            }
+            Ok(Json(coupon))
+        }
+        Ok(None) => {
+            // DB row not found after we'd already created a new Stripe coupon → orphan cleanup.
+            if let Some(ref new_id) = new_stripe_coupon_id {
+                let _ = state.services.stripe.delete_coupon(new_id).await;
+            }
+            Err((StatusCode::NOT_FOUND, Json(json!({"error": "Coupon not found"}))))
+        }
+        Err(e) => {
+            tracing::error!(target: "admin", "update_coupon DB error: {}", e);
+            // Roll back orphan Stripe coupon if math changed.
+            if let Some(ref new_id) = new_stripe_coupon_id {
+                let _ = state.services.stripe.delete_coupon(new_id).await;
+            }
+            if e.to_string().contains("duplicate") {
+                Err((StatusCode::CONFLICT, Json(json!({"error": "Coupon code already exists"}))))
+            } else {
+                Err((StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))
+            }
+        }
+    }
+}
+
+/// Mirror a DB coupon row into Stripe (Batch 4 backfill tool).
+///
+/// POST /api/admin/coupons/:id/sync-to-stripe
+///
+/// Use case: a DB row exists but `stripe_coupon_id IS NULL` — usually
+/// because a Stripe API outage during create left the row half-mirrored,
+/// or the row was imported from outside the admin UI. Calling this
+/// endpoint creates a fresh Stripe Coupon from the DB fields and stores
+/// its id on the row.
+///
+/// If the row is already mirrored (`stripe_coupon_id IS NOT NULL`) we
+/// return 400 with a directive to use the edit endpoint instead. This
+/// avoids the foot-gun of accidentally orphaning a Stripe coupon and
+/// keeps the recreate-and-swap policy in a single place
+/// (`update_coupon`). The check itself is race-safe: the read+create+
+/// update sequence re-checks NULL by virtue of the unconditional
+/// `WHERE id = $2` UPDATE; concurrent calls would race to fail with a
+/// duplicate-stripe-id error on the second writer.
+async fn sync_coupon_to_stripe(
+    State(state): State<AppState>,
+    user: User,
+    Path(id): Path<i64>,
+) -> Result<Json<CouponRow>, (StatusCode, Json<serde_json::Value>)> {
+    require_admin(&user)?;
+
+    // Read existing row.
+    let row: Option<CouponRow> = sqlx::query_as(
+        r#"SELECT id, code, description, discount_type,
+            (discount_value * 100)::BIGINT AS discount_value_cents,
+            (min_purchase * 100)::BIGINT AS min_purchase_cents,
+            (max_discount * 100)::BIGINT AS max_discount_cents,
+            usage_limit, usage_count, is_active, starts_at, expires_at,
+            applicable_products, applicable_plans, stripe_coupon_id, duration, duration_in_months, created_at, updated_at
+        FROM coupons WHERE id = $1"#,
+    )
+    .bind(id)
     .fetch_optional(&state.db.pool)
     .await
     .map_err(|e| {
-        tracing::error!(target: "admin", "update_coupon error: {}", e);
-        if e.to_string().contains("duplicate") {
-            (
-                StatusCode::CONFLICT,
-                Json(json!({"error": "Coupon code already exists"})),
-            )
-        } else {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": e.to_string()})),
-            )
-        }
+        tracing::error!(target: "admin", "sync_coupon_to_stripe read error: {}", e);
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
     })?;
 
-    coupon.map(Json).ok_or_else(|| {
-        (
-            StatusCode::NOT_FOUND,
-            Json(json!({"error": "Coupon not found"})),
-        )
-    })
+    let coupon = row.ok_or((
+        StatusCode::NOT_FOUND,
+        Json(json!({"error": "Coupon not found"})),
+    ))?;
+
+    // Already mirrored — return 400 per Batch 4 spec. Operator should
+    // use the edit endpoint to change discount math.
+    if coupon.stripe_coupon_id.is_some() {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({
+                "error": "Coupon already synced to Stripe; use the edit endpoint to change it"
+            })),
+        ));
+    }
+
+    // Map DB discount_type → Stripe percent_off / amount_off.
+    let (percent_off, amount_off_cents) = match coupon.discount_type.as_str() {
+        "percent" | "percentage" => {
+            let percent = (coupon.discount_value_cents as f64) / 100.0;
+            if percent <= 0.0 || percent > 100.0 {
+                return Err((
+                    StatusCode::BAD_REQUEST,
+                    Json(json!({"error": "Stored discount_value invalid for percent coupon (must be > 0 and <= 100)"})),
+                ));
+            }
+            (Some(percent), None)
+        }
+        _ => {
+            if coupon.discount_value_cents <= 0 {
+                return Err((
+                    StatusCode::BAD_REQUEST,
+                    Json(json!({"error": "Stored discount_value_cents must be > 0 for fixed coupons"})),
+                ));
+            }
+            (None, Some(coupon.discount_value_cents))
+        }
+    };
+
+    let req = crate::services::stripe::CreateStripeCouponRequest {
+        percent_off,
+        amount_off_cents,
+        currency: "usd".into(),
+        duration: coupon.duration.clone(),
+        duration_in_months: coupon.duration_in_months.map(|n| n as i64),
+        name: Some(coupon.code.to_uppercase()),
+        max_redemptions: coupon.usage_limit.map(|n| n as i64),
+        redeem_by_unix: coupon.expires_at.map(|t| t.and_utc().timestamp()),
+    };
+    let created = state
+        .services
+        .stripe
+        .create_coupon(req)
+        .await
+        .map_err(|e| {
+            tracing::error!(target: "admin", "sync_coupon_to_stripe Stripe create failed: {}", e);
+            (
+                StatusCode::BAD_GATEWAY,
+                Json(json!({"error": format!("Stripe coupon create failed: {}", e)})),
+            )
+        })?;
+
+    // Persist stripe_coupon_id on the DB row.
+    let updated: CouponRow = sqlx::query_as(
+        r#"UPDATE coupons SET stripe_coupon_id = $1, updated_at = NOW()
+           WHERE id = $2
+           RETURNING id, code, description, discount_type,
+               (discount_value * 100)::BIGINT AS discount_value_cents,
+               (min_purchase * 100)::BIGINT AS min_purchase_cents,
+               (max_discount * 100)::BIGINT AS max_discount_cents,
+               usage_limit, usage_count, is_active, starts_at, expires_at,
+               applicable_products, applicable_plans, stripe_coupon_id, duration, duration_in_months, created_at, updated_at"#,
+    )
+    .bind(&created.id)
+    .bind(id)
+    .fetch_one(&state.db.pool)
+    .await
+    .map_err(|e| {
+        // DB write failed AFTER we created a new Stripe coupon → orphan cleanup.
+        tracing::error!(
+            target: "admin",
+            "sync_coupon_to_stripe DB persist failed for coupon {}; rolling back Stripe coupon {}: {}",
+            id, created.id, e
+        );
+        let stripe = state.services.stripe.clone();
+        let stripe_id = created.id.clone();
+        tokio::spawn(async move {
+            let _ = stripe.delete_coupon(&stripe_id).await;
+        });
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
+    })?;
+
+    tracing::info!(
+        target: "admin",
+        event = "coupon_synced_to_stripe",
+        coupon_id = %id,
+        stripe_coupon_id = %created.id,
+        "Mirrored DB coupon into Stripe"
+    );
+
+    Ok(Json(updated))
 }
 
 /// Validate coupon (public)
@@ -2058,6 +2410,8 @@ pub fn router() -> Router<AppState> {
             "/coupons/:id",
             get(get_coupon).put(update_coupon).delete(delete_coupon),
         )
+        // Batch 4 P2: backfill mirror for rows whose stripe_coupon_id is NULL
+        .route("/coupons/:id/sync-to-stripe", post(sync_coupon_to_stripe))
         .route("/coupons/validate/:code", get(validate_coupon))
         // Settings
         .route("/settings", get(get_settings))

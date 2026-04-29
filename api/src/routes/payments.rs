@@ -232,9 +232,12 @@ async fn create_checkout(
             expires_at: Option<chrono::NaiveDateTime>,
             usage_limit: Option<i32>,
             usage_count: i32,
+            // Batch 4: app-side gate. NULL = no minimum.
+            min_purchase_cents: Option<i64>,
         }
         let row: Option<CouponRow> = sqlx::query_as(
-            r#"SELECT id, stripe_coupon_id, is_active, expires_at, usage_limit, usage_count
+            r#"SELECT id, stripe_coupon_id, is_active, expires_at, usage_limit, usage_count,
+                      (min_purchase * 100)::BIGINT AS min_purchase_cents
                FROM coupons WHERE UPPER(code) = UPPER($1) LIMIT 1"#,
         )
         .bind(code)
@@ -249,6 +252,20 @@ async fn create_checkout(
                 coupon_resolution_error = Some("Coupon has expired".into());
             } else if c.usage_limit.map(|lim| c.usage_count >= lim).unwrap_or(false) {
                 coupon_resolution_error = Some("Coupon usage limit reached".into());
+            } else if c
+                .min_purchase_cents
+                .map(|min| min > 0 && subtotal_cents < min)
+                .unwrap_or(false)
+            {
+                // Batch 4: enforce app-side min_purchase BEFORE attaching the
+                // discount. Stripe Coupons can't gate on order subtotal,
+                // so we do it here. Compare in cents; subtotal is the
+                // pre-discount line-item total computed above.
+                let min = c.min_purchase_cents.unwrap();
+                coupon_resolution_error = Some(format!(
+                    "Order must be at least ${:.2} to use this coupon",
+                    (min as f64) / 100.0
+                ));
             } else if let Some(stripe_id) = c.stripe_coupon_id.clone() {
                 coupon_id = Some(c.id);
                 server_applied_discount = Some(crate::services::stripe::DiscountSpec {
@@ -886,12 +903,26 @@ async fn handle_checkout_completed(
                     };
 
                     if let Some(plan_id) = plan_id {
-                        // FIX-2026-04-26: was `.execute(&state.db.pool).await.ok();` — silently
-                        // dropping membership-creation failures meant the user paid Stripe
-                        // but got no membership and no error logged. Now logs failure
-                        // explicitly. Future: wrap in transaction with the access-grant
-                        // loop below for true atomicity.
-                        // Old: .execute(&state.db.pool).await.ok();
+                        // Batch 4: re-subscribe history.
+                        //
+                        // Was ON CONFLICT (user_id, plan_id) DO UPDATE — that
+                        // path is now unreachable because migration 063
+                        // replaced the (user_id, plan_id) unique constraint
+                        // with a *partial* unique index that only covers
+                        // live statuses ('active', 'trialing', 'past_due').
+                        // A user re-subscribing after full cancellation
+                        // therefore gets a NEW row, preserving the prior
+                        // cancelled row for history. Stripe is the source
+                        // of truth via stripe_subscription_id.
+                        //
+                        // We deliberately do not upsert. If the partial
+                        // unique index fires (an active row already exists
+                        // for this user+plan), Postgres returns an error
+                        // and we log it — the webhook will retry per
+                        // Stripe's idempotency, and on retry the existing
+                        // row's stripe_subscription_id will already match.
+                        // To handle the "duplicate retry" case cleanly we
+                        // make the INSERT idempotent on stripe_subscription_id.
                         if let Err(e) = sqlx::query(
                             r#"INSERT INTO user_memberships (
                                 user_id, plan_id, starts_at, status,
@@ -899,14 +930,11 @@ async fn handle_checkout_completed(
                                 current_period_start, current_period_end,
                                 cancel_at_period_end, created_at, updated_at
                             ) VALUES ($1, $2, NOW(), 'active', 'stripe', $3, $4, $5, $6, false, NOW(), NOW())
-                            ON CONFLICT (user_id, plan_id)
-                            DO UPDATE SET
+                            ON CONFLICT (stripe_subscription_id) DO UPDATE SET
                                 status = 'active',
-                                stripe_subscription_id = $3,
-                                stripe_customer_id = $4,
-                                current_period_start = $5,
-                                current_period_end = $6,
-                                updated_at = NOW()"#
+                                current_period_start = EXCLUDED.current_period_start,
+                                current_period_end = EXCLUDED.current_period_end,
+                                updated_at = NOW()"#,
                         )
                         .bind(user_id)
                         .bind(plan_id)
