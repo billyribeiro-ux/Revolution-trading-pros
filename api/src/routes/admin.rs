@@ -16,58 +16,19 @@ use axum::{
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::{middleware::admin::AdminUser, models::User, AppState};
+use crate::{
+    middleware::admin::{AdminUser, SuperAdminUser},
+    models::User,
+    AppState,
+};
 
-// ═══════════════════════════════════════════════════════════════════════════
-// AUTHORIZATION HELPERS
-// ═══════════════════════════════════════════════════════════════════════════
-
-/// Check if user has admin privileges (admin, super-admin, or developer role)
-fn require_admin(user: &User) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
-    let role = user.role.as_deref().unwrap_or("user");
-    let is_admin =
-        role == "admin" || role == "super-admin" || role == "super_admin" || role == "developer";
-
-    // ICT 11+ DEBUG: Log role check for troubleshooting 403 issues
-    tracing::info!(
-        target: "auth_debug",
-        user_id = user.id,
-        email = %user.email,
-        role = %role,
-        is_admin = is_admin,
-        "require_admin check"
-    );
-
-    if is_admin {
-        Ok(())
-    } else {
-        Err((
-            StatusCode::FORBIDDEN,
-            Json(json!({
-                "error": "Access denied",
-                "message": "This action requires admin privileges",
-                "your_role": role
-            })),
-        ))
-    }
-}
-
-/// Check if user is super-admin (highest privilege level)
-#[allow(dead_code)]
-fn require_super_admin(user: &User) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
-    let role = user.role.as_deref().unwrap_or("user");
-    if role == "super-admin" || role == "super_admin" {
-        Ok(())
-    } else {
-        Err((
-            StatusCode::FORBIDDEN,
-            Json(json!({
-                "error": "Access denied",
-                "message": "This action requires super-admin privileges"
-            })),
-        ))
-    }
-}
+// Batch 5b: local `require_admin` and `require_super_admin` helpers
+// removed. Admin/super-admin auth is now uniformly enforced via the
+// `AdminUser` and `SuperAdminUser` extractors from
+// `crate::middleware::admin`. The error shape changed slightly
+// (plain text "Admin access required" vs the old JSON body with
+// `your_role`); admin clients should treat 403 as "not authorized,"
+// not parse the response body.
 
 // ═══════════════════════════════════════════════════════════════════════════
 // USER MANAGEMENT (Admin Staff)
@@ -116,10 +77,9 @@ pub struct UpdateUserRequest {
 /// ICT 7 SECURITY FIX: Added require_admin check - was missing!
 async fn list_users(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Query(query): Query<UserListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
     let page = query.page.unwrap_or(1).max(1);
     let per_page = query.per_page.unwrap_or(50).min(100);
     let offset = (page - 1) * per_page;
@@ -188,10 +148,9 @@ async fn list_users(
 /// ICT 7 SECURITY FIX: Added require_admin check
 async fn get_user(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<AdminUserRow>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     let target_user: AdminUserRow = sqlx::query_as(
         "SELECT id, name, email, role, is_active, email_verified_at, last_login_at, created_at, updated_at FROM users WHERE id = $1"
@@ -209,10 +168,9 @@ async fn get_user(
 /// ICT 7 SECURITY FIX: Added require_admin check
 async fn create_user(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Json(input): Json<CreateUserRequest>,
 ) -> Result<Json<AdminUserRow>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     // FIX-2026-04-27 (H-4): Validate password strength before hashing.
     // Previously hash_password was called without validate_password, so admins
@@ -262,11 +220,10 @@ async fn create_user(
 /// ICT 7 SECURITY FIX: Added require_admin check
 async fn update_user(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(id): Path<i64>,
     Json(input): Json<UpdateUserRequest>,
 ) -> Result<Json<AdminUserRow>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     // FIX-2026-04-27 (H-7): Only super_admin may grant privileged roles.
     // A regular admin promoting anyone to developer/super_admin is a privilege escalation path.
@@ -399,10 +356,9 @@ async fn update_user(
 /// ICT 7 SECURITY FIX: Added require_admin check
 async fn delete_user(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     sqlx::query("DELETE FROM users WHERE id = $1")
         .bind(id)
@@ -422,10 +378,9 @@ async fn delete_user(
 /// ICT 7 SECURITY FIX: Added require_admin check
 async fn ban_user(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     sqlx::query("UPDATE users SET is_active = false, updated_at = NOW() WHERE id = $1")
         .bind(id)
@@ -470,10 +425,9 @@ async fn ban_user(
 /// ICT 7 SECURITY FIX: Added require_admin check
 async fn unban_user(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     sqlx::query("UPDATE users SET is_active = true, updated_at = NOW() WHERE id = $1")
         .bind(id)
@@ -493,9 +447,8 @@ async fn unban_user(
 /// ICT 7 SECURITY FIX: Added require_admin check
 async fn user_stats(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM users")
         .fetch_one(&state.db.pool)
@@ -604,9 +557,8 @@ pub struct CreateCouponRequest {
 /// ICT 7 FIX: Use explicit column list with FLOAT8 casting for DECIMAL columns
 async fn list_coupons(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
 ) -> Result<Json<Vec<CouponRow>>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     // Money is integer cents at the Rust boundary (architecture standard §1.2).
     // DB columns remain NUMERIC(10,2) as a display cache; convert at the SQL edge.
@@ -646,10 +598,9 @@ async fn list_coupons(
 /// stores stay in sync.
 async fn create_coupon(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Json(input): Json<CreateCouponRequest>,
 ) -> Result<Json<CouponRow>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     // ── Validate inputs ──────────────────────────────────────────────────
     let duration = input.duration.clone().unwrap_or_else(|| "once".into());
@@ -793,10 +744,9 @@ async fn create_coupon(
 /// already have the discount keep it for the rest of its `duration`.
 async fn delete_coupon(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     let stripe_coupon_id: Option<Option<String>> =
         sqlx::query_scalar("SELECT stripe_coupon_id FROM coupons WHERE id = $1")
@@ -843,10 +793,9 @@ async fn delete_coupon(
 /// ICT 7 FIX: Use explicit column list with FLOAT8 casting for DECIMAL columns
 async fn get_coupon(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<CouponRow>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     let coupon: Option<CouponRow> = sqlx::query_as(
         r#"SELECT
@@ -901,11 +850,10 @@ async fn get_coupon(
 /// orphan Stripe coupon is deleted.
 async fn update_coupon(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(id): Path<i64>,
     Json(input): Json<CreateCouponRequest>,
 ) -> Result<Json<CouponRow>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     // ── Validate discount_type if provided ──────────────────────────────
     if !input.discount_type.is_empty()
@@ -1189,10 +1137,9 @@ async fn update_coupon(
 /// duplicate-stripe-id error on the second writer.
 async fn sync_coupon_to_stripe(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<CouponRow>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     // Read existing row.
     let row: Option<CouponRow> = sqlx::query_as(
@@ -1388,9 +1335,8 @@ pub struct SettingRow {
 /// ICT 7 SECURITY FIX: Added require_admin check
 async fn get_settings(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
 ) -> Result<Json<Vec<SettingRow>>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     let settings: Vec<SettingRow> =
         sqlx::query_as("SELECT * FROM application_settings ORDER BY group_name, key")
@@ -1410,10 +1356,9 @@ async fn get_settings(
 /// ICT 7 SECURITY FIX: Added require_admin check
 async fn get_setting(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(key): Path<String>,
 ) -> Result<Json<SettingRow>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     let setting: SettingRow = sqlx::query_as("SELECT * FROM application_settings WHERE key = $1")
         .bind(&key)
@@ -1444,11 +1389,10 @@ pub struct UpdateSettingRequest {
 /// ICT 7 SECURITY FIX: Added require_admin check
 async fn update_setting(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(key): Path<String>,
     Json(input): Json<UpdateSettingRequest>,
 ) -> Result<Json<SettingRow>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     let setting: SettingRow = sqlx::query_as(
         "UPDATE application_settings SET value = $1, updated_at = NOW() WHERE key = $2 RETURNING *",
@@ -1567,10 +1511,9 @@ async fn list_all_plans(
 /// List user memberships (admin)
 async fn list_user_memberships(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Query(query): Query<UserMembershipListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     let page = query.page.unwrap_or(1).max(1);
     let per_page = query.per_page.unwrap_or(50).min(100);
@@ -1642,10 +1585,9 @@ async fn list_user_memberships(
 /// Get single user membership (admin)
 async fn get_user_membership(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<AdminUserMembershipRow>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     let membership: AdminUserMembershipRow = sqlx::query_as(
         r#"
@@ -1683,10 +1625,9 @@ async fn get_user_membership(
 /// Grant membership to user (admin)
 async fn grant_membership(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Json(input): Json<GrantMembershipRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     // Verify user exists
     let user_exists: Option<(i64,)> = sqlx::query_as("SELECT id FROM users WHERE id = $1")
@@ -1766,11 +1707,10 @@ async fn grant_membership(
 /// Update user membership (admin) - extend expiration, change status
 async fn update_user_membership(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(id): Path<i64>,
     Json(input): Json<UpdateMembershipRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     // Build UPDATE dynamically
     let mut set_clauses = Vec::new();
@@ -1839,10 +1779,9 @@ async fn update_user_membership(
 /// Delete/revoke user membership (admin)
 async fn revoke_membership(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     let result = sqlx::query("DELETE FROM user_memberships WHERE id = $1")
         .bind(id)
@@ -1868,10 +1807,9 @@ async fn revoke_membership(
 /// Get memberships for specific user (admin)
 async fn get_user_memberships_by_user(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(user_id): Path<i64>,
 ) -> Result<Json<Vec<AdminUserMembershipRow>>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     let memberships: Vec<AdminUserMembershipRow> = sqlx::query_as(
         r#"
@@ -1934,9 +1872,8 @@ pub struct CreateCampaignRequest {
 /// List campaigns (admin)
 async fn list_campaigns(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
 ) -> Result<Json<Vec<CampaignRow>>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     let campaigns: Vec<CampaignRow> =
         sqlx::query_as("SELECT * FROM campaigns ORDER BY created_at DESC")
@@ -1950,10 +1887,9 @@ async fn list_campaigns(
 /// Create campaign (admin)
 async fn create_campaign(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Json(input): Json<CreateCampaignRequest>,
 ) -> Result<Json<CampaignRow>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     let campaign: CampaignRow = sqlx::query_as(
         r#"
@@ -1979,10 +1915,9 @@ async fn create_campaign(
 /// Delete campaign (admin)
 async fn delete_campaign(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     sqlx::query("DELETE FROM campaigns WHERE id = $1")
         .bind(id)
@@ -2005,9 +1940,8 @@ async fn delete_campaign(
 /// Products stats (admin)
 async fn products_stats(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM products")
         .fetch_one(&state.db.pool)
@@ -2040,9 +1974,8 @@ async fn products_stats(
 /// Dashboard overview (admin)
 async fn dashboard_overview(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
     let total_users: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM users")
         .fetch_one(&state.db.pool)
         .await
@@ -2098,10 +2031,9 @@ pub struct AnalyticsDashboardQuery {
 /// Analytics dashboard (admin) - GET /admin/analytics/dashboard
 async fn analytics_dashboard(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Query(query): Query<AnalyticsDashboardQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
     let _period = query.period.unwrap_or_else(|| "30d".to_string());
 
     let total_events: (i64,) = sqlx::query_as(
@@ -2142,9 +2074,8 @@ async fn analytics_dashboard(
 /// Posts stats (admin) - GET /admin/posts/stats
 async fn posts_stats(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM posts")
         .fetch_one(&state.db.pool)
@@ -2173,9 +2104,8 @@ async fn posts_stats(
 /// Site health (admin) - GET /admin/site-health
 async fn site_health(
     State(_state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     Ok(Json(json!({
         "success": true,
@@ -2193,9 +2123,8 @@ async fn site_health(
 /// Connections status (admin) - GET /admin/connections
 async fn connections_status(
     State(_state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     Ok(Json(json!({
         "success": true,
@@ -2212,11 +2141,10 @@ async fn connections_status(
 /// ICT 7 FIX: Added missing endpoint that frontend expects
 async fn impersonate_user(
     State(state): State<AppState>,
-    user: User,
+    SuperAdminUser(user): SuperAdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    // Only super-admin can impersonate
-    require_super_admin(&user)?;
+    // SuperAdminUser extractor enforces super-admin role.
 
     // Get target user
     let target: Option<AdminUserRow> = sqlx::query_as(
@@ -2270,10 +2198,9 @@ async fn impersonate_user(
 /// ICT 7 FIX: Added missing endpoint that frontend expects
 async fn get_user_subscriptions(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
 
     // Verify user exists
     let user_exists: Option<(i64,)> = sqlx::query_as("SELECT id FROM users WHERE id = $1")
