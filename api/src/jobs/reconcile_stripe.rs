@@ -19,8 +19,17 @@ use serde_json::{json, Value};
 use std::collections::HashMap;
 use std::time::Duration;
 
-/// Spawn the daily reconciliation scheduler. Runs once immediately at startup
-/// (so the first pass happens at first boot), then sleeps until 03:00 UTC.
+/// Spawn the daily reconciliation scheduler.
+///
+/// Schedule: sleeps until the next 03:00 UTC, runs one pass, then loops.
+///
+/// Note (Batch 7 §AB verification): the comment used to claim "runs
+/// once immediately at startup" — that was wrong. The actual loop
+/// sleeps first, runs second. This is intentional in production
+/// (don't pile a heavy Stripe-list call onto cold boot) but means
+/// **operators must not assume a fresh deploy has reconciled
+/// recently**. To force a run on demand, call `POST
+/// /api/admin/reconciliation/run` (see `routes/reconciliation.rs`).
 pub fn spawn_scheduler(state: AppState) {
     tokio::spawn(async move {
         loop {

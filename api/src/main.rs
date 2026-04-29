@@ -38,6 +38,12 @@ async fn main() -> anyhow::Result<()> {
     dotenvy::dotenv().ok();
     let config = Config::from_env()?;
 
+    // Batch 7: pre-launch assertion. In production, refuse to boot
+    // unless all Stripe secrets are live-mode (sk_live_, pk_live_,
+    // and a non-placeholder whsec_). Outside production this is a
+    // no-op so dev/staging stacks still boot with test keys.
+    config.validate_production_secrets();
+
     tracing::info!("Starting Revolution Trading Pros API");
     tracing::info!("Environment: {}", config.environment);
 
