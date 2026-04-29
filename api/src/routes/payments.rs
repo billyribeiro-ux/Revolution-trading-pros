@@ -195,59 +195,86 @@ async fn create_checkout(
         });
     }
 
-    // Apply coupon if provided — all math in integer cents
-    let mut discount_cents: i64 = 0;
+    // ─── COUPONS / DISCOUNTS ──────────────────────────────────────────────
+    // Two paths, mutually exclusive at the Stripe Checkout Session level:
+    //
+    //   1. Server-applied (Batch 3.5 directive): caller supplied
+    //      `coupon_code` matching a row in our `coupons` table that has
+    //      been mirrored into a Stripe Coupon (`stripe_coupon_id` set).
+    //      We attach it via `discounts[0][coupon]=<stripe_coupon_id>` so
+    //      Stripe applies the discount on its hosted page. Stripe rejects
+    //      sessions that have BOTH `discounts[]` and
+    //      `allow_promotion_codes`, so we turn promotion_codes off here.
+    //
+    //   2. Stripe-side (no `coupon_code` in request): we set
+    //      `allow_promotion_codes=true` so Stripe shows a promotion-code
+    //      field on its hosted page; the customer types a Stripe
+    //      Promotion Code there and Stripe applies it.
+    //
+    // In BOTH paths Stripe is the source of truth for the discount math.
+    // The webhook handler `handle_checkout_completed` re-fetches the
+    // session with `total_details` expanded and writes the actual amounts
+    // (`amount_subtotal`, `amount_discount`, `amount_total`) plus the
+    // applied promotion-code/coupon name back to `orders`.
+    //
+    // At create-time we record `subtotal == total` and `discount = 0`. The
+    // webhook reconciles. This guarantees customer-paid == DB-recorded.
+    let mut server_applied_discount: Option<crate::services::stripe::DiscountSpec> = None;
     let mut coupon_id: Option<i64> = None;
+    let mut coupon_resolution_error: Option<String> = None;
 
     if let Some(ref code) = input.coupon_code {
         #[derive(sqlx::FromRow)]
-        struct CouponInfo {
+        struct CouponRow {
             id: i64,
-            discount_type: String,
-            discount_value_cents: i64,
-            max_discount_cents: Option<i64>,
+            stripe_coupon_id: Option<String>,
+            is_active: bool,
+            expires_at: Option<chrono::NaiveDateTime>,
+            usage_limit: Option<i32>,
+            usage_count: i32,
         }
-
-        let coupon: Option<CouponInfo> = sqlx::query_as(
-            r#"SELECT id, discount_type,
-                      (discount_value * 100)::BIGINT AS discount_value_cents,
-                      (max_discount   * 100)::BIGINT AS max_discount_cents
-               FROM coupons
-               WHERE UPPER(code) = UPPER($1)
-               AND is_active = true
-               AND (expires_at IS NULL OR expires_at > NOW())
-               AND (usage_limit IS NULL OR usage_count < usage_limit)"#,
+        let row: Option<CouponRow> = sqlx::query_as(
+            r#"SELECT id, stripe_coupon_id, is_active, expires_at, usage_limit, usage_count
+               FROM coupons WHERE UPPER(code) = UPPER($1) LIMIT 1"#,
         )
         .bind(code)
         .fetch_optional(&state.db.pool)
         .await
-        .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": e.to_string()})),
-            )
-        })?;
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
 
-        if let Some(c) = coupon {
-            // For percent coupons the value is stored in dollars (e.g. 50.00 = 50%);
-            // multiply (subtotal_cents * percent_int) / 100. For fixed-amount coupons
-            // the cents value is the discount.
-            discount_cents = if c.discount_type == "percent" {
-                let percent = c.discount_value_cents / 100; // 50.00 → 50
-                (subtotal_cents.saturating_mul(percent)) / 100
+        if let Some(c) = row {
+            if !c.is_active {
+                coupon_resolution_error = Some("Coupon is not active".into());
+            } else if c.expires_at.map(|t| t < chrono::Utc::now().naive_utc()).unwrap_or(false) {
+                coupon_resolution_error = Some("Coupon has expired".into());
+            } else if c.usage_limit.map(|lim| c.usage_count >= lim).unwrap_or(false) {
+                coupon_resolution_error = Some("Coupon usage limit reached".into());
+            } else if let Some(stripe_id) = c.stripe_coupon_id.clone() {
+                coupon_id = Some(c.id);
+                server_applied_discount = Some(crate::services::stripe::DiscountSpec {
+                    coupon: Some(stripe_id),
+                    promotion_code: None,
+                });
             } else {
-                c.discount_value_cents
-            };
-
-            if let Some(max) = c.max_discount_cents {
-                discount_cents = discount_cents.min(max);
+                // DB row exists but no Stripe mirror yet — fail loudly so the
+                // operator notices, instead of silently charging full price.
+                coupon_resolution_error =
+                    Some("Coupon is not yet mirrored into Stripe (stripe_coupon_id NULL)".into());
             }
+        } else {
+            coupon_resolution_error = Some("Invalid coupon code".into());
+        }
 
-            coupon_id = Some(c.id);
+        if let Some(err) = coupon_resolution_error {
+            return Err((StatusCode::BAD_REQUEST, Json(json!({"error": err}))));
         }
     }
 
-    let total_cents: i64 = subtotal_cents.saturating_sub(discount_cents);
+    // At create time we persist subtotal=total, discount=0. The webhook
+    // (handle_checkout_completed) reconciles after Stripe applies the
+    // discount on its hosted page.
+    let discount_cents: i64 = 0;
+    let total_cents: i64 = subtotal_cents;
 
     // Generate order number
     let order_number = format!(
@@ -327,6 +354,10 @@ async fn create_checkout(
         ));
     }
     let app_url = state.config.app_url.trim_end_matches('/');
+    let discounts = match server_applied_discount {
+        Some(d) => vec![d],
+        None => Vec::new(),
+    };
     let config = CheckoutConfig {
         customer_email: input.billing_email.unwrap_or(user.email.clone()),
         customer_name: input.billing_name,
@@ -334,7 +365,12 @@ async fn create_checkout(
         success_url: format!("{}{}?order={}", app_url, success_path, order_number),
         cancel_url: format!("{}{}", app_url, cancel_path),
         metadata,
-        allow_promotion_codes: input.coupon_code.is_none(),
+        // When a server-applied discount is set, Stripe rejects sessions
+        // that ALSO have allow_promotion_codes. When none is set, expose
+        // the promotion-code field so customers can enter a Stripe-side
+        // Promotion Code on the hosted page.
+        allow_promotion_codes: discounts.is_empty(),
+        discounts,
         billing_address_collection: true,
         trial_period_days: checkout_trial_days,
         trial_requires_payment_method: checkout_trial_requires_pm,
@@ -736,18 +772,69 @@ async fn handle_checkout_completed(
     let user_id = event.get_user_id();
 
     if let Some(order_id) = order_id {
-        // Update order status to completed
+        // ─── Reconcile order totals with Stripe-applied discount (arch §10) ───
+        // The webhook payload's session usually carries `amount_total`,
+        // `amount_subtotal`, and `total_details`, but we re-fetch with
+        // `expand[]=total_details.breakdown.discounts.discount.coupon` so we
+        // also get the human-readable promotion code/coupon name to backfill
+        // `orders.coupon_code`. This is the single source of truth for the
+        // amounts the customer was actually charged.
+        let session_full = state
+            .services
+            .stripe
+            .retrieve_checkout_session(&session.id)
+            .await
+            .ok();
+
+        let (amount_subtotal_cents, amount_discount_cents, amount_total_cents, applied_code) =
+            if let Some(s) = session_full.as_ref() {
+                let subtotal = s.amount_subtotal.or(s.amount_total).unwrap_or(0);
+                let discount = s
+                    .total_details
+                    .as_ref()
+                    .and_then(|td| td.amount_discount)
+                    .unwrap_or(0);
+                let total = s.amount_total.unwrap_or(subtotal.saturating_sub(discount));
+                let code = s
+                    .total_details
+                    .as_ref()
+                    .and_then(|td| td.breakdown.as_ref())
+                    .and_then(|b| b.discounts.first())
+                    .and_then(|d| d.discount.as_ref())
+                    .and_then(|inner| {
+                        inner.promotion_code.clone().or_else(|| {
+                            inner
+                                .coupon
+                                .as_ref()
+                                .and_then(|c| c.id.clone().or_else(|| c.name.clone()))
+                        })
+                    });
+                (subtotal, discount, total, code)
+            } else {
+                // Stripe re-fetch failed; fall back to webhook payload's amount_total.
+                let total = session.amount_total.unwrap_or(0);
+                (total, 0_i64, total, None)
+            };
+
         sqlx::query(
             r#"UPDATE orders SET
                 status = 'completed',
                 payment_provider = 'stripe',
                 payment_intent_id = $1,
+                subtotal = $3::BIGINT / 100.0,
+                discount = $4::BIGINT / 100.0,
+                total    = $5::BIGINT / 100.0,
+                coupon_code = COALESCE($6, coupon_code),
                 completed_at = NOW(),
                 updated_at = NOW()
             WHERE id = $2"#,
         )
         .bind(&session.payment_intent)
         .bind(order_id)
+        .bind(amount_subtotal_cents)
+        .bind(amount_discount_cents)
+        .bind(amount_total_cents)
+        .bind(&applied_code)
         .execute(&state.db.pool)
         .await
         .map_err(|e| {
@@ -756,6 +843,18 @@ async fn handle_checkout_completed(
                 Json(json!({"error": e.to_string()})),
             )
         })?;
+
+        tracing::info!(
+            target: "payments",
+            event = "checkout_completed_reconciled",
+            order_id = %order_id,
+            session_id = %session.id,
+            subtotal_cents = %amount_subtotal_cents,
+            discount_cents = %amount_discount_cents,
+            total_cents = %amount_total_cents,
+            applied_promo = ?applied_code,
+            "Order reconciled with Stripe-charged amounts"
+        );
 
         // If subscription, create user membership
         if let Some(ref subscription_id) = session.subscription {

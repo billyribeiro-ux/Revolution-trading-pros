@@ -553,6 +553,10 @@ async fn user_stats(
 
 /// Coupon row returned to admin UI. All monetary fields are integer cents.
 /// For percent coupons: `discount_value_cents = percent * 100` (e.g. 5000 = 50%).
+///
+/// `stripe_coupon_id` mirrors the row into a Stripe Coupon; populated on
+/// admin create. `duration` is one of "once" / "forever" / "repeating";
+/// `duration_in_months` is required when duration='repeating'.
 #[derive(Debug, serde::Serialize, sqlx::FromRow)]
 pub struct CouponRow {
     pub id: i64,
@@ -569,6 +573,9 @@ pub struct CouponRow {
     pub expires_at: Option<chrono::NaiveDateTime>,
     pub applicable_products: Option<serde_json::Value>,
     pub applicable_plans: Option<serde_json::Value>,
+    pub stripe_coupon_id: Option<String>,
+    pub duration: String,
+    pub duration_in_months: Option<i32>,
     pub created_at: chrono::NaiveDateTime,
     pub updated_at: chrono::NaiveDateTime,
 }
@@ -587,6 +594,10 @@ pub struct CreateCouponRequest {
     pub expires_at: Option<chrono::NaiveDateTime>,
     pub applicable_products: Option<serde_json::Value>,
     pub applicable_plans: Option<serde_json::Value>,
+    /// "once" | "forever" | "repeating". Defaults to "once" when omitted.
+    pub duration: Option<String>,
+    /// Required when `duration == "repeating"`.
+    pub duration_in_months: Option<i32>,
 }
 
 /// List coupons (admin)
@@ -606,7 +617,7 @@ async fn list_coupons(
             (min_purchase * 100)::BIGINT AS min_purchase_cents,
             (max_discount * 100)::BIGINT AS max_discount_cents,
             usage_limit, usage_count, is_active, starts_at, expires_at,
-            applicable_products, applicable_plans, created_at, updated_at
+            applicable_products, applicable_plans, stripe_coupon_id, duration, duration_in_months, created_at, updated_at
         FROM coupons ORDER BY created_at DESC"#,
     )
     .fetch_all(&state.db.pool)
@@ -622,8 +633,17 @@ async fn list_coupons(
     Ok(Json(coupons))
 }
 
-/// Create coupon (admin)
-/// ICT 7 FIX: Use explicit RETURNING clause with FLOAT8 casting for DECIMAL columns
+/// Create coupon (admin).
+///
+/// Mirrors the row into a Stripe Coupon (Batch 3.5 directive). Stripe is
+/// the source of truth for discount math at checkout time; this row stores
+/// our admin metadata (code, description, usage tracking, applicable
+/// products/plans) plus a pointer (`stripe_coupon_id`) to the Stripe object
+/// the checkout flow attaches via `discounts[]`.
+///
+/// On Stripe-side failure the DB row is NOT created. On DB-side failure
+/// after Stripe success, the orphaned Stripe coupon is deleted so the two
+/// stores stay in sync.
 async fn create_coupon(
     State(state): State<AppState>,
     user: User,
@@ -631,18 +651,99 @@ async fn create_coupon(
 ) -> Result<Json<CouponRow>, (StatusCode, Json<serde_json::Value>)> {
     require_admin(&user)?;
 
-    // Inputs are integer cents; convert to NUMERIC(10,2) at the SQL boundary.
-    let coupon: CouponRow = sqlx::query_as(
+    // ── Validate inputs ──────────────────────────────────────────────────
+    let duration = input.duration.clone().unwrap_or_else(|| "once".into());
+    if !matches!(duration.as_str(), "once" | "forever" | "repeating") {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "duration must be 'once', 'forever', or 'repeating'"})),
+        ));
+    }
+    let duration_in_months = input.duration_in_months;
+    if duration == "repeating" && duration_in_months.unwrap_or(0) <= 0 {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "duration_in_months > 0 required when duration='repeating'"})),
+        ));
+    }
+    if duration != "repeating" && duration_in_months.is_some() {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "duration_in_months only valid when duration='repeating'"})),
+        ));
+    }
+    if !matches!(input.discount_type.as_str(), "percent" | "percentage" | "fixed" | "amount") {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "discount_type must be 'percent' or 'fixed'"})),
+        ));
+    }
+
+    // ── Create the Stripe Coupon (canonical source for the math) ────────
+    let (percent_off, amount_off_cents) = match input.discount_type.as_str() {
+        "percent" | "percentage" => {
+            // discount_value_cents stores 'percent * 100' (e.g. 1000 = 10.00%).
+            let percent = (input.discount_value_cents as f64) / 100.0;
+            if percent <= 0.0 || percent > 100.0 {
+                return Err((
+                    StatusCode::BAD_REQUEST,
+                    Json(json!({"error": "percent must be > 0 and <= 100"})),
+                ));
+            }
+            (Some(percent), None)
+        }
+        _ => {
+            if input.discount_value_cents <= 0 {
+                return Err((
+                    StatusCode::BAD_REQUEST,
+                    Json(json!({"error": "discount_value_cents must be > 0 for fixed coupons"})),
+                ));
+            }
+            (None, Some(input.discount_value_cents))
+        }
+    };
+
+    let stripe_coupon = state
+        .services
+        .stripe
+        .create_coupon(crate::services::stripe::CreateStripeCouponRequest {
+            percent_off,
+            amount_off_cents,
+            currency: "usd".into(),
+            duration: duration.clone(),
+            duration_in_months: duration_in_months.map(|n| n as i64),
+            name: Some(input.code.to_uppercase()),
+            max_redemptions: input.usage_limit.map(|n| n as i64),
+            redeem_by_unix: input.expires_at.map(|t| t.and_utc().timestamp()),
+        })
+        .await
+        .map_err(|e| {
+            tracing::error!(target: "admin", "Stripe coupon create failed: {}", e);
+            (
+                StatusCode::BAD_GATEWAY,
+                Json(json!({"error": format!("Stripe coupon create failed: {}", e)})),
+            )
+        })?;
+
+    // ── INSERT the DB row (with Stripe pointer) ─────────────────────────
+    let coupon_result: Result<CouponRow, sqlx::Error> = sqlx::query_as(
         r#"
-        INSERT INTO coupons (code, description, discount_type, discount_value, min_purchase, max_discount, usage_limit, usage_count, is_active, starts_at, expires_at, applicable_products, applicable_plans, created_at, updated_at)
-        VALUES (UPPER($1), $2, $3, $4::BIGINT / 100.0, $5::BIGINT / 100.0, $6::BIGINT / 100.0, $7, 0, $8, $9, $10, $11, $12, NOW(), NOW())
+        INSERT INTO coupons (code, description, discount_type, discount_value, min_purchase, max_discount,
+                             usage_limit, usage_count, is_active, starts_at, expires_at,
+                             applicable_products, applicable_plans,
+                             stripe_coupon_id, duration, duration_in_months,
+                             created_at, updated_at)
+        VALUES (UPPER($1), $2, $3, $4::BIGINT / 100.0, $5::BIGINT / 100.0, $6::BIGINT / 100.0,
+                $7, 0, $8, $9, $10, $11, $12,
+                $13, $14, $15,
+                NOW(), NOW())
         RETURNING id, code, description, discount_type,
             (discount_value * 100)::BIGINT AS discount_value_cents,
             (min_purchase * 100)::BIGINT AS min_purchase_cents,
             (max_discount * 100)::BIGINT AS max_discount_cents,
             usage_limit, usage_count, is_active, starts_at, expires_at,
-            applicable_products, applicable_plans, created_at, updated_at
-        "#
+            applicable_products, applicable_plans, stripe_coupon_id, duration, duration_in_months, created_at, updated_at
+        "#,
     )
     .bind(&input.code)
     .bind(&input.description)
@@ -656,27 +757,59 @@ async fn create_coupon(
     .bind(&input.expires_at)
     .bind(&input.applicable_products)
     .bind(&input.applicable_plans)
+    .bind(&stripe_coupon.id)
+    .bind(&duration)
+    .bind(duration_in_months)
     .fetch_one(&state.db.pool)
-    .await
-    .map_err(|e| {
-        tracing::error!(target: "admin", "create_coupon error: {}", e);
-        if e.to_string().contains("duplicate") {
-            (StatusCode::CONFLICT, Json(json!({"error": "Coupon code already exists"})))
-        } else {
-            (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
-        }
-    })?;
+    .await;
 
-    Ok(Json(coupon))
+    match coupon_result {
+        Ok(coupon) => Ok(Json(coupon)),
+        Err(e) => {
+            // Roll back the Stripe coupon so the two stores stay in sync.
+            tracing::error!(
+                target: "admin",
+                "create_coupon DB insert failed after Stripe coupon {} created; rolling back Stripe: {}",
+                stripe_coupon.id, e
+            );
+            if let Err(del_err) = state.services.stripe.delete_coupon(&stripe_coupon.id).await {
+                tracing::error!(
+                    target: "admin",
+                    "Failed to roll back orphan Stripe coupon {}: {}",
+                    stripe_coupon.id, del_err
+                );
+            }
+            if e.to_string().contains("duplicate") {
+                Err((StatusCode::CONFLICT, Json(json!({"error": "Coupon code already exists"}))))
+            } else {
+                Err((StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))
+            }
+        }
+    }
 }
 
-/// Delete coupon (admin)
+/// Delete coupon (admin). Removes the DB row and the Stripe-side coupon.
+/// Stripe coupon deletion stops future redemptions; subscriptions that
+/// already have the discount keep it for the rest of its `duration`.
 async fn delete_coupon(
     State(state): State<AppState>,
     user: User,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     require_admin(&user)?;
+
+    let stripe_coupon_id: Option<Option<String>> =
+        sqlx::query_scalar("SELECT stripe_coupon_id FROM coupons WHERE id = $1")
+            .bind(id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e| {
+                tracing::error!(target: "admin", "delete_coupon read error: {}", e);
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
 
     sqlx::query("DELETE FROM coupons WHERE id = $1")
         .bind(id)
@@ -688,6 +821,16 @@ async fn delete_coupon(
                 Json(json!({"error": e.to_string()})),
             )
         })?;
+
+    if let Some(Some(sid)) = stripe_coupon_id {
+        if let Err(e) = state.services.stripe.delete_coupon(&sid).await {
+            tracing::warn!(
+                target: "admin",
+                "DB coupon {} deleted but Stripe coupon {} delete failed: {}; manual cleanup required",
+                id, sid, e
+            );
+        }
+    }
 
     Ok(Json(json!({"message": "Coupon deleted successfully"})))
 }
@@ -712,7 +855,7 @@ async fn get_coupon(
             (min_purchase * 100)::BIGINT AS min_purchase_cents,
             (max_discount * 100)::BIGINT AS max_discount_cents,
             usage_limit, usage_count, is_active, starts_at, expires_at,
-            applicable_products, applicable_plans, created_at, updated_at
+            applicable_products, applicable_plans, stripe_coupon_id, duration, duration_in_months, created_at, updated_at
         FROM coupons WHERE id = $1"#,
     )
     .bind(id)
@@ -779,7 +922,7 @@ async fn update_coupon(
             (min_purchase * 100)::BIGINT AS min_purchase_cents,
             (max_discount * 100)::BIGINT AS max_discount_cents,
             usage_limit, usage_count, is_active, starts_at, expires_at,
-            applicable_products, applicable_plans, created_at, updated_at
+            applicable_products, applicable_plans, stripe_coupon_id, duration, duration_in_months, created_at, updated_at
         "#,
     )
     .bind(id)
@@ -833,7 +976,7 @@ async fn validate_coupon(
             (min_purchase * 100)::BIGINT AS min_purchase_cents,
             (max_discount * 100)::BIGINT AS max_discount_cents,
             usage_limit, usage_count, is_active, starts_at, expires_at,
-            applicable_products, applicable_plans, created_at, updated_at
+            applicable_products, applicable_plans, stripe_coupon_id, duration, duration_in_months, created_at, updated_at
         FROM coupons WHERE UPPER(code) = UPPER($1) AND is_active = true"#,
     )
     .bind(&code)
