@@ -18,6 +18,7 @@
 -->
 <script lang="ts">
 	import type { VideoUpdate } from '../alerts/types';
+	import Icon from '$lib/components/Icon.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PROPS - Svelte 5 $props() pattern
@@ -39,9 +40,7 @@
 	<a href={video.href} class="video-card-compact">
 		<div class="compact-thumb" style="background-image: url('{video.image}')">
 			<div class="compact-play-icon">
-				<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20" aria-hidden="true">
-					<path d="M8 5v14l11-7z" />
-				</svg>
+				<Icon name="IconPlayerPlay" size={20} />
 			</div>
 			<span class="compact-duration">{video.duration}</span>
 		</div>
@@ -52,9 +51,7 @@
 	<a href={video.href} class="video-card">
 		<div class="video-thumbnail" style="background-image: url('{video.image}')">
 			<div class="play-overlay">
-				<svg viewBox="0 0 24 24" fill="currentColor" width="48" height="48" aria-hidden="true">
-					<path d="M8 5v14l11-7z" />
-				</svg>
+				<Icon name="IconPlayerPlay" size={48} />
 			</div>
 			<div class="video-duration">{video.duration}</div>
 		</div>
@@ -109,13 +106,13 @@
 		background: rgba(0, 0, 0, 0.6);
 	}
 
-	.play-overlay svg {
+	.play-overlay :global(svg) {
 		color: #fff;
 		opacity: 0.9;
 		transition: all 0.3s;
 	}
 
-	.video-card:hover .play-overlay svg {
+	.video-card:hover .play-overlay :global(svg) {
 		opacity: 1;
 		transform: scale(1.1);
 	}
@@ -195,7 +192,7 @@
 		transform: translate(-50%, -50%) scale(1.1);
 	}
 
-	.compact-play-icon svg {
+	.compact-play-icon :global(svg) {
 		color: #1a1a1a;
 		margin-left: 2px;
 	}

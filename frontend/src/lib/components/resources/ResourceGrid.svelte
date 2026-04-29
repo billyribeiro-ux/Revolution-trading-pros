@@ -19,6 +19,7 @@
 	} from '$lib/api/room-resources';
 	import { listResources } from '$lib/api/room-resources';
 	import ResourceCard from './ResourceCard.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	interface Props {
 		roomId?: number;
@@ -235,19 +236,7 @@
 						class="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-4 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
 						oninput={handleSearch}
 					/>
-					<svg
-						class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
-						fill="none"
-						stroke="currentColor"
-						viewBox="0 0 24 24"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-						/>
-					</svg>
+					<Icon name="IconSearch" size={16} class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
 				</div>
 			{/if}
 
@@ -321,19 +310,7 @@
 		<div
 			class="rounded-lg border border-red-200 bg-red-50 p-8 text-center dark:border-red-800 dark:bg-red-900/20"
 		>
-			<svg
-				class="mx-auto h-12 w-12 text-red-400"
-				fill="none"
-				stroke="currentColor"
-				viewBox="0 0 24 24"
-			>
-				<path
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					stroke-width="2"
-					d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-				/>
-			</svg>
+			<Icon name="IconAlertTriangle" size={48} class="mx-auto text-red-400" />
 			<h3 class="mt-4 text-lg font-medium text-red-800 dark:text-red-200">
 				Failed to load resources
 			</h3>
@@ -350,19 +327,7 @@
 		<div
 			class="rounded-lg border border-gray-200 bg-gray-50 p-8 text-center dark:border-gray-700 dark:bg-gray-800"
 		>
-			<svg
-				class="mx-auto h-12 w-12 text-gray-400"
-				fill="none"
-				stroke="currentColor"
-				viewBox="0 0 24 24"
-			>
-				<path
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					stroke-width="2"
-					d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-				/>
-			</svg>
+			<Icon name="IconFileText" size={48} class="mx-auto text-gray-400" />
 			<h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">No resources found</h3>
 			<p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
 				{#if searchQuery}

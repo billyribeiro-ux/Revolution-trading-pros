@@ -13,6 +13,7 @@
 	 */
 	import { onMount } from 'svelte';
 	import { spring } from 'svelte/motion';
+	import Icon from '$lib/components/Icon.svelte';
 
 	// Props - Svelte 5 syntax
 	interface Props {
@@ -151,10 +152,7 @@
 			title="Slider comparison"
 			aria-label="Slider comparison"
 		>
-			<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor">
-				<path d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" />
-				<path d="M10 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1z" />
-			</svg>
+			<Icon name="IconArrowsLeftRight" size={18} />
 		</button>
 		<button
 			class:active={mode === 'side-by-side'}
@@ -162,11 +160,7 @@
 			title="Side by side"
 			aria-label="Side by side comparison"
 		>
-			<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor">
-				<path
-					d="M2 4a1 1 0 011-1h6a1 1 0 011 1v12a1 1 0 01-1 1H3a1 1 0 01-1-1V4zM12 4a1 1 0 011-1h4a1 1 0 011 1v12a1 1 0 01-1 1h-4a1 1 0 01-1-1V4z"
-				/>
-			</svg>
+			<Icon name="IconColumns" size={18} />
 		</button>
 		<button
 			class:active={mode === 'toggle'}
@@ -174,13 +168,7 @@
 			title="Toggle view"
 			aria-label="Toggle view"
 		>
-			<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor">
-				<path
-					fill-rule="evenodd"
-					d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
-					clip-rule="evenodd"
-				/>
-			</svg>
+			<Icon name="IconRefresh" size={18} />
 		</button>
 	</div>
 
@@ -191,13 +179,7 @@
 			disabled={zoomLevel <= 1}
 			aria-label="Zoom out"
 		>
-			<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor">
-				<path
-					fill-rule="evenodd"
-					d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
-					clip-rule="evenodd"
-				/>
-			</svg>
+			<Icon name="IconMinus" size={16} />
 		</button>
 		<span>{Math.round(zoomLevel * 100)}%</span>
 		<button
@@ -205,13 +187,7 @@
 			disabled={zoomLevel >= 5}
 			aria-label="Zoom in"
 		>
-			<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor">
-				<path
-					fill-rule="evenodd"
-					d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-					clip-rule="evenodd"
-				/>
-			</svg>
+			<Icon name="IconPlus" size={16} />
 		</button>
 		{#if zoomLevel > 1}
 			<button onclick={resetZoom} class="reset-btn">Reset</button>
@@ -256,9 +232,7 @@
 				<div class="slider-handle" style="left: {$sliderPosition}%;">
 					<div class="handle-line"></div>
 					<div class="handle-grip">
-						<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-							<path d="M8 12h8M12 8v8" />
-						</svg>
+						<Icon name="IconArrowsLeftRight" size={20} />
 					</div>
 				</div>
 			</div>
@@ -387,10 +361,6 @@
 		color: white;
 	}
 
-	.mode-selector button svg {
-		width: 18px;
-		height: 18px;
-	}
 
 	/* Zoom Controls */
 	.zoom-controls {
@@ -432,10 +402,6 @@
 		cursor: not-allowed;
 	}
 
-	.zoom-controls button svg {
-		width: 16px;
-		height: 16px;
-	}
 
 	.zoom-controls span {
 		font-size: 12px;
@@ -540,11 +506,6 @@
 		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 	}
 
-	.handle-grip svg {
-		width: 20px;
-		height: 20px;
-		color: #1d1d1f;
-	}
 
 	/* Side by Side Mode */
 	.side-by-side-wrapper {

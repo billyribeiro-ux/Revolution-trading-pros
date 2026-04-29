@@ -1106,18 +1106,7 @@
 																}}
 																title="Details"
 															>
-																<svg
-																	width="14"
-																	height="14"
-																	viewBox="0 0 24 24"
-																	fill="none"
-																	stroke="currentColor"
-																	stroke-width="2"
-																>
-																	<circle cx="12" cy="12" r="10" />
-																	<line x1="12" y1="16" x2="12" y2="12" />
-																	<line x1="12" y1="8" x2="12.01" y2="8" />
-																</svg>
+																<Icon name="IconInfoCircle" size={14} />
 															</button>
 														</td>
 													</tr>
@@ -1154,17 +1143,7 @@
 										onclick={() => (sidebarOpen = false)}
 										aria-label="Close sidebar"
 									>
-										<svg
-											width="16"
-											height="16"
-											viewBox="0 0 24 24"
-											fill="none"
-											stroke="currentColor"
-											stroke-width="2"
-										>
-											<line x1="18" y1="6" x2="6" y2="18" />
-											<line x1="6" y1="6" x2="18" y2="18" />
-										</svg>
+										<Icon name="IconX" size={16} />
 									</button>
 								</div>
 
@@ -1180,23 +1159,11 @@
 										<video src={selectedAsset.cdn_url} controls></video>
 									{:else}
 										<div class="type-preview-large {getAssetType(selectedAsset.mime_type)}">
-											<svg
-												width="48"
-												height="48"
-												viewBox="0 0 24 24"
-												fill="none"
-												stroke="currentColor"
-												stroke-width="1.5"
-											>
-												{#if getAssetType(selectedAsset.mime_type) === 'audio'}
-													<path d="M9 18V5l12-2v13" />
-													<circle cx="6" cy="18" r="3" />
-													<circle cx="18" cy="16" r="3" />
-												{:else}
-													<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-													<polyline points="14 2 14 8 20 8" />
-												{/if}
-											</svg>
+											{#if getAssetType(selectedAsset.mime_type) === 'audio'}
+												<Icon name="IconVolume" size={48} stroke={1.5} />
+											{:else}
+												<Icon name="IconFileText" size={48} stroke={1.5} />
+											{/if}
 										</div>
 									{/if}
 								</div>
@@ -1330,37 +1297,14 @@
 								<!-- Actions -->
 								<div class="detail-actions">
 									<a href={selectedAsset.cdn_url} target="_blank" class="action-link">
-										<svg
-											width="14"
-											height="14"
-											viewBox="0 0 24 24"
-											fill="none"
-											stroke="currentColor"
-											stroke-width="2"
-										>
-											<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-											<polyline points="15 3 21 3 21 9" />
-											<line x1="10" y1="14" x2="21" y2="3" />
-										</svg>
+										<Icon name="IconExternalLink" size={14} />
 										Open Original
 									</a>
 									<button
 										class="action-link danger"
 										onclick={() => selectedAsset && deleteAsset(selectedAsset.id)}
 									>
-										<svg
-											width="14"
-											height="14"
-											viewBox="0 0 24 24"
-											fill="none"
-											stroke="currentColor"
-											stroke-width="2"
-										>
-											<polyline points="3 6 5 6 21 6" />
-											<path
-												d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-											/>
-										</svg>
+										<Icon name="IconTrash" size={14} />
 										Delete Asset
 									</button>
 								</div>
@@ -1376,18 +1320,7 @@
 							role="region"
 							aria-label="Upload drop zone"
 						>
-							<svg
-								width="48"
-								height="48"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="1.5"
-							>
-								<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-								<polyline points="17 8 12 3 7 8" />
-								<line x1="12" y1="3" x2="12" y2="15" />
-							</svg>
+							<Icon name="IconUpload" size={48} stroke={1.5} />
 							<h4>Drag and drop files here</h4>
 							<p>or</p>
 							<label class="browse-btn">
@@ -1430,19 +1363,7 @@
 													<img src={item.previewUrl} alt="" />
 												{:else}
 													<div class="file-icon">
-														<svg
-															width="20"
-															height="20"
-															viewBox="0 0 24 24"
-															fill="none"
-															stroke="currentColor"
-															stroke-width="2"
-														>
-															<path
-																d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
-															/>
-															<polyline points="14 2 14 8 20 8" />
-														</svg>
+														<Icon name="IconFile" size={20} />
 													</div>
 												{/if}
 											</div>
@@ -1459,29 +1380,9 @@
 											</div>
 											<div class="item-status">
 												{#if item.status === 'complete'}
-													<svg
-														width="18"
-														height="18"
-														viewBox="0 0 24 24"
-														fill="none"
-														stroke="#22c55e"
-														stroke-width="2"
-													>
-														<polyline points="20 6 9 17 4 12" />
-													</svg>
+													<Icon name="IconCheck" size={18} color="#22c55e" />
 												{:else if item.status === 'error'}
-													<svg
-														width="18"
-														height="18"
-														viewBox="0 0 24 24"
-														fill="none"
-														stroke="#ef4444"
-														stroke-width="2"
-													>
-														<circle cx="12" cy="12" r="10" />
-														<line x1="15" y1="9" x2="9" y2="15" />
-														<line x1="9" y1="9" x2="15" y2="15" />
-													</svg>
+													<Icon name="IconCircleX" size={18} color="#ef4444" />
 												{:else if item.status === 'uploading'}
 													<div class="spinner small"></div>
 												{:else}
@@ -1490,17 +1391,7 @@
 														onclick={() => removeFromQueue(item.id)}
 														aria-label="Remove from queue"
 													>
-														<svg
-															width="14"
-															height="14"
-															viewBox="0 0 24 24"
-															fill="none"
-															stroke="currentColor"
-															stroke-width="2"
-														>
-															<line x1="18" y1="6" x2="6" y2="18" />
-															<line x1="6" y1="6" x2="18" y2="18" />
-														</svg>
+														<Icon name="IconX" size={14} />
 													</button>
 												{/if}
 											</div>
@@ -1545,18 +1436,7 @@
 			{#if isDragging}
 				<div class="drag-overlay" transition:fade={{ duration: 150 }}>
 					<div class="drag-indicator">
-						<svg
-							width="48"
-							height="48"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-						>
-							<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-							<polyline points="17 8 12 3 7 8" />
-							<line x1="12" y1="3" x2="12" y2="15" />
-						</svg>
+						<Icon name="IconUpload" size={48} />
 						<span>Drop files to upload</span>
 					</div>
 				</div>
@@ -1760,7 +1640,7 @@
 		min-width: 240px;
 	}
 
-	.search-box svg {
+	.search-box :global(svg) {
 		color: #64748b;
 		flex-shrink: 0;
 	}
@@ -1820,7 +1700,7 @@
 		background: rgba(255, 255, 255, 0.1);
 	}
 
-	.sort-btn svg {
+	.sort-btn :global(svg) {
 		transition: transform 0.2s;
 	}
 
@@ -1978,7 +1858,7 @@
 		color: #3b82f6;
 	}
 
-	.folder-item svg {
+	.folder-item :global(svg) {
 		flex-shrink: 0;
 	}
 
@@ -2031,7 +1911,7 @@
 		color: #f1f5f9;
 	}
 
-	.breadcrumb svg {
+	.breadcrumb :global(svg) {
 		color: #475569;
 	}
 
@@ -2047,7 +1927,7 @@
 		gap: 1rem;
 	}
 
-	.empty-state svg {
+	.empty-state :global(svg) {
 		opacity: 0.5;
 	}
 
@@ -2679,7 +2559,7 @@
 		background: rgba(59, 130, 246, 0.1);
 	}
 
-	.drop-zone svg {
+	.drop-zone :global(svg) {
 		color: #64748b;
 		margin-bottom: 1rem;
 	}

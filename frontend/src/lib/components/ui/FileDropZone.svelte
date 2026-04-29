@@ -9,6 +9,8 @@
 	@version 1.0.0
 -->
 <script lang="ts">
+	import Icon from '$lib/components/Icon.svelte';
+
 	interface Props {
 		accept?: string[];
 		maxSizeBytes?: number;
@@ -121,35 +123,14 @@
 >
 	<div class="drop-zone-content">
 		<div class="upload-icon">
-			<svg
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="1.5"
-				aria-hidden="true"
-			>
-				<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-				<polyline points="17 8 12 3 7 8"></polyline>
-				<line x1="12" y1="3" x2="12" y2="15"></line>
-			</svg>
+			<Icon name="IconUpload" size={56} />
 		</div>
 		<p class="drop-text">Drag and drop file here</p>
 		<p class="drop-hint">{hint}</p>
 		<span class="supported-formats">{acceptedFormatsDisplay} (max {maxSizeDisplay})</span>
 
 		<button type="button" class="btn-browse" onclick={openFileBrowser} {disabled}>
-			<svg
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-				width="18"
-				height="18"
-				aria-hidden="true"
-			>
-				<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"
-				></path>
-			</svg>
+			<Icon name="IconFolder" size={18} />
 			Browse Files & Folders
 		</button>
 	</div>
@@ -209,7 +190,7 @@
 		margin-bottom: 0.5rem;
 	}
 
-	.upload-icon svg {
+	.upload-icon :global(svg) {
 		width: 100%;
 		height: 100%;
 	}

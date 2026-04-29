@@ -20,6 +20,7 @@
 -->
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import Icon from '$lib/components/Icon.svelte';
 
 	// Video type from API
 	interface VideoData {
@@ -275,21 +276,7 @@
 				<div class="dashboard-filters__search">
 					<form onsubmit={handleSearchSubmit} class="search-form">
 						<div class="search-input-wrapper">
-							<svg
-								class="search-icon"
-								xmlns="http://www.w3.org/2000/svg"
-								width="18"
-								height="18"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-							>
-								<circle cx="11" cy="11" r="8"></circle>
-								<path d="m21 21-4.3-4.3"></path>
-							</svg>
+							<Icon name="IconSearch" size={18} class="search-icon" />
 							<input
 								type="text"
 								placeholder="Search archives..."
@@ -304,21 +291,7 @@
 									onclick={clearSearch}
 									aria-label="Clear search"
 								>
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										width="16"
-										height="16"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										stroke-width="2"
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										aria-hidden="true"
-									>
-										<path d="M18 6 6 18"></path>
-										<path d="m6 6 12 12"></path>
-									</svg>
+									<Icon name="IconX" size={16} />
 								</button>
 							{/if}
 						</div>
@@ -536,7 +509,7 @@
 		align-items: center;
 	}
 
-	.search-icon {
+	.search-input-wrapper :global(.search-icon) {
 		position: absolute;
 		left: 12px;
 		color: #999;

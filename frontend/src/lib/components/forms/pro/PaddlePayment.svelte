@@ -57,6 +57,8 @@
 		onerror
 	}: Props = $props();
 
+	import Icon from '$lib/components/Icon.svelte';
+
 	let loading = $state(true);
 	let processing = $state(false);
 	let paymentError = $state('');
@@ -185,9 +187,7 @@
 
 	{#if loading}
 		<div class="loading-state">
-			<svg aria-hidden="true" class="spinner" viewBox="0 0 24 24">
-				<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" />
-			</svg>
+			<Icon name="IconLoader" size={20} class="spinner" />
 			<span>Loading checkout...</span>
 		</div>
 	{:else}
@@ -202,9 +202,7 @@
 			disabled={disabled || processing}
 		>
 			{#if processing}
-				<svg aria-hidden="true" class="button-spinner" viewBox="0 0 24 24">
-					<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" />
-				</svg>
+				<Icon name="IconLoader" size={20} class="button-spinner" />
 				Processing...
 			{:else}
 				{label}
@@ -213,32 +211,21 @@
 
 		<div class="features">
 			<div class="feature">
-				<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-					<circle cx="12" cy="12" r="10"></circle>
-					<path d="M12 6v6l4 2"></path>
-				</svg>
+				<Icon name="IconClock" size={16} />
 				<span>Instant access</span>
 			</div>
 			<div class="feature">
-				<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-					<rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-					<line x1="1" y1="10" x2="23" y2="10"></line>
-				</svg>
+				<Icon name="IconCreditCard" size={16} />
 				<span>Multiple payment options</span>
 			</div>
 			<div class="feature">
-				<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-					<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-				</svg>
+				<Icon name="IconShield" size={16} />
 				<span>Secure checkout</span>
 			</div>
 		</div>
 
 		<div class="secure-badge">
-			<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-				<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-				<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-			</svg>
+			<Icon name="IconLock" size={14} />
 			<span>Powered by Paddle</span>
 		</div>
 	{/if}
@@ -297,18 +284,9 @@
 		color: #6b7280;
 	}
 
-	.spinner,
-	.button-spinner {
-		width: 20px;
-		height: 20px;
+	:global(.spinner),
+	:global(.button-spinner) {
 		animation: spin 1s linear infinite;
-	}
-
-	.spinner circle,
-	.button-spinner circle {
-		stroke-dasharray: 60;
-		stroke-dashoffset: 45;
-		stroke-linecap: round;
 	}
 
 	@keyframes spin {
@@ -367,7 +345,7 @@
 		color: #6b7280;
 	}
 
-	.feature svg {
+	.feature :global(svg) {
 		width: 16px;
 		height: 16px;
 	}
@@ -381,7 +359,7 @@
 		color: #6b7280;
 	}
 
-	.secure-badge svg {
+	.secure-badge :global(svg) {
 		width: 14px;
 		height: 14px;
 	}

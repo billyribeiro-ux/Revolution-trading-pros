@@ -7,6 +7,7 @@
 	 */
 
 	import { onMount } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	interface Props {
 		beforeSrc: string;
@@ -149,18 +150,7 @@
 			</div>
 			<div class="savings" class:positive={savingsPercent > 0}>
 				{#if savingsPercent > 0}
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						viewBox="0 0 20 20"
-						fill="currentColor"
-						class="icon"
-					>
-						<path
-							fill-rule="evenodd"
-							d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
-							clip-rule="evenodd"
-						/>
-					</svg>
+					<Icon name="IconCircleCheckFilled" size={20} class="icon" />
 					<span>{savingsPercent}% smaller</span>
 					<span class="bytes">({formatBytes(savingsBytes)} saved)</span>
 				{:else}
@@ -219,16 +209,7 @@
 		<div class="slider-handle" style="left: {sliderPosition}%;">
 			<div class="handle-line"></div>
 			<div class="handle-button" class:active={isDragging}>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-				>
-					<path d="M18 8L22 12L18 16" />
-					<path d="M6 8L2 12L6 16" />
-				</svg>
+				<Icon name="IconArrowsLeftRight" size={24} />
 			</div>
 		</div>
 	</div>
@@ -292,10 +273,6 @@
 		color: #166534;
 	}
 
-	.savings .icon {
-		width: 1.25rem;
-		height: 1.25rem;
-	}
 
 	.savings .bytes {
 		color: #4ade80;
@@ -431,11 +408,6 @@
 			0 0 0 4px rgba(255, 255, 255, 0.7);
 	}
 
-	.handle-button svg {
-		width: 1.5rem;
-		height: 1.5rem;
-		color: #475569;
-	}
 
 	.keyboard-hint {
 		margin-top: 0.75rem;
@@ -472,9 +444,5 @@
 			height: 2.5rem;
 		}
 
-		.handle-button svg {
-			width: 1.25rem;
-			height: 1.25rem;
-		}
 	}
 </style>

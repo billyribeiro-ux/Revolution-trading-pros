@@ -51,6 +51,8 @@
 		onchange
 	}: Props = $props();
 
+	import Icon from '$lib/components/Icon.svelte';
+
 	let addressValue = $state<AddressValue>({
 		address_line_1: '',
 		address_line_2: '',
@@ -195,21 +197,7 @@
 					<span class="spinner"></span>
 					Detecting...
 				{:else}
-					<svg
-						width="16"
-						height="16"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<circle cx="12" cy="12" r="10"></circle>
-						<circle cx="12" cy="12" r="3"></circle>
-						<line x1="12" y1="2" x2="12" y2="6"></line>
-						<line x1="12" y1="18" x2="12" y2="22"></line>
-						<line x1="2" y1="12" x2="6" y2="12"></line>
-						<line x1="18" y1="12" x2="22" y2="12"></line>
-					</svg>
+					<Icon name="IconTarget" size={16} />
 					Use My Location
 				{/if}
 			</button>
@@ -217,17 +205,7 @@
 			{#if addressValue.latitude && addressValue.longitude}
 				<div class="location-info">
 					<span class="coordinates">
-						<svg
-							width="14"
-							height="14"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-						>
-							<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-							<circle cx="12" cy="10" r="3"></circle>
-						</svg>
+						<Icon name="IconMapPin" size={14} />
 						{addressValue.latitude.toFixed(6)}, {addressValue.longitude.toFixed(6)}
 					</span>
 					<button
@@ -236,17 +214,7 @@
 						onclick={clearLocation}
 						title="Clear location"
 					>
-						<svg
-							width="14"
-							height="14"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-						>
-							<line x1="18" y1="6" x2="6" y2="18"></line>
-							<line x1="6" y1="6" x2="18" y2="18"></line>
-						</svg>
+						<Icon name="IconX" size={14} />
 					</button>
 				</div>
 			{/if}
@@ -362,18 +330,7 @@
 
 	{#if error}
 		<div class="error-message">
-			<svg
-				width="14"
-				height="14"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-			>
-				<circle cx="12" cy="12" r="10"></circle>
-				<line x1="12" y1="8" x2="12" y2="12"></line>
-				<line x1="12" y1="16" x2="12.01" y2="16"></line>
-			</svg>
+			<Icon name="IconAlertCircle" size={14} />
 			{error}
 		</div>
 	{/if}

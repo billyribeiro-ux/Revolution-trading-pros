@@ -64,6 +64,8 @@
 	}
 
 	let props: Props = $props();
+
+	import Icon from '$lib/components/Icon.svelte';
 	const previewMode = $derived(props.previewMode ?? false);
 
 	let currentSettings = $state<StyleSettings>({});
@@ -200,17 +202,7 @@
 		<h3 class="styler-title">Form Style Settings</h3>
 		<div class="header-actions">
 			<button type="button" class="btn-icon" onclick={copyToClipboard} title="Copy CSS Variables">
-				<svg
-					width="16"
-					height="16"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-				>
-					<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-					<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-				</svg>
+				<Icon name="IconCopy" size={16} />
 			</button>
 			<button type="button" class="btn-reset" onclick={resetToDefaults}> Reset to Defaults </button>
 		</div>

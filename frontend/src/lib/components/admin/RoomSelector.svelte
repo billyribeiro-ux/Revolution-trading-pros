@@ -317,14 +317,14 @@
 		border-radius: 50%;
 	}
 
-	.trigger-icon {
+	:global(.trigger-icon) {
 		width: 20px;
 		height: 20px;
 		color: #64748b;
 		transition: transform 0.2s;
 	}
 
-	.trigger-icon.rotated {
+	:global(.trigger-icon.rotated) {
 		transform: rotate(180deg);
 	}
 
@@ -432,7 +432,7 @@
 		border-color: #475569;
 	}
 
-	.group-checkbox svg {
+	.group-checkbox :global(svg) {
 		width: 12px;
 		height: 12px;
 		color: white;
@@ -494,7 +494,7 @@
 		border-color: #0984ae;
 	}
 
-	.room-checkbox svg {
+	.room-checkbox :global(svg) {
 		width: 12px;
 		height: 12px;
 		color: white;

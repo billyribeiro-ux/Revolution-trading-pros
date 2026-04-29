@@ -593,7 +593,7 @@
 		padding: 1.5rem;
 	}
 
-	.upload-icon {
+	:global(.upload-icon) {
 		width: 48px;
 		height: 48px;
 		color: #64748b;
@@ -617,7 +617,7 @@
 		text-align: left;
 	}
 
-	.file-icon {
+	:global(.file-icon) {
 		width: 40px;
 		height: 40px;
 		color: #22c55e;
@@ -662,8 +662,8 @@
 		background: rgba(239, 68, 68, 0.3);
 	}
 
-	.remove-file svg,
-	.remove-thumbnail svg {
+	.remove-file :global(svg),
+	.remove-thumbnail :global(svg) {
 		width: 16px;
 		height: 16px;
 	}
@@ -697,7 +697,7 @@
 		border-color: #22c55e;
 	}
 
-	.thumbnail-drop svg {
+	.thumbnail-drop :global(svg) {
 		width: 24px;
 		height: 24px;
 		color: #64748b;
@@ -902,7 +902,7 @@
 		justify-content: center;
 	}
 
-	.success-icon svg {
+	.success-icon :global(svg) {
 		width: 40px;
 		height: 40px;
 		color: #22c55e;

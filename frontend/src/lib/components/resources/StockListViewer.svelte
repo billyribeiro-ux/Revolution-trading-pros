@@ -11,6 +11,7 @@
 -->
 <script lang="ts">
 	import type { StockList, StockSymbol } from '$lib/api/room-resources';
+	import Icon from '$lib/components/Icon.svelte';
 
 	interface Props {
 		stockList: StockList;
@@ -208,19 +209,7 @@
 						placeholder="Search symbols, names, or sectors..."
 						class="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-4 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white lg:max-w-md"
 					/>
-					<svg
-						class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
-						fill="none"
-						stroke="currentColor"
-						viewBox="0 0 24 24"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-						/>
-					</svg>
+					<Icon name="IconSearch" size={16} class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
 				</div>
 			{/if}
 		</div>
@@ -238,19 +227,7 @@
 						>
 							Symbol
 							{#if sortColumn === 'symbol'}
-								<svg
-									class="h-4 w-4 {sortDirection === 'desc' ? 'rotate-180' : ''}"
-									fill="none"
-									stroke="currentColor"
-									viewBox="0 0 24 24"
-								>
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M5 15l7-7 7 7"
-									/>
-								</svg>
+								<Icon name="IconChevronUp" size={16} class={sortDirection === 'desc' ? 'rotate-180' : ''} />
 							{/if}
 						</button>
 					</th>
@@ -261,19 +238,7 @@
 						>
 							Name
 							{#if sortColumn === 'name'}
-								<svg
-									class="h-4 w-4 {sortDirection === 'desc' ? 'rotate-180' : ''}"
-									fill="none"
-									stroke="currentColor"
-									viewBox="0 0 24 24"
-								>
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M5 15l7-7 7 7"
-									/>
-								</svg>
+								<Icon name="IconChevronUp" size={16} class={sortDirection === 'desc' ? 'rotate-180' : ''} />
 							{/if}
 						</button>
 					</th>

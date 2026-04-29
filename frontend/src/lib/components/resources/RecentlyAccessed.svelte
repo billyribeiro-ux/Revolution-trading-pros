@@ -11,6 +11,7 @@
 <script lang="ts">
 	import type { RecentlyAccessed } from '$lib/api/room-resources';
 	import { getRecentlyAccessed } from '$lib/api/room-resources';
+	import Icon from '$lib/components/Icon.svelte';
 
 	interface Props {
 		limit?: number;
@@ -57,23 +58,6 @@
 
 	function handleItemClick(item: RecentlyAccessed) {
 		onSelect?.(item);
-	}
-
-	function getResourceIcon(type: string): string {
-		switch (type) {
-			case 'video':
-				return 'M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z';
-			case 'pdf':
-				return 'M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z';
-			case 'image':
-				return 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z';
-			case 'document':
-				return 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z';
-			case 'spreadsheet':
-				return 'M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z';
-			default:
-				return 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z';
-		}
 	}
 
 	function formatTimeAgo(dateString: string): string {
@@ -133,19 +117,7 @@
 		<div
 			class="rounded-lg border border-gray-200 bg-gray-50 p-6 text-center dark:border-gray-700 dark:bg-gray-800"
 		>
-			<svg
-				class="mx-auto h-10 w-10 text-gray-400"
-				fill="none"
-				stroke="currentColor"
-				viewBox="0 0 24 24"
-			>
-				<path
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					stroke-width="2"
-					d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-				/>
-			</svg>
+			<Icon name="IconClock" size={40} class="mx-auto text-gray-400" />
 			<p class="mt-2 text-sm text-gray-500 dark:text-gray-400">No recently accessed resources</p>
 			<p class="text-xs text-gray-400 dark:text-gray-500">Resources you view will appear here</p>
 		</div>
@@ -175,19 +147,17 @@
 							<div
 								class="flex h-full w-full items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800"
 							>
-								<svg
-									class="h-8 w-8 text-gray-400"
-									fill="none"
-									stroke="currentColor"
-									viewBox="0 0 24 24"
-								>
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d={getResourceIcon(item.resource_type)}
-									/>
-								</svg>
+								{#if item.resource_type === 'video'}
+									<Icon name="IconVideo" size={32} class="text-gray-400" />
+								{:else if item.resource_type === 'pdf'}
+									<Icon name="IconPdf" size={32} class="text-gray-400" />
+								{:else if item.resource_type === 'image'}
+									<Icon name="IconPhoto" size={32} class="text-gray-400" />
+								{:else if item.resource_type === 'spreadsheet'}
+									<Icon name="IconFileSpreadsheet" size={32} class="text-gray-400" />
+								{:else}
+									<Icon name="IconFileDescription" size={32} class="text-gray-400" />
+								{/if}
 							</div>
 						{/if}
 

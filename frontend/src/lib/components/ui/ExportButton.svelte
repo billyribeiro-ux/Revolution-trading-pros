@@ -9,6 +9,7 @@
 	 */
 	import { fly } from 'svelte/transition';
 	import { IconDownload, IconCsv, IconPdf, IconJson } from '$lib/icons';
+	import Icon from '$lib/components/Icon.svelte';
 	import {
 		exportToCSV,
 		exportToPDF,
@@ -107,15 +108,7 @@
 		{#if data.length > 0}
 			<span class="text-slate-500">({data.length})</span>
 		{/if}
-		<svg
-			class="w-4 h-4 transition-transform duration-200"
-			class:rotate-180={isOpen}
-			fill="none"
-			stroke="currentColor"
-			viewBox="0 0 24 24"
-		>
-			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-		</svg>
+		<Icon name="IconChevronDown" size={16} class="transition-transform duration-200 {isOpen ? 'rotate-180' : ''}" />
 	</button>
 
 	{#if isOpen}

@@ -13,6 +13,7 @@
 <script lang="ts">
 	import type { RoomResource } from '$lib/api/room-resources';
 	import { trackDownload } from '$lib/api/room-resources';
+	import Icon from '$lib/components/Icon.svelte';
 
 	interface Props {
 		resource: RoomResource;
@@ -203,61 +204,13 @@
 					class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/30"
 				>
 					{#if isVideo}
-						<svg
-							class="h-5 w-5 text-blue-600 dark:text-blue-400"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
-							/>
-						</svg>
+						<Icon name="IconVideo" size={20} class="text-blue-600 dark:text-blue-400" />
 					{:else if isPdf}
-						<svg
-							class="h-5 w-5 text-red-600 dark:text-red-400"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-							/>
-						</svg>
+						<Icon name="IconPdf" size={20} class="text-red-600 dark:text-red-400" />
 					{:else if isImage}
-						<svg
-							class="h-5 w-5 text-green-600 dark:text-green-400"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-							/>
-						</svg>
+						<Icon name="IconPhoto" size={20} class="text-green-600 dark:text-green-400" />
 					{:else}
-						<svg
-							class="h-5 w-5 text-gray-600 dark:text-gray-400"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-							/>
-						</svg>
+						<Icon name="IconFileText" size={20} class="text-gray-600 dark:text-gray-400" />
 					{/if}
 				</div>
 
@@ -296,31 +249,10 @@
 					disabled={downloading}
 				>
 					{#if downloading}
-						<svg aria-hidden="true" class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-							<circle
-								class="opacity-25"
-								cx="12"
-								cy="12"
-								r="10"
-								stroke="currentColor"
-								stroke-width="4"
-							></circle>
-							<path
-								class="opacity-75"
-								fill="currentColor"
-								d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-							></path>
-						</svg>
+						<Icon name="IconLoader2" size={16} class="animate-spin" />
 						Downloading...
 					{:else}
-						<svg aria-hidden="true" class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-							/>
-						</svg>
+						<Icon name="IconDownload" size={16} />
 						Download
 					{/if}
 				</button>
@@ -331,14 +263,7 @@
 					onclick={handleClose}
 					aria-label="Close"
 				>
-					<svg aria-hidden="true" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M6 18L18 6M6 6l12 12"
-						/>
-					</svg>
+					<Icon name="IconX" size={20} />
 				</button>
 			</div>
 		</header>
@@ -402,14 +327,7 @@
 								disabled={imageZoom <= 0.5}
 								aria-label="Zoom out"
 							>
-								<svg aria-hidden="true" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M20 12H4"
-									/>
-								</svg>
+								<Icon name="IconMinus" size={20} />
 							</button>
 							<span class="min-w-[3rem] text-center text-sm text-white"
 								>{Math.round(imageZoom * 100)}%</span
@@ -420,28 +338,14 @@
 								disabled={imageZoom >= 3}
 								aria-label="Zoom in"
 							>
-								<svg aria-hidden="true" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M12 4v16m8-8H4"
-									/>
-								</svg>
+								<Icon name="IconPlus" size={20} />
 							</button>
 							<button
 								class="rounded p-1 text-white hover:bg-white/20"
 								onclick={resetZoom}
 								aria-label="Reset zoom"
 							>
-								<svg aria-hidden="true" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-									/>
-								</svg>
+								<Icon name="IconRefresh" size={20} />
 							</button>
 						</div>
 					</div>
@@ -451,19 +355,7 @@
 						<div
 							class="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700"
 						>
-							<svg
-								class="h-12 w-12 text-gray-400"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-							>
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-								/>
-							</svg>
+							<Icon name="IconFileText" size={48} class="text-gray-400" />
 						</div>
 						<h3 class="mb-2 text-xl font-semibold text-gray-900 dark:text-white">
 							Preview not available

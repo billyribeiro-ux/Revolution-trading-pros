@@ -437,8 +437,8 @@
 		min-height: 300px;
 	}
 
-	.empty-player svg,
-	.no-video-placeholder svg {
+	.empty-player :global(svg),
+	.no-video-placeholder :global(svg) {
 		color: #444;
 	}
 
@@ -526,12 +526,12 @@
 		color: #888;
 	}
 
-	.chevron {
+	:global(.chevron) {
 		color: #666;
 		transition: transform 0.2s ease;
 	}
 
-	.chevron.expanded {
+	:global(.chevron.expanded) {
 		transform: rotate(180deg);
 	}
 
@@ -616,12 +616,12 @@
 		text-transform: uppercase;
 	}
 
-	.play-icon {
+	:global(.play-icon) {
 		color: #999;
 		flex-shrink: 0;
 	}
 
-	.lesson-item.active .play-icon {
+	.lesson-item.active :global(.play-icon) {
 		color: #1976d2;
 	}
 
@@ -730,7 +730,7 @@
 		font-size: 0.7rem;
 	}
 
-	.play-icon {
+	:global(.play-icon) {
 		width: 14px;
 		height: 14px;
 	}
@@ -849,7 +849,7 @@
 			font-size: 0.75rem;
 		}
 
-		.play-icon {
+		:global(.play-icon) {
 			width: 16px;
 			height: 16px;
 		}
@@ -909,7 +909,7 @@
 
 		.module-header,
 		.lesson-item,
-		.chevron {
+		:global(.chevron) {
 			transition: none;
 		}
 	}

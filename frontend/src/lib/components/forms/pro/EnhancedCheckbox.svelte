@@ -45,6 +45,8 @@
 		onchange
 	}: Props = $props();
 
+	import Icon from '$lib/components/Icon.svelte';
+
 	let selectedValues = $state<string[]>([]);
 	let otherChecked = $state(false);
 	let otherText = $state('');
@@ -126,16 +128,7 @@
 						handleCheckboxChange(option.value, (e.target as HTMLInputElement).checked)}
 				/>
 				<span class="checkbox-custom">
-					<svg
-						width="12"
-						height="12"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="3"
-					>
-						<polyline points="20 6 9 17 4 12"></polyline>
-					</svg>
+					<Icon name="IconCheck" size={12} stroke={3} />
 				</span>
 				<span class="checkbox-label">{option.label}</span>
 			</label>
@@ -154,16 +147,7 @@
 					onchange={(e: Event) => handleOtherChange((e.target as HTMLInputElement).checked)}
 				/>
 				<span class="checkbox-custom">
-					<svg
-						width="12"
-						height="12"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="3"
-					>
-						<polyline points="20 6 9 17 4 12"></polyline>
-					</svg>
+					<Icon name="IconCheck" size={12} stroke={3} />
 				</span>
 				<span class="checkbox-label">{otherLabel}</span>
 			</label>
@@ -206,18 +190,7 @@
 
 	{#if error}
 		<div class="error-message">
-			<svg
-				width="14"
-				height="14"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-			>
-				<circle cx="12" cy="12" r="10"></circle>
-				<line x1="12" y1="8" x2="12" y2="12"></line>
-				<line x1="12" y1="16" x2="12.01" y2="16"></line>
-			</svg>
+			<Icon name="IconAlertCircle" size={14} />
 			{error}
 		</div>
 	{/if}
@@ -281,7 +254,7 @@
 		flex-shrink: 0;
 	}
 
-	.checkbox-custom svg {
+	.checkbox-custom :global(svg) {
 		opacity: 0;
 		color: white;
 		transition: opacity 0.15s ease;
@@ -292,7 +265,7 @@
 		border-color: #3b82f6;
 	}
 
-	.checkbox-option input:checked + .checkbox-custom svg {
+	.checkbox-option input:checked + .checkbox-custom :global(svg) {
 		opacity: 1;
 	}
 

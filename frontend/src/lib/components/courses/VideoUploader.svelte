@@ -6,6 +6,7 @@
 	 */
 
 	import { onMount } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	import { browser } from '$app/environment';
 
 	// Dynamic import for tus-js-client to avoid SSR issues
@@ -204,35 +205,13 @@
 			{#if !file}
 				<input type="file" accept="video/*" onchange={handleFileSelect} id="video-input" />
 				<label for="video-input">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="48"
-						height="48"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="1.5"
-					>
-						<path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5" />
-						<rect x="2" y="6" width="14" height="12" rx="2" />
-					</svg>
+					<Icon name="IconVideo" size={48} stroke={1.5} />
 					<span class="label">Drop video here or click to browse</span>
 					<span class="hint">MP4, MOV, WebM up to 10GB</span>
 				</label>
 			{:else}
 				<div class="file-info">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="32"
-						height="32"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5" />
-						<rect x="2" y="6" width="14" height="12" rx="2" />
-					</svg>
+					<Icon name="IconVideo" size={32} />
 					<div class="file-details">
 						<span class="file-name">{file.name}</span>
 						<span class="file-size">{formatSize(file.size)}</span>
@@ -245,33 +224,11 @@
 						}}
 						aria-label="Remove file"
 					>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="20"
-							height="20"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-						>
-							<line x1="18" x2="6" y1="6" y2="18" /><line x1="6" x2="18" y1="6" y2="18" />
-						</svg>
+						<Icon name="IconX" size={20} />
 					</button>
 				</div>
 				<button class="btn-upload" onclick={startUpload} disabled={!tus}>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="20"
-						height="20"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline
-							points="17 8 12 3 7 8"
-						/><line x1="12" x2="12" y1="3" y2="15" />
-					</svg>
+					<Icon name="IconUpload" size={20} />
 					{tus ? 'Upload Video' : 'Loading...'}
 				</button>
 			{/if}
@@ -308,17 +265,7 @@
 		</div>
 	{:else if status === 'complete'}
 		<div class="status-panel complete">
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				width="48"
-				height="48"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-			>
-				<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
-			</svg>
+			<Icon name="IconCircleCheck" size={48} />
 			<p>Video uploaded successfully!</p>
 			<button
 				class="btn-new"
@@ -371,7 +318,7 @@
 		color: #6b7280;
 	}
 
-	.upload-zone label svg {
+	.upload-zone label :global(svg) {
 		color: #9ca3af;
 	}
 	.upload-zone label .label {
@@ -394,7 +341,7 @@
 		margin-bottom: 16px;
 	}
 
-	.file-info svg {
+	.file-info :global(svg) {
 		color: #143e59;
 		flex-shrink: 0;
 	}
@@ -487,7 +434,7 @@
 		font-size: 13px;
 		color: #9ca3af;
 	}
-	.status-panel.complete svg {
+	.status-panel.complete :global(svg) {
 		color: #10b981;
 		margin-bottom: 16px;
 	}

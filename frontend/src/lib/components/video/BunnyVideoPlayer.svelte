@@ -22,6 +22,7 @@
 	import { browser } from '$app/environment';
 	import { fade } from 'svelte/transition';
 	import { decodeBlurhash, DEFAULT_BLURHASHES } from '$lib/utils/blurhash';
+	import Icon from '$lib/components/Icon.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════
 	// PROPS
@@ -378,9 +379,7 @@
 					onclick={handlePlayClick}
 					aria-label="Play video: {title}"
 				>
-					<svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" width="64" height="64">
-						<path d="M8 5v14l11-7z" />
-					</svg>
+					<Icon name="IconPlayerPlay" size={64} />
 				</button>
 			</div>
 		{/if}
@@ -500,7 +499,7 @@
 		touch-action: manipulation;
 	}
 
-	.bunny-player__play-btn svg {
+	.bunny-player__play-btn :global(svg) {
 		width: 32px;
 		height: 32px;
 		margin-left: 3px; /* Visual centering for play icon */
@@ -556,7 +555,7 @@
 			height: 60px;
 		}
 
-		.bunny-player__play-btn svg {
+		.bunny-player__play-btn :global(svg) {
 			width: 36px;
 			height: 36px;
 		}
@@ -573,7 +572,7 @@
 			height: 72px;
 		}
 
-		.bunny-player__play-btn svg {
+		.bunny-player__play-btn :global(svg) {
 			width: 44px;
 			height: 44px;
 			margin-left: 4px;
@@ -602,7 +601,7 @@
 			height: 80px;
 		}
 
-		.bunny-player__play-btn svg {
+		.bunny-player__play-btn :global(svg) {
 			width: 52px;
 			height: 52px;
 		}
@@ -619,7 +618,7 @@
 			height: 88px;
 		}
 
-		.bunny-player__play-btn svg {
+		.bunny-player__play-btn :global(svg) {
 			width: 56px;
 			height: 56px;
 		}

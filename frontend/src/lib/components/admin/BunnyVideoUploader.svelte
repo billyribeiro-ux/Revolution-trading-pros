@@ -368,7 +368,7 @@
 		margin-bottom: 0.5rem;
 	}
 
-	.upload-icon svg {
+	.upload-icon :global(svg) {
 		width: 100%;
 		height: 100%;
 	}
@@ -412,7 +412,7 @@
 		flex-shrink: 0;
 	}
 
-	.file-icon svg {
+	.file-icon :global(svg) {
 		width: 100%;
 		height: 100%;
 	}
@@ -454,7 +454,7 @@
 		background: rgba(239, 68, 68, 0.3);
 	}
 
-	.btn-remove svg {
+	.btn-remove :global(svg) {
 		width: 16px;
 		height: 16px;
 	}
@@ -529,7 +529,7 @@
 		box-shadow: 0 4px 12px rgba(230, 184, 0, 0.4);
 	}
 
-	.btn-upload svg {
+	.btn-upload :global(svg) {
 		width: 20px;
 		height: 20px;
 	}
@@ -550,7 +550,7 @@
 		justify-content: center;
 	}
 
-	.success-icon svg {
+	.success-icon :global(svg) {
 		width: 32px;
 		height: 32px;
 		color: #22c55e;
@@ -588,7 +588,7 @@
 		font-size: 0.875rem;
 	}
 
-	.error-message svg {
+	.error-message :global(svg) {
 		width: 18px;
 		height: 18px;
 		flex-shrink: 0;

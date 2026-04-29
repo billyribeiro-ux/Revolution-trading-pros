@@ -36,6 +36,8 @@
 		oncreate?: (name: string) => Promise<TaxonomyTerm>;
 	}
 
+	import Icon from '$lib/components/Icon.svelte';
+
 	let {
 		name,
 		taxonomy = 'category',
@@ -197,9 +199,7 @@
 
 	{#if loading}
 		<div class="loading-state">
-			<svg aria-hidden="true" class="spinner" viewBox="0 0 24 24">
-				<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" />
-			</svg>
+			<Icon name="IconLoader2" size={18} class="spinner" />
 			<span>Loading {taxonomy}...</span>
 		</div>
 	{:else if multiple}
@@ -375,16 +375,8 @@
 		color: #6b7280;
 	}
 
-	.spinner {
-		width: 18px;
-		height: 18px;
+	:global(.spinner) {
 		animation: spin 1s linear infinite;
-	}
-
-	.spinner circle {
-		stroke-dasharray: 60;
-		stroke-dashoffset: 45;
-		stroke-linecap: round;
 	}
 
 	@keyframes spin {

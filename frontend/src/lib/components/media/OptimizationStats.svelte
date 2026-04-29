@@ -14,6 +14,7 @@
 	import { fade, slide } from 'svelte/transition';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
+	import Icon from '$lib/components/Icon.svelte';
 
 	interface Stats {
 		originalSize: number;
@@ -81,14 +82,7 @@
 	<!-- Compact inline version -->
 	<div class="inline-flex items-center gap-2 text-sm {className}" transition:fade>
 		<span class="text-gray-400 line-through">{formatBytes(stats.originalSize)}</span>
-		<svg aria-hidden="true" class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-			<path
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				stroke-width="2"
-				d="M13 7l5 5m0 0l-5 5m5-5H6"
-			/>
-		</svg>
+		<Icon name="IconArrowRight" size={16} class="text-gray-400" />
 		<span class="font-medium text-gray-700 dark:text-gray-300"
 			>{formatBytes(stats.optimizedSize)}</span
 		>
@@ -111,14 +105,7 @@
 			class="flex items-center gap-3 p-4 bg-green-100/50 dark:bg-green-900/30 border-b border-green-200 dark:border-green-800"
 		>
 			<div class="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center">
-				<svg aria-hidden="true" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M5 13l4 4L19 7"
-					/>
-				</svg>
+				<Icon name="IconCheck" size={24} />
 			</div>
 			<div>
 				<h3 class="text-lg font-semibold text-green-800 dark:text-green-200">
@@ -181,14 +168,7 @@
 					{/if}
 				</div>
 				<div class="py-1">
-					<svg aria-hidden="true" class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M19 14l-7 7m0 0l-7-7m7 7V3"
-						/>
-					</svg>
+					<Icon name="IconArrowDown" size={20} class="text-green-500" />
 				</div>
 				<div class="flex items-center gap-2">
 					<span class="text-xs text-gray-500 dark:text-gray-400 w-16">Optimized</span>
@@ -211,43 +191,17 @@
 				class="flex items-center justify-center gap-6 px-4 py-3 border-t border-green-200 dark:border-green-800 text-xs text-gray-600 dark:text-gray-400"
 			>
 				<div class="flex items-center gap-1.5">
-					<svg aria-hidden="true" class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-						/>
-					</svg>
+					<Icon name="IconShieldCheck" size={16} class="text-gray-400" />
 					<span>Lossless quality</span>
 				</div>
 				{#if stats.variantsCount && stats.variantsCount > 0}
 					<div class="flex items-center gap-1.5">
-						<svg
-							class="w-4 h-4 text-gray-400"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"
-							/>
-						</svg>
+						<Icon name="IconLayoutGrid" size={16} class="text-gray-400" />
 						<span>{stats.variantsCount} responsive sizes</span>
 					</div>
 				{/if}
 				<div class="flex items-center gap-1.5">
-					<svg aria-hidden="true" class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M13 10V3L4 14h7v7l9-11h-7z"
-						/>
-					</svg>
+					<Icon name="IconBolt" size={16} class="text-gray-400" />
 					<span>CDN-ready</span>
 				</div>
 			</div>

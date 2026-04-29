@@ -9,7 +9,7 @@
 -->
 
 <script lang="ts">
-	import { IconVideo } from '$lib/icons';
+	import { IconVideo, IconLink, IconPlayerPlay, IconAlertCircle, IconX } from '$lib/icons';
 	import { sanitizeURL } from '$lib/utils/sanitization';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
@@ -310,19 +310,7 @@
 					onclick={clearVideo}
 					aria-label="Remove video"
 				>
-					<svg
-						width="16"
-						height="16"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-					>
-						<line x1="18" y1="6" x2="6" y2="18"></line>
-						<line x1="6" y1="6" x2="18" y2="18"></line>
-					</svg>
+					<IconX size={16} />
 				</button>
 			{/if}
 		</div>
@@ -354,20 +342,7 @@
 			<span class="video-placeholder-subtitle"> Paste a YouTube, Vimeo, or direct video URL </span>
 
 			<div class="video-url-input-wrapper">
-				<svg
-					class="video-url-icon"
-					width="18"
-					height="18"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-				>
-					<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-					<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-				</svg>
+				<IconLink size={18} class="video-url-icon" />
 				<input
 					type="url"
 					placeholder="https://www.youtube.com/watch?v=..."
@@ -384,37 +359,13 @@
 					disabled={!urlInputValue.trim()}
 					aria-label="Add video"
 				>
-					<svg
-						width="18"
-						height="18"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-					>
-						<polygon points="5 3 19 12 5 21 5 3"></polygon>
-					</svg>
+					<IconPlayerPlay size={18} />
 				</button>
 			</div>
 
 			{#if hasError}
 				<div class="video-input-error" role="alert">
-					<svg
-						width="16"
-						height="16"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-					>
-						<circle cx="12" cy="12" r="10"></circle>
-						<line x1="12" y1="8" x2="12" y2="12"></line>
-						<line x1="12" y1="16" x2="12.01" y2="16"></line>
-					</svg>
+					<IconAlertCircle size={16} />
 					<span>{errorMessage}</span>
 				</div>
 			{/if}
@@ -645,7 +596,7 @@
 		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 	}
 
-	.video-url-icon {
+	:global(.video-url-icon) {
 		color: #94a3b8;
 		flex-shrink: 0;
 	}
@@ -822,7 +773,7 @@
 		color: #64748b;
 	}
 
-	:global(.dark) .video-url-icon {
+	:global(.dark) :global(.video-url-icon) {
 		color: #64748b;
 	}
 

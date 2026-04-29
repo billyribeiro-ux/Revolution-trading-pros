@@ -54,6 +54,8 @@
 		onerror
 	}: Props = $props();
 
+	import Icon from '$lib/components/Icon.svelte';
+
 	let loading = $state(false);
 	let paymentError = $state('');
 
@@ -150,9 +152,7 @@
 
 	<button type="button" class="pay-button" onclick={handlePayment} disabled={disabled || loading}>
 		{#if loading}
-			<svg aria-hidden="true" class="button-spinner" viewBox="0 0 24 24">
-				<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" />
-			</svg>
+			<Icon name="IconLoader" size={20} class="button-spinner" />
 			Loading...
 		{:else}
 			{label}
@@ -175,10 +175,7 @@
 	</div>
 
 	<div class="secure-badge">
-		<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-			<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-			<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-		</svg>
+		<Icon name="IconLock" size={14} />
 		<span>Secured by Paystack</span>
 	</div>
 
@@ -250,16 +247,8 @@
 		cursor: not-allowed;
 	}
 
-	.button-spinner {
-		width: 20px;
-		height: 20px;
+	:global(.button-spinner) {
 		animation: spin 1s linear infinite;
-	}
-
-	.button-spinner circle {
-		stroke-dasharray: 60;
-		stroke-dashoffset: 45;
-		stroke-linecap: round;
 	}
 
 	@keyframes spin {
@@ -295,7 +284,7 @@
 		color: #6b7280;
 	}
 
-	.secure-badge svg {
+	.secure-badge :global(svg) {
 		width: 14px;
 		height: 14px;
 	}

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { FormField } from '$lib/api/forms';
+	import Icon from '$lib/components/Icon.svelte';
 
 	interface Country {
 		code: string;
@@ -172,16 +173,7 @@
 			<button type="button" class="country-button" onclick={toggleDropdown}>
 				<span class="country-flag">{selectedCountry.flag}</span>
 				<span class="dial-code">{selectedCountry.dialCode}</span>
-				<svg
-					width="12"
-					height="12"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-				>
-					<polyline points="6 9 12 15 18 9"></polyline>
-				</svg>
+				<Icon name="IconChevronDown" size={12} />
 			</button>
 
 			{#if showDropdown}

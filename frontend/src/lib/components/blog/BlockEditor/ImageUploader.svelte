@@ -809,7 +809,7 @@
 		color: #3b82f6;
 	}
 
-	.drop-icon {
+	:global(.drop-icon) {
 		width: 48px;
 		height: 48px;
 		animation: bounce 0.5s infinite alternate;
@@ -828,13 +828,13 @@
 		gap: 1rem;
 	}
 
-	.upload-icon {
+	:global(.upload-icon) {
 		width: 48px;
 		height: 48px;
 		color: #64748b;
 	}
 
-	.compact .upload-icon {
+	.compact :global(.upload-icon) {
 		width: 32px;
 		height: 32px;
 	}
@@ -930,7 +930,7 @@
 		object-fit: cover;
 	}
 
-	.item-preview svg {
+	.item-preview :global(svg) {
 		width: 24px;
 		height: 24px;
 		color: #64748b;
@@ -1038,12 +1038,12 @@
 		justify-content: center;
 	}
 
-	.status-icon {
+	:global(.status-icon) {
 		width: 20px;
 		height: 20px;
 	}
 
-	.status-icon.success {
+	:global(.status-icon.success) {
 		color: #22c55e;
 	}
 
@@ -1066,7 +1066,7 @@
 		transform: rotate(-30deg);
 	}
 
-	.retry-btn svg {
+	.retry-btn :global(svg) {
 		width: 18px;
 		height: 18px;
 	}
@@ -1092,7 +1092,7 @@
 		color: #ef4444;
 	}
 
-	.remove-btn svg {
+	.remove-btn :global(svg) {
 		width: 16px;
 		height: 16px;
 	}
@@ -1181,14 +1181,14 @@
 		border-color: rgba(59, 130, 246, 0.3);
 	}
 
-	.library-btn svg,
-	.recent-btn svg {
+	.library-btn :global(svg),
+	.recent-btn :global(svg) {
 		width: 16px;
 		height: 16px;
 		flex-shrink: 0;
 	}
 
-	.recent-btn .chevron {
+	.recent-btn :global(.chevron) {
 		width: 14px;
 		height: 14px;
 		margin-left: auto;

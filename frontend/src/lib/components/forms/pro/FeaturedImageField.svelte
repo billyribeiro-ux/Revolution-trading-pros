@@ -35,6 +35,8 @@
 		onupload
 	}: Props = $props();
 
+	import Icon from '$lib/components/Icon.svelte';
+
 	let imageUrl = $state('');
 	let imageId = $state('');
 	let isDragging = $state(false);
@@ -179,23 +181,11 @@
 		>
 			{#if uploading}
 				<div class="upload-progress">
-					<svg aria-hidden="true" class="spinner" viewBox="0 0 24 24">
-						<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" />
-					</svg>
+					<Icon name="IconLoader" size={32} class="spinner" />
 					<span>Uploading...</span>
 				</div>
 			{:else}
-				<svg
-					class="upload-icon"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-				>
-					<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-					<circle cx="8.5" cy="8.5" r="1.5"></circle>
-					<polyline points="21 15 16 10 5 21"></polyline>
-				</svg>
+				<Icon name="IconPhoto" size={48} class="upload-icon" />
 				<p class="dropzone-text">
 					<span class="dropzone-link">Click to upload</span> or drag and drop
 				</p>
@@ -298,9 +288,7 @@
 		min-height: 200px;
 	}
 
-	.upload-icon {
-		width: 48px;
-		height: 48px;
+	:global(.upload-icon) {
 		color: #9ca3af;
 		margin-bottom: 0.75rem;
 	}
@@ -330,16 +318,8 @@
 		color: #3b82f6;
 	}
 
-	.spinner {
-		width: 32px;
-		height: 32px;
+	:global(.spinner) {
 		animation: spin 1s linear infinite;
-	}
-
-	.spinner circle {
-		stroke-dasharray: 60;
-		stroke-dashoffset: 45;
-		stroke-linecap: round;
 	}
 
 	@keyframes spin {

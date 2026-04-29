@@ -12,6 +12,7 @@
 -->
 <script lang="ts">
 	import type { Alert } from './types';
+	import Icon from '$lib/components/Icon.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PROPS - Svelte 5 $props() pattern
@@ -66,35 +67,11 @@
 		<div class="alert-info">
 			<!-- Directional Arrow Icon -->
 			{#if alert.type === 'ENTRY'}
-				<svg
-					class="direction-icon direction-up"
-					viewBox="0 0 24 24"
-					fill="currentColor"
-					width="20"
-					height="20"
-				>
-					<path d="M7 14l5-5 5 5H7z" />
-				</svg>
+				<Icon name="IconArrowUp" size={20} class="direction-icon direction-up" />
 			{:else if alert.type === 'EXIT'}
-				<svg
-					class="direction-icon direction-down"
-					viewBox="0 0 24 24"
-					fill="currentColor"
-					width="20"
-					height="20"
-				>
-					<path d="M7 10l5 5 5-5H7z" />
-				</svg>
+				<Icon name="IconArrowDown" size={20} class="direction-icon direction-down" />
 			{:else}
-				<svg
-					class="direction-icon direction-neutral"
-					viewBox="0 0 24 24"
-					fill="currentColor"
-					width="20"
-					height="20"
-				>
-					<circle cx="12" cy="12" r="4" />
-				</svg>
+				<Icon name="IconMinus" size={20} class="direction-icon direction-neutral" />
 			{/if}
 			<span class="alert-type alert-type--{alert.type.toLowerCase()}">{alert.type}</span>
 			<span class="alert-ticker">{alert.ticker}</span>
@@ -120,29 +97,10 @@
 			aria-label="Copy trade details"
 		>
 			{#if isCopied}
-				<svg
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2.5"
-					width="16"
-					height="16"
-				>
-					<path d="M20 6L9 17l-5-5" />
-				</svg>
+				<Icon name="IconCheck" size={16} stroke={2.5} />
 				<span>Copied!</span>
 			{:else}
-				<svg
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-					width="16"
-					height="16"
-				>
-					<rect x="9" y="9" width="13" height="13" rx="2" />
-					<path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-				</svg>
+				<Icon name="IconCopy" size={16} />
 				<span>Copy</span>
 			{/if}
 		</button>
@@ -154,17 +112,7 @@
 			aria-expanded={isNotesExpanded}
 		>
 			<span class="notes-label">Notes</span>
-			<svg
-				class="chevron-icon"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2.5"
-				width="18"
-				height="18"
-			>
-				<path d="M19 9l-7 7-7-7" />
-			</svg>
+			<Icon name="IconChevronDown" size={18} stroke={2.5} class="chevron-icon" />
 		</button>
 	</div>
 
@@ -177,17 +125,7 @@
 				onclick={() => navigator.clipboard.writeText(alert.tosString || '')}
 				aria-label="Copy TOS string"
 			>
-				<svg
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-					width="14"
-					height="14"
-				>
-					<rect x="9" y="9" width="13" height="13" rx="2" />
-					<path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-				</svg>
+				<Icon name="IconCopy" size={14} />
 			</button>
 		</div>
 	{/if}
@@ -450,7 +388,7 @@
 		transition: transform 0.3s ease;
 	}
 
-	.notes-chevron.expanded .chevron-icon {
+	.notes-chevron.expanded :global(.chevron-icon) {
 		transform: rotate(180deg);
 	}
 

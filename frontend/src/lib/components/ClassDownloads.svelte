@@ -530,7 +530,7 @@
 		gap: 12px;
 	}
 
-	.empty-state-content svg {
+	.empty-state-content :global(svg) {
 		color: #c1c1c1;
 		margin-bottom: 8px;
 	}
@@ -651,7 +651,7 @@
 		height: 44px;
 	}
 
-	.download-btn svg {
+	.download-btn :global(svg) {
 		width: 1.125rem;
 		height: 1.125rem;
 	}
@@ -661,7 +661,7 @@
 		padding: 2.5rem 1rem;
 	}
 
-	.empty-state-content svg {
+	.empty-state-content :global(svg) {
 		width: 2.5rem;
 		height: 2.5rem;
 	}
@@ -727,7 +727,7 @@
 			padding: 3rem 1.5rem;
 		}
 
-		.empty-state-content svg {
+		.empty-state-content :global(svg) {
 			width: 3rem;
 			height: 3rem;
 		}
@@ -795,7 +795,7 @@
 			padding: 3.75rem 1.5rem;
 		}
 
-		.empty-state-content svg {
+		.empty-state-content :global(svg) {
 			width: 3rem;
 			height: 3rem;
 		}

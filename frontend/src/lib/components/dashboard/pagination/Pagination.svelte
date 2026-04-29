@@ -31,6 +31,8 @@
 		itemLabel?: string;
 	}
 
+	import Icon from '$lib/components/Icon.svelte';
+
 	let props: Props = $props();
 
 	// Derived props with defaults
@@ -112,17 +114,7 @@
 			onkeydown={(e) => handleKeyDown(e, currentPage - 1)}
 			aria-label="Go to previous page"
 		>
-			<svg
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-				width="18"
-				height="18"
-				aria-hidden="true"
-			>
-				<path d="M15 19l-7-7 7-7" />
-			</svg>
+			<Icon name="IconChevronLeft" size={18} />
 			<span class="nav-text">Previous</span>
 		</button>
 
@@ -155,17 +147,7 @@
 			aria-label="Go to next page"
 		>
 			<span class="nav-text">Next</span>
-			<svg
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-				width="18"
-				height="18"
-				aria-hidden="true"
-			>
-				<path d="M9 5l7 7-7 7" />
-			</svg>
+			<Icon name="IconChevronRight" size={18} />
 		</button>
 	</div>
 

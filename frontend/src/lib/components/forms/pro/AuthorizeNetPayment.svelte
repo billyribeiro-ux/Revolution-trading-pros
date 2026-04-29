@@ -60,6 +60,8 @@
 		onError
 	}: Props = $props();
 
+	import Icon from '$lib/components/Icon.svelte';
+
 	let cardNumber = $state('');
 	let expirationMonth = $state('');
 	let expirationYear = $state('');
@@ -285,17 +287,7 @@
 
 	{#if paymentToken}
 		<div class="payment-success">
-			<svg
-				width="24"
-				height="24"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-			>
-				<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-				<polyline points="22 4 12 14.01 9 11.01"></polyline>
-			</svg>
+			<Icon name="IconCircleCheck" size={24} />
 			<div class="success-details">
 				<span class="success-title">Payment Method Saved</span>
 				<span class="card-details"
@@ -423,34 +415,13 @@
 
 	{#if validationError || error}
 		<div class="error-message">
-			<svg
-				width="14"
-				height="14"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-			>
-				<circle cx="12" cy="12" r="10"></circle>
-				<line x1="12" y1="8" x2="12" y2="12"></line>
-				<line x1="12" y1="16" x2="12.01" y2="16"></line>
-			</svg>
+			<Icon name="IconAlertCircle" size={14} />
 			{validationError || error}
 		</div>
 	{/if}
 
 	<div class="security-notice">
-		<svg
-			width="14"
-			height="14"
-			viewBox="0 0 24 24"
-			fill="none"
-			stroke="currentColor"
-			stroke-width="2"
-		>
-			<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-			<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-		</svg>
+		<Icon name="IconLock" size={14} />
 		<span>Your payment information is encrypted and secure</span>
 	</div>
 </div>

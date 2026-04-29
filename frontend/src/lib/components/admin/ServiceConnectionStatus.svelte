@@ -480,7 +480,7 @@
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 	}
 
-	.disconnect-icon {
+	:global(.disconnect-icon) {
 		width: 18px;
 		height: 18px;
 		color: #94a3b8;
@@ -594,8 +594,8 @@
 		transform: translateY(-1px);
 	}
 
-	.btn-icon,
-	.arrow-icon {
+	:global(.btn-icon),
+	:global(.arrow-icon) {
 		width: 20px;
 		height: 20px;
 	}
@@ -610,7 +610,7 @@
 		color: #64748b;
 	}
 
-	.lock-icon {
+	:global(.lock-icon) {
 		width: 14px;
 		height: 14px;
 	}
@@ -703,7 +703,7 @@
 		border-color: color-mix(in srgb, var(--btn-color, #f59e0b) 40%, transparent);
 	}
 
-	.banner-button svg {
+	.banner-button :global(svg) {
 		width: 16px;
 		height: 16px;
 	}
@@ -725,7 +725,7 @@
 		flex-shrink: 0;
 	}
 
-	.inline-icon svg {
+	.inline-icon :global(svg) {
 		width: 20px;
 		height: 20px;
 	}
@@ -757,7 +757,7 @@
 		border-color: rgba(245, 158, 11, 0.35);
 	}
 
-	.inline-button svg {
+	.inline-button :global(svg) {
 		width: 14px;
 		height: 14px;
 	}
@@ -823,7 +823,7 @@
 		color: var(--btn-color, #e6b800);
 	}
 
-	.plug-icon {
+	:global(.plug-icon) {
 		width: 16px;
 		height: 16px;
 	}

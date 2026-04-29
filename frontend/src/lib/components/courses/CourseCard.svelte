@@ -4,6 +4,8 @@
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
 	 */
 
+	import Icon from '$lib/components/Icon.svelte';
+
 	interface Course {
 		id: string;
 		title: string;
@@ -142,16 +144,7 @@
 			<div class="footer">
 				{#if props.course.avg_rating}
 					<div class="rating">
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="14"
-							height="14"
-							viewBox="0 0 24 24"
-							fill="currentColor"
-							><polygon
-								points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
-							/></svg
-						>
+						<Icon name="IconStarFilled" size={14} />
 						<span>{props.course.avg_rating.toFixed(1)}</span>
 						{#if props.course.review_count}<span class="count">({props.course.review_count})</span
 							>{/if}
@@ -317,7 +310,7 @@
 		font-weight: 500;
 	}
 
-	.rating svg {
+	.rating :global(svg) {
 		color: #fbbf24;
 	}
 
