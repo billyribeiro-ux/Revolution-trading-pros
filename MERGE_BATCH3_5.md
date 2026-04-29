@@ -4,6 +4,10 @@
 **Date:** 2026-04-28
 **Predecessor:** Batch 3 (`task7-verification-gaps`) which uncovered the defect.
 
+**Commit on the branch:** `24b2eecfd`
+**Merge commit on main:** `167d6a799`
+**Pushed to origin:** `091680a8f..167d6a799  main -> main`
+
 ---
 
 ## What this batch ships
