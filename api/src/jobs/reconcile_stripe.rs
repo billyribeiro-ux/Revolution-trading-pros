@@ -184,12 +184,12 @@ pub async fn run_once(state: &AppState) -> anyhow::Result<usize> {
                 // c. current_period_end drift (>60 s tolerance for clock skew)
                 let (_, stripe_end_ts) = stripe_sub.get_current_period();
                 if stripe_end_ts != 0 {
-                    let stripe_end = chrono::DateTime::from_timestamp(stripe_end_ts, 0)
-                        .map(|d| d.naive_utc());
+                    let stripe_end =
+                        chrono::DateTime::from_timestamp(stripe_end_ts, 0).map(|d| d.naive_utc());
                     if let Some(stripe_end_naive) = stripe_end {
-                        let drift = row.current_period_end.map(|db_end| {
-                            (db_end - stripe_end_naive).num_seconds().abs()
-                        });
+                        let drift = row
+                            .current_period_end
+                            .map(|db_end| (db_end - stripe_end_naive).num_seconds().abs());
                         if drift.is_none_or(|d| d > 60) {
                             let entry = fix_period_end(
                                 state,
@@ -267,13 +267,12 @@ async fn fix_status(
     before: &str,
     after: &str,
 ) -> Value {
-    let result = sqlx::query(
-        "UPDATE user_memberships SET status = $1, updated_at = NOW() WHERE id = $2",
-    )
-    .bind(after)
-    .bind(row_id)
-    .execute(&state.db.pool)
-    .await;
+    let result =
+        sqlx::query("UPDATE user_memberships SET status = $1, updated_at = NOW() WHERE id = $2")
+            .bind(after)
+            .bind(row_id)
+            .execute(&state.db.pool)
+            .await;
 
     let fixed = result.is_ok();
     tracing::warn!(

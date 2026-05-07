@@ -137,7 +137,9 @@ async fn create_checkout(
             if plan.stripe_price_id.is_none() {
                 return Err((
                     StatusCode::UNPROCESSABLE_ENTITY,
-                    Json(json!({"error": format!("Plan {} has no Stripe price configured", plan_id)})),
+                    Json(
+                        json!({"error": format!("Plan {} has no Stripe price configured", plan_id)}),
+                    ),
                 ));
             }
 
@@ -197,7 +199,10 @@ async fn create_checkout(
         .await
         .map_err(|e| {
             tracing::error!(target: "checkout", error = %e, "Failed to fetch coupon");
-            (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Failed to validate coupon"})))
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": "Failed to validate coupon"})),
+            )
         })?;
 
         // Static-message branches first.
@@ -211,7 +216,11 @@ async fn create_checkout(
             {
                 Some("Coupon has expired")
             }
-            Some(ref c) if c.usage_limit.map(|lim| c.usage_count >= lim).unwrap_or(false) => {
+            Some(ref c)
+                if c.usage_limit
+                    .map(|lim| c.usage_count >= lim)
+                    .unwrap_or(false) =>
+            {
                 Some("Coupon usage limit reached")
             }
             Some(ref c) if c.stripe_coupon_id.is_none() => {
@@ -320,8 +329,14 @@ async fn create_checkout(
 
     // Insert order items — convert cents → NUMERIC(10,2) at SQL boundary
     for item in &line_items {
-        let price_cents = item.get("price_cents").and_then(|p| p.as_i64()).unwrap_or(0);
-        let total_cents_li = item.get("total_cents").and_then(|t| t.as_i64()).unwrap_or(0);
+        let price_cents = item
+            .get("price_cents")
+            .and_then(|p| p.as_i64())
+            .unwrap_or(0);
+        let total_cents_li = item
+            .get("total_cents")
+            .and_then(|t| t.as_i64())
+            .unwrap_or(0);
         sqlx::query(
             r#"
             INSERT INTO order_items (order_id, product_id, plan_id, name, quantity, unit_price, total, created_at)
@@ -369,14 +384,20 @@ async fn create_checkout(
 
     for item in &line_items {
         let is_subscription = item.get("type").and_then(|t| t.as_str()) == Some("subscription");
-        let stripe_price_id = item.get("stripe_price_id").and_then(|v| v.as_str()).map(|s| s.to_string());
+        let stripe_price_id = item
+            .get("stripe_price_id")
+            .and_then(|v| v.as_str())
+            .map(|s| s.to_string());
 
         // Derive interval from billing_cycle for metadata purposes (Stripe already knows from price_id)
-        let billing_cycle = item.get("billing_cycle").and_then(|v| v.as_str()).unwrap_or("monthly");
+        let billing_cycle = item
+            .get("billing_cycle")
+            .and_then(|v| v.as_str())
+            .unwrap_or("monthly");
         let (interval, interval_count) = match billing_cycle {
             "quarterly" => ("month", 3),
-            "annual"    => ("year", 1),
-            _           => ("month", 1),
+            "annual" => ("year", 1),
+            _ => ("month", 1),
         };
 
         stripe_line_items.push(crate::services::stripe::LineItem {
@@ -387,12 +408,23 @@ async fn create_checkout(
                 .unwrap_or("Item")
                 .to_string(),
             description: None,
-            amount: item.get("price_cents").and_then(|p| p.as_i64()).unwrap_or(0),
+            amount: item
+                .get("price_cents")
+                .and_then(|p| p.as_i64())
+                .unwrap_or(0),
             currency: "usd".to_string(),
             quantity: item.get("quantity").and_then(|q| q.as_i64()).unwrap_or(1),
             is_subscription,
-            interval: if is_subscription { Some(interval.to_string()) } else { None },
-            interval_count: if is_subscription { Some(interval_count) } else { None },
+            interval: if is_subscription {
+                Some(interval.to_string())
+            } else {
+                None
+            },
+            interval_count: if is_subscription {
+                Some(interval_count)
+            } else {
+                None
+            },
         });
     }
 
@@ -533,14 +565,24 @@ async fn get_order(
                   (total * 100)::BIGINT    AS total_cents,
                   currency, coupon_code, billing_name, billing_email,
                   completed_at, created_at
-           FROM orders WHERE order_number = $1 AND user_id = $2"#
+           FROM orders WHERE order_number = $1 AND user_id = $2"#,
     )
     .bind(&order_number)
     .bind(user.id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Order not found"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Order not found"})),
+        )
+    })?;
 
     #[derive(sqlx::FromRow, serde::Serialize)]
     struct OrderItemRow {
@@ -557,12 +599,17 @@ async fn get_order(
         r#"SELECT id, product_id, plan_id, name, quantity,
                   (unit_price * 100)::BIGINT AS unit_price_cents,
                   (total      * 100)::BIGINT AS total_cents
-           FROM order_items WHERE order_id = $1"#
+           FROM order_items WHERE order_id = $1"#,
     )
     .bind(order.id)
     .fetch_all(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({
         "order": order,
@@ -589,12 +636,17 @@ async fn get_orders(
         r#"SELECT id, order_number, status,
                   (total * 100)::BIGINT AS total_cents,
                   currency, created_at
-           FROM orders WHERE user_id = $1 ORDER BY created_at DESC"#
+           FROM orders WHERE user_id = $1 ORDER BY created_at DESC"#,
     )
     .bind(user.id)
     .fetch_all(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({"orders": orders})))
 }

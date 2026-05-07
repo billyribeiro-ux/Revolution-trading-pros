@@ -8,6 +8,7 @@
 //!
 //! @version 1.0.0 - January 27, 2026
 
+use crate::middleware::admin::AdminUser;
 use axum::{
     extract::{Path, Query, State},
     http::StatusCode,
@@ -17,7 +18,6 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value as JsonValue};
 use uuid::Uuid;
-use crate::middleware::admin::AdminUser;
 
 use crate::{
     models::User,
@@ -57,7 +57,6 @@ async fn get_audit_logs(
     AdminUser(user): AdminUser,
     Query(query): Query<cms_audit::AuditLogQuery>,
 ) -> ApiResult<JsonValue> {
-
     let logs = cms_audit::get_audit_logs(&state.db.pool, &query)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;

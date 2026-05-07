@@ -594,7 +594,11 @@ fn oauth_callback_response_with_cookies(
     // Cookies use the SAME names hooks.server.ts already reads
     // (rtp_access_token, rtp_refresh_token, rtp_session_id) so this
     // change is transparent to the frontend.
-    let secure_attr = if state.config.is_production() { "; Secure" } else { "" };
+    let secure_attr = if state.config.is_production() {
+        "; Secure"
+    } else {
+        ""
+    };
     let access_max_age = state.config.jwt_expires_in * 3600; // hours -> seconds
     let refresh_max_age: i64 = 7 * 24 * 3600; // 7 days
 
@@ -910,7 +914,11 @@ async fn google_callback(
     // /auth/callback page no longer reads tokens from `?token=...`; it
     // calls GET /api/auth/me to confirm the session. See
     // oauth_callback_response_with_cookies() above for cookie attributes.
-    Ok(oauth_callback_response_with_cookies(&state, &auth_response, "google"))
+    Ok(oauth_callback_response_with_cookies(
+        &state,
+        &auth_response,
+        "google",
+    ))
 }
 
 // =============================================================================
@@ -1129,7 +1137,11 @@ async fn apple_callback(
 
     // FIX-C-1 (2026-04-29): tokens are now set as httpOnly cookies on the
     // redirect Response. See google_callback for full rationale.
-    Ok(oauth_callback_response_with_cookies(&state, &auth_response, "apple"))
+    Ok(oauth_callback_response_with_cookies(
+        &state,
+        &auth_response,
+        "apple",
+    ))
 }
 
 // =============================================================================

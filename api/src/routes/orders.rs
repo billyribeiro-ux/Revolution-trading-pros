@@ -657,9 +657,11 @@ pub async fn admin_index(
                 .fetch_one(&state.db.pool)
                 .await
         }
-        _ => sqlx::query_scalar("SELECT COUNT(*) FROM orders")
-            .fetch_one(&state.db.pool)
-            .await,
+        _ => {
+            sqlx::query_scalar("SELECT COUNT(*) FROM orders")
+                .fetch_one(&state.db.pool)
+                .await
+        }
     }
     .map_err(|e| {
         tracing::error!("Failed to count admin orders: {}", e);

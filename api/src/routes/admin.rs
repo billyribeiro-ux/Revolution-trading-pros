@@ -151,7 +151,6 @@ async fn get_user(
     AdminUser(user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<AdminUserRow>, (StatusCode, Json<serde_json::Value>)> {
-
     let target_user: AdminUserRow = sqlx::query_as(
         "SELECT id, name, email, role, is_active, email_verified_at, last_login_at, created_at, updated_at FROM users WHERE id = $1"
     )
@@ -171,16 +170,11 @@ async fn create_user(
     AdminUser(user): AdminUser,
     Json(input): Json<CreateUserRequest>,
 ) -> Result<Json<AdminUserRow>, (StatusCode, Json<serde_json::Value>)> {
-
     // FIX-2026-04-27 (H-4): Validate password strength before hashing.
     // Previously hash_password was called without validate_password, so admins
     // could create accounts with passwords like "a" that bypass the policy.
-    crate::utils::validate_password(&input.password).map_err(|e| {
-        (
-            StatusCode::BAD_REQUEST,
-            Json(json!({"error": e})),
-        )
-    })?;
+    crate::utils::validate_password(&input.password)
+        .map_err(|e| (StatusCode::BAD_REQUEST, Json(json!({"error": e}))))?;
 
     let password_hash = crate::utils::hash_password(&input.password).map_err(|e| {
         (
@@ -224,7 +218,6 @@ async fn update_user(
     Path(id): Path<i64>,
     Json(input): Json<UpdateUserRequest>,
 ) -> Result<Json<AdminUserRow>, (StatusCode, Json<serde_json::Value>)> {
-
     // FIX-2026-04-27 (H-7): Only super_admin may grant privileged roles.
     // A regular admin promoting anyone to developer/super_admin is a privilege escalation path.
     if let Some(ref new_role) = input.role {
@@ -238,7 +231,9 @@ async fn update_user(
             if !actor_is_super {
                 return Err((
                     StatusCode::FORBIDDEN,
-                    Json(json!({"error": "Only super_admin can grant developer or super_admin roles"})),
+                    Json(
+                        json!({"error": "Only super_admin can grant developer or super_admin roles"}),
+                    ),
                 ));
             }
         }
@@ -359,7 +354,6 @@ async fn delete_user(
     AdminUser(user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-
     sqlx::query("DELETE FROM users WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
@@ -381,7 +375,6 @@ async fn ban_user(
     AdminUser(user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-
     sqlx::query("UPDATE users SET is_active = false, updated_at = NOW() WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
@@ -428,7 +421,6 @@ async fn unban_user(
     AdminUser(user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-
     sqlx::query("UPDATE users SET is_active = true, updated_at = NOW() WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
@@ -449,7 +441,6 @@ async fn user_stats(
     State(state): State<AppState>,
     AdminUser(user): AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-
     let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM users")
         .fetch_one(&state.db.pool)
         .await
@@ -559,7 +550,6 @@ async fn list_coupons(
     State(state): State<AppState>,
     AdminUser(user): AdminUser,
 ) -> Result<Json<Vec<CouponRow>>, (StatusCode, Json<serde_json::Value>)> {
-
     // Money is integer cents at the Rust boundary (architecture standard §1.2).
     // DB columns remain NUMERIC(10,2) as a display cache; convert at the SQL edge.
     let coupons: Vec<CouponRow> = sqlx::query_as(
@@ -601,7 +591,6 @@ async fn create_coupon(
     AdminUser(user): AdminUser,
     Json(input): Json<CreateCouponRequest>,
 ) -> Result<Json<CouponRow>, (StatusCode, Json<serde_json::Value>)> {
-
     // ── Validate inputs ──────────────────────────────────────────────────
     let duration = input.duration.clone().unwrap_or_else(|| "once".into());
     if !matches!(duration.as_str(), "once" | "forever" | "repeating") {
@@ -623,7 +612,10 @@ async fn create_coupon(
             Json(json!({"error": "duration_in_months only valid when duration='repeating'"})),
         ));
     }
-    if !matches!(input.discount_type.as_str(), "percent" | "percentage" | "fixed" | "amount") {
+    if !matches!(
+        input.discount_type.as_str(),
+        "percent" | "percentage" | "fixed" | "amount"
+    ) {
         return Err((
             StatusCode::BAD_REQUEST,
             Json(json!({"error": "discount_type must be 'percent' or 'fixed'"})),
@@ -731,9 +723,15 @@ async fn create_coupon(
                 );
             }
             if e.to_string().contains("duplicate") {
-                Err((StatusCode::CONFLICT, Json(json!({"error": "Coupon code already exists"}))))
+                Err((
+                    StatusCode::CONFLICT,
+                    Json(json!({"error": "Coupon code already exists"})),
+                ))
             } else {
-                Err((StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))
+                Err((
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                ))
             }
         }
     }
@@ -747,7 +745,6 @@ async fn delete_coupon(
     AdminUser(user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-
     let stripe_coupon_id: Option<Option<String>> =
         sqlx::query_scalar("SELECT stripe_coupon_id FROM coupons WHERE id = $1")
             .bind(id)
@@ -796,7 +793,6 @@ async fn get_coupon(
     AdminUser(user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<CouponRow>, (StatusCode, Json<serde_json::Value>)> {
-
     let coupon: Option<CouponRow> = sqlx::query_as(
         r#"SELECT
             id, code, description, discount_type,
@@ -854,7 +850,6 @@ async fn update_coupon(
     Path(id): Path<i64>,
     Json(input): Json<CreateCouponRequest>,
 ) -> Result<Json<CouponRow>, (StatusCode, Json<serde_json::Value>)> {
-
     // ── Validate discount_type if provided ──────────────────────────────
     if !input.discount_type.is_empty()
         && input.discount_type != "percent"
@@ -909,9 +904,15 @@ async fn update_coupon(
     .await
     .map_err(|e| {
         tracing::error!(target: "admin", "update_coupon snapshot error: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
     })?
-    .ok_or((StatusCode::NOT_FOUND, Json(json!({"error": "Coupon not found"}))))?;
+    .ok_or((
+        StatusCode::NOT_FOUND,
+        Json(json!({"error": "Coupon not found"})),
+    ))?;
 
     // Resolve effective new discount-math fields. Empty/None means "keep".
     let new_discount_type: String = if !input.discount_type.is_empty() {
@@ -964,7 +965,9 @@ async fn update_coupon(
                 if new_discount_value_cents <= 0 {
                     return Err((
                         StatusCode::BAD_REQUEST,
-                        Json(json!({"error": "discount_value_cents must be > 0 for fixed coupons"})),
+                        Json(
+                            json!({"error": "discount_value_cents must be > 0 for fixed coupons"}),
+                        ),
                     ));
                 }
                 (None, Some(new_discount_value_cents))
@@ -980,13 +983,18 @@ async fn update_coupon(
             max_redemptions: input.usage_limit.map(|n| n as i64),
             redeem_by_unix: input.expires_at.map(|t| t.and_utc().timestamp()),
         };
-        let created = state.services.stripe.create_coupon(req).await.map_err(|e| {
-            tracing::error!(target: "admin", "Stripe coupon recreate failed: {}", e);
-            (
-                StatusCode::BAD_GATEWAY,
-                Json(json!({"error": format!("Stripe coupon recreate failed: {}", e)})),
-            )
-        })?;
+        let created = state
+            .services
+            .stripe
+            .create_coupon(req)
+            .await
+            .map_err(|e| {
+                tracing::error!(target: "admin", "Stripe coupon recreate failed: {}", e);
+                (
+                    StatusCode::BAD_GATEWAY,
+                    Json(json!({"error": format!("Stripe coupon recreate failed: {}", e)})),
+                )
+            })?;
         new_stripe_coupon_id = Some(created.id);
     }
 
@@ -1100,7 +1108,10 @@ async fn update_coupon(
             if let Some(ref new_id) = new_stripe_coupon_id {
                 let _ = state.services.stripe.delete_coupon(new_id).await;
             }
-            Err((StatusCode::NOT_FOUND, Json(json!({"error": "Coupon not found"}))))
+            Err((
+                StatusCode::NOT_FOUND,
+                Json(json!({"error": "Coupon not found"})),
+            ))
         }
         Err(e) => {
             tracing::error!(target: "admin", "update_coupon DB error: {}", e);
@@ -1109,9 +1120,15 @@ async fn update_coupon(
                 let _ = state.services.stripe.delete_coupon(new_id).await;
             }
             if e.to_string().contains("duplicate") {
-                Err((StatusCode::CONFLICT, Json(json!({"error": "Coupon code already exists"}))))
+                Err((
+                    StatusCode::CONFLICT,
+                    Json(json!({"error": "Coupon code already exists"})),
+                ))
             } else {
-                Err((StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))
+                Err((
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                ))
             }
         }
     }
@@ -1140,7 +1157,6 @@ async fn sync_coupon_to_stripe(
     AdminUser(user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<CouponRow>, (StatusCode, Json<serde_json::Value>)> {
-
     // Read existing row.
     let row: Option<CouponRow> = sqlx::query_as(
         r#"SELECT id, code, description, discount_type,
@@ -1182,7 +1198,9 @@ async fn sync_coupon_to_stripe(
             if percent <= 0.0 || percent > 100.0 {
                 return Err((
                     StatusCode::BAD_REQUEST,
-                    Json(json!({"error": "Stored discount_value invalid for percent coupon (must be > 0 and <= 100)"})),
+                    Json(
+                        json!({"error": "Stored discount_value invalid for percent coupon (must be > 0 and <= 100)"}),
+                    ),
                 ));
             }
             (Some(percent), None)
@@ -1191,7 +1209,9 @@ async fn sync_coupon_to_stripe(
             if coupon.discount_value_cents <= 0 {
                 return Err((
                     StatusCode::BAD_REQUEST,
-                    Json(json!({"error": "Stored discount_value_cents must be > 0 for fixed coupons"})),
+                    Json(
+                        json!({"error": "Stored discount_value_cents must be > 0 for fixed coupons"}),
+                    ),
                 ));
             }
             (None, Some(coupon.discount_value_cents))
@@ -1337,7 +1357,6 @@ async fn get_settings(
     State(state): State<AppState>,
     AdminUser(user): AdminUser,
 ) -> Result<Json<Vec<SettingRow>>, (StatusCode, Json<serde_json::Value>)> {
-
     let settings: Vec<SettingRow> =
         sqlx::query_as("SELECT * FROM application_settings ORDER BY group_name, key")
             .fetch_all(&state.db.pool)
@@ -1359,7 +1378,6 @@ async fn get_setting(
     AdminUser(user): AdminUser,
     Path(key): Path<String>,
 ) -> Result<Json<SettingRow>, (StatusCode, Json<serde_json::Value>)> {
-
     let setting: SettingRow = sqlx::query_as("SELECT * FROM application_settings WHERE key = $1")
         .bind(&key)
         .fetch_optional(&state.db.pool)
@@ -1393,7 +1411,6 @@ async fn update_setting(
     Path(key): Path<String>,
     Json(input): Json<UpdateSettingRequest>,
 ) -> Result<Json<SettingRow>, (StatusCode, Json<serde_json::Value>)> {
-
     let setting: SettingRow = sqlx::query_as(
         "UPDATE application_settings SET value = $1, updated_at = NOW() WHERE key = $2 RETURNING *",
     )
@@ -1514,7 +1531,6 @@ async fn list_user_memberships(
     AdminUser(user): AdminUser,
     Query(query): Query<UserMembershipListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-
     let page = query.page.unwrap_or(1).max(1);
     let per_page = query.per_page.unwrap_or(50).min(100);
     let offset = (page - 1) * per_page;
@@ -1588,7 +1604,6 @@ async fn get_user_membership(
     AdminUser(user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<AdminUserMembershipRow>, (StatusCode, Json<serde_json::Value>)> {
-
     let membership: AdminUserMembershipRow = sqlx::query_as(
         r#"
         SELECT
@@ -1628,7 +1643,6 @@ async fn grant_membership(
     AdminUser(user): AdminUser,
     Json(input): Json<GrantMembershipRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-
     // Verify user exists
     let user_exists: Option<(i64,)> = sqlx::query_as("SELECT id FROM users WHERE id = $1")
         .bind(input.user_id)
@@ -1711,7 +1725,6 @@ async fn update_user_membership(
     Path(id): Path<i64>,
     Json(input): Json<UpdateMembershipRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-
     // Build UPDATE dynamically
     let mut set_clauses = Vec::new();
     let mut param_count = 1;
@@ -1782,7 +1795,6 @@ async fn revoke_membership(
     AdminUser(user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-
     let result = sqlx::query("DELETE FROM user_memberships WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
@@ -1810,7 +1822,6 @@ async fn get_user_memberships_by_user(
     AdminUser(user): AdminUser,
     Path(user_id): Path<i64>,
 ) -> Result<Json<Vec<AdminUserMembershipRow>>, (StatusCode, Json<serde_json::Value>)> {
-
     let memberships: Vec<AdminUserMembershipRow> = sqlx::query_as(
         r#"
         SELECT
@@ -1874,7 +1885,6 @@ async fn list_campaigns(
     State(state): State<AppState>,
     AdminUser(user): AdminUser,
 ) -> Result<Json<Vec<CampaignRow>>, (StatusCode, Json<serde_json::Value>)> {
-
     let campaigns: Vec<CampaignRow> =
         sqlx::query_as("SELECT * FROM campaigns ORDER BY created_at DESC")
             .fetch_all(&state.db.pool)
@@ -1890,7 +1900,6 @@ async fn create_campaign(
     AdminUser(user): AdminUser,
     Json(input): Json<CreateCampaignRequest>,
 ) -> Result<Json<CampaignRow>, (StatusCode, Json<serde_json::Value>)> {
-
     let campaign: CampaignRow = sqlx::query_as(
         r#"
         INSERT INTO campaigns (name, description, campaign_type, status, start_date, end_date, target_audience, metrics, created_at, updated_at)
@@ -1918,7 +1927,6 @@ async fn delete_campaign(
     AdminUser(user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-
     sqlx::query("DELETE FROM campaigns WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
@@ -1942,7 +1950,6 @@ async fn products_stats(
     State(state): State<AppState>,
     AdminUser(user): AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-
     let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM products")
         .fetch_one(&state.db.pool)
         .await
@@ -2076,7 +2083,6 @@ async fn posts_stats(
     State(state): State<AppState>,
     AdminUser(user): AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-
     let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM posts")
         .fetch_one(&state.db.pool)
         .await
@@ -2106,7 +2112,6 @@ async fn site_health(
     State(_state): State<AppState>,
     AdminUser(user): AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-
     Ok(Json(json!({
         "success": true,
         "status": "healthy",
@@ -2125,7 +2130,6 @@ async fn connections_status(
     State(_state): State<AppState>,
     AdminUser(user): AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-
     Ok(Json(json!({
         "success": true,
         "connections": {
@@ -2170,7 +2174,6 @@ async fn get_user_subscriptions(
     AdminUser(user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-
     // Verify user exists
     let user_exists: Option<(i64,)> = sqlx::query_as("SELECT id FROM users WHERE id = $1")
         .bind(id)

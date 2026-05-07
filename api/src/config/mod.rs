@@ -148,9 +148,7 @@ impl Config {
         if is_dev {
             let app_url = std::env::var("APP_URL").unwrap_or_default();
             // Deploy target deferred — extend this list when production hosts are chosen.
-            const PROD_INDICATORS: &[&str] = &[
-                "revolutiontradingpros.com",
-            ];
+            const PROD_INDICATORS: &[&str] = &["revolutiontradingpros.com"];
             if PROD_INDICATORS.iter().any(|d| app_url.contains(d)) {
                 panic!(
                     "FATAL: ENVIRONMENT=development but APP_URL ({}) looks like production. \
@@ -379,9 +377,7 @@ impl Config {
         // Webhook secret prefix sanity. Stripe live webhook secrets
         // start with "whsec_" and are >= 32 chars after the prefix.
         if !self.stripe_webhook_secret.starts_with("whsec_") {
-            panic!(
-                "FATAL: STRIPE_WEBHOOK_SECRET does not start with 'whsec_'. Refusing to boot."
-            );
+            panic!("FATAL: STRIPE_WEBHOOK_SECRET does not start with 'whsec_'. Refusing to boot.");
         }
 
         // Stripe publishable key parity check — if set, must match live mode.
@@ -449,9 +445,8 @@ mod tests {
             // FIX-H-1 (2026-04-29): live_config now provides a JWT_SECRET that
             // satisfies the new production assertion (>=32 chars, not a placeholder).
             // Previously was "x" (1 char) — caught by the new check.
-            jwt_secret:
-                "test-jwt-secret-thirty-two-chars-or-more-for-tests-only-not-a-real-secret"
-                    .to_string(),
+            jwt_secret: "test-jwt-secret-thirty-two-chars-or-more-for-tests-only-not-a-real-secret"
+                .to_string(),
             jwt_expires_in: 1,
             stripe_secret_key: format!("sk_live_{}", body),
             stripe_publishable_key: format!("pk_live_{}", body),

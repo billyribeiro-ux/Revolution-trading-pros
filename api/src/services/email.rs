@@ -246,12 +246,11 @@ impl EmailService {
 
         match result {
             Ok(resp) if resp.status().is_success() => {
-                let parsed: PostmarkResponse =
-                    resp.json().await.unwrap_or(PostmarkResponse {
-                        message_id: None,
-                        error_code: None,
-                        message: None,
-                    });
+                let parsed: PostmarkResponse = resp.json().await.unwrap_or(PostmarkResponse {
+                    message_id: None,
+                    error_code: None,
+                    message: None,
+                });
                 let _ = sqlx::query(
                     r#"UPDATE email_logs
                        SET status = 'sent', sent_at = NOW(), provider_message_id = $1

@@ -67,11 +67,11 @@ pub mod member_indicators;
 pub mod migrate;
 pub mod organization;
 pub mod popups;
+pub mod reconciliation;
 pub mod room_analytics; // ICT 11+ Phase 5: Room Performance Analytics API
 pub mod room_content;
 pub mod room_resources;
 pub mod room_search; // ICT 7+ Phase 4: Full-Text Search for Room Content
-pub mod reconciliation;
 pub mod subscriptions_admin;
 pub mod trading_rooms;
 pub mod watchlist; // ICT 7: Service connection status // ICT 7: Teams & Departments // ICT 7+: Reusable content blocks library

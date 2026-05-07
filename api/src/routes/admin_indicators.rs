@@ -993,7 +993,10 @@ async fn change_indicator_price(
 
     let mut tx = state.db.pool.begin().await.map_err(|e| {
         tracing::error!(target: "stripe_price", error = %e, "Failed to begin transaction");
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Failed to start transaction"})))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Failed to start transaction"})),
+        )
     })?;
 
     sqlx::query(
@@ -1038,7 +1041,10 @@ async fn change_indicator_price(
 
     tx.commit().await.map_err(|e| {
         tracing::error!(target: "stripe_price", error = %e, "Failed to commit transaction");
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Failed to commit DB changes"})))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Failed to commit DB changes"})),
+        )
     })?;
 
     tracing::info!(

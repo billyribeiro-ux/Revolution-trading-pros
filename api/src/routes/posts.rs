@@ -132,12 +132,10 @@ async fn sync_post_categories(
     if slugs.is_empty() {
         return Ok(());
     }
-    let ids: Vec<i64> = sqlx::query_scalar(
-        "SELECT id FROM categories WHERE slug = ANY($1)",
-    )
-    .bind(slugs)
-    .fetch_all(pool)
-    .await?;
+    let ids: Vec<i64> = sqlx::query_scalar("SELECT id FROM categories WHERE slug = ANY($1)")
+        .bind(slugs)
+        .fetch_all(pool)
+        .await?;
     for cid in ids {
         sqlx::query("INSERT INTO post_categories (post_id, category_id) VALUES ($1, $2) ON CONFLICT DO NOTHING")
             .bind(post_id)
@@ -184,11 +182,13 @@ async fn sync_post_tags(
         }
     }
     for tid in ids {
-        sqlx::query("INSERT INTO post_tags (post_id, tag_id) VALUES ($1, $2) ON CONFLICT DO NOTHING")
-            .bind(post_id)
-            .bind(tid)
-            .execute(pool)
-            .await?;
+        sqlx::query(
+            "INSERT INTO post_tags (post_id, tag_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
+        )
+        .bind(post_id)
+        .bind(tid)
+        .execute(pool)
+        .await?;
     }
     Ok(())
 }
@@ -464,21 +464,34 @@ async fn create_post(
     .bind(input.allow_comments.unwrap_or(true))
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     // Resolve & write categories/tags joins (best-effort: a join failure should
     // not roll back a successful post insert; surface the error if it fails).
     if let Some(ref cats) = input.categories {
-        sync_post_categories(&state.db.pool, post.id, cats).await.map_err(|e| (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": format!("category sync failed: {}", e)})),
-        ))?;
+        sync_post_categories(&state.db.pool, post.id, cats)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": format!("category sync failed: {}", e)})),
+                )
+            })?;
     }
     if let Some(ref tags) = input.tags {
-        sync_post_tags(&state.db.pool, post.id, tags).await.map_err(|e| (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": format!("tag sync failed: {}", e)})),
-        ))?;
+        sync_post_tags(&state.db.pool, post.id, tags)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": format!("tag sync failed: {}", e)})),
+                )
+            })?;
     }
 
     Ok(Json(post))
@@ -581,7 +594,9 @@ async fn update_post(
     };
     let featured_media_id = input.featured_media_id.or(current.featured_media_id);
     let featured_image_alt = input.featured_image_alt.or(current.featured_image_alt);
-    let featured_image_caption = input.featured_image_caption.or(current.featured_image_caption);
+    let featured_image_caption = input
+        .featured_image_caption
+        .or(current.featured_image_caption);
     let featured_image_title = input.featured_image_title.or(current.featured_image_title);
     let featured_image_description = input
         .featured_image_description
@@ -634,16 +649,24 @@ async fn update_post(
     // Resolve & rewrite categories/tags joins. None means "leave as-is";
     // an explicit empty array clears them.
     if let Some(ref cats) = input.categories {
-        sync_post_categories(&state.db.pool, post.id, cats).await.map_err(|e| (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": format!("category sync failed: {}", e)})),
-        ))?;
+        sync_post_categories(&state.db.pool, post.id, cats)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": format!("category sync failed: {}", e)})),
+                )
+            })?;
     }
     if let Some(ref tags) = input.tags {
-        sync_post_tags(&state.db.pool, post.id, tags).await.map_err(|e| (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": format!("tag sync failed: {}", e)})),
-        ))?;
+        sync_post_tags(&state.db.pool, post.id, tags)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": format!("tag sync failed: {}", e)})),
+                )
+            })?;
     }
 
     Ok(Json(post))

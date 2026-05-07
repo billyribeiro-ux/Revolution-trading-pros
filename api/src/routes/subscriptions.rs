@@ -419,17 +419,18 @@ async fn create_subscription(
     })?;
 
     // Check if user already has active subscription
-    let existing: Option<(i64,)> =
-        sqlx::query_as("SELECT id FROM user_memberships WHERE user_id = $1 AND status IN ('active', 'trialing')")
-            .bind(user.id)
-            .fetch_optional(&state.db.pool)
-            .await
-            .map_err(|e| {
-                (
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(json!({"error": e.to_string()})),
-                )
-            })?;
+    let existing: Option<(i64,)> = sqlx::query_as(
+        "SELECT id FROM user_memberships WHERE user_id = $1 AND status IN ('active', 'trialing')",
+    )
+    .bind(user.id)
+    .fetch_optional(&state.db.pool)
+    .await
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     if existing.is_some() {
         return Err((
@@ -984,8 +985,10 @@ async fn change_plan(
         let days_remaining: i64 = (period_end - now).num_days().max(0);
 
         // credit_cents = (current_plan.price_cents * days_remaining) / total_days
-        let credit_cents: i64 = (current_plan.price_cents.saturating_mul(days_remaining)) / total_days;
-        let new_cost_cents: i64 = (new_plan.price_cents.saturating_mul(days_remaining)) / total_days;
+        let credit_cents: i64 =
+            (current_plan.price_cents.saturating_mul(days_remaining)) / total_days;
+        let new_cost_cents: i64 =
+            (new_plan.price_cents.saturating_mul(days_remaining)) / total_days;
         let proration_amount_cents: i64 = new_cost_cents - credit_cents;
 
         Some(ProrationPreview {
@@ -1120,8 +1123,10 @@ async fn preview_plan_change(
         let total_days: i64 = (period_end - period_start).num_days().max(1);
         let days_remaining: i64 = (period_end - now).num_days().max(0);
 
-        let credit_cents: i64 = (current_plan.price_cents.saturating_mul(days_remaining)) / total_days;
-        let new_cost_cents: i64 = (new_plan.price_cents.saturating_mul(days_remaining)) / total_days;
+        let credit_cents: i64 =
+            (current_plan.price_cents.saturating_mul(days_remaining)) / total_days;
+        let new_cost_cents: i64 =
+            (new_plan.price_cents.saturating_mul(days_remaining)) / total_days;
         let proration_amount_cents: i64 = new_cost_cents - credit_cents;
 
         ProrationPreview {
@@ -1203,12 +1208,15 @@ async fn reactivate_subscription(
 
     // Legitimate path: scheduled cancellation — un-flag via Stripe, then update DB
     if subscription.cancel_at_period_end.unwrap_or(false) {
-        let stripe_sub_id = subscription.stripe_subscription_id.as_deref().ok_or_else(|| {
-            (
-                StatusCode::BAD_REQUEST,
-                Json(json!({"error": "Subscription has no Stripe ID"})),
-            )
-        })?;
+        let stripe_sub_id = subscription
+            .stripe_subscription_id
+            .as_deref()
+            .ok_or_else(|| {
+                (
+                    StatusCode::BAD_REQUEST,
+                    Json(json!({"error": "Subscription has no Stripe ID"})),
+                )
+            })?;
 
         let env_scope = state.config.environment.clone();
         let stripe = state

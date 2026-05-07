@@ -184,7 +184,8 @@ async fn validate_coupon(
     }
 
     // Check minimum purchase — convert NUMERIC → cents at the boundary
-    let min_purchase_cents: i64 = (coupon.min_purchase_amount.to_f64().unwrap_or(0.0) * 100.0).round() as i64;
+    let min_purchase_cents: i64 =
+        (coupon.min_purchase_amount.to_f64().unwrap_or(0.0) * 100.0).round() as i64;
     if min_purchase_cents > 0 {
         if let Some(subtotal_cents) = input.subtotal_cents {
             if subtotal_cents < min_purchase_cents {

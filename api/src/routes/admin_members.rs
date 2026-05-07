@@ -4,6 +4,7 @@
 //! Member segments, tags, and saved filters management for CRM.
 //! All routes require admin privileges.
 
+use crate::middleware::admin::{AdminUser, SuperAdminUser};
 use axum::{
     extract::{Path, Query, State},
     http::StatusCode,
@@ -14,7 +15,6 @@ use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sqlx::FromRow;
-use crate::middleware::admin::{AdminUser, SuperAdminUser};
 
 use crate::{models::User, AppState};
 
@@ -77,7 +77,6 @@ async fn list_segments(
     AdminUser(user): AdminUser,
     Query(query): Query<SegmentQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-
     let page = query.page.unwrap_or(1).max(1);
     let per_page = query.per_page.unwrap_or(50).min(100);
     let offset = (page - 1) * per_page;
@@ -141,7 +140,6 @@ async fn get_segment(
     AdminUser(user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<MemberSegment>, (StatusCode, Json<serde_json::Value>)> {
-
     let segment: MemberSegment = sqlx::query_as(
         "SELECT id, name, slug, description, rules, member_count, is_active, created_at, updated_at FROM member_segments WHERE id = $1"
     )
@@ -160,7 +158,6 @@ async fn create_segment(
     AdminUser(user): AdminUser,
     Json(input): Json<CreateSegmentRequest>,
 ) -> Result<Json<MemberSegment>, (StatusCode, Json<serde_json::Value>)> {
-
     // Generate slug if not provided
     let slug = input.slug.unwrap_or_else(|| {
         input
@@ -204,7 +201,6 @@ async fn update_segment(
     Path(id): Path<i64>,
     Json(input): Json<UpdateSegmentRequest>,
 ) -> Result<Json<MemberSegment>, (StatusCode, Json<serde_json::Value>)> {
-
     // Build UPDATE query dynamically
     let mut set_clauses = Vec::new();
     let mut param_count = 1;
@@ -287,7 +283,6 @@ async fn delete_segment(
     SuperAdminUser(user): SuperAdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-
     let result = sqlx::query("DELETE FROM member_segments WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
@@ -354,7 +349,6 @@ async fn list_member_tags(
     AdminUser(user): AdminUser,
     Query(query): Query<MemberTagQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-
     let page = query.page.unwrap_or(1).max(1);
     let per_page = query.per_page.unwrap_or(100).min(500);
     let offset = (page - 1) * per_page;
@@ -414,7 +408,6 @@ async fn get_member_tag(
     AdminUser(user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<MemberTag>, (StatusCode, Json<serde_json::Value>)> {
-
     let tag: MemberTag = sqlx::query_as(
         "SELECT id, name, slug, color, description, member_count, created_at, updated_at FROM member_tags WHERE id = $1"
     )
@@ -433,7 +426,6 @@ async fn create_member_tag(
     AdminUser(user): AdminUser,
     Json(input): Json<CreateMemberTagRequest>,
 ) -> Result<Json<MemberTag>, (StatusCode, Json<serde_json::Value>)> {
-
     // Generate slug if not provided
     let slug = input.slug.unwrap_or_else(|| {
         input
@@ -476,7 +468,6 @@ async fn update_member_tag(
     Path(id): Path<i64>,
     Json(input): Json<UpdateMemberTagRequest>,
 ) -> Result<Json<MemberTag>, (StatusCode, Json<serde_json::Value>)> {
-
     let mut set_clauses = Vec::new();
     let mut param_count = 1;
 
@@ -551,7 +542,6 @@ async fn delete_member_tag(
     SuperAdminUser(user): SuperAdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-
     let result = sqlx::query("DELETE FROM member_tags WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
@@ -622,7 +612,6 @@ async fn list_member_filters(
     AdminUser(user): AdminUser,
     Query(query): Query<MemberFilterQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-
     let page = query.page.unwrap_or(1).max(1);
     let per_page = query.per_page.unwrap_or(50).min(100);
     let offset = (page - 1) * per_page;
@@ -683,7 +672,6 @@ async fn get_member_filter(
     AdminUser(user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<MemberFilter>, (StatusCode, Json<serde_json::Value>)> {
-
     let filter: MemberFilter = sqlx::query_as(
         "SELECT id, name, description, filters, is_default, is_public, created_by, created_at, updated_at FROM member_filters WHERE id = $1"
     )
@@ -702,7 +690,6 @@ async fn create_member_filter(
     AdminUser(user): AdminUser,
     Json(input): Json<CreateMemberFilterRequest>,
 ) -> Result<Json<MemberFilter>, (StatusCode, Json<serde_json::Value>)> {
-
     let filter: MemberFilter = sqlx::query_as(
         r#"
         INSERT INTO member_filters (name, description, filters, is_default, is_public, created_by, created_at, updated_at)
@@ -736,7 +723,6 @@ async fn update_member_filter(
     Path(id): Path<i64>,
     Json(input): Json<UpdateMemberFilterRequest>,
 ) -> Result<Json<MemberFilter>, (StatusCode, Json<serde_json::Value>)> {
-
     let mut set_clauses = Vec::new();
     let mut param_count = 1;
 
@@ -818,7 +804,6 @@ async fn delete_member_filter(
     SuperAdminUser(user): SuperAdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-
     let result = sqlx::query("DELETE FROM member_filters WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
@@ -862,7 +847,6 @@ async fn assign_tag_to_user(
     AdminUser(user): AdminUser,
     Json(input): Json<AssignTagRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-
     sqlx::query(
         r#"
         INSERT INTO user_member_tags (user_id, tag_id, created_at)
@@ -899,7 +883,6 @@ async fn unassign_tag_from_user(
     AdminUser(user): AdminUser,
     Json(input): Json<AssignTagRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-
     sqlx::query("DELETE FROM user_member_tags WHERE user_id = $1 AND tag_id = $2")
         .bind(input.user_id)
         .bind(input.tag_id)
@@ -932,7 +915,6 @@ async fn bulk_assign_tags(
     SuperAdminUser(user): SuperAdminUser,
     Json(input): Json<BulkAssignTagsRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-
     let mut assigned_count = 0;
 
     for user_id in &input.user_ids {
@@ -987,7 +969,6 @@ async fn analytics_metrics(
     AdminUser(user): AdminUser,
     Query(query): Query<AnalyticsRangeQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-
     let _range = query.range.unwrap_or_else(|| "30d".to_string());
 
     // Get basic metrics with graceful fallbacks
@@ -1022,8 +1003,13 @@ async fn analytics_metrics(
            )::BIGINT
            FROM user_memberships um
            JOIN membership_plans mp ON mp.id = um.plan_id
-           WHERE um.status IN ('active', 'trialing')"#
-    ).fetch_one(&state.db.pool).await.ok().flatten().unwrap_or(0);
+           WHERE um.status IN ('active', 'trialing')"#,
+    )
+    .fetch_one(&state.db.pool)
+    .await
+    .ok()
+    .flatten()
+    .unwrap_or(0);
 
     Ok(Json(json!({
         "total_members": total_members,
@@ -1041,7 +1027,6 @@ async fn analytics_growth(
     AdminUser(user): AdminUser,
     Query(_query): Query<AnalyticsRangeQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-
     // Get monthly growth data
     let growth_data: Vec<(String, i64)> = sqlx::query_as(
         r#"
@@ -1074,7 +1059,6 @@ async fn analytics_cohorts(
     AdminUser(user): AdminUser,
     Query(_query): Query<AnalyticsRangeQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-
     // Return cohort structure (would need complex query for real data)
     Ok(Json(json!({
         "cohorts": [
@@ -1092,11 +1076,10 @@ async fn analytics_revenue(
     AdminUser(user): AdminUser,
     Query(_query): Query<AnalyticsRangeQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-
     let total_revenue_cents: i64 = sqlx::query_scalar::<_, Option<i64>>(
         r#"SELECT SUM((mp.price * 100)::BIGINT)::BIGINT
            FROM user_memberships um
-           JOIN membership_plans mp ON mp.id = um.plan_id"#
+           JOIN membership_plans mp ON mp.id = um.plan_id"#,
     )
     .fetch_one(&state.db.pool)
     .await
@@ -1115,8 +1098,13 @@ async fn analytics_revenue(
            )::BIGINT
            FROM user_memberships um
            JOIN membership_plans mp ON mp.id = um.plan_id
-           WHERE um.status IN ('active', 'trialing')"#
-    ).fetch_one(&state.db.pool).await.ok().flatten().unwrap_or(0);
+           WHERE um.status IN ('active', 'trialing')"#,
+    )
+    .fetch_one(&state.db.pool)
+    .await
+    .ok()
+    .flatten()
+    .unwrap_or(0);
 
     Ok(Json(json!({
         "total_revenue_cents": total_revenue_cents,
@@ -1133,7 +1121,6 @@ async fn analytics_churn_reasons(
     AdminUser(user): AdminUser,
     Query(_query): Query<AnalyticsRangeQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-
     Ok(Json(json!({
         "reasons": [
             {"reason": "Too expensive", "count": 45, "percentage": 32},
@@ -1151,7 +1138,6 @@ async fn analytics_segments(
     AdminUser(user): AdminUser,
     Query(_query): Query<AnalyticsRangeQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-
     let segments: Vec<MemberSegment> = sqlx::query_as(
         "SELECT id, name, slug, description, rules, member_count, is_active, created_at, updated_at FROM member_segments WHERE is_active = true ORDER BY member_count DESC LIMIT 10"
     ).fetch_all(&state.db.pool).await.unwrap_or_default();
@@ -1185,7 +1171,6 @@ async fn get_member_notes(
     AdminUser(user): AdminUser,
     Path(member_id): Path<i64>,
 ) -> Result<Json<Vec<MemberNote>>, (StatusCode, Json<serde_json::Value>)> {
-
     let notes: Vec<MemberNote> = sqlx::query_as(
         "SELECT id, user_id, content, created_by, created_at FROM member_notes WHERE user_id = $1 ORDER BY created_at DESC"
     )
@@ -1204,7 +1189,6 @@ async fn create_member_note(
     Path(member_id): Path<i64>,
     Json(input): Json<CreateNoteRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-
     // Try to create note, gracefully handle if table doesn't exist
     let result = sqlx::query(
         "INSERT INTO member_notes (user_id, content, created_by, created_at) VALUES ($1, $2, $3, NOW())"
@@ -1244,7 +1228,6 @@ async fn get_member_emails(
     AdminUser(user): AdminUser,
     Path(member_id): Path<i64>,
 ) -> Result<Json<Vec<MemberEmail>>, (StatusCode, Json<serde_json::Value>)> {
-
     let emails: Vec<MemberEmail> = sqlx::query_as(
         "SELECT id, user_id, subject, status, sent_at, created_at FROM member_emails WHERE user_id = $1 ORDER BY created_at DESC LIMIT 50"
     )

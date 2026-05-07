@@ -172,6 +172,12 @@ describe('ChartBlock - TradingView Embed Mode', () => {
 	});
 
 	it('should apply correct height from settings', () => {
+		// Height plumbed via the `--chart-height` CSS variable on the
+		// outer `.chart-block` element (see ChartBlock.svelte:322 +
+		// CSS rule `.chart-container { height: var(--chart-height) }`
+		// at line ~747). The fullscreen override depends on this
+		// indirection so the inline style lives on the parent, NOT on
+		// `.chart-container` itself. Assert on the implementation.
 		const block = createMockBlock({
 			settings: { chartHeight: '500px' }
 		});
@@ -186,8 +192,13 @@ describe('ChartBlock - TradingView Embed Mode', () => {
 			}
 		});
 
-		const chartContainer = container.querySelector('.chart-container');
-		expect(chartContainer).toHaveStyle({ height: '500px' });
+		const chartBlock = container.querySelector('.chart-block') as HTMLElement | null;
+		expect(chartBlock).not.toBeNull();
+		// `style:--chart-height={heightValue}px` writes the variable as
+		// an inline style. The numeric portion is `parseInt('500px') = 500`,
+		// then re-suffixed with `px` in the template, so the final value
+		// is `500px`.
+		expect(chartBlock?.style.getPropertyValue('--chart-height')).toBe('500px');
 	});
 });
 

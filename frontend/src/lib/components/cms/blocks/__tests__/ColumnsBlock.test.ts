@@ -491,8 +491,14 @@ describe('ColumnsBlock - Gap Control', () => {
 			}
 		});
 
-		const columnsContainer = container.querySelector('.columns-container');
-		expect(columnsContainer).toHaveStyle({ gap: '1.5rem' });
+		// Gap is plumbed via the `--columns-gap` CSS variable on the
+		// outer `.columns-block` element (see ColumnsBlock.svelte:107
+		// `style:--columns-gap={gap}` and the CSS rule
+		// `.columns-container { gap: var(--columns-gap) }`). The inline
+		// style lives on the parent, NOT on `.columns-container`.
+		const columnsBlock = container.querySelector('.columns-block') as HTMLElement | null;
+		expect(columnsBlock).not.toBeNull();
+		expect(columnsBlock?.style.getPropertyValue('--columns-gap')).toBe('1.5rem');
 	});
 });
 

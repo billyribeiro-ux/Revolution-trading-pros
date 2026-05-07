@@ -923,7 +923,7 @@ async fn update_profile(
         if let (Some(new_email), Some((raw_token, _))) = (&input.email, verification_token) {
             // Send verification email
             {
-        let email_service = &state.services.email;
+                let email_service = &state.services.email;
                 let name = display_name.as_deref().unwrap_or(&user.name);
                 email_service
                     .send_verification_email(new_email, name, &raw_token)

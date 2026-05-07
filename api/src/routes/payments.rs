@@ -278,19 +278,17 @@ async fn webhook(
     }
 
     // Mark event as processed
-    sqlx::query(
-        "UPDATE webhook_events SET processed_at = NOW() WHERE event_id = $1",
-    )
-    .bind(&event.id)
-    .execute(&state.db.pool)
-    .await
-    .map_err(|e| {
-        tracing::error!(target: "payments", "Failed to mark webhook processed: {}", e);
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": "Failed to finalize webhook processing"})),
-        )
-    })?;
+    sqlx::query("UPDATE webhook_events SET processed_at = NOW() WHERE event_id = $1")
+        .bind(&event.id)
+        .execute(&state.db.pool)
+        .await
+        .map_err(|e| {
+            tracing::error!(target: "payments", "Failed to mark webhook processed: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": "Failed to finalize webhook processing"})),
+            )
+        })?;
 
     Ok(StatusCode::OK)
 }
@@ -827,32 +825,29 @@ async fn handle_checkout_completed(
                 email: String,
                 name: String,
             }
-            let user_row: Option<UserRow> = sqlx::query_as(
-                "SELECT email, name FROM users WHERE id = $1",
-            )
-            .bind(user_id)
-            .fetch_optional(&state.db.pool)
-            .await
-            .ok()
-            .flatten();
+            let user_row: Option<UserRow> =
+                sqlx::query_as("SELECT email, name FROM users WHERE id = $1")
+                    .bind(user_id)
+                    .fetch_optional(&state.db.pool)
+                    .await
+                    .ok()
+                    .flatten();
 
             #[derive(sqlx::FromRow)]
             struct OrderRow {
                 order_number: String,
                 total: rust_decimal::Decimal,
             }
-            let order_row: Option<OrderRow> = sqlx::query_as(
-                "SELECT order_number, total FROM orders WHERE id = $1",
-            )
-            .bind(order_id)
-            .fetch_optional(&state.db.pool)
-            .await
-            .ok()
-            .flatten();
+            let order_row: Option<OrderRow> =
+                sqlx::query_as("SELECT order_number, total FROM orders WHERE id = $1")
+                    .bind(order_id)
+                    .fetch_optional(&state.db.pool)
+                    .await
+                    .ok()
+                    .flatten();
 
             if let (Some(u), Some(o)) = (user_row, order_row) {
-                let amount_dollars: f64 =
-                    o.total.to_string().parse::<f64>().unwrap_or(0.0);
+                let amount_dollars: f64 = o.total.to_string().parse::<f64>().unwrap_or(0.0);
                 let is_subscription = session.subscription.is_some();
                 if is_subscription {
                     // Look up the plan name + period_end for the model.
@@ -1191,7 +1186,7 @@ async fn handle_payment_failed(
 
         // ICT 7 Fix: Send payment failed with grace period email notification
         {
-        let email_service = &state.services.email;
+            let email_service = &state.services.email;
             // Get user details from membership including plan price
             #[derive(sqlx::FromRow)]
             struct UserSubscription {
@@ -1703,7 +1698,7 @@ async fn generate_invoice(
                   (total * 100)::BIGINT    AS total_cents,
                   currency, billing_name, billing_email,
                   billing_address, coupon_code, created_at, completed_at
-           FROM orders WHERE id = $1"#
+           FROM orders WHERE id = $1"#,
     )
     .bind(input.order_id)
     .fetch_optional(&state.db.pool)
@@ -1744,7 +1739,7 @@ async fn generate_invoice(
         "SELECT name, quantity,
                 (unit_price * 100)::BIGINT AS unit_price_cents,
                 (total      * 100)::BIGINT AS total_cents
-         FROM order_items WHERE order_id = $1"
+         FROM order_items WHERE order_id = $1",
     )
     .bind(order.id)
     .fetch_all(&state.db.pool)

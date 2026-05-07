@@ -1198,7 +1198,7 @@ async fn submit_form(
         {
             if let Some(email_to) = settings.get("email_to").and_then(|v| v.as_str()) {
                 {
-        let email_service = &state.services.email;
+                    let email_service = &state.services.email;
                     let subject = format!("New Form Submission: {}", form.name);
                     let html_body = build_form_notification_email(&form.name, &clean_data);
 
