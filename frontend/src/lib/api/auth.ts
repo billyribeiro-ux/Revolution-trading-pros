@@ -60,6 +60,14 @@ const MAX_RETRIES = 3;
 const RETRY_DELAY_BASE = 1000; // 1 second
 const TOKEN_REFRESH_THRESHOLD = 300000; // 5 minutes before expiry
 const SESSION_CHECK_INTERVAL = 60000; // 1 minute
+const PUBLIC_AUTH_PATHS = new Set([
+	'/login',
+	'/register',
+	'/forgot-password',
+	'/reset-password',
+	'/verify-email',
+	'/auth/callback'
+]);
 // Custom headers removed - Rust API CORS only allows standard headers
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -117,7 +125,7 @@ export interface UpdateProfileData {
 	email?: string;
 	phone?: string;
 	avatar?: File;
-	preferences?: Record<string, any>;
+	preferences?: Record<string, unknown>;
 }
 
 export interface AuthResponse {
@@ -221,6 +229,27 @@ export class SessionInvalidatedError extends AuthError {
 	}
 }
 
+type AnalyticsEventData = Record<string, unknown>;
+
+type AnalyticsWindow = Window & {
+	gtag?: (
+		command: 'event',
+		eventName: string,
+		parameters: AnalyticsEventData & { event_category: string }
+	) => void;
+	analytics?: {
+		track: (eventName: string, data?: AnalyticsEventData) => void;
+	};
+};
+
+function getErrorName(error: unknown): string | undefined {
+	return error instanceof Error ? error.name : undefined;
+}
+
+function getErrorMessage(error: unknown): string {
+	return error instanceof Error ? error.message : 'Unknown error';
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // Core Service Class
 // ═══════════════════════════════════════════════════════════════════════════
@@ -230,7 +259,7 @@ class AuthenticationService {
 	private tokenRefreshTimeout?: number;
 	private sessionCheckInterval?: number;
 	private pendingRefresh: Promise<TokenResponse> | null = null;
-	private requestQueue: Map<string, Promise<any>> = new Map();
+	private requestQueue: Map<string, Promise<unknown>> = new Map();
 	private sessionFingerprint?: string;
 	private abortController?: AbortController;
 
@@ -511,15 +540,17 @@ class AuthenticationService {
 	/**
 	 * Check if error should trigger retry
 	 */
-	private shouldRetry(error: any): boolean {
+	private shouldRetry(error: unknown): boolean {
 		if (error instanceof RateLimitError) return false;
 		if (error instanceof ValidationError) return false;
 		if (error instanceof UnauthorizedError) return false;
 
+		const errorName = getErrorName(error);
+
 		// Retry on network errors or 5xx errors
 		return (
-			error.name === 'AbortError' ||
-			error.name === 'NetworkError' ||
+			errorName === 'AbortError' ||
+			errorName === 'NetworkError' ||
 			(error instanceof AuthError && Boolean(error.code?.startsWith('5')))
 		);
 	}
@@ -527,18 +558,20 @@ class AuthenticationService {
 	/**
 	 * Transform error for consistent handling
 	 */
-	private transformError(error: any): Error {
+	private transformError(error: unknown): Error {
 		if (error instanceof AuthError) return error;
 
-		if (error.name === 'AbortError') {
+		const errorName = getErrorName(error);
+
+		if (errorName === 'AbortError') {
 			return new AuthError('Request timeout', 'TIMEOUT');
 		}
 
-		if (error.name === 'NetworkError') {
+		if (errorName === 'NetworkError') {
 			return new AuthError('Network error', 'NETWORK_ERROR');
 		}
 
-		return new AuthError(error.message || 'Unknown error', 'UNKNOWN');
+		return new AuthError(getErrorMessage(error), 'UNKNOWN');
 	}
 
 	/**
@@ -1350,20 +1383,22 @@ class AuthenticationService {
 	/**
 	 * Track event for analytics
 	 */
-	private trackEvent(event: string, data?: Record<string, any>): void {
+	private trackEvent(event: string, data?: AnalyticsEventData): void {
 		if (!browser) return;
 
+		const analyticsWindow = window as AnalyticsWindow;
+
 		// Google Analytics
-		if ('gtag' in window) {
-			(window as any).gtag('event', event, {
+		if (analyticsWindow.gtag) {
+			analyticsWindow.gtag('event', event, {
 				event_category: 'authentication',
 				...data
 			});
 		}
 
 		// Custom analytics
-		if ('analytics' in window) {
-			(window as any).analytics.track(event, data);
+		if (analyticsWindow.analytics) {
+			analyticsWindow.analytics.track(event, data);
 		}
 
 		console.debug(`[AuthService] Event tracked: ${event}`, data);
@@ -1373,7 +1408,7 @@ class AuthenticationService {
 	 * Track security event
 	 * NOTE: Disabled - /api/security/events endpoint not implemented on backend
 	 */
-	private trackSecurityEvent(type: string, data?: Record<string, any>): void {
+	private trackSecurityEvent(type: string, data?: AnalyticsEventData): void {
 		// Log locally instead of making API call
 		console.debug('[AuthService] Security event:', type, data);
 	}
@@ -1430,14 +1465,20 @@ export const getSecurityEvents = () => authService.getSecurityEvents();
 export async function initializeAuth(): Promise<boolean> {
 	if (!browser) return false;
 
+	const sessionId = authStore.getSessionId();
+	const pathname = window.location.pathname;
+
+	if (!sessionId && PUBLIC_AUTH_PATHS.has(pathname)) {
+		authStore.completeInitialization(false);
+		return false;
+	}
+
 	// ICT11+ Performance: Add timeout to prevent blocking UI
 	const AUTH_TIMEOUT = 5000; // 5 second timeout
 
 	const timeoutPromise = new Promise<never>((_, reject) => {
 		setTimeout(() => reject(new Error('Auth initialization timeout')), AUTH_TIMEOUT);
 	});
-
-	const sessionId = authStore.getSessionId();
 
 	// FIX-2026-04-27: cookie-only session probe.
 	// ───────────────────────────────────────────────────────────────────────────

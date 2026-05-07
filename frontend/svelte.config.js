@@ -74,6 +74,10 @@ const config = {
 				'style-src': ['self', 'unsafe-inline', 'fonts.googleapis.com'],
 				'font-src': ['self', 'fonts.gstatic.com', 'data:'],
 				'img-src': ['self', 'data:', 'https:', 'blob:'],
+				'worker-src': [
+					'self',
+					...(process.env.NODE_ENV === 'development' ? ['blob:'] : [])
+				],
 				'media-src': [
 					'self',
 					'https://*.mediadelivery.net',
@@ -111,7 +115,7 @@ const config = {
 			}
 		},
 		serviceWorker: {
-			register: true
+			register: process.env.NODE_ENV !== 'development'
 		},
 		env: {
 			publicPrefix: 'PUBLIC_'

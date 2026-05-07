@@ -8,12 +8,26 @@
  * ══════════════════════════════════════════════════════════════════════════════
  */
 
+import { dev } from '$app/environment';
+
 export async function registerServiceWorker(): Promise<void> {
 	// SvelteKit handles registration automatically via svelte.config.js
 	// This function is kept for backward compatibility but is now a no-op
 	// The service worker is registered from src/service-worker.ts
 
 	if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
+		return;
+	}
+
+	if (dev) {
+		const registrations = await navigator.serviceWorker.getRegistrations();
+		await Promise.all(registrations.map((registration) => registration.unregister()));
+
+		if ('caches' in window) {
+			const keys = await caches.keys();
+			await Promise.all(keys.map((key) => caches.delete(key)));
+		}
+
 		return;
 	}
 
