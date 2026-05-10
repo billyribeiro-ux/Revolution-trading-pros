@@ -61,21 +61,6 @@ const authHandler: Handle = async ({ event, resolve }) => {
 		return null;
 	};
 
-	// DEV MODE BYPASS DISABLED - Using real authentication
-	// const isDev = process.env.NODE_ENV === 'development';
-	// const DEV_BYPASS_EMAIL = 'welberribeirodrums@gmail.com';
-	//
-	// if (isDev && (pathname.startsWith('/dashboard') || pathname.startsWith('/admin'))) {
-	// 	event.locals.user = {
-	// 		id: 999,
-	// 		email: DEV_BYPASS_EMAIL,
-	// 		name: 'Developer',
-	// 		role: 'developer'
-	// 	};
-	// 	event.locals.accessToken = 'dev-token';
-	// 	return resolve(event);
-	// }
-
 	// Check if this is a protected route
 	const isProtectedRoute = PROTECTED_ROUTES.some((route) => pathname.startsWith(route));
 

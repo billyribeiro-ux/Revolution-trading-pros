@@ -393,6 +393,7 @@ impl StripeService {
             .post(format!("{}/customers", STRIPE_API_BASE))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
+            .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
             .form(
                 &params
                     .iter()
@@ -542,6 +543,7 @@ impl StripeService {
             .post(format!("{}/checkout/sessions", STRIPE_API_BASE))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
+            .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
             .form(
                 &form_params
                     .iter()
@@ -634,6 +636,7 @@ impl StripeService {
             .post(format!("{}/billing_portal/sessions", STRIPE_API_BASE))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
+            .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
             .form(&params)
             .send()
             .await?
@@ -699,6 +702,7 @@ impl StripeService {
             .post(format!("{}/coupons", STRIPE_API_BASE))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
+            .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
             .form(
                 &form
                     .iter()
@@ -747,6 +751,7 @@ impl StripeService {
             .delete(format!("{}/coupons/{}", STRIPE_API_BASE, coupon_id))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
+            .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
             .send()
             .await?;
         if !response.status().is_success() {
@@ -818,6 +823,7 @@ impl StripeService {
                 ))
                 .basic_auth(&self.secret_key, None::<&str>)
                 .header("Stripe-Version", STRIPE_API_VERSION)
+            .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
                 .send()
                 .await?
                 .json()
@@ -833,6 +839,7 @@ impl StripeService {
                 ))
                 .basic_auth(&self.secret_key, None::<&str>)
                 .header("Stripe-Version", STRIPE_API_VERSION)
+            .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
                 .form(&[("cancel_at_period_end", "true")])
                 .send()
                 .await?
@@ -857,6 +864,7 @@ impl StripeService {
             ))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
+            .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
             .form(params)
             .send()
             .await?
@@ -889,6 +897,7 @@ impl StripeService {
             .post(format!("{}/refunds", STRIPE_API_BASE))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
+            .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
             .form(
                 &params
                     .iter()
@@ -990,6 +999,7 @@ impl StripeService {
             ))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
+            .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
             .form(&[("customer", customer_id)])
             .send()
             .await?
@@ -1000,6 +1010,7 @@ impl StripeService {
             .post(format!("{}/customers/{}", STRIPE_API_BASE, customer_id))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
+            .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
             .form(&[(
                 "invoice_settings[default_payment_method]",
                 payment_method_id,
@@ -1055,6 +1066,7 @@ impl StripeService {
             .post(format!("{}/invoices/{}/pay", STRIPE_API_BASE, invoice.id))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
+            .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
             .send()
             .await?;
 
@@ -1120,6 +1132,7 @@ impl StripeService {
             ))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
+            .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
             .form(&[("customer", customer_id)])
             .send()
             .await?
@@ -1143,6 +1156,7 @@ impl StripeService {
             ))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
+            .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
             .send()
             .await?
             .json()
@@ -1181,6 +1195,7 @@ impl StripeService {
             .post(format!("{}/products", STRIPE_API_BASE))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
+            .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
             .form(&[("name", name)])
             .send()
             .await?;
@@ -1240,6 +1255,7 @@ impl StripeService {
             .post(format!("{}/prices", STRIPE_API_BASE))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
+            .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
             .form(
                 &params
                     .iter()
@@ -1288,6 +1304,7 @@ impl StripeService {
             .post(format!("{}/prices/{}", STRIPE_API_BASE, price_id))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
+            .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
             .form(&[("active", "false")])
             .send()
             .await?
@@ -1370,6 +1387,7 @@ impl StripeService {
             ))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
+            .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
             .form(
                 &params
                     .iter()

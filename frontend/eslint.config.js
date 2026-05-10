@@ -19,6 +19,8 @@ export default [
 				ServiceWorkerGlobalScope: 'readonly',
 				FetchEvent: 'readonly',
 				Disposable: 'readonly',
+				// SvelteKit ambient namespace declared in src/app.d.ts
+				App: 'readonly',
 				$state: 'readonly',
 				$derived: 'readonly',
 				$effect: 'readonly',

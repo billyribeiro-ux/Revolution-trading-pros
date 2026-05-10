@@ -285,7 +285,8 @@
 			// and the admin retries; never silently persist a transient blob URL.
 			console.error('Server upload failed:', error?.message ?? error);
 			throw new Error(
-				`Upload failed: ${error?.message ?? 'unknown error'}. Please retry — the file was not saved.`
+				`Upload failed: ${error?.message ?? 'unknown error'}. Please retry — the file was not saved.`,
+				{ cause: error }
 			);
 		}
 	}
