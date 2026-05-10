@@ -1039,7 +1039,7 @@ export const usersApi = {
 
 	// FIX-H-5 (2026-04-29): impersonate() removed. Backend endpoint
 	// /admin/users/:id/impersonate has been deleted along with this
-	// client wrapper. See SECURITY_GAPS_2026-04-29.md.
+	// client wrapper. See docs/audits/SECURITY_GAPS_2026-04-29.md.
 };
 
 /**

@@ -14,7 +14,7 @@
 
 import { browser } from '$app/environment';
 // FIX-2026-04-26: untrack imported for the read-helper shield (Change 1B in
-// PRINCIPAL_FIX_PLAN_2026-04-26.md). Wrapping the rune read inside each
+// docs/audits/PRINCIPAL_FIX_PLAN_2026-04-26.md). Wrapping the rune read inside each
 // getIs*Connected() helper prevents a $effect caller from installing
 // connectionsState as a tracked dep — eliminating the cascade-prone
 // read+write pattern that bit 13 admin pages.
@@ -259,7 +259,7 @@ let visibilityListener: (() => void) | null = null;
 // When a $effect re-runs (because the rune was written + getIs*Connected was
 // read in the same flush), the second `load()` call returns this promise
 // instead of starting a second concurrent fetch. Net result: one rune write
-// per page mount, no cascade. See CASCADE_ROOT_CAUSE_REPORT.md §6 Change A.
+// per page mount, no cascade. See docs/audits/CASCADE_ROOT_CAUSE_REPORT.md §6 Change A.
 let inFlightLoad: Promise<void> | null = null;
 
 export const connections = {
@@ -286,7 +286,7 @@ export const connections = {
 	 * calls coalesce into a single fetch + single rune write. This makes
 	 * `load()` safe to call from inside a $effect — the recipe that 13 admin
 	 * pages used (and that tripped `effect_update_depth_exceeded` on
-	 * post-login). See CASCADE_ROOT_CAUSE_REPORT.md §6 Change A.
+	 * post-login). See docs/audits/CASCADE_ROOT_CAUSE_REPORT.md §6 Change A.
 	 *
 	 * Old code (kept for one revision per FIX-2026-04-26 marker — delete in follow-up):
 	 *
@@ -431,7 +431,7 @@ export const connections = {
 	 *
 	 * FIX-2026-04-26: was an unconditional `setInterval(this.load, 60s)` that
 	 * kept ticking even when the tab was backgrounded — wasting battery,
-	 * bandwidth, and (per CASCADE_ROOT_CAUSE_REPORT.md §5.2) generating high-
+	 * bandwidth, and (per docs/audits/CASCADE_ROOT_CAUSE_REPORT.md §5.2) generating high-
 	 * frequency rune churn that re-fired every `$derived` and `getIs*Connected`
 	 * downstream of `connectionsState`. Now gated on `document.visibilityState`:
 	 * the interval only runs while the tab is visible and is paused/resumed via
@@ -540,7 +540,7 @@ export const connections = {
 // `effect_update_depth_exceeded` on post-login. `$derived(getXConnected())`
 // continues to work: $derived installs tracking at the proxy boundary,
 // before `untrack` runs inside the helper body. Verified Svelte 5 semantics.
-// See CASCADE_ROOT_CAUSE_REPORT.md §6 Change B.
+// See docs/audits/CASCADE_ROOT_CAUSE_REPORT.md §6 Change B.
 
 /**
  * Check if analytics is connected

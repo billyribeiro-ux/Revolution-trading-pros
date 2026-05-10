@@ -6,7 +6,7 @@ All notable changes to this project. Format roughly follows [Keep a Changelog](h
 
 ## [Unreleased] — 2026-04-29 16:07 EDT — Security hardening pass: 13 of 14 audit gaps closed
 
-Branch: `security-hardening-2026-04-29` (off `main`). Single audit-and-fix pass driven by [SECURITY_GAPS_2026-04-29.md](SECURITY_GAPS_2026-04-29.md). Every claim grounded in direct source read; every fix verified by `cargo check` clean, `cargo test --lib config` 13/13 passing, `pnpm check` 0 errors / 0 warnings / 5217 files.
+Branch: `security-hardening-2026-04-29` (off `main`). Single audit-and-fix pass driven by [docs/audits/SECURITY_GAPS_2026-04-29.md](docs/audits/SECURITY_GAPS_2026-04-29.md). Every claim grounded in direct source read; every fix verified by `cargo check` clean, `cargo test --lib config` 13/13 passing, `pnpm check` 0 errors / 0 warnings / 5217 files.
 
 13 code-fixable gaps closed. Only C-3 (R2 credential rotation) remains — it requires logging into the Cloudflare console and cannot be fixed from code.
 
@@ -46,7 +46,7 @@ Branch: `security-hardening-2026-04-29` (off `main`). Single audit-and-fix pass 
 
 ### Outstanding
 
-**C-3 — R2 credential rotation.** Cannot be fixed from code. The values currently in `api/.env` are real Cloudflare R2 credentials. Rotation steps in [SECURITY_GAPS_2026-04-29.md](SECURITY_GAPS_2026-04-29.md) §C-3.
+**C-3 — R2 credential rotation.** Cannot be fixed from code. The values currently in `api/.env` are real Cloudflare R2 credentials. Rotation steps in [docs/audits/SECURITY_GAPS_2026-04-29.md](docs/audits/SECURITY_GAPS_2026-04-29.md) §C-3.
 
 ### Verification
 
@@ -68,7 +68,7 @@ COMPLETED 5217 FILES 0 ERRORS 0 WARNINGS 0 FILES_WITH_PROBLEMS
 
 | Modified | Deleted | Created |
 |---|---|---|
-| api/src/config/mod.rs | api/src/services/rate_limit.rs | SECURITY_GAPS_2026-04-29.md |
+| api/src/config/mod.rs | api/src/services/rate_limit.rs | docs/audits/SECURITY_GAPS_2026-04-29.md |
 | api/src/main.rs | | api/migrations/065_backfill_coupon_usage.sql |
 | api/src/middleware/admin.rs | | api/migrations/066_drop_unused_oauth_tokens.sql |
 | api/src/middleware/auth.rs | | api/migrations/067_drop_unused_login_rate_limits.sql |
@@ -300,7 +300,7 @@ Migration system reconciliation, Meilisearch local stack, and Fly.io config clea
 
 ## [Unreleased] — 2026-04-28 (a) — Auth Security Hardening
 
-Comprehensive auth/authorization security hardening. All 7 findings verified live against the running Docker stack. Full audit in `AUTH_AUDIT.md`.
+Comprehensive auth/authorization security hardening. All 7 findings verified live against the running Docker stack. Full audit in `docs/audits/AUTH_AUDIT.md`.
 
 ### Security
 

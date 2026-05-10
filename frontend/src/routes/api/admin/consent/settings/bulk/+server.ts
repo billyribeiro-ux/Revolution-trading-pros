@@ -2,7 +2,7 @@
  * Admin Consent Settings — Bulk Update Proxy.
  *
  * FIX-2026-04-26: created to satisfy `POST /api/admin/consent/settings/bulk`
- * for the `/admin/consent/settings` page (ADMIN_FAILURE_DATA.md §9.5).
+ * for the `/admin/consent/settings` page (docs/audits/ADMIN_FAILURE_DATA.md §9.5).
  *
  * Lives in its own folder rather than under a `[...rest]` shim because the
  * page hits a single, fixed sub-path. Forwards body unchanged with the

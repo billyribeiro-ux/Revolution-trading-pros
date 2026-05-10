@@ -4,7 +4,7 @@
  * The parent `+server.ts` in this folder claims all sub-paths for routing
  * purposes, blocking POST/PUT/PATCH on /admin/posts/<id>, bulk-delete,
  * bulk-status, duplicate, status, featured, import, export, analytics, etc.
- * (9 broken blog-admin actions per ADMIN_FAILURE_DATA.md §3a.)
+ * (9 broken blog-admin actions per docs/audits/ADMIN_FAILURE_DATA.md §3a.)
  *
  * This `[...rest]/+server.ts` explicitly handles the sub-paths and forwards
  * to the Rust backend with the canonical `rtp_access_token` Bearer token.

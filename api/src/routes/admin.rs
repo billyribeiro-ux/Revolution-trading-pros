@@ -2285,7 +2285,7 @@ pub fn router() -> Router<AppState> {
         .route("/users/:id/memberships", get(get_user_memberships_by_user))
         .route("/users/:id/subscriptions", get(get_user_subscriptions))
         // FIX-H-5 (2026-04-29): /users/:id/impersonate route removed
-        // along with the handler. See SECURITY_GAPS_2026-04-29.md.
+        // along with the handler. See docs/audits/SECURITY_GAPS_2026-04-29.md.
         // Memberships (admin management)
         .route("/membership-plans", get(list_all_plans))
         .route(
