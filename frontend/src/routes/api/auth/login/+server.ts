@@ -17,12 +17,10 @@ export const POST = async ({ request, cookies }: RequestEvent) => {
 	try {
 		const body = await request.json();
 
-		// ICT 7 Debug: Log request details (mask password)
-		console.log('[Auth Proxy] Login request:', {
-			email: body.email,
-			hasPassword: !!body.password,
-			passwordLength: body.password?.length || 0
-		});
+		// (audit 2026-05-17) Removed the temp "ICT 7 Debug" request log:
+		// logging the email + auth-attempt shape on every login is PII /
+		// security noise that should never reach production. Errors are
+		// still surfaced via console.error below.
 
 		// Forward request to backend
 		const response = await fetch(`${API_URL}/api/auth/login`, {
@@ -44,13 +42,9 @@ export const POST = async ({ request, cookies }: RequestEvent) => {
 			return json({ error: 'Invalid response from auth server' }, { status: 502 });
 		}
 
-		// ICT 7 Debug: Log full response for diagnosis
-		console.log('[Auth Proxy] Backend response:', {
-			status: response.status,
-			error: data.error,
-			hasToken: !!data.token,
-			hasUser: !!data.user
-		});
+		// (audit 2026-05-17) Removed the temp "ICT 7 Debug" response log
+		// (auth-token presence / user shape on every login). console.error
+		// below still covers genuine failures.
 
 		// If successful, set httpOnly cookies for the tokens
 		if (response.ok && data.token) {
@@ -76,8 +70,6 @@ export const POST = async ({ request, cookies }: RequestEvent) => {
 					maxAge: 60 * 60 * 24 * 30 // 30 days
 				});
 			}
-
-			console.log('[Auth Proxy] Cookies set successfully');
 		}
 
 		// Return the response with proper status
