@@ -790,7 +790,17 @@ impl StripeService {
         Ok(response)
     }
 
-    /// Get subscription details
+    /// Get subscription details.
+    ///
+    /// P1-8 FIX (audit FULL_REPO_AUDIT_2026-05-17): the Stripe 2026 API moved
+    /// the billing-period timestamps off the top-level Subscription object and
+    /// into `items.data[0].current_period_start/end`. A plain GET no longer
+    /// returns those item fields populated, so `get_current_period()` fell back
+    /// to `(0, 0)` and memberships were persisted with
+    /// `current_period_start/end = 1970-01-01`. We now explicitly expand
+    /// `items.data` (matching how `get_checkout_session` /
+    /// `retrieve_checkout_session` already expand nested objects) so the period
+    /// timestamps are present in the response.
     pub async fn get_subscription(&self, subscription_id: &str) -> Result<StripeSubscription> {
         let response: StripeSubscription = self
             .client
@@ -800,6 +810,7 @@ impl StripeService {
             ))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
+            .query(&[("expand[]", "items.data")])
             .send()
             .await?
             .json()
@@ -874,12 +885,53 @@ impl StripeService {
         Ok(response)
     }
 
-    /// Create refund
+    /// Create refund.
+    ///
+    /// P2-A FIX (audit FULL_REPO_AUDIT_2026-05-17): previously every call sent a
+    /// fresh `uuid::Uuid::new_v4()` Idempotency-Key, so a webhook retry or a
+    /// user double-submit that re-invoked this method issued a *second* refund
+    /// against the same payment intent. The Idempotency-Key is now derived
+    /// deterministically from the logical refund operation
+    /// (`payment_intent + amount`) so a retry of the SAME logical refund
+    /// reuses the SAME key and Stripe collapses it to one refund.
+    ///
+    /// For callers that own a higher-level logical operation id (e.g. the
+    /// originating order/refund-request id) prefer
+    /// [`StripeService::create_refund_with_key`] and thread that id through;
+    /// this 3-arg form keeps its public signature for existing callers
+    /// (`routes/orders.rs`) and derives the key from the refund parameters.
     pub async fn create_refund(
         &self,
         payment_intent_id: &str,
         amount: Option<i64>,
         reason: Option<&str>,
+    ) -> Result<StripeRefund> {
+        // Deterministic per (payment_intent, amount). A full refund and a
+        // distinct partial-refund amount get distinct keys (they are distinct
+        // logical operations); a retry of the same logical refund reuses it.
+        let logical_op = format!(
+            "refund:{}:{}",
+            payment_intent_id,
+            amount
+                .map(|a| a.to_string())
+                .unwrap_or_else(|| "full".to_string())
+        );
+        self.create_refund_with_key(payment_intent_id, amount, reason, &logical_op)
+            .await
+    }
+
+    /// Create refund with an explicit caller-supplied logical-operation key.
+    ///
+    /// `logical_op` MUST be stable across retries of the SAME logical refund
+    /// (e.g. derived from the originating order id / refund-request id). It is
+    /// hashed into a deterministic Stripe Idempotency-Key so that Stripe
+    /// dedupes a replayed refund instead of issuing a second one.
+    pub async fn create_refund_with_key(
+        &self,
+        payment_intent_id: &str,
+        amount: Option<i64>,
+        reason: Option<&str>,
+        logical_op: &str,
     ) -> Result<StripeRefund> {
         let mut params: Vec<(&str, String)> =
             vec![("payment_intent", payment_intent_id.to_string())];
@@ -897,7 +949,10 @@ impl StripeService {
             .post(format!("{}/refunds", STRIPE_API_BASE))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
-            .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
+            .header(
+                "Idempotency-Key",
+                deterministic_idempotency_key("refund", logical_op),
+            )
             .form(
                 &params
                     .iter()
@@ -1518,6 +1573,31 @@ impl WebhookEvent {
             .as_str()
             .and_then(|s| s.parse().ok())
     }
+}
+
+/// Derive a deterministic Stripe Idempotency-Key from a logical operation.
+///
+/// P2-A FIX (audit FULL_REPO_AUDIT_2026-05-17): mutating Stripe calls must
+/// reuse the SAME Idempotency-Key when the SAME logical operation is retried
+/// (webhook redelivery, user double-submit) so Stripe collapses the duplicate
+/// instead of charging/refunding twice. `domain` namespaces the operation
+/// class (e.g. "refund") and `logical_op` is the stable identity of the
+/// operation (order id, subscription id, payment-intent, …). We SHA-256 the
+/// `domain:logical_op` tuple so arbitrary-length identifiers map to a
+/// fixed-length, collision-resistant key well under Stripe's 255-char limit.
+///
+/// This is the compile-verifiable, no-DB form. The ideal hardening (G0.3,
+/// owner-gated, NOT verifiable here) is to additionally persist the resulting
+/// key on the originating DB row so the SAME key is reused even across process
+/// restarts where the caller no longer holds the logical id in memory; that
+/// requires a schema column and is documented as a follow-up.
+fn deterministic_idempotency_key(domain: &str, logical_op: &str) -> String {
+    use sha2::Digest;
+    let mut hasher = Sha256::new();
+    hasher.update(domain.as_bytes());
+    hasher.update(b":");
+    hasher.update(logical_op.as_bytes());
+    format!("{}-{}", domain, hex::encode(hasher.finalize()))
 }
 
 /// Constant-time string comparison to prevent timing attacks
