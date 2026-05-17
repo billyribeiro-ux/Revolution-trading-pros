@@ -161,7 +161,7 @@ apiClient.addRequestInterceptor(async (config) => {
 
 // Log all successful responses
 apiClient.addResponseInterceptor(async (response) => {
-	console.log(`API Response: ${response.status} - ${response.duration}ms`);
+	console.info(`API Response: ${response.status} - ${response.duration}ms`);
 	return response;
 });
 

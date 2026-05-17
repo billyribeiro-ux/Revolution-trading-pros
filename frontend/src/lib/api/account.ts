@@ -235,7 +235,7 @@ export const accountApi = {
 	async updateProfile(data: UpdateProfileRequest): Promise<UserProfile> {
 		try {
 			const response = await apiClient.put<ApiResponse<UserProfile>>('/api/user/profile', data);
-			console.log('[Account API] Profile updated successfully');
+			console.info('[Account API] Profile updated successfully');
 			return response.data;
 		} catch (error) {
 			console.error('[Account API] Failed to update profile:', error);
@@ -256,7 +256,7 @@ export const accountApi = {
 				'/api/user/password',
 				data
 			);
-			console.log('[Account API] Password updated successfully');
+			console.info('[Account API] Password updated successfully');
 			return response.data;
 		} catch (error) {
 			console.error('[Account API] Failed to update password:', error);
@@ -286,7 +286,7 @@ export const accountApi = {
 				}
 			);
 
-			console.log('[Account API] Avatar uploaded successfully');
+			console.info('[Account API] Avatar uploaded successfully');
 			return response.data;
 		} catch (error) {
 			console.error('[Account API] Failed to upload avatar:', error);
@@ -303,7 +303,7 @@ export const accountApi = {
 	async deleteAvatar(): Promise<UserProfile> {
 		try {
 			const response = await apiClient.delete<ApiResponse<UserProfile>>('/api/user/avatar');
-			console.log('[Account API] Avatar deleted successfully');
+			console.info('[Account API] Avatar deleted successfully');
 			return response.data;
 		} catch (error) {
 			console.error('[Account API] Failed to delete avatar:', error);

@@ -198,7 +198,9 @@
 		indicator.slug = value;
 		slugEdited = value.trim().length > 0;
 	}
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	// `void` reference keeps `onSlugInput` from tripping no-unused-vars while
+	// the slug-input field that should call it is still TODO (orphaned handler;
+	// tracked for a follow-up — not wired here to keep this PR scoped).
 	void onSlugInput;
 
 	// ═══════════════════════════════════════════════════════════════════════════

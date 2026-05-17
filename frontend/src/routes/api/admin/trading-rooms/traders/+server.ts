@@ -15,8 +15,12 @@ import { env } from '$env/dynamic/private';
 const BACKEND_URL =
 	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
-// Mock traders data
-const mockTraders = [
+// Mock traders data — PRESERVED as a local-dev reference only (audit
+// 2026-05-16). The real backend (`admin_list_traders`, trading_rooms.rs)
+// is now implemented, so this is no longer a live data path. `_`-prefixed
+// so the config's varsIgnorePattern (/^_/) silences no-unused-vars
+// without deleting the reference.
+const _mockTraders = [
 	{
 		id: 1,
 		name: 'Mike Thompson',
@@ -106,7 +110,12 @@ async function fetchFromBackend(endpoint: string, options?: RequestInit): Promis
 
 // GET - List traders
 export const GET: RequestHandler = async ({ url, request, cookies }) => {
-	const activeOnly = url.searchParams.get('active_only') === 'true';
+	// `active_only` is forwarded intact to the backend via
+	// `url.searchParams.toString()` below and honored there by the now-real
+	// `admin_list_traders` (TradersQuery, trading_rooms.rs). Parsing it into
+	// a local const here was vestigial — commented out (not deleted) per the
+	// audit's "comment, don't delete" rule.
+	// const activeOnly = url.searchParams.get('active_only') === 'true';
 
 	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
 	// Old: headers: { Authorization: request.headers.get('Authorization') || '' }

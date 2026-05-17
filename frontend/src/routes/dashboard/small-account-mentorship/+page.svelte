@@ -146,16 +146,16 @@
 		const DISCOVERY_DOCS = ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'];
 		const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly';
 
-		// @ts-ignore - gapi is loaded from external script
+		// @ts-expect-error gapi is loaded from external script (untyped global)
 		if (typeof gapi === 'undefined' || !gapi.client) {
 			console.warn('Google API not loaded yet');
 			return;
 		}
 
 		try {
-			// @ts-ignore
+			// @ts-expect-error gapi is an untyped external Google API global
 			gapi.load('client', () => {
-				// @ts-ignore
+				// @ts-expect-error gapi is an untyped external Google API global
 				gapi.client
 					.init({
 						apiKey: API_KEY,
@@ -164,7 +164,7 @@
 						scope: SCOPES
 					})
 					.then(() => {
-						// @ts-ignore
+						// @ts-expect-error gapi is an untyped external Google API global
 						return gapi.client.calendar.events.list({
 							calendarId: 'simpleroptions.com_sabio00har0rd4odbrsa705904@group.calendar.google.com',
 							timeMin: new Date().toISOString(),

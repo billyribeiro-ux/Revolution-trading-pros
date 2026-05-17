@@ -28,7 +28,7 @@ const BACKEND_URL = env.BACKEND_URL || 'http://localhost:8080';
 
 async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Promise<any | null> {
 	try {
-		console.log(`[Alerts API] Fetching: ${BACKEND_URL}${endpoint}`);
+		console.info(`[Alerts API] Fetching: ${BACKEND_URL}${endpoint}`);
 		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
 			...options,
 			headers: {
@@ -44,7 +44,7 @@ async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Pr
 		}
 
 		const data = await response.json();
-		console.log(`[Alerts API] Backend success:`, data?.data?.length || 0, 'items');
+		console.info(`[Alerts API] Backend success:`, data?.data?.length || 0, 'items');
 		return data;
 	} catch (err) {
 		console.error('[Alerts API] Backend fetch failed:', err);
@@ -151,8 +151,10 @@ export const GET: RequestHandler = async ({ params, url, request, cookies }) => 
 		});
 	}
 
-	// Fallback to mock data
-	console.log(`[Alerts API] Using mock data for ${slug}`);
+	// Fallback to mock data — STUB-SMELL (audit 2026-05-17): the proxy
+	// silently serves mockAlerts on backend failure, same class as the
+	// trading-rooms gaps. Tracked in audit doc §11. info, not log.
+	console.info(`[Alerts API] Using mock data for ${slug}`);
 	let alerts = mockAlerts[slug] || [];
 
 	// Filter by alert type

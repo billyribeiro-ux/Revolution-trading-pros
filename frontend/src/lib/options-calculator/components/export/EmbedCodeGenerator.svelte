@@ -1,6 +1,4 @@
 <script lang="ts">
-	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
-	// import { Code2, Copy, X } from '@lucide/svelte';
 	import IconCode from '@tabler/icons-svelte-runes/icons/code';
 	import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';

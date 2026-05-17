@@ -82,13 +82,8 @@
 	let toastType = $state<'success' | 'error'>('success');
 	let showToast = $state(false);
 
-	// Stats
-	let stats = $state({
-		total: 0,
-		visible: 0,
-		hidden: 0,
-		withPosts: 0
-	});
+	// Stats — pure projection of `categories`, so a single $derived (declared
+	// in the DERIVED section below). No $state + sync-$effect indirection.
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE - Svelte 5 $derived
@@ -134,17 +129,16 @@
 		}
 	});
 
-	// FIX-2026-04-26 (P3-13): convert effect-derived stats to $derived to remove
-	// the write-while-reading "shadow-state" cascade.
-	let computedStats = $derived({
+	// FIX-2026-04-26 (P3-13) completed (audit 2026-05-16): previously a
+	// $derived `computedStats` was copied into a `$state` `stats` via a
+	// sync-$effect — the exact write-while-reading "shadow-state" cascade
+	// the P3-13 comment claimed to remove. Now a single $derived; the
+	// template reads `stats.*` unchanged.
+	let stats = $derived({
 		total: categories.length,
 		visible: categories.filter((c) => c.is_visible).length,
 		hidden: categories.filter((c) => !c.is_visible).length,
 		withPosts: categories.filter((c) => c.post_count > 0).length
-	});
-	// Keep the existing `stats` rune in sync via a plain effect (one-direction).
-	$effect(() => {
-		stats = computedStats;
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════

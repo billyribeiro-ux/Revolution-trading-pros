@@ -1,3 +1,5 @@
+/* eslint-disable no-console -- CLI audit script: console IS its output
+   (prints the scan target + formatted report). audit 2026-05-17 */
 /**
  * SEO Audit Script
  * ═══════════════════════════════════════════════════════════════════════════════

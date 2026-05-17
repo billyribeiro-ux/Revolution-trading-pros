@@ -1,6 +1,4 @@
 <script lang="ts">
-	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
-	// import { Camera, X, Copy, Download, Monitor, BarChart3, LineChart, Maximize } from '@lucide/svelte';
 	import IconCamera from '@tabler/icons-svelte-runes/icons/camera';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconCopy from '@tabler/icons-svelte-runes/icons/copy';

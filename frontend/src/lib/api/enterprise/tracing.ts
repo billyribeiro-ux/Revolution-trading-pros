@@ -386,6 +386,9 @@ export function log(
 	if (import.meta.env.DEV) {
 		const prefix = context ? `[${context.traceId.slice(0, 8)}]` : '';
 		const consoleMethod = level === 'error' ? 'error' : level === 'warn' ? 'warn' : 'debug';
+		// consoleMethod is only ever error|warn|debug (all lint-allowed) and
+		// this block is DEV-gated; the rule can't prove the union statically.
+		// eslint-disable-next-line no-console
 		console[consoleMethod](`${prefix} ${message}`, entry);
 	}
 

@@ -17,10 +17,8 @@ export const POST = async ({ request }: RequestEvent) => {
 	try {
 		const body = await request.json();
 
-		// ICT 11+ Debug: Log request details
-		console.log('[Auth Proxy] Forgot password request:', {
-			email: body.email
-		});
+		// (audit 2026-05-17) Removed temp "ICT 11+ Debug" request log
+		// (logged the email on every forgot-password — PII noise).
 
 		// Forward request to backend
 		const response = await fetch(`${API_URL}/api/auth/forgot-password`, {
@@ -42,11 +40,7 @@ export const POST = async ({ request }: RequestEvent) => {
 			return json({ error: 'Invalid response from auth server' }, { status: 502 });
 		}
 
-		// ICT 11+ Debug: Log response for diagnosis
-		console.log('[Auth Proxy] Forgot password response:', {
-			status: response.status,
-			message: data.message
-		});
+		// (audit 2026-05-17) Removed temp "ICT 11+ Debug" response log.
 
 		// Return the response with proper status
 		return json(data, { status: response.status });

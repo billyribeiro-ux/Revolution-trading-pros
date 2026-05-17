@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { Dialog as DialogPrimitive } from 'bits-ui';
 	import DialogPortal from './dialog-portal.svelte';
-	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
-	// import XIcon from '@lucide/svelte/icons/x';
 	import XIcon from '@tabler/icons-svelte-runes/icons/x';
 	import type { Snippet } from 'svelte';
 	import * as Dialog from './index.js';

@@ -27,7 +27,7 @@ const BACKEND_URL = env.BACKEND_URL || 'http://localhost:8080';
 
 async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Promise<any | null> {
 	try {
-		console.log(`[Stats API] Fetching: ${BACKEND_URL}${endpoint}`);
+		console.info(`[Stats API] Fetching: ${BACKEND_URL}${endpoint}`);
 		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
 			...options,
 			headers: {
@@ -43,7 +43,7 @@ async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Pr
 		}
 
 		const data = await response.json();
-		console.log(`[Stats API] Backend success`);
+		console.info(`[Stats API] Backend success`);
 		return data;
 	} catch (err) {
 		console.error('[Stats API] Backend fetch failed:', err);
@@ -112,7 +112,7 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
 	}
 
 	// Fallback to mock data
-	console.log(`[Stats API] Using mock data for ${slug}`);
+	console.info(`[Stats API] Using mock data for ${slug}`);
 	const stats = mockStats[slug];
 
 	if (!stats) {

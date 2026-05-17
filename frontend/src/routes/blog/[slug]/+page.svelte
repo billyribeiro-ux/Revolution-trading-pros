@@ -161,9 +161,12 @@
 		return cleanup;
 	});
 
-	// Track social shares
+	// Track social shares.
+	// STUB (audit 2026-05-17): wired to <ShareButtons onShare> but only
+	// logs — no real analytics event is fired. Logged at info until a
+	// proper share-tracking call lands; tracked in the audit doc.
 	function handleSocialShare(platform: string) {
-		console.log(`Shared on ${platform}:`, post?.slug);
+		console.info(`Shared on ${platform}:`, post?.slug);
 	}
 
 	// Derived SEO values - Svelte 5 runes

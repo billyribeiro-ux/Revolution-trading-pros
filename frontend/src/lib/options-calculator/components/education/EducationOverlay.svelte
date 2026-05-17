@@ -1,6 +1,4 @@
 <script lang="ts">
-	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
-	// import { GraduationCap } from '@lucide/svelte';
 	import IconSchool from '@tabler/icons-svelte-runes/icons/school';
 	import ConceptTooltip from './ConceptTooltip.svelte';
 	import { getEducation } from './education-content.js';

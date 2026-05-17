@@ -1,6 +1,4 @@
 <script lang="ts">
-	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
-	// import { RotateCcw } from '@lucide/svelte';
 	import IconRotate2 from '@tabler/icons-svelte-runes/icons/rotate-2';
 	import AnimatedSlider from './ui/AnimatedSlider.svelte';
 	import InfoTooltip from './ui/InfoTooltip.svelte';

@@ -1,6 +1,4 @@
 <script lang="ts">
-	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
-	// import { Lightbulb, TrendingUp, TrendingDown, X } from '@lucide/svelte';
 	import IconBulb from '@tabler/icons-svelte-runes/icons/bulb';
 	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
 	import IconTrendingDown from '@tabler/icons-svelte-runes/icons/trending-down';

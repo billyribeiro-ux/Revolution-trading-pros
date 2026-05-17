@@ -141,7 +141,7 @@
 	}
 
 	function handleFunctionCall(prop: PropDefinition) {
-		console.log(`[Workbench] ${prop.name}() called`);
+		console.info(`[Workbench] ${prop.name}() called`);
 		const fn = values[prop.name];
 		if (typeof fn === 'function') {
 			fn();

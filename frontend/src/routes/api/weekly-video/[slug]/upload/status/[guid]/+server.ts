@@ -38,7 +38,7 @@ export const GET: RequestHandler = async ({ params, cookies }) => {
 			headers['Authorization'] = `Bearer ${accessToken}`;
 		}
 
-		console.log(`[Weekly Video Status] Checking ${slug} video ${guid}`);
+		console.info(`[Weekly Video Status] Checking ${slug} video ${guid}`);
 		const response = await fetch(`${BACKEND_URL}/api/admin/bunny/video-status/${guid}`, {
 			headers
 		});

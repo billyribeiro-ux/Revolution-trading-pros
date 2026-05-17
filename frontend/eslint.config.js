@@ -78,7 +78,14 @@ export default [
 			'no-empty': 'warn',
 			// FIX-2026-04-26: was 'off' — warn on bare console.log only, allow .error/.warn/.info/.debug
 			// 'no-console': 'off',
-			'no-console': ['warn', { allow: ['error', 'warn', 'info', 'debug'] }]
+			'no-console': ['warn', { allow: ['error', 'warn', 'info', 'debug'] }],
+			// PHASE-1 (audit 2026-05-16): TypeScript's own compiler resolves
+			// ambient `declare global` namespaces (e.g. SvelteKit's `App.Locals`);
+			// the base `no-undef` rule cannot and false-positives on them
+			// (auth.ts `App.Locals['user']`). typescript-eslint's own guidance
+			// is to disable `no-undef` for TS files. This block is now
+			// consistent with the Svelte block, which already does this (below).
+			'no-undef': 'off'
 		}
 	},
 	// TS rules without project for test/script files (not in tsconfig.json)

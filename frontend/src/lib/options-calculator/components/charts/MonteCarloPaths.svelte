@@ -3,8 +3,6 @@
 	import { scaleLinear } from 'd3-scale';
 	import { line as d3line, curveMonotoneX } from 'd3-shape';
 	import { axisBottom, axisLeft } from 'd3-axis';
-	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
-	// import { Loader2, Play } from '@lucide/svelte';
 	import IconLoader2 from '@tabler/icons-svelte-runes/icons/loader-2';
 	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
 	import { formatCurrency, formatPercent } from '../../utils/formatters.js';

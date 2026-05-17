@@ -21,8 +21,12 @@
 	import { sanitizeBlogContent } from '$lib/utils/sanitize';
 	import {
 		predefinedCategories,
-		getPredefinedCategoryById,
-		type BlogCategory
+		getPredefinedCategoryById
+		// `type BlogCategory` commented out (audit 2026-05-16): traced — this
+		// page models categories as string IDs (`post.categories: string[]`)
+		// and never annotates with BlogCategory. Kept here (not deleted) as a
+		// pointer in case typed categories get wired in later.
+		// , type BlogCategory
 	} from '$lib/data/predefined-categories';
 
 	let post = $state({

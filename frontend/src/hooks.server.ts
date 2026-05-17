@@ -141,7 +141,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 			// ICT 7: 401 = Invalid/expired token - attempt refresh if available
 			if (!refreshToken) {
 				// No refresh token - permanent auth failure
-				console.log('[Auth Hook] 401 with no refresh token - redirecting to login');
+				console.info('[Auth Hook] 401 with no refresh token - redirecting to login');
 				const returnUrl = encodeURIComponent(pathname);
 				redirect(303, `/login?redirect=${returnUrl}`);
 			}
@@ -205,7 +205,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 				}
 			} else {
 				// Refresh failed - permanent auth failure
-				console.log('[Auth Hook] Token refresh failed - redirecting to login');
+				console.info('[Auth Hook] Token refresh failed - redirecting to login');
 				const returnUrl = encodeURIComponent(pathname);
 				redirect(303, `/login?redirect=${returnUrl}`);
 			}
@@ -216,7 +216,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 			throw new Error(`API_SERVER_ERROR_${response.status}`);
 		} else if (response.status === 403) {
 			// ICT 7: 403 = Forbidden (permanent) - redirect to login
-			console.log('[Auth Hook] 403 Forbidden - redirecting to login');
+			console.info('[Auth Hook] 403 Forbidden - redirecting to login');
 			const returnUrl = encodeURIComponent(pathname);
 			redirect(303, `/login?redirect=${returnUrl}`);
 		} else {

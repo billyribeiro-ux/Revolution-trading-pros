@@ -27,8 +27,6 @@
 	import KeyboardShortcuts from './power-user/KeyboardShortcuts.svelte';
 	import CTABanner from './growth/CTABanner.svelte';
 	import LeadCaptureModal from './growth/LeadCaptureModal.svelte';
-	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
-	// import { Calculator as CalculatorIcon, Zap, FolderOpen } from '@lucide/svelte';
 	import IconCalculator from '@tabler/icons-svelte-runes/icons/calculator';
 	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
 	import IconFolderOpen from '@tabler/icons-svelte-runes/icons/folder-open';

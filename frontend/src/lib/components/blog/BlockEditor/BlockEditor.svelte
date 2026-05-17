@@ -1953,7 +1953,10 @@
 		isOpen={showScheduling}
 		onClose={() => (showScheduling = false)}
 		onScheduleCreated={(schedule) => {
-			console.log('Schedule created:', schedule);
+			// STUB (audit 2026-05-17): SchedulingPanel emits the created
+			// schedule but the editor only logs it — no state update / UI
+			// refresh / toast. Logged at info until wired; tracked in audit.
+			console.info('Schedule created:', schedule);
 		}}
 	/>
 {/if}

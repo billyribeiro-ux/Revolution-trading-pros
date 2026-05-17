@@ -1,6 +1,4 @@
 <script lang="ts">
-	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
-	// import { Camera, FileSpreadsheet, Link2, Code2, ChevronDown } from '@lucide/svelte';
 	import IconCamera from '@tabler/icons-svelte-runes/icons/camera';
 	import IconFileSpreadsheet from '@tabler/icons-svelte-runes/icons/file-spreadsheet';
 	import IconLink from '@tabler/icons-svelte-runes/icons/link';

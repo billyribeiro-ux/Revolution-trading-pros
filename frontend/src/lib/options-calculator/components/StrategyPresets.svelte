@@ -1,7 +1,5 @@
 <script lang="ts">
 	import gsap from 'gsap';
-	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
-	// import { TrendingUp, TrendingDown, Minus } from '@lucide/svelte';
 	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
 	import IconTrendingDown from '@tabler/icons-svelte-runes/icons/trending-down';
 	import IconMinus from '@tabler/icons-svelte-runes/icons/minus';
