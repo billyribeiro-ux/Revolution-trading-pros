@@ -367,4 +367,66 @@ Lower risk; principal-engineer = delete/dedupe/decompose, not annotate.
 - ☐ Live playback smoke for an enrolled user after the P0-7 fix.
 - ☐ Video upload happy/error path smoke (any video-upload-adjacent
   change made in Stages 4/6).
-</content>
+
+---
+
+## Isolated & root-caused — owner / follow-up gated (not code-fixable in scope)
+
+These were chased to the actual root with reproducible hard evidence;
+each needs a decision/asset outside the audit's app-code scope.
+
+### CI-1 — GitHub-Actions "Frontend (check + vitest + build)" red — ROOT-CAUSED
+
+**Status:** NOT a product/code defect. Cloudflare Pages (the primary
+production deploy) builds + deploys the identical code **green on every
+push** (verified across #581/#582/#583). Cold repro on exact
+`origin/main`: `install`/`check`/`lint`/`vitest` **all pass**; `vite
+build` itself **succeeds** (`✓ built`). The job then fails because
+SvelteKit `@sveltejs/adapter-cloudflare@7.2.8` starts **Miniflare 4 /
+`workerd`** to emulate `event.platform` for prerendered routes and
+workerd dies:
+
+```
+workerd/util/sqlite.c++:842: failed: SENTRY_DO SQLite failed;
+  NOSENTRY database is locked: SQLITE_BUSY
+MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start
+```
+
+Concurrent Miniflare/workerd instances during the build-time prerender
+contend on workerd's internal SQLite lock (`SQLITE_BUSY`). Disproven
+along the way (with evidence): not pnpm-ignored-builds (install green),
+not unbuilt `workerd` (`pnpm rebuild` → binary present → still fails),
+not vitest/jsdom (vitest green), not the heap/`API_BASE_URL`
+placeholder. It is a **third-party build-tool concurrency regression**
+(`workerd@1.20260515.1` + `miniflare@4.20260515.0`), timing-sensitive
+(explains intermittency), surfacing only in the GH-Actions adapter
+prerender path — never in the Cloudflare production build.
+
+**Root-cause fix options (follow-up; touch adapter/prerender or 3rd-party
+versions, outside the audit's app-code remediation scope):**
+1. Eliminate build-time `platform` emulation: guard every
+   `event.platform` access behind `building` from `$app/environment`,
+   or set `export const prerender = false` on the specific prerendered
+   route(s) that touch `platform` (short trace to identify them) → the
+   adapter never starts Miniflare → no `SQLITE_BUSY`.
+2. Pin `workerd` / `miniflare` / `@sveltejs/adapter-cloudflare` to a
+   combination without this `SENTRY_DO`/`SQLITE_BUSY` regression.
+3. CI-only mitigation: isolate Miniflare's persistence dir per
+   invocation and/or force single-threaded prerender.
+
+Recommended: option 1 (correct + removes a heavy build-time dependency).
+Deliberately **not** done mid-audit: it is non-product-blocking, needs
+a route-level trace + adapter behavior change, and the user scoped this
+class as "isolate, then root-cause later."
+
+### CI-2 — `Build + Deploy` (secondary `deploy-cloudflare.yml`) red
+Owner-gated: needs repo secrets `CLOUDFLARE_API_TOKEN` /
+`CLOUDFLARE_ACCOUNT_ID`, or disable this redundant secondary workflow
+(the primary Cloudflare Pages git-integration deploy is green). Also
+still hardcodes the stale `PNPM_VERSION: "10.33.2"`. Pre-existing.
+
+### Carry-over owner-gated (unchanged)
+🔴 G0.3 schema not reproducible (8/60 migrations fail fresh) · rotate
+leaked secrets P0-2/P1-1/R2 + G0.1 history-rewrite decision · Bunny
+account (Errol) · deferred-by-risk: P2-J 16 collisions, mega-component
+decomposition, /signup-vs-/register.

@@ -950,23 +950,17 @@ async fn login(
     // is_active == Some(false) means an admin explicitly banned this account.
     // NULL (legacy rows) and Some(true) are both treated as active.
     //
-    // SECURITY (FULL_REPO_AUDIT_2026-05-17 P1-2) — REQUIRED COMPANION CALL,
-    // CROSS-FILE (not in this agent's ownership; this is the ban path's
-    // auth.rs touch-point, but the ban *state transition* lives in
-    // `routes/admin.rs::ban_user`, owned by another agent):
-    //
-    //   In `admin.rs::ban_user`, immediately next to the existing
-    //   `redis.invalidate_all_user_sessions(id)` call, add the single line:
-    //
-    //       let _ = redis.bump_token_version(id).await; // or log Err like the others
-    //
-    //   Same one-helper / one-call-site pattern used here in `logout_all`
-    //   and `reset_password`. Without it a stolen access/refresh JWT for a
-    //   just-banned user survives until TTL/rotation — the C-1 `is_active`
-    //   guard below + the extractor only catch the *next DB-backed* fetch,
-    //   not a token served from the Redis user-cache hot path. The bump
-    //   strands every prior token immediately. This guard itself is a login
-    //   gate (no live token exists at this point), so no bump belongs here.
+    // SECURITY (FULL_REPO_AUDIT_2026-05-17 P1-2) — COMPANION NOW IMPLEMENTED.
+    // The ban *state transition* lives in `routes/admin.rs::ban_user`; the
+    // required `redis.bump_token_version(id)` call has been added there,
+    // immediately next to the existing `redis.invalidate_all_user_sessions(id)`
+    // call, using the same best-effort/log-on-Err pattern as `logout_all`
+    // and `reset_password` below. That bump strands every prior
+    // access/refresh JWT for a just-banned user the instant the extractor
+    // re-reads the epoch — the C-1 `is_active` guard below + the extractor
+    // only catch the *next DB-backed* fetch, not a token served from the
+    // Redis user-cache hot path. This guard itself is a login gate (no live
+    // token exists at this point), so no bump belongs here.
     if user.is_active == Some(false) {
         tracing::warn!(
             target: "security_audit",
@@ -982,32 +976,70 @@ async fn login(
 
     // ICT 11+ ENTERPRISE SECURITY: Email Verification Enforcement
     // Apple Principal Engineer Grade - Zero Trust Security Model
-    // Only developers and superadmins bypass verification for operational access
-    let is_developer =
-        state.config.is_developer_email(&user.email) || user.role.as_deref() == Some("developer");
+    //
+    // P2-H / security-M1 (FULL_REPO_AUDIT_2026-05-17): close the
+    // email-verification bypass AND the email-list-as-identity elevation
+    // hole. ROOT CAUSE: the previous code OR'd `is_developer_email` /
+    // `is_superadmin_email` (a configured env email-list string) straight
+    // into `bypass_verification`. That meant ANYONE who controlled (or could
+    // get their address onto) the configured `DEVELOPER_EMAILS` /
+    // `SUPERADMIN_EMAILS` list could log in WITHOUT ever verifying that email
+    // and be treated as a privileged role — an env list string was being
+    // accepted as proof of identity.
+    //
+    // FIX: email-list membership is at most a *secondary hint* layered on
+    // top of a verified, DB-role'd account. The privileged bypass now
+    // requires BOTH (a) the user row has `email_verified_at` set, AND (b)
+    // the user carries a real DB privileged role (developer / super_admin /
+    // super-admin / admin) — the env list can only *confirm* an elevation
+    // the database already grants, never *create* one or skip verification.
+    // `is_*_email_strict` enforces (verified ∧ DB-role ∧ on-list); the
+    // explicit DB-role checks below cover a verified DB-role'd account that
+    // is NOT on any env list (legitimate verified-admin login preserved).
+    let email_verified = user.email_verified_at.is_some();
+    let db_role = user.role.as_deref();
+    let has_db_developer_role = db_role == Some("developer");
+    let has_db_superadmin_role = db_role == Some("super_admin") || db_role == Some("super-admin");
 
-    let is_superadmin = state.config.is_superadmin_email(&user.email)
-        || user.role.as_deref() == Some("super_admin")
-        || user.role.as_deref() == Some("super-admin");
+    let is_developer = email_verified
+        && (has_db_developer_role
+            || state
+                .config
+                .is_developer_email_strict(&user.email, db_role, email_verified));
 
-    // ICT 11+ SECURITY: Strict verification enforcement
-    // Only privileged roles bypass - all other users MUST verify email
+    let is_superadmin = email_verified
+        && (has_db_superadmin_role
+            || state
+                .config
+                .is_superadmin_email_strict(&user.email, db_role, email_verified));
+
+    // ICT 11+ SECURITY: Strict verification enforcement.
+    // A privileged bypass now requires a VERIFIED account with a real DB
+    // privileged role — controlling a configured email is never sufficient
+    // on its own. All other users MUST verify email.
     let bypass_verification = is_developer || is_superadmin;
 
-    // ICT 11+ AUDIT: Log all verification bypass attempts
-    if bypass_verification && user.email_verified_at.is_none() {
+    // P2-H / security-M1 (FULL_REPO_AUDIT_2026-05-17): the old code logged an
+    // "email_verification_bypassed" warning here for `bypass_verification &&
+    // email_verified_at.is_none()`. Under the hardened derivation above,
+    // `bypass_verification` IMPLIES `email_verified` (a privileged bypass now
+    // requires a verified, DB-role'd account), so an unverified privileged
+    // bypass is no longer reachable — that warning would be dead code that
+    // misrepresents the (now-closed) invariant. We instead audit the real,
+    // legitimate event: a verified privileged account authenticating.
+    if bypass_verification {
         let role_type = if is_developer {
             "developer"
         } else {
             "superadmin"
         };
-        tracing::warn!(
+        tracing::info!(
             target: "security_audit",
-            event = "email_verification_bypassed",
+            event = "privileged_login",
             user_id = %user.id,
             role = %role_type,
-            reason = "privileged_role_access",
-            "ICT 11+ AUDIT: Email verification bypassed for privileged user"
+            email_verified = true,
+            "ICT 11+ AUDIT: Verified privileged account login (email-list is a secondary hint only, never a standalone gate)"
         );
     }
 
@@ -1032,21 +1064,11 @@ async fn login(
         ));
     }
 
-    // ICT 11+ AUDIT: Log successful verification bypass
-    if bypass_verification && user.email_verified_at.is_none() {
-        let role_type = if is_developer {
-            "developer"
-        } else {
-            "superadmin"
-        };
-        tracing::info!(
-            target: "security_audit",
-            event = "privileged_verification_bypass",
-            role = role_type,
-            user_id = %user.id,
-            "Privileged user bypassing email verification requirement"
-        );
-    }
+    // P2-H / security-M1 (FULL_REPO_AUDIT_2026-05-17): the second
+    // "privileged_verification_bypass" log (previously here, also gated on
+    // `bypass_verification && email_verified_at.is_none()`) is likewise
+    // unreachable under the hardened invariant and has been removed. The
+    // single `privileged_login` audit above is the accurate, reachable event.
 
     // SECURITY (FULL_REPO_AUDIT_2026-05-17 P1-2): mint both tokens with the
     // user's CURRENT token epoch so they survive the extractor's stale-token
