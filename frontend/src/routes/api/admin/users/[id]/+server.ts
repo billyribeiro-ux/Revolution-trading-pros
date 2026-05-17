@@ -20,7 +20,7 @@
  * @version 2.0.0 - April 2026 (audit hardening)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { requireAdmin, requireSuperadmin } from '$lib/server/auth';

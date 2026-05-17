@@ -21,8 +21,7 @@
 	import { sanitizeBlogContent } from '$lib/utils/sanitize';
 	import {
 		predefinedCategories,
-		getPredefinedCategoryById,
-		type BlogCategory
+		getPredefinedCategoryById
 	} from '$lib/data/predefined-categories';
 
 	let post = $state({

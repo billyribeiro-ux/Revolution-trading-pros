@@ -54,7 +54,11 @@
 		return defaultItems;
 	});
 
-	// Generate JSON-LD schema for SEO
+	// Generate JSON-LD schema for SEO. False-positive no-unused-vars: this is
+	// consumed in the `<svelte:head><script type="application/ld+json">` block
+	// below, which the eslint Svelte parser does not analyse for references.
+	// Removing it breaks breadcrumb structured data (SEO regression).
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const breadcrumbSchema = $derived({
 		'@context': 'https://schema.org',
 		'@type': 'BreadcrumbList',

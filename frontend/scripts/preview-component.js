@@ -13,7 +13,7 @@
  *   node scripts/preview-component.js src/lib/components/dashboard/VideoCard.svelte
  */
 
-import { readFileSync, existsSync } from 'fs';
+import { existsSync } from 'fs';
 import { relative, resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
