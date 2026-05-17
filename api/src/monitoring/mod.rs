@@ -1,10 +1,17 @@
 //! Monitoring and Observability Module
 //! ICT 11+ Principal Engineer Grade - Production Monitoring
 
-use axum::{extract::State, http::StatusCode, response::Json, routing::get, Router};
+use axum::{
+    extract::State,
+    http::{header, StatusCode},
+    response::{IntoResponse, Json},
+    routing::get,
+    Router,
+};
 use serde::Serialize;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
+use subtle::ConstantTimeEq;
 
 /// Application metrics
 #[derive(Clone)]
@@ -151,12 +158,101 @@ async fn health_detailed() -> (StatusCode, Json<serde_json::Value>) {
     )
 }
 
+/// Authorization guard for the monitoring surface.
+///
+/// SECURITY FIX (FULL_REPO_AUDIT_2026-05-17 P1-4 #3): `/monitoring/metrics`,
+/// `/monitoring/metrics/json`, and `/monitoring/health/detailed` were
+/// completely unauthenticated. They expose request/auth-failure counters
+/// (an attacker's brute-force feedback channel), process uptime, and exact
+/// crate/rustc versions — a recon + info-disclosure surface.
+///
+/// ROOT-CAUSE / DESIGN NOTE: this sub-router is structurally `Router<Metrics>`
+/// — `main.rs` finalizes it with `monitoring::router().with_state(metrics)`
+/// before nesting, so `AppState` is *not* in scope here and the cookie/JWT
+/// `AdminUser` extractor (which is `FromRequestParts<AppState>`) cannot be
+/// used at this layer without editing `main.rs` (out of ownership). User-
+/// identity auth is also the wrong primitive for a machine-scraped Prometheus
+/// target, which presents no JWT. The durable fix is the industry-standard
+/// pattern: a shared-secret scrape token validated in constant time.
+///
+/// Behaviour (fail-closed):
+///   - `MONITORING_TOKEN` set  -> require `Authorization: Bearer <token>`,
+///     compared in constant time. Missing/wrong token -> 401.
+///   - `MONITORING_TOKEN` unset + ENVIRONMENT=development/dev -> allow,
+///     mirroring the dev-fallback house style used by `setup_db`/`init_db`
+///     and `config::required_or_dev` so the local stack can still scrape.
+///   - `MONITORING_TOKEN` unset + any other ENVIRONMENT -> 503. The endpoint
+///     refuses to serve recon data rather than falling open.
+async fn require_monitoring_token(
+    request: axum::extract::Request,
+    next: axum::middleware::Next,
+) -> axum::response::Response {
+    let configured = std::env::var("MONITORING_TOKEN")
+        .ok()
+        .filter(|t| !t.is_empty());
+
+    match configured {
+        Some(expected) => {
+            let presented = request
+                .headers()
+                .get(header::AUTHORIZATION)
+                .and_then(|v| v.to_str().ok())
+                .and_then(|v| v.strip_prefix("Bearer "))
+                .map(str::trim)
+                .unwrap_or("");
+
+            // Constant-time comparison (subtle) to deny a timing oracle on
+            // the scrape token. ct_eq over equal-length byte slices; unequal
+            // lengths can never match so we short-circuit without leaking the
+            // expected length through control flow timing on the hot path.
+            let ok = presented.len() == expected.len()
+                && bool::from(presented.as_bytes().ct_eq(expected.as_bytes()));
+
+            if ok {
+                next.run(request).await
+            } else {
+                tracing::warn!(
+                    target: "security",
+                    event = "unauthorized_monitoring_access",
+                    "Rejected monitoring scrape with missing/invalid token"
+                );
+                (StatusCode::UNAUTHORIZED, "Invalid monitoring token").into_response()
+            }
+        }
+        None => {
+            let environment =
+                std::env::var("ENVIRONMENT").unwrap_or_else(|_| "production".to_string());
+            if environment == "development" || environment == "dev" {
+                next.run(request).await
+            } else {
+                tracing::error!(
+                    target: "security",
+                    event = "monitoring_token_unconfigured",
+                    "MONITORING_TOKEN is not set outside development; refusing to expose \
+                     monitoring endpoints (fail-closed)"
+                );
+                (
+                    StatusCode::SERVICE_UNAVAILABLE,
+                    "Monitoring endpoints are disabled: MONITORING_TOKEN is not configured",
+                )
+                    .into_response()
+            }
+        }
+    }
+}
+
 /// Create monitoring router
+///
+/// All three routes are sensitive (counters / uptime / version recon) and are
+/// gated by [`require_monitoring_token`]. There is no basic-liveness route in
+/// this module — the public `/health` and load-balancer `/ready` probes live
+/// in `routes::health` and are unaffected — so nothing here is left public.
 pub fn router() -> Router<Metrics> {
     Router::new()
         .route("/metrics", get(metrics_endpoint))
         .route("/metrics/json", get(metrics_json))
         .route("/health/detailed", get(health_detailed))
+        .layer(axum::middleware::from_fn(require_monitoring_token))
 }
 
 /// ICT 11+ Metrics Middleware Layer

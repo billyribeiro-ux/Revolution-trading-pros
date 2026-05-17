@@ -1282,10 +1282,18 @@ async fn sync_coupon_to_stripe(
     Ok(Json(updated))
 }
 
-/// Validate coupon (public)
+/// Validate coupon (admin)
 /// ICT 7 FIX: Use explicit column list with FLOAT8 casting for DECIMAL columns
+/// SECURITY FIX (FULL_REPO_AUDIT_2026-05-17 P1-4 #1): This handler was the lone
+/// unauthenticated route in the admin module. Its response embeds the full
+/// `CouponRow` — internal id, `stripe_coupon_id`, `usage_count`/`usage_limit`,
+/// and `applicable_products`/`applicable_plans` — which allowed anonymous
+/// coupon enumeration and Stripe-linkage disclosure. Gate it with the same
+/// `AdminUser` extractor every sibling admin handler uses so the route is
+/// fail-closed at the type level.
 async fn validate_coupon(
     State(state): State<AppState>,
+    AdminUser(_user): AdminUser,
     Path(code): Path<String>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let coupon: Option<CouponRow> = sqlx::query_as(
