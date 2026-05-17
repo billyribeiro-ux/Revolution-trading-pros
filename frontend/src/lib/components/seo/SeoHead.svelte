@@ -15,6 +15,7 @@
 	 */
 
 	import { generateStructuredData, type StructuredDataConfig } from '$lib/utils/structured-data';
+	import { serializeJsonLd } from '$lib/seo/serializeJsonLd';
 
 	// ==========================================================================
 	// Props
@@ -214,7 +215,11 @@
 	<!-- Structured Data / JSON-LD -->
 	{#if structuredDataJson}
 		{#each structuredDataJson as jsonLd, i (i)}
-			{@html '<scr' + 'ipt type="application/ld+json">' + JSON.stringify(jsonLd) + '</scr' + 'ipt>'}
+			{@html '<scr' +
+				'ipt type="application/ld+json">' +
+				serializeJsonLd(jsonLd) +
+				'</scr' +
+				'ipt>'}
 		{/each}
 	{/if}
 </svelte:head>

@@ -18,6 +18,7 @@ import type {
 	JsonLdFAQPage,
 	JsonLdNode
 } from './types';
+import { serializeJsonLd } from './serializeJsonLd';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // BUILDERS
@@ -217,13 +218,19 @@ export function dedupeJsonLd(nodes: JsonLdNode[]): JsonLdNode[] {
 
 /**
  * Safely serialize a JSON-LD node for embedding in a <script> tag.
- * Escapes </script> and <!-- to prevent XSS via script injection.
+ *
+ * P0-6 (FULL_REPO_AUDIT_2026-05-17): the previous implementation only
+ * escaped `</script`/`<!--` and used non-deterministic `JSON.stringify`
+ * (key order), leaving a standalone `<`/`>`/`&`/U+2028/U+2029 breakout
+ * class and SSR/CSR hydration drift. It now delegates to the single
+ * canonical serializer so every consumer (Seo.svelte et al.) gets the
+ * hardened, deterministic escaper with zero call-site changes — one
+ * implementation, no duplication.
  */
 export function safeJsonLdSerialize(
 	node: JsonLdNode | JsonLdNode[] | Record<string, unknown>
 ): string {
-	const json = JSON.stringify(node);
-	return json.replace(/<\/script/gi, '<\\/script').replace(/<!--/g, '<\\!--');
+	return serializeJsonLd(node);
 }
 
 /**

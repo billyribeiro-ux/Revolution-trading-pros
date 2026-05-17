@@ -57,6 +57,7 @@
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
+	import { serializeJsonLd } from '$lib/seo/serializeJsonLd';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Props & Configuration
@@ -296,26 +297,16 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	/**
-	 * Generate stable JSON-LD script to avoid hydration mismatches
-	 * Uses deterministic key ordering for consistent server/client output
+	 * Build a JSON-LD `<script>` element for one schema node.
+	 *
+	 * Serialization (deterministic key ordering for stable SSR/CSR output
+	 * AND HTML-`<script>`-injection safety) is delegated to the single
+	 * canonical serializer in `$lib/seo/serializeJsonLd`. The script-tag
+	 * name is concatenated so the Svelte compiler does not parse it.
 	 */
 	function generateJsonLdScript(schema: Record<string, unknown>): string {
-		const stableStringify = (obj: unknown): string => {
-			if (obj === null || typeof obj !== 'object') {
-				return JSON.stringify(obj);
-			}
-			if (Array.isArray(obj)) {
-				return '[' + obj.map(stableStringify).join(',') + ']';
-			}
-			const keys = Object.keys(obj as Record<string, unknown>).sort();
-			const pairs = keys
-				.filter((k) => (obj as Record<string, unknown>)[k] !== undefined)
-				.map((k) => `${JSON.stringify(k)}:${stableStringify((obj as Record<string, unknown>)[k])}`);
-			return '{' + pairs.join(',') + '}';
-		};
-		// Use concatenation to avoid Svelte parsing the script tag
 		const tag = 'script';
-		return `<${tag} type="application/ld+json">${stableStringify(schema)}</${tag}>`;
+		return `<${tag} type="application/ld+json">${serializeJsonLd(schema)}</${tag}>`;
 	}
 
 	function constructTitle(baseTitle: string, site: string): string {

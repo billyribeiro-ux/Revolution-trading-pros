@@ -874,18 +874,30 @@ async fn get_related_posts(
         }
     };
 
-    // Get related posts by shared tags (if post_tags table exists) or by category
-    // Using a combination approach: posts with shared tags, same category, or recent posts
+    // Related posts = published posts that share a tag OR a category with the
+    // current post, shared-tag matches ranked first.
+    //
+    // ROOT-CAUSE NOTE (audit P2-D): the prior query referenced `p.category_id`,
+    // a column that does NOT exist — `posts` has no `category_id`; categories
+    // are a many-to-many via the `post_categories(post_id, category_id)` join
+    // table (001_initial §193). That made this query fail on EVERY request,
+    // and the `.unwrap_or_default()` (whose own comment blamed "schema drift")
+    // silently masked it as an empty result. Both defects are fixed here: the
+    // query now joins `post_categories` correctly, and a real DB fault now
+    // propagates via the same house 500 shape used elsewhere in this file
+    // (e.g. `archive_post`) instead of being swallowed.
     let related: Vec<PostRow> = sqlx::query_as(
         r#"
         SELECT DISTINCT p.* FROM posts p
         LEFT JOIN post_tags pt1 ON p.id = pt1.post_id
         LEFT JOIN post_tags pt2 ON pt1.tag_id = pt2.tag_id AND pt2.post_id = $1
+        LEFT JOIN post_categories pc1 ON p.id = pc1.post_id
+        LEFT JOIN post_categories pc2 ON pc1.category_id = pc2.category_id AND pc2.post_id = $1
         WHERE p.id != $1
           AND p.status = 'published'
           AND (
-            pt2.post_id IS NOT NULL  -- Has shared tags
-            OR p.category_id = $2    -- Same category
+            pt2.post_id IS NOT NULL  -- Has a shared tag
+            OR pc2.post_id IS NOT NULL  -- Has a shared category
           )
         ORDER BY
           CASE WHEN pt2.post_id IS NOT NULL THEN 0 ELSE 1 END,  -- Prioritize shared tags
@@ -894,12 +906,16 @@ async fn get_related_posts(
         "#,
     )
     .bind(current.id)
-    .bind(current.id) // category_id would need to be added to PostRow if used
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default(); // Fallback to empty if query fails (e.g., no category_id column)
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
-    // If no related posts found via tags/category, get recent posts
+    // If no related posts found via tags/category, fall back to recent posts.
     let final_related = if related.is_empty() {
         sqlx::query_as(
             r#"
@@ -912,7 +928,12 @@ async fn get_related_posts(
         .bind(current.id)
         .fetch_all(&state.db.pool)
         .await
-        .unwrap_or_default()
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?
     } else {
         related
     };

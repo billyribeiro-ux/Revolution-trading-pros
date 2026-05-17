@@ -29,6 +29,7 @@
 	import { page } from '$app/state';
 	import type { PageData } from './+page';
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
+	import { serializeJsonLd } from '$lib/seo/serializeJsonLd';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PROPS - Svelte 5 $props() rune with explicit typing
@@ -185,7 +186,7 @@
 	     ═══════════════════════════════════════════════════════════════════════════ -->
 	{@html '<scr' +
 		'ipt type="application/ld+json">' +
-		JSON.stringify(structuredData) +
+		serializeJsonLd(structuredData) +
 		'</scr' +
 		'ipt>'}
 

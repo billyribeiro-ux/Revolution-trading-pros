@@ -192,6 +192,45 @@ async fn get_course_detail(
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════════
+// COURSE ENTITLEMENT (paywall) — ICT 7 Grade
+// ═══════════════════════════════════════════════════════════════════════════════════
+
+/// Admin-role gate, matching the canonical role set used by
+/// `crate::middleware::admin::AdminUser` so the player handler stays
+/// consistent with the rest of the codebase. The player route uses the
+/// plain `User` extractor (legitimate enrolled members are not admins),
+/// so the admin check has to be derived inline from `user.role`.
+fn is_course_admin(user: &User) -> bool {
+    let role = user.role.as_deref().unwrap_or("user");
+    matches!(role, "admin" | "super_admin" | "super-admin" | "developer")
+}
+
+/// Pure entitlement predicate for a single lesson — no DB, no network.
+///
+/// Determines whether `bunny_video_guid` (and other protected lesson
+/// fields) may be serialized for the caller. A viewer is entitled to a
+/// lesson's protected video payload when ANY of the following holds:
+///
+/// * the caller is enrolled in the course, or
+/// * the caller is an admin/super-admin/developer, or
+/// * the course itself is free, or
+/// * the lesson is individually marked free, or
+/// * the lesson is a public preview.
+///
+/// This is intentionally the *only* place the rule is expressed so it can
+/// be regression-tested without a database (Bunny CDN is down, no live
+/// playback test is possible — structural correctness is the bar).
+fn is_lesson_entitled(
+    course_is_free: bool,
+    enrolled: bool,
+    is_admin: bool,
+    lesson_is_free: bool,
+    lesson_is_preview: bool,
+) -> bool {
+    enrolled || is_admin || course_is_free || lesson_is_free || lesson_is_preview
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════════
 // AUTHENTICATED MEMBER ENDPOINTS
 // ═══════════════════════════════════════════════════════════════════════════════════
 
@@ -287,6 +326,33 @@ async fn get_course_player(
     .ok()
     .flatten();
 
+    // ═══════════════════════════════════════════════════════════════════════
+    // PAYWALL GATE (P0-7) — ICT 7 Grade
+    //
+    // A paid course's player payload (Bunny video GUIDs + downloads) must
+    // NOT be served to a caller who is neither enrolled nor an admin. Prior
+    // to this fix any authenticated free account could pull every
+    // `bunny_video_guid` and download link for a paid course.
+    // ═══════════════════════════════════════════════════════════════════════
+    let course_is_free = course.is_free.unwrap_or(false);
+    let is_enrolled = enrollment.is_some();
+    let is_admin = is_course_admin(&user);
+
+    if !course_is_free && !is_enrolled && !is_admin {
+        tracing::warn!(
+            target: "security",
+            event = "paywall_bypass_blocked",
+            user_id = %user_id,
+            course_id = %course.id,
+            course_slug = %slug,
+            "Non-entitled user blocked from paid course player"
+        );
+        return Err((
+            StatusCode::FORBIDDEN,
+            Json(json!({"error": "Not enrolled in this course"})),
+        ));
+    }
+
     let modules: Vec<CourseModule> =
         sqlx::query_as("SELECT * FROM course_modules_v2 WHERE course_id = $1 ORDER BY sort_order")
             .bind(course.id)
@@ -325,30 +391,62 @@ async fn get_course_player(
         Vec::new()
     };
 
-    let modules_with_lessons: Vec<ModuleWithLessons> = modules
+    // Defense-in-depth: serialize each lesson but strip the protected video
+    // payload (`bunny_video_guid`) for any lesson the caller is not entitled
+    // to. Enrolled users and admins are entitled to every lesson, so their
+    // experience is unchanged; a viewer on a free course only ever sees
+    // GUIDs for lessons that are themselves free/preview (or, for a free
+    // course, all of them). The response shape/keys are preserved — the
+    // protected field is merely nulled rather than leaked.
+    let modules_with_lessons: Vec<serde_json::Value> = modules
         .into_iter()
         .map(|m| {
-            let module_lessons = lessons
+            let module_lessons: Vec<serde_json::Value> = lessons
                 .iter()
                 .filter(|l| l.module_id == Some(m.id))
-                .cloned()
+                .map(|l| {
+                    let entitled = is_lesson_entitled(
+                        course_is_free,
+                        is_enrolled,
+                        is_admin,
+                        l.is_free,
+                        l.is_preview.unwrap_or(false),
+                    );
+                    let mut value = json!(l);
+                    if !entitled {
+                        if let Some(obj) = value.as_object_mut() {
+                            obj.insert("bunny_video_guid".to_string(), json!(null));
+                        }
+                    }
+                    value
+                })
                 .collect();
-            ModuleWithLessons {
-                module: m,
-                lessons: module_lessons,
-            }
+            json!({
+                "module": m,
+                "lessons": module_lessons
+            })
         })
         .collect();
+
+    // Downloads (PDFs, indicator files, etc.) are an enrollment benefit —
+    // mirror `get_course_downloads`, which only serves them to enrolled
+    // users. A non-enrolled, non-admin viewer of a free course can still
+    // open the player, but must not receive download links.
+    let visible_downloads: Vec<CourseDownload> = if is_enrolled || is_admin {
+        downloads
+    } else {
+        Vec::new()
+    };
 
     Ok(Json(json!({
         "success": true,
         "data": {
             "course": course,
             "modules": modules_with_lessons,
-            "downloads": downloads,
+            "downloads": visible_downloads,
             "enrollment": enrollment,
             "progress": progress,
-            "is_enrolled": enrollment.is_some()
+            "is_enrolled": is_enrolled
         }
     })))
 }
@@ -1511,4 +1609,63 @@ pub fn member_router() -> Router<AppState> {
         .route("/:slug/quizzes/:quiz_id/results", get(get_quiz_results))
         // Prerequisites
         .route("/:slug/lessons/:lesson_id/access", get(check_lesson_access))
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════════
+// TESTS — pure entitlement predicate (P0-7 paywall regression guard)
+//
+// No DB / no network: the Bunny GUID is an opaque string, so the
+// authorization branch is fully reasoned structurally. These tests pin the
+// truth table so the paywall cannot silently regress.
+// ═══════════════════════════════════════════════════════════════════════════════════
+
+#[cfg(test)]
+mod tests {
+    use super::is_lesson_entitled;
+
+    /// A non-enrolled, non-admin viewer on a PAID course whose lesson is
+    /// neither free nor preview is the exact P0-7 leak vector — it must be
+    /// denied the protected video payload.
+    #[test]
+    fn paid_course_anonymous_viewer_is_not_entitled() {
+        assert!(!is_lesson_entitled(
+            false, // course_is_free
+            false, // enrolled
+            false, // is_admin
+            false, // lesson_is_free
+            false, // lesson_is_preview
+        ));
+    }
+
+    #[test]
+    fn enrolled_user_is_entitled_even_on_paid_locked_lesson() {
+        assert!(is_lesson_entitled(false, true, false, false, false));
+    }
+
+    #[test]
+    fn admin_is_entitled_even_when_not_enrolled() {
+        assert!(is_lesson_entitled(false, false, true, false, false));
+    }
+
+    #[test]
+    fn free_course_is_entitled_for_anyone() {
+        assert!(is_lesson_entitled(true, false, false, false, false));
+    }
+
+    #[test]
+    fn free_lesson_on_paid_course_is_entitled() {
+        assert!(is_lesson_entitled(false, false, false, true, false));
+    }
+
+    #[test]
+    fn preview_lesson_on_paid_course_is_entitled() {
+        assert!(is_lesson_entitled(false, false, false, false, true));
+    }
+
+    /// Enrolled + admin + free flags all true must still be entitled
+    /// (no accidental inversion of the predicate).
+    #[test]
+    fn fully_privileged_viewer_is_entitled() {
+        assert!(is_lesson_entitled(true, true, true, true, true));
+    }
 }
