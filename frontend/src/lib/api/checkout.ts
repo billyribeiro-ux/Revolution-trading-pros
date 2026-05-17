@@ -5,7 +5,6 @@
  * Connects to backend PaymentController endpoints.
  */
 
-import { browser } from '$app/environment';
 import { authStore } from '$lib/stores/auth.svelte';
 
 // ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
@@ -23,13 +22,6 @@ export interface PaymentIntent {
 	amount: number;
 	currency: string;
 	status: string;
-}
-
-export interface CheckoutSession {
-	id: string;
-	url: string;
-	payment_status: string;
-	expires_at: number;
 }
 
 export interface Order {
@@ -141,40 +133,6 @@ export async function createPaymentIntent(orderId: string): Promise<PaymentInten
 
 	const data = await response.json();
 	return data.payment_intent;
-}
-
-/**
- * Create a Stripe Checkout session
- */
-export async function createCheckoutSession(
-	orderId: string,
-	successUrl?: string,
-	cancelUrl?: string
-): Promise<CheckoutSession> {
-	const token = authStore.getToken();
-
-	const response = await fetch(`${API_BASE}/payment/checkout-session`, {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			Accept: 'application/json',
-			...(token ? { Authorization: `Bearer ${token}` } : {})
-		},
-		credentials: 'include',
-		body: JSON.stringify({
-			order_id: orderId,
-			success_url: successUrl || `${browser ? window.location.origin : ''}/checkout/success`,
-			cancel_url: cancelUrl || `${browser ? window.location.origin : ''}/cart`
-		})
-	});
-
-	if (!response.ok) {
-		const error = await response.json();
-		throw new Error(error.message || 'Failed to create checkout session');
-	}
-
-	const data = await response.json();
-	return data.session;
 }
 
 /**

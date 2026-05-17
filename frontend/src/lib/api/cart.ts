@@ -1110,9 +1110,50 @@ class CheckoutCartService {
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	/**
-	 * Create checkout session
+	 * Create checkout session.
+	 *
+	 * Wire contract: this POSTs to `${API_URL}/checkout`, the SvelteKit
+	 * catch-all proxy (`src/routes/api/[...path]/+server.ts`) which forwards
+	 * to the Rust backend `POST /api/checkout` → `checkout::create_checkout`
+	 * (api/src/routes/checkout.rs:65, mounted at `/checkout` via
+	 * `router()` line 656 `.route("/", post(create_checkout))`).
+	 *
+	 * The request body MUST match `CheckoutRequest` (checkout.rs:26-36):
+	 *   - items: Vec<CartItem>           (required, non-empty)
+	 *       CartItem = { product_id?: i64, plan_id?: i64, quantity?: i32 }
+	 *   - coupon_code?: string
+	 *   - billing_name?: string
+	 *   - billing_email?: string
+	 *   - billing_address?: object
+	 *   - success_path?: string          (must start with "/")
+	 *   - cancel_path?: string           (must start with "/")
+	 *
+	 * The backend resolves authoritative pricing itself from the
+	 * `products` / `membership_plans` tables by id — the client only sends
+	 * ids + quantities, never prices. `membership`-type cart lines map to
+	 * `plan_id` (membership_plans); everything else maps to `product_id`
+	 * (products), matching the backend's product/subscription split
+	 * (checkout.rs:81-159).
+	 *
+	 * The response is the `create_checkout` JSON (checkout.rs:493-507);
+	 * `checkout_url` is the Stripe hosted-session URL the caller redirects
+	 * to. We surface it as `.url` so `checkout/+page.svelte` (which reads
+	 * `session.url`) keeps working unchanged.
 	 */
 	async createCheckoutSession(options?: {
+		billing?: {
+			firstName?: string;
+			lastName?: string;
+			email?: string;
+			phone?: string;
+			address1?: string;
+			address2?: string;
+			city?: string;
+			state?: string;
+			postcode?: string;
+			country?: string;
+		};
+		couponCode?: string;
 		provider?: PaymentProvider;
 		express?: boolean;
 	}): Promise<CheckoutSession> {
@@ -1129,26 +1170,130 @@ class CheckoutCartService {
 			// Reserve inventory
 			await this.reserveInventory(cart.items);
 
-			const response = await fetch(`${API_URL}/checkout/create-session`, {
+			// Map cart lines → backend CartItem[]. The backend keys on
+			// product_id (products) vs plan_id (membership_plans); the
+			// cart's string `id` is the DB primary key. A non-numeric id
+			// cannot be resolved server-side, so fail fast and clearly.
+			const items = cart.items
+				.filter((item) => !item.savedForLater)
+				.map((item) => {
+					const numericId = Number.parseInt(String(item.id), 10);
+					if (!Number.isFinite(numericId)) {
+						throw new Error(`Cart item "${item.name}" has an invalid product id`);
+					}
+					const isSubscription =
+						(item as { type?: string }).type === 'membership';
+					return isSubscription
+						? { plan_id: numericId, quantity: item.quantity }
+						: { product_id: numericId, quantity: item.quantity };
+				});
+
+			if (items.length === 0) {
+				throw new Error('Cart is empty');
+			}
+
+			const billing = options?.billing;
+			const billingName = billing
+				? [billing.firstName, billing.lastName]
+						.filter((part) => part && part.trim())
+						.join(' ')
+						.trim()
+				: '';
+			const billingAddress = billing
+				? {
+						line1: billing.address1 ?? '',
+						line2: billing.address2 ?? '',
+						city: billing.city ?? '',
+						state: billing.state ?? '',
+						postal_code: billing.postcode ?? '',
+						country: billing.country ?? '',
+						phone: billing.phone ?? ''
+					}
+				: undefined;
+
+			// CheckoutRequest body. success_path/cancel_path are
+			// root-relative — the backend builds the absolute URL from
+			// its own app_url and rejects anything not starting with "/"
+			// (checkout.rs:368-375).
+			const requestBody: {
+				items: Array<{ product_id?: number; plan_id?: number; quantity: number }>;
+				coupon_code?: string;
+				billing_name?: string;
+				billing_email?: string;
+				billing_address?: Record<string, string>;
+				success_path: string;
+				cancel_path: string;
+			} = {
+				items,
+				success_path: '/checkout/success',
+				cancel_path: '/checkout/cancel'
+			};
+
+			const couponCode = options?.couponCode?.trim();
+			if (couponCode) {
+				requestBody.coupon_code = couponCode;
+			}
+			if (billingName) {
+				requestBody.billing_name = billingName;
+			}
+			if (billing?.email?.trim()) {
+				requestBody.billing_email = billing.email.trim();
+			}
+			if (billingAddress) {
+				requestBody.billing_address = billingAddress;
+			}
+
+			const response = await fetch(`${API_URL}/checkout`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 					Authorization: `Bearer ${this.getAuthToken()}`
 				},
-				body: JSON.stringify({
-					cart,
-					provider: options?.provider || 'stripe',
-					express: options?.express || false,
-					returnUrl: `${window.location.origin}/checkout/success`,
-					cancelUrl: `${window.location.origin}/checkout/cancel`
-				})
+				body: JSON.stringify(requestBody)
 			});
 
 			if (!response.ok) {
-				throw new Error('Failed to create checkout session');
+				// Surface the backend's structured `{ "error": ... }`
+				// message (checkout.rs returns this on every failure path)
+				// instead of a generic string.
+				let message = 'Failed to create checkout session';
+				try {
+					const errBody = await response.json();
+					if (errBody && typeof errBody.error === 'string') {
+						message = errBody.error;
+					}
+				} catch {
+					// non-JSON error body — keep the generic message
+				}
+				throw new Error(message);
 			}
 
-			const session = await response.json();
+			// Backend response shape: checkout.rs:493-507.
+			const data = (await response.json()) as {
+				order_id: number;
+				order_number: string;
+				total_cents: number;
+				currency: string;
+				stripe_session_id: string;
+				checkout_url?: string | null;
+			};
+
+			// Normalize into the CheckoutSession shape the rest of the
+			// client + checkout/+page.svelte expect. `.url` is the
+			// redirect target the page reads.
+			const session: CheckoutSession = {
+				id: data.stripe_session_id,
+				url: data.checkout_url ?? undefined,
+				status: 'pending',
+				paymentProvider: options?.provider || 'stripe',
+				cart,
+				orderId: String(data.order_id),
+				amount: data.total_cents / 100,
+				currency: data.currency,
+				createdAt: new Date().toISOString(),
+				expiresAt: new Date(Date.now() + 30 * 60 * 1000).toISOString()
+			};
+
 			this.checkoutSession.set(session);
 
 			// Store in session storage
