@@ -6,6 +6,7 @@
 		generateFAQStructuredData,
 		generateOGMeta
 	} from '$lib/options-calculator/utils/seo.js';
+	import { serializeJsonLd } from '$lib/seo/serializeJsonLd';
 
 	const structuredData = generateStructuredData();
 	const faqData = generateFAQStructuredData();
@@ -35,8 +36,8 @@
 	<meta name="twitter:image" content={ogMeta['twitter:image']} />
 
 	<!-- Structured Data -->
-	{@html '<script type="application/ld+json">' + JSON.stringify(structuredData) + '<' + '/script>'}
-	{@html '<script type="application/ld+json">' + JSON.stringify(faqData) + '<' + '/script>'}
+	{@html '<scr' + 'ipt type="application/ld+json">' + serializeJsonLd(structuredData) + '</scr' + 'ipt>'}
+	{@html '<scr' + 'ipt type="application/ld+json">' + serializeJsonLd(faqData) + '</scr' + 'ipt>'}
 
 	<!-- Fonts -->
 	<link rel="preconnect" href="https://fonts.googleapis.com" />

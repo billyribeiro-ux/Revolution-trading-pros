@@ -5,3 +5,11 @@ onlyBuiltDependencies:
   - esbuild
   - sharp
   - workerd
+
+# pnpm 11 escalates ERR_PNPM_IGNORED_BUILDS to a FATAL non-zero exit by
+# default, so a clean `pnpm install --frozen-lockfile` (CI, fresh clone)
+# exits 1 even though esbuild/sharp/workerd ship prebuilt platform
+# binaries whose postinstall is effectively a no-op. The explicit
+# allowlist above is kept for intent/audit; this stops the fatal
+# escalation so the install (and every frontend CI job) succeeds.
+strictDepBuilds: false
