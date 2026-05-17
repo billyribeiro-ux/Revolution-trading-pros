@@ -13,3 +13,13 @@ onlyBuiltDependencies:
 # allowlist above is kept for intent/audit; this stops the fatal
 # escalation so the install (and every frontend CI job) succeeds.
 strictDepBuilds: false
+
+# Before every `pnpm run <script>` pnpm re-verifies installed deps and,
+# on any mismatch, tries to REMOVE and reinstall node_modules. In CI
+# (no TTY) that abort-prompts and the whole step dies with
+# ERR_PNPM_ABORTED_REMOVE_MODULES_DIR_NO_TTY — this is the actual reason
+# the Frontend job (check/lint/vitest/build) failed even after install
+# succeeded. The lockfile is frozen in CI, so a pre-run reinstall is
+# never desired. Reproduced cold and verified: with this set,
+# install -> check -> lint -> vitest all pass on a clean checkout.
+verifyDepsBeforeRun: false
