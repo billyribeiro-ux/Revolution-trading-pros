@@ -45,6 +45,20 @@ const ADMIN_ROLE_VALUES = new Set([
 ]);
 
 /**
+ * Canonical server-side role predicates. These are the single source of
+ * truth for "is this role privileged?" on the server — consumed by the
+ * proxy guards below AND by `routes/admin/+layout.server.ts` so the page
+ * gate and the API gate can never drift apart.
+ */
+export function isAdminRole(role: string | null | undefined): boolean {
+	return ADMIN_ROLE_VALUES.has((role ?? '').toLowerCase());
+}
+
+export function isSuperadminRole(role: string | null | undefined): boolean {
+	return SUPERADMIN_ROLE_VALUES.has((role ?? '').toLowerCase());
+}
+
+/**
  * Read the canonical `rtp_access_token` cookie, falling back to the
  * `Authorization: Bearer` header for server-to-server callers. Throws
  * `error(401)` if neither is present.
@@ -81,8 +95,7 @@ export function requireAdmin(event: RequestEvent): {
 	const token = requireAdminToken(event);
 	const user = event.locals.user;
 	if (!user) error(403, 'Forbidden');
-	const role = user.role?.toLowerCase() ?? '';
-	if (!ADMIN_ROLE_VALUES.has(role)) error(403, 'Forbidden');
+	if (!isAdminRole(user.role)) error(403, 'Forbidden');
 	return { token, user };
 }
 
@@ -103,7 +116,6 @@ export function requireSuperadmin(event: RequestEvent): {
 	const token = requireAdminToken(event);
 	const user = event.locals.user;
 	if (!user) error(403, 'Forbidden');
-	const role = user.role?.toLowerCase() ?? '';
-	if (!SUPERADMIN_ROLE_VALUES.has(role)) error(403, 'Forbidden');
+	if (!isSuperadminRole(user.role)) error(403, 'Forbidden');
 	return { token, user };
 }
