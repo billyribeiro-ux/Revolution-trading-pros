@@ -106,6 +106,79 @@ impl FromRequestParts<AppState> for User {
             }
         }
 
+        // SECURITY (FULL_REPO_AUDIT_2026-05-17 P1-2 / security-C1+M3):
+        // AUTHORITATIVE per-user token-epoch check. This is where the stale
+        // token is actually rejected — `verify_jwt` is kept pure (sig+exp+type
+        // only); the claim-vs-stored-version comparison belongs here in the
+        // extractor because only the extractor has `state`/Redis.
+        //
+        // Root cause this closes: `invalidate_all_user_sessions()` only
+        // deleted `session:*` keys, so a stolen ACCESS JWT survived
+        // logout-all / password-reset / ban for its full TTL, and a stolen
+        // REFRESH token survived until rotation. The epoch (Redis key
+        // `user_token_version:{id}`, bumped by `RedisService::bump_token_version`
+        // in logout_all / reset_password / ban) is now compared against the
+        // value embedded in the token at mint time. Any token minted before
+        // the most recent bump has `claims.token_version < current` and is
+        // rejected immediately — for BOTH access and refresh-derived requests.
+        //
+        // Authority model (verifiable HERE without a DB): the Redis epoch key
+        // is the RUNTIME source of truth. `get_token_version` reads it,
+        // returning 0 when absent — identical to the `#[serde(default)]`
+        // value carried by pre-feature / brand-new-user tokens, so nothing is
+        // locked out until the first real bump. This deliberately avoids a
+        // new `users.token_version` sqlx query because the migration set is
+        // non-replayable on a fresh DB (owner-gated G0.3) and a DB-backed
+        // read could not be compiled/clippy-verified here under SQLX_OFFLINE.
+        //
+        // G0.3-DEFERRED FOLLOW-UP (do NOT add here — owner-gated, unverifiable
+        // without a live DB): add `users.token_version BIGINT NOT NULL
+        // DEFAULT 0`, have `bump_token_version` also `UPDATE users SET
+        // token_version = token_version + 1` inside the same tx, and make the
+        // Redis key a read-through cache of that column (DB authoritative,
+        // Redis fast-path) — mirroring the existing user-cache pattern below.
+        // Until that migration lands, the Redis key is durable authority
+        // (30-day sliding TTL >> 7-day max token life; see redis.rs).
+        //
+        // Fail-closed (mirrors the blacklist check above): Redis configured +
+        // lookup error -> reject. Redis NOT configured -> log + continue,
+        // exactly like the blacklist branch (local dev without Redis; prod
+        // config sanity requires Redis at boot).
+        if let Some(ref redis) = state.services.redis {
+            match redis.get_token_version(claims.sub).await {
+                Ok(current_version) => {
+                    if claims.token_version < current_version {
+                        tracing::warn!(
+                            target: "security_audit",
+                            event = "stale_token_epoch_rejected",
+                            user_id = %claims.sub,
+                            token_version = %claims.token_version,
+                            current_version = %current_version,
+                            "Rejected token minted before a logout-all/password-reset/ban"
+                        );
+                        return Err((StatusCode::UNAUTHORIZED, "Token has been revoked"));
+                    }
+                }
+                Err(e) => {
+                    // Fail-closed: a Redis fault must not reopen the window
+                    // for a revoked token. Same 401 + message shape as the
+                    // blacklist fail-closed branch so the frontend's existing
+                    // retry/refresh flow handles it uniformly.
+                    tracing::error!(
+                        target: "security_audit",
+                        event = "token_version_check_failed_fail_closed",
+                        user_id = %claims.sub,
+                        error = %e,
+                        "Redis token_version check failed; rejecting request (fail-closed)"
+                    );
+                    return Err((
+                        StatusCode::UNAUTHORIZED,
+                        "Authentication temporarily unavailable",
+                    ));
+                }
+            }
+        }
+
         // ICT 7+: Try Redis cache first for faster auth (60-80% improvement)
         if let Some(ref redis) = state.services.redis {
             if let Ok(Some(cached_json)) = redis.get_cached_user(claims.sub).await {

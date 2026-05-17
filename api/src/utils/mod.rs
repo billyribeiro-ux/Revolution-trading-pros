@@ -38,6 +38,29 @@ pub struct Claims {
     pub iat: i64, // Issued at
     #[serde(default)]
     pub token_type: String, // "access" or "refresh"
+    // SECURITY (FULL_REPO_AUDIT_2026-05-17 P1-2 / security-C1+M3): per-user
+    // token epoch. Every issued token embeds the user's token_version at
+    // mint time. A logout-all / password-reset / ban bumps the user's stored
+    // version; the `User` extractor (middleware/auth.rs) then rejects any
+    // token whose `token_version` is *below* the current stored value. This
+    // closes the window where a stolen access JWT survived "log out all
+    // devices", password-reset and ban for its full TTL (and a stolen
+    // refresh token survived until rotation), because those flows only
+    // deleted Redis `session:*` keys and the single-device `/logout` was the
+    // ONLY thing that blacklisted an access JWT.
+    //
+    // `#[serde(default)]` is load-bearing for backward compatibility:
+    //   - Tokens minted BEFORE this change carry no `tv` field and decode
+    //     with `token_version == 0`. New users start at version 0 too, so
+    //     legacy tokens are accepted until the first bump (a bump moves the
+    //     stored version to >= 1, which then strands every version-0 token).
+    //   - The pre-existing `create_jwt`/`create_refresh_token`/`verify_jwt`
+    //     signatures are intentionally left untouched (they default the
+    //     version to 0) so `tests/utils_test.rs` — which we do not own and
+    //     must not edit — keeps compiling and passing. New code paths use
+    //     the `*_versioned` constructors below.
+    #[serde(default, rename = "tv")]
+    pub token_version: i64,
 }
 
 /// ICT L11+ Security Hardening: Password validation rules
@@ -212,14 +235,34 @@ pub fn verify_password(password: &str, hash: &str) -> Result<bool> {
     }
 }
 
-/// Create a JWT access token
+/// Create a JWT access token.
+///
+/// Backward-compatible shim: mints a token at `token_version == 0`. Retained
+/// verbatim because `tests/utils_test.rs` (not owned/editable here) calls
+/// `create_jwt(uid, SECRET, hours)` directly. Production auth code must call
+/// [`create_jwt_versioned`] so the user's live token epoch is embedded.
 pub fn create_jwt(user_id: i64, secret: &str, expires_in_hours: i64) -> Result<String> {
+    create_jwt_versioned(user_id, secret, expires_in_hours, 0)
+}
+
+/// Create a JWT access token that embeds the user's current token epoch.
+///
+/// SECURITY (P1-2): callers pass the user's authoritative `token_version`
+/// (see `RedisService::get_token_version`). The `User` extractor compares the
+/// embedded value against the live stored value and rejects stale tokens.
+pub fn create_jwt_versioned(
+    user_id: i64,
+    secret: &str,
+    expires_in_hours: i64,
+    token_version: i64,
+) -> Result<String> {
     let now = Utc::now();
     let claims = Claims {
         sub: user_id,
         iat: now.timestamp(),
         exp: (now + Duration::hours(expires_in_hours)).timestamp(),
         token_type: "access".to_string(),
+        token_version,
     };
 
     let token = encode(
@@ -231,14 +274,32 @@ pub fn create_jwt(user_id: i64, secret: &str, expires_in_hours: i64) -> Result<S
     Ok(token)
 }
 
-/// Create a JWT refresh token (longer expiry - 7 days)
+/// Create a JWT refresh token (longer expiry - 7 days).
+///
+/// Backward-compatible shim at `token_version == 0` (see [`create_jwt`] for
+/// the rationale — `tests/utils_test.rs` binds this exact signature).
+/// Production auth code must call [`create_refresh_token_versioned`].
 pub fn create_refresh_token(user_id: i64, secret: &str) -> Result<String> {
+    create_refresh_token_versioned(user_id, secret, 0)
+}
+
+/// Create a JWT refresh token that embeds the user's current token epoch.
+///
+/// SECURITY (P1-2): a stolen refresh token previously survived until the
+/// next rotation. Embedding the epoch lets the extractor (and any future
+/// refresh-side check) strand it the instant the user's version is bumped.
+pub fn create_refresh_token_versioned(
+    user_id: i64,
+    secret: &str,
+    token_version: i64,
+) -> Result<String> {
     let now = Utc::now();
     let claims = Claims {
         sub: user_id,
         iat: now.timestamp(),
         exp: (now + Duration::days(7)).timestamp(),
         token_type: "refresh".to_string(),
+        token_version,
     };
 
     let token = encode(
@@ -435,6 +496,130 @@ mod jwt_token_type_tests {
     fn malformed_token_rejected() {
         let result = verify_jwt("not.a.token", SECRET, "access");
         assert!(result.is_err(), "garbage input must reject");
+    }
+}
+
+// SECURITY (FULL_REPO_AUDIT_2026-05-17 P1-2 / security-C1+M3): unit coverage
+// for the per-user token_version epoch claim. These exercise ONLY the pure
+// pieces (claim round-trip, embedding, backward-compat default, and that
+// `verify_jwt` stays sig/exp/type-only with the new claim present). The
+// authoritative claim-vs-stored-version COMPARE lives in the `User`
+// extractor (middleware/auth.rs) and is DB/Redis-bound — integration-level,
+// G0.3-blocked here (no DB/Redis in the unit harness), so it is not covered
+// by these unit tests by design.
+#[cfg(test)]
+mod token_version_tests {
+    use super::*;
+
+    const SECRET: &str = "test_secret_must_be_long_enough_to_pass_HS256";
+
+    #[test]
+    fn claims_round_trips_token_version() {
+        // Mint with an explicit non-zero version and confirm verify_jwt
+        // (which decodes the claims) preserves it exactly.
+        let token = create_jwt_versioned(7, SECRET, 1, 42).unwrap();
+        let claims = verify_jwt(&token, SECRET, "access").expect("should validate");
+        assert_eq!(claims.sub, 7);
+        assert_eq!(claims.token_version, 42);
+        assert_eq!(claims.token_type, "access");
+    }
+
+    #[test]
+    fn refresh_token_embeds_passed_version() {
+        let token = create_refresh_token_versioned(9, SECRET, 13).unwrap();
+        let claims = verify_jwt(&token, SECRET, "refresh").expect("should validate");
+        assert_eq!(claims.sub, 9);
+        assert_eq!(claims.token_version, 13);
+        assert_eq!(claims.token_type, "refresh");
+    }
+
+    #[test]
+    fn create_jwt_embeds_the_passed_version() {
+        // Distinct versions produce distinct decoded claims — proves the
+        // value is actually embedded, not hard-coded.
+        let v0 = verify_jwt(
+            &create_jwt_versioned(1, SECRET, 1, 0).unwrap(),
+            SECRET,
+            "access",
+        )
+        .unwrap();
+        let v5 = verify_jwt(
+            &create_jwt_versioned(1, SECRET, 1, 5).unwrap(),
+            SECRET,
+            "access",
+        )
+        .unwrap();
+        assert_eq!(v0.token_version, 0);
+        assert_eq!(v5.token_version, 5);
+    }
+
+    #[test]
+    fn legacy_shim_constructors_default_version_to_zero() {
+        // The backward-compatible (un-versioned) constructors that
+        // tests/utils_test.rs binds MUST default the epoch to 0 so a
+        // brand-new user (also at version 0) is not locked out.
+        let access = verify_jwt(&create_jwt(1, SECRET, 1).unwrap(), SECRET, "access").unwrap();
+        let refresh =
+            verify_jwt(&create_refresh_token(1, SECRET).unwrap(), SECRET, "refresh").unwrap();
+        assert_eq!(access.token_version, 0);
+        assert_eq!(refresh.token_version, 0);
+    }
+
+    #[test]
+    fn token_without_tv_claim_deserializes_to_zero() {
+        // A token minted before this change carries no `tv` field. It must
+        // still decode (token_version defaults to 0) so we don't hard-fail
+        // every in-flight session on deploy. We hand-craft a payload with
+        // NO `tv` key and sign it with the real HS256 key.
+        use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
+        let now = Utc::now().timestamp();
+        // Header {"alg":"HS256","typ":"JWT"} == jsonwebtoken's Header::default.
+        let header_json = br#"{"typ":"JWT","alg":"HS256"}"#;
+        let payload_json = format!(
+            r#"{{"sub":1,"exp":{},"iat":{},"token_type":"access"}}"#,
+            now + 3600,
+            now
+        );
+        let signing_input = format!(
+            "{}.{}",
+            URL_SAFE_NO_PAD.encode(header_json),
+            URL_SAFE_NO_PAD.encode(payload_json.as_bytes())
+        );
+        // HS256 = HMAC-SHA256 over the signing input with the secret.
+        use hmac::{Hmac, Mac};
+        use sha2::Sha256;
+        let mut mac = Hmac::<Sha256>::new_from_slice(SECRET.as_bytes()).unwrap();
+        mac.update(signing_input.as_bytes());
+        let sig = URL_SAFE_NO_PAD.encode(mac.finalize().into_bytes());
+        let legacy_token = format!("{signing_input}.{sig}");
+
+        let claims =
+            verify_jwt(&legacy_token, SECRET, "access").expect("legacy token must still decode");
+        assert_eq!(
+            claims.token_version, 0,
+            "missing `tv` claim must default to 0 for backward compatibility"
+        );
+    }
+
+    #[test]
+    fn verify_jwt_stays_sig_exp_type_only_with_new_claim() {
+        // verify_jwt must remain PURE: it enforces signature, expiry and
+        // token-type — and must NOT itself reject on token_version (that is
+        // the extractor's authoritative job). A high-version token with a
+        // valid sig/exp/type still verifies here.
+        let high = create_jwt_versioned(1, SECRET, 1, 999_999).unwrap();
+        assert!(
+            verify_jwt(&high, SECRET, "access").is_ok(),
+            "verify_jwt must not gate on token_version"
+        );
+        // sig still enforced with the new claim present
+        assert!(verify_jwt(&high, "wrong_secret", "access").is_err());
+        // exp still enforced
+        let expired = create_jwt_versioned(1, SECRET, -1, 7).unwrap();
+        assert!(verify_jwt(&expired, SECRET, "access").is_err());
+        // type still enforced
+        let refresh = create_refresh_token_versioned(1, SECRET, 7).unwrap();
+        assert!(verify_jwt(&refresh, SECRET, "access").is_err());
     }
 }
 
