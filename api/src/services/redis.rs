@@ -41,6 +41,21 @@ const LOGIN_ATTEMPTS_PREFIX: &str = "login_attempts:";
 const RATE_LIMIT_PREFIX: &str = "rate_limit:";
 const TOKEN_BLACKLIST_PREFIX: &str = "token_blacklist:";
 const USER_CACHE_PREFIX: &str = "user_cache:";
+// SECURITY (FULL_REPO_AUDIT_2026-05-17 P1-2 / security-C1+M3): per-user token
+// epoch key. `user_token_version:{id}` -> monotonically increasing i64.
+// Every issued JWT embeds the value live at mint time (utils::Claims.token_version);
+// the `User` extractor rejects any token whose embedded version is below the
+// stored value. Bumping this key is what makes "log out all devices",
+// password-reset and ban actually strand already-issued access AND refresh
+// tokens immediately, instead of waiting for TTL expiry / refresh rotation.
+const TOKEN_VERSION_PREFIX: &str = "user_token_version:";
+// The epoch must outlive the longest-lived token so a bump cannot be
+// "forgotten" while a pre-bump token is still otherwise valid. The longest
+// token is the 7-day refresh token; we hold the key for 30 days (>> 7d) and
+// every bump/read refreshes the TTL, so an active user's epoch never lapses.
+// If the key DOES lapse (idle > 30d) it reads back as 0 — safe, because any
+// surviving token from that era is itself long expired (max 7d).
+const TOKEN_VERSION_TTL_SECONDS: i64 = 30 * 24 * 3600;
 
 // ICT 7+: User cache TTL - 5 minutes for balance between freshness and performance
 const USER_CACHE_TTL_SECONDS: u64 = 300;
@@ -253,6 +268,82 @@ impl RedisService {
         );
 
         Ok(count)
+    }
+
+    /// SECURITY (FULL_REPO_AUDIT_2026-05-17 P1-2 / security-C1+M3):
+    /// Read the user's current token epoch (authoritative for the `User`
+    /// extractor's stale-token rejection).
+    ///
+    /// Returns `0` when the key is absent — i.e. a user who has NEVER had a
+    /// bump (brand-new account) or whose epoch key has lapsed after >30d of
+    /// inactivity. `0` is the same value `#[serde(default)]` yields for a
+    /// token minted before this feature, so legacy/new tokens validate until
+    /// the first bump. Reading also refreshes the TTL so an actively-used
+    /// account's epoch never silently lapses out from under live tokens.
+    ///
+    /// Fail-closed contract: this returns `Err` on any Redis fault. Callers
+    /// (the extractor) MUST treat `Err` as "reject", mirroring the existing
+    /// blacklist check's fail-closed behavior — a Redis fault must not open a
+    /// window for a revoked token.
+    pub async fn get_token_version(&self, user_id: i64) -> Result<i64> {
+        let key = format!("{}{}", TOKEN_VERSION_PREFIX, user_id);
+        let mut conn = self.conn.clone();
+        let value: Option<i64> = conn.get(&key).await?;
+        match value {
+            Some(v) => {
+                // Keep an active user's epoch alive (sliding TTL). Best-effort:
+                // a failure to refresh the TTL must not fail the auth path —
+                // the value we already read is authoritative for this request.
+                if let Err(e) = conn.expire::<_, ()>(&key, TOKEN_VERSION_TTL_SECONDS).await {
+                    tracing::warn!(
+                        target: "security",
+                        event = "token_version_ttl_refresh_failed",
+                        user_id = %user_id,
+                        error = %e,
+                        "Could not refresh token_version TTL (value still authoritative)"
+                    );
+                }
+                Ok(v)
+            }
+            None => Ok(0),
+        }
+    }
+
+    /// SECURITY (FULL_REPO_AUDIT_2026-05-17 P1-2 / security-C1+M3):
+    /// Atomically bump the user's token epoch, invalidating EVERY previously
+    /// issued access and refresh token for that user.
+    ///
+    /// Call this anywhere sessions are invalidated — it is the companion to
+    /// [`Self::invalidate_all_user_sessions`] (which only kills `session:*`
+    /// keys and never touched stateless JWTs). One helper, one call pattern.
+    /// `INCR` is atomic and creates the key at 1 if absent, so the first bump
+    /// on a fresh account moves the epoch 0 -> 1, instantly stranding every
+    /// version-0 token (legacy + freshly minted) for that user.
+    ///
+    /// Returns the new epoch value.
+    pub async fn bump_token_version(&self, user_id: i64) -> Result<i64> {
+        let key = format!("{}{}", TOKEN_VERSION_PREFIX, user_id);
+        let mut conn = self.conn.clone();
+        // Atomic INCR + (re)set the TTL together so a crash between the two
+        // can't leave a never-expiring key, and so the epoch always outlives
+        // the longest-lived (7d refresh) token by a wide margin.
+        let result: Vec<i64> = redis::pipe()
+            .atomic()
+            .incr(&key, 1)
+            .expire(&key, TOKEN_VERSION_TTL_SECONDS)
+            .query_async(&mut conn)
+            .await?;
+        let new_version = result.into_iter().next().unwrap_or(0);
+
+        tracing::info!(
+            target: "security_audit",
+            event = "token_version_bumped",
+            user_id = %user_id,
+            new_version = %new_version,
+            "User token epoch bumped — all prior access/refresh tokens revoked"
+        );
+
+        Ok(new_version)
     }
 
     // ═══════════════════════════════════════════════════════════════════════════

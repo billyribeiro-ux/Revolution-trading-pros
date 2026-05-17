@@ -39,9 +39,9 @@ use crate::{
         RefreshTokenRequest, RefreshTokenResponse, ResetPasswordRequest, User, UserResponse,
     },
     utils::{
-        create_jwt, create_refresh_token, generate_session_id, generate_verification_token,
-        hash_dummy_password, hash_password, hash_token, validate_password, verify_jwt,
-        verify_password,
+        create_jwt_versioned, create_refresh_token_versioned, generate_session_id,
+        generate_verification_token, hash_dummy_password, hash_password, hash_token,
+        validate_password, verify_jwt, verify_password,
     },
     AppState,
 };
@@ -949,6 +949,24 @@ async fn login(
     // FIX-2026-04-27 (C-1): Block banned/deactivated accounts at login.
     // is_active == Some(false) means an admin explicitly banned this account.
     // NULL (legacy rows) and Some(true) are both treated as active.
+    //
+    // SECURITY (FULL_REPO_AUDIT_2026-05-17 P1-2) — REQUIRED COMPANION CALL,
+    // CROSS-FILE (not in this agent's ownership; this is the ban path's
+    // auth.rs touch-point, but the ban *state transition* lives in
+    // `routes/admin.rs::ban_user`, owned by another agent):
+    //
+    //   In `admin.rs::ban_user`, immediately next to the existing
+    //   `redis.invalidate_all_user_sessions(id)` call, add the single line:
+    //
+    //       let _ = redis.bump_token_version(id).await; // or log Err like the others
+    //
+    //   Same one-helper / one-call-site pattern used here in `logout_all`
+    //   and `reset_password`. Without it a stolen access/refresh JWT for a
+    //   just-banned user survives until TTL/rotation — the C-1 `is_active`
+    //   guard below + the extractor only catch the *next DB-backed* fetch,
+    //   not a token served from the Redis user-cache hot path. The bump
+    //   strands every prior token immediately. This guard itself is a login
+    //   gate (no live token exists at this point), so no bump belongs here.
     if user.is_active == Some(false) {
         tracing::warn!(
             target: "security_audit",
@@ -1030,11 +1048,20 @@ async fn login(
         );
     }
 
+    // SECURITY (FULL_REPO_AUDIT_2026-05-17 P1-2): mint both tokens with the
+    // user's CURRENT token epoch so they survive the extractor's stale-token
+    // check until the next logout-all/password-reset/ban bump. If Redis is
+    // configured but errors here we fail closed (do not mint a token we
+    // cannot later validate); if Redis is absent the epoch is 0 (matches the
+    // extractor's "Redis absent -> skip the epoch check" branch).
+    let token_version = current_token_version(&state, user.id).await?;
+
     // Create access token
-    let token = create_jwt(
+    let token = create_jwt_versioned(
         user.id,
         &state.config.jwt_secret,
         state.config.jwt_expires_in,
+        token_version,
     )
     .map_err(|e| {
         tracing::error!("JWT creation error: {}", e);
@@ -1045,13 +1072,16 @@ async fn login(
     })?;
 
     // Create refresh token
-    let refresh_token = create_refresh_token(user.id, &state.config.jwt_secret).map_err(|e| {
-        tracing::error!("Refresh token creation error: {}", e);
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": "Refresh token creation failed"})),
-        )
-    })?;
+    let refresh_token =
+        create_refresh_token_versioned(user.id, &state.config.jwt_secret, token_version).map_err(
+            |e| {
+                tracing::error!("Refresh token creation error: {}", e);
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": "Refresh token creation failed"})),
+                )
+            },
+        )?;
 
     // Generate session ID and store in Redis
     let session_id = generate_session_id();
@@ -1174,11 +1204,35 @@ async fn refresh(
         ));
     }
 
+    // SECURITY (FULL_REPO_AUDIT_2026-05-17 P1-2): the presented refresh
+    // token's own epoch must not be stale. `verify_jwt` is pure (sig+exp+
+    // type), so enforce the epoch here explicitly — this is the refresh-side
+    // mirror of the extractor's access-token check. A refresh token minted
+    // before a logout-all/password-reset/ban is rejected instead of being
+    // honored "until rotation" (the exact gap the audit flagged). Fail-closed
+    // on Redis error; epoch 0 when Redis absent.
+    let token_version = current_token_version(&state, claims.sub).await?;
+    if claims.token_version < token_version {
+        tracing::warn!(
+            target: "security_audit",
+            event = "stale_refresh_token_epoch_rejected",
+            user_id = %claims.sub,
+            token_version = %claims.token_version,
+            current_version = %token_version,
+            "Refresh rejected: token minted before a logout-all/password-reset/ban"
+        );
+        return Err((
+            StatusCode::UNAUTHORIZED,
+            Json(json!({"error": "Refresh token has been revoked. Please log in again."})),
+        ));
+    }
+
     // Create new access token
-    let token = create_jwt(
+    let token = create_jwt_versioned(
         claims.sub,
         &state.config.jwt_secret,
         state.config.jwt_expires_in,
+        token_version,
     )
     .map_err(|e| {
         tracing::error!("JWT creation error: {}", e);
@@ -1190,13 +1244,14 @@ async fn refresh(
 
     // Create new refresh token (token rotation for security)
     let new_refresh_token =
-        create_refresh_token(claims.sub, &state.config.jwt_secret).map_err(|e| {
-            tracing::error!("Refresh token creation error: {}", e);
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": "Refresh token creation failed"})),
-            )
-        })?;
+        create_refresh_token_versioned(claims.sub, &state.config.jwt_secret, token_version)
+            .map_err(|e| {
+                tracing::error!("Refresh token creation error: {}", e);
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": "Refresh token creation failed"})),
+                )
+            })?;
 
     // FIX-2026-04-26 (Priority 6): blacklist OLD refresh token in Redis so a re-presentation
     // is detected. TTL = remaining validity window (clamp to refresh-token lifetime = 7d).
@@ -1245,6 +1300,39 @@ fn hash_token_for_blacklist(token: &str) -> String {
     let mut hasher = Sha256::new();
     hasher.update(token.as_bytes());
     hex::encode(hasher.finalize())
+}
+
+/// SECURITY (FULL_REPO_AUDIT_2026-05-17 P1-2): resolve the user's current
+/// token epoch for embedding into a freshly minted access/refresh token.
+///
+/// Fail-closed contract (mirrors the `User` extractor and the existing
+/// fail-closed Redis paths in this file): if Redis is configured but the
+/// lookup errors we return 503 rather than minting a token at an unknown
+/// epoch — a token minted at the wrong (stale) version would either be
+/// instantly rejected by the extractor (annoying) or, worse, a guessed-too-
+/// low value could mask a real revocation. If Redis is NOT configured the
+/// epoch is 0, which is exactly what the extractor's "Redis absent -> skip
+/// the epoch check" branch expects, so the two stay consistent.
+async fn current_token_version(
+    state: &AppState,
+    user_id: i64,
+) -> Result<i64, (StatusCode, Json<serde_json::Value>)> {
+    match state.services.redis.as_ref() {
+        Some(redis) => redis.get_token_version(user_id).await.map_err(|e| {
+            tracing::error!(
+                target: "security_audit",
+                event = "token_version_read_failed_fail_closed",
+                user_id = %user_id,
+                error = %e,
+                "Could not read token epoch; refusing to mint token (fail-closed)"
+            );
+            (
+                StatusCode::SERVICE_UNAVAILABLE,
+                Json(json!({"error": "Service temporarily unavailable, please try again"})),
+            )
+        }),
+        None => Ok(0),
+    }
 }
 
 /// Logout user - ICT L11+ Security: Proper session and token invalidation
@@ -1310,6 +1398,25 @@ async fn logout_all(
     user: User,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let count = if let Some(redis) = &state.services.redis {
+        // SECURITY (FULL_REPO_AUDIT_2026-05-17 P1-2): bump the token epoch
+        // ALONGSIDE the session sweep. Deleting `session:*` keys alone never
+        // touched the stateless access/refresh JWTs — that was the root bug:
+        // "log out all devices" left a stolen access token usable for its
+        // full TTL and a stolen refresh token usable until rotation. The
+        // bump strands every previously-issued token for this user the
+        // instant the extractor (and the refresh handler) re-checks the
+        // epoch. Best-effort like the session sweep: a Redis fault here is
+        // logged but does not 500 the logout — and the fail-closed read in
+        // the extractor still rejects on a Redis fault at validation time.
+        if let Err(e) = redis.bump_token_version(user.id).await {
+            tracing::error!(
+                target: "security_audit",
+                event = "logout_all_token_version_bump_failed",
+                user_id = %user.id,
+                error = %e,
+                "Could not bump token epoch on logout-all (sessions still swept; extractor fails closed on Redis error)"
+            );
+        }
         redis
             .invalidate_all_user_sessions(user.id)
             .await
@@ -1603,6 +1710,23 @@ async fn reset_password(
 
     if let Some(uid) = user_id_for_invalidate {
         if let Some(redis) = &state.services.redis {
+            // SECURITY (FULL_REPO_AUDIT_2026-05-17 P1-2): bump the token
+            // epoch on password reset. Pre-fix, the reset only deleted
+            // `session:*` keys, so a thief holding a valid access (≤1h) or
+            // refresh (≤7d) token kept access for exactly the window the
+            // reset was meant to close. The bump revokes every prior
+            // access/refresh token for this user immediately. Best-effort,
+            // same rationale as the session sweep below (password is already
+            // changed; the extractor fails closed on a Redis fault anyway).
+            if let Err(e) = redis.bump_token_version(uid).await {
+                tracing::error!(
+                    target: "security_audit",
+                    event = "password_reset_token_version_bump_failed",
+                    user_id = %uid,
+                    error = %e,
+                    "Could not bump token epoch on password reset (extractor fails closed on Redis error)"
+                );
+            }
             // Best-effort: a Redis outage here logs but does not fail the
             // reset. The password is already changed; rolling that back
             // would be worse than leaving residual sessions.
