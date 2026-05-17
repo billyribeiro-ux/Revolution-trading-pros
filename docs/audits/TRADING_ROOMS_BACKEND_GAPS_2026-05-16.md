@@ -1,14 +1,16 @@
 # Trading-Rooms Admin: backend gaps found by end-to-end tracing
 
 **Date:** 2026-05-16
+**Status: BOTH GAPS FIXED 2026-05-16** (see "Resolution" under each).
+
 **How found:** During QW-2 ("unused-vars cleanup") the operator correctly
 insisted: *"before assuming it's dead code, trace every single file
 first-to-last end-to-end, because it could be something we should be
 adding instead of deleting."* Doing that on the trading-rooms admin
 proxies surfaced two real backend gaps the cleanup framing had hidden.
 The `mockVideos` / `mockTraders` arrays were **restored 100%** (not
-deleted) because they are the only working data path while these gaps
-exist.
+deleted); they remain as a documented local-dev reference now that the
+real backend paths work.
 
 ---
 
@@ -44,11 +46,20 @@ silently, with no error**, because the only real data source
 built. Deleting `mockTraders` (QW-2's original move) removed the only
 thing making this screen functional. **Reverted.**
 
-**What to actually do (the "add, don't delete" the operator called for):**
-implement `admin_list_traders` to query the traders table with
-`room_slug` / `active_only` filtering + pagination (mirror the working
-`admin_list_videos` at `:775`). Until then, `mockTraders` stays
-(commented context added in the proxy, array preserved).
+**RESOLUTION (2026-05-16, DONE):** `admin_list_traders`
+(`api/src/routes/trading_rooms.rs`) now queries the real `room_traders`
+table (schema: `migrations/015_consolidated_schema.sql` §2) instead of
+returning hardcoded `[]`. It mirrors the proven `admin_list_videos`
+pattern exactly: tuple `query_as`, `.map().unwrap_or_default()`, separate
+`COUNT`, identical `meta` shape. `TradersQuery` was extended with
+`page`/`per_page`. `active_only` is honored (maps to `is_active`);
+`room_slug` is intentionally **not** applied because `room_traders` has
+no room foreign key (rooms reference traders via
+`instructor_id`/`creator_id`, not the reverse) — the same "honor only
+what the schema supports" stance as `admin_list_videos`. Gates:
+`cargo check` ✓, `cargo clippy -D warnings` ✓, `pnpm check` 0/0 ✓.
+`mockTraders` left in place (commented context) as a local-dev
+reference.
 
 ---
 
@@ -77,11 +88,23 @@ keys. Pagination works (`page`/`per_page` align). This is a latent bug,
 not dead code; the parsed consts in the proxy were the *old local-filter*
 implementation and are harmless but misleading.
 
-**What to do:** align the contract — either (a) change the proxy/consumer
-to send `room_slug` + `is_published` and route room-scoped requests to
-`/videos/:slug`, or (b) extend `VideosQuery` + the SQL to accept
-`trading_room_id`/`trader_id`. A product/architecture decision, not a
-cleanup.
+**RESOLUTION (2026-05-16, DONE — proxy-layer translation, option a):**
+`videos/+server.ts` GET no longer forwards `url.searchParams.toString()`
+verbatim. It now builds an explicit backend query mapped to the real
+`VideosQuery` contract:
+- `published_only` → `is_published` (default `true` unless `"false"`)
+- `page` / `per_page` → pass through (names already align)
+- `content_type` / `room_slug` → forwarded if the caller supplies them
+- `trading_room_id` / `trader_id` → **explicitly dropped** (documented
+  inline): the admin video *list* endpoint has no room/trader column
+  filter; room scoping lives on the separate `/videos/:slug` path
+  handler. Forwarding them only created the illusion of filtering.
+
+A first-class room/trader filter on the list endpoint (option b —
+extending `VideosQuery` + SQL/JOIN) remains genuine future product work,
+but the silent-no-op bug is closed: callers now get exactly the
+filtering the backend actually performs, with no misleading params on
+the wire. Gate: `pnpm check` 0/0 ✓.
 
 ---
 

@@ -142,11 +142,36 @@ async function fetchFromBackend(endpoint: string, options?: RequestInit): Promis
 
 // GET - List videos
 export const GET: RequestHandler = async ({ url, request, cookies }) => {
-	const roomId = url.searchParams.get('trading_room_id');
-	const traderId = url.searchParams.get('trader_id');
-	const publishedOnly = url.searchParams.get('published_only') !== 'false';
+	// FIX (audit 2026-05-16, TRADING_ROOMS_BACKEND_GAPS Gap 2): the old code
+	// forwarded `url.searchParams.toString()` verbatim. The frontend sends
+	// `published_only` / `trading_room_id` / `trader_id`, but the Rust
+	// `VideosQuery` (trading_rooms.rs) only deserializes
+	// `page` / `per_page` / `room_slug` / `content_type` / `is_published`,
+	// so every filter except pagination was silently dropped by Axum.
+	//
+	// Translate to the backend's actual contract instead of pretending:
+	//  - published_only -> is_published (default true unless "false")
+	//  - page / per_page -> pass through (names already align)
+	//  - content_type / room_slug -> pass through if the caller sends them
+	//  - trading_room_id / trader_id -> NOT forwardable: the admin video
+	//    LIST endpoint has no room/trader column filter (room scoping lives
+	//    on the separate path handler `/videos/:slug`). Forwarding them
+	//    only created the illusion of filtering. Dropped explicitly; a
+	//    real room/trader filter is tracked in the gaps doc as future work.
+	const backendQuery = new URLSearchParams();
 	const page = parseInt(url.searchParams.get('page') || '1');
 	const perPage = parseInt(url.searchParams.get('per_page') || '20');
+	backendQuery.set('page', String(page));
+	backendQuery.set('per_page', String(perPage));
+
+	const publishedOnly = url.searchParams.get('published_only');
+	if (publishedOnly !== null) {
+		backendQuery.set('is_published', publishedOnly === 'false' ? 'false' : 'true');
+	}
+	const contentType = url.searchParams.get('content_type');
+	if (contentType) backendQuery.set('content_type', contentType);
+	const roomSlug = url.searchParams.get('room_slug');
+	if (roomSlug) backendQuery.set('room_slug', roomSlug);
 
 	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
 	// Old: headers: { Authorization: request.headers.get('Authorization') || '' }
@@ -157,7 +182,7 @@ export const GET: RequestHandler = async ({ url, request, cookies }) => {
 
 	// Try backend first
 	const backendData = await fetchFromBackend(
-		`/api/admin/trading-rooms/videos?${url.searchParams.toString()}`,
+		`/api/admin/trading-rooms/videos?${backendQuery.toString()}`,
 		{
 			headers: { Authorization: `Bearer ${token}` }
 		}
