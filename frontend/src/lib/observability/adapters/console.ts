@@ -14,6 +14,11 @@
  * @author Revolution Trading Pros
  */
 
+/* eslint-disable no-console --
+ * This is the Console analytics adapter — emitting colorized console
+ * output IS its entire purpose. console.* here is the implementation,
+ * not stray debug logging. (audit 2026-05-17) */
+
 import { browser } from '$app/environment';
 import type {
 	AnalyticsAdapter,
