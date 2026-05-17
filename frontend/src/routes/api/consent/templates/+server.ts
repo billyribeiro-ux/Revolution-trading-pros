@@ -76,7 +76,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
 
 		templateStore.set(siteId, config);
 
-		console.log(`[TemplatesAPI] Saved template config for site: ${siteId}`);
+		console.info(`[TemplatesAPI] Saved template config for site: ${siteId}`);
 
 		return json({
 			success: true,
@@ -132,7 +132,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
 
 		templateStore.delete(siteId);
 
-		console.log(`[TemplatesAPI] Reset template config for site: ${siteId}`);
+		console.info(`[TemplatesAPI] Reset template config for site: ${siteId}`);
 
 		return json({
 			success: true,

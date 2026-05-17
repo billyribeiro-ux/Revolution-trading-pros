@@ -29,7 +29,7 @@ const BACKEND_URL = env.BACKEND_URL || 'http://localhost:8080';
 
 async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Promise<any | null> {
 	try {
-		console.log(`[Alert API] Fetching: ${BACKEND_URL}${endpoint}`);
+		console.info(`[Alert API] Fetching: ${BACKEND_URL}${endpoint}`);
 		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
 			...options,
 			headers: {
@@ -45,7 +45,7 @@ async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Pr
 		}
 
 		const data = await response.json();
-		console.log(`[Alert API] Backend success`);
+		console.info(`[Alert API] Backend success`);
 		return data;
 	} catch (err) {
 		console.error('[Alert API] Backend fetch failed:', err);

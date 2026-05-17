@@ -27,7 +27,7 @@ const BACKEND_URL = env.BACKEND_URL || 'http://localhost:8080';
 
 async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Promise<any | null> {
 	try {
-		console.log(`[Trade Plans API] Fetching: ${BACKEND_URL}${endpoint}`);
+		console.info(`[Trade Plans API] Fetching: ${BACKEND_URL}${endpoint}`);
 		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
 			...options,
 			headers: {
@@ -43,7 +43,7 @@ async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Pr
 		}
 
 		const data = await response.json();
-		console.log(`[Trade Plans API] Backend success:`, data?.data?.length || 0, 'items');
+		console.info(`[Trade Plans API] Backend success:`, data?.data?.length || 0, 'items');
 		return data;
 	} catch (err) {
 		console.error('[Trade Plans API] Backend fetch failed:', err);
@@ -143,7 +143,7 @@ export const GET: RequestHandler = async ({ params, url, request, cookies }) => 
 	}
 
 	// Fallback to mock data
-	console.log(`[Trade Plans API] Using mock data for ${slug}`);
+	console.info(`[Trade Plans API] Using mock data for ${slug}`);
 	let plans = mockTradePlans[slug] || [];
 
 	// Filter by week if specified

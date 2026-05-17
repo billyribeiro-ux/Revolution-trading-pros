@@ -284,6 +284,17 @@ toast/notification system was never built; they `console.info` a
 `[TYPE] message`. Low severity (admin-side) but a genuine missing
 feature, not cruft.
 
+Mock-fallback proxies (found 2026-05-17 in the same sweep) — same class
+as the TRADING_ROOMS gaps: the proxy silently serves a hard-coded
+`mock*` array on backend failure instead of surfacing it. Now
+`console.info('[X API] Using mock data for ...')`, but the real fix is
+to 502 on backend failure like the trading-rooms proxies were hardened
+to (P1-11), or gate the mock behind an explicit env flag:
+- `src/routes/api/alerts/[slug]/+server.ts:155` (`mockAlerts`)
+- `src/routes/api/stats/[slug]/+server.ts:115`
+- `src/routes/api/trades/[slug]/+server.ts:178`
+- `src/routes/api/trade-plans/[slug]/+server.ts:146`
+
 ---
 
 *Report produced by automated audit. Every quantitative claim is reproducible from commit `ee7eb2e76` via the commands in §0 and the cited `file:line` anchors. Gate outputs preserved in `/tmp/eslint-report.json`.*
