@@ -467,7 +467,7 @@
 			<!-- Rating (Stars) -->
 		{:else if props.field.field_type === 'rating'}
 			<div class="rating-wrapper">
-				{#each Array(props.field.validation?.max || 5) as _, i}
+				{#each Array(props.field.validation?.max || 5) as _, i (i)}
 					<button
 						type="button"
 						class="star-button"
