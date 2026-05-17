@@ -436,5 +436,52 @@ tests ✅. Type safety, lint, and clippy debt are all at zero;
 unit/no-DB tests pass in full. The blockers in §3 are correctness /
 security defects that no current gate exercises (no e2e stack, no DB
 integration tests, lint can't see route-contract or money-path bugs).
-</content>
-</invoke>
+
+---
+
+## Schema-Reproducibility — escalated P0 (added 2026-05-17 during remediation Stage 1b)
+
+While building the real-JWT integration harness (Stage 1b), a full
+fresh-database replay of all 60 `api/migrations/*.sql` was run for the
+first time. **Result: 52 apply, 8 fail.** The migration set cannot
+reconstruct the database from zero — production was bootstrapped from
+the Laravel era and the sqlx chain only ever ran as incremental patches
+on top of a pre-existing schema.
+
+| Migration | Failure | State-dependent? |
+|---|---|---|
+| `035_ict7_member_system_complete.sql` | `relation "user_sessions" does not exist` (table never `CREATE`d by any migration; app uses Redis for sessions — vestigial Laravel table) | yes (missing table) |
+| `036_room_resources_ict7_complete.sql` | `column "trading_room_id" does not exist` | yes |
+| `039_resources_ict7_enhanced.sql` | `column r.trading_room_id does not exist` | yes |
+| `041_cms_presets.sql` | `syntax error at or near "WHERE"` | **NO — unconditional SQL syntax error; this migration cannot have applied on any database, incl. prod** |
+| `050_room_fulltext_search_indexes.sql` | `function name "search_room_content" is not unique` | partly (definition conflict) |
+| `051_video_system_ict7_complete.sql` | `column "tags" does not exist` | yes |
+| `053_subscription_notifications_ict7.sql` | `column "trial_ends_at" does not exist` | yes |
+| `054_cms_scheduling_releases.sql` | `column "performed_by" does not exist` | yes |
+
+**Severity: P0.** No new environment, no disaster-recovery rebuild, and
+no DB-backed integration test is possible. `041`'s hard syntax error
+further implies the historical chain is not internally consistent
+(either it never ran in prod and that feature is absent, or prod's
+`_sqlx_migrations` lineage diverges from the repo).
+
+**Why it is not patchable in-place (sqlx constraints):**
+`sqlx::migrate!` checksums applied migrations — editing `035`/`041`
+makes the production app refuse to boot ("migration modified after
+applied"); inserting a re-ordered/earlier migration trips sqlx's
+out-of-order detection on prod. Fabricating the missing tables only in
+the test harness was explicitly rejected — it would make the tests
+lie while DR/new-env bootstrap stays broken.
+
+**The durable (10-year) fix — owner-gated, tracked as G0.3:** squash to
+an authoritative baseline. `pg_dump --schema-only` of the canonical
+production database, committed as `migrations/0000_baseline.sql` (or a
+`schema.sql` the test/CI harness applies before incremental
+migrations); retire the historical pre-baseline migrations from the
+replay path; reset the `_sqlx_migrations` lineage in a coordinated
+maintenance window. This needs the canonical prod schema (owner-held)
+and a prod `_sqlx_migrations` operation. Until it lands, the Stage 1b
+harness ships correct but its Postgres-in-CI activation is
+deliberately **not** wired (a permanently-red gate would defeat the
+purpose of making CI a real gate). This confirms and supersedes the
+prior audit's P1-1 and `MIGRATION_REPAIR_2026-04-28.md`.
