@@ -103,7 +103,9 @@
 
 	// Bulk selection
 	let selectedIds = $state<Set<number>>(new Set());
-	let showBulkActions = $state(false);
+	// Pure projection of selection size (selectedIds is reassigned on every
+	// mutation, so $derived tracks it correctly) — was a state+$effect.
+	let showBulkActions = $derived(selectedIds.size > 0);
 
 	// Delete confirmation modal state
 	let showDeleteModal = $state(false);
@@ -334,13 +336,6 @@
 		}, 3000);
 
 		return () => clearTimeout(timeout);
-	});
-
-	/**
-	 * Update bulk actions visibility
-	 */
-	$effect(() => {
-		showBulkActions = selectedIds.size > 0;
 	});
 
 	// FIX-2026-04-26 (P2-7): clear bulk selection when filters change so the user
