@@ -10,6 +10,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 
 // Production fallback - Rust API on Fly.io
 import { env } from '$env/dynamic/private';
+import { requireAdmin, requireSuperadmin } from '$lib/server/auth';
 const PROD_BACKEND =
 	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
@@ -17,17 +18,9 @@ const PROD_BACKEND =
  * DELETE /api/admin/member-management/:id
  * Soft delete member (anonymizes data, keeps record for audit)
  */
-export const DELETE: RequestHandler = async ({ params, request, cookies }) => {
-	const memberId = params.id;
-	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
-	// Old: const authHeader = request.headers.get('Authorization') || '';
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-
-	if (!token) {
-		return json({ error: 'Missing or invalid authorization header' }, { status: 401 });
-	}
+export const DELETE: RequestHandler = async (event) => {
+	const { token } = requireSuperadmin(event);
+	const memberId = event.params.id;
 	const authHeader = `Bearer ${token}`;
 
 	try {
@@ -61,17 +54,9 @@ export const DELETE: RequestHandler = async ({ params, request, cookies }) => {
  * GET /api/admin/member-management/:id
  * Get member with full details
  */
-export const GET: RequestHandler = async ({ params, request, cookies }) => {
-	const memberId = params.id;
-	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
-	// Old: const authHeader = request.headers.get('Authorization') || '';
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-
-	if (!token) {
-		return json({ error: 'Missing or invalid authorization header' }, { status: 401 });
-	}
+export const GET: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const memberId = event.params.id;
 	const authHeader = `Bearer ${token}`;
 
 	try {
@@ -105,18 +90,10 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
  * PUT /api/admin/member-management/:id
  * Update member details
  */
-export const PUT: RequestHandler = async ({ params, request, cookies }) => {
-	const memberId = params.id;
-	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
-	// Old: const authHeader = request.headers.get('Authorization') || '';
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-	const body = await request.json();
-
-	if (!token) {
-		return json({ error: 'Missing or invalid authorization header' }, { status: 401 });
-	}
+export const PUT: RequestHandler = async (event) => {
+	const { token } = requireSuperadmin(event);
+	const memberId = event.params.id;
+	const body = await event.request.json();
 	const authHeader = `Bearer ${token}`;
 
 	try {

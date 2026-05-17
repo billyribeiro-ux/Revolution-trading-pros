@@ -20,16 +20,15 @@
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
+import { requireAdmin } from '$lib/server/auth';
 
 // CLAUDE.md house style: API_BASE_URL || BACKEND_URL || prod fly URL.
 const BACKEND_URL =
 	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
-export const POST: RequestHandler = async ({ request, cookies }) => {
-	const cookieToken = cookies.get('rtp_access_token');
-	if (!cookieToken) {
-		error(401, 'Authentication required');
-	}
+export const POST: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const { request } = event;
 
 	// Forward the multipart body verbatim. We must NOT re-parse + re-build the
 	// FormData because Node would mangle binary file chunks. Stream the buffer.
@@ -48,7 +47,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 			method: 'POST',
 			headers: {
 				'Content-Type': contentType,
-				Authorization: `Bearer ${cookieToken}`,
+				Authorization: `Bearer ${token}`,
 				'Content-Length': bodyBuffer.byteLength.toString()
 			},
 			body: bodyBuffer

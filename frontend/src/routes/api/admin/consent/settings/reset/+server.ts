@@ -7,16 +7,17 @@
  * The page sends an empty POST; we still forward whatever body is present so
  * future enhancements (e.g. partial reset) work without a proxy change.
  */
-import { error, json } from '@sveltejs/kit';
+import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
+import { requireSuperadmin } from '$lib/server/auth';
 
 const API_URL =
 	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
-export const POST: RequestHandler = async ({ cookies, fetch, request }) => {
-	const token = cookies.get('rtp_access_token');
-	if (!token) error(401, 'Unauthorized');
+export const POST: RequestHandler = async (event) => {
+	const { token } = requireSuperadmin(event);
+	const { fetch, request } = event;
 
 	const body = await request.text();
 

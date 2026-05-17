@@ -17,17 +17,17 @@
  * the backend grows that surface; the upstream will return 405 today.
  */
 
-import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
+import { requireAdmin } from '$lib/server/auth';
 
 const API_URL =
 	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 function buildHandler(method: 'GET' | 'PUT' | 'DELETE'): RequestHandler {
-	return async ({ params, request, cookies, fetch, url }) => {
-		const token = cookies.get('rtp_access_token');
-		if (!token) error(401, 'Unauthorized');
+	return async (event) => {
+		const { token } = requireAdmin(event);
+		const { params, request, fetch, url } = event;
 
 		const id = params.id;
 		const target = `${API_URL}/api/admin/orders/${id}${url.search}`;

@@ -14,19 +14,15 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
+import { requireAdmin } from '$lib/server/auth';
 
 const BACKEND_URL =
 	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 // ── GET — list indicators ────────────────────────────────────────────────────
-export const GET: RequestHandler = async ({ cookies, request, url }) => {
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-
-	if (!token) {
-		return json({ success: false, error: 'Authentication required' }, { status: 401 });
-	}
+export const GET: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const { url } = event;
 
 	try {
 		const queryString = url.search || '';
@@ -74,14 +70,9 @@ export const GET: RequestHandler = async ({ cookies, request, url }) => {
 };
 
 // ── POST — create indicator ──────────────────────────────────────────────────
-export const POST: RequestHandler = async ({ cookies, request }) => {
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-
-	if (!token) {
-		return json({ success: false, error: 'Authentication required' }, { status: 401 });
-	}
+export const POST: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const { request } = event;
 
 	try {
 		const contentType = request.headers.get('content-type') || 'application/json';

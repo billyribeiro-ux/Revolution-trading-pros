@@ -9,6 +9,7 @@
 
 import { json, error as kitError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import { requireSuperadmin } from '$lib/server/auth';
 
 import { env } from '$env/dynamic/private';
 const PROD_BACKEND =
@@ -42,11 +43,9 @@ function extractErrorMessage(data: unknown, fallback: string): string {
 	return fallback;
 }
 
-export const POST: RequestHandler = async ({ request, cookies }) => {
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-	if (!token) kitError(401, 'Unauthorized');
+export const POST: RequestHandler = async (event) => {
+	const { token } = requireSuperadmin(event);
+	const { request } = event;
 
 	let body: Record<string, unknown>;
 	try {

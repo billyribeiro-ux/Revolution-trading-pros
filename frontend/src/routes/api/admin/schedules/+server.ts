@@ -22,6 +22,7 @@
 
 import { json, error as kitError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import { requireAdmin } from '$lib/server/auth';
 
 import { env } from '$env/dynamic/private';
 const BACKEND_URL =
@@ -119,15 +120,12 @@ function extractErrorMessage(data: unknown, fallback: string): string {
 // GET - List schedules (with optional room_id filter)
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const GET: RequestHandler = async ({ url, request, cookies }) => {
+export const GET: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const { url } = event;
 	const roomId = url.searchParams.get('room_id');
 	const activeOnly = url.searchParams.get('active_only') === 'true';
 	const dayOfWeek = url.searchParams.get('day_of_week');
-
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-	if (!token) kitError(401, 'Unauthorized');
 
 	const result = await callBackend(`/api/admin/schedules?${url.searchParams.toString()}`, {
 		headers: { Authorization: `Bearer ${token}` }
@@ -173,13 +171,9 @@ export const GET: RequestHandler = async ({ url, request, cookies }) => {
 // POST - Create schedule
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const POST: RequestHandler = async ({ request, cookies }) => {
-	const body = await request.json();
-
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-	if (!token) kitError(401, 'Unauthorized');
+export const POST: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const body = await event.request.json();
 
 	if (
 		!body.room_id ||

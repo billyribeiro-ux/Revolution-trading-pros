@@ -11,16 +11,17 @@
  * (`./bulk/+server.ts`, `./reset/+server.ts`) to dodge the SvelteKit
  * POST-405 cliff documented in `frontend/src/lib/utils/createProxyShim.ts`.
  */
-import { error, json } from '@sveltejs/kit';
+import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
+import { requireAdmin } from '$lib/server/auth';
 
 const API_URL =
 	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
-export const GET: RequestHandler = async ({ cookies, fetch, url }) => {
-	const token = cookies.get('rtp_access_token');
-	if (!token) error(401, 'Unauthorized');
+export const GET: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const { fetch, url } = event;
 
 	const upstream = await fetch(`${API_URL}/api/admin/consent/settings${url.search}`, {
 		method: 'GET',

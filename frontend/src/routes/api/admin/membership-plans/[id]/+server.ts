@@ -9,22 +9,10 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
+import { requireAdmin } from '$lib/server/auth';
 
 const API_URL =
 	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
-
-function authHeaderFrom({
-	cookies,
-	request
-}: {
-	cookies: { get: (name: string) => string | undefined };
-	request: Request;
-}): string | null {
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-	return token ? `Bearer ${token}` : null;
-}
 
 async function forward(
 	method: 'PUT' | 'PATCH' | 'DELETE' | 'GET',
@@ -59,11 +47,11 @@ async function handleResponse(response: Response): Promise<Response> {
 	}
 }
 
-export const GET: RequestHandler = async ({ params, request, cookies }) => {
-	const id = params.id;
+export const GET: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const id = event.params.id;
 	if (!id) return json({ error: 'Missing plan id' }, { status: 400 });
-	const auth = authHeaderFrom({ cookies, request });
-	if (!auth) return json({ error: 'Missing or invalid authorization header' }, { status: 401 });
+	const auth = `Bearer ${token}`;
 	try {
 		return handleResponse(await forward('GET', id, auth));
 	} catch (err) {
@@ -72,13 +60,13 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
 	}
 };
 
-export const PUT: RequestHandler = async ({ params, request, cookies }) => {
-	const id = params.id;
+export const PUT: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const id = event.params.id;
 	if (!id) return json({ error: 'Missing plan id' }, { status: 400 });
-	const auth = authHeaderFrom({ cookies, request });
-	if (!auth) return json({ error: 'Missing or invalid authorization header' }, { status: 401 });
+	const auth = `Bearer ${token}`;
 	try {
-		const body = await request.json();
+		const body = await event.request.json();
 		return handleResponse(await forward('PUT', id, auth, body));
 	} catch (err) {
 		console.error('[API Proxy] Update membership plan error:', err);
@@ -91,13 +79,13 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
  * partial updates today — see subscriptions_admin.rs::update_plan, which
  * treats every field as Option<T>).
  */
-export const PATCH: RequestHandler = async ({ params, request, cookies }) => {
-	const id = params.id;
+export const PATCH: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const id = event.params.id;
 	if (!id) return json({ error: 'Missing plan id' }, { status: 400 });
-	const auth = authHeaderFrom({ cookies, request });
-	if (!auth) return json({ error: 'Missing or invalid authorization header' }, { status: 401 });
+	const auth = `Bearer ${token}`;
 	try {
-		const body = await request.json();
+		const body = await event.request.json();
 		return handleResponse(await forward('PUT', id, auth, body));
 	} catch (err) {
 		console.error('[API Proxy] Patch membership plan error:', err);
@@ -105,11 +93,11 @@ export const PATCH: RequestHandler = async ({ params, request, cookies }) => {
 	}
 };
 
-export const DELETE: RequestHandler = async ({ params, request, cookies }) => {
-	const id = params.id;
+export const DELETE: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const id = event.params.id;
 	if (!id) return json({ error: 'Missing plan id' }, { status: 400 });
-	const auth = authHeaderFrom({ cookies, request });
-	if (!auth) return json({ error: 'Missing or invalid authorization header' }, { status: 401 });
+	const auth = `Bearer ${token}`;
 	try {
 		return handleResponse(await forward('DELETE', id, auth));
 	} catch (err) {

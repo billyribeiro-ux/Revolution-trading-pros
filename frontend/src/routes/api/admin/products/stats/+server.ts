@@ -8,10 +8,20 @@ import type { RequestHandler } from '@sveltejs/kit';
 
 // Production fallback - Rust API on Fly.io
 import { env } from '$env/dynamic/private';
+import { requireAdmin } from '$lib/server/auth';
 const BACKEND_URL =
 	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
-export const GET: RequestHandler = async ({ cookies, fetch }) => {
+export const GET: RequestHandler = async (event) => {
+	// PRINCIPAL-2026-05-17 (audit FULL_REPO_AUDIT_2026-05-17 §P2-F): replaced the
+	// "no token → return empty mock 200" anti-pattern (which masked auth state
+	// from the client) with the canonical RBAC gate. `requireAdmin` throws
+	// `error(401|403)` so an unauthenticated/under-privileged caller gets a
+	// real status, exactly like every other admin proxy. The 5xx → mock-data
+	// graceful-degradation path below is preserved deliberately.
+	const { token } = requireAdmin(event);
+	const { fetch } = event;
+
 	// ICT 7 FIX: Return mock data for all error cases to prevent console errors
 	const mockData = {
 		total: 0,
@@ -26,13 +36,6 @@ export const GET: RequestHandler = async ({ cookies, fetch }) => {
 	};
 
 	try {
-		const token = cookies.get('rtp_access_token');
-
-		// If no token, return mock data silently (user not authenticated)
-		if (!token) {
-			return json(mockData);
-		}
-
 		const response = await fetch(`${BACKEND_URL}/api/admin/products/stats`, {
 			method: 'GET',
 			headers: {

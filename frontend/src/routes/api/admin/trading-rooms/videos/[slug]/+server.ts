@@ -8,6 +8,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import { requireAdmin } from '$lib/server/auth';
 
 // Production fallback - Rust API on Fly.io
 import { env } from '$env/dynamic/private';
@@ -159,20 +160,15 @@ async function fetchFromBackend(endpoint: string, options?: RequestInit): Promis
 }
 
 // GET - List videos for a specific room by slug
-export const GET: RequestHandler = async ({ params, url, request, cookies }) => {
+export const GET: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const { params, url } = event;
 	const { slug } = params;
 	const traderId = url.searchParams.get('trader_id');
 	const search = url.searchParams.get('search');
 	const publishedOnly = url.searchParams.get('published_only') !== 'false';
 	const page = parseInt(url.searchParams.get('page') || '1');
 	const perPage = parseInt(url.searchParams.get('per_page') || '20');
-
-	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
-	// Old: headers: { Authorization: request.headers.get('Authorization') || '' }
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-	if (!token) error(401, 'Unauthorized');
 
 	// Try backend first
 	const backendData = await fetchFromBackend(

@@ -14,6 +14,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 
 // Production fallback - Rust API on Fly.io
 import { env } from '$env/dynamic/private';
+import { requireAdmin, requireSuperadmin } from '$lib/server/auth';
 const PROD_BACKEND =
 	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
@@ -22,7 +23,8 @@ const PROD_BACKEND =
  * NOT SUPPORTED - Backend doesn't have a list endpoint here.
  * Use /api/admin/members for listing members.
  */
-export const GET: RequestHandler = async () => {
+export const GET: RequestHandler = async (event) => {
+	requireAdmin(event);
 	return json(
 		{
 			error: 'Method not allowed. Use /api/admin/members for listing members.',
@@ -36,17 +38,10 @@ export const GET: RequestHandler = async () => {
  * POST /api/admin/member-management
  * Create new member
  */
-export const POST: RequestHandler = async ({ request, cookies }) => {
-	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
-	// Old: const authHeader = request.headers.get('Authorization') || '';
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
+export const POST: RequestHandler = async (event) => {
+	const { token } = requireSuperadmin(event);
+	const { request } = event;
 	const body = await request.json();
-
-	if (!token) {
-		return json({ error: 'Missing or invalid authorization header' }, { status: 401 });
-	}
 	const authHeader = `Bearer ${token}`;
 
 	try {

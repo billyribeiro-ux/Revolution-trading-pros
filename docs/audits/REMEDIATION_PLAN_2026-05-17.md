@@ -68,7 +68,7 @@ Status: ☐ todo · ◐ in progress · ☑ done · ⏸ blocked on owner gate ·
 | P1-3 spoofable client IP | B | 2 | ☑ (commit 7b9bcd1 — ConnectInfo + trusted-proxy CIDR, 19 no-DB tests; clippy/check/fmt 0) |
 | P1-4 unauth endpoints | B | 2 | ☑ (commit 113bd7e — AdminUser/SuperAdminUser + MONITORING_TOKEN; clippy/check/fmt 0) |
 | P1-6 set-session | B | 2 | ☑ (PR #576 merged — insecure POST deleted; svelte-check/eslint 0/0) |
-| P2-F proxy RBAC | B | 2 | ◐ (Agent C in flight — ~50 admin proxies onto canonical helpers) |
+| P2-F proxy RBAC | B | 2 | ☑ (commit 0c732d2 — 51 proxies onto requireAdmin/requireSuperadmin; empty/mock-200 deleted; svelte-check 0/0, eslint 0 errors) |
 | security-M3 refresh TTL | B | 2 | ☐ |
 | P1-7 money→cents schema | C | 3 | ☐ |
 | P2-I migration 068 / sqlx state | C | 3 | ☐ ⏸ |
