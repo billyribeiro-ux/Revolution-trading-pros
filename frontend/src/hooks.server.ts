@@ -294,8 +294,10 @@ const securityHeaders: Handle = async ({ event, resolve }) => {
 	// Security Headers (OWASP Best Practices)
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Prevent XSS attacks - strongest protection
-	headers.set('X-XSS-Protection', '1; mode=block');
+	// NOTE: X-XSS-Protection deliberately NOT set. The header is
+	// deprecated — modern browsers ignore it, and in legacy browsers its
+	// auditor could itself be abused to introduce XSS. The strong
+	// Content-Security-Policy is the correct, modern control.
 
 	// Prevent MIME type sniffing
 	headers.set('X-Content-Type-Options', 'nosniff');

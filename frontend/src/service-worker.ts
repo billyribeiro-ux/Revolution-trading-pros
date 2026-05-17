@@ -86,6 +86,31 @@ const ASSETS = [
 	return true;
 });
 
+// Path prefixes that render user-specific, authenticated SSR HTML.
+// These must NEVER touch the shared HTTP cache: on a shared device a
+// second user could otherwise be served the first user's cached private
+// page while offline. Mirrors PROTECTED_ROUTES in hooks.server.ts, plus
+// /my for any user-scoped shorthand routes.
+const PRIVATE_PATH_PREFIXES = [
+	'/dashboard',
+	'/account',
+	'/admin',
+	'/checkout',
+	'/trading-room',
+	'/my'
+];
+
+/**
+ * True when the pathname belongs to an authenticated, user-specific area.
+ * Used to skip BOTH cache writes and cache-match fallbacks so private
+ * SSR HTML is never persisted to or served from the shared cache.
+ */
+function isPrivatePath(pathname: string): boolean {
+	return PRIVATE_PATH_PREFIXES.some(
+		(prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
+	);
+}
+
 // ICT 7 FIX: Removed offline.html dependency
 // Using inline fallback instead to avoid 404 errors during build
 // The inline fallback is more reliable and doesn't require a separate file
@@ -223,11 +248,16 @@ sw.addEventListener('fetch', (event) => {
 
 	// For navigation requests (HTML pages), use network-first
 	if (event.request.mode === 'navigate') {
+		const isPrivate = isPrivatePath(url.pathname);
 		event.respondWith(
 			fetch(event.request).catch(async () => {
-				// If offline, try to serve cached page or offline fallback
-				const cached = await caches.match(event.request);
-				if (cached) return cached;
+				// If offline, try to serve cached page or offline fallback.
+				// Never serve a cached private page: it may be another
+				// user's SSR'd HTML on a shared device.
+				if (!isPrivate) {
+					const cached = await caches.match(event.request);
+					if (cached) return cached;
+				}
 
 				// ICT 11+ FIX: Inline offline response (no external file dependency)
 				return new Response(
@@ -261,20 +291,26 @@ sw.addEventListener('fetch', (event) => {
 		return;
 	}
 
-	// For everything else, network-first with cache fallback
+	// For everything else, network-first with cache fallback.
+	// Private (authenticated, user-specific) responses are never written
+	// to or read back from the shared cache — see isPrivatePath.
+	const isPrivate = isPrivatePath(url.pathname);
 	event.respondWith(
 		fetch(event.request)
 			.then((response) => {
-				// Cache successful responses
-				if (response.ok) {
+				// Cache successful responses (public paths only)
+				if (response.ok && !isPrivate) {
 					const responseClone = response.clone();
 					caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
 				}
 				return response;
 			})
 			.catch(async () => {
-				const cached = await caches.match(event.request);
-				return cached || new Response('Not found', { status: 404 });
+				if (!isPrivate) {
+					const cached = await caches.match(event.request);
+					if (cached) return cached;
+				}
+				return new Response('Not found', { status: 404 });
 			})
 	);
 });
