@@ -2,7 +2,7 @@
   "name": "revolution-trading-pros-monorepo",
   "version": "2.0.0",
   "private": true,
-  "packageManager": "pnpm@10.33.2",
+  "packageManager": "pnpm@11.1.2",
   "scripts": {
     "dev": "pnpm --filter revolution-svelte dev",
     "build": "pnpm --filter revolution-svelte build",
@@ -21,7 +21,6 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "@sentry/cli",
       "esbuild",
       "puppeteer",
       "sharp",
