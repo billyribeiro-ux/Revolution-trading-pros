@@ -65,7 +65,36 @@ Plus one directive-level problem: `frontend/src/routes/admin/indicators/create/+
 
 Project has a sanitizer utility and **11 files** import `DOMPurify`/`sanitize-html`/`isomorphic-dompurify`.
 
-**Honest conclusion:** This is an **audit surface, not a confirmed vulnerability**. The blog path is safe. The remaining ~33 files (`PopupModal.svelte:1117`, `FormFieldRenderer.svelte:192`, `MobileResponsiveTable.svelte:223/294`, `VideoTranscript.svelte:290`, `admin/crm/templates/+page.svelte:806`, `admin/email/templates/preview/[id]/+page.svelte:39`, etc.) each need a one-line check: *"is the bound expression a sanitized/constant value or raw user/DB input?"* On a fintech app this is the single highest-value follow-up. Recommend: enforce `svelte/no-at-html-tags` as **error** with explicit per-line `// audited: <reason>` disables, so the surface is provably bounded.
+**RESOLUTION (2026-05-16 — full classification done, all 84 sites in 36 files):**
+Every `{@html}` bound expression was read, not sampled. Buckets:
+
+- **Sanitized (DOMPurify-backed)** — the large majority: `sanitizeBlogContent`,
+  `sanitizeHtml`, `sanitizeHtmlSafe`, `sanitizePopupContent`,
+  `sanitizeFormContent`, `sanitizeVideoOverlay`, `sanitizeHTML`. Verified
+  the non-obvious wrappers actually sanitize internally:
+  - `MobileResponsiveTable.getValue()` → `return sanitizeHtml(rawValue, 'standard')` (line 124)
+  - `indicators/[id] formatGuideHtml()` → wraps `sanitizeHtml(...)` (line 241)
+  - `HtmlBlock.safeHtml` → `$derived(sanitizeHTML(rawHtml, {mode:'custom'}))` (line 60), with a visible "Content sanitized" badge
+- **App-controlled constant** — JSON-LD blocks
+  (`'<script type="application/ld+json">' + JSON.stringify(...)`,
+  app-built structured data) and inline-SVG icon strings
+  (`{@html Icons.X}`, `{@html pillar.icon}` where `pillars` is a static
+  `const` with `icon: Icons.Shield`). No user/DB input reaches these.
+
+**Verified conclusion: zero raw-unsanitized-input `{@html}` sinks.** The
+surface is an audit surface, not a vulnerability — confirmed across
+*all* 36 files, not the original 2-file sample.
+
+**Hardening decision (deliberate, not the original "flip to error"
+recommendation):** flipping `svelte/no-at-html-tags` to `error` would
+require ~84 blanket `svelte-ignore` lines. That trades a *visible* CI
+warning signal for *invisible* per-line suppressions — a new unsafe
+`{@html}` could ship with a copy-pasted ignore and no one would notice.
+Better protection: keep the rule at `warn` (every site stays visible in
+`pnpm lint` / CI), and rely on this committed full classification as the
+durable audit trail. Re-audit is a `rg '\{@html'` + diff against this
+list. Net: the surface is provably bounded *and* the signal for the
+next addition stays loud.
 
 ---
 
