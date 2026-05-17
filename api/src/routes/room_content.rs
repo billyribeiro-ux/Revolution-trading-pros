@@ -29,7 +29,7 @@ use crate::cache::{cache_keys, cache_ttl};
 use crate::services::event_broadcaster::{
     AlertEventData, TradeEventData, TradePlanEventData, VideoEventData,
 };
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{middleware::admin::AdminUser, models::User, AppState};
 
 // ═══════════════════════════════════════════════════════════════════════════════════
 // TYPE DEFINITIONS
@@ -380,13 +380,57 @@ struct PaginationMeta {
     total_pages: i64,
 }
 
+/// NF-1 (P0): room content (trade plans, alerts, trades, weekly videos,
+/// stats) is the paid product. The `public_router` handlers were mounted
+/// with NO authentication — served to anonymous internet users. This gate
+/// requires an authenticated user who is either staff or holds an active /
+/// trial membership. Fail-closed: a DB error never serves paid content.
+async fn ensure_room_access(
+    state: &AppState,
+    user: &User,
+) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
+    let role = user.role.as_deref().unwrap_or("");
+    if matches!(role, "admin" | "super_admin" | "super-admin" | "developer") {
+        return Ok(());
+    }
+    let has_membership: Option<(i64,)> = sqlx::query_as(
+        "SELECT id FROM user_memberships \
+         WHERE user_id = $1 AND status IN ('active', 'trial', 'trialing') LIMIT 1",
+    )
+    .bind(user.id)
+    .fetch_optional(&state.db.pool)
+    .await
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("Database error: {}", e)})),
+        )
+    })?;
+    if has_membership.is_some() {
+        Ok(())
+    } else {
+        tracing::warn!(
+            target: "security",
+            event = "room_content_paywall_blocked",
+            user_id = %user.id,
+            "Non-member blocked from members-only room content"
+        );
+        Err((
+            StatusCode::FORBIDDEN,
+            Json(json!({"error": "Active membership required"})),
+        ))
+    }
+}
+
 /// List trade plan entries for a room
 /// ICT 7+ Phase 2: Redis cached with graceful degradation
 async fn list_trade_plans(
     State(state): State<AppState>,
+    user: User,
     Path(room_slug): Path<String>,
     Query(query): Query<ListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    ensure_room_access(&state, &user).await?;
     let page = query.page.unwrap_or(1).max(1);
     let per_page = query.per_page.unwrap_or(50).min(100);
     let offset = (page - 1) * per_page;
@@ -753,9 +797,11 @@ struct AlertsResponse {
 /// ICT 7+ Phase 2: Redis cached with 60 second TTL for time-sensitive alerts
 async fn list_alerts(
     State(state): State<AppState>,
+    user: User,
     Path(room_slug): Path<String>,
     Query(query): Query<ListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    ensure_room_access(&state, &user).await?;
     let page = query.page.unwrap_or(1).max(1);
     let per_page = query.per_page.unwrap_or(20).min(100);
     let offset = (page - 1) * per_page;
@@ -1075,8 +1121,10 @@ async fn delete_alert(
 /// Mark alert as read (not new)
 async fn mark_alert_read(
     State(state): State<AppState>,
+    user: User,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    ensure_room_access(&state, &user).await?;
     sqlx::query("UPDATE room_alerts SET is_new = false WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
@@ -1112,8 +1160,10 @@ struct WeeklyVideosResponse {
 /// ICT 7+ Phase 2: Redis cached with 1 hour TTL
 async fn get_weekly_video(
     State(state): State<AppState>,
+    user: User,
     Path(room_slug): Path<String>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    ensure_room_access(&state, &user).await?;
     let cache_key = cache_keys::weekly_video(&room_slug);
 
     let response = state
@@ -1149,9 +1199,11 @@ async fn get_weekly_video(
 /// ICT 7+ Phase 2: Redis cached with 1 hour TTL
 async fn list_weekly_videos(
     State(state): State<AppState>,
+    user: User,
     Path(room_slug): Path<String>,
     Query(query): Query<ListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    ensure_room_access(&state, &user).await?;
     let page = query.page.unwrap_or(1).max(1);
     let per_page = query.per_page.unwrap_or(20).min(100);
     let offset = (page - 1) * per_page;
@@ -1296,9 +1348,11 @@ pub struct ArchivedWeekResponse {
 /// List archived weekly videos for a room (past weeks only)
 async fn list_archived_videos(
     State(state): State<AppState>,
+    user: User,
     Path(room_slug): Path<String>,
     Query(query): Query<ArchiveQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    ensure_room_access(&state, &user).await?;
     let year = query.year.unwrap_or_else(|| Utc::now().year());
 
     // Query archived videos with alert/trade counts
@@ -1403,8 +1457,10 @@ struct StatsResponse {
 /// ICT 7+ Phase 2: Redis cached with 5 minute TTL
 async fn get_room_stats(
     State(state): State<AppState>,
+    user: User,
     Path(room_slug): Path<String>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    ensure_room_access(&state, &user).await?;
     let cache_key = cache_keys::stats(&room_slug);
 
     let response = state
@@ -1448,9 +1504,11 @@ struct TradesResponse {
 /// ICT 7+ Phase 2: Redis cached with 5 minute TTL
 async fn list_trades(
     State(state): State<AppState>,
+    user: User,
     Path(room_slug): Path<String>,
     Query(query): Query<TradeListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    ensure_room_access(&state, &user).await?;
     let page = query.page.unwrap_or(1).max(1);
     let per_page = query.per_page.unwrap_or(20).min(100);
     let offset = (page - 1) * per_page;

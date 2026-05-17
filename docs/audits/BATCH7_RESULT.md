@@ -32,7 +32,7 @@ docker logs rtp-api 2>&1 | grep -E "scheduler_sleep|reconcile" | head -5
 # 2. Force a run on demand (admin auth required):
 ADMIN_TOKEN=$(curl -sS -X POST http://localhost:8080/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"welberribeirodrums@gmail.com","password":"<pass>"}' | \
+  -d '{"email":"<REDACTED-SUPERADMIN-EMAIL>","password":"<pass>"}' | \
   python3 -c "import sys,json; print(json.load(sys.stdin)['access_token'])")
 curl -sS -X POST http://localhost:8080/api/admin/reconciliation/run \
   -H "Authorization: Bearer $ADMIN_TOKEN"

@@ -70,7 +70,7 @@ calls `POST /api/checkout`). Delete the second dead
 `createCheckoutSession` in `lib/api/checkout.ts:149`.
 
 ### P0-2 [V] Committed superadmin credentials + production env file
-`welberribeirodrums@gmail.com` / `Davedicenso01!` are hardcoded in
+`<REDACTED-SUPERADMIN-EMAIL>` / `<REDACTED-PASSWORD>` are hardcoded in
 **four** committed e2e specs: `frontend/tests/e2e/admin/role-gate.spec.ts:33-34`,
 `admin/subscription-checkout.spec.ts:32-33`, `admin-sweep.spec.ts:23,36-37`,
 and `verify_tag_fix.spec.ts:26,47,50` (the last has **no** env fallback —

@@ -27,7 +27,7 @@ use sha2::{Digest, Sha256};
 
 use crate::{
     models::{AuthResponse, User, UserResponse},
-    utils::{create_jwt, create_refresh_token, generate_session_id},
+    utils::{create_jwt_versioned, create_refresh_token_versioned, generate_session_id},
     AppState,
 };
 
@@ -520,15 +520,40 @@ async fn log_oauth_action(
 }
 
 /// Create auth response for OAuth user
-fn create_oauth_auth_response(
+///
+/// NF-3b (P1): the OAuth path previously minted tokens via the
+/// `token_version == 0` shims, bypassing the P1-2 revocation epoch — a
+/// stolen OAuth token survived logout-all/reset/ban, and an OAuth login
+/// after any epoch bump was silently un-revocable. Mint with the user's
+/// live epoch (fail-closed if the epoch can't be read), exactly like the
+/// password-login path in `auth.rs`.
+async fn create_oauth_auth_response(
     user: User,
     state: &AppState,
 ) -> Result<AuthResponse, (StatusCode, Json<serde_json::Value>)> {
+    let token_version = match state.services.redis.as_ref() {
+        Some(redis) => redis.get_token_version(user.id).await.map_err(|e| {
+            tracing::error!(
+                target: "security_audit",
+                event = "token_version_read_failed_fail_closed",
+                user_id = %user.id,
+                error = %e,
+                "Could not read token epoch; refusing to mint OAuth token (fail-closed)"
+            );
+            (
+                StatusCode::SERVICE_UNAVAILABLE,
+                Json(serde_json::json!({"error": "Service temporarily unavailable, please try again"})),
+            )
+        })?,
+        None => 0,
+    };
+
     // Create access token
-    let token = create_jwt(
+    let token = create_jwt_versioned(
         user.id,
         &state.config.jwt_secret,
         state.config.jwt_expires_in,
+        token_version,
     )
     .map_err(|e| {
         tracing::error!("JWT creation error: {}", e);
@@ -539,13 +564,16 @@ fn create_oauth_auth_response(
     })?;
 
     // Create refresh token
-    let refresh_token = create_refresh_token(user.id, &state.config.jwt_secret).map_err(|e| {
-        tracing::error!("Refresh token creation error: {}", e);
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(serde_json::json!({"error": "Refresh token creation failed"})),
-        )
-    })?;
+    let refresh_token =
+        create_refresh_token_versioned(user.id, &state.config.jwt_secret, token_version).map_err(
+            |e| {
+                tracing::error!("Refresh token creation error: {}", e);
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(serde_json::json!({"error": "Refresh token creation failed"})),
+                )
+            },
+        )?;
 
     // Generate session ID
     let session_id = generate_session_id();
@@ -900,7 +928,7 @@ async fn google_callback(
     }
 
     // Create auth tokens
-    let auth_response = create_oauth_auth_response(user, &state)?;
+    let auth_response = create_oauth_auth_response(user, &state).await?;
 
     tracing::info!(
         target: "security_audit",
@@ -1126,7 +1154,7 @@ async fn apple_callback(
     }
 
     // Create auth tokens
-    let auth_response = create_oauth_auth_response(user, &state)?;
+    let auth_response = create_oauth_auth_response(user, &state).await?;
 
     tracing::info!(
         target: "security_audit",
