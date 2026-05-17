@@ -831,6 +831,13 @@
 
 	.typ-welcome__image img {
 		width: 100%;
+		height: auto;
+		/* CLS: reserve a stable box before the image loads. No width/height
+		   attrs possible — the asset (/images/welcome-trading.jpg) is
+		   currently missing from the repo (see audit note). 3:2 is a sane
+		   hero default; revisit when the real asset lands. */
+		aspect-ratio: 3 / 2;
+		object-fit: cover;
 		border-radius: 1rem;
 		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 	}

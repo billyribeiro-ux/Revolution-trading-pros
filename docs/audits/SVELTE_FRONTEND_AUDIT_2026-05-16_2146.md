@@ -174,7 +174,35 @@ Structural grep, verified per-file (not raw match count):
 - 206 raw `<img` matches.
 - **86 files** contain at least one `<img>` with **neither** `width`/`height` **nor** `aspect-ratio` — genuine CLS candidates.
 
-High-traffic / revenue-path examples: `src/routes/checkout/+page.svelte`, `src/routes/checkout/thank-you/+page.svelte`, `src/routes/dashboard/classes/+page.svelte`, plus the dashboard video/learning-center pages. Each unsized image shifts layout as it loads. CLAUDE.md hard rule: set both `width` and `height`, or `aspect-ratio` on a wrapper. **Runtime evidence still owed** (Playwright/Lighthouse CLS measurement) before claiming user impact magnitude — flagged as a *measured follow-up*, not asserted.
+High-traffic / revenue-path examples: `src/routes/checkout/+page.svelte`, `src/routes/checkout/thank-you/+page.svelte`, `src/routes/dashboard/classes/+page.svelte`, plus the dashboard video/learning-center pages. Each unsized image shifts layout as it loads. CLAUDE.md hard rule: set both `width` and `height`, or `aspect-ratio` on a wrapper.
+
+**RESOLUTION (2026-05-16 — revenue pages traced per-file, not by grep count):**
+The "86 files" figure is a *raw* grep that does **not** account for
+wrapper-based `aspect-ratio` (the correct, already-widely-used pattern
+here). Tracing the 3 revenue pages individually:
+
+- `dashboard/classes/+page.svelte` — **already correct.** `.class-card__image`
+  wrapper has `aspect-ratio: 16/9` + `img { width/height:100%; object-fit:cover }`.
+  Zero CLS. No change.
+- `checkout/thank-you/+page.svelte` — `typ-order-item__image` (fixed 80×80
+  wrapper) and `typ-upsell-card__image` (fixed 200px-height wrapper) were
+  **already correct**. Only `.typ-welcome__image img` was a real CLS
+  source (`width:100%`, no height/ratio) → **fixed** with
+  `aspect-ratio: 3/2; height:auto; object-fit:cover`.
+- `checkout/+page.svelte` — the 3 Visa/MC/Amex payment-method logos had
+  `height:24px` but no width → horizontal CLS. **Fixed**: explicit
+  `width="38" height="24"` attrs + CSS `width:auto`.
+
+Net: of the supposed revenue-page CLS risks, **only 2 were real**; both
+fixed precisely (no blanket attribute spraying). Lesson mirrors the
+`{@html}` and `unused-vars` passes — the raw grep over-counts; per-file
+tracing is required. Gate: `pnpm check` 0/0/4540.
+
+**Adjacent bug found while tracing:** `checkout/thank-you/+page.svelte:294`
+references `/images/welcome-trading.jpg`, which **does not exist anywhere
+in the repo** (broken hero image / 404 on the order-confirmation page).
+The `aspect-ratio` fix keeps layout stable regardless, but the missing
+asset is a separate P2 to resolve (supply the image or remove the block).
 
 ---
 
