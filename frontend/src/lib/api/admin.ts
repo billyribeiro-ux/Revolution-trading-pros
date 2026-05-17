@@ -1235,6 +1235,56 @@ export const formsApi = {
 /**
  * Subscription Plans API
  */
+/**
+ * FIX (audit FULL_REPO_AUDIT_2026-05-17 §P0-5, MONEY_PATH_DIG_2026-05-17 F2):
+ * the admin plan form captures a dollars `price` (step="0.01" input), but the
+ * Rust backend (`api/src/routes/subscriptions_admin.rs`) expects an integer
+ * cents field:
+ *
+ *   - `CreatePlanRequest.price_cents: i64`  — REQUIRED (lines 118-130). A
+ *     missing `price_cents` fails serde deserialization → create silently
+ *     failed.
+ *   - `UpdatePlanRequest.price_cents: Option<i64>` (lines 132-144). The
+ *     handler does `price = COALESCE($4::BIGINT / 100.0, price)`, and serde
+ *     does not `deny_unknown_fields`, so a stray dollars `price` key was
+ *     silently ignored and the price change was silently DROPPED (the
+ *     dangerous money bug).
+ *
+ * This mirrors `normalizeCouponPayload` / `normalizeProductPayload` in this
+ * same file: convert dollars → integer cents at the single API boundary and
+ * strip the legacy `price` key so the backend never sees it.
+ *
+ * `Math.round` is mandatory: `19.99 * 100` is `1998.9999…` in IEEE-754 float;
+ * truncation (`| 0` / `Math.trunc`) would corrupt the price by a cent. Money
+ * rule: i64 cents end-to-end, with the single rounding at this boundary.
+ *
+ * NOTE: the Stripe-syncing price-change flow (`POST /plans/:id/price`,
+ * `ChangePriceRequest.amount_cents`) is a SEPARATE endpoint
+ * (subscriptions_admin.rs lines 745-1047, router line 1163) that creates a
+ * new Stripe Price and migrates subscriptions. That path already converts
+ * dollars → cents correctly in `+page.svelte::submitPriceChange` and is
+ * intentionally NOT routed through this normalizer — the plain
+ * create/update path is the local DB-only `membership_plans.price` write.
+ */
+function normalizePlanPayload(input: Partial<SubscriptionPlan>): Record<string, any> {
+	const src = input as Record<string, any>;
+	const out: Record<string, any> = { ...src };
+
+	// Dollars -> integer cents for the backend's `price_cents: i64`
+	// (REQUIRED on create, Option on update). Only synthesize when an
+	// explicit `price` was supplied so partial updates that don't touch
+	// price stay partial (UpdatePlanRequest is all-Option / COALESCE).
+	if (out.price_cents === undefined && out.price !== undefined && out.price !== null) {
+		const dollars = Number(out.price);
+		if (Number.isFinite(dollars)) {
+			out.price_cents = Math.round(dollars * 100);
+		}
+	}
+	delete out.price;
+
+	return out;
+}
+
 export const subscriptionPlansApi = {
 	async list(params?: FilterParams): Promise<ApiResponse<SubscriptionPlan[]>> {
 		const query = params ? buildQueryString(params) : '';
@@ -1248,7 +1298,7 @@ export const subscriptionPlansApi = {
 	async create(data: Partial<SubscriptionPlan>): Promise<ApiResponse<SubscriptionPlan>> {
 		const response = await makeRequest<SubscriptionPlan>('/admin/subscriptions/plans', {
 			method: 'POST',
-			body: JSON.stringify(data)
+			body: JSON.stringify(normalizePlanPayload(data))
 		});
 		requestManager.clearCache('/admin/subscriptions/plans');
 		return response;
@@ -1260,7 +1310,7 @@ export const subscriptionPlansApi = {
 	): Promise<ApiResponse<SubscriptionPlan>> {
 		const response = await makeRequest<SubscriptionPlan>(`/admin/subscriptions/plans/${id}`, {
 			method: 'PUT',
-			body: JSON.stringify(data)
+			body: JSON.stringify(normalizePlanPayload(data))
 		});
 		requestManager.clearCache('/admin/subscriptions/plans');
 		return response;

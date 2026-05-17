@@ -280,6 +280,16 @@
 
 		try {
 			// FIX-2026-04-26 (audit 02 §P3-6): cookie-authed proxy.
+			// FIX (audit FULL_REPO_AUDIT_2026-05-17 §P0-5, MONEY_PATH_DIG F2):
+			// the backend `UpdatePlanRequest` expects integer cents
+			// (`price_cents: Option<i64>`, subscriptions_admin.rs:132-144) and
+			// silently ignores an unknown dollars `price` key — so the old
+			// hand-built `price: editingPlan.price` body dropped every price
+			// change. Send `price_cents` instead. `Math.round` is mandatory:
+			// `19.99 * 100` is `1998.9999…` in float; truncation corrupts a
+			// cent. This mirrors the single normalizer chokepoint in
+			// `subscriptionPlansApi` (admin.ts::normalizePlanPayload) so there
+			// is no second un-normalized path.
 			const response = await fetch(`/api/admin/subscriptions/plans/${editingPlan.id}`, {
 				method: 'PUT',
 				headers: { 'Content-Type': 'application/json' },
@@ -287,7 +297,7 @@
 				body: JSON.stringify({
 					name: editingPlan.name,
 					description: editingPlan.description,
-					price: editingPlan.price,
+					price_cents: Math.round(Number(editingPlan.price) * 100),
 					billing_cycle: editingPlan.billing_cycle,
 					is_active: editingPlan.is_active,
 					stripe_price_id: editingPlan.stripe_price_id || null,
