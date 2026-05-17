@@ -70,30 +70,31 @@ Status: ☐ todo · ◐ in progress · ☑ done · ⏸ blocked on owner gate ·
 | P1-6 set-session | B | 2 | ☑ (PR #576 merged — insecure POST deleted; svelte-check/eslint 0/0) |
 | P2-F proxy RBAC | B | 2 | ☑ (commit 0c732d2 — 51 proxies onto requireAdmin/requireSuperadmin; empty/mock-200 deleted; svelte-check 0/0, eslint 0 errors) |
 | security-M3 refresh TTL | B | 2 | ☐ |
-| P1-7 money→cents schema | C | 3 | ☐ |
+| CI red root causes (pnpm strictDepBuilds / verifyDepsBeforeRun / Rust toolchain pin / runner OOM-heap + real API host) | H | 1 | ☑ (PR #579/#580/#581 — Backend+Cloudflare CI green; Frontend job under final verify) |
+| P1-7 money→cents schema | C | 3 | ☐ ⏸ (G0.3 — needs reproducible schema) |
 | P2-I migration 068 / sqlx state | C | 3 | ☐ ⏸ |
-| P0-1 checkout contract | C | 3 | ☐ |
-| P0-4 webhook atomicity | C | 3 | ☐ |
-| P2-A persisted idempotency | C | 3 | ☐ |
-| P2-C webhook DB errors swallowed | C | 3 | ☐ |
-| P0-5 plan price normalizer | C | 3 | ☐ |
-| P1-8 expand=items | C | 3 | ☐ |
-| P2-B refund authz | C | 3 | ☐ |
-| P0-6 JSON-LD XSS | D | 4 | ☐ |
-| P0-7 course paywall | E | 4 | ☐ 🐰 |
-| P1-5 fabricated analytics | F | 5 | ☐ |
-| P2-D unwrap_or_default swallow | F | 5 | ☐ |
-| P3 log-level default | F | 5 | ☐ |
-| P2-E webhook SSRF | G | 5 | ☐ |
-| P3 consent OnceLock | I | 5 | ☐ |
-| P2-G SW auth-HTML cache | J | 6 | ☐ |
-| P2-J component collisions | J | 6 | ☐ |
-| P3 dead module/components | J | 6 | ☐ |
-| P3 mega-components | J | 6 | ☐ |
+| P0-1 checkout contract | C | 3 | ◐ (agent N done — real CheckoutRequest contract, dead client removed, svelte-check 0/0; integration commit pending) |
+| P0-4 webhook atomicity | C | 3 | ◐ (agent M in flight) |
+| P2-A persisted idempotency | C | 3 | ◐ (agent M in flight) |
+| P2-C webhook DB errors swallowed | C | 3 | ◐ (agent M in flight) |
+| P0-5 plan price normalizer | C | 3 | ◐ (agent O done — normalizePlanPayload, /price flow correctly preserved, svelte-check 0/0; integration pending) |
+| P1-8 expand=items | C | 3 | ◐ (agent M in flight) |
+| P2-B refund authz | C | 3 | ◐ (agent M in flight) |
+| P0-6 JSON-LD XSS | D | 4 | ☑ (PR #579 — canonical serializeJsonLd, all 5 sites + jsonld.ts delegate; +10 tests) |
+| P0-7 course paywall | E | 4 | ☑ (PR #579 — 403 + per-lesson entitlement + GUID/download withholding +7 tests; 🐰 live deferred) |
+| P1-5 fabricated analytics | F | 5 | ☑ (PR #579 — real revenue/AOV queries; honest 501 for churn) |
+| P2-D unwrap_or_default swallow | F | 5 | ☑ (PR #579 — ?-propagated 500s; fixed latent broken related-posts query) |
+| P3 log-level default | F | 5 | ◐ (agent H done — EnvFilter debug→info; integration pending) |
+| P2-E webhook SSRF | G | 5 | ☑ (PR #579 — https-only + private-range block, reuses config::IpCidr, +16 tests) |
+| P3 consent OnceLock | I | 5 | ☐ (G0.3-adjacent — dedicated table migration not replayable; deferred) |
+| P2-G SW auth-HTML cache | J | 6 | ◐ (agent J done — isPrivatePath guard; integration pending) |
+| P2-J component collisions | J | 6 | ☐ (deferred — sequence after I's deletions land) |
+| P3 dead module/components | J | 6 | ◐ (agents H+I done — courses.rs/cms_scheduler.rs + 7 dead components deleted, evidence-proven; integration pending) |
+| P3 mega-components | J | 6 | ☐ (deferred — large decomposition) |
 | P3 a11y suppressions | J | 6 | ☐ |
 | P3 /signup vs /register | J | 6 | ☐ |
-| P3 ~36MB cruft | J | 6 | ☐ |
-| P3 stale comments / X-XSS hdr | J | 6 | ☐ |
+| P3 ~36MB cruft | J | 6 | ☑ (PR #581 — 161 files/~36MB removed, evidence-proven, svelte-check 0/0/4523) |
+| P3 stale comments / X-XSS hdr | J | 6 | ◐ (agent J done — deprecated X-XSS-Protection removed; integration pending) |
 
 ---
 

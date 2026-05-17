@@ -389,9 +389,8 @@
 					></textarea>
 				</div>
 				<div class="form-group">
-					<!-- svelte-ignore a11y_label_has_associated_control -->
-					<label>Color</label>
-					<div class="color-picker">
+					<span id="tag-color-label" class="group-label">Color</span>
+					<div class="color-picker" role="group" aria-labelledby="tag-color-label">
 						<div class="color-preview" style="background-color: {formData.color}"></div>
 						<div class="color-palette">
 							{#each colorPalette as color (color)}
@@ -836,7 +835,8 @@
 		margin-bottom: 1.25rem;
 	}
 
-	.form-group label {
+	.form-group label,
+	.form-group .group-label {
 		display: block;
 		font-size: 0.875rem;
 		font-weight: 500;

@@ -950,10 +950,9 @@
 							{#if resource.thumbnail_url}
 								<img src={resource.thumbnail_url} alt={resource.title} />
 							{:else}
-								{@const SvelteComponent = getResourceIcon(resource.resource_type)}
+								{@const ResourceIcon = getResourceIcon(resource.resource_type)}
 								<div class="thumbnail-placeholder">
-									<!-- svelte-ignore svelte_component_deprecated -->
-									<SvelteComponent size={32} />
+									<ResourceIcon size={32} />
 								</div>
 							{/if}
 
@@ -1217,9 +1216,8 @@
 
 				<!-- Tags -->
 				<div class="form-group">
-					<!-- svelte-ignore a11y_label_has_associated_control -->
-					<label>Categories/Tags</label>
-					<div class="tags-grid">
+					<span id="resource-tags-label" class="group-label">Categories/Tags</span>
+					<div class="tags-grid" role="group" aria-labelledby="resource-tags-label">
 						{#each CATEGORIES as category (category.id)}
 							<button
 								type="button"
@@ -2044,7 +2042,8 @@
 		margin-bottom: 1.25rem;
 	}
 
-	.form-group label {
+	.form-group label,
+	.form-group .group-label {
 		display: block;
 		margin-bottom: 0.5rem;
 		color: #94a3b8;
@@ -2385,7 +2384,8 @@
 		gap: 0.875rem;
 	}
 
-	.form-group label {
+	.form-group label,
+	.form-group .group-label {
 		font-size: 0.8125rem;
 	}
 

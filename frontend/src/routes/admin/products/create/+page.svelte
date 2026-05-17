@@ -198,9 +198,8 @@
 
 				<!-- Product Type Selection -->
 				<div class="form-group">
-					<!-- svelte-ignore a11y_label_has_associated_control -->
-					<label>Product Type *</label>
-					<div class="type-selector">
+					<span id="product-type-label" class="group-label">Product Type *</span>
+					<div class="type-selector" role="group" aria-labelledby="product-type-label">
 						{#each productTypes as type (type.value)}
 							{@const Icon = type.icon}
 							<button
@@ -618,7 +617,8 @@
 		border-color: #ef4444;
 	}*/
 
-	.form-group label {
+	.form-group label,
+	.form-group .group-label {
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;

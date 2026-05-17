@@ -211,14 +211,37 @@ async fn webhook(
         "Processing Stripe webhook"
     );
 
-    // Idempotency: record the event; skip processing if already seen
+    // P0-4 FIX (audit FULL_REPO_AUDIT_2026-05-17) — correct replay-after-
+    // partial-failure.
+    //
+    // OLD behaviour (the bug): the dedup row was INSERTed *before* the handler
+    // ran and any subsequent retry was dropped purely on row PRESENCE
+    // (`ON CONFLICT DO NOTHING` → no row returned → "duplicate, skip"). A
+    // handler that died mid-way (e.g. after the orders UPDATE but before access
+    // grants) therefore left the customer charged with no access AND a dedup
+    // row that caused every Stripe retry to be skipped — the partial write was
+    // never repaired.
+    //
+    // NEW behaviour: we record/observe the event row, but the skip decision is
+    // made on `processed_at IS NOT NULL` (genuinely *completed*), NOT on mere
+    // presence. A row that exists with `processed_at IS NULL` means a previous
+    // attempt did not finish — we fall through and REPROCESS it. The handler's
+    // multi-table writes run inside ONE transaction; `processed_at` is only
+    // stamped AFTER that transaction commits, and that stamp is the very last
+    // statement of the committing transaction (so "processed" and the business
+    // rows are atomically all-or-nothing). If the handler/tx fails we return
+    // 5xx with `processed_at` still NULL, Stripe retries, and the next delivery
+    // re-runs the handler from a clean slate.
     let payload_value: serde_json::Value =
         serde_json::from_str(body_str).unwrap_or(serde_json::Value::Null);
-    let inserted: Option<i64> = sqlx::query_scalar(
+
+    // Upsert the observation row (idempotent) and read back whether it has
+    // already been fully processed. `processed_at` is the authority.
+    let already_processed: Option<bool> = sqlx::query_scalar(
         r#"INSERT INTO webhook_events (event_id, event_type, payload)
            VALUES ($1, $2, $3)
-           ON CONFLICT (event_id) DO NOTHING
-           RETURNING 1::BIGINT"#,
+           ON CONFLICT (event_id) DO UPDATE SET event_type = EXCLUDED.event_type
+           RETURNING (processed_at IS NOT NULL)"#,
     )
     .bind(&event.id)
     .bind(&event.event_type)
@@ -234,53 +257,76 @@ async fn webhook(
     })?
     .flatten();
 
-    if inserted.is_none() {
+    if already_processed == Some(true) {
         tracing::info!(
             target: "payments",
             event_id = %event.id,
-            "Duplicate webhook event — skipping"
+            "Webhook event already processed — skipping (idempotent replay)"
         );
         return Ok(StatusCode::OK);
     }
 
-    // Handle different event types
+    if already_processed == Some(false) {
+        tracing::warn!(
+            target: "payments",
+            event_id = %event.id,
+            event_type = %event.event_type,
+            "Webhook event seen but not previously completed — reprocessing prior partial/failed delivery"
+        );
+    }
+
+    // Open ONE transaction for the whole handler. Every multi-table business
+    // write goes through `&mut tx`; nothing is durable until `tx.commit()`.
+    // The final statement of this tx flips `webhook_events.processed_at`, so
+    // the "processed" marker and the business rows commit atomically.
+    let mut tx = state.db.pool.begin().await.map_err(|e| {
+        tracing::error!(target: "payments", "Failed to open webhook transaction: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error starting webhook transaction"})),
+        )
+    })?;
+
+    // Handle different event types — all DB writes are routed through `tx`.
     match event.event_type.as_str() {
         "checkout.session.completed" => {
-            handle_checkout_completed(&state, &event).await?;
+            handle_checkout_completed(&state, &mut tx, &event).await?;
         }
         "customer.subscription.created" => {
-            handle_subscription_created(&state, &event).await?;
+            handle_subscription_created(&state, &mut tx, &event).await?;
         }
         "customer.subscription.updated" => {
-            handle_subscription_updated(&state, &event).await?;
+            handle_subscription_updated(&state, &mut tx, &event).await?;
         }
         "customer.subscription.deleted" => {
-            handle_subscription_deleted(&state, &event).await?;
+            handle_subscription_deleted(&state, &mut tx, &event).await?;
         }
         "invoice.paid" => {
-            handle_invoice_paid(&state, &event).await?;
+            handle_invoice_paid(&state, &mut tx, &event).await?;
         }
         "invoice.payment_failed" => {
-            handle_payment_failed(&state, &event).await?;
+            handle_payment_failed(&state, &mut tx, &event).await?;
         }
         "charge.refunded" => {
-            handle_refund(&state, &event).await?;
+            handle_refund(&state, &mut tx, &event).await?;
         }
         "charge.dispute.created" => {
-            handle_dispute_created(&state, &event).await?;
+            handle_dispute_created(&state, &mut tx, &event).await?;
         }
         "customer.subscription.trial_will_end" => {
-            handle_trial_will_end(&state, &event).await?;
+            handle_trial_will_end(&state, &mut tx, &event).await?;
         }
         _ => {
             tracing::debug!("Unhandled webhook event: {}", event.event_type);
         }
     }
 
-    // Mark event as processed
+    // Mark event as processed AS THE LAST STATEMENT OF THE SAME TRANSACTION,
+    // then commit. Either the business rows AND this stamp both land, or
+    // neither does and Stripe's retry reprocesses (processed_at still NULL).
     sqlx::query("UPDATE webhook_events SET processed_at = NOW() WHERE event_id = $1")
         .bind(&event.id)
-        .execute(&state.db.pool)
+        .execute(&mut *tx)
         .await
         .map_err(|e| {
             tracing::error!(target: "payments", "Failed to mark webhook processed: {}", e);
@@ -290,17 +336,34 @@ async fn webhook(
             )
         })?;
 
+    tx.commit().await.map_err(|e| {
+        tracing::error!(target: "payments", "Failed to commit webhook transaction: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Failed to commit webhook processing"})),
+        )
+    })?;
+
     Ok(StatusCode::OK)
 }
 
 /// Process refund request
 /// POST /api/payments/refund
+///
+/// P2-B FIX (audit FULL_REPO_AUDIT_2026-05-17): this endpoint was reachable by
+/// the order OWNER (`user: User`) who could supply an arbitrary `amount` and
+/// `reason` and was not rate-limited — a self-service unbounded-refund path on
+/// a trading SaaS. Refund issuance is now ADMIN-GATED via the existing
+/// `AdminUser` extractor (the safe default; same pattern used by
+/// `get_summary` and `routes/orders.rs` refund admin op). Legitimate admin
+/// refund behavior is preserved; the `amount`/`reason` request fields keep
+/// working for admins. Owner self-refund is intentionally removed — customers
+/// request refunds through support, an admin issues them.
 async fn create_refund(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(admin): AdminUser,
     Json(input): Json<RefundRequest>,
 ) -> Result<Json<RefundResponse>, (StatusCode, Json<serde_json::Value>)> {
-    // Get order and verify ownership (or admin)
     #[derive(sqlx::FromRow)]
     struct OrderInfo {
         user_id: i64,
@@ -326,16 +389,6 @@ async fn create_refund(
                 )
             })?;
 
-    // Check authorization (must be owner or admin)
-    let is_admin =
-        user.role.as_deref() == Some("admin") || user.role.as_deref() == Some("super_admin");
-    if order.user_id != user.id && !is_admin {
-        return Err((
-            StatusCode::FORBIDDEN,
-            Json(json!({"error": "Not authorized"})),
-        ));
-    }
-
     // Check order status
     if order.status != "completed" {
         return Err((
@@ -351,11 +404,29 @@ async fn create_refund(
         )
     })?;
 
-    // Create refund via Stripe
+    // Create refund via Stripe. P2-A: thread a deterministic logical-operation
+    // key (the order id) so an admin double-submit / proxied retry of the SAME
+    // logical refund reuses the SAME Stripe Idempotency-Key and Stripe collapses
+    // the duplicate instead of issuing a second refund. The amount is folded in
+    // so a deliberate follow-up partial refund of a different amount is a
+    // distinct logical op.
+    let logical_op = format!(
+        "order:{}:amount:{}",
+        input.order_id,
+        input
+            .amount
+            .map(|a| a.to_string())
+            .unwrap_or_else(|| "full".to_string())
+    );
     let refund = state
         .services
         .stripe
-        .create_refund(&payment_intent_id, input.amount, input.reason.as_deref())
+        .create_refund_with_key(
+            &payment_intent_id,
+            input.amount,
+            input.reason.as_deref(),
+            &logical_op,
+        )
         .await
         .map_err(|e| {
             tracing::error!("Stripe refund error: {}", e);
@@ -365,20 +436,36 @@ async fn create_refund(
             )
         })?;
 
-    // Update order status
+    // Update order status. P2-C-adjacent: this multi-row-relevant write is
+    // propagated (not `.ok()`-swallowed) so a DB failure after a successful
+    // Stripe refund surfaces as 5xx for operator follow-up rather than a
+    // silent "order still completed but money refunded" divergence.
     sqlx::query("UPDATE orders SET status = 'refunded', refunded_at = NOW(), updated_at = NOW() WHERE id = $1")
         .bind(input.order_id)
         .execute(&state.db.pool)
         .await
-        .ok();
+        .map_err(|e| {
+            tracing::error!(
+                target: "payments",
+                order_id = %input.order_id,
+                refund_id = %refund.id,
+                error = %e,
+                "Refund succeeded at Stripe but order status update failed"
+            );
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": "Refund issued but order status update failed; reconcile manually"})),
+            )
+        })?;
 
     tracing::info!(
         target: "payments",
         event = "refund_processed",
         order_id = %input.order_id,
+        admin_user_id = %admin.id,
         refund_id = %refund.id,
         amount = %refund.amount,
-        "Refund processed"
+        "Refund processed by admin"
     );
 
     Ok(Json(RefundResponse {
@@ -406,15 +493,31 @@ async fn get_config(State(state): State<AppState>) -> Json<serde_json::Value> {
 // Webhook Handlers
 // ═══════════════════════════════════════════════════════════════════════════
 
-// IDEMPOTENT-BY: top-level webhook_events(event_id) UNIQUE +
-// orders.stripe_session_id UNIQUE WHERE NOT NULL +
-// user_memberships.stripe_subscription_id partial UNIQUE (Batch 4 / 063).
-// A retried `checkout.session.completed` is dropped at the top-level
-// dedup table; if (somehow) it reaches here, the orders update is a
-// no-op SET on the same session_id, and the membership upsert lands on
-// the existing row via stripe_subscription_id ON CONFLICT.
+// IDEMPOTENT-BY: orders.stripe_session_id UNIQUE WHERE NOT NULL +
+// user_memberships.stripe_subscription_id partial UNIQUE (Batch 4 / 063) +
+// per-row ON CONFLICT upserts below.
+//
+// P0-4 (audit FULL_REPO_AUDIT_2026-05-17): every multi-table write in this
+// handler now runs through the caller-owned `tx`. The orders reconcile, the
+// membership upsert, the coupon usage_count bump, and the user_products /
+// user_course_enrollments / user_indicator_access grants are ALL in one
+// transaction with the `webhook_events.processed_at` stamp. Either the
+// customer is charged AND fully provisioned AND the event is marked
+// processed, or NONE of it commits and Stripe's retry re-runs the whole
+// handler (the dedup row is left with processed_at NULL, so the retry is
+// reprocessed, not skipped). Previously these were independent statements
+// on the pool: a mid-handler failure charged the customer with partial/no
+// access and the old presence-based dedup then dropped every retry.
+//
+// Per-statement ON CONFLICT upserts keep the handler safe to fully re-run:
+// a replay re-asserts the same rows rather than duplicating them.
+//
+// Best-effort SIDE EFFECTS (confirmation/receipt emails) deliberately stay
+// on `state.db.pool`, NOT `tx`: a transient email failure must not roll back
+// a successful charge+provision, and the email service takes a pool handle.
 async fn handle_checkout_completed(
     state: &AppState,
+    tx: &mut sqlx::Transaction<'_, sqlx::Postgres>,
     event: &crate::services::stripe::WebhookEvent,
 ) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
     let session = event.as_checkout_session().ok_or_else(|| {
@@ -491,7 +594,7 @@ async fn handle_checkout_completed(
         .bind(amount_discount_cents)
         .bind(amount_total_cents)
         .bind(&applied_code)
-        .execute(&state.db.pool)
+        .execute(&mut **tx)
         .await
         .map_err(|e| {
             (
@@ -532,7 +635,7 @@ async fn handle_checkout_completed(
                         "SELECT plan_id FROM order_items WHERE order_id = $1 AND plan_id IS NOT NULL LIMIT 1"
                     )
                     .bind(order_id)
-                    .fetch_optional(&state.db.pool)
+                    .fetch_optional(&mut **tx)
                     .await {
                         Ok(p) => p,
                         Err(e) => {
@@ -562,7 +665,12 @@ async fn handle_checkout_completed(
                         // row's stripe_subscription_id will already match.
                         // To handle the "duplicate retry" case cleanly we
                         // make the INSERT idempotent on stripe_subscription_id.
-                        if let Err(e) = sqlx::query(
+                        // P0-4: the customer has been charged; the membership
+                        // grant is part of the SAME transaction. A failure here
+                        // must roll the whole thing back and 5xx so Stripe
+                        // retries — NOT log-and-continue (which previously left
+                        // a charged customer with no membership).
+                        sqlx::query(
                             r#"INSERT INTO user_memberships (
                                 user_id, plan_id, starts_at, status,
                                 payment_provider, stripe_subscription_id, stripe_customer_id,
@@ -587,26 +695,37 @@ async fn handle_checkout_completed(
                             let (_, end) = sub.get_current_period();
                             chrono::DateTime::from_timestamp(end, 0).map(|d| d.naive_utc())
                         })
-                        .execute(&state.db.pool)
-                        .await {
-                            tracing::error!(target: "payments", user_id = %user_id, plan_id = %plan_id, "Failed to create user_membership: {}", e);
-                        }
+                        .execute(&mut **tx)
+                        .await
+                        .map_err(|e| {
+                            tracing::error!(target: "payments", user_id = %user_id, plan_id = %plan_id, "Failed to create user_membership — rolling back webhook tx: {}", e);
+                            (
+                                StatusCode::INTERNAL_SERVER_ERROR,
+                                Json(json!({"error": "Failed to create membership"})),
+                            )
+                        })?;
                     }
                 }
             }
         }
 
-        // FIX-2026-04-26: was `.execute(&state.db.pool).await.ok();` — silently
-        // swallowed coupon-usage update failures. Logged now.
-        // Old: .execute(&state.db.pool).await.ok();
-        if let Err(e) = sqlx::query(
+        // P0-4: coupon usage accounting is part of the atomic checkout commit.
+        // Routed through `tx` and propagated — a failure rolls back the whole
+        // handler so we never under-count redemptions against a completed
+        // order (and Stripe retries cleanly because processed_at stays NULL).
+        sqlx::query(
             "UPDATE coupons SET usage_count = usage_count + 1, updated_at = NOW() WHERE id = (SELECT coupon_id FROM orders WHERE id = $1)"
         )
         .bind(order_id)
-        .execute(&state.db.pool)
-        .await {
-            tracing::error!(target: "payments", order_id = %order_id, "Failed to increment coupon usage: {}", e);
-        }
+        .execute(&mut **tx)
+        .await
+        .map_err(|e| {
+            tracing::error!(target: "payments", order_id = %order_id, "Failed to increment coupon usage — rolling back webhook tx: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": "Failed to update coupon usage"})),
+            )
+        })?;
 
         // ═══════════════════════════════════════════════════════════════════════════
         // ACCESS GRANTING - Apple ICT 11+ Principal Engineer Grade
@@ -623,7 +742,7 @@ async fn handle_checkout_completed(
                 "SELECT product_id, name FROM order_items WHERE order_id = $1 AND product_id IS NOT NULL",
             )
             .bind(order_id)
-            .fetch_all(&state.db.pool)
+            .fetch_all(&mut **tx)
             .await
             .map_err(|e| {
                 tracing::error!(
@@ -649,31 +768,33 @@ async fn handle_checkout_completed(
                         indicator_id: Option<i64>,
                     }
 
-                    // FIX-2026-04-26: was `.ok().flatten()` — silently dropped product
-                    // lookup errors. Now logged.
-                    // Old: .fetch_optional(&state.db.pool).await.ok().flatten();
-                    let product_info: Option<ProductInfo> = match sqlx::query_as::<_, ProductInfo>(
+                    // P0-4: routed through `tx`; a real DB error must roll back
+                    // and 5xx (Stripe retries) rather than silently skip
+                    // provisioning a paid product. `None` (product row genuinely
+                    // absent) still falls through harmlessly.
+                    let product_info: Option<ProductInfo> = sqlx::query_as::<_, ProductInfo>(
                         "SELECT type as product_type, course_id, indicator_id FROM products WHERE id = $1",
                     )
                     .bind(product_id)
-                    .fetch_optional(&state.db.pool)
+                    .fetch_optional(&mut **tx)
                     .await
-                    {
-                        Ok(p) => p,
-                        Err(e) => {
-                            tracing::error!(target: "payments", product_id = %product_id, "products lookup failed: {}", e);
-                            None
-                        }
-                    };
+                    .map_err(|e| {
+                        tracing::error!(target: "payments", product_id = %product_id, "products lookup failed — rolling back webhook tx: {}", e);
+                        (
+                            StatusCode::INTERNAL_SERVER_ERROR,
+                            Json(json!({"error": "Failed to look up product for access grant"})),
+                        )
+                    })?;
 
                     if let Some(info) = product_info {
                         // ─────────────────────────────────────────────────────────
                         // 1. Create user_products record for ownership tracking
                         // ─────────────────────────────────────────────────────────
-                        // FIX-2026-04-26: was `.ok();` — silently dropped user_products
-                        // INSERT failures (paid customer, no ownership row). Now logged.
-                        // Old: .execute(&state.db.pool).await.ok();
-                        if let Err(e) = sqlx::query(
+                        // P0-4: ownership row is part of the atomic provision.
+                        // Propagate on failure — a charged customer must end up
+                        // with the ownership row or the whole tx rolls back and
+                        // Stripe retries.
+                        sqlx::query(
                             r#"INSERT INTO user_products (user_id, product_id, purchased_at, order_id)
                                VALUES ($1, $2, NOW(), $3)
                                ON CONFLICT (user_id, product_id) DO UPDATE SET
@@ -683,10 +804,15 @@ async fn handle_checkout_completed(
                         .bind(user_id)
                         .bind(product_id)
                         .bind(order_id)
-                        .execute(&state.db.pool)
-                        .await {
-                            tracing::error!(target: "payments", user_id = %user_id, product_id = %product_id, order_id = %order_id, "user_products INSERT failed: {}", e);
-                        }
+                        .execute(&mut **tx)
+                        .await
+                        .map_err(|e| {
+                            tracing::error!(target: "payments", user_id = %user_id, product_id = %product_id, order_id = %order_id, "user_products INSERT failed — rolling back webhook tx: {}", e);
+                            (
+                                StatusCode::INTERNAL_SERVER_ERROR,
+                                Json(json!({"error": "Failed to record product ownership"})),
+                            )
+                        })?;
 
                         tracing::info!(
                             target: "payments",
@@ -701,10 +827,9 @@ async fn handle_checkout_completed(
                         // 2. Course enrollment
                         // ─────────────────────────────────────────────────────────
                         if let Some(course_id) = info.course_id {
-                            // FIX-2026-04-26: was `.ok();` — silently dropped course
-                            // enrollment failures. Now logged.
-                            // Old: .execute(&state.db.pool).await.ok();
-                            if let Err(e) = sqlx::query(
+                            // P0-4: course access is part of the atomic
+                            // provision; propagate on failure.
+                            sqlx::query(
                                 r#"INSERT INTO user_course_enrollments (user_id, course_id, is_active, enrolled_at)
                                    VALUES ($1, $2, true, NOW())
                                    ON CONFLICT (user_id, course_id) DO UPDATE SET
@@ -712,10 +837,15 @@ async fn handle_checkout_completed(
                             )
                             .bind(user_id)
                             .bind(course_id)
-                            .execute(&state.db.pool)
-                            .await {
-                                tracing::error!(target: "payments", user_id = %user_id, course_id = %course_id, "user_course_enrollments INSERT failed: {}", e);
-                            }
+                            .execute(&mut **tx)
+                            .await
+                            .map_err(|e| {
+                                tracing::error!(target: "payments", user_id = %user_id, course_id = %course_id, "user_course_enrollments INSERT failed — rolling back webhook tx: {}", e);
+                                (
+                                    StatusCode::INTERNAL_SERVER_ERROR,
+                                    Json(json!({"error": "Failed to enroll user in course"})),
+                                )
+                            })?;
 
                             tracing::info!(
                                 target: "payments",
@@ -731,10 +861,9 @@ async fn handle_checkout_completed(
                         // 3. Indicator access
                         // ─────────────────────────────────────────────────────────
                         if let Some(indicator_id) = info.indicator_id {
-                            // FIX-2026-04-26: was `.ok();` — silently dropped indicator
-                            // access INSERT failures. Now logged.
-                            // Old: .execute(&state.db.pool).await.ok();
-                            if let Err(e) = sqlx::query(
+                            // P0-4: indicator access is part of the atomic
+                            // provision; propagate on failure.
+                            sqlx::query(
                                 r#"INSERT INTO user_indicator_access (user_id, indicator_id, is_active, granted_at)
                                    VALUES ($1, $2, true, NOW())
                                    ON CONFLICT (user_id, indicator_id) DO UPDATE SET
@@ -743,10 +872,15 @@ async fn handle_checkout_completed(
                             )
                             .bind(user_id)
                             .bind(indicator_id)
-                            .execute(&state.db.pool)
-                            .await {
-                                tracing::error!(target: "payments", user_id = %user_id, indicator_id = %indicator_id, "user_indicator_access INSERT failed: {}", e);
-                            }
+                            .execute(&mut **tx)
+                            .await
+                            .map_err(|e| {
+                                tracing::error!(target: "payments", user_id = %user_id, indicator_id = %indicator_id, "user_indicator_access INSERT failed — rolling back webhook tx: {}", e);
+                                (
+                                    StatusCode::INTERNAL_SERVER_ERROR,
+                                    Json(json!({"error": "Failed to grant indicator access"})),
+                                )
+                            })?;
 
                             tracing::info!(
                                 target: "payments",
@@ -765,6 +899,9 @@ async fn handle_checkout_completed(
                             && info.indicator_id.is_none()
                         {
                             // Try to find indicator by matching product name/slug
+                            // P0-4: routed through `tx`; real DB error
+                            // propagates (rollback + Stripe retry). A genuine
+                            // no-match still yields None and is skipped.
                             let indicator_id: Option<i64> = sqlx::query_scalar(
                                 r#"SELECT i.id FROM indicators i
                                    JOIN products p ON LOWER(p.name) LIKE CONCAT('%', LOWER(i.name), '%')
@@ -772,21 +909,20 @@ async fn handle_checkout_completed(
                                    LIMIT 1"#
                             )
                             .bind(product_id)
-                            // FIX-2026-04-26: was `.ok().flatten()` — silently dropped
-                            // indicator-by-name lookup errors. Now logged.
-                            // Old: .fetch_optional(&state.db.pool).await.ok().flatten();
-                            .fetch_optional(&state.db.pool)
+                            .fetch_optional(&mut **tx)
                             .await
-                            .unwrap_or_else(|e| {
-                                tracing::error!(target: "payments", product_id = %product_id, "indicator-by-name lookup failed: {}", e);
-                                None
-                            });
+                            .map_err(|e| {
+                                tracing::error!(target: "payments", product_id = %product_id, "indicator-by-name lookup failed — rolling back webhook tx: {}", e);
+                                (
+                                    StatusCode::INTERNAL_SERVER_ERROR,
+                                    Json(json!({"error": "Failed to resolve indicator for access grant"})),
+                                )
+                            })?;
 
                             if let Some(ind_id) = indicator_id {
-                                // FIX-2026-04-26: was `.ok();` — silently dropped indicator
-                                // access (by-type) INSERT failures. Now logged.
-                                // Old: .execute(&state.db.pool).await.ok();
-                                if let Err(e) = sqlx::query(
+                                // P0-4: by-type indicator access is part of the
+                                // atomic provision; propagate on failure.
+                                sqlx::query(
                                     r#"INSERT INTO user_indicator_access (user_id, indicator_id, is_active, granted_at)
                                        VALUES ($1, $2, true, NOW())
                                        ON CONFLICT (user_id, indicator_id) DO UPDATE SET
@@ -795,10 +931,15 @@ async fn handle_checkout_completed(
                                 )
                                 .bind(user_id)
                                 .bind(ind_id)
-                                .execute(&state.db.pool)
-                                .await {
-                                    tracing::error!(target: "payments", user_id = %user_id, indicator_id = %ind_id, "user_indicator_access (by-type) INSERT failed: {}", e);
-                                }
+                                .execute(&mut **tx)
+                                .await
+                                .map_err(|e| {
+                                    tracing::error!(target: "payments", user_id = %user_id, indicator_id = %ind_id, "user_indicator_access (by-type) INSERT failed — rolling back webhook tx: {}", e);
+                                    (
+                                        StatusCode::INTERNAL_SERVER_ERROR,
+                                        Json(json!({"error": "Failed to grant indicator access"})),
+                                    )
+                                })?;
 
                                 tracing::info!(
                                     target: "payments",
@@ -819,6 +960,12 @@ async fn handle_checkout_completed(
         // Batch 6: send subscription-confirmation OR receipt depending
         // on whether this checkout session created a subscription.
         // Best-effort — webhook 200 is more important than email send.
+        //
+        // P0-4: these reads feed ONLY the best-effort email but they read
+        // rows mutated in `tx` (reconciled orders.total, freshly-inserted
+        // membership), so they go through `&mut **tx` to see the in-flight
+        // state. `.ok()` is retained (not `?`) deliberately: a failed *email*
+        // lookup must never roll back a successful charge+provision.
         if let Some(user_id) = user_id {
             #[derive(sqlx::FromRow)]
             struct UserRow {
@@ -828,7 +975,7 @@ async fn handle_checkout_completed(
             let user_row: Option<UserRow> =
                 sqlx::query_as("SELECT email, name FROM users WHERE id = $1")
                     .bind(user_id)
-                    .fetch_optional(&state.db.pool)
+                    .fetch_optional(&mut **tx)
                     .await
                     .ok()
                     .flatten();
@@ -841,7 +988,7 @@ async fn handle_checkout_completed(
             let order_row: Option<OrderRow> =
                 sqlx::query_as("SELECT order_number, total FROM orders WHERE id = $1")
                     .bind(order_id)
-                    .fetch_optional(&state.db.pool)
+                    .fetch_optional(&mut **tx)
                     .await
                     .ok()
                     .flatten();
@@ -864,7 +1011,7 @@ async fn handle_checkout_completed(
                            ORDER BY um.id DESC LIMIT 1"#,
                     )
                     .bind(session.subscription.as_deref().unwrap_or(""))
-                    .fetch_optional(&state.db.pool)
+                    .fetch_optional(&mut **tx)
                     .await
                     .ok()
                     .flatten();
@@ -927,6 +1074,7 @@ async fn handle_checkout_completed(
 // (subsequent state transitions).
 async fn handle_subscription_created(
     _state: &AppState,
+    _tx: &mut sqlx::Transaction<'_, sqlx::Postgres>,
     event: &crate::services::stripe::WebhookEvent,
 ) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
     let subscription = event.as_subscription().ok_or_else(|| {
@@ -953,7 +1101,8 @@ async fn handle_subscription_created(
 // current_period_*, cancel_at_period_end). No INSERT, no counters
 // incremented — pure state replication.
 async fn handle_subscription_updated(
-    state: &AppState,
+    _state: &AppState,
+    tx: &mut sqlx::Transaction<'_, sqlx::Postgres>,
     event: &crate::services::stripe::WebhookEvent,
 ) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
     let subscription = event.as_subscription().ok_or_else(|| {
@@ -998,7 +1147,7 @@ async fn handle_subscription_updated(
             .and_then(|ts| chrono::DateTime::from_timestamp(ts, 0).map(|d| d.naive_utc())),
     )
     .bind(&subscription.id)
-    .execute(&state.db.pool)
+    .execute(&mut **tx)
     .await
     .map_err(|e| {
         tracing::error!(
@@ -1032,6 +1181,7 @@ async fn handle_subscription_updated(
 // "when did Stripe perform it."
 async fn handle_subscription_deleted(
     state: &AppState,
+    tx: &mut sqlx::Transaction<'_, sqlx::Postgres>,
     event: &crate::services::stripe::WebhookEvent,
 ) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
     let subscription = event.as_subscription().ok_or_else(|| {
@@ -1045,7 +1195,7 @@ async fn handle_subscription_deleted(
         "UPDATE user_memberships SET status = 'cancelled', cancelled_at = NOW(), updated_at = NOW() WHERE stripe_subscription_id = $1"
     )
     .bind(&subscription.id)
-    .execute(&state.db.pool)
+    .execute(&mut **tx)
     .await
     .map_err(|e| {
         tracing::error!(
@@ -1084,7 +1234,7 @@ async fn handle_subscription_deleted(
            ORDER BY um.id DESC LIMIT 1"#,
     )
     .bind(&subscription.id)
-    .fetch_optional(&state.db.pool)
+    .fetch_optional(&mut **tx)
     .await
     .ok()
     .flatten();
@@ -1112,21 +1262,38 @@ async fn handle_subscription_deleted(
 // stripe_subscription_id. Replaying the event re-asserts the same
 // status. No counters, no inserts.
 async fn handle_invoice_paid(
-    state: &AppState,
+    _state: &AppState,
+    tx: &mut sqlx::Transaction<'_, sqlx::Postgres>,
     event: &crate::services::stripe::WebhookEvent,
 ) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
     let invoice = &event.data.object;
     let subscription_id = invoice["subscription"].as_str();
 
     if let Some(sub_id) = subscription_id {
-        // Extend subscription period
+        // P2-C FIX (audit FULL_REPO_AUDIT_2026-05-17): was `.ok();` which
+        // swallowed the DB error and returned 200 OK to Stripe — the
+        // membership stayed `past_due` after a successful payment and Stripe
+        // never retried. Now routed through the webhook `tx` and propagated as
+        // 5xx (matching the `handle_subscription_updated` pattern) so the
+        // transaction rolls back and Stripe redelivers.
         sqlx::query(
             "UPDATE user_memberships SET status = 'active', updated_at = NOW() WHERE stripe_subscription_id = $1"
         )
         .bind(sub_id)
-        .execute(&state.db.pool)
+        .execute(&mut **tx)
         .await
-        .ok();
+        .map_err(|e| {
+            tracing::error!(
+                target: "payments",
+                subscription_id = %sub_id,
+                error = %e,
+                "DB write failed in invoice_paid — Stripe will retry"
+            );
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": "Failed to mark subscription active"})),
+            )
+        })?;
     }
 
     tracing::info!(
@@ -1147,6 +1314,7 @@ async fn handle_invoice_paid(
 // boundary — same event_id means same attempt and we skip.
 async fn handle_payment_failed(
     state: &AppState,
+    tx: &mut sqlx::Transaction<'_, sqlx::Postgres>,
     event: &crate::services::stripe::WebhookEvent,
 ) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
     let invoice = &event.data.object;
@@ -1163,7 +1331,13 @@ async fn handle_payment_failed(
     let grace_period_end = chrono::Utc::now() + chrono::Duration::days(grace_period_days);
 
     if let Some(sub_id) = subscription_id {
-        // ICT 7 Fix: Update membership status AND set grace_period_end
+        // P2-C FIX (audit FULL_REPO_AUDIT_2026-05-17): was `.ok();` which
+        // swallowed the DB error and 200'd Stripe — the membership was never
+        // marked `past_due`, no grace period / failure count recorded, and
+        // Stripe did not retry, so dunning silently never started. Now routed
+        // through the webhook `tx` and propagated as 5xx so the transaction
+        // rolls back and Stripe redelivers (the email below is best-effort and
+        // is not reached on the error path).
         sqlx::query(
             r#"UPDATE user_memberships SET
                status = 'past_due',
@@ -1180,9 +1354,20 @@ async fn handle_payment_failed(
         .bind(grace_period_end.naive_utc())
         .bind(attempt_count)
         .bind(sub_id)
-        .execute(&state.db.pool)
+        .execute(&mut **tx)
         .await
-        .ok();
+        .map_err(|e| {
+            tracing::error!(
+                target: "payments",
+                subscription_id = %sub_id,
+                error = %e,
+                "DB write failed in payment_failed — Stripe will retry"
+            );
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": "Failed to record payment failure"})),
+            )
+        })?;
 
         // ICT 7 Fix: Send payment failed with grace period email notification
         {
@@ -1207,7 +1392,7 @@ async fn handle_payment_failed(
                    LIMIT 1"#,
             )
             .bind(sub_id)
-            .fetch_optional(&state.db.pool)
+            .fetch_optional(&mut **tx)
             .await
             .ok()
             .flatten();
@@ -1298,6 +1483,7 @@ async fn handle_payment_failed(
 // event for the same charge is a state advance, not a duplicate.
 async fn handle_refund(
     state: &AppState,
+    tx: &mut sqlx::Transaction<'_, sqlx::Postgres>,
     event: &crate::services::stripe::WebhookEvent,
 ) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
     let charge = &event.data.object;
@@ -1326,7 +1512,7 @@ async fn handle_refund(
         .bind(refund_status)
         .bind(refund_amount_cents)
         .bind(pi)
-        .execute(&state.db.pool)
+        .execute(&mut **tx)
         .await
         .map_err(|e| {
             tracing::error!(target: "payments", error = %e, "Failed to update order on refund");
@@ -1336,7 +1522,18 @@ async fn handle_refund(
             )
         })?;
 
-        // Full refund: revoke access for subscriptions, courses, and indicators
+        // Full refund: revoke access for subscriptions, courses, and
+        // indicators.
+        //
+        // P0-4 / P2-C (audit FULL_REPO_AUDIT_2026-05-17): these were
+        // `.ok()`-swallowed "best-effort" revocations on the pool. Inside the
+        // single webhook transaction that is both incorrect (a failed
+        // statement poisons the tx, so a later swallow can't actually save it)
+        // and undesirable (a refund that records money-back but silently
+        // leaves access live is exactly the partial-state bug P0-4 targets).
+        // They are now part of the SAME tx and propagate as 5xx — order
+        // refund-state and access revocation are all-or-nothing, and Stripe
+        // retries the whole event on failure.
         if is_full_refund {
             // Revoke subscription membership
             sqlx::query(
@@ -1349,9 +1546,15 @@ async fn handle_refund(
                    )"#,
             )
             .bind(pi)
-            .execute(&state.db.pool)
+            .execute(&mut **tx)
             .await
-            .ok(); // Non-fatal — best-effort revocation
+            .map_err(|e| {
+                tracing::error!(target: "payments", payment_intent = %pi, error = %e, "Failed to revoke membership on full refund — rolling back webhook tx");
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": "Failed to revoke membership on refund"})),
+                )
+            })?;
 
             // Revoke course enrollment access
             sqlx::query(
@@ -1360,9 +1563,15 @@ async fn handle_refund(
                      AND is_active = true"#,
             )
             .bind(pi)
-            .execute(&state.db.pool)
+            .execute(&mut **tx)
             .await
-            .ok();
+            .map_err(|e| {
+                tracing::error!(target: "payments", payment_intent = %pi, error = %e, "Failed to revoke course access on full refund — rolling back webhook tx");
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": "Failed to revoke course access on refund"})),
+                )
+            })?;
 
             // Revoke indicator access
             sqlx::query(
@@ -1371,9 +1580,15 @@ async fn handle_refund(
                      AND is_active = true"#,
             )
             .bind(pi)
-            .execute(&state.db.pool)
+            .execute(&mut **tx)
             .await
-            .ok();
+            .map_err(|e| {
+                tracing::error!(target: "payments", payment_intent = %pi, error = %e, "Failed to revoke indicator access on full refund — rolling back webhook tx");
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": "Failed to revoke indicator access on refund"})),
+                )
+            })?;
 
             tracing::info!(
                 target: "payments",
@@ -1409,7 +1624,7 @@ async fn handle_refund(
                LIMIT 1"#,
         )
         .bind(pi)
-        .fetch_optional(&state.db.pool)
+        .fetch_optional(&mut **tx)
         .await
         .ok()
         .flatten();
@@ -1449,6 +1664,7 @@ async fn handle_refund(
 // are status updates, not creates).
 async fn handle_dispute_created(
     state: &AppState,
+    tx: &mut sqlx::Transaction<'_, sqlx::Postgres>,
     event: &crate::services::stripe::WebhookEvent,
 ) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
     let dispute = &event.data.object;
@@ -1477,7 +1693,7 @@ async fn handle_dispute_created(
     .bind(amount_cents)
     .bind(currency)
     .bind(response_deadline.map(|d| d.naive_utc()))
-    .execute(&state.db.pool)
+    .execute(&mut **tx)
     .await
     .map_err(|e| {
         tracing::error!(target: "payments", error = %e, "Failed to insert dispute record");
@@ -1487,7 +1703,11 @@ async fn handle_dispute_created(
         )
     })?;
 
-    // Log to security_events
+    // Log to security_events. P0-4: now part of the webhook tx. A failed
+    // statement inside a transaction aborts the whole tx, so the previous
+    // `.ok()` "non-fatal" swallow could not actually keep the dispute row —
+    // it is propagated so the security audit row and the dispute row are
+    // atomic (Stripe retries the event on failure).
     sqlx::query(
         r#"INSERT INTO security_events (event_type, details, created_at)
            VALUES ('chargeback_dispute', $1, NOW())"#,
@@ -1501,9 +1721,15 @@ async fn handle_dispute_created(
         "status": status,
         "severity": "high"
     }))
-    .execute(&state.db.pool)
+    .execute(&mut **tx)
     .await
-    .ok(); // Log failure is non-fatal
+    .map_err(|e| {
+        tracing::error!(target: "payments", error = %e, "Failed to log dispute security_event — rolling back webhook tx");
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Failed to record dispute security event"})),
+        )
+    })?;
 
     tracing::warn!(
         target: "payments",
@@ -1559,6 +1785,7 @@ async fn handle_dispute_created(
 // the email. Acceptable risk given Stripe's webhook retry budget.
 async fn handle_trial_will_end(
     state: &AppState,
+    tx: &mut sqlx::Transaction<'_, sqlx::Postgres>,
     event: &crate::services::stripe::WebhookEvent,
 ) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
     let sub = &event.data.object;
@@ -1566,12 +1793,12 @@ async fn handle_trial_will_end(
     let customer_id = sub["customer"].as_str().unwrap_or("unknown");
     let trial_end = sub["trial_end"].as_i64();
 
-    // Look up the user by stripe_customer_id
+    // Look up the user by stripe_customer_id (through the webhook tx).
     let user_id: Option<i64> = sqlx::query_scalar(
         "SELECT user_id FROM user_memberships WHERE stripe_customer_id = $1 LIMIT 1",
     )
     .bind(customer_id)
-    .fetch_optional(&state.db.pool)
+    .fetch_optional(&mut **tx)
     .await
     .map_err(|e| {
         tracing::error!(target: "payments", error = %e, "trial_will_end user lookup failed");
@@ -1582,6 +1809,10 @@ async fn handle_trial_will_end(
     })?
     .flatten();
 
+    // P0-4: the audit-trail row is now part of the webhook tx. A failed
+    // statement aborts the tx, so the prior `.ok()` "non-fatal" swallow could
+    // not actually keep anything — propagate so the security_events row is
+    // atomic with marking the event processed (Stripe retries on failure).
     sqlx::query(
         r#"INSERT INTO security_events (user_id, event_type, event_category, severity, details, created_at)
            VALUES ($1, 'trial_will_end', 'billing', 'low', $2, NOW())"#,
@@ -1593,9 +1824,15 @@ async fn handle_trial_will_end(
         "trial_end_ts": trial_end,
         // TODO Task 4: send Postmark "trial ending soon" email to user
     }))
-    .execute(&state.db.pool)
+    .execute(&mut **tx)
     .await
-    .ok(); // non-fatal
+    .map_err(|e| {
+        tracing::error!(target: "payments", error = %e, "Failed to log trial_will_end security_event — rolling back webhook tx");
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Failed to record trial_will_end event"})),
+        )
+    })?;
 
     tracing::info!(
         target: "payments",
@@ -1625,7 +1862,7 @@ async fn handle_trial_will_end(
         )
         .bind(uid)
         .bind(subscription_id)
-        .fetch_optional(&state.db.pool)
+        .fetch_optional(&mut **tx)
         .await
         .ok()
         .flatten();
@@ -1900,7 +2137,14 @@ async fn retry_payment(
             )
         })?;
 
-    // Update membership status if successful
+    // Update membership status if successful.
+    //
+    // P2-C FIX (audit FULL_REPO_AUDIT_2026-05-17): was `.ok();` which
+    // swallowed the DB error after Stripe had already CHARGED the customer —
+    // the membership stayed `past_due` and nothing surfaced the divergence.
+    // Now propagated as 5xx so the caller sees the failure and an operator can
+    // reconcile (the payment did go through at Stripe; this is a DB-write
+    // failure, not a payment failure).
     if result.success {
         sqlx::query(
             "UPDATE user_memberships SET status = 'active', payment_failure_count = 0, updated_at = NOW() WHERE id = $1"
@@ -1908,7 +2152,19 @@ async fn retry_payment(
         .bind(membership.id)
         .execute(&state.db.pool)
         .await
-        .ok();
+        .map_err(|e| {
+            tracing::error!(
+                target: "payments",
+                membership_id = %membership.id,
+                subscription_id = %input.subscription_id,
+                error = %e,
+                "Payment retry succeeded at Stripe but membership status update failed"
+            );
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": "Payment retried but membership update failed; reconcile manually"})),
+            )
+        })?;
 
         tracing::info!(
             target: "payments",

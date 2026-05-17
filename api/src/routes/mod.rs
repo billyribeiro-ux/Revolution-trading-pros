@@ -14,7 +14,7 @@ pub mod tags;
 pub mod user; // Singular /user routes for frontend compatibility
 pub mod users;
 // pub mod settings; // Already handled by admin.rs
-pub mod courses;
+// pub mod courses; // FULL_REPO_AUDIT_2026-05-17 P3: dead module removed (never mounted; superseded by member_courses)
 pub mod payments;
 pub mod products;
 pub mod search;
@@ -87,8 +87,7 @@ pub fn api_router() -> Router<AppState> {
         .nest("/auth", oauth::router()) // ICT 7: Google & Apple OAuth routes
         .nest("/users", users::router())
         .nest("/user", user::router()) // Singular /user routes for frontend
-        // Legacy courses route - replaced by member_courses
-        // .nest("/courses", courses::router())
+        // Legacy courses route removed (FULL_REPO_AUDIT_2026-05-17 P3) — replaced by member_courses
         .nest("/payments", payments::router())
         .nest("/search", search::router())
         .nest("/products", products::router())

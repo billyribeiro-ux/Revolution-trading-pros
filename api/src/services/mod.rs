@@ -7,7 +7,7 @@ pub mod bunny;
 pub mod cms_audit;
 pub mod cms_content;
 pub mod cms_preview;
-pub mod cms_scheduler;
+// pub mod cms_scheduler; // FULL_REPO_AUDIT_2026-05-17 P3: orphan removed (start_scheduler never spawned)
 pub mod cms_upload;
 pub mod cms_webhooks;
 pub mod cms_workflow;

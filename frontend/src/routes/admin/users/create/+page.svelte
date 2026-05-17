@@ -1533,8 +1533,7 @@
 						</select>
 					</div>
 					<div>
-						<!-- svelte-ignore a11y_label_has_associated_control -->
-						<label class="block text-sm text-zinc-400 mb-1">Training Modules</label>
+						<span class="block text-sm text-zinc-400 mb-1">Training Modules</span>
 						<div class="flex flex-wrap gap-2">
 							{#each trainingModules as mod (mod.id)}
 								<span class="px-3 py-1 bg-zinc-800 rounded-full text-xs text-zinc-300"
