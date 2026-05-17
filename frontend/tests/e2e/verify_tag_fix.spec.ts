@@ -9,6 +9,7 @@
  * into the Svelte component state via page.evaluate after the page loads.
  */
 import { test, expect } from '@playwright/test';
+import { SUPERADMIN_EMAIL, SUPERADMIN_PASSWORD } from './_creds';
 
 const BASE = process.env.FRONTEND_URL || process.env.E2E_BASE_URL || 'http://localhost:5173';
 const API = process.env.API_URL || process.env.VITE_API_URL || 'http://localhost:8080';
@@ -23,7 +24,7 @@ test('blog create with tags sends tag names (strings), not IDs (numbers)', async
 	});
 	// We need a token to check tags — login directly
 	const loginApiRes = await request.post(`${API}/api/auth/login`, {
-		data: { email: 'welberribeirodrums@gmail.com', password: 'Davedicenso01!' }
+		data: { email: SUPERADMIN_EMAIL, password: SUPERADMIN_PASSWORD }
 	});
 	const loginApiBody = await loginApiRes.json();
 	const apiToken: string = loginApiBody.access_token;
@@ -44,10 +45,10 @@ test('blog create with tags sends tag names (strings), not IDs (numbers)', async
 	const emailInput = page.locator('#email');
 	await emailInput.waitFor({ state: 'visible', timeout: 15000 });
 	await emailInput.click({ clickCount: 3 });
-	await emailInput.fill('welberribeirodrums@gmail.com');
+	await emailInput.fill(SUPERADMIN_EMAIL);
 	await page.keyboard.press('Tab');
 	await page.locator('#password').click({ clickCount: 3 });
-	await page.locator('#password').fill('Davedicenso01!');
+	await page.locator('#password').fill(SUPERADMIN_PASSWORD);
 	await page.keyboard.press('Tab');
 	await page.waitForTimeout(300);
 	await page.click('.submit-btn');

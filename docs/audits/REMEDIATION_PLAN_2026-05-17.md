@@ -57,7 +57,7 @@ Status: ☐ todo · ◐ in progress · ☑ done · ⏸ blocked on owner gate ·
 | P1-1 Google key committed | A | 0 | ☐ ⏸ |
 | Bunny account restore | — | 0 | ☐ ⏸ (Errol) |
 | R2 rotation (carried from CHANGELOG C-3) | A | 0 | ☐ ⏸ |
-| 🔴 P0 schema not reproducible (G0.3, 8/60 migrations fail fresh) | — | 0 | ☐ ⏸ (owner: squash baseline) |
+| 🔴 P0 schema not reproducible (G0.3, 8/60 migrations fail fresh) | — | 0 | ◐ (reconstructed baseline shipped: `api/migrations/schema.sql` proven 60/60 replay + from-zero load 0 err/204 tables; fresh-env `_sqlx_migrations` seed proven a no-op against the real `sqlx::migrate!` call. **ONE owner cutover step remains** — see G0_3 note) |
 | P2-H email-verify bypass | A | 2 | ☐ |
 | security-M1 email elevation | A | 2 | ☐ |
 | P1-9 CI not enforcing | H | 1 | ☑ (eslint+clippy blocking; dead workflow removed; pnpm single-source) |
@@ -116,28 +116,45 @@ Status: ☐ todo · ◐ in progress · ☑ done · ⏸ blocked on owner gate ·
   money-schema migrations and the existing `068` are operator-applied
   against prod per CLAUDE.md. Capture the `_sqlx_migrations` table
   state vs disk (resolves P2-I uncertainty) before any deploy.
-- ☐ **🔴 P0 / Decision gate G0.3 — schema is NOT reproducible from the
-  migration set.** CONFIRMED 2026-05-17 by full fresh-DB replay: of 60
-  migrations, **52 apply, 8 fail** on a clean database —
-  `035`(user_sessions missing), `036`/`039`(trading_room_id),
-  `041`(**unconditional SQL syntax error** — state-independent; this
-  migration cannot have applied anywhere), `050`(duplicate
-  `search_room_content` function), `051`(tags), `053`(trial_ends_at),
-  `054`(performed_by). Impact: **no new environment, no DR rebuild, no
-  DB integration test is possible**; prod was bootstrapped from the
-  Laravel era and the sqlx chain only ever ran as incremental patches
-  on top. This blocks the *activation* of Stage 1b (real-JWT DB
-  harness) and all DB-backed verification in Stages 2–5.
-  **Not patchable safely:** editing an applied migration breaks the
-  sqlx checksum on prod (app refuses to boot); inserting a re-ordered
-  migration breaks sqlx ordering on prod. **The only durable L7 fix is
-  a squashed authoritative baseline:** `pg_dump --schema-only` of the
-  canonical production DB → committed as `migrations/0000_baseline.sql`
-  (or a `schema.sql` the test/CI harness applies), historical
-  pre-baseline migrations retired from the replay path, and
-  `_sqlx_migrations` lineage reset in a coordinated maintenance window.
-  Requires the canonical prod schema (owner-held) + a prod
-  `_sqlx_migrations` operation → **owner decision required**. Evidence:
+- ◐ **🔴 P0 / G0.3 — reconstructed baseline shipped; fresh-env mechanism
+  proven; ONE owner cutover step remains.** CONFIRMED 2026-05-17 by full
+  fresh-DB replay that of 60 migrations 8 fail on a clean DB. **Root
+  cause re-derived empirically** (the original "8 fail" list was a
+  cascade): the historical chain assumes a Laravel-era substrate that no
+  migration creates — vestigial table `user_sessions`, vestigial FK
+  target `traders` (036's `trader_id BIGINT REFERENCES traders(id)` sits
+  in a `DO $$ … EXCEPTION WHEN others THEN NULL` block, so its absence
+  silently rolled back ALL of 036's column adds → the apparent
+  `trading_room_id`/`content_type`/`section`/`resource_date` failures),
+  `unified_videos.tags` (JSONB — `jsonb_path_ops` GIN index rejects
+  TEXT), and `user_memberships.trial_ends_at`/`grace_period_end` (053
+  indexes them 7 migrations before 060 adds them). Plus three genuine
+  intra-chain defects (041 invalid `UNIQUE … WHERE` table constraint;
+  050 duplicate function; 054 missing `performed_by`).
+  **Shipped (prod-safe):**
+  `api/migrations/schema.sql` — a `pg_dump --schema-only --no-owner` of a
+  DB built by replaying ALL 60 migrations on top of a reconstructed
+  pre-sqlx baseline. **Proven:** `REPLAY 60/60 OK`; `schema.sql` loads
+  into a brand-new empty DB with **0 errors / 204 tables**; and the gated
+  test `api/tests/g03_schema_baseline_test.rs` proves that after
+  `schema.sql` + a `_sqlx_migrations` seed, the **exact** production call
+  `sqlx::migrate!("./migrations").run()` is a clean no-op (all 60 SHA-384
+  checksums match the embedded ones — no `VersionMismatch`). Every
+  reconstructed column type is traced to the Rust app contract in
+  `api/src/` (see `docs/audits/G0_3_SCHEMA_BASELINE_2026-05-17.md`).
+  Production is untouched: `git diff --stat -- api/migrations/0*.sql` is
+  EMPTY; the app still replays the committed chain unchanged.
+  This **unblocks Stage 1b activation** and DB-backed verification for
+  CI/local/DR via `api/migrations/README.md`.
+  **Remaining owner-gated step (the only one):** a coordinated
+  maintenance-window cutover of the *production* DB onto this baseline —
+  `pg_dump --schema-only` prod, `diff` vs this `schema.sql`, reconcile
+  any prod-only objects, reset prod's `_sqlx_migrations` lineage. The
+  exact runbook + diff command is in
+  `docs/audits/G0_3_SCHEMA_BASELINE_2026-05-17.md`; with the
+  reconstructed `schema.sql` in hand this is a ~30-min owner task, not a
+  research project. Evidence:
+  `docs/audits/G0_3_SCHEMA_BASELINE_2026-05-17.md`,
   `docs/audits/FULL_REPO_AUDIT_2026-05-17.md` §Schema-Reproducibility.
 
 **Exit:** secrets rotated; G0.1, G0.2, G0.3 answered (recorded here).
@@ -437,8 +454,12 @@ Owner-gated: needs repo secrets `CLOUDFLARE_API_TOKEN` /
 (the primary Cloudflare Pages git-integration deploy is green). Also
 still hardcodes the stale `PNPM_VERSION: "10.33.2"`. Pre-existing.
 
-### Carry-over owner-gated (unchanged)
-🔴 G0.3 schema not reproducible (8/60 migrations fail fresh) · rotate
-leaked secrets P0-2/P1-1/R2 + G0.1 history-rewrite decision · Bunny
-account (Errol) · deferred-by-risk: P2-J 16 collisions, mega-component
-decomposition, /signup-vs-/register.
+### Carry-over owner-gated
+🔴→◐ G0.3 — reconstructed baseline `api/migrations/schema.sql` shipped
+(proven 60/60 replay + from-zero load 0 err/204 tables + embedded-migrator
+no-op test). **Only the prod-DB maintenance-window cutover remains
+owner-gated** — exact `pg_dump`/`diff` runbook in
+`docs/audits/G0_3_SCHEMA_BASELINE_2026-05-17.md`. · rotate leaked secrets
+P0-2/P1-1/R2 + G0.1 history-rewrite decision · Bunny account (Errol) ·
+deferred-by-risk: P2-J 16 collisions, mega-component decomposition,
+/signup-vs-/register.

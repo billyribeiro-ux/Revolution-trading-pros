@@ -19,8 +19,8 @@
  *   - Postgres + Redis + Rust API on `:8080`
  *   - SvelteKit dev server on `:5173`
  *
- * Auth: logs in as the seeded local super-admin
- * (welberribeirodrums@gmail.com / Davedicenso01! — local-only).
+ * Auth: logs in as the seeded local super-admin (credentials from
+ * E2E_SUPERADMIN_EMAIL / E2E_SUPERADMIN_PASSWORD — see tests/e2e/_creds.ts).
  *
  * Usage:
  *   pnpm exec playwright test tests/e2e/admin-sweep.spec.ts --project=chromium
@@ -30,11 +30,12 @@
  */
 
 import { test, expect, type Page } from '@playwright/test';
+import { SUPERADMIN_EMAIL, SUPERADMIN_PASSWORD } from './_creds';
 
 // ── Config ────────────────────────────────────────────────────────────────────
 
-const ADMIN_EMAIL = process.env.E2E_ADMIN_EMAIL || 'welberribeirodrums@gmail.com';
-const ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD || 'Davedicenso01!';
+const ADMIN_EMAIL = SUPERADMIN_EMAIL;
+const ADMIN_PASSWORD = SUPERADMIN_PASSWORD;
 
 /**
  * Admin sidebar destinations (mirrors AdminSidebar.svelte `menuSections`).

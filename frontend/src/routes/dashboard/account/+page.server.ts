@@ -212,7 +212,7 @@ export const actions: Actions = {
 		}
 
 		try {
-			// Real Laravel backend API call
+			// Real backend API call
 			const updateData: UpdateProfileRequest = {
 				first_name: firstName,
 				last_name: lastName,
@@ -238,7 +238,7 @@ export const actions: Actions = {
 
 			// Handle API errors with proper messages
 			if (error?.errors) {
-				// Laravel validation errors
+				// Backend validation errors
 				const firstError = Object.values(error.errors)[0];
 				const errorMessage = Array.isArray(firstError) ? firstError[0] : 'Validation failed';
 				return fail(400, { error: errorMessage });
@@ -294,7 +294,7 @@ export const actions: Actions = {
 		}
 
 		try {
-			// Real Laravel backend API call
+			// Real backend API call
 			const updateData: UpdatePasswordRequest = {
 				current_password: currentPassword,
 				new_password: newPassword,
@@ -314,7 +314,7 @@ export const actions: Actions = {
 
 			// Handle API errors with proper messages
 			if (error?.errors) {
-				// Laravel validation errors
+				// Backend validation errors
 				const firstError = Object.values(error.errors)[0];
 				const errorMessage = Array.isArray(firstError) ? firstError[0] : 'Validation failed';
 				return fail(400, { error: errorMessage });

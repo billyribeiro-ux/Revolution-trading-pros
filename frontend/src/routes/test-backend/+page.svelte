@@ -160,14 +160,14 @@
 		'@context': 'https://schema.org',
 		'@type': 'WebPage',
 		name: 'Backend Test Page',
-		description: 'Testing forms, popups, and SEO integration with Laravel backend',
+		description: 'Testing forms, popups, and SEO integration with the backend',
 		url: 'https://revolution-trading-pros.pages.dev/test-backend'
 	};
 </script>
 
 <SEOHead
 	title="Backend Test - Forms, Popups & SEO"
-	description="Testing forms, popups, and SEO integration with Laravel backend. Newsletter signup, contact forms, and popup functionality."
+	description="Testing forms, popups, and SEO integration with the backend. Newsletter signup, contact forms, and popup functionality."
 	canonical="/test-backend"
 	ogType="website"
 	schema={pageSchema}

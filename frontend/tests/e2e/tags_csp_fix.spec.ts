@@ -15,9 +15,10 @@
  *        click edit link → verify title loads → save → delete.
  */
 import { test, expect, type Page } from '@playwright/test';
+import { SUPERADMIN_EMAIL, SUPERADMIN_PASSWORD } from './_creds';
 
-const ADMIN_EMAIL = process.env.E2E_ADMIN_EMAIL || 'welberribeirodrums@gmail.com';
-const ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD || 'Davedicenso01!';
+const ADMIN_EMAIL = SUPERADMIN_EMAIL;
+const ADMIN_PASSWORD = SUPERADMIN_PASSWORD;
 const TITLE = 'E2E CSP+Tags Verification';
 const SLUG = 'e2e-csp-tags-verification';
 

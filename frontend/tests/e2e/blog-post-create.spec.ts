@@ -25,8 +25,9 @@
  * editor's slash-command path once that's stable.
  *
  * Local stack required: Docker `db` + `redis` + `api`, plus the SvelteKit dev
- * server (Playwright's `webServer` config boots it automatically). Admin user
- * `welberribeirodrums@gmail.com` / `Davedicenso01!` must exist; seed via
+ * server (Playwright's `webServer` config boots it automatically). The
+ * super-admin user (credentials from E2E_SUPERADMIN_EMAIL /
+ * E2E_SUPERADMIN_PASSWORD — see tests/e2e/_creds.ts) must exist; seed via
  * `api/scripts/seed-local-admin.sh` if the DB is fresh.
  *
  * Run:
@@ -60,9 +61,10 @@
 import { test, expect, type Page } from '@playwright/test';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { SUPERADMIN_EMAIL, SUPERADMIN_PASSWORD } from './_creds';
 
-const ADMIN_EMAIL = process.env.E2E_ADMIN_EMAIL || 'welberribeirodrums@gmail.com';
-const ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD || 'Davedicenso01!';
+const ADMIN_EMAIL = SUPERADMIN_EMAIL;
+const ADMIN_PASSWORD = SUPERADMIN_PASSWORD;
 
 const TITLE = 'E2E Test Post';
 const SLUG = 'e2e-test-post'; // Rust `slug::slugify(TITLE)`

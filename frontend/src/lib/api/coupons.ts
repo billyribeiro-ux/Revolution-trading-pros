@@ -69,7 +69,7 @@ const ANALYTICS_INTERVAL = 60000; // 1 minute
 // WebSocket Configuration - Apple ICT 11 Principal Engineer Standards
 // ═══════════════════════════════════════════════════════════════════════════
 // WebSocket Feature Flag - Set VITE_WS_ENABLED=true in .env to enable real-time updates
-// Backend: Laravel Reverb WebSocket server with coupon channels implemented
+// Backend: Rust WebSocket server with coupon channels implemented
 // WebSocket disabled by default - enable via VITE_WS_ENABLED=true
 const WS_RECONNECT_DELAY = 1000; // Start with 1 second
 const WS_HEARTBEAT_INTERVAL = 30000; // 30 seconds

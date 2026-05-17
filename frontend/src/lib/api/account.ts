@@ -5,7 +5,7 @@
  * COMPLETE END-TO-END IMPLEMENTATION - NO MOCKED DATA
  *
  * ARCHITECTURE:
- * - Real Laravel backend API integration
+ * - Real Rust backend API integration
  * - Proper error handling and validation
  * - Type-safe request/response handling
  * - Enterprise-grade security patterns

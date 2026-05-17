@@ -17,6 +17,7 @@
 	import BunnyVideoPlayer from '$lib/components/video/BunnyVideoPlayer.svelte';
 	import type { WatchlistResponse } from '$lib/types/watchlist';
 	import type { RoomResource } from '$lib/api/room-resources';
+	import { GOOGLE_CALENDAR_API_KEY, GOOGLE_OAUTH_CLIENT_ID } from '$lib/config/google';
 
 	// Props interface for SSR data - Svelte 5 best practice
 	interface Props {
@@ -141,8 +142,8 @@
 	});
 
 	function initCalendar() {
-		const CLIENT_ID = '656301048421-g2s2jvb2pe772mnj8j8it67eirh4jq1f.apps.googleusercontent.com';
-		const API_KEY = 'AIzaSyBTC-zYg65B6xD8ezr4gMWCeUNk7y2Hlrw';
+		const CLIENT_ID = GOOGLE_OAUTH_CLIENT_ID;
+		const API_KEY = GOOGLE_CALENDAR_API_KEY;
 		const DISCOVERY_DOCS = ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'];
 		const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly';
 
