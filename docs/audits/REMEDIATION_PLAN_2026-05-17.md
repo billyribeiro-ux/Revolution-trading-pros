@@ -59,8 +59,9 @@ Status: ☐ todo · ◐ in progress · ☑ done · ⏸ blocked on owner gate ·
 | R2 rotation (carried from CHANGELOG C-3) | A | 0 | ☐ ⏸ |
 | P2-H email-verify bypass | A | 2 | ☐ |
 | security-M1 email elevation | A | 2 | ☐ |
-| P1-9 CI not enforcing | H | 1 | ☐ |
-| P1-10 tests test copies | H | 1 | ☐ |
+| P1-9 CI not enforcing | H | 1 | ☑ (eslint+clippy blocking; dead workflow removed; pnpm single-source) |
+| P1-10 tests test copies | H | 1 | ◐ (no-DB tests now bind the real crate ✓; real-JWT DB harness pending Postgres-in-CI) |
+| CI fmt-red since 4420d1d | H | 1 | ☑ (pre-existing `cargo fmt` drift in stripe.rs:826/842 fixed) |
 | P0-3 /admin gate client-only | B | 2 | ☐ |
 | P1-2 token revocation | B | 2 | ☐ |
 | P1-3 spoofable client IP | B | 2 | ☐ |
@@ -125,25 +126,41 @@ file).
 cannot principal-engineer a payments rewrite without a real test
 harness.
 
-- ☐ **P1-10** Delete the duplicated `mod stripe { … }` / `mod utils`
-  copies in `api/tests/{stripe_test,utils_test}.rs`; point the tests at
-  the real `api/src/` modules (expose via `pub` or a `testutil`
-  feature). A regression in `services/stripe.rs` must now fail CI.
-- ☐ **P1-10** Build a real-JWT admin integration harness in
-  `api/tests/common/` (mint a signed token with the test
-  `JWT_SECRET`, seed an admin + a member + a non-enrolled user). Delete
-  the fake `"test_admin_token"`. This harness is the substrate for
-  verifying Clusters B/C/E.
-- ☐ **P1-9** Add **blocking** `eslint` and
-  `cargo clippy -D warnings` jobs to the canonical
-  `.github/workflows/ci.yml`; remove `continue-on-error` from clippy.
-  Delete the dead `frontend/.github/workflows/ci.yml` (wrong location +
-  npm-in-pnpm).
-- ☐ Add a Postgres+Redis service to CI so the new integration tests
-  run on every PR (gates Stages 2–5).
+- ☑ **P1-10 (1a)** Deleted the duplicated `mod stripe`/`mod utils`
+  copies; `stripe_test.rs`/`utils_test.rs` now bind the real crate
+  (`revolution_api::services::stripe::StripeService::verify_webhook`,
+  `revolution_api::utils`) via the public builder. Added a single
+  canonical Stripe-signature simulator (`tests/common/stripe_sig.rs`,
+  reused by Stage 3). New regression guards that the copies could never
+  catch: HS256-pinning (forged `alg:none` rejected), access/refresh
+  token-type segregation, webhook replay-window (stale/future ts), and
+  strict-UTF-8 payload rejection. Verified: stripe_test 19/19,
+  utils_test 18/18, clippy `-D warnings` clean, fmt clean.
+- ☑ **CI fmt-red root cause** Commit `4420d1d` (the prior "P0 fix")
+  added the idempotency-key headers at `stripe.rs:826/842` without
+  `cargo fmt`, so the **blocking** `cargo fmt --all --check` step has
+  failed since — backend CI was red on every PR. Fixed (2-line
+  indentation, no behavior change). New finding; folded into the audit.
+- ◐ **P1-10 (1b)** Real-JWT admin integration harness in
+  `api/tests/common/` (mint a signed token with the test `JWT_SECRET`,
+  seed admin + member + non-enrolled user; delete the fake
+  `"test_admin_token"`). Code is writable now but is only *provable*
+  with Postgres-in-CI, so it lands together with the CI DB service in
+  the next Stage-1 increment rather than shipped unverifiable.
+- ☑ **P1-9** Blocking `eslint` (frontend job) and
+  `cargo clippy --locked --all-targets -- -D warnings` (backend job)
+  added to the canonical `.github/workflows/ci.yml`;
+  `continue-on-error` removed from clippy; `--locked` on check/test;
+  pnpm version de-pinned so `pnpm/action-setup` derives it from
+  `package.json#packageManager` (one source of truth). Deleted the dead
+  `frontend/.github/workflows/ci.yml` (wrong location + npm-in-pnpm).
+- ◐ Add a Postgres+Redis service to CI so the integration tests run on
+  every PR (pairs with 1b; gates Stages 2–5).
 
-**Exit:** CI red on a real `services/stripe.rs` regression; admin
-integration tests run with real JWTs in CI; lint+clippy block merges.
+**Exit (1a — met):** CI red on a real `services/stripe.rs` /
+`utils::verify_jwt` regression; lint+clippy+fmt block merges.
+**Exit (1b — pending):** admin integration tests run with real JWTs
+against a CI Postgres.
 
 ---
 

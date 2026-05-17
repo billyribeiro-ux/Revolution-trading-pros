@@ -1,251 +1,190 @@
-//! Unit tests for utility functions
+//! Auth/crypto utilities — exercises the REAL `revolution_api::utils`.
+//!
+//! These tests previously ran against a hand-duplicated `mod utils`
+//! whose `verify_jwt` used `Validation::default()` and a `Claims`
+//! struct with no `token_type`. The shipped verifier pins HS256 and
+//! enforces access/refresh segregation, so a regression that weakened
+//! either (e.g. reverting to `Validation::default()`) would have
+//! passed the old tests. They now bind to the production functions and
+//! assert the real security invariants.
 
-// Import the utils module functions
-// Note: These tests assume the functions are exported from the crate
+use revolution_api::utils;
 
-mod utils {
-    use anyhow::Result;
-    use argon2::{
-        password_hash::{
-            rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString,
-        },
-        Argon2,
-    };
-    use chrono::{Duration, Utc};
-    use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
-    use serde::{Deserialize, Serialize};
-    use uuid::Uuid;
+// ── Password hashing (Argon2id) ─────────────────────────────────────
 
-    #[derive(Debug, Serialize, Deserialize)]
-    pub struct Claims {
-        pub sub: Uuid,
-        pub exp: i64,
-        pub iat: i64,
-    }
-
-    pub fn hash_password(password: &str) -> Result<String> {
-        let salt = SaltString::generate(&mut OsRng);
-        let argon2 = Argon2::default();
-        let hash = argon2
-            .hash_password(password.as_bytes(), &salt)
-            .map_err(|e| anyhow::anyhow!("Password hashing failed: {}", e))?;
-        Ok(hash.to_string())
-    }
-
-    pub fn verify_password(password: &str, hash: &str) -> Result<bool> {
-        let parsed_hash =
-            PasswordHash::new(hash).map_err(|e| anyhow::anyhow!("Invalid password hash: {}", e))?;
-        Ok(Argon2::default()
-            .verify_password(password.as_bytes(), &parsed_hash)
-            .is_ok())
-    }
-
-    pub fn create_jwt(user_id: &Uuid, secret: &str, expires_in_hours: i64) -> Result<String> {
-        let now = Utc::now();
-        let claims = Claims {
-            sub: *user_id,
-            iat: now.timestamp(),
-            exp: (now + Duration::hours(expires_in_hours)).timestamp(),
-        };
-
-        let token = encode(
-            &Header::default(),
-            &claims,
-            &EncodingKey::from_secret(secret.as_bytes()),
-        )?;
-
-        Ok(token)
-    }
-
-    pub fn verify_jwt(token: &str, secret: &str) -> Result<Claims> {
-        let token_data = decode::<Claims>(
-            token,
-            &DecodingKey::from_secret(secret.as_bytes()),
-            &Validation::default(),
-        )?;
-
-        Ok(token_data.claims)
-    }
-
-    pub fn generate_token() -> String {
-        use rand::Rng;
-        let mut rng = rand::thread_rng();
-        (0..32)
-            .map(|_| rng.sample(rand::distributions::Alphanumeric) as char)
-            .collect()
-    }
+#[test]
+fn hash_is_argon2_format_and_salted() {
+    let h1 = utils::hash_password("SecurePassword123!").unwrap();
+    let h2 = utils::hash_password("SecurePassword123!").unwrap();
+    assert!(h1.starts_with("$argon2"), "expected Argon2 PHC string");
+    assert_ne!(h1, h2, "per-hash salt must make digests unique");
 }
 
-#[cfg(test)]
-mod tests {
-    use super::utils::*;
-    use uuid::Uuid;
+#[test]
+fn verify_password_accepts_correct_and_rejects_wrong() {
+    let hash = utils::hash_password("CorrectHorse1!").unwrap();
+    assert!(utils::verify_password("CorrectHorse1!", &hash).unwrap());
+    assert!(!utils::verify_password("WrongHorse1!", &hash).unwrap());
+}
 
-    // ===================
-    // Password Hashing Tests
-    // ===================
+#[test]
+fn verify_password_errors_on_malformed_hash() {
+    assert!(utils::verify_password("whatever", "not-a-phc-string").is_err());
+}
 
-    #[test]
-    fn test_hash_password_creates_valid_hash() {
-        let password = "SecurePassword123!";
-        let hash = hash_password(password).expect("Hashing should succeed");
+#[test]
+fn unicode_password_roundtrips() {
+    let pw = "密码🔐パスワード-9!";
+    let hash = utils::hash_password(pw).unwrap();
+    assert!(utils::verify_password(pw, &hash).unwrap());
+}
 
-        // Argon2 hashes start with $argon2
-        assert!(
-            hash.starts_with("$argon2"),
-            "Hash should be in Argon2 format"
-        );
-    }
+// ── Password policy ─────────────────────────────────────────────────
 
-    #[test]
-    fn test_hash_password_creates_unique_hashes() {
-        let password = "SamePassword";
-        let hash1 = hash_password(password).expect("Hashing should succeed");
-        let hash2 = hash_password(password).expect("Hashing should succeed");
+#[test]
+fn password_policy_enforces_owasp_rules() {
+    // Too short (<12).
+    assert!(utils::validate_password("Short1!").is_err());
+    // Missing a special character.
+    assert!(utils::validate_password("NoSpecialChar123abc").is_err());
+    // Contains a known weak pattern even though it is otherwise complex.
+    assert!(utils::validate_password("MyPassword123!").is_err());
+    // Satisfies length + upper + lower + digit + special, no weak word.
+    assert!(utils::validate_password("SecureTrading#2026").is_ok());
+}
 
-        // Same password should produce different hashes (due to salt)
-        assert_ne!(hash1, hash2, "Each hash should be unique due to salt");
-    }
+// ── JWT: type segregation + algorithm pinning ───────────────────────
 
-    #[test]
-    fn test_verify_password_correct_password() {
-        let password = "CorrectPassword123";
-        let hash = hash_password(password).expect("Hashing should succeed");
+const SECRET: &str = "test_secret_key_minimum_32_chars_xxxxx";
 
-        let result = verify_password(password, &hash).expect("Verification should succeed");
-        assert!(result, "Correct password should verify");
-    }
+#[test]
+fn access_token_roundtrips_and_preserves_i64_subject() {
+    // 2^53 + 1 — would lose precision if ever coerced through f64.
+    let uid: i64 = 9_007_199_254_740_993;
+    let token = utils::create_jwt(uid, SECRET, 24).unwrap();
+    assert_eq!(token.split('.').count(), 3, "JWS compact form");
+    let claims = utils::verify_jwt(&token, SECRET, "access").unwrap();
+    assert_eq!(claims.sub, uid);
+    assert_eq!(claims.token_type, "access");
+}
 
-    #[test]
-    fn test_verify_password_incorrect_password() {
-        let password = "CorrectPassword123";
-        let hash = hash_password(password).expect("Hashing should succeed");
+#[test]
+fn refresh_token_roundtrips_as_refresh() {
+    let token = utils::create_refresh_token(42, SECRET).unwrap();
+    let claims = utils::verify_jwt(&token, SECRET, "refresh").unwrap();
+    assert_eq!(claims.sub, 42);
+    assert_eq!(claims.token_type, "refresh");
+}
 
-        let result = verify_password("WrongPassword", &hash).expect("Verification should succeed");
-        assert!(!result, "Wrong password should not verify");
-    }
+/// Security invariant: an access token MUST NOT satisfy a refresh-token
+/// check and vice versa. The old duplicated verifier had no concept of
+/// token type, so this whole class was untested.
+#[test]
+fn token_type_segregation_is_enforced() {
+    let access = utils::create_jwt(7, SECRET, 1).unwrap();
+    let refresh = utils::create_refresh_token(7, SECRET).unwrap();
+    assert!(
+        utils::verify_jwt(&access, SECRET, "refresh").is_err(),
+        "access token accepted where refresh required"
+    );
+    assert!(
+        utils::verify_jwt(&refresh, SECRET, "access").is_err(),
+        "refresh token accepted where access required"
+    );
+}
 
-    #[test]
-    fn test_verify_password_invalid_hash() {
-        let result = verify_password("password", "not-a-valid-hash");
-        assert!(result.is_err(), "Invalid hash should return error");
-    }
+/// Security invariant: HS256 is pinned. A forged `alg:none` token (the
+/// classic algorithm-confusion attack) must be rejected. This is the
+/// 10-year regression guard against anyone reverting to
+/// `Validation::default()`.
+#[test]
+fn alg_none_forgery_is_rejected() {
+    use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
 
-    #[test]
-    fn test_hash_password_empty_password() {
-        let hash = hash_password("").expect("Empty password should still hash");
-        let result = verify_password("", &hash).expect("Verification should succeed");
-        assert!(result, "Empty password should verify against its hash");
-    }
+    let now = chrono::Utc::now().timestamp();
+    let header = URL_SAFE_NO_PAD.encode(br#"{"alg":"none","typ":"JWT"}"#);
+    let claims = URL_SAFE_NO_PAD.encode(
+        format!(
+            r#"{{"sub":1,"exp":{},"iat":{},"token_type":"access"}}"#,
+            now + 3600,
+            now
+        )
+        .as_bytes(),
+    );
+    // alg:none → empty signature segment.
+    let forged = format!("{header}.{claims}.");
+    assert!(
+        utils::verify_jwt(&forged, SECRET, "access").is_err(),
+        "alg:none token must never verify under HS256 pinning"
+    );
+}
 
-    #[test]
-    fn test_hash_password_unicode() {
-        let password = "密码🔐パスワード";
-        let hash = hash_password(password).expect("Unicode password should hash");
-        let result = verify_password(password, &hash).expect("Verification should succeed");
-        assert!(result, "Unicode password should verify");
-    }
+#[test]
+fn wrong_secret_fails_verification() {
+    let token = utils::create_jwt(1, "correct-secret-correct-secret-xx", 24).unwrap();
+    assert!(utils::verify_jwt(&token, "another-secret-another-secret-xx", "access").is_err());
+}
 
-    // ===================
-    // JWT Tests
-    // ===================
+#[test]
+fn expired_token_fails_verification() {
+    let token = utils::create_jwt(1, SECRET, -1).unwrap();
+    assert!(utils::verify_jwt(&token, SECRET, "access").is_err());
+}
 
-    #[test]
-    fn test_create_jwt_returns_valid_token() {
-        let user_id = Uuid::new_v4();
-        let secret = "test_secret_key_12345";
-        let expires_in = 24;
+#[test]
+fn tampered_or_malformed_token_fails_verification() {
+    assert!(utils::verify_jwt("not.a.jwt", SECRET, "access").is_err());
+    let mut token = utils::create_jwt(1, SECRET, 1).unwrap();
+    token.push('x'); // corrupt the signature segment
+    assert!(utils::verify_jwt(&token, SECRET, "access").is_err());
+}
 
-        let token = create_jwt(&user_id, secret, expires_in).expect("JWT creation should succeed");
+// ── Token / session generators ──────────────────────────────────────
 
-        // JWT has three parts separated by dots
-        let parts: Vec<&str> = token.split('.').collect();
-        assert_eq!(parts.len(), 3, "JWT should have 3 parts");
-    }
+#[test]
+fn generate_token_is_32_alphanumeric_and_unique() {
+    let a = utils::generate_token();
+    let b = utils::generate_token();
+    assert_eq!(a.len(), 32);
+    assert!(a.chars().all(|c| c.is_ascii_alphanumeric()));
+    assert_ne!(a, b);
+}
 
-    #[test]
-    fn test_verify_jwt_valid_token() {
-        let user_id = Uuid::new_v4();
-        let secret = "test_secret_key_12345";
+#[test]
+fn session_id_is_256_bit_hex() {
+    let s = utils::generate_session_id();
+    assert_eq!(s.len(), 64, "32 bytes hex-encoded");
+    assert!(s.chars().all(|c| c.is_ascii_hexdigit()));
+}
 
-        let token = create_jwt(&user_id, secret, 24).expect("JWT creation should succeed");
-        let claims = verify_jwt(&token, secret).expect("JWT verification should succeed");
+#[test]
+fn password_reset_token_is_64_chars_unique() {
+    let a = utils::generate_password_reset_token();
+    assert_eq!(a.len(), 64);
+    assert_ne!(a, utils::generate_password_reset_token());
+}
 
-        assert_eq!(claims.sub, user_id, "User ID should match");
-    }
+#[test]
+fn generators_are_collision_free_over_a_batch() {
+    let n = 200;
+    let set: std::collections::HashSet<String> = (0..n).map(|_| utils::generate_token()).collect();
+    assert_eq!(set.len(), n, "no collisions across {n} tokens");
+}
 
-    #[test]
-    fn test_verify_jwt_wrong_secret() {
-        let user_id = Uuid::new_v4();
-        let token =
-            create_jwt(&user_id, "correct_secret", 24).expect("JWT creation should succeed");
+// ── Constant-time compare + token hashing ───────────────────────────
 
-        let result = verify_jwt(&token, "wrong_secret");
-        assert!(result.is_err(), "Wrong secret should fail verification");
-    }
+#[test]
+fn constant_time_compare_matches_only_identical_strings() {
+    assert!(utils::constant_time_compare("abc123", "abc123"));
+    assert!(!utils::constant_time_compare("abc123", "abc124"));
+    assert!(!utils::constant_time_compare("abc", "abcd")); // length mismatch
+}
 
-    #[test]
-    fn test_verify_jwt_expired_token() {
-        let user_id = Uuid::new_v4();
-        let secret = "test_secret";
-
-        // Create a token that's already expired (negative hours)
-        let token = create_jwt(&user_id, secret, -1).expect("JWT creation should succeed");
-
-        let result = verify_jwt(&token, secret);
-        assert!(result.is_err(), "Expired token should fail verification");
-    }
-
-    #[test]
-    fn test_verify_jwt_invalid_format() {
-        let result = verify_jwt("not.a.valid.jwt.token", "secret");
-        assert!(result.is_err(), "Invalid JWT format should fail");
-    }
-
-    #[test]
-    fn test_jwt_roundtrip_preserves_user_id() {
-        let original_id = Uuid::parse_str("550e8400-e29b-41d4-a716-446655440000").unwrap();
-        let secret = "roundtrip_test_secret";
-
-        let token = create_jwt(&original_id, secret, 1).expect("JWT creation should succeed");
-        let claims = verify_jwt(&token, secret).expect("JWT verification should succeed");
-
-        assert_eq!(claims.sub, original_id, "User ID should survive roundtrip");
-    }
-
-    // ===================
-    // Token Generation Tests
-    // ===================
-
-    #[test]
-    fn test_generate_token_length() {
-        let token = generate_token();
-        assert_eq!(token.len(), 32, "Token should be 32 characters");
-    }
-
-    #[test]
-    fn test_generate_token_is_alphanumeric() {
-        let token = generate_token();
-        assert!(
-            token.chars().all(|c| c.is_alphanumeric()),
-            "Token should only contain alphanumeric characters"
-        );
-    }
-
-    #[test]
-    fn test_generate_token_uniqueness() {
-        let token1 = generate_token();
-        let token2 = generate_token();
-        assert_ne!(token1, token2, "Generated tokens should be unique");
-    }
-
-    #[test]
-    fn test_generate_token_multiple_uniqueness() {
-        let tokens: Vec<String> = (0..100).map(|_| generate_token()).collect();
-        let unique_count = tokens
-            .iter()
-            .collect::<std::collections::HashSet<_>>()
-            .len();
-        assert_eq!(unique_count, 100, "All 100 tokens should be unique");
-    }
+#[test]
+fn hash_token_is_deterministic_and_not_identity() {
+    let h1 = utils::hash_token("opaque-token");
+    let h2 = utils::hash_token("opaque-token");
+    assert_eq!(h1, h2, "same input → same digest (DB lookup key)");
+    assert_ne!(h1, "opaque-token", "must store a hash, not the token");
+    assert_ne!(h1, utils::hash_token("different-token"));
 }

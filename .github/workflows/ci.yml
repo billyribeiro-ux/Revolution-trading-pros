@@ -6,9 +6,11 @@ on:
   pull_request:
     branches: [main, develop]
 
+# pnpm version is intentionally NOT pinned here — pnpm/action-setup@v4
+# reads it from package.json#packageManager (pnpm@11.1.2), so CI and
+# local always use the exact same pnpm. One source of truth, no drift.
 env:
   NODE_VERSION: "22"
-  PNPM_VERSION: "10.33.2"
   RUST_VERSION: "stable"
 
 jobs:
@@ -24,8 +26,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
 
       - uses: actions/setup-node@v4
         with:
@@ -37,6 +37,9 @@ jobs:
 
       - name: Typecheck (svelte-kit sync && svelte-check)
         run: pnpm --filter revolution-svelte check
+
+      - name: Lint (eslint — blocking, 0 errors required)
+        run: pnpm --filter revolution-svelte lint
 
       - name: Unit tests (vitest)
         run: pnpm --filter revolution-svelte test:unit
@@ -60,8 +63,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
 
       - uses: actions/setup-node@v4
         with:
@@ -96,10 +97,10 @@ jobs:
           retention-days: 7
 
   # ───────────────────────────────────────────────────────────────────────
-  # Backend: cargo fmt + check + no-DB unit tests
+  # Backend: cargo fmt + clippy(-D warnings) + check + no-DB unit tests
   # ───────────────────────────────────────────────────────────────────────
   backend:
-    name: Backend (cargo fmt + check + no-DB tests)
+    name: Backend (fmt + clippy + check + no-DB tests)
     runs-on: ubuntu-latest
     timeout-minutes: 25
     defaults:
@@ -121,16 +122,19 @@ jobs:
       - name: cargo fmt --check
         run: cargo fmt --all --check
 
-      - name: cargo clippy (warnings tolerated for now)
-        run: cargo clippy --all-targets --all-features
-        continue-on-error: true
-
-      - name: cargo check
-        run: cargo check --all-targets --all-features
+      # Canonical gate per CLAUDE.md — blocking, no continue-on-error.
+      - name: cargo clippy (-D warnings, blocking)
+        run: cargo clippy --locked --all-targets -- -D warnings
         env:
           SQLX_OFFLINE: "true"
 
-      - name: cargo test (no-DB unit tests)
-        run: cargo test --test utils_test --test stripe_test
+      - name: cargo check
+        run: cargo check --locked --all-targets
+        env:
+          SQLX_OFFLINE: "true"
+
+      # Exercises the REAL revolution_api crate (no duplicated copies).
+      - name: cargo test (no-DB unit tests, real crate)
+        run: cargo test --locked --test utils_test --test stripe_test
         env:
           SQLX_OFFLINE: "true"
