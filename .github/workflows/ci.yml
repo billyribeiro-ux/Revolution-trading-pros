@@ -11,7 +11,9 @@ on:
 # local always use the exact same pnpm. One source of truth, no drift.
 env:
   NODE_VERSION: "22"
-  RUST_VERSION: "stable"
+  # Pinned (NOT "stable") for a reproducible backend gate — see the
+  # rust-toolchain step note + rust-toolchain.toml.
+  RUST_VERSION: "1.94.1"
 
 jobs:
   # ───────────────────────────────────────────────────────────────────────
@@ -110,7 +112,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: dtolnay/rust-toolchain@stable
+      # @master honors the `toolchain:` input; the `@stable` wrapper
+      # ALWAYS installs stable and silently ignores `toolchain:`, which
+      # is why the backend gate floated on a moving toolchain and broke
+      # non-deterministically once clippy was made `-D warnings`. Pinned
+      # to the exact version the gate is verified against (also in
+      # rust-toolchain.toml so local + contributors match CI forever).
+      - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ env.RUST_VERSION }}
           components: rustfmt, clippy

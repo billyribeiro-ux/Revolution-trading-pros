@@ -1,0 +1,10 @@
+# Pinned toolchain — single source of truth for local dev, CI, and
+# contributors. The backend quality gate (cargo fmt --check, clippy
+# -D warnings, check, no-DB tests) is verified against exactly this
+# version; floating on "stable" makes `-D warnings` break
+# non-deterministically whenever upstream Rust adds a lint. CI's
+# dtolnay/rust-toolchain@master step installs RUST_VERSION which is
+# kept equal to this channel.
+[toolchain]
+channel = "1.94.1"
+components = ["clippy", "rustfmt"]

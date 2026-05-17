@@ -1822,7 +1822,15 @@ async fn list_stock_lists(
     q = q.bind(per_page);
     q = q.bind(offset);
 
-    let lists: Vec<StockList> = q.fetch_all(&state.db.pool).await.unwrap_or_default();
+    // P2-D: previously `.unwrap_or_default()` turned a DB fault into an empty
+    // list with a 200 + success:true — masking an outage. Propagate via the
+    // same house 500 shape `get_stock_list` (below) uses.
+    let lists: Vec<StockList> = q.fetch_all(&state.db.pool).await.map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     // Bind parameters for the count query
     let mut cq = sqlx::query_as::<_, (i64,)>(&count_sql);
@@ -1841,7 +1849,14 @@ async fn list_stock_lists(
         cq = cq.bind(week_date);
     }
 
-    let total: (i64,) = cq.fetch_one(&state.db.pool).await.unwrap_or((0,));
+    // P2-D: same fault-masking issue — a failed COUNT must not silently
+    // report total:0 alongside an otherwise-successful page.
+    let total: (i64,) = cq.fetch_one(&state.db.pool).await.map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({
         "success": true,
