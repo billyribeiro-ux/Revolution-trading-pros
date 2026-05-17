@@ -42,9 +42,48 @@ Goal: eliminate the 36-file effect-malpractice class; each change verified by `m
 
 Branch `audit/phase-2-effect-to-derived`. Split into 2 PRs (≤18 files each) for reviewability.
 
-- 2a — confirmed sites: `admin/categories/+page.svelte:86/139/146` (collapse `$state`+`$effect`, rename existing `$derived` → `stats`), `admin/schedules/+page.svelte:106/342`, `forgot-password/+page.svelte:19`, `ImageComparisonSlider.svelte:41`, `dashboard/explosive-swings/+page.svelte:107`, `CookieConsent.svelte:68`.
-- 2b — the remaining ~30 from the 36-file grep pool, audited individually (skip any where the effect has a real side-effect, not pure derivation).
+> **CORRECTION (executed 2026-05-16, commit `0d187a34e`):** The original
+> "6 confirmed 2a sites" claim was over-stated. Investigating each
+> individually (per the operator's "don't run from the work" directive)
+> showed **only 2 are pure derivations** safe to convert to `$derived`:
+>
+> - ✅ **DONE** `admin/categories/+page.svelte` — collapsed the
+>   `$derived computedStats` → `$state stats` → sync-`$effect` shadow
+>   cascade into one `$derived stats`. autofixer `issues:[]`.
+> - ✅ **DONE** `admin/schedules/+page.svelte` — `showBulkActions`
+>   `$effect` → `$derived(selectedIds.size > 0)`. autofixer `issues:[]`.
+>
+> The other 4 are **NOT pure derivations** — converting them to
+> `$derived` would break runtime behaviour, so they were deliberately
+> left alone and are tracked here as a separate (non-quick) refactor:
+>
+> - ❌ `forgot-password/+page.svelte:19` — `isVisible` is a *mount
+>   effect* (false→true once, to trigger a CSS entrance animation).
+>   `$derived(true)` is a constant and kills the transition.
+> - ❌ `ImageComparisonSlider.svelte:41` — `sliderPosition` is seeded
+>   from a prop **and** mutated by drag/keyboard handlers. Needs
+>   `$bindable` or one-time-init, not `$derived` (can't assign to a
+>   derived).
+> - ❌ `dashboard/explosive-swings/+page.svelte:107` — `alertModalOpen`
+>   synced from a store **and** set false by close handlers.
+>   Bidirectional; same as above.
+> - ❌ `CookieConsent.svelte:68` — `isPreferencesOpen` synced from a
+>   prop **and** user-toggled. Bidirectional; same class as the
+>   TemplateEditor landmine — needs `$bindable`/key-remount, real work.
+>
+> Lesson: "autofixer suggested it" ≠ "safe to convert." The
+> suggestion's own text says ignore it when the effect is a real
+> side-effect or the state is also written elsewhere. 4/6 fell in that
+> bucket. The 2b "~30 remaining" pool must be triaged the same way —
+> expect a similar hit rate, not 30 mechanical conversions.
+
+- 2a — **2 done** (above). Remaining bidirectional/mount-effect sites need `$bindable` or `{#key}`-remount design, not `$derived` — promote to a design task, not a quick win.
+- 2b — the remaining ~30 from the 36-file grep pool, audited individually (skip any where the effect has a real side-effect, not pure derivation — based on 2a, expect the majority to be skips).
 - Per file: run autofixer until `issues: []` AND no "assigned inside an $effect" suggestion.
+
+### Stale-IDE artifact (not a code bug) — recorded so it isn't re-chased
+
+On 2026-05-16 the IDE reported `TS2306 … @tabler/icons-svelte-runes/dist/icons/*.svelte.d.ts is not a module` across `admin/blog/create/+page.svelte`. **This is a stale TypeScript-server cache**, not a real error: the path it references is the orphaned `@tabler+icons-svelte-runes@3.41.1` `.pnpm` tree left behind after PR #571 bumped Tabler to `3.44.0`. The authoritative `pnpm check` (`svelte-kit sync && svelte-check`) reports **0 errors / 0 warnings / 4541 files** on that exact file. Resolution: restart the IDE TS server (or `pnpm install --frozen-lockfile` to prune the orphan). No source change required.
 
 - **Gates:** `pnpm check` 0/0; autofixer clean per touched file.
 - **Out of scope:** any effect doing real side-effects (DOM, fetch, subscriptions) — leave untouched.
