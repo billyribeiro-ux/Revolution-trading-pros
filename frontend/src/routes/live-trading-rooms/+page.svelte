@@ -77,11 +77,8 @@
 	 * TypeScript doesn't recognize bind:this as a "read" operation, causing false positive lints.
 	 * They are necessary for GSAP ScrollTrigger animations.
 	 */
-	// @ts-ignore - Used in bind:this directive at line 378 (TypeScript limitation with Svelte bindings)
 	let _heroContainer: HTMLElement | undefined;
-	// @ts-ignore - Used in bind:this directive at line 441 (TypeScript limitation with Svelte bindings)
 	let _gridRef: HTMLElement | undefined;
-	// @ts-ignore - Used in bind:this directive at line 558 (TypeScript limitation with Svelte bindings)
 	let _benefitsRef: HTMLElement | undefined;
 	let ctaRef: HTMLElement | undefined;
 
