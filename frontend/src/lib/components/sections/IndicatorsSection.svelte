@@ -351,9 +351,22 @@
 						}
 					}
 				);
+
+				// fromTo applies opacity:0 immediately and ScrollTrigger
+				// computes start positions now — before late images/fonts
+				// load. Refresh after paint and again on window load so the
+				// trigger can't end up stale (cards stuck invisible).
+				scrollTriggerInstance.refresh();
+				if (document.readyState !== 'complete') {
+					window.addEventListener(
+						'load',
+						() => scrollTriggerInstance?.refresh(),
+						{ once: true }
+					);
+				}
 			}
 		} catch (e) {
-			console.debug('[IndicatorsSection] GSAP not available:', e);
+			console.warn('[IndicatorsSection] GSAP failed to load:', e);
 		}
 	}
 

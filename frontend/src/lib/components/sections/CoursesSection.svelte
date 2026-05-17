@@ -223,9 +223,24 @@
 						}
 					}
 				);
+
+				// fromTo applies the opacity:0 from-state immediately, and
+				// ScrollTrigger computes start positions now — before the
+				// hero/lazy images and web fonts have loaded. Without a
+				// post-load refresh those positions are stale and the
+				// trigger can never fire, leaving the cards permanently
+				// invisible on a real (image-heavy) marketing page.
+				scrollTriggerInstance.refresh();
+				if (document.readyState !== 'complete') {
+					window.addEventListener(
+						'load',
+						() => scrollTriggerInstance?.refresh(),
+						{ once: true }
+					);
+				}
 			}
 		} catch (e) {
-			console.debug('[CoursesSection] GSAP not available:', e);
+			console.warn('[CoursesSection] GSAP failed to load:', e);
 		}
 	}
 
