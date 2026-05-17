@@ -54,10 +54,10 @@
 		},
 		get onError() {
 			return props.onError;
-		},
-		onEnded: () => {
-			console.log('Audio playback ended');
 		}
+		// `onEnded` removed (audit 2026-05-17): it existed only to
+		// console.log; the hook types it `onEnded?` and calls it via
+		// `onEnded?.()`, so omitting it is behavior-identical.
 	});
 
 	// Sync audio element with controls hook when it changes

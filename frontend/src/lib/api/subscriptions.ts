@@ -837,8 +837,9 @@ class SubscriptionService {
 		message: string,
 		type: 'info' | 'success' | 'warning' | 'error' = 'info'
 	): void {
-		// Implement notification system
-		console.log(`[${type.toUpperCase()}] ${message}`);
+		// Implement notification system. Until then, `info` is the correct
+		// level for a user-facing notice and is allowed by lint.
+		console.info(`[${type.toUpperCase()}] ${message}`);
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════

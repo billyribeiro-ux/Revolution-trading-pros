@@ -1392,7 +1392,9 @@ class CheckoutCartService {
 		message: string,
 		type: 'info' | 'success' | 'warning' | 'error' = 'info'
 	): void {
-		console.log(`[${type.toUpperCase()}] ${message}`);
+		// Placeholder notification dispatch — `info` is the correct level for
+		// a user-facing notice and is allowed by lint (audit 2026-05-17).
+		console.info(`[${type.toUpperCase()}] ${message}`);
 		// Implement actual notification system
 	}
 
