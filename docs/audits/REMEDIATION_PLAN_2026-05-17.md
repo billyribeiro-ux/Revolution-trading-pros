@@ -57,10 +57,11 @@ Status: ☐ todo · ◐ in progress · ☑ done · ⏸ blocked on owner gate ·
 | P1-1 Google key committed | A | 0 | ☐ ⏸ |
 | Bunny account restore | — | 0 | ☐ ⏸ (Errol) |
 | R2 rotation (carried from CHANGELOG C-3) | A | 0 | ☐ ⏸ |
+| 🔴 P0 schema not reproducible (G0.3, 8/60 migrations fail fresh) | — | 0 | ☐ ⏸ (owner: squash baseline) |
 | P2-H email-verify bypass | A | 2 | ☐ |
 | security-M1 email elevation | A | 2 | ☐ |
 | P1-9 CI not enforcing | H | 1 | ☑ (eslint+clippy blocking; dead workflow removed; pnpm single-source) |
-| P1-10 tests test copies | H | 1 | ◐ (no-DB tests now bind the real crate ✓; real-JWT DB harness pending Postgres-in-CI) |
+| P1-10 tests test copies | H | 1 | ◐ (1a: no-DB tests bind real crate ✓ shipped; 1b: real-JWT DB harness written ✓ but **activation blocked by G0.3** — fresh DB can't migrate) |
 | CI fmt-red since 4420d1d | H | 1 | ☑ (pre-existing `cargo fmt` drift in stripe.rs:826/842 fixed) |
 | P0-3 /admin gate client-only | B | 2 | ☐ |
 | P1-2 token revocation | B | 2 | ☐ |
@@ -114,9 +115,31 @@ Status: ☐ todo · ◐ in progress · ☑ done · ⏸ blocked on owner gate ·
   money-schema migrations and the existing `068` are operator-applied
   against prod per CLAUDE.md. Capture the `_sqlx_migrations` table
   state vs disk (resolves P2-I uncertainty) before any deploy.
+- ☐ **🔴 P0 / Decision gate G0.3 — schema is NOT reproducible from the
+  migration set.** CONFIRMED 2026-05-17 by full fresh-DB replay: of 60
+  migrations, **52 apply, 8 fail** on a clean database —
+  `035`(user_sessions missing), `036`/`039`(trading_room_id),
+  `041`(**unconditional SQL syntax error** — state-independent; this
+  migration cannot have applied anywhere), `050`(duplicate
+  `search_room_content` function), `051`(tags), `053`(trial_ends_at),
+  `054`(performed_by). Impact: **no new environment, no DR rebuild, no
+  DB integration test is possible**; prod was bootstrapped from the
+  Laravel era and the sqlx chain only ever ran as incremental patches
+  on top. This blocks the *activation* of Stage 1b (real-JWT DB
+  harness) and all DB-backed verification in Stages 2–5.
+  **Not patchable safely:** editing an applied migration breaks the
+  sqlx checksum on prod (app refuses to boot); inserting a re-ordered
+  migration breaks sqlx ordering on prod. **The only durable L7 fix is
+  a squashed authoritative baseline:** `pg_dump --schema-only` of the
+  canonical production DB → committed as `migrations/0000_baseline.sql`
+  (or a `schema.sql` the test/CI harness applies), historical
+  pre-baseline migrations retired from the replay path, and
+  `_sqlx_migrations` lineage reset in a coordinated maintenance window.
+  Requires the canonical prod schema (owner-held) + a prod
+  `_sqlx_migrations` operation → **owner decision required**. Evidence:
+  `docs/audits/FULL_REPO_AUDIT_2026-05-17.md` §Schema-Reproducibility.
 
-**Exit:** secrets rotated; G0.1 and G0.2 answered (recorded in this
-file).
+**Exit:** secrets rotated; G0.1, G0.2, G0.3 answered (recorded here).
 
 ---
 
@@ -141,12 +164,18 @@ harness.
   `cargo fmt`, so the **blocking** `cargo fmt --all --check` step has
   failed since — backend CI was red on every PR. Fixed (2-line
   indentation, no behavior change). New finding; folded into the audit.
-- ◐ **P1-10 (1b)** Real-JWT admin integration harness in
-  `api/tests/common/` (mint a signed token with the test `JWT_SECRET`,
-  seed admin + member + non-enrolled user; delete the fake
-  `"test_admin_token"`). Code is writable now but is only *provable*
-  with Postgres-in-CI, so it lands together with the CI DB service in
-  the next Stage-1 increment rather than shipped unverifiable.
+- ◐ **P1-10 (1b)** Real-JWT admin integration harness shipped
+  (`api/tests/common/mod.rs`): the fake `"test_admin_token"` /
+  `"test_user_token"` are gone — `setup_test_app_with_admin` /
+  `_with_user_token` now `seed_user(...)` a real row and mint a real
+  HS256 JWT via the production `revolution_api::utils::create_jwt`, and
+  `setup_test_app` calls `db.migrate()`. The harness is correct, but
+  running it surfaced **🔴 P0 G0.3**: a fresh DB cannot migrate (8/60
+  migrations fail; see Stage 0). This is the *honest* boundary — the
+  old fake-token harness hid it. **Stage 1b activation (and the
+  Postgres-in-CI integration job) is blocked by G0.3** and is NOT
+  wired into CI (a permanently-red gate would defeat Stage 1's
+  purpose). Harness ships now so it is ready the moment G0.3 lands.
 - ☑ **P1-9** Blocking `eslint` (frontend job) and
   `cargo clippy --locked --all-targets -- -D warnings` (backend job)
   added to the canonical `.github/workflows/ci.yml`;
