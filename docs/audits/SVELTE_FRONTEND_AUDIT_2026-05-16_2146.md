@@ -262,6 +262,28 @@ Per the stack's runtime-evidence bar, these are NOT done until measured:
 - §4.2 fix — needs a Playwright spec: type in the editor, trigger parent re-render, assert edits survive.
 - §3 — each `{@html}` closed only with a cited sanitizer call or proof the source is constant.
 
+## 11. Stubs found while clearing `no-console` (2026-05-17) — tracked, not buried
+
+These were `console.log`-only bodies where the log substitutes for
+missing logic. Converted to `console.info` (lint-clear, behaviour
+identical, stub stays *visible*) rather than deleted (would hide the
+gap) or disabled (would bless it). Each needs real implementation:
+
+- `src/lib/api/popups.ts:handleABTestResult` — an A/B test winner is
+  received from a message but nothing applies it (pin variant / end
+  test). Currently only logs.
+- `src/routes/blog/[slug]/+page.svelte:handleSocialShare` — wired to
+  `<ShareButtons onShare>` but fires no real analytics event; only logs.
+- `src/lib/components/blog/BlockEditor/BlockEditor.svelte` —
+  `onScheduleCreated` from `SchedulingPanel` is logged but the editor
+  does no state update / refresh / toast on schedule creation.
+
+Plus the recurring `showNotification()` placeholder in
+`api/{bannedEmails,cart,coupons,seo,subscriptions,forms}.ts` — a real
+toast/notification system was never built; they `console.info` a
+`[TYPE] message`. Low severity (admin-side) but a genuine missing
+feature, not cruft.
+
 ---
 
 *Report produced by automated audit. Every quantitative claim is reproducible from commit `ee7eb2e76` via the commands in §0 and the cited `file:line` anchors. Gate outputs preserved in `/tmp/eslint-report.json`.*

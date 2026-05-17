@@ -672,7 +672,10 @@ class PopupEngagementService {
 	}
 
 	private handleABTestResult(data: { popupId: string; winnerId: string }): void {
-		console.log('[PopupService] A/B test winner:', data);
+		// STUB (audit 2026-05-17): an A/B winner arrives here but nothing
+		// applies it (e.g. pin the winning variant / stop the test). Logged
+		// at info until the real logic lands — tracked in the audit doc.
+		console.info('[PopupService] A/B test winner:', data);
 	}
 
 	/**

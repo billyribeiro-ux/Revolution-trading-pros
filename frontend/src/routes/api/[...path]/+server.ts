@@ -213,7 +213,7 @@ async function proxyRequest(
 	for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
 		if (attempt > 0) {
 			const delay = calculateBackoff(attempt - 1);
-			console.log(`[API Proxy] Retry ${attempt}/${MAX_RETRIES} for ${path} after ${delay}ms`);
+			console.info(`[API Proxy] Retry ${attempt}/${MAX_RETRIES} for ${path} after ${delay}ms`);
 			await sleep(delay);
 		}
 
