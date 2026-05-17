@@ -8,6 +8,8 @@
  * @version 1.0.0
  */
 
+import { GOOGLE_CALENDAR_API_KEY, GOOGLE_OAUTH_CLIENT_ID } from '$lib/config/google';
+
 export interface TradingRoomConfig {
 	slug: string;
 	name: string;
@@ -54,8 +56,8 @@ export const tradingRooms: Record<string, TradingRoomConfig> = {
 		description:
 			'Master the art of day trading with expert guidance and real-time market analysis.',
 		calendarId: 'simpleroptions.com_sabio00har0rd4odbrsa705904@group.calendar.google.com',
-		calendarApiKey: 'AIzaSyBTC-zYg65B6xD8ezr4gMWCeUNk7y2Hlrw',
-		calendarClientId: '656301048421-g2s2jvb2pe772mnj8j8it67eirh4jq1f.apps.googleusercontent.com',
+		calendarApiKey: GOOGLE_CALENDAR_API_KEY,
+		calendarClientId: GOOGLE_OAUTH_CLIENT_ID,
 		tutorialVideo: {
 			src: 'https://simpler-options.s3.amazonaws.com/tutorials/MTT_tutorial2025.mp4',
 			poster: 'https://cdn.simplertrading.com/2025/06/03161600/SCR-20250603-nmuc.jpeg'
@@ -113,8 +115,8 @@ export const tradingRooms: Record<string, TradingRoomConfig> = {
 		type: 'trading-room',
 		description: 'Capture multi-day moves with our swing trading strategies and expert analysis.',
 		calendarId: 'simpleroptions.com_swing_trading@group.calendar.google.com',
-		calendarApiKey: 'AIzaSyBTC-zYg65B6xD8ezr4gMWCeUNk7y2Hlrw',
-		calendarClientId: '656301048421-g2s2jvb2pe772mnj8j8it67eirh4jq1f.apps.googleusercontent.com',
+		calendarApiKey: GOOGLE_CALENDAR_API_KEY,
+		calendarClientId: GOOGLE_OAUTH_CLIENT_ID,
 		tutorialVideo: {
 			src: 'https://simpler-options.s3.amazonaws.com/tutorials/SwingTrading_tutorial2025.mp4',
 			poster: 'https://cdn.simplertrading.com/2025/06/03161600/SCR-20250603-nmuc.jpeg'
@@ -164,8 +166,8 @@ export const tradingRooms: Record<string, TradingRoomConfig> = {
 		description:
 			'Grow your small account with proven strategies designed for capital preservation and steady growth.',
 		calendarId: 'simpleroptions.com_small_account@group.calendar.google.com',
-		calendarApiKey: 'AIzaSyBTC-zYg65B6xD8ezr4gMWCeUNk7y2Hlrw',
-		calendarClientId: '656301048421-g2s2jvb2pe772mnj8j8it67eirh4jq1f.apps.googleusercontent.com',
+		calendarApiKey: GOOGLE_CALENDAR_API_KEY,
+		calendarClientId: GOOGLE_OAUTH_CLIENT_ID,
 		tutorialVideo: {
 			src: 'https://simpler-options.s3.amazonaws.com/tutorials/SmallAccount_tutorial2025.mp4',
 			poster: 'https://cdn.simplertrading.com/2025/06/03161600/SCR-20250603-nmuc.jpeg'
@@ -274,8 +276,8 @@ export const tradingRooms: Record<string, TradingRoomConfig> = {
 		type: 'trading-room',
 		description: 'Master the art of day trading options with expert guidance.',
 		calendarId: 'simpleroptions.com_options_day@group.calendar.google.com',
-		calendarApiKey: 'AIzaSyBTC-zYg65B6xD8ezr4gMWCeUNk7y2Hlrw',
-		calendarClientId: '656301048421-g2s2jvb2pe772mnj8j8it67eirh4jq1f.apps.googleusercontent.com',
+		calendarApiKey: GOOGLE_CALENDAR_API_KEY,
+		calendarClientId: GOOGLE_OAUTH_CLIENT_ID,
 		tutorialVideo: {
 			src: 'https://simpler-options.s3.amazonaws.com/tutorials/OptionsDayTrading_tutorial2025.mp4',
 			poster: 'https://cdn.simplertrading.com/2025/06/03161600/SCR-20250603-nmuc.jpeg'
@@ -333,8 +335,8 @@ export const tradingRooms: Record<string, TradingRoomConfig> = {
 		type: 'trading-room',
 		description: 'Watch expert traders showcase their strategies in real-time.',
 		calendarId: 'simpleroptions.com_showcase@group.calendar.google.com',
-		calendarApiKey: 'AIzaSyBTC-zYg65B6xD8ezr4gMWCeUNk7y2Hlrw',
-		calendarClientId: '656301048421-g2s2jvb2pe772mnj8j8it67eirh4jq1f.apps.googleusercontent.com',
+		calendarApiKey: GOOGLE_CALENDAR_API_KEY,
+		calendarClientId: GOOGLE_OAUTH_CLIENT_ID,
 		quickLinks: [
 			{ label: 'Support', href: 'https://intercom.help/simpler-trading/en/', external: true },
 			{ label: 'Platform Tutorials', href: '/tutorials', external: true }

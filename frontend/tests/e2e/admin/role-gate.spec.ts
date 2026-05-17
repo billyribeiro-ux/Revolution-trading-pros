@@ -29,9 +29,10 @@
  */
 
 import { test, expect, type Page } from '@playwright/test';
+import { SUPERADMIN_EMAIL, SUPERADMIN_PASSWORD } from '../_creds';
 
-const ADMIN_EMAIL = process.env.E2E_ADMIN_EMAIL || 'welberribeirodrums@gmail.com';
-const ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD || 'Davedicenso01!';
+const ADMIN_EMAIL = SUPERADMIN_EMAIL;
+const ADMIN_PASSWORD = SUPERADMIN_PASSWORD;
 
 const NONADMIN_EMAIL = process.env.E2E_NONADMIN_EMAIL || 'e2e-nonadmin@revolutiontradingpros.test';
 const NONADMIN_PASSWORD = process.env.E2E_NONADMIN_PASSWORD || 'NonAdminPass1!';

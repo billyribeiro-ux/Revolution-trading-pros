@@ -28,9 +28,10 @@
  */
 
 import { test, expect, type APIRequestContext } from '@playwright/test';
+import { SUPERADMIN_EMAIL, SUPERADMIN_PASSWORD } from '../_creds';
 
-const ADMIN_EMAIL = process.env.E2E_ADMIN_EMAIL || 'welberribeirodrums@gmail.com';
-const ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD || 'Davedicenso01!';
+const ADMIN_EMAIL = SUPERADMIN_EMAIL;
+const ADMIN_PASSWORD = SUPERADMIN_PASSWORD;
 
 const RUN_STRIPE = process.env.RUN_STRIPE_E2E === '1';
 
