@@ -823,7 +823,7 @@ impl StripeService {
                 ))
                 .basic_auth(&self.secret_key, None::<&str>)
                 .header("Stripe-Version", STRIPE_API_VERSION)
-            .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
+                .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
                 .send()
                 .await?
                 .json()
@@ -839,7 +839,7 @@ impl StripeService {
                 ))
                 .basic_auth(&self.secret_key, None::<&str>)
                 .header("Stripe-Version", STRIPE_API_VERSION)
-            .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
+                .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
                 .form(&[("cancel_at_period_end", "true")])
                 .send()
                 .await?

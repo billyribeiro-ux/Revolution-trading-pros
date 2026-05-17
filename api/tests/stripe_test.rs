@@ -1,314 +1,184 @@
-//! Unit tests for Stripe webhook verification
+//! Stripe webhook signature verification — exercises the REAL
+//! `revolution_api::services::stripe::StripeService::verify_webhook`.
+//!
+//! These tests previously ran against a hand-duplicated copy of the
+//! verifier that *skipped the timestamp check*, so a regression in the
+//! shipped code (e.g. dropping the replay-window guard or the strict
+//! UTF-8 requirement) would not have been caught. They now bind to the
+//! production type via the public builder
+//! (`StripeService::new(..).with_webhook_secret(..)`) and assert the
+//! real security properties.
 
-/// Stripe webhook signature verification implementation (duplicated for testing)
-mod stripe {
-    use anyhow::Result;
-    use hmac::{Hmac, Mac};
-    use sha2::Sha256;
+use revolution_api::services::stripe::StripeService;
 
-    pub fn verify_webhook(
-        payload: &[u8],
-        signature_header: &str,
-        webhook_secret: &str,
-    ) -> Result<bool> {
-        let mut timestamp: Option<&str> = None;
-        let mut signatures: Vec<&str> = Vec::new();
+#[path = "common/stripe_sig.rs"]
+mod stripe_sig;
 
-        for part in signature_header.split(',') {
-            let mut kv = part.splitn(2, '=');
-            if let (Some(key), Some(value)) = (kv.next(), kv.next()) {
-                match key {
-                    "t" => timestamp = Some(value),
-                    "v1" => signatures.push(value),
-                    _ => {}
-                }
-            }
-        }
+const SECRET: &str = "whsec_test_secret_12345";
 
-        let timestamp =
-            timestamp.ok_or_else(|| anyhow::anyhow!("Missing timestamp in signature header"))?;
-
-        if signatures.is_empty() {
-            return Err(anyhow::anyhow!("No v1 signature found in header"));
-        }
-
-        // Skip timestamp verification for tests
-        let signed_payload = format!("{}.{}", timestamp, String::from_utf8_lossy(payload));
-
-        type HmacSha256 = Hmac<Sha256>;
-        let mut mac = HmacSha256::new_from_slice(webhook_secret.as_bytes())
-            .map_err(|_| anyhow::anyhow!("Invalid webhook secret"))?;
-        mac.update(signed_payload.as_bytes());
-        let expected = hex::encode(mac.finalize().into_bytes());
-
-        for sig in signatures {
-            if constant_time_compare(sig, &expected) {
-                return Ok(true);
-            }
-        }
-
-        Ok(false)
-    }
-
-    fn constant_time_compare(a: &str, b: &str) -> bool {
-        if a.len() != b.len() {
-            return false;
-        }
-        let mut result = 0u8;
-        for (x, y) in a.bytes().zip(b.bytes()) {
-            result |= x ^ y;
-        }
-        result == 0
-    }
-
-    /// Helper to generate a valid signature for testing
-    pub fn generate_test_signature(payload: &str, timestamp: i64, secret: &str) -> String {
-        let signed_payload = format!("{}.{}", timestamp, payload);
-
-        type HmacSha256 = Hmac<Sha256>;
-        let mut mac = HmacSha256::new_from_slice(secret.as_bytes()).unwrap();
-        mac.update(signed_payload.as_bytes());
-        let signature = hex::encode(mac.finalize().into_bytes());
-
-        format!("t={},v1={}", timestamp, signature)
-    }
+/// Service whose webhook secret matches the signer.
+fn svc() -> StripeService {
+    StripeService::new("sk_test_dummy").with_webhook_secret(SECRET)
 }
 
-#[cfg(test)]
-mod tests {
-    use super::stripe::*;
-    use chrono::Utc;
+// ── Valid signatures ────────────────────────────────────────────────
 
-    const TEST_SECRET: &str = "whsec_test_secret_12345";
+#[test]
+fn valid_signature_verifies() {
+    let payload = br#"{"type":"checkout.session.completed"}"#;
+    let header = stripe_sig::sign_now(payload, SECRET);
+    assert!(svc().verify_webhook(payload, &header).unwrap());
+}
 
-    // ===================
-    // Valid Signature Tests
-    // ===================
+#[test]
+fn matches_when_one_of_several_v1_is_correct() {
+    let payload = br#"{"id":"evt_123"}"#;
+    let good = stripe_sig::sign_now(payload, SECRET);
+    // good == "t=<ts>,v1=<sig>" — splice a bogus v1 before the real one.
+    let (t, v1) = good.split_once(',').unwrap();
+    let header = format!("{t},v1=deadbeef,{v1}");
+    assert!(svc().verify_webhook(payload, &header).unwrap());
+}
 
-    #[test]
-    fn test_verify_valid_signature() {
-        let payload = r#"{"type":"checkout.session.completed"}"#;
-        let timestamp = Utc::now().timestamp();
-        let signature_header = generate_test_signature(payload, timestamp, TEST_SECRET);
+#[test]
+fn ignores_unknown_header_fields() {
+    let payload = br#"{"test":true}"#;
+    let good = stripe_sig::sign_now(payload, SECRET);
+    let (t, v1) = good.split_once(',').unwrap();
+    let header = format!("{t},v0=old,{v1},v2=new");
+    assert!(svc().verify_webhook(payload, &header).unwrap());
+}
 
-        let result = verify_webhook(payload.as_bytes(), &signature_header, TEST_SECRET);
+#[test]
+fn empty_payload_with_valid_signature_verifies() {
+    let header = stripe_sig::sign_now(b"", SECRET);
+    assert!(svc().verify_webhook(b"", &header).unwrap());
+}
 
-        assert!(result.is_ok(), "Verification should succeed");
-        assert!(result.unwrap(), "Valid signature should return true");
-    }
+#[test]
+fn unicode_payload_verifies() {
+    let payload = r#"{"name":"日本語","emoji":"🎉"}"#.as_bytes();
+    let header = stripe_sig::sign_now(payload, SECRET);
+    assert!(svc().verify_webhook(payload, &header).unwrap());
+}
 
-    #[test]
-    fn test_verify_valid_signature_with_multiple_v1() {
-        let payload = r#"{"id":"evt_123"}"#;
-        let timestamp = Utc::now().timestamp();
+#[test]
+fn large_payload_verifies() {
+    let payload = "x".repeat(100_000);
+    let header = stripe_sig::sign_now(payload.as_bytes(), SECRET);
+    assert!(svc().verify_webhook(payload.as_bytes(), &header).unwrap());
+}
 
-        // Generate correct signature
-        let signed_payload = format!("{}.{}", timestamp, payload);
-        type HmacSha256 = hmac::Hmac<sha2::Sha256>;
-        use hmac::Mac;
-        let mut mac = HmacSha256::new_from_slice(TEST_SECRET.as_bytes()).unwrap();
-        mac.update(signed_payload.as_bytes());
-        let correct_sig = hex::encode(mac.finalize().into_bytes());
+// ── Rejected signatures (Ok(false)) ─────────────────────────────────
 
-        // Header with multiple v1 signatures (old + new)
-        let signature_header = format!("t={},v1=oldsignature,v1={}", timestamp, correct_sig);
+#[test]
+fn wrong_secret_does_not_verify() {
+    let payload = br#"{"type":"payment_intent.succeeded"}"#;
+    let header = stripe_sig::sign_now(payload, "the_wrong_secret");
+    assert!(!svc().verify_webhook(payload, &header).unwrap());
+}
 
-        let result = verify_webhook(payload.as_bytes(), &signature_header, TEST_SECRET);
+#[test]
+fn tampered_payload_does_not_verify() {
+    let header = stripe_sig::sign_now(br#"{"amount":1000}"#, SECRET);
+    assert!(!svc()
+        .verify_webhook(br#"{"amount":9999}"#, &header)
+        .unwrap());
+}
 
-        assert!(result.is_ok());
-        assert!(result.unwrap(), "Should match second v1 signature");
-    }
+#[test]
+fn garbage_signature_does_not_verify() {
+    let now = chrono::Utc::now().timestamp();
+    let header = format!("t={now},v1=abc123def456");
+    assert!(!svc().verify_webhook(b"{}", &header).unwrap());
+}
 
-    // ===================
-    // Invalid Signature Tests
-    // ===================
+#[test]
+fn signature_comparison_is_case_sensitive() {
+    // Production hex-encodes lowercase and compares constant-time over
+    // bytes; an upper-cased signature must not verify.
+    let payload = br#"{"x":1}"#;
+    let good = stripe_sig::sign_now(payload, SECRET);
+    let header = good
+        .to_uppercase()
+        .replace("T=", "t=")
+        .replace("V1=", "v1=");
+    assert!(!svc().verify_webhook(payload, &header).unwrap());
+}
 
-    #[test]
-    fn test_verify_wrong_signature() {
-        let payload = r#"{"type":"payment_intent.succeeded"}"#;
-        let timestamp = Utc::now().timestamp();
+// ── Hard errors (Result::Err) ───────────────────────────────────────
 
-        // Create signature with different secret
-        let signature_header = generate_test_signature(payload, timestamp, "wrong_secret");
+#[test]
+fn missing_timestamp_errors() {
+    let err = svc().verify_webhook(b"{}", "v1=somesignature").unwrap_err();
+    assert!(err.to_string().contains("timestamp"));
+}
 
-        let result = verify_webhook(payload.as_bytes(), &signature_header, TEST_SECRET);
+#[test]
+fn missing_v1_signature_errors() {
+    let now = chrono::Utc::now().timestamp();
+    assert!(svc().verify_webhook(b"{}", &format!("t={now}")).is_err());
+}
 
-        assert!(result.is_ok());
-        assert!(!result.unwrap(), "Wrong signature should return false");
-    }
+#[test]
+fn empty_header_errors() {
+    assert!(svc().verify_webhook(b"{}", "").is_err());
+}
 
-    #[test]
-    fn test_verify_tampered_payload() {
-        let original_payload = r#"{"amount":1000}"#;
-        let timestamp = Utc::now().timestamp();
-        let signature_header = generate_test_signature(original_payload, timestamp, TEST_SECRET);
+#[test]
+fn malformed_header_errors() {
+    assert!(svc()
+        .verify_webhook(b"{}", "malformed=header=format")
+        .is_err());
+}
 
-        // Verify with tampered payload
-        let tampered_payload = r#"{"amount":9999}"#;
-        let result = verify_webhook(tampered_payload.as_bytes(), &signature_header, TEST_SECRET);
+#[test]
+fn non_numeric_timestamp_errors() {
+    assert!(svc()
+        .verify_webhook(b"{}", "t=not-a-number,v1=deadbeef")
+        .is_err());
+}
 
-        assert!(result.is_ok());
-        assert!(
-            !result.unwrap(),
-            "Tampered payload should fail verification"
-        );
-    }
+/// Security property (previously UNTESTED — the duplicated verifier
+/// skipped it): a stale timestamp must be rejected even with an
+/// otherwise-valid signature, defeating webhook replay.
+#[test]
+fn stale_timestamp_is_rejected() {
+    let payload = br#"{"type":"checkout.session.completed"}"#;
+    let stale = chrono::Utc::now().timestamp() - 3600; // 1h old, >300s
+    let header = stripe_sig::sign(payload, SECRET, stale);
+    let err = svc().verify_webhook(payload, &header).unwrap_err();
+    assert!(err.to_string().to_lowercase().contains("tolerance"));
+}
 
-    #[test]
-    fn test_verify_random_signature() {
-        let payload = r#"{"data":"test"}"#;
-        let timestamp = Utc::now().timestamp();
-        let signature_header = format!("t={},v1=abc123def456", timestamp);
+/// The tolerance window is symmetric — a far-future timestamp is also
+/// rejected (covers the `.abs()` branch).
+#[test]
+fn far_future_timestamp_is_rejected() {
+    let payload = br#"{"type":"checkout.session.completed"}"#;
+    let future = chrono::Utc::now().timestamp() + 3600;
+    let header = stripe_sig::sign(payload, SECRET, future);
+    assert!(svc().verify_webhook(payload, &header).is_err());
+}
 
-        let result = verify_webhook(payload.as_bytes(), &signature_header, TEST_SECRET);
+/// Security property (previously UNTESTED): a non-UTF-8 payload is
+/// rejected outright — production must not lossily coerce bytes before
+/// HMAC (that would let an attacker mutate non-UTF-8 bytes freely).
+#[test]
+fn non_utf8_payload_is_rejected() {
+    let payload: &[u8] = &[0x00, 0x01, 0x02, 0xFF, 0xFE];
+    let now = chrono::Utc::now().timestamp();
+    let header = format!("t={now},v1=00");
+    let err = svc().verify_webhook(payload, &header).unwrap_err();
+    assert!(err.to_string().to_lowercase().contains("utf-8"));
+}
 
-        assert!(result.is_ok());
-        assert!(!result.unwrap(), "Random signature should fail");
-    }
-
-    // ===================
-    // Missing Header Tests
-    // ===================
-
-    #[test]
-    fn test_verify_missing_timestamp() {
-        let signature_header = "v1=somesignature";
-        let result = verify_webhook(b"payload", signature_header, TEST_SECRET);
-
-        assert!(result.is_err(), "Missing timestamp should error");
-        assert!(result.unwrap_err().to_string().contains("timestamp"));
-    }
-
-    #[test]
-    fn test_verify_missing_signature() {
-        let signature_header = "t=1234567890";
-        let result = verify_webhook(b"payload", signature_header, TEST_SECRET);
-
-        assert!(result.is_err(), "Missing v1 signature should error");
-    }
-
-    #[test]
-    fn test_verify_empty_header() {
-        let result = verify_webhook(b"payload", "", TEST_SECRET);
-        assert!(result.is_err(), "Empty header should error");
-    }
-
-    #[test]
-    fn test_verify_malformed_header() {
-        let result = verify_webhook(b"payload", "malformed=header=format", TEST_SECRET);
-        assert!(result.is_err(), "Malformed header should error");
-    }
-
-    // ===================
-    // Edge Cases
-    // ===================
-
-    #[test]
-    fn test_verify_empty_payload() {
-        let payload = "";
-        let timestamp = Utc::now().timestamp();
-        let signature_header = generate_test_signature(payload, timestamp, TEST_SECRET);
-
-        let result = verify_webhook(payload.as_bytes(), &signature_header, TEST_SECRET);
-
-        assert!(result.is_ok());
-        assert!(
-            result.unwrap(),
-            "Empty payload with valid signature should verify"
-        );
-    }
-
-    #[test]
-    fn test_verify_large_payload() {
-        let payload = "x".repeat(100_000);
-        let timestamp = Utc::now().timestamp();
-        let signature_header = generate_test_signature(&payload, timestamp, TEST_SECRET);
-
-        let result = verify_webhook(payload.as_bytes(), &signature_header, TEST_SECRET);
-
-        assert!(result.is_ok());
-        assert!(result.unwrap(), "Large payload should verify");
-    }
-
-    #[test]
-    fn test_verify_unicode_payload() {
-        let payload = r#"{"name":"日本語","emoji":"🎉"}"#;
-        let timestamp = Utc::now().timestamp();
-        let signature_header = generate_test_signature(payload, timestamp, TEST_SECRET);
-
-        let result = verify_webhook(payload.as_bytes(), &signature_header, TEST_SECRET);
-
-        assert!(result.is_ok());
-        assert!(result.unwrap(), "Unicode payload should verify");
-    }
-
-    #[test]
-    fn test_verify_binary_payload() {
-        let payload: &[u8] = &[0x00, 0x01, 0x02, 0xFF, 0xFE];
-        let timestamp = Utc::now().timestamp();
-
-        // Generate signature for binary data
-        let signed_payload = format!("{}.{}", timestamp, String::from_utf8_lossy(payload));
-        type HmacSha256 = hmac::Hmac<sha2::Sha256>;
-        use hmac::Mac;
-        let mut mac = HmacSha256::new_from_slice(TEST_SECRET.as_bytes()).unwrap();
-        mac.update(signed_payload.as_bytes());
-        let signature = hex::encode(mac.finalize().into_bytes());
-        let signature_header = format!("t={},v1={}", timestamp, signature);
-
-        let result = verify_webhook(payload, &signature_header, TEST_SECRET);
-
-        assert!(result.is_ok());
-        assert!(result.unwrap(), "Binary payload should verify");
-    }
-
-    // ===================
-    // Header Format Tests
-    // ===================
-
-    #[test]
-    fn test_verify_header_with_extra_fields() {
-        let payload = r#"{"test":true}"#;
-        let timestamp = Utc::now().timestamp();
-
-        let signed_payload = format!("{}.{}", timestamp, payload);
-        type HmacSha256 = hmac::Hmac<sha2::Sha256>;
-        use hmac::Mac;
-        let mut mac = HmacSha256::new_from_slice(TEST_SECRET.as_bytes()).unwrap();
-        mac.update(signed_payload.as_bytes());
-        let signature = hex::encode(mac.finalize().into_bytes());
-
-        // Header with extra unknown fields
-        let signature_header = format!("t={},v0=oldsig,v1={},v2=newsig", timestamp, signature);
-
-        let result = verify_webhook(payload.as_bytes(), &signature_header, TEST_SECRET);
-
-        assert!(result.is_ok());
-        assert!(
-            result.unwrap(),
-            "Should ignore unknown fields and verify v1"
-        );
-    }
-
-    #[test]
-    fn test_verify_signature_case_sensitivity() {
-        let payload = "test";
-        let timestamp = Utc::now().timestamp();
-
-        let signed_payload = format!("{}.{}", timestamp, payload);
-        type HmacSha256 = hmac::Hmac<sha2::Sha256>;
-        use hmac::Mac;
-        let mut mac = HmacSha256::new_from_slice(TEST_SECRET.as_bytes()).unwrap();
-        mac.update(signed_payload.as_bytes());
-        let signature = hex::encode(mac.finalize().into_bytes());
-
-        // Test with uppercase signature (should fail)
-        let signature_header = format!("t={},v1={}", timestamp, signature.to_uppercase());
-
-        let result = verify_webhook(payload.as_bytes(), &signature_header, TEST_SECRET);
-
-        // Hex should be lowercase
-        assert!(result.is_ok());
-        // This depends on implementation - hex encoding is typically lowercase
-    }
+/// A service without a configured webhook secret must fail closed.
+#[test]
+fn unconfigured_webhook_secret_errors() {
+    let no_secret = StripeService::new("sk_test_dummy");
+    let now = chrono::Utc::now().timestamp();
+    assert!(no_secret
+        .verify_webhook(b"{}", &format!("t={now},v1=00"))
+        .is_err());
 }
