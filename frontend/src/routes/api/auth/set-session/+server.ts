@@ -1,71 +1,33 @@
 /**
- * Set Session API Endpoint - ICT 11+ Server-Side Cookie Setting
- * ═══════════════════════════════════════════════════════════════════════════
+ * Session cookie teardown — logout only.
  *
- * This endpoint sets httpOnly cookies for server-side auth.
- * Called by the client after successful login to enable SSR auth.
+ * P1-6 (audit FULL_REPO_AUDIT_2026-05-17 §P1-6): the former `POST`
+ * handler wrote an attacker-suppliable `access_token` from the request
+ * body straight into the `rtp_access_token` httpOnly cookie with NO
+ * authentication, origin, or token validation — a session-fixation /
+ * login-CSRF primitive. It had zero live callers: the OAuth callback
+ * delivers tokens via backend `Set-Cookie`, and `lib/api/auth.ts` only
+ * ever calls this endpoint with `method: 'DELETE'`. An endpoint that
+ * mints a session from an unauthenticated body must not exist, so the
+ * `POST` is deleted outright.
  *
- * SECURITY:
- * - Cookies are httpOnly (not accessible via JavaScript)
- * - Cookies are secure (HTTPS only in production)
- * - Cookies use sameSite: 'lax' for CSRF protection
- *
- * @version 1.0.0 - ICT 11+ Server-Side Auth
+ * `DELETE` is the only legitimate purpose — clearing the server-set
+ * httpOnly auth cookies on logout. It now also clears `rtp_session_id`
+ * (set by the OAuth callback, CHANGELOG C-1) so logout fully tears the
+ * session down rather than leaving a dangling session identifier.
  */
 
 import { json, type RequestEvent } from '@sveltejs/kit';
-// SvelteKit auto-generates types - this import will be available after build
 import type { RequestHandler } from './$types';
 
-export const POST: RequestHandler = async ({ request, cookies }: RequestEvent) => {
-	try {
-		const body = await request.json();
-		// Support both camelCase and snake_case for OAuth callback compatibility
-		const accessToken = body.access_token || body.accessToken;
-		const refreshToken = body.refresh_token || body.refreshToken;
-		const expiresIn = body.expires_in || body.expiresIn;
+/** Every cookie the auth / OAuth flow sets (see CHANGELOG C-1). */
+const AUTH_COOKIES = ['rtp_access_token', 'rtp_refresh_token', 'rtp_session_id'] as const;
 
-		if (!accessToken) {
-			return json({ error: 'Access token required' }, { status: 400 });
-		}
-
-		// ICT 7 FIX: secure=false on localhost (http), true in production (https)
-		const isSecure = process.env.NODE_ENV === 'production' || !request.url.includes('localhost');
-
-		// Set access token cookie
-		cookies.set('rtp_access_token', accessToken, {
-			path: '/',
-			httpOnly: true,
-			secure: isSecure,
-			sameSite: 'lax',
-			maxAge: expiresIn || 3600 // Default 1 hour
-		});
-
-		// Set refresh token cookie if provided
-		if (refreshToken) {
-			cookies.set('rtp_refresh_token', refreshToken, {
-				path: '/',
-				httpOnly: true,
-				secure: isSecure,
-				sameSite: 'lax',
-				maxAge: 60 * 60 * 24 * 30 // 30 days
-			});
-		}
-
-		return json({ success: true });
-	} catch (error) {
-		console.error('[Set Session] Error:', error);
-		return json({ error: 'Failed to set session' }, { status: 500 });
-	}
-};
-
-/**
- * DELETE - Clear session cookies on logout
- */
 export const DELETE: RequestHandler = async ({ cookies }: RequestEvent) => {
-	// Clear both cookies
-	cookies.delete('rtp_access_token', { path: '/' });
-	cookies.delete('rtp_refresh_token', { path: '/' });
-
+	for (const name of AUTH_COOKIES) {
+		// Path must match how the cookie was set ('/') for the browser
+		// to actually drop it.
+		cookies.delete(name, { path: '/' });
+	}
 	return json({ success: true });
 };
