@@ -668,31 +668,13 @@ impl Config {
         )
     }
 
-    // ── security-M1 — REQUIRED-COMPANION (CROSS-FILE, NOT IN THIS AGENT'S
-    //    OWNERSHIP) ────────────────────────────────────────────────────────
-    //
-    // `src/middleware/admin.rs` (the `AdminUser` and `SuperAdminUser`
-    // extractors) still calls the deprecated bare `is_superadmin_email(email)`
-    // at lines ~33 and ~78 and ORs its result straight into the
-    // authorize/deny decision. That is the same email-list-as-identity hole
-    // this fix closes everywhere it owns. The middleware extractor already
-    // has the fully-loaded `User` row in scope (`user.role`,
-    // `user.email_verified_at`), so the one-line companion change in EACH
-    // extractor is:
-    //
-    //   // AdminUser (~line 33) and SuperAdminUser (~line 78):
-    //   let is_superadmin = state.config.is_superadmin_email_strict(
-    //       &user.email,
-    //       user.role.as_deref(),
-    //       user.email_verified_at.is_some(),
-    //   );
-    //
-    // i.e. swap `is_superadmin_email(&user.email)` →
-    // `is_superadmin_email_strict(&user.email, user.role.as_deref(),
-    // user.email_verified_at.is_some())`. No behavior change for a real
-    // verified DB-role'd superadmin; closes the unverified-elevation path.
-    // Left as a marker (not edited) because `middleware/admin.rs` is outside
-    // this agent's edit ownership.
+    // ── security-M1 — COMPANION IMPLEMENTED ──────────────────────────────
+    // The `AdminUser` / `SuperAdminUser` extractors in
+    // `src/middleware/admin.rs` were switched from the bare
+    // `is_superadmin_email(email)` to `is_superadmin_email_strict(
+    // &user.email, user.role.as_deref(), user.email_verified_at.is_some())`,
+    // closing the email-list-as-identity elevation path at the extractors
+    // too. The bare helpers above remain documented break-glass only.
 
     /// Check if developer mode is enabled
     pub fn is_developer_mode(&self) -> bool {
