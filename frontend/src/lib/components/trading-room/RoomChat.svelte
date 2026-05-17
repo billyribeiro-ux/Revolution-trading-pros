@@ -87,7 +87,7 @@
 			ws = new WebSocket(wsUrl);
 
 			ws.onopen = () => {
-				console.log(`[RoomChat] Connected to ${roomSlug}`);
+				console.info(`[RoomChat] Connected to ${roomSlug}`);
 				isConnected = true;
 				isConnecting = false;
 				error = null;
@@ -116,7 +116,7 @@
 			};
 
 			ws.onclose = () => {
-				console.log(`[RoomChat] Disconnected from ${roomSlug}`);
+				console.info(`[RoomChat] Disconnected from ${roomSlug}`);
 				isConnected = false;
 				// Attempt to reconnect after 5 seconds
 				setTimeout(connectWebSocket, 5000);

@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+/* eslint-disable no-console -- CLI script: console IS its output channel
+   (usage text, the workbench URL, errors to the terminal). audit 2026-05-17 */
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
  * Component Preview Script - IDE Integration

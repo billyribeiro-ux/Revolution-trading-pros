@@ -259,7 +259,7 @@
 
 		if (import.meta.env.DEV) {
 			logInterval = setInterval(() => {
-				console.log('[VirtualBlockList Performance]', {
+				console.info('[VirtualBlockList Performance]', {
 					...performanceMetrics,
 					timestamp: new Date().toISOString()
 				});
@@ -662,7 +662,7 @@
 
 		// Emit a custom event or callback for duplication
 		// This would need to be added to props if needed
-		console.log('[VirtualBlockList] Duplicate block:', blockId);
+		console.info('[VirtualBlockList] Duplicate block:', blockId);
 	}
 
 	// ==========================================================================
@@ -671,7 +671,7 @@
 
 	onMount(() => {
 		// Log initial performance
-		console.log('[VirtualBlockList] Mounted with', blocks.length, 'blocks');
+		console.info('[VirtualBlockList] Mounted with', blocks.length, 'blocks');
 	});
 
 	onDestroy(() => {

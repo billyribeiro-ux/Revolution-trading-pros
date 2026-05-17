@@ -295,6 +295,11 @@ to (P1-11), or gate the mock behind an explicit env flag:
 - `src/routes/api/trades/[slug]/+server.ts:178`
 - `src/routes/api/trade-plans/[slug]/+server.ts:146`
 
+`src/lib/components/BatchOperations.svelte` — the delete/archive/export
+batch actions only `console.info` the ids + fake a 1s `setTimeout`; no
+real persistence. Demo handlers wired to a real-looking toolbar. Needs
+actual API calls before this component is used for live data.
+
 ---
 
 *Report produced by automated audit. Every quantitative claim is reproducible from commit `ee7eb2e76` via the commands in §0 and the cited `file:line` anchors. Gate outputs preserved in `/tmp/eslint-report.json`.*

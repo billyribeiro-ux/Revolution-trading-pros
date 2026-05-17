@@ -123,9 +123,13 @@ async function reportError(
 ): Promise<void> {
 	// Only report in production
 	if (import.meta.env.DEV) {
+		// DEV-only grouped error report; group/groupEnd aren't in the
+		// allowed-methods list but the .error/.info inside are intentional.
+		/* eslint-disable-next-line no-console */
 		console.group(`🚨 Client Error [${errorId}]`);
 		console.error('Error:', error);
 		console.info('Metadata:', metadata);
+		/* eslint-disable-next-line no-console */
 		console.groupEnd();
 		return;
 	}

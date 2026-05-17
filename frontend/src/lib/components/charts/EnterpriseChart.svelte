@@ -62,13 +62,13 @@
 	function initChart() {
 		// Placeholder for chart initialization
 		// In production, integrate with lightweight-charts, ApexCharts, or Chart.js
-		console.log('[EnterpriseChart] Chart initialized with type:', type);
+		console.info('[EnterpriseChart] Chart initialized with type:', type);
 	}
 
 	$effect(() => {
 		if (browser && chartInstance && series) {
 			// Update chart data
-			console.log('[EnterpriseChart] Data updated');
+			console.info('[EnterpriseChart] Data updated');
 		}
 	});
 </script>

@@ -536,7 +536,7 @@
 
 	function showNotification(message: string, type: 'info' | 'warning' | 'error' = 'info'): void {
 		// Implement your notification system here
-		console.log(`[Notification] ${type}: ${message}`);
+		console.info(`[Notification] ${type}: ${message}`);
 
 		// Announce to screen readers
 		announceToScreenReader(message);

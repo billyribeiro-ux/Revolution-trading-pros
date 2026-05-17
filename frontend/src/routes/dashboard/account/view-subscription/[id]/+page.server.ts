@@ -58,7 +58,7 @@ export const actions: Actions = {
 		const reason = formData.get('reason') as string;
 
 		// TODO: Call actual API when backend is ready
-		console.log('Cancel subscription requested with reason:', reason);
+		console.info('Cancel subscription requested with reason:', reason);
 
 		return {
 			success: true,
@@ -71,7 +71,7 @@ export const actions: Actions = {
 		const reason = formData.get('reason') as string;
 
 		// TODO: Call actual API when backend is ready
-		console.log('Pause subscription requested with reason:', reason);
+		console.info('Pause subscription requested with reason:', reason);
 
 		return {
 			success: true,

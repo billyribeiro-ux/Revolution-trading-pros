@@ -64,7 +64,7 @@
 			ws = new WebSocket(wsUrl);
 
 			ws.onopen = () => {
-				console.log(`[LiveStreamBadge] Connected to ${roomSlug}`);
+				console.info(`[LiveStreamBadge] Connected to ${roomSlug}`);
 				isLoading = false;
 			};
 
@@ -93,7 +93,7 @@
 			};
 
 			ws.onclose = () => {
-				console.log(`[LiveStreamBadge] Disconnected from ${roomSlug}`);
+				console.info(`[LiveStreamBadge] Disconnected from ${roomSlug}`);
 				// Attempt to reconnect after 5 seconds
 				setTimeout(connectWebSocket, 5000);
 			};

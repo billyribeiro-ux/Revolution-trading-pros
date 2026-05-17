@@ -175,7 +175,7 @@ export function initReadingAnalytics(config: {
 				metrics.milestones.add(milestone);
 
 				if (opts.debug) {
-					console.log(`[Reading Analytics] Milestone reached: ${milestone}%`, {
+					console.info(`[Reading Analytics] Milestone reached: ${milestone}%`, {
 						timeOnPage: `${(metrics.timeOnPage / 1000).toFixed(1)}s`,
 						engagement: metrics.engagementScore
 					});
@@ -203,7 +203,7 @@ export function initReadingAnalytics(config: {
 		reported = true;
 
 		if (opts.debug) {
-			console.log('[Reading Analytics] Read completed!', {
+			console.info('[Reading Analytics] Read completed!', {
 				timeOnPage: `${(metrics.timeOnPage / 1000).toFixed(1)}s`,
 				engagement: metrics.engagementScore,
 				completion: metrics.readCompletion
@@ -284,7 +284,7 @@ export function initReadingAnalytics(config: {
 	updateMetrics();
 
 	if (opts.debug) {
-		console.log('[Reading Analytics] Initialized for:', slug);
+		console.info('[Reading Analytics] Initialized for:', slug);
 	}
 
 	// Return cleanup function

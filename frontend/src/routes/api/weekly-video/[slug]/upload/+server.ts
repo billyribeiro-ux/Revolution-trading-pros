@@ -123,7 +123,7 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 			error(400, 'No file data provided');
 		}
 
-		console.log(
+		console.info(
 			`[Weekly Video Upload] Uploading ${fileBuffer.byteLength} bytes to ${slug} video ${videoGuid}`
 		);
 

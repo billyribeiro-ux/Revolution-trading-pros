@@ -131,7 +131,7 @@ export const load: PageServerLoad = async ({
 			avatarUrl: profileData.avatar_url
 		};
 
-		console.log('[Account Page] Loaded account data successfully via server-side fetch');
+		console.info('[Account Page] Loaded account data successfully via server-side fetch');
 
 		return {
 			profile,
@@ -221,7 +221,7 @@ export const actions: Actions = {
 
 			const updatedProfile = await accountApi.updateProfile(updateData);
 
-			console.log('[Account] Profile updated successfully:', updatedProfile);
+			console.info('[Account] Profile updated successfully:', updatedProfile);
 
 			return {
 				success: true,
@@ -303,7 +303,7 @@ export const actions: Actions = {
 
 			const result = await accountApi.updatePassword(updateData);
 
-			console.log('[Account] Password updated successfully');
+			console.info('[Account] Password updated successfully');
 
 			return {
 				success: true,

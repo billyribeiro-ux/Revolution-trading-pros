@@ -776,9 +776,13 @@
 			// Log SEO warnings in development only if score is below 60
 			// This reduces console noise while still alerting to serious SEO issues
 			if (import.meta.env.DEV && seoWarnings.length > 0 && seoScore < 60) {
+				// DEV-only grouped SEO warning; group/groupEnd aren't allowed
+				// methods but the inner output is intentional.
+				/* eslint-disable-next-line no-console */
 				console.group('🔍 SEO Warnings');
-				console.log(`SEO Score: ${seoScore}/100`);
+				console.info(`SEO Score: ${seoScore}/100`);
 				seoWarnings.forEach((warning) => console.warn(warning));
+				/* eslint-disable-next-line no-console */
 				console.groupEnd();
 			}
 
