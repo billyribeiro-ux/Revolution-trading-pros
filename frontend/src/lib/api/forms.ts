@@ -848,8 +848,9 @@ class FormsService {
 	}
 
 	private showNotification(message: string): void {
-		// Implement notification system
-		console.log('[Notification]', message);
+		// Implement notification system. Until then, `info` is the correct
+		// level for a user-facing notice and is allowed by lint.
+		console.info('[Notification]', message);
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════

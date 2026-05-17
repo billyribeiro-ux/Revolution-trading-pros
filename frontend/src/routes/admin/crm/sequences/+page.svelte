@@ -48,7 +48,6 @@
 	let sequences = $state<EmailSequence[]>([]);
 	let isLoading = $state(true);
 	let error = $state('');
-	// @ts-ignore write-only state
 	let searchQuery = $state('');
 	let selectedStatus = $state<SequenceStatus | 'all'>('all');
 	let isInitialized = $state(false);
@@ -284,7 +283,6 @@
 		sequences.filter((seq) => {
 			const matchesSearch =
 				!searchQuery || seq.title.toLowerCase().includes(searchQuery.toLowerCase());
-			// @ts-ignore write-only state
 			const matchesStatus = selectedStatus === 'all' || seq.status === selectedStatus;
 			return matchesSearch && matchesStatus;
 		})

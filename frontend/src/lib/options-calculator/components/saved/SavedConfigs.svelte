@@ -1,6 +1,4 @@
 <script lang="ts">
-	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
-	// import { X, Download, Upload, Trash2, FolderOpen } from '@lucide/svelte';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconDownload from '@tabler/icons-svelte-runes/icons/download';
 	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';

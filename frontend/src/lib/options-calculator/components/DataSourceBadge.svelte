@@ -1,6 +1,4 @@
 <script lang="ts">
-	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
-	// import { Wifi, WifiOff, Database } from '@lucide/svelte';
 	import IconWifi from '@tabler/icons-svelte-runes/icons/wifi';
 	import IconWifiOff from '@tabler/icons-svelte-runes/icons/wifi-off';
 	import IconDatabase from '@tabler/icons-svelte-runes/icons/database';

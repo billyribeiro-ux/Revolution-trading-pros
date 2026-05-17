@@ -74,7 +74,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			consentStore.set(`user:${userId}`, record);
 		}
 
-		console.log(`[ConsentAPI] Saved consent: ${consentId} for user: ${userId || 'anonymous'}`);
+		console.info(`[ConsentAPI] Saved consent: ${consentId} for user: ${userId || 'anonymous'}`);
 
 		return json({
 			success: true,
@@ -165,7 +165,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
 			error(404, 'Consent not found');
 		}
 
-		console.log(`[ConsentAPI] Deleted consent for: ${userId || consentId}`);
+		console.info(`[ConsentAPI] Deleted consent for: ${userId || consentId}`);
 
 		return json({
 			success: true,

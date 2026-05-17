@@ -18,7 +18,7 @@ interface AnalyticsEvent {
  */
 export function trackPageView(url: string): void {
 	if (dev) {
-		console.log('[Analytics] Page view:', url);
+		console.info('[Analytics] Page view:', url);
 		return;
 	}
 
@@ -40,7 +40,7 @@ export function trackPageView(url: string): void {
  */
 export function trackEvent({ action, category, label, value }: AnalyticsEvent): void {
 	if (dev) {
-		console.log('[Analytics] Event:', { action, category, label, value });
+		console.info('[Analytics] Event:', { action, category, label, value });
 		return;
 	}
 

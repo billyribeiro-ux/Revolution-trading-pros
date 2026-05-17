@@ -60,13 +60,13 @@ export class BehaviorTracker {
 	private init() {
 		// Check DNT
 		if (this.config.respectDNT && navigator.doNotTrack === '1') {
-			console.log('[BehaviorTracker] DNT enabled, tracking disabled');
+			console.info('[BehaviorTracker] DNT enabled, tracking disabled');
 			return;
 		}
 
 		// Sample rate check
 		if (Math.random() > this.config.sampleRate) {
-			console.log('[BehaviorTracker] Session not sampled');
+			console.info('[BehaviorTracker] Session not sampled');
 			return;
 		}
 

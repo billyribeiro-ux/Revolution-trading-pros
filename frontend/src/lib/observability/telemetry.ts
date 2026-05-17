@@ -256,8 +256,10 @@ class TelemetryService {
 
 		this.logs.push(entry);
 
-		// Console output
+		// Console output — this IS the telemetry console sink; the dynamic
+		// method is the implementation, not stray logging. (audit 2026-05-17)
 		const consoleMethod = level === 'fatal' ? 'error' : level;
+		// eslint-disable-next-line no-console
 		console[consoleMethod](`[${level.toUpperCase()}]`, message, attributes);
 
 		// Auto-flush on error/fatal

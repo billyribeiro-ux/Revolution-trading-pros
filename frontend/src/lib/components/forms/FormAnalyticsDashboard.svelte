@@ -363,7 +363,7 @@
 			<div class="breakdown-card">
 				<h3>Devices</h3>
 				<div class="donut-chart">
-					{#each Object.entries(deviceBreakdown) as [device, percentage], i}
+					{#each Object.entries(deviceBreakdown) as [device, percentage], i (device)}
 						<div class="donut-item">
 							<span class="donut-color" style="background: {['#2563eb', '#16a34a', '#f59e0b'][i]}"
 							></span>
@@ -378,7 +378,7 @@
 			<div class="breakdown-card">
 				<h3>Browsers</h3>
 				<div class="donut-chart">
-					{#each Object.entries(browserBreakdown) as [browser, percentage], i}
+					{#each Object.entries(browserBreakdown) as [browser, percentage], i (browser)}
 						<div class="donut-item">
 							<span
 								class="donut-color"
@@ -395,7 +395,7 @@
 			<div class="breakdown-card">
 				<h3>Traffic Sources</h3>
 				<div class="donut-chart">
-					{#each Object.entries(sourceBreakdown) as [source, percentage], i}
+					{#each Object.entries(sourceBreakdown) as [source, percentage], i (source)}
 						<div class="donut-item">
 							<span
 								class="donut-color"

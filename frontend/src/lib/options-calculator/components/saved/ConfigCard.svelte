@@ -1,6 +1,4 @@
 <script lang="ts">
-	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
-	// import { Trash2, Play } from '@lucide/svelte';
 	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
 	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
 	import { formatCurrency } from '../../utils/formatters.js';

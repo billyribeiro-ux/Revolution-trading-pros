@@ -153,7 +153,7 @@
 			icon: '🔔',
 			color: '#362D59',
 			features: ['Error tracking', 'Performance monitoring', 'Alerts', 'Debug tools'],
-			primaryService: 'sentry'
+			primaryService: 'datadog'
 		}
 	};
 

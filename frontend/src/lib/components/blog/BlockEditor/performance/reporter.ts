@@ -627,8 +627,14 @@ class PerformanceReporter {
 	}
 
 	/**
-	 * Log metrics in development mode
+	 * Log metrics in development mode.
+	 *
+	 * Called only behind `if (dev)` (see line ~543). The console.* block
+	 * below is the documented "fallback to console in development mode"
+	 * feature, not stray debug logging — scoped disable rather than
+	 * file-level so the rest of this file stays linted. (audit 2026-05-17)
 	 */
+	/* eslint-disable no-console */
 	private logDevMetrics(payload: MetricsPayload): void {
 		console.groupCollapsed('%c[Performance Metrics]', 'color: #8b5cf6; font-weight: bold;');
 
@@ -677,6 +683,7 @@ class PerformanceReporter {
 
 		console.groupEnd();
 	}
+	/* eslint-enable no-console */
 
 	/**
 	 * Log helper

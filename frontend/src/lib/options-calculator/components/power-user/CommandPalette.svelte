@@ -1,6 +1,4 @@
 <script lang="ts">
-	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
-	// import { Search } from '@lucide/svelte';
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
 	import gsap from 'gsap';
 	import type { CalculatorState } from '../../state/calculator.svelte.js';

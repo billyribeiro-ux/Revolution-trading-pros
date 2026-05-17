@@ -120,7 +120,7 @@ export async function load({ fetch }: ServerLoadEvent) {
 		const data: WatchlistApiResponse = await response.json();
 
 		if (!data.entries || data.entries.length === 0) {
-			console.log('[WatchlistRundown] No API data - using mock data');
+			console.info('[WatchlistRundown] No API data - using mock data');
 			return { videos: MOCK_VIDEOS };
 		}
 

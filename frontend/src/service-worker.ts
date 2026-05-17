@@ -45,6 +45,8 @@ const sw = self as unknown as ServiceWorkerGlobalScope;
 
 // ICT 11+ Production Mode: Silent operation (no console noise)
 const IS_PRODUCTION = true; // Set to false for debugging
+// Production-safe by construction: short-circuits on IS_PRODUCTION.
+// eslint-disable-next-line no-console
 const log = (...args: any[]) => !IS_PRODUCTION && console.log(...args);
 const warn = (...args: any[]) => !IS_PRODUCTION && console.warn(...args);
 const error = (...args: any[]) => console.error(...args); // Always log errors

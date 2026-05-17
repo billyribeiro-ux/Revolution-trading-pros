@@ -532,17 +532,26 @@
 											>
 										</label>
 										<div class="card-icons">
+<!-- width/height reserve space (CLS): card logos render at 24px tall
+												 (.card-icons img), ~38px wide intrinsic. CSS width:auto keeps
+												 the visual size; the attrs only fix the aspect ratio box. -->
 											<img
 												src="https://js.stripe.com/v3/fingerprinted/img/visa-729c05c240c4bdb47b03ac81d9945bfe.svg"
 												alt="Visa"
+												width="38"
+												height="24"
 											/>
 											<img
 												src="https://js.stripe.com/v3/fingerprinted/img/mastercard-4d8844094130711885b5e41b28c9848f.svg"
 												alt="Mastercard"
+												width="38"
+												height="24"
 											/>
 											<img
 												src="https://js.stripe.com/v3/fingerprinted/img/amex-a49b82f46c5cd6a96a6e418a6ca1717c.svg"
 												alt="Amex"
+												width="38"
+												height="24"
 											/>
 										</div>
 									</div>
@@ -1164,6 +1173,7 @@
 
 	.payment-method .card-icons img {
 		height: 24px;
+		width: auto; /* keep visual size; width/height attrs reserve the CLS box */
 	}
 
 	.security-notice {

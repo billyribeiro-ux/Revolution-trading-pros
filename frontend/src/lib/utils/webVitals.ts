@@ -86,7 +86,7 @@ async function reportMetric(metric: WebVitalMetric, options: WebVitalsOptions): 
 				: metric.rating === 'needs-improvement'
 					? '#f59e0b'
 					: '#ef4444';
-		console.log(
+		console.info(
 			`%c[Web Vitals] ${metric.name}: ${metric.value.toFixed(2)} (${metric.rating})`,
 			`color: ${color}; font-weight: bold;`
 		);
@@ -419,7 +419,7 @@ export function initWebVitals(userOptions: WebVitalsOptions = {}): void {
 	observeINP(options);
 
 	if (options.debug) {
-		console.log('[Web Vitals] Monitoring initialized');
+		console.info('[Web Vitals] Monitoring initialized');
 	}
 }
 

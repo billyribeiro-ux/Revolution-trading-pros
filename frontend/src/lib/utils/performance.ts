@@ -1313,7 +1313,7 @@ export interface LegacyPerformanceMetric {
  */
 export function reportLegacyMetric(metric: LegacyPerformanceMetric): void {
 	if (import.meta.env.DEV) {
-		console.log(`[Performance] ${metric.name}:`, {
+		console.info(`[Performance] ${metric.name}:`, {
 			value: Math.round(metric.value),
 			rating: metric.rating
 		});
@@ -1356,7 +1356,7 @@ export function measureCustomMetric(name: string, startMark: string, endMark: st
 		const measure = performance.getEntriesByName(name)[0];
 
 		if (measure) {
-			console.log(`[Performance] ${name}:`, `${measure.duration.toFixed(2)}ms`);
+			console.info(`[Performance] ${name}:`, `${measure.duration.toFixed(2)}ms`);
 		}
 	} catch (error) {
 		console.error(`Custom metric measurement failed for ${name}:`, error);

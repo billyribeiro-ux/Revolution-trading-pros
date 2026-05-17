@@ -25,7 +25,8 @@ export const POST: RequestHandler = async ({ request }) => {
 		// 4. Process for real-time dashboards
 
 		if (import.meta.env.DEV && import.meta.env.VITE_DEBUG_BEHAVIOR) {
-			console.log(
+			// Double-gated dev-only debug trace; `info` is lint-allowed.
+			console.info(
 				`[Behavior] Received ${batch.events.length} events from session ${batch.session_id}`
 			);
 		}

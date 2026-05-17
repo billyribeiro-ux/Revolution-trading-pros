@@ -33,7 +33,7 @@ export async function registerServiceWorker(): Promise<void> {
 
 	// Listen for service worker updates and prompt user to refresh
 	navigator.serviceWorker.addEventListener('controllerchange', () => {
-		console.log('[SW] New service worker activated');
+		console.info('[SW] New service worker activated');
 	});
 }
 
@@ -49,7 +49,7 @@ export async function updateServiceWorker(): Promise<void> {
 		const registration = await navigator.serviceWorker.getRegistration();
 		if (registration) {
 			await registration.update();
-			console.log('[SW] Service worker update triggered');
+			console.info('[SW] Service worker update triggered');
 		}
 	} catch (error) {
 		console.error('[SW] Update failed:', error);
@@ -83,7 +83,7 @@ export async function unregisterServiceWorker(): Promise<void> {
 		for (const registration of registrations) {
 			await registration.unregister();
 		}
-		console.log('Service worker unregistered');
+		console.info('Service worker unregistered');
 	} catch (error) {
 		console.error('Service worker unregistration failed:', error);
 	}

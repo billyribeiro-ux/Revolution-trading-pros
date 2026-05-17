@@ -17,12 +17,9 @@ export const POST = async ({ request }: RequestEvent) => {
 	try {
 		const body = await request.json();
 
-		// ICT 11+ Debug: Log request details (mask sensitive data)
-		console.log('[Auth Proxy] Reset password request:', {
-			email: body.email,
-			hasToken: !!body.token,
-			hasPassword: !!body.password
-		});
+		// (audit 2026-05-17) Removed temp "ICT 11+ Debug" request log
+		// (logged email + token/password presence on every reset — this is
+		// PII/auth noise that must not reach production).
 
 		// Forward request to backend
 		const response = await fetch(`${API_URL}/api/auth/reset-password`, {
@@ -44,11 +41,7 @@ export const POST = async ({ request }: RequestEvent) => {
 			return json({ error: 'Invalid response from auth server' }, { status: 502 });
 		}
 
-		// ICT 11+ Debug: Log response for diagnosis
-		console.log('[Auth Proxy] Reset password response:', {
-			status: response.status,
-			message: data.message
-		});
+		// (audit 2026-05-17) Removed temp "ICT 11+ Debug" response log.
 
 		// Return the response with proper status
 		return json(data, { status: response.status });

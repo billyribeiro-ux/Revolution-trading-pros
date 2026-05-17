@@ -329,12 +329,9 @@
 			// Security validation: prevent open redirects and XSS
 			const validatedUrl = validateRedirectUrl(targetUrl);
 
-			console.log('[LoginForm:ICT11] Redirect flow:', {
-				raw: rawRedirect,
-				target: targetUrl,
-				validated: validatedUrl,
-				timestamp: new Date().toISOString()
-			});
+			// (audit 2026-05-17) Removed debug log of the redirect flow
+			// (raw/target/validated URLs) — auth-path noise. console.error
+			// on navigation failure below is kept.
 
 			// ICT 11+ Pattern: Use SvelteKit navigation with full invalidation
 			// invalidateAll ensures all load functions re-run with new auth state
@@ -345,7 +342,6 @@
 				noScroll: false // Allow natural scroll to top
 			});
 
-			console.log('[LoginForm:ICT11] Navigation completed successfully');
 		} catch (navigationError) {
 			// ICT 11+ Error Recovery: Log error and use native navigation as fallback
 			console.error('[LoginForm:ICT11] SvelteKit navigation failed:', {
@@ -364,19 +360,14 @@
 				new URLSearchParams(window.location.search).get('redirect') || '/dashboard'
 			);
 
-			console.log('[LoginForm:ICT11] Using native navigation fallback:', fallbackUrl);
 			window.location.href = fallbackUrl;
 		}
 	}
 
 	// --- Form Submit ---
 	async function handleSubmit() {
-		// ICT 11+ Debug: Entry point logging for troubleshooting silent failures
-		console.log('[LoginForm:ICT11] handleSubmit called', {
-			email: email ? email.substring(0, 3) + '***' : '(empty)',
-			passwordLength: password?.length || 0,
-			timestamp: new Date().toISOString()
-		});
+		// (audit 2026-05-17) Removed "ICT 11+ Debug" entry log (email
+		// prefix + password length on every submit — auth-path PII noise).
 
 		// Mark all fields as touched
 		touched = { email: true, password: true };
@@ -386,9 +377,6 @@
 		const passwordError = validatePassword(password);
 
 		if (emailError || passwordError) {
-			// ICT 11+ Debug: Log validation failures
-			console.log('[LoginForm:ICT11] Validation failed', { emailError, passwordError });
-
 			// ICT 11+ Svelte 5 Fix: Create complete object in single assignment
 			// Mutating after assignment may not trigger reactivity in Svelte 5
 			errors = {
@@ -423,19 +411,11 @@
 		if (gsap && submitBtn) gsap.to(submitBtn, { scale: 0.97, duration: 0.1 });
 
 		try {
-			// ICT 11+: Structured logging with context
-			console.log('[LoginForm:ICT11] Authentication flow initiated', {
-				email: email.substring(0, 3) + '***', // Privacy: mask email
-				rememberMe,
-				timestamp: new Date().toISOString()
-			});
+			// (audit 2026-05-17) Removed "ICT 11+" auth-flow-initiated /
+			// successful debug logs — auth-path noise; errors still logged.
 
 			// Execute login with comprehensive error handling in auth service
 			await login({ email, password, remember: rememberMe });
-
-			console.log('[LoginForm:ICT11] Authentication successful', {
-				timestamp: new Date().toISOString()
-			});
 
 			// Persist email preference (localStorage is sync, safe to call)
 			saveRememberedEmail();
@@ -451,13 +431,11 @@
 			// - Too fast (<200ms): User misses success confirmation
 			// - Too slow (>600ms): Feels sluggish
 			// - 400ms: Sweet spot for recognition without impatience
-			console.log('[LoginForm:ICT11] Scheduling redirect (400ms delay for UX)');
 
 			// ICT 11+: Fire-and-forget timer pattern
 			// Timer ID intentionally not stored - component will unmount during navigation
 			// No cleanup needed as navigation replaces the entire page context
 			setTimeout(() => {
-				console.log('[LoginForm:ICT11] Redirect timer executed');
 				// Fire-and-forget: performRedirect handles all errors internally
 				performRedirect().catch((err) => {
 					// This should never happen as performRedirect catches all errors
@@ -517,8 +495,8 @@
 				emailNotVerified = true;
 				generalError = '';
 			} else {
-				// ICT 7 Debug: Log before setting generalError
-				console.log('[LoginForm:ICT7] Setting generalError to:', errorMessage);
+				// (audit 2026-05-17) Removed "ICT 7 Debug" log of the error
+				// message; it surfaces to the user via generalError anyway.
 				generalError = errorMessage;
 			}
 		} finally {

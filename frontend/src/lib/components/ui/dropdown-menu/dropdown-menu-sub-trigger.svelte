@@ -1,7 +1,5 @@
 <script lang="ts">
 	import { DropdownMenu as DropdownMenuPrimitive } from 'bits-ui';
-	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
-	// import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
 	import ChevronRightIcon from '@tabler/icons-svelte-runes/icons/chevron-right';
 	import { cn } from '$lib/utils.js';
 

@@ -17,12 +17,8 @@ export const POST = async ({ request }: RequestEvent) => {
 	try {
 		const body = await request.json();
 
-		// ICT 11+ Debug: Log request details (mask sensitive data)
-		console.log('[Auth Proxy] Register request:', {
-			email: body.email,
-			hasPassword: !!body.password,
-			name: body.name
-		});
+		// (audit 2026-05-17) Removed temp "ICT 11+ Debug" request log
+		// (logged email/name on every registration — PII noise).
 
 		// Forward request to backend
 		const response = await fetch(`${API_URL}/api/auth/register`, {
@@ -44,12 +40,7 @@ export const POST = async ({ request }: RequestEvent) => {
 			return json({ error: 'Invalid response from auth server' }, { status: 502 });
 		}
 
-		// ICT 11+ Debug: Log response for diagnosis
-		console.log('[Auth Proxy] Register response:', {
-			status: response.status,
-			message: data.message,
-			error: data.error
-		});
+		// (audit 2026-05-17) Removed temp "ICT 11+ Debug" response log.
 
 		// Return the response with proper status
 		return json(data, { status: response.status });

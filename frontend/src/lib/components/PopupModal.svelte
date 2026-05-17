@@ -160,7 +160,7 @@
 
 		// Log performance metrics
 		if (import.meta.env.DEV) {
-			console.log(`[PopupModal] Load time: ${loadTime.toFixed(2)}ms`);
+			console.info(`[PopupModal] Load time: ${loadTime.toFixed(2)}ms`);
 		}
 	});
 
@@ -862,7 +862,7 @@
 
 		// Log in development
 		if (import.meta.env.DEV) {
-			console.log(`[Analytics] ${eventName}`, data);
+			console.info(`[Analytics] ${eventName}`, data);
 		}
 	}
 

@@ -24,8 +24,10 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	let searchQuery = $state('');
-	let expandedFolders = $state<SvelteSet<string>>(new SvelteSet(['root']));
-	let favorites = $state<SvelteSet<string>>(new SvelteSet());
+	// SvelteSet is already reactive on its contents (.add/.delete/.has);
+	// wrapping in $state double-wraps reactivity (svelte/no-unnecessary-state-wrap).
+	const expandedFolders = new SvelteSet<string>(['root']);
+	const favorites = new SvelteSet<string>();
 	let recentComponents = $state<string[]>([]);
 
 	// Load favorites and recent from localStorage
@@ -35,7 +37,12 @@
 			const savedRecent = localStorage.getItem('workbench-recent');
 
 			if (savedFavorites) {
-				favorites = new SvelteSet(JSON.parse(savedFavorites));
+				// Mutate the existing reactive set in place (it's `const` now);
+				// SvelteSet tracks .add/.clear so the UI still updates.
+				favorites.clear();
+				for (const path of JSON.parse(savedFavorites) as string[]) {
+					favorites.add(path);
+				}
 			}
 			if (savedRecent) {
 				recentComponents = JSON.parse(savedRecent);
@@ -106,7 +113,6 @@
 		} else {
 			expandedFolders.add(folder);
 		}
-		expandedFolders = new SvelteSet(expandedFolders);
 	}
 
 	function handleSelect(component: ComponentInfo) {
@@ -131,7 +137,6 @@
 		} else {
 			favorites.add(component.relativePath);
 		}
-		favorites = new SvelteSet(favorites);
 
 		if (typeof window !== 'undefined') {
 			localStorage.setItem('workbench-favorites', JSON.stringify([...favorites]));

@@ -157,7 +157,6 @@ const EXTERNAL_SERVICES: Omit<
 	{ key: 'anthropic', name: 'Anthropic', category: 'AI' },
 
 	// Monitoring
-	{ key: 'sentry', name: 'Sentry', category: 'Monitoring' },
 	{ key: 'datadog', name: 'Datadog', category: 'Monitoring' },
 	{ key: 'new_relic', name: 'New Relic', category: 'Monitoring' },
 

@@ -1,6 +1,4 @@
 <script lang="ts">
-	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
-	// import { X, Keyboard } from '@lucide/svelte';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconKeyboard from '@tabler/icons-svelte-runes/icons/keyboard';
 	import gsap from 'gsap';

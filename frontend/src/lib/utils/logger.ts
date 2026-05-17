@@ -10,6 +10,11 @@
  * logger.error('Critical error', error); // Only logs in dev
  */
 
+/* eslint-disable no-console --
+ * This module IS the logging primitive. Every console.* here is the
+ * intended implementation, dev-gated via `isDev`. Linting the wrapper
+ * for using console is circular. (audit 2026-05-17) */
+
 const isDev = import.meta.env.DEV;
 
 type LogLevel = 'log' | 'warn' | 'error' | 'debug' | 'info' | 'trace';

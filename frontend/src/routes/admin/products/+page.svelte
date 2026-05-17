@@ -23,7 +23,6 @@
 	let loading = $state(true);
 	let products = $state<Product[]>([]);
 	let error = $state('');
-	// @ts-ignore write-only state
 	let selectedType = $state('all');
 	let searchQuery = $state('');
 	let deleting = $state<number | null>(null);

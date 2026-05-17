@@ -1,7 +1,5 @@
 <script lang="ts">
 	import { Select as SelectPrimitive } from 'bits-ui';
-	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
-	// import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 	import ChevronDownIcon from '@tabler/icons-svelte-runes/icons/chevron-down';
 	import { cn, type WithoutChild } from '$lib/utils.js';
 

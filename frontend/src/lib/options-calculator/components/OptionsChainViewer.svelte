@@ -1,6 +1,4 @@
 <script lang="ts">
-	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
-	// import { Loader2 } from '@lucide/svelte';
 	import IconLoader2 from '@tabler/icons-svelte-runes/icons/loader-2';
 	import gsap from 'gsap';
 	import { price as bsPrice } from '../engine/black-scholes.js';

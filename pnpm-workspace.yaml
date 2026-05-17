@@ -3,3 +3,5 @@ packages:
   - svelte-click-to-source
 onlyBuiltDependencies:
   - esbuild
+  - sharp
+  - workerd

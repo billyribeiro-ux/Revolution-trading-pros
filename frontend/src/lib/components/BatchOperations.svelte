@@ -48,8 +48,11 @@
 			label: 'Delete',
 			icon: IconTrash,
 			variant: 'danger',
+			// STUB-SMELL (audit 2026-05-17): the delete/archive/export actions
+			// only log + fake a 1s delay — no real persistence. Demo handlers.
+			// Tracked in audit doc §11. console.info, not log.
 			action: async (ids) => {
-				console.log('Deleting:', ids);
+				console.info('Deleting:', ids);
 				await new Promise((r) => setTimeout(r, 1000));
 			}
 		},
@@ -58,7 +61,7 @@
 			label: 'Archive',
 			icon: IconInbox,
 			action: async (ids) => {
-				console.log('Archiving:', ids);
+				console.info('Archiving:', ids);
 				await new Promise((r) => setTimeout(r, 1000));
 			}
 		},
@@ -67,7 +70,7 @@
 			label: 'Export',
 			icon: IconDownload,
 			action: async (ids) => {
-				console.log('Exporting:', ids);
+				console.info('Exporting:', ids);
 				await new Promise((r) => setTimeout(r, 1000));
 			}
 		}

@@ -15,7 +15,6 @@
 		onSuccess: () => void;
 	}
 
-	// @ts-ignore write-only state
 	const { isOpen, position, roomSlug: _roomSlug, onClose, onSuccess }: Props = $props();
 
 	let isSubmitting = $state(false);

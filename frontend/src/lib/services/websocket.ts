@@ -101,7 +101,7 @@ class WebSocketService {
 			this.ws = new WebSocket(this.url);
 
 			this.ws.onopen = () => {
-				console.log('WebSocket connected');
+				console.info('WebSocket connected');
 				this.connected.set(true);
 				this.error.set(null);
 				this.reconnectAttempts = 0;
@@ -122,7 +122,7 @@ class WebSocketService {
 			};
 
 			this.ws.onclose = () => {
-				console.log('WebSocket disconnected');
+				console.info('WebSocket disconnected');
 				this.connected.set(false);
 				this.attemptReconnect();
 			};
@@ -426,7 +426,7 @@ class WebSocketService {
 
 		if (event === 'system:notification') {
 			// Handle system-wide notifications
-			console.log('System notification:', message);
+			console.info('System notification:', message);
 		}
 	}
 
@@ -451,7 +451,7 @@ class WebSocketService {
 		this.reconnectAttempts++;
 		const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
 
-		console.log(`Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts})`);
+		console.info(`Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts})`);
 
 		setTimeout(() => {
 			this.connect();

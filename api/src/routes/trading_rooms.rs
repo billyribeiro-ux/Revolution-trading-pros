@@ -78,6 +78,8 @@ pub struct TradingRoomsQuery {
 pub struct TradersQuery {
     pub room_slug: Option<String>,
     pub active_only: Option<bool>,
+    pub page: Option<i64>,
+    pub per_page: Option<i64>,
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -735,25 +737,103 @@ async fn admin_list_sections(
 }
 
 /// List traders (admin) - ICT 7: Requires admin auth
+///
+/// FIX (audit 2026-05-16, TRADING_ROOMS_BACKEND_GAPS Gap 1): was a stub
+/// returning hardcoded `data: []`, so the admin Traders list rendered
+/// empty once the frontend proxy's `mockTraders` fallback was removed by
+/// P1-11. Now queries `room_traders` (schema: migrations/015 §2),
+/// mirroring the proven `admin_list_videos` pattern: tuple `query_as`,
+/// `.map().unwrap_or_default()`, separate COUNT, identical `meta` shape.
+///
+/// `room_traders` has no room foreign key (rooms reference traders via
+/// `instructor_id`/`creator_id`, not the reverse), so `room_slug` has no
+/// column to filter on and is intentionally not applied here — only the
+/// filters that map to real columns (`active_only`) plus pagination, the
+/// same "honor what the schema supports" approach as `admin_list_videos`.
 async fn admin_list_traders(
-    State(_state): State<AppState>,
+    State(state): State<AppState>,
     _admin: AdminUser,
-    Query(_query): Query<TradersQuery>,
+    Query(query): Query<TradersQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     tracing::info!(
         target: "security_audit",
         event = "admin_list_traders",
         "ICT 7 AUDIT: Admin listing traders"
     );
+    let page = query.page.unwrap_or(1).max(1);
+    let per_page = query.per_page.unwrap_or(20).min(100);
+    let offset = (page - 1) * per_page;
+
+    let traders: Vec<serde_json::Value> = sqlx::query_as::<
+        _,
+        (
+            i64,
+            Option<i64>,
+            String,
+            Option<String>,
+            Option<String>,
+            Option<String>,
+            Option<String>,
+            Option<String>,
+            Option<i32>,
+            bool,
+            bool,
+            chrono::DateTime<chrono::Utc>,
+        ),
+    >(
+        r#"
+        SELECT t.id, t.user_id, t.name, t.slug, t.title, t.bio,
+               t.avatar_url, t.trading_style, t.years_experience,
+               t.is_active, t.is_featured, t.created_at
+        FROM room_traders t
+        WHERE ($1::boolean IS NULL OR t.is_active = $1)
+        ORDER BY t.is_featured DESC, t.name ASC
+        LIMIT $2 OFFSET $3
+        "#,
+    )
+    .bind(query.active_only)
+    .bind(per_page)
+    .bind(offset)
+    .fetch_all(&state.db.pool)
+    .await
+    .map(|rows| {
+        rows.into_iter()
+            .map(|r| {
+                json!({
+                    "id": r.0,
+                    "user_id": r.1,
+                    "name": r.2,
+                    "slug": r.3,
+                    "title": r.4,
+                    "bio": r.5,
+                    "avatar_url": r.6,
+                    "trading_style": r.7,
+                    "years_experience": r.8,
+                    "is_active": r.9,
+                    "is_featured": r.10,
+                    "created_at": r.11.to_string()
+                })
+            })
+            .collect()
+    })
+    .unwrap_or_default();
+
+    let total: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM room_traders WHERE ($1::boolean IS NULL OR is_active = $1)",
+    )
+    .bind(query.active_only)
+    .fetch_one(&state.db.pool)
+    .await
+    .unwrap_or(0);
 
     Ok(Json(json!({
         "success": true,
-        "data": [],
+        "data": traders,
         "meta": {
-            "current_page": 1,
-            "per_page": 20,
-            "total": 0,
-            "total_pages": 0
+            "current_page": page,
+            "per_page": per_page,
+            "total": total,
+            "total_pages": (total as f64 / per_page as f64).ceil() as i64
         }
     })))
 }
