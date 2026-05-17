@@ -15,8 +15,12 @@ import { env } from '$env/dynamic/private';
 const BACKEND_URL =
 	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
-// Mock videos data
-const mockVideos = [
+// Mock videos data — PRESERVED as a local-dev reference only (audit
+// 2026-05-16). The real backend (`admin_list_videos`, trading_rooms.rs)
+// is implemented and the proxy now translates params to it, so this is
+// no longer a live data path. `_`-prefixed so the config's
+// varsIgnorePattern (/^_/) silences no-unused-vars without deleting it.
+const _mockVideos = [
 	{
 		id: 1,
 		trading_room_id: 1,
