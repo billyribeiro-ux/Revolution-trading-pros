@@ -42,7 +42,12 @@ const config = {
 			},
 			handleMissingId: 'ignore',
 			handleUnseenRoutes: 'ignore',
-			concurrency: 8,
+			// Serialized: adapter-cloudflare spins an emulated Miniflare/
+			// workerd per prerender worker; concurrent workerd instances
+			// contend on workerd's internal SQLite lock and crash the build
+			// with `SQLITE_BUSY`/ERR_RUNTIME_FAILURE (CI-only; the real
+			// Cloudflare runtime is unaffected). Build-time cost only.
+			concurrency: 1,
 			crawl: true,
 			entries: ['*', '/robots.txt']
 		},

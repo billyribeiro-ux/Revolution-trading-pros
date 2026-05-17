@@ -375,7 +375,19 @@ Lower risk; principal-engineer = delete/dedupe/decompose, not annotate.
 These were chased to the actual root with reproducible hard evidence;
 each needs a decision/asset outside the audit's app-code scope.
 
-### CI-1 — GitHub-Actions "Frontend (check + vitest + build)" red — ROOT-CAUSED
+### CI-1 — GitHub-Actions "Frontend" red — ✅ FIXED (was ROOT-CAUSED)
+
+**Resolution (committed):** `frontend/svelte.config.js`
+`prerender.concurrency: 8 → 1`. `adapter-cloudflare` spins one emulated
+Miniflare/`workerd` per prerender worker; 8 concurrent instances
+contended on workerd's internal SQLite lock → `SQLITE_BUSY` →
+`ERR_RUNTIME_FAILURE`. Serializing prerender removes the contention.
+Decisive cold-build proof: same fresh-clone methodology that
+reproduced `BUILD:1`+`SQLITE_BUSY` now yields `INSTALL:0 BUILD:0 ✔
+done`, zero `SQLITE_BUSY`/`ERR_RUNTIME_FAILURE`. Production-safe:
+build-time only; the real Cloudflare runtime provides `platform`
+unaffected; no risky workerd/miniflare version pins. Original
+root-cause analysis retained below for history.
 
 **Status:** NOT a product/code defect. Cloudflare Pages (the primary
 production deploy) builds + deploys the identical code **green on every
