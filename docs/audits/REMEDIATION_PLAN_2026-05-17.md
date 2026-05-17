@@ -63,12 +63,12 @@ Status: ☐ todo · ◐ in progress · ☑ done · ⏸ blocked on owner gate ·
 | P1-9 CI not enforcing | H | 1 | ☑ (eslint+clippy blocking; dead workflow removed; pnpm single-source) |
 | P1-10 tests test copies | H | 1 | ◐ (1a: no-DB tests bind real crate ✓ shipped; 1b: real-JWT DB harness written ✓ but **activation blocked by G0.3** — fresh DB can't migrate) |
 | CI fmt-red since 4420d1d | H | 1 | ☑ (pre-existing `cargo fmt` drift in stripe.rs:826/842 fixed) |
-| P0-3 /admin gate client-only | B | 2 | ☐ |
-| P1-2 token revocation | B | 2 | ☐ |
-| P1-3 spoofable client IP | B | 2 | ☐ |
-| P1-4 unauth endpoints | B | 2 | ☐ |
-| P1-6 set-session | B | 2 | ☐ |
-| P2-F proxy RBAC | B | 2 | ☐ |
+| P0-3 /admin gate client-only | B | 2 | ☑ (PR #576 merged — server +layout.server.ts gate, DRY isAdminRole; svelte-check/eslint 0/0) |
+| P1-2 token revocation | B | 2 | ☐ (full enforcement DB-backed → deferred behind G0.3) |
+| P1-3 spoofable client IP | B | 2 | ☑ (commit 7b9bcd1 — ConnectInfo + trusted-proxy CIDR, 19 no-DB tests; clippy/check/fmt 0) |
+| P1-4 unauth endpoints | B | 2 | ☑ (commit 113bd7e — AdminUser/SuperAdminUser + MONITORING_TOKEN; clippy/check/fmt 0) |
+| P1-6 set-session | B | 2 | ☑ (PR #576 merged — insecure POST deleted; svelte-check/eslint 0/0) |
+| P2-F proxy RBAC | B | 2 | ◐ (Agent C in flight — ~50 admin proxies onto canonical helpers) |
 | security-M3 refresh TTL | B | 2 | ☐ |
 | P1-7 money→cents schema | C | 3 | ☐ |
 | P2-I migration 068 / sqlx state | C | 3 | ☐ ⏸ |

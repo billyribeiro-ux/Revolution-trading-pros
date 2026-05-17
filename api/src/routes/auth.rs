@@ -11,8 +11,10 @@
 //! - GET /verify-email - Verify email with token
 //! - POST /resend-verification - Resend verification email
 
+use std::net::{IpAddr, SocketAddr};
+
 use axum::{
-    extract::{Query, State},
+    extract::{ConnectInfo, Query, State},
     // FIX-2026-04-26 (Priority 4): pull in HeaderMap to extract client IP for rate-limiting.
     http::{HeaderMap, StatusCode},
     routing::{get, post},
@@ -27,6 +29,9 @@ use serde::Deserialize;
 use serde_json::json;
 
 use crate::{
+    // P1-3 (FULL_REPO_AUDIT_2026-05-17): trusted-proxy CIDR type for the
+    // spoof-resistant client-IP resolver.
+    config::IpCidr,
     // FIX-2026-04-26 (Priority 2): pull in ValidatedJson extractor for hot-path handlers.
     middleware::validated_json::ValidatedJson,
     models::{
@@ -41,26 +46,134 @@ use crate::{
     AppState,
 };
 
-/// FIX-2026-04-26 (Priority 4): client IP extraction helper.
-/// Reads `x-forwarded-for` (first hop), then `x-real-ip`, then falls back to `"unknown"`.
-/// Used to scope per-IP rate limits on register/forgot-password/reset-password and to
-/// add per-IP scope to login (in addition to the existing per-email scope).
-fn client_ip(headers: &HeaderMap) -> String {
+/// P1-3 (FULL_REPO_AUDIT_2026-05-17): spoof-resistant client-IP resolver.
+///
+/// Replaces the old `client_ip(headers)` helper, which blindly trusted the
+/// first hop of client-supplied `X-Forwarded-For` (then `X-Real-IP`). Because
+/// every per-IP rate-limit bucket is keyed by the returned string, an attacker
+/// could mint a brand-new bucket on every request just by rotating the XFF
+/// header — defeating the register (5/15m), per-IP login (10/15m),
+/// forgot-password (3/h) and reset-password (5/h) limiters.
+///
+/// Root cause: there was no notion of *which* proxy is allowed to assert a
+/// forwarded client IP. The fix introduces an explicit trusted-proxy CIDR
+/// allowlist (`Config::trusted_proxy_cidrs`, env `TRUSTED_PROXY_CIDRS`) and the
+/// standard, well-understood algorithm:
+///
+/// 1. If the immediate TCP peer is **not** within a trusted-proxy CIDR, the
+///    request did not arrive through our infrastructure: `X-Forwarded-For` /
+///    `X-Real-IP` are attacker-controlled noise and are **ignored entirely**.
+///    The real TCP peer is the client.
+/// 2. If the peer **is** trusted, walk `X-Forwarded-For` **right-to-left**
+///    (proxies *append* the address they saw, so the rightmost entries are the
+///    ones closest to us and the most trustworthy) and return the rightmost
+///    address that is **not** itself a trusted proxy. That is the first hop we
+///    cannot vouch for — i.e. the real external client. This correctly handles
+///    a chain of N trusted proxies.
+/// 3. If every XFF entry is a trusted proxy (or XFF is absent/empty/malformed),
+///    fall back to the trusted peer's own socket address.
+///
+/// With an empty allowlist (the default — `TRUSTED_PROXY_CIDRS` unset) NO peer
+/// is ever trusted, so forwarded headers are always ignored and the socket
+/// peer is authoritative. The legitimate single-proxy and direct-connection
+/// cases are byte-for-byte unchanged; only header spoofing is closed.
+pub fn resolve_client_ip(peer: IpAddr, headers: &HeaderMap, trusted: &[IpCidr]) -> IpAddr {
+    // Step 1: is the immediate peer a proxy we explicitly trust?
+    let peer_trusted = trusted.iter().any(|cidr| cidr.contains(peer));
+    if !peer_trusted {
+        // Untrusted (or no allowlist configured): forwarded headers are
+        // adversary-controlled. Ignore them completely.
+        return peer;
+    }
+
+    // Step 2: the peer is a trusted proxy. Reconstruct the forwarded chain
+    // and find the rightmost non-trusted (i.e. real client) hop.
+    //
+    // RFC 7239 / de-facto XFF semantics: a proxy appends the address it
+    // received the connection from. So the list reads, left→right,
+    // [original client, proxy1, proxy2, ...]. Walking right→left and
+    // skipping trusted proxies yields the genuine client even with several
+    // chained load balancers.
     if let Some(xff) = headers.get("x-forwarded-for").and_then(|v| v.to_str().ok()) {
-        if let Some(first) = xff.split(',').next() {
-            let ip = first.trim();
-            if !ip.is_empty() {
-                return ip.to_string();
+        for hop in xff.rsplit(',') {
+            let hop = hop.trim();
+            if hop.is_empty() {
+                continue;
             }
+            // XFF entries can carry a `:port` (and IPv6 may be bracketed).
+            let Some(parsed) = parse_forwarded_hop(hop) else {
+                // Malformed entry — cannot trust or attribute it. Skip and
+                // keep walking; do NOT abort to the peer, since a later
+                // (more leftward) entry might still be a valid client and a
+                // garbage rightmost hop would otherwise mask it.
+                continue;
+            };
+            if trusted.iter().any(|cidr| cidr.contains(parsed)) {
+                // Another trusted proxy in the chain — keep walking left.
+                continue;
+            }
+            // First non-trusted hop from the right: the real client.
+            return parsed;
         }
     }
-    if let Some(real_ip) = headers.get("x-real-ip").and_then(|v| v.to_str().ok()) {
-        let ip = real_ip.trim();
-        if !ip.is_empty() {
-            return ip.to_string();
+
+    // Step 3: XFF absent / empty / all-trusted / all-malformed. Fall back
+    // to the trusted proxy's socket address. (We intentionally do NOT
+    // consult `X-Real-IP` here: a trusted proxy that wants to assert the
+    // client IP must do so via XFF, which is what every reverse proxy in
+    // this stack emits. Honoring a second, independently-spoofable header
+    // would re-open a parallel bypass.)
+    peer
+}
+
+/// Parse one `X-Forwarded-For` element into an [`IpAddr`].
+///
+/// Tolerates the common real-world shapes:
+///
+/// - bare IPv4 / IPv6 (`203.0.113.7` / `2001:db8::1`)
+/// - IPv4 with port (`203.0.113.7:54321`)
+/// - bracketed IPv6, optionally with port (`[2001:db8::1]` / `[2001:db8::1]:443`)
+///
+/// Anything else returns `None` (the caller skips it).
+fn parse_forwarded_hop(hop: &str) -> Option<IpAddr> {
+    // Fast path: already a valid bare IP (covers unbracketed IPv6).
+    if let Ok(ip) = hop.parse::<IpAddr>() {
+        return Some(ip);
+    }
+    // Bracketed IPv6, optionally followed by `:port`.
+    if let Some(rest) = hop.strip_prefix('[') {
+        if let Some(end) = rest.find(']') {
+            return rest[..end].parse::<IpAddr>().ok();
+        }
+        return None;
+    }
+    // `host:port` — only meaningful for IPv4 (an unbracketed IPv6 with a
+    // port is ambiguous and non-conformant; reject it).
+    if let Some((host, _port)) = hop.rsplit_once(':') {
+        if let Ok(v4) = host.parse::<std::net::Ipv4Addr>() {
+            return Some(IpAddr::V4(v4));
         }
     }
-    "unknown".to_string()
+    None
+}
+
+/// Resolve the client IP for rate-limiting and return it as the `String`
+/// bucket key the limiter expects. Thin adapter over [`resolve_client_ip`]
+/// so the handler call sites stay terse.
+///
+/// `peer` is `Option` because the `ConnectInfo` extension is only present
+/// when the server is launched via `into_make_service_with_connect_info`
+/// (production — see `main.rs`). Tower's `oneshot`-driven integration test
+/// harness does not install it; in that case we fall back to the
+/// unspecified address `0.0.0.0`, which is **never** inside any
+/// trusted-proxy CIDR — so the spoof-resistant branch still ignores
+/// forwarded headers. Fail-safe: a missing peer can only make the limiter
+/// *more* conservative (single shared bucket), never bypassable.
+fn client_ip(peer: Option<SocketAddr>, headers: &HeaderMap, trusted: &[IpCidr]) -> String {
+    let peer_ip = peer
+        .map(|p| p.ip())
+        .unwrap_or(IpAddr::V4(std::net::Ipv4Addr::UNSPECIFIED));
+    resolve_client_ip(peer_ip, headers, trusted).to_string()
 }
 
 /// FIX-2026-04-26 (Priority 4): per-IP rate limit gate.
@@ -158,12 +271,18 @@ struct RegisterResponse {
 // Original signature: async fn register(State(state): State<AppState>, Json(input): Json<CreateUser>)
 async fn register(
     State(state): State<AppState>,
+    peer: Option<ConnectInfo<SocketAddr>>,
     headers: HeaderMap,
     ValidatedJson(input): ValidatedJson<CreateUser>,
 ) -> Result<Json<RegisterResponse>, (StatusCode, Json<serde_json::Value>)> {
     // FIX-2026-04-26 (Priority 4): per-IP rate limit BEFORE Argon2 hashing
     // (otherwise an attacker can DOS by burning CPU on hash attempts).
-    let ip = client_ip(&headers);
+    // P1-3 (2026-05-17): IP is now spoof-resistant (trusted-proxy aware).
+    let ip = client_ip(
+        peer.map(|ci| ci.0),
+        &headers,
+        &state.config.trusted_proxy_cidrs,
+    );
     enforce_ip_rate_limit_strict(&state, &ip, "register", 5, 900).await?;
 
     // Validate email format
@@ -639,6 +758,7 @@ async fn resend_verification(
 // Original signature: async fn login(State(state): State<AppState>, Json(input): Json<LoginUser>)
 async fn login(
     State(state): State<AppState>,
+    peer: Option<ConnectInfo<SocketAddr>>,
     headers: HeaderMap,
     ValidatedJson(input): ValidatedJson<LoginUser>,
 ) -> Result<Json<AuthResponse>, (StatusCode, Json<serde_json::Value>)> {
@@ -651,7 +771,13 @@ async fn login(
 
     // FIX-2026-04-27 (H-2): Both per-IP and per-email checks now FAIL CLOSED.
     // A Redis outage must not become a free pass for brute-force attacks.
-    let ip = client_ip(&headers);
+    // P1-3 (2026-05-17): IP is now spoof-resistant (trusted-proxy aware), so
+    // the per-IP bucket can no longer be sidestepped by rotating XFF.
+    let ip = client_ip(
+        peer.map(|ci| ci.0),
+        &headers,
+        &state.config.trusted_proxy_cidrs,
+    );
     enforce_ip_rate_limit_strict(&state, &ip, "login_ip", 10, 900).await?;
 
     let Some(ref redis) = state.services.redis else {
@@ -1213,11 +1339,17 @@ async fn logout_all(
 // Original signature: async fn forgot_password(State(state): State<AppState>, Json(input): Json<ForgotPasswordRequest>)
 async fn forgot_password(
     State(state): State<AppState>,
+    peer: Option<ConnectInfo<SocketAddr>>,
     headers: HeaderMap,
     Json(input): Json<ForgotPasswordRequest>,
 ) -> Result<Json<MessageResponse>, (StatusCode, Json<serde_json::Value>)> {
     // FIX-2026-04-26 (Priority 4): per-IP rate limit (3/hour) — fail-closed.
-    let ip = client_ip(&headers);
+    // P1-3 (2026-05-17): IP is now spoof-resistant (trusted-proxy aware).
+    let ip = client_ip(
+        peer.map(|ci| ci.0),
+        &headers,
+        &state.config.trusted_proxy_cidrs,
+    );
     enforce_ip_rate_limit_strict(&state, &ip, "forgot_password", 3, 3600).await?;
 
     // Find user (but don't reveal if they exist)
@@ -1329,11 +1461,17 @@ async fn forgot_password(
 // Original signature: async fn reset_password(State(state): State<AppState>, Json(input): Json<ResetPasswordRequest>)
 async fn reset_password(
     State(state): State<AppState>,
+    peer: Option<ConnectInfo<SocketAddr>>,
     headers: HeaderMap,
     ValidatedJson(input): ValidatedJson<ResetPasswordRequest>,
 ) -> Result<Json<MessageResponse>, (StatusCode, Json<serde_json::Value>)> {
     // FIX-2026-04-26 (Priority 4): per-IP rate limit (5/hour) — fail-closed.
-    let ip = client_ip(&headers);
+    // P1-3 (2026-05-17): IP is now spoof-resistant (trusted-proxy aware).
+    let ip = client_ip(
+        peer.map(|ci| ci.0),
+        &headers,
+        &state.config.trusted_proxy_cidrs,
+    );
     enforce_ip_rate_limit_strict(&state, &ip, "reset_password", 5, 3600).await?;
 
     // Validate passwords match

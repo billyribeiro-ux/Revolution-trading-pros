@@ -8,7 +8,7 @@ use axum::{
 };
 use serde::Serialize;
 
-use crate::middleware::admin::AdminUser;
+use crate::middleware::admin::SuperAdminUser;
 use crate::AppState;
 
 #[derive(Serialize)]
@@ -154,10 +154,14 @@ async fn ready_check(
 
 /// Setup endpoint - creates missing tables
 /// POST /setup-db
-/// ICT 11+ SECURITY FIX: Now requires admin authentication
-/// SECURITY: Also gated to development — contains destructive DROP TABLE operations
+/// SECURITY FIX (FULL_REPO_AUDIT_2026-05-17 P1-4 #2): This endpoint executes
+/// `DROP TABLE ... CASCADE` and can rewrite the bootstrap super_admin user.
+/// It must require `SuperAdminUser`, not the broader `AdminUser` (which also
+/// admits the `admin`/`developer` roles). The dev-only `ENVIRONMENT` check is
+/// retained below as defense-in-depth, but the extractor — not a defaultable
+/// env string — is the real authorization gate.
 async fn setup_db(
-    admin: AdminUser,
+    admin: SuperAdminUser,
     axum::extract::State(state): axum::extract::State<AppState>,
 ) -> Result<Json<SetupResponse>, (StatusCode, Json<SetupResponse>)> {
     // Only allow in development — this endpoint drops and recreates tables
@@ -289,10 +293,12 @@ async fn setup_db(
 
 /// Run all pending migrations including membership plan seeding
 /// POST /run-migrations
-/// ICT 11+ SECURITY FIX: Now requires admin authentication
-/// Migrations are defined in SQL files, not hardcoded
+/// SECURITY FIX (FULL_REPO_AUDIT_2026-05-17 P1-4 #2): Schema-mutating endpoint
+/// escalated from `AdminUser` to `SuperAdminUser`. Running migrations is a
+/// privileged DDL operation and must not be reachable by the `admin`/
+/// `developer` roles. Migrations are defined in SQL files, not hardcoded.
 async fn run_migrations(
-    admin: AdminUser,
+    admin: SuperAdminUser,
     axum::extract::State(state): axum::extract::State<AppState>,
 ) -> Result<Json<SetupResponse>, (StatusCode, Json<SetupResponse>)> {
     tracing::info!("Admin {} running migrations", admin.0.email);
@@ -341,11 +347,19 @@ async fn run_migrations(
     }))
 }
 
-/// TEMP: Run migrations without auth
-/// SECURITY: Gated to development environment only
+/// Run migrations + bootstrap developer from environment variables
+/// POST /init-db
+/// SECURITY FIX (FULL_REPO_AUDIT_2026-05-17 P1-4 #2): Previously this endpoint
+/// had NO auth extractor — it was "protected" solely by an `ENVIRONMENT`
+/// string that defaults to `"production"` only when the var is unset, so any
+/// misconfiguration (or `ENVIRONMENT=development` in a shared env) exposed
+/// schema migration + bootstrap-user creation to anonymous callers. It now
+/// requires `SuperAdminUser`; the env check is kept below as defense-in-depth.
 async fn init_db(
+    admin: SuperAdminUser,
     axum::extract::State(state): axum::extract::State<AppState>,
 ) -> Result<Json<SetupResponse>, (StatusCode, Json<SetupResponse>)> {
+    tracing::info!("Super admin {} running init-db", admin.0.email);
     // Only allow in development
     let environment = std::env::var("ENVIRONMENT").unwrap_or_else(|_| "production".to_string());
     if environment != "development" && environment != "dev" {

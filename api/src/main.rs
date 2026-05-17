@@ -297,7 +297,18 @@ async fn main() -> anyhow::Result<()> {
     );
 
     let listener = tokio::net::TcpListener::bind(addr).await?;
-    axum::serve(listener, app).await?;
+    // P1-3 (FULL_REPO_AUDIT_2026-05-17): serve with ConnectInfo so handlers can
+    // extract the real TCP peer `SocketAddr`. Without this, `client_ip` had no
+    // source of truth except client-controlled `X-Forwarded-For` / `X-Real-IP`,
+    // letting an attacker mint a fresh per-IP rate-limit bucket on every request.
+    // It also fixes a latent panic: routes that already declared
+    // `ConnectInfo<SocketAddr>` (e.g. newsletter::subscribe) would 500 at runtime
+    // because the connect-info extension was never installed.
+    axum::serve(
+        listener,
+        app.into_make_service_with_connect_info::<SocketAddr>(),
+    )
+    .await?;
 
     Ok(())
 }

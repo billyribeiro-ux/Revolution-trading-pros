@@ -293,6 +293,9 @@ mod tests {
             stripe_publishable_key: "pk_test_123".into(),
             stripe_webhook_secret: "whsec_test".into(),
             cors_origins: vec![],
+            // P1-3 (FULL_REPO_AUDIT_2026-05-17): new required Config field;
+            // test fixture trusts no proxy (mechanical struct-literal update).
+            trusted_proxy_cidrs: vec![],
             postmark_token: None,
             from_email: String::new(),
             app_url: String::new(),
