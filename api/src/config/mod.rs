@@ -569,16 +569,130 @@ impl Config {
         );
     }
 
-    /// Check if an email is a superadmin
+    /// security-M1 (FULL_REPO_AUDIT_2026-05-17): raw env-list membership ONLY.
+    ///
+    /// !!! HARDENING — DO NOT USE FOR AUTHORIZATION/ELEVATION DECISIONS !!!
+    ///
+    /// This is a *break-glass hint*, never a standalone authorization
+    /// decision. Treating "the caller controls the configured
+    /// `SUPERADMIN_EMAILS` value" as proof of identity let anyone who could
+    /// set/spoof that email obtain instant, *unverified* superadmin
+    /// elevation. Root cause: an env email-list string was treated as an
+    /// identity credential.
+    ///
+    /// Callers that make a role/elevation decision MUST use
+    /// [`Config::is_superadmin_email_strict`], which additionally requires the
+    /// account to be email-verified AND to carry a real DB
+    /// superadmin/admin/developer role. The bare form below is retained only
+    /// for non-elevating diagnostics (e.g. logging "this address is on the
+    /// configured list").
+    ///
+    /// A compiler `#[deprecated]` is deliberately NOT applied here: the
+    /// remaining caller is `src/middleware/admin.rs` (outside this fix's edit
+    /// ownership), and `#[deprecated]` would turn that file's usage into a
+    /// hard error under the repo's `clippy -D warnings` gate without a way to
+    /// fix it from an owned file. The enforcement is instead done at every
+    /// owned call site (`auth.rs` login) plus the precise REQUIRED-COMPANION
+    /// marker below for the middleware caller.
     pub fn is_superadmin_email(&self, email: &str) -> bool {
         self.superadmin_emails.contains(&email.to_lowercase())
     }
 
-    /// Check if an email is a developer (Enterprise Pattern)
-    /// Developers have complete access to all features, memberships, and development tools
+    /// security-M1 (FULL_REPO_AUDIT_2026-05-17): raw env-list membership ONLY.
+    ///
+    /// !!! HARDENING — DO NOT USE FOR AUTHORIZATION/ELEVATION DECISIONS !!!
+    ///
+    /// Same hardening rationale as [`Config::is_superadmin_email`] — use
+    /// [`Config::is_developer_email_strict`] for any elevation decision; the
+    /// bare form is break-glass / non-elevating-diagnostics only.
     pub fn is_developer_email(&self, email: &str) -> bool {
         self.developer_emails.contains(&email.to_lowercase())
     }
+
+    /// security-M1 (FULL_REPO_AUDIT_2026-05-17): strict superadmin check.
+    ///
+    /// Honors the configured `SUPERADMIN_EMAILS` allowlist as *at most a
+    /// secondary hint* layered on top of a verified, DB-role'd account.
+    /// Returns `true` iff ALL of:
+    ///
+    /// 1. `email` is in the configured `SUPERADMIN_EMAILS` list, AND
+    /// 2. `email_verified` is `true` (the user row's `email_verified_at` is
+    ///    set — controlling the configured email is not enough; the address
+    ///    must have actually been proven), AND
+    /// 3. `role` is a real DB privileged role (`super_admin` / `super-admin`
+    ///    / `admin` / `developer`) — the email list can only *confirm*
+    ///    elevation that the database already grants, never *create* it.
+    ///
+    /// This closes the "controls the configured email ⇒ instant unverified
+    /// elevation" hole while preserving every legitimate verified-admin path:
+    /// a real superadmin whose row is verified and DB-role'd is unaffected.
+    pub fn is_superadmin_email_strict(
+        &self,
+        email: &str,
+        role: Option<&str>,
+        email_verified: bool,
+    ) -> bool {
+        if !email_verified {
+            return false;
+        }
+        if !self.superadmin_emails.contains(&email.to_lowercase()) {
+            return false;
+        }
+        matches!(
+            role,
+            Some("super_admin") | Some("super-admin") | Some("admin") | Some("developer")
+        )
+    }
+
+    /// security-M1 (FULL_REPO_AUDIT_2026-05-17): strict developer check.
+    ///
+    /// Same three-part contract as [`Config::is_superadmin_email_strict`]
+    /// but against the `DEVELOPER_EMAILS` allowlist. Requires the account to
+    /// be email-verified AND to carry a real DB privileged role; the env
+    /// list is only a secondary confirmation, never a standalone gate.
+    pub fn is_developer_email_strict(
+        &self,
+        email: &str,
+        role: Option<&str>,
+        email_verified: bool,
+    ) -> bool {
+        if !email_verified {
+            return false;
+        }
+        if !self.developer_emails.contains(&email.to_lowercase()) {
+            return false;
+        }
+        matches!(
+            role,
+            Some("super_admin") | Some("super-admin") | Some("admin") | Some("developer")
+        )
+    }
+
+    // ── security-M1 — REQUIRED-COMPANION (CROSS-FILE, NOT IN THIS AGENT'S
+    //    OWNERSHIP) ────────────────────────────────────────────────────────
+    //
+    // `src/middleware/admin.rs` (the `AdminUser` and `SuperAdminUser`
+    // extractors) still calls the deprecated bare `is_superadmin_email(email)`
+    // at lines ~33 and ~78 and ORs its result straight into the
+    // authorize/deny decision. That is the same email-list-as-identity hole
+    // this fix closes everywhere it owns. The middleware extractor already
+    // has the fully-loaded `User` row in scope (`user.role`,
+    // `user.email_verified_at`), so the one-line companion change in EACH
+    // extractor is:
+    //
+    //   // AdminUser (~line 33) and SuperAdminUser (~line 78):
+    //   let is_superadmin = state.config.is_superadmin_email_strict(
+    //       &user.email,
+    //       user.role.as_deref(),
+    //       user.email_verified_at.is_some(),
+    //   );
+    //
+    // i.e. swap `is_superadmin_email(&user.email)` →
+    // `is_superadmin_email_strict(&user.email, user.role.as_deref(),
+    // user.email_verified_at.is_some())`. No behavior change for a real
+    // verified DB-role'd superadmin; closes the unverified-elevation path.
+    // Left as a marker (not edited) because `middleware/admin.rs` is outside
+    // this agent's edit ownership.
 
     /// Check if developer mode is enabled
     pub fn is_developer_mode(&self) -> bool {

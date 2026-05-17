@@ -391,6 +391,28 @@ async fn ban_user(
     // Tolerate Redis failure — the ban is already persisted in the DB and Fix C-1
     // will block the user on the next DB fetch.
     if let Some(ref redis) = state.services.redis {
+        // SECURITY (FULL_REPO_AUDIT_2026-05-17 P1-2) — required companion to
+        // commit 6f5c5a9 (per-user token-version revocation). Deleting
+        // `session:*` keys alone never touched the stateless access/refresh
+        // JWTs: that was the root bug — a just-banned user's *stolen* access
+        // token stayed valid for its full TTL (≤1h) and the refresh token
+        // until rotation (≤7d), because the C-1 `is_active` guard + the
+        // extractor only re-check on the next DB-backed fetch, not on a token
+        // served from the Redis user-cache hot path. Bumping the token epoch
+        // strands every previously-issued token for this user the instant the
+        // extractor/refresh handler re-reads the epoch. Best-effort, exactly
+        // as `auth.rs::logout_all` / `reset_password` do it: a Redis fault is
+        // logged but does NOT fail the ban (DB ban is already persisted and
+        // the extractor's read fails closed on a Redis fault at validate time).
+        if let Err(e) = redis.bump_token_version(id).await {
+            tracing::error!(
+                target: "security_audit",
+                event = "ban_token_version_bump_failed",
+                user_id = %id,
+                error = %e,
+                "Could not bump token epoch on ban (DB ban still effective; extractor fails closed on Redis error)"
+            );
+        }
         if let Err(e) = redis.invalidate_all_user_sessions(id).await {
             tracing::warn!(
                 target: "security_audit",
