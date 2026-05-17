@@ -1039,27 +1039,61 @@ async fn change_plan(
     let is_upgrade = new_plan.price_cents > current_plan.price_cents;
     let change_type = if is_upgrade { "upgrade" } else { "downgrade" };
 
-    // Update the subscription to new plan
-    sqlx::query(
-        r#"
-        UPDATE user_memberships
-        SET plan_id = $1, updated_at = NOW()
-        WHERE id = $2
-        "#,
-    )
-    .bind(new_plan.id)
-    .bind(subscription_id)
-    .execute(&state.db.pool)
-    .await
-    .map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": e.to_string()})),
-        )
-    })?;
+    // NF-3 (P0): the previous implementation did ONLY
+    // `UPDATE user_memberships SET plan_id` with NO Stripe call — any user
+    // could POST their own plan change and receive a higher-tier
+    // entitlement with no charge (or keep paying the old price). Money +
+    // entitlement integrity break.
+    //
+    // Correct flow: move the real Stripe billing. The authoritative DB
+    // `plan_id` write is performed by the `customer.subscription.updated`
+    // webhook after Stripe confirms the change (single source of truth) —
+    // we deliberately do NOT write `plan_id` here. A subscription with no
+    // linked Stripe billing cannot be changed in place (fail-closed: no
+    // free upgrades) and must go through checkout.
+    let sub_stripe_id = subscription.stripe_subscription_id.clone();
+    let new_price_id = new_plan.stripe_price_id.clone();
+    match (sub_stripe_id, new_price_id) {
+        (Some(sub_id), Some(price_id)) if !sub_id.is_empty() && !price_id.is_empty() => {
+            let behavior = if prorate {
+                "create_prorations"
+            } else {
+                "none"
+            };
+            state
+                .services
+                .stripe
+                .migrate_subscription_to_price(&sub_id, &price_id, behavior)
+                .await
+                .map_err(|e| {
+                    tracing::error!(
+                        target: "billing",
+                        event = "change_plan_stripe_failed",
+                        user_id = %user.id,
+                        subscription_id = %subscription_id,
+                        error = %e,
+                        "Stripe plan migration failed"
+                    );
+                    (
+                        StatusCode::BAD_GATEWAY,
+                        Json(json!({"error": format!("Stripe plan change failed: {}", e)})),
+                    )
+                })?;
+        }
+        _ => {
+            return Err((
+                StatusCode::CONFLICT,
+                Json(json!({
+                    "error": "This subscription has no linked Stripe billing; complete the plan change through checkout.",
+                    "code": "stripe_subscription_required"
+                })),
+            ));
+        }
+    }
 
     Ok(Json(json!({
         "success": true,
+        "pending": true,
         "change_type": change_type,
         "previous_plan": {
             "id": current_plan.id,
@@ -1074,7 +1108,10 @@ async fn change_plan(
             "billing_cycle": new_plan.billing_cycle
         },
         "proration": proration,
-        "message": format!("Successfully {}d to {}", change_type, new_plan.name)
+        "message": format!(
+            "Plan change to {} submitted to Stripe; it takes effect once billing is confirmed",
+            new_plan.name
+        )
     })))
 }
 

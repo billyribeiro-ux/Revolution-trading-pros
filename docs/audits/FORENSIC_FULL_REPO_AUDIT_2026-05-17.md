@@ -284,3 +284,36 @@ caught by any current gate (no e2e, no DB tests, lint can't see a
 missing extractor). The `SQLX_OFFLINE` blind spot (§1a) means a green
 build is not evidence the data layer is correct. Address the §7 P0s
 before any release.
+
+---
+
+## 9. Remediation applied (same session, HEAD `16b350b`)
+
+The release-blocking findings were fixed in-session and verified against
+the ground-truth gates (`cargo check --locked --all-targets` ✅ clean ·
+`cargo clippy --locked --all-targets -- -D warnings` ✅ no warnings).
+
+| Finding | Fix | Files |
+|---|---|---|
+| **NF-1** (P0) anonymous room-content surface | Added `User` extractor + `ensure_room_access` (staff role OR active/trial membership; fail-closed on DB error) to all 8 `public_router` handlers incl. the anonymous `mark_alert_read` POST | `routes/room_content.rs` |
+| **NF-2** (P0) unauthenticated `/video-advanced` | Added the house-standard `AdminUser` extractor to all 32 destructive/management handlers (series/chapter CRUD, clone, bulk-edit, CSV export, CDN purge, scheduled jobs, analytics). **Deliberately left** `track_video_event`, `track_video_events_batch`, `update_watch_progress` (member-facing) and `bunny_webhook` (external signature-authed) — a blanket router layer would have broken these, a nuance the one-line audit fix missed | `routes/admin_videos.rs` |
+| **NF-3** (P0) `change_plan` free upgrades | Removed the unpaid `UPDATE … SET plan_id`. Now calls `stripe.migrate_subscription_to_price` (proration-aware); the authoritative DB write is left to the `customer.subscription.updated` webhook. Subscriptions with no linked Stripe billing are rejected `409` (fail-closed: no free upgrades) | `routes/subscriptions.rs` |
+| **NF-3b** (P1) OAuth bypassed token-version | OAuth now mints via `create_jwt_versioned`/`create_refresh_token_versioned` with the user's live Redis epoch, fail-closed (`503`) if unreadable — identical to the password-login path | `routes/oauth.rs` |
+| **P0-2** creds in tracked docs | Redacted the plaintext superadmin email/password from the 4 tracked audit docs | `docs/audits/*` |
+
+**Residual / not done here (require owner action or are larger-scope):**
+- **P0-2 is not fully closed:** the credentials remain in **git
+  history**; redacting working-tree docs is incomplete. Real remediation
+  = rotate the credential + history rewrite (destructive, owner-gated —
+  intentionally not performed unilaterally).
+- **NF-3 correctness now depends on the `customer.subscription.updated`
+  webhook** actually mapping the Stripe price back to a local `plan_id`;
+  that webhook path was not re-verified in this session — must be
+  confirmed before relying on plan changes end-to-end.
+- **NF-4/5/6/…/30** (WS room authz, room-search membership,
+  over-refund, etc.) remain open per §4/§7 — out of scope for the
+  release-blocker pass.
+- An attempted single `route_layer` guard for NF-2 was reverted: axum
+  needs the state value at layer-build time (`from_fn_with_state`), which
+  is not available where the router is constructed — hence the
+  per-handler extractor approach.

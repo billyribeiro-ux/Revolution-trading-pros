@@ -102,7 +102,7 @@ Status: ☐ todo · ◐ in progress · ☑ done · ⏸ blocked on owner gate ·
 
 **Goal:** stop active exposure; record irreversible decisions.
 
-- ☐ **Rotate** the superadmin password (`Davedicenso01!`) and the
+- ☐ **Rotate** the superadmin password (`<REDACTED-PASSWORD>`) and the
   Google API key (`AIzaSyBTC-…`). Out-of-band; owner/ops.
 - ☐ **R2 credential rotation** — carried open from CHANGELOG C-3.
 - ☐ **Bunny account** — owner engages Errol; blocks only live video

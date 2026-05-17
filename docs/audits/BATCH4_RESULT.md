@@ -75,7 +75,7 @@ List-view duration semantics display (`"10% off, once"` / `"forever"` / `"3 mont
 
 I cannot run the live Stripe + DB scenarios from here (need the local Docker stack, real Stripe Test Clocks, and operator interaction). Walk through the 12 below against a running local stack. Each scenario lists the exact commands to run and what to look for. Replace `$USER_ID`, `$PLAN_ID`, `$COUPON_ID`, `$ADMIN_TOKEN`, etc. with concrete values from your local DB.
 
-Local stack assumed: API on `http://localhost:8080`, frontend on `http://localhost:5173`, Postgres reachable as `psql $DATABASE_URL`. Admin login: `welberribeirodrums@gmail.com` (per local_dev_admin memory).
+Local stack assumed: API on `http://localhost:8080`, frontend on `http://localhost:5173`, Postgres reachable as `psql $DATABASE_URL`. Admin login: `<REDACTED-SUPERADMIN-EMAIL>` (per local_dev_admin memory).
 
 ### 1A — Re-subscribe creates a new row, leaves the cancelled one
 
