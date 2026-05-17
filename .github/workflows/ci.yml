@@ -22,7 +22,15 @@ jobs:
   frontend:
     name: Frontend (check + vitest + build)
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
+    # GitHub-hosted runners are memory-constrained (~7 GB). This is a very
+    # large Vite app (threlte/three.js, ~1.6k modules); `vite build` and
+    # vitest need a raised V8 heap or they OOM on the runner — the single
+    # difference vs the Cloudflare Pages build and local builds, which
+    # have more memory and pass. Job-level so build AND vitest get it
+    # (previously only `lint` raised the heap, via its npm script).
+    env:
+      NODE_OPTIONS: --max-old-space-size=6144
 
     steps:
       - uses: actions/checkout@v4
@@ -49,8 +57,13 @@ jobs:
       - name: Production build
         run: pnpm --filter revolution-svelte build
         env:
-          API_BASE_URL: <your-api-host>
-          BACKEND_URL: <your-api-host>
+          # `<your-api-host>` was a literal placeholder → an invalid URL
+          # for any build-time SSR/prerender fetch. localhost mirrors the
+          # proxy default and the exact condition under which the cold
+          # build is proven green (prerender fetch → clean ECONNREFUSED
+          # the pages tolerate; build still completes).
+          API_BASE_URL: http://localhost:8080
+          BACKEND_URL: http://localhost:8080
 
   # ───────────────────────────────────────────────────────────────────────
   # Frontend: end-to-end (Playwright, chromium only — fastest meaningful gate)
