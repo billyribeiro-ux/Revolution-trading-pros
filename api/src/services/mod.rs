@@ -21,7 +21,7 @@ pub mod order_service;
 // struct it defined was never instantiated; login uses
 // state.services.redis.check_login_rate_limit directly with fail-closed
 // behavior (auth.rs:649-695). Keeping unused multi-tier code added
-// confusion without security benefit. See SECURITY_GAPS_2026-04-29.md.
+// confusion without security benefit. See docs/audits/SECURITY_GAPS_2026-04-29.md.
 pub mod redis;
 pub mod room_analytics; // ICT 11+ Phase 5: Room Performance Analytics Service
 pub mod room_search; // ICT 7+ Phase 4: Full-Text Search for Room Content

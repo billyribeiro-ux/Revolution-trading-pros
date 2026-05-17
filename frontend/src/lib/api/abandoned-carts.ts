@@ -7,7 +7,7 @@
  * client. For now, exports are kept for git history; importers should not
  * call into this file in production code paths.
  *
- * See AUDIT_REPORT.md §10 Finding 2 + §12 Finding 1.
+ * See docs/audits/AUDIT_REPORT.md §10 Finding 2 + §12 Finding 1.
  */
 
 /**

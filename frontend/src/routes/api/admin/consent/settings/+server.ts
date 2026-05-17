@@ -2,7 +2,7 @@
  * Admin Consent Settings Proxy — GET only.
  *
  * FIX-2026-04-26: created to satisfy the `/admin/consent/settings` page,
- * which previously 404'd on every load (see ADMIN_FAILURE_DATA.md §9.5).
+ * which previously 404'd on every load (see docs/audits/ADMIN_FAILURE_DATA.md §9.5).
  *
  * Forwards `GET /api/admin/consent/settings` to the Rust backend, attaching
  * the canonical `rtp_access_token` cookie as a Bearer token.

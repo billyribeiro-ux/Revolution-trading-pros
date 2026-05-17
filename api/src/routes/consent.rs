@@ -1,6 +1,6 @@
 //! Consent Management Settings - ICT 11+ Principal Engineer Grade
 //! Created 2026-04-26 to satisfy the `/admin/consent/settings` admin page
-//! per ADMIN_FAILURE_DATA.md §9.5 (load/save/reset all 404).
+//! per docs/audits/ADMIN_FAILURE_DATA.md §9.5 (load/save/reset all 404).
 //!
 //! SECURITY: All endpoints require `AdminUser` authentication.
 //!

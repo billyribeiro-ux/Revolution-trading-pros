@@ -170,7 +170,7 @@ export const enterpriseUsersApi = {
 
 	stats: () => withEnterprise('users.stats', 'GET', () => usersApi.stats())
 	// FIX-H-5 (2026-04-29): impersonate adapter removed; usersApi.impersonate
-	// no longer exists. See SECURITY_GAPS_2026-04-29.md.
+	// no longer exists. See docs/audits/SECURITY_GAPS_2026-04-29.md.
 };
 
 /**

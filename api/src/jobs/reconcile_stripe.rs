@@ -4,7 +4,7 @@
 //! `user_memberships`. Missed webhooks, network failures, or in-flight updates can
 //! leave the two sources out of sync; this job is the backstop.
 //!
-//! Algorithm (per §14 of PAYMENTS_ARCHITECTURE_STANDARD.md):
+//! Algorithm (per §14 of docs/architecture/PAYMENTS_ARCHITECTURE_STANDARD.md):
 //!   1. Fetch all active/trialing/past_due subs from Stripe (paginated).
 //!   2. For each DB row with a stripe_subscription_id:
 //!      a. If the sub no longer appears in Stripe → mark cancelled, log.

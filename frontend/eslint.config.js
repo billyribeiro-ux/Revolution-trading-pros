@@ -19,6 +19,8 @@ export default [
 				ServiceWorkerGlobalScope: 'readonly',
 				FetchEvent: 'readonly',
 				Disposable: 'readonly',
+				// SvelteKit ambient namespace declared in src/app.d.ts
+				App: 'readonly',
 				$state: 'readonly',
 				$derived: 'readonly',
 				$effect: 'readonly',
@@ -202,6 +204,22 @@ export default [
 		}
 	},
 	prettier,
+	{
+		// Tests, e2e and one-off scripts are allowed to log freely. Production
+		// `src/**` code still goes through `no-console: warn` above.
+		files: [
+			'tests/**/*.{ts,js}',
+			'e2e/**/*.{ts,js}',
+			'scripts/**/*.{ts,js}',
+			'playwright.config.ts',
+			'src/**/__tests__/**/*.{ts,js}',
+			'src/**/*.test.ts',
+			'src/**/*.spec.ts'
+		],
+		rules: {
+			'no-console': 'off'
+		}
+	},
 	{
 		// FIX-2026-04-26: was also ignoring tests/** and scripts/** — narrowed to build
 		// output only so that tests and scripts are lintable. The TS-project-aware

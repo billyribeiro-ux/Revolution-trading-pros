@@ -441,14 +441,48 @@ async fn create_subscription(
         ));
     }
 
-    // Create Stripe checkout session if plan has stripe_price_id
+    // Create Stripe checkout session if plan has stripe_price_id.
+    // The Stripe-side subscription will fire `checkout.session.completed` →
+    // `customer.subscription.created` webhooks; the webhook handler in
+    // payments.rs is responsible for inserting the matching user_memberships
+    // row. Do not write user_memberships here.
     if let Some(ref stripe_price_id) = plan.stripe_price_id {
-        // TODO: Create Stripe checkout session
-        // For now, return a placeholder
+        let app_url = state.config.app_url.trim_end_matches('/');
+        let success_url = format!(
+            "{}/account/subscriptions?status=success&plan={}",
+            app_url, plan.slug
+        );
+        let cancel_url = format!("{}/account/subscriptions?status=cancel", app_url);
+
+        let checkout_url = state
+            .services
+            .stripe
+            .create_subscription_checkout(&user.email, stripe_price_id, &success_url, &cancel_url)
+            .await
+            .map_err(|e| {
+                tracing::error!(
+                    user_id = user.id,
+                    plan_id = plan.id,
+                    error = %e,
+                    "Failed to create Stripe subscription checkout session"
+                );
+                (
+                    StatusCode::BAD_GATEWAY,
+                    Json(json!({"error": "Failed to create Stripe checkout session"})),
+                )
+            })?;
+
+        tracing::info!(
+            user_id = user.id,
+            plan_id = plan.id,
+            stripe_price_id = stripe_price_id.as_str(),
+            "Created Stripe subscription checkout session"
+        );
+
         return Ok(Json(json!({
-            "checkout_url": format!("https://checkout.stripe.com/placeholder?price={}", stripe_price_id),
+            "checkout_url": checkout_url,
             "plan": plan,
-            "message": "Redirect to Stripe checkout"
+            "message": "Redirect to Stripe checkout",
         })));
     }
 

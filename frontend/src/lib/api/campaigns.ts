@@ -21,7 +21,7 @@
  * Until then, the campaigns page emits "Failed to load campaigns" toasts on every
  * mount.
  *
- * See AUDIT_REPORT.md §10 Finding 2 + ADMIN_DASHBOARD_REPORT.md (orphan API clients).
+ * See docs/audits/AUDIT_REPORT.md §10 Finding 2 + docs/audits/ADMIN_DASHBOARD_REPORT.md (orphan API clients).
  */
 
 import { get as _get } from 'svelte/store';

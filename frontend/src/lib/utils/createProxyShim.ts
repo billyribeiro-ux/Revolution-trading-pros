@@ -4,7 +4,7 @@
  * FIX-2026-04-26: SvelteKit's dev resolver returns 405 for POST/PUT/PATCH
  * to any sub-path under a directory that has its own `+server.ts`, never
  * reaching the catch-all `/api/[...path]/+server.ts`. Empirically reproducible
- * (see ADMIN_FAILURE_DATA.md §3a).
+ * (see docs/audits/ADMIN_FAILURE_DATA.md §3a).
  *
  * Workaround: each affected folder gets a sibling `[...rest]/+server.ts`
  * that uses this helper to delegate to the backend.

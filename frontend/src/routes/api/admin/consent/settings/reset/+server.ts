@@ -2,7 +2,7 @@
  * Admin Consent Settings — Reset-to-Defaults Proxy.
  *
  * FIX-2026-04-26: created to satisfy `POST /api/admin/consent/settings/reset`
- * for the `/admin/consent/settings` page (ADMIN_FAILURE_DATA.md §9.5).
+ * for the `/admin/consent/settings` page (docs/audits/ADMIN_FAILURE_DATA.md §9.5).
  *
  * The page sends an empty POST; we still forward whatever body is present so
  * future enhancements (e.g. partial reset) work without a proxy change.
