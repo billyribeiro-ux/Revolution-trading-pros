@@ -14,32 +14,20 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
+import { requireAdmin } from '$lib/server/auth';
 
 const API_URL =
 	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
-function authHeaderFrom({
-	cookies,
-	request
-}: {
-	cookies: { get: (name: string) => string | undefined };
-	request: Request;
-}): string | null {
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-	return token ? `Bearer ${token}` : null;
-}
-
-export const GET: RequestHandler = async ({ cookies, request }) => {
+export const GET: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const auth = `Bearer ${token}`;
 	try {
-		const auth = authHeaderFrom({ cookies, request });
-
 		const response = await fetch(`${API_URL}/api/admin/membership-plans`, {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
-				...(auth ? { Authorization: auth } : {})
+				Authorization: auth
 			}
 		});
 
@@ -66,13 +54,11 @@ export const GET: RequestHandler = async ({ cookies, request }) => {
  * Forwards to backend /api/admin/subscriptions/plans (the Rust CRUD root for
  * plans — see subscriptions_admin.rs::create_plan).
  */
-export const POST: RequestHandler = async ({ cookies, request }) => {
+export const POST: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const auth = `Bearer ${token}`;
 	try {
-		const auth = authHeaderFrom({ cookies, request });
-		if (!auth) {
-			return json({ error: 'Missing or invalid authorization header' }, { status: 401 });
-		}
-		const body = await request.json();
+		const body = await event.request.json();
 
 		const response = await fetch(`${API_URL}/api/admin/subscriptions/plans`, {
 			method: 'POST',

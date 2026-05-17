@@ -11,6 +11,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import { requireSuperadmin } from '$lib/server/auth';
 
 import { env } from '$env/dynamic/private';
 const BACKEND_URL =
@@ -60,8 +61,9 @@ function extractErrorMessage(data: unknown, fallback: string): string {
 	return fallback;
 }
 
-export const POST: RequestHandler = async ({ request, cookies }) => {
-	const body = await request.json();
+export const POST: RequestHandler = async (event) => {
+	const { token } = requireSuperadmin(event);
+	const body = await event.request.json();
 	const { ids } = body;
 
 	if (!ids || !Array.isArray(ids) || ids.length === 0) {
@@ -70,11 +72,6 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 			{ status: 400 }
 		);
 	}
-
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-	if (!token) error(401, 'Unauthorized');
 
 	const result = await callBackend('/api/admin/schedules/bulk-delete', {
 		method: 'POST',

@@ -17,22 +17,12 @@
  * @version 1.0.0
  */
 
-import { error as kitError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 import { env } from '$env/dynamic/private';
+import { requireAdmin } from '$lib/server/auth';
 const PROD_BACKEND =
 	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
-
-function tokenFrom(event: Parameters<RequestHandler>[0]): string {
-	const cookieToken = event.cookies.get('rtp_access_token');
-	const headerToken = event.request.headers
-		.get('Authorization')
-		?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-	if (!token) kitError(401, 'Unauthorized');
-	return token;
-}
 
 function buildUpstreamUrl(pathSegments: string, search: string): string {
 	const cleanPath = pathSegments ? `/${pathSegments}` : '';
@@ -41,9 +31,9 @@ function buildUpstreamUrl(pathSegments: string, search: string): string {
 
 async function proxy(
 	event: Parameters<RequestHandler>[0],
-	method: string
+	method: string,
+	token: string
 ): Promise<Response> {
-	const token = tokenFrom(event);
 	const url = buildUpstreamUrl(event.params.path ?? '', event.url.search);
 
 	const upstreamHeaders: Record<string, string> = {
@@ -90,8 +80,27 @@ async function proxy(
 	return new Response(buf, { status: response.status, headers: passHeaders });
 }
 
-export const GET: RequestHandler = (event) => proxy(event, 'GET');
-export const POST: RequestHandler = (event) => proxy(event, 'POST');
-export const PUT: RequestHandler = (event) => proxy(event, 'PUT');
-export const PATCH: RequestHandler = (event) => proxy(event, 'PATCH');
-export const DELETE: RequestHandler = (event) => proxy(event, 'DELETE');
+export const GET: RequestHandler = (event) => {
+	const { token } = requireAdmin(event);
+	return proxy(event, 'GET', token);
+};
+
+export const POST: RequestHandler = (event) => {
+	const { token } = requireAdmin(event);
+	return proxy(event, 'POST', token);
+};
+
+export const PUT: RequestHandler = (event) => {
+	const { token } = requireAdmin(event);
+	return proxy(event, 'PUT', token);
+};
+
+export const PATCH: RequestHandler = (event) => {
+	const { token } = requireAdmin(event);
+	return proxy(event, 'PATCH', token);
+};
+
+export const DELETE: RequestHandler = (event) => {
+	const { token } = requireAdmin(event);
+	return proxy(event, 'DELETE', token);
+};

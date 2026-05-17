@@ -8,19 +8,20 @@ import type { RequestHandler } from '@sveltejs/kit';
 
 // Production fallback - Rust API on Fly.io
 import { env } from '$env/dynamic/private';
+import { requireAdmin } from '$lib/server/auth';
 const BACKEND_URL =
 	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
-export const GET: RequestHandler = async ({ cookies, fetch }) => {
+export const GET: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const { fetch } = event;
 	try {
-		const token = cookies.get('rtp_access_token');
-
 		const response = await fetch(`${BACKEND_URL}/api/admin/subscriptions/plans/stats`, {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
 				Accept: 'application/json',
-				...(token ? { Authorization: `Bearer ${token}` } : {})
+				Authorization: `Bearer ${token}`
 			}
 		});
 

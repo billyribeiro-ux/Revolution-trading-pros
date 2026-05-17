@@ -12,6 +12,7 @@
 
 import { json, error as kitError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import { requireAdmin } from '$lib/server/auth';
 
 import { env } from '$env/dynamic/private';
 const BACKEND_URL =
@@ -71,13 +72,9 @@ function extractErrorMessage(data: unknown, fallback: string): string {
 // GET - Get single schedule by ID
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const GET: RequestHandler = async ({ params, request, cookies }) => {
-	const id = parseInt(params.id || '0');
-
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-	if (!token) kitError(401, 'Unauthorized');
+export const GET: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const id = parseInt(event.params.id || '0');
 
 	const result = await callBackend(`/api/admin/schedules/${id}`, {
 		headers: { Authorization: `Bearer ${token}` }
@@ -101,14 +98,10 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
 // PUT - Update schedule
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const PUT: RequestHandler = async ({ params, request, cookies }) => {
-	const id = parseInt(params.id || '0');
-	const body = await request.json();
-
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-	if (!token) kitError(401, 'Unauthorized');
+export const PUT: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const id = parseInt(event.params.id || '0');
+	const body = await event.request.json();
 
 	const result = await callBackend(`/api/admin/schedules/${id}`, {
 		method: 'PUT',
@@ -138,13 +131,9 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 // DELETE - Delete schedule
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const DELETE: RequestHandler = async ({ params, request, cookies }) => {
-	const id = parseInt(params.id || '0');
-
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-	if (!token) kitError(401, 'Unauthorized');
+export const DELETE: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const id = parseInt(event.params.id || '0');
 
 	const result = await callBackend(`/api/admin/schedules/${id}`, {
 		method: 'DELETE',

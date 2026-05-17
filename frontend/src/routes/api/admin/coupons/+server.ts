@@ -10,6 +10,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 
 // Production fallback - Rust API on Fly.io
 import { env } from '$env/dynamic/private';
+import { requireAdmin } from '$lib/server/auth';
 const PROD_BACKEND =
 	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
@@ -27,18 +28,16 @@ function getBackendUrl(): string {
 	return PROD_BACKEND;
 }
 
-export const GET: RequestHandler = async ({ request, cookies }) => {
+export const GET: RequestHandler = async (event) => {
+	// PRINCIPAL-2026-05-17 (audit FULL_REPO_AUDIT_2026-05-17 §P2-F): replaced the
+	// "no token → return EMPTY_DATA 200" anti-pattern (which masked auth state
+	// from the client and let the list page render "No coupons yet" for an
+	// unauthenticated/expired session) with the canonical RBAC gate.
+	// `requireAdmin` throws `error(401|403)` so the proxy short-circuits with a
+	// real status, exactly like every other admin proxy.
+	const { token } = requireAdmin(event);
 	try {
 		const backendUrl = getBackendUrl();
-		// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
-		// Old: const authHeader = request.headers.get('Authorization') || '';
-		const cookieToken = cookies.get('rtp_access_token');
-		const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-		const token = cookieToken || headerToken;
-		// If no auth, return empty data silently (preserve original behavior)
-		if (!token) {
-			return json(EMPTY_DATA);
-		}
 		const authHeader = `Bearer ${token}`;
 
 		const response = await fetch(`${backendUrl}/api/admin/coupons`, {
@@ -82,17 +81,11 @@ export const GET: RequestHandler = async ({ request, cookies }) => {
 	}
 };
 
-export const POST: RequestHandler = async ({ request, cookies }) => {
+export const POST: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const { request } = event;
 	try {
 		const backendUrl = getBackendUrl();
-		// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
-		// Old: const authHeader = request.headers.get('Authorization') || '';
-		const cookieToken = cookies.get('rtp_access_token');
-		const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-		const token = cookieToken || headerToken;
-		if (!token) {
-			return json({ message: 'Unauthorized' }, { status: 401 });
-		}
 		const authHeader = `Bearer ${token}`;
 		const body = await request.json();
 

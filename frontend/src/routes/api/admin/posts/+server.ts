@@ -11,6 +11,7 @@ import { json, error, isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 import { env } from '$env/dynamic/private';
+import { requireAdmin } from '$lib/server/auth';
 const PROD_BACKEND =
 	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
@@ -39,14 +40,9 @@ async function fetchFromBackend(
 }
 
 // GET - List posts
-export const GET: RequestHandler = async ({ url, request, cookies }) => {
-	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to
-	// Authorization header for legacy adminFetch callers that still ship it.
-	// Old: const authHeader = request.headers.get('Authorization') || '';
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-	if (!token) error(401, 'Unauthorized');
+export const GET: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const { url } = event;
 	const authHeader = `Bearer ${token}`;
 	const queryParams = url.searchParams.toString();
 	const endpoint = `/admin/posts${queryParams ? `?${queryParams}` : ''}`;
@@ -69,13 +65,9 @@ export const GET: RequestHandler = async ({ url, request, cookies }) => {
 };
 
 // POST - Create new post
-export const POST: RequestHandler = async ({ request, cookies }) => {
-	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
-	// Old: const authHeader = request.headers.get('Authorization') || '';
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-	if (!token) error(401, 'Unauthorized');
+export const POST: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const { request } = event;
 	const authHeader = `Bearer ${token}`;
 
 	try {
@@ -108,13 +100,9 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 };
 
 // PUT - Update post
-export const PUT: RequestHandler = async ({ request, url, cookies }) => {
-	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
-	// Old: const authHeader = request.headers.get('Authorization') || '';
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-	if (!token) error(401, 'Unauthorized');
+export const PUT: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const { request, url } = event;
 	const authHeader = `Bearer ${token}`;
 	const postId = url.searchParams.get('id');
 
@@ -151,13 +139,9 @@ export const PUT: RequestHandler = async ({ request, url, cookies }) => {
 };
 
 // DELETE - Delete post
-export const DELETE: RequestHandler = async ({ url, request, cookies }) => {
-	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
-	// Old: const authHeader = request.headers.get('Authorization') || '';
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-	if (!token) error(401, 'Unauthorized');
+export const DELETE: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const { url } = event;
 	const authHeader = `Bearer ${token}`;
 	const postId = url.searchParams.get('id');
 

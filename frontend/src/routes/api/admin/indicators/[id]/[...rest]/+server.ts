@@ -17,15 +17,10 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
+import { requireAdmin } from '$lib/server/auth';
 
 const BACKEND_URL =
 	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
-
-function extractToken(cookies: { get: (k: string) => string | undefined }, request: Request) {
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	return cookieToken || headerToken || null;
-}
 
 async function proxy(method: string, backendPath: string, token: string, request: Request) {
 	const headers: Record<string, string> = {
@@ -76,9 +71,9 @@ function backendPath(id: string, rest: string) {
 	return `/api/admin/indicators/${id}/${rest}`;
 }
 
-export const GET: RequestHandler = async ({ params, cookies, request, url }) => {
-	const token = extractToken(cookies, request);
-	if (!token) return json({ success: false, error: 'Authentication required' }, { status: 401 });
+export const GET: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const { params, request, url } = event;
 
 	const path = backendPath(params.id, params.rest ?? '') + (url.search || '');
 	try {
@@ -89,9 +84,9 @@ export const GET: RequestHandler = async ({ params, cookies, request, url }) => 
 	}
 };
 
-export const POST: RequestHandler = async ({ params, cookies, request, url }) => {
-	const token = extractToken(cookies, request);
-	if (!token) return json({ success: false, error: 'Authentication required' }, { status: 401 });
+export const POST: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const { params, request, url } = event;
 
 	const path = backendPath(params.id, params.rest ?? '') + (url.search || '');
 	try {
@@ -102,9 +97,9 @@ export const POST: RequestHandler = async ({ params, cookies, request, url }) =>
 	}
 };
 
-export const PUT: RequestHandler = async ({ params, cookies, request, url }) => {
-	const token = extractToken(cookies, request);
-	if (!token) return json({ success: false, error: 'Authentication required' }, { status: 401 });
+export const PUT: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const { params, request, url } = event;
 
 	const path = backendPath(params.id, params.rest ?? '') + (url.search || '');
 	try {
@@ -115,9 +110,9 @@ export const PUT: RequestHandler = async ({ params, cookies, request, url }) => 
 	}
 };
 
-export const PATCH: RequestHandler = async ({ params, cookies, request, url }) => {
-	const token = extractToken(cookies, request);
-	if (!token) return json({ success: false, error: 'Authentication required' }, { status: 401 });
+export const PATCH: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const { params, request, url } = event;
 
 	const path = backendPath(params.id, params.rest ?? '') + (url.search || '');
 	try {
@@ -128,9 +123,9 @@ export const PATCH: RequestHandler = async ({ params, cookies, request, url }) =
 	}
 };
 
-export const DELETE: RequestHandler = async ({ params, cookies, request, url }) => {
-	const token = extractToken(cookies, request);
-	if (!token) return json({ success: false, error: 'Authentication required' }, { status: 401 });
+export const DELETE: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const { params, request, url } = event;
 
 	const path = backendPath(params.id, params.rest ?? '') + (url.search || '');
 	try {

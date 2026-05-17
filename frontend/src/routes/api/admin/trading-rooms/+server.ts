@@ -11,6 +11,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 import { env } from '$env/dynamic/private';
+import { requireAdmin } from '$lib/server/auth';
 const PROD_BACKEND =
 	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
@@ -39,13 +40,9 @@ async function fetchFromBackend(
 }
 
 // GET - List trading rooms
-export const GET: RequestHandler = async ({ url, request, cookies }) => {
-	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
-	// Old: const authHeader = request.headers.get('Authorization') || '';
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-	if (!token) error(401, 'Unauthorized');
+export const GET: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const { url } = event;
 	const authHeader = `Bearer ${token}`;
 	const queryParams = url.searchParams.toString();
 	const endpoint = `/trading-rooms${queryParams ? `?${queryParams}` : ''}`;
@@ -66,13 +63,9 @@ export const GET: RequestHandler = async ({ url, request, cookies }) => {
 };
 
 // POST - Create trading room
-export const POST: RequestHandler = async ({ request, cookies }) => {
-	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
-	// Old: const authHeader = request.headers.get('Authorization') || '';
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-	if (!token) error(401, 'Unauthorized');
+export const POST: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const { request } = event;
 	const authHeader = `Bearer ${token}`;
 
 	try {

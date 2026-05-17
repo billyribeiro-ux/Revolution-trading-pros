@@ -17,6 +17,7 @@ import { json, error, isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 import { env } from '$env/dynamic/private';
+import { requireAdmin } from '$lib/server/auth';
 const PROD_BACKEND =
 	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
@@ -50,16 +51,10 @@ async function fetchFromBackend(
 	}
 }
 
-function readAuth(request: Request, cookies: Parameters<RequestHandler>[0]['cookies']): string {
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-	if (!token) error(401, 'Unauthorized');
-	return `Bearer ${token}`;
-}
-
-export const GET: RequestHandler = async ({ url, request, cookies }) => {
-	const authHeader = readAuth(request, cookies);
+export const GET: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const { url } = event;
+	const authHeader = `Bearer ${token}`;
 	const queryParams = url.searchParams.toString();
 	// Backend exposes forms under /api/forms (admin scope is enforced by
 	// the bearer token + role check on the Rust side).
@@ -79,8 +74,10 @@ export const GET: RequestHandler = async ({ url, request, cookies }) => {
 	return json(data);
 };
 
-export const POST: RequestHandler = async ({ request, cookies }) => {
-	const authHeader = readAuth(request, cookies);
+export const POST: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const { request } = event;
+	const authHeader = `Bearer ${token}`;
 	try {
 		const body = await request.json();
 		const { data, status } = await fetchFromBackend('/forms', {

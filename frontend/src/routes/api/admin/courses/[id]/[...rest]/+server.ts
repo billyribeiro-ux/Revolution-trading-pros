@@ -23,25 +23,25 @@
  *   - POST        /api/admin/courses/<id>/video-upload
  */
 
-import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
+import { requireAdmin } from '$lib/server/auth';
 
 const API_URL =
 	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 const handler =
 	(method: string): RequestHandler =>
-	async ({ params, request, cookies, fetch, url }) => {
-		const cookieToken = cookies.get('rtp_access_token');
-		if (!cookieToken) error(401, 'Unauthorized');
+	async (event) => {
+		const { token } = requireAdmin(event);
+		const { params, request, fetch, url } = event;
 
 		const { id } = params as { id: string; rest?: string };
 		const rest = (params as { rest?: string }).rest ?? '';
 		const targetPath = `/api/admin/courses/${id}${rest ? `/${rest}` : ''}${url.search}`;
 
 		const headers: Record<string, string> = {
-			Authorization: `Bearer ${cookieToken}`
+			Authorization: `Bearer ${token}`
 		};
 		const ct = request.headers.get('content-type');
 		if (ct) headers['Content-Type'] = ct;

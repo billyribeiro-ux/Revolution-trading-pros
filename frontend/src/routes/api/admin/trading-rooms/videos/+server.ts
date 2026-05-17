@@ -7,8 +7,9 @@
  * @version 1.0.0 - December 2025
  */
 
-import { json, error } from '@sveltejs/kit';
+import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import { requireAdmin } from '$lib/server/auth';
 
 // Production fallback - Rust API on Fly.io
 import { env } from '$env/dynamic/private';
@@ -145,7 +146,9 @@ async function fetchFromBackend(endpoint: string, options?: RequestInit): Promis
 }
 
 // GET - List videos
-export const GET: RequestHandler = async ({ url, request, cookies }) => {
+export const GET: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const { url } = event;
 	// FIX (audit 2026-05-16, TRADING_ROOMS_BACKEND_GAPS Gap 2): the old code
 	// forwarded `url.searchParams.toString()` verbatim. The frontend sends
 	// `published_only` / `trading_room_id` / `trader_id`, but the Rust
@@ -177,13 +180,6 @@ export const GET: RequestHandler = async ({ url, request, cookies }) => {
 	const roomSlug = url.searchParams.get('room_slug');
 	if (roomSlug) backendQuery.set('room_slug', roomSlug);
 
-	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
-	// Old: headers: { Authorization: request.headers.get('Authorization') || '' }
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-	if (!token) error(401, 'Unauthorized');
-
 	// Try backend first
 	const backendData = await fetchFromBackend(
 		`/api/admin/trading-rooms/videos?${backendQuery.toString()}`,
@@ -211,15 +207,9 @@ export const GET: RequestHandler = async ({ url, request, cookies }) => {
 };
 
 // POST - Create video
-export const POST: RequestHandler = async ({ request, cookies }) => {
-	const body = await request.json();
-
-	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
-	// Old: headers: { Authorization: request.headers.get('Authorization') || '' }
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-	if (!token) error(401, 'Unauthorized');
+export const POST: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const body = await event.request.json();
 
 	// Try backend first
 	const backendData = await fetchFromBackend('/api/admin/trading-rooms/videos', {

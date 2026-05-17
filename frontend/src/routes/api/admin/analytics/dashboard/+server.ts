@@ -7,12 +7,13 @@
  * @version 1.0.0 - December 2025
  */
 
-import { json, error } from '@sveltejs/kit';
+import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 // Production fallback - Rust API on Fly.io
 import { env } from '$env/dynamic/private';
 import { isValidPeriod } from '$lib/server/analytics-proxy';
+import { requireAdmin } from '$lib/server/auth';
 const BACKEND_URL =
 	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
@@ -74,20 +75,15 @@ function generateBuiltInAnalytics(_period: string) {
 	};
 }
 
-export const GET: RequestHandler = async ({ url, request, cookies }) => {
+export const GET: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const { url } = event;
 	// FIX-2026-04-26 (audit 08-analytics §P1-8 / §P2-9):
 	// Validate `period` against the canonical allowlist before string-concat
 	// into the upstream URL. Previously `period=30d&secret=true` would pass
 	// straight through.
 	const rawPeriod = url.searchParams.get('period');
 	const period = isValidPeriod(rawPeriod) ? rawPeriod! : '30d';
-
-	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
-	// Old: headers: { Authorization: request.headers.get('Authorization') || '' }
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-	if (!token) error(401, 'Unauthorized');
 
 	// Try to get real analytics from backend first
 	const params = new URLSearchParams({ period });

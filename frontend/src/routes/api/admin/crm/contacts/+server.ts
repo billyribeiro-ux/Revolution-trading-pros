@@ -12,6 +12,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 
 // Production fallback - Rust API on Fly.io
 import { env } from '$env/dynamic/private';
+import { requireAdmin } from '$lib/server/auth';
 const BACKEND_URL =
 	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
@@ -41,12 +42,9 @@ function getAuthHeaders(token: string): HeadersInit {
 }
 
 // GET - List contacts (proxies to backend)
-export const GET: RequestHandler = async ({ url, request, cookies }) => {
-	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-	if (!token) error(401, 'Unauthorized');
+export const GET: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const { url } = event;
 	try {
 		// Forward query params to backend
 		const queryParams = new URLSearchParams();
@@ -119,12 +117,9 @@ export const GET: RequestHandler = async ({ url, request, cookies }) => {
 };
 
 // POST - Create contact (proxies to backend)
-export const POST: RequestHandler = async ({ request, cookies }) => {
-	// FIX-2026-04-26: prefer canonical rtp_access_token cookie, fall back to header.
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-	if (!token) error(401, 'Unauthorized');
+export const POST: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const { request } = event;
 	try {
 		const body = await request.json();
 

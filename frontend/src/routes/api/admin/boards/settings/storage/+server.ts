@@ -22,6 +22,7 @@
 
 import { json, error as kitError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import { requireAdmin, requireSuperadmin } from '$lib/server/auth';
 
 import { env } from '$env/dynamic/private';
 const BACKEND_URL =
@@ -119,11 +120,8 @@ function stripUnchangedSecrets(body: Record<string, unknown>): Record<string, un
 	return next;
 }
 
-export const GET: RequestHandler = async ({ request, cookies }) => {
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-	if (!token) kitError(401, 'Unauthorized');
+export const GET: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
 
 	const result = await callBackend('/api/admin/boards/settings/storage', {
 		method: 'GET',
@@ -141,11 +139,9 @@ export const GET: RequestHandler = async ({ request, cookies }) => {
 	return json({ data: null, _degraded: true }, { status: 503 });
 };
 
-export const PUT: RequestHandler = async ({ request, cookies }) => {
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-	if (!token) kitError(401, 'Unauthorized');
+export const PUT: RequestHandler = async (event) => {
+	const { token } = requireSuperadmin(event);
+	const { request } = event;
 
 	let body: Record<string, unknown>;
 	try {

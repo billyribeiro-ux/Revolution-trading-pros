@@ -10,22 +10,10 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
+import { requireAdmin } from '$lib/server/auth';
 
 const API_URL =
 	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
-
-function authHeaderFrom({
-	cookies,
-	request
-}: {
-	cookies: { get: (name: string) => string | undefined };
-	request: Request;
-}): string | null {
-	const cookieToken = cookies.get('rtp_access_token');
-	const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-	const token = cookieToken || headerToken;
-	return token ? `Bearer ${token}` : null;
-}
 
 async function relayResponse(response: Response): Promise<Response> {
 	const text = await response.text();
@@ -40,9 +28,10 @@ async function relayResponse(response: Response): Promise<Response> {
 	}
 }
 
-export const GET: RequestHandler = async ({ url, cookies, request }) => {
-	const auth = authHeaderFrom({ cookies, request });
-	if (!auth) return json({ error: 'Missing or invalid authorization header' }, { status: 401 });
+export const GET: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const { url } = event;
+	const auth = `Bearer ${token}`;
 	try {
 		const qs = url.search ? url.search : '';
 		const response = await fetch(`${API_URL}/api/admin/subscriptions/plans${qs}`, {
@@ -60,11 +49,11 @@ export const GET: RequestHandler = async ({ url, cookies, request }) => {
 	}
 };
 
-export const POST: RequestHandler = async ({ cookies, request }) => {
-	const auth = authHeaderFrom({ cookies, request });
-	if (!auth) return json({ error: 'Missing or invalid authorization header' }, { status: 401 });
+export const POST: RequestHandler = async (event) => {
+	const { token } = requireAdmin(event);
+	const auth = `Bearer ${token}`;
 	try {
-		const body = await request.json();
+		const body = await event.request.json();
 		const response = await fetch(`${API_URL}/api/admin/subscriptions/plans`, {
 			method: 'POST',
 			headers: {
