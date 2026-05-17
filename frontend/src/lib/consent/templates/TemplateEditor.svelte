@@ -21,13 +21,24 @@
 
 	let { template, isNew = false, onSave, onCancel, onPreview }: Props = $props();
 
-	// Svelte 5: Reactive state using $state() rune - initialized with empty structure
-	let editedTemplate: BannerTemplate = $state({} as BannerTemplate);
-
-	// Sync template prop to editedTemplate state
-	$effect(() => {
-		editedTemplate = JSON.parse(JSON.stringify(template));
-	});
+	// One-time deep clone of the incoming template into local editable state.
+	//
+	// FIX (audit 2026-05-16, Phase 1): the previous `$effect(() => {
+	// editedTemplate = JSON.parse(JSON.stringify(template)); })` re-ran on
+	// EVERY reactive read of `template`, silently discarding the admin's
+	// in-progress edits whenever the parent re-rendered. CLAUDE.md landmine:
+	// "parent-passed prop without proper sync -> child edits silently lost".
+	//
+	// The clone now runs exactly once at construction. To load a *different*
+	// template, the parent wraps this component in `{#key editingTemplate.id}`
+	// so Svelte destroys + reinstantiates it (per the {#key} docs) — a fresh
+	// editor for a new template, but typing is never clobbered mid-edit.
+	//
+	// The one-time `template` read is deliberate (we want only the initial
+	// value; the {#key} remount supplies new ones), so the
+	// state_referenced_locally hint is intentionally suppressed here.
+	// svelte-ignore state_referenced_locally
+	let editedTemplate: BannerTemplate = $state(JSON.parse(JSON.stringify(template)));
 
 	// Svelte 5: Editor tabs state
 	type EditorTab = 'layout' | 'colors' | 'typography' | 'copy' | 'buttons' | 'advanced';

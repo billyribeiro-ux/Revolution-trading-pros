@@ -198,7 +198,9 @@
 		indicator.slug = value;
 		slugEdited = value.trim().length > 0;
 	}
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	// `void` reference keeps `onSlugInput` from tripping no-unused-vars while
+	// the slug-input field that should call it is still TODO (orphaned handler;
+	// tracked for a follow-up — not wired here to keep this PR scoped).
 	void onSlugInput;
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -285,7 +287,8 @@
 			// and the admin retries; never silently persist a transient blob URL.
 			console.error('Server upload failed:', error?.message ?? error);
 			throw new Error(
-				`Upload failed: ${error?.message ?? 'unknown error'}. Please retry — the file was not saved.`
+				`Upload failed: ${error?.message ?? 'unknown error'}. Please retry — the file was not saved.`,
+				{ cause: error }
 			);
 		}
 	}

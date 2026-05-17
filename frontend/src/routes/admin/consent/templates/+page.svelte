@@ -288,13 +288,19 @@
 
 	<!-- Editor -->
 	{#if showEditor && editingTemplate}
-		<TemplateEditor
-			template={editingTemplate}
-			isNew={isCreatingNew}
-			onSave={handleSaveTemplate}
-			onCancel={handleCancelEdit}
-			onPreview={handleEditorPreview}
-		/>
+		<!-- {#key} remount: selecting a *different* template tears down and
+		     rebuilds the editor with a fresh clone (see TemplateEditor.svelte
+		     one-time-init comment). Without this, the child's one-time init
+		     would keep stale data when switching templates. -->
+		{#key editingTemplate.id}
+			<TemplateEditor
+				template={editingTemplate}
+				isNew={isCreatingNew}
+				onSave={handleSaveTemplate}
+				onCancel={handleCancelEdit}
+				onPreview={handleEditorPreview}
+			/>
+		{/key}
 	{/if}
 
 	<!-- Preview Mode Banner -->
