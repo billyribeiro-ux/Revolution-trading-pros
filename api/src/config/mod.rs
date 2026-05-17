@@ -1,6 +1,160 @@
 //! Application configuration
 
 use anyhow::{Context, Result};
+use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
+
+/// A single IPv4 or IPv6 CIDR block, used for the trusted-proxy allowlist.
+///
+/// P1-3 (FULL_REPO_AUDIT_2026-05-17): hand-rolled (no `ipnet` dependency) —
+/// containment is a fixed-width prefix-bit comparison, ~30 lines, fully
+/// unit-tested. The whole point of the trusted-proxy check is correctness
+/// under adversarial input, so the algorithm is kept here, small and visible,
+/// rather than behind a transitive crate.
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub enum IpCidr {
+    /// Network base address (host bits already zeroed) + prefix length 0..=32.
+    V4 { base: u32, prefix: u8 },
+    /// Network base address (host bits already zeroed) + prefix length 0..=128.
+    V6 { base: u128, prefix: u8 },
+}
+
+impl IpCidr {
+    /// Parse a single CIDR string. A bare IP (no `/`) is treated as a
+    /// host route (`/32` for IPv4, `/128` for IPv6). Host bits beyond the
+    /// prefix are masked off so equality/containment is canonical.
+    pub fn parse(s: &str) -> Result<Self, String> {
+        let s = s.trim();
+        let (addr_part, prefix_part) = match s.split_once('/') {
+            Some((a, p)) => (a, Some(p)),
+            None => (s, None),
+        };
+
+        let addr: IpAddr = addr_part
+            .parse()
+            .map_err(|_| format!("invalid IP address in CIDR {s:?}"))?;
+
+        match addr {
+            IpAddr::V4(v4) => {
+                let prefix = match prefix_part {
+                    Some(p) => p
+                        .parse::<u8>()
+                        .map_err(|_| format!("invalid prefix in CIDR {s:?}"))?,
+                    None => 32,
+                };
+                if prefix > 32 {
+                    return Err(format!("IPv4 prefix out of range in CIDR {s:?}"));
+                }
+                let bits = u32::from(v4);
+                let mask = ipv4_mask(prefix);
+                Ok(IpCidr::V4 {
+                    base: bits & mask,
+                    prefix,
+                })
+            }
+            IpAddr::V6(v6) => {
+                let prefix = match prefix_part {
+                    Some(p) => p
+                        .parse::<u8>()
+                        .map_err(|_| format!("invalid prefix in CIDR {s:?}"))?,
+                    None => 128,
+                };
+                if prefix > 128 {
+                    return Err(format!("IPv6 prefix out of range in CIDR {s:?}"));
+                }
+                let bits = u128::from(v6);
+                let mask = ipv6_mask(prefix);
+                Ok(IpCidr::V6 {
+                    base: bits & mask,
+                    prefix,
+                })
+            }
+        }
+    }
+
+    /// True iff `ip` falls inside this CIDR block.
+    ///
+    /// IPv4-mapped IPv6 peers (`::ffff:a.b.c.d`, the form a dual-stack
+    /// listener reports for IPv4 clients) are unwrapped so an operator can
+    /// express the allowlist in plain IPv4 and still match real IPv4 hops.
+    pub fn contains(&self, ip: IpAddr) -> bool {
+        let ip = normalize_ip(ip);
+        match (self, ip) {
+            (IpCidr::V4 { base, prefix }, IpAddr::V4(v4)) => {
+                let mask = ipv4_mask(*prefix);
+                (u32::from(v4) & mask) == *base
+            }
+            (IpCidr::V6 { base, prefix }, IpAddr::V6(v6)) => {
+                let mask = ipv6_mask(*prefix);
+                (u128::from(v6) & mask) == *base
+            }
+            // Cross-family never matches (an IPv4 hop is not in an IPv6 block).
+            _ => false,
+        }
+    }
+}
+
+impl std::fmt::Debug for IpCidr {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            IpCidr::V4 { base, prefix } => {
+                write!(f, "{}/{}", Ipv4Addr::from(*base), prefix)
+            }
+            IpCidr::V6 { base, prefix } => {
+                write!(f, "{}/{}", Ipv6Addr::from(*base), prefix)
+            }
+        }
+    }
+}
+
+/// IPv4 netmask for a prefix length. `prefix == 0` yields an all-zero
+/// mask (the `<< 32` shift is UB in Rust for `u32`, so it is special-cased).
+fn ipv4_mask(prefix: u8) -> u32 {
+    if prefix == 0 {
+        0
+    } else {
+        u32::MAX << (32 - prefix as u32)
+    }
+}
+
+/// IPv6 netmask for a prefix length. `prefix == 0` special-cased for the
+/// same overflow-shift reason as the IPv4 helper.
+fn ipv6_mask(prefix: u8) -> u128 {
+    if prefix == 0 {
+        0
+    } else {
+        u128::MAX << (128 - prefix as u32)
+    }
+}
+
+/// Collapse an IPv4-mapped IPv6 address (`::ffff:0:0/96`) back to its
+/// IPv4 form so a single allowlist entry covers both representations.
+fn normalize_ip(ip: IpAddr) -> IpAddr {
+    match ip {
+        IpAddr::V6(v6) => match v6.to_ipv4_mapped() {
+            Some(v4) => IpAddr::V4(v4),
+            None => IpAddr::V6(v6),
+        },
+        v4 => v4,
+    }
+}
+
+/// Parse the `TRUSTED_PROXY_CIDRS` env value (comma-separated CIDRs).
+///
+/// Empty / unset / all-blank → empty Vec, which the resolver treats as
+/// "trust NO proxy" (XFF/X-Real-IP are ignored entirely). A malformed
+/// entry is a hard configuration error: silently dropping it would
+/// re-open the spoofing hole this fix closes.
+fn parse_trusted_proxy_cidrs(raw: &str) -> Result<Vec<IpCidr>> {
+    raw.split(',')
+        .map(str::trim)
+        .filter(|s| !s.is_empty())
+        .map(|s| {
+            IpCidr::parse(s).map_err(|msg| {
+                anyhow::anyhow!("TRUSTED_PROXY_CIDRS contains an invalid entry: {msg}")
+            })
+        })
+        .collect()
+}
 
 /// Application configuration loaded from environment variables
 #[derive(Clone)]
@@ -33,6 +187,13 @@ pub struct Config {
 
     // CORS
     pub cors_origins: Vec<String>,
+
+    /// P1-3 (FULL_REPO_AUDIT_2026-05-17): trusted reverse-proxy / load-balancer
+    /// CIDR allowlist, parsed from `TRUSTED_PROXY_CIDRS` (comma-separated,
+    /// IPv4 + IPv6). Empty/unset = trust NO proxy → `X-Forwarded-For` /
+    /// `X-Real-IP` are ignored and the real TCP peer is used. Non-secret
+    /// (it's network topology, not a credential) so it is printed in Debug.
+    pub trusted_proxy_cidrs: Vec<IpCidr>,
 
     // Email (Postmark)
     pub postmark_token: Option<String>,
@@ -94,6 +255,8 @@ impl std::fmt::Debug for Config {
             .field("stripe_webhook_secret", &"[REDACTED]")
             // Non-sensitive: CORS
             .field("cors_origins", &self.cors_origins)
+            // Non-sensitive: network topology, not a credential.
+            .field("trusted_proxy_cidrs", &self.trusted_proxy_cidrs)
             // Sensitive: Postmark token
             .field(
                 "postmark_token",
@@ -240,6 +403,14 @@ impl Config {
                 .split(',')
                 .map(|s| s.trim().to_string())
                 .collect(),
+
+            // P1-3 (FULL_REPO_AUDIT_2026-05-17): trusted-proxy allowlist.
+            // Hard-fail on a malformed entry — a typo here must not silently
+            // degrade to "trust everything" / "trust nothing" without notice.
+            trusted_proxy_cidrs: parse_trusted_proxy_cidrs(
+                &std::env::var("TRUSTED_PROXY_CIDRS").unwrap_or_default(),
+            )
+            .context("Invalid TRUSTED_PROXY_CIDRS")?,
 
             postmark_token: std::env::var("POSTMARK_TOKEN")
                 .ok()
@@ -452,6 +623,7 @@ mod tests {
             stripe_publishable_key: format!("pk_live_{}", body),
             stripe_webhook_secret: format!("whsec_{}", body),
             cors_origins: vec![],
+            trusted_proxy_cidrs: vec![],
             postmark_token: None,
             from_email: "n@e".to_string(),
             app_url: "https://example.com".to_string(),
@@ -588,5 +760,105 @@ mod tests {
         let mut cfg = live_config();
         cfg.jwt_secret = "please-changeme-this-is-not-a-real-secret-yet-no-no".to_string();
         cfg.validate_production_secrets();
+    }
+
+    // ── P1-3 (FULL_REPO_AUDIT_2026-05-17): IpCidr containment primitive ──
+    //
+    // The spoof-resistant client-IP resolver is end-to-end tested in
+    // tests/client_ip_test.rs. These unit tests pin the CIDR math itself
+    // (boundary prefixes, /0, /32, /128, IPv4-mapped IPv6, cross-family).
+
+    fn ip(s: &str) -> std::net::IpAddr {
+        s.parse().unwrap()
+    }
+
+    #[test]
+    fn cidr_parse_bare_ip_is_host_route() {
+        assert_eq!(
+            IpCidr::parse("10.0.0.5").unwrap(),
+            IpCidr::V4 {
+                base: u32::from(std::net::Ipv4Addr::new(10, 0, 0, 5)),
+                prefix: 32
+            }
+        );
+        let v6 = IpCidr::parse("2001:db8::1").unwrap();
+        assert!(matches!(v6, IpCidr::V6 { prefix: 128, .. }));
+    }
+
+    #[test]
+    fn cidr_v4_containment_and_masking() {
+        let net = IpCidr::parse("10.0.0.0/8").unwrap();
+        assert!(net.contains(ip("10.255.255.255")));
+        assert!(net.contains(ip("10.0.0.1")));
+        assert!(!net.contains(ip("11.0.0.1")));
+        assert!(!net.contains(ip("9.255.255.255")));
+
+        // Host bits in the spec are masked off → canonical base.
+        let masked = IpCidr::parse("10.1.2.3/8").unwrap();
+        assert!(masked.contains(ip("10.9.9.9")));
+
+        // /32 is an exact host match.
+        let host = IpCidr::parse("192.168.1.50/32").unwrap();
+        assert!(host.contains(ip("192.168.1.50")));
+        assert!(!host.contains(ip("192.168.1.51")));
+    }
+
+    #[test]
+    fn cidr_v4_zero_prefix_matches_everything() {
+        let any = IpCidr::parse("0.0.0.0/0").unwrap();
+        assert!(any.contains(ip("8.8.8.8")));
+        assert!(any.contains(ip("255.255.255.255")));
+        assert!(any.contains(ip("0.0.0.0")));
+    }
+
+    #[test]
+    fn cidr_v6_containment() {
+        let net = IpCidr::parse("2001:db8::/32").unwrap();
+        assert!(net.contains(ip("2001:db8::1")));
+        assert!(net.contains(ip("2001:db8:ffff::1")));
+        assert!(!net.contains(ip("2001:db9::1")));
+
+        let any6 = IpCidr::parse("::/0").unwrap();
+        assert!(any6.contains(ip("::1")));
+        assert!(any6.contains(ip("2001:db8::dead:beef")));
+    }
+
+    #[test]
+    fn cidr_v4_mapped_v6_peer_matches_v4_block() {
+        // A dual-stack listener reports IPv4 clients as ::ffff:a.b.c.d.
+        // An operator-written IPv4 allowlist must still match them.
+        let net = IpCidr::parse("203.0.113.0/24").unwrap();
+        assert!(net.contains(ip("::ffff:203.0.113.7")));
+        assert!(!net.contains(ip("::ffff:203.0.114.7")));
+    }
+
+    #[test]
+    fn cidr_cross_family_never_matches() {
+        let v4 = IpCidr::parse("10.0.0.0/8").unwrap();
+        assert!(!v4.contains(ip("2001:db8::1")));
+        let v6 = IpCidr::parse("2001:db8::/32").unwrap();
+        assert!(!v6.contains(ip("10.0.0.1")));
+    }
+
+    #[test]
+    fn cidr_parse_rejects_garbage() {
+        assert!(IpCidr::parse("not-an-ip").is_err());
+        assert!(IpCidr::parse("10.0.0.0/33").is_err());
+        assert!(IpCidr::parse("2001:db8::/129").is_err());
+        assert!(IpCidr::parse("10.0.0.0/abc").is_err());
+    }
+
+    #[test]
+    fn trusted_proxy_cidrs_parsing() {
+        // Empty / blank → trust nobody.
+        assert!(parse_trusted_proxy_cidrs("").unwrap().is_empty());
+        assert!(parse_trusted_proxy_cidrs("  ,  , ").unwrap().is_empty());
+
+        // Mixed IPv4 + IPv6, whitespace tolerated.
+        let v = parse_trusted_proxy_cidrs("10.0.0.0/8 , 2001:db8::/32, 192.168.1.1").unwrap();
+        assert_eq!(v.len(), 3);
+
+        // One bad entry fails the whole parse (fail-loud, not fail-open).
+        assert!(parse_trusted_proxy_cidrs("10.0.0.0/8, garbage").is_err());
     }
 }
