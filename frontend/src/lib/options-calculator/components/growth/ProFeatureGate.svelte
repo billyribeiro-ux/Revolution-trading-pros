@@ -1,6 +1,4 @@
 <script lang="ts">
-	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
-	// import { Lock } from '@lucide/svelte';
 	import IconLock from '@tabler/icons-svelte-runes/icons/lock';
 	import gsap from 'gsap';
 	import type { Snippet } from 'svelte';

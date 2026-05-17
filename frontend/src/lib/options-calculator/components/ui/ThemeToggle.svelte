@@ -1,6 +1,4 @@
 <script lang="ts">
-	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
-	// import { Sun, Moon } from '@lucide/svelte';
 	import IconSun from '@tabler/icons-svelte-runes/icons/sun';
 	import IconMoon from '@tabler/icons-svelte-runes/icons/moon';
 	import gsap from 'gsap';

@@ -1,6 +1,4 @@
 <script lang="ts">
-	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
-	// import { Lightbulb } from '@lucide/svelte';
 	import IconBulb from '@tabler/icons-svelte-runes/icons/bulb';
 	import gsap from 'gsap';
 	import { GREEK_EDUCATION } from './education-content.js';

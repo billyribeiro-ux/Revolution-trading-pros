@@ -1,6 +1,4 @@
 <script lang="ts">
-	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
-	// import { Play, Pause } from '@lucide/svelte';
 	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
 	import IconPlayerPause from '@tabler/icons-svelte-runes/icons/player-pause';
 	import { formatCurrency } from '../utils/formatters.js';

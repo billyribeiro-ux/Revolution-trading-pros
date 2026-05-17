@@ -1,6 +1,4 @@
 <script lang="ts">
-	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
-	// import { Zap, X, Plus } from '@lucide/svelte';
 	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';

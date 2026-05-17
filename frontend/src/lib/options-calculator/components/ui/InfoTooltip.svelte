@@ -1,6 +1,4 @@
 <script lang="ts">
-	// FIX-2026-04-26: replaced @lucide/svelte (forbidden) with @tabler/icons-svelte-runes
-	// import { Info } from '@lucide/svelte';
 	import IconInfoCircle from '@tabler/icons-svelte-runes/icons/info-circle';
 
 	interface Props {
