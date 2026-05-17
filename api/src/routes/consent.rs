@@ -4,17 +4,16 @@
 //!
 //! SECURITY: All endpoints require `AdminUser` authentication.
 //!
-//! PERSISTENCE: We piggy-back on the generic `settings` table by storing the
-//! whole `ConsentSettings` blob as a JSON string under a single fixed key
-//! (`consent_management_settings`). This avoids a new migration while still
-//! durably persisting changes. If the table is missing or unwritable we fall
-//! back to a process-local cache so the page never 404s — see TODO below.
-//!
-//! TODO: persist to a dedicated `consent_settings` table with JSONB column
-//! once the schema migration lands; the helper functions below are wrapped
-//! so swapping storage is a one-place change.
-
-use std::sync::OnceLock;
+//! PERSISTENCE: The generic `settings` table (migration
+//! `015_consolidated_schema.sql`, mirrored in `migrations/schema.sql`) is the
+//! single source of truth. The whole `ConsentSettings` value is stored as a
+//! JSONB document in the table's `value jsonb` column under one fixed key
+//! (`consent_management_settings`). Reads and writes go straight to the DB;
+//! any DB error propagates as HTTP 500 so the page fails closed rather than
+//! silently serving divergent process-local state. There is intentionally NO
+//! in-process cache: consent settings are low-traffic admin configuration and
+//! a process-local fallback would mask DB outages and let app instances
+//! diverge (FULL_REPO_AUDIT_2026-05-17 — "P3 consent OnceLock", cluster I).
 
 use axum::{
     extract::State,
@@ -25,7 +24,6 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use tokio::sync::Mutex;
 use validator::Validate;
 
 use crate::{middleware::admin::AdminUser, AppState};
@@ -154,68 +152,63 @@ pub struct BulkUpdateRequest {
 /// Single fixed key in the existing `settings` table — see file-level docs.
 const STORAGE_KEY: &str = "consent_management_settings";
 
-/// Process-local fallback. When the `settings` table doesn't exist (fresh
-/// dev DB) or a write fails we still want subsequent GETs to return the
-/// most-recent in-memory state rather than reverting to defaults.
-fn cache() -> &'static Mutex<ConsentSettings> {
-    static CACHE: OnceLock<Mutex<ConsentSettings>> = OnceLock::new();
-    CACHE.get_or_init(|| Mutex::new(ConsentSettings::default()))
+/// Map a storage error to an HTTP 500. We fail closed: if the DB cannot be
+/// read or written, the request errors rather than serving stale or default
+/// state, so divergent app instances and DB outages are visible.
+fn storage_error(context: &str, e: sqlx::Error) -> (StatusCode, Json<serde_json::Value>) {
+    tracing::error!("consent: {context}: {e}");
+    (
+        StatusCode::INTERNAL_SERVER_ERROR,
+        Json(json!({
+            "success": false,
+            "error": "Failed to access consent settings storage",
+        })),
+    )
 }
 
-/// Best-effort load — DB first, fall back to in-memory cache, then defaults.
-async fn load_from_storage(pool: &sqlx::PgPool) -> ConsentSettings {
-    // Try DB first.
-    let row: Result<Option<String>, sqlx::Error> =
+/// Load consent settings from the DB (single source of truth).
+///
+/// Returns the stored value, or [`ConsentSettings::default`] only when the row
+/// is genuinely absent (never-configured deployment). A DB error propagates as
+/// HTTP 500 — we do NOT fall back to defaults or process-local state on
+/// failure, because that would mask an outage and let instances diverge.
+async fn load_from_storage(
+    pool: &sqlx::PgPool,
+) -> Result<ConsentSettings, (StatusCode, Json<serde_json::Value>)> {
+    let row: Option<sqlx::types::Json<ConsentSettings>> =
         sqlx::query_scalar("SELECT value FROM settings WHERE key = $1")
             .bind(STORAGE_KEY)
             .fetch_optional(pool)
-            .await;
+            .await
+            .map_err(|e| storage_error("failed to read settings row", e))?;
 
-    if let Ok(Some(json_str)) = row {
-        if let Ok(parsed) = serde_json::from_str::<ConsentSettings>(&json_str) {
-            // Refresh the in-memory cache so subsequent saves see fresh state.
-            *cache().lock().await = parsed.clone();
-            return parsed;
-        }
-    }
-
-    // DB miss / parse error / table missing — return cached or defaults.
-    cache().lock().await.clone()
+    Ok(row.map(|j| j.0).unwrap_or_default())
 }
 
-/// Best-effort save — write to DB if possible, always update the in-memory
-/// cache so the page reflects the change immediately.
-async fn save_to_storage(pool: &sqlx::PgPool, settings: &ConsentSettings) {
-    *cache().lock().await = settings.clone();
-
-    let Ok(json_str) = serde_json::to_string(settings) else {
-        tracing::warn!("consent: failed to serialise ConsentSettings to JSON");
-        return;
-    };
-
-    // Upsert into the existing settings table. The table is shared with
-    // routes/settings.rs and uses a `key` UNIQUE index.
-    let result = sqlx::query(
+/// Persist consent settings to the DB. Single-row upsert on the existing
+/// `settings` table (canonical columns only: `key`, `value jsonb`,
+/// `description`, `created_at`, `updated_at`). Errors propagate as HTTP 500;
+/// there is no in-memory fallback to mask a failed write.
+async fn save_to_storage(
+    pool: &sqlx::PgPool,
+    settings: &ConsentSettings,
+) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
+    // Single statement, single table → no transaction needed.
+    sqlx::query(
         r#"
-        INSERT INTO settings (key, value, "group", description, is_public, created_at, updated_at)
-        VALUES ($1, $2, 'consent', 'Consent Management Settings (JSON blob)', false, NOW(), NOW())
+        INSERT INTO settings (key, value, description, created_at, updated_at)
+        VALUES ($1, $2, 'Consent Management Settings (JSON blob)', NOW(), NOW())
         ON CONFLICT (key)
         DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()
         "#,
     )
     .bind(STORAGE_KEY)
-    .bind(&json_str)
+    .bind(sqlx::types::Json(settings))
     .execute(pool)
-    .await;
+    .await
+    .map_err(|e| storage_error("failed to persist settings", e))?;
 
-    if let Err(e) = result {
-        // Non-fatal: cache already holds the new state, the page will work.
-        // TODO: persist to dedicated consent_settings table once it exists.
-        tracing::warn!(
-            "consent: failed to persist settings to DB ({}); retained in-memory only",
-            e
-        );
-    }
+    Ok(())
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -234,7 +227,7 @@ async fn get_settings(
         "Admin loading consent settings"
     );
 
-    let settings = load_from_storage(state.db.pool()).await;
+    let settings = load_from_storage(state.db.pool()).await?;
 
     Ok(Json(json!({
         "success": true,
@@ -260,7 +253,7 @@ async fn bulk_update_settings(
         ));
     }
 
-    save_to_storage(state.db.pool(), &payload.settings).await;
+    save_to_storage(state.db.pool(), &payload.settings).await?;
 
     tracing::info!(
         admin_id = admin.0.id,
@@ -282,7 +275,7 @@ async fn reset_settings(
     admin: AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let defaults = ConsentSettings::default();
-    save_to_storage(state.db.pool(), &defaults).await;
+    save_to_storage(state.db.pool(), &defaults).await?;
 
     tracing::info!(
         admin_id = admin.0.id,

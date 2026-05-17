@@ -86,7 +86,10 @@ async fn schema_sql_plus_seed_makes_embedded_migrator_a_noop() {
         .filter(|n| {
             n.ends_with(".sql")
                 && n != "schema.sql"
-                && n.chars().next().map(|c| c.is_ascii_digit()).unwrap_or(false)
+                && n.chars()
+                    .next()
+                    .map(|c| c.is_ascii_digit())
+                    .unwrap_or(false)
         })
         .collect();
     files.sort();
@@ -145,6 +148,8 @@ async fn schema_sql_plus_seed_makes_embedded_migrator_a_noop() {
         "expected the full reconstructed schema (~204 tables), got {tables}"
     );
 
-    eprintln!("G0.3 PROOF OK: schema.sql + seed -> embedded migrator no-op; \
-               {applied} versions applied, {tables} tables.");
+    eprintln!(
+        "G0.3 PROOF OK: schema.sql + seed -> embedded migrator no-op; \
+               {applied} versions applied, {tables} tables."
+    );
 }
