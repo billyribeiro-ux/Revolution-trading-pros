@@ -318,7 +318,7 @@
 			</div>
 		{/if}
 
-		{@const SvelteComponent_1 = previewTypeIcon}
+		{@const PreviewTypeIcon = previewTypeIcon}
 		<div class="content-grid">
 			<!-- Main Form -->
 			<div class="form-section">
@@ -332,9 +332,8 @@
 
 					<!-- Product Type Selection -->
 					<div class="form-group">
-						<!-- svelte-ignore a11y_label_has_associated_control -->
-						<label>Product Type *</label>
-						<div class="type-selector">
+						<span id="product-type-label">Product Type *</span>
+						<div class="type-selector" role="group" aria-labelledby="product-type-label">
 							{#each productTypes as type (type.value)}
 								{@const Icon = type.icon}
 								<button
@@ -597,16 +596,14 @@
 							<img src={formData.thumbnail} alt={formData.name || 'Product'} />
 						</div>
 					{:else}
-						{@const SvelteComponent = previewTypeIcon}
+						{@const PreviewTypeIcon = previewTypeIcon}
 						<div class="preview-thumbnail placeholder">
-							<!-- svelte-ignore svelte_component_deprecated -->
-							<SvelteComponent size={48} />
+							<PreviewTypeIcon size={48} />
 						</div>
 					{/if}
 
 					<div class="preview-badge" style="background: {previewTypeColor}">
-						<!-- svelte-ignore svelte_component_deprecated -->
-						<SvelteComponent_1 size={14} />
+						<PreviewTypeIcon size={14} />
 						{formData.type}
 					</div>
 
