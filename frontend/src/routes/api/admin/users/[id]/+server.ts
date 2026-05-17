@@ -20,7 +20,11 @@
  * @version 2.0.0 - April 2026 (audit hardening)
  */
 
-import { error } from '@sveltejs/kit';
+// `json` import commented out (audit 2026-05-16): traced end-to-end — every
+// response in this file goes through `forwardJson()` (raw `new Response`),
+// `json()` is never called. Left commented (not deleted) in case a future
+// handler needs it. `error` IS used.
+import { /* json, */ error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { requireAdmin, requireSuperadmin } from '$lib/server/auth';

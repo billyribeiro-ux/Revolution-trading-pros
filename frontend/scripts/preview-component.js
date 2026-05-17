@@ -13,7 +13,10 @@
  *   node scripts/preview-component.js src/lib/components/dashboard/VideoCard.svelte
  */
 
-import { existsSync } from 'fs';
+// `readFileSync` commented out (audit 2026-05-16): traced — script only
+// validates existence (existsSync) and prints a URL; it never reads file
+// contents. Kept (not deleted) in case the script grows to inspect source.
+import { /* readFileSync, */ existsSync } from 'fs';
 import { relative, resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
