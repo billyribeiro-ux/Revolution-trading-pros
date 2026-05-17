@@ -29,8 +29,13 @@ impl FromRequestParts<AppState> for AdminUser {
             || user_role == "super-admin"
             || user_role == "developer";
 
-        // Also check if email is in superadmin list
-        let is_superadmin = state.config.is_superadmin_email(&user.email);
+        // security-M1: email-list is only honored on a verified, DB-role'd
+        // account — never as a standalone identity claim.
+        let is_superadmin = state.config.is_superadmin_email_strict(
+            &user.email,
+            user.role.as_deref(),
+            user.email_verified_at.is_some(),
+        );
 
         // ICT 11+ DEBUG: Log role check for troubleshooting 403 issues
         tracing::info!(
@@ -74,8 +79,13 @@ impl FromRequestParts<AppState> for SuperAdminUser {
         let is_super_admin = user.role.as_deref() == Some("super_admin")
             || user.role.as_deref() == Some("super-admin");
 
-        // Also check if email is in superadmin list
-        let is_superadmin_email = state.config.is_superadmin_email(&user.email);
+        // security-M1: email-list is only honored on a verified, DB-role'd
+        // account — never as a standalone identity claim.
+        let is_superadmin_email = state.config.is_superadmin_email_strict(
+            &user.email,
+            user.role.as_deref(),
+            user.email_verified_at.is_some(),
+        );
 
         if is_super_admin || is_superadmin_email {
             Ok(SuperAdminUser(user))
