@@ -1366,6 +1366,15 @@ export const subscriptionsApi = {
  * shape `api/src/models/product.rs::CreateProduct` actually accepts.
  *
  * - `type` is renamed to `product_type` (the backend struct field).
+ * - `price` (dollars, from a step="0.01" input) is converted to the
+ *   REQUIRED integer-cents field `price_cents: i64` the backend struct
+ *   expects. FIX (audit 2026-05-17, P0): this mapping was missing — the
+ *   P0-4 fix renamed `type`/tucked extras but left `price` unmapped, so
+ *   every admin product create/update failed serde deserialization
+ *   (`CreateProduct.price_cents` is mandatory with #[validate(range)]).
+ *   `Math.round` is mandatory: `19.99 * 100` is `1998.9999…` in float —
+ *   truncation would corrupt the price by a cent (money-rule: i64 cents
+ *   end-to-end, never lose precision).
  * - `sale_price`, `currency`, `features`, and `slug` are tucked into
  *   `metadata` (the backend's catch-all `Option<serde_json::Value>`)
  *   so they round-trip without crashing the deserializer. The
@@ -1380,6 +1389,15 @@ function normalizeProductPayload(input: Partial<Product>): Record<string, any> {
 		out.product_type = out.type;
 	}
 	delete out.type;
+
+	// Dollars -> integer cents for the backend's required `price_cents: i64`.
+	if (out.price_cents === undefined && out.price !== undefined && out.price !== null) {
+		const dollars = Number(out.price);
+		if (Number.isFinite(dollars)) {
+			out.price_cents = Math.round(dollars * 100);
+		}
+	}
+	delete out.price;
 
 	const extraKeys = ['sale_price', 'currency', 'features', 'slug'] as const;
 	const extras: Record<string, any> = {};
