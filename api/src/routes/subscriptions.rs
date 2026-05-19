@@ -1055,11 +1055,7 @@ async fn change_plan(
     let new_price_id = new_plan.stripe_price_id.clone();
     match (sub_stripe_id, new_price_id) {
         (Some(sub_id), Some(price_id)) if !sub_id.is_empty() && !price_id.is_empty() => {
-            let behavior = if prorate {
-                "create_prorations"
-            } else {
-                "none"
-            };
+            let behavior = if prorate { "create_prorations" } else { "none" };
             state
                 .services
                 .stripe
