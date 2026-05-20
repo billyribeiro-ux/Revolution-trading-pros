@@ -361,7 +361,28 @@ export function validateBlock(block: unknown): block is Block {
 }
 
 /**
- * Extract all blocks from nested structures (columns, groups)
+ * Extract all blocks from nested structures (columns, groups).
+ *
+ * @deprecated **DO NOT USE in runtime code.** This helper traverses the
+ * LEGACY nested-block shape (`block.content.columns[].blocks` for columns,
+ * `block.content.blocks` for groups). Real components write nested blocks
+ * under `block.content.children: Block[]` (see `ColumnsBlock.svelte:50`,
+ * `GroupBlock.svelte:63`, R26-A defaults factory LB-R26-7 / LB-R26-8). This
+ * function will silently return zero nested results for any block authored
+ * by the current editor.
+ *
+ * Flagged in R26-A as **LB-R26-NESTED-TRAVERSAL** (LOW impact: zero runtime
+ * callers in `src/` — only the unit tests in
+ * `src/lib/utils/__tests__/blocks.test.ts` exercise it, and they pass the
+ * legacy shape directly so the helper-vs-shape contract self-validates).
+ *
+ * Canonical replacement: recurse directly through
+ * `(block.content.children ?? []) as Block[]` at the call site, matching
+ * the `$derived` pattern used in `ColumnsBlock.svelte` and
+ * `GroupBlock.svelte`. There is no canonical helper because no feature
+ * currently needs cross-tree traversal; if one materialises, write a new
+ * `walkBlocks(blocks, visit)` helper against the `children` shape rather
+ * than reviving this one.
  */
 export function flattenBlocks(blocks: Block[]): Block[] {
 	const flattened: Block[] = [];
@@ -369,7 +390,7 @@ export function flattenBlocks(blocks: Block[]): Block[] {
 	for (const block of blocks) {
 		flattened.push(block);
 
-		// Handle nested blocks
+		// Handle nested blocks (LEGACY shape — see @deprecated note above)
 		if (block.type === 'columns' && block.content.columns) {
 			for (const column of block.content.columns) {
 				if (column.blocks) {
@@ -385,7 +406,21 @@ export function flattenBlocks(blocks: Block[]): Block[] {
 }
 
 /**
- * Find block by ID in nested structure
+ * Find block by ID in nested structure.
+ *
+ * @deprecated **DO NOT USE in runtime code.** Same LEGACY-shape traversal
+ * bug as {@link flattenBlocks}: walks `block.content.columns[].blocks` and
+ * `block.content.blocks`, but the editor writes nested blocks under
+ * `block.content.children`. Will return `null` for any nested block
+ * authored by the current editor.
+ *
+ * Flagged as **LB-R26-NESTED-TRAVERSAL** in R26-A. Zero runtime callers in
+ * `src/` — only the unit tests reach it. Kept for backward-compat of any
+ * legacy serialized post that survived the migration to `children`.
+ *
+ * Canonical replacement: recurse directly through `block.content.children`
+ * at the call site, mirroring the `ColumnsBlock.svelte` / `GroupBlock.svelte`
+ * `$derived` pattern.
  */
 export function findBlockById(blocks: Block[], id: string): Block | null {
 	for (const block of blocks) {
@@ -409,7 +444,16 @@ export function findBlockById(blocks: Block[], id: string): Block | null {
 }
 
 /**
- * Count blocks by type
+ * Count blocks by type.
+ *
+ * @deprecated **DO NOT USE in runtime code.** Internally delegates to
+ * {@link flattenBlocks}, which traverses the LEGACY nested-block shape
+ * (`columns[].blocks` / `content.blocks`). Counts will under-report by
+ * every nested block authored under the canonical `content.children` shape.
+ *
+ * Flagged as **LB-R26-NESTED-TRAVERSAL** in R26-A. Zero runtime callers in
+ * `src/`. If a feature needs block-type counts, walk `content.children`
+ * directly and tally inline — there's no canonical helper to redirect to.
  */
 export function countBlocksByType(blocks: Block[]): Record<string, number> {
 	const counts: Record<string, number> = {};
@@ -423,7 +467,22 @@ export function countBlocksByType(blocks: Block[]): Record<string, number> {
 }
 
 /**
- * Calculate reading time based on blocks
+ * Calculate reading time based on blocks.
+ *
+ * @deprecated **DO NOT USE in runtime code.** Same LEGACY-shape problem as
+ * {@link flattenBlocks} (which this function delegates to): every nested
+ * block authored under `content.children` is invisible to the word-count,
+ * so the estimate under-reports for any post with columns or groups.
+ *
+ * Flagged as **LB-R26-NESTED-TRAVERSAL** in R26-A. Zero runtime callers in
+ * `src/` — `routes/blog/[slug]/+page.svelte` uses the text-based
+ * `calculateReadingTime` from `$lib/utils/readingAnalytics.ts` instead
+ * (which works off rendered prose, not the editor block tree, and is the
+ * canonical reading-time helper for this codebase).
+ *
+ * If a future feature needs block-tree reading-time, walk
+ * `content.children` directly and accumulate `content.text` /
+ * `content.description` / `content.title` word counts inline.
  */
 export function calculateReadingTime(blocks: Block[]): number {
 	const WORDS_PER_MINUTE = 200;
@@ -460,7 +519,23 @@ function countWords(text: string): number {
 }
 
 /**
- * Extract headings for TOC
+ * Extract headings for TOC.
+ *
+ * @deprecated **DO NOT USE in runtime code.** Delegates to
+ * {@link flattenBlocks} and therefore misses every heading nested inside a
+ * `columns` or `group` block authored under the canonical `content.children`
+ * shape (see `ColumnsBlock.svelte:50`, `GroupBlock.svelte:63`). The TOC
+ * would silently omit nested-section headings if this were wired up.
+ *
+ * Flagged as **LB-R26-NESTED-TRAVERSAL** in R26-A. Zero runtime callers in
+ * `src/` — the live TOC implementation in
+ * `src/lib/components/blog/TableOfContents.svelte:100` has its OWN local
+ * `extractHeadings()` that iterates the post's content-blocks list
+ * directly (and reads from `block.data ?? block.content` for legacy posts).
+ * That local function is the canonical heading-extractor for this codebase.
+ *
+ * If a future feature needs cross-tree heading extraction, walk
+ * `content.children` directly at the call site.
  */
 export function extractHeadings(
 	blocks: Block[]

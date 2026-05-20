@@ -15,7 +15,8 @@
 		ResourceListQuery,
 		ContentType,
 		ResourceType,
-		AccessLevel
+		AccessLevel,
+		SectionType
 	} from '$lib/api/room-resources';
 	import { listResources } from '$lib/api/room-resources';
 	import ResourceCard from './ResourceCard.svelte';
@@ -25,7 +26,7 @@
 		roomId?: number;
 		contentType?: ContentType;
 		resourceType?: ResourceType;
-		section?: string;
+		section?: SectionType;
 		accessLevel?: AccessLevel;
 		courseId?: number;
 		lessonId?: number;
@@ -71,7 +72,7 @@
 	let total = $state(0);
 	let searchQuery = $state('');
 	let selectedType = $state<ResourceType | ''>('');
-	let selectedSection = $state('');
+	let selectedSection = $state<SectionType | ''>('');
 	let selectedAccessLevel = $state<AccessLevel | ''>('');
 
 	// Sync state from props when they change
@@ -111,8 +112,9 @@
 		{ value: 'archive', label: 'Archives' }
 	];
 
-	// Section options
-	const sectionOptions = [
+	// Section options — `value` typed as `SectionType | ''` so the
+	// `bind:value={selectedSection}` boundary stays narrow.
+	const sectionOptions: { value: SectionType | ''; label: string }[] = [
 		{ value: '', label: 'All Sections' },
 		{ value: 'introduction', label: 'Introduction' },
 		{ value: 'latest_updates', label: 'Latest Updates' },
@@ -122,8 +124,8 @@
 		{ value: 'learning_center', label: 'Learning Center' }
 	];
 
-	// Access level options
-	const accessLevelOptions = [
+	// Access level options — `value` typed as `AccessLevel | ''`.
+	const accessLevelOptions: { value: AccessLevel | ''; label: string }[] = [
 		{ value: '', label: 'All Access Levels' },
 		{ value: 'free', label: 'Free' },
 		{ value: 'member', label: 'Member' },
@@ -142,21 +144,29 @@
 			content_type: contentType,
 			resource_type: selectedType || undefined,
 			search: searchQuery || undefined,
-			access_level: selectedAccessLevel ? (selectedAccessLevel as AccessLevel) : undefined
+			access_level: selectedAccessLevel || undefined
 		};
 
-		// Add section filter if specified
+		// LB-R27-1: previously `(query as any).section = selectedSection`. The
+		// cast existed because `selectedSection` was typed as `string` (from a
+		// bare `$state('')`), but `ResourceListQuery.section` requires
+		// `SectionType`. Tightening `selectedSection` to `SectionType | ''`
+		// (its actual domain — every `sectionOptions[].value` is a
+		// `SectionType` literal or `''`) lets the field assign directly with
+		// no cast. The previous `as any` would have silently accepted any
+		// string the operator could inject if the option list ever drifted.
 		if (selectedSection) {
-			// Note: section filtering is handled via the section query param
-			(query as any).section = selectedSection;
+			query.section = selectedSection;
 		}
 
-		// Add course/lesson filters
+		// Same LB-R27-1: `course_id` / `lesson_id` were already declared on
+		// `ResourceListQuery` (lines 187-188), so the `(query as any)` casts
+		// were purely lint-debt — direct assignment compiles cleanly.
 		if (courseId) {
-			(query as any).course_id = courseId;
+			query.course_id = courseId;
 		}
 		if (lessonId) {
-			(query as any).lesson_id = lessonId;
+			query.lesson_id = lessonId;
 		}
 
 		try {
