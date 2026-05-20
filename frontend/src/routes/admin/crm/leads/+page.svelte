@@ -35,14 +35,9 @@
 		IconEdit,
 		IconEye,
 		IconTrash,
-		IconChartBar,
-		IconTrendingUp,
 		IconRefresh,
 		IconBuilding,
-		IconCheck,
-		IconX,
 		IconChevronDown,
-		IconTarget,
 		IconFlame,
 		IconStar,
 		IconStarFilled,
@@ -53,6 +48,12 @@
 	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
 	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import PageHeader from './_components/PageHeader.svelte';
+	import StatsGrid from './_components/StatsGrid.svelte';
+	import DeleteLeadModal from './_components/DeleteLeadModal.svelte';
+	import ConvertLeadModal from './_components/ConvertLeadModal.svelte';
+	import LeadFormModal from './_components/LeadFormModal.svelte';
+	import LeadsPagination from './_components/LeadsPagination.svelte';
 	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 
@@ -628,13 +629,7 @@
 
 	<div class="admin-page-container">
 		<!-- Header - CENTERED -->
-		<header class="page-header">
-			<h1>
-				<IconUsers size={28} />
-				Lead Management
-			</h1>
-			<p class="subtitle">Track, qualify, and convert leads through your sales pipeline</p>
-		</header>
+		<PageHeader />
 
 		{#if connectionLoading}
 			<SkeletonLoader variant="dashboard" />
@@ -655,62 +650,7 @@
 			/>
 		{:else}
 			<!-- Stats Overview -->
-			<section class="stats-grid">
-				<div class="stat-card highlight">
-					<div class="stat-icon blue">
-						<IconUsers size={24} />
-					</div>
-					<div class="stat-content">
-						<span class="stat-value">{stats.total.toLocaleString()}</span>
-						<span class="stat-label">Total Leads</span>
-					</div>
-				</div>
-				<div class="stat-card">
-					<div class="stat-icon cyan">
-						<IconFlame size={24} />
-					</div>
-					<div class="stat-content">
-						<span class="stat-value">{stats.hot_leads}</span>
-						<span class="stat-label">Hot Leads</span>
-					</div>
-				</div>
-				<div class="stat-card">
-					<div class="stat-icon purple">
-						<IconTarget size={24} />
-					</div>
-					<div class="stat-content">
-						<span class="stat-value">{stats.qualified}</span>
-						<span class="stat-label">Qualified</span>
-					</div>
-				</div>
-				<div class="stat-card">
-					<div class="stat-icon emerald">
-						<IconCheck size={24} />
-					</div>
-					<div class="stat-content">
-						<span class="stat-value">{stats.won}</span>
-						<span class="stat-label">Won</span>
-					</div>
-				</div>
-				<div class="stat-card">
-					<div class="stat-icon amber">
-						<IconChartBar size={24} />
-					</div>
-					<div class="stat-content">
-						<span class="stat-value">{formatCurrency(stats.total_value)}</span>
-						<span class="stat-label">Pipeline Value</span>
-					</div>
-				</div>
-				<div class="stat-card">
-					<div class="stat-icon green">
-						<IconTrendingUp size={24} />
-					</div>
-					<div class="stat-content">
-						<span class="stat-value">{stats.conversion_rate.toFixed(1)}%</span>
-						<span class="stat-label">Conversion Rate</span>
-					</div>
-				</div>
-			</section>
+			<StatsGrid {stats} {formatCurrency} />
 
 			<!-- Actions Bar -->
 			<div class="actions-bar">
@@ -976,33 +916,12 @@
 					</table>
 
 					<!-- Pagination -->
-					<div class="table-footer">
-						<span class="results-count">
-							Showing {(currentPage - 1) * perPage + 1} - {Math.min(
-								currentPage * perPage,
-								filteredLeads.length
-							)} of {filteredLeads.length} leads
-						</span>
-						<div class="pagination">
-							<button
-								class="pagination-btn"
-								disabled={currentPage === 1}
-								onclick={() => (currentPage = currentPage - 1)}
-							>
-								Previous
-							</button>
-							<span class="pagination-info">
-								Page {currentPage} of {totalPages}
-							</span>
-							<button
-								class="pagination-btn"
-								disabled={currentPage === totalPages}
-								onclick={() => (currentPage = currentPage + 1)}
-							>
-								Next
-							</button>
-						</div>
-					</div>
+					<LeadsPagination
+						bind:currentPage
+						{totalPages}
+						{perPage}
+						totalCount={filteredLeads.length}
+					/>
 				{/if}
 			</div>
 		{/if}
@@ -1012,340 +931,46 @@
 
 <!-- Add Lead Modal -->
 {#if showAddModal}
-	<div
-		class="modal-overlay"
-		onclick={() => (showAddModal = false)}
-		onkeydown={(e) => e.key === 'Escape' && (showAddModal = false)}
-		role="dialog"
-		aria-modal="true"
-		tabindex="-1"
-	>
-		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-		<div
-			class="modal"
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.key === 'Escape' && (showAddModal = false)}
-			role="document"
-		>
-			<div class="modal-header">
-				<h3>
-					<IconUserPlus size={20} />
-					Add New Lead
-				</h3>
-				<button class="modal-close" onclick={() => (showAddModal = false)}>
-					<IconX size={20} />
-				</button>
-			</div>
-			<div class="modal-body">
-				{#if formError}
-					<div class="form-error">{formError}</div>
-				{/if}
-				<div class="form-grid">
-					<div class="form-group">
-						<label for="first_name">First Name *</label>
-						<input
-							id="first_name"
-							name="first_name"
-							type="text"
-							bind:value={formData.first_name}
-							required
-						/>
-					</div>
-					<div class="form-group">
-						<label for="last_name">Last Name *</label>
-						<input
-							id="last_name"
-							name="last_name"
-							type="text"
-							bind:value={formData.last_name}
-							required
-						/>
-					</div>
-					<div class="form-group full-width">
-						<label for="email">Email *</label>
-						<input
-							id="email"
-							name="email"
-							autocomplete="email"
-							type="email"
-							bind:value={formData.email}
-							required
-						/>
-					</div>
-					<div class="form-group">
-						<label for="phone">Phone</label>
-						<input
-							id="phone"
-							name="phone"
-							autocomplete="tel"
-							type="tel"
-							bind:value={formData.phone}
-						/>
-					</div>
-					<div class="form-group">
-						<label for="company">Company</label>
-						<input id="company" name="company" type="text" bind:value={formData.company_name} />
-					</div>
-					<div class="form-group">
-						<label for="job_title">Job Title</label>
-						<input id="job_title" name="job_title" type="text" bind:value={formData.job_title} />
-					</div>
-					<div class="form-group">
-						<label for="source">Lead Source</label>
-						<select id="source" bind:value={formData.source}>
-							{#each sourceOptions.filter((o) => o.value !== 'all') as option (option.value)}
-								<option value={option.value}>{option.label}</option>
-							{/each}
-						</select>
-					</div>
-					<div class="form-group full-width">
-						<label for="estimated_value">Estimated Value ($)</label>
-						<input
-							id="estimated_value"
-							name="estimated_value"
-							type="number"
-							min="0"
-							bind:value={formData.estimated_value}
-						/>
-					</div>
-					<div class="form-group full-width">
-						<label for="notes">Notes</label>
-						<textarea id="notes" rows="3" bind:value={formData.notes}></textarea>
-					</div>
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button class="btn-secondary" onclick={() => (showAddModal = false)}> Cancel </button>
-				<button
-					class="btn-primary"
-					onclick={createLead}
-					disabled={formLoading || !formData.email || !formData.first_name}
-				>
-					{#if formLoading}
-						Creating...
-					{:else}
-						<IconCheck size={18} />
-						Create Lead
-					{/if}
-				</button>
-			</div>
-		</div>
-	</div>
+	<LeadFormModal
+		mode="add"
+		bind:formData
+		{formError}
+		{formLoading}
+		{sourceOptions}
+		onClose={() => (showAddModal = false)}
+		onSubmit={createLead}
+	/>
 {/if}
 
 <!-- Edit Lead Modal -->
 {#if showEditModal && editingLead}
-	<div
-		class="modal-overlay"
-		onclick={() => (showEditModal = false)}
-		onkeydown={(e) => e.key === 'Escape' && (showEditModal = false)}
-		role="dialog"
-		aria-modal="true"
-		tabindex="-1"
-	>
-		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-		<div
-			class="modal"
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.key === 'Escape' && (showEditModal = false)}
-			role="document"
-		>
-			<div class="modal-header">
-				<h3>
-					<IconEdit size={20} />
-					Edit Lead
-				</h3>
-				<button class="modal-close" onclick={() => (showEditModal = false)}>
-					<IconX size={20} />
-				</button>
-			</div>
-			<div class="modal-body">
-				{#if formError}
-					<div class="form-error">{formError}</div>
-				{/if}
-				<div class="form-grid">
-					<div class="form-group">
-						<label for="edit_first_name">First Name *</label>
-						<input
-							id="edit_first_name"
-							name="edit_first_name"
-							type="text"
-							bind:value={formData.first_name}
-							required
-						/>
-					</div>
-					<div class="form-group">
-						<label for="edit_last_name">Last Name *</label>
-						<input
-							id="edit_last_name"
-							name="edit_last_name"
-							type="text"
-							bind:value={formData.last_name}
-							required
-						/>
-					</div>
-					<div class="form-group full-width">
-						<label for="edit_email">Email *</label>
-						<input
-							id="edit_email"
-							name="edit_email"
-							autocomplete="email"
-							type="email"
-							bind:value={formData.email}
-							required
-						/>
-					</div>
-					<div class="form-group">
-						<label for="edit_phone">Phone</label>
-						<input
-							id="edit_phone"
-							name="edit_phone"
-							autocomplete="tel"
-							type="tel"
-							bind:value={formData.phone}
-						/>
-					</div>
-					<div class="form-group">
-						<label for="edit_company">Company</label>
-						<input
-							id="edit_company"
-							name="edit_company"
-							type="text"
-							bind:value={formData.company_name}
-						/>
-					</div>
-					<div class="form-group">
-						<label for="edit_job_title">Job Title</label>
-						<input
-							id="edit_job_title"
-							name="edit_job_title"
-							type="text"
-							bind:value={formData.job_title}
-						/>
-					</div>
-					<div class="form-group">
-						<label for="edit_source">Lead Source</label>
-						<select id="edit_source" bind:value={formData.source}>
-							{#each sourceOptions.filter((o) => o.value !== 'all') as option (option.value)}
-								<option value={option.value}>{option.label}</option>
-							{/each}
-						</select>
-					</div>
-					<div class="form-group full-width">
-						<label for="edit_estimated_value">Estimated Value ($)</label>
-						<input
-							id="edit_estimated_value"
-							name="edit_estimated_value"
-							type="number"
-							min="0"
-							bind:value={formData.estimated_value}
-						/>
-					</div>
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button class="btn-secondary" onclick={() => (showEditModal = false)}> Cancel </button>
-				<button
-					class="btn-primary"
-					onclick={updateLead}
-					disabled={formLoading || !formData.email || !formData.first_name}
-				>
-					{#if formLoading}
-						Saving...
-					{:else}
-						<IconCheck size={18} />
-						Save Changes
-					{/if}
-				</button>
-			</div>
-		</div>
-	</div>
+	<LeadFormModal
+		mode="edit"
+		bind:formData
+		{formError}
+		{formLoading}
+		{sourceOptions}
+		onClose={() => (showEditModal = false)}
+		onSubmit={updateLead}
+	/>
 {/if}
 
 <!-- Delete Confirmation Modal -->
 {#if showDeleteModal && deletingLead}
-	<div
-		class="modal-overlay"
-		onclick={() => (showDeleteModal = false)}
-		onkeydown={(e) => e.key === 'Escape' && (showDeleteModal = false)}
-		role="dialog"
-		aria-modal="true"
-		tabindex="-1"
-	>
-		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-		<div
-			class="modal modal-small"
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.key === 'Escape' && (showDeleteModal = false)}
-			role="document"
-		>
-			<div class="modal-header">
-				<h3>
-					<IconTrash size={20} />
-					Delete Lead
-				</h3>
-				<button class="modal-close" onclick={() => (showDeleteModal = false)}>
-					<IconX size={20} />
-				</button>
-			</div>
-			<div class="modal-body">
-				<p class="confirm-text">
-					Are you sure you want to delete <strong>{deletingLead.full_name}</strong>? This action
-					cannot be undone.
-				</p>
-			</div>
-			<div class="modal-footer">
-				<button class="btn-secondary" onclick={() => (showDeleteModal = false)}> Cancel </button>
-				<button class="btn-danger" onclick={deleteLead}>
-					<IconTrash size={18} />
-					Delete Lead
-				</button>
-			</div>
-		</div>
-	</div>
+	<DeleteLeadModal
+		lead={deletingLead}
+		onClose={() => (showDeleteModal = false)}
+		onConfirm={deleteLead}
+	/>
 {/if}
 
 <!-- Convert to Contact Modal -->
 {#if showConvertModal && convertingLead}
-	<div
-		class="modal-overlay"
-		onclick={() => (showConvertModal = false)}
-		onkeydown={(e) => e.key === 'Escape' && (showConvertModal = false)}
-		role="dialog"
-		aria-modal="true"
-		tabindex="-1"
-	>
-		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-		<div
-			class="modal modal-small"
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.key === 'Escape' && (showConvertModal = false)}
-			role="document"
-		>
-			<div class="modal-header">
-				<h3>
-					<IconArrowRight size={20} />
-					Convert to Contact
-				</h3>
-				<button class="modal-close" onclick={() => (showConvertModal = false)}>
-					<IconX size={20} />
-				</button>
-			</div>
-			<div class="modal-body">
-				<p class="confirm-text">
-					Convert <strong>{convertingLead.full_name}</strong> to a contact? The lead will be moved to
-					your contacts list with all associated data.
-				</p>
-			</div>
-			<div class="modal-footer">
-				<button class="btn-secondary" onclick={() => (showConvertModal = false)}> Cancel </button>
-				<button class="btn-primary" onclick={convertToContact}>
-					<IconArrowRight size={18} />
-					Convert Lead
-				</button>
-			</div>
-		</div>
-	</div>
+	<ConvertLeadModal
+		lead={convertingLead}
+		onClose={() => (showConvertModal = false)}
+		onConfirm={convertToContact}
+	/>
 {/if}
 
 <!-- Bulk Delete Confirmation (audit P0 #3) -->
@@ -1384,114 +1009,6 @@
 		max-width: 1400px;
 		margin: 0 auto;
 		padding: 2rem;
-	}
-
-	/* Header - CENTERED */
-	.page-header {
-		text-align: center;
-		margin-bottom: 2rem;
-	}
-
-	.page-header h1 {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		gap: 12px;
-		margin: 0 0 0.5rem;
-		font-size: 1.75rem;
-		font-weight: 700;
-		color: #f1f5f9;
-	}
-
-	.page-header h1 :global(svg) {
-		color: var(--primary-500);
-	}
-
-	.subtitle {
-		margin: 0;
-		color: #64748b;
-		font-size: 0.875rem;
-	}
-
-	/* Stats Grid */
-	.stats-grid {
-		display: grid;
-		grid-template-columns: repeat(6, 1fr);
-		gap: 16px;
-		margin-bottom: 24px;
-	}
-
-	.stat-card {
-		display: flex;
-		align-items: center;
-		gap: 16px;
-		padding: 20px;
-		background: rgba(30, 41, 59, 0.4);
-		border: 1px solid #334155;
-		border-radius: 8px;
-		transition: all 0.2s;
-	}
-
-	.stat-card:hover {
-		border-color: rgba(99, 102, 241, 0.3);
-		transform: translateY(-2px);
-	}
-
-	.stat-card.highlight {
-		background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, #1e293b 100%);
-		border-color: rgba(99, 102, 241, 0.3);
-	}
-
-	.stat-icon {
-		width: 48px;
-		height: 48px;
-		border-radius: 12px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		flex-shrink: 0;
-	}
-
-	.stat-icon.blue {
-		background: rgba(59, 130, 246, 0.15);
-		color: #60a5fa;
-	}
-	.stat-icon.cyan {
-		background: rgba(6, 182, 212, 0.15);
-		color: #22d3ee;
-	}
-	.stat-icon.purple {
-		background: rgba(139, 92, 246, 0.15);
-		color: #a78bfa;
-	}
-	.stat-icon.emerald {
-		background: rgba(16, 185, 129, 0.15);
-		color: #34d399;
-	}
-	.stat-icon.amber {
-		background: rgba(245, 158, 11, 0.15);
-		color: #fbbf24;
-	}
-	.stat-icon.green {
-		background: rgba(34, 197, 94, 0.15);
-		color: #4ade80;
-	}
-
-	.stat-content {
-		display: flex;
-		flex-direction: column;
-		gap: 4px;
-	}
-
-	.stat-value {
-		font-size: 1.5rem;
-		font-weight: 700;
-		color: white;
-	}
-
-	.stat-label {
-		font-size: 0.8rem;
-		color: #64748b;
 	}
 
 	/* Actions Bar */
@@ -1970,50 +1487,6 @@
 	}
 
 	/* Table Footer */
-	.table-footer {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 16px 20px;
-		border-top: 1px solid #334155;
-	}
-
-	.results-count {
-		font-size: 0.8rem;
-		color: #64748b;
-	}
-
-	.pagination {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-	}
-
-	.pagination-btn {
-		padding: 8px 16px;
-		background: #334155;
-		border: none;
-		border-radius: 6px;
-		color: white;
-		font-size: 0.8rem;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.pagination-btn:hover:not(:disabled) {
-		background: #475569;
-	}
-
-	.pagination-btn:disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
-	}
-
-	.pagination-info {
-		font-size: 0.8rem;
-		color: #64748b;
-	}
-
 	/* States */
 	.loading-state,
 	.error-state,
@@ -2051,188 +1524,6 @@
 		margin-bottom: 16px;
 	}
 
-	/* Modal */
-	.modal-overlay {
-		position: fixed;
-		inset: 0;
-		background: rgba(0, 0, 0, 0.7);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		z-index: 1000;
-		padding: 20px;
-	}
-
-	.modal {
-		width: 100%;
-		max-width: 560px;
-		max-height: 90vh;
-		overflow-y: auto;
-		background: #1e293b;
-		border: 1px solid #334155;
-		border-radius: 16px;
-	}
-
-	.modal-small {
-		max-width: 420px;
-	}
-
-	.modal-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 20px;
-		border-bottom: 1px solid #334155;
-	}
-
-	.modal-header h3 {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		margin: 0;
-		font-size: 1.1rem;
-		font-weight: 600;
-		color: white;
-	}
-
-	.modal-header h3 :global(svg) {
-		color: var(--primary-500);
-	}
-
-	.modal-close {
-		display: flex;
-		padding: 8px;
-		background: transparent;
-		border: none;
-		color: #64748b;
-		cursor: pointer;
-		transition: color 0.2s;
-	}
-
-	.modal-close:hover {
-		color: white;
-	}
-
-	.modal-body {
-		padding: 20px;
-	}
-
-	.modal-footer {
-		display: flex;
-		justify-content: flex-end;
-		gap: 12px;
-		padding: 20px;
-		border-top: 1px solid #334155;
-	}
-
-	.form-grid {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: 16px;
-	}
-
-	.form-group {
-		display: flex;
-		flex-direction: column;
-		gap: 6px;
-	}
-
-	.form-group.full-width {
-		grid-column: 1 / -1;
-	}
-
-	.form-group label {
-		font-size: 0.8rem;
-		font-weight: 600;
-		color: #94a3b8;
-	}
-
-	.form-group input,
-	.form-group select,
-	.form-group textarea {
-		padding: 10px 14px;
-		background: #0f172a;
-		border: 1px solid #334155;
-		border-radius: 8px;
-		color: white;
-		font-size: 0.9rem;
-		font-family: inherit;
-	}
-
-	.form-group input:focus,
-	.form-group select:focus,
-	.form-group textarea:focus {
-		outline: none;
-		border-color: var(--primary-500);
-	}
-
-	.form-group textarea {
-		resize: vertical;
-		min-height: 80px;
-	}
-
-	.form-error {
-		margin-bottom: 16px;
-		padding: 12px;
-		background: rgba(239, 68, 68, 0.1);
-		border: 1px solid rgba(239, 68, 68, 0.3);
-		border-radius: 8px;
-		color: #f87171;
-		font-size: 0.875rem;
-	}
-
-	.confirm-text {
-		margin: 0;
-		font-size: 0.95rem;
-		color: #94a3b8;
-		line-height: 1.6;
-	}
-
-	.confirm-text strong {
-		color: white;
-	}
-
-	.btn-secondary {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 8px;
-		padding: 0.75rem 1rem;
-		background: rgba(100, 116, 139, 0.2);
-		border: 1px solid rgba(100, 116, 139, 0.3);
-		border-radius: 8px;
-		color: #cbd5e1;
-		font-weight: 500;
-		font-size: 0.875rem;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.btn-secondary:hover {
-		background: rgba(100, 116, 139, 0.3);
-		border-color: rgba(100, 116, 139, 0.5);
-	}
-
-	.btn-danger {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		padding: 10px 20px;
-		background: linear-gradient(135deg, #ef4444, #dc2626);
-		color: white;
-		border: none;
-		border-radius: 10px;
-		font-weight: 600;
-		font-size: 0.875rem;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.btn-danger:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
-	}
-
 	/* Responsive */
 	@media (max-width: 1400px) {
 		.stats-grid {
@@ -2260,10 +1551,6 @@
 			padding: 1rem;
 		}
 
-		.page-header h1 {
-			font-size: 1.5rem;
-		}
-
 		.stats-grid {
 			grid-template-columns: 1fr;
 		}
@@ -2288,10 +1575,6 @@
 
 		.filter-group {
 			width: 100%;
-		}
-
-		.form-grid {
-			grid-template-columns: 1fr;
 		}
 
 		.table-container {
