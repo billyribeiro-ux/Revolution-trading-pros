@@ -55,22 +55,51 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
 	import { browser } from '$app/environment';
+	import type VimeoPlayer from '@vimeo/player';
 
-	// YouTube API type declarations
-	declare global {
-		interface Window {
-			YT?: {
-				Player: any;
-				PlayerState: {
-					PLAYING: number;
-					PAUSED: number;
-					ENDED: number;
-					BUFFERING: number;
-				};
-			};
-			onYouTubeIframeAPIReady?: () => void;
-		}
+	// Type alias for instances of the dynamically-imported Vimeo Player class.
+	// `import type` is erased at runtime — the actual `Player` constructor is
+	// loaded via `(await import('@vimeo/player')).default` in `loadVimeoAPI`.
+	type VimeoPlayerInstance = InstanceType<typeof VimeoPlayer>;
+
+	// YouTube IFrame Player API — minimal subset of methods this component
+	// actually invokes. The official `@types/youtube` package would be the
+	// long-term home for this; for now, a local typed shim removes the
+	// `Window.YT.Player = any` cast in `app.d.ts` for this consumer site.
+	// (The app.d.ts global declares `YT.Player: any` which is the SDK's
+	// constructor — we model it here as the instance shape we use.)
+	interface YouTubePlayer {
+		playVideo(): void;
+		pauseVideo(): void;
+		seekTo(seconds: number, allowSeekAhead: boolean): void;
+		setVolume(volume: number): void;
+		mute(): void;
+		unMute(): void;
+		setPlaybackRate(rate: number): void;
+		setPlaybackQuality(quality: string): void;
+		getDuration(): number;
+		destroy(): void;
 	}
+	interface YouTubePlayerReadyEvent {
+		target: YouTubePlayer;
+	}
+	interface YouTubePlayerStateChangeEvent {
+		data: number;
+	}
+	interface YouTubePlayerErrorEvent {
+		data: number;
+	}
+	type YouTubePlayerCtor = new (
+		element: Element,
+		config: {
+			events?: {
+				onReady?: (event: YouTubePlayerReadyEvent) => void;
+				onStateChange?: (event: YouTubePlayerStateChangeEvent) => void;
+				onError?: (event: YouTubePlayerErrorEvent) => void;
+			};
+		}
+	) => YouTubePlayer;
+
 	import {
 		IconPlayerPlay,
 		IconPlayerPause,
@@ -158,7 +187,7 @@
 		onEnded?: () => void;
 		onTimeUpdate?: (time: number, duration: number) => void;
 		onProgress?: (percent: number) => void;
-		onError?: (error: any) => void;
+		onError?: (error: VideoErrorPayload) => void;
 		onReady?: () => void;
 		onQualityChange?: (quality: string) => void;
 		onVolumeChange?: (volume: number) => void;
@@ -303,7 +332,21 @@
 	interface AnalyticsEvent {
 		type: string;
 		timestamp: number;
-		data?: any;
+		// Free-form telemetry payload (`{ time, watchTime, percent, error, ... }`).
+		// Each call site builds its own object; we don't read inside `data`
+		// after pushing — it's forwarded to gtag and the in-memory analytics buffer.
+		data?: Record<string, unknown>;
+	}
+
+	// Player error shape passed to the `onError` callback prop. YouTube emits
+	// `{ code, message }` from our error handler; Vimeo's SDK emits the
+	// `ErrorEvent` shape (`{ name, message, method }`); HTML5 emits a DOM
+	// `Event` we narrow to `{ message: string }` for the UI banner.
+	interface VideoErrorPayload {
+		code?: number;
+		message?: string;
+		name?: string;
+		method?: string;
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -313,7 +356,10 @@
 	let playerElement: HTMLElement;
 	let videoElement: HTMLVideoElement | null = $state(null);
 	let iframeElement: HTMLIFrameElement | null = $state(null);
-	let playerAPI: any = $state(null);
+	// Holds either a YouTubePlayer (set in `createYouTubePlayer`) or a Vimeo
+	// `Player` instance (set in `loadVimeoAPI` after dynamic import). The two
+	// SDKs are dispatched on `platform`, so each branch below narrows.
+	let playerAPI: YouTubePlayer | VimeoPlayerInstance | null = $state(null);
 
 	// Platform detection
 	let platform: 'youtube' | 'vimeo' | 'wistia' | 'dailymotion' | 'twitch' | 'html5' =
@@ -389,8 +435,15 @@
 		analyticsBase.url = url;
 	});
 
-	// Derive full analytics object with current quality
-	let analytics: VideoAnalytics = $derived({
+	// Derive full analytics object with current quality. Currently unread —
+	// the three pre-R24-A consumers (`analytics.interactions++` /
+	// `analytics.quality = ...` / `analytics.events.push(...)`) were
+	// silently-no-op mutations on a `$derived` mirror (see LB-VID-1) and
+	// have been rerouted through `analyticsBase`. The `_` prefix matches the
+	// project lint config's allowed-unused pattern; the derived view is kept
+	// in place so a future `export const getAnalytics = () => analytics`
+	// integration point doesn't need to reconstruct the merge.
+	let _analytics: VideoAnalytics = $derived({
 		...analyticsBase,
 		quality: currentQuality
 	});
@@ -663,7 +716,10 @@
 
 	function createYouTubePlayer() {
 		if (!window.YT || !iframeElement) return;
-		playerAPI = new window.YT.Player(iframeElement, {
+		// `window.YT.Player` is declared as `any` in `app.d.ts`; we cast through
+		// our local `YouTubePlayerCtor` shim to get typed events + instance.
+		const PlayerCtor = window.YT.Player as YouTubePlayerCtor;
+		playerAPI = new PlayerCtor(iframeElement, {
 			events: {
 				onReady: handleYouTubeReady,
 				onStateChange: handleYouTubeStateChange,
@@ -674,14 +730,17 @@
 
 	async function loadVimeoAPI() {
 		if (!iframeElement) return;
-		const Player = (await import('@vimeo/player')).default;
-		playerAPI = new Player(iframeElement);
+		const PlayerCtor = (await import('@vimeo/player')).default;
+		const vimeo: VimeoPlayerInstance = new PlayerCtor(iframeElement);
+		playerAPI = vimeo;
 
-		playerAPI.on('play', () => handlePlay());
-		playerAPI.on('pause', () => handlePause());
-		playerAPI.on('ended', () => handleEnded());
-		playerAPI.on('timeupdate', (data: any) => handleTimeUpdate(data.seconds, data.duration));
-		playerAPI.on('error', (error: any) => handleError(error));
+		vimeo.on('play', () => handlePlay());
+		vimeo.on('pause', () => handlePause());
+		vimeo.on('ended', () => handleEnded());
+		vimeo.on('timeupdate', (data) => handleTimeUpdate(data.seconds, data.duration));
+		vimeo.on('error', (error) =>
+			handleError({ name: error.name, message: error.message, method: error.method })
+		);
 
 		handleReady();
 	}
@@ -800,13 +859,20 @@
 		analyticsBase.completionRate = Math.max(analyticsBase.completionRate, progressPercent);
 	}
 
-	function handleError(error: any) {
+	function handleError(error: unknown) {
 		hasError = true;
-		errorMessage = error.message || 'An error occurred while loading the video';
+		// Narrow to our `VideoErrorPayload` shape. Sources: HTML5 emits a DOM
+		// `Event` (no `.message`); YouTube passes our `{ code, message }`
+		// object; Vimeo passes `{ name, message, method }`.
+		const payload: VideoErrorPayload =
+			typeof error === 'object' && error !== null
+				? (error as VideoErrorPayload)
+				: { message: String(error) };
+		errorMessage = payload.message || 'An error occurred while loading the video';
 		// Update base state, not derived analytics
 		analyticsBase.errors++;
 
-		onError?.(error);
+		onError?.(payload);
 		trackEvent('error', { error: errorMessage });
 	}
 
@@ -840,13 +906,13 @@
 	}
 
 	// YouTube specific handlers
-	function handleYouTubeReady(event: any) {
+	function handleYouTubeReady(event: YouTubePlayerReadyEvent) {
 		playerAPI = event.target;
-		duration = playerAPI.getDuration();
+		duration = event.target.getDuration();
 		handleReady();
 	}
 
-	function handleYouTubeStateChange(event: any) {
+	function handleYouTubeStateChange(event: YouTubePlayerStateChangeEvent) {
 		if (!window.YT) return;
 		switch (event.data) {
 			case window.YT.PlayerState.PLAYING:
@@ -866,7 +932,7 @@
 		}
 	}
 
-	function handleYouTubeError(event: any) {
+	function handleYouTubeError(event: YouTubePlayerErrorEvent) {
 		handleError({ code: event.data, message: 'YouTube player error' });
 	}
 
@@ -874,13 +940,23 @@
 	// Player Controls
 	// ═══════════════════════════════════════════════════════════════════════════
 
+	// Narrowing helpers — return the typed player instance for the active
+	// platform, or `null` if not yet initialised / wrong platform. The switch
+	// arms below use these instead of casting `playerAPI` at every call site.
+	function ytPlayer(): YouTubePlayer | null {
+		return platform === 'youtube' && playerAPI ? (playerAPI as YouTubePlayer) : null;
+	}
+	function vimeoPlayerNarrow(): VimeoPlayerInstance | null {
+		return platform === 'vimeo' && playerAPI ? (playerAPI as VimeoPlayerInstance) : null;
+	}
+
 	export function play() {
 		switch (platform) {
 			case 'youtube':
-				playerAPI?.playVideo();
+				ytPlayer()?.playVideo();
 				break;
 			case 'vimeo':
-				playerAPI?.play();
+				vimeoPlayerNarrow()?.play();
 				break;
 			case 'html5':
 				videoElement?.play();
@@ -891,10 +967,10 @@
 	export function pause() {
 		switch (platform) {
 			case 'youtube':
-				playerAPI?.pauseVideo();
+				ytPlayer()?.pauseVideo();
 				break;
 			case 'vimeo':
-				playerAPI?.pause();
+				vimeoPlayerNarrow()?.pause();
 				break;
 			case 'html5':
 				videoElement?.pause();
@@ -917,10 +993,10 @@
 
 		switch (platform) {
 			case 'youtube':
-				playerAPI?.seekTo(time, true);
+				ytPlayer()?.seekTo(time, true);
 				break;
 			case 'vimeo':
-				playerAPI?.setCurrentTime(time);
+				vimeoPlayerNarrow()?.setCurrentTime(time);
 				break;
 			case 'html5':
 				if (videoElement) videoElement.currentTime = time;
@@ -935,10 +1011,10 @@
 
 		switch (platform) {
 			case 'youtube':
-				playerAPI?.setVolume(currentVolume * 100);
+				ytPlayer()?.setVolume(currentVolume * 100);
 				break;
 			case 'vimeo':
-				playerAPI?.setVolume(currentVolume);
+				vimeoPlayerNarrow()?.setVolume(currentVolume);
 				break;
 			case 'html5':
 				if (videoElement) videoElement.volume = currentVolume;
@@ -950,22 +1026,29 @@
 		isMuted = !isMuted;
 
 		switch (platform) {
-			case 'youtube':
+			case 'youtube': {
+				const yt = ytPlayer();
 				if (isMuted) {
-					playerAPI?.mute();
+					yt?.mute();
 				} else {
-					playerAPI?.unMute();
+					yt?.unMute();
 				}
 				break;
+			}
 			case 'vimeo':
-				playerAPI?.setVolume(isMuted ? 0 : currentVolume);
+				vimeoPlayerNarrow()?.setVolume(isMuted ? 0 : currentVolume);
 				break;
 			case 'html5':
 				if (videoElement) videoElement.muted = isMuted;
 				break;
 		}
 
-		analytics.interactions++;
+		// LB-VID-1: pre-R24-A code wrote `analytics.interactions++` here, but
+		// `analytics` is `$derived(...)` (read-only at the consumer site).
+		// Mutating it has no effect — the counter was lost on every mute toggle.
+		// Route the increment through the underlying `$state` base, matching
+		// `togglePlay()` and the other interaction sites.
+		analyticsBase.interactions++;
 	}
 
 	export function setPlaybackRate(rate: number) {
@@ -973,10 +1056,10 @@
 
 		switch (platform) {
 			case 'youtube':
-				playerAPI?.setPlaybackRate(rate);
+				ytPlayer()?.setPlaybackRate(rate);
 				break;
 			case 'vimeo':
-				playerAPI?.setPlaybackRate(rate);
+				vimeoPlayerNarrow()?.setPlaybackRate(rate);
 				break;
 			case 'html5':
 				if (videoElement) videoElement.playbackRate = rate;
@@ -991,24 +1074,42 @@
 
 		switch (platform) {
 			case 'youtube':
-				playerAPI?.setPlaybackQuality(quality);
+				ytPlayer()?.setPlaybackQuality(quality);
 				break;
 			case 'vimeo':
-				playerAPI?.setQuality(quality);
+				// Vimeo's `setQuality` accepts a `VideoQualityId` which is a plain
+				// `string` per `@vimeo/player`'s typedef.
+				vimeoPlayerNarrow()?.setQuality(quality);
 				break;
 		}
 
 		if (onQualityChange) onQualityChange(quality);
 		trackEvent('quality_change', { quality });
-		analytics.quality = quality;
+		// LB-VID-1 (same shape): pre-R24-A wrote `analytics.quality = quality`
+		// against the `$derived` read-only mirror — no effect. The `quality`
+		// is already derived from `currentQuality` (set above), so this
+		// assignment was redundant. Removed.
+	}
+
+	// Safari-only fullscreen API shape. The standardised `requestFullscreen` /
+	// `exitFullscreen` are in `lib.dom.d.ts`; the `webkit*` variants are not.
+	interface WebkitFullscreenElement extends HTMLElement {
+		webkitRequestFullscreen?: () => Promise<void> | void;
+	}
+	interface WebkitFullscreenDocument extends Document {
+		webkitExitFullscreen?: () => Promise<void> | void;
+		webkitFullscreenElement?: Element | null;
 	}
 
 	export async function enterFullscreen() {
 		try {
 			if (playerElement.requestFullscreen) {
 				await playerElement.requestFullscreen();
-			} else if ((playerElement as any).webkitRequestFullscreen) {
-				await (playerElement as any).webkitRequestFullscreen();
+			} else {
+				const webkit = playerElement as WebkitFullscreenElement;
+				if (webkit.webkitRequestFullscreen) {
+					await webkit.webkitRequestFullscreen();
+				}
 			}
 			isFullscreen = true;
 			trackEvent('fullscreen_enter');
@@ -1021,8 +1122,11 @@
 		try {
 			if (document.exitFullscreen) {
 				await document.exitFullscreen();
-			} else if ((document as any).webkitExitFullscreen) {
-				await (document as any).webkitExitFullscreen();
+			} else {
+				const webkit = document as WebkitFullscreenDocument;
+				if (webkit.webkitExitFullscreen) {
+					await webkit.webkitExitFullscreen();
+				}
 			}
 			isFullscreen = false;
 			trackEvent('fullscreen_exit');
@@ -1042,7 +1146,8 @@
 				await videoElement.requestPictureInPicture();
 				_isPictureInPicture = true;
 			}
-			analytics.interactions++;
+			// LB-VID-1 again: route through base state, not the derived mirror.
+			analyticsBase.interactions++;
 		} catch (error) {
 			console.error('Picture-in-Picture not supported:', error);
 		}
@@ -1136,7 +1241,9 @@
 	}
 
 	function handleFullscreenChange() {
-		isFullscreen = !!(document.fullscreenElement || (document as any).webkitFullscreenElement);
+		isFullscreen = !!(
+			document.fullscreenElement || (document as WebkitFullscreenDocument).webkitFullscreenElement
+		);
 	}
 
 	function handleKeyboard(e: KeyboardEvent) {
@@ -1203,7 +1310,7 @@
 		seek(duration * percent);
 	}
 
-	function trackEvent(event: string, data?: any) {
+	function trackEvent(event: string, data?: Record<string, unknown>) {
 		if (!trackAnalytics || !trackingEvents.includes(event)) return;
 
 		const analyticsEvent: AnalyticsEvent = {
@@ -1212,11 +1319,19 @@
 			data
 		};
 
-		analytics.events.push(analyticsEvent);
+		// LB-VID-1: pre-R24-A code wrote `analytics.events.push(...)`. The
+		// underlying array IS shared between the derived view and the base
+		// (Svelte 5 derives reference the same array reference, and `.push`
+		// mutates in place), so that one happened to work — but for clarity
+		// and consistency with the `interactions++` / `quality` fixes above,
+		// route the mutation through the base. The state proxy will pick up
+		// the change either way.
+		analyticsBase.events.push(analyticsEvent);
 
-		// Send to analytics service
-		if (browser && 'gtag' in window) {
-			(window as any).gtag('event', `video_${event}`, {
+		// Send to analytics service. `window.gtag` is declared in `app.d.ts`
+		// as `(...args: unknown[]) => void`; optional-chain handles absence.
+		if (browser && typeof window.gtag === 'function') {
+			window.gtag('event', `video_${event}`, {
 				video_url: url,
 				video_title: title,
 				video_percent: progressPercent,
