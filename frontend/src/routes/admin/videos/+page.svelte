@@ -33,7 +33,6 @@
 		IconUser,
 		IconBuilding,
 		IconTags,
-		IconAlertCircle,
 		IconCloudUpload,
 		IconProgressCheck
 	} from '$lib/icons';
@@ -58,6 +57,12 @@
 	import IconStar from '@tabler/icons-svelte-runes/icons/star';
 	import IconStarOff from '@tabler/icons-svelte-runes/icons/star-off';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import FormBanners from './_components/FormBanners.svelte';
+	import EmbedCodeModal from './_components/EmbedCodeModal.svelte';
+	import ReplaceVideoModal from './_components/ReplaceVideoModal.svelte';
+	import SelectedRoomHeader from './_components/SelectedRoomHeader.svelte';
+	import PageHeader from './_components/PageHeader.svelte';
+	import AnalyticsPanel from './_components/AnalyticsPanel.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// LOCAL TYPES (extending API types)
@@ -1107,50 +1112,17 @@
 		</div>
 
 		<!-- Success/Error Messages -->
-		{#if successMessage}
-			<div class="alert alert-success">
-				<IconCheck size={18} />
-				{successMessage}
-			</div>
-		{/if}
-
-		{#if error}
-			<div class="alert alert-error">
-				<IconAlertCircle size={18} />
-				{error}
-				<button class="alert-close" onclick={() => (error = '')}>
-					<IconX size={16} />
-				</button>
-			</div>
-		{/if}
+		<FormBanners {successMessage} {error} onDismissError={() => (error = '')} />
 
 		<!-- Header -->
-		<div class="page-header">
-			<h1>Trading Room Videos</h1>
-			<p class="subtitle">Manage daily videos with category tags for each room and service</p>
-			<div class="header-actions">
-				<button class="btn-secondary" onclick={toggleAnalyticsPanel} title="View Analytics">
-					<IconChartBar size={18} />
-					Analytics
-				</button>
-				<button
-					class="btn-bunny"
-					onclick={openBunnyUploadModal}
-					disabled={!selectedRoom}
-					title="Upload to Bunny.net"
-				>
-					<IconCloudUpload size={18} />
-					Bunny Upload
-				</button>
-				<button class="btn-refresh" onclick={() => loadVideos()} disabled={isLoading}>
-					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
-				</button>
-				<button class="btn-primary" onclick={openUploadModal} disabled={!selectedRoom}>
-					<IconPlus size={18} />
-					Add Video
-				</button>
-			</div>
-		</div>
+		<PageHeader
+			hasSelectedRoom={!!selectedRoom}
+			{isLoading}
+			onAnalytics={toggleAnalyticsPanel}
+			onBunnyUpload={openBunnyUploadModal}
+			onRefresh={() => loadVideos()}
+			onAddVideo={openUploadModal}
+		/>
 
 		<!-- Room Selector Tabs -->
 		{#if isLoadingRooms}
@@ -1217,109 +1189,25 @@
 
 		<!-- Selected Room Header -->
 		{#if selectedRoom}
-			<div class="selected-room-header" style:--room-color={selectedRoom.color}>
-				<div class="selected-room-info">
-					<h2>{selectedRoom.name}</h2>
-					<span class="room-type-badge"
-						>{selectedRoom.type === 'trading_room' ? 'Trading Room' : 'Alert Service'}</span
-					>
-				</div>
-				<div class="selected-room-stats">
-					<div class="stat">
-						<span class="stat-value">{videos.length}</span>
-						<span class="stat-label">Videos</span>
-					</div>
-					<div class="stat">
-						<span class="stat-value">{formatViews(totalViews)}</span>
-						<span class="stat-label">Total Views</span>
-					</div>
-					<div class="stat">
-						<span class="stat-value">{publishedCount}</span>
-						<span class="stat-label">Published</span>
-					</div>
-				</div>
-			</div>
+			<SelectedRoomHeader
+				room={selectedRoom}
+				videoCount={videos.length}
+				{totalViews}
+				{publishedCount}
+				{formatViews}
+			/>
 		{/if}
 
 		<!-- Analytics Panel -->
-		{#if showAnalyticsPanel}
-			<div class="analytics-panel">
-				<div class="analytics-header">
-					<h3><IconChartBar size={20} /> Video Analytics</h3>
-					<div class="analytics-controls">
-						<label for="analytics-period" class="sr-only">Analytics period</label>
-						<select id="analytics-period" class="filter-select" bind:value={analyticsPeriod}>
-							<option value="7d">Last 7 days</option>
-							<option value="30d">Last 30 days</option>
-							<option value="90d">Last 90 days</option>
-						</select>
-						<button class="btn-icon" onclick={() => (showAnalyticsPanel = false)} title="Close">
-							<IconX size={18} />
-						</button>
-					</div>
-				</div>
-
-				{#if isLoadingAnalytics}
-					<div class="analytics-loading">
-						<div class="spinner"></div>
-						<p>Loading analytics...</p>
-					</div>
-				{:else if analyticsData}
-					<div class="analytics-grid">
-						<div class="analytics-stat">
-							<span class="stat-value">{formatViews(analyticsData.total_views)}</span>
-							<span class="stat-label">Total Views</span>
-						</div>
-						<div class="analytics-stat">
-							<span class="stat-value">{analyticsData.unique_viewers.toLocaleString()}</span>
-							<span class="stat-label">Unique Viewers</span>
-						</div>
-						<div class="analytics-stat">
-							<span class="stat-value">{analyticsData.total_watch_time_hours.toFixed(1)}h</span>
-							<span class="stat-label">Watch Time</span>
-						</div>
-						<div class="analytics-stat">
-							<span class="stat-value">{(analyticsData.avg_completion_rate * 100).toFixed(0)}%</span
-							>
-							<span class="stat-label">Avg Completion</span>
-						</div>
-					</div>
-
-					{#if analyticsData.top_videos && analyticsData.top_videos.length > 0}
-						<div class="top-videos-section">
-							<h4>Top Performing Videos</h4>
-							<div class="top-videos-list">
-								{#each analyticsData.top_videos.slice(0, 5) as topVideo, index (topVideo.video_id)}
-									<div class="top-video-item">
-										<span class="rank">#{index + 1}</span>
-										<span class="title">{topVideo.title}</span>
-										<span class="views">{formatViews(topVideo.views)} views</span>
-									</div>
-								{/each}
-							</div>
-						</div>
-					{/if}
-
-					<!-- Used Categories Quick Stats -->
-					{#if usedCategories.length > 0}
-						<div class="categories-stats-section">
-							<h4>Categories in Use</h4>
-							<div class="used-categories-tags">
-								{#each usedCategories as category (category.id)}
-									<span class="category-tag" style:--tag-color={category.color}>
-										{category.name}
-									</span>
-								{/each}
-							</div>
-						</div>
-					{/if}
-				{:else}
-					<div class="analytics-empty">
-						<p>No analytics data available yet.</p>
-					</div>
-				{/if}
-			</div>
-		{/if}
+		<AnalyticsPanel
+			open={showAnalyticsPanel}
+			{analyticsData}
+			bind:analyticsPeriod
+			{isLoadingAnalytics}
+			{usedCategories}
+			{formatViews}
+			onClose={() => (showAnalyticsPanel = false)}
+		/>
 
 		<!-- Filters -->
 		<div class="filters-bar">
@@ -1847,91 +1735,19 @@
 {/if}
 
 <!-- Replace Video Modal -->
-{#if showReplaceModal && replacingVideo}
-	<div
-		class="modal-overlay"
-		role="button"
-		tabindex="0"
-		onclick={() => {
-			showReplaceModal = false;
-			replacingVideo = null;
-			newVideoUrl = '';
-		}}
-		onkeydown={(e: KeyboardEvent) =>
-			e.key === 'Escape' &&
-			((showReplaceModal = false), (replacingVideo = null), (newVideoUrl = ''))}
-	>
-		<div
-			class="modal"
-			onclick={(e: MouseEvent) => e.stopPropagation()}
-			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
-			role="dialog"
-			aria-modal="true"
-			tabindex="-1"
-		>
-			<div class="modal-header">
-				<h2>Replace Video</h2>
-				<button
-					class="modal-close"
-					onclick={() => {
-						showReplaceModal = false;
-						replacingVideo = null;
-						newVideoUrl = '';
-					}}
-					type="button"
-					aria-label="Close">&times;</button
-				>
-			</div>
-			<div class="modal-body">
-				<div class="replace-info">
-					<p><strong>Current video:</strong> {replacingVideo.title}</p>
-					<p class="text-muted">
-						All metadata (title, description, categories, featured status) will be kept. Only the
-						video URL will be replaced.
-					</p>
-				</div>
-
-				<div class="form-group">
-					<label for="new-video-url">New Video URL</label>
-					<input
-						type="url"
-						id="new-video-url"
-						name="new-video-url"
-						placeholder="https://your-video-url.com/video.mp4"
-						bind:value={newVideoUrl}
-					/>
-					<small class="form-hint">Platform will be auto-detected from URL</small>
-				</div>
-
-				{#if newVideoUrl}
-					<div class="platform-preview">
-						<span>Detected platform: <strong>{detectPlatform(newVideoUrl)}</strong></span>
-					</div>
-				{/if}
-			</div>
-			<div class="modal-footer">
-				<button
-					class="btn-secondary"
-					onclick={() => {
-						showReplaceModal = false;
-						replacingVideo = null;
-						newVideoUrl = '';
-					}}
-					type="button">Cancel</button
-				>
-				<button class="btn-primary" onclick={replaceVideo} disabled={isSaving || !newVideoUrl}>
-					{#if isSaving}
-						<span class="btn-spinner"></span>
-						Replacing...
-					{:else}
-						<IconLink size={16} />
-						Replace Video
-					{/if}
-				</button>
-			</div>
-		</div>
-	</div>
-{/if}
+<ReplaceVideoModal
+	open={showReplaceModal}
+	video={replacingVideo}
+	bind:newVideoUrl
+	{isSaving}
+	{detectPlatform}
+	onClose={() => {
+		showReplaceModal = false;
+		replacingVideo = null;
+		newVideoUrl = '';
+	}}
+	onReplace={replaceVideo}
+/>
 
 <!-- Bunny.net Direct Upload Modal -->
 {#if showBunnyUploadModal}
@@ -2208,65 +2024,15 @@
 {/if}
 
 <!-- ICT 7 ADDITION: Embed Code Modal -->
-{#if showEmbedModal && embedCodeData}
-	<div
-		class="modal-overlay"
-		role="button"
-		tabindex="0"
-		onclick={() => {
-			showEmbedModal = false;
-			embedCodeData = null;
-		}}
-		onkeydown={(e: KeyboardEvent) =>
-			e.key === 'Escape' && ((showEmbedModal = false), (embedCodeData = null))}
-	>
-		<div
-			class="modal"
-			onclick={(e: MouseEvent) => e.stopPropagation()}
-			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
-			role="dialog"
-			aria-modal="true"
-			tabindex="-1"
-		>
-			<div class="modal-header">
-				<h2>
-					<IconCode size={24} />
-					Embed Code
-				</h2>
-				<button
-					class="modal-close"
-					onclick={() => {
-						showEmbedModal = false;
-						embedCodeData = null;
-					}}
-					type="button"
-					aria-label="Close">&times;</button
-				>
-			</div>
-			<div class="modal-body">
-				<p class="embed-title"><strong>{embedCodeData.title}</strong></p>
-				<div class="embed-code-box">
-					<pre><code>{embedCodeData.embed_html}</code></pre>
-				</div>
-				<p class="embed-hint">Copy this code and paste it into your website to embed this video.</p>
-			</div>
-			<div class="modal-footer">
-				<button
-					class="btn-secondary"
-					onclick={() => {
-						showEmbedModal = false;
-						embedCodeData = null;
-					}}
-					type="button">Close</button
-				>
-				<button class="btn-primary" onclick={copyEmbedCode}>
-					<IconCode size={16} />
-					Copy to Clipboard
-				</button>
-			</div>
-		</div>
-	</div>
-{/if}
+<EmbedCodeModal
+	open={showEmbedModal}
+	data={embedCodeData}
+	onClose={() => {
+		showEmbedModal = false;
+		embedCodeData = null;
+	}}
+	onCopy={copyEmbedCode}
+/>
 
 <ConfirmationModal
 	isOpen={showDeleteModal}
@@ -2301,52 +2067,7 @@
 	}
 
 	/* Header - Centered */
-	.page-header {
-		text-align: center;
-		margin-bottom: 2rem;
-	}
-
-	.page-header h1 {
-		font-size: 1.75rem;
-		font-weight: 700;
-		color: var(--text-primary);
-		margin: 0 0 0.25rem 0;
-	}
-
-	.subtitle {
-		color: var(--text-tertiary);
-		font-size: 0.875rem;
-		margin: 0.25rem 0 1rem 0;
-	}
-
-	.header-actions {
-		display: flex;
-		justify-content: center;
-		gap: 0.75rem;
-	}
-
-	.btn-refresh {
-		width: 36px;
-		height: 36px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: rgba(22, 27, 34, 0.8);
-		border: 1px solid rgba(230, 184, 0, 0.2);
-		border-radius: 10px;
-		color: var(--text-secondary);
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.btn-refresh:hover {
-		background: rgba(230, 184, 0, 0.2);
-		color: var(--primary-500);
-	}
-
-	.btn-refresh :global(.spinning) {
-		animation: spin 1s linear infinite;
-	}
+	/* .page-header / .subtitle / .header-actions / .btn-refresh — moved to _components/PageHeader.svelte */
 
 	@keyframes spin {
 		from {
@@ -2398,85 +2119,15 @@
 	}
 
 	/* Replace Modal Specific */
-	.replace-info {
-		background: rgba(230, 184, 0, 0.1);
-		border: 1px solid rgba(230, 184, 0, 0.2);
-		border-radius: 8px;
-		padding: 1rem;
-		margin-bottom: 1.5rem;
-	}
-
-	.replace-info p {
-		margin: 0.5rem 0;
-		color: var(--text-primary);
-	}
-
-	.replace-info strong {
-		color: var(--text-primary);
-	}
+	/* .replace-info / .platform-preview — moved to _components/ReplaceVideoModal.svelte */
+	/* .form-hint (this declaration) was a duplicate of the one further down that always won */
 
 	.text-muted {
 		color: var(--text-tertiary);
 		font-size: 0.875rem;
 	}
 
-	.form-hint {
-		display: block;
-		margin-top: 0.5rem;
-		color: var(--text-tertiary);
-		font-size: 0.875rem;
-	}
-
-	.platform-preview {
-		background: rgba(34, 197, 94, 0.1);
-		border: 1px solid rgba(34, 197, 94, 0.2);
-		border-radius: 6px;
-		padding: 0.75rem;
-		margin-top: 1rem;
-		color: var(--success-emphasis);
-		font-size: 0.875rem;
-	}
-
-	.platform-preview strong {
-		text-transform: uppercase;
-	}
-
-	/* Alert Messages */
-	.alert {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-		padding: 1rem 1.25rem;
-		border-radius: 10px;
-		margin-bottom: 1.5rem;
-		font-size: 0.9rem;
-	}
-
-	.alert-success {
-		background: rgba(34, 197, 94, 0.15);
-		border: 1px solid rgba(34, 197, 94, 0.3);
-		color: var(--success-emphasis);
-	}
-
-	.alert-error {
-		background: rgba(239, 68, 68, 0.15);
-		border: 1px solid rgba(239, 68, 68, 0.3);
-		color: var(--error-emphasis);
-	}
-
-	.alert-close {
-		margin-left: auto;
-		background: transparent;
-		border: none;
-		color: inherit;
-		cursor: pointer;
-		opacity: 0.7;
-		transition: opacity 0.2s;
-	}
-
-	.alert-close:hover {
-		opacity: 1;
-	}
+	/* Alert Messages — moved to _components/FormBanners.svelte */
 
 	/* Room Selector */
 	.room-selector {
@@ -2570,55 +2221,7 @@
 		background: rgba(255, 255, 255, 0.25);
 	}
 
-	/* Selected Room Header */
-	.selected-room-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 1.25rem;
-		background: rgba(22, 27, 34, 0.6);
-		border: 1px solid rgba(230, 184, 0, 0.1);
-		border-radius: 14px;
-		margin-bottom: 1.5rem;
-		border-left: 4px solid var(--room-color, var(--primary-500));
-	}
-
-	.selected-room-info h2 {
-		font-size: 1.25rem;
-		font-weight: 600;
-		color: var(--text-primary);
-		margin: 0 0 0.25rem 0;
-	}
-
-	.room-type-badge {
-		display: inline-block;
-		padding: 0.25rem 0.625rem;
-		background: rgba(230, 184, 0, 0.15);
-		border-radius: 20px;
-		font-size: 0.75rem;
-		color: var(--text-secondary);
-	}
-
-	.selected-room-stats {
-		display: flex;
-		gap: 2rem;
-	}
-
-	.selected-room-stats .stat {
-		text-align: center;
-	}
-
-	.selected-room-stats .stat-value {
-		display: block;
-		font-size: 1.5rem;
-		font-weight: 700;
-		color: var(--text-primary);
-	}
-
-	.selected-room-stats .stat-label {
-		font-size: 0.8rem;
-		color: var(--text-tertiary);
-	}
+	/* Selected Room Header — moved to _components/SelectedRoomHeader.svelte */
 
 	/* Filters */
 	.filters-bar {
@@ -3211,127 +2814,7 @@
 	}
 
 	/* Analytics Panel */
-	.analytics-panel {
-		background: rgba(22, 27, 34, 0.4);
-		border-radius: 8px;
-		padding: 1.5rem;
-		margin-bottom: 1.5rem;
-	}
-
-	.analytics-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 1.5rem;
-	}
-
-	.analytics-header h3 {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		font-size: 1.1rem;
-		font-weight: 600;
-		color: var(--text-primary);
-		margin: 0;
-	}
-
-	.analytics-controls {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-	}
-
-	.analytics-loading,
-	.analytics-empty {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		padding: 2rem;
-		color: var(--text-tertiary);
-	}
-
-	.analytics-grid {
-		display: grid;
-		grid-template-columns: repeat(4, 1fr);
-		gap: 1rem;
-		margin-bottom: 1.5rem;
-	}
-
-	.analytics-stat {
-		text-align: center;
-		padding: 1rem;
-		background: rgba(99, 102, 241, 0.1);
-		border-radius: 10px;
-	}
-
-	.analytics-stat .stat-value {
-		display: block;
-		font-size: 1.75rem;
-		font-weight: 700;
-		color: var(--text-primary);
-		margin-bottom: 0.25rem;
-	}
-
-	.analytics-stat .stat-label {
-		font-size: 0.8rem;
-		color: var(--text-tertiary);
-	}
-
-	.top-videos-section,
-	.categories-stats-section {
-		margin-top: 1.5rem;
-		padding-top: 1.5rem;
-		border-top: 1px solid rgba(99, 102, 241, 0.1);
-	}
-
-	.top-videos-section h4,
-	.categories-stats-section h4 {
-		font-size: 0.9rem;
-		font-weight: 600;
-		color: var(--text-secondary);
-		margin: 0 0 1rem 0;
-	}
-
-	.top-videos-list {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-	}
-
-	.top-video-item {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-		padding: 0.75rem;
-		background: rgba(13, 17, 23, 0.6);
-		border-radius: 8px;
-	}
-
-	.top-video-item .rank {
-		font-weight: 700;
-		color: var(--warning-emphasis);
-		min-width: 24px;
-	}
-
-	.top-video-item .title {
-		flex: 1;
-		color: var(--text-primary);
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	.top-video-item .views {
-		color: var(--text-tertiary);
-		font-size: 0.85rem;
-	}
-
-	.used-categories-tags {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.5rem;
-	}
+	/* Analytics Panel CSS — moved to _components/AnalyticsPanel.svelte */
 
 	/* Bunny Upload Modal */
 	.bunny-header h2 {
@@ -3667,36 +3150,7 @@
 	}
 
 	/* Embed Code Modal */
-	.embed-title {
-		margin-bottom: 1rem;
-		color: var(--text-primary);
-	}
-
-	.embed-code-box {
-		background: rgba(13, 17, 23, 0.8);
-		border: 1px solid rgba(230, 184, 0, 0.2);
-		border-radius: 8px;
-		padding: 1rem;
-		overflow-x: auto;
-	}
-
-	.embed-code-box pre {
-		margin: 0;
-		white-space: pre-wrap;
-		word-break: break-all;
-	}
-
-	.embed-code-box code {
-		font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
-		font-size: 0.8rem;
-		color: var(--primary-500);
-	}
-
-	.embed-hint {
-		margin-top: 1rem;
-		font-size: 0.85rem;
-		color: var(--text-tertiary);
-	}
+	/* .embed-title / .embed-code-box / .embed-hint — moved to _components/EmbedCodeModal.svelte */
 
 	@media (max-width: 768px) {
 		.room-tabs {
@@ -3707,16 +3161,7 @@
 			justify-content: space-between;
 		}
 
-		.selected-room-header {
-			flex-direction: column;
-			gap: 1rem;
-			text-align: center;
-		}
-
-		.selected-room-stats {
-			width: 100%;
-			justify-content: space-around;
-		}
+		/* .selected-room-header / .selected-room-stats responsive rules moved to _components/SelectedRoomHeader.svelte */
 
 		.form-row {
 			grid-template-columns: 1fr;
@@ -3735,12 +3180,8 @@
 			overflow-y: auto;
 		}
 
-		.analytics-grid {
-			grid-template-columns: repeat(2, 1fr);
-		}
+		/* .analytics-grid responsive moved to _components/AnalyticsPanel.svelte */
 
-		.header-actions {
-			flex-wrap: wrap;
-		}
+		/* .header-actions responsive moved to _components/PageHeader.svelte */
 	}
 </style>
