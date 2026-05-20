@@ -208,29 +208,37 @@
 		loading = true;
 		error = null;
 		try {
+			type ContactRes = { data?: Contact } | Contact;
+			type TimelineRes = { data?: TimelineEvent[] } | TimelineEvent[];
+			type EmailsRes = { data?: EmailActivity[] } | EmailActivity[];
+			type NotesRes = { data?: Note[] } | Note[];
 			const [contactRes, timelineRes, emailsRes, notesRes] = await Promise.allSettled([
-				api.get(`/api/admin/crm/contacts/${contactId}`),
-				api.get(`/api/admin/crm/contacts/${contactId}/timeline`),
-				api.get(`/api/admin/crm/contacts/${contactId}/emails`),
-				api.get(`/api/admin/crm/contacts/${contactId}/notes`)
+				api.get<ContactRes>(`/api/admin/crm/contacts/${contactId}`),
+				api.get<TimelineRes>(`/api/admin/crm/contacts/${contactId}/timeline`),
+				api.get<EmailsRes>(`/api/admin/crm/contacts/${contactId}/emails`),
+				api.get<NotesRes>(`/api/admin/crm/contacts/${contactId}/notes`)
 			]);
 
 			if (contactRes.status === 'fulfilled') {
-				contact = contactRes.value?.data || contactRes.value;
+				const v = contactRes.value;
+				contact = v && 'data' in v && v.data ? v.data : (v as Contact);
 			} else {
 				throw new Error('Failed to load contact');
 			}
 
 			if (timelineRes.status === 'fulfilled') {
-				timeline = timelineRes.value?.data || timelineRes.value || [];
+				const v = timelineRes.value;
+				timeline = Array.isArray(v) ? v : v?.data || [];
 			}
 
 			if (emailsRes.status === 'fulfilled') {
-				emailHistory = emailsRes.value?.data || emailsRes.value || [];
+				const v = emailsRes.value;
+				emailHistory = Array.isArray(v) ? v : v?.data || [];
 			}
 
 			if (notesRes.status === 'fulfilled') {
-				notes = notesRes.value?.data || notesRes.value || [];
+				const v = notesRes.value;
+				notes = Array.isArray(v) ? v : v?.data || [];
 			}
 		} catch (e) {
 			logger.error('Failed to load contact', { error: e });
@@ -242,17 +250,23 @@
 
 	async function loadAvailableTagsAndLists() {
 		try {
+			type TagOption = { id: string; name: string; color?: string };
+			type ListOption = { id: string; name: string };
+			type TagsRes = { data?: TagOption[] } | TagOption[];
+			type ListsRes = { data?: ListOption[] } | ListOption[];
 			const [tagsRes, listsRes] = await Promise.allSettled([
-				api.get('/api/admin/crm/tags'),
-				api.get('/api/admin/crm/lists')
+				api.get<TagsRes>('/api/admin/crm/tags'),
+				api.get<ListsRes>('/api/admin/crm/lists')
 			]);
 
 			if (tagsRes.status === 'fulfilled') {
-				availableTags = tagsRes.value?.data || tagsRes.value || [];
+				const v = tagsRes.value;
+				availableTags = Array.isArray(v) ? v : v?.data || [];
 			}
 
 			if (listsRes.status === 'fulfilled') {
-				availableLists = listsRes.value?.data || listsRes.value || [];
+				const v = listsRes.value;
+				availableLists = Array.isArray(v) ? v : v?.data || [];
 			}
 		} catch (e) {
 			logger.error('Failed to load tags/lists', { error: e });
@@ -335,17 +349,25 @@
 		if (availableEmailTemplates.length > 0) return; // Cache check
 		loadingTemplates = true;
 		try {
-			const response = await api.get('/api/admin/email/templates');
-			const templates = response?.data || response || [];
-			availableEmailTemplates = Array.isArray(templates)
-				? templates.map((t: any) => ({
-						id: t.id,
-						name: t.name || t.title || 'Untitled Template',
-						subject: t.subject || '',
-						body_html: t.body_html || t.body || '',
-						body_text: t.body_text || ''
-					}))
-				: [];
+			type TemplateRow = {
+				id: string | number;
+				name?: string;
+				title?: string;
+				subject?: string;
+				body_html?: string;
+				body?: string;
+				body_text?: string;
+			};
+			type TemplatesRes = { data?: TemplateRow[] } | TemplateRow[];
+			const response = await api.get<TemplatesRes>('/api/admin/email/templates');
+			const templates = Array.isArray(response) ? response : response?.data || [];
+			availableEmailTemplates = templates.map((t) => ({
+				id: t.id,
+				name: t.name || t.title || 'Untitled Template',
+				subject: t.subject || '',
+				body_html: t.body_html || t.body || '',
+				body_text: t.body_text || ''
+			}));
 		} catch (e) {
 			logger.error('Failed to load email templates', { error: e });
 			availableEmailTemplates = [];

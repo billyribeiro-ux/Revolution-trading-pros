@@ -100,13 +100,19 @@
 		error = '';
 
 		try {
-			const response = await api.get('/api/admin/crm/campaigns', {
-				params: {
+			// LATENT BUG FIX (R12-A): the previous call passed `{ params: {...} }`
+			// as the 2nd arg, but `api.get(endpoint, params)` expects the params
+			// object directly — the old code shipped `?params=[object+Object]`
+			// to the backend. With QueryParams typing the bug now surfaces at
+			// compile time.
+			const response = await api.get<{ data?: Campaign[] } | Campaign[]>(
+				'/api/admin/crm/campaigns',
+				{
 					search: searchQuery || undefined,
 					status: selectedStatus !== 'all' ? selectedStatus : undefined
 				}
-			});
-			campaigns = response?.data || response || [];
+			);
+			campaigns = Array.isArray(response) ? response : response?.data || [];
 
 			stats = {
 				total: campaigns.length,

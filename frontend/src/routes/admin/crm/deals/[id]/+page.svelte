@@ -116,10 +116,12 @@
 		error = null;
 
 		try {
+			type TimelineRes = { data?: TimelineEvent[] } | TimelineEvent[];
+			type NotesRes = { data?: DealNote[] } | DealNote[];
 			const [dealRes, timelineRes, notesRes] = await Promise.allSettled([
 				crmAPI.getDeal(dealId),
-				api.get(`/api/admin/crm/deals/${dealId}/timeline`),
-				api.get(`/api/admin/crm/deals/${dealId}/notes`)
+				api.get<TimelineRes>(`/api/admin/crm/deals/${dealId}/timeline`),
+				api.get<NotesRes>(`/api/admin/crm/deals/${dealId}/notes`)
 			]);
 
 			if (dealRes.status === 'fulfilled') {
@@ -138,11 +140,13 @@
 			}
 
 			if (timelineRes.status === 'fulfilled') {
-				timeline = timelineRes.value?.data || timelineRes.value || [];
+				const v = timelineRes.value;
+				timeline = Array.isArray(v) ? v : v?.data || [];
 			}
 
 			if (notesRes.status === 'fulfilled') {
-				notes = notesRes.value?.data || notesRes.value || [];
+				const v = notesRes.value;
+				notes = Array.isArray(v) ? v : v?.data || [];
 			}
 		} catch (e) {
 			console.error('Failed to load deal:', e);

@@ -92,8 +92,9 @@
 		error = '';
 
 		try {
-			const response = await api.get('/api/admin/crm/segments');
-			segments = response?.data || response || [];
+			type SegmentsRes = { data?: DynamicSegment[] } | DynamicSegment[];
+			const response = await api.get<SegmentsRes>('/api/admin/crm/segments');
+			segments = Array.isArray(response) ? response : response?.data || [];
 
 			stats = {
 				total: segments.length,
