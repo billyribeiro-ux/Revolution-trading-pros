@@ -7,32 +7,15 @@
 	// FIX-2026-04-26: alert() calls replaced with existing toastStore import below.
 	import {
 		IconUsers,
-		IconTrendingUp,
-		IconTrendingDown,
-		IconCurrencyDollar,
-		IconCrown,
-		IconAlertTriangle,
 		IconMail,
 		IconSearch,
 		IconFilter,
 		IconDownload,
-		IconRefresh,
-		IconChevronLeft,
-		IconChevronRight,
 		IconExternalLink,
-		IconUserCheck,
-		IconCreditCard,
-		IconChartBar,
-		IconX,
-		IconSend,
-		IconUpload,
-		IconUserPlus,
 		IconEdit,
 		IconTrash,
 		IconBan,
-		IconPlayerPlay,
-		IconFileSpreadsheet,
-		IconPdf
+		IconPlayerPlay
 	} from '$lib/icons';
 	import { membersApi } from '$lib/api/members';
 	import { toastStore } from '$lib/stores/toast.svelte';
@@ -42,6 +25,16 @@
 	import MemberFormModal from '$lib/components/admin/MemberFormModal.svelte';
 	import MemberDetailDrawer from '$lib/components/admin/MemberDetailDrawer.svelte';
 	import ActionsDropdown from '$lib/components/admin/ActionsDropdown.svelte';
+
+	// Route-local extractions
+	import ErrorBanner from './_components/ErrorBanner.svelte';
+	import TempPasswordModal from './_components/TempPasswordModal.svelte';
+	import ImportModal from './_components/ImportModal.svelte';
+	import EmailModal from './_components/EmailModal.svelte';
+	import TopServicesSection from './_components/TopServicesSection.svelte';
+	import StatsGrid from './_components/StatsGrid.svelte';
+	import MembersPagination from './_components/MembersPagination.svelte';
+	import PageHeader from './_components/PageHeader.svelte';
 
 	// Reactive state from stores
 	let members = $derived(membersStore.members);
@@ -434,6 +427,28 @@
 		}
 		return member.name?.slice(0, 2).toUpperCase() || 'U';
 	}
+
+	// Discriminated dispatcher for PageHeader actions (R10-C pattern)
+	import type { HeaderAction } from './_components/PageHeader.svelte';
+	function handleHeaderAction(action: HeaderAction) {
+		switch (action.type) {
+			case 'refresh':
+				handleRefresh();
+				break;
+			case 'import':
+				showImportModal = true;
+				break;
+			case 'export':
+				handleExportAdvanced(action.format);
+				break;
+			case 'win-back':
+				goto('/admin/members/churned');
+				break;
+			case 'create':
+				showCreateModal = true;
+				break;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -451,195 +466,27 @@
 	<div class="admin-page-container">
 		<!-- Error Banner -->
 		{#if initError}
-			<div class="error-banner">
-				<IconAlertTriangle size={20} />
-				<span>{initError}</span>
-				<button onclick={() => window.location.reload()}>Refresh Page</button>
-			</div>
+			<ErrorBanner message={initError} onRefresh={() => window.location.reload()} />
 		{/if}
 
 		<!-- Header - Centered Style -->
-		<header class="page-header">
-			<h1>Members Command Center</h1>
-			<p class="subtitle">Comprehensive member management and analytics</p>
-			<div class="header-actions">
-				<button class="btn-secondary" onclick={handleRefresh} title="Refresh data">
-					<IconRefresh size={18} />
-					Refresh
-				</button>
-				<button class="btn-secondary" onclick={() => (showImportModal = true)}>
-					<IconUpload size={18} />
-					Import
-				</button>
-				<div class="export-dropdown">
-					<button
-						class="btn-secondary"
-						onclick={() => handleExportAdvanced(exportFormat)}
-						disabled={exporting}
-					>
-						<IconDownload size={18} />
-						{exporting ? 'Exporting...' : `Export ${exportFormat.toUpperCase()}`}
-					</button>
-					<div class="export-options">
-						<button onclick={() => handleExportAdvanced('csv')} disabled={exporting}>
-							<IconDownload size={14} />
-							CSV
-						</button>
-						<button onclick={() => handleExportAdvanced('xlsx')} disabled={exporting}>
-							<IconFileSpreadsheet size={14} />
-							Excel
-						</button>
-						<button onclick={() => handleExportAdvanced('pdf')} disabled={exporting}>
-							<IconPdf size={14} />
-							PDF
-						</button>
-					</div>
-				</div>
-				<button class="btn-secondary" onclick={() => goto('/admin/members/churned')}>
-					<IconAlertTriangle size={18} />
-					Win-Back
-				</button>
-				<button class="btn-primary" onclick={() => (showCreateModal = true)}>
-					<IconUserPlus size={18} />
-					Create Member
-				</button>
-			</div>
-		</header>
+		<PageHeader {exportFormat} {exporting} onAction={handleHeaderAction} />
 
 		<!-- Stats Grid -->
 		{#if stats}
-			<div class="stats-grid">
-				<!-- Total Members -->
-				<div class="stat-card gradient-purple">
-					<div class="stat-icon">
-						<IconUsers size={28} />
-					</div>
-					<div class="stat-content">
-						<div class="stat-label">Total Members</div>
-						<div class="stat-value">{stats.overview.total_members.toLocaleString()}</div>
-						<div class="stat-change positive">
-							<IconTrendingUp size={14} />
-							+{stats.overview.new_this_month} this month
-						</div>
-					</div>
-					<div class="stat-sparkline">
-						{#each (stats.growth_trend || []).slice(-6) as point, i (i)}
-							<div
-								class="sparkline-bar"
-								style="height: {(point.new /
-									Math.max(...(stats.growth_trend || []).map((p) => p.new))) *
-									100}%"
-							></div>
-						{/each}
-					</div>
-				</div>
-
-				<!-- Active Subscribers -->
-				<div class="stat-card gradient-emerald">
-					<div class="stat-icon">
-						<IconUserCheck size={28} />
-					</div>
-					<div class="stat-content">
-						<div class="stat-label">Active Subscribers</div>
-						<div class="stat-value">{stats.subscriptions.active.toLocaleString()}</div>
-						<div class="stat-change neutral">
-							<IconCrown size={14} />
-							{stats.subscriptions.trial} in trial
-						</div>
-					</div>
-					<div class="stat-ring">
-						<svg aria-hidden="true" viewBox="0 0 36 36">
-							<circle
-								cx="18"
-								cy="18"
-								r="16"
-								fill="none"
-								stroke="currentColor"
-								stroke-opacity="0.2"
-								stroke-width="3"
-							></circle>
-							<circle
-								cx="18"
-								cy="18"
-								r="16"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="3"
-								stroke-dasharray="{stats.overview.total_members > 0
-									? (stats.subscriptions.active / stats.overview.total_members) * 100
-									: 0} 100"
-								stroke-linecap="round"
-								transform="rotate(-90 18 18)"
-							></circle>
-						</svg>
-						<span
-							>{stats.overview.total_members > 0
-								? Math.round(
-										(stats.subscriptions.active / stats.overview.total_members) * 100
-									)
-								: 0}%</span
-						>
-					</div>
-				</div>
-
-				<!-- Monthly Recurring Revenue -->
-				<div class="stat-card gradient-gold">
-					<div class="stat-icon">
-						<IconCreditCard size={28} />
-					</div>
-					<div class="stat-content">
-						<div class="stat-label">Monthly Revenue</div>
-						<div class="stat-value">{formatCurrency(stats?.revenue?.mrr ?? 0)}</div>
-						<div class="stat-change neutral">
-							<IconCurrencyDollar size={14} />
-							{formatCurrency(stats?.revenue?.avg_ltv ?? 0)} avg LTV
-						</div>
-					</div>
-					<div class="stat-glow"></div>
-				</div>
-
-				<!-- Churn Rate -->
-				<div class="stat-card gradient-red">
-					<div class="stat-icon">
-						<IconTrendingDown size={28} />
-					</div>
-					<div class="stat-content">
-						<div class="stat-label">Churn Rate</div>
-						<div class="stat-value">{stats?.subscriptions?.churn_rate ?? 0}%</div>
-						<div class="stat-change negative">
-							<IconAlertTriangle size={14} />
-							{stats?.subscriptions?.churned ?? 0} churned
-						</div>
-					</div>
-					<button class="stat-action" onclick={() => goto('/admin/members/churned')}>
-						Recover <IconExternalLink size={14} />
-					</button>
-				</div>
-			</div>
+			<StatsGrid
+				{stats}
+				{formatCurrency}
+				onRecoverChurned={() => goto('/admin/members/churned')}
+			/>
 		{/if}
 
 		<!-- Top Services -->
 		{#if stats?.top_services && stats.top_services.length > 0}
-			<div class="top-services-section">
-				<h3>Top Services by Members</h3>
-				<div class="services-grid">
-					{#each stats.top_services as service (service.id)}
-						<button
-							class="service-card"
-							onclick={() => goto(`/admin/members/service/${service.id}`)}
-						>
-							<div class="service-icon">
-								<IconChartBar size={20} />
-							</div>
-							<div class="service-info">
-								<div class="service-name">{service.name}</div>
-								<div class="service-type">{service.type}</div>
-							</div>
-							<div class="service-count">{service.members_count}</div>
-						</button>
-					{/each}
-				</div>
-			</div>
+			<TopServicesSection
+				services={stats.top_services}
+				onSelectService={(id) => goto(`/admin/members/service/${id}`)}
+			/>
 		{/if}
 
 		<!-- Toolbar -->
@@ -842,38 +689,10 @@
 
 				<!-- Pagination -->
 				{#if pagination}
-					<div class="pagination">
-						<div class="pagination-info">
-							<!-- FIX-2026-04-26 (audit 02 §P2-7): off-by-one on empty list
-								(used to show "Showing 1 to 0 of 0 members"). -->
-							Showing {pagination.total === 0
-								? 0
-								: (pagination.current_page - 1) * pagination.per_page + 1} to {Math.min(
-								pagination.current_page * pagination.per_page,
-								pagination.total
-							)} of {pagination.total} members
-						</div>
-						<div class="pagination-controls">
-							<button
-								class="page-btn"
-								disabled={pagination.current_page === 1}
-								onclick={() => membersStore.goToPage(pagination.current_page - 1)}
-							>
-								<IconChevronLeft size={18} />
-							</button>
-							<span class="page-indicator"
-								>Page {pagination.current_page} of {Math.max(pagination.last_page, 1)}</span
-							>
-							<button
-								class="page-btn"
-								disabled={pagination.current_page >= Math.max(pagination.last_page, 1) ||
-									pagination.total === 0}
-								onclick={() => membersStore.goToPage(pagination.current_page + 1)}
-							>
-								<IconChevronRight size={18} />
-							</button>
-						</div>
-					</div>
+					<MembersPagination
+						{pagination}
+						onGoToPage={(page) => membersStore.goToPage(page)}
+					/>
 				{/if}
 			{/if}
 		</div>
@@ -881,160 +700,27 @@
 	<!-- End admin-page-container -->
 </div>
 
-<!-- Email Modal -->
 {#if showEmailModal}
-	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<div
-		class="modal-overlay"
-		onclick={() => (showEmailModal = false)}
-		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showEmailModal = false)}
-		role="dialog"
-		tabindex="-1"
-		aria-modal="true"
-	>
-		<div
-			class="modal-content"
-			onclick={(e: MouseEvent) => e.stopPropagation()}
-			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
-			role="document"
-		>
-			<div class="modal-header">
-				<h2>Send Email to {selectedMembers.size} Member{selectedMembers.size > 1 ? 's' : ''}</h2>
-				<button class="close-btn" onclick={() => (showEmailModal = false)}>
-					<IconX size={20} />
-				</button>
-			</div>
-
-			<div class="modal-body">
-				<div class="template-selector">
-					<span class="template-label">Quick Templates</span>
-					<div class="template-buttons">
-						{#each emailStore.presetTemplates as template (template.name)}
-							<button class="template-btn" onclick={() => applyTemplate(template)}>
-								{template.name}
-							</button>
-						{/each}
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label for="email-subject">Subject</label>
-					<input
-						id="email-subject"
-						name="email-subject"
-						type="text"
-						bind:value={emailSubject}
-						placeholder="Email subject..."
-					/>
-				</div>
-
-				<div class="form-group">
-					<label for="email-body">Body</label>
-					<textarea
-						id="email-body"
-						bind:value={emailBody}
-						rows="10"
-						placeholder="Email body... Use {{ name }} for personalization"
-					></textarea>
-				</div>
-			</div>
-
-			<div class="modal-footer">
-				<button class="btn-secondary" onclick={() => (showEmailModal = false)}>Cancel</button>
-				<button
-					class="btn-primary"
-					onclick={handleBulkEmail}
-					disabled={!emailSubject || !emailBody}
-				>
-					<IconSend size={18} />
-					Send Email
-				</button>
-			</div>
-		</div>
-	</div>
+	<EmailModal
+		recipientCount={selectedMembers.size}
+		templates={emailStore.presetTemplates}
+		bind:subject={emailSubject}
+		bind:body={emailBody}
+		onClose={() => (showEmailModal = false)}
+		onApplyTemplate={applyTemplate}
+		onSend={handleBulkEmail}
+	/>
 {/if}
 
-<!-- Import Modal -->
 {#if showImportModal}
-	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<div
-		class="modal-overlay"
-		onclick={() => (showImportModal = false)}
-		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showImportModal = false)}
-		role="dialog"
-		tabindex="-1"
-		aria-modal="true"
-	>
-		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-		<div
-			class="modal-content"
-			onclick={(e: MouseEvent) => e.stopPropagation()}
-			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
-			role="document"
-		>
-			<div class="modal-header">
-				<h2>Import Members</h2>
-				<button class="close-btn" onclick={() => (showImportModal = false)}>
-					<IconX size={20} />
-				</button>
-			</div>
-
-			<div class="modal-body">
-				<div class="import-instructions">
-					<h4>CSV Format Requirements</h4>
-					<ul>
-						<li>First row must contain column headers</li>
-						<li>Required columns: <code>email</code>, <code>name</code></li>
-						<li>
-							Optional: <code>first_name</code>, <code>last_name</code>, <code>phone</code>,
-							<code>tags</code>
-						</li>
-						<li>Maximum file size: 10MB</li>
-					</ul>
-				</div>
-
-				<div class="file-upload">
-					<label for="import-file" class="upload-zone" class:has-file={importFile}>
-						<IconUpload size={32} />
-						{#if importFile}
-							<span class="file-name">{importFile.name}</span>
-							<span class="file-size">{(importFile.size / 1024).toFixed(1)} KB</span>
-						{:else}
-							<span>Click to select CSV file</span>
-							<span class="upload-hint">or drag and drop</span>
-						{/if}
-					</label>
-					<input
-						id="import-file"
-						name="import-file"
-						type="file"
-						accept=".csv"
-						onchange={handleFileSelect}
-						style="display: none"
-					/>
-				</div>
-
-				{#if importFile}
-					<button
-						class="btn-secondary"
-						style="margin-top: 1rem"
-						onclick={() => (importFile = null)}
-					>
-						<IconX size={16} />
-						Remove File
-					</button>
-				{/if}
-			</div>
-
-			<div class="modal-footer">
-				<button class="btn-secondary" onclick={() => (showImportModal = false)}>Cancel</button>
-				<button class="btn-primary" onclick={handleImport} disabled={!importFile || importing}>
-					<IconUpload size={18} />
-					{importing ? 'Importing...' : 'Import Members'}
-				</button>
-			</div>
-		</div>
-	</div>
+	<ImportModal
+		file={importFile}
+		{importing}
+		onClose={() => (showImportModal = false)}
+		onFileSelect={handleFileSelect}
+		onRemoveFile={() => (importFile = null)}
+		onImport={handleImport}
+	/>
 {/if}
 
 <!-- ═══════════════════════════════════════════════════════════════════════════════════
@@ -1102,35 +788,13 @@
 	/>
 {/if}
 
-<!-- FIX-2026-04-26 (audit 02 §P1-9): one-time temporary-password reveal modal.
-     Replaces the old plaintext-password-in-toast pattern. The modal is the
-     ONLY surface that ever renders the password (no logging, no toast). -->
 {#if temporaryPasswordToReveal}
-	<div
-		class="temp-password-overlay"
-		role="dialog"
-		aria-modal="true"
-		aria-labelledby="temp-password-title"
-	>
-		<div class="temp-password-modal">
-			<h2 id="temp-password-title">Temporary password</h2>
-			<p class="temp-password-subtitle">
-				One-time view for <strong>{temporaryPasswordMember}</strong>. Copy it now — it will
-				not be shown again, and we never store it server-side after creation.
-			</p>
-			<div class="temp-password-value">
-				<code>{temporaryPasswordToReveal}</code>
-			</div>
-			<div class="temp-password-actions">
-				<button type="button" class="btn-primary" onclick={copyTemporaryPassword}>
-					Copy to clipboard
-				</button>
-				<button type="button" class="btn-secondary" onclick={dismissTemporaryPassword}>
-					I have recorded this — close
-				</button>
-			</div>
-		</div>
-	</div>
+	<TempPasswordModal
+		password={temporaryPasswordToReveal}
+		memberName={temporaryPasswordMember}
+		onCopy={copyTemporaryPassword}
+		onDismiss={dismissTemporaryPassword}
+	/>
 {/if}
 
 <style>
@@ -1215,278 +879,6 @@
 		66% {
 			transform: translate(-20px, 20px) scale(0.95);
 		}
-	}
-
-	/* Header - CENTERED */
-	.page-header {
-		text-align: center;
-		margin-bottom: 2rem;
-	}
-
-	.header-content {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-	}
-
-	.header-title {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-	}
-
-	.title-icon {
-		width: 56px;
-		height: 56px;
-		background: linear-gradient(135deg, var(--admin-accent-primary), var(--admin-accent-secondary));
-		border-radius: 16px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: white;
-		box-shadow: 0 8px 32px var(--admin-accent-glow, rgba(230, 184, 0, 0.3));
-	}
-
-	.subtitle {
-		color: var(--text-tertiary);
-		font-size: 0.875rem;
-		margin: 0 0 1.5rem;
-	}
-
-	.header-actions {
-		display: flex;
-		justify-content: center;
-		gap: 0.75rem;
-	}
-
-	/* Stats Grid */
-	.stats-grid {
-		display: grid;
-		grid-template-columns: repeat(4, 1fr);
-		gap: 1.5rem;
-		margin-bottom: 2rem;
-	}
-
-	.stat-card {
-		background: rgba(22, 27, 34, 0.8);
-		border-radius: 12px;
-		padding: 1.5rem;
-		position: relative;
-		overflow: hidden;
-		border: 1px solid var(--border-muted);
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-		backdrop-filter: blur(10px);
-	}
-
-	.stat-card.gradient-purple {
-		border-color: rgba(230, 184, 0, 0.3);
-	}
-	.stat-card.gradient-emerald {
-		border-color: rgba(16, 185, 129, 0.3);
-	}
-	.stat-card.gradient-gold {
-		border-color: rgba(251, 191, 36, 0.3);
-	}
-	.stat-card.gradient-red {
-		border-color: rgba(239, 68, 68, 0.3);
-	}
-
-	.stat-icon {
-		width: 48px;
-		height: 48px;
-		border-radius: 12px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.gradient-purple .stat-icon {
-		background: rgba(230, 184, 0, 0.15);
-		color: var(--primary-400);
-	}
-	.gradient-emerald .stat-icon {
-		background: rgba(16, 185, 129, 0.15);
-		color: var(--success-emphasis);
-	}
-	.gradient-gold .stat-icon {
-		background: rgba(251, 191, 36, 0.15);
-		color: var(--warning-emphasis);
-	}
-	.gradient-red .stat-icon {
-		background: rgba(239, 68, 68, 0.15);
-		color: var(--error-emphasis);
-	}
-
-	.stat-label {
-		font-size: 0.8125rem;
-		color: var(--admin-text-muted);
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-		font-weight: 600;
-	}
-
-	.stat-value {
-		font-size: 2rem;
-		font-weight: 800;
-		color: var(--admin-text-primary);
-	}
-
-	.stat-change {
-		display: flex;
-		align-items: center;
-		gap: 0.375rem;
-		font-size: 0.8125rem;
-		font-weight: 500;
-	}
-
-	.stat-change.positive {
-		color: var(--admin-success);
-	}
-	.stat-change.neutral {
-		color: var(--admin-text-muted);
-	}
-	.stat-change.negative {
-		color: var(--admin-error);
-	}
-
-	.stat-sparkline {
-		position: absolute;
-		right: 1rem;
-		bottom: 1rem;
-		display: flex;
-		align-items: flex-end;
-		gap: 3px;
-		height: 40px;
-	}
-
-	.sparkline-bar {
-		width: 6px;
-		background: rgba(230, 184, 0, 0.4);
-		border-radius: 2px;
-		min-height: 4px;
-	}
-
-	.stat-ring {
-		position: absolute;
-		right: 1rem;
-		top: 1rem;
-		width: 60px;
-		height: 60px;
-	}
-
-	.stat-ring svg {
-		width: 100%;
-		height: 100%;
-		color: var(--success-emphasis);
-	}
-
-	.stat-ring span {
-		position: absolute;
-		inset: 0;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-size: 0.75rem;
-		font-weight: 700;
-		color: var(--success-emphasis);
-	}
-
-	.stat-glow {
-		position: absolute;
-		inset: 0;
-		background: radial-gradient(circle at 80% 20%, rgba(251, 191, 36, 0.15), transparent 60%);
-		pointer-events: none;
-	}
-
-	.stat-action {
-		position: absolute;
-		right: 1rem;
-		bottom: 1rem;
-		padding: 0.375rem 0.75rem;
-		background: rgba(239, 68, 68, 0.15);
-		border: 1px solid rgba(239, 68, 68, 0.3);
-		border-radius: 6px;
-		color: var(--error-emphasis);
-		font-size: 0.75rem;
-		font-weight: 600;
-		cursor: pointer;
-		display: flex;
-		align-items: center;
-		gap: 0.375rem;
-		transition: all 0.2s;
-	}
-
-	.stat-action:hover {
-		background: rgba(239, 68, 68, 0.25);
-	}
-
-	/* Top Services */
-	.top-services-section {
-		margin-bottom: 2rem;
-	}
-
-	.top-services-section h3 {
-		font-size: 1.125rem;
-		font-weight: 600;
-		color: var(--text-primary);
-		margin-bottom: 1rem;
-	}
-
-	.services-grid {
-		display: flex;
-		gap: 1rem;
-		overflow-x: auto;
-		padding-bottom: 0.5rem;
-	}
-
-	.service-card {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-		padding: 1rem 1.5rem;
-		background: rgba(22, 27, 34, 0.8);
-		border: 1px solid var(--border-muted);
-		border-radius: 12px;
-		cursor: pointer;
-		transition: all 0.2s;
-		min-width: 200px;
-		backdrop-filter: blur(10px);
-	}
-
-	.service-card:hover {
-		border-color: rgba(230, 184, 0, 0.3);
-		transform: translateY(-2px);
-	}
-
-	.service-icon {
-		width: 40px;
-		height: 40px;
-		background: rgba(230, 184, 0, 0.15);
-		border-radius: 10px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: var(--primary-400);
-	}
-
-	.service-name {
-		font-weight: 600;
-		color: var(--text-primary);
-	}
-
-	.service-type {
-		font-size: 0.75rem;
-		color: var(--text-tertiary);
-		text-transform: capitalize;
-	}
-
-	.service-count {
-		margin-left: auto;
-		font-size: 1.25rem;
-		font-weight: 700;
-		color: var(--primary-400);
 	}
 
 	/* Toolbar */
@@ -1824,206 +1216,6 @@
 		color: var(--primary-500);
 	}
 
-	/* Pagination */
-	.pagination {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 1rem 1.5rem;
-		border-top: 1px solid var(--border-muted);
-	}
-
-	.pagination-info {
-		font-size: 0.875rem;
-		color: var(--text-tertiary);
-	}
-
-	.pagination-controls {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-	}
-
-	.page-btn {
-		width: 36px;
-		height: 36px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: rgba(148, 163, 184, 0.1);
-		border: 1px solid var(--border-default);
-		border-radius: 12px;
-		color: var(--text-secondary);
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.page-btn:hover:not(:disabled) {
-		background: rgba(230, 184, 0, 0.15);
-		border-color: rgba(230, 184, 0, 0.3);
-		color: var(--primary-500);
-	}
-
-	.page-btn:disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
-	}
-
-	.page-indicator {
-		font-size: 0.875rem;
-		color: var(--text-secondary);
-	}
-
-	/* Modal */
-	.modal-overlay {
-		position: fixed;
-		inset: 0;
-		background: rgba(0, 0, 0, 0.85);
-		backdrop-filter: blur(8px);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		z-index: 50;
-		padding: 2rem;
-	}
-
-	.modal-content {
-		background: linear-gradient(145deg, var(--bg-elevated) 0%, var(--bg-base) 100%);
-		border: 1px solid rgba(230, 184, 0, 0.2);
-		border-radius: 16px;
-		width: 100%;
-		max-width: 600px;
-		max-height: 90vh;
-		overflow-y: auto;
-		box-shadow:
-			0 25px 60px -15px rgba(0, 0, 0, 0.7),
-			0 0 40px -10px rgba(230, 184, 0, 0.1);
-	}
-
-	.modal-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 1.5rem;
-		border-bottom: 1px solid var(--border-muted);
-		background: rgba(13, 17, 23, 0.5);
-	}
-
-	.modal-header h2 {
-		font-size: 1.25rem;
-		font-weight: 600;
-		color: var(--text-primary);
-		margin: 0;
-	}
-
-	.close-btn {
-		width: 36px;
-		height: 36px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: rgba(100, 116, 139, 0.2);
-		border: 1px solid rgba(100, 116, 139, 0.3);
-		border-radius: 10px;
-		color: var(--text-secondary);
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.close-btn:hover {
-		background: rgba(100, 116, 139, 0.3);
-		color: var(--text-primary);
-	}
-
-	.modal-body {
-		padding: 1.5rem;
-	}
-
-	.template-selector {
-		margin-bottom: 1.5rem;
-	}
-
-	.template-label {
-		display: block;
-		font-size: 0.75rem;
-		font-weight: 600;
-		color: var(--text-secondary);
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-		margin-bottom: 0.75rem;
-	}
-
-	.template-buttons {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.5rem;
-	}
-
-	.template-btn {
-		padding: 0.625rem 1rem;
-		background: rgba(230, 184, 0, 0.1);
-		border: 1px solid rgba(230, 184, 0, 0.25);
-		border-radius: 10px;
-		color: var(--primary-500);
-		font-size: 0.8125rem;
-		font-weight: 600;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.template-btn:hover {
-		background: rgba(230, 184, 0, 0.2);
-		border-color: rgba(230, 184, 0, 0.4);
-		transform: translateY(-1px);
-	}
-
-	.form-group {
-		margin-bottom: 1.25rem;
-	}
-
-	.form-group label {
-		display: block;
-		font-size: 0.875rem;
-		font-weight: 600;
-		color: var(--text-primary);
-		margin-bottom: 0.5rem;
-	}
-
-	.form-group input,
-	.form-group textarea {
-		width: 100%;
-		padding: 0.75rem 1rem;
-		background: rgba(13, 17, 23, 0.6);
-		border: 1px solid var(--border-default);
-		border-radius: 10px;
-		color: var(--text-primary);
-		font-size: 0.9375rem;
-		font-family: inherit;
-		resize: vertical;
-		transition: all 0.2s;
-	}
-
-	.form-group input:focus,
-	.form-group textarea:focus {
-		outline: none;
-		border-color: var(--primary-500);
-		box-shadow: 0 0 0 3px rgba(230, 184, 0, 0.15);
-	}
-
-	.form-group input::placeholder,
-	.form-group textarea::placeholder {
-		color: var(--text-tertiary);
-	}
-
-	.modal-footer {
-		display: flex;
-		justify-content: flex-end;
-		gap: 0.75rem;
-		padding: 1.5rem;
-		border-top: 1px solid var(--border-muted);
-		background: rgba(13, 17, 23, 0.3);
-	}
-
 	/* Buttons - Email Templates Style */
 	.btn-secondary,
 	.btn-primary {
@@ -2134,10 +1326,6 @@
 			padding: 0.75rem;
 		}
 
-		.page-header h1 {
-			font-size: 1.5rem;
-		}
-
 		.stats-grid {
 			gap: 0.5rem;
 		}
@@ -2163,19 +1351,6 @@
 			padding: 0.5rem;
 		}
 
-		.page-header h1 {
-			font-size: 1.25rem;
-		}
-
-		.page-header {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: 0.75rem;
-		}
-
-		.header-actions {
-			width: 100%;
-		}
 
 		.stats-grid {
 			grid-template-columns: 1fr;
@@ -2255,8 +1430,7 @@
 			border-width: 2px;
 		}
 
-		.stat-value,
-		.page-header h1 {
+		.stat-value {
 			font-weight: 800;
 		}
 
@@ -2310,152 +1484,6 @@
 		}
 	}
 
-	/* Import Modal */
-	.import-instructions {
-		background: rgba(22, 27, 34, 0.6);
-		border: 1px solid var(--border-muted);
-		border-radius: 12px;
-		padding: 1rem 1.25rem;
-		margin-bottom: 1.5rem;
-	}
-
-	.import-instructions h4 {
-		color: var(--text-primary);
-		font-size: 0.875rem;
-		font-weight: 600;
-		margin: 0 0 0.75rem;
-	}
-
-	.import-instructions ul {
-		margin: 0;
-		padding-left: 1.25rem;
-		color: var(--text-secondary);
-		font-size: 0.8125rem;
-		line-height: 1.6;
-	}
-
-	.import-instructions code {
-		background: rgba(230, 184, 0, 0.2);
-		color: var(--primary-500);
-		padding: 0.125rem 0.375rem;
-		border-radius: 4px;
-		font-size: 0.75rem;
-	}
-
-	.file-upload {
-		margin-top: 1rem;
-	}
-
-	.upload-zone {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		padding: 2rem;
-		background: rgba(22, 27, 34, 0.6);
-		border: 2px dashed var(--border-default);
-		border-radius: 12px;
-		cursor: pointer;
-		color: var(--text-secondary);
-		text-align: center;
-		transition: all 0.2s;
-	}
-
-	.upload-zone:hover {
-		background: rgba(230, 184, 0, 0.1);
-		border-color: rgba(230, 184, 0, 0.4);
-		color: var(--primary-500);
-	}
-
-	.upload-zone.has-file {
-		background: rgba(16, 185, 129, 0.1);
-		border-color: rgba(16, 185, 129, 0.4);
-		color: var(--success-emphasis);
-	}
-
-	.upload-zone .file-name {
-		font-weight: 600;
-		color: var(--text-primary);
-		margin-top: 0.75rem;
-	}
-
-	.upload-zone .file-size {
-		font-size: 0.75rem;
-		color: var(--text-tertiary);
-	}
-
-	.upload-hint {
-		font-size: 0.75rem;
-		color: var(--text-tertiary);
-		margin-top: 0.25rem;
-	}
-
-	/* Export Dropdown */
-	.export-dropdown {
-		position: relative;
-		display: inline-block;
-	}
-
-	.export-dropdown:hover .export-options {
-		display: flex;
-	}
-
-	.export-options {
-		display: none;
-		position: absolute;
-		top: 100%;
-		left: 0;
-		z-index: 20;
-		flex-direction: column;
-		min-width: 140px;
-		background: var(--admin-surface-primary, rgba(30, 41, 59, 0.98));
-		border: 1px solid var(--admin-border-subtle, rgba(148, 163, 184, 0.15));
-		border-radius: var(--radius-md, 0.5rem);
-		padding: 0.375rem;
-		margin-top: 0.25rem;
-		box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.4);
-		animation: exportDropIn 0.15s ease;
-	}
-
-	@keyframes exportDropIn {
-		from {
-			opacity: 0;
-			transform: translateY(-6px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
-
-	.export-options button {
-		display: flex;
-		align-items: center;
-		gap: 0.625rem;
-		width: 100%;
-		padding: 0.5rem 0.75rem;
-		background: transparent;
-		border: none;
-		color: var(--admin-text-secondary, #cbd5e1);
-		font-family: var(--font-body), 'Roboto', sans-serif;
-		font-size: 0.8125rem;
-		font-weight: 500;
-		text-align: left;
-		border-radius: var(--radius-sm, 0.25rem);
-		cursor: pointer;
-		transition: all 0.15s ease;
-	}
-
-	.export-options button:hover:not(:disabled) {
-		background: var(--admin-surface-hover, rgba(230, 184, 0, 0.1));
-		color: var(--primary-500);
-	}
-
-	.export-options button:disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
-	}
-
 	/* Member Info Button - Clickable table cell */
 	.member-info-btn {
 		display: flex;
@@ -2490,35 +1518,4 @@
 	}
 
 	/* Error Banner */
-	.error-banner {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-		padding: 1rem 1.5rem;
-		background: rgba(239, 68, 68, 0.1);
-		border: 1px solid rgba(239, 68, 68, 0.3);
-		border-radius: 12px;
-		color: var(--error-emphasis);
-		margin-bottom: 1.5rem;
-	}
-
-	.error-banner span {
-		flex: 1;
-		font-weight: 500;
-	}
-
-	.error-banner button {
-		padding: 0.5rem 1rem;
-		background: rgba(239, 68, 68, 0.2);
-		border: 1px solid rgba(239, 68, 68, 0.3);
-		border-radius: 6px;
-		color: var(--error-emphasis);
-		font-weight: 600;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.error-banner button:hover {
-		background: rgba(239, 68, 68, 0.3);
-	}
 </style>
