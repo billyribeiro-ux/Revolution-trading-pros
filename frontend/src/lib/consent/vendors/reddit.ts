@@ -10,6 +10,7 @@
  */
 
 import { browser, dev } from '$app/environment';
+import { logger } from '$lib/utils/logger';
 import type { VendorConfig } from '../types';
 
 declare global {
@@ -54,7 +55,7 @@ function initializeReddit(pixelId: string): void {
 		window.rdt?.('track', 'PageVisit');
 		redditReady = true;
 		processEventQueue();
-		console.debug('[Reddit] Pixel initialized:', pixelId);
+		logger.debug('[Reddit] Pixel initialized:', pixelId);
 	};
 
 	document.head.appendChild(script);
@@ -84,7 +85,7 @@ export function trackRedditEvent(event: string, data?: Record<string, unknown>):
 	}
 
 	window.rdt?.('track', event, data);
-	console.debug('[Reddit] Tracked event:', event, data);
+	logger.debug('[Reddit] Tracked event:', event, data);
 }
 
 /**
@@ -99,7 +100,7 @@ export function trackRedditPageView(): void {
 	}
 
 	window.rdt?.('track', 'PageVisit');
-	console.debug('[Reddit] Tracked page view');
+	logger.debug('[Reddit] Tracked page view');
 }
 
 /**
@@ -120,7 +121,7 @@ export function setRedditLimitedDataUse(enabled: boolean): void {
 
 	if (window.rdt) {
 		window.rdt('set', 'optOut', enabled);
-		console.debug('[Reddit] Limited Data Use:', enabled ? 'enabled' : 'disabled');
+		logger.debug('[Reddit] Limited Data Use:', enabled ? 'enabled' : 'disabled');
 	}
 }
 
@@ -176,6 +177,8 @@ export const redditVendor: VendorConfig = {
 	load: () => {
 		const pixelId = PUBLIC_REDDIT_PIXEL_ID;
 		if (!pixelId) {
+			// Prod-only env-missing telemetry; logger.warn would be dev-gated (suppressed by !dev),
+			// so we deliberately use console.warn here (allowed by no-console config).
 			if (!dev) console.warn('[Reddit] Missing PUBLIC_REDDIT_PIXEL_ID environment variable');
 			return;
 		}
@@ -186,6 +189,6 @@ export const redditVendor: VendorConfig = {
 		redditReady = false;
 		limitedDataUseEnabled = false;
 		eventQueue.length = 0;
-		console.debug('[Reddit] Consent revoked');
+		logger.debug('[Reddit] Consent revoked');
 	}
 };
