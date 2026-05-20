@@ -43,6 +43,19 @@ interface WatchlistItem {
 	updatedAt: string;
 }
 
+/** PUT body — partial update of the item; admin form sends only changed fields. */
+interface WatchlistPutBody {
+	title?: string;
+	trader?: string;
+	traderImage?: string;
+	description?: string;
+	status?: 'published' | 'draft' | 'archived';
+	rooms?: string[];
+	videoSrc?: string;
+	videoPoster?: string;
+	spreadsheetSrc?: string;
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // MOCK DATA (shared reference)
 // ═══════════════════════════════════════════════════════════════════════════
@@ -144,8 +157,14 @@ const mockWatchlistItems: Record<string, WatchlistItem> = {
 // BACKEND FETCH
 // ═══════════════════════════════════════════════════════════════════════════
 
-async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Promise<any | null> {
-	const BACKEND_URL = env.BACKEND_URL || 'http://localhost:8080';
+function hasSuccess(value: unknown): value is { success: unknown } {
+	return typeof value === 'object' && value !== null && 'success' in value;
+}
+
+async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Promise<unknown> {
+	// CLAUDE.md hard rule: `env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080'`.
+	const BACKEND_URL =
+		env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 	try {
 		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
@@ -158,7 +177,7 @@ async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Pr
 		});
 
 		if (!response.ok) return null;
-		return await response.json();
+		return (await response.json()) as unknown;
 	} catch {
 		return null;
 	}
@@ -182,7 +201,7 @@ export const GET: RequestHandler = async ({ params, request }) => {
 
 	const backendData = await fetchFromBackend(`/api/watchlist/${slug}`, { headers });
 
-	if (backendData?.success) {
+	if (hasSuccess(backendData) && backendData.success) {
 		return json(backendData);
 	}
 
@@ -216,7 +235,7 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 		error(400, 'Slug is required');
 	}
 
-	const body = await request.json();
+	const body = (await request.json()) as WatchlistPutBody;
 
 	// Try backend first
 	const backendData = await fetchFromBackend(`/api/admin/watchlist/${slug}`, {
@@ -225,7 +244,7 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 		body: JSON.stringify(body)
 	});
 
-	if (backendData?.success) {
+	if (hasSuccess(backendData) && backendData.success) {
 		return json(backendData);
 	}
 
@@ -284,7 +303,7 @@ export const DELETE: RequestHandler = async ({ params, request }) => {
 		headers: { Authorization: authHeader }
 	});
 
-	if (backendData?.success) {
+	if (hasSuccess(backendData) && backendData.success) {
 		return json(backendData);
 	}
 

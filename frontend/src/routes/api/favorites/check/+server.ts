@@ -11,13 +11,20 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 
-const BACKEND_URL = env.BACKEND_URL || 'http://localhost:8080';
+// CLAUDE.md hard rule: `env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080'`.
+// R18-A: was missing the API_BASE_URL primary leg (existing 18-file violation
+// across `src/routes/api/`). Restored here.
+const BACKEND_URL =
+	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
+// Returns the parsed JSON body as `unknown` (or `null` on any failure) so
+// callers must narrow before reading fields. The previous `Promise<any | null>`
+// silently swallowed missing-field bugs.
 async function fetchFromBackend(
 	endpoint: string,
 	options: RequestInit = {},
 	cookies?: { get: (name: string) => string | undefined }
-): Promise<any | null> {
+): Promise<unknown> {
 	try {
 		const headers: Record<string, string> = {
 			'Content-Type': 'application/json',
@@ -45,11 +52,32 @@ async function fetchFromBackend(
 			return null;
 		}
 
-		return await response.json();
+		return (await response.json()) as unknown;
 	} catch (err) {
 		console.error('[Favorites Check API] Backend fetch failed:', err);
 		return null;
 	}
+}
+
+// ─── Local response shapes ────────────────────────────────────────────────
+// Backend at /api/favorites/check returns `{ success, is_favorited, data }`
+// (matches the envelope this proxy itself returns). The list fallback returns
+// `{ success, data: FavoriteRecord[], meta? }`.
+interface FavoriteRecord {
+	id: number;
+	item_type: string;
+	item_id: number;
+	[k: string]: unknown;
+}
+
+function isFavoriteRecord(value: unknown): value is FavoriteRecord {
+	if (typeof value !== 'object' || value === null) return false;
+	const obj = value as Record<string, unknown>;
+	return (
+		typeof obj.item_type === 'string' &&
+		typeof obj.item_id === 'number' &&
+		typeof obj.id === 'number'
+	);
 }
 
 // GET - Check if item is favorited
@@ -73,7 +101,14 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 		cookies
 	);
 
-	if (backendData?.success !== undefined) {
+	// Backend already shaped to the envelope — forward verbatim if `success`
+	// is present. Narrow `unknown` before the `?.success` read.
+	if (
+		typeof backendData === 'object' &&
+		backendData !== null &&
+		'success' in backendData &&
+		(backendData as { success?: unknown }).success !== undefined
+	) {
 		return json(backendData);
 	}
 
@@ -85,11 +120,17 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 
 	const listData = await fetchFromBackend(`/api/favorites?${params.toString()}`, {}, cookies);
 
-	if (listData?.data && Array.isArray(listData.data)) {
+	// Narrow `listData.data` to `unknown[]` before iterating.
+	const listDataArr =
+		typeof listData === 'object' && listData !== null && 'data' in listData
+			? (listData as { data: unknown }).data
+			: null;
+
+	if (Array.isArray(listDataArr)) {
 		const numericId = parseInt(itemId, 10);
-		const favorite = listData.data.find(
-			(f: any) => f.item_type === itemType && f.item_id === numericId
-		);
+		const favorite = listDataArr
+			.filter(isFavoriteRecord)
+			.find((f) => f.item_type === itemType && f.item_id === numericId);
 
 		return json({
 			success: true,

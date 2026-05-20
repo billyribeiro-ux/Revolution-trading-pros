@@ -11,13 +11,19 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 
-const BACKEND_URL = env.BACKEND_URL || 'http://localhost:8080';
+// CLAUDE.md hard rule: `env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080'`.
+const BACKEND_URL =
+	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+
+function hasSuccess(value: unknown): value is { success: unknown } {
+	return typeof value === 'object' && value !== null && 'success' in value;
+}
 
 async function fetchFromBackend(
 	endpoint: string,
 	options: RequestInit = {},
 	cookies?: { get: (name: string) => string | undefined }
-): Promise<any | null> {
+): Promise<unknown> {
 	try {
 		const headers: Record<string, string> = {
 			'Content-Type': 'application/json',
@@ -44,7 +50,7 @@ async function fetchFromBackend(
 			return null;
 		}
 
-		return await response.json();
+		return (await response.json()) as unknown;
 	} catch (err) {
 		console.error('[Favorites API] Backend fetch failed:', err);
 		return null;
@@ -61,7 +67,7 @@ export const DELETE: RequestHandler = async ({ params, cookies }) => {
 
 	const backendData = await fetchFromBackend(`/api/favorites/${id}`, { method: 'DELETE' }, cookies);
 
-	if (backendData?.success) {
+	if (hasSuccess(backendData) && backendData.success) {
 		return json(backendData);
 	}
 

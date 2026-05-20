@@ -48,6 +48,22 @@ export interface WatchlistItem {
 	updatedAt: string;
 }
 
+/** Shape of the POST body — every field optional from the wire; admin form validates required ones. */
+interface WatchlistPostBody {
+	title?: string;
+	trader?: string;
+	traderImage?: string;
+	weekOf?: string;
+	slug?: string;
+	videoSrc?: string;
+	videoPoster?: string;
+	spreadsheetSrc?: string;
+	watchlistDates?: WatchlistDate[];
+	description?: string;
+	status?: 'published' | 'draft' | 'archived';
+	rooms?: string[];
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // MOCK DATA - All rooms by default
 // ═══════════════════════════════════════════════════════════════════════════
@@ -196,8 +212,14 @@ const mockWatchlistItems: WatchlistItem[] = [
 // BACKEND FETCH
 // ═══════════════════════════════════════════════════════════════════════════
 
-async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Promise<any | null> {
-	const BACKEND_URL = env.BACKEND_URL || 'http://localhost:8080';
+function hasSuccess(value: unknown): value is { success: unknown } {
+	return typeof value === 'object' && value !== null && 'success' in value;
+}
+
+async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Promise<unknown> {
+	// CLAUDE.md hard rule: `env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080'`.
+	const BACKEND_URL =
+		env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 	try {
 		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
@@ -210,7 +232,7 @@ async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Pr
 		});
 
 		if (!response.ok) return null;
-		return await response.json();
+		return (await response.json()) as unknown;
 	} catch {
 		return null;
 	}
@@ -237,7 +259,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
 		headers
 	});
 
-	if (backendData?.success) {
+	if (hasSuccess(backendData) && backendData.success) {
 		return json(backendData);
 	}
 
@@ -318,12 +340,17 @@ export const POST: RequestHandler = async ({ request }) => {
 		error(401, 'Authentication required');
 	}
 
-	const body = await request.json();
+	const body = (await request.json()) as WatchlistPostBody;
 
 	// Validate required fields
 	if (!body.title || !body.trader || !body.weekOf) {
 		error(400, 'Title, trader, and weekOf are required');
 	}
+
+	// After the validation `error()` returns `never`, so the locals are non-null.
+	const title = body.title;
+	const trader = body.trader;
+	const weekOf = body.weekOf;
 
 	// Default to all rooms if not specified
 	const rooms = body.rooms || ALL_ROOM_IDS;
@@ -335,36 +362,36 @@ export const POST: RequestHandler = async ({ request }) => {
 		body: JSON.stringify({ ...body, rooms })
 	});
 
-	if (backendData?.success) {
+	if (hasSuccess(backendData) && backendData.success) {
 		return json(backendData, { status: 201 });
 	}
 
 	// Mock create - generate new item
 	const newId = Math.max(...mockWatchlistItems.map((i) => i.id), 0) + 1;
-	const weekOfDate = new Date(body.weekOf);
+	const weekOfDate = new Date(weekOf);
 	const dateStr = weekOfDate.toLocaleDateString('en-US', {
 		month: 'long',
 		day: 'numeric',
 		year: 'numeric'
 	});
-	const slugDate = body.weekOf.replace(/-/g, '').substring(4) + body.weekOf.substring(0, 4);
-	const traderSlug = body.trader.toLowerCase().replace(/\s+/g, '-');
+	const slugDate = weekOf.replace(/-/g, '').substring(4) + weekOf.substring(0, 4);
+	const traderSlug = trader.toLowerCase().replace(/\s+/g, '-');
 
 	const newItem: WatchlistItem = {
 		id: newId,
 		slug: body.slug || `${slugDate}-${traderSlug}`,
-		title: body.title,
+		title,
 		subtitle: `Week of ${dateStr}`,
-		trader: body.trader,
+		trader,
 		traderImage: body.traderImage,
 		datePosted: dateStr,
-		weekOf: body.weekOf,
+		weekOf,
 		video: {
 			src: body.videoSrc || '',
 			poster:
 				body.videoPoster ||
 				'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg',
-			title: body.title
+			title
 		},
 		spreadsheet: {
 			src: body.spreadsheetSrc || ''
@@ -372,7 +399,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		watchlistDates: body.watchlistDates || undefined,
 		description: body.description || `Week of ${dateStr}.`,
 		status: body.status || 'draft',
-		rooms: rooms,
+		rooms,
 		createdAt: new Date().toISOString(),
 		updatedAt: new Date().toISOString()
 	};
