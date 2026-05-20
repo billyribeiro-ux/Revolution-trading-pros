@@ -6,6 +6,7 @@
  */
 
 import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
+import { logger } from '$lib/utils/logger';
 
 // ============================================================================
 // Types
@@ -87,7 +88,7 @@ export function useMediaControls(options: MediaControlsOptions): MediaControlsRe
 							stateManager.setAudioState(blockId, { playing: true });
 						})
 						.catch((error) => {
-							console.error('Play failed:', error);
+							logger.error('Play failed:', error);
 							onError?.(error);
 							stateManager.setAudioState(blockId, { playing: false });
 						});
@@ -110,7 +111,7 @@ export function useMediaControls(options: MediaControlsOptions): MediaControlsRe
 					stateManager.setAudioState(blockId, { playing: true });
 				})
 				.catch((error) => {
-					console.error('Play failed:', error);
+					logger.error('Play failed:', error);
 					onError?.(error);
 				});
 		} else {
@@ -217,7 +218,7 @@ export function useMediaControls(options: MediaControlsOptions): MediaControlsRe
 		const errorMessage = mediaError?.message || 'Unknown media playback error';
 		const error = new Error(`Media playback error: ${errorMessage}`);
 
-		console.error(error);
+		logger.error(error);
 		onError?.(error);
 
 		stateManager.setAudioState(blockId, { playing: false });

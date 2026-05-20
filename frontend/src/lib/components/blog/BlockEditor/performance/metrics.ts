@@ -156,8 +156,6 @@ class PerformanceMetricsStore {
 
 		// Start memory monitoring
 		this.startMemoryMonitoring();
-
-		console.debug('[PerformanceMetrics] Initialized');
 	}
 
 	/**
@@ -203,8 +201,8 @@ class PerformanceMetricsStore {
 			});
 
 			this.longTaskObserver.observe({ entryTypes: ['longtask'] });
-		} catch (_e) {
-			console.debug('[PerformanceMetrics] Long task observer not supported');
+		} catch {
+			// Long task observer not supported in this browser; safe to ignore.
 		}
 	}
 
@@ -231,8 +229,8 @@ class PerformanceMetricsStore {
 				type: 'layout-shift',
 				buffered: true
 			});
-		} catch (_e) {
-			console.debug('[PerformanceMetrics] Layout shift observer not supported');
+		} catch {
+			// Layout shift observer not supported in this browser; safe to ignore.
 		}
 	}
 
