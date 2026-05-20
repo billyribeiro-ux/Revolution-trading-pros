@@ -20,6 +20,41 @@
 /// <reference lib="dom.iterable" />
 
 // ============================================================================
+// Non-standard Browser API Types
+// ============================================================================
+
+/**
+ * Chrome-only `performance.memory` shape. Non-standard, not in `lib.dom.d.ts`.
+ * Spec: https://developer.chrome.com/docs/devtools/performance/memory
+ */
+interface PerformanceMemory {
+	readonly usedJSHeapSize: number;
+	readonly totalJSHeapSize: number;
+	readonly jsHeapSizeLimit: number;
+}
+
+interface PerformanceWithMemory extends Performance {
+	readonly memory?: PerformanceMemory;
+}
+
+/**
+ * Network Information API shape. Non-standard, mostly Chromium-only.
+ * Spec: https://developer.mozilla.org/en-US/docs/Web/API/NetworkInformation
+ */
+interface NetworkInformation {
+	readonly effectiveType?: '4g' | '3g' | '2g' | 'slow-2g';
+	readonly downlink?: number;
+	readonly rtt?: number;
+	readonly saveData?: boolean;
+}
+
+interface NavigatorWithConnection extends Navigator {
+	readonly connection?: NetworkInformation;
+	readonly mozConnection?: NetworkInformation;
+	readonly webkitConnection?: NetworkInformation;
+}
+
+// ============================================================================
 // Types and Interfaces
 // ============================================================================
 
@@ -299,7 +334,7 @@ export class PerformanceMonitor {
 		if (typeof window === 'undefined') return null;
 
 		// Memory API is non-standard but available in Chrome
-		const perfMemory = (performance as any).memory;
+		const perfMemory = (performance as PerformanceWithMemory).memory;
 		if (!perfMemory) return null;
 
 		return {
@@ -342,9 +377,14 @@ export class PerformanceMonitor {
 
 /**
  * Debounce function with proper TypeScript generics
- * Delays execution until after a specified wait time has elapsed since the last call
+ * Delays execution until after a specified wait time has elapsed since the last call.
+ *
+ * The `(...args: never[]) => unknown` constraint is the strictest lodash-style
+ * shape: it accepts any function (`never[]` is assignable from any tuple of
+ * positional args via inference of `Parameters<T>`) without leaking `any` into
+ * the result type. The return is preserved through `ReturnType<T>`.
  */
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: never[]) => unknown>(
 	fn: T,
 	wait: number,
 	options?: { leading?: boolean; trailing?: boolean; maxWait?: number }
@@ -356,7 +396,7 @@ export function debounce<T extends (...args: any[]) => any>(
 	let lastCallTime: number | undefined;
 	let lastInvokeTime: number = 0;
 	let lastArgs: Parameters<T> | undefined;
-	let lastThis: any;
+	let lastThis: unknown;
 	let result: ReturnType<T> | undefined;
 
 	const invokeFunc = (time: number): ReturnType<T> => {
@@ -366,7 +406,7 @@ export function debounce<T extends (...args: any[]) => any>(
 		lastArgs = undefined;
 		lastThis = undefined;
 		lastInvokeTime = time;
-		result = fn.apply(thisArg, args);
+		result = fn.apply(thisArg, args) as ReturnType<T>;
 		return result as ReturnType<T>;
 	};
 
@@ -423,7 +463,7 @@ export function debounce<T extends (...args: any[]) => any>(
 		return leading ? invokeFunc(time) : result;
 	};
 
-	const debounced = function (this: any, ...args: Parameters<T>): ReturnType<T> | undefined {
+	const debounced = function (this: unknown, ...args: Parameters<T>): ReturnType<T> | undefined {
 		const time = Date.now();
 		const isInvoking = shouldInvoke(time);
 
@@ -475,9 +515,13 @@ export function debounce<T extends (...args: any[]) => any>(
 
 /**
  * Throttle function with proper TypeScript generics
- * Limits execution to at most once per specified interval
+ * Limits execution to at most once per specified interval.
+ *
+ * Same `(...args: never[]) => unknown` constraint as `debounce` above —
+ * accepts any function via tuple inference on `Parameters<T>`, returns
+ * `ReturnType<T>` without leaking `any`.
  */
-export function throttle<T extends (...args: any[]) => any>(
+export function throttle<T extends (...args: never[]) => unknown>(
 	fn: T,
 	limit: number,
 	options?: { leading?: boolean; trailing?: boolean }
@@ -487,7 +531,7 @@ export function throttle<T extends (...args: any[]) => any>(
 	let lastCallTime: number = 0;
 	let timeoutId: ReturnType<typeof setTimeout> | null = null;
 	let lastArgs: Parameters<T> | undefined;
-	let lastThis: any;
+	let lastThis: unknown;
 	let result: ReturnType<T>;
 
 	const invokeFunc = (): ReturnType<T> => {
@@ -496,11 +540,11 @@ export function throttle<T extends (...args: any[]) => any>(
 		lastArgs = undefined;
 		lastThis = undefined;
 		lastCallTime = Date.now();
-		result = fn.apply(thisArg, args);
+		result = fn.apply(thisArg, args) as ReturnType<T>;
 		return result;
 	};
 
-	const throttled = function (this: any, ...args: Parameters<T>): ReturnType<T> {
+	const throttled = function (this: unknown, ...args: Parameters<T>): ReturnType<T> {
 		const now = Date.now();
 		const remaining = limit - (now - lastCallTime);
 
@@ -549,7 +593,7 @@ export function throttle<T extends (...args: any[]) => any>(
 // Lazy Loading Utilities
 // ============================================================================
 
-const lazyLoadCache = new Map<string, Promise<any>>();
+const lazyLoadCache = new Map<string, Promise<unknown>>();
 
 /**
  * Lazy load a module or resource with caching
@@ -826,7 +870,12 @@ export async function preloadImages(
 // Memory Manager Class
 // ============================================================================
 
-type CleanupCallback = (heldValue: any) => void;
+type CleanupCallback = (heldValue: unknown) => void;
+
+// Held value shape passed through FinalizationRegistry's `register` to the
+// cleanup callback. `value` may be anything user-supplied — we don't read
+// inside `value`, just forward it to the optional caller cleanup.
+type FinalizationHeldValue = { key: string; value: unknown };
 
 // Check if FinalizationRegistry is available (not in Cloudflare Workers)
 const hasFinalizationRegistry = typeof FinalizationRegistry !== 'undefined';
@@ -837,7 +886,7 @@ const hasWeakRef = typeof WeakRef !== 'undefined';
  * Falls back to simple Map-based storage when these APIs are unavailable (e.g., Cloudflare Workers)
  */
 export class MemoryManager<T extends object> {
-	private registry: FinalizationRegistry<any> | null = null;
+	private registry: FinalizationRegistry<FinalizationHeldValue> | null = null;
 	private refs: Map<string, WeakRef<T>> = new Map();
 	private strongRefs: Map<string, T> = new Map(); // Fallback for environments without WeakRef
 	private cleanupCallbacks: Map<string, CleanupCallback> = new Map();
@@ -846,7 +895,7 @@ export class MemoryManager<T extends object> {
 		// FinalizationRegistry calls cleanup when objects are garbage collected
 		// Only create if available (not in Cloudflare Workers)
 		if (hasFinalizationRegistry) {
-			this.registry = new FinalizationRegistry((heldValue: { key: string; value: any }) => {
+			this.registry = new FinalizationRegistry((heldValue: FinalizationHeldValue) => {
 				this.refs.delete(heldValue.key);
 
 				// Call custom cleanup if registered
@@ -862,7 +911,7 @@ export class MemoryManager<T extends object> {
 	/**
 	 * Register an object to be tracked
 	 */
-	register(key: string, object: T, heldValue?: any, cleanup?: CleanupCallback): void {
+	register(key: string, object: T, heldValue?: unknown, cleanup?: CleanupCallback): void {
 		// Clean up existing ref if present
 		if (hasWeakRef) {
 			const existingRef = this.refs.get(key);
@@ -1142,10 +1191,8 @@ export function getNetworkInfo(): NetworkInfo {
 	defaultInfo.online = navigator.onLine;
 
 	// Check for Network Information API
-	const connection =
-		(navigator as any).connection ||
-		(navigator as any).mozConnection ||
-		(navigator as any).webkitConnection;
+	const nav = navigator as NavigatorWithConnection;
+	const connection = nav.connection || nav.mozConnection || nav.webkitConnection;
 
 	if (!connection) {
 		return defaultInfo;
@@ -1320,8 +1367,10 @@ export function reportLegacyMetric(metric: LegacyPerformanceMetric): void {
 	}
 
 	if (import.meta.env.PROD && typeof window !== 'undefined' && typeof navigator !== 'undefined') {
-		if ('gtag' in window) {
-			(window as any).gtag('event', metric.name, {
+		// `window.gtag` is declared in `src/app.d.ts` as
+		// `(...args: unknown[]) => void`; optional-chain handles the absent case.
+		if (typeof window.gtag === 'function') {
+			window.gtag('event', metric.name, {
 				value: Math.round(metric.value),
 				metric_rating: metric.rating,
 				metric_delta: metric.delta ? Math.round(metric.delta) : undefined,

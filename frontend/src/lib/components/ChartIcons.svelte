@@ -2,6 +2,11 @@
 	import { onMount } from 'svelte';
 	import * as d3 from 'd3';
 
+	// d3.Selection result of `svg.append('g')` — used as the parent group for
+	// every chart-drawing helper below. Datum is `unknown` since each helper
+	// either passes a primitive array or its own object shape via `.data()`.
+	type ChartGroup = d3.Selection<SVGGElement, unknown, null, undefined>;
+
 	interface Props {
 		type?: 'line' | 'area' | 'candle' | 'bar' | 'pie' | 'scatter' | 'heatmap' | 'radar';
 		size?: number;
@@ -52,7 +57,7 @@
 		}
 	});
 
-	function drawLineChart(g: any, width: number, height: number, color: string) {
+	function drawLineChart(g: ChartGroup, width: number, height: number, color: string) {
 		const data = [0.3, 0.5, 0.4, 0.7, 0.6, 0.8, 0.9, 0.7];
 		const x = d3
 			.scaleLinear()
@@ -74,7 +79,7 @@
 			.attr('d', line);
 	}
 
-	function drawAreaChart(g: any, width: number, height: number, color: string) {
+	function drawAreaChart(g: ChartGroup, width: number, height: number, color: string) {
 		const data = [0.3, 0.5, 0.4, 0.7, 0.6, 0.8, 0.9, 0.7];
 		const x = d3
 			.scaleLinear()
@@ -105,7 +110,7 @@
 			.attr('d', line);
 	}
 
-	function drawCandlestickChart(g: any, width: number, height: number, _color: string) {
+	function drawCandlestickChart(g: ChartGroup, width: number, height: number, _color: string) {
 		const candles = [
 			{ open: 0.4, close: 0.6, high: 0.7, low: 0.3 },
 			{ open: 0.6, close: 0.5, high: 0.65, low: 0.45 },
@@ -134,9 +139,13 @@
 				.attr('stroke', candleColor)
 				.attr('stroke-width', 1);
 
-			// Body
+			// Body. `x(i.toString())` is `number | undefined` from d3's band
+			// scale; we built the domain from `candles.map(_, i => i.toString())`
+			// so the key is always present. The pre-R24-A code used `as any` to
+			// hide the strict-null mismatch — non-null assertion matches the
+			// wick block above which already uses `!`. LB-CHART-1.
 			g.append('rect')
-				.attr('x', x(i.toString()))
+				.attr('x', x(i.toString())!)
 				.attr('y', y(Math.max(d.open, d.close)))
 				.attr('width', x.bandwidth())
 				.attr('height', Math.abs(y(d.open) - y(d.close)) || 1)
@@ -144,7 +153,7 @@
 		});
 	}
 
-	function drawBarChart(g: any, width: number, height: number, color: string) {
+	function drawBarChart(g: ChartGroup, width: number, height: number, color: string) {
 		const data = [0.4, 0.6, 0.5, 0.8, 0.7, 0.9];
 		const x = d3
 			.scaleBand()
@@ -153,27 +162,30 @@
 			.padding(0.2);
 		const y = d3.scaleLinear().domain([0, 1]).range([height, 0]);
 
-		g.selectAll('rect')
+		g.selectAll<SVGRectElement, number>('rect')
 			.data(data)
 			.enter()
 			.append('rect')
-			.attr('x', (_d: number, i: number) => x(i.toString())!)
-			.attr('y', (d: number) => y(d))
+			.attr('x', (_d, i) => x(i.toString())!)
+			.attr('y', (d) => y(d))
 			.attr('width', x.bandwidth())
-			.attr('height', (d: number) => height - y(d))
+			.attr('height', (d) => height - y(d))
 			.attr('fill', color)
 			.attr('rx', 1);
 	}
 
-	function drawPieChart(g: any, width: number, height: number, color: string) {
+	function drawPieChart(g: ChartGroup, width: number, height: number, color: string) {
 		const data = [30, 20, 25, 25];
 		const radius = Math.min(width, height) / 2;
 
 		const pie = d3.pie<number>().value((d: number) => d);
-		const arc = d3.arc<any>().innerRadius(0).outerRadius(radius);
+		// `d3.arc<PieArcDatum<number>>` is the exact datum shape that `pie(data)`
+		// emits — switching from `<any>` lets the `arc(d)` call below typecheck
+		// without a cast.
+		const arc = d3.arc<d3.PieArcDatum<number>>().innerRadius(0).outerRadius(radius);
 
 		const colors = d3
-			.scaleOrdinal()
+			.scaleOrdinal<string, string>()
 			.domain(data.map((_d, i) => i.toString()))
 			.range([
 				color,
@@ -184,18 +196,19 @@
 
 		g.attr('transform', `translate(${width / 2}, ${height / 2})`);
 
-		g.selectAll('path')
+		g.selectAll<SVGPathElement, d3.PieArcDatum<number>>('path')
 			.data(pie(data))
 			.enter()
 			.append('path')
 			.attr('d', arc)
-			.attr('fill', (_d: any, i: number) => colors(i.toString()) as string)
+			.attr('fill', (_d, i) => colors(i.toString()))
 			.attr('stroke', 'rgba(0,0,0,0.2)')
 			.attr('stroke-width', 1);
 	}
 
-	function drawScatterChart(g: any, width: number, height: number, color: string) {
-		const data = Array.from({ length: 20 }, () => ({
+	function drawScatterChart(g: ChartGroup, width: number, height: number, color: string) {
+		type ScatterPoint = { x: number; y: number };
+		const data: ScatterPoint[] = Array.from({ length: 20 }, () => ({
 			x: Math.random(),
 			y: Math.random()
 		}));
@@ -203,19 +216,20 @@
 		const x = d3.scaleLinear().domain([0, 1]).range([0, width]);
 		const y = d3.scaleLinear().domain([0, 1]).range([height, 0]);
 
-		g.selectAll('circle')
+		g.selectAll<SVGCircleElement, ScatterPoint>('circle')
 			.data(data)
 			.enter()
 			.append('circle')
-			.attr('cx', (d: any) => x(d.x))
-			.attr('cy', (d: any) => y(d.y))
+			.attr('cx', (d) => x(d.x))
+			.attr('cy', (d) => y(d.y))
 			.attr('r', 2)
 			.attr('fill', color)
 			.attr('opacity', 0.7);
 	}
 
-	function drawHeatmap(g: any, width: number, height: number, _color: string) {
-		const data = Array.from({ length: 5 }, (_, i) =>
+	function drawHeatmap(g: ChartGroup, width: number, height: number, _color: string) {
+		type HeatCell = { row: number; col: number; value: number };
+		const data: HeatCell[] = Array.from({ length: 5 }, (_, i) =>
 			Array.from({ length: 5 }, (_, j) => ({
 				row: i,
 				col: j,
@@ -226,19 +240,19 @@
 		const cellSize = Math.min(width, height) / 5;
 		const colorScale = d3.scaleSequential(d3.interpolateBlues).domain([0, 1]);
 
-		g.selectAll('rect')
+		g.selectAll<SVGRectElement, HeatCell>('rect')
 			.data(data)
 			.enter()
 			.append('rect')
-			.attr('x', (d: any) => d.col * cellSize)
-			.attr('y', (d: any) => d.row * cellSize)
+			.attr('x', (d) => d.col * cellSize)
+			.attr('y', (d) => d.row * cellSize)
 			.attr('width', cellSize - 1)
 			.attr('height', cellSize - 1)
-			.attr('fill', (d: any) => colorScale(d.value))
+			.attr('fill', (d) => colorScale(d.value))
 			.attr('rx', 1);
 	}
 
-	function drawRadarChart(g: any, width: number, height: number, color: string) {
+	function drawRadarChart(g: ChartGroup, width: number, height: number, color: string) {
 		const data = [0.8, 0.6, 0.9, 0.7, 0.5];
 		const radius = Math.min(width, height) / 2;
 		const angleSlice = (Math.PI * 2) / data.length;

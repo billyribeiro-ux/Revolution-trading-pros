@@ -389,12 +389,47 @@ export interface User {
 	role?: string;
 }
 
+/**
+ * Daily submission count point from the analytics endpoint's 30-day trend
+ * series. Backend handler (`api/src/routes/forms/analytics.rs:93`) emits
+ * `[{ date: 'YYYY-MM-DD', count: N }]` from a `GROUP BY DATE(created_at)`.
+ */
+export interface FormSubmissionTrendPoint {
+	date: string;
+	count: number;
+}
+
+/**
+ * Per-status row from the analytics endpoint's status breakdown. Backend
+ * handler (`api/src/routes/forms/analytics.rs:94`) emits
+ * `[{ status: 'unread'|'read'|'starred'|'archived', count: N }]`. The
+ * `status` field mirrors `FormSubmission.status` minus 'complete'/'partial'/
+ * 'spam' which the GROUP BY rolls into 'unread' via `COALESCE`.
+ */
+export interface FormStatusBreakdownRow {
+	status: string;
+	count: number;
+}
+
+/**
+ * Wire shape returned by `GET /forms/:id/analytics` (admin). Mirrors the
+ * literal `Json(json!({...}))` payload built in
+ * `api/src/routes/forms/analytics.rs`. Pre-R24-B this interface was missing
+ * `conversion_rate`, `submission_trends`, `status_breakdown` — three fields
+ * the backend emits unconditionally; the `FormAnalytics.svelte` template was
+ * reading `total_submissions`/`read_count`/etc which simply don't exist in
+ * the response, rendering every metric as `0`. See R23-A LB-2.
+ */
 export interface FormAnalytics {
 	views: number;
 	unique_views: number;
 	submissions: number;
 	conversions: number;
+	/** Backend emits this as a pre-formatted "{:.1}" string (e.g. "12.5"). */
+	conversion_rate?: string;
 	avg_time_to_complete: number;
+	submission_trends: FormSubmissionTrendPoint[];
+	status_breakdown: FormStatusBreakdownRow[];
 	field_drop_offs: Record<string, number>;
 	device_breakdown: Record<string, number>;
 	referrer_breakdown: Record<string, number>;

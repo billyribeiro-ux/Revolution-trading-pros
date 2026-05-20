@@ -1,6 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { Form, FormField, FormSubmission, SubmissionData } from '$lib/api/forms';
+	import type {
+		Form,
+		FormField,
+		FormSubmission,
+		SubmissionData,
+		FormAnalytics as FormAnalyticsResponse,
+		FormSubmissionTrendPoint
+	} from '$lib/api/forms';
 	import { getSubmissionStats, getSubmissions } from '$lib/api/forms';
 
 	interface Props {
@@ -10,26 +17,21 @@
 	let props: Props = $props();
 
 	/**
-	 * Shape the template reads from `stats`. The `getSubmissionStats` API is
-	 * aliased to `getFormAnalytics` which is *declared* to return `FormAnalytics`
-	 * (views/unique_views/submissions/...) — but the template reads fields like
-	 * `total_submissions`/`read_count`/`unread_count` that aren't on
-	 * `FormAnalytics`. Either the backend returns a wider envelope and the
-	 * declared type is wrong, or the template uses outdated keys. See R23-A
-	 * LB-2 for the drift — typed structurally here matching the template reads.
+	 * View-model shape the template reads. Derived from the real backend
+	 * `FormAnalyticsResponse` envelope (see `forms.ts`). Pre-R24-B this
+	 * component cast the response `as unknown as SubmissionStatsView` and
+	 * read keys (`total_submissions` / `read_count` / `unread_count` / etc.)
+	 * that don't exist on the response — every metric rendered as `0`. R24-B
+	 * builds these fields from `response.submissions` + `status_breakdown` +
+	 * `submission_trends`, which the backend has been emitting all along.
 	 */
 	interface SubmissionStatsView {
-		total_submissions?: number;
-		recent_submissions?: number;
-		read_count?: number;
-		unread_count?: number;
-		starred_count?: number;
-		archived_count?: number;
-	}
-
-	interface SubmissionTrendPoint {
-		date: string;
-		count: number;
+		total_submissions: number;
+		recent_submissions: number;
+		read_count: number;
+		unread_count: number;
+		starred_count: number;
+		archived_count: number;
 	}
 
 	interface FieldCompletionRow {
@@ -42,29 +44,56 @@
 
 	let stats = $state<SubmissionStatsView | null>(null);
 	let loading = $state(true);
-	let submissionTrend = $state<SubmissionTrendPoint[]>([]);
+	let submissionTrend = $state<FormSubmissionTrendPoint[]>([]);
 	let fieldAnalytics = $state<FieldCompletionRow[]>([]);
 
 	onMount(async () => {
 		await loadAnalytics();
 	});
 
+	/**
+	 * Project the backend `FormAnalyticsResponse` shape onto the view model
+	 * the template renders. Counts are sourced from `status_breakdown` (one
+	 * row per status); `recent_submissions` is the last 7 days of
+	 * `submission_trends` summed (the backend already returns the trend).
+	 */
+	function toStatsView(resp: FormAnalyticsResponse): SubmissionStatsView {
+		const statusCount = (s: string): number =>
+			resp.status_breakdown?.find((row) => row.status === s)?.count ?? 0;
+
+		const last7Days = (resp.submission_trends ?? []).slice(-7);
+		const recent = last7Days.reduce((sum, p) => sum + p.count, 0);
+
+		return {
+			total_submissions: resp.submissions,
+			recent_submissions: recent,
+			unread_count: statusCount('unread'),
+			read_count: statusCount('read'),
+			starred_count: statusCount('starred'),
+			archived_count: statusCount('archived')
+		};
+	}
+
 	async function loadAnalytics() {
 		loading = true;
 
 		try {
 			if (props.form.id) {
-				// Load basic stats. The API typing claims `FormAnalytics` but the
-				// template reads `SubmissionStatsView` fields — see LB-2.
-				stats = (await getSubmissionStats(props.form.id)) as unknown as SubmissionStatsView;
+				// R24-B: use the typed backend envelope directly. `getSubmissionStats`
+				// is an alias for `getFormAnalytics`; both hit GET /forms/:id/analytics.
+				const resp = await getSubmissionStats(props.form.id);
+				stats = toStatsView(resp);
 
-				// Load recent submissions for trend analysis
+				// Use the backend-provided 30-day trend directly. The client
+				// previously re-computed this from `getSubmissions(...)`; for
+				// forms with >100 submissions the client calc only counted the
+				// most-recent 100 (a paged slice), under-reporting the trend.
+				// LB-FA-1.
+				submissionTrend = resp.submission_trends ?? [];
+
+				// Field completion still requires submission rows (the backend
+				// envelope doesn't include per-field response data).
 				const submissions = await getSubmissions(props.form.id, 1, 100);
-
-				// Calculate submission trend (last 30 days)
-				submissionTrend = calculateSubmissionTrend(submissions.submissions);
-
-				// Analyze field completion rates
 				fieldAnalytics = analyzeFieldCompletion(submissions.submissions);
 			}
 		} catch (err) {
@@ -72,42 +101,6 @@
 		} finally {
 			loading = false;
 		}
-	}
-
-	function calculateSubmissionTrend(submissions: FormSubmission[]): SubmissionTrendPoint[] {
-		const last30Days = new Date();
-		last30Days.setDate(last30Days.getDate() - 30);
-
-		const dailyCounts: Record<string, number> = {};
-
-		// Initialize all days with 0
-		for (let i = 0; i < 30; i++) {
-			const date = new Date(last30Days);
-			date.setDate(date.getDate() + i);
-			const dateKey = date.toISOString().split('T')[0];
-			if (dateKey) {
-				dailyCounts[dateKey] = 0;
-			}
-		}
-
-		// Count submissions per day. Skip submissions without `created_at` —
-		// pre-R23-A this code did `new Date(undefined)` which silently produces
-		// Invalid Date and dropped the row (the `>=` comparison is always false).
-		submissions.forEach((submission) => {
-			if (!submission.created_at) return;
-			const date = new Date(submission.created_at);
-			if (date >= last30Days) {
-				const dateKey = date.toISOString().split('T')[0];
-				if (dateKey) {
-					dailyCounts[dateKey] = (dailyCounts[dateKey] || 0) + 1;
-				}
-			}
-		});
-
-		return Object.entries(dailyCounts).map(([date, count]) => ({
-			date,
-			count
-		}));
 	}
 
 	function analyzeFieldCompletion(submissions: FormSubmission[]): FieldCompletionRow[] {
