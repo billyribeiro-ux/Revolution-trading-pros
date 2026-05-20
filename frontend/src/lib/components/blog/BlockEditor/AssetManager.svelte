@@ -24,6 +24,14 @@
 	import { flip } from 'svelte/animate';
 	import Icon from '$lib/components/Icon.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import DamHeader from './asset-manager/DamHeader.svelte';
+	import DamTabs from './asset-manager/DamTabs.svelte';
+	import DamFooter from './asset-manager/DamFooter.svelte';
+	import DragOverlay from './asset-manager/DragOverlay.svelte';
+	import LoadingState from './asset-manager/LoadingState.svelte';
+	import EmptyState from './asset-manager/EmptyState.svelte';
+	import DropZone from './asset-manager/DropZone.svelte';
+	import FoldersSidebar from './asset-manager/FoldersSidebar.svelte';
 
 	// ============================================================================
 	// Types
@@ -89,7 +97,9 @@
 	const onClose = $derived(props.onClose);
 	const onSelect = $derived(props.onSelect);
 	const allowMultiple = $derived(props.allowMultiple ?? false);
-	const acceptTypes = $derived(props.acceptTypes ?? ['image', 'video', 'audio', 'document']);
+	const acceptTypes: ('image' | 'video' | 'audio' | 'document')[] = $derived(
+		props.acceptTypes ?? ['image', 'video', 'audio', 'document']
+	);
 	const initialFolder = $derived(props.initialFolder ?? null);
 
 	// ============================================================================
@@ -776,51 +786,10 @@
 			transition:fly={{ y: 20, duration: 300, easing: cubicOut }}
 		>
 			<!-- Header -->
-			<header class="dam-header">
-				<div class="header-left">
-					<h2>Asset Manager</h2>
-					<span class="asset-count">{totalAssets.toLocaleString()} assets</span>
-				</div>
-				<div class="header-actions">
-					<label class="upload-btn">
-						<Icon name="IconUpload" size={16} />
-						Upload
-						<input
-							type="file"
-							multiple
-							accept={acceptTypes
-								.map((t) => (t === 'document' ? 'application/*' : `${t}/*`))
-								.join(',')}
-							onchange={handleFileInput}
-							hidden
-						/>
-					</label>
-					<button class="close-btn" onclick={onClose} aria-label="Close">
-						<Icon name="IconX" size={20} />
-					</button>
-				</div>
-			</header>
+			<DamHeader {totalAssets} {acceptTypes} {onClose} onFileInput={handleFileInput} />
 
 			<!-- Tabs -->
-			<div class="dam-tabs">
-				<button
-					class="tab"
-					class:active={activeTab === 'library'}
-					onclick={() => (activeTab = 'library')}
-				>
-					Library
-				</button>
-				<button
-					class="tab"
-					class:active={activeTab === 'upload'}
-					onclick={() => (activeTab = 'upload')}
-				>
-					Upload
-					{#if uploadQueue.length > 0}
-						<span class="badge">{uploadQueue.length}</span>
-					{/if}
-				</button>
-			</div>
+			<DamTabs bind:activeTab uploadQueueCount={uploadQueue.length} />
 
 			<!-- Main Content -->
 			<div class="dam-body">
@@ -925,35 +894,7 @@
 					<!-- Library Layout -->
 					<div class="library-layout" class:sidebar-open={sidebarOpen}>
 						<!-- Sidebar - Folders -->
-						<aside class="folders-sidebar">
-							<div class="sidebar-header">
-								<h4>Folders</h4>
-								<button class="new-folder-btn" title="New folder">
-									<Icon name="IconPlus" size={14} />
-								</button>
-							</div>
-							<nav class="folder-tree">
-								<button
-									class="folder-item"
-									class:active={currentFolderId === null}
-									onclick={() => navigateToFolder(null)}
-								>
-									<Icon name="IconHome" size={16} />
-									<span>All Assets</span>
-								</button>
-								{#each folders.filter((f) => f.parent_id === null) as folder (folder.id)}
-									<button
-										class="folder-item"
-										class:active={currentFolderId === folder.id}
-										onclick={() => navigateToFolder(folder)}
-									>
-										<Icon name="IconFolder" size={16} color={folder.color || undefined} />
-										<span>{folder.name}</span>
-										<span class="folder-count">{folder.asset_count}</span>
-									</button>
-								{/each}
-							</nav>
-						</aside>
+						<FoldersSidebar {folders} {currentFolderId} onNavigate={navigateToFolder} />
 
 						<!-- Main Content -->
 						<main class="asset-content">
@@ -978,29 +919,10 @@
 
 							<!-- Loading -->
 							{#if isLoading}
-								<div class="loading-state">
-									<div class="spinner"></div>
-									<span>Loading assets...</span>
-								</div>
+								<LoadingState />
 							{:else if assets.length === 0}
 								<!-- Empty State -->
-								<div class="empty-state">
-									<Icon name="IconPhoto" size={48} stroke={1.5} />
-									<h4>No assets found</h4>
-									<p>Upload files or adjust your filters</p>
-									<label class="upload-cta">
-										Upload Files
-										<input
-											type="file"
-											multiple
-											accept={acceptTypes
-												.map((t) => (t === 'document' ? 'application/*' : `${t}/*`))
-												.join(',')}
-											onchange={handleFileInput}
-											hidden
-										/>
-									</label>
-								</div>
+								<EmptyState {acceptTypes} onFileInput={handleFileInput} />
 							{:else}
 								<!-- Child Folders -->
 								{#if childFolders.length > 0 && !searchQuery}
@@ -1350,33 +1272,7 @@
 				{:else}
 					<!-- Upload Tab -->
 					<div class="upload-area">
-						<div
-							class="drop-zone"
-							class:dragging={isDragging}
-							role="region"
-							aria-label="Upload drop zone"
-						>
-							<Icon name="IconUpload" size={48} stroke={1.5} />
-							<h4>Drag and drop files here</h4>
-							<p>or</p>
-							<label class="browse-btn">
-								Browse Files
-								<input
-									type="file"
-									multiple
-									accept={acceptTypes
-										.map((t) => (t === 'document' ? 'application/*' : `${t}/*`))
-										.join(',')}
-									onchange={handleFileInput}
-									hidden
-								/>
-							</label>
-							<p class="upload-hint">
-								Supports: {acceptTypes
-									.map((t) => t.charAt(0).toUpperCase() + t.slice(1) + 's')
-									.join(', ')}
-							</p>
-						</div>
+						<DropZone {isDragging} {acceptTypes} onFileInput={handleFileInput} />
 
 						{#if uploadQueue.length > 0}
 							<div class="upload-queue" transition:slide={{ duration: 200 }}>
@@ -1452,30 +1348,11 @@
 			</div>
 
 			<!-- Footer -->
-			<footer class="dam-footer">
-				<div class="footer-info">
-					{#if selectedAssets.size > 0}
-						{selectedAssets.size} asset{selectedAssets.size !== 1 ? 's' : ''} selected
-					{:else}
-						Select an asset to insert
-					{/if}
-				</div>
-				<div class="footer-actions">
-					<button class="cancel-btn" onclick={onClose}>Cancel</button>
-					<button class="insert-btn" onclick={handleInsert} disabled={selectedAssets.size === 0}>
-						Insert Selected
-					</button>
-				</div>
-			</footer>
+			<DamFooter selectedCount={selectedAssets.size} {onClose} onInsert={handleInsert} />
 
 			<!-- Drag Overlay -->
 			{#if isDragging}
-				<div class="drag-overlay" transition:fade={{ duration: 150 }}>
-					<div class="drag-indicator">
-						<Icon name="IconUpload" size={48} />
-						<span>Drop files to upload</span>
-					</div>
-				</div>
+				<DragOverlay />
 			{/if}
 		</div>
 	</div>
@@ -1533,125 +1410,9 @@
 		position: relative;
 	}
 
-	/* ========================================================================== */
-	/* Header */
-	/* ========================================================================== */
+	/* Header CSS extracted with DamHeader (R6-C #1). */
 
-	.dam-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 1rem 1.5rem;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-		background: rgba(255, 255, 255, 0.02);
-	}
-
-	.header-left {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-	}
-
-	.dam-header h2 {
-		margin: 0;
-		font-size: 1.25rem;
-		font-weight: 600;
-		color: #f1f5f9;
-	}
-
-	.asset-count {
-		font-size: 0.8125rem;
-		color: #64748b;
-	}
-
-	.header-actions {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-	}
-
-	.upload-btn {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.5rem 1rem;
-		background: #3b82f6;
-		color: white;
-		border: none;
-		border-radius: 8px;
-		font-size: 0.875rem;
-		font-weight: 500;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.upload-btn:hover {
-		background: #2563eb;
-	}
-
-	.close-btn {
-		width: 36px;
-		height: 36px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: rgba(255, 255, 255, 0.05);
-		border: none;
-		border-radius: 8px;
-		color: #94a3b8;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.close-btn:hover {
-		background: rgba(255, 255, 255, 0.1);
-		color: #f1f5f9;
-	}
-
-	/* ========================================================================== */
-	/* Tabs */
-	/* ========================================================================== */
-
-	.dam-tabs {
-		display: flex;
-		padding: 0 1.5rem;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-		background: rgba(255, 255, 255, 0.02);
-	}
-
-	.tab {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.875rem 1.25rem;
-		background: none;
-		border: none;
-		font-size: 0.875rem;
-		font-weight: 500;
-		color: #64748b;
-		cursor: pointer;
-		border-bottom: 2px solid transparent;
-		margin-bottom: -1px;
-		transition: all 0.2s;
-	}
-
-	.tab:hover {
-		color: #94a3b8;
-	}
-
-	.tab.active {
-		color: #3b82f6;
-		border-bottom-color: #3b82f6;
-	}
-
-	.badge {
-		background: #3b82f6;
-		color: white;
-		padding: 0.125rem 0.5rem;
-		border-radius: 999px;
-		font-size: 0.75rem;
-		font-weight: 600;
-	}
+	/* Tabs CSS extracted with DamTabs (R6-C #2). */
 
 	/* ========================================================================== */
 	/* Body */
@@ -1840,13 +1601,8 @@
 		margin-right: 320px;
 	}
 
-	/* Folders Sidebar */
-	.folders-sidebar {
-		width: 200px;
-		border-right: 1px solid rgba(255, 255, 255, 0.1);
-		overflow-y: auto;
-		flex-shrink: 0;
-	}
+	/* Folders Sidebar CSS extracted with FoldersSidebar (R6-C #8).
+	   Base .sidebar-header + .sidebar-header h4 retained — still used by details-sidebar. */
 
 	.sidebar-header {
 		display: flex;
@@ -1863,73 +1619,6 @@
 		color: #64748b;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
-	}
-
-	.new-folder-btn {
-		width: 24px;
-		height: 24px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: none;
-		border: none;
-		color: #64748b;
-		cursor: pointer;
-		border-radius: 4px;
-		transition: all 0.2s;
-	}
-
-	.new-folder-btn:hover {
-		background: rgba(255, 255, 255, 0.1);
-		color: #94a3b8;
-	}
-
-	.folder-tree {
-		padding: 0.5rem;
-	}
-
-	.folder-item {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		width: 100%;
-		padding: 0.5rem 0.75rem;
-		background: none;
-		border: none;
-		border-radius: 6px;
-		font-size: 0.8125rem;
-		color: #94a3b8;
-		cursor: pointer;
-		text-align: left;
-		transition: all 0.2s;
-	}
-
-	.folder-item:hover {
-		background: rgba(255, 255, 255, 0.05);
-		color: #f1f5f9;
-	}
-
-	.folder-item.active {
-		background: rgba(59, 130, 246, 0.15);
-		color: #3b82f6;
-	}
-
-	.folder-item :global(svg) {
-		flex-shrink: 0;
-	}
-
-	.folder-item span {
-		flex: 1;
-		min-width: 0;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-
-	.folder-count {
-		font-size: 0.6875rem;
-		color: #64748b;
-		flex-shrink: 0;
 	}
 
 	/* Asset Content */
@@ -1971,43 +1660,7 @@
 		color: #475569;
 	}
 
-	/* Loading & Empty States */
-	.loading-state,
-	.empty-state {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		height: 300px;
-		color: #64748b;
-		gap: 1rem;
-	}
-
-	.empty-state :global(svg) {
-		opacity: 0.5;
-	}
-
-	.empty-state h4 {
-		margin: 0;
-		font-size: 1rem;
-		color: #94a3b8;
-	}
-
-	.empty-state p {
-		margin: 0;
-		font-size: 0.875rem;
-	}
-
-	.upload-cta {
-		padding: 0.625rem 1.25rem;
-		background: #3b82f6;
-		color: white;
-		border-radius: 8px;
-		font-size: 0.875rem;
-		font-weight: 500;
-		cursor: pointer;
-		margin-top: 0.5rem;
-	}
+	/* Loading & Empty States CSS extracted with LoadingState / EmptyState (R6-C #5+#6). */
 
 	.spinner {
 		width: 32px;
@@ -2598,54 +2251,7 @@
 		overflow-y: auto;
 	}
 
-	.drop-zone {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		min-height: 200px;
-		padding: 3rem;
-		border: 2px dashed rgba(255, 255, 255, 0.2);
-		border-radius: 12px;
-		transition: all 0.2s;
-	}
-
-	.drop-zone.dragging {
-		border-color: #3b82f6;
-		background: rgba(59, 130, 246, 0.1);
-	}
-
-	.drop-zone :global(svg) {
-		color: #64748b;
-		margin-bottom: 1rem;
-	}
-
-	.drop-zone h4 {
-		margin: 0;
-		font-size: 1rem;
-		font-weight: 600;
-		color: #e2e8f0;
-	}
-
-	.drop-zone p {
-		margin: 0.5rem 0;
-		color: #64748b;
-	}
-
-	.browse-btn {
-		padding: 0.625rem 1.25rem;
-		background: #3b82f6;
-		color: white;
-		border-radius: 8px;
-		font-size: 0.875rem;
-		font-weight: 500;
-		cursor: pointer;
-	}
-
-	.upload-hint {
-		font-size: 0.75rem;
-		margin-top: 1rem;
-	}
+	/* Drop-zone CSS extracted with DropZone (R6-C #7). */
 
 	/* Upload Queue */
 	.upload-queue {
@@ -2810,90 +2416,9 @@
 		cursor: not-allowed;
 	}
 
-	/* ========================================================================== */
-	/* Footer */
-	/* ========================================================================== */
+	/* Footer CSS extracted with DamFooter (R6-C #3). */
 
-	.dam-footer {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 1rem 1.5rem;
-		border-top: 1px solid rgba(255, 255, 255, 0.1);
-		background: rgba(255, 255, 255, 0.02);
-	}
-
-	.footer-info {
-		font-size: 0.875rem;
-		color: #64748b;
-	}
-
-	.footer-actions {
-		display: flex;
-		gap: 0.75rem;
-	}
-
-	.cancel-btn,
-	.insert-btn {
-		padding: 0.625rem 1.25rem;
-		border-radius: 8px;
-		font-size: 0.875rem;
-		font-weight: 500;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.cancel-btn {
-		background: transparent;
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		color: #94a3b8;
-	}
-
-	.cancel-btn:hover {
-		background: rgba(255, 255, 255, 0.05);
-	}
-
-	.insert-btn {
-		background: #3b82f6;
-		border: none;
-		color: white;
-	}
-
-	.insert-btn:hover:not(:disabled) {
-		background: #2563eb;
-	}
-
-	.insert-btn:disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
-	}
-
-	/* ========================================================================== */
-	/* Drag Overlay */
-	/* ========================================================================== */
-
-	.drag-overlay {
-		position: absolute;
-		inset: 0;
-		background: rgba(15, 23, 42, 0.95);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		z-index: 100;
-	}
-
-	.drag-indicator {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 1rem;
-		color: #3b82f6;
-	}
-
-	.drag-indicator span {
-		font-size: 1.25rem;
-		font-weight: 500;
-	}
+	/* Drag-overlay CSS extracted with DragOverlay (R6-C #4). */
 
 	/* ========================================================================== */
 	/* Animations */
@@ -2919,9 +2444,7 @@
 	/* ========================================================================== */
 
 	@media (max-width: 1024px) {
-		.folders-sidebar {
-			display: none;
-		}
+		/* .folders-sidebar display:none moved into FoldersSidebar (R6-C #8). */
 
 		.library-layout.sidebar-open .asset-content {
 			margin-right: 0;
