@@ -13,6 +13,7 @@
 
 import { browser } from '$app/environment';
 import { ROOM_SLUG } from '../constants';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPE DEFINITIONS - Matching Backend API Response
@@ -363,7 +364,7 @@ export function createAnalyticsState() {
 			streakAnalysis = analytics.streak_analysis;
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load analytics';
-			console.error('[analytics] Failed to fetch analytics:', err);
+			logger.error('[analytics] Failed to fetch analytics:', err);
 		} finally {
 			isLoading = false;
 		}
@@ -398,7 +399,7 @@ export function createAnalyticsState() {
 			equityCurve = data.data;
 		} catch (err) {
 			equityCurveError = err instanceof Error ? err.message : 'Failed to load equity curve';
-			console.error('[analytics] Failed to fetch equity curve:', err);
+			logger.error('[analytics] Failed to fetch equity curve:', err);
 		} finally {
 			isLoadingEquityCurve = false;
 		}
@@ -433,7 +434,7 @@ export function createAnalyticsState() {
 			drawdowns = data.data;
 		} catch (err) {
 			drawdownsError = err instanceof Error ? err.message : 'Failed to load drawdowns';
-			console.error('[analytics] Failed to fetch drawdowns:', err);
+			logger.error('[analytics] Failed to fetch drawdowns:', err);
 		} finally {
 			isLoadingDrawdowns = false;
 		}
