@@ -231,7 +231,20 @@ async fn create_checkout(
         if let Some(msg) = static_err {
             return Err((StatusCode::BAD_REQUEST, Json(json!({"error": msg}))));
         }
-        let c = row.unwrap();
+        // Invariant: the `None` arm of `static_err` above returns an error,
+        // so `row` is guaranteed `Some` here. Encode that explicitly with
+        // `ok_or_else` instead of `.unwrap()` so a future refactor that
+        // breaks the invariant fails as a typed 500 rather than a panic.
+        let c = row.ok_or_else(|| {
+            tracing::error!(
+                target: "checkout",
+                "coupon row invariant violated: reached post-validation with row=None"
+            );
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": "Failed to validate coupon"})),
+            )
+        })?;
 
         // Batch 4: enforce min_purchase BEFORE attaching the Stripe
         // discount. Stripe Coupons can't gate on order subtotal, so we
