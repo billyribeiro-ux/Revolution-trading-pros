@@ -50,6 +50,7 @@
 
 import { writable, derived } from 'svelte/store';
 import { getAuthToken } from '$lib/stores/auth.svelte';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -441,7 +442,7 @@ class EnterpriseApiClient {
 		// Setup performance monitoring
 		this.startPerformanceMonitoring();
 
-		console.debug('[ApiClient] Initialized');
+		// audit 2026-05-20: removed singleton-init startup-noise log (auth-path; pattern from R5-E)
 	}
 
 	/**
@@ -513,7 +514,7 @@ class EnterpriseApiClient {
 		// Check for duplicate requests
 		const existingRequest = this.activeRequests.get(cacheKey);
 		if (existingRequest) {
-			console.debug(`[ApiClient] Deduplicating request: ${endpoint}`);
+			// audit 2026-05-20: removed per-request endpoint-leaking debug log (auth-path; fires every request)
 			return existingRequest;
 		}
 
@@ -1008,7 +1009,7 @@ class EnterpriseApiClient {
 			this.wsConnection = new WebSocket(`${configuredWsUrl}/ws`);
 
 			this.wsConnection.onopen = () => {
-				console.debug('[ApiClient] WebSocket connected');
+				// audit 2026-05-20: removed WS-onopen noise (auth-path; pattern from R5-E)
 				this._wsReconnectAttempts = 0;
 				this.authenticateWebSocket();
 			};
@@ -1063,7 +1064,7 @@ class EnterpriseApiClient {
 					break;
 			}
 		} catch (error) {
-			console.error('[ApiClient] Failed to handle WebSocket message:', error);
+			logger.error('[ApiClient] Failed to handle WebSocket message', { error });
 		}
 	}
 
@@ -1135,7 +1136,7 @@ class EnterpriseApiClient {
 			};
 
 			this.sseConnection.onopen = () => {
-				console.debug('[ApiClient] SSE connected');
+				// audit 2026-05-20: removed SSE-onopen noise (auth-path; pattern from R5-E)
 			};
 		} catch (_error) {
 			// Silently handle - SSE is optional
@@ -1144,11 +1145,11 @@ class EnterpriseApiClient {
 
 	private handleSSEMessage(event: MessageEvent): void {
 		try {
-			const data = JSON.parse(event.data);
+			JSON.parse(event.data);
 			// Handle SSE updates
-			console.debug('[ApiClient] SSE message:', data);
+			// audit 2026-05-20: removed raw-SSE-data debug log (auth-path; payload may contain user data)
 		} catch (error) {
-			console.error('[ApiClient] Failed to handle SSE message:', error);
+			logger.error('[ApiClient] Failed to handle SSE message', { error });
 		}
 	}
 
@@ -1189,7 +1190,7 @@ class EnterpriseApiClient {
 		const cached = this.requestCache.get(key);
 
 		if (cached && Date.now() < cached.expiry) {
-			console.debug(`[ApiClient] Cache hit: ${key}`);
+			// audit 2026-05-20: removed per-cache-hit endpoint-leaking debug log (auth-path; fires on every cached GET)
 			return cached.data;
 		}
 
@@ -1222,7 +1223,7 @@ class EnterpriseApiClient {
 			for (const [key] of this.requestCache) {
 				if (regex.test(key)) {
 					this.requestCache.delete(key);
-					console.debug(`[ApiClient] Cache invalidated: ${key}`);
+					// audit 2026-05-20: removed per-key debug log (auth-path; cache keys contain endpoint paths)
 				}
 			}
 		});
@@ -1230,7 +1231,7 @@ class EnterpriseApiClient {
 
 	private clearCache(): void {
 		this.requestCache.clear();
-		console.debug('[ApiClient] Cache cleared');
+		// audit 2026-05-20: removed clear-cache debug log (auth-path; fires on logout, redundant)
 	}
 
 	private createAbortSignal(timeout: number = REQUEST_TIMEOUT): AbortSignal {
@@ -1331,7 +1332,7 @@ class EnterpriseApiClient {
 		try {
 			await this.getMe();
 		} catch (error) {
-			console.error('[ApiClient] Failed to load user:', error);
+			logger.error('[ApiClient] Failed to load user', { error });
 		}
 	}
 
@@ -1339,7 +1340,7 @@ class EnterpriseApiClient {
 		try {
 			await Promise.all([this.getMyMemberships(), this.getMyProducts()]);
 		} catch (error) {
-			console.error('[ApiClient] Failed to load user data:', error);
+			logger.error('[ApiClient] Failed to load user data', { error });
 		}
 	}
 
