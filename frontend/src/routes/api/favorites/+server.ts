@@ -13,13 +13,20 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 
-const BACKEND_URL = env.BACKEND_URL || 'http://localhost:8080';
+// CLAUDE.md hard rule: `env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080'`.
+const BACKEND_URL =
+	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+
+/** Backend success envelope — every endpoint here wraps payload in `{ success, ... }`. */
+function hasSuccess(value: unknown): value is { success: unknown } {
+	return typeof value === 'object' && value !== null && 'success' in value;
+}
 
 async function fetchFromBackend(
 	endpoint: string,
 	options: RequestInit = {},
 	cookies?: { get: (name: string) => string | undefined }
-): Promise<any | null> {
+): Promise<unknown> {
 	try {
 		const headers: Record<string, string> = {
 			'Content-Type': 'application/json',
@@ -47,7 +54,7 @@ async function fetchFromBackend(
 			return null;
 		}
 
-		return await response.json();
+		return (await response.json()) as unknown;
 	} catch (err) {
 		console.error('[Favorites API] Backend fetch failed:', err);
 		return null;
@@ -67,7 +74,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 
 	const backendData = await fetchFromBackend(`/api/favorites?${params.toString()}`, {}, cookies);
 
-	if (backendData?.success) {
+	if (hasSuccess(backendData) && backendData.success) {
 		return json(backendData);
 	}
 
@@ -81,9 +88,17 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 
 // POST - Add item to favorites
 export const POST: RequestHandler = async ({ request, cookies }) => {
-	const body = await request.json();
+	// Narrow incoming JSON body before reading fields — `request.json()` is `unknown`.
+	const body = (await request.json()) as unknown;
 
-	if (!body.item_type || !body.item_id) {
+	if (
+		typeof body !== 'object' ||
+		body === null ||
+		!('item_type' in body) ||
+		!('item_id' in body) ||
+		!(body as { item_type?: unknown }).item_type ||
+		!(body as { item_id?: unknown }).item_id
+	) {
 		error(400, 'item_type and item_id are required');
 	}
 
@@ -96,7 +111,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		cookies
 	);
 
-	if (backendData?.success) {
+	if (hasSuccess(backendData) && backendData.success) {
 		return json(backendData);
 	}
 

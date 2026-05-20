@@ -18,7 +18,9 @@ import { env } from '$env/dynamic/private';
 // BACKEND CONFIGURATION
 // ═══════════════════════════════════════════════════════════════════════════
 
-const BACKEND_URL = env.BACKEND_URL || 'http://localhost:8080';
+// CLAUDE.md hard rule: `env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080'`.
+const BACKEND_URL =
+	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -43,11 +45,23 @@ interface WeeklyVideo {
 	updated_at: string;
 }
 
+/** Shape of the incoming POST body — every field optional except `video_url`/`video_title`. */
+interface WeeklyVideoPostBody {
+	week_of?: string;
+	week_title?: string;
+	video_title?: string;
+	video_url?: string;
+	video_platform?: string;
+	thumbnail_url?: string;
+	duration?: string;
+	description?: string;
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // BACKEND FETCH HELPER
 // ═══════════════════════════════════════════════════════════════════════════
 
-async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Promise<any | null> {
+async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Promise<unknown> {
 	try {
 		console.info(`[Weekly Video API] Fetching: ${BACKEND_URL}${endpoint}`);
 		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
@@ -64,13 +78,25 @@ async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Pr
 			return null;
 		}
 
-		const data = await response.json();
+		const data = (await response.json()) as unknown;
 		console.info(`[Weekly Video API] Backend success`);
 		return data;
 	} catch (err) {
 		console.error('[Weekly Video API] Backend fetch failed:', err);
 		return null;
 	}
+}
+
+/**
+ * Narrow the parsed backend body to its `{ data: T }` field when present,
+ * otherwise return the raw body. Mirrors the legacy `backendData.data || backendData`
+ * fallback the GET handler used to do unguarded.
+ */
+function extractBackendData(value: unknown): unknown {
+	if (typeof value === 'object' && value !== null && 'data' in value) {
+		return (value as { data: unknown }).data;
+	}
+	return value;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -152,7 +178,7 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
 	if (backendData) {
 		return json({
 			success: true,
-			data: backendData.data || backendData,
+			data: extractBackendData(backendData),
 			_source: 'backend'
 		});
 	}
@@ -186,7 +212,7 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 		error(400, 'Room slug is required');
 	}
 
-	const body = await request.json();
+	const body = (await request.json()) as WeeklyVideoPostBody;
 
 	// Validate required fields
 	if (!body.video_url || !body.video_title) {
