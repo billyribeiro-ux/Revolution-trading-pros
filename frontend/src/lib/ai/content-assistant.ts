@@ -4,6 +4,8 @@
  * Real-time AI-powered writing assistance
  */
 
+import { logger } from '$lib/utils/logger';
+
 export interface SuggestionResult {
 	suggestions: string[];
 	confidence: number;
@@ -70,7 +72,7 @@ export class ContentAssistant {
 
 			return await response.json();
 		} catch (error) {
-			console.error('AI suggestions error:', error);
+			logger.error('AI suggestions error', { error });
 			return { suggestions: [], confidence: 0 };
 		}
 	}
@@ -95,7 +97,7 @@ export class ContentAssistant {
 
 			return await response.json();
 		} catch (error) {
-			console.error('AI improve error:', error);
+			logger.error('AI improve error', { error });
 			return { improved: text, changes: [] };
 		}
 	}
@@ -121,7 +123,7 @@ export class ContentAssistant {
 
 			return await response.json();
 		} catch (error) {
-			console.error('AI outline error:', error);
+			logger.error('AI outline error', { error });
 			return { outline: [], estimatedWordCount: 0 };
 		}
 	}
@@ -146,7 +148,7 @@ export class ContentAssistant {
 
 			return await response.json();
 		} catch (error) {
-			console.error('AI grammar check error:', error);
+			logger.error('AI grammar check error', { error });
 			return { issues: [], score: 100 };
 		}
 	}
@@ -173,7 +175,7 @@ export class ContentAssistant {
 			const data = await response.json();
 			return data.summary;
 		} catch (error) {
-			console.error('AI summarize error:', error);
+			logger.error('AI summarize error', { error });
 			return '';
 		}
 	}
@@ -200,7 +202,7 @@ export class ContentAssistant {
 			const data = await response.json();
 			return data.expanded;
 		} catch (error) {
-			console.error('AI expand error:', error);
+			logger.error('AI expand error', { error });
 			return text;
 		}
 	}
@@ -227,7 +229,7 @@ export class ContentAssistant {
 			const data = await response.json();
 			return data.titles;
 		} catch (error) {
-			console.error('AI titles error:', error);
+			logger.error('AI titles error', { error });
 			return [];
 		}
 	}
@@ -254,7 +256,7 @@ export class ContentAssistant {
 			const data = await response.json();
 			return data.translated;
 		} catch (error) {
-			console.error('AI translate error:', error);
+			logger.error('AI translate error', { error });
 			return text;
 		}
 	}
