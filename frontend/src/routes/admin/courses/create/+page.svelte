@@ -39,6 +39,12 @@
 	import { productsApi, AdminApiError } from '$lib/api/admin';
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import PublishWarningModal from './_components/PublishWarningModal.svelte';
+	import PricingAnalysisModal from './_components/PricingAnalysisModal.svelte';
+	import QualityScoreCard from './_components/QualityScoreCard.svelte';
+	import CompletionProgress from './_components/CompletionProgress.svelte';
+	import PageHeader from './_components/PageHeader.svelte';
+	import FormBanners from './_components/FormBanners.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Type Definitions & Interfaces
@@ -1613,75 +1619,23 @@
 </svelte:head>
 
 <!-- Modals and Notifications -->
-{#if showPublishWarning}
-	<div class="modal-overlay">
-		<div class="modal-content">
-			<h3>Publish Warning</h3>
-			<p>Your course quality score is below 70%. Are you sure you want to publish?</p>
-			<div class="modal-actions">
-				<button class="btn-secondary" onclick={cancelPublish}>Cancel</button>
-				<button class="btn-primary" onclick={confirmPublish}>Publish Anyway</button>
-			</div>
-		</div>
-	</div>
-{/if}
+<PublishWarningModal open={showPublishWarning} onConfirm={confirmPublish} onCancel={cancelPublish} />
 
-{#if pricingAnalysis?.show}
-	<div class="modal-overlay">
-		<div class="modal-content pricing-modal">
-			<h3>AI Pricing Analysis Complete</h3>
-			<div class="pricing-details">
-				<p><strong>Your Course:</strong> {course.duration_hours} hours of content</p>
-				<p><strong>Market Average:</strong> ${pricingAnalysis.marketAverage}</p>
-
-				<h4>Competitor Analysis</h4>
-				<ul>
-					{#each pricingAnalysis.competitors as comp (comp.name)}
-						<li>{comp.name}: ${comp.price} ({comp.hours}h)</li>
-					{/each}
-				</ul>
-
-				<div class="suggested-price">
-					<span>Recommended Price:</span>
-					<strong>${pricingAnalysis.suggestedPrice}</strong>
-				</div>
-
-				<h4>Pricing Strategies</h4>
-				<ul>
-					<li>One-time: ${pricingAnalysis.suggestedPrice}</li>
-					<li>Payment plan: 3 × ${Math.ceil((pricingAnalysis.suggestedPrice / 3) * 1.1)}</li>
-					<li>Subscription: ${Math.ceil(pricingAnalysis.suggestedPrice / 6)}/month</li>
-					<li>Early bird: ${Math.ceil(pricingAnalysis.suggestedPrice * 0.7)} (30% off)</li>
-				</ul>
-			</div>
-			<div class="modal-actions">
-				<button class="btn-primary" onclick={() => (pricingAnalysis = null)}>Got it</button>
-			</div>
-		</div>
-	</div>
-{/if}
+<PricingAnalysisModal
+	analysis={pricingAnalysis}
+	durationHours={course.duration_hours}
+	onClose={() => (pricingAnalysis = null)}
+/>
 
 <div class="create-page">
 	<!-- Form Messages -->
-	{#if formError}
-		<div class="form-error-banner">
-			<IconAlertCircle size={20} />
-			<span>{formError}</span>
-			<button onclick={() => (formError = '')}><IconX size={16} /></button>
-		</div>
-	{/if}
-
-	{#if successMessage}
-		<div class="form-success-banner">
-			<IconCheck size={20} />
-			<span>{successMessage}</span>
-		</div>
-	{/if}
+	<FormBanners
+		error={formError}
+		success={successMessage}
+		onDismissError={() => (formError = '')}
+	/>
 	<!-- Centered Page Header -->
-	<div class="page-header">
-		<h1>Create New Course</h1>
-		<p class="subtitle">Build a comprehensive educational trading course</p>
-	</div>
+	<PageHeader title="Create New Course" subtitle="Build a comprehensive educational trading course" />
 
 	<!-- Actions Row - Centered -->
 	<div class="header-actions">
@@ -1731,18 +1685,13 @@
 	</div>
 
 	<!-- Progress Bar -->
-	<div class="completion-progress">
-		<div class="progress-bar">
-			<div class="progress-fill" style="width: {completionStatus.percentage}%"></div>
-		</div>
-		<div class="progress-details">
-			<span class="progress-text">{completionStatus.percentage}% Complete</span>
-			<span class="progress-items"
-				>{completionStatus.completed}/{completionStatus.total} items • {course.modules.length} modules
-				• {course.duration_hours}h</span
-			>
-		</div>
-	</div>
+	<CompletionProgress
+		percentage={completionStatus.percentage}
+		completed={completionStatus.completed}
+		total={completionStatus.total}
+		moduleCount={course.modules.length}
+		durationHours={course.duration_hours}
+	/>
 
 	<!-- Main Content Area -->
 	<div class="content-wrapper">
@@ -1850,37 +1799,7 @@
 			</div>
 
 			<!-- Quality Score Card -->
-			<div class="validation-card">
-				<h3>Quality Score</h3>
-				<div class="score-circle">
-					<svg aria-hidden="true" viewBox="0 0 100 100">
-						<circle cx="50" cy="50" r="45" fill="none" stroke="#1e293b" stroke-width="8" />
-						<circle
-							cx="50"
-							cy="50"
-							r="45"
-							fill="none"
-							stroke={overallScore > 70 ? '#10b981' : overallScore > 40 ? '#f59e0b' : '#ef4444'}
-							stroke-width="8"
-							stroke-dasharray="{overallScore * 2.83} 283"
-							transform="rotate(-90 50 50)"
-							style="transition: stroke-dasharray 0.5s ease"
-						/>
-					</svg>
-					<div class="score-text">{overallScore}</div>
-				</div>
-
-				{#if validationResults.length > 0}
-					<div class="validation-items">
-						{#each validationResults as result (result.message)}
-							<div class="validation-item {result.status}">
-								<span class="item-label">{result.message}</span>
-								<span class="item-score">+{result.score}</span>
-							</div>
-						{/each}
-					</div>
-				{/if}
-			</div>
+			<QualityScoreCard {overallScore} {validationResults} />
 		</aside>
 
 		<!-- Main Form Content Area - Layout Shift Free Pattern -->
@@ -3189,125 +3108,13 @@
 	}
 
 	/* Modal Overlay */
-	.modal-overlay {
-		position: fixed;
-		inset: 0;
-		background: rgba(0, 0, 0, 0.7);
-		backdrop-filter: blur(4px);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		z-index: 1000;
-	}
+	/* Modal styles (.modal-overlay/.modal-content/.modal-actions/.pricing-modal/
+	   .pricing-details/.suggested-price) moved to:
+	     - _components/PublishWarningModal.svelte
+	     - _components/PricingAnalysisModal.svelte
+	   ConfirmationModal (used below) ships its own scoped styles. */
 
-	.modal-content {
-		background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-		border: 1px solid rgba(230, 184, 0, 0.3);
-		border-radius: 16px;
-		padding: 2rem;
-		max-width: 500px;
-		width: 90%;
-		box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-	}
-
-	.modal-content h3 {
-		color: #f1f5f9;
-		font-size: 1.25rem;
-		margin-bottom: 1rem;
-	}
-
-	.modal-content p {
-		color: #94a3b8;
-		margin-bottom: 1.5rem;
-		line-height: 1.6;
-	}
-
-	.modal-actions {
-		display: flex;
-		gap: 1rem;
-		justify-content: flex-end;
-	}
-
-	.pricing-modal {
-		max-width: 600px;
-	}
-
-	.pricing-details h4 {
-		color: var(--primary-500);
-		font-size: 1rem;
-		margin: 1.5rem 0 0.75rem;
-	}
-
-	.pricing-details ul {
-		list-style: none;
-		color: #94a3b8;
-	}
-
-	.pricing-details li {
-		padding: 0.5rem 0;
-		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-	}
-
-	.suggested-price {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-		padding: 1rem;
-		background: rgba(230, 184, 0, 0.15);
-		border-radius: 8px;
-		margin: 1rem 0;
-	}
-
-	.suggested-price span {
-		color: #94a3b8;
-	}
-
-	.suggested-price strong {
-		color: #86efac;
-		font-size: 1.5rem;
-	}
-
-	/* Form Message Banners */
-	.form-error-banner,
-	.form-success-banner {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-		padding: 1rem 1.5rem;
-		border-radius: 12px;
-		margin-bottom: 1.5rem;
-		font-size: 0.9375rem;
-	}
-
-	.form-error-banner {
-		background: rgba(239, 68, 68, 0.15);
-		border: 1px solid rgba(239, 68, 68, 0.3);
-		color: #fca5a5;
-	}
-
-	.form-error-banner button {
-		margin-left: auto;
-		background: none;
-		border: none;
-		color: #fca5a5;
-		cursor: pointer;
-		padding: 0.25rem;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		border-radius: 4px;
-		transition: background 0.2s;
-	}
-
-	.form-error-banner button:hover {
-		background: rgba(239, 68, 68, 0.2);
-	}
-
-	.form-success-banner {
-		background: rgba(34, 197, 94, 0.15);
-		border: 1px solid rgba(34, 197, 94, 0.3);
-		color: #86efac;
-	}
+	/* Form-banner styles moved to _components/FormBanners.svelte */
 
 	.create-page {
 		padding: 2rem;
@@ -3318,23 +3125,7 @@
 	}
 
 	/* Centered Header - Email Templates Style */
-	.page-header {
-		text-align: center;
-		margin-bottom: 1.5rem;
-	}
-
-	.page-header h1 {
-		font-size: 1.75rem;
-		font-weight: 700;
-		color: #f1f5f9;
-		margin: 0;
-	}
-
-	.subtitle {
-		color: #64748b;
-		font-size: 0.875rem;
-		margin: 0.25rem 0 0;
-	}
+	/* Page-header styles moved to _components/PageHeader.svelte */
 
 	/* Actions Row - Centered */
 	.header-actions {
@@ -3362,32 +3153,7 @@
 		font-size: 0.8125rem;
 	}
 
-	/* Progress Bar */
-	.completion-progress {
-		max-width: 500px;
-		margin: 0 auto 1.5rem;
-	}
-
-	.progress-bar {
-		height: 8px;
-		background: rgba(148, 163, 184, 0.2);
-		border-radius: 4px;
-		overflow: hidden;
-		margin-bottom: 0.5rem;
-	}
-
-	.progress-fill {
-		height: 100%;
-		background: linear-gradient(90deg, var(--primary-500), var(--primary-600));
-		transition: width 0.5s ease;
-	}
-
-	.progress-details {
-		display: flex;
-		justify-content: space-between;
-		font-size: 0.8125rem;
-		color: #64748b;
-	}
+	/* Progress-bar styles moved to _components/CompletionProgress.svelte */
 
 	/* Layout */
 	.content-wrapper {
@@ -3500,82 +3266,7 @@
 	}
 
 	/* Validation Card */
-	.validation-card {
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 12px;
-		padding: 1.25rem;
-		backdrop-filter: blur(10px);
-	}
-
-	.validation-card h3 {
-		font-size: 1.05rem;
-		color: #f1f5f9;
-		margin: 0 0 1rem 0;
-		font-weight: 600;
-	}
-
-	.score-circle {
-		position: relative;
-		width: 120px;
-		height: 120px;
-		margin: 0 auto 1.25rem;
-	}
-
-	.score-circle svg {
-		width: 100%;
-		height: 100%;
-		transform: rotate(-90deg);
-	}
-
-	.score-text {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		font-size: 2rem;
-		font-weight: 700;
-		color: #f1f5f9;
-	}
-
-	.validation-items {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-	}
-
-	.validation-item {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 0.625rem 0.875rem;
-		background: rgba(148, 163, 184, 0.05);
-		border-radius: 6px;
-		font-size: 0.875rem;
-	}
-
-	.validation-item.good {
-		background: rgba(16, 185, 129, 0.1);
-		color: #10b981;
-		border: 1px solid rgba(16, 185, 129, 0.2);
-	}
-
-	.validation-item.warning {
-		background: rgba(245, 158, 11, 0.1);
-		color: #f59e0b;
-		border: 1px solid rgba(245, 158, 11, 0.2);
-	}
-
-	.validation-item.error {
-		background: rgba(239, 68, 68, 0.1);
-		color: #ef4444;
-		border: 1px solid rgba(239, 68, 68, 0.2);
-	}
-
-	.item-score {
-		font-weight: 600;
-		font-size: 0.75rem;
-	}
+	/* Quality-score card styles moved to _components/QualityScoreCard.svelte */
 
 	/* Main Content - Layout Shift Prevention */
 	.main-content {
@@ -3910,11 +3601,11 @@
 		margin-bottom: 1rem;
 	}
 
-	.drag-handle {
-		cursor: move;
-		color: #64748b;
-		flex-shrink: 0;
-	}
+	/* `.drag-handle` was a scoped selector on `<IconGripVertical class="drag-handle" />`.
+	   Svelte compiler emits `css_unused_selector` because the class lands on the
+	   icon's SVG without the parent's scope hash — the rule has been dead since
+	   this file was written. Removed (re-removed after a defensive R3-D revert
+	   was rolled back via empirical svelte-check verification). */
 
 	.module-number {
 		font-weight: 600;
@@ -4003,11 +3694,8 @@
 		border-color: rgba(148, 163, 184, 0.2);
 	}
 
-	.lesson-drag {
-		cursor: move;
-		color: #64748b;
-		flex-shrink: 0;
-	}
+	/* `.lesson-drag` — same Svelte-scope-doesn't-reach-child-component issue as
+	   `.drag-handle` above. Confirmed dead by svelte-check `css_unused_selector`. */
 
 	.lesson-number {
 		font-weight: 600;
@@ -4746,10 +4434,10 @@
 		color: #10b981;
 	}
 
-	/* Buttons - Email Templates Style */
+	/* Buttons - Email Templates Style.
+	   `.btn-ghost` had no markup and was dead. Removed. */
 	.btn-primary,
-	.btn-secondary,
-	.btn-ghost {
+	.btn-secondary {
 		display: inline-flex;
 		align-items: center;
 		gap: 0.5rem;
@@ -4793,19 +4481,14 @@
 		cursor: not-allowed;
 	}
 
-	.btn-ghost {
-		background: transparent;
-		color: #94a3b8;
-	}
+	/* `.btn-ghost` (and `.btn-ghost:hover`) — globally defined in
+	   src/lib/styles/base/global.css:170-179. The scoped re-declaration here was
+	   redundant AND unreachable (svelte-check `css_unused_selector`). Removed. */
 
-	.btn-ghost:hover {
-		background: rgba(148, 163, 184, 0.1);
-	}
-
-	/* Animations */
-	.spinning {
-		animation: spin 1s linear infinite;
-	}
+	/* `.spinning` — was applied to `<IconRefresh class="spinning" />`. Same
+	   Svelte-scope issue: class lands on the icon's SVG without the parent's
+	   scope hash. svelte-check confirms `css_unused_selector`. Removed.
+	   `@keyframes spin` kept in case any sibling scope still references it. */
 
 	@keyframes spin {
 		from {
@@ -4864,10 +4547,7 @@
 	}
 
 	@media (max-width: 640px) {
-		.page-header {
-			flex-direction: column;
-			align-items: flex-start;
-		}
+		/* .page-header mobile rule moved to _components/PageHeader.svelte */
 
 		.form-row {
 			grid-template-columns: 1fr;
