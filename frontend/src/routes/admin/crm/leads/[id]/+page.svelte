@@ -57,6 +57,7 @@
 		IconWorld
 	} from '$lib/icons';
 	import { api } from '$lib/api/config';
+	import { logger } from '$lib/utils/logger';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES
@@ -172,7 +173,7 @@
 				notes = Array.isArray(v) ? v : v?.data || [];
 			}
 		} catch (e) {
-			console.error('Failed to load lead:', e);
+			logger.error('Failed to load lead', { error: e });
 			error = 'Failed to load lead. Please try again.';
 		} finally {
 			loading = false;
@@ -188,7 +189,7 @@
 			showToast('success', `Status updated to ${newStatus}`);
 			await loadLead();
 		} catch (e) {
-			console.error('Failed to update status:', e);
+			logger.error('Failed to update status', { error: e });
 			showToast('error', 'Failed to update status');
 		}
 	}
@@ -202,7 +203,7 @@
 			});
 			lead.is_starred = !lead.is_starred;
 		} catch (e) {
-			console.error('Failed to toggle starred:', e);
+			logger.error('Failed to toggle starred', { error: e });
 		}
 	}
 
@@ -219,7 +220,7 @@
 			showToast('success', 'Note added successfully');
 			await loadLead();
 		} catch (e) {
-			console.error('Failed to add note:', e);
+			logger.error('Failed to add note', { error: e });
 			showToast('error', 'Failed to add note');
 		} finally {
 			actionLoading = false;
@@ -235,7 +236,7 @@
 			showToast('success', 'Lead converted to contact successfully');
 			goto('/admin/crm');
 		} catch (e) {
-			console.error('Failed to convert lead:', e);
+			logger.error('Failed to convert lead', { error: e });
 			showToast('error', 'Failed to convert lead');
 		} finally {
 			actionLoading = false;
@@ -251,7 +252,7 @@
 			showToast('success', 'Lead deleted successfully');
 			goto('/admin/crm/leads');
 		} catch (e) {
-			console.error('Failed to delete lead:', e);
+			logger.error('Failed to delete lead', { error: e });
 			showToast('error', 'Failed to delete lead');
 		} finally {
 			actionLoading = false;
