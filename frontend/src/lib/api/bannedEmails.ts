@@ -63,6 +63,7 @@
 import { browser } from '$app/environment';
 import { writable, derived, get } from 'svelte/store';
 import { getAuthToken } from '$lib/stores/auth.svelte';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -386,8 +387,6 @@ class BannedEmailManagementService {
 
 		// Load initial data
 		this.loadInitialData();
-
-		console.debug('[BannedEmailService] Initialized');
 	}
 
 	/**
@@ -408,7 +407,6 @@ class BannedEmailManagementService {
 			this.wsConnection = new WebSocket(`${configuredWsUrl}/banned-emails`);
 
 			this.wsConnection.onopen = () => {
-				console.debug('[BannedEmailService] WebSocket connected');
 				this.authenticate();
 			};
 
@@ -462,7 +460,7 @@ class BannedEmailManagementService {
 					break;
 			}
 		} catch (error) {
-			console.error('[BannedEmailService] Failed to handle WebSocket message:', error);
+			logger.error('[BannedEmailService] Failed to handle WebSocket message:', { error });
 		}
 	}
 
@@ -476,7 +474,7 @@ class BannedEmailManagementService {
 	}
 
 	private handlePatternDetected(data: any): void {
-		console.warn('[BannedEmailService] Pattern detected:', data);
+		logger.warn('[BannedEmailService] Pattern detected:', data);
 		this.reviewQueue.update((queue) => [...queue, data]);
 	}
 
@@ -508,7 +506,7 @@ class BannedEmailManagementService {
 		try {
 			await Promise.all([this.loadStats(), this.checkPatterns()]);
 		} catch (error) {
-			console.error('[BannedEmailService] Sync failed:', error);
+			logger.error('[BannedEmailService] Sync failed:', { error });
 		}
 	}
 
@@ -524,7 +522,7 @@ class BannedEmailManagementService {
 				this.loadWhitelist()
 			]);
 		} catch (error) {
-			console.error('[BannedEmailService] Failed to load initial data:', error);
+			logger.error('[BannedEmailService] Failed to load initial data:', { error });
 		}
 	}
 
@@ -617,7 +615,7 @@ class BannedEmailManagementService {
 			this.setCache(cacheKey, enhanced);
 			return enhanced;
 		} catch (error) {
-			console.error('[BannedEmailService] Check failed:', error);
+			logger.error('[BannedEmailService] Check failed:', { error });
 			throw error;
 		}
 	}
@@ -830,7 +828,7 @@ class BannedEmailManagementService {
 				return similar;
 			}
 		} catch (error) {
-			console.error('[BannedEmailService] Similar email check failed:', error);
+			logger.error('[BannedEmailService] Similar email check failed:', { error });
 		}
 
 		// Fallback to local pattern matching
@@ -853,7 +851,7 @@ class BannedEmailManagementService {
 				return patterns;
 			}
 		} catch (error) {
-			console.error('[BannedEmailService] Pattern detection failed:', error);
+			logger.error('[BannedEmailService] Pattern detection failed:', { error });
 		}
 
 		// Fallback to local detection
@@ -873,7 +871,7 @@ class BannedEmailManagementService {
 				return response.json();
 			}
 		} catch (error) {
-			console.error('[BannedEmailService] Domain check failed:', error);
+			logger.error('[BannedEmailService] Domain check failed:', { error });
 		}
 
 		// Return default info
@@ -904,7 +902,7 @@ class BannedEmailManagementService {
 				return score;
 			}
 		} catch (error) {
-			console.error('[BannedEmailService] Risk score calculation failed:', error);
+			logger.error('[BannedEmailService] Risk score calculation failed:', { error });
 		}
 
 		// Calculate local risk score
@@ -958,7 +956,7 @@ class BannedEmailManagementService {
 				return stats;
 			}
 		} catch (error) {
-			console.error('[BannedEmailService] Failed to load stats:', error);
+			logger.error('[BannedEmailService] Failed to load stats:', { error });
 		}
 
 		// Return empty stats
@@ -1017,7 +1015,7 @@ class BannedEmailManagementService {
 				return queue;
 			}
 		} catch (error) {
-			console.error('[BannedEmailService] Failed to load review queue:', error);
+			logger.error('[BannedEmailService] Failed to load review queue:', { error });
 		}
 
 		return [];
@@ -1083,7 +1081,7 @@ class BannedEmailManagementService {
 				return whitelist;
 			}
 		} catch (error) {
-			console.error('[BannedEmailService] Failed to load whitelist:', error);
+			logger.error('[BannedEmailService] Failed to load whitelist:', { error });
 		}
 
 		return [];
@@ -1177,7 +1175,7 @@ class BannedEmailManagementService {
 			action.status = 'completed';
 		} catch (error) {
 			action.status = 'failed';
-			console.error('[BannedEmailService] Enforcement failed:', error);
+			logger.error('[BannedEmailService] Enforcement failed:', { error });
 		}
 
 		// Update recent actions
@@ -1200,7 +1198,7 @@ class BannedEmailManagementService {
 					body: JSON.stringify({ email })
 				});
 			} catch (error) {
-				console.error(`[BannedEmailService] Webhook failed: ${webhook}`, error);
+				logger.error(`[BannedEmailService] Webhook failed: ${webhook}`, { error });
 			}
 		}
 	}
@@ -1238,9 +1236,8 @@ class BannedEmailManagementService {
 		message: string,
 		type: 'info' | 'success' | 'warning' | 'error' = 'info'
 	): void {
-		// Placeholder notification dispatch — `info` is the correct level for
-		// a user-facing notice and is allowed by lint (audit 2026-05-17).
-		console.info(`[${type.toUpperCase()}] ${message}`);
+		// Placeholder notification dispatch — routed through dev-only logger.
+		logger.info(`[${type.toUpperCase()}] ${message}`);
 	}
 
 	private trackEvent(event: string, data?: any): void {

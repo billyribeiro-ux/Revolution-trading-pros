@@ -51,6 +51,7 @@
 import { browser } from '$app/environment';
 import { writable, derived, get } from 'svelte/store';
 import { getAuthToken } from '$lib/stores/auth.svelte';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -510,8 +511,6 @@ class CouponManagementService {
 		// Setup fraud detection
 		this.setupFraudDetection();
 
-		console.debug('[CouponService] Initialized');
-
 		// Note: Analytics and initial data loading disabled to prevent reactive loops
 		// Call loadInitialData() and startAnalyticsCollection() manually if needed
 	}
@@ -569,7 +568,7 @@ class CouponManagementService {
 
 			return data;
 		} catch (error) {
-			console.error('[CouponService] Request failed:', error);
+			logger.error('[CouponService] Request failed:', { error });
 			throw error;
 		}
 	}
@@ -610,7 +609,6 @@ class CouponManagementService {
 			this.wsConnection = new WebSocket(wsUrl);
 
 			this.wsConnection.onopen = () => {
-				console.debug('[CouponService] WebSocket connected');
 				this.wsConnectionState.set('connected');
 				this._wsReconnectAttempts = 0;
 				this._wsReconnectDelay = WS_RECONNECT_DELAY;
@@ -643,7 +641,7 @@ class CouponManagementService {
 	 */
 	private subscribeToUpdates(): void {
 		if (!this.wsConnection || this.wsConnection.readyState !== WebSocket.OPEN) {
-			console.warn('[CouponService] Cannot subscribe - WebSocket not connected');
+			logger.warn('[CouponService] Cannot subscribe - WebSocket not connected');
 			return;
 		}
 
@@ -654,7 +652,6 @@ class CouponManagementService {
 		};
 
 		this.wsConnection.send(JSON.stringify(subscriptionMessage));
-		console.debug('[CouponService] Subscribed to update channels');
 	}
 
 	/**
@@ -694,14 +691,14 @@ class CouponManagementService {
 					this.handleFraudAlert(message.data);
 					break;
 				case 'error':
-					console.error('[CouponService] Server error:', message.data);
+					logger.error('[CouponService] Server error:', { data: message.data });
 					this.error.set(message.data.message || 'Server error');
 					break;
 				default:
-					console.debug('[CouponService] Unknown message type:', message.type);
+					logger.debug('[CouponService] Unknown message type:', message.type);
 			}
 		} catch (error) {
-			console.error('[CouponService] Failed to handle WebSocket message:', error);
+			logger.error('[CouponService] Failed to handle WebSocket message:', { error });
 		}
 	}
 
@@ -720,7 +717,7 @@ class CouponManagementService {
 				this.wsHeartbeatTimeout = window.setTimeout(() => {
 					const timeSinceLastPong = Date.now() - this.wsLastPongTime;
 					if (timeSinceLastPong > WS_HEARTBEAT_TIMEOUT) {
-						console.warn('[CouponService] Heartbeat timeout - connection may be stale');
+						logger.warn('[CouponService] Heartbeat timeout - connection may be stale');
 						this.wsConnection?.close(4000, 'Heartbeat timeout');
 					}
 				}, WS_HEARTBEAT_TIMEOUT);
@@ -766,7 +763,7 @@ class CouponManagementService {
 			try {
 				this.wsConnection.send(JSON.stringify(message));
 			} catch (error) {
-				console.error('[CouponService] Failed to send queued message:', error);
+				logger.error('[CouponService] Failed to send queued message:', { error });
 				// Re-queue the message
 				if (message) this.wsMessageQueue.unshift(message);
 				break;
@@ -790,7 +787,6 @@ class CouponManagementService {
 	 */
 	private handleCouponDelete(couponId: string): void {
 		this.coupons.update((coupons) => coupons.filter((c) => c.id !== couponId));
-		console.debug('[CouponService] Coupon deleted via WebSocket:', couponId);
 	}
 
 	private handleCouponUpdate(coupon: EnhancedCoupon): void {
@@ -848,7 +844,7 @@ class CouponManagementService {
 	}
 
 	private handleFraudAlert(alert: any): void {
-		console.warn('[CouponService] Fraud alert:', alert);
+		logger.warn('[CouponService] Fraud alert:', alert);
 		this.showNotification(`Fraud detected: ${alert.message}`, 'error');
 	}
 
@@ -864,24 +860,21 @@ class CouponManagementService {
 		if (!browser) return;
 
 		this.isLoading.set(true);
-		console.info('[CouponService] Loading initial data...');
 
 		try {
 			// Load coupons first (primary data)
 			let coupons: EnhancedCoupon[] = [];
 			try {
 				coupons = await this.getAllCoupons();
-				console.debug(`[CouponService] Loaded ${coupons.length} coupons`);
 			} catch (error) {
-				console.debug('[CouponService] Coupons endpoint not available:', error);
+				logger.debug('[CouponService] Coupons endpoint not available:', error);
 			}
 
 			// Try to load campaigns (optional endpoint)
 			try {
 				await this.getCampaigns();
-				console.debug('[CouponService] Campaigns loaded');
 			} catch (_error) {
-				console.debug('[CouponService] Campaigns endpoint not available');
+				logger.debug('[CouponService] Campaigns endpoint not available');
 			}
 
 			// Load metrics for active coupons (limit to first 10 for performance)
@@ -893,10 +886,8 @@ class CouponManagementService {
 					// Metrics endpoint may not exist - silent fail
 				}
 			}
-
-			console.info('[CouponService] ✓ Initial data loaded successfully');
 		} catch (error) {
-			console.debug('[CouponService] Initial data load skipped:', error);
+			logger.debug('[CouponService] Initial data load skipped:', error);
 		} finally {
 			this.isLoading.set(false);
 		}
@@ -916,8 +907,6 @@ class CouponManagementService {
 		// Clear existing interval if any
 		this.stopAnalyticsCollection();
 
-		console.info('[CouponService] Starting analytics collection...');
-
 		this.analyticsInterval = window.setInterval(() => {
 			this.updateAnalytics();
 		}, ANALYTICS_INTERVAL);
@@ -930,7 +919,6 @@ class CouponManagementService {
 		if (this.analyticsInterval) {
 			clearInterval(this.analyticsInterval);
 			this.analyticsInterval = undefined;
-			console.debug('[CouponService] Analytics collection stopped');
 		}
 	}
 
@@ -950,7 +938,7 @@ class CouponManagementService {
 					return m;
 				});
 			} catch (error) {
-				console.error(`[CouponService] Failed to update metrics for ${coupon.id}:`, error);
+				logger.error(`[CouponService] Failed to update metrics for ${coupon.id}:`, { error });
 			}
 		}
 	}
@@ -960,7 +948,6 @@ class CouponManagementService {
 	 */
 	private setupFraudDetection(): void {
 		// Initialize fraud detection system
-		console.debug('[CouponService] Fraud detection initialized');
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -1094,7 +1081,7 @@ class CouponManagementService {
 			this.fraudCheckCache.set(cacheKey, result);
 			return result;
 		} catch (error) {
-			console.error('[CouponService] Fraud check failed:', error);
+			logger.error('[CouponService] Fraud check failed:', { error });
 			return { score: 0, status: 'safe', reasons: [], recommendations: [] };
 		}
 	}
@@ -1113,7 +1100,7 @@ class CouponManagementService {
 			);
 			return response.discounts;
 		} catch (error) {
-			console.error('[CouponService] Failed to find stackable discounts:', error);
+			logger.error('[CouponService] Failed to find stackable discounts:', { error });
 			return [];
 		}
 	}
@@ -1322,7 +1309,7 @@ class CouponManagementService {
 			return response.campaigns || [];
 		} catch (_error) {
 			// Campaigns endpoint may not be implemented yet
-			console.debug('[CouponService] Campaigns not available');
+			logger.debug('[CouponService] Campaigns not available');
 			this.campaigns.set([]);
 			return [];
 		}
@@ -1526,9 +1513,8 @@ class CouponManagementService {
 		message: string,
 		type: 'info' | 'success' | 'warning' | 'error' = 'info'
 	): void {
-		// Placeholder notification dispatch — `info` is the correct level for
-		// a user-facing notice and is allowed by lint (audit 2026-05-17).
-		console.info(`[${type.toUpperCase()}] ${message}`);
+		// Placeholder notification dispatch — routed through dev-only logger.
+		logger.info(`[${type.toUpperCase()}] ${message}`);
 	}
 
 	private trackEvent(event: string, data: any): void {
