@@ -4,7 +4,12 @@
  * Helper functions for block manipulation and validation
  */
 
-import type { Block, BlockType, CreateBlockPayload } from '$lib/components/cms/blocks/types';
+import type {
+	Block,
+	BlockContent,
+	BlockType,
+	CreateBlockPayload
+} from '$lib/components/cms/blocks/types';
 import { toBlockId, type BlockId } from '$lib/stores/blockState.svelte';
 
 /**
@@ -36,10 +41,16 @@ export function createBlock(type: BlockType, overrides?: Partial<CreateBlockPayl
 }
 
 /**
- * Get default content for block type
+ * Get default content for block type.
+ *
+ * Returns a `BlockContent` view (which already carries the open
+ * `[key: string]: unknown` index for forward-compat fields). The
+ * previous `Record<string, any>` return widened every consumer of
+ * `defaultContent` to `any`, silently disabling type-checking on the
+ * `Block.content` assignment downstream.
  */
-function getDefaultContent(type: BlockType): Record<string, any> {
-	const defaults: Record<BlockType, Record<string, any>> = {
+function getDefaultContent(type: BlockType): BlockContent {
+	const defaults: Record<BlockType, BlockContent> = {
 		// Content
 		paragraph: { text: '' },
 		heading: { text: '', level: 2 },
@@ -56,7 +67,11 @@ function getDefaultContent(type: BlockType): Record<string, any> {
 		audio: { mediaUrl: '', mediaCaption: '' },
 		gallery: { galleryImages: [] },
 		file: { mediaUrl: '', title: '' },
-		embed: { embedUrl: '', embedType: 'iframe' },
+		// LB-R25-1: `'iframe'` is not a member of `BlockContent.embedType`
+		// (`youtube | vimeo | twitter | instagram | tiktok | soundcloud |
+		// spotify | custom`). `'custom'` is the closest semantic match for a
+		// generic iframe embed and matches what the editor actually wires up.
+		embed: { embedUrl: '', embedType: 'custom' },
 		gif: { mediaUrl: '', mediaAlt: '' },
 
 		// Interactive
@@ -75,8 +90,10 @@ function getDefaultContent(type: BlockType): Record<string, any> {
 		toggle: { title: 'Toggle Title', content: 'Toggle content' },
 		toc: { title: 'Table of Contents' },
 
-		// Layout
-		columns: { columns: [{ blocks: [], width: 50 }] },
+		// Layout — LB-R25-2: `width` is typed `string | undefined` (CSS value
+		// like `'50%'`). Previous default was the number `50` which would emit
+		// `style="width:50"` with no unit and not render correctly.
+		columns: { columns: [{ blocks: [], width: '50%' }] },
 		group: { blocks: [] },
 		row: { blocks: [] },
 		divider: {},
@@ -84,14 +101,42 @@ function getDefaultContent(type: BlockType): Record<string, any> {
 		// Trading
 		ticker: { symbol: 'SPY', exchange: 'NYSE' },
 		chart: { symbol: 'SPY', chartType: 'candlestick' },
-		priceAlert: { symbol: '', targetPrice: 0, direction: 'above' },
+		// LB-R25-3: `PriceAlertBlock.svelte` reads `alertSymbol`,
+		// `alertDirection`, `alertTarget`, `alertEntry`, `alertStop`,
+		// `alertNote` — NOT `symbol`/`direction`/`targetPrice`. The
+		// previous defaults never reached the block (the `||` fallbacks
+		// inside the component took over) so new alert blocks rendered
+		// with hard-coded fallback prices (`SPY` / `480` / `475` / `470`),
+		// not the schema's documented defaults. Aligning to the real field
+		// names so the defaults actually take effect.
+		priceAlert: {
+			alertSymbol: '',
+			alertTarget: 0,
+			alertEntry: 0,
+			alertStop: 0,
+			alertDirection: 'above',
+			alertNote: ''
+		},
+		// LB-R25-4: same drift as LB-R25-3 — `TradingIdeaBlock.svelte`
+		// reads `tradeSymbol`, `tradeDirection`, `tradeEntry`, `tradeStop`,
+		// `tradeTarget1`, `tradeTarget2`, `tradeConfidence`, `tradeThesis`,
+		// `tradeTimeframe`. The previous defaults (`symbol`, `direction`,
+		// `entry`, `stopLoss`, `takeProfit`, `confidence`) never reached
+		// the component; new trading-idea blocks rendered with the hard-
+		// coded in-component fallbacks (`AAPL`, 185, 180, 195, 205, 75).
+		// Additionally the old default `confidence: 'medium'` was a string
+		// where the declared type is `number` — the type-tightening from
+		// this sweep surfaced the mismatch.
 		tradingIdea: {
-			symbol: '',
-			direction: 'long',
-			entry: 0,
-			stopLoss: 0,
-			takeProfit: 0,
-			confidence: 'medium'
+			tradeSymbol: '',
+			tradeDirection: 'long',
+			tradeEntry: 0,
+			tradeStop: 0,
+			tradeTarget1: 0,
+			tradeTarget2: 0,
+			tradeConfidence: 50,
+			tradeThesis: '',
+			tradeTimeframe: ''
 		},
 
 		// AI
@@ -145,12 +190,18 @@ export function cloneBlock(block: Block): Block {
 }
 
 /**
- * Validate block structure
+ * Validate block structure.
+ *
+ * The narrowing cast goes through `Record<string, unknown>` so the
+ * downstream property reads stay `unknown` (not `any`), which keeps
+ * the guard honest — every check below is the only thing standing
+ * between an arbitrary deserialized payload and the rest of the
+ * editor.
  */
 export function validateBlock(block: unknown): block is Block {
 	if (!block || typeof block !== 'object') return false;
 
-	const b = block as any;
+	const b = block as Record<string, unknown>;
 
 	return (
 		typeof b.id === 'string' &&

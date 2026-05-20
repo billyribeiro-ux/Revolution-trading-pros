@@ -1,5 +1,6 @@
 import { writable, type Writable } from 'svelte/store';
 import { browser } from '$app/environment';
+import type { JsonValue } from '$lib/api/_types';
 
 interface WebSocketMessage {
 	event: string;
@@ -8,9 +9,46 @@ interface WebSocketMessage {
 	user_id?: string;
 	cart_id?: string;
 	notification?: NotificationPayload;
-	data?: any;
-	changes?: any;
+	// `data` / `changes` are wire-level polymorphic payloads keyed off `event`.
+	// The handler narrows per-branch (`data as RoomAlertPayload` etc.).
+	data?: JsonValue;
+	changes?: JsonValue;
 	timestamp: string;
+}
+
+/**
+ * Server-bound control messages. The backend's subscription protocol only
+ * accepts `{ action: 'subscribe' | 'unsubscribe', channel: string }`.
+ */
+interface WebSocketControlMessage {
+	action: 'subscribe' | 'unsubscribe';
+	channel: string;
+}
+
+/**
+ * Erased callback signature stored in the subscriptions map. Each typed
+ * `subscribeTo*` method wraps its caller's callback in this erased shape;
+ * the handler dispatches a per-channel narrowed payload via a localized
+ * cast.
+ */
+type ChannelCallback = (payload: unknown) => void;
+
+/**
+ * Narrow a `JsonValue` to a plain object form so handlers can safely read
+ * string-keyed fields like `data.room_slug` or `data.session_id`. Returns
+ * `null` for arrays / primitives / null.
+ */
+function asObject(
+	value: JsonValue | undefined
+): { [k: string]: JsonValue | undefined } | null {
+	if (
+		value !== null &&
+		typeof value === 'object' &&
+		!Array.isArray(value)
+	) {
+		return value;
+	}
+	return null;
 }
 
 export interface NotificationPayload {
@@ -82,7 +120,7 @@ class WebSocketService {
 	private reconnectAttempts = 0;
 	private maxReconnectAttempts = 5;
 	private reconnectDelay = 1000;
-	private subscriptions: Map<string, Set<(data: any) => void>> = new Map();
+	private subscriptions: Map<string, Set<ChannelCallback>> = new Map();
 
 	public connected: Writable<boolean> = writable(false);
 	public error: Writable<string | null> = writable(null);
@@ -146,14 +184,14 @@ class WebSocketService {
 	/**
 	 * Subscribe to widget updates
 	 */
-	subscribeToWidget(widgetId: string, callback: (data: any) => void): () => void {
+	subscribeToWidget(widgetId: string, callback: (data: JsonValue) => void): () => void {
 		const channel = `widget:${widgetId}`;
 
 		if (!this.subscriptions.has(channel)) {
 			this.subscriptions.set(channel, new Set());
 		}
 
-		this.subscriptions.get(channel)!.add(callback);
+		this.subscriptions.get(channel)!.add(callback as ChannelCallback);
 
 		// Send subscription message to server
 		this.send({
@@ -163,7 +201,7 @@ class WebSocketService {
 
 		// Return unsubscribe function
 		return () => {
-			this.subscriptions.get(channel)?.delete(callback);
+			this.subscriptions.get(channel)?.delete(callback as ChannelCallback);
 			if (this.subscriptions.get(channel)?.size === 0) {
 				this.send({
 					action: 'unsubscribe',
@@ -176,14 +214,14 @@ class WebSocketService {
 	/**
 	 * Subscribe to dashboard updates
 	 */
-	subscribeToDashboard(dashboardId: string, callback: (changes: any) => void): () => void {
+	subscribeToDashboard(dashboardId: string, callback: (changes: JsonValue) => void): () => void {
 		const channel = `dashboard:${dashboardId}`;
 
 		if (!this.subscriptions.has(channel)) {
 			this.subscriptions.set(channel, new Set());
 		}
 
-		this.subscriptions.get(channel)!.add(callback);
+		this.subscriptions.get(channel)!.add(callback as ChannelCallback);
 
 		this.send({
 			action: 'subscribe',
@@ -191,7 +229,7 @@ class WebSocketService {
 		});
 
 		return () => {
-			this.subscriptions.get(channel)?.delete(callback);
+			this.subscriptions.get(channel)?.delete(callback as ChannelCallback);
 			if (this.subscriptions.get(channel)?.size === 0) {
 				this.send({
 					action: 'unsubscribe',
@@ -214,7 +252,7 @@ class WebSocketService {
 			this.subscriptions.set(channel, new Set());
 		}
 
-		this.subscriptions.get(channel)!.add(callback);
+		this.subscriptions.get(channel)!.add(callback as ChannelCallback);
 
 		this.send({
 			action: 'subscribe',
@@ -222,7 +260,7 @@ class WebSocketService {
 		});
 
 		return () => {
-			this.subscriptions.get(channel)?.delete(callback);
+			this.subscriptions.get(channel)?.delete(callback as ChannelCallback);
 			if (this.subscriptions.get(channel)?.size === 0) {
 				this.send({
 					action: 'unsubscribe',
@@ -247,7 +285,7 @@ class WebSocketService {
 			this.subscriptions.set(channel, new Set());
 		}
 
-		this.subscriptions.get(channel)!.add(callback);
+		this.subscriptions.get(channel)!.add(callback as ChannelCallback);
 
 		this.send({
 			action: 'subscribe',
@@ -255,7 +293,7 @@ class WebSocketService {
 		});
 
 		return () => {
-			this.subscriptions.get(channel)?.delete(callback);
+			this.subscriptions.get(channel)?.delete(callback as ChannelCallback);
 			if (this.subscriptions.get(channel)?.size === 0) {
 				this.send({
 					action: 'unsubscribe',
@@ -280,7 +318,7 @@ class WebSocketService {
 			this.subscriptions.set(channel, new Set());
 		}
 
-		this.subscriptions.get(channel)!.add(callback);
+		this.subscriptions.get(channel)!.add(callback as ChannelCallback);
 
 		this.send({
 			action: 'subscribe',
@@ -288,7 +326,7 @@ class WebSocketService {
 		});
 
 		return () => {
-			this.subscriptions.get(channel)?.delete(callback);
+			this.subscriptions.get(channel)?.delete(callback as ChannelCallback);
 			if (this.subscriptions.get(channel)?.size === 0) {
 				this.send({
 					action: 'unsubscribe',
@@ -312,7 +350,7 @@ class WebSocketService {
 			this.subscriptions.set(channel, new Set());
 		}
 
-		this.subscriptions.get(channel)!.add(callback);
+		this.subscriptions.get(channel)!.add(callback as ChannelCallback);
 
 		this.send({
 			action: 'subscribe',
@@ -320,7 +358,7 @@ class WebSocketService {
 		});
 
 		return () => {
-			this.subscriptions.get(channel)?.delete(callback);
+			this.subscriptions.get(channel)?.delete(callback as ChannelCallback);
 			if (this.subscriptions.get(channel)?.size === 0) {
 				this.send({
 					action: 'unsubscribe',
@@ -344,7 +382,7 @@ class WebSocketService {
 			this.subscriptions.set(channel, new Set());
 		}
 
-		this.subscriptions.get(channel)!.add(callback);
+		this.subscriptions.get(channel)!.add(callback as ChannelCallback);
 
 		this.send({
 			action: 'subscribe',
@@ -352,7 +390,7 @@ class WebSocketService {
 		});
 
 		return () => {
-			this.subscriptions.get(channel)?.delete(callback);
+			this.subscriptions.get(channel)?.delete(callback as ChannelCallback);
 			if (this.subscriptions.get(channel)?.size === 0) {
 				this.send({
 					action: 'unsubscribe',
@@ -391,13 +429,15 @@ class WebSocketService {
 
 		// Handle cart updates
 		if (event === 'cart.updated' && data) {
+			const dataObj = asObject(data);
 			// Try user channel first, then session channel
 			if (user_id) {
 				const userChannel = `user:${user_id}:cart`;
 				this.subscriptions.get(userChannel)?.forEach((callback) => callback(data));
 			}
-			if (data.session_id) {
-				const sessionChannel = `session:${data.session_id}:cart`;
+			const sessionId = dataObj?.session_id;
+			if (typeof sessionId === 'string') {
+				const sessionChannel = `session:${sessionId}:cart`;
 				this.subscriptions.get(sessionChannel)?.forEach((callback) => callback(data));
 			}
 		}
@@ -406,22 +446,37 @@ class WebSocketService {
 		// Handle Explosive Swings room events
 		// ═══════════════════════════════════════════════════════════════════════════
 
+		const dataObj = asObject(data);
+		const roomSlug = dataObj?.room_slug;
+
 		// Handle room alert created
-		if ((event === 'room:alert:created' || event === 'room:alert:updated') && data?.room_slug) {
-			const channel = `room:${data.room_slug}:alerts`;
-			this.subscriptions.get(channel)?.forEach((callback) => callback(data as RoomAlertPayload));
+		if (
+			(event === 'room:alert:created' || event === 'room:alert:updated') &&
+			typeof roomSlug === 'string'
+		) {
+			const channel = `room:${roomSlug}:alerts`;
+			this.subscriptions
+				.get(channel)
+				?.forEach((callback) => callback(data as unknown as RoomAlertPayload));
 		}
 
 		// Handle room trade opened/closed
-		if ((event === 'room:trade:opened' || event === 'room:trade:closed') && data?.room_slug) {
-			const channel = `room:${data.room_slug}:trades`;
-			this.subscriptions.get(channel)?.forEach((callback) => callback(data as TradeUpdatePayload));
+		if (
+			(event === 'room:trade:opened' || event === 'room:trade:closed') &&
+			typeof roomSlug === 'string'
+		) {
+			const channel = `room:${roomSlug}:trades`;
+			this.subscriptions
+				.get(channel)
+				?.forEach((callback) => callback(data as unknown as TradeUpdatePayload));
 		}
 
 		// Handle room stats updated
-		if (event === 'room:stats:updated' && data?.room_slug) {
-			const channel = `room:${data.room_slug}:stats`;
-			this.subscriptions.get(channel)?.forEach((callback) => callback(data as StatsUpdatePayload));
+		if (event === 'room:stats:updated' && typeof roomSlug === 'string') {
+			const channel = `room:${roomSlug}:stats`;
+			this.subscriptions
+				.get(channel)
+				?.forEach((callback) => callback(data as unknown as StatsUpdatePayload));
 		}
 
 		if (event === 'system:notification') {
@@ -431,9 +486,14 @@ class WebSocketService {
 	}
 
 	/**
-	 * Send message to server
+	 * Send a subscribe/unsubscribe control message to the server.
+	 *
+	 * The backend's subscription protocol only accepts the
+	 * `WebSocketControlMessage` shape; previously typed as `any` which
+	 * permitted accidentally posting arbitrary payloads. Tightening to
+	 * the control union catches typos at compile time.
 	 */
-	private send(data: any): void {
+	private send(data: WebSocketControlMessage): void {
 		if (this.ws?.readyState === WebSocket.OPEN) {
 			this.ws.send(JSON.stringify(data));
 		}

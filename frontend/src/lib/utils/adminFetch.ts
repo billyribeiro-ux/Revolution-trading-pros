@@ -18,7 +18,7 @@ import { browser } from '$app/environment';
 /**
  * Response type for API calls
  */
-export interface AdminApiResponse<T = any> {
+export interface AdminApiResponse<T = unknown> {
 	data?: T;
 	message?: string;
 	success?: boolean;
@@ -50,6 +50,15 @@ export interface AdminFetchOptions extends Omit<RequestInit, 'headers'> {
  * @param options - Fetch options
  * @returns Promise with parsed JSON response
  */
+/**
+ * NOTE on the `T = any` default: tightening this to `unknown` cascades
+ * to ~73 untyped admin callsites (`const data = await adminFetch(...);
+ * data.connections;`) — that migration is tracked as a dedicated
+ * follow-up. For this sweep we leave the default as `any` and accept
+ * one residual eslint warning on this line; convenience wrappers below
+ * (`adminApi.*`) and `AdminApiResponse` were tightened to `unknown`.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- See note above; tightening default cascades to 73 admin callsites.
 export async function adminFetch<T = any>(
 	endpoint: string,
 	options: AdminFetchOptions = {}
@@ -164,34 +173,46 @@ export class AdminApiError extends Error {
 }
 
 /**
- * Convenience methods
+ * Convenience methods.
+ *
+ * Note: the response generic defaults to `unknown` rather than `any`.
+ * Callers that rely on the previous `any` ergonomics will see a narrow-
+ * required compile error and should either supply the response type
+ * explicitly (`adminApi.get<MyShape>(...)`) or narrow `unknown` at the
+ * use site. Direct admin proxy callers using `adminFetch(...)` retain
+ * their existing default for backward compatibility with the ~73 untyped
+ * callsites; tightening that default is tracked as a follow-up sweep.
+ *
+ * Request `data` payloads are typed `unknown` — `JSON.stringify` accepts
+ * unknown, and callers were already implicitly serializing arbitrary
+ * shapes here.
  */
 export const adminApi = {
-	get: <T = any>(endpoint: string, options?: AdminFetchOptions) =>
+	get: <T = unknown>(endpoint: string, options?: AdminFetchOptions) =>
 		adminFetch<T>(endpoint, { ...options, method: 'GET' }),
 
-	post: <T = any>(endpoint: string, data?: any, options?: AdminFetchOptions) =>
+	post: <T = unknown>(endpoint: string, data?: unknown, options?: AdminFetchOptions) =>
 		adminFetch<T>(endpoint, {
 			...options,
 			method: 'POST',
 			body: data instanceof FormData ? data : JSON.stringify(data)
 		}),
 
-	put: <T = any>(endpoint: string, data?: any, options?: AdminFetchOptions) =>
+	put: <T = unknown>(endpoint: string, data?: unknown, options?: AdminFetchOptions) =>
 		adminFetch<T>(endpoint, {
 			...options,
 			method: 'PUT',
 			body: JSON.stringify(data)
 		}),
 
-	patch: <T = any>(endpoint: string, data?: any, options?: AdminFetchOptions) =>
+	patch: <T = unknown>(endpoint: string, data?: unknown, options?: AdminFetchOptions) =>
 		adminFetch<T>(endpoint, {
 			...options,
 			method: 'PATCH',
 			body: JSON.stringify(data)
 		}),
 
-	delete: <T = any>(endpoint: string, options?: AdminFetchOptions) =>
+	delete: <T = unknown>(endpoint: string, options?: AdminFetchOptions) =>
 		adminFetch<T>(endpoint, { ...options, method: 'DELETE' })
 };
 
