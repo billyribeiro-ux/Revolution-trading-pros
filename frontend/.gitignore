@@ -44,9 +44,9 @@ coverage/
 *.tmp
 .cache/
 
-# Reference files - Simpler Trading documentation (NOT part of website)
-Simpler*/
-templates/Simpler*.txt
-Dashboards
-Do's/
+# Reference files (kept in-repo for design reference; do NOT delete)
+# Simpler*/  — kept tracked; do not auto-ignore
+# templates/Simpler*.txt  — kept tracked
+# Dashboards  — kept tracked
+# Do's/  — kept tracked
 
