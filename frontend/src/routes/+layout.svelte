@@ -49,6 +49,7 @@
 	import type { Snippet } from 'svelte';
 	import { initializeConsent } from '$lib/consent';
 	import { trackPageView } from '$lib/consent/vendors/ga4';
+	import { logger } from '$lib/utils/logger';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PROPS - Svelte 5 $props() Pattern (no destructuring)
@@ -105,7 +106,7 @@
 			try {
 				trackPageView(to.url.href);
 			} catch (err) {
-				console.debug('[Layout] Page view tracking failed (non-critical):', err);
+				logger.error('[Layout] Page view tracking failed (non-critical):', err);
 			}
 		}
 	});
@@ -118,25 +119,25 @@
 
 		// All initializers wrapped in try/catch to prevent render interruption
 		initializeAuth().catch((err) => {
-			console.debug('[Layout] Auth init failed (non-critical):', err);
+			logger.error('[Layout] Auth init failed (non-critical):', err);
 		});
 
 		try {
 			registerServiceWorker();
 		} catch (err) {
-			console.debug('[Layout] Service worker registration failed (non-critical):', err);
+			logger.error('[Layout] Service worker registration failed (non-critical):', err);
 		}
 
 		try {
 			initPerformanceMonitoring();
 		} catch (err) {
-			console.debug('[Layout] Performance monitoring init failed (non-critical):', err);
+			logger.error('[Layout] Performance monitoring init failed (non-critical):', err);
 		}
 
 		try {
 			initializeConsent();
 		} catch (err) {
-			console.debug('[Layout] Consent init failed (non-critical):', err);
+			logger.error('[Layout] Consent init failed (non-critical):', err);
 		}
 	});
 </script>

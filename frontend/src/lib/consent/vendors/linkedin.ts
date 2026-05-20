@@ -9,6 +9,7 @@
  */
 
 import { browser, dev } from '$app/environment';
+import { logger } from '$lib/utils/logger';
 import type { VendorConfig } from '../types';
 
 declare global {
@@ -51,7 +52,6 @@ function initializeLinkedIn(partnerId: string): void {
 	script.onload = () => {
 		linkedinReady = true;
 		processEventQueue();
-		console.debug('[LinkedIn] Insight Tag initialized:', partnerId);
 	};
 
 	document.head.appendChild(script);
@@ -84,15 +84,13 @@ export function trackLinkedInConversion(
 	}
 
 	window.lintrk?.('track', { conversion_id: conversionId, ...data });
-	console.debug('[LinkedIn] Tracked conversion:', conversionId, data);
 }
 
 /**
  * Track page view (automatically tracked by Insight Tag)
  */
 export function trackLinkedInPageView(): void {
-	// Page views are automatically tracked by the Insight Tag
-	console.debug('[LinkedIn] Page view auto-tracked by Insight Tag');
+	// Page views are automatically tracked by the Insight Tag — no-op.
 }
 
 /**
@@ -150,7 +148,7 @@ export const linkedinVendor: VendorConfig = {
 	load: () => {
 		const partnerId = PUBLIC_LINKEDIN_PARTNER_ID;
 		if (!partnerId) {
-			if (!dev) console.warn('[LinkedIn] Missing PUBLIC_LINKEDIN_PARTNER_ID environment variable');
+			if (!dev) logger.warn('[LinkedIn] Missing PUBLIC_LINKEDIN_PARTNER_ID environment variable');
 			return;
 		}
 		initializeLinkedIn(partnerId);
@@ -159,6 +157,5 @@ export const linkedinVendor: VendorConfig = {
 	onConsentRevoked: () => {
 		linkedinReady = false;
 		eventQueue.length = 0;
-		console.debug('[LinkedIn] Consent revoked');
 	}
 };
