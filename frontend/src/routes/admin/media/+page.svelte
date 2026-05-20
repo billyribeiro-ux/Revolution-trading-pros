@@ -27,10 +27,16 @@
 	import DropZone from '$lib/components/media/DropZone.svelte';
 	import OptimizedImage from '$lib/components/media/OptimizedImage.svelte';
 	import ImageCropModal from '$lib/components/media/ImageCropModal.svelte';
-	import ResponsivePreview from '$lib/components/media/ResponsivePreview.svelte';
 	import MediaSkeleton from '$lib/components/media/MediaSkeleton.svelte';
 	import { mediaApi, type MediaItem, type OptimizationStatistics } from '$lib/api/media';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import ToastContainer from './_components/ToastContainer.svelte';
+	import StatsPanel from './_components/StatsPanel.svelte';
+	import UploadQueue from './_components/UploadQueue.svelte';
+	import Pagination from './_components/Pagination.svelte';
+	import ContextMenu, { type ContextAction } from './_components/ContextMenu.svelte';
+	import ResponsivePreviewModal from './_components/ResponsivePreviewModal.svelte';
+	import PageHeader from './_components/PageHeader.svelte';
 	// FIX-2026-04-26-audit (P1-7): media uploads, AI calls, and replace now route through
 	// same-origin /api/admin/media/* proxies (see frontend/src/routes/api/admin/media/*).
 	// Cross-origin XHRs to API_BASE_URL silently 401'd because the rtp_access_token cookie
@@ -38,33 +44,17 @@
 
 	// FIX-2026-04-26: Tabler icons replace 43 raw inline <svg> blocks for
 	// consistent professional styling per CLAUDE.md icon-system standard.
-	import IconLayoutGrid from '@tabler/icons-svelte-runes/icons/layout-grid';
-	import IconList from '@tabler/icons-svelte-runes/icons/list';
-	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
 	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
-	import IconPhoto from '@tabler/icons-svelte-runes/icons/photo';
-	import IconCircleCheck from '@tabler/icons-svelte-runes/icons/circle-check';
-	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
-	import IconBox from '@tabler/icons-svelte-runes/icons/box';
 	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
-	import IconChevronUp from '@tabler/icons-svelte-runes/icons/chevron-up';
 	import IconArrowUp from '@tabler/icons-svelte-runes/icons/arrow-up';
 	import IconArrowDown from '@tabler/icons-svelte-runes/icons/arrow-down';
 	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconCircleCheckFilled from '@tabler/icons-svelte-runes/icons/circle-check-filled';
-	import IconCircleXFilled from '@tabler/icons-svelte-runes/icons/circle-x-filled';
-	import IconChevronsLeft from '@tabler/icons-svelte-runes/icons/chevrons-left';
-	import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left';
-	import IconChevronRight from '@tabler/icons-svelte-runes/icons/chevron-right';
-	import IconChevronsRight from '@tabler/icons-svelte-runes/icons/chevrons-right';
 	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
 	import IconCrop from '@tabler/icons-svelte-runes/icons/crop';
 	import IconDevices from '@tabler/icons-svelte-runes/icons/devices';
 	import IconDownload from '@tabler/icons-svelte-runes/icons/download';
 	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconClipboardCopy from '@tabler/icons-svelte-runes/icons/clipboard-copy';
-	import IconInfoCircle from '@tabler/icons-svelte-runes/icons/info-circle';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// State
@@ -662,6 +652,36 @@
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
+	// Context Menu dispatcher (post-R10-C extraction)
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	function handleContextAction(action: ContextAction) {
+		if (!contextMenu) return;
+		const item = contextMenu.item;
+		switch (action) {
+			case 'view':
+				handleItemDoubleClick(item);
+				break;
+			case 'optimize':
+				handleOptimize(item);
+				break;
+			case 'crop':
+				handleCrop(item);
+				break;
+			case 'ai-analyze':
+				handleAIAnalyze(item);
+				break;
+			case 'copy-url':
+				navigator.clipboard.writeText(item.url);
+				showToast('URL copied', 'success');
+				break;
+			case 'delete':
+				handleDelete(item);
+				break;
+		}
+	}
+
+	// ═══════════════════════════════════════════════════════════════════════════
 	// Toast Notifications
 	// ═══════════════════════════════════════════════════════════════════════════
 
@@ -723,138 +743,17 @@
 			<div class="bg-blob bg-blob-3"></div>
 		</div>
 
-		<!-- ═══════════════════════════════════════════════════════════════════════ -->
-		<!-- Header - Centered Layout -->
-		<!-- ═══════════════════════════════════════════════════════════════════════ -->
-		<div class="page-header">
-			<h1>Media Library</h1>
-			<p class="subtitle">
-				Manage your media files, optimize images, and organize assets ({totalItems} items)
-			</p>
-			<div class="header-actions">
-				<div class="search-box">
-					<input
-						id="page-searchquery"
-						name="page-searchquery"
-						type="text"
-						placeholder="Search media..."
-						bind:value={searchQuery}
-						class="search-input"
-						onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && loadMedia()}
-					/>
-				</div>
-				<div class="view-toggle">
-					<button
-						class:active={viewMode === 'grid'}
-						onclick={() => (viewMode = 'grid')}
-						title="Grid view"
-					>
-						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: grid 4-squares SVG -->
-						<IconLayoutGrid size={20} aria-hidden="true" />
-					</button>
-					<button
-						class:active={viewMode === 'list'}
-						onclick={() => (viewMode = 'list')}
-						title="List view"
-					>
-						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: list 4-lines SVG -->
-						<IconList size={20} aria-hidden="true" />
-					</button>
-				</div>
-				<a href="/admin/media/analytics" class="btn-secondary" title="View bandwidth analytics">
-					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chart-bar 3-bar SVG -->
-					<IconChartBar size={20} aria-hidden="true" />
-					Analytics
-				</a>
-				<button class="btn-primary" onclick={() => (showUploadPanel = !showUploadPanel)}>
-					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: upload arrow SVG -->
-					<IconUpload size={20} aria-hidden="true" />
-					Upload
-				</button>
-			</div>
-		</div>
+		<!-- Header (extracted to _components/PageHeader.svelte) -->
+		<PageHeader
+			{totalItems}
+			bind:searchQuery
+			bind:viewMode
+			bind:showUploadPanel
+			onSearchSubmit={loadMedia}
+		/>
 
-		<!-- ═══════════════════════════════════════════════════════════════════════ -->
-		<!-- Statistics Panel -->
-		<!-- ═══════════════════════════════════════════════════════════════════════ -->
-		{#if showStatsPanel && statistics}
-			<div class="stats-panel" transition:slide={{ duration: 300 }}>
-				<div class="stats-grid">
-					<div class="stat-card">
-						<div class="stat-icon blue">
-							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: photo/image SVG -->
-							<IconPhoto size={24} aria-hidden="true" />
-						</div>
-						<div class="stat-info">
-							<span class="stat-value">{statistics.total_images}</span>
-							<span class="stat-label">Total Images</span>
-						</div>
-					</div>
-
-					<div class="stat-card">
-						<div class="stat-icon green">
-							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-check SVG -->
-							<IconCircleCheck size={24} aria-hidden="true" />
-						</div>
-						<div class="stat-info">
-							<span class="stat-value">{statistics.optimized_images}</span>
-							<span class="stat-label">Optimized</span>
-						</div>
-					</div>
-
-					<div class="stat-card">
-						<div class="stat-icon orange">
-							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: clock SVG -->
-							<IconClock size={24} aria-hidden="true" />
-						</div>
-						<div class="stat-info">
-							<span class="stat-value">{statistics.pending_optimization}</span>
-							<span class="stat-label">Pending</span>
-						</div>
-					</div>
-
-					<div class="stat-card">
-						<div class="stat-icon gold">
-							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: box/package SVG -->
-							<IconBox size={24} aria-hidden="true" />
-						</div>
-						<div class="stat-info">
-							<span class="stat-value">{formatBytes(statistics.total_storage)}</span>
-							<span class="stat-label">Storage Used</span>
-						</div>
-					</div>
-
-					<div class="stat-card highlight">
-						<div class="stat-icon emerald">
-							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: bolt/lightning SVG -->
-							<IconBolt size={24} aria-hidden="true" />
-						</div>
-						<div class="stat-info">
-							<span class="stat-value">{formatBytes(statistics.total_savings_bytes)}</span>
-							<span class="stat-label">Total Savings</span>
-						</div>
-						<div class="stat-progress">
-							<div class="progress-bar" style="width: {$statsProgress}%"></div>
-						</div>
-					</div>
-				</div>
-
-				<button
-					class="stats-toggle"
-					onclick={() => (showStatsPanel = false)}
-					aria-label="Hide statistics"
-				>
-					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chevron-up SVG -->
-					<IconChevronUp size={20} aria-hidden="true" />
-				</button>
-			</div>
-		{:else}
-			<button class="stats-show" onclick={() => (showStatsPanel = true)}>
-				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chart-bar SVG -->
-				<IconChartBar size={20} aria-hidden="true" />
-				Show Statistics
-			</button>
-		{/if}
+		<!-- Statistics Panel (extracted to _components/StatsPanel.svelte) -->
+		<StatsPanel {statistics} bind:showStatsPanel statsProgress={$statsProgress} />
 
 		<!-- ═══════════════════════════════════════════════════════════════════════ -->
 		<!-- Upload Panel -->
@@ -868,40 +767,7 @@
 					onfiles={handleFilesSelected}
 				/>
 
-				{#if uploadQueue.length > 0}
-					<div class="upload-queue">
-						{#each uploadQueue as upload (upload.id)}
-							<div
-								class="upload-item"
-								class:complete={upload.status === 'complete'}
-								class:error={upload.status === 'error'}
-							>
-								<div class="upload-icon">
-									{#if upload.status === 'complete'}
-										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-check-filled (upload complete) -->
-										<IconCircleCheckFilled size={20} aria-hidden="true" class="text-green" />
-									{:else if upload.status === 'error'}
-										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-x-filled (upload error) -->
-										<IconCircleXFilled size={20} aria-hidden="true" class="text-red" />
-									{:else}
-										<div class="upload-spinner"></div>
-									{/if}
-								</div>
-								<div class="upload-info">
-									<span class="upload-name">{upload.file.name}</span>
-									<span class="upload-size">{formatBytes(upload.file.size)}</span>
-								</div>
-								<div class="upload-progress-bar">
-									<div class="progress-fill" style="width: {upload.progress}%"></div>
-								</div>
-							</div>
-						{/each}
-					</div>
-
-					{#if !isUploading}
-						<button class="btn-secondary" onclick={clearUploadQueue}> Clear Queue </button>
-					{/if}
-				{/if}
+				<UploadQueue uploads={uploadQueue} {isUploading} onClearQueue={clearUploadQueue} />
 			</div>
 		{/if}
 
@@ -1144,64 +1010,8 @@
 					</div>
 				{/if}
 
-				<!-- Pagination -->
-				{#if totalPages > 1}
-					<div class="pagination">
-						<button
-							class="btn-icon"
-							disabled={currentPage === 1}
-							onclick={() => {
-								currentPage = 1;
-								loadMedia();
-							}}
-							aria-label="First page"
-						>
-							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chevrons-left (first page) -->
-							<IconChevronsLeft size={20} aria-hidden="true" />
-						</button>
-						<button
-							class="btn-icon"
-							disabled={currentPage === 1}
-							onclick={() => {
-								currentPage--;
-								loadMedia();
-							}}
-							aria-label="Previous page"
-						>
-							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chevron-left (prev page) -->
-							<IconChevronLeft size={20} aria-hidden="true" />
-						</button>
-
-						<span class="page-info">
-							Page {currentPage} of {totalPages}
-						</span>
-
-						<button
-							class="btn-icon"
-							disabled={currentPage === totalPages}
-							onclick={() => {
-								currentPage++;
-								loadMedia();
-							}}
-							aria-label="Next page"
-						>
-							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chevron-right (next page) -->
-							<IconChevronRight size={20} aria-hidden="true" />
-						</button>
-						<button
-							class="btn-icon"
-							disabled={currentPage === totalPages}
-							onclick={() => {
-								currentPage = totalPages;
-								loadMedia();
-							}}
-							aria-label="Last page"
-						>
-							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chevrons-right (last page) -->
-							<IconChevronsRight size={20} aria-hidden="true" />
-						</button>
-					</div>
-				{/if}
+				<!-- Pagination (extracted to _components/Pagination.svelte) -->
+				<Pagination bind:currentPage {totalPages} onChange={() => loadMedia()} />
 			</main>
 
 			<!-- ═══════════════════════════════════════════════════════════════════════ -->
@@ -1366,111 +1176,13 @@
 			{/if}
 		</div>
 
-		<!-- ═══════════════════════════════════════════════════════════════════════ -->
-		<!-- Context Menu -->
-		<!-- ═══════════════════════════════════════════════════════════════════════ -->
-		{#if contextMenu}
-			<div
-				class="context-menu"
-				style="left: {contextMenu.x}px; top: {contextMenu.y}px"
-				transition:scale={{ duration: 150, start: 0.9 }}
-			>
-				<button
-					onclick={() => {
-						handleItemDoubleClick(contextMenu!.item);
-						contextMenu = null;
-					}}
-				>
-					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: eye (view) -->
-					<IconEye size={16} aria-hidden="true" />
-					View
-				</button>
-				{#if contextMenu.item.file_type === 'image'}
-					<button
-						onclick={() => {
-							handleOptimize(contextMenu!.item);
-							contextMenu = null;
-						}}
-					>
-						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: bolt (optimize) -->
-						<IconBolt size={16} aria-hidden="true" />
-						Optimize
-					</button>
-					<button
-						onclick={() => {
-							handleCrop(contextMenu!.item);
-							contextMenu = null;
-						}}
-					>
-						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: crop -->
-						<IconCrop size={16} aria-hidden="true" />
-						Crop
-					</button>
-					{#if aiEnabled}
-						<button
-							onclick={() => {
-								handleAIAnalyze(contextMenu!.item);
-								contextMenu = null;
-							}}
-						>
-							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: eye (AI analyze) -->
-							<IconEye size={16} aria-hidden="true" />
-							AI Analyze
-						</button>
-					{/if}
-				{/if}
-				<hr />
-				<a href={contextMenu.item.url} download={contextMenu.item.filename}>
-					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: download -->
-					<IconDownload size={16} aria-hidden="true" />
-					Download
-				</a>
-				<button
-					onclick={() => {
-						navigator.clipboard.writeText(contextMenu!.item.url);
-						showToast('URL copied', 'success');
-						contextMenu = null;
-					}}
-				>
-					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: clipboard (copy URL) -->
-					<IconClipboardCopy size={16} aria-hidden="true" />
-					Copy URL
-				</button>
-				<hr />
-				<button
-					class="danger"
-					onclick={() => {
-						handleDelete(contextMenu!.item);
-						contextMenu = null;
-					}}
-				>
-					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: trash (delete) -->
-					<IconTrash size={16} aria-hidden="true" />
-					Delete
-				</button>
-			</div>
-		{/if}
+		<!-- Context Menu (extracted to _components/ContextMenu.svelte) -->
+		<ContextMenu bind:menu={contextMenu} {aiEnabled} onAction={handleContextAction} />
 
 		<!-- ═══════════════════════════════════════════════════════════════════════ -->
-		<!-- Toast Notifications -->
+		<!-- Toast Notifications (extracted to _components/ToastContainer.svelte) -->
 		<!-- ═══════════════════════════════════════════════════════════════════════ -->
-		<div class="toast-container">
-			{#each toasts as toast (toast.id)}
-				<div class="toast toast-{toast.type}" transition:fly={{ y: 20, duration: 300 }}>
-					{#if toast.type === 'success'}
-						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-check-filled (toast success) -->
-						<IconCircleCheckFilled size={20} aria-hidden="true" />
-					{:else if toast.type === 'error'}
-						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-x-filled (toast error) -->
-						<IconCircleXFilled size={20} aria-hidden="true" />
-					{:else}
-						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: info-circle (toast info) -->
-						<IconInfoCircle size={20} aria-hidden="true" />
-					{/if}
-					<span>{toast.message}</span>
-				</div>
-			{/each}
-		</div>
+		<ToastContainer {toasts} />
 	</div>
 	<!-- End admin-page-container -->
 </div>
@@ -1484,48 +1196,8 @@
 	/>
 {/if}
 
-<!-- Responsive Preview Modal -->
-{#if showPreviewModal && detailItem}
-	<div
-		class="modal-overlay"
-		onclick={() => (showPreviewModal = false)}
-		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showPreviewModal = false)}
-		role="dialog"
-		aria-modal="true"
-		aria-labelledby="preview-modal-title"
-		tabindex="-1"
-		transition:fade={{ duration: 200 }}
-	>
-		<div
-			class="modal-content"
-			onclick={(e: MouseEvent) => e.stopPropagation()}
-			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
-			role="presentation"
-			transition:scale={{ duration: 300, start: 0.95 }}
-		>
-			<div class="modal-header">
-				<h2 id="preview-modal-title">Responsive Preview</h2>
-				<button
-					class="btn-icon"
-					onclick={() => (showPreviewModal = false)}
-					aria-label="Close preview"
-				>
-					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: x (close modal) -->
-					<IconX size={20} aria-hidden="true" />
-				</button>
-			</div>
-			<ResponsivePreview
-				variants={(detailItem.variants ?? []).map((v) => ({
-					sizeName: v.size ?? v.type,
-					width: v.width,
-					height: v.height,
-					url: v.url,
-					size: v.file_size
-				}))}
-			/>
-		</div>
-	</div>
-{/if}
+<!-- Responsive Preview Modal (extracted to _components/ResponsivePreviewModal.svelte) -->
+<ResponsivePreviewModal bind:isOpen={showPreviewModal} item={detailItem} />
 
 <!-- Delete Single Item Modal -->
 <ConfirmationModal
@@ -1564,241 +1236,9 @@
 		padding: 2rem;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-     Page Header - Centered
-     ═══════════════════════════════════════════════════════════════════════════ */
-	.page-header {
-		text-align: center;
-		margin-bottom: 2rem;
-	}
+	/* Page-header CSS moved to _components/PageHeader.svelte (R10-C). */
 
-	.page-header h1 {
-		font-size: 1.75rem;
-		font-weight: 700;
-		color: #f1f5f9;
-		margin: 0 0 0.25rem;
-	}
-
-	.subtitle {
-		color: #64748b;
-		font-size: 0.875rem;
-		margin: 0 0 1.5rem;
-	}
-
-	.header-actions {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		gap: 0.75rem;
-		flex-wrap: wrap;
-	}
-
-	.search-box {
-		position: relative;
-	}
-
-	.search-input {
-		width: 240px;
-		padding: 0.625rem 1rem;
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.2);
-		border-radius: 8px;
-		color: #f1f5f9;
-		font-size: 0.875rem;
-	}
-
-	.search-input::placeholder {
-		color: #64748b;
-	}
-
-	.search-input:focus {
-		outline: none;
-		border-color: rgba(99, 102, 241, 0.5);
-	}
-
-	.view-toggle {
-		display: flex;
-		background: rgba(30, 41, 59, 0.6);
-		border-radius: 8px;
-		padding: 2px;
-		border: 1px solid rgba(148, 163, 184, 0.2);
-	}
-
-	.view-toggle button {
-		padding: 6px 10px;
-		background: transparent;
-		border: none;
-		border-radius: 6px;
-		cursor: pointer;
-		transition: all 0.2s;
-		color: #94a3b8;
-	}
-
-	.view-toggle button.active {
-		background: rgba(99, 102, 241, 0.3);
-		color: #a5b4fc;
-	}
-
-	.view-toggle button:hover:not(.active) {
-		background: rgba(148, 163, 184, 0.1);
-	}
-
-	/* FIX-2026-04-26: wrapped in :global() so styles reach Tabler's internal <svg> */
-	.view-toggle button :global(svg) {
-		width: 18px;
-		height: 18px;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-     Statistics Panel
-     ═══════════════════════════════════════════════════════════════════════════ */
-	.stats-panel {
-		padding: 1rem;
-		background: rgba(30, 41, 59, 0.4);
-		border-radius: 8px;
-		margin-bottom: 1.5rem;
-		position: relative;
-	}
-
-	.stats-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-		gap: 1rem;
-	}
-
-	.stat-card {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-		padding: 1rem;
-		background: rgba(15, 23, 42, 0.5);
-		border-radius: 8px;
-		border: 1px solid rgba(148, 163, 184, 0.1);
-		position: relative;
-		overflow: hidden;
-	}
-
-	.stat-card.highlight {
-		background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(6, 95, 70, 0.15));
-		border-color: rgba(16, 185, 129, 0.3);
-	}
-
-	.stat-icon {
-		width: 40px;
-		height: 40px;
-		border-radius: 8px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	/* FIX-2026-04-26: :global() so styles reach Tabler's internal <svg> */
-	.stat-icon :global(svg) {
-		width: 20px;
-		height: 20px;
-	}
-
-	.stat-icon.blue {
-		background: #dbeafe;
-		color: #2563eb;
-	}
-	.stat-icon.green {
-		background: #d1fae5;
-		color: #059669;
-	}
-	.stat-icon.orange {
-		background: #fef3c7;
-		color: #d97706;
-	}
-	.stat-icon.gold {
-		background: #fff8e0;
-		color: var(--primary-600);
-	}
-	.stat-icon.emerald {
-		background: #d1fae5;
-		color: #10b981;
-	}
-
-	.stat-info {
-		display: flex;
-		flex-direction: column;
-	}
-
-	.stat-value {
-		font-size: 1.25rem;
-		font-weight: 600;
-		color: #f1f5f9;
-	}
-
-	.stat-label {
-		font-size: 0.75rem;
-		color: #64748b;
-	}
-
-	.stat-progress {
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		height: 3px;
-		background: rgba(148, 163, 184, 0.1);
-	}
-
-	.progress-bar {
-		height: 100%;
-		background: linear-gradient(135deg, #10b981, #059669);
-		transition: width 1s ease-out;
-	}
-
-	.stats-toggle {
-		position: absolute;
-		right: 1rem;
-		top: 50%;
-		transform: translateY(-50%);
-		padding: 0.5rem;
-		background: rgba(148, 163, 184, 0.1);
-		border: none;
-		border-radius: 6px;
-		cursor: pointer;
-		color: #94a3b8;
-	}
-
-	.stats-toggle:hover {
-		background: rgba(148, 163, 184, 0.2);
-	}
-
-	/* FIX-2026-04-26: :global() so styles reach Tabler's internal <svg> */
-	.stats-toggle :global(svg) {
-		width: 16px;
-		height: 16px;
-	}
-
-	.stats-show {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 0.5rem;
-		margin-bottom: 1.5rem;
-		padding: 0.5rem 1rem;
-		background: rgba(30, 41, 59, 0.4);
-		border: 1px solid rgba(148, 163, 184, 0.2);
-		border-radius: 8px;
-		font-size: 0.8125rem;
-		color: #94a3b8;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.stats-show:hover {
-		background: rgba(30, 41, 59, 0.6);
-		border-color: rgba(99, 102, 241, 0.3);
-	}
-
-	/* FIX-2026-04-26: :global() so styles reach Tabler's internal <svg> */
-	.stats-show :global(svg) {
-		width: 16px;
-		height: 16px;
-	}
+	/* Statistics Panel CSS moved to _components/StatsPanel.svelte (R10-C). */
 
 	/* ═══════════════════════════════════════════════════════════════════════════
      Upload Panel
@@ -1811,94 +1251,7 @@
 		margin-bottom: 1.5rem;
 	}
 
-	.upload-queue {
-		margin-top: 1rem;
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-	}
-
-	.upload-item {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-		padding: 0.75rem;
-		background: rgba(15, 23, 42, 0.5);
-		border-radius: 8px;
-		border: 1px solid rgba(148, 163, 184, 0.1);
-	}
-
-	.upload-item.complete {
-		background: rgba(34, 197, 94, 0.1);
-		border-color: rgba(34, 197, 94, 0.3);
-	}
-
-	.upload-item.error {
-		background: rgba(239, 68, 68, 0.1);
-		border-color: rgba(239, 68, 68, 0.3);
-	}
-
-	.upload-icon {
-		width: 32px;
-		height: 32px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	/* FIX-2026-04-26: :global() so styles reach Tabler's internal <svg> */
-	.upload-icon :global(svg) {
-		width: 20px;
-		height: 20px;
-	}
-
-	/* FIX-2026-04-26: wrapped in :global() so styles reach Tabler's internal <svg> */
-	.upload-icon :global(.text-green) {
-		color: #22c55e;
-	}
-	.upload-icon :global(.text-red) {
-		color: #ef4444;
-	}
-
-	.upload-spinner {
-		width: 20px;
-		height: 20px;
-		border: 2px solid rgba(99, 102, 241, 0.2);
-		border-top-color: var(--primary-500);
-		border-radius: 50%;
-		animation: spin 0.8s linear infinite;
-	}
-
-	.upload-info {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-	}
-
-	.upload-name {
-		font-size: 0.8125rem;
-		font-weight: 500;
-		color: #f1f5f9;
-	}
-
-	.upload-size {
-		font-size: 0.75rem;
-		color: #64748b;
-	}
-
-	.upload-progress-bar {
-		width: 100px;
-		height: 4px;
-		background: rgba(148, 163, 184, 0.1);
-		border-radius: 2px;
-		overflow: hidden;
-	}
-
-	.progress-fill {
-		height: 100%;
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
-		transition: width 0.3s;
-	}
+	/* Upload-queue/item CSS moved to _components/UploadQueue.svelte (R10-C). */
 
 	/* ═══════════════════════════════════════════════════════════════════════════
      Toolbar
@@ -2386,22 +1739,7 @@
 		height: 16px;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-     Pagination
-     ═══════════════════════════════════════════════════════════════════════════ */
-	.pagination {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 0.5rem;
-		padding: 1.5rem 0;
-	}
-
-	.page-info {
-		padding: 0 1rem;
-		font-size: 0.8125rem;
-		color: #94a3b8;
-	}
+	/* Pagination CSS moved to _components/Pagination.svelte (R10-C). */
 
 	/* ═══════════════════════════════════════════════════════════════════════════
      Details Panel
@@ -2553,164 +1891,14 @@
 		justify-content: center;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-     Context Menu
-     ═══════════════════════════════════════════════════════════════════════════ */
-	.context-menu {
-		position: fixed;
-		min-width: 180px;
-		background: rgba(15, 23, 42, 0.95);
-		backdrop-filter: blur(20px);
-		-webkit-backdrop-filter: blur(20px);
-		border: 1px solid rgba(148, 163, 184, 0.2);
-		border-radius: 12px;
-		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-		padding: 6px;
-		z-index: 1000;
-	}
-
-	.context-menu button,
-	.context-menu a {
-		display: flex;
-		align-items: center;
-		gap: 0.625rem;
-		width: 100%;
-		padding: 0.625rem 0.75rem;
-		background: none;
-		border: none;
-		border-radius: 8px;
-		font-size: 0.8125rem;
-		color: #e2e8f0;
-		text-decoration: none;
-		cursor: pointer;
-		transition: all 0.15s;
-	}
-
-	.context-menu button:hover,
-	.context-menu a:hover {
-		background: rgba(99, 102, 241, 0.15);
-		color: #a5b4fc;
-	}
-
-	.context-menu button.danger {
-		color: #f87171;
-	}
-
-	.context-menu button.danger:hover {
-		background: rgba(239, 68, 68, 0.15);
-	}
-
-	/* FIX-2026-04-26: wrapped in :global() so styles reach Tabler's internal <svg> */
-	.context-menu button :global(svg),
-	.context-menu a :global(svg) {
-		width: 16px;
-		height: 16px;
-		color: #94a3b8;
-	}
-
-	.context-menu button:hover :global(svg),
-	.context-menu a:hover :global(svg) {
-		color: #a5b4fc;
-	}
-
-	.context-menu button.danger :global(svg) {
-		color: #f87171;
-	}
-
-	.context-menu hr {
-		border: none;
-		border-top: 1px solid rgba(148, 163, 184, 0.1);
-		margin: 6px 0;
-	}
+	/* Context-menu CSS moved to _components/ContextMenu.svelte (R10-C). */
 
 	/* ═══════════════════════════════════════════════════════════════════════════
      Toast Notifications
      ═══════════════════════════════════════════════════════════════════════════ */
-	.toast-container {
-		position: fixed;
-		bottom: 1.5rem;
-		right: 1.5rem;
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-		z-index: 1000;
-	}
+	/* Toast CSS moved to _components/ToastContainer.svelte (R10-C). */
 
-	.toast {
-		display: flex;
-		align-items: center;
-		gap: 0.625rem;
-		padding: 0.75rem 1rem;
-		background: rgba(15, 23, 42, 0.95);
-		backdrop-filter: blur(20px);
-		-webkit-backdrop-filter: blur(20px);
-		border: 1px solid rgba(148, 163, 184, 0.2);
-		border-radius: 10px;
-		color: #f1f5f9;
-		font-size: 0.8125rem;
-		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-	}
-
-	/* FIX-2026-04-26: :global() so styles reach Tabler's internal <svg> */
-	.toast :global(svg) {
-		width: 18px;
-		height: 18px;
-	}
-
-	.toast-success :global(svg) {
-		color: #22c55e;
-	}
-
-	.toast-error :global(svg) {
-		color: #ef4444;
-	}
-
-	.toast-info :global(svg) {
-		color: var(--primary-500);
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-     Modal
-     ═══════════════════════════════════════════════════════════════════════════ */
-	.modal-overlay {
-		position: fixed;
-		inset: 0;
-		background: rgba(0, 0, 0, 0.7);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		z-index: 1000;
-		padding: 1.5rem;
-	}
-
-	.modal-content {
-		background: rgba(15, 23, 42, 0.98);
-		border: 1px solid rgba(148, 163, 184, 0.2);
-		border-radius: 16px;
-		max-width: 1200px;
-		max-height: 90vh;
-		width: 100%;
-		overflow: hidden;
-		display: flex;
-		flex-direction: column;
-		backdrop-filter: blur(20px);
-		-webkit-backdrop-filter: blur(20px);
-	}
-
-	.modal-header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 1rem 1.25rem;
-		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-	}
-
-	.modal-header h2 {
-		font-size: 1.125rem;
-		font-weight: 600;
-		color: #f1f5f9;
-		margin: 0;
-	}
+	/* Modal CSS moved to _components/ResponsivePreviewModal.svelte (R10-C). */
 
 	/* ═══════════════════════════════════════════════════════════════════════════
      Loading State
@@ -2773,18 +1961,7 @@
 			padding: 1rem;
 		}
 
-		.page-header h1 {
-			font-size: 1.5rem;
-		}
-
-		.header-actions {
-			flex-direction: column;
-			gap: 0.5rem;
-		}
-
-		.search-input {
-			width: 100%;
-		}
+		/* Page-header responsive overrides moved to _components/PageHeader.svelte (R10-C). */
 
 		.toolbar {
 			flex-direction: column;
