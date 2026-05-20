@@ -74,10 +74,11 @@ import type {
 	CampaignStats
 } from '$lib/crm/types';
 import { apiClient } from './client.svelte';
+import type { PaginatedResponse } from './_types';
 
 export class CrmAPI {
 	// Contacts
-	async getContacts(filters?: ContactFilters): Promise<{ data: Contact[]; meta: any }> {
+	async getContacts(filters?: ContactFilters): Promise<PaginatedResponse<Contact>> {
 		return apiClient.get('/admin/crm/contacts', { params: filters ?? undefined });
 	}
 
@@ -106,7 +107,7 @@ export class CrmAPI {
 	}
 
 	// Deals
-	async getDeals(filters?: DealFilters): Promise<{ data: Deal[]; meta: any }> {
+	async getDeals(filters?: DealFilters): Promise<PaginatedResponse<Deal>> {
 		return apiClient.get('/admin/crm/deals', { params: filters ?? undefined });
 	}
 
@@ -170,7 +171,7 @@ export class CrmAPI {
 	// FLUENTCRM PRO - EMAIL SEQUENCES (Drip Campaigns)
 	// =====================================================
 
-	async getSequences(filters?: SequenceFilters): Promise<{ data: EmailSequence[]; meta: any }> {
+	async getSequences(filters?: SequenceFilters): Promise<PaginatedResponse<EmailSequence>> {
 		return apiClient.get('/admin/crm/sequences', { params: filters ?? undefined });
 	}
 
@@ -226,7 +227,7 @@ export class CrmAPI {
 	async getSequenceSubscribers(
 		id: string,
 		filters?: { status?: string; per_page?: number }
-	): Promise<{ data: SequenceTracker[]; meta: any }> {
+	): Promise<PaginatedResponse<SequenceTracker>> {
 		return apiClient.get(`/admin/crm/sequences/${id}/subscribers`, {
 			params: filters ?? undefined
 		});
@@ -260,7 +261,7 @@ export class CrmAPI {
 
 	async getRecurringCampaigns(
 		filters?: RecurringCampaignFilters
-	): Promise<{ data: RecurringCampaign[]; meta: any }> {
+	): Promise<PaginatedResponse<RecurringCampaign>> {
 		return apiClient.get('/admin/crm/recurring-campaigns', { params: filters });
 	}
 
@@ -292,7 +293,7 @@ export class CrmAPI {
 	async getRecurringCampaignEmails(
 		campaignId: string,
 		filters?: { status?: string; per_page?: number }
-	): Promise<{ data: RecurringMail[]; meta: any }> {
+	): Promise<PaginatedResponse<RecurringMail>> {
 		return apiClient.get(`/admin/crm/recurring-campaigns/${campaignId}/emails`, {
 			params: filters
 		});
@@ -306,7 +307,7 @@ export class CrmAPI {
 	// FLUENTCRM PRO - SMART LINKS
 	// =====================================================
 
-	async getSmartLinks(filters?: SmartLinkFilters): Promise<{ data: SmartLink[]; meta: any }> {
+	async getSmartLinks(filters?: SmartLinkFilters): Promise<PaginatedResponse<SmartLink>> {
 		return apiClient.get('/admin/crm/smart-links', { params: filters });
 	}
 
@@ -329,7 +330,7 @@ export class CrmAPI {
 	async getSmartLinkClicks(
 		id: string,
 		filters?: { per_page?: number }
-	): Promise<{ data: SmartLinkClick[]; meta: any }> {
+	): Promise<PaginatedResponse<SmartLinkClick>> {
 		return apiClient.get(`/admin/crm/smart-links/${id}/clicks`, { params: filters });
 	}
 
@@ -343,7 +344,7 @@ export class CrmAPI {
 
 	async getAutomationFunnels(
 		filters?: FunnelFilters
-	): Promise<{ data: AutomationFunnel[]; meta: any }> {
+	): Promise<PaginatedResponse<AutomationFunnel>> {
 		return apiClient.get('/admin/crm/automations', { params: filters });
 	}
 
@@ -420,7 +421,7 @@ export class CrmAPI {
 	async getFunnelSubscribers(
 		funnelId: string,
 		filters?: { status?: string; per_page?: number }
-	): Promise<{ data: FunnelSubscriber[]; meta: any }> {
+	): Promise<PaginatedResponse<FunnelSubscriber>> {
 		return apiClient.get(`/admin/crm/automations/${funnelId}/subscribers`, { params: filters });
 	}
 
@@ -447,7 +448,7 @@ export class CrmAPI {
 		search?: string;
 		is_public?: boolean;
 		per_page?: number;
-	}): Promise<{ data: ContactList[]; meta: any }> {
+	}): Promise<PaginatedResponse<ContactList>> {
 		return apiClient.get('/admin/crm/lists', { params: filters });
 	}
 
@@ -470,7 +471,7 @@ export class CrmAPI {
 	async getListContacts(
 		id: string,
 		filters?: { per_page?: number }
-	): Promise<{ data: Contact[]; meta: any }> {
+	): Promise<PaginatedResponse<Contact>> {
 		return apiClient.get(`/admin/crm/lists/${id}/contacts`, { params: filters });
 	}
 
@@ -494,7 +495,7 @@ export class CrmAPI {
 	async getContactTags(filters?: {
 		search?: string;
 		per_page?: number;
-	}): Promise<{ data: ContactTag[]; meta: any }> {
+	}): Promise<PaginatedResponse<ContactTag>> {
 		return apiClient.get('/admin/crm/contact-tags', { params: filters });
 	}
 
@@ -517,7 +518,7 @@ export class CrmAPI {
 	async getTagContacts(
 		id: string,
 		filters?: { per_page?: number; page?: number }
-	): Promise<{ data: Contact[]; meta: any }> {
+	): Promise<PaginatedResponse<Contact>> {
 		return apiClient.get(`/admin/crm/contact-tags/${id}/contacts`, { params: filters });
 	}
 
@@ -543,7 +544,7 @@ export class CrmAPI {
 	// FLUENTCRM PRO - CRM COMPANIES (B2B)
 	// =====================================================
 
-	async getCompanies(filters?: CompanyFilters): Promise<{ data: CrmCompany[]; meta: any }> {
+	async getCompanies(filters?: CompanyFilters): Promise<PaginatedResponse<CrmCompany>> {
 		return apiClient.get('/admin/crm/companies', { params: filters });
 	}
 
@@ -575,14 +576,14 @@ export class CrmAPI {
 	async getCompanyContacts(
 		id: string,
 		filters?: { per_page?: number }
-	): Promise<{ data: Contact[]; meta: any }> {
+	): Promise<PaginatedResponse<Contact>> {
 		return apiClient.get(`/admin/crm/companies/${id}/contacts`, { params: filters });
 	}
 
 	async getCompanyDeals(
 		id: string,
 		filters?: { status?: string; per_page?: number }
-	): Promise<{ data: Deal[]; meta: any }> {
+	): Promise<PaginatedResponse<Deal>> {
 		return apiClient.get(`/admin/crm/companies/${id}/deals`, { params: filters });
 	}
 
@@ -600,7 +601,7 @@ export class CrmAPI {
 
 	async getAbandonedCarts(
 		filters?: AbandonedCartFilters
-	): Promise<{ data: AbandonedCart[]; meta: any; haveAutomation: boolean }> {
+	): Promise<PaginatedResponse<AbandonedCart> & { haveAutomation: boolean }> {
 		return apiClient.get('/admin/crm/abandoned-carts', { params: filters });
 	}
 
@@ -638,7 +639,7 @@ export class CrmAPI {
 		search?: string;
 		category?: string;
 		per_page?: number;
-	}): Promise<{ data: EmailTemplate[]; meta: any }> {
+	}): Promise<PaginatedResponse<EmailTemplate>> {
 		return apiClient.get('/admin/crm/templates', { params: filters });
 	}
 
@@ -674,7 +675,7 @@ export class CrmAPI {
 	// FLUENTCRM PRO - WEBHOOKS
 	// =====================================================
 
-	async getWebhooks(filters?: { per_page?: number }): Promise<{ data: Webhook[]; meta: any }> {
+	async getWebhooks(filters?: { per_page?: number }): Promise<PaginatedResponse<Webhook>> {
 		return apiClient.get('/admin/crm/webhooks', { params: filters });
 	}
 
@@ -701,7 +702,7 @@ export class CrmAPI {
 	async getWebhookLogs(
 		id: string,
 		filters?: { per_page?: number }
-	): Promise<{ data: WebhookLog[]; meta: any }> {
+	): Promise<PaginatedResponse<WebhookLog>> {
 		return apiClient.get(`/admin/crm/webhooks/${id}/logs`, { params: filters });
 	}
 
@@ -717,7 +718,7 @@ export class CrmAPI {
 		type?: string;
 		status?: string;
 		per_page?: number;
-	}): Promise<{ data: ImportJob[]; meta: any }> {
+	}): Promise<PaginatedResponse<ImportJob>> {
 		return apiClient.get('/admin/crm/imports', { params: filters });
 	}
 
@@ -752,7 +753,7 @@ export class CrmAPI {
 	async getExportJobs(filters?: {
 		type?: string;
 		per_page?: number;
-	}): Promise<{ data: ExportJob[]; meta: any }> {
+	}): Promise<PaginatedResponse<ExportJob>> {
 		return apiClient.get('/admin/crm/exports', { params: filters });
 	}
 
@@ -798,7 +799,7 @@ export class CrmAPI {
 
 	async getManagerUsers(filters?: {
 		per_page?: number;
-	}): Promise<{ data: ManagerUser[]; meta: any }> {
+	}): Promise<PaginatedResponse<ManagerUser>> {
 		return apiClient.get('/admin/crm/managers', { params: filters });
 	}
 
@@ -858,7 +859,7 @@ export class CrmAPI {
 	// FLUENTCRM PRO - SYSTEM LOGS
 	// =====================================================
 
-	async getSystemLogs(filters?: SystemLogFilters): Promise<{ data: SystemLog[]; meta: any }> {
+	async getSystemLogs(filters?: SystemLogFilters): Promise<PaginatedResponse<SystemLog>> {
 		return apiClient.get('/admin/crm/logs', { params: filters });
 	}
 
@@ -890,7 +891,7 @@ export class CrmAPI {
 		status?: string;
 		search?: string;
 		per_page?: number;
-	}): Promise<{ data: Campaign[]; meta: any }> {
+	}): Promise<PaginatedResponse<Campaign>> {
 		return apiClient.get('/admin/crm/campaigns', { params: filters });
 	}
 
@@ -937,7 +938,7 @@ export class CrmAPI {
 	async getCampaignRecipients(
 		id: string,
 		filters?: { per_page?: number }
-	): Promise<{ data: Contact[]; meta: any }> {
+	): Promise<PaginatedResponse<Contact>> {
 		return apiClient.get(`/admin/crm/campaigns/${id}/recipients`, { params: filters });
 	}
 
@@ -948,7 +949,7 @@ export class CrmAPI {
 	async getContactSegments(filters?: {
 		search?: string;
 		per_page?: number;
-	}): Promise<{ data: ContactSegment[]; meta: any }> {
+	}): Promise<PaginatedResponse<ContactSegment>> {
 		return apiClient.get('/admin/crm/segments', { params: filters });
 	}
 
@@ -981,7 +982,7 @@ export class CrmAPI {
 	async getSegmentContacts(
 		id: string,
 		filters?: { per_page?: number }
-	): Promise<{ data: Contact[]; meta: any }> {
+	): Promise<PaginatedResponse<Contact>> {
 		return apiClient.get(`/admin/crm/segments/${id}/contacts`, { params: filters });
 	}
 }
