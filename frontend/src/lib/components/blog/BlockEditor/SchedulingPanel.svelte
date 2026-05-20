@@ -22,6 +22,7 @@
 	import { fade, slide } from 'svelte/transition';
 	import Icon from '$lib/components/Icon.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { logger } from '$lib/utils/logger';
 
 	// Props
 	interface Props {
@@ -159,7 +160,7 @@
 				pendingSchedules = data.schedules || [];
 			}
 		} catch (e) {
-			console.error('Failed to load schedules:', e);
+			logger.error('Failed to load schedules:', e);
 		}
 	}
 
@@ -171,7 +172,7 @@
 				releases = data.releases || [];
 			}
 		} catch (e) {
-			console.error('Failed to load releases:', e);
+			logger.error('Failed to load releases:', e);
 		}
 	}
 
@@ -187,7 +188,7 @@
 				calendarEntries = await response.json();
 			}
 		} catch (e) {
-			console.error('Failed to load calendar:', e);
+			logger.error('Failed to load calendar:', e);
 		}
 	}
 
@@ -201,7 +202,7 @@
 				scheduleHistory = data.history || [];
 			}
 		} catch (e) {
-			console.error('Failed to load history:', e);
+			logger.error('Failed to load history:', e);
 		}
 	}
 
