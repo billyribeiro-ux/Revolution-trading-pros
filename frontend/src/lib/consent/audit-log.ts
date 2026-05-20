@@ -9,6 +9,7 @@
  */
 
 import { browser } from '$app/environment';
+import { logger } from '$lib/utils/logger';
 import type {
 	ConsentState,
 	ConsentCategory,
@@ -38,8 +39,8 @@ export function getAuditLog(
 		if (stored) {
 			return JSON.parse(stored);
 		}
-	} catch (e) {
-		console.debug('[ConsentAudit] Failed to load audit log:', e);
+	} catch (error) {
+		logger.debug('[ConsentAudit] Failed to load audit log:', { error });
 	}
 
 	return [];
@@ -62,8 +63,8 @@ function saveAuditLog(
 		const trimmed = entries.slice(-maxEntries);
 
 		localStorage.setItem(key, JSON.stringify(trimmed));
-	} catch (e) {
-		console.debug('[ConsentAudit] Failed to save audit log:', e);
+	} catch (error) {
+		logger.debug('[ConsentAudit] Failed to save audit log:', { error });
 	}
 }
 
@@ -93,7 +94,7 @@ export function addAuditEntry(
 		log.push(entry);
 		saveAuditLog(log, options);
 
-		console.debug('[ConsentAudit] Added entry:', entry);
+		logger.debug('[ConsentAudit] Added entry:', entry);
 	}
 
 	return entry;
@@ -195,9 +196,9 @@ export function clearAuditLog(options: ConsentStorageOptions = DEFAULT_STORAGE_O
 	try {
 		const key = options.auditLogKey || 'rtp_consent_audit';
 		localStorage.removeItem(key);
-		console.debug('[ConsentAudit] Cleared audit log');
-	} catch (e) {
-		console.debug('[ConsentAudit] Failed to clear audit log:', e);
+		logger.debug('[ConsentAudit] Cleared audit log');
+	} catch (error) {
+		logger.debug('[ConsentAudit] Failed to clear audit log:', { error });
 	}
 }
 
@@ -301,8 +302,8 @@ export async function syncAuditLogToServer(
 		});
 
 		return response.ok;
-	} catch (e) {
-		console.error('[ConsentAudit] Failed to sync to server:', e);
+	} catch (error) {
+		logger.error('[ConsentAudit] Failed to sync to server:', { error });
 		return false;
 	}
 }

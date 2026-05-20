@@ -9,6 +9,7 @@
  */
 
 import { browser, dev } from '$app/environment';
+import { logger } from '$lib/utils/logger';
 import type { VendorConfig } from '../types';
 
 interface TikTokPixelInstance {
@@ -100,7 +101,7 @@ function initializeTikTok(pixelId: string): void {
 	// Process queued events
 	processEventQueue();
 
-	console.debug('[TikTok] Pixel initialized:', pixelId);
+	logger.debug('[TikTok] Pixel initialized:', pixelId);
 }
 
 /**
@@ -127,7 +128,7 @@ export function trackTikTokEvent(event: string, data?: Record<string, unknown>):
 	}
 
 	window.ttq?.track(event, data);
-	console.debug('[TikTok] Tracked event:', event, data);
+	logger.debug('[TikTok] Tracked event:', event, data);
 }
 
 /**
@@ -142,7 +143,7 @@ export function trackTikTokPageView(): void {
 	}
 
 	window.ttq?.page();
-	console.debug('[TikTok] Tracked page view');
+	logger.debug('[TikTok] Tracked page view');
 }
 
 /**
@@ -156,7 +157,7 @@ export function identifyTikTokUser(data: {
 	if (!browser || !tiktokReady) return;
 
 	window.ttq?.identify(data);
-	console.debug('[TikTok] Identified user');
+	logger.debug('[TikTok] Identified user');
 }
 
 /**
@@ -213,6 +214,8 @@ export const tiktokVendor: VendorConfig = {
 	load: () => {
 		const pixelId = PUBLIC_TIKTOK_PIXEL_ID;
 		if (!pixelId) {
+			// Prod-only env-missing telemetry; logger.warn would be dev-gated (suppressed by !dev),
+			// so we deliberately use console.warn here (allowed by no-console config).
 			if (!dev) console.warn('[TikTok] Missing PUBLIC_TIKTOK_PIXEL_ID environment variable');
 			return;
 		}
@@ -222,6 +225,6 @@ export const tiktokVendor: VendorConfig = {
 	onConsentRevoked: () => {
 		tiktokReady = false;
 		eventQueue.length = 0;
-		console.debug('[TikTok] Consent revoked');
+		logger.debug('[TikTok] Consent revoked');
 	}
 };

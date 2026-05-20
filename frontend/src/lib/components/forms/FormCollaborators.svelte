@@ -14,6 +14,7 @@
 
 	import { onMount, onDestroy } from 'svelte';
 	import { getAuthToken } from '$lib/stores/auth.svelte';
+	import { logger } from '$lib/utils/logger';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	interface Props {
@@ -72,7 +73,7 @@
 				collaborators = await response.json();
 			}
 		} catch (error) {
-			console.error('Failed to fetch collaborators:', error);
+			logger.error('Failed to fetch collaborators:', { error });
 		}
 	}
 
@@ -88,7 +89,7 @@
 				activeUsers = await response.json();
 			}
 		} catch (error) {
-			console.error('Failed to fetch active users:', error);
+			logger.error('Failed to fetch active users:', { error });
 		}
 	}
 
@@ -104,7 +105,7 @@
 				activities = await response.json();
 			}
 		} catch (error) {
-			console.error('Failed to fetch activities:', error);
+			logger.error('Failed to fetch activities:', { error });
 		}
 	}
 
@@ -133,7 +134,7 @@
 				showInviteForm = false;
 			}
 		} catch (error) {
-			console.error('Failed to invite collaborator:', error);
+			logger.error('Failed to invite collaborator:', { error });
 		}
 		inviting = false;
 	}
@@ -153,7 +154,7 @@
 
 			await fetchCollaborators();
 		} catch (error) {
-			console.error('Failed to update role:', error);
+			logger.error('Failed to update role:', { error });
 		}
 	}
 
@@ -177,7 +178,7 @@
 
 			await fetchCollaborators();
 		} catch (error) {
-			console.error('Failed to remove collaborator:', error);
+			logger.error('Failed to remove collaborator:', { error });
 		}
 	}
 
