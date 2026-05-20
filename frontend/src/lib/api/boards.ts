@@ -48,6 +48,7 @@ import type {
 	StorageConfig,
 	WebhookEvent
 } from '$lib/boards/types';
+import type { JsonValue, PaginatedResponse } from './_types';
 import { apiClient } from './client.svelte';
 
 export class BoardsAPI {
@@ -55,11 +56,17 @@ export class BoardsAPI {
 	// BOARDS
 	// =====================================================
 
-	async getBoards(filters?: BoardFilters): Promise<{ data: Board[]; meta: any }> {
+	async getBoards(filters?: BoardFilters): Promise<PaginatedResponse<Board>> {
 		return apiClient.get('/admin/boards', { params: filters });
 	}
 
-	async getBoard(id: string): Promise<{ board: Board; members: BoardMember[]; stats: any }> {
+	async getBoard(
+		id: string
+	): Promise<{ board: Board; members: BoardMember[]; stats: Record<string, JsonValue> }> {
+		// `stats` is a server-shaped aggregate (counts, % complete, due-soon
+		// buckets) — no caller in `src/routes/admin/boards/` reads typed keys
+		// off it today, so we leave it as opaque JSON until the backend route
+		// lands (file is FIX-2026-04-26 orphan; see the banner at the top).
 		return apiClient.get(`/admin/boards/${id}`);
 	}
 
@@ -98,7 +105,7 @@ export class BoardsAPI {
 	async getBoardActivity(
 		id: string,
 		filters?: ActivityFilters
-	): Promise<{ data: Activity[]; meta: any }> {
+	): Promise<PaginatedResponse<Activity>> {
 		return apiClient.get(`/admin/boards/${id}/activity`, { params: filters });
 	}
 
@@ -168,7 +175,7 @@ export class BoardsAPI {
 	// TASKS
 	// =====================================================
 
-	async getTasks(boardId: string, filters?: TaskFilters): Promise<{ data: Task[]; meta: any }> {
+	async getTasks(boardId: string, filters?: TaskFilters): Promise<PaginatedResponse<Task>> {
 		return apiClient.get(`/admin/boards/${boardId}/tasks`, { params: filters });
 	}
 
@@ -449,7 +456,11 @@ export class BoardsAPI {
 		boardId: string,
 		taskId: string,
 		fieldId: string,
-		value: any
+		// The custom-field shape is decided by `CustomFieldDefinition.type` at
+		// runtime (text / number / date / checkbox / etc.) — round-tripped as
+		// JSON through the backend. Narrower than `any`: callers must hand the
+		// already-serialisable value.
+		value: JsonValue
 	): Promise<CustomFieldValue> {
 		return apiClient.post(`/admin/boards/${boardId}/tasks/${taskId}/custom-fields/${fieldId}`, {
 			value
@@ -548,7 +559,7 @@ export class BoardsAPI {
 	// TIME TRACKING
 	// =====================================================
 
-	async getTimeEntries(filters?: TimeEntryFilters): Promise<{ data: TimeEntry[]; meta: any }> {
+	async getTimeEntries(filters?: TimeEntryFilters): Promise<PaginatedResponse<TimeEntry>> {
 		return apiClient.get('/admin/boards/time-entries', { params: filters });
 	}
 
@@ -671,7 +682,7 @@ export class BoardsAPI {
 
 	async getImportPreview(
 		id: string
-	): Promise<{ headers: string[]; rows: any[]; total_rows: number }> {
+	): Promise<{ headers: string[]; rows: Record<string, JsonValue>[]; total_rows: number }> {
 		return apiClient.get(`/admin/boards/import/${id}/preview`);
 	}
 
@@ -835,7 +846,7 @@ export class BoardsAPI {
 	// ACTIVITY
 	// =====================================================
 
-	async getGlobalActivity(filters?: ActivityFilters): Promise<{ data: Activity[]; meta: any }> {
+	async getGlobalActivity(filters?: ActivityFilters): Promise<PaginatedResponse<Activity>> {
 		return apiClient.get('/admin/boards/activity', { params: filters });
 	}
 
@@ -860,7 +871,7 @@ export class BoardsAPI {
 		return apiClient.get('/admin/boards/dashboard');
 	}
 
-	async getMyTasks(filters?: TaskFilters): Promise<{ data: Task[]; meta: any }> {
+	async getMyTasks(filters?: TaskFilters): Promise<PaginatedResponse<Task>> {
 		return apiClient.get('/admin/boards/my-tasks', { params: filters });
 	}
 

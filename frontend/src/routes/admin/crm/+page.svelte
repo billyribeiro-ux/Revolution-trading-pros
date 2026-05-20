@@ -183,18 +183,39 @@
 		error = '';
 
 		try {
+			type ContactsRes = { data?: CrmContact[]; contacts?: CrmContact[] } | CrmContact[];
+			type DealsRes = { data?: CrmDeal[]; deals?: CrmDeal[] } | CrmDeal[];
+			type StatsRes = {
+				data?: Partial<typeof stats> & {
+					total_contacts?: number;
+					new_this_month?: number;
+					active_deals?: number;
+					deal_value?: number;
+					high_score_contacts?: number;
+					at_risk_contacts?: number;
+				};
+				total_contacts?: number;
+				new_this_month?: number;
+				active_deals?: number;
+				deal_value?: number;
+				high_score_contacts?: number;
+				at_risk_contacts?: number;
+			};
+
 			const [contactsRes, dealsRes, statsRes] = await Promise.allSettled([
-				api.get('/api/admin/crm/contacts'),
-				api.get('/api/admin/crm/deals'),
-				api.get('/api/admin/crm/stats')
+				api.get<ContactsRes>('/api/admin/crm/contacts'),
+				api.get<DealsRes>('/api/admin/crm/deals'),
+				api.get<StatsRes>('/api/admin/crm/stats')
 			]);
 
 			if (contactsRes.status === 'fulfilled') {
-				contacts = contactsRes.value?.data || contactsRes.value?.contacts || [];
+				const v = contactsRes.value;
+				contacts = Array.isArray(v) ? v : v?.data || v?.contacts || [];
 			}
 
 			if (dealsRes.status === 'fulfilled') {
-				deals = dealsRes.value?.data || dealsRes.value?.deals || [];
+				const v = dealsRes.value;
+				deals = Array.isArray(v) ? v : v?.data || v?.deals || [];
 			}
 
 			if (statsRes.status === 'fulfilled') {

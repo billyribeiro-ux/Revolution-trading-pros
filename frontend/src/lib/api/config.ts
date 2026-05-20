@@ -5,6 +5,7 @@
  */
 
 import { getAuthToken } from '$lib/stores/auth.svelte';
+import type { JsonValue, QueryParams } from './_types';
 
 // ICT11+ PRODUCTION DEPLOYMENT: Always use deployed URLs
 // Backend is deployed on Fly.io (Rust + Axum)
@@ -270,10 +271,10 @@ export const ERROR_MESSAGES = {
  * Enhanced fetch wrapper with error handling and retries
  * Accepts optional fetch function for SSR compatibility
  */
-export async function apiFetch<T>(
+export async function apiFetch<T = unknown>(
 	endpoint: string,
 	options: RequestInit & {
-		params?: Record<string, any>;
+		params?: QueryParams;
 		retries?: number;
 		retryDelay?: number;
 		fetch?: typeof fetch; // Optional fetch function for SSR
@@ -310,8 +311,23 @@ export async function apiFetch<T>(
 	}
 
 	if (options.params) {
-		const queryString = new URLSearchParams(options.params).toString();
-		url += `?${queryString}`;
+		// LATENT BUG FIX (R12-A): `new URLSearchParams({ search: undefined })`
+		// coerces to the literal string `search=undefined` in the URL — every
+		// caller that passes `{ search: searchQuery || undefined, ... }` (e.g.
+		// admin/crm/campaigns:103, admin/crm/segments:95) has been shipping that
+		// in the query string. Skip null/undefined entries and stringify arrays
+		// as repeated `key=v1&key=v2`.
+		const sp = new URLSearchParams();
+		for (const [key, value] of Object.entries(options.params)) {
+			if (value === undefined || value === null) continue;
+			if (Array.isArray(value)) {
+				for (const item of value) sp.append(key, String(item));
+			} else {
+				sp.append(key, String(value));
+			}
+		}
+		const queryString = sp.toString();
+		if (queryString) url += `?${queryString}`;
 	}
 
 	// Get auth token from secure auth store (memory-only, not localStorage)
@@ -349,23 +365,22 @@ export async function apiFetch<T>(
 
 			// Handle error responses
 			if (!response.ok) {
-				const errorData = await response.json().catch(() => ({}));
+				const errorData: JsonValue = await response.json().catch(() => ({}));
+				const errMessage =
+					typeof errorData === 'object' &&
+					errorData !== null &&
+					!Array.isArray(errorData) &&
+					typeof errorData.message === 'string'
+						? errorData.message
+						: getErrorMessage(response.status);
 
 				// Don't retry on client errors (except 429)
 				if (response.status >= 400 && response.status < 500 && response.status !== 429) {
-					throw new ApiError(
-						errorData.message || getErrorMessage(response.status),
-						response.status,
-						errorData
-					);
+					throw new ApiError(errMessage, response.status, errorData);
 				}
 
 				// Retry on server errors
-				throw new ApiError(
-					errorData.message || getErrorMessage(response.status),
-					response.status,
-					errorData
-				);
+				throw new ApiError(errMessage, response.status, errorData);
 			}
 
 			// Success - return parsed response
@@ -402,12 +417,17 @@ export async function apiFetch<T>(
 
 /**
  * Custom API Error class
+ *
+ * `data` carries the parsed JSON body of the failed response (validation
+ * errors, server-side error envelope, etc.). It is genuinely JSON-shaped —
+ * declaring it as `JsonValue` keeps callers honest about narrowing before
+ * property access while leaving the wire-format round-trippable.
  */
 export class ApiError extends Error {
 	constructor(
 		message: string,
 		public status: number,
-		public data?: any
+		public data?: JsonValue
 	) {
 		super(message);
 		this.name = 'ApiError';
@@ -438,45 +458,70 @@ function getErrorMessage(status: number): string {
 
 /**
  * Convenience methods
+ *
+ * Default response generic is `<T = unknown>` (matches the precedent in
+ * `client.svelte.ts` — its `request<T>`, `get<T>`, etc. have no defaults so
+ * TS forces inference at the call site). Callers that previously relied on
+ * implicit `any` for property access must either pass an explicit generic
+ * (`api.get<{ data: Foo[] }>(...)`) or narrow the returned `unknown` before
+ * use; this is the point of the typed-envelope sweep.
+ *
+ * Body `data` is `unknown` — `JSON.stringify` accepts any value, so we
+ * don't need to narrow at this boundary; the caller's serialiser already
+ * picks the right shape. `params` is `QueryParams` (string/number/bool/array
+ * scalars) — narrower than `Record<string, any>` so call sites can't
+ * accidentally pass nested objects that would serialise to `[object Object]`.
  */
 export const api = {
-	get: <T = any>(endpoint: string, params?: Record<string, any>) =>
+	get: <T = unknown>(endpoint: string, params?: QueryParams) =>
 		apiFetch<T>(endpoint, params ? { method: 'GET', params } : { method: 'GET' }),
 
-	post: <T = any>(endpoint: string, data?: any, params?: Record<string, any>) =>
+	post: <T = unknown>(endpoint: string, data?: unknown, params?: QueryParams) =>
 		apiFetch<T>(endpoint, {
 			method: 'POST',
-			...(data ? { body: JSON.stringify(data) } : {}),
+			...(data !== undefined ? { body: JSON.stringify(data) } : {}),
 			...(params ? { params } : {})
 		}),
 
-	put: <T = any>(endpoint: string, data?: any, params?: Record<string, any>) =>
+	put: <T = unknown>(endpoint: string, data?: unknown, params?: QueryParams) =>
 		apiFetch<T>(endpoint, {
 			method: 'PUT',
-			...(data ? { body: JSON.stringify(data) } : {}),
+			...(data !== undefined ? { body: JSON.stringify(data) } : {}),
 			...(params ? { params } : {})
 		}),
 
-	patch: <T = any>(endpoint: string, data?: any, params?: Record<string, any>) =>
+	patch: <T = unknown>(endpoint: string, data?: unknown, params?: QueryParams) =>
 		apiFetch<T>(endpoint, {
 			method: 'PATCH',
-			...(data ? { body: JSON.stringify(data) } : {}),
+			...(data !== undefined ? { body: JSON.stringify(data) } : {}),
 			...(params ? { params } : {})
 		}),
 
-	delete: <T = any>(endpoint: string, params?: Record<string, any>) =>
+	delete: <T = unknown>(endpoint: string, params?: QueryParams) =>
 		apiFetch<T>(endpoint, params ? { method: 'DELETE', params } : { method: 'DELETE' })
 };
 
 /**
  * Build full URL for external use
  */
-export function buildApiUrl(endpoint: string, params?: Record<string, any>): string {
+export function buildApiUrl(endpoint: string, params?: QueryParams): string {
 	let url = `${API_BASE_URL}${endpoint}`;
 
 	if (params) {
-		const queryString = new URLSearchParams(params).toString();
-		url += `?${queryString}`;
+		// Same null/undefined-skipping shape as `apiFetch` above — keeps the
+		// two URL builders behaviourally aligned and avoids the literal
+		// `key=undefined` footgun in the wire format.
+		const sp = new URLSearchParams();
+		for (const [key, value] of Object.entries(params)) {
+			if (value === undefined || value === null) continue;
+			if (Array.isArray(value)) {
+				for (const item of value) sp.append(key, String(item));
+			} else {
+				sp.append(key, String(value));
+			}
+		}
+		const queryString = sp.toString();
+		if (queryString) url += `?${queryString}`;
 	}
 
 	return url;
@@ -495,18 +540,38 @@ export function buildCdnUrl(path: string): string {
 /**
  * Check if error is an API error
  */
-export function isApiError(error: any): error is ApiError {
+export function isApiError(error: unknown): error is ApiError {
 	return error instanceof ApiError;
 }
 
 /**
- * Extract validation errors from API error
+ * Extract validation errors from API error.
+ *
+ * `error.data` is `JsonValue` (parsed response body of the failed request).
+ * Laravel-style validation responses use `{ errors: { field: ["msg"] } }`;
+ * narrow before returning so the caller gets `Record<string, string[]>` or
+ * an empty object — never a poisoned `any`.
  */
-export function getValidationErrors(error: any): Record<string, string[]> {
-	if (isApiError(error) && error.data?.errors) {
-		return error.data.errors;
+export function getValidationErrors(error: unknown): Record<string, string[]> {
+	if (!isApiError(error)) return {};
+	const data = error.data;
+	if (
+		typeof data !== 'object' ||
+		data === null ||
+		Array.isArray(data) ||
+		typeof data.errors !== 'object' ||
+		data.errors === null ||
+		Array.isArray(data.errors)
+	) {
+		return {};
 	}
-	return {};
+	const out: Record<string, string[]> = {};
+	for (const [field, msgs] of Object.entries(data.errors)) {
+		if (Array.isArray(msgs)) {
+			out[field] = msgs.filter((m): m is string => typeof m === 'string');
+		}
+	}
+	return out;
 }
 
 export default api;

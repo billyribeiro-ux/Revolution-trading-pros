@@ -9,6 +9,7 @@
  */
 
 import { apiClient } from './client.svelte';
+import type { JsonValue } from './_types';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -32,8 +33,12 @@ export interface TradingRoom {
 	sort_order: number;
 	features?: string[];
 	available_sections?: string[]; // ICT 7: Section configuration
-	schedule?: Record<string, any>;
-	metadata?: Record<string, any>;
+	// `schedule` and `metadata` are JSONB columns on the backend — round-tripped
+	// untouched. No caller in `src/routes/admin/` currently reads typed keys off
+	// them; modelling as opaque JSON keeps the shape honest until a backend
+	// schema lands.
+	schedule?: Record<string, JsonValue>;
+	metadata?: Record<string, JsonValue>;
 	traders?: Trader[];
 	daily_videos_count?: number;
 	learning_content_count?: number;
@@ -90,7 +95,7 @@ export interface DailyVideo {
 	is_published: boolean;
 	views_count: number;
 	tags?: string[]; // Category IDs stored as tags in backend
-	metadata?: Record<string, any>;
+	metadata?: Record<string, JsonValue>;
 	trading_room?: TradingRoom;
 	trader?: Trader;
 	created_at: string;
@@ -112,7 +117,7 @@ export interface LearningContent {
 	sort_order: number;
 	is_published: boolean;
 	views_count: number;
-	metadata?: Record<string, any>;
+	metadata?: Record<string, JsonValue>;
 	trading_room?: TradingRoom;
 	trader?: Trader;
 	created_at: string;
@@ -131,8 +136,10 @@ export interface RoomArchive {
 	session_type?: string;
 	is_published: boolean;
 	views_count: number;
-	timestamps?: Record<string, any>[];
-	metadata?: Record<string, any>;
+	// Chapter markers / cue points on the archive recording — shape is
+	// JSONB, no consumer keys read at present.
+	timestamps?: Record<string, JsonValue>[];
+	metadata?: Record<string, JsonValue>;
 	trading_room?: TradingRoom;
 	created_at: string;
 	updated_at: string;
@@ -330,7 +337,7 @@ export const dailyVideosApi = {
 		is_featured?: boolean;
 		is_published?: boolean;
 		tags?: string[]; // Categories sent as tags
-		metadata?: Record<string, any>;
+		metadata?: Record<string, JsonValue>;
 	}): Promise<ApiResponse<DailyVideo>> => {
 		return apiClient.post(ENDPOINTS.admin.videos, data);
 	},
@@ -354,7 +361,7 @@ export const dailyVideosApi = {
 			is_featured: boolean;
 			is_published: boolean;
 			tags: string[];
-			metadata: Record<string, any>;
+			metadata: Record<string, JsonValue>;
 		}>
 	): Promise<ApiResponse<DailyVideo>> => {
 		return apiClient.put(ENDPOINTS.admin.videoById(id), data);

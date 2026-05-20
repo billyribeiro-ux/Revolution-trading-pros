@@ -223,8 +223,10 @@
 		if (!newTag.trim()) return;
 
 		try {
-			const data = await api.post('/api/admin/tags', { name: newTag.trim() });
-			const newTagData = data.data || data;
+			type TagRow = { id: number; name?: string };
+			type TagRes = { data?: TagRow } | TagRow;
+			const data = await api.post<TagRes>('/api/admin/tags', { name: newTag.trim() });
+			const newTagData = (data && 'data' in data && data.data ? data.data : data) as TagRow;
 			availableTags = [...availableTags, newTagData];
 			post.tags = [...post.tags, newTagData.id];
 			newTag = '';

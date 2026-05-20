@@ -289,13 +289,16 @@
 		error = '';
 
 		try {
+			type LeadsRes = { data?: Lead[]; leads?: Lead[] } | Lead[];
+			type StatsRes = { data?: Partial<LeadStats> } & Partial<LeadStats>;
 			const [leadsRes, statsRes] = await Promise.allSettled([
-				api.get('/api/admin/crm/leads'),
-				api.get('/api/admin/crm/leads/stats')
+				api.get<LeadsRes>('/api/admin/crm/leads'),
+				api.get<StatsRes>('/api/admin/crm/leads/stats')
 			]);
 
 			if (leadsRes.status === 'fulfilled') {
-				leads = leadsRes.value?.data || leadsRes.value?.leads || leadsRes.value || [];
+				const v = leadsRes.value;
+				leads = Array.isArray(v) ? v : v?.data || v?.leads || [];
 			}
 
 			if (statsRes.status === 'fulfilled') {

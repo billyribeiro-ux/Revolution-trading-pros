@@ -146,24 +146,30 @@
 		error = null;
 
 		try {
+			type LeadRes = { data?: Lead } | Lead;
+			type TimelineRes = { data?: TimelineEvent[] } | TimelineEvent[];
+			type NotesRes = { data?: Note[] } | Note[];
 			const [leadRes, timelineRes, notesRes] = await Promise.allSettled([
-				api.get(`/api/admin/crm/leads/${leadId}`),
-				api.get(`/api/admin/crm/leads/${leadId}/timeline`),
-				api.get(`/api/admin/crm/leads/${leadId}/notes`)
+				api.get<LeadRes>(`/api/admin/crm/leads/${leadId}`),
+				api.get<TimelineRes>(`/api/admin/crm/leads/${leadId}/timeline`),
+				api.get<NotesRes>(`/api/admin/crm/leads/${leadId}/notes`)
 			]);
 
 			if (leadRes.status === 'fulfilled') {
-				lead = leadRes.value?.data || leadRes.value;
+				const v = leadRes.value;
+				lead = v && 'data' in v && v.data ? v.data : (v as Lead);
 			} else {
 				throw new Error('Failed to load lead');
 			}
 
 			if (timelineRes.status === 'fulfilled') {
-				timeline = timelineRes.value?.data || timelineRes.value || [];
+				const v = timelineRes.value;
+				timeline = Array.isArray(v) ? v : v?.data || [];
 			}
 
 			if (notesRes.status === 'fulfilled') {
-				notes = notesRes.value?.data || notesRes.value || [];
+				const v = notesRes.value;
+				notes = Array.isArray(v) ? v : v?.data || [];
 			}
 		} catch (e) {
 			console.error('Failed to load lead:', e);
