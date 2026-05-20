@@ -54,6 +54,26 @@ import { getAuthToken } from '$lib/stores/auth.svelte';
 import { logger } from '$lib/utils/logger';
 import type { Popup } from '$lib/stores/popups.svelte';
 import { ML_API_URL } from './config';
+import type { JsonValue } from './_types';
+
+/**
+ * R9-A typed-envelope sweep: `gtag` is declared globally in
+ * `src/app.d.ts` as `(...args: unknown[]) => void` — we reach for that
+ * instead of `(window as any).gtag(...)`. The arg list we pass is
+ * statically known (`'event'`, eventName, params), so no runtime risk.
+ *
+ * `TrackEventPayload` accepts `undefined` per-key because GA tolerates
+ * absent fields and the existing call sites pass optional values like
+ * `popup.variant?.id`.
+ */
+type TrackEventPayload = Record<string, JsonValue | undefined>;
+
+/** Local helper: pull a message out of a thrown value without `as any`. */
+function getErrorMessage(err: unknown): string {
+	if (err instanceof Error) return err.message;
+	if (typeof err === 'string') return err;
+	return 'Unknown error';
+}
 
 // Re-export Popup type for convenience
 export type { Popup } from '$lib/stores/popups.svelte';
@@ -192,7 +212,8 @@ export interface TargetingRules {
 export interface UserAttribute {
 	key: string;
 	operator: 'equals' | 'not_equals' | 'contains' | 'greater_than' | 'less_than';
-	value: any;
+	/** Targeting attribute value — any JSON-compatible primitive (string/number/bool). */
+	value: JsonValue;
 }
 
 export type DeviceType = 'desktop' | 'mobile' | 'tablet';
@@ -240,7 +261,8 @@ export type TriggerType =
 export interface TriggerCondition {
 	parameter: string;
 	operator: string;
-	value: any;
+	/** Trigger comparison operand — JSON value, narrowed at evaluation time. */
+	value: JsonValue;
 }
 
 export interface TriggerFrequency {
@@ -277,7 +299,8 @@ export interface PersonalizationField {
 export interface DynamicContent {
 	id: string;
 	type: 'product' | 'offer' | 'countdown' | 'social_proof' | 'weather' | 'stock';
-	config: Record<string, any>;
+	/** Type-specific config bag — shape varies by `type`. */
+	config: Record<string, JsonValue>;
 	updateInterval?: number;
 }
 
@@ -310,7 +333,8 @@ export interface FormField {
 
 export interface FormIntegration {
 	type: 'email' | 'crm' | 'webhook' | 'zapier';
-	config: Record<string, any>;
+	/** Integration-specific config (e.g. webhook URL, CRM list ID). */
+	config: Record<string, JsonValue>;
 }
 
 export interface CTAConfig {
@@ -323,7 +347,8 @@ export interface CTAConfig {
 
 export interface SocialProofConfig {
 	type: 'reviews' | 'purchases' | 'views' | 'countdown';
-	data: any;
+	/** Type-specific payload — e.g. recent reviews array, purchase count. */
+	data: JsonValue;
 	updateInterval?: number;
 }
 
@@ -474,7 +499,7 @@ export interface ConversionData {
 	action?: string;
 	value?: string | number;
 	revenue?: number;
-	metadata?: Record<string, any>;
+	metadata?: Record<string, JsonValue>;
 	timestamp?: string;
 }
 
@@ -484,7 +509,7 @@ export interface PopupEvent {
 	timestamp: string;
 	sessionId?: string;
 	userId?: string;
-	data?: Record<string, any>;
+	data?: Record<string, JsonValue>;
 }
 
 export type EventType =
@@ -503,7 +528,7 @@ export type EventType =
 class PopupEngagementService {
 	private static instance: PopupEngagementService;
 	private wsConnection?: WebSocket;
-	private cache = new Map<string, { data: any; expiry: number }>();
+	private cache = new Map<string, { data: unknown; expiry: number }>();
 	private eventBuffer: PopupEvent[] = [];
 	private impressionTimers = new Map<string, number>();
 	private exitIntentListener?: (e: MouseEvent) => void;
@@ -831,8 +856,8 @@ class PopupEngagementService {
 			this.popups.set(popupsList);
 
 			return popupsList;
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error) {
+			this.error.set(getErrorMessage(error));
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -849,7 +874,7 @@ class PopupEngagementService {
 		const cacheKey = `active_popups_${page}`;
 
 		// Check cache
-		const cached = this.getFromCache(cacheKey);
+		const cached = this.getFromCache<EnhancedPopup[]>(cacheKey);
 		if (cached) {
 			this.processActivePopups(cached);
 			return;
@@ -924,8 +949,8 @@ class PopupEngagementService {
 			this.trackEvent('popup_created', { popupId: created.id });
 
 			return created;
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error) {
+			this.error.set(getErrorMessage(error));
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -959,8 +984,8 @@ class PopupEngagementService {
 			this.clearCache();
 
 			return updated;
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error) {
+			this.error.set(getErrorMessage(error));
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -986,8 +1011,8 @@ class PopupEngagementService {
 
 			this.popups.update((popups) => popups.filter((p) => p.id !== id));
 			this.clearCache();
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error) {
+			this.error.set(getErrorMessage(error));
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -1132,8 +1157,11 @@ class PopupEngagementService {
 	private setupCustomTrigger(popup: EnhancedPopup, trigger: TriggerConfig): void {
 		// Setup custom event listeners
 		if (trigger.type === 'custom_event' && trigger.conditions) {
+			// `conditions[0].value` is `JsonValue` — only string makes sense as
+			// a DOM event name. Anything else (number/bool/object) is silently
+			// skipped rather than coerced.
 			const eventName = trigger.conditions[0]?.value;
-			if (eventName) {
+			if (typeof eventName === 'string' && eventName) {
 				document.addEventListener(
 					eventName,
 					() => {
@@ -1231,7 +1259,11 @@ class PopupEngagementService {
 	/**
 	 * Track interaction
 	 */
-	private trackInteraction(popupId: string, action: string, data?: any): void {
+	private trackInteraction(
+		popupId: string,
+		action: string,
+		data?: Record<string, JsonValue>
+	): void {
 		this.eventBuffer.push({
 			type: 'interaction',
 			popupId,
@@ -1512,9 +1544,9 @@ class PopupEngagementService {
 		});
 	}
 
-	private trackEvent(event: string, data?: any): void {
-		if (browser && 'gtag' in window) {
-			(window as any).gtag('event', event, data);
+	private trackEvent(event: string, data?: TrackEventPayload): void {
+		if (browser && window.gtag) {
+			window.gtag('event', event, data);
 		}
 	}
 
@@ -1538,15 +1570,20 @@ class PopupEngagementService {
 		document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/`;
 	}
 
-	private getFromCache(key: string): any {
+	/**
+	 * Generic cache getter. Caller declares the expected payload type via
+	 * `<T>` — this is the safe analogue of the previous `any` return.
+	 * Returns `null` if missing or expired; the caller still narrows.
+	 */
+	private getFromCache<T>(key: string): T | null {
 		const cached = this.cache.get(key);
 		if (cached && Date.now() < cached.expiry) {
-			return cached.data;
+			return cached.data as T;
 		}
 		return null;
 	}
 
-	private setCache(key: string, data: any, ttl: number = CACHE_TTL): void {
+	private setCache<T>(key: string, data: T, ttl: number = CACHE_TTL): void {
 		this.cache.set(key, {
 			data,
 			expiry: Date.now() + ttl
@@ -1684,11 +1721,11 @@ export async function submitPopupForm(
 		});
 
 		return result;
-	} catch (error: any) {
+	} catch (error) {
 		logger.error('[PopupService] Form submission failed', { error });
 		return {
 			status: 'error',
-			message: error.message || 'Failed to submit form'
+			message: getErrorMessage(error) || 'Failed to submit form'
 		};
 	}
 }
@@ -1713,8 +1750,11 @@ export const popupsApi = {
 		await getActivePopups(page);
 		return get(popups);
 	},
-	create: async (data: any) => ({ popup: await createPopup(data), message: 'Created' }),
-	update: async (id: number, data: any) => ({
+	create: async (data: Partial<EnhancedPopup>) => ({
+		popup: await createPopup(data),
+		message: 'Created'
+	}),
+	update: async (id: number, data: Partial<EnhancedPopup>) => ({
 		popup: await updatePopup(String(id), data),
 		message: 'Updated'
 	}),
@@ -1726,7 +1766,7 @@ export const popupsApi = {
 	analytics: async (id: number) => getPopupAnalytics(String(id)),
 	getAnalytics: async (id: number) => getPopupAnalytics(String(id)),
 	trackView: async (popupId: number) => recordPopupImpression(String(popupId)),
-	trackConversion: async (popupId: number, data?: any) =>
+	trackConversion: async (popupId: number, data?: ConversionData) =>
 		recordPopupConversion(String(popupId), data)
 };
 

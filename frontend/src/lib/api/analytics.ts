@@ -9,6 +9,29 @@
  */
 
 import { authStore } from '$lib/stores/auth.svelte';
+import type { JsonValue } from './_types';
+
+/**
+ * R9-A typed-envelope sweep: most analytics handlers return
+ * `serde_json::Value` from the Rust side (see `_types.ts` rationale), so
+ * payloads here are typed as `JsonValue` rather than `any`. Callers narrow
+ * via shape checks or `typeof` before reading nested fields.
+ */
+
+/**
+ * Event property bag — what callers attach to `trackEvent` / appears in
+ * `AnalyticsEvent.properties`. JSON-compatible only; the upstream caller
+ * in `stores/analytics.svelte.ts` passes a `Record<string, any>` which is
+ * structurally compatible here (any-as-JsonValue widens at the boundary).
+ */
+export type EventProperties = Record<string, JsonValue>;
+
+/**
+ * URL query-string params — request-time only, never persisted. Restricted
+ * to scalar shapes that `URLSearchParams` actually serialises (`String(v)`).
+ */
+type QueryParams = Record<string, string | number | boolean | undefined | null>;
+
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -193,6 +216,20 @@ export interface ConversionPath {
 	revenue: number;
 }
 
+/**
+ * Segment rule — left untyped at the conditions level because the
+ * backend supports arbitrary DSL fragments per segment type. Narrow at
+ * the UI layer before rendering.
+ */
+export interface SegmentRule {
+	field?: string;
+	operator?: string;
+	value?: JsonValue;
+	// Backend may attach extra metadata (cohort joins, computed flags) —
+	// preserve as JsonValue rather than dropping fields.
+	[key: string]: JsonValue | undefined;
+}
+
 export interface Segment {
 	key: string;
 	name: string;
@@ -203,7 +240,7 @@ export interface Segment {
 	color?: string;
 	icon?: string;
 	is_system: boolean;
-	rules?: any[]; // Segment rules/conditions
+	rules?: SegmentRule[]; // Segment rules/conditions
 }
 
 export interface Forecast {
@@ -240,8 +277,10 @@ export interface DashboardData {
 		anomalies_count: number;
 		alerts_triggered: number;
 		critical_count: number;
-		recent_anomalies: any[];
-		recent_alerts: any[];
+		/** Recent anomaly events — backend-shaped JSON; UI doesn't read fields today. */
+		recent_anomalies: JsonValue[];
+		/** Recent alerts triggered — backend-shaped JSON; UI doesn't read fields today. */
+		recent_alerts: JsonValue[];
 	};
 	funnels?: Array<{
 		key: string;
@@ -280,7 +319,7 @@ export interface AnalyticsEvent {
 	session_id?: string;
 	page_path?: string;
 	channel?: string;
-	properties?: Record<string, any>;
+	properties?: EventProperties;
 	created_at: string;
 }
 
@@ -344,8 +383,8 @@ class AnalyticsApiClient {
 	private async request<T>(
 		method: string,
 		endpoint: string,
-		body?: any,
-		params?: Record<string, any>
+		body?: JsonValue | Record<string, unknown>,
+		params?: QueryParams
 	): Promise<T> {
 		// ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
 		const apiEndpoint = endpoint.startsWith('/api/') ? endpoint : `/api${endpoint}`;
@@ -388,7 +427,7 @@ class AnalyticsApiClient {
 		event_type?: string;
 		entity_type?: string;
 		entity_id?: number;
-		properties?: Record<string, any>;
+		properties?: EventProperties;
 		event_value?: number;
 		revenue?: number;
 	}): Promise<{ success: boolean; event_id: string }> {
@@ -408,7 +447,7 @@ class AnalyticsApiClient {
 		events: Array<{
 			event_name: string;
 			event_category?: string;
-			properties?: Record<string, any>;
+			properties?: EventProperties;
 		}>
 	): Promise<{ success: boolean; processed: number }> {
 		return this.request('POST', '/analytics/batch', { events });
@@ -445,7 +484,7 @@ class AnalyticsApiClient {
 		return this.request('GET', `/admin/analytics/funnels/${funnelKey}`, undefined, { period });
 	}
 
-	async getFunnelDropOff(funnelKey: string, period: string = '30d'): Promise<any> {
+	async getFunnelDropOff(funnelKey: string, period: string = '30d'): Promise<JsonValue> {
 		return this.request('GET', `/admin/analytics/funnels/${funnelKey}/dropoff`, undefined, {
 			period
 		});
@@ -455,7 +494,7 @@ class AnalyticsApiClient {
 		funnelKey: string,
 		segmentField: string,
 		period: string = '30d'
-	): Promise<any> {
+	): Promise<JsonValue> {
 		return this.request('GET', `/admin/analytics/funnels/${funnelKey}/segment`, undefined, {
 			segment_field: segmentField,
 			period
@@ -484,7 +523,7 @@ class AnalyticsApiClient {
 		});
 	}
 
-	async getCohortLTV(cohortKey: string, period: string = '90d'): Promise<any> {
+	async getCohortLTV(cohortKey: string, period: string = '90d'): Promise<JsonValue> {
 		return this.request('GET', `/admin/analytics/cohorts/${cohortKey}/ltv`, undefined, { period });
 	}
 
@@ -495,7 +534,7 @@ class AnalyticsApiClient {
 	async getCampaignAttribution(
 		model: string = 'linear',
 		period: string = '30d'
-	): Promise<{ campaigns: any[] }> {
+	): Promise<{ campaigns: JsonValue[] }> {
 		return this.request('GET', '/admin/analytics/attribution/campaigns', undefined, {
 			model,
 			period
@@ -509,7 +548,9 @@ class AnalyticsApiClient {
 		return this.request('GET', '/admin/analytics/attribution/paths', undefined, { period, limit });
 	}
 
-	async compareAttributionModels(period: string = '30d'): Promise<{ models: Record<string, any> }> {
+	async compareAttributionModels(
+		period: string = '30d'
+	): Promise<{ models: Record<string, JsonValue> }> {
 		return this.request('GET', '/admin/analytics/attribution/compare', undefined, { period });
 	}
 
@@ -530,7 +571,7 @@ class AnalyticsApiClient {
 		});
 	}
 
-	async getForecastAccuracy(kpiKey: string, granularity: string = 'daily'): Promise<any> {
+	async getForecastAccuracy(kpiKey: string, granularity: string = 'daily'): Promise<JsonValue> {
 		return this.request('GET', `/admin/analytics/forecast/${kpiKey}/accuracy`, undefined, {
 			granularity
 		});
@@ -544,7 +585,7 @@ class AnalyticsApiClient {
 		return this.request('GET', '/admin/analytics/segments');
 	}
 
-	async getSegment(segmentKey: string): Promise<{ segment: Segment & { rules?: any } }> {
+	async getSegment(segmentKey: string): Promise<{ segment: Segment }> {
 		return this.request('GET', `/admin/analytics/segments/${segmentKey}`);
 	}
 
@@ -567,7 +608,10 @@ class AnalyticsApiClient {
 	async getEventBreakdown(
 		dimension: 'channel' | 'device_type' | 'country_code' | 'browser' | 'event_name',
 		period: string = '30d'
-	): Promise<{ breakdown: Array<{ [key: string]: any; count: number }> }> {
+	): Promise<{ breakdown: Array<{ [key: string]: JsonValue | undefined; count: number }> }> {
+		// `breakdown` rows carry a stable `count` plus one dynamic dimension
+		// key whose name varies with `dimension`. The extra key holds the
+		// dimension value (string/number/null), hence the JsonValue union.
 		return this.request('GET', '/admin/analytics/events/breakdown', undefined, {
 			dimension,
 			period
@@ -576,7 +620,8 @@ class AnalyticsApiClient {
 
 	async getRealTimeMetrics(): Promise<{
 		metrics: RealTimeMetrics;
-		counters: any;
+		/** Counter snapshot bag — backend-shaped, not read by current UI. */
+		counters: JsonValue;
 		timestamp: string;
 	}> {
 		return this.request('GET', '/admin/analytics/realtime');
@@ -700,7 +745,8 @@ class AnalyticsApiClient {
 		data: {
 			name?: string;
 			description?: string;
-			rules?: any;
+			/** Free-form rule DSL — backend validates shape. */
+			rules?: { conditions: SegmentRule[] } | SegmentRule[];
 		}
 	): Promise<{ success: boolean }> {
 		return this.request('PUT', `/admin/analytics/segments/${segmentKey}`, data);
@@ -732,7 +778,7 @@ class AnalyticsApiClient {
 		return this.request('GET', '/admin/analytics/reports');
 	}
 
-	async getReport(reportId: string): Promise<{ report: Report; data: any }> {
+	async getReport(reportId: string): Promise<{ report: Report; data: JsonValue }> {
 		return this.request('GET', `/admin/analytics/reports/${reportId}`);
 	}
 
@@ -757,8 +803,8 @@ class AnalyticsApiClient {
 		data: {
 			name?: string;
 			description?: string;
-			config?: any;
-			schedule?: any;
+			config?: Report['config'];
+			schedule?: Report['schedule'];
 			status?: string;
 		}
 	): Promise<{ success: boolean }> {
@@ -769,7 +815,7 @@ class AnalyticsApiClient {
 		return this.request('DELETE', `/admin/analytics/reports/${reportId}`);
 	}
 
-	async runReport(reportId: string): Promise<{ success: boolean; data: any }> {
+	async runReport(reportId: string): Promise<{ success: boolean; data: JsonValue }> {
 		return this.request('POST', `/admin/analytics/reports/${reportId}/run`);
 	}
 }
