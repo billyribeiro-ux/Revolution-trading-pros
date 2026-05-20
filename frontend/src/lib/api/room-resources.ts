@@ -13,6 +13,8 @@
 
 // ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
 
+import type { QueryParams } from './_types';
+
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
 // ═══════════════════════════════════════════════════════════════════════════
@@ -211,10 +213,22 @@ export interface ResourceResponse {
 // HELPER FUNCTIONS
 // ═══════════════════════════════════════════════════════════════════════════
 
-function buildQueryString(params: Record<string, any>): string {
+// R16-A: was `params: Record<string, any>`. Every call site passes a typed
+// query bag (`ResourceListQuery`, `StockListQuery`, or `{ page, per_page }`)
+// whose fields are all `string | number | boolean | undefined` — exactly
+// `QueryValue` from `_types.ts`. Array-valued params aren't used here today,
+// but `QueryParams` accepts them and the loop below would serialise an
+// array as `[object Object]` (`String([1,2])` → `"1,2"`), so guard with
+// `Array.isArray` and emit repeated keys to match the
+// `bing-seo.ts` / `media.ts` precedent (R14-A) — same convention as the
+// rest of the api/ tree.
+function buildQueryString(params: QueryParams): string {
 	const query = new URLSearchParams();
 	Object.entries(params).forEach(([key, value]) => {
-		if (value !== undefined && value !== null && value !== '') {
+		if (value === undefined || value === null || value === '') return;
+		if (Array.isArray(value)) {
+			for (const v of value) query.append(key, String(v));
+		} else {
 			query.append(key, String(value));
 		}
 	});
@@ -223,8 +237,17 @@ function buildQueryString(params: Record<string, any>): string {
 
 async function handleResponse<T>(response: Response): Promise<T> {
 	if (!response.ok) {
-		const error = await response.json().catch(() => ({ error: 'Request failed' }));
-		throw new Error(error.error || error.message || `HTTP ${response.status}`);
+		// R16-A: narrow the unknown error body before reading `.error` / `.message`.
+		// Pre-R16-A the `.catch(() => ({ error: 'Request failed' }))` short-circuit
+		// hid that the success path leaked `any` through `.error || .message`
+		// (`error.message` could legitimately be a non-string Object).
+		const raw: unknown = await response.json().catch(() => ({ error: 'Request failed' }));
+		const pick = (k: 'error' | 'message'): string | undefined => {
+			if (typeof raw !== 'object' || raw === null || !(k in raw)) return undefined;
+			const v = (raw as Record<string, unknown>)[k];
+			return typeof v === 'string' ? v : undefined;
+		};
+		throw new Error(pick('error') || pick('message') || `HTTP ${response.status}`);
 	}
 	return response.json();
 }
@@ -240,7 +263,10 @@ export async function listResources(
 	params: ResourceListQuery = {},
 	fetchFn: typeof fetch = fetch
 ): Promise<ResourceListResponse> {
-	const query = buildQueryString(params);
+	// R16-A: `as QueryParams` matches campaigns.ts:250 — closed interfaces
+	// are structurally compatible with `Record<string, QueryValue>` but TS
+	// requires an explicit cast for the index-signature check.
+	const query = buildQueryString(params as QueryParams);
 	const url = `/api/room-resources${query ? `?${query}` : ''}`;
 	const response = await fetchFn(url);
 	return handleResponse<ResourceListResponse>(response);
@@ -281,7 +307,7 @@ export async function adminListResources(
 	params: ResourceListQuery = {},
 	fetchFn: typeof fetch = fetch
 ): Promise<ResourceListResponse> {
-	const query = buildQueryString(params);
+	const query = buildQueryString(params as QueryParams);
 	const url = `/api/admin/room-resources${query ? `?${query}` : ''}`;
 	const response = await fetchFn(url, { credentials: 'include' });
 	return handleResponse<ResourceListResponse>(response);
@@ -938,7 +964,7 @@ export async function listStockLists(
 	params: StockListQuery = {},
 	fetchFn: typeof fetch = fetch
 ): Promise<StockListsResponse> {
-	const query = buildQueryString(params);
+	const query = buildQueryString(params as QueryParams);
 	const url = `/api/room-resources/stock-lists${query ? `?${query}` : ''}`;
 	const response = await fetchFn(url);
 	return handleResponse<StockListsResponse>(response);
@@ -1107,7 +1133,7 @@ export async function getDownloadLogs(
 	perPage: number = 50,
 	fetchFn: typeof fetch = fetch
 ): Promise<DownloadLogsResponse> {
-	const params: Record<string, any> = { page, per_page: perPage };
+	const params: QueryParams = { page, per_page: perPage };
 	if (resourceId) params.resource_id = resourceId;
 	const query = buildQueryString(params);
 	const url = `/api/admin/room-resources/download-logs${query ? `?${query}` : ''}`;

@@ -251,6 +251,32 @@ export interface ApiResult<T> {
 	error?: string;
 }
 
+/**
+ * Pagination envelope emitted by the `courses_admin` Rust routes.
+ *
+ * R16-A: replaces the two `pagination: any` annotations on `coursesApi.list`
+ * and `enrollmentsApi.list`. Evidence from
+ * `api/src/routes/courses_admin/crud.rs:108-114` (list courses) and
+ * `api/src/routes/courses_admin/enrollments.rs:152-156` (list enrollments):
+ *
+ * - `page` / `per_page` / `total` — universal across both handlers.
+ * - `total_pages` — emitted by `list_courses` only; `list_enrollments`
+ *   omits it. Marked optional so a consumer that grabs it without a
+ *   fallback gets a `number | undefined` narrowing requirement (the
+ *   correct outcome — same convention as `_types.ts/PaginationMeta`).
+ *
+ * Note: this envelope uses `page` (not `current_page` like the CRM
+ * routes wrapped by `_types.ts/PaginationMeta`). Kept local rather than
+ * extending the shared shape because the wire format genuinely differs;
+ * a future consolidation should normalise the Rust side first.
+ */
+export interface CoursesPaginationMeta {
+	page: number;
+	per_page: number;
+	total: number;
+	total_pages?: number;
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // API FUNCTIONS
 // ═══════════════════════════════════════════════════════════════════════════
@@ -266,15 +292,29 @@ async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promi
 			credentials: 'include'
 		});
 
-		const data = await response.json();
+		// R16-A: `await response.json()` is `Promise<any>` by `lib.dom`; pin to
+		// `unknown` and narrow before reaching for `.error`. Pre-R16-A the
+		// fallback `data.error || HTTP …` blindly read `.error` off whatever
+		// the backend returned — a non-object body (e.g. `null`, a number, or
+		// a malformed JSON whose `.error` was non-string) would have leaked
+		// through and ended up in `ApiResult.error`. Now the narrowing makes
+		// the fallback path explicit.
+		const data: unknown = await response.json();
 
 		if (!response.ok) {
-			return { success: false, error: data.error || `HTTP ${response.status}` };
+			const errMsg =
+				typeof data === 'object' &&
+				data !== null &&
+				'error' in data &&
+				typeof (data as { error: unknown }).error === 'string'
+					? (data as { error: string }).error
+					: `HTTP ${response.status}`;
+			return { success: false, error: errMsg };
 		}
 
-		return { success: true, data };
+		return { success: true, data: data as T };
 	} catch (error) {
-		return { success: false, error: String(error) };
+		return { success: false, error: error instanceof Error ? error.message : String(error) };
 	}
 }
 
@@ -288,7 +328,7 @@ export const coursesApi = {
 		Object.entries(query).forEach(([key, value]) => {
 			if (value !== undefined) params.append(key, String(value));
 		});
-		return apiRequest<{ courses: Course[]; pagination: any }>(`?${params}`);
+		return apiRequest<{ courses: Course[]; pagination: CoursesPaginationMeta }>(`?${params}`);
 	},
 
 	get: (courseId: number) => {
@@ -467,7 +507,7 @@ export const enrollmentsApi = {
 	},
 
 	list: (courseId: number, page = 1, perPage = 50) => {
-		return apiRequest<{ enrollments: CourseEnrollment[]; pagination: any }>(
+		return apiRequest<{ enrollments: CourseEnrollment[]; pagination: CoursesPaginationMeta }>(
 			`/${courseId}/enrollments?page=${page}&per_page=${perPage}`
 		);
 	},
