@@ -153,8 +153,9 @@
 
 	function enableAnalytics(): void {
 		// Enable Google Analytics
-		if ('gtag' in window) {
-			(window as any).gtag('consent', 'update', {
+		// `window.gtag` is declared in src/app.d.ts as `(...args: unknown[]) => void`.
+		if (window.gtag) {
+			window.gtag('consent', 'update', {
 				analytics_storage: 'granted'
 			});
 		}
@@ -164,8 +165,8 @@
 	}
 
 	function disableAnalytics(): void {
-		if ('gtag' in window) {
-			(window as any).gtag('consent', 'update', {
+		if (window.gtag) {
+			window.gtag('consent', 'update', {
 				analytics_storage: 'denied'
 			});
 		}
@@ -174,33 +175,33 @@
 	}
 
 	function enableMarketing(): void {
-		if ('gtag' in window) {
-			(window as any).gtag('consent', 'update', {
+		if (window.gtag) {
+			window.gtag('consent', 'update', {
 				ad_storage: 'granted',
 				ad_user_data: 'granted',
 				ad_personalization: 'granted'
 			});
 		}
 
-		// Enable Facebook Pixel
-		if ('fbq' in window) {
-			(window as any).fbq('consent', 'grant');
+		// Enable Facebook Pixel — `window.fbq` declared via the `Fbq` interface in app.d.ts.
+		if (window.fbq) {
+			window.fbq('consent', 'grant');
 		}
 
 		window.dispatchEvent(new CustomEvent('cookie-consent:marketing', { detail: true }));
 	}
 
 	function disableMarketing(): void {
-		if ('gtag' in window) {
-			(window as any).gtag('consent', 'update', {
+		if (window.gtag) {
+			window.gtag('consent', 'update', {
 				ad_storage: 'denied',
 				ad_user_data: 'denied',
 				ad_personalization: 'denied'
 			});
 		}
 
-		if ('fbq' in window) {
-			(window as any).fbq('consent', 'revoke');
+		if (window.fbq) {
+			window.fbq('consent', 'revoke');
 		}
 
 		window.dispatchEvent(new CustomEvent('cookie-consent:marketing', { detail: false }));
