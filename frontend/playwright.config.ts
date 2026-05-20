@@ -1,8 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
 
 // Dev server URL. Precedence: FRONTEND_URL > E2E_BASE_URL > localhost:5173.
-// With strictPort set in vite.config.ts, the server never silently rolls to
-// a different port, so the fallback is always canonical.
+// vite.config.ts uses strictPort:false now, so if 5173 is taken vite rolls
+// to the next free port — set FRONTEND_URL (or E2E_BASE_URL) to the actual
+// printed URL when running playwright against a non-default port.
 const BASE_URL = process.env.FRONTEND_URL || process.env.E2E_BASE_URL || 'http://localhost:5173';
 
 export default defineConfig({
