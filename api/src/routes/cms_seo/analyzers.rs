@@ -1,501 +1,34 @@
-//! CMS SEO Validation Routes - Apple ICT 11+ Principal Engineer Grade
-//! January 2026
+//! Per-category SEO analyzers.
 //!
-//! Server-side SEO validation endpoint with comprehensive content analysis:
-//! - Title and meta description validation
-//! - Keyword density and placement analysis
-//! - Heading hierarchy validation
-//! - Readability scoring (Flesch-Kincaid)
-//! - Link analysis (internal/external ratio)
-//! - Image alt text presence
-//! - Content length validation
-//! - Duplicate content detection
-//! - URL/slug optimization
+//! One function per analysis category — title, meta description, content,
+//! readability, slug, structure (headings + images), links — plus the
+//! shared `calculate_grade` helper.
 //!
-//! Features:
-//! - Rate limiting (30 requests/minute per user)
-//! - Comprehensive error handling
-//! - SQL injection prevention via parameterized queries
-//! - Caching support for duplicate detection
-
-use axum::{extract::State, http::StatusCode, routing::post, Json, Router};
-use regex::Regex;
-use serde::{Deserialize, Serialize};
-use serde_json::{json, Value as JsonValue};
-use std::collections::{HashMap, HashSet};
-
-use crate::{models::User, AppState};
-
-// ═══════════════════════════════════════════════════════════════════════════════════════
-// CONSTANTS
-// ═══════════════════════════════════════════════════════════════════════════════════════
-
-/// Rate limit: 30 requests per minute per user
-const RATE_LIMIT_MAX_REQUESTS: i64 = 30;
-const RATE_LIMIT_WINDOW_SECONDS: u64 = 60;
-
-/// SEO thresholds
-const TITLE_MIN_LENGTH: usize = 30;
-const TITLE_OPTIMAL_MIN: usize = 50;
-const TITLE_OPTIMAL_MAX: usize = 60;
-const TITLE_MAX_LENGTH: usize = 70;
-
-const META_MIN_LENGTH: usize = 70;
-const META_OPTIMAL_MIN: usize = 150;
-const META_OPTIMAL_MAX: usize = 160;
-const META_MAX_LENGTH: usize = 180;
-
-const MIN_WORD_COUNT: u32 = 300;
-const GOOD_WORD_COUNT: u32 = 1000;
-const EXCELLENT_WORD_COUNT: u32 = 1500;
-
-const KEYWORD_DENSITY_MIN: f32 = 0.5;
-const KEYWORD_DENSITY_MAX: f32 = 3.0;
-const KEYWORD_DENSITY_OPTIMAL_MIN: f32 = 1.0;
-const KEYWORD_DENSITY_OPTIMAL_MAX: f32 = 2.5;
-
-const SLUG_MAX_LENGTH: usize = 75;
-
-/// Words per minute for reading time calculation
-const WORDS_PER_MINUTE: u32 = 200;
-
-// ═══════════════════════════════════════════════════════════════════════════════════════
-// COMPILED REGEX PATTERNS (hoisted to avoid per-request recompilation)
-//
-// House style: this repo uses `lazy_static!` (see api/src/routes/sitemap.rs and
-// robots.rs). The `.expect("static regex must compile")` runs once at startup,
-// so a panic there is a build-time bug, not a per-request hazard.
-// ═══════════════════════════════════════════════════════════════════════════════════════
-
-lazy_static::lazy_static! {
-    /// Strip HTML tags (e.g. `<p>`, `<a href="...">`).
-    static ref HTML_TAG_RE: Regex =
-        Regex::new(r"<[^>]*>").expect("static regex must compile");
-
-    /// Collapse runs of whitespace to a single space.
-    static ref WHITESPACE_RE: Regex =
-        Regex::new(r"\s+").expect("static regex must compile");
-
-    /// Sentence-ending punctuation.
-    static ref SENTENCE_END_RE: Regex =
-        Regex::new(r"[.!?]+").expect("static regex must compile");
-
-    /// Naive passive-voice detector (e.g. "was written", "is loved").
-    static ref PASSIVE_VOICE_RE: Regex =
-        Regex::new(r"\b(was|were|is|are|been|being)\s+\w+ed\b")
-            .expect("static regex must compile");
-
-    /// Match `<h2 ...>...</h2>` blocks.
-    static ref H2_RE: Regex =
-        Regex::new(r"<h2[^>]*>(.*?)</h2>").expect("static regex must compile");
-
-    /// Match all `<img ...>` tags.
-    static ref IMG_TOTAL_RE: Regex =
-        Regex::new(r#"<img[^>]*>"#).expect("static regex must compile");
-
-    /// Match `<img>` tags that have a non-empty `alt="..."`.
-    static ref IMG_WITH_ALT_RE: Regex =
-        Regex::new(r#"<img[^>]*alt="[^"]+""#).expect("static regex must compile");
-
-    /// Match anchors with internal hrefs (`/...` or `#...`).
-    static ref INTERNAL_LINK_RE: Regex =
-        Regex::new(r#"<a[^>]*href="(/[^"]*|#[^"]*)""#)
-            .expect("static regex must compile");
-
-    /// Match anchors with external `http(s)://` hrefs.
-    static ref EXTERNAL_LINK_RE: Regex =
-        Regex::new(r#"<a[^>]*href="https?://[^"]*""#)
-            .expect("static regex must compile");
-
-    /// Match anchors carrying a `rel="...nofollow..."`.
-    static ref NOFOLLOW_LINK_RE: Regex =
-        Regex::new(r#"<a[^>]*rel="[^"]*nofollow[^"]*""#)
-            .expect("static regex must compile");
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════════════
-// TYPES AND ENUMS
-// ═══════════════════════════════════════════════════════════════════════════════════════
-
-/// SEO issue severity level
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum SeoIssueSeverity {
-    Error,
-    Warning,
-    Info,
-    Success,
-}
-
-/// SEO issue category
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum SeoIssueCategory {
-    Title,
-    Meta,
-    Content,
-    Keyword,
-    Readability,
-    Structure,
-    Slug,
-    Links,
-    Images,
-    Headings,
-}
-
-/// Individual SEO issue
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SeoIssue {
-    #[serde(rename = "type")]
-    pub severity: SeoIssueSeverity,
-    pub category: SeoIssueCategory,
-    pub message: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub impact: Option<String>,
-}
-
-/// Heading node for hierarchy analysis
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct HeadingNode {
-    pub level: u8,
-    pub text: String,
-    pub id: String,
-    #[serde(default)]
-    pub children: Vec<HeadingNode>,
-}
-
-/// Links analysis result
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct LinksAnalysis {
-    pub internal_count: u32,
-    pub external_count: u32,
-    pub ratio: f32,
-    pub nofollow_count: u32,
-    pub broken_count: u32,
-}
-
-/// Request body for SEO validation
-#[derive(Debug, Clone, Deserialize)]
-pub struct SeoValidationRequest {
-    pub title: String,
-    #[serde(default)]
-    pub meta_description: Option<String>,
-    pub content_blocks: Vec<JsonValue>,
-    pub slug: String,
-    #[serde(default)]
-    pub focus_keyword: Option<String>,
-}
-
-/// Response from SEO validation endpoint
-#[derive(Debug, Clone, Serialize)]
-pub struct SeoValidationResponse {
-    pub score: u8,
-    pub grade: String,
-    pub issues: Vec<SeoIssue>,
-    pub suggestions: Vec<String>,
-    pub keyword_density: f32,
-    pub readability_score: f32,
-    pub word_count: u32,
-    pub reading_time_minutes: u32,
-    pub heading_structure: Vec<HeadingNode>,
-    pub links: LinksAnalysis,
-    pub images_without_alt: u32,
-    /// Individual category scores
-    pub category_scores: CategoryScores,
-}
-
-/// Individual category scores
-#[derive(Debug, Clone, Serialize)]
-pub struct CategoryScores {
-    pub title_score: u8,
-    pub meta_score: u8,
-    pub content_score: u8,
-    pub readability_score: u8,
-    pub keyword_score: u8,
-    pub structure_score: u8,
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════════════
-// API RESULT TYPES
-// ═══════════════════════════════════════════════════════════════════════════════════════
-
-type ApiResult<T> = Result<Json<T>, (StatusCode, Json<JsonValue>)>;
-
-fn api_error(status: StatusCode, message: &str) -> (StatusCode, Json<JsonValue>) {
-    (status, Json(json!({ "error": message })))
-}
-
-fn api_error_with_details(
-    status: StatusCode,
-    message: &str,
-    details: JsonValue,
-) -> (StatusCode, Json<JsonValue>) {
-    (
-        status,
-        Json(json!({
-            "error": message,
-            "details": details
-        })),
-    )
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════════════
-// AUTHORIZATION HELPERS
-// ═══════════════════════════════════════════════════════════════════════════════════════
-
-fn require_cms_editor(user: &User) -> Result<(), (StatusCode, Json<JsonValue>)> {
-    let role = user.role.as_deref().unwrap_or("user");
-    if matches!(
-        role,
-        "admin" | "super-admin" | "super_admin" | "editor" | "marketing" | "developer"
-    ) {
-        Ok(())
-    } else {
-        Err(api_error(
-            StatusCode::FORBIDDEN,
-            "Editor access required for SEO validation",
-        ))
-    }
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════════════
-// RATE LIMITING
-// ═══════════════════════════════════════════════════════════════════════════════════════
-
-async fn check_rate_limit(
-    state: &AppState,
-    user_id: i64,
-) -> Result<(), (StatusCode, Json<JsonValue>)> {
-    if let Some(ref redis) = state.services.redis {
-        let key = format!("cms_seo_rate_limit:{}", user_id);
-        match redis
-            .check_rate_limit(&key, RATE_LIMIT_MAX_REQUESTS, RATE_LIMIT_WINDOW_SECONDS)
-            .await
-        {
-            Ok(allowed) if allowed => Ok(()),
-            Ok(_) => {
-                tracing::warn!(
-                    target: "security",
-                    event = "cms_seo_rate_limited",
-                    user_id = %user_id,
-                    "CMS SEO rate limit exceeded"
-                );
-                Err(api_error_with_details(
-                    StatusCode::TOO_MANY_REQUESTS,
-                    "Rate limit exceeded. Please wait before making more requests.",
-                    json!({
-                        "limit": RATE_LIMIT_MAX_REQUESTS,
-                        "window_seconds": RATE_LIMIT_WINDOW_SECONDS,
-                        "retry_after": RATE_LIMIT_WINDOW_SECONDS
-                    }),
-                ))
-            }
-            Err(e) => {
-                tracing::error!(
-                    target: "cms_seo",
-                    error = %e,
-                    "Failed to check rate limit"
-                );
-                // Allow request if rate limit check fails (fail open for availability)
-                Ok(())
-            }
-        }
-    } else {
-        // No Redis available, allow request
-        Ok(())
-    }
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════════════
-// TEXT EXTRACTION AND ANALYSIS HELPERS
-// ═══════════════════════════════════════════════════════════════════════════════════════
-
-/// Extract plain text from content blocks
-fn extract_text_from_blocks(blocks: &[JsonValue]) -> String {
-    let mut text = String::new();
-
-    for block in blocks {
-        if let Some(content) = block.get("content") {
-            // Extract text from various content fields
-            if let Some(t) = content.get("text").and_then(|v| v.as_str()) {
-                text.push_str(t);
-                text.push(' ');
-            }
-            if let Some(h) = content.get("html").and_then(|v| v.as_str()) {
-                text.push_str(&strip_html(h));
-                text.push(' ');
-            }
-            // Handle list items
-            if let Some(items) = content.get("listItems").and_then(|v| v.as_array()) {
-                for item in items {
-                    if let Some(item_text) = item.as_str() {
-                        text.push_str(item_text);
-                        text.push(' ');
-                    }
-                }
-            }
-            // Handle nested children
-            if let Some(children) = content.get("children").and_then(|v| v.as_array()) {
-                text.push_str(&extract_text_from_blocks(children));
-            }
-        }
-    }
-
-    text.trim().to_string()
-}
-
-/// Extract HTML content from blocks for structural analysis
-fn extract_html_from_blocks(blocks: &[JsonValue]) -> String {
-    let mut html = String::new();
-
-    for block in blocks {
-        let block_type = block.get("type").and_then(|v| v.as_str()).unwrap_or("");
-
-        if let Some(content) = block.get("content") {
-            // Add heading tags
-            if block_type == "heading" {
-                let level = block
-                    .get("settings")
-                    .and_then(|s| s.get("level"))
-                    .and_then(|l| l.as_u64())
-                    .unwrap_or(2);
-                if let Some(text) = content.get("text").and_then(|v| v.as_str()) {
-                    html.push_str(&format!("<h{level}>{text}</h{level}>\n"));
-                }
-            }
-
-            // Add HTML content
-            if let Some(h) = content.get("html").and_then(|v| v.as_str()) {
-                html.push_str(h);
-                html.push('\n');
-            }
-
-            // Add paragraph text
-            if block_type == "paragraph" {
-                if let Some(text) = content.get("text").and_then(|v| v.as_str()) {
-                    html.push_str(&format!("<p>{text}</p>\n"));
-                }
-            }
-
-            // Handle images
-            if block_type == "image" {
-                let src = content
-                    .get("mediaUrl")
-                    .and_then(|v| v.as_str())
-                    .unwrap_or("");
-                let alt = content
-                    .get("mediaAlt")
-                    .and_then(|v| v.as_str())
-                    .unwrap_or("");
-                html.push_str(&format!("<img src=\"{src}\" alt=\"{alt}\">\n"));
-            }
-
-            // Handle nested children
-            if let Some(children) = content.get("children").and_then(|v| v.as_array()) {
-                html.push_str(&extract_html_from_blocks(children));
-            }
-        }
-    }
-
-    html
-}
-
-/// Strip HTML tags from text
-fn strip_html(html: &str) -> String {
-    let text = HTML_TAG_RE.replace_all(html, " ");
-    // Normalize whitespace
-    WHITESPACE_RE.replace_all(&text, " ").trim().to_string()
-}
-
-/// Count words in text
-fn count_words(text: &str) -> u32 {
-    text.split_whitespace().count() as u32
-}
-
-/// Count sentences in text
-fn count_sentences(text: &str) -> u32 {
-    let count = SENTENCE_END_RE.find_iter(text).count();
-    if count == 0 {
-        1
-    } else {
-        count as u32
-    }
-}
-
-/// Count syllables in a word (approximation)
-fn count_syllables(word: &str) -> u32 {
-    let word = word.to_lowercase();
-    if word.len() <= 3 {
-        return 1;
-    }
-
-    let vowels: HashSet<char> = ['a', 'e', 'i', 'o', 'u', 'y'].iter().cloned().collect();
-    let mut count = 0;
-    let mut prev_vowel = false;
-
-    for (i, c) in word.chars().enumerate() {
-        let is_vowel = vowels.contains(&c);
-        if is_vowel && !prev_vowel {
-            count += 1;
-        }
-        prev_vowel = is_vowel;
-
-        // Handle silent e at end
-        if i == word.len() - 1 && c == 'e' && count > 1 {
-            count -= 1;
-        }
-    }
-
-    if count == 0 {
-        1
-    } else {
-        count
-    }
-}
-
-/// Calculate Flesch-Kincaid readability score
-fn calculate_flesch_kincaid(text: &str) -> f32 {
-    let words = count_words(text);
-    let sentences = count_sentences(text);
-    let syllables: u32 = text.split_whitespace().map(count_syllables).sum();
-
-    if words == 0 || sentences == 0 {
-        return 0.0;
-    }
-
-    // Flesch Reading Ease formula
-    let score = 206.835
-        - (1.015 * (words as f32 / sentences as f32))
-        - (84.6 * (syllables as f32 / words as f32));
-
-    // Clamp between 0 and 100
-    score.clamp(0.0, 100.0)
-}
-
-/// Calculate keyword density
-fn calculate_keyword_density(text: &str, keyword: &str) -> f32 {
-    if keyword.is_empty() {
-        return 0.0;
-    }
-
-    let words = count_words(text);
-    if words == 0 {
-        return 0.0;
-    }
-
-    let keyword_lower = keyword.to_lowercase();
-    let text_lower = text.to_lowercase();
-    let keyword_count = text_lower.matches(&keyword_lower).count();
-
-    (keyword_count as f32 / words as f32) * 100.0
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════════════
-// SEO ANALYSIS FUNCTIONS
-// ═══════════════════════════════════════════════════════════════════════════════════════
+//! Each analyzer takes the relevant inputs plus `&mut Vec<SeoIssue>` and
+//! `&mut Vec<String>` (suggestions) collectors and returns the per-category
+//! score (and, where relevant, a derived metric like `keyword_density` or
+//! the heading tree). The top-level handler in `handlers.rs` orchestrates
+//! the calls and folds the scores into the overall response.
+
+use serde_json::Value as JsonValue;
+
+use super::regex_patterns::{
+    EXTERNAL_LINK_RE, H2_RE, IMG_TOTAL_RE, IMG_WITH_ALT_RE, INTERNAL_LINK_RE, NOFOLLOW_LINK_RE,
+    PASSIVE_VOICE_RE,
+};
+use super::text::{
+    calculate_flesch_kincaid, calculate_keyword_density, count_sentences, count_words,
+};
+use super::types::{HeadingNode, LinksAnalysis, SeoIssue, SeoIssueCategory, SeoIssueSeverity};
+use super::{
+    EXCELLENT_WORD_COUNT, GOOD_WORD_COUNT, KEYWORD_DENSITY_MAX, KEYWORD_DENSITY_MIN,
+    KEYWORD_DENSITY_OPTIMAL_MAX, KEYWORD_DENSITY_OPTIMAL_MIN, META_MAX_LENGTH, META_MIN_LENGTH,
+    META_OPTIMAL_MAX, META_OPTIMAL_MIN, MIN_WORD_COUNT, SLUG_MAX_LENGTH, TITLE_MAX_LENGTH,
+    TITLE_MIN_LENGTH, TITLE_OPTIMAL_MAX, TITLE_OPTIMAL_MIN,
+};
 
 /// Analyze title SEO
-fn analyze_title(
+pub(super) fn analyze_title(
     title: &str,
     keyword: &Option<String>,
     issues: &mut Vec<SeoIssue>,
@@ -631,7 +164,7 @@ fn analyze_title(
 }
 
 /// Analyze meta description SEO
-fn analyze_meta_description(
+pub(super) fn analyze_meta_description(
     meta: &Option<String>,
     keyword: &Option<String>,
     issues: &mut Vec<SeoIssue>,
@@ -742,7 +275,7 @@ fn analyze_meta_description(
 }
 
 /// Analyze content SEO
-fn analyze_content(
+pub(super) fn analyze_content(
     text: &str,
     keyword: &Option<String>,
     issues: &mut Vec<SeoIssue>,
@@ -876,7 +409,7 @@ fn analyze_content(
 }
 
 /// Analyze readability
-fn analyze_readability(
+pub(super) fn analyze_readability(
     text: &str,
     issues: &mut Vec<SeoIssue>,
     suggestions: &mut Vec<String>,
@@ -1056,7 +589,7 @@ fn analyze_readability(
 }
 
 /// Analyze URL slug
-fn analyze_slug(
+pub(super) fn analyze_slug(
     slug: &str,
     keyword: &Option<String>,
     issues: &mut Vec<SeoIssue>,
@@ -1153,7 +686,7 @@ fn analyze_slug(
 }
 
 /// Analyze heading structure
-fn analyze_structure(
+pub(super) fn analyze_structure(
     html: &str,
     blocks: &[JsonValue],
     keyword: &Option<String>,
@@ -1348,7 +881,7 @@ fn analyze_structure(
 }
 
 /// Analyze links
-fn analyze_links(
+pub(super) fn analyze_links(
     html: &str,
     issues: &mut Vec<SeoIssue>,
     suggestions: &mut Vec<String>,
@@ -1409,7 +942,7 @@ fn analyze_links(
 }
 
 /// Calculate grade from score
-fn calculate_grade(score: u8) -> String {
+pub(super) fn calculate_grade(score: u8) -> String {
     match score {
         90..=100 => "A".to_string(),
         80..=89 => "B".to_string(),
@@ -1417,163 +950,4 @@ fn calculate_grade(score: u8) -> String {
         60..=69 => "D".to_string(),
         _ => "F".to_string(),
     }
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════════════
-// ENDPOINT HANDLERS
-// ═══════════════════════════════════════════════════════════════════════════════════════
-
-/// POST /api/cms/seo/validate
-/// Validate content for SEO
-async fn validate_seo(
-    State(state): State<AppState>,
-    user: User,
-    Json(request): Json<SeoValidationRequest>,
-) -> ApiResult<SeoValidationResponse> {
-    require_cms_editor(&user)?;
-    check_rate_limit(&state, user.id).await?;
-
-    // Validate request
-    if request.title.len() > 500 {
-        return Err(api_error(
-            StatusCode::BAD_REQUEST,
-            "Title exceeds maximum length of 500 characters",
-        ));
-    }
-
-    if request.content_blocks.len() > 500 {
-        return Err(api_error(
-            StatusCode::BAD_REQUEST,
-            "Content blocks exceed maximum of 500 blocks",
-        ));
-    }
-
-    // Sanitize inputs - ICT 11+ SQL injection prevention
-    // All string inputs are properly bound in parameterized queries
-    // No raw SQL is constructed from user input
-
-    let start_time = std::time::Instant::now();
-
-    // Extract text content
-    let plain_text = extract_text_from_blocks(&request.content_blocks);
-    let html_content = extract_html_from_blocks(&request.content_blocks);
-    let word_count = count_words(&plain_text);
-
-    // Initialize analysis collections
-    let mut issues: Vec<SeoIssue> = Vec::new();
-    let mut suggestions: Vec<String> = Vec::new();
-
-    // Run all analyses
-    let title_score = analyze_title(
-        &request.title,
-        &request.focus_keyword,
-        &mut issues,
-        &mut suggestions,
-    );
-    let meta_score = analyze_meta_description(
-        &request.meta_description,
-        &request.focus_keyword,
-        &mut issues,
-        &mut suggestions,
-    );
-    let (content_score, keyword_density) = analyze_content(
-        &plain_text,
-        &request.focus_keyword,
-        &mut issues,
-        &mut suggestions,
-    );
-    let (readability_score, flesch_score) =
-        analyze_readability(&plain_text, &mut issues, &mut suggestions);
-    let slug_score = analyze_slug(
-        &request.slug,
-        &request.focus_keyword,
-        &mut issues,
-        &mut suggestions,
-    );
-    let (structure_score, headings, images_without_alt) = analyze_structure(
-        &html_content,
-        &request.content_blocks,
-        &request.focus_keyword,
-        &mut issues,
-        &mut suggestions,
-    );
-    let links = analyze_links(&html_content, &mut issues, &mut suggestions);
-
-    // Calculate overall score (weighted average)
-    let overall_score = ((title_score as f32 * 0.20)
-        + (meta_score as f32 * 0.15)
-        + (content_score as f32 * 0.25)
-        + (readability_score as f32 * 0.20)
-        + (structure_score as f32 * 0.20))
-        .round()
-        .clamp(0.0, 100.0) as u8;
-
-    let grade = calculate_grade(overall_score);
-    let reading_time_minutes = (word_count / WORDS_PER_MINUTE).max(1);
-
-    // Remove duplicate suggestions
-    let unique_suggestions: Vec<String> = suggestions
-        .into_iter()
-        .collect::<HashSet<_>>()
-        .into_iter()
-        .collect();
-
-    // Sort issues by severity (errors first, then warnings, then info, then success)
-    let mut sorted_issues = issues;
-    sorted_issues.sort_by(|a, b| {
-        let severity_order = |s: &SeoIssueSeverity| match s {
-            SeoIssueSeverity::Error => 0,
-            SeoIssueSeverity::Warning => 1,
-            SeoIssueSeverity::Info => 2,
-            SeoIssueSeverity::Success => 3,
-        };
-        severity_order(&a.severity).cmp(&severity_order(&b.severity))
-    });
-
-    let processing_time_ms = start_time.elapsed().as_millis();
-
-    tracing::info!(
-        target: "cms_seo",
-        user_id = %user.id,
-        score = %overall_score,
-        grade = %grade,
-        word_count = %word_count,
-        processing_time_ms = %processing_time_ms,
-        "SEO validation completed"
-    );
-
-    Ok(Json(SeoValidationResponse {
-        score: overall_score,
-        grade,
-        issues: sorted_issues,
-        suggestions: unique_suggestions,
-        keyword_density,
-        readability_score: flesch_score,
-        word_count,
-        reading_time_minutes,
-        heading_structure: headings,
-        links,
-        images_without_alt,
-        category_scores: CategoryScores {
-            title_score,
-            meta_score,
-            content_score,
-            readability_score,
-            keyword_score: if request.focus_keyword.is_some() {
-                content_score
-            } else {
-                50
-            },
-            structure_score,
-        },
-    }))
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════════════
-// ROUTER
-// ═══════════════════════════════════════════════════════════════════════════════════════
-
-/// CMS SEO validation routes (requires authentication)
-pub fn router() -> Router<AppState> {
-    Router::new().route("/validate", post(validate_seo))
 }
