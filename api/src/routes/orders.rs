@@ -1362,8 +1362,8 @@ pub async fn admin_resend_confirmation(
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/", get(index))
-        .route("/by-number/{order_number}", get(show_by_number))
-        .route("/{id}", get(show))
+        .route("/by-number/:order_number", get(show_by_number))
+        .route("/:id", get(show))
 }
 
 /// Build admin orders router - ICT 7 COMPLETE
@@ -1372,11 +1372,11 @@ pub fn admin_router() -> Router<AppState> {
 
     Router::new()
         .route("/", get(admin_index))
-        .route("/{id}", get(admin_show))
+        .route("/:id", get(admin_show))
         // Order management endpoints - ICT 7 FIX
-        .route("/{id}/status", post(admin_update_status))
-        .route("/{id}/refund", post(admin_refund))
-        .route("/{id}/cancel", post(admin_cancel))
-        .route("/{id}/fulfill", post(admin_fulfill))
-        .route("/{id}/resend-confirmation", post(admin_resend_confirmation))
+        .route("/:id/status", post(admin_update_status))
+        .route("/:id/refund", post(admin_refund))
+        .route("/:id/cancel", post(admin_cancel))
+        .route("/:id/fulfill", post(admin_fulfill))
+        .route("/:id/resend-confirmation", post(admin_resend_confirmation))
 }
