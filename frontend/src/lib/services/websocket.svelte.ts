@@ -18,6 +18,7 @@
  */
 
 import { browser } from '$app/environment';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // CONFIGURATION
@@ -187,7 +188,7 @@ type MessageHandler = (message: WsMessage) => void;
  *
  *   const unsubscribe = ws.subscribe((message) => {
  *     if (message.type === 'AlertCreated') {
- *       console.info('New alert:', message.payload);
+ *       logger.info('New alert:', message.payload);
  *     }
  *   });
  *
@@ -309,14 +310,14 @@ export function createWebSocketService(initialRooms: string | string[] = []) {
 		}
 
 		heartbeatTimer = setTimeout(() => {
-			console.warn('[WebSocket] Heartbeat timeout - connection may be stale');
+			logger.warn('[WebSocket] Heartbeat timeout - connection may be stale');
 
 			// Try to send a ping
 			send({ action: 'Ping', data: { timestamp: Date.now() } });
 
 			// If still no response, reconnect
 			heartbeatTimer = setTimeout(() => {
-				console.warn('[WebSocket] No heartbeat response - reconnecting');
+				logger.warn('[WebSocket] No heartbeat response - reconnecting');
 				socket?.close();
 			}, 10000);
 		}, HEARTBEAT_TIMEOUT);
@@ -337,12 +338,10 @@ export function createWebSocketService(initialRooms: string | string[] = []) {
 				case 'Connected':
 					state.connectionId = message.payload.connection_id;
 					state.reconnectAttempts = 0;
-					console.info(
-						'[WebSocket] Connected:',
-						message.payload.connection_id,
-						'Rooms:',
-						message.payload.rooms
-					);
+					logger.info('[WebSocket] Connected', {
+						connectionId: message.payload.connection_id,
+						rooms: message.payload.rooms
+					});
 					break;
 
 				case 'Heartbeat':
@@ -352,16 +351,19 @@ export function createWebSocketService(initialRooms: string | string[] = []) {
 
 				case 'Subscribed':
 					state.subscribedRooms.add(message.payload.room);
-					console.info('[WebSocket] Subscribed to room:', message.payload.room);
+					logger.info('[WebSocket] Subscribed to room', { room: message.payload.room });
 					break;
 
 				case 'Unsubscribed':
 					state.subscribedRooms.delete(message.payload.room);
-					console.info('[WebSocket] Unsubscribed from room:', message.payload.room);
+					logger.info('[WebSocket] Unsubscribed from room', { room: message.payload.room });
 					break;
 
 				case 'Error':
-					console.error('[WebSocket] Server error:', message.payload.code, message.payload.message);
+					logger.error('[WebSocket] Server error', {
+						code: message.payload.code,
+						message: message.payload.message
+					});
 					state.error = new Error(`${message.payload.code}: ${message.payload.message}`);
 					break;
 			}
@@ -370,12 +372,12 @@ export function createWebSocketService(initialRooms: string | string[] = []) {
 			messageHandlers.forEach((handler) => {
 				try {
 					handler(message);
-				} catch (err) {
-					console.error('[WebSocket] Error in message handler:', err);
+				} catch (error) {
+					logger.error('[WebSocket] Error in message handler', { error });
 				}
 			});
-		} catch (err) {
-			console.error('[WebSocket] Failed to parse message:', err);
+		} catch (error) {
+			logger.error('[WebSocket] Failed to parse message', { error });
 		}
 	}
 
@@ -399,7 +401,7 @@ export function createWebSocketService(initialRooms: string | string[] = []) {
 			send({ action: 'Subscribe', data: { room } });
 		});
 
-		console.info('[WebSocket] Connection opened');
+		logger.info('[WebSocket] Connection opened');
 	}
 
 	/**
@@ -409,14 +411,14 @@ export function createWebSocketService(initialRooms: string | string[] = []) {
 		state.isConnected = false;
 		clearTimers();
 
-		console.info('[WebSocket] Connection closed:', event.code, event.reason);
+		logger.info('[WebSocket] Connection closed', { code: event.code, reason: event.reason });
 
 		// Attempt reconnection if not a deliberate close
 		if (event.code !== 1000 && state.reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
 			scheduleReconnect();
 		} else if (state.reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
 			state.error = new Error('Maximum reconnection attempts reached');
-			console.error('[WebSocket] Max reconnection attempts reached');
+			logger.error('[WebSocket] Max reconnection attempts reached');
 		}
 	}
 
@@ -424,7 +426,7 @@ export function createWebSocketService(initialRooms: string | string[] = []) {
 	 * Handle WebSocket error
 	 */
 	function handleError(event: Event): void {
-		console.error('[WebSocket] Error:', event);
+		logger.error('[WebSocket] Error', { event });
 		state.error = new Error('WebSocket connection error');
 	}
 
@@ -438,9 +440,11 @@ export function createWebSocketService(initialRooms: string | string[] = []) {
 		const delay = getReconnectDelay();
 		state.reconnectAttempts++;
 
-		console.info(
-			`[WebSocket] Reconnecting in ${Math.round(delay)}ms (attempt ${state.reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`
-		);
+		logger.info('[WebSocket] Reconnecting', {
+			delayMs: Math.round(delay),
+			attempt: state.reconnectAttempts,
+			maxAttempts: MAX_RECONNECT_ATTEMPTS
+		});
 
 		reconnectTimer = setTimeout(() => {
 			connect();
@@ -464,7 +468,6 @@ export function createWebSocketService(initialRooms: string | string[] = []) {
 
 		const url = getWebSocketUrl();
 		if (!url) {
-			console.debug('[WebSocket] No VITE_WS_URL configured — skipping connection');
 			return;
 		}
 
@@ -476,10 +479,10 @@ export function createWebSocketService(initialRooms: string | string[] = []) {
 			socket.onerror = handleError;
 			socket.onmessage = handleMessage;
 
-			console.info('[WebSocket] Connecting to:', url);
-		} catch (err) {
-			console.error('[WebSocket] Failed to create connection:', err);
-			state.error = err instanceof Error ? err : new Error('Failed to connect');
+			logger.info('[WebSocket] Connecting', { url });
+		} catch (error) {
+			logger.error('[WebSocket] Failed to create connection', { error });
+			state.error = error instanceof Error ? error : new Error('Failed to connect');
 			scheduleReconnect();
 		}
 	}
@@ -500,7 +503,7 @@ export function createWebSocketService(initialRooms: string | string[] = []) {
 		state.isReconnecting = false;
 		state.connectionId = null;
 
-		console.info('[WebSocket] Disconnected');
+		logger.info('[WebSocket] Disconnected');
 	}
 
 	/**

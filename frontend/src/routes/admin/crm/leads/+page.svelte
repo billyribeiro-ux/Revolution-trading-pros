@@ -53,6 +53,7 @@
 	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
 	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -314,9 +315,9 @@
 					conversion_rate: data?.conversion_rate || 0
 				};
 			}
-		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to load leads';
-			console.error('Load leads error:', err);
+		} catch (error_) {
+			error = error_ instanceof Error ? error_.message : 'Failed to load leads';
+			logger.error('[CRM Leads] Load failed', { error: error_ });
 		} finally {
 			isLoading = false;
 		}
@@ -344,9 +345,9 @@
 			showAddModal = false;
 			resetForm();
 			await loadData();
-		} catch (err) {
-			formError = err instanceof Error ? err.message : 'Failed to create lead';
-			console.error('Create lead error:', err);
+		} catch (error_) {
+			formError = error_ instanceof Error ? error_.message : 'Failed to create lead';
+			logger.error('[CRM Leads] Create failed', { error: error_ });
 		} finally {
 			formLoading = false;
 		}
@@ -374,9 +375,9 @@
 			editingLead = null;
 			resetForm();
 			await loadData();
-		} catch (err) {
-			formError = err instanceof Error ? err.message : 'Failed to update lead';
-			console.error('Update lead error:', err);
+		} catch (error_) {
+			formError = error_ instanceof Error ? error_.message : 'Failed to update lead';
+			logger.error('[CRM Leads] Update failed', { error: error_ });
 		} finally {
 			formLoading = false;
 		}
@@ -390,9 +391,9 @@
 			showDeleteModal = false;
 			deletingLead = null;
 			await loadData();
-		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to delete lead';
-			console.error('Delete lead error:', err);
+		} catch (error_) {
+			error = error_ instanceof Error ? error_.message : 'Failed to delete lead';
+			logger.error('[CRM Leads] Delete failed', { error: error_ });
 		}
 	}
 
@@ -400,9 +401,9 @@
 		try {
 			await api.patch(`/api/admin/crm/leads/${leadId}/status`, { status: newStatus });
 			await loadData();
-		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to update lead status';
-			console.error('Update status error:', err);
+		} catch (error_) {
+			error = error_ instanceof Error ? error_.message : 'Failed to update lead status';
+			logger.error('[CRM Leads] Status update failed', { error: error_ });
 		}
 	}
 
@@ -412,8 +413,8 @@
 				is_starred: !lead.is_starred
 			});
 			lead.is_starred = !lead.is_starred;
-		} catch (err) {
-			console.error('Toggle starred error:', err);
+		} catch (error_) {
+			logger.error('[CRM Leads] Toggle starred failed', { error: error_ });
 		}
 	}
 
@@ -425,9 +426,9 @@
 			showConvertModal = false;
 			convertingLead = null;
 			await loadData();
-		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to convert lead';
-			console.error('Convert lead error:', err);
+		} catch (error_) {
+			error = error_ instanceof Error ? error_.message : 'Failed to convert lead';
+			logger.error('[CRM Leads] Convert failed', { error: error_ });
 		}
 	}
 
@@ -450,9 +451,9 @@
 			selectedLeads = new Set();
 			showBulkDeleteModal = false;
 			await loadData();
-		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to delete leads';
-			console.error('Bulk delete error:', err);
+		} catch (error_) {
+			error = error_ instanceof Error ? error_.message : 'Failed to delete leads';
+			logger.error('[CRM Leads] Bulk delete failed', { error: error_ });
 		} finally {
 			bulkDeleteLoading = false;
 		}
@@ -480,9 +481,9 @@
 			showBulkStatusModal = false;
 			pendingBulkStatus = '';
 			await loadData();
-		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to update leads';
-			console.error('Bulk update error:', err);
+		} catch (error_) {
+			error = error_ instanceof Error ? error_.message : 'Failed to update leads';
+			logger.error('[CRM Leads] Bulk update failed', { error: error_ });
 		} finally {
 			bulkStatusLoading = false;
 		}

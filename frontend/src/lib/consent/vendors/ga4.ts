@@ -32,6 +32,7 @@
  */
 
 import { browser } from '$app/environment';
+import { logger } from '$lib/utils/logger';
 import type { VendorConfig } from '../types';
 import { injectScript } from '../vendor-loader';
 import { applyConsentMode } from '../google-consent-mode';
@@ -114,8 +115,6 @@ export function trackPageView(url?: string): void {
 		page_path: pagePath,
 		page_title: document.title
 	});
-
-	console.debug('[GA4] Tracked page view:', pagePath);
 }
 
 /**
@@ -128,7 +127,6 @@ export function trackEvent(eventName: string, params?: Record<string, unknown>):
 	if (!browser || !ga4Initialized) return;
 
 	window.gtag!('event', eventName, params);
-	console.debug('[GA4] Tracked event:', eventName, params);
 }
 
 /**
@@ -142,8 +140,6 @@ export function setUserProperties(properties: Record<string, unknown>): void {
 	window.gtag!('config', PUBLIC_GA4_MEASUREMENT_ID, {
 		user_properties: properties
 	});
-
-	console.debug('[GA4] Set user properties:', properties);
 }
 
 /**
@@ -157,8 +153,6 @@ export function setUserId(userId: string | null): void {
 	window.gtag!('config', PUBLIC_GA4_MEASUREMENT_ID, {
 		user_id: userId
 	});
-
-	console.debug('[GA4] Set user ID:', userId ? '[set]' : '[cleared]');
 }
 
 /**
@@ -175,19 +169,12 @@ export const ga4Vendor: VendorConfig = {
 	async load(): Promise<void> {
 		// Validate environment variable
 		if (!PUBLIC_GA4_MEASUREMENT_ID) {
-			console.debug(
-				'[GA4] PUBLIC_GA4_MEASUREMENT_ID not set. Skipping GA4 initialization. ' +
-					'Set this environment variable to enable Google Analytics.'
-			);
 			return;
 		}
 
 		// Validate measurement ID format
 		if (!PUBLIC_GA4_MEASUREMENT_ID.startsWith('G-')) {
-			console.warn(
-				'[GA4] Invalid measurement ID format. Expected "G-XXXXXXXXXX". Got:',
-				PUBLIC_GA4_MEASUREMENT_ID
-			);
+			logger.warn('[GA4] Invalid measurement ID format. Expected "G-XXXXXXXXXX".');
 			return;
 		}
 
@@ -195,7 +182,6 @@ export const ga4Vendor: VendorConfig = {
 
 		// Prevent double initialization
 		if (ga4Initialized) {
-			console.debug('[GA4] Already initialized');
 			return;
 		}
 
@@ -255,12 +241,10 @@ export const ga4Vendor: VendorConfig = {
 
 			ga4Initialized = true;
 
-			console.debug('[GA4] Initialized successfully with ID:', PUBLIC_GA4_MEASUREMENT_ID);
-
 			// Send initial page view
 			trackPageView();
 		} catch (error) {
-			console.error('[GA4] Failed to initialize:', error);
+			logger.error('[GA4] Failed to initialize', { error });
 			throw error;
 		}
 	},
@@ -269,7 +253,6 @@ export const ga4Vendor: VendorConfig = {
 		// GA4 respects consent mode updates automatically.
 		// When consent is revoked, we update consent mode and GA4
 		// will stop collecting data that requires that consent.
-		console.debug('[GA4] Consent revoked - GA4 will respect consent mode update');
 
 		// Note: We don't need to do anything special here because:
 		// 1. Google Consent Mode v2 handles this automatically
