@@ -10,6 +10,7 @@
 	 */
 	import type { ComponentInfo } from './+page.server';
 	import type { Component } from 'svelte';
+	import { logger } from '$lib/utils/logger';
 
 	interface Props {
 		component: ComponentInfo | null;
@@ -86,7 +87,7 @@
 			renderTime = Math.round(performance.now() - startTime);
 		} catch (e) {
 			loadError = e instanceof Error ? e.message : 'Failed to load component';
-			console.error('[Workbench] Load error:', e);
+			logger.error('[Workbench] Load error:', e);
 		} finally {
 			isLoading = false;
 		}
@@ -98,7 +99,7 @@
 
 	function _handleRenderError(error: Error) {
 		renderError = error.message;
-		console.error('[Workbench] Render error:', error);
+		logger.error('[Workbench] Render error:', error);
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
