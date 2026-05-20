@@ -45,7 +45,6 @@ import {
 	deserializeBlocks,
 	generateBlockId
 } from '../blocks';
-import type { Block } from '$lib/components/cms/blocks/types';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // generateBlockId
@@ -185,16 +184,27 @@ describe('createBlock — embed defaults pin (R25-A LB-R25-1)', () => {
 	});
 });
 
-describe('createBlock — columns defaults pin (R25-A LB-R25-2)', () => {
-	it('column width default is the CSS-shaped string "50%" (not the bare number 50)', () => {
-		// LB-R25-2: the columns type declares `width?: string`. The pre-R25
-		// default was the number 50, which produced `style="width:50"` with
-		// no unit and silently failed to render at 50%. Pin the string.
+describe('createBlock — columns defaults pin (R26-A LB-R26-7)', () => {
+	it('emits the canonical { columnCount, columnLayout, children } shape ColumnsBlock.svelte reads', () => {
+		// LB-R25-2 (historical): the legacy `{ columns: [{blocks, width}] }`
+		// shape stored width as the bare number `50`, which would have emitted
+		// `style="width:50"` with no unit had it ever reached a renderer.
+		//
+		// LB-R26-7 (current): `ColumnsBlock.svelte` (src/lib/components/cms/
+		// blocks/layout/ColumnsBlock.svelte) reads `columnCount, columnLayout,
+		// children` — NOT the legacy nested-columns shape. The R26-A fix in
+		// commit 711d0e8d7 replaced the orphan default with the canonical
+		// fields the component actually destructures. Column widths are now
+		// derived from the `columnLayout` preset ('50/50', '33/33/33', etc.),
+		// not stored per-column. Pin the new shape so a regression to the
+		// orphan default (which silently rendered as an empty placeholder)
+		// is caught.
 		const b = createBlock('columns');
-		expect(b.content).toEqual({ columns: [{ blocks: [], width: '50%' }] });
-		const cols = b.content.columns as Array<{ blocks: Block[]; width?: string }>;
-		expect(typeof cols[0].width).toBe('string');
-		expect(cols[0].width).toBe('50%');
+		expect(b.content).toEqual({ columnCount: 2, columnLayout: '50/50', children: [] });
+		expect(b.content.columnCount).toBe(2);
+		expect(b.content.columnLayout).toBe('50/50');
+		expect(Array.isArray(b.content.children)).toBe(true);
+		expect(b.content.children).toEqual([]);
 	});
 });
 
