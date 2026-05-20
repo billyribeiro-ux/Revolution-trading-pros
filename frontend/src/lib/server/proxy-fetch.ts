@@ -28,6 +28,13 @@
  *     '[Alerts API]'
  *   );
  *   if (hasSuccess(backendData) && backendData.success) { … }
+ *
+ * Why `interface XBody + as XBody`, not zod/valibot (R22-A decision):
+ *   Proxy layer is hot-path SSR — adding a runtime validator (zod ~12 KB,
+ *   valibot ~4 KB modular) lifts every cold-start render and every
+ *   `+server.ts` import. Backend already validates with serde; the proxy's
+ *   only job is forward-and-narrow. `isObject` + structural cast catches
+ *   the "client posted `null`" 500-NPE class (R18-A §2) at zero runtime cost.
  */
 
 import { env } from '$env/dynamic/private';

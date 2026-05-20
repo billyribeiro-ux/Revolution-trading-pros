@@ -5,46 +5,33 @@
  * GET, PUT, DELETE operations for individual watchlist items.
  * Supports room-specific targeting.
  *
+ * R22-A: Deleted the 3-row `mockWatchlistItems` map (TG Watkins,
+ *   Allison Ostrander, Taylor Horton) plus its hardcoded previous/next
+ *   nav graph. On backend failure:
+ *     - GET returned the mock row by slug with `_mock: true`.
+ *     - PUT silently merged the body into the mock map (without persisting
+ *       to backend), and returned 200 — admins saw "Updated" while no row
+ *       was touched in the DB.
+ *     - DELETE returned 200 — same shape, no DB row removed.
+ *   All three now surface backend failure as 502. The 3-row mock map's
+ *   prev/next nav was also stale (slugs like 12082025-taylor-horton don't
+ *   match any DB row), so even returning the mock GET was actively
+ *   broken — users clicking "previous" would 404 on the next page.
+ *
  * @version 2.0.0 - December 2025 - Added room targeting
  */
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { ALL_ROOM_IDS } from '$lib/config/rooms';
 // R20-A: migrated off local `fetchFromBackend` helper to shared
 // `$lib/server/proxy-fetch` (CLAUDE.md URL-fallback pinned once,
 // `Promise<unknown>` return, narrowing primitives consolidated).
+// R22-A: `ALL_ROOM_IDS` import dropped — no caller after the mock map went.
 import { fetchBackend, hasSuccess } from '$lib/server/proxy-fetch';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
 // ═══════════════════════════════════════════════════════════════════════════
-
-interface WatchlistItem {
-	id: number;
-	slug: string;
-	title: string;
-	subtitle: string;
-	trader: string;
-	traderImage?: string;
-	datePosted: string;
-	weekOf: string;
-	video: {
-		src: string;
-		poster: string;
-		title: string;
-	};
-	spreadsheet: {
-		src: string;
-	};
-	description: string;
-	status: 'published' | 'draft' | 'archived';
-	rooms: string[];
-	previous: { slug: string; title: string } | null;
-	next: { slug: string; title: string } | null;
-	createdAt: string;
-	updatedAt: string;
-}
 
 /** PUT body — partial update of the item; admin form sends only changed fields. */
 interface WatchlistPutBody {
@@ -58,103 +45,6 @@ interface WatchlistPutBody {
 	videoPoster?: string;
 	spreadsheetSrc?: string;
 }
-
-// ═══════════════════════════════════════════════════════════════════════════
-// MOCK DATA (shared reference)
-// ═══════════════════════════════════════════════════════════════════════════
-
-const mockWatchlistItems: Record<string, WatchlistItem> = {
-	'12222025-tg-watkins': {
-		id: 1,
-		slug: '12222025-tg-watkins',
-		title: 'Weekly Watchlist with TG Watkins',
-		subtitle: 'Week of December 22, 2025',
-		trader: 'TG Watkins',
-		traderImage: 'https://cdn.simplertrading.com/2025/05/07135326/SimplerCentral_TG.jpg',
-		datePosted: 'December 22, 2025',
-		weekOf: '2025-12-22',
-		video: {
-			src: 'https://cloud-streaming.s3.amazonaws.com/WeeklyWatchlist/WW-TG-12222025.mp4',
-			poster:
-				'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg',
-			title: 'Weekly Watchlist with TG Watkins'
-		},
-		spreadsheet: {
-			src: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSsdQCEUZLymwpLK8j35e5B6qjdRPz1k2tX8U2yL0z30EsEv06i-74m7V-cPgCyxZe528DA_3gdMUKy/pubhtml'
-		},
-		description: 'Week of December 22, 2025.',
-		status: 'published',
-		rooms: ALL_ROOM_IDS,
-		previous: {
-			slug: '12152025-allison-ostrander',
-			title: 'Weekly Watchlist with Allison Ostrander'
-		},
-		next: null,
-		createdAt: '2025-12-22T09:00:00Z',
-		updatedAt: '2025-12-22T09:00:00Z'
-	},
-	'12152025-allison-ostrander': {
-		id: 2,
-		slug: '12152025-allison-ostrander',
-		title: 'Weekly Watchlist with Allison Ostrander',
-		subtitle: 'Week of December 15, 2025',
-		trader: 'Allison Ostrander',
-		traderImage: 'https://cdn.simplertrading.com/2025/05/07134911/SimplerCentral_DShay.jpg',
-		datePosted: 'December 15, 2025',
-		weekOf: '2025-12-15',
-		video: {
-			src: 'https://cloud-streaming.s3.amazonaws.com/WeeklyWatchlist/WW-AO-12152025.mp4',
-			poster:
-				'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Allison-Watchlist-Rundown.jpg',
-			title: 'Weekly Watchlist with Allison Ostrander'
-		},
-		spreadsheet: {
-			src: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSsdQCEUZLymwpLK8j35e5B6qjdRPz1k2tX8U2yL0z30EsEv06i-74m7V-cPgCyxZe528DA_3gdMUKy/pubhtml'
-		},
-		description: 'Week of December 15, 2025.',
-		status: 'published',
-		rooms: ['day-trading-room', 'swing-trading-room', 'small-account-mentorship'],
-		previous: {
-			slug: '12082025-taylor-horton',
-			title: 'Weekly Watchlist with Taylor Horton'
-		},
-		next: {
-			slug: '12222025-tg-watkins',
-			title: 'Weekly Watchlist with TG Watkins'
-		},
-		createdAt: '2025-12-15T09:00:00Z',
-		updatedAt: '2025-12-15T09:00:00Z'
-	},
-	'12082025-taylor-horton': {
-		id: 3,
-		slug: '12082025-taylor-horton',
-		title: 'Weekly Watchlist with Taylor Horton',
-		subtitle: 'Week of December 8, 2025',
-		trader: 'Taylor Horton',
-		traderImage: 'https://cdn.simplertrading.com/2025/05/07134745/SimplerCentral_HG.jpg',
-		datePosted: 'December 8, 2025',
-		weekOf: '2025-12-08',
-		video: {
-			src: 'https://cloud-streaming.s3.amazonaws.com/WeeklyWatchlist/WW-TH-12082025.mp4',
-			poster:
-				'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Taylor-Watchlist-Rundown.jpg',
-			title: 'Weekly Watchlist with Taylor Horton'
-		},
-		spreadsheet: {
-			src: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSsdQCEUZLymwpLK8j35e5B6qjdRPz1k2tX8U2yL0z30EsEv06i-74m7V-cPgCyxZe528DA_3gdMUKy/pubhtml'
-		},
-		description: 'Week of December 8, 2025.',
-		status: 'published',
-		rooms: ['small-account-mentorship', 'explosive-swings'],
-		previous: null,
-		next: {
-			slug: '12152025-allison-ostrander',
-			title: 'Weekly Watchlist with Allison Ostrander'
-		},
-		createdAt: '2025-12-08T09:00:00Z',
-		updatedAt: '2025-12-08T09:00:00Z'
-	}
-};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // GET HANDLER - Get single watchlist item
@@ -182,18 +72,14 @@ export const GET: RequestHandler = async ({ params, request }) => {
 		return json(backendData);
 	}
 
-	// Fallback to mock data
-	const item = mockWatchlistItems[slug];
-
-	if (!item) {
-		error(404, `Watchlist item '${slug}' not found`);
-	}
-
-	return json({
-		success: true,
-		data: item,
-		_mock: true
-	});
+	// R22-A: was: look up `slug` in the 3-row mock map (stale prev/next nav
+	// included), return `_mock: true`. Now: 502 so the watchlist detail
+	// page shows a real error.
+	console.error(`[Watchlist API] GET backend unavailable for slug '${slug}'`);
+	return json(
+		{ success: false, error: 'Unable to load watchlist item — backend is unavailable.' },
+		{ status: 502 }
+	);
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -229,37 +115,15 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 		return json(backendData);
 	}
 
-	// Mock update
-	const existingItem = mockWatchlistItems[slug];
-
-	if (!existingItem) {
-		error(404, `Watchlist item '${slug}' not found`);
-	}
-
-	const updatedItem: WatchlistItem = {
-		...existingItem,
-		title: body.title ?? existingItem.title,
-		trader: body.trader ?? existingItem.trader,
-		traderImage: body.traderImage ?? existingItem.traderImage,
-		description: body.description ?? existingItem.description,
-		status: body.status ?? existingItem.status,
-		rooms: body.rooms ?? existingItem.rooms,
-		video: {
-			src: body.videoSrc ?? existingItem.video.src,
-			poster: body.videoPoster ?? existingItem.video.poster,
-			title: body.title ?? existingItem.video.title
-		},
-		spreadsheet: {
-			src: body.spreadsheetSrc ?? existingItem.spreadsheet.src
-		},
-		updatedAt: new Date().toISOString()
-	};
-
-	return json({
-		success: true,
-		data: updatedItem,
-		_mock: true
-	});
+	// R22-A: was: merge body fields into `mockWatchlistItems[slug]`, return
+	// 200 `_mock: true`. The PUT returned an item that LOOKED edited but
+	// no DB row was touched — the next GET on the same slug showed the
+	// old values. Now: 502.
+	console.error(`[Watchlist API] PUT backend unavailable for slug '${slug}'`);
+	return json(
+		{ success: false, error: 'Unable to update watchlist item — backend is unavailable.' },
+		{ status: 502 }
+	);
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -292,16 +156,11 @@ export const DELETE: RequestHandler = async ({ params, request }) => {
 		return json(backendData);
 	}
 
-	// Mock delete
-	const existingItem = mockWatchlistItems[slug];
-
-	if (!existingItem) {
-		error(404, `Watchlist item '${slug}' not found`);
-	}
-
-	return json({
-		success: true,
-		message: `Watchlist item '${slug}' deleted`,
-		_mock: true
-	});
+	// R22-A: was: 404 if slug not in mock map, 200 `_mock: true` otherwise.
+	// No DB row was actually removed. Now: 502.
+	console.error(`[Watchlist API] DELETE backend unavailable for slug '${slug}'`);
+	return json(
+		{ success: false, error: 'Unable to delete watchlist item — backend is unavailable.' },
+		{ status: 502 }
+	);
 };

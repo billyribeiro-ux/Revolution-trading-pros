@@ -5,6 +5,12 @@
  * GET /api/export/watchlist?room_slug=explosive-swings&format=csv
  * Exports the current week's trade plan as CSV or JSON
  *
+ * R22-A: Deleted the 3-row NVDA/META/AMD mock fallback. A trader clicking
+ *   "Export CSV" on a backend hiccup used to download a CSV with the same
+ *   three hardcoded tickers regardless of which room they were in — easy to
+ *   mistake for the real week's plan and act on phantom trades. Now: a
+ *   backend non-2xx surfaces as 502 so the download fails loudly.
+ *
  * @version 2.0.0 - ICT 11 Principal Engineer Grade
  */
 
@@ -53,57 +59,19 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 			headers
 		});
 
-		let entries: TradePlanEntry[] = [];
-		let weekOf = new Date().toISOString().split('T')[0];
-
-		if (response.ok) {
-			const data = await response.json();
-			entries = data.data || [];
-			weekOf = data.week_of || weekOf;
-		} else {
-			// Fallback mock data for demo
-			entries = [
-				{
-					ticker: 'NVDA',
-					bias: 'BULLISH',
-					entry: '$142.50',
-					target1: '$148.00',
-					target2: '$152.00',
-					target3: '$158.00',
-					runner: '$165.00+',
-					stop: '$136.00',
-					options_strike: '$145 Call',
-					options_exp: '2026-01-24',
-					notes: 'Breakout above consolidation'
-				},
-				{
-					ticker: 'META',
-					bias: 'BULLISH',
-					entry: '$612.00',
-					target1: '$625.00',
-					target2: '$640.00',
-					target3: '$660.00',
-					runner: '$680.00+',
-					stop: '$595.00',
-					options_strike: '$620 Call',
-					options_exp: '2026-01-24',
-					notes: 'Momentum continuation'
-				},
-				{
-					ticker: 'AMD',
-					bias: 'BEARISH',
-					entry: '$118.50',
-					target1: '$112.00',
-					target2: '$108.00',
-					target3: '$102.00',
-					runner: '$95.00',
-					stop: '$124.00',
-					options_strike: '$115 Put',
-					options_exp: '2026-01-24',
-					notes: 'Head & shoulders breakdown'
-				}
-			];
+		if (!response.ok) {
+			// R22-A: was: fall back to 3-row NVDA/META/AMD mock and proceed to
+			// generate the CSV/JSON. Now: fail loudly so the trader doesn't
+			// download phantom tickers and act on them.
+			console.error(
+				`[Export watchlist] Backend ${response.status} for room '${roomSlug}'`
+			);
+			error(502, `Unable to fetch trade plan for ${roomSlug}.`);
 		}
+
+		const data = await response.json();
+		const entries: TradePlanEntry[] = data.data || [];
+		const weekOf = data.week_of || new Date().toISOString().split('T')[0];
 
 		if (format === 'json') {
 			return new Response(JSON.stringify({ week_of: weekOf, entries }, null, 2), {

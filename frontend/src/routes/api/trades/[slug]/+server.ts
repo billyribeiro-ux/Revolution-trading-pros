@@ -37,39 +37,17 @@ function isTradeLike(value: unknown): value is Trade {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// FALLBACK MOCK DATA
+// R22-A: Deleted `mockTrades` (one fake closed MSFT trade for `explosive-swings`
+//   with a fabricated +$3,500 P&L). On backend failure:
+//     - GET fell back to the mock, computed `stats` from it, and returned
+//       `_source: 'mock'`. The win-rate / total-P&L numbers on the trades
+//       page were derived from one fake winning trade, falsely showing a
+//       100% win rate during any backend outage.
+//     - POST appended a new trade to the in-memory map and returned 200.
+//       Admins saw "Trade created" on a phantom row that no one else could
+//       see and that vanished on the next dyno cycle.
+//   Both now surface backend failure as 502.
 // ═══════════════════════════════════════════════════════════════════════════
-
-const mockTrades: Record<string, Trade[]> = {
-	'explosive-swings': [
-		{
-			id: 1,
-			room_id: 4,
-			room_slug: 'explosive-swings',
-			ticker: 'MSFT',
-			trade_type: 'shares',
-			direction: 'long',
-			quantity: 100,
-			option_type: null,
-			strike: null,
-			expiration: null,
-			entry_alert_id: null,
-			entry_price: 425.0,
-			entry_date: '2026-01-05',
-			exit_alert_id: null,
-			exit_price: 460.0,
-			exit_date: '2026-01-10',
-			setup: 'Breakout',
-			status: 'closed',
-			pnl: 3500,
-			pnl_percent: 8.24,
-			holding_days: 5,
-			notes: 'Perfect breakout setup.',
-			created_at: new Date().toISOString(),
-			updated_at: new Date().toISOString()
-		}
-	]
-};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // HELPER: Calculate stats from trades
@@ -163,40 +141,17 @@ export const GET: RequestHandler = async ({ params, url, request, cookies }) => 
 		});
 	}
 
-	// Fallback to mock data
-	console.info(`[Trades API] Using mock data for ${slug}`);
-	let trades = mockTrades[slug] || [];
-
-	// Filter by status
-	if (status && status !== 'all') {
-		trades = trades.filter((t) => t.status === status);
-	}
-
-	// Filter by ticker
-	if (ticker) {
-		trades = trades.filter((t) => t.ticker.toUpperCase() === ticker.toUpperCase());
-	}
-
-	// Sort by entry date (newest first)
-	trades.sort((a, b) => new Date(b.entry_date).getTime() - new Date(a.entry_date).getTime());
-
-	// Calculate stats
-	const stats = calculateStats(mockTrades[slug] || []);
-
-	// Paginate
-	const offset = (parseInt(page) - 1) * parseInt(perPage);
-	const total = trades.length;
-	trades = trades.slice(offset, offset + parseInt(perPage));
-
-	return json({
-		success: true,
-		data: trades,
-		stats,
-		total,
-		page: parseInt(page),
-		limit: parseInt(perPage),
-		_source: 'mock'
-	});
+	// R22-A: was: fall back to mock MSFT trade, compute fake 100% win-rate
+	// stats from it, return `_source: 'mock'`. Now: 502 so the trades page
+	// shows a real error rather than fake stats.
+	console.error(`[Trades API] Backend unavailable for slug '${slug}'`);
+	return json(
+		{
+			success: false,
+			error: 'Unable to load trades — backend is unavailable.'
+		},
+		{ status: 502 }
+	);
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -269,46 +224,15 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 		});
 	}
 
-	// Mock create fallback
-	const trades = mockTrades[slug] || [];
-	const maxId = trades.reduce((max, t) => Math.max(max, t.id), 0);
-
-	const newTrade: Trade = {
-		id: maxId + 1,
-		room_id: 4,
-		room_slug: slug,
-		ticker: body.ticker.toUpperCase(),
-		trade_type: body.trade_type,
-		direction: body.direction,
-		quantity: body.quantity,
-		option_type: body.option_type || null,
-		strike: body.strike || null,
-		expiration: body.expiration || null,
-		entry_alert_id: body.entry_alert_id || null,
-		entry_price: body.entry_price,
-		entry_date: body.entry_date || new Date().toISOString().split('T')[0],
-		exit_alert_id: null,
-		exit_price: null,
-		exit_date: null,
-		setup: body.setup || null,
-		status: 'open',
-		pnl: null,
-		pnl_percent: null,
-		holding_days: null,
-		notes: body.notes || null,
-		created_at: new Date().toISOString(),
-		updated_at: new Date().toISOString()
-	};
-
-	if (!mockTrades[slug]) {
-		mockTrades[slug] = [];
-	}
-	mockTrades[slug].unshift(newTrade);
-
-	return json({
-		success: true,
-		data: newTrade,
-		message: 'Trade created successfully',
-		_source: 'mock'
-	});
+	// R22-A: was: append a new trade to in-memory `mockTrades[slug]` and
+	// return 200. Fake-success on a mutating endpoint — the trade was never
+	// persisted and the linked entry alert pointed nowhere. Now: 502.
+	console.error(`[Trades API] POST backend unavailable for slug '${slug}'`);
+	return json(
+		{
+			success: false,
+			error: 'Unable to create trade — backend is unavailable.'
+		},
+		{ status: 502 }
+	);
 };
