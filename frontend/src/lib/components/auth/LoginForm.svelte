@@ -36,9 +36,14 @@
 	import { browser } from '$app/environment';
 	import { fade, slide } from 'svelte/transition';
 
-	// GSAP loaded dynamically to prevent SSR blocking
-	let gsap: any = null;
-	let gsapContext: any = null; // GSAP 3.12+ context for proper cleanup
+	// GSAP loaded dynamically to prevent SSR blocking. The `gsap` package ships
+	// a global `gsap` namespace via its types (see node_modules/gsap/types/),
+	// so `typeof globalThis.gsap` is the runtime singleton type and
+	// `gsap.Context` is the type returned by `gsap.context(...)`. Replaces
+	// `any` while keeping `null` until the dynamic import resolves.
+	type GsapInstance = typeof globalThis.gsap;
+	let gsap: GsapInstance | null = null;
+	let gsapContext: globalThis.gsap.Context | null = null;
 	import {
 		IconMail,
 		IconLock,
@@ -251,10 +256,14 @@
 			const gsapModule = await import('gsap');
 			gsap = gsapModule.default;
 
+			// Local non-null ref so the inner closure does not need to re-check
+			// the (typed-as-nullable) `gsap` module variable.
+			const gsapRef = gsap;
+
 			// GSAP 3.12+ pattern: use gsap.context() for proper cleanup
-			gsapContext = gsap.context(() => {
+			gsapContext = gsapRef.context(() => {
 				// Entrance animation - scope selectors to cardRef to avoid GSAP warnings
-				const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+				const tl = gsapRef.timeline({ defaults: { ease: 'power3.out' } });
 
 				// Get scoped elements
 				const formHeader = cardRef!.querySelector('.form-header');
@@ -386,8 +395,10 @@
 
 			// Shake animation
 			if (gsap && cardRef) {
-				gsap.fromTo(
-					cardRef,
+				const gsapRef = gsap;
+				const cardRefLocal = cardRef;
+				gsapRef.fromTo(
+					cardRefLocal,
 					{ x: -8 },
 					{
 						x: 8,
@@ -395,7 +406,7 @@
 						repeat: 5,
 						yoyo: true,
 						ease: 'power1.inOut',
-						onComplete: () => gsap.to(cardRef, { x: 0, duration: 0.1 })
+						onComplete: () => gsapRef.to(cardRefLocal, { x: 0, duration: 0.1 })
 					}
 				);
 			}
@@ -459,8 +470,10 @@
 
 			// Shake animation
 			if (gsap && cardRef) {
-				gsap.fromTo(
-					cardRef,
+				const gsapRef = gsap;
+				const cardRefLocal = cardRef;
+				gsapRef.fromTo(
+					cardRefLocal,
 					{ x: -8 },
 					{
 						x: 8,
@@ -468,7 +481,7 @@
 						repeat: 5,
 						yoyo: true,
 						ease: 'power1.inOut',
-						onComplete: () => gsap.to(cardRef, { x: 0, duration: 0.1 })
+						onComplete: () => gsapRef.to(cardRefLocal, { x: 0, duration: 0.1 })
 					}
 				);
 			}
@@ -476,21 +489,25 @@
 			// ICT 7 Fix: Simplified error handling to ensure generalError is always set
 			let errorMessage = 'Unable to sign in. Please check your credentials and try again.';
 
+			// Narrow the unknown `error` to a keyed object so `.message` /
+			// `.error` / `.code` reads stay type-safe. Replaces `as any`.
+			const errorObj =
+				error && typeof error === 'object' ? (error as Record<string, unknown>) : null;
+
 			if (error instanceof Error) {
 				errorMessage = error.message;
-			} else if (error && typeof error === 'object') {
-				const errorObj = error as any;
-				if (errorObj.message) {
-					errorMessage = errorObj.message;
-				} else if (errorObj.error) {
-					errorMessage = errorObj.error;
+			} else if (errorObj) {
+				if (typeof errorObj['message'] === 'string') {
+					errorMessage = errorObj['message'];
+				} else if (typeof errorObj['error'] === 'string') {
+					errorMessage = errorObj['error'];
 				}
 			}
 
 			// Check for email verification error
 			if (
 				errorMessage.toLowerCase().includes('verify your email') ||
-				(error && typeof error === 'object' && (error as any).code === 'EMAIL_NOT_VERIFIED')
+				errorObj?.['code'] === 'EMAIL_NOT_VERIFIED'
 			) {
 				emailNotVerified = true;
 				generalError = '';

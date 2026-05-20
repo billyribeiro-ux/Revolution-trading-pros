@@ -2,17 +2,35 @@
 	import { onMount } from 'svelte';
 	import { apiFetch } from '$lib/api/config';
 	import TemplateForm from '$lib/components/admin/TemplateForm.svelte';
+	import type { EmailTemplate } from '$lib/api/admin';
 	import { page } from '$app/state';
 
+	/**
+	 * R26-A LB-R26-1: the backend returns `{ data: EmailTemplate, message? }`
+	 * as the envelope shape (see `api/src/routes/email_templates.rs:144`).
+	 * `apiFetch` returns `T` raw, so we must unwrap `.data` here before
+	 * handing the row to `<TemplateForm>` — the form's `$effect` initialises
+	 * its inputs from `template.name`, `template.subject`, etc., and reading
+	 * those off the envelope produced `undefined` for every field. Edit pages
+	 * were rendering an empty form on load.
+	 */
 	let loading = $state(true);
 	let error = $state('');
-	let template: Record<string, unknown> | null = $state(null);
+	let template: Partial<EmailTemplate> | null = $state(null);
 
 	const id = page.params['id']!;
 
 	onMount(async () => {
 		try {
-			template = await apiFetch(`/admin/email/templates/${id}`);
+			const response = await apiFetch<{ data: EmailTemplate } | EmailTemplate>(
+				`/admin/email/templates/${id}`
+			);
+			// Defensive unwrap — backend envelope is `{ data: ... }`, but
+			// keep the legacy un-enveloped path working too.
+			template =
+				response && typeof response === 'object' && 'data' in response
+					? (response as { data: EmailTemplate }).data
+					: (response as EmailTemplate);
 		} catch (e) {
 			error = (e as Error).message;
 		} finally {

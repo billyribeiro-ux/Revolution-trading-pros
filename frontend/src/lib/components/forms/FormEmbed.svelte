@@ -23,8 +23,21 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import { previewForm, getFormById, submitForm, type Form as FormType } from '$lib/api/forms';
+	import {
+		previewForm,
+		getFormById,
+		submitForm,
+		type Form as FormType,
+		type FormField,
+		type ConditionalRule
+	} from '$lib/api/forms';
+	import type { JsonValue } from '$lib/api/_types';
 	import FormFieldRenderer from './FormFieldRenderer.svelte';
+
+	// Mirrors FormFieldRenderer's local `FieldValue` (File acceptable for
+	// file/image inputs even though the JSON submit payload narrows it back
+	// out at upload boundary).
+	type FieldValue = JsonValue | File | undefined;
 
 	interface Props {
 		/** Form ID (numeric) - Primary method like FluentForm: <Form id={5} /> */
@@ -85,7 +98,11 @@
 	let useSlug = $derived(formSlug !== undefined);
 
 	let formInstance: FormType | null = $state(null);
-	let formData: Record<string, any> = $state({});
+	// `FieldValue` rather than `JsonValue` so File objects (file/image
+	// inputs) survive in local state until the submit boundary, where
+	// `submitForm` re-narrows to `Record<string, JsonValue>`. Previously
+	// `Record<string, any>`.
+	let formData: Record<string, FieldValue> = $state({});
 	let errors: Record<string, string[]> = $state({});
 	let loading = $state(true);
 	let loadError = $state('');
@@ -141,13 +158,13 @@
 		}
 	}
 
-	function shouldDisplayField(field: any): boolean {
+	function shouldDisplayField(field: FormField): boolean {
 		if (!field.conditional_logic?.enabled) return true;
 
 		const logic = field.conditional_logic;
 		const results: boolean[] = [];
 
-		logic.rules?.forEach((rule: any) => {
+		logic.rules?.forEach((rule: ConditionalRule) => {
 			const fieldValue = formData[rule.field];
 			let result: boolean;
 
@@ -189,7 +206,7 @@
 		visibleFields = newVisible;
 	}
 
-	function handleFieldChange(fieldName: string, value: any) {
+	function handleFieldChange(fieldName: string, value: FieldValue) {
 		formData[fieldName] = value;
 		updateVisibleFields();
 		if (errors[fieldName]) {
@@ -208,8 +225,18 @@
 		// Get the slug for submission (from loaded form or prop)
 		const submitSlug = formInstance.slug || formSlug || '';
 
+		// Narrow `formData` (Record<string, FieldValue>) to the JSON shape
+		// `submitForm` expects. File objects don't serialise to JSON and
+		// are handled by separate upload endpoints — drop them here so
+		// the submit body remains a plain JSON document.
+		const submitPayload: Record<string, JsonValue> = {};
+		for (const [key, value] of Object.entries(formData)) {
+			if (value === undefined || value instanceof File) continue;
+			submitPayload[key] = value;
+		}
+
 		try {
-			const result = await submitForm(submitSlug, formData);
+			const result = await submitForm(submitSlug, submitPayload);
 
 			if (result.success) {
 				submitted = true;

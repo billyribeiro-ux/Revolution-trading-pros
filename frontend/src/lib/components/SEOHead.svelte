@@ -60,6 +60,25 @@
 	import { serializeJsonLd } from '$lib/seo/serializeJsonLd';
 
 	// ═══════════════════════════════════════════════════════════════════════════
+	// Types
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	/**
+	 * JSON-LD node — a Schema.org graph object with arbitrary string-keyed
+	 * data. Replaces `any` for the `schema` prop and the schema generator
+	 * return types. Nodes can contain nested nodes (e.g. `publisher: {...}`),
+	 * arrays of nodes (e.g. `mainEntity: [...]`), and primitives.
+	 */
+	type JsonLdValue =
+		| string
+		| number
+		| boolean
+		| null
+		| JsonLdNode
+		| Array<JsonLdValue>;
+	type JsonLdNode = { [key: string]: JsonLdValue | undefined };
+
+	// ═══════════════════════════════════════════════════════════════════════════
 	// Props & Configuration
 	// ═══════════════════════════════════════════════════════════════════════════
 
@@ -107,7 +126,7 @@
 		productSKU?: string | null;
 		productRating?: number | null;
 		productReviewCount?: number | null;
-		schema?: any;
+		schema?: JsonLdNode | JsonLdNode[] | null;
 		autoSchema?: boolean;
 		schemaType?: string | null;
 		breadcrumbs?: Array<{ name: string; url: string }>;
@@ -388,8 +407,8 @@
 		return crumbs;
 	}
 
-	function generateSchema(): any[] {
-		const schemas = [];
+	function generateSchema(): JsonLdNode[] {
+		const schemas: JsonLdNode[] = [];
 
 		// Website/Organization Schema
 		schemas.push({
@@ -694,8 +713,12 @@
 		return schemas;
 	}
 
-	function combineSchemas(generated: any[]): any[] {
-		const schemas = [...generated];
+	function combineSchemas(generated: JsonLdNode | JsonLdNode[] | null): JsonLdNode[] {
+		const schemas: JsonLdNode[] = Array.isArray(generated)
+			? [...generated]
+			: generated
+				? [generated]
+				: [];
 		if (schema) {
 			if (Array.isArray(schema)) {
 				schemas.push(...schema);
@@ -777,9 +800,12 @@
 				console.groupEnd();
 			}
 
-			// Send SEO metrics to analytics
-			if (typeof window !== 'undefined' && 'gtag' in window) {
-				(window as any).gtag('event', 'seo_metrics', {
+			// Send SEO metrics to analytics. `window.gtag` is typed globally in
+			// `src/app.d.ts` (`gtag?: (...args: unknown[]) => void`); the previous
+			// `(window as any).gtag(...)` cast was redundant and lost the typed
+			// optional-chain narrowing.
+			if (typeof window !== 'undefined' && window.gtag) {
+				window.gtag('event', 'seo_metrics', {
 					page_title: fullTitle,
 					seo_score: seoScore,
 					title_length: titleLength,
