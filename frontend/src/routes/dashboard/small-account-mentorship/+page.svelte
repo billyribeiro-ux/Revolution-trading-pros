@@ -18,6 +18,7 @@
 	import type { WatchlistResponse } from '$lib/types/watchlist';
 	import type { RoomResource } from '$lib/api/room-resources';
 	import { GOOGLE_CALENDAR_API_KEY, GOOGLE_OAUTH_CLIENT_ID } from '$lib/config/google';
+	import { logger } from '$lib/utils/logger';
 
 	// Props interface for SSR data - Svelte 5 best practice
 	interface Props {
@@ -129,7 +130,7 @@
 			setTimeout(initCalendar, 100);
 		};
 		script.onerror = () => {
-			console.warn('Failed to load Google Calendar API');
+			logger.warn('Failed to load Google Calendar API');
 		};
 		document.head.appendChild(script);
 
@@ -149,7 +150,7 @@
 
 		// @ts-expect-error gapi is loaded from external script (untyped global)
 		if (typeof gapi === 'undefined' || !gapi.client) {
-			console.warn('Google API not loaded yet');
+			logger.warn('Google API not loaded yet');
 			return;
 		}
 
@@ -195,11 +196,11 @@
 						}
 					})
 					.catch((error: any) => {
-						console.warn('Calendar Error:', error);
+						logger.warn('Calendar Error:', error);
 					});
 			});
 		} catch (error) {
-			console.warn('Failed to initialize Google Calendar:', error);
+			logger.warn('Failed to initialize Google Calendar:', error);
 		}
 	}
 </script>

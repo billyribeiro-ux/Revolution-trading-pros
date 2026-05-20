@@ -9,6 +9,7 @@
 	} from '$lib/icons';
 	import CreateRedirectModal from '$lib/components/seo/CreateRedirectModal.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { logger } from '$lib/utils/logger';
 
 	let logs: any[] = $state([]);
 	let stats: any = $state(null);
@@ -41,7 +42,7 @@
 			const data = await response.json();
 			logs = data.data || [];
 		} catch (error) {
-			console.error('Failed to load 404 logs:', error);
+			logger.error('Failed to load 404 logs:', error);
 		} finally {
 			loading = false;
 		}
@@ -52,7 +53,7 @@
 			const response = await fetch('/api/seo/404-logs/stats');
 			stats = await response.json();
 		} catch (error) {
-			console.error('Failed to load stats:', error);
+			logger.error('Failed to load stats:', error);
 		}
 	}
 
@@ -67,7 +68,7 @@
 			loadLogs();
 			loadStats();
 		} catch (error) {
-			console.error('Failed to ignore log:', error);
+			logger.error('Failed to ignore log:', error);
 		}
 	}
 
@@ -92,7 +93,7 @@
 			loadLogs();
 			loadStats();
 		} catch (error) {
-			console.error('Failed to delete logs:', error);
+			logger.error('Failed to delete logs:', error);
 		}
 	}
 
