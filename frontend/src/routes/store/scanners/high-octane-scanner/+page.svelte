@@ -22,6 +22,7 @@
 		IconFilter,
 		IconClock
 	} from '$lib/icons';
+	import { toastStore } from '$lib/stores/toast.svelte';
 
 	// Product configuration
 	const product = {
@@ -111,7 +112,7 @@
 			}, 3000);
 		} catch (error) {
 			console.error('Failed to add to cart:', error);
-			alert('Failed to add to cart. Please try again.');
+			toastStore.error('Failed to add to cart. Please try again.');
 		} finally {
 			isAddingToCart = false;
 		}

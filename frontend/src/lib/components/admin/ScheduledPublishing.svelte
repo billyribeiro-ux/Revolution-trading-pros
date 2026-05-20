@@ -13,6 +13,7 @@
 	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	interface Props {
 		resourceType?: 'video' | 'series';
@@ -36,6 +37,10 @@
 	let isSaving = $state(false);
 	let error = $state('');
 	let showForm = $state(false);
+
+	// Confirmation modal state (replaces native confirm())
+	let showCancelJobModal = $state(false);
+	let pendingCancelJobId = $state<number | null>(null);
 
 	// Form state
 	let scheduledDate = $state(getTomorrowDate());
@@ -142,8 +147,16 @@
 		isSaving = false;
 	}
 
-	async function cancelJob(jobId: number) {
-		if (!confirm('Are you sure you want to cancel this scheduled job?')) return;
+	function cancelJob(jobId: number) {
+		pendingCancelJobId = jobId;
+		showCancelJobModal = true;
+	}
+
+	async function confirmCancelJob() {
+		const jobId = pendingCancelJobId;
+		if (jobId == null) return;
+		showCancelJobModal = false;
+		pendingCancelJobId = null;
 
 		const result = await scheduledApi.cancel(jobId);
 
@@ -152,6 +165,11 @@
 		} else {
 			error = result.error || 'Failed to cancel job';
 		}
+	}
+
+	function dismissCancelJobModal() {
+		showCancelJobModal = false;
+		pendingCancelJobId = null;
 	}
 
 	function formatDateTime(isoString: string): string {
@@ -305,6 +323,17 @@
 		{/if}
 	{/if}
 </div>
+
+<ConfirmationModal
+	isOpen={showCancelJobModal}
+	title="Cancel scheduled job?"
+	message="Are you sure you want to cancel this scheduled job?"
+	confirmText="Cancel Job"
+	cancelText="Keep"
+	variant="warning"
+	onConfirm={confirmCancelJob}
+	onCancel={dismissCancelJobModal}
+/>
 
 <style>
 	.scheduled-publishing {

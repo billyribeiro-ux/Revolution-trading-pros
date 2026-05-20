@@ -7,6 +7,7 @@
 
 	import { apiFetch } from '$lib/api/config';
 	import Icon from '$lib/components/Icon.svelte';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	interface Review {
 		id: number;
@@ -61,6 +62,9 @@
 	let title = $state('');
 	let content = $state('');
 	let error = $state('');
+
+	// Confirmation modal state (replaces native confirm())
+	let showDeleteReviewModal = $state(false);
 	let successMessage = $state('');
 
 	const ratingLabels = ['Terrible', 'Poor', 'Average', 'Good', 'Excellent'];
@@ -108,8 +112,12 @@
 		}
 	}
 
-	async function _deleteReview() {
-		if (!confirm('Are you sure you want to delete your review?')) return;
+	function _deleteReview() {
+		showDeleteReviewModal = true;
+	}
+
+	async function confirmDeleteReview() {
+		showDeleteReviewModal = false;
 
 		try {
 			const res = await apiFetch<ApiResponse>(`/member/courses/${props.courseSlug}/reviews`, {
@@ -122,6 +130,10 @@
 		} catch (e) {
 			console.error('Failed to delete review:', e);
 		}
+	}
+
+	function cancelDeleteReview() {
+		showDeleteReviewModal = false;
 	}
 
 	const formatDate = (dateStr: string): string => {
@@ -290,6 +302,16 @@
 		{/if}
 	{/if}
 </div>
+
+<ConfirmationModal
+	isOpen={showDeleteReviewModal}
+	title="Delete review?"
+	message="Are you sure you want to delete your review? This action cannot be undone."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteReview}
+	onCancel={cancelDeleteReview}
+/>
 
 <style>
 	.reviews-section {

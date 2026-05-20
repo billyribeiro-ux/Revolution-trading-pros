@@ -225,6 +225,8 @@
 															src={enrollment.course.card_image_url}
 															alt={enrollment.course.title}
 															loading="lazy"
+															width="320"
+															height="180"
 														/>
 														<div class="progress-overlay">
 															<div class="progress-bar">
@@ -287,6 +289,8 @@
 															src={enrollment.course.card_image_url}
 															alt={enrollment.course.title}
 															loading="lazy"
+															width="320"
+															height="180"
 														/>
 														<div class="completed-badge">
 															<svg

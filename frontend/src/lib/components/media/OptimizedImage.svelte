@@ -168,6 +168,8 @@
 			class="absolute inset-0 w-full h-full object-{objectFit} blur-lg scale-105 transition-opacity duration-500"
 			class:opacity-0={loaded}
 			aria-hidden="true"
+			width={width ?? undefined}
+			height={height ?? undefined}
 		/>
 	{/if}
 

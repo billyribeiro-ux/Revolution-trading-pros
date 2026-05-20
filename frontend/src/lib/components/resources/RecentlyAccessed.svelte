@@ -142,6 +142,8 @@
 								alt={item.resource_title}
 								class="h-full w-full object-cover transition-transform group-hover:scale-105"
 								loading="lazy"
+								width="400"
+								height="225"
 							/>
 						{:else}
 							<div

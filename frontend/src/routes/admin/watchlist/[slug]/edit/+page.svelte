@@ -335,7 +335,13 @@
 					{#if formData.videoPoster}
 						<div class="media-preview">
 							<p class="preview-label">Video Poster Preview</p>
-							<img src={formData.videoPoster} alt="Video poster preview" />
+							<img
+								src={formData.videoPoster}
+								alt="Video poster preview"
+								width="356"
+								height="200"
+								loading="lazy"
+							/>
 						</div>
 					{/if}
 				</section>

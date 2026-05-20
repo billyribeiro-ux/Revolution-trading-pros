@@ -21,6 +21,7 @@
 	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
+	import { toastStore } from '$lib/stores/toast.svelte';
 
 	interface Funnel {
 		key: string;
@@ -100,7 +101,7 @@
 			newFunnel = { name: '', description: '', steps: [{ name: '', event_name: '' }] };
 			loadFunnels();
 		} catch (e) {
-			alert(e instanceof Error ? e.message : 'Failed to create funnel');
+			toastStore.error(e instanceof Error ? e.message : 'Failed to create funnel');
 		}
 	}
 

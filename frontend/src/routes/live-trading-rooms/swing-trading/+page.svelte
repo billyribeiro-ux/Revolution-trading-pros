@@ -706,6 +706,9 @@
 								src="/logos/nvda.svg"
 								alt="NVIDIA logo"
 								class="w-5 h-5 opacity-70 hidden sm:block"
+								width="20"
+								height="20"
+								loading="lazy"
 							/>
 							NVDA
 						</div>
@@ -718,7 +721,14 @@
 					</div>
 					<div class="grid grid-cols-12 p-5 items-center hover:bg-white/5 transition-colors">
 						<div class="col-span-3 md:col-span-2 font-bold text-white flex items-center gap-2">
-							<img src="/logos/amd.svg" alt="AMD logo" class="w-5 h-5 opacity-70 hidden sm:block" />
+							<img
+								src="/logos/amd.svg"
+								alt="AMD logo"
+								class="w-5 h-5 opacity-70 hidden sm:block"
+								width="20"
+								height="20"
+								loading="lazy"
+							/>
 							AMD
 						</div>
 						<div class="col-span-3 md:col-span-2 text-emerald-400 font-bold">CALLS</div>
@@ -736,6 +746,9 @@
 								src="/logos/tsla.svg"
 								alt="Tesla logo"
 								class="w-5 h-5 opacity-70 hidden sm:block"
+								width="20"
+								height="20"
+								loading="lazy"
 							/>
 							TSLA
 						</div>
@@ -752,6 +765,9 @@
 								src="/logos/meta.svg"
 								alt="Meta logo"
 								class="w-5 h-5 opacity-70 hidden sm:block"
+								width="20"
+								height="20"
+								loading="lazy"
 							/>
 							META
 						</div>

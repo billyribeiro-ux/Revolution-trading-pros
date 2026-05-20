@@ -97,7 +97,14 @@
 							<div class="trader-header__col trader-header__col--photo">
 								<div class="trader-photo">
 									<div class="trader-photo__frame">
-										<img class="trader-photo__img" src={trader.image} alt={trader.name} />
+										<img
+											class="trader-photo__img"
+											src={trader.image}
+											alt={trader.name}
+											width="180"
+											height="180"
+											loading="lazy"
+										/>
 									</div>
 								</div>
 							</div>
@@ -133,7 +140,13 @@
 					{#each products as product (product.id)}
 						<div class="product-card">
 							<figure class="product-card__image">
-								<img src={product.image} alt={product.name} />
+								<img
+									src={product.image}
+									alt={product.name}
+									width="325"
+									height="183"
+									loading="lazy"
+								/>
 							</figure>
 							<div class="product-card__body">
 								<h4 class="product-card__name">{product.name}</h4>

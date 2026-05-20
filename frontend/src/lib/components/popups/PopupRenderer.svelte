@@ -457,7 +457,15 @@
 			<div class="popup-content">
 				<!-- Header Image -->
 				{#if currentPopup.design?.header_image}
-					<img src={currentPopup.design.header_image} alt="" class="popup-header-image" />
+					<!-- TODO(cls): admin-uploaded popup header image; intrinsic dims unknown -->
+					<img
+						src={currentPopup.design.header_image}
+						alt=""
+						class="popup-header-image"
+						width="800"
+						height="200"
+						loading="lazy"
+					/>
 				{/if}
 
 				<!-- Video Embed -->

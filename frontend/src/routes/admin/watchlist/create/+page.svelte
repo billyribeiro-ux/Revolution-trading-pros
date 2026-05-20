@@ -321,7 +321,13 @@
 				{#if posterUrl}
 					<div class="media-preview">
 						<p class="preview-label">Video Poster Preview</p>
-						<img src={posterUrl} alt="Video poster preview" />
+						<img
+							src={posterUrl}
+							alt="Video poster preview"
+							width="356"
+							height="200"
+							loading="lazy"
+						/>
 					</div>
 				{/if}
 			</section>

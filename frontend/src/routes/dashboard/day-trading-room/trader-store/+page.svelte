@@ -128,7 +128,13 @@
 			{#each traderStores as store (store.id)}
 				<a href="/dashboard/day-trading-room/trader-store/{store.slug}" class="store-card">
 					<figure class="store-card__image">
-						<img src={store.image} alt={store.name} loading="lazy" />
+						<img
+							src={store.image}
+							alt={store.name}
+							loading="lazy"
+							width="320"
+							height="160"
+						/>
 					</figure>
 
 					<div class="store-card__content">

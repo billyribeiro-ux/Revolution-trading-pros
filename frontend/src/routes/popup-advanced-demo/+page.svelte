@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { popupStore, type Popup } from '$lib/stores/popups.svelte';
 	import { IconClock, IconVideo, IconRocket } from '$lib/icons';
+	import { toastStore } from '$lib/stores/toast.svelte';
 
 	// Get date 24 hours from now for countdown demo
 	const tomorrow = new Date();
@@ -253,7 +254,7 @@
 
 	function clearHistory() {
 		popupStore.clearHistory();
-		alert('Popup history cleared!');
+		toastStore.success('Popup history cleared!');
 	}
 </script>
 

@@ -21,6 +21,7 @@
 	import { onMount } from 'svelte';
 	import { fade, slide } from 'svelte/transition';
 	import Icon from '$lib/components/Icon.svelte';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// Props
 	interface Props {
@@ -86,6 +87,10 @@
 	let scheduleTime = $state('');
 	let scheduleTimezone = $state(Intl.DateTimeFormat().resolvedOptions().timeZone);
 	let scheduleNotes = $state('');
+
+	// Confirmation modal state (replaces native confirm())
+	let showCancelScheduleModal = $state(false);
+	let pendingCancelScheduleId = $state<string | null>(null);
 
 	// Pending schedules
 	let pendingSchedules = $state<Schedule[]>([]);
@@ -249,8 +254,16 @@
 		}
 	}
 
-	async function cancelSchedule(scheduleId: string) {
-		if (!confirm('Are you sure you want to cancel this schedule?')) return;
+	function cancelSchedule(scheduleId: string) {
+		pendingCancelScheduleId = scheduleId;
+		showCancelScheduleModal = true;
+	}
+
+	async function confirmCancelSchedule() {
+		const scheduleId = pendingCancelScheduleId;
+		if (!scheduleId) return;
+		showCancelScheduleModal = false;
+		pendingCancelScheduleId = null;
 
 		try {
 			const response = await fetch(`/api/cms/scheduling/schedules/${scheduleId}/cancel`, {
@@ -267,6 +280,11 @@
 		} catch (e: unknown) {
 			error = e instanceof Error ? e.message : 'Failed to cancel schedule';
 		}
+	}
+
+	function dismissCancelScheduleModal() {
+		showCancelScheduleModal = false;
+		pendingCancelScheduleId = null;
 	}
 
 	async function createRelease() {
@@ -836,6 +854,17 @@
 		</div>
 	</div>
 {/if}
+
+<ConfirmationModal
+	isOpen={showCancelScheduleModal}
+	title="Cancel schedule?"
+	message="Are you sure you want to cancel this schedule?"
+	confirmText="Cancel Schedule"
+	cancelText="Keep"
+	variant="warning"
+	onConfirm={confirmCancelSchedule}
+	onCancel={dismissCancelScheduleModal}
+/>
 
 <style>
 	.scheduling-overlay {

@@ -236,7 +236,14 @@
 			{#each files as file (file.id)}
 				<li class="file-item" class:error={file.status === 'error'}>
 					{#if showPreview && file.type.startsWith('image/') && file.url}
-						<img src={file.url} alt={file.name} class="file-preview" />
+						<img
+							src={file.url}
+							alt={file.name}
+							class="file-preview"
+							width="48"
+							height="48"
+							loading="lazy"
+						/>
 					{:else}
 						<span class="file-icon">{getFileIcon(file.type)}</span>
 					{/if}

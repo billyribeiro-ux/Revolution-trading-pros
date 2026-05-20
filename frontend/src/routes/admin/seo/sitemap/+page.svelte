@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { IconRefresh, IconDownload, IconUpload, IconFileText } from '$lib/icons';
+	import { toastStore } from '$lib/stores/toast.svelte';
 
 	// State using Svelte 5 runes
 	let stats = $state<any>(null);
@@ -31,7 +32,7 @@
 			loadStats();
 		} catch (error) {
 			console.error('Failed to generate sitemap:', error);
-			alert('Failed to generate sitemap');
+			toastStore.error('Failed to generate sitemap');
 		} finally {
 			generating = false;
 		}
@@ -48,11 +49,11 @@
 			});
 
 			if (response.ok) {
-				alert('Sitemap submitted to search engines successfully!');
+				toastStore.success('Sitemap submitted to search engines successfully!');
 			}
 		} catch (error) {
 			console.error('Failed to submit sitemap:', error);
-			alert('Failed to submit sitemap to search engines');
+			toastStore.error('Failed to submit sitemap to search engines');
 		} finally {
 			submitting = false;
 		}

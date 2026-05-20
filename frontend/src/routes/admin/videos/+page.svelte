@@ -1502,7 +1502,13 @@
 								<td class="video-cell">
 									<div class="video-thumbnail-small">
 										{#if video.thumbnail_url}
-											<img src={video.thumbnail_url} alt="" />
+											<img
+												src={video.thumbnail_url}
+												alt=""
+												width="80"
+												height="45"
+												loading="lazy"
+											/>
 										{:else}
 											<div class="thumbnail-placeholder-small">
 												<IconVideo size={20} />
@@ -1535,7 +1541,14 @@
 								<td>
 									<div class="trader-cell">
 										{#if video.trader?.photo_url}
-											<img src={video.trader.photo_url} alt="" class="trader-avatar" />
+											<img
+												src={video.trader.photo_url}
+												alt=""
+												class="trader-avatar"
+												width="28"
+												height="28"
+												loading="lazy"
+											/>
 										{:else}
 											<div class="trader-avatar-placeholder">
 												<IconUser size={16} />

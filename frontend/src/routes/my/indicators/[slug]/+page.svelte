@@ -165,7 +165,14 @@
 			<a href="/my/indicators" class="back-link">← My Indicators</a>
 			<div class="indicator-info">
 				{#if indicator.logo_url}
-					<img src={indicator.logo_url} alt="" class="logo" />
+					<img
+						src={indicator.logo_url}
+						alt=""
+						class="logo"
+						width="64"
+						height="64"
+						loading="lazy"
+					/>
 				{/if}
 				<div>
 					<h1>{indicator.name}</h1>
@@ -303,7 +310,13 @@
 									allowfullscreen
 								></iframe>
 							{:else if video.thumbnail_url}
-								<img src={video.thumbnail_url} alt={video.title} />
+								<img
+									src={video.thumbnail_url}
+									alt={video.title}
+									width="320"
+									height="180"
+									loading="lazy"
+								/>
 							{/if}
 							<h4>{video.title}</h4>
 						</div>

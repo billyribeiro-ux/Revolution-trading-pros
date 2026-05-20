@@ -395,6 +395,7 @@
 
 			<!-- Responsive Image -->
 			{#if props.isEditing}
+				<!-- TODO(cls): user-uploaded image — intrinsic dims not stored on Block; persist width/height to mediaWidth/mediaHeight to eliminate CLS -->
 				<img
 					src={sanitizedURL}
 					{srcset}
@@ -418,6 +419,7 @@
 					onkeydown={handleImageKeyDown}
 					aria-label={`View ${imageAlt || 'image'} in lightbox`}
 				>
+					<!-- TODO(cls): user-uploaded image — intrinsic dims not stored on Block; persist width/height to mediaWidth/mediaHeight to eliminate CLS -->
 					<img
 						src={sanitizedURL}
 						{srcset}
@@ -584,11 +586,13 @@
 			<IconX size={24} aria-hidden="true" />
 		</button>
 		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_noninteractive_element_interactions -->
+		<!-- TODO(cls): fullscreen lightbox; intrinsic dims of user-uploaded image unknown -->
 		<img
 			src={sanitizedURL}
 			alt={imageAlt}
 			class="image-block__lightbox-image"
 			onclick={(e) => e.stopPropagation()}
+			loading="lazy"
 		/>
 		{#if caption}
 			<p class="image-block__lightbox-caption">{caption}</p>

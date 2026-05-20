@@ -297,7 +297,13 @@
 
 						{#if product.thumbnail}
 							<div class="product-thumbnail">
-								<img src={product.thumbnail} alt={product.name} />
+								<img
+									src={product.thumbnail}
+									alt={product.name}
+									width="360"
+									height="160"
+									loading="lazy"
+								/>
 							</div>
 						{/if}
 

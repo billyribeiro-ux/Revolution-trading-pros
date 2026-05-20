@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { IconNews, IconRefresh, IconExternalLink, IconCheck, IconX, IconClock } from '$lib/icons';
+	import { toastStore } from '$lib/stores/toast.svelte';
 
 	// State using Svelte 5 runes
 	let articles = $state<any[]>([]);
@@ -70,7 +71,7 @@
 			// In production, call API to regenerate
 			await new Promise((resolve) => setTimeout(resolve, 1000));
 			lastGenerated = new Date().toISOString();
-			alert('News sitemap regenerated successfully!');
+			toastStore.success('News sitemap regenerated successfully!');
 		} finally {
 			loading = false;
 		}

@@ -198,7 +198,7 @@
 			>
 				{#if product.image}
 					<div class="product-image">
-						<img src={product.image} alt={product.name} loading="lazy" />
+						<img src={product.image} alt={product.name} loading="lazy" width="60" height="60" />
 					</div>
 				{/if}
 

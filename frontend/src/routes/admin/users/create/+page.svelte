@@ -1052,22 +1052,34 @@
 	}
 
 	// Reactive statements for real-time validation
+	// Debounced via setTimeout-in-$effect-cleanup pattern (per CLAUDE.md:
+	// "$effect on typed input" landmine — bare effects fire on every keystroke).
+	// 400ms is the default debounce across this codebase.
 	$effect(() => {
-		if (formData.username) {
+		const username = formData.username; // tracked dep
+		if (!username) return;
+		const t = setTimeout(() => {
 			checkUsernameAvailability();
-		}
+		}, 400);
+		return () => clearTimeout(t);
 	});
 
 	$effect(() => {
-		if (formData.email) {
+		const email = formData.email; // tracked dep
+		if (!email) return;
+		const t = setTimeout(() => {
 			checkEmailAvailability();
-		}
+		}, 400);
+		return () => clearTimeout(t);
 	});
 
 	$effect(() => {
-		if (formData.password) {
-			checkPasswordStrength(formData.password);
-		}
+		const password = formData.password; // tracked dep
+		if (!password) return;
+		const t = setTimeout(() => {
+			checkPasswordStrength(password);
+		}, 400);
+		return () => clearTimeout(t);
 	});
 </script>
 
@@ -1206,6 +1218,9 @@
 							src={profilePhotoPreview}
 							alt="Preview"
 							class="mt-2 w-16 h-16 rounded-full object-cover"
+							width="64"
+							height="64"
+							loading="lazy"
 						/>
 					{/if}
 				</div>

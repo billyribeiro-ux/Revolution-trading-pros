@@ -122,6 +122,9 @@
 	);
 
 	beforeNavigate((nav) => {
+		// TODO(modal-confirm): SvelteKit's beforeNavigate is synchronous —
+		// nav.cancel() must be called inline, so native confirm() is the only
+		// portable option today.
 		if (
 			hasUnsavedChanges &&
 			!nav.willUnload &&

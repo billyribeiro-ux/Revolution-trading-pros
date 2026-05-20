@@ -7,6 +7,8 @@
 	 */
 
 	import { sanitizeHtml } from '$lib/sanitize';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { toastStore } from '$lib/stores/toast.svelte';
 
 	interface Props {
 		name?: string;
@@ -44,6 +46,10 @@
 	let editorRef = $state<HTMLDivElement>();
 	let showHtml = $state(false);
 
+	// Input modal state (replaces native prompt() for URL entry).
+	let showInsertLinkModal = $state(false);
+	let insertLinkUrl = $state('');
+
 	// Sync content with value prop changes
 	$effect(() => {
 		content = value;
@@ -77,10 +83,22 @@
 	}
 
 	function insertLink() {
-		const url = prompt('Enter URL:');
-		if (url) {
-			execCommand('createLink', url);
+		insertLinkUrl = '';
+		showInsertLinkModal = true;
+	}
+
+	function confirmInsertLink(value?: string) {
+		const url = (value ?? '').trim();
+		showInsertLinkModal = false;
+		if (!url) {
+			toastStore.error('URL is required');
+			return;
 		}
+		execCommand('createLink', url);
+	}
+
+	function cancelInsertLink() {
+		showInsertLinkModal = false;
 	}
 
 	function toggleHtmlView() {
@@ -232,6 +250,20 @@
 	<!-- Hidden input for form submission -->
 	<input type="hidden" {name} value={content} />
 </div>
+
+<ConfirmationModal
+	isOpen={showInsertLinkModal}
+	title="Insert link"
+	message="Enter the URL to link to."
+	confirmText="Insert"
+	variant="info"
+	showInput={true}
+	inputLabel="URL"
+	inputPlaceholder="https://example.com"
+	bind:inputValue={insertLinkUrl}
+	onConfirm={confirmInsertLink}
+	onCancel={cancelInsertLink}
+/>
 
 <style>
 	.post-content-field {

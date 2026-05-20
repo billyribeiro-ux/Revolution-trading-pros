@@ -231,7 +231,13 @@
 							<div class="typ-order-item">
 								<div class="typ-order-item__image">
 									{#if item.thumbnail}
-										<img src={item.thumbnail} alt={item.name} />
+										<img
+											src={item.thumbnail}
+											alt={item.name}
+											width="80"
+											height="80"
+											loading="lazy"
+										/>
 									{:else}
 										<div class="typ-order-item__placeholder">
 											<svg
@@ -291,7 +297,13 @@
 				</p>
 			</div>
 			<div class="typ-welcome__image">
-				<img src="/images/welcome-trading.jpg" alt="Welcome to Revolution Trading Pros" />
+				<img
+					src="/images/welcome-trading.jpg"
+					alt="Welcome to Revolution Trading Pros"
+					width="600"
+					height="400"
+					loading="lazy"
+				/>
 			</div>
 		</section>
 
@@ -447,7 +459,13 @@
 								<span class="typ-upsell-card__badge">{product.badge}</span>
 							{/if}
 							<div class="typ-upsell-card__image">
-								<img src={product.image} alt={product.name} />
+								<img
+									src={product.image}
+									alt={product.name}
+									width="600"
+									height="200"
+									loading="lazy"
+								/>
 							</div>
 							<div class="typ-upsell-card__content">
 								<h3 class="typ-upsell-card__title">{product.name}</h3>

@@ -16,6 +16,7 @@
 	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
 	import IconDots from '@tabler/icons-svelte-runes/icons/dots-vertical';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import { toastStore } from '$lib/stores/toast.svelte';
 
 	interface Goal {
 		id: string;
@@ -126,7 +127,7 @@
 				loadGoals();
 			}
 		} catch (e) {
-			alert(e instanceof Error ? e.message : 'Failed to create goal');
+			toastStore.error(e instanceof Error ? e.message : 'Failed to create goal');
 		}
 	}
 

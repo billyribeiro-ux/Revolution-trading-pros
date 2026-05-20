@@ -221,7 +221,7 @@
 
 				{#if option.image && imageOptions}
 					<div class="quiz-option__image">
-						<img src={option.image} alt={option.text} />
+						<img src={option.image} alt={option.text} width="213" height="120" loading="lazy" />
 					</div>
 				{/if}
 

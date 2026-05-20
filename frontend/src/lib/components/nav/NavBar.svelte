@@ -102,6 +102,8 @@
 	import { getCartItemCount } from '$lib/stores/cart.svelte';
 	import { logout as logoutApi } from '$lib/api/auth';
 
+	// FIX-2026-05-19 (maint-round1): replaced 10 legacy `$user`/`$isAuthenticated` autosubscribes across 8 sites with `.current` rune-getters — mirrors AdminSidebar FIX-2026-04-26 to prevent `effect_update_depth_exceeded` on post-login `goto({ invalidateAll: true })` flush.
+
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DEFAULT CONFIGURATION (Must be before Props destructuring)
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -281,7 +283,7 @@
 	});
 
 	const userInitial = $derived(
-		$user?.name?.[0]?.toUpperCase() || $user?.email?.[0]?.toUpperCase() || 'U'
+		user.current?.name?.[0]?.toUpperCase() || user.current?.email?.[0]?.toUpperCase() || 'U'
 	);
 
 	// CSS custom properties from theme
@@ -732,7 +734,7 @@
 			{/each}
 
 			<!-- Dashboard (Authenticated) -->
-			{#if $isAuthenticated}
+			{#if isAuthenticated.current}
 				<div class="dropdown" data-dropdown="dashboard">
 					<button
 						class="dropdown-trigger"
@@ -809,7 +811,7 @@
 				{/if}
 
 				<!-- Auth Buttons -->
-				{#if !$isAuthenticated}
+				{#if !isAuthenticated.current}
 					<a href="/get-started" class="cta-btn">Get Started</a>
 					<a href="/login" class="login-btn">Login</a>
 				{/if}
@@ -879,12 +881,12 @@
 		</div>
 
 		<!-- User -->
-		{#if $isAuthenticated && $user}
+		{#if isAuthenticated.current && user.current}
 			<div class="mobile-user">
 				<div class="mobile-avatar" aria-hidden="true">{userInitial}</div>
 				<div class="mobile-user-info">
-					<span class="mobile-user-name">{$user?.name || 'User'}</span>
-					<span class="mobile-user-email">{$user?.email || ''}</span>
+					<span class="mobile-user-name">{user.current?.name || 'User'}</span>
+					<span class="mobile-user-email">{user.current?.email || ''}</span>
 				</div>
 			</div>
 		{/if}
@@ -938,7 +940,7 @@
 			{/each}
 
 			<!-- Dashboard -->
-			{#if $isAuthenticated}
+			{#if isAuthenticated.current}
 				<div class="mobile-divider" role="separator" aria-hidden="true"></div>
 
 				<div class="mobile-nav-group">
@@ -992,7 +994,7 @@
 				</a>
 			{/if}
 
-			{#if $isAuthenticated}
+			{#if isAuthenticated.current}
 				<button class="mobile-logout" onclick={handleLogout} type="button"> Logout </button>
 			{:else}
 				<a

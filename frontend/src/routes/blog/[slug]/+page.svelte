@@ -291,6 +291,9 @@
 								src={post.author_image}
 								alt={post.author?.name ?? 'Author'}
 								class="author-avatar"
+								width="56"
+								height="56"
+								loading="lazy"
 							/>
 						{:else if post.author}
 							<div class="author-avatar-placeholder">

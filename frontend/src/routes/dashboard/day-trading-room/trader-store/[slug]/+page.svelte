@@ -474,7 +474,13 @@
 												class="card-image"
 												style="background-image: url({product.image});"
 											>
-												<img src="https://placehold.it/540x256" alt={product.name} />
+												<img
+													src="https://placehold.it/540x256"
+													alt={product.name}
+													width="540"
+													height="256"
+													loading="lazy"
+												/>
 											</a>
 										</figure>
 										<section class="card-body">

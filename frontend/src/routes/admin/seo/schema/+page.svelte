@@ -1,11 +1,17 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { IconPlus, IconCode, IconEye, IconTrash, IconCopy } from '$lib/icons';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { toastStore } from '$lib/stores/toast.svelte';
 
 	// State using Svelte 5 runes
 	let schemas = $state<any[]>([]);
 	let loading = $state(false);
 	let showPreview = $state<any>(null);
+
+	// Delete confirmation modal state
+	let showDeleteSchemaModal = $state(false);
+	let pendingDeleteSchemaId = $state<number | null>(null);
 
 	const schemaTypes = [
 		'Article',
@@ -42,15 +48,28 @@
 		}
 	}
 
-	async function deleteSchema(id: number) {
-		if (!confirm('Delete this schema?')) return;
+	function deleteSchema(id: number) {
+		pendingDeleteSchemaId = id;
+		showDeleteSchemaModal = true;
+	}
 
+	async function confirmDeleteSchema() {
+		const id = pendingDeleteSchemaId;
+		if (id == null) return;
+		showDeleteSchemaModal = false;
+		pendingDeleteSchemaId = null;
 		try {
 			await fetch(`/api/seo/schema/${id}`, { method: 'DELETE' });
 			loadSchemas();
 		} catch (error) {
 			console.error('Failed to delete schema:', error);
+			toastStore.error('Failed to delete schema');
 		}
+	}
+
+	function cancelDeleteSchema() {
+		showDeleteSchemaModal = false;
+		pendingDeleteSchemaId = null;
 	}
 
 	async function viewJsonLd(id: number) {
@@ -65,7 +84,7 @@
 
 	function copyJsonLd() {
 		navigator.clipboard.writeText(JSON.stringify(showPreview, null, 2));
-		alert('JSON-LD copied to clipboard!');
+		toastStore.success('JSON-LD copied to clipboard!');
 	}
 </script>
 
@@ -182,6 +201,16 @@
 		</div>
 	</div>
 {/if}
+
+<ConfirmationModal
+	isOpen={showDeleteSchemaModal}
+	title="Delete schema?"
+	message="Are you sure you want to delete this schema? This action cannot be undone."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteSchema}
+	onCancel={cancelDeleteSchema}
+/>
 
 <style>
 	.schema-page {

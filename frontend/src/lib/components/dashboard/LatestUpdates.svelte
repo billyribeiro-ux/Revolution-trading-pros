@@ -106,7 +106,7 @@
 				<div class="updates-grid__item">
 					<article class="article-card">
 						<figure class="article-card__image" style="background-image: url({item.image});">
-							<img src={item.image} alt={item.title} loading="lazy" />
+							<img src={item.image} alt={item.title} loading="lazy" width="400" height="225" />
 						</figure>
 
 						{#if item.isVideo && item.type}

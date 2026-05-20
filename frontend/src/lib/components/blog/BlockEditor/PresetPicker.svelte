@@ -468,7 +468,13 @@
 									>
 										{#if preset.thumbnail_url}
 											<div class="preset-thumbnail">
-												<img src={preset.thumbnail_url} alt={preset.name} loading="lazy" />
+												<img
+													src={preset.thumbnail_url}
+													alt={preset.name}
+													loading="lazy"
+													width="200"
+													height="80"
+												/>
 											</div>
 										{:else}
 											<div class="preset-thumbnail placeholder">

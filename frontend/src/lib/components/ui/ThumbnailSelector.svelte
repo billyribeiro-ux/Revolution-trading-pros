@@ -38,7 +38,7 @@
 					aria-label="Select thumbnail {i + 1}"
 					aria-pressed={selected === i}
 				>
-					<img src={thumb} alt="Thumbnail option {i + 1}" loading="lazy" />
+					<img src={thumb} alt="Thumbnail option {i + 1}" loading="lazy" width="320" height="180" />
 					{#if selected === i}
 						<div class="thumb-check">
 							<Icon name="IconCheck" size={16} />

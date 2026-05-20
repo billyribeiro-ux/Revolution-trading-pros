@@ -7,6 +7,7 @@
 	import { IconPlus } from '$lib/icons';
 	import type { Block } from '$lib/components/cms/blocks/types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
+	import { toastStore } from '$lib/stores/toast.svelte';
 
 	// Initialize state manager
 	const stateManager = new BlockStateManager();
@@ -53,10 +54,10 @@
 			if (!response.ok) throw new Error('Save failed');
 
 			// Show success message
-			alert('Post saved successfully!');
+			toastStore.success('Post saved successfully!');
 		} catch (error) {
 			console.error('Save error:', error);
-			alert('Failed to save post');
+			toastStore.error('Failed to save post');
 		} finally {
 			isSaving = false;
 		}

@@ -661,7 +661,14 @@
 							{#each videos as video (video.id)}
 								<div class="video-card">
 									{#if video.thumbnail_url}
-										<img src={video.thumbnail_url} alt={video.title} class="thumbnail" />
+										<img
+											src={video.thumbnail_url}
+											alt={video.title}
+											class="thumbnail"
+											width="320"
+											height="180"
+											loading="lazy"
+										/>
 									{:else}
 										<div class="thumbnail-placeholder">No Thumbnail</div>
 									{/if}

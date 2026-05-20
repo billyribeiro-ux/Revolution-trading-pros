@@ -19,6 +19,7 @@
 	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
 	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import { toastStore } from '$lib/stores/toast.svelte';
 
 	// Svelte 5 Runes - State
 	let segments = $state<Segment[]>([]);
@@ -113,7 +114,7 @@
 			};
 			loadSegments();
 		} catch (e) {
-			alert(e instanceof Error ? e.message : 'Failed to create segment');
+			toastStore.error(e instanceof Error ? e.message : 'Failed to create segment');
 		}
 	}
 

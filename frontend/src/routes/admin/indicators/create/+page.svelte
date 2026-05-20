@@ -1124,6 +1124,9 @@
 								src={indicator.thumbnail_url}
 								alt="Thumbnail preview"
 								class="thumbnail-preview"
+								width="400"
+								height="250"
+								loading="lazy"
 							/>
 							<button
 								type="button"
@@ -1170,7 +1173,13 @@
 					<div class="preview-card">
 						<div class="preview-image">
 							{#if indicator.thumbnail_url}
-								<img src={indicator.thumbnail_url} alt="Preview" />
+								<img
+									src={indicator.thumbnail_url}
+									alt="Preview"
+									width="400"
+									height="250"
+									loading="lazy"
+								/>
 							{:else}
 								<div class="preview-placeholder">
 									<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chart-line (preview placeholder) -->

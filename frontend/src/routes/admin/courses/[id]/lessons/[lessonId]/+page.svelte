@@ -111,6 +111,9 @@
 	);
 
 	beforeNavigate((nav) => {
+		// TODO(modal-confirm): SvelteKit's beforeNavigate is synchronous —
+		// nav.cancel() must be called inline, so native confirm() is the only
+		// portable option today.
 		if (
 			hasUnsavedChanges &&
 			!nav.willUnload &&
@@ -507,7 +510,13 @@
 						<!-- FIX-2026-04-26 (P1-9): only render <img> when URL passes
 						     scheme validation (https://, http://, or relative). -->
 						{#if safeThumbnailUrl}
-							<img src={safeThumbnailUrl} alt="Thumbnail" />
+							<img
+								src={safeThumbnailUrl}
+								alt="Thumbnail"
+								width="320"
+								height="180"
+								loading="lazy"
+							/>
 						{:else if lesson.thumbnail_url}
 							<div class="no-thumb">Invalid thumbnail URL</div>
 						{:else}

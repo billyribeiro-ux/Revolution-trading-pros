@@ -9,6 +9,7 @@
 		IconToggleRight
 	} from '$lib/icons';
 	import RedirectEditor from '$lib/components/seo/RedirectEditor.svelte';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	let redirects: any[] = $state([]);
 	let stats: any = $state(null);
@@ -20,6 +21,11 @@
 
 	const filterTypes = ['all', '301', '302', '307', '308', '410'];
 	let activeFilter = $state('all');
+
+	// Confirmation modal state (replaces native confirm())
+	let showDeleteRedirectModal = $state(false);
+	let pendingDeleteRedirectId = $state<number | null>(null);
+	let showBulkDeleteRedirectsModal = $state(false);
 
 	onMount(() => {
 		loadRedirects();
@@ -58,9 +64,16 @@
 		showEditor = true;
 	}
 
-	async function deleteRedirect(id: number) {
-		if (!confirm('Are you sure you want to delete this redirect?')) return;
+	function deleteRedirect(id: number) {
+		pendingDeleteRedirectId = id;
+		showDeleteRedirectModal = true;
+	}
 
+	async function confirmDeleteRedirect() {
+		const id = pendingDeleteRedirectId;
+		if (id == null) return;
+		showDeleteRedirectModal = false;
+		pendingDeleteRedirectId = null;
 		try {
 			await fetch(`/api/seo/redirects/${id}`, { method: 'DELETE' });
 			loadRedirects();
@@ -68,6 +81,11 @@
 		} catch (error) {
 			console.error('Failed to delete redirect:', error);
 		}
+	}
+
+	function cancelDeleteRedirect() {
+		showDeleteRedirectModal = false;
+		pendingDeleteRedirectId = null;
 	}
 
 	async function toggleRedirect(redirect: any) {
@@ -88,9 +106,13 @@
 		}
 	}
 
-	async function bulkDelete() {
-		if (!confirm(`Delete ${selectedIds.length} redirects?`)) return;
+	function bulkDelete() {
+		if (selectedIds.length === 0) return;
+		showBulkDeleteRedirectsModal = true;
+	}
 
+	async function confirmBulkDeleteRedirects() {
+		showBulkDeleteRedirectsModal = false;
 		try {
 			await fetch('/api/seo/redirects/bulk-delete', {
 				method: 'POST',
@@ -103,6 +125,10 @@
 		} catch (error) {
 			console.error('Failed to delete redirects:', error);
 		}
+	}
+
+	function cancelBulkDeleteRedirects() {
+		showBulkDeleteRedirectsModal = false;
 	}
 
 	function handleSaved() {
@@ -292,6 +318,26 @@
 		oncancel={() => (showEditor = false)}
 	/>
 {/if}
+
+<ConfirmationModal
+	isOpen={showDeleteRedirectModal}
+	title="Delete redirect?"
+	message="Are you sure you want to delete this redirect?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteRedirect}
+	onCancel={cancelDeleteRedirect}
+/>
+
+<ConfirmationModal
+	isOpen={showBulkDeleteRedirectsModal}
+	title="Delete redirects?"
+	message={`Delete ${selectedIds.length} redirects?`}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmBulkDeleteRedirects}
+	onCancel={cancelBulkDeleteRedirects}
+/>
 
 <style>
 	.redirects-page {

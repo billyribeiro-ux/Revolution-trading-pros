@@ -210,7 +210,7 @@
 	<div class="author-block__photo-section">
 		{#if sanitizedPhotoURL}
 			<div class="author-block__photo">
-				<img src={sanitizedPhotoURL} alt={name} loading="lazy" />
+				<img src={sanitizedPhotoURL} alt={name} loading="lazy" width="96" height="96" />
 				{#if props.isEditing && props.isSelected}
 					<button
 						type="button"

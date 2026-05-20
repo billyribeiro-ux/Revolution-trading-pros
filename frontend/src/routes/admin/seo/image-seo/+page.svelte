@@ -16,6 +16,11 @@
 		type ImageMetadata,
 		type ProcessedImage
 	} from '$lib/seo';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { toastStore } from '$lib/stores/toast.svelte';
+
+	// Reset-defaults confirmation modal state
+	let showResetSettingsModal = $state(false);
 
 	// State using Svelte 5 runes
 	let images = $state<ProcessedImage[]>([]);
@@ -109,7 +114,7 @@
 				height: img.height
 			}));
 			images = processImages(rawImages, settings);
-			alert('All images processed successfully!');
+			toastStore.success('All images processed successfully!');
 		} finally {
 			processing = false;
 		}
@@ -117,17 +122,25 @@
 
 	function saveSettings() {
 		imageSeoSettings.set(settings);
-		alert('Settings saved!');
+		toastStore.success('Settings saved!');
 		// Reprocess images with new settings
 		loadImages();
 	}
 
 	function resetSettings() {
-		if (!confirm('Are you sure you want to reset all settings to defaults?')) return;
+		showResetSettingsModal = true;
+	}
+
+	function confirmResetSettings() {
+		showResetSettingsModal = false;
 		settings = defaultImageSeoSettings;
 		imageSeoSettings.reset();
-		alert('Settings reset to defaults!');
+		toastStore.success('Settings reset to defaults!');
 		loadImages();
+	}
+
+	function cancelResetSettings() {
+		showResetSettingsModal = false;
 	}
 
 	function getScoreColor(score: number): string {
@@ -216,7 +229,13 @@
 					{#each images as image (image.src)}
 						<div class="image-item">
 							<div class="image-preview">
-								<img src={image.src} alt={image.generatedAlt || 'Image preview'} />
+								<img
+									src={image.src}
+									alt={image.generatedAlt || 'Image preview'}
+									width="120"
+									height="120"
+									loading="lazy"
+								/>
 								<div class="score-badge" style="background: {getScoreColor(image.seoScore)}">
 									{image.seoScore}
 								</div>
@@ -419,6 +438,16 @@
 		</div>
 	{/if}
 </div>
+
+<ConfirmationModal
+	isOpen={showResetSettingsModal}
+	title="Reset to defaults?"
+	message="Are you sure you want to reset all settings to defaults?"
+	confirmText="Reset"
+	variant="warning"
+	onConfirm={confirmResetSettings}
+	onCancel={cancelResetSettings}
+/>
 
 <style>
 	.image-seo-page {

@@ -14,6 +14,7 @@
 	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
 	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
 	import { adminFetch } from '$lib/utils/adminFetch';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// ICT 7 FIX: Match actual backend schema (admin_indicators.rs)
 	interface IndicatorListItem {
@@ -41,6 +42,10 @@
 	let statusFilter = $state('');
 	let deleting = $state<string | null>(null);
 
+	// Confirmation modal state (replaces native confirm())
+	let showDeleteIndicatorModal = $state(false);
+	let pendingDeleteIndicator = $state<{ id: number; name: string } | null>(null);
+
 	const fetchIndicators = async () => {
 		loading = true;
 		try {
@@ -66,14 +71,22 @@
 	};
 
 	// ICT 7 FIX: id is number, not string
-	const deleteIndicator = async (id: number, name: string) => {
-		if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
-		deleting = id.toString();
+	const deleteIndicator = (id: number, name: string) => {
+		pendingDeleteIndicator = { id, name };
+		showDeleteIndicatorModal = true;
+	};
+
+	const confirmDeleteIndicator = async () => {
+		const target = pendingDeleteIndicator;
+		if (!target) return;
+		showDeleteIndicatorModal = false;
+		pendingDeleteIndicator = null;
+		deleting = target.id.toString();
 		try {
 			// ICT 11+ FIX: Use adminFetch for absolute URL on Pages.dev
-			const data = await adminFetch(`/api/admin/indicators/${id}`, { method: 'DELETE' });
+			const data = await adminFetch(`/api/admin/indicators/${target.id}`, { method: 'DELETE' });
 			if (data.success) {
-				indicators = indicators.filter((i) => i.id !== id);
+				indicators = indicators.filter((i) => i.id !== target.id);
 				total--;
 			}
 		} catch (e) {
@@ -81,6 +94,11 @@
 		} finally {
 			deleting = null;
 		}
+	};
+
+	const cancelDeleteIndicator = () => {
+		showDeleteIndicatorModal = false;
+		pendingDeleteIndicator = null;
 	};
 
 	// ICT 7 FIX: Backend uses price in dollars, not cents
@@ -204,7 +222,14 @@
 							<tr>
 								<td class="indicator-cell">
 									{#if indicator.thumbnail}
-										<img src={indicator.thumbnail} alt="" class="logo" />
+										<img
+											src={indicator.thumbnail}
+											alt=""
+											class="logo"
+											width="48"
+											height="48"
+											loading="lazy"
+										/>
 									{:else}
 										<div class="logo-placeholder">
 											<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chart-line (logo placeholder) -->
@@ -306,6 +331,16 @@
 	</div>
 	<!-- End admin-page-container -->
 </div>
+
+<ConfirmationModal
+	isOpen={showDeleteIndicatorModal}
+	title="Delete indicator?"
+	message={`Delete "${pendingDeleteIndicator?.name ?? ''}"? This cannot be undone.`}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteIndicator}
+	onCancel={cancelDeleteIndicator}
+/>
 
 <style>
 	/* Page wrapper */

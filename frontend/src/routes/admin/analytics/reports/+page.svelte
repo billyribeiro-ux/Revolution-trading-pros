@@ -10,6 +10,7 @@
 	import { analyticsApi } from '$lib/api/analytics';
 	import { connections, getIsAnalyticsConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
+	import { toastStore } from '$lib/stores/toast.svelte';
 
 	interface Report {
 		id: string;
@@ -113,7 +114,7 @@
 			};
 			loadReports();
 		} catch (e) {
-			alert(e instanceof Error ? e.message : 'Failed to create report');
+			toastStore.error(e instanceof Error ? e.message : 'Failed to create report');
 		}
 	}
 

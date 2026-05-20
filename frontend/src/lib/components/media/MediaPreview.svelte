@@ -7,6 +7,7 @@
 	 */
 	import type { MediaItem, MediaVariant } from '$lib/api/media';
 	import Icon from '$lib/components/Icon.svelte';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	interface Props {
 		item?: MediaItem | null;
@@ -36,6 +37,9 @@
 		caption: ''
 	});
 
+	// Confirmation modal state (replaces native confirm())
+	let showDeleteFileModal = $state(false);
+
 	$effect(() => {
 		if (item) {
 			editData = {
@@ -56,9 +60,17 @@
 	}
 
 	function handleDelete() {
-		if (item && confirm('Are you sure you want to delete this file?')) {
-			ondelete?.(item);
-		}
+		if (!item) return;
+		showDeleteFileModal = true;
+	}
+
+	function confirmDeleteFile() {
+		showDeleteFileModal = false;
+		if (item) ondelete?.(item);
+	}
+
+	function cancelDeleteFile() {
+		showDeleteFileModal = false;
 	}
 
 	function handleSave() {
@@ -143,7 +155,13 @@
 						<!-- Image preview -->
 						<div class="preview-image">
 							{#if item.file_type === 'image'}
-								<img src={selectedVariant?.url || item.url} alt={item.alt_text || item.filename} />
+								<img
+									src={selectedVariant?.url || item.url}
+									alt={item.alt_text || item.filename}
+									width={selectedVariant?.width ?? item.width ?? undefined}
+									height={selectedVariant?.height ?? item.height ?? undefined}
+									loading="lazy"
+								/>
 							{:else if item.file_type === 'video'}
 								<video controls src={item.url}>
 									<track kind="captions" />
@@ -282,7 +300,13 @@
 								onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && (selectedVariant = variant)}
 							>
 								<div class="variant-preview">
-									<img src={variant.url} alt="{variant.type} variant" loading="lazy" />
+									<img
+										src={variant.url}
+										alt="{variant.type} variant"
+										loading="lazy"
+										width={variant.width}
+										height={variant.height}
+									/>
 								</div>
 								<div class="variant-info">
 									<span class="variant-type">
@@ -342,6 +366,16 @@
 		</div>
 	</div>
 {/if}
+
+<ConfirmationModal
+	isOpen={showDeleteFileModal}
+	title="Delete file?"
+	message="Are you sure you want to delete this file? This action cannot be undone."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteFile}
+	onCancel={cancelDeleteFile}
+/>
 
 <style>
 	.preview-overlay {

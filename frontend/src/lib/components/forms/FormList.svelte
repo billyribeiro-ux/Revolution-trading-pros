@@ -9,6 +9,8 @@
 		archiveForm,
 		duplicateForm
 	} from '$lib/api/forms';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { toastStore } from '$lib/stores/toast.svelte';
 
 	interface Props {
 		onEdit?: (form: Form) => void;
@@ -24,6 +26,12 @@
 	let currentPage = $state(1);
 	let totalPages = $state(1);
 	let statusFilter: string = $state('');
+
+	// Confirmation modal state (replaces native confirm())
+	let showDeleteModal = $state(false);
+	let pendingDeleteForm = $state<Form | null>(null);
+	let showArchiveModal = $state(false);
+	let pendingArchiveForm = $state<Form | null>(null);
 
 	onMount(() => {
 		loadForms();
@@ -48,19 +56,28 @@
 		}
 	}
 
-	async function handleDelete(form: Form) {
+	function handleDelete(form: Form) {
 		if (!form.id) return;
+		pendingDeleteForm = form;
+		showDeleteModal = true;
+	}
 
-		if (!confirm(`Are you sure you want to delete "${form.title}"?`)) {
-			return;
-		}
-
+	async function confirmDelete() {
+		const form = pendingDeleteForm;
+		if (!form?.id) return;
+		showDeleteModal = false;
+		pendingDeleteForm = null;
 		try {
 			await deleteForm(form.id);
 			await loadForms();
 		} catch (err) {
-			alert(err instanceof Error ? err.message : 'Failed to delete form');
+			toastStore.error(err instanceof Error ? err.message : 'Failed to delete form');
 		}
+	}
+
+	function cancelDelete() {
+		showDeleteModal = false;
+		pendingDeleteForm = null;
 	}
 
 	async function handlePublish(form: Form) {
@@ -74,23 +91,32 @@
 			}
 			await loadForms();
 		} catch (err) {
-			alert(err instanceof Error ? err.message : 'Failed to update form status');
+			toastStore.error(err instanceof Error ? err.message : 'Failed to update form status');
 		}
 	}
 
-	async function handleArchive(form: Form) {
+	function handleArchive(form: Form) {
 		if (!form.id) return;
+		pendingArchiveForm = form;
+		showArchiveModal = true;
+	}
 
-		if (!confirm(`Archive "${form.title}"?`)) {
-			return;
-		}
-
+	async function confirmArchive() {
+		const form = pendingArchiveForm;
+		if (!form?.id) return;
+		showArchiveModal = false;
+		pendingArchiveForm = null;
 		try {
 			await archiveForm(form.id);
 			await loadForms();
 		} catch (err) {
-			alert(err instanceof Error ? err.message : 'Failed to archive form');
+			toastStore.error(err instanceof Error ? err.message : 'Failed to archive form');
 		}
+	}
+
+	function cancelArchive() {
+		showArchiveModal = false;
+		pendingArchiveForm = null;
 	}
 
 	async function handleDuplicate(form: Form) {
@@ -100,7 +126,7 @@
 			await duplicateForm(form.id);
 			await loadForms();
 		} catch (err) {
-			alert(err instanceof Error ? err.message : 'Failed to duplicate form');
+			toastStore.error(err instanceof Error ? err.message : 'Failed to duplicate form');
 		}
 	}
 
@@ -275,6 +301,26 @@
 		{/if}
 	{/if}
 </div>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete form?"
+	message={`Are you sure you want to delete "${pendingDeleteForm?.title ?? ''}"? This action cannot be undone.`}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDelete}
+	onCancel={cancelDelete}
+/>
+
+<ConfirmationModal
+	isOpen={showArchiveModal}
+	title="Archive form?"
+	message={`Archive "${pendingArchiveForm?.title ?? ''}"?`}
+	confirmText="Archive"
+	variant="warning"
+	onConfirm={confirmArchive}
+	onCancel={cancelArchive}
+/>
 
 <style>
 	.form-list-container {

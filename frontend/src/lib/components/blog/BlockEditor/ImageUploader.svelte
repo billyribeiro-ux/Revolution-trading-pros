@@ -574,7 +574,13 @@
 						onclick={() => handleRecentAssetClick(asset)}
 						title={asset.filename}
 					>
-						<img src={asset.thumbnail_url || asset.cdn_url} alt={asset.filename} loading="lazy" />
+						<img
+							src={asset.thumbnail_url || asset.cdn_url}
+							alt={asset.filename}
+							loading="lazy"
+							width="100"
+							height="100"
+						/>
 					</button>
 				{/each}
 			</div>
@@ -656,12 +662,14 @@
 								src={renderBlurhashToDataUrl(item.blurhash, 64, 64)}
 								alt="Loading placeholder"
 								class="blurhash-preview"
+								width="48"
+								height="48"
 							/>
 							<div class="preview-overlay">
 								<div class="spinner"></div>
 							</div>
 						{:else if item.previewUrl}
-							<img src={item.previewUrl} alt={item.file.name} />
+							<img src={item.previewUrl} alt={item.file.name} width="48" height="48" />
 						{:else}
 							<Icon name="IconPhoto" size={24} />
 						{/if}

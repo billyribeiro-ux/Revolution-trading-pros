@@ -14,6 +14,7 @@
 	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconGripVertical from '@tabler/icons-svelte-runes/icons/grip-vertical';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	interface Props {
 		videoId: number;
@@ -33,6 +34,10 @@
 	let isSaving = $state(false);
 	let error = $state('');
 	let editingId = $state<number | null>(null);
+
+	// Confirmation modal state (replaces native confirm())
+	let showDeleteChapterModal = $state(false);
+	let pendingDeleteChapterId = $state<number | null>(null);
 
 	// New chapter form
 	let newChapter = $state({
@@ -154,8 +159,16 @@
 		isSaving = false;
 	}
 
-	async function deleteChapter(chapterId: number) {
-		if (!confirm('Are you sure you want to delete this chapter?')) return;
+	function deleteChapter(chapterId: number) {
+		pendingDeleteChapterId = chapterId;
+		showDeleteChapterModal = true;
+	}
+
+	async function confirmDeleteChapter() {
+		const chapterId = pendingDeleteChapterId;
+		if (chapterId == null) return;
+		showDeleteChapterModal = false;
+		pendingDeleteChapterId = null;
 
 		const result = await chaptersApi.delete(videoId, chapterId);
 
@@ -164,6 +177,11 @@
 		} else {
 			error = result.error || 'Failed to delete chapter';
 		}
+	}
+
+	function cancelDeleteChapter() {
+		showDeleteChapterModal = false;
+		pendingDeleteChapterId = null;
 	}
 
 	async function parseFromDescription(text: string) {
@@ -361,6 +379,16 @@
 		</div>
 	{/if}
 </div>
+
+<ConfirmationModal
+	isOpen={showDeleteChapterModal}
+	title="Delete chapter?"
+	message="Are you sure you want to delete this chapter? This action cannot be undone."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteChapter}
+	onCancel={cancelDeleteChapter}
+/>
 
 <style>
 	.chapters-editor {

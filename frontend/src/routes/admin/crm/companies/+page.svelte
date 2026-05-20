@@ -313,7 +313,13 @@
 									<div class="company-cell">
 										<div class="company-icon">
 											{#if company.logo_url}
-												<img src={company.logo_url} alt={company.name} />
+												<img
+													src={company.logo_url}
+													alt={company.name}
+													width="40"
+													height="40"
+													loading="lazy"
+												/>
 											{:else}
 												<IconBuilding size={20} />
 											{/if}

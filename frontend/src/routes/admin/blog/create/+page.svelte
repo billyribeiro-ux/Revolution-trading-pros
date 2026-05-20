@@ -538,7 +538,12 @@
 					</div>
 				{:else if post.featured_image}
 					<div class="featured-image-preview">
-						<img src={post.featured_image} alt={post.featured_image_alt || 'Featured'} />
+						<!-- TODO(cls): width/height needed — user-uploaded blog featured image; capture intrinsic dims on upload and store alongside URL -->
+						<img
+							src={post.featured_image}
+							alt={post.featured_image_alt || 'Featured'}
+							loading="lazy"
+						/>
 						<button type="button" class="remove-image" onclick={removeFeaturedImage}>
 							<IconX size={16} />
 						</button>

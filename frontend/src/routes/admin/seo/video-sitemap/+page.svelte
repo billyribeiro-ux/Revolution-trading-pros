@@ -9,6 +9,7 @@
 		IconEdit
 	} from '$lib/icons';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { toastStore } from '$lib/stores/toast.svelte';
 
 	// State using Svelte 5 runes
 	let videos = $state<any[]>([]);
@@ -97,7 +98,7 @@
 		loading = true;
 		try {
 			await new Promise((resolve) => setTimeout(resolve, 1000));
-			alert('Video sitemap regenerated successfully!');
+			toastStore.success('Video sitemap regenerated successfully!');
 		} finally {
 			loading = false;
 		}
@@ -131,7 +132,7 @@
 	async function addVideo() {
 		if (!newVideoUrl) return;
 		// In production, validate URL and add to database
-		alert('Video URL added: ' + newVideoUrl);
+		toastStore.success('Video URL added: ' + newVideoUrl);
 		newVideoUrl = '';
 		showAddModal = false;
 	}
@@ -274,7 +275,13 @@
 				{#each videos as video (video.id)}
 					<div class="video-item">
 						<div class="video-thumbnail">
-							<img src={video.thumbnail} alt={video.title} />
+							<img
+								src={video.thumbnail}
+								alt={video.title}
+								width="160"
+								height="90"
+								loading="lazy"
+							/>
 							<span class="duration-badge" class:live={video.isLive}>
 								{#if video.isLive}
 									<span class="live-dot"></span> LIVE
