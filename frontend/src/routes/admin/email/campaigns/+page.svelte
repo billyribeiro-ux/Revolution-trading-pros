@@ -18,6 +18,7 @@
 	import { goto } from '$app/navigation';
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import { adminFetch } from '$lib/utils/adminFetch';
+	import { logger } from '$lib/utils/logger';
 	import { connections, getIsEmailConnected } from '$lib/stores/connections.svelte';
 	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
 	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
@@ -156,7 +157,7 @@
 			campaigns = response.data;
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load campaigns';
-			console.error('Failed to load campaigns:', err);
+			logger.error('Failed to load campaigns:', err);
 		} finally {
 			loading = false;
 		}
@@ -166,7 +167,7 @@
 		try {
 			stats = await getCampaignStats();
 		} catch (err) {
-			console.error('Failed to load stats:', err);
+			logger.error('Failed to load stats:', err);
 		}
 	}
 
@@ -178,7 +179,7 @@
 				name: t.name
 			}));
 		} catch (err) {
-			console.error('Failed to load templates:', err);
+			logger.error('Failed to load templates:', err);
 		}
 	}
 
@@ -208,7 +209,7 @@
 				];
 			}
 		} catch (err) {
-			console.error('Failed to load segments:', err);
+			logger.error('Failed to load segments:', err);
 			// Use fallback segments on error
 			segments = [
 				{ id: 1, name: 'All Members', count: 12847 },

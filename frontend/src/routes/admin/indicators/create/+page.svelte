@@ -9,6 +9,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { adminFetch } from '$lib/utils/adminFetch';
+	import { logger } from '$lib/utils/logger';
 	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
 	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
 	import IconFileDescription from '@tabler/icons-svelte-runes/icons/file-description';
@@ -285,7 +286,7 @@
 			// current tab — saving the indicator persisted a dead-on-reload URL
 			// to the database. Re-throw instead so the caller surfaces the error
 			// and the admin retries; never silently persist a transient blob URL.
-			console.error('Server upload failed:', error?.message ?? error);
+			logger.error('Server upload failed:', error?.message ?? error);
 			throw new Error(
 				`Upload failed: ${error?.message ?? 'unknown error'}. Please retry — the file was not saved.`,
 				{ cause: error }
@@ -596,7 +597,7 @@
 									installation_notes: pf.installation_notes || undefined,
 									is_latest: true
 								})
-							}).catch((e) => console.warn('Failed to save platform file:', e));
+							}).catch((e) => logger.warn('Failed to save platform file:', e));
 						}
 					}
 
@@ -612,7 +613,7 @@
 									file_name: doc.file.name,
 									is_published: true
 								})
-							}).catch((e) => console.warn('Failed to save documentation:', e));
+							}).catch((e) => logger.warn('Failed to save documentation:', e));
 						}
 					}
 				}
@@ -623,7 +624,7 @@
 				formError = response.error || 'Failed to create indicator';
 			}
 		} catch (error: any) {
-			console.error('Failed to save indicator:', error);
+			logger.error('Failed to save indicator:', error);
 			formError = error.message || 'Failed to save indicator. Please try again.';
 		} finally {
 			saving = false;

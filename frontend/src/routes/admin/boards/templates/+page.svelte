@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { boardsAPI } from '$lib/api/boards';
 	import type { BoardTemplate } from '$lib/boards/types';
+	import { logger } from '$lib/utils/logger';
 	import {
 		IconTemplate,
 		IconArrowLeft,
@@ -185,7 +186,7 @@
 			const res = await boardsAPI.getTemplates();
 			templates = res.length > 0 ? res : defaultTemplates;
 		} catch (error) {
-			console.error('Failed to load templates:', error);
+			logger.error('Failed to load templates:', error);
 			templates = defaultTemplates;
 		} finally {
 			loading = false;
@@ -216,7 +217,7 @@
 			const board = await boardsAPI.createFromTemplate(template.id, template.title);
 			goto(`/admin/boards/${board.id}`);
 		} catch (error) {
-			console.error('Failed to create board from template:', error);
+			logger.error('Failed to create board from template:', error);
 			// FIX-2026-04-26 (P1-3): manual fallback — if any stage/label creation fails
 			// mid-flight, roll back the partially-created board so admins don't end up
 			// with orphaned half-built boards. Best-effort: a delete failure is logged
@@ -242,13 +243,13 @@
 
 				goto(`/admin/boards/${board.id}`);
 			} catch (err) {
-				console.error('Failed to create board:', err);
+				logger.error('Failed to create board:', err);
 				// Compensating delete to keep state consistent.
 				if (createdBoardId) {
 					try {
 						await boardsAPI.deleteBoard(createdBoardId);
 					} catch (rollbackErr) {
-						console.error(
+						logger.error(
 							'Failed to roll back partially-created board ',
 							createdBoardId,
 							rollbackErr
