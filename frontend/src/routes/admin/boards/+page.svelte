@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { boardsAPI } from '$lib/api/boards';
+	import { logger } from '$lib/utils/logger';
 	import type { Board, Folder, Activity, Task } from '$lib/boards/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import {
@@ -136,7 +137,7 @@
 			overdueTasks = overdueRes;
 			tasksDueToday = todayRes;
 		} catch (error) {
-			console.error('Failed to load boards data:', error);
+			logger.error('[admin/boards] Failed to load boards data', { error });
 		} finally {
 			loading = false;
 		}
@@ -152,7 +153,7 @@
 			newBoard = { title: '', description: '', type: 'kanban', folder_id: undefined };
 			goto(`/admin/boards/${board.id}`);
 		} catch (error) {
-			console.error('Failed to create board:', error);
+			logger.error('[admin/boards] Failed to create board', { error });
 		}
 	}
 
@@ -165,7 +166,7 @@
 			showFolderModal = false;
 			newFolder = { title: '', color: '#3b82f6' };
 		} catch (error) {
-			console.error('Failed to create folder:', error);
+			logger.error('[admin/boards] Failed to create folder', { error });
 		}
 	}
 
@@ -174,7 +175,7 @@
 			const updated = await boardsAPI.toggleFavorite(board.id);
 			boards = boards.map((b) => (b.id === board.id ? updated : b));
 		} catch (error) {
-			console.error('Failed to toggle favorite:', error);
+			logger.error('[admin/boards] Failed to toggle favorite', { error });
 		}
 	}
 
@@ -192,7 +193,7 @@
 			const updated = await boardsAPI.archiveBoard(board.id);
 			boards = boards.map((b) => (b.id === board.id ? updated : b));
 		} catch (error) {
-			console.error('Failed to archive board:', error);
+			logger.error('[admin/boards] Failed to archive board', { error });
 		}
 	}
 
@@ -210,7 +211,7 @@
 			await boardsAPI.deleteBoard(board.id);
 			boards = boards.filter((b) => b.id !== board.id);
 		} catch (error) {
-			console.error('Failed to delete board:', error);
+			logger.error('[admin/boards] Failed to delete board', { error });
 		}
 	}
 
@@ -219,7 +220,7 @@
 			const duplicate = await boardsAPI.duplicateBoard(board.id);
 			boards = [duplicate, ...boards];
 		} catch (error) {
-			console.error('Failed to duplicate board:', error);
+			logger.error('[admin/boards] Failed to duplicate board', { error });
 		}
 	}
 

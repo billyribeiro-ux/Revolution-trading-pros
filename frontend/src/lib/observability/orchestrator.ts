@@ -26,6 +26,7 @@
 
 import { browser } from '$app/environment';
 import { writable, derived } from 'svelte/store';
+import { logger } from '$lib/utils/logger';
 import type {
 	AnalyticsAdapter,
 	AnalyticsConfig,
@@ -241,11 +242,6 @@ class AnalyticsOrchestrator {
 
 		this._initialized = true;
 		this._updateStore();
-
-		if (this._config.debug) {
-			console.debug('[Orchestrator] Initialized with config:', this._config);
-			console.debug('[Orchestrator] Registered adapters:', Array.from(this._adapters.keys()));
-		}
 	}
 
 	/**
@@ -253,19 +249,20 @@ class AnalyticsOrchestrator {
 	 */
 	async registerAdapter(adapter: AnalyticsAdapter): Promise<void> {
 		if (this._adapters.has(adapter.id)) {
-			console.warn(`[Orchestrator] Adapter "${adapter.id}" already registered, replacing...`);
+			logger.warn('[Orchestrator] Adapter already registered, replacing', {
+				adapterId: adapter.id
+			});
 		}
 
 		try {
 			await adapter.initialize(this._config);
 			this._adapters.set(adapter.id, adapter);
 			this._updateStore();
-
-			if (this._config.debug) {
-				console.debug(`[Orchestrator] Registered adapter: ${adapter.id}`);
-			}
 		} catch (error) {
-			console.error(`[Orchestrator] Failed to register adapter "${adapter.id}":`, error);
+			logger.error('[Orchestrator] Failed to register adapter', {
+				adapterId: adapter.id,
+				error
+			});
 		}
 	}
 
@@ -292,10 +289,6 @@ class AnalyticsOrchestrator {
 		}
 
 		this._updateStore();
-
-		if (this._config.debug) {
-			console.debug('[Orchestrator] Consent updated:', consent);
-		}
 	}
 
 	/**
@@ -453,7 +446,10 @@ class AnalyticsOrchestrator {
 				}
 			} catch (error) {
 				this._failedEvents++;
-				console.error(`[Orchestrator] Error in adapter "${adapter.id}":`, error);
+				logger.error('[Orchestrator] Error in adapter', {
+					adapterId: adapter.id,
+					error
+				});
 			}
 		}
 	}

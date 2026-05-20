@@ -52,6 +52,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { usersApi, AdminApiError } from '$lib/api/admin';
+	import { logger } from '$lib/utils/logger';
 	import {
 		IconCheck,
 		IconUser,
@@ -441,7 +442,7 @@
 				onboardingPlans = [{ id: 'standard', name: 'Standard Onboarding', duration: 5 }];
 			}
 		} catch (error) {
-			console.error('Failed to load lookup data:', error);
+			logger.error('[admin/users/create] Failed to load lookup data', { error });
 			// Set minimal defaults on complete failure
 			departments = [{ id: 'general', name: 'General' }];
 			locations = [{ id: 'remote', name: 'Remote', timezone: 'UTC' }];
@@ -538,7 +539,7 @@
 			} else {
 				errors = [{ field: 'general', message: 'Failed to create user', severity: 'error' }];
 			}
-			console.error('Failed to create user:', err);
+			logger.error('[admin/users/create] Failed to create user', { error: err });
 		} finally {
 			saving = false;
 		}
@@ -705,7 +706,7 @@
 				usernameAvailable = null;
 			}
 		} catch (error) {
-			console.error('Failed to check username:', error);
+			logger.error('[admin/users/create] Failed to check username', { error });
 			usernameAvailable = null; // Don't block user, server will validate on submit
 		} finally {
 			checkingUsername = false;
@@ -732,7 +733,7 @@
 				emailAvailable = null;
 			}
 		} catch (error) {
-			console.error('Failed to check email:', error);
+			logger.error('[admin/users/create] Failed to check email', { error });
 			emailAvailable = null; // Don't block user, server will validate on submit
 		} finally {
 			checkingEmail = false;
