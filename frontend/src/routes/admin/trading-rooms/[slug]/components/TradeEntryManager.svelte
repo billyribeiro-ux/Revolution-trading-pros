@@ -106,7 +106,7 @@
 
 		try {
 			if (editingEntry) {
-				await tradePlanApi.update(editingEntry.id, {
+				await tradePlanApi.update(editingEntry.id, roomSlug, {
 					ticker: form.ticker.toUpperCase(),
 					bias: form.bias,
 					entry: form.entry || undefined,

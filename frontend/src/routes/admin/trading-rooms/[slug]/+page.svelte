@@ -491,7 +491,7 @@
 
 		try {
 			if (editingTradePlan) {
-				await tradePlanApi.update(editingTradePlan.id, tradePlanForm);
+				await tradePlanApi.update(editingTradePlan.id, slug, tradePlanForm);
 				successMessage = 'Trade plan entry updated';
 			} else {
 				await tradePlanApi.create({

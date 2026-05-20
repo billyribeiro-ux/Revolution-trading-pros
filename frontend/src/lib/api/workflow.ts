@@ -1,4 +1,5 @@
 import { apiClient } from './client.svelte';
+import type { JsonValue } from './_types';
 import type {
 	Workflow,
 	WorkflowNode,
@@ -90,7 +91,13 @@ export const workflowApi = {
 	},
 
 	// Execution
-	async executeWorkflow(id: number, triggerData?: Record<string, any>): Promise<WorkflowRun> {
+	//
+	// `trigger_data` is JSON-serialised onto the wire and forwarded to the
+	// backend workflow runtime, which treats it as opaque JSONB. Typed as
+	// `JsonValue` (not `Record<string, JsonValue>`) so callers can also
+	// pass primitives / arrays — matches the workflow trigger payload
+	// shape on the backend.
+	async executeWorkflow(id: number, triggerData?: JsonValue): Promise<WorkflowRun> {
 		const response = (await apiClient.post(`/workflows/${id}/execute`, {
 			trigger_data: triggerData
 		})) as { data: WorkflowRun };

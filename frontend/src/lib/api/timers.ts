@@ -1,5 +1,6 @@
 import { apiClient } from './client.svelte';
 import { API_ENDPOINTS } from './config';
+import type { JsonValue } from './_types';
 
 export type TimerEventType =
 	| 'start'
@@ -18,7 +19,13 @@ export interface TimerEventPayload {
 	type: TimerEventType;
 	timestamp: string;
 	remaining_ms: number;
-	payload?: Record<string, any>;
+	/**
+	 * Free-form event-specific payload. JSON-serialised onto the wire and
+	 * stored as JSONB on the backend `timer_events.payload` column —
+	 * `JsonValue` is the strictly-correct shape (no `any` leaking into the
+	 * caller's spread).
+	 */
+	payload?: { [k: string]: JsonValue | undefined };
 }
 
 /**

@@ -327,13 +327,42 @@ export const spxProfitPulseApi = {
 				throw new Error(`HTTP ${response.status}`);
 			}
 
-			const result = await response.json();
-			const rooms = (result.data || result || []).map((room: any) => ({
-				name: room.name,
-				slug: room.slug,
-				href: `/dashboard/${room.slug}`,
-				icon: room.icon || 'chart-line'
-			}));
+			const result: unknown = await response.json();
+
+			// LATENT-BUG (R17-A): pre-edit `(result.data || result || []).map(...)`
+			// blew up if the backend returned `{ data: null }` (or any falsy
+			// `data` field) — `result.data || result` then fell through to the
+			// whole envelope object and `.map` was called on a non-array.
+			// Narrow to "array of records" explicitly; on any other shape, fall
+			// back to defaults.
+			const candidate =
+				result !== null &&
+				typeof result === 'object' &&
+				'data' in result &&
+				Array.isArray((result as { data: unknown }).data)
+					? (result as { data: unknown[] }).data
+					: Array.isArray(result)
+						? result
+						: null;
+
+			if (!candidate) {
+				return { success: true, data: getDefaultTradingRooms() };
+			}
+
+			const rooms = candidate
+				.filter(
+					(room): room is { name: string; slug: string; icon?: string } =>
+						typeof room === 'object' &&
+						room !== null &&
+						typeof (room as { slug?: unknown }).slug === 'string' &&
+						typeof (room as { name?: unknown }).name === 'string'
+				)
+				.map((room) => ({
+					name: room.name,
+					slug: room.slug,
+					href: `/dashboard/${room.slug}`,
+					icon: room.icon || 'chart-line'
+				}));
 
 			return { success: true, data: rooms };
 		} catch (error) {
