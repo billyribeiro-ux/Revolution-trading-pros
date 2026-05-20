@@ -1,5 +1,6 @@
 import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
+import { logger } from '$lib/utils/logger';
 import {
 	isSuperadmin,
 	isAdmin as checkIsAdmin,
@@ -137,9 +138,7 @@ function safeLocalStorage<T>(
 				return null;
 		}
 	} catch (error) {
-		if (import.meta.env.DEV) {
-			console.warn('[Auth] localStorage operation failed:', error);
-		}
+		logger.warn('[Auth] localStorage operation failed:', error);
 		return null;
 	}
 }
@@ -310,9 +309,7 @@ class AuthStoreClass {
 				try {
 					fn(snapshot);
 				} catch (err) {
-					if (import.meta.env.DEV) {
-						console.error('[Auth] subscriber threw during notification:', err);
-					}
+					logger.error('[Auth] subscriber threw during notification:', err);
 				}
 			}
 		});
@@ -597,16 +594,12 @@ class AuthStoreClass {
 						safeLocalStorage('set', TOKEN_EXPIRY_KEY, this._tokenExpiry.toString());
 					}
 
-					if (import.meta.env.DEV) {
-						console.debug('[Auth] Token refreshed successfully');
-					}
+					logger.debug('[Auth] Token refreshed successfully');
 				} else {
 					throw new Error('No access token in refresh response');
 				}
 			} catch (error) {
-				if (import.meta.env.DEV) {
-					console.error('[Auth] Token refresh failed:', error);
-				}
+				logger.error('[Auth] Token refresh failed:', error);
 				throw error;
 			} finally {
 				this.refreshPromise = null;
@@ -667,9 +660,7 @@ class AuthStoreClass {
 
 				clearTimeout(timeoutId);
 			} catch (error) {
-				if (import.meta.env.DEV) {
-					console.error('[Auth] Logout API error:', error);
-				}
+				logger.error('[Auth] Logout API error:', error);
 			}
 		}
 

@@ -17,6 +17,7 @@
  */
 
 import { browser } from '$app/environment';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -171,7 +172,7 @@ export const spxProfitPulseApi = {
 				data: result.data || result
 			};
 		} catch (error) {
-			console.warn('[SPX API] Dashboard fetch failed, using fallback:', error);
+			logger.warn('[SPX API] Dashboard fetch failed, using fallback:', error);
 			return {
 				success: true,
 				data: getDefaultDashboardData()
@@ -223,7 +224,7 @@ export const spxProfitPulseApi = {
 				data: result.data || { items: [], current_page: 1, last_page: 1, per_page: 6, total: 0 }
 			};
 		} catch (error) {
-			console.warn('[SPX API] Alerts fetch failed:', error);
+			logger.warn('[SPX API] Alerts fetch failed:', error);
 			return {
 				success: true,
 				data: {
@@ -267,7 +268,7 @@ export const spxProfitPulseApi = {
 			const result = await response.json();
 			return { success: true, data: result.data || result };
 		} catch (error) {
-			console.warn('[SPX API] Alert fetch failed:', error);
+			logger.warn('[SPX API] Alert fetch failed:', error);
 			return { success: false, data: null, error: 'Failed to fetch alert' };
 		}
 	},
@@ -298,7 +299,7 @@ export const spxProfitPulseApi = {
 			const result = await response.json();
 			return { success: true, data: result.data || result };
 		} catch (error) {
-			console.warn('[SPX API] Performance fetch failed:', error);
+			logger.warn('[SPX API] Performance fetch failed:', error);
 			return { success: true, data: getDefaultPerformance() };
 		}
 	},
@@ -336,7 +337,7 @@ export const spxProfitPulseApi = {
 
 			return { success: true, data: rooms };
 		} catch (error) {
-			console.warn('[SPX API] Trading rooms fetch failed:', error);
+			logger.warn('[SPX API] Trading rooms fetch failed:', error);
 			return { success: true, data: getDefaultTradingRooms() };
 		}
 	}

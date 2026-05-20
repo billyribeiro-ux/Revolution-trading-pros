@@ -51,6 +51,7 @@
 import { browser } from '$app/environment';
 import { writable, derived, get } from 'svelte/store';
 import { getAuthToken } from '$lib/stores/auth.svelte';
+import { logger } from '$lib/utils/logger';
 import type {
 	Subscription,
 	SubscriptionStatus,
@@ -450,8 +451,6 @@ class SubscriptionService {
 
 		// Process retry queue
 		this.processRetryQueue();
-
-		console.debug('[SubscriptionService] Initialized');
 	}
 
 	/**
@@ -601,7 +600,6 @@ class SubscriptionService {
 			this.wsConnection = new WebSocket(`${configuredWsUrl}/subscriptions`);
 
 			this.wsConnection.onopen = () => {
-				console.debug('[SubscriptionService] WebSocket connected');
 				this.authenticate();
 				this.subscribeToUpdates();
 			};
@@ -659,7 +657,7 @@ class SubscriptionService {
 					break;
 			}
 		} catch (error) {
-			console.error('[SubscriptionService] Failed to handle WebSocket message:', error);
+			logger.error('[SubscriptionService] Failed to handle WebSocket message:', error);
 		}
 	}
 
@@ -734,7 +732,7 @@ class SubscriptionService {
 		message: string;
 		severity?: 'info' | 'success' | 'warning' | 'error';
 	}): void {
-		console.warn('[SubscriptionService] Alert:', alert);
+		logger.warn('[SubscriptionService] Alert:', alert);
 		this.showNotification(alert.message, alert.severity);
 	}
 
@@ -764,9 +762,8 @@ class SubscriptionService {
 			if (revenue) this.revenueMetrics.set(revenue);
 			if (churn) this.churnMetrics.set(churn);
 			if (stats) this.stats.set(stats);
-		} catch (_error) {
-			// Gracefully handle missing endpoints
-			console.debug('[SubscriptionService] Metrics not available');
+		} catch {
+			// Gracefully handle missing endpoints — analytics is optional
 		}
 	}
 
@@ -795,12 +792,13 @@ class SubscriptionService {
 					await this.executeRequest(item.url, item.options, false);
 					// Remove from queue on success
 					this.retryQueue = this.retryQueue.filter((i) => i !== item);
-				} catch (_error) {
+				} catch {
 					item.attempts++;
 					if (item.attempts >= RETRY_ATTEMPTS) {
-						// Remove after max attempts
+						// Remove after max attempts. Don't log full `item` — its
+						// `options.body` may contain payment/billing payloads (PCI/PII).
 						this.retryQueue = this.retryQueue.filter((i) => i !== item);
-						console.error('[SubscriptionService] Max retries reached:', item);
+						logger.error('[SubscriptionService] Max retries reached for', item.url);
 					}
 				}
 			}
@@ -874,9 +872,10 @@ class SubscriptionService {
 		message: string,
 		type: 'info' | 'success' | 'warning' | 'error' = 'info'
 	): void {
-		// Implement notification system. Until then, `info` is the correct
-		// level for a user-facing notice and is allowed by lint.
-		console.info(`[${type.toUpperCase()}] ${message}`);
+		// TODO: wire to real toast/notification primitive. Dev-only log keeps
+		// the dev signal but stays silent in prod (subscription IDs in `message`
+		// would otherwise leak via console).
+		logger.info(`[${type.toUpperCase()}] ${message}`);
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
