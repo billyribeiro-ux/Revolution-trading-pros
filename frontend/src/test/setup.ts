@@ -1,8 +1,13 @@
-import { expect, afterEach, vi, beforeAll, afterAll } from 'vitest';
+import { afterEach, vi, beforeAll, afterAll } from 'vitest';
 import { cleanup } from '@testing-library/svelte';
-import * as matchers from '@testing-library/jest-dom/matchers';
-
-expect.extend(matchers);
+// `/vitest` entry registers jest-dom matchers at runtime AND extends
+// Vitest's `Assertion` interface with their TypeScript types, so
+// .test.ts files type-check correctly for `toBeInTheDocument`,
+// `toHaveAttribute`, `toHaveStyle`, etc. The previous `/matchers`
+// import only added runtime matchers — types were missing, surfacing
+// as ~686 svelte-check errors across 18 __tests__/ files.
+// https://github.com/testing-library/jest-dom#with-vitest
+import '@testing-library/jest-dom/vitest';
 
 afterEach(() => {
 	cleanup();
