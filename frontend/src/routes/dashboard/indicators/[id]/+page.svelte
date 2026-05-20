@@ -21,6 +21,7 @@ https://svelte.dev/e/element_unclosed -->
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 	import { sanitizeHtml as sanitizeHtmlSafe } from '$lib/sanitize';
+	import { logger } from '$lib/utils/logger';
 
 	// Platform logo mapping
 	const platformLogos: Record<string, string> = {
@@ -111,7 +112,7 @@ https://svelte.dev/e/element_unclosed -->
 			}
 		} catch (e) {
 			error = 'Failed to load indicator';
-			console.error(e);
+			logger.error('Failed to load indicator', e);
 		} finally {
 			loading = false;
 		}
@@ -132,7 +133,7 @@ https://svelte.dev/e/element_unclosed -->
 			}
 		} catch (e) {
 			error = 'Failed to download file';
-			console.error(e);
+			logger.error('Failed to download file', e);
 		} finally {
 			downloading = null;
 		}
@@ -184,7 +185,7 @@ https://svelte.dev/e/element_unclosed -->
 				licenseKey = data.data.license_key;
 			}
 		} catch (e) {
-			console.error('Failed to fetch license key:', e);
+			logger.error('Failed to fetch license key:', e);
 		} finally {
 			loadingLicense = false;
 		}
@@ -197,7 +198,7 @@ https://svelte.dev/e/element_unclosed -->
 			copiedLicense = true;
 			setTimeout(() => (copiedLicense = false), 2000);
 		} catch (e) {
-			console.error('Failed to copy license key:', e);
+			logger.error('Failed to copy license key:', e);
 		}
 	};
 
@@ -219,7 +220,7 @@ https://svelte.dev/e/element_unclosed -->
 				installGuide = 'Failed to load installation guide.';
 			}
 		} catch (e) {
-			console.error('Failed to fetch installation guide:', e);
+			logger.error('Failed to fetch installation guide:', e);
 			installGuide = 'Failed to load installation guide.';
 		} finally {
 			loadingGuide = false;

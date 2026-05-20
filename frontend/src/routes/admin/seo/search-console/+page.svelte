@@ -8,6 +8,7 @@
 		IconPlugConnectedX
 	} from '$lib/icons';
 	import { toastStore } from '$lib/stores/toast.svelte';
+	import { logger } from '$lib/utils/logger';
 
 	// State using Svelte 5 runes
 	let status = $state<any>(null);
@@ -29,7 +30,7 @@
 				loadSites();
 			}
 		} catch (error) {
-			console.error('Failed to check status:', error);
+			logger.error('Failed to check status:', error);
 		} finally {
 			_loading = false;
 		}
@@ -41,7 +42,7 @@
 			const data = await response.json();
 			sites = data.sites || [];
 		} catch (error) {
-			console.error('Failed to load sites:', error);
+			logger.error('Failed to load sites:', error);
 		}
 	}
 
@@ -54,7 +55,7 @@
 				window.location.href = data.auth_url;
 			}
 		} catch (error) {
-			console.error('Failed to get auth URL:', error);
+			logger.error('Failed to get auth URL:', error);
 			toastStore.error('Failed to initiate connection');
 		}
 	}
@@ -74,7 +75,7 @@
 			const data = await response.json();
 			toastStore.success(`Successfully imported ${data.count} analytics records`);
 		} catch (error) {
-			console.error('Failed to import analytics:', error);
+			logger.error('Failed to import analytics:', error);
 			toastStore.error('Failed to import analytics data');
 		} finally {
 			importing = false;
@@ -87,7 +88,7 @@
 			const data = await response.json();
 			toastStore.success(`Updated ${data.count} keywords`);
 		} catch (error) {
-			console.error('Failed to update keywords:', error);
+			logger.error('Failed to update keywords:', error);
 			toastStore.error('Failed to update keywords');
 		}
 	}
