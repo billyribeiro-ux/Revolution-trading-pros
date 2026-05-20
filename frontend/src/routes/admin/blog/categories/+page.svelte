@@ -1,32 +1,50 @@
 <!--
 /**
- * Blog Categories & Tags Management - Google L4+ Enterprise Implementation
- * Enterprise features: TypeScript types, API integration, bulk operations,
- * search/filter, validation, loading states, error handling
+ * Admin /blog/categories — Categories & Tags management.
+ *
+ * R27-E extraction (2026-05-20): broke the 1515-LOC page into seven
+ * focused components under `_components/`:
+ *   - BlogTaxonomyPageHeader.svelte  — title + Refresh button
+ *   - BlogTaxonomyToolbar.svelte     — search + show-hidden ($bindable)
+ *   - BlogToastNotification.svelte   — success/error toast
+ *   - BlogTaxonomyList.svelte        — GENERIC list panel; renders
+ *                                       categories OR tags, eliminating
+ *                                       the ~95% duplication between
+ *                                       the two original "<!-- ... Section -->"
+ *                                       blocks (~150 LOC saved).
+ *   - BlogCategoryModal.svelte       — create/edit Category (has description)
+ *   - BlogTagModal.svelte            — create/edit Tag (no description)
+ *   - types.ts                       — CategoryFormData / TagFormData /
+ *                                       ToastType + re-export of canonical
+ *                                       Category / Tag entity types.
+ *
+ * The page now owns ONLY: state, load/save/delete API orchestration,
+ * filter $effect (one for both lists), validation, slug-auto-generator
+ * $effects, and the four ConfirmationModal wires for the destructive
+ * actions.
  */
 -->
 
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { fade } from 'svelte/transition';
-	import {
-		IconPlus,
-		IconEdit,
-		IconTrash,
-		IconTag,
-		IconFolder,
-		IconSearch,
-		IconRefresh,
-		IconCheck,
-		IconX,
-		IconAlertCircle,
-		IconChartBar,
-		IconEyeOff,
-		IconCopy
-	} from '$lib/icons';
-	import { categoriesApi, tagsApi, AdminApiError, type Category, type Tag } from '$lib/api/admin';
+	import { categoriesApi, tagsApi, AdminApiError } from '$lib/api/admin';
 	import { logger } from '$lib/utils/logger';
+	import { IconFolder, IconTag } from '$lib/icons';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+
+	import BlogCategoryModal from './_components/BlogCategoryModal.svelte';
+	import BlogTagModal from './_components/BlogTagModal.svelte';
+	import BlogTaxonomyList from './_components/BlogTaxonomyList.svelte';
+	import BlogTaxonomyPageHeader from './_components/BlogTaxonomyPageHeader.svelte';
+	import BlogTaxonomyToolbar from './_components/BlogTaxonomyToolbar.svelte';
+	import BlogToastNotification from './_components/BlogToastNotification.svelte';
+	import type {
+		Category,
+		CategoryFormData,
+		Tag,
+		TagFormData,
+		ToastType
+	} from './_components/types';
 
 	// State
 	let categories = $state<Category[]>([]);
@@ -49,7 +67,7 @@
 	let selectedTags = $state(new Set<number>());
 
 	// Forms
-	let categoryForm = $state({
+	let categoryForm = $state<CategoryFormData>({
 		name: '',
 		slug: '',
 		description: '',
@@ -57,7 +75,7 @@
 		is_visible: true
 	});
 
-	let tagForm = $state({
+	let tagForm = $state<TagFormData>({
 		name: '',
 		slug: '',
 		color: '#10b981',
@@ -70,7 +88,7 @@
 
 	// Toast notifications
 	let toastMessage = $state('');
-	let toastType = $state<'success' | 'error'>('success');
+	let toastType = $state<ToastType>('success');
 	let showToast = $state(false);
 
 	// Delete confirmation modal state
@@ -80,6 +98,11 @@
 	let showBulkDeleteTagsModal = $state(false);
 	let pendingDeleteCategory = $state<Category | null>(null);
 	let pendingDeleteTag = $state<Tag | null>(null);
+
+	// FIX-2026-04-26 (P0-4): once a user manually edits the slug, stop
+	// clobbering it on every name keystroke. Tracked per-form.
+	let categorySlugEdited = $state(false);
+	let tagSlugEdited = $state(false);
 
 	$effect(() => {
 		if (browser) {
@@ -143,7 +166,7 @@
 
 	// Effect to apply filters when search/filter changes
 	$effect(() => {
-		// Track dependencies - accessing these state values triggers re-run on change
+		// Track dependencies — accessing these state values triggers re-run on change
 		categorySearch;
 		showHidden;
 		applyFilters();
@@ -159,13 +182,11 @@
 				color: category.color,
 				is_visible: category.is_visible
 			};
-			// FIX-2026-04-26 (P0-4): editing an existing category — slug is
-			// already user-curated, never auto-overwrite.
+			// FIX-2026-04-26 (P0-4): editing — slug is user-curated already.
 			categorySlugEdited = true;
 		} else {
 			editingCategory = null;
 			categoryForm = { name: '', slug: '', description: '', color: '#3b82f6', is_visible: true };
-			// New category — let auto-slug fire until user types in the slug input.
 			categorySlugEdited = false;
 		}
 		categoryErrors = [];
@@ -181,7 +202,7 @@
 				color: tag.color,
 				is_visible: tag.is_visible
 			};
-			// FIX-2026-04-26 (P0-4): editing — never auto-overwrite slug.
+			// FIX-2026-04-26 (P0-4): editing — slug is user-curated.
 			tagSlugEdited = true;
 		} else {
 			editingTag = null;
@@ -197,8 +218,7 @@
 		if (!categoryForm.name.trim()) categoryErrors.push('Name is required');
 		if (!categoryForm.slug.trim()) categoryErrors.push('Slug is required');
 		else if (!/^[a-z0-9-]+$/.test(categoryForm.slug)) {
-			// FIX-2026-04-26 (P2-3): include the offending characters so legacy
-			// data (uppercase, underscores) can be diagnosed.
+			// FIX-2026-04-26 (P2-3): include the offending characters.
 			const bad = categoryForm.slug.replace(/[a-z0-9-]/g, '');
 			const detail = bad ? ` (invalid: "${[...new Set(bad.split(''))].join('')}")` : '';
 			categoryErrors.push(
@@ -210,7 +230,6 @@
 
 	async function saveCategory() {
 		if (!validateCategory()) return;
-
 		saving = true;
 		try {
 			if (editingCategory) {
@@ -243,7 +262,7 @@
 		if (!tagForm.name.trim()) tagErrors.push('Name is required');
 		if (!tagForm.slug.trim()) tagErrors.push('Slug is required');
 		else if (!/^[a-z0-9-]+$/.test(tagForm.slug)) {
-			// FIX-2026-04-26 (P2-3): include offending characters in the error.
+			// FIX-2026-04-26 (P2-3): include offending characters.
 			const bad = tagForm.slug.replace(/[a-z0-9-]/g, '');
 			const detail = bad ? ` (invalid: "${[...new Set(bad.split(''))].join('')}")` : '';
 			tagErrors.push(`Slug can only contain lowercase letters, numbers, and hyphens${detail}`);
@@ -253,7 +272,6 @@
 
 	async function saveTag() {
 		if (!validateTag()) return;
-
 		saving = true;
 		try {
 			if (editingTag) {
@@ -281,7 +299,7 @@
 		}
 	}
 
-	function deleteCategory(id: number) {
+	function requestDeleteCategory(id: number) {
 		const category = categories.find((c) => c.id === id);
 		if (!category) return;
 		pendingDeleteCategory = category;
@@ -307,7 +325,7 @@
 		}
 	}
 
-	function deleteTag(id: number) {
+	function requestDeleteTag(id: number) {
 		const tag = tags.find((t) => t.id === id);
 		if (!tag) return;
 		pendingDeleteTag = tag;
@@ -333,7 +351,6 @@
 		}
 	}
 
-	// Bulk operations
 	function bulkDeleteCategories() {
 		if (selectedCategories.size === 0) return;
 		showBulkDeleteCategoriesModal = true;
@@ -344,8 +361,7 @@
 		try {
 			await categoriesApi.bulkDelete(Array.from(selectedCategories));
 			showToastMessage('Categories deleted successfully', 'success');
-			// FIX-2026-04-26 (P2-2): Set mutations are reactive in Svelte 5 — drop
-			// the legacy self-assignment hack and reassign with a fresh Set.
+			// FIX-2026-04-26 (P2-2): Set mutations are reactive in Svelte 5.
 			selectedCategories = new Set();
 			await loadCategories();
 		} catch (error) {
@@ -365,7 +381,6 @@
 		try {
 			await tagsApi.bulkDelete(Array.from(selectedTags));
 			showToastMessage('Tags deleted successfully', 'success');
-			// FIX-2026-04-26 (P2-2): drop legacy self-assignment hack.
 			selectedTags = new Set();
 			await loadTags();
 		} catch (error) {
@@ -375,7 +390,6 @@
 		}
 	}
 
-	// Utility functions
 	function generateSlug(name: string): string {
 		return name
 			.toLowerCase()
@@ -385,25 +399,13 @@
 			.replace(/^-+|-+$/g, '');
 	}
 
-	function showToastMessage(message: string, type: 'success' | 'error') {
+	function showToastMessage(message: string, type: ToastType) {
 		toastMessage = message;
 		toastType = type;
 		showToast = true;
 		setTimeout(() => {
 			showToast = false;
 		}, 5000);
-	}
-
-	// FIX-2026-04-26 (P0-4): once a user manually edits the slug, stop
-	// clobbering it on every name keystroke. Tracked per-form.
-	let categorySlugEdited = $state(false);
-	let tagSlugEdited = $state(false);
-
-	function handleCategorySlugInput() {
-		categorySlugEdited = true;
-	}
-	function handleTagSlugInput() {
-		tagSlugEdited = true;
 	}
 
 	// Auto-generate slug when name changes for categories
@@ -426,466 +428,80 @@
 </svelte:head>
 
 <div class="categories-page">
-	<!-- Toast Notification -->
 	{#if showToast}
-		<div class="toast toast-{toastType}" transition:fade>
-			{#if toastType === 'success'}
-				<IconCheck size={20} />
-			{:else}
-				<IconAlertCircle size={20} />
-			{/if}
-			<span>{toastMessage}</span>
-			<button onclick={() => (showToast = false)}>
-				<IconX size={16} />
-			</button>
-		</div>
+		<BlogToastNotification
+			message={toastMessage}
+			type={toastType}
+			onClose={() => (showToast = false)}
+		/>
 	{/if}
 
-	<header class="page-header">
-		<h1>Categories & Tags</h1>
-		<p class="subtitle">Organize your blog posts with categories and tags</p>
-		<div class="header-actions">
-			<button class="btn-secondary" onclick={loadData} disabled={loading}>
-				<IconRefresh size={18} class={loading ? 'spinning' : ''} />
-				Refresh
-			</button>
-		</div>
-	</header>
+	<BlogTaxonomyPageHeader {loading} onRefresh={loadData} />
 
-	<!-- Search & Filter Toolbar -->
-	<div class="toolbar">
-		<div class="search-group">
-			<IconSearch size={18} />
-			<input
-				id="page-categorysearch"
-				name="page-categorysearch"
-				type="text"
-				class="search-input"
-				placeholder="Search categories and tags..."
-				bind:value={categorySearch}
-			/>
-		</div>
-		<label class="checkbox-label">
-			<input
-				id="page-showhidden"
-				name="page-showhidden"
-				type="checkbox"
-				bind:checked={showHidden}
-			/>
-			<span>Show Hidden</span>
-		</label>
-	</div>
+	<BlogTaxonomyToolbar bind:search={categorySearch} bind:showHidden />
 
 	<div class="content-grid">
-		<!-- Categories Section -->
-		<div class="section">
-			<div class="section-header">
-				<div class="section-title">
-					<IconFolder size={24} />
-					<h2>Categories</h2>
-					<span class="count-badge">{filteredCategories.length}</span>
-				</div>
-				<div class="section-actions">
-					{#if selectedCategories.size > 0}
-						<button class="btn-danger-ghost" onclick={bulkDeleteCategories}>
-							<IconTrash size={16} />
-							Delete ({selectedCategories.size})
-						</button>
-					{/if}
-					<button class="btn-primary" onclick={() => openCategoryModal()}>
-						<IconPlus size={18} />
-						Add Category
-					</button>
-				</div>
-			</div>
+		<BlogTaxonomyList
+			kind="category"
+			label="Categories"
+			items={filteredCategories}
+			{loading}
+			bind:selectedIds={selectedCategories}
+			onCreate={() => openCategoryModal()}
+			onEdit={openCategoryModal}
+			onDelete={requestDeleteCategory}
+			onBulkDelete={bulkDeleteCategories}
+		>
+			{#snippet headerIcon()}
+				<IconFolder size={24} />
+			{/snippet}
+			{#snippet emptyIcon()}
+				<IconFolder size={48} />
+			{/snippet}
+		</BlogTaxonomyList>
 
-			<div class="items-list">
-				{#if loading}
-					{#each Array(3) as _, i (i)}
-						<div class="skeleton-card"></div>
-					{/each}
-				{:else if filteredCategories.length === 0}
-					<div class="empty-state">
-						<IconFolder size={48} />
-						<p>No categories found</p>
-						<button class="btn-primary" onclick={() => openCategoryModal()}>
-							Create your first category
-						</button>
-					</div>
-				{:else}
-					{#each filteredCategories as category (category.id)}
-						<div class="item-card" transition:fade>
-							<label class="checkbox-wrapper">
-								<!-- FIX-2026-04-26 (P3-2): unique id per row; previously every row
-								     shared id="page-checkbox" — invalid HTML, breaks <label for=…>. -->
-								<!-- FIX-2026-04-26 (P2-2): drop self-assignment; Set mutations are
-								     reactive in Svelte 5. Reassign with new Set to be explicit. -->
-								<input
-									id="cat-checkbox-{category.id}"
-									name="cat-checkbox-{category.id}"
-									type="checkbox"
-									checked={selectedCategories.has(category.id)}
-									onchange={(e: Event) => {
-										if ((e.currentTarget as HTMLInputElement).checked) {
-											selectedCategories.add(category.id);
-										} else {
-											selectedCategories.delete(category.id);
-										}
-										selectedCategories = new Set(selectedCategories);
-									}}
-								/>
-							</label>
-							<div class="item-color" style="background: {category.color}"></div>
-							<div class="item-info">
-								<div class="item-header">
-									<h3>{category.name}</h3>
-									{#if !category.is_visible}
-										<span class="badge badge-gray">
-											<IconEyeOff size={12} />
-											Hidden
-										</span>
-									{/if}
-								</div>
-								{#if category.description}
-									<p class="item-description">{category.description}</p>
-								{/if}
-								<div class="item-meta">
-									<span class="item-count">
-										<IconChartBar size={14} />
-										{category.post_count} posts
-									</span>
-									<span class="item-slug">/{category.slug}</span>
-								</div>
-							</div>
-							<div class="item-actions">
-								<button class="action-btn" onclick={() => openCategoryModal(category)} title="Edit">
-									<IconEdit size={18} />
-								</button>
-								<button
-									class="action-btn"
-									onclick={() => navigator.clipboard.writeText(category.slug)}
-									title="Copy slug"
-								>
-									<IconCopy size={18} />
-								</button>
-								<button
-									class="action-btn danger"
-									onclick={() => deleteCategory(category.id)}
-									title="Delete"
-								>
-									<IconTrash size={18} />
-								</button>
-							</div>
-						</div>
-					{/each}
-				{/if}
-			</div>
-		</div>
-
-		<!-- Tags Section -->
-		<div class="section">
-			<div class="section-header">
-				<div class="section-title">
-					<IconTag size={24} />
-					<h2>Tags</h2>
-					<span class="count-badge">{filteredTags.length}</span>
-				</div>
-				<div class="section-actions">
-					{#if selectedTags.size > 0}
-						<button class="btn-danger-ghost" onclick={bulkDeleteTags}>
-							<IconTrash size={16} />
-							Delete ({selectedTags.size})
-						</button>
-					{/if}
-					<button class="btn-primary" onclick={() => openTagModal()}>
-						<IconPlus size={18} />
-						Add Tag
-					</button>
-				</div>
-			</div>
-
-			<div class="items-list">
-				{#if loading}
-					{#each Array(3) as _, i (i)}
-						<div class="skeleton-card"></div>
-					{/each}
-				{:else if filteredTags.length === 0}
-					<div class="empty-state">
-						<IconTag size={48} />
-						<p>No tags found</p>
-						<button class="btn-primary" onclick={() => openTagModal()}>
-							Create your first tag
-						</button>
-					</div>
-				{:else}
-					{#each filteredTags as tag (tag.id)}
-						<div class="item-card" transition:fade>
-							<label class="checkbox-wrapper">
-								<!-- FIX-2026-04-26 (P3-2): unique id per row. -->
-								<!-- FIX-2026-04-26 (P2-2): drop self-assignment hack. -->
-								<input
-									id="tag-checkbox-{tag.id}"
-									name="tag-checkbox-{tag.id}"
-									type="checkbox"
-									checked={selectedTags.has(tag.id)}
-									onchange={(e: Event) => {
-										if ((e.currentTarget as HTMLInputElement).checked) {
-											selectedTags.add(tag.id);
-										} else {
-											selectedTags.delete(tag.id);
-										}
-										selectedTags = new Set(selectedTags);
-									}}
-								/>
-							</label>
-							<div class="item-color" style="background: {tag.color}"></div>
-							<div class="item-info">
-								<div class="item-header">
-									<h3>{tag.name}</h3>
-									{#if !tag.is_visible}
-										<span class="badge badge-gray">
-											<IconEyeOff size={12} />
-											Hidden
-										</span>
-									{/if}
-								</div>
-								<div class="item-meta">
-									<span class="item-count">
-										<IconChartBar size={14} />
-										{tag.post_count} posts
-									</span>
-									<span class="item-slug">/{tag.slug}</span>
-								</div>
-							</div>
-							<div class="item-actions">
-								<button class="action-btn" onclick={() => openTagModal(tag)} title="Edit">
-									<IconEdit size={18} />
-								</button>
-								<button
-									class="action-btn"
-									onclick={() => navigator.clipboard.writeText(tag.slug)}
-									title="Copy slug"
-								>
-									<IconCopy size={18} />
-								</button>
-								<button class="action-btn danger" onclick={() => deleteTag(tag.id)} title="Delete">
-									<IconTrash size={18} />
-								</button>
-							</div>
-						</div>
-					{/each}
-				{/if}
-			</div>
-		</div>
+		<BlogTaxonomyList
+			kind="tag"
+			label="Tags"
+			items={filteredTags}
+			{loading}
+			bind:selectedIds={selectedTags}
+			onCreate={() => openTagModal()}
+			onEdit={openTagModal}
+			onDelete={requestDeleteTag}
+			onBulkDelete={bulkDeleteTags}
+		>
+			{#snippet headerIcon()}
+				<IconTag size={24} />
+			{/snippet}
+			{#snippet emptyIcon()}
+				<IconTag size={48} />
+			{/snippet}
+		</BlogTaxonomyList>
 	</div>
 </div>
 
-<!-- Category Modal -->
-{#if showCategoryModal}
-	<div
-		class="modal-overlay"
-		role="button"
-		tabindex="0"
-		onclick={() => (showCategoryModal = false)}
-		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showCategoryModal = false)}
-	>
-		<div
-			class="modal"
-			role="dialog"
-			aria-modal="true"
-			tabindex="-1"
-			onclick={(e: MouseEvent) => e.stopPropagation()}
-			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
-		>
-			<div class="modal-header">
-				<h3>{editingCategory ? 'Edit' : 'Add'} Category</h3>
-				<button class="close-btn" onclick={() => (showCategoryModal = false)}>×</button>
-			</div>
+<BlogCategoryModal
+	isOpen={showCategoryModal}
+	isEditing={editingCategory !== null}
+	bind:formData={categoryForm}
+	errors={categoryErrors}
+	{saving}
+	onClose={() => (showCategoryModal = false)}
+	onSave={saveCategory}
+	onSlugManuallyEdited={() => (categorySlugEdited = true)}
+/>
 
-			<div class="modal-body">
-				{#if categoryErrors.length > 0}
-					<div class="error-banner">
-						<IconAlertCircle size={18} />
-						<div>
-							{#each categoryErrors as error (error)}
-								<p>{error}</p>
-							{/each}
-						</div>
-					</div>
-				{/if}
-
-				<div class="form-group">
-					<label for="cat-name">Name *</label>
-					<input
-						id="cat-name"
-						name="cat-name"
-						type="text"
-						bind:value={categoryForm.name}
-						placeholder="Category name"
-						required
-					/>
-				</div>
-
-				<div class="form-group">
-					<label for="cat-slug">Slug *</label>
-					<!-- FIX-2026-04-26 (P0-4): mark as user-edited on input so the
-					     auto-generator stops clobbering manual slug edits. -->
-					<input
-						id="cat-slug"
-						name="cat-slug"
-						type="text"
-						bind:value={categoryForm.slug}
-						oninput={handleCategorySlugInput}
-						placeholder="category-slug"
-						required
-					/>
-					<p class="help-text">Lowercase letters, numbers, and hyphens only</p>
-				</div>
-
-				<div class="form-group">
-					<label for="cat-desc">Description</label>
-					<textarea
-						id="cat-desc"
-						bind:value={categoryForm.description}
-						placeholder="Brief description"
-						rows="3"
-					></textarea>
-				</div>
-
-				<div class="form-row">
-					<div class="form-group">
-						<label for="cat-color">Color</label>
-						<input id="cat-color" name="cat-color" type="color" bind:value={categoryForm.color} />
-					</div>
-
-					<div class="form-group">
-						<label class="checkbox-label">
-							<input
-								id="page-categoryform-is-visible"
-								name="page-categoryform-is-visible"
-								type="checkbox"
-								bind:checked={categoryForm.is_visible}
-							/>
-							<span>Visible</span>
-						</label>
-						<p class="help-text">Hidden categories won't appear in public listings</p>
-					</div>
-				</div>
-			</div>
-
-			<div class="modal-footer">
-				<button class="btn-secondary" onclick={() => (showCategoryModal = false)} disabled={saving}
-					>Cancel</button
-				>
-				<button class="btn-primary" onclick={saveCategory} disabled={saving}>
-					{#if saving}
-						Saving...
-					{:else}
-						Save
-					{/if}
-				</button>
-			</div>
-		</div>
-	</div>
-{/if}
-
-<!-- Tag Modal -->
-{#if showTagModal}
-	<div
-		class="modal-overlay"
-		role="button"
-		tabindex="0"
-		onclick={() => (showTagModal = false)}
-		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showTagModal = false)}
-	>
-		<div
-			class="modal"
-			role="dialog"
-			aria-modal="true"
-			tabindex="-1"
-			onclick={(e: MouseEvent) => e.stopPropagation()}
-			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
-		>
-			<div class="modal-header">
-				<h3>{editingTag ? 'Edit' : 'Add'} Tag</h3>
-				<button class="close-btn" onclick={() => (showTagModal = false)}>×</button>
-			</div>
-
-			<div class="modal-body">
-				{#if tagErrors.length > 0}
-					<div class="error-banner">
-						<IconAlertCircle size={18} />
-						<div>
-							{#each tagErrors as error (error)}
-								<p>{error}</p>
-							{/each}
-						</div>
-					</div>
-				{/if}
-
-				<div class="form-group">
-					<label for="tag-name">Name *</label>
-					<input
-						id="tag-name"
-						name="tag-name"
-						type="text"
-						bind:value={tagForm.name}
-						placeholder="Tag name"
-						required
-					/>
-				</div>
-
-				<div class="form-group">
-					<label for="tag-slug">Slug *</label>
-					<!-- FIX-2026-04-26 (P0-4): mark as user-edited on input. -->
-					<input
-						id="tag-slug"
-						name="tag-slug"
-						type="text"
-						bind:value={tagForm.slug}
-						oninput={handleTagSlugInput}
-						placeholder="tag-slug"
-						required
-					/>
-					<p class="help-text">Lowercase letters, numbers, and hyphens only</p>
-				</div>
-
-				<div class="form-row">
-					<div class="form-group">
-						<label for="tag-color">Color</label>
-						<input id="tag-color" name="tag-color" type="color" bind:value={tagForm.color} />
-					</div>
-
-					<div class="form-group">
-						<label class="checkbox-label">
-							<input
-								id="page-tagform-is-visible"
-								name="page-tagform-is-visible"
-								type="checkbox"
-								bind:checked={tagForm.is_visible}
-							/>
-							<span>Visible</span>
-						</label>
-						<p class="help-text">Hidden tags won't appear in public listings</p>
-					</div>
-				</div>
-			</div>
-
-			<div class="modal-footer">
-				<button class="btn-secondary" onclick={() => (showTagModal = false)} disabled={saving}
-					>Cancel</button
-				>
-				<button class="btn-primary" onclick={saveTag} disabled={saving}>
-					{#if saving}
-						Saving...
-					{:else}
-						Save
-					{/if}
-				</button>
-			</div>
-		</div>
-	</div>
-{/if}
+<BlogTagModal
+	isOpen={showTagModal}
+	isEditing={editingTag !== null}
+	bind:formData={tagForm}
+	errors={tagErrors}
+	{saving}
+	onClose={() => (showTagModal = false)}
+	onSave={saveTag}
+	onSlugManuallyEdited={() => (tagSlugEdited = true)}
+/>
 
 <ConfirmationModal
 	isOpen={showDeleteCategoryModal}
@@ -938,6 +554,8 @@
 />
 
 <style>
+	/* Page-level chrome only — section/modal/toast styles live in _components/. */
+
 	.categories-page {
 		padding: 2rem;
 		max-width: 1400px;
@@ -946,521 +564,13 @@
 		color: #f1f5f9;
 	}
 
-	.page-header {
-		text-align: center;
-		margin-bottom: 2rem;
-	}
-
-	.page-header h1 {
-		font-size: 1.75rem;
-		font-weight: 700;
-		color: #f1f5f9;
-		margin-bottom: 0.5rem;
-	}
-
-	.subtitle {
-		color: #64748b;
-		font-size: 0.875rem;
-		margin-bottom: 1rem;
-	}
-
-	.header-actions {
-		display: flex;
-		justify-content: center;
-		gap: 0.75rem;
-	}
-
 	.content-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
 		gap: 2rem;
 	}
 
-	.section {
-		background: rgba(30, 41, 59, 0.4);
-		border-radius: 8px;
-		border: 1px solid rgba(148, 163, 184, 0.2);
-		padding: 1.5rem;
-	}
-
-	.section-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 1.5rem;
-		padding-bottom: 1rem;
-		border-bottom: 1px solid rgba(148, 163, 184, 0.2);
-	}
-
-	.section-header h2 {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		font-size: 1.25rem;
-		font-weight: 600;
-		color: #f1f5f9;
-		margin: 0;
-	}
-
-	.btn-primary {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.625rem 1rem;
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
-		color: white;
-		border: none;
-		border-radius: 6px;
-		font-weight: 500;
-		font-size: 0.9rem;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.btn-primary:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
-	}
-
-	.items-list {
-		display: flex;
-		flex-direction: column;
-		gap: 0.75rem;
-	}
-
-	.item-card {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-		padding: 1rem;
-		border: 1px solid rgba(148, 163, 184, 0.2);
-		border-radius: 8px;
-		transition: all 0.2s;
-		background: rgba(15, 23, 42, 0.4);
-	}
-
-	.item-card:hover {
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-		border-color: rgba(148, 163, 184, 0.3);
-	}
-
-	.item-color {
-		width: 40px;
-		height: 40px;
-		border-radius: 8px;
-		flex-shrink: 0;
-	}
-
-	.item-info {
-		flex: 1;
-	}
-
-	.item-info h3 {
-		font-size: 1rem;
-		font-weight: 600;
-		color: #f1f5f9;
-		margin: 0 0 0.25rem;
-	}
-
-	.item-info p {
-		font-size: 0.85rem;
-		color: #94a3b8;
-		margin: 0 0 0.25rem;
-	}
-
-	.item-count {
-		font-size: 0.8rem;
-		color: #64748b;
-		display: flex;
-		align-items: center;
-		gap: 0.25rem;
-	}
-
-	.item-actions {
-		display: flex;
-		gap: 0.5rem;
-	}
-
-	.action-btn {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 36px;
-		height: 36px;
-		background: rgba(100, 116, 139, 0.2);
-		border: 1px solid rgba(148, 163, 184, 0.2);
-		border-radius: 6px;
-		color: #94a3b8;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.action-btn:hover {
-		background: rgba(100, 116, 139, 0.3);
-		color: #f1f5f9;
-	}
-
-	.action-btn.danger {
-		color: #f87171;
-		border-color: rgba(248, 113, 113, 0.3);
-	}
-
-	.action-btn.danger:hover {
-		background: rgba(239, 68, 68, 0.2);
-	}
-
-	.empty-state {
-		text-align: center;
-		padding: 3rem 1rem;
-		color: #64748b;
-	}
-
-	.empty-state p {
-		color: #64748b;
-		margin: 1rem 0;
-	}
-
-	.modal-overlay {
-		position: fixed;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		background: rgba(0, 0, 0, 0.8);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		z-index: 1000;
-	}
-
-	.modal {
-		background: rgba(30, 41, 59, 0.98);
-		border: 1px solid rgba(148, 163, 184, 0.3);
-		border-radius: 8px;
-		width: 100%;
-		max-width: 500px;
-		box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
-	}
-
-	.modal-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 1.5rem;
-		border-bottom: 1px solid rgba(148, 163, 184, 0.2);
-	}
-
-	.modal-header h3 {
-		font-size: 1.25rem;
-		font-weight: 600;
-		margin: 0;
-		color: #f1f5f9;
-	}
-
-	.close-btn {
-		background: none;
-		border: none;
-		font-size: 2rem;
-		color: #94a3b8;
-		cursor: pointer;
-		line-height: 1;
-	}
-
-	.close-btn:hover {
-		color: #f1f5f9;
-	}
-
-	.modal-body {
-		padding: 1.5rem;
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-	}
-
-	.form-group {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-	}
-
-	.form-group label {
-		font-weight: 500;
-		color: #cbd5e1;
-		font-size: 0.95rem;
-	}
-
-	.form-group input,
-	.form-group textarea {
-		width: 100%;
-		padding: 0.75rem;
-		border: 1px solid rgba(148, 163, 184, 0.3);
-		border-radius: 6px;
-		font-size: 0.95rem;
-		font-family: inherit;
-		background: rgba(15, 23, 42, 0.6);
-		color: #f1f5f9;
-	}
-
-	.form-group input:focus,
-	.form-group textarea:focus {
-		outline: none;
-		border-color: var(--primary-500);
-	}
-
-	.form-group input[type='color'] {
-		height: 50px;
-		cursor: pointer;
-	}
-
-	.form-group textarea {
-		resize: vertical;
-	}
-
-	.modal-footer {
-		display: flex;
-		justify-content: flex-end;
-		gap: 0.75rem;
-		padding: 1.5rem;
-		border-top: 1px solid rgba(148, 163, 184, 0.2);
-	}
-
-	.btn-secondary {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.625rem 1.25rem;
-		background: rgba(100, 116, 139, 0.2);
-		color: #cbd5e1;
-		border: 1px solid rgba(100, 116, 139, 0.3);
-		border-radius: 6px;
-		font-weight: 500;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.btn-secondary:hover {
-		background: rgba(100, 116, 139, 0.3);
-		border-color: rgba(100, 116, 139, 0.5);
-	}
-
-	/* Toast Notification */
-	.toast {
-		position: fixed;
-		top: 2rem;
-		right: 2rem;
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-		padding: 1rem 1.5rem;
-		background: rgba(30, 41, 59, 0.98);
-		border: 1px solid rgba(148, 163, 184, 0.3);
-		border-radius: 8px;
-		box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-		z-index: 2000;
-		min-width: 300px;
-	}
-
-	.toast-success {
-		border-left: 4px solid #10b981;
-		color: #10b981;
-	}
-
-	.toast-error {
-		border-left: 4px solid #ef4444;
-		color: #ef4444;
-	}
-
-	.toast span {
-		flex: 1;
-		color: #f1f5f9;
-	}
-
-	.toast button {
-		background: none;
-		border: none;
-		color: #94a3b8;
-		cursor: pointer;
-		padding: 0;
-		display: flex;
-	}
-
-	.toast button:hover {
-		color: #f1f5f9;
-	}
-
-	/* Toolbar */
-	.toolbar {
-		display: flex;
-		gap: 1rem;
-		align-items: center;
-		margin-bottom: 2rem;
-		padding: 1rem;
-		background: rgba(30, 41, 59, 0.4);
-		border-radius: 8px;
-		border: 1px solid rgba(148, 163, 184, 0.2);
-	}
-
-	.search-group {
-		flex: 1;
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.5rem 1rem;
-		background: rgba(15, 23, 42, 0.6);
-		border-radius: 6px;
-		color: #94a3b8;
-	}
-
-	.search-input {
-		flex: 1;
-		border: none;
-		background: none;
-		outline: none;
-		font-size: 0.95rem;
-		color: #f1f5f9;
-	}
-
-	.search-input::placeholder {
-		color: #64748b;
-	}
-
-	.checkbox-label {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		cursor: pointer;
-		user-select: none;
-		color: #cbd5e1;
-	}
-
-	/* Section Title */
-	.section-title {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		color: #94a3b8;
-	}
-
-	.section-actions {
-		display: flex;
-		gap: 0.5rem;
-	}
-
-	.count-badge {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		min-width: 24px;
-		height: 24px;
-		padding: 0 0.5rem;
-		background: rgba(100, 116, 139, 0.3);
-		border-radius: 12px;
-		font-size: 0.75rem;
-		font-weight: 600;
-		color: #94a3b8;
-	}
-
-	.btn-danger-ghost {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.625rem 1rem;
-		background: rgba(239, 68, 68, 0.1);
-		color: #f87171;
-		border: 1px solid rgba(239, 68, 68, 0.3);
-		border-radius: 6px;
-		font-weight: 500;
-		font-size: 0.9rem;
-		cursor: pointer;
-	}
-
-	.btn-danger-ghost:hover {
-		background: rgba(239, 68, 68, 0.2);
-	}
-
-	/* Checkbox Wrapper */
-	.checkbox-wrapper {
-		display: flex;
-		align-items: center;
-		cursor: pointer;
-	}
-
-	.checkbox-wrapper input[type='checkbox'] {
-		width: 18px;
-		height: 18px;
-		cursor: pointer;
-	}
-
-	/* Item Header */
-	.item-header {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		margin-bottom: 0.25rem;
-	}
-
-	.item-description {
-		font-size: 0.85rem;
-		color: #94a3b8;
-		margin: 0.25rem 0;
-	}
-
-	.item-meta {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-		font-size: 0.8rem;
-		color: #64748b;
-	}
-
-	.item-slug {
-		font-family: monospace;
-		background: rgba(100, 116, 139, 0.2);
-		padding: 0.125rem 0.5rem;
-		border-radius: 4px;
-		color: #94a3b8;
-	}
-
-	/* Badge */
-	.badge {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.25rem;
-		padding: 0.25rem 0.5rem;
-		border-radius: 4px;
-		font-size: 0.75rem;
-		font-weight: 500;
-	}
-
-	.badge-gray {
-		background: rgba(100, 116, 139, 0.3);
-		color: #94a3b8;
-	}
-
-	/* Loading States */
-	.skeleton-card {
-		height: 80px;
-		background: linear-gradient(
-			90deg,
-			rgba(148, 163, 184, 0.1) 25%,
-			rgba(148, 163, 184, 0.2) 50%,
-			rgba(148, 163, 184, 0.1) 75%
-		);
-		background-size: 200% 100%;
-		animation: loading 1.5s infinite;
-		border-radius: 8px;
-	}
-
-	@keyframes loading {
-		0% {
-			background-position: 200% 0;
-		}
-		100% {
-			background-position: -200% 0;
-		}
-	}
-
-	.spinning {
+	:global(.spinning) {
 		animation: spin 1s linear infinite;
 	}
 
@@ -1473,42 +583,8 @@
 		}
 	}
 
-	/* Error Banner */
-	.error-banner {
-		display: flex;
-		gap: 0.75rem;
-		padding: 1rem;
-		background: rgba(239, 68, 68, 0.1);
-		border: 1px solid rgba(239, 68, 68, 0.3);
-		border-radius: 6px;
-		color: #f87171;
-		margin-bottom: 1rem;
-	}
-
-	.error-banner p {
-		margin: 0;
-		font-size: 0.9rem;
-	}
-
-	/* Form Row */
-	.form-row {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: 1rem;
-	}
-
-	.help-text {
-		font-size: 0.8rem;
-		color: #64748b;
-		margin-top: 0.25rem;
-	}
-
 	@media (max-width: 1024px) {
 		.content-grid {
-			grid-template-columns: 1fr;
-		}
-
-		.form-row {
 			grid-template-columns: 1fr;
 		}
 	}
