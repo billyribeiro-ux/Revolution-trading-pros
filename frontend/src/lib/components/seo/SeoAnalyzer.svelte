@@ -8,6 +8,46 @@
 		IconTrendingUp
 	} from '$lib/icons';
 
+	// ─────────────────────────────────────────────────────────────────────
+	// Endpoint contract
+	// ─────────────────────────────────────────────────────────────────────
+	// `/api/seo/meta/analyze` returns a shape distinct from the canonical
+	// `SeoAnalysis` / `ReadabilityMetrics` types in `$lib/api/seo.ts` —
+	// those describe the persisted record, this is the live preview form.
+	// We type only the fields this component actually reads in markup; any
+	// extra payload keys flow through untyped (`data` is still narrowed via
+	// the local `MetaAnalyzeResponse` view, no `any` escape hatch).
+	type ResultStatus = 'good' | 'warning' | 'error';
+
+	interface AnalysisResultRow {
+		test: string;
+		status: ResultStatus;
+		message: string;
+	}
+
+	interface SeoAnalysisView {
+		score: number;
+		passed: number;
+		warnings: number;
+		errors: number;
+		results: AnalysisResultRow[];
+	}
+
+	interface ReadabilityView {
+		score: number;
+		level: string;
+		details: {
+			words: number;
+			sentences: number;
+			avg_words_per_sentence: number;
+		};
+	}
+
+	interface MetaAnalyzeResponse {
+		seo_analysis?: SeoAnalysisView;
+		readability?: ReadabilityView;
+	}
+
 	interface Props {
 		content?: string;
 		title?: string;
@@ -24,8 +64,8 @@
 		additionalKeywords = []
 	}: Props = $props();
 
-	let analysis: any = $state(null);
-	let readability: any = $state(null);
+	let analysis: SeoAnalysisView | null = $state(null);
+	let readability: ReadabilityView | null = $state(null);
 	let loading = $state(false);
 
 	$effect(() => {
@@ -34,7 +74,9 @@
 		}
 	});
 
-	let debounceTimer: any;
+	// `setTimeout` in the browser returns `number`; `clearTimeout(undefined)`
+	// is a documented no-op so this is safe before the first scheduled call.
+	let debounceTimer: ReturnType<typeof setTimeout> | undefined;
 	function analyzeDebounced() {
 		clearTimeout(debounceTimer);
 		debounceTimer = setTimeout(() => {
@@ -60,9 +102,9 @@
 			});
 
 			if (response.ok) {
-				const data = await response.json();
-				analysis = data.seo_analysis;
-				readability = data.readability;
+				const data = (await response.json()) as MetaAnalyzeResponse;
+				analysis = data.seo_analysis ?? null;
+				readability = data.readability ?? null;
 			}
 		} catch (error) {
 			console.error('Analysis failed:', error);
@@ -71,7 +113,7 @@
 		}
 	}
 
-	function getStatusIcon(status: string) {
+	function getStatusIcon(status: ResultStatus) {
 		switch (status) {
 			case 'good':
 				return IconCircleCheck;
@@ -79,12 +121,10 @@
 				return IconAlertTriangle;
 			case 'error':
 				return IconCircleX;
-			default:
-				return IconAlertTriangle;
 		}
 	}
 
-	function getStatusColor(status: string) {
+	function getStatusColor(status: ResultStatus): 'green' | 'yellow' | 'red' {
 		switch (status) {
 			case 'good':
 				return 'green';
@@ -92,8 +132,6 @@
 				return 'yellow';
 			case 'error':
 				return 'red';
-			default:
-				return 'gray';
 		}
 	}
 

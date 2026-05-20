@@ -48,6 +48,30 @@ interface PreloadState {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
+// AMBIENT SHIMS — Network Information API
+// ═══════════════════════════════════════════════════════════════════════════
+//
+// `navigator.connection` is non-standard and only typed in `lib.dom` behind
+// a `--lib` flag we don't enable. Mirrors the private shim used in
+// `src/lib/utils/performance.ts:44–55`. Kept local so the export surface of
+// videoPreloader stays unchanged; if a third file needs these we'll hoist
+// to a shared `lib.dom-extensions.d.ts` (tracked as R27-B in R25-A's
+// next-sweep list).
+
+interface NetworkInformation extends EventTarget {
+	readonly effectiveType?: '4g' | '3g' | '2g' | 'slow-2g';
+	readonly downlink?: number;
+	readonly rtt?: number;
+	readonly saveData?: boolean;
+}
+
+interface NavigatorWithConnection extends Navigator {
+	readonly connection?: NetworkInformation;
+	readonly mozConnection?: NetworkInformation;
+	readonly webkitConnection?: NetworkInformation;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
 // BUNNY.NET CONFIGURATION
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -79,18 +103,17 @@ class VideoPreloader {
 	// ═══════════════════════════════════════════════════════════════════════
 
 	private detectConnectionQuality(): void {
-		const connection =
-			(navigator as any).connection ||
-			(navigator as any).mozConnection ||
-			(navigator as any).webkitConnection;
+		const nav = navigator as NavigatorWithConnection;
+		const connection: NetworkInformation | undefined =
+			nav.connection ?? nav.mozConnection ?? nav.webkitConnection;
 
 		if (connection) {
-			this.saveData = connection.saveData || false;
-			this.effectiveType = connection.effectiveType || '4g';
+			this.saveData = connection.saveData ?? false;
+			this.effectiveType = connection.effectiveType ?? '4g';
 
 			connection.addEventListener?.('change', () => {
-				this.saveData = connection.saveData || false;
-				this.effectiveType = connection.effectiveType || '4g';
+				this.saveData = connection.saveData ?? false;
+				this.effectiveType = connection.effectiveType ?? '4g';
 			});
 		}
 	}

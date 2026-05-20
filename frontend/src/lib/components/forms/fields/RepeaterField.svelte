@@ -13,12 +13,20 @@
 	 */
 
 	import type { FormField } from '$lib/api/forms';
+	import type { JsonValue } from '$lib/api/_types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+
+	// Each sub-field's stored value: the same shape as `FormField.default_value`
+	// (a `JsonValue`) — strings for text/email/date/select, booleans for
+	// checkboxes, numbers for number inputs, and `undefined` while the user
+	// hasn't typed yet. The previous `Record<string, any>` widened every
+	// downstream read to `any`, defeating the JSON-column round-trip safety.
+	type RepeaterValue = JsonValue | undefined;
 
 	interface RepeaterRow {
 		id: string;
 		collapsed: boolean;
-		values: Record<string, any>;
+		values: Record<string, RepeaterValue>;
 	}
 
 	interface Props {
@@ -92,9 +100,12 @@
 
 	// Create new row
 	function createNewRow(): RepeaterRow {
-		const initialValues: Record<string, any> = {};
+		const initialValues: Record<string, RepeaterValue> = {};
 		subFields.forEach((sf) => {
 			if (sf.name) {
+				// `default_value` is `JsonValue | undefined`; `?? ''` keeps the
+				// previous behavior of falling back to empty-string when the
+				// sub-field declared no default.
 				initialValues[sf.name] = sf.default_value ?? '';
 			}
 		});
@@ -149,8 +160,11 @@
 		rows = rows.map((row, i) => (i === index ? { ...row, collapsed: !row.collapsed } : row));
 	}
 
-	// Update field value
-	function updateFieldValue(rowIndex: number, fieldName: string, newValue: any) {
+	// Update field value. `newValue` is whatever the per-field input emits —
+	// `string` for text/email/date/select, `boolean` for checkboxes, `number`
+	// for number inputs. All of those are `JsonValue` so the cast at the
+	// call-site stays narrow.
+	function updateFieldValue(rowIndex: number, fieldName: string, newValue: RepeaterValue) {
 		rows = rows.map((row, i) =>
 			i === rowIndex ? { ...row, values: { ...row.values, [fieldName]: newValue } } : row
 		);
@@ -191,6 +205,27 @@
 	function getRowSummary(row: RepeaterRow): string {
 		const firstValue = Object.values(row.values).find((v) => v && typeof v === 'string');
 		return firstValue ? String(firstValue).substring(0, 50) : 'Empty';
+	}
+
+	// Narrow a per-field stored value to the HTML primitive its `<input>`
+	// expects. Stored values are `JsonValue` so the JSON column round-trips
+	// cleanly, but the templates need narrow scalar bindings. Each helper
+	// falls back to the documented zero-value for its input type (empty
+	// string for text/email/date/select, `0` for number, `false` for
+	// checkbox) so a stale JSON payload that doesn't match the sub-field
+	// type degrades gracefully rather than corrupting the input.
+	function asInputString(v: RepeaterValue): string {
+		return typeof v === 'string' ? v : typeof v === 'number' ? String(v) : '';
+	}
+	function asInputNumber(v: RepeaterValue): number | '' {
+		// `<input type="number">` accepts `number` or `''` (empty); a stale
+		// non-numeric stored value renders the field blank instead of NaN.
+		if (typeof v === 'number') return v;
+		if (typeof v === 'string' && v !== '' && !Number.isNaN(Number(v))) return Number(v);
+		return '';
+	}
+	function asInputBoolean(v: RepeaterValue): boolean {
+		return v === true;
 	}
 
 	// Check if can add more
@@ -277,7 +312,7 @@
 										<input
 											type="text"
 											id="{props.field.name}_{row.id}_{subField.name}"
-											value={row.values[subField.name] ?? ''}
+											value={asInputString(row.values[subField.name])}
 											oninput={(e: Event) =>
 												updateFieldValue(
 													index,
@@ -290,7 +325,7 @@
 									{:else if subField.field_type === 'textarea'}
 										<textarea
 											id="{props.field.name}_{row.id}_{subField.name}"
-											value={row.values[subField.name] ?? ''}
+											value={asInputString(row.values[subField.name])}
 											oninput={(e: Event) =>
 												updateFieldValue(
 													index,
@@ -305,7 +340,7 @@
 										<input
 											type="number"
 											id="{props.field.name}_{row.id}_{subField.name}"
-											value={row.values[subField.name] ?? ''}
+											value={asInputNumber(row.values[subField.name])}
 											oninput={(e: Event) =>
 												updateFieldValue(
 													index,
@@ -319,7 +354,7 @@
 										<input
 											type="email"
 											id="{props.field.name}_{row.id}_{subField.name}"
-											value={row.values[subField.name] ?? ''}
+											value={asInputString(row.values[subField.name])}
 											oninput={(e: Event) =>
 												updateFieldValue(
 													index,
@@ -333,7 +368,7 @@
 										<label class="sub-field-checkbox">
 											<input
 												type="checkbox"
-												checked={row.values[subField.name] ?? false}
+												checked={asInputBoolean(row.values[subField.name])}
 												onchange={(e: Event) =>
 													updateFieldValue(
 														index,
@@ -346,7 +381,7 @@
 									{:else if subField.field_type === 'select'}
 										<select
 											id="{props.field.name}_{row.id}_{subField.name}"
-											value={row.values[subField.name] ?? ''}
+											value={asInputString(row.values[subField.name])}
 											onchange={(e: Event) =>
 												updateFieldValue(
 													index,
@@ -372,7 +407,7 @@
 										<input
 											type="date"
 											id="{props.field.name}_{row.id}_{subField.name}"
-											value={row.values[subField.name] ?? ''}
+											value={asInputString(row.values[subField.name])}
 											onchange={(e: Event) =>
 												updateFieldValue(
 													index,
@@ -385,7 +420,7 @@
 										<input
 											type="text"
 											id="{props.field.name}_{row.id}_{subField.name}"
-											value={row.values[subField.name] ?? ''}
+											value={asInputString(row.values[subField.name])}
 											oninput={(e: Event) =>
 												updateFieldValue(
 													index,
