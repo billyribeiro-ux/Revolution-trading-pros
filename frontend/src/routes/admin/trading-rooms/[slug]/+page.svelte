@@ -36,6 +36,7 @@
 		type RoomResource,
 		type ResourceListQuery
 	} from '$lib/api/room-resources';
+	import { logger } from '$lib/utils/logger';
 
 	// Icons
 	import IconTable from '@tabler/icons-svelte-runes/icons/table';
@@ -362,7 +363,7 @@
 			const response = await tradePlanApi.list(slug);
 			tradePlanEntries = response.data || [];
 		} catch (err) {
-			console.error('Failed to load trade plan:', err);
+			logger.error('Failed to load trade plan', { error: err });
 			errorMessage = 'Failed to load trade plan entries';
 		} finally {
 			isLoadingTradePlan = false;
@@ -375,7 +376,7 @@
 			const response = await alertsApi.list(slug, { per_page: 50 });
 			alerts = response.data || [];
 		} catch (err) {
-			console.error('Failed to load alerts:', err);
+			logger.error('Failed to load alerts', { error: err });
 			errorMessage = 'Failed to load alerts';
 		} finally {
 			isLoadingAlerts = false;
@@ -392,7 +393,7 @@
 			currentVideo = currentRes.data;
 			archivedVideos = (archiveRes.data || []).filter((v) => !v.is_current);
 		} catch (err) {
-			console.error('Failed to load weekly video:', err);
+			logger.error('Failed to load weekly video', { error: err });
 		} finally {
 			isLoadingVideo = false;
 		}
@@ -404,7 +405,7 @@
 			const response = await roomStatsApi.get(slug);
 			roomStats = response.data;
 		} catch (err) {
-			console.error('Failed to load room stats:', err);
+			logger.error('Failed to load room stats', { error: err });
 		} finally {
 			isLoadingStats = false;
 		}
@@ -416,7 +417,7 @@
 			const response = await tradesApi.list(slug, { per_page: 100 });
 			trades = response.data || [];
 		} catch (err) {
-			console.error('Failed to load trades:', err);
+			logger.error('Failed to load trades', { error: err });
 			errorMessage = 'Failed to load trades';
 		} finally {
 			isLoadingTrades = false;
@@ -433,7 +434,7 @@
 			} as ResourceListQuery & { room_slug: string });
 			videoResources = response.data || [];
 		} catch (err) {
-			console.error('Failed to load video resources:', err);
+			logger.error('Failed to load video resources', { error: err });
 		} finally {
 			isLoadingVideos = false;
 		}

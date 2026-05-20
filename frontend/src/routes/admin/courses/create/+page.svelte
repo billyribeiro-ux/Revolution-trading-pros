@@ -38,6 +38,7 @@
 	} from '$lib/icons';
 	import { productsApi, AdminApiError } from '$lib/api/admin';
 	import { adminFetch } from '$lib/utils/adminFetch';
+	import { logger } from '$lib/utils/logger';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import PublishWarningModal from './_components/PublishWarningModal.svelte';
 	import PricingAnalysisModal from './_components/PricingAnalysisModal.svelte';
@@ -981,7 +982,7 @@
 				throw new Error(response.message || 'Upload failed - no URL returned');
 			}
 		} catch (error: any) {
-			console.error('Failed to upload image:', error);
+			logger.error('Failed to upload image', { error });
 			formError = error.message || 'Failed to upload image. Please try again.';
 
 			// Fallback: Use local preview if server upload fails
@@ -1038,7 +1039,7 @@
 				throw new Error(response.message || 'Upload failed - no URL returned');
 			}
 		} catch (error: any) {
-			console.error('Failed to upload video:', error);
+			logger.error('Failed to upload video', { error });
 			formError = error.message || 'Failed to upload video. Please try again.';
 
 			// Fallback: Use local preview if server upload fails
@@ -1310,13 +1311,13 @@
 					'name' in candidate &&
 					Array.isArray(candidate.modules);
 				if (!isValidShape) {
-					console.warn('[course-draft] discarding draft with unrecognized shape');
+					logger.warn('[course-draft] discarding draft with unrecognized shape');
 					return;
 				}
 				pendingDraft = { course: candidate, date };
 				showLoadDraftModal = true;
 			} catch (e) {
-				console.error('Failed to load draft:', e);
+				logger.error('Failed to load draft', { error: e });
 			}
 		}
 	}
@@ -1467,7 +1468,7 @@
 			} else {
 				formError = error.message || 'Failed to save course. Please try again.';
 			}
-			console.error('Save error:', error);
+			logger.error('Save error', { error });
 		} finally {
 			saving = false;
 		}

@@ -25,6 +25,7 @@
 		IconCopy
 	} from '$lib/icons';
 	import { categoriesApi, tagsApi, AdminApiError, type Category, type Tag } from '$lib/api/admin';
+	import { logger } from '$lib/utils/logger';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// State
@@ -103,7 +104,7 @@
 			categories = (response.data || []) as Category[];
 			applyFilters();
 		} catch (error) {
-			console.error('Failed to load categories:', error);
+			logger.error('Failed to load categories', { error });
 			if (error instanceof AdminApiError) {
 				showToastMessage(error.message, 'error');
 			}
@@ -116,7 +117,7 @@
 			tags = (response.data || []) as Tag[];
 			applyFilters();
 		} catch (error) {
-			console.error('Failed to load tags:', error);
+			logger.error('Failed to load tags', { error });
 			if (error instanceof AdminApiError) {
 				showToastMessage(error.message, 'error');
 			}
@@ -222,7 +223,7 @@
 			await loadCategories();
 			showCategoryModal = false;
 		} catch (error) {
-			console.error('Failed to save category:', error);
+			logger.error('Failed to save category', { error });
 			if (error instanceof AdminApiError) {
 				if (error.isValidationError && error.response?.errors) {
 					categoryErrors = Object.values(error.response.errors).flat() as string[];
@@ -265,7 +266,7 @@
 			await loadTags();
 			showTagModal = false;
 		} catch (error) {
-			console.error('Failed to save tag:', error);
+			logger.error('Failed to save tag', { error });
 			if (error instanceof AdminApiError) {
 				if (error.isValidationError && error.response?.errors) {
 					tagErrors = Object.values(error.response.errors).flat() as string[];
@@ -297,7 +298,7 @@
 			showToastMessage('Category deleted successfully', 'success');
 			await loadCategories();
 		} catch (error) {
-			console.error('Failed to delete category:', error);
+			logger.error('Failed to delete category', { error });
 			if (error instanceof AdminApiError) {
 				showToastMessage(error.message, 'error');
 			} else {
@@ -323,7 +324,7 @@
 			showToastMessage('Tag deleted successfully', 'success');
 			await loadTags();
 		} catch (error) {
-			console.error('Failed to delete tag:', error);
+			logger.error('Failed to delete tag', { error });
 			if (error instanceof AdminApiError) {
 				showToastMessage(error.message, 'error');
 			} else {
