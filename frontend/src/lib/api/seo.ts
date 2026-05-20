@@ -52,6 +52,24 @@ import { writable, derived, get } from 'svelte/store';
 import { browser } from '$app/environment';
 import { api, type ApiResponse } from './client.svelte';
 import { logger } from '$lib/utils/logger';
+import type { JsonValue } from './_types';
+
+/**
+ * R9-A typed-envelope sweep: `gtag` is declared globally in
+ * `src/app.d.ts` as `(...args: unknown[]) => void`. We use that directly
+ * rather than `(window as any).gtag(...)`.
+ *
+ * `TrackEventPayload` allows `undefined` per-key because GA tolerates
+ * absent fields and matches the popup-service pattern.
+ */
+type TrackEventPayload = Record<string, JsonValue | undefined>;
+
+/** Local helper: pull a message out of a thrown value without `as any`. */
+function getErrorMessage(err: unknown): string {
+	if (err instanceof Error) return err.message;
+	if (typeof err === 'string') return err;
+	return 'Unknown error';
+}
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -137,7 +155,8 @@ export interface AnalysisResult {
 	status: 'pass' | 'warning' | 'fail';
 	message: string;
 	impact: 'low' | 'medium' | 'high' | 'critical';
-	details?: any;
+	/** Per-rule extra context — shape varies (e.g. failing selectors, byte counts). */
+	details?: JsonValue;
 }
 
 export interface Suggestion {
@@ -231,7 +250,8 @@ export interface LinkOpportunity {
 
 export interface SchemaMarkup {
 	type: string;
-	properties: Record<string, any>;
+	/** Schema.org property bag — values are heterogeneous (strings, nested objects). */
+	properties: Record<string, JsonValue>;
 	required: string[];
 	recommended: string[];
 	implementation: string;
@@ -434,7 +454,8 @@ export interface SitemapConfig {
 export interface SitemapCondition {
 	field: string;
 	operator: 'equals' | 'not_equals' | 'contains' | 'greater_than' | 'less_than';
-	value: any;
+	/** Operand for the condition — JSON primitive matching the field type. */
+	value: JsonValue;
 }
 
 export interface LocalBusiness {
@@ -449,7 +470,8 @@ export interface LocalBusiness {
 	price_range?: string;
 	images: string[];
 	social_profiles: SocialProfile[];
-	attributes: Record<string, any>;
+	/** Schema.org extension attributes — shape depends on `category`. */
+	attributes: Record<string, JsonValue>;
 }
 
 export interface Address {
@@ -540,12 +562,12 @@ export interface Backlink {
 
 class SeoManagementService {
 	private static instance: SeoManagementService;
-	private cache = new Map<string, { data: any; expiry: number }>();
+	private cache = new Map<string, { data: unknown; expiry: number }>();
 	private wsConnection?: WebSocket;
 	private analysisDebounceTimers = new Map<string, number>();
 	private rankCheckInterval?: number;
 	private alertCheckInterval?: number;
-	private pendingAnalyses = new Map<string, Promise<any>>();
+	private pendingAnalyses = new Map<string, Promise<EnhancedSeoAnalysis>>();
 
 	// Stores
 	public analyses = writable<EnhancedSeoAnalysis[]>([]);
@@ -702,8 +724,9 @@ class SeoManagementService {
 		}
 	}
 
-	private handleCrawlComplete(_data: any): void {
-		// Refresh technical issues
+	private handleCrawlComplete(_data: unknown): void {
+		// Payload isn't read — we just refresh local technical issues on
+		// any crawl-complete event.
 		this.loadTechnicalIssues();
 	}
 
@@ -823,9 +846,11 @@ class SeoManagementService {
 			const timer = window.setTimeout(
 				async () => {
 					try {
-						// Check if analysis is already pending
-						if (this.pendingAnalyses.has(analysisKey)) {
-							const result = await this.pendingAnalyses.get(analysisKey);
+						// Check if analysis is already pending — re-use the in-flight
+						// Promise rather than racing two requests for the same key.
+						const inFlight = this.pendingAnalyses.get(analysisKey);
+						if (inFlight) {
+							const result = await inFlight;
 							resolve(result);
 							return;
 						}
@@ -858,9 +883,9 @@ class SeoManagementService {
 						});
 
 						resolve(analysis);
-					} catch (error: any) {
-						this.error.set(error.message);
-						reject(error);
+					} catch (error) {
+						this.error.set(getErrorMessage(error));
+						reject(error instanceof Error ? error : new Error(getErrorMessage(error)));
 					} finally {
 						this.pendingAnalyses.delete(analysisKey);
 						this.isLoading.set(false);
@@ -998,7 +1023,11 @@ class SeoManagementService {
 		return response;
 	}
 
-	private calculateOverallScore(data: any): number {
+	private calculateOverallScore(data: {
+		basicAnalysis: SeoAnalysis;
+		technicalAudit: { issues: TechnicalIssue[] } | null;
+		performanceMetrics: { pageSpeed: PageSpeedMetrics; coreWebVitals: CoreWebVitals } | null;
+	}): number {
 		// Weighted scoring algorithm
 		const weights = {
 			technical: 0.3,
@@ -1025,7 +1054,12 @@ class SeoManagementService {
 		return Math.round(score);
 	}
 
-	private async generateAISuggestions(data: any): Promise<Suggestion[]> {
+	private async generateAISuggestions(data: {
+		basicAnalysis: SeoAnalysis;
+		competitorAnalysis: CompetitorAnalysis | null;
+		keywordOpportunities: KeywordOpportunity[] | null;
+		contentGaps: ContentGap[] | null;
+	}): Promise<Suggestion[]> {
 		try {
 			const response = await api.post<{ suggestions: Suggestion[] }>(
 				`${AI_API}/seo/suggestions`,
@@ -1043,7 +1077,7 @@ class SeoManagementService {
 	 */
 	async getAnalysis(contentType: string, contentId: number): Promise<EnhancedSeoAnalysis> {
 		const cacheKey = `analysis_${contentType}_${contentId}`;
-		const cached = this.getFromCache(cacheKey);
+		const cached = this.getFromCache<EnhancedSeoAnalysis>(cacheKey);
 
 		if (cached) {
 			return cached;
@@ -1091,7 +1125,9 @@ class SeoManagementService {
 	// Public API Methods - Redirects
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	async loadRedirects(params?: any): Promise<Redirect[]> {
+	async loadRedirects(
+		params?: Record<string, string | number | boolean | undefined>
+	): Promise<Redirect[]> {
 		try {
 			const response = await api.get<ApiResponse<Redirect[]>>('/admin/redirects', { params });
 			this.redirects.set(response.data);
@@ -1168,7 +1204,9 @@ class SeoManagementService {
 	// Public API Methods - 404 Errors
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	async load404Errors(params?: any): Promise<Error404[]> {
+	async load404Errors(
+		params?: Record<string, string | number | boolean | undefined>
+	): Promise<Error404[]> {
 		try {
 			const response = await api.get<ApiResponse<Error404[]>>('/admin/404-errors', { params });
 			this.errors404.set(response.data);
@@ -1318,7 +1356,7 @@ class SeoManagementService {
 		return response;
 	}
 
-	async updateSetting(key: string, value: any): Promise<void> {
+	async updateSetting(key: string, value: JsonValue): Promise<void> {
 		await api.put(`/seo-settings/${key}`, { value });
 	}
 
@@ -1345,7 +1383,7 @@ class SeoManagementService {
 		await api.post('/seo-settings/local-business', data);
 	}
 
-	async generateSchema(type: string, data: any): Promise<string> {
+	async generateSchema(type: string, data: Record<string, JsonValue>): Promise<string> {
 		const response = await api.post<{ schema: string }>('/admin/seo/schema/generate', {
 			type,
 			data
@@ -1357,15 +1395,19 @@ class SeoManagementService {
 	// Utilities
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	private getFromCache(key: string): any {
+	/**
+	 * Generic cache getter. Caller declares the expected payload type via
+	 * `<T>` — safe analogue of the previous `any` return.
+	 */
+	private getFromCache<T>(key: string): T | null {
 		const cached = this.cache.get(key);
 		if (cached && Date.now() < cached.expiry) {
-			return cached.data;
+			return cached.data as T;
 		}
 		return null;
 	}
 
-	private setCache(key: string, data: any, ttl: number = CACHE_TTL): void {
+	private setCache<T>(key: string, data: T, ttl: number = CACHE_TTL): void {
 		this.cache.set(key, {
 			data,
 			expiry: Date.now() + ttl
@@ -1397,10 +1439,10 @@ class SeoManagementService {
 		logger.info(`[${type.toUpperCase()}] ${message}`);
 	}
 
-	private trackEvent(event: string, data: any): void {
+	private trackEvent(event: string, data: TrackEventPayload): void {
 		// Analytics tracking
-		if (browser && 'gtag' in window) {
-			(window as any).gtag('event', event, data);
+		if (browser && window.gtag) {
+			window.gtag('event', event, data);
 		}
 	}
 
@@ -1450,7 +1492,8 @@ interface SeoAlert {
 	type: string;
 	severity: 'info' | 'warning' | 'error';
 	message: string;
-	details?: any;
+	/** Alert-specific context (e.g. URL that hit a 5xx, keyword that dropped). */
+	details?: JsonValue;
 	is_new: boolean;
 	created_at: string;
 }
@@ -1505,7 +1548,8 @@ export const seoApi = {
 		seoService.autoFix(contentType, contentId, issues),
 
 	// Redirects
-	listRedirects: (params?: any) => seoService.loadRedirects(params),
+	listRedirects: (params?: Record<string, string | number | boolean | undefined>) =>
+		seoService.loadRedirects(params),
 	createRedirect: (data: Partial<Redirect>) => seoService.createRedirect(data),
 	updateRedirect: (id: number, data: Partial<Redirect>) => seoService.updateRedirect(id, data),
 	deleteRedirect: (id: number) => seoService.deleteRedirect(id),
@@ -1515,7 +1559,8 @@ export const seoApi = {
 	getRedirectStats: () => api.get('/redirects/statistics'),
 
 	// 404 Errors
-	list404s: (params?: any) => seoService.load404Errors(params),
+	list404s: (params?: Record<string, string | number | boolean | undefined>) =>
+		seoService.load404Errors(params),
 	resolve404: (id: number, redirectTo?: string) => seoService.resolve404(id, redirectTo),
 	bulkDelete404s: (resolvedOnly: boolean, olderThanDays?: number) =>
 		seoService.bulkDelete404s(resolvedOnly, olderThanDays),
@@ -1538,13 +1583,14 @@ export const seoApi = {
 
 	// Settings
 	getSettings: () => seoService.getSettings(),
-	updateSetting: (key: string, value: any) => seoService.updateSetting(key, value),
+	updateSetting: (key: string, value: JsonValue) => seoService.updateSetting(key, value),
 	getSitemapConfigs: () => seoService.getSitemapConfigs(),
 	updateSitemapConfig: (config: SitemapConfig) => seoService.updateSitemapConfig(config),
 	generateSitemap: () => seoService.generateSitemap(),
 	getLocalBusiness: () => seoService.getLocalBusiness(),
 	updateLocalBusiness: (data: Partial<LocalBusiness>) => seoService.updateLocalBusiness(data),
-	generateSchema: (type: string, data: any) => seoService.generateSchema(type, data)
+	generateSchema: (type: string, data: Record<string, JsonValue>) =>
+		seoService.generateSchema(type, data)
 };
 
 export default seoService;
