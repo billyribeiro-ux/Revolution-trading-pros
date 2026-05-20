@@ -3,6 +3,9 @@
 	import { browser } from '$app/environment';
 	import Icon from '$lib/components/Icon.svelte';
 
+	// `window.gtag` is declared globally in `src/app.d.ts` as a variadic
+	// function — use that ambient typing rather than redeclaring locally.
+
 	/**
 	 * ConsentBanner - GDPR/CCPA Compliant Cookie Consent
 	 *
@@ -239,8 +242,8 @@
 	function enableAnalytics(): void {
 		// Placeholder for enabling analytics scripts
 		// Example: Initialize Google Analytics
-		if (typeof window !== 'undefined' && (window as any).gtag) {
-			(window as any).gtag('consent', 'update', {
+		if (typeof window !== 'undefined' && window.gtag) {
+			window.gtag('consent', 'update', {
 				analytics_storage: 'granted'
 			});
 		}
@@ -248,8 +251,8 @@
 
 	function disableAnalytics(): void {
 		// Placeholder for disabling analytics scripts
-		if (typeof window !== 'undefined' && (window as any).gtag) {
-			(window as any).gtag('consent', 'update', {
+		if (typeof window !== 'undefined' && window.gtag) {
+			window.gtag('consent', 'update', {
 				analytics_storage: 'denied'
 			});
 		}
@@ -257,8 +260,8 @@
 
 	function enableMarketing(): void {
 		// Placeholder for enabling marketing scripts
-		if (typeof window !== 'undefined' && (window as any).gtag) {
-			(window as any).gtag('consent', 'update', {
+		if (typeof window !== 'undefined' && window.gtag) {
+			window.gtag('consent', 'update', {
 				ad_storage: 'granted',
 				ad_user_data: 'granted',
 				ad_personalization: 'granted'
@@ -268,8 +271,8 @@
 
 	function disableMarketing(): void {
 		// Placeholder for disabling marketing scripts
-		if (typeof window !== 'undefined' && (window as any).gtag) {
-			(window as any).gtag('consent', 'update', {
+		if (typeof window !== 'undefined' && window.gtag) {
+			window.gtag('consent', 'update', {
 				ad_storage: 'denied',
 				ad_user_data: 'denied',
 				ad_personalization: 'denied'

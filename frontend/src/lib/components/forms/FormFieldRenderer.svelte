@@ -1,13 +1,21 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { FormField } from '$lib/api/forms';
+	import type { JsonValue } from '$lib/api/_types';
 	import { sanitizeFormContent } from '$lib/utils/sanitize';
+
+	// `value` round-trips through PostgreSQL JSONB columns and can be any of
+	// the FormField default_value shapes (string for text/textarea, boolean for
+	// checkbox, number for range/slider, string[] for multi-checkbox/categories,
+	// object for address/payment) — plus `File | null` mid-flight for the
+	// file_type === 'file' branch before upload. Type-narrow at use site.
+	type FieldValue = JsonValue | File | undefined;
 
 	interface Props {
 		field: FormField;
-		value?: any;
+		value?: FieldValue;
 		error?: string[];
-		onchange?: (value: any) => void;
+		onchange?: (value: FieldValue) => void;
 	}
 
 	let props: Props = $props();
@@ -190,17 +198,20 @@
 	function handleChange(event: Event) {
 		const target = event.target as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
 
-		let newValue: any;
+		let newValue: FieldValue;
 
 		if (target instanceof HTMLInputElement) {
 			if (target.type === 'checkbox') {
 				if (props.field.field_type === 'checkbox') {
-					// Multiple checkboxes - array
-					const currentValues = Array.isArray(props.value) ? props.value : [];
+					// Multiple checkboxes - array. The persisted value is a string[]
+					// at this branch (validator narrows by field_type === 'checkbox').
+					const currentValues: string[] = Array.isArray(props.value)
+						? (props.value.filter((v): v is string => typeof v === 'string') as string[])
+						: [];
 					if (target.checked) {
 						newValue = [...currentValues, target.value];
 					} else {
-						newValue = currentValues.filter((v: string) => v !== target.value);
+						newValue = currentValues.filter((v) => v !== target.value);
 					}
 				} else {
 					// Single checkbox
@@ -221,16 +232,21 @@
 	}
 
 	function handleCheckboxChange(optionValue: string, checked: boolean) {
-		const currentValues = Array.isArray(props.value) ? props.value : [];
+		const currentValues: string[] = Array.isArray(props.value)
+			? (props.value.filter((v): v is string => typeof v === 'string') as string[])
+			: [];
 		const newValue = checked
 			? [...currentValues, optionValue]
-			: currentValues.filter((v: string) => v !== optionValue);
+			: currentValues.filter((v) => v !== optionValue);
 
 		props.onchange?.(newValue);
 	}
 
 	function isChecked(optionValue: string): boolean {
-		return Array.isArray(props.value) && props.value.includes(optionValue);
+		return (
+			Array.isArray(props.value) &&
+			(props.value as JsonValue[]).includes(optionValue as JsonValue)
+		);
 	}
 
 	function getInputClasses(): string {
@@ -272,7 +288,7 @@
 				required={props.field.required}
 				class={getInputClasses()}
 				oninput={handleChange}
-				{...(props.field.attributes as Record<string, any>) || {}}
+				{...(props.field.attributes as Record<string, unknown>) || {}}
 			/>
 
 			<!-- Email -->
@@ -286,7 +302,7 @@
 				required={props.field.required}
 				class={getInputClasses()}
 				oninput={handleChange}
-				{...(props.field.attributes as Record<string, any>) || {}}
+				{...(props.field.attributes as Record<string, unknown>) || {}}
 			/>
 
 			<!-- Number -->
@@ -306,7 +322,7 @@
 				typeof props.field.validation?.step === 'string'
 					? props.field.validation.step
 					: 'any'}
-				{...(props.field.attributes as Record<string, any>) || {}}
+				{...(props.field.attributes as Record<string, unknown>) || {}}
 			/>
 
 			<!-- Phone -->
@@ -320,7 +336,7 @@
 				required={props.field.required}
 				class={getInputClasses()}
 				oninput={handleChange}
-				{...(props.field.attributes as Record<string, any>) || {}}
+				{...(props.field.attributes as Record<string, unknown>) || {}}
 			/>
 
 			<!-- URL -->
@@ -334,7 +350,7 @@
 				required={props.field.required}
 				class={getInputClasses()}
 				oninput={handleChange}
-				{...(props.field.attributes as Record<string, any>) || {}}
+				{...(props.field.attributes as Record<string, unknown>) || {}}
 			/>
 
 			<!-- Textarea -->
@@ -343,7 +359,7 @@
 				id={`field-${props.field.name}`}
 				name={props.field.name}
 				placeholder={props.field.placeholder || ''}
-				value={props.value ?? ''}
+				value={typeof props.value === 'string' ? props.value : ''}
 				required={props.field.required}
 				class={getInputClasses()}
 				oninput={handleChange}
@@ -354,7 +370,7 @@
 						: 5}
 				minlength={props.field.validation?.min_length}
 				maxlength={props.field.validation?.max_length}
-				{...(props.field.attributes as Record<string, any>) || {}}
+				{...(props.field.attributes as Record<string, unknown>) || {}}
 			></textarea>
 
 			<!-- Select Dropdown -->
@@ -366,7 +382,7 @@
 				required={props.field.required}
 				class={getInputClasses()}
 				onchange={handleChange}
-				{...(props.field.attributes as Record<string, any>) || {}}
+				{...(props.field.attributes as Record<string, unknown>) || {}}
 			>
 				<option value="">-- Select --</option>
 				{#each narrowedOptions as option, i (i)}
@@ -390,7 +406,7 @@
 							checked={props.value === optionValue}
 							required={props.field.required}
 							onchange={handleChange}
-							{...(props.field.attributes as Record<string, any>) || {}}
+							{...(props.field.attributes as Record<string, unknown>) || {}}
 						/>
 						<span>{optionLabel}</span>
 					</label>
@@ -410,7 +426,7 @@
 							checked={isChecked(optionValue)}
 							onchange={(e: Event) =>
 								handleCheckboxChange(optionValue, (e.currentTarget as HTMLInputElement).checked)}
-							{...(props.field.attributes as Record<string, any>) || {}}
+							{...(props.field.attributes as Record<string, unknown>) || {}}
 						/>
 						<span>{optionLabel}</span>
 					</label>
@@ -429,7 +445,7 @@
 				accept={typeof props.field.validation?.accept === 'string'
 					? props.field.validation.accept
 					: undefined}
-				{...(props.field.attributes as Record<string, any>) || {}}
+				{...(props.field.attributes as Record<string, unknown>) || {}}
 			/>
 			{#if props.field.validation?.max_size}
 				<small class="field-help">Maximum file size: {props.field.validation.max_size}</small>
@@ -447,7 +463,7 @@
 				oninput={handleChange}
 				min={props.field.validation?.min}
 				max={props.field.validation?.max}
-				{...(props.field.attributes as Record<string, any>) || {}}
+				{...(props.field.attributes as Record<string, unknown>) || {}}
 			/>
 
 			<!-- Time -->
@@ -460,7 +476,7 @@
 				required={props.field.required}
 				class={getInputClasses()}
 				oninput={handleChange}
-				{...(props.field.attributes as Record<string, any>) || {}}
+				{...(props.field.attributes as Record<string, unknown>) || {}}
 			/>
 
 			<!-- Date & Time -->
@@ -473,17 +489,21 @@
 				required={props.field.required}
 				class={getInputClasses()}
 				oninput={handleChange}
-				{...(props.field.attributes as Record<string, any>) || {}}
+				{...(props.field.attributes as Record<string, unknown>) || {}}
 			/>
 
 			<!-- Range Slider -->
 		{:else if props.field.field_type === 'range'}
+			{@const rangeValue =
+				typeof props.value === 'number' || typeof props.value === 'string'
+					? props.value
+					: (props.field.validation?.min ?? 0)}
 			<div class="range-wrapper">
 				<input
 					type="range"
 					id={`field-${props.field.name}`}
 					name={props.field.name}
-					value={props.value || props.field.validation?.min || 0}
+					value={rangeValue}
 					required={props.field.required}
 					class="form-range"
 					oninput={handleChange}
@@ -493,9 +513,9 @@
 					typeof props.field.validation?.step === 'string'
 						? props.field.validation.step
 						: 1}
-					{...(props.field.attributes as Record<string, any>) || {}}
+					{...(props.field.attributes as Record<string, unknown>) || {}}
 				/>
-				<output class="range-value">{props.value || props.field.validation?.min || 0}</output>
+				<output class="range-value">{rangeValue}</output>
 			</div>
 
 			<!-- Color Picker -->
@@ -508,7 +528,7 @@
 				required={props.field.required}
 				class="form-color"
 				oninput={handleChange}
-				{...(props.field.attributes as Record<string, any>) || {}}
+				{...(props.field.attributes as Record<string, unknown>) || {}}
 			/>
 
 			<!-- Hidden Field -->
@@ -517,17 +537,18 @@
 				type="hidden"
 				name={props.field.name}
 				value={props.value ?? ''}
-				{...(props.field.attributes as Record<string, any>) || {}}
+				{...(props.field.attributes as Record<string, unknown>) || {}}
 			/>
 
 			<!-- Rating (Stars) -->
 		{:else if props.field.field_type === 'rating'}
+			{@const ratingValue = typeof props.value === 'number' ? props.value : 0}
 			<div class="rating-wrapper">
 				{#each Array(props.field.validation?.max || 5) as _, i (i)}
 					<button
 						type="button"
 						class="star-button"
-						class:active={props.value > i}
+						class:active={ratingValue > i}
 						onclick={() => props.onchange?.(i + 1)}
 						aria-label={`Rate ${i + 1} stars`}
 					>
@@ -559,7 +580,26 @@
 			<!-- ICT 7 Fix: Address Field - Complete multi-part address input -->
 		{:else if props.field.field_type === 'address'}
 			{@const addressValue =
-				typeof props.value === 'object' && props.value !== null ? props.value : {}}
+				typeof props.value === 'object' &&
+				props.value !== null &&
+				!Array.isArray(props.value) &&
+				!(props.value instanceof File)
+					? (props.value as {
+							address_line_1?: string;
+							address_line_2?: string;
+							city?: string;
+							state?: string;
+							zip?: string;
+							country?: string;
+						})
+					: ({} as {
+							address_line_1?: string;
+							address_line_2?: string;
+							city?: string;
+							state?: string;
+							zip?: string;
+							country?: string;
+						})}
 			<div class="address-wrapper">
 				<div class="address-fields">
 					<div class="address-row full-width">
@@ -710,7 +750,7 @@
 					class={getInputClasses()}
 					pattern={props.field.validation?.pattern || '[0-9+\\-\\s\\(\\)]+'}
 					oninput={handleChange}
-					{...(props.field.attributes as Record<string, any>) || {}}
+					{...(props.field.attributes as Record<string, unknown>) || {}}
 				/>
 				{#if props.field.help_text}
 					<small class="phone-help">{props.field.help_text}</small>
@@ -730,7 +770,7 @@
 							props.value === 'yes' ||
 							props.value === 'on'}
 						onchange={(e: Event) => props.onchange?.((e.currentTarget as HTMLInputElement).checked)}
-						{...(props.field.attributes as Record<string, any>) || {}}
+						{...(props.field.attributes as Record<string, unknown>) || {}}
 					/>
 					<span class="newsletter-checkbox-text">
 						{newsletterOptions.checkbox_label || 'Yes, I want to receive newsletters'}
@@ -805,7 +845,7 @@
 				required={props.field.required}
 				class={getInputClasses()}
 				onchange={handleChange}
-				{...(props.field.attributes as Record<string, any>) || {}}
+				{...(props.field.attributes as Record<string, unknown>) || {}}
 			>
 				{#if narrowedOptions.length > 0}
 					{#each narrowedOptions as option, i (i)}

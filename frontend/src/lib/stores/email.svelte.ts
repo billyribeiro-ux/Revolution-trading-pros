@@ -70,6 +70,15 @@ const initialState: EmailState = {
 
 let emailState = $state<EmailState>({ ...initialState });
 
+/**
+ * Narrow a caught `unknown` to a user-displayable message. Matches the
+ * `error instanceof Error ? error.message : '<fallback>'` shape used in
+ * `members.svelte.ts` / `media.svelte.ts` / `analytics.svelte.ts`.
+ */
+function toErrorMessage(error: unknown, fallback: string): string {
+	return error instanceof Error ? error.message : fallback;
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // Email Store API
 // ═══════════════════════════════════════════════════════════════════════════
@@ -130,10 +139,10 @@ export const emailStore = {
 				},
 				isLoading: false
 			};
-		} catch (error: any) {
+		} catch (error) {
 			emailState = {
 				...emailState,
-				error: error.message,
+				error: toErrorMessage(error, 'Failed to load campaigns'),
 				isLoading: false
 			};
 		}
@@ -150,10 +159,10 @@ export const emailStore = {
 				currentCampaign: campaign,
 				isLoading: false
 			};
-		} catch (error: any) {
+		} catch (error) {
 			emailState = {
 				...emailState,
-				error: error.message,
+				error: toErrorMessage(error, 'Failed to load campaign'),
 				isLoading: false
 			};
 		}
@@ -173,10 +182,10 @@ export const emailStore = {
 			};
 
 			return campaign;
-		} catch (error: any) {
+		} catch (error) {
 			emailState = {
 				...emailState,
-				error: error.message,
+				error: toErrorMessage(error, 'Failed to create campaign'),
 				isLoading: false
 			};
 			throw error;
@@ -197,10 +206,10 @@ export const emailStore = {
 			};
 
 			return campaign;
-		} catch (error: any) {
+		} catch (error) {
 			emailState = {
 				...emailState,
-				error: error.message,
+				error: toErrorMessage(error, 'Failed to update campaign'),
 				isLoading: false
 			};
 			throw error;
@@ -219,10 +228,10 @@ export const emailStore = {
 				currentCampaign: emailState.currentCampaign?.id === id ? null : emailState.currentCampaign,
 				isLoading: false
 			};
-		} catch (error: any) {
+		} catch (error) {
 			emailState = {
 				...emailState,
-				error: error.message,
+				error: toErrorMessage(error, 'Failed to delete campaign'),
 				isLoading: false
 			};
 			throw error;
@@ -244,10 +253,10 @@ export const emailStore = {
 				currentCampaign: campaign,
 				isLoading: false
 			};
-		} catch (error: any) {
+		} catch (error) {
 			emailState = {
 				...emailState,
-				error: error.message,
+				error: toErrorMessage(error, 'Failed to send campaign'),
 				isLoading: false
 			};
 			throw error;
@@ -260,10 +269,10 @@ export const emailStore = {
 		try {
 			await emailApi.sendTestEmail(id, emails);
 			emailState = { ...emailState, isLoading: false };
-		} catch (error: any) {
+		} catch (error) {
 			emailState = {
 				...emailState,
-				error: error.message,
+				error: toErrorMessage(error, 'Failed to send test email'),
 				isLoading: false
 			};
 			throw error;
@@ -288,10 +297,10 @@ export const emailStore = {
 				templates: response.templates,
 				isLoading: false
 			};
-		} catch (error: any) {
+		} catch (error) {
 			emailState = {
 				...emailState,
-				error: error.message,
+				error: toErrorMessage(error, 'Failed to load templates'),
 				isLoading: false
 			};
 		}
@@ -308,10 +317,10 @@ export const emailStore = {
 				currentTemplate: template,
 				isLoading: false
 			};
-		} catch (error: any) {
+		} catch (error) {
 			emailState = {
 				...emailState,
-				error: error.message,
+				error: toErrorMessage(error, 'Failed to load template'),
 				isLoading: false
 			};
 		}
@@ -331,10 +340,10 @@ export const emailStore = {
 			};
 
 			return template;
-		} catch (error: any) {
+		} catch (error) {
 			emailState = {
 				...emailState,
-				error: error.message,
+				error: toErrorMessage(error, 'Failed to create template'),
 				isLoading: false
 			};
 			throw error;
@@ -355,10 +364,10 @@ export const emailStore = {
 			};
 
 			return template;
-		} catch (error: any) {
+		} catch (error) {
 			emailState = {
 				...emailState,
-				error: error.message,
+				error: toErrorMessage(error, 'Failed to update template'),
 				isLoading: false
 			};
 			throw error;
@@ -377,10 +386,10 @@ export const emailStore = {
 				currentTemplate: emailState.currentTemplate?.id === id ? null : emailState.currentTemplate,
 				isLoading: false
 			};
-		} catch (error: any) {
+		} catch (error) {
 			emailState = {
 				...emailState,
-				error: error.message,
+				error: toErrorMessage(error, 'Failed to delete template'),
 				isLoading: false
 			};
 			throw error;
@@ -405,10 +414,10 @@ export const emailStore = {
 				sequences: response.sequences,
 				isLoading: false
 			};
-		} catch (error: any) {
+		} catch (error) {
 			emailState = {
 				...emailState,
-				error: error.message,
+				error: toErrorMessage(error, 'Failed to load sequences'),
 				isLoading: false
 			};
 		}
@@ -425,10 +434,10 @@ export const emailStore = {
 				currentSequence: sequence,
 				isLoading: false
 			};
-		} catch (error: any) {
+		} catch (error) {
 			emailState = {
 				...emailState,
-				error: error.message,
+				error: toErrorMessage(error, 'Failed to load sequence'),
 				isLoading: false
 			};
 		}
@@ -448,10 +457,10 @@ export const emailStore = {
 			};
 
 			return sequence;
-		} catch (error: any) {
+		} catch (error) {
 			emailState = {
 				...emailState,
-				error: error.message,
+				error: toErrorMessage(error, 'Failed to create sequence'),
 				isLoading: false
 			};
 			throw error;
@@ -472,10 +481,10 @@ export const emailStore = {
 			};
 
 			return sequence;
-		} catch (error: any) {
+		} catch (error) {
 			emailState = {
 				...emailState,
-				error: error.message,
+				error: toErrorMessage(error, 'Failed to update sequence'),
 				isLoading: false
 			};
 			throw error;
@@ -494,10 +503,10 @@ export const emailStore = {
 				currentSequence: emailState.currentSequence?.id === id ? null : emailState.currentSequence,
 				isLoading: false
 			};
-		} catch (error: any) {
+		} catch (error) {
 			emailState = {
 				...emailState,
-				error: error.message,
+				error: toErrorMessage(error, 'Failed to delete sequence'),
 				isLoading: false
 			};
 			throw error;
@@ -522,10 +531,10 @@ export const emailStore = {
 				automations: response.automations,
 				isLoading: false
 			};
-		} catch (error: any) {
+		} catch (error) {
 			emailState = {
 				...emailState,
-				error: error.message,
+				error: toErrorMessage(error, 'Failed to load automations'),
 				isLoading: false
 			};
 		}
@@ -542,10 +551,10 @@ export const emailStore = {
 				currentAutomation: automation,
 				isLoading: false
 			};
-		} catch (error: any) {
+		} catch (error) {
 			emailState = {
 				...emailState,
-				error: error.message,
+				error: toErrorMessage(error, 'Failed to load automation'),
 				isLoading: false
 			};
 		}
@@ -565,10 +574,10 @@ export const emailStore = {
 			};
 
 			return automation;
-		} catch (error: any) {
+		} catch (error) {
 			emailState = {
 				...emailState,
-				error: error.message,
+				error: toErrorMessage(error, 'Failed to create automation'),
 				isLoading: false
 			};
 			throw error;
@@ -589,10 +598,10 @@ export const emailStore = {
 			};
 
 			return automation;
-		} catch (error: any) {
+		} catch (error) {
 			emailState = {
 				...emailState,
-				error: error.message,
+				error: toErrorMessage(error, 'Failed to update automation'),
 				isLoading: false
 			};
 			throw error;
@@ -612,10 +621,10 @@ export const emailStore = {
 					emailState.currentAutomation?.id === id ? null : emailState.currentAutomation,
 				isLoading: false
 			};
-		} catch (error: any) {
+		} catch (error) {
 			emailState = {
 				...emailState,
-				error: error.message,
+				error: toErrorMessage(error, 'Failed to delete automation'),
 				isLoading: false
 			};
 			throw error;
@@ -637,10 +646,10 @@ export const emailStore = {
 				segments: response.segments,
 				isLoading: false
 			};
-		} catch (error: any) {
+		} catch (error) {
 			emailState = {
 				...emailState,
-				error: error.message,
+				error: toErrorMessage(error, 'Failed to load segments'),
 				isLoading: false
 			};
 		}
@@ -659,10 +668,10 @@ export const emailStore = {
 			};
 
 			return segment;
-		} catch (error: any) {
+		} catch (error) {
 			emailState = {
 				...emailState,
-				error: error.message,
+				error: toErrorMessage(error, 'Failed to create segment'),
 				isLoading: false
 			};
 			throw error;
@@ -691,10 +700,10 @@ export const emailStore = {
 				},
 				isLoading: false
 			};
-		} catch (error: any) {
+		} catch (error) {
 			emailState = {
 				...emailState,
-				error: error.message,
+				error: toErrorMessage(error, 'Failed to load subscribers'),
 				isLoading: false
 			};
 		}
@@ -715,10 +724,10 @@ export const emailStore = {
 				analytics,
 				isLoading: false
 			};
-		} catch (error: any) {
+		} catch (error) {
 			emailState = {
 				...emailState,
-				error: error.message,
+				error: toErrorMessage(error, 'Failed to load analytics'),
 				isLoading: false
 			};
 		}
