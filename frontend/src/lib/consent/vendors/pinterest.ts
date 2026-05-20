@@ -9,6 +9,7 @@
  */
 
 import { browser, dev } from '$app/environment';
+import { logger } from '$lib/utils/logger';
 import type { VendorConfig } from '../types';
 
 declare global {
@@ -49,7 +50,6 @@ function initializePinterest(tagId: string): void {
 		window.pintrk?.('page');
 		pinterestReady = true;
 		processEventQueue();
-		console.debug('[Pinterest] Tag initialized:', tagId);
 	};
 
 	document.head.appendChild(script);
@@ -79,7 +79,6 @@ export function trackPinterestEvent(event: string, data?: Record<string, unknown
 	}
 
 	window.pintrk?.('track', event, data);
-	console.debug('[Pinterest] Tracked event:', event, data);
 }
 
 /**
@@ -94,7 +93,6 @@ export function trackPinterestPageView(): void {
 	}
 
 	window.pintrk?.('page');
-	console.debug('[Pinterest] Tracked page view');
 }
 
 /**
@@ -149,7 +147,7 @@ export const pinterestVendor: VendorConfig = {
 	load: () => {
 		const tagId = PUBLIC_PINTEREST_TAG_ID;
 		if (!tagId) {
-			if (!dev) console.warn('[Pinterest] Missing PUBLIC_PINTEREST_TAG_ID environment variable');
+			if (!dev) logger.warn('[Pinterest] Missing PUBLIC_PINTEREST_TAG_ID environment variable');
 			return;
 		}
 		initializePinterest(tagId);
@@ -158,6 +156,5 @@ export const pinterestVendor: VendorConfig = {
 	onConsentRevoked: () => {
 		pinterestReady = false;
 		eventQueue.length = 0;
-		console.debug('[Pinterest] Consent revoked');
 	}
 };

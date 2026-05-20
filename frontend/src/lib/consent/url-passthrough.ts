@@ -87,10 +87,6 @@ export function captureUrlParameters(): Record<string, string> {
 
 	storedParams = { ...storedParams, ...params };
 
-	if (Object.keys(params).length > 0) {
-		console.debug('[UrlPassthrough] Captured parameters:', params);
-	}
-
 	return params;
 }
 
@@ -146,8 +142,6 @@ export function configureGoogleUrlPassthrough(enabled: boolean): void {
 
 	// Set url_passthrough parameter
 	window.gtag('set', 'url_passthrough', enabled);
-
-	console.debug('[UrlPassthrough] Google URL passthrough:', enabled ? 'enabled' : 'disabled');
 }
 
 /**
@@ -159,8 +153,6 @@ export function enableUrlPassthrough(): void {
 	passthroughEnabled = true;
 	captureUrlParameters();
 	configureGoogleUrlPassthrough(true);
-
-	console.debug('[UrlPassthrough] URL passthrough enabled');
 }
 
 /**
@@ -171,8 +163,6 @@ export function disableUrlPassthrough(): void {
 
 	passthroughEnabled = false;
 	configureGoogleUrlPassthrough(false);
-
-	console.debug('[UrlPassthrough] URL passthrough disabled');
 }
 
 /**
@@ -207,7 +197,6 @@ export function decorateLinks(): void {
 	if (!browser || !passthroughEnabled || Object.keys(storedParams).length === 0) return;
 
 	const links = document.querySelectorAll('a[href]');
-	let decoratedCount = 0;
 
 	links.forEach((link) => {
 		const href = link.getAttribute('href');
@@ -225,16 +214,11 @@ export function decorateLinks(): void {
 			const newHref = addPassthroughParams(href);
 			if (newHref !== href) {
 				link.setAttribute('href', newHref);
-				decoratedCount++;
 			}
 		} catch {
 			// Invalid URL, skip
 		}
 	});
-
-	if (decoratedCount > 0) {
-		console.debug(`[UrlPassthrough] Decorated ${decoratedCount} links`);
-	}
 }
 
 /**
