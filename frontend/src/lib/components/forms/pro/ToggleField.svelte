@@ -10,10 +10,20 @@
 
 	let props: Props = $props();
 
-	const onLabel = $derived(props.field.attributes?.on_label || 'Yes');
-	const offLabel = $derived(props.field.attributes?.off_label || 'No');
+	// R8-A: `field.attributes` is now `JsonValue | undefined`. Narrow per-key.
+	function asString(v: unknown, fallback: string): string {
+		return typeof v === 'string' ? v : fallback;
+	}
+	function isSize(v: unknown): v is 'sm' | 'md' | 'lg' {
+		return v === 'sm' || v === 'md' || v === 'lg';
+	}
+
+	const onLabel = $derived(asString(props.field.attributes?.on_label, 'Yes'));
+	const offLabel = $derived(asString(props.field.attributes?.off_label, 'No'));
 	const showLabels = $derived(props.field.attributes?.show_labels !== false);
-	const size = $derived<'sm' | 'md' | 'lg'>(props.field.attributes?.size || 'md');
+	const size = $derived<'sm' | 'md' | 'lg'>(
+		isSize(props.field.attributes?.size) ? props.field.attributes.size : 'md'
+	);
 
 	function handleToggle() {
 		props.onchange?.(!(props.value ?? false));

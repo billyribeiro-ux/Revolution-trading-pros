@@ -100,7 +100,21 @@
 		if (!field?.options) return [];
 
 		if (Array.isArray(field.options)) {
-			return field.options.map((opt) => (typeof opt === 'string' ? opt : opt.value || opt.label));
+			// R8-A: `field.options` is `JsonValue` (was `any`); each entry is
+			// `JsonValue` and may be a plain string OR a `{label,value}` object.
+			// Narrow per-entry; ignore truly opaque entries.
+			return field.options
+				.map((opt) => {
+					if (typeof opt === 'string') return opt;
+					if (opt && typeof opt === 'object' && !Array.isArray(opt)) {
+						const v = opt['value'];
+						if (typeof v === 'string') return v;
+						const l = opt['label'];
+						if (typeof l === 'string') return l;
+					}
+					return '';
+				})
+				.filter((s): s is string => s.length > 0);
 		}
 
 		return [];

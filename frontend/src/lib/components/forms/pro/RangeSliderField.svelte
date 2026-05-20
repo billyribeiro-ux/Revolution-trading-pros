@@ -10,15 +10,25 @@
 
 	let props: Props = $props();
 
+	// R8-A: `field.attributes` is now `JsonValue | undefined` (was `any`).
+	// Narrow per-attribute via local helpers since each one has a known
+	// runtime shape for the range/slider field type but TS can't infer that.
+	function asString(v: unknown, fallback = ''): string {
+		return typeof v === 'string' ? v : fallback;
+	}
+	function asNumber(v: unknown, fallback: number): number {
+		return typeof v === 'number' ? v : fallback;
+	}
+
 	const min = $derived(props.field.validation?.min ?? 0);
 	const max = $derived(props.field.validation?.max ?? 100);
 	const step = $derived(props.field.validation?.step ?? 1);
 	const isRange = $derived(props.field.attributes?.range_type === 'range');
 	const showValue = $derived(props.field.attributes?.show_value !== false);
-	const showTicks = $derived(props.field.attributes?.show_ticks || false);
-	const prefix = $derived(props.field.attributes?.prefix || '');
-	const suffix = $derived(props.field.attributes?.suffix || '');
-	const tickCount = $derived(props.field.attributes?.tick_count || 5);
+	const showTicks = $derived(!!props.field.attributes?.show_ticks);
+	const prefix = $derived(asString(props.field.attributes?.prefix));
+	const suffix = $derived(asString(props.field.attributes?.suffix));
+	const tickCount = $derived(asNumber(props.field.attributes?.tick_count, 5));
 
 	let singleValue = $state<number>(0);
 	let rangeStart = $state<number>(0);

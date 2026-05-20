@@ -59,3 +59,30 @@ export interface PaginatedResponse<T> {
 	data: T[];
 	meta: PaginationMeta;
 }
+
+/**
+ * JSON-compatible value type for genuinely heterogeneous fields (settings,
+ * dynamic form submission data, criteria DSLs, JSON column round-trips).
+ *
+ * Narrower than `any`: callers must narrow before use
+ * (`typeof` / `Array.isArray` / shape checks), but doesn't pretend to know a
+ * shape we don't actually know. Identical to the local copies that
+ * `admin.ts` (line 56) and `frontend/src/lib/types/common.ts` carry today;
+ * consolidated here so `_types.ts` is the single source of truth for the
+ * `api/` module family — `coupons.ts`, `subscriptions.ts`, `forms.ts`, and
+ * the rest can `import type { JsonValue } from './_types'` rather than
+ * each define their own.
+ *
+ * R7-A and earlier reports left this as a local-each-file copy; R8-A
+ * surfaces it because the existing `coupons.ts` and `subscriptions.ts`
+ * already `import type { JsonValue } from './_types'` (the import was
+ * already on disk; the export was not). Adding it here fixes a latent
+ * svelte-check error in the baseline.
+ */
+export type JsonValue =
+	| string
+	| number
+	| boolean
+	| null
+	| { [k: string]: JsonValue | undefined }
+	| JsonValue[];

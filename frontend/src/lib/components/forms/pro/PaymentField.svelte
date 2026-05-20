@@ -19,9 +19,19 @@
 
 	let props: Props = $props();
 
-	const paymentType = $derived(props.field.attributes?.payment_type || 'single');
-	const items = $derived<PaymentItem[]>((props.field.options as PaymentItem[]) || []);
-	const allowQuantity = $derived(props.field.attributes?.allow_quantity || false);
+	// R8-A: `field.attributes` / `field.options` are now `JsonValue | undefined`
+	// (was `any`). Narrow per-key — payment_type/allow_quantity have known
+	// shapes; items is a JSON-column array of {id,label,price,...} the
+	// backend builds at form-design time. Trust the inner shape for backwards
+	// compat — explicit narrowing of every PaymentItem field is out of scope.
+	function asString(v: unknown, fallback: string): string {
+		return typeof v === 'string' ? v : fallback;
+	}
+	const paymentType = $derived(asString(props.field.attributes?.payment_type, 'single'));
+	const items = $derived<PaymentItem[]>(
+		Array.isArray(props.field.options) ? (props.field.options as unknown as PaymentItem[]) : []
+	);
+	const allowQuantity = $derived(!!props.field.attributes?.allow_quantity);
 
 	function formatCurrency(amount: number): string {
 		return new Intl.NumberFormat('en-US', {

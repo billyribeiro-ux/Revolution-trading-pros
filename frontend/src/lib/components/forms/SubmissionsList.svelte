@@ -42,8 +42,11 @@
 		error = '';
 
 		try {
+			// R8-A: `getSubmissions` filters are now `Record<string, string>`
+			// (was `any`). Build the dict explicitly from `statusFilter`.
+			const filters = statusFilter ? { status: statusFilter } : undefined;
 			const [submissionsData, statsData] = await Promise.all([
-				getSubmissions(formId, currentPage, 20, statusFilter || undefined),
+				getSubmissions(formId, currentPage, 20, filters),
 				getSubmissionStats(formId)
 			]);
 
@@ -294,9 +297,15 @@
 								<div class="field-data">
 									{#if submission.data}
 										{#each submission.data.slice(0, 3) as data (data.field_name)}
+											{@const preview =
+												typeof data.value === 'string'
+													? data.value
+													: data.value === null || data.value === undefined
+														? ''
+														: JSON.stringify(data.value)}
 											<div class="field-item">
 												<strong>{data.field?.label || data.field_name}:</strong>
-												{data.value.substring(0, 50)}{data.value.length > 50 ? '...' : ''}
+												{preview.substring(0, 50)}{preview.length > 50 ? '...' : ''}
 											</div>
 										{/each}
 										{#if submission.data.length > 3}

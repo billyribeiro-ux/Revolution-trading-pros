@@ -19,12 +19,26 @@
 
 	let props: Props = $props();
 
-	const formula = $derived(props.field.attributes?.formula || '');
-	const prefix = $derived(props.field.attributes?.prefix || '');
-	const suffix = $derived(props.field.attributes?.suffix || '');
-	const decimals = $derived(props.field.attributes?.decimals ?? 2);
-	const showFormula = $derived(props.field.attributes?.show_formula || false);
-	const variables = $derived<CalculationVariable[]>(props.field.attributes?.variables || []);
+	// R8-A: `field.attributes` is now `JsonValue | undefined`. Narrow per-key.
+	function asString(v: unknown, fallback = ''): string {
+		return typeof v === 'string' ? v : fallback;
+	}
+	function asNumber(v: unknown, fallback: number): number {
+		return typeof v === 'number' ? v : fallback;
+	}
+	function asVariables(v: unknown): CalculationVariable[] {
+		// Backend stores `variables` as a JSON array of {name,label,value}.
+		// Trust the shape at runtime — narrowing the inner objects is
+		// out-of-scope for this typing pass.
+		return Array.isArray(v) ? (v as unknown as CalculationVariable[]) : [];
+	}
+
+	const formula = $derived(asString(props.field.attributes?.formula));
+	const prefix = $derived(asString(props.field.attributes?.prefix));
+	const suffix = $derived(asString(props.field.attributes?.suffix));
+	const decimals = $derived(asNumber(props.field.attributes?.decimals, 2));
+	const showFormula = $derived(!!props.field.attributes?.show_formula);
+	const variables = $derived<CalculationVariable[]>(asVariables(props.field.attributes?.variables));
 
 	const calculatedValue = $derived.by(() => {
 		if (!formula) return 0;

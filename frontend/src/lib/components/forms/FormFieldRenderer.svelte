@@ -12,6 +12,64 @@
 
 	let props: Props = $props();
 
+	// R8-A: `field.options` is now `JsonValue` (was `any`). The renderer
+	// needs an array view that ALSO holds object-shaped entries with
+	// `label`/`value`/etc. Build it once via a $derived so all branches share
+	// the same narrowing — keeps the template terse and TypeScript happy.
+	type OptionShape = {
+		value?: string;
+		label?: string;
+		description?: string;
+		icon?: string;
+		color?: string;
+	};
+	function narrowOption(o: unknown): OptionShape | string | null {
+		if (typeof o === 'string') return o;
+		if (o && typeof o === 'object' && !Array.isArray(o)) {
+			const rec = o as Record<string, unknown>;
+			return {
+				value: typeof rec['value'] === 'string' ? rec['value'] : undefined,
+				label: typeof rec['label'] === 'string' ? rec['label'] : undefined,
+				description: typeof rec['description'] === 'string' ? rec['description'] : undefined,
+				icon: typeof rec['icon'] === 'string' ? rec['icon'] : undefined,
+				color: typeof rec['color'] === 'string' ? rec['color'] : undefined
+			};
+		}
+		return null;
+	}
+	const narrowedOptions = $derived<Array<OptionShape | string>>(
+		Array.isArray(props.field.options)
+			? (props.field.options
+					.map(narrowOption)
+					.filter((x) => x !== null) as Array<OptionShape | string>)
+			: []
+	);
+	// Newsletter-style options ({checkbox_label, show_privacy_link, privacy_url})
+	// is an OBJECT, not an array. Type accordingly.
+	type NewsletterOptions = {
+		checkbox_label?: string;
+		show_privacy_link?: boolean;
+		privacy_url?: string;
+	};
+	const newsletterOptions = $derived<NewsletterOptions>(
+		props.field.options && typeof props.field.options === 'object' && !Array.isArray(props.field.options)
+			? {
+					checkbox_label:
+						typeof (props.field.options as Record<string, unknown>)['checkbox_label'] === 'string'
+							? ((props.field.options as Record<string, unknown>)['checkbox_label'] as string)
+							: undefined,
+					show_privacy_link:
+						typeof (props.field.options as Record<string, unknown>)['show_privacy_link'] === 'boolean'
+							? ((props.field.options as Record<string, unknown>)['show_privacy_link'] as boolean)
+							: undefined,
+					privacy_url:
+						typeof (props.field.options as Record<string, unknown>)['privacy_url'] === 'string'
+							? ((props.field.options as Record<string, unknown>)['privacy_url'] as string)
+							: undefined
+				}
+			: {}
+	);
+
 	// ICT 7 Fix: Signature canvas state
 	let signatureCanvas: HTMLCanvasElement | null = null;
 	let signatureCtx: CanvasRenderingContext2D | null = null;
@@ -311,54 +369,52 @@
 				{...(props.field.attributes as Record<string, any>) || {}}
 			>
 				<option value="">-- Select --</option>
-				{#if props.field.options}
-					{#each props.field.options as option (option)}
-						<option value={option}>{option}</option>
-					{/each}
-				{/if}
+				{#each narrowedOptions as option, i (i)}
+					{@const optionValue = typeof option === 'string' ? option : (option.value ?? '')}
+					{@const optionLabel = typeof option === 'string' ? option : (option.label ?? optionValue)}
+					<option value={optionValue}>{optionLabel}</option>
+				{/each}
 			</select>
 
 			<!-- Radio Buttons -->
 		{:else if props.field.field_type === 'radio'}
 			<div class="radio-group">
-				{#if props.field.options}
-					{#each props.field.options as option (option)}
-						<label class="radio-label">
-							<input
-								type="radio"
-								name={props.field.name}
-								value={option}
-								checked={props.value === option}
-								required={props.field.required}
-								onchange={handleChange}
-								{...(props.field.attributes as Record<string, any>) || {}}
-							/>
-							<span>{option}</span>
-						</label>
-					{/each}
-				{/if}
+				{#each narrowedOptions as option, i (i)}
+					{@const optionValue = typeof option === 'string' ? option : (option.value ?? '')}
+					{@const optionLabel = typeof option === 'string' ? option : (option.label ?? optionValue)}
+					<label class="radio-label">
+						<input
+							type="radio"
+							name={props.field.name}
+							value={optionValue}
+							checked={props.value === optionValue}
+							required={props.field.required}
+							onchange={handleChange}
+							{...(props.field.attributes as Record<string, any>) || {}}
+						/>
+						<span>{optionLabel}</span>
+					</label>
+				{/each}
 			</div>
 
 			<!-- Checkboxes -->
 		{:else if props.field.field_type === 'checkbox'}
 			<div class="checkbox-group">
-				{#if props.field.options}
-					{#each props.field.options as option, i (i)}
-						{@const optionValue = typeof option === 'string' ? option : option.value}
-						{@const optionLabel = typeof option === 'string' ? option : option.label}
-						<label class="checkbox-label">
-							<input
-								type="checkbox"
-								value={optionValue}
-								checked={isChecked(optionValue)}
-								onchange={(e: Event) =>
-									handleCheckboxChange(optionValue, (e.currentTarget as HTMLInputElement).checked)}
-								{...(props.field.attributes as Record<string, any>) || {}}
-							/>
-							<span>{optionLabel}</span>
-						</label>
-					{/each}
-				{/if}
+				{#each narrowedOptions as option, i (i)}
+					{@const optionValue = typeof option === 'string' ? option : (option.value ?? '')}
+					{@const optionLabel = typeof option === 'string' ? option : (option.label ?? optionValue)}
+					<label class="checkbox-label">
+						<input
+							type="checkbox"
+							value={optionValue}
+							checked={isChecked(optionValue)}
+							onchange={(e: Event) =>
+								handleCheckboxChange(optionValue, (e.currentTarget as HTMLInputElement).checked)}
+							{...(props.field.attributes as Record<string, any>) || {}}
+						/>
+						<span>{optionLabel}</span>
+					</label>
+				{/each}
 			</div>
 
 			<!-- File Upload -->
@@ -677,12 +733,12 @@
 						{...(props.field.attributes as Record<string, any>) || {}}
 					/>
 					<span class="newsletter-checkbox-text">
-						{props.field.options?.checkbox_label || 'Yes, I want to receive newsletters'}
+						{newsletterOptions.checkbox_label || 'Yes, I want to receive newsletters'}
 					</span>
 				</label>
-				{#if props.field.options?.show_privacy_link !== false}
+				{#if newsletterOptions.show_privacy_link !== false}
 					<a
-						href={props.field.options?.privacy_url || '/privacy-policy'}
+						href={newsletterOptions.privacy_url || '/privacy-policy'}
 						target="_blank"
 						rel="noopener noreferrer"
 						class="privacy-link"
@@ -695,38 +751,36 @@
 			<!-- Newsletter Categories Multi-Select -->
 		{:else if props.field.field_type === 'newsletter_categories'}
 			<div class="newsletter-categories-wrapper">
-				{#if props.field.options && Array.isArray(props.field.options)}
-					{#each props.field.options as option, i (i)}
-						{@const optionValue = typeof option === 'string' ? option : option.value}
-						{@const optionLabel = typeof option === 'string' ? option : option.label}
-						{@const optionDescription = typeof option === 'object' ? option.description : ''}
-						{@const optionIcon = typeof option === 'object' ? option.icon : null}
-						{@const optionColor = typeof option === 'object' ? option.color : null}
-						<label
-							class="category-card"
-							style={optionColor ? `border-left-color: ${optionColor}` : ''}
-						>
-							<input
-								type="checkbox"
-								value={optionValue}
-								checked={isChecked(optionValue)}
-								onchange={(e: Event) =>
-									handleCheckboxChange(optionValue, (e.currentTarget as HTMLInputElement).checked)}
-							/>
-							<div class="category-content">
-								{#if optionIcon}
-									<span class="category-icon">{optionIcon}</span>
+				{#each narrowedOptions as option, i (i)}
+					{@const optionValue = typeof option === 'string' ? option : (option.value ?? '')}
+					{@const optionLabel = typeof option === 'string' ? option : (option.label ?? optionValue)}
+					{@const optionDescription = typeof option === 'object' ? option.description : undefined}
+					{@const optionIcon = typeof option === 'object' ? option.icon : undefined}
+					{@const optionColor = typeof option === 'object' ? option.color : undefined}
+					<label
+						class="category-card"
+						style={optionColor ? `border-left-color: ${optionColor}` : ''}
+					>
+						<input
+							type="checkbox"
+							value={optionValue}
+							checked={isChecked(optionValue)}
+							onchange={(e: Event) =>
+								handleCheckboxChange(optionValue, (e.currentTarget as HTMLInputElement).checked)}
+						/>
+						<div class="category-content">
+							{#if optionIcon}
+								<span class="category-icon">{optionIcon}</span>
+							{/if}
+							<div class="category-text">
+								<span class="category-label">{optionLabel}</span>
+								{#if optionDescription}
+									<span class="category-description">{optionDescription}</span>
 								{/if}
-								<div class="category-text">
-									<span class="category-label">{optionLabel}</span>
-									{#if optionDescription}
-										<span class="category-description">{optionDescription}</span>
-									{/if}
-								</div>
 							</div>
-						</label>
-					{/each}
-				{/if}
+						</div>
+					</label>
+				{/each}
 				{#if props.field.attributes?.['min_selections'] || props.field.attributes?.['max_selections']}
 					<small class="category-hint">
 						{#if props.field.attributes['min_selections'] && props.field.attributes['max_selections']}
@@ -753,10 +807,10 @@
 				onchange={handleChange}
 				{...(props.field.attributes as Record<string, any>) || {}}
 			>
-				{#if props.field.options && Array.isArray(props.field.options)}
-					{#each props.field.options as option, i (i)}
-						{@const optionValue = typeof option === 'string' ? option : option.value}
-						{@const optionLabel = typeof option === 'string' ? option : option.label}
+				{#if narrowedOptions.length > 0}
+					{#each narrowedOptions as option, i (i)}
+						{@const optionValue = typeof option === 'string' ? option : (option.value ?? '')}
+						{@const optionLabel = typeof option === 'string' ? option : (option.label ?? optionValue)}
 						<option value={optionValue}>{optionLabel}</option>
 					{/each}
 				{:else}
