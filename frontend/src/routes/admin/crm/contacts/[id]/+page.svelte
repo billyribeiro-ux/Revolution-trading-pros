@@ -60,6 +60,7 @@
 	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
 	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
 	import { api } from '$lib/api/config';
+	import { logger } from '$lib/utils/logger';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES
@@ -232,7 +233,7 @@
 				notes = notesRes.value?.data || notesRes.value || [];
 			}
 		} catch (e) {
-			console.error('Failed to load contact', e);
+			logger.error('Failed to load contact', { error: e });
 			error = 'Failed to load contact. Please try again.';
 		} finally {
 			loading = false;
@@ -254,7 +255,7 @@
 				availableLists = listsRes.value?.data || listsRes.value || [];
 			}
 		} catch (e) {
-			console.error('Failed to load tags/lists', e);
+			logger.error('Failed to load tags/lists', { error: e });
 		}
 	}
 
@@ -264,7 +265,7 @@
 			await loadContact();
 			showAddTagModal = false;
 		} catch (e) {
-			console.error('Failed to add tag', e);
+			logger.error('Failed to add tag', { error: e });
 		}
 	}
 
@@ -273,7 +274,7 @@
 			await api.delete(`/api/admin/crm/contacts/${contactId}/tags/${tagId}`);
 			await loadContact();
 		} catch (e) {
-			console.error('Failed to remove tag', e);
+			logger.error('Failed to remove tag', { error: e });
 		}
 	}
 
@@ -283,7 +284,7 @@
 			await loadContact();
 			showAddListModal = false;
 		} catch (e) {
-			console.error('Failed to add to list', e);
+			logger.error('Failed to add to list', { error: e });
 		}
 	}
 
@@ -292,7 +293,7 @@
 			await api.delete(`/api/admin/crm/contacts/${contactId}/lists/${listId}`);
 			await loadContact();
 		} catch (e) {
-			console.error('Failed to remove from list', e);
+			logger.error('Failed to remove from list', { error: e });
 		}
 	}
 
@@ -304,7 +305,7 @@
 			showAddNoteModal = false;
 			await loadContact();
 		} catch (e) {
-			console.error('Failed to add note', e);
+			logger.error('Failed to add note', { error: e });
 		}
 	}
 
@@ -318,7 +319,7 @@
 			await api.delete(`/api/admin/crm/contacts/${contactId}`);
 			goto('/admin/crm');
 		} catch (e) {
-			console.error('Failed to delete contact', e);
+			logger.error('Failed to delete contact', { error: e });
 		}
 	}
 
@@ -346,7 +347,7 @@
 					}))
 				: [];
 		} catch (e) {
-			console.error('Failed to load email templates:', e);
+			logger.error('Failed to load email templates', { error: e });
 			availableEmailTemplates = [];
 		} finally {
 			loadingTemplates = false;
@@ -415,7 +416,7 @@
 		} catch (e: unknown) {
 			const errorMessage =
 				e instanceof Error ? e.message : 'Failed to send email. Please try again.';
-			console.error('Failed to send email:', e);
+			logger.error('Failed to send email', { error: e });
 			showToast('error', errorMessage);
 		} finally {
 			sendingEmail = false;

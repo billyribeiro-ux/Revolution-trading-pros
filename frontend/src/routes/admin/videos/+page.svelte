@@ -57,6 +57,7 @@
 	import IconStar from '@tabler/icons-svelte-runes/icons/star';
 	import IconStarOff from '@tabler/icons-svelte-runes/icons/star-off';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { logger } from '$lib/utils/logger';
 	import FormBanners from './_components/FormBanners.svelte';
 	import EmbedCodeModal from './_components/EmbedCodeModal.svelte';
 	import ReplaceVideoModal from './_components/ReplaceVideoModal.svelte';
@@ -236,7 +237,7 @@
 			}
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load rooms and traders';
-			console.error('Error loading rooms/traders:', err);
+			logger.error('Error loading rooms/traders', { error: err });
 		} finally {
 			isLoadingRooms = false;
 		}
@@ -269,7 +270,7 @@
 			}
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load videos';
-			console.error('Error loading videos:', err);
+			logger.error('Error loading videos', { error: err });
 		} finally {
 			isLoading = false;
 		}
@@ -370,7 +371,7 @@
 			}
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to replace video';
-			console.error('Error replacing video:', err);
+			logger.error('Error replacing video', { error: err });
 		} finally {
 			isSaving = false;
 		}
@@ -414,7 +415,7 @@
 			await loadVideos();
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to save video';
-			console.error('Error saving video:', err);
+			logger.error('Error saving video', { error: err });
 		} finally {
 			isSaving = false;
 		}
@@ -442,7 +443,7 @@
 			}
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to delete video';
-			console.error('Error deleting video:', err);
+			logger.error('Error deleting video', { error: err });
 		} finally {
 			isDeleting = false;
 		}
@@ -461,7 +462,7 @@
 			}
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to update video';
-			console.error('Error toggling publish status:', err);
+			logger.error('Error toggling publish status', { error: err });
 		}
 	}
 
@@ -544,7 +545,10 @@
 						await uploadFileToBunny(uploadItem.upload_url, file, uploadItem.id);
 						bunnyUploadProgress = Math.round(((i + 1) / response.data.uploads.length) * 100);
 					} catch (uploadErr) {
-						console.error(`Failed to upload ${file.name}:`, uploadErr);
+						logger.error('Failed to upload file to Bunny', {
+							error: uploadErr,
+							fileName: file.name
+						});
 						await bulkUploadApi.updateItemStatus(uploadItem.id, {
 							status: 'failed',
 							error_message: uploadErr instanceof Error ? uploadErr.message : 'Upload failed'
@@ -559,7 +563,7 @@
 			}
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to initialize Bunny upload';
-			console.error('Bunny upload error:', err);
+			logger.error('Bunny upload error', { error: err });
 		} finally {
 			isUploadingToBunny = false;
 		}
@@ -584,7 +588,9 @@
 				pendingPercent = null;
 				bulkUploadApi
 					.updateItemStatus(itemId, { status: 'uploading', progress_percent: percent })
-					.catch((e) => console.warn('[uploadFileToBunny] progress update failed:', e));
+					.catch((e) =>
+						logger.warn('[uploadFileToBunny] progress update failed', { error: e })
+					);
 			};
 
 			xhr.upload.addEventListener('progress', (e) => {
@@ -657,7 +663,7 @@
 			parsed.searchParams.delete('AccessKey');
 			parsed.searchParams.delete('access_key');
 			parsed.searchParams.delete('api_key');
-			console.warn('[uploadFileToBunny] non-proxy upload URL detected; stripping auth query params');
+			logger.warn('[uploadFileToBunny] non-proxy upload URL detected; stripping auth query params');
 			return parsed.toString();
 		} catch {
 			return url;
@@ -732,7 +738,7 @@
 			}
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load analytics';
-			console.error('Analytics error:', err);
+			logger.error('Analytics error', { error: err });
 		} finally {
 			isLoadingAnalytics = false;
 		}

@@ -33,6 +33,7 @@
 		IconLayoutGrid
 	} from '$lib/icons';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { logger } from '$lib/utils/logger';
 	import { predefinedCategories, type BlogCategory } from '$lib/data/predefined-categories';
 	import PreviewModal from './_components/PreviewModal.svelte';
 	import ExportModal from './_components/ExportModal.svelte';
@@ -155,7 +156,7 @@
 				selected: selectedPosts.has(post.id)
 			}));
 		} catch (error: any) {
-			console.error('Failed to load posts:', error);
+			logger.error('Failed to load posts', { error });
 			// FIX-2026-04-26 (P1-8): on 401, stop polling so we don't blast the
 			// expired session every 30s.
 			if (error?.status === 401 || /401|Unauthorized/i.test(String(error?.message || ''))) {
@@ -173,7 +174,7 @@
 		try {
 			stats = await adminFetch('/api/admin/posts/stats');
 		} catch (error) {
-			console.error('Failed to load stats:', error);
+			logger.error('Failed to load stats', { error });
 		}
 	}
 
@@ -296,7 +297,7 @@
 			selectAll = false;
 			showNotification('success', `Deleted ${count} posts`);
 		} catch (error) {
-			console.error('Failed to bulk delete:', error);
+			logger.error('Failed to bulk delete', { error });
 			showNotification('error', 'Failed to delete posts');
 		}
 	}
@@ -321,7 +322,7 @@
 			selectAll = false;
 			showNotification('success', `Updated ${count} posts to ${newStatus}`);
 		} catch (error) {
-			console.error('Failed to bulk update status:', error);
+			logger.error('Failed to bulk update status', { error });
 			showNotification('error', 'Failed to update posts');
 		}
 	}
@@ -346,7 +347,7 @@
 			loadStats();
 			showNotification('success', 'Post deleted');
 		} catch (error) {
-			console.error('Failed to delete post:', error);
+			logger.error('Failed to delete post', { error });
 			showNotification('error', 'Failed to delete post');
 		}
 	}
@@ -357,7 +358,7 @@
 			loadPosts();
 			showNotification('success', 'Post duplicated');
 		} catch (error) {
-			console.error('Failed to duplicate post:', error);
+			logger.error('Failed to duplicate post', { error });
 			showNotification('error', 'Failed to duplicate post');
 		}
 	}
@@ -375,7 +376,7 @@
 			loadStats();
 			showNotification('success', `Post ${newStatus}`);
 		} catch (error) {
-			console.error('Failed to toggle status:', error);
+			logger.error('Failed to toggle status', { error });
 			showNotification('error', 'Failed to update status');
 		}
 	}
@@ -390,7 +391,7 @@
 			post.featured = !post.featured;
 			showNotification('success', post.featured ? 'Post featured' : 'Post unfeatured');
 		} catch (error) {
-			console.error('Failed to toggle featured:', error);
+			logger.error('Failed to toggle featured', { error });
 			showNotification('error', 'Failed to update featured status');
 		}
 	}
@@ -420,7 +421,7 @@
 			showExportModal = false;
 			showNotification('success', 'Posts exported successfully');
 		} catch (error) {
-			console.error('Failed to export posts:', error);
+			logger.error('Failed to export posts', { error });
 			showNotification('error', 'Failed to export posts');
 		}
 	}
@@ -442,7 +443,7 @@
 			loadStats();
 			showNotification('success', 'Posts imported successfully');
 		} catch (error) {
-			console.error('Failed to import posts:', error);
+			logger.error('Failed to import posts', { error });
 			showNotification('error', 'Failed to import posts');
 		}
 	}
@@ -495,7 +496,7 @@
 			const data = await adminFetch(`/api/admin/posts/${post.id}/analytics`);
 			analyticsPost = { ...analyticsPost, analytics: data };
 		} catch (error) {
-			console.error('Failed to load analytics:', error);
+			logger.error('Failed to load analytics', { error });
 			showNotification('error', 'Failed to load analytics');
 		}
 	}
