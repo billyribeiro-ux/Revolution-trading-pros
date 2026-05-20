@@ -1,6 +1,6 @@
 /**
  * Shared API envelope + JSON-value helpers — used by the typed-api-client
- * refactor (R2-03 / R4-B / R5-A / R6-A).
+ * refactor (R2-03 / R4-B / R5-A / R6-A / R7-A).
  *
  * ─────────────────────────────────────────────────────────────────────────
  * `PaginatedResponse<T>` replaces the ad-hoc `Promise<{ data: X[]; meta: any }>`
