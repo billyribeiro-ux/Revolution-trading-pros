@@ -30,7 +30,7 @@
 	let isEditing = $state(false);
 	let editValue = $state('');
 
-	let displayValue = $derived(() => {
+	let displayValue = $derived.by(() => {
 		const v = value * displayMultiplier;
 		return v.toFixed(displayDecimals);
 	});
@@ -43,7 +43,7 @@
 	}
 
 	function startEdit() {
-		editValue = displayValue();
+		editValue = displayValue;
 		isEditing = true;
 	}
 
@@ -118,7 +118,7 @@
 					style="color: var(--calc-text); font-family: var(--calc-font-mono);"
 					aria-label="Edit {label} value"
 				>
-					{displayValue()}{unit === '%' ? '%' : unit === '$' ? '' : ` ${unit}`}
+					{displayValue}{unit === '%' ? '%' : unit === '$' ? '' : ` ${unit}`}
 				</button>
 			{/if}
 

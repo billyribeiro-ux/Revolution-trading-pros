@@ -12,13 +12,8 @@
 
 	// Get base URL
 	const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
-	let embedUrl = $state('');
-	let directUrl = $state('');
-
-	$effect(() => {
-		embedUrl = `${baseUrl}/embed/form/${props.form.slug}`;
-		directUrl = `${baseUrl}/forms/${props.form.slug}`;
-	});
+	let embedUrl = $derived(`${baseUrl}/embed/form/${props.form.slug}`);
+	let directUrl = $derived(`${baseUrl}/forms/${props.form.slug}`);
 
 	// Generate embed codes
 	let iframeCode = $derived(
