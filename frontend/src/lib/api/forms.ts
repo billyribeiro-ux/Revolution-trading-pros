@@ -52,6 +52,7 @@ import { browser } from '$app/environment';
 import { writable, derived as _derived, get } from 'svelte/store';
 import type { FormTheme } from '$lib/data/formTemplates';
 import { getAuthToken, getSessionId as _getAuthSessionId } from '$lib/stores/auth.svelte';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -458,8 +459,6 @@ class FormsService {
 
 		// Process analytics queue
 		this.processAnalyticsQueue();
-
-		console.debug('[FormsService] Initialized');
 	}
 
 	/**
@@ -588,7 +587,6 @@ class FormsService {
 	private getFromCache(key: string): any {
 		const cached = this.cache.get(key);
 		if (cached && Date.now() < cached.expiry) {
-			console.debug(`[FormsService] Cache hit: ${key}`);
 			return cached.data;
 		}
 		return null;
@@ -599,7 +597,6 @@ class FormsService {
 			data,
 			expiry: Date.now() + ttl
 		});
-		console.debug(`[FormsService] Cached: ${key}`);
 	}
 
 	private clearCache(pattern?: string): void {
@@ -632,7 +629,6 @@ class FormsService {
 			this.wsConnection = new WebSocket(`${configuredWsUrl}/forms`);
 
 			this.wsConnection.onopen = () => {
-				console.debug('[FormsService] WebSocket connected');
 				this.authenticate();
 			};
 
@@ -679,7 +675,7 @@ class FormsService {
 					break;
 			}
 		} catch (error) {
-			console.error('[FormsService] Failed to handle WebSocket message:', error);
+			logger.error('[FormsService] Failed to handle WebSocket message', { error });
 		}
 	}
 
@@ -710,7 +706,7 @@ class FormsService {
 
 	private handleCollaboration(data: any): void {
 		// Handle real-time collaboration updates
-		console.debug('[FormsService] Collaboration update:', data);
+		logger.debug('[FormsService] Collaboration update', data);
 	}
 
 	/**
@@ -754,13 +750,13 @@ class FormsService {
 	private async processOfflineQueue(): Promise<void> {
 		if (this.offlineQueue.length === 0) return;
 
-		console.debug(`[FormsService] Processing ${this.offlineQueue.length} offline requests`);
+		logger.debug(`[FormsService] Processing ${this.offlineQueue.length} offline requests`);
 
 		for (const request of this.offlineQueue) {
 			try {
 				await this.executeRequest(request.url, request.options, 0);
 			} catch (error) {
-				console.error('[FormsService] Failed to process offline request:', error);
+				logger.error('[FormsService] Failed to process offline request', { error });
 			}
 		}
 
@@ -785,9 +781,8 @@ class FormsService {
 	private async saveDraft(form: Form): Promise<void> {
 		try {
 			await this.updateForm(form.id!, { ...form, status: 'draft' });
-			console.debug('[FormsService] Draft saved');
 		} catch (error) {
-			console.error('[FormsService] Failed to save draft:', error);
+			logger.error('[FormsService] Failed to save draft', { error });
 		}
 	}
 
@@ -848,9 +843,9 @@ class FormsService {
 	}
 
 	private showNotification(message: string): void {
-		// Implement notification system. Until then, `info` is the correct
-		// level for a user-facing notice and is allowed by lint.
-		console.info('[Notification]', message);
+		// Implement notification system. Until then, route through the
+		// production-safe logger (dev-only output).
+		logger.info('[Notification]', message);
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -1094,7 +1089,7 @@ class FormsService {
 
 			return response.fields;
 		} catch (error) {
-			console.error('[FormsService] Failed to get field suggestions:', error);
+			logger.error('[FormsService] Failed to get field suggestions', { error });
 			return [];
 		}
 	}
@@ -1354,7 +1349,7 @@ class FormsService {
 						errors.push(response.message);
 					}
 				} catch (error) {
-					console.error('[FormsService] Async validation failed:', error);
+					logger.error('[FormsService] Async validation failed', { error });
 				}
 			}
 		}
@@ -1437,7 +1432,7 @@ export const previewForm = async (slug: string): Promise<Form> => {
 		return response.json();
 	} catch (error) {
 		// Log error for debugging while preserving the error chain
-		console.error('[FormsAPI] previewForm error:', error);
+		logger.error('[FormsAPI] previewForm error', { error });
 		throw error instanceof Error ? error : new Error('Failed to preview form');
 	}
 };
@@ -1457,7 +1452,7 @@ export const getFormById = async (id: number): Promise<Form> => {
 		return data.data || data;
 	} catch (error) {
 		// Log error for debugging while preserving the error chain
-		console.error('[FormsAPI] getFormById error:', error);
+		logger.error('[FormsAPI] getFormById error', { error });
 		throw error instanceof Error ? error : new Error('Failed to load form');
 	}
 };
@@ -1625,7 +1620,7 @@ export const formsApi = {
 			}
 			return response.blob();
 		} catch (error) {
-			console.error('[FormsAPI] exportEntries error:', error);
+			logger.error('[FormsAPI] exportEntries error', { error });
 			throw error instanceof Error ? error : new Error('Failed to export form entries');
 		}
 	}
