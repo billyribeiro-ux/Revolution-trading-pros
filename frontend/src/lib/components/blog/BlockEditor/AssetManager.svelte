@@ -24,6 +24,7 @@
 	import { flip } from 'svelte/animate';
 	import Icon from '$lib/components/Icon.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { logger } from '$lib/utils/logger';
 	import DamHeader from './asset-manager/DamHeader.svelte';
 	import DamTabs from './asset-manager/DamTabs.svelte';
 	import DamFooter from './asset-manager/DamFooter.svelte';
@@ -225,7 +226,7 @@
 			// totalPages available in data.meta.total_pages if needed for pagination UI
 			hasMore = data.meta.has_more;
 		} catch (error) {
-			console.error('Failed to fetch assets:', error);
+			logger.error('[AssetManager] Fetch assets failed', { error });
 		} finally {
 			isLoading = false;
 			isLoadingMore = false;
@@ -241,7 +242,7 @@
 				folders = await response.json();
 			}
 		} catch (error) {
-			console.error('Failed to fetch folders:', error);
+			logger.error('[AssetManager] Fetch folders failed', { error });
 		}
 	}
 
@@ -255,7 +256,7 @@
 				await response.json();
 			}
 		} catch (error) {
-			console.error('Failed to fetch tags:', error);
+			logger.error('[AssetManager] Fetch tags failed', { error });
 		}
 	}
 
@@ -269,7 +270,7 @@
 				assetUsage = await response.json();
 			}
 		} catch (error) {
-			console.error('Failed to fetch usage:', error);
+			logger.error('[AssetManager] Fetch usage failed', { error });
 		} finally {
 			isLoadingUsage = false;
 		}
@@ -327,7 +328,7 @@
 				editingMetadata = false;
 			}
 		} catch (error) {
-			console.error('Failed to update metadata:', error);
+			logger.error('[AssetManager] Update metadata failed', { error });
 		}
 	}
 
@@ -358,7 +359,7 @@
 				}
 			}
 		} catch (error) {
-			console.error('Failed to delete asset:', error);
+			logger.error('[AssetManager] Delete asset failed', { error });
 		}
 	}
 
@@ -391,7 +392,7 @@
 				sidebarOpen = false;
 			}
 		} catch (error) {
-			console.error('Failed to bulk delete:', error);
+			logger.error('[AssetManager] Bulk delete failed', { error });
 		}
 	}
 

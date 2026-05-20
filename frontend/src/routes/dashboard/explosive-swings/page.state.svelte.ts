@@ -43,6 +43,7 @@ import {
 	trackPagination,
 	trackModalOpened
 } from './monitoring';
+import { logger } from '$lib/utils/logger';
 
 /**
  * Creates the reactive state store for the Explosive Swings dashboard.
@@ -269,7 +270,7 @@ export function createPageState() {
 			analyticsTracker.trackPaginationCompleted();
 		} catch (err) {
 			alertsError = err instanceof Error ? err.message : 'Failed to load alerts';
-			console.error('Failed to fetch alerts:', err);
+			logger.error('[ExplosiveSwings] Fetch alerts failed', { error: err });
 			analyticsTracker.trackError('fetch_alerts', alertsError, { page: currentPage });
 		} finally {
 			isLoadingAlerts = false;
@@ -285,7 +286,7 @@ export function createPageState() {
 			apiTradePlan = result as unknown as ApiTradePlanEntry[];
 		} catch (err) {
 			tradePlanError = err instanceof Error ? err.message : 'Failed to load trade plan';
-			console.error('Failed to fetch trade plan:', err);
+			logger.error('[ExplosiveSwings] Fetch trade plan failed', { error: err });
 		} finally {
 			isLoadingTradePlan = false;
 		}
@@ -301,7 +302,7 @@ export function createPageState() {
 			);
 		} catch (err) {
 			statsError = err instanceof Error ? err.message : 'Failed to load stats';
-			console.error('Failed to fetch stats:', err);
+			logger.error('[ExplosiveSwings] Fetch stats failed', { error: err });
 			analyticsTracker.trackError('fetch_stats', statsError);
 		} finally {
 			isLoadingStats = false;
@@ -320,7 +321,7 @@ export function createPageState() {
 			apiClosedTrades = trades.filter((t) => t.status === 'closed');
 		} catch (err) {
 			tradesError = err instanceof Error ? err.message : 'Failed to load trades';
-			console.error('Failed to fetch trades:', err);
+			logger.error('[ExplosiveSwings] Fetch trades failed', { error: err });
 			analyticsTracker.trackError('fetch_trades', tradesError);
 		} finally {
 			isLoadingTrades = false;
@@ -335,7 +336,7 @@ export function createPageState() {
 			apiWeeklyVideo = await getWeeklyVideo({ roomSlug: ROOM_SLUG });
 		} catch (err) {
 			videosError = err instanceof Error ? err.message : 'Failed to load video';
-			console.error('Failed to fetch weekly video:', err);
+			logger.error('[ExplosiveSwings] Fetch weekly video failed', { error: err });
 		} finally {
 			isLoadingVideos = false;
 		}
@@ -375,7 +376,7 @@ export function createPageState() {
 				copiedAlertId = null;
 			}, 2000);
 		} catch (err) {
-			console.error('Failed to copy:', err);
+			logger.error('[ExplosiveSwings] Clipboard copy failed', { error: err });
 		}
 	}
 
@@ -392,7 +393,7 @@ export function createPageState() {
 		try {
 			await checkAdminStatus();
 		} catch (err) {
-			console.error('Failed to check admin status:', err);
+			logger.error('[ExplosiveSwings] Check admin status failed', { error: err });
 		}
 
 		// ICT 7 Fix: Fetch all data in parallel for optimal performance
@@ -592,7 +593,7 @@ export function createPageState() {
 			// Track successful deletion
 			analyticsTracker.trackEvent('trade', 'position_deleted', position.ticker);
 		} catch (err) {
-			console.error('Failed to delete position:', err);
+			logger.error('[ExplosiveSwings] Delete position failed', { error: err });
 			analyticsTracker.trackError(
 				'delete_position',
 				err instanceof Error ? err.message : 'Unknown error'
