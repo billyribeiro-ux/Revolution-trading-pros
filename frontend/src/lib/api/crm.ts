@@ -74,7 +74,7 @@ import type {
 	CampaignStats
 } from '$lib/crm/types';
 import { apiClient } from './client.svelte';
-import type { PaginatedResponse } from './_types';
+import type { JsonValue, PaginatedResponse } from './_types';
 
 export class CrmAPI {
 	// Contacts
@@ -376,11 +376,11 @@ export class CrmAPI {
 		return apiClient.post(`/admin/crm/automations/${id}/duplicate`);
 	}
 
-	async importAutomationFunnel(data: Record<string, any>): Promise<AutomationFunnel> {
+	async importAutomationFunnel(data: Record<string, JsonValue>): Promise<AutomationFunnel> {
 		return apiClient.post('/admin/crm/automations/import', data);
 	}
 
-	async exportAutomationFunnel(id: string): Promise<Record<string, any>> {
+	async exportAutomationFunnel(id: string): Promise<Record<string, JsonValue>> {
 		return apiClient.get(`/admin/crm/automations/${id}/export`);
 	}
 
@@ -621,7 +621,10 @@ export class CrmAPI {
 		return apiClient.get('/admin/crm/abandoned-carts/stats', { params: { date_range: dateRange } });
 	}
 
-	async getAbandonedCartSettings(): Promise<{ settings: AbandonedCartSettings; wooOptions?: any }> {
+	async getAbandonedCartSettings(): Promise<{
+		settings: AbandonedCartSettings;
+		wooOptions?: Record<string, JsonValue>;
+	}> {
 		return apiClient.get('/admin/crm/abandoned-carts/settings');
 	}
 
@@ -735,7 +738,7 @@ export class CrmAPI {
 	async startImportJob(
 		id: string,
 		mapping: Record<string, string>,
-		settings: any
+		settings: Record<string, JsonValue>
 	): Promise<ImportJob> {
 		return apiClient.post(`/admin/crm/imports/${id}/start`, { mapping, settings });
 	}
@@ -746,7 +749,7 @@ export class CrmAPI {
 
 	async getImportPreview(
 		id: string
-	): Promise<{ headers: string[]; rows: any[]; total_rows: number }> {
+	): Promise<{ headers: string[]; rows: Array<Record<string, JsonValue>>; total_rows: number }> {
 		return apiClient.get(`/admin/crm/imports/${id}/preview`);
 	}
 
@@ -759,7 +762,7 @@ export class CrmAPI {
 
 	async createExportJob(
 		type: string,
-		filters?: Record<string, any>,
+		filters?: Record<string, JsonValue>,
 		fields?: string[]
 	): Promise<ExportJob> {
 		return apiClient.post('/admin/crm/exports', { type, filters, fields });

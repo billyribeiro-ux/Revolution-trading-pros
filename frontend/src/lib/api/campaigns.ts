@@ -26,6 +26,7 @@
 
 import { get as _get } from 'svelte/store';
 import { authStore } from '$lib/stores/auth.svelte';
+import type { PaginationMeta, QueryParams } from './_types';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -179,15 +180,21 @@ class CampaignsApiClient {
 	private async request<T>(
 		method: string,
 		endpoint: string,
-		body?: any,
-		params?: Record<string, any>
+		body?: unknown,
+		params?: QueryParams
 	): Promise<T> {
 		let url = `${API_BASE}${endpoint}`;
 
 		if (params) {
+			// Matches the R12-A precedent in `config.ts` / `bing-seo.ts`:
+			// repeated-key serialisation for arrays so `{ tags: ['a','b'] }`
+			// emits `?tags=a&tags=b` (the backend shape) rather than `?tags=a%2Cb`.
 			const searchParams = new URLSearchParams();
 			Object.entries(params).forEach(([key, value]) => {
-				if (value !== undefined && value !== null && value !== '') {
+				if (value === undefined || value === null || value === '') return;
+				if (Array.isArray(value)) {
+					for (const item of value) searchParams.append(key, String(item));
+				} else {
 					searchParams.append(key, String(value));
 				}
 			});
@@ -200,14 +207,21 @@ class CampaignsApiClient {
 		const fetchOptions: RequestInit = {
 			method,
 			headers: this.getAuthHeaders(),
-			...(body && { body: JSON.stringify(body) })
+			...(body !== undefined && { body: JSON.stringify(body) })
 		};
 
 		const response = await fetch(url, fetchOptions);
 
 		if (!response.ok) {
-			const error = await response.json().catch(() => ({ message: 'Request failed' }));
-			throw new Error(error.message || `HTTP ${response.status}`);
+			const errorBody: unknown = await response.json().catch(() => null);
+			const message =
+				typeof errorBody === 'object' &&
+				errorBody !== null &&
+				'message' in errorBody &&
+				typeof (errorBody as { message: unknown }).message === 'string'
+					? (errorBody as { message: string }).message
+					: `HTTP ${response.status}`;
+			throw new Error(message);
 		}
 
 		return response.json();
@@ -221,12 +235,27 @@ class CampaignsApiClient {
 		data: Campaign[];
 		meta: { total: number; current_page: number; last_page: number };
 	}> {
+		// NB: The orphaned backend (see file header — no Rust handler exists yet)
+		// will eventually need to choose between Laravel-style `last_page` and the
+		// canonical `total_pages` emitted by every other paginated handler in this
+		// stack (`PaginationMeta` in `./_types.ts`). The public signature here
+		// keeps `last_page` to preserve the existing wire contract this client
+		// was built against. The internal response shape is widened to
+		// `PaginationMeta` (which contains `total` + optional fields); callers
+		// reading `last_page` are responsible for narrowing.
 		const response = await this.request<{
 			success: boolean;
 			data: Campaign[];
-			meta: any;
-		}>('GET', '/admin/email/campaigns', undefined, filters);
-		return { data: response.data, meta: response.meta };
+			meta: PaginationMeta & { last_page?: number; current_page?: number };
+		}>('GET', '/admin/email/campaigns', undefined, filters as QueryParams | undefined);
+		return {
+			data: response.data,
+			meta: {
+				total: response.meta.total,
+				current_page: response.meta.current_page ?? 1,
+				last_page: response.meta.last_page ?? 1
+			}
+		};
 	}
 
 	async getCampaign(id: number): Promise<Campaign> {

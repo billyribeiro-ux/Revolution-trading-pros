@@ -423,9 +423,7 @@ async function getDeveloperMemberships(): Promise<UserMembershipsResponse> {
 			});
 
 			if (plansResponse.ok) {
-				const plansData = await plansResponse.json();
-				const plans =
-					plansData.plans || plansData.data || (Array.isArray(plansData) ? plansData : []);
+				const plans = extractProductArray(await plansResponse.json(), 'plans');
 				if (plans.length > 0) {
 					return transformDeveloperProducts(plans);
 				}
@@ -439,11 +437,7 @@ async function getDeveloperMemberships(): Promise<UserMembershipsResponse> {
 			});
 
 			if (productsResponse.ok) {
-				const productsData = await productsResponse.json();
-				const products =
-					productsData.data ||
-					productsData.products ||
-					(Array.isArray(productsData) ? productsData : []);
+				const products = extractProductArray(await productsResponse.json(), 'products');
 				if (products.length > 0) {
 					return transformDeveloperProducts(products);
 				}
@@ -462,10 +456,46 @@ async function getDeveloperMemberships(): Promise<UserMembershipsResponse> {
 }
 
 /**
+ * Pull the product/plan array out of the heterogeneous responses returned by
+ * `/api/admin/membership-plans` (`{ plans: [...] }` or `{ data: [...] }`) and
+ * `/api/products` (`{ data: [...] }` or `{ products: [...] }`). The
+ * `primaryKey` arg gives a per-endpoint precedence; falls back to `data`,
+ * then to a bare array at the top level. Returns `[]` on any other shape.
+ */
+function extractProductArray(
+	body: unknown,
+	primaryKey: 'plans' | 'products'
+): DeveloperRawProduct[] {
+	if (Array.isArray(body)) return body as DeveloperRawProduct[];
+	if (typeof body !== 'object' || body === null) return [];
+	const obj = body as Record<string, unknown>;
+	const candidate = obj[primaryKey] ?? obj.data;
+	return Array.isArray(candidate) ? (candidate as DeveloperRawProduct[]) : [];
+}
+
+/**
+ * Raw product/plan shape forwarded from `/api/admin/membership-plans` and
+ * `/api/products`. Fields are intentionally optional — this client receives
+ * a heterogeneous payload (membership plans vs. products) and falls back per
+ * key. Replaces a pair of `any` casts in `transformDeveloperProducts`.
+ */
+interface DeveloperRawProduct {
+	id: string | number;
+	name?: string;
+	title?: string;
+	slug?: string;
+	description?: string;
+	price?: number;
+	price_monthly?: number;
+	metadata?: { icon?: string } | Record<string, unknown> | null;
+	features?: { icon?: string } | string[] | Record<string, unknown> | null;
+}
+
+/**
  * ICT 7: Transform raw API products/plans into developer memberships
  */
-function transformDeveloperProducts(products: any[]): UserMembershipsResponse {
-	const memberships: UserMembership[] = products.map((item: any) => {
+function transformDeveloperProducts(products: DeveloperRawProduct[]): UserMembershipsResponse {
+	const memberships: UserMembership[] = products.map((item) => {
 		const name = item.name || item.title || 'Unnamed Membership';
 		const slug = item.slug || `membership-${item.id}`;
 		const price = item.price || item.price_monthly || 0;
@@ -490,10 +520,22 @@ function transformDeveloperProducts(products: any[]): UserMembershipsResponse {
 		}
 
 		let icon = getDefaultIcon(membershipType);
-		if (item.metadata && typeof item.metadata === 'object') {
-			icon = item.metadata.icon || icon;
-		} else if (item.features && typeof item.features === 'object') {
-			icon = item.features.icon || icon;
+		// NB: `metadata` and `features` are read-or-fall-through. `features` may
+		// legitimately be a `string[]` (the canonical `UserMembership.features`
+		// shape, returned by `/api/products`) OR an object carrying an `icon`
+		// (the membership-plans shape). Narrow each branch explicitly so the
+		// `features.icon` access doesn't compile when `features` is the array
+		// form.
+		if (item.metadata && typeof item.metadata === 'object' && !Array.isArray(item.metadata)) {
+			const metaIcon = (item.metadata as { icon?: unknown }).icon;
+			if (typeof metaIcon === 'string') icon = metaIcon;
+		} else if (
+			item.features &&
+			typeof item.features === 'object' &&
+			!Array.isArray(item.features)
+		) {
+			const featIcon = (item.features as { icon?: unknown }).icon;
+			if (typeof featIcon === 'string') icon = featIcon;
 		}
 
 		return {
@@ -509,7 +551,7 @@ function transformDeveloperProducts(products: any[]): UserMembershipsResponse {
 			price,
 			interval: 'monthly' as BillingInterval,
 			roomLabel: name,
-			features: Array.isArray(item.features) ? item.features : []
+			features: Array.isArray(item.features) ? item.features.map(String) : []
 		};
 	});
 
