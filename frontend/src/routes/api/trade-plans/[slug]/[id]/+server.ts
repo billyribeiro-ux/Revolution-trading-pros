@@ -13,34 +13,26 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
+// R19-A: shared proxy helper — pins CLAUDE.md URL-fallback chain
+// (API_BASE_URL || BACKEND_URL || localhost) AND replaces the
+// `Promise<any | null>` helper with `Promise<unknown>` + narrowing guards.
+import { fetchBackend, isObject, extractBackendData } from '$lib/server/proxy-fetch';
 
-const BACKEND_URL = env.BACKEND_URL || 'http://localhost:8080';
-
-async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Promise<any | null> {
-	try {
-		console.info(`[Trade Plans API] Fetching: ${BACKEND_URL}${endpoint}`);
-		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
-			...options,
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-				...options.headers
-			}
-		});
-
-		if (!response.ok) {
-			console.error(`[Trade Plans API] Backend error: ${response.status} ${response.statusText}`);
-			const errorText = await response.text();
-			console.error(`[Trade Plans API] Error body:`, errorText);
-			return null;
-		}
-
-		return await response.json();
-	} catch (err) {
-		console.error('[Trade Plans API] Backend fetch failed:', err);
-		return null;
-	}
+interface TradePlanPutBody {
+	ticker?: string;
+	bias?: string;
+	entry?: string;
+	target1?: string;
+	target2?: string;
+	target3?: string;
+	runner?: string;
+	stop?: string;
+	runner_stop?: string | null;
+	options_strike?: string | null;
+	options_exp?: string | null;
+	notes?: string | null;
+	sort_order?: number;
+	is_active?: boolean;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -70,14 +62,18 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
 		headers['Authorization'] = `Bearer ${accessToken}`;
 	}
 
-	const backendData = await fetchFromBackend(`/api/room-content/rooms/${slug}/trade-plan/${id}`, {
-		headers
-	});
+	const backendData = await fetchBackend(
+		`/api/room-content/rooms/${slug}/trade-plan/${id}`,
+		{ headers },
+		'[Trade Plans API]'
+	);
 
 	if (backendData) {
+		// R19-A: extractBackendData() preserves "envelope.data === null"
+		// semantics (returns null, not the envelope) which `||` did not.
 		return json({
 			success: true,
-			data: backendData.data || backendData,
+			data: extractBackendData(backendData),
 			_source: 'backend'
 		});
 	}
@@ -107,7 +103,14 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 		error(400, 'Invalid trade plan ID');
 	}
 
-	const body = await request.json();
+	// R19-A: narrow body to non-null object — original code read
+	// `body.ticker?.toUpperCase()` on a potentially-null `body`, which
+	// would 500 the PUT on a `null` JSON body (R18-A Latent Bug §2 class).
+	const rawBody: unknown = await request.json();
+	if (!isObject(rawBody)) {
+		error(400, 'Request body must be a JSON object');
+	}
+	const body = rawBody as TradePlanPutBody;
 
 	// Build headers - use Bearer token format
 	const headers: Record<string, string> = {};
@@ -118,31 +121,35 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 	}
 
 	// Call backend at /api/admin/room-content/trade-plan/:id
-	const backendData = await fetchFromBackend(`/api/admin/room-content/trade-plan/${id}`, {
-		method: 'PUT',
-		headers,
-		body: JSON.stringify({
-			ticker: body.ticker?.toUpperCase(),
-			bias: body.bias,
-			entry: body.entry,
-			target1: body.target1,
-			target2: body.target2,
-			target3: body.target3,
-			runner: body.runner,
-			stop: body.stop,
-			runner_stop: body.runner_stop,
-			options_strike: body.options_strike,
-			options_exp: body.options_exp,
-			notes: body.notes,
-			sort_order: body.sort_order,
-			is_active: body.is_active
-		})
-	});
+	const backendData = await fetchBackend(
+		`/api/admin/room-content/trade-plan/${id}`,
+		{
+			method: 'PUT',
+			headers,
+			body: JSON.stringify({
+				ticker: body.ticker?.toUpperCase(),
+				bias: body.bias,
+				entry: body.entry,
+				target1: body.target1,
+				target2: body.target2,
+				target3: body.target3,
+				runner: body.runner,
+				stop: body.stop,
+				runner_stop: body.runner_stop,
+				options_strike: body.options_strike,
+				options_exp: body.options_exp,
+				notes: body.notes,
+				sort_order: body.sort_order,
+				is_active: body.is_active
+			})
+		},
+		'[Trade Plans API]'
+	);
 
 	if (backendData) {
 		return json({
 			success: true,
-			data: backendData.data || backendData,
+			data: extractBackendData(backendData),
 			message: 'Trade plan entry updated',
 			_source: 'backend'
 		});
@@ -182,10 +189,14 @@ export const DELETE: RequestHandler = async ({ params, request, cookies }) => {
 	}
 
 	// Call backend at /api/admin/room-content/trade-plan/:id
-	const backendData = await fetchFromBackend(`/api/admin/room-content/trade-plan/${id}`, {
-		method: 'DELETE',
-		headers
-	});
+	const backendData = await fetchBackend(
+		`/api/admin/room-content/trade-plan/${id}`,
+		{
+			method: 'DELETE',
+			headers
+		},
+		'[Trade Plans API]'
+	);
 
 	if (backendData) {
 		return json({
