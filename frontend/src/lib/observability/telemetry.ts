@@ -11,6 +11,7 @@
  */
 
 import { browser } from '$app/environment';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types
@@ -118,8 +119,6 @@ class TelemetryService {
 				promise: event.promise
 			});
 		});
-
-		console.debug('[Telemetry] Initialized', this.config);
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -153,7 +152,7 @@ class TelemetryService {
 	endSpan(spanId: string, status: SpanStatus = { code: 'OK' }): void {
 		const span = this.spans.get(spanId);
 		if (!span) {
-			console.warn('[Telemetry] Span not found:', spanId);
+			logger.warn('[Telemetry] Span not found', { spanId });
 			return;
 		}
 
@@ -167,12 +166,6 @@ class TelemetryService {
 		// Record as metric
 		this.recordMetric('span_duration_ms', duration, 'histogram', {
 			span_name: span.name,
-			status: status.code
-		});
-
-		console.debug('[Telemetry] Span ended:', {
-			name: span.name,
-			duration: `${duration.toFixed(2)}ms`,
 			status: status.code
 		});
 	}
@@ -407,22 +400,17 @@ class TelemetryService {
 			spans.forEach((span) => this.spans.delete(span.spanId));
 			this.metrics = [];
 			this.logs = [];
-
-			console.debug('[Telemetry] Flushed', {
-				spans: spans.length,
-				metrics: metrics.length,
-				logs: logs.length
-			});
 		} catch (error) {
-			console.error('[Telemetry] Failed to flush:', error);
+			logger.error('[Telemetry] Failed to flush', { error });
 		}
 	}
 
 	private async sendTelemetry(data: any): Promise<void> {
-		// In production, send to OpenTelemetry collector
-		// For now, log to console in development
+		// In production, send to OpenTelemetry collector.
+		// In development, the dev-gated `logger.debug` shows the batch payload
+		// without leaking past the dev sink in prod.
 		if (this.config.environment === 'development') {
-			console.debug('[Telemetry] Data:', data);
+			logger.debug('[Telemetry] Data', data);
 			return;
 		}
 
@@ -437,7 +425,7 @@ class TelemetryService {
 			});
 		} catch (error) {
 			// Silently fail to avoid affecting user experience
-			console.error('[Telemetry] Send failed:', error);
+			logger.error('[Telemetry] Send failed', { error });
 		}
 	}
 
