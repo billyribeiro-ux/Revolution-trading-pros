@@ -12,6 +12,7 @@
 	} from '$lib/icons';
 	import { getAllPopups, deletePopup, togglePopupStatus, duplicatePopup } from '$lib/api/popups';
 	import type { Popup } from '$lib/stores/popups.svelte';
+	import { logger } from '$lib/utils/logger';
 	// FIX-2026-04-26 (07-marketing P0-4): the delete button used to set a
 	// `_showDeleteModal` flag with no actual modal rendered — clicking
 	// "Delete" did nothing visible. Wire up the shared ConfirmationModal.
@@ -45,7 +46,7 @@
 		try {
 			popups = await getAllPopups();
 		} catch (error) {
-			console.error('Error loading popups:', error);
+			logger.error('Error loading popups:', error);
 			popups = [];
 		} finally {
 			loading = false;
@@ -57,7 +58,7 @@
 			await togglePopupStatus(popup.id, !popup.isActive);
 			await loadPopups();
 		} catch (error) {
-			console.error('Error toggling popup status:', error);
+			logger.error('Error toggling popup status:', error);
 		}
 	}
 
@@ -81,7 +82,7 @@
 			showDeleteModal = false;
 			pendingDeleteId = null;
 		} catch (error) {
-			console.error('Error deleting popup:', error);
+			logger.error('Error deleting popup:', error);
 		} finally {
 			deleting = false;
 		}
@@ -92,7 +93,7 @@
 			await duplicatePopup(popupId);
 			await loadPopups();
 		} catch (error) {
-			console.error('Error duplicating popup:', error);
+			logger.error('Error duplicating popup:', error);
 		}
 	}
 

@@ -61,8 +61,6 @@ export function setBingDefaultConsent(consent: ConsentState): void {
 	window.uetq!.push('consent', 'default', {
 		ad_storage: params.ad_storage
 	});
-
-	console.debug('[BingConsentMode] Set default consent:', params);
 }
 
 /**
@@ -82,8 +80,6 @@ export function updateBingConsent(consent: ConsentState): void {
 	window.uetq!.push('consent', 'update', {
 		ad_storage: params.ad_storage
 	});
-
-	console.debug('[BingConsentMode] Updated consent:', params);
 }
 
 /**
@@ -132,7 +128,6 @@ export function grantAllBingConsent(): void {
 	});
 
 	bingConsentInitialized = true;
-	console.debug('[BingConsentMode] Granted all consent');
 }
 
 /**
@@ -148,7 +143,6 @@ export function denyAllBingConsent(): void {
 	});
 
 	bingConsentInitialized = true;
-	console.debug('[BingConsentMode] Denied all consent');
 }
 
 /**
