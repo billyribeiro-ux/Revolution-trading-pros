@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { IconCheck, IconX, IconUser } from '$lib/icons';
+	import { logger } from '$lib/utils/logger';
 
 	let loading = $state(true);
 	let saving = $state(false);
@@ -69,7 +70,7 @@
 			} else {
 				error = 'Failed to load user. Please try again.';
 			}
-			console.error('Failed to load user:', err);
+			logger.error('Failed to load user:', err);
 		} finally {
 			loading = false;
 		}
@@ -124,7 +125,7 @@
 			}, 1500);
 		} catch (err: any) {
 			error = err.message || 'Failed to update user';
-			console.error('Failed to update user:', err);
+			logger.error('Failed to update user:', err);
 		} finally {
 			saving = false;
 		}

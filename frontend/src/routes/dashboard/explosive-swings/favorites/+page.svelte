@@ -9,6 +9,7 @@
 	 */
 	import { onMount } from 'svelte';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
+	import { logger } from '$lib/utils/logger';
 
 	const ROOM_SLUG = 'explosive-swings';
 
@@ -39,7 +40,7 @@
 				error = 'Failed to load favorites';
 			}
 		} catch (err) {
-			console.error('Failed to fetch favorites:', err);
+			logger.error('Failed to fetch favorites:', err);
 			error = 'Failed to load favorites';
 		} finally {
 			isLoading = false;
@@ -53,7 +54,7 @@
 				favorites = favorites.filter((f) => f.id !== id);
 			}
 		} catch (err) {
-			console.error('Failed to remove favorite:', err);
+			logger.error('Failed to remove favorite:', err);
 		}
 	}
 

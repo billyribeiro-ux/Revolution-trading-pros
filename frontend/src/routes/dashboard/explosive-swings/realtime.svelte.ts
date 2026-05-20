@@ -16,7 +16,7 @@
  * Built for the next 10 years with extensibility in mind.
  */
 
-import { browser, dev } from '$app/environment';
+import { browser } from '$app/environment';
 import {
 	createWebSocketService,
 	type AlertPayload,
@@ -26,6 +26,7 @@ import {
 	type WsMessage,
 	type WebSocketService
 } from '$lib/services/websocket.svelte';
+import { logger } from '$lib/utils/logger';
 import { formatTimeAgo } from './utils/formatters';
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -111,11 +112,6 @@ function showToast(options: ToastOptions): void {
 		}
 	});
 	window.dispatchEvent(event);
-
-	// Console log for development only
-	if (dev) {
-		console.debug(`[Toast] ${options.type.toUpperCase()}: ${options.title} - ${options.message}`);
-	}
 }
 
 /**
@@ -564,7 +560,7 @@ export function createRealtimeState(roomSlug: string = ROOM_SLUG) {
 
 		// ICT 7 Fix: Prevent duplicate connections and memory leaks
 		if (state.isConnected || state.isReconnecting) {
-			console.warn('[realtime] Already connected or reconnecting, skipping connect()');
+			logger.warn('[realtime] Already connected or reconnecting, skipping connect()');
 			return;
 		}
 
