@@ -12,43 +12,28 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
 import type { Trade, TradeCreateInput, TradeStatus } from '$lib/types/trading';
+// R19-A: shared proxy helper — pins CLAUDE.md URL-fallback chain
+// (API_BASE_URL || BACKEND_URL || localhost) AND replaces the
+// `Promise<any | null>` helper with `Promise<unknown>` + narrowing guards.
+import { fetchBackend, hasData, isObject, extractMetaTotal } from '$lib/server/proxy-fetch';
 
 // ═══════════════════════════════════════════════════════════════════════════
-// BACKEND CONFIGURATION
+// TYPE GUARDS
 // ═══════════════════════════════════════════════════════════════════════════
 
-const BACKEND_URL = env.BACKEND_URL || 'http://localhost:8080';
-
-// ═══════════════════════════════════════════════════════════════════════════
-// BACKEND FETCH HELPER
-// ═══════════════════════════════════════════════════════════════════════════
-
-async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Promise<any | null> {
-	try {
-		console.info(`[Trades API] Fetching: ${BACKEND_URL}${endpoint}`);
-		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
-			...options,
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-				...options.headers
-			}
-		});
-
-		if (!response.ok) {
-			console.error(`[Trades API] Backend error: ${response.status} ${response.statusText}`);
-			return null;
-		}
-
-		const data = await response.json();
-		console.info(`[Trades API] Backend success:`, data?.data?.length || 0, 'items');
-		return data;
-	} catch (err) {
-		console.error('[Trades API] Backend fetch failed:', err);
-		return null;
-	}
+// R19-A: a row from the backend trades list is treated as a Trade only
+// if `status`, `ticker`, `entry_date` are present as the expected
+// primitive types — calculateStats() and the date-comparator below
+// both read these fields without narrowing.
+function isTradeLike(value: unknown): value is Trade {
+	if (!isObject(value)) return false;
+	return (
+		typeof value.id === 'number' &&
+		typeof value.status === 'string' &&
+		typeof value.ticker === 'string' &&
+		typeof value.entry_date === 'string'
+	);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -154,20 +139,24 @@ export const GET: RequestHandler = async ({ params, url, request, cookies }) => 
 	if (ticker) backendParams.set('ticker', ticker);
 
 	// Call backend at /api/room-content/rooms/:slug/trades
-	const backendData = await fetchFromBackend(
+	const backendData = await fetchBackend(
 		`/api/room-content/rooms/${slug}/trades?${backendParams.toString()}`,
-		{ headers }
+		{ headers },
+		'[Trades API]'
 	);
 
-	if (backendData?.data) {
-		const trades = backendData.data;
+	if (hasData(backendData) && Array.isArray(backendData.data)) {
+		// R19-A: filter via isTradeLike() — calculateStats() and the
+		// downstream `t.pnl` arithmetic both assumed every row was
+		// shape-correct; a malformed row would NaN-poison `total_pnl`.
+		const trades: Trade[] = backendData.data.filter(isTradeLike);
 		const stats = calculateStats(trades);
 
 		return json({
 			success: true,
 			data: trades,
 			stats,
-			total: backendData.meta?.total || trades.length,
+			total: extractMetaTotal(backendData, trades.length),
 			page: parseInt(page),
 			limit: parseInt(perPage),
 			_source: 'backend'
@@ -227,7 +216,13 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 		error(400, 'Room slug is required');
 	}
 
-	const body: TradeCreateInput = await request.json();
+	// R19-A: narrow body to non-null object before treating as
+	// TradeCreateInput. Surfaces a 400 instead of a 500 NPE on null.
+	const rawBody: unknown = await request.json();
+	if (!isObject(rawBody)) {
+		error(400, 'Request body must be a JSON object');
+	}
+	const body = rawBody as unknown as TradeCreateInput;
 
 	// Validate required fields
 	if (!body.ticker || !body.trade_type || !body.direction || !body.quantity || !body.entry_price) {
@@ -243,7 +238,7 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	}
 
 	// Call backend at /api/admin/room-content/trades
-	const backendData = await fetchFromBackend(`/api/admin/room-content/trades`, {
+	const backendData = await fetchBackend(`/api/admin/room-content/trades`, {
 		method: 'POST',
 		headers,
 		body: JSON.stringify({
@@ -263,7 +258,7 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 			setup: body.setup,
 			notes: body.notes
 		})
-	});
+	}, '[Trades API]');
 
 	if (backendData) {
 		return json({

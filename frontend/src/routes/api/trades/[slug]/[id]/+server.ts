@@ -11,8 +11,11 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
 import type { Trade, TradeUpdateInput } from '$lib/types/trading';
+// R19-A: shared proxy helper — pins CLAUDE.md URL-fallback chain
+// (API_BASE_URL || BACKEND_URL || localhost) AND replaces the
+// `Promise<any | null>` helper with `Promise<unknown>` + narrowing guards.
+import { fetchBackend, hasSuccess, isObject } from '$lib/server/proxy-fetch';
 
 // Reference to mock data from parent route
 // In production, this would come from database
@@ -100,30 +103,6 @@ const mockTrades: Record<string, Trade[]> = {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
-// BACKEND FETCH
-// ═══════════════════════════════════════════════════════════════════════════
-
-async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Promise<any | null> {
-	const BACKEND_URL = env.BACKEND_URL || 'http://localhost:8080';
-
-	try {
-		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
-			...options,
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-				...options.headers
-			}
-		});
-
-		if (!response.ok) return null;
-		return await response.json();
-	} catch {
-		return null;
-	}
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
 // UTILITY FUNCTIONS
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -191,11 +170,15 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
 		headers['Authorization'] = `Bearer ${accessToken}`;
 	}
 
-	const backendData = await fetchFromBackend(`/api/room-content/rooms/${slug}/trades/${id}`, {
-		headers
-	});
+	const backendData = await fetchBackend(
+		`/api/room-content/rooms/${slug}/trades/${id}`,
+		{ headers },
+		'[Trade API]'
+	);
 
-	if (backendData?.success) {
+	// R19-A: hasSuccess() narrowing instead of `backendData?.success`
+	// (which would throw on a non-null primitive backend response).
+	if (hasSuccess(backendData) && backendData.success) {
 		return json(backendData);
 	}
 
@@ -236,7 +219,13 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 		error(400, 'Invalid trade ID');
 	}
 
-	const body: TradeUpdateInput = await request.json();
+	// R19-A: narrow body to non-null object before treating as
+	// TradeUpdateInput. Surfaces a 400 instead of a 500 NPE on null.
+	const rawBody: unknown = await request.json();
+	if (!isObject(rawBody)) {
+		error(400, 'Request body must be a JSON object');
+	}
+	const body = rawBody as TradeUpdateInput;
 
 	// Build headers - use rtp_access_token cookie for Bearer auth
 	const headers: Record<string, string> = {};
@@ -252,16 +241,20 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 
 	// Try backend first - use /close endpoint for closing trades
 	if (isCloseRequest) {
-		const backendData = await fetchFromBackend(`/api/admin/room-content/trades/${id}/close`, {
-			method: 'PUT',
-			headers,
-			body: JSON.stringify({
-				exit_price: body.exit_price,
-				exit_date: body.exit_date || new Date().toISOString().split('T')[0],
-				exit_tos_string: body.exit_tos_string,
-				notes: body.notes
-			})
-		});
+		const backendData = await fetchBackend(
+			`/api/admin/room-content/trades/${id}/close`,
+			{
+				method: 'PUT',
+				headers,
+				body: JSON.stringify({
+					exit_price: body.exit_price,
+					exit_date: body.exit_date || new Date().toISOString().split('T')[0],
+					exit_tos_string: body.exit_tos_string,
+					notes: body.notes
+				})
+			},
+			'[Trade API]'
+		);
 
 		if (backendData) {
 			return json({
@@ -273,13 +266,17 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 		}
 	} else {
 		// Regular update (not close)
-		const backendData = await fetchFromBackend(`/api/admin/room-content/trades/${id}`, {
-			method: 'PUT',
-			headers,
-			body: JSON.stringify(body)
-		});
+		const backendData = await fetchBackend(
+			`/api/admin/room-content/trades/${id}`,
+			{
+				method: 'PUT',
+				headers,
+				body: JSON.stringify(body)
+			},
+			'[Trade API]'
+		);
 
-		if (backendData?.success) {
+		if (hasSuccess(backendData) && backendData.success) {
 			return json(backendData);
 		}
 	}
@@ -378,12 +375,16 @@ export const DELETE: RequestHandler = async ({ params, request, cookies }) => {
 	}
 
 	// Try backend first
-	const backendData = await fetchFromBackend(`/api/admin/room-content/trades/${id}`, {
-		method: 'DELETE',
-		headers
-	});
+	const backendData = await fetchBackend(
+		`/api/admin/room-content/trades/${id}`,
+		{
+			method: 'DELETE',
+			headers
+		},
+		'[Trade API]'
+	);
 
-	if (backendData?.success) {
+	if (hasSuccess(backendData) && backendData.success) {
 		return json(backendData);
 	}
 

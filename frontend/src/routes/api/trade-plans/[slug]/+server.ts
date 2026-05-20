@@ -12,43 +12,27 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
 import type { TradePlanEntry, TradePlanCreateInput } from '$lib/types/trading';
+// R19-A: shared proxy helper — pins CLAUDE.md URL-fallback chain
+// (API_BASE_URL || BACKEND_URL || localhost) AND replaces the
+// `Promise<any | null>` helper with `Promise<unknown>` + narrowing guards.
+import { fetchBackend, hasData, isObject, extractMetaTotal } from '$lib/server/proxy-fetch';
 
 // ═══════════════════════════════════════════════════════════════════════════
-// BACKEND CONFIGURATION
+// TYPE GUARDS
 // ═══════════════════════════════════════════════════════════════════════════
 
-const BACKEND_URL = env.BACKEND_URL || 'http://localhost:8080';
-
-// ═══════════════════════════════════════════════════════════════════════════
-// BACKEND FETCH HELPER
-// ═══════════════════════════════════════════════════════════════════════════
-
-async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Promise<any | null> {
-	try {
-		console.info(`[Trade Plans API] Fetching: ${BACKEND_URL}${endpoint}`);
-		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
-			...options,
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-				...options.headers
-			}
-		});
-
-		if (!response.ok) {
-			console.error(`[Trade Plans API] Backend error: ${response.status} ${response.statusText}`);
-			return null;
-		}
-
-		const data = await response.json();
-		console.info(`[Trade Plans API] Backend success:`, data?.data?.length || 0, 'items');
-		return data;
-	} catch (err) {
-		console.error('[Trade Plans API] Backend fetch failed:', err);
-		return null;
-	}
+// R19-A: a row from the backend response is treated as a TradePlanEntry
+// only if the fields used downstream (`sort_order`, `is_active`,
+// `week_of`) are the expected primitive types. Drops malformed rows
+// silently rather than NPE-ing in the sort comparator.
+function isTradePlanLike(value: unknown): value is TradePlanEntry {
+	if (!isObject(value)) return false;
+	return (
+		typeof value.id === 'number' &&
+		typeof value.sort_order === 'number' &&
+		typeof value.is_active === 'boolean'
+	);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -117,27 +101,30 @@ export const GET: RequestHandler = async ({ params, url, request, cookies }) => 
 	if (weekOf) backendParams.set('week_of', weekOf);
 
 	// Call backend at /api/room-content/rooms/:slug/trade-plan
-	const backendData = await fetchFromBackend(
+	const backendData = await fetchBackend(
 		`/api/room-content/rooms/${slug}/trade-plan?${backendParams.toString()}`,
-		{ headers }
+		{ headers },
+		'[Trade Plans API]'
 	);
 
-	if (backendData?.data) {
-		let plans = backendData.data;
+	if (hasData(backendData) && Array.isArray(backendData.data)) {
+		// R19-A: filter via isTradePlanLike so the sort comparator doesn't
+		// NPE on a row with a missing/non-numeric `sort_order`.
+		let plans: TradePlanEntry[] = backendData.data.filter(isTradePlanLike);
 
 		// Filter active only if needed (client-side)
 		if (activeOnly) {
-			plans = plans.filter((p: TradePlanEntry) => p.is_active);
+			plans = plans.filter((p) => p.is_active);
 		}
 
 		// Sort by sort_order
-		plans.sort((a: TradePlanEntry, b: TradePlanEntry) => a.sort_order - b.sort_order);
+		plans.sort((a, b) => a.sort_order - b.sort_order);
 
 		return json({
 			success: true,
 			data: plans,
 			week_of: plans[0]?.week_of || null,
-			total: backendData.meta?.total || plans.length,
+			total: extractMetaTotal(backendData, plans.length),
 			_source: 'backend'
 		});
 	}
@@ -185,7 +172,13 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 		error(400, 'Room slug is required');
 	}
 
-	const body: TradePlanCreateInput = await request.json();
+	// R19-A: narrow body to non-null object before treating as
+	// TradePlanCreateInput.
+	const rawBody: unknown = await request.json();
+	if (!isObject(rawBody)) {
+		error(400, 'Request body must be a JSON object');
+	}
+	const body = rawBody as unknown as TradePlanCreateInput;
 
 	// Validate required fields - only ticker is truly required
 	if (!body.ticker) {
@@ -201,7 +194,7 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	}
 
 	// Call backend at /api/admin/room-content/trade-plan
-	const backendData = await fetchFromBackend(`/api/admin/room-content/trade-plan`, {
+	const backendData = await fetchBackend(`/api/admin/room-content/trade-plan`, {
 		method: 'POST',
 		headers,
 		body: JSON.stringify({
@@ -220,7 +213,7 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 			notes: body.notes,
 			sort_order: body.sort_order
 		})
-	});
+	}, '[Trade Plans API]');
 
 	if (backendData) {
 		return json({

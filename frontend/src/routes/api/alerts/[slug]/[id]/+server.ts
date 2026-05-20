@@ -13,44 +13,19 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
 import type { RoomAlert, AlertUpdateInput } from '$lib/types/trading';
 import { buildTosString, validateTosParams } from '$lib/utils/tos-builder';
+// R19-A: shared proxy helper — pins CLAUDE.md URL-fallback chain
+// (API_BASE_URL || BACKEND_URL || localhost) AND replaces the
+// `Promise<any | null>` helper with `Promise<unknown>` + narrowing guards.
+import { fetchBackend, hasData, isObject } from '$lib/server/proxy-fetch';
 
 // ═══════════════════════════════════════════════════════════════════════════
-// BACKEND CONFIGURATION
+// TYPE GUARDS
 // ═══════════════════════════════════════════════════════════════════════════
 
-const BACKEND_URL = env.BACKEND_URL || 'http://localhost:8080';
-
-// ═══════════════════════════════════════════════════════════════════════════
-// BACKEND FETCH HELPER
-// ═══════════════════════════════════════════════════════════════════════════
-
-async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Promise<any | null> {
-	try {
-		console.info(`[Alert API] Fetching: ${BACKEND_URL}${endpoint}`);
-		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
-			...options,
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-				...options.headers
-			}
-		});
-
-		if (!response.ok) {
-			console.error(`[Alert API] Backend error: ${response.status} ${response.statusText}`);
-			return null;
-		}
-
-		const data = await response.json();
-		console.info(`[Alert API] Backend success`);
-		return data;
-	} catch (err) {
-		console.error('[Alert API] Backend fetch failed:', err);
-		return null;
-	}
+function isAlertWithId(value: unknown): value is RoomAlert {
+	return isObject(value) && typeof value.id === 'number';
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -120,10 +95,17 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
 
 	// Try backend - note: there's no single alert GET endpoint in room_content.rs
 	// So we fetch all and filter
-	const backendData = await fetchFromBackend(`/api/room-content/rooms/${slug}/alerts`, { headers });
+	const backendData = await fetchBackend(
+		`/api/room-content/rooms/${slug}/alerts`,
+		{ headers },
+		'[Alert API]'
+	);
 
-	if (backendData?.data) {
-		const alert = backendData.data.find((a: RoomAlert) => a.id === alertId);
+	// R19-A: filter via isAlertWithId rather than `(a: RoomAlert)` cast —
+	// the cast was a lie (the row could be `null` or a primitive). Find
+	// returns `RoomAlert | undefined` correctly now.
+	if (hasData(backendData) && Array.isArray(backendData.data)) {
+		const alert = backendData.data.filter(isAlertWithId).find((a) => a.id === alertId);
 		if (alert) {
 			return json({
 				success: true,
@@ -170,7 +152,14 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 		error(400, 'Invalid alert ID');
 	}
 
-	const body: AlertUpdateInput = await request.json();
+	// R19-A: narrow body to non-null object before treating as
+	// AlertUpdateInput. Surfaces a 400 instead of a 500 NPE if the client
+	// POSTs `null`/primitive (R18-A Latent Bug §2 class).
+	const rawBody: unknown = await request.json();
+	if (!isObject(rawBody)) {
+		error(400, 'Request body must be a JSON object');
+	}
+	const body = rawBody as AlertUpdateInput;
 
 	// Build headers
 	const headers: Record<string, string> = {};
@@ -181,11 +170,15 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 	}
 
 	// Call backend at /api/admin/room-content/alerts/:id
-	const backendData = await fetchFromBackend(`/api/admin/room-content/alerts/${id}`, {
-		method: 'PUT',
-		headers,
-		body: JSON.stringify(body)
-	});
+	const backendData = await fetchBackend(
+		`/api/admin/room-content/alerts/${id}`,
+		{
+			method: 'PUT',
+			headers,
+			body: JSON.stringify(body)
+		},
+		'[Alert API]'
+	);
 
 	if (backendData) {
 		return json({
@@ -299,10 +292,14 @@ export const DELETE: RequestHandler = async ({ params, request, cookies }) => {
 	}
 
 	// Call backend at /api/admin/room-content/alerts/:id
-	const backendData = await fetchFromBackend(`/api/admin/room-content/alerts/${id}`, {
-		method: 'DELETE',
-		headers
-	});
+	const backendData = await fetchBackend(
+		`/api/admin/room-content/alerts/${id}`,
+		{
+			method: 'DELETE',
+			headers
+		},
+		'[Alert API]'
+	);
 
 	if (backendData) {
 		return json({

@@ -12,44 +12,11 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
 import type { RoomStats } from '$lib/types/trading';
-
-// ═══════════════════════════════════════════════════════════════════════════
-// BACKEND CONFIGURATION
-// ═══════════════════════════════════════════════════════════════════════════
-
-const BACKEND_URL = env.BACKEND_URL || 'http://localhost:8080';
-
-// ═══════════════════════════════════════════════════════════════════════════
-// BACKEND FETCH HELPER
-// ═══════════════════════════════════════════════════════════════════════════
-
-async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Promise<any | null> {
-	try {
-		console.info(`[Stats API] Fetching: ${BACKEND_URL}${endpoint}`);
-		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
-			...options,
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-				...options.headers
-			}
-		});
-
-		if (!response.ok) {
-			console.error(`[Stats API] Backend error: ${response.status} ${response.statusText}`);
-			return null;
-		}
-
-		const data = await response.json();
-		console.info(`[Stats API] Backend success`);
-		return data;
-	} catch (err) {
-		console.error('[Stats API] Backend fetch failed:', err);
-		return null;
-	}
-}
+// R19-A: shared proxy helper — pins CLAUDE.md URL-fallback chain
+// (API_BASE_URL || BACKEND_URL || localhost) AND replaces the
+// `Promise<any | null>` helper with `Promise<unknown>` + narrowing guards.
+import { fetchBackend, hasData, extractBackendData } from '$lib/server/proxy-fetch';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // FALLBACK MOCK DATA
@@ -101,9 +68,14 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
 	}
 
 	// Call backend at /api/room-content/rooms/:slug/stats
-	const backendData = await fetchFromBackend(`/api/room-content/rooms/${slug}/stats`, { headers });
+	const backendData = await fetchBackend(
+		`/api/room-content/rooms/${slug}/stats`,
+		{ headers },
+		'[Stats API]'
+	);
 
-	if (backendData?.data) {
+	// R19-A: hasData() narrowing instead of `backendData?.data`.
+	if (hasData(backendData)) {
 		return json({
 			success: true,
 			data: backendData.data,
@@ -175,18 +147,23 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	}
 
 	// Call backend to refresh stats
-	const backendData = await fetchFromBackend(
+	const backendData = await fetchBackend(
 		`/api/admin/room-content/rooms/${slug}/stats/refresh`,
 		{
 			method: 'POST',
 			headers
-		}
+		},
+		'[Stats API]'
 	);
 
 	if (backendData) {
+		// R19-A: replaces `backendData.data || backendData` short-circuit
+		// (R18-A Latent Bug §3). Distinguishes "backend returned `data:
+		// null`" (no stats yet) from "envelope has no `data` key" (legacy
+		// non-wrapped endpoint). Both safe to forward.
 		return json({
 			success: true,
-			data: backendData.data || backendData,
+			data: extractBackendData(backendData),
 			message: 'Stats refreshed',
 			_source: 'backend'
 		});

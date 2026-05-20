@@ -12,44 +12,28 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
 import type { RoomAlert, AlertCreateInput } from '$lib/types/trading';
 import { buildTosString, validateTosParams } from '$lib/utils/tos-builder';
+// R19-A: shared proxy helper — pins CLAUDE.md URL-fallback chain
+// (API_BASE_URL || BACKEND_URL || localhost) AND replaces the
+// `Promise<any | null>` helper with `Promise<unknown>` + narrowing guards.
+import { fetchBackend, hasData, isObject, extractMetaTotal } from '$lib/server/proxy-fetch';
 
 // ═══════════════════════════════════════════════════════════════════════════
-// BACKEND CONFIGURATION
+// TYPE GUARDS
 // ═══════════════════════════════════════════════════════════════════════════
 
-const BACKEND_URL = env.BACKEND_URL || 'http://localhost:8080';
-
-// ═══════════════════════════════════════════════════════════════════════════
-// BACKEND FETCH HELPER
-// ═══════════════════════════════════════════════════════════════════════════
-
-async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Promise<any | null> {
-	try {
-		console.info(`[Alerts API] Fetching: ${BACKEND_URL}${endpoint}`);
-		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
-			...options,
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-				...options.headers
-			}
-		});
-
-		if (!response.ok) {
-			console.error(`[Alerts API] Backend error: ${response.status} ${response.statusText}`);
-			return null;
-		}
-
-		const data = await response.json();
-		console.info(`[Alerts API] Backend success:`, data?.data?.length || 0, 'items');
-		return data;
-	} catch (err) {
-		console.error('[Alerts API] Backend fetch failed:', err);
-		return null;
-	}
+// R19-A Latent Bug guard: backend could (in principle) return a row with
+// missing/null `alert_type` or `ticker`. The downstream `.ticker.toUpperCase()`
+// access in the filter loop would NPE on such a row. Filter via this guard
+// before reading fields.
+function isRoomAlertLike(value: unknown): value is RoomAlert {
+	if (!isObject(value)) return false;
+	return (
+		typeof value.id === 'number' &&
+		typeof value.alert_type === 'string' &&
+		typeof value.ticker === 'string'
+	);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -124,27 +108,32 @@ export const GET: RequestHandler = async ({ params, url, request, cookies }) => 
 	backendParams.set('per_page', perPage);
 
 	// Call backend at /api/room-content/rooms/:slug/alerts
-	const backendData = await fetchFromBackend(
+	const backendData = await fetchBackend(
 		`/api/room-content/rooms/${slug}/alerts?${backendParams.toString()}`,
-		{ headers }
+		{ headers },
+		'[Alerts API]'
 	);
 
-	if (backendData?.data) {
-		// Transform backend response to frontend format
-		let alerts = backendData.data;
+	// R19-A: narrow `unknown` via hasData() instead of `backendData?.data`
+	// (which would throw on a non-null primitive backend response). Filter
+	// to only entries that look like RoomAlert before applying the
+	// downstream string comparisons — drops malformed rows silently rather
+	// than 500-ing the whole list (R18-A Latent Bug §1 class).
+	if (hasData(backendData) && Array.isArray(backendData.data)) {
+		let alerts: RoomAlert[] = backendData.data.filter(isRoomAlertLike);
 
 		// Apply client-side filters if needed
 		if (alertType && alertType !== 'all') {
-			alerts = alerts.filter((a: RoomAlert) => a.alert_type === alertType);
+			alerts = alerts.filter((a) => a.alert_type === alertType);
 		}
 		if (ticker) {
-			alerts = alerts.filter((a: RoomAlert) => a.ticker.toUpperCase() === ticker.toUpperCase());
+			alerts = alerts.filter((a) => a.ticker.toUpperCase() === ticker.toUpperCase());
 		}
 
 		return json({
 			success: true,
 			data: alerts,
-			total: backendData.meta?.total || alerts.length,
+			total: extractMetaTotal(backendData, alerts.length),
 			page: parseInt(page),
 			limit: parseInt(perPage),
 			_source: 'backend'
@@ -207,7 +196,16 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 		error(400, 'Room slug is required');
 	}
 
-	const body: AlertCreateInput = await request.json();
+	// R19-A: SvelteKit's `request.json()` returns `Promise<any>`, narrow the
+	// body to a non-null object BEFORE field reads to surface a 400 (rather
+	// than a 500 NPE) if a client POSTs `null` or a primitive (R18-A Latent
+	// Bug §2 class). The `AlertCreateInput` cast then documents the shape
+	// we're assuming for the downstream field reads.
+	const rawBody: unknown = await request.json();
+	if (!isObject(rawBody)) {
+		error(400, 'Request body must be a JSON object');
+	}
+	const body = rawBody as unknown as AlertCreateInput;
 
 	// Validate required fields
 	if (!body.alert_type || !body.ticker || !body.title || !body.message) {
@@ -247,7 +245,7 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	}
 
 	// Call backend at /api/admin/room-content/alerts
-	const backendData = await fetchFromBackend(`/api/admin/room-content/alerts`, {
+	const backendData = await fetchBackend(`/api/admin/room-content/alerts`, {
 		method: 'POST',
 		headers,
 		body: JSON.stringify({
@@ -272,7 +270,7 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 			trade_plan_id: body.trade_plan_id,
 			is_pinned: body.is_pinned
 		})
-	});
+	}, '[Alerts API]');
 
 	if (backendData) {
 		return json({
