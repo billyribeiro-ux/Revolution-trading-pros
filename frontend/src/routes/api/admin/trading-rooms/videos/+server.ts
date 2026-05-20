@@ -10,11 +10,29 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { requireAdmin } from '$lib/server/auth';
+// R20-A: migrated off local `Promise<any | null>` helper to shared
+// `$lib/server/proxy-fetch` (CLAUDE.md URL-fallback pinned once;
+// `Promise<unknown>` return type; `hasSuccess` narrowing replaces the
+// unsound `backendData?.success` pattern).
+import { fetchBackend, hasSuccess, isObject } from '$lib/server/proxy-fetch';
 
-// Production fallback - Rust API on Fly.io
-import { env } from '$env/dynamic/private';
-const BACKEND_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+/** Body shape for POST /api/admin/trading-rooms/videos — every field optional from the wire. */
+interface VideoCreateBody {
+	trading_room_id?: number;
+	trader_id?: number;
+	title?: string;
+	description?: string;
+	video_url?: string;
+	video_platform?: string;
+	video_id?: string;
+	thumbnail_url?: string | null;
+	duration?: number;
+	video_date?: string;
+	is_featured?: boolean;
+	is_published?: boolean;
+	tags?: string[];
+	metadata?: Record<string, unknown> | null;
+}
 
 // Mock videos data — PRESERVED as a local-dev reference only (audit
 // 2026-05-16). The real backend (`admin_list_videos`, trading_rooms.rs)
@@ -124,27 +142,6 @@ const _mockVideos = [
 	}
 ];
 
-// Try to fetch from backend
-async function fetchFromBackend(endpoint: string, options?: RequestInit): Promise<any | null> {
-	if (!BACKEND_URL) return null;
-
-	try {
-		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
-			...options,
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-				...options?.headers
-			}
-		});
-
-		if (!response.ok) return null;
-		return await response.json();
-	} catch (_error) {
-		return null;
-	}
-}
-
 // GET - List videos
 export const GET: RequestHandler = async (event) => {
 	const { token } = requireAdmin(event);
@@ -181,14 +178,17 @@ export const GET: RequestHandler = async (event) => {
 	if (roomSlug) backendQuery.set('room_slug', roomSlug);
 
 	// Try backend first
-	const backendData = await fetchFromBackend(
+	const backendData = await fetchBackend(
 		`/api/admin/trading-rooms/videos?${backendQuery.toString()}`,
 		{
 			headers: { Authorization: `Bearer ${token}` }
-		}
+		},
+		'[Trading-rooms videos proxy]'
 	);
 
-	if (backendData?.success) {
+	// R20-A: `hasSuccess` narrows `unknown` before reading `.success`
+	// (replaces the unsound `backendData?.success` pattern).
+	if (hasSuccess(backendData) && backendData.success) {
 		return json(backendData);
 	}
 
@@ -209,16 +209,31 @@ export const GET: RequestHandler = async (event) => {
 // POST - Create video
 export const POST: RequestHandler = async (event) => {
 	const { token } = requireAdmin(event);
-	const body = await event.request.json();
+
+	// R20-A: narrow request.json() to a non-null object before forwarding
+	// to the backend. `null` / primitive bodies now surface a 400 instead
+	// of a 500 NPE downstream (R18-A Latent Bug §2 mitigation).
+	const rawBody: unknown = await event.request.json();
+	if (!isObject(rawBody)) {
+		return json(
+			{ success: false, error: 'Request body must be a JSON object' },
+			{ status: 400 }
+		);
+	}
+	const body = rawBody as VideoCreateBody;
 
 	// Try backend first
-	const backendData = await fetchFromBackend('/api/admin/trading-rooms/videos', {
-		method: 'POST',
-		headers: { Authorization: `Bearer ${token}` },
-		body: JSON.stringify(body)
-	});
+	const backendData = await fetchBackend(
+		'/api/admin/trading-rooms/videos',
+		{
+			method: 'POST',
+			headers: { Authorization: `Bearer ${token}` },
+			body: JSON.stringify(body)
+		},
+		'[Trading-rooms videos proxy POST]'
+	);
 
-	if (backendData?.success) {
+	if (hasSuccess(backendData) && backendData.success) {
 		return json(backendData);
 	}
 

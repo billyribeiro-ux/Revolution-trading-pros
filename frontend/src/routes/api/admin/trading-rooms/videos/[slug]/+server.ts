@@ -9,11 +9,11 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { requireAdmin } from '$lib/server/auth';
-
-// Production fallback - Rust API on Fly.io
-import { env } from '$env/dynamic/private';
-const BACKEND_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+// R20-A: migrated off local `Promise<any | null>` helper to shared
+// `$lib/server/proxy-fetch` (CLAUDE.md URL-fallback pinned once;
+// `Promise<unknown>` return; `hasSuccess` narrow replaces unsound
+// `backendData?.success`).
+import { fetchBackend, hasSuccess } from '$lib/server/proxy-fetch';
 
 // Room slug to ID mapping
 // FIX-2026-04-26-audit (P2-4): the rooms config and the trading-rooms admin page
@@ -138,27 +138,6 @@ const mockVideos = [
 	}
 ];
 
-// Try to fetch from backend
-async function fetchFromBackend(endpoint: string, options?: RequestInit): Promise<any | null> {
-	if (!BACKEND_URL) return null;
-
-	try {
-		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
-			...options,
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-				...options?.headers
-			}
-		});
-
-		if (!response.ok) return null;
-		return await response.json();
-	} catch (_error) {
-		return null;
-	}
-}
-
 // GET - List videos for a specific room by slug
 export const GET: RequestHandler = async (event) => {
 	const { token } = requireAdmin(event);
@@ -171,14 +150,17 @@ export const GET: RequestHandler = async (event) => {
 	const perPage = parseInt(url.searchParams.get('per_page') || '20');
 
 	// Try backend first
-	const backendData = await fetchFromBackend(
+	const backendData = await fetchBackend(
 		`/api/admin/trading-rooms/videos/${slug}?${url.searchParams.toString()}`,
 		{
 			headers: { Authorization: `Bearer ${token}` }
-		}
+		},
+		'[Trading-rooms videos by slug proxy]'
 	);
 
-	if (backendData?.success) {
+	// R20-A: `hasSuccess` narrows `unknown` before reading `.success`
+	// (replaces the unsound `backendData?.success` pattern).
+	if (hasSuccess(backendData) && backendData.success) {
 		return json(backendData);
 	}
 
