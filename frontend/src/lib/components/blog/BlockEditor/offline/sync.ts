@@ -10,6 +10,7 @@
  */
 
 import { browser } from '$app/environment';
+import { logger } from '$lib/utils/logger';
 import {
 	blogEditorDB,
 	generateChecksum,
@@ -186,7 +187,7 @@ class SyncManager {
 				try {
 					callback(event);
 				} catch (error) {
-					console.error('[SyncManager] Error in event listener:', error);
+					logger.error('[SyncManager] Error in event listener:', error);
 				}
 			}
 		}
@@ -205,10 +206,6 @@ class SyncManager {
 		this.status.isOnline = true;
 		this.status.consecutiveFailures = 0;
 
-		if (import.meta.env.DEV) {
-			console.debug('[SyncManager] Network online');
-		}
-
 		if (this.options.autoSyncOnOnline) {
 			// Delay slightly to allow network to stabilize
 			setTimeout(() => this.syncNow(), 1000);
@@ -217,10 +214,6 @@ class SyncManager {
 
 	private handleOffline = (): void => {
 		this.status.isOnline = false;
-
-		if (import.meta.env.DEV) {
-			console.debug('[SyncManager] Network offline');
-		}
 
 		// Abort any in-progress sync
 		if (this.abortController) {
@@ -240,9 +233,7 @@ class SyncManager {
 		this.syncTimer = setInterval(() => {
 			if (this.status.isOnline && !this.status.isSyncing) {
 				this.syncNow().catch((error) => {
-					if (import.meta.env.DEV) {
-						console.error('[SyncManager] Periodic sync failed:', error);
-					}
+					logger.error('[SyncManager] Periodic sync failed:', error);
 				});
 			}
 		}, this.options.syncInterval);
@@ -795,9 +786,7 @@ export async function registerBackgroundSync(): Promise<boolean> {
 		await registration.sync.register('blog-editor-sync');
 		return true;
 	} catch (error) {
-		if (import.meta.env.DEV) {
-			console.warn('[SyncManager] Background sync registration failed:', error);
-		}
+		logger.warn('[SyncManager] Background sync registration failed:', error);
 		return false;
 	}
 }

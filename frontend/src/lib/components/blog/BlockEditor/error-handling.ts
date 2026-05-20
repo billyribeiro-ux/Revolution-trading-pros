@@ -15,6 +15,7 @@
  */
 
 import { writable, derived, type Readable, type Writable } from 'svelte/store';
+import { logger } from '$lib/utils/logger';
 import type { Block, BlockType, BlockContent, BlockSettings, BlockMetadata } from './types';
 import { BLOCK_DEFINITIONS } from './types';
 
@@ -334,12 +335,10 @@ export function captureBlockError(
 		recovered: false
 	};
 
-	// Log to console
-	console.error(`[BlockError] ${type} in ${block.type} block (${block.id}):`, error);
-	if (import.meta.env.DEV) {
-		console.error('[BlockError] Context:', context);
-		console.error('[BlockError] Block data:', block);
-	}
+	// Log to console (dev-only — prod path is the reportErrorToBackend call below)
+	logger.error(`[BlockError] ${type} in ${block.type} block (${block.id}):`, error);
+	logger.error('[BlockError] Context:', context);
+	logger.error('[BlockError] Block data:', block);
 
 	// Add to error tracking store
 	addErrorToStore(record);
@@ -347,7 +346,7 @@ export function captureBlockError(
 	// Optionally send to backend
 	if (typeof window !== 'undefined' && !import.meta.env.DEV) {
 		reportErrorToBackend(record).catch((e) => {
-			console.warn('[BlockError] Failed to report error to backend:', e);
+			logger.warn('[BlockError] Failed to report error to backend:', e);
 		});
 	}
 
@@ -745,11 +744,11 @@ async function reportErrorToBackend(record: BlockErrorRecord): Promise<void> {
 		});
 
 		if (!response.ok) {
-			console.warn('[BlockError] Backend error reporting failed:', response.status);
+			logger.warn('[BlockError] Backend error reporting failed:', response.status);
 		}
 	} catch (e) {
 		// Silently fail - don't cause more errors while reporting errors
-		console.warn('[BlockError] Backend error reporting failed:', e);
+		logger.warn('[BlockError] Backend error reporting failed:', e);
 	}
 }
 
