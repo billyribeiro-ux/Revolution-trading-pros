@@ -4,6 +4,7 @@
 	import { IconEdit, IconTrash, IconPlus, IconRefresh, IconSearch, IconFilter } from '$lib/icons';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import { toastStore } from '$lib/stores/toast.svelte';
+	import { logger } from '$lib/utils/logger';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// State Management - Svelte 5 Runes
@@ -80,7 +81,7 @@
 			} else {
 				error = 'Error connecting to server';
 			}
-			console.error('Failed to load coupons:', err);
+			logger.error('Failed to load coupons:', err);
 		} finally {
 			loading = false;
 		}
@@ -113,7 +114,7 @@
 			} else {
 				toastStore.error('Failed to delete coupon. Please try again.');
 			}
-			console.error('Delete coupon error:', err);
+			logger.error('Delete coupon error:', err);
 		} finally {
 			deleting = null;
 		}
@@ -124,7 +125,7 @@
 			await couponsApi.update(coupon.id, { is_active: !coupon.is_active });
 			coupons = coupons.map((c) => (c.id === coupon.id ? { ...c, is_active: !c.is_active } : c));
 		} catch (err) {
-			console.error('Toggle status error:', err);
+			logger.error('Toggle status error:', err);
 			toastStore.error('Failed to update coupon status');
 		}
 	}

@@ -22,6 +22,7 @@
 	import IconCircleCheck from '@tabler/icons-svelte-runes/icons/circle-check';
 	import IconCircleX from '@tabler/icons-svelte-runes/icons/circle-x';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { logger } from '$lib/utils/logger';
 
 	// Reset confirmation modal state
 	let showResetModal = $state(false);
@@ -217,7 +218,7 @@
 				settings = { ...settings, ...data.data };
 			}
 		} catch (error) {
-			console.error('Failed to load settings:', error);
+			logger.error('Failed to load settings:', error);
 			showNotification('Failed to load settings', 'error');
 		}
 		loading = false;
@@ -232,7 +233,7 @@
 			});
 			showNotification('Settings saved successfully', 'success');
 		} catch (error) {
-			console.error('Failed to save settings:', error);
+			logger.error('Failed to save settings:', error);
 			showNotification('Failed to save settings', 'error');
 		}
 		saving = false;
@@ -252,7 +253,7 @@
 			}
 			showNotification('Settings reset to defaults', 'success');
 		} catch (error) {
-			console.error('Failed to reset settings:', error);
+			logger.error('Failed to reset settings:', error);
 			showNotification('Failed to reset settings', 'error');
 		}
 		saving = false;
