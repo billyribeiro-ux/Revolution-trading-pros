@@ -33,13 +33,6 @@
 		IconSettings,
 		IconChevronUp,
 		IconChevronDown,
-		IconArrowBackUp,
-		IconArrowForwardUp,
-		IconDeviceDesktop,
-		IconDeviceTablet,
-		IconDeviceMobile,
-		IconEye,
-		IconEdit,
 		IconMaximize,
 		IconMinimize,
 		IconDeviceFloppy,
@@ -67,6 +60,17 @@
 	import RevisionHistory from './RevisionHistory.svelte';
 	import KeyboardShortcuts from './KeyboardShortcuts.svelte';
 	import SchedulingPanel from './SchedulingPanel.svelte';
+
+	// Extracted leaf components (R7-C)
+	import DropIndicator from './block-editor/DropIndicator.svelte';
+	import MultiSelectionBadge from './block-editor/MultiSelectionBadge.svelte';
+	import AnnouncementsLiveRegion from './block-editor/AnnouncementsLiveRegion.svelte';
+	import EmptyEditorState from './block-editor/EmptyEditorState.svelte';
+	import UndoRedoControls from './block-editor/UndoRedoControls.svelte';
+	import DevicePreviewToggle from './block-editor/DevicePreviewToggle.svelte';
+	import ViewModeToggle from './block-editor/ViewModeToggle.svelte';
+	import SaveStatusIndicator from './block-editor/SaveStatusIndicator.svelte';
+	import BlockLayersPanel from './block-editor/BlockLayersPanel.svelte';
 
 	// ==========================================================================
 	// Props
@@ -1352,30 +1356,7 @@
 	<!-- Top Toolbar -->
 	<header class="editor-header">
 		<div class="header-left">
-			<div class="undo-redo" role="group" aria-label="Undo and redo actions">
-				<button
-					type="button"
-					class="toolbar-btn"
-					disabled={!canUndo}
-					onclick={undo}
-					title="Undo (Ctrl+Z)"
-					aria-label="Undo last action"
-					aria-keyshortcuts="Control+Z"
-				>
-					<IconArrowBackUp size={18} aria-hidden="true" />
-				</button>
-				<button
-					type="button"
-					class="toolbar-btn"
-					disabled={!canRedo}
-					onclick={redo}
-					title="Redo (Ctrl+Shift+Z)"
-					aria-label="Redo last undone action"
-					aria-keyshortcuts="Control+Shift+Z"
-				>
-					<IconArrowForwardUp size={18} aria-hidden="true" />
-				</button>
-			</div>
+			<UndoRedoControls {canUndo} {canRedo} onUndo={undo} onRedo={redo} />
 
 			<div class="block-info">
 				<span class="block-count">{blockCount} blocks</span>
@@ -1385,80 +1366,21 @@
 		</div>
 
 		<div class="header-center">
-			<div class="device-preview" role="group" aria-label="Device preview options">
-				<button
-					type="button"
-					class="device-btn"
-					class:active={editorState.devicePreview === 'desktop'}
-					onclick={() => setDevicePreview('desktop')}
-					title="Desktop Preview"
-					aria-label="Preview as desktop"
-					aria-pressed={editorState.devicePreview === 'desktop'}
-				>
-					<IconDeviceDesktop size={18} aria-hidden="true" />
-				</button>
-				<button
-					type="button"
-					class="device-btn"
-					class:active={editorState.devicePreview === 'tablet'}
-					onclick={() => setDevicePreview('tablet')}
-					title="Tablet Preview"
-					aria-label="Preview as tablet"
-					aria-pressed={editorState.devicePreview === 'tablet'}
-				>
-					<IconDeviceTablet size={18} aria-hidden="true" />
-				</button>
-				<button
-					type="button"
-					class="device-btn"
-					class:active={editorState.devicePreview === 'mobile'}
-					onclick={() => setDevicePreview('mobile')}
-					title="Mobile Preview"
-					aria-label="Preview as mobile"
-					aria-pressed={editorState.devicePreview === 'mobile'}
-				>
-					<IconDeviceMobile size={18} aria-hidden="true" />
-				</button>
-			</div>
+			<DevicePreviewToggle device={editorState.devicePreview} onChange={setDevicePreview} />
 
-			<div class="view-toggle" role="group" aria-label="View mode">
-				<button
-					type="button"
-					class="view-btn"
-					class:active={editorState.viewMode === 'edit'}
-					onclick={() => (editorState.viewMode = 'edit')}
-					aria-label="Edit mode"
-					aria-pressed={editorState.viewMode === 'edit'}
-				>
-					<IconEdit size={16} aria-hidden="true" />
-					Edit
-				</button>
-				<button
-					type="button"
-					class="view-btn"
-					class:active={editorState.viewMode === 'preview'}
-					onclick={() => (editorState.viewMode = 'preview')}
-					aria-label="Preview mode"
-					aria-pressed={editorState.viewMode === 'preview'}
-				>
-					<IconEye size={16} aria-hidden="true" />
-					Preview
-				</button>
-			</div>
+			<ViewModeToggle
+				mode={editorState.viewMode}
+				onChange={(m) => (editorState.viewMode = m)}
+			/>
 		</div>
 
 		<div class="header-right">
-			<div class="save-status">
-				{#if saveError}
-					<span class="error">{saveError}</span>
-				{:else if isSaving}
-					<span class="saving"><IconCloudUpload size={16} class="spin" /> Saving...</span>
-				{:else if editorState.hasUnsavedChanges}
-					<span class="unsaved">Unsaved changes</span>
-				{:else}
-					<span class="saved">Saved {formatLastSaved(editorState.lastSaved)}</span>
-				{/if}
-			</div>
+			<SaveStatusIndicator
+				{isSaving}
+				{saveError}
+				hasUnsavedChanges={editorState.hasUnsavedChanges}
+				lastSavedLabel={formatLastSaved(editorState.lastSaved)}
+			/>
 			{#if seoAnalysis && seoAnalysis.grade}
 				<div class="seo-score" title="SEO Score: {seoAnalysis.score}/100">
 					<span class="grade grade-{seoAnalysis.grade.toLowerCase()}">{seoAnalysis.grade}</span>
@@ -1637,29 +1559,11 @@
 						{/if}
 					</div>
 				{:else if editorState.sidebarTab === 'layers'}
-					<div id="panel-layers" role="tabpanel" aria-labelledby="tab-layers">
-						<div class="panel-header">
-							<h3>Block Layers</h3>
-						</div>
-						<div class="layers-list" role="listbox" aria-label="Content blocks">
-							{#each editorState.blocks as block, i (block.id)}
-								<button
-									type="button"
-									class="layer-item"
-									class:selected={block.id === editorState.selectedBlockId}
-									onclick={() => (editorState.selectedBlockId = block.id)}
-									role="option"
-									aria-selected={block.id === editorState.selectedBlockId}
-									aria-label="{BLOCK_DEFINITIONS[block.type]?.name || block.type}, position {i + 1}"
-								>
-									<IconGripVertical size={14} aria-hidden="true" />
-									<span class="layer-type">{BLOCK_DEFINITIONS[block.type]?.name || block.type}</span
-									>
-									<span class="layer-index">#{i + 1}</span>
-								</button>
-							{/each}
-						</div>
-					</div>
+					<BlockLayersPanel
+						blocks={editorState.blocks}
+						selectedBlockId={editorState.selectedBlockId}
+						onSelectBlock={(id) => (editorState.selectedBlockId = id)}
+					/>
 				{:else if editorState.sidebarTab === 'ai'}
 					<div id="panel-ai" role="tabpanel" aria-labelledby="tab-ai">
 						<AIAssistant
@@ -1701,17 +1605,7 @@
 			<div class="canvas-wrapper">
 				{#if editorState.blocks.length === 0}
 					<!-- Empty State -->
-					<div class="empty-state" transition:fade>
-						<div class="empty-icon">
-							<IconPlus size={48} />
-						</div>
-						<h2>Start creating your content</h2>
-						<p>Click the button below to add your first block</p>
-						<button type="button" class="btn-add-first" onclick={() => openBlockInserter(0)}>
-							<IconPlus size={18} />
-							Add Block
-						</button>
-					</div>
+					<EmptyEditorState onAddBlock={() => openBlockInserter(0)} />
 				{:else}
 					<!-- Block List -->
 					<div
@@ -1877,40 +1771,21 @@
 </div>
 
 <!-- Screen Reader Live Region for Drag-Drop Announcements -->
-<div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
-	{#each announcements as announcement, i (i)}
-		<p>{announcement}</p>
-	{/each}
-</div>
+<AnnouncementsLiveRegion {announcements} />
 
 <!-- Drop Indicator (visible during drag operations) -->
 {#if dragVisuals.dropIndicatorVisible && editorState.isDragging}
-	<div
-		class="drop-indicator"
-		style="top: {dragVisuals.dropIndicatorY}px;"
-		transition:fade={{ duration: 100 }}
-	>
-		<div class="drop-indicator-line"></div>
-		<div class="drop-indicator-dot drop-indicator-dot-left"></div>
-		<div class="drop-indicator-dot drop-indicator-dot-right"></div>
-	</div>
+	<DropIndicator y={dragVisuals.dropIndicatorY} />
 {/if}
 
 <!-- Multi-Selection Count Badge -->
 {#if editorState.selectedBlockIds.length > 1 && !editorState.isDragging}
-	<div class="multi-selection-badge" transition:fade={{ duration: 150 }}>
-		{editorState.selectedBlockIds.length} blocks selected
-		<button
-			type="button"
-			class="clear-selection-btn"
-			onclick={() => {
-				editorState.selectedBlockIds = [];
-			}}
-			aria-label="Clear selection"
-		>
-			Clear
-		</button>
-	</div>
+	<MultiSelectionBadge
+		count={editorState.selectedBlockIds.length}
+		onClear={() => {
+			editorState.selectedBlockIds = [];
+		}}
+	/>
 {/if}
 
 <!-- Block Inserter Modal -->
@@ -1999,11 +1874,6 @@
 		gap: 0.75rem;
 	}
 
-	.undo-redo {
-		display: flex;
-		gap: 0.25rem;
-	}
-
 	.toolbar-btn {
 		display: flex;
 		align-items: center;
@@ -2030,15 +1900,11 @@
 
 	/* Focus visible styles for keyboard navigation - WCAG 2.1 AA */
 	.toolbar-btn:focus-visible,
-	.device-btn:focus-visible,
-	.view-btn:focus-visible,
 	.tab-btn:focus-visible,
 	.btn-save:focus-visible,
 	.btn-publish:focus-visible,
 	.block-tool:focus-visible,
-	.layer-item:focus-visible,
-	.add-between-btn:focus-visible,
-	.btn-add-first:focus-visible {
+	.add-between-btn:focus-visible {
 		outline: 2px solid #3b82f6;
 		outline-offset: 2px;
 	}
@@ -2066,84 +1932,6 @@
 		gap: 1rem;
 		font-size: 0.8125rem;
 		color: #666;
-	}
-
-	.device-preview {
-		display: flex;
-		background: #f0f0f0;
-		border-radius: 8px;
-		padding: 0.25rem;
-	}
-
-	.device-btn {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 32px;
-		height: 32px;
-		border: none;
-		background: transparent;
-		border-radius: 6px;
-		cursor: pointer;
-		color: #666;
-		transition: all 0.15s;
-	}
-
-	.device-btn:hover {
-		color: #1a1a1a;
-	}
-
-	.device-btn.active {
-		background: white;
-		color: #3b82f6;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-	}
-
-	.view-toggle {
-		display: flex;
-		background: #f0f0f0;
-		border-radius: 8px;
-		padding: 0.25rem;
-	}
-
-	.view-btn {
-		display: flex;
-		align-items: center;
-		gap: 0.375rem;
-		padding: 0.375rem 0.75rem;
-		border: none;
-		background: transparent;
-		border-radius: 6px;
-		cursor: pointer;
-		color: #666;
-		font-size: 0.8125rem;
-		font-weight: 500;
-		transition: all 0.15s;
-	}
-
-	.view-btn.active {
-		background: white;
-		color: #1a1a1a;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-	}
-
-	.save-status {
-		font-size: 0.8125rem;
-	}
-
-	.save-status .saving {
-		color: #3b82f6;
-		display: flex;
-		align-items: center;
-		gap: 0.375rem;
-	}
-
-	.save-status .unsaved {
-		color: #f59e0b;
-	}
-
-	.save-status .saved {
-		color: #10b981;
 	}
 
 	.header-actions {
@@ -2290,45 +2078,6 @@
 		font-size: 0.875rem;
 	}
 
-	.layers-list {
-		display: flex;
-		flex-direction: column;
-		gap: 0.25rem;
-	}
-
-	.layer-item {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.625rem 0.75rem;
-		background: #f5f5f5;
-		border: 1px solid transparent;
-		border-radius: 6px;
-		cursor: pointer;
-		font-size: 0.8125rem;
-		text-align: left;
-		transition: all 0.15s;
-	}
-
-	.layer-item:hover {
-		background: #e5e5e5;
-	}
-
-	.layer-item.selected {
-		background: #dbeafe;
-		border-color: #3b82f6;
-	}
-
-	.layer-type {
-		flex: 1;
-		font-weight: 500;
-	}
-
-	.layer-index {
-		color: #999;
-		font-size: 0.75rem;
-	}
-
 	/* Canvas */
 	.editor-canvas {
 		flex: 1;
@@ -2349,59 +2098,6 @@
 		transform: scale(var(--zoom, 1));
 		transform-origin: top center;
 		transition: width 0.3s ease;
-	}
-
-	/* Empty State */
-	.empty-state {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		height: 400px;
-		text-align: center;
-	}
-
-	.empty-icon {
-		width: 80px;
-		height: 80px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: #f0f0f0;
-		border-radius: 16px;
-		color: #999;
-		margin-bottom: 1.5rem;
-	}
-
-	.empty-state h2 {
-		font-size: 1.25rem;
-		font-weight: 600;
-		color: #1a1a1a;
-		margin: 0 0 0.5rem;
-	}
-
-	.empty-state p {
-		color: #666;
-		margin: 0 0 1.5rem;
-	}
-
-	.btn-add-first {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.75rem 1.5rem;
-		background: #3b82f6;
-		color: white;
-		border: none;
-		border-radius: 8px;
-		font-size: 0.9375rem;
-		font-weight: 500;
-		cursor: pointer;
-		transition: all 0.15s;
-	}
-
-	.btn-add-first:hover {
-		background: #2563eb;
 	}
 
 	/* Block Wrapper */
@@ -2678,107 +2374,6 @@
 		}
 	}
 
-	/* Floating drop indicator */
-	.drop-indicator {
-		position: fixed;
-		left: 0;
-		right: 0;
-		height: 4px;
-		pointer-events: none;
-		z-index: 10000;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.drop-indicator-line {
-		position: absolute;
-		left: 50%;
-		transform: translateX(-50%);
-		width: min(900px, calc(100% - 4rem));
-		height: 4px;
-		background: linear-gradient(
-			90deg,
-			transparent 0%,
-			#3b82f6 5%,
-			#60a5fa 50%,
-			#3b82f6 95%,
-			transparent 100%
-		);
-		border-radius: 2px;
-		box-shadow:
-			0 0 20px rgba(59, 130, 246, 0.6),
-			0 0 40px rgba(59, 130, 246, 0.3);
-	}
-
-	.drop-indicator-dot {
-		position: absolute;
-		width: 12px;
-		height: 12px;
-		background: #3b82f6;
-		border: 2px solid white;
-		border-radius: 50%;
-		box-shadow: 0 2px 8px rgba(59, 130, 246, 0.5);
-		animation: dropDotPulse 1s ease-in-out infinite;
-	}
-
-	.drop-indicator-dot-left {
-		left: calc(50% - min(450px, calc(50% - 2rem)));
-	}
-
-	.drop-indicator-dot-right {
-		right: calc(50% - min(450px, calc(50% - 2rem)));
-	}
-
-	@keyframes dropDotPulse {
-		0%,
-		100% {
-			transform: scale(1);
-		}
-		50% {
-			transform: scale(1.2);
-		}
-	}
-
-	/* Multi-selection badge */
-	.multi-selection-badge {
-		position: fixed;
-		bottom: 24px;
-		left: 50%;
-		transform: translateX(-50%);
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		padding: 12px 20px;
-		background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
-		color: white;
-		border-radius: 12px;
-		font-size: 14px;
-		font-weight: 500;
-		box-shadow:
-			0 10px 40px rgba(30, 27, 75, 0.4),
-			0 4px 12px rgba(0, 0, 0, 0.2);
-		z-index: 1000;
-		backdrop-filter: blur(8px);
-	}
-
-	.clear-selection-btn {
-		padding: 6px 12px;
-		background: rgba(255, 255, 255, 0.15);
-		border: 1px solid rgba(255, 255, 255, 0.2);
-		border-radius: 6px;
-		color: white;
-		font-size: 12px;
-		font-weight: 500;
-		cursor: pointer;
-		transition: all 0.15s;
-	}
-
-	.clear-selection-btn:hover {
-		background: rgba(255, 255, 255, 0.25);
-		border-color: rgba(255, 255, 255, 0.3);
-	}
-
 	/* Drop feedback animation (haptic-style) */
 	.canvas-wrapper.drop-feedback {
 		animation: dropFeedback 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -2842,26 +2437,9 @@
 		.block-wrapper.dragging,
 		.block-wrapper.drop-before::before,
 		.block-wrapper.drop-after::after,
-		.canvas-wrapper.drop-feedback,
-		.drop-indicator-dot,
-		.drop-indicator-line {
+		.canvas-wrapper.drop-feedback {
 			animation: none;
 			transition: none;
-		}
-
-		.drop-indicator-line {
-			box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
-		}
-	}
-
-	/* Dark mode support */
-	@media (prefers-color-scheme: dark) {
-		.drop-indicator-dot {
-			border-color: #1e1b4b;
-		}
-
-		.multi-selection-badge {
-			background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
 		}
 	}
 
