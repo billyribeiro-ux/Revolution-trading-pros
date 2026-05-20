@@ -10,6 +10,7 @@
 
 import { get as _get } from 'svelte/store';
 import { authStore } from '$lib/stores/auth.svelte';
+import type { JsonValue, QueryParams } from './_types';
 
 // ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
 const API_BASE = '';
@@ -50,7 +51,13 @@ export interface EmailTemplate {
 	thumbnail?: string;
 	html_content: string;
 	plain_text_content?: string;
-	design_json?: any; // For builder state
+	/**
+	 * Builder-state blob (grapesjs / mjml / homegrown JSON). Shape varies by
+	 * template editor; treat as opaque JSON on the client and round-trip it
+	 * to/from the backend unchanged. Callers that need to read or mutate the
+	 * design tree must narrow with `typeof` / `Array.isArray` first.
+	 */
+	design_json?: JsonValue;
 	is_public: boolean;
 	usage_count: number;
 	tags: string[];
@@ -63,7 +70,13 @@ export interface EmailSequence {
 	name: string;
 	description?: string;
 	trigger_type: 'manual' | 'signup' | 'purchase' | 'tag_added' | 'custom_event';
-	trigger_config?: any;
+	/**
+	 * Trigger-specific configuration bag — keys vary by `trigger_type`
+	 * (e.g. `tag_added` carries `{ tag: string }`, `custom_event` carries
+	 * `{ event_name: string; properties?: Record<string, JsonValue> }`).
+	 * Modelled as opaque JSON because the backend stores the DSL verbatim.
+	 */
+	trigger_config?: JsonValue;
 	status: 'active' | 'paused' | 'draft';
 	emails: SequenceEmail[];
 	stats?: SequenceStats;
@@ -88,7 +101,11 @@ export interface SequenceEmail {
 
 export interface SequenceCondition {
 	type: 'opened' | 'clicked' | 'not_opened' | 'not_clicked' | 'tag' | 'custom';
-	value?: any;
+	/**
+	 * Condition-specific value (e.g. a tag name string for `tag`, a JSON
+	 * predicate for `custom`). Opaque JSON on the client.
+	 */
+	value?: JsonValue;
 	previous_email_id?: string;
 }
 
@@ -107,18 +124,21 @@ export interface EmailAutomation {
 
 export interface AutomationTrigger {
 	type: 'tag_added' | 'tag_removed' | 'field_changed' | 'event' | 'date' | 'webhook';
-	config: any;
+	/** Trigger-specific config DSL; opaque JSON on the client. */
+	config: JsonValue;
 }
 
 export interface AutomationCondition {
 	field: string;
 	operator: 'equals' | 'not_equals' | 'contains' | 'greater_than' | 'less_than';
-	value: any;
+	/** Comparison value — type depends on `field` (string / number / boolean). */
+	value: JsonValue;
 }
 
 export interface AutomationAction {
 	type: 'send_email' | 'add_tag' | 'remove_tag' | 'update_field' | 'wait' | 'webhook';
-	config: any;
+	/** Action-specific config DSL; opaque JSON on the client. */
+	config: JsonValue;
 	delay?: number;
 }
 
@@ -136,7 +156,8 @@ export interface EmailSegment {
 export interface SegmentCondition {
 	field: string;
 	operator: 'equals' | 'not_equals' | 'contains' | 'greater_than' | 'less_than' | 'in' | 'not_in';
-	value: any;
+	/** Comparison value; scalar for most operators, array for `in`/`not_in`. */
+	value: JsonValue;
 }
 
 export interface EmailSubscriber {
@@ -146,7 +167,12 @@ export interface EmailSubscriber {
 	last_name?: string;
 	status: 'subscribed' | 'unsubscribed' | 'bounced' | 'complained';
 	tags: string[];
-	custom_fields: Record<string, any>;
+	/**
+	 * Subscriber custom fields (account-defined schema). Values are JSON
+	 * scalars/structures stored alongside the subscriber; treat as opaque
+	 * JSON, narrow at the read site.
+	 */
+	custom_fields: Record<string, JsonValue>;
 	email_score: number;
 	last_opened_at?: string;
 	last_clicked_at?: string;
@@ -208,7 +234,11 @@ export interface EmailEvent {
 	email_id: string;
 	subscriber_id: string;
 	type: 'sent' | 'delivered' | 'opened' | 'clicked' | 'bounced' | 'complained' | 'unsubscribed';
-	metadata?: any;
+	/**
+	 * Event-specific metadata bag (link clicked, bounce reason, etc.).
+	 * Opaque JSON on the client.
+	 */
+	metadata?: JsonValue;
 	created_at: string;
 }
 
@@ -245,22 +275,28 @@ class EmailAPI {
 	private async request<T>(
 		method: string,
 		endpoint: string,
-		data?: any,
-		params?: Record<string, any>
+		data?: unknown,
+		params?: QueryParams
 	): Promise<T> {
 		// Use secure getter from auth store
 		const token = authStore.getToken();
 
 		// ICT 11+ Fix: Add /api prefix if endpoint doesn't already have it
 		const apiEndpoint = endpoint.startsWith('/api/') ? endpoint : `/api${endpoint}`;
-		const url = new URL(`${API_BASE}${apiEndpoint}`);
+		const searchParams = new URLSearchParams();
 		if (params) {
 			Object.entries(params).forEach(([key, value]) => {
-				if (value !== undefined && value !== null) {
-					url.searchParams.append(key, String(value));
-				}
+				if (value === undefined || value === null) return;
+				// `URLSearchParams.append` coerces values to strings;
+				// preserve the pre-typing behaviour where arrays collapse via
+				// their default `Array.prototype.toString()` (comma-joined),
+				// which matches the existing backend parser. Per-key repeat
+				// would be a behaviour change so we keep `String(value)`.
+				searchParams.append(key, String(value));
 			});
 		}
+		const queryString = searchParams.toString();
+		const url = `${API_BASE}${apiEndpoint}${queryString ? `?${queryString}` : ''}`;
 
 		const headers: Record<string, string> = {
 			'Content-Type': 'application/json'
@@ -273,11 +309,13 @@ class EmailAPI {
 		const fetchOptions: RequestInit = {
 			method,
 			headers,
-			...(data && { body: JSON.stringify(data) }),
 			credentials: 'include'
 		};
+		if (data !== undefined) {
+			fetchOptions.body = JSON.stringify(data);
+		}
 
-		const response = await fetch(url.toString(), fetchOptions);
+		const response = await fetch(url, fetchOptions);
 
 		if (!response.ok) {
 			const error = await response.json().catch(() => ({ message: 'Request failed' }));
@@ -610,7 +648,12 @@ class EmailAPI {
 
 	async generateEmailContent(
 		prompt: string,
-		context?: any
+		/**
+		 * Optional context bag forwarded to the AI generator (audience,
+		 * tone, brand voice, etc.). Opaque JSON because the backend's
+		 * prompt-engineering layer owns the schema.
+		 */
+		context?: JsonValue
 	): Promise<{
 		subject: string;
 		html_content: string;
