@@ -39,6 +39,7 @@
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	// FIX-2026-04-26 (P0-4): toast for drop-failure surfacing.
 	import { toastStore } from '$lib/stores/toast.svelte';
+	import { logger } from '$lib/utils/logger';
 
 	// Get board ID from URL
 	const boardId = $derived(page.params['id'] ?? '');
@@ -163,7 +164,7 @@
 			_customFields = fieldsRes;
 			// Suppress unused warning - _customFields loaded for future use
 		} catch (error) {
-			console.error('Failed to load board:', error);
+			logger.error('[BoardPage] Failed to load board', { error });
 		} finally {
 			loading = false;
 		}
@@ -182,7 +183,7 @@
 			newTaskTitle = '';
 			showNewTaskInput = null;
 		} catch (error) {
-			console.error('Failed to create task:', error);
+			logger.error('[BoardPage] Failed to create task', { error });
 		}
 	}
 
@@ -199,7 +200,7 @@
 			newStageTitle = '';
 			showNewStageInput = false;
 		} catch (error) {
-			console.error('Failed to create stage:', error);
+			logger.error('[BoardPage] Failed to create stage', { error });
 		}
 	}
 
@@ -220,7 +221,7 @@
 			taskAttachments = attachments;
 			taskSubtasks = subtasks;
 		} catch (error) {
-			console.error('Failed to load task details:', error);
+			logger.error('[BoardPage] Failed to load task details', { error });
 		}
 	}
 
@@ -242,7 +243,7 @@
 			tasks = tasks.map((t) => (t.id === selectedTask!.id ? updated : t));
 			selectedTask = updated;
 		} catch (error) {
-			console.error('Failed to update task:', error);
+			logger.error('[BoardPage] Failed to update task', { error });
 		}
 	}
 
@@ -260,7 +261,7 @@
 			tasks = tasks.filter((t) => t.id !== selectedTask!.id);
 			closeTaskModal();
 		} catch (error) {
-			console.error('Failed to delete task:', error);
+			logger.error('[BoardPage] Failed to delete task', { error });
 		}
 	}
 
@@ -272,7 +273,7 @@
 			tasks = tasks.map((t) => (t.id === selectedTask!.id ? updated : t));
 			selectedTask = updated;
 		} catch (error) {
-			console.error('Failed to complete task:', error);
+			logger.error('[BoardPage] Failed to complete task', { error });
 		}
 	}
 
@@ -284,7 +285,7 @@
 			taskComments = [...taskComments, comment];
 			newComment = '';
 		} catch (error) {
-			console.error('Failed to add comment:', error);
+			logger.error('[BoardPage] Failed to add comment', { error });
 		}
 	}
 
@@ -298,7 +299,7 @@
 			taskSubtasks = [...taskSubtasks, subtask];
 			newSubtaskTitle = '';
 		} catch (error) {
-			console.error('Failed to add subtask:', error);
+			logger.error('[BoardPage] Failed to add subtask', { error });
 		}
 	}
 
@@ -309,7 +310,7 @@
 			const updated = await boardsAPI.toggleSubtaskComplete(boardId, selectedTask.id, subtask.id);
 			taskSubtasks = taskSubtasks.map((s) => (s.id === subtask.id ? updated : s));
 		} catch (error) {
-			console.error('Failed to toggle subtask:', error);
+			logger.error('[BoardPage] Failed to toggle subtask', { error });
 		}
 	}
 
@@ -320,7 +321,7 @@
 			await boardsAPI.startTimer(boardId, selectedTask.id);
 			activeTimer = { taskId: selectedTask.id, startedAt: new Date() };
 		} catch (error) {
-			console.error('Failed to start timer:', error);
+			logger.error('[BoardPage] Failed to start timer', { error });
 		}
 	}
 
@@ -332,7 +333,7 @@
 			activeTimer = null;
 			timerDisplay = '00:00:00';
 		} catch (error) {
-			console.error('Failed to stop timer:', error);
+			logger.error('[BoardPage] Failed to stop timer', { error });
 		}
 	}
 
@@ -390,14 +391,16 @@
 			// Reconcile with backend's authoritative view of the moved task.
 			tasks = tasks.map((t) => (t.id === moving.id ? updated : t));
 		} catch (error) {
-			console.error('Failed to move task:', error);
+			logger.error('[BoardPage] Failed to move task', { error });
 			// Roll back to pre-drop state, then refetch to be sure we're in sync.
 			tasks = snapshot;
 			toastStore.error('Failed to move task. Reloading board.');
 			try {
 				await loadBoard();
 			} catch (reloadErr) {
-				console.error('Failed to reload board after drop failure:', reloadErr);
+				logger.error('[BoardPage] Failed to reload board after drop failure', {
+					error: reloadErr
+				});
 			}
 		} finally {
 			draggedTask = null;
