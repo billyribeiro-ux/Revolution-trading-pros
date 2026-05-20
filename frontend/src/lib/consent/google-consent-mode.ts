@@ -91,8 +91,6 @@ export function setDefaultConsent(consent: ConsentState, waitForUpdate?: number)
 	}
 
 	window.gtag!('consent', 'default', consentParams);
-
-	console.debug('[GoogleConsentMode] Set default consent:', consentParams);
 }
 
 /**
@@ -109,8 +107,6 @@ export function updateConsent(consent: ConsentState): void {
 	const params = mapConsentToGoogle(consent);
 
 	window.gtag!('consent', 'update', params);
-
-	console.debug('[GoogleConsentMode] Updated consent:', params);
 }
 
 /**
@@ -168,8 +164,6 @@ export function grantAllConsent(): void {
 
 	window.gtag!('consent', 'update', params);
 	consentInitialized = true;
-
-	console.debug('[GoogleConsentMode] Granted all consent');
 }
 
 /**
@@ -192,6 +186,4 @@ export function denyNonEssentialConsent(): void {
 
 	window.gtag!('consent', 'update', params);
 	consentInitialized = true;
-
-	console.debug('[GoogleConsentMode] Denied non-essential consent');
 }

@@ -12,6 +12,7 @@
  */
 
 import { browser } from '$app/environment';
+import { logger } from '$lib/utils/logger';
 
 export interface PendingAction {
 	id: string;
@@ -41,7 +42,7 @@ function loadPendingActions(): PendingAction[] {
 		const stored = localStorage.getItem(STORAGE_KEY);
 		return stored ? JSON.parse(stored) : [];
 	} catch (e) {
-		console.error('Failed to load pending actions:', e);
+		logger.error('Failed to load pending actions:', e);
 		return [];
 	}
 }
@@ -53,7 +54,7 @@ function savePendingActions(actions: PendingAction[]) {
 	try {
 		localStorage.setItem(STORAGE_KEY, JSON.stringify(actions));
 	} catch (e) {
-		console.error('Failed to save pending actions:', e);
+		logger.error('Failed to save pending actions:', e);
 	}
 }
 
@@ -109,7 +110,7 @@ async function syncPendingActions() {
 			// Attempt to sync the action
 			await performSync(action);
 		} catch (error) {
-			console.error('Failed to sync action:', action.id, error);
+			logger.error('Failed to sync action:', action.id, error);
 			// Increment retry count and keep for later
 			if (action.retryCount < 3) {
 				failedActions.push({
@@ -253,7 +254,7 @@ export const offlineStore = {
 				cacheSize: 0
 			};
 		} catch (error) {
-			console.error('Failed to clear cache:', error);
+			logger.error('Failed to clear cache:', error);
 		}
 	}
 };
