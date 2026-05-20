@@ -4,6 +4,16 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	preprocess: vitePreprocess(),
+	// FIX-2026-05-20 vite-8-upgrade: inspector is now first-party inside
+	// @sveltejs/vite-plugin-svelte v7 and configured here instead of via the
+	// removed @sveltejs/vite-plugin-svelte-inspector standalone import.
+	vitePlugin: {
+		inspector: {
+			toggleKeyCombo: 'meta-shift',
+			showToggleButton: 'always',
+			toggleButtonPos: 'bottom-right'
+		}
+	},
 	dynamicCompileOptions({ filename }) {
 		if (filename.includes('node_modules')) {
 			return { runes: false };
