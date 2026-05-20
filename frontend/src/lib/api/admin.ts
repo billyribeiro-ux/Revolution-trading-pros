@@ -40,10 +40,26 @@
 
 import { authStore } from '$lib/stores/auth.svelte';
 import type { User } from '$lib/stores/auth.svelte';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { PaginatedResponse, PaginationMeta } from './_types';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
 // ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * JSON-compatible value type for genuinely heterogeneous fields (settings,
+ * dynamic form submission data, criteria DSL, JSON column round-trips).
+ * Narrower than `any`: callers must narrow before use (typeof / Array.isArray),
+ * but doesn't pretend to know a shape we don't actually know.
+ */
+export type JsonValue =
+	| string
+	| number
+	| boolean
+	| null
+	| { [k: string]: JsonValue | undefined }
+	| JsonValue[];
 
 // ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
 const API_VERSION = 'v1';
@@ -60,7 +76,7 @@ const CIRCUIT_BREAKER_TIMEOUT = 60000; // 1 minute
 // ═══════════════════════════════════════════════════════════════════════════
 
 // Base types
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
 	data: T;
 	message?: string;
 	meta?: {
@@ -83,6 +99,8 @@ export interface PaginationParams {
 	per_page?: number;
 	sort_by?: string;
 	sort_order?: 'asc' | 'desc';
+	// Compatible with `buildQueryString` — allow extra scalar query params.
+	[key: string]: string | number | boolean | undefined | Array<string | number | boolean>;
 }
 
 export interface FilterParams {
@@ -90,7 +108,9 @@ export interface FilterParams {
 	status?: string;
 	from_date?: string;
 	to_date?: string;
-	[key: string]: any;
+	// Filter params get serialized into a query string via buildQueryString —
+	// only scalars / arrays of scalars / undefined make sense here.
+	[key: string]: string | number | boolean | undefined | Array<string | number | boolean>;
 }
 
 // Entity types
@@ -180,7 +200,7 @@ export interface FormField {
 	name: string;
 	placeholder?: string;
 	required: boolean;
-	validation?: Record<string, any>;
+	validation?: Record<string, JsonValue>;
 	options?: Array<{ label: string; value: string }>;
 	order: number;
 }
@@ -196,7 +216,7 @@ export interface FormSettings {
 export interface FormSubmission {
 	id: number;
 	form_id: number;
-	data: Record<string, any>;
+	data: Record<string, JsonValue>;
 	ip_address?: string;
 	user_agent?: string;
 	submitted_at: string;
@@ -245,7 +265,7 @@ export interface Product {
 	features?: string[];
 	is_active: boolean;
 	thumbnail?: string | null;
-	metadata?: Record<string, any> | null;
+	metadata?: Record<string, JsonValue> | null;
 	meta_title?: string | null;
 	meta_description?: string | null;
 	indexable?: boolean;
@@ -256,7 +276,7 @@ export interface Product {
 
 export interface Setting {
 	key: string;
-	value: any;
+	value: JsonValue;
 	type: 'string' | 'number' | 'boolean' | 'json';
 	description?: string;
 	group?: string;
@@ -339,19 +359,19 @@ export interface CouponCreateData {
 	start_date?: string;
 	expiry_date?: string;
 	applicable_categories?: string[];
-	restrictions?: Record<string, any>;
+	restrictions?: Record<string, JsonValue>;
 	campaign_id?: string;
-	segments?: any[];
-	rules?: any[];
+	segments?: JsonValue[];
+	rules?: JsonValue[];
 	stackable?: boolean;
 	priority?: number;
 	referral_source?: string;
 	affiliate_id?: string;
 	influencer_id?: string;
 	tags?: string[];
-	meta?: Record<string, any>;
-	ab_test?: Record<string, any>;
-	tiers?: any[];
+	meta?: Record<string, JsonValue>;
+	ab_test?: Record<string, JsonValue>;
+	tiers?: JsonValue[];
 }
 
 export type CouponUpdateData = Partial<CouponCreateData>;
@@ -438,8 +458,8 @@ export class ApiRateLimitError extends AdminApiError {
 // ═══════════════════════════════════════════════════════════════════════════
 
 class RequestManager {
-	private cache = new Map<string, { data: any; expiry: number }>();
-	private pendingRequests = new Map<string, Promise<any>>();
+	private cache = new Map<string, { data: unknown; expiry: number }>();
+	private pendingRequests = new Map<string, Promise<unknown>>();
 	private activeRequests = 0;
 	private circuitBreaker = {
 		failures: 0,
@@ -473,7 +493,7 @@ class RequestManager {
 		if (this.isCacheValid(key)) {
 			const cached = this.cache.get(key);
 			console.debug(`[API] Cache hit for ${key}`);
-			return cached?.data || null;
+			return (cached?.data as T | undefined) ?? null;
 		}
 		return null;
 	}
@@ -578,7 +598,7 @@ const requestManager = new RequestManager();
 /**
  * Make authenticated API request with enterprise features
  */
-async function makeRequest<T = any>(
+async function makeRequest<T = unknown>(
 	endpoint: string,
 	options: RequestInit & {
 		skipCache?: boolean;
@@ -675,22 +695,24 @@ async function executeRequestWithRetry<T>(
 			throw new ApiRateLimitError(retryAfter, url);
 		}
 
-		// Parse response
-		let data: any;
+		// Parse response. The wire shape is whatever the backend emits; we
+		// trust the caller's `<T>` once we've confirmed 2xx + JSON content-type.
+		let data: ApiResponse<T> | ApiError;
 		const contentType = response.headers.get('content-type');
 
 		if (contentType?.includes('application/json')) {
-			data = await response.json();
+			data = (await response.json()) as ApiResponse<T> | ApiError;
 		} else {
-			data = { data: await response.text() };
+			data = { data: await response.text() } as unknown as ApiResponse<T>;
 		}
 
 		// Handle errors
 		if (!response.ok) {
+			const errBody = data as ApiError;
 			throw new AdminApiError(
-				data.message || `Request failed with status ${response.status}`,
+				errBody.message || `Request failed with status ${response.status}`,
 				response.status,
-				data,
+				errBody,
 				url
 			);
 		}
@@ -700,7 +722,7 @@ async function executeRequestWithRetry<T>(
 			requestManager.setCached(endpoint, data, options, cacheTTL);
 		}
 
-		return data;
+		return data as ApiResponse<T>;
 	} catch (error) {
 		clearTimeout(timeoutId);
 
@@ -748,7 +770,8 @@ function trackApiPerformance(
 
 	// Send to analytics
 	if (typeof window !== 'undefined' && 'gtag' in window) {
-		(window as any).gtag('event', 'api_request', {
+		const gtag = (window as unknown as { gtag?: (...args: unknown[]) => void }).gtag;
+		gtag?.('event', 'api_request', {
 			event_category: 'api',
 			event_label: endpoint,
 			value: Math.round(duration),
@@ -764,14 +787,17 @@ function trackApiPerformance(
 /**
  * Log API errors for monitoring
  */
-function logApiError(endpoint: string, error: any): void {
+function logApiError(endpoint: string, error: unknown): void {
 	console.error(`[API] Error for ${endpoint}:`, error);
 }
 
 /**
  * Build query string from parameters
  */
-function buildQueryString(params: Record<string, any>): string {
+type QueryScalar = string | number | boolean;
+type QueryValue = QueryScalar | QueryScalar[] | null | undefined;
+
+function buildQueryString(params: Record<string, QueryValue>): string {
 	const searchParams = new URLSearchParams();
 
 	for (const [key, value] of Object.entries(params)) {
@@ -803,9 +829,11 @@ function buildQueryString(params: Record<string, any>): string {
  * `min_purchase`, `max_discount`) before sending to the wire. Legacy keys
  * are stripped so the backend `serde::Deserialize` doesn't see them.
  */
-function normalizeCouponPayload(input: CouponCreateData | CouponUpdateData): Record<string, any> {
-	const src = input as Record<string, any>;
-	const out: Record<string, any> = { ...src };
+function normalizeCouponPayload(
+	input: CouponCreateData | CouponUpdateData
+): Record<string, unknown> {
+	const src = input as Record<string, unknown>;
+	const out: Record<string, unknown> = { ...src };
 
 	const move = (legacy: string, canonical: string) => {
 		if (out[canonical] === undefined && out[legacy] !== undefined) {
@@ -925,7 +953,7 @@ export const couponsApi = {
 		});
 	},
 
-	async import(formData: FormData): Promise<ApiResponse<{ coupons: any[]; count: number }>> {
+	async import(formData: FormData): Promise<ApiResponse<{ coupons: Coupon[]; count: number }>> {
 		// Use secure getter from auth store
 		const token = authStore.getToken();
 		const response = await fetch(`/api/admin/coupons/import`, {
@@ -954,18 +982,20 @@ export const couponsApi = {
 		test_scenarios: Array<{
 			cart_total: number;
 			user_type: string;
-			products: any[];
+			products: JsonValue[];
 		}>;
-		[key: string]: any;
-	}): Promise<ApiResponse<{ scenarios: any[] }>> {
-		return makeRequest<{ scenarios: any[] }>('/admin/coupons/test', {
+		[key: string]: JsonValue | undefined;
+	}): Promise<ApiResponse<{ scenarios: JsonValue[] }>> {
+		return makeRequest<{ scenarios: JsonValue[] }>('/admin/coupons/test', {
 			method: 'POST',
 			body: JSON.stringify(data),
 			skipCache: true
 		});
 	},
 
-	async preview(data: any): Promise<
+	async preview(
+		data: Partial<CouponCreateData> | Record<string, JsonValue>
+	): Promise<
 		ApiResponse<{
 			formatted_value: string;
 			example_discount: number;
@@ -1022,8 +1052,8 @@ export const usersApi = {
 		return response;
 	},
 
-	async stats(): Promise<ApiResponse<Record<string, any>>> {
-		return makeRequest<Record<string, any>>('/admin/users/stats', {
+	async stats(): Promise<ApiResponse<Record<string, JsonValue>>> {
+		return makeRequest<Record<string, JsonValue>>('/admin/users/stats', {
 			cacheTTL: 60000 // Cache for 1 minute
 		});
 	},
@@ -1045,7 +1075,7 @@ export const settingsApi = {
 		return makeRequest<Setting>(`/admin/settings/${key}`);
 	},
 
-	async update(settings: Record<string, any>): Promise<ApiResponse<void>> {
+	async update(settings: Record<string, JsonValue>): Promise<ApiResponse<void>> {
 		const response = await makeRequest<void>('/admin/settings', {
 			method: 'PUT',
 			body: JSON.stringify({ settings })
@@ -1054,7 +1084,7 @@ export const settingsApi = {
 		return response;
 	},
 
-	async updateSingle(key: string, value: any): Promise<ApiResponse<Setting>> {
+	async updateSingle(key: string, value: JsonValue): Promise<ApiResponse<Setting>> {
 		const response = await makeRequest<Setting>(`/admin/settings/${key}`, {
 			method: 'PUT',
 			body: JSON.stringify({ value })
@@ -1103,7 +1133,7 @@ export const emailTemplatesApi = {
 		return response;
 	},
 
-	async preview(id: number, data: Record<string, any>): Promise<ApiResponse<{ html: string }>> {
+	async preview(id: number, data: Record<string, JsonValue>): Promise<ApiResponse<{ html: string }>> {
 		return makeRequest<{ html: string }>(`/admin/email/templates/${id}/preview`, {
 			method: 'POST',
 			body: JSON.stringify(data),
@@ -1182,14 +1212,14 @@ export const formsApi = {
 		return response;
 	},
 
-	async stats(): Promise<ApiResponse<Record<string, any>>> {
-		return makeRequest<Record<string, any>>('/admin/forms/stats', {
+	async stats(): Promise<ApiResponse<Record<string, JsonValue>>> {
+		return makeRequest<Record<string, JsonValue>>('/admin/forms/stats', {
 			cacheTTL: 60000
 		});
 	},
 
-	async fieldTypes(): Promise<ApiResponse<Record<string, any>>> {
-		return makeRequest<Record<string, any>>('/admin/forms/field-types', {
+	async fieldTypes(): Promise<ApiResponse<Record<string, JsonValue>>> {
+		return makeRequest<Record<string, JsonValue>>('/admin/forms/field-types', {
 			cacheTTL: 3600000 // Cache for 1 hour
 		});
 	},
@@ -1266,9 +1296,9 @@ export const formsApi = {
  * intentionally NOT routed through this normalizer — the plain
  * create/update path is the local DB-only `membership_plans.price` write.
  */
-function normalizePlanPayload(input: Partial<SubscriptionPlan>): Record<string, any> {
-	const src = input as Record<string, any>;
-	const out: Record<string, any> = { ...src };
+function normalizePlanPayload(input: Partial<SubscriptionPlan>): Record<string, unknown> {
+	const src = input as Record<string, unknown>;
+	const out: Record<string, unknown> = { ...src };
 
 	// Dollars -> integer cents for the backend's `price_cents: i64`
 	// (REQUIRED on create, Option on update). Only synthesize when an
@@ -1324,8 +1354,8 @@ export const subscriptionPlansApi = {
 		return response;
 	},
 
-	async stats(): Promise<ApiResponse<Record<string, any>>> {
-		return makeRequest<Record<string, any>>('/admin/subscriptions/plans/stats', {
+	async stats(): Promise<ApiResponse<Record<string, JsonValue>>> {
+		return makeRequest<Record<string, JsonValue>>('/admin/subscriptions/plans/stats', {
 			cacheTTL: 60000
 		});
 	}
@@ -1431,9 +1461,9 @@ export const subscriptionsApi = {
  *   long-term fix is a schema migration adding those columns; until
  *   then this preserves the data.
  */
-function normalizeProductPayload(input: Partial<Product>): Record<string, any> {
-	const src = input as Record<string, any>;
-	const out: Record<string, any> = { ...src };
+function normalizeProductPayload(input: Partial<Product>): Record<string, unknown> {
+	const src = input as Record<string, unknown>;
+	const out: Record<string, unknown> = { ...src };
 
 	if (out.product_type === undefined && out.type !== undefined) {
 		out.product_type = out.type;
@@ -1450,7 +1480,7 @@ function normalizeProductPayload(input: Partial<Product>): Record<string, any> {
 	delete out.price;
 
 	const extraKeys = ['sale_price', 'currency', 'features', 'slug'] as const;
-	const extras: Record<string, any> = {};
+	const extras: Record<string, unknown> = {};
 	let hasExtras = false;
 	for (const key of extraKeys) {
 		if (out[key] !== undefined && out[key] !== null) {
@@ -1460,8 +1490,11 @@ function normalizeProductPayload(input: Partial<Product>): Record<string, any> {
 		delete out[key];
 	}
 	if (hasExtras) {
+		const existing = out.metadata;
 		const baseMeta =
-			out.metadata && typeof out.metadata === 'object' ? { ...out.metadata } : {};
+			existing && typeof existing === 'object' && !Array.isArray(existing)
+				? { ...(existing as Record<string, unknown>) }
+				: {};
 		out.metadata = { ...baseMeta, ...extras };
 	}
 
@@ -1508,8 +1541,8 @@ export const productsApi = {
 		return makeRequest<Product[]>(`/admin/products/type/${type}`);
 	},
 
-	async stats(): Promise<ApiResponse<Record<string, any>>> {
-		return makeRequest<Record<string, any>>('/admin/products/stats', {
+	async stats(): Promise<ApiResponse<Record<string, JsonValue>>> {
+		return makeRequest<Record<string, JsonValue>>('/admin/products/stats', {
 			cacheTTL: 60000
 		});
 	},
@@ -1618,14 +1651,14 @@ export const categoriesApi = {
 		});
 	},
 
-	async export(): Promise<ApiResponse<{ data: any[]; filename: string }>> {
-		return makeRequest<{ data: any[]; filename: string }>('/admin/categories/export', {
+	async export(): Promise<ApiResponse<{ data: Category[]; filename: string }>> {
+		return makeRequest<{ data: Category[]; filename: string }>('/admin/categories/export', {
 			method: 'POST'
 		});
 	},
 
-	async stats(): Promise<ApiResponse<any>> {
-		return makeRequest<any>('/admin/categories/stats');
+	async stats(): Promise<ApiResponse<Record<string, JsonValue>>> {
+		return makeRequest<Record<string, JsonValue>>('/admin/categories/stats');
 	}
 };
 
@@ -1696,14 +1729,14 @@ export const tagsApi = {
 		});
 	},
 
-	async export(): Promise<ApiResponse<{ data: any[]; filename: string }>> {
-		return makeRequest<{ data: any[]; filename: string }>('/admin/tags/export', {
+	async export(): Promise<ApiResponse<{ data: Tag[]; filename: string }>> {
+		return makeRequest<{ data: Tag[]; filename: string }>('/admin/tags/export', {
 			method: 'POST'
 		});
 	},
 
-	async stats(): Promise<ApiResponse<any>> {
-		return makeRequest<any>('/admin/tags/stats');
+	async stats(): Promise<ApiResponse<Record<string, JsonValue>>> {
+		return makeRequest<Record<string, JsonValue>>('/admin/tags/stats');
 	}
 };
 
@@ -1716,7 +1749,7 @@ export interface UserSegment {
 	name: string;
 	slug: string;
 	description?: string;
-	criteria: Record<string, any>;
+	criteria: Record<string, JsonValue>;
 	user_count: number;
 	is_active: boolean;
 	created_at: string;
@@ -1759,15 +1792,15 @@ export const segmentsApi = {
 		return response;
 	},
 
-	async calculate(id: number): Promise<ApiResponse<{ user_count: number; users: any[] }>> {
-		return makeRequest<{ user_count: number; users: any[] }>(`/admin/segments/${id}/calculate`, {
+	async calculate(id: number): Promise<ApiResponse<{ user_count: number; users: User[] }>> {
+		return makeRequest<{ user_count: number; users: User[] }>(`/admin/segments/${id}/calculate`, {
 			method: 'POST',
 			skipCache: true
 		});
 	},
 
-	async stats(): Promise<ApiResponse<Record<string, any>>> {
-		return makeRequest<Record<string, any>>('/admin/segments/stats', {
+	async stats(): Promise<ApiResponse<Record<string, JsonValue>>> {
+		return makeRequest<Record<string, JsonValue>>('/admin/segments/stats', {
 			cacheTTL: 60000
 		});
 	}
@@ -1848,7 +1881,7 @@ export const teamsApi = {
 		if (!response.ok) return { data: null };
 		return response.json();
 	},
-	create: async (data: any) => {
+	create: async (data: Record<string, JsonValue>) => {
 		const response = await fetch(`${API_BASE}/admin/organization/teams`, {
 			method: 'POST',
 			headers: getAuthHeaders(),
@@ -1857,7 +1890,7 @@ export const teamsApi = {
 		if (!response.ok) throw new AdminApiError('Failed to create team', response.status);
 		return response.json();
 	},
-	update: async (id: number | string, data: any) => {
+	update: async (id: number | string, data: Record<string, JsonValue>) => {
 		const response = await fetch(`${API_BASE}/admin/organization/teams/${id}`, {
 			method: 'PUT',
 			headers: getAuthHeaders(),
@@ -1890,7 +1923,7 @@ export const departmentsApi = {
 		if (!response.ok) return { data: null };
 		return response.json();
 	},
-	create: async (data: any) => {
+	create: async (data: Record<string, JsonValue>) => {
 		const response = await fetch(`${API_BASE}/admin/organization/departments`, {
 			method: 'POST',
 			headers: getAuthHeaders(),
@@ -1899,7 +1932,7 @@ export const departmentsApi = {
 		if (!response.ok) throw new AdminApiError('Failed to create department', response.status);
 		return response.json();
 	},
-	update: async (id: number | string, data: any) => {
+	update: async (id: number | string, data: Record<string, JsonValue>) => {
 		const response = await fetch(`${API_BASE}/admin/organization/departments/${id}`, {
 			method: 'PUT',
 			headers: getAuthHeaders(),
