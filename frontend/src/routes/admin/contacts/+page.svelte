@@ -15,9 +15,9 @@
 	let loading = $state(true);
 	let searchQuery = $state('');
 	let statusFilter = $state<ContactStatus | ''>('');
-	let pagination = $state<{ current_page: number; last_page: number; total: number }>({
+	let pagination = $state<{ current_page: number; total_pages: number; total: number }>({
 		current_page: 1,
-		last_page: 1,
+		total_pages: 1,
 		total: 0
 	});
 
@@ -48,8 +48,8 @@
 			contacts = response.data || [];
 			if (response.meta) {
 				pagination = {
-					current_page: response.meta.current_page,
-					last_page: response.meta.last_page,
+					current_page: response.meta.current_page ?? 1,
+					total_pages: response.meta.total_pages ?? 1,
 					total: response.meta.total
 				};
 			}
@@ -225,10 +225,10 @@
 			</Card>
 
 			<!-- Pagination -->
-			{#if pagination.last_page > 1}
+			{#if pagination.total_pages > 1}
 				<div class="pagination-info">
 					<p>
-						Page {pagination.current_page} of {pagination.last_page} ({pagination.total} contacts)
+						Page {pagination.current_page} of {pagination.total_pages} ({pagination.total} contacts)
 					</p>
 				</div>
 			{/if}
