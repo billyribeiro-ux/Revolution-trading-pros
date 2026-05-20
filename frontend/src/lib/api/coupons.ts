@@ -52,6 +52,18 @@ import { browser } from '$app/environment';
 import { writable, derived, get } from 'svelte/store';
 import { getAuthToken } from '$lib/stores/auth.svelte';
 import { logger } from '$lib/utils/logger';
+import type { JsonValue } from './_types';
+
+/**
+ * Narrow an `unknown` caught error into a string suitable for `error.set(...)`.
+ * Used by every public-API catch handler now that `catch (error: any)` was
+ * replaced with `catch (error: unknown)` — see R6-A precedent.
+ */
+function errorMessage(err: unknown): string {
+	if (err instanceof Error) return err.message;
+	if (typeof err === 'string') return err;
+	return String(err);
+}
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -176,7 +188,7 @@ export interface CampaignGoal {
 export interface DistributionChannel {
 	type: 'email' | 'sms' | 'push' | 'social' | 'affiliate' | 'partner' | 'website';
 	enabled: boolean;
-	config?: Record<string, any>;
+	config?: Record<string, JsonValue>;
 	performance?: ChannelPerformance;
 }
 
@@ -206,7 +218,7 @@ export interface GeoTarget {
 export interface CustomCriteria {
 	field: string;
 	operator: 'equals' | 'not_equals' | 'contains' | 'greater_than' | 'less_than' | 'in' | 'not_in';
-	value: any;
+	value: JsonValue;
 }
 
 export interface ABTestConfig {
@@ -245,7 +257,7 @@ export interface CustomerSegment {
 export interface SegmentCriteria {
 	type: string;
 	condition: string;
-	value: any;
+	value: JsonValue;
 }
 
 export interface PromotionRule {
@@ -268,14 +280,14 @@ export type RuleType =
 export interface RuleCondition {
 	field: string;
 	operator: string;
-	value: any;
+	value: JsonValue;
 	combineWith?: 'and' | 'or';
 	subConditions?: RuleCondition[];
 }
 
 export interface RuleAction {
 	type: 'apply_discount' | 'add_product' | 'free_shipping' | 'upgrade' | 'custom';
-	value: any;
+	value: JsonValue;
 	message?: string;
 }
 
@@ -395,7 +407,7 @@ export interface CartItem {
 	price: number;
 	quantity: number;
 	categoryId?: string;
-	attributes?: Record<string, any>;
+	attributes?: Record<string, JsonValue>;
 }
 
 export interface GeoLocation {
@@ -438,10 +450,10 @@ export interface BulkOperation {
 
 class CouponManagementService {
 	private static instance: CouponManagementService;
-	private cache = new Map<string, { data: any; expiry: number }>();
+	private cache = new Map<string, { data: unknown; expiry: number }>();
 	private wsConnection?: WebSocket;
 	private analyticsInterval?: number;
-	private pendingValidations = new Map<string, Promise<any>>();
+	private pendingValidations = new Map<string, Promise<CouponValidationResponse>>();
 	private fraudCheckCache = new Map<string, FraudCheckResult>();
 
 	// WebSocket State Management - Apple ICT 11 Principal Engineer Standards
@@ -449,7 +461,7 @@ class CouponManagementService {
 	private _wsReconnectDelay = WS_RECONNECT_DELAY;
 	private wsHeartbeatTimer?: number;
 	private wsHeartbeatTimeout?: number;
-	private wsMessageQueue: any[] = [];
+	private wsMessageQueue: unknown[] = [];
 	private wsConnectionState = writable<
 		'disconnected' | 'connecting' | 'connected' | 'reconnecting'
 	>('disconnected');
@@ -538,8 +550,10 @@ class CouponManagementService {
 		// Check cache
 		const cacheKey = `${fetchOptions.method || 'GET'}:${url}`;
 		if (!skipCache && (!fetchOptions.method || fetchOptions.method === 'GET')) {
-			const cached = this.getFromCache(cacheKey);
-			if (cached) return cached;
+			const cached = this.getFromCache<T>(cacheKey);
+			// `!== null` rather than truthy: a cached `0`/`""`/`false`
+			// is still a hit. Matches R5-A / R6-A surprise #3.
+			if (cached !== null) return cached;
 		}
 
 		try {
@@ -555,8 +569,8 @@ class CouponManagementService {
 			});
 
 			if (!response.ok) {
-				const error = await response.json();
-				throw new Error(error.message || `HTTP ${response.status}`);
+				const error = (await response.json()) as { message?: string };
+				throw new Error(error.message ?? `HTTP ${response.status}`);
 			}
 
 			const data = await response.json();
@@ -742,7 +756,7 @@ class CouponManagementService {
 	/**
 	 * Queue message for sending when connection is restored
 	 */
-	private queueMessage(message: any): void {
+	private queueMessage(message: unknown): void {
 		if (this.wsMessageQueue.length >= WS_MESSAGE_QUEUE_SIZE) {
 			// Remove oldest message if queue is full
 			this.wsMessageQueue.shift();
@@ -774,7 +788,7 @@ class CouponManagementService {
 	/**
 	 * Send message via WebSocket with queue fallback
 	 */
-	private sendWebSocketMessage(message: any): void {
+	private sendWebSocketMessage(message: unknown): void {
 		if (this.wsConnection?.readyState === WebSocket.OPEN) {
 			this.wsConnection.send(JSON.stringify(message));
 		} else {
@@ -801,7 +815,11 @@ class CouponManagementService {
 		});
 	}
 
-	private handleRedemption(data: any): void {
+	private handleRedemption(data: {
+		couponId: string;
+		code: string;
+		orderTotal: number;
+	}): void {
 		// Update metrics for the redeemed coupon
 		this.metrics.update((metrics) => {
 			const couponMetrics = metrics[data.couponId] || this.createEmptyMetrics();
@@ -843,7 +861,7 @@ class CouponManagementService {
 		});
 	}
 
-	private handleFraudAlert(alert: any): void {
+	private handleFraudAlert(alert: { message: string; severity?: 'low' | 'medium' | 'high' }): void {
 		logger.warn('[CouponService] Fraud alert:', alert);
 		this.showNotification(`Fraud detected: ${alert.message}`, 'error');
 	}
@@ -966,16 +984,18 @@ class CouponManagementService {
 
 		// Check validation cache
 		const cacheKey = `validate_${code}_${context.cartTotal}`;
-		const cached = this.getFromCache(cacheKey);
-		if (cached) {
+		const cached = this.getFromCache<CouponValidationResponse>(cacheKey);
+		// `!== null` rather than truthy — matches R5-A / R6-A surprise #3.
+		if (cached !== null) {
 			this.validationResult.set(cached);
 			this.isLoading.set(false);
 			return cached;
 		}
 
 		// Check if validation is already pending
-		if (this.pendingValidations.has(cacheKey)) {
-			return this.pendingValidations.get(cacheKey);
+		const pending = this.pendingValidations.get(cacheKey);
+		if (pending) {
+			return pending;
 		}
 
 		// Create validation promise
@@ -1011,8 +1031,8 @@ class CouponManagementService {
 			});
 
 			return result;
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error: unknown) {
+			this.error.set(errorMessage(error));
 			throw error;
 		} finally {
 			this.pendingValidations.delete(cacheKey);
@@ -1125,7 +1145,7 @@ class CouponManagementService {
 	/**
 	 * Get all coupons
 	 */
-	async getAllCoupons(filters?: any): Promise<EnhancedCoupon[]> {
+	async getAllCoupons(filters?: Record<string, string>): Promise<EnhancedCoupon[]> {
 		this.isLoading.set(true);
 		this.error.set(null);
 
@@ -1142,8 +1162,8 @@ class CouponManagementService {
 			this.activeCoupons.set(active);
 
 			return response.coupons;
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error: unknown) {
+			this.error.set(errorMessage(error));
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -1187,8 +1207,8 @@ class CouponManagementService {
 			});
 
 			return coupon;
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error: unknown) {
+			this.error.set(errorMessage(error));
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -1213,8 +1233,8 @@ class CouponManagementService {
 			this.clearCache(`/coupons/${id}`);
 
 			return coupon;
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error: unknown) {
+			this.error.set(errorMessage(error));
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -1239,8 +1259,8 @@ class CouponManagementService {
 
 			// Track deletion
 			this.trackEvent('coupon_deleted', { id });
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error: unknown) {
+			this.error.set(errorMessage(error));
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -1370,16 +1390,16 @@ class CouponManagementService {
 		return this.authFetch<CouponAnalytics>(`${API_URL}/admin/coupons/${couponId}/analytics`);
 	}
 
-	async getRedemptionReport(dateRange: { from: string; to: string }): Promise<any> {
-		return this.authFetch(`${API_URL}/admin/reports/redemptions`, {
+	async getRedemptionReport(dateRange: { from: string; to: string }): Promise<JsonValue> {
+		return this.authFetch<JsonValue>(`${API_URL}/admin/reports/redemptions`, {
 			method: 'POST',
 			body: JSON.stringify(dateRange)
 		});
 	}
 
-	async getROIReport(campaignId?: string): Promise<any> {
+	async getROIReport(campaignId?: string): Promise<JsonValue> {
 		const params = campaignId ? `?campaign=${campaignId}` : '';
-		return this.authFetch(`${API_URL}/admin/reports/roi${params}`);
+		return this.authFetch<JsonValue>(`${API_URL}/admin/reports/roi${params}`);
 	}
 
 	async exportCoupons(format: 'csv' | 'excel' | 'json' = 'csv'): Promise<Blob> {
@@ -1470,15 +1490,15 @@ class CouponManagementService {
 	// Utilities
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	private getFromCache(key: string): any {
+	private getFromCache<T>(key: string): T | null {
 		const cached = this.cache.get(key);
 		if (cached && Date.now() < cached.expiry) {
-			return cached.data;
+			return cached.data as T;
 		}
 		return null;
 	}
 
-	private setCache(key: string, data: any, ttl: number = CACHE_TTL): void {
+	private setCache(key: string, data: unknown, ttl: number = CACHE_TTL): void {
 		this.cache.set(key, {
 			data,
 			expiry: Date.now() + ttl
@@ -1517,10 +1537,11 @@ class CouponManagementService {
 		logger.info(`[${type.toUpperCase()}] ${message}`);
 	}
 
-	private trackEvent(event: string, data: any): void {
-		if (browser && 'gtag' in window) {
-			(window as any).gtag('event', event, data);
-		}
+	private trackEvent(event: string, data: Record<string, JsonValue | undefined>): void {
+		if (!browser) return;
+		const gtag = (window as unknown as { gtag?: (cmd: string, event: string, data: unknown) => void })
+			.gtag;
+		gtag?.('event', event, data);
 	}
 
 	/**
@@ -1566,10 +1587,13 @@ export const validateCoupon = (
 	context?: Partial<ValidationContext>
 ) => couponService.validateCoupon(code, { cartTotal, ...context });
 
-export const getAllCoupons = (filters?: any) => couponService.getAllCoupons(filters);
+export const getAllCoupons = (filters?: Record<string, string>) =>
+	couponService.getAllCoupons(filters);
 
-export const createCoupon = (coupon: Partial<EnhancedCoupon>, options?: any) =>
-	couponService.createCoupon(coupon, options);
+export const createCoupon = (
+	coupon: Partial<EnhancedCoupon>,
+	options?: { generateCode?: boolean; optimize?: boolean }
+) => couponService.createCoupon(coupon, options);
 
 export const updateCoupon = (id: string, updates: Partial<EnhancedCoupon>) =>
 	couponService.updateCoupon(id, updates);
