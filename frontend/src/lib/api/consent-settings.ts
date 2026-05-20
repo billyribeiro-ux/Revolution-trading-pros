@@ -10,6 +10,7 @@
 
 import { browser } from '$app/environment';
 import { logger } from '$lib/utils/logger';
+import type { JsonValue } from './_types';
 
 const API_BASE = '/api';
 
@@ -81,7 +82,12 @@ export interface ConsentSettingsData {
 	proof_retention_days: number;
 	proof_auto_delete: boolean;
 
-	[key: string]: any;
+	// R16-A: was `[key: string]: any;`. The backend's `consent_settings` table
+	// is key/value with a typed registry above; the index signature exists so
+	// `Partial<ConsentSettingsData>` accepts forward-compatible keys not yet
+	// modelled here. `JsonValue` matches every legal payload (DB serialises
+	// settings as JSONB).
+	[key: string]: JsonValue | undefined;
 }
 
 export interface BannerTemplate {
@@ -244,7 +250,7 @@ export async function getConsentSettings(group?: string): Promise<ConsentSetting
  */
 export async function updateConsentSetting(
 	key: string,
-	value: any,
+	value: JsonValue,
 	options?: { type?: string; group?: string; description?: string; is_public?: boolean }
 ): Promise<boolean> {
 	try {
