@@ -12,6 +12,7 @@
 
 import { browser } from '$app/environment';
 import { writable, derived, get } from 'svelte/store';
+import { logger } from '$lib/utils/logger';
 
 /**
  * Supported languages
@@ -639,7 +640,7 @@ export function detectBrowserLanguage(): SupportedLanguage {
 			}
 		}
 	} catch (e) {
-		console.debug('[i18n] Failed to detect browser language:', e);
+		logger.debug('[i18n] Failed to detect browser language:', e);
 	}
 
 	return 'en';
@@ -654,7 +655,7 @@ export function initializeI18n(): void {
 	const detectedLang = detectBrowserLanguage();
 	currentLanguage.set(detectedLang);
 
-	console.debug('[i18n] Initialized with language:', detectedLang);
+	logger.debug('[i18n] Initialized with language:', detectedLang);
 }
 
 /**
@@ -663,9 +664,9 @@ export function initializeI18n(): void {
 export function setLanguage(lang: SupportedLanguage): void {
 	if (translations[lang]) {
 		currentLanguage.set(lang);
-		console.debug('[i18n] Language set to:', lang);
+		logger.debug('[i18n] Language set to:', lang);
 	} else {
-		console.warn('[i18n] Language not supported:', lang);
+		logger.warn('[i18n] Language not supported:', lang);
 	}
 }
 
