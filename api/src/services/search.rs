@@ -16,7 +16,11 @@ pub struct SearchableCourse {
     pub description: String,
     pub slug: String,
     pub instructor_name: String,
-    pub price_cents: i32,
+    // CLAUDE.md money rule: every *_cents value is i64 / BIGINT end-to-end.
+    // Widened from i32 (audit R17-D, 2026-05-20). The source DB column
+    // `courses.price_cents` is BIGINT; carrying i32 in the search index
+    // payload was a silent narrowing on the read side.
+    pub price_cents: i64,
     pub is_published: bool,
 }
 

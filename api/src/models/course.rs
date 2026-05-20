@@ -232,7 +232,12 @@ pub struct UserCourseEnrollment {
     pub access_expires_at: Option<NaiveDateTime>,
     pub is_lifetime_access: Option<bool>,
     pub order_id: Option<i64>,
-    pub price_paid_cents: Option<i32>,
+    // CLAUDE.md money rule: every *_cents value is i64 / BIGINT end-to-end.
+    // Widened from Option<i32> (audit R17-D, 2026-05-20). Note: this struct
+    // maps a legacy schema and is not currently bound to a live column;
+    // widening here keeps the type contract aligned with the rule for the
+    // day a `price_paid_cents` column is added.
+    pub price_paid_cents: Option<i64>,
     pub certificate_issued: Option<bool>,
     pub certificate_url: Option<String>,
     pub certificate_issued_at: Option<NaiveDateTime>,

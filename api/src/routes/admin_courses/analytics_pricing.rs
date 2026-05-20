@@ -219,7 +219,11 @@ pub(super) async fn change_course_price(
         title: String,
         stripe_price_id: Option<String>,
         stripe_product_id: Option<String>,
-        price_cents: i32,
+        // CLAUDE.md money rule: every *_cents value is i64 / BIGINT end-to-end.
+        // Widened from i32 (audit R17-D, 2026-05-20). The DB column
+        // `courses.price_cents` is BIGINT since migration 068; the i32
+        // type here had been a silent overflow exposure on the read side.
+        price_cents: i64,
     }
 
     let course: CourseForPriceChange = sqlx::query_as(
@@ -280,7 +284,11 @@ pub(super) async fn change_course_price(
     )
     .bind(&new_price_id)
     .bind(&product_id)
-    .bind(input.amount_cents as i32)
+    // CLAUDE.md money rule: bind i64 to BIGINT, never downcast to i32.
+    // Pre-fix: `.bind(input.amount_cents as i32)` silently truncated values
+    // above $21,474,836.47. `courses.price_cents` is BIGINT since 068.
+    // (audit R17-D, 2026-05-20)
+    .bind(input.amount_cents)
     .bind(course_id)
     .execute(&mut *tx)
     .await

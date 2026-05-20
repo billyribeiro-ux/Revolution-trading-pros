@@ -51,7 +51,10 @@ pub struct IndicatorEnhanced {
     pub is_featured: bool,
     pub is_free: bool,
     pub required_plan_id: Option<i64>,
-    pub price_cents: Option<i32>,
+    // CLAUDE.md money rule: every *_cents value is i64 / BIGINT end-to-end.
+    // Widened from Option<i32> (audit R17-D, 2026-05-20). The DB column
+    // `indicators_enhanced.price_cents` is BIGINT since migration 061.
+    pub price_cents: Option<i64>,
     pub total_downloads: i32,
     pub supported_platforms: Option<serde_json::Value>,
     pub has_tradingview_access: bool,
@@ -183,7 +186,9 @@ pub struct CreateIndicatorRequest {
     pub is_featured: Option<bool>,
     pub is_free: Option<bool>,
     pub required_plan_id: Option<i64>,
-    pub price_cents: Option<i32>,
+    // CLAUDE.md money rule: wire DTO matches DB column (BIGINT) and Stripe
+    // int64. Widened from Option<i32> (audit R17-D, 2026-05-20).
+    pub price_cents: Option<i64>,
     pub has_tradingview_access: Option<bool>,
     pub tradingview_invite_only: Option<bool>,
 }
@@ -206,7 +211,9 @@ pub struct UpdateIndicatorRequest {
     pub is_featured: Option<bool>,
     pub is_free: Option<bool>,
     pub required_plan_id: Option<i64>,
-    pub price_cents: Option<i32>,
+    // CLAUDE.md money rule: wire DTO matches DB column (BIGINT) and Stripe
+    // int64. Widened from Option<i32> (audit R17-D, 2026-05-20).
+    pub price_cents: Option<i64>,
     pub has_tradingview_access: Option<bool>,
     pub tradingview_invite_only: Option<bool>,
 }
@@ -377,7 +384,9 @@ pub struct IndicatorResponse {
     pub is_published: bool,
     pub is_featured: bool,
     pub is_free: bool,
-    pub price_cents: Option<i32>,
+    // CLAUDE.md money rule: response DTO matches DB column (BIGINT).
+    // Widened from Option<i32> (audit R17-D, 2026-05-20).
+    pub price_cents: Option<i64>,
     pub total_downloads: i32,
     pub supported_platforms: Vec<PlatformSummary>,
     pub has_tradingview_access: bool,
