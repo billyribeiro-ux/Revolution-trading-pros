@@ -36,8 +36,6 @@
 		IconRefresh,
 		IconPlus,
 		IconLink,
-		IconCheck,
-		IconX,
 		IconStar,
 		IconStarFilled,
 		IconPin,
@@ -58,6 +56,13 @@
 	} from '$lib/api/room-resources';
 	import { tradingRoomApi, type TradingRoom, type Trader } from '$lib/api/trading-rooms';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import AlertsBanner from './_components/AlertsBanner.svelte';
+	import PageHeader from './_components/PageHeader.svelte';
+	import RoomTabs from './_components/RoomTabs.svelte';
+	import StatsBar from './_components/StatsBar.svelte';
+	import ReplaceModal from './_components/ReplaceModal.svelte';
+	import BulkOperationsModal from './_components/BulkOperationsModal.svelte';
+	import ResourceFormModal from './_components/ResourceFormModal.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES & CONSTANTS
@@ -793,96 +798,24 @@
 
 	<div class="admin-page-container">
 		<!-- Alerts -->
-		{#if successMessage}
-			<div class="alert alert-success">
-				<IconCheck size={18} />
-				{successMessage}
-			</div>
-		{/if}
-
-		{#if error}
-			<div class="alert alert-error">
-				<IconAlertCircle size={18} />
-				{error}
-				<button class="alert-close" onclick={() => (error = '')}>
-					<IconX size={16} />
-				</button>
-			</div>
-		{/if}
+		<AlertsBanner {successMessage} {error} onClearError={() => (error = '')} />
 
 		<!-- Header -->
-		<div class="page-header">
-			<h1>Room Resources</h1>
-			<p class="subtitle">Manage videos, PDFs, documents, and images for each trading room</p>
-			<div class="header-actions">
-				{#if selectedResources.size > 0}
-					<button class="btn-warning" onclick={openBulkModal}>
-						Bulk Actions ({selectedResources.size})
-					</button>
-				{/if}
-				<button class="btn-secondary" onclick={() => loadResources()} disabled={isLoading}>
-					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
-				</button>
-				<button class="btn-primary" onclick={openCreateModal} disabled={!selectedRoom}>
-					<IconPlus size={18} />
-					Add Resource
-				</button>
-			</div>
-		</div>
+		<PageHeader
+			selectedCount={selectedResources.size}
+			{isLoading}
+			hasSelectedRoom={!!selectedRoom}
+			onBulk={openBulkModal}
+			onRefresh={() => loadResources()}
+			onCreate={openCreateModal}
+		/>
 
 		<!-- Room Tabs -->
-		{#if isLoadingRooms}
-			<div class="room-tabs loading">
-				<div class="spinner"></div>
-				<span>Loading rooms...</span>
-			</div>
-		{:else}
-			<div class="room-tabs">
-				{#each rooms as room (room.id)}
-					<button
-						class="room-tab"
-						class:active={selectedRoom?.id === room.id}
-						onclick={() => selectRoom(room)}
-					>
-						{room.name}
-					</button>
-				{/each}
-			</div>
-		{/if}
+		<RoomTabs {rooms} {selectedRoom} {isLoadingRooms} onSelect={selectRoom} />
 
 		<!-- Stats Bar -->
 		{#if selectedRoom}
-			<div class="stats-bar">
-				<div class="stat">
-					<span class="stat-value">{stats.total}</span>
-					<span class="stat-label">Total</span>
-				</div>
-				<div class="stat">
-					<IconVideo size={16} />
-					<span class="stat-value">{stats.videos}</span>
-					<span class="stat-label">Videos</span>
-				</div>
-				<div class="stat">
-					<IconFileText size={16} />
-					<span class="stat-value">{stats.pdfs}</span>
-					<span class="stat-label">PDFs</span>
-				</div>
-				<div class="stat">
-					<IconPhoto size={16} />
-					<span class="stat-value">{stats.images}</span>
-					<span class="stat-label">Images</span>
-				</div>
-				<div class="stat">
-					<IconCheck size={16} />
-					<span class="stat-value">{stats.published}</span>
-					<span class="stat-label">Published</span>
-				</div>
-				<div class="stat">
-					<IconStarFilled size={16} />
-					<span class="stat-value">{stats.featured}</span>
-					<span class="stat-label">Featured</span>
-				</div>
-			</div>
+			<StatsBar {stats} />
 		{/if}
 
 		<!-- Filters -->
@@ -1056,399 +989,53 @@
 
 <!-- Create/Edit Modal -->
 {#if showCreateModal || showEditModal}
-	<div
-		class="modal-overlay"
-		onclick={(e: MouseEvent) => {
-			if (e.target === e.currentTarget) {
-				showCreateModal = false;
-				showEditModal = false;
-				editingResource = null;
-			}
+	<ResourceFormModal
+		isEdit={showEditModal}
+		bind:formData
+		resourceTypes={RESOURCE_TYPES}
+		{availableContentTypes}
+		{availableSections}
+		accessLevels={ACCESS_LEVELS}
+		videoPlatforms={VIDEO_PLATFORMS}
+		categories={CATEGORIES}
+		{traders}
+		{isSaving}
+		onClose={() => {
+			showCreateModal = false;
+			showEditModal = false;
+			editingResource = null;
 		}}
-		onkeydown={(e: KeyboardEvent) => {
-			if (e.key === 'Escape') {
-				showCreateModal = false;
-				showEditModal = false;
-				editingResource = null;
-			}
-		}}
-		role="dialog"
-		aria-modal="true"
-		tabindex="-1"
-	>
-		<div class="modal modal-large" role="document">
-			<div class="modal-header">
-				<h2>{showEditModal ? 'Edit Resource' : 'Add New Resource'}</h2>
-				<button
-					class="modal-close"
-					onclick={() => {
-						showCreateModal = false;
-						showEditModal = false;
-						editingResource = null;
-					}}>&times;</button
-				>
-			</div>
-			<div class="modal-body">
-				<!-- Title -->
-				<div class="form-group">
-					<label for="title">Title *</label>
-					<input
-						type="text"
-						id="title"
-						name="title"
-						bind:value={formData.title}
-						placeholder="Resource title"
-						required
-					/>
-				</div>
-
-				<!-- Description -->
-				<div class="form-group">
-					<label for="description">Description</label>
-					<textarea
-						id="description"
-						bind:value={formData.description}
-						placeholder="Brief description..."
-						rows="3"
-					></textarea>
-				</div>
-
-				<!-- Type Selection -->
-				<div class="form-row">
-					<div class="form-group">
-						<label for="resource-type">Resource Type *</label>
-						<select id="resource-type" bind:value={formData.resource_type}>
-							{#each RESOURCE_TYPES as type (type.id)}
-								<option value={type.id}>{type.name}</option>
-							{/each}
-						</select>
-					</div>
-					<div class="form-group">
-						<label for="content-type">Content Type *</label>
-						<select id="content-type" bind:value={formData.content_type}>
-							{#each availableContentTypes as type (type.id)}
-								<option value={type.id}>{type.name}</option>
-							{/each}
-						</select>
-					</div>
-				</div>
-
-				<!-- ICT 7: Section Selection -->
-				<div class="form-row">
-					<div class="form-group">
-						<label for="section">Dashboard Section</label>
-						<select id="section" bind:value={formData.section}>
-							{#each availableSections as section (section.id)}
-								<option value={section.id}>{section.name}</option>
-							{/each}
-						</select>
-						<small class="form-hint">Where this resource appears</small>
-					</div>
-					<!-- ICT 7: Access Level -->
-					<div class="form-group">
-						<label for="access-level">Access Level</label>
-						<select id="access-level" bind:value={formData.access_level}>
-							{#each ACCESS_LEVELS as level (level.id)}
-								<option value={level.id}>{level.name}</option>
-							{/each}
-						</select>
-						<small class="form-hint">Who can access this resource</small>
-					</div>
-				</div>
-
-				<!-- File URL -->
-				<div class="form-group">
-					<label for="file-url">File/Video URL *</label>
-					<input
-						type="url"
-						id="file-url"
-						name="file-url"
-						bind:value={formData.file_url}
-						placeholder="https://..."
-						required
-					/>
-					{#if formData.resource_type === 'video' && formData.video_platform}
-						<small class="form-hint"
-							>Detected platform: <strong>{formData.video_platform}</strong></small
-						>
-					{/if}
-				</div>
-
-				<!-- Video Platform (for videos only) -->
-				{#if formData.resource_type === 'video'}
-					<div class="form-row">
-						<div class="form-group">
-							<label for="video-platform">Video Platform</label>
-							<select id="video-platform" bind:value={formData.video_platform}>
-								{#each VIDEO_PLATFORMS as platform (platform.id)}
-									<option value={platform.id}>{platform.name}</option>
-								{/each}
-							</select>
-						</div>
-						<div class="form-group">
-							<label for="trader">Trader</label>
-							<select id="trader" bind:value={formData.trader_id}>
-								<option value={undefined}>Select trader...</option>
-								{#each traders as trader (trader.id)}
-									<option value={trader.id}>{trader.name}</option>
-								{/each}
-							</select>
-						</div>
-					</div>
-				{/if}
-
-				<!-- Thumbnail & Date -->
-				<div class="form-row">
-					<div class="form-group">
-						<label for="thumbnail-url">Thumbnail URL</label>
-						<input
-							type="url"
-							id="thumbnail-url"
-							name="thumbnail-url"
-							bind:value={formData.thumbnail_url}
-							placeholder="https://..."
-						/>
-					</div>
-					<div class="form-group">
-						<label for="resource-date">Date</label>
-						<input
-							type="date"
-							id="resource-date"
-							name="resource-date"
-							bind:value={formData.resource_date}
-						/>
-					</div>
-				</div>
-
-				<!-- Tags -->
-				<div class="form-group">
-					<span id="resource-tags-label" class="group-label">Categories/Tags</span>
-					<div class="tags-grid" role="group" aria-labelledby="resource-tags-label">
-						{#each CATEGORIES as category (category.id)}
-							<button
-								type="button"
-								class="tag-btn"
-								class:selected={formData.tags?.includes(category.id)}
-								style:--tag-color={category.color}
-								onclick={() => toggleTag(category.id)}
-							>
-								{#if formData.tags?.includes(category.id)}
-									<IconCheck size={14} />
-								{/if}
-								{category.name}
-							</button>
-						{/each}
-					</div>
-				</div>
-
-				<!-- Options -->
-				<div class="form-options">
-					<label class="checkbox-label">
-						<input
-							id="page-formdata-is-published"
-							name="page-formdata-is-published"
-							type="checkbox"
-							bind:checked={formData.is_published}
-						/>
-						<span>Published</span>
-					</label>
-					<label class="checkbox-label">
-						<input
-							id="page-formdata-is-featured"
-							name="page-formdata-is-featured"
-							type="checkbox"
-							bind:checked={formData.is_featured}
-						/>
-						<span>Featured (Main Resource)</span>
-					</label>
-					<label class="checkbox-label">
-						<input
-							id="page-formdata-is-pinned"
-							name="page-formdata-is-pinned"
-							type="checkbox"
-							bind:checked={formData.is_pinned}
-						/>
-						<span>Pinned (Always on top)</span>
-					</label>
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button
-					class="btn-secondary"
-					onclick={() => {
-						showCreateModal = false;
-						showEditModal = false;
-						editingResource = null;
-					}}>Cancel</button
-				>
-				<button
-					class="btn-primary"
-					onclick={saveResource}
-					disabled={isSaving || !formData.title || !formData.file_url}
-				>
-					{#if isSaving}
-						<span class="spinner-small"></span>
-						Saving...
-					{:else}
-						{showEditModal ? 'Update' : 'Create'} Resource
-					{/if}
-				</button>
-			</div>
-		</div>
-	</div>
+		onSave={saveResource}
+		onToggleTag={toggleTag}
+	/>
 {/if}
 
 <!-- Replace Modal -->
 {#if showReplaceModal && replacingResource}
-	<div
-		class="modal-overlay"
-		onclick={(e: MouseEvent) => {
-			if (e.target === e.currentTarget) {
-				showReplaceModal = false;
-				replacingResource = null;
-				newFileUrl = '';
-			}
+	<ReplaceModal
+		resource={replacingResource}
+		bind:newFileUrl
+		{isSaving}
+		onClose={() => {
+			showReplaceModal = false;
+			replacingResource = null;
+			newFileUrl = '';
 		}}
-		onkeydown={(e: KeyboardEvent) => {
-			if (e.key === 'Escape') {
-				showReplaceModal = false;
-				replacingResource = null;
-				newFileUrl = '';
-			}
-		}}
-		role="dialog"
-		aria-modal="true"
-		tabindex="-1"
-	>
-		<div class="modal" role="document">
-			<div class="modal-header">
-				<h2>Replace Resource</h2>
-				<button
-					class="modal-close"
-					onclick={() => {
-						showReplaceModal = false;
-						replacingResource = null;
-						newFileUrl = '';
-					}}>&times;</button
-				>
-			</div>
-			<div class="modal-body">
-				<div class="replace-info">
-					<p><strong>Current:</strong> {replacingResource.title}</p>
-					<p class="text-muted">All metadata will be kept. Only the file URL will be replaced.</p>
-				</div>
-				<div class="form-group">
-					<label for="new-file-url">New File URL</label>
-					<!-- svelte-ignore a11y_autofocus -->
-					<input
-						type="url"
-						id="new-file-url"
-						name="new-file-url"
-						bind:value={newFileUrl}
-						placeholder="https://..."
-						autofocus
-					/>
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button
-					class="btn-secondary"
-					onclick={() => {
-						showReplaceModal = false;
-						replacingResource = null;
-						newFileUrl = '';
-					}}>Cancel</button
-				>
-				<button class="btn-primary" onclick={replaceResource} disabled={isSaving || !newFileUrl}>
-					{#if isSaving}
-						<span class="spinner-small"></span>
-						Replacing...
-					{:else}
-						<IconLink size={16} />
-						Replace
-					{/if}
-				</button>
-			</div>
-		</div>
-	</div>
+		onReplace={replaceResource}
+	/>
 {/if}
 
 <!-- ICT 7: Bulk Operations Modal -->
 {#if showBulkModal}
-	<div
-		class="modal-overlay"
-		onclick={() => (showBulkModal = false)}
-		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showBulkModal = false)}
-		role="dialog"
-		aria-modal="true"
-		tabindex="-1"
-	>
-		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-		<div
-			class="modal"
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.stopPropagation()}
-			role="document"
-		>
-			<div class="modal-header">
-				<h2>Bulk Operations</h2>
-				<button class="modal-close" onclick={() => (showBulkModal = false)}>&times;</button>
-			</div>
-			<div class="modal-body">
-				<p class="bulk-info">
-					Apply action to <strong>{selectedResources.size}</strong> selected resources:
-				</p>
-
-				<div class="form-group">
-					<label for="bulk-action">Action</label>
-					<select id="bulk-action" bind:value={bulkAction}>
-						<option value="publish">Publish All</option>
-						<option value="unpublish">Unpublish All</option>
-						<option value="feature">Mark as Featured</option>
-						<option value="unfeature">Remove Featured</option>
-						<option value="access">Set Access Level</option>
-						<option value="delete">Delete All</option>
-					</select>
-				</div>
-
-				{#if bulkAction === 'access'}
-					<div class="form-group">
-						<label for="bulk-access">Access Level</label>
-						<select id="bulk-access" bind:value={bulkAccessLevel}>
-							{#each ACCESS_LEVELS as level (level.id)}
-								<option value={level.id}>{level.name}</option>
-							{/each}
-						</select>
-					</div>
-				{/if}
-
-				{#if bulkAction === 'delete'}
-					<div class="alert alert-error">
-						<IconAlertCircle size={18} />
-						This will permanently delete {selectedResources.size} resources. This cannot be undone.
-					</div>
-				{/if}
-			</div>
-			<div class="modal-footer">
-				<button class="btn-secondary" onclick={() => (showBulkModal = false)}>Cancel</button>
-				<button
-					class="btn-primary"
-					class:btn-danger={bulkAction === 'delete'}
-					onclick={executeBulkAction}
-					disabled={isSaving}
-				>
-					{#if isSaving}
-						<span class="spinner-small"></span>
-						Processing...
-					{:else if bulkAction === 'delete'}
-						Delete {selectedResources.size} Resources
-					{:else}
-						Apply to {selectedResources.size} Resources
-					{/if}
-				</button>
-			</div>
-		</div>
-	</div>
+	<BulkOperationsModal
+		selectedCount={selectedResources.size}
+		bind:bulkAction
+		bind:bulkAccessLevel
+		accessLevels={ACCESS_LEVELS}
+		{isSaving}
+		onClose={() => (showBulkModal = false)}
+		onConfirm={executeBulkAction}
+	/>
 {/if}
 
 <ConfirmationModal
@@ -1478,31 +1065,6 @@
 		overflow: hidden;
 	}
 
-	/* Header - Centered */
-	.page-header {
-		text-align: center;
-		margin-bottom: 2rem;
-	}
-
-	.page-header h1 {
-		font-size: 1.75rem;
-		font-weight: 700;
-		color: #f1f5f9;
-		margin: 0 0 0.5rem 0;
-	}
-
-	.subtitle {
-		color: #64748b;
-		font-size: 0.875rem;
-		margin: 0 0 1rem 0;
-	}
-
-	.header-actions {
-		display: flex;
-		justify-content: center;
-		gap: 0.75rem;
-	}
-
 	/* Buttons */
 	.btn-primary {
 		display: flex;
@@ -1526,65 +1088,6 @@
 	.btn-primary:disabled {
 		opacity: 0.6;
 		cursor: not-allowed;
-	}
-
-	.btn-secondary {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.75rem 1.25rem;
-		background: rgba(230, 184, 0, 0.1);
-		color: #94a3b8;
-		border: 1px solid rgba(230, 184, 0, 0.2);
-		border-radius: 10px;
-		font-weight: 600;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.btn-secondary:hover {
-		background: rgba(230, 184, 0, 0.2);
-		color: #e2e8f0;
-	}
-
-	/* ICT 7: Warning and danger buttons */
-	.btn-warning {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-		color: #fff;
-		border: none;
-		border-radius: 10px;
-		font-weight: 600;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.btn-warning:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
-	}
-
-	.btn-danger,
-	.btn-primary.btn-danger {
-		background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-	}
-
-	.btn-danger:hover,
-	.btn-primary.btn-danger:hover {
-		box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
-	}
-
-	/* Bulk info */
-	.bulk-info {
-		color: #cbd5e1;
-		margin-bottom: 1.5rem;
-	}
-
-	.bulk-info strong {
-		color: #f1f5f9;
 	}
 
 	/* Unused - keeping for future use */
@@ -1633,71 +1136,6 @@
 
 	.btn-icon.active {
 		color: #22c55e;
-	}
-
-	/* Room Tabs */
-	.room-tabs {
-		display: flex;
-		gap: 0.5rem;
-		margin-bottom: 1.5rem;
-		flex-wrap: wrap;
-		padding: 0.5rem;
-		background: rgba(15, 23, 42, 0.6);
-		border-radius: 12px;
-	}
-
-	.room-tabs.loading {
-		justify-content: center;
-		padding: 1rem;
-	}
-
-	.room-tab {
-		padding: 0.75rem 1.5rem;
-		background: transparent;
-		border: none;
-		border-radius: 8px;
-		color: #94a3b8;
-		font-weight: 500;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.room-tab:hover {
-		background: rgba(230, 184, 0, 0.1);
-		color: #e2e8f0;
-	}
-
-	.room-tab.active {
-		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
-		color: var(--bg-base);
-	}
-
-	/* Stats Bar */
-	.stats-bar {
-		display: flex;
-		gap: 1.5rem;
-		padding: 1rem 1.5rem;
-		background: rgba(15, 23, 42, 0.6);
-		border-radius: 12px;
-		margin-bottom: 1.5rem;
-		flex-wrap: wrap;
-	}
-
-	.stat {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		color: #94a3b8;
-	}
-
-	.stat-value {
-		font-size: 1.25rem;
-		font-weight: 700;
-		color: #f1f5f9;
-	}
-
-	.stat-label {
-		font-size: 0.875rem;
 	}
 
 	/* Filters */
@@ -1926,254 +1364,10 @@
 		animation: spin 1s linear infinite;
 	}
 
-	.spinner-small {
-		width: 16px;
-		height: 16px;
-		border: 2px solid rgba(255, 255, 255, 0.3);
-		border-top-color: white;
-		border-radius: 50%;
-		animation: spin 1s linear infinite;
-	}
-
 	@keyframes spin {
 		to {
 			transform: rotate(360deg);
 		}
-	}
-
-	/* Alerts */
-	.alert {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-		padding: 1rem;
-		border-radius: 10px;
-		margin-bottom: 1.5rem;
-	}
-
-	.alert-success {
-		background: rgba(34, 197, 94, 0.15);
-		border: 1px solid rgba(34, 197, 94, 0.3);
-		color: #4ade80;
-	}
-
-	.alert-error {
-		background: rgba(239, 68, 68, 0.15);
-		border: 1px solid rgba(239, 68, 68, 0.3);
-		color: #f87171;
-	}
-
-	.alert-close {
-		margin-left: auto;
-		background: transparent;
-		border: none;
-		color: inherit;
-		cursor: pointer;
-		opacity: 0.7;
-	}
-
-	.alert-close:hover {
-		opacity: 1;
-	}
-
-	/* Modal */
-	.modal-overlay {
-		position: fixed;
-		inset: 0;
-		background: rgba(0, 0, 0, 0.75);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		z-index: 1000;
-		padding: 1rem;
-	}
-
-	.modal {
-		background: #1e293b;
-		border-radius: 16px;
-		width: 100%;
-		max-width: 500px;
-		max-height: 90vh;
-		overflow: hidden;
-		display: flex;
-		flex-direction: column;
-	}
-
-	.modal.modal-large {
-		max-width: 700px;
-	}
-
-	.modal-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 1.25rem 1.5rem;
-		border-bottom: 1px solid rgba(230, 184, 0, 0.2);
-	}
-
-	.modal-header h2 {
-		margin: 0;
-		font-size: 1.25rem;
-		color: #f1f5f9;
-	}
-
-	.modal-close {
-		background: transparent;
-		border: none;
-		font-size: 1.5rem;
-		color: #64748b;
-		cursor: pointer;
-		line-height: 1;
-	}
-
-	.modal-close:hover {
-		color: #f1f5f9;
-	}
-
-	.modal-body {
-		padding: 1.5rem;
-		overflow-y: auto;
-	}
-
-	.modal-footer {
-		display: flex;
-		justify-content: flex-end;
-		gap: 0.75rem;
-		padding: 1rem 1.5rem;
-		border-top: 1px solid rgba(230, 184, 0, 0.2);
-	}
-
-	/* Form Elements */
-	.form-group {
-		margin-bottom: 1.25rem;
-	}
-
-	.form-group label,
-	.form-group .group-label {
-		display: block;
-		margin-bottom: 0.5rem;
-		color: #94a3b8;
-		font-size: 0.875rem;
-		font-weight: 500;
-	}
-
-	.form-group input,
-	.form-group textarea,
-	.form-group select {
-		width: 100%;
-		padding: 0.75rem 1rem;
-		background: rgba(15, 23, 42, 0.8);
-		border: 1px solid rgba(230, 184, 0, 0.2);
-		border-radius: 8px;
-		color: #f1f5f9;
-		font-size: 0.9rem;
-	}
-
-	.form-group input:focus,
-	.form-group textarea:focus,
-	.form-group select:focus {
-		outline: none;
-		border-color: var(--primary-500);
-	}
-
-	.form-group textarea {
-		resize: vertical;
-		min-height: 80px;
-	}
-
-	.form-row {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 1rem;
-	}
-
-	.form-hint {
-		display: block;
-		margin-top: 0.5rem;
-		color: #64748b;
-		font-size: 0.8rem;
-	}
-
-	.form-hint strong {
-		color: #4ade80;
-		text-transform: uppercase;
-	}
-
-	/* Tags Grid */
-	.tags-grid {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.5rem;
-	}
-
-	.tag-btn {
-		display: flex;
-		align-items: center;
-		gap: 0.35rem;
-		padding: 0.5rem 0.75rem;
-		background: rgba(15, 23, 42, 0.8);
-		border: 1px solid rgba(230, 184, 0, 0.2);
-		border-radius: 6px;
-		color: #94a3b8;
-		font-size: 0.8rem;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.tag-btn:hover {
-		border-color: var(--tag-color, var(--primary-500));
-		color: var(--tag-color, var(--primary-400));
-	}
-
-	.tag-btn.selected {
-		background: color-mix(in srgb, var(--tag-color, var(--primary-500)) 20%, transparent);
-		border-color: var(--tag-color, var(--primary-500));
-		color: var(--tag-color, var(--primary-400));
-	}
-
-	/* Form Options */
-	.form-options {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 1.5rem;
-	}
-
-	.checkbox-label {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		cursor: pointer;
-		color: #94a3b8;
-		font-size: 0.9rem;
-	}
-
-	.checkbox-label input[type='checkbox'] {
-		width: 18px;
-		height: 18px;
-		accent-color: var(--primary-500);
-	}
-
-	/* Replace Modal */
-	.replace-info {
-		background: rgba(230, 184, 0, 0.1);
-		border: 1px solid rgba(230, 184, 0, 0.2);
-		border-radius: 8px;
-		padding: 1rem;
-		margin-bottom: 1.5rem;
-	}
-
-	.replace-info p {
-		margin: 0.25rem 0;
-		color: #cbd5e1;
-	}
-
-	.replace-info strong {
-		color: #f1f5f9;
-	}
-
-	.text-muted {
-		color: #64748b;
-		font-size: 0.875rem;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -2187,23 +1381,8 @@
 		padding-right: env(safe-area-inset-right, 0px);
 	}
 
-	/* Page Header - Mobile */
-	.page-header h1 {
-		font-size: 1.375rem;
-	}
-
-	.subtitle {
-		font-size: 0.8125rem;
-	}
-
-	.header-actions {
-		flex-wrap: wrap;
-		gap: 0.5rem;
-	}
-
 	/* Buttons - Touch Targets */
-	.btn-primary,
-	.btn-secondary {
+	.btn-primary {
 		/* 44px min touch target */
 		min-height: 44px;
 		padding: 0.625rem 1rem;
@@ -2214,49 +1393,6 @@
 		/* 44px touch target */
 		width: 44px;
 		height: 44px;
-	}
-
-	/* Room Tabs - Mobile Horizontal Scroll */
-	.room-tabs {
-		flex-wrap: nowrap;
-		overflow-x: auto;
-		-webkit-overflow-scrolling: touch;
-		scrollbar-width: none;
-		gap: 0.375rem;
-		padding: 0.375rem;
-	}
-
-	.room-tabs::-webkit-scrollbar {
-		display: none;
-	}
-
-	.room-tab {
-		/* 44px touch target */
-		min-height: 44px;
-		padding: 0.625rem 1rem;
-		font-size: 0.8125rem;
-		white-space: nowrap;
-		flex-shrink: 0;
-	}
-
-	/* Stats Bar - Mobile Wrap */
-	.stats-bar {
-		flex-wrap: wrap;
-		justify-content: flex-start;
-		gap: 0.75rem 1.25rem;
-		padding: 0.875rem 1rem;
-	}
-
-	.stat {
-		gap: 0.375rem;
-	}
-
-	.stat-value {
-		font-size: 1.125rem;
-	}
-
-	.stat-label {
-		font-size: 0.75rem;
 	}
 
 	/* Filters - Mobile Stack */
@@ -2342,103 +1478,6 @@
 		height: 44px;
 	}
 
-	/* Modal - Mobile Full Width */
-	.modal-overlay {
-		padding: 0.5rem;
-		padding-top: calc(0.5rem + env(safe-area-inset-top, 0px));
-		padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));
-	}
-
-	.modal {
-		max-width: 100%;
-		max-height: calc(
-			100vh - 1rem - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)
-		);
-	}
-
-	.modal.modal-large {
-		max-width: 100%;
-	}
-
-	.modal-header {
-		padding: 1rem;
-	}
-
-	.modal-header h2 {
-		font-size: 1.125rem;
-	}
-
-	.modal-body {
-		padding: 1rem;
-	}
-
-	.modal-footer {
-		padding: 0.75rem 1rem;
-		flex-direction: column;
-		gap: 0.5rem;
-	}
-
-	.modal-footer button {
-		width: 100%;
-		/* 44px touch target */
-		min-height: 44px;
-	}
-
-	/* Form Elements - Mobile */
-	.form-row {
-		grid-template-columns: 1fr;
-		gap: 0.875rem;
-	}
-
-	.form-group label,
-	.form-group .group-label {
-		font-size: 0.8125rem;
-	}
-
-	.form-group input,
-	.form-group textarea,
-	.form-group select {
-		/* 44px touch target */
-		min-height: 44px;
-		font-size: 0.9375rem;
-		padding: 0.625rem 0.875rem;
-	}
-
-	.form-group textarea {
-		min-height: 80px;
-	}
-
-	/* Tags Grid - Mobile */
-	.tags-grid {
-		gap: 0.375rem;
-	}
-
-	.tag-btn {
-		/* 44px touch target */
-		min-height: 44px;
-		padding: 0.5rem 0.75rem;
-		font-size: 0.75rem;
-	}
-
-	/* Form Options - Mobile */
-	.form-options {
-		flex-direction: column;
-		gap: 1rem;
-	}
-
-	.checkbox-label {
-		/* 44px touch target */
-		min-height: 44px;
-		padding: 0.5rem 0;
-		display: flex;
-		align-items: center;
-	}
-
-	.checkbox-label input[type='checkbox'] {
-		width: 22px;
-		height: 22px;
-	}
-
 	/* Empty/Loading States - Mobile */
 	.empty-state,
 	.loading-state {
@@ -2447,10 +1486,6 @@
 
 	/* sm: 640px+ */
 	@media (min-width: 640px) {
-		.page-header h1 {
-			font-size: 1.5rem;
-		}
-
 		.filters-bar {
 			flex-direction: row;
 			flex-wrap: wrap;
@@ -2474,58 +1509,13 @@
 			grid-template-columns: repeat(2, 1fr);
 			gap: 1.25rem;
 		}
-
-		.modal-footer {
-			flex-direction: row;
-			justify-content: flex-end;
-		}
-
-		.modal-footer button {
-			width: auto;
-		}
-
-		.form-options {
-			flex-direction: row;
-			flex-wrap: wrap;
-		}
 	}
 
 	/* md: 768px+ */
 	@media (min-width: 768px) {
-		.page-header h1 {
-			font-size: 1.75rem;
-		}
-
-		.room-tabs {
-			flex-wrap: wrap;
-			overflow-x: visible;
-		}
-
-		.stats-bar {
-			justify-content: flex-start;
-			gap: 1.5rem;
-			padding: 1rem 1.5rem;
-		}
-
-		.stat-value {
-			font-size: 1.25rem;
-		}
-
 		.resources-grid {
 			grid-template-columns: repeat(2, 1fr);
 			gap: 1.5rem;
-		}
-
-		.modal {
-			max-width: 500px;
-		}
-
-		.modal.modal-large {
-			max-width: 700px;
-		}
-
-		.form-row {
-			grid-template-columns: 1fr 1fr;
 		}
 	}
 
