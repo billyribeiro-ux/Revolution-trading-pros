@@ -16,6 +16,8 @@
  * - Drag & Drop Reorder
  */
 
+import type { JsonValue, PaginationMeta } from './_types';
+
 // ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
 const API_BASE = '';
 
@@ -36,7 +38,7 @@ export interface AnalyticsEvent {
 		| 'quality_change'
 		| 'speed_change'
 		| 'buffer';
-	event_data?: Record<string, any>;
+	event_data?: Record<string, JsonValue>;
 	watch_time_seconds?: number;
 	progress_percent?: number;
 	buffer_count?: number;
@@ -376,7 +378,7 @@ export const seriesApi = {
 		difficulty_level?: string;
 		is_published?: boolean;
 		search?: string;
-	}): Promise<{ success: boolean; data?: VideoSeries[]; meta?: any }> {
+	}): Promise<{ success: boolean; data?: VideoSeries[]; meta?: PaginationMeta }> {
 		const searchParams = new URLSearchParams();
 		if (params?.page) searchParams.set('page', params.page.toString());
 		if (params?.per_page) searchParams.set('per_page', params.per_page.toString());
@@ -728,7 +730,7 @@ export interface TranscodingStatus {
 	is_ready: boolean;
 	thumbnail_url?: string;
 	duration?: number;
-	metadata?: Record<string, any>;
+	metadata?: Record<string, JsonValue>;
 }
 
 export interface EmbedCode {

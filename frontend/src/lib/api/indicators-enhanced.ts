@@ -236,6 +236,26 @@ export interface ApiResult<T> {
 	error?: string;
 }
 
+/**
+ * Pagination envelope emitted by the indicators-enhanced backend routes.
+ *
+ * NOTE — wire-shape divergence from `PaginationMeta` in `_types.ts`:
+ * the indicators backend (`api/src/routes/indicators_admin.rs` lines
+ * 109-114, 1259-1262, 1419+) emits `"page"`, not `"current_page"`.
+ * Defining a dedicated type here so callers see the actual server shape
+ * — using `PaginationMeta` would have given them a `current_page` key
+ * that the server never emits (silent `undefined` at runtime).
+ *
+ * `total_pages` is omitted on the download-log and TradingView-access
+ * listings (only the indicators-list endpoint computes it).
+ */
+export interface IndicatorsPaginationMeta {
+	page: number;
+	per_page: number;
+	total: number;
+	total_pages?: number;
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // API FUNCTIONS
 // ═══════════════════════════════════════════════════════════════════════════
@@ -273,7 +293,9 @@ export const indicatorsApi = {
 		Object.entries(query).forEach(([key, value]) => {
 			if (value !== undefined) params.append(key, String(value));
 		});
-		return apiRequest<{ indicators: Indicator[]; pagination: any }>(`?${params}`);
+		return apiRequest<{ indicators: Indicator[]; pagination: IndicatorsPaginationMeta }>(
+			`?${params}`
+		);
 	},
 
 	get: (indicatorId: number) => {
@@ -318,7 +340,9 @@ export const indicatorsApi = {
 		Object.entries(query).forEach(([key, value]) => {
 			if (value !== undefined) params.append(key, String(value));
 		});
-		return apiRequest<{ downloads: DownloadLog[]; pagination: any }>(`/downloads?${params}`);
+		return apiRequest<{ downloads: DownloadLog[]; pagination: IndicatorsPaginationMeta }>(
+			`/downloads?${params}`
+		);
 	}
 };
 
@@ -473,7 +497,7 @@ export const tradingViewAccessApi = {
 		Object.entries(query).forEach(([key, value]) => {
 			if (value !== undefined) params.append(key, String(value));
 		});
-		return apiRequest<{ accesses: TradingViewAccess[]; pagination: any }>(
+		return apiRequest<{ accesses: TradingViewAccess[]; pagination: IndicatorsPaginationMeta }>(
 			`/${indicatorId}/tradingview?${params}`
 		);
 	},
