@@ -4,6 +4,7 @@
 	import { popupsApi } from '$lib/api/popups';
 	import type { Popup } from '$lib/stores/popups.svelte';
 	import { IconX } from '$lib/icons';
+	import { logger } from '$lib/utils/logger';
 	import { sanitizePopupContent } from '$lib/utils/sanitize';
 
 	interface Props {
@@ -65,7 +66,7 @@
 				}
 			}
 		} catch (error) {
-			console.error('Failed to load popups:', error);
+			logger.error('Failed to load popups:', error);
 		}
 	}
 
@@ -165,7 +166,7 @@
 			// Note: viewId tracking could be enhanced by updating the API to return view_id
 			viewId = popupIdNum; // Use popup.id as fallback for tracking
 		} catch (error) {
-			console.error('Failed to track view:', error);
+			logger.error('Failed to track view:', error);
 		}
 
 		// Focus management - wait for element to render
@@ -217,7 +218,7 @@
 			await popupsApi.trackConversion(popupIdNum, { action: type, ...data });
 			closePopup();
 		} catch (error) {
-			console.error('Failed to track conversion:', error);
+			logger.error('Failed to track conversion:', error);
 		}
 	}
 
