@@ -40,6 +40,7 @@
 
 import { authStore } from '$lib/stores/auth.svelte';
 import type { User } from '$lib/stores/auth.svelte';
+import { logger } from '$lib/utils/logger';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { PaginatedResponse, PaginationMeta } from './_types';
 
@@ -492,7 +493,6 @@ class RequestManager {
 		const key = this.getCacheKey(endpoint, options);
 		if (this.isCacheValid(key)) {
 			const cached = this.cache.get(key);
-			console.debug(`[API] Cache hit for ${key}`);
 			return (cached?.data as T | undefined) ?? null;
 		}
 		return null;
@@ -507,7 +507,6 @@ class RequestManager {
 			data,
 			expiry: Date.now() + ttl
 		});
-		console.debug(`[API] Cached ${key} for ${ttl}ms`);
 	}
 
 	/**
@@ -531,7 +530,6 @@ class RequestManager {
 	async deduplicateRequest<T>(key: string, requestFn: () => Promise<T>): Promise<T> {
 		// Check if request is already pending
 		if (this.pendingRequests.has(key)) {
-			console.debug(`[API] Deduplicating request: ${key}`);
 			return this.pendingRequests.get(key) as Promise<T>;
 		}
 
@@ -579,7 +577,7 @@ class RequestManager {
 
 			if (this.circuitBreaker.failures >= CIRCUIT_BREAKER_THRESHOLD) {
 				this.circuitBreaker.isOpen = true;
-				console.error('[API] Circuit breaker opened due to repeated failures');
+				logger.error('[API] Circuit breaker opened due to repeated failures');
 			}
 
 			throw error;
@@ -734,7 +732,7 @@ async function executeRequestWithRetry<T>(
 		// Determine if we should retry
 		if (error instanceof AdminApiError && error.shouldRetry && retriesLeft > 0) {
 			const delay = RETRY_DELAY_BASE * Math.pow(2, MAX_RETRIES - retriesLeft);
-			console.warn(
+			logger.warn(
 				`[API] Retrying request to ${endpoint} after ${delay}ms (${retriesLeft} retries left)`
 			);
 
@@ -765,7 +763,7 @@ function trackApiPerformance(
 ): void {
 	// Log slow requests
 	if (duration > 3000) {
-		console.warn(`[API] Slow request: ${method} ${endpoint} took ${duration}ms`);
+		logger.warn(`[API] Slow request: ${method} ${endpoint} took ${duration}ms`);
 	}
 
 	// Send to analytics
@@ -788,7 +786,7 @@ function trackApiPerformance(
  * Log API errors for monitoring
  */
 function logApiError(endpoint: string, error: unknown): void {
-	console.error(`[API] Error for ${endpoint}:`, error);
+	logger.error(`[API] Error for ${endpoint}`, { error });
 }
 
 /**
@@ -1830,7 +1828,7 @@ export function clearApiCachePattern(pattern: string): void {
 export async function prefetchData(endpoints: string[]): Promise<void> {
 	const promises = endpoints.map((endpoint) =>
 		makeRequest(endpoint).catch((err) => {
-			console.warn(`[API] Prefetch failed for ${endpoint}:`, err);
+			logger.warn(`[API] Prefetch failed for ${endpoint}`, { error: err });
 			return null;
 		})
 	);
