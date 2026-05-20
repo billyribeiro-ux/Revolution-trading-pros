@@ -6,16 +6,19 @@ import { defineConfig, devices } from '@playwright/test';
 // printed URL when running playwright against a non-default port.
 const BASE_URL = process.env.FRONTEND_URL || process.env.E2E_BASE_URL || 'http://localhost:5173';
 
+// Live Playwright surface (2026-05-19 — see PR for full audit):
+//   frontend/tests/sitemap.test.ts                  — sitemap.xml validation
+//   frontend/tests/accessibility/a11y-audit.spec.ts — axe-core a11y audit
+// Both specs run chromium-only via `pnpm test:a11y` (a11y) or `pnpm exec
+// playwright test tests/sitemap` (sitemap). tests/e2e/ was removed
+// 2026-05-19; frontend/e2e/blog-editor/ was removed 2026-05-17. The blog
+// editor SOURCE (frontend/src/lib/components/blog/BlockEditor/) is fully
+// intact and shipping — only its old test scaffolding is gone.
+// firefox/webkit/Mobile Chrome/Mobile Safari device projects were trimmed
+// because the surviving specs don't exercise them, and 6 dead
+// `test:blog-editor*` package.json scripts were removed alongside.
 export default defineConfig({
-	// tests/e2e/ was removed 2026-05-19 after the suite surfaced 2 real
-	// backend bugs (POST /api/auth/register → 503; admin login failure)
-	// that need triage against the running app, not via a CI black box.
-	// The surviving Playwright surface is tests/accessibility (a11y-audit);
-	// a fresh e2e suite will be authored once the backend bugs are fixed.
 	testDir: './tests',
-	// FIX-2026-04-26 (admin-audit): default to chromium-only when running the
-	// admin sweep so we get one fast end-to-end pass instead of 5 redundant ones.
-	// Opt into other browsers via `--project=firefox` etc.
 	fullyParallel: true,
 	forbidOnly: !!process.env.CI,
 	retries: process.env.CI ? 2 : 0,
@@ -40,22 +43,6 @@ export default defineConfig({
 		{
 			name: 'chromium',
 			use: { ...devices['Desktop Chrome'] }
-		},
-		{
-			name: 'firefox',
-			use: { ...devices['Desktop Firefox'] }
-		},
-		{
-			name: 'webkit',
-			use: { ...devices['Desktop Safari'] }
-		},
-		{
-			name: 'Mobile Chrome',
-			use: { ...devices['Pixel 5'] }
-		},
-		{
-			name: 'Mobile Safari',
-			use: { ...devices['iPhone 12'] }
 		}
 	],
 	webServer: {
