@@ -8,6 +8,7 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { adminFetch } from '$lib/utils/adminFetch';
+	import { logger } from '$lib/utils/logger';
 	// FIX-2026-04-26-audit (P2-3): replace native window.confirm() with the
 	// shared ConfirmationModal used everywhere else in the admin. The native
 	// dialog is blocked in some sandboxed contexts and is inconsistent UX.
@@ -133,7 +134,7 @@
 			}
 		} catch (e) {
 			error = 'Failed to load indicator';
-			console.error(e);
+			logger.error(e);
 		} finally {
 			loading = false;
 		}
@@ -148,7 +149,7 @@
 				files = data.data || [];
 			}
 		} catch (e) {
-			console.error('Failed to load files:', e);
+			logger.error('Failed to load files:', e);
 		} finally {
 			loadingFiles = false;
 		}
@@ -163,7 +164,7 @@
 				videos = data.data || [];
 			}
 		} catch (e) {
-			console.error('Failed to load videos:', e);
+			logger.error('Failed to load videos:', e);
 		} finally {
 			loadingVideos = false;
 		}
@@ -247,7 +248,7 @@
 			}
 		} catch (e) {
 			error = 'Failed to upload file';
-			console.error(e);
+			logger.error(e);
 		} finally {
 			uploadingFile = false;
 		}
@@ -341,7 +342,7 @@
 			}
 		} catch (e) {
 			error = 'Failed to add video';
-			console.error(e);
+			logger.error(e);
 		} finally {
 			addingVideo = false;
 		}

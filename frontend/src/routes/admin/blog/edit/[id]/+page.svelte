@@ -21,6 +21,7 @@
 	import SeoMetaFields from '$lib/components/blog/SeoMetaFields.svelte';
 	import { api } from '$lib/api/config';
 	import { mediaApi } from '$lib/api/media';
+	import { logger } from '$lib/utils/logger';
 	import {
 		predefinedCategories,
 		getPredefinedCategoryById
@@ -196,7 +197,7 @@
 				];
 			}
 		} catch (error) {
-			console.error('Failed to load post:', error);
+			logger.error('Failed to load post:', error);
 			saveError = 'Failed to load post';
 		} finally {
 			loading = false;
@@ -214,7 +215,7 @@
 			const data = await resp.json();
 			availableTags = data.data || data || [];
 		} catch (error) {
-			console.error('Failed to load tags:', error);
+			logger.error('Failed to load tags:', error);
 		} finally {
 			tagsLoading = false;
 		}
@@ -293,7 +294,7 @@
 			post.tags = [...post.tags, newTagData.id];
 			newTag = '';
 		} catch (error) {
-			console.error('Failed to create tag:', error);
+			logger.error('Failed to create tag:', error);
 		}
 	}
 
@@ -363,7 +364,7 @@
 				saveSuccess = '';
 			}, 3000);
 		} catch (error: any) {
-			console.error('Failed to save post:', error);
+			logger.error('Failed to save post:', error);
 			saveError = error.message || 'Failed to save post. Please try again.';
 		} finally {
 			saving = false;
@@ -395,7 +396,7 @@
 					post.featured_image_title = result.file.title || file.name.replace(/\.[^/.]+$/, '');
 				}
 			} catch (error: any) {
-				console.error('Failed to upload featured image:', error);
+				logger.error('Failed to upload featured image:', error);
 				uploadError = error.message || 'Failed to upload image';
 			} finally {
 				uploadingImage = false;
