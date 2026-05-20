@@ -2,6 +2,13 @@
 	import { flip } from 'svelte/animate';
 	import Icon from '$lib/components/Icon.svelte';
 	import { slide } from 'svelte/transition';
+	import type { JsonValue } from '$lib/api/_types';
+
+	// Each repeater row holds the form values for one configured group: keys
+	// are `FieldConfig.name`, values are the string/number/boolean payloads
+	// produced by the inputs below. JSON-shaped because the row round-trips
+	// through PostgreSQL JSONB columns on submit.
+	type RepeaterRow = Record<string, JsonValue | undefined>;
 
 	/**
 	 * RepeaterField - Dynamic Repeating Field Groups
@@ -36,9 +43,9 @@
 		collapsible?: boolean;
 		itemLabel?: string;
 		required?: boolean;
-		value?: Record<string, any>[];
+		value?: RepeaterRow[];
 		error?: string[];
-		onchange?: (value: Record<string, any>[]) => void;
+		onchange?: (value: RepeaterRow[]) => void;
 	}
 
 	let {
@@ -59,7 +66,7 @@
 	}: Props = $props();
 
 	// State
-	let items: { id: string; data: Record<string, any>; collapsed: boolean }[] = $state([]);
+	let items: { id: string; data: RepeaterRow; collapsed: boolean }[] = $state([]);
 	let draggedIndex: number | null = $state(null);
 	let dragOverIndex: number | null = $state(null);
 
@@ -85,8 +92,8 @@
 	}
 
 	// Create empty item data
-	function createEmptyData(): Record<string, any> {
-		const data: Record<string, any> = {};
+	function createEmptyData(): RepeaterRow {
+		const data: RepeaterRow = {};
 		fields.forEach((field) => {
 			data[field.name] = '';
 		});
@@ -142,7 +149,7 @@
 	}
 
 	// Update field value
-	function updateField(index: number, fieldName: string, fieldValue: any): void {
+	function updateField(index: number, fieldName: string, fieldValue: JsonValue | undefined): void {
 		const item = items[index];
 		if (!item) return;
 		item.data[fieldName] = fieldValue;
@@ -216,11 +223,13 @@
 		updateValue();
 	}
 
-	// Get item preview text
-	function getItemPreview(item: Record<string, any>): string {
+	// Get item preview text. Note: this takes a full *item wrapper* (with the
+	// `data` key) — kept for backward compat with the call site, even though
+	// the wrapping is awkward.
+	function getItemPreview(item: { data: RepeaterRow }): string {
 		const firstField = fields[0];
-		if (firstField && item['data']?.[firstField.name]) {
-			return String(item['data'][firstField.name]).substring(0, 50);
+		if (firstField && item.data?.[firstField.name]) {
+			return String(item.data[firstField.name]).substring(0, 50);
 		}
 		return '';
 	}
@@ -349,7 +358,10 @@
 										<select
 											id="{id}-{index}-{field.name}"
 											class="repeater-item__input"
-											value={item.data[field.name]}
+											value={typeof item.data[field.name] === 'string' ||
+											typeof item.data[field.name] === 'number'
+												? (item.data[field.name] as string | number)
+												: ''}
 											onchange={(e: Event) =>
 												updateField(
 													index,
@@ -367,7 +379,10 @@
 										<textarea
 											id="{id}-{index}-{field.name}"
 											class="repeater-item__input repeater-item__input--textarea"
-											value={item.data[field.name]}
+											value={typeof item.data[field.name] === 'string' ||
+											typeof item.data[field.name] === 'number'
+												? (item.data[field.name] as string | number)
+												: ''}
 											placeholder={field.placeholder}
 											required={field.required}
 											oninput={(e: Event) =>
@@ -382,7 +397,10 @@
 											type={field.type}
 											id="{id}-{index}-{field.name}"
 											class="repeater-item__input"
-											value={item.data[field.name]}
+											value={typeof item.data[field.name] === 'string' ||
+											typeof item.data[field.name] === 'number'
+												? (item.data[field.name] as string | number)
+												: ''}
 											placeholder={field.placeholder}
 											required={field.required}
 											oninput={(e: Event) =>

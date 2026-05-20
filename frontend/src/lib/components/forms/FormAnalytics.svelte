@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { Form } from '$lib/api/forms';
+	import type { Form, FormField, FormSubmission, SubmissionData } from '$lib/api/forms';
 	import { getSubmissionStats, getSubmissions } from '$lib/api/forms';
 
 	interface Props {
@@ -9,10 +9,41 @@
 
 	let props: Props = $props();
 
-	let stats: any = $state(null);
+	/**
+	 * Shape the template reads from `stats`. The `getSubmissionStats` API is
+	 * aliased to `getFormAnalytics` which is *declared* to return `FormAnalytics`
+	 * (views/unique_views/submissions/...) — but the template reads fields like
+	 * `total_submissions`/`read_count`/`unread_count` that aren't on
+	 * `FormAnalytics`. Either the backend returns a wider envelope and the
+	 * declared type is wrong, or the template uses outdated keys. See R23-A
+	 * LB-2 for the drift — typed structurally here matching the template reads.
+	 */
+	interface SubmissionStatsView {
+		total_submissions?: number;
+		recent_submissions?: number;
+		read_count?: number;
+		unread_count?: number;
+		starred_count?: number;
+		archived_count?: number;
+	}
+
+	interface SubmissionTrendPoint {
+		date: string;
+		count: number;
+	}
+
+	interface FieldCompletionRow {
+		label: string;
+		name: string;
+		completionRate: number;
+		filled: number;
+		total: number;
+	}
+
+	let stats = $state<SubmissionStatsView | null>(null);
 	let loading = $state(true);
-	let submissionTrend: any[] = $state([]);
-	let fieldAnalytics: any[] = $state([]);
+	let submissionTrend = $state<SubmissionTrendPoint[]>([]);
+	let fieldAnalytics = $state<FieldCompletionRow[]>([]);
 
 	onMount(async () => {
 		await loadAnalytics();
@@ -23,8 +54,9 @@
 
 		try {
 			if (props.form.id) {
-				// Load basic stats
-				stats = await getSubmissionStats(props.form.id);
+				// Load basic stats. The API typing claims `FormAnalytics` but the
+				// template reads `SubmissionStatsView` fields — see LB-2.
+				stats = (await getSubmissionStats(props.form.id)) as unknown as SubmissionStatsView;
 
 				// Load recent submissions for trend analysis
 				const submissions = await getSubmissions(props.form.id, 1, 100);
@@ -42,7 +74,7 @@
 		}
 	}
 
-	function calculateSubmissionTrend(submissions: any[]) {
+	function calculateSubmissionTrend(submissions: FormSubmission[]): SubmissionTrendPoint[] {
 		const last30Days = new Date();
 		last30Days.setDate(last30Days.getDate() - 30);
 
@@ -58,8 +90,11 @@
 			}
 		}
 
-		// Count submissions per day
+		// Count submissions per day. Skip submissions without `created_at` —
+		// pre-R23-A this code did `new Date(undefined)` which silently produces
+		// Invalid Date and dropped the row (the `>=` comparison is always false).
 		submissions.forEach((submission) => {
+			if (!submission.created_at) return;
 			const date = new Date(submission.created_at);
 			if (date >= last30Days) {
 				const dateKey = date.toISOString().split('T')[0];
@@ -75,10 +110,10 @@
 		}));
 	}
 
-	function analyzeFieldCompletion(submissions: any[]) {
+	function analyzeFieldCompletion(submissions: FormSubmission[]): FieldCompletionRow[] {
 		if (!props.form.fields || submissions.length === 0) return [];
 
-		const fieldStats: Record<string, { filled: number; total: number; field: any }> = {};
+		const fieldStats: Record<string, { filled: number; total: number; field: FormField }> = {};
 
 		// Initialize field stats
 		props.form.fields.forEach((field) => {
@@ -89,10 +124,12 @@
 			};
 		});
 
-		// Count filled fields
+		// Count filled fields. `data.value` is a `JsonValue` — only call .trim()
+		// when it's a string.
 		submissions.forEach((submission) => {
-			submission.data?.forEach((data: any) => {
-				if (data.value && data.value.trim() !== '') {
+			submission.data?.forEach((data: SubmissionData) => {
+				const v = data.value;
+				if (typeof v === 'string' ? v.trim() !== '' : v !== null && v !== undefined) {
 					const stat = fieldStats[data.field_name];
 					if (stat) {
 						stat.filled++;
@@ -115,9 +152,13 @@
 		return '2m 34s';
 	}
 
-	let readRate = $derived(
-		stats && stats.total_submissions > 0 ? (stats.read_count / stats.total_submissions) * 100 : 0
-	);
+	// Percentage helper used by the status-bar / read-rate visualisations.
+	function pct(num: number | undefined, denom: number | undefined): number {
+		if (!num || !denom || denom <= 0) return 0;
+		return (num / denom) * 100;
+	}
+
+	let readRate = $derived(pct(stats?.read_count, stats?.total_submissions));
 </script>
 
 <div class="analytics-container">
@@ -171,9 +212,7 @@
 					<div class="bar-track">
 						<div
 							class="bar-fill unread"
-							style="width: {stats && stats.total_submissions > 0
-								? (stats.unread_count / stats.total_submissions) * 100
-								: 0}%"
+							style="width: {pct(stats?.unread_count, stats?.total_submissions)}%"
 						></div>
 					</div>
 				</div>
@@ -186,9 +225,7 @@
 					<div class="bar-track">
 						<div
 							class="bar-fill read"
-							style="width: {stats && stats.total_submissions > 0
-								? (stats.read_count / stats.total_submissions) * 100
-								: 0}%"
+							style="width: {pct(stats?.read_count, stats?.total_submissions)}%"
 						></div>
 					</div>
 				</div>
@@ -201,9 +238,7 @@
 					<div class="bar-track">
 						<div
 							class="bar-fill starred"
-							style="width: {stats && stats.total_submissions > 0
-								? (stats.starred_count / stats.total_submissions) * 100
-								: 0}%"
+							style="width: {pct(stats?.starred_count, stats?.total_submissions)}%"
 						></div>
 					</div>
 				</div>
@@ -216,9 +251,7 @@
 					<div class="bar-track">
 						<div
 							class="bar-fill archived"
-							style="width: {stats && stats.total_submissions > 0
-								? (stats.archived_count / stats.total_submissions) * 100
-								: 0}%"
+							style="width: {pct(stats?.archived_count, stats?.total_submissions)}%"
 						></div>
 					</div>
 				</div>

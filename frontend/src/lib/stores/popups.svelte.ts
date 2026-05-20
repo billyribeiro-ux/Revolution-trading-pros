@@ -4,6 +4,7 @@
  */
 
 import { browser } from '$app/environment';
+import type { JsonValue } from '$lib/api/_types';
 
 // Popup configuration types for a fully customizable popup system
 export interface PopupButton {
@@ -118,7 +119,14 @@ export interface Popup {
 
 	// Content
 	title?: string;
-	content: any; // PopupContent or string for backend compatibility
+	// HISTORICAL `any` (R23-A audited): `content`/`design`/`animation` round-trip
+	// through JSONB and may be either the strict envelope (PopupContent /
+	// PopupDesign / PopupAnimation) OR a backward-compat string/partial blob
+	// from the legacy WP popup importer. Narrowing them surfaces ~110
+	// downstream errors across `admin/popups/{new,[id]}/+page.svelte` and the
+	// popup-demo routes — out of R23-A's scope. Keep `any` here and tighten
+	// in a dedicated sweep after the admin-popup editor is rewritten.
+	content: any;
 	successMessage?: string;
 	variantTitle?: string;
 	abTestId?: string;
@@ -127,9 +135,9 @@ export interface Popup {
 	closeOnOverlayClick: boolean;
 	closeOnEscape?: boolean;
 
-	// Design
-	design: any; // PopupDesign for backend compatibility (may be partial)
-	animation: any; // PopupAnimation or string for backend compatibility
+	// Design — see comment above; left as `any` until the admin editor migrates.
+	design: any;
+	animation: any;
 	attentionAnimation?: {
 		enabled: boolean;
 		type: 'shake' | 'pulse' | 'bounce';
@@ -204,7 +212,11 @@ export interface Popup {
 	createdAt: string;
 	updatedAt: string;
 
-	// Backend compatibility properties (snake_case from API)
+	// Backend compatibility properties (snake_case from API).
+	// HISTORICAL `any` (R23-A audited): trigger_rules / display_rules /
+	// frequency_rules are JSONB on the backend with a structural shape
+	// expected by `admin/popups/new` and `admin/popups/[id]/edit` pages —
+	// narrowing them surfaces ~20 downstream errors. Out of R23-A's scope.
 	priority?: number;
 	trigger_rules?: any;
 	display_rules?: any;
@@ -372,7 +384,7 @@ export const popupStore = {
 	},
 
 	// Record that a popup was shown
-	recordImpression(popupId: string, _meta?: Record<string, any>) {
+	recordImpression(popupId: string, _meta?: Record<string, JsonValue>) {
 		const now = Date.now();
 		const history = [...storeState.popupHistory];
 		const existing = history.find((h) => h.popupId === popupId);
@@ -401,14 +413,27 @@ export const popupStore = {
 		}
 	},
 
-	// Record a conversion (button click, form submit, etc.)
-	recordConversion(popupId: string, data?: Record<string, any>) {
+	// Record a conversion (button click, form submit, etc.). Historically a
+	// `Record<string, any>` because callers (`PopupModal.svelte:620,692`,
+	// `PopupRenderer.svelte:229,250`) pass freeform analytic payloads
+	// (`{ formData, variant, submissionTime }`, `{ action, buttonText, variant }`)
+	// that the backend logs verbatim. The API's `ConversionData` envelope
+	// (`action?, value?, revenue?, metadata?, timestamp?`) is narrower — and
+	// LB-1 (below) documents the latent drift between the two shapes. Until
+	// callers are migrated to the envelope, accept JSON-shaped payloads here.
+	recordConversion(popupId: string, data?: Record<string, JsonValue>) {
 		// Send to backend API
 		if (browser) {
 			import('$lib/api/popups').then(({ recordPopupConversion }) => {
-				recordPopupConversion(popupId, data).catch((err) => {
-					console.error('Failed to record conversion:', err);
-				});
+				// `data` is a freeform JSON payload (callers pass `{ formData,
+				// variant, submissionTime, ... }`); pass through unchanged so
+				// the wire shape stays flat — see LB-1 in R23-A report for the
+				// `ConversionData`-envelope drift.
+				recordPopupConversion(popupId, data as Parameters<typeof recordPopupConversion>[1]).catch(
+					(err) => {
+						console.error('Failed to record conversion:', err);
+					}
+				);
 			});
 		}
 	},
