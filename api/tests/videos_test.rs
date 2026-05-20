@@ -311,7 +311,7 @@ fn watch_history_query_optional_i64_fields() {
     // R9-D NEGATIVE: user_id non-integer MUST fail
     assert!(
         serde_json::from_value::<WatchHistoryQuery>(serde_json::json!({
-            "user_id": 3.14,
+            "user_id": 1.5, // R23-D: any non-integer float; value irrelevant — test only checks i64 rejection
         }))
         .is_err(),
         "WatchHistoryQuery.user_id MUST reject float input (i64 only)"

@@ -1,3 +1,8 @@
+// R23-D: test-scaffold doc comments use narrative list formatting that doesn't
+// match clippy's strict CommonMark interpretation. These are documentation-style
+// lints, not correctness issues. Allow file-wide to keep the scaffold readable.
+#![allow(clippy::doc_lazy_continuation, clippy::doc_overindented_list_items)]
+
 //! Health route contract tests — pure, no-DB.
 //!
 //! Binds directly to `revolution_api::routes::health` and pins the
