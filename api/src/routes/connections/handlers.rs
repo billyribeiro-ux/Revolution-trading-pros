@@ -1,374 +1,25 @@
-//! Connections Routes - ICT Level 7 Principal Engineer Grade
-//! Apple ICT 11+ Principal Engineer Grade - January 2026
-//!
-//! SECURITY: All endpoints require AdminUser authentication
-//! Features:
-//! - Third-party service connections with database storage
-//! - API keys encrypted at rest
-//! - Stripe connection management
-//! - Email provider settings
-//! - Integration webhooks
-//! - Connection health monitoring
-//! - Audit logging for all changes
+//! Connection CRUD handlers (split from `connections.rs` lines
+//! 365-1232, R20-B maintainability pass, 2026-05-20). Behavior
+//! preserved verbatim — only the module boundary changed.
 
 use axum::{
     extract::{Path, Query, State},
     http::StatusCode,
-    routing::{delete, get, post, put},
-    Json, Router,
+    Json,
 };
-use chrono::{DateTime, Utc};
-use serde::{Deserialize, Serialize};
 use serde_json::json;
-use sqlx::FromRow;
 use std::collections::HashMap;
 
 use crate::{middleware::admin::AdminUser, AppState};
 
-// ═══════════════════════════════════════════════════════════════════════════
-// TYPES
-// ═══════════════════════════════════════════════════════════════════════════
-
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
-pub struct ServiceConnection {
-    pub id: i64,
-    pub service_key: String,
-    pub name: String,
-    pub category: String,
-    pub description: Option<String>,
-    pub status: String,
-    pub health_score: i32,
-    pub health_status: Option<String>,
-    pub environment: Option<String>,
-    pub credentials_encrypted: Option<String>,
-    pub settings: Option<serde_json::Value>,
-    pub webhook_url: Option<String>,
-    pub webhook_secret: Option<String>,
-    pub api_calls_today: i32,
-    pub api_calls_total: i64,
-    pub last_error: Option<String>,
-    pub last_verified_at: Option<DateTime<Utc>>,
-    pub connected_at: Option<DateTime<Utc>>,
-    pub created_at: Option<DateTime<Utc>>,
-    pub updated_at: Option<DateTime<Utc>>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
-pub struct IntegrationWebhook {
-    pub id: i64,
-    pub connection_id: i64,
-    pub name: String,
-    pub url: String,
-    pub secret: Option<String>,
-    pub events: Option<serde_json::Value>,
-    pub is_active: bool,
-    pub last_triggered_at: Option<DateTime<Utc>>,
-    pub last_status_code: Option<i32>,
-    pub failure_count: i32,
-    pub created_at: Option<DateTime<Utc>>,
-    pub updated_at: Option<DateTime<Utc>>,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct ConnectServiceRequest {
-    pub credentials: HashMap<String, String>,
-    pub environment: Option<String>,
-    pub settings: Option<serde_json::Value>,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct UpdateConnectionRequest {
-    pub credentials: Option<HashMap<String, String>>,
-    pub environment: Option<String>,
-    pub settings: Option<serde_json::Value>,
-    pub is_active: Option<bool>,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct CreateWebhookRequest {
-    pub name: String,
-    pub url: String,
-    pub events: Option<serde_json::Value>,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct UpdateWebhookRequest {
-    pub name: Option<String>,
-    pub url: Option<String>,
-    pub events: Option<serde_json::Value>,
-    pub is_active: Option<bool>,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct ListQuery {
-    pub category: Option<String>,
-    pub status: Option<String>,
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// ENCRYPTION HELPERS
-// ═══════════════════════════════════════════════════════════════════════════
-
-/// Encrypt credentials for storage (uses base64 encoding as placeholder - in production use AES-256)
-fn encrypt_credentials(credentials: &HashMap<String, String>) -> String {
-    use base64::{engine::general_purpose::STANDARD, Engine};
-    let json = serde_json::to_string(credentials).unwrap_or_default();
-    // In production, use proper AES-256-GCM encryption with a key from env
-    // For now, we use base64 encoding as a placeholder
-    STANDARD.encode(json.as_bytes())
-}
-
-/// Decrypt credentials from storage
-fn decrypt_credentials(encrypted: &str) -> HashMap<String, String> {
-    use base64::{engine::general_purpose::STANDARD, Engine};
-    // In production, use proper AES-256-GCM decryption
-    match STANDARD.decode(encrypted) {
-        Ok(bytes) => serde_json::from_slice(&bytes).unwrap_or_default(),
-        Err(_) => HashMap::new(),
-    }
-}
-
-/// Mask sensitive credential values for display
-fn mask_credentials(credentials: &HashMap<String, String>) -> HashMap<String, String> {
-    credentials
-        .iter()
-        .map(|(k, v)| {
-            let masked = if v.len() <= 8 {
-                "*".repeat(v.len())
-            } else {
-                format!("{}...{}", "*".repeat(8), &v[v.len().saturating_sub(4)..])
-            };
-            (k.clone(), masked)
-        })
-        .collect()
-}
-
-/// Generate a secure webhook secret
-fn generate_webhook_secret() -> String {
-    use rand::Rng;
-    let mut rng = rand::thread_rng();
-    let bytes: Vec<u8> = (0..32).map(|_| rng.gen()).collect();
-    hex::encode(bytes)
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// AUDIT LOGGING
-// ═══════════════════════════════════════════════════════════════════════════
-
-#[allow(clippy::too_many_arguments)]
-async fn log_connection_audit(
-    pool: &sqlx::PgPool,
-    admin_id: i64,
-    admin_email: &str,
-    action: &str,
-    entity_type: &str,
-    entity_id: Option<i64>,
-    old_value: Option<serde_json::Value>,
-    new_value: Option<serde_json::Value>,
-    metadata: Option<serde_json::Value>,
-) {
-    let _ = sqlx::query(
-        r#"
-        INSERT INTO admin_audit_logs (
-            admin_id, admin_email, action, entity_type, entity_id,
-            old_value, new_value, metadata, created_at
-        ) VALUES ($1, $2, $3, $4, $5, $6::text, $7::text, $8, NOW())
-        "#,
-    )
-    .bind(admin_id)
-    .bind(admin_email)
-    .bind(action)
-    .bind(entity_type)
-    .bind(entity_id)
-    .bind(old_value.map(|v| v.to_string()))
-    .bind(new_value.map(|v| v.to_string()))
-    .bind(metadata)
-    .execute(pool)
-    .await;
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// SERVICE DEFINITIONS (metadata)
-// ═══════════════════════════════════════════════════════════════════════════
-
-fn get_service_definitions() -> Vec<serde_json::Value> {
-    vec![
-        // Built-in services
-        json!({
-            "key": "fluent_crm_pro",
-            "name": "FluentCRM Pro",
-            "category": "CRM",
-            "description": "Advanced customer relationship management with automation, segmentation, and email sequences.",
-            "icon": "crm",
-            "color": "#10B981",
-            "is_oauth": false,
-            "is_builtin": true,
-            "fields": []
-        }),
-        json!({
-            "key": "fluent_forms_pro",
-            "name": "FluentForms Pro",
-            "category": "Forms",
-            "description": "Drag-and-drop form builder with conditional logic, file uploads, and integrations.",
-            "icon": "forms",
-            "color": "#8B5CF6",
-            "is_oauth": false,
-            "is_builtin": true,
-            "fields": []
-        }),
-        json!({
-            "key": "fluent_smtp",
-            "name": "FluentSMTP",
-            "category": "Email",
-            "description": "Reliable email delivery with multiple provider support and detailed logging.",
-            "icon": "email",
-            "color": "#F59E0B",
-            "is_oauth": false,
-            "is_builtin": true,
-            "fields": []
-        }),
-        // External services
-        json!({
-            "key": "stripe",
-            "name": "Stripe",
-            "category": "Payment",
-            "description": "Accept payments, manage subscriptions, and process refunds securely.",
-            "icon": "stripe",
-            "color": "#635BFF",
-            "docs_url": "https://stripe.com/docs",
-            "signup_url": "https://dashboard.stripe.com/register",
-            "is_oauth": false,
-            "is_builtin": false,
-            "environments": ["production", "sandbox"],
-            "fields": [
-                {"key": "publishable_key", "label": "Publishable Key", "type": "text", "required": true, "placeholder": "pk_live_..."},
-                {"key": "secret_key", "label": "Secret Key", "type": "password", "required": true, "placeholder": "sk_live_..."},
-                {"key": "webhook_secret", "label": "Webhook Secret", "type": "password", "required": false, "placeholder": "whsec_..."}
-            ]
-        }),
-        json!({
-            "key": "bunny_cdn",
-            "name": "Bunny.net CDN",
-            "category": "Storage",
-            "description": "Global CDN and video streaming with edge caching for fast content delivery.",
-            "icon": "bunny",
-            "color": "#FF6B00",
-            "docs_url": "https://docs.bunny.net",
-            "signup_url": "https://bunny.net",
-            "is_oauth": false,
-            "is_builtin": false,
-            "fields": [
-                {"key": "api_key", "label": "API Key", "type": "password", "required": true},
-                {"key": "storage_zone", "label": "Storage Zone", "type": "text", "required": true},
-                {"key": "library_id", "label": "Video Library ID", "type": "text", "required": false}
-            ]
-        }),
-        json!({
-            "key": "sendgrid",
-            "name": "SendGrid",
-            "category": "Email",
-            "description": "Transactional email delivery with templates, analytics, and deliverability tools.",
-            "icon": "email",
-            "color": "#1A82E2",
-            "docs_url": "https://docs.sendgrid.com",
-            "signup_url": "https://signup.sendgrid.com",
-            "is_oauth": false,
-            "is_builtin": false,
-            "fields": [
-                {"key": "api_key", "label": "API Key", "type": "password", "required": true},
-                {"key": "from_email", "label": "From Email", "type": "text", "required": true},
-                {"key": "from_name", "label": "From Name", "type": "text", "required": false}
-            ]
-        }),
-        json!({
-            "key": "google_analytics",
-            "name": "Google Analytics 4",
-            "category": "Analytics",
-            "description": "Track user behavior, conversions, and marketing performance with advanced analytics.",
-            "icon": "analytics",
-            "color": "#F9AB00",
-            "docs_url": "https://developers.google.com/analytics",
-            "signup_url": "https://analytics.google.com",
-            "is_oauth": true,
-            "is_builtin": false,
-            "fields": [
-                {"key": "measurement_id", "label": "Measurement ID", "type": "text", "required": true, "placeholder": "G-XXXXXXXXXX"},
-                {"key": "api_secret", "label": "API Secret", "type": "password", "required": false}
-            ]
-        }),
-        json!({
-            "key": "openai",
-            "name": "OpenAI",
-            "category": "AI",
-            "description": "AI-powered content generation, chat assistants, and intelligent automation.",
-            "icon": "ai",
-            "color": "#10A37F",
-            "docs_url": "https://platform.openai.com/docs",
-            "signup_url": "https://platform.openai.com/signup",
-            "is_oauth": false,
-            "is_builtin": false,
-            "fields": [
-                {"key": "api_key", "label": "API Key", "type": "password", "required": true, "placeholder": "sk-..."},
-                {"key": "organization_id", "label": "Organization ID", "type": "text", "required": false}
-            ]
-        }),
-        json!({
-            "key": "cloudflare_r2",
-            "name": "Cloudflare R2",
-            "category": "Storage",
-            "description": "S3-compatible object storage with zero egress fees and global distribution.",
-            "icon": "storage",
-            "color": "#F48120",
-            "docs_url": "https://developers.cloudflare.com/r2",
-            "signup_url": "https://dash.cloudflare.com/sign-up",
-            "is_oauth": false,
-            "is_builtin": false,
-            "fields": [
-                {"key": "account_id", "label": "Account ID", "type": "text", "required": true},
-                {"key": "access_key_id", "label": "Access Key ID", "type": "text", "required": true},
-                {"key": "secret_access_key", "label": "Secret Access Key", "type": "password", "required": true},
-                {"key": "bucket_name", "label": "Bucket Name", "type": "text", "required": true}
-            ]
-        }),
-        json!({
-            "key": "meilisearch",
-            "name": "Meilisearch",
-            "category": "Search",
-            "description": "Lightning-fast full-text search with typo tolerance and faceted filtering.",
-            "icon": "search",
-            "color": "#FF5CAA",
-            "docs_url": "https://docs.meilisearch.com",
-            "signup_url": "https://cloud.meilisearch.com",
-            "is_oauth": false,
-            "is_builtin": false,
-            "fields": [
-                {"key": "host", "label": "Host URL", "type": "text", "required": true},
-                {"key": "api_key", "label": "API Key", "type": "password", "required": true}
-            ]
-        }),
-    ]
-}
-
-fn get_categories() -> serde_json::Value {
-    json!({
-        "Payment": {"name": "Payment", "icon": "credit-card", "services": ["stripe"]},
-        "Storage": {"name": "Storage", "icon": "cloud", "services": ["bunny_cdn", "cloudflare_r2"]},
-        "Email": {"name": "Email", "icon": "mail", "services": ["sendgrid", "fluent_smtp"]},
-        "Analytics": {"name": "Analytics", "icon": "chart", "services": ["google_analytics"]},
-        "AI": {"name": "AI", "icon": "cpu", "services": ["openai"]},
-        "Search": {"name": "Search", "icon": "search", "services": ["meilisearch"]},
-        "CRM": {"name": "CRM", "icon": "users", "services": ["fluent_crm_pro"]},
-        "Forms": {"name": "Forms", "icon": "file-text", "services": ["fluent_forms_pro"]}
-    })
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// CONNECTION HANDLERS
-// ═══════════════════════════════════════════════════════════════════════════
+use super::audit::log_connection_audit;
+use super::crypto::{decrypt_credentials, encrypt_credentials, mask_credentials};
+use super::definitions::{get_categories, get_service_definitions};
+use super::{ConnectServiceRequest, ListQuery, ServiceConnection};
 
 /// GET /admin/connections - Get all connections with status
 #[tracing::instrument(skip(state, admin))]
-async fn get_connections_status(
+pub(super) async fn get_connections_status(
     State(state): State<AppState>,
     admin: AdminUser,
     Query(query): Query<ListQuery>,
@@ -535,7 +186,7 @@ async fn get_connections_status(
 
 /// GET /admin/connections/summary - Get connection summary for dashboard
 #[tracing::instrument(skip(state, admin))]
-async fn get_connections_summary(
+pub(super) async fn get_connections_summary(
     State(state): State<AppState>,
     admin: AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -583,7 +234,7 @@ async fn get_connections_summary(
 
 /// GET /admin/connections/:key - Get single connection details
 #[tracing::instrument(skip(state, admin))]
-async fn get_connection(
+pub(super) async fn get_connection(
     State(state): State<AppState>,
     admin: AdminUser,
     Path(key): Path<String>,
@@ -689,7 +340,7 @@ async fn get_connection(
 
 /// POST /admin/connections/:key/connect - Connect a service
 #[tracing::instrument(skip(state, admin, input))]
-async fn connect_service(
+pub(super) async fn connect_service(
     State(state): State<AppState>,
     admin: AdminUser,
     Path(key): Path<String>,
@@ -852,7 +503,7 @@ async fn connect_service(
 
 /// POST /admin/connections/:key/test - Test a service connection
 #[tracing::instrument(skip(state, admin, input))]
-async fn test_connection(
+pub(super) async fn test_connection(
     State(state): State<AppState>,
     admin: AdminUser,
     Path(key): Path<String>,
@@ -1018,7 +669,7 @@ async fn test_connection(
 
 /// POST /admin/connections/:key/disconnect - Disconnect a service
 #[tracing::instrument(skip(state, admin))]
-async fn disconnect_service(
+pub(super) async fn disconnect_service(
     State(state): State<AppState>,
     admin: AdminUser,
     Path(key): Path<String>,
@@ -1107,7 +758,7 @@ async fn disconnect_service(
 
 /// DELETE /admin/connections/:key - Delete a connection entirely
 #[tracing::instrument(skip(state, admin))]
-async fn delete_connection(
+pub(super) async fn delete_connection(
     State(state): State<AppState>,
     admin: AdminUser,
     Path(key): Path<String>,
@@ -1216,7 +867,7 @@ async fn delete_connection(
 
 /// GET /admin/connections/categories - Get connection categories
 #[tracing::instrument(skip(_state, admin))]
-async fn get_categories_handler(
+pub(super) async fn get_categories_handler(
     State(_state): State<AppState>,
     admin: AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -1229,331 +880,4 @@ async fn get_categories_handler(
         "success": true,
         "categories": get_categories()
     })))
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// WEBHOOK HANDLERS
-// ═══════════════════════════════════════════════════════════════════════════
-
-/// GET /admin/connections/:key/webhooks - Get webhooks for a connection
-#[tracing::instrument(skip(state, admin))]
-async fn list_webhooks(
-    State(state): State<AppState>,
-    admin: AdminUser,
-    Path(key): Path<String>,
-) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    tracing::info!(
-        admin_id = admin.0.id,
-        service_key = %key,
-        "Admin listing webhooks"
-    );
-
-    // Get connection ID
-    let connection_id: Option<i64> =
-        sqlx::query_scalar("SELECT id FROM service_connections WHERE service_key = $1")
-            .bind(&key)
-            .fetch_optional(state.db.pool())
-            .await
-            .ok()
-            .flatten();
-
-    let connection_id = connection_id.ok_or((
-        StatusCode::NOT_FOUND,
-        Json(json!({"error": "Connection not found"})),
-    ))?;
-
-    let webhooks: Vec<IntegrationWebhook> = sqlx::query_as(
-        r#"
-        SELECT id, connection_id, name, url, secret, events, is_active,
-               last_triggered_at, last_status_code, failure_count,
-               created_at, updated_at
-        FROM integration_webhooks
-        WHERE connection_id = $1
-        ORDER BY name
-        "#,
-    )
-    .bind(connection_id)
-    .fetch_all(state.db.pool())
-    .await
-    .unwrap_or_default();
-
-    // Mask secrets
-    let webhooks_masked: Vec<serde_json::Value> = webhooks
-        .into_iter()
-        .map(|w| {
-            json!({
-                "id": w.id,
-                "name": w.name,
-                "url": w.url,
-                "secret_set": w.secret.is_some(),
-                "events": w.events,
-                "is_active": w.is_active,
-                "last_triggered_at": w.last_triggered_at,
-                "last_status_code": w.last_status_code,
-                "failure_count": w.failure_count
-            })
-        })
-        .collect();
-
-    Ok(Json(json!({
-        "success": true,
-        "data": webhooks_masked
-    })))
-}
-
-/// POST /admin/connections/:key/webhooks - Create webhook
-#[tracing::instrument(skip(state, admin, input))]
-async fn create_webhook(
-    State(state): State<AppState>,
-    admin: AdminUser,
-    Path(key): Path<String>,
-    Json(input): Json<CreateWebhookRequest>,
-) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    // Validate URL
-    if !input.url.starts_with("https://") {
-        return Err((
-            StatusCode::BAD_REQUEST,
-            Json(json!({"error": "Webhook URL must use HTTPS"})),
-        ));
-    }
-
-    // Get connection ID
-    let connection_id: Option<i64> =
-        sqlx::query_scalar("SELECT id FROM service_connections WHERE service_key = $1")
-            .bind(&key)
-            .fetch_optional(state.db.pool())
-            .await
-            .ok()
-            .flatten();
-
-    let connection_id = connection_id.ok_or((
-        StatusCode::NOT_FOUND,
-        Json(json!({"error": "Connection not found"})),
-    ))?;
-
-    // Generate webhook secret
-    let secret = generate_webhook_secret();
-
-    let webhook: IntegrationWebhook = sqlx::query_as(
-        r#"
-        INSERT INTO integration_webhooks (
-            connection_id, name, url, secret, events, is_active,
-            created_at, updated_at
-        ) VALUES ($1, $2, $3, $4, $5, true, NOW(), NOW())
-        RETURNING id, connection_id, name, url, secret, events, is_active,
-                  last_triggered_at, last_status_code, failure_count,
-                  created_at, updated_at
-        "#,
-    )
-    .bind(connection_id)
-    .bind(&input.name)
-    .bind(&input.url)
-    .bind(&secret)
-    .bind(&input.events)
-    .fetch_one(state.db.pool())
-    .await
-    .map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": e.to_string()})),
-        )
-    })?;
-
-    // Audit log
-    log_connection_audit(
-        state.db.pool(),
-        admin.0.id,
-        &admin.0.email,
-        "webhook.created",
-        "integration_webhook",
-        Some(webhook.id),
-        None,
-        Some(json!({"name": input.name, "url": input.url})),
-        Some(json!({"connection_id": connection_id})),
-    )
-    .await;
-
-    tracing::info!(
-        admin_id = admin.0.id,
-        webhook_id = webhook.id,
-        "Webhook created"
-    );
-
-    Ok(Json(json!({
-        "success": true,
-        "message": "Webhook created successfully",
-        "data": {
-            "id": webhook.id,
-            "name": webhook.name,
-            "url": webhook.url,
-            "secret": secret, // Only returned on creation
-            "events": webhook.events,
-            "is_active": webhook.is_active
-        }
-    })))
-}
-
-/// DELETE /admin/connections/:key/webhooks/:id - Delete webhook
-#[tracing::instrument(skip(state, admin))]
-async fn delete_webhook(
-    State(state): State<AppState>,
-    admin: AdminUser,
-    Path((key, webhook_id)): Path<(String, i64)>,
-) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    // Verify connection exists
-    let connection_id: Option<i64> =
-        sqlx::query_scalar("SELECT id FROM service_connections WHERE service_key = $1")
-            .bind(&key)
-            .fetch_optional(state.db.pool())
-            .await
-            .ok()
-            .flatten();
-
-    let connection_id = connection_id.ok_or((
-        StatusCode::NOT_FOUND,
-        Json(json!({"error": "Connection not found"})),
-    ))?;
-
-    // Delete webhook
-    let result =
-        sqlx::query("DELETE FROM integration_webhooks WHERE id = $1 AND connection_id = $2")
-            .bind(webhook_id)
-            .bind(connection_id)
-            .execute(state.db.pool())
-            .await
-            .map_err(|e| {
-                (
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(json!({"error": e.to_string()})),
-                )
-            })?;
-
-    if result.rows_affected() == 0 {
-        return Err((
-            StatusCode::NOT_FOUND,
-            Json(json!({"error": "Webhook not found"})),
-        ));
-    }
-
-    // Audit log
-    log_connection_audit(
-        state.db.pool(),
-        admin.0.id,
-        &admin.0.email,
-        "webhook.deleted",
-        "integration_webhook",
-        Some(webhook_id),
-        None,
-        None,
-        Some(json!({"connection_id": connection_id})),
-    )
-    .await;
-
-    tracing::info!(
-        admin_id = admin.0.id,
-        webhook_id = webhook_id,
-        "Webhook deleted"
-    );
-
-    Ok(Json(json!({
-        "success": true,
-        "message": "Webhook deleted successfully"
-    })))
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// AUDIT LOG ENDPOINT
-// ═══════════════════════════════════════════════════════════════════════════
-
-/// GET /admin/connections/audit-logs - Get connection audit logs
-#[tracing::instrument(skip(state, admin))]
-async fn get_audit_logs(
-    State(state): State<AppState>,
-    admin: AdminUser,
-    Query(params): Query<HashMap<String, String>>,
-) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    tracing::info!(
-        admin_id = admin.0.id,
-        "Admin fetching connection audit logs"
-    );
-
-    let limit: i64 = params
-        .get("limit")
-        .and_then(|s| s.parse().ok())
-        .unwrap_or(50)
-        .min(500);
-    let offset: i64 = params
-        .get("offset")
-        .and_then(|s| s.parse().ok())
-        .unwrap_or(0);
-
-    #[derive(Debug, Serialize, FromRow)]
-    struct AuditLogEntry {
-        id: i64,
-        admin_id: i64,
-        admin_email: Option<String>,
-        action: String,
-        entity_type: String,
-        entity_id: Option<i64>,
-        old_value: Option<String>,
-        new_value: Option<String>,
-        metadata: Option<serde_json::Value>,
-        created_at: DateTime<Utc>,
-    }
-
-    let logs: Vec<AuditLogEntry> = sqlx::query_as(
-        r#"
-        SELECT id, admin_id, admin_email, action, entity_type, entity_id,
-               old_value, new_value, metadata, created_at
-        FROM admin_audit_logs
-        WHERE entity_type IN ('service_connection', 'integration_webhook')
-        ORDER BY created_at DESC
-        LIMIT $1 OFFSET $2
-        "#,
-    )
-    .bind(limit)
-    .bind(offset)
-    .fetch_all(state.db.pool())
-    .await
-    .unwrap_or_default();
-
-    let total: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM admin_audit_logs WHERE entity_type IN ('service_connection', 'integration_webhook')"
-    )
-    .fetch_one(state.db.pool())
-    .await
-    .unwrap_or(0);
-
-    Ok(Json(json!({
-        "success": true,
-        "data": logs,
-        "pagination": {
-            "total": total,
-            "limit": limit,
-            "offset": offset
-        }
-    })))
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// ROUTER
-// ═══════════════════════════════════════════════════════════════════════════
-
-/// Build the connections admin router
-pub fn admin_router() -> Router<AppState> {
-    Router::new()
-        // Main connection routes
-        .route("/", get(get_connections_status))
-        .route("/status", get(get_connections_status))
-        .route("/summary", get(get_connections_summary))
-        .route("/categories", get(get_categories_handler))
-        .route("/audit-logs", get(get_audit_logs))
-        // Individual connection routes
-        .route("/:key", get(get_connection).delete(delete_connection))
-        .route("/:key/connect", post(connect_service))
-        .route("/:key/test", post(test_connection))
-        .route("/:key/disconnect", post(disconnect_service))
-        // Webhook routes
-        .route("/:key/webhooks", get(list_webhooks).post(create_webhook))
-        .route("/:key/webhooks/:id", delete(delete_webhook))
 }
