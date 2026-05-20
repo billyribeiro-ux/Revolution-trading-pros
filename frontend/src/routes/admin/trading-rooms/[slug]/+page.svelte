@@ -45,14 +45,20 @@
 	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
 	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
 	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left';
 	import IconPin from '@tabler/icons-svelte-runes/icons/pin';
 	import IconPinFilled from '@tabler/icons-svelte-runes/icons/pin-filled';
 	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
 	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
 	import IconCurrencyDollar from '@tabler/icons-svelte-runes/icons/currency-dollar';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import PageHeader from './_components/PageHeader.svelte';
+	import MessagesBanner from './_components/MessagesBanner.svelte';
+	import TabNavigation from './_components/TabNavigation.svelte';
+	import WeeklyVideoPanel from './_components/WeeklyVideoPanel.svelte';
+	import TradePlanModal from './_components/TradePlanModal.svelte';
+	import WeeklyVideoModal from './_components/WeeklyVideoModal.svelte';
+	import CloseTradeModal from './_components/CloseTradeModal.svelte';
+	import AlertModal from './_components/AlertModal.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// TYPES
@@ -843,113 +849,21 @@
 
 <div class="admin-page">
 	<!-- Header -->
-	<header class="page-header">
-		<a href="/admin/trading-rooms" class="back-link">
-			<IconChevronLeft size={20} />
-			<span>All Trading Rooms</span>
-		</a>
-		<div class="header-row">
-			<div class="header-content">
-				<div class="room-badge" style="background: {room?.color || '#143E59'}">
-					{room?.icon || '📊'}
-				</div>
-				<div>
-					<h1>{room?.name || 'Trading Room'}</h1>
-					<p>Manage trade plans, alerts, and weekly videos</p>
-				</div>
-			</div>
-			{#if roomStats && !isLoadingStats}
-				<div class="stats-panel">
-					<div class="stat-item">
-						<span class="stat-value" style="color: #22c55e">{roomStats.win_rate ?? '-'}%</span>
-						<span class="stat-label">Win Rate</span>
-					</div>
-					<div class="stat-item">
-						<span class="stat-value">{roomStats.active_trades ?? 0}</span>
-						<span class="stat-label">Active</span>
-					</div>
-					<div class="stat-item">
-						<span class="stat-value">{roomStats.closed_this_week ?? 0}</span>
-						<span class="stat-label">This Week</span>
-					</div>
-					<div class="stat-item">
-						<span class="stat-value">{roomStats.total_trades ?? 0}</span>
-						<span class="stat-label">Total</span>
-					</div>
-				</div>
-			{/if}
-		</div>
-	</header>
+	<PageHeader {room} {roomStats} {isLoadingStats} />
 
 	<!-- Messages -->
-	{#if successMessage}
-		<div class="message success">
-			<IconCheck size={20} />
-			{successMessage}
-		</div>
-	{/if}
-	{#if errorMessage}
-		<div class="message error">
-			<IconX size={20} />
-			{errorMessage}
-			<button onclick={() => (errorMessage = '')}>×</button>
-		</div>
-	{/if}
+	<MessagesBanner {successMessage} {errorMessage} onDismissError={() => (errorMessage = '')} />
 
 	<!-- Tabs -->
-	<nav class="tabs">
-		<button
-			class="tab"
-			class:active={activeTab === 'trade-plan'}
-			onclick={() => (activeTab = 'trade-plan')}
-		>
-			<IconTable size={20} />
-			<span>Trade Plan</span>
-			<span class="badge">{tradePlanCount}</span>
-		</button>
-		<button
-			class="tab"
-			class:active={activeTab === 'alerts'}
-			onclick={() => (activeTab = 'alerts')}
-		>
-			<IconBell size={20} />
-			<span>Alerts</span>
-			<span class="badge">{alertsCount}</span>
-		</button>
-		<button
-			class="tab"
-			class:active={activeTab === 'weekly-video'}
-			onclick={() => (activeTab = 'weekly-video')}
-		>
-			<IconVideo size={20} />
-			<span>Weekly Video</span>
-			{#if hasCurrentVideo}
-				<span class="badge active">1</span>
-			{/if}
-		</button>
-		<button
-			class="tab"
-			class:active={activeTab === 'trades'}
-			onclick={() => (activeTab = 'trades')}
-		>
-			<IconChartLine size={20} />
-			<span>Trade Tracker</span>
-			{#if activeTradesCount > 0}
-				<span class="badge active">{activeTradesCount}</span>
-			{:else}
-				<span class="badge">{tradesCount}</span>
-			{/if}
-		</button>
-		<button
-			class="tab"
-			class:active={activeTab === 'video-library'}
-			onclick={() => (activeTab = 'video-library')}
-		>
-			<IconPlayerPlay size={20} />
-			<span>Video Library</span>
-			<span class="badge">{videosCount}</span>
-		</button>
-	</nav>
+	<TabNavigation
+		bind:activeTab
+		{tradePlanCount}
+		{alertsCount}
+		{hasCurrentVideo}
+		{tradesCount}
+		{activeTradesCount}
+		{videosCount}
+	/>
 
 	<!-- Tab Content -->
 	<div class="tab-content">
@@ -1177,64 +1091,13 @@
 				</button>
 			</div>
 
-			{#if isLoadingVideo}
-				<div class="loading">Loading video...</div>
-			{:else}
-				<!-- Current Video -->
-				{#if currentVideo}
-					<div class="current-video-card">
-						<div class="video-badge">CURRENT</div>
-						<div class="video-content">
-							{#if currentVideo.thumbnail_url}
-								<div
-									class="video-thumbnail"
-									style="background-image: url('{currentVideo.thumbnail_url}')"
-								>
-									{#if currentVideo.duration}
-										<span class="duration">{currentVideo.duration}</span>
-									{/if}
-								</div>
-							{/if}
-							<div class="video-info">
-								<h3>{currentVideo.week_title}</h3>
-								<h4>{currentVideo.video_title}</h4>
-								<p class="video-url">{currentVideo.video_url}</p>
-								<span class="video-date"
-									>Published: {new Date(currentVideo.published_at).toLocaleDateString()}</span
-								>
-							</div>
-						</div>
-					</div>
-				{:else}
-					<div class="empty-state">
-						<IconVideo size={48} />
-						<h3>No Weekly Video</h3>
-						<p>Publish your first weekly video for this room</p>
-						<button class="btn-primary" onclick={openAddVideo}>
-							<IconPlus size={18} />
-							Publish Video
-						</button>
-					</div>
-				{/if}
-
-				<!-- Archived Videos -->
-				{#if hasArchivedVideos}
-					<div class="archived-section">
-						<h3>Archive</h3>
-						<div class="archived-list">
-							{#each archivedVideos as video (video.id)}
-								<div class="archived-video">
-									<span class="archived-week">{video.week_title}</span>
-									<span class="archived-title">{video.video_title}</span>
-									<span class="archived-date"
-										>{new Date(video.published_at).toLocaleDateString()}</span
-									>
-								</div>
-							{/each}
-						</div>
-					</div>
-				{/if}
-			{/if}
+			<WeeklyVideoPanel
+				{isLoadingVideo}
+				{currentVideo}
+				{archivedVideos}
+				{hasArchivedVideos}
+				onAddVideo={openAddVideo}
+			/>
 		{/if}
 
 		<!-- ═══════════════════════════════════════════════════════════════════════════
@@ -1482,642 +1345,54 @@
 <!-- ═══════════════════════════════════════════════════════════════════════════════════
      TRADE PLAN MODAL
      ═══════════════════════════════════════════════════════════════════════════════════ -->
-{#if showTradePlanModal}
-	<div
-		class="modal-overlay"
-		onclick={() => (showTradePlanModal = false)}
-		onkeydown={(e) => e.key === 'Escape' && (showTradePlanModal = false)}
-		aria-hidden="true"
-	>
-		<div
-			class="modal"
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
-			role="dialog"
-			aria-modal="true"
-			aria-labelledby="trade-plan-modal-title"
-			tabindex="-1"
-		>
-			<div class="modal-header">
-				<h2 id="trade-plan-modal-title">{editingTradePlan ? 'Edit' : 'Add'} Trade Plan Entry</h2>
-				<button class="close-btn" onclick={() => (showTradePlanModal = false)}>
-					<IconX size={24} />
-				</button>
-			</div>
-			<form
-				class="modal-body"
-				onsubmit={(e) => {
-					e.preventDefault();
-					saveTradePlan();
-				}}
-			>
-				<div class="form-row">
-					<div class="form-group">
-						<label for="ticker">Ticker *</label>
-						<input
-							id="ticker"
-							name="ticker"
-							type="text"
-							bind:value={tradePlanForm.ticker}
-							placeholder="NVDA"
-							style="text-transform: uppercase"
-						/>
-					</div>
-					<div class="form-group">
-						<label for="bias">Bias *</label>
-						<select id="bias" bind:value={tradePlanForm.bias}>
-							<option value="BULLISH">BULLISH</option>
-							<option value="BEARISH">BEARISH</option>
-							<option value="NEUTRAL">NEUTRAL</option>
-						</select>
-					</div>
-				</div>
-
-				<div class="form-row">
-					<div class="form-group">
-						<label for="entry">Entry</label>
-						<input
-							id="entry"
-							name="entry"
-							type="text"
-							bind:value={tradePlanForm.entry}
-							placeholder="$142.50"
-						/>
-					</div>
-					<div class="form-group">
-						<label for="stop">Stop</label>
-						<input
-							id="stop"
-							name="stop"
-							type="text"
-							bind:value={tradePlanForm.stop}
-							placeholder="$136.00"
-						/>
-					</div>
-				</div>
-
-				<div class="form-row targets">
-					<div class="form-group">
-						<label for="target1">Target 1</label>
-						<input
-							id="target1"
-							name="target1"
-							type="text"
-							bind:value={tradePlanForm.target1}
-							placeholder="$148.00"
-						/>
-					</div>
-					<div class="form-group">
-						<label for="target2">Target 2</label>
-						<input
-							id="target2"
-							name="target2"
-							type="text"
-							bind:value={tradePlanForm.target2}
-							placeholder="$152.00"
-						/>
-					</div>
-					<div class="form-group">
-						<label for="target3">Target 3</label>
-						<input
-							id="target3"
-							name="target3"
-							type="text"
-							bind:value={tradePlanForm.target3}
-							placeholder="$158.00"
-						/>
-					</div>
-					<div class="form-group">
-						<label for="runner">Runner</label>
-						<input
-							id="runner"
-							name="runner"
-							type="text"
-							bind:value={tradePlanForm.runner}
-							placeholder="$165.00+"
-						/>
-					</div>
-				</div>
-
-				<div class="form-row">
-					<div class="form-group">
-						<label for="options_strike">Options Strike</label>
-						<input
-							id="options_strike"
-							name="options_strike"
-							type="text"
-							bind:value={tradePlanForm.options_strike}
-							placeholder="$145 Call"
-						/>
-					</div>
-					<div class="form-group">
-						<label for="options_exp">Options Exp</label>
-						<input
-							id="options_exp"
-							name="options_exp"
-							type="date"
-							bind:value={tradePlanForm.options_exp}
-						/>
-					</div>
-				</div>
-
-				<div class="form-group full-width">
-					<label for="notes">Notes</label>
-					<textarea
-						id="notes"
-						bind:value={tradePlanForm.notes}
-						placeholder="Breakout above consolidation. Wait for pullback to entry..."
-						rows="3"
-					></textarea>
-				</div>
-
-				<div class="modal-actions">
-					<button type="button" class="btn-secondary" onclick={() => (showTradePlanModal = false)}
-						>Cancel</button
-					>
-					<button
-						type="submit"
-						class="btn-primary"
-						disabled={isSavingTradePlan || !isTradePlanFormValid}
-					>
-						{isSavingTradePlan ? 'Saving...' : editingTradePlan ? 'Update' : 'Add Entry'}
-					</button>
-				</div>
-			</form>
-		</div>
-	</div>
-{/if}
+<TradePlanModal
+	open={showTradePlanModal}
+	{editingTradePlan}
+	bind:form={tradePlanForm}
+	isSaving={isSavingTradePlan}
+	isValid={isTradePlanFormValid}
+	onSave={saveTradePlan}
+	onClose={() => (showTradePlanModal = false)}
+/>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════════════
      ALERT MODAL
      ═══════════════════════════════════════════════════════════════════════════════════ -->
-{#if showAlertModal}
-	<div
-		class="modal-overlay"
-		onclick={() => (showAlertModal = false)}
-		onkeydown={(e) => e.key === 'Escape' && (showAlertModal = false)}
-		aria-hidden="true"
-	>
-		<div
-			class="modal"
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
-			role="dialog"
-			aria-modal="true"
-			aria-labelledby="alert-modal-title"
-			tabindex="-1"
-		>
-			<div class="modal-header">
-				<h2 id="alert-modal-title">{editingAlert ? 'Edit' : 'Create'} Alert</h2>
-				<button class="close-btn" onclick={() => (showAlertModal = false)}>
-					<IconX size={24} />
-				</button>
-			</div>
-			<form
-				class="modal-body"
-				onsubmit={(e) => {
-					e.preventDefault();
-					saveAlert();
-				}}
-			>
-				<div class="form-row">
-					<div class="form-group">
-						<label for="alert_type">Type *</label>
-						<select id="alert_type" bind:value={alertForm.alert_type}>
-							<option value="ENTRY">ENTRY</option>
-							<option value="EXIT">EXIT</option>
-							<option value="UPDATE">UPDATE</option>
-						</select>
-					</div>
-					<div class="form-group">
-						<label for="alert_ticker">Ticker *</label>
-						<input
-							id="alert_ticker"
-							name="alert_ticker"
-							type="text"
-							bind:value={alertForm.ticker}
-							placeholder="NVDA"
-							style="text-transform: uppercase"
-						/>
-					</div>
-				</div>
-
-				<div class="form-group full-width">
-					<label for="alert_title">Title *</label>
-					<input
-						id="alert_title"
-						name="alert_title"
-						type="text"
-						bind:value={alertForm.title}
-						placeholder="Opening NVDA Swing Position"
-					/>
-				</div>
-
-				<div class="form-group full-width">
-					<label for="alert_message">Message *</label>
-					<textarea
-						id="alert_message"
-						bind:value={alertForm.message}
-						placeholder="Entering NVDA at $142.50. First target $148, stop at $136..."
-						rows="3"
-					></textarea>
-				</div>
-
-				<div class="form-group full-width">
-					<label for="alert_notes">Detailed Notes (for dropdown)</label>
-					<textarea
-						id="alert_notes"
-						bind:value={alertForm.notes}
-						placeholder="Entry based on breakout above $142 resistance with strong volume confirmation..."
-						rows="4"
-					></textarea>
-				</div>
-
-				<!-- TOS Format Section -->
-				{#if alertForm.alert_type === 'ENTRY' || alertForm.alert_type === 'EXIT'}
-					<div class="tos-section">
-						<h4 class="section-title">TOS Format (Optional)</h4>
-						<div class="form-row">
-							<div class="form-group">
-								<label for="trade_type">Trade Type</label>
-								<select id="trade_type" bind:value={alertForm.trade_type}>
-									<option value="">Select...</option>
-									<option value="options">Options</option>
-									<option value="shares">Shares</option>
-								</select>
-							</div>
-							<div class="form-group">
-								<label for="action">Action</label>
-								<select id="action" bind:value={alertForm.action}>
-									<option value="">Select...</option>
-									<option value="BUY">BUY</option>
-									<option value="SELL">SELL</option>
-								</select>
-							</div>
-							<div class="form-group">
-								<label for="quantity">Quantity</label>
-								<input
-									id="quantity"
-									name="quantity"
-									type="number"
-									bind:value={alertForm.quantity}
-									placeholder="10"
-								/>
-							</div>
-						</div>
-
-						{#if alertForm.trade_type === 'options'}
-							<div class="form-row">
-								<div class="form-group">
-									<label for="option_type">Option Type</label>
-									<select id="option_type" bind:value={alertForm.option_type}>
-										<option value="">Select...</option>
-										<option value="CALL">CALL</option>
-										<option value="PUT">PUT</option>
-									</select>
-								</div>
-								<div class="form-group">
-									<label for="strike">Strike</label>
-									<input
-										id="strike"
-										name="strike"
-										type="number"
-										step="0.5"
-										bind:value={alertForm.strike}
-										placeholder="145"
-									/>
-								</div>
-								<div class="form-group">
-									<label for="expiration">Expiration</label>
-									<input
-										id="expiration"
-										name="expiration"
-										type="date"
-										bind:value={alertForm.expiration}
-									/>
-								</div>
-							</div>
-							<div class="form-row">
-								<div class="form-group">
-									<label for="contract_type">Contract Type</label>
-									<select id="contract_type" bind:value={alertForm.contract_type}>
-										<option value="">Select...</option>
-										<option value="Weeklys">Weeklys</option>
-										<option value="Monthly">Monthly</option>
-										<option value="LEAPS">LEAPS</option>
-									</select>
-								</div>
-								<div class="form-group">
-									<label for="order_type">Order Type</label>
-									<select id="order_type" bind:value={alertForm.order_type}>
-										<option value="">Select...</option>
-										<option value="MKT">Market (MKT)</option>
-										<option value="LMT">Limit (LMT)</option>
-									</select>
-								</div>
-							</div>
-						{/if}
-
-						<div class="form-row">
-							<div class="form-group">
-								<label for="limit_price">Limit Price</label>
-								<input
-									id="limit_price"
-									name="limit_price"
-									type="number"
-									step="0.01"
-									bind:value={alertForm.limit_price}
-									placeholder="2.50"
-								/>
-							</div>
-							<div class="form-group">
-								<label for="fill_price">Fill Price</label>
-								<input
-									id="fill_price"
-									name="fill_price"
-									type="number"
-									step="0.01"
-									bind:value={alertForm.fill_price}
-									placeholder="2.48"
-								/>
-							</div>
-						</div>
-
-						<div class="form-group full-width">
-							<label for="tos_string">TOS String (auto-generated or manual)</label>
-							<input
-								id="tos_string"
-								name="tos_string"
-								type="text"
-								bind:value={alertForm.tos_string}
-								placeholder="BUY +10 NVDA 100 (Weeklys) 17 JAN 25 145 CALL @2.50 LMT"
-							/>
-						</div>
-					</div>
-				{/if}
-
-				<div class="form-row checkboxes">
-					<label class="checkbox-label">
-						<input
-							id="alert-is-new"
-							name="alert-is-new"
-							type="checkbox"
-							bind:checked={alertForm.is_new}
-						/>
-						<span>Mark as NEW</span>
-					</label>
-					<label class="checkbox-label">
-						<input
-							id="alert-is-published"
-							name="alert-is-published"
-							type="checkbox"
-							bind:checked={alertForm.is_published}
-						/>
-						<span>Published</span>
-					</label>
-				</div>
-
-				<div class="modal-actions">
-					<button type="button" class="btn-secondary" onclick={() => (showAlertModal = false)}
-						>Cancel</button
-					>
-					<button type="submit" class="btn-primary" disabled={isSavingAlert || !isAlertFormValid}>
-						{isSavingAlert ? 'Saving...' : editingAlert ? 'Update' : 'Create Alert'}
-					</button>
-				</div>
-			</form>
-		</div>
-	</div>
-{/if}
+<AlertModal
+	open={showAlertModal}
+	{editingAlert}
+	bind:form={alertForm}
+	isSaving={isSavingAlert}
+	isValid={isAlertFormValid}
+	onSave={saveAlert}
+	onClose={() => (showAlertModal = false)}
+/>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════════════
      WEEKLY VIDEO MODAL
      ═══════════════════════════════════════════════════════════════════════════════════ -->
-{#if showVideoModal}
-	<div
-		class="modal-overlay"
-		onclick={() => (showVideoModal = false)}
-		onkeydown={(e) => e.key === 'Escape' && (showVideoModal = false)}
-		aria-hidden="true"
-	>
-		<div
-			class="modal"
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
-			role="dialog"
-			aria-modal="true"
-			aria-labelledby="video-modal-title"
-			tabindex="-1"
-		>
-			<div class="modal-header">
-				<h2 id="video-modal-title">Publish Weekly Video</h2>
-				<button class="close-btn" onclick={() => (showVideoModal = false)}>
-					<IconX size={24} />
-				</button>
-			</div>
-			<form
-				class="modal-body"
-				onsubmit={(e) => {
-					e.preventDefault();
-					saveVideo();
-				}}
-			>
-				<div class="form-row">
-					<div class="form-group">
-						<label for="week_of">Week Of *</label>
-						<input id="week_of" name="week_of" type="date" bind:value={videoForm.week_of} />
-					</div>
-					<div class="form-group">
-						<label for="week_title">Week Title *</label>
-						<input
-							id="week_title"
-							name="week_title"
-							type="text"
-							bind:value={videoForm.week_title}
-							placeholder="Week of January 13, 2026"
-						/>
-					</div>
-				</div>
-
-				<div class="form-group full-width">
-					<label for="video_title">Video Title *</label>
-					<input
-						id="video_title"
-						name="video_title"
-						type="text"
-						bind:value={videoForm.video_title}
-						placeholder="Weekly Breakdown: Top Swing Setups"
-					/>
-				</div>
-
-				<div class="form-row">
-					<div class="form-group flex-2">
-						<label for="video_url">Video URL *</label>
-						<input
-							id="video_url"
-							name="video_url"
-							type="url"
-							bind:value={videoForm.video_url}
-							placeholder="https://player.vimeo.com/video/..."
-						/>
-					</div>
-					<div class="form-group">
-						<label for="duration">Duration</label>
-						<input
-							id="duration"
-							name="duration"
-							type="text"
-							bind:value={videoForm.duration}
-							placeholder="24:35"
-						/>
-					</div>
-				</div>
-
-				<div class="form-group full-width">
-					<label for="thumbnail_url">Thumbnail URL</label>
-					<input
-						id="thumbnail_url"
-						name="thumbnail_url"
-						type="url"
-						bind:value={videoForm.thumbnail_url}
-						placeholder="https://..."
-					/>
-				</div>
-
-				<div class="form-group full-width">
-					<label for="description">Description</label>
-					<textarea
-						id="description"
-						bind:value={videoForm.description}
-						placeholder="This week's breakdown covers..."
-						rows="3"
-					></textarea>
-				</div>
-
-				<div class="info-box">
-					<strong>Note:</strong> Publishing a new video will automatically archive the current video.
-				</div>
-
-				<div class="modal-actions">
-					<button type="button" class="btn-secondary" onclick={() => (showVideoModal = false)}
-						>Cancel</button
-					>
-					<button type="submit" class="btn-primary" disabled={isSavingVideo || !isVideoFormValid}>
-						{isSavingVideo ? 'Publishing...' : 'Publish Video'}
-					</button>
-				</div>
-			</form>
-		</div>
-	</div>
-{/if}
+<WeeklyVideoModal
+	open={showVideoModal}
+	bind:form={videoForm}
+	isSaving={isSavingVideo}
+	isValid={isVideoFormValid}
+	onSave={saveVideo}
+	onClose={() => (showVideoModal = false)}
+/>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════════════
      CLOSE TRADE MODAL
      ═══════════════════════════════════════════════════════════════════════════════════ -->
-{#if showCloseTradeModal && closingTrade}
-	<div
-		class="modal-overlay"
-		onclick={() => (showCloseTradeModal = false)}
-		onkeydown={(e) => e.key === 'Escape' && (showCloseTradeModal = false)}
-		aria-hidden="true"
-	>
-		<div
-			class="modal"
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
-			role="dialog"
-			aria-modal="true"
-			aria-labelledby="close-trade-modal-title"
-			tabindex="-1"
-		>
-			<div class="modal-header">
-				<h2 id="close-trade-modal-title">Close Trade: {closingTrade.ticker}</h2>
-				<button class="close-btn" onclick={() => (showCloseTradeModal = false)}>
-					<IconX size={24} />
-				</button>
-			</div>
-			<form
-				class="modal-body"
-				onsubmit={(e) => {
-					e.preventDefault();
-					closeTrade();
-				}}
-			>
-				<div class="trade-summary">
-					<div class="trade-summary-row">
-						<span class="label">Ticker:</span>
-						<span class="value"><strong>{closingTrade.ticker}</strong></span>
-					</div>
-					<div class="trade-summary-row">
-						<span class="label">Direction:</span>
-						<span
-							class="value direction-badge"
-							class:long={closingTrade.direction === 'long'}
-							class:short={closingTrade.direction === 'short'}
-						>
-							{closingTrade.direction.toUpperCase()}
-						</span>
-					</div>
-					<div class="trade-summary-row">
-						<span class="label">Entry Price:</span>
-						<span class="value">{formatCurrency(closingTrade.entry_price)}</span>
-					</div>
-					<div class="trade-summary-row">
-						<span class="label">Entry Date:</span>
-						<span class="value">{new Date(closingTrade.entry_date).toLocaleDateString()}</span>
-					</div>
-				</div>
-
-				<div class="form-row">
-					<div class="form-group">
-						<label for="exit_price">Exit Price *</label>
-						<input
-							id="exit_price"
-							name="exit_price"
-							type="number"
-							step="0.01"
-							bind:value={closeTradeForm.exit_price}
-							placeholder="145.50"
-							required
-						/>
-					</div>
-					<div class="form-group">
-						<label for="exit_date">Exit Date</label>
-						<input
-							id="exit_date"
-							name="exit_date"
-							type="date"
-							bind:value={closeTradeForm.exit_date}
-						/>
-					</div>
-				</div>
-
-				<div class="form-group full-width">
-					<label for="close_notes">Notes</label>
-					<textarea
-						id="close_notes"
-						bind:value={closeTradeForm.notes}
-						placeholder="Optional notes about the exit..."
-						rows="2"
-					></textarea>
-				</div>
-
-				<div class="modal-actions">
-					<button type="button" class="btn-secondary" onclick={() => (showCloseTradeModal = false)}
-						>Cancel</button
-					>
-					<button
-						type="submit"
-						class="btn-primary"
-						disabled={isClosingTrade || !isCloseTradeFormValid}
-					>
-						{isClosingTrade ? 'Closing...' : 'Close Trade'}
-					</button>
-				</div>
-			</form>
-		</div>
-	</div>
-{/if}
+<CloseTradeModal
+	open={showCloseTradeModal}
+	{closingTrade}
+	bind:form={closeTradeForm}
+	isClosing={isClosingTrade}
+	isValid={isCloseTradeFormValid}
+	{formatCurrency}
+	onClose={() => (showCloseTradeModal = false)}
+	onSubmit={closeTrade}
+/>
 
 <ConfirmationModal
 	isOpen={showDeleteTradePlanModal}
@@ -2181,178 +1456,6 @@
 		margin: 0 auto;
 	}
 
-	/* Header */
-	.page-header {
-		margin-bottom: 32px;
-	}
-
-	.back-link {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		color: #64748b;
-		text-decoration: none;
-		font-size: 14px;
-		font-weight: 500;
-		margin-bottom: 16px;
-		transition: color 0.2s;
-	}
-
-	.back-link:hover {
-		color: #143e59;
-	}
-
-	.header-row {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		gap: 24px;
-		flex-wrap: wrap;
-	}
-
-	.header-content {
-		display: flex;
-		align-items: center;
-		gap: 20px;
-	}
-
-	.room-badge {
-		width: 64px;
-		height: 64px;
-		border-radius: 16px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-size: 32px;
-	}
-
-	.header-content h1 {
-		font-size: 28px;
-		font-weight: 700;
-		color: #1e293b;
-		margin: 0 0 4px 0;
-	}
-
-	.header-content p {
-		font-size: 15px;
-		color: #64748b;
-		margin: 0;
-	}
-
-	/* Stats Panel */
-	.stats-panel {
-		display: flex;
-		gap: 24px;
-		background: #f8fafc;
-		padding: 16px 24px;
-		border-radius: 12px;
-		border: 1px solid #e2e8f0;
-	}
-
-	.stat-item {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		min-width: 60px;
-	}
-
-	.stat-value {
-		font-size: 24px;
-		font-weight: 700;
-		color: #1e293b;
-		line-height: 1;
-	}
-
-	.stat-label {
-		font-size: 11px;
-		font-weight: 600;
-		color: #64748b;
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-		margin-top: 4px;
-	}
-
-	/* Messages */
-	.message {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		padding: 14px 18px;
-		border-radius: 10px;
-		margin-bottom: 20px;
-		font-weight: 500;
-	}
-
-	.message.success {
-		background: #dcfce7;
-		color: #166534;
-	}
-
-	.message.error {
-		background: #fef2f2;
-		color: #991b1b;
-	}
-
-	.message button {
-		margin-left: auto;
-		background: none;
-		border: none;
-		font-size: 20px;
-		cursor: pointer;
-		opacity: 0.7;
-	}
-
-	/* Tabs */
-	.tabs {
-		display: flex;
-		gap: 8px;
-		border-bottom: 2px solid #e2e8f0;
-		margin-bottom: 32px;
-	}
-
-	.tab {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		padding: 14px 24px;
-		background: none;
-		border: none;
-		font-size: 15px;
-		font-weight: 600;
-		color: #64748b;
-		cursor: pointer;
-		border-bottom: 3px solid transparent;
-		margin-bottom: -2px;
-		transition: all 0.2s;
-	}
-
-	.tab:hover {
-		color: #1e293b;
-	}
-
-	.tab.active {
-		color: #143e59;
-		border-bottom-color: #143e59;
-	}
-
-	.tab .badge {
-		background: #e2e8f0;
-		color: #64748b;
-		padding: 2px 8px;
-		border-radius: 10px;
-		font-size: 12px;
-	}
-
-	.tab.active .badge {
-		background: #143e59;
-		color: #fff;
-	}
-
-	.tab .badge.active {
-		background: #22c55e;
-		color: #fff;
-	}
-
 	/* Section Header */
 	.section-header {
 		display: flex;
@@ -2391,25 +1494,6 @@
 	.btn-primary:disabled {
 		opacity: 0.6;
 		cursor: not-allowed;
-	}
-
-	.btn-secondary {
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
-		padding: 12px 24px;
-		background: #f1f5f9;
-		color: #475569;
-		border: none;
-		border-radius: 10px;
-		font-size: 14px;
-		font-weight: 600;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.btn-secondary:hover {
-		background: #e2e8f0;
 	}
 
 	.icon-btn {
@@ -2685,276 +1769,6 @@
 		color: #94a3b8;
 	}
 
-	/* Weekly Video */
-	.current-video-card {
-		background: #fff;
-		border: 2px solid #143e59;
-		border-radius: 16px;
-		overflow: hidden;
-		position: relative;
-	}
-
-	.video-badge {
-		position: absolute;
-		top: 16px;
-		left: 16px;
-		background: #143e59;
-		color: #fff;
-		padding: 6px 14px;
-		border-radius: 6px;
-		font-size: 11px;
-		font-weight: 700;
-		z-index: 1;
-	}
-
-	.video-content {
-		display: flex;
-		gap: 24px;
-		padding: 24px;
-	}
-
-	.video-thumbnail {
-		width: 320px;
-		height: 180px;
-		background-size: cover;
-		background-position: center;
-		background-color: #f1f5f9;
-		border-radius: 12px;
-		flex-shrink: 0;
-		position: relative;
-	}
-
-	.video-thumbnail .duration {
-		position: absolute;
-		bottom: 8px;
-		right: 8px;
-		background: rgba(0, 0, 0, 0.8);
-		color: #fff;
-		padding: 4px 8px;
-		border-radius: 4px;
-		font-size: 12px;
-		font-weight: 600;
-	}
-
-	.video-info {
-		flex: 1;
-	}
-
-	.video-info h3 {
-		font-size: 20px;
-		font-weight: 700;
-		color: #1e293b;
-		margin: 0 0 8px 0;
-	}
-
-	.video-info h4 {
-		font-size: 16px;
-		font-weight: 500;
-		color: #475569;
-		margin: 0 0 16px 0;
-	}
-
-	.video-url {
-		font-size: 13px;
-		color: #3b82f6;
-		word-break: break-all;
-		margin: 0 0 12px 0;
-	}
-
-	.video-date {
-		font-size: 13px;
-		color: #94a3b8;
-	}
-
-	.archived-section {
-		margin-top: 32px;
-	}
-
-	.archived-section h3 {
-		font-size: 16px;
-		font-weight: 600;
-		color: #64748b;
-		margin: 0 0 16px 0;
-	}
-
-	.archived-list {
-		display: flex;
-		flex-direction: column;
-		gap: 8px;
-	}
-
-	.archived-video {
-		display: flex;
-		align-items: center;
-		gap: 16px;
-		padding: 14px 18px;
-		background: #f8fafc;
-		border-radius: 10px;
-	}
-
-	.archived-week {
-		font-weight: 600;
-		color: #1e293b;
-		min-width: 200px;
-	}
-
-	.archived-title {
-		flex: 1;
-		color: #64748b;
-	}
-
-	.archived-date {
-		font-size: 13px;
-		color: #94a3b8;
-	}
-
-	/* Modal */
-	.modal-overlay {
-		position: fixed;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		background: rgba(0, 0, 0, 0.5);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		z-index: var(--z-modal, 400);
-		padding: var(--space-2, 20px);
-		isolation: isolate;
-	}
-
-	.modal {
-		background: #fff;
-		border-radius: 16px;
-		width: 100%;
-		max-width: 640px;
-		max-height: 90vh;
-		overflow-y: auto;
-	}
-
-	.modal-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 24px;
-		border-bottom: 1px solid #e2e8f0;
-	}
-
-	.modal-header h2 {
-		font-size: 20px;
-		font-weight: 700;
-		color: #1e293b;
-		margin: 0;
-	}
-
-	.close-btn {
-		background: none;
-		border: none;
-		color: #64748b;
-		cursor: pointer;
-		padding: 4px;
-	}
-
-	.close-btn:hover {
-		color: #1e293b;
-	}
-
-	.modal-body {
-		padding: 24px;
-	}
-
-	.form-row {
-		display: flex;
-		gap: 16px;
-		margin-bottom: 20px;
-	}
-
-	.form-row.targets {
-		display: grid;
-		grid-template-columns: repeat(4, 1fr);
-	}
-
-	.form-group {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		gap: 8px;
-	}
-
-	.form-group.full-width {
-		margin-bottom: 20px;
-	}
-
-	.form-group.flex-2 {
-		flex: 2;
-	}
-
-	.form-group label {
-		font-size: 13px;
-		font-weight: 600;
-		color: #475569;
-	}
-
-	.form-group input,
-	.form-group select,
-	.form-group textarea {
-		padding: 12px 14px;
-		border: 1.5px solid #e2e8f0;
-		border-radius: 10px;
-		font-size: 14px;
-		transition: border-color 0.2s;
-	}
-
-	.form-group input:focus,
-	.form-group select:focus,
-	.form-group textarea:focus {
-		outline: none;
-		border-color: #143e59;
-	}
-
-	.form-group textarea {
-		resize: vertical;
-	}
-
-	.form-row.checkboxes {
-		display: flex;
-		gap: 24px;
-	}
-
-	.checkbox-label {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		font-size: 14px;
-		color: #475569;
-		cursor: pointer;
-	}
-
-	.checkbox-label input[type='checkbox'] {
-		width: 18px;
-		height: 18px;
-		accent-color: #143e59;
-	}
-
-	.info-box {
-		background: #f0f9ff;
-		border: 1px solid #bae6fd;
-		border-radius: 10px;
-		padding: 14px 18px;
-		font-size: 14px;
-		color: #0369a1;
-		margin-bottom: 20px;
-	}
-
-	.modal-actions {
-		display: flex;
-		justify-content: flex-end;
-		gap: 12px;
-		padding-top: 20px;
-		border-top: 1px solid #e2e8f0;
-	}
-
 	/* Filter Pills */
 	.filter-pills {
 		display: flex;
@@ -3076,35 +1890,6 @@
 		background: #16a34a;
 	}
 
-	/* Trade Summary in Modal */
-	.trade-summary {
-		background: #f8fafc;
-		border-radius: 10px;
-		padding: 16px;
-		margin-bottom: 20px;
-	}
-
-	.trade-summary-row {
-		display: flex;
-		justify-content: space-between;
-		padding: 8px 0;
-		border-bottom: 1px solid #e2e8f0;
-	}
-
-	.trade-summary-row:last-child {
-		border-bottom: none;
-	}
-
-	.trade-summary-row .label {
-		color: #64748b;
-		font-size: 14px;
-	}
-
-	.trade-summary-row .value {
-		color: #1e293b;
-		font-size: 14px;
-	}
-
 	/* Video Library Grid */
 	.video-grid {
 		display: grid;
@@ -3211,54 +1996,9 @@
 		gap: 16px;
 	}
 
-	/* TOS Section */
-	.tos-section {
-		background: #f8fafc;
-		border: 1px solid #e2e8f0;
-		border-radius: 12px;
-		padding: 20px;
-		margin-bottom: 20px;
-	}
-
-	.section-title {
-		font-size: 14px;
-		font-weight: 600;
-		color: #475569;
-		margin: 0 0 16px 0;
-		padding-bottom: 12px;
-		border-bottom: 1px solid #e2e8f0;
-	}
-
 	@media (max-width: 768px) {
 		.admin-page {
 			padding: 20px;
-		}
-
-		.header-row {
-			flex-direction: column;
-			align-items: flex-start;
-		}
-
-		.stats-panel {
-			width: 100%;
-			justify-content: space-between;
-		}
-
-		.form-row {
-			flex-direction: column;
-		}
-
-		.form-row.targets {
-			grid-template-columns: repeat(2, 1fr);
-		}
-
-		.video-content {
-			flex-direction: column;
-		}
-
-		.video-thumbnail {
-			width: 100%;
-			height: 200px;
 		}
 
 		.filter-pills {
