@@ -9,6 +9,7 @@
  */
 
 import { browser } from '$app/environment';
+import { logger } from '$lib/utils/logger';
 import type { ConsentState, ConsentStorageOptions } from './types';
 import { DEFAULT_CONSENT_STATE, DEFAULT_STORAGE_OPTIONS, CONSENT_SCHEMA_VERSION } from './types';
 
@@ -89,8 +90,8 @@ function setCookie(name: string, value: string, options: ConsentStorageOptions):
 
 		document.cookie = cookieString;
 		return true;
-	} catch (e) {
-		console.debug('[Consent] Failed to set cookie:', e);
+	} catch (error) {
+		logger.debug('[Consent] Failed to set cookie', { error });
 		return false;
 	}
 }
@@ -129,7 +130,7 @@ function validateAndMigrate(data: unknown): ConsentState | null {
 	// Migrate from older versions if needed
 	const version = state.version ?? 0;
 	if (version < CONSENT_SCHEMA_VERSION) {
-		console.debug(
+		logger.debug(
 			`[Consent] Migrating consent state from v${version} to v${CONSENT_SCHEMA_VERSION}`
 		);
 		// Future migrations would go here
@@ -163,11 +164,11 @@ export function loadConsent(
 			const parsed = JSON.parse(cookieValue);
 			const validated = validateAndMigrate(parsed);
 			if (validated) {
-				console.debug('[Consent] Loaded consent from cookie');
+				logger.debug('[Consent] Loaded consent from cookie');
 				return validated;
 			}
-		} catch (e) {
-			console.debug('[Consent] Failed to parse cookie:', e);
+		} catch (error) {
+			logger.debug('[Consent] Failed to parse cookie', { error });
 		}
 	}
 
@@ -179,18 +180,18 @@ export function loadConsent(
 				const parsed = JSON.parse(stored);
 				const validated = validateAndMigrate(parsed);
 				if (validated) {
-					console.debug('[Consent] Loaded consent from localStorage');
+					logger.debug('[Consent] Loaded consent from localStorage');
 					// Sync back to cookie if available
 					saveConsent(validated, options);
 					return validated;
 				}
 			}
-		} catch (e) {
-			console.debug('[Consent] Failed to load from localStorage:', e);
+		} catch (error) {
+			logger.debug('[Consent] Failed to load from localStorage', { error });
 		}
 	}
 
-	console.debug('[Consent] No stored consent found, using defaults');
+	logger.debug('[Consent] No stored consent found, using defaults');
 	return { ...DEFAULT_CONSENT_STATE };
 }
 
@@ -216,7 +217,7 @@ export function saveConsent(
 	// Try cookie first
 	if (setCookie(options.cookieName, serialized, options)) {
 		saved = true;
-		console.debug('[Consent] Saved consent to cookie');
+		logger.debug('[Consent] Saved consent to cookie');
 	}
 
 	// Also save to localStorage as backup
@@ -224,14 +225,14 @@ export function saveConsent(
 		try {
 			localStorage.setItem(options.localStorageKey, serialized);
 			saved = true;
-			console.debug('[Consent] Saved consent to localStorage');
-		} catch (e) {
-			console.debug('[Consent] Failed to save to localStorage:', e);
+			logger.debug('[Consent] Saved consent to localStorage');
+		} catch (error) {
+			logger.debug('[Consent] Failed to save to localStorage', { error });
 		}
 	}
 
 	if (!saved) {
-		console.warn('[Consent] Could not persist consent preferences');
+		logger.warn('[Consent] Could not persist consent preferences');
 	}
 
 	return saved;
@@ -253,7 +254,7 @@ export function clearConsent(options: ConsentStorageOptions = DEFAULT_STORAGE_OP
 		}
 	}
 
-	console.debug('[Consent] Cleared stored consent');
+	logger.debug('[Consent] Cleared stored consent');
 }
 
 /**

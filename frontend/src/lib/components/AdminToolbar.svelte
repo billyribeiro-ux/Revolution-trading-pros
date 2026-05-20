@@ -54,6 +54,7 @@
 	import type { User } from '$lib/stores/auth.svelte';
 	import { isSuperadmin, isAdmin as checkIsAdmin, hasPermission } from '$lib/config/roles';
 	import { getUser, logout as apiLogout } from '$lib/api/auth';
+	import { logger } from '$lib/utils/logger';
 	// Individual Tabler icon imports (Svelte 5 compatible)
 	import IconDashboard from '@tabler/icons-svelte-runes/icons/dashboard';
 	import IconForms from '@tabler/icons-svelte-runes/icons/forms';
@@ -206,21 +207,13 @@
 			if (!isAuthenticated.current) return false;
 
 			if (!currentUser) {
-				console.debug('[AdminToolbar] No user data yet, checking auth...');
+				// audit 2026-05-20: removed render-side debug noise (auth-path; fires every $derived recompute)
 				return false;
 			}
 
 			// Use centralized admin check
-			const result = checkIsAdmin(currentUser);
-			console.debug(
-				'[AdminToolbar] Admin check for:',
-				currentUser?.email || 'unknown',
-				'isSuperadmin:',
-				isSuperadminUser,
-				'isAdmin:',
-				result
-			);
-			return result;
+			// audit 2026-05-20: removed render-side debug log (auth-path PII — was logging currentUser.email on every recompute)
+			return checkIsAdmin(currentUser);
 		})()
 	);
 
@@ -262,7 +255,7 @@
 			// Verify session is still valid by fetching user data
 			await getUser();
 		} catch (error) {
-			console.warn('[AdminToolbar] Session check failed:', error);
+			logger.warn('[AdminToolbar] Session check failed', { error });
 			// Session may have expired
 			await handleSessionExpired();
 		}
@@ -303,7 +296,7 @@
 			// Redirect with success message - use replaceState to prevent history pollution
 			await goto('/?message=logged_out', { replaceState: true });
 		} catch (error) {
-			console.error('[AdminToolbar] Logout failed:', error);
+			logger.error('[AdminToolbar] Logout failed', { error });
 
 			// Force logout even on error
 			authStore.clearAuth();
@@ -506,7 +499,7 @@
 				lastRetry: 0
 			};
 		} catch (error) {
-			console.error('[AdminToolbar] Retry failed:', error);
+			logger.error('[AdminToolbar] Retry failed', { error });
 			errorState.hasError = true;
 			errorState.message = 'Failed to load user data';
 
@@ -536,7 +529,7 @@
 
 	function showNotification(message: string, type: 'info' | 'warning' | 'error' = 'info'): void {
 		// Implement your notification system here
-		console.info(`[Notification] ${type}: ${message}`);
+		logger.info(`[Notification] ${type}: ${message}`);
 
 		// Announce to screen readers
 		announceToScreenReader(message);
@@ -554,7 +547,7 @@
 				});
 			}
 		} catch (error) {
-			console.error('[Analytics] Failed to track event:', error);
+			logger.error('[Analytics] Failed to track event', { error });
 		}
 
 		// Telemetry removed - use proper analytics service if needed
@@ -573,7 +566,7 @@
 
 		// Log slow operations
 		if (duration > 1000) {
-			console.warn(`[AdminToolbar] Slow operation: ${action} took ${duration}ms`);
+			logger.warn(`[AdminToolbar] Slow operation: ${action} took ${duration}ms`);
 		}
 	}
 
@@ -584,8 +577,7 @@
 	onMount(async () => {
 		if (!browser) return;
 
-		console.debug('[AdminToolbar] Mounting...');
-
+		// audit 2026-05-20: removed mount/loading/loaded.email debug noise (auth-path PII)
 		try {
 			// ICT9+ Pattern: Don't attempt token refresh in AdminToolbar
 			// Token refresh should be handled by a dedicated auth initialization service
@@ -594,17 +586,11 @@
 
 			// Only load user if we already have a valid token
 			if (token && !user.current) {
-				console.debug('[AdminToolbar] Loading user data...');
 				isLoading = true;
 				try {
 					await getUser();
-					// Type-safe access with proper null checking
-					const loaded = user.current as AdminUser | null;
-					if (loaded?.email) {
-						console.debug('[AdminToolbar] User loaded:', loaded.email);
-					}
 				} catch (error) {
-					console.error('[AdminToolbar] Failed to load user:', error);
+					logger.error('[AdminToolbar] Failed to load user', { error });
 					errorState.hasError = true;
 					errorState.message = 'Failed to load user data';
 					// Don't clear auth here - let the auth service handle it
@@ -637,7 +623,7 @@
 			// Track toolbar load
 			trackEvent('toolbar_loaded', { isAdmin });
 		} catch (error) {
-			console.error('[AdminToolbar] Mount error:', error);
+			logger.error('[AdminToolbar] Mount error', { error });
 			errorState.hasError = true;
 		}
 	});
@@ -645,7 +631,7 @@
 	onDestroy(() => {
 		if (!browser) return;
 
-		console.debug('[AdminToolbar] Unmounting...');
+		// audit 2026-05-20: removed unmount debug noise
 
 		// Cleanup
 		abortController.abort();
