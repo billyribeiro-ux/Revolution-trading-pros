@@ -16,6 +16,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
+	import { logger } from '$lib/utils/logger';
 
 	// ===============================================================================
 	// PROPS
@@ -97,7 +98,7 @@
 
 			isLoading = false;
 		} catch (err) {
-			console.error('[RoomNotification] Error fetching schedule:', err);
+			logger.error('[RoomNotification] Error fetching schedule:', err);
 			error = 'Unable to load schedule';
 			isLoading = false;
 		}
@@ -190,7 +191,7 @@
 			hasNotificationPermission = permission === 'granted';
 			showNotificationPrompt = false;
 		} catch (err) {
-			console.error('[RoomNotification] Error requesting permission:', err);
+			logger.error('[RoomNotification] Error requesting permission:', err);
 		}
 	}
 
@@ -217,7 +218,7 @@
 			// Auto-close after 30 seconds
 			setTimeout(() => notification.close(), 30000);
 		} catch (err) {
-			console.error('[RoomNotification] Error sending notification:', err);
+			logger.error('[RoomNotification] Error sending notification:', err);
 		}
 	}
 

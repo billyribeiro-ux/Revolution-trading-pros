@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { IconRefresh, IconDownload, IconUpload, IconFileText } from '$lib/icons';
 	import { toastStore } from '$lib/stores/toast.svelte';
+	import { logger } from '$lib/utils/logger';
 
 	// State using Svelte 5 runes
 	let stats = $state<any>(null);
@@ -19,7 +20,7 @@
 			const response = await fetch('/api/seo/sitemap/stats');
 			stats = await response.json();
 		} catch (error) {
-			console.error('Failed to load stats:', error);
+			logger.error('Failed to load stats:', error);
 		}
 	}
 
@@ -31,7 +32,7 @@
 			showSitemapXml = true;
 			loadStats();
 		} catch (error) {
-			console.error('Failed to generate sitemap:', error);
+			logger.error('Failed to generate sitemap:', error);
 			toastStore.error('Failed to generate sitemap');
 		} finally {
 			generating = false;
@@ -52,7 +53,7 @@
 				toastStore.success('Sitemap submitted to search engines successfully!');
 			}
 		} catch (error) {
-			console.error('Failed to submit sitemap:', error);
+			logger.error('Failed to submit sitemap:', error);
 			toastStore.error('Failed to submit sitemap to search engines');
 		} finally {
 			submitting = false;
