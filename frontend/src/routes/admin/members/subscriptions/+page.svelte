@@ -34,6 +34,7 @@
 		exportSubscriptions,
 		type EnhancedSubscription
 	} from '$lib/api/subscriptions';
+	import { logger } from '$lib/utils/logger';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// State - Svelte 5 Runes
@@ -127,7 +128,7 @@
 			} else {
 				error = 'Failed to load subscriptions. Please refresh the page or contact support.';
 			}
-			console.error('Failed to load subscriptions:', e);
+			logger.error('Failed to load subscriptions:', e);
 		} finally {
 			loading = false;
 		}
@@ -153,7 +154,7 @@
 			await loadSubscriptions();
 		} catch (e) {
 			toastStore.error('Failed to pause subscription');
-			console.error(e);
+			logger.error(e);
 		}
 	}
 
@@ -164,7 +165,7 @@
 			await loadSubscriptions();
 		} catch (e) {
 			toastStore.error('Failed to resume subscription');
-			console.error(e);
+			logger.error(e);
 		}
 	}
 
@@ -185,7 +186,7 @@
 			await loadSubscriptions();
 		} catch (e) {
 			toastStore.error('Failed to cancel subscription');
-			console.error(e);
+			logger.error(e);
 		}
 	}
 
@@ -204,7 +205,7 @@
 			toastStore.success('Subscriptions exported successfully');
 		} catch (e) {
 			toastStore.error('Failed to export subscriptions');
-			console.error(e);
+			logger.error(e);
 		} finally {
 			exporting = false;
 		}

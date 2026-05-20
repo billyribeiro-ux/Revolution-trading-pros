@@ -10,6 +10,7 @@
 	import { page } from '$app/state';
 	import { beforeNavigate } from '$app/navigation';
 	import { adminFetch } from '$lib/utils/adminFetch';
+	import { logger } from '$lib/utils/logger';
 	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
 	import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left';
 	import IconLayoutGrid from '@tabler/icons-svelte-runes/icons/layout-grid';
@@ -159,7 +160,7 @@
 				lastSavedSnapshot = JSON.stringify(course);
 			}
 		} catch (e) {
-			console.error('Failed to fetch course:', e);
+			logger.error('Failed to fetch course:', e);
 		} finally {
 			loading = false;
 		}
@@ -273,7 +274,7 @@
 			await adminFetch(`/api/admin/courses/${courseId}/modules/${moduleId}`, { method: 'DELETE' });
 			modules = modules.filter((m) => m.id !== moduleId);
 		} catch {
-			console.error('Failed to delete module');
+			logger.error('Failed to delete module');
 		}
 	};
 
@@ -381,7 +382,7 @@
 				toastStore.error(createData.error || 'Failed to create download record');
 			}
 		} catch (e) {
-			console.error('Upload error:', e);
+			logger.error('Upload error:', e);
 			// FIX-2026-04-26: replaced native alert() with toastStore.error.
 			// Old: alert('Failed to upload file');
 			toastStore.error('Failed to upload file');
@@ -409,7 +410,7 @@
 			});
 			downloads = downloads.filter((d) => d.id !== downloadId);
 		} catch {
-			console.error('Failed to delete download');
+			logger.error('Failed to delete download');
 		}
 	};
 
@@ -442,7 +443,7 @@
 				unassignedLessons = unassignedLessons.filter((l) => l.id !== lessonId);
 			}
 		} catch {
-			console.error('Failed to delete lesson');
+			logger.error('Failed to delete lesson');
 		}
 	};
 </script>
