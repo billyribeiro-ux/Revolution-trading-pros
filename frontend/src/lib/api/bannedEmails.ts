@@ -64,6 +64,7 @@ import { browser } from '$app/environment';
 import { writable, derived, get } from 'svelte/store';
 import { getAuthToken } from '$lib/stores/auth.svelte';
 import { logger } from '$lib/utils/logger';
+import type { JsonValue } from './_types';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -143,7 +144,12 @@ export interface RiskFactor {
 	score: number;
 	confidence: number;
 	description: string;
-	evidence?: any;
+	/**
+	 * Risk-factor-specific evidence blob (matched-IP list, pattern hits,
+	 * fraud-model feature vector, etc.). Opaque JSON because the schema
+	 * varies by `type`; callers should narrow before rendering.
+	 */
+	evidence?: JsonValue;
 }
 
 export type RiskFactorType =
@@ -192,7 +198,8 @@ export interface EnforcementAction {
 	status: 'pending' | 'completed' | 'failed' | 'reversed';
 	executed_at?: string;
 	executed_by?: string;
-	details?: Record<string, any>;
+	/** Action-specific details (provider response, affected ids, etc.). */
+	details?: Record<string, JsonValue>;
 	reversal_reason?: string;
 }
 
@@ -301,7 +308,8 @@ export interface GeoHotspot {
 export interface TimeSeriesData {
 	date: string;
 	value: number;
-	metadata?: Record<string, any>;
+	/** Series-point metadata (segment label, breakdown counts, etc.). */
+	metadata?: Record<string, JsonValue>;
 }
 
 export interface WhitelistEntry {
@@ -318,7 +326,8 @@ export interface ReviewQueue {
 	email: string;
 	trigger: string;
 	risk_score: number;
-	evidence: any[];
+	/** Evidence items attached to this review (free-form JSON entries). */
+	evidence: JsonValue[];
 	status: 'pending' | 'reviewing' | 'approved' | 'rejected';
 	assigned_to?: string;
 	created_at: string;
@@ -331,7 +340,7 @@ export interface ReviewQueue {
 class BannedEmailManagementService {
 	private static instance: BannedEmailManagementService;
 	private wsConnection?: WebSocket;
-	private cache = new Map<string, { data: any; expiry: number }>();
+	private cache = new Map<string, { data: unknown; expiry: number }>();
 	private syncInterval?: number;
 	private patternEngine?: PatternDetectionEngine;
 
@@ -473,7 +482,7 @@ class BannedEmailManagementService {
 		this.bannedEmails.update((emails) => emails.filter((e) => e.id !== data.id));
 	}
 
-	private handlePatternDetected(data: any): void {
+	private handlePatternDetected(data: ReviewQueue): void {
 		logger.warn('[BannedEmailService] Pattern detected:', data);
 		this.reviewQueue.update((queue) => [...queue, data]);
 	}
@@ -567,8 +576,8 @@ class BannedEmailManagementService {
 
 			this.bannedEmails.set(enhanced);
 			return enhanced;
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error) {
+			this.error.set(error instanceof Error ? error.message : String(error));
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -584,9 +593,16 @@ class BannedEmailManagementService {
 		risk_score?: number;
 		similar_banned?: string[];
 	}> {
+		type CheckResult = {
+			banned: boolean;
+			record?: EnhancedBannedEmail;
+			risk_score?: number;
+			similar_banned?: string[];
+		};
+
 		// Quick cache check
 		const cacheKey = `check_${email}`;
-		const cached = this.getFromCache(cacheKey);
+		const cached = this.getFromCache<CheckResult>(cacheKey);
 		if (cached) return cached;
 
 		try {
@@ -675,8 +691,8 @@ class BannedEmailManagementService {
 			});
 
 			return banned;
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error) {
+			this.error.set(error instanceof Error ? error.message : String(error));
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -724,8 +740,8 @@ class BannedEmailManagementService {
 			await this.loadBannedEmails();
 
 			return results;
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error) {
+			this.error.set(error instanceof Error ? error.message : String(error));
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -768,8 +784,8 @@ class BannedEmailManagementService {
 			});
 
 			return result;
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error) {
+			this.error.set(error instanceof Error ? error.message : String(error));
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -800,8 +816,8 @@ class BannedEmailManagementService {
 
 			// Track event
 			this.trackEvent('email_unbanned', { id, reason });
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error) {
+			this.error.set(error instanceof Error ? error.message : String(error));
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -1217,15 +1233,21 @@ class BannedEmailManagementService {
 		return getAuthToken() || '';
 	}
 
-	private getFromCache(key: string): any {
+	/**
+	 * Typed cache reader. The cache stores heterogeneous payloads keyed by a
+	 * caller-controlled string; callers parametrise `T` to the shape they
+	 * stored (the cache cannot verify shape, but at least the call site
+	 * declares its expectation explicitly instead of receiving `any`).
+	 */
+	private getFromCache<T>(key: string): T | null {
 		const cached = this.cache.get(key);
 		if (cached && Date.now() < cached.expiry) {
-			return cached.data;
+			return cached.data as T;
 		}
 		return null;
 	}
 
-	private setCache(key: string, data: any, ttl: number = CACHE_TTL): void {
+	private setCache(key: string, data: unknown, ttl: number = CACHE_TTL): void {
 		this.cache.set(key, {
 			data,
 			expiry: Date.now() + ttl
@@ -1240,9 +1262,12 @@ class BannedEmailManagementService {
 		logger.info(`[${type.toUpperCase()}] ${message}`);
 	}
 
-	private trackEvent(event: string, data?: any): void {
-		if (browser && 'gtag' in window) {
-			(window as any).gtag('event', event, data);
+	private trackEvent(event: string, data?: unknown): void {
+		// `window.gtag` is declared globally in `src/app.d.ts`, so no
+		// untyped window cast is needed — call it through the typed
+		// global directly.
+		if (browser) {
+			window.gtag?.('event', event, data);
 		}
 	}
 
@@ -1300,8 +1325,10 @@ class PatternDetectionEngine {
 		return [`${base}1@${domain}`, `${base}2@${domain}`, `${base}.test@${domain}`];
 	}
 
-	analyzePatterns(_emails: string[]): any[] {
-		// Analyze patterns across multiple emails
+	analyzePatterns(_emails: string[]): DetectedPattern[] {
+		// Analyze patterns across multiple emails.
+		// Placeholder — full implementation lives behind the ML API; the local
+		// stub returns an empty list so callers can rely on the shape.
 		return [];
 	}
 }
@@ -1326,7 +1353,17 @@ export const isLoading = bannedEmailService.isLoading;
 export const error = bannedEmailService.error;
 
 // Export methods
-export const getBannedEmails = (filters?: any) => bannedEmailService.loadBannedEmails(filters);
+/**
+ * Filters accepted by `getBannedEmails` — mirrors the inline parameter shape
+ * on `loadBannedEmails`. Re-derived here so external callers can construct a
+ * fully-typed filter bag rather than relying on `any`.
+ */
+export type BannedEmailFilters = Parameters<
+	typeof bannedEmailService.loadBannedEmails
+>[0];
+
+export const getBannedEmails = (filters?: BannedEmailFilters) =>
+	bannedEmailService.loadBannedEmails(filters);
 export const checkEmailBanned = (email: string) => bannedEmailService.checkEmail(email);
 export const banEmail = (request: BanRequest) => bannedEmailService.banEmail(request);
 export const bulkBanEmails = (request: BulkBanRequest) => bannedEmailService.bulkBanEmails(request);

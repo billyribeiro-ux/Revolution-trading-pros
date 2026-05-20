@@ -54,6 +54,7 @@ import { getAuthToken } from '$lib/stores/auth.svelte';
 import type { CartItem } from '$lib/stores/cart.svelte';
 import { websocketService, type CartUpdatePayload } from '$lib/services/websocket';
 import { logger } from '$lib/utils/logger';
+import type { JsonValue } from './_types';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -97,7 +98,12 @@ export interface EnhancedCartItem extends CartItem {
 
 	// Customization
 	variants?: ProductVariant[];
-	customization?: Record<string, any>;
+	/**
+	 * Per-line customization options (engraving text, gift wrap colour, etc.).
+	 * Shape varies by product type, so modelled as opaque JSON; callers must
+	 * narrow each key before rendering.
+	 */
+	customization?: Record<string, JsonValue>;
 	giftWrap?: boolean;
 	giftMessage?: string;
 
@@ -269,7 +275,11 @@ export interface CheckoutSession {
 	requiresShipping?: boolean;
 
 	// Metadata
-	metadata?: Record<string, any>;
+	/**
+	 * Free-form session metadata bag (referrer, marketing context, etc.) —
+	 * round-tripped to Stripe / the order record as opaque JSON.
+	 */
+	metadata?: Record<string, JsonValue>;
 	returnUrl?: string;
 	cancelUrl?: string;
 
@@ -377,7 +387,12 @@ export interface FunnelStep {
 export interface AnalyticsEvent {
 	type: string;
 	timestamp: string;
-	data?: Record<string, any>;
+	/**
+	 * Event payload forwarded to the analytics backend. Modelled as `unknown`
+	 * because call sites pass heterogeneous shapes (totals, item snapshots,
+	 * error strings); the serialiser handles the JSON conversion downstream.
+	 */
+	data?: unknown;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -785,7 +800,9 @@ class CheckoutCartService {
 		}
 	}
 
-	private updateInventory(inventory: Record<string, any>): void {
+	private updateInventory(
+		inventory: Record<string, { status?: EnhancedCartItem['stockStatus']; available: number }>
+	): void {
 		this.cart.update((cart) => {
 			cart.items.forEach((item) => {
 				const stock = inventory[item.id];
@@ -879,8 +896,15 @@ class CheckoutCartService {
 		this.error.set(null);
 
 		try {
+			// `Partial<EnhancedCartItem>` makes `id` optional, but the
+			// inventory check has no meaning without one — fail loud rather
+			// than smuggling a non-null assertion past the type system.
+			if (!item.id) {
+				throw new Error('Cart item is missing an id');
+			}
+
 			// Check inventory first
-			const available = await this.checkItemAvailability(item.id!);
+			const available = await this.checkItemAvailability(item.id);
 			if (!available) {
 				throw new Error('Item is out of stock');
 			}
@@ -924,8 +948,8 @@ class CheckoutCartService {
 			this.resetAbandonmentTimer();
 
 			this.showNotification(`${item.name} added to cart`, 'success');
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error) {
+			this.error.set(error instanceof Error ? error.message : String(error));
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -1096,8 +1120,8 @@ class CheckoutCartService {
 
 			this.trackEvent('apply_coupon', { code, discount: result.discount });
 			this.showNotification(`Coupon ${code} applied!`, 'success');
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error) {
+			this.error.set(error instanceof Error ? error.message : String(error));
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -1305,8 +1329,8 @@ class CheckoutCartService {
 			});
 
 			return session;
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error) {
+			this.error.set(error instanceof Error ? error.message : String(error));
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -1314,9 +1338,17 @@ class CheckoutCartService {
 	}
 
 	/**
-	 * Process payment
+	 * Process payment.
+	 *
+	 * `paymentDetails` is forwarded verbatim to the `POST /checkout/process-payment`
+	 * backend handler — shape is provider-specific (Stripe `PaymentIntent`
+	 * confirmation payload, PayPal order id, etc.), so it's modelled as opaque
+	 * JSON on the client. Callers must construct the right shape per
+	 * `session.paymentProvider`.
 	 */
-	async processPayment(paymentDetails: any): Promise<{ success: boolean; orderId?: string }> {
+	async processPayment(
+		paymentDetails: JsonValue
+	): Promise<{ success: boolean; orderId?: string }> {
 		this.isLoading.set(true);
 		this.error.set(null);
 
@@ -1361,9 +1393,10 @@ class CheckoutCartService {
 			}
 
 			return result;
-		} catch (error: any) {
-			this.error.set(error.message);
-			this.trackEvent('payment_failed', { error: error.message });
+		} catch (error) {
+			const message = error instanceof Error ? error.message : String(error);
+			this.error.set(message);
+			this.trackEvent('payment_failed', { error: message });
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -1491,7 +1524,10 @@ class CheckoutCartService {
 		});
 	}
 
-	private async syncItemWithServer(action: string, item: any): Promise<void> {
+	private async syncItemWithServer(
+		action: 'add' | 'update' | 'remove' | 'save_for_later' | 'move_to_cart',
+		item: Partial<EnhancedCartItem>
+	): Promise<void> {
 		try {
 			await fetch(`${API_URL}/cart/${action}`, {
 				method: 'POST',
@@ -1541,7 +1577,7 @@ class CheckoutCartService {
 		logger.info(`[${type.toUpperCase()}] ${message}`);
 	}
 
-	private trackEvent(event: string, data?: any): void {
+	private trackEvent(event: string, data?: unknown): void {
 		// Buffer analytics events
 		this.analyticsBuffer.push({
 			type: event,
@@ -1549,9 +1585,10 @@ class CheckoutCartService {
 			data
 		});
 
-		// Send to analytics
-		if (browser && 'gtag' in window) {
-			(window as any).gtag('event', event, data);
+		// Send to analytics — `window.gtag` is declared globally in
+		// `src/app.d.ts`, so no untyped window cast is needed.
+		if (browser) {
+			window.gtag?.('event', event, data);
 		}
 
 		// Flush buffer periodically
@@ -1660,10 +1697,20 @@ export const clearCart = () => checkoutService.clearCart();
 
 export const applyCoupon = (code: string) => checkoutService.applyCoupon(code);
 
-export const createCheckoutSession = (options?: any) =>
+/**
+ * Options accepted by `createCheckoutSession`. Mirrors the inline parameter
+ * shape on `CheckoutCartService.createCheckoutSession`; exported so the
+ * checkout page (and any future caller) can construct a fully-typed payload
+ * instead of leaning on `any`.
+ */
+export type CreateCheckoutSessionOptions = Parameters<
+	CheckoutCartService['createCheckoutSession']
+>[0];
+
+export const createCheckoutSession = (options?: CreateCheckoutSessionOptions) =>
 	checkoutService.createCheckoutSession(options);
 
-export const processPayment = (paymentDetails: any) =>
+export const processPayment = (paymentDetails: JsonValue) =>
 	checkoutService.processPayment(paymentDetails);
 
 export const calculateShipping = (address: Address) => checkoutService.calculateShipping(address);
