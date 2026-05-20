@@ -51,6 +51,7 @@
 import { writable, derived } from 'svelte/store';
 import { getAuthToken } from '$lib/stores/auth.svelte';
 import { logger } from '$lib/utils/logger';
+import type { JsonValue } from './_types';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -83,11 +84,11 @@ export interface ApiError {
 	retryAfter?: number;
 }
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
 	data: T;
 	meta?: ResponseMeta;
 	links?: ResponseLinks;
-	included?: any[];
+	included?: JsonValue[];
 }
 
 export interface ResponseMeta {
@@ -114,15 +115,41 @@ export interface ResponseLinks {
 export interface RequestConfig {
 	method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 	headers?: HeadersInit;
-	body?: any;
-	params?: Record<string, any> | undefined;
+	/**
+	 * Mutation body. `unknown` instead of `any` so call sites must commit to a
+	 * shape (a literal object, a typed DTO, FormData, etc.) — `executeRequest`
+	 * `JSON.stringify`s any non-binary value. Matches the typed sibling
+	 * `client.ts:RequestOptions.body` (default `unknown`).
+	 */
+	body?: unknown;
+	/**
+	 * URL query parameters. Typed as a plain `object` plus `null | undefined`
+	 * to admit both `Record<string, unknown>` shapes AND closed-interface
+	 * filter DTOs (`BoardFilters`, `ContactFilters`, etc.) that lack an
+	 * `[key: string]` index signature. `buildUrl` narrows per-entry at the
+	 * URLSearchParams serialisation step (skip `null` / `undefined`,
+	 * `String(v)` everything else, spread arrays).
+	 *
+	 * Pre-R10-A: `Record<string, any>` — same runtime behaviour, no compile-
+	 * time signal when a caller passed a nested object that would have
+	 * serialised to `[object Object]` in the URL. `object` here is strictly
+	 * tighter — it rejects scalars (`params: 42` is now a type error) and
+	 * narrowed via `Object.entries` inside `buildUrl`.
+	 */
+	params?: object | null;
 	timeout?: number;
 	retry?: RetryConfig;
 	cache?: CacheConfig;
 	priority?: RequestPriority;
 	batch?: boolean;
 	optimistic?: boolean;
-	transform?: (data: any) => any;
+	/**
+	 * Post-fetch payload transform. Receives the parsed JSON / blob / text
+	 * (typed `unknown` — caller must narrow) and returns whatever the public
+	 * method's `<T>` should resolve to. Wrapped at the call site by the
+	 * `request<T>` boundary, which then casts the result to `T`.
+	 */
+	transform?: (data: unknown) => unknown;
 	responseType?: 'json' | 'blob' | 'text' | 'arraybuffer';
 }
 
@@ -318,7 +345,7 @@ export type PostStatus = 'draft' | 'published' | 'scheduled' | 'archived';
 export interface ContentBlock {
 	id: string;
 	type: string;
-	data: any;
+	data: JsonValue;
 	position: number;
 }
 
@@ -334,8 +361,8 @@ export interface RequestQueueItem {
 	id: string;
 	endpoint: string;
 	config: RequestConfig;
-	resolve: (value: any) => void;
-	reject: (error: any) => void;
+	resolve: (value: unknown) => void;
+	reject: (error: unknown) => void;
 	timestamp: number;
 	priority: RequestPriority;
 	retryCount: number;
@@ -351,6 +378,16 @@ export interface PerformanceMetrics {
 	requestsPerMinute: number;
 }
 
+/**
+ * Operation descriptor accepted by `batch()` — POSTed to the backend `/batch`
+ * endpoint as an array, see `processBatchRequests` for the producer side.
+ */
+export interface BatchOperation {
+	endpoint: string;
+	method?: string;
+	data?: unknown;
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // Core API Client Class
 // ═══════════════════════════════════════════════════════════════════════════
@@ -364,13 +401,13 @@ class EnterpriseApiClient {
 
 	// Request management
 	private requestQueue: RequestQueueItem[] = [];
-	private activeRequests = new Map<string, Promise<any>>();
-	private requestCache = new Map<string, { data: any; expiry: number }>();
+	private activeRequests = new Map<string, Promise<unknown>>();
+	private requestCache = new Map<string, { data: unknown; expiry: number }>();
 	private rateLimiter = new RateLimiter(RATE_LIMIT);
 	private circuitBreaker = new CircuitBreaker();
 
-	// Batch processing
-	private batchQueue: Map<string, any[]> = new Map();
+	// Batch processing — items are operation descriptors enqueued by `batch()`
+	private batchQueue: Map<string, BatchOperation[]> = new Map();
 
 	// Performance tracking
 	private metrics: PerformanceMetrics = {
@@ -504,15 +541,15 @@ class EnterpriseApiClient {
 
 		// Check cache first
 		if (config.cache?.enabled !== false && config.method === 'GET') {
-			const cached = this.getFromCache(cacheKey);
-			if (cached) {
+			const cached = this.getFromCache<T>(cacheKey);
+			if (cached !== null) {
 				this.updateMetrics({ cached: true });
 				return cached;
 			}
 		}
 
 		// Check for duplicate requests
-		const existingRequest = this.activeRequests.get(cacheKey);
+		const existingRequest = this.activeRequests.get(cacheKey) as Promise<T> | undefined;
 		if (existingRequest) {
 			// audit 2026-05-20: removed per-request endpoint-leaking debug log (auth-path; fires every request)
 			return existingRequest;
@@ -591,7 +628,7 @@ class EnterpriseApiClient {
 		}
 
 		// Retry logic
-		let lastError: any;
+		let lastError: unknown;
 		const maxAttempts = config.retry?.attempts || RETRY_ATTEMPTS;
 
 		for (let attempt = 0; attempt < maxAttempts; attempt++) {
@@ -616,7 +653,7 @@ class EnterpriseApiClient {
 				}
 
 				// Parse successful response based on responseType
-				let data: any;
+				let data: unknown;
 				const responseType = config.responseType || 'json';
 
 				switch (responseType) {
@@ -630,11 +667,21 @@ class EnterpriseApiClient {
 						data = await response.arrayBuffer();
 						break;
 					case 'json':
-					default:
+					default: {
 						// ICT11+ Fix: Backend wraps response in { success: true, data: {...} }
-						const json = await response.json();
-						data = json.data !== undefined ? json.data : json;
+						const json: unknown = await response.json();
+						if (
+							typeof json === 'object' &&
+							json !== null &&
+							'data' in json &&
+							(json as { data?: unknown }).data !== undefined
+						) {
+							data = (json as { data: unknown }).data;
+						} else {
+							data = json;
+						}
 						break;
+					}
 				}
 
 				// Update metrics
@@ -643,8 +690,11 @@ class EnterpriseApiClient {
 					success: true
 				});
 
-				// Transform if needed
-				const result = config.transform ? config.transform(data) : data;
+				// Transform if needed. `transform` is `(unknown) => unknown`; the
+				// caller-side `<T>` re-establishes the result type. This is the
+				// same trade-off `client.ts`'s typed sibling makes at the same
+				// boundary (see client.ts:709 — `processedOptions.transform<T>(...)`).
+				const result = (config.transform ? config.transform(data) : data) as T;
 
 				// Record circuit breaker success
 				this.circuitBreaker.recordSuccess();
@@ -680,19 +730,37 @@ class EnterpriseApiClient {
 	}
 
 	private async handleErrorResponse(response: Response, requestId: string): Promise<ApiError> {
-		let errorData: any = {};
+		// Backend error envelope: `{ message?: string; errors?: Record<string,
+		// string[]>; code?: string }`. Read as `Record<string, unknown>` and
+		// narrow each field — pre-R10-A this was typed `any` and silently passed
+		// through any rogue shape (e.g. `{ error: "…" }` with no `message`)
+		// which became `error.message = undefined` at the call site.
+		let errorData: Record<string, unknown> = {};
 
 		try {
-			errorData = await response.json();
+			const parsed: unknown = await response.json();
+			if (parsed !== null && typeof parsed === 'object') {
+				errorData = parsed as Record<string, unknown>;
+			}
 		} catch {
 			// Response might not be JSON
 		}
 
+		const message =
+			typeof errorData.message === 'string'
+				? errorData.message
+				: this.getDefaultErrorMessage(response.status);
+		const errors =
+			errorData.errors && typeof errorData.errors === 'object'
+				? (errorData.errors as Record<string, string[]>)
+				: undefined;
+		const code = typeof errorData.code === 'string' ? errorData.code : undefined;
+
 		const error: ApiError = {
-			message: errorData.message || this.getDefaultErrorMessage(response.status),
-			errors: errorData.errors,
+			message,
+			errors,
 			status: response.status,
-			code: errorData.code,
+			code,
 			timestamp: new Date().toISOString(),
 			requestId
 		};
@@ -732,15 +800,15 @@ class EnterpriseApiClient {
 		return this.request<T>(endpoint, { ...config, method: 'GET' });
 	}
 
-	async post<T>(endpoint: string, data?: any, config?: RequestConfig): Promise<T> {
+	async post<T>(endpoint: string, data?: unknown, config?: RequestConfig): Promise<T> {
 		return this.request<T>(endpoint, { ...config, method: 'POST', body: data });
 	}
 
-	async put<T>(endpoint: string, data?: any, config?: RequestConfig): Promise<T> {
+	async put<T>(endpoint: string, data?: unknown, config?: RequestConfig): Promise<T> {
 		return this.request<T>(endpoint, { ...config, method: 'PUT', body: data });
 	}
 
-	async patch<T>(endpoint: string, data?: any, config?: RequestConfig): Promise<T> {
+	async patch<T>(endpoint: string, data?: unknown, config?: RequestConfig): Promise<T> {
 		return this.request<T>(endpoint, { ...config, method: 'PATCH', body: data });
 	}
 
@@ -863,8 +931,8 @@ class EnterpriseApiClient {
 		});
 	}
 
-	async purchaseProduct(productId: number, paymentMethod?: string): Promise<any> {
-		return this.post(
+	async purchaseProduct(productId: number, paymentMethod?: string): Promise<JsonValue> {
+		return this.post<JsonValue>(
 			'/products/purchase',
 			{
 				product_id: productId,
@@ -934,9 +1002,7 @@ class EnterpriseApiClient {
 	/**
 	 * Batch operations
 	 */
-	async batch<T>(
-		operations: Array<{ endpoint: string; method?: string; data?: any }>
-	): Promise<T[]> {
+	async batch<T>(operations: BatchOperation[]): Promise<T[]> {
 		return this.post<T[]>('/batch', { operations });
 	}
 
@@ -1092,7 +1158,7 @@ class EnterpriseApiClient {
 		});
 	}
 
-	private handleNotification(notification: any): void {
+	private handleNotification(notification: unknown): void {
 		// Emit custom event for notifications
 		if (typeof window !== 'undefined') {
 			window.dispatchEvent(new CustomEvent('api:notification', { detail: notification }));
@@ -1157,7 +1223,7 @@ class EnterpriseApiClient {
 	// Helper methods
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	private buildUrl(endpoint: string, params?: Record<string, any>): string {
+	private buildUrl(endpoint: string, params?: object | null): string {
 		// ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
 		let url: string;
 		if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) {
@@ -1174,11 +1240,26 @@ class EnterpriseApiClient {
 			return url;
 		}
 
-		const queryString = new URLSearchParams(
-			Object.entries(params).filter(([_, v]) => v != null)
-		).toString();
-
-		return `${url}?${queryString}`;
+		// R10-A: Build the URLSearchParams explicitly so numeric / boolean /
+		// array QueryValue values serialise correctly. Pre-R10-A passed the
+		// `Object.entries(params)` tuple list straight to the URLSearchParams
+		// ctor, which accepts `string` values only — non-string params relied
+		// on a coercion that wasn't actually happening in TS. Behaviour for the
+		// existing all-string call sites is unchanged; numeric callers now also
+		// work as intended (e.g. `params: { page: 2 }` → `?page=2`).
+		const searchParams = new URLSearchParams();
+		for (const [key, value] of Object.entries(params)) {
+			if (value === null || value === undefined) continue;
+			if (Array.isArray(value)) {
+				for (const item of value) {
+					searchParams.append(key, String(item));
+				}
+			} else {
+				searchParams.append(key, String(value));
+			}
+		}
+		const queryString = searchParams.toString();
+		return queryString ? `${url}?${queryString}` : url;
 	}
 
 	private getCacheKey(endpoint: string, config: RequestConfig): string {
@@ -1186,12 +1267,20 @@ class EnterpriseApiClient {
 		return `${config.method || 'GET'}_${endpoint}_${params}`;
 	}
 
-	private getFromCache(key: string): any {
+	/**
+	 * Read a cached value, narrowing to the caller's expected type.
+	 *
+	 * R10-A: changed return shape from `any` → `T | null`. Callers MUST check
+	 * `if (result !== null)` (not `if (result)`) — a cached `0` / `""` /
+	 * `false` is a legitimate hit. Same correctness fix as R5-A / R6-A / R7-A
+	 * / R8-A surprises (`||` → `!== null`).
+	 */
+	private getFromCache<T>(key: string): T | null {
 		const cached = this.requestCache.get(key);
 
 		if (cached && Date.now() < cached.expiry) {
 			// audit 2026-05-20: removed per-cache-hit endpoint-leaking debug log (auth-path; fires on every cached GET)
-			return cached.data;
+			return cached.data as T;
 		}
 
 		// Check IndexedDB for persistent cache
@@ -1202,7 +1291,7 @@ class EnterpriseApiClient {
 		return null;
 	}
 
-	private setCache(key: string, data: any, ttl: number = CACHE_TTL): void {
+	private setCache(key: string, data: unknown, ttl: number = CACHE_TTL): void {
 		this.requestCache.set(key, {
 			data,
 			expiry: Date.now() + ttl
@@ -1344,7 +1433,7 @@ class EnterpriseApiClient {
 		}
 	}
 
-	private async getOfflineData(_endpoint: string): Promise<any> {
+	private async getOfflineData(_endpoint: string): Promise<unknown> {
 		// Try to get from IndexedDB
 		if (typeof window !== 'undefined' && 'indexedDB' in window) {
 			// Implementation for offline data retrieval
@@ -1552,11 +1641,11 @@ export const hasActiveSubscription = apiClient.hasActiveSubscription;
 export const api = {
 	// HTTP methods
 	get: <T>(endpoint: string, config?: RequestConfig) => apiClient.get<T>(endpoint, config),
-	post: <T>(endpoint: string, data?: any, config?: RequestConfig) =>
+	post: <T>(endpoint: string, data?: unknown, config?: RequestConfig) =>
 		apiClient.post<T>(endpoint, data, config),
-	put: <T>(endpoint: string, data?: any, config?: RequestConfig) =>
+	put: <T>(endpoint: string, data?: unknown, config?: RequestConfig) =>
 		apiClient.put<T>(endpoint, data, config),
-	patch: <T>(endpoint: string, data?: any, config?: RequestConfig) =>
+	patch: <T>(endpoint: string, data?: unknown, config?: RequestConfig) =>
 		apiClient.patch<T>(endpoint, data, config),
 	delete: <T = void>(endpoint: string, config?: RequestConfig) =>
 		apiClient.delete<T>(endpoint, config),
@@ -1574,13 +1663,15 @@ export const api = {
 	getMyProducts: () => apiClient.getMyProducts(),
 
 	// Products
-	getIndicators: (params?: any) => apiClient.getIndicators(params),
+	getIndicators: (params?: { category?: string; sort?: string }) =>
+		apiClient.getIndicators(params),
 	getIndicator: (slug: string) => apiClient.getIndicator(slug),
 	purchaseProduct: (productId: number, paymentMethod?: string) =>
 		apiClient.purchaseProduct(productId, paymentMethod),
 
 	// Posts
-	getPosts: (params?: any) => apiClient.getPosts(params),
+	getPosts: (params?: { page?: number; category?: string; search?: string }) =>
+		apiClient.getPosts(params),
 	getPost: (slug: string) => apiClient.getPost(slug),
 	createPost: (data: Partial<Post>) => apiClient.createPost(data),
 	updatePost: (id: number, data: Partial<Post>) => apiClient.updatePost(id, data),
@@ -1592,8 +1683,7 @@ export const api = {
 		apiClient.download(endpoint, onProgress),
 
 	// Batch
-	batch: <T>(operations: Array<{ endpoint: string; method?: string; data?: any }>) =>
-		apiClient.batch<T>(operations),
+	batch: <T>(operations: BatchOperation[]) => apiClient.batch<T>(operations),
 
 	// Token management
 	setToken: (token: string | null, refreshToken?: string | null) =>

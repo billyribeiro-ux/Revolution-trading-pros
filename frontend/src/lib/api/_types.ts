@@ -86,3 +86,25 @@ export type JsonValue =
 	| null
 	| { [k: string]: JsonValue | undefined }
 	| JsonValue[];
+
+/**
+ * Scalar or array-of-scalar values acceptable as URL query-string parameters.
+ *
+ * Mirrors the shape `URLSearchParams` accepts after `String(value)` coercion.
+ * Used by the central api client (`client.svelte.ts`) and sibling api modules
+ * for `params?:` on GET-style requests — narrower than `Record<string, any>`,
+ * caller can no longer accidentally pass a nested object that would serialise
+ * to `[object Object]` in the URL.
+ *
+ * `undefined` / `null` are accepted so call sites can pass partial query bags
+ * (`{ status: filter || undefined }`); the buildUrl helper filters them out.
+ */
+export type QueryValue =
+	| string
+	| number
+	| boolean
+	| null
+	| undefined
+	| Array<string | number | boolean>;
+
+export type QueryParams = Record<string, QueryValue>;
