@@ -1,9 +1,16 @@
 /**
  * Video API Client
- * Handles video management and analytics tracking
+ * Handles video management and analytics tracking.
+ *
+ * R13-A: scrubbed `any`. `meta: any` → `PaginationMeta` (matches the rest of
+ * the api/ tree per `_types.ts`). `event_data: Record<string, any>` →
+ * `Record<string, JsonValue>` — the event data is round-tripped to a JSONB
+ * column on the backend, so the JSON-shape constraint is real. `eventQueue:
+ * any[]` → the typed `TrackEvent` shape the queue actually holds.
  */
 
 import { apiClient } from './client.svelte';
+import type { JsonValue, PaginatedResponse, PaginationMeta } from './_types';
 
 export interface Video {
 	id: number;
@@ -77,7 +84,7 @@ export interface VideoAnalytic {
 	interactions: number;
 	quality?: string;
 	buffer_events: number;
-	event_data?: Record<string, any>;
+	event_data?: Record<string, JsonValue>;
 	ip_address?: string;
 	user_agent?: string;
 	referrer?: string;
@@ -110,7 +117,7 @@ export async function getVideos(params?: {
 	per_page?: number;
 	page?: number;
 }) {
-	return apiClient.get<{ data: Video[]; meta: any }>('/videos', { params });
+	return apiClient.get<PaginatedResponse<Video>>('/videos', { params });
 }
 
 /**
@@ -149,33 +156,36 @@ export async function deleteVideo(id: number) {
 }
 
 /**
+ * Wire shape accepted by `POST /videos/:id/track`. Used directly by
+ * `trackVideoEvent` and as the queue-element type inside `VideoTracker`.
+ */
+export type VideoTrackEvent = {
+	session_id: string;
+	event_type:
+		| 'view'
+		| 'play'
+		| 'pause'
+		| 'complete'
+		| 'progress'
+		| 'seek'
+		| 'error'
+		| 'quality_change'
+		| 'speed_change'
+		| 'fullscreen_enter'
+		| 'fullscreen_exit';
+	timestamp_seconds?: number;
+	watch_time?: number;
+	completion_rate?: number;
+	interactions?: number;
+	quality?: string;
+	buffer_events?: number;
+	event_data?: Record<string, JsonValue>;
+};
+
+/**
  * Track a video analytics event
  */
-export async function trackVideoEvent(
-	videoId: number,
-	data: {
-		session_id: string;
-		event_type:
-			| 'view'
-			| 'play'
-			| 'pause'
-			| 'complete'
-			| 'progress'
-			| 'seek'
-			| 'error'
-			| 'quality_change'
-			| 'speed_change'
-			| 'fullscreen_enter'
-			| 'fullscreen_exit';
-		timestamp_seconds?: number;
-		watch_time?: number;
-		completion_rate?: number;
-		interactions?: number;
-		quality?: string;
-		buffer_events?: number;
-		event_data?: Record<string, any>;
-	}
-) {
+export async function trackVideoEvent(videoId: number, data: VideoTrackEvent) {
 	return apiClient.post<{ message: string; analytic: VideoAnalytic }>(
 		`/videos/${videoId}/track`,
 		data
@@ -197,7 +207,7 @@ export async function getVideoAnalytics(
 	}
 ) {
 	return apiClient.get<{
-		analytics: { data: VideoAnalytic[]; meta: any };
+		analytics: { data: VideoAnalytic[]; meta: PaginationMeta };
 		stats: VideoStats;
 	}>(`/admin/videos/${videoId}/analytics`, { params });
 }
@@ -224,7 +234,7 @@ export class VideoTracker {
 	private sessionId: string;
 	private watchStartTime: number = 0;
 	private totalWatchTime: number = 0;
-	private eventQueue: any[] = [];
+	private eventQueue: VideoTrackEvent[] = [];
 	private flushInterval: number | null = null;
 
 	constructor(videoId: number, sessionId?: string) {
@@ -234,21 +244,19 @@ export class VideoTracker {
 	}
 
 	/**
-	 * Track a video event
+	 * Track a video event.
+	 *
+	 * R13-A: `eventType` typed as the `VideoTrackEvent['event_type']` union
+	 * (matches the wire contract). Callers that previously passed a raw
+	 * string now get a compile-time error when typoing an event name —
+	 * pre-R13-A `any[]` queue silently let arbitrary strings through to the
+	 * backend, which would 400 at validation.
 	 */
 	async track(
-		eventType: string,
-		data?: {
-			timestamp_seconds?: number;
-			watch_time?: number;
-			completion_rate?: number;
-			interactions?: number;
-			quality?: string;
-			buffer_events?: number;
-			event_data?: Record<string, any>;
-		}
+		eventType: VideoTrackEvent['event_type'],
+		data?: Omit<VideoTrackEvent, 'session_id' | 'event_type'>
 	) {
-		const event = {
+		const event: VideoTrackEvent = {
 			session_id: this.sessionId,
 			event_type: eventType,
 			...data

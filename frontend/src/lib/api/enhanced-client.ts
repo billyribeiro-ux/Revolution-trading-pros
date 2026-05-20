@@ -29,6 +29,7 @@ import {
 	error as logError,
 	info
 } from '../observability/telemetry';
+import type { JsonValue } from './_types';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types
@@ -64,7 +65,13 @@ export interface RequestConfig extends Omit<RequestInit, 'cache'> {
 	};
 }
 
-export interface ApiResponse<T = any> {
+/**
+ * R13-A: `T` defaults to `unknown` (not `any`). Matches `client.svelte.ts`'s
+ * typed-envelope precedent — callers must commit to an explicit shape
+ * (`apiClient.get<UserList>(…)`) or narrow `response.data` before use. Pre-R13-A
+ * the default `any` silently poisoned every untyped consumer's property access.
+ */
+export interface ApiResponse<T = unknown> {
 	data: T;
 	status: number;
 	statusText: string;
@@ -73,7 +80,7 @@ export interface ApiResponse<T = any> {
 	duration: number;
 }
 
-export interface CacheEntry<T = any> {
+export interface CacheEntry<T = unknown> {
 	data: T;
 	timestamp: number;
 	ttl: number;
@@ -121,7 +128,7 @@ export class EnhancedApiClient {
 	// HTTP Methods
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	async get<T = any>(url: string, config: RequestConfig = {}): Promise<ApiResponse<T>> {
+	async get<T = unknown>(url: string, config: RequestConfig = {}): Promise<ApiResponse<T>> {
 		return this.request<T>(url, {
 			...config,
 			method: 'GET',
@@ -129,41 +136,45 @@ export class EnhancedApiClient {
 		});
 	}
 
-	async post<T = any>(
+	async post<T = unknown>(
 		url: string,
-		data?: any,
+		data?: unknown,
 		config: RequestConfig = {}
 	): Promise<ApiResponse<T>> {
 		return this.request<T>(url, {
 			...config,
 			method: 'POST',
-			...(data && { body: JSON.stringify(data) }),
+			...(data ? { body: JSON.stringify(data) } : {}),
 			idempotent: config.idempotent !== undefined ? config.idempotent : true
 		});
 	}
 
-	async put<T = any>(url: string, data?: any, config: RequestConfig = {}): Promise<ApiResponse<T>> {
+	async put<T = unknown>(
+		url: string,
+		data?: unknown,
+		config: RequestConfig = {}
+	): Promise<ApiResponse<T>> {
 		return this.request<T>(url, {
 			...config,
 			method: 'PUT',
-			...(data && { body: JSON.stringify(data) }),
+			...(data ? { body: JSON.stringify(data) } : {}),
 			idempotent: config.idempotent !== undefined ? config.idempotent : true
 		});
 	}
 
-	async patch<T = any>(
+	async patch<T = unknown>(
 		url: string,
-		data?: any,
+		data?: unknown,
 		config: RequestConfig = {}
 	): Promise<ApiResponse<T>> {
 		return this.request<T>(url, {
 			...config,
 			method: 'PATCH',
-			...(data && { body: JSON.stringify(data) })
+			...(data ? { body: JSON.stringify(data) } : {})
 		});
 	}
 
-	async delete<T = any>(url: string, config: RequestConfig = {}): Promise<ApiResponse<T>> {
+	async delete<T = unknown>(url: string, config: RequestConfig = {}): Promise<ApiResponse<T>> {
 		return this.request<T>(url, {
 			...config,
 			method: 'DELETE',
@@ -175,7 +186,7 @@ export class EnhancedApiClient {
 	// Core Request Method
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	async request<T = any>(url: string, config: RequestConfig = {}): Promise<ApiResponse<T>> {
+	async request<T = unknown>(url: string, config: RequestConfig = {}): Promise<ApiResponse<T>> {
 		const fullConfig = { ...this.defaultConfig, ...config };
 		const fullURL = url.startsWith('http') ? url : `${this.baseURL}${url}`;
 		const method = fullConfig.method || 'GET';
@@ -245,9 +256,13 @@ export class EnhancedApiClient {
 			}
 
 			// Run response interceptors
-			let interceptedResponse = response;
+			// R13-A: interceptors are stored as `(ApiResponse) => ApiResponse`
+			// without a generic — they may mutate `data` arbitrarily. The cast
+			// preserves `<T>` at the public-method boundary; identical to the
+			// `client.svelte.ts:transform` pattern (see line 697).
+			let interceptedResponse: ApiResponse<T> = response;
 			for (const interceptor of this.responseInterceptors) {
-				interceptedResponse = await interceptor(interceptedResponse);
+				interceptedResponse = (await interceptor(interceptedResponse)) as ApiResponse<T>;
 			}
 
 			// Record metrics
@@ -272,9 +287,12 @@ export class EnhancedApiClient {
 			}
 
 			return interceptedResponse;
-		} catch (error: any) {
-			// Run error interceptors
-			let interceptedError = error;
+		} catch (error: unknown) {
+			// R13-A: narrow once at the catch boundary. Pre-R13-A `error: any`
+			// silently allowed reading `.name`/`.message`/`.stack` off a thrown
+			// scalar — TS now forces us to commit to the `Error`-shaped path.
+			const err = error instanceof Error ? error : new Error(String(error));
+			let interceptedError: Error = err;
 			for (const interceptor of this.errorInterceptors) {
 				interceptedError = await interceptor(interceptedError);
 			}
@@ -283,25 +301,25 @@ export class EnhancedApiClient {
 			incrementCounter('api_request_error_total', {
 				endpoint: url,
 				method,
-				error_type: error.name
+				error_type: err.name
 			});
 
 			if (spanId) {
 				addSpanEvent(spanId, 'request_error', {
-					error: error.message,
-					error_type: error.name
+					error: err.message,
+					error_type: err.name
 				});
 				endSpan(spanId, {
 					code: 'ERROR',
-					message: error.message
+					message: err.message
 				});
 			}
 
 			logError('API request failed', {
 				url: fullURL,
 				method,
-				error: error.message,
-				stack: error.stack
+				error: err.message,
+				stack: err.stack
 			});
 
 			throw interceptedError;
@@ -337,11 +355,12 @@ export class EnhancedApiClient {
 				clearTimeout(timeoutId);
 
 				if (!response.ok) {
+					const errBody = (await response.json().catch(() => null)) as JsonValue | null;
 					throw new ApiError(
 						`HTTP ${response.status}: ${response.statusText}`,
 						response.status,
 						response.statusText,
-						await response.json().catch(() => null)
+						errBody ?? undefined
 					);
 				}
 
@@ -355,10 +374,13 @@ export class EnhancedApiClient {
 					cached: false,
 					duration: 0 // Will be set by caller
 				};
-			} catch (error: any) {
+			} catch (error: unknown) {
 				clearTimeout(timeoutId);
 
-				if (error.name === 'AbortError') {
+				// R13-A: narrow at the catch boundary. The only branch this code
+				// actually inspects is `error.name === 'AbortError'` (DOMException
+				// from `signal.abort()`); rethrow everything else untouched.
+				if (error instanceof Error && error.name === 'AbortError') {
 					throw new ApiError(`Request timeout after ${config.timeout}ms`, 408, 'Request Timeout');
 				}
 
@@ -417,7 +439,10 @@ export class EnhancedApiClient {
 			return null;
 		}
 
-		return entry.data;
+		// R13-A: `CacheEntry.data` is `unknown` post-tightening; re-establish
+		// `<T>` at the caller boundary. Same trade-off as `client.svelte.ts`'s
+		// `getFromCache<T>` (line 1283: `return cached.data as T`).
+		return entry.data as T;
 	}
 
 	private setCache<T>(key: string, data: T, ttl: number): void {
@@ -544,11 +569,17 @@ export class EnhancedApiClient {
 // ═══════════════════════════════════════════════════════════════════════════
 
 export class ApiError extends Error {
+	/**
+	 * R13-A: `data` typed as `JsonValue` (parsed JSON body of the failed
+	 * response) — matches the precedent in `config.ts:ApiError.data`. Callers
+	 * must narrow before property access; pre-R13-A `any` silently passed
+	 * through every malformed shape.
+	 */
 	constructor(
 		message: string,
 		public status: number,
 		public statusText: string,
-		public data?: any
+		public data?: JsonValue
 	) {
 		super(message);
 		this.name = 'ApiError';
@@ -577,8 +608,10 @@ const API_BASE_URL = '';
 export const apiClient = new EnhancedApiClient(API_BASE_URL);
 
 // Add default error interceptor for auth errors
-apiClient.addErrorInterceptor(async (error: any) => {
-	if (error.status === 401) {
+// R13-A: typed as `Error` to match the interceptor signature; narrow to
+// `ApiError` to read `.status` instead of poisoning with `any`.
+apiClient.addErrorInterceptor(async (error: Error) => {
+	if (error instanceof ApiError && error.status === 401) {
 		// Handle unauthorized - redirect to login
 		if (browser) {
 			window.location.href = '/login';
