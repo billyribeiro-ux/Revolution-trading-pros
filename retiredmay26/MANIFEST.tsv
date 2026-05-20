@@ -1,0 +1,177 @@
+PATH	BYTES	LOC	LAST_COMMIT_DATE	LAST_COMMIT_HASH	LAST_COMMIT_SUBJECT
+src/lib/accessibility/popup-a11y.ts	20394	729	2026-01-16	c77a1ee9a	style: fix prettier formatting errors
+src/lib/ai/content-assistant.ts	6739	270	2026-02-02	addbf613a	feat: Add AI content assistant and Y.js collaborative editing infrastructure
+src/lib/analytics/ab-test-statistics.ts	14542	478	2026-01-16	c77a1ee9a	style: fix prettier formatting errors
+src/lib/analytics/popup-heatmap.ts	18760	565	2026-01-16	c77a1ee9a	style: fix prettier formatting errors
+src/lib/animations/appleAnimations.ts	18184	720	2026-01-16	c77a1ee9a	style: fix prettier formatting errors
+src/lib/api/bannedEmails.ts	38444	1353	2026-05-17	9b80f76c4	Merge branch 'main' into claude/repo-audit-investigation-ejndf
+src/lib/api/courses-enhanced.ts	16784	533	2026-02-04	5d6f5d653	fix: resolve lint errors and build issues
+src/lib/api/enhanced-client.example.ts	13955	370	2026-05-17	e59f58dd8	fix(easy-win): clear remaining no-console to ZERO src warnings (480->0)
+src/lib/api/enterprise/admin-adapter.ts	11648	330	2026-05-10	3c194f091	chore(repo): tidy root markdown, eslint override for tests/scripts
+src/lib/api/indicators-enhanced.ts	18396	561	2026-02-04	5d6f5d653	fix: resolve lint errors and build issues
+src/lib/api/learning-content.ts	5230	176	2026-01-17	2a50d6736	refactor(api): remove API_BASE_URL configuration and use same-origin endpoints across all API clients
+src/lib/api/popup-branding.ts	18318	636	2026-01-16	c77a1ee9a	style: fix prettier formatting errors
+src/lib/api/trading-room-sso.ts	5241	153	2026-05-10	3c194f091	chore(repo): tidy root markdown, eslint override for tests/scripts
+src/lib/components/admin/BulkEditModal.svelte	18903	753	2026-04-26	106cfc625	refactor: update SvelteKit configuration and improve accessibility tests
+src/lib/components/admin/BulkUploadQueue.svelte	16424	725	2026-04-26	8444ee2aa	feat: add stub pages for CRM managers, recurring campaigns, segments, and sequences
+src/lib/components/admin/ConnectionGate.svelte	3244	108	2026-02-02	eecae5dcd	fix(svelte5): migrate all stores from exported $derived to getter functions
+src/lib/components/admin/ScheduledPublishing.svelte	11770	543	2026-02-04	bab7c8605	Revert "feat(svelte5): Complete Svelte 5 runes migration - forensic audit"
+src/lib/components/admin/TabPanel.svelte	11256	360	2026-04-25	05acf3231	chore: pnpm migration, dependency refresh, Svelte 5 idiom cleanup
+src/lib/components/admin/VideoAnalyticsDashboard.svelte	19629	934	2026-04-28	1784ea33f	Refactor Svelte components to improve key tracking in each blocks
+src/lib/components/admin/VideoChaptersEditor.svelte	13271	609	2026-04-26	8444ee2aa	feat: add stub pages for CRM managers, recurring campaigns, segments, and sequences
+src/lib/components/ApexChartIcons.svelte	487	15	2026-04-28	41d5ad9de	chore(svelte): autofixer round 2 + security + a11y comprehensive audit
+src/lib/components/blog/BlockEditor/GlobalComponentLibrary.svelte	43297	1953	2026-04-28	1784ea33f	Refactor Svelte components to improve key tracking in each blocks
+src/lib/components/ChartIcons.svelte	7469	283	2026-04-28	41d5ad9de	chore(svelte): autofixer round 2 + security + a11y comprehensive audit
+src/lib/components/ChartJsIcons.svelte	569	15	2026-04-28	41d5ad9de	chore(svelte): autofixer round 2 + security + a11y comprehensive audit
+src/lib/components/cms/blocks/BlockLoader.svelte	5864	201	2026-02-06	afd6004a2	style: apply prettier formatting across entire codebase
+src/lib/components/courses/CourseReviews.svelte	12694	668	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/courses/QuizPlayer.svelte	15362	774	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/dashboard/WatchHistory.svelte	12330	441	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/DynamicIcon.svelte	4369	115	2026-02-04	eadb0c497	fix: update @tabler/icons-svelte imports to @tabler/icons-svelte-runes
+src/lib/components/forms/ConditionalLogicBuilder.svelte	14908	635	2026-04-28	745d28449	svelte-check
+src/lib/components/forms/fields/AddressAutocomplete.svelte	15717	668	2026-04-28	1784ea33f	Refactor Svelte components to improve key tracking in each blocks
+src/lib/components/forms/fields/CalculatedField.svelte	9073	374	2026-04-26	106cfc625	refactor: update SvelteKit configuration and improve accessibility tests
+src/lib/components/forms/FormAIAssistant.svelte	17316	838	2026-04-28	745d28449	svelte-check
+src/lib/components/forms/FormAnalyticsDashboard.svelte	18237	816	2026-05-16	b019827b6	fix(quick-win): add keys to 4 unkeyed {#each} blocks
+src/lib/components/forms/FormCollaborators.svelte	14564	700	2026-04-28	1784ea33f	Refactor Svelte components to improve key tracking in each blocks
+src/lib/components/forms/FormEmbedGenerator.svelte	13426	661	2026-04-28	68c0d8b9d	fix(svelte): autofixer pass — 98 keyed {#each} blocks across 42 files
+src/lib/components/forms/FormImportExport.svelte	16636	773	2026-04-28	68c0d8b9d	fix(svelte): autofixer pass — 98 keyed {#each} blocks across 42 files
+src/lib/components/forms/RelatedForms.svelte	7992	405	2026-04-28	1784ea33f	Refactor Svelte components to improve key tracking in each blocks
+src/lib/components/layout/MarketingShell.svelte	1478	37	2026-04-26	77f004e72	feat: refactor marketing styles and layout structure for improved CSS isolation
+src/lib/components/LazySection.svelte	3870	125	2026-02-04	bab7c8605	Revert "feat(svelte5): Complete Svelte 5 runes migration - forensic audit"
+src/lib/components/LightweightChartIcons.svelte	736	19	2026-04-28	41d5ad9de	chore(svelte): autofixer round 2 + security + a11y comprehensive audit
+src/lib/components/media/DuplicateDetector.svelte	18678	905	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/media/ImageComparisonSlider.svelte	9412	448	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/PopupModal.svelte	45473	1696	2026-05-17	e59f58dd8	fix(easy-win): clear remaining no-console to ZERO src warnings (480->0)
+src/lib/components/seo/SeoHead.svelte	6462	225	2026-05-17	32913dc15	fix(P0-6 + frontend CI): canonical injection-safe JSON-LD + pnpm install
+src/lib/components/video/RelatedVideos.svelte	10403	383	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/video/VideoTranscript.svelte	14664	527	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/config/form-integrations.ts	28379	1231	2026-01-16	93a8aade3	chore: exclude Implementation/ folder from prettier checks
+src/lib/consent/components/ConsentBannerDesigner.svelte	30416	1165	2026-04-28	68c0d8b9d	fix(svelte): autofixer pass — 98 keyed {#each} blocks across 42 files
+src/lib/db/indexed-db.ts	7488	259	2026-02-02	addbf613a	feat: Add AI content assistant and Y.js collaborative editing infrastructure
+src/lib/monitoring/performance-dashboard.svelte	5668	246	2026-02-06	afd6004a2	style: apply prettier formatting across entire codebase
+src/lib/observability/adapters/apple-privacy-attribution.ts	16506	559	2026-02-07	3b8626575	fix: comprehensive frontend audit - fix all ESLint errors, svelte-check errors, and config issues
+src/lib/observability/adapters/microsoft-clarity.ts	15354	544	2026-02-07	3b8626575	fix: comprehensive frontend audit - fix all ESLint errors, svelte-check errors, and config issues
+src/lib/options-calculator/components/education/GreekExplainer.svelte	3852	106	2026-05-16	f32323b5c	chore(icons): scrub 81 dead @lucide/svelte comment lines (40 files)
+src/lib/options-calculator/components/growth/ProFeatureGate.svelte	1602	59	2026-05-16	f32323b5c	chore(icons): scrub 81 dead @lucide/svelte comment lines (40 files)
+src/lib/options-calculator/components/growth/WatermarkOverlay.svelte	2891	121	2026-04-26	106cfc625	refactor: update SvelteKit configuration and improve accessibility tests
+src/lib/options-calculator/components/ui/ConfirmDialog.svelte	3041	125	2026-05-16	f32323b5c	chore(icons): scrub 81 dead @lucide/svelte comment lines (40 files)
+src/lib/seo/video-schema.ts	18279	601	2026-01-16	93a8aade3	chore: exclude Implementation/ folder from prettier checks
+src/lib/stores/auditLog.svelte.ts	11552	439	2026-01-27	6bee89528	feat(restoration): restore all retired components to active codebase
+src/lib/stores/theme.svelte.ts	6012	176	2026-01-27	6bee89528	feat(restoration): restore all retired components to active codebase
+src/lib/styles/simpler-icons.css	4144	116	2026-04-25	c9eead621	refactor(css): eliminate 71% of !important + add admin compact-rail sidebar
+src/lib/utils/analytics-helpers.ts	12542	351	2026-01-27	6bee89528	feat(restoration): restore all retired components to active codebase
+src/lib/utils/cart-helpers.ts	2342	108	2026-04-26	106cfc625	refactor: update SvelteKit configuration and improve accessibility tests
+src/lib/utils/command-manager.ts	5340	238	2026-02-04	2fd4fef49	Update components and remove audit files
+src/lib/utils/media-embed-detector.ts	24715	860	2026-02-07	3b8626575	fix: comprehensive frontend audit - fix all ESLint errors, svelte-check errors, and config issues
+src/lib/utils/worker-manager.ts	3660	155	2026-02-07	3b8626575	fix: comprehensive frontend audit - fix all ESLint errors, svelte-check errors, and config issues
+src/lib/versioning/version-manager.ts	5051	205	2026-02-06	afd6004a2	style: apply prettier formatting across entire codebase
+src/routes/admin/trading-rooms/[slug]/components/TradeEntryManager.svelte	25395	1069	2026-02-07	2acf4d76b	fix: remaining ESLint warning fixes across routes and components
+src/routes/dashboard/explosive-swings/analytics/components/DateRangePicker.svelte	3081	124	2026-04-28	b23a97213	fix(svelte): autofixer pass — routes/ (non-admin) keyed {#each} blocks
+src/routes/dashboard/explosive-swings/analytics/components/StreakIndicator.svelte	9902	461	2026-04-28	745d28449	svelte-check
+src/routes/dashboard/explosive-swings/components/ApiErrorDisplay.svelte	4496	189	2026-05-19	62291afe5	fix(CI): revert 35 drive-by component renames + restore fmt on subscriptions.rs
+src/routes/dashboard/explosive-swings/components/NewAlertToast.svelte	4923	210	2026-01-28	ed7879942	feat(explosive-swings): comprehensive E2E implementation - Phase 1-5
+src/routes/dashboard/explosive-swings/notifications/AlertNotificationManager.svelte	3864	139	2026-02-07	2acf4d76b	fix: remaining ESLint warning fixes across routes and components
+test-icons-import.ts	285	6	2025-11-24	6ed2dcbf4	updates-nov-24-747am
+src/lib/components/forms/pro/ChainedSelectField.svelte	4828	241	2026-04-28	1784ea33f	Refactor Svelte components to improve key tracking in each blocks
+src/lib/components/forms/pro/TaxonomyField.svelte	11997	563	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/forms/pro/NPSField.svelte	4710	251	2026-04-28	1784ea33f	Refactor Svelte components to improve key tracking in each blocks
+src/lib/components/forms/pro/FormStyler.svelte	25226	865	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/forms/pro/AddressField.svelte	7853	310	2026-04-28	1784ea33f	Refactor Svelte components to improve key tracking in each blocks
+src/lib/components/forms/pro/PayPalPayment.svelte	6347	309	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/forms/pro/EnhancedCheckbox.svelte	7558	367	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/forms/pro/PostTitleField.svelte	2701	161	2026-01-27	6bee89528	feat(restoration): restore all retired components to active codebase
+src/lib/components/forms/pro/RepeaterField.svelte	9844	449	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/forms/pro/PostContentField.svelte	7975	406	2026-04-28	41d5ad9de	chore(svelte): autofixer round 2 + security + a11y comprehensive audit
+src/lib/components/forms/pro/MolliePayment.svelte	9426	433	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/forms/pro/FormStepField.svelte	8081	399	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/forms/pro/RazorPayPayment.svelte	6019	298	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/forms/pro/PaymentField.svelte	7381	348	2026-04-28	1784ea33f	Refactor Svelte components to improve key tracking in each blocks
+src/lib/components/forms/pro/FeaturedImageField.svelte	7961	416	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/forms/pro/PaymentMethodSelector.svelte	6866	219	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/forms/pro/PostExcerptField.svelte	2782	163	2026-01-27	6bee89528	feat(restoration): restore all retired components to active codebase
+src/lib/components/forms/pro/SquarePayment.svelte	8508	397	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/forms/pro/InventoryField.svelte	13233	629	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/forms/pro/ToggleField.svelte	4228	222	2026-04-28	1784ea33f	Refactor Svelte components to improve key tracking in each blocks
+src/lib/components/forms/pro/FileUploadField.svelte	10244	484	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/forms/pro/GeolocationAddress.svelte	11505	541	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/forms/pro/SaveProgressButton.svelte	10068	510	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/forms/pro/ColorPickerField.svelte	5586	293	2026-04-28	1784ea33f	Refactor Svelte components to improve key tracking in each blocks
+src/lib/components/forms/pro/PdfDownload.svelte	16497	876	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/forms/pro/PaymentSummary.svelte	4905	158	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/forms/pro/DynamicField.svelte	9983	460	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/forms/pro/CouponField.svelte	6231	311	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/forms/pro/GDPRField.svelte	4484	220	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/forms/pro/AccordionTabField.svelte	7104	363	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/forms/pro/CalculatorField.svelte	5504	248	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/forms/pro/RangeSliderField.svelte	8124	358	2026-04-28	1784ea33f	Refactor Svelte components to improve key tracking in each blocks
+src/lib/components/forms/pro/StripePayment.svelte	13110	443	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/forms/pro/index.ts	11129	440	2026-01-27	6bee89528	feat(restoration): restore all retired components to active codebase
+src/lib/components/forms/pro/SignatureField.svelte	7648	387	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/forms/pro/AuthorizeNetPayment.svelte	14985	692	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/forms/pro/AdminApprovalStatus.svelte	11857	588	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/forms/pro/PhoneIntlField.svelte	11338	419	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/forms/pro/DoubleOptIn.svelte	10132	450	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/forms/pro/PaddlePayment.svelte	7453	377	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/forms/pro/FormReport.svelte	12559	602	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/forms/pro/PaystackPayment.svelte	6019	302	2026-04-29	15f5693b5	chore(icons): Tabler migration — complete lib/components/ (96 files, ~350 icons)
+src/lib/components/ui/button/button.types.ts	2249	44	2026-02-06	afd6004a2	style: apply prettier formatting across entire codebase
+src/lib/components/ui/button/button.svelte	1154	53	2026-02-07	3b8626575	fix: comprehensive frontend audit - fix all ESLint errors, svelte-check errors, and config issues
+src/lib/components/ui/button/index.ts	287	18	2026-02-06	afd6004a2	style: apply prettier formatting across entire codebase
+src/lib/components/ui/card/card-title.svelte	435	20	2026-04-26	106cfc625	refactor: update SvelteKit configuration and improve accessibility tests
+src/lib/components/ui/card/card-header.svelte	571	23	2026-04-26	106cfc625	refactor: update SvelteKit configuration and improve accessibility tests
+src/lib/components/ui/card/card-description.svelte	446	20	2026-04-26	106cfc625	refactor: update SvelteKit configuration and improve accessibility tests
+src/lib/components/ui/card/card.svelte	491	23	2026-04-25	05acf3231	chore: pnpm migration, dependency refresh, Svelte 5 idiom cleanup
+src/lib/components/ui/card/card-action.svelte	472	20	2026-04-26	106cfc625	refactor: update SvelteKit configuration and improve accessibility tests
+src/lib/components/ui/card/index.ts	547	25	2026-02-06	afd6004a2	style: apply prettier formatting across entire codebase
+src/lib/components/ui/card/card-content.svelte	410	15	2026-04-26	106cfc625	refactor: update SvelteKit configuration and improve accessibility tests
+src/lib/components/ui/card/card-footer.svelte	449	20	2026-04-26	106cfc625	refactor: update SvelteKit configuration and improve accessibility tests
+src/lib/components/ui/dialog/dialog-trigger.svelte	251	7	2026-04-26	106cfc625	refactor: update SvelteKit configuration and improve accessibility tests
+src/lib/components/ui/dialog/dialog-description.svelte	384	17	2026-04-26	106cfc625	refactor: update SvelteKit configuration and improve accessibility tests
+src/lib/components/ui/dialog/dialog-portal.svelte	175	7	2026-02-06	afd6004a2	style: apply prettier formatting across entire codebase
+src/lib/components/ui/dialog/dialog-title.svelte	371	17	2026-04-26	106cfc625	refactor: update SvelteKit configuration and improve accessibility tests
+src/lib/components/ui/dialog/dialog-footer.svelte	888	33	2026-04-26	106cfc625	refactor: update SvelteKit configuration and improve accessibility tests
+src/lib/components/ui/dialog/dialog-content.svelte	2754	73	2026-05-16	f32323b5c	chore(icons): scrub 81 dead @lucide/svelte comment lines (40 files)
+src/lib/components/ui/dialog/dialog-close.svelte	245	7	2026-04-26	106cfc625	refactor: update SvelteKit configuration and improve accessibility tests
+src/lib/components/ui/dialog/index.ts	817	34	2026-02-06	afd6004a2	style: apply prettier formatting across entire codebase
+src/lib/components/ui/dialog/dialog.svelte	221	7	2026-04-26	106cfc625	refactor: update SvelteKit configuration and improve accessibility tests
+src/lib/components/ui/dialog/dialog-header.svelte	810	32	2026-04-26	106cfc625	refactor: update SvelteKit configuration and improve accessibility tests
+src/lib/components/ui/dialog/dialog-overlay.svelte	500	20	2026-04-26	106cfc625	refactor: update SvelteKit configuration and improve accessibility tests
+src/lib/components/ui/dropdown-menu/dropdown-menu-sub.svelte	243	7	2026-04-26	106cfc625	refactor: update SvelteKit configuration and improve accessibility tests
+src/lib/components/ui/dropdown-menu/dropdown-menu-checkbox-item.svelte	1501	43	2026-05-16	f32323b5c	chore(icons): scrub 81 dead @lucide/svelte comment lines (40 files)
+src/lib/components/ui/dropdown-menu/dropdown-menu-sub-trigger.svelte	1131	31	2026-05-16	f32323b5c	chore(icons): scrub 81 dead @lucide/svelte comment lines (40 files)
+src/lib/components/ui/dropdown-menu/dropdown-menu-group.svelte	276	7	2026-04-26	106cfc625	refactor: update SvelteKit configuration and improve accessibility tests
+src/lib/components/ui/dropdown-menu/dropdown-menu-label.svelte	556	26	2026-04-26	106cfc625	refactor: update SvelteKit configuration and improve accessibility tests
+src/lib/components/ui/dropdown-menu/dropdown-menu-portal.svelte	199	7	2026-02-06	afd6004a2	style: apply prettier formatting across entire codebase
+src/lib/components/ui/dropdown-menu/dropdown-menu-content.svelte	1341	31	2026-04-26	106cfc625	refactor: update SvelteKit configuration and improve accessibility tests
+src/lib/components/ui/dropdown-menu/dropdown-menu-checkbox-group.svelte	346	16	2026-04-25	05acf3231	chore: pnpm migration, dependency refresh, Svelte 5 idiom cleanup
+src/lib/components/ui/dropdown-menu/dropdown-menu-radio-item.svelte	1113	31	2026-05-16	f32323b5c	chore(icons): scrub 81 dead @lucide/svelte comment lines (40 files)
+src/lib/components/ui/dropdown-menu/dropdown-menu-item.svelte	1217	29	2026-04-26	106cfc625	refactor: update SvelteKit configuration and improve accessibility tests
+src/lib/components/ui/dropdown-menu/dropdown-menu.svelte	245	7	2026-04-26	106cfc625	refactor: update SvelteKit configuration and improve accessibility tests
+src/lib/components/ui/dropdown-menu/dropdown-menu-group-heading.svelte	607	24	2026-04-26	106cfc625	refactor: update SvelteKit configuration and improve accessibility tests
+src/lib/components/ui/dropdown-menu/dropdown-menu-shortcut.svelte	477	20	2026-04-26	106cfc625	refactor: update SvelteKit configuration and improve accessibility tests
+src/lib/components/ui/dropdown-menu/dropdown-menu-sub-content.svelte	882	20	2026-04-26	106cfc625	refactor: update SvelteKit configuration and improve accessibility tests
+src/lib/components/ui/dropdown-menu/dropdown-menu-radio-group.svelte	344	16	2026-04-26	106cfc625	refactor: update SvelteKit configuration and improve accessibility tests
+src/lib/components/ui/dropdown-menu/index.ts	1734	54	2026-02-06	afd6004a2	style: apply prettier formatting across entire codebase
+src/lib/components/ui/dropdown-menu/dropdown-menu-separator.svelte	405	17	2026-04-26	106cfc625	refactor: update SvelteKit configuration and improve accessibility tests
+src/lib/components/ui/dropdown-menu/dropdown-menu-trigger.svelte	282	7	2026-04-26	106cfc625	refactor: update SvelteKit configuration and improve accessibility tests
+src/lib/components/ui/input/input.svelte	1984	54	2026-02-06	afd6004a2	style: apply prettier formatting across entire codebase
+src/lib/components/ui/input/index.ts	74	7	2026-02-06	afd6004a2	style: apply prettier formatting across entire codebase
+src/lib/components/ui/label/index.ts	74	7	2026-02-06	afd6004a2	style: apply prettier formatting across entire codebase
+src/lib/components/ui/label/label.svelte	542	20	2026-02-06	afd6004a2	style: apply prettier formatting across entire codebase
+src/lib/components/ui/select/select-separator.svelte	455	18	2026-02-06	afd6004a2	style: apply prettier formatting across entire codebase
+src/lib/components/ui/select/select-group.svelte	245	7	2026-02-06	afd6004a2	style: apply prettier formatting across entire codebase
+src/lib/components/ui/select/select-label.svelte	457	20	2026-02-06	afd6004a2	style: apply prettier formatting across entire codebase
+src/lib/components/ui/select/select-group-heading.svelte	532	21	2026-02-06	afd6004a2	style: apply prettier formatting across entire codebase
+src/lib/components/ui/select/select-item.svelte	1282	38	2026-05-16	f32323b5c	chore(icons): scrub 81 dead @lucide/svelte comment lines (40 files)
+src/lib/components/ui/select/select-content.svelte	1900	45	2026-02-06	afd6004a2	style: apply prettier formatting across entire codebase
+src/lib/components/ui/select/select.svelte	465	13	2026-04-26	106cfc625	refactor: update SvelteKit configuration and improve accessibility tests
+src/lib/components/ui/select/select-portal.svelte	190	7	2026-02-06	afd6004a2	style: apply prettier formatting across entire codebase
+src/lib/components/ui/select/select-scroll-up-button.svelte	612	20	2026-05-16	f32323b5c	chore(icons): scrub 81 dead @lucide/svelte comment lines (40 files)
+src/lib/components/ui/select/select-trigger.svelte	1503	31	2026-05-16	f32323b5c	chore(icons): scrub 81 dead @lucide/svelte comment lines (40 files)
+src/lib/components/ui/select/index.ts	996	37	2026-02-06	afd6004a2	style: apply prettier formatting across entire codebase
+src/lib/components/ui/select/select-scroll-down-button.svelte	626	20	2026-05-16	f32323b5c	chore(icons): scrub 81 dead @lucide/svelte comment lines (40 files)
+src/lib/components/ui/textarea/textarea.svelte	962	23	2026-02-06	afd6004a2	style: apply prettier formatting across entire codebase
+src/lib/components/ui/textarea/index.ts	80	7	2026-02-06	afd6004a2	style: apply prettier formatting across entire codebase
+api/src/routes/indicators.rs	9565	291			
+api/src/routes/settings.rs	34324	1104			
