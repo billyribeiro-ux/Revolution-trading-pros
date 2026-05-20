@@ -3,7 +3,7 @@
 	import { goto } from '$app/navigation';
 	// FIX-2026-04-26 (CLAUDE.md): init/cleanup belongs in onMount, not $effect.
 	import { onMount } from 'svelte';
-	import { fly, slide, scale } from 'svelte/transition';
+	import { slide, scale } from 'svelte/transition';
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import {
 		IconPlus,
@@ -29,14 +29,17 @@
 		IconSortAscending,
 		IconSortDescending,
 		IconRefresh,
-		IconAlertCircle,
-		IconCheck,
-		IconX,
 		IconMenu2,
 		IconLayoutGrid
 	} from '$lib/icons';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import { predefinedCategories, type BlogCategory } from '$lib/data/predefined-categories';
+	import PreviewModal from './_components/PreviewModal.svelte';
+	import ExportModal from './_components/ExportModal.svelte';
+	import AnalyticsModal from './_components/AnalyticsModal.svelte';
+	import NotificationsList from './_components/NotificationsList.svelte';
+	import KeyboardShortcutsHelper from './_components/KeyboardShortcutsHelper.svelte';
+	import StatsGrid from './_components/StatsGrid.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// State Management
@@ -658,20 +661,7 @@
 
 	<div class="admin-page-container">
 		<!-- Notifications -->
-		<div class="notifications">
-			{#each notifications as notification (notification.id)}
-				<div class="notification {notification.type}" transition:fly={{ y: -20, duration: 300 }}>
-					{#if notification.type === 'success'}
-						<IconCheck size={20} />
-					{:else if notification.type === 'error'}
-						<IconX size={20} />
-					{:else}
-						<IconAlertCircle size={20} />
-					{/if}
-					{notification.message}
-				</div>
-			{/each}
-		</div>
+		<NotificationsList {notifications} />
 
 		<!-- Header -->
 		<header class="page-header">
@@ -702,45 +692,7 @@
 		</header>
 
 		<!-- Stats -->
-		{#if stats}
-			<div class="stats-grid">
-				<div class="stat-card">
-					<div class="stat-icon"><IconChartBar size={24} /></div>
-					<div class="stat-content">
-						<div class="stat-value">{stats.total}</div>
-						<div class="stat-label">Total Posts</div>
-						<div class="stat-change">+{stats.new_this_month || 0} this month</div>
-					</div>
-				</div>
-				<div class="stat-card published">
-					<div class="stat-icon"><IconCheck size={24} /></div>
-					<div class="stat-content">
-						<div class="stat-value">{stats.published}</div>
-						<div class="stat-label">Published</div>
-						<div class="stat-change">{Math.round((stats.published / stats.total) * 100)}%</div>
-					</div>
-				</div>
-				<div class="stat-card draft">
-					<div class="stat-icon"><IconEdit size={24} /></div>
-					<div class="stat-content">
-						<div class="stat-value">{stats.draft}</div>
-						<div class="stat-label">Drafts</div>
-						<div class="stat-change">{stats.scheduled || 0} scheduled</div>
-					</div>
-				</div>
-				<div class="stat-card views">
-					<div class="stat-icon"><IconEye size={24} /></div>
-					<div class="stat-content">
-						<div class="stat-value">{formatNumber(stats.total_views || 0)}</div>
-						<div class="stat-label">Total Views</div>
-						<div class="stat-change">
-							<IconTrendingUp size={16} />
-							{stats.views_growth || 0}%
-						</div>
-					</div>
-				</div>
-			</div>
-		{/if}
+		<StatsGrid {stats} {formatNumber} />
 
 		<!-- Controls Bar -->
 		<div class="controls-bar">
@@ -1250,115 +1202,16 @@
 		{/if}
 
 		<!-- Preview Modal -->
-		{#if previewPost}
-			<div
-				class="modal-overlay"
-				role="button"
-				tabindex="0"
-				onclick={() => (previewPost = null)}
-				onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (previewPost = null)}
-			>
-				<div
-					class="modal preview-modal"
-					role="dialog"
-					aria-modal="true"
-					tabindex="-1"
-					onclick={(e: MouseEvent) => e.stopPropagation()}
-					onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
-				>
-					<div class="modal-header">
-						<h2>Preview: {previewPost.title}</h2>
-						<button class="btn-icon" onclick={() => (previewPost = null)}>
-							<IconX size={20} />
-						</button>
-					</div>
-					<div class="modal-content">
-						<!-- FIX-2026-04-26 (P1-9): URL-encode the slug before interpolating
-						     to prevent a stray `?`/`&`/`<` in DB-stored slug from
-						     hijacking the iframe URL. -->
-						<iframe
-							src="/blog/{encodeURIComponent(previewPost.slug)}?preview=true"
-							title="Post Preview"
-						></iframe>
-					</div>
-				</div>
-			</div>
-		{/if}
+		<PreviewModal post={previewPost} onClose={() => (previewPost = null)} />
 
 		<!-- Export Modal -->
-		{#if showExportModal}
-			<div
-				class="modal-overlay"
-				role="button"
-				tabindex="0"
-				onclick={() => (showExportModal = false)}
-				onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showExportModal = false)}
-			>
-				<div
-					class="modal"
-					role="dialog"
-					aria-modal="true"
-					tabindex="-1"
-					onclick={(e: MouseEvent) => e.stopPropagation()}
-					onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
-				>
-					<div class="modal-header">
-						<h2>Export Posts</h2>
-						<button class="btn-icon" onclick={() => (showExportModal = false)}>
-							<IconX size={20} />
-						</button>
-					</div>
-					<div class="modal-content">
-						<div class="export-options">
-							<label>
-								<input
-									id="export-csv"
-									name="export-format"
-									type="radio"
-									bind:group={exportFormat}
-									value="csv"
-								/>
-								CSV Format
-							</label>
-							<label>
-								<input
-									id="export-json"
-									name="export-format"
-									type="radio"
-									bind:group={exportFormat}
-									value="json"
-								/>
-								JSON Format
-							</label>
-							<label>
-								<input
-									id="export-wordpress"
-									name="export-format"
-									type="radio"
-									bind:group={exportFormat}
-									value="wordpress"
-								/>
-								WordPress XML
-							</label>
-						</div>
-						<p class="export-info">
-							{selectedPosts.size > 0
-								? `Exporting ${selectedPosts.size} selected posts`
-								: 'Exporting all posts matching current filters'}
-						</p>
-					</div>
-					<div class="modal-actions">
-						<button class="btn-secondary" onclick={() => (showExportModal = false)}>
-							Cancel
-						</button>
-						<button class="btn-primary" onclick={exportPosts}>
-							<IconDownload size={18} />
-							Export
-						</button>
-					</div>
-				</div>
-			</div>
-		{/if}
+		<ExportModal
+			open={showExportModal}
+			bind:format={exportFormat}
+			selectedCount={selectedPosts.size}
+			onClose={() => (showExportModal = false)}
+			onExport={exportPosts}
+		/>
 
 		<!--
 			TODO: Re-add schedule modal when scheduler worker exists.
@@ -1367,90 +1220,18 @@
 		-->
 
 		<!-- Analytics Modal -->
-		{#if showAnalyticsModal && analyticsPost}
-			<div
-				class="modal-overlay"
-				role="button"
-				tabindex="0"
-				onclick={() => (showAnalyticsModal = false)}
-				onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showAnalyticsModal = false)}
-			>
-				<div
-					class="modal analytics-modal"
-					role="dialog"
-					aria-modal="true"
-					tabindex="-1"
-					onclick={(e: MouseEvent) => e.stopPropagation()}
-					onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
-				>
-					<div class="modal-header">
-						<h2>Analytics: {analyticsPost.title}</h2>
-						<button class="btn-icon" onclick={() => (showAnalyticsModal = false)}>
-							<IconX size={20} />
-						</button>
-					</div>
-					<div class="modal-content">
-						{#if analyticsPost.analytics}
-							<div class="analytics-grid">
-								<div class="analytics-card">
-									<h3>Performance</h3>
-									<div class="metric-row">
-										<span>Total Views</span>
-										<strong>{formatNumber(analyticsPost.analytics.views)}</strong>
-									</div>
-									<div class="metric-row">
-										<span>Unique Visitors</span>
-										<strong>{formatNumber(analyticsPost.analytics.unique_visitors)}</strong>
-									</div>
-									<div class="metric-row">
-										<span>Avg. Time on Page</span>
-										<strong>{analyticsPost.analytics.avg_time}s</strong>
-									</div>
-									<div class="metric-row">
-										<span>Bounce Rate</span>
-										<strong>{analyticsPost.analytics.bounce_rate}%</strong>
-									</div>
-								</div>
-
-								<div class="analytics-card">
-									<h3>Engagement</h3>
-									<div class="metric-row">
-										<span>Comments</span>
-										<strong>{analyticsPost.analytics.comments}</strong>
-									</div>
-									<div class="metric-row">
-										<span>Shares</span>
-										<strong>{analyticsPost.analytics.shares}</strong>
-									</div>
-									<div class="metric-row">
-										<span>Likes</span>
-										<strong>{analyticsPost.analytics.likes}</strong>
-									</div>
-									<div class="metric-row">
-										<span>CTR</span>
-										<strong>{analyticsPost.analytics.ctr}%</strong>
-									</div>
-								</div>
-							</div>
-						{:else}
-							<div class="loading">Loading analytics...</div>
-						{/if}
-					</div>
-				</div>
-			</div>
-		{/if}
+		<AnalyticsModal
+			open={showAnalyticsModal}
+			post={analyticsPost}
+			{formatNumber}
+			onClose={() => (showAnalyticsModal = false)}
+		/>
 	</div>
 	<!-- End admin-page-container -->
 </div>
 
 <!-- Keyboard Shortcuts Helper -->
-<div class="keyboard-shortcuts">
-	<span>⌘N New</span>
-	<span>⌘F Search</span>
-	<span>⌘A Select All</span>
-	<span>V Toggle View</span>
-	<span>R Refresh</span>
-</div>
+<KeyboardShortcutsHelper />
 
 <ConfirmationModal
 	isOpen={showDeleteModal}
@@ -2480,159 +2261,10 @@
 		}
 	}
 
-	/* Modals */
-	.modal-overlay {
-		position: fixed;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		background: rgba(0, 0, 0, 0.8);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		z-index: 1000;
-	}
-
-	.modal {
-		background: rgba(30, 41, 59, 0.98);
-		border: 1px solid rgba(148, 163, 184, 0.3);
-		border-radius: 12px;
-		width: 90%;
-		max-width: 600px;
-		max-height: 90vh;
-		overflow: hidden;
-		display: flex;
-		flex-direction: column;
-	}
-
-	.modal.preview-modal {
-		max-width: 1200px;
-		height: 80vh;
-	}
-
-	.modal.analytics-modal {
-		max-width: 800px;
-	}
-
-	.modal-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 1.5rem;
-		border-bottom: 1px solid rgba(148, 163, 184, 0.2);
-	}
-
-	.modal-header h2 {
-		font-size: 1.5rem;
-		font-weight: 600;
-		color: #f1f5f9;
-		margin: 0;
-	}
-
-	.modal-content {
-		flex: 1;
-		padding: 1.5rem;
-		overflow-y: auto;
-	}
-
-	.modal-content iframe {
-		width: 100%;
-		height: 100%;
-		border: none;
-		border-radius: 8px;
-	}
-
-	.modal-actions {
-		display: flex;
-		justify-content: flex-end;
-		gap: 1rem;
-		padding: 1.5rem;
-		border-top: 1px solid rgba(148, 163, 184, 0.2);
-	}
-
-	/* Export Modal */
-	.export-options {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-		margin-bottom: 1.5rem;
-	}
-
-	.export-options label {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-		padding: 1rem;
-		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.2);
-		border-radius: 8px;
-		cursor: pointer;
-		color: #cbd5e1;
-		transition: all 0.2s;
-	}
-
-	.export-options label:hover {
-		border-color: rgba(59, 130, 246, 0.3);
-	}
-
-	.export-options label:has(:global(input[type='radio']:checked)) {
-		background: rgba(59, 130, 246, 0.1);
-		border-color: #3b82f6;
-		color: #3b82f6;
-	}
-
-	.export-info {
-		color: #94a3b8;
-		font-size: 0.9rem;
-		padding: 1rem;
-		background: rgba(59, 130, 246, 0.1);
-		border-radius: 8px;
-	}
+	/* Modal CSS (overlay/header/content/actions + analytics/export/preview variants) moved
+	   to _components/{PreviewModal,ExportModal,AnalyticsModal}.svelte (extraction R5-C). */
 
 	/* Schedule modal CSS removed 2026-04-27 along with the modal markup. */
-
-	/* Analytics Modal */
-	.analytics-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-		gap: 1.5rem;
-	}
-
-	.analytics-card {
-		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.2);
-		border-radius: 8px;
-		padding: 1.5rem;
-	}
-
-	.analytics-card h3 {
-		font-size: 1.1rem;
-		font-weight: 600;
-		color: #f1f5f9;
-		margin: 0 0 1rem 0;
-	}
-
-	.metric-row {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 0.75rem 0;
-		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-	}
-
-	.metric-row:last-child {
-		border-bottom: none;
-	}
-
-	.metric-row span {
-		color: #94a3b8;
-	}
-
-	.metric-row strong {
-		color: #f1f5f9;
-		font-weight: 600;
-	}
 
 	/* Keyboard Shortcuts */
 	.keyboard-shortcuts {
@@ -2649,12 +2281,6 @@
 		font-size: 0.75rem;
 		color: #94a3b8;
 		z-index: 100;
-	}
-
-	.keyboard-shortcuts span {
-		display: flex;
-		align-items: center;
-		gap: 0.25rem;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -2902,11 +2528,6 @@
 			font-size: 0.9375rem;
 		}
 
-		.modal-content {
-			padding: 1rem;
-			margin: 0.5rem;
-			max-width: calc(100vw - 1rem);
-		}
 	}
 
 	/* Touch Device Optimizations - Apple HIG 44pt minimum */
@@ -2957,15 +2578,12 @@
 	/* High Contrast Mode - Accessibility */
 	@media (prefers-contrast: high) {
 		.post-card,
-		.stat-card,
-		.controls-bar,
-		.modal-content {
+		.controls-bar {
 			border-width: 2px;
 		}
 
 		.page-header h1,
-		.post-title,
-		.stat-value {
+		.post-title {
 			font-weight: 800;
 		}
 	}
