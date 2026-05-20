@@ -553,7 +553,7 @@ impl CacheService {
                     .iter()
                     .map(|(k, v)| (k.clone(), v.created_at))
                     .collect();
-                entries.sort_by(|a, b| a.1.cmp(&b.1));
+                entries.sort_by_key(|a| a.1);
                 for (key, _) in entries.into_iter().take(to_remove) {
                     cache.remove(&key);
                 }

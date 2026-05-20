@@ -240,83 +240,105 @@ fn consent_settings_validator_enforces_ranges() {
     );
 
     // expire_days out of range (above 730)
-    let mut bad = ConsentSettings::default();
-    bad.expire_days = 1000;
+    let bad = ConsentSettings {
+        expire_days: 1000,
+        ..ConsentSettings::default()
+    };
     assert!(
         bad.validate().is_err(),
         "expire_days=1000 MUST fail (max 730)"
     );
 
     // expire_days = 0 (below min 1)
-    let mut bad = ConsentSettings::default();
-    bad.expire_days = 0;
+    let bad = ConsentSettings {
+        expire_days: 0,
+        ..ConsentSettings::default()
+    };
     assert!(bad.validate().is_err(), "expire_days=0 MUST fail (min 1)");
 
     // consent_version < 1
-    let mut bad = ConsentSettings::default();
-    bad.consent_version = 0;
+    let bad = ConsentSettings {
+        consent_version: 0,
+        ..ConsentSettings::default()
+    };
     assert!(
         bad.validate().is_err(),
         "consent_version=0 MUST fail (min 1)"
     );
 
     // proof_retention_days out of range
-    let mut bad = ConsentSettings::default();
-    bad.proof_retention_days = 5000; // exceeds 3650
+    let bad = ConsentSettings {
+        proof_retention_days: 5000, // exceeds 3650
+        ..ConsentSettings::default()
+    };
     assert!(
         bad.validate().is_err(),
         "proof_retention_days=5000 MUST fail (max 3650 = 10 years)"
     );
 
-    let mut bad = ConsentSettings::default();
-    bad.proof_retention_days = 10; // below min 30
+    let bad = ConsentSettings {
+        proof_retention_days: 10, // below min 30
+        ..ConsentSettings::default()
+    };
     assert!(
         bad.validate().is_err(),
         "proof_retention_days=10 MUST fail (min 30)"
     );
 
     // close_on_scroll_distance out of range
-    let mut bad = ConsentSettings::default();
-    bad.close_on_scroll_distance = 9999;
+    let bad = ConsentSettings {
+        close_on_scroll_distance: 9999,
+        ..ConsentSettings::default()
+    };
     assert!(
         bad.validate().is_err(),
         "close_on_scroll_distance > 5000 MUST fail"
     );
 
-    let mut bad = ConsentSettings::default();
-    bad.close_on_scroll_distance = 5;
+    let bad = ConsentSettings {
+        close_on_scroll_distance: 5,
+        ..ConsentSettings::default()
+    };
     assert!(
         bad.validate().is_err(),
         "close_on_scroll_distance < 10 MUST fail"
     );
 
     // policy_version empty (length 0 below min 1)
-    let mut bad = ConsentSettings::default();
-    bad.policy_version = String::new();
+    let bad = ConsentSettings {
+        policy_version: String::new(),
+        ..ConsentSettings::default()
+    };
     assert!(
         bad.validate().is_err(),
         "policy_version='' MUST fail (length 1-32)"
     );
 
     // policy_version too long (>32)
-    let mut bad = ConsentSettings::default();
-    bad.policy_version = "x".repeat(33);
+    let bad = ConsentSettings {
+        policy_version: "x".repeat(33),
+        ..ConsentSettings::default()
+    };
     assert!(
         bad.validate().is_err(),
         "policy_version length 33 MUST fail (max 32)"
     );
 
     // banner_position empty
-    let mut bad = ConsentSettings::default();
-    bad.banner_position = String::new();
+    let bad = ConsentSettings {
+        banner_position: String::new(),
+        ..ConsentSettings::default()
+    };
     assert!(
         bad.validate().is_err(),
         "banner_position='' MUST fail (length 1-32)"
     );
 
     // banner_layout overlong
-    let mut bad = ConsentSettings::default();
-    bad.banner_layout = "x".repeat(64);
+    let bad = ConsentSettings {
+        banner_layout: "x".repeat(64),
+        ..ConsentSettings::default()
+    };
     assert!(
         bad.validate().is_err(),
         "banner_layout overlong MUST fail (max 32)"

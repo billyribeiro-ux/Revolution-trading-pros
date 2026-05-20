@@ -223,12 +223,12 @@ fn create_preset_request_required_fields_and_defaults() {
     assert_eq!(minimal.name, "Hero Title");
     assert!(minimal.slug.is_none(), "slug auto-generated at handler");
     assert!(minimal.category.is_none(), "category optional");
-    assert_eq!(
-        minimal.is_default, false,
+    assert!(
+        !minimal.is_default,
         "is_default defaults to false via serde(default)"
     );
-    assert_eq!(
-        minimal.is_global, true,
+    assert!(
+        minimal.is_global,
         "is_global defaults to true via serde(default = default_true)"
     );
 
@@ -247,8 +247,8 @@ fn create_preset_request_required_fields_and_defaults() {
     }))
     .expect("full CreatePresetRequest must deserialize");
     assert_eq!(full.category, Some(CmsPresetCategory::Brand));
-    assert_eq!(full.is_default, true);
-    assert_eq!(full.is_global, false);
+    assert!(full.is_default);
+    assert!(!full.is_global);
 
     // NEGATIVE: missing required `block_type` MUST fail.
     assert!(

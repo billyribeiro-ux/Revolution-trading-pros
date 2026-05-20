@@ -1,3 +1,7 @@
+// R23-D: test-scaffold doc comments use narrative list formatting that doesn't
+// match clippy's strict CommonMark interpretation. Allow file-wide.
+#![allow(clippy::doc_lazy_continuation, clippy::doc_overindented_list_items)]
+
 //! Member-courses route contract tests — pure, no-DB.
 //!
 //! Binds directly to `revolution_api::routes::member_courses` and
@@ -268,7 +272,7 @@ fn user_course_enrollment_ids_are_i64_documents_price_paid_landmine() {
         // LANDMINE: this field is Option<i32> on the source side
         // (violates CLAUDE.md "Money / cents"). When the source is
         // widened to i64, the assertion below MUST be updated.
-        price_paid_cents: Some(9_999_99),
+        price_paid_cents: Some(999_999),
         certificate_issued: Some(false),
         certificate_url: None,
         certificate_issued_at: None,
@@ -288,7 +292,7 @@ fn user_course_enrollment_ids_are_i64_documents_price_paid_landmine() {
     // Document the price_paid_cents landmine — fits in i32 here ($9,999.99).
     // When the source field is widened to i64, this assertion still
     // passes but the type pin in the field declaration shifts.
-    assert_eq!(wire["price_paid_cents"].as_i64(), Some(9_999_99));
+    assert_eq!(wire["price_paid_cents"].as_i64(), Some(999_999));
 
     // Wire-format keys snake_case.
     assert!(wire.get("userId").is_none());

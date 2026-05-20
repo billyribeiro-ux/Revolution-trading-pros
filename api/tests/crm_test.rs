@@ -195,7 +195,7 @@ fn crm_deal_struct_bigserial_aligned() {
         pipeline_id: above_i32,
         stage_id: above_i32,
         owner_id: Some(above_i32),
-        amount: sqlx::types::Decimal::new(12_345_67, 2), // $12,345.67
+        amount: sqlx::types::Decimal::new(1_234_567, 2), // $12,345.67
         currency: "USD".to_string(),
         probability: 75,
         status: "open".to_string(),

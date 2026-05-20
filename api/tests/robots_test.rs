@@ -1,3 +1,7 @@
+// R23-D: test-scaffold doc comments use narrative list formatting that doesn't
+// match clippy's strict CommonMark interpretation. Allow file-wide.
+#![allow(clippy::doc_lazy_continuation, clippy::doc_overindented_list_items)]
+
 //! Robots.txt route contract tests — pure, no-DB.
 //!
 //! Binds directly to `revolution_api::routes::robots` and pins the
@@ -143,11 +147,11 @@ fn robots_router_construction_idempotent() {
 fn robots_txt_handler_is_pub_and_callable() {
     // Reference via fully-qualified path — would fail to compile if
     // the handler became `pub(super)` / `pub(crate)`.
-    let _f: fn(
-        axum::extract::State<revolution_api::AppState>,
-    ) -> std::pin::Pin<
-        Box<dyn std::future::Future<Output = axum::response::Response> + Send>,
-    > = |state| Box::pin(robots::robots_txt(state));
+    type RobotsHandlerFuture =
+        std::pin::Pin<Box<dyn std::future::Future<Output = axum::response::Response> + Send>>;
+    type RobotsHandlerFn =
+        fn(axum::extract::State<revolution_api::AppState>) -> RobotsHandlerFuture;
+    let _f: RobotsHandlerFn = |state| Box::pin(robots::robots_txt(state));
 }
 
 // ── 4. R9-D NEGATIVE: router is NOT Router<()> (state required) ──────

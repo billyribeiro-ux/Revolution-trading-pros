@@ -245,8 +245,8 @@ fn create_reusable_block_request_required_fields_negative_pin() {
     );
     assert!(minimal.description.is_none());
     assert!(minimal.category.is_none());
-    assert_eq!(
-        minimal.is_global, false,
+    assert!(
+        !minimal.is_global,
         "is_global defaults to false via #[serde(default)]"
     );
 
@@ -282,7 +282,7 @@ fn create_reusable_block_request_required_fields_negative_pin() {
     .expect("full CreateReusableBlockRequest must parse");
     assert_eq!(full.slug.as_deref(), Some("custom-calculator-slug"));
     assert_eq!(full.category, Some(CmsReusableBlockCategory::Trading));
-    assert_eq!(full.is_global, true);
+    assert!(full.is_global);
     assert_eq!(full.tags.as_ref().map(|t| t.len()), Some(2));
 }
 
@@ -378,8 +378,8 @@ fn list_query_optional_and_track_usage_required_fields_pin() {
     assert_eq!(track.reusable_block_id, block_id);
     assert_eq!(track.content_id, content_id);
     assert_eq!(track.block_instance_id, "instance-abc-123");
-    assert_eq!(
-        track.is_synced, true,
+    assert!(
+        track.is_synced,
         "is_synced must default to true via #[serde(default = \"default_true\")]"
     );
 

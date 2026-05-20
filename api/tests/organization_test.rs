@@ -1,3 +1,7 @@
+// R23-D: test-scaffold doc comments use narrative list formatting that doesn't
+// match clippy's strict CommonMark interpretation. Allow file-wide.
+#![allow(clippy::doc_lazy_continuation, clippy::doc_overindented_list_items)]
+
 //! Organization route contract tests — pure, no-DB.
 //!
 //! Binds directly to `revolution_api::routes::organization` and

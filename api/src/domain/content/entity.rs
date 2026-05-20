@@ -411,20 +411,16 @@ impl Content {
 
         // Check permissions for specific transitions
         match new_status {
-            ContentStatus::Approved | ContentStatus::Published => {
-                if !user_role.can_approve() {
-                    return Err(ContentError::PermissionDenied {
-                        role: user_role.clone(),
-                        action: format!("transition to {:?}", new_status),
-                    });
-                }
+            ContentStatus::Approved | ContentStatus::Published if !user_role.can_approve() => {
+                return Err(ContentError::PermissionDenied {
+                    role: user_role.clone(),
+                    action: format!("transition to {:?}", new_status),
+                });
             }
-            ContentStatus::Scheduled => {
-                if self.scheduled_publish_at.is_none() {
-                    return Err(ContentError::ValidationFailed(
-                        "Scheduled publish date required for scheduling".to_string(),
-                    ));
-                }
+            ContentStatus::Scheduled if self.scheduled_publish_at.is_none() => {
+                return Err(ContentError::ValidationFailed(
+                    "Scheduled publish date required for scheduling".to_string(),
+                ));
             }
             _ => {}
         }
