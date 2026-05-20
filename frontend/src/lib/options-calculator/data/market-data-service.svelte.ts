@@ -9,6 +9,7 @@ import { createCache, CACHE_TTL } from './cache.js';
 import { createMockAdapter } from './adapters/mock.js';
 import { createPolygonAdapter } from './adapters/polygon.js';
 import { createFREDAdapter } from './adapters/fred.js';
+import { logger } from '$lib/utils/logger';
 import type {
 	StockQuote,
 	OptionsChain,
@@ -54,10 +55,10 @@ export function createMarketDataService() {
 		maxRetries: 1,
 		timeoutMs: 8000,
 		onFallback(from, to, error) {
-			console.warn(`[MarketData] Falling back from ${from} to ${to}: ${error.message}`);
+			logger.warn(`[MarketData] Falling back from ${from} to ${to}: ${error.message}`);
 		},
 		onAllFailed(capability, errors) {
-			console.error(`[MarketData] All providers failed for ${capability}:`, errors);
+			logger.error(`[MarketData] All providers failed for ${capability}:`, errors);
 			lastError = `Unable to fetch ${capability}. Please try again.`;
 		}
 	});
@@ -97,7 +98,7 @@ export function createMarketDataService() {
 				cache.set(cacheKey, results, CACHE_TTL.TICKER_SEARCH, 'mock');
 				searchResults = results;
 			} catch (error) {
-				console.error('[MarketData] Search failed:', error);
+				logger.error('[MarketData] Search failed:', error);
 				searchResults = [];
 			} finally {
 				isSearching = false;
@@ -176,7 +177,7 @@ export function createMarketDataService() {
 			return snapshot;
 		} catch (error) {
 			lastError = `Error loading data for ${activeTicker}`;
-			console.error('[MarketData]', error);
+			logger.error('[MarketData]', error);
 			return null;
 		} finally {
 			isLoading = false;
