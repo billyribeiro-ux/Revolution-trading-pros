@@ -23,14 +23,22 @@
 
 	let props: Props = $props();
 
+	// R8-A: `field.attributes` is now `JsonValue | undefined`. Narrow per-key.
+	function asString(v: unknown, fallback: string): string {
+		return typeof v === 'string' ? v : fallback;
+	}
+	function asNumber(v: unknown, fallback: number): number {
+		return typeof v === 'number' ? v : fallback;
+	}
+
 	// Configuration from field attributes
-	const formula = $derived(props.field.attributes?.['formula'] ?? '');
-	const format = $derived(props.field.attributes?.['format'] ?? 'number');
-	const decimals = $derived(props.field.attributes?.['decimals'] ?? 2);
-	const prefix = $derived(props.field.attributes?.['prefix'] ?? '');
-	const suffix = $derived(props.field.attributes?.['suffix'] ?? '');
-	const currency = $derived(props.field.attributes?.['currency'] ?? 'USD');
-	const showFormula = $derived(props.field.attributes?.['show_formula'] ?? false);
+	const formula = $derived(asString(props.field.attributes?.['formula'], ''));
+	const format = $derived(asString(props.field.attributes?.['format'], 'number'));
+	const decimals = $derived(asNumber(props.field.attributes?.['decimals'], 2));
+	const prefix = $derived(asString(props.field.attributes?.['prefix'], ''));
+	const suffix = $derived(asString(props.field.attributes?.['suffix'], ''));
+	const currency = $derived(asString(props.field.attributes?.['currency'], 'USD'));
+	const showFormula = $derived(!!props.field.attributes?.['show_formula']);
 
 	let calculatedValue = $state<number | null>(null);
 	let displayValue = $state<string>('—');

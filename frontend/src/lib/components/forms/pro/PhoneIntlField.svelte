@@ -85,7 +85,9 @@
 	let searchQuery = $state('');
 
 	$effect(() => {
-		defaultCountry = props.field.attributes?.default_country || 'US';
+		// `attributes` is open-ended (`JsonValue | undefined`); narrow before use.
+		const dc = props.field.attributes?.default_country;
+		defaultCountry = typeof dc === 'string' ? dc : 'US';
 	});
 
 	$effect(() => {

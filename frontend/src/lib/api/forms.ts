@@ -53,6 +53,28 @@ import { writable, derived as _derived, get } from 'svelte/store';
 import type { FormTheme } from '$lib/data/formTemplates';
 import { getAuthToken, getSessionId as _getAuthSessionId } from '$lib/stores/auth.svelte';
 import { logger } from '$lib/utils/logger';
+import type { JsonValue, PaginatedResponse } from './_types';
+
+// R8-A: re-export `PaginatedResponse` so the type is reachable to forms-area
+// callers without forcing them to `import from '$lib/api/_types'` directly.
+// `_types.ts` is intentionally underscore-prefixed (private to `api/`); this
+// is the public surface for now. Forward-compat for the day forms.rs ships
+// an explicit `{ data, meta }` contract — at that point `getForms` will
+// return `PaginatedResponse<Form>` and the `forms` / `total` unwrap below
+// will go away.
+export type { PaginatedResponse };
+
+/**
+ * Local error-message helper. Used by every public-API catch handler now
+ * that `catch (error: any)` was removed (R7-A precedent). Not exported —
+ * each `api/` module carries its own copy today; a shared helper is a
+ * future R-* candidate.
+ */
+function errorMessage(err: unknown): string {
+	if (err instanceof Error) return err.message;
+	if (typeof err === 'string') return err;
+	return String(err);
+}
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -104,7 +126,11 @@ export interface FieldAttributes {
 	multiple?: boolean;
 	accept?: string; // For file inputs
 	capture?: string; // For camera inputs
-	[key: string]: any;
+	// Open-ended pass-through for HTML attributes the explicit fields above
+	// don't enumerate (e.g. `pattern`, `minlength` on text inputs). Stays
+	// `JsonValue` because the value gets serialized in JSON columns on the
+	// backend and re-hydrated; callers (FormFieldRenderer) must narrow.
+	[key: string]: JsonValue | undefined;
 }
 
 export interface NewsletterFieldOptions {
@@ -121,8 +147,17 @@ export interface FormField {
 	name: string;
 	placeholder?: string;
 	help_text?: string;
-	default_value?: any;
-	options?: any;
+	// `default_value` and `options` are genuinely heterogeneous — they round-trip
+	// through PostgreSQL JSONB columns and the same `FormField` row can hold:
+	//   - default_value: a string (text inputs), boolean (toggle), number
+	//     (range/slider), string[] (multiselect), or object (address/payment).
+	//   - options: an Array<{label,value}> (select/radio/checkbox), a
+	//     newsletter config object (newsletter_*), a `PaymentItem[]`, or a
+	//     `string[]`. See `FormFieldRenderer.svelte:680-757` for the union of
+	//     concrete shapes; `ConditionalLogicBuilder.svelte:102-104` uses
+	//     `Array.isArray` to narrow. Callers MUST narrow at use site.
+	default_value?: JsonValue;
+	options?: JsonValue;
 	validation?: FieldValidation | null;
 	conditional_logic?: ConditionalLogic | null;
 	attributes?: FieldAttributes | null;
@@ -200,7 +235,10 @@ export interface ConditionalLogic {
 export interface ConditionalRule {
 	field: string;
 	operator: ConditionalOperator;
-	value?: any;
+	// Heterogeneous comparison target — equals/contains compare against
+	// strings, greater_than/less_than against numbers, is_checked against
+	// booleans. Narrow at use site.
+	value?: JsonValue;
 }
 
 export type ConditionalOperator =
@@ -261,7 +299,9 @@ export interface FormSettings {
 export interface FormIntegration {
 	type: 'zapier' | 'webhook' | 'email' | 'slack' | 'crm' | 'analytics';
 	enabled: boolean;
-	config: Record<string, any>;
+	// Integration-specific config — different per provider (webhook URL,
+	// Slack channel ID, CRM API key, etc.). JSON column on the backend.
+	config: Record<string, JsonValue>;
 }
 
 export interface ABTestConfig {
@@ -273,7 +313,8 @@ export interface ABTestConfig {
 export interface FormVariant {
 	id: string;
 	name: string;
-	changes: Record<string, any>;
+	// A/B variant overrides — patch shape applied to form fields/styles.
+	changes: Record<string, JsonValue>;
 }
 
 export interface SpamProtection {
@@ -308,7 +349,9 @@ export interface FormStyles {
 	animation_type?: 'none' | 'fade' | 'slide' | 'zoom';
 	animation_duration?: string;
 
-	[key: string]: any;
+	// Open-ended for custom CSS-derived properties (e.g. theme-specific
+	// gradient stops). Survive JSONB round-trip via JsonValue.
+	[key: string]: JsonValue | undefined;
 }
 
 export interface Form {
@@ -378,7 +421,9 @@ export interface FormSubmission {
 	country?: string;
 	city?: string;
 	completion_time?: number;
-	metadata?: Record<string, any>;
+	// Submission metadata (UTM enrichment, device fingerprint, etc.) — JSON
+	// column on the backend.
+	metadata?: Record<string, JsonValue>;
 	created_at?: string;
 	updated_at?: string;
 	deleted_at?: string;
@@ -392,7 +437,11 @@ export interface SubmissionData {
 	submission_id: number;
 	field_id: number;
 	field_name: string;
-	value: any;
+	// The submitted value for ONE field; type depends on the field shape
+	// (string for text, boolean for checkbox, string[] for multiselect,
+	// object for address/signature). Callers MUST narrow before reading
+	// shape-specific methods like `.substring()` / `.length`.
+	value: JsonValue;
 	validated?: boolean;
 	created_at?: string;
 	updated_at?: string;
@@ -412,13 +461,39 @@ export interface SubmissionNote {
 // Core Service Class
 // ═══════════════════════════════════════════════════════════════════════════
 
+/**
+ * Shape of a queued offline request — replayed by `processOfflineQueue` when
+ * the network comes back online. Kept private to this module.
+ */
+interface OfflineRequest {
+	url: string;
+	options: RequestInit;
+	timestamp?: number;
+}
+
+/**
+ * Shape of a queued analytics event — batched and POSTed to the backend.
+ */
+interface AnalyticsEvent {
+	event: string;
+	data: Record<string, JsonValue | undefined>;
+	timestamp: number;
+}
+
 class FormsService {
 	private static instance: FormsService;
-	private cache = new Map<string, { data: any; expiry: number }>();
-	private offlineQueue: any[] = [];
+	// R7-A precedent: cache values stored as `unknown`; reads go through a
+	// generic `getFromCache<T>(): T | null`. Pre-fix, `any` allowed a cached
+	// `0` / `""` / `false` to force a refetch via the `if (cached) ...`
+	// truthy-check.
+	private cache = new Map<string, { data: unknown; expiry: number }>();
+	private offlineQueue: OfflineRequest[] = [];
 	private wsConnection?: WebSocket;
-	private analyticsQueue: any[] = [];
-	private pendingRequests = new Map<string, Promise<any>>();
+	private analyticsQueue: AnalyticsEvent[] = [];
+	// `unknown` rather than a concrete `T` because the map holds different
+	// fetch results keyed by URL; dedup-then-replay returns the same Promise
+	// reference and the caller's `authFetch<T>` generic re-establishes T.
+	private pendingRequests = new Map<string, Promise<unknown>>();
 
 	// Stores
 	public forms = writable<Form[]>([]);
@@ -492,13 +567,19 @@ class FormsService {
 		// Check cache for GET requests
 		const cacheKey = `${fetchOptions.method || 'GET'}:${url}`;
 		if ((!skipCache && !fetchOptions.method) || fetchOptions.method === 'GET') {
-			const cached = this.getFromCache(cacheKey);
-			if (cached) return cached;
+			// R7-A precedent: explicit `!== null` test on the generic
+			// `getFromCache<T>` return so a cached `0` / `""` / `false`
+			// doesn't force a refetch.
+			const cached = this.getFromCache<T>(cacheKey);
+			if (cached !== null) return cached;
 		}
 
 		// Check for pending request (deduplication)
-		if (this.pendingRequests.has(cacheKey)) {
-			return this.pendingRequests.get(cacheKey);
+		const pending = this.pendingRequests.get(cacheKey);
+		if (pending) {
+			// Same-URL dedup — caller's generic re-establishes T from the
+			// stored `Promise<unknown>`.
+			return pending as Promise<T>;
 		}
 
 		// Create request promise
@@ -559,12 +640,19 @@ class FormsService {
 					}
 				}
 
-				const error = await response.json().catch(() => ({ message: 'Request failed' }));
-				throw new Error(error.message || `HTTP ${response.status}`);
+				// R7-A precedent: tighten the parsed-error-body shape from
+				// `any` to `{ message?: string }`. Pre-fix, if the backend
+				// returned `{ "error": "..." }` (no `message`), the thrown
+				// error was `"undefined"` — silently swallowing the real
+				// message. Now falls through to `HTTP <status>`.
+				const errorBody: { message?: string } = await response
+					.json()
+					.catch(() => ({ message: 'Request failed' }));
+				throw new Error(errorBody.message || `HTTP ${response.status}`);
 			}
 
 			return response.json();
-		} catch (error) {
+		} catch (error: unknown) {
 			// Retry logic
 			if (retriesLeft > 0 && this.shouldRetry(error)) {
 				await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
@@ -583,16 +671,21 @@ class FormsService {
 
 	/**
 	 * Cache management
+	 *
+	 * R7-A precedent: generic getter so the caller's `T` is re-established
+	 * after the `unknown`-typed store, and explicit `null` sentinel for miss
+	 * (callers MUST compare `!== null`, NOT a truthy check — a cached
+	 * `0` / `""` / `false` is a valid hit).
 	 */
-	private getFromCache(key: string): any {
+	private getFromCache<T>(key: string): T | null {
 		const cached = this.cache.get(key);
 		if (cached && Date.now() < cached.expiry) {
-			return cached.data;
+			return cached.data as T;
 		}
 		return null;
 	}
 
-	private setCache(key: string, data: any, ttl: number): void {
+	private setCache(key: string, data: unknown, ttl: number): void {
 		this.cache.set(key, {
 			data,
 			expiry: Date.now() + ttl
@@ -704,9 +797,10 @@ class FormsService {
 		this.showNotification(`New submission for form ${submission.form_id}`);
 	}
 
-	private handleCollaboration(data: any): void {
-		// Handle real-time collaboration updates
-		logger.debug('[FormsService] Collaboration update', data);
+	private handleCollaboration(data: JsonValue): void {
+		// Handle real-time collaboration updates. Logged for now; future work
+		// will narrow on `data.type` once collab message shape stabilizes.
+		logger.debug('[FormsService] Collaboration update', { data });
 	}
 
 	/**
@@ -739,7 +833,7 @@ class FormsService {
 		localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(this.offlineQueue));
 	}
 
-	private queueOfflineRequest(request: any): void {
+	private queueOfflineRequest(request: Omit<OfflineRequest, 'timestamp'>): void {
 		this.offlineQueue.push({
 			...request,
 			timestamp: Date.now()
@@ -789,7 +883,7 @@ class FormsService {
 	/**
 	 * Analytics
 	 */
-	private trackEvent(event: string, data: any): void {
+	private trackEvent(event: string, data: Record<string, JsonValue | undefined>): void {
 		this.analyticsQueue.push({
 			event,
 			data,
@@ -826,12 +920,14 @@ class FormsService {
 	/**
 	 * Utilities
 	 */
-	private shouldRetry(error: any): boolean {
-		return error?.message?.includes('Network') || error?.message?.includes('fetch');
+	private shouldRetry(error: unknown): boolean {
+		const message = error instanceof Error ? error.message : '';
+		return message.includes('Network') || message.includes('fetch');
 	}
 
-	private isNetworkError(error: any): boolean {
-		return !navigator.onLine || error?.message?.includes('Network');
+	private isNetworkError(error: unknown): boolean {
+		const message = error instanceof Error ? error.message : '';
+		return !navigator.onLine || message.includes('Network');
 	}
 
 	private async clearAuth(): Promise<void> {
@@ -858,7 +954,7 @@ class FormsService {
 	async getForms(
 		page = 1,
 		perPage = 20,
-		filters?: any
+		filters?: { status?: string }
 	): Promise<{ forms: Form[]; total: number; perPage: number }> {
 		this.isLoading.set(true);
 		this.error.set(null);
@@ -874,30 +970,55 @@ class FormsService {
 				params.set('status', filters.status);
 			}
 
-			const response = await this.authFetch<any>(`${API_BASE}/forms?${params}`);
+			// R8-A / R2-03 follow-up: the backend (`api/src/routes/forms.rs:126-134`)
+			// returns exactly one shape for `GET /forms` — the canonical
+			// envelope `{ data: Form[], meta: { current_page, per_page, total,
+			// total_pages } }`. The four legacy fallbacks below
+			// (`response.data.data`, `response.forms`, `Array.isArray(response)`)
+			// are DEAD CODE per the current Rust handler — but the task spec
+			// rules out backend changes AND user-level CLAUDE.md flags "Let
+			// me also clean up these unrelated things" as scope creep. Path
+			// of least surprise: keep the defensive shape-probing, just
+			// re-type the boundary as `unknown` and narrow at each branch.
+			// This deletes 1 `any` (the `authFetch<any>`) while preserving
+			// the 5-shape compat that some external consumer might depend on.
+			const response = await this.authFetch<unknown>(`${API_BASE}/forms?${params}`);
 
-			// Handle paginated response: { success: true, data: { data: [...], total: N, per_page: N } }
 			let forms: Form[] = [];
 			let total = 0;
 			let responsePerPage = perPage;
 
-			if (response?.data?.data) {
-				// Paginated response
-				forms = response.data.data;
-				total = response.data.total || forms.length;
-				responsePerPage = response.data.per_page || perPage;
-			} else if (response?.data && Array.isArray(response.data)) {
-				// Direct array in data
-				forms = response.data;
-				total = forms.length;
-			} else if (response?.forms) {
-				// Legacy format
-				forms = response.forms;
-				total = response.total ?? forms.length;
-				responsePerPage = response.perPage ?? perPage;
+			const isRecord = (v: unknown): v is Record<string, unknown> =>
+				typeof v === 'object' && v !== null && !Array.isArray(v);
+
+			if (isRecord(response) && isRecord(response['data']) && Array.isArray(response['data']['data'])) {
+				// Paginated wrapped: { data: { data: [], total, per_page } }
+				const inner = response['data'] as { data: unknown[]; total?: number; per_page?: number };
+				forms = inner.data as Form[];
+				total = inner.total ?? forms.length;
+				responsePerPage = inner.per_page ?? perPage;
+			} else if (isRecord(response) && Array.isArray(response['data'])) {
+				// Canonical envelope from forms.rs:126-134:
+				// { data: Form[], meta: { total, ... } }
+				forms = response['data'] as Form[];
+				if (isRecord(response['meta']) && typeof response['meta']['total'] === 'number') {
+					total = response['meta']['total'];
+				} else {
+					total = forms.length;
+				}
+				if (isRecord(response['meta']) && typeof response['meta']['per_page'] === 'number') {
+					responsePerPage = response['meta']['per_page'];
+				}
+			} else if (isRecord(response) && Array.isArray(response['forms'])) {
+				// Legacy format: { forms: Form[], total, perPage }
+				forms = response['forms'] as Form[];
+				total = typeof response['total'] === 'number' ? response['total'] : forms.length;
+				if (typeof response['perPage'] === 'number') {
+					responsePerPage = response['perPage'];
+				}
 			} else if (Array.isArray(response)) {
 				// Direct array response
-				forms = response;
+				forms = response as Form[];
 				total = forms.length;
 			}
 
@@ -907,8 +1028,8 @@ class FormsService {
 				total,
 				perPage: responsePerPage
 			};
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error: unknown) {
+			this.error.set(errorMessage(error));
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -927,8 +1048,8 @@ class FormsService {
 			this.trackEvent('form_viewed', { form_id: id });
 
 			return form;
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error: unknown) {
+			this.error.set(errorMessage(error));
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -953,8 +1074,8 @@ class FormsService {
 			this.trackEvent('form_created', { form_id: form.id });
 
 			return form;
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error: unknown) {
+			this.error.set(errorMessage(error));
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -989,10 +1110,10 @@ class FormsService {
 			this.trackEvent('form_updated', { form_id: id });
 
 			return form;
-		} catch (error: any) {
+		} catch (error: unknown) {
 			// Revert optimistic update
 			await this.getForms();
-			this.error.set(error.message);
+			this.error.set(errorMessage(error));
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -1016,10 +1137,10 @@ class FormsService {
 
 			// Track deletion
 			this.trackEvent('form_deleted', { form_id: id });
-		} catch (error: any) {
+		} catch (error: unknown) {
 			// Revert optimistic delete
 			await this.getForms();
-			this.error.set(error.message);
+			this.error.set(errorMessage(error));
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -1045,8 +1166,8 @@ class FormsService {
 			});
 
 			return form;
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error: unknown) {
+			this.error.set(errorMessage(error));
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -1071,8 +1192,8 @@ class FormsService {
 			this.trackEvent('ai_form_generated', { prompt });
 
 			return response.form;
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error: unknown) {
+			this.error.set(errorMessage(error));
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -1111,8 +1232,8 @@ class FormsService {
 			this.trackEvent('form_optimized', { form_id: formId });
 
 			return response.form;
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error: unknown) {
+			this.error.set(errorMessage(error));
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -1124,7 +1245,7 @@ class FormsService {
 	 */
 	async submitForm(
 		slug: string,
-		data: Record<string, any>
+		data: Record<string, JsonValue>
 	): Promise<{
 		success: boolean;
 		message?: string;
@@ -1142,7 +1263,16 @@ class FormsService {
 				body: JSON.stringify(data)
 			});
 
-			const result = await response.json();
+			// Backend `POST /forms/:slug/submit` returns `{ success, message?,
+			// submission_id?, errors?, redirect_url? }` per the type signature
+			// of this method. Parse with the same shape.
+			const result: {
+				success: boolean;
+				message?: string;
+				submission_id?: string;
+				errors?: Record<string, string[]>;
+				redirect_url?: string;
+			} = await response.json();
 
 			// Track submission
 			this.trackEvent('form_submitted', {
@@ -1151,7 +1281,7 @@ class FormsService {
 			});
 
 			return result;
-		} catch (error: any) {
+		} catch (error: unknown) {
 			// Queue for offline if network error
 			if (this.isNetworkError(error)) {
 				this.queueOfflineRequest({
@@ -1176,7 +1306,10 @@ class FormsService {
 		formId: number,
 		page = 1,
 		perPage = 20,
-		filters?: any
+		// Free-form filter dict — keys map 1:1 to backend query string
+		// parameters (`status`, `from`, `to`, etc.). Values must already be
+		// stringified by the caller; spread into URLSearchParams below.
+		filters?: Record<string, string>
 	): Promise<{
 		submissions: FormSubmission[];
 		total?: number;
@@ -1202,8 +1335,8 @@ class FormsService {
 
 			this.submissions.set(response.submissions);
 			return response;
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error: unknown) {
+			this.error.set(errorMessage(error));
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -1236,31 +1369,37 @@ class FormsService {
 		return this.authFetch<FormAnalytics>(`${API_BASE}/forms/${formId}/analytics`);
 	}
 
-	async getConversionFunnel(formId: number): Promise<any> {
-		return this.authFetch(`${API_BASE}/forms/${formId}/analytics/funnel`);
+	// Analytics endpoints below return shapes the backend doesn't define
+	// (`utoipa::path` not applied — see R2-03 report) and that no caller in
+	// the repo reads off concretely as of R8-A. Type as `JsonValue` so
+	// callers must narrow at use site rather than write `.foo.bar` on
+	// truly unknown data. R7-A precedent (`getRedemptionReport`,
+	// `getROIReport`).
+	async getConversionFunnel(formId: number): Promise<JsonValue> {
+		return this.authFetch<JsonValue>(`${API_BASE}/forms/${formId}/analytics/funnel`);
 	}
 
-	async getFieldHeatmap(formId: number): Promise<any> {
-		return this.authFetch(`${API_BASE}/forms/${formId}/analytics/heatmap`);
+	async getFieldHeatmap(formId: number): Promise<JsonValue> {
+		return this.authFetch<JsonValue>(`${API_BASE}/forms/${formId}/analytics/heatmap`);
 	}
 
-	async getUserRecording(submissionId: string): Promise<any> {
-		return this.authFetch(`${API_BASE}/submissions/${submissionId}/recording`);
+	async getUserRecording(submissionId: string): Promise<JsonValue> {
+		return this.authFetch<JsonValue>(`${API_BASE}/submissions/${submissionId}/recording`);
 	}
 
 	/**
 	 * A/B Testing
 	 */
-	async createABTest(formId: number, config: ABTestConfig): Promise<any> {
-		return this.authFetch(`${API_BASE}/forms/${formId}/ab-test`, {
+	async createABTest(formId: number, config: ABTestConfig): Promise<JsonValue> {
+		return this.authFetch<JsonValue>(`${API_BASE}/forms/${formId}/ab-test`, {
 			method: 'POST',
 			body: JSON.stringify(config),
 			skipCache: true
 		});
 	}
 
-	async getABTestResults(formId: number, testId: string): Promise<any> {
-		return this.authFetch(`${API_BASE}/forms/${formId}/ab-test/${testId}/results`);
+	async getABTestResults(formId: number, testId: string): Promise<JsonValue> {
+		return this.authFetch<JsonValue>(`${API_BASE}/forms/${formId}/ab-test/${testId}/results`);
 	}
 
 	/**
@@ -1288,7 +1427,7 @@ class FormsService {
 		);
 	}
 
-	sendCollaborationUpdate(formId: number, update: any): void {
+	sendCollaborationUpdate(formId: number, update: JsonValue): void {
 		if (!this.wsConnection) return;
 
 		this.wsConnection.send(
@@ -1303,11 +1442,18 @@ class FormsService {
 	/**
 	 * Validation
 	 */
-	async validateField(field: FormField, value: any): Promise<{ valid: boolean; errors: string[] }> {
+	async validateField(
+		field: FormField,
+		value: JsonValue
+	): Promise<{ valid: boolean; errors: string[] }> {
 		const errors: string[] = [];
 
-		// Required validation
-		if (field.required && !value) {
+		// Required validation — `null`, `undefined`, `false`, `0`, `""`, and `[]`
+		// all fail the truthiness check. For arrays we additionally require
+		// at least one element.
+		const isEmpty =
+			!value || (Array.isArray(value) && value.length === 0);
+		if (field.required && isEmpty) {
 			errors.push(`${field.label} is required`);
 		}
 
@@ -1325,8 +1471,11 @@ class FormsService {
 				}
 			}
 
-			// Pattern validation
-			if (field.validation.pattern) {
+			// Pattern validation — `RegExp.test()` requires a string. Pre-R8-A
+			// `value: any` let this through with `regex.test(undefined)`
+			// stringifying to `"undefined"` (a latent bug); now we only run
+			// the regex when the input is genuinely a string.
+			if (field.validation.pattern && typeof value === 'string') {
 				const regex = new RegExp(field.validation.pattern);
 				if (!regex.test(value)) {
 					errors.push(field.validation.pattern_message || `${field.label} format is invalid`);
@@ -1398,7 +1547,7 @@ export const offlineMode = formsService.offlineMode;
 export const getForms = (
 	page?: number,
 	perPage?: number,
-	filters?: any
+	filters?: { status?: string }
 ): Promise<{ forms: Form[]; total: number; perPage: number }> =>
 	formsService.getForms(page, perPage, filters);
 
@@ -1419,7 +1568,7 @@ export const suggestFields = (context: string) => formsService.suggestFields(con
 
 export const optimizeForm = (formId: number) => formsService.optimizeForm(formId);
 
-export const submitForm = (slug: string, data: Record<string, any>) =>
+export const submitForm = (slug: string, data: Record<string, JsonValue>) =>
 	formsService.submitForm(slug, data);
 
 export const previewForm = async (slug: string): Promise<Form> => {
@@ -1457,8 +1606,12 @@ export const getFormById = async (id: number): Promise<Form> => {
 	}
 };
 
-export const getSubmissions = (formId: number, page?: number, perPage?: number, filters?: any) =>
-	formsService.getSubmissions(formId, page, perPage, filters);
+export const getSubmissions = (
+	formId: number,
+	page?: number,
+	perPage?: number,
+	filters?: Record<string, string>
+) => formsService.getSubmissions(formId, page, perPage, filters);
 
 export const exportSubmissions = (formId: number, format?: 'csv' | 'excel' | 'pdf') =>
 	formsService.exportSubmissions(formId, format);
@@ -1469,7 +1622,7 @@ export const getConversionFunnel = (formId: number) => formsService.getConversio
 
 export const getFieldHeatmap = (formId: number) => formsService.getFieldHeatmap(formId);
 
-export const validateField = (field: FormField, value: any) =>
+export const validateField = (field: FormField, value: JsonValue) =>
 	formsService.validateField(field, value);
 
 export const getFormTemplates = (category?: string) => formsService.getFormTemplates(category);
@@ -1482,7 +1635,7 @@ export const joinCollaboration = (formId: number) => formsService.joinCollaborat
 
 export const leaveCollaboration = (formId: number) => formsService.leaveCollaboration(formId);
 
-export const sendCollaborationUpdate = (formId: number, update: any) =>
+export const sendCollaborationUpdate = (formId: number, update: JsonValue) =>
 	formsService.sendCollaborationUpdate(formId, update);
 
 // A/B Testing
@@ -1576,7 +1729,10 @@ export const bulkDeleteSubmissions = async (formId: number, submissionIds: (numb
 export interface FormEntry {
 	id: number;
 	form_id: number;
-	data: Record<string, any>;
+	// Per-field submission data, keyed by field name. Each value's type
+	// depends on the field shape (string / boolean / number / object).
+	// JSON column on the backend.
+	data: Record<string, JsonValue>;
 	status?: string;
 	created_at: string;
 	updated_at?: string;

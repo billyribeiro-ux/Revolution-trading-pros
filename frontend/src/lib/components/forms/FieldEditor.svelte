@@ -63,7 +63,24 @@ https://svelte.dev/e/bind_invalid_expression -->
 				width: props.field.width ?? 12
 			};
 			showConditionalLogic = !!props.field.conditional_logic;
-			optionsText = props.field.options ? props.field.options.join('\n') : '';
+			// R8-A: `field.options` is now `JsonValue` (was `any`). Narrow
+			// before `.join()` — accept either `string[]` (legacy) or
+			// `Array<{label,value}>` (current write-side at line 78-82).
+			optionsText = Array.isArray(props.field.options)
+				? props.field.options
+						.map((o) => {
+							if (typeof o === 'string') return o;
+							if (o && typeof o === 'object' && !Array.isArray(o)) {
+								const l = o['label'];
+								if (typeof l === 'string') return l;
+								const v = o['value'];
+								if (typeof v === 'string') return v;
+							}
+							return '';
+						})
+						.filter(Boolean)
+						.join('\n')
+				: '';
 		}
 	});
 

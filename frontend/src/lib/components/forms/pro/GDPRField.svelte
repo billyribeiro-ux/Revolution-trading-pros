@@ -12,15 +12,24 @@
 
 	let props: Props = $props();
 
+	// R8-A: `field.attributes` is now `JsonValue | undefined`. Narrow per-key.
+	function asString(v: unknown, fallback: string): string {
+		return typeof v === 'string' ? v : fallback;
+	}
+
 	const consentText = $derived(
-		props.field.attributes?.consent_text ||
+		asString(
+			props.field.attributes?.consent_text,
 			'I agree to the processing of my personal data in accordance with the Privacy Policy.'
+		)
 	);
-	const privacyUrl = $derived(props.field.attributes?.privacy_url || '/privacy-policy');
-	const termsUrl = $derived(props.field.attributes?.terms_url || '/terms-of-service');
+	const privacyUrl = $derived(asString(props.field.attributes?.privacy_url, '/privacy-policy'));
+	const termsUrl = $derived(asString(props.field.attributes?.terms_url, '/terms-of-service'));
 	const showPrivacyLink = $derived(props.field.attributes?.show_privacy_link !== false);
 	const showTermsLink = $derived(props.field.attributes?.show_terms_link !== false);
-	const fieldType = $derived<'gdpr' | 'terms'>(props.field.attributes?.field_type || 'gdpr');
+	const fieldType = $derived<'gdpr' | 'terms'>(
+		props.field.attributes?.field_type === 'terms' ? 'terms' : 'gdpr'
+	);
 
 	function handleChange(event: Event) {
 		const target = event.target as HTMLInputElement;

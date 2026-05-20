@@ -30,20 +30,39 @@
 
 	let props: Props = $props();
 
+	// R8-A: `field.attributes` is now `JsonValue | undefined`. Narrow per-key.
+	function asNumber(v: unknown, fallback: number): number {
+		return typeof v === 'number' ? v : fallback;
+	}
+	function asString(v: unknown, fallback: string): string {
+		return typeof v === 'string' ? v : fallback;
+	}
+	function asBool(v: unknown, fallback: boolean): boolean {
+		return typeof v === 'boolean' ? v : fallback;
+	}
+	function asSubFields(v: unknown): Partial<FormField>[] {
+		// JSON column round-trip; trust the inner shape for backwards compat.
+		return Array.isArray(v) ? (v as unknown as Partial<FormField>[]) : [];
+	}
+
 	// Get repeater configuration from field attributes
-	const minItems = $derived(props.field.attributes?.['min_items'] ?? 0);
-	const maxItems = $derived(props.field.attributes?.['max_items'] ?? 10);
-	const addButtonText = $derived(props.field.attributes?.['add_button_text'] ?? 'Add Item');
-	const itemLabel = $derived(props.field.attributes?.['item_label'] ?? 'Item');
-	const collapsible = $derived(props.field.attributes?.['collapsible'] ?? true);
-	const confirmDelete = $derived(props.field.attributes?.['confirm_delete'] ?? true);
+	const minItems = $derived(asNumber(props.field.attributes?.['min_items'], 0));
+	const maxItems = $derived(asNumber(props.field.attributes?.['max_items'], 10));
+	const addButtonText = $derived(
+		asString(props.field.attributes?.['add_button_text'], 'Add Item')
+	);
+	const itemLabel = $derived(asString(props.field.attributes?.['item_label'], 'Item'));
+	const collapsible = $derived(asBool(props.field.attributes?.['collapsible'], true));
+	const confirmDelete = $derived(asBool(props.field.attributes?.['confirm_delete'], true));
 
 	// Sub-fields configuration - use $derived to maintain reactivity
 	const subFields = $derived<Partial<FormField>[]>(
-		props.field.attributes?.['sub_fields'] ?? [
-			{ name: 'title', label: 'Title', field_type: 'text', required: true },
-			{ name: 'description', label: 'Description', field_type: 'textarea' }
-		]
+		asSubFields(props.field.attributes?.['sub_fields']).length > 0
+			? asSubFields(props.field.attributes?.['sub_fields'])
+			: [
+					{ name: 'title', label: 'Title', field_type: 'text', required: true },
+					{ name: 'description', label: 'Description', field_type: 'textarea' }
+				]
 	);
 
 	// Initialize rows state
@@ -338,10 +357,14 @@
 										>
 											<option value="">Select...</option>
 											{#if Array.isArray(subField.options)}
-												{#each subField.options as opt (typeof opt === 'string' ? opt : opt.value)}
-													<option value={typeof opt === 'string' ? opt : opt.value}>
-														{typeof opt === 'string' ? opt : opt.label}
-													</option>
+												{#each subField.options as opt (typeof opt === 'string' ? opt : opt && typeof opt === 'object' && !Array.isArray(opt) && typeof opt['value'] === 'string' ? opt['value'] : '')}
+													{#if typeof opt === 'string'}
+														<option value={opt}>{opt}</option>
+													{:else if opt && typeof opt === 'object' && !Array.isArray(opt)}
+														{@const v = typeof opt['value'] === 'string' ? opt['value'] : ''}
+														{@const l = typeof opt['label'] === 'string' ? opt['label'] : v}
+														<option value={v}>{l}</option>
+													{/if}
 												{/each}
 											{/if}
 										</select>
