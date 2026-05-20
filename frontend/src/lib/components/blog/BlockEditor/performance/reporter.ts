@@ -16,6 +16,7 @@
 
 import { browser } from '$app/environment';
 import { dev } from '$app/environment';
+import { logger } from '$lib/utils/logger';
 import {
 	subscribeToMetrics,
 	type MetricsSnapshot,
@@ -270,8 +271,8 @@ class PerformanceReporter {
 				this.pendingPayloads = JSON.parse(stored);
 				this.log(`Loaded ${this.pendingPayloads.length} pending payloads`);
 			}
-		} catch (e) {
-			console.error('[PerformanceReporter] Failed to load pending payloads:', e);
+		} catch (error) {
+			logger.error('[PerformanceReporter] Failed to load pending payloads', { error });
 		}
 	}
 
@@ -283,8 +284,8 @@ class PerformanceReporter {
 			// Keep only last 50 payloads to avoid storage overflow
 			const toSave = this.pendingPayloads.slice(-50);
 			localStorage.setItem(STORAGE_KEYS.PENDING_METRICS, JSON.stringify(toSave));
-		} catch (e) {
-			console.error('[PerformanceReporter] Failed to save pending payloads:', e);
+		} catch (error) {
+			logger.error('[PerformanceReporter] Failed to save pending payloads', { error });
 		}
 	}
 
@@ -610,7 +611,7 @@ class PerformanceReporter {
 
 			throw new Error(`HTTP ${response.status}: ${response.statusText}`);
 		} catch (error) {
-			console.error('[PerformanceReporter] Failed to send metrics:', error);
+			logger.error('[PerformanceReporter] Failed to send metrics', { error });
 
 			// Retry with exponential backoff
 			if (this.retryCount < this.config.maxRetries) {
@@ -629,68 +630,66 @@ class PerformanceReporter {
 	/**
 	 * Log metrics in development mode.
 	 *
-	 * Called only behind `if (dev)` (see line ~543). The console.* block
+	 * Called only behind `if (dev)` (see line ~543). The logger.* block
 	 * below is the documented "fallback to console in development mode"
-	 * feature, not stray debug logging — scoped disable rather than
-	 * file-level so the rest of this file stays linted. (audit 2026-05-17)
+	 * feature, routed through the project's dev-only logger so production
+	 * is a no-op. (audit 2026-05-19, console.* migrated to logger)
 	 */
-	/* eslint-disable no-console */
 	private logDevMetrics(payload: MetricsPayload): void {
-		console.groupCollapsed('%c[Performance Metrics]', 'color: #8b5cf6; font-weight: bold;');
+		logger.group('[Performance Metrics]');
 
 		// Web Vitals
-		console.group('Web Vitals');
+		logger.group('Web Vitals');
 		const vitals = payload.webVitals;
-		if (vitals.lcp) console.log(`LCP: ${vitals.lcp.value.toFixed(0)}ms (${vitals.lcp.rating})`);
-		if (vitals.fcp) console.log(`FCP: ${vitals.fcp.value.toFixed(0)}ms (${vitals.fcp.rating})`);
-		if (vitals.cls) console.log(`CLS: ${vitals.cls.value.toFixed(3)} (${vitals.cls.rating})`);
-		if (vitals.inp) console.log(`INP: ${vitals.inp.value.toFixed(0)}ms (${vitals.inp.rating})`);
-		if (vitals.ttfb) console.log(`TTFB: ${vitals.ttfb.value.toFixed(0)}ms (${vitals.ttfb.rating})`);
-		console.groupEnd();
+		if (vitals.lcp) logger.log(`LCP: ${vitals.lcp.value.toFixed(0)}ms (${vitals.lcp.rating})`);
+		if (vitals.fcp) logger.log(`FCP: ${vitals.fcp.value.toFixed(0)}ms (${vitals.fcp.rating})`);
+		if (vitals.cls) logger.log(`CLS: ${vitals.cls.value.toFixed(3)} (${vitals.cls.rating})`);
+		if (vitals.inp) logger.log(`INP: ${vitals.inp.value.toFixed(0)}ms (${vitals.inp.rating})`);
+		if (vitals.ttfb) logger.log(`TTFB: ${vitals.ttfb.value.toFixed(0)}ms (${vitals.ttfb.rating})`);
+		logger.groupEnd();
 
 		// Editor Metrics
 		if (Object.keys(payload.editorMetrics).length > 0) {
-			console.group('Editor Metrics');
+			logger.group('Editor Metrics');
 			for (const [key, metric] of Object.entries(payload.editorMetrics)) {
-				console.log(
+				logger.log(
 					`${key}: avg=${metric.avg.toFixed(2)}ms, p95=${metric.p95.toFixed(2)}ms (n=${metric.count})`
 				);
 			}
-			console.groupEnd();
+			logger.groupEnd();
 		}
 
 		// Block Render Stats
 		if (Object.keys(payload.blockRenderStats).length > 0) {
-			console.group('Block Render Stats');
+			logger.group('Block Render Stats');
 			for (const [type, stats] of Object.entries(payload.blockRenderStats)) {
-				console.log(
+				logger.log(
 					`${type}: avg=${stats.avgRenderTime.toFixed(2)}ms, p95=${stats.p95.toFixed(2)}ms (n=${stats.count})`
 				);
 			}
-			console.groupEnd();
+			logger.groupEnd();
 		}
 
 		// Memory & FPS
-		console.group('System');
-		console.log(`FPS: ${payload.avgFps}`);
-		console.log(`Block Count: ${payload.totalBlockCount}`);
+		logger.group('System');
+		logger.log(`FPS: ${payload.avgFps}`);
+		logger.log(`Block Count: ${payload.totalBlockCount}`);
 		if (payload.memoryUsage) {
-			console.log(
+			logger.log(
 				`Memory: ${payload.memoryUsage.usedMB.toFixed(1)}MB / ${payload.memoryUsage.limitMB.toFixed(0)}MB (${payload.memoryUsage.usagePercentage.toFixed(1)}%)`
 			);
 		}
-		console.groupEnd();
+		logger.groupEnd();
 
-		console.groupEnd();
+		logger.groupEnd();
 	}
-	/* eslint-enable no-console */
 
 	/**
 	 * Log helper
 	 */
 	private log(message: string): void {
 		if (this.config.verbose || dev) {
-			console.debug(`[PerformanceReporter] ${message}`);
+			logger.debug(`[PerformanceReporter] ${message}`);
 		}
 	}
 
