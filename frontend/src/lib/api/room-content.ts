@@ -331,10 +331,23 @@ export const tradePlanApi = {
 	/**
 	 * Update a trade plan entry
 	 * Uses frontend proxy at /api/trade-plans/[slug]/[id] which handles auth
+	 *
+	 * `roomSlug` is required for the proxy path. The proxy uses `:id` (a
+	 * globally-unique trade-plan ID) to address the backend, so the slug is
+	 * not strictly load-bearing for routing — but it IS load-bearing for
+	 * authorization (the proxy validates the caller's access to the room
+	 * before forwarding). Pre-edit the function read `(data as any).room_slug`
+	 * and fell back to the hard-coded `'explosive-swings'` if the caller
+	 * didn't smuggle it through the request body; that meant any update from
+	 * the admin `day-trading-room` page (and every non-explosive-swings room)
+	 * was authorized against the wrong slug. Explicit `roomSlug` parameter
+	 * matches the sibling `delete()` API on this object.
 	 */
-	update: async (id: number, data: UpdateTradePlanRequest): Promise<TradePlanEntry> => {
-		// Need room_slug for the proxy route - get from data or use default
-		const roomSlug = (data as any).room_slug || 'explosive-swings';
+	update: async (
+		id: number,
+		roomSlug: string,
+		data: UpdateTradePlanRequest
+	): Promise<TradePlanEntry> => {
 		const response = await fetch(`/api/trade-plans/${roomSlug}/${id}`, {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
@@ -342,11 +355,29 @@ export const tradePlanApi = {
 			body: JSON.stringify(data)
 		});
 		if (!response.ok) {
-			const error = await response.json().catch(() => ({ error: 'Failed to update trade plan' }));
-			throw new Error(error.error || 'Failed to update trade plan');
+			const raw: unknown = await response
+				.json()
+				.catch(() => ({ error: 'Failed to update trade plan' }));
+			const errMsg =
+				typeof raw === 'object' &&
+				raw !== null &&
+				'error' in raw &&
+				typeof (raw as { error: unknown }).error === 'string'
+					? (raw as { error: string }).error
+					: 'Failed to update trade plan';
+			throw new Error(errMsg);
 		}
-		const result = await response.json();
-		return result.data || result;
+		const result: unknown = await response.json();
+		if (
+			typeof result === 'object' &&
+			result !== null &&
+			'data' in result &&
+			(result as { data: unknown }).data !== undefined &&
+			(result as { data: unknown }).data !== null
+		) {
+			return (result as { data: TradePlanEntry }).data;
+		}
+		return result as TradePlanEntry;
 	},
 
 	/**

@@ -146,7 +146,7 @@
 		try {
 			if (isEditMode && editEntry?.id) {
 				// Update existing entry
-				await tradePlanApi.update(editEntry.id, {
+				await tradePlanApi.update(editEntry.id, roomSlug, {
 					ticker: form.ticker.toUpperCase(),
 					bias: form.bias,
 					entry: form.entry || undefined,
@@ -158,9 +158,8 @@
 					stop: form.stop || undefined,
 					options_strike: form.options_strike || undefined,
 					options_exp: form.options_exp || undefined,
-					notes: form.notes || undefined,
-					room_slug: roomSlug
-				} as any);
+					notes: form.notes || undefined
+				});
 			} else {
 				// Create new entry
 				await tradePlanApi.create({
