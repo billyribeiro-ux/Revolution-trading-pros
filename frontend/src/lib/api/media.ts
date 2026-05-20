@@ -10,6 +10,7 @@
 
 import { get as _get } from 'svelte/store';
 import { authStore } from '$lib/stores/auth.svelte';
+import type { JsonValue, QueryParams } from './_types';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -66,7 +67,7 @@ export interface MediaFile {
 }
 
 export interface MediaMetadata {
-	exif?: Record<string, any>;
+	exif?: Record<string, JsonValue>;
 	dimensions?: { width: number; height: number };
 	color_palette?: string[];
 	dominant_color?: string;
@@ -282,8 +283,8 @@ class MediaApiClient {
 	private async request<T>(
 		method: string,
 		endpoint: string,
-		body?: any,
-		params?: Record<string, any>,
+		body?: unknown,
+		params?: QueryParams,
 		isFormData: boolean = false
 	): Promise<T> {
 		// ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
@@ -293,7 +294,10 @@ class MediaApiClient {
 		if (params) {
 			const searchParams = new URLSearchParams();
 			Object.entries(params).forEach(([key, value]) => {
-				if (value !== undefined && value !== null) {
+				if (value === undefined || value === null) return;
+				if (Array.isArray(value)) {
+					value.forEach((v) => searchParams.append(key, String(v)));
+				} else {
 					searchParams.append(key, String(value));
 				}
 			});
@@ -308,15 +312,34 @@ class MediaApiClient {
 			headers['Content-Type'] = 'application/json';
 		}
 
+		// Body is `unknown`: branch on the isFormData flag (FormData passes through
+		// untouched so the browser sets the multipart boundary), else JSON.stringify
+		// any truthy value. Truthy-check matches the prior `body ? ...` semantics
+		// — no caller in src/ passes falsy-non-undefined values, so this is the
+		// same wire behaviour as before.
+		let requestBody: BodyInit | undefined;
+		if (isFormData) {
+			requestBody = body as FormData;
+		} else if (body) {
+			requestBody = JSON.stringify(body);
+		}
+
 		const response = await fetch(url, {
 			method,
 			headers,
-			body: isFormData ? body : body ? JSON.stringify(body) : undefined
+			body: requestBody
 		});
 
 		if (!response.ok) {
-			const error = await response.json().catch(() => ({ message: 'Request failed' }));
-			throw new Error(error.message || `HTTP ${response.status}`);
+			const error: unknown = await response.json().catch(() => ({ message: 'Request failed' }));
+			const message =
+				typeof error === 'object' &&
+				error !== null &&
+				'message' in error &&
+				typeof (error as { message: unknown }).message === 'string'
+					? (error as { message: string }).message
+					: `HTTP ${response.status}`;
+			throw new Error(message);
 		}
 
 		return response.json();
