@@ -4,7 +4,16 @@
  *
  * CRUD operations for weekly watchlist items.
  * Supports room-specific targeting for all 6 services.
- * Falls back to mock data when backend is unavailable.
+ *
+ * R22-A: Deleted the 5-row `mockWatchlistItems` array (Melissa Beegle,
+ *   David Starr, TG Watkins, Allison Ostrander, Taylor Horton — January
+ *   3 2026 and earlier). On backend failure:
+ *     - GET fell back to filter/search/paginate the mock list and built
+ *       `previous` / `next` nav links pointing at slugs that didn't exist
+ *       on the real backend. Users could navigate through phantom history.
+ *     - POST returned 201 `_mock: true` with a new mock item — admins saw
+ *       "Watchlist published" while it was never persisted.
+ *   Both now surface backend failure as 502.
  *
  * @version 2.0.0 - December 2025 - Added room targeting
  */
@@ -68,162 +77,11 @@ interface WatchlistPostBody {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// MOCK DATA - All rooms by default
-// ═══════════════════════════════════════════════════════════════════════════
-
-const mockWatchlistItems: WatchlistItem[] = [
-	{
-		id: 1,
-		slug: '01032026-melissa-beegle',
-		title: 'Weekly Watchlist with Melissa Beegle',
-		subtitle: 'Week of January 3, 2026',
-		trader: 'Melissa Beegle',
-		traderImage: 'https://cdn.simplertrading.com/2025/03/09130833/Melissa-WeeklyWatchlist.jpg',
-		datePosted: 'January 3, 2026',
-		weekOf: '2026-01-03',
-		video: {
-			src: 'https://cloud-streaming.s3.amazonaws.com/WeeklyWatchlist/WW-MB-01032026.mp4',
-			poster: 'https://cdn.simplertrading.com/2025/03/09130833/Melissa-WeeklyWatchlist.jpg',
-			title: 'Weekly Watchlist with Melissa Beegle'
-		},
-		spreadsheet: {
-			src: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0DkJXxG0rA7tUzJl2-au8DRWf486KZyPbbjeaVNp4fJ1ZyO0qPWLUkHia-TWEdDRCnPFPMJjFc-1V/pubhtml'
-		},
-		watchlistDates: [
-			{
-				date: '1/3/2026',
-				spreadsheetUrl:
-					'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0DkJXxG0rA7tUzJl2-au8DRWf486KZyPbbjeaVNp4fJ1ZyO0qPWLUkHia-TWEdDRCnPFPMJjFc-1V/pubhtml'
-			},
-			{
-				date: '5/28/2025',
-				spreadsheetUrl:
-					'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0DkJXxG0rA7tUzJl2-au8DRWf486KZyPbbjeaVNp4fJ1ZyO0qPWLUkHia-TWEdDRCnPFPMJjFc-1V/pubhtml'
-			},
-			{
-				date: '3/9/2025',
-				spreadsheetUrl:
-					'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0DkJXxG0rA7tUzJl2-au8DRWf486KZyPbbjeaVNp4fJ1ZyO0qPWLUkHia-TWEdDRCnPFPMJjFc-1V/pubhtml'
-			}
-		],
-		description: 'Week starting on January 3, 2026.',
-		status: 'published',
-		rooms: ALL_ROOM_IDS,
-		createdAt: '2026-01-03T09:00:00Z',
-		updatedAt: '2026-01-03T09:00:00Z'
-	},
-	{
-		id: 2,
-		slug: '12292025-david-starr',
-		title: 'Weekly Watchlist with David Starr',
-		subtitle: 'Week of December 29, 2025',
-		trader: 'David Starr',
-		traderImage:
-			'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg',
-		datePosted: 'December 29, 2025',
-		weekOf: '2025-12-29',
-		video: {
-			src: 'https://cloud-streaming.s3.amazonaws.com/WeeklyWatchlist/WW-DS-12292025.mp4',
-			poster:
-				'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg',
-			title: 'Weekly Watchlist with David Starr'
-		},
-		spreadsheet: {
-			src: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSsdQCEUZLymwpLK8j35e5B6qjdRPz1k2tX8U2yL0z30EsEv06i-74m7V-cPgCyxZe528DA_3gdMUKy/pubhtml'
-		},
-		description: 'Week of December 29, 2025.',
-		status: 'published',
-		rooms: ALL_ROOM_IDS,
-		createdAt: '2025-12-29T09:00:00Z',
-		updatedAt: '2025-12-29T09:00:00Z'
-	},
-	{
-		id: 3,
-		slug: '12222025-tg-watkins',
-		title: 'Weekly Watchlist with TG Watkins',
-		subtitle: 'Week of December 22, 2025',
-		trader: 'TG Watkins',
-		traderImage: 'https://cdn.simplertrading.com/2025/05/07135326/SimplerCentral_TG.jpg',
-		datePosted: 'December 22, 2025',
-		weekOf: '2025-12-22',
-		video: {
-			src: 'https://cloud-streaming.s3.amazonaws.com/WeeklyWatchlist/WW-TG-12222025.mp4',
-			poster:
-				'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg',
-			title: 'Weekly Watchlist with TG Watkins'
-		},
-		spreadsheet: {
-			src: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSsdQCEUZLymwpLK8j35e5B6qjdRPz1k2tX8U2yL0z30EsEv06i-74m7V-cPgCyxZe528DA_3gdMUKy/pubhtml'
-		},
-		description: 'Week of December 22, 2025.',
-		status: 'published',
-		rooms: ALL_ROOM_IDS, // Available to all rooms
-		createdAt: '2025-12-22T09:00:00Z',
-		updatedAt: '2025-12-22T09:00:00Z'
-	},
-	{
-		id: 2,
-		slug: '12152025-allison-ostrander',
-		title: 'Weekly Watchlist with Allison Ostrander',
-		subtitle: 'Week of December 15, 2025',
-		trader: 'Allison Ostrander',
-		traderImage: 'https://cdn.simplertrading.com/2025/05/07134911/SimplerCentral_DShay.jpg',
-		datePosted: 'December 15, 2025',
-		weekOf: '2025-12-15',
-		video: {
-			src: 'https://cloud-streaming.s3.amazonaws.com/WeeklyWatchlist/WW-AO-12152025.mp4',
-			poster:
-				'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Allison-Watchlist-Rundown.jpg',
-			title: 'Weekly Watchlist with Allison Ostrander'
-		},
-		spreadsheet: {
-			src: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSsdQCEUZLymwpLK8j35e5B6qjdRPz1k2tX8U2yL0z30EsEv06i-74m7V-cPgCyxZe528DA_3gdMUKy/pubhtml'
-		},
-		description: 'Week of December 15, 2025.',
-		status: 'published',
-		rooms: ['day-trading-room', 'swing-trading-room', 'small-account-mentorship'], // Only live trading rooms
-		createdAt: '2025-12-15T09:00:00Z',
-		updatedAt: '2025-12-15T09:00:00Z'
-	},
-	{
-		id: 3,
-		slug: '12082025-taylor-horton',
-		title: 'Weekly Watchlist with Taylor Horton',
-		subtitle: 'Week of December 8, 2025',
-		trader: 'Taylor Horton',
-		traderImage: 'https://cdn.simplertrading.com/2025/05/07134745/SimplerCentral_HG.jpg',
-		datePosted: 'December 8, 2025',
-		weekOf: '2025-12-08',
-		video: {
-			src: 'https://cloud-streaming.s3.amazonaws.com/WeeklyWatchlist/WW-TH-12082025.mp4',
-			poster:
-				'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Taylor-Watchlist-Rundown.jpg',
-			title: 'Weekly Watchlist with Taylor Horton'
-		},
-		spreadsheet: {
-			src: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSsdQCEUZLymwpLK8j35e5B6qjdRPz1k2tX8U2yL0z30EsEv06i-74m7V-cPgCyxZe528DA_3gdMUKy/pubhtml'
-		},
-		description: 'Week of December 8, 2025.',
-		status: 'published',
-		rooms: ['small-account-mentorship', 'explosive-swings'], // Specific rooms only
-		createdAt: '2025-12-08T09:00:00Z',
-		updatedAt: '2025-12-08T09:00:00Z'
-	}
-];
-
-// ═══════════════════════════════════════════════════════════════════════════
 // GET HANDLER - List all watchlist items
 // ═══════════════════════════════════════════════════════════════════════════
 
 export const GET: RequestHandler = async ({ url, request }) => {
-	// Parse query params
-	const page = parseInt(url.searchParams.get('page') || '1');
-	const perPage = parseInt(url.searchParams.get('per_page') || '20');
-	const status = url.searchParams.get('status');
-	const search = url.searchParams.get('search');
-	const room = url.searchParams.get('room'); // Room filter
-
-	// Try backend first
+	// Try backend
 	const authHeader = request.headers.get('Authorization');
 	const headers: Record<string, string> = {};
 	if (authHeader) headers['Authorization'] = authHeader;
@@ -238,71 +96,17 @@ export const GET: RequestHandler = async ({ url, request }) => {
 		return json(backendData);
 	}
 
-	// Fallback to mock data
-	let items = [...mockWatchlistItems];
-
-	// Filter by status
-	if (status) {
-		items = items.filter((item) => item.status === status);
-	}
-
-	// Filter by room - only return items that include this room
-	if (room) {
-		items = items.filter((item) => item.rooms.includes(room));
-	}
-
-	// Search filter
-	if (search) {
-		const searchLower = search.toLowerCase();
-		items = items.filter(
-			(item) =>
-				item.title.toLowerCase().includes(searchLower) ||
-				item.trader.toLowerCase().includes(searchLower) ||
-				item.description.toLowerCase().includes(searchLower)
-		);
-	}
-
-	// Sort by date (newest first)
-	items.sort((a, b) => new Date(b.weekOf).getTime() - new Date(a.weekOf).getTime());
-
-	// Paginate
-	const total = items.length;
-	const start = (page - 1) * perPage;
-	const paginatedItems = items.slice(start, start + perPage);
-
-	// Add previous/next links
-	const itemsWithNav = paginatedItems.map((item) => {
-		const globalIndex = items.findIndex((i) => i.id === item.id);
-		return {
-			...item,
-			previous:
-				globalIndex < items.length - 1
-					? {
-							slug: items[globalIndex + 1].slug,
-							title: items[globalIndex + 1].title
-						}
-					: null,
-			next:
-				globalIndex > 0
-					? {
-							slug: items[globalIndex - 1].slug,
-							title: items[globalIndex - 1].title
-						}
-					: null
-		};
-	});
-
-	return json({
-		success: true,
-		data: itemsWithNav,
-		pagination: {
-			current_page: page,
-			per_page: perPage,
-			total,
-			last_page: Math.ceil(total / perPage)
+	// R22-A: was: filter/search/paginate the 5-row in-file mock list, build
+	// previous/next nav between mock slugs, return `_mock: true`. Now: 502
+	// so the watchlist UI shows a real error rather than phantom history.
+	console.error('[Watchlist API] GET backend unavailable');
+	return json(
+		{
+			success: false,
+			error: 'Unable to load weekly watchlist — backend is unavailable.'
 		},
-		_mock: true
-	});
+		{ status: 502 }
+	);
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -322,15 +126,10 @@ export const POST: RequestHandler = async ({ request }) => {
 		error(400, 'Title, trader, and weekOf are required');
 	}
 
-	// After the validation `error()` returns `never`, so the locals are non-null.
-	const title = body.title;
-	const trader = body.trader;
-	const weekOf = body.weekOf;
-
 	// Default to all rooms if not specified
 	const rooms = body.rooms || ALL_ROOM_IDS;
 
-	// Try backend first
+	// Try backend
 	const backendData = await fetchBackend(
 		'/api/admin/watchlist',
 		{
@@ -345,50 +144,16 @@ export const POST: RequestHandler = async ({ request }) => {
 		return json(backendData, { status: 201 });
 	}
 
-	// Mock create - generate new item
-	const newId = Math.max(...mockWatchlistItems.map((i) => i.id), 0) + 1;
-	const weekOfDate = new Date(weekOf);
-	const dateStr = weekOfDate.toLocaleDateString('en-US', {
-		month: 'long',
-		day: 'numeric',
-		year: 'numeric'
-	});
-	const slugDate = weekOf.replace(/-/g, '').substring(4) + weekOf.substring(0, 4);
-	const traderSlug = trader.toLowerCase().replace(/\s+/g, '-');
-
-	const newItem: WatchlistItem = {
-		id: newId,
-		slug: body.slug || `${slugDate}-${traderSlug}`,
-		title,
-		subtitle: `Week of ${dateStr}`,
-		trader,
-		traderImage: body.traderImage,
-		datePosted: dateStr,
-		weekOf,
-		video: {
-			src: body.videoSrc || '',
-			poster:
-				body.videoPoster ||
-				'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg',
-			title
-		},
-		spreadsheet: {
-			src: body.spreadsheetSrc || ''
-		},
-		watchlistDates: body.watchlistDates || undefined,
-		description: body.description || `Week of ${dateStr}.`,
-		status: body.status || 'draft',
-		rooms,
-		createdAt: new Date().toISOString(),
-		updatedAt: new Date().toISOString()
-	};
-
+	// R22-A: was: build a new mock `WatchlistItem` from the body (computing
+	// slug, datePosted, default thumbnail URL, etc.) and return 201
+	// `_mock: true`. Fake-success on a mutating endpoint — admins saw
+	// "Published" but no row hit the DB. Now: 502.
+	console.error('[Watchlist API] POST backend unavailable');
 	return json(
 		{
-			success: true,
-			data: newItem,
-			_mock: true
+			success: false,
+			error: 'Unable to create watchlist item — backend is unavailable.'
 		},
-		{ status: 201 }
+		{ status: 502 }
 	);
 };

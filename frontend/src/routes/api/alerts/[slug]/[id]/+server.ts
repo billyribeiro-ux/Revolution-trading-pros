@@ -14,10 +14,11 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import type { RoomAlert, AlertUpdateInput } from '$lib/types/trading';
-import { buildTosString, validateTosParams } from '$lib/utils/tos-builder';
 // R19-A: shared proxy helper — pins CLAUDE.md URL-fallback chain
 // (API_BASE_URL || BACKEND_URL || localhost) AND replaces the
 // `Promise<any | null>` helper with `Promise<unknown>` + narrowing guards.
+// R22-A: `buildTosString`/`validateTosParams` no longer imported — the
+// mock-update path that rebuilt the TOS string client-side is gone.
 import { fetchBackend, hasData, isObject } from '$lib/server/proxy-fetch';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -29,42 +30,17 @@ function isAlertWithId(value: unknown): value is RoomAlert {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// FALLBACK MOCK DATA
+// R22-A: Deleted `mockAlerts` (the parent route's NVDA placeholder). On
+//   backend failure:
+//     - GET fell back to the mock map by id and returned `_source: 'mock'`.
+//     - PUT silently mutated the in-memory map, returning 200 while no row
+//       was persisted (worst case: trader sees "Alert updated" but the
+//       broadcast never fires).
+//     - DELETE silently spliced the mock array, returning 200 with no DB
+//       row touched.
+//   All three now surface the upstream failure as 502 so the alerts UI
+//   shows a real error instead of phantom success on mutating ops.
 // ═══════════════════════════════════════════════════════════════════════════
-
-const mockAlerts: Record<string, RoomAlert[]> = {
-	'explosive-swings': [
-		{
-			id: 1,
-			room_id: 4,
-			room_slug: 'explosive-swings',
-			alert_type: 'ENTRY',
-			ticker: 'NVDA',
-			title: 'Opening NVDA Swing Position',
-			message: 'Entering NVDA at $142.50. First target $148, stop at $136.',
-			notes: 'Entry based on breakout above $142 resistance.',
-			trade_type: 'shares',
-			action: 'BUY',
-			quantity: 150,
-			option_type: null,
-			strike: null,
-			expiration: null,
-			contract_type: null,
-			order_type: 'LMT',
-			limit_price: 142.5,
-			fill_price: 142.5,
-			tos_string: 'BUY +150 NVDA @142.50 LMT',
-			entry_alert_id: null,
-			trade_plan_id: 1,
-			is_new: true,
-			is_published: true,
-			is_pinned: false,
-			published_at: new Date().toISOString(),
-			created_at: new Date().toISOString(),
-			updated_at: new Date().toISOString()
-		}
-	]
-};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // GET - Get single alert
@@ -115,19 +91,13 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
 		}
 	}
 
-	// Fallback to mock data
-	const alerts = mockAlerts[slug] || [];
-	const alert = alerts.find((a) => a.id === alertId);
-
-	if (!alert) {
-		error(404, `Alert ${id} not found`);
-	}
-
-	return json({
-		success: true,
-		data: alert,
-		_source: 'mock'
-	});
+	// R22-A: was: look up alertId in `mockAlerts[slug]` and return `_source: 'mock'`.
+	// Now: surface backend failure as 502 — the alert genuinely cannot be retrieved.
+	console.error(`[Alert API] GET backend unavailable for slug '${slug}' id '${id}'`);
+	return json(
+		{ success: false, error: 'Unable to load alert — backend is unavailable.' },
+		{ status: 502 }
+	);
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -189,76 +159,15 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 		});
 	}
 
-	// Fallback to mock update
-	const alerts = mockAlerts[slug] || [];
-	const alertIndex = alerts.findIndex((a) => a.id === alertId);
-
-	if (alertIndex === -1) {
-		error(404, `Alert ${id} not found`);
-	}
-
-	const existingAlert = alerts[alertIndex];
-
-	// Rebuild TOS string if trade details changed
-	let tosString = existingAlert.tos_string;
-	const tradeType = body.trade_type ?? existingAlert.trade_type;
-	const action = body.action ?? existingAlert.action;
-	const quantity = body.quantity ?? existingAlert.quantity;
-	const orderType = body.order_type ?? existingAlert.order_type;
-
-	if (tradeType && action && quantity && orderType) {
-		const tosParams = {
-			trade_type: tradeType,
-			action: action,
-			quantity: quantity,
-			ticker: body.ticker ?? existingAlert.ticker,
-			option_type: body.option_type ?? existingAlert.option_type ?? undefined,
-			strike: body.strike ?? existingAlert.strike ?? undefined,
-			expiration: body.expiration ?? existingAlert.expiration ?? undefined,
-			contract_type: body.contract_type ?? existingAlert.contract_type ?? undefined,
-			order_type: orderType,
-			limit_price: body.limit_price ?? existingAlert.limit_price ?? undefined
-		};
-
-		const errors = validateTosParams(tosParams);
-		if (errors.length === 0) {
-			tosString = buildTosString(tosParams);
-		}
-	}
-
-	// Update alert
-	const updatedAlert: RoomAlert = {
-		...existingAlert,
-		alert_type: body.alert_type ?? existingAlert.alert_type,
-		ticker: body.ticker?.toUpperCase() ?? existingAlert.ticker,
-		title: body.title ?? existingAlert.title,
-		message: body.message ?? existingAlert.message,
-		notes: body.notes ?? existingAlert.notes,
-		trade_type: body.trade_type ?? existingAlert.trade_type,
-		action: body.action ?? existingAlert.action,
-		quantity: body.quantity ?? existingAlert.quantity,
-		option_type: body.option_type ?? existingAlert.option_type,
-		strike: body.strike ?? existingAlert.strike,
-		expiration: body.expiration ?? existingAlert.expiration,
-		contract_type: body.contract_type ?? existingAlert.contract_type,
-		order_type: body.order_type ?? existingAlert.order_type,
-		limit_price: body.limit_price ?? existingAlert.limit_price,
-		entry_alert_id: body.entry_alert_id ?? existingAlert.entry_alert_id,
-		is_new: body.is_new ?? existingAlert.is_new,
-		is_published: body.is_published ?? existingAlert.is_published,
-		is_pinned: body.is_pinned ?? existingAlert.is_pinned,
-		tos_string: tosString,
-		updated_at: new Date().toISOString()
-	};
-
-	mockAlerts[slug][alertIndex] = updatedAlert;
-
-	return json({
-		success: true,
-		data: updatedAlert,
-		message: 'Alert updated successfully',
-		_source: 'mock'
-	});
+	// R22-A: was: rebuild TOS string, mutate `mockAlerts[slug][alertIndex]`,
+	// return `_source: 'mock'`. The mock write was lost on every dyno cycle
+	// and never broadcast to room members — a silent fake-success on a
+	// mutating endpoint. Surface the failure as 502 so the admin retries.
+	console.error(`[Alert API] PUT backend unavailable for slug '${slug}' id '${id}'`);
+	return json(
+		{ success: false, error: 'Unable to update alert — backend is unavailable.' },
+		{ status: 502 }
+	);
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -309,19 +218,11 @@ export const DELETE: RequestHandler = async ({ params, request, cookies }) => {
 		});
 	}
 
-	// Fallback to mock delete
-	const alerts = mockAlerts[slug] || [];
-	const alertIndex = alerts.findIndex((a) => a.id === alertId);
-
-	if (alertIndex === -1) {
-		error(404, `Alert ${id} not found`);
-	}
-
-	mockAlerts[slug].splice(alertIndex, 1);
-
-	return json({
-		success: true,
-		message: `Alert ${id} deleted successfully`,
-		_source: 'mock'
-	});
+	// R22-A: was: splice the in-memory `mockAlerts[slug]` and return 200.
+	// Now: surface backend failure as 502 — the DB row is still there.
+	console.error(`[Alert API] DELETE backend unavailable for slug '${slug}' id '${id}'`);
+	return json(
+		{ success: false, error: 'Unable to delete alert — backend is unavailable.' },
+		{ status: 502 }
+	);
 };

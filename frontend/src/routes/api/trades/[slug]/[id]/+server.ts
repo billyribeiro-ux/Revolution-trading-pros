@@ -11,139 +11,29 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import type { Trade, TradeUpdateInput } from '$lib/types/trading';
+import type { TradeUpdateInput } from '$lib/types/trading';
 // R19-A: shared proxy helper — pins CLAUDE.md URL-fallback chain
 // (API_BASE_URL || BACKEND_URL || localhost) AND replaces the
 // `Promise<any | null>` helper with `Promise<unknown>` + narrowing guards.
+// R22-A: `Trade` type import dropped — the in-file mock array and the
+// helpers that built fake closed-trade rows are gone.
 import { fetchBackend, hasSuccess, isObject } from '$lib/server/proxy-fetch';
 
-// Reference to mock data from parent route
-// In production, this would come from database
-const mockTrades: Record<string, Trade[]> = {
-	'explosive-swings': [
-		{
-			id: 1,
-			room_id: 4,
-			room_slug: 'explosive-swings',
-			ticker: 'MSFT',
-			trade_type: 'shares',
-			direction: 'long',
-			quantity: 100,
-			option_type: null,
-			strike: null,
-			expiration: null,
-			entry_alert_id: null,
-			entry_price: 425.0,
-			entry_date: '2026-01-05',
-			exit_alert_id: null,
-			exit_price: 460.0,
-			exit_date: '2026-01-10',
-			setup: 'Breakout',
-			status: 'closed',
-			pnl: 3500,
-			pnl_percent: 8.24,
-			holding_days: 5,
-			notes: 'Perfect breakout setup. Held through consolidation and exited at T2.',
-			created_at: '2026-01-05T10:00:00Z',
-			updated_at: '2026-01-10T15:45:00Z'
-		},
-		{
-			id: 5,
-			room_id: 4,
-			room_slug: 'explosive-swings',
-			ticker: 'NVDA',
-			trade_type: 'shares',
-			direction: 'long',
-			quantity: 150,
-			option_type: null,
-			strike: null,
-			expiration: null,
-			entry_alert_id: 1,
-			entry_price: 142.5,
-			entry_date: '2026-01-13',
-			exit_alert_id: null,
-			exit_price: null,
-			exit_date: null,
-			setup: 'Breakout',
-			status: 'open',
-			pnl: null,
-			pnl_percent: null,
-			holding_days: null,
-			notes: 'Currently holding. Watching for T1 at $148.',
-			created_at: '2026-01-13T10:32:00Z',
-			updated_at: '2026-01-13T10:32:00Z'
-		},
-		{
-			id: 7,
-			room_id: 4,
-			room_slug: 'explosive-swings',
-			ticker: 'AMZN',
-			trade_type: 'shares',
-			direction: 'long',
-			quantity: 100,
-			option_type: null,
-			strike: null,
-			expiration: null,
-			entry_alert_id: null,
-			entry_price: 185.0,
-			entry_date: '2026-01-11',
-			exit_alert_id: null,
-			exit_price: null,
-			exit_date: null,
-			setup: 'Breakout',
-			status: 'open',
-			pnl: null,
-			pnl_percent: null,
-			holding_days: null,
-			notes: 'Active position. Currently at T1.',
-			created_at: '2026-01-11T11:15:00Z',
-			updated_at: '2026-01-11T11:15:00Z'
-		}
-	]
-};
-
 // ═══════════════════════════════════════════════════════════════════════════
-// UTILITY FUNCTIONS
-// ═══════════════════════════════════════════════════════════════════════════
-
-function calculatePnL(
-	direction: 'long' | 'short',
-	tradeType: 'shares' | 'options',
-	quantity: number,
-	entryPrice: number,
-	exitPrice: number
-): { pnl: number; pnl_percent: number } {
-	let pnl: number;
-
-	if (direction === 'long') {
-		// Long: profit when exit > entry
-		pnl = (exitPrice - entryPrice) * quantity;
-	} else {
-		// Short: profit when exit < entry
-		pnl = (entryPrice - exitPrice) * quantity;
-	}
-
-	// For options, multiply by contract size (100 shares per contract)
-	if (tradeType === 'options') {
-		pnl *= 100;
-	}
-
-	const pnl_percent =
-		((exitPrice - entryPrice) / entryPrice) * 100 * (direction === 'short' ? -1 : 1);
-
-	return {
-		pnl: Math.round(pnl * 100) / 100,
-		pnl_percent: Math.round(pnl_percent * 100) / 100
-	};
-}
-
-function calculateHoldingDays(entryDate: string, exitDate: string): number {
-	const entry = new Date(entryDate);
-	const exit = new Date(exitDate);
-	const diffTime = Math.abs(exit.getTime() - entry.getTime());
-	return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-}
-
+// R22-A: Deleted `mockTrades` (3 fake explosive-swings rows: closed MSFT
+//   +$3,500, open NVDA at $142.50, open AMZN at $185), the local P&L
+//   calculator, and the holding-days calculator.
+//     - GET fell back to the mock map on backend failure, returning
+//       `_mock: true` rows with fabricated numbers.
+//     - PUT silently mutated the in-memory map (including running
+//       `calculatePnL` against fake entry prices) and returned 200 —
+//       traders saw "Trade closed successfully" with a fabricated P&L on
+//       a row that never updated in the DB. Worst-case among mutating
+//       proxies because the P&L numbers anchor downstream stats rollups.
+//     - DELETE silently spliced the mock array and returned 200.
+//   All three now surface backend failure as 502. The P&L / holding-days
+//   helpers are deleted because the only callers were the mock paths —
+//   the real P&L is computed by the backend.
 // ═══════════════════════════════════════════════════════════════════════════
 // GET - Get single trade
 // ═══════════════════════════════════════════════════════════════════════════
@@ -182,19 +72,13 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
 		return json(backendData);
 	}
 
-	// Fallback to mock data
-	const trades = mockTrades[slug] || [];
-	const trade = trades.find((t) => t.id === tradeId);
-
-	if (!trade) {
-		error(404, `Trade ${id} not found`);
-	}
-
-	return json({
-		success: true,
-		data: trade,
-		_mock: true
-	});
+	// R22-A: was: look up `tradeId` in `mockTrades[slug]` and return
+	// `_mock: true`. Now: 502 so the trade detail page shows a real error.
+	console.error(`[Trade API] GET backend unavailable for slug '${slug}' id '${id}'`);
+	return json(
+		{ success: false, error: 'Unable to load trade — backend is unavailable.' },
+		{ status: 502 }
+	);
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -281,67 +165,16 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 		}
 	}
 
-	// Fallback to mock update
-	const trades = mockTrades[slug] || [];
-	const tradeIndex = trades.findIndex((t) => t.id === tradeId);
-
-	if (tradeIndex === -1) {
-		error(404, `Trade ${id} not found`);
-	}
-
-	const existingTrade = trades[tradeIndex];
-
-	// Determine if this is a close action
-	const isClosing =
-		body.status === 'closed' ||
-		(body.exit_price !== undefined && body.exit_price !== null && existingTrade.status === 'open');
-
-	let pnl = existingTrade.pnl;
-	let pnl_percent = existingTrade.pnl_percent;
-	let holding_days = existingTrade.holding_days;
-
-	// Calculate P&L if closing
-	if (isClosing && body.exit_price) {
-		const exitPrice = body.exit_price;
-		const calculation = calculatePnL(
-			existingTrade.direction,
-			existingTrade.trade_type,
-			existingTrade.quantity,
-			existingTrade.entry_price,
-			exitPrice
-		);
-		pnl = calculation.pnl;
-		pnl_percent = calculation.pnl_percent;
-
-		const exitDate = body.exit_date || new Date().toISOString().split('T')[0];
-		holding_days = calculateHoldingDays(existingTrade.entry_date, exitDate);
-	}
-
-	// Update trade
-	const updatedTrade: Trade = {
-		...existingTrade,
-		exit_alert_id: body.exit_alert_id ?? existingTrade.exit_alert_id,
-		exit_price: body.exit_price ?? existingTrade.exit_price,
-		exit_date:
-			body.exit_date ??
-			(isClosing ? new Date().toISOString().split('T')[0] : existingTrade.exit_date),
-		status: isClosing ? 'closed' : (body.status ?? existingTrade.status),
-		pnl,
-		pnl_percent,
-		holding_days,
-		notes: body.notes ?? existingTrade.notes,
-		updated_at: new Date().toISOString()
-	};
-
-	// Update in mock data
-	mockTrades[slug][tradeIndex] = updatedTrade;
-
-	return json({
-		success: true,
-		data: updatedTrade,
-		message: isClosing ? 'Trade closed successfully' : 'Trade updated successfully',
-		_mock: true
-	});
+	// R22-A: was: look up tradeId in `mockTrades[slug]`, run local
+	// `calculatePnL`/`calculateHoldingDays` against the mock row's entry
+	// fields, mutate the in-memory map, and return 200 with the fabricated
+	// P&L. Worst class of mock fallback because the fake P&L numbers
+	// anchored downstream stats rollups. Now: 502.
+	console.error(`[Trade API] PUT backend unavailable for slug '${slug}' id '${id}'`);
+	return json(
+		{ success: false, error: 'Unable to update trade — backend is unavailable.' },
+		{ status: 502 }
+	);
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -388,20 +221,12 @@ export const DELETE: RequestHandler = async ({ params, request, cookies }) => {
 		return json(backendData);
 	}
 
-	// Fallback to mock delete
-	const trades = mockTrades[slug] || [];
-	const tradeIndex = trades.findIndex((t) => t.id === tradeId);
-
-	if (tradeIndex === -1) {
-		error(404, `Trade ${id} not found`);
-	}
-
-	// Remove from mock data
-	mockTrades[slug].splice(tradeIndex, 1);
-
-	return json({
-		success: true,
-		message: `Trade ${id} deleted successfully`,
-		_mock: true
-	});
+	// R22-A: was: splice `mockTrades[slug]` and return 200. The DB row was
+	// untouched — admins saw "Trade deleted" but the row was still live on
+	// the trades page in the next request. Now: 502.
+	console.error(`[Trade API] DELETE backend unavailable for slug '${slug}' id '${id}'`);
+	return json(
+		{ success: false, error: 'Unable to delete trade — backend is unavailable.' },
+		{ status: 502 }
+	);
 };

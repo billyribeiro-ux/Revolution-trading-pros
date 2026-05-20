@@ -4,13 +4,19 @@
  *
  * Proxies requests from frontend to Rust backend API
  * Endpoint: GET /api/courses/:id/downloads
+ *
+ * R22-A: Deleted the fake-success fallback that returned `{ success: true,
+ *   data: [] }` on any backend non-2xx or network failure. The previous
+ *   shape lied to the user: a course with five downloads showed "no
+ *   downloads" the moment the backend hiccuped, with no way for the UI to
+ *   distinguish "actually no files" from "API unreachable." Now: forward
+ *   the upstream non-2xx status, and surface network failure as 500.
  */
 
 import { json, type RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 
-// FIX-2026-04-26: env.API_URL → canonical pattern
-// const API_URL = env.API_URL || 'http://localhost:8080';
+// CLAUDE.md hard rule — API_BASE_URL primary, BACKEND_URL fallback, localhost last.
 const API_URL =
 	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
@@ -42,27 +48,30 @@ export const GET: RequestHandler = async ({ params, cookies, fetch }) => {
 		});
 
 		if (!response.ok) {
-			// Return mock data for now since backend endpoint may not exist yet
-			console.warn(`[API Proxy] Backend returned ${response.status} for course downloads: ${id}`);
-
-			// Return empty downloads array - no error, just no downloads yet
-			return json({
-				success: true,
-				data: [],
-				message: 'No downloads available for this course'
-			});
+			// R22-A: was: return `{ success: true, data: [] }`. Now: forward the
+			// upstream status as the body's `error.message` so the UI can render
+			// a real error and the student can retry.
+			console.error(
+				`[Course downloads proxy] Backend ${response.status} for course '${id}'`
+			);
+			return json(
+				{
+					success: false,
+					error: `Unable to load course downloads (backend ${response.status}).`
+				},
+				{ status: 502 }
+			);
 		}
 
 		const data = await response.json();
 		return json(data);
-	} catch (error) {
-		console.error('[API Proxy] Error fetching course downloads:', error);
-
-		// Return graceful fallback - no downloads rather than error
-		return json({
-			success: true,
-			data: [],
-			message: 'Downloads temporarily unavailable'
-		});
+	} catch (err) {
+		// R22-A: was: silent `{ success: true, data: [] }` fallback. Now: 500
+		// so an outage surfaces in the UI and the SRE channel.
+		console.error('[Course downloads proxy] Backend fetch failed:', err);
+		return json(
+			{ success: false, error: 'Course downloads backend unreachable.' },
+			{ status: 500 }
+		);
 	}
 };

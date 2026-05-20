@@ -36,35 +36,14 @@ function isTradePlanLike(value: unknown): value is TradePlanEntry {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// FALLBACK MOCK DATA
+// R22-A: Deleted `mockTradePlans` (one NVDA placeholder for explosive-swings).
+//   - GET handler used to fall back to this single row on backend failure,
+//     so traders saw the same NVDA plan every week forever during outages.
+//   - POST handler appended a new entry to the in-memory map and returned
+//     200 `_source: 'mock'` — admins saw "Trade plan created" while nothing
+//     persisted and no one else in the room could ever see the entry.
+//   Both now surface backend failure as 502.
 // ═══════════════════════════════════════════════════════════════════════════
-
-const mockTradePlans: Record<string, TradePlanEntry[]> = {
-	'explosive-swings': [
-		{
-			id: 1,
-			room_id: 4,
-			room_slug: 'explosive-swings',
-			week_of: new Date().toISOString().split('T')[0],
-			ticker: 'NVDA',
-			bias: 'BULLISH',
-			entry: '$142.50',
-			target1: '$148.00',
-			target2: '$152.00',
-			target3: '$158.00',
-			runner: '$165.00+',
-			runner_stop: '$160.00',
-			stop: '$136.00',
-			options_strike: '$145 Call',
-			options_exp: '2026-01-24',
-			notes: 'Breakout above consolidation. Wait for pullback to entry zone.',
-			sort_order: 1,
-			is_active: true,
-			created_at: new Date().toISOString(),
-			updated_at: new Date().toISOString()
-		}
-	]
-};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // GET - List trade plans for a room
@@ -129,30 +108,17 @@ export const GET: RequestHandler = async ({ params, url, request, cookies }) => 
 		});
 	}
 
-	// Fallback to mock data
-	console.info(`[Trade Plans API] Using mock data for ${slug}`);
-	let plans = mockTradePlans[slug] || [];
-
-	// Filter by week if specified
-	if (weekOf) {
-		plans = plans.filter((p) => p.week_of === weekOf);
-	}
-
-	// Filter active only
-	if (activeOnly) {
-		plans = plans.filter((p) => p.is_active);
-	}
-
-	// Sort by sort_order
-	plans.sort((a, b) => a.sort_order - b.sort_order);
-
-	return json({
-		success: true,
-		data: plans,
-		week_of: weekOf || plans[0]?.week_of || null,
-		total: plans.length,
-		_source: 'mock'
-	});
+	// R22-A: was: fall back to in-memory `mockTradePlans[slug]` (one NVDA row),
+	// filter by week/active, sort, return `_source: 'mock'`. Now: 502 so the
+	// trade-plans UI shows a real error rather than the same NVDA placeholder.
+	console.error(`[Trade Plans API] Backend unavailable for slug '${slug}'`);
+	return json(
+		{
+			success: false,
+			error: 'Unable to load trade plans — backend is unavailable.'
+		},
+		{ status: 502 }
+	);
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -224,43 +190,15 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 		});
 	}
 
-	// Mock create fallback
-	const plans = mockTradePlans[slug] || [];
-	const maxId = plans.reduce((max, p) => Math.max(max, p.id), 0);
-	const maxOrder = plans.reduce((max, p) => Math.max(max, p.sort_order), 0);
-
-	const newPlan: TradePlanEntry = {
-		id: maxId + 1,
-		room_id: 4,
-		room_slug: slug,
-		week_of: body.week_of || new Date().toISOString().split('T')[0],
-		ticker: body.ticker.toUpperCase(),
-		bias: body.bias,
-		entry: body.entry || '',
-		target1: body.target1 || '',
-		target2: body.target2 || '',
-		target3: body.target3 || '',
-		runner: body.runner || '',
-		runner_stop: body.runner_stop || null,
-		stop: body.stop || '',
-		options_strike: body.options_strike || null,
-		options_exp: body.options_exp || null,
-		notes: body.notes || null,
-		sort_order: body.sort_order ?? maxOrder + 1,
-		is_active: true,
-		created_at: new Date().toISOString(),
-		updated_at: new Date().toISOString()
-	};
-
-	if (!mockTradePlans[slug]) {
-		mockTradePlans[slug] = [];
-	}
-	mockTradePlans[slug].push(newPlan);
-
-	return json({
-		success: true,
-		data: newPlan,
-		message: 'Trade plan entry created',
-		_source: 'mock'
-	});
+	// R22-A: was: append to in-memory `mockTradePlans[slug]` and return 200.
+	// Fake-success on a mutating endpoint — the entry was never persisted
+	// and room members never saw it. Now: 502 so the admin retries.
+	console.error(`[Trade Plans API] POST backend unavailable for slug '${slug}'`);
+	return json(
+		{
+			success: false,
+			error: 'Unable to create trade plan — backend is unavailable.'
+		},
+		{ status: 502 }
+	);
 };

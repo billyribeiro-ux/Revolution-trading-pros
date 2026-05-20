@@ -37,42 +37,16 @@ function isRoomAlertLike(value: unknown): value is RoomAlert {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// FALLBACK MOCK DATA (only used when backend unavailable)
+// R22-A: Deleted `mockAlerts` (one fake NVDA entry alert for `explosive-swings`).
+//   On backend failure the GET handler used to return that NVDA row and the
+//   POST handler used to append a new mock alert to the in-memory map — the
+//   latter is the worst kind: traders clicking "Create Alert" got a 200 with
+//   `_source: 'mock'`, the row was lost on the next dyno cycle, AND no one
+//   else in the room ever received the notification. Both paths now surface
+//   a backend failure with the right status (502 for non-2xx, 500 for
+//   network failure) so the alert form shows a real error and the trader
+//   can retry against a working backend.
 // ═══════════════════════════════════════════════════════════════════════════
-
-const mockAlerts: Record<string, RoomAlert[]> = {
-	'explosive-swings': [
-		{
-			id: 1,
-			room_id: 4,
-			room_slug: 'explosive-swings',
-			alert_type: 'ENTRY',
-			ticker: 'NVDA',
-			title: 'Opening NVDA Swing Position',
-			message: 'Entering NVDA at $142.50. First target $148, stop at $136.',
-			notes: 'Entry based on breakout above $142 resistance with strong volume confirmation.',
-			trade_type: 'shares',
-			action: 'BUY',
-			quantity: 150,
-			option_type: null,
-			strike: null,
-			expiration: null,
-			contract_type: null,
-			order_type: 'LMT',
-			limit_price: 142.5,
-			fill_price: 142.5,
-			tos_string: 'BUY +150 NVDA @142.50 LMT',
-			entry_alert_id: null,
-			trade_plan_id: 1,
-			is_new: true,
-			is_published: true,
-			is_pinned: false,
-			published_at: new Date().toISOString(),
-			created_at: new Date().toISOString(),
-			updated_at: new Date().toISOString()
-		}
-	]
-};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // GET - List alerts for a room
@@ -140,43 +114,18 @@ export const GET: RequestHandler = async ({ params, url, request, cookies }) => 
 		});
 	}
 
-	// Fallback to mock data — STUB-SMELL (audit 2026-05-17): the proxy
-	// silently serves mockAlerts on backend failure, same class as the
-	// trading-rooms gaps. Tracked in audit doc §11. info, not log.
-	console.info(`[Alerts API] Using mock data for ${slug}`);
-	let alerts = mockAlerts[slug] || [];
-
-	// Filter by alert type
-	if (alertType && alertType !== 'all') {
-		alerts = alerts.filter((a) => a.alert_type === alertType);
-	}
-
-	// Filter by ticker
-	if (ticker) {
-		alerts = alerts.filter((a) => a.ticker.toUpperCase() === ticker.toUpperCase());
-	}
-
-	// Filter published only for non-admin requests
-	if (!authHeader) {
-		alerts = alerts.filter((a) => a.is_published);
-	}
-
-	// Sort by published date (newest first)
-	alerts.sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
-
-	// Paginate
-	const offset = (parseInt(page) - 1) * parseInt(perPage);
-	const total = alerts.length;
-	alerts = alerts.slice(offset, offset + parseInt(perPage));
-
-	return json({
-		success: true,
-		data: alerts,
-		total,
-		page: parseInt(page),
-		limit: parseInt(perPage),
-		_source: 'mock'
-	});
+	// R22-A: was: fall back to in-memory `mockAlerts[slug]`, filter, sort,
+	// paginate, return with `_source: 'mock'`. Now: surface the backend
+	// failure as 502 so the alerts UI shows a real error rather than the
+	// same single NVDA placeholder row forever.
+	console.error(`[Alerts API] Backend unavailable for slug '${slug}'`);
+	return json(
+		{
+			success: false,
+			error: 'Unable to load alerts from backend. Please check the API connection.'
+		},
+		{ status: 502 }
+	);
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -281,49 +230,19 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 		});
 	}
 
-	// Mock create fallback
-	const alerts = mockAlerts[slug] || [];
-	const maxId = alerts.reduce((max, a) => Math.max(max, a.id), 0);
-
-	const newAlert: RoomAlert = {
-		id: maxId + 1,
-		room_id: 4,
-		room_slug: slug,
-		alert_type: body.alert_type,
-		ticker: body.ticker.toUpperCase(),
-		title: body.title,
-		message: body.message,
-		notes: body.notes || null,
-		trade_type: body.trade_type || null,
-		action: body.action || null,
-		quantity: body.quantity || null,
-		option_type: body.option_type || null,
-		strike: body.strike || null,
-		expiration: body.expiration || null,
-		contract_type: body.contract_type || null,
-		order_type: body.order_type || null,
-		limit_price: body.limit_price || null,
-		fill_price: body.fill_price || body.limit_price || null,
-		tos_string: tosString,
-		entry_alert_id: body.entry_alert_id || null,
-		trade_plan_id: body.trade_plan_id || null,
-		is_new: true,
-		is_published: true,
-		is_pinned: body.is_pinned || false,
-		published_at: new Date().toISOString(),
-		created_at: new Date().toISOString(),
-		updated_at: new Date().toISOString()
-	};
-
-	if (!mockAlerts[slug]) {
-		mockAlerts[slug] = [];
-	}
-	mockAlerts[slug].unshift(newAlert);
-
-	return json({
-		success: true,
-		data: newAlert,
-		message: 'Alert created successfully',
-		_source: 'mock'
-	});
+	// R22-A: was: append a new alert to in-memory `mockAlerts[slug]` and
+	// return 200 `_source: 'mock'`. That was the worst class of mock chain:
+	// the admin saw "Alert created" while the row was never persisted and
+	// no room member ever received the notification. The fake-success
+	// poisoned the chain — entry_alert_ids referenced by trade rows pointed
+	// at IDs that vanished on the next dyno cycle. Now: 502 so the form
+	// surfaces a real failure.
+	console.error(`[Alerts API] POST backend unavailable for slug '${slug}'`);
+	return json(
+		{
+			success: false,
+			error: 'Unable to create alert — backend is unavailable. Please try again.'
+		},
+		{ status: 502 }
+	);
 };
