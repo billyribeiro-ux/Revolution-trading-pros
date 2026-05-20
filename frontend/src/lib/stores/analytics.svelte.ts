@@ -9,8 +9,26 @@
  */
 
 import { browser } from '$app/environment';
-import { analyticsApi, type DashboardData, type RealTimeMetrics } from '$lib/api/analytics';
+import {
+	analyticsApi,
+	type DashboardData,
+	type EventProperties,
+	type RealTimeMetrics
+} from '$lib/api/analytics';
 import { logger } from '$lib/utils/logger';
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Queue payload shape — mirrors the body `analyticsApi.trackEvent` accepts.
+// `track()` builds these inline and `flushQueue()` forwards them to
+// `analyticsApi.trackBatch(...)`, which accepts a superset (extra fields like
+// `event_type` are tolerated structurally).
+// ═══════════════════════════════════════════════════════════════════════════
+interface QueuedEvent {
+	event_name: string;
+	event_category?: string;
+	event_type?: string;
+	properties?: EventProperties;
+}
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types
@@ -172,7 +190,7 @@ export const analyticsStore = {
 
 let trackingConfig = $state<EventTrackingConfig>({ ...defaultTrackingConfig });
 let sessionIdValue = $state<string | null>(null);
-const eventQueue: any[] = [];
+const eventQueue: QueuedEvent[] = [];
 let flushInterval: ReturnType<typeof setInterval> | null = null;
 
 // Generate session ID
@@ -199,16 +217,24 @@ function initSession() {
 	sessionIdValue = sid;
 }
 
+// Narrow a `JsonValue | undefined` property to a string fallback. Returns the
+// default when the value is missing or not a string; defends `event_category`
+// / `event_type` (declared `string` in the API contract) from a caller passing
+// e.g. a number or array in the property bag.
+function asString(value: EventProperties[string] | undefined, fallback: string): string {
+	return typeof value === 'string' && value.length > 0 ? value : fallback;
+}
+
 // Track event
-async function track(eventName: string, properties?: Record<string, any>) {
+async function track(eventName: string, properties?: EventProperties) {
 	if (!browser) return;
 
 	initSession();
 
-	const eventData = {
+	const eventData: QueuedEvent = {
 		event_name: eventName,
-		event_category: properties?.['category'] || 'user_interaction',
-		event_type: properties?.['type'] || 'custom',
+		event_category: asString(properties?.['category'], 'user_interaction'),
+		event_type: asString(properties?.['type'], 'custom'),
 		properties: {
 			...properties,
 			session_id: sessionIdValue,
@@ -305,12 +331,12 @@ function setupScrollTracking() {
 }
 
 // Track form submission
-function trackFormSubmit(formId: string, formData?: Record<string, any>) {
+function trackFormSubmit(formId: string, formData?: EventProperties) {
 	if (!trackingConfig.autoTrackFormSubmissions) return;
 
 	track('form_submit', {
 		form_id: formId,
-		form_data: formData,
+		...(formData && { form_data: formData }),
 		category: 'conversion'
 	});
 }

@@ -13,6 +13,13 @@
 	 */
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { browser } from '$app/environment';
+	import type {
+		CandlestickData,
+		IChartApi,
+		ISeriesApi,
+		UTCTimestamp
+	} from 'lightweight-charts';
+	import type gsap from 'gsap';
 
 	// ============================================================================
 	// MODULE-LEVEL PRE-COMPUTATION
@@ -30,11 +37,11 @@
 		};
 	}
 
-	const CANDLE_DATA = generateCandleData();
+	const CANDLE_DATA: CandlestickData<UTCTimestamp>[] = generateCandleData();
 
-	function generateCandleData() {
+	function generateCandleData(): CandlestickData<UTCTimestamp>[] {
 		const rand = mulberry32(42);
-		const candles = [];
+		const candles: CandlestickData<UTCTimestamp>[] = [];
 		const baseTime = 1704715800;
 		const rangeCenter = 475.5;
 		const rangeHigh = 476.1;
@@ -59,7 +66,8 @@
 			const wickRange = Math.max(bodySize * 0.08, 0.01);
 
 			candles.push({
-				time: baseTime + i * 60,
+				// `UTCTimestamp` is a branded `number` from lightweight-charts.
+				time: (baseTime + i * 60) as UTCTimestamp,
 				open: +open.toFixed(2),
 				high: +Math.min(rangeHigh, Math.max(open, close) + wickRange * rand()).toFixed(2),
 				low: +Math.max(rangeLow, Math.min(open, close) - wickRange * rand()).toFixed(2),
@@ -115,15 +123,15 @@
 	// ============================================================================
 	// STATE
 	// ============================================================================
-	let chart: ReturnType<typeof import('lightweight-charts').createChart> | null = null;
-	let series: any = null;
+	let chart: IChartApi | null = null;
+	let series: ISeriesApi<'Candlestick'> | null = null;
 	let replayInterval: ReturnType<typeof setInterval> | null = null;
 	let slideInterval: ReturnType<typeof setInterval> | null = null;
 	let currentSlide = $state(0);
 	let previousSlide = $state(-1);
 	let isLooping = $state(false);
-	let gsapLib: any = null;
-	let timeline: any = null;
+	let gsapLib: typeof gsap | null = null;
+	let timeline: gsap.core.Timeline | null = null;
 	let gsapLoaded = $state(false);
 	let isTransitioning = $state(false);
 
@@ -273,6 +281,9 @@
 		loopTL
 			.to(chartContainer, { opacity: 0, scale: 1.02, duration: 0.6, ease: 'power2.in' })
 			.call(() => {
+				// `series` / `chart` may be nulled by onDestroy before this
+				// deferred GSAP callback fires; re-check inside the closure.
+				if (!series) return;
 				series.setData(CANDLE_DATA.slice(0, 10));
 				if (chart?.timeScale()) {
 					chart.timeScale().setVisibleLogicalRange({ from: 0, to: 10 });
@@ -311,6 +322,9 @@
 			yoyo: true,
 			repeat: 1,
 			onComplete: () => {
+				// `gsapLib` / `chartContainer` are nullable at the closure site
+				// (onDestroy doesn't kill in-flight tweens). Re-narrow.
+				if (!gsapLib || !chartContainer) return;
 				gsapLib.to(chartContainer, { opacity: 0.4, duration: 0.3 });
 			}
 		});

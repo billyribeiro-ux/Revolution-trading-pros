@@ -19,6 +19,18 @@
 	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
 	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
 	import IconSparkles from '@tabler/icons-svelte-runes/icons/sparkles';
+	import type ScrollTriggerType from 'gsap/ScrollTrigger';
+
+	// Local shape for the synthetic OHLC candles `generateCandleData` emits —
+	// distinct from any persisted candle DTO; lives only inside this section's
+	// background visualization.
+	interface Candle {
+		open: number;
+		high: number;
+		low: number;
+		close: number;
+		bullish: boolean;
+	}
 
 	// ============================================================================
 	// INDICATOR DATA
@@ -78,7 +90,10 @@
 	// ICT11+ Fix: Start false, set true in onMount to trigger in: transitions
 	let isVisible = $state(false);
 	let activeIndicator = $state(0);
-	let scrollTriggerInstance: any = null;
+	// `ScrollTriggerType` is the *class* (used statically — `.getAll()`,
+	// `.refresh()`); instances returned by `.getAll()` are `ScrollTriggerType`
+	// instances of the same class.
+	let scrollTriggerInstance: typeof ScrollTriggerType | null = null;
 	let animationFrame: number;
 	let chartCtx: CanvasRenderingContext2D | null = null;
 	let canvasRef = $state<HTMLCanvasElement | null>(null);
@@ -92,8 +107,8 @@
 	// ============================================================================
 	// DATA GENERATORS
 	// ============================================================================
-	function generateCandleData(count: number) {
-		const candles = [];
+	function generateCandleData(count: number): Candle[] {
+		const candles: Candle[] = [];
 		let price = 150;
 		for (let i = 0; i < count; i++) {
 			const change = (Math.random() - 0.48) * 3;
@@ -107,7 +122,7 @@
 		return candles;
 	}
 
-	function generateRSIData(candles: any[]) {
+	function generateRSIData(candles: Candle[]): number[] {
 		return candles.map((_, i) => 30 + Math.sin(i * 0.15) * 25 + Math.random() * 15);
 	}
 
@@ -374,8 +389,12 @@
 		if (animationFrame) cancelAnimationFrame(animationFrame);
 		// Kill only ScrollTriggers associated with this section
 		if (scrollTriggerInstance && sectionRef) {
-			scrollTriggerInstance.getAll().forEach((st: any) => {
-				if (st.trigger === sectionRef || sectionRef?.contains(st.trigger)) {
+			const section = sectionRef;
+			scrollTriggerInstance.getAll().forEach((st) => {
+				// `st.trigger` is `Element | undefined`; `contains` rejects undefined.
+				const trigger = st.trigger;
+				if (!trigger) return;
+				if (trigger === section || section.contains(trigger)) {
 					st.kill();
 				}
 			});

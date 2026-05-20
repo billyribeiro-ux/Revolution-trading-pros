@@ -7,10 +7,16 @@
 -->
 
 <script lang="ts">
+	import type { Component as SvelteComponent } from 'svelte';
 	import { IconLoader2 } from '$lib/icons';
-	import type { Block } from './types';
+	import type { Block, BlockType } from './types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 
+	// Prop shape every block component receives from the loader — and exactly
+	// what BlockLoader itself accepts (it's a pass-through wrapper). Individual
+	// block components are free to declare a stricter `Block` type (e.g.
+	// narrowed to their own content shape); at the dynamic-import boundary we
+	// only know it matches this superset.
 	interface Props {
 		block: Block;
 		blockId: BlockId;
@@ -20,13 +26,21 @@
 		onError?: (error: Error) => void;
 	}
 
+	type BlockComponent = SvelteComponent<Props>;
+	type BlockModule = { default: BlockComponent };
+
 	let props: Props = $props();
 
 	let isLoading = $state(true);
 	let loadError = $state<string | null>(null);
-	let Component = $state<any>(null);
+	let Component = $state<BlockComponent | null>(null);
 
-	const blockImports: Record<string, () => Promise<any>> = {
+	// Lookup intentionally keyed on a subset of `BlockType` — a few block-type
+	// union members (e.g. `preformatted`, `row`, `separator`, `shortcode`,
+	// `reusable`) currently have no dedicated loader and surface as
+	// `Unknown block type: …` via the catch below. See LB-R28-1 in
+	// R28-A-lib-cleanup.md.
+	const blockImports: Partial<Record<BlockType, () => Promise<BlockModule>>> = {
 		// Content blocks
 		paragraph: () => import('./content/ParagraphBlock.svelte'),
 		heading: () => import('./content/HeadingBlock.svelte'),
@@ -82,7 +96,7 @@
 		loadBlock(props.block.type);
 	});
 
-	async function loadBlock(type: string): Promise<void> {
+	async function loadBlock(type: BlockType): Promise<void> {
 		isLoading = true;
 		loadError = null;
 
