@@ -471,6 +471,8 @@
 					// FIX-2026-04-26 (P3-5): require explicit confirmation before
 					// blowing away whatever modules the user has already authored.
 					// Old code silently overwrote without prompt.
+					// TODO(modal-confirm): replace native confirm() with ConfirmationModal —
+					// requires refactoring this sync generate() into a state-driven flow.
 					if (
 						course.modules.length > 0 &&
 						!confirm(
@@ -2647,7 +2649,13 @@
 						<div class="media-upload">
 							{#if course.thumbnail}
 								<div class="image-preview large">
-									<img src={course.thumbnail} alt="Thumbnail" />
+									<img
+										src={course.thumbnail}
+										alt="Thumbnail"
+										width="711"
+										height="400"
+										loading="lazy"
+									/>
 									<button
 										class="remove-btn"
 										onclick={() => {
@@ -2744,7 +2752,13 @@
 						<div class="gallery-grid">
 							{#each course.gallery as image, i (i)}
 								<div class="gallery-item">
-									<img src={image} alt="Gallery {i + 1}" />
+									<img
+										src={image}
+										alt="Gallery {i + 1}"
+										width="320"
+										height="180"
+										loading="lazy"
+									/>
 									<button class="remove-btn" onclick={() => removeFromGallery(i)}>
 										<IconX size={16} />
 									</button>
@@ -2838,7 +2852,13 @@
 							<label for="og-image">Social Share Image</label>
 							{#if course.og_image}
 								<div class="image-preview">
-									<img src={course.og_image} alt="Social share preview" />
+									<img
+										src={course.og_image}
+										alt="Social share preview"
+										width="1200"
+										height="630"
+										loading="lazy"
+									/>
 									<button
 										class="remove-btn"
 										onclick={() => {

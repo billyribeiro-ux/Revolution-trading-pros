@@ -500,7 +500,13 @@
 				<div class="member-profile">
 					<div class="member-avatar large">
 						{#if member.avatar}
-							<img src={member.avatar} alt={member.name} />
+							<img
+								src={member.avatar}
+								alt={member.name}
+								width="80"
+								height="80"
+								loading="lazy"
+							/>
 						{:else}
 							{getMemberInitials()}
 						{/if}

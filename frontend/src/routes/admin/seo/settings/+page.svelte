@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { IconDeviceFloppy, IconRefresh } from '$lib/icons';
+	import { toastStore } from '$lib/stores/toast.svelte';
 
 	// State using Svelte 5 runes
 	let settings = $state<any>({});
@@ -70,10 +71,10 @@
 				body: JSON.stringify({ settings: settingsArray })
 			});
 
-			alert('Settings saved successfully!');
+			toastStore.success('Settings saved successfully!');
 		} catch (error) {
 			console.error('Failed to save settings:', error);
-			alert('Failed to save settings');
+			toastStore.error('Failed to save settings');
 		} finally {
 			saving = false;
 		}

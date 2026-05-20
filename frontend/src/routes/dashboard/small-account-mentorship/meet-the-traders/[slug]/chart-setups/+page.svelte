@@ -59,6 +59,7 @@
 			</ul>
 
 			<div class="intercom-container">
+				<!-- TODO(cls): width/height needed — intercom CDN screenshot; inspect intrinsic PNG dims and pin them here. -->
 				<img
 					src="https://downloads.intercomcdn.com/i/o/258328594/bff0055e0282c1edd00ced72/image.png"
 					alt="Chart Setup Example"

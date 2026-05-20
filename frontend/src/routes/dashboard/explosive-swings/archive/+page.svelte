@@ -214,7 +214,13 @@
 								<!-- Thumbnail -->
 								<div class="card-thumbnail">
 									{#if week.thumbnailUrl}
-										<img src={week.thumbnailUrl} alt="{week.weekTitle} thumbnail" loading="lazy" />
+										<img
+											src={week.thumbnailUrl}
+											alt="{week.weekTitle} thumbnail"
+											loading="lazy"
+											width="320"
+											height="180"
+										/>
 									{:else}
 										<div class="thumbnail-placeholder">
 											<svg

@@ -14,6 +14,7 @@
 
 	import { onMount, onDestroy } from 'svelte';
 	import { getAuthToken } from '$lib/stores/auth.svelte';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	interface Props {
 		formId: number;
@@ -48,6 +49,10 @@
 	let inviting = $state(false);
 	let showInviteForm = $state(false);
 	let pollingInterval: ReturnType<typeof setInterval> | null = null;
+
+	// Confirmation modal state (replaces native confirm())
+	let showRemoveCollaboratorModal = $state(false);
+	let pendingRemoveUserId = $state<number | null>(null);
 
 	const roles = [
 		{ value: 'editor', label: 'Editor', description: 'Can edit form fields and settings' },
@@ -153,9 +158,16 @@
 	}
 
 	// Remove collaborator
-	async function removeCollaborator(userId: number) {
-		if (!confirm('Are you sure you want to remove this collaborator?')) return;
+	function removeCollaborator(userId: number) {
+		pendingRemoveUserId = userId;
+		showRemoveCollaboratorModal = true;
+	}
 
+	async function confirmRemoveCollaborator() {
+		const userId = pendingRemoveUserId;
+		if (userId == null) return;
+		showRemoveCollaboratorModal = false;
+		pendingRemoveUserId = null;
 		try {
 			const token = getAuthToken();
 			await fetch(`/api/forms/${formId}/collaborators/${userId}`, {
@@ -167,6 +179,11 @@
 		} catch (error) {
 			console.error('Failed to remove collaborator:', error);
 		}
+	}
+
+	function cancelRemoveCollaborator() {
+		showRemoveCollaboratorModal = false;
+		pendingRemoveUserId = null;
 	}
 
 	// Format relative time
@@ -363,6 +380,16 @@
 		</div>
 	{/if}
 </div>
+
+<ConfirmationModal
+	isOpen={showRemoveCollaboratorModal}
+	title="Remove collaborator?"
+	message="Are you sure you want to remove this collaborator?"
+	confirmText="Remove"
+	variant="danger"
+	onConfirm={confirmRemoveCollaborator}
+	onCancel={cancelRemoveCollaborator}
+/>
 
 <style>
 	.collaborators-panel {

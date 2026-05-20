@@ -8,6 +8,7 @@
 <script lang="ts">
 	import { uploadStore } from '$lib/stores/media.svelte';
 	import { IconUpload, IconX, IconCheck, IconAlertCircle } from '$lib/icons';
+	import { toastStore } from '$lib/stores/toast.svelte';
 
 	interface Props {
 		folderId?: string | null;
@@ -58,7 +59,9 @@
 		// Filter by size
 		const validFiles = files.filter((file) => {
 			if (file.size > maxSize) {
-				alert(`File ${file.name} is too large. Maximum size is ${maxSize / 1024 / 1024}MB`);
+				toastStore.error(
+					`File ${file.name} is too large. Maximum size is ${maxSize / 1024 / 1024}MB`
+				);
 				return false;
 			}
 			return true;

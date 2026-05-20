@@ -370,6 +370,8 @@
 						loading="eager"
 						decoding="async"
 						fetchpriority="high"
+						width="1280"
+						height="720"
 					/>
 				{/if}
 

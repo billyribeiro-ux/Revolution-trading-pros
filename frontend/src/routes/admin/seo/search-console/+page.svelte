@@ -7,6 +7,7 @@
 		IconPlugConnected,
 		IconPlugConnectedX
 	} from '$lib/icons';
+	import { toastStore } from '$lib/stores/toast.svelte';
 
 	// State using Svelte 5 runes
 	let status = $state<any>(null);
@@ -54,7 +55,7 @@
 			}
 		} catch (error) {
 			console.error('Failed to get auth URL:', error);
-			alert('Failed to initiate connection');
+			toastStore.error('Failed to initiate connection');
 		}
 	}
 
@@ -71,10 +72,10 @@
 			});
 
 			const data = await response.json();
-			alert(`Successfully imported ${data.count} analytics records`);
+			toastStore.success(`Successfully imported ${data.count} analytics records`);
 		} catch (error) {
 			console.error('Failed to import analytics:', error);
-			alert('Failed to import analytics data');
+			toastStore.error('Failed to import analytics data');
 		} finally {
 			importing = false;
 		}
@@ -84,10 +85,10 @@
 		try {
 			const response = await fetch('/api/seo/gsc/update-keywords', { method: 'POST' });
 			const data = await response.json();
-			alert(`Updated ${data.count} keywords`);
+			toastStore.success(`Updated ${data.count} keywords`);
 		} catch (error) {
 			console.error('Failed to update keywords:', error);
-			alert('Failed to update keywords');
+			toastStore.error('Failed to update keywords');
 		}
 	}
 </script>

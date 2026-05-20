@@ -175,6 +175,8 @@
 								src={item.thumbnail_url || item.url}
 								alt={item.alt_text || item.filename}
 								loading="lazy"
+								width="200"
+								height="200"
 							/>
 						{:else if item.file_type === 'video'}
 							<div class="type-icon video">

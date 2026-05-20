@@ -349,7 +349,13 @@
 									<div class="item-cell">
 										<div class="item-thumb">
 											{#if item.video.poster}
-												<img src={item.video.poster} alt="" />
+												<img
+													src={item.video.poster}
+													alt=""
+													width="80"
+													height="45"
+													loading="lazy"
+												/>
 											{:else}
 												<div class="thumb-placeholder">
 													<IconVideo size={20} />
@@ -365,7 +371,14 @@
 								<td class="col-trader">
 									<div class="trader-cell">
 										{#if item.traderImage}
-											<img src={item.traderImage} alt="" class="trader-avatar" />
+											<img
+												src={item.traderImage}
+												alt=""
+												class="trader-avatar"
+												width="28"
+												height="28"
+												loading="lazy"
+											/>
 										{/if}
 										<span>{item.trader}</span>
 									</div>

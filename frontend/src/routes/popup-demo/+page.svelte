@@ -5,6 +5,7 @@
 <script lang="ts">
 	import { popupStore, type Popup } from '$lib/stores/popups.svelte';
 	import { IconRocket } from '$lib/icons';
+	import { toastStore } from '$lib/stores/toast.svelte';
 
 	// Demo popup templates
 	const demoPopups: Partial<Popup>[] = [
@@ -386,7 +387,7 @@
 
 	function clearHistory() {
 		popupStore.clearHistory();
-		alert('Popup history cleared! You can now test frequency rules again.');
+		toastStore.success('Popup history cleared! You can now test frequency rules again.');
 	}
 </script>
 

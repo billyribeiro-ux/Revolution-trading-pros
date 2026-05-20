@@ -324,6 +324,8 @@
 				src="https://staticmap.openstreetmap.de/staticmap.php?center={addressValue.latitude},{addressValue.longitude}&zoom=15&size=400x200&markers={addressValue.latitude},{addressValue.longitude},red-pushpin"
 				alt="Location map preview"
 				loading="lazy"
+				width="400"
+				height="200"
 			/>
 		</div>
 	{/if}

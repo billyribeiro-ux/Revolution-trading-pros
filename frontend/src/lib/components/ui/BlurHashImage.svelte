@@ -141,6 +141,8 @@
 			{alt}
 			{loading}
 			{decoding}
+			width={typeof width === 'number' ? width : undefined}
+			height={typeof height === 'number' ? height : undefined}
 			sizes={generateSizes() || sizes}
 			srcset={generateSrcset(src, breakpoints) || srcset}
 			class="image"

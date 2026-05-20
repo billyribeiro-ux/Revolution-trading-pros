@@ -138,6 +138,8 @@
 							alt="Weekly Watchlist"
 							class="u--border-radius"
 							loading="eager"
+							width="400"
+							height="225"
 						/>
 					</a>
 				</div>
@@ -149,7 +151,14 @@
 			</div>
 			<div class="col-right desktop-only">
 				<a href={displayHref}>
-					<img src={displayImage} alt="Weekly Watchlist" class="u--border-radius" loading="eager" />
+					<img
+						src={displayImage}
+						alt="Weekly Watchlist"
+						class="u--border-radius"
+						loading="eager"
+						width="400"
+						height="225"
+					/>
 				</a>
 			</div>
 		</div>

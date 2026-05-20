@@ -13,6 +13,7 @@
 	 */
 
 	import type { FormField } from '$lib/api/forms';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	interface RepeaterRow {
 		id: string;
@@ -61,6 +62,10 @@
 	let draggedIndex = $state<number | null>(null);
 	let dragOverIndex = $state<number | null>(null);
 
+	// Confirmation modal state (replaces native confirm())
+	let showRemoveRowModal = $state(false);
+	let pendingRemoveRowIndex = $state<number | null>(null);
+
 	// Generate unique ID
 	function generateId(): string {
 		return `row_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -94,12 +99,28 @@
 	function removeRow(index: number) {
 		if (rows.length <= minItems) return;
 
-		if (confirmDelete && !confirm(`Remove ${itemLabel} ${index + 1}?`)) {
+		if (confirmDelete) {
+			pendingRemoveRowIndex = index;
+			showRemoveRowModal = true;
 			return;
 		}
 
 		rows = rows.filter((_, i) => i !== index);
 		emitChange();
+	}
+
+	function confirmRemoveRow() {
+		const index = pendingRemoveRowIndex;
+		showRemoveRowModal = false;
+		pendingRemoveRowIndex = null;
+		if (index === null) return;
+		rows = rows.filter((_, i) => i !== index);
+		emitChange();
+	}
+
+	function cancelRemoveRow() {
+		showRemoveRowModal = false;
+		pendingRemoveRowIndex = null;
 	}
 
 	// Toggle collapse
@@ -387,6 +408,16 @@
 		</div>
 	{/if}
 </div>
+
+<ConfirmationModal
+	isOpen={showRemoveRowModal}
+	title="Remove item?"
+	message={`Remove ${itemLabel} ${pendingRemoveRowIndex !== null ? pendingRemoveRowIndex + 1 : ''}?`}
+	confirmText="Remove"
+	variant="danger"
+	onConfirm={confirmRemoveRow}
+	onCancel={cancelRemoveRow}
+/>
 
 <style>
 	.repeater-field {

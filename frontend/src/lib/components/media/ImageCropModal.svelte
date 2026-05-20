@@ -498,6 +498,7 @@
 					class="image-wrapper"
 					style="transform: scale({imageScale}); transform-origin: center;"
 				>
+					<!-- TODO(cls): crop preview of arbitrary user uploads; intrinsic dims unknown -->
 					<img
 						{src}
 						alt="Crop preview"

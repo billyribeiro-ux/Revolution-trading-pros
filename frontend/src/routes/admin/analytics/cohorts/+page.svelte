@@ -18,6 +18,7 @@
 	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
 	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import { toastStore } from '$lib/stores/toast.svelte';
 
 	// FIX-2026-04-26 (audit 08-analytics §P2-4): widened `type` and `granularity`
 	// to `string`. The backend returns `string` (not the strict literal union),
@@ -117,7 +118,7 @@
 			};
 			loadCohorts();
 		} catch (e) {
-			alert(e instanceof Error ? e.message : 'Failed to create cohort');
+			toastStore.error(e instanceof Error ? e.message : 'Failed to create cohort');
 		}
 	}
 

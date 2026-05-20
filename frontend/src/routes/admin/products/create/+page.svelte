@@ -460,7 +460,13 @@
 			<div class="product-preview-card">
 				{#if formData.thumbnail}
 					<div class="preview-thumbnail">
-						<img src={formData.thumbnail} alt={formData.name || 'Product'} />
+						<img
+							src={formData.thumbnail}
+							alt={formData.name || 'Product'}
+							width="360"
+							height="200"
+							loading="lazy"
+						/>
 					</div>
 				{:else}
 					{@const SvelteComponent = previewTypeIcon}

@@ -88,7 +88,14 @@
 					<h2 class="section-title-alt section-title-alt--underline">Weekly Watchlist</h2>
 					<div class="hidden-md d-lg-none pb-2">
 						<a href="/watchlist/{latestWatchlist.slug}">
-							<img src={latestWatchlist.image} alt="Weekly Watchlist" class="u--border-radius" />
+							<img
+								src={latestWatchlist.image}
+								alt="Weekly Watchlist"
+								class="u--border-radius"
+								width="800"
+								height="450"
+								loading="lazy"
+							/>
 						</a>
 					</div>
 					<h4 class="h5 u--font-weight-bold">Weekly Watchlist with {latestWatchlist.trader}</h4>
@@ -99,7 +106,14 @@
 				</div>
 				<div class="col-sm-6 col-lg-7 hidden-xs hidden-sm d-none d-lg-block">
 					<a href="/watchlist/{latestWatchlist.slug}">
-						<img src={latestWatchlist.image} alt="Weekly Watchlist" class="u--border-radius" />
+						<img
+							src={latestWatchlist.image}
+							alt="Weekly Watchlist"
+							class="u--border-radius"
+							width="800"
+							height="450"
+							loading="lazy"
+						/>
 					</a>
 				</div>
 			</div>

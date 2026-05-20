@@ -238,6 +238,9 @@
 										src={video.thumbnail_url ||
 											'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg'}
 										alt={video.title}
+										width="325"
+										height="183"
+										loading="lazy"
 									/>
 								</figure>
 								{#if video.tag_details && video.tag_details.length > 0}

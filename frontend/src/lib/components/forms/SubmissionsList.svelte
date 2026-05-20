@@ -10,6 +10,8 @@
 		bulkDeleteSubmissions,
 		exportSubmissions
 	} from '$lib/api/forms';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { toastStore } from '$lib/stores/toast.svelte';
 
 	interface Props {
 		formId: number;
@@ -25,6 +27,11 @@
 	let totalPages = $state(1);
 	let statusFilter: string = $state('');
 	let selectedSubmissions: Set<string> = $state(new Set());
+
+	// Confirmation modal state (replaces native confirm())
+	let showDeleteOneModal = $state(false);
+	let pendingDeleteSubmission = $state<FormSubmission | null>(null);
+	let showBulkDeleteModal = $state(false);
 
 	onMount(() => {
 		loadData();
@@ -58,19 +65,31 @@
 			await updateSubmissionStatus(formId, Number(submission.submission_id), newStatus);
 			await loadData();
 		} catch (err) {
-			alert(err instanceof Error ? err.message : 'Failed to update status');
+			toastStore.error(err instanceof Error ? err.message : 'Failed to update status');
 		}
 	}
 
-	async function handleDelete(submission: FormSubmission) {
-		if (!confirm('Delete this submission?')) return;
+	function handleDelete(submission: FormSubmission) {
+		pendingDeleteSubmission = submission;
+		showDeleteOneModal = true;
+	}
 
+	async function confirmDelete() {
+		const submission = pendingDeleteSubmission;
+		if (!submission) return;
+		showDeleteOneModal = false;
+		pendingDeleteSubmission = null;
 		try {
 			await deleteSubmission(formId, Number(submission.submission_id));
 			await loadData();
 		} catch (err) {
-			alert(err instanceof Error ? err.message : 'Failed to delete submission');
+			toastStore.error(err instanceof Error ? err.message : 'Failed to delete submission');
 		}
+	}
+
+	function cancelDelete() {
+		showDeleteOneModal = false;
+		pendingDeleteSubmission = null;
 	}
 
 	async function handleBulkStatusUpdate(newStatus: FormSubmission['status']) {
@@ -85,21 +104,28 @@
 			selectedSubmissions.clear();
 			await loadData();
 		} catch (err) {
-			alert(err instanceof Error ? err.message : 'Failed to update submissions');
+			toastStore.error(err instanceof Error ? err.message : 'Failed to update submissions');
 		}
 	}
 
-	async function handleBulkDelete() {
+	function handleBulkDelete() {
 		if (selectedSubmissions.size === 0) return;
-		if (!confirm(`Delete ${selectedSubmissions.size} submissions?`)) return;
+		showBulkDeleteModal = true;
+	}
 
+	async function confirmBulkDelete() {
+		showBulkDeleteModal = false;
 		try {
 			await bulkDeleteSubmissions(formId, Array.from(selectedSubmissions).map(Number));
 			selectedSubmissions.clear();
 			await loadData();
 		} catch (err) {
-			alert(err instanceof Error ? err.message : 'Failed to delete submissions');
+			toastStore.error(err instanceof Error ? err.message : 'Failed to delete submissions');
 		}
+	}
+
+	function cancelBulkDelete() {
+		showBulkDeleteModal = false;
 	}
 
 	async function handleExport() {
@@ -113,7 +139,7 @@
 			a.click();
 			window.URL.revokeObjectURL(url);
 		} catch (err) {
-			alert(err instanceof Error ? err.message : 'Failed to export submissions');
+			toastStore.error(err instanceof Error ? err.message : 'Failed to export submissions');
 		}
 	}
 
@@ -336,6 +362,26 @@
 		{/if}
 	{/if}
 </div>
+
+<ConfirmationModal
+	isOpen={showDeleteOneModal}
+	title="Delete submission?"
+	message="Are you sure you want to delete this submission? This action cannot be undone."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDelete}
+	onCancel={cancelDelete}
+/>
+
+<ConfirmationModal
+	isOpen={showBulkDeleteModal}
+	title="Delete submissions?"
+	message={`Delete ${selectedSubmissions.size} submissions? This action cannot be undone.`}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmBulkDelete}
+	onCancel={cancelBulkDelete}
+/>
 
 <style>
 	.submissions-container {

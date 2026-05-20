@@ -4,6 +4,11 @@ https://svelte.dev/e/bind_invalid_expression -->
 	import type { Form, FormField } from '$lib/api/forms';
 	import { getFieldTypes, createForm, updateForm } from '$lib/api/forms';
 	import FieldEditor from './FieldEditor.svelte';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+
+	// Confirmation modal state (replaces native confirm())
+	let showDeleteFieldModal = $state(false);
+	let pendingDeleteFieldIndex = $state<number | null>(null);
 
 	interface Props {
 		form?: Partial<Form> | null;
@@ -121,10 +126,22 @@ https://svelte.dev/e/bind_invalid_expression -->
 	}
 
 	function handleDeleteField(index: number) {
-		if (confirm('Delete this field?')) {
-			fields = fields.filter((_, i) => i !== index);
-			updateFieldOrders();
-		}
+		pendingDeleteFieldIndex = index;
+		showDeleteFieldModal = true;
+	}
+
+	function confirmDeleteField() {
+		const index = pendingDeleteFieldIndex;
+		if (index === null) return;
+		showDeleteFieldModal = false;
+		pendingDeleteFieldIndex = null;
+		fields = fields.filter((_, i) => i !== index);
+		updateFieldOrders();
+	}
+
+	function cancelDeleteField() {
+		showDeleteFieldModal = false;
+		pendingDeleteFieldIndex = null;
 	}
 
 	function handleMoveField(index: number, direction: 'up' | 'down') {
@@ -404,6 +421,16 @@ https://svelte.dev/e/bind_invalid_expression -->
 		/>
 	{/if}
 </div>
+
+<ConfirmationModal
+	isOpen={showDeleteFieldModal}
+	title="Delete field?"
+	message="Are you sure you want to delete this field?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteField}
+	onCancel={cancelDeleteField}
+/>
 
 <style>
 	.form-builder {

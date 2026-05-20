@@ -194,7 +194,7 @@
 	<!-- Header -->
 	<div class="sidebar-header">
 		<a href="/admin" class="sidebar-logo">
-			<img src="/revolution-trading-pros.png" alt="RTP Admin" />
+			<img src="/revolution-trading-pros.png" alt="RTP Admin" width="3163" height="835" />
 		</a>
 		<button class="close-btn" onclick={closeSidebar}>
 			<IconX size={24} />

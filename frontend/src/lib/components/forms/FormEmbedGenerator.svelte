@@ -292,7 +292,13 @@
 			<div class="section">
 				<h3 class="section-label">QR Code</h3>
 				<div class="qr-container">
-					<img src={qrCodeUrl} alt="QR Code for {props.formTitle}" class="qr-code" />
+					<img
+					src={qrCodeUrl}
+					alt="QR Code for {props.formTitle}"
+					class="qr-code"
+					width="150"
+					height="150"
+				/>
 					<a href={qrCodeUrl} download="form-qr-{props.formSlug}.png" class="btn-download">
 						Download QR Code
 					</a>

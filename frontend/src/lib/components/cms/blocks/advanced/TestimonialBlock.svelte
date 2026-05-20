@@ -296,7 +296,14 @@
 		{#if showPhoto}
 			<div class="testimonial-block__photo">
 				{#if sanitizedPhotoURL}
-					<img src={sanitizedPhotoURL} alt={authorName} class="testimonial-block__photo-img" />
+					<img
+						src={sanitizedPhotoURL}
+						alt={authorName}
+						class="testimonial-block__photo-img"
+						width="56"
+						height="56"
+						loading="lazy"
+					/>
 					{#if props.isEditing && props.isSelected}
 						<button
 							type="button"

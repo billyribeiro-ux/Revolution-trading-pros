@@ -204,12 +204,16 @@
 								src={upload.result.thumbnailUrl}
 								alt="Thumbnail preview of {upload.file.name}"
 								class="w-full h-full object-cover"
+								width="48"
+								height="48"
 							/>
 						{:else if upload.file.type.startsWith('image/')}
 							<img
 								src={getFileThumbnail(upload.file)}
 								alt="Preview of {upload.file.name}"
 								class="w-full h-full object-cover"
+								width="48"
+								height="48"
 							/>
 						{:else}
 							<Icon name="IconPhoto" size={24} class="text-gray-400" />

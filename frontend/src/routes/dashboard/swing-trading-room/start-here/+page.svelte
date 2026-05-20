@@ -378,7 +378,13 @@
 								{#each traders as trader (trader.slug)}
 									<div class="team_member">
 										<a href="/traders/{trader.slug}">
-											<img src={trader.image} alt={trader.name} />
+											<img
+												src={trader.image}
+												alt={trader.name}
+												width="300"
+												height="400"
+												loading="lazy"
+											/>
 										</a>
 										<div class="trader-info">
 											<h3>
@@ -563,10 +569,12 @@
 								room on your Swing Trading Room Member Dashboard:
 							</p>
 							<p>
+								<!-- TODO(cls): width/height needed — schedule screenshot intrinsic dims unknown (CDN-hosted PNG, not in repo). Inspect the asset and set dims. -->
 								<img
 									src="https://cdn.simplertrading.com/2025/05/01151648/SCR-20250501-mrti.png"
 									alt="Trading Room Schedule"
 									class="schedule-screenshot"
+									loading="lazy"
 								/>
 							</p>
 							<p>

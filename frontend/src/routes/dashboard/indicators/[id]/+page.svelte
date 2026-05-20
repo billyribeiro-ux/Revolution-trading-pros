@@ -333,10 +333,13 @@ https://svelte.dev/e/element_unclosed -->
 					{#each downloadsByPlatform as platformDownload (platformDownload.platform)}
 						<section class="st_box {platformDownload.platform.toLowerCase().replace(/\s+/g, '')}">
 							<div class="platform-header">
+								<!-- TODO(cls): platform logo aspect varies per-platform; height="60" is a rough average. Capture intrinsic dims when uploaded to standardize. -->
 								<img
 									width="200"
+									height="60"
 									src={platformDownload.logo}
 									alt={platformDownload.platform}
+									loading="lazy"
 									onerror={(e) => {
 										const img = e.currentTarget as HTMLImageElement;
 										img.style.display = 'none';

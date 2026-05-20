@@ -16,6 +16,7 @@
 	import { goto } from '$app/navigation';
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import { IconEdit, IconTrash, IconEye, IconPlus, IconRefresh } from '$lib/icons';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// State - Svelte 5 Runes
@@ -25,6 +26,10 @@
 	let loading = $state(true);
 	let error = $state('');
 	let searchQuery = $state('');
+
+	// Confirmation modal state (replaces native confirm())
+	let showDeleteTemplateModal = $state(false);
+	let pendingDeleteTemplateId = $state<number | null>(null);
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// Derived State
@@ -97,8 +102,16 @@
 	// Actions
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	async function deleteTemplate(id: number) {
-		if (!confirm('Are you sure you want to delete this template?')) return;
+	function deleteTemplate(id: number) {
+		pendingDeleteTemplateId = id;
+		showDeleteTemplateModal = true;
+	}
+
+	async function confirmDeleteTemplate() {
+		const id = pendingDeleteTemplateId;
+		if (id == null) return;
+		showDeleteTemplateModal = false;
+		pendingDeleteTemplateId = null;
 		try {
 			await emailTemplatesApi.delete(id);
 			templates = templates.filter((t) => t.id !== id);
@@ -107,6 +120,11 @@
 			toastStore.error('Failed to delete template');
 			console.error(e);
 		}
+	}
+
+	function cancelDeleteTemplate() {
+		showDeleteTemplateModal = false;
+		pendingDeleteTemplateId = null;
 	}
 </script>
 
@@ -222,6 +240,16 @@
 		</table>
 	{/if}
 </div>
+
+<ConfirmationModal
+	isOpen={showDeleteTemplateModal}
+	title="Delete template?"
+	message="Are you sure you want to delete this template?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteTemplate}
+	onCancel={cancelDeleteTemplate}
+/>
 
 <style>
 	.templates-page {

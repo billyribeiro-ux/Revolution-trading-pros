@@ -397,7 +397,12 @@
 					onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && thumbnailInput?.click()}
 				>
 					{#if thumbnailFile}
-						<img src={URL.createObjectURL(thumbnailFile)} alt="Thumbnail preview" />
+						<img
+							src={URL.createObjectURL(thumbnailFile)}
+							alt="Thumbnail preview"
+							width="200"
+							height="112"
+						/>
 						<button
 							type="button"
 							class="remove-thumbnail"

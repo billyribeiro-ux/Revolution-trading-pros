@@ -98,6 +98,8 @@
 				alt={resource.title}
 				class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
 				loading="lazy"
+				width="400"
+				height="225"
 			/>
 		{:else}
 			<div class="flex h-full w-full items-center justify-center">

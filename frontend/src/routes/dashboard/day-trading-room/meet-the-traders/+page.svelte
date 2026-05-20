@@ -44,7 +44,13 @@
 			{#each traders as trader (trader.id)}
 				<article class="trader-card">
 					<figure class="trader-card__image">
-						<img src={trader.image} alt={trader.name} loading="lazy" />
+						<img
+							src={trader.image}
+							alt={trader.name}
+							loading="lazy"
+							width="320"
+							height="180"
+						/>
 					</figure>
 
 					<div class="trader-card__content">

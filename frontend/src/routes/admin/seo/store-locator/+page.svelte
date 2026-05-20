@@ -26,6 +26,7 @@
 		type BusinessType
 	} from '$lib/seo';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { toastStore } from '$lib/stores/toast.svelte';
 
 	// State using Svelte 5 runes
 	let locationList = $state<Location[]>([]);
@@ -206,7 +207,16 @@
 
 	function viewSchema(location: Location) {
 		const schema = generateLocationSchema(location);
-		alert(JSON.stringify(schema, null, 2));
+		const json = JSON.stringify(schema, null, 2);
+		// Copy JSON-LD to clipboard so it can be inspected/used externally;
+		// avoids native alert() which is blocked in some embed contexts.
+		void navigator.clipboard
+			.writeText(json)
+			.then(() => toastStore.success('Location schema copied to clipboard'))
+			.catch(() => {
+				console.log('Location schema:', json);
+				toastStore.info('Location schema logged to console');
+			});
 	}
 
 	const businessTypes: { value: BusinessType; label: string }[] = [

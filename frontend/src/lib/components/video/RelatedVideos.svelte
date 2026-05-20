@@ -126,7 +126,13 @@
 					<!-- Thumbnail -->
 					<div class="related-card__thumbnail">
 						{#if video.thumbnail_url}
-							<img src={video.thumbnail_url} alt={video.title} loading="lazy" />
+							<img
+								src={video.thumbnail_url}
+								alt={video.title}
+								loading="lazy"
+								width="120"
+								height="68"
+							/>
 						{:else}
 							<div class="related-card__placeholder">
 								<Icon name="IconPlayerPlay" size={24} />

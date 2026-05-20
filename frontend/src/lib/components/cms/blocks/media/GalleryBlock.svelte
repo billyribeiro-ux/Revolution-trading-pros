@@ -430,6 +430,8 @@
 									alt={image.alt}
 									class="gallery-image"
 									loading="lazy"
+									width="300"
+									height="300"
 								/>
 								<div class="gallery-item-overlay">
 									<div class="drag-handle" aria-label="Drag to reorder">
@@ -481,6 +483,8 @@
 									alt={image.alt}
 									class="gallery-image"
 									loading="lazy"
+									width="300"
+									height="300"
 								/>
 								<div class="gallery-item-hover">
 									<IconPhoto size={24} />
@@ -511,6 +515,9 @@
 								src={sanitizeURL(images[carouselIndex].url)}
 								alt={images[carouselIndex].alt}
 								class="carousel-image"
+								width="800"
+								height="450"
+								loading="lazy"
 							/>
 							{#if images[carouselIndex].caption}
 								<div class="carousel-caption">
@@ -718,7 +725,13 @@
 
 			<!-- Image Container -->
 			<div class="lightbox-image-container">
-				<img src={sanitizeURL(currentImage.url)} alt={currentImage.alt} class="lightbox-image" />
+				<!-- TODO(cls): fullscreen lightbox; intrinsic dims of arbitrary user uploads unknown -->
+			<img
+				src={sanitizeURL(currentImage.url)}
+				alt={currentImage.alt}
+				class="lightbox-image"
+				loading="lazy"
+			/>
 			</div>
 
 			<!-- Navigation: Next -->

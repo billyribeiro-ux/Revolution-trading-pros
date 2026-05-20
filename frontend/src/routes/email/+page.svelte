@@ -301,7 +301,14 @@
 						{#each emailStore.templates as template (template.id)}
 							<div class="template-card">
 								{#if template.thumbnail}
-									<img src={template.thumbnail} alt={template.name} class="template-thumbnail" />
+									<img
+										src={template.thumbnail}
+										alt={template.name}
+										class="template-thumbnail"
+										width="320"
+										height="192"
+										loading="lazy"
+									/>
 								{:else}
 									<div class="template-placeholder">
 										<IconFileText size={48} class="text-gray-600" />

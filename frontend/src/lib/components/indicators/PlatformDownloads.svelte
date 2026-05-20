@@ -24,7 +24,8 @@
 </script>
 
 <div class="st_box {platform.toLowerCase()}">
-	<img width="250" src={logo} alt={platform} />
+	<!-- TODO(cls): logo aspect ratio is per-platform; height needed but intrinsic dims unknown -->
+	<img width="250" height="100" src={logo} alt={platform} loading="lazy" />
 
 	{#if files.length > 0}
 		<table>

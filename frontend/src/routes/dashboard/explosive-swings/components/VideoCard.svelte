@@ -40,7 +40,15 @@
 	aria-label="Watch {video.title}"
 >
 	<div class="thumbnail-wrapper">
-		<img src={video.thumbnailUrl} alt="" role="presentation" class="thumbnail" loading="lazy" />
+		<img
+			src={video.thumbnailUrl}
+			alt=""
+			role="presentation"
+			class="thumbnail"
+			loading="lazy"
+			width="320"
+			height="180"
+		/>
 
 		<!-- Gradient Overlay -->
 		<div class="thumbnail-gradient"></div>

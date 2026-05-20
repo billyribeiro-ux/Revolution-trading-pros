@@ -150,6 +150,8 @@
 						alt="{variant.sizeName} preview"
 						loading="lazy"
 						class="w-full h-full object-cover"
+						width={variant.width}
+						height={variant.height}
 					/>
 				</div>
 
@@ -222,6 +224,9 @@
 				src={hoveredVariant.url}
 				alt="Preview"
 				class="max-w-[200px] max-h-[150px] object-contain"
+				width={hoveredVariant.width}
+				height={hoveredVariant.height}
+				loading="lazy"
 			/>
 			<div
 				class="flex items-center justify-between gap-2 px-2 py-1 text-xs bg-gray-50 dark:bg-gray-900"

@@ -436,7 +436,10 @@ mod jwt_token_type_tests {
 
     #[test]
     fn access_token_accepted_when_expecting_access() {
-        let token = create_jwt(42, SECRET, 1).unwrap();
+        // CLAUDE.md "no unwrap()": tests use `.expect("test setup: ...")` so a
+        // future regression (e.g. JWT encode breaks for static SECRET) produces
+        // a self-describing failure instead of a bare `unwrap` panic.
+        let token = create_jwt(42, SECRET, 1).expect("test setup: create_jwt with static SECRET");
         let claims = verify_jwt(&token, SECRET, "access").expect("access token should validate");
         assert_eq!(claims.sub, 42);
         assert_eq!(claims.token_type, "access");
@@ -444,7 +447,8 @@ mod jwt_token_type_tests {
 
     #[test]
     fn refresh_token_accepted_when_expecting_refresh() {
-        let token = create_refresh_token(99, SECRET).unwrap();
+        let token = create_refresh_token(99, SECRET)
+            .expect("test setup: create_refresh_token with static SECRET");
         let claims = verify_jwt(&token, SECRET, "refresh").expect("refresh token should validate");
         assert_eq!(claims.sub, 99);
         assert_eq!(claims.token_type, "refresh");
@@ -454,7 +458,8 @@ mod jwt_token_type_tests {
     fn refresh_token_rejected_when_expecting_access() {
         // This is the core bug the audit found: a refresh token presented as a
         // bearer access token MUST be rejected.
-        let refresh = create_refresh_token(1, SECRET).unwrap();
+        let refresh = create_refresh_token(1, SECRET)
+            .expect("test setup: create_refresh_token with static SECRET");
         let result = verify_jwt(&refresh, SECRET, "access");
         assert!(
             result.is_err(),
@@ -470,7 +475,7 @@ mod jwt_token_type_tests {
 
     #[test]
     fn access_token_rejected_when_expecting_refresh() {
-        let access = create_jwt(1, SECRET, 1).unwrap();
+        let access = create_jwt(1, SECRET, 1).expect("test setup: create_jwt with static SECRET");
         let result = verify_jwt(&access, SECRET, "refresh");
         assert!(
             result.is_err(),
@@ -480,14 +485,15 @@ mod jwt_token_type_tests {
 
     #[test]
     fn wrong_secret_rejected() {
-        let token = create_jwt(1, SECRET, 1).unwrap();
+        let token = create_jwt(1, SECRET, 1).expect("test setup: create_jwt with static SECRET");
         let result = verify_jwt(&token, "different_secret", "access");
         assert!(result.is_err(), "wrong secret must reject");
     }
 
     #[test]
     fn expired_token_rejected() {
-        let token = create_jwt(1, SECRET, -1).unwrap(); // already-expired
+        // already-expired (negative hours); the encode itself is still infallible.
+        let token = create_jwt(1, SECRET, -1).expect("test setup: create_jwt with static SECRET");
         let result = verify_jwt(&token, SECRET, "access");
         assert!(result.is_err(), "expired token must reject");
     }
@@ -517,7 +523,8 @@ mod token_version_tests {
     fn claims_round_trips_token_version() {
         // Mint with an explicit non-zero version and confirm verify_jwt
         // (which decodes the claims) preserves it exactly.
-        let token = create_jwt_versioned(7, SECRET, 1, 42).unwrap();
+        let token = create_jwt_versioned(7, SECRET, 1, 42)
+            .expect("test setup: create_jwt_versioned with static SECRET");
         let claims = verify_jwt(&token, SECRET, "access").expect("should validate");
         assert_eq!(claims.sub, 7);
         assert_eq!(claims.token_version, 42);
@@ -526,7 +533,8 @@ mod token_version_tests {
 
     #[test]
     fn refresh_token_embeds_passed_version() {
-        let token = create_refresh_token_versioned(9, SECRET, 13).unwrap();
+        let token = create_refresh_token_versioned(9, SECRET, 13)
+            .expect("test setup: create_refresh_token_versioned with static SECRET");
         let claims = verify_jwt(&token, SECRET, "refresh").expect("should validate");
         assert_eq!(claims.sub, 9);
         assert_eq!(claims.token_version, 13);
@@ -538,17 +546,19 @@ mod token_version_tests {
         // Distinct versions produce distinct decoded claims — proves the
         // value is actually embedded, not hard-coded.
         let v0 = verify_jwt(
-            &create_jwt_versioned(1, SECRET, 1, 0).unwrap(),
+            &create_jwt_versioned(1, SECRET, 1, 0)
+                .expect("test setup: create_jwt_versioned with static SECRET"),
             SECRET,
             "access",
         )
-        .unwrap();
+        .expect("test setup: verify_jwt of just-minted access token");
         let v5 = verify_jwt(
-            &create_jwt_versioned(1, SECRET, 1, 5).unwrap(),
+            &create_jwt_versioned(1, SECRET, 1, 5)
+                .expect("test setup: create_jwt_versioned with static SECRET"),
             SECRET,
             "access",
         )
-        .unwrap();
+        .expect("test setup: verify_jwt of just-minted access token");
         assert_eq!(v0.token_version, 0);
         assert_eq!(v5.token_version, 5);
     }
@@ -558,9 +568,19 @@ mod token_version_tests {
         // The backward-compatible (un-versioned) constructors that
         // tests/utils_test.rs binds MUST default the epoch to 0 so a
         // brand-new user (also at version 0) is not locked out.
-        let access = verify_jwt(&create_jwt(1, SECRET, 1).unwrap(), SECRET, "access").unwrap();
-        let refresh =
-            verify_jwt(&create_refresh_token(1, SECRET).unwrap(), SECRET, "refresh").unwrap();
+        let access = verify_jwt(
+            &create_jwt(1, SECRET, 1).expect("test setup: create_jwt with static SECRET"),
+            SECRET,
+            "access",
+        )
+        .expect("test setup: verify_jwt of just-minted access token");
+        let refresh = verify_jwt(
+            &create_refresh_token(1, SECRET)
+                .expect("test setup: create_refresh_token with static SECRET"),
+            SECRET,
+            "refresh",
+        )
+        .expect("test setup: verify_jwt of just-minted refresh token");
         assert_eq!(access.token_version, 0);
         assert_eq!(refresh.token_version, 0);
     }
@@ -588,7 +608,11 @@ mod token_version_tests {
         // HS256 = HMAC-SHA256 over the signing input with the secret.
         use hmac::{Hmac, Mac};
         use sha2::Sha256;
-        let mut mac = Hmac::<Sha256>::new_from_slice(SECRET.as_bytes()).unwrap();
+        // HMAC-SHA256 accepts any key length (RFC 2104); `new_from_slice` only
+        // errors on truly invalid lengths which is impossible for a non-empty
+        // static secret. Use `expect` to document this static invariant.
+        let mut mac = Hmac::<Sha256>::new_from_slice(SECRET.as_bytes())
+            .expect("static invariant: HMAC-SHA256 accepts any non-empty key length");
         mac.update(signing_input.as_bytes());
         let sig = URL_SAFE_NO_PAD.encode(mac.finalize().into_bytes());
         let legacy_token = format!("{signing_input}.{sig}");
@@ -607,7 +631,8 @@ mod token_version_tests {
         // token-type — and must NOT itself reject on token_version (that is
         // the extractor's authoritative job). A high-version token with a
         // valid sig/exp/type still verifies here.
-        let high = create_jwt_versioned(1, SECRET, 1, 999_999).unwrap();
+        let high = create_jwt_versioned(1, SECRET, 1, 999_999)
+            .expect("test setup: create_jwt_versioned with static SECRET");
         assert!(
             verify_jwt(&high, SECRET, "access").is_ok(),
             "verify_jwt must not gate on token_version"
@@ -615,10 +640,12 @@ mod token_version_tests {
         // sig still enforced with the new claim present
         assert!(verify_jwt(&high, "wrong_secret", "access").is_err());
         // exp still enforced
-        let expired = create_jwt_versioned(1, SECRET, -1, 7).unwrap();
+        let expired = create_jwt_versioned(1, SECRET, -1, 7)
+            .expect("test setup: create_jwt_versioned with static SECRET");
         assert!(verify_jwt(&expired, SECRET, "access").is_err());
         // type still enforced
-        let refresh = create_refresh_token_versioned(1, SECRET, 7).unwrap();
+        let refresh = create_refresh_token_versioned(1, SECRET, 7)
+            .expect("test setup: create_refresh_token_versioned with static SECRET");
         assert!(verify_jwt(&refresh, SECRET, "access").is_err());
     }
 }

@@ -354,7 +354,14 @@
 							<td>
 								<div class="customer-cell">
 									{#if cart.customer_avatar}
-										<img src={cart.customer_avatar} alt="" class="customer-avatar" />
+										<img
+											src={cart.customer_avatar}
+											alt=""
+											class="customer-avatar"
+											width="40"
+											height="40"
+											loading="lazy"
+										/>
 									{:else}
 										<div class="customer-avatar-placeholder">
 											<IconUser size={16} />

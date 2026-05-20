@@ -526,6 +526,9 @@
 					class:loading={!imageLoaded}
 					onload={handleImageLoad}
 					onerror={handleImageError}
+					width="1200"
+					height="500"
+					loading="lazy"
 				/>
 			{/if}
 		{/if}

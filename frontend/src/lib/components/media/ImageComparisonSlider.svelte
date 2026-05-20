@@ -191,7 +191,14 @@
 
 		<!-- After image (full width, behind) -->
 		<div class="image-layer after-layer">
-			<img src={afterSrc} alt={afterLabel} draggable="false" />
+			<img
+				src={afterSrc}
+				alt={afterLabel}
+				draggable="false"
+				width="800"
+				height="450"
+				loading="lazy"
+			/>
 			{#if showLabels}
 				<span class="image-label after-label">{afterLabel}</span>
 			{/if}
@@ -199,7 +206,14 @@
 
 		<!-- Before image (clipped) -->
 		<div class="image-layer before-layer" style="clip-path: inset(0 {100 - sliderPosition}% 0 0);">
-			<img src={beforeSrc} alt={beforeLabel} draggable="false" />
+			<img
+				src={beforeSrc}
+				alt={beforeLabel}
+				draggable="false"
+				width="800"
+				height="450"
+				loading="lazy"
+			/>
 			{#if showLabels}
 				<span class="image-label before-label">{beforeLabel}</span>
 			{/if}

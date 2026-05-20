@@ -21,6 +21,7 @@
 		type ReportFrequency
 	} from '$lib/seo';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { toastStore } from '$lib/stores/toast.svelte';
 
 	// State using Svelte 5 runes
 	let templates = $state<ReportTemplate[]>([]);
@@ -185,7 +186,7 @@
 	}
 
 	async function runReport(template: ReportTemplate) {
-		alert(`Generating report: ${template.name}...`);
+		toastStore.info(`Generating report: ${template.name}...`);
 		// In production, call API to generate report
 	}
 

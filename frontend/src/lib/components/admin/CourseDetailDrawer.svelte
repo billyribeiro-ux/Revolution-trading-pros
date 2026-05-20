@@ -307,7 +307,13 @@
 				<header class="drawer-header">
 					<div class="course-thumbnail">
 						{#if courseData.card_image_url}
-							<img src={courseData.card_image_url} alt={courseData.title} />
+							<img
+								src={courseData.card_image_url}
+								alt={courseData.title}
+								width="72"
+								height="48"
+								loading="lazy"
+							/>
 						{:else}
 							<IconBook size={32} />
 						{/if}
@@ -714,6 +720,9 @@
 												src={courseData.instructor_avatar_url}
 												alt={courseData.instructor_name}
 												class="instructor-avatar"
+												width="48"
+												height="48"
+												loading="lazy"
 											/>
 										{:else}
 											<div class="instructor-avatar-placeholder">

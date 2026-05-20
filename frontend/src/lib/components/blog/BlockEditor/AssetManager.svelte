@@ -23,6 +23,7 @@
 	import { cubicOut } from 'svelte/easing';
 	import { flip } from 'svelte/animate';
 	import Icon from '$lib/components/Icon.svelte';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// ============================================================================
 	// Types
@@ -120,6 +121,11 @@
 	let isLoading = $state(false);
 	let isLoadingMore = $state(false);
 	let isLoadingUsage = $state(false);
+
+	// Confirmation modal state (replaces native confirm())
+	let showDeleteAssetModal = $state(false);
+	let pendingDeleteAssetId = $state<string | null>(null);
+	let showBulkDeleteAssetsModal = $state(false);
 
 	// Pagination
 	let currentPage = $state(1);
@@ -315,8 +321,16 @@
 		}
 	}
 
-	async function deleteAsset(assetId: string) {
-		if (!confirm('Are you sure you want to delete this asset?')) return;
+	function deleteAsset(assetId: string) {
+		pendingDeleteAssetId = assetId;
+		showDeleteAssetModal = true;
+	}
+
+	async function confirmDeleteAsset() {
+		const assetId = pendingDeleteAssetId;
+		if (!assetId) return;
+		showDeleteAssetModal = false;
+		pendingDeleteAssetId = null;
 
 		try {
 			const response = await fetch(`/api/cms/assets/${assetId}`, {
@@ -338,10 +352,18 @@
 		}
 	}
 
-	async function bulkDelete() {
-		if (selectedAssets.size === 0) return;
-		if (!confirm(`Delete ${selectedAssets.size} asset(s)?`)) return;
+	function cancelDeleteAsset() {
+		showDeleteAssetModal = false;
+		pendingDeleteAssetId = null;
+	}
 
+	function bulkDelete() {
+		if (selectedAssets.size === 0) return;
+		showBulkDeleteAssetsModal = true;
+	}
+
+	async function confirmBulkDeleteAssets() {
+		showBulkDeleteAssetsModal = false;
 		try {
 			const response = await fetch('/api/cms/assets/bulk/delete', {
 				method: 'POST',
@@ -361,6 +383,10 @@
 		} catch (error) {
 			console.error('Failed to bulk delete:', error);
 		}
+	}
+
+	function cancelBulkDeleteAssets() {
+		showBulkDeleteAssetsModal = false;
 	}
 
 	// Move to folder - available for future use
@@ -1013,6 +1039,8 @@
 															src={asset.thumbnail_url || asset.cdn_url}
 															alt={asset.alt_text || asset.filename}
 															loading="lazy"
+															width="200"
+															height="150"
 														/>
 													{:else if getAssetType(asset.mime_type) === 'video'}
 														<div class="type-preview video">
@@ -1079,7 +1107,13 @@
 													>
 														<td class="td-preview">
 															{#if getAssetType(asset.mime_type) === 'image'}
-																<img src={asset.thumbnail_url || asset.cdn_url} alt="" />
+																<img
+																	src={asset.thumbnail_url || asset.cdn_url}
+																	alt=""
+																	width="40"
+																	height="40"
+																	loading="lazy"
+																/>
 															{:else}
 																<div class="type-icon {getAssetType(asset.mime_type)}">
 																	{#if getAssetType(asset.mime_type) === 'video'}
@@ -1153,6 +1187,8 @@
 										<img
 											src={selectedAsset.cdn_url}
 											alt={selectedAsset.alt_text || selectedAsset.filename}
+											width="400"
+											height="250"
 										/>
 									{:else if getAssetType(selectedAsset.mime_type) === 'video'}
 										<!-- svelte-ignore a11y_media_has_caption -->
@@ -1360,7 +1396,7 @@
 										>
 											<div class="item-preview">
 												{#if item.previewUrl}
-													<img src={item.previewUrl} alt="" />
+													<img src={item.previewUrl} alt="" width="40" height="40" />
 												{:else}
 													<div class="file-icon">
 														<Icon name="IconFile" size={20} />
@@ -1444,6 +1480,26 @@
 		</div>
 	</div>
 {/if}
+
+<ConfirmationModal
+	isOpen={showDeleteAssetModal}
+	title="Delete asset?"
+	message="Are you sure you want to delete this asset? This action cannot be undone."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteAsset}
+	onCancel={cancelDeleteAsset}
+/>
+
+<ConfirmationModal
+	isOpen={showBulkDeleteAssetsModal}
+	title="Delete assets?"
+	message={`Delete ${selectedAssets.size} asset(s)? This action cannot be undone.`}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmBulkDeleteAssets}
+	onCancel={cancelBulkDeleteAssets}
+/>
 
 <style>
 	/* ========================================================================== */

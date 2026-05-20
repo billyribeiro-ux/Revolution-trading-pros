@@ -387,7 +387,13 @@
 		<div class="current-video-card">
 			<div class="video-preview">
 				{#if currentVideo.thumbnail_url}
-					<img src={currentVideo.thumbnail_url} alt={currentVideo.video_title} />
+					<img
+						src={currentVideo.thumbnail_url}
+						alt={currentVideo.video_title}
+						width="320"
+						height="180"
+						loading="lazy"
+					/>
 				{:else}
 					<div class="video-placeholder">
 						<IconVideo size={48} />

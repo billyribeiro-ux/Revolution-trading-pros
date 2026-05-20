@@ -148,7 +148,13 @@
 								class="card-image"
 								style="background-image: url({relatedVideo.thumbnail});"
 							>
-								<img src="https://placehold.it/325x183" alt={relatedVideo.title} />
+								<img
+									src="https://placehold.it/325x183"
+									alt={relatedVideo.title}
+									width="325"
+									height="183"
+									loading="lazy"
+								/>
 							</a>
 						</figure>
 						<section class="card-body">

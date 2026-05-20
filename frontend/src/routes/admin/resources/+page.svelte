@@ -948,7 +948,13 @@
 						<!-- Thumbnail -->
 						<div class="resource-thumbnail">
 							{#if resource.thumbnail_url}
-								<img src={resource.thumbnail_url} alt={resource.title} />
+								<img
+									src={resource.thumbnail_url}
+									alt={resource.title}
+									width="320"
+									height="180"
+									loading="lazy"
+								/>
 							{:else}
 								{@const ResourceIcon = getResourceIcon(resource.resource_type)}
 								<div class="thumbnail-placeholder">

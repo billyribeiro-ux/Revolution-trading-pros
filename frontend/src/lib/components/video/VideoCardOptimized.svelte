@@ -225,6 +225,8 @@
 				loading={loadingPriority === 'high' ? 'eager' : 'lazy'}
 				decoding="async"
 				fetchpriority={loadingPriority}
+				width="1280"
+				height="720"
 				class="video-card__image"
 				class:is-loaded={thumbnailLoaded}
 				onload={handleThumbnailLoad}

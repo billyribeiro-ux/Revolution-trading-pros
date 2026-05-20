@@ -304,6 +304,7 @@
 						aria-label="Image viewer with zoom controls"
 						use:panZoomAction
 					>
+						<!-- TODO(cls): fullscreen image viewer; intrinsic dims of arbitrary user uploads unknown -->
 						<img
 							src={resource.file_url}
 							alt={resource.title}
@@ -315,6 +316,7 @@
 									: 'grab'
 								: 'default'}"
 							draggable="false"
+							loading="lazy"
 						/>
 
 						<!-- Zoom controls -->

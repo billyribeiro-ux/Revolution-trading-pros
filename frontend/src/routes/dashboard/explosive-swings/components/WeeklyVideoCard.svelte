@@ -41,6 +41,8 @@
 				alt="Thumbnail for {video.title}"
 				class="video-thumbnail"
 				loading="lazy"
+				width="320"
+				height="180"
 			/>
 			<button class="play-overlay" onclick={onPlay} aria-label="Play {video.title}">
 				<div class="play-button">

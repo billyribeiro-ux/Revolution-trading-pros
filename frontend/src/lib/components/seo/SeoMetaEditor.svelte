@@ -12,6 +12,8 @@
 	} from '$lib/icons';
 	import SeoAnalyzer from './SeoAnalyzer.svelte';
 	import SeoPreview from './SeoPreview.svelte';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { toastStore } from '$lib/stores/toast.svelte';
 
 	interface Props {
 		entity: any;
@@ -46,6 +48,10 @@
 	let content = $state('');
 	let _analyzing = $state(false);
 	let saving = $state(false);
+
+	// Input modal state (replaces native prompt()).
+	let showAddKeywordModal = $state(false);
+	let addKeywordInput = $state('');
 
 	const tabs = [
 		{ id: 'general', label: 'General', icon: IconFileText },
@@ -95,10 +101,22 @@
 	}
 
 	function addKeyword() {
-		const input = prompt('Enter keyword:');
-		if (input && input.trim()) {
-			meta.additional_keywords = [...meta.additional_keywords, input.trim()];
+		addKeywordInput = '';
+		showAddKeywordModal = true;
+	}
+
+	function confirmAddKeyword(value?: string) {
+		const keyword = (value ?? '').trim();
+		showAddKeywordModal = false;
+		if (!keyword) {
+			toastStore.error('Keyword is required');
+			return;
 		}
+		meta.additional_keywords = [...meta.additional_keywords, keyword];
+	}
+
+	function cancelAddKeyword() {
+		showAddKeywordModal = false;
 	}
 
 	function removeKeyword(index: number) {
@@ -362,6 +380,20 @@
 		{/if}
 	</div>
 </div>
+
+<ConfirmationModal
+	isOpen={showAddKeywordModal}
+	title="Add keyword"
+	message="Enter an additional keyword to track."
+	confirmText="Add"
+	variant="info"
+	showInput={true}
+	inputLabel="Keyword"
+	inputPlaceholder="e.g. day trading"
+	bind:inputValue={addKeywordInput}
+	onConfirm={confirmAddKeyword}
+	onCancel={cancelAddKeyword}
+/>
 
 <style>
 	.seo-meta-editor {

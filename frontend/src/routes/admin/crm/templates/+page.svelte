@@ -624,7 +624,13 @@
 
 						<div class="template-thumbnail">
 							{#if template.thumbnail}
-								<img src={template.thumbnail} alt={`${template.title} preview`} loading="lazy" />
+								<img
+									src={template.thumbnail}
+									alt={`${template.title} preview`}
+									loading="lazy"
+									width="320"
+									height="160"
+								/>
 							{:else}
 								<div class="thumbnail-placeholder">
 									<IconTemplate size={32} />

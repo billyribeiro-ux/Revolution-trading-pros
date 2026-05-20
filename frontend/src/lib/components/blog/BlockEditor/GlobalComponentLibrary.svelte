@@ -48,6 +48,7 @@
 	import { API_BASE_URL } from '$lib/api/config';
 	import { getAuthToken } from '$lib/stores/auth.svelte';
 	import type { Block } from './types';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// ==========================================================================
 	// Types
@@ -158,6 +159,10 @@
 	let formIsGlobal = $state(true);
 	let isSubmitting = $state(false);
 	let editMode = $state(false);
+
+	// Confirmation modal state (replaces native confirm())
+	let showDeleteComponentModal = $state(false);
+	let pendingDeleteComponent = $state<GlobalComponent | null>(null);
 
 	// ==========================================================================
 	// Category Config
@@ -361,10 +366,16 @@
 		}
 	}
 
-	async function handleDelete(component: GlobalComponent): Promise<void> {
-		if (!confirm(`Delete "${component.name}"? This cannot be undone.`)) {
-			return;
-		}
+	function handleDelete(component: GlobalComponent): void {
+		pendingDeleteComponent = component;
+		showDeleteComponentModal = true;
+	}
+
+	async function confirmDeleteComponent(): Promise<void> {
+		const component = pendingDeleteComponent;
+		if (!component) return;
+		showDeleteComponentModal = false;
+		pendingDeleteComponent = null;
 
 		try {
 			const response = await fetch(`${API_BASE_URL}/api/cms/global-components/${component.id}`, {
@@ -382,6 +393,11 @@
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to delete';
 		}
+	}
+
+	function cancelDeleteComponent(): void {
+		showDeleteComponentModal = false;
+		pendingDeleteComponent = null;
 	}
 
 	async function handleRestoreVersion(versionNum: number): Promise<void> {
@@ -664,7 +680,13 @@
 								>
 									<div class="card-thumbnail">
 										{#if component.thumbnail_url}
-											<img src={component.thumbnail_url} alt={component.name} />
+											<img
+												src={component.thumbnail_url}
+												alt={component.name}
+												width="250"
+												height="100"
+												loading="lazy"
+											/>
 										{:else}
 											<div class="thumbnail-placeholder" style="background-color: {config.color}20">
 												<Icon size={32} />
@@ -1007,6 +1029,16 @@
 		</div>
 	</div>
 {/if}
+
+<ConfirmationModal
+	isOpen={showDeleteComponentModal}
+	title="Delete component?"
+	message={`Delete "${pendingDeleteComponent?.name ?? ''}"? This cannot be undone.`}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteComponent}
+	onCancel={cancelDeleteComponent}
+/>
 
 <style>
 	.global-component-library {

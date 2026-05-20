@@ -141,7 +141,13 @@
 					<!-- Thumbnail -->
 					<div class="watch-card__thumbnail">
 						{#if item.thumbnail_url}
-							<img src={item.thumbnail_url} alt={item.title} loading="lazy" />
+							<img
+								src={item.thumbnail_url}
+								alt={item.title}
+								loading="lazy"
+								width="320"
+								height="180"
+							/>
 						{:else}
 							<div class="watch-card__placeholder">
 								<Icon name="IconPlayerPlay" size={32} />

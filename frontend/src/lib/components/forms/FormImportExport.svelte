@@ -13,6 +13,8 @@
 	 */
 
 	import { getAuthToken } from '$lib/stores/auth.svelte';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { toastStore } from '$lib/stores/toast.svelte';
 
 	interface Props {
 		formId?: number;
@@ -34,6 +36,12 @@
 	let importResult = $state<{ success: boolean; message: string } | null>(null);
 	let dateFrom = $state('');
 	let dateTo = $state('');
+
+	// Input modal state (replaces native prompt()).
+	// prompt() is blocked in modern browser embed contexts and has no validation;
+	// ConfirmationModal with showInput surfaces a real text input.
+	let showSaveTemplateModal = $state(false);
+	let saveTemplateName = $state('');
 
 	// Export formats
 	const exportFormats = [
@@ -146,12 +154,20 @@
 		importing = false;
 	}
 
-	// Save as template
-	async function saveAsTemplate() {
+	// Save as template — opens an input modal in place of native prompt().
+	function saveAsTemplate() {
 		if (!formId) return;
+		saveTemplateName = '';
+		showSaveTemplateModal = true;
+	}
 
-		const templateName = prompt('Enter template name:');
-		if (!templateName) return;
+	async function confirmSaveAsTemplate(value?: string) {
+		const templateName = (value ?? '').trim();
+		if (!templateName) {
+			toastStore.error('Template name is required');
+			return;
+		}
+		showSaveTemplateModal = false;
 
 		try {
 			const token = getAuthToken();
@@ -168,11 +184,16 @@
 			});
 
 			if (response.ok) {
-				alert('Template saved successfully!');
+				toastStore.success('Template saved successfully!');
 			}
 		} catch (error) {
 			console.error('Failed to save template:', error);
+			toastStore.error('Failed to save template');
 		}
+	}
+
+	function cancelSaveAsTemplate() {
+		showSaveTemplateModal = false;
 	}
 </script>
 
@@ -379,6 +400,20 @@
 		{/if}
 	</div>
 </div>
+
+<ConfirmationModal
+	isOpen={showSaveTemplateModal}
+	title="Save as template"
+	message="Give this template a name to save it to your library."
+	confirmText="Save Template"
+	variant="info"
+	showInput={true}
+	inputLabel="Template name"
+	inputPlaceholder="My form template"
+	bind:inputValue={saveTemplateName}
+	onConfirm={confirmSaveAsTemplate}
+	onCancel={cancelSaveAsTemplate}
+/>
 
 <style>
 	.import-export {
