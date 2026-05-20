@@ -10,46 +10,21 @@
  *
  * Auth: rtp_access_token cookie (preferred) or Bearer header fallback.
  *
- * @version 1.0.0 — 2026-04-26
+ * R21-A: migrated to shared `fetchBackendWithStatus` helper. POST body
+ * narrowed with `isObject`. Backend-error-message extraction consolidated.
+ *
+ * @version 1.1.0 — 2026-05-20
  */
 
 import { json, error, isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
-import { env } from '$env/dynamic/private';
 import { requireAdmin } from '$lib/server/auth';
-const PROD_BACKEND =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
-
-async function fetchFromBackend(
-	endpoint: string,
-	options?: RequestInit
-): Promise<{ data: unknown; status: number }> {
-	const backendUrl = PROD_BACKEND;
-	try {
-		const response = await fetch(`${backendUrl}/api${endpoint}`, {
-			...options,
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-				...(options?.headers || {})
-			}
-		});
-		const text = await response.text();
-		let data: unknown = null;
-		if (text) {
-			try {
-				data = JSON.parse(text);
-			} catch {
-				data = { error: text };
-			}
-		}
-		return { data, status: response.status };
-	} catch (err) {
-		console.error(`Backend error for ${endpoint}:`, err);
-		return { data: null, status: 500 };
-	}
-}
+import {
+	fetchBackendWithStatus,
+	isObject,
+	extractBackendErrorMessage
+} from '$lib/server/proxy-fetch';
 
 export const GET: RequestHandler = async (event) => {
 	const { token } = requireAdmin(event);
@@ -58,11 +33,13 @@ export const GET: RequestHandler = async (event) => {
 	const queryParams = url.searchParams.toString();
 	// Backend exposes forms under /api/forms (admin scope is enforced by
 	// the bearer token + role check on the Rust side).
-	const endpoint = `/forms${queryParams ? `?${queryParams}` : ''}`;
+	const endpoint = `/api/forms${queryParams ? `?${queryParams}` : ''}`;
 
-	const { data, status } = await fetchFromBackend(endpoint, {
-		headers: { Authorization: authHeader }
-	});
+	const { data, status } = await fetchBackendWithStatus(
+		endpoint,
+		{ headers: { Authorization: authHeader } },
+		'[Admin Forms API]'
+	);
 
 	if (status === 401 || status === 403) error(status, 'Unauthorized');
 	if (status >= 400 || !data) {
@@ -79,21 +56,25 @@ export const POST: RequestHandler = async (event) => {
 	const { request } = event;
 	const authHeader = `Bearer ${token}`;
 	try {
-		const body = await request.json();
-		const { data, status } = await fetchFromBackend('/forms', {
-			method: 'POST',
-			headers: { Authorization: authHeader },
-			body: JSON.stringify(body)
-		});
+		const body: unknown = await request.json();
+
+		if (!isObject(body)) {
+			error(400, 'Invalid request body');
+		}
+
+		const { data, status } = await fetchBackendWithStatus(
+			'/api/forms',
+			{
+				method: 'POST',
+				headers: { Authorization: authHeader },
+				body: JSON.stringify(body)
+			},
+			'[Admin Forms API]'
+		);
 
 		if (status === 401 || status === 403) error(status, 'Unauthorized');
 		if (status >= 400) {
-			const message =
-				(data && typeof data === 'object' && ('message' in data || 'error' in data)
-					? (data as { message?: string; error?: string }).message ||
-						(data as { error?: string }).error
-					: undefined) || 'Failed to create form';
-			error(status, message);
+			error(status, extractBackendErrorMessage(data, 'Failed to create form'));
 		}
 		return json(data);
 	} catch (err) {

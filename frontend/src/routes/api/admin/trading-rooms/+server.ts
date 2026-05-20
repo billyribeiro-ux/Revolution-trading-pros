@@ -4,40 +4,23 @@
  *
  * Proxies to backend for trading room management.
  *
- * @version 2.0.0 - January 2026
+ * R21-A: migrated to shared `fetchBackendWithStatus` helper. POST body
+ * narrowed with `isObject`. Backend-error-message extraction consolidated
+ * (was: generic "Failed to create trading room" regardless of backend
+ * validation message — now forwards backend's `.message` / `.error`).
+ *
+ * @version 2.1.0 — 2026-05-20
  */
 
-import { json, error } from '@sveltejs/kit';
+import { json, error, isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
-import { env } from '$env/dynamic/private';
 import { requireAdmin } from '$lib/server/auth';
-const PROD_BACKEND =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
-
-async function fetchFromBackend(
-	endpoint: string,
-	options?: RequestInit
-): Promise<{ data: unknown; status: number }> {
-	const backendUrl = PROD_BACKEND;
-
-	try {
-		const response = await fetch(`${backendUrl}/api${endpoint}`, {
-			...options,
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-				...(options?.headers || {})
-			}
-		});
-
-		const data = await response.json();
-		return { data, status: response.status };
-	} catch (err) {
-		console.error(`Backend error for ${endpoint}:`, err);
-		return { data: null, status: 500 };
-	}
-}
+import {
+	fetchBackendWithStatus,
+	isObject,
+	extractBackendErrorMessage
+} from '$lib/server/proxy-fetch';
 
 // GET - List trading rooms
 export const GET: RequestHandler = async (event) => {
@@ -45,11 +28,13 @@ export const GET: RequestHandler = async (event) => {
 	const { url } = event;
 	const authHeader = `Bearer ${token}`;
 	const queryParams = url.searchParams.toString();
-	const endpoint = `/trading-rooms${queryParams ? `?${queryParams}` : ''}`;
+	const endpoint = `/api/trading-rooms${queryParams ? `?${queryParams}` : ''}`;
 
-	const { data, status } = await fetchFromBackend(endpoint, {
-		headers: { Authorization: authHeader }
-	});
+	const { data, status } = await fetchBackendWithStatus(
+		endpoint,
+		{ headers: { Authorization: authHeader } },
+		'[Trading Rooms API]'
+	);
 
 	if (status >= 400 || !data) {
 		return json({
@@ -69,20 +54,29 @@ export const POST: RequestHandler = async (event) => {
 	const authHeader = `Bearer ${token}`;
 
 	try {
-		const body = await request.json();
+		const body: unknown = await request.json();
 
-		const { data, status } = await fetchFromBackend('/admin/trading-rooms', {
-			method: 'POST',
-			headers: { Authorization: authHeader },
-			body: JSON.stringify(body)
-		});
+		if (!isObject(body)) {
+			error(400, 'Invalid request body');
+		}
+
+		const { data, status } = await fetchBackendWithStatus(
+			'/api/admin/trading-rooms',
+			{
+				method: 'POST',
+				headers: { Authorization: authHeader },
+				body: JSON.stringify(body)
+			},
+			'[Trading Rooms API]'
+		);
 
 		if (status >= 400) {
-			error(status, 'Failed to create trading room');
+			error(status, extractBackendErrorMessage(data, 'Failed to create trading room'));
 		}
 
 		return json(data);
 	} catch (err) {
+		if (isHttpError(err)) throw err;
 		console.error('POST /api/admin/trading-rooms error:', err);
 		error(400, 'Invalid request body');
 	}

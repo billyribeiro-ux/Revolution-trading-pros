@@ -4,48 +4,32 @@
  *
  * Proxies to backend for email template CRUD operations.
  *
- * @version 2.0.0 - January 2026
+ * R21-A: migrated to shared `fetchBackendWithStatus` helper. Body narrowing
+ * added to POST handler (`isObject` guard on `request.json()`) — was: implicit
+ * `any` followed by unchecked `.name` / `.subject` reads. Latent NPE on
+ * `null` / primitive bodies now returns 400 instead of 500.
+ *
+ * @version 3.0.0 — 2026-05-20
  */
 
-import { json, error } from '@sveltejs/kit';
+import { json, error, isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
-import { env } from '$env/dynamic/private';
 import { requireAdmin } from '$lib/server/auth';
-const PROD_BACKEND =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
-
-async function fetchFromBackend(
-	endpoint: string,
-	options?: RequestInit
-): Promise<{ data: unknown; status: number }> {
-	const backendUrl = PROD_BACKEND;
-
-	try {
-		const response = await fetch(`${backendUrl}/api${endpoint}`, {
-			...options,
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-				...(options?.headers || {})
-			}
-		});
-
-		const data = await response.json();
-		return { data, status: response.status };
-	} catch (err) {
-		console.error(`Backend error for ${endpoint}:`, err);
-		return { data: null, status: 500 };
-	}
-}
+import {
+	fetchBackendWithStatus,
+	isObject
+} from '$lib/server/proxy-fetch';
 
 export const GET: RequestHandler = async (event) => {
 	const { token } = requireAdmin(event);
 	const authHeader = `Bearer ${token}`;
 
-	const { data, status } = await fetchFromBackend('/admin/email/templates', {
-		headers: { Authorization: authHeader }
-	});
+	const { data, status } = await fetchBackendWithStatus(
+		'/api/admin/email/templates',
+		{ headers: { Authorization: authHeader } },
+		'[Email Templates API]'
+	);
 
 	if (status >= 400 || !data) {
 		return json({
@@ -65,17 +49,21 @@ export const POST: RequestHandler = async (event) => {
 	const authHeader = `Bearer ${token}`;
 
 	try {
-		const body = await request.json();
+		const body: unknown = await request.json();
 
-		if (!body.name || !body.subject) {
+		if (!isObject(body) || typeof body.name !== 'string' || typeof body.subject !== 'string') {
 			return json({ success: false, error: 'Name and subject are required' }, { status: 400 });
 		}
 
-		const { data, status } = await fetchFromBackend('/admin/email/templates', {
-			method: 'POST',
-			headers: { Authorization: authHeader },
-			body: JSON.stringify(body)
-		});
+		const { data, status } = await fetchBackendWithStatus(
+			'/api/admin/email/templates',
+			{
+				method: 'POST',
+				headers: { Authorization: authHeader },
+				body: JSON.stringify(body)
+			},
+			'[Email Templates API]'
+		);
 
 		if (status >= 400) {
 			error(status, 'Failed to create template');
@@ -83,6 +71,7 @@ export const POST: RequestHandler = async (event) => {
 
 		return json(data);
 	} catch (err) {
+		if (isHttpError(err)) throw err;
 		console.error('POST /api/admin/email/templates error:', err);
 		error(400, 'Invalid request body');
 	}
