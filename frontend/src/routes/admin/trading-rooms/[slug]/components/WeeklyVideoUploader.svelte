@@ -16,6 +16,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { weeklyVideoApi, type WeeklyVideo } from '$lib/api/room-content';
 	import { adminFetch } from '$lib/utils/adminFetch';
+	import { logger } from '$lib/utils/logger';
 
 	// Icons
 	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
@@ -144,7 +145,7 @@
 			archivedVideos = archived.data.filter((v) => !v.is_current);
 		} catch (err) {
 			if (controller.signal.aborted) return;
-			console.error('Failed to load videos:', err);
+			logger.error('Failed to load videos:', err);
 		} finally {
 			if (loadAbortController === controller) loadAbortController = null;
 			if (!controller.signal.aborted) isLoading = false;
@@ -173,7 +174,7 @@
 			await loadVideos();
 		} catch (err) {
 			onError?.('Failed to publish video');
-			console.error(err);
+			logger.error(err);
 		} finally {
 			isUploading = false;
 		}
@@ -256,7 +257,7 @@
 			// knows whether it was auth, network, or backend.
 			const message = err instanceof Error ? err.message : 'Failed to upload video';
 			onError?.(message);
-			console.error('[WeeklyVideoUploader] uploadToBunny failed:', err);
+			logger.error('[WeeklyVideoUploader] uploadToBunny failed:', err);
 		} finally {
 			isUploading = false;
 		}

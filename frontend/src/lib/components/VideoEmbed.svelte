@@ -113,6 +113,7 @@
 		IconPictureInPictureOn
 	} from '$lib/icons';
 	import { sanitizeVideoOverlay } from '$lib/utils/sanitize';
+	import { logger } from '$lib/utils/logger';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Props
@@ -1114,7 +1115,7 @@
 			isFullscreen = true;
 			trackEvent('fullscreen_enter');
 		} catch (error) {
-			console.error('Failed to enter fullscreen:', error);
+			logger.error('Failed to enter fullscreen:', error);
 		}
 	}
 
@@ -1131,7 +1132,7 @@
 			isFullscreen = false;
 			trackEvent('fullscreen_exit');
 		} catch (error) {
-			console.error('Failed to exit fullscreen:', error);
+			logger.error('Failed to exit fullscreen:', error);
 		}
 	}
 
@@ -1149,7 +1150,7 @@
 			// LB-VID-1 again: route through base state, not the derived mirror.
 			analyticsBase.interactions++;
 		} catch (error) {
-			console.error('Picture-in-Picture not supported:', error);
+			logger.error('Picture-in-Picture not supported:', error);
 		}
 	}
 

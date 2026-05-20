@@ -7,6 +7,7 @@
 
 import DOMPurify from 'isomorphic-dompurify';
 import type { Config } from 'dompurify';
+import { logger } from '$lib/utils/logger';
 
 // ============================================================================
 // Types
@@ -371,7 +372,7 @@ export function sanitizeURL(url: string, additionalSafeProtocols: string[] = [])
 		lowercaseUrl.startsWith('vbscript:') ||
 		lowercaseUrl.startsWith('data:text/html')
 	) {
-		console.warn('Dangerous URL protocol blocked:', trimmedUrl.slice(0, 20));
+		logger.warn('Dangerous URL protocol blocked:', trimmedUrl.slice(0, 20));
 		return '';
 	}
 
@@ -383,7 +384,7 @@ export function sanitizeURL(url: string, additionalSafeProtocols: string[] = [])
 
 		// Validate protocol
 		if (!allSafeProtocols.includes(urlObj.protocol as (typeof SAFE_PROTOCOLS)[number])) {
-			console.warn('Unsafe URL protocol blocked:', urlObj.protocol);
+			logger.warn('Unsafe URL protocol blocked:', urlObj.protocol);
 			return '';
 		}
 
@@ -436,7 +437,7 @@ export function sanitizeCSS(css: string): string {
 
 	// Validate remaining content doesn't contain dangerous constructs
 	if (containsDangerousCSS(cleaned)) {
-		console.warn('CSS contained dangerous constructs after sanitization');
+		logger.warn('CSS contained dangerous constructs after sanitization');
 		return '';
 	}
 
