@@ -13,7 +13,10 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 
-const BACKEND_URL = env.BACKEND_URL || 'http://localhost:8080';
+// CLAUDE.md hard rule — API_BASE_URL primary, BACKEND_URL fallback,
+// localhost last. R21-A: restored full fallback chain (was: BACKEND_URL only).
+const BACKEND_URL =
+	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 // GET - Check video processing status
 export const GET: RequestHandler = async ({ params, cookies }) => {

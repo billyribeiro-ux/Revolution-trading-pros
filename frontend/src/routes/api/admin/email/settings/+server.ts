@@ -16,59 +16,36 @@
  *     but explicitly delete `password` from the GET response as defense in
  *     depth.
  *
- * @version 3.0.0 — 2026-04-26
+ * R21-A: migrated to shared `fetchBackendWithStatus` helper. POST body now
+ * narrowed with `isObject` (was: `as Record<string, unknown>` cast hid the
+ * possibility of `null` / primitive body and the downstream `.password`
+ * reads would silently no-op). Latent Bug §2 mitigation extended to this
+ * file.
+ *
+ * @version 3.1.0 — 2026-05-20
  */
 
 import { json, error, isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
-import { env } from '$env/dynamic/private';
 import { requireAdmin, requireSuperadmin } from '$lib/server/auth';
-const PROD_BACKEND =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+import {
+	fetchBackendWithStatus,
+	isObject,
+	extractBackendErrorMessage
+} from '$lib/server/proxy-fetch';
 
 const PASSWORD_MASK = '••••••••';
-
-async function fetchFromBackend(
-	endpoint: string,
-	options?: RequestInit
-): Promise<{ data: unknown; status: number }> {
-	const backendUrl = PROD_BACKEND;
-
-	try {
-		const response = await fetch(`${backendUrl}/api${endpoint}`, {
-			...options,
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-				...(options?.headers || {})
-			}
-		});
-
-		// Tolerate empty 204 / non-JSON 5xx bodies.
-		const text = await response.text();
-		let data: unknown = null;
-		if (text) {
-			try {
-				data = JSON.parse(text);
-			} catch {
-				data = { error: text };
-			}
-		}
-		return { data, status: response.status };
-	} catch (err) {
-		console.error(`Backend error for ${endpoint}:`, err);
-		return { data: null, status: 500 };
-	}
-}
 
 export const GET: RequestHandler = async (event) => {
 	const { token } = requireAdmin(event);
 	const authHeader = `Bearer ${token}`;
 
-	const { data, status } = await fetchFromBackend('/admin/email/settings', {
-		headers: { Authorization: authHeader }
-	});
+	const { data, status } = await fetchBackendWithStatus(
+		'/api/admin/email/settings',
+		{ headers: { Authorization: authHeader } },
+		'[Email Settings API]'
+	);
 
 	if (status === 401 || status === 403) error(status, 'Unauthorized');
 	if (status >= 400 || !data) {
@@ -89,9 +66,9 @@ export const GET: RequestHandler = async (event) => {
 	// Defense in depth: scrub any plaintext password before responding to the
 	// browser. The Rust backend SHOULD return `has_password: boolean` only,
 	// but if it ever leaks the column we mask it here.
-	if (data && typeof data === 'object') {
-		const safe = { ...(data as Record<string, unknown>) };
-		const hadPwd = typeof safe.password === 'string' && (safe.password as string).length > 0;
+	if (isObject(data)) {
+		const safe = { ...data };
+		const hadPwd = typeof safe.password === 'string' && safe.password.length > 0;
 		delete safe.password;
 		if (!('has_password' in safe)) safe.has_password = hadPwd;
 		return json(safe);
@@ -106,7 +83,11 @@ export const POST: RequestHandler = async (event) => {
 	const authHeader = `Bearer ${token}`;
 
 	try {
-		const body = (await request.json()) as Record<string, unknown>;
+		const body: unknown = await request.json();
+
+		if (!isObject(body)) {
+			return json({ success: false, error: 'Invalid request body' }, { status: 400 });
+		}
 
 		// Validate required fields client-side as a fast-fail.
 		if (!body.host || !body.port || !body.from_address || !body.from_name) {
@@ -126,20 +107,19 @@ export const POST: RequestHandler = async (event) => {
 			delete forwarded.password;
 		}
 
-		const { data, status } = await fetchFromBackend('/admin/email/settings', {
-			method: 'POST',
-			headers: { Authorization: authHeader },
-			body: JSON.stringify(forwarded)
-		});
+		const { data, status } = await fetchBackendWithStatus(
+			'/api/admin/email/settings',
+			{
+				method: 'POST',
+				headers: { Authorization: authHeader },
+				body: JSON.stringify(forwarded)
+			},
+			'[Email Settings API]'
+		);
 
 		if (status === 401 || status === 403) error(status, 'Unauthorized');
 		if (status >= 400) {
-			const message =
-				(data && typeof data === 'object' && ('message' in data || 'error' in data)
-					? (data as { message?: string; error?: string }).message ||
-						(data as { error?: string }).error
-					: undefined) || 'Failed to save settings';
-			error(status, message);
+			error(status, extractBackendErrorMessage(data, 'Failed to save settings'));
 		}
 
 		return json(data ?? { success: true, message: 'Settings saved successfully!' });

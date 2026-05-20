@@ -15,7 +15,10 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 
-const BACKEND_URL = env.BACKEND_URL || 'http://localhost:8080';
+// CLAUDE.md hard rule — API_BASE_URL primary, BACKEND_URL fallback,
+// localhost last. R21-A: restored full fallback chain (was: BACKEND_URL only).
+const BACKEND_URL =
+	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 // Default Bunny library ID - can be overridden by BUNNY_STREAM_LIBRARY_ID env var
 const DEFAULT_LIBRARY_ID = parseInt(env.BUNNY_STREAM_LIBRARY_ID || '585929', 10);

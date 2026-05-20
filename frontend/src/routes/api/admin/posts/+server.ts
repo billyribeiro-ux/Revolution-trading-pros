@@ -4,40 +4,25 @@
  * Handles blog post management - proxies to Rust API backend.
  * No mock data - always returns real backend data.
  *
- * @version 3.0.0 - January 2026
+ * R21-A: migrated to shared `fetchBackendWithStatus` helper. POST/PUT bodies
+ * now narrowed with `isObject` (was: implicit `any` from `request.json()`
+ * passed straight to `JSON.stringify` — null/primitive bodies serialized to
+ * "null"/literal and triggered backend-side validation 500s instead of
+ * proxy-side 400). Backend-error-message extraction consolidated through
+ * `extractBackendErrorMessage`.
+ *
+ * @version 3.1.0 — 2026-05-20
  */
 
 import { json, error, isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
-import { env } from '$env/dynamic/private';
 import { requireAdmin } from '$lib/server/auth';
-const PROD_BACKEND =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
-
-async function fetchFromBackend(
-	endpoint: string,
-	options?: RequestInit
-): Promise<{ data: unknown; status: number }> {
-	const backendUrl = PROD_BACKEND;
-
-	try {
-		const response = await fetch(`${backendUrl}/api${endpoint}`, {
-			...options,
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-				...(options?.headers || {})
-			}
-		});
-
-		const data = await response.json();
-		return { data, status: response.status };
-	} catch (err) {
-		console.error(`Backend error for ${endpoint}:`, err);
-		return { data: null, status: 500 };
-	}
-}
+import {
+	fetchBackendWithStatus,
+	isObject,
+	extractBackendErrorMessage
+} from '$lib/server/proxy-fetch';
 
 // GET - List posts
 export const GET: RequestHandler = async (event) => {
@@ -45,11 +30,13 @@ export const GET: RequestHandler = async (event) => {
 	const { url } = event;
 	const authHeader = `Bearer ${token}`;
 	const queryParams = url.searchParams.toString();
-	const endpoint = `/admin/posts${queryParams ? `?${queryParams}` : ''}`;
+	const endpoint = `/api/admin/posts${queryParams ? `?${queryParams}` : ''}`;
 
-	const { data, status } = await fetchFromBackend(endpoint, {
-		headers: { Authorization: authHeader }
-	});
+	const { data, status } = await fetchBackendWithStatus(
+		endpoint,
+		{ headers: { Authorization: authHeader } },
+		'[Posts API]'
+	);
 
 	if (status >= 400) {
 		// Return empty data on error, not mock data
@@ -71,23 +58,26 @@ export const POST: RequestHandler = async (event) => {
 	const authHeader = `Bearer ${token}`;
 
 	try {
-		const body = await request.json();
+		const body: unknown = await request.json();
 
-		const { data, status } = await fetchFromBackend('/admin/posts', {
-			method: 'POST',
-			headers: { Authorization: authHeader },
-			body: JSON.stringify(body)
-		});
+		if (!isObject(body)) {
+			error(400, 'Invalid request body');
+		}
+
+		const { data, status } = await fetchBackendWithStatus(
+			'/api/admin/posts',
+			{
+				method: 'POST',
+				headers: { Authorization: authHeader },
+				body: JSON.stringify(body)
+			},
+			'[Posts API]'
+		);
 
 		if (status >= 400) {
 			// FIX-2026-04-26 (P0-1): pass through backend's actual error message/status
 			// rather than collapsing into a generic 400. The browser reads result.message.
-			const message =
-				(data && typeof data === 'object' && ('message' in data || 'error' in data)
-					? (data as { message?: string; error?: string }).message ||
-						(data as { error?: string }).error
-					: undefined) || 'Failed to create post';
-			error(status, message);
+			error(status, extractBackendErrorMessage(data, 'Failed to create post'));
 		}
 
 		return json(data);
@@ -111,22 +101,25 @@ export const PUT: RequestHandler = async (event) => {
 	}
 
 	try {
-		const body = await request.json();
+		const body: unknown = await request.json();
 
-		const { data, status } = await fetchFromBackend(`/admin/posts/${postId}`, {
-			method: 'PUT',
-			headers: { Authorization: authHeader },
-			body: JSON.stringify(body)
-		});
+		if (!isObject(body)) {
+			error(400, 'Invalid request body');
+		}
+
+		const { data, status } = await fetchBackendWithStatus(
+			`/api/admin/posts/${postId}`,
+			{
+				method: 'PUT',
+				headers: { Authorization: authHeader },
+				body: JSON.stringify(body)
+			},
+			'[Posts API]'
+		);
 
 		if (status >= 400) {
 			// FIX-2026-04-26 (P0-1): forward backend status + message instead of generic 400.
-			const message =
-				(data && typeof data === 'object' && ('message' in data || 'error' in data)
-					? (data as { message?: string; error?: string }).message ||
-						(data as { error?: string }).error
-					: undefined) || 'Failed to update post';
-			error(status, message);
+			error(status, extractBackendErrorMessage(data, 'Failed to update post'));
 		}
 
 		return json(data);
@@ -149,13 +142,17 @@ export const DELETE: RequestHandler = async (event) => {
 		error(400, 'Post ID required');
 	}
 
-	const { data, status } = await fetchFromBackend(`/admin/posts/${postId}`, {
-		method: 'DELETE',
-		headers: { Authorization: authHeader }
-	});
+	const { data, status } = await fetchBackendWithStatus(
+		`/api/admin/posts/${postId}`,
+		{
+			method: 'DELETE',
+			headers: { Authorization: authHeader }
+		},
+		'[Posts API]'
+	);
 
 	if (status >= 400) {
-		error(status, 'Failed to delete post');
+		error(status, extractBackendErrorMessage(data, 'Failed to delete post'));
 	}
 
 	return json(data);
