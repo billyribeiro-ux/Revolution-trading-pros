@@ -58,6 +58,25 @@ import type {
 	SubscriptionStats,
 	SubscriptionPayment
 } from '$lib/stores/subscriptions.svelte';
+// R6-A: typed-envelope helpers. `JsonValue` replaces the heterogeneous
+// `Record<string, any>` / metadata `any` patterns. `PaginatedResponse<T>` is
+// not consumed here — no endpoint in this file emits the `{ data, meta }`
+// pagination envelope (lists are unwrapped via `response.subscriptions` or
+// `response.payments`) — but it is re-exported below so callers can import
+// the typed envelope from this module if they ever wire up a paginated
+// subscriptions endpoint without reaching for `crm.ts` / `admin.ts`.
+import type { JsonValue, PaginatedResponse } from './_types';
+export type { PaginatedResponse };
+
+/**
+ * Narrow `unknown` caught error → human-readable message string.
+ * Used in every public-API catch handler now that `error: any` was removed.
+ */
+function errorMessage(err: unknown): string {
+	if (err instanceof Error) return err.message;
+	if (typeof err === 'string') return err;
+	return String(err);
+}
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -105,7 +124,7 @@ export interface EnhancedSubscription extends Subscription {
 	engagement: EngagementMetrics;
 
 	// Metadata
-	customFields?: Record<string, any>;
+	customFields?: Record<string, JsonValue>;
 	tags?: string[];
 	subscriptionNotes?: Note[];
 }
@@ -162,7 +181,7 @@ export interface Discount {
 
 export interface DiscountCondition {
 	type: 'min_amount' | 'min_duration' | 'specific_plan' | 'new_customer';
-	value: any;
+	value: JsonValue;
 }
 
 export interface Tax {
@@ -202,7 +221,7 @@ export interface PaymentHistory {
 	method: PaymentMethod;
 	provider: PaymentProvider;
 	attempts: PaymentAttempt[];
-	metadata: Record<string, any>;
+	metadata: Record<string, JsonValue>;
 	createdAt: string;
 }
 
@@ -220,7 +239,7 @@ export interface PaymentProvider {
 	name: 'stripe' | 'paypal' | 'square' | 'braintree' | 'custom';
 	accountId: string;
 	customerId: string;
-	metadata?: Record<string, any>;
+	metadata?: Record<string, JsonValue>;
 }
 
 export interface PaymentAttempt {
@@ -310,7 +329,7 @@ export interface HealthFactor {
 	name: string;
 	impact: 'positive' | 'negative' | 'neutral';
 	weight: number;
-	value: any;
+	value: JsonValue;
 }
 
 export interface Note {
@@ -374,9 +393,9 @@ export interface CohortAnalysis {
 
 class SubscriptionService {
 	private static instance: SubscriptionService;
-	private cache = new Map<string, { data: any; expiry: number }>();
+	private cache = new Map<string, { data: unknown; expiry: number }>();
 	private wsConnection?: WebSocket;
-	private pendingRequests = new Map<string, Promise<any>>();
+	private pendingRequests = new Map<string, Promise<unknown>>();
 	private retryQueue: RetryItem[] = [];
 
 	// Stores
@@ -459,13 +478,13 @@ class SubscriptionService {
 		// Check cache
 		const cacheKey = `${fetchOptions.method || 'GET'}:${url}`;
 		if (!skipCache && (!fetchOptions.method || fetchOptions.method === 'GET')) {
-			const cached = this.getFromCache(cacheKey);
-			if (cached) return cached;
+			const cached = this.getFromCache<T>(cacheKey);
+			if (cached !== null) return cached;
 		}
 
 		// Check pending requests
 		if (this.pendingRequests.has(cacheKey) && !fetchOptions.method) {
-			return this.pendingRequests.get(cacheKey);
+			return this.pendingRequests.get(cacheKey) as Promise<T>;
 		}
 
 		// Create request
@@ -518,22 +537,25 @@ class SubscriptionService {
 			clearTimeout(timeout);
 
 			if (!response.ok) {
-				const error = await response.json().catch(() => ({ message: 'Request failed' }));
+				const errorBody: { message?: string } = await response
+					.json()
+					.catch(() => ({ message: 'Request failed' }));
+				const errMsg = errorBody.message ?? `HTTP ${response.status}`;
 
 				// Handle specific error codes
 				if (response.status === 402) {
-					throw new PaymentRequiredError(error.message);
+					throw new PaymentRequiredError(errMsg);
 				}
 				if (response.status === 429) {
 					const retryAfter = parseInt(response.headers.get('Retry-After') || '60', 10);
-					throw new RateLimitError(error.message, retryAfter);
+					throw new RateLimitError(errMsg, retryAfter);
 				}
 
-				throw new Error(error.message || `HTTP ${response.status}`);
+				throw new Error(errMsg);
 			}
 
 			return response.json();
-		} catch (error: any) {
+		} catch (error: unknown) {
 			clearTimeout(timeout);
 
 			// Retry logic
@@ -708,7 +730,10 @@ class SubscriptionService {
 		);
 	}
 
-	private handleAlert(alert: any): void {
+	private handleAlert(alert: {
+		message: string;
+		severity?: 'info' | 'success' | 'warning' | 'error';
+	}): void {
 		console.warn('[SubscriptionService] Alert:', alert);
 		this.showNotification(alert.message, alert.severity);
 	}
@@ -783,17 +808,19 @@ class SubscriptionService {
 	}
 
 	/**
-	 * Cache management
+	 * Cache management. Callers pass the expected `T`; we store `unknown`
+	 * and assert at the read site (the cache is keyed by `method:url`, so
+	 * the type-shape contract is owned by the caller of `authFetch<T>`).
 	 */
-	private getFromCache(key: string): any {
+	private getFromCache<T>(key: string): T | null {
 		const cached = this.cache.get(key);
 		if (cached && Date.now() < cached.expiry) {
-			return cached.data;
+			return cached.data as T;
 		}
 		return null;
 	}
 
-	private setCache(key: string, data: any, ttl: number): void {
+	private setCache(key: string, data: unknown, ttl: number): void {
 		this.cache.set(key, {
 			data,
 			expiry: Date.now() + ttl
@@ -815,9 +842,19 @@ class SubscriptionService {
 	/**
 	 * Utilities
 	 */
-	private shouldRetry(error: any): boolean {
-		// Don't retry client errors (4xx)
-		if (error.status >= 400 && error.status < 500) return false;
+	private shouldRetry(error: unknown): boolean {
+		// Don't retry client errors (4xx). `error` is `unknown` post-R6-A;
+		// narrow defensively. Many thrown errors here are plain `Error`s
+		// without a `.status` (Stripe/payment helpers above set numeric
+		// `status` on their own subclasses) — treat absent `status` as
+		// retryable (matches pre-R6-A behavior because `undefined >= 400`
+		// is `false`).
+		if (typeof error === 'object' && error !== null && 'status' in error) {
+			const status = (error as { status?: unknown }).status;
+			if (typeof status === 'number' && status >= 400 && status < 500) {
+				return false;
+			}
+		}
 
 		// Retry network and server errors
 		return true;
@@ -867,8 +904,8 @@ class SubscriptionService {
 			const subs = response.subscriptions || response.data || [];
 			this.subscriptions.set(subs);
 			return subs;
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error: unknown) {
+			this.error.set(errorMessage(error));
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -886,8 +923,8 @@ class SubscriptionService {
 
 			this.currentSubscription.set(subscription);
 			return subscription;
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error: unknown) {
+			this.error.set(errorMessage(error));
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -916,8 +953,8 @@ class SubscriptionService {
 			});
 
 			return subscription;
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error: unknown) {
+			this.error.set(errorMessage(error));
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -945,8 +982,8 @@ class SubscriptionService {
 			this.clearCache(`/subscriptions/${id}`);
 
 			return subscription;
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error: unknown) {
+			this.error.set(errorMessage(error));
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -982,7 +1019,7 @@ class SubscriptionService {
 	private async updateSubscriptionStatus(
 		id: string,
 		status: SubscriptionStatus,
-		metadata?: Record<string, any>
+		metadata?: Record<string, JsonValue>
 	): Promise<EnhancedSubscription> {
 		this.isLoading.set(true);
 		this.error.set(null);
@@ -1008,8 +1045,8 @@ class SubscriptionService {
 			});
 
 			return subscription;
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error: unknown) {
+			this.error.set(errorMessage(error));
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -1038,14 +1075,15 @@ class SubscriptionService {
 			this.handlePaymentUpdate(payment);
 
 			return payment;
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error: unknown) {
+			const msg = errorMessage(error);
+			this.error.set(msg);
 
 			// Track payment failure
 			this.trackEvent('payment_failed', {
 				subscription_id: subscriptionId,
 				amount,
-				error: error.message
+				error: msg
 			});
 
 			throw error;
@@ -1096,19 +1134,19 @@ class SubscriptionService {
 
 	async getRevenueMetrics(): Promise<RevenueMetrics | null> {
 		// Analytics microservice is optional - return null if not configured
-		if (!ANALYTICS_API) return null as any;
+		if (!ANALYTICS_API) return null;
 		return this.authFetch<RevenueMetrics>(`${ANALYTICS_API}/revenue/metrics`);
 	}
 
 	async getChurnMetrics(): Promise<ChurnMetrics | null> {
 		// Analytics microservice is optional - return null if not configured
-		if (!ANALYTICS_API) return null as any;
+		if (!ANALYTICS_API) return null;
 		return this.authFetch<ChurnMetrics>(`${ANALYTICS_API}/churn/metrics`);
 	}
 
 	async getCohortAnalysis(cohort: string): Promise<CohortAnalysis | null> {
 		// Analytics microservice is optional - return null if not configured
-		if (!ANALYTICS_API) return null as any;
+		if (!ANALYTICS_API) return null;
 		return this.authFetch<CohortAnalysis>(`${ANALYTICS_API}/cohorts/${cohort}`);
 	}
 
@@ -1121,10 +1159,12 @@ class SubscriptionService {
 		return response.predictions;
 	}
 
-	async getUpsellRecommendations(customerId: string): Promise<any[]> {
-		// Analytics microservice is optional - return empty array if not configured
+	async getUpsellRecommendations(customerId: string): Promise<JsonValue[]> {
+		// Analytics microservice is optional - return empty array if not configured.
+		// Backend shape is unknown to this client (analytics microservice is external),
+		// so `JsonValue[]` documents "structured JSON, narrow at use site".
 		if (!ANALYTICS_API) return [];
-		const response = await this.authFetch<{ recommendations: any[] }>(
+		const response = await this.authFetch<{ recommendations: JsonValue[] }>(
 			`${ANALYTICS_API}/upsell/recommendations/${customerId}`
 		);
 		return response.recommendations;
@@ -1133,7 +1173,7 @@ class SubscriptionService {
 	/**
 	 * Dunning Management
 	 */
-	async configureDunning(settings: any): Promise<void> {
+	async configureDunning(settings: Record<string, JsonValue>): Promise<void> {
 		await this.authFetch(`${API_BASE}/dunning/configure`, {
 			method: 'POST',
 			body: JSON.stringify(settings),
@@ -1141,8 +1181,10 @@ class SubscriptionService {
 		});
 	}
 
-	async getDunningCampaigns(): Promise<any[]> {
-		const response = await this.authFetch<{ campaigns: any[] }>(`${API_BASE}/dunning/campaigns`);
+	async getDunningCampaigns(): Promise<JsonValue[]> {
+		const response = await this.authFetch<{ campaigns: JsonValue[] }>(
+			`${API_BASE}/dunning/campaigns`
+		);
 		return response.campaigns;
 	}
 
@@ -1204,8 +1246,8 @@ class SubscriptionService {
 		return response.blob();
 	}
 
-	async generateReport(type: string, params: any): Promise<any> {
-		return this.authFetch(`${API_BASE}/reports/generate`, {
+	async generateReport(type: string, params: Record<string, JsonValue>): Promise<JsonValue> {
+		return this.authFetch<JsonValue>(`${API_BASE}/reports/generate`, {
 			method: 'POST',
 			body: JSON.stringify({ type, params }),
 			skipCache: true
@@ -1215,7 +1257,7 @@ class SubscriptionService {
 	/**
 	 * Webhooks
 	 */
-	async configureWebhook(config: any): Promise<void> {
+	async configureWebhook(config: Record<string, JsonValue>): Promise<void> {
 		await this.authFetch(`${API_BASE}/webhooks/configure`, {
 			method: 'POST',
 			body: JSON.stringify(config),
@@ -1259,10 +1301,18 @@ class SubscriptionService {
 		return params.toString();
 	}
 
-	private trackEvent(event: string, data: any): void {
+	private trackEvent(event: string, data: Record<string, JsonValue | undefined>): void {
 		// Analytics tracking via Google Analytics
 		if (browser && 'gtag' in window) {
-			(window as any).gtag('event', event, data);
+			(
+				window as unknown as {
+					gtag?: (
+						type: string,
+						event: string,
+						data: Record<string, JsonValue | undefined>
+					) => void;
+				}
+			).gtag?.('event', event, data);
 		}
 
 		// Custom analytics microservice (optional - only if configured)
@@ -1302,7 +1352,7 @@ class RateLimitError extends Error {
 interface RetryItem {
 	url: string;
 	options: RequestInit;
-	error: any;
+	error: unknown;
 	timestamp: number;
 	attempts: number;
 }
