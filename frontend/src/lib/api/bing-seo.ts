@@ -22,6 +22,7 @@
  */
 
 import { getAuthToken } from '$lib/stores/auth.svelte';
+import type { JsonValue, QueryParams } from './_types';
 
 // ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
 const API_BASE = '';
@@ -132,8 +133,8 @@ class BingSeoAPI {
 	private async request<T>(
 		method: string,
 		endpoint: string,
-		data?: any,
-		params?: Record<string, any>
+		data?: unknown,
+		params?: QueryParams
 	): Promise<T> {
 		// Use secure auth store token (memory-only, not localStorage)
 		const token = getAuthToken();
@@ -142,11 +143,18 @@ class BingSeoAPI {
 		const apiEndpoint = endpoint.startsWith('/api/') ? endpoint : `/api${endpoint}`;
 		const url = new URL(`${API_BASE}${apiEndpoint}`);
 		if (params) {
-			Object.entries(params).forEach(([key, value]) => {
-				if (value !== undefined && value !== null) {
+			// R13-A: handle `QueryParams` arrays (`?tag=a&tag=b`) — pre-R13-A
+			// `Record<string, any>` typed the input, but the loop body called
+			// `String(value)` which would serialise arrays to `"a,b"`. Match
+			// the buildUrl shape used by `client.svelte.ts` / `config.ts`.
+			for (const [key, value] of Object.entries(params)) {
+				if (value === undefined || value === null) continue;
+				if (Array.isArray(value)) {
+					for (const item of value) url.searchParams.append(key, String(item));
+				} else {
 					url.searchParams.append(key, String(value));
 				}
-			});
+			}
 		}
 
 		const headers: Record<string, string> = {
@@ -160,15 +168,21 @@ class BingSeoAPI {
 		const fetchOptions: RequestInit = {
 			method,
 			headers,
-			...(data && { body: JSON.stringify(data) }),
+			...(data ? { body: JSON.stringify(data) } : {}),
 			credentials: 'include'
 		};
 
 		const response = await fetch(url.toString(), fetchOptions);
 
 		if (!response.ok) {
-			const error = await response.json().catch(() => ({ message: 'Request failed' }));
-			throw new Error(error.message || `HTTP ${response.status}`);
+			// R13-A: `response.json()` is `Promise<unknown>` after tightening;
+			// narrow to read `.message` instead of letting `any` paper over it.
+			const parsed: unknown = await response.json().catch(() => null);
+			const message =
+				parsed !== null && typeof parsed === 'object' && 'message' in parsed
+					? String((parsed as { message: unknown }).message)
+					: `HTTP ${response.status}`;
+			throw new Error(message);
 		}
 
 		return response.json();
@@ -310,14 +324,19 @@ class BingSeoAPI {
 	 */
 	async getRecommendations(): Promise<{
 		recommendations: OptimizationRecommendation[];
-		cdn: any;
-		core_web_vitals: any;
+		cdn: JsonValue | null;
+		core_web_vitals: JsonValue | null;
 	}> {
+		// R13-A: `cdn` / `core_web_vitals` are heterogeneous JSON blobs the
+		// only consumer (admin/performance/+page.svelte) doesn't read.
+		// `JsonValue | null` preserves the wire-format escape hatch without
+		// the `any` poison — if a future caller wants `.cdn.provider`,
+		// they'll have to narrow.
 		const response = await this.request<{
 			data: {
 				recommendations: OptimizationRecommendation[];
-				cdn: any;
-				core_web_vitals: any;
+				cdn: JsonValue | null;
+				core_web_vitals: JsonValue | null;
 			};
 		}>('GET', '/performance/recommendations');
 		return response.data;
