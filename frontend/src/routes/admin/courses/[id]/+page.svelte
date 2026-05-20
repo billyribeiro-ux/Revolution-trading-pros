@@ -2,6 +2,11 @@
 	/**
 	 * Admin Course Editor Page
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
+	 *
+	 * R19-C extraction (2026-05-20): split 1264 LOC tabbed-detail page into
+	 * 6 leaf components under `_components/`. Parent is now the orchestrator
+	 * only: state, fetch, mutation handlers, ConfirmationModal wiring.
+	 * Mirrors R18-C indicators/[id] pattern exactly.
 	 */
 
 	import { onMount } from 'svelte';
@@ -11,19 +16,15 @@
 	import { beforeNavigate } from '$app/navigation';
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import { logger } from '$lib/utils/logger';
-	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
-	import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left';
-	import IconLayoutGrid from '@tabler/icons-svelte-runes/icons/layout-grid';
-	import IconExternalLink from '@tabler/icons-svelte-runes/icons/external-link';
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
-	import IconDownload from '@tabler/icons-svelte-runes/icons/download';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	// FIX-2026-04-26: replaced native alert() calls with toastStore for non-blocking UX.
 	import { toastStore } from '$lib/stores/toast.svelte';
+	import CourseHeader from './_components/CourseHeader.svelte';
+	import CourseTabs from './_components/CourseTabs.svelte';
+	import CourseDetailsTab from './_components/CourseDetailsTab.svelte';
+	import CourseContentTab from './_components/CourseContentTab.svelte';
+	import CourseDownloadsTab from './_components/CourseDownloadsTab.svelte';
+	import CourseSettingsTab from './_components/CourseSettingsTab.svelte';
 
 	interface Module {
 		id: number;
@@ -95,7 +96,6 @@
 	let loading = $state(true);
 	let saving = $state(false);
 	let uploading = $state(false);
-	let fileInput = $state<HTMLInputElement | null>(null);
 	let activeTab = $state<'details' | 'content' | 'downloads' | 'settings'>('details');
 
 	// Delete confirmation modal state
@@ -414,14 +414,6 @@
 		}
 	};
 
-	// Format file size
-	const formatFileSize = (bytes?: number) => {
-		if (!bytes) return '-';
-		if (bytes < 1024) return `${bytes} B`;
-		if (bytes < 1048576) return `${(bytes / 1024).toFixed(1)} KB`;
-		return `${(bytes / 1048576).toFixed(1)} MB`;
-	};
-
 	const deleteLesson = (lessonId: string, moduleId?: number) => {
 		pendingDeleteLesson = { id: lessonId, moduleId };
 		showDeleteLessonModal = true;
@@ -459,326 +451,40 @@
 			<p>Loading course...</p>
 		</div>
 	{:else if course}
-		<header class="editor-header">
-			<div class="header-left">
-				<a href="/admin/courses" class="back-link">
-					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chevron-left (back link) -->
-					<IconChevronLeft size={20} aria-hidden="true" />
-					Back to Courses
-				</a>
-				<h1>{course.title}</h1>
-				<span class="status" class:published={course.is_published}>
-					{course.is_published ? 'Published' : 'Draft'}
-				</span>
-			</div>
-			<div class="header-actions">
-				<a href="/admin/page-builder?course={course.id}" class="btn-builder">
-					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: layout-grid (page builder btn) -->
-					<IconLayoutGrid size={16} aria-hidden="true" />
-					Page Builder
-				</a>
-				<a href="/classes/{course.slug}" target="_blank" class="btn-secondary">
-					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: external-link (preview) -->
-					<IconExternalLink size={16} aria-hidden="true" />
-					Preview
-				</a>
-				<button class="btn-secondary" onclick={publishCourse}>
-					{course.is_published ? 'Unpublish' : 'Publish'}
-				</button>
-				<button class="btn-primary" onclick={saveCourse} disabled={saving}>
-					{saving ? 'Saving...' : 'Save Changes'}
-				</button>
-			</div>
-		</header>
+		<CourseHeader
+			courseId={course.id}
+			courseTitle={course.title}
+			courseSlug={course.slug}
+			isPublished={course.is_published}
+			{saving}
+			onPublishToggle={publishCourse}
+			onSave={saveCourse}
+		/>
 
-		<nav class="tabs">
-			<button class:active={activeTab === 'details'} onclick={() => (activeTab = 'details')}
-				>Details</button
-			>
-			<button class:active={activeTab === 'content'} onclick={() => (activeTab = 'content')}
-				>Content</button
-			>
-			<button class:active={activeTab === 'downloads'} onclick={() => (activeTab = 'downloads')}
-				>Downloads</button
-			>
-			<button class:active={activeTab === 'settings'} onclick={() => (activeTab = 'settings')}
-				>Settings</button
-			>
-		</nav>
+		<CourseTabs bind:activeTab />
 
 		<div class="tab-content">
 			{#if activeTab === 'details'}
-				<div class="form-section">
-					<h2>Basic Information</h2>
-					<div class="form-grid">
-						<div class="form-group full">
-							<label for="title">Title</label>
-							<input id="title" name="title" type="text" bind:value={course.title} />
-						</div>
-						<div class="form-group full">
-							<label for="slug">Slug</label>
-							<input id="slug" name="slug" type="text" bind:value={course.slug} />
-						</div>
-						<div class="form-group full">
-							<label for="description">Description</label>
-							<textarea id="description" rows="4" bind:value={course.description}></textarea>
-						</div>
-						<div class="form-group full">
-							<label for="card_description">Card Description (short)</label>
-							<input
-								id="card_description"
-								name="card_description"
-								type="text"
-								bind:value={course.card_description}
-							/>
-						</div>
-						<div class="form-group">
-							<label for="level">Level</label>
-							<select id="level" bind:value={course.level}>
-								<option value="">Select level</option>
-								<option value="Beginner">Beginner</option>
-								<option value="Intermediate">Intermediate</option>
-								<option value="Advanced">Advanced</option>
-							</select>
-						</div>
-						<div class="form-group">
-							<label for="price">Price (cents)</label>
-							<input id="price" name="price" type="number" bind:value={course.price_cents} />
-						</div>
-						<div class="form-group">
-							<label class="checkbox-label">
-								<input
-									id="page-course-is-free"
-									name="page-course-is-free"
-									type="checkbox"
-									bind:checked={course.is_free}
-								/>
-								Free Course
-							</label>
-						</div>
-					</div>
-				</div>
-
-				<div class="form-section">
-					<h2>Instructor</h2>
-					<div class="form-grid">
-						<div class="form-group">
-							<label for="instructor_name">Name</label>
-							<input
-								id="instructor_name"
-								name="instructor_name"
-								type="text"
-								bind:value={course.instructor_name}
-							/>
-						</div>
-						<div class="form-group">
-							<label for="instructor_title">Title</label>
-							<input
-								id="instructor_title"
-								name="instructor_title"
-								type="text"
-								bind:value={course.instructor_title}
-							/>
-						</div>
-						<div class="form-group full">
-							<label for="instructor_bio">Bio</label>
-							<textarea id="instructor_bio" rows="3" bind:value={course.instructor_bio}></textarea>
-						</div>
-					</div>
-				</div>
-
-				<div class="form-section">
-					<h2>Card Display</h2>
-					<div class="form-grid">
-						<div class="form-group full">
-							<label for="card_image">Card Image URL</label>
-							<input
-								id="card_image"
-								name="card_image"
-								type="text"
-								bind:value={course.card_image_url}
-							/>
-						</div>
-						<div class="form-group">
-							<label for="badge">Badge Text</label>
-							<input
-								id="badge"
-								name="badge"
-								type="text"
-								bind:value={course.card_badge}
-								placeholder="e.g., NEW"
-							/>
-						</div>
-						<div class="form-group">
-							<label for="badge_color">Badge Color</label>
-							<input
-								id="badge_color"
-								name="badge_color"
-								type="color"
-								bind:value={course.card_badge_color}
-							/>
-						</div>
-					</div>
-				</div>
+				<CourseDetailsTab bind:course />
 			{:else if activeTab === 'content'}
-				<div class="content-section">
-					<div class="content-header">
-						<h2>Modules & Lessons</h2>
-						<button class="btn-secondary" onclick={addModule}>
-							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: plus (add module) -->
-							<IconPlus size={16} aria-hidden="true" />
-							Add Module
-						</button>
-					</div>
-
-					{#each modules as mod (mod.id)}
-						<div class="module-card">
-							<div class="module-header">
-								<h3>{mod.title}</h3>
-								<div class="module-actions">
-									<button onclick={() => addLesson(mod.id)} aria-label="Add lesson">
-										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: plus (add lesson) -->
-										<IconPlus size={16} aria-hidden="true" />
-									</button>
-									<button onclick={() => deleteModule(mod.id)} aria-label="Delete module">
-										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: trash (delete module) -->
-										<IconTrash size={16} aria-hidden="true" />
-									</button>
-								</div>
-							</div>
-							<ul class="lesson-list">
-								{#each mod.lessons as lesson (lesson.id)}
-									<li>
-										<a href="/admin/courses/{courseId}/lessons/{lesson.id}">
-											<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: player-play (lesson) -->
-										<IconPlayerPlay size={16} aria-hidden="true" />
-											<span>{lesson.title}</span>
-											{#if lesson.duration_minutes}
-												<span class="duration">{lesson.duration_minutes}m</span>
-											{/if}
-										</a>
-										<button
-											onclick={() => deleteLesson(lesson.id, mod.id)}
-											aria-label="Delete lesson"
-										>
-											<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: x (delete lesson 1) -->
-											<IconX size={14} aria-hidden="true" />
-										</button>
-									</li>
-								{/each}
-								{#if mod.lessons.length === 0}
-									<li class="empty">No lessons yet</li>
-								{/if}
-							</ul>
-						</div>
-					{/each}
-
-					{#if unassignedLessons.length > 0}
-						<div class="module-card unassigned">
-							<div class="module-header">
-								<h3>Unassigned Lessons</h3>
-							</div>
-							<ul class="lesson-list">
-								{#each unassignedLessons as lesson (lesson.id)}
-									<li>
-										<a href="/admin/courses/{courseId}/lessons/{lesson.id}">
-											<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: player-play (unassigned lesson) -->
-											<IconPlayerPlay size={16} aria-hidden="true" />
-											<span>{lesson.title}</span>
-										</a>
-										<button onclick={() => deleteLesson(lesson.id)} aria-label="Delete lesson">
-											<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: x (delete lesson 2) -->
-											<IconX size={14} aria-hidden="true" />
-										</button>
-									</li>
-								{/each}
-							</ul>
-						</div>
-					{/if}
-
-					<button class="btn-add-lesson" onclick={() => addLesson()}>
-						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: plus (add lesson no module) -->
-						<IconPlus size={20} aria-hidden="true" />
-						Add Lesson (No Module)
-					</button>
-				</div>
+				<CourseContentTab
+					{courseId}
+					{modules}
+					{unassignedLessons}
+					onAddModule={addModule}
+					onDeleteModule={deleteModule}
+					onAddLesson={addLesson}
+					onDeleteLesson={deleteLesson}
+				/>
 			{:else if activeTab === 'downloads'}
-				<div class="downloads-section">
-					<div class="content-header">
-						<h2>Course Downloads</h2>
-						<input
-							id="page-file"
-							name="page-file"
-							type="file"
-							bind:this={fileInput}
-							onchange={handleFileUpload}
-							style="display: none;"
-						/>
-						<button class="btn-secondary" onclick={() => fileInput?.click()} disabled={uploading}>
-							{#if uploading}
-								<span class="spinner-small"></span>
-								Uploading...
-							{:else}
-								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: upload (upload file btn) -->
-								<IconUpload size={16} aria-hidden="true" />
-								Upload File
-							{/if}
-						</button>
-					</div>
-
-					{#if downloads.length === 0}
-						<div class="empty-downloads">
-							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: download (empty downloads) -->
-							<IconDownload size={48} aria-hidden="true" />
-							<p>No downloads yet. Upload files to make them available to enrolled students.</p>
-						</div>
-					{:else}
-						<ul class="downloads-list">
-							{#each downloads as dl (dl.id)}
-								<li>
-									<span class="dl-title">{dl.title}</span>
-									<span class="dl-meta">
-										<span class="dl-file">{dl.file_name}</span>
-										<span class="dl-size">{formatFileSize(dl.file_size_bytes)}</span>
-									</span>
-									<button onclick={() => deleteDownload(dl.id)} aria-label="Delete download">
-										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: trash (delete download) -->
-										<IconTrash size={16} aria-hidden="true" />
-									</button>
-								</li>
-							{/each}
-						</ul>
-					{/if}
-				</div>
+				<CourseDownloadsTab
+					{downloads}
+					{uploading}
+					onFileSelect={handleFileUpload}
+					onDeleteDownload={deleteDownload}
+				/>
 			{:else if activeTab === 'settings'}
-				<div class="form-section">
-					<h2>SEO Settings</h2>
-					<div class="form-grid">
-						<div class="form-group full">
-							<label for="meta_title">Meta Title</label>
-							<input id="meta_title" name="meta_title" type="text" bind:value={course.meta_title} />
-						</div>
-						<div class="form-group full">
-							<label for="meta_desc">Meta Description</label>
-							<textarea id="meta_desc" rows="3" bind:value={course.meta_description}></textarea>
-						</div>
-					</div>
-				</div>
-
-				<div class="form-section">
-					<h2>Video Settings</h2>
-					<div class="form-grid">
-						<div class="form-group">
-							<label for="bunny_lib">Bunny.net Library ID</label>
-							<input
-								id="bunny_lib"
-								name="bunny_lib"
-								type="number"
-								bind:value={course.bunny_library_id}
-							/>
-						</div>
-					</div>
-				</div>
+				<CourseSettingsTab bind:course />
 			{/if}
 		</div>
 	{/if}
@@ -885,380 +591,9 @@
 		}
 	}
 
-	.editor-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
-		margin-bottom: 24px;
-		padding-bottom: 24px;
-		border-bottom: 1px solid #e5e7eb;
-	}
-	.header-left {
-		display: flex;
-		flex-direction: column;
-		gap: 8px;
-	}
-	.back-link {
-		display: inline-flex;
-		align-items: center;
-		gap: 4px;
-		color: #6b7280;
-		text-decoration: none;
-		font-size: 14px;
-	}
-	.back-link:hover {
-		color: #143e59;
-	}
-	.header-left h1 {
-		font-size: 24px;
-		margin: 0;
-		color: #1f2937;
-	}
-	.status {
-		display: inline-block;
-		padding: 4px 10px;
-		background: #fef3c7;
-		color: #92400e;
-		border-radius: 4px;
-		font-size: 12px;
-		font-weight: 500;
-	}
-	.status.published {
-		background: #d1fae5;
-		color: #065f46;
-	}
-
-	.header-actions {
-		display: flex;
-		gap: 8px;
-	}
-	.btn-primary,
-	.btn-secondary {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		padding: 10px 16px;
-		border-radius: 8px;
-		font-size: 14px;
-		font-weight: 500;
-		cursor: pointer;
-		transition: all 0.2s;
-		text-decoration: none;
-		border: none;
-	}
-	.btn-primary {
-		background: #143e59;
-		color: #fff;
-	}
-	.btn-primary:hover {
-		background: #0f2d42;
-	}
-	.btn-primary:disabled {
-		opacity: 0.6;
-		cursor: not-allowed;
-	}
-	.btn-secondary {
-		background: #f3f4f6;
-		color: #1f2937;
-	}
-	.btn-secondary:hover {
-		background: #e5e7eb;
-	}
-	.btn-builder {
-		background: linear-gradient(135deg, #143e59 0%, #1e73be 100%);
-		color: #fff;
-	}
-	.btn-builder:hover {
-		background: linear-gradient(135deg, #0f2d42 0%, #143e59 100%);
-		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(20, 62, 89, 0.3);
-	}
-
-	.tabs {
-		display: flex;
-		gap: 4px;
-		margin-bottom: 24px;
-		border-bottom: 1px solid #e5e7eb;
-	}
-	.tabs button {
-		padding: 12px 20px;
-		background: none;
-		border: none;
-		color: #6b7280;
-		font-size: 14px;
-		font-weight: 500;
-		cursor: pointer;
-		border-bottom: 2px solid transparent;
-		margin-bottom: -1px;
-	}
-	.tabs button:hover {
-		color: #1f2937;
-	}
-	.tabs button.active {
-		color: #143e59;
-		border-bottom-color: #143e59;
-	}
-
-	.form-section {
-		background: #fff;
-		border: 1px solid #e5e7eb;
-		border-radius: 12px;
-		padding: 24px;
-		margin-bottom: 24px;
-	}
-	.form-section h2 {
-		font-size: 16px;
-		font-weight: 600;
-		color: #1f2937;
-		margin: 0 0 20px;
-	}
-	.form-grid {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: 16px;
-	}
-	.form-group {
-		display: flex;
-		flex-direction: column;
-		gap: 6px;
-	}
-	.form-group.full {
-		grid-column: 1 / -1;
-	}
-	.form-group label {
-		font-size: 13px;
-		font-weight: 500;
-		color: #374151;
-	}
-	.form-group input,
-	.form-group select,
-	.form-group textarea {
-		padding: 10px 12px;
-		border: 1px solid #e5e7eb;
-		border-radius: 6px;
-		font-size: 14px;
-	}
-	.form-group input:focus,
-	.form-group select:focus,
-	.form-group textarea:focus {
-		outline: none;
-		border-color: #143e59;
-	}
-	.checkbox-label {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		cursor: pointer;
-	}
-	.checkbox-label input {
-		width: 16px;
-		height: 16px;
-	}
-
-	.content-section,
-	.downloads-section {
-		background: #fff;
-		border: 1px solid #e5e7eb;
-		border-radius: 12px;
-		padding: 24px;
-	}
-	.content-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 20px;
-	}
-	.content-header h2 {
-		font-size: 16px;
-		font-weight: 600;
-		color: #1f2937;
-		margin: 0;
-	}
-
-	.module-card {
-		background: #f9fafb;
-		border-radius: 8px;
-		margin-bottom: 16px;
-		overflow: hidden;
-	}
-	.module-card.unassigned {
-		background: #fef3c7;
-	}
-	.module-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 12px 16px;
-		background: #e5e7eb;
-	}
-	.module-card.unassigned .module-header {
-		background: #fcd34d;
-	}
-	.module-header h3 {
-		font-size: 14px;
-		font-weight: 600;
-		margin: 0;
-	}
-	.module-actions {
-		display: flex;
-		gap: 8px;
-	}
-	.module-actions button {
-		background: none;
-		border: none;
-		color: #6b7280;
-		cursor: pointer;
-		padding: 4px;
-	}
-	.module-actions button:hover {
-		color: #1f2937;
-	}
-
-	.lesson-list {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-	}
-	.lesson-list li {
-		display: flex;
-		align-items: center;
-		padding: 12px 16px;
-		border-bottom: 1px solid #e5e7eb;
-	}
-	.lesson-list li:last-child {
-		border-bottom: none;
-	}
-	.lesson-list li.empty {
-		color: #9ca3af;
-		font-style: italic;
-		font-size: 13px;
-	}
-	.lesson-list li a {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		flex: 1;
-		text-decoration: none;
-		color: #1f2937;
-		font-size: 14px;
-	}
-	.lesson-list li a:hover {
-		color: #143e59;
-	}
-	.lesson-list .duration {
-		color: #9ca3af;
-		font-size: 12px;
-		margin-left: auto;
-	}
-	.lesson-list li > button {
-		background: none;
-		border: none;
-		color: #9ca3af;
-		cursor: pointer;
-		padding: 4px;
-	}
-	.lesson-list li > button:hover {
-		color: #dc2626;
-	}
-
-	.btn-add-lesson {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 8px;
-		width: 100%;
-		padding: 12px;
-		background: #f3f4f6;
-		border: 2px dashed #d1d5db;
-		border-radius: 8px;
-		color: #6b7280;
-		font-size: 14px;
-		cursor: pointer;
-		margin-top: 16px;
-	}
-	.btn-add-lesson:hover {
-		background: #e5e7eb;
-		border-color: #9ca3af;
-	}
-
-	.empty-downloads {
-		text-align: center;
-		padding: 48px;
-		color: #6b7280;
-	}
-	.empty-downloads :global(svg) {
-		margin-bottom: 16px;
-		opacity: 0.5;
-	}
-	.downloads-list {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-	}
-	.downloads-list li {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		padding: 12px;
-		background: #f9fafb;
-		border-radius: 6px;
-		margin-bottom: 8px;
-	}
-	.dl-title {
-		font-weight: 500;
-		flex: 1;
-	}
-	.dl-meta {
-		display: flex;
-		gap: 16px;
-		align-items: center;
-	}
-	.dl-file {
-		color: #6b7280;
-		font-size: 13px;
-	}
-	.dl-size {
-		color: #9ca3af;
-		font-size: 12px;
-	}
-	.downloads-list button {
-		background: none;
-		border: none;
-		color: #9ca3af;
-		cursor: pointer;
-	}
-	.downloads-list button:hover {
-		color: #dc2626;
-	}
-	.spinner-small {
-		width: 16px;
-		height: 16px;
-		border: 2px solid #e5e7eb;
-		border-top-color: #143e59;
-		border-radius: 50%;
-		animation: spin 0.8s linear infinite;
-		display: inline-block;
-	}
-	@keyframes spin {
-		to {
-			transform: rotate(360deg);
-		}
-	}
-
-	@media (max-width: 768px) {
-		.editor-header {
-			flex-direction: column;
-			gap: 16px;
-		}
-		.header-actions {
-			width: 100%;
-			justify-content: flex-end;
-		}
-		.form-grid {
-			grid-template-columns: 1fr;
-		}
-		.tabs {
-			overflow-x: auto;
+	@media (prefers-reduced-motion: reduce) {
+		.spinner {
+			animation: none;
 		}
 	}
 </style>
