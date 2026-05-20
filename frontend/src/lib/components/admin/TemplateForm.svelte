@@ -1,18 +1,44 @@
 <script lang="ts">
-	import { emailTemplatesApi, AdminApiError } from '$lib/api/admin';
+	import { emailTemplatesApi, AdminApiError, type EmailTemplate } from '$lib/api/admin';
 	import { goto } from '$app/navigation';
 	import { IconDeviceFloppy, IconX } from '$lib/icons';
 
+	/**
+	 * Edit/Create form for email templates.
+	 *
+	 * `template` prop shape note (R26-A audit):
+	 * The edit page at `routes/admin/email/templates/edit/[id]/+page.svelte`
+	 * loads the template via `apiFetch(...)` which returns the raw backend
+	 * envelope `{ data: EmailTemplate, message?: string }`. The page does
+	 * NOT unwrap before passing to this form. To keep this component robust
+	 * to either shape (raw envelope OR pre-unwrapped row) without breaking
+	 * the existing page, the prop is typed as `EmailTemplate` but we
+	 * defensively unwrap a `.data` envelope at the boundary. The previous
+	 * `template?: any` + `(template as any).id` was masking the fact that
+	 * `template.name ?? ''` read `undefined` from the envelope and rendered
+	 * empty fields on every edit — see LB-R26-1 in the report.
+	 */
+	type TemplateEnvelope = { data: Partial<EmailTemplate> } & Partial<EmailTemplate>;
+
 	interface Props {
-		template?: any;
+		template?: Partial<EmailTemplate> | TemplateEnvelope | null;
 		isEdit?: boolean;
 		onsaved?: (detail: { id: number }) => void;
 	}
 
 	let props: Props = $props();
 
+	// Unwrap a `{ data: ... }` envelope if the caller forgot to.
+	function unwrap(t: Props['template']): Partial<EmailTemplate> | null {
+		if (!t) return null;
+		if (typeof t === 'object' && 'data' in t && t.data && typeof t.data === 'object') {
+			return t.data as Partial<EmailTemplate>;
+		}
+		return t as Partial<EmailTemplate>;
+	}
+
 	// Destructure with defaults for internal use
-	const template = $derived(props.template ?? null);
+	const template = $derived(unwrap(props.template));
 	const isEdit = $derived(props.isEdit ?? false);
 	const onsaved = $derived(props.onsaved);
 
@@ -58,11 +84,15 @@
 		};
 		try {
 			if (isEdit) {
-				await emailTemplatesApi.update((template as any).id, payload);
-				onsaved?.({ id: (template as any).id });
+				const existingId = template?.id;
+				if (existingId === undefined) {
+					throw new Error('Cannot update template: missing id');
+				}
+				const response = await emailTemplatesApi.update(existingId, payload);
+				onsaved?.({ id: response.data.id });
 			} else {
-				const created = await emailTemplatesApi.create(payload);
-				onsaved?.({ id: (created as any).id });
+				const response = await emailTemplatesApi.create(payload);
+				onsaved?.({ id: response.data.id });
 			}
 			goto('/admin/email/templates');
 		} catch (e) {
