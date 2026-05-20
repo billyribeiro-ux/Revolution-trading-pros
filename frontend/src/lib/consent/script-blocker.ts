@@ -255,9 +255,7 @@ export function startScriptBlocking(): void {
 					set(value: string) {
 						const category = getScriptCategory(value);
 						if (category) {
-							// Block this script
-							console.debug(`[ScriptBlocker] Blocked: ${value} (${category})`);
-
+							// Block this script (no log — fires on every blocked script load)
 							blockedScripts.push({
 								src: value,
 								category,
@@ -283,8 +281,6 @@ export function startScriptBlocking(): void {
 
 	// Also scan and block existing scripts in the DOM
 	scanAndBlockExistingScripts();
-
-	console.debug('[ScriptBlocker] Script blocking enabled');
 }
 
 /**
@@ -303,8 +299,6 @@ function scanAndBlockExistingScripts(): void {
 			script.setAttribute('data-blocked-src', src);
 			script.setAttribute('data-blocked-category', category);
 			script.removeAttribute('src');
-
-			console.debug(`[ScriptBlocker] Blocked existing script: ${src}`);
 		}
 	});
 }
@@ -337,7 +331,6 @@ export function releaseBlockedScripts(consent: ConsentState): void {
 			});
 
 			document.head.appendChild(script);
-			console.debug(`[ScriptBlocker] Released: ${scriptInfo.src}`);
 		}
 	});
 
@@ -351,7 +344,6 @@ export function releaseBlockedScripts(consent: ConsentState): void {
 			script.setAttribute('src', src);
 			script.removeAttribute('data-blocked-src');
 			script.removeAttribute('data-blocked-category');
-			console.debug(`[ScriptBlocker] Released DOM script: ${src}`);
 		}
 	});
 }
@@ -388,11 +380,8 @@ export function generateBlockingScript(): string {
     var stored = localStorage.getItem('rtp_consent');
     if (stored) consent = JSON.parse(stored);
   } catch(e) {
-    // SSR safety: localStorage may not be available or consent data may be corrupted
-    // Log error in development for debugging
-    if (typeof console !== 'undefined' && console.warn) {
-      console.warn('[ScriptBlocker] Failed to read consent from localStorage:', e.message || e);
-    }
+    // SSR safety: localStorage may not be available or consent data may be corrupted.
+    // Swallow silently — corrupted/missing consent falls through to the default-block path.
   }
 
   if (consent && consent.hasInteracted) return; // Already has consent
@@ -408,7 +397,6 @@ export function generateBlockingScript(): string {
         set: function(v) {
           for (var cat in patterns) {
             if (new RegExp(patterns[cat], 'i').test(v)) {
-              console.debug('[Blocker] Blocked:', v);
               el.setAttribute('data-blocked-src', v);
               el.setAttribute('data-blocked-category', cat);
               return;
