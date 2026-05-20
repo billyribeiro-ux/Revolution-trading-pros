@@ -51,8 +51,15 @@ export default defineConfig(({ mode }) => ({
 		restoreMocks: true
 	},
 	server: {
+		// Prefer 5173 (matches docs + tooling defaults) but fall back to the
+		// next free port if it's taken. strictPort:true previously hard-failed
+		// when 5173 was in use — that broke the "just run another dev server"
+		// flow. Downstream tooling (playwright, scripts/preview-component.js,
+		// SvelteKit +server.ts proxies) all read FRONTEND_URL/E2E_BASE_URL/
+		// API_BASE_URL from env, so an alternate port is opt-in via env, not
+		// a code change.
 		port: 5173,
-		strictPort: true,
+		strictPort: false,
 		host: 'localhost'
 	},
 	build: {
