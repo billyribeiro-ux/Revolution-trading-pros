@@ -11,8 +11,11 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
 import { ALL_ROOM_IDS } from '$lib/config/rooms';
+// R20-A: migrated off local `fetchFromBackend` helper to shared
+// `$lib/server/proxy-fetch` (CLAUDE.md URL-fallback pinned once,
+// `Promise<unknown>` return, narrowing primitives consolidated).
+import { fetchBackend, hasSuccess } from '$lib/server/proxy-fetch';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -209,36 +212,6 @@ const mockWatchlistItems: WatchlistItem[] = [
 ];
 
 // ═══════════════════════════════════════════════════════════════════════════
-// BACKEND FETCH
-// ═══════════════════════════════════════════════════════════════════════════
-
-function hasSuccess(value: unknown): value is { success: unknown } {
-	return typeof value === 'object' && value !== null && 'success' in value;
-}
-
-async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Promise<unknown> {
-	// CLAUDE.md hard rule: `env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080'`.
-	const BACKEND_URL =
-		env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
-
-	try {
-		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
-			...options,
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-				...options.headers
-			}
-		});
-
-		if (!response.ok) return null;
-		return (await response.json()) as unknown;
-	} catch {
-		return null;
-	}
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
 // GET HANDLER - List all watchlist items
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -255,9 +228,11 @@ export const GET: RequestHandler = async ({ url, request }) => {
 	const headers: Record<string, string> = {};
 	if (authHeader) headers['Authorization'] = authHeader;
 
-	const backendData = await fetchFromBackend(`/api/watchlist?${url.searchParams.toString()}`, {
-		headers
-	});
+	const backendData = await fetchBackend(
+		`/api/watchlist?${url.searchParams.toString()}`,
+		{ headers },
+		'[Watchlist API]'
+	);
 
 	if (hasSuccess(backendData) && backendData.success) {
 		return json(backendData);
@@ -356,11 +331,15 @@ export const POST: RequestHandler = async ({ request }) => {
 	const rooms = body.rooms || ALL_ROOM_IDS;
 
 	// Try backend first
-	const backendData = await fetchFromBackend('/api/admin/watchlist', {
-		method: 'POST',
-		headers: { Authorization: authHeader },
-		body: JSON.stringify({ ...body, rooms })
-	});
+	const backendData = await fetchBackend(
+		'/api/admin/watchlist',
+		{
+			method: 'POST',
+			headers: { Authorization: authHeader },
+			body: JSON.stringify({ ...body, rooms })
+		},
+		'[Watchlist API]'
+	);
 
 	if (hasSuccess(backendData) && backendData.success) {
 		return json(backendData, { status: 201 });

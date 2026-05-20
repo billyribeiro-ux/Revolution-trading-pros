@@ -12,15 +12,11 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
-
-// ═══════════════════════════════════════════════════════════════════════════
-// BACKEND CONFIGURATION
-// ═══════════════════════════════════════════════════════════════════════════
-
-// CLAUDE.md hard rule: `env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080'`.
-const BACKEND_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+// R20-A: migrated off local `fetchFromBackend` helper to shared
+// `$lib/server/proxy-fetch` (CLAUDE.md URL-fallback pinned once,
+// `Promise<unknown>` return; `extractBackendData` preserves the
+// R18-A Latent Bug §3 fix for `{ data: null }` semantics).
+import { fetchBackend, extractBackendData } from '$lib/server/proxy-fetch';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -55,48 +51,6 @@ interface WeeklyVideoPostBody {
 	thumbnail_url?: string;
 	duration?: string;
 	description?: string;
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// BACKEND FETCH HELPER
-// ═══════════════════════════════════════════════════════════════════════════
-
-async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Promise<unknown> {
-	try {
-		console.info(`[Weekly Video API] Fetching: ${BACKEND_URL}${endpoint}`);
-		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
-			...options,
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-				...options.headers
-			}
-		});
-
-		if (!response.ok) {
-			console.error(`[Weekly Video API] Backend error: ${response.status} ${response.statusText}`);
-			return null;
-		}
-
-		const data = (await response.json()) as unknown;
-		console.info(`[Weekly Video API] Backend success`);
-		return data;
-	} catch (err) {
-		console.error('[Weekly Video API] Backend fetch failed:', err);
-		return null;
-	}
-}
-
-/**
- * Narrow the parsed backend body to its `{ data: T }` field when present,
- * otherwise return the raw body. Mirrors the legacy `backendData.data || backendData`
- * fallback the GET handler used to do unguarded.
- */
-function extractBackendData(value: unknown): unknown {
-	if (typeof value === 'object' && value !== null && 'data' in value) {
-		return (value as { data: unknown }).data;
-	}
-	return value;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -171,9 +125,11 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
 	}
 
 	// Call backend at /api/room-content/rooms/:slug/weekly-video
-	const backendData = await fetchFromBackend(`/api/room-content/rooms/${slug}/weekly-video`, {
-		headers
-	});
+	const backendData = await fetchBackend(
+		`/api/room-content/rooms/${slug}/weekly-video`,
+		{ headers },
+		'[Weekly Video API]'
+	);
 
 	if (backendData) {
 		return json({
@@ -228,23 +184,27 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	}
 
 	// Call backend at /api/admin/room-content/weekly-video
-	const backendData = await fetchFromBackend(`/api/admin/room-content/weekly-video`, {
-		method: 'POST',
-		headers,
-		body: JSON.stringify({
-			room_slug: slug,
-			week_of: body.week_of || new Date().toISOString().split('T')[0],
-			week_title:
-				body.week_title ||
-				`Week of ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`,
-			video_title: body.video_title,
-			video_url: body.video_url,
-			video_platform: body.video_platform || 'bunny',
-			thumbnail_url: body.thumbnail_url || '',
-			duration: body.duration || '',
-			description: body.description || ''
-		})
-	});
+	const backendData = await fetchBackend(
+		`/api/admin/room-content/weekly-video`,
+		{
+			method: 'POST',
+			headers,
+			body: JSON.stringify({
+				room_slug: slug,
+				week_of: body.week_of || new Date().toISOString().split('T')[0],
+				week_title:
+					body.week_title ||
+					`Week of ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`,
+				video_title: body.video_title,
+				video_url: body.video_url,
+				video_platform: body.video_platform || 'bunny',
+				thumbnail_url: body.thumbnail_url || '',
+				duration: body.duration || '',
+				description: body.description || ''
+			})
+		},
+		'[Weekly Video API]'
+	);
 
 	if (backendData) {
 		return json({

@@ -9,55 +9,14 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
-
-// CLAUDE.md hard rule: `env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080'`.
-// R18-A: was missing the API_BASE_URL primary leg (existing 18-file violation
-// across `src/routes/api/`). Restored here.
-const BACKEND_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
-
-// Returns the parsed JSON body as `unknown` (or `null` on any failure) so
-// callers must narrow before reading fields. The previous `Promise<any | null>`
-// silently swallowed missing-field bugs.
-async function fetchFromBackend(
-	endpoint: string,
-	options: RequestInit = {},
-	cookies?: { get: (name: string) => string | undefined }
-): Promise<unknown> {
-	try {
-		const headers: Record<string, string> = {
-			'Content-Type': 'application/json',
-			Accept: 'application/json',
-			...((options.headers as Record<string, string>) || {})
-		};
-
-		// Add auth cookie if available
-		if (cookies) {
-			// FIX-2026-04-26: comment-out, verify, delete in follow-up. Wrong cookie name — login proxy sets rtp_access_token, not session.
-			// const session = cookies.get('session');
-			const session = cookies.get('rtp_access_token');
-			if (session) {
-				headers['Cookie'] = `session=${session}`;
-			}
-		}
-
-		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
-			...options,
-			headers
-		});
-
-		if (!response.ok) {
-			console.error(`[Favorites Check API] Backend error: ${response.status}`);
-			return null;
-		}
-
-		return (await response.json()) as unknown;
-	} catch (err) {
-		console.error('[Favorites Check API] Backend fetch failed:', err);
-		return null;
-	}
-}
+// R20-A: migrated off local `fetchFromBackend` helper to the shared
+// `$lib/server/proxy-fetch` primitives (R19-A's extraction). The shared
+// helper pins the CLAUDE.md URL-fallback chain (API_BASE_URL ||
+// BACKEND_URL || localhost) AND the `Promise<unknown>` return type at
+// one site, instead of copy-pasted across 13+ proxy files. Behaviour
+// matches R18-A's edit pattern verbatim (narrowing via type-guards,
+// `isFavoriteRecord` predicate filter, etc.).
+import { fetchBackend, hasData, hasSuccess, isObject } from '$lib/server/proxy-fetch';
 
 // ─── Local response shapes ────────────────────────────────────────────────
 // Backend at /api/favorites/check returns `{ success, is_favorited, data }`
@@ -71,12 +30,11 @@ interface FavoriteRecord {
 }
 
 function isFavoriteRecord(value: unknown): value is FavoriteRecord {
-	if (typeof value !== 'object' || value === null) return false;
-	const obj = value as Record<string, unknown>;
+	if (!isObject(value)) return false;
 	return (
-		typeof obj.item_type === 'string' &&
-		typeof obj.item_id === 'number' &&
-		typeof obj.id === 'number'
+		typeof value.item_type === 'string' &&
+		typeof value.item_id === 'number' &&
+		typeof value.id === 'number'
 	);
 }
 
@@ -94,21 +52,24 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 		});
 	}
 
+	// Build auth headers — FIX-2026-04-26: login proxy sets rtp_access_token,
+	// not session. The Cookie wire-name `session=…` is what the backend
+	// middleware reads. Mirror R18-A's behaviour exactly.
+	const headers: Record<string, string> = {};
+	const session = cookies.get('rtp_access_token');
+	if (session) headers['Cookie'] = `session=${session}`;
+
 	// Try backend check endpoint
-	const backendData = await fetchFromBackend(
+	const backendData = await fetchBackend(
 		`/api/favorites/check?item_type=${encodeURIComponent(itemType)}&item_id=${encodeURIComponent(itemId)}`,
-		{},
-		cookies
+		{ headers },
+		'[Favorites Check API]'
 	);
 
 	// Backend already shaped to the envelope — forward verbatim if `success`
-	// is present. Narrow `unknown` before the `?.success` read.
-	if (
-		typeof backendData === 'object' &&
-		backendData !== null &&
-		'success' in backendData &&
-		(backendData as { success?: unknown }).success !== undefined
-	) {
+	// is present (even if false). Narrow `unknown` via `hasSuccess` instead
+	// of `backendData?.success` (which was unsound on a non-null primitive).
+	if (hasSuccess(backendData) && backendData.success !== undefined) {
 		return json(backendData);
 	}
 
@@ -118,16 +79,21 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 		per_page: '100'
 	});
 
-	const listData = await fetchFromBackend(`/api/favorites?${params.toString()}`, {}, cookies);
+	const listData = await fetchBackend(
+		`/api/favorites?${params.toString()}`,
+		{ headers },
+		'[Favorites Check API]'
+	);
 
 	// Narrow `listData.data` to `unknown[]` before iterating.
-	const listDataArr =
-		typeof listData === 'object' && listData !== null && 'data' in listData
-			? (listData as { data: unknown }).data
-			: null;
+	const listDataArr = hasData(listData) ? listData.data : null;
 
 	if (Array.isArray(listDataArr)) {
 		const numericId = parseInt(itemId, 10);
+		// R18-A Latent Bug §1 guard: `.filter(isFavoriteRecord)` drops
+		// null/non-shape rows before the `.find()` comparator reads
+		// `f.item_type` / `f.item_id`. Without the predicate filter, a
+		// single null row in the backend list would 500 the whole GET.
 		const favorite = listDataArr
 			.filter(isFavoriteRecord)
 			.find((f) => f.item_type === itemType && f.item_id === numericId);

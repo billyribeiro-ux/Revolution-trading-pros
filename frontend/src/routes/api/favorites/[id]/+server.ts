@@ -9,53 +9,10 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
-
-// CLAUDE.md hard rule: `env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080'`.
-const BACKEND_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
-
-function hasSuccess(value: unknown): value is { success: unknown } {
-	return typeof value === 'object' && value !== null && 'success' in value;
-}
-
-async function fetchFromBackend(
-	endpoint: string,
-	options: RequestInit = {},
-	cookies?: { get: (name: string) => string | undefined }
-): Promise<unknown> {
-	try {
-		const headers: Record<string, string> = {
-			'Content-Type': 'application/json',
-			Accept: 'application/json',
-			...((options.headers as Record<string, string>) || {})
-		};
-
-		if (cookies) {
-			// FIX-2026-04-26: comment-out, verify, delete in follow-up. Wrong cookie name — login proxy sets rtp_access_token, not session.
-			// const session = cookies.get('session');
-			const session = cookies.get('rtp_access_token');
-			if (session) {
-				headers['Cookie'] = `session=${session}`;
-			}
-		}
-
-		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
-			...options,
-			headers
-		});
-
-		if (!response.ok) {
-			console.error(`[Favorites API] Backend error: ${response.status}`);
-			return null;
-		}
-
-		return (await response.json()) as unknown;
-	} catch (err) {
-		console.error('[Favorites API] Backend fetch failed:', err);
-		return null;
-	}
-}
+// R20-A: migrated off local `fetchFromBackend` helper to shared
+// `$lib/server/proxy-fetch` (CLAUDE.md URL-fallback pinned once,
+// `Promise<unknown>` return, narrowing primitives consolidated).
+import { fetchBackend, hasSuccess } from '$lib/server/proxy-fetch';
 
 // DELETE - Remove favorite by ID
 export const DELETE: RequestHandler = async ({ params, cookies }) => {
@@ -65,7 +22,17 @@ export const DELETE: RequestHandler = async ({ params, cookies }) => {
 		error(400, 'Favorite ID is required');
 	}
 
-	const backendData = await fetchFromBackend(`/api/favorites/${id}`, { method: 'DELETE' }, cookies);
+	// FIX-2026-04-26: login proxy sets rtp_access_token, not session.
+	// The Cookie wire-name `session=…` is what the backend reads.
+	const headers: Record<string, string> = {};
+	const session = cookies.get('rtp_access_token');
+	if (session) headers['Cookie'] = `session=${session}`;
+
+	const backendData = await fetchBackend(
+		`/api/favorites/${id}`,
+		{ method: 'DELETE', headers },
+		'[Favorites API]'
+	);
 
 	if (hasSuccess(backendData) && backendData.success) {
 		return json(backendData);

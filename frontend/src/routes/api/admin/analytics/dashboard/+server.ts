@@ -10,33 +10,18 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
-// Production fallback - Rust API on Fly.io
-import { env } from '$env/dynamic/private';
 import { isValidPeriod } from '$lib/server/analytics-proxy';
 import { requireAdmin } from '$lib/server/auth';
-const BACKEND_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
-
-// Try to fetch from backend
-async function fetchFromBackend(endpoint: string, options?: RequestInit): Promise<any | null> {
-	if (!BACKEND_URL) return null;
-
-	try {
-		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
-			...options,
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-				...options?.headers
-			}
-		});
-
-		if (!response.ok) return null;
-		return await response.json();
-	} catch (_error) {
-		return null;
-	}
-}
+// R20-A: migrated off local `Promise<any | null>` helper to shared
+// `$lib/server/proxy-fetch` (CLAUDE.md URL-fallback pinned once;
+// `Promise<unknown>` return; `hasSuccess` + `extractBackendData`
+// fix the R18-A Latent Bug §3 short-circuit on `{ data: null }`).
+import {
+	fetchBackend,
+	hasSuccess,
+	isObject,
+	extractBackendData
+} from '$lib/server/proxy-fetch';
 
 // Generate realistic baseline analytics based on actual platform activity
 function generateBuiltInAnalytics(_period: string) {
@@ -87,17 +72,27 @@ export const GET: RequestHandler = async (event) => {
 
 	// Try to get real analytics from backend first
 	const params = new URLSearchParams({ period });
-	const backendData = await fetchFromBackend(
+	const backendData = await fetchBackend(
 		`/api/admin/analytics/dashboard?${params.toString()}`,
 		{
 			headers: { Authorization: `Bearer ${token}` }
-		}
+		},
+		'[Analytics dashboard proxy]'
 	);
 
-	if (backendData?.success || backendData?.kpis) {
+	// R20-A: narrow `unknown` via type-guards before reading nested fields.
+	// Accept either of two backend shapes:
+	//  (a) envelope `{ success: true, data: { ...kpis... } }`
+	//  (b) raw payload with top-level `kpis` field (the built-in shape).
+	// R18-A Latent Bug §3 mitigation: `extractBackendData` preserves
+	// `{ data: null }` semantics (returns the null) rather than falling
+	// through to the envelope and rendering `error` strings as KPI data.
+	const isEnvelopeSuccess = hasSuccess(backendData) && backendData.success;
+	const hasKpis = isObject(backendData) && 'kpis' in backendData;
+	if (isEnvelopeSuccess || hasKpis) {
 		return json({
 			success: true,
-			data: backendData.data || backendData,
+			data: extractBackendData(backendData),
 			_source: 'backend'
 		});
 	}

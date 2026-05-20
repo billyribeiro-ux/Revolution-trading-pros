@@ -11,55 +11,10 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
-
-// CLAUDE.md hard rule: `env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080'`.
-const BACKEND_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
-
-/** Backend success envelope — every endpoint here wraps payload in `{ success, ... }`. */
-function hasSuccess(value: unknown): value is { success: unknown } {
-	return typeof value === 'object' && value !== null && 'success' in value;
-}
-
-async function fetchFromBackend(
-	endpoint: string,
-	options: RequestInit = {},
-	cookies?: { get: (name: string) => string | undefined }
-): Promise<unknown> {
-	try {
-		const headers: Record<string, string> = {
-			'Content-Type': 'application/json',
-			Accept: 'application/json',
-			...((options.headers as Record<string, string>) || {})
-		};
-
-		// Add auth cookie if available
-		if (cookies) {
-			// FIX-2026-04-26: comment-out, verify, delete in follow-up. Wrong cookie name — login proxy sets rtp_access_token, not session.
-			// const session = cookies.get('session');
-			const session = cookies.get('rtp_access_token');
-			if (session) {
-				headers['Cookie'] = `session=${session}`;
-			}
-		}
-
-		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
-			...options,
-			headers
-		});
-
-		if (!response.ok) {
-			console.error(`[Favorites API] Backend error: ${response.status}`);
-			return null;
-		}
-
-		return (await response.json()) as unknown;
-	} catch (err) {
-		console.error('[Favorites API] Backend fetch failed:', err);
-		return null;
-	}
-}
+// R20-A: migrated off local `fetchFromBackend` helper to shared
+// `$lib/server/proxy-fetch` (CLAUDE.md URL-fallback pinned once,
+// `Promise<unknown>` return, narrowing primitives consolidated).
+import { fetchBackend, hasSuccess, isObject } from '$lib/server/proxy-fetch';
 
 // GET - List user's favorites
 export const GET: RequestHandler = async ({ url, cookies }) => {
@@ -72,7 +27,17 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 	if (roomSlug) params.set('room_slug', roomSlug);
 	if (itemType) params.set('item_type', itemType);
 
-	const backendData = await fetchFromBackend(`/api/favorites?${params.toString()}`, {}, cookies);
+	// FIX-2026-04-26: login proxy sets rtp_access_token, not session.
+	// The Cookie wire-name `session=…` is what the backend reads.
+	const headers: Record<string, string> = {};
+	const session = cookies.get('rtp_access_token');
+	if (session) headers['Cookie'] = `session=${session}`;
+
+	const backendData = await fetchBackend(
+		`/api/favorites?${params.toString()}`,
+		{ headers },
+		'[Favorites API]'
+	);
 
 	if (hasSuccess(backendData) && backendData.success) {
 		return json(backendData);
@@ -88,27 +53,32 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 
 // POST - Add item to favorites
 export const POST: RequestHandler = async ({ request, cookies }) => {
-	// Narrow incoming JSON body before reading fields — `request.json()` is `unknown`.
-	const body = (await request.json()) as unknown;
-
+	// R18-A Latent Bug §2 mitigation: narrow `request.json()` to a non-null
+	// object BEFORE any field reads. A client posting `null` / primitive
+	// would 500 the handler on `body.item_type` access; this surfaces a 400.
+	const rawBody: unknown = await request.json();
 	if (
-		typeof body !== 'object' ||
-		body === null ||
-		!('item_type' in body) ||
-		!('item_id' in body) ||
-		!(body as { item_type?: unknown }).item_type ||
-		!(body as { item_id?: unknown }).item_id
+		!isObject(rawBody) ||
+		!('item_type' in rawBody) ||
+		!('item_id' in rawBody) ||
+		!rawBody.item_type ||
+		!rawBody.item_id
 	) {
 		error(400, 'item_type and item_id are required');
 	}
 
-	const backendData = await fetchFromBackend(
+	const headers: Record<string, string> = {};
+	const session = cookies.get('rtp_access_token');
+	if (session) headers['Cookie'] = `session=${session}`;
+
+	const backendData = await fetchBackend(
 		'/api/favorites',
 		{
 			method: 'POST',
-			body: JSON.stringify(body)
+			headers,
+			body: JSON.stringify(rawBody)
 		},
-		cookies
+		'[Favorites API]'
 	);
 
 	if (hasSuccess(backendData) && backendData.success) {
