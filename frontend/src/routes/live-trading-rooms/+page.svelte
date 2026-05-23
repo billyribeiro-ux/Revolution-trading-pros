@@ -9,14 +9,97 @@
 
 	/**
 	 * Svelte 5 Runes & SSR/SSG Pattern
+	 * PE7 FIX 2026-05-23: Properly typed data structures replacing `any`
 	 */
+	interface PricePlan {
+		monthly: number;
+		quarterly: number;
+		annual: number;
+	}
+
+	interface TradingRoom {
+		id: string;
+		iconType: 'volatility' | 'trend' | 'growth';
+		name: string;
+		tagline: string;
+		description: string;
+		liveCount: number;
+		features: string[];
+		price: PricePlan;
+		accent: 'cyan' | 'emerald' | 'amber';
+		badge: string;
+	}
+
+	interface Benefit {
+		iconType: 'analysis' | 'radar' | 'strategy' | 'network';
+		title: string;
+		desc: string;
+	}
+
+	interface TickerSymbol {
+		sym: string;
+		price: string;
+		change: string;
+		up: boolean;
+	}
+
+	interface OpenGraphImage {
+		url: string;
+		width: number;
+		height: number;
+		alt: string;
+		type: string;
+	}
+
+	interface OpenGraphArticle {
+		author: string;
+		publishedTime: string;
+		modifiedTime: string;
+		section: string;
+		tag: string;
+	}
+
+	interface OpenGraphData {
+		title: string;
+		description: string;
+		type: string;
+		url: string;
+		images: OpenGraphImage[];
+		siteName: string;
+		locale: string;
+		article: OpenGraphArticle;
+	}
+
+	interface TwitterData {
+		card: string;
+		title: string;
+		description: string;
+		images: string[];
+		site: string;
+		creator: string;
+		domain: string;
+	}
+
+	interface SEOData {
+		title: string;
+		description: string;
+		keywords: string;
+		canonical: string;
+		author: string;
+		publisher: string;
+		openGraph: OpenGraphData;
+		twitter: TwitterData;
+	}
+
+	interface PageData {
+		rooms: TradingRoom[];
+		benefits: Benefit[];
+		symbols: TickerSymbol[];
+		seo: SEOData;
+	}
+
 	interface Props {
-		data: {
-			rooms: any[];
-			benefits: any[];
-			symbols: any[];
-			seo: any;
-		};
+		data: PageData;
 	}
 	let { data }: Props = $props();
 
@@ -112,8 +195,10 @@
 
 				// Create GSAP context for proper cleanup (GSAP 3.12+ pattern)
 				animationContext = gsapInstance.context(() => {
-					const gsap = gsapInstance!;
-					const ScrollTrigger = scrollTriggerInstance!;
+					// PE7 FIX 2026-05-23: Type guard to satisfy strict TypeScript
+					if (!gsapInstance || !scrollTriggerInstance) return;
+					const gsap = gsapInstance;
+					const ScrollTrigger = scrollTriggerInstance;
 
 					// ===== HERO SECTION ANIMATIONS =====
 					const heroTl = gsap.timeline({
@@ -173,6 +258,42 @@
 						yoyo: true,
 						ease: 'sine.inOut',
 						stagger: { each: 0.2, from: 'random' }
+					});
+
+					// ===== 6 FLOATING CTA BUTTONS ANIMATION =====
+					// Each button enters from a different direction with unique timing
+					const btnConfigs = [
+						{ selector: '.hero-float-btn-1', from: { x: -100, y: 0, opacity: 0 }, delay: 0 },
+						{ selector: '.hero-float-btn-2', from: { x: 100, y: 0, opacity: 0 }, delay: 0.1 },
+						{ selector: '.hero-float-btn-3', from: { x: 0, y: -50, opacity: 0 }, delay: 0.2 },
+						{ selector: '.hero-float-btn-4', from: { x: -80, y: 30, opacity: 0 }, delay: 0.3 },
+						{ selector: '.hero-float-btn-5', from: { x: 80, y: -30, opacity: 0 }, delay: 0.4 },
+						{ selector: '.hero-float-btn-6', from: { x: 0, y: 50, opacity: 0 }, delay: 0.5 }
+					];
+
+					btnConfigs.forEach(({ selector, from, delay }) => {
+						gsap.fromTo(
+							selector,
+							from,
+							{
+								x: 0,
+								y: 0,
+								opacity: 1,
+								duration: 0.8,
+								delay: 1.5 + delay,
+								ease: 'back.out(1.7)'
+							}
+						);
+					});
+
+					// Subtle continuous float for buttons
+					gsap.to('.hero-float-btn', {
+						y: 'random(-8, 8)',
+						duration: 'random(2, 4)',
+						repeat: -1,
+						yoyo: true,
+						ease: 'sine.inOut',
+						stagger: { each: 0.3, from: 'random' }
 					});
 
 					// ===== ROOM CARDS SCROLL ANIMATION =====
@@ -305,8 +426,8 @@
 	<meta property="og:url" content={seo.openGraph.url} />
 	<meta property="og:site_name" content={seo.openGraph.siteName} />
 	<meta property="og:image" content={seo.openGraph.images[0].url} />
-	<meta property="og:image:width" content={seo.openGraph.images[0].width} />
-	<meta property="og:image:height" content={seo.openGraph.images[0].height} />
+	<meta property="og:image:width" content={String(seo.openGraph.images[0].width)} />
+	<meta property="og:image:height" content={String(seo.openGraph.images[0].height)} />
 	<meta property="og:image:alt" content={seo.openGraph.images[0].alt} />
 
 	<!-- Twitter Card Meta Tags - Using server-loaded data -->
@@ -419,7 +540,7 @@
 		>
 			<div class="hero-grid-plane absolute inset-0 pointer-events-none opacity-0">
 				<div
-					class="absolute inset-0 bg-gradient-to-b from-[#050505] via-transparent to-[#050505] z-10"
+					class="absolute inset-0 bg-linear-to-b from-[#050505] via-transparent to-[#050505] z-10"
 				></div>
 				<div class="grid-lines w-full h-full"></div>
 			</div>
@@ -471,7 +592,7 @@
 
 			<div class="relative z-20 max-w-5xl mx-auto mt-12">
 				<div
-					class="hero-badge inline-flex items-center gap-3 px-5 py-2 rounded-full bg-white/[0.03] border border-white/[0.08] backdrop-blur-md mb-10 shadow-[0_0_30px_rgba(16,185,129,0.1)] hover:bg-white/[0.05] transition-colors cursor-default"
+					class="hero-badge inline-flex items-center gap-3 px-5 py-2 rounded-full bg-white/3 border border-white/8 backdrop-blur-md mb-10 shadow-[0_0_30px_rgba(16,185,129,0.1)] hover:bg-white/5 transition-colors cursor-default"
 				>
 					<span class="relative flex h-2 w-2">
 						<span
@@ -492,7 +613,7 @@
 					</div>
 					<div class="hero-title-line overflow-hidden">
 						<span
-							class="inline-block bg-gradient-to-r from-blue-400 via-indigo-300 to-emerald-400 bg-clip-text text-transparent pb-4"
+							class="inline-block bg-linear-to-r from-blue-400 via-indigo-300 to-emerald-400 bg-clip-text text-transparent pb-4"
 							>Intelligence</span
 						>
 					</div>
@@ -505,8 +626,57 @@
 					data, institutional signals, and a community of professional traders.
 				</p>
 
+				<!-- ═══════════════════════════════════════════════════════════════════════════
+				     6 FLOATING CTA BUTTONS - PE7 RESTORE 2026-05-23
+				     Animated entrance from different directions as per original design
+				     ═══════════════════════════════════════════════════════════════════════════ -->
+				<div class="hero-cta-container relative mt-16 flex flex-wrap justify-center gap-4 max-w-4xl mx-auto">
+					<a
+						href="/live-trading-rooms/day-trading"
+						class="hero-float-btn hero-float-btn-1 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold hover:bg-emerald-500/20 hover:border-emerald-500/50 transition-all duration-300 backdrop-blur-sm"
+					>
+						<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+						Day Trading Room
+					</a>
+					<a
+						href="/live-trading-rooms/swing-trading"
+						class="hero-float-btn hero-float-btn-2 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-500/10 border border-blue-500/30 text-blue-400 font-semibold hover:bg-blue-500/20 hover:border-blue-500/50 transition-all duration-300 backdrop-blur-sm"
+					>
+						<span class="w-2 h-2 rounded-full bg-blue-400"></span>
+						Swing Trading
+					</a>
+					<a
+						href="/live-trading-rooms/small-accounts"
+						class="hero-float-btn hero-float-btn-3 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 font-semibold hover:bg-amber-500/20 hover:border-amber-500/50 transition-all duration-300 backdrop-blur-sm"
+					>
+						<span class="w-2 h-2 rounded-full bg-amber-400"></span>
+						Small Accounts
+					</a>
+					<a
+						href="/alerts/spx-profit-pulse"
+						class="hero-float-btn hero-float-btn-4 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400 font-semibold hover:bg-purple-500/20 hover:border-purple-500/50 transition-all duration-300 backdrop-blur-sm"
+					>
+						<span class="w-2 h-2 rounded-full bg-purple-400"></span>
+						SPX Alerts
+					</a>
+					<a
+						href="/mentorship"
+						class="hero-float-btn hero-float-btn-5 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 font-semibold hover:bg-cyan-500/20 hover:border-cyan-500/50 transition-all duration-300 backdrop-blur-sm"
+					>
+						<span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+						Mentorship
+					</a>
+					<a
+						href="/indicators"
+						class="hero-float-btn hero-float-btn-6 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 font-semibold hover:bg-rose-500/20 hover:border-rose-500/50 transition-all duration-300 backdrop-blur-sm"
+					>
+						<span class="w-2 h-2 rounded-full bg-rose-400"></span>
+						Indicators
+					</a>
+				</div>
+
 				<div
-					class="hero-line w-24 h-[1px] bg-gradient-to-r from-transparent via-blue-500 to-transparent mx-auto mt-12 opacity-0"
+					class="hero-line w-24 h-px bg-linear-to-r from-transparent via-blue-500 to-transparent mx-auto mt-16 opacity-0"
 				></div>
 			</div>
 		</section>
@@ -524,7 +694,7 @@
 					aria-label={room.name}
 				>
 					<div
-						class={`absolute -inset-[1px] rounded-3xl bg-gradient-to-b opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm 
+						class={`absolute -inset-px rounded-3xl bg-linear-to-b opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm 
                         ${room.accent === 'cyan' ? 'from-cyan-500/50' : ''}
                         ${room.accent === 'emerald' ? 'from-emerald-500/50' : ''}
                         ${room.accent === 'amber' ? 'from-amber-500/50' : ''}
@@ -534,7 +704,7 @@
 						class="relative h-full flex flex-col bg-[#0A0A0A] border border-white/5 hover:border-white/10 rounded-3xl p-1 shadow-2xl overflow-hidden transition-colors duration-300"
 					>
 						<div
-							class="flex-1 flex flex-col p-6 lg:p-8 rounded-[20px] bg-gradient-to-b from-white/[0.02] to-transparent"
+							class="flex-1 flex flex-col p-6 lg:p-8 rounded-[20px] bg-linear-to-b from-white/2 to-transparent"
 						>
 							{#if room.badge}
 								<div class="absolute top-6 right-6">
@@ -729,7 +899,7 @@
 			<div class="absolute inset-0 bg-blue-500/5 blur-[100px] pointer-events-none"></div>
 			<div class="text-center mb-16 relative z-10">
 				<h2
-					class="text-3xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60"
+					class="text-3xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-linear-to-b from-white to-white/60"
 				>
 					Why the Pros Choose Us
 				</h2>
@@ -808,7 +978,7 @@
 
 		<section
 			bind:this={ctaRef}
-			class="py-24 pb-32 text-center relative overflow-hidden rounded-3xl my-12 bg-gradient-to-b from-blue-900/20 to-black border border-white/10"
+			class="py-24 pb-32 text-center relative overflow-hidden rounded-3xl my-12 bg-linear-to-b from-blue-900/20 to-black border border-white/10"
 		>
 			<div class="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10"></div>
 			<div class="relative z-10 max-w-3xl mx-auto px-4">
