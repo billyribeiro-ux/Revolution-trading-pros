@@ -21,15 +21,72 @@
  * ════════════════════════════════════════════════════════════════════════════
  */
 
-@import 'tailwindcss';
+/* ═══════════════════════════════════════════════════════════════════════════
+   PURE CSS UTILITY CLASSES - PE7 FIX 2026-05-23
+   Live Trading Rooms use these classes. Previously undefined, causing
+   complete rendering failures. Now implemented as pure CSS.
+   ═══════════════════════════════════════════════════════════════════════════ */
 
-/* Marketing canvas — replaces app.html:98's unlayered body color rule.
-   Background-color and text-color only; layout geometry (min-h-screen,
-   flex flex-col, min-w-0) comes from existing Tailwind classes on the
-   wrapper div in +layout.svelte. */
+/* CSS Custom Properties scoped to marketing shell */
 .marketing-shell {
-	background-color: #0a0a0a;
-	color: #f5f5f5;
+	--rtp-bg: #0a0a0a;
+	--rtp-text: #f5f5f5;
+	--rtp-surface: #161616;
+	--rtp-border: rgba(255, 255, 255, 0.1);
+	--rtp-muted: #6b7280;
+	--rtp-primary: #3b82f6;
+	--rtp-emerald: #10b981;
+	--rtp-indigo: #6366f1;
+	--rtp-blue: #3b82f6;
+	--font-heading: 'Inter', system-ui, sans-serif;
+
+	/* Canvas colors */
+	background-color: var(--rtp-bg);
+	color: var(--rtp-text);
+}
+
+/* Background utilities */
+.marketing-shell :where(.bg-rtp-bg) {
+	background-color: var(--rtp-bg);
+}
+.marketing-shell :where(.bg-rtp-surface) {
+	background-color: var(--rtp-surface);
+}
+
+/* Text utilities */
+.marketing-shell :where(.text-rtp-text) {
+	color: var(--rtp-text);
+}
+.marketing-shell :where(.text-rtp-muted) {
+	color: var(--rtp-muted);
+}
+.marketing-shell :where(.text-rtp-primary) {
+	color: var(--rtp-primary);
+}
+.marketing-shell :where(.text-rtp-emerald) {
+	color: var(--rtp-emerald);
+}
+.marketing-shell :where(.text-rtp-indigo) {
+	color: var(--rtp-indigo);
+}
+.marketing-shell :where(.text-rtp-blue) {
+	color: var(--rtp-blue);
+}
+
+/* Border utilities */
+.marketing-shell :where(.border-rtp-border) {
+	border-color: var(--rtp-border);
+}
+.marketing-shell :where(.border-rtp-emerald) {
+	border-color: var(--rtp-emerald);
+}
+.marketing-shell :where(.border-rtp-primary) {
+	border-color: var(--rtp-primary);
+}
+
+/* Typography utilities */
+.marketing-shell :where(.font-heading) {
+	font-family: var(--font-heading);
 }
 
 /* Universal border + outline default for marketing-only descendants.
