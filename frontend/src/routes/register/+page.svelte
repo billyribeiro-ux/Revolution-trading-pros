@@ -38,11 +38,16 @@
 	let particlesRef = $state<HTMLElement | null>(null);
 	let formRef = $state<HTMLElement | null>(null);
 
+	// GSAP types (dynamically imported below; types-only here for SSR safety)
+	type GSAPLib = typeof import('gsap').gsap;
+	type GSAPTimeline = ReturnType<GSAPLib['timeline']>;
+	type GSAPTween = ReturnType<GSAPLib['to']>;
+
 	// Track GSAP animations for cleanup to prevent memory leaks
-	let mainTimeline = $state<any>(null);
-	let sparkleTimeline = $state<any>(null);
-	let particleAnimations = $state<any[]>([]);
-	let gsapLib = $state<any>(null);
+	let mainTimeline = $state<GSAPTimeline | null>(null);
+	let sparkleTimeline = $state<GSAPTimeline | null>(null);
+	let particleAnimations = $state<GSAPTween[]>([]);
+	let gsapLib = $state<GSAPLib | null>(null);
 
 	// Svelte 5 effect for initialization and cleanup
 	$effect(() => {
@@ -96,8 +101,8 @@
 					);
 			}
 
-			// Create floating emerald particles
-			createEmeraldParticles();
+			// Attach floating-particle animations to the declaratively-rendered nodes
+			attachParticleAnimations();
 
 			// Sparkle effect on icon - tracked for cleanup
 			sparkleTimeline = gsapLib.timeline({ repeat: -1 });
@@ -130,14 +135,9 @@
 			sparkleTimeline = null;
 		}
 
-		// Kill all particle animations
+		// Kill all particle animations (DOM nodes themselves are torn down by Svelte)
 		particleAnimations.forEach((anim) => anim.kill());
 		particleAnimations = [];
-
-		// Clear particles from DOM
-		if (particlesRef) {
-			particlesRef.innerHTML = '';
-		}
 
 		// Kill all GSAP animations on this component
 		if (gsapLib) {
@@ -152,41 +152,37 @@
 		}
 	}
 
-	function createEmeraldParticles() {
-		if (!particlesRef) return;
+	// Particle configs computed once at module-load. Rendered declaratively
+	// via {#each particles} (no createElement/appendChild). GSAP animations
+	// attach to the rendered nodes in attachParticleAnimations().
+	const particles = Array.from({ length: 40 }, () => ({
+		size: Math.random() * 6 + 3,
+		startX: Math.random() * 100,
+		startY: Math.random() * 100,
+		duration: Math.random() * 25 + 20,
+		delay: Math.random() * 8,
+		drift: Math.random() * 120 - 60
+	}));
 
-		for (let i = 0; i < 40; i++) {
-			const particle = document.createElement('div');
-			particle.className = 'emerald-particle';
-
-			const size = Math.random() * 6 + 3;
-			const startX = Math.random() * 100;
-			const startY = Math.random() * 100;
-			const duration = Math.random() * 25 + 20;
-			const delay = Math.random() * 8;
-
-			particle.style.width = `${size}px`;
-			particle.style.height = `${size}px`;
-			particle.style.left = `${startX}%`;
-			particle.style.top = `${startY}%`;
-
-			particlesRef.appendChild(particle);
-
-			// Track animation for cleanup
-			if (gsapLib) {
-				const anim = gsapLib.to(particle, {
-					y: -150,
-					x: `+=${Math.random() * 120 - 60}`,
-					opacity: 0,
-					rotation: 360,
-					duration: duration,
-					delay: delay,
-					repeat: -1,
-					ease: 'none'
-				});
-				particleAnimations.push(anim);
-			}
-		}
+	function attachParticleAnimations() {
+		if (!particlesRef || !gsapLib) return;
+		const gsap = gsapLib;
+		const nodes = particlesRef.querySelectorAll<HTMLElement>('.emerald-particle');
+		nodes.forEach((node, i) => {
+			const config = particles[i];
+			if (!config) return;
+			const anim = gsap.to(node, {
+				y: -150,
+				x: `+=${config.drift}`,
+				opacity: 0,
+				rotation: 360,
+				duration: config.duration,
+				delay: config.delay,
+				repeat: -1,
+				ease: 'none'
+			});
+			particleAnimations.push(anim);
+		});
 	}
 
 	async function handleSubmit(e: Event) {
@@ -267,8 +263,18 @@
 	<div class="radial-glow glow-2"></div>
 	<div class="radial-glow glow-3"></div>
 
-	<!-- Floating particles container -->
-	<div bind:this={particlesRef} class="particles-container"></div>
+	<!-- Floating particles container — rendered declaratively, animated via GSAP after mount -->
+	<div bind:this={particlesRef} class="particles-container">
+		{#each particles as p, i (i)}
+			<div
+				class="emerald-particle"
+				style:width="{p.size}px"
+				style:height="{p.size}px"
+				style:left="{p.startX}%"
+				style:top="{p.startY}%"
+			></div>
+		{/each}
+	</div>
 
 	<!-- Animated grid -->
 	<div class="grid-pattern"></div>

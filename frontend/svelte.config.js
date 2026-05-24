@@ -1,6 +1,14 @@
 import adapter from '@sveltejs/adapter-cloudflare';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
+// Dev-mode detection. NODE_ENV is unreliable here: Vite sets it AFTER
+// svelte.config.js evaluates, so reading process.env.NODE_ENV at this
+// scope returns undefined for `vite dev`. Detect via the CLI argv instead,
+// which is populated before any module-load. Covers `vite dev`, `vite dev --host`,
+// `pnpm dev`, and the `dev:fast` alias.
+const isDev =
+	process.env.NODE_ENV === 'development' || process.argv.includes('dev');
+
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	preprocess: vitePreprocess(),
@@ -89,10 +97,7 @@ const config = {
 				'style-src': ['self', 'unsafe-inline', 'fonts.googleapis.com'],
 				'font-src': ['self', 'fonts.gstatic.com', 'data:'],
 				'img-src': ['self', 'data:', 'https:', 'blob:'],
-				'worker-src': [
-					'self',
-					...(process.env.NODE_ENV === 'development' ? ['blob:'] : [])
-				],
+				'worker-src': ['self', ...(isDev ? ['blob:'] : [])],
 				'media-src': [
 					'self',
 					'https://*.mediadelivery.net',
@@ -111,9 +116,9 @@ const config = {
 					'https://*.mediadelivery.net',
 					'https://vz-5a23b520-193.b-cdn.net',
 					// Dev-only: allow direct calls to the local Rust API,
-					// Vite dev servers, and ws/wss for HMR.
-					// NODE_ENV is 'development' during `pnpm dev`; never set in production builds.
-					...(process.env.NODE_ENV === 'development'
+					// Vite dev servers, and ws/wss for HMR. isDev is detected
+					// from process.argv (NODE_ENV isn't set yet at config load).
+					...(isDev
 						? ['ws:', 'http://localhost:8080', 'http://localhost:5173', 'http://localhost:5174']
 						: [])
 				],
