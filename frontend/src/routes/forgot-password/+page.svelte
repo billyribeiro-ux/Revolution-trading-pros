@@ -3,6 +3,7 @@
 	 * Forgot Password Page - Svelte 5 January 2026
 	 * @version 2.0.0
 	 */
+	import { onMount } from 'svelte';
 	import { forgotPassword } from '$lib/api/auth';
 	import { IconMail, IconAlertCircle, IconCheck, IconSend } from '$lib/icons';
 	import SEOHead from '$lib/components/seo/SeoHead.svelte';
@@ -15,8 +16,7 @@
 	let isLoading = $state(false);
 	let isVisible = $state(false);
 
-	// Svelte 5 effect for initialization
-	$effect(() => {
+	onMount(() => {
 		isVisible = true;
 	});
 
@@ -58,7 +58,7 @@
 >
 	<!-- Animated gradient background -->
 	<div
-		class="absolute inset-0 bg-gradient-to-br from-slate-950 via-amber-950/30 to-slate-950"
+		class="absolute inset-0 bg-linear-to-br from-slate-950 via-amber-950/30 to-slate-950"
 	></div>
 
 	<!-- Floating orbs - hidden on small screens to save space -->
@@ -76,7 +76,7 @@
 	>
 		<!-- Glow effect -->
 		<div
-			class="absolute -inset-1 bg-gradient-to-r from-amber-500 via-yellow-500 to-orange-500 rounded-3xl opacity-20 blur-xl"
+			class="absolute -inset-1 bg-linear-to-r from-amber-500 via-yellow-500 to-orange-500 rounded-3xl opacity-20 blur-xl"
 		></div>
 
 		<div
@@ -85,7 +85,7 @@
 			<!-- Header -->
 			<div class="text-center mb-6 sm:mb-8">
 				<div
-					class="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 p-0.5 mb-4 sm:mb-6"
+					class="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl bg-linear-to-br from-amber-500 to-orange-500 p-0.5 mb-4 sm:mb-6"
 				>
 					<div
 						class="w-full h-full bg-slate-900 rounded-xl sm:rounded-2xl flex items-center justify-center"
@@ -95,7 +95,7 @@
 					</div>
 				</div>
 				<h1
-					class="text-2xl sm:text-4xl font-heading font-bold mb-2 sm:mb-3 bg-gradient-to-r from-amber-300 via-yellow-300 to-orange-300 bg-clip-text text-transparent"
+					class="text-2xl sm:text-4xl font-heading font-bold mb-2 sm:mb-3 bg-linear-to-r from-amber-300 via-yellow-300 to-orange-300 bg-clip-text text-transparent"
 				>
 					Forgot Password?
 				</h1>
@@ -107,7 +107,7 @@
 				<div
 					class="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-start gap-3 animate-fade-in"
 				>
-					<IconCheck size={20} class="text-emerald-400 flex-shrink-0 mt-0.5" />
+					<IconCheck size={20} class="text-emerald-400 shrink-0 mt-0.5" />
 					<p class="text-sm text-emerald-300">{successMessage}</p>
 				</div>
 			{/if}
@@ -117,7 +117,7 @@
 				<div
 					class="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-start gap-3 animate-fade-in"
 				>
-					<IconAlertCircle size={20} class="text-red-400 flex-shrink-0 mt-0.5" />
+					<IconAlertCircle size={20} class="text-red-400 shrink-0 mt-0.5" />
 					<p class="text-sm text-red-300">{generalError}</p>
 				</div>
 			{/if}
@@ -154,7 +154,7 @@
 				<button
 					type="submit"
 					disabled={isLoading}
-					class="w-full relative px-6 py-4 bg-gradient-to-r from-amber-500 via-yellow-500 to-orange-500 text-slate-900 font-heading font-bold rounded-xl overflow-hidden group transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
+					class="w-full relative px-6 py-4 bg-linear-to-r from-amber-500 via-yellow-500 to-orange-500 text-slate-900 font-heading font-bold rounded-xl overflow-hidden group transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
 				>
 					<span class="relative z-10 flex items-center justify-center gap-2">
 						{#if isLoading}

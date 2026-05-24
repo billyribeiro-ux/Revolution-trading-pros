@@ -345,7 +345,7 @@
 					{#each sessionBreakdown as item (item.time)}
 						<div class="group gsap-reveal-item">
 							<div
-								class="flex flex-col md:flex-row gap-8 md:gap-16 p-8 hover:bg-white/[0.02] transition-colors border-l-2 border-white/10 hover:border-amber-600"
+								class="flex flex-col md:flex-row gap-8 md:gap-16 p-8 hover:bg-white/2 transition-colors border-l-2 border-white/10 hover:border-amber-600"
 							>
 								<div class="w-32 shrink-0 pt-1">
 									<span class="font-mono text-amber-600 text-sm">{item.time}</span>

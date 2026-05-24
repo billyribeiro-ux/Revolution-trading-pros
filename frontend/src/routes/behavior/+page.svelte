@@ -340,7 +340,7 @@
 	}
 
 	.friction-fill {
-		@apply h-full bg-gradient-to-r from-orange-500 to-red-500;
+		@apply h-full bg-linear-to-r from-orange-500 to-red-500;
 	}
 
 	.timeline-chart {
@@ -352,7 +352,7 @@
 	}
 
 	.bar-fill {
-		@apply w-full bg-gradient-to-t from-purple-500 to-purple-400 rounded-t;
+		@apply w-full bg-linear-to-t from-purple-500 to-purple-400 rounded-t;
 		@apply transition-all hover:from-purple-400 hover:to-purple-300;
 	}
 

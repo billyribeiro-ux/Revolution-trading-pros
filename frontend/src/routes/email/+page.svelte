@@ -387,7 +387,7 @@
 	}
 
 	.stat-icon {
-		@apply w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0;
+		@apply w-12 h-12 rounded-lg flex items-center justify-center shrink-0;
 	}
 
 	.stat-content {

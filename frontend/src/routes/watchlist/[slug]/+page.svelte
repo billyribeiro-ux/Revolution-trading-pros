@@ -75,41 +75,48 @@
 
 	// State
 	let activeTab = $state<'rundown' | 'watchlist'>('rundown');
-	let currentEntry = $state<(typeof watchlistEntries)[0] | null>(null);
-	let previousEntry = $state<(typeof watchlistEntries)[0] | null>(null);
-	let nextEntry = $state<(typeof watchlistEntries)[0] | null>(null);
 	let selectedDateIndex = $state(0);
-	let currentSpreadsheetUrl = $state('');
 
 	// Get current slug from URL
 	const slug = $derived(page.params.slug);
 
-	// Find current entry and adjacent entries for pagination
+	// Index of current entry in the array; -1 when not found
+	const currentIndex = $derived.by(() => {
+		if (slug === 'latest' || slug === 'current') return 0;
+		return watchlistEntries.findIndex((e) => e.slug === slug);
+	});
+
+	// Current, previous, next entries derived purely from currentIndex
+	const currentEntry = $derived(currentIndex !== -1 ? watchlistEntries[currentIndex] : null);
+	const previousEntry = $derived(
+		currentIndex !== -1 && currentIndex < watchlistEntries.length - 1
+			? watchlistEntries[currentIndex + 1]
+			: null
+	);
+	const nextEntry = $derived(
+		currentIndex > 0 && (slug === 'latest' || slug === 'current') === false
+			? watchlistEntries[currentIndex - 1]
+			: null
+	);
+
+	// Reset date index when slug changes (state update on input change is the
+	// only legitimate $effect pattern here — there's no derived equivalent).
+	let lastSlug = $state<string | null>(null);
 	$effect(() => {
-		const currentIndex = watchlistEntries.findIndex((e) => e.slug === slug);
-
-		if (currentIndex !== -1) {
-			currentEntry = watchlistEntries[currentIndex];
-
-			// CRITICAL: Reset date index when switching watchlist entries
+		if (slug !== lastSlug) {
+			lastSlug = slug;
 			selectedDateIndex = 0;
-
-			// Previous = older entry (higher index in array since newest is first)
-			previousEntry =
-				currentIndex < watchlistEntries.length - 1 ? watchlistEntries[currentIndex + 1] : null;
-
-			// Next = newer entry (lower index in array since newest is first)
-			nextEntry = currentIndex > 0 ? watchlistEntries[currentIndex - 1] : null;
 		}
 	});
 
-	// Handle "latest" slug - redirect to most recent
-	$effect(() => {
-		if (slug === 'latest' || slug === 'current') {
-			currentEntry = watchlistEntries[0];
-			previousEntry = watchlistEntries.length > 1 ? watchlistEntries[1] : null;
-			nextEntry = null; // Latest has no next
+	// Spreadsheet URL — fully derived from currentEntry + selectedDateIndex
+	const currentSpreadsheetUrl = $derived.by(() => {
+		if (!currentEntry) return '';
+		if (currentEntry.watchlistDates && currentEntry.watchlistDates.length > 0) {
+			const validIndex = Math.min(selectedDateIndex, currentEntry.watchlistDates.length - 1);
+			return currentEntry.watchlistDates[validIndex].spreadsheetUrl;
 		}
+		return currentEntry.spreadsheetUrl ?? '';
 	});
 
 	function setTab(tab: 'rundown' | 'watchlist') {
@@ -117,14 +124,11 @@
 	}
 
 	function selectDate(index: number) {
-		// Validate index is within bounds
 		if (!currentEntry?.watchlistDates || index < 0 || index >= currentEntry.watchlistDates.length) {
 			console.warn('Invalid date index:', index);
 			return;
 		}
-
 		selectedDateIndex = index;
-		currentSpreadsheetUrl = currentEntry.watchlistDates[index].spreadsheetUrl;
 	}
 
 	function nextDate() {
@@ -141,33 +145,6 @@
 			selectDate(selectedDateIndex - 1);
 		}
 	}
-
-	// Initialize spreadsheet URL when entry changes
-	$effect(() => {
-		if (!currentEntry) {
-			currentSpreadsheetUrl = '';
-			return;
-		}
-
-		// Priority 1: Use watchlistDates array if available
-		if (currentEntry.watchlistDates && currentEntry.watchlistDates.length > 0) {
-			// Ensure selectedDateIndex is valid
-			const validIndex = Math.min(selectedDateIndex, currentEntry.watchlistDates.length - 1);
-			if (validIndex !== selectedDateIndex) {
-				selectedDateIndex = validIndex;
-			}
-			currentSpreadsheetUrl = currentEntry.watchlistDates[validIndex].spreadsheetUrl;
-		}
-		// Priority 2: Fallback to single spreadsheetUrl
-		else if (currentEntry.spreadsheetUrl) {
-			currentSpreadsheetUrl = currentEntry.spreadsheetUrl;
-		}
-		// Priority 3: No spreadsheet available
-		else {
-			currentSpreadsheetUrl = '';
-			console.warn('No spreadsheet URL found for watchlist:', currentEntry.slug);
-		}
-	});
 </script>
 
 <svelte:head>

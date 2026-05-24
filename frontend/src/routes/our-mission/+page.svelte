@@ -1,27 +1,20 @@
 <script lang="ts">
 	import type { RawSchemaConfig } from '$lib/utils/structured-data';
 	import { onMount } from 'svelte';
-	import { slide } from 'svelte/transition';
 	import { browser } from '$app/environment';
 	import SEOHead from '$lib/components/seo/SeoHead.svelte';
-	import IconTarget from '@tabler/icons-svelte-runes/icons/target';
 	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
 	import IconShield from '@tabler/icons-svelte-runes/icons/shield';
 	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
 	import IconScale from '@tabler/icons-svelte-runes/icons/scale';
 	import IconBrain from '@tabler/icons-svelte-runes/icons/brain';
-	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
 	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
 	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconQuote from '@tabler/icons-svelte-runes/icons/quote';
-	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
-	import IconServer from '@tabler/icons-svelte-runes/icons/server';
-	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
-	import IconLock from '@tabler/icons-svelte-runes/icons/lock';
-	import IconTerminal from '@tabler/icons-svelte-runes/icons/terminal';
-	import IconBook from '@tabler/icons-svelte-runes/icons/book';
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
+	import MathOfEdgeCalculator from './_sections/MathOfEdgeCalculator.svelte';
+	import SyllabusAccordion from './_sections/SyllabusAccordion.svelte';
+	import MissionFaqAccordion from './_sections/MissionFaqAccordion.svelte';
 	// --- GSAP ScrollTrigger Animations (Svelte 5 SSR-safe pattern) ---
 	onMount(() => {
 		if (!browser) return;
@@ -75,39 +68,7 @@
 	});
 
 
-	// --- INTERACTIVE RISK CALCULATOR LOGIC ---
-	// A comprehensive simulator showing the power of compounding vs ruin
-	// Svelte 5 state runes
-	let simAccount = $state(25000);
-	let simRisk = $state(2);
-	let simWinRate = $state(55);
-	let simRR = $state(2);
-
-	// Svelte 5 derived runes
-	let riskAmount = $derived(Math.round(simAccount * (simRisk / 100)));
-	let winAmount = $derived(Math.round(riskAmount * simRR));
-	let expectedValue = $derived(
-		(simWinRate / 100) * winAmount - (1 - simWinRate / 100) * riskAmount
-	);
-	let tradesToDouble = $derived(Math.ceil(simAccount / expectedValue));
-	let riskOfRuin = $derived(
-		simRisk > 5
-			? 'HIGH (Casino Mode)'
-			: simRisk > 2
-				? 'MODERATE (Aggressive)'
-				: 'LOW (Institutional)'
-	);
-	let riskColor = $derived(
-		simRisk > 5 ? 'text-red-500' : simRisk > 2 ? 'text-orange-400' : 'text-emerald-400'
-	);
-
 	// --- STATES (Svelte 5 runes) ---
-	let openFaq = $state<number | null>(null);
-	const toggleFaq = (idx: number) => (openFaq = openFaq === idx ? null : idx);
-
-	let openSyllabus = $state<number | null>(0);
-	const toggleSyllabus = (idx: number) => (openSyllabus = openSyllabus === idx ? null : idx);
-
 	let glossarySearch = $state('');
 
 	// --- SEO SCHEMA (JSON-LD) ---
@@ -198,33 +159,6 @@
 			color: 'text-purple-400',
 			bg: 'bg-purple-400/10',
 			border: 'border-purple-400/20'
-		}
-	];
-
-	const syllabus = [
-		{
-			title: 'Module 1: Market Microstructure',
-			desc: 'Understanding the Auction Process, Bid/Ask mechanics, and how liquidity moves price. We deconstruct the Limit Order Book (LOB) and aggressive vs passive order flow.'
-		},
-		{
-			title: 'Module 2: Volume Profiling',
-			desc: "Identifying value areas, POC (Point of Control), and composite profiles. Learning to spot 'trapped' traders and liquidity voids where price accelerates."
-		},
-		{
-			title: 'Module 3: Institutional Order Flow',
-			desc: 'Reading the DOM (Depth of Market), Delta Divergence, and Footprint charts. Identifying iceberg orders and absorption at key levels.'
-		},
-		{
-			title: 'Module 4: Advanced Risk Modeling',
-			desc: 'Building a personalized risk management plan based on Kelly Criterion, Sharpe Ratio optimization, and drawdown recovery protocols.'
-		},
-		{
-			title: 'Module 5: The Psychology of Variance',
-			desc: "Cognitive Behavioral Therapy (CBT) techniques for traders. Dealing with 'Recency Bias', 'Tilt', and the physiological response to risk."
-		},
-		{
-			title: 'Module 6: System Architecture',
-			desc: 'Building your Playbook. Defining A+ setups versus B setups. Creating a trade execution checklist that removes discretionary errors.'
 		}
 	];
 
@@ -368,7 +302,7 @@
 				We Don't Sell Dreams.<br />
 				We Build
 				<span
-					class="text-transparent bg-clip-text bg-gradient-to-r from-rtp-primary via-blue-400 to-indigo-400"
+					class="text-transparent bg-clip-text bg-linear-to-r from-rtp-primary via-blue-400 to-indigo-400"
 					>Careers.</span
 				>
 			</h1>
@@ -383,32 +317,32 @@
 			</div>
 
 			<div data-gsap class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-				<div class="bg-white/[0.02] border border-white/10 p-6 rounded-xl backdrop-blur-sm">
+				<div class="bg-white/2 border border-white/10 p-6 rounded-xl backdrop-blur-sm">
 					<div class="text-3xl font-bold text-white font-mono">90%</div>
 					<div class="text-[10px] uppercase tracking-widest text-slate-500 mt-2">
 						Retail Failure Rate
 					</div>
 				</div>
-				<div class="bg-white/[0.02] border border-white/10 p-6 rounded-xl backdrop-blur-sm">
+				<div class="bg-white/2 border border-white/10 p-6 rounded-xl backdrop-blur-sm">
 					<div class="text-3xl font-bold text-rtp-primary font-mono">10+</div>
 					<div class="text-[10px] uppercase tracking-widest text-slate-500 mt-2">
 						Years Experience
 					</div>
 				</div>
-				<div class="bg-white/[0.02] border border-white/10 p-6 rounded-xl backdrop-blur-sm">
+				<div class="bg-white/2 border border-white/10 p-6 rounded-xl backdrop-blur-sm">
 					<div class="text-3xl font-bold text-emerald-400 font-mono">100%</div>
 					<div class="text-[10px] uppercase tracking-widest text-slate-500 mt-2">
 						Verified Audits
 					</div>
 				</div>
-				<div class="bg-white/[0.02] border border-white/10 p-6 rounded-xl backdrop-blur-sm">
+				<div class="bg-white/2 border border-white/10 p-6 rounded-xl backdrop-blur-sm">
 					<div class="text-3xl font-bold text-white font-mono">$0</div>
 					<div class="text-[10px] uppercase tracking-widest text-slate-500 mt-2">Hidden Fees</div>
 				</div>
 			</div>
 		</section>
 
-		<section class="py-32 border-y border-white/5 bg-white/[0.01]">
+		<section class="py-32 border-y border-white/5 bg-white/1">
 			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 				<div class="grid lg:grid-cols-12 gap-16 items-center">
 					<div class="lg:col-span-5" data-gsap>
@@ -454,7 +388,7 @@
 							class="relative bg-[#0a0a0a] border border-white/10 rounded-2xl overflow-hidden shadow-2xl"
 						>
 							<div
-								class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 to-emerald-500"
+								class="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-red-500 to-emerald-500"
 							></div>
 							<div class="overflow-x-auto">
 								<table class="w-full text-left border-collapse">
@@ -462,7 +396,7 @@
 										<tr
 											class="text-xs uppercase tracking-widest border-b border-white/10 text-slate-500"
 										>
-											<th class="p-6 font-medium bg-white/[0.02]">Metric</th>
+											<th class="p-6 font-medium bg-white/2">Metric</th>
 											<th class="p-6 font-medium text-red-400 bg-red-900/10 border-l border-white/5"
 												>The Amateur</th
 											>
@@ -514,162 +448,7 @@
 			</div>
 		</section>
 
-		<section class="py-32 bg-[#080808] border-b border-white/5 relative overflow-hidden">
-			<div
-				class="absolute -left-40 top-20 w-96 h-96 bg-emerald-500/5 blur-[100px] rounded-full pointer-events-none"
-			></div>
-
-			<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-				<div class="text-center mb-16">
-					<h2 class="text-3xl md:text-4xl font-heading font-bold text-white mb-4">
-						The Mathematics of Edge
-					</h2>
-					<p class="text-slate-400 max-w-2xl mx-auto">
-						Trading is not magic. It is statistics. Use this institutional risk calculator to see
-						how small changes in risk management define your survival.
-					</p>
-				</div>
-
-				<div
-					class="grid md:grid-cols-12 gap-8 bg-[#050505] border border-white/10 rounded-3xl p-8 md:p-12 shadow-2xl"
-				>
-					<div class="md:col-span-4 space-y-8">
-						<div>
-							<label
-								for="sim-account"
-								class="text-xs uppercase tracking-widest text-slate-500 font-bold mb-4 block"
-								>Account Size ($)</label
-							>
-							<div class="relative">
-								<span class="absolute left-4 top-3 text-slate-500">$</span>
-								<input
-									id="sim-account"
-									name="sim-account"
-									type="number"
-									bind:value={simAccount}
-									class="w-full bg-white/5 border border-white/10 rounded-lg py-3 pl-8 pr-4 text-white font-mono focus:border-rtp-primary focus:outline-none transition-colors"
-								/>
-							</div>
-						</div>
-						<div>
-							<label
-								for="sim-risk"
-								class="text-xs uppercase tracking-widest text-slate-500 font-bold mb-4 block flex justify-between"
-							>
-								<span>Risk Per Trade (%)</span>
-								<span class={riskColor}>{simRisk}%</span>
-							</label>
-							<input
-								id="sim-risk"
-								name="sim-risk"
-								type="range"
-								min="0.5"
-								max="10"
-								step="0.5"
-								bind:value={simRisk}
-								class="w-full accent-rtp-primary cursor-pointer"
-							/>
-							<div class="flex justify-between text-[10px] text-slate-600 mt-2 font-mono">
-								<span>Conservative (0.5%)</span>
-								<span>Gambler (10%)</span>
-							</div>
-						</div>
-						<div class="grid grid-cols-2 gap-4">
-							<div>
-								<label
-									for="sim-winrate"
-									class="text-xs uppercase tracking-widest text-slate-500 font-bold mb-2 block"
-									>Win Rate (%)</label
-								>
-								<input
-									id="sim-winrate"
-									name="sim-winrate"
-									type="number"
-									bind:value={simWinRate}
-									class="w-full bg-white/5 border border-white/10 rounded-lg py-2 px-3 text-white font-mono focus:border-rtp-primary focus:outline-none"
-								/>
-							</div>
-							<div>
-								<label
-									for="sim-rr"
-									class="text-xs uppercase tracking-widest text-slate-500 font-bold mb-2 block"
-									>R:R Ratio</label
-								>
-								<input
-									id="sim-rr"
-									name="sim-rr"
-									type="number"
-									step="0.1"
-									bind:value={simRR}
-									class="w-full bg-white/5 border border-white/10 rounded-lg py-2 px-3 text-white font-mono focus:border-rtp-primary focus:outline-none"
-								/>
-							</div>
-						</div>
-					</div>
-
-					<div class="md:col-span-8 flex flex-col justify-center border-l border-white/5 md:pl-12">
-						<div class="grid grid-cols-2 gap-6 mb-8">
-							<div class="p-4 bg-white/[0.02] rounded-lg border border-white/5">
-								<div class="text-xs text-slate-500 uppercase mb-1">Dollar Risk (1R)</div>
-								<div class="text-2xl text-white font-mono font-bold">${riskAmount}</div>
-							</div>
-							<div class="p-4 bg-white/[0.02] rounded-lg border border-white/5">
-								<div class="text-xs text-slate-500 uppercase mb-1">Potential Reward</div>
-								<div class="text-2xl text-emerald-400 font-mono font-bold">${winAmount}</div>
-							</div>
-							<div class="p-4 bg-white/[0.02] rounded-lg border border-white/5">
-								<div class="text-xs text-slate-500 uppercase mb-1">Trades to Double</div>
-								<div class="text-2xl text-rtp-primary font-mono font-bold">
-									{tradesToDouble > 0 ? tradesToDouble : '∞'}
-								</div>
-							</div>
-							<div class="p-4 bg-white/[0.02] rounded-lg border border-white/5">
-								<div class="text-xs text-slate-500 uppercase mb-1">Expectancy (per trade)</div>
-								<div
-									class="text-2xl font-mono font-bold {expectedValue > 0
-										? 'text-white'
-										: 'text-red-500'}"
-								>
-									${expectedValue.toFixed(2)}
-								</div>
-							</div>
-						</div>
-
-						<div class="bg-black/40 rounded-xl p-6 border border-white/10 relative overflow-hidden">
-							<div
-								class="absolute top-2 right-4 text-[10px] font-mono text-slate-600 uppercase tracking-widest"
-							>
-								Analysis Output
-							</div>
-							<div class="space-y-4">
-								<div class="flex justify-between items-center border-b border-white/5 pb-2">
-									<span class="text-slate-400 text-sm">Risk Classification</span>
-									<span class="font-bold font-mono {riskColor}">{riskOfRuin}</span>
-								</div>
-								<div class="flex justify-between items-center border-b border-white/5 pb-2">
-									<span class="text-slate-400 text-sm">Institutional Viability</span>
-									<span
-										class="font-bold font-mono {simRisk <= 2 ? 'text-emerald-400' : 'text-red-500'}"
-										>{simRisk <= 2 ? 'PASS' : 'FAIL'}</span
-									>
-								</div>
-								<p class="text-xs text-slate-500 leading-relaxed mt-2">
-									{#if simRisk > 2}
-										<span class="text-red-400 font-bold">WARNING:</span> Your risk per trade is too
-										high for institutional standards. A standard drawdown sequence (4-5 losses) will
-										cause significant emotional damage (-{simRisk * 5}% equity).
-									{:else}
-										<span class="text-emerald-400 font-bold">OPTIMAL:</span> Your sizing allows you
-										to weather statistical variance. You can survive a 10-trade losing streak with
-										only {simRisk * 10}% drawdown.
-									{/if}
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
+		<MathOfEdgeCalculator />
 
 		<section class="py-32 relative overflow-hidden">
 			<div
@@ -693,7 +472,7 @@
 				</div>
 
 				<div class="grid md:grid-cols-3 gap-8">
-					{#each pillars as pillar, i (pillar.title)}
+					{#each pillars as pillar, _i (pillar.title)}
 						{@const PillarIcon = pillar.icon}
 						<div data-gsap class="group relative h-full">
 							<div
@@ -708,7 +487,7 @@
 									<PillarIcon size={28} stroke={1.5} />
 								</div>
 								<h3 class="text-2xl font-bold text-white mb-4">{pillar.title}</h3>
-								<p class="text-slate-400 leading-relaxed flex-grow">
+								<p class="text-slate-400 leading-relaxed grow">
 									{pillar.desc}
 								</p>
 								<div
@@ -723,11 +502,11 @@
 			</div>
 		</section>
 
-		<section class="py-32 bg-gradient-to-b from-[#050505] to-[#0a0a0a] border-y border-white/5">
+		<section class="py-32 bg-linear-to-b from-[#050505] to-[#0a0a0a] border-y border-white/5">
 			<div class="max-w-3xl mx-auto px-6">
 				<div class="flex justify-center mb-12">
 					<div
-						class="w-20 h-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white text-3xl font-heading font-bold text-rtp-primary shadow-[0_0_30px_rgba(59,130,246,0.1)]"
+						class="w-20 h-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-3xl font-heading font-bold text-rtp-primary shadow-[0_0_30px_rgba(59,130,246,0.1)]"
 					>
 						R
 					</div>
@@ -776,113 +555,9 @@
 			</div>
 		</section>
 
-		<section class="py-32 bg-[#020202] border-t border-white/5">
-			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-				<div class="grid lg:grid-cols-12 gap-20">
-					<div data-gsap class="lg:col-span-5 sticky top-32 h-fit">
-						<div class="flex items-center gap-3 mb-6">
-							<span class="p-2 bg-blue-500/10 rounded-lg text-blue-500 border border-blue-500/20"><IconBook size={20} stroke={1.5} /></span>
-							<span class="font-bold tracking-widest uppercase text-sm text-blue-400"
-								>The Syllabus</span
-							>
-						</div>
-						<h2 class="text-4xl md:text-5xl font-heading font-bold text-white mb-8">
-							From Subjective to <br />
-							<span class="text-white border-b-4 border-rtp-primary">Objective.</span>
-						</h2>
-						<p class="text-lg text-slate-400 mb-8 leading-relaxed">
-							Most traders look at a chart and see "patterns." We look at a chart and see <strong
-								>Auctions</strong
-							>.
-						</p>
-						<p class="text-lg text-slate-400 mb-12 leading-relaxed">
-							We teach you to read the raw data of the market: Volume, Liquidity, and Time. This
-							allows you to identify where the "Smart Money" is transacting, not just where price
-							has been.
-						</p>
+		<SyllabusAccordion />
 
-						<div class="p-1 bg-white/5 rounded-xl border border-white/10">
-							<div
-								class="aspect-video bg-[#0f172a] rounded-lg flex items-center justify-center relative overflow-hidden group"
-							>
-								<div
-									class="absolute inset-0 bg-[linear-gradient(0deg,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:20px_20px]"
-								></div>
-								<div class="absolute left-0 bottom-20 h-4 w-32 bg-blue-500/20 rounded-r"></div>
-								<div class="absolute left-0 bottom-24 h-4 w-48 bg-blue-500/40 rounded-r"></div>
-								<div class="absolute left-0 bottom-28 h-4 w-64 bg-blue-500/60 rounded-r"></div>
-								<div class="absolute left-0 bottom-32 h-4 w-40 bg-blue-500/40 rounded-r"></div>
-								<div class="absolute left-0 bottom-36 h-4 w-24 bg-blue-500/20 rounded-r"></div>
-
-								<div class="absolute right-10 top-10 text-right">
-									<div class="text-xs text-slate-500 font-mono">POC: 4450.25</div>
-									<div class="text-xs text-slate-500 font-mono">VAH: 4462.00</div>
-									<div class="text-xs text-slate-500 font-mono">VAL: 4438.50</div>
-								</div>
-								<p
-									class="text-center text-xs text-slate-500 mt-24 font-mono uppercase tracking-widest z-10"
-								>
-									Figure 1.1: Auction Market Theory
-								</p>
-							</div>
-						</div>
-					</div>
-
-					<div class="lg:col-span-7 space-y-4 pt-8">
-						{#each syllabus as module, i (module.title)}
-							<div
-								class="border border-white/10 rounded-xl bg-[#0a0a0a] overflow-hidden group hover:border-rtp-primary/50 transition-all duration-300"
-							>
-								<button
-									class="w-full flex justify-between items-center p-6 text-left"
-									onclick={() => toggleSyllabus(i)}
-								>
-									<div class="flex items-center gap-6">
-										<span
-											class="text-rtp-primary font-mono text-sm bg-rtp-primary/10 px-3 py-1 rounded border border-rtp-primary/20"
-											>MOD {i + 1}</span
-										>
-										<span
-											class="font-bold text-white text-lg group-hover:text-rtp-primary transition-colors"
-											>{module.title}</span
-										>
-									</div>
-									<div
-										class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-slate-500 transform transition-transform duration-300 {openSyllabus ===
-										i
-											? 'rotate-180 bg-white/10 text-white'
-											: ''}"
-									>
-										<IconChevronDown size={20} stroke={1.5} />
-									</div>
-								</button>
-								{#if openSyllabus === i}
-									<div
-										transition:slide
-										class="px-6 pb-8 pl-[5.5rem] text-slate-400 leading-relaxed border-t border-white/5 pt-6 text-sm"
-									>
-										{module.desc}
-										<div class="mt-4 flex gap-4">
-											<span class="text-xs font-mono text-emerald-400 flex items-center gap-1"
-												><IconCheck size={12} stroke={2} /> Video</span
-											>
-											<span class="text-xs font-mono text-emerald-400 flex items-center gap-1"
-												><IconCheck size={12} stroke={2} /> PDF</span
-											>
-											<span class="text-xs font-mono text-emerald-400 flex items-center gap-1"
-												><IconCheck size={12} stroke={2} /> Quiz</span
-											>
-										</div>
-									</div>
-								{/if}
-							</div>
-						{/each}
-					</div>
-				</div>
-			</div>
-		</section>
-
-		<section class="py-24 bg-white/[0.01] border-y border-white/5">
+		<section class="py-24 bg-white/1 border-y border-white/5">
 			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 				<div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
 					<div>
@@ -927,7 +602,7 @@
 			<div class="max-w-6xl mx-auto">
 				<div
 					data-gsap
-					class="relative bg-gradient-to-br from-[#0f172a] to-[#020617] border border-white/10 rounded-3xl p-8 md:p-16 overflow-hidden shadow-2xl"
+					class="relative bg-linear-to-br from-[#0f172a] to-[#020617] border border-white/10 rounded-3xl p-8 md:p-16 overflow-hidden shadow-2xl"
 				>
 					<div class="absolute top-0 right-0 text-white/5 -mr-8 -mt-8 transform rotate-12">
 						<IconQuote size={256} class="text-white/5" />
@@ -967,91 +642,11 @@
 			</div>
 		</section>
 
-		<section class="py-24 bg-white/[0.02] border-t border-white/5">
-			<div class="max-w-3xl mx-auto px-4">
-				<div class="text-center mb-12">
-					<h2 class="text-3xl font-bold text-white mb-4">Common Questions</h2>
-					<p class="text-slate-400">Understanding our philosophy before you join.</p>
-				</div>
-
-				<div class="space-y-4">
-					<div class="border border-white/10 rounded-lg bg-[#0a0a0a] overflow-hidden">
-						<button
-							class="w-full flex justify-between items-center p-6 text-left hover:bg-white/5 transition-colors"
-							onclick={() => toggleFaq(0)}
-						>
-							<span class="font-bold text-white">Is this a "Get Rich Quick" scheme?</span>
-							<IconChevronDown
-								size={20}
-								stroke={1.5}
-								class={`text-slate-500 transition-transform duration-300 ${openFaq === 0 ? 'rotate-180' : ''}`}
-							/>
-						</button>
-						{#if openFaq === 0}
-							<div
-								transition:slide
-								class="px-6 pb-6 text-slate-400 leading-relaxed border-t border-white/5 pt-4"
-							>
-								Absolutely not. If you are looking for fast money, please look elsewhere. We teach a
-								profession that takes years to master. We promise hard work, not Lamborghinis.
-							</div>
-						{/if}
-					</div>
-
-					<div class="border border-white/10 rounded-lg bg-[#0a0a0a] overflow-hidden">
-						<button
-							class="w-full flex justify-between items-center p-6 text-left hover:bg-white/5 transition-colors"
-							onclick={() => toggleFaq(1)}
-						>
-							<span class="font-bold text-white">Do I need a large account to start?</span>
-							<IconChevronDown
-								size={20}
-								stroke={1.5}
-								class={`text-slate-500 transition-transform duration-300 ${openFaq === 1 ? 'rotate-180' : ''}`}
-							/>
-						</button>
-						{#if openFaq === 1}
-							<div
-								transition:slide
-								class="px-6 pb-6 text-slate-400 leading-relaxed border-t border-white/5 pt-4"
-							>
-								No. In fact, we recommend starting with a small account or a simulator.
-								Institutional risk management concepts (Position Sizing, R-Multiples) apply whether
-								you are trading $1,000 or $1,000,000.
-							</div>
-						{/if}
-					</div>
-
-					<div class="border border-white/10 rounded-lg bg-[#0a0a0a] overflow-hidden">
-						<button
-							class="w-full flex justify-between items-center p-6 text-left hover:bg-white/5 transition-colors"
-							onclick={() => toggleFaq(2)}
-						>
-							<span class="font-bold text-white">What trading style do you teach?</span>
-							<IconChevronDown
-								size={20}
-								stroke={1.5}
-								class={`text-slate-500 transition-transform duration-300 ${openFaq === 2 ? 'rotate-180' : ''}`}
-							/>
-						</button>
-						{#if openFaq === 2}
-							<div
-								transition:slide
-								class="px-6 pb-6 text-slate-400 leading-relaxed border-t border-white/5 pt-4"
-							>
-								We are primarily Day Traders and Swing Traders. We focus on Index Futures (ES, NQ)
-								and Large Cap Tech Options. Our methodology is based on Price Action, Volume
-								Profile, and Order Flow.
-							</div>
-						{/if}
-					</div>
-				</div>
-			</div>
-		</section>
+		<MissionFaqAccordion />
 
 		<section class="py-32 text-center relative overflow-hidden">
 			<div
-				class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-gradient-to-b from-rtp-primary/5 to-transparent pointer-events-none"
+				class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-linear-to-b from-rtp-primary/5 to-transparent pointer-events-none"
 			></div>
 
 			<div data-gsap class="max-w-4xl mx-auto px-4 relative z-10">

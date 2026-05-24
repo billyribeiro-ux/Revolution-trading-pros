@@ -191,7 +191,7 @@
 			{#if $sessionInvalidated}
 				<div class="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
 					<svg
-						class="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5"
+						class="w-5 h-5 text-amber-500 shrink-0 mt-0.5"
 						fill="none"
 						stroke="currentColor"
 						viewBox="0 0 24 24"
@@ -412,7 +412,7 @@
 				<h3 class="font-medium text-blue-900 mb-2">Security Information</h3>
 				<ul class="text-sm text-blue-800 space-y-1">
 					<li class="flex items-start gap-2">
-						<svg aria-hidden="true" class="w-4 h-4 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+						<svg aria-hidden="true" class="w-4 h-4 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
 							<path
 								fill-rule="evenodd"
 								d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -422,7 +422,7 @@
 						<span>For security, only one active session is allowed at a time.</span>
 					</li>
 					<li class="flex items-start gap-2">
-						<svg aria-hidden="true" class="w-4 h-4 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+						<svg aria-hidden="true" class="w-4 h-4 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
 							<path
 								fill-rule="evenodd"
 								d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -432,7 +432,7 @@
 						<span>Signing in on a new device will automatically sign you out from others.</span>
 					</li>
 					<li class="flex items-start gap-2">
-						<svg aria-hidden="true" class="w-4 h-4 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+						<svg aria-hidden="true" class="w-4 h-4 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
 							<path
 								fill-rule="evenodd"
 								d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"

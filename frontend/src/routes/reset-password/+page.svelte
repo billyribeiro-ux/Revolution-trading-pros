@@ -13,6 +13,7 @@
 		IconEye,
 		IconEyeOff
 	} from '$lib/icons';
+	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import SEOHead from '$lib/components/seo/SeoHead.svelte';
 
@@ -30,7 +31,7 @@
 	let isVisible = $state(false);
 
 	// Svelte 5 effect for initialization
-	$effect(() => {
+	onMount(() => {
 		if (!browser) return;
 
 		isVisible = true;
@@ -82,7 +83,7 @@
 >
 	<!-- Animated gradient background -->
 	<div
-		class="absolute inset-0 bg-gradient-to-br from-slate-950 via-purple-950/30 to-slate-950"
+		class="absolute inset-0 bg-linear-to-br from-slate-950 via-purple-950/30 to-slate-950"
 	></div>
 
 	<!-- Floating orbs -->
@@ -100,7 +101,7 @@
 	>
 		<!-- Glow effect -->
 		<div
-			class="absolute -inset-1 bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500 rounded-3xl opacity-20 blur-xl"
+			class="absolute -inset-1 bg-linear-to-r from-purple-500 via-pink-500 to-rose-500 rounded-3xl opacity-20 blur-xl"
 		></div>
 
 		<div
@@ -109,14 +110,14 @@
 			<!-- Header -->
 			<div class="text-center mb-8">
 				<div
-					class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 p-0.5 mb-6"
+					class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-linear-to-br from-purple-500 to-pink-500 p-0.5 mb-6"
 				>
 					<div class="w-full h-full bg-slate-900 rounded-2xl flex items-center justify-center">
 						<IconShieldCheck size={40} class="text-purple-400" />
 					</div>
 				</div>
 				<h1
-					class="text-4xl font-heading font-bold mb-3 bg-gradient-to-r from-purple-300 via-pink-300 to-rose-300 bg-clip-text text-transparent"
+					class="text-4xl font-heading font-bold mb-3 bg-linear-to-r from-purple-300 via-pink-300 to-rose-300 bg-clip-text text-transparent"
 				>
 					Reset Password
 				</h1>
@@ -128,7 +129,7 @@
 				<div
 					class="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-start gap-3 animate-fade-in"
 				>
-					<IconCheck size={20} class="text-emerald-400 flex-shrink-0 mt-0.5" />
+					<IconCheck size={20} class="text-emerald-400 shrink-0 mt-0.5" />
 					<div class="text-sm text-emerald-300">
 						<p>{successMessage}</p>
 						<p class="mt-1 text-emerald-400/70">Redirecting to login...</p>
@@ -141,7 +142,7 @@
 				<div
 					class="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-start gap-3 animate-fade-in"
 				>
-					<IconAlertCircle size={20} class="text-red-400 flex-shrink-0 mt-0.5" />
+					<IconAlertCircle size={20} class="text-red-400 shrink-0 mt-0.5" />
 					<p class="text-sm text-red-300">{generalError}</p>
 				</div>
 			{/if}
@@ -248,7 +249,7 @@
 				<button
 					type="submit"
 					disabled={isLoading || !!successMessage}
-					class="w-full relative px-6 py-4 bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500 text-white font-heading font-bold rounded-xl overflow-hidden group transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/50 disabled:opacity-50 disabled:cursor-not-allowed mt-6"
+					class="w-full relative px-6 py-4 bg-linear-to-r from-purple-500 via-pink-500 to-rose-500 text-white font-heading font-bold rounded-xl overflow-hidden group transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/50 disabled:opacity-50 disabled:cursor-not-allowed mt-6"
 				>
 					<span class="relative z-10 flex items-center justify-center gap-2">
 						{#if isLoading}

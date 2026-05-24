@@ -18,6 +18,7 @@
 	 * @version 4.0.0 - Svelte 5 January 2026
 	 * @author Revolution Trading Pros
 	 */
+	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
@@ -284,7 +285,7 @@
 	// Lifecycle - Svelte 5 $effect
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	$effect(() => {
+	onMount(() => {
 		if (!browser) return;
 
 		trackEvent('verification_page_view');
@@ -293,7 +294,7 @@
 		// Add keyboard listener
 		window.addEventListener('keydown', handleKeydown);
 
-		// Cleanup function returned from $effect
+		// Cleanup
 		return () => {
 			if (redirectTimer) {
 				clearInterval(redirectTimer);
@@ -308,12 +309,12 @@
 </svelte:head>
 
 <div
-	class="flex items-center justify-center bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900 p-4"
+	class="flex items-center justify-center bg-linear-to-br from-slate-900 via-emerald-950 to-slate-900 p-4"
 >
 	<div class="w-full max-w-md">
 		<!-- Logo -->
 		<div class="mb-8 text-center">
-			<div class="inline-block rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 p-3 mb-4">
+			<div class="inline-block rounded-xl bg-linear-to-r from-emerald-500 to-teal-500 p-3 mb-4">
 				<IconMail class="h-8 w-8 text-white" />
 			</div>
 			<h1 class="text-3xl font-bold text-white">Revolution Trading Pros</h1>
@@ -373,7 +374,7 @@
 					<div class="mt-8">
 						<a
 							href="/login"
-							class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-6 py-3 font-semibold text-white transition hover:from-emerald-600 hover:to-teal-600"
+							class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-emerald-500 to-teal-500 px-6 py-3 font-semibold text-white transition hover:from-emerald-600 hover:to-teal-600"
 						>
 							<IconLogin class="h-5 w-5" />
 							Login to Your Account
@@ -469,7 +470,7 @@
 							<button
 								onclick={handleResend}
 								disabled={resending}
-								class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-6 py-3 font-semibold text-white transition hover:from-emerald-600 hover:to-teal-600 disabled:opacity-50"
+								class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-emerald-500 to-teal-500 px-6 py-3 font-semibold text-white transition hover:from-emerald-600 hover:to-teal-600 disabled:opacity-50"
 							>
 								{#if resending}
 									<IconLoader class="h-5 w-5 animate-spin" />

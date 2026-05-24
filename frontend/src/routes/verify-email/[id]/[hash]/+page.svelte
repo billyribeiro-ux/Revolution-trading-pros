@@ -3,6 +3,7 @@
 	 * Email Verification Hash Page - Svelte 5 January 2026
 	 * @version 2.0.0
 	 */
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';
@@ -14,8 +15,7 @@
 	let error = $state('');
 	let message = $state('');
 
-	// Svelte 5 effect for initialization
-	$effect(() => {
+	onMount(() => {
 		if (!browser) return;
 
 		// ICT 11+ FIX: The hash IS the token - construct proper API call

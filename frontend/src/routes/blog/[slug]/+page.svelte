@@ -1,4 +1,5 @@
 <script lang="ts">
+	/* eslint svelte/no-at-html-tags: "off" -- all {@html} calls in this file are sanitized via sanitizeBlogContent() */
 	import type { RawSchemaConfig } from '$lib/utils/structured-data';
 	/**
 	 * Blog Post Page - Svelte 5 Runes Implementation
@@ -18,7 +19,7 @@
 	import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
 	import type { Post } from '$lib/types/post';
 	import { sanitizeBlogContent } from '$lib/utils/sanitize';
-		import {
+	import {
 		initReadingAnalytics,
 		calculateReadingTime,
 		formatReadingTime

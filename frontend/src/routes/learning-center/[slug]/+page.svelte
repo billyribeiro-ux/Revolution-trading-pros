@@ -290,6 +290,7 @@
 
 						<!-- Content -->
 						<div class="resource-content">
+							<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 							{@html sanitizeHtml(resource.content ?? '', 'rich')}
 						</div>
 

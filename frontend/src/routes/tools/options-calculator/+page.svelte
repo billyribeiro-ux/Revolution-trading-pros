@@ -36,7 +36,9 @@
 	<meta name="twitter:image" content={ogMeta['twitter:image']} />
 
 	<!-- Structured Data -->
+	<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 	{@html '<scr' + 'ipt type="application/ld+json">' + serializeJsonLd(structuredData) + '</scr' + 'ipt>'}
+	<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 	{@html '<scr' + 'ipt type="application/ld+json">' + serializeJsonLd(faqData) + '</scr' + 'ipt>'}
 
 	<!-- Fonts -->

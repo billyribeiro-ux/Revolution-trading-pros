@@ -219,7 +219,7 @@
 			style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E');"
 		></div>
 
-		<div class="absolute inset-0 bg-gradient-to-b from-[#020408] via-[#050810] to-[#010203]"></div>
+		<div class="absolute inset-0 bg-linear-to-b from-[#020408] via-[#050810] to-[#010203]"></div>
 	</div>
 
 	<div
@@ -276,18 +276,18 @@
 							class="text-6xl sm:text-7xl lg:text-9xl font-serif text-white tracking-tighter leading-[0.9] mb-10 mix-blend-screen drop-shadow-2xl"
 						>
 							Trade Real <span
-								class="text-transparent bg-clip-text bg-gradient-to-r from-slate-100 to-slate-600"
+								class="text-transparent bg-clip-text bg-linear-to-r from-slate-100 to-slate-600"
 								>Capital.</span
 							><br />
 							<span
-								class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-700 drop-shadow-[0_0_30px_rgba(217,119,6,0.3)]"
+								class="text-transparent bg-clip-text bg-linear-to-r from-amber-400 to-amber-700 drop-shadow-[0_0_30px_rgba(217,119,6,0.3)]"
 								>Real Mentors.</span
 							><br />
 							<span class="text-slate-600">Real Time.</span>
 						</h1>
 
 						<p
-							class="text-xl text-slate-400 font-light leading-relaxed max-w-2xl border-l-2 border-amber-600/50 pl-6 mb-12 bg-gradient-to-r from-white/5 to-transparent py-4 backdrop-blur-sm rounded-r-lg"
+							class="text-xl text-slate-400 font-light leading-relaxed max-w-2xl border-l-2 border-amber-600/50 pl-6 mb-12 bg-linear-to-r from-white/5 to-transparent py-4 backdrop-blur-sm rounded-r-lg"
 						>
 							Stop guessing. Join a professional trading floor where we share screens, explain the
 							'why' behind every move, and fight for profitability together. No hindsight. No
@@ -297,10 +297,10 @@
 						<div class="flex flex-col sm:flex-row gap-4">
 							<a
 								href="/join"
-								class="group relative inline-flex justify-center items-center gap-3 px-10 py-5 bg-gradient-to-br from-amber-700 to-amber-900 text-white font-bold text-xs uppercase tracking-[0.2em] transition-all overflow-hidden border border-amber-600/50 hover:border-amber-400 hover:shadow-[0_0_40px_rgba(245,158,11,0.3)]"
+								class="group relative inline-flex justify-center items-center gap-3 px-10 py-5 bg-linear-to-br from-amber-700 to-amber-900 text-white font-bold text-xs uppercase tracking-[0.2em] transition-all overflow-hidden border border-amber-600/50 hover:border-amber-400 hover:shadow-[0_0_40px_rgba(245,158,11,0.3)]"
 							>
 								<span
-									class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-500 ease-in-out"
+									class="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-500 ease-in-out"
 								></span>
 								<span class="relative z-10">Join The Community</span>
 								<IconArrowRight
@@ -327,7 +327,7 @@
 								class="bg-[#050505]/90 p-6 group hover:bg-[#0A0A0A] transition-colors relative overflow-hidden interactive-card"
 							>
 								<div
-									class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"
+									class="absolute top-0 left-0 w-full h-[2px] bg-linear-to-r from-transparent via-amber-500 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"
 								></div>
 
 								<div
@@ -360,7 +360,7 @@
 						class="relative w-full aspect-[4/3] bg-[#050505] border border-white/10 rounded-lg overflow-hidden shadow-2xl transform transition-transform duration-1000 group-hover:rotate-y-3 group-hover:rotate-x-2 preserve-3d"
 					>
 						<div
-							class="absolute inset-0 bg-[linear-gradient(0deg,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:3rem_3rem]"
+							class="absolute inset-0 bg-[linear-gradient(0deg,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-size-[3rem_3rem]"
 						></div>
 
 						<svg
@@ -548,7 +548,7 @@
 
 								<div class="md:col-span-2 flex items-center gap-6 relative z-10">
 									<div
-										class="w-20 h-20 rounded-full bg-gradient-to-br from-white/10 to-transparent flex items-center justify-center text-slate-400 border border-white/5 group-hover:border-amber-600/50 group-hover:text-amber-500 overflow-hidden shadow-2xl transition-all group-hover:scale-105"
+										class="w-20 h-20 rounded-full bg-linear-to-br from-white/10 to-transparent flex items-center justify-center text-slate-400 border border-white/5 group-hover:border-amber-600/50 group-hover:text-amber-500 overflow-hidden shadow-2xl transition-all group-hover:scale-105"
 									>
 										<IconId size={36} stroke={1} />
 									</div>
@@ -628,7 +628,7 @@
 							</p>
 							<div class="flex items-center gap-4 border-t border-white/5 pt-6">
 								<div
-									class="w-10 h-10 bg-gradient-to-tr from-slate-800 to-slate-700 rounded-full flex items-center justify-center text-xs font-bold text-white border border-white/10"
+									class="w-10 h-10 bg-linear-to-tr from-slate-800 to-slate-700 rounded-full flex items-center justify-center text-xs font-bold text-white border border-white/10"
 								>
 									MK
 								</div>
@@ -661,7 +661,7 @@
 							</p>
 							<div class="flex items-center gap-4 border-t border-white/5 pt-6">
 								<div
-									class="w-10 h-10 bg-gradient-to-tr from-slate-800 to-slate-700 rounded-full flex items-center justify-center text-xs font-bold text-white border border-white/10"
+									class="w-10 h-10 bg-linear-to-tr from-slate-800 to-slate-700 rounded-full flex items-center justify-center text-xs font-bold text-white border border-white/10"
 								>
 									JT
 								</div>
@@ -694,7 +694,7 @@
 								class="group bg-[#050505] border border-white/10 open:border-amber-600/30 transition-all duration-300 rounded-lg overflow-hidden"
 							>
 								<summary
-									class="flex justify-between items-center p-6 cursor-pointer list-none bg-white/[0.02] hover:bg-white/[0.04] transition-colors"
+									class="flex justify-between items-center p-6 cursor-pointer list-none bg-white/2 hover:bg-white/4 transition-colors"
 								>
 									<span class="text-lg text-slate-200 font-light pr-8">{faq.q}</span>
 									<span
@@ -720,11 +720,11 @@
 		>
 			<div class="absolute inset-0 bg-amber-600/5 blur-[120px] pointer-events-none"></div>
 			<div
-				class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-amber-600/50 to-transparent"
+				class="absolute top-0 left-0 w-full h-px bg-linear-to-r from-transparent via-amber-600/50 to-transparent"
 			></div>
 
 			<div
-				class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px] opacity-20"
+				class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-size-[40px_40px] opacity-20"
 			></div>
 
 			<div class="relative z-10 px-4">
@@ -735,7 +735,7 @@
 				/>
 				<h2 class="text-5xl md:text-8xl font-serif text-white mb-8 tracking-tighter">
 					Ready to <span
-						class="italic text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-700"
+						class="italic text-transparent bg-clip-text bg-linear-to-r from-amber-400 to-amber-700"
 						>Turn Pro?</span
 					>
 				</h2>
@@ -745,10 +745,10 @@
 				<div class="flex flex-col sm:flex-row justify-center gap-6">
 					<a
 						href="/join"
-						class="group relative flex justify-center items-center gap-4 px-12 py-6 bg-gradient-to-r from-amber-800 to-amber-900 text-white font-bold text-sm uppercase tracking-[0.2em] transition-all shadow-[0_0_40px_rgba(180,83,9,0.2)] hover:shadow-[0_0_60px_rgba(180,83,9,0.4)] overflow-hidden rounded-sm border border-amber-700/50"
+						class="group relative flex justify-center items-center gap-4 px-12 py-6 bg-linear-to-r from-amber-800 to-amber-900 text-white font-bold text-sm uppercase tracking-[0.2em] transition-all shadow-[0_0_40px_rgba(180,83,9,0.2)] hover:shadow-[0_0_60px_rgba(180,83,9,0.4)] overflow-hidden rounded-sm border border-amber-700/50"
 					>
 						<span
-							class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"
+							class="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"
 						></span>
 						<span class="relative z-10">Start Your Membership</span>
 						<IconArrowRight
