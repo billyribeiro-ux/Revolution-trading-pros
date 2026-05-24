@@ -3,9 +3,9 @@
 	import { cubicOut } from 'svelte/easing';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import SEOHead from '$lib/components/SEOHead.svelte';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-
+	import SEOHead from '$lib/components/seo/SeoHead.svelte';
+	import type { StructuredDataConfig } from '$lib/utils/structured-data';
+	
 	// --- Pricing State ---
 	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = $state('quarterly');
 
@@ -154,55 +154,36 @@
 		}
 	];
 
-	const schemaOrg = {
-		'@context': 'https://schema.org',
-		'@graph': [
-			{
-				'@type': 'Product',
-				name: 'Explosive Swings Trading Alerts',
-				description:
-					'Premium multi-day swing trading alerts service. Catch 3-7 day moves with precise entry and exit signals. Institutional dark pool analysis.',
-				brand: {
-					'@type': 'Brand',
-					name: 'Revolution Trading Pros'
-				},
-				image: 'https://revolution-trading-pros.pages.dev/images/og-swings.jpg',
-				offers: {
-					'@type': 'Offer',
-					priceCurrency: 'USD',
-					price: '97',
-					availability: 'https://schema.org/InStock',
-					url: 'https://revolution-trading-pros.pages.dev/alerts/explosive-swings'
-				},
-				aggregateRating: {
-					'@type': 'AggregateRating',
-					ratingValue: '4.9',
-					reviewCount: '128'
-				},
-				audience: {
-					'@type': 'Audience',
-					audienceType: 'Swing Traders, Part-time Traders, Retail Investors'
-				}
-			},
-			{
-				'@type': 'FAQPage',
-				mainEntity: faqData.map((item) => ({
-					'@type': 'Question',
-					name: item.q,
-					acceptedAnswer: { '@type': 'Answer', text: item.a }
-				}))
-			}
-		]
+	const productSchema: StructuredDataConfig = {
+		type: 'Product',
+		name: 'Explosive Swings Trading Alerts',
+		url: '/alerts/explosive-swings',
+		description:
+			'Premium multi-day swing trading alerts service. Catch 3-7 day moves with precise entry and exit signals. Institutional dark pool analysis.',
+		brand: 'Revolution Trading Pros',
+		image: '/images/og-swings.jpg',
+		price: 97,
+		priceCurrency: 'USD',
+		availability: 'InStock',
+		ratingValue: 4.9,
+		reviewCount: 128
 	};
 
-	// Schema for SEOHead
-	const combinedSchema = schemaOrg['@graph'];
+	const faqSchema: StructuredDataConfig = {
+		type: 'FAQPage',
+		questions: faqData.map((item) => ({
+			question: item.q,
+			answer: item.a
+		}))
+	};
+
+	const combinedSchema: StructuredDataConfig[] = [productSchema, faqSchema];
 </script>
 
 <SEOHead
 	title="Explosive Swings Trading Alerts | High-Probability Multi-Day Signals"
 	description="Catch 20%+ moves with 3-7 day swing trading alerts. Institutional dark pool analysis and precise options signals for traders with day jobs. 82% historical win rate."
-	canonical="/alerts/explosive-swings"
+	canonicalUrl="/alerts/explosive-swings"
 	ogType="product"
 	ogImage="/images/og-swings.jpg"
 	ogImageAlt="Explosive Swings Trading Alerts - Multi-Day Opportunities"
@@ -217,11 +198,7 @@
 		'trading signals for beginners',
 		'part time trading strategy'
 	]}
-	schema={combinedSchema}
-	schemaType="Product"
-	productPrice={97}
-	productCurrency="USD"
-	productAvailability="in stock"
+	structuredData={combinedSchema}
 />
 
 <div
@@ -230,7 +207,7 @@
 	<section class="relative min-h-[90vh] flex items-center py-20 lg:py-0">
 		<div class="absolute inset-0 z-0 pointer-events-none">
 			<div
-				class="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.03)_1px,transparent_1px)] bg-[size:48px_48px] opacity-40"
+				class="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.03)_1px,transparent_1px)] bg-size-[48px_48px] opacity-40"
 			></div>
 			<div
 				class="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-3xl"
@@ -265,7 +242,7 @@
 				>
 					Catch the <br />
 					<span
-						class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-emerald-300 to-teal-200"
+						class="text-transparent bg-clip-text bg-linear-to-r from-emerald-400 via-emerald-300 to-teal-200"
 						>Institutional Moves.</span
 					>
 				</h1>
@@ -361,67 +338,71 @@
 			</div>
 
 			<div
-				class="hidden lg:block relative [perspective:1000px]"
+				class="hidden lg:block relative perspective-[1000px]"
 				style="contain: layout style paint;"
 			>
 				<div
-					class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-tr from-emerald-500/20 to-transparent rounded-full blur-3xl"
+					class="absolute inset-0 bg-linear-to-tr from-rtp-primary/20 to-transparent rounded-full blur-3xl transform translate-x-10 translate-y-10"
 				></div>
 
 				<div
-					class="relative bg-slate-900/90 backdrop-blur-md border border-slate-700 p-8 rounded-3xl shadow-2xl transform rotate-y-[-12deg] rotate-x-[5deg] hover:rotate-0 transition-transform duration-700 ease-out will-change-transform"
+					class="relative bg-rtp-surface/80 backdrop-blur-xl border border-rtp-border/50 rounded-3xl p-6 shadow-2xl transform rotate-y-[-10deg] rotate-x-[5deg] hover:rotate-0 transition-transform duration-700 ease-out"
 				>
-					<div class="flex justify-between items-center mb-8">
-						<div>
-							<h3 class="text-2xl font-bold text-white">Swing Alert 🚀</h3>
-							<p class="text-emerald-500 text-sm font-bold">Confirmed Breakout Setup</p>
+					<div class="flex items-center justify-between mb-6 border-b border-rtp-border/30 pb-4">
+						<div class="flex items-center gap-3">
+							<div
+								class="w-10 h-10 rounded-full bg-linear-to-br from-rtp-primary to-rtp-blue flex items-center justify-center text-white font-bold shadow-inner"
+							>
+								<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+									><path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M13 10V3L4 14h7v7l9-11h-7z"
+									/></svg
+								>
+							</div>
+							<div>
+								<div class="font-bold text-rtp-text">Explosive Swings</div>
+								<div class="text-xs text-rtp-emerald">● Multi-Day Alerts</div>
+							</div>
 						</div>
-						<div
-							class="bg-slate-950 px-3 py-1 rounded-lg border border-slate-800 text-xs font-mono text-slate-400"
-						>
-							Received: 10:30 AM
+						<div class="text-xs font-mono text-rtp-muted bg-rtp-bg px-2 py-1 rounded">
+							10:30 AM
 						</div>
 					</div>
 
-					<div class="space-y-6">
-						<div class="bg-slate-950 p-4 rounded-xl border-l-4 border-emerald-500">
-							<div class="text-xs text-slate-500 uppercase tracking-wider mb-1">Signal</div>
-							<div class="text-lg font-bold text-white flex items-center gap-2">
-								<span class="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-sm"
-									>BUY</span
-								>
-								NVDA 480 CALLS
-								<span class="text-slate-500 text-sm font-normal ml-auto">Exp: Next Week</span>
+					<div class="space-y-4">
+						<div class="bg-rtp-bg/50 p-4 rounded-xl border-l-4 border-emerald-500">
+							<div class="flex justify-between text-xs mb-2">
+								<span class="text-emerald-500 font-bold uppercase">New Signal</span>
+								<span class="text-rtp-muted">Just now</span>
+							</div>
+							<div class="text-sm font-mono text-rtp-text mb-1">
+								<span class="font-bold text-white">NVDA 480 CALLS</span>
+								<span class="text-rtp-muted ml-2">Exp: Next Week</span>
+							</div>
+							<div class="flex gap-4 text-xs text-rtp-muted">
+								<span>Entry: $5.50 - $6.00</span>
+								<span>🎯 Target: $8.50+</span>
 							</div>
 						</div>
-
-						<div class="grid grid-cols-2 gap-4">
-							<div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
-								<div class="text-xs text-slate-500 uppercase tracking-wider mb-1">Entry Zone</div>
-								<div class="text-xl font-mono font-bold text-white">$5.50 - $6.00</div>
-							</div>
-							<div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
-								<div class="text-xs text-slate-500 uppercase tracking-wider mb-1">Target 1</div>
-								<div class="text-xl font-mono font-bold text-emerald-400">$8.50+</div>
-							</div>
-						</div>
-
-						<div class="bg-slate-950 p-4 rounded-xl border border-red-500/30">
-							<div class="flex justify-between items-center">
-								<div class="text-xs text-slate-500 uppercase tracking-wider">
-									Invalidation (Hard Stop)
-								</div>
-								<div class="text-red-400 font-mono font-bold">$4.20 (Close Below)</div>
+						<div class="bg-rtp-bg/50 p-4 rounded-xl border-l-4 border-red-500/50">
+							<div class="flex justify-between text-xs">
+								<span class="text-red-400 font-bold uppercase">Invalidation</span>
+								<span class="text-red-400 font-mono">$4.20 (Close Below)</span>
 							</div>
 						</div>
 					</div>
 
 					<div
-						class="absolute -right-6 -bottom-6 bg-emerald-500 text-slate-950 p-4 rounded-2xl shadow-xl shadow-emerald-500/20 animate-bounce will-change-transform"
-						style="contain: layout;"
+						class="absolute -bottom-6 -right-6 bg-white text-rtp-bg px-6 py-3 rounded-xl shadow-xl font-bold border-2 border-rtp-bg flex items-center gap-2 animate-bounce"
 					>
-						<div class="text-xs font-bold opacity-80 uppercase">Potential Return</div>
-						<div class="text-2xl font-extrabold">+45%</div>
+						<span class="text-2xl">🚀</span>
+						<div>
+							<div class="text-xs uppercase tracking-wide opacity-70">Potential Return</div>
+							<div class="text-emerald-600">+45%</div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -831,7 +812,7 @@
 			<div class="grid md:grid-cols-2 gap-8 text-left">
 				<div class="flex gap-4">
 					<div
-						class="w-10 h-10 rounded-full bg-emerald-500/10 flex-shrink-0 flex items-center justify-center text-emerald-500 font-bold"
+						class="w-10 h-10 rounded-full bg-emerald-500/10 shrink-0 flex items-center justify-center text-emerald-500 font-bold"
 					>
 						1
 					</div>
@@ -845,7 +826,7 @@
 				</div>
 				<div class="flex gap-4">
 					<div
-						class="w-10 h-10 rounded-full bg-emerald-500/10 flex-shrink-0 flex items-center justify-center text-emerald-500 font-bold"
+						class="w-10 h-10 rounded-full bg-emerald-500/10 shrink-0 flex items-center justify-center text-emerald-500 font-bold"
 					>
 						2
 					</div>
@@ -859,7 +840,7 @@
 				</div>
 				<div class="flex gap-4">
 					<div
-						class="w-10 h-10 rounded-full bg-emerald-500/10 flex-shrink-0 flex items-center justify-center text-emerald-500 font-bold"
+						class="w-10 h-10 rounded-full bg-emerald-500/10 shrink-0 flex items-center justify-center text-emerald-500 font-bold"
 					>
 						3
 					</div>
@@ -873,7 +854,7 @@
 				</div>
 				<div class="flex gap-4">
 					<div
-						class="w-10 h-10 rounded-full bg-emerald-500/10 flex-shrink-0 flex items-center justify-center text-emerald-500 font-bold"
+						class="w-10 h-10 rounded-full bg-emerald-500/10 shrink-0 flex items-center justify-center text-emerald-500 font-bold"
 					>
 						4
 					</div>
@@ -1090,7 +1071,7 @@
 						>
 							<span class="pr-8">{item.q}</span>
 							<svg
-								class="w-5 h-5 text-slate-500 transform transition-transform duration-300 flex-shrink-0 {openFaq ===
+								class="w-5 h-5 text-slate-500 transform transition-transform duration-300 shrink-0 {openFaq ===
 								i
 									? 'rotate-180'
 									: ''}"
@@ -1129,7 +1110,7 @@
 	</section>
 
 	<section
-		class="py-24 bg-gradient-to-br from-emerald-600 to-teal-800 text-white relative overflow-hidden"
+		class="py-24 bg-linear-to-br from-emerald-600 to-teal-800 text-white relative overflow-hidden"
 	>
 		<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
 			<h2 class="text-4xl md:text-6xl font-heading font-extrabold mb-6 tracking-tight">
@@ -1156,4 +1137,3 @@
 	</section>
 </div>
 
-<MarketingFooter />

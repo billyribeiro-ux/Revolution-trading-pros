@@ -77,6 +77,12 @@
 	/* Custom breakpoint for very small phones (320-480px) */
 	--breakpoint-xs: 360px;
 
+	/* RTP Marketing Colors */
+	--color-rtp-primary: #3b82f6;
+	--color-rtp-border: rgba(255, 255, 255, 0.1);
+	--color-rtp-border-60: rgba(255, 255, 255, 0.6);
+	--color-rtp-emerald: #10b981;
+
 	--radius-sm: calc(var(--radius) - 4px);
 	--radius-md: calc(var(--radius) - 2px);
 	--radius-lg: var(--radius);

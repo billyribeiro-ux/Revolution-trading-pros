@@ -3,6 +3,8 @@
 -->
 
 <script lang="ts">
+	import type { RawSchemaConfig, StructuredDataConfig } from '$lib/utils/structured-data';
+	import type { Attachment } from 'svelte/attachments';
 	import { onMount } from 'svelte';
 	import { cubicOut } from 'svelte/easing';
 	import { fade, draw } from 'svelte/transition';
@@ -23,40 +25,41 @@
 	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
 	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
 
-	import SEOHead from '$lib/components/SEOHead.svelte';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-
+	import SEOHead from '$lib/components/seo/SeoHead.svelte';
+	
 	// --- Animation Logic (Svelte 5 Runes) ---
-	let containerRef: HTMLElement | undefined = $state();
 	let isVisible = $state(false);
-	let mouse = $state({ x: 0, y: 0 });
 
-	const handleMouseMove = (e: MouseEvent) => {
-		if (!containerRef) return;
-		const rect = containerRef.getBoundingClientRect();
-		mouse.x = e.clientX - rect.left;
-		mouse.y = e.clientY - rect.top;
-
-		// Update CSS variables for all interactive cards
-		const cards = document.querySelectorAll('.interactive-card');
-		cards.forEach((card) => {
-			const cardRect = card.getBoundingClientRect();
-			const x = e.clientX - cardRect.left;
-			const y = e.clientY - cardRect.top;
-			(card as HTMLElement).style.setProperty('--card-x', `${x}px`);
-			(card as HTMLElement).style.setProperty('--card-y', `${y}px`);
-		});
+	// Per-card spotlight attachment — avoids querySelectorAll on every mousemove
+	const interactiveCard: Attachment<HTMLElement> = (node) => {
+		function onMouseMove(e: MouseEvent) {
+			const rect = node.getBoundingClientRect();
+			node.style.setProperty('--card-x', `${e.clientX - rect.left}px`);
+			node.style.setProperty('--card-y', `${e.clientY - rect.top}px`);
+		}
+		node.addEventListener('mousemove', onMouseMove);
+		return () => node.removeEventListener('mousemove', onMouseMove);
 	};
+
+	// --- GSAP Parallax Animations (PE7 Svelte 5 Pattern) ---
+	let gsapContext: ReturnType<typeof import('gsap').gsap.context> | null = null;
 
 	onMount(() => {
 		if (!browser) return;
+		initGSAP();
 
-		let gsapContext: ReturnType<typeof import('gsap').gsap.context> | null = null;
+		isVisible = true;
 
-		// Dynamically import GSAP to avoid SSR issues
-		(async () => {
+		return () => {
+			gsapContext?.revert();
+		};
+	});
+
+	// PE7: Separate async function for GSAP initialization
+	async function initGSAP(): Promise<void> {
+		try {
 			const { gsap } = await import('gsap');
-			const ScrollTrigger = (await import('gsap/ScrollTrigger')).default;
+			const { ScrollTrigger } = await import('gsap/ScrollTrigger');
 			gsap.registerPlugin(ScrollTrigger);
 
 			// Use gsap.context() for scoped cleanup - prevents global ScrollTrigger destruction
@@ -73,28 +76,10 @@
 					}
 				});
 			});
-		})();
-
-		const observer = new IntersectionObserver(
-			(entries) => {
-				if (entries[0]?.isIntersecting) {
-					isVisible = true;
-					observer.disconnect();
-				}
-			},
-			{ threshold: 0.1 }
-		);
-		if (containerRef) observer.observe(containerRef);
-
-		// Window scroll listener for Svelte-based parallax values
-		const handleScroll = () => {};
-		window.addEventListener('scroll', handleScroll);
-
-		return () => {
-			window.removeEventListener('scroll', handleScroll);
-			if (gsapContext) gsapContext.revert();
-		};
-	});
+		} catch (error) {
+			console.error('[About] GSAP initialization failed:', error);
+		}
+	}
 
 	// Kept original function exactly as requested
 	function heavySlide(_node: Element, { delay = 0, duration = 1000 }) {
@@ -183,14 +168,11 @@
 	];
 
 	// Schema Logic
-	const organizationSchema = {
-		'@context': 'https://schema.org',
-		'@type': 'Organization',
+	const organizationSchema: StructuredDataConfig = {
+		type: 'Organization',
 		name: 'Revolution Trading Pros',
 		description: 'Professional trading community and mentorship program.',
-		foundingDate: '2018',
-		url: 'https://revolution-trading-pros.pages.dev',
-		sameAs: ['https://twitter.com/revolutiontradingpros'] // Example
+		url: 'https://revolution-trading-pros.pages.dev'
 	};
 
 	const faqSchema = {
@@ -222,110 +204,19 @@
 <SEOHead
 	title="Revolution Trading Pros | The #1 Supportive Live Trading Community"
 	description="Join a professional trading floor that genuinely cares. Real trades, real-time voice guidance, and institutional data without the hype. Established 2018."
-	canonical="/"
-	schema={[organizationSchema, faqSchema]}
+	canonicalUrl="/about"
+	structuredData={[organizationSchema, { type: 'Raw' as const, data: faqSchema } satisfies RawSchemaConfig]}
 />
 
-<svelte:head>
-	<style>
-		.ticker-wrap {
-			width: 100%;
-			overflow: hidden;
-			white-space: nowrap;
-			mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
-		}
-		.ticker-move {
-			display: inline-block;
-			animation: ticker 40s linear infinite;
-		}
-		.ticker-move:hover {
-			animation-play-state: paused;
-		}
-		@keyframes ticker {
-			0% {
-				transform: translate3d(0, 0, 0);
-			}
-			100% {
-				transform: translate3d(-50%, 0, 0);
-			}
-		}
-		.scanner-line {
-			animation: scan 4s ease-in-out infinite;
-			transform-origin: bottom;
-			background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.8), transparent);
-		}
-		@keyframes scan {
-			0% {
-				transform: translateX(0);
-				opacity: 0;
-			}
-			10% {
-				opacity: 1;
-			}
-			90% {
-				opacity: 1;
-			}
-			100% {
-				transform: translateX(350px);
-				opacity: 0;
-			}
-		}
-		/* Cinematic Spotlight / Reflection logic */
-		.interactive-card {
-			position: relative;
-		}
-		.interactive-card::before {
-			content: '';
-			position: absolute;
-			top: 0;
-			left: 0;
-			right: 0;
-			bottom: 0;
-			background: radial-gradient(
-				800px circle at var(--card-x, 50%) var(--card-y, 50%),
-				rgba(255, 255, 255, 0.08),
-				transparent 40%
-			);
-			z-index: 2;
-			pointer-events: none;
-			opacity: 0;
-			transition: opacity 0.5s;
-			mix-blend-mode: overlay;
-		}
-		.interactive-card:hover::before {
-			opacity: 1;
-		}
-
-		/* Grid Floor Perspective */
-		.grid-floor {
-			background-image:
-				linear-gradient(rgba(245, 158, 11, 0.1) 1px, transparent 1px),
-				linear-gradient(90deg, rgba(245, 158, 11, 0.1) 1px, transparent 1px);
-			background-size: 60px 60px;
-			transform: perspective(500px) rotateX(60deg);
-			transform-origin: top center;
-			opacity: 0.2;
-			mask-image: linear-gradient(to bottom, black, transparent);
-		}
-	</style>
-</svelte:head>
 
 <div
-	bind:this={containerRef}
-	onmousemove={handleMouseMove}
 	role="main"
 	class="relative bg-[#010203] text-slate-400 font-sans selection:bg-amber-700/50 selection:text-white"
-	style="--x: {mouse.x}px; --y: {mouse.y}px;"
 >
 	<div class="fixed inset-0 pointer-events-none z-0">
 		<div
 			class="absolute inset-0 opacity-[0.04] mix-blend-overlay z-[2]"
 			style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E');"
-		></div>
-
-		<div
-			class="absolute inset-0 opacity-30 transition-transform duration-100 ease-out will-change-transform"
-			style="background: radial-gradient(1000px circle at var(--x) var(--y), rgba(30, 41, 59, 0.4), transparent 60%); transform: translate(calc(var(--x) * -0.02), calc(var(--y) * -0.02));"
 		></div>
 
 		<div class="absolute inset-0 bg-gradient-to-b from-[#020408] via-[#050810] to-[#010203]"></div>
@@ -336,7 +227,7 @@
 	>
 		<div class="ticker-wrap text-[10px] font-mono uppercase tracking-widest text-slate-500">
 			<div class="ticker-move">
-				{#each [...tickerItems, ...tickerItems, ...tickerItems, ...tickerItems] as item, i (`ticker-${i}`)}
+				{#each [...tickerItems, ...tickerItems] as item, i (`ticker-${i}`)}
 					<span class="inline-block px-8 group cursor-default hover:text-white transition-colors">
 						<span
 							class="{item.includes('+')
@@ -432,6 +323,7 @@
 						{#each stats as stat (stat.label)}
 							{@const Icon = stat.icon}
 							<div
+        {@attach interactiveCard}
 								class="bg-[#050505]/90 p-6 group hover:bg-[#0A0A0A] transition-colors relative overflow-hidden interactive-card"
 							>
 								<div
@@ -585,6 +477,7 @@
 						{#each features as feat, i (feat.title)}
 							{@const Icon = feat.icon}
 							<div
+        {@attach interactiveCard}
 								class="group interactive-card bg-[#050505] border border-white/10 p-10 hover:border-amber-600/40 transition-all duration-500 relative overflow-hidden flex flex-col h-full rounded-xl"
 							>
 								<div
@@ -646,6 +539,7 @@
 					<div class="grid gap-px bg-white/5 border border-white/10 overflow-hidden rounded-lg">
 						{#each team as member (member.name)}
 							<div
+        {@attach interactiveCard}
 								class="group bg-[#050505] p-8 md:p-12 grid md:grid-cols-12 gap-8 items-center hover:bg-[#080808] transition-colors duration-300 relative overflow-hidden interactive-card"
 							>
 								<div
@@ -716,6 +610,7 @@
 
 				<div in:heavySlide={{ delay: 700 }} class="grid md:grid-cols-2 gap-8">
 					<div
+      {@attach interactiveCard}
 						class="bg-[#080808]/80 backdrop-blur-xl p-10 border border-white/5 rounded-xl relative hover:border-amber-600/30 transition-colors duration-500 interactive-card"
 					>
 						<div class="absolute -top-4 -left-4 text-amber-900/20">
@@ -748,6 +643,7 @@
 					</div>
 
 					<div
+      {@attach interactiveCard}
 						class="bg-[#080808]/80 backdrop-blur-xl p-10 border border-white/5 rounded-xl relative hover:border-amber-600/30 transition-colors duration-500 interactive-card"
 					>
 						<div class="absolute -top-4 -left-4 text-amber-900/20">
@@ -877,4 +773,85 @@
 	</section>
 </div>
 
-<MarketingFooter />
+
+<style>
+		.ticker-wrap {
+			width: 100%;
+			overflow: hidden;
+			white-space: nowrap;
+			mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+		}
+		.ticker-move {
+			display: inline-block;
+			animation: ticker 40s linear infinite;
+		}
+		.ticker-move:hover {
+			animation-play-state: paused;
+		}
+		@keyframes ticker {
+			0% {
+				transform: translate3d(0, 0, 0);
+			}
+			100% {
+				transform: translate3d(-50%, 0, 0);
+			}
+		}
+		.scanner-line {
+			animation: scan 4s ease-in-out infinite;
+			transform-origin: bottom;
+			background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.8), transparent);
+		}
+		@keyframes scan {
+			0% {
+				transform: translateX(0);
+				opacity: 0;
+			}
+			10% {
+				opacity: 1;
+			}
+			90% {
+				opacity: 1;
+			}
+			100% {
+				transform: translateX(350px);
+				opacity: 0;
+			}
+		}
+		/* Cinematic Spotlight / Reflection logic */
+		.interactive-card {
+			position: relative;
+		}
+		.interactive-card::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background: radial-gradient(
+				800px circle at var(--card-x, 50%) var(--card-y, 50%),
+				rgba(255, 255, 255, 0.08),
+				transparent 40%
+			);
+			z-index: 2;
+			pointer-events: none;
+			opacity: 0;
+			transition: opacity 0.5s;
+			mix-blend-mode: overlay;
+		}
+		.interactive-card:hover::before {
+			opacity: 1;
+		}
+
+		/* Grid Floor Perspective */
+		.grid-floor {
+			background-image:
+				linear-gradient(rgba(245, 158, 11, 0.1) 1px, transparent 1px),
+				linear-gradient(90deg, rgba(245, 158, 11, 0.1) 1px, transparent 1px);
+			background-size: 60px 60px;
+			transform: perspective(500px) rotateX(60deg);
+			transform-origin: top center;
+			opacity: 0.2;
+			mask-image: linear-gradient(to bottom, black, transparent);
+		}
+	</style>

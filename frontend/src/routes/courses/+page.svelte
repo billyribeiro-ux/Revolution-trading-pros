@@ -3,9 +3,10 @@
 	import { cubicOut } from 'svelte/easing';
 	import { slide } from 'svelte/transition';
 	import { browser } from '$app/environment';
+	import { Tween } from 'svelte/motion';
+	import { expoOut } from 'svelte/easing';
+	import type { Attachment } from 'svelte/attachments';
 
-	// GSAP loaded dynamically for SSR safety
-	let gsapInstance: typeof import('gsap').gsap | null = null;
 
 	// --- ICONS ---
 	import IconSchool from '@tabler/icons-svelte-runes/icons/school';
@@ -23,9 +24,10 @@
 	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
 
 	// Assumed existing component based on your snippet
-	import SEOHead from '$lib/components/SEOHead.svelte';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-
+	import SEOHead from '$lib/components/seo/SeoHead.svelte';
+	import type { StructuredDataConfig } from '$lib/utils/structured-data';
+	import type { IconComponent } from '$lib/icons';
+	
 	// --- TYPES ---
 
 	interface Course {
@@ -39,7 +41,7 @@
 		students: string;
 		rating: number;
 		price: string;
-		icon: any;
+		icon: IconComponent;
 		features: string[];
 		// Pre-computed Tailwind classes to avoid JIT interpolation issues
 		colorClasses: {
@@ -172,13 +174,67 @@
 	let scrollY = $state(0);
 	let innerHeight = $state(0);
 	let innerWidth = $state(0);
-	let mounted = $state(false);
 
 	// Accordion State
 	let openFaqIndex = $state<number | null>(0);
 
-	// Canvas Ref
-	let canvasRef: HTMLCanvasElement;
+	// Canvas attachment — Svelte 5.29+ best practice.
+	// Uses ResizeObserver to size the canvas from its own CSS dimensions,
+	// avoiding the 0×0 seed problem that occurs when innerWidth/innerHeight
+	// are still 0 at mount time.
+	const particleCanvas: Attachment<HTMLCanvasElement> = (node) => {
+		const maybeCtx = node.getContext('2d');
+		if (!maybeCtx) return;
+		const ctx: CanvasRenderingContext2D = maybeCtx;
+
+		let particles: ParticleData[] = [];
+		let rafId: number;
+
+		function seed(w: number, h: number) {
+			const count = w < 768 ? 30 : 60;
+			particles = Array.from({ length: count }, () => createParticle(w, h));
+		}
+
+		function animate() {
+			const w = node.width;
+			const h = node.height;
+			ctx.clearRect(0, 0, w, h);
+			ctx.strokeStyle = 'rgba(56, 189, 248, 0.05)';
+			ctx.lineWidth = 1;
+			for (let i = 0; i < particles.length; i++) {
+				updateParticle(particles[i], w, h);
+				drawParticle(ctx, particles[i]);
+				for (let j = i + 1; j < particles.length; j++) {
+					const dx = particles[i].x - particles[j].x;
+					const dy = particles[i].y - particles[j].y;
+					if (Math.sqrt(dx * dx + dy * dy) < 150) {
+						ctx.beginPath();
+						ctx.moveTo(particles[i].x, particles[i].y);
+						ctx.lineTo(particles[j].x, particles[j].y);
+						ctx.stroke();
+					}
+				}
+			}
+			rafId = requestAnimationFrame(animate);
+		}
+
+		const ro = new ResizeObserver((entries) => {
+			const entry = entries[0];
+			const w = entry.contentRect.width;
+			const h = entry.contentRect.height;
+			if (w === 0 || h === 0) return;
+			node.width = w;
+			node.height = h;
+			seed(w, h);
+		});
+		ro.observe(node);
+		animate();
+
+		return () => {
+			cancelAnimationFrame(rafId);
+			ro.disconnect();
+		};
+	};
 
 	// --- PARTICLE CLASS (moved to top level to avoid nested class warning) ---
 
@@ -220,17 +276,17 @@
 
 	// --- ACTIONS & UTILS ---
 
-	function handleMouseMove(e: MouseEvent) {
-		// Update CSS props for high-performance spotlights on specific containers
-		const cards = document.querySelectorAll('.spotlight-card');
-		cards.forEach((card) => {
-			const rect = card.getBoundingClientRect();
-			const x = e.clientX - rect.left;
-			const y = e.clientY - rect.top;
-			(card as HTMLElement).style.setProperty('--mouse-x', `${x}px`);
-			(card as HTMLElement).style.setProperty('--mouse-y', `${y}px`);
-		});
-	}
+	// Per-card spotlight attachment — avoids page-level querySelectorAll +
+	// getBoundingClientRect on every mousemove event.
+	const spotlightCard: Attachment<HTMLElement> = (node) => {
+		function onMouseMove(e: MouseEvent) {
+			const rect = node.getBoundingClientRect();
+			node.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+			node.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+		}
+		node.addEventListener('mousemove', onMouseMove);
+		return () => node.removeEventListener('mousemove', onMouseMove);
+	};
 
 	function toggleFaq(index: number) {
 		if (openFaqIndex === index) {
@@ -242,90 +298,22 @@
 
 	// --- ANIMATION EFFECTS ---
 
-	// Animated Numbers Helper
-	function createCounter(target: number, duration: number = 2) {
-		let current = $state(0);
-		$effect(() => {
-			if (mounted && gsapInstance) {
-				gsapInstance.to(
-					{ val: 0 },
-					{
-						duration,
-						val: target,
-						ease: 'power2.out',
-						onUpdate: function () {
-							current = Math.round(this.targets()[0].val * 10) / 10;
-						}
-					}
-				);
-			}
-		});
-		return {
-			get value() {
-				return current;
-			}
-		};
-	}
-
-	const studentCounter = createCounter(12000);
-
-	// Canvas Particle System (The "Order Flow" Background)
-	function initCanvas() {
-		if (!canvasRef) return;
-		const ctx = canvasRef.getContext('2d');
-		if (!ctx) return;
-
-		const particles: ParticleData[] = [];
-		const particleCount = innerWidth < 768 ? 30 : 60;
-
-		for (let i = 0; i < particleCount; i++) {
-			particles.push(createParticle(innerWidth, innerHeight));
-		}
-
-		function animate() {
-			if (!ctx) return;
-			ctx.clearRect(0, 0, innerWidth, innerHeight);
-
-			ctx.strokeStyle = 'rgba(56, 189, 248, 0.05)';
-			ctx.lineWidth = 1;
-
-			for (let i = 0; i < particles.length; i++) {
-				updateParticle(particles[i], innerWidth, innerHeight);
-				drawParticle(ctx, particles[i]);
-
-				for (let j = i; j < particles.length; j++) {
-					const dx = particles[i].x - particles[j].x;
-					const dy = particles[i].y - particles[j].y;
-					const distance = Math.sqrt(dx * dx + dy * dy);
-
-					if (distance < 150) {
-						ctx.beginPath();
-						ctx.moveTo(particles[i].x, particles[i].y);
-						ctx.lineTo(particles[j].x, particles[j].y);
-						ctx.stroke();
-					}
-				}
-			}
-			requestAnimationFrame(animate);
-		}
-
-		animate();
-	}
+	// Single source of truth for student count — tween and CTA both derive from this
+	const STUDENT_COUNT = 12_000;
+	const studentCounter = new Tween(0, { duration: 2000, easing: expoOut });
 
 	onMount(() => {
 		if (!browser) return;
 
-		mounted = true;
-		initCanvas();
+		// Start the student counter tween
+		studentCounter.set(STUDENT_COUNT);
 
 		// Load GSAP dynamically for SSR safety
 		(async () => {
 			const { gsap } = await import('gsap');
-			gsapInstance = gsap;
 
 			// GSAP Entrance Timeline
 			const tl = gsap.timeline();
-
 			tl.from('.hero-badge', { y: 20, opacity: 0, duration: 0.8, ease: 'power3.out' })
 				.from(
 					'.hero-title-line',
@@ -340,36 +328,20 @@
 				)
 				.from('.ticker-bar', { opacity: 0, y: 100, duration: 1 }, '-=0.8');
 		})();
-
-		return () => {
-			// Cleanup handled by Svelte
-		};
 	});
 
 	// Schema for SEO
-	const schema = {
-		'@context': 'https://schema.org',
-		'@type': 'ItemList',
-		'@id': 'https://revolution-trading-pros.pages.dev/courses/#courselist',
-		name: 'Professional Trading Education Catalog',
-		numberOfItems: courses.length,
-		itemListElement: courses.map((course, index) => ({
-			'@type': 'ListItem',
-			position: index + 1,
-			item: {
-				'@type': 'Course',
-				name: course.title,
-				description: course.description,
-				provider: {
-					'@type': 'Organization',
-					name: 'Revolution Trading Pros',
-					sameAs: 'https://revolution-trading-pros.pages.dev'
-				},
-				educationalLevel: course.level,
-				offers: { '@type': 'Offer', price: course.price.replace('$', ''), priceCurrency: 'USD' }
-			}
-		}))
-	};
+	const courseSchemas: StructuredDataConfig[] = courses.map((course) => ({
+		type: 'Course' as const,
+		url: `/courses/${course.slug}`,
+		name: course.title,
+		description: course.description,
+		provider: { name: 'Revolution Trading Pros', url: 'https://revolutiontradingpros.com' },
+		educationalLevel: course.level,
+		courseMode: 'online' as const,
+		price: parseFloat(course.price.replace('$', '')),
+		priceCurrency: 'USD'
+	}));
 </script>
 
 <svelte:window bind:scrollY bind:innerHeight bind:innerWidth />
@@ -377,27 +349,21 @@
 <SEOHead
 	title="Trading Courses & Mentorship | Revolution Trading Pros"
 	description="Institutional-grade trading education. Learn to read order flow, manage risk, and execute with precision. Join the top 1% of disciplined traders."
-	canonical="/courses"
-	{schema}
-	schemaType="Course"
+	canonicalUrl="/courses"
+	structuredData={courseSchemas}
 />
 
-<!-- svelte-ignore a11y_no_static_element_interactions -->
-<div
-	class="bg-black text-slate-200 font-sans selection:bg-blue-500/30 selection:text-white"
-	onmousemove={handleMouseMove}
->
+<div class="bg-black text-slate-200 font-sans selection:bg-blue-500/30 selection:text-white">
 	<section class="relative min-h-[95vh] flex items-center justify-center overflow-hidden pt-20">
 		<div class="absolute inset-0 z-0 opacity-40">
-			<canvas bind:this={canvasRef} width={innerWidth} height={innerHeight} class="w-full h-full"
-			></canvas>
+			<canvas {@attach particleCanvas} class="w-full h-full"></canvas>
 		</div>
 
 		<div
-			class="absolute inset-0 z-0 bg-gradient-to-b from-black/0 via-black/50 to-black pointer-events-none"
+			class="absolute inset-0 z-0 bg-linear-to-b from-black/0 via-black/50 to-black pointer-events-none"
 		></div>
 		<div
-			class="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/10 via-black/0 to-black pointer-events-none"
+			class="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-blue-900/10 via-black/0 to-black pointer-events-none"
 		></div>
 
 		<div class="relative z-10 container mx-auto px-6 flex flex-col items-center text-center">
@@ -422,7 +388,7 @@
 					EXECUTION
 				</span>
 				<span
-					class="hero-title-line block text-4xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-white tracking-tight -mt-2 md:-mt-6"
+					class="hero-title-line block text-4xl md:text-7xl font-bold bg-clip-text text-transparent bg-linear-to-r from-blue-400 via-purple-400 to-white tracking-tight -mt-2 md:-mt-6"
 				>
 					OVER OPINION
 				</span>
@@ -442,7 +408,7 @@
 					class="group relative px-8 py-4 bg-white text-black rounded-full font-bold text-lg tracking-tight overflow-hidden transition-transform hover:scale-105 active:scale-95"
 				>
 					<div
-						class="absolute inset-0 bg-gradient-to-r from-blue-200 to-white opacity-0 group-hover:opacity-100 transition-opacity"
+						class="absolute inset-0 bg-linear-to-r from-blue-200 to-white opacity-0 group-hover:opacity-100 transition-opacity"
 					></div>
 					<span class="relative flex items-center gap-2">
 						View Curriculum
@@ -455,7 +421,7 @@
 				>
 					<div class="flex flex-col items-center">
 						<span class="text-white text-2xl font-bold tracking-tight normal-case"
-							>{Math.floor(studentCounter.value).toLocaleString()}+</span
+							>{Math.floor(studentCounter.current).toLocaleString()}+</span
 						>
 						<span>Traders</span>
 					</div>
@@ -472,7 +438,7 @@
 			class="ticker-bar absolute bottom-0 left-0 w-full border-t border-white/10 bg-black/40 backdrop-blur-md overflow-hidden py-3 z-20"
 		>
 			<div class="flex animate-marquee whitespace-nowrap">
-				{#each Array(8) as _, _ti (_ti)}
+				{#each Array(2) as _, _ti (_ti)}
 					<div class="flex items-center gap-8 px-4">
 						<span class="flex items-center gap-2 text-xs font-mono text-emerald-400"
 							><IconTrendingUp size={14} /> SPY $542.30 +1.2%</span
@@ -577,6 +543,7 @@
 					{@const Icon = course.icon}
 					{@const colors = course.colorClasses}
 					<div
+						{@attach spotlightCard}
 						class="spotlight-card group relative h-full bg-black border border-white/10 rounded-3xl overflow-hidden hover:border-white/20 transition-colors duration-500"
 					>
 						<div
@@ -609,7 +576,7 @@
 
 							<div class="h-px w-full bg-white/5 mb-6"></div>
 
-							<p class="text-slate-400 leading-relaxed mb-8 flex-grow">{course.description}</p>
+							<p class="text-slate-400 leading-relaxed mb-8 grow">{course.description}</p>
 
 							<div class="space-y-3 mb-8">
 								{#each course.features as feature (feature)}
@@ -644,12 +611,14 @@
 			<h2 class="text-3xl font-bold text-white mb-12 text-center">Protocol FAQ</h2>
 
 			<div class="space-y-4">
-				{#each faqs as faq, i (i)}
-					<button
-						onclick={() => toggleFaq(i)}
-						class="w-full text-left group bg-white/[0.02] hover:bg-white/[0.04] border border-white/5 rounded-xl transition-all duration-300 overflow-hidden"
-					>
-						<div class="p-6 flex items-center justify-between">
+				{#each faqs as faq, i (faq.question)}
+					<div class="rounded-xl border border-white/5 overflow-hidden">
+						<button
+							onclick={() => toggleFaq(i)}
+							aria-expanded={openFaqIndex === i}
+							aria-controls="faq-panel-{i}"
+							class="w-full text-left group bg-white/2 hover:bg-white/4 transition-all duration-300 p-6 flex items-center justify-between"
+						>
 							<span
 								class="text-lg font-medium text-slate-200 group-hover:text-white transition-colors"
 								>{faq.question}</span
@@ -658,16 +627,20 @@
 								size={20}
 								class={`text-slate-500 transition-transform duration-300 ${openFaqIndex === i ? 'rotate-180 text-blue-400' : ''}`}
 							/>
-						</div>
-
+						</button>
 						{#if openFaqIndex === i}
-							<div transition:slide={{ duration: 300, easing: cubicOut }} class="px-6 pb-6">
+							<div
+								id="faq-panel-{i}"
+								role="region"
+								transition:slide={{ duration: 300, easing: cubicOut }}
+								class="px-6 pb-6 bg-white/2"
+							>
 								<p class="text-slate-400 leading-relaxed pt-2 border-t border-white/5">
 									{faq.answer}
 								</p>
 							</div>
 						{/if}
-					</button>
+					</div>
 				{/each}
 			</div>
 		</div>
@@ -682,7 +655,7 @@
 				Market Opens In... Now.
 			</h2>
 			<p class="text-xl text-slate-400 mb-12 max-w-xl mx-auto">
-				Join 10,000+ disciplined traders building wealth through logic, not luck.
+				Join {STUDENT_COUNT.toLocaleString()}+ disciplined traders building wealth through logic, not luck.
 			</p>
 
 			<a
@@ -696,7 +669,6 @@
 	</section>
 </div>
 
-<MarketingFooter />
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════

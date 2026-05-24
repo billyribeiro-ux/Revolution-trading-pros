@@ -18,13 +18,9 @@
 	 * @author Revolution Trading Pros
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 */
-	// PRINCIPAL-2026-04-26: comment-out, verify, delete in follow-up.
-	// app.css carried shadcn light-theme tokens that conflicted with marketing's
-	// dark canvas (`bg-background` resolves to white). Replaced by marketing.css
-	// imported below. Admin/dashboard/cms self-contain their CSS in their nested
-	// +layout.svelte files. app.css is preserved on disk for any route that
-	// still wants shadcn tokens — opt in via local import.
-	// import '../app.css';
+	// RESTORED 2026-05-23: Tailwind CSS re-enabled for full site functionality
+	// PE7 migration will happen systematically from this working baseline
+	import '../app.css';
 
 	// Marketing CSS — imported at the root so the layout tree topology stays
 	// stable across route transitions (no component mount/unmount on
@@ -38,6 +34,7 @@
 	import Seo from '$lib/seo/Seo.svelte';
 	import { resolveSEO } from '$lib/seo/resolve';
 	import type { SEOInput, RouteSEOContext, SEODefaults } from '$lib/seo/types';
+	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 	import { NavBar } from '$lib/components/nav';
 	import { onMount } from 'svelte';
 	import { afterNavigate } from '$app/navigation';
@@ -185,6 +182,7 @@
 	<div
 		class="min-h-screen flex flex-col min-w-0"
 		class:marketing-shell={isMarketingPage}
+		class:dark={isMarketingPage}
 		class:has-admin-toolbar={showAdminToolbar}
 	>
 		<!-- ICT Level 7: ClientOnly prevents hydration mismatch for auth-dependent AdminToolbar -->
@@ -199,6 +197,10 @@
 		<main id="main-content" class="flex-1 min-w-0 overflow-x-clip">
 			{@render props.children()}
 		</main>
+
+		{#if isMarketingPage}
+			<MarketingFooter />
+		{/if}
 
 		<!-- Consent UI: Re-enable when consent system is ready -->
 	</div>

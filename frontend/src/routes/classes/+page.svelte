@@ -7,9 +7,8 @@
 
 	import { onMount } from 'svelte';
 	import { CourseCard } from '$lib/components/courses';
-	import SEOHead from '$lib/components/SEOHead.svelte';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-
+	import SEOHead from '$lib/components/seo/SeoHead.svelte';
+	
 	interface Course {
 		id: string;
 		title: string;
@@ -84,9 +83,8 @@
 <SEOHead
 	title="Trading Classes & Courses"
 	description="Browse our trading courses and classes. Learn from professional traders and improve your trading skills with beginner to advanced programs."
-	canonical="/classes"
+	canonicalUrl="/classes"
 	ogType="website"
-	schemaType="CollectionPage"
 	keywords={[
 		'trading classes',
 		'trading courses',
@@ -153,7 +151,6 @@
 	{/if}
 </div>
 
-<MarketingFooter />
 
 <style>
 	.courses-page {

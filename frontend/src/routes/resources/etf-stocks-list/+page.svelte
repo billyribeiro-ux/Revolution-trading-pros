@@ -7,7 +7,7 @@
 	 * ETF Stock List Page - Google L11 Enterprise Standard
 	 * Comprehensive ETF education and reference resource
 	 */
-	import SEOHead from '$lib/components/SEOHead.svelte';
+	import SEOHead from '$lib/components/seo/SeoHead.svelte';
 	import { fade, fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import {
@@ -293,7 +293,7 @@
 <SEOHead
 	title="ETF Stock List"
 	description="Explore our complete ETF stock list with detailed information on ETFs and their underlying stocks. Perfect for traders and investors looking to diversify."
-	canonical="/resources/etf-stocks-list"
+	canonicalUrl="/resources/etf-stocks-list"
 	ogType="website"
 	keywords={[
 		'ETF list',

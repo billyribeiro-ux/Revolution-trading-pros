@@ -11,7 +11,7 @@
 	import { authStore } from '$lib/stores/auth.svelte';
 	import { registerAndLogin } from '$lib/api/auth';
 	import { goto } from '$app/navigation';
-	import SEOHead from '$lib/components/SEOHead.svelte';
+	import SEOHead from '$lib/components/seo/SeoHead.svelte';
 
 	// Svelte 5 state runes
 	let name = $state('');
@@ -78,7 +78,7 @@
 <SEOHead
 	title="Sign Up - Create Your Trading Account"
 	description="Join Revolution Trading Pros. Create your free account to access live trading rooms, professional alerts, courses, and our trading community."
-	canonical="/signup"
+	canonicalUrl="/signup"
 	ogType="website"
 	keywords={[
 		'trading signup',

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { RawSchemaConfig } from '$lib/utils/structured-data';
 	/**
 	 * Blog List Page - Svelte 5 Runes Implementation
 	 * @version 4.0.0 - January 2026
@@ -7,12 +8,11 @@
 	 */
 	import { preloadData } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import SEOHead from '$lib/components/SEOHead.svelte';
+	import SEOHead from '$lib/components/seo/SeoHead.svelte';
 	import BlurHashImage from '$lib/components/ui/BlurHashImage.svelte';
 	import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
 	import type { Post } from '$lib/types/post';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-
+	
 	// ============================================================================
 	// TypeScript Interfaces
 	// ============================================================================
@@ -235,9 +235,9 @@
 <SEOHead
 	title="Blog - Trading Insights & Tutorials"
 	description="Expert trading insights, tutorials, and market analysis from Revolution Trading Pros. Learn day trading, swing trading, options strategies, and more."
-	canonical="/blog"
+	canonicalUrl="/blog"
 	ogType="website"
-	schema={blogSchema}
+	structuredData={{ type: 'Raw' as const, data: blogSchema as Record<string, unknown> } satisfies RawSchemaConfig}
 />
 
 <div class="blog-container">
@@ -444,7 +444,6 @@
 	{/if}
 </div>
 
-<MarketingFooter />
 
 <style>
 	/* 2026 CSS Standards: CSS Layers, oklch colors, container queries, color-mix */

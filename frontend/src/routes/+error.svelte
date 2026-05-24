@@ -12,7 +12,7 @@
 	 */
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';
-	import SEOHead from '$lib/components/SEOHead.svelte';
+	import SEOHead from '$lib/components/seo/SeoHead.svelte';
 
 	// Error details from SvelteKit
 	let status = $derived(page.status);

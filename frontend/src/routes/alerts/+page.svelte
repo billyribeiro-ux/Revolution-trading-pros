@@ -11,9 +11,8 @@
 
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import SEOHead from '$lib/components/SEOHead.svelte';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-
+	import SEOHead from '$lib/components/seo/SeoHead.svelte';
+	
 	// --- GSAP ScrollTrigger Animations (Svelte 5 SSR-safe pattern) ---
 	onMount(() => {
 		if (!browser) return;
@@ -112,7 +111,7 @@
 <SEOHead
 	title="Trading Alert Services | Revolution Trading Pros"
 	description="Get premium trading alerts delivered to your phone. Swing trading and day trading alerts with precise entries, exits, and risk management."
-	canonical="/alerts"
+	canonicalUrl="/alerts"
 	ogType="website"
 	keywords={[
 		'trading alerts',
@@ -311,7 +310,6 @@
 	</section>
 </div>
 
-<MarketingFooter />
 
 <style>
 	.alerts-page {

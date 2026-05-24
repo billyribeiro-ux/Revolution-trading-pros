@@ -8,10 +8,11 @@
 -->
 
 <script lang="ts">
+	import type { RawSchemaConfig } from '$lib/utils/structured-data';
 	import { onMount } from 'svelte';
 	import { submitForm } from '$lib/api/forms';
 	import { popupsApi, recordPopupImpression } from '$lib/api/popups';
-	import SEOHead from '$lib/components/SEOHead.svelte';
+	import SEOHead from '$lib/components/seo/SeoHead.svelte';
 	import { IconMail, IconUser, IconCheck } from '$lib/icons';
 
 	// Form state
@@ -168,9 +169,9 @@
 <SEOHead
 	title="Backend Test - Forms, Popups & SEO"
 	description="Testing forms, popups, and SEO integration with the backend. Newsletter signup, contact forms, and popup functionality."
-	canonical="/test-backend"
+	canonicalUrl="/test-backend"
 	ogType="website"
-	schema={pageSchema}
+	structuredData={{ type: 'Raw' as const, data: pageSchema as Record<string, unknown> } satisfies RawSchemaConfig}
 />
 
 <div class="test-page">

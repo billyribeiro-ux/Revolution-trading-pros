@@ -28,7 +28,6 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import type { PageData } from './+page';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 	import { serializeJsonLd } from '$lib/seo/serializeJsonLd';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -71,7 +70,7 @@
 			// ItemList Schema for product collection
 			{
 				'@type': 'ItemList',
-				itemListElement: scanners.map((scanner: any, index: number) => ({
+				itemListElement: scanners.map((scanner: PageData['scanners'][number], index: number) => ({
 					'@type': 'ListItem',
 					position: index + 1,
 					url: `${page.url.origin}/store/scanners/${scanner.slug}/`,
@@ -184,6 +183,7 @@
 	     STRUCTURED DATA - JSON-LD for Google Rich Snippets
 	     Google Dec 2025: Critical for product listings
 	     ═══════════════════════════════════════════════════════════════════════════ -->
+	<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 	{@html '<scr' +
 		'ipt type="application/ld+json">' +
 		serializeJsonLd(structuredData) +
@@ -300,7 +300,6 @@
 	</div>
 </div>
 
-<MarketingFooter />
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════

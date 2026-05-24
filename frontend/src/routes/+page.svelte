@@ -3,6 +3,7 @@
 -->
 
 <script lang="ts">
+	import type { RawSchemaConfig } from '$lib/utils/structured-data';
 	/**
 	 * Homepage - Enterprise Performance Optimized + SEO Enhanced
 	 * ICT11+ Fix: Client-side posts fetch fallback for production
@@ -20,9 +21,8 @@
 	import LatestBlogsSection from '$lib/components/sections/LatestBlogsSection.svelte';
 	import CTASection from '$lib/components/sections/CTASection.svelte';
 	import SocialMediaSection from '$lib/components/sections/SocialMediaSection.svelte';
-	import SEOHead from '$lib/components/SEOHead.svelte';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-
+	import SEOHead from '$lib/components/seo/SeoHead.svelte';
+	
 	// ICT 11+ CORB Fix: Use same-origin endpoints
 	const API_URL = '';
 
@@ -74,9 +74,9 @@
 <SEOHead
 	title="Live Trading Rooms, Alerts & Pro Tools"
 	description="Professional trading education and tools."
-	canonical="/"
+	canonicalUrl="/"
 	ogType="website"
-	schema={homepageSchema}
+	structuredData={homepageSchema.map((d) => ({ type: 'Raw' as const, data: d })) satisfies RawSchemaConfig[]}
 />
 
 <Hero />
@@ -91,4 +91,3 @@
 <CTASection />
 <SocialMediaSection />
 
-<MarketingFooter />

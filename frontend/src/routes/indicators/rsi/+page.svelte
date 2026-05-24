@@ -5,6 +5,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
+	import SEOHead from '$lib/components/seo/SeoHead.svelte';
+	import type { StructuredDataConfig } from '$lib/utils/structured-data';
 	import {
 		IconActivity,
 		IconTrendingUp,
@@ -54,27 +56,21 @@
 			sectionObserver.disconnect();
 		};
 	});
+
+const pageSchema: StructuredDataConfig = {
+	type: 'WebPage',
+	url: '/indicators/rsi',
+	name: 'RSI - Relative Strength Index | Revolution Trading Pros',
+	description: 'Master the RSI indicator to identify overbought/oversold conditions and reversal points with precision.'
+};
 </script>
 
-<svelte:head>
-	<title>RSI - Relative Strength Index | Revolution Trading</title>
-	<meta
-		name="description"
-		content="Master the RSI indicator to identify overbought/oversold conditions and reversal points with precision."
-	/>
-	<meta property="og:title" content="RSI - Relative Strength Index | Revolution Trading" />
-	<meta
-		property="og:description"
-		content="Master the RSI indicator to identify overbought/oversold conditions and reversal points with precision."
-	/>
-	<meta property="og:type" content="website" />
-	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:title" content="RSI Indicator | Revolution Trading" />
-	<meta
-		name="twitter:description"
-		content="Master the RSI indicator to identify overbought/oversold conditions and reversal points with precision."
-	/>
-</svelte:head>
+<SEOHead
+	title="RSI - Relative Strength Index | Revolution Trading Pros"
+	description="Master the RSI indicator to identify overbought/oversold conditions and reversal points with precision."
+	canonicalUrl="/indicators/rsi"
+	structuredData={pageSchema}
+/>
 
 <div class="indicator-page">
 	<!-- Hero Section -->

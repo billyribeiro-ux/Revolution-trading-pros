@@ -392,7 +392,7 @@
 	   CSS CUSTOM PROPERTIES - Revolution Trading Colors
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	:root {
+	:global(:root) {
 		--st-bg: #f4f4f4;
 		--st-card-bg: #ffffff;
 		--st-border: #dbdbdb;

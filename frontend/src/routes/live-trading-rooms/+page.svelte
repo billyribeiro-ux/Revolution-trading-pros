@@ -2,8 +2,7 @@
 	import { onMount } from 'svelte';
 	import { spring } from 'svelte/motion';
 	import { browser } from '$app/environment';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-
+	
 	// GSAP types for TypeScript (actual imports are dynamic for SSR safety)
 	type GSAPInstance = typeof import('gsap').gsap;
 
@@ -1022,7 +1021,6 @@
 	</div>
 </div>
 
-<MarketingFooter />
 
 <style>
 	/* --- Hero Specifics --- */

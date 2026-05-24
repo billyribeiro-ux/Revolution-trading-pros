@@ -5,7 +5,7 @@
 	 */
 	import { forgotPassword } from '$lib/api/auth';
 	import { IconMail, IconAlertCircle, IconCheck, IconSend } from '$lib/icons';
-	import SEOHead from '$lib/components/SEOHead.svelte';
+	import SEOHead from '$lib/components/seo/SeoHead.svelte';
 
 	// Svelte 5 state runes
 	let email = $state('');
@@ -48,7 +48,7 @@
 <SEOHead
 	title="Forgot Password - Reset Your Account"
 	description="Forgot your password? Reset your Revolution Trading Pros account password securely."
-	canonical="/forgot-password"
+	canonicalUrl="/forgot-password"
 	ogType="website"
 	noindex={true}
 />

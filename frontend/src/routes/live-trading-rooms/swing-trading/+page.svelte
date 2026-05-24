@@ -3,9 +3,9 @@
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
-	import SEOHead from '$lib/components/SEOHead.svelte';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-
+	import SEOHead from '$lib/components/seo/SeoHead.svelte';
+	import type { StructuredDataConfig } from '$lib/utils/structured-data';
+	
 	// --- Pricing State (Svelte 5 Runes) ---
 	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = $state('quarterly');
 
@@ -120,77 +120,35 @@
 	];
 
 	// --- SEO: STRUCTURED DATA (JSON-LD) ---
-	const productSchema = {
-		'@context': 'https://schema.org',
-		'@type': 'Product',
+	const productSchema: StructuredDataConfig = {
+		type: 'Product',
+		url: '/live-trading-rooms/swing-trading',
 		name: 'Explosive Swings Trading Alerts',
 		description:
 			'Premium multi-day swing trading alerts service. Catch 3-7 day moves with precise entry and exit signals. Verified 82% win rate.',
-		brand: {
-			'@type': 'Organization',
-			name: 'Revolution Trading Pros'
-		},
-		aggregateRating: {
-			'@type': 'AggregateRating',
-			ratingValue: '4.8',
-			reviewCount: '342'
-		},
-		offers: {
-			'@type': 'AggregateOffer',
-			priceCurrency: 'USD',
-			lowPrice: '97',
-			highPrice: '927',
-			offerCount: '3',
-			offers: [
-				{
-					'@type': 'Offer',
-					name: 'Monthly Swing Access',
-					price: '97',
-					priceCurrency: 'USD',
-					availability: 'https://schema.org/InStock',
-					priceSpecification: {
-						'@type': 'UnitPriceSpecification',
-						price: '97',
-						priceCurrency: 'USD',
-						referenceQuantity: { '@type': 'QuantitativeValue', value: '1', unitCode: 'MON' }
-					}
-				},
-				{
-					'@type': 'Offer',
-					name: 'Quarterly Swing Access',
-					price: '247',
-					priceCurrency: 'USD'
-				},
-				{
-					'@type': 'Offer',
-					name: 'Annual Swing Access',
-					price: '927',
-					priceCurrency: 'USD'
-				}
-			]
-		}
+		brand: 'Revolution Trading Pros',
+		price: 97,
+		priceCurrency: 'USD',
+		availability: 'InStock',
+		ratingValue: 4.8,
+		reviewCount: 342
 	};
 
-	const faqSchema = {
-		'@context': 'https://schema.org',
-		'@type': 'FAQPage',
-		mainEntity: faqList.map((item) => ({
-			'@type': 'Question',
-			name: item.question,
-			acceptedAnswer: {
-				'@type': 'Answer',
-				text: item.answer
-			}
+	const faqSchema: StructuredDataConfig = {
+		type: 'FAQPage',
+		questions: faqList.map((item) => ({
+			question: item.question,
+			answer: item.answer
 		}))
 	};
 
-	const combinedSchema = [productSchema, faqSchema];
+	const combinedSchema: StructuredDataConfig[] = [productSchema, faqSchema];
 </script>
 
 <SEOHead
 	title="Swing Trading Alerts | Multi-Day Stock & Options Signals"
 	description="The #1 swing trading room for part-time traders. Get high-precision stock and options alerts (3-7 day holds) sent via SMS & Push. 82% historical win rate."
-	canonical="/live-trading-rooms/swing-trading"
+	canonicalUrl="/live-trading-rooms/swing-trading"
 	ogType="product"
 	ogImage="/images/og-swings.jpg"
 	ogImageAlt="Swing Trading Room - Multi-Day Trading Opportunities"
@@ -204,18 +162,14 @@
 		'part time trading',
 		'swing trading for beginners'
 	]}
-	schema={combinedSchema}
-	schemaType="Product"
-	productPrice={97}
-	productCurrency="USD"
-	productAvailability="in stock"
+	structuredData={combinedSchema}
 />
 
 <div class="w-full bg-rtp-bg text-rtp-text font-sans selection:bg-rtp-emerald selection:text-white">
 	<section class="relative min-h-[90vh] flex items-center overflow-hidden py-20 lg:py-0">
 		<div class="absolute inset-0 bg-rtp-bg z-0 pointer-events-none">
 			<div
-				class="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.03)_1px,transparent_1px)] bg-[size:48px_48px] opacity-50"
+				class="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.03)_1px,transparent_1px)] bg-size-[48px_48px] opacity-50"
 			></div>
 			<div
 				class="absolute top-0 right-0 w-[600px] h-[600px] bg-rtp-emerald/10 rounded-full blur-[100px] animate-pulse"
@@ -250,7 +204,7 @@
 				>
 					Catch the <br />
 					<span
-						class="text-transparent bg-clip-text bg-gradient-to-r from-rtp-emerald via-emerald-300 to-teal-200"
+						class="text-transparent bg-clip-text bg-linear-to-r from-rtp-emerald via-emerald-300 to-teal-200"
 						>Big Moves.</span
 					>
 				</h1>
@@ -345,11 +299,11 @@
 
 			<div class="hidden lg:block relative perspective-1000">
 				<div
-					class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-tr from-rtp-emerald/20 to-transparent rounded-full blur-3xl"
+					class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-linear-to-tr from-rtp-emerald/20 to-transparent rounded-full blur-3xl"
 				></div>
 
 				<div
-					class="relative bg-rtp-surface/90 backdrop-blur-xl border border-rtp-border/50 p-8 rounded-3xl shadow-2xl transform rotate-y-[-12deg] rotate-x-[5deg] hover:rotate-0 transition-transform duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)]"
+					class="relative bg-rtp-surface/90 backdrop-blur-xl border border-rtp-border/50 p-8 rounded-3xl shadow-2xl transform -rotate-y-12 rotate-x-[5deg] hover:rotate-0 transition-transform duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)]"
 				>
 					<div class="flex justify-between items-center mb-8">
 						<div>
@@ -960,7 +914,7 @@
 					Secure checkout powered by Stripe. Cancel anytime.
 				</p>
 				<div
-					class="flex items-center justify-center gap-2 text-rtp-muted text-sm bg-rtp-bg inline-flex px-4 py-2 rounded-full border border-rtp-border"
+					class="inline-flex items-center justify-center gap-2 text-rtp-muted text-sm bg-rtp-bg px-4 py-2 rounded-full border border-rtp-border"
 				>
 					<svg
 						class="w-4 h-4 text-emerald-500"
@@ -997,7 +951,7 @@
 						>
 							<span class="text-base pr-4">{faq.question}</span>
 							<svg
-								class="w-5 h-5 text-rtp-emerald flex-shrink-0 transform transition-transform duration-300 {openFaq ===
+								class="w-5 h-5 text-rtp-emerald shrink-0 transform transition-transform duration-300 {openFaq ===
 								i
 									? 'rotate-180'
 									: ''}"
@@ -1027,7 +981,7 @@
 	</section>
 
 	<section
-		class="py-24 bg-gradient-to-br from-rtp-emerald to-teal-900 text-white relative overflow-hidden"
+		class="py-24 bg-linear-to-br from-rtp-emerald to-teal-900 text-white relative overflow-hidden"
 	>
 		<div class="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10"></div>
 		<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
@@ -1048,4 +1002,3 @@
 	</section>
 </div>
 
-<MarketingFooter />

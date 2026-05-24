@@ -11,7 +11,7 @@
 	 *
 	 * @version 3.0.0 - Complete Order Details Display
 	 */
-	import SEOHead from '$lib/components/SEOHead.svelte';
+	import SEOHead from '$lib/components/seo/SeoHead.svelte';
 	import type { PageData } from './$types';
 	import type { OrderDetail, OrderItem } from './types';
 

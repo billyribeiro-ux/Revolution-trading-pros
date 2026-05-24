@@ -3,9 +3,9 @@
 -->
 
 <script lang="ts">
-	import SEOHead from '$lib/components/SEOHead.svelte';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-
+	import type { RawSchemaConfig } from '$lib/utils/structured-data';
+	import SEOHead from '$lib/components/seo/SeoHead.svelte';
+	
 	// Resources page structured data
 	const resourcesSchema = [
 		{
@@ -59,7 +59,7 @@
 <SEOHead
 	title="Free Trading Resources & Education Tools"
 	description="Free trading resources, guides, calculators, and tools. Start your trading education with our comprehensive resource library. Position size calculators, trading journal templates, and more."
-	canonical="/resources"
+	canonicalUrl="/resources"
 	ogType="website"
 	ogImage="/og-image.webp"
 	ogImageAlt="Revolution Trading Pros Free Trading Resources"
@@ -75,7 +75,7 @@
 		'market analysis',
 		'trading psychology'
 	]}
-	schema={resourcesSchema}
+	structuredData={resourcesSchema.map((d: Record<string, unknown>) => ({ type: 'Raw' as const, data: d })) satisfies RawSchemaConfig[]}
 />
 
 <!-- Hero - 2026 Mobile-First Responsive -->
@@ -585,7 +585,6 @@
 	</div>
 </section>
 
-<MarketingFooter />
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════

@@ -2,32 +2,22 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { slide } from 'svelte/transition';
-	import SEOHead from '$lib/components/SEOHead.svelte';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-
-	// --- ICONS (Inline for Zero-Dependency Safety) ---
-	const Icons = {
-		Lock: `<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`,
-		Globe: `<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>`,
-		Shield: `<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>`,
-		ChevronDown: `<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`,
-		Activity: `<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>`,
-		Terminal: `<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>`,
-		Brain: `<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/></svg>`,
-		Check: `<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
-		FileText: `<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>`
-	};
+	import type { Attachment } from 'svelte/attachments';
+	import SEOHead from '$lib/components/seo/SeoHead.svelte';
+	import IconLock from '@tabler/icons-svelte-runes/icons/lock';
+	import IconGlobe from '@tabler/icons-svelte-runes/icons/globe';
+	import IconShield from '@tabler/icons-svelte-runes/icons/shield';
+	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
+	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
+	import IconTerminal from '@tabler/icons-svelte-runes/icons/terminal';
+	import IconBrain from '@tabler/icons-svelte-runes/icons/brain';
+	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
+	import IconFileText from '@tabler/icons-svelte-runes/icons/file-text';
 
 	// --- STATE ---
 	let openAccordion = $state<number | null>(0);
 	const toggleAccordion = (idx: number) => (openAccordion = openAccordion === idx ? null : idx);
 
-	// --- DOM REFS FOR GSAP ---
-	let heroBadge: HTMLElement | undefined;
-	let heroTitle: HTMLElement | undefined;
-	let heroDesc: HTMLElement | undefined;
-	let heroMetrics: HTMLElement | undefined;
-	let heroGraphic: HTMLElement | undefined;
 
 	// --- MOTION ENGINE ---
 	onMount(async () => {
@@ -36,29 +26,19 @@
 		// Dynamic GSAP import for SSR safety
 		const { gsap } = await import('gsap');
 
-		// 1. Hero Sequence (Timeline)
+		// 1. Hero Sequence (Timeline) — query data-gsap-hero elements
 		const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
+		const badge = document.querySelector<HTMLElement>('[data-gsap-hero="badge"]');
+		const title = document.querySelector<HTMLElement>('[data-gsap-hero="title"]');
+		const desc = document.querySelector<HTMLElement>('[data-gsap-hero="desc"]');
+		const metrics = document.querySelector<HTMLElement>('[data-gsap-hero="metrics"]');
+		const graphic = document.querySelector<HTMLElement>('[data-gsap-hero="graphic"]');
 
-		if (heroBadge)
-			tl.fromTo(heroBadge, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1, delay: 0.2 });
-		if (heroTitle)
-			tl.fromTo(
-				heroTitle,
-				{ y: 40, opacity: 0 },
-				{ y: 0, opacity: 1, duration: 1.2, stagger: 0.1 },
-				'-=0.8'
-			);
-		if (heroDesc)
-			tl.fromTo(heroDesc, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1 }, '-=0.8');
-		if (heroMetrics)
-			tl.fromTo(
-				heroMetrics,
-				{ opacity: 0, scale: 0.98 },
-				{ opacity: 1, scale: 1, duration: 1.2 },
-				'-=0.6'
-			);
-		if (heroGraphic)
-			tl.fromTo(heroGraphic, { x: 40, opacity: 0 }, { x: 0, opacity: 1, duration: 1.5 }, '-=1.0');
+		if (badge) tl.fromTo(badge, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1, delay: 0.2 });
+		if (title) tl.fromTo(title, { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 1.2, stagger: 0.1 }, '-=0.8');
+		if (desc) tl.fromTo(desc, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1 }, '-=0.8');
+		if (metrics) tl.fromTo(metrics, { opacity: 0, scale: 0.98 }, { opacity: 1, scale: 1, duration: 1.2 }, '-=0.6');
+		if (graphic) tl.fromTo(graphic, { x: 40, opacity: 0 }, { x: 0, opacity: 1, duration: 1.5 }, '-=1.0');
 
 		// 2. Scroll Reveal Logic
 		const observer = new IntersectionObserver(
@@ -126,7 +106,7 @@
 <SEOHead
 	title="Institutional Strategy Audit | $25,000 Consultation"
 	description="A high-velocity, forensic deconstruction of your trading business. Designed strictly for Portfolio Managers and Proprietary Traders deploying 7-8 figure capital."
-	canonical="/mentorship"
+	canonicalUrl="/mentorship"
 	ogType="website"
 	noindex={true}
 	nofollow={true}
@@ -174,22 +154,22 @@
 			<div class="max-w-[1600px] mx-auto grid lg:grid-cols-12 gap-16">
 				<div class="lg:col-span-8">
 					<div
-						bind:this={heroBadge}
+						data-gsap-hero="badge"
 						class="inline-flex items-center gap-3 px-3 py-1 border border-amber-900/30 bg-amber-900/10 text-amber-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-12"
 					>
-						<span class="w-3 h-3">{@html Icons.Lock}</span>
+						<IconLock size={12} />
 						Restricted Access
 					</div>
 
 					<h1
-						bind:this={heroTitle}
+						data-gsap-hero="title"
 						class="text-6xl md:text-8xl lg:text-9xl font-serif text-white mb-12 tracking-tight leading-[0.9] origin-left"
 					>
 						Strategic<br />
 						<span class="text-slate-700">Alpha</span> Audit.
 					</h1>
 
-					<div bind:this={heroDesc} class="max-w-2xl border-l-2 border-amber-700 pl-8 py-2">
+					<div data-gsap-hero="desc" class="max-w-2xl border-l-2 border-amber-700 pl-8 py-2">
 						<p class="text-xl md:text-2xl text-slate-300 font-light leading-relaxed">
 							A high-velocity, forensic deconstruction of your trading business. Designed strictly
 							for <span class="text-white font-medium">Portfolio Managers</span> and
@@ -197,7 +177,7 @@
 						</p>
 					</div>
 
-					<div bind:this={heroMetrics} class="mt-16 flex flex-wrap gap-12">
+					<div data-gsap-hero="metrics" class="mt-16 flex flex-wrap gap-12">
 						<div>
 							<div class="text-[10px] font-mono uppercase tracking-widest text-slate-600 mb-2">
 								Consultation Fee
@@ -225,10 +205,10 @@
 					</div>
 				</div>
 
-				<div bind:this={heroGraphic} class="lg:col-span-4 flex flex-col justify-end">
+				<div data-gsap-hero="graphic" class="lg:col-span-4 flex flex-col justify-end">
 					<div class="bg-[#080808] border border-white/10 p-8 relative overflow-hidden">
 						<div class="absolute top-0 right-0 p-4 opacity-20 w-12 h-12 text-slate-500">
-							{@html Icons.Globe}
+							<IconGlobe size={48} stroke={1.2} />
 						</div>
 						<h3
 							class="font-mono text-xs uppercase tracking-widest text-white mb-6 border-b border-white/10 pb-4"
@@ -302,7 +282,7 @@
 
 					<div class="grid grid-cols-2 gap-px bg-white/10 border border-white/10">
 						<div class="bg-[#080808] p-10 flex flex-col justify-between h-64 gsap-reveal-item">
-							<div class="text-amber-600 w-8 h-8">{@html Icons.Activity}</div>
+							<div class="text-amber-600"><IconActivity size={32} stroke={1.2} /></div>
 							<div>
 								<div class="text-3xl font-serif text-white mb-2">
 									-18<span class="text-lg">%</span>
@@ -313,7 +293,7 @@
 							</div>
 						</div>
 						<div class="bg-[#080808] p-10 flex flex-col justify-between h-64 gsap-reveal-item">
-							<div class="text-amber-600 w-8 h-8">{@html Icons.Brain}</div>
+							<div class="text-amber-600"><IconBrain size={32} stroke={1.2} /></div>
 							<div>
 								<div class="text-3xl font-serif text-white mb-2">Bias</div>
 								<div class="text-[10px] font-mono uppercase tracking-widest text-slate-500">
@@ -322,7 +302,7 @@
 							</div>
 						</div>
 						<div class="bg-[#080808] p-10 flex flex-col justify-between h-64 gsap-reveal-item">
-							<div class="text-amber-600 w-8 h-8">{@html Icons.Terminal}</div>
+							<div class="text-amber-600"><IconTerminal size={32} stroke={1.2} /></div>
 							<div>
 								<div class="text-3xl font-serif text-white mb-2">Zero</div>
 								<div class="text-[10px] font-mono uppercase tracking-widest text-slate-500">
@@ -331,7 +311,7 @@
 							</div>
 						</div>
 						<div class="bg-[#080808] p-10 flex flex-col justify-between h-64 gsap-reveal-item">
-							<div class="text-amber-600 w-8 h-8">{@html Icons.Shield}</div>
+							<div class="text-amber-600"><IconShield size={32} stroke={1.2} /></div>
 							<div>
 								<div class="text-3xl font-serif text-white mb-2">MNDA</div>
 								<div class="text-[10px] font-mono uppercase tracking-widest text-slate-500">
@@ -386,7 +366,7 @@
 				<div class="gsap-reveal-item">
 					<div class="flex items-center gap-4 mb-10">
 						<div class="w-10 h-10 flex items-center justify-center rounded bg-white/5 text-white">
-							{@html Icons.FileText}
+							<IconFileText size={24} stroke={1.2} />
 						</div>
 						<h3 class="text-2xl font-serif text-white">Technical Prerequisites</h3>
 					</div>
@@ -419,7 +399,7 @@
 				<div class="gsap-reveal-item">
 					<div class="flex items-center gap-4 mb-10">
 						<div class="w-10 h-10 flex items-center justify-center rounded bg-white/5 text-white">
-							{@html Icons.Shield}
+							<IconShield size={24} stroke={1.2} />
 						</div>
 						<h3 class="text-2xl font-serif text-white">Engagement Protocols</h3>
 					</div>
@@ -433,11 +413,10 @@
 								<span class="font-bold text-white text-sm tracking-wide"
 									>CONFIDENTIALITY & DATA SOVEREIGNTY</span
 								>
-								<span
-									class="w-4 h-4 text-slate-500 transform transition-transform {openAccordion === 0
-										? 'rotate-180'
-										: ''}">{@html Icons.ChevronDown}</span
-								>
+								<IconChevronDown
+									size={16}
+									class="text-slate-500 transition-transform duration-300 {openAccordion === 0 ? 'rotate-180' : ''}"
+								/>
 							</button>
 							{#if openAccordion === 0}
 								<div
@@ -458,11 +437,10 @@
 								onclick={() => toggleAccordion(1)}
 							>
 								<span class="font-bold text-white text-sm tracking-wide">CONFLICT OF INTEREST</span>
-								<span
-									class="w-4 h-4 text-slate-500 transform transition-transform {openAccordion === 1
-										? 'rotate-180'
-										: ''}">{@html Icons.ChevronDown}</span
-								>
+								<IconChevronDown
+									size={16}
+									class="text-slate-500 transition-transform duration-300 {openAccordion === 1 ? 'rotate-180' : ''}"
+								/>
 							</button>
 							{#if openAccordion === 1}
 								<div
@@ -484,11 +462,10 @@
 							>
 								<span class="font-bold text-white text-sm tracking-wide">LOGISTICS & EXPENSING</span
 								>
-								<span
-									class="w-4 h-4 text-slate-500 transform transition-transform {openAccordion === 2
-										? 'rotate-180'
-										: ''}">{@html Icons.ChevronDown}</span
-								>
+								<IconChevronDown
+									size={16}
+									class="text-slate-500 transition-transform duration-300 {openAccordion === 2 ? 'rotate-180' : ''}"
+								/>
 							</button>
 							{#if openAccordion === 2}
 								<div
@@ -520,7 +497,7 @@
 					></div>
 
 					<div class="mb-10">
-						<div class="text-amber-600 mx-auto w-12 h-12 mb-6">{@html Icons.Check}</div>
+						<div class="text-amber-600 mx-auto mb-6"><IconCheck size={48} stroke={1.5} /></div>
 						<h2 class="text-4xl md:text-5xl font-serif text-white mb-4">Initiate Application</h2>
 						<p class="text-slate-500 font-mono text-xs uppercase tracking-[0.2em]">
 							Reference: Q4-INST-AUDIT
@@ -555,4 +532,3 @@
 	</div>
 </div>
 
-<MarketingFooter />

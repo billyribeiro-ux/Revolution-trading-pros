@@ -1,10 +1,27 @@
 <script lang="ts">
+	import type { RawSchemaConfig } from '$lib/utils/structured-data';
 	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
 	import { browser } from '$app/environment';
-	import SEOHead from '$lib/components/SEOHead.svelte';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-
+	import SEOHead from '$lib/components/seo/SeoHead.svelte';
+	import IconTarget from '@tabler/icons-svelte-runes/icons/target';
+	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
+	import IconShield from '@tabler/icons-svelte-runes/icons/shield';
+	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
+	import IconScale from '@tabler/icons-svelte-runes/icons/scale';
+	import IconBrain from '@tabler/icons-svelte-runes/icons/brain';
+	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
+	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
+	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import IconQuote from '@tabler/icons-svelte-runes/icons/quote';
+	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
+	import IconServer from '@tabler/icons-svelte-runes/icons/server';
+	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
+	import IconLock from '@tabler/icons-svelte-runes/icons/lock';
+	import IconTerminal from '@tabler/icons-svelte-runes/icons/terminal';
+	import IconBook from '@tabler/icons-svelte-runes/icons/book';
+	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
 	// --- GSAP ScrollTrigger Animations (Svelte 5 SSR-safe pattern) ---
 	onMount(() => {
 		if (!browser) return;
@@ -57,27 +74,6 @@
 		return () => ctx?.revert();
 	});
 
-	// --- ICONS (Inline SVG for Zero-Dependency & Performance) ---
-	const Icons = {
-		Target: `<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`,
-		TrendingUp: `<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>`,
-		Shield: `<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
-		Users: `<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
-		Scale: `<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>`,
-		Brain: `<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/></svg>`,
-		ChartBar: `<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>`,
-		ArrowRight: `<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>`,
-		Check: `<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
-		X: `<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>`,
-		Quote: `<svg width="100%" height="100%" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/></svg>`,
-		ChevronDown: `<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`,
-		Server: `<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="8" x="2" y="2" rx="2" ry="2"/><rect width="20" height="8" x="2" y="14" rx="2" ry="2"/><line x1="6" x2="6.01" y1="6" y2="6"/><line x1="6" x2="6.01" y1="18" y2="18"/></svg>`,
-		Activity: `<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>`,
-		Lock: `<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`,
-		Terminal: `<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>`,
-		Book: `<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`,
-		Search: `<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>`
-	};
 
 	// --- INTERACTIVE RISK CALCULATOR LOGIC ---
 	// A comprehensive simulator showing the power of compounding vs ruin
@@ -180,7 +176,7 @@
 	// --- CONTENT DATA ---
 	const pillars = [
 		{
-			icon: Icons.Shield,
+			icon: IconShield,
 			title: 'Radical Transparency',
 			desc: 'We operate in a glass house. We publish raw track records, including losses and commissions. In an industry of smoke and mirrors, truth is the only currency.',
 			color: 'text-emerald-400',
@@ -188,7 +184,7 @@
 			border: 'border-emerald-400/20'
 		},
 		{
-			icon: Icons.Users,
+			icon: IconUsers,
 			title: 'Collective Intelligence',
 			desc: 'Trading is an isolation sport. We replace that with a hive-mind of disciplined professionals sharing real-time order flow, risk assessments, and sentiment. We win together.',
 			color: 'text-blue-400',
@@ -196,7 +192,7 @@
 			border: 'border-blue-400/20'
 		},
 		{
-			icon: Icons.Scale,
+			icon: IconScale,
 			title: 'Probabilistic Thinking',
 			desc: 'We reject gambling. We teach the mathematics of "Edge"—thinking in Expected Value (EV), Standard Deviation, and R-Multiples. We do not predict; we react to probability.',
 			color: 'text-purple-400',
@@ -308,7 +304,7 @@
 <SEOHead
 	title="Our Mission | The Institutional Bridge"
 	description="Dismantling the retail trader stereotype. We bridge the gap between gambling and institutional risk management through data, discipline, and transparency. Join the 1% of traders who treat this as a business."
-	canonical="/our-mission"
+	canonicalUrl="/our-mission"
 	ogType="website"
 	ogImage="/og-image.webp"
 	ogImageAlt="Revolution Trading Pros Mission - Building Trading Careers"
@@ -323,8 +319,7 @@
 		'trading career',
 		'professional trading'
 	]}
-	schema={jsonLd['@graph']}
-	author="Billy Ribeiro"
+	structuredData={(jsonLd['@graph'] as Record<string, unknown>[]).map((d) => ({ type: 'Raw' as const, data: d })) satisfies RawSchemaConfig[]}
 />
 
 <div class="bg-[#050505] text-slate-300 font-sans selection:bg-rtp-primary/30 selection:text-white">
@@ -343,7 +338,7 @@
 	<div class="relative z-10">
 		<div class="w-full bg-rtp-primary/10 border-b border-rtp-primary/20 overflow-hidden py-2">
 			<div class="flex whitespace-nowrap animate-ticker">
-				{#each [...axioms, ...axioms, ...axioms] as axiom, _ai (_ai)}
+				{#each [...axioms, ...axioms] as axiom, _ai (_ai)}
 					<div
 						class="flex items-center mx-8 text-xs font-mono font-bold text-rtp-primary uppercase tracking-widest"
 					>
@@ -418,9 +413,7 @@
 				<div class="grid lg:grid-cols-12 gap-16 items-center">
 					<div class="lg:col-span-5" data-gsap>
 						<div class="flex items-center gap-3 mb-8">
-							<span class="p-2 bg-red-500/10 rounded-lg text-red-500 border border-red-500/20"
-								>{@html Icons.TrendingUp}</span
-							>
+							<span class="p-2 bg-red-500/10 rounded-lg text-red-500 border border-red-500/20"><IconTrendingUp size={20} stroke={1.5} /></span>
 							<span class="font-bold tracking-widest uppercase text-sm text-red-400"
 								>The Reality Check</span
 							>
@@ -445,7 +438,7 @@
 								<h4
 									class="text-red-400 font-bold mb-2 text-sm uppercase tracking-wider flex items-center gap-2"
 								>
-									{@html Icons.Brain} The Cognitive Gap
+									<IconBrain size={16} stroke={1.5} /> The Cognitive Gap
 								</h4>
 								<p class="text-sm text-red-200/60">
 									Retail traders seek dopamine hits (action). Institutional traders seek boredom
@@ -701,7 +694,8 @@
 
 				<div class="grid md:grid-cols-3 gap-8">
 					{#each pillars as pillar, i (pillar.title)}
-						<div data-gsap={{ delay: i * 150 }} class="group relative h-full">
+						{@const PillarIcon = pillar.icon}
+						<div data-gsap class="group relative h-full">
 							<div
 								class="absolute inset-0 bg-[#0f172a] rounded-2xl transform transition-transform duration-300 group-hover:scale-[1.02]"
 							></div>
@@ -711,7 +705,7 @@
 								<div
 									class={`w-14 h-14 ${pillar.bg} rounded-xl flex items-center justify-center ${pillar.color} mb-8 border ${pillar.border}`}
 								>
-									{@html pillar.icon}
+									<PillarIcon size={28} stroke={1.5} />
 								</div>
 								<h3 class="text-2xl font-bold text-white mb-4">{pillar.title}</h3>
 								<p class="text-slate-400 leading-relaxed flex-grow">
@@ -720,7 +714,7 @@
 								<div
 									class="mt-8 pt-6 border-t border-white/5 flex items-center gap-2 text-sm font-bold text-white/60 group-hover:text-white transition-colors"
 								>
-									Learn More {@html Icons.ArrowRight}
+									Learn More <IconArrowRight size={16} stroke={2} />
 								</div>
 							</div>
 						</div>
@@ -787,9 +781,7 @@
 				<div class="grid lg:grid-cols-12 gap-20">
 					<div data-gsap class="lg:col-span-5 sticky top-32 h-fit">
 						<div class="flex items-center gap-3 mb-6">
-							<span class="p-2 bg-blue-500/10 rounded-lg text-blue-500 border border-blue-500/20"
-								>{@html Icons.Book}</span
-							>
+							<span class="p-2 bg-blue-500/10 rounded-lg text-blue-500 border border-blue-500/20"><IconBook size={20} stroke={1.5} /></span>
 							<span class="font-bold tracking-widest uppercase text-sm text-blue-400"
 								>The Syllabus</span
 							>
@@ -861,7 +853,7 @@
 											? 'rotate-180 bg-white/10 text-white'
 											: ''}"
 									>
-										{@html Icons.ChevronDown}
+										<IconChevronDown size={20} stroke={1.5} />
 									</div>
 								</button>
 								{#if openSyllabus === i}
@@ -872,13 +864,13 @@
 										{module.desc}
 										<div class="mt-4 flex gap-4">
 											<span class="text-xs font-mono text-emerald-400 flex items-center gap-1"
-												>{@html Icons.Check} Video</span
+												><IconCheck size={12} stroke={2} /> Video</span
 											>
 											<span class="text-xs font-mono text-emerald-400 flex items-center gap-1"
-												>{@html Icons.Check} PDF</span
+												><IconCheck size={12} stroke={2} /> PDF</span
 											>
 											<span class="text-xs font-mono text-emerald-400 flex items-center gap-1"
-												>{@html Icons.Check} Quiz</span
+												><IconCheck size={12} stroke={2} /> Quiz</span
 											>
 										</div>
 									</div>
@@ -901,7 +893,7 @@
 					</div>
 					<div class="relative">
 						<div class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 w-4 h-4">
-							{@html Icons.Target}
+							<IconSearch size={16} stroke={1.5} />
 						</div>
 						<input
 							id="page-glossarysearch"
@@ -938,7 +930,7 @@
 					class="relative bg-gradient-to-br from-[#0f172a] to-[#020617] border border-white/10 rounded-3xl p-8 md:p-16 overflow-hidden shadow-2xl"
 				>
 					<div class="absolute top-0 right-0 text-white/5 -mr-8 -mt-8 transform rotate-12">
-						<div class="w-64 h-64">{@html Icons.Quote}</div>
+						<IconQuote size={256} class="text-white/5" />
 					</div>
 
 					<div class="relative z-10">
@@ -955,7 +947,7 @@
 									<div
 										class="mt-1 text-emerald-500 bg-emerald-500/10 p-1 rounded-md transition-colors group-hover:bg-emerald-500 group-hover:text-white"
 									>
-										{@html Icons.Check}
+										<IconCheck size={16} stroke={2} />
 									</div>
 									<span
 										class="text-slate-300 font-medium text-lg group-hover:text-white transition-colors"
@@ -989,10 +981,11 @@
 							onclick={() => toggleFaq(0)}
 						>
 							<span class="font-bold text-white">Is this a "Get Rich Quick" scheme?</span>
-							<span
-								class={`text-slate-500 transform transition-transform duration-300 ${openFaq === 0 ? 'rotate-180' : ''}`}
-								>{@html Icons.ChevronDown}</span
-							>
+							<IconChevronDown
+								size={20}
+								stroke={1.5}
+								class={`text-slate-500 transition-transform duration-300 ${openFaq === 0 ? 'rotate-180' : ''}`}
+							/>
 						</button>
 						{#if openFaq === 0}
 							<div
@@ -1011,10 +1004,11 @@
 							onclick={() => toggleFaq(1)}
 						>
 							<span class="font-bold text-white">Do I need a large account to start?</span>
-							<span
-								class={`text-slate-500 transform transition-transform duration-300 ${openFaq === 1 ? 'rotate-180' : ''}`}
-								>{@html Icons.ChevronDown}</span
-							>
+							<IconChevronDown
+								size={20}
+								stroke={1.5}
+								class={`text-slate-500 transition-transform duration-300 ${openFaq === 1 ? 'rotate-180' : ''}`}
+							/>
 						</button>
 						{#if openFaq === 1}
 							<div
@@ -1034,10 +1028,11 @@
 							onclick={() => toggleFaq(2)}
 						>
 							<span class="font-bold text-white">What trading style do you teach?</span>
-							<span
-								class={`text-slate-500 transform transition-transform duration-300 ${openFaq === 2 ? 'rotate-180' : ''}`}
-								>{@html Icons.ChevronDown}</span
-							>
+							<IconChevronDown
+								size={20}
+								stroke={1.5}
+								class={`text-slate-500 transition-transform duration-300 ${openFaq === 2 ? 'rotate-180' : ''}`}
+							/>
 						</button>
 						{#if openFaq === 2}
 							<div
@@ -1063,7 +1058,7 @@
 				<div
 					class="inline-block p-4 rounded-full bg-white/5 border border-white/10 mb-8 animate-bounce"
 				>
-					<div class="w-12 h-12 text-rtp-primary">{@html Icons.Brain}</div>
+					<IconBrain size={48} stroke={1.5} class="text-rtp-primary" />
 				</div>
 
 				<h2 class="text-5xl md:text-6xl font-heading font-extrabold text-white mb-8 tracking-tight">
@@ -1082,9 +1077,7 @@
 						class="group flex items-center gap-3 bg-rtp-primary text-white px-10 py-5 rounded-xl font-bold text-lg hover:bg-blue-600 transition-all hover:-translate-y-1 shadow-[0_0_30px_rgba(59,130,246,0.3)]"
 					>
 						Join the Professional Tier
-						<span class="group-hover:translate-x-1 transition-transform"
-							>{@html Icons.ArrowRight}</span
-						>
+						<span class="group-hover:translate-x-1 transition-transform"><IconArrowRight size={20} stroke={2} /></span>
 					</a>
 					<a
 						href="/methodology"
@@ -1102,7 +1095,6 @@
 	</div>
 </div>
 
-<MarketingFooter />
 
 <style>
 	/* --- Custom Styles for Specific Effects --- */
@@ -1149,17 +1141,17 @@
 	}
 
 	/* Custom Scrollbar */
-	::-webkit-scrollbar {
+	:global(::-webkit-scrollbar) {
 		width: 8px;
 	}
-	::-webkit-scrollbar-track {
+	:global(::-webkit-scrollbar-track) {
 		background: #020202;
 	}
-	::-webkit-scrollbar-thumb {
+	:global(::-webkit-scrollbar-thumb) {
 		background: #1e293b;
 		border-radius: 4px;
 	}
-	::-webkit-scrollbar-thumb:hover {
+	:global(::-webkit-scrollbar-thumb:hover) {
 		background: #334155;
 	}
 </style>

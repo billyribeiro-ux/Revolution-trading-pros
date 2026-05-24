@@ -12,14 +12,14 @@
 	 *
 	 * @version 2.0.0
 	 */
-	import SEOHead from '$lib/components/SEOHead.svelte';
+	import SEOHead from '$lib/components/seo/SeoHead.svelte';
 	import { LoginLayout, TradingHeroBackground, LoginForm } from '$lib/components/auth';
 </script>
 
 <SEOHead
 	title="Login to Your Trading Account | Revolution Trading Pros"
 	description="Access your Revolution Trading Pros account. Log in to your live trading rooms, real-time alerts, and expert courses dashboard."
-	canonical="/login"
+	canonicalUrl="/login"
 	ogType="website"
 	keywords={[
 		'trading login',

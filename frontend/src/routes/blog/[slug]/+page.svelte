@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { RawSchemaConfig } from '$lib/utils/structured-data';
 	/**
 	 * Blog Post Page - Svelte 5 Runes Implementation
 	 * ICT11+ Production-Grade with Full Analytics & Engagement Features
@@ -8,7 +9,7 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
-	import SEOHead from '$lib/components/SEOHead.svelte';
+	import SEOHead from '$lib/components/seo/SeoHead.svelte';
 	import BlurHashImage from '$lib/components/ui/BlurHashImage.svelte';
 	import TableOfContents from '$lib/components/blog/TableOfContents.svelte';
 	import FloatingTocWidget from '$lib/components/blog/FloatingTocWidget.svelte';
@@ -17,8 +18,7 @@
 	import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
 	import type { Post } from '$lib/types/post';
 	import { sanitizeBlogContent } from '$lib/utils/sanitize';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-	import {
+		import {
 		initReadingAnalytics,
 		calculateReadingTime,
 		formatReadingTime
@@ -209,12 +209,12 @@
 	<SEOHead
 		title={seoTitle ?? post.title}
 		description={seoDescription ?? ''}
-		canonical={`/blog/${post.slug}`}
+		canonicalUrl={`/blog/${post.slug}`}
 		ogType="article"
-		ogImage={post.featured_image}
-		author={post.author?.name ?? null}
-		publishedTime={post.published_at}
-		schema={articleSchema}
+		ogImage={post.featured_image ?? undefined}
+		articleAuthor={post.author?.name ?? undefined}
+		articlePublishedTime={post.published_at}
+		structuredData={{ type: 'Raw' as const, data: articleSchema as Record<string, unknown> } satisfies RawSchemaConfig}
 	/>
 {/if}
 
@@ -511,7 +511,6 @@
 	{/if}
 </div>
 
-<MarketingFooter />
 
 <style>
 	/* 2026 CSS Standards: CSS Layers, oklch colors, container queries, color-mix */

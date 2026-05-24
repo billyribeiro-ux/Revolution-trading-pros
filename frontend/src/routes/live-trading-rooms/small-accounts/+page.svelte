@@ -3,9 +3,9 @@
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
-	import SEOHead from '$lib/components/SEOHead.svelte';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-
+	import SEOHead from '$lib/components/seo/SeoHead.svelte';
+	import type { StructuredDataConfig } from '$lib/utils/structured-data';
+	
 	// --- Pricing State (Svelte 5 Runes) ---
 	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = $state('quarterly');
 
@@ -120,82 +120,38 @@
 	];
 
 	// --- SEO: STRUCTURED DATA (JSON-LD) ---
-	const productSchema = {
-		'@context': 'https://schema.org',
-		'@type': 'Product',
-		name: 'Small Accounts Day Trading Room',
+	const productSchema: StructuredDataConfig = {
+		type: 'Product',
+		url: '/live-trading-rooms/small-accounts',
+		name: 'Small Account Options Room',
 		description:
 			'Live trading room designed for growing small accounts (under $25k). Learn professional SPX 0DTE strategies optimized for cash accounts to avoid PDT restrictions.',
-		brand: {
-			'@type': 'Organization',
-			name: 'Revolution Trading Pros'
-		},
-		aggregateRating: {
-			'@type': 'AggregateRating',
-			ratingValue: '4.9',
-			reviewCount: '184'
-		},
-		offers: {
-			'@type': 'AggregateOffer',
-			priceCurrency: 'USD',
-			lowPrice: '97',
-			highPrice: '1647',
-			offerCount: '3',
-			offers: [
-				{
-					'@type': 'Offer',
-					name: 'Monthly Access',
-					price: '197',
-					priceCurrency: 'USD',
-					availability: 'https://schema.org/InStock',
-					priceSpecification: {
-						'@type': 'UnitPriceSpecification',
-						price: '197',
-						priceCurrency: 'USD',
-						referenceQuantity: { '@type': 'QuantitativeValue', value: '1', unitCode: 'MON' }
-					}
-				},
-				{
-					'@type': 'Offer',
-					name: 'Quarterly Access',
-					price: '497',
-					priceCurrency: 'USD',
-					availability: 'https://schema.org/InStock'
-				},
-				{
-					'@type': 'Offer',
-					name: 'Annual Access',
-					price: '1647',
-					priceCurrency: 'USD',
-					availability: 'https://schema.org/InStock'
-				}
-			]
-		}
+		brand: 'Revolution Trading Pros',
+		price: 197,
+		priceCurrency: 'USD',
+		availability: 'InStock',
+		ratingValue: 4.9,
+		reviewCount: 184
 	};
 
-	const faqSchema = {
-		'@context': 'https://schema.org',
-		'@type': 'FAQPage',
-		mainEntity: faqList.map((item) => ({
-			'@type': 'Question',
-			name: item.question,
-			acceptedAnswer: {
-				'@type': 'Answer',
-				text: item.answer
-			}
+	const faqSchema: StructuredDataConfig = {
+		type: 'FAQPage',
+		questions: faqList.map((item) => ({
+			question: item.question,
+			answer: item.answer
 		}))
 	};
 
-	const combinedSchema = [productSchema, faqSchema];
+	const combinedSchema: StructuredDataConfig[] = [productSchema, faqSchema];
 </script>
 
 <SEOHead
-	title="Small Accounts Day Trading Room | Grow Accounts Under $25k"
-	description="The #1 live trading room for small accounts. Learn to trade SPX 0DTE options without PDT restrictions. Live screen share, real-time alerts, and risk management."
-	canonical="/live-trading-rooms/small-accounts"
+	title="Small Account Options Room | PDT-Free SPX Strategy for Accounts Under $25k"
+	description="A dedicated small-account options room focused on cash-account execution, PDT-free routines, SPX 0DTE risk control, and account-preservation habits."
+	canonicalUrl="/live-trading-rooms/small-accounts"
 	ogType="product"
 	ogImage="/images/day-trading-og.jpg"
-	ogImageAlt="Small Accounts Day Trading Room - PDT-Free Strategies"
+	ogImageAlt="Small Account Options Room - PDT-Free SPX Strategies"
 	keywords={[
 		'small account day trading',
 		'how to trade under 25k',
@@ -205,18 +161,14 @@
 		'live trading room discord',
 		'growing a small trading account'
 	]}
-	schema={combinedSchema}
-	schemaType="Product"
-	productPrice={197}
-	productCurrency="USD"
-	productAvailability="in stock"
+	structuredData={combinedSchema}
 />
 
 <div class="w-full bg-rtp-bg text-rtp-text font-sans selection:bg-rtp-primary selection:text-white">
 	<section class="relative min-h-[90vh] flex items-center overflow-hidden py-24 lg:py-0">
 		<div class="absolute inset-0 bg-rtp-bg z-0 pointer-events-none">
 			<div
-				class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"
+				class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-size-[40px_40px] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"
 			></div>
 			<div
 				class="absolute top-0 right-0 w-[600px] h-[600px] bg-rtp-primary/10 rounded-full blur-[120px] animate-pulse"
@@ -250,7 +202,7 @@
 					class="text-4xl md:text-6xl font-heading font-extrabold mb-6 leading-tight tracking-tight"
 				>
 					Master <span
-						class="text-transparent bg-clip-text bg-gradient-to-r from-rtp-primary to-emerald-400"
+						class="text-transparent bg-clip-text bg-linear-to-r from-rtp-primary to-emerald-400"
 						>0DTE Options</span
 					> <br />Without The PDT Rule.
 				</h1>
@@ -267,7 +219,7 @@
 						href="#pricing"
 						class="bg-rtp-primary text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-600 transition-all shadow-lg shadow-rtp-primary/25 hover:-translate-y-1 flex items-center justify-center gap-2"
 					>
-						Join the Live Room
+						Join the Small Account Room
 						<svg aria-hidden="true" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
 							><path
 								stroke-linecap="round"
@@ -310,39 +262,71 @@
 
 			<div class="hidden lg:block relative perspective-1000">
 				<div
-					class="absolute inset-0 bg-gradient-to-tr from-rtp-primary/20 to-transparent rounded-full blur-3xl transform translate-y-10"
+					class="absolute inset-0 bg-linear-to-tr from-rtp-primary/20 to-transparent rounded-full blur-3xl transform translate-y-10"
 				></div>
 
 				<div
 					class="relative transform rotate-y-[-5deg] hover:rotate-0 transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]"
 				>
-					<div class="rounded-2xl overflow-hidden border border-rtp-border shadow-2xl bg-[#1a1b26]">
-						[Image of live trading software interface]
-					</div>
-
 					<div
-						class="absolute -bottom-6 -left-6 bg-rtp-surface/95 backdrop-blur-xl border border-rtp-border p-4 rounded-xl shadow-2xl animate-bounce-slow"
+						class="relative bg-rtp-surface/80 backdrop-blur-xl border border-rtp-border/50 rounded-3xl p-6 shadow-2xl transform rotate-y-[-10deg] rotate-x-[5deg] hover:rotate-0 transition-transform duration-700 ease-out"
 					>
-						<div class="flex items-center gap-3">
-							<div class="bg-emerald-500/20 p-2 rounded-lg">
-								<svg
-									class="w-6 h-6 text-emerald-500"
-									fill="none"
-									stroke="currentColor"
-									viewBox="0 0 24 24"
-									><path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-									/></svg
+						<div class="flex items-center justify-between mb-6 border-b border-rtp-border/30 pb-4">
+							<div class="flex items-center gap-3">
+								<div
+									class="w-10 h-10 rounded-full bg-linear-to-br from-rtp-primary to-rtp-blue flex items-center justify-center text-white font-bold shadow-inner"
 								>
-							</div>
-							<div>
-								<div class="text-[10px] text-rtp-muted uppercase font-bold tracking-wider">
-									Latest Call
+									<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+										><path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											stroke-width="2"
+											d="M13 10V3L4 14h7v7l9-11h-7z"
+										/></svg
+									>
 								</div>
-								<div class="text-white font-bold font-mono">SPX 4450 Calls @ $2.50</div>
+								<div>
+									<div class="font-bold text-rtp-text">Small Account Mastery</div>
+									<div class="text-xs text-rtp-emerald">● Live Trading Room</div>
+								</div>
+							</div>
+							<div class="text-xs font-mono text-rtp-muted bg-rtp-bg px-2 py-1 rounded">
+								10:32:45 EST
+							</div>
+						</div>
+
+						<div class="space-y-4">
+							<div class="bg-rtp-bg/50 p-4 rounded-xl border-l-4 border-emerald-500">
+								<div class="flex justify-between text-xs mb-2">
+									<span class="text-emerald-500 font-bold uppercase">New Signal</span>
+									<span class="text-rtp-muted">Just now</span>
+								</div>
+								<div class="text-sm font-mono text-rtp-text mb-1">
+									BTO <span class="font-bold text-white">SPX 4580 CALL</span> @ $3.50
+								</div>
+								<div class="flex gap-4 text-xs text-rtp-muted">
+									<span>🛑 Stop: $2.10</span>
+									<span>🎯 Target: $5.00+</span>
+								</div>
+							</div>
+							<div class="bg-rtp-bg/50 p-4 rounded-xl border-l-4 border-rtp-blue opacity-60">
+								<div class="flex justify-between text-xs mb-2">
+									<span class="text-rtp-blue font-bold uppercase">Update</span>
+									<span class="text-rtp-muted">15m ago</span>
+								</div>
+								<div class="text-sm text-rtp-text">
+									Approaching VWAP support. Watching for bounce to add to runners.
+								</div>
+							</div>
+						</div>
+
+						<div
+							class="absolute -bottom-6 -right-6 bg-white text-rtp-bg px-6 py-3 rounded-xl shadow-xl font-bold border-2 border-rtp-bg flex items-center gap-2 animate-bounce"
+						>
+							<span class="text-2xl">🚀</span>
+							<div>
+								<div class="text-xs uppercase tracking-wide opacity-70">Last Trade</div>
+								<div class="text-emerald-600">+85% Profit</div>
 							</div>
 						</div>
 					</div>
@@ -461,7 +445,7 @@
 				</div>
 				<div class="relative">
 					<div
-						class="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-blue-500/20 rounded-3xl blur-2xl"
+						class="absolute inset-0 bg-linear-to-r from-emerald-500/20 to-blue-500/20 rounded-3xl blur-2xl"
 					></div>
 					<div class="relative bg-rtp-surface border border-rtp-border rounded-2xl p-8 shadow-2xl">
 						[Image of trading chart with support and resistance lines]
@@ -592,7 +576,7 @@
 			</div>
 
 			<div
-				class="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-rtp-border before:to-transparent"
+				class="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-linear-to-b before:from-transparent before:via-rtp-border before:to-transparent"
 			>
 				<div
 					data-gsap
@@ -798,13 +782,13 @@
 						$9.85 / trading day
 					</div>
 					<ul class="space-y-4 mb-8 text-sm text-rtp-muted">
-						<li class="flex gap-3"><span class="text-rtp-primary">✓</span> Live Voice & Screen</li>
-						<li class="flex gap-3"><span class="text-rtp-primary">✓</span> Real-time SPX Alerts</li>
-						<li class="flex gap-3"><span class="text-rtp-primary">✓</span> Chat Access</li>
-						<li class="flex gap-3"><span class="text-rtp-primary">✓</span> Small Account Guide</li>
+						<li class="flex gap-3"><span class="text-rtp-primary">✓</span> Cash-account execution plan</li>
+						<li class="flex gap-3"><span class="text-rtp-primary">✓</span> PDT-free SPX setups</li>
+						<li class="flex gap-3"><span class="text-rtp-primary">✓</span> Risk-per-trade guardrails</li>
+						<li class="flex gap-3"><span class="text-rtp-primary">✓</span> Small account guide</li>
 					</ul>
 					<a
-						href="/checkout/monthly-room"
+						href="/checkout/monthly-small-accounts"
 						class="block w-full py-3 bg-rtp-bg border border-rtp-border text-white font-bold rounded-lg text-center hover:bg-white hover:text-black transition-colors"
 						>Select Monthly</a
 					>
@@ -837,17 +821,17 @@
 							<span class="font-bold">Priority Support</span>
 						</li>
 						<li class="flex gap-3">
-							<span class="text-rtp-emerald font-bold">✓</span> Live Voice & Screen
+							<span class="text-rtp-emerald font-bold">✓</span> Cash-account execution plan
 						</li>
 						<li class="flex gap-3">
-							<span class="text-rtp-emerald font-bold">✓</span> Real-time SPX Alerts
+							<span class="text-rtp-emerald font-bold">✓</span> PDT-free SPX setups
 						</li>
 						<li class="flex gap-3">
-							<span class="text-rtp-emerald font-bold">✓</span> Small Account Guide
+							<span class="text-rtp-emerald font-bold">✓</span> Small account guide
 						</li>
 					</ul>
 					<a
-						href="/checkout/quarterly-room"
+						href="/checkout/quarterly-small-accounts"
 						class="block w-full py-4 bg-rtp-emerald text-white font-bold rounded-xl text-center hover:bg-emerald-600 transition-colors shadow-lg hover:shadow-emerald-500/50"
 						>Join Quarterly</a
 					>
@@ -874,12 +858,12 @@
 							<span class="text-rtp-indigo">✓</span>
 							<span class="font-bold">1-on-1 Coaching Call</span>
 						</li>
-						<li class="flex gap-3"><span class="text-rtp-indigo">✓</span> Live Voice & Screen</li>
-						<li class="flex gap-3"><span class="text-rtp-indigo">✓</span> Real-time Alerts</li>
-						<li class="flex gap-3"><span class="text-rtp-indigo">✓</span> Chat Access</li>
+						<li class="flex gap-3"><span class="text-rtp-indigo">✓</span> Cash-account execution plan</li>
+						<li class="flex gap-3"><span class="text-rtp-indigo">✓</span> PDT-free SPX setups</li>
+						<li class="flex gap-3"><span class="text-rtp-indigo">✓</span> Account growth review</li>
 					</ul>
 					<a
-						href="/checkout/annual-room"
+						href="/checkout/annual-small-accounts"
 						class="block w-full py-3 bg-rtp-bg border border-rtp-indigo text-rtp-indigo font-bold rounded-lg text-center hover:bg-rtp-indigo hover:text-white transition-colors"
 						>Select Annual</a
 					>
@@ -891,7 +875,7 @@
 					Secure checkout powered by Stripe. Cancel anytime.
 				</p>
 				<div
-					class="flex items-center justify-center gap-2 text-rtp-muted text-sm bg-rtp-surface inline-flex px-4 py-2 rounded-full border border-rtp-border"
+					class="inline-flex items-center justify-center gap-2 text-rtp-muted text-sm bg-rtp-surface px-4 py-2 rounded-full border border-rtp-border"
 				>
 					<svg
 						class="w-4 h-4 text-emerald-500"
@@ -958,7 +942,7 @@
 	</section>
 
 	<section
-		class="py-24 bg-gradient-to-br from-rtp-primary to-indigo-900 text-white text-center relative overflow-hidden"
+		class="py-24 bg-linear-to-br from-rtp-primary to-indigo-900 text-white text-center relative overflow-hidden"
 	>
 		<div class="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10"></div>
 		<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -966,8 +950,8 @@
 				Market Opens at 9:30 AM ET.
 			</h2>
 			<p class="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
-				Don't trade alone tomorrow. Join 500+ traders in the live room and start growing your small
-				account correctly.
+				Don't trade a small account with large-account habits. Join a room built around PDT-free
+				execution, tight risk, and repeatable account growth.
 			</p>
 			<a
 				href="#pricing"
@@ -980,4 +964,3 @@
 	</section>
 </div>
 
-<MarketingFooter />

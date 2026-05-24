@@ -35,6 +35,7 @@
 	--rtp-border: rgba(255, 255, 255, 0.1);
 	--rtp-muted: #6b7280;
 	--rtp-primary: #3b82f6;
+	--rtp-primary-60: rgba(59, 130, 246, 0.6);
 	--rtp-emerald: #10b981;
 	--rtp-indigo: #6366f1;
 	--rtp-blue: #3b82f6;
@@ -89,14 +90,4 @@
 	font-family: var(--font-heading);
 }
 
-/* Universal border + outline default for marketing-only descendants.
-   Replaces the `.marketing-page-root *` rule that previously lived in app.css.
-   Hex values are inlined (not @apply'd from app.css tokens) so this sheet
-   has zero dependency on the shadcn theme. Values match what
-   `border-border` / `outline-ring/50` resolved to under app.css's light theme. */
-.marketing-shell *,
-.marketing-shell *::before,
-.marketing-shell *::after {
-	border-color: oklch(0.92 0.004 286.32);
-	outline-color: oklch(0.705 0.015 286.067 / 0.5);
-}
+/* REMOVED 2026-05-23: Universal border rule caused white borders on all elements */

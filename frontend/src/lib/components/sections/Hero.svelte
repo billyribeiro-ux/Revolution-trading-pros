@@ -697,50 +697,79 @@
 	// ============================================================================
 	// LIFECYCLE
 	// ============================================================================
-	onMount(async () => {
+	// PE7 SVELTE 5 PATTERN: Synchronous onMount with async setup inside
+	// This ensures proper cleanup function return and SSR safety
+	onMount(() => {
 		if (!browser) return;
 
 		currentSlide = 0;
 		previousSlide = -1;
 
-		// Wait for DOM bindings to be ready
-		await tick();
-
-		if (heroSection && typeof ResizeObserver !== 'undefined') {
-			resizeObserver = new ResizeObserver(handleResize);
-			resizeObserver.observe(heroSection);
-		}
-
-		if (heroSection) {
-			setupVisibilityObserver();
-		}
-
-		if (chartContainer && heroSection) {
-			// ICT 7: Await the async function to properly handle any rejections
-			try {
-				await initChart();
-			} catch {
-				// Chart initialization failed - continue without chart
+		// PE7: Schedule async initialization
+		tick().then(() => {
+			// Setup ResizeObserver
+			if (heroSection && typeof ResizeObserver !== 'undefined') {
+				resizeObserver = new ResizeObserver(handleResize);
+				resizeObserver.observe(heroSection);
 			}
-		}
 
+			if (heroSection) {
+				setupVisibilityObserver();
+			}
+
+			// Initialize chart independently
+			if (chartContainer && heroSection) {
+				initChart().catch(() => {
+					// Chart initialization failed - continue without chart
+				});
+			}
+
+			// PE7: Load GSAP with proper error handling
+			initGSAP();
+
+			// Start slide rotation
+			slideInterval = setInterval(nextSlide, 7000);
+			startProgressTimer();
+		});
+	});
+
+	// PE7: Separate async function for GSAP initialization
+	async function initGSAP(): Promise<void> {
 		try {
 			const gsapModule = await import('gsap');
 			gsapLib = gsapModule?.gsap || gsapModule?.default || null;
-			if (gsapLib) {
-				gsapLoaded = true;
-				// Wait another tick to ensure slide elements are in DOM
-				await tick();
-				animateSlideIn(currentSlide);
-			}
-		} catch (e) {
-			console.warn('GSAP failed to load:', e);
-		}
 
-		// Start slide rotation
-		slideInterval = setInterval(nextSlide, 7000);
-		startProgressTimer();
-	});
+			if (!gsapLib) {
+				console.warn('[Hero] GSAP library not available');
+				return;
+			}
+
+			// PE7: Wait for DOM to be fully ready
+			await tick();
+			await new Promise(resolve => requestAnimationFrame(resolve));
+
+			// PE7: Verify slide element exists before animating
+			const slide = document.querySelector(`[data-slide="${currentSlide}"]`);
+			if (!slide) {
+				console.warn(`[Hero] Slide ${currentSlide} not found in DOM, retrying...`);
+				// Retry after another tick
+				await tick();
+				await new Promise(resolve => setTimeout(resolve, 100));
+				
+				const retrySlide = document.querySelector(`[data-slide="${currentSlide}"]`);
+				if (!retrySlide) {
+					console.error(`[Hero] Slide ${currentSlide} still not found, skipping animation`);
+					return;
+				}
+			}
+
+			gsapLoaded = true;
+			animateSlideIn(currentSlide);
+			console.info('[Hero] GSAP animations initialized successfully');
+		} catch (e) {
+			console.error('[Hero] GSAP initialization failed:', e);
+		}
+	}
 
 	onDestroy(() => {
 		if (slideInterval) clearInterval(slideInterval);
@@ -762,7 +791,7 @@
 	<div class="hero-ambient" aria-hidden="true">
 		<div class="ambient-gradient"></div>
 		<div class="ambient-grid"></div>
-		<div class="ambient-glow" style="--accent-color: {SLIDES[currentSlide]!.accentColor}"></div>
+		<div class="ambient-glow" style="--accent-color: {SLIDES[currentSlide]?.accentColor ?? '#00d4ff'}"></div>
 	</div>
 
 	<!-- Chart Background -->

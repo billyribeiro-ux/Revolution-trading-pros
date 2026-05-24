@@ -17,11 +17,11 @@
 	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
 	import IconSchool from '@tabler/icons-svelte-runes/icons/school';
 	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
-	import SEOHead from '$lib/components/SEOHead.svelte';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-
+	import SEOHead from '$lib/components/seo/SeoHead.svelte';
+	import type { StructuredDataConfig } from '$lib/utils/structured-data';
+	
 	// Data & types extracted for maintainability
-	import { indicators, goldenSetup, faqs, categories, indicatorsSchema } from './data';
+	import { indicators, goldenSetup, faqs, categories } from './data';
 
 	// --- State Management (Svelte 5 Runes) ---
 	let heroVisible = $state(false);
@@ -190,7 +190,7 @@
 <SEOHead
 	title="Best Technical Indicators for Day Trading (2026 Guide)"
 	description="Stop guessing. Master the RSI, VWAP, MACD, and Bollinger Bands. Get the exact 'Golden Setup' configurations used by professional traders."
-	canonical="/indicators"
+	canonicalUrl="/indicators"
 	ogType="article"
 	ogImage="/og-indicators-guide.webp"
 	ogImageAlt="Technical Analysis Indicators Guide"
@@ -205,7 +205,18 @@
 		'chart reading',
 		'golden setup'
 	]}
-	schema={indicatorsSchema['@graph']}
+	structuredData={[
+		{
+			type: 'FAQPage',
+			questions: faqs.map((f) => ({ question: f.question, answer: f.answer }))
+		} satisfies StructuredDataConfig,
+		{
+			type: 'WebPage',
+			url: '/indicators',
+			name: 'Best Technical Indicators for Day Trading (2026 Guide)',
+			description: "Stop guessing. Master the RSI, VWAP, MACD, and Bollinger Bands. Get the exact 'Golden Setup' configurations used by professional traders."
+		} satisfies StructuredDataConfig
+	]}
 />
 
 <div class="indicators-page antialiased">
@@ -646,7 +657,6 @@
 	</section>
 </div>
 
-<MarketingFooter />
 
 <style>
 	/* * RESTORED CUSTOM CSS ARCHITECTURE 

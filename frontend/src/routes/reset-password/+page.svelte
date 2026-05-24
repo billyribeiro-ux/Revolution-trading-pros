@@ -14,7 +14,7 @@
 		IconEyeOff
 	} from '$lib/icons';
 	import { browser } from '$app/environment';
-	import SEOHead from '$lib/components/SEOHead.svelte';
+	import SEOHead from '$lib/components/seo/SeoHead.svelte';
 
 	// Svelte 5 state runes
 	let email = $state('');
@@ -72,7 +72,7 @@
 <SEOHead
 	title="Reset Password - Secure Account Recovery"
 	description="Reset your Revolution Trading Pros account password securely. Create a new password for your trading account."
-	canonical="/reset-password"
+	canonicalUrl="/reset-password"
 	ogType="website"
 	noindex={true}
 />

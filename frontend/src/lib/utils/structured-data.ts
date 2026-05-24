@@ -511,6 +511,12 @@ export interface WebPageConfig {
 	};
 }
 
+/** Escape hatch for raw JSON-LD objects that don't map to a typed config. */
+export interface RawSchemaConfig {
+	type: 'Raw';
+	data: Record<string, unknown>;
+}
+
 export type StructuredDataConfig =
 	| OrganizationConfig
 	| WebSiteConfig
@@ -525,7 +531,8 @@ export type StructuredDataConfig =
 	| VideoConfig
 	| HowToConfig
 	| CollectionPageConfig
-	| WebPageConfig;
+	| WebPageConfig
+	| RawSchemaConfig;
 
 // =============================================================================
 // Generator Functions
@@ -1520,6 +1527,8 @@ export function generateStructuredData(config: StructuredDataConfig): BaseStruct
 			return generateCollectionPage(config);
 		case 'WebPage':
 			return generateWebPage(config);
+		case 'Raw':
+			return config.data as BaseStructuredData;
 		default:
 			throw new Error(`Unknown structured data type: ${(config as StructuredDataConfig).type}`);
 	}

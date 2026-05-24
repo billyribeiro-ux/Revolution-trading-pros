@@ -7,7 +7,7 @@
 	 * Stock Indexes List Page - Google L11 Enterprise Standard
 	 * Comprehensive stock index education and reference resource
 	 */
-	import SEOHead from '$lib/components/SEOHead.svelte';
+	import SEOHead from '$lib/components/seo/SeoHead.svelte';
 	import { fade, fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import {
@@ -17,7 +17,8 @@
 		IconQuestionMark,
 		IconExternalLink,
 		IconChartBar,
-		IconBuildingSkyscraper
+		IconBuildingSkyscraper,
+		IconChevronDown
 	} from '$lib/icons';
 
 	// Major Stock Indexes with detailed info
@@ -182,7 +183,7 @@
 <SEOHead
 	title="Stock Indexes List"
 	description="The S&P 500 is a prominent stock index that tracks the 500 largest companies listed on major U.S. exchanges. Learn about major stock indexes and how to trade them."
-	canonical="/resources/stock-indexes-list"
+	canonicalUrl="/resources/stock-indexes-list"
 	ogType="website"
 	keywords={[
 		'stock indexes',
@@ -371,19 +372,7 @@
 						<button class="faq-item__question" onclick={() => toggleFaq(i)}>
 							<IconQuestionMark size={20} class="faq-item__icon" />
 							<span>{faq.question}</span>
-							<svg
-								class="faq-item__chevron"
-								width="20"
-								height="20"
-								viewBox="0 0 20 20"
-								fill="currentColor"
-							>
-								<path
-									fill-rule="evenodd"
-									d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-									clip-rule="evenodd"
-								/>
-							</svg>
+							<span class="faq-item__chevron"><IconChevronDown size={20} /></span>
 						</button>
 						{#if expandedFaq === i}
 							<div class="faq-item__answer" in:fly={{ y: -10, duration: 200 }}>
@@ -857,6 +846,8 @@
 	}
 
 	.faq-item__chevron {
+		display: inline-flex;
+		align-items: center;
 		color: #64748b;
 		transition: transform 0.3s ease;
 		flex-shrink: 0;

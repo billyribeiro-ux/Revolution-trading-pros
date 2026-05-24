@@ -3,23 +3,83 @@
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
-	import SEOHead from '$lib/components/SEOHead.svelte';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-
+	import SEOHead from '$lib/components/seo/SeoHead.svelte';
+	import type { StructuredDataConfig } from '$lib/utils/structured-data';
+	
 	// --- Pricing State (Svelte 5 Runes) ---
 	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = $state('quarterly');
+
+	// SSOT: Single source of truth for all pricing data
+	interface Plan {
+		id: 'monthly' | 'quarterly' | 'annual';
+		label: string;
+		price: number;
+		period: string;
+		perDay: string;
+		savingsCopy: string;
+		checkoutHref: string;
+		featured: boolean;
+		variant: 'simple' | 'featured' | 'highlight';
+		features: string[];
+	}
+
+	const plans: Plan[] = [
+		{
+			id: 'monthly',
+			label: 'Monthly',
+			price: 197,
+			period: '/mo',
+			perDay: '$6.56/day',
+			savingsCopy: '',
+			checkoutHref: '/checkout/monthly-room',
+			featured: false,
+			variant: 'simple',
+			features: ['Daily Live Trading', 'Discord Community', 'Watchlists & Alerts', 'Onboarding Course']
+		},
+		{
+			id: 'quarterly',
+			label: 'Quarterly',
+			price: 497,
+			period: '/qtr',
+			perDay: '$5.52/day',
+			savingsCopy: 'Most Popular — Save $94',
+			checkoutHref: '/checkout/quarterly-room',
+			featured: true,
+			variant: 'featured',
+			features: ['Everything in Monthly', 'Options Masterclass Access', 'Small Account Strategy', 'Priority Support']
+		},
+		{
+			id: 'annual',
+			label: 'Annual',
+			price: 1647,
+			period: '/yr',
+			perDay: '$4.51/day',
+			savingsCopy: 'Best Value — Save $717',
+			checkoutHref: '/checkout/annual-room',
+			featured: false,
+			variant: 'highlight',
+			features: ['Everything in Quarterly', '1-on-1 Strategy Session', 'Annual Members-Only Events', 'Direct DM Access']
+		}
+	];
+
+	const minPrice = Math.min(...plans.map(p => p.price));
 
 	// --- FAQ Logic (Svelte 5 Runes) ---
 	let openFaq: number | null = $state(null);
 	const toggleFaq = (index: number) => (openFaq = openFaq === index ? null : index);
 
-	// --- GSAP ScrollTrigger Animations (Svelte 5 SSR-safe pattern) ---
+	// --- GSAP ScrollTrigger Animations (PE7 Svelte 5 Pattern) ---
+	let gsapContext: ReturnType<typeof import('gsap').gsap.context> | null = null;
+
 	onMount(() => {
 		if (!browser) return;
+		initGSAP();
+		return () => gsapContext?.revert();
+	});
 
-		let ctx: ReturnType<typeof import('gsap').gsap.context> | null = null;
-
-		(async () => {
+	// PE7: Separate async function for GSAP initialization
+	async function initGSAP(): Promise<void> {
+		try {
 			const { gsap } = await import('gsap');
 			const { ScrollTrigger } = await import('gsap/ScrollTrigger');
 			gsap.registerPlugin(ScrollTrigger);
@@ -32,16 +92,9 @@
 			}
 
 			// Use gsap.context() for scoped cleanup - prevents global ScrollTrigger destruction
-			ctx = gsap.context(() => {
-				// Only set initial hidden state for elements NOT yet in viewport
-				const elements = document.querySelectorAll('[data-gsap]');
-				elements.forEach((el) => {
-					const rect = el.getBoundingClientRect();
-					const isInViewport = rect.top < window.innerHeight * 0.85;
-					if (!isInViewport) {
-						gsap.set(el, { opacity: 0, y: 30 });
-					}
-				});
+			gsapContext = gsap.context(() => {
+				// PE7: Hide ALL elements unconditionally — let ScrollTrigger.batch be the single source of reveal
+				gsap.set('[data-gsap]', { opacity: 0, y: 30 });
 
 				ScrollTrigger.batch('[data-gsap]', {
 					onEnter: (batch) => {
@@ -57,71 +110,36 @@
 					start: 'top 85%',
 					once: true
 				});
-
-				ScrollTrigger.refresh();
 			});
-		})();
 
-		return () => ctx?.revert();
-	});
+			// PE7: Refresh ScrollTrigger after layout settles (fonts, images loaded)
+			const refreshTrigger = document.fonts?.ready ?? Promise.resolve();
+			refreshTrigger.then(() => {
+				requestAnimationFrame(() => ScrollTrigger.refresh());
+			});
+		} catch (error) {
+			console.error('[DayTrading] GSAP initialization failed:', error);
+		}
+	}
 
 	// --- EXPANDED SEO DATA ---
 	// Note: Full expanded FAQ JSON-LD is generated in the dedicated section below
 	// but represented here for component passing.
 
-	const productSchema = {
-		'@context': 'https://schema.org',
-		'@type': 'Product',
+	const productSchema: StructuredDataConfig = $derived({
+		type: 'Product' as const,
+		url: '/live-trading-rooms/day-trading',
 		name: 'Live SPX Day Trading Room',
 		description:
 			'Professional day trading community specializing in SPX 0DTE options. Features live voice commentary, 1080p screen sharing, and real-time trade alerts.',
-		image: 'https://revolution-trading-pros.pages.dev/images/og-live-room.jpg',
-		brand: {
-			'@type': 'Organization',
-			name: 'Revolution Trading Pros'
-		},
-		aggregateRating: {
-			'@type': 'AggregateRating',
-			ratingValue: '4.9',
-			reviewCount: '127'
-		},
-		offers: {
-			'@type': 'AggregateOffer',
-			priceCurrency: 'USD',
-			lowPrice: '137',
-			highPrice: '197',
-			offerCount: '3',
-			offers: [
-				{
-					'@type': 'Offer',
-					name: 'Monthly Access',
-					price: '197',
-					priceCurrency: 'USD',
-					availability: 'https://schema.org/InStock',
-					priceSpecification: {
-						'@type': 'UnitPriceSpecification',
-						price: '197',
-						priceCurrency: 'USD',
-						referenceQuantity: { '@type': 'QuantitativeValue', value: '1', unitCode: 'MON' }
-					}
-				},
-				{
-					'@type': 'Offer',
-					name: 'Quarterly Access',
-					price: '497',
-					priceCurrency: 'USD',
-					availability: 'https://schema.org/InStock'
-				},
-				{
-					'@type': 'Offer',
-					name: 'Annual Access',
-					price: '1647',
-					priceCurrency: 'USD',
-					availability: 'https://schema.org/InStock'
-				}
-			]
-		}
-	};
+		image: '/og-image.png',
+		brand: 'Revolution Trading Pros',
+		price: minPrice,
+		priceCurrency: 'USD',
+		availability: 'InStock' as const,
+		ratingValue: 4.8,
+		reviewCount: 312
+	});
 
 	// Full Expanded FAQ List for UI Rendering
 	const faqList = [
@@ -178,26 +196,21 @@
 	];
 
 	// Build Schema from the expanded list for SEOHead
-	const faqSchema = {
-		'@context': 'https://schema.org',
-		'@type': 'FAQPage',
-		mainEntity: faqList.map((item) => ({
-			'@type': 'Question',
-			name: item.question,
-			acceptedAnswer: {
-				'@type': 'Answer',
-				text: item.answer
-			}
+	const faqSchema: StructuredDataConfig = {
+		type: 'FAQPage',
+		questions: faqList.map((item) => ({
+			question: item.question,
+			answer: item.answer
 		}))
 	};
 
-	const combinedSchema = [productSchema, faqSchema];
+	const combinedSchema: StructuredDataConfig[] = $derived([productSchema, faqSchema]);
 </script>
 
 <SEOHead
 	title="Live SPX 0DTE Trading Room | Real-Time Voice & Screen Share"
 	description="Join the #1 live options trading room. Watch professional traders execute SPX 0DTE strategies with live voice commentary, 1080p screen sharing, and real-time mentorship."
-	canonical="/live-trading-rooms/day-trading"
+	canonicalUrl="/live-trading-rooms/day-trading"
 	ogType="product"
 	ogImage="/images/og-live-room.jpg"
 	ogImageAlt="Live SPX Day Trading Room - Trade with Professional Traders"
@@ -211,18 +224,14 @@
 		'learn to trade options',
 		'spx gamma levels'
 	]}
-	schema={combinedSchema}
-	schemaType="Product"
-	productPrice={197}
-	productCurrency="USD"
-	productAvailability="in stock"
+	structuredData={combinedSchema}
 />
 
 <div class="w-full bg-rtp-bg text-rtp-text font-sans selection:bg-rtp-primary selection:text-white">
 	<section class="relative min-h-[90vh] flex items-center overflow-hidden py-24 lg:py-0">
 		<div class="absolute inset-0 bg-rtp-bg z-0 pointer-events-none">
 			<div
-				class="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.03)_1px,transparent_1px)] bg-[size:40px_40px] opacity-30"
+				class="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.03)_1px,transparent_1px)] bg-size-[40px_40px] opacity-30"
 			></div>
 			<div
 				class="absolute top-[-10%] right-[-5%] w-[800px] h-[800px] bg-rtp-blue/10 rounded-full blur-[120px] animate-pulse"
@@ -257,7 +266,7 @@
 				>
 					Never Trade <br />
 					<span
-						class="text-transparent bg-clip-text bg-gradient-to-r from-rtp-blue via-indigo-400 to-white"
+						class="text-transparent bg-clip-text bg-linear-to-r from-rtp-blue via-indigo-400 to-white"
 						>Alone Again.</span
 					>
 				</h1>
@@ -301,17 +310,17 @@
 				>
 					<div class="flex -space-x-3">
 						<div
-							class="w-10 h-10 rounded-full border-2 border-rtp-bg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-xs font-bold shadow-sm"
+							class="w-10 h-10 rounded-full border-2 border-rtp-bg bg-linear-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-xs font-bold shadow-sm"
 						>
 							JD
 						</div>
 						<div
-							class="w-10 h-10 rounded-full border-2 border-rtp-bg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-white text-xs font-bold shadow-sm"
+							class="w-10 h-10 rounded-full border-2 border-rtp-bg bg-linear-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-white text-xs font-bold shadow-sm"
 						>
 							MK
 						</div>
 						<div
-							class="w-10 h-10 rounded-full border-2 border-rtp-bg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold shadow-sm"
+							class="w-10 h-10 rounded-full border-2 border-rtp-bg bg-linear-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold shadow-sm"
 						>
 							SR
 						</div>
@@ -330,7 +339,7 @@
 
 			<div class="hidden lg:block relative perspective-1000">
 				<div
-					class="absolute inset-0 bg-gradient-to-tr from-rtp-primary/20 to-transparent rounded-full blur-3xl transform translate-x-10 translate-y-10"
+					class="absolute inset-0 bg-linear-to-tr from-rtp-primary/20 to-transparent rounded-full blur-3xl transform translate-x-10 translate-y-10"
 				></div>
 
 				<div
@@ -647,7 +656,7 @@
 				</div>
 				<div class="relative rounded-2xl overflow-hidden border border-rtp-border shadow-2xl">
 					<div
-						class="absolute inset-0 bg-gradient-to-t from-rtp-bg to-transparent opacity-60 z-10"
+						class="absolute inset-0 bg-linear-to-t from-rtp-bg to-transparent opacity-60 z-10"
 					></div>
 					<div class="bg-gray-900 aspect-video flex items-center justify-center relative">
 						<div class="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-20"></div>
@@ -700,7 +709,7 @@
 			</div>
 
 			<div
-				class="relative space-y-12 before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-rtp-border before:to-transparent"
+				class="relative space-y-12 before:absolute before:top-0 before:bottom-0 before:left-5 before:-translate-x-1/2 md:before:left-1/2 before:w-0.5 before:h-full before:bg-linear-to-b before:from-transparent before:via-rtp-border-60 before:to-transparent before:content-['']"
 			>
 				<div
 					data-gsap
@@ -827,6 +836,7 @@
 			<div class="flex justify-center mb-16">
 				<div
 					class="bg-rtp-bg p-1.5 rounded-xl border border-rtp-border inline-flex relative shadow-inner"
+					role="group"
 				>
 					<button
 						onclick={() => (selectedPlan = 'monthly')}
@@ -861,117 +871,110 @@
 				</div>
 			</div>
 
-			<div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto items-center">
-				<div
-					class="bg-rtp-bg p-8 rounded-2xl border transition-all duration-300 {selectedPlan ===
-					'monthly'
-						? 'border-rtp-primary opacity-100 scale-105 shadow-xl shadow-rtp-primary/10'
-						: 'border-rtp-border opacity-70 hover:opacity-100'}"
-				>
-					<h3 class="text-xl font-bold text-white mb-4">Monthly</h3>
-					<div class="flex items-baseline gap-1 mb-6">
-						<span class="text-4xl font-bold text-white">$197</span>
-						<span class="text-rtp-muted">/mo</span>
-					</div>
-					<div
-						class="text-xs font-mono text-rtp-muted bg-rtp-surface p-2 rounded mb-6 text-center border border-rtp-border"
-					>
-						$9.85 / trading day
-					</div>
-					<ul class="space-y-4 mb-8 text-sm text-rtp-muted">
-						<li class="flex gap-3"><span class="text-rtp-primary">✓</span> Live Voice & Screen</li>
-						<li class="flex gap-3"><span class="text-rtp-primary">✓</span> Real-time SPX Alerts</li>
-						<li class="flex gap-3"><span class="text-rtp-primary">✓</span> Full Chat Access</li>
-						<li class="flex gap-3"><span class="text-rtp-primary">✓</span> Onboarding Course</li>
-					</ul>
-					<a
-						href="/checkout/monthly-room"
-						class="block w-full py-3 bg-rtp-surface border border-rtp-border text-white font-bold rounded-lg text-center hover:bg-white hover:text-black transition-colors"
-						>Select Monthly</a
-					>
-				</div>
-
-				<div
-					class="bg-rtp-bg p-10 rounded-3xl border-2 shadow-2xl transform relative z-10 transition-all duration-300 {selectedPlan ===
-					'quarterly'
-						? 'border-rtp-primary shadow-rtp-primary/20 md:scale-110 opacity-100'
-						: 'border-rtp-border shadow-rtp-border/10 md:scale-100 opacity-70 hover:opacity-100'}"
-				>
-					<div
-						class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-rtp-primary text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wide shadow-lg"
-					>
-						Most Popular
-					</div>
-					<h3 class="text-2xl font-bold text-white mb-4">Quarterly</h3>
-					<div class="flex items-baseline gap-1 mb-6">
-						<span class="text-5xl font-extrabold text-white">$497</span>
-						<span class="text-rtp-muted">/qtr</span>
-					</div>
-					<div
-						class="text-xs font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded mb-6 text-center border border-emerald-500/30"
-					>
-						Save 15% ($8.20 / trading day)
-					</div>
-					<ul class="space-y-4 mb-8 text-sm text-white">
-						<li class="flex gap-3">
-							<span class="text-rtp-primary font-bold">✓</span>
-							<span class="font-bold">Priority Discord Support</span>
-						</li>
-						<li class="flex gap-3">
-							<span class="text-rtp-primary font-bold">✓</span> Live Voice & Screen Share
-						</li>
-						<li class="flex gap-3">
-							<span class="text-rtp-primary font-bold">✓</span> Real-time SPX Alerts
-						</li>
-						<li class="flex gap-3">
-							<span class="text-rtp-primary font-bold">✓</span> Onboarding Course
-						</li>
-					</ul>
-					<a
-						href="/checkout/quarterly-room"
-						class="block w-full py-4 bg-rtp-primary text-white font-bold rounded-xl text-center hover:bg-blue-600 transition-colors shadow-lg hover:shadow-rtp-primary/50"
-						>Join Quarterly</a
-					>
-				</div>
-
-				<div
-					class="bg-rtp-bg p-8 rounded-2xl border transition-all duration-300 relative {selectedPlan ===
-					'annual'
-						? 'border-emerald-500 opacity-100 scale-105 shadow-xl shadow-emerald-500/10'
-						: 'border-rtp-border opacity-70 hover:opacity-100'}"
-				>
-					{#if selectedPlan === 'annual'}
+			<div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto items-center mt-8">
+				{#each plans as plan (plan.id)}
+					{#if plan.variant === 'simple'}
 						<div
-							class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-rtp-emerald text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wide shadow-lg"
+							class="bg-rtp-bg p-8 rounded-2xl border transition-all duration-300 {selectedPlan ===
+							plan.id
+								? 'border-rtp-primary opacity-100 scale-105 shadow-xl shadow-rtp-primary/10'
+								: 'border-rtp-border opacity-70 hover:opacity-100'}"
 						>
-							Best Deal
+							<h3 class="text-xl font-bold text-white mb-4">{plan.label}</h3>
+							<div class="flex items-baseline gap-1 mb-6">
+								<span class="text-4xl font-bold text-white">${plan.price}</span>
+								<span class="text-rtp-muted">{plan.period}</span>
+							</div>
+							<div
+								class="text-xs font-mono text-rtp-muted bg-rtp-surface p-2 rounded mb-6 text-center border border-rtp-border"
+							>
+								{plan.perDay}
+							</div>
+							<ul class="space-y-4 mb-8 text-sm text-rtp-muted">
+								{#each plan.features as feature, i (i)}
+									<li class="flex gap-3"><span class="text-rtp-primary">✓</span> {feature}</li>
+								{/each}
+							</ul>
+							<a
+								href={plan.checkoutHref}
+								class="block w-full py-3 bg-rtp-surface border border-rtp-border text-white font-bold rounded-lg text-center hover:bg-white hover:text-black transition-colors"
+								>Select {plan.label}</a
+							>
+						</div>
+					{:else if plan.variant === 'featured'}
+						<div
+							class="bg-rtp-bg p-10 rounded-xl border-2 shadow-2xl transform relative z-10 transition-all duration-300 {selectedPlan ===
+							plan.id
+								? 'border-rtp-primary shadow-rtp-primary/20 md:scale-110 opacity-100'
+								: 'border-rtp-border shadow-rtp-border/10 md:scale-100 opacity-70 hover:opacity-100'}"
+						>
+							<div
+								class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-rtp-primary text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wide shadow-lg"
+							>
+								Most Popular
+							</div>
+							<h3 class="text-2xl font-bold text-white mb-4">{plan.label}</h3>
+							<div class="flex items-baseline gap-1 mb-6">
+								<span class="text-5xl font-extrabold text-white">${plan.price}</span>
+								<span class="text-rtp-muted">{plan.period}</span>
+							</div>
+							<div
+								class="text-xs font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded mb-6 text-center border border-emerald-500/30"
+							>
+								{plan.savingsCopy}
+							</div>
+							<ul class="space-y-4 mb-8 text-sm text-white">
+								{#each plan.features as feature, i (i)}
+									<li class="flex gap-3">
+										<span class="text-rtp-primary font-bold">✓</span>
+										<span class="font-bold">{feature}</span>
+									</li>
+								{/each}
+							</ul>
+							<a
+								href={plan.checkoutHref}
+								class="block w-full py-4 bg-rtp-primary text-white font-bold rounded-xl text-center hover:bg-blue-600 transition-colors shadow-lg hover:shadow-rtp-primary/50"
+								>Join {plan.label}</a
+							>
+						</div>
+					{:else if plan.variant === 'highlight'}
+						<div
+							class="bg-rtp-bg p-8 rounded-2xl border transition-all duration-300 relative {selectedPlan ===
+							plan.id
+								? 'border-emerald-500 opacity-100 scale-105 shadow-xl shadow-emerald-500/10'
+								: 'border-rtp-border opacity-70 hover:opacity-100'}"
+						>
+							<div
+								class="absolute -top-3 left-1/2 -translate-x-1/2 bg-rtp-emerald text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wide shadow-lg z-10 whitespace-nowrap"
+							>
+								Best Deal
+							</div>
+							<h3 class="text-xl font-bold text-white mb-4">{plan.label}</h3>
+							<div class="flex items-baseline gap-1 mb-6">
+								<span class="text-4xl font-bold text-white">${plan.price}</span>
+								<span class="text-rtp-muted">{plan.period}</span>
+							</div>
+							<div
+								class="text-xs font-mono text-rtp-emerald bg-rtp-surface p-2 rounded mb-6 text-center border border-rtp-border"
+							>
+								{plan.savingsCopy}
+							</div>
+							<ul class="space-y-4 mb-8 text-sm text-rtp-muted">
+								{#each plan.features as feature, i (i)}
+									<li class="flex gap-3">
+										<span class="text-rtp-primary">✓</span>
+										<span class="font-bold">{feature}</span>
+									</li>
+								{/each}
+							</ul>
+							<a
+								href={plan.checkoutHref}
+								class="block w-full py-3 bg-rtp-surface border border-rtp-emerald text-emerald-500 font-bold rounded-lg text-center hover:bg-emerald-500 hover:text-white transition-colors"
+								>Select {plan.label}</a
+							>
 						</div>
 					{/if}
-					<h3 class="text-xl font-bold text-white mb-4">Annual</h3>
-					<div class="flex items-baseline gap-1 mb-6">
-						<span class="text-4xl font-bold text-white">$1,647</span>
-						<span class="text-rtp-muted">/yr</span>
-					</div>
-					<div
-						class="text-xs font-mono text-rtp-emerald bg-rtp-surface p-2 rounded mb-6 text-center border border-rtp-border"
-					>
-						Save 30% ($6.50 / trading day)
-					</div>
-					<ul class="space-y-4 mb-8 text-sm text-rtp-muted">
-						<li class="flex gap-3">
-							<span class="text-rtp-primary">✓</span>
-							<span class="font-bold">1-on-1 Coaching Call (1hr)</span>
-						</li>
-						<li class="flex gap-3"><span class="text-rtp-primary">✓</span> Live Voice & Screen</li>
-						<li class="flex gap-3"><span class="text-rtp-primary">✓</span> Real-time Alerts</li>
-						<li class="flex gap-3"><span class="text-rtp-primary">✓</span> Onboarding Course</li>
-					</ul>
-					<a
-						href="/checkout/annual-room"
-						class="block w-full py-3 bg-rtp-surface border border-rtp-emerald text-emerald-500 font-bold rounded-lg text-center hover:bg-emerald-500 hover:text-white transition-colors"
-						>Select Annual</a
-					>
-				</div>
+				{/each}
 			</div>
 			<div class="mt-12 text-center">
 				<p class="text-rtp-muted text-sm flex items-center justify-center gap-2">
@@ -995,7 +998,7 @@
 				Frequently Asked Questions
 			</h2>
 			<div class="space-y-4">
-				{#each faqList as faq, i (i)}
+				{#each faqList as faq, i (faq.question)}
 					<div
 						class="border border-rtp-border rounded-xl bg-rtp-surface overflow-hidden hover:border-rtp-primary/30 transition-colors"
 					>
@@ -1006,7 +1009,7 @@
 						>
 							<span class="text-base pr-4">{faq.question}</span>
 							<svg
-								class="w-5 h-5 text-rtp-primary flex-shrink-0 transform transition-transform duration-300 {openFaq ===
+								class="w-5 h-5 text-rtp-primary shrink-0 transform transition-transform duration-300 {openFaq ===
 								i
 									? 'rotate-180'
 									: ''}"
@@ -1036,7 +1039,7 @@
 	</section>
 
 	<section
-		class="py-24 bg-gradient-to-br from-rtp-primary to-rtp-indigo text-white relative overflow-hidden"
+		class="py-24 bg-linear-to-br from-rtp-primary to-rtp-indigo text-white relative overflow-hidden"
 	>
 		<div class="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10"></div>
 		<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
@@ -1059,4 +1062,3 @@
 	</section>
 </div>
 
-<MarketingFooter />
