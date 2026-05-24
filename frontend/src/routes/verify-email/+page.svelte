@@ -109,11 +109,14 @@
 	// Analytics Tracking
 	// ═══════════════════════════════════════════════════════════════════════════
 
+	type GtagFn = (command: 'event', eventName: string, params?: Record<string, unknown>) => void;
+
 	function trackEvent(eventName: string, properties?: Record<string, unknown>) {
 		try {
 			// Track verification funnel events
-			if (typeof window !== 'undefined' && (window as any).gtag) {
-				(window as any).gtag('event', eventName, properties);
+			const gtag = (window as unknown as { gtag?: GtagFn }).gtag;
+			if (typeof window !== 'undefined' && gtag) {
+				gtag('event', eventName, properties);
 			}
 			console.info(`[Analytics] ${eventName}`, properties);
 		} catch (error) {
@@ -173,8 +176,9 @@
 
 			// Announce to screen readers
 			announceToScreenReader('Email verified successfully! Redirecting to login...');
-		} catch (error: any) {
-			const errorType = error.message?.toLowerCase() || '';
+		} catch (error: unknown) {
+			const e = error as { message?: string };
+			const errorType = e.message?.toLowerCase() || '';
 
 			if (errorType.includes('expired')) {
 				status = 'expired';
@@ -191,8 +195,8 @@
 				trackEvent('verification_invalid');
 			} else {
 				status = 'error';
-				errorMessage = error.message || 'Verification failed. Please try again.';
-				trackEvent('verification_error', { error: error.message });
+				errorMessage = e.message || 'Verification failed. Please try again.';
+				trackEvent('verification_error', { error: e.message });
 
 				// Offer retry if not exceeded max attempts
 				if (retryCount < maxRetries) {
@@ -238,9 +242,10 @@
 			resendSuccess = true;
 			trackEvent('verification_resend_success');
 			announceToScreenReader('Verification email sent successfully! Check your inbox.');
-		} catch (error: any) {
-			errorMessage = error.message || 'Failed to resend verification email.';
-			trackEvent('verification_resend_error', { error: error.message });
+		} catch (error: unknown) {
+			const e = error as { message?: string };
+			errorMessage = e.message || 'Failed to resend verification email.';
+			trackEvent('verification_resend_error', { error: e.message });
 			announceToScreenReader(errorMessage);
 		} finally {
 			resending = false;

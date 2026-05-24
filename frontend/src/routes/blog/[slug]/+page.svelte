@@ -56,7 +56,7 @@
 	let error = $state('');
 
 	// Derived values from page store
-	let slug = $derived(page.params['slug']!);
+	let slug = $derived(page.params['slug'] ?? '');
 
 	// Load post when slug changes. Gate on a tracked slug so the effect
 	// only fires when the param actually changes, not on every reactive

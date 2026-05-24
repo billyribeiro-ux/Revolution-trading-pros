@@ -119,14 +119,7 @@
 		return `${x},${y}`;
 	}).join(' ');
 
-	/**
-	 * Animation Controller
-	 * ICT 11+: These variables are used in bind:this directives in the template.
-	 * TypeScript doesn't recognize bind:this as a "read" operation, causing false positive lints.
-	 * They are necessary for GSAP ScrollTrigger animations.
-	 */
-	let _heroContainer: HTMLElement | undefined;
-	let _benefitsRef: HTMLElement | undefined;
+	// ctaRef is read by GSAP ScrollTrigger; other sections animate via [data-gsap] attribute selectors.
 	let ctaRef: HTMLElement | undefined;
 
 	/**
@@ -499,7 +492,6 @@
 
 	<div class="relative z-10 pt-0 pb-0 container mx-auto px-4 sm:px-6 lg:px-8">
 		<section
-			bind:this={_heroContainer}
 			class="relative min-h-[85vh] flex flex-col items-center justify-center text-center perspective-hero mb-24"
 		>
 			<div class="hero-grid-plane absolute inset-0 pointer-events-none opacity-0">
@@ -660,7 +652,7 @@
 					technology, and community.
 				</p>
 			</div>
-			<div bind:this={_benefitsRef} class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
 				{#each benefits as item (item.title)}
 					<div
 						class="p-6 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/10 transition-colors duration-300 text-center group cursor-default"

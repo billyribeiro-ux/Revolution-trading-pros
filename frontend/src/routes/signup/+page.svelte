@@ -64,10 +64,11 @@
 				password_confirmation: passwordConfirmation
 			});
 			goto('/account');
-		} catch (error: any) {
-			errorMessage = error.message || 'Registration failed. Please try again.';
-			if (error.errors) {
-				validationErrors = error.errors;
+		} catch (error: unknown) {
+			const e = error as { message?: string; errors?: Record<string, string[]> };
+			errorMessage = e.message || 'Registration failed. Please try again.';
+			if (e.errors) {
+				validationErrors = e.errors;
 			}
 		} finally {
 			isLoading = false;
