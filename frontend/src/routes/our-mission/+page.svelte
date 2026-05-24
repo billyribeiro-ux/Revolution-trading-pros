@@ -713,6 +713,26 @@
 
 
 <style>
+	/* Pre-hide data-gsap elements so the GSAP entrance animation has a
+	   from-state without a flash-of-visible-content during the dynamic
+	   import. The `transition: none` rule prevents Tailwind's
+	   `transition-all` (used on the hero badge for hover effects) from
+	   interpolating against GSAP's per-frame opacity ticks, which would
+	   otherwise make GSAP's animation appear ~6× slower. Reduced-motion
+	   users (and no-JS) bypass these rules. */
+	:global([data-gsap]) {
+		opacity: 0;
+		transform: translateY(30px);
+		transition: none;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		:global([data-gsap]) {
+			opacity: 1;
+			transform: none;
+			transition: revert;
+		}
+	}
+
 	/* --- Custom Styles for Specific Effects --- */
 	.font-heading {
 		font-family:
