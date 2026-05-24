@@ -5,7 +5,8 @@
 	import { browser } from '$app/environment';
 	import SEOHead from '$lib/components/seo/SeoHead.svelte';
 	import type { StructuredDataConfig } from '$lib/utils/structured-data';
-	
+	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
+
 	// --- Pricing State (Svelte 5 Runes) ---
 	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = $state('quarterly');
 
@@ -33,30 +34,48 @@
 
 			// Use gsap.context() for scoped cleanup - prevents global ScrollTrigger destruction
 			ctx = gsap.context(() => {
-				// Only set initial hidden state for elements NOT yet in viewport
-				const elements = document.querySelectorAll('[data-gsap]');
-				elements.forEach((el) => {
-					const rect = el.getBoundingClientRect();
-					const isInViewport = rect.top < window.innerHeight * 0.85;
-					if (!isInViewport) {
-						gsap.set(el, { opacity: 0, y: 30 });
-					}
+				const all = Array.from(document.querySelectorAll('[data-gsap]'));
+				gsap.set(all, { opacity: 0, y: 30 });
+
+				// Elements visible in viewport on mount get an immediate
+				// staggered entrance — ScrollTrigger.batch's onEnter does not
+				// fire for elements already past the trigger position at
+				// registration time, which would otherwise leave hero
+				// elements stuck invisible.
+				const visible: Element[] = [];
+				const hidden: Element[] = [];
+				all.forEach((el) => {
+					const r = el.getBoundingClientRect();
+					if (r.top < window.innerHeight && r.bottom > 0) visible.push(el);
+					else hidden.push(el);
 				});
 
-				ScrollTrigger.batch('[data-gsap]', {
-					onEnter: (batch) => {
-						gsap.to(batch, {
-							opacity: 1,
-							y: 0,
-							duration: 0.8,
-							ease: 'power3.out',
-							stagger: 0.1,
-							overwrite: true
-						});
-					},
-					start: 'top 85%',
-					once: true
-				});
+				if (visible.length > 0) {
+					gsap.to(visible, {
+						opacity: 1,
+						y: 0,
+						duration: 0.9,
+						ease: 'power3.out',
+						stagger: 0.1
+					});
+				}
+
+				if (hidden.length > 0) {
+					ScrollTrigger.batch(hidden, {
+						onEnter: (batch) => {
+							gsap.to(batch, {
+								opacity: 1,
+								y: 0,
+								duration: 0.8,
+								ease: 'power3.out',
+								stagger: 0.1,
+								overwrite: true
+							});
+						},
+						start: 'top 85%',
+						once: true
+					});
+				}
 
 				ScrollTrigger.refresh();
 			});
@@ -631,14 +650,7 @@
 						class="text-emerald-500 font-bold hover:text-emerald-400 flex items-center gap-1 text-sm"
 					>
 						View Full Performance Log
-						<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-							><path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M17 8l4 4m0 0l-4 4m4-4H3"
-							></path></svg
-						>
+						<IconArrowRight size={16} stroke={2} class="w-4 h-4" aria-hidden="true" />
 					</a>
 				</div>
 			</div>
