@@ -33,6 +33,7 @@
 	import ClientOnly from '$lib/components/ssr/ClientOnly.svelte';
 	import Seo from '$lib/seo/Seo.svelte';
 	import { resolveSEO } from '$lib/seo/resolve';
+	import { createPageSeoContext } from '$lib/seo/page-seo-context.svelte';
 	import type { SEOInput, RouteSEOContext, SEODefaults } from '$lib/seo/types';
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 	import { NavBar } from '$lib/components/nav';
@@ -83,11 +84,18 @@
 	// Page-level SEO overrides come from page.data.seo (set in +page.server.ts)
 	// ═══════════════════════════════════════════════════════════════════════════
 	const pageSeo = $derived((page.data as { seo?: SEOInput })?.seo);
+
+	// Page-level SEO context — allows legacy `<SEOHead>` components to
+	// contribute their props to the unified Seo renderer (synchronous
+	// mutation during child <script> evaluation; see page-seo-context.svelte.ts).
+	const pageSeoCtx = createPageSeoContext();
+
 	const resolvedSeo = $derived(
 		resolveSEO(
 			{ ...props.data.seoContext, pathname: page.url.pathname },
 			props.data.seoDefaults,
-			pageSeo
+			pageSeo,
+			pageSeoCtx.value ? pageSeoCtx.value() : null
 		)
 	);
 
@@ -138,11 +146,6 @@
 		}
 	});
 </script>
-
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     SEO - Single ownership layer for all <head> SEO output
-     ═══════════════════════════════════════════════════════════════════════════ -->
-<Seo seo={resolvedSeo} />
 
 <svelte:head>
 	<!-- Non-SEO head tags (theme-color, RSS feeds) stay here -->
@@ -205,6 +208,13 @@
 		<!-- Consent UI: Re-enable when consent system is ready -->
 	</div>
 {/if}
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     SEO - Single ownership layer for all <head> SEO output
+     MUST render AFTER children so page-level SEO context (written by
+     <SEOHead> components during child <script> init) is available.
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<Seo seo={resolvedSeo} />
 
 <style>
 	.has-admin-toolbar {

@@ -16,6 +16,7 @@
 
 	import { generateStructuredData, type StructuredDataConfig } from '$lib/utils/structured-data';
 	import { serializeJsonLd } from '$lib/seo/serializeJsonLd';
+	import { getPageSeoContext } from '$lib/seo/page-seo-context.svelte';
 
 	// ==========================================================================
 	// Props
@@ -129,6 +130,70 @@
 	const finalTwitterImage = $derived(twitterImage || finalOgImage);
 
 	// Structured Data JSON
+	// ═══════════════════════════════════════════════════════════════════════════
+	// Unified SEO Context Bridge (SSR-safe — runs during synchronous init)
+	// ═══════════════════════════════════════════════════════════════════════════
+	// If the layout has created a page-SEO context, we write our computed meta
+	// data into it. The layout's <Seo> component then emits the single source
+	// of truth, eliminating duplicate meta/canonical/og/twitter tags.
+	// If no context (standalone / test), we fall back to emitting ourselves.
+	// ═══════════════════════════════════════════════════════════════════════════
+	const ctx = getPageSeoContext();
+	const hasLayoutSeo = !!ctx;
+
+	// Build SEOInput for the unified layer (only when context is available).
+	// We assign a CLOSURE so prop reads happen lazily inside the layout's
+	// $derived (reactive context). This eliminates state_referenced_locally.
+	// IMPORTANT: pass RAW title (no suffix) so resolveSEO applies titleTemplate once.
+	if (ctx) {
+		ctx.value = () => ({
+			title,
+			titleTemplate: titleSuffix,
+			description: (description || '').slice(0, 160) || null,
+			canonical: canonicalUrl || null,
+			robots: {
+				index: !noindex,
+				follow: !nofollow,
+				noarchive: noarchive || undefined
+			},
+			og: {
+				title: ogTitle || title || null,
+				description: ogDescription || (description || '').slice(0, 160) || null,
+				url: ogUrl || canonicalUrl || null,
+				type: ogType,
+				siteName: ogSiteName || null,
+				locale: ogLocale || null,
+				image: ogImage || defaultImage || null,
+				imageAlt: ogImageAlt || null,
+				imageWidth: 1200,
+				imageHeight: 630,
+				article:
+					ogType === 'article'
+						? {
+							publishedTime: articlePublishedTime,
+							modifiedTime: articleModifiedTime,
+							author: articleAuthor,
+							section: articleSection,
+							tags: articleTags
+						}
+						: null
+			},
+			twitter: {
+				card: twitterCard,
+				site: twitterSite || null,
+				creator: twitterCreator || null,
+				title: twitterTitle || ogTitle || title || null,
+				description: twitterDescription || ogDescription || (description || '').slice(0, 160) || null,
+				image: twitterImage || ogImage || defaultImage || null,
+				imageAlt: (twitterImageAlt || ogImageAlt) || null
+			}
+		});
+	}
+
+	// ==========================================================================
+	// Computed Values
+	// ==========================================================================
+
 	const structuredDataJson = $derived.by(() => {
 		if (!structuredData) return null;
 		const configs = Array.isArray(structuredData) ? structuredData : [structuredData];
@@ -137,84 +202,87 @@
 </script>
 
 <svelte:head>
-	<!-- Primary Meta Tags -->
-	<title>{fullTitle}</title>
-	{#if metaDescription}
-		<meta name="description" content={metaDescription} />
-	{/if}
-	{#if metaKeywords}
-		<meta name="keywords" content={metaKeywords} />
+	{#if !hasLayoutSeo}
+		<!-- ═══ FALLBACK: only emit meta tags when no layout context is present ═══ -->
+		<title>{fullTitle}</title>
+		{#if metaDescription}
+			<meta name="description" content={metaDescription} />
+		{/if}
+		{#if metaKeywords}
+			<meta name="keywords" content={metaKeywords} />
+		{/if}
+
+		<!-- Robots -->
+		<meta name="robots" content={robotsContent} />
+
+		<!-- Canonical URL -->
+		{#if canonicalUrl}
+			<link rel="canonical" href={canonicalUrl} />
+		{/if}
+
+		<!-- Open Graph / Facebook -->
+		<meta property="og:type" content={ogType} />
+		<meta property="og:site_name" content={ogSiteName} />
+		<meta property="og:locale" content={ogLocale} />
+		<meta property="og:title" content={finalOgTitle} />
+		{#if finalOgDescription}
+			<meta property="og:description" content={finalOgDescription} />
+		{/if}
+		{#if finalOgUrl}
+			<meta property="og:url" content={finalOgUrl} />
+		{/if}
+		{#if finalOgImage}
+			<meta property="og:image" content={finalOgImage} />
+			{#if ogImageAlt}
+				<meta property="og:image:alt" content={ogImageAlt} />
+			{/if}
+			<meta property="og:image:width" content="1200" />
+			<meta property="og:image:height" content="630" />
+		{/if}
+
+		<!-- Article-specific Open Graph -->
+		{#if ogType === 'article'}
+			{#if articleAuthor}
+				<meta property="article:author" content={articleAuthor} />
+			{/if}
+			{#if articlePublishedTime}
+				<meta property="article:published_time" content={articlePublishedTime} />
+			{/if}
+			{#if articleModifiedTime}
+				<meta property="article:modified_time" content={articleModifiedTime} />
+			{/if}
+			{#if articleSection}
+				<meta property="article:section" content={articleSection} />
+			{/if}
+			{#each articleTags as tag (tag)}
+				<meta property="article:tag" content={tag} />
+			{/each}
+		{/if}
+
+		<!-- Twitter Card -->
+		<meta name="twitter:card" content={twitterCard} />
+		{#if twitterSite}
+			<meta name="twitter:site" content={twitterSite} />
+		{/if}
+		{#if twitterCreator}
+			<meta name="twitter:creator" content={twitterCreator} />
+		{/if}
+		<meta name="twitter:title" content={finalTwitterTitle} />
+		{#if finalTwitterDescription}
+			<meta name="twitter:description" content={finalTwitterDescription} />
+		{/if}
+		{#if finalTwitterImage}
+			<meta name="twitter:image" content={finalTwitterImage} />
+			{#if twitterImageAlt || ogImageAlt}
+				<meta name="twitter:image:alt" content={twitterImageAlt || ogImageAlt} />
+			{/if}
+		{/if}
 	{/if}
 
-	<!-- Robots -->
-	<meta name="robots" content={robotsContent} />
-
-	<!-- Canonical URL -->
-	{#if canonicalUrl}
-		<link rel="canonical" href={canonicalUrl} />
-	{/if}
-
-	<!-- Open Graph / Facebook -->
-	<meta property="og:type" content={ogType} />
-	<meta property="og:site_name" content={ogSiteName} />
-	<meta property="og:locale" content={ogLocale} />
-	<meta property="og:title" content={finalOgTitle} />
-	{#if finalOgDescription}
-		<meta property="og:description" content={finalOgDescription} />
-	{/if}
-	{#if finalOgUrl}
-		<meta property="og:url" content={finalOgUrl} />
-	{/if}
-	{#if finalOgImage}
-		<meta property="og:image" content={finalOgImage} />
-		{#if ogImageAlt}
-			<meta property="og:image:alt" content={ogImageAlt} />
-		{/if}
-		<meta property="og:image:width" content="1200" />
-		<meta property="og:image:height" content="630" />
-	{/if}
-
-	<!-- Article-specific Open Graph -->
-	{#if ogType === 'article'}
-		{#if articleAuthor}
-			<meta property="article:author" content={articleAuthor} />
-		{/if}
-		{#if articlePublishedTime}
-			<meta property="article:published_time" content={articlePublishedTime} />
-		{/if}
-		{#if articleModifiedTime}
-			<meta property="article:modified_time" content={articleModifiedTime} />
-		{/if}
-		{#if articleSection}
-			<meta property="article:section" content={articleSection} />
-		{/if}
-		{#each articleTags as tag (tag)}
-			<meta property="article:tag" content={tag} />
-		{/each}
-	{/if}
-
-	<!-- Twitter Card -->
-	<meta name="twitter:card" content={twitterCard} />
-	{#if twitterSite}
-		<meta name="twitter:site" content={twitterSite} />
-	{/if}
-	{#if twitterCreator}
-		<meta name="twitter:creator" content={twitterCreator} />
-	{/if}
-	<meta name="twitter:title" content={finalTwitterTitle} />
-	{#if finalTwitterDescription}
-		<meta name="twitter:description" content={finalTwitterDescription} />
-	{/if}
-	{#if finalTwitterImage}
-		<meta name="twitter:image" content={finalTwitterImage} />
-		{#if twitterImageAlt || ogImageAlt}
-			<meta name="twitter:image:alt" content={twitterImageAlt || ogImageAlt} />
-		{/if}
-	{/if}
-
-	<!-- Structured Data / JSON-LD -->
+	<!-- ═══ JSON-LD: always emitted by SEOHead (multiple scripts are valid) ═══ -->
 	{#if structuredDataJson}
 		{#each structuredDataJson as jsonLd, i (i)}
+			<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 			{@html '<scr' +
 				'ipt type="application/ld+json">' +
 				serializeJsonLd(jsonLd) +
