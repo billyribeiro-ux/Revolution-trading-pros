@@ -35,30 +35,51 @@
 
 			// Use gsap.context() for scoped cleanup - prevents global ScrollTrigger destruction
 			ctx = gsap.context(() => {
-				// Only set initial hidden state for elements NOT yet in viewport
-				const elements = document.querySelectorAll('[data-gsap]');
-				elements.forEach((el) => {
-					const rect = el.getBoundingClientRect();
-					const isInViewport = rect.top < window.innerHeight * 0.85;
-					if (!isInViewport) {
-						gsap.set(el, { opacity: 0, y: 30 });
-					}
+				// Hide ALL data-gsap elements initially. Doing this synchronously
+				// inside the gsap context ensures the entrance tweens have a
+				// from-state to animate from. The brief flash before this runs
+				// is acceptable and identical to the existing pattern across the
+				// site; CSS-level pre-hiding is intentionally avoided to keep
+				// no-JS / SSR fallbacks visible.
+				const all = document.querySelectorAll('[data-gsap]');
+				gsap.set(all, { opacity: 0, y: 30 });
+
+				// Split: above-fold animate immediately on mount with a stagger
+				// (the hero entrance); below-fold animate on scroll via batch.
+				const aboveFold: Element[] = [];
+				const belowFold: Element[] = [];
+				all.forEach((el) => {
+					const top = el.getBoundingClientRect().top;
+					if (top < window.innerHeight * 0.85) aboveFold.push(el);
+					else belowFold.push(el);
 				});
 
-				ScrollTrigger.batch('[data-gsap]', {
-					onEnter: (batch) => {
-						gsap.to(batch, {
-							opacity: 1,
-							y: 0,
-							duration: 0.8,
-							ease: 'power3.out',
-							stagger: 0.1,
-							overwrite: true
-						});
-					},
-					start: 'top 85%',
-					once: true
-				});
+				if (aboveFold.length > 0) {
+					gsap.to(aboveFold, {
+						opacity: 1,
+						y: 0,
+						duration: 0.9,
+						ease: 'power3.out',
+						stagger: 0.1
+					});
+				}
+
+				if (belowFold.length > 0) {
+					ScrollTrigger.batch(belowFold, {
+						onEnter: (batch) => {
+							gsap.to(batch, {
+								opacity: 1,
+								y: 0,
+								duration: 0.8,
+								ease: 'power3.out',
+								stagger: 0.1,
+								overwrite: true
+							});
+						},
+						start: 'top 85%',
+						once: true
+					});
+				}
 
 				ScrollTrigger.refresh();
 			});
