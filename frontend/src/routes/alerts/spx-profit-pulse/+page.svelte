@@ -68,6 +68,9 @@
 
 		// --- GSAP ScrollTrigger Animations ---
 	import { browser } from '$app/environment';
+	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
+	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
+	import IconLock from '@tabler/icons-svelte-runes/icons/lock';
 	let gsapContext: ReturnType<typeof import('gsap').gsap.context> | null = null;
 
 	onMount(() => {
@@ -91,22 +94,48 @@
 			}
 
 			gsapContext = gsap.context(() => {
-				gsap.set('[data-gsap]', { opacity: 0, y: 30 });
+				const all = Array.from(document.querySelectorAll('[data-gsap]'));
+				gsap.set(all, { opacity: 0, y: 30 });
 
-				ScrollTrigger.batch('[data-gsap]', {
-					onEnter: (batch) => {
-						gsap.to(batch, {
-							opacity: 1,
-							y: 0,
-							duration: 0.8,
-							ease: 'power3.out',
-							stagger: 0.1,
-							overwrite: true
-						});
-					},
-					start: 'top 85%',
-					once: true
+				// Elements visible in viewport on mount get an immediate
+				// staggered entrance — ScrollTrigger.batch's onEnter does not
+				// fire for elements already past the trigger position at
+				// registration time, which would otherwise leave hero
+				// elements stuck invisible.
+				const visible: Element[] = [];
+				const hidden: Element[] = [];
+				all.forEach((el) => {
+					const r = el.getBoundingClientRect();
+					if (r.top < window.innerHeight && r.bottom > 0) visible.push(el);
+					else hidden.push(el);
 				});
+
+				if (visible.length > 0) {
+					gsap.to(visible, {
+						opacity: 1,
+						y: 0,
+						duration: 0.9,
+						ease: 'power3.out',
+						stagger: 0.1
+					});
+				}
+
+				if (hidden.length > 0) {
+					ScrollTrigger.batch(hidden, {
+						onEnter: (batch) => {
+							gsap.to(batch, {
+								opacity: 1,
+								y: 0,
+								duration: 0.8,
+								ease: 'power3.out',
+								stagger: 0.1,
+								overwrite: true
+							});
+						},
+						start: 'top 85%',
+						once: true
+					});
+				}
 			});
 
 			const refreshTrigger = document.fonts?.ready ?? Promise.resolve();
@@ -297,14 +326,7 @@
 							<div
 								class="w-10 h-10 rounded-full bg-linear-to-br from-rtp-primary to-rtp-blue flex items-center justify-center text-white font-bold shadow-inner"
 							>
-								<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-									><path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M13 10V3L4 14h7v7l9-11h-7z"
-									/></svg
-								>
+								<IconBolt size={24} stroke={2} class="w-6 h-6" aria-hidden="true" />
 							</div>
 							<div>
 								<div class="font-bold text-rtp-text">SPX Profit Pulse</div>
@@ -505,14 +527,7 @@
 					<div
 						class="w-14 h-14 rounded-xl bg-rtp-blue/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
 					>
-						<svg class="w-7 h-7 text-rtp-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-							><path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-							/></svg
-						>
+						<IconTrendingUp size={28} stroke={2} class="w-7 h-7 text-rtp-blue" aria-hidden="true" />
 					</div>
 					<h3 class="text-xl font-bold text-rtp-text mb-3">Runner Management</h3>
 					<p class="text-rtp-muted leading-relaxed text-sm">
@@ -528,14 +543,7 @@
 					<div
 						class="w-14 h-14 rounded-xl bg-red-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
 					>
-						<svg class="w-7 h-7 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-							><path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-							/></svg
-						>
+						<IconLock size={28} stroke={2} class="w-7 h-7 text-red-400" aria-hidden="true" />
 					</div>
 					<h3 class="text-xl font-bold text-rtp-text mb-3">Hard Stops (No Bagley)</h3>
 					<p class="text-rtp-muted leading-relaxed text-sm">
@@ -936,14 +944,7 @@
 			</div>
 			<div class="mt-12 text-center">
 				<p class="text-rtp-muted text-sm flex items-center justify-center gap-2">
-					<svg aria-hidden="true" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-						><path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-						></path></svg
-					>
+					<IconLock size={16} stroke={2} class="w-4 h-4" aria-hidden="true" />
 					Secure checkout powered by Stripe. Cancel anytime.
 				</p>
 			</div>

@@ -5,7 +5,9 @@
 	import { browser } from '$app/environment';
 	import SEOHead from '$lib/components/seo/SeoHead.svelte';
 	import type { StructuredDataConfig } from '$lib/utils/structured-data';
-	
+	import IconMenu2 from '@tabler/icons-svelte-runes/icons/menu-2';
+	import IconLock from '@tabler/icons-svelte-runes/icons/lock';
+
 	// --- Pricing State (Svelte 5 Runes) ---
 	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = $state('quarterly');
 
@@ -93,23 +95,48 @@
 
 			// Use gsap.context() for scoped cleanup - prevents global ScrollTrigger destruction
 			gsapContext = gsap.context(() => {
-				// PE7: Hide ALL elements unconditionally — let ScrollTrigger.batch be the single source of reveal
-				gsap.set('[data-gsap]', { opacity: 0, y: 30 });
+				const all = Array.from(document.querySelectorAll('[data-gsap]'));
+				gsap.set(all, { opacity: 0, y: 30 });
 
-				ScrollTrigger.batch('[data-gsap]', {
-					onEnter: (batch) => {
-						gsap.to(batch, {
-							opacity: 1,
-							y: 0,
-							duration: 0.8,
-							ease: 'power3.out',
-							stagger: 0.1,
-							overwrite: true
-						});
-					},
-					start: 'top 85%',
-					once: true
+				// Elements visible in viewport on mount get an immediate
+				// staggered entrance — ScrollTrigger.batch's onEnter does not
+				// fire for elements already past the trigger position at
+				// registration time, which would otherwise leave hero
+				// elements stuck invisible.
+				const visible: Element[] = [];
+				const hidden: Element[] = [];
+				all.forEach((el) => {
+					const r = el.getBoundingClientRect();
+					if (r.top < window.innerHeight && r.bottom > 0) visible.push(el);
+					else hidden.push(el);
 				});
+
+				if (visible.length > 0) {
+					gsap.to(visible, {
+						opacity: 1,
+						y: 0,
+						duration: 0.9,
+						ease: 'power3.out',
+						stagger: 0.1
+					});
+				}
+
+				if (hidden.length > 0) {
+					ScrollTrigger.batch(hidden, {
+						onEnter: (batch) => {
+							gsap.to(batch, {
+								opacity: 1,
+								y: 0,
+								duration: 0.8,
+								ease: 'power3.out',
+								stagger: 0.1,
+								overwrite: true
+							});
+						},
+						start: 'top 85%',
+						once: true
+					});
+				}
 			});
 
 			// PE7: Refresh ScrollTrigger after layout settles (fonts, images loaded)
@@ -348,14 +375,7 @@
 					<div class="bg-[#2b2b36] p-4 border-b border-gray-700 flex items-center justify-between">
 						<div class="flex items-center gap-3">
 							<div class="text-gray-400">
-								<svg aria-hidden="true" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-									><path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M4 6h16M4 12h16M4 18h7"
-									/></svg
-								>
+								<IconMenu2 size={20} stroke={2} class="w-5 h-5" aria-hidden="true" />
 							</div>
 							<div class="font-bold text-white tracking-wide text-sm"># 🔴-live-trading-floor</div>
 						</div>
@@ -978,14 +998,7 @@
 			</div>
 			<div class="mt-12 text-center">
 				<p class="text-rtp-muted text-sm flex items-center justify-center gap-2">
-					<svg aria-hidden="true" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-						><path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-						></path></svg
-					>
+					<IconLock size={16} stroke={2} class="w-4 h-4" aria-hidden="true" />
 					Secure checkout powered by Stripe. Cancel anytime.
 				</p>
 			</div>
