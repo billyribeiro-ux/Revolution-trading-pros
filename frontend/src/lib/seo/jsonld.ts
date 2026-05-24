@@ -16,6 +16,7 @@ import type {
 	JsonLdBreadcrumbList,
 	JsonLdArticle,
 	JsonLdFAQPage,
+	JsonLdSpeakable,
 	JsonLdNode
 } from './types';
 import { serializeJsonLd } from './serializeJsonLd';
@@ -162,12 +163,26 @@ export function articleSchema(opts: {
 	return node;
 }
 
+/**
+ * @deprecated Google deprecated FAQ rich results on May 7, 2026. This builder
+ * still emits valid `FAQPage` JSON-LD because the markup remains useful for
+ * AI/voice search and other consumers, but it will not produce a Google rich
+ * result. Prefer `speakableSchema()` (or QAPage for user-submitted Q&A) for
+ * generative-AI surfaces. See: frontend/src/lib/seo/README.md §May 2026 SEO.
+ */
 export function faqSchema(
 	questions: Array<{ question: string; answer: string }>,
 	id?: string
 ): JsonLdFAQPage {
 	if (questions.length === 0) {
 		throw new Error('[SEO] faqSchema requires at least one question');
+	}
+
+	if (import.meta.env.DEV) {
+		console.warn(
+			'[SEO] faqSchema() is deprecated: Google dropped FAQ rich results May 7, 2026. ' +
+				'Markup is still emitted (useful for AI/voice search) but no Google rich result will appear.'
+		);
 	}
 
 	const node: JsonLdFAQPage = {
@@ -184,6 +199,41 @@ export function faqSchema(
 	};
 
 	if (id) node['@id'] = id;
+	return node;
+}
+
+/**
+ * Speakable JSON-LD — marks regions of a page suitable for voice/generative-AI
+ * summarization. Introduced in this codebase per Google's May 15, 2026 guide on
+ * "optimizing for generative AI features." Accepts CSS selectors and/or XPaths;
+ * provide at least one.
+ */
+export function speakableSchema(opts: {
+	url: string;
+	cssSelector?: string[];
+	xpath?: string[];
+	name?: string;
+	id?: string;
+}): JsonLdSpeakable {
+	const hasSelector = (opts.cssSelector?.length ?? 0) > 0;
+	const hasXpath = (opts.xpath?.length ?? 0) > 0;
+	if (!hasSelector && !hasXpath) {
+		throw new Error('[SEO] speakableSchema requires cssSelector or xpath');
+	}
+
+	const spec: JsonLdSpeakable['speakable'] = { '@type': 'SpeakableSpecification' };
+	if (hasSelector) spec.cssSelector = opts.cssSelector;
+	if (hasXpath) spec.xpath = opts.xpath;
+
+	const node: JsonLdSpeakable = {
+		'@context': 'https://schema.org',
+		'@type': 'WebPage',
+		url: opts.url,
+		speakable: spec
+	};
+
+	if (opts.id) node['@id'] = opts.id;
+	if (opts.name) node.name = opts.name;
 	return node;
 }
 

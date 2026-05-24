@@ -177,9 +177,35 @@ export interface JsonLdFAQQuestion {
 	};
 }
 
+/**
+ * @deprecated As of Google Search update May 7, 2026, FAQ rich results no longer
+ * appear in Google Search. June 2026 the Rich Results Test will drop support, and
+ * August 2026 the Search Console API support is removed. The markup is retained
+ * for semantic/AI-search consumers (LLMs, voice assistants) — do not author new
+ * pages around it for rich-result reasons.
+ * See: https://developers.google.com/search/docs/appearance/structured-data/faqpage
+ */
 export interface JsonLdFAQPage extends JsonLdBase {
 	'@type': 'FAQPage';
 	mainEntity: JsonLdFAQQuestion[];
+}
+
+/**
+ * SpeakableSpecification — used by Speakable JSON-LD nodes to mark which parts
+ * of a page are suitable for voice/generative-AI summarization. Aligns with the
+ * May 15 2026 "optimizing for generative AI features" guidance.
+ */
+export interface JsonLdSpeakableSpec {
+	'@type': 'SpeakableSpecification';
+	cssSelector?: string[];
+	xpath?: string[];
+}
+
+export interface JsonLdSpeakable extends JsonLdBase {
+	'@type': 'WebPage';
+	speakable: JsonLdSpeakableSpec;
+	url?: string;
+	name?: string;
 }
 
 export type JsonLdNode =
@@ -188,6 +214,7 @@ export type JsonLdNode =
 	| JsonLdBreadcrumbList
 	| JsonLdArticle
 	| JsonLdFAQPage
+	| JsonLdSpeakable
 	| (JsonLdBase & Record<string, unknown>);
 
 // ═══════════════════════════════════════════════════════════════════════════════
