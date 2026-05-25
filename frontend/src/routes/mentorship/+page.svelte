@@ -2,7 +2,6 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { slide } from 'svelte/transition';
-	import type { Attachment } from 'svelte/attachments';
 	import SEOHead from '$lib/components/seo/SeoHead.svelte';
 	import IconLock from '@tabler/icons-svelte-runes/icons/lock';
 	import IconGlobe from '@tabler/icons-svelte-runes/icons/globe';
