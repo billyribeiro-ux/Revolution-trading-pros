@@ -268,6 +268,12 @@ export interface ProductConfig {
 	ratingValue?: number;
 	reviewCount?: number;
 	reviews?: ReviewConfig[];
+	/**
+	 * Google Merchant alignment (added May 20, 2026): declare whether the
+	 * product is intended for adult audiences. Defaults to `'no'` for our
+	 * trading-education catalogue when omitted.
+	 */
+	hasAdultConsideration?: 'yes' | 'no';
 }
 
 export interface CourseConfig {
@@ -302,6 +308,11 @@ export interface CourseConfig {
 	competencyRequired?: string[];
 }
 
+/**
+ * @deprecated FAQ rich results were removed from Google Search on May 7, 2026.
+ * Markup is retained for AI/voice-search consumers but no longer produces a
+ * rich result. See: frontend/src/lib/seo/README.md §May 2026 SEO updates.
+ */
 export interface FAQConfig {
 	type: 'FAQPage';
 	questions: {
@@ -881,6 +892,8 @@ function generateProduct(config: ProductConfig): BaseStructuredData {
 		data.image = Array.isArray(config.image) ? config.image : [config.image];
 	}
 
+	data.hasAdultConsideration = config.hasAdultConsideration ?? 'no';
+
 	if (config.price !== undefined) {
 		data.offers = {
 			'@type': 'Offer',
@@ -999,9 +1012,19 @@ function generateCourse(config: CourseConfig): BaseStructuredData {
 }
 
 /**
- * Generate FAQPage schema
+ * Generate FAQPage schema.
+ *
+ * @deprecated Google deprecated FAQ rich results May 7, 2026. Markup is still
+ * emitted (still parseable by AI/voice search) but no longer produces a Google
+ * rich result. See: frontend/src/lib/seo/README.md §May 2026 SEO updates.
  */
 function generateFAQ(config: FAQConfig): BaseStructuredData {
+	if (import.meta.env.DEV) {
+		console.warn(
+			'[SEO] FAQPage schema is deprecated: Google removed FAQ rich results May 7, 2026.'
+		);
+	}
+
 	const data: BaseStructuredData = {
 		'@context': 'https://schema.org',
 		'@type': 'FAQPage',

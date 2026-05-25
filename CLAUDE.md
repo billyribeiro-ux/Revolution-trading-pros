@@ -13,8 +13,9 @@ truth.
 | [README.md](README.md) | First time in the repo |
 | [docs/development/LOCAL_DEV.md](docs/development/LOCAL_DEV.md) | Booting the local stack |
 | [docs/development/ENV_VARS.md](docs/development/ENV_VARS.md) | Setting any env var |
-| [docs/audits/REPO_STATE_2026-04-25.md](docs/audits/REPO_STATE_2026-04-25.md) | Quick "what's the state of this codebase?" |
-| [docs/audits/DISTINGUISHED_ENGINEER_AUDIT_2026-04-25.md](docs/audits/DISTINGUISHED_ENGINEER_AUDIT_2026-04-25.md) | Picking the next thing to fix (§9 has the prioritized backlog) |
+| [docs/audits/FORENSIC_AUDIT_2026-05-24.md](docs/audits/FORENSIC_AUDIT_2026-05-24.md) | Quick "what's the state of this codebase?" |
+| [docs/audits/FULL_REPO_AUDIT_2026-05-17.md](docs/audits/FULL_REPO_AUDIT_2026-05-17.md) | Picking the next thing to fix (P0/P1 findings + the prior audit's backlog still apply for P2/P3 work) |
+| [docs/audits/REPO_STATE_2026-04-25.md](docs/audits/REPO_STATE_2026-04-25.md) | Stale (~30 days, 13 PRs out of date) but useful for "why is this branch shaped this way?" history |
 
 ---
 

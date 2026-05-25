@@ -13,22 +13,32 @@
 	let showDeleteSchemaModal = $state(false);
 	let pendingDeleteSchemaId = $state<number | null>(null);
 
-	const schemaTypes = [
-		'Article',
-		'Product',
-		'Organization',
-		'Person',
-		'LocalBusiness',
-		'Event',
-		'Recipe',
-		'VideoObject',
-		'FAQPage',
-		'Course',
-		'JobPosting',
-		'Review',
-		'BreadcrumbList',
-		'Website',
-		'WebPage'
+	type SchemaTypeOption = {
+		name: string;
+		deprecated?: boolean;
+		note?: string;
+	};
+
+	const schemaTypes: SchemaTypeOption[] = [
+		{ name: 'Article' },
+		{ name: 'Product' },
+		{ name: 'Organization' },
+		{ name: 'Person' },
+		{ name: 'LocalBusiness' },
+		{ name: 'Event' },
+		{ name: 'Recipe' },
+		{ name: 'VideoObject' },
+		{
+			name: 'FAQPage',
+			deprecated: true,
+			note: 'Google removed FAQ rich results on May 7, 2026. Markup is still parsed by AI/voice search but produces no Google rich result.'
+		},
+		{ name: 'Course' },
+		{ name: 'JobPosting' },
+		{ name: 'Review' },
+		{ name: 'BreadcrumbList' },
+		{ name: 'Website' },
+		{ name: 'WebPage' }
 	];
 
 	onMount(() => {
@@ -159,10 +169,20 @@
 	<div class="templates-section">
 		<h2>Available Schema Types</h2>
 		<div class="type-grid">
-			{#each schemaTypes as type (type)}
-				<div class="type-card">
-					<div class="type-name">{type}</div>
-					<a href="/admin/seo/schema/create?type={type}" class="use-template"> Use Template </a>
+			{#each schemaTypes as type (type.name)}
+				<div class="type-card" class:type-card--deprecated={type.deprecated}>
+					<div class="type-name">
+						{type.name}
+						{#if type.deprecated}
+							<span class="deprecated-badge" title={type.note}>Deprecated</span>
+						{/if}
+					</div>
+					{#if type.note}
+						<p class="type-note">{type.note}</p>
+					{/if}
+					<a href="/admin/seo/schema/create?type={type.name}" class="use-template">
+						Use Template
+					</a>
 				</div>
 			{/each}
 		</div>
@@ -406,10 +426,37 @@
 		box-shadow: 0 2px 8px rgba(230, 184, 0, 0.1);
 	}
 
+	.type-card--deprecated {
+		background: #fbfaf6;
+		border-color: #e8d8a8;
+	}
+
 	.type-name {
 		font-weight: 600;
 		color: #1a1a1a;
 		margin-bottom: 0.75rem;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.deprecated-badge {
+		font-size: 0.65rem;
+		font-weight: 700;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+		padding: 0.15rem 0.45rem;
+		border-radius: 999px;
+		background: #fef3c7;
+		color: #92400e;
+		border: 1px solid #f3d791;
+	}
+
+	.type-note {
+		font-size: 0.75rem;
+		color: #6b6b6b;
+		margin: 0 0 0.75rem;
+		line-height: 1.35;
 	}
 
 	.use-template {

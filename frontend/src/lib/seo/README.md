@@ -128,7 +128,8 @@ Environment-aware robots directive builder. Returns `{ directives, content }`.
 - `websiteSchema(opts)` → `JsonLdWebSite`
 - `breadcrumbSchema(items, id?)` → `JsonLdBreadcrumbList`
 - `articleSchema(opts)` → `JsonLdArticle`
-- `faqSchema(questions, id?)` → `JsonLdFAQPage`
+- `faqSchema(questions, id?)` → `JsonLdFAQPage` _(deprecated — see §May 2026 SEO updates)_
+- `speakableSchema(opts)` → `JsonLdSpeakable` _(May 2026: voice / generative-AI)_
 
 #### Utilities
 
@@ -382,6 +383,26 @@ Sitemap: https://revolution-trading-pros.pages.dev/sitemap.xml
 - **Note:** This is a Discover-specific volatility event, NOT a broad Search core update
 - Track: impressions, CTR, and traffic changes weekly
 - Document any significant drops with date + affected URLs
+
+### May 2026 SEO updates
+
+Three concrete changes from Google's May 2026 updates are wired into this
+library. See the original Google announcements at
+[developers.google.com/search/updates](https://developers.google.com/search/updates/)
+and the [May 2026 core update note](https://searchengineland.com/google-may-2026-core-update-rolling-out-now-478430).
+
+| Date       | Change                                                                                | This repo                                                                                                                                                                                                                              |
+| ---------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-05-07 | FAQ rich results dropped from Google Search; Rich Results Test loses support June; Search Console API loses support August. | `faqSchema()`, `generateFAQSchema()`, `generateFAQ()`, `generateFAQStructuredData()` are all marked `@deprecated` and emit a dev-only `console.warn`. Markup is still produced (useful for AI / voice search). Admin schema picker shows a "Deprecated" badge. |
+| 2026-05-15 | "Optimizing for generative AI features" guide published. SEO best practices remain valid; speakable / structured markup matters more. | New `speakableSchema({ url, cssSelector, xpath })` builder in `jsonld.ts`. Add to page-level `jsonld` arrays for sections you want voice/AI surfaces to read.                                                                                                |
+| 2026-05-20 | `hasAdultConsideration` added to Merchant-listing / Product structured data.          | `ProductConfig.hasAdultConsideration` added; `generateProduct()` defaults to `'no'` for our trading-education catalogue.                                                                                                                                    |
+| 2026-05-21 | Broad May 2026 core update rollout (content-quality focused).                         | No code action — content team owns. See `Core Update Resilience` above for our checklist.                                                                                                                                                                  |
+
+**When to use Speakable instead of FAQ:** for new content authored after May
+2026, prefer wrapping the question/answer copy in DOM nodes carrying a stable
+class (e.g. `.speakable-answer`) and emitting a `speakableSchema()` node
+alongside the existing prose, instead of leaning on FAQPage rich-result
+behaviour that no longer exists.
 
 ## Operations Checklist
 

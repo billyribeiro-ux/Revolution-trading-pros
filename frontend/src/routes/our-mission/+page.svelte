@@ -129,7 +129,11 @@
 				author: { '@type': 'Organization', name: 'Revolution Trading Pros' },
 				publisher: { '@type': 'Organization', name: 'Revolution Trading Pros' },
 				datePublished: '2024-01-01',
-				image: 'https://revolution-trading-pros.pages.dev/images/retail-trap.jpg'
+				image: 'https://revolution-trading-pros.pages.dev/images/retail-trap.jpg',
+				speakable: {
+					'@type': 'SpeakableSpecification',
+					cssSelector: ['[data-speakable]']
+				}
 			},
 			{
 				'@type': 'FAQPage',
@@ -318,6 +322,7 @@
 
 			<h1
 				data-gsap
+				data-speakable
 				class="text-6xl md:text-8xl lg:text-9xl font-heading font-extrabold text-white tracking-tight mb-10 leading-[0.95]"
 			>
 				We Don't Sell Dreams.<br />
@@ -329,7 +334,10 @@
 			</h1>
 
 			<div data-gsap class="max-w-3xl mx-auto">
-				<p class="text-xl md:text-2xl text-slate-400 leading-relaxed font-light">
+				<p
+					data-speakable
+					class="text-xl md:text-2xl text-slate-400 leading-relaxed font-light"
+				>
 					Our mission is to dismantle the "Retail Trader" stereotype and rebuild it with <span
 						class="text-white font-medium border-b border-rtp-primary/50">Institutional DNA</span
 					>. We exist to transition you from a gambler seeking action to a risk manager executing an

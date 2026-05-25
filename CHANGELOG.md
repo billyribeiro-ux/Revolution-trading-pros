@@ -4,6 +4,59 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-05-24 23:30 UTC — Google May 2026 SEO updates + repo hygiene + audit refresh
+
+Branch: `claude/google-seo-updates-may-2026-Sp1j7` (off `main`). Single end-to-end pass triggered by "pull up Google's latest May 2026 SEO updates and compare against our repo and implement the changes end to end using the Svelte MCP tool." Followed by a forensic repo audit and a hygiene sweep run under the explicit standing rule "we never delete retired files; move them into the retired folder; act on forensic hard evidence, not assumptions; use both the Svelte and Rust MCP tools."
+
+Every quality gate ran green at the end of the pass: `pnpm check` 4,725 files / **0 errors / 0 warnings**; `pnpm test:unit` **2,255 passed / 32 skipped / 0 failed** across 57 files; `cargo check` clean (full fresh build). `svelte-autofixer` returned zero issues on the modified admin schema component. The Rust MCP server (`rust-mcp-server`) is declared in `.mcp.json` but its binary is not installed in the current cloud-agent environment, so `cargo check` was driven directly via Bash and that limitation is logged here for transparency.
+
+### SEO — Google May 2026 changes wired end-to-end
+
+**SEO-1 — FAQ rich results deprecation (Google 2026-05-07).** Google removed FAQ rich results from Search on 2026-05-07 (Rich Results Test loses support June 2026; Search Console API support removed August 2026). All four FAQ-schema generators in this repo are now marked `@deprecated` and emit a dev-only `console.warn` when invoked: `faqSchema()` in [frontend/src/lib/seo/jsonld.ts](frontend/src/lib/seo/jsonld.ts), `generateFAQSchema()` in [frontend/src/lib/seo/structured-data.ts](frontend/src/lib/seo/structured-data.ts), `generateFAQ()` in [frontend/src/lib/utils/structured-data.ts](frontend/src/lib/utils/structured-data.ts), and `generateFAQStructuredData()` in [frontend/src/lib/options-calculator/utils/seo.ts](frontend/src/lib/options-calculator/utils/seo.ts). Markup is still emitted because it remains useful for AI/voice-search consumers (LLMs, voice assistants) — only the Google rich-result expectation is gone. The admin schema-picker at [frontend/src/routes/admin/seo/schema/+page.svelte](frontend/src/routes/admin/seo/schema/+page.svelte) now shows a "Deprecated" badge plus explanatory note next to `FAQPage`. Twelve existing routes still emit `FAQPage` JSON-LD; none were touched.
+
+**SEO-2 — Speakable schema builder (Google 2026-05-15 generative-AI guide).** New `speakableSchema({ url, cssSelector?, xpath?, name?, id? })` builder in [frontend/src/lib/seo/jsonld.ts](frontend/src/lib/seo/jsonld.ts), backed by new `JsonLdSpeakable` and `JsonLdSpeakableSpec` types in [frontend/src/lib/seo/types.ts](frontend/src/lib/seo/types.ts). Exported through the unified `$lib/seo` barrel. First adoption: [frontend/src/routes/blog/[slug]/+page.ts](frontend/src/routes/blog/[slug]/+page.ts) emits a Speakable node alongside the existing `articleSchema` + `breadcrumbSchema`, selecting `.post-title` and `.post-lead` (the headline + lede already rendered by the page). [frontend/src/routes/our-mission/+page.svelte](frontend/src/routes/our-mission/+page.svelte) attaches `SpeakableSpecification` directly to its existing `Article` `@graph` node and adds `data-speakable` to the hero `<h1>` and lede `<p>` so the selector resolves. This is the active replacement for the AI-surface area lost when FAQ rich results were deprecated.
+
+**SEO-3 — `hasAdultConsideration` on Product schema (Google 2026-05-20).** Added `hasAdultConsideration?: 'yes' | 'no'` to `ProductConfig` and `generateProduct()` in [frontend/src/lib/utils/structured-data.ts](frontend/src/lib/utils/structured-data.ts), defaulting to `'no'` for our trading-education catalogue when omitted. Matches the Merchant Center feed specification alignment Google announced 2026-05-20.
+
+**SEO-4 — May 2026 core update (Google 2026-05-21).** No code action — content-quality focused. README §May 2026 SEO updates documents the four changes and the "prefer Speakable over FAQ for new content" guidance.
+
+### Docs — Forensic audit + CLAUDE.md refresh
+
+**DOC-1 — `docs/audits/FORENSIC_AUDIT_2026-05-24.md` added.** End-to-end audit captured the repo state at HEAD `30cda69`: gates green, two prior P0 release-blockers from [docs/audits/FULL_REPO_AUDIT_2026-05-17.md](docs/audits/FULL_REPO_AUDIT_2026-05-17.md) (P0-1 checkout route mismatch, P0-3 webhook atomicity) mechanically closed via the `api/src/routes/payments/` module split and the `create_subscription_checkout` wiring (both verified by `grep` on this tree; both still owe a live Playwright pass for full sign-off). Repo composition: frontend 76,017 LOC / 1,092 .svelte / 558 routes; Rust API 110,538 LOC. Quality-debt heatmap: 295 `: any | <any>`, 81 `TODO/FIXME/XXX/HACK`, **63 `console.log/debug` (down from 186 in the Apr 25 audit — large reduction)**.
+
+**DOC-2 — CLAUDE.md "Read first" table refreshed.** Promotes `FORENSIC_AUDIT_2026-05-24.md` to row 1 ("what's the state of this codebase?"); promotes `FULL_REPO_AUDIT_2026-05-17.md` to "picking the next thing to fix" in place of the Apr 25 distinguished-engineer audit whose Tier-0 backlog items are now closed or moot post-Fly-strip. The Apr 25 `REPO_STATE` is retained as "history-only context."
+
+### Hygiene — One-shot scripts retired (not deleted) + audit-folder slimmed
+
+**HYG-1 — Six one-shot PE7 Python scripts moved into the retired folder.** `fix_spx.py`, `fix_spx_all.py`, `fix_spx_complete.py`, `fix_spx_now.py` (repo root) and `frontend/src/routes/alerts/spx-profit-pulse/fix_gsap.py`, `fix_plans.py` all hard-code an absolute macOS path (`/Users/billyribeiro/Desktop/...`) — they ran exactly once during the PE7 migration and are unrunnable on any other machine. They were originally added in `ff7f510` and a prior session in this same branch deleted them in `eb91d4c`. That deletion is reversed: the files are now restored under [retiredmay26/scripts-pe7-2026-05-23/](retiredmay26/scripts-pe7-2026-05-23/), with sha256 verified against the deleted versions and a provenance README. `git grep` confirmed zero external references to any of the six.
+
+**HYG-2 — Four root-level audit markdowns relocated into `docs/audits/`.** `GSAP_ANIMATION_AUDIT_2026-05-23.md`, `GSAP_COMPLETE_VERIFICATION_2026-05-23.md`, `RESTORE_AND_MIGRATE_PLAN.md`, and `orphans.md` were sitting at the repo root rather than under `docs/audits/` where CLAUDE.md points readers. They moved into `docs/audits/`; `orphans.md` renamed to `ORPHAN_INVENTORY_2026-05-20.md` to match the dated-audit convention.
+
+**HYG-3 — Twelve orphaned audit docs retired (`retiredmay26/docs/audits-2026-05-24/`).** A forensic cross-reference sweep of `docs/audits/*.md` (`git grep -lE "\\b<filename>\\b"` + `git grep -lFw "<basename>"`, both excluding the file itself) found 53 of 65 audit MDs were referenced from `CHANGELOG.md` / `CLAUDE.md` / `README.md` / other audit docs / **and source code itself** (e.g. `api/src/routes/consent.rs`, `frontend/src/lib/api/abandoned-carts.ts`, `frontend/src/lib/stores/connections.svelte.ts`, `frontend/src/routes/+layout.svelte`, `api/migrations/schema.sql`). Those 53 stay where they are — moving them would break inbound links. The remaining 12 with zero inbound references moved into [retiredmay26/docs/audits-2026-05-24/](retiredmay26/docs/audits-2026-05-24/) with a provenance README that lists every file, every check, and the bash snippet to re-verify on the current tree:
+
+- `ADMIN_CMS_AUDIT_2026-05-10.md`, `CSS_ISOLATION_PLAN_2026-04-25.md`, `GSAP_ANIMATION_AUDIT_2026-05-23.md`, `GSAP_COMPLETE_VERIFICATION_2026-05-23.md`, `OVERSIZED_COMPONENTS_CHANGELOG_2026-05-16.md`, `PORT_FLEXIBILITY_2026-04-27.md`, `RESTORE_AND_MIGRATE_PLAN_2026-05-23.md`, `SVELTE_REMEDIATION_PLAN_2026-05-16.md`, `TASK3_RESULT.md`, `TASK5_RESULT.md`, `TASK6_RESULT.md`, `TRADING_ROOMS_BACKEND_GAPS_2026-05-16.md`.
+
+### Discipline notes
+
+- Svelte MCP `svelte-autofixer` was run on the modified `frontend/src/routes/admin/seo/schema/+page.svelte` per the CLAUDE.md mandate — zero issues returned.
+- Rust MCP `rust-mcp-server` is configured in `.mcp.json` but absent from this cloud-agent runtime; `cargo check` was run via Bash as a fallback (clean compile).
+- Every move in this pass used `git mv` so file-history follow works.
+
+### Verification
+
+```
+$ pnpm check
+COMPLETED 4725 FILES 0 ERRORS 0 WARNINGS 0 FILES_WITH_PROBLEMS
+
+$ pnpm test:unit
+Test Files  57 passed (57)
+     Tests  2255 passed | 32 skipped (2287)
+  Duration  ~35s
+
+$ cargo check
+Finished `dev` profile [unoptimized + debuginfo] target(s) in 2m 51s
+```
+
 ## [Unreleased] — 2026-04-29 16:07 EDT — Security hardening pass: 13 of 14 audit gaps closed
 
 Branch: `security-hardening-2026-04-29` (off `main`). Single audit-and-fix pass driven by [docs/audits/SECURITY_GAPS_2026-04-29.md](docs/audits/SECURITY_GAPS_2026-04-29.md). Every claim grounded in direct source read; every fix verified by `cargo check` clean, `cargo test --lib config` 13/13 passing, `pnpm check` 0 errors / 0 warnings / 5217 files.

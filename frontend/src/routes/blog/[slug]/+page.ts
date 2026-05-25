@@ -3,7 +3,7 @@ import { error } from '@sveltejs/kit';
 import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
 import type { Post } from '$lib/types/post';
 import type { SEOInput } from '$lib/seo/types';
-import { articleSchema, breadcrumbSchema } from '$lib/seo/jsonld';
+import { articleSchema, breadcrumbSchema, speakableSchema } from '$lib/seo/jsonld';
 
 const SITE_URL = 'https://revolution-trading-pros.pages.dev';
 
@@ -75,7 +75,13 @@ export const load: Load = async ({ params, url }) => {
 					{ name: postTitle, url: postUrl }
 				],
 				`${postUrl}#breadcrumb`
-			)
+			),
+			speakableSchema({
+				url: postUrl,
+				name: postTitle,
+				cssSelector: ['.post-title', '.post-lead'],
+				id: `${postUrl}#speakable`
+			})
 		]
 	};
 
