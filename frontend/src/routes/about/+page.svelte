@@ -629,7 +629,7 @@
       {@attach interactiveCard}
 						class="bg-[#080808]/80 backdrop-blur-xl p-10 border border-white/5 rounded-xl relative overflow-hidden hover:border-amber-600/30 transition-colors duration-500 interactive-card"
 					>
-						<div class="absolute -top-4 -left-4 text-amber-900/20">
+						<div class="absolute top-4 left-4 text-amber-900/20">
 							<IconMessageCircle size={80} />
 						</div>
 
@@ -662,7 +662,7 @@
       {@attach interactiveCard}
 						class="bg-[#080808]/80 backdrop-blur-xl p-10 border border-white/5 rounded-xl relative overflow-hidden hover:border-amber-600/30 transition-colors duration-500 interactive-card"
 					>
-						<div class="absolute -top-4 -left-4 text-amber-900/20">
+						<div class="absolute top-4 left-4 text-amber-900/20">
 							<IconMessageCircle size={80} />
 						</div>
 
