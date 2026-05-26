@@ -119,68 +119,84 @@
 	];
 
 	// Sector ETFs
-	const sectorETFs = [
+	// `variant` controls the icon gradient via .sector-card__icon--<variant> classes.
+	const sectorETFs: Array<{
+		sector: string;
+		symbol: string;
+		icon: typeof IconCpu;
+		variant:
+			| 'blue'
+			| 'pink'
+			| 'orange'
+			| 'green'
+			| 'teal'
+			| 'yellow'
+			| 'slate'
+			| 'purple'
+			| 'indigo';
+		etfs: string[];
+	}> = [
 		{
 			sector: 'Technology',
 			symbol: 'XLK',
 			icon: IconCpu,
-			color: 'from-blue-500 to-cyan-500',
+			variant: 'blue',
 			etfs: ['XLK', 'VGT', 'SMH', 'SOXX', 'PSI']
 		},
 		{
 			sector: 'Healthcare',
 			symbol: 'XLV',
 			icon: IconHeartbeat,
-			color: 'from-pink-500 to-rose-500',
+			variant: 'pink',
 			etfs: ['XLV', 'VHT', 'IHF', 'IBB', 'XBI', 'BBH']
 		},
 		{
 			sector: 'Energy',
 			symbol: 'XLE',
 			icon: IconBolt,
-			color: 'from-orange-500 to-amber-500',
+			variant: 'orange',
 			etfs: ['XLE', 'VDE', 'IYE', 'ICLN', 'TAN', 'PBW']
 		},
 		{
 			sector: 'Financial',
 			symbol: 'XLF',
 			icon: IconBuildingBank,
-			color: 'from-green-500 to-emerald-500',
+			variant: 'green',
 			etfs: ['XLF', 'VFH', 'IYF', 'KRE', 'KBE']
 		},
 		{
 			sector: 'Materials',
 			symbol: 'XLB',
 			icon: IconLeaf,
-			color: 'from-teal-500 to-green-500',
+			variant: 'teal',
 			etfs: ['XLB', 'VAW', 'IYM', 'XME', 'PICK', 'GDX']
 		},
 		{
 			sector: 'Utilities',
 			symbol: 'XLU',
 			icon: IconHome,
-			color: 'from-yellow-500 to-orange-500',
+			variant: 'yellow',
 			etfs: ['XLU', 'VPU', 'IDU']
 		},
 		{
 			sector: 'Industrials',
 			symbol: 'XLI',
 			icon: IconTools,
-			color: 'from-slate-500 to-gray-500',
+			variant: 'slate',
 			etfs: ['XLI', 'VIS', 'IYJ', 'ITA', 'XAR', 'PPA']
 		},
 		{
 			sector: 'Consumer Staples',
 			symbol: 'XLP',
 			icon: IconShoppingCart,
-			color: 'from-purple-500 to-violet-500',
+			variant: 'purple',
 			etfs: ['XLP', 'VDC', 'KXI']
 		},
 		{
 			sector: 'Consumer Discretionary',
 			symbol: 'XLY',
 			icon: IconCoin,
-			color: 'from-indigo-500 to-blue-500',
+			variant: 'indigo',
 			etfs: ['XLY', 'VCR', 'IYC', 'ITB']
 		}
 	];
@@ -421,7 +437,7 @@
 				{#each sectorETFs as sector, i (sector.sector)}
 					{@const Icon = sector.icon}
 					<div class="sector-card" in:fly={{ y: 20, delay: 50 * i, duration: 400 }}>
-						<div class="sector-card__icon bg-linear-to-br {sector.color}">
+						<div class="sector-card__icon sector-card__icon--{sector.variant}">
 							<Icon size={28} />
 						</div>
 						<h3 class="sector-card__title">{sector.sector}</h3>
@@ -848,6 +864,38 @@
 		justify-content: center;
 		color: #fff;
 		margin-bottom: 1rem;
+		background: linear-gradient(to bottom right, #64748b, #475569); /* fallback / slate */
+	}
+
+	/* Sector icon gradient variants — these map to the Tailwind `from-X-500 to-Y-500`
+	   palette previously inlined in script data. Centralized here so the data
+	   structure stays free of styling concerns. */
+	.sector-card__icon--blue {
+		background: linear-gradient(to bottom right, #3b82f6, #06b6d4);
+	}
+	.sector-card__icon--pink {
+		background: linear-gradient(to bottom right, #ec4899, #f43f5e);
+	}
+	.sector-card__icon--orange {
+		background: linear-gradient(to bottom right, #f97316, #f59e0b);
+	}
+	.sector-card__icon--green {
+		background: linear-gradient(to bottom right, #22c55e, #10b981);
+	}
+	.sector-card__icon--teal {
+		background: linear-gradient(to bottom right, #14b8a6, #22c55e);
+	}
+	.sector-card__icon--yellow {
+		background: linear-gradient(to bottom right, #eab308, #f97316);
+	}
+	.sector-card__icon--slate {
+		background: linear-gradient(to bottom right, #64748b, #6b7280);
+	}
+	.sector-card__icon--purple {
+		background: linear-gradient(to bottom right, #a855f7, #8b5cf6);
+	}
+	.sector-card__icon--indigo {
+		background: linear-gradient(to bottom right, #6366f1, #3b82f6);
 	}
 
 	.sector-card__title {

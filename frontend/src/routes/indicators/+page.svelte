@@ -219,22 +219,23 @@
 	]}
 />
 
-<div class="indicators-page antialiased">
+<div class="indicators-page">
 	<div
-		class="fixed inset-0 pointer-events-none opacity-[0.03] z-1 mix-blend-overlay"
+		class="indicators-page__grain"
+		aria-hidden="true"
 		style="background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIi8+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiMwMDAiLz4KPC9zdmc+');"
 	></div>
 
-	<section class="hero-section relative" class:visible={heroVisible}>
+	<section class={['hero-section', { visible: heroVisible }]}>
 		<div class="hero-background">
-			<div class="glow-orb glow-orb-1 mix-blend-screen"></div>
-			<div class="glow-orb glow-orb-2 mix-blend-screen"></div>
-			<div class="glow-orb glow-orb-3 mix-blend-screen"></div>
+			<div class="glow-orb glow-orb-1"></div>
+			<div class="glow-orb glow-orb-2"></div>
+			<div class="glow-orb glow-orb-3"></div>
 
-			<div class="absolute inset-0 perspective-grid opacity-20"></div>
+			<div class="perspective-grid"></div>
 
 			<div class="chart-lines">
-				<svg aria-hidden="true" class="absolute inset-0 w-full h-full" preserveAspectRatio="none">
+				<svg aria-hidden="true" class="chart-lines__svg" preserveAspectRatio="none">
 					<path
 						class="chart-line-svg line-1"
 						d="M0,300 Q400,250 800,350 T1600,200"
@@ -253,157 +254,138 @@
 			</div>
 		</div>
 
-		<div class="hero-content relative z-10 px-4">
+		<div class="hero-content">
 			<div class="hero-badge animate-float">
 				<IconChartLine size={18} stroke={2} />
-				<span class="tracking-wide text-xs uppercase font-bold">The Professional Toolkit</span>
+				<span class="hero-badge__label">The Professional Toolkit</span>
 			</div>
 
-			<h1 class="hero-title tracking-tight">
+			<h1 class="hero-title">
 				Master the Tools<br />
-				<span
-					class="gradient-text bg-clip-text text-transparent bg-linear-to-r from-blue-400 via-emerald-400 to-blue-400 bg-size-[200%_auto]"
-					>Pro Traders Use</span
-				>
+				<span class="gradient-text gradient-text--animated">Pro Traders Use</span>
 			</h1>
 
-			<p class="hero-description text-lg md:text-xl text-slate-300/90 leading-relaxed">
+			<p class="hero-description">
 				Stop looking for a "magic bullet." Successful trading isn't about finding the perfect
 				indicator—it's about interpreting the data correctly. We teach you how to use
 				institutional-grade tools like VWAP and RSI to read the market's narrative, not just its
 				noise.
 			</p>
 
-			<div class="hero-cta-group pt-4">
-				<button class="cta-button primary group relative overflow-hidden">
-					<span class="relative z-10 flex items-center gap-2">
+			<div class="hero-cta-group">
+				<button class="cta-button primary">
+					<span class="cta-button__label">
 						Join the Live Room
-						<IconArrowRight size={20} class="transition-transform group-hover:translate-x-1" />
+						<IconArrowRight size={20} class="cta-button__arrow" />
 					</span>
-					<div
-						class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"
-					></div>
+					<div class="cta-button__fill" aria-hidden="true"></div>
 				</button>
-				<button class="cta-button secondary backdrop-blur-md"> Explore Indicators </button>
+				<button class="cta-button secondary">Explore Indicators</button>
 			</div>
 
-			<div class="hero-stats border-t border-white/10 mt-12 pt-8">
-				<div class="stat-item group">
-					<div class="p-3 rounded-full bg-white/5 group-hover:bg-blue-500/10 transition-colors">
-						<IconTarget size={28} stroke={1.5} class="stat-icon text-blue-400" />
+			<div class="hero-stats">
+				<div class="stat-item stat-item--blue">
+					<div class="stat-item__icon-wrap">
+						<IconTarget size={28} stroke={1.5} class="stat-icon stat-icon--blue" />
 					</div>
 					<div class="stat-content">
-						<div class="stat-value text-white font-mono">Precision</div>
-						<div class="stat-label text-slate-400">Entries & Exits</div>
+						<div class="stat-value">Precision</div>
+						<div class="stat-label">Entries & Exits</div>
 					</div>
 				</div>
-				<div class="stat-item group">
-					<div class="p-3 rounded-full bg-white/5 group-hover:bg-emerald-500/10 transition-colors">
-						<IconBolt size={28} stroke={1.5} class="stat-icon text-emerald-400" />
+				<div class="stat-item stat-item--emerald">
+					<div class="stat-item__icon-wrap">
+						<IconBolt size={28} stroke={1.5} class="stat-icon stat-icon--emerald" />
 					</div>
 					<div class="stat-content">
-						<div class="stat-value text-white font-mono">Real-Time</div>
-						<div class="stat-label text-slate-400">Live Application</div>
+						<div class="stat-value">Real-Time</div>
+						<div class="stat-label">Live Application</div>
 					</div>
 				</div>
-				<div class="stat-item group">
-					<div class="p-3 rounded-full bg-white/5 group-hover:bg-purple-500/10 transition-colors">
-						<IconUsers size={28} stroke={1.5} class="stat-icon text-purple-400" />
+				<div class="stat-item stat-item--purple">
+					<div class="stat-item__icon-wrap">
+						<IconUsers size={28} stroke={1.5} class="stat-icon stat-icon--purple" />
 					</div>
 					<div class="stat-content">
-						<div class="stat-value text-white font-mono">Community</div>
-						<div class="stat-label text-slate-400">Mentorship</div>
+						<div class="stat-value">Community</div>
+						<div class="stat-label">Mentorship</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</section>
 
-	<section class="setup-section relative">
+	<section class="setup-section">
 		<div class="section-container">
-			<div class="setup-header text-center mb-12">
-				<h2 class="section-title tracking-tight mb-4">The "Golden Setup"</h2>
-				<p class="section-subtitle mb-8">
+			<div class="setup-header">
+				<h2 class="section-title">The "Golden Setup"</h2>
+				<p class="section-subtitle">
 					You don't need 20 indicators. You need 3 that work. Here is the exact configuration we use
 					every day.
 				</p>
 			</div>
 
-			<div class="setup-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+			<div class="setup-grid">
 				{#each goldenSetup as item (item.title)}
 					{@const Icon = item.icon}
-					<div
-						class="setup-item bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 hover:border-blue-500/30 transition-all duration-300 group"
-					>
-						<div
-							class="setup-icon-wrapper mb-4 w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center group-hover:scale-110 transition-transform"
-						>
-							<Icon size={24} class="text-blue-400" />
+					<div class="setup-item">
+						<div class="setup-icon-wrapper">
+							<Icon size={24} class="setup-icon" />
 						</div>
-						<h3 class="text-slate-400 text-sm font-medium uppercase tracking-wide mb-2">
-							{item.title}
-						</h3>
-						<div class="text-xl font-bold text-white mb-1">{item.value}</div>
-						<div
-							class="text-xs text-emerald-400 font-mono bg-emerald-500/10 inline-block px-2 py-1 rounded border border-emerald-500/20"
-						>
-							{item.detail}
-						</div>
+						<h3 class="setup-item__title">{item.title}</h3>
+						<div class="setup-item__value">{item.value}</div>
+						<div class="setup-item__detail">{item.detail}</div>
 					</div>
 				{/each}
 			</div>
 		</div>
 	</section>
 
-	<section class="truth-section relative overflow-hidden">
-		<div
-			class="absolute right-0 top-0 w-1/3 h-full bg-linear-to-l from-blue-900/10 to-transparent pointer-events-none"
-		></div>
+	<section class="truth-section">
+		<div class="truth-section__fade" aria-hidden="true"></div>
 
-		<div class="section-container relative z-10">
+		<div class="section-container truth-section__inner">
 			<div class="truth-grid">
 				<div class="truth-content">
-					<h2 class="section-title left-align tracking-tighter">
+					<h2 class="section-title left-align truth-section__title">
 						The Truth About <span class="text-highlight">Technical Indicators</span>
 					</h2>
-					<p class="truth-text text-slate-300">
+					<p class="truth-text">
 						Most new traders fail because they treat indicators as "Go/Stop" signals. They buy when
 						the RSI crosses 30, or sell when lines cross, without understanding context.
 					</p>
-					<p class="truth-text text-slate-300">
+					<p class="truth-text">
 						<strong>Here is the reality:</strong> Indicators are just derivatives of price. They are tools,
 						not crystal balls. In our community, we teach you to use these tools to build a case—a "confluence"
 						of evidence—that tilts the probabilities in your favor.
 					</p>
-					<ul class="truth-list space-y-4">
-						<li class="bg-white/5 p-4 rounded-lg border border-white/5">
-							<IconAlertTriangle size={24} class="warning-icon shrink-0" />
+					<ul class="truth-list">
+						<li class="truth-list__item">
+							<IconAlertTriangle size={24} class="warning-icon" />
 							<span>Stop chasing "lagging" signals blindly.</span>
 						</li>
-						<li class="bg-white/5 p-4 rounded-lg border border-white/5">
-							<IconCheck size={24} class="check-icon shrink-0" />
+						<li class="truth-list__item">
+							<IconCheck size={24} class="check-icon" />
 							<span>Start using indicators to confirm price action.</span>
 						</li>
-						<li class="bg-white/5 p-4 rounded-lg border border-white/5">
-							<IconCheck size={24} class="check-icon shrink-0" />
+						<li class="truth-list__item">
+							<IconCheck size={24} class="check-icon" />
 							<span>Learn to spot what the institutions are doing.</span>
 						</li>
 					</ul>
 				</div>
 				<div class="truth-visual">
-					<div class="chart-card glass-panel shadow-2xl shadow-blue-900/20 backdrop-blur-xl">
-						<div
-							class="chart-header flex items-center justify-between border-b border-white/10 pb-4 mb-6"
-						>
-							<div class="flex gap-2">
+					<div class="chart-card">
+						<div class="chart-header">
+							<div class="chart-header__dots">
 								<span class="dot red"></span>
 								<span class="dot yellow"></span>
 								<span class="dot green"></span>
 							</div>
-							<div class="text-xs font-mono text-slate-500">M15 • ES_F</div>
+							<div class="chart-header__label">M15 • ES_F</div>
 						</div>
-						<div class="chart-mockup h-[220px] relative w-full">
-							<svg aria-hidden="true" class="w-full h-full overflow-visible" viewBox="0 0 400 200">
+						<div class="chart-mockup">
+							<svg aria-hidden="true" class="chart-mockup__svg" viewBox="0 0 400 200">
 								<defs>
 									<linearGradient id="chartGrad" x1="0%" y1="0%" x2="0%" y2="100%">
 										<stop offset="0%" stop-color="#2e8eff" stop-opacity="0.3" />
@@ -431,10 +413,8 @@
 								/>
 							</svg>
 
-							<div
-								class="mockup-annotation absolute top-4 right-8 bg-emerald-500 text-black font-bold px-3 py-1 rounded shadow-lg transform origin-bottom-left"
-							>
-								<div class="flex items-center gap-1 text-xs">
+							<div class="mockup-annotation">
+								<div class="mockup-annotation__row">
 									<IconAlertTriangle size={14} />
 									<span>Bearish Divergence</span>
 								</div>
@@ -448,15 +428,14 @@
 
 	<section class="filter-section" id="indicators-list">
 		<div class="filter-container">
-			<h3 class="tracking-tight">Explore Our Core Indicators</h3>
-			<p class="filter-subtitle text-lg">
+			<h3 class="filter-section__title">Explore Our Core Indicators</h3>
+			<p class="filter-subtitle">
 				These are the exact tools active in our trading room charts right now.
 			</p>
 			<div class="filter-buttons">
 				{#each categories as category (category)}
 					<button
-						class="filter-button"
-						class:active={selectedCategory === category}
+						class={['filter-button', { active: selectedCategory === category }]}
 						onclick={() => (selectedCategory = category)}
 					>
 						{category}
@@ -472,45 +451,35 @@
 				{#each filteredIndicators as indicator, index (indicator.id)}
 					{@const Icon = indicator.icon}
 					<article
-						class="indicator-card group relative"
-						class:visible={cardsVisible[index]}
+						class={['indicator-card', { visible: cardsVisible[index] }]}
 						data-index={index}
 						onmousemove={handleMouseMove}
 						style="--delay: {index * 0.1}s; --card-color: {indicator.color};"
 					>
-						<div
-							class="spotlight-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-						></div>
+						<div class="spotlight-overlay" aria-hidden="true"></div>
 
-						<div
-							class="card-header relative overflow-hidden"
-							style="background: {indicator.gradient}"
-						>
-							<div class="absolute inset-0 bg-noise opacity-20"></div>
+						<div class="card-header" style="background: {indicator.gradient}">
+							<div class="bg-noise" aria-hidden="true"></div>
 
-							<div
-								class="card-icon relative z-10 transform transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3"
-							>
+							<div class="card-icon">
 								<Icon size={48} stroke={1.5} />
 							</div>
-							<div class="card-category shadow-lg">{indicator.category}</div>
+							<div class="card-category">{indicator.category}</div>
 						</div>
 
-						<div class="card-content bg-[#0B101E]">
-							<h3
-								class="card-title text-white group-hover:text-(--card-color) transition-colors duration-300"
-							>
+						<div class="card-content">
+							<h3 class="card-title">
 								{indicator.name}
 							</h3>
 							<p class="card-description">{indicator.description}</p>
 
-							<div class="card-use-case bg-white/5 border-l-2 border-(--card-color)">
+							<div class="card-use-case">
 								<IconTarget size={18} stroke={2} />
 								<span>{indicator.useCase}</span>
 							</div>
 
 							<div class="card-meta">
-								<div class="meta-badge difficulty border border-white/10">
+								<div class="meta-badge difficulty">
 									<IconStar size={16} stroke={2} />
 									<span>{indicator.difficulty}</span>
 								</div>
@@ -518,20 +487,16 @@
 
 							<ul class="card-features">
 								{#each indicator.features as feature (feature)}
-									<li class="group-hover:pl-1 transition-all duration-300">
+									<li>
 										<IconCheck size={16} stroke={2} />
 										<span>{feature}</span>
 									</li>
 								{/each}
 							</ul>
 
-							<a href="/indicators/{indicator.slug}" class="card-button group/btn">
+							<a href="/indicators/{indicator.slug}" class="card-button">
 								View Strategy Guide
-								<IconArrowRight
-									size={18}
-									stroke={2}
-									class="transition-transform group-hover/btn:translate-x-1"
-								/>
+								<IconArrowRight size={18} stroke={2} class="card-button__arrow" />
 							</a>
 						</div>
 					</article>
@@ -540,12 +505,10 @@
 		</div>
 	</section>
 
-	<section class="confluence-section relative">
-		<div
-			class="absolute inset-0 bg-linear-to-b from-transparent via-blue-900/5 to-transparent pointer-events-none"
-		></div>
-		<div class="section-container relative z-10">
-			<h2 class="section-title tracking-tight">
+	<section class="confluence-section">
+		<div class="confluence-section__fade" aria-hidden="true"></div>
+		<div class="section-container confluence-section__inner">
+			<h2 class="section-title">
 				The Power of <span class="gradient-text">Confluence</span>
 			</h2>
 			<p class="section-subtitle">
@@ -554,53 +517,53 @@
 			</p>
 
 			<div class="confluence-grid">
-				<div class="confluence-step hover:border-blue-500/50 transition-colors duration-300">
-					<div class="step-number shadow-lg shadow-blue-500/30">1</div>
-					<h3 class="text-xl font-bold mb-2">Trend</h3>
-					<p class="text-slate-400 text-sm">
+				<div class="confluence-step confluence-step--blue">
+					<div class="step-number step-number--blue">1</div>
+					<h3 class="confluence-step__title">Trend</h3>
+					<p class="confluence-step__desc">
 						We use <strong>Moving Averages</strong> to determine if the market is bullish or bearish.
 						We never fight the trend.
 					</p>
 				</div>
 
-				<div class="confluence-connector hidden md:block">
-					<IconArrowRight size={32} class="text-slate-600 animate-pulse" />
+				<div class="confluence-connector confluence-connector--horizontal">
+					<IconArrowRight size={32} class="confluence-connector__icon" />
 				</div>
-				<div class="confluence-connector md:hidden rotate-90">
-					<IconArrowRight size={32} class="text-slate-600 animate-pulse" />
+				<div class="confluence-connector confluence-connector--vertical">
+					<IconArrowRight size={32} class="confluence-connector__icon" />
 				</div>
 
-				<div class="confluence-step hover:border-emerald-500/50 transition-colors duration-300">
-					<div class="step-number bg-emerald-500 shadow-lg shadow-emerald-500/30">2</div>
-					<h3 class="text-xl font-bold mb-2">Location</h3>
-					<p class="text-slate-400 text-sm">
+				<div class="confluence-step confluence-step--emerald">
+					<div class="step-number step-number--emerald">2</div>
+					<h3 class="confluence-step__title">Location</h3>
+					<p class="confluence-step__desc">
 						We wait for price to return to value areas like <strong>VWAP</strong> or Support zones. We
 						don't chase extended moves.
 					</p>
 				</div>
 
-				<div class="confluence-connector hidden md:block">
-					<IconArrowRight size={32} class="text-slate-600 animate-pulse" />
+				<div class="confluence-connector confluence-connector--horizontal">
+					<IconArrowRight size={32} class="confluence-connector__icon" />
 				</div>
-				<div class="confluence-connector md:hidden rotate-90">
-					<IconArrowRight size={32} class="text-slate-600 animate-pulse" />
+				<div class="confluence-connector confluence-connector--vertical">
+					<IconArrowRight size={32} class="confluence-connector__icon" />
 				</div>
 
-				<div class="confluence-step hover:border-purple-500/50 transition-colors duration-300">
-					<div class="step-number bg-purple-500 shadow-lg shadow-purple-500/30">3</div>
-					<h3 class="text-xl font-bold mb-2">Momentum</h3>
-					<p class="text-slate-400 text-sm">
+				<div class="confluence-step confluence-step--purple">
+					<div class="step-number step-number--purple">3</div>
+					<h3 class="confluence-step__title">Momentum</h3>
+					<p class="confluence-step__desc">
 						We execute when <strong>RSI or MACD</strong> confirms the buyers are stepping back in. This
 						creates the "sniper" entry.
 					</p>
 				</div>
 			</div>
 
-			<div class="confluence-cta mt-12">
-				<p class="text-slate-400 mb-2">Want to see this confluence strategy in action?</p>
-				<a href="/trading-room" class="text-link inline-flex items-center gap-2 group">
+			<div class="confluence-cta">
+				<p class="confluence-cta__lede">Want to see this confluence strategy in action?</p>
+				<a href="/trading-room" class="text-link">
 					Watch us trade this setup live tomorrow morning
-					<IconArrowRight size={18} class="transition-transform group-hover:translate-x-1" />
+					<IconArrowRight size={18} class="text-link__arrow" />
 				</a>
 			</div>
 		</div>
@@ -608,24 +571,18 @@
 
 	<section class="faq-section">
 		<div class="section-container">
-			<h2 class="section-title tracking-tight">Common Questions</h2>
+			<h2 class="section-title">Common Questions</h2>
 			<div class="faq-list">
 				{#each faqs as faq, i (i)}
-					<div class="faq-item transition-all duration-300" class:open={openFaq === i}>
-						<button
-							class="faq-question hover:text-blue-400 transition-colors"
-							onclick={() => toggleFaq(i)}
-						>
+					<div class={['faq-item', { open: openFaq === i }]}>
+						<button class="faq-question" onclick={() => toggleFaq(i)}>
 							{faq.question}
-							<div
-								class="faq-icon transform transition-transform duration-300"
-								class:rotate-180={openFaq === i}
-							>
+							<div class={['faq-icon', { 'faq-icon--open': openFaq === i }]}>
 								<IconChevronDown size={20} />
 							</div>
 						</button>
 						<div class="faq-answer">
-							<p class="text-slate-300">{faq.answer}</p>
+							<p class="faq-answer__text">{faq.answer}</p>
 						</div>
 					</div>
 				{/each}
@@ -633,25 +590,19 @@
 		</div>
 	</section>
 
-	<section class="final-cta relative overflow-hidden">
-		<div
-			class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-blue-600/10 blur-[120px] rounded-full pointer-events-none"
-		></div>
+	<section class="final-cta">
+		<div class="final-cta__halo" aria-hidden="true"></div>
 
-		<div class="cta-content relative z-10">
-			<div class="inline-block p-4 rounded-full bg-blue-500/10 mb-6">
-				<IconSchool size={48} class="cta-icon text-blue-400 mb-0!" />
+		<div class="cta-content">
+			<div class="final-cta__icon-wrap">
+				<IconSchool size={48} class="cta-icon" />
 			</div>
-			<h2 class="tracking-tight">Stop Learning Alone. Start Trading Together.</h2>
-			<p>
+			<h2 class="final-cta__heading">Stop Learning Alone. Start Trading Together.</h2>
+			<p class="final-cta__lede">
 				You have the tools. Now get the guidance. Join a community of traders who genuinely care
 				about your success.
 			</p>
-			<button
-				class="cta-button primary large transform hover:scale-105 transition-transform duration-300 shadow-xl shadow-blue-500/20"
-			>
-				Join Revolution Trading Pros
-			</button>
+			<button class="cta-button primary large">Join Revolution Trading Pros</button>
 			<p class="cta-subtext">No spam. No fake alerts. Just real trading.</p>
 		</div>
 	</section>
@@ -659,15 +610,36 @@
 
 
 <style>
-	/* * RESTORED CUSTOM CSS ARCHITECTURE 
-     * (Preserving the original animations, layout logic, and visual fidelity)
-     */
-
+	/* ═════════════════════════════════════════════════════════════════════════
+	   Page-local tokens (one-offs for /indicators only).
+	   Reusable color/spacing values come from --rtp-* in marketing.css.
+	   ═════════════════════════════════════════════════════════════════════════ */
 	.indicators-page {
-		background: #050812;
-		color: white;
-		font-family: 'Inter', system-ui, sans-serif;
+		--ind-bg-navy: #050812;
+		--ind-bg-navy-2: #0a0f1e;
+		--ind-bg-navy-3: #080c18;
+		--ind-card-bg: #0b101e;
+		--ind-blue: #2e8eff;
+		--ind-blue-soft: var(--rtp-blue-bright);
+		--ind-emerald: var(--rtp-emerald-bright);
+		--ind-purple: #a78bfa;
+		--ind-purple-strong: #8b5cf6;
+		--ind-amber: var(--rtp-amber);
+
+		background: var(--ind-bg-navy);
+		color: var(--rtp-text);
+		font-family: var(--rtp-font-sans);
 		overflow-x: hidden;
+		position: relative;
+	}
+
+	.indicators-page__grain {
+		position: fixed;
+		inset: 0;
+		pointer-events: none;
+		opacity: 0.03;
+		z-index: 1;
+		mix-blend-mode: overlay;
 	}
 
 	/* Cinematic Spotlight Effect */
@@ -681,9 +653,18 @@
 			transparent 40%
 		);
 		z-index: 2;
+		opacity: 0;
+		transition: opacity 500ms;
+	}
+	.indicator-card:hover .spotlight-overlay {
+		opacity: 1;
 	}
 
 	.bg-noise {
+		position: absolute;
+		inset: 0;
+		opacity: 0.2;
+		pointer-events: none;
 		background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
 	}
 
@@ -1580,5 +1561,567 @@
 			break-inside: avoid;
 			page-break-inside: avoid;
 		}
+	}
+
+	/* ═════════════════════════════════════════════════════════════════════════
+	   Additions for cleaned-up markup (Phase 2D, 2026-05-25).
+	   New BEM modifiers/elements introduced when stripping Tailwind utilities
+	   off the markup. Existing rules above are unchanged for visual parity.
+	   ═════════════════════════════════════════════════════════════════════════ */
+
+	/* Section positioning */
+	.hero-section {
+		position: relative;
+	}
+	.setup-section,
+	.truth-section,
+	.confluence-section,
+	.final-cta {
+		position: relative;
+		overflow: hidden;
+	}
+
+	.hero-content {
+		position: relative;
+		z-index: 10;
+		padding-inline: 1rem;
+		max-width: 1000px;
+		text-align: center;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	/* Hero badge label */
+	.hero-badge__label {
+		letter-spacing: 0.05em;
+		font-size: 0.75rem;
+		text-transform: uppercase;
+		font-weight: 700;
+	}
+
+	/* Gradient text — animated horizontal pan (was the inline tailwind gradient) */
+	.gradient-text--animated {
+		background: linear-gradient(
+			to right,
+			var(--ind-blue-soft),
+			var(--ind-emerald),
+			var(--ind-blue-soft)
+		);
+		background-size: 200% auto;
+		-webkit-background-clip: text;
+		background-clip: text;
+		-webkit-text-fill-color: transparent;
+		color: transparent;
+	}
+
+	/* CTA buttons enhancements */
+	.cta-button.primary {
+		position: relative;
+		overflow: hidden;
+	}
+	.cta-button__label {
+		position: relative;
+		z-index: 10;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+	:global(.cta-button__arrow) {
+		transition: transform var(--rtp-dur-base) var(--rtp-ease-out);
+	}
+	.cta-button.primary:hover :global(.cta-button__arrow) {
+		transform: translateX(0.25rem);
+	}
+	.cta-button__fill {
+		position: absolute;
+		inset: 0;
+		background: color-mix(in oklab, #fff 20%, transparent);
+		transform: translateY(100%);
+		transition: transform var(--rtp-dur-base) var(--rtp-ease-out);
+		pointer-events: none;
+	}
+	.cta-button.primary:hover .cta-button__fill {
+		transform: translateY(0);
+	}
+	.cta-button.secondary {
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
+	}
+
+	.hero-cta-group {
+		padding-block-start: 1rem;
+	}
+
+	/* Hero stats border + spacing (was inline tailwind) */
+	.hero-stats {
+		border-block-start: 1px solid var(--rtp-border);
+		margin-block-start: 3rem;
+		padding-block-start: 2rem;
+	}
+	.stat-item__icon-wrap {
+		padding: 0.75rem;
+		border-radius: var(--rtp-radius-pill);
+		background: color-mix(in oklab, #fff 5%, transparent);
+		transition: background-color var(--rtp-dur-base) var(--rtp-ease-out);
+	}
+	.stat-item--blue:hover .stat-item__icon-wrap {
+		background: color-mix(in oklab, var(--ind-blue) 10%, transparent);
+	}
+	.stat-item--emerald:hover .stat-item__icon-wrap {
+		background: color-mix(in oklab, var(--rtp-emerald) 10%, transparent);
+	}
+	.stat-item--purple:hover .stat-item__icon-wrap {
+		background: color-mix(in oklab, var(--ind-purple-strong) 10%, transparent);
+	}
+	:global(.stat-icon--blue) {
+		color: var(--ind-blue-soft);
+	}
+	:global(.stat-icon--emerald) {
+		color: var(--rtp-emerald-bright);
+	}
+	:global(.stat-icon--purple) {
+		color: var(--ind-purple);
+	}
+	.stat-content {
+		text-align: start;
+	}
+	.stat-value {
+		color: var(--rtp-text);
+		font-family: var(--rtp-font-mono);
+	}
+	.stat-label {
+		color: var(--rtp-text-muted);
+	}
+
+	/* Setup section */
+	.setup-header {
+		text-align: center;
+		margin-block-end: 3rem;
+	}
+	.setup-header .section-title {
+		margin-block-end: 1rem;
+		letter-spacing: -0.025em;
+	}
+	.setup-header .section-subtitle {
+		margin-block-end: 2rem;
+	}
+	.setup-grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1.5rem;
+	}
+	@media (min-width: 768px) {
+		.setup-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+	@media (min-width: 1024px) {
+		.setup-grid {
+			grid-template-columns: repeat(4, 1fr);
+		}
+	}
+
+	.setup-item {
+		background: color-mix(in oklab, #fff 5%, transparent);
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
+		border: 1px solid var(--rtp-border);
+		border-radius: 1rem;
+		padding: 1.5rem;
+		transition: all 300ms;
+	}
+	.setup-item:hover {
+		border-color: color-mix(in oklab, var(--ind-blue) 30%, transparent);
+	}
+	.setup-icon-wrapper {
+		margin-block-end: 1rem;
+		inline-size: 3rem;
+		block-size: 3rem;
+		border-radius: 0.75rem;
+		background: color-mix(in oklab, var(--ind-blue) 10%, transparent);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: transform var(--rtp-dur-base) var(--rtp-ease-out);
+	}
+	.setup-item:hover .setup-icon-wrapper {
+		transform: scale(1.1);
+	}
+	:global(.setup-icon) {
+		color: var(--ind-blue-soft);
+	}
+	.setup-item__title {
+		color: var(--rtp-text-muted);
+		font-size: 0.875rem;
+		font-weight: 500;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		margin-block-end: 0.5rem;
+	}
+	.setup-item__value {
+		font-size: 1.25rem;
+		font-weight: 700;
+		color: var(--rtp-text);
+		margin-block-end: 0.25rem;
+	}
+	.setup-item__detail {
+		font-size: 0.75rem;
+		color: var(--rtp-emerald-bright);
+		font-family: var(--rtp-font-mono);
+		background: color-mix(in oklab, var(--rtp-emerald) 10%, transparent);
+		display: inline-block;
+		padding: 0.25rem 0.5rem;
+		border-radius: 0.25rem;
+		border: 1px solid color-mix(in oklab, var(--rtp-emerald) 20%, transparent);
+	}
+
+	/* Truth section */
+	.truth-section__fade {
+		position: absolute;
+		inset-block-start: 0;
+		inset-inline-end: 0;
+		inline-size: 33.333%;
+		block-size: 100%;
+		background: linear-gradient(
+			to left,
+			color-mix(in oklab, #1e3a8a 10%, transparent),
+			transparent
+		);
+		pointer-events: none;
+	}
+	.truth-section__inner {
+		position: relative;
+		z-index: 10;
+	}
+	.truth-section__title {
+		letter-spacing: -0.05em;
+	}
+	.truth-text {
+		color: var(--rtp-text-soft);
+	}
+	.truth-list {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+	.truth-list__item {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		background: color-mix(in oklab, #fff 5%, transparent);
+		padding: 1rem;
+		border-radius: 0.5rem;
+		border: 1px solid var(--rtp-border-soft);
+	}
+	:global(.warning-icon),
+	:global(.check-icon) {
+		flex-shrink: 0;
+	}
+
+	/* Chart card / header / mockup */
+	.chart-card {
+		backdrop-filter: blur(16px);
+		-webkit-backdrop-filter: blur(16px);
+		box-shadow: 0 25px 50px -12px color-mix(in oklab, #1e3a8a 20%, transparent);
+	}
+	.chart-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		border-block-end: 1px solid var(--rtp-border);
+		padding-block-end: 1rem;
+		margin-block-end: 1.5rem;
+	}
+	.chart-header__dots {
+		display: flex;
+		gap: 0.5rem;
+	}
+	.chart-header__label {
+		font-size: 0.75rem;
+		font-family: var(--rtp-font-mono);
+		color: var(--rtp-text-subtle);
+	}
+	.chart-mockup {
+		block-size: 220px;
+		position: relative;
+		inline-size: 100%;
+	}
+	.chart-mockup__svg {
+		inline-size: 100%;
+		block-size: 100%;
+		overflow: visible;
+	}
+
+	.mockup-annotation {
+		position: absolute;
+		inset-block-start: 1rem;
+		inset-inline-end: 2rem;
+		background: var(--rtp-emerald);
+		color: #000;
+		font-weight: 700;
+		padding: 0.25rem 0.75rem;
+		border-radius: 0.25rem;
+		box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+		transform-origin: bottom left;
+	}
+	.mockup-annotation__row {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		font-size: 0.75rem;
+	}
+
+	/* Filter section heading */
+	.filter-section__title {
+		letter-spacing: -0.025em;
+		font-size: clamp(1.5rem, 3vw, 2rem);
+		font-weight: 800;
+		margin-block-end: 1rem;
+	}
+	.filter-subtitle {
+		font-size: 1.125rem;
+		max-width: 600px;
+		margin: 0 auto 2rem;
+		color: var(--rtp-text-muted);
+	}
+
+	/* Indicator card additions */
+	.indicator-card {
+		position: relative;
+	}
+	.card-header {
+		position: relative;
+		overflow: hidden;
+	}
+	.card-icon {
+		position: relative;
+		z-index: 10;
+		transform: translateZ(0);
+		transition: transform 500ms;
+	}
+	.indicator-card:hover .card-icon {
+		transform: scale(1.1) rotate(3deg);
+	}
+	.card-category {
+		box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+	}
+	.card-content {
+		background: var(--ind-card-bg);
+	}
+	.card-title {
+		color: var(--rtp-text);
+		transition: color 300ms;
+	}
+	.indicator-card:hover .card-title {
+		color: var(--card-color);
+	}
+	.card-use-case {
+		background: color-mix(in oklab, #fff 5%, transparent);
+		border-inline-start: 2px solid var(--card-color);
+	}
+	.meta-badge {
+		border: 1px solid var(--rtp-border);
+	}
+	.card-features li {
+		transition: padding-inline-start 300ms;
+	}
+	.indicator-card:hover .card-features li {
+		padding-inline-start: 0.25rem;
+	}
+	:global(.card-button__arrow) {
+		transition: transform var(--rtp-dur-base) var(--rtp-ease-out);
+	}
+	.card-button:hover :global(.card-button__arrow) {
+		transform: translateX(0.25rem);
+	}
+
+	/* Confluence section */
+	.confluence-section__fade {
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(
+			to bottom,
+			transparent,
+			color-mix(in oklab, #1e3a8a 5%, transparent),
+			transparent
+		);
+		pointer-events: none;
+	}
+	.confluence-section__inner {
+		position: relative;
+		z-index: 10;
+	}
+	.confluence-step__title {
+		font-size: 1.25rem;
+		font-weight: 700;
+		margin-block-end: 0.5rem;
+	}
+	.confluence-step__desc {
+		color: var(--rtp-text-muted);
+		font-size: 0.875rem;
+	}
+	.confluence-step {
+		transition: border-color 300ms;
+	}
+	.confluence-step--blue:hover {
+		border-color: color-mix(in oklab, var(--ind-blue) 50%, transparent);
+	}
+	.confluence-step--emerald:hover {
+		border-color: color-mix(in oklab, var(--rtp-emerald) 50%, transparent);
+	}
+	.confluence-step--purple:hover {
+		border-color: color-mix(in oklab, var(--ind-purple-strong) 50%, transparent);
+	}
+	.step-number--blue {
+		background: var(--ind-blue);
+		box-shadow: 0 10px 15px -3px color-mix(in oklab, var(--ind-blue) 30%, transparent);
+	}
+	.step-number--emerald {
+		background: var(--rtp-emerald);
+		box-shadow: 0 10px 15px -3px color-mix(in oklab, var(--rtp-emerald) 30%, transparent);
+	}
+	.step-number--purple {
+		background: var(--ind-purple-strong);
+		box-shadow: 0 10px 15px -3px color-mix(in oklab, var(--ind-purple-strong) 30%, transparent);
+	}
+
+	.confluence-connector--horizontal {
+		display: none;
+	}
+	.confluence-connector--vertical {
+		display: block;
+		transform: rotate(90deg);
+	}
+	@media (min-width: 768px) {
+		.confluence-connector--horizontal {
+			display: block;
+		}
+		.confluence-connector--vertical {
+			display: none;
+		}
+	}
+	:global(.confluence-connector__icon) {
+		color: var(--rtp-text-dim);
+		animation: indicators-pulse-icon 2s ease-in-out infinite;
+	}
+	@keyframes indicators-pulse-icon {
+		0%,
+		100% {
+			opacity: 0.5;
+		}
+		50% {
+			opacity: 1;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		:global(.confluence-connector__icon) {
+			animation: none;
+		}
+	}
+
+	.confluence-cta {
+		text-align: center;
+		margin-block-start: 3rem;
+	}
+	.confluence-cta__lede {
+		color: var(--rtp-text-muted);
+		margin-block-end: 0.5rem;
+	}
+	.text-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+	:global(.text-link__arrow) {
+		transition: transform var(--rtp-dur-base) var(--rtp-ease-out);
+	}
+	.text-link:hover :global(.text-link__arrow) {
+		transform: translateX(0.25rem);
+	}
+
+	/* FAQ extras */
+	.faq-item {
+		transition: all 300ms;
+	}
+	.faq-icon {
+		transform: rotate(0deg);
+		transition: transform 300ms;
+	}
+	.faq-icon--open {
+		transform: rotate(180deg);
+	}
+	.faq-question {
+		transition: color var(--rtp-dur-base) var(--rtp-ease-out);
+	}
+	.faq-question:hover {
+		color: var(--ind-blue-soft);
+	}
+	.faq-answer__text {
+		color: var(--rtp-text-soft);
+	}
+
+	/* Final CTA */
+	.final-cta__halo {
+		position: absolute;
+		inset-block-start: 50%;
+		inset-inline-start: 50%;
+		transform: translate(-50%, -50%);
+		inline-size: 800px;
+		block-size: 400px;
+		background: color-mix(in oklab, #2563eb 10%, transparent);
+		filter: blur(120px);
+		border-radius: 50%;
+		pointer-events: none;
+	}
+	.cta-content {
+		position: relative;
+		z-index: 10;
+	}
+	.final-cta__icon-wrap {
+		display: inline-block;
+		padding: 1rem;
+		border-radius: var(--rtp-radius-pill);
+		background: color-mix(in oklab, var(--ind-blue) 10%, transparent);
+		margin-block-end: 1.5rem;
+	}
+	:global(.cta-icon) {
+		color: var(--ind-blue-soft);
+		display: block;
+		margin: 0;
+	}
+	.final-cta__heading {
+		letter-spacing: -0.025em;
+	}
+	.cta-button.primary.large {
+		transition:
+			transform var(--rtp-dur-base) var(--rtp-ease-out),
+			box-shadow var(--rtp-dur-base) var(--rtp-ease-out);
+		box-shadow:
+			0 20px 25px -5px rgba(0, 0, 0, 0.25),
+			0 0 30px color-mix(in oklab, var(--ind-blue) 20%, transparent);
+	}
+	.cta-button.primary.large:hover {
+		transform: translateY(-2px) scale(1.05);
+	}
+
+	/* Chart lines svg helper */
+	.chart-lines__svg {
+		position: absolute;
+		inset: 0;
+		inline-size: 100%;
+		block-size: 100%;
+	}
+
+	.glow-orb {
+		mix-blend-mode: screen;
+	}
+	.perspective-grid {
+		position: absolute;
+		inset: 0;
+		opacity: 0.2;
 	}
 </style>

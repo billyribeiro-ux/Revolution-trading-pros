@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import RoomsGrid from './_sections/RoomsGrid.svelte';
-	
+
 	// GSAP types for TypeScript (actual imports are dynamic for SSR safety)
 	type GSAPInstance = typeof import('gsap').gsap;
 
@@ -469,43 +469,33 @@
 	<!-- JSON-LD Structured Data would go here if needed -->
 </svelte:head>
 
-<div class="bg-[#050505] text-white selection:bg-blue-500/30 font-sans relative">
-	<div class="fixed inset-0 pointer-events-none z-0">
-		<div
-			class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03]"
-		></div>
+<div class="ltr">
+	<div class="ltr__noise-layer" aria-hidden="true">
+		<div class="ltr__noise"></div>
 	</div>
 
-	<div
-		class="relative z-50 border-b border-white/5 bg-[#050505]/80 backdrop-blur-md h-10 flex items-center overflow-hidden"
-	>
-		<div class="ticker-track flex items-center gap-12 whitespace-nowrap px-4">
+	<div class="ticker">
+		<div class="ticker-track ticker__track">
 			{#each tickerItems as item, _ti (_ti)}
-				<div class="flex items-center gap-3 text-xs font-mono select-none">
-					<span class="font-bold text-zinc-300">{item.sym}</span>
-					<span class="text-zinc-500">{item.price}</span>
-					<span class={item.up ? 'text-emerald-400' : 'text-rose-400'}>{item.change}</span>
+				<div class="ticker__item">
+					<span class="ticker__sym">{item.sym}</span>
+					<span class="ticker__price">{item.price}</span>
+					<span class={['ticker__change', item.up ? 'ticker__change--up' : 'ticker__change--down']}>{item.change}</span>
 				</div>
 			{/each}
 		</div>
 	</div>
 
-	<div class="relative z-10 pt-0 pb-0 container mx-auto px-4 sm:px-6 lg:px-8">
-		<section
-			class="relative min-h-[85vh] flex flex-col items-center justify-center text-center perspective-hero mb-24"
-		>
-			<div class="hero-grid-plane absolute inset-0 pointer-events-none opacity-0">
-				<div
-					class="absolute inset-0 bg-linear-to-b from-[#050505] via-transparent to-[#050505] z-10"
-				></div>
-				<div class="grid-lines w-full h-full"></div>
+	<div class="ltr__content">
+		<section class="hero perspective-hero">
+			<div class="hero-grid-plane hero__grid-plane" aria-hidden="true">
+				<div class="hero__grid-fade"></div>
+				<div class="hero__grid-lines grid-lines"></div>
 			</div>
 
-			<div
-				class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40 z-0 overflow-hidden"
-			>
+			<div class="hero-chart hero__chart-wrap" aria-hidden="true">
 				<svg
-					class="w-[120%] h-[600px] transform translate-y-20 blur-[1px]"
+					class="hero__chart-svg"
 					viewBox="0 0 1000 300"
 					preserveAspectRatio="none"
 				>
@@ -527,58 +517,43 @@
 				</svg>
 			</div>
 
-			<div class="absolute inset-0 pointer-events-none z-0 overflow-hidden">
-				<div
-					class="hero-floater absolute top-1/4 left-10 text-[10px] font-mono text-emerald-500/30 p-2 border border-emerald-500/20 rounded bg-emerald-900/10 backdrop-blur-sm"
-				>
+			<div class="hero__floaters" aria-hidden="true">
+				<div class="hero-floater hero__floater hero__floater--emerald hero__floater--top-left">
 					ORDER_FLOW: INSTITUTIONAL_BUY
 				</div>
-				<div
-					class="hero-floater absolute bottom-1/3 right-20 text-[10px] font-mono text-blue-500/30 p-2 border border-blue-500/20 rounded bg-blue-900/10 backdrop-blur-sm"
-				>
+				<div class="hero-floater hero__floater hero__floater--blue hero__floater--bottom-right">
 					VOL: 24,000,392
 				</div>
-				<div class="hero-floater absolute top-20 right-1/4 text-[10px] font-mono text-zinc-600">
-					<div class="flex gap-1">
-						<div class="w-1 h-1 bg-zinc-500 rounded-full"></div>
+				<div class="hero-floater hero__floater hero__floater--plain hero__floater--top-right">
+					<div class="hero__floater-row">
+						<div class="hero__floater-dot"></div>
 						CONNECTED
 					</div>
 				</div>
 			</div>
 
-			<div class="relative z-20 max-w-5xl mx-auto mt-12">
-				<div
-					class="hero-badge inline-flex items-center gap-3 px-5 py-2 rounded-full bg-white/3 border border-white/8 backdrop-blur-md mb-10 shadow-[0_0_30px_rgba(16,185,129,0.1)] hover:bg-white/5 transition-colors cursor-default"
-				>
-					<span class="relative flex h-2 w-2">
-						<span
-							class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"
-						></span>
-						<span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+			<div class="hero__inner">
+				<div class="hero-badge hero__badge">
+					<span class="hero__badge-pulse">
+						<span class="hero__badge-ping"></span>
+						<span class="hero__badge-dot"></span>
 					</span>
-					<span class="text-xs font-mono uppercase tracking-widest text-zinc-300 font-bold">
-						NY Session: <span class="text-emerald-400">Live</span>
+					<span class="hero__badge-label">
+						NY Session: <span class="hero__badge-status">Live</span>
 					</span>
 				</div>
 
-				<h1
-					class="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter leading-[0.9] mb-10 text-white"
-				>
-					<div class="hero-title-line overflow-hidden">
-						<span class="block">Market</span>
+				<h1 class="hero__title">
+					<div class="hero-title-line hero__title-line">
+						<span class="hero__title-word">Market</span>
 					</div>
-					<div class="hero-title-line overflow-hidden">
-						<span
-							class="inline-block bg-linear-to-r from-blue-400 via-indigo-300 to-emerald-400 bg-clip-text text-transparent pb-4"
-							>Intelligence</span
-						>
+					<div class="hero-title-line hero__title-line">
+						<span class="hero__title-accent">Intelligence</span>
 					</div>
 				</h1>
 
-				<p
-					class="hero-desc text-xl md:text-2xl text-zinc-400 max-w-2xl mx-auto leading-relaxed font-light"
-				>
-					Step inside the <span class="text-white font-medium">Command Center</span>. Real-time
+				<p class="hero-desc hero__desc">
+					Step inside the <span class="hero__desc-emph">Command Center</span>. Real-time
 					data, institutional signals, and a community of professional traders.
 				</p>
 
@@ -586,80 +561,72 @@
 				     6 FLOATING CTA BUTTONS - PE7 RESTORE 2026-05-23
 				     Animated entrance from different directions as per original design
 				     ═══════════════════════════════════════════════════════════════════════════ -->
-				<div class="hero-cta-container relative mt-16 flex flex-wrap justify-center gap-4 max-w-4xl mx-auto">
+				<div class="hero-cta-container hero__cta-row">
 					<a
 						href="/live-trading-rooms/day-trading"
-						class="hero-float-btn hero-float-btn-1 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold hover:bg-emerald-500/20 hover:border-emerald-500/50 transition-all duration-300 backdrop-blur-sm"
+						class="hero-float-btn hero-float-btn-1 hero__cta hero__cta--emerald"
 					>
-						<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+						<span class="hero__cta-dot hero__cta-dot--pulse"></span>
 						Day Trading Room
 					</a>
 					<a
 						href="/live-trading-rooms/swing-trading"
-						class="hero-float-btn hero-float-btn-2 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-500/10 border border-blue-500/30 text-blue-400 font-semibold hover:bg-blue-500/20 hover:border-blue-500/50 transition-all duration-300 backdrop-blur-sm"
+						class="hero-float-btn hero-float-btn-2 hero__cta hero__cta--blue"
 					>
-						<span class="w-2 h-2 rounded-full bg-blue-400"></span>
+						<span class="hero__cta-dot"></span>
 						Swing Trading
 					</a>
 					<a
 						href="/live-trading-rooms/small-accounts"
-						class="hero-float-btn hero-float-btn-3 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 font-semibold hover:bg-amber-500/20 hover:border-amber-500/50 transition-all duration-300 backdrop-blur-sm"
+						class="hero-float-btn hero-float-btn-3 hero__cta hero__cta--amber"
 					>
-						<span class="w-2 h-2 rounded-full bg-amber-400"></span>
+						<span class="hero__cta-dot"></span>
 						Small Accounts
 					</a>
 					<a
 						href="/alerts/spx-profit-pulse"
-						class="hero-float-btn hero-float-btn-4 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400 font-semibold hover:bg-purple-500/20 hover:border-purple-500/50 transition-all duration-300 backdrop-blur-sm"
+						class="hero-float-btn hero-float-btn-4 hero__cta hero__cta--purple"
 					>
-						<span class="w-2 h-2 rounded-full bg-purple-400"></span>
+						<span class="hero__cta-dot"></span>
 						SPX Alerts
 					</a>
 					<a
 						href="/mentorship"
-						class="hero-float-btn hero-float-btn-5 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 font-semibold hover:bg-cyan-500/20 hover:border-cyan-500/50 transition-all duration-300 backdrop-blur-sm"
+						class="hero-float-btn hero-float-btn-5 hero__cta hero__cta--cyan"
 					>
-						<span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+						<span class="hero__cta-dot"></span>
 						Mentorship
 					</a>
 					<a
 						href="/indicators"
-						class="hero-float-btn hero-float-btn-6 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 font-semibold hover:bg-rose-500/20 hover:border-rose-500/50 transition-all duration-300 backdrop-blur-sm"
+						class="hero-float-btn hero-float-btn-6 hero__cta hero__cta--rose"
 					>
-						<span class="w-2 h-2 rounded-full bg-rose-400"></span>
+						<span class="hero__cta-dot"></span>
 						Indicators
 					</a>
 				</div>
 
-				<div
-					class="hero-line w-24 h-px bg-linear-to-r from-transparent via-blue-500 to-transparent mx-auto mt-16 opacity-0"
-				></div>
+				<div class="hero-line hero__rule" aria-hidden="true"></div>
 			</div>
 		</section>
 
 		<RoomsGrid {rooms} />
 
-		<section class="py-24 border-t border-white/5 relative">
-			<div class="absolute inset-0 bg-blue-500/5 blur-[100px] pointer-events-none"></div>
-			<div class="text-center mb-16 relative z-10">
-				<h2
-					class="text-3xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-linear-to-b from-white to-white/60"
-				>
+		<section class="benefits">
+			<div class="benefits__halo" aria-hidden="true"></div>
+			<div class="benefits__header">
+				<h2 class="benefits__title">
 					Why the Pros Choose Us
 				</h2>
-				<p class="text-zinc-400 max-w-2xl mx-auto">
+				<p class="benefits__lede">
 					We don't just sell courses. We build institutional-grade traders through immersion,
 					technology, and community.
 				</p>
 			</div>
-			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+			<div class="benefits__grid">
 				{#each benefits as item (item.title)}
-					<div
-						class="p-6 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/10 transition-colors duration-300 text-center group cursor-default"
-					>
-						<div
-							class="mx-auto w-12 h-12 mb-6 text-zinc-400 group-hover:text-blue-400 transition-colors duration-300"
-						>
+					<div class="benefits__card group">
+						<div class="benefits__icon">
 							{#if item.iconType === 'analysis'}
 								<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
 									<circle
@@ -713,54 +680,41 @@
 								</svg>
 							{/if}
 						</div>
-						<h3 class="text-lg font-bold text-white mb-3">{item.title}</h3>
-						<p class="text-sm text-zinc-400 leading-relaxed">{item.desc}</p>
+						<h3 class="benefits__card-title">{item.title}</h3>
+						<p class="benefits__card-desc">{item.desc}</p>
 					</div>
 				{/each}
 			</div>
 		</section>
 
-		<section
-			bind:this={ctaRef}
-			class="py-24 pb-32 text-center relative overflow-hidden rounded-3xl my-12 bg-linear-to-b from-blue-900/20 to-black border border-white/10"
-		>
-			<div class="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10"></div>
-			<div class="relative z-10 max-w-3xl mx-auto px-4">
-				<h2 class="text-4xl md:text-5xl font-bold text-white mb-6">Ready to Level Up?</h2>
-				<p class="text-xl text-zinc-400 mb-10">
-					Join thousands of traders who have transformed their results. <br
-						class="hidden md:block"
-					/>
+		<section bind:this={ctaRef} class="cta">
+			<div class="cta__bg-pattern" aria-hidden="true"></div>
+			<div class="cta__inner">
+				<h2 class="cta__title">Ready to Level Up?</h2>
+				<p class="cta__lede">
+					Join thousands of traders who have transformed their results. <br class="cta__br" />
 					The market is waiting. Your desk is ready.
 				</p>
-				<div class="flex flex-col sm:flex-row gap-4 justify-center">
-					<a
-						href="#rooms-section"
-						class="px-8 py-4 bg-white text-black font-bold rounded-xl hover:bg-blue-50 hover:scale-105 transition-all duration-300 shadow-[0_0_40px_rgba(255,255,255,0.3)]"
-					>
+				<div class="cta__actions">
+					<a href="#rooms-section" class="cta__btn cta__btn--primary">
 						Choose Your Room
 					</a>
-					<a
-						href="/about"
-						class="px-8 py-4 bg-transparent border border-white/20 text-white font-bold rounded-xl hover:bg-white/5 hover:border-white/40 transition-all duration-300"
-					>
+					<a href="/about" class="cta__btn cta__btn--ghost">
 						Talk to an Advisor
 					</a>
 				</div>
 			</div>
 		</section>
 
-		<div class="text-center border-t border-white/5 pt-16 pb-8">
-			<h3 class="text-zinc-600 text-xs font-mono uppercase tracking-[0.2em] mb-8">
+		<div class="trust">
+			<h3 class="trust__heading">
 				Trusted by 10,000+ Traders Worldwide
 			</h3>
-			<div
-				class="flex flex-wrap justify-center gap-12 opacity-30 grayscale hover:grayscale-0 transition-all duration-500"
-			>
-				<div class="h-6 w-20 bg-white/20 rounded-sm"></div>
-				<div class="h-6 w-20 bg-white/20 rounded-sm"></div>
-				<div class="h-6 w-20 bg-white/20 rounded-sm"></div>
-				<div class="h-6 w-20 bg-white/20 rounded-sm"></div>
+			<div class="trust__row">
+				<div class="trust__chip"></div>
+				<div class="trust__chip"></div>
+				<div class="trust__chip"></div>
+				<div class="trust__chip"></div>
 			</div>
 		</div>
 	</div>
@@ -768,33 +722,96 @@
 
 
 <style>
-	/* --- Hero Specifics --- */
-	.perspective-hero {
-		perspective: 1000px;
+	/* ─────────────────────────────────────────────────────────────────
+	   Page-local tokens (Live Trading Rooms hub).
+	   The 6 floating CTA buttons each use a distinct accent palette;
+	   the page-local tokens below host the per-color "bg / border / text
+	   / hover" values without bleeding into the global token set.
+	   ───────────────────────────────────────────────────────────────── */
+	.ltr {
+		--ltr-bg: #050505;
+		--ltr-rose: #fb7185;
+		--ltr-purple: #a855f7;
+		--ltr-cyan: #06b6d4;
+		--ltr-zinc-300: #d4d4d8;
+		--ltr-zinc-400: #a1a1aa;
+		--ltr-zinc-500: #71717a;
+		--ltr-zinc-600: #52525b;
+
+		background: var(--ltr-bg);
+		color: #fff;
+		font-family: var(--rtp-font-sans);
+		position: relative;
+	}
+
+	.ltr ::selection {
+		background: color-mix(in oklab, var(--rtp-primary) 30%, transparent);
+	}
+
+	/* ─────────────────────────────────────────────────────────────────
+	   Background noise layer
+	   ───────────────────────────────────────────────────────────────── */
+	.ltr__noise-layer {
+		position: fixed;
+		inset: 0;
+		pointer-events: none;
+		z-index: 0;
+	}
+	.ltr__noise {
+		position: absolute;
+		inset: 0;
+		background-image: url('https://grainy-gradients.vercel.app/noise.svg');
+		opacity: 0.03;
+	}
+
+	/* ─────────────────────────────────────────────────────────────────
+	   Ticker bar (sticky-feeling top strip)
+	   ───────────────────────────────────────────────────────────────── */
+	.ticker {
+		position: relative;
+		z-index: 50;
+		border-block-end: 1px solid var(--rtp-border-soft);
+		background: color-mix(in oklab, var(--ltr-bg) 80%, transparent);
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
+		height: 2.5rem;
+		display: flex;
+		align-items: center;
 		overflow: hidden;
 	}
-
-	.hero-grid-plane {
-		transform-style: preserve-3d;
-		transform: rotateX(60deg) translateY(0);
-		transform-origin: 50% 50%;
-	}
-
-	.grid-lines {
-		background-size: 60px 60px;
-		background-image:
-			linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-			linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-		mask-image: radial-gradient(circle at 50% 0%, black 0%, transparent 70%);
-	}
-
-	/* --- Ticker --- */
-	.ticker-track {
+	.ticker__track {
+		display: flex;
+		align-items: center;
+		gap: 3rem;
+		white-space: nowrap;
+		padding-inline: 1rem;
 		animation: scroll 60s linear infinite;
 	}
-	.ticker-track:hover {
+	.ticker__track:hover {
 		animation-play-state: paused;
 	}
+	.ticker__item {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		font-size: 0.75rem;
+		font-family: var(--rtp-font-mono);
+		user-select: none;
+	}
+	.ticker__sym {
+		font-weight: 700;
+		color: var(--ltr-zinc-300);
+	}
+	.ticker__price {
+		color: var(--ltr-zinc-500);
+	}
+	.ticker__change--up {
+		color: var(--rtp-emerald-bright);
+	}
+	.ticker__change--down {
+		color: var(--ltr-rose);
+	}
+
 	@keyframes scroll {
 		0% {
 			transform: translateX(0);
@@ -804,7 +821,511 @@
 		}
 	}
 
-	/* SVG Keyframes — applied via Tailwind group-hover: variants (global at runtime) */
+	/* ─────────────────────────────────────────────────────────────────
+	   Page content wrapper
+	   ───────────────────────────────────────────────────────────────── */
+	.ltr__content {
+		position: relative;
+		z-index: 10;
+		max-width: var(--rtp-content-max);
+		margin-inline: auto;
+		padding-inline: 1rem;
+	}
+	@media (min-width: 640px) {
+		.ltr__content {
+			padding-inline: 1.5rem;
+		}
+	}
+	@media (min-width: 1024px) {
+		.ltr__content {
+			padding-inline: 2rem;
+		}
+	}
+
+	/* ─────────────────────────────────────────────────────────────────
+	   Hero
+	   ───────────────────────────────────────────────────────────────── */
+	.hero {
+		position: relative;
+		min-height: 85vh;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		text-align: center;
+		margin-block-end: 6rem;
+	}
+	.perspective-hero {
+		perspective: 1000px;
+		overflow: hidden;
+	}
+
+	.hero__grid-plane {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		opacity: 0;
+		transform-style: preserve-3d;
+		transform: rotateX(60deg) translateY(0);
+		transform-origin: 50% 50%;
+	}
+	.hero__grid-fade {
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(
+			to bottom,
+			var(--ltr-bg) 0%,
+			transparent 50%,
+			var(--ltr-bg) 100%
+		);
+		z-index: 10;
+	}
+	.grid-lines,
+	.hero__grid-lines {
+		width: 100%;
+		height: 100%;
+		background-size: 60px 60px;
+		background-image:
+			linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+			linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+		mask-image: radial-gradient(circle at 50% 0%, black 0%, transparent 70%);
+	}
+
+	.hero__chart-wrap {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		pointer-events: none;
+		opacity: 0.4;
+		z-index: 0;
+		overflow: hidden;
+	}
+	.hero__chart-svg {
+		width: 120%;
+		height: 600px;
+		transform: translateY(5rem);
+		filter: blur(1px);
+	}
+
+	.hero__floaters {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		z-index: 0;
+		overflow: hidden;
+	}
+	.hero__floater {
+		position: absolute;
+		font-size: 0.625rem;
+		font-family: var(--rtp-font-mono);
+		padding: 0.5rem;
+		border: 1px solid;
+		border-radius: var(--rtp-radius-sm);
+		backdrop-filter: blur(4px);
+		-webkit-backdrop-filter: blur(4px);
+	}
+	.hero__floater--emerald {
+		color: color-mix(in oklab, var(--rtp-emerald) 30%, transparent);
+		border-color: color-mix(in oklab, var(--rtp-emerald) 20%, transparent);
+		background: color-mix(in oklab, #064e3b 10%, transparent);
+	}
+	.hero__floater--blue {
+		color: color-mix(in oklab, var(--rtp-blue) 30%, transparent);
+		border-color: color-mix(in oklab, var(--rtp-blue) 20%, transparent);
+		background: color-mix(in oklab, #1e3a8a 10%, transparent);
+	}
+	.hero__floater--plain {
+		color: var(--ltr-zinc-600);
+		border: 0;
+		background: transparent;
+	}
+	.hero__floater--top-left {
+		top: 25%;
+		left: 2.5rem;
+	}
+	.hero__floater--bottom-right {
+		bottom: 33%;
+		right: 5rem;
+	}
+	.hero__floater--top-right {
+		top: 5rem;
+		right: 25%;
+	}
+	.hero__floater-row {
+		display: flex;
+		gap: 0.25rem;
+		align-items: center;
+	}
+	.hero__floater-dot {
+		width: 0.25rem;
+		height: 0.25rem;
+		background: var(--ltr-zinc-500);
+		border-radius: 50%;
+	}
+
+	.hero__inner {
+		position: relative;
+		z-index: 20;
+		max-width: 64rem;
+		margin-inline: auto;
+		margin-block-start: 3rem;
+	}
+
+	.hero__badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0.5rem 1.25rem;
+		border-radius: var(--rtp-radius-pill);
+		background: color-mix(in oklab, #fff 3%, transparent);
+		border: 1px solid color-mix(in oklab, #fff 8%, transparent);
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
+		margin-block-end: 2.5rem;
+		box-shadow: 0 0 30px color-mix(in oklab, var(--rtp-emerald) 10%, transparent);
+		cursor: default;
+		transition: background var(--rtp-dur-fast) var(--rtp-ease-out);
+	}
+	.hero__badge:hover {
+		background: color-mix(in oklab, #fff 5%, transparent);
+	}
+	.hero__badge-pulse {
+		position: relative;
+		display: inline-flex;
+		width: 0.5rem;
+		height: 0.5rem;
+	}
+	.hero__badge-ping {
+		position: absolute;
+		inset: 0;
+		border-radius: 50%;
+		background: var(--rtp-emerald-bright);
+		opacity: 0.75;
+		animation: hero-ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+	}
+	.hero__badge-dot {
+		position: relative;
+		display: inline-flex;
+		width: 0.5rem;
+		height: 0.5rem;
+		border-radius: 50%;
+		background: var(--rtp-emerald);
+	}
+	.hero__badge-label {
+		font-size: 0.75rem;
+		font-family: var(--rtp-font-mono);
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		color: var(--ltr-zinc-300);
+		font-weight: 700;
+	}
+	.hero__badge-status {
+		color: var(--rtp-emerald-bright);
+	}
+
+	@keyframes hero-ping {
+		75%,
+		100% {
+			transform: scale(2);
+			opacity: 0;
+		}
+	}
+
+	.hero__title {
+		font-size: 3.75rem;
+		font-weight: 700;
+		letter-spacing: -0.05em;
+		line-height: 0.9;
+		margin-block-end: 2.5rem;
+		color: #fff;
+	}
+	.hero__title-line {
+		overflow: hidden;
+	}
+	.hero__title-word {
+		display: block;
+	}
+	.hero__title-accent {
+		display: inline-block;
+		background: linear-gradient(
+			to right,
+			var(--rtp-blue-bright),
+			#a5b4fc,
+			var(--rtp-emerald-bright)
+		);
+		-webkit-background-clip: text;
+		background-clip: text;
+		color: transparent;
+		padding-block-end: 1rem;
+	}
+	@media (min-width: 768px) {
+		.hero__title {
+			font-size: 6rem;
+		}
+	}
+	@media (min-width: 1024px) {
+		.hero__title {
+			font-size: 8rem;
+		}
+	}
+
+	.hero__desc {
+		font-size: 1.25rem;
+		color: var(--ltr-zinc-400);
+		max-width: 42rem;
+		margin-inline: auto;
+		line-height: 1.625;
+		font-weight: 300;
+	}
+	.hero__desc-emph {
+		color: #fff;
+		font-weight: 500;
+	}
+	@media (min-width: 768px) {
+		.hero__desc {
+			font-size: 1.5rem;
+		}
+	}
+
+	.hero__cta-row {
+		position: relative;
+		margin-block-start: 4rem;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 1rem;
+		max-width: 56rem;
+		margin-inline: auto;
+	}
+
+	/* Floating CTA buttons — six accents */
+	.hero__cta {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.75rem 1.5rem;
+		border-radius: var(--rtp-radius-md);
+		font-weight: 600;
+		text-decoration: none;
+		backdrop-filter: blur(4px);
+		-webkit-backdrop-filter: blur(4px);
+		border: 1px solid;
+		transition:
+			background var(--rtp-dur-base) var(--rtp-ease-out),
+			border-color var(--rtp-dur-base) var(--rtp-ease-out);
+	}
+	.hero__cta-dot {
+		width: 0.5rem;
+		height: 0.5rem;
+		border-radius: 50%;
+	}
+	.hero__cta-dot--pulse {
+		animation: cta-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+	}
+	@keyframes cta-pulse {
+		0%,
+		100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0.5;
+		}
+	}
+
+	.hero__cta--emerald {
+		background: color-mix(in oklab, var(--rtp-emerald) 10%, transparent);
+		border-color: color-mix(in oklab, var(--rtp-emerald) 30%, transparent);
+		color: var(--rtp-emerald-bright);
+	}
+	.hero__cta--emerald:hover {
+		background: color-mix(in oklab, var(--rtp-emerald) 20%, transparent);
+		border-color: color-mix(in oklab, var(--rtp-emerald) 50%, transparent);
+	}
+	.hero__cta--emerald .hero__cta-dot {
+		background: var(--rtp-emerald-bright);
+	}
+
+	.hero__cta--blue {
+		background: color-mix(in oklab, var(--rtp-blue) 10%, transparent);
+		border-color: color-mix(in oklab, var(--rtp-blue) 30%, transparent);
+		color: var(--rtp-blue-bright);
+	}
+	.hero__cta--blue:hover {
+		background: color-mix(in oklab, var(--rtp-blue) 20%, transparent);
+		border-color: color-mix(in oklab, var(--rtp-blue) 50%, transparent);
+	}
+	.hero__cta--blue .hero__cta-dot {
+		background: var(--rtp-blue-bright);
+	}
+
+	.hero__cta--amber {
+		background: color-mix(in oklab, var(--rtp-amber) 10%, transparent);
+		border-color: color-mix(in oklab, var(--rtp-amber) 30%, transparent);
+		color: #fbbf24;
+	}
+	.hero__cta--amber:hover {
+		background: color-mix(in oklab, var(--rtp-amber) 20%, transparent);
+		border-color: color-mix(in oklab, var(--rtp-amber) 50%, transparent);
+	}
+	.hero__cta--amber .hero__cta-dot {
+		background: #fbbf24;
+	}
+
+	.hero__cta--purple {
+		background: color-mix(in oklab, var(--ltr-purple) 10%, transparent);
+		border-color: color-mix(in oklab, var(--ltr-purple) 30%, transparent);
+		color: #c084fc;
+	}
+	.hero__cta--purple:hover {
+		background: color-mix(in oklab, var(--ltr-purple) 20%, transparent);
+		border-color: color-mix(in oklab, var(--ltr-purple) 50%, transparent);
+	}
+	.hero__cta--purple .hero__cta-dot {
+		background: #c084fc;
+	}
+
+	.hero__cta--cyan {
+		background: color-mix(in oklab, var(--ltr-cyan) 10%, transparent);
+		border-color: color-mix(in oklab, var(--ltr-cyan) 30%, transparent);
+		color: #22d3ee;
+	}
+	.hero__cta--cyan:hover {
+		background: color-mix(in oklab, var(--ltr-cyan) 20%, transparent);
+		border-color: color-mix(in oklab, var(--ltr-cyan) 50%, transparent);
+	}
+	.hero__cta--cyan .hero__cta-dot {
+		background: #22d3ee;
+	}
+
+	.hero__cta--rose {
+		background: color-mix(in oklab, var(--ltr-rose) 10%, transparent);
+		border-color: color-mix(in oklab, var(--ltr-rose) 30%, transparent);
+		color: var(--ltr-rose);
+	}
+	.hero__cta--rose:hover {
+		background: color-mix(in oklab, var(--ltr-rose) 20%, transparent);
+		border-color: color-mix(in oklab, var(--ltr-rose) 50%, transparent);
+	}
+	.hero__cta--rose .hero__cta-dot {
+		background: var(--ltr-rose);
+	}
+
+	.hero__rule {
+		width: 6rem;
+		height: 1px;
+		background: linear-gradient(
+			to right,
+			transparent,
+			var(--rtp-primary),
+			transparent
+		);
+		margin-inline: auto;
+		margin-block-start: 4rem;
+		opacity: 0;
+	}
+
+	/* ─────────────────────────────────────────────────────────────────
+	   Benefits section
+	   ───────────────────────────────────────────────────────────────── */
+	.benefits {
+		padding-block: 6rem;
+		border-block-start: 1px solid var(--rtp-border-soft);
+		position: relative;
+	}
+	.benefits__halo {
+		position: absolute;
+		inset: 0;
+		background: color-mix(in oklab, var(--rtp-primary) 5%, transparent);
+		filter: blur(100px);
+		pointer-events: none;
+	}
+	.benefits__header {
+		text-align: center;
+		margin-block-end: 4rem;
+		position: relative;
+		z-index: 10;
+	}
+	.benefits__title {
+		font-size: 1.875rem;
+		font-weight: 700;
+		margin-block-end: 1.5rem;
+		background-clip: text;
+		-webkit-background-clip: text;
+		color: transparent;
+		background-image: linear-gradient(
+			to bottom,
+			#fff,
+			color-mix(in oklab, #fff 60%, transparent)
+		);
+	}
+	@media (min-width: 768px) {
+		.benefits__title {
+			font-size: 3rem;
+		}
+	}
+	.benefits__lede {
+		color: var(--ltr-zinc-400);
+		max-width: 42rem;
+		margin-inline: auto;
+	}
+	.benefits__grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 2rem;
+		position: relative;
+		z-index: 10;
+	}
+	@media (min-width: 768px) {
+		.benefits__grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+	@media (min-width: 1024px) {
+		.benefits__grid {
+			grid-template-columns: repeat(4, 1fr);
+		}
+	}
+	.benefits__card {
+		padding: 1.5rem;
+		border-radius: var(--rtp-radius-xl);
+		background: color-mix(in oklab, #fff 5%, transparent);
+		border: 1px solid color-mix(in oklab, #fff 5%, transparent);
+		text-align: center;
+		cursor: default;
+		transition:
+			background var(--rtp-dur-base) var(--rtp-ease-out),
+			border-color var(--rtp-dur-base) var(--rtp-ease-out);
+	}
+	.benefits__card:hover {
+		background: color-mix(in oklab, #fff 10%, transparent);
+		border-color: color-mix(in oklab, #fff 10%, transparent);
+	}
+	.benefits__icon {
+		width: 3rem;
+		height: 3rem;
+		margin-inline: auto;
+		margin-block-end: 1.5rem;
+		color: var(--ltr-zinc-400);
+		transition: color var(--rtp-dur-base) var(--rtp-ease-out);
+	}
+	.benefits__card:hover .benefits__icon {
+		color: var(--rtp-blue-bright);
+	}
+	.benefits__card-title {
+		font-size: 1.125rem;
+		font-weight: 700;
+		color: #fff;
+		margin-block-end: 0.75rem;
+	}
+	.benefits__card-desc {
+		font-size: 0.875rem;
+		color: var(--ltr-zinc-400);
+		line-height: 1.625;
+	}
+
+	/* SVG group-hover animations — keep :global so SVG inner shapes can opt in */
 	@keyframes draw-line {
 		to {
 			stroke-dashoffset: 0;
@@ -822,5 +1343,137 @@
 	}
 	:global(.animate-spin-slow) {
 		animation: spin-slow 8s linear infinite;
+	}
+
+	/* ─────────────────────────────────────────────────────────────────
+	   CTA section
+	   ───────────────────────────────────────────────────────────────── */
+	.cta {
+		padding-block: 6rem 8rem;
+		text-align: center;
+		position: relative;
+		overflow: hidden;
+		border-radius: 1.5rem;
+		margin-block: 3rem;
+		background: linear-gradient(
+			to bottom,
+			color-mix(in oklab, #1e3a8a 20%, transparent),
+			#000
+		);
+		border: 1px solid var(--rtp-border);
+	}
+	.cta__bg-pattern {
+		position: absolute;
+		inset: 0;
+		background-image: url('/grid-pattern.svg');
+		opacity: 0.1;
+		pointer-events: none;
+	}
+	.cta__inner {
+		position: relative;
+		z-index: 10;
+		max-width: 48rem;
+		margin-inline: auto;
+		padding-inline: 1rem;
+	}
+	.cta__title {
+		font-size: 2.25rem;
+		font-weight: 700;
+		color: #fff;
+		margin-block-end: 1.5rem;
+	}
+	@media (min-width: 768px) {
+		.cta__title {
+			font-size: 3rem;
+		}
+	}
+	.cta__lede {
+		font-size: 1.25rem;
+		color: var(--ltr-zinc-400);
+		margin-block-end: 2.5rem;
+	}
+	.cta__br {
+		display: none;
+	}
+	@media (min-width: 768px) {
+		.cta__br {
+			display: block;
+		}
+	}
+	.cta__actions {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		justify-content: center;
+	}
+	@media (min-width: 640px) {
+		.cta__actions {
+			flex-direction: row;
+		}
+	}
+	.cta__btn {
+		padding: 1rem 2rem;
+		border-radius: var(--rtp-radius-md);
+		font-weight: 700;
+		text-decoration: none;
+		transition:
+			background var(--rtp-dur-base) var(--rtp-ease-out),
+			border-color var(--rtp-dur-base) var(--rtp-ease-out),
+			transform var(--rtp-dur-base) var(--rtp-ease-out);
+	}
+	.cta__btn--primary {
+		background: #fff;
+		color: #000;
+		box-shadow: 0 0 40px rgba(255, 255, 255, 0.3);
+	}
+	.cta__btn--primary:hover {
+		background: #eff6ff;
+		transform: scale(1.05);
+	}
+	.cta__btn--ghost {
+		background: transparent;
+		border: 1px solid color-mix(in oklab, #fff 20%, transparent);
+		color: #fff;
+	}
+	.cta__btn--ghost:hover {
+		background: color-mix(in oklab, #fff 5%, transparent);
+		border-color: color-mix(in oklab, #fff 40%, transparent);
+	}
+
+	/* ─────────────────────────────────────────────────────────────────
+	   Trust footer
+	   ───────────────────────────────────────────────────────────────── */
+	.trust {
+		text-align: center;
+		border-block-start: 1px solid var(--rtp-border-soft);
+		padding-block: 4rem 2rem;
+	}
+	.trust__heading {
+		color: var(--ltr-zinc-600);
+		font-size: 0.75rem;
+		font-family: var(--rtp-font-mono);
+		text-transform: uppercase;
+		letter-spacing: 0.2em;
+		margin-block-end: 2rem;
+	}
+	.trust__row {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 3rem;
+		opacity: 0.3;
+		filter: grayscale(1);
+		transition:
+			filter var(--rtp-dur-slow) var(--rtp-ease-out),
+			opacity var(--rtp-dur-slow) var(--rtp-ease-out);
+	}
+	.trust__row:hover {
+		filter: grayscale(0);
+	}
+	.trust__chip {
+		height: 1.5rem;
+		width: 5rem;
+		background: color-mix(in oklab, #fff 20%, transparent);
+		border-radius: var(--rtp-radius-sm);
 	}
 </style>

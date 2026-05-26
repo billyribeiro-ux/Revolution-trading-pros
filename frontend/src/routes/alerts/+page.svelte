@@ -312,15 +312,29 @@
 
 
 <style>
+	/* ─────────────────────────────────────────────────────────────────
+	   Page-local tokens — colors only used inside this hub page.
+	   Reusable values (canvas, surfaces, text) come from --rtp-*.
+	   Brand emerald/blue used as service variants live on --rtp-emerald/
+	   --rtp-blue; lighter accent shades (emerald-300, blue-bright) are
+	   already token-defined as well.
+	   ───────────────────────────────────────────────────────────────── */
 	.alerts-page {
-		background: #0f172a;
-		color: #e2e8f0;
+		--alerts-emerald-deep: #059669; /* emerald-600, gradient pair */
+		--alerts-blue-deep: #2563eb; /* blue-600, gradient pair */
+		--alerts-success-bright: #22c55e; /* badge dot pulse, check icon */
+
+		background: var(--rtp-bg);
+		color: var(--rtp-text-soft);
 	}
 
-	/* Hero */
+	/* ─────────────────────────────────────────────────────────────────
+	   Hero
+	   ───────────────────────────────────────────────────────────────── */
 	.hero {
 		position: relative;
-		padding: 120px 24px 80px;
+		padding-block: 7.5rem 5rem;
+		padding-inline: 1.5rem;
 		text-align: center;
 		overflow: hidden;
 	}
@@ -329,39 +343,47 @@
 		position: absolute;
 		inset: 0;
 		background:
-			radial-gradient(ellipse at 30% 20%, rgba(16, 185, 129, 0.15) 0%, transparent 50%),
-			radial-gradient(ellipse at 70% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+			radial-gradient(
+				ellipse at 30% 20%,
+				color-mix(in oklab, var(--rtp-emerald) 15%, transparent) 0%,
+				transparent 50%
+			),
+			radial-gradient(
+				ellipse at 70% 80%,
+				color-mix(in oklab, var(--rtp-primary) 10%, transparent) 0%,
+				transparent 50%
+			);
 	}
 
 	.hero-content {
 		position: relative;
 		max-width: 800px;
-		margin: 0 auto;
+		margin-inline: auto;
 	}
 
 	.hero-badge {
 		display: inline-flex;
 		align-items: center;
-		gap: 8px;
-		background: rgba(16, 185, 129, 0.1);
-		border: 1px solid rgba(16, 185, 129, 0.3);
-		padding: 8px 16px;
-		border-radius: 24px;
-		font-size: 14px;
+		gap: 0.5rem;
+		background: color-mix(in oklab, var(--rtp-emerald) 10%, transparent);
+		border: 1px solid color-mix(in oklab, var(--rtp-emerald) 30%, transparent);
+		padding: 0.5rem 1rem;
+		border-radius: var(--rtp-radius-pill);
+		font-size: 0.875rem;
 		font-weight: 600;
-		color: #34d399;
-		margin-bottom: 24px;
+		color: var(--rtp-emerald-bright);
+		margin-block-end: 1.5rem;
 	}
 
 	.badge-dot {
-		width: 8px;
-		height: 8px;
-		background: #22c55e;
+		width: 0.5rem;
+		height: 0.5rem;
+		background: var(--alerts-success-bright);
 		border-radius: 50%;
-		animation: pulse 2s infinite;
+		animation: alerts-pulse 2s infinite;
 	}
 
-	@keyframes pulse {
+	@keyframes alerts-pulse {
 		0%,
 		100% {
 			opacity: 1;
@@ -375,12 +397,12 @@
 		font-size: clamp(2.5rem, 6vw, 4rem);
 		font-weight: 800;
 		line-height: 1.1;
-		margin-bottom: 24px;
-		color: #fff;
+		margin-block-end: 1.5rem;
+		color: var(--rtp-text);
 	}
 
 	.gradient-text {
-		background: linear-gradient(135deg, #34d399, #60a5fa);
+		background: linear-gradient(135deg, var(--rtp-emerald-bright), var(--rtp-blue-bright));
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
 		background-clip: text;
@@ -388,47 +410,52 @@
 
 	.hero p {
 		font-size: 1.25rem;
-		color: #94a3b8;
+		color: var(--rtp-text-muted);
 		max-width: 600px;
-		margin: 0 auto;
+		margin-inline: auto;
 		line-height: 1.7;
 	}
 
-	/* Comparison Section */
+	/* ─────────────────────────────────────────────────────────────────
+	   Comparison
+	   ───────────────────────────────────────────────────────────────── */
 	.comparison-section {
-		padding: 80px 24px;
+		padding-block: 5rem;
+		padding-inline: 1.5rem;
 		max-width: 1000px;
-		margin: 0 auto;
+		margin-inline: auto;
 	}
 
 	.comparison-header {
 		text-align: center;
-		margin-bottom: 48px;
+		margin-block-end: 3rem;
 	}
 
 	.comparison-header h2 {
 		font-size: 2rem;
 		font-weight: 700;
-		color: #fff;
-		margin-bottom: 12px;
+		color: var(--rtp-text);
+		margin-block-end: 0.75rem;
 	}
 
 	.comparison-header p {
-		color: #94a3b8;
+		color: var(--rtp-text-muted);
 	}
 
 	.services-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr));
-		gap: 32px;
+		gap: 2rem;
 	}
 
-	/* Service Card */
+	/* ─────────────────────────────────────────────────────────────────
+	   Service card (variant: emerald | blue)
+	   ───────────────────────────────────────────────────────────────── */
 	.service-card {
-		background: #1e293b;
-		border-radius: 24px;
-		padding: 32px;
-		border: 2px solid #334155;
+		background: var(--rtp-surface);
+		border-radius: var(--rtp-radius-xl);
+		padding: 2rem;
+		border: 2px solid var(--rtp-text-faint);
 		transition: all 0.3s ease;
 	}
 
@@ -438,17 +465,17 @@
 	}
 
 	.service-card--emerald:hover {
-		border-color: rgba(16, 185, 129, 0.5);
+		border-color: color-mix(in oklab, var(--rtp-emerald) 50%, transparent);
 	}
 	.service-card--blue:hover {
-		border-color: rgba(59, 130, 246, 0.5);
+		border-color: color-mix(in oklab, var(--rtp-primary) 50%, transparent);
 	}
 
 	.service-header {
 		display: flex;
 		align-items: flex-start;
-		gap: 16px;
-		margin-bottom: 20px;
+		gap: 1rem;
+		margin-block-end: 1.25rem;
 	}
 
 	.service-icon {
@@ -459,31 +486,31 @@
 	.service-header h3 {
 		font-size: 1.5rem;
 		font-weight: 700;
-		color: #fff;
+		color: var(--rtp-text);
 		margin: 0;
 	}
 
 	.tagline {
-		font-size: 14px;
-		color: #94a3b8;
-		margin: 4px 0 0;
+		font-size: 0.875rem;
+		color: var(--rtp-text-muted);
+		margin: 0.25rem 0 0;
 	}
 
 	.service-description {
-		color: #94a3b8;
+		color: var(--rtp-text-muted);
 		line-height: 1.6;
-		margin-bottom: 24px;
+		margin-block-end: 1.5rem;
 	}
 
-	/* Stats */
+	/* ── Stats ────────────────────────────────────────────────────── */
 	.service-stats {
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
-		gap: 16px;
-		background: #0f172a;
-		border-radius: 12px;
-		padding: 16px;
-		margin-bottom: 24px;
+		gap: 1rem;
+		background: var(--rtp-bg);
+		border-radius: var(--rtp-radius-md);
+		padding: 1rem;
+		margin-block-end: 1.5rem;
 	}
 
 	.stat {
@@ -494,112 +521,112 @@
 		display: block;
 		font-size: 1.25rem;
 		font-weight: 700;
-		color: #fff;
+		color: var(--rtp-text);
 	}
 
 	.stat-label {
-		font-size: 12px;
-		color: #64748b;
+		font-size: 0.75rem;
+		color: var(--rtp-text-subtle);
 	}
 
 	.service-card--emerald .stat-value {
-		color: #34d399;
+		color: var(--rtp-emerald-bright);
 	}
 	.service-card--blue .stat-value {
-		color: #60a5fa;
+		color: var(--rtp-blue-bright);
 	}
 
-	/* Features */
+	/* ── Features ─────────────────────────────────────────────────── */
 	.service-features {
 		list-style: none;
 		padding: 0;
-		margin: 0 0 24px;
+		margin: 0 0 1.5rem;
 	}
 
 	.service-features li {
 		display: flex;
 		align-items: flex-start;
-		gap: 12px;
-		padding: 8px 0;
-		font-size: 14px;
-		color: #cbd5e1;
+		gap: 0.75rem;
+		padding: 0.5rem 0;
+		font-size: 0.875rem;
+		color: var(--rtp-text-soft);
 	}
 
 	.check-icon {
-		width: 18px;
-		height: 18px;
+		width: 1.125rem;
+		height: 1.125rem;
 		flex-shrink: 0;
-		color: #22c55e;
+		color: var(--alerts-success-bright);
 	}
 
-	/* Pricing */
+	/* ── Pricing ──────────────────────────────────────────────────── */
 	.service-pricing {
 		text-align: center;
-		margin-bottom: 24px;
+		margin-block-end: 1.5rem;
 	}
 
 	.price-main {
 		display: flex;
 		align-items: baseline;
 		justify-content: center;
-		gap: 4px;
+		gap: 0.25rem;
 	}
 
 	.price-from {
-		font-size: 14px;
-		color: #64748b;
+		font-size: 0.875rem;
+		color: var(--rtp-text-subtle);
 	}
 
 	.price-amount {
 		font-size: 2.5rem;
 		font-weight: 800;
-		color: #fff;
+		color: var(--rtp-text);
 	}
 
 	.price-period {
-		font-size: 14px;
-		color: #64748b;
+		font-size: 0.875rem;
+		color: var(--rtp-text-subtle);
 	}
 
 	.price-annual {
-		font-size: 13px;
-		color: #22c55e;
-		margin-top: 8px;
+		font-size: 0.8125rem;
+		color: var(--alerts-success-bright);
+		margin-block-start: 0.5rem;
 	}
 
-	/* CTA Button */
+	/* ── CTA button ───────────────────────────────────────────────── */
 	.service-cta {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: 8px;
+		gap: 0.5rem;
 		width: 100%;
-		padding: 16px 24px;
-		background: linear-gradient(135deg, #10b981, #059669);
-		color: #fff;
+		padding: 1rem 1.5rem;
+		background: linear-gradient(135deg, var(--rtp-emerald), var(--alerts-emerald-deep));
+		color: var(--rtp-text);
 		font-weight: 600;
-		font-size: 16px;
-		border-radius: 12px;
+		font-size: 1rem;
+		border-radius: var(--rtp-radius-md);
 		text-decoration: none;
 		transition: all 0.2s ease;
 	}
 
 	.service-card--blue .service-cta {
-		background: linear-gradient(135deg, #3b82f6, #2563eb);
+		background: linear-gradient(135deg, var(--rtp-primary), var(--alerts-blue-deep));
 	}
 
 	.service-cta:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 8px 20px -4px rgba(16, 185, 129, 0.4);
+		box-shadow: 0 8px 20px -4px color-mix(in oklab, var(--rtp-emerald) 40%, transparent);
 	}
 
 	.service-card--blue .service-cta:hover {
-		box-shadow: 0 8px 20px -4px rgba(59, 130, 246, 0.4);
+		box-shadow: 0 8px 20px -4px color-mix(in oklab, var(--rtp-primary) 40%, transparent);
 	}
 
 	.arrow-icon {
-		width: 20px;
-		height: 20px;
+		width: 1.25rem;
+		height: 1.25rem;
 		transition: transform 0.2s ease;
 	}
 
@@ -607,154 +634,167 @@
 		transform: translateX(4px);
 	}
 
-	/* How Section */
+	/* ─────────────────────────────────────────────────────────────────
+	   How it works
+	   ───────────────────────────────────────────────────────────────── */
 	.how-section {
-		background: #1e293b;
-		padding: 80px 24px;
+		background: var(--rtp-surface);
+		padding-block: 5rem;
+		padding-inline: 1.5rem;
 	}
 
 	.how-content {
 		max-width: 1000px;
-		margin: 0 auto;
+		margin-inline: auto;
 		text-align: center;
 	}
 
 	.how-content h2 {
 		font-size: 2rem;
 		font-weight: 700;
-		color: #fff;
-		margin-bottom: 48px;
+		color: var(--rtp-text);
+		margin-block-end: 3rem;
 	}
 
 	.steps-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-		gap: 32px;
+		gap: 2rem;
 	}
 
 	.step {
-		padding: 24px;
+		padding: 1.5rem;
 	}
 
 	.step-number {
-		width: 48px;
-		height: 48px;
-		background: linear-gradient(135deg, #10b981, #059669);
+		width: 3rem;
+		height: 3rem;
+		background: linear-gradient(135deg, var(--rtp-emerald), var(--alerts-emerald-deep));
 		border-radius: 50%;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		font-size: 1.25rem;
 		font-weight: 700;
-		color: #fff;
-		margin: 0 auto 16px;
+		color: var(--rtp-text);
+		margin: 0 auto 1rem;
 	}
 
 	.step h3 {
 		font-size: 1.125rem;
 		font-weight: 600;
-		color: #fff;
-		margin-bottom: 8px;
+		color: var(--rtp-text);
+		margin-block-end: 0.5rem;
 	}
 
 	.step p {
-		font-size: 14px;
-		color: #94a3b8;
+		font-size: 0.875rem;
+		color: var(--rtp-text-muted);
 		line-height: 1.6;
 	}
 
-	/* FAQ Section */
+	/* ─────────────────────────────────────────────────────────────────
+	   FAQ
+	   ───────────────────────────────────────────────────────────────── */
 	.faq-section {
-		padding: 80px 24px;
+		padding-block: 5rem;
+		padding-inline: 1.5rem;
 	}
 
 	.faq-content {
 		max-width: 800px;
-		margin: 0 auto;
+		margin-inline: auto;
 	}
 
 	.faq-content h2 {
 		font-size: 2rem;
 		font-weight: 700;
-		color: #fff;
+		color: var(--rtp-text);
 		text-align: center;
-		margin-bottom: 48px;
+		margin-block-end: 3rem;
 	}
 
 	.faq-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-		gap: 24px;
+		gap: 1.5rem;
 	}
 
 	.faq-item {
-		background: #1e293b;
-		border-radius: 12px;
-		padding: 24px;
+		background: var(--rtp-surface);
+		border-radius: var(--rtp-radius-md);
+		padding: 1.5rem;
 	}
 
 	.faq-item h3 {
 		font-size: 1rem;
 		font-weight: 600;
-		color: #fff;
-		margin-bottom: 8px;
+		color: var(--rtp-text);
+		margin-block-end: 0.5rem;
 	}
 
 	.faq-item p {
-		font-size: 14px;
-		color: #94a3b8;
+		font-size: 0.875rem;
+		color: var(--rtp-text-muted);
 		line-height: 1.6;
 	}
 
-	/* CTA Section */
+	/* ─────────────────────────────────────────────────────────────────
+	   Bottom CTA
+	   ───────────────────────────────────────────────────────────────── */
 	.cta-section {
-		padding: 80px 24px;
+		padding-block: 5rem;
+		padding-inline: 1.5rem;
 		text-align: center;
-		background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(59, 130, 246, 0.1));
+		background: linear-gradient(
+			135deg,
+			color-mix(in oklab, var(--rtp-emerald) 10%, transparent),
+			color-mix(in oklab, var(--rtp-primary) 10%, transparent)
+		);
 	}
 
 	.cta-content {
 		max-width: 600px;
-		margin: 0 auto;
+		margin-inline: auto;
 	}
 
 	.cta-content h2 {
 		font-size: 2rem;
 		font-weight: 700;
-		color: #fff;
-		margin-bottom: 16px;
+		color: var(--rtp-text);
+		margin-block-end: 1rem;
 	}
 
 	.cta-content p {
-		color: #94a3b8;
-		margin-bottom: 32px;
+		color: var(--rtp-text-muted);
+		margin-block-end: 2rem;
 	}
 
 	.cta-buttons {
 		display: flex;
-		gap: 16px;
+		gap: 1rem;
 		justify-content: center;
 		flex-wrap: wrap;
 	}
 
 	.cta-button {
 		display: inline-block;
-		padding: 16px 32px;
+		padding: 1rem 2rem;
 		font-weight: 600;
-		font-size: 16px;
-		border-radius: 12px;
+		font-size: 1rem;
+		border-radius: var(--rtp-radius-md);
 		text-decoration: none;
 		transition: all 0.2s ease;
 	}
 
 	.cta-button--primary {
-		background: linear-gradient(135deg, #10b981, #059669);
-		color: #fff;
+		background: linear-gradient(135deg, var(--rtp-emerald), var(--alerts-emerald-deep));
+		color: var(--rtp-text);
 	}
 
 	.cta-button--secondary {
-		background: linear-gradient(135deg, #3b82f6, #2563eb);
-		color: #fff;
+		background: linear-gradient(135deg, var(--rtp-primary), var(--alerts-blue-deep));
+		color: var(--rtp-text);
 	}
 
 	.cta-button:hover {
@@ -762,10 +802,15 @@
 		box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.3);
 	}
 
-	/* Responsive */
+	/* ─────────────────────────────────────────────────────────────────
+	   Mobile-first responsive (small-screen overrides).
+	   The defaults above already work mobile-first; the previous
+	   max-width queries shrunk things further on small phones.
+	   ───────────────────────────────────────────────────────────────── */
 	@media (max-width: 768px) {
 		.hero {
-			padding: 80px 16px 60px;
+			padding-block: 5rem 3.75rem;
+			padding-inline: 1rem;
 		}
 
 		.services-grid {
@@ -774,36 +819,33 @@
 
 		.service-stats {
 			grid-template-columns: 1fr;
-			gap: 12px;
+			gap: 0.75rem;
 		}
 
 		.stat {
 			display: flex;
 			justify-content: space-between;
-			text-align: left;
+			text-align: start;
 		}
 
 		.service-card {
-			padding: 24px;
+			padding: 1.5rem;
 		}
 
 		.service-features li {
-			font-size: 15px;
+			font-size: 0.9375rem;
 		}
 	}
 
 	@media (max-width: 480px) {
 		.hero {
-			padding: 60px 12px 40px;
-		}
-
-		.section {
-			padding: 40px 12px;
+			padding-block: 3.75rem 2.5rem;
+			padding-inline: 0.75rem;
 		}
 
 		.service-card {
-			padding: 20px;
-			border-radius: 16px;
+			padding: 1.25rem;
+			border-radius: var(--rtp-radius-lg);
 		}
 
 		.service-header h3 {

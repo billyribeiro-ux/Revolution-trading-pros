@@ -27,8 +27,10 @@
 	import SEOHead from '$lib/components/seo/SeoHead.svelte';
 	import type { StructuredDataConfig } from '$lib/utils/structured-data';
 	import type { IconComponent } from '$lib/icons';
-	
+
 	// --- TYPES ---
+
+	type CourseVariant = 'blue' | 'emerald' | 'violet' | 'orange';
 
 	interface Course {
 		id: string;
@@ -43,13 +45,8 @@
 		price: string;
 		icon: IconComponent;
 		features: string[];
-		// Pre-computed Tailwind classes to avoid JIT interpolation issues
-		colorClasses: {
-			bg: string;
-			border: string;
-			text: string;
-			icon: string;
-		};
+		/** Variant token — drives the .courses-card--<variant> CSS modifier. */
+		variant: CourseVariant;
 	}
 
 	interface FaqItem {
@@ -74,12 +71,7 @@
 			price: '$497',
 			icon: IconChartCandle,
 			features: ['Tape Reading', 'L2 Analysis', 'Gap Strategies'],
-			colorClasses: {
-				bg: 'bg-blue-500/10',
-				border: 'border-blue-500/20',
-				text: 'text-blue-400',
-				icon: 'text-blue-500'
-			}
+			variant: 'blue'
 		},
 		{
 			id: '2',
@@ -95,12 +87,7 @@
 			price: '$397',
 			icon: IconChartLine,
 			features: ['Macro Trends', 'Supply/Demand', 'Portfolio Rotation'],
-			colorClasses: {
-				bg: 'bg-emerald-500/10',
-				border: 'border-emerald-500/20',
-				text: 'text-emerald-400',
-				icon: 'text-emerald-500'
-			}
+			variant: 'emerald'
 		},
 		{
 			id: '3',
@@ -116,12 +103,7 @@
 			price: '$597',
 			icon: IconBrain,
 			features: ['The Greeks', 'Iron Condors', 'Volatility Crush'],
-			colorClasses: {
-				bg: 'bg-violet-500/10',
-				border: 'border-violet-500/20',
-				text: 'text-violet-400',
-				icon: 'text-violet-500'
-			}
+			variant: 'violet'
 		},
 		{
 			id: '4',
@@ -137,12 +119,7 @@
 			price: '$297',
 			icon: IconShield,
 			features: ['Position Sizing', 'R-Multiples', 'Drawdown Protocols'],
-			colorClasses: {
-				bg: 'bg-orange-500/10',
-				border: 'border-orange-500/20',
-				text: 'text-orange-400',
-				icon: 'text-orange-500'
-			}
+			variant: 'orange'
 		}
 	];
 
@@ -353,164 +330,131 @@
 	structuredData={courseSchemas}
 />
 
-<div class="bg-black text-slate-200 font-sans selection:bg-blue-500/30 selection:text-white">
-	<section class="relative min-h-[95vh] flex items-center justify-center overflow-hidden pt-20">
-		<div class="absolute inset-0 z-0 opacity-40">
-			<canvas {@attach particleCanvas} class="w-full h-full"></canvas>
+<div class="courses">
+	<section class="courses-hero">
+		<div class="courses-hero__canvas" aria-hidden="true">
+			<canvas {@attach particleCanvas} class="courses-hero__canvas-el"></canvas>
 		</div>
 
-		<div
-			class="absolute inset-0 z-0 bg-linear-to-b from-black/0 via-black/50 to-black pointer-events-none"
-		></div>
-		<div
-			class="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-blue-900/10 via-black/0 to-black pointer-events-none"
-		></div>
+		<div class="courses-hero__veil" aria-hidden="true"></div>
+		<div class="courses-hero__radial" aria-hidden="true"></div>
 
-		<div class="relative z-10 container mx-auto px-6 flex flex-col items-center text-center">
-			<div
-				class="hero-badge inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-8 shadow-[0_0_15px_rgba(56,189,248,0.15)]"
-			>
-				<span class="relative flex h-2 w-2">
-					<span
-						class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"
-					></span>
-					<span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+		<div class="courses-hero__inner">
+			<div class="hero-badge courses-hero__badge">
+				<span class="courses-hero__pulse-wrap">
+					<span class="courses-hero__pulse-ping" aria-hidden="true"></span>
+					<span class="courses-hero__pulse-dot" aria-hidden="true"></span>
 				</span>
-				<span class="text-xs font-bold uppercase tracking-widest text-slate-300"
-					>Live Market Admissions Open</span
-				>
+				<span class="courses-hero__badge-label">Live Market Admissions Open</span>
 			</div>
 
-			<h1 class="max-w-5xl mx-auto mb-8 leading-[0.9]">
-				<span
-					class="hero-title-line block text-[13vw] md:text-[6rem] lg:text-[7.5rem] font-black tracking-tighter text-white mix-blend-overlay opacity-90"
-				>
-					EXECUTION
-				</span>
-				<span
-					class="hero-title-line block text-4xl md:text-7xl font-bold bg-clip-text text-transparent bg-linear-to-r from-blue-400 via-purple-400 to-white tracking-tight -mt-2 md:-mt-6"
-				>
-					OVER OPINION
-				</span>
+			<h1 class="courses-hero__title">
+				<span class="hero-title-line courses-hero__title-shout">EXECUTION</span>
+				<span class="hero-title-line courses-hero__title-accent">OVER OPINION</span>
 			</h1>
 
-			<p
-				class="hero-desc max-w-2xl text-lg md:text-xl text-slate-400 leading-relaxed mb-12 font-light"
-			>
-				The market transfers money from the <span class="text-red-400 font-medium">impatient</span>
-				to the <span class="text-emerald-400 font-medium">disciplined</span>. Stop gambling on
-				signals. Start trading with institutional edge.
+			<p class="hero-desc courses-hero__desc">
+				The market transfers money from the
+				<span class="courses-hero__desc-impatient">impatient</span>
+				to the
+				<span class="courses-hero__desc-disciplined">disciplined</span>. Stop gambling on signals.
+				Start trading with institutional edge.
 			</p>
 
-			<div class="hero-stats flex flex-col md:flex-row items-center gap-6 md:gap-12 p-2">
-				<a
-					href="#curriculum"
-					class="group relative px-8 py-4 bg-white text-black rounded-full font-bold text-lg tracking-tight overflow-hidden transition-transform hover:scale-105 active:scale-95"
-				>
-					<div
-						class="absolute inset-0 bg-linear-to-r from-blue-200 to-white opacity-0 group-hover:opacity-100 transition-opacity"
-					></div>
-					<span class="relative flex items-center gap-2">
+			<div class="hero-stats courses-hero__stats">
+				<a href="#curriculum" class="courses-hero__cta">
+					<span class="courses-hero__cta-fill" aria-hidden="true"></span>
+					<span class="courses-hero__cta-label">
 						View Curriculum
-						<IconArrowRight size={20} class="transition-transform group-hover:translate-x-1" />
+						<IconArrowRight size={20} class="courses-hero__cta-arrow" />
 					</span>
 				</a>
 
-				<div
-					class="flex items-center gap-8 text-sm font-medium text-slate-500 uppercase tracking-widest"
-				>
-					<div class="flex flex-col items-center">
-						<span class="text-white text-2xl font-bold tracking-tight normal-case"
-							>{Math.floor(studentCounter.current).toLocaleString()}+</span
-						>
-						<span>Traders</span>
+				<div class="courses-hero__meta">
+					<div class="courses-hero__meta-item">
+						<span class="courses-hero__meta-value">
+							{Math.floor(studentCounter.current).toLocaleString()}+
+						</span>
+						<span class="courses-hero__meta-label">Traders</span>
 					</div>
-					<div class="w-px h-8 bg-white/10"></div>
-					<div class="flex flex-col items-center">
-						<span class="text-white text-2xl font-bold tracking-tight normal-case">4.9/5</span>
-						<span>Rating</span>
+					<div class="courses-hero__meta-divider" aria-hidden="true"></div>
+					<div class="courses-hero__meta-item">
+						<span class="courses-hero__meta-value">4.9/5</span>
+						<span class="courses-hero__meta-label">Rating</span>
 					</div>
 				</div>
 			</div>
 		</div>
 
-		<div
-			class="ticker-bar absolute bottom-0 left-0 w-full border-t border-white/10 bg-black/40 backdrop-blur-md overflow-hidden py-3 z-20"
-		>
-			<div class="flex animate-marquee whitespace-nowrap">
+		<div class="ticker-bar courses-hero__ticker">
+			<div class="courses-hero__ticker-track">
 				{#each Array(2) as _, _ti (_ti)}
-					<div class="flex items-center gap-8 px-4">
-						<span class="flex items-center gap-2 text-xs font-mono text-emerald-400"
-							><IconTrendingUp size={14} /> SPY $542.30 +1.2%</span
-						>
-						<span class="flex items-center gap-2 text-xs font-mono text-red-400"
-							><IconActivity size={14} /> VIX 13.45 -2.1%</span
-						>
-						<span class="flex items-center gap-2 text-xs font-mono text-emerald-400"
-							><IconBolt size={14} /> NVDA $135.20 +3.4%</span
-						>
-						<span class="flex items-center gap-2 text-xs font-mono text-slate-400"
-							>BTC $92,430 +0.1%</span
-						>
-						<span class="text-xs font-mono text-slate-600">|</span>
+					<div class="courses-hero__ticker-row">
+						<span class="courses-hero__ticker-cell courses-hero__ticker-cell--up">
+							<IconTrendingUp size={14} /> SPY $542.30 +1.2%
+						</span>
+						<span class="courses-hero__ticker-cell courses-hero__ticker-cell--down">
+							<IconActivity size={14} /> VIX 13.45 -2.1%
+						</span>
+						<span class="courses-hero__ticker-cell courses-hero__ticker-cell--up">
+							<IconBolt size={14} /> NVDA $135.20 +3.4%
+						</span>
+						<span class="courses-hero__ticker-cell courses-hero__ticker-cell--mute">
+							BTC $92,430 +0.1%
+						</span>
+						<span class="courses-hero__ticker-cell courses-hero__ticker-cell--sep">|</span>
 					</div>
 				{/each}
 			</div>
 		</div>
 	</section>
 
-	<section class="py-32 relative z-10">
-		<div class="container mx-auto px-6">
-			<div class="grid lg:grid-cols-2 gap-16 items-center">
-				<div class="space-y-8">
-					<h2 class="text-4xl md:text-5xl font-bold tracking-tight text-white">
-						The <span class="text-blue-500">Retail</span> Trap.
+	<section class="trap">
+		<div class="trap__inner">
+			<div class="trap__grid">
+				<div class="trap__copy">
+					<h2 class="trap__heading">
+						The <span class="trap__heading-accent">Retail</span> Trap.
 					</h2>
-					<p class="text-xl text-slate-400 leading-relaxed">
-						90% of traders fail because they treat the market like a casino. They chase alerts, lack
-						a risk model, and trade their P&L instead of the chart.
+					<p class="trap__lede">
+						90% of traders fail because they treat the market like a casino. They chase alerts,
+						lack a risk model, and trade their P&L instead of the chart.
 					</p>
 
-					<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-						<div class="p-6 rounded-2xl bg-red-500/5 border border-red-500/10">
-							<IconX class="text-red-500 mb-4" size={32} />
-							<h3 class="text-white font-bold mb-2">Gambling</h3>
-							<p class="text-sm text-slate-400">
+					<div class="trap__cards">
+						<div class="trap-card trap-card--bad">
+							<IconX class="trap-card__icon" size={32} />
+							<h3 class="trap-card__heading">Gambling</h3>
+							<p class="trap-card__desc">
 								Entry based on "feeling" rather than statistical edge.
 							</p>
 						</div>
-						<div class="p-6 rounded-2xl bg-emerald-500/5 border border-emerald-500/10">
-							<IconCheck class="text-emerald-500 mb-4" size={32} />
-							<h3 class="text-white font-bold mb-2">Business</h3>
-							<p class="text-sm text-slate-400">
+						<div class="trap-card trap-card--good">
+							<IconCheck class="trap-card__icon" size={32} />
+							<h3 class="trap-card__heading">Business</h3>
+							<p class="trap-card__desc">
 								Execution based on a pre-defined, backtested playbook.
 							</p>
 						</div>
 					</div>
 				</div>
 
-				<div
-					class="relative aspect-square md:aspect-video lg:aspect-square rounded-3xl overflow-hidden border border-white/10 bg-white/5 shadow-2xl"
-				>
-					<div
-						class="absolute inset-0 bg-[url('https://assets.codepen.io/907368/noise.svg')] opacity-20"
-					></div>
-					<div class="absolute inset-0 flex items-center justify-center">
-						<div
-							class="relative w-3/4 h-3/4 border border-white/10 bg-black/50 backdrop-blur-xl rounded-xl p-6 flex flex-col"
-						>
-							<div class="flex items-center justify-between mb-8 border-b border-white/5 pb-4">
-								<div class="flex gap-2">
-									<div class="w-3 h-3 rounded-full bg-red-500/50"></div>
-									<div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
-									<div class="w-3 h-3 rounded-full bg-green-500/50"></div>
+				<div class="trap__visual">
+					<div class="trap__visual-noise" aria-hidden="true"></div>
+					<div class="trap__visual-frame">
+						<div class="trap__visual-panel">
+							<div class="trap__visual-chrome">
+								<div class="trap__visual-dots">
+									<span class="trap__visual-dot trap__visual-dot--red"></span>
+									<span class="trap__visual-dot trap__visual-dot--yellow"></span>
+									<span class="trap__visual-dot trap__visual-dot--green"></span>
 								</div>
-								<div class="text-[10px] font-mono text-slate-500 uppercase">System: Active</div>
+								<div class="trap__visual-label">System: Active</div>
 							</div>
-							<div class="flex-1 flex items-end gap-1">
+							<div class="trap__visual-bars">
 								{#each Array(20) as _, i (i)}
 									<div
-										class="flex-1 bg-blue-500/50 rounded-t-sm animate-pulse"
+										class="trap__visual-bar"
 										style="height: {30 + Math.random() * 60}%; animation-delay: {i *
 											0.1}s; opacity: {0.3 + Math.random() * 0.7}"
 									></div>
@@ -523,79 +467,56 @@
 		</div>
 	</section>
 
-	<section id="curriculum" class="py-32 relative z-10 bg-slate-950/50 border-y border-white/5">
-		<div class="container mx-auto px-6">
-			<div class="text-center max-w-3xl mx-auto mb-20">
-				<span class="text-blue-500 font-mono text-xs uppercase tracking-[0.3em] mb-4 block"
-					>Classified Intel</span
-				>
-				<h2 class="text-4xl md:text-6xl font-bold tracking-tighter text-white mb-6">
-					Master The Setup.
-				</h2>
-				<p class="text-slate-400 text-lg">
+	<section id="curriculum" class="curriculum">
+		<div class="curriculum__inner">
+			<div class="curriculum__header">
+				<span class="curriculum__eyebrow">Classified Intel</span>
+				<h2 class="curriculum__heading">Master The Setup.</h2>
+				<p class="curriculum__lede">
 					Four specialized pathways designed to take you from unconscious incompetence to
 					unconscious competence.
 				</p>
 			</div>
 
-			<div class="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-6xl mx-auto">
+			<div class="curriculum__grid">
 				{#each courses as course (course.id)}
 					{@const Icon = course.icon}
-					{@const colors = course.colorClasses}
 					<div
 						{@attach spotlightCard}
-						class="spotlight-card group relative h-full bg-black border border-white/10 rounded-3xl overflow-hidden hover:border-white/20 transition-colors duration-500"
+						class="spotlight-card courses-card courses-card--{course.variant}"
 					>
-						<div
-							class="absolute pointer-events-none -inset-px opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0"
-							style="
-                                background: radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(255,255,255,0.06), transparent 40%);
-                            "
-						></div>
+						<div class="courses-card__spotlight" aria-hidden="true"></div>
 
-						<div
-							class="relative z-10 p-8 md:p-10 flex flex-col h-full bg-black/40 backdrop-blur-sm"
-						>
-							<div class="flex justify-between items-start mb-8">
-								<div class={`p-3 rounded-2xl ${colors.bg} ${colors.border} border ${colors.text}`}>
+						<div class="courses-card__body">
+							<div class="courses-card__header">
+								<div class="courses-card__icon">
 									<Icon size={32} stroke={1.5} />
 								</div>
-								<span
-									class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-white/5 border border-white/10 text-slate-300"
-								>
-									{course.level}
-								</span>
+								<span class="courses-card__level">{course.level}</span>
 							</div>
 
-							<h3
-								class="text-2xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors"
-							>
-								{course.title}
-							</h3>
-							<p class="text-sm font-mono text-slate-500 mb-6">{course.targetAudience}</p>
+							<h3 class="courses-card__title">{course.title}</h3>
+							<p class="courses-card__audience">{course.targetAudience}</p>
 
-							<div class="h-px w-full bg-white/5 mb-6"></div>
+							<div class="courses-card__rule" aria-hidden="true"></div>
 
-							<p class="text-slate-400 leading-relaxed mb-8 grow">{course.description}</p>
+							<p class="courses-card__desc">{course.description}</p>
 
-							<div class="space-y-3 mb-8">
+							<div class="courses-card__features">
 								{#each course.features as feature (feature)}
-									<div class="flex items-center gap-3 text-sm text-slate-300">
-										<IconCheck size={16} class={colors.icon} />
+									<div class="courses-card__feature">
+										<IconCheck size={16} class="courses-card__feature-icon" />
 										{feature}
 									</div>
 								{/each}
 							</div>
 
-							<div class="flex items-center justify-between pt-6 border-t border-white/5">
-								<div>
-									<div class="text-xs text-slate-500 uppercase tracking-wider mb-1">Investment</div>
-									<div class="text-xl font-bold text-white">{course.price}</div>
+							<div class="courses-card__footer">
+								<div class="courses-card__price-block">
+									<div class="courses-card__price-label">Investment</div>
+									<div class="courses-card__price-value">{course.price}</div>
 								</div>
-								<a
-									href={`/courses/${course.slug}`}
-									class="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-white text-black font-semibold text-sm hover:bg-slate-200 transition-colors"
-								>
+								<a href={`/courses/${course.slug}`} class="courses-card__cta">
 									Start <IconArrowRight size={16} />
 								</a>
 							</div>
@@ -606,26 +527,23 @@
 		</div>
 	</section>
 
-	<section class="py-32 relative z-10 bg-black">
-		<div class="container mx-auto px-6 max-w-3xl">
-			<h2 class="text-3xl font-bold text-white mb-12 text-center">Protocol FAQ</h2>
+	<section class="faq">
+		<div class="faq__inner">
+			<h2 class="faq__heading">Protocol FAQ</h2>
 
-			<div class="space-y-4">
+			<div class="faq__list">
 				{#each faqs as faq, i (faq.question)}
-					<div class="rounded-xl border border-white/5 overflow-hidden">
+					<div class="faq-item">
 						<button
 							onclick={() => toggleFaq(i)}
 							aria-expanded={openFaqIndex === i}
 							aria-controls="faq-panel-{i}"
-							class="w-full text-left group bg-white/2 hover:bg-white/4 transition-all duration-300 p-6 flex items-center justify-between"
+							class="faq-item__trigger"
 						>
-							<span
-								class="text-lg font-medium text-slate-200 group-hover:text-white transition-colors"
-								>{faq.question}</span
-							>
+							<span class="faq-item__question">{faq.question}</span>
 							<IconChevronDown
 								size={20}
-								class={`text-slate-500 transition-transform duration-300 ${openFaqIndex === i ? 'rotate-180 text-blue-400' : ''}`}
+								class="faq-item__chevron {openFaqIndex === i ? 'faq-item__chevron--open' : ''}"
 							/>
 						</button>
 						{#if openFaqIndex === i}
@@ -633,11 +551,9 @@
 								id="faq-panel-{i}"
 								role="region"
 								transition:slide={{ duration: 300, easing: cubicOut }}
-								class="px-6 pb-6 bg-white/2"
+								class="faq-item__panel"
 							>
-								<p class="text-slate-400 leading-relaxed pt-2 border-t border-white/5">
-									{faq.answer}
-								</p>
+								<p class="faq-item__answer">{faq.answer}</p>
 							</div>
 						{/if}
 					</div>
@@ -646,22 +562,17 @@
 		</div>
 	</section>
 
-	<section class="relative py-40 overflow-hidden">
-		<div class="absolute inset-0 bg-blue-600/5 blur-[100px]"></div>
+	<section class="final-cta">
+		<div class="final-cta__halo" aria-hidden="true"></div>
 
-		<div class="container mx-auto px-6 relative z-10 text-center">
-			<IconRocket size={48} stroke={1} class="mx-auto text-blue-500 mb-8 animate-bounce" />
-			<h2 class="text-5xl md:text-7xl font-black tracking-tighter text-white mb-8">
-				Market Opens In... Now.
-			</h2>
-			<p class="text-xl text-slate-400 mb-12 max-w-xl mx-auto">
+		<div class="final-cta__inner">
+			<IconRocket size={48} stroke={1} class="final-cta__rocket" />
+			<h2 class="final-cta__heading">Market Opens In... Now.</h2>
+			<p class="final-cta__lede">
 				Join {STUDENT_COUNT.toLocaleString()}+ disciplined traders building wealth through logic, not luck.
 			</p>
 
-			<a
-				href="#curriculum"
-				class="inline-flex items-center gap-3 px-10 py-5 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-bold text-lg transition-all shadow-[0_0_40px_rgba(37,99,235,0.3)] hover:shadow-[0_0_60px_rgba(37,99,235,0.5)]"
-			>
+			<a href="#curriculum" class="final-cta__button">
 				<IconSchool size={24} />
 				Enroll Now
 			</a>
@@ -671,14 +582,342 @@
 
 
 <style>
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * 2026 MOBILE-FIRST RESPONSIVE DESIGN
-	 * Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
-	 * ═══════════════════════════════════════════════════════════════════════════ */
+	/* ═════════════════════════════════════════════════════════════════════════
+	   Page-local tokens
+	   Reusable color/spacing values come from --rtp-* (marketing.css).
+	   ═════════════════════════════════════════════════════════════════════════ */
+	.courses {
+		--c-blue: var(--rtp-primary);
+		--c-blue-bright: var(--rtp-blue-bright);
+		--c-violet: #8b5cf6;
+		--c-violet-bright: #a78bfa;
+		--c-orange: #f97316;
+		--c-orange-bright: #fb923c;
 
-	/* Custom Tailwind-compatible utilities for specific animations */
+		--c-card-bg: #000;
+		--c-card-border: var(--rtp-border);
+		--c-card-border-hover: var(--rtp-border-strong);
 
-	@keyframes marquee {
+		background: #000;
+		color: var(--rtp-text-soft);
+		font-family: var(--rtp-font-sans);
+	}
+	.courses ::selection {
+		background: color-mix(in oklab, var(--rtp-primary) 30%, transparent);
+		color: #fff;
+	}
+
+	/* ═════════════════════════════════════════════════════════════════════════
+	   Hero
+	   ═════════════════════════════════════════════════════════════════════════ */
+	.courses-hero {
+		position: relative;
+		min-block-size: 95vh;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		overflow: hidden;
+		padding-block-start: 5rem;
+	}
+
+	.courses-hero__canvas {
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		opacity: 0.4;
+		pointer-events: none;
+	}
+	.courses-hero__canvas-el {
+		inline-size: 100%;
+		block-size: 100%;
+	}
+
+	.courses-hero__veil {
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		pointer-events: none;
+		background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5), #000);
+	}
+	.courses-hero__radial {
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		pointer-events: none;
+		background: radial-gradient(
+			circle at center,
+			color-mix(in oklab, #1e3a8a 10%, transparent),
+			rgba(0, 0, 0, 0),
+			#000
+		);
+	}
+
+	.courses-hero__inner {
+		position: relative;
+		z-index: 10;
+		max-inline-size: var(--rtp-content-max);
+		margin-inline: auto;
+		padding-inline: 1.5rem;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+	}
+
+	.courses-hero__badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.375rem 1rem;
+		border-radius: var(--rtp-radius-pill);
+		background: color-mix(in oklab, #fff 5%, transparent);
+		border: 1px solid var(--rtp-border);
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
+		margin-block-end: 2rem;
+		box-shadow: 0 0 15px color-mix(in oklab, #38bdf8 15%, transparent);
+	}
+	.courses-hero__pulse-wrap {
+		position: relative;
+		display: inline-flex;
+		block-size: 0.5rem;
+		inline-size: 0.5rem;
+	}
+	.courses-hero__pulse-ping {
+		position: absolute;
+		inset: 0;
+		border-radius: 50%;
+		background: var(--rtp-emerald-bright);
+		opacity: 0.75;
+		animation: courses-ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+	}
+	.courses-hero__pulse-dot {
+		position: relative;
+		display: inline-flex;
+		block-size: 0.5rem;
+		inline-size: 0.5rem;
+		border-radius: 50%;
+		background: var(--rtp-emerald);
+	}
+	.courses-hero__badge-label {
+		font-size: 0.75rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		color: var(--rtp-text-soft);
+	}
+
+	@keyframes courses-ping {
+		75%,
+		100% {
+			transform: scale(2);
+			opacity: 0;
+		}
+	}
+
+	.courses-hero__title {
+		max-inline-size: 64rem;
+		margin-inline: auto;
+		margin-block-end: 2rem;
+		line-height: 0.9;
+	}
+	.courses-hero__title-shout {
+		display: block;
+		font-size: 13vw;
+		font-weight: 900;
+		letter-spacing: -0.04em;
+		color: var(--rtp-text);
+		mix-blend-mode: overlay;
+		opacity: 0.9;
+	}
+	.courses-hero__title-accent {
+		display: block;
+		font-size: 2.25rem;
+		font-weight: 700;
+		letter-spacing: -0.025em;
+		background: linear-gradient(
+			to right,
+			var(--rtp-blue-bright),
+			var(--c-violet-bright),
+			var(--rtp-text)
+		);
+		-webkit-background-clip: text;
+		background-clip: text;
+		color: transparent;
+		margin-block-start: -0.5rem;
+	}
+	@media (min-width: 768px) {
+		.courses-hero__title-shout {
+			font-size: 6rem;
+		}
+		.courses-hero__title-accent {
+			font-size: 4.5rem;
+			margin-block-start: -1.5rem;
+		}
+	}
+	@media (min-width: 1024px) {
+		.courses-hero__title-shout {
+			font-size: 7.5rem;
+		}
+	}
+
+	.courses-hero__desc {
+		max-inline-size: 42rem;
+		font-size: 1.125rem;
+		line-height: 1.625;
+		color: var(--rtp-text-muted);
+		font-weight: 300;
+		margin-block-end: 3rem;
+	}
+	@media (min-width: 768px) {
+		.courses-hero__desc {
+			font-size: 1.25rem;
+		}
+	}
+	.courses-hero__desc-impatient {
+		color: var(--rtp-red-soft);
+		font-weight: 500;
+	}
+	.courses-hero__desc-disciplined {
+		color: var(--rtp-emerald-bright);
+		font-weight: 500;
+	}
+
+	.courses-hero__stats {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1.5rem;
+		padding: 0.5rem;
+	}
+	@media (min-width: 768px) {
+		.courses-hero__stats {
+			flex-direction: row;
+			gap: 3rem;
+		}
+	}
+
+	.courses-hero__cta {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		padding: 1rem 2rem;
+		background: #fff;
+		color: #000;
+		border-radius: var(--rtp-radius-pill);
+		font-weight: 700;
+		font-size: 1.125rem;
+		letter-spacing: -0.025em;
+		overflow: hidden;
+		text-decoration: none;
+		transition: transform var(--rtp-dur-base) var(--rtp-ease-out);
+	}
+	.courses-hero__cta:hover {
+		transform: scale(1.05);
+	}
+	.courses-hero__cta:active {
+		transform: scale(0.95);
+	}
+	.courses-hero__cta-fill {
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(to right, #bfdbfe, #fff);
+		opacity: 0;
+		transition: opacity var(--rtp-dur-base) var(--rtp-ease-out);
+	}
+	.courses-hero__cta:hover .courses-hero__cta-fill {
+		opacity: 1;
+	}
+	.courses-hero__cta-label {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+	:global(.courses-hero__cta-arrow) {
+		transition: transform var(--rtp-dur-base) var(--rtp-ease-out);
+	}
+	.courses-hero__cta:hover :global(.courses-hero__cta-arrow) {
+		transform: translateX(0.25rem);
+	}
+
+	.courses-hero__meta {
+		display: flex;
+		align-items: center;
+		gap: 2rem;
+		font-size: 0.875rem;
+		font-weight: 500;
+		color: var(--rtp-text-subtle);
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+	}
+	.courses-hero__meta-item {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+	.courses-hero__meta-value {
+		color: var(--rtp-text);
+		font-size: 1.5rem;
+		font-weight: 700;
+		letter-spacing: -0.025em;
+		text-transform: none;
+	}
+	.courses-hero__meta-label {
+		text-transform: uppercase;
+	}
+	.courses-hero__meta-divider {
+		inline-size: 1px;
+		block-size: 2rem;
+		background: var(--rtp-border);
+	}
+
+	/* Ticker */
+	.courses-hero__ticker {
+		position: absolute;
+		inset-inline: 0;
+		inset-block-end: 0;
+		inline-size: 100%;
+		border-block-start: 1px solid var(--rtp-border);
+		background: color-mix(in oklab, #000 40%, transparent);
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
+		overflow: hidden;
+		padding-block: 0.75rem;
+		z-index: 20;
+	}
+	.courses-hero__ticker-track {
+		display: flex;
+		white-space: nowrap;
+		animation: courses-marquee 40s linear infinite;
+	}
+	.courses-hero__ticker-row {
+		display: flex;
+		align-items: center;
+		gap: 2rem;
+		padding-inline: 1rem;
+	}
+	.courses-hero__ticker-cell {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.75rem;
+		font-family: var(--rtp-font-mono);
+	}
+	.courses-hero__ticker-cell--up {
+		color: var(--rtp-emerald-bright);
+	}
+	.courses-hero__ticker-cell--down {
+		color: var(--rtp-red-soft);
+	}
+	.courses-hero__ticker-cell--mute {
+		color: var(--rtp-text-muted);
+	}
+	.courses-hero__ticker-cell--sep {
+		color: var(--rtp-text-faint);
+	}
+
+	@keyframes courses-marquee {
 		0% {
 			transform: translateX(0);
 		}
@@ -686,97 +925,652 @@
 			transform: translateX(-50%);
 		}
 	}
-
-	.animate-marquee {
-		animation: marquee 40s linear infinite;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * SAFE AREA INSETS - iOS/Android notch & gesture areas
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-	:global(.course-page-wrapper) {
-		padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
-			env(safe-area-inset-left);
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * TOUCH TARGETS - Minimum 44x44px for all interactive elements
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-	@media (hover: none) and (pointer: coarse) {
-		:global(.spotlight-card a),
-		:global(.hero-stats a),
-		:global(button) {
-			min-height: 44px;
-			min-width: 44px;
+	@media (prefers-reduced-motion: reduce) {
+		.courses-hero__ticker-track {
+			animation: none;
 		}
 	}
 
-	/* Responsive overrides — component <style> is unlayered, beats Tailwind
-	   @layer utilities by layer-order; hardened 2026-04-25. */
+	/* ═════════════════════════════════════════════════════════════════════════
+	   Trap section
+	   ═════════════════════════════════════════════════════════════════════════ */
+	.trap {
+		position: relative;
+		z-index: 10;
+		padding-block: 8rem;
+	}
+	.trap__inner {
+		max-inline-size: var(--rtp-content-max);
+		margin-inline: auto;
+		padding-inline: 1.5rem;
+	}
+	.trap__grid {
+		display: grid;
+		gap: 4rem;
+		align-items: center;
+	}
+	@media (min-width: 1024px) {
+		.trap__grid {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+
+	.trap__copy {
+		display: flex;
+		flex-direction: column;
+		gap: 2rem;
+	}
+	.trap__heading {
+		font-size: 2.25rem;
+		font-weight: 700;
+		color: var(--rtp-text);
+		letter-spacing: -0.025em;
+	}
+	.trap__heading-accent {
+		color: var(--rtp-primary);
+	}
+	@media (min-width: 768px) {
+		.trap__heading {
+			font-size: 3rem;
+		}
+	}
+	.trap__lede {
+		font-size: 1.25rem;
+		color: var(--rtp-text-muted);
+		line-height: 1.625;
+	}
+
+	.trap__cards {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1rem;
+	}
+	@media (min-width: 640px) {
+		.trap__cards {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+
+	.trap-card {
+		padding: 1.5rem;
+		border-radius: 1rem;
+	}
+	.trap-card--bad {
+		background: color-mix(in oklab, var(--rtp-red) 5%, transparent);
+		border: 1px solid color-mix(in oklab, var(--rtp-red) 10%, transparent);
+	}
+	.trap-card--good {
+		background: color-mix(in oklab, var(--rtp-emerald) 5%, transparent);
+		border: 1px solid color-mix(in oklab, var(--rtp-emerald) 10%, transparent);
+	}
+	:global(.trap-card--bad .trap-card__icon) {
+		color: var(--rtp-red);
+		margin-block-end: 1rem;
+	}
+	:global(.trap-card--good .trap-card__icon) {
+		color: var(--rtp-emerald);
+		margin-block-end: 1rem;
+	}
+	.trap-card__heading {
+		color: var(--rtp-text);
+		font-weight: 700;
+		margin-block-end: 0.5rem;
+	}
+	.trap-card__desc {
+		font-size: 0.875rem;
+		color: var(--rtp-text-muted);
+	}
+
+	.trap__visual {
+		position: relative;
+		aspect-ratio: 1 / 1;
+		border-radius: 1.5rem;
+		overflow: hidden;
+		border: 1px solid var(--rtp-border);
+		background: color-mix(in oklab, #fff 5%, transparent);
+		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+	}
+	@media (min-width: 768px) {
+		.trap__visual {
+			aspect-ratio: 16 / 9;
+		}
+	}
+	@media (min-width: 1024px) {
+		.trap__visual {
+			aspect-ratio: 1 / 1;
+		}
+	}
+	.trap__visual-noise {
+		position: absolute;
+		inset: 0;
+		background-image: url('https://assets.codepen.io/907368/noise.svg');
+		opacity: 0.2;
+		pointer-events: none;
+	}
+	.trap__visual-frame {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.trap__visual-panel {
+		position: relative;
+		inline-size: 75%;
+		block-size: 75%;
+		border: 1px solid var(--rtp-border);
+		background: color-mix(in oklab, #000 50%, transparent);
+		backdrop-filter: blur(16px);
+		-webkit-backdrop-filter: blur(16px);
+		border-radius: 0.75rem;
+		padding: 1.5rem;
+		display: flex;
+		flex-direction: column;
+	}
+	.trap__visual-chrome {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-block-end: 2rem;
+		border-block-end: 1px solid var(--rtp-border-soft);
+		padding-block-end: 1rem;
+	}
+	.trap__visual-dots {
+		display: flex;
+		gap: 0.5rem;
+	}
+	.trap__visual-dot {
+		inline-size: 0.75rem;
+		block-size: 0.75rem;
+		border-radius: 50%;
+	}
+	.trap__visual-dot--red {
+		background: color-mix(in oklab, var(--rtp-red) 50%, transparent);
+	}
+	.trap__visual-dot--yellow {
+		background: color-mix(in oklab, #eab308 50%, transparent);
+	}
+	.trap__visual-dot--green {
+		background: color-mix(in oklab, #22c55e 50%, transparent);
+	}
+	.trap__visual-label {
+		font-size: 0.625rem;
+		font-family: var(--rtp-font-mono);
+		color: var(--rtp-text-subtle);
+		text-transform: uppercase;
+	}
+	.trap__visual-bars {
+		flex: 1;
+		display: flex;
+		align-items: flex-end;
+		gap: 0.25rem;
+	}
+	.trap__visual-bar {
+		flex: 1;
+		background: color-mix(in oklab, var(--rtp-primary) 50%, transparent);
+		border-start-start-radius: 0.125rem;
+		border-start-end-radius: 0.125rem;
+		animation: courses-pulse 2s ease-in-out infinite;
+	}
+	@keyframes courses-pulse {
+		0%,
+		100% {
+			opacity: 0.5;
+		}
+		50% {
+			opacity: 1;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.trap__visual-bar {
+			animation: none;
+		}
+	}
+
+	/* ═════════════════════════════════════════════════════════════════════════
+	   Curriculum grid
+	   ═════════════════════════════════════════════════════════════════════════ */
+	.curriculum {
+		position: relative;
+		z-index: 10;
+		padding-block: 8rem;
+		background: color-mix(in oklab, #0f172a 50%, transparent);
+		border-block: 1px solid var(--rtp-border-soft);
+	}
+	.curriculum__inner {
+		max-inline-size: var(--rtp-content-max);
+		margin-inline: auto;
+		padding-inline: 1.5rem;
+	}
+	.curriculum__header {
+		text-align: center;
+		max-inline-size: 48rem;
+		margin-inline: auto;
+		margin-block-end: 5rem;
+	}
+	.curriculum__eyebrow {
+		display: block;
+		color: var(--rtp-primary);
+		font-family: var(--rtp-font-mono);
+		font-size: 0.75rem;
+		text-transform: uppercase;
+		letter-spacing: 0.3em;
+		margin-block-end: 1rem;
+	}
+	.curriculum__heading {
+		font-size: 2.25rem;
+		font-weight: 700;
+		letter-spacing: -0.05em;
+		color: var(--rtp-text);
+		margin-block-end: 1.5rem;
+	}
+	@media (min-width: 768px) {
+		.curriculum__heading {
+			font-size: 3.75rem;
+		}
+	}
+	.curriculum__lede {
+		color: var(--rtp-text-muted);
+		font-size: 1.125rem;
+	}
+
+	.curriculum__grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1.5rem;
+		max-inline-size: 72rem;
+		margin-inline: auto;
+	}
+	@media (min-width: 768px) {
+		.curriculum__grid {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+	@media (min-width: 1024px) {
+		.curriculum__grid {
+			gap: 2rem;
+		}
+	}
+
+	/* ── Course card ── */
+	.courses-card {
+		position: relative;
+		block-size: 100%;
+		background: var(--c-card-bg);
+		border: 1px solid var(--c-card-border);
+		border-radius: 1.5rem;
+		overflow: hidden;
+		transition: border-color 500ms;
+	}
+	.courses-card:hover {
+		border-color: var(--c-card-border-hover);
+	}
+	.courses-card__spotlight {
+		position: absolute;
+		inset: -1px;
+		pointer-events: none;
+		opacity: 0;
+		transition: opacity 300ms;
+		background: radial-gradient(
+			600px circle at var(--mouse-x) var(--mouse-y),
+			rgba(255, 255, 255, 0.06),
+			transparent 40%
+		);
+		z-index: 0;
+	}
+	.courses-card:hover .courses-card__spotlight {
+		opacity: 1;
+	}
+	.courses-card__body {
+		position: relative;
+		z-index: 10;
+		padding: 2rem;
+		display: flex;
+		flex-direction: column;
+		block-size: 100%;
+		background: color-mix(in oklab, #000 40%, transparent);
+		backdrop-filter: blur(4px);
+		-webkit-backdrop-filter: blur(4px);
+	}
+	@media (min-width: 768px) {
+		.courses-card__body {
+			padding: 2.5rem;
+		}
+	}
+
+	.courses-card__header {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		margin-block-end: 2rem;
+	}
+	.courses-card__icon {
+		padding: 0.75rem;
+		border-radius: 1rem;
+		border: 1px solid var(--card-accent-border, var(--rtp-border));
+		background: var(--card-accent-bg, transparent);
+		color: var(--card-accent-fg, var(--rtp-primary));
+	}
+	.courses-card__level {
+		padding: 0.25rem 0.75rem;
+		border-radius: var(--rtp-radius-pill);
+		font-size: 0.75rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		background: color-mix(in oklab, #fff 5%, transparent);
+		border: 1px solid var(--rtp-border);
+		color: var(--rtp-text-soft);
+	}
+
+	.courses-card__title {
+		font-size: 1.5rem;
+		font-weight: 700;
+		color: var(--rtp-text);
+		margin-block-end: 0.5rem;
+		transition: color var(--rtp-dur-base) var(--rtp-ease-out);
+	}
+	.courses-card:hover .courses-card__title {
+		color: var(--rtp-blue-bright);
+	}
+	.courses-card__audience {
+		font-size: 0.875rem;
+		font-family: var(--rtp-font-mono);
+		color: var(--rtp-text-subtle);
+		margin-block-end: 1.5rem;
+	}
+	.courses-card__rule {
+		block-size: 1px;
+		inline-size: 100%;
+		background: var(--rtp-border-soft);
+		margin-block-end: 1.5rem;
+	}
+	.courses-card__desc {
+		color: var(--rtp-text-muted);
+		line-height: 1.625;
+		margin-block-end: 2rem;
+		flex-grow: 1;
+	}
+
+	.courses-card__features {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		margin-block-end: 2rem;
+	}
+	.courses-card__feature {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		font-size: 0.875rem;
+		color: var(--rtp-text-soft);
+	}
+	:global(.courses-card__feature-icon) {
+		color: var(--card-accent-fg, var(--rtp-primary));
+	}
+
+	.courses-card__footer {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding-block-start: 1.5rem;
+		border-block-start: 1px solid var(--rtp-border-soft);
+	}
+	.courses-card__price-label {
+		font-size: 0.75rem;
+		color: var(--rtp-text-subtle);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		margin-block-end: 0.25rem;
+	}
+	.courses-card__price-value {
+		font-size: 1.25rem;
+		font-weight: 700;
+		color: var(--rtp-text);
+	}
+	.courses-card__cta {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.625rem 1.25rem;
+		border-radius: var(--rtp-radius-sm);
+		background: #fff;
+		color: #000;
+		font-weight: 600;
+		font-size: 0.875rem;
+		text-decoration: none;
+		transition: background-color var(--rtp-dur-base) var(--rtp-ease-out);
+	}
+	.courses-card__cta:hover {
+		background: var(--rtp-text-soft);
+	}
+
+	/* ── Card variant accents ── */
+	.courses-card--blue {
+		--card-accent-bg: color-mix(in oklab, var(--c-blue) 10%, transparent);
+		--card-accent-border: color-mix(in oklab, var(--c-blue) 20%, transparent);
+		--card-accent-fg: var(--rtp-blue-bright);
+	}
+	.courses-card--emerald {
+		--card-accent-bg: color-mix(in oklab, var(--rtp-emerald) 10%, transparent);
+		--card-accent-border: color-mix(in oklab, var(--rtp-emerald) 20%, transparent);
+		--card-accent-fg: var(--rtp-emerald-bright);
+	}
+	.courses-card--violet {
+		--card-accent-bg: color-mix(in oklab, var(--c-violet) 10%, transparent);
+		--card-accent-border: color-mix(in oklab, var(--c-violet) 20%, transparent);
+		--card-accent-fg: var(--c-violet-bright);
+	}
+	.courses-card--orange {
+		--card-accent-bg: color-mix(in oklab, var(--c-orange) 10%, transparent);
+		--card-accent-border: color-mix(in oklab, var(--c-orange) 20%, transparent);
+		--card-accent-fg: var(--c-orange-bright);
+	}
+
+	/* ═════════════════════════════════════════════════════════════════════════
+	   FAQ
+	   ═════════════════════════════════════════════════════════════════════════ */
+	.faq {
+		position: relative;
+		z-index: 10;
+		padding-block: 8rem;
+		background: #000;
+	}
+	.faq__inner {
+		max-inline-size: 48rem;
+		margin-inline: auto;
+		padding-inline: 1.5rem;
+	}
+	.faq__heading {
+		font-size: 1.875rem;
+		font-weight: 700;
+		color: var(--rtp-text);
+		text-align: center;
+		margin-block-end: 3rem;
+	}
+	.faq__list {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+	.faq-item {
+		border-radius: 0.75rem;
+		border: 1px solid var(--rtp-border-soft);
+		overflow: hidden;
+	}
+	.faq-item__trigger {
+		inline-size: 100%;
+		text-align: start;
+		background: color-mix(in oklab, #fff 2%, transparent);
+		padding: 1.5rem;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		border: none;
+		cursor: pointer;
+		color: var(--rtp-text-soft);
+		transition: background-color var(--rtp-dur-base) var(--rtp-ease-out);
+	}
+	.faq-item__trigger:hover {
+		background: color-mix(in oklab, #fff 4%, transparent);
+	}
+	.faq-item__question {
+		font-size: 1.125rem;
+		font-weight: 500;
+		color: var(--rtp-text-soft);
+		transition: color var(--rtp-dur-base) var(--rtp-ease-out);
+	}
+	.faq-item__trigger:hover .faq-item__question {
+		color: var(--rtp-text);
+	}
+	:global(.faq-item__chevron) {
+		color: var(--rtp-text-subtle);
+		transition: transform 300ms;
+	}
+	:global(.faq-item__chevron--open) {
+		transform: rotate(180deg);
+		color: var(--rtp-blue-bright);
+	}
+	.faq-item__panel {
+		padding-inline: 1.5rem;
+		padding-block-end: 1.5rem;
+		background: color-mix(in oklab, #fff 2%, transparent);
+	}
+	.faq-item__answer {
+		color: var(--rtp-text-muted);
+		line-height: 1.625;
+		padding-block-start: 0.5rem;
+		border-block-start: 1px solid var(--rtp-border-soft);
+	}
+
+	/* ═════════════════════════════════════════════════════════════════════════
+	   Final CTA
+	   ═════════════════════════════════════════════════════════════════════════ */
+	.final-cta {
+		position: relative;
+		padding-block: 10rem;
+		overflow: hidden;
+	}
+	.final-cta__halo {
+		position: absolute;
+		inset: 0;
+		background: color-mix(in oklab, #2563eb 5%, transparent);
+		filter: blur(100px);
+		pointer-events: none;
+	}
+	.final-cta__inner {
+		position: relative;
+		z-index: 10;
+		max-inline-size: var(--rtp-content-max);
+		margin-inline: auto;
+		padding-inline: 1.5rem;
+		text-align: center;
+	}
+	:global(.final-cta__rocket) {
+		display: block;
+		margin-inline: auto;
+		color: var(--rtp-primary);
+		margin-block-end: 2rem;
+		animation: courses-bounce 1s infinite;
+	}
+	@keyframes courses-bounce {
+		0%,
+		100% {
+			transform: translateY(-25%);
+			animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+		}
+		50% {
+			transform: translateY(0);
+			animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		:global(.final-cta__rocket) {
+			animation: none;
+		}
+	}
+	.final-cta__heading {
+		font-size: 3rem;
+		font-weight: 900;
+		letter-spacing: -0.05em;
+		color: var(--rtp-text);
+		margin-block-end: 2rem;
+	}
+	@media (min-width: 768px) {
+		.final-cta__heading {
+			font-size: 4.5rem;
+		}
+	}
+	.final-cta__lede {
+		font-size: 1.25rem;
+		color: var(--rtp-text-muted);
+		margin-block-end: 3rem;
+		max-inline-size: 36rem;
+		margin-inline: auto;
+	}
+	.final-cta__button {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 1.25rem 2.5rem;
+		background: #2563eb;
+		color: var(--rtp-text);
+		border-radius: var(--rtp-radius-pill);
+		font-weight: 700;
+		font-size: 1.125rem;
+		text-decoration: none;
+		transition: all var(--rtp-dur-base) var(--rtp-ease-out);
+		box-shadow: 0 0 40px color-mix(in oklab, #2563eb 30%, transparent);
+	}
+	.final-cta__button:hover {
+		background: var(--rtp-primary);
+		box-shadow: 0 0 60px color-mix(in oklab, #2563eb 50%, transparent);
+	}
+
+	/* ═════════════════════════════════════════════════════════════════════════
+	   Mobile refinement (≤359px)
+	   ═════════════════════════════════════════════════════════════════════════ */
 	@media (max-width: 359px) {
-		:global(.container) {
-			padding-left: 0.75rem;
-			padding-right: 0.75rem;
+		.courses-hero__inner {
+			padding-inline: 0.75rem;
 		}
-
-		:global(.hero-title-line) {
+		.courses-hero__title-shout {
 			font-size: 11vw;
 		}
-
-		:global(.spotlight-card) {
+		.courses-card {
 			border-radius: 1rem;
 		}
-
-		:global(.spotlight-card .p-8) {
+		.courses-card__body {
 			padding: 1rem;
 		}
 	}
 
 	@media (min-width: 360px) and (max-width: 639px) {
-		:global(.container) {
-			padding-left: 1rem;
-			padding-right: 1rem;
+		.courses-hero__inner {
+			padding-inline: 1rem;
 		}
-
-		:global(.hero-stats) {
-			flex-direction: column;
-			gap: 1rem;
-		}
-
-		:global(.hero-stats a) {
-			width: 100%;
-			justify-content: center;
-		}
-
-		:global(.spotlight-card) {
+		.courses-card {
 			border-radius: 1.25rem;
 		}
-
-		:global(.ticker-bar) {
+		.courses-hero__ticker {
 			font-size: 0.7rem;
 		}
 	}
 
-	@media (min-width: 640px) and (max-width: 767px) {
-		:global(.hero-stats) {
-			flex-direction: row;
-			flex-wrap: wrap;
-			justify-content: center;
-		}
-	}
-
 	@media (min-width: 768px) and (max-width: 1023px) {
-		:global(.spotlight-card .p-8) {
+		.courses-card__body {
 			padding: 1.5rem;
 		}
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * REDUCED MOTION - Accessibility
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-	@media (prefers-reduced-motion: reduce) {
-		.animate-marquee {
-			animation: none;
+	/* Touch targets — minimum 44x44px for interactive elements on coarse pointers */
+	@media (hover: none) and (pointer: coarse) {
+		.courses-hero__cta,
+		.courses-card__cta,
+		.final-cta__button,
+		.faq-item__trigger {
+			min-block-size: 44px;
+			min-inline-size: 44px;
 		}
 	}
 </style>
