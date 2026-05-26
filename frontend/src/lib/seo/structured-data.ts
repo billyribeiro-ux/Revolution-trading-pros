@@ -340,11 +340,9 @@ export function generateProductSchema(data: ProductSchema): object {
  * See: frontend/src/lib/seo/README.md §May 2026 SEO updates.
  */
 export function generateFAQSchema(data: FAQSchema): object {
-	if (import.meta.env.DEV) {
-		console.warn(
-			'[SEO] generateFAQSchema() is deprecated: FAQ rich results were removed from Google Search May 7, 2026.'
-		);
-	}
+	// NOTE: Runtime `console.warn` removed 2026-05-25 — the `@deprecated`
+	// JSDoc tag above is sufficient discoverability; firing a warning on every
+	// page load that emits FAQ JSON-LD is noise, not signal.
 	return {
 		'@context': 'https://schema.org',
 		'@type': 'FAQPage',

@@ -1016,6 +1016,14 @@
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   DESIGN TOKENS
 	   ICT11+ Fix: Responsive navbar height for 11-13" laptops
+
+	   NOTE on the --nav-* vs --rtp-* split (audited 2026-05-25):
+	   The navbar deliberately uses a slate-blue surface (#151f31) and a deeper
+	   primary blue (#0e6ac4) to contrast with the deep-black marketing canvas
+	   (--rtp-bg #0a0a0a). Do NOT alias --nav-bg to --rtp-bg or unify the
+	   primaries — the contrast is the design. If marketing palette shifts,
+	   evaluate nav tokens independently. Per CLAUDE.md, document the
+	   divergence so future agents don't "fix" it.
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.navbar {
 		--nav-height: 80px;

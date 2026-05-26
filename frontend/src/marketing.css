@@ -1,7 +1,7 @@
 /**
  * Marketing Stylesheet — applied to marketing routes only via `.marketing-shell` class.
  * ════════════════════════════════════════════════════════════════════════════
- * Architectural contract (PRINCIPAL-2026-04-26):
+ * Architectural contract (PRINCIPAL-2026-04-26, expanded 2026-05-25):
  *   - Imported once by frontend/src/routes/+layout.svelte. Loads on every
  *     route, but rules only fire where `.marketing-shell` class is applied
  *     (marketing routes — see `class:marketing-shell={isMarketingPage}` in
@@ -15,79 +15,236 @@
  *     `.marketing-shell`. Replaces the unlayered `body { background: #0a0a0a }`
  *     hack that lived in app.html.
  *   - No dependency on app.css (no shadcn tokens). Marketing components
- *     self-paint their sections; this sheet sets the canvas plus a universal
- *     border default for bare HTML elements (input, hr, fieldset) that don't
- *     carry component styles.
+ *     self-paint their sections; this sheet sets the canvas, design-token
+ *     vocabulary, and project-local utility classes for reused patterns.
+ *
+ * Guiding principle (Operator, 2026-05-25):
+ *   "Anything reusable lives in global CSS. Anything individual lives in
+ *    the file." A value used in 2+ navbar pages is a token here. A
+ *    one-off lives in the page's scoped <style> block.
  * ════════════════════════════════════════════════════════════════════════════
  */
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   PURE CSS UTILITY CLASSES - PE7 FIX 2026-05-23
-   Live Trading Rooms use these classes. Previously undefined, causing
-   complete rendering failures. Now implemented as pure CSS.
+   DESIGN TOKENS — scoped to .marketing-shell so they cannot leak into
+   admin/dashboard/cms routes which have their own systems.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* CSS Custom Properties scoped to marketing shell */
 .marketing-shell {
-	--rtp-bg: #0a0a0a;
-	--rtp-text: #f5f5f5;
-	--rtp-surface: #161616;
-	--rtp-border: rgba(255, 255, 255, 0.1);
-	--rtp-muted: #6b7280;
-	--rtp-primary: #3b82f6;
-	--rtp-primary-60: rgba(59, 130, 246, 0.6);
-	--rtp-emerald: #10b981;
-	--rtp-indigo: #6366f1;
-	--rtp-blue: #3b82f6;
-	--font-heading: 'Inter', system-ui, sans-serif;
+	/* ── Canvas / surface stack ─────────────────────────────────────────── */
+	--rtp-bg: #0a0a0a; /* primary page background */
+	--rtp-bg-deep: #050505; /* hero halo backdrops, deeper sections */
+	--rtp-bg-deeper: #080808; /* surface elevations between bg and surface */
+	--rtp-bg-darker: #020202; /* about/mentorship overlay backgrounds */
+	--rtp-bg-darkest: #010203; /* heaviest dark — about gradient bottom */
+	--rtp-surface: #161616; /* card / surface base */
+	--rtp-surface-elev: #1f1f1f; /* hovered or elevated surface */
 
-	/* Canvas colors */
+	/* ── Text hierarchy ─────────────────────────────────────────────────── */
+	--rtp-text: #f5f5f5; /* primary body text */
+	--rtp-text-soft: #cbd5e1; /* slate-300, secondary headings */
+	--rtp-text-muted: #94a3b8; /* slate-400, the dominant body-muted shade */
+	--rtp-text-subtle: #64748b; /* slate-500, captions, metadata */
+	--rtp-text-dim: #475569; /* slate-600, disabled, separators */
+	--rtp-text-faint: #334155; /* slate-700, decorative slash separators */
+
+	/* Legacy token — kept for compatibility with signup/resources/alerts
+	   pages that already reference .text-rtp-muted. Do NOT use in new code;
+	   prefer --rtp-text-muted above. */
+	--rtp-muted: #6b7280;
+
+	/* ── Brand palette ──────────────────────────────────────────────────── */
+	--rtp-primary: #3b82f6; /* blue-500, primary CTA + accent */
+	--rtp-primary-60: rgba(59, 130, 246, 0.6); /* legacy alias, prefer color-mix */
+	--rtp-blue: #3b82f6; /* alias for clarity in gradients */
+	--rtp-blue-bright: #60a5fa; /* blue-400, lighter accent */
+	--rtp-indigo: #6366f1; /* secondary accent */
+	--rtp-emerald: #10b981; /* success / positive */
+	--rtp-emerald-bright: #34d399; /* emerald-400, success accent */
+	--rtp-amber: #f59e0b; /* warning / about-page metallic accent */
+	--rtp-amber-deep: #d97706; /* amber-600, about-page primary metallic */
+	--rtp-red: #ef4444; /* destructive / live alerts */
+	--rtp-red-soft: #f87171; /* red-400, less aggressive variants */
+
+	/* ── Borders / dividers ─────────────────────────────────────────────── */
+	--rtp-border: rgba(255, 255, 255, 0.1);
+	--rtp-border-soft: rgba(255, 255, 255, 0.05);
+	--rtp-border-strong: rgba(255, 255, 255, 0.2);
+
+	/* ── Layout ─────────────────────────────────────────────────────────── */
+	--rtp-content-max: 80rem; /* 1280px — default content shell (max-w-7xl) */
+	--rtp-content-wide: 100rem; /* 1600px — about/mentorship wide hero */
+	--rtp-nav-height: 5rem; /* matches --nav-height in NavBar.svelte */
+
+	/* ── Type ───────────────────────────────────────────────────────────── */
+	--rtp-font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+	--rtp-font-display: 'Inter', system-ui, -apple-system, sans-serif;
+	--rtp-font-serif: 'Source Serif Pro', Georgia, 'Times New Roman', serif;
+	--rtp-font-mono: ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, monospace;
+
+	/* Legacy alias — pages referencing .font-heading still work. */
+	--font-heading: var(--rtp-font-display);
+
+	/* ── Radii ──────────────────────────────────────────────────────────── */
+	--rtp-radius-sm: 0.375rem;
+	--rtp-radius-md: 0.75rem;
+	--rtp-radius-lg: 1rem;
+	--rtp-radius-xl: 1.5rem;
+	--rtp-radius-pill: 9999px;
+
+	/* ── Motion ─────────────────────────────────────────────────────────── */
+	--rtp-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+	--rtp-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+	--rtp-dur-fast: 180ms;
+	--rtp-dur-base: 320ms;
+	--rtp-dur-slow: 600ms;
+
+	/* Canvas paint — last so the cascade applies after all tokens land. */
 	background-color: var(--rtp-bg);
 	color: var(--rtp-text);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PROJECT-LOCAL UTILITY CLASSES — for tokens used across multiple navbar
+   pages. These are NOT Tailwind. They live here because the operator's rule
+   is "reusable → global, individual → in-file". A `class="bg-rtp-bg"` is
+   reusable by design.
+
+   All selectors use :where() to keep specificity at 0-0-1 so component-scoped
+   styles always win when they disagree.
+   ═══════════════════════════════════════════════════════════════════════════ */
 
 /* Background utilities */
 .marketing-shell :where(.bg-rtp-bg) {
 	background-color: var(--rtp-bg);
 }
+.marketing-shell :where(.bg-rtp-bg-deep) {
+	background-color: var(--rtp-bg-deep);
+}
+.marketing-shell :where(.bg-rtp-bg-deeper) {
+	background-color: var(--rtp-bg-deeper);
+}
+.marketing-shell :where(.bg-rtp-bg-darker) {
+	background-color: var(--rtp-bg-darker);
+}
+.marketing-shell :where(.bg-rtp-bg-darkest) {
+	background-color: var(--rtp-bg-darkest);
+}
 .marketing-shell :where(.bg-rtp-surface) {
 	background-color: var(--rtp-surface);
 }
+.marketing-shell :where(.bg-rtp-surface-elev) {
+	background-color: var(--rtp-surface-elev);
+}
 
-/* Text utilities */
+/* Text color utilities */
 .marketing-shell :where(.text-rtp-text) {
 	color: var(--rtp-text);
 }
+.marketing-shell :where(.text-rtp-soft) {
+	color: var(--rtp-text-soft);
+}
+.marketing-shell :where(.text-rtp-text-muted) {
+	color: var(--rtp-text-muted);
+}
+.marketing-shell :where(.text-rtp-text-subtle) {
+	color: var(--rtp-text-subtle);
+}
+.marketing-shell :where(.text-rtp-text-dim) {
+	color: var(--rtp-text-dim);
+}
+.marketing-shell :where(.text-rtp-text-faint) {
+	color: var(--rtp-text-faint);
+}
 .marketing-shell :where(.text-rtp-muted) {
 	color: var(--rtp-muted);
-}
+} /* legacy — kept for signup/resources/alerts consumers */
 .marketing-shell :where(.text-rtp-primary) {
 	color: var(--rtp-primary);
-}
-.marketing-shell :where(.text-rtp-emerald) {
-	color: var(--rtp-emerald);
-}
-.marketing-shell :where(.text-rtp-indigo) {
-	color: var(--rtp-indigo);
 }
 .marketing-shell :where(.text-rtp-blue) {
 	color: var(--rtp-blue);
 }
+.marketing-shell :where(.text-rtp-blue-bright) {
+	color: var(--rtp-blue-bright);
+}
+.marketing-shell :where(.text-rtp-indigo) {
+	color: var(--rtp-indigo);
+}
+.marketing-shell :where(.text-rtp-emerald) {
+	color: var(--rtp-emerald);
+}
+.marketing-shell :where(.text-rtp-emerald-bright) {
+	color: var(--rtp-emerald-bright);
+}
+.marketing-shell :where(.text-rtp-amber) {
+	color: var(--rtp-amber);
+}
+.marketing-shell :where(.text-rtp-amber-deep) {
+	color: var(--rtp-amber-deep);
+}
+.marketing-shell :where(.text-rtp-red) {
+	color: var(--rtp-red);
+}
+.marketing-shell :where(.text-rtp-red-soft) {
+	color: var(--rtp-red-soft);
+}
 
-/* Border utilities */
+/* Border color utilities */
 .marketing-shell :where(.border-rtp-border) {
 	border-color: var(--rtp-border);
 }
-.marketing-shell :where(.border-rtp-emerald) {
-	border-color: var(--rtp-emerald);
+.marketing-shell :where(.border-rtp-border-soft) {
+	border-color: var(--rtp-border-soft);
+}
+.marketing-shell :where(.border-rtp-border-strong) {
+	border-color: var(--rtp-border-strong);
 }
 .marketing-shell :where(.border-rtp-primary) {
 	border-color: var(--rtp-primary);
 }
+.marketing-shell :where(.border-rtp-emerald) {
+	border-color: var(--rtp-emerald);
+}
+.marketing-shell :where(.border-rtp-amber) {
+	border-color: var(--rtp-amber);
+}
+.marketing-shell :where(.border-rtp-red) {
+	border-color: var(--rtp-red);
+}
 
 /* Typography utilities */
 .marketing-shell :where(.font-heading) {
-	font-family: var(--font-heading);
+	font-family: var(--rtp-font-display);
+}
+.marketing-shell :where(.font-rtp-sans) {
+	font-family: var(--rtp-font-sans);
+}
+.marketing-shell :where(.font-rtp-display) {
+	font-family: var(--rtp-font-display);
+}
+.marketing-shell :where(.font-rtp-serif) {
+	font-family: var(--rtp-font-serif);
+}
+.marketing-shell :where(.font-rtp-mono) {
+	font-family: var(--rtp-font-mono);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   REDUCED MOTION RESET
+   Any global @keyframes added below should be referenced from page <style>
+   blocks via the standard name. They are scoped to the .marketing-shell
+   selector to prevent leakage into admin/dashboard routes.
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+	.marketing-shell *,
+	.marketing-shell *::before,
+	.marketing-shell *::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
 }
 
 /* REMOVED 2026-05-23: Universal border rule caused white borders on all elements */

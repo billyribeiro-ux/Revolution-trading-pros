@@ -13,19 +13,13 @@
 	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
 	import IconFileText from '@tabler/icons-svelte-runes/icons/file-text';
 
-	// --- STATE ---
 	let openAccordion = $state<number | null>(0);
 	const toggleAccordion = (idx: number) => (openAccordion = openAccordion === idx ? null : idx);
 
-
-	// --- MOTION ENGINE ---
 	onMount(async () => {
 		if (!browser) return;
-
-		// Dynamic GSAP import for SSR safety
 		const { gsap } = await import('gsap');
 
-		// 1. Hero Sequence (Timeline) — query data-gsap-hero elements
 		const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
 		const badge = document.querySelector<HTMLElement>('[data-gsap-hero="badge"]');
 		const title = document.querySelector<HTMLElement>('[data-gsap-hero="title"]');
@@ -39,33 +33,16 @@
 		if (metrics) tl.fromTo(metrics, { opacity: 0, scale: 0.98 }, { opacity: 1, scale: 1, duration: 1.2 }, '-=0.6');
 		if (graphic) tl.fromTo(graphic, { x: 40, opacity: 0 }, { x: 0, opacity: 1, duration: 1.5 }, '-=1.0');
 
-		// 2. Scroll Reveal Logic
 		const observer = new IntersectionObserver(
 			(entries) => {
 				entries.forEach((entry) => {
 					if (entry.isIntersecting) {
 						const target = entry.target as HTMLElement;
 						const children = target.querySelectorAll('.gsap-reveal-item');
-
 						if (children.length > 0) {
-							gsap.fromTo(
-								children,
-								{ y: 30, opacity: 0 },
-								{
-									y: 0,
-									opacity: 1,
-									duration: 0.8,
-									stagger: 0.1,
-									ease: 'power2.out',
-									overwrite: true
-								}
-							);
+							gsap.fromTo(children, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: 'power2.out', overwrite: true });
 						} else {
-							gsap.fromTo(
-								target,
-								{ y: 30, opacity: 0 },
-								{ y: 0, opacity: 1, duration: 0.8, ease: 'power2.out', overwrite: true }
-							);
+							gsap.fromTo(target, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: 'power2.out', overwrite: true });
 						}
 						observer.unobserve(target);
 					}
@@ -73,11 +50,9 @@
 			},
 			{ threshold: 0.15 }
 		);
-
 		document.querySelectorAll('.gsap-section').forEach((el) => observer.observe(el));
 	});
 
-	// --- DATA ---
 	const sessionBreakdown = [
 		{
 			time: '00:00 - 00:30',
@@ -119,136 +94,111 @@
 	]}
 />
 
-<div class="bg-[#020202] text-slate-400 font-sans selection:bg-white selection:text-black">
-	<div
-		class="fixed inset-0 z-0 pointer-events-none"
-		style="background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 60px 60px;"
-	></div>
+<div class="mentorship">
+	<div class="mentorship__grid-overlay" aria-hidden="true"></div>
 
 	<!-- ICT11+ Fix: Changed from <main> to <div> - root layout provides <main> -->
-	<div class="relative z-10">
-		<nav class="w-full border-b border-white/10 bg-[#020202]/80 backdrop-blur-sm fixed top-0 z-50">
-			<div class="max-w-[1600px] mx-auto px-6 h-16 flex justify-between items-center">
-				<div
-					class="text-xs font-mono uppercase tracking-[0.2em] text-white hover:text-amber-500 transition-colors cursor-default"
-				>
-					Revolution <span class="text-slate-600">//</span> Institutional
+	<div class="mentorship__content">
+		<nav class="m-topbar" aria-label="Institutional context">
+			<div class="m-topbar__container">
+				<div class="m-topbar__brand">
+					Revolution <span class="m-topbar__slash">//</span> Institutional
 				</div>
-				<div class="flex items-center gap-6">
-					<div class="flex items-center gap-2">
-						<div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-						<span class="text-[10px] font-mono text-slate-400 uppercase tracking-widest"
-							>Secure Uplink</span
-						>
+				<div class="m-topbar__meta">
+					<div class="m-topbar__status">
+						<span class="m-topbar__pulse" aria-hidden="true"></span>
+						<span class="m-topbar__status-label">Secure Uplink</span>
 					</div>
-					<div class="h-4 w-px bg-white/10"></div>
-					<span class="text-[10px] font-mono text-slate-500 uppercase tracking-widest"
-						>Client ID: Guest</span
-					>
+					<span class="m-topbar__divider" aria-hidden="true"></span>
+					<span class="m-topbar__client">Client ID: Guest</span>
 				</div>
 			</div>
 		</nav>
 
-		<section class="pt-48 pb-32 px-6 border-b border-white/10">
-			<div class="max-w-[1600px] mx-auto grid lg:grid-cols-12 gap-16">
-				<div class="lg:col-span-8">
-					<div
-						data-gsap-hero="badge"
-						class="inline-flex items-center gap-3 px-3 py-1 border border-amber-900/30 bg-amber-900/10 text-amber-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-12"
-					>
+		<section class="hero">
+			<div class="hero__grid">
+				<div class="hero__copy">
+					<div data-gsap-hero="badge" class="hero__badge">
 						<IconLock size={12} />
 						Restricted Access
 					</div>
 
-					<h1
-						data-gsap-hero="title"
-						class="text-6xl md:text-8xl lg:text-9xl font-serif text-white mb-12 tracking-tight leading-[0.9] origin-left"
-					>
+					<h1 data-gsap-hero="title" class="hero__title">
 						Strategic<br />
-						<span class="text-slate-700">Alpha</span> Audit.
+						<span class="hero__title-mute">Alpha</span> Audit.
 					</h1>
 
-					<div data-gsap-hero="desc" class="max-w-2xl border-l-2 border-amber-700 pl-8 py-2">
-						<p class="text-xl md:text-2xl text-slate-300 font-light leading-relaxed">
+					<div data-gsap-hero="desc" class="hero__lede">
+						<p>
 							A high-velocity, forensic deconstruction of your trading business. Designed strictly
-							for <span class="text-white font-medium">Portfolio Managers</span> and
-							<span class="text-white font-medium">Proprietary Traders</span> deploying 7-8 figure capital.
+							for <span class="hero__lede-emph">Portfolio Managers</span> and
+							<span class="hero__lede-emph">Proprietary Traders</span> deploying 7-8 figure capital.
 						</p>
 					</div>
 
-					<div data-gsap-hero="metrics" class="mt-16 flex flex-wrap gap-12">
-						<div>
-							<div class="text-[10px] font-mono uppercase tracking-widest text-slate-600 mb-2">
-								Consultation Fee
-							</div>
-							<div class="text-3xl font-serif text-white">
-								$25,000 <span class="text-sm text-slate-600 font-sans align-middle">USD</span>
+					<div data-gsap-hero="metrics" class="hero__metrics">
+						<div class="hero__metric">
+							<div class="hero__metric-label">Consultation Fee</div>
+							<div class="hero__metric-value">
+								$25,000 <span class="hero__metric-unit">USD</span>
 							</div>
 						</div>
-						<div>
-							<div class="text-[10px] font-mono uppercase tracking-widest text-slate-600 mb-2">
-								Duration
-							</div>
-							<div class="text-3xl font-serif text-white">
-								120 <span class="text-sm text-slate-600 font-sans align-middle">MINUTES</span>
+						<div class="hero__metric">
+							<div class="hero__metric-label">Duration</div>
+							<div class="hero__metric-value">
+								120 <span class="hero__metric-unit">MINUTES</span>
 							</div>
 						</div>
-						<div>
-							<div class="text-[10px] font-mono uppercase tracking-widest text-slate-600 mb-2">
-								Availability
-							</div>
-							<div class="text-3xl font-serif text-white">
-								Q4: <span class="text-amber-500">2 SLOTS</span>
+						<div class="hero__metric">
+							<div class="hero__metric-label">Availability</div>
+							<div class="hero__metric-value">
+								Q4: <span class="hero__metric-accent">2 SLOTS</span>
 							</div>
 						</div>
 					</div>
 				</div>
 
-				<div data-gsap-hero="graphic" class="lg:col-span-4 flex flex-col justify-end">
-					<div class="bg-[#080808] border border-white/10 p-8 relative overflow-hidden">
-						<div class="absolute top-0 right-0 p-4 opacity-20 w-12 h-12 text-slate-500">
+				<div data-gsap-hero="graphic" class="hero__scope">
+					<div class="scope-card">
+						<div class="scope-card__icon" aria-hidden="true">
 							<IconGlobe size={48} stroke={1.2} />
 						</div>
-						<h3
-							class="font-mono text-xs uppercase tracking-widest text-white mb-6 border-b border-white/10 pb-4"
-						>
-							Scope of Engagement
-						</h3>
-						<ul class="space-y-4 text-sm font-mono text-slate-400">
-							<li class="flex justify-between items-center">
-								<span>> Execution Audit</span>
-								<div class="flex items-center gap-2">
-									<div class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
-									<span class="text-emerald-500 text-[10px] uppercase">Active</span>
+						<h3 class="scope-card__heading">Scope of Engagement</h3>
+						<ul class="scope-card__list">
+							<li class="scope-card__row">
+								<span>&gt; Execution Audit</span>
+								<div class="scope-card__status">
+									<span class="scope-card__dot" aria-hidden="true"></span>
+									<span class="scope-card__status-label">Active</span>
 								</div>
 							</li>
-							<li class="flex justify-between items-center">
-								<span>> Risk Parameterization</span>
-								<div class="flex items-center gap-2">
-									<div class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
-									<span class="text-emerald-500 text-[10px] uppercase">Active</span>
+							<li class="scope-card__row">
+								<span>&gt; Risk Parameterization</span>
+								<div class="scope-card__status">
+									<span class="scope-card__dot" aria-hidden="true"></span>
+									<span class="scope-card__status-label">Active</span>
 								</div>
 							</li>
-							<li class="flex justify-between items-center">
-								<span>> Psychological Mapping</span>
-								<div class="flex items-center gap-2">
-									<div class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
-									<span class="text-emerald-500 text-[10px] uppercase">Active</span>
+							<li class="scope-card__row">
+								<span>&gt; Psychological Mapping</span>
+								<div class="scope-card__status">
+									<span class="scope-card__dot" aria-hidden="true"></span>
+									<span class="scope-card__status-label">Active</span>
 								</div>
 							</li>
-							<li class="flex justify-between items-center">
-								<span>> Infrastructure Review</span>
-								<div class="flex items-center gap-2">
-									<div class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
-									<span class="text-emerald-500 text-[10px] uppercase">Active</span>
+							<li class="scope-card__row">
+								<span>&gt; Infrastructure Review</span>
+								<div class="scope-card__status">
+									<span class="scope-card__dot" aria-hidden="true"></span>
+									<span class="scope-card__status-label">Active</span>
 								</div>
 							</li>
 						</ul>
-						<div class="mt-8 pt-6 border-t border-white/10">
-							<p class="text-xs text-slate-600 leading-relaxed">
-								<span class="text-amber-600 font-bold">WARNING:</span> This service is not educational.
-								It is advisory. We assume the client possesses sophisticated knowledge of derivatives,
-								margin mechanics, and market microstructure.
+						<div class="scope-card__footer">
+							<p>
+								<span class="scope-card__warning">WARNING:</span> This service is not educational. It
+								is advisory. We assume the client possesses sophisticated knowledge of derivatives, margin
+								mechanics, and market microstructure.
 							</p>
 						</div>
 					</div>
@@ -256,12 +206,12 @@
 			</div>
 		</section>
 
-		<section class="py-32 px-6 bg-[#050505] border-b border-white/5 gsap-section">
-			<div class="max-w-[1600px] mx-auto">
-				<div class="grid lg:grid-cols-2 gap-24">
-					<div class="gsap-reveal-item">
-						<h2 class="text-4xl font-serif text-white mb-8">The Liquidity Ceiling.</h2>
-						<div class="space-y-6 text-lg font-light leading-relaxed text-slate-400">
+		<section class="ceiling gsap-section">
+			<div class="ceiling__inner">
+				<div class="ceiling__grid">
+					<div class="ceiling__copy gsap-reveal-item">
+						<h2 class="section-title">The Liquidity Ceiling.</h2>
+						<div class="ceiling__body">
 							<p>
 								Scaling a portfolio from $100,000 to $1,000,000 is a math problem. Scaling from
 								$10,000,000 to $100,000,000 is a liquidity problem.
@@ -271,7 +221,7 @@
 								execute. Without optimizing your participation rate, dark pool routing, and variance drag,
 								you are simply paying a "Size Tax" to HFT firms.
 							</p>
-							<p class="text-white border-l-2 border-white/20 pl-6 py-2">
+							<p class="ceiling__pullquote">
 								Revolution Trading Pros intervenes at this inflection point. We do not teach you <em
 									>how</em
 								> to trade. We engineer your business to scale without breaking.
@@ -279,43 +229,35 @@
 						</div>
 					</div>
 
-					<div class="grid grid-cols-2 gap-px bg-white/10 border border-white/10">
-						<div class="bg-[#080808] p-10 flex flex-col justify-between h-64 gsap-reveal-item">
-							<div class="text-amber-600"><IconActivity size={32} stroke={1.2} /></div>
+					<div class="ceiling__metrics-grid">
+						<div class="metric-tile gsap-reveal-item">
+							<div class="metric-tile__icon"><IconActivity size={32} stroke={1.2} /></div>
 							<div>
-								<div class="text-3xl font-serif text-white mb-2">
-									-18<span class="text-lg">%</span>
+								<div class="metric-tile__value">
+									-18<span class="metric-tile__unit">%</span>
 								</div>
-								<div class="text-[10px] font-mono uppercase tracking-widest text-slate-500">
-									Avg. Execution Drag
-								</div>
+								<div class="metric-tile__label">Avg. Execution Drag</div>
 							</div>
 						</div>
-						<div class="bg-[#080808] p-10 flex flex-col justify-between h-64 gsap-reveal-item">
-							<div class="text-amber-600"><IconBrain size={32} stroke={1.2} /></div>
+						<div class="metric-tile gsap-reveal-item">
+							<div class="metric-tile__icon"><IconBrain size={32} stroke={1.2} /></div>
 							<div>
-								<div class="text-3xl font-serif text-white mb-2">Bias</div>
-								<div class="text-[10px] font-mono uppercase tracking-widest text-slate-500">
-									Primary Bottleneck
-								</div>
+								<div class="metric-tile__value">Bias</div>
+								<div class="metric-tile__label">Primary Bottleneck</div>
 							</div>
 						</div>
-						<div class="bg-[#080808] p-10 flex flex-col justify-between h-64 gsap-reveal-item">
-							<div class="text-amber-600"><IconTerminal size={32} stroke={1.2} /></div>
+						<div class="metric-tile gsap-reveal-item">
+							<div class="metric-tile__icon"><IconTerminal size={32} stroke={1.2} /></div>
 							<div>
-								<div class="text-3xl font-serif text-white mb-2">Zero</div>
-								<div class="text-[10px] font-mono uppercase tracking-widest text-slate-500">
-									Latency Tolerance
-								</div>
+								<div class="metric-tile__value">Zero</div>
+								<div class="metric-tile__label">Latency Tolerance</div>
 							</div>
 						</div>
-						<div class="bg-[#080808] p-10 flex flex-col justify-between h-64 gsap-reveal-item">
-							<div class="text-amber-600"><IconShield size={32} stroke={1.2} /></div>
+						<div class="metric-tile gsap-reveal-item">
+							<div class="metric-tile__icon"><IconShield size={32} stroke={1.2} /></div>
 							<div>
-								<div class="text-3xl font-serif text-white mb-2">MNDA</div>
-								<div class="text-[10px] font-mono uppercase tracking-widest text-slate-500">
-									Legal Protection
-								</div>
+								<div class="metric-tile__value">MNDA</div>
+								<div class="metric-tile__label">Legal Protection</div>
 							</div>
 						</div>
 					</div>
@@ -323,35 +265,29 @@
 			</div>
 		</section>
 
-		<section class="py-32 px-6 border-b border-white/5 gsap-section">
-			<div class="max-w-5xl mx-auto">
-				<div
-					class="flex items-end justify-between mb-20 border-b border-white/10 pb-8 gsap-reveal-item"
-				>
+		<section class="protocol gsap-section">
+			<div class="protocol__inner">
+				<div class="protocol__header gsap-reveal-item">
 					<div>
-						<h2 class="text-4xl font-serif text-white mb-2">The 120-Minute Protocol</h2>
-						<p class="text-sm font-mono text-slate-500 uppercase tracking-widest">
-							Session Agenda // Confidential
-						</p>
+						<h2 class="section-title section-title--small">The 120-Minute Protocol</h2>
+						<p class="protocol__subhead">Session Agenda // Confidential</p>
 					</div>
-					<div class="hidden md:block text-right">
-						<div class="text-amber-600 font-mono text-sm">NYC / LON / SIN</div>
-						<div class="text-xs text-slate-600 font-mono uppercase">Global Availability</div>
+					<div class="protocol__regions">
+						<div class="protocol__regions-primary">NYC / LON / SIN</div>
+						<div class="protocol__regions-caption">Global Availability</div>
 					</div>
 				</div>
 
-				<div class="space-y-8">
+				<div class="protocol__list">
 					{#each sessionBreakdown as item (item.time)}
-						<div class="group gsap-reveal-item">
-							<div
-								class="flex flex-col md:flex-row gap-8 md:gap-16 p-8 hover:bg-white/2 transition-colors border-l-2 border-white/10 hover:border-amber-600"
-							>
-								<div class="w-32 shrink-0 pt-1">
-									<span class="font-mono text-amber-600 text-sm">{item.time}</span>
+						<div class="protocol__item gsap-reveal-item">
+							<div class="protocol__row">
+								<div class="protocol__time">
+									<span>{item.time}</span>
 								</div>
 								<div>
-									<h3 class="text-xl font-serif text-white mb-3">{item.phase}</h3>
-									<p class="text-slate-400 font-light leading-relaxed text-sm">{item.desc}</p>
+									<h3 class="protocol__phase">{item.phase}</h3>
+									<p class="protocol__desc">{item.desc}</p>
 								</div>
 							</div>
 						</div>
@@ -360,121 +296,110 @@
 			</div>
 		</section>
 
-		<section class="py-32 px-6 bg-[#080808] border-b border-white/5 gsap-section">
-			<div class="max-w-[1600px] mx-auto grid lg:grid-cols-2 gap-24">
-				<div class="gsap-reveal-item">
-					<div class="flex items-center gap-4 mb-10">
-						<div class="w-10 h-10 flex items-center justify-center rounded bg-white/5 text-white">
+		<section class="engagement gsap-section">
+			<div class="engagement__grid">
+				<div class="engagement__col gsap-reveal-item">
+					<div class="engagement__heading-row">
+						<div class="engagement__heading-icon">
 							<IconFileText size={24} stroke={1.2} />
 						</div>
-						<h3 class="text-2xl font-serif text-white">Technical Prerequisites</h3>
+						<h3 class="engagement__heading">Technical Prerequisites</h3>
 					</div>
-					<div class="bg-[#020202] border border-white/10 p-10">
-						<p class="text-sm text-slate-500 mb-8 leading-relaxed">
-							To ensure maximum utility of the 120-minute window, we require the following data
-							points to be uploaded to our encrypted portal 48 hours prior to the session.
+					<div class="prereq">
+						<p class="prereq__intro">
+							To ensure maximum utility of the 120-minute window, we require the following data points
+							to be uploaded to our encrypted portal 48 hours prior to the session.
 						</p>
-						<ul class="space-y-4">
-							<li class="flex items-start gap-3 text-sm font-mono text-slate-300">
-								<span class="text-amber-600 shrink-0">>></span>
+						<ul class="prereq__list">
+							<li class="prereq__item">
+								<span class="prereq__bullet">&gt;&gt;</span>
 								Past 12 Months of Brokerage Statements (Redacted PII)
 							</li>
-							<li class="flex items-start gap-3 text-sm font-mono text-slate-300">
-								<span class="text-amber-600 shrink-0">>></span>
+							<li class="prereq__item">
+								<span class="prereq__bullet">&gt;&gt;</span>
 								Current Risk Management Policy Document
 							</li>
-							<li class="flex items-start gap-3 text-sm font-mono text-slate-300">
-								<span class="text-amber-600 shrink-0">>></span>
+							<li class="prereq__item">
+								<span class="prereq__bullet">&gt;&gt;</span>
 								List of Execution Venues / Prime Brokerage Relationships
 							</li>
-							<li class="flex items-start gap-3 text-sm font-mono text-slate-300">
-								<span class="text-amber-600 shrink-0">>></span>
+							<li class="prereq__item">
+								<span class="prereq__bullet">&gt;&gt;</span>
 								Signed Mutual Non-Disclosure Agreement (MNDA)
 							</li>
 						</ul>
 					</div>
 				</div>
 
-				<div class="gsap-reveal-item">
-					<div class="flex items-center gap-4 mb-10">
-						<div class="w-10 h-10 flex items-center justify-center rounded bg-white/5 text-white">
+				<div class="engagement__col gsap-reveal-item">
+					<div class="engagement__heading-row">
+						<div class="engagement__heading-icon">
 							<IconShield size={24} stroke={1.2} />
 						</div>
-						<h3 class="text-2xl font-serif text-white">Engagement Protocols</h3>
+						<h3 class="engagement__heading">Engagement Protocols</h3>
 					</div>
 
-					<div class="space-y-2">
-						<div class="border border-white/10 bg-[#020202]">
+					<div class="accordion">
+						<div class="accordion__item">
 							<button
-								class="w-full flex justify-between items-center p-6 text-left hover:bg-white/5 transition-colors"
+								class="accordion__trigger"
+								aria-expanded={openAccordion === 0}
 								onclick={() => toggleAccordion(0)}
 							>
-								<span class="font-bold text-white text-sm tracking-wide"
-									>CONFIDENTIALITY & DATA SOVEREIGNTY</span
-								>
+								<span class="accordion__label">CONFIDENTIALITY &amp; DATA SOVEREIGNTY</span>
 								<IconChevronDown
 									size={16}
-									class="text-slate-500 transition-transform duration-300 {openAccordion === 0 ? 'rotate-180' : ''}"
+									class="accordion__chevron {openAccordion === 0 ? 'accordion__chevron--open' : ''}"
 								/>
 							</button>
 							{#if openAccordion === 0}
-								<div
-									transition:slide
-									class="px-6 pb-6 text-slate-400 text-sm font-light leading-relaxed border-t border-white/5 pt-4"
-								>
-									Revolution Trading Pros operates under a strict code of silence. We execute a
-									Mutual Non-Disclosure Agreement (MNDA) before receiving any trade logs. We do not
-									store client data on cloud servers; all analysis is performed on air-gapped local
-									machines and wiped post-session.
+								<div transition:slide class="accordion__panel">
+									Revolution Trading Pros operates under a strict code of silence. We execute a Mutual
+									Non-Disclosure Agreement (MNDA) before receiving any trade logs. We do not store client
+									data on cloud servers; all analysis is performed on air-gapped local machines and wiped
+									post-session.
 								</div>
 							{/if}
 						</div>
 
-						<div class="border border-white/10 bg-[#020202]">
+						<div class="accordion__item">
 							<button
-								class="w-full flex justify-between items-center p-6 text-left hover:bg-white/5 transition-colors"
+								class="accordion__trigger"
+								aria-expanded={openAccordion === 1}
 								onclick={() => toggleAccordion(1)}
 							>
-								<span class="font-bold text-white text-sm tracking-wide">CONFLICT OF INTEREST</span>
+								<span class="accordion__label">CONFLICT OF INTEREST</span>
 								<IconChevronDown
 									size={16}
-									class="text-slate-500 transition-transform duration-300 {openAccordion === 1 ? 'rotate-180' : ''}"
+									class="accordion__chevron {openAccordion === 1 ? 'accordion__chevron--open' : ''}"
 								/>
 							</button>
 							{#if openAccordion === 1}
-								<div
-									transition:slide
-									class="px-6 pb-6 text-slate-400 text-sm font-light leading-relaxed border-t border-white/5 pt-4"
-								>
-									We maintain a rigorous "Chinese Wall." We do not front-run client order flow, nor
-									do we take opposing positions in instruments discussed during the consultation.
-									Our role is strictly advisory; we do not take custody of funds or execute trades
-									on your behalf.
+								<div transition:slide class="accordion__panel">
+									We maintain a rigorous "Chinese Wall." We do not front-run client order flow, nor do
+									we take opposing positions in instruments discussed during the consultation. Our role
+									is strictly advisory; we do not take custody of funds or execute trades on your behalf.
 								</div>
 							{/if}
 						</div>
 
-						<div class="border border-white/10 bg-[#020202]">
+						<div class="accordion__item">
 							<button
-								class="w-full flex justify-between items-center p-6 text-left hover:bg-white/5 transition-colors"
+								class="accordion__trigger"
+								aria-expanded={openAccordion === 2}
 								onclick={() => toggleAccordion(2)}
 							>
-								<span class="font-bold text-white text-sm tracking-wide">LOGISTICS & EXPENSING</span
-								>
+								<span class="accordion__label">LOGISTICS &amp; EXPENSING</span>
 								<IconChevronDown
 									size={16}
-									class="text-slate-500 transition-transform duration-300 {openAccordion === 2 ? 'rotate-180' : ''}"
+									class="accordion__chevron {openAccordion === 2 ? 'accordion__chevron--open' : ''}"
 								/>
 							</button>
 							{#if openAccordion === 2}
-								<div
-									transition:slide
-									class="px-6 pb-6 text-slate-400 text-sm font-light leading-relaxed border-t border-white/5 pt-4"
-								>
-									Sessions are conducted via encrypted video link (Zoom Enterprise/Teams) or
-									in-person in NYC (subject to travel retainer). We provide itemized corporate
-									invoicing suitable for fund administration expenses under "Professional
-									Consultation."
+								<div transition:slide class="accordion__panel">
+									Sessions are conducted via encrypted video link (Zoom Enterprise/Teams) or in-person
+									in NYC (subject to travel retainer). We provide itemized corporate invoicing suitable
+									for fund administration expenses under "Professional Consultation."
 								</div>
 							{/if}
 						</div>
@@ -483,47 +408,41 @@
 			</div>
 		</section>
 
-		<section class="py-40 px-6 relative overflow-hidden bg-[#020202] gsap-section">
-			<div class="absolute top-0 left-1/2 -translate-x-1/2 w-px h-full bg-white/5"></div>
-			<div class="absolute top-1/2 left-0 w-full h-px bg-white/5"></div>
+		<section class="cta gsap-section">
+			<div class="cta__vline" aria-hidden="true"></div>
+			<div class="cta__hline" aria-hidden="true"></div>
 
-			<div
-				class="max-w-4xl mx-auto relative z-10 bg-[#020202] border border-white/10 p-1 gsap-reveal-item"
-			>
-				<div class="border border-white/5 p-12 md:p-20 text-center relative overflow-hidden group">
-					<div
-						class="absolute inset-0 bg-amber-900/10 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none"
-					></div>
+			<div class="cta__shell gsap-reveal-item">
+				<div class="cta__inner">
+					<div class="cta__halo" aria-hidden="true"></div>
 
-					<div class="mb-10">
-						<div class="text-amber-600 mx-auto mb-6"><IconCheck size={48} stroke={1.5} /></div>
-						<h2 class="text-4xl md:text-5xl font-serif text-white mb-4">Initiate Application</h2>
-						<p class="text-slate-500 font-mono text-xs uppercase tracking-[0.2em]">
-							Reference: Q4-INST-AUDIT
-						</p>
+					<div class="cta__head">
+						<div class="cta__icon"><IconCheck size={48} stroke={1.5} /></div>
+						<h2 class="cta__title">Initiate Application</h2>
+						<p class="cta__ref">Reference: Q4-INST-AUDIT</p>
 					</div>
 
-					<div class="grid grid-cols-2 gap-8 max-w-lg mx-auto mb-12 text-left">
-						<div class="border-l border-amber-800/50 pl-4">
-							<div class="text-[10px] font-mono uppercase text-slate-500 mb-1">Wire Amount</div>
-							<div class="text-xl text-white font-serif">$25,000.00</div>
+					<div class="cta__terms">
+						<div class="cta__term">
+							<div class="cta__term-label">Wire Amount</div>
+							<div class="cta__term-value">$25,000.00</div>
 						</div>
-						<div class="border-l border-amber-800/50 pl-4">
-							<div class="text-[10px] font-mono uppercase text-slate-500 mb-1">Payment Terms</div>
-							<div class="text-xl text-white font-serif">Net 0</div>
+						<div class="cta__term">
+							<div class="cta__term-label">Payment Terms</div>
+							<div class="cta__term-value">Net 0</div>
 						</div>
 					</div>
 
 					<a
 						href="mailto:institutional@revolution-trading-pros.pages.dev?subject=Institutional%20Audit%20Application"
-						class="inline-flex items-center justify-center w-full md:w-auto px-12 py-5 bg-white text-black font-bold text-sm uppercase tracking-[0.25em] hover:bg-amber-500 transition-all duration-300"
+						class="cta__button"
 					>
 						Submit Request
 					</a>
 
-					<p class="mt-8 text-[10px] text-slate-600 font-mono uppercase">
-						Due to high demand, applications are reviewed weekly. <br class="hidden md:block" /> We reserve
-						the right to decline engagements based on fit.
+					<p class="cta__fine-print">
+						Due to high demand, applications are reviewed weekly. <br class="cta__br" /> We reserve the
+						right to decline engagements based on fit.
 					</p>
 				</div>
 			</div>
@@ -531,3 +450,794 @@
 	</div>
 </div>
 
+<style>
+	/* ─────────────────────────────────────────────────────────────────
+	   Page-local tokens (one-offs for this page only).
+	   Reusable color/spacing values come from --rtp-* (marketing.css).
+	   ───────────────────────────────────────────────────────────────── */
+	.mentorship {
+		/* Amber metallic palette — used heavily on this page and on /about,
+		   but each page authors its own shade scale because the about palette
+		   leans richer and this page leans more reserved. */
+		--m-amber-500: #f59e0b;
+		--m-amber-600: #d97706;
+		--m-amber-700: #b45309;
+		--m-amber-warn: color-mix(in oklab, var(--m-amber-600) 30%, transparent);
+		--m-amber-pill-bg: color-mix(in oklab, #78350f 10%, transparent);
+		--m-amber-pill-border: color-mix(in oklab, #78350f 30%, transparent);
+		--m-amber-cta-halo: color-mix(in oklab, #78350f 10%, transparent);
+		--m-amber-border-divider: color-mix(in oklab, var(--m-amber-700) 50%, transparent);
+
+		background: var(--rtp-bg-darker);
+		color: var(--rtp-text-muted);
+		font-family: var(--rtp-font-sans);
+		position: relative;
+		overflow-x: clip;
+	}
+	.mentorship::selection {
+		background: #fff;
+		color: #000;
+	}
+
+	.mentorship__grid-overlay {
+		position: fixed;
+		inset: 0;
+		z-index: 0;
+		pointer-events: none;
+		background-image:
+			linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+		background-size: 60px 60px;
+	}
+
+	.mentorship__content {
+		position: relative;
+		z-index: 10;
+	}
+
+	/* ─────────────────────────────────────────────────────────────────
+	   Top context bar — fixed strip above the navbar's hero area
+	   ───────────────────────────────────────────────────────────────── */
+	.m-topbar {
+		position: fixed;
+		inset-block-start: 0;
+		inset-inline: 0;
+		z-index: 50;
+		background: color-mix(in oklab, var(--rtp-bg-darker) 80%, transparent);
+		border-block-end: 1px solid var(--rtp-border);
+		backdrop-filter: blur(4px);
+		-webkit-backdrop-filter: blur(4px);
+	}
+	.m-topbar__container {
+		max-width: var(--rtp-content-wide);
+		margin-inline: auto;
+		padding-inline: 1.5rem;
+		height: 4rem;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+	.m-topbar__brand {
+		font-size: 0.75rem;
+		font-family: var(--rtp-font-mono);
+		text-transform: uppercase;
+		letter-spacing: 0.2em;
+		color: #fff;
+		transition: color var(--rtp-dur-fast) var(--rtp-ease-out);
+		cursor: default;
+	}
+	.m-topbar__brand:hover {
+		color: var(--m-amber-500);
+	}
+	.m-topbar__slash {
+		color: var(--rtp-text-faint);
+	}
+	.m-topbar__meta {
+		display: flex;
+		align-items: center;
+		gap: 1.5rem;
+	}
+	.m-topbar__status {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+	.m-topbar__pulse {
+		width: 0.375rem;
+		height: 0.375rem;
+		border-radius: 50%;
+		background: var(--rtp-emerald);
+		animation: m-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+	}
+	.m-topbar__status-label,
+	.m-topbar__client {
+		font-size: 0.625rem;
+		font-family: var(--rtp-font-mono);
+		text-transform: uppercase;
+		letter-spacing: 0.2em;
+	}
+	.m-topbar__status-label {
+		color: var(--rtp-text-muted);
+	}
+	.m-topbar__client {
+		color: var(--rtp-text-subtle);
+	}
+	.m-topbar__divider {
+		width: 1px;
+		height: 1rem;
+		background: var(--rtp-border);
+	}
+
+	@keyframes m-pulse {
+		0%,
+		100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0.5;
+		}
+	}
+
+	/* ─────────────────────────────────────────────────────────────────
+	   Section primitives — shared title / inner wrappers
+	   ───────────────────────────────────────────────────────────────── */
+	.section-title {
+		font-family: var(--rtp-font-serif);
+		font-size: clamp(2rem, 4vw, 2.5rem);
+		color: var(--rtp-text);
+		margin-block-end: 2rem;
+	}
+	.section-title--small {
+		margin-block-end: 0.5rem;
+	}
+
+	/* ─────────────────────────────────────────────────────────────────
+	   Hero
+	   ───────────────────────────────────────────────────────────────── */
+	.hero {
+		padding-block: 12rem 8rem;
+		padding-inline: 1.5rem;
+		border-block-end: 1px solid var(--rtp-border);
+	}
+	.hero__grid {
+		max-width: var(--rtp-content-wide);
+		margin-inline: auto;
+		display: grid;
+		gap: 4rem;
+	}
+	@media (min-width: 1024px) {
+		.hero__grid {
+			grid-template-columns: repeat(12, minmax(0, 1fr));
+		}
+		.hero__copy {
+			grid-column: span 8 / span 8;
+		}
+		.hero__scope {
+			grid-column: span 4 / span 4;
+			display: flex;
+			flex-direction: column;
+			justify-content: flex-end;
+		}
+	}
+
+	.hero__badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0.25rem 0.75rem;
+		border: 1px solid var(--m-amber-pill-border);
+		background: var(--m-amber-pill-bg);
+		color: var(--m-amber-500);
+		font-size: 0.625rem;
+		font-weight: 700;
+		letter-spacing: 0.3em;
+		text-transform: uppercase;
+		margin-block-end: 3rem;
+	}
+
+	.hero__title {
+		font-family: var(--rtp-font-serif);
+		font-size: 3.75rem; /* 6xl */
+		color: var(--rtp-text);
+		margin-block-end: 3rem;
+		letter-spacing: -0.025em;
+		line-height: 0.9;
+		transform-origin: left;
+	}
+	@media (min-width: 768px) {
+		.hero__title {
+			font-size: 6rem;
+		}
+	}
+	@media (min-width: 1024px) {
+		.hero__title {
+			font-size: 8rem;
+		}
+	}
+	.hero__title-mute {
+		color: var(--rtp-text-faint);
+	}
+
+	.hero__lede {
+		max-width: 42rem;
+		border-inline-start: 2px solid var(--m-amber-700);
+		padding-inline-start: 2rem;
+		padding-block: 0.5rem;
+	}
+	.hero__lede p {
+		font-size: 1.25rem;
+		color: var(--rtp-text-soft);
+		font-weight: 300;
+		line-height: 1.625;
+	}
+	@media (min-width: 768px) {
+		.hero__lede p {
+			font-size: 1.5rem;
+		}
+	}
+	.hero__lede-emph {
+		color: var(--rtp-text);
+		font-weight: 500;
+	}
+
+	.hero__metrics {
+		margin-block-start: 4rem;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 3rem;
+	}
+	.hero__metric-label {
+		font-size: 0.625rem;
+		font-family: var(--rtp-font-mono);
+		text-transform: uppercase;
+		letter-spacing: 0.2em;
+		color: var(--rtp-text-faint);
+		margin-block-end: 0.5rem;
+	}
+	.hero__metric-value {
+		font-size: 1.875rem;
+		font-family: var(--rtp-font-serif);
+		color: var(--rtp-text);
+	}
+	.hero__metric-unit {
+		font-size: 0.875rem;
+		color: var(--rtp-text-faint);
+		font-family: var(--rtp-font-sans);
+		vertical-align: middle;
+	}
+	.hero__metric-accent {
+		color: var(--m-amber-500);
+	}
+
+	/* ─────────────────────────────────────────────────────────────────
+	   Scope card (hero right-side panel)
+	   ───────────────────────────────────────────────────────────────── */
+	.scope-card {
+		background: var(--rtp-bg-deeper);
+		border: 1px solid var(--rtp-border);
+		padding: 2rem;
+		position: relative;
+		overflow: hidden;
+	}
+	.scope-card__icon {
+		position: absolute;
+		inset-block-start: 0;
+		inset-inline-end: 0;
+		padding: 1rem;
+		opacity: 0.2;
+		width: 3rem;
+		height: 3rem;
+		color: var(--rtp-text-subtle);
+	}
+	.scope-card__heading {
+		font-family: var(--rtp-font-mono);
+		font-size: 0.75rem;
+		text-transform: uppercase;
+		letter-spacing: 0.2em;
+		color: var(--rtp-text);
+		margin-block-end: 1.5rem;
+		padding-block-end: 1rem;
+		border-block-end: 1px solid var(--rtp-border);
+	}
+	.scope-card__list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		font-family: var(--rtp-font-mono);
+		font-size: 0.875rem;
+		color: var(--rtp-text-muted);
+	}
+	.scope-card__row {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+	.scope-card__status {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+	.scope-card__dot {
+		width: 0.375rem;
+		height: 0.375rem;
+		background: var(--rtp-emerald);
+		border-radius: 50%;
+	}
+	.scope-card__status-label {
+		color: var(--rtp-emerald);
+		font-size: 0.625rem;
+		text-transform: uppercase;
+	}
+	.scope-card__footer {
+		margin-block-start: 2rem;
+		padding-block-start: 1.5rem;
+		border-block-start: 1px solid var(--rtp-border);
+	}
+	.scope-card__footer p {
+		font-size: 0.75rem;
+		color: var(--rtp-text-faint);
+		line-height: 1.625;
+	}
+	.scope-card__warning {
+		color: var(--m-amber-600);
+		font-weight: 700;
+	}
+
+	/* ─────────────────────────────────────────────────────────────────
+	   Ceiling section (the liquidity ceiling)
+	   ───────────────────────────────────────────────────────────────── */
+	.ceiling {
+		padding-block: 8rem;
+		padding-inline: 1.5rem;
+		background: var(--rtp-bg-deep);
+		border-block-end: 1px solid var(--rtp-border-soft);
+	}
+	.ceiling__inner {
+		max-width: var(--rtp-content-wide);
+		margin-inline: auto;
+	}
+	.ceiling__grid {
+		display: grid;
+		gap: 6rem;
+	}
+	@media (min-width: 1024px) {
+		.ceiling__grid {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+	.ceiling__body {
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
+		font-size: 1.125rem;
+		font-weight: 300;
+		line-height: 1.625;
+		color: var(--rtp-text-muted);
+	}
+	.ceiling__pullquote {
+		color: var(--rtp-text);
+		border-inline-start: 2px solid var(--rtp-border-strong);
+		padding-inline-start: 1.5rem;
+		padding-block: 0.5rem;
+	}
+
+	.ceiling__metrics-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 1px;
+		background: var(--rtp-border);
+		border: 1px solid var(--rtp-border);
+	}
+
+	.metric-tile {
+		background: var(--rtp-bg-deeper);
+		padding: 2.5rem;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		height: 16rem;
+	}
+	.metric-tile__icon {
+		color: var(--m-amber-600);
+	}
+	.metric-tile__value {
+		font-size: 1.875rem;
+		font-family: var(--rtp-font-serif);
+		color: var(--rtp-text);
+		margin-block-end: 0.5rem;
+	}
+	.metric-tile__unit {
+		font-size: 1.125rem;
+	}
+	.metric-tile__label {
+		font-size: 0.625rem;
+		font-family: var(--rtp-font-mono);
+		text-transform: uppercase;
+		letter-spacing: 0.2em;
+		color: var(--rtp-text-subtle);
+	}
+
+	/* ─────────────────────────────────────────────────────────────────
+	   Protocol (120-minute agenda)
+	   ───────────────────────────────────────────────────────────────── */
+	.protocol {
+		padding-block: 8rem;
+		padding-inline: 1.5rem;
+		border-block-end: 1px solid var(--rtp-border-soft);
+	}
+	.protocol__inner {
+		max-width: 64rem; /* max-w-5xl */
+		margin-inline: auto;
+	}
+	.protocol__header {
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+		margin-block-end: 5rem;
+		border-block-end: 1px solid var(--rtp-border);
+		padding-block-end: 2rem;
+	}
+	.protocol__subhead {
+		font-size: 0.875rem;
+		font-family: var(--rtp-font-mono);
+		color: var(--rtp-text-subtle);
+		text-transform: uppercase;
+		letter-spacing: 0.2em;
+	}
+	.protocol__regions {
+		display: none;
+		text-align: end;
+	}
+	@media (min-width: 768px) {
+		.protocol__regions {
+			display: block;
+		}
+	}
+	.protocol__regions-primary {
+		color: var(--m-amber-600);
+		font-family: var(--rtp-font-mono);
+		font-size: 0.875rem;
+	}
+	.protocol__regions-caption {
+		font-size: 0.75rem;
+		color: var(--rtp-text-faint);
+		font-family: var(--rtp-font-mono);
+		text-transform: uppercase;
+	}
+
+	.protocol__list {
+		display: flex;
+		flex-direction: column;
+		gap: 2rem;
+	}
+	.protocol__row {
+		display: flex;
+		flex-direction: column;
+		gap: 2rem;
+		padding: 2rem;
+		border-inline-start: 2px solid var(--rtp-border);
+		transition:
+			background var(--rtp-dur-fast) var(--rtp-ease-out),
+			border-color var(--rtp-dur-fast) var(--rtp-ease-out);
+	}
+	.protocol__row:hover {
+		background: color-mix(in oklab, #fff 2%, transparent);
+		border-inline-start-color: var(--m-amber-600);
+	}
+	@media (min-width: 768px) {
+		.protocol__row {
+			flex-direction: row;
+			gap: 4rem;
+		}
+	}
+	.protocol__time {
+		width: 8rem;
+		flex-shrink: 0;
+		padding-block-start: 0.25rem;
+	}
+	.protocol__time span {
+		font-family: var(--rtp-font-mono);
+		color: var(--m-amber-600);
+		font-size: 0.875rem;
+	}
+	.protocol__phase {
+		font-size: 1.25rem;
+		font-family: var(--rtp-font-serif);
+		color: var(--rtp-text);
+		margin-block-end: 0.75rem;
+	}
+	.protocol__desc {
+		color: var(--rtp-text-muted);
+		font-weight: 300;
+		line-height: 1.625;
+		font-size: 0.875rem;
+	}
+
+	/* ─────────────────────────────────────────────────────────────────
+	   Engagement (prereqs + accordion)
+	   ───────────────────────────────────────────────────────────────── */
+	.engagement {
+		padding-block: 8rem;
+		padding-inline: 1.5rem;
+		background: var(--rtp-bg-deeper);
+		border-block-end: 1px solid var(--rtp-border-soft);
+	}
+	.engagement__grid {
+		max-width: var(--rtp-content-wide);
+		margin-inline: auto;
+		display: grid;
+		gap: 6rem;
+	}
+	@media (min-width: 1024px) {
+		.engagement__grid {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+	.engagement__heading-row {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		margin-block-end: 2.5rem;
+	}
+	.engagement__heading-icon {
+		width: 2.5rem;
+		height: 2.5rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: var(--rtp-radius-sm);
+		background: color-mix(in oklab, #fff 5%, transparent);
+		color: var(--rtp-text);
+	}
+	.engagement__heading {
+		font-size: 1.5rem;
+		font-family: var(--rtp-font-serif);
+		color: var(--rtp-text);
+	}
+
+	.prereq {
+		background: var(--rtp-bg-darker);
+		border: 1px solid var(--rtp-border);
+		padding: 2.5rem;
+	}
+	.prereq__intro {
+		font-size: 0.875rem;
+		color: var(--rtp-text-subtle);
+		margin-block-end: 2rem;
+		line-height: 1.625;
+	}
+	.prereq__list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+	.prereq__item {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.75rem;
+		font-size: 0.875rem;
+		font-family: var(--rtp-font-mono);
+		color: var(--rtp-text-soft);
+	}
+	.prereq__bullet {
+		color: var(--m-amber-600);
+		flex-shrink: 0;
+	}
+
+	.accordion {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+	.accordion__item {
+		border: 1px solid var(--rtp-border);
+		background: var(--rtp-bg-darker);
+	}
+	.accordion__trigger {
+		width: 100%;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 1.5rem;
+		text-align: start;
+		background: transparent;
+		border: 0;
+		color: inherit;
+		font: inherit;
+		cursor: pointer;
+		transition: background var(--rtp-dur-fast) var(--rtp-ease-out);
+	}
+	.accordion__trigger:hover {
+		background: color-mix(in oklab, #fff 5%, transparent);
+	}
+	.accordion__trigger:focus-visible {
+		outline: 2px solid var(--m-amber-500);
+		outline-offset: -2px;
+	}
+	.accordion__label {
+		font-weight: 700;
+		color: var(--rtp-text);
+		font-size: 0.875rem;
+		letter-spacing: 0.025em;
+	}
+	.accordion :global(.accordion__chevron) {
+		color: var(--rtp-text-subtle);
+		transition: transform var(--rtp-dur-base) var(--rtp-ease-out);
+	}
+	.accordion :global(.accordion__chevron--open) {
+		transform: rotate(180deg);
+	}
+	.accordion__panel {
+		padding: 1rem 1.5rem 1.5rem;
+		color: var(--rtp-text-muted);
+		font-size: 0.875rem;
+		font-weight: 300;
+		line-height: 1.625;
+		border-block-start: 1px solid var(--rtp-border-soft);
+	}
+
+	/* ─────────────────────────────────────────────────────────────────
+	   CTA (application card)
+	   ───────────────────────────────────────────────────────────────── */
+	.cta {
+		padding-block: 10rem;
+		padding-inline: 1.5rem;
+		position: relative;
+		overflow: hidden;
+		background: var(--rtp-bg-darker);
+	}
+	.cta__vline,
+	.cta__hline {
+		position: absolute;
+		background: var(--rtp-border-soft);
+	}
+	.cta__vline {
+		inset-block-start: 0;
+		inset-inline-start: 50%;
+		translate: -50% 0;
+		width: 1px;
+		height: 100%;
+	}
+	.cta__hline {
+		inset-block-start: 50%;
+		inset-inline-start: 0;
+		width: 100%;
+		height: 1px;
+	}
+
+	.cta__shell {
+		max-width: 56rem; /* max-w-4xl */
+		margin-inline: auto;
+		position: relative;
+		z-index: 10;
+		background: var(--rtp-bg-darker);
+		border: 1px solid var(--rtp-border);
+		padding: 0.25rem;
+	}
+	.cta__inner {
+		border: 1px solid var(--rtp-border-soft);
+		padding: 3rem;
+		text-align: center;
+		position: relative;
+		overflow: hidden;
+	}
+	@media (min-width: 768px) {
+		.cta__inner {
+			padding: 5rem;
+		}
+	}
+	.cta__halo {
+		position: absolute;
+		inset: 0;
+		background: var(--m-amber-cta-halo);
+		opacity: 0;
+		transition: opacity 1s var(--rtp-ease-out);
+		pointer-events: none;
+	}
+	.cta__inner:hover .cta__halo {
+		opacity: 1;
+	}
+
+	.cta__head {
+		margin-block-end: 2.5rem;
+	}
+	.cta__icon {
+		color: var(--m-amber-600);
+		margin-inline: auto;
+		margin-block-end: 1.5rem;
+	}
+	.cta__title {
+		font-size: 2.25rem; /* 4xl */
+		font-family: var(--rtp-font-serif);
+		color: var(--rtp-text);
+		margin-block-end: 1rem;
+	}
+	@media (min-width: 768px) {
+		.cta__title {
+			font-size: 3rem; /* 5xl */
+		}
+	}
+	.cta__ref {
+		color: var(--rtp-text-subtle);
+		font-family: var(--rtp-font-mono);
+		font-size: 0.75rem;
+		text-transform: uppercase;
+		letter-spacing: 0.2em;
+	}
+
+	.cta__terms {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 2rem;
+		max-width: 32rem;
+		margin-inline: auto;
+		margin-block-end: 3rem;
+		text-align: start;
+	}
+	.cta__term {
+		border-inline-start: 1px solid var(--m-amber-border-divider);
+		padding-inline-start: 1rem;
+	}
+	.cta__term-label {
+		font-size: 0.625rem;
+		font-family: var(--rtp-font-mono);
+		text-transform: uppercase;
+		color: var(--rtp-text-subtle);
+		margin-block-end: 0.25rem;
+	}
+	.cta__term-value {
+		font-size: 1.25rem;
+		color: var(--rtp-text);
+		font-family: var(--rtp-font-serif);
+	}
+
+	.cta__button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		padding: 1.25rem 3rem;
+		background: #fff;
+		color: #000;
+		font-weight: 700;
+		font-size: 0.875rem;
+		text-transform: uppercase;
+		letter-spacing: 0.25em;
+		text-decoration: none;
+		transition: background 300ms var(--rtp-ease-out);
+	}
+	.cta__button:hover {
+		background: var(--m-amber-500);
+	}
+	.cta__button:focus-visible {
+		outline: 2px solid var(--m-amber-500);
+		outline-offset: 4px;
+	}
+	@media (min-width: 768px) {
+		.cta__button {
+			width: auto;
+		}
+	}
+
+	.cta__fine-print {
+		margin-block-start: 2rem;
+		font-size: 0.625rem;
+		color: var(--rtp-text-faint);
+		font-family: var(--rtp-font-mono);
+		text-transform: uppercase;
+	}
+	.cta__br {
+		display: none;
+	}
+	@media (min-width: 768px) {
+		.cta__br {
+			display: inline;
+		}
+	}
+</style>

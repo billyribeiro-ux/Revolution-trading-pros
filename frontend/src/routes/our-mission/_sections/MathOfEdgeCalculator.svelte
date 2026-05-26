@@ -57,6 +57,7 @@
 							type="number"
 							bind:value={simAccount}
 							class="w-full bg-white/5 border border-white/10 rounded-lg py-3 pl-8 pr-4 text-white font-mono focus:border-rtp-primary focus:outline-none transition-colors"
+							autocomplete="off"
 						/>
 					</div>
 				</div>
@@ -77,6 +78,7 @@
 						step="0.5"
 						bind:value={simRisk}
 						class="w-full accent-rtp-primary cursor-pointer"
+						autocomplete="off"
 					/>
 					<div class="flex justify-between text-[10px] text-slate-600 mt-2 font-mono">
 						<span>Conservative (0.5%)</span>
@@ -96,6 +98,7 @@
 							type="number"
 							bind:value={simWinRate}
 							class="w-full bg-white/5 border border-white/10 rounded-lg py-2 px-3 text-white font-mono focus:border-rtp-primary focus:outline-none"
+							autocomplete="off"
 						/>
 					</div>
 					<div>
@@ -111,6 +114,7 @@
 							step="0.1"
 							bind:value={simRR}
 							class="w-full bg-white/5 border border-white/10 rounded-lg py-2 px-3 text-white font-mono focus:border-rtp-primary focus:outline-none"
+							autocomplete="off"
 						/>
 					</div>
 				</div>

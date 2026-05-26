@@ -223,16 +223,30 @@
 		pointer-events: none;
 	}
 
+	/* Footer-local tokens.
+	   The slate-blue gradient (#1e293b → #0f172a) is deliberately distinct
+	   from --rtp-bg (#0a0a0a) — it visually pairs with the NavBar's slate
+	   identity to bracket the page. Do not unify with --rtp-bg. */
 	.marketing-footer {
-		background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-		border-top: 1px solid rgba(99, 102, 241, 0.1);
+		--footer-gradient-top: #1e293b;
+		--footer-gradient-bottom: #0f172a;
+		--footer-indigo-faint: color-mix(in oklab, var(--rtp-indigo) 10%, transparent);
+		--footer-indigo-soft: color-mix(in oklab, var(--rtp-indigo) 20%, transparent);
+		--footer-indigo-hover: #818cf8; /* indigo-400, footer-only hover accent */
+		--footer-focus-ring: color-mix(in oklab, var(--footer-indigo-hover) 90%, transparent);
+		--footer-heading-color: #f1f5f9; /* slate-100, footer-only heading shade */
+		--footer-disclaimer-strong: #fbbf24; /* amber-400, risk disclaimer emphasis */
+		--footer-disclaimer-tint: color-mix(in oklab, var(--rtp-amber) 5%, transparent);
+		--footer-disclaimer-border: color-mix(in oklab, var(--rtp-amber) 20%, transparent);
+
+		background: linear-gradient(180deg, var(--footer-gradient-top) 0%, var(--footer-gradient-bottom) 100%);
+		border-top: 1px solid var(--footer-indigo-faint);
 		padding: 4rem 0 2rem;
 		width: 100%;
 		max-width: 100%;
 		min-width: 0;
 		flex-shrink: 0;
 		overflow-x: clip; /* Prevents any horizontal overflow from breaking layout */
-		/* REMOVED: contain: paint - was causing rendering issues in flex contexts */
 	}
 
 	.footer-container {
@@ -271,7 +285,7 @@
 	}
 
 	.footer-tagline {
-		color: #64748b;
+		color: var(--rtp-text-subtle);
 		font-size: 0.9375rem;
 		line-height: 1.6;
 		margin: 0 0 1.5rem 0;
@@ -293,23 +307,25 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(99, 102, 241, 0.1);
-		border: 1px solid rgba(99, 102, 241, 0.2);
-		border-radius: 0.5rem;
-		color: #94a3b8;
-		transition: all 0.2s ease;
+		background: var(--footer-indigo-faint);
+		border: 1px solid var(--footer-indigo-soft);
+		border-radius: var(--rtp-radius-md);
+		color: var(--rtp-text-muted);
+		transition: background var(--rtp-dur-fast) var(--rtp-ease-out),
+			color var(--rtp-dur-fast) var(--rtp-ease-out),
+			translate var(--rtp-dur-fast) var(--rtp-ease-out);
 		text-decoration: none;
 		flex-shrink: 0;
 	}
 
 	.social-link:hover {
-		background: rgba(99, 102, 241, 0.2);
-		color: #818cf8;
-		transform: translateY(-2px);
+		background: var(--footer-indigo-soft);
+		color: var(--footer-indigo-hover);
+		translate: 0 -2px;
 	}
 
 	.social-link:focus-visible {
-		outline: 2px solid rgba(129, 140, 248, 0.9);
+		outline: 2px solid var(--footer-focus-ring);
 		outline-offset: 2px;
 	}
 
@@ -326,7 +342,7 @@
 	}
 
 	.footer-heading {
-		color: #f1f5f9;
+		color: var(--footer-heading-color);
 		font-size: 0.875rem;
 		font-weight: 600;
 		text-transform: uppercase;
@@ -350,50 +366,50 @@
 	}
 
 	.footer-list a {
-		color: #94a3b8;
+		color: var(--rtp-text-muted);
 		text-decoration: none;
 		font-size: 0.9375rem;
-		transition: color 0.2s ease;
+		transition: color var(--rtp-dur-fast) var(--rtp-ease-out);
 		display: inline-block;
 	}
 
 	.footer-list a:hover {
-		color: #f1f5f9;
+		color: var(--footer-heading-color);
 	}
 
 	.footer-list a:focus-visible {
-		outline: 2px solid rgba(129, 140, 248, 0.9);
+		outline: 2px solid var(--footer-focus-ring);
 		outline-offset: 3px;
-		border-radius: 0.25rem;
+		border-radius: var(--rtp-radius-sm);
 	}
 
 	.risk-disclaimer {
 		padding: 1.5rem;
-		background: rgba(245, 158, 11, 0.05);
-		border: 1px solid rgba(245, 158, 11, 0.2);
-		border-radius: 0.75rem;
+		background: var(--footer-disclaimer-tint);
+		border: 1px solid var(--footer-disclaimer-border);
+		border-radius: var(--rtp-radius-md);
 		margin-bottom: 2rem;
 	}
 
 	.risk-disclaimer p {
-		color: #94a3b8;
+		color: var(--rtp-text-muted);
 		font-size: 0.8125rem;
 		line-height: 1.6;
 		margin: 0;
 	}
 
 	.risk-disclaimer strong {
-		color: #fbbf24;
+		color: var(--footer-disclaimer-strong);
 	}
 
 	.footer-bottom {
 		padding-top: 2rem;
-		border-top: 1px solid rgba(99, 102, 241, 0.1);
+		border-top: 1px solid var(--footer-indigo-faint);
 		text-align: center;
 	}
 
 	.footer-bottom p {
-		color: #64748b;
+		color: var(--rtp-text-subtle);
 		font-size: 0.875rem;
 		margin: 0;
 	}
@@ -405,7 +421,7 @@
 		}
 
 		.social-link:hover {
-			transform: none;
+			translate: 0 0;
 		}
 	}
 

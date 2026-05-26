@@ -1017,14 +1017,12 @@ function generateCourse(config: CourseConfig): BaseStructuredData {
  * @deprecated Google deprecated FAQ rich results May 7, 2026. Markup is still
  * emitted (still parseable by AI/voice search) but no longer produces a Google
  * rich result. See: frontend/src/lib/seo/README.md §May 2026 SEO updates.
+ *
+ * NOTE: The runtime `console.warn` was removed 2026-05-25 — the JSDoc
+ * `@deprecated` tag above is sufficient discoverability; firing a warning on
+ * every page load that emits FAQ JSON-LD is noise, not signal.
  */
 function generateFAQ(config: FAQConfig): BaseStructuredData {
-	if (import.meta.env.DEV) {
-		console.warn(
-			'[SEO] FAQPage schema is deprecated: Google removed FAQ rich results May 7, 2026.'
-		);
-	}
-
 	const data: BaseStructuredData = {
 		'@context': 'https://schema.org',
 		'@type': 'FAQPage',
