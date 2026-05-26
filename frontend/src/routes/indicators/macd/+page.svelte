@@ -5,8 +5,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import SEOHead from '$lib/components/seo/SeoHead.svelte';
-	import type { StructuredDataConfig } from '$lib/utils/structured-data';
 	import {
 		IconWaveSine,
 		IconTrendingUp,
@@ -36,20 +34,7 @@
 		return () => heroObserver.disconnect();
 	});
 
-const pageSchema: StructuredDataConfig = {
-	type: 'WebPage',
-	url: '/indicators/macd',
-	name: 'MACD - Moving Average Convergence Divergence | Revolution Trading Pros',
-	description: 'Master the MACD indicator to identify trend changes and momentum shifts with this powerful trend-following tool.'
-};
 </script>
-
-<SEOHead
-	title="MACD - Moving Average Convergence Divergence | Revolution Trading Pros"
-	description="Master the MACD indicator to identify trend changes and momentum shifts with this powerful trend-following tool."
-	canonicalUrl="/indicators/macd"
-	structuredData={pageSchema}
-/>
 
 <div class="indicator-page">
 	<section class="hero-section" class:visible={heroVisible}>

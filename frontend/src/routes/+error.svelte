@@ -12,7 +12,6 @@
 	 */
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';
-	import SEOHead from '$lib/components/seo/SeoHead.svelte';
 
 	// Error details from SvelteKit
 	let status = $derived(page.status);
@@ -101,11 +100,10 @@
 	}
 </script>
 
-<SEOHead
-	title="{config.title} - Revolution Trading Pros"
-	description={config.description}
-	noindex
-/>
+<svelte:head>
+	<title>{config.title} — Revolution Trading Pros</title>
+	<meta name="description" content={config.description} />
+</svelte:head>
 
 <!-- ICT11+ Fix: Changed from <main> to <div> - root layout provides <main> -->
 <div class="error-page">

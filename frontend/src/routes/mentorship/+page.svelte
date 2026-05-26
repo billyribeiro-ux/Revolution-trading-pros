@@ -2,7 +2,6 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { slide } from 'svelte/transition';
-	import SEOHead from '$lib/components/seo/SeoHead.svelte';
 	import IconLock from '@tabler/icons-svelte-runes/icons/lock';
 	import IconGlobe from '@tabler/icons-svelte-runes/icons/globe';
 	import IconShield from '@tabler/icons-svelte-runes/icons/shield';
@@ -76,23 +75,6 @@
 		}
 	];
 </script>
-
-<SEOHead
-	title="Institutional Strategy Audit | $25,000 Consultation"
-	description="A high-velocity, forensic deconstruction of your trading business. Designed strictly for Portfolio Managers and Proprietary Traders deploying 7-8 figure capital."
-	canonicalUrl="/mentorship"
-	ogType="website"
-	noindex={true}
-	nofollow={true}
-	keywords={[
-		'institutional trading audit',
-		'trading consultation',
-		'portfolio manager consulting',
-		'proprietary trading',
-		'trading mentorship',
-		'high-net-worth trading'
-	]}
-/>
 
 <div class="mentorship">
 	<div class="mentorship__grid-overlay" aria-hidden="true"></div>

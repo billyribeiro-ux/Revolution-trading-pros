@@ -1,6 +1,5 @@
 <script lang="ts">
 	/* eslint svelte/no-at-html-tags: "off" -- all {@html} calls in this file are sanitized via sanitizeBlogContent() */
-	import type { RawSchemaConfig } from '$lib/utils/structured-data';
 	/**
 	 * Blog Post Page - Svelte 5 Runes Implementation
 	 * ICT11+ Production-Grade with Full Analytics & Engagement Features
@@ -10,7 +9,6 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
-	import SEOHead from '$lib/components/seo/SeoHead.svelte';
 	import BlurHashImage from '$lib/components/ui/BlurHashImage.svelte';
 	import TableOfContents from '$lib/components/blog/TableOfContents.svelte';
 	import FloatingTocWidget from '$lib/components/blog/FloatingTocWidget.svelte';
@@ -170,54 +168,7 @@
 		console.info(`Shared on ${platform}:`, post?.slug);
 	}
 
-	// Derived SEO values - Svelte 5 runes
-	let articleSchema = $derived(
-		post &&
-			(post.schema_markup || {
-				'@context': 'https://schema.org',
-				'@type': 'Article',
-				headline: post.title,
-				description: post.excerpt || post.meta_description || '',
-				image:
-					post.featured_image ||
-					'https://revolution-trading-pros.pages.dev/revolution-trading-pros.png',
-				datePublished: post.published_at,
-				dateModified: post.published_at,
-				author: {
-					'@type': 'Person',
-					name: post.author?.name || 'Revolution Trading Pros'
-				},
-				publisher: {
-					'@type': 'Organization',
-					name: 'Revolution Trading Pros',
-					logo: {
-						'@type': 'ImageObject',
-						url: 'https://revolution-trading-pros.pages.dev/revolution-trading-pros.png'
-					}
-				},
-				mainEntityOfPage: {
-					'@type': 'WebPage',
-					'@id': `https://revolution-trading-pros.pages.dev/blog/${post.slug}`
-				}
-			})
-	);
-
-	let seoTitle = $derived(post && (post.meta_title || post.title));
-	let seoDescription = $derived(post && (post.meta_description || post.excerpt || ''));
 </script>
-
-{#if post}
-	<SEOHead
-		title={seoTitle ?? post.title}
-		description={seoDescription ?? ''}
-		canonicalUrl={`/blog/${post.slug}`}
-		ogType="article"
-		ogImage={post.featured_image ?? undefined}
-		articleAuthor={post.author?.name ?? undefined}
-		articlePublishedTime={post.published_at}
-		structuredData={{ type: 'Raw' as const, data: articleSchema as Record<string, unknown> } satisfies RawSchemaConfig}
-	/>
-{/if}
 
 <!-- Reading Progress Indicator -->
 <ReadingProgress contentSelector=".post-body" height={4} color="#3b82f6" position="top" />

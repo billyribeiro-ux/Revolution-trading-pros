@@ -7,8 +7,7 @@
 
 	import { onMount } from 'svelte';
 	import { CourseCard } from '$lib/components/courses';
-	import SEOHead from '$lib/components/seo/SeoHead.svelte';
-	
+
 	interface Course {
 		id: string;
 		title: string;
@@ -79,20 +78,6 @@
 		}
 	});
 </script>
-
-<SEOHead
-	title="Trading Classes & Courses"
-	description="Browse our trading courses and classes. Learn from professional traders and improve your trading skills with beginner to advanced programs."
-	canonicalUrl="/classes"
-	ogType="website"
-	keywords={[
-		'trading classes',
-		'trading courses',
-		'learn to trade',
-		'stock market education',
-		'day trading course'
-	]}
-/>
 
 <div class="courses-page">
 	<header class="page-header">

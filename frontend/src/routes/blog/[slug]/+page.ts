@@ -26,7 +26,7 @@ export const load: Load = async ({ params, url }) => {
 	const postTitle = post.title ?? params.slug ?? 'Blog Post';
 	const postDescription =
 		post.excerpt ?? post.meta_description ?? `Read ${postTitle} on Revolution Trading Pros`;
-	const postImage = post.featured_image ?? `${SITE_URL}/og-default.png`;
+	const postImage = post.featured_image ?? `${SITE_URL}/revolution-trading-pros.png`;
 	const authorName = post.author?.name ?? 'Revolution Trading Pros';
 	const publishedDate = post.published_at ?? new Date().toISOString();
 
@@ -61,7 +61,7 @@ export const load: Load = async ({ params, url }) => {
 				dateModified: publishedDate,
 				authorName,
 				publisherName: 'Revolution Trading Pros',
-				publisherLogo: `${SITE_URL}/logo.png`,
+				publisherLogo: `${SITE_URL}/icon-512.png`,
 				type: 'BlogPosting',
 				description: postDescription,
 				image: postImage,

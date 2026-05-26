@@ -13,7 +13,6 @@
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
-	import SEOHead from '$lib/components/seo/SeoHead.svelte';
 	import { authStore } from '$lib/stores/auth.svelte';
 	import {
 		IconAlertTriangle,
@@ -130,11 +129,10 @@
 	}
 </script>
 
-<SEOHead
-	title="Error {status} - Admin | Revolution Trading Pros"
-	description={config.description}
-	noindex
-/>
+<svelte:head>
+	<title>Error {status} — Admin | Revolution Trading Pros</title>
+	<meta name="description" content={config.description} />
+</svelte:head>
 
 <div class="admin-error-page">
 	<div class="error-card">

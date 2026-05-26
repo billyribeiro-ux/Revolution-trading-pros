@@ -3,7 +3,6 @@
 -->
 
 <script lang="ts">
-	import type { RawSchemaConfig } from '$lib/utils/structured-data';
 	/**
 	 * Homepage - Enterprise Performance Optimized + SEO Enhanced
 	 * ICT11+ Fix: Client-side posts fetch fallback for production
@@ -21,8 +20,7 @@
 	import LatestBlogsSection from '$lib/components/sections/LatestBlogsSection.svelte';
 	import CTASection from '$lib/components/sections/CTASection.svelte';
 	import SocialMediaSection from '$lib/components/sections/SocialMediaSection.svelte';
-	import SEOHead from '$lib/components/seo/SeoHead.svelte';
-	
+
 	// ICT 11+ CORB Fix: Use same-origin endpoints
 	const API_URL = '';
 
@@ -58,26 +56,7 @@
 		}
 	});
 
-	const siteUrl = import.meta.env['VITE_SITE_URL'] || 'https://revolution-trading-pros.pages.dev';
-
-	const homepageSchema = [
-		{
-			'@context': 'https://schema.org',
-			'@type': 'FinancialService',
-			name: 'Revolution Trading Pros',
-			description: 'Professional trading education platform',
-			url: siteUrl
-		}
-	];
 </script>
-
-<SEOHead
-	title="Live Trading Rooms, Alerts & Pro Tools"
-	description="Professional trading education and tools."
-	canonicalUrl="/"
-	ogType="website"
-	structuredData={homepageSchema.map((d) => ({ type: 'Raw' as const, data: d })) satisfies RawSchemaConfig[]}
-/>
 
 <Hero />
 <TradingRoomsSection />

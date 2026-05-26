@@ -4,30 +4,59 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  *
  * @description super-sitemap is the SOLE sitemap owner.
- * @version 5.0.0 - Unified SEO layer integration
- * @standards Apple Principal Engineer ICT 7+ Standards
+ * @version 6.0.0 - Dynamic route enumeration (May 2026 SEO audit)
  *
  * Features:
  * - super-sitemap auto-discovers routes from src/routes
+ * - additionalPaths populated dynamically: blog posts, indicators, courses,
+ *   guides, classes, live trading rooms
  * - Excludes private/noindex routes via excludeRoutePatterns
- * - Supports sitemap index for >50K URLs automatically
  * - 1h CDN cache, no browser cache
  * - Alphabetically sorted URLs
- * - Google February 2026 compliant (no priority/changefreq)
  *
  * Constraints (Google):
  * - 50,000 URLs max OR 50MB uncompressed max per sitemap file
- * - super-sitemap handles segmentation + sitemap index automatically
  */
 
 import type { RequestHandler } from '@sveltejs/kit';
 import { response } from 'super-sitemap';
+import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
+import type { PaginatedPosts } from '$lib/types/post';
+import { indicators } from '../indicators/data';
 
 const SITE_URL = 'https://revolution-trading-pros.pages.dev';
 
-export const prerender = true;
+// Disable prerender — additionalPaths fetches the live API at request time.
+// 1h CDN cache (s-maxage=3600) is set in headers below.
+export const prerender = false;
 
-export const GET: RequestHandler = async () => {
+const STATIC_SLUGS = {
+	courses: ['day-trading-masterclass', 'options-trading', 'risk-management', 'swing-trading-pro'],
+	guides: ['exit-strategies', 'position-sizing', 'risk-management', 'swing-entry'],
+	classes: ['quickstart-precision-trading-c', 'tax-loss-harvest-c'],
+	liveTradingRooms: ['day-trading', 'small-accounts', 'swing-trading'],
+	resources: ['etf-stocks-list', 'stock-indexes-list']
+};
+
+async function fetchBlogSlugs(fetch: typeof globalThis.fetch): Promise<string[]> {
+	try {
+		const res = await apiFetch<PaginatedPosts>(API_ENDPOINTS.posts.list, { fetch });
+		return res.data.filter((p) => p.indexable !== false).map((p) => `/blog/${p.slug}`);
+	} catch (err) {
+		console.warn('[sitemap] failed to fetch blog posts; skipping blog slugs', err);
+		return [];
+	}
+}
+
+export const GET: RequestHandler = async ({ fetch }) => {
+	const blogPaths = await fetchBlogSlugs(fetch);
+	const indicatorPaths = indicators.map((i) => `/indicators/${i.slug}`);
+	const coursePaths = STATIC_SLUGS.courses.map((s) => `/courses/${s}`);
+	const guidePaths = STATIC_SLUGS.guides.map((s) => `/guides/${s}`);
+	const classPaths = STATIC_SLUGS.classes.map((s) => `/classes/${s}`);
+	const liveRoomPaths = STATIC_SLUGS.liveTradingRooms.map((s) => `/live-trading-rooms/${s}`);
+	const resourcePaths = STATIC_SLUGS.resources.map((s) => `/resources/${s}`);
+
 	return await response({
 		origin: SITE_URL,
 		excludeRoutePatterns: [
@@ -64,7 +93,7 @@ export const GET: RequestHandler = async () => {
 			'^/email.*',
 			'^/workflows.*',
 			'^/chatroom-archive.*',
-			// Dynamic routes without param values provided
+			// Dynamic routes are enumerated via additionalPaths below
 			'.*\\[slug\\].*',
 			'.*\\[id\\].*',
 			'.*\\[room\\].*',
@@ -77,15 +106,16 @@ export const GET: RequestHandler = async () => {
 			'/alerts/explosive-swings',
 			'/alerts/spx-profit-pulse',
 			'/blog',
-			'/indicators/volume-max-i',
-			'/live-trading-rooms/day-trading-room',
-			'/live-trading-rooms/explosive-swings',
-			'/live-trading-rooms/small-account-mentorship',
-			'/live-trading-rooms/spx-profit-pulse',
-			'/live-trading-rooms/swing-trading-room',
 			'/login',
 			'/register',
-			'/tools/options-calculator'
+			'/tools/options-calculator',
+			...blogPaths,
+			...indicatorPaths,
+			...coursePaths,
+			...guidePaths,
+			...classPaths,
+			...liveRoomPaths,
+			...resourcePaths
 		],
 		sort: 'alpha',
 		headers: {

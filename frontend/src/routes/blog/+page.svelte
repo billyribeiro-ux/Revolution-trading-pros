@@ -1,5 +1,4 @@
 <script lang="ts">
-	import type { RawSchemaConfig } from '$lib/utils/structured-data';
 	/**
 	 * Blog List Page - Svelte 5 Runes Implementation
 	 * @version 4.0.0 - January 2026
@@ -8,7 +7,6 @@
 	 */
 	import { preloadData } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import SEOHead from '$lib/components/seo/SeoHead.svelte';
 	import BlurHashImage from '$lib/components/ui/BlurHashImage.svelte';
 	import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
 	import type { Post } from '$lib/types/post';
@@ -207,22 +205,6 @@
 		};
 	});
 
-	// Structured data for blog list
-	const blogSchema = {
-		'@context': 'https://schema.org',
-		'@type': 'Blog',
-		name: 'Revolution Trading Pros Blog',
-		description: 'Expert trading insights, tutorials, and market analysis',
-		url: 'https://revolution-trading-pros.pages.dev/blog',
-		publisher: {
-			'@type': 'Organization',
-			name: 'Revolution Trading Pros',
-			logo: {
-				'@type': 'ImageObject',
-				url: 'https://revolution-trading-pros.pages.dev/revolution-trading-pros.png'
-			}
-		}
-	};
 </script>
 
 <svelte:head>
@@ -231,14 +213,6 @@
 		<link rel="prefetch" href="/blog/{post.slug}" />
 	{/each}
 </svelte:head>
-
-<SEOHead
-	title="Blog - Trading Insights & Tutorials"
-	description="Expert trading insights, tutorials, and market analysis from Revolution Trading Pros. Learn day trading, swing trading, options strategies, and more."
-	canonicalUrl="/blog"
-	ogType="website"
-	structuredData={{ type: 'Raw' as const, data: blogSchema as Record<string, unknown> } satisfies RawSchemaConfig}
-/>
 
 <div class="blog-container">
 	<div class="blog-header">

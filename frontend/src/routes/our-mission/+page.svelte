@@ -1,8 +1,6 @@
 <script lang="ts">
-	import type { RawSchemaConfig } from '$lib/utils/structured-data';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import SEOHead from '$lib/components/seo/SeoHead.svelte';
 	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
 	import IconShield from '@tabler/icons-svelte-runes/icons/shield';
 	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
@@ -67,59 +65,6 @@
 
 	let glossarySearch = $state('');
 
-	const jsonLd = {
-		'@context': 'https://schema.org',
-		'@graph': [
-			{
-				'@type': 'Organization',
-				name: 'Revolution Trading Pros',
-				url: 'https://revolution-trading-pros.pages.dev',
-				logo: 'https://revolution-trading-pros.pages.dev/logo.png',
-				foundingDate: '2023',
-				founder: { '@type': 'Person', name: 'Billy Ribeiro' },
-				sameAs: ['https://twitter.com/RevTradingPros'],
-				contactPoint: { '@type': 'ContactPoint', telephone: '+1-555-0123', contactType: 'customer service' }
-			},
-			{
-				'@type': 'Course',
-				name: 'Institutional Trading Mastery',
-				description: 'A comprehensive curriculum covering Auction Market Theory, Volume Profiling, and Institutional Risk Management.',
-				provider: { '@type': 'Organization', name: 'Revolution Trading Pros' },
-				hasCourseInstance: { '@type': 'CourseInstance', courseMode: 'online', courseWorkload: 'P12W' }
-			},
-			{
-				'@type': 'Article',
-				headline: 'The Retail Trap: Why 90% of Traders Fail',
-				author: { '@type': 'Organization', name: 'Revolution Trading Pros' },
-				publisher: { '@type': 'Organization', name: 'Revolution Trading Pros' },
-				datePublished: '2024-01-01',
-				image: 'https://revolution-trading-pros.pages.dev/images/retail-trap.jpg',
-				speakable: { '@type': 'SpeakableSpecification', cssSelector: ['[data-speakable]'] }
-			},
-			{
-				'@type': 'FAQPage',
-				mainEntity: [
-					{
-						'@type': 'Question',
-						name: "What is the 'Retail Trap' in trading?",
-						acceptedAnswer: {
-							'@type': 'Answer',
-							text: 'The Retail Trap refers to the statistical probability of failure for non-professional traders (often cited as the 90/90/90 rule). This failure is driven by a lack of risk management, emotional trading, and reliance on lagging indicators.'
-						}
-					},
-					{
-						'@type': 'Question',
-						name: 'How is Revolution Trading Pros different from other groups?',
-						acceptedAnswer: {
-							'@type': 'Answer',
-							text: "We focus on 'Auction Market Theory' and 'Volume Profiling' rather than subjective chart patterns. We treat trading as a business of probability (Expectancy) rather than a game of prediction."
-						}
-					}
-				]
-			}
-		]
-	};
-
 	const pillars = [
 		{
 			icon: IconShield,
@@ -179,27 +124,6 @@
 		'We are fiduciaries to our own education.'
 	];
 </script>
-
-<SEOHead
-	title="Our Mission | The Institutional Bridge"
-	description="Dismantling the retail trader stereotype. We bridge the gap between gambling and institutional risk management through data, discipline, and transparency. Join the 1% of traders who treat this as a business."
-	canonicalUrl="/our-mission"
-	ogType="website"
-	ogImage="/og-image.webp"
-	ogImageAlt="Revolution Trading Pros Mission - Building Trading Careers"
-	keywords={[
-		'trading mission',
-		'institutional trading',
-		'retail trading education',
-		'auction market theory',
-		'risk management',
-		'trading psychology',
-		'order flow',
-		'trading career',
-		'professional trading'
-	]}
-	structuredData={(jsonLd['@graph'] as Record<string, unknown>[]).map((d) => ({ type: 'Raw' as const, data: d })) satisfies RawSchemaConfig[]}
-/>
 
 <div class="mission">
 	<div class="mission__atmosphere" aria-hidden="true">

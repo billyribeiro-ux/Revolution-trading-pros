@@ -14,8 +14,7 @@
 -->
 <script lang="ts">
 	import type { PageData } from './$types';
-	import SEOHead from '$lib/components/seo/SeoHead.svelte';
-	
+
 	// Svelte 5 props with SvelteKit typing
 	interface Props {
 		data: PageData;
@@ -43,20 +42,6 @@
 		}
 	}
 </script>
-
-<SEOHead
-	title="Platform Tutorials - ThinkorSwim & TradeStation"
-	description="Tutorials, Tips and Platform Features for ThinkorSwim and TradeStation trading platforms. Step-by-step guides for traders of all levels."
-	canonicalUrl="/tutorials"
-	ogType="website"
-	keywords={[
-		'ThinkorSwim tutorials',
-		'TradeStation tutorials',
-		'trading platform setup',
-		'platform tips',
-		'trading tools'
-	]}
-/>
 
 <div class="fl-builder-content">
 	<!-- Header Section -->

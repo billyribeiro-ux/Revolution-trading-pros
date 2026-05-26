@@ -16,11 +16,24 @@ export const load: PageServerLoad = async ({ fetch }) => {
 	const posts = await fetchPosts(fetch);
 
 	const seo: SEOInput = {
+		// Use the site default title (already templated as
+		// "Revolution Trading Pros — Professional Trading Education & Tools")
 		title: null,
 		titleTemplate: null,
-		og: {
-			type: 'website'
-		}
+		og: { type: 'website' },
+		jsonld: [
+			{
+				'@context': 'https://schema.org',
+				'@type': 'FinancialService',
+				'@id': 'https://revolution-trading-pros.pages.dev/#financialservice',
+				name: 'Revolution Trading Pros',
+				description:
+					'Professional trading education, live trading rooms, custom indicators, and alert services for active traders.',
+				url: 'https://revolution-trading-pros.pages.dev',
+				serviceType: 'Trading Education',
+				areaServed: 'Worldwide'
+			}
+		]
 	};
 
 	return {

@@ -5,8 +5,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import SEOHead from '$lib/components/seo/SeoHead.svelte';
-	import type { StructuredDataConfig } from '$lib/utils/structured-data';
 	import {
 		IconActivity,
 		IconTrendingUp,
@@ -57,20 +55,7 @@
 		};
 	});
 
-const pageSchema: StructuredDataConfig = {
-	type: 'WebPage',
-	url: '/indicators/rsi',
-	name: 'RSI - Relative Strength Index | Revolution Trading Pros',
-	description: 'Master the RSI indicator to identify overbought/oversold conditions and reversal points with precision.'
-};
 </script>
-
-<SEOHead
-	title="RSI - Relative Strength Index | Revolution Trading Pros"
-	description="Master the RSI indicator to identify overbought/oversold conditions and reversal points with precision."
-	canonicalUrl="/indicators/rsi"
-	structuredData={pageSchema}
-/>
 
 <div class="indicator-page">
 	<!-- Hero Section -->

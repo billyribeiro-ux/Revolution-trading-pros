@@ -21,7 +21,7 @@ export const seoDefaults: SEODefaults = {
 	defaultTitle: 'Revolution Trading Pros — Professional Trading Education & Tools',
 	defaultDescription:
 		'Institutional-grade trading education, live trading rooms, custom indicators, and professional tools for 18,000+ active traders.',
-	defaultImage: `${SITE_URL}/og-default.png`,
+	defaultImage: `${SITE_URL}/revolution-trading-pros.png`,
 	defaultImageAlt: 'Revolution Trading Pros — Professional Trading Education',
 	defaultLocale: 'en_US',
 	twitterSite: '@RevTradingPros',
@@ -88,7 +88,7 @@ export const seoDefaults: SEODefaults = {
 			url: SITE_URL,
 			logo: {
 				'@type': 'ImageObject',
-				url: `${SITE_URL}/logo.png`
+				url: `${SITE_URL}/icon-512.png`
 			},
 			description:
 				'Professional trading education, custom indicators, and live trading rooms for 18,000+ active traders.',

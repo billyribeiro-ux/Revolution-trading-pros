@@ -8,8 +8,38 @@
  * @version 1.0.0
  */
 
+import type { SEOInput } from '$lib/seo/types';
+import { buildBreadcrumb, buildFAQPage, buildItemList } from '$lib/seo/schemas';
+import { indicators, faqs } from './data';
+
+const SITE = 'https://revolution-trading-pros.pages.dev';
+
 // Enable static site generation for SEO
 export const prerender = true;
 
 // Enable server-side rendering
 export const ssr = true;
+
+export const load = () => ({
+	seo: {
+		title: 'Best Technical Indicators for Day Trading (2026 Guide)',
+		description:
+			"Stop guessing. Master the RSI, VWAP, MACD, and Bollinger Bands. Get the exact 'Golden Setup' configurations used by professional traders.",
+		og: { type: 'article' },
+		jsonld: [
+			buildBreadcrumb([
+				{ name: 'Home', url: `${SITE}/` },
+				{ name: 'Indicators', url: `${SITE}/indicators` }
+			]),
+			buildItemList(
+				'Trading Indicators',
+				indicators.map((i) => ({
+					name: i.name,
+					url: `${SITE}/indicators/${i.slug}`,
+					description: i.description
+				}))
+			),
+			buildFAQPage(faqs.map((f) => ({ q: f.question, a: f.answer })))
+		]
+	} satisfies SEOInput
+});

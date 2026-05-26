@@ -75,6 +75,11 @@ export const load: ServerLoad = async ({ url, fetch, cookies }) => {
 		orderDetail,
 		fetchError,
 		// Metadata for tracking
-		purchaseTimestamp: Date.now()
+		purchaseTimestamp: Date.now(),
+		seo: {
+			title: 'Thanks for Your Purchase',
+			description:
+				"Welcome to Revolution Trading Pros! You've taken the first step towards strategic trading."
+		}
 	};
 };

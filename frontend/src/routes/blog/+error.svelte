@@ -13,7 +13,6 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
-	import SEOHead from '$lib/components/seo/SeoHead.svelte';
 
 	// Error details from SvelteKit
 	let status = $derived(page.status);
@@ -93,7 +92,10 @@
 	}
 </script>
 
-<SEOHead title="{config.title} - Blog" description={config.description} noindex />
+<svelte:head>
+	<title>{config.title} — Blog</title>
+	<meta name="description" content={config.description} />
+</svelte:head>
 
 <div class="blog-error-container">
 	<div class="error-content">

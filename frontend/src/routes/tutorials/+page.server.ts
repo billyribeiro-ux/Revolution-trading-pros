@@ -13,6 +13,10 @@
  */
 
 import type { PageServerLoad } from './$types';
+import type { SEOInput } from '$lib/seo/types';
+import { buildBreadcrumb } from '$lib/seo/schemas';
+
+const SITE = 'https://revolution-trading-pros.pages.dev';
 
 // SSR/SSG Configuration - Per SvelteKit Official Docs
 export const ssr = true;
@@ -36,6 +40,7 @@ export interface PageData {
 		page: number;
 		totalPages: number;
 	};
+	seo: SEOInput;
 }
 
 // ThinkorSwim tutorials data
@@ -201,12 +206,25 @@ export const load: PageServerLoad = async ({ url }) => {
 	const endIndex = startIndex + perPage;
 	const paginatedTosTutorials = tosTutorials.slice(startIndex, endIndex);
 
+	const seo: SEOInput = {
+		title: 'Platform Tutorials — ThinkorSwim & TradeStation',
+		description:
+			'Tutorials, tips, and platform features for ThinkorSwim and TradeStation trading platforms. Step-by-step guides for traders of all levels.',
+		jsonld: [
+			buildBreadcrumb([
+				{ name: 'Home', url: `${SITE}/` },
+				{ name: 'Tutorials', url: `${SITE}/tutorials` }
+			])
+		]
+	};
+
 	return {
 		tosTutorials: paginatedTosTutorials,
 		tradestationTutorials,
 		tosPagination: {
 			page,
 			totalPages: Math.ceil(tosTutorials.length / perPage)
-		}
+		},
+		seo
 	} satisfies PageData;
 };
