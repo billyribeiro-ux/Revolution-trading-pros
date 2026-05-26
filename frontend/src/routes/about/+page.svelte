@@ -7,7 +7,7 @@
 	import type { Attachment } from 'svelte/attachments';
 	import { onMount } from 'svelte';
 	import { cubicOut } from 'svelte/easing';
-	import { fade, draw } from 'svelte/transition';
+	import { fade, draw, slide } from 'svelte/transition';
 	import { browser } from '$app/environment';
 	// GSAP imported dynamically in onMount to avoid SSR issues
 
@@ -29,6 +29,17 @@
 	
 	// --- Animation Logic (Svelte 5 Runes) ---
 	let isVisible = $state(false);
+
+	// FAQ accordion — controlled state lets us animate height via slide transition,
+	// eliminating the layout snap that native <details> open/close causes.
+	let openFaqIndex = $state(-1);
+
+	// Live height of the currently-open FAQ answer, tracked via bind:clientHeight
+	// on the sliding element. Drives spacerHeight to keep the FAQ section's total
+	// height constant — answer grows, spacer shrinks in lockstep, section size
+	// never changes, CTA section below never shifts.
+	let openAnswerHeight = $state(0);
+	const spacerHeight = $derived(Math.max(0, 140 - openAnswerHeight));
 
 	// Per-card spotlight attachment — avoids querySelectorAll on every mousemove
 	const interactiveCard: Attachment<HTMLElement> = (node) => {
@@ -75,6 +86,11 @@
 						scrub: true
 					}
 				});
+
+				// Re-measure trigger positions after Svelte's {#if isVisible} content
+				// renders and web fonts settle — without this, ScrollTrigger caches
+				// the not-yet-final page height and the scrub desyncs from scroll.
+				ScrollTrigger.refresh();
 			});
 		} catch (error) {
 			console.error('[About] GSAP initialization failed:', error);
@@ -611,7 +627,7 @@
 				<div in:heavySlide={{ delay: 700 }} class="grid md:grid-cols-2 gap-8">
 					<div
       {@attach interactiveCard}
-						class="bg-[#080808]/80 backdrop-blur-xl p-10 border border-white/5 rounded-xl relative hover:border-amber-600/30 transition-colors duration-500 interactive-card"
+						class="bg-[#080808]/80 backdrop-blur-xl p-10 border border-white/5 rounded-xl relative overflow-hidden hover:border-amber-600/30 transition-colors duration-500 interactive-card"
 					>
 						<div class="absolute -top-4 -left-4 text-amber-900/20">
 							<IconMessageCircle size={80} />
@@ -644,7 +660,7 @@
 
 					<div
       {@attach interactiveCard}
-						class="bg-[#080808]/80 backdrop-blur-xl p-10 border border-white/5 rounded-xl relative hover:border-amber-600/30 transition-colors duration-500 interactive-card"
+						class="bg-[#080808]/80 backdrop-blur-xl p-10 border border-white/5 rounded-xl relative overflow-hidden hover:border-amber-600/30 transition-colors duration-500 interactive-card"
 					>
 						<div class="absolute -top-4 -left-4 text-amber-900/20">
 							<IconMessageCircle size={80} />
@@ -689,27 +705,49 @@
 					</div>
 
 					<div class="space-y-4">
-						{#each faqs as faq (faq.q)}
-							<details
-								class="group bg-[#050505] border border-white/10 open:border-amber-600/30 transition-all duration-300 rounded-lg overflow-hidden"
+						{#each faqs as faq, i (faq.q)}
+							<div
+								class="bg-[#050505] border rounded-lg overflow-hidden transition-colors duration-300 {openFaqIndex ===
+								i
+									? 'border-amber-600/30'
+									: 'border-white/10'}"
 							>
-								<summary
-									class="flex justify-between items-center p-6 cursor-pointer list-none bg-white/2 hover:bg-white/4 transition-colors"
+								<button
+									type="button"
+									onclick={() => (openFaqIndex = openFaqIndex === i ? -1 : i)}
+									aria-expanded={openFaqIndex === i}
+									class="flex justify-between items-center w-full p-6 cursor-pointer bg-white/2 hover:bg-white/4 transition-colors text-left"
 								>
 									<span class="text-lg text-slate-200 font-light pr-8">{faq.q}</span>
 									<span
-										class="text-amber-600 transform group-open:rotate-180 transition-transform duration-300"
+										class="text-amber-600 transition-transform duration-300 {openFaqIndex === i
+											? 'rotate-180'
+											: ''}"
 									>
 										<IconChevronDown size={20} />
 									</span>
-								</summary>
-								<div
-									class="px-6 pb-8 text-slate-400 font-light leading-relaxed border-t border-white/5 pt-6 bg-[#020202]"
-								>
-									{faq.a}
-								</div>
-							</details>
+								</button>
+								{#if openFaqIndex === i}
+									<div
+										transition:slide={{ duration: 300, easing: cubicOut }}
+										bind:clientHeight={openAnswerHeight}
+										onoutroend={() => (openAnswerHeight = 0)}
+										class="px-6 pb-8 text-slate-400 font-light leading-relaxed border-t border-white/5 pt-6 bg-[#020202]"
+									>
+										{faq.a}
+									</div>
+								{/if}
+							</div>
 						{/each}
+						<!-- Spacer absorbs the FAQ expansion to keep total section
+						     height constant — the CTA section below never shifts.
+						     spacerHeight tracks the live answer height in lockstep:
+						     answer grows N px → spacer shrinks N px → net zero. -->
+						<div
+							aria-hidden="true"
+							class="overflow-hidden"
+							style:height="{spacerHeight}px"
+						></div>
 					</div>
 				</div>
 			{/if}
