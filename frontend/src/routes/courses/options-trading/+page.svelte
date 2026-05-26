@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import SEOHead from '$lib/components/seo/SeoHead.svelte';
-	import type { StructuredDataConfig } from '$lib/utils/structured-data';
 	import {
 		IconBrain,
 		IconClock,
@@ -32,26 +30,7 @@
 		return () => heroObserver.disconnect();
 	});
 
-const courseSchema: StructuredDataConfig = {
-	type: 'Course',
-	url: '/courses/options-trading',
-	name: 'Options Trading Fundamentals',
-	description: 'Master options trading with comprehensive training on strategies, Greeks, volatility analysis, and institutional-grade risk management.',
-	provider: { name: 'Revolution Trading Pros', url: 'https://revolutiontradingpros.com' },
-	educationalLevel: 'Intermediate',
-	courseMode: 'online',
-	price: 597,
-	priceCurrency: 'USD'
-};
 </script>
-
-<SEOHead
-	title="Options Trading Fundamentals | Revolution Trading Pros"
-	description="Master options trading with comprehensive training on strategies, Greeks, volatility analysis, and institutional-grade risk management."
-	canonicalUrl="/courses/options-trading"
-	ogType="product"
-	structuredData={courseSchema}
-/>
 
 <div class="course-page">
 	<section class="hero-section" class:visible={heroVisible}>

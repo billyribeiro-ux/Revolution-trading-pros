@@ -1,5 +1,12 @@
 <!--
 /**
+ * @deprecated As of May 2026 SEO audit, all importers were migrated to the
+ * unified SEO layer at `$lib/seo/`. This legacy component has zero importers
+ * (verified by grep) and is retained for archaeological reference only.
+ *
+ * Do not import. Write SEO payloads in your route's `load()` and return
+ * { seo: SEOInput } instead. See frontend/src/routes/about/+page.ts.
+ *
  * SEOHead Component - Google November 2025 Enterprise Implementation
  * ═══════════════════════════════════════════════════════════════════════════
  *

@@ -24,8 +24,6 @@
 	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
 
 	// Assumed existing component based on your snippet
-	import SEOHead from '$lib/components/seo/SeoHead.svelte';
-	import type { StructuredDataConfig } from '$lib/utils/structured-data';
 	import type { IconComponent } from '$lib/icons';
 
 	// --- TYPES ---
@@ -307,28 +305,10 @@
 		})();
 	});
 
-	// Schema for SEO
-	const courseSchemas: StructuredDataConfig[] = courses.map((course) => ({
-		type: 'Course' as const,
-		url: `/courses/${course.slug}`,
-		name: course.title,
-		description: course.description,
-		provider: { name: 'Revolution Trading Pros', url: 'https://revolutiontradingpros.com' },
-		educationalLevel: course.level,
-		courseMode: 'online' as const,
-		price: parseFloat(course.price.replace('$', '')),
-		priceCurrency: 'USD'
-	}));
+	// Course schemas now emitted from +page.ts (page.data.seo).
 </script>
 
 <svelte:window bind:scrollY bind:innerHeight bind:innerWidth />
-
-<SEOHead
-	title="Trading Courses & Mentorship | Revolution Trading Pros"
-	description="Institutional-grade trading education. Learn to read order flow, manage risk, and execute with precision. Join the top 1% of disciplined traders."
-	canonicalUrl="/courses"
-	structuredData={courseSchemas}
-/>
 
 <div class="courses">
 	<section class="courses-hero">

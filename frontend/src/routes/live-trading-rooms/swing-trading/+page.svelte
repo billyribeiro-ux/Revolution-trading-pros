@@ -3,8 +3,6 @@
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
-	import SEOHead from '$lib/components/seo/SeoHead.svelte';
-	import type { StructuredDataConfig } from '$lib/utils/structured-data';
 	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
 
 	// --- Pricing State (Svelte 5 Runes) ---
@@ -138,51 +136,8 @@
 		}
 	];
 
-	// --- SEO: STRUCTURED DATA (JSON-LD) ---
-	const productSchema: StructuredDataConfig = {
-		type: 'Product',
-		url: '/live-trading-rooms/swing-trading',
-		name: 'Explosive Swings Trading Alerts',
-		description:
-			'Premium multi-day swing trading alerts service. Catch 3-7 day moves with precise entry and exit signals. Verified 82% win rate.',
-		brand: 'Revolution Trading Pros',
-		price: 97,
-		priceCurrency: 'USD',
-		availability: 'InStock',
-		ratingValue: 4.8,
-		reviewCount: 342
-	};
-
-	const faqSchema: StructuredDataConfig = {
-		type: 'FAQPage',
-		questions: faqList.map((item) => ({
-			question: item.question,
-			answer: item.answer
-		}))
-	};
-
-	const combinedSchema: StructuredDataConfig[] = [productSchema, faqSchema];
+	// SEO schemas emitted via +page.ts (page.data.seo).
 </script>
-
-<SEOHead
-	title="Swing Trading Alerts | Multi-Day Stock & Options Signals"
-	description="The #1 swing trading room for part-time traders. Get high-precision stock and options alerts (3-7 day holds) sent via SMS & Push. 82% historical win rate."
-	canonicalUrl="/live-trading-rooms/swing-trading"
-	ogType="product"
-	ogImage="/images/og-swings.jpg"
-	ogImageAlt="Swing Trading Room - Multi-Day Trading Opportunities"
-	keywords={[
-		'swing trading room',
-		'swing trading alerts',
-		'multi-day trading strategies',
-		'stock options alerts sms',
-		'swing trade signals',
-		'options swing trading',
-		'part time trading',
-		'swing trading for beginners'
-	]}
-	structuredData={combinedSchema}
-/>
 
 <div class="swing-trading">
 	<section class="hero">

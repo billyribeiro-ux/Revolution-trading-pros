@@ -3,8 +3,6 @@
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
-	import SEOHead from '$lib/components/seo/SeoHead.svelte';
-	import type { StructuredDataConfig } from '$lib/utils/structured-data';
 	import IconMenu2 from '@tabler/icons-svelte-runes/icons/menu-2';
 	import IconLock from '@tabler/icons-svelte-runes/icons/lock';
 
@@ -149,26 +147,8 @@
 		}
 	}
 
-	// --- EXPANDED SEO DATA ---
-	// Note: Full expanded FAQ JSON-LD is generated in the dedicated section below
-	// but represented here for component passing.
-
-	const productSchema: StructuredDataConfig = $derived({
-		type: 'Product' as const,
-		url: '/live-trading-rooms/day-trading',
-		name: 'Live SPX Day Trading Room',
-		description:
-			'Professional day trading community specializing in SPX 0DTE options. Features live voice commentary, 1080p screen sharing, and real-time trade alerts.',
-		image: '/og-image.png',
-		brand: 'Revolution Trading Pros',
-		price: minPrice,
-		priceCurrency: 'USD',
-		availability: 'InStock' as const,
-		ratingValue: 4.8,
-		reviewCount: 312
-	});
-
-	// Full Expanded FAQ List for UI Rendering
+	// SEO schemas now emitted via +page.ts (page.data.seo).
+	// FAQ list kept locally for the on-page accordion UI.
 	const faqList = [
 		{
 			question: 'Do I need to be an expert to join?',
@@ -222,37 +202,7 @@
 		}
 	];
 
-	// Build Schema from the expanded list for SEOHead
-	const faqSchema: StructuredDataConfig = {
-		type: 'FAQPage',
-		questions: faqList.map((item) => ({
-			question: item.question,
-			answer: item.answer
-		}))
-	};
-
-	const combinedSchema: StructuredDataConfig[] = $derived([productSchema, faqSchema]);
 </script>
-
-<SEOHead
-	title="Live SPX 0DTE Trading Room | Real-Time Voice & Screen Share"
-	description="Join the #1 live options trading room. Watch professional traders execute SPX 0DTE strategies with live voice commentary, 1080p screen sharing, and real-time mentorship."
-	canonicalUrl="/live-trading-rooms/day-trading"
-	ogType="product"
-	ogImage="/images/og-live-room.jpg"
-	ogImageAlt="Live SPX Day Trading Room - Trade with Professional Traders"
-	keywords={[
-		'day trading room',
-		'live trading discord',
-		'spx 0dte strategy',
-		'options trading community',
-		'live stock market commentary',
-		'professional trading signals',
-		'learn to trade options',
-		'spx gamma levels'
-	]}
-	structuredData={combinedSchema}
-/>
 
 <div class="day-trading">
 	<section class="hero">

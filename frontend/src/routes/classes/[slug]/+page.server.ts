@@ -14,6 +14,10 @@
 
 import { env } from '$env/dynamic/private';
 import type { PageServerLoad } from './$types';
+import type { SEOInput } from '$lib/seo/types';
+import { buildBreadcrumb, buildCourse } from '$lib/seo/schemas';
+
+const SITE = 'https://revolution-trading-pros.pages.dev';
 
 const API_URL = env.API_URL || 'http://localhost:8080';
 
@@ -111,17 +115,42 @@ export const load: PageServerLoad = async ({ params, cookies, fetch }) => {
 	const ogImage =
 		courseData?.course?.og_image_url || courseData?.course?.card_image_url || '/logos/rtp-logo.png';
 
+	const classUrl = `${SITE}/classes/${slug}`;
+	const seo: SEOInput = {
+		title,
+		description,
+		canonical: classUrl,
+		og: {
+			type: 'article',
+			image: ogImage,
+			imageAlt: title
+		},
+		jsonld: [
+			buildBreadcrumb([
+				{ name: 'Home', url: `${SITE}/` },
+				{ name: 'Classes', url: `${SITE}/classes` },
+				{ name: title, url: classUrl }
+			]),
+			buildCourse({
+				url: classUrl,
+				name: title,
+				description,
+				provider: { name: 'Revolution Trading Pros', url: SITE },
+				hasCourseInstance: {
+					courseMode: 'Online',
+					instructor: courseData?.course?.instructor_name
+						? { name: courseData.course.instructor_name }
+						: undefined
+				}
+			})
+		]
+	};
+
 	return {
 		slug,
 		courseData,
 		error,
-		seo: {
-			title: `${title} - Revolution Trading Pros`,
-			description,
-			ogImage,
-			ogType: 'article',
-			canonical: `https://revolution-trading-pros.com/classes/${slug}`
-		},
+		seo,
 		// Legacy support for existing page structure
 		classData: courseData
 			? {

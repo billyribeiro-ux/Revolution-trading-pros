@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
-	import SEOHead from '$lib/components/seo/SeoHead.svelte';
 	import { cubicOut } from 'svelte/easing';
-	import type { StructuredDataConfig } from '$lib/utils/structured-data';
 
 	// --- SSOT: Pricing Plans ---
 	type Plan = {
@@ -147,32 +145,25 @@
 		}
 	}
 
-	// --- SEO SCHEMA (JSON-LD) - PRESERVED ---
-	const productSchema: StructuredDataConfig = {
-		type: 'Product',
-		url: '/alerts/spx-profit-pulse',
-		name: 'SPX Profit Pulse - 0DTE Options Alerts',
-		description:
-			`Professional SPX 0DTE options alerts delivered via SMS and Discord. Plans range from $${minPrice} to $${maxPrice}. Real-time entries, exits, and risk management.`,
-		brand: 'Revolution Trading Pros',
-		price: minPrice,
-		priceCurrency: 'USD',
-		availability: 'InStock'
-	};
-
-	const faqSchema: StructuredDataConfig = {
-		type: 'FAQPage',
-		questions: [
-			{
-				question: 'What is SPX 0DTE?',
-				answer: "SPX 0DTE refers to 'Zero Days to Expiration' options on the S&P 500 index. These contracts expire the same day they are traded, offering high potential returns due to rapid gamma exposure."
-			},
-			{ question: 'How fast are the alerts?', answer: 'Our alerts are sent instantly via SMS text message and Discord webhooks. The average latency is under 5 seconds from the moment our trader executes the trade.' },
-			{ question: 'What account size do I need?', answer: 'Since we trade SPX options, premiums can range from $2.00 to $10.00 ($200-$1,000 per contract). We recommend a starting account of at least $2,000 to manage risk properly.' }
-		]
-	};
-
-	const combinedSchema: StructuredDataConfig[] = [productSchema, faqSchema];
+	// SEO schemas emitted via +page.ts (page.data.seo). FAQ list kept locally
+	// for the on-page accordion UI (the JSON-LD is owned by the loader).
+	const faqList = [
+		{
+			question: 'What is SPX 0DTE?',
+			answer:
+				"SPX 0DTE refers to 'Zero Days to Expiration' options on the S&P 500 index. These contracts expire the same day they are traded, offering high potential returns due to rapid gamma exposure."
+		},
+		{
+			question: 'How fast are the alerts?',
+			answer:
+				'Our alerts are sent instantly via SMS text message and Discord webhooks. The average latency is under 5 seconds from the moment our trader executes the trade.'
+		},
+		{
+			question: 'What account size do I need?',
+			answer:
+				'Since we trade SPX options, premiums can range from $2.00 to $10.00 ($200-$1,000 per contract). We recommend a starting account of at least $2,000 to manage risk properly.'
+		}
+	];
 
 	// Feature card data — variant drives icon-tile color via CSS modifier classes.
 	type FeatureVariant = 'primary' | 'indigo' | 'emerald' | 'blue' | 'red' | 'purple';
@@ -209,23 +200,6 @@
 		}
 	];
 </script>
-
-<SEOHead
-	title="SPX Profit Pulse | #1 0DTE Options Alerts | Revolution Trading Pros"
-	description="Trade SPX 0DTE options with confidence. Get real-time SMS alerts, precise entries/exits, and professional risk management. Join 1,000+ traders."
-	canonicalUrl="/alerts/spx-profit-pulse"
-	ogType="product"
-	ogImage="/images/og-spx-pulse.jpg"
-	ogImageAlt="SPX Profit Pulse Alerts"
-	keywords={[
-		'spx alerts',
-		'0dte options',
-		'trading signals',
-		'discord trading group',
-		'sms options alerts'
-	]}
-	structuredData={combinedSchema}
-/>
 
 <main class="spx">
 	<!-- ─────────────────────────────────────────────────────────────
@@ -738,7 +712,7 @@
 		<div class="faq__inner">
 			<h2 class="faq__title">Frequently Asked Questions</h2>
 			<div class="faq__list">
-				{#each faqSchema.questions as faq, i (i)}
+				{#each faqList as faq, i (i)}
 					<div class="faq__item">
 						<button
 							type="button"

@@ -1,4 +1,9 @@
 /**
+ * @deprecated As of May 2026 SEO audit, the legacy SeoHead component (which
+ * this bridge served) has zero importers. All routes now write SEO directly
+ * into `page.data.seo` from their `load()`. The layout still wires this
+ * context to avoid a breaking change in `+layout.svelte`, but it is inert.
+ *
  * Page SEO Context — SSR-safe component-to-layout SEO bridge
  * ═══════════════════════════════════════════════════════════════════════════════
  *

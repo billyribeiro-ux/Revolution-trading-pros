@@ -1,5 +1,14 @@
 <script lang="ts">
 	/**
+	 * @deprecated As of May 2026 SEO audit, all pages have been migrated to the
+	 * unified SEO layer at `$lib/seo/` (Seo.svelte + resolveSEO + +page.{ts,server.ts}
+	 * load returning `{ seo: SEOInput }`). This legacy component is retained only
+	 * for archaeological reference and has zero importers (verified by grep).
+	 *
+	 * Do not import this component. If you find yourself reaching for it, write
+	 * an SEO payload in your route's `load()` instead — see frontend/src/routes/
+	 * about/+page.ts or blog/[slug]/+page.ts for examples.
+	 *
 	 * SEO Head Component - Apple ICT 7+ Principal Engineer Grade
 	 * ===========================================================
 	 *

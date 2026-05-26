@@ -3,8 +3,6 @@
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
-	import SEOHead from '$lib/components/seo/SeoHead.svelte';
-	import type { StructuredDataConfig } from '$lib/utils/structured-data';
 
 	// --- Pricing State (Svelte 5 Runes) ---
 	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = $state('quarterly');
@@ -119,50 +117,8 @@
 		}
 	];
 
-	// --- SEO: STRUCTURED DATA (JSON-LD) ---
-	const productSchema: StructuredDataConfig = {
-		type: 'Product',
-		url: '/live-trading-rooms/small-accounts',
-		name: 'Small Account Options Room',
-		description:
-			'Live trading room designed for growing small accounts (under $25k). Learn professional SPX 0DTE strategies optimized for cash accounts to avoid PDT restrictions.',
-		brand: 'Revolution Trading Pros',
-		price: 197,
-		priceCurrency: 'USD',
-		availability: 'InStock',
-		ratingValue: 4.9,
-		reviewCount: 184
-	};
-
-	const faqSchema: StructuredDataConfig = {
-		type: 'FAQPage',
-		questions: faqList.map((item) => ({
-			question: item.question,
-			answer: item.answer
-		}))
-	};
-
-	const combinedSchema: StructuredDataConfig[] = [productSchema, faqSchema];
+	// SEO schemas emitted via +page.ts (page.data.seo).
 </script>
-
-<SEOHead
-	title="Small Account Options Room | PDT-Free SPX Strategy for Accounts Under $25k"
-	description="A dedicated small-account options room focused on cash-account execution, PDT-free routines, SPX 0DTE risk control, and account-preservation habits."
-	canonicalUrl="/live-trading-rooms/small-accounts"
-	ogType="product"
-	ogImage="/images/day-trading-og.jpg"
-	ogImageAlt="Small Account Options Room - PDT-Free SPX Strategies"
-	keywords={[
-		'small account day trading',
-		'how to trade under 25k',
-		'PDT workaround strategies',
-		'SPX 0DTE for small accounts',
-		'cash account options trading',
-		'live trading room discord',
-		'growing a small trading account'
-	]}
-	structuredData={combinedSchema}
-/>
 
 <div class="small-accounts">
 	<section class="hero">

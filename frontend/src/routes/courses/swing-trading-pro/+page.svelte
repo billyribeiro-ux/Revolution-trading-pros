@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import SEOHead from '$lib/components/seo/SeoHead.svelte';
-	import type { StructuredDataConfig } from '$lib/utils/structured-data';
 	import {
 		IconChartLine,
 		IconClock,
@@ -154,26 +152,7 @@
 		};
 	});
 
-const courseSchema: StructuredDataConfig = {
-	type: 'Course',
-	url: '/courses/swing-trading-pro',
-	name: 'Swing Trading Pro',
-	description: 'Master swing trading with professional strategies to capture multi-day moves and optimal risk-reward setups.',
-	provider: { name: 'Revolution Trading Pros', url: 'https://revolutiontradingpros.com' },
-	educationalLevel: 'Beginner',
-	courseMode: 'online',
-	price: 397,
-	priceCurrency: 'USD'
-};
 </script>
-
-<SEOHead
-	title="Swing Trading Pro | Revolution Trading Pros"
-	description="Master swing trading with professional strategies to capture multi-day moves and optimal risk-reward setups."
-	canonicalUrl="/courses/swing-trading-pro"
-	ogType="product"
-	structuredData={courseSchema}
-/>
 
 <div class="course-page">
 	<!-- Hero Section -->

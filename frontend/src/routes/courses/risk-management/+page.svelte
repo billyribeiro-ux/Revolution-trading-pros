@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import SEOHead from '$lib/components/seo/SeoHead.svelte';
-	import type { StructuredDataConfig } from '$lib/utils/structured-data';
 	import {
 		IconShield,
 		IconClock,
@@ -32,26 +30,7 @@
 		return () => heroObserver.disconnect();
 	});
 
-const courseSchema: StructuredDataConfig = {
-	type: 'Course',
-	url: '/courses/risk-management',
-	name: 'Risk Management Mastery',
-	description: 'Learn professional risk management techniques used by institutional traders to preserve capital and maximize long-term profitability.',
-	provider: { name: 'Revolution Trading Pros', url: 'https://revolutiontradingpros.com' },
-	educationalLevel: 'All Levels',
-	courseMode: 'online',
-	price: 297,
-	priceCurrency: 'USD'
-};
 </script>
-
-<SEOHead
-	title="Risk Management Mastery | Revolution Trading Pros"
-	description="Learn professional risk management techniques used by institutional traders to preserve capital and maximize long-term profitability."
-	canonicalUrl="/courses/risk-management"
-	ogType="product"
-	structuredData={courseSchema}
-/>
 
 <div class="course-page">
 	<section class="hero-section" class:visible={heroVisible}>

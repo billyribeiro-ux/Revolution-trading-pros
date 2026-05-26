@@ -12,6 +12,10 @@
  */
 
 import type { PageServerLoad } from './.types';
+import type { SEOInput } from '$lib/seo/types';
+import { buildBreadcrumb, buildItemList } from '$lib/seo/schemas';
+
+const SITE = 'https://revolution-trading-pros.pages.dev';
 
 // Static data that can be generated at build time
 const tradingRoomsData = [
@@ -123,77 +127,32 @@ export const load: PageServerLoad = async ({
 		'Referrer-Policy': 'strict-origin-when-cross-origin'
 	});
 
-	// Generate SEO metadata aligned with Google December 2025 updates
-	const seoMetadata = {
-		title: 'Live Trading Rooms | Professional Trading Mentorship | Revolution Trading Pros',
+	// SEO payload — shape must match SEOInput so the unified layer renders it.
+	// Detailed JSON-LD graph below is included as a structured-data node.
+	const seoMetadata: SEOInput = {
+		title: 'Live Trading Rooms — Professional Trading Mentorship',
 		description:
 			'Join expert traders in our live trading rooms. Learn day trading, swing trading, and small account strategies with real-time alerts from institutional professionals with 15+ years experience.',
-		keywords:
-			'live trading rooms, professional trading mentorship, day trading education, swing trading strategies, small account growth, institutional trading, real-time trading alerts, expert traders',
-		canonical: 'https://revolution-trading-pros.com/live-trading-rooms',
-		author: 'Revolution Trading Pros - Professional Trading Education',
-		publisher: 'Revolution Trading Pros',
-		datePublished: '2025-12-16',
-		dateModified: new Date().toISOString(),
-		openGraph: {
-			title: 'Live Trading Rooms | Professional Trading Mentorship | Revolution Trading Pros',
-			description:
-				'Join expert traders in our live trading rooms. Learn day trading, swing trading, and small account strategies with real-time alerts from institutional professionals.',
+		og: {
 			type: 'website',
-			url: 'https://revolution-trading-pros.com/live-trading-rooms',
-			images: [
-				{
-					url: 'https://revolution-trading-pros.com/images/live-trading-rooms-og.jpg',
-					width: 1200,
-					height: 630,
-					alt: 'Professional Live Trading Rooms with Expert Mentors',
-					type: 'image/jpeg'
-				}
-			],
-			siteName: 'Revolution Trading Pros',
-			locale: 'en_US',
-			article: {
-				author: 'Revolution Trading Pros',
-				publishedTime: '2025-12-16T00:00:00Z',
-				modifiedTime: new Date().toISOString(),
-				section: 'Trading Education',
-				tag: 'Live Trading Rooms'
-			}
+			title: 'Live Trading Rooms — Professional Trading Mentorship',
+			image: `${SITE}/images/live-trading-rooms-og.jpg`,
+			imageAlt: 'Professional Live Trading Rooms with Expert Mentors'
 		},
-		twitter: {
-			card: 'summary_large_image',
-			title: 'Live Trading Rooms | Professional Trading Mentorship',
-			description:
-				'Join expert traders in our live trading rooms. Learn day trading, swing trading, and small account strategies with real-time alerts.',
-			images: ['https://revolution-trading-pros.com/images/live-trading-rooms-twitter.jpg'],
-			site: '@revolutiontrading',
-			creator: '@revolutiontrading',
-			domain: 'revolution-trading-pros.com'
-		},
-		// Google December 2025 E-E-A-T signals
-		eeat: {
-			expertise: {
-				level: 'professional',
-				authorCredentials: [
-					'15+ years institutional trading',
-					'Series 7 & 63 licensed',
-					'Former hedge fund trader'
-				],
-				originalResearch: 'Real-time market analysis and proprietary trading strategies',
-				contentDepth: 'Comprehensive trading education with live demonstrations'
-			},
-			trustworthiness: {
-				security: 'HTTPS with SSL encryption',
-				transparency: 'Full team credentials and trading methodology disclosed',
-				contactInfo: 'Verified business with physical address and support',
-				corrections: 'Transparent error correction policy'
-			},
-			userCentric: {
-				primaryIntent: 'Learn professional trading strategies through live mentorship',
-				contentFormat: 'Interactive live trading rooms with real-time alerts',
-				valueProposition: 'Direct access to institutional traders and proven strategies'
-			}
-		}
+		jsonld: [
+			buildBreadcrumb([
+				{ name: 'Home', url: `${SITE}/` },
+				{ name: 'Live Trading Rooms', url: `${SITE}/live-trading-rooms` }
+			]),
+			buildItemList(
+				'Live Trading Rooms',
+				tradingRoomsData.map((room) => ({
+					name: room.name,
+					url: `${SITE}/live-trading-rooms/${room.id}`,
+					description: room.description
+				}))
+			)
+		]
 	};
 
 	// Generate comprehensive structured data for Google December 2025
@@ -416,8 +375,10 @@ export const load: PageServerLoad = async ({
 		benefits: benefitsData,
 		symbols: tickerSymbols,
 
-		// SEO metadata
+		// SEO metadata (consumed by root +layout.svelte via page.data.seo)
 		seo: seoMetadata,
+		// Legacy structured-data graph kept for now in case any component reads it.
+		// It is NOT emitted to <head>; the unified Seo layer renders only seo.jsonld.
 		structuredData,
 
 		// Performance metrics
