@@ -26,11 +26,9 @@
 
 	let props: Props = $props();
 
-	let isCollapsed = $state(false);
-
-	$effect(() => {
-		isCollapsed = props.collapsed ?? false;
-	});
+	// Writable $derived — tracks `props.collapsed`, but `toggleSidebar` can
+	// override it locally until the prop changes again.
+	let isCollapsed = $derived(props.collapsed ?? false);
 
 	function toggleSidebar() {
 		isCollapsed = !isCollapsed;

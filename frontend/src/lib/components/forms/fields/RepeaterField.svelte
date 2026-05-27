@@ -73,17 +73,18 @@
 				]
 	);
 
-	// Initialize rows state
-	let rows = $state<RepeaterRow[]>([]);
-
-	// Sync rows with value prop and minItems using $effect
-	$effect(() => {
-		if (props.value && props.value.length > 0) {
-			rows = props.value;
-		} else if (minItems > 0 && rows.length === 0) {
-			rows = Array.from({ length: minItems }, () => createNewRow());
-		}
-	});
+	// Writable $derived — local mutators (`addRow`, `removeRow`, drag
+	// reorder) override directly; a prop / config change re-syncs from
+	// `props.value` or seeds `minItems` blank rows. Replaces the previous
+	// $state + $effect shadow pattern called out in
+	// docs/audits/DISTINGUISHED_ENGINEER_AUDIT_2026-04-25.md.
+	let rows = $derived<RepeaterRow[]>(
+		props.value && props.value.length > 0
+			? props.value
+			: minItems > 0
+				? Array.from({ length: minItems }, () => createNewRow())
+				: []
+	);
 
 	// Drag state
 	let draggedIndex = $state<number | null>(null);

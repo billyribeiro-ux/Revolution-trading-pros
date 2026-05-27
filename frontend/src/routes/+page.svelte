@@ -29,30 +29,26 @@
 	}
 	let props: Props = $props();
 
-	// Posts state - use SSR data or fetch client-side
-	let posts = $state<any[]>([]);
+	// Client-side fallback posts (only used when SSR returned empty)
+	let clientPosts = $state<any[]>([]);
 
-	// Sync posts with data.posts reactively
-	$effect(() => {
-		if (props.data.posts && props.data.posts.length > 0) {
-			posts = props.data.posts;
-		}
-	});
+	// Prefer SSR data; fall back to the client-side fetch result when SSR returned empty.
+	const posts = $derived(
+		props.data?.posts?.length ? props.data.posts : clientPosts
+	);
 
-	// Client-side fallback fetch if SSR returned empty
-	// ICT 7: SSR should always fetch from production API - client fetch is backup only
+	// Client-side fallback fetch if SSR returned empty.
 	onMount(async () => {
-		if (posts.length === 0 && browser) {
-			try {
-				const res = await fetch(`${API_URL}/api/posts?per_page=6`);
-				if (res.ok) {
-					const json = await res.json();
-					posts = json.data || [];
-				}
-			} catch {
-				// ICT 7: Network errors handled gracefully - posts remain empty
-				// Component renders without posts (shows empty state or placeholder)
+		if (!browser) return;
+		if (props.data?.posts?.length) return;
+		try {
+			const res = await fetch(`${API_URL}/api/posts?per_page=6`);
+			if (res.ok) {
+				const json = await res.json();
+				clientPosts = json.data || [];
 			}
+		} catch {
+			// Network errors handled gracefully - posts remain empty.
 		}
 	});
 

@@ -38,10 +38,36 @@ https://svelte.dev/e/bind_invalid_expression -->
 		width: 12
 	});
 
-	let showConditionalLogic = $state(false);
-	let optionsText = $state('');
+	// Writable $derived — `removeConditionalRule` can flip this back to false
+	// when the last rule is removed; a prop change re-syncs from the field.
+	let showConditionalLogic = $derived<boolean>(!!props.field?.conditional_logic);
 
-	// Sync with prop changes - ICT 7 Fix: Always ensure validation is an object
+	// Writable $derived — bound to a textarea below, parsed back into
+	// `fieldData.options` on save. A prop change re-renders the textarea
+	// with the upstream options list.
+	let optionsText = $derived<string>(
+		Array.isArray(props.field?.options)
+			? props.field.options
+					.map((o) => {
+						if (typeof o === 'string') return o;
+						if (o && typeof o === 'object' && !Array.isArray(o)) {
+							const l = (o as Record<string, unknown>)['label'];
+							if (typeof l === 'string') return l;
+							const v = (o as Record<string, unknown>)['value'];
+							if (typeof v === 'string') return v;
+						}
+						return '';
+					})
+					.filter(Boolean)
+					.join('\n')
+			: ''
+	);
+
+	// Sync working-copy `fieldData` with prop changes. Kept as $state + $effect
+	// because the editor mutates `fieldData` heavily (see handleSave,
+	// addConditionalRule, bind:value on every input). The plain rebuild is
+	// safe here because there's no concurrent typing — the editor re-mounts
+	// when the parent switches which field is being edited.
 	$effect(() => {
 		if (props.field) {
 			fieldData = {
@@ -62,25 +88,6 @@ https://svelte.dev/e/bind_invalid_expression -->
 				order: props.field.order ?? 0,
 				width: props.field.width ?? 12
 			};
-			showConditionalLogic = !!props.field.conditional_logic;
-			// R8-A: `field.options` is now `JsonValue` (was `any`). Narrow
-			// before `.join()` — accept either `string[]` (legacy) or
-			// `Array<{label,value}>` (current write-side at line 78-82).
-			optionsText = Array.isArray(props.field.options)
-				? props.field.options
-						.map((o) => {
-							if (typeof o === 'string') return o;
-							if (o && typeof o === 'object' && !Array.isArray(o)) {
-								const l = o['label'];
-								if (typeof l === 'string') return l;
-								const v = o['value'];
-								if (typeof v === 'string') return v;
-							}
-							return '';
-						})
-						.filter(Boolean)
-						.join('\n')
-				: '';
 		}
 	});
 

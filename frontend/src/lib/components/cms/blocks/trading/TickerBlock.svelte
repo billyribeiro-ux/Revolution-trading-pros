@@ -37,10 +37,11 @@
 		{ id: 't3', symbol: 'AAPL', price: 185.92, change: 3.45, changePercent: 1.89 }
 	];
 
-	let tickers = $state<TickerItem[]>(DEFAULT_TICKERS);
-	$effect(() => {
-		tickers = (props.block.content.tickerItems as TickerItem[] | undefined) ?? DEFAULT_TICKERS;
-	});
+	// Writable $derived — editor handlers below can override `tickers`
+	// locally; a prop change re-syncs from the block content.
+	let tickers = $derived<TickerItem[]>(
+		(props.block.content.tickerItems as TickerItem[] | undefined) ?? DEFAULT_TICKERS
+	);
 
 	let layout = $derived((props.block.settings.tickerLayout as 'grid' | 'list') || 'grid');
 

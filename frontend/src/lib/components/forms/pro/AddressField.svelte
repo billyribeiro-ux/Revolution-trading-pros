@@ -28,16 +28,13 @@
 		country: ''
 	};
 
-	let addressData = $state<AddressValue>({ ...defaultValue });
+	// Writable $derived — `handleFieldChange` can override locally,
+	// and a prop change (form reset, edit-load) re-syncs it.
+	let addressData = $derived<AddressValue>({ ...defaultValue, ...props.value });
 
 	const showAddress2 = $derived(props.field.attributes?.show_address_2 !== false);
 	const showCountry = $derived(props.field.attributes?.show_country !== false);
 	const enableAutocomplete = $derived(props.field.attributes?.enable_autocomplete !== false);
-
-	// Sync with prop value changes
-	$effect(() => {
-		addressData = { ...defaultValue, ...props.value };
-	});
 
 	const countries = [
 		{ code: 'US', name: 'United States' },

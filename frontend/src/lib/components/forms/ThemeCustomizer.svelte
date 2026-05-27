@@ -8,17 +8,13 @@
 	}
 
 	let props: Props = $props();
-	let selectedTheme = $state<FormTheme>(themes[0]);
 	let isCustomizing = $state(false);
-	let customTheme = $state<FormTheme>({ ...themes[0] });
 
-	// Sync from props when they change
-	$effect(() => {
-		if (props.selectedTheme) {
-			selectedTheme = props.selectedTheme;
-			customTheme = { ...props.selectedTheme };
-		}
-	});
+	// Writable $derived — `selectTheme` / `applyCustomTheme` can override
+	// locally; a prop change re-syncs both. Replaces the previous $state +
+	// $effect shadow pattern.
+	let selectedTheme = $derived<FormTheme>(props.selectedTheme ?? themes[0]);
+	let customTheme = $derived<FormTheme>({ ...(props.selectedTheme ?? themes[0]) });
 
 	function selectTheme(theme: FormTheme) {
 		selectedTheme = theme;

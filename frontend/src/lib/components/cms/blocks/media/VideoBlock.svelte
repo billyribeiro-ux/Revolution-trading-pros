@@ -39,10 +39,10 @@
 	// Local State
 	// ==========================================================================
 
-	let urlInputValue = $state('');
-	$effect(() => {
-		urlInputValue = props.block.content.mediaUrl || '';
-	});
+	// Writable $derived — the URL input below can override locally while the
+	// user types; a prop change (e.g., the block being externally updated)
+	// re-syncs the field. Replaces the previous $state + $effect shadow.
+	let urlInputValue = $derived<string>(props.block.content.mediaUrl || '');
 	let isLoading = $state(false);
 	let hasError = $state(false);
 	let errorMessage = $state('');
@@ -238,10 +238,6 @@
 		}
 	});
 
-	// Sync input value with block content
-	$effect(() => {
-		urlInputValue = props.block.content.mediaUrl || '';
-	});
 </script>
 
 <div

@@ -78,27 +78,23 @@
 		{ code: 'CO', name: 'Colombia', dialCode: '+57', flag: '🇨🇴' }
 	];
 
-	let defaultCountry = $state('US');
-	let selectedCountry = $state<Country>(countries[0]);
-	let phoneNumber = $state('');
 	let showDropdown = $state(false);
 	let searchQuery = $state('');
 
-	$effect(() => {
-		// `attributes` is open-ended (`JsonValue | undefined`); narrow before use.
-		const dc = props.field.attributes?.default_country;
-		defaultCountry = typeof dc === 'string' ? dc : 'US';
-	});
-
-	$effect(() => {
-		selectedCountry =
-			countries.find((c) => c.code === (props.value?.country_code || defaultCountry)) ||
-			countries[0];
-	});
-
-	$effect(() => {
-		phoneNumber = props.value?.number || '';
-	});
+	const defaultCountry = $derived(
+		typeof props.field.attributes?.default_country === 'string'
+			? (props.field.attributes.default_country as string)
+			: 'US'
+	);
+	// Writable $derived — `selectCountry` can override locally, and a prop
+	// change re-syncs the selection.
+	let selectedCountry = $derived<Country>(
+		countries.find((c) => c.code === (props.value?.country_code || defaultCountry)) ||
+			countries[0]
+	);
+	// Writable $derived — `handlePhoneInput` can override locally while the
+	// user types; a prop change re-syncs the displayed value.
+	let phoneNumber = $derived<string>(props.value?.number || '');
 
 	const filteredCountries = $derived(
 		searchQuery

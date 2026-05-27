@@ -30,36 +30,19 @@
 	const suffix = $derived(asString(props.field.attributes?.suffix));
 	const tickCount = $derived(asNumber(props.field.attributes?.tick_count, 5));
 
-	let singleValue = $state<number>(0);
-	let rangeStart = $state<number>(0);
-	let rangeEnd = $state<number>(100);
-
-	$effect(() => {
-		singleValue = min;
-	});
-
-	$effect(() => {
-		rangeStart = min;
-	});
-
-	$effect(() => {
-		rangeEnd = max;
-	});
-
-	// Sync state values with value prop changes
-	$effect(() => {
-		if (typeof props.value === 'number') {
-			singleValue = props.value as number;
-		} else if (Array.isArray(props.value)) {
-			rangeStart = (props.value as [number, number])[0];
-			rangeEnd = (props.value as [number, number])[1];
-		} else {
-			// Initialize from defaults if no value provided
-			singleValue = min;
-			rangeStart = min;
-			rangeEnd = max;
-		}
-	});
+	// Writable $derived — handlers below can override locally, and a prop /
+	// validation change re-syncs them. The previous code used four $effects
+	// (three of which always reset to min/max regardless of `props.value`),
+	// which made initial render order matter and could race with user input.
+	let singleValue = $derived<number>(
+		typeof props.value === 'number' ? (props.value as number) : min
+	);
+	let rangeStart = $derived<number>(
+		Array.isArray(props.value) ? (props.value as [number, number])[0] : min
+	);
+	let rangeEnd = $derived<number>(
+		Array.isArray(props.value) ? (props.value as [number, number])[1] : max
+	);
 
 	function formatValue(val: number): string {
 		return `${prefix}${val}${suffix}`;

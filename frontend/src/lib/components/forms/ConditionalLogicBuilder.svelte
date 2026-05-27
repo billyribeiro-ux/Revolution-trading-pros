@@ -31,14 +31,12 @@
 		rules: []
 	};
 
-	let logic = $state<ConditionalLogic>({ ...defaultLogic });
-
-	// Sync with prop changes
-	$effect(() => {
-		if (props.value) {
-			logic = { ...defaultLogic, ...props.value };
-		}
-	});
+	// Writable $derived — internal handlers can mutate `logic` directly, and
+	// a prop change (form load, reset) re-syncs it. Replaces the previous
+	// $state + $effect shadow pattern.
+	let logic = $derived<ConditionalLogic>(
+		props.value ? { ...defaultLogic, ...props.value } : { ...defaultLogic }
+	);
 
 	// Available operators with labels
 	const operators = [

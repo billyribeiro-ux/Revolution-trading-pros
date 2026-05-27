@@ -50,8 +50,7 @@
 	let manualMode = $state(false);
 	let selectedIndex = $state(-1);
 
-	// Initialize address state with proper derived reactivity
-	let address = $state<AddressComponents>({
+	const EMPTY_ADDRESS: AddressComponents = {
 		street_number: '',
 		street_name: '',
 		address_line1: '',
@@ -62,14 +61,12 @@
 		country: '',
 		country_code: '',
 		formatted_address: ''
-	});
+	};
 
-	// Sync address with value prop changes
-	$effect(() => {
-		if (props.value && JSON.stringify(props.value) !== JSON.stringify(address)) {
-			address = props.value;
-		}
-	});
+	// Writable $derived — handlers below can override locally, but a prop
+	// change (e.g., a selected suggestion fed back through the parent)
+	// re-syncs it. Cheaper than the prior JSON.stringify equality check.
+	let address = $derived<AddressComponents>(props.value ?? EMPTY_ADDRESS);
 
 	// Debounce timer
 	let debounceTimer: ReturnType<typeof setTimeout>;
