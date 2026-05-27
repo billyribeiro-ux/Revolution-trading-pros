@@ -1,171 +1,240 @@
-<!-- @migration-task Error while migrating Svelte code: Can only bind to an Identifier or MemberExpression or a `{get, set}` pair
-https://svelte.dev/e/bind_invalid_expression -->
 <script lang="ts">
-	import type { FormField } from '$lib/api/forms';
+	/**
+	 * FieldEditor — configure a single form field's properties.
+	 *
+	 * Lifecycle contract (owned by `FormBuilder.svelte`):
+	 *   • Parent gates this component behind `{#if showFieldEditor}` and toggles
+	 *     it false on save/cancel, so a fresh editor mounts for each session.
+	 *   • Parent passes `field` as a shallow clone of the row it wants to edit
+	 *     (`editingField = { ...fields[i] }`) — this component owns its own
+	 *     deep-cloned working copy from there and never mutates the prop.
+	 *   • On save we hand the normalized `FormField` back through `onsave`;
+	 *     on cancel the parent simply discards `editingField`.
+	 *
+	 * No `$effect`s — `fieldData` is initialised once at mount via $state,
+	 * `optionsText` and the conditional-logic checkbox are wired through
+	 * function bindings (`bind:value={get, set}`), and all mutations live in
+	 * event handlers rather than reactive side effects.
+	 */
+	import { untrack } from 'svelte';
+	import type {
+		FormField,
+		FieldValidation,
+		ConditionalLogic,
+		ConditionalRule
+	} from '$lib/api/forms';
 
 	interface Props {
+		/** The field to edit. `null`/`undefined` boots an empty `text` field. */
 		field?: FormField | null;
+		/** Other fields in the form, used as targets for conditional-logic rules. */
 		availableFields?: FormField[];
+		/** Commit handler. Receives the normalized working copy. */
 		onsave?: (data: FormField) => void;
 		oncancel?: () => void;
 	}
 
-	let props: Props = $props();
+	let { field, availableFields = [], onsave, oncancel }: Props = $props();
 
-	// Default validation object to prevent null reference errors (ICT 7 Fix)
-	const createDefaultValidation = () => ({
-		min_length: undefined as number | undefined,
-		max_length: undefined as number | undefined,
-		min: undefined as number | undefined,
-		max: undefined as number | undefined,
-		accept: undefined as string | undefined,
-		max_size: undefined as number | undefined
-	});
+	// ─────────────────────────────────────────────────────────────────────────
+	// Working copy
+	// ─────────────────────────────────────────────────────────────────────────
 
-	let fieldData: FormField = $state({
-		field_type: 'text',
-		label: '',
-		name: '',
-		placeholder: '',
-		help_text: '',
-		default_value: '',
-		options: null,
-		validation: createDefaultValidation(),
-		conditional_logic: null,
-		attributes: null,
-		required: false,
-		order: 0,
-		width: 12
-	});
+	/**
+	 * Build a fully-defaulted, deep-cloned working copy from the parent's field.
+	 *
+	 * Deep-cloning matters: the parent only `{...field}`-clones the top level,
+	 * so without this the inner `validation`/`conditional_logic`/`attributes`
+	 * objects would still reference the original — and `addConditionalRule`
+	 * would silently mutate the row the user is supposedly only "previewing"
+	 * (Cancel becomes a no-op).
+	 */
+	function buildWorkingCopy(source: FormField | null | undefined): FormField {
+		// `structuredClone` reads through the parent's $state proxy, producing a
+		// plain object we can safely mutate without touching the upstream row.
+		const base: FormField = source
+			? (structuredClone(source) as FormField)
+			: {
+					field_type: 'text',
+					label: '',
+					name: '',
+					placeholder: '',
+					help_text: '',
+					default_value: '',
+					options: null,
+					validation: null,
+					conditional_logic: null,
+					attributes: null,
+					required: false,
+					order: 0,
+					width: 12
+				};
 
-	// Writable $derived — `removeConditionalRule` can flip this back to false
-	// when the last rule is removed; a prop change re-syncs from the field.
-	let showConditionalLogic = $derived<boolean>(!!props.field?.conditional_logic);
+		// Normalise sparse fields so the template's bindings (which all expect
+		// strings, not `undefined`) don't have to defend themselves.
+		base.field_type = base.field_type ?? 'text';
+		base.label = base.label ?? '';
+		base.name = base.name ?? '';
+		base.placeholder = base.placeholder ?? '';
+		base.help_text = base.help_text ?? '';
+		base.default_value = base.default_value ?? '';
+		base.options = base.options ?? null;
+		base.conditional_logic = base.conditional_logic ?? null;
+		base.attributes = base.attributes ?? null;
+		base.required = base.required ?? false;
+		base.order = base.order ?? 0;
+		base.width = base.width ?? 12;
 
-	// Writable $derived — bound to a textarea below, parsed back into
-	// `fieldData.options` on save. A prop change re-renders the textarea
-	// with the upstream options list.
-	let optionsText = $derived<string>(
-		Array.isArray(props.field?.options)
-			? props.field.options
-					.map((o) => {
-						if (typeof o === 'string') return o;
-						if (o && typeof o === 'object' && !Array.isArray(o)) {
-							const l = (o as Record<string, unknown>)['label'];
-							if (typeof l === 'string') return l;
-							const v = (o as Record<string, unknown>)['value'];
-							if (typeof v === 'string') return v;
-						}
-						return '';
-					})
-					.filter(Boolean)
-					.join('\n')
-			: ''
-	);
+		// `validation` stays an object so `bind:value={fieldData.validation.*}`
+		// is always a valid member expression. We strip empty keys on save.
+		base.validation = base.validation ?? {};
 
-	// Sync working-copy `fieldData` with prop changes. Kept as $state + $effect
-	// because the editor mutates `fieldData` heavily (see handleSave,
-	// addConditionalRule, bind:value on every input). The plain rebuild is
-	// safe here because there's no concurrent typing — the editor re-mounts
-	// when the parent switches which field is being edited.
-	$effect(() => {
-		if (props.field) {
-			fieldData = {
-				...props.field,
-				field_type: props.field.field_type ?? 'text',
-				label: props.field.label ?? '',
-				name: props.field.name ?? '',
-				placeholder: props.field.placeholder ?? '',
-				help_text: props.field.help_text ?? '',
-				default_value: props.field.default_value ?? '',
-				options: props.field.options ?? null,
-				validation: props.field.validation
-					? { ...createDefaultValidation(), ...props.field.validation }
-					: createDefaultValidation(),
-				conditional_logic: props.field.conditional_logic ?? null,
-				attributes: props.field.attributes ?? null,
-				required: props.field.required ?? false,
-				order: props.field.order ?? 0,
-				width: props.field.width ?? 12
-			};
-		}
-	});
+		return base;
+	}
+
+	// Initialise once at mount. `untrack` makes the intent explicit: the
+	// parent's lifecycle (`{#if showFieldEditor}` remount) is what swaps
+	// fields, not in-place prop updates, so we deliberately don't re-read
+	// `field` reactively.
+	let fieldData: FormField = $state(untrack(() => buildWorkingCopy(field)));
+
+	// ─────────────────────────────────────────────────────────────────────────
+	// Derived view of the field shape (drives which sections render)
+	// ─────────────────────────────────────────────────────────────────────────
 
 	const needsOptions = $derived(['select', 'radio', 'checkbox'].includes(fieldData.field_type));
 	const supportsValidation = $derived(
 		!['heading', 'divider', 'html', 'hidden'].includes(fieldData.field_type)
 	);
+	const showsBasicInputs = $derived(
+		!['heading', 'divider', 'html'].includes(fieldData.field_type)
+	);
 
-	function handleSave() {
-		// Parse options from textarea - convert strings to FieldOption objects
-		if (needsOptions && optionsText.trim()) {
-			fieldData.options = optionsText
-				.split('\n')
-				.map((s) => s.trim())
-				.filter(Boolean)
-				.map((label) => ({ label, value: label.toLowerCase().replace(/\s+/g, '_') }));
-		} else {
+	// ─────────────────────────────────────────────────────────────────────────
+	// Function bindings: textarea <-> fieldData.options
+	//
+	// `options` is a `JsonValue` that may hold a `FieldOption[]`, a `string[]`,
+	// or a non-array shape (newsletter config, etc.). The textarea only edits
+	// the `FieldOption[]` flavour; non-array shapes are passed through
+	// untouched (read as empty, save leaves them alone).
+	// ─────────────────────────────────────────────────────────────────────────
+
+	function readOptionLabel(o: unknown): string {
+		if (typeof o === 'string') return o;
+		if (o && typeof o === 'object' && !Array.isArray(o)) {
+			const obj = o as Record<string, unknown>;
+			if (typeof obj.label === 'string') return obj.label;
+			if (typeof obj.value === 'string') return obj.value;
+		}
+		return '';
+	}
+
+	function getOptionsText(): string {
+		if (!Array.isArray(fieldData.options)) return '';
+		return fieldData.options.map(readOptionLabel).filter(Boolean).join('\n');
+	}
+
+	function setOptionsText(text: string): void {
+		const lines = text
+			.split('\n')
+			.map((s) => s.trim())
+			.filter(Boolean);
+		if (lines.length === 0) {
 			fieldData.options = null;
+			return;
 		}
-
-		// Clear conditional logic if not enabled
-		if (!showConditionalLogic) {
-			fieldData.conditional_logic = null;
-		}
-
-		// Generate name from label if empty
-		if (!fieldData.name && fieldData.label) {
-			fieldData.name = fieldData.label
-				.toLowerCase()
-				.replace(/[^a-z0-9]+/g, '_')
-				.replace(/^_+|_+$/g, '');
-		}
-
-		props.onsave?.(fieldData);
+		// `FieldOption` has typed fields but no index signature, so it isn't
+		// structurally `JsonValue`. The plain object literal below IS — `label`
+		// and `value` are both strings, which satisfy JsonValue.
+		fieldData.options = lines.map((label) => ({
+			label,
+			value: label.toLowerCase().replace(/\s+/g, '_')
+		}));
 	}
 
-	function handleCancel() {
-		props.oncancel?.();
+	// ─────────────────────────────────────────────────────────────────────────
+	// Function bindings: checkbox <-> fieldData.conditional_logic existence
+	// ─────────────────────────────────────────────────────────────────────────
+
+	const BLANK_RULE: ConditionalRule = { field: '', operator: 'equals', value: '' };
+
+	function isConditionalEnabled(): boolean {
+		return fieldData.conditional_logic !== null;
 	}
 
-	function addConditionalRule() {
-		if (!fieldData.conditional_logic) {
-			fieldData.conditional_logic = {
-				enabled: true,
-				action: 'show',
-				logic: 'all',
-				rules: []
-			};
-		}
-
-		fieldData.conditional_logic.rules = [
-			...fieldData.conditional_logic.rules,
-			{
-				field: '',
-				operator: 'equals',
-				value: ''
+	function setConditionalEnabled(enabled: boolean): void {
+		if (enabled) {
+			if (!fieldData.conditional_logic) {
+				fieldData.conditional_logic = {
+					enabled: true,
+					action: 'show',
+					logic: 'all',
+					rules: [{ ...BLANK_RULE }]
+				};
 			}
-		];
-	}
-
-	function removeConditionalRule(index: number) {
-		if (!fieldData.conditional_logic) return;
-
-		fieldData.conditional_logic.rules = fieldData.conditional_logic.rules.filter(
-			(_, i) => i !== index
-		);
-
-		if (fieldData.conditional_logic.rules.length === 0) {
-			showConditionalLogic = false;
+		} else {
 			fieldData.conditional_logic = null;
 		}
 	}
 
-	$effect(() => {
-		if (showConditionalLogic && !fieldData.conditional_logic) {
-			addConditionalRule();
+	function addConditionalRule(): void {
+		const cl: ConditionalLogic = fieldData.conditional_logic ?? {
+			enabled: true,
+			action: 'show',
+			logic: 'all',
+			rules: []
+		};
+		fieldData.conditional_logic = {
+			...cl,
+			rules: [...cl.rules, { ...BLANK_RULE }]
+		};
+	}
+
+	function removeConditionalRule(index: number): void {
+		const cl = fieldData.conditional_logic;
+		if (!cl) return;
+		const remaining = cl.rules.filter((_, i) => i !== index);
+		if (remaining.length === 0) {
+			fieldData.conditional_logic = null;
+		} else {
+			fieldData.conditional_logic = { ...cl, rules: remaining };
 		}
-	});
+	}
+
+	// ─────────────────────────────────────────────────────────────────────────
+	// Commit
+	// ─────────────────────────────────────────────────────────────────────────
+
+	/** Slug-ify a label into a unique-looking field name. */
+	function slugify(label: string): string {
+		return label
+			.toLowerCase()
+			.replace(/[^a-z0-9]+/g, '_')
+			.replace(/^_+|_+$/g, '');
+	}
+
+	function pruneValidation(v: FieldValidation | null | undefined): FieldValidation | null {
+		if (!v) return null;
+		const out: Record<string, unknown> = {};
+		for (const [k, val] of Object.entries(v)) {
+			if (val !== undefined && val !== '' && val !== null) out[k] = val;
+		}
+		return Object.keys(out).length ? (out as FieldValidation) : null;
+	}
+
+	function handleSave(): void {
+		// Auto-derive `name` from `label` when the user didn't set one.
+		if (!fieldData.name && fieldData.label) {
+			fieldData.name = slugify(fieldData.label);
+		}
+		// Drop empty validation keys before round-tripping through JSONB.
+		fieldData.validation = pruneValidation(fieldData.validation);
+		onsave?.(fieldData);
+	}
+
+	function handleCancel(): void {
+		oncancel?.();
+	}
 </script>
 
 <div class="field-editor">
@@ -199,7 +268,7 @@ https://svelte.dev/e/bind_invalid_expression -->
 			<small class="help-text">Unique identifier for this field</small>
 		</div>
 
-		{#if fieldData.field_type !== 'heading' && fieldData.field_type !== 'divider' && fieldData.field_type !== 'html'}
+		{#if showsBasicInputs}
 			<div class="form-group">
 				<label for="field-placeholder">Placeholder Text</label>
 				<input
@@ -251,7 +320,7 @@ https://svelte.dev/e/bind_invalid_expression -->
 				<label for="field-options">Options (one per line) *</label>
 				<textarea
 					id="field-options"
-					bind:value={optionsText}
+					bind:value={getOptionsText, setOptionsText}
 					placeholder="Option 1&#10;Option 2&#10;Option 3"
 					class="form-input"
 					rows="5"
@@ -261,7 +330,7 @@ https://svelte.dev/e/bind_invalid_expression -->
 		{/if}
 
 		<!-- Validation -->
-		{#if supportsValidation}
+		{#if supportsValidation && fieldData.validation}
 			<div class="form-section">
 				<h4>Validation</h4>
 
@@ -272,7 +341,7 @@ https://svelte.dev/e/bind_invalid_expression -->
 							<input
 								id="min-length"
 								type="number"
-								bind:value={fieldData.validation!.min_length}
+								bind:value={fieldData.validation.min_length}
 								class="form-input"
 								min="0"
 							/>
@@ -283,7 +352,7 @@ https://svelte.dev/e/bind_invalid_expression -->
 							<input
 								id="max-length"
 								type="number"
-								bind:value={fieldData.validation!.max_length}
+								bind:value={fieldData.validation.max_length}
 								class="form-input"
 								min="1"
 							/>
@@ -298,7 +367,7 @@ https://svelte.dev/e/bind_invalid_expression -->
 							<input
 								id="min-value"
 								type="number"
-								bind:value={fieldData.validation!.min}
+								bind:value={fieldData.validation.min}
 								class="form-input"
 							/>
 						</div>
@@ -308,7 +377,7 @@ https://svelte.dev/e/bind_invalid_expression -->
 							<input
 								id="max-value"
 								type="number"
-								bind:value={fieldData.validation!.max}
+								bind:value={fieldData.validation.max}
 								class="form-input"
 							/>
 						</div>
@@ -321,7 +390,7 @@ https://svelte.dev/e/bind_invalid_expression -->
 						<input
 							id="file-accept"
 							type="text"
-							bind:value={fieldData.validation!.accept}
+							bind:value={fieldData.validation.accept}
 							placeholder=".pdf,.doc,.docx"
 							class="form-input"
 						/>
@@ -332,7 +401,7 @@ https://svelte.dev/e/bind_invalid_expression -->
 						<input
 							id="file-size"
 							type="number"
-							bind:value={fieldData.validation!.max_size}
+							bind:value={fieldData.validation.max_size}
 							class="form-input"
 							min="1"
 							step="1"
@@ -347,12 +416,16 @@ https://svelte.dev/e/bind_invalid_expression -->
 			<div class="section-header">
 				<h4>Conditional Logic</h4>
 				<label for="conditional-enable" class="checkbox-label">
-					<input id="conditional-enable" type="checkbox" bind:checked={showConditionalLogic} />
+					<input
+						id="conditional-enable"
+						type="checkbox"
+						bind:checked={isConditionalEnabled, setConditionalEnabled}
+					/>
 					<span>Enable conditional logic</span>
 				</label>
 			</div>
 
-			{#if showConditionalLogic && fieldData.conditional_logic}
+			{#if fieldData.conditional_logic}
 				<div class="conditional-config">
 					<div class="form-row">
 						<div class="form-group">
@@ -386,7 +459,7 @@ https://svelte.dev/e/bind_invalid_expression -->
 								<label for="rule-field-{index}" class="sr-only">Rule field</label>
 								<select id="rule-field-{index}" bind:value={rule.field} class="form-input">
 									<option value="">Select field...</option>
-									{#each props.availableFields ?? [] as availField (availField.name)}
+									{#each availableFields as availField (availField.name)}
 										<option value={availField.name}>{availField.label}</option>
 									{/each}
 								</select>
@@ -418,6 +491,7 @@ https://svelte.dev/e/bind_invalid_expression -->
 									class="btn-remove"
 									onclick={() => removeConditionalRule(index)}
 									title="Remove rule"
+									aria-label="Remove rule {index + 1}"
 								>
 									✕
 								</button>
@@ -434,8 +508,8 @@ https://svelte.dev/e/bind_invalid_expression -->
 	</div>
 
 	<div class="editor-actions">
-		<button class="btn btn-secondary" onclick={handleCancel}> Cancel </button>
-		<button class="btn btn-primary" onclick={handleSave}> Save Field </button>
+		<button type="button" class="btn btn-secondary" onclick={handleCancel}>Cancel</button>
+		<button type="button" class="btn btn-primary" onclick={handleSave}>Save Field</button>
 	</div>
 </div>
 
