@@ -1,10 +1,6 @@
 packages:
   - frontend
   - svelte-click-to-source
-onlyBuiltDependencies:
-  - esbuild
-  - sharp
-  - workerd
 
 # pnpm 11 escalates ERR_PNPM_IGNORED_BUILDS to a FATAL non-zero exit by
 # default, so a clean `pnpm install --frozen-lockfile` (CI, fresh clone)
@@ -23,3 +19,7 @@ strictDepBuilds: false
 # never desired. Reproduced cold and verified: with this set,
 # install -> check -> lint -> vitest all pass on a clean checkout.
 verifyDepsBeforeRun: false
+allowBuilds:
+  esbuild: true
+  sharp: true
+  workerd: true
