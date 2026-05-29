@@ -80,9 +80,10 @@
 	let canvas: HTMLCanvasElement | undefined = $state();
 	let image: HTMLImageElement | undefined = $state();
 	let imageLoaded = $state(false);
-	// Intentionally capture initial value only - selectedRatio is user-controlled after mount
-	// svelte-ignore state_referenced_locally
-	let selectedRatio = $state(initialAspectRatio || 'Free');
+	// Intentionally capture initial value only — selectedRatio is user-controlled
+	// after mount. `untrack` makes the init-once intent explicit and replaces
+	// the prior // svelte-ignore state_referenced_locally directive.
+	let selectedRatio = $state(untrack(() => initialAspectRatio || 'Free'));
 	let rotation = $state(0);
 	let flipH = $state(false);
 	let flipV = $state(false);

@@ -7,6 +7,7 @@
 	 *
 	 * Updated: December 2025 - Migrated to Svelte 5 runes ($props, $state, $derived)
 	 */
+	import { untrack } from 'svelte';
 	import type { BannerTemplate, TemplatePosition, ButtonVariant, AnimationType } from './types';
 	import { BANNER_TEMPLATES, getTemplate } from './registry';
 
@@ -35,10 +36,11 @@
 	// editor for a new template, but typing is never clobbered mid-edit.
 	//
 	// The one-time `template` read is deliberate (we want only the initial
-	// value; the {#key} remount supplies new ones), so the
-	// state_referenced_locally hint is intentionally suppressed here.
-	// svelte-ignore state_referenced_locally
-	let editedTemplate: BannerTemplate = $state(JSON.parse(JSON.stringify(template)));
+	// value; the {#key} remount supplies new ones). `untrack` makes that
+	// init-once intent explicit and replaces the prior svelte-ignore directive.
+	let editedTemplate: BannerTemplate = $state(
+		untrack(() => JSON.parse(JSON.stringify(template)))
+	);
 
 	// Svelte 5: Editor tabs state
 	type EditorTab = 'layout' | 'colors' | 'typography' | 'copy' | 'buttons' | 'advanced';

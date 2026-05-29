@@ -5,6 +5,7 @@
 	 * Updated: December 2025 - Migrated to Svelte 5 runes ($props, $state, $derived, $effect)
 	 */
 	import { browser } from '$app/environment';
+	import { untrack } from 'svelte';
 	import Icon from '$lib/components/Icon.svelte';
 
 	interface ContentBlock {
@@ -67,9 +68,10 @@
 	// Svelte 5: Reactive state using $state() rune
 	let tocItems: TocItem[] = $state([]);
 	let flatItems: TocItem[] = $state([]);
-	// Initialize from prop - user interactions will override
-	// svelte-ignore state_referenced_locally
-	let isExpanded = $state(defaultExpanded);
+	// Initialize from prop once at mount; user interactions override thereafter.
+	// `untrack` makes the init-once intent explicit and replaces the prior
+	// // svelte-ignore state_referenced_locally directive.
+	let isExpanded = $state(untrack(() => defaultExpanded));
 	let activeId = $state('');
 	let readingProgress = $state(0);
 	let isFloatingMinimized = $state(false);
