@@ -2537,4 +2537,316 @@
 			padding: 28px 20px;
 		}
 	}
+
+	/* Mobile First Responsive Design */
+	@media (max-width: 480px) {
+		/* Manifesto */
+		.manifesto-headline {
+			font-size: 1.75rem;
+		}
+
+		.manifesto-sub {
+			font-size: 0.9375rem;
+		}
+
+		/* Charts */
+		.chart-container {
+			height: 250px;
+		}
+
+		.mini-container {
+			height: 100px;
+		}
+
+		.chart-header {
+			flex-direction: column;
+			gap: 12px;
+			align-items: flex-start;
+		}
+
+		.price-live {
+			width: 100%;
+			justify-content: space-between;
+		}
+
+		.current-price {
+			font-size: 20px;
+		}
+
+		.chart-footer {
+			flex-direction: column;
+			gap: 12px;
+			align-items: flex-start;
+		}
+
+		/* Scanners */
+		.scanners-header {
+			flex-direction: column;
+			text-align: center;
+			gap: 16px;
+		}
+
+		.header-text h2 {
+			font-size: 1.25rem;
+		}
+
+		.scanner-interface {
+			grid-template-columns: 1fr;
+		}
+
+		.radar-container {
+			width: 120px;
+			height: 120px;
+		}
+
+		.scan-metrics {
+			grid-template-columns: 1fr;
+		}
+
+		.signal-row {
+			grid-template-columns: 1fr;
+			gap: 8px;
+		}
+
+		.signal-data {
+			align-items: flex-start;
+		}
+
+		.scanners-features {
+			grid-template-columns: 1fr;
+		}
+
+		/* University */
+		.university-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.uni-header {
+			flex-direction: column;
+			text-align: center;
+		}
+
+		/* Infrastructure */
+		.infra-header {
+			flex-direction: column;
+			text-align: center;
+		}
+
+		.server-unit {
+			grid-template-columns: 1fr;
+			gap: 8px;
+		}
+
+		.unit-lights {
+			justify-content: flex-start;
+		}
+
+		.expansion-metrics {
+			gap: 12px;
+		}
+
+		.exp-card {
+			padding: 16px;
+		}
+
+		.exp-value {
+			font-size: 24px;
+		}
+
+		/* Stats */
+		.stat-item {
+			padding: 16px 20px;
+			min-width: auto;
+			flex: 1 1 45%;
+		}
+
+		.stat-number {
+			font-size: 1.75rem;
+		}
+
+		/* Capture */
+		.capture-title {
+			font-size: 1.5rem;
+		}
+
+		.input-wrapper {
+			flex-direction: column;
+		}
+
+		.magnetic-btn {
+			width: 100%;
+			justify-content: center;
+		}
+
+		.benefits {
+			flex-direction: column;
+			align-items: center;
+		}
+
+		.benefits span {
+			width: 100%;
+			text-align: center;
+		}
+
+		/* Market tape */
+		.tape-item {
+			font-size: 11px;
+			padding: 2px 6px;
+		}
+	}
+
+	/* Tablet */
+	@media (min-width: 481px) and (max-width: 768px) {
+		.content {
+			padding: 100px 20px 50px;
+		}
+
+		.charts-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.scanner-interface {
+			grid-template-columns: 1fr;
+		}
+
+		.university-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.server-visualization {
+			grid-template-columns: 1fr;
+		}
+
+		.stats-section {
+			flex-wrap: wrap;
+			justify-content: center;
+		}
+
+		.stat-item {
+			flex: 1 1 40%;
+		}
+	}
+
+	/* Small Desktop */
+	@media (min-width: 769px) and (max-width: 1024px) {
+		.content {
+			padding: 100px 24px 60px;
+		}
+
+		.charts-grid {
+			grid-template-columns: 1.5fr 1fr;
+		}
+
+		.scanner-interface {
+			grid-template-columns: 1fr 1.2fr;
+		}
+
+		.university-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	/* Large Desktop */
+	@media (min-width: 1025px) and (max-width: 1440px) {
+		.content {
+			max-width: 1100px;
+		}
+	}
+
+	/* Extra Large */
+	@media (min-width: 1441px) {
+		.content {
+			max-width: 1300px;
+		}
+
+		.manifesto-headline {
+			font-size: 4.5rem;
+		}
+
+		.chart-container {
+			height: 400px;
+		}
+	}
+
+	/* Touch Device Optimizations */
+	@media (hover: none) and (pointer: coarse) {
+		.magnetic-btn {
+			transform: none !important;
+		}
+
+		.tape-item:hover {
+			transform: none;
+		}
+
+		.feature-item:hover,
+		.signal-row:hover,
+		.module-row:hover {
+			transform: none;
+		}
+	}
+
+	/* Reduced Motion */
+	@media (prefers-reduced-motion: reduce) {
+		.tape-track,
+		.radar-sweep,
+		.radar-ring,
+		.blip,
+		.pulse-dot,
+		.live-pulse,
+		.scan-dot,
+		.light.blink,
+		.orb {
+			animation: none;
+		}
+	}
+
+	/* Dark mode support (already dark, but ensure consistency) */
+	@media (prefers-color-scheme: dark) {
+		.experience-container {
+			background: var(--dark);
+		}
+	}
+
+	/* Landscape orientation on mobile */
+	@media (max-width: 768px) and (orientation: landscape) {
+		.chart-container {
+			height: 200px;
+		}
+
+		.manifesto-headline {
+			font-size: 1.5rem;
+		}
+	}
+
+	/* High DPI / Retina displays */
+	@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+		.tape-item,
+		.current-price,
+		.mini-price,
+		.stat-number,
+		.metric-value {
+			-webkit-font-smoothing: antialiased;
+			-moz-osx-font-smoothing: grayscale;
+		}
+	}
+
+	/* Print styles */
+	@media print {
+		.experience-container {
+			position: static;
+			overflow: visible;
+		}
+
+		.market-tape,
+		.ambient-layer,
+		.radar-container,
+		.radar-sweep,
+		.blip {
+			display: none;
+		}
+
+		.content {
+			padding: 20px;
+		}
+	}
 </style>
