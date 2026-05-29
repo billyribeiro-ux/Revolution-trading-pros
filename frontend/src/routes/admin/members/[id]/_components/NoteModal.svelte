@@ -13,21 +13,17 @@
 </script>
 
 {#if open}
-	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<div
 		class="modal-overlay"
-		onclick={onClose}
+		onclick={(e: MouseEvent) => {
+			if (e.target === e.currentTarget) onClose();
+		}}
 		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && onClose()}
 		role="dialog"
 		tabindex="-1"
 		aria-modal="true"
 	>
-		<div
-			class="modal-content"
-			onclick={(e: MouseEvent) => e.stopPropagation()}
-			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
-			role="document"
-		>
+		<div class="modal-content" role="document">
 			<div class="modal-header">
 				<h2>Add Note</h2>
 				<button class="close-btn" onclick={onClose}>

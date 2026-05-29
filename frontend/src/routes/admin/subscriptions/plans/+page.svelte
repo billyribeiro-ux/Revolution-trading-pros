@@ -618,22 +618,20 @@
 
 <!-- Edit Modal -->
 {#if showEditModal && editingPlan}
-	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<div
 		class="modal-overlay"
-		onclick={closeEditModal}
+		onclick={(e) => {
+			if (e.target === e.currentTarget) closeEditModal();
+		}}
 		onkeydown={(e) => {
-			if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') {
-				e.preventDefault();
-				closeEditModal();
-			}
+			if (e.key === 'Escape') closeEditModal();
 		}}
 		role="dialog"
 		aria-modal="true"
-		aria-label="Close modal"
-		tabindex="0"
+		aria-label="Edit plan"
+		tabindex="-1"
 	>
-		<div class="modal" onmousedown={(e) => e.stopPropagation()} role="document">
+		<div class="modal" role="document">
 			<div class="modal-header">
 				<h2>Edit Plan</h2>
 				<button class="modal-close" onclick={closeEditModal}>×</button>
@@ -781,22 +779,20 @@
 
 <!-- Change Price Modal -->
 {#if showPriceModal && priceTargetPlan}
-	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<div
 		class="modal-overlay"
-		onclick={closePriceModal}
+		onclick={(e) => {
+			if (e.target === e.currentTarget) closePriceModal();
+		}}
 		onkeydown={(e) => {
-			if (e.key === 'Escape') {
-				e.preventDefault();
-				closePriceModal();
-			}
+			if (e.key === 'Escape') closePriceModal();
 		}}
 		role="dialog"
 		aria-modal="true"
 		aria-label="Change plan price"
-		tabindex="0"
+		tabindex="-1"
 	>
-		<div class="modal price-modal" onmousedown={(e) => e.stopPropagation()} role="document">
+		<div class="modal price-modal" role="document">
 			<div class="modal-header">
 				<h2>Change Price — {priceTargetPlan.name}</h2>
 				<button class="modal-close" onclick={closePriceModal} aria-label="Close">×</button>

@@ -122,6 +122,16 @@
 	let savePresetName = $state('');
 	let savePresetDescription = $state('');
 	let savePresetCategory = $state('custom');
+	// Programmatic focus replaces the deprecated `autofocus` attribute on the
+	// preset-name input — `autofocus` is an a11y anti-pattern. The $effect
+	// fires whenever `showSaveModal` flips true, focusing the input once the
+	// modal renders.
+	let presetNameInput = $state<HTMLInputElement | null>(null);
+	$effect(() => {
+		if (showSaveModal) {
+			presetNameInput?.focus();
+		}
+	});
 
 	// ==========================================================================
 	// Category Configuration
@@ -597,13 +607,12 @@
 			<div class="save-modal-content">
 				<div class="form-field">
 					<label for="preset-name">Preset Name *</label>
-					<!-- svelte-ignore a11y_autofocus -->
 					<input
+						bind:this={presetNameInput}
 						id="preset-name"
 						type="text"
 						bind:value={savePresetName}
 						placeholder="e.g., Primary CTA Button"
-						autofocus
 					/>
 				</div>
 
