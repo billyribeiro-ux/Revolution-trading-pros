@@ -16,7 +16,8 @@
  */
 -->
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, untrack } from 'svelte';
+	import { SvelteSet } from 'svelte/reactivity';
 	import BunnyVideoPlayer from '$lib/components/video/BunnyVideoPlayer.svelte';
 	import Icon from '$lib/components/Icon.svelte';
 
@@ -91,20 +92,25 @@
 		return cd.lessons || [];
 	}
 
-	function computeExpandedModules(cd: CourseData | null): Set<number> {
-		return new Set(cd?.modules?.map((m) => m.module.id) ?? []);
+	function computeExpandedModules(cd: CourseData | null): SvelteSet<number> {
+		return new SvelteSet(cd?.modules?.map((m) => m.module.id) ?? []);
 	}
 
 	// Seed directly from the SSR-provided `initialData` (init-once). The prior
 	// logic gated on `if (initialData && !courseData)` inside an $effect, so it
 	// only ever consumed the first non-null `initialData` — seeding at
 	// declaration is behaviourally equivalent without writing state in an effect.
-	let courseData = $state<CourseData | null>(initialData);
-	let loading = $state(!initialData);
+	// `untrack` makes the init-once intent explicit: `initialData` is read for
+	// its initial value only (the parent remounts to change courses), so these
+	// seeds must not register `initialData` as a reactive dependency.
+	const seed = untrack(() => initialData);
+
+	let courseData = $state<CourseData | null>(seed);
+	let loading = $state(!seed);
 	let error = $state('');
-	let activeLesson = $state<Lesson | null>(computeAllLessons(initialData)[0] ?? null);
+	let activeLesson = $state<Lesson | null>(computeAllLessons(seed)[0] ?? null);
 	let viewportWidth = $state(0);
-	let expandedModules = $state<Set<number>>(computeExpandedModules(initialData));
+	let expandedModules = $state<SvelteSet<number>>(computeExpandedModules(seed));
 	let mounted = $state(false);
 
 	const isMobile = $derived(mounted && viewportWidth > 0 && viewportWidth < 640);
@@ -161,13 +167,12 @@
 	}
 
 	function toggleModule(moduleId: number) {
-		const newSet = new Set(expandedModules);
-		if (newSet.has(moduleId)) {
-			newSet.delete(moduleId);
+		// SvelteSet is deeply reactive — mutate in place; no clone/reassign needed.
+		if (expandedModules.has(moduleId)) {
+			expandedModules.delete(moduleId);
 		} else {
-			newSet.add(moduleId);
+			expandedModules.add(moduleId);
 		}
-		expandedModules = newSet;
 	}
 
 	function formatDuration(minutes?: number): string {
