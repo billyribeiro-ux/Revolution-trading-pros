@@ -12,6 +12,7 @@
 		type UpdateModuleRequest
 	} from '$lib/api/courses';
 	import { IconX, IconPlus, IconEdit, IconClock } from '$lib/icons';
+	import { untrack } from 'svelte';
 
 	interface Props {
 		isOpen: boolean;
@@ -44,43 +45,31 @@
 		onSaved?.(m);
 	};
 
-	// Form state
-	let title = $state('');
-	let description = $state('');
-	let sortOrder = $state(1);
-	let isPublished = $state(true);
-	let dripEnabled = $state(false);
-	let dripDays = $state(0);
+	// Form state — seeded once at mount.
+	//
+	// Supersedes FIX P2-2 (audits/admin-2026-04-26/01-shell-and-dashboard.md),
+	// which gated a reset $effect on a real false → true `isOpen` transition to
+	// avoid blowing away half-typed input. The parent now gates this modal
+	// behind `{#if showModuleModal}`, so a fresh instance mounts per editing
+	// session — seeding once gives the same "reset on open, keep typing while
+	// open" behaviour without writing state inside an effect or hand-tracking
+	// `wasOpen`. `untrack` reads the props' initial values without registering
+	// them as reactive deps (explicit init-once intent; avoids
+	// state_referenced_locally).
+	const seedIsEdit = untrack(() => mode === 'edit' && !!module);
+	const seedModule = untrack(() => module);
+	const seedNextSort = untrack(() => nextSortOrder);
+
+	let title = $state(seedIsEdit ? seedModule?.title || '' : '');
+	let description = $state(seedIsEdit ? seedModule?.description || '' : '');
+	let sortOrder = $state(seedIsEdit ? seedModule?.sort_order || 1 : seedNextSort);
+	let isPublished = $state(seedIsEdit ? (seedModule?.is_published ?? true) : true);
+	let dripEnabled = $state(seedIsEdit ? (seedModule?.drip_enabled ?? false) : false);
+	let dripDays = $state(seedIsEdit ? seedModule?.drip_days || 0 : 0);
 
 	// UI state
 	let isLoading = $state(false);
 	let error = $state('');
-
-	// FIX P2-2 (audits/admin-2026-04-26/01-shell-and-dashboard.md):
-	// Gate the reset on a real false → true transition of `isOpen`.
-	let wasOpen = false;
-	$effect(() => {
-		const opening = isOpen && !wasOpen;
-		wasOpen = isOpen;
-		if (!opening) return;
-
-		if (mode === 'edit' && module) {
-			title = module.title || '';
-			description = module.description || '';
-			sortOrder = module.sort_order || 1;
-			isPublished = module.is_published ?? true;
-			dripEnabled = module.drip_enabled ?? false;
-			dripDays = module.drip_days || 0;
-		} else if (mode === 'create') {
-			title = '';
-			description = '';
-			sortOrder = nextSortOrder;
-			isPublished = true;
-			dripEnabled = false;
-			dripDays = 0;
-		}
-		error = '';
-	});
 
 	$effect(() => {
 		if (isOpen) {
