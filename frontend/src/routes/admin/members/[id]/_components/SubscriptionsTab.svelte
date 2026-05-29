@@ -1,10 +1,5 @@
 <script lang="ts">
-	import {
-		IconCreditCard,
-		IconCalendar,
-		IconTrash,
-		IconGift
-	} from '$lib/icons';
+	import { IconCreditCard, IconCalendar, IconTrash, IconGift } from '$lib/icons';
 	import type { Subscription } from '$lib/api/members';
 	import { formatCurrency, formatDate } from './helpers';
 
@@ -56,15 +51,11 @@
 						</div>
 						<div class="subscription-detail">
 							<span class="label">Started</span>
-							<span class="value"
-								>{sub.start_date ? formatDate(sub.start_date) : 'N/A'}</span
-							>
+							<span class="value">{sub.start_date ? formatDate(sub.start_date) : 'N/A'}</span>
 						</div>
 						<div class="subscription-detail">
 							<span class="label">Next Payment</span>
-							<span class="value"
-								>{sub.next_payment ? formatDate(sub.next_payment) : 'N/A'}</span
-							>
+							<span class="value">{sub.next_payment ? formatDate(sub.next_payment) : 'N/A'}</span>
 						</div>
 						<div class="subscription-detail">
 							<span class="label">Total Paid</span>

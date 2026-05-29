@@ -17,8 +17,7 @@ const courseSummary = [
 	{
 		slug: 'swing-trading-pro',
 		name: 'Swing Trading Pro',
-		description:
-			'Capture major market moves. Identify macro trends and execute low-stress setups.',
+		description: 'Capture major market moves. Identify macro trends and execute low-stress setups.',
 		level: 'Beginner',
 		price: 397
 	},

@@ -321,7 +321,13 @@ describe('cart totals', () => {
 	it('happy path: getTotal = sum(price * quantity); quantity is always 1', () => {
 		cartStore.addItem({ id: 'a', name: 'A', price: 100, type: 'course' });
 		cartStore.addItem({ id: 'b', name: 'B', price: 250, type: 'indicator' });
-		cartStore.addItem({ id: 'c', name: 'C', price: 49.99, type: 'membership', interval: 'monthly' });
+		cartStore.addItem({
+			id: 'c',
+			name: 'C',
+			price: 49.99,
+			type: 'membership',
+			interval: 'monthly'
+		});
 
 		expect(cartStore.getItemCount()).toBe(3);
 		expect(cartStore.getTotal()).toBeCloseTo(399.99, 5);

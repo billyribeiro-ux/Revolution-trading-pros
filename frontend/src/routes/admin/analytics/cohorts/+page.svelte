@@ -189,7 +189,7 @@
 				<div
 					class="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-2xl shadow-lg shadow-purple-500/20"
 				>
-										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: users -->
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: users -->
 					<IconUsers size={24} aria-hidden="true" />
 				</div>
 				<div>
@@ -247,7 +247,7 @@
 				<div
 					class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-red-500/10 flex items-center justify-center"
 				>
-										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: alert-circle error -->
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: alert-circle error -->
 					<IconAlertCircle size={32} aria-hidden="true" />
 				</div>
 				<p class="text-red-400 mb-4">{error}</p>
@@ -392,7 +392,7 @@
 						class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
 						aria-label="Close modal"
 					>
-												<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: x (close) -->
+						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: x (close) -->
 						<IconX size={20} aria-hidden="true" />
 					</button>
 				</div>

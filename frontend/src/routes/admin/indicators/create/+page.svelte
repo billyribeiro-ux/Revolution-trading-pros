@@ -587,9 +587,9 @@
 								method: 'POST',
 								body: JSON.stringify({
 									// FIX-2026-04-26-audit (P0-5): send the platform slug string directly.
-								// Previously `findIndex + 1` produced integers 1/2/3 unrelated to the
-								// real DB platform PKs, causing FK violations or wrong-row matches.
-								platform_id: pf.platform_id,
+									// Previously `findIndex + 1` produced integers 1/2/3 unrelated to the
+									// real DB platform PKs, causing FK violations or wrong-row matches.
+									platform_id: pf.platform_id,
 									file_url: pf.file.url,
 									file_name: pf.file.name,
 									file_size_bytes: pf.file.size,

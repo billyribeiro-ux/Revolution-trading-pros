@@ -243,7 +243,7 @@
 	{#if canAddRow}
 		<button type="button" class="add-row-btn" onclick={addRow} {disabled}>
 			<Icon name="IconPlus" size={18} />
-		{addButtonText}
+			{addButtonText}
 		</button>
 	{/if}
 

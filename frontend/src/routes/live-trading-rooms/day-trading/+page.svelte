@@ -34,7 +34,12 @@
 			checkoutHref: '/checkout/monthly-room',
 			featured: false,
 			variant: 'simple',
-			features: ['Daily Live Trading', 'Discord Community', 'Watchlists & Alerts', 'Onboarding Course']
+			features: [
+				'Daily Live Trading',
+				'Discord Community',
+				'Watchlists & Alerts',
+				'Onboarding Course'
+			]
 		},
 		{
 			id: 'quarterly',
@@ -46,7 +51,12 @@
 			checkoutHref: '/checkout/quarterly-room',
 			featured: true,
 			variant: 'featured',
-			features: ['Everything in Monthly', 'Options Masterclass Access', 'Small Account Strategy', 'Priority Support']
+			features: [
+				'Everything in Monthly',
+				'Options Masterclass Access',
+				'Small Account Strategy',
+				'Priority Support'
+			]
 		},
 		{
 			id: 'annual',
@@ -58,11 +68,16 @@
 			checkoutHref: '/checkout/annual-room',
 			featured: false,
 			variant: 'highlight',
-			features: ['Everything in Quarterly', '1-on-1 Strategy Session', 'Annual Members-Only Events', 'Direct DM Access']
+			features: [
+				'Everything in Quarterly',
+				'1-on-1 Strategy Session',
+				'Annual Members-Only Events',
+				'Direct DM Access'
+			]
 		}
 	];
 
-	const minPrice = Math.min(...plans.map(p => p.price));
+	const minPrice = Math.min(...plans.map((p) => p.price));
 
 	// --- FAQ Logic (Svelte 5 Runes) ---
 	let openFaq: number | null = $state(null);
@@ -201,7 +216,6 @@
 				'You have full control. You can cancel anytime via your user dashboard or the Stripe portal link provided in your welcome email. Access continues until the end of your billing cycle.'
 		}
 	];
-
 </script>
 
 <div class="day-trading">
@@ -236,11 +250,7 @@
 				<div data-gsap class="hero__cta-row">
 					<a href="#pricing" class="hero__cta hero__cta--primary group">
 						Join the Room
-						<svg
-							class="hero__cta-arrow"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
+						<svg class="hero__cta-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"
 							><path
 								stroke-linecap="round"
 								stroke-linejoin="round"
@@ -249,9 +259,7 @@
 							/></svg
 						>
 					</a>
-					<a href="#schedule" class="hero__cta hero__cta--ghost">
-						View Schedule
-					</a>
+					<a href="#schedule" class="hero__cta hero__cta--ghost"> View Schedule </a>
 				</div>
 
 				<div data-gsap class="hero__social">
@@ -284,12 +292,7 @@
 					<div class="hero__chrome-body">
 						<div class="hero__chart-pane">
 							<div class="hero__chart-label">SCREEN SHARE: HEAD TRADER</div>
-							<svg
-								class="hero__chart-svg"
-								viewBox="0 0 400 200"
-								fill="none"
-								stroke="currentColor"
-							>
+							<svg class="hero__chart-svg" viewBox="0 0 400 200" fill="none" stroke="currentColor">
 								<path
 									stroke-width="2"
 									d="M0 150 C 50 150, 50 100, 100 100 C 150 100, 150 180, 200 180 C 250 180, 250 40, 300 40 C 350 40, 350 90, 400 90"
@@ -319,7 +322,9 @@
 								<div class="hero__chat-avatar hero__chat-avatar--emerald">M</div>
 								<div class="hero__chat-text">
 									<span class="hero__chat-author hero__chat-author--mod">Mod:</span>
-									<span class="hero__chat-msg">Approaching VWAP support at 4500. Watch for the bounce.</span>
+									<span class="hero__chat-msg"
+										>Approaching VWAP support at 4500. Watch for the bounce.</span
+									>
 								</div>
 							</div>
 							<div class="hero__chat-row">
@@ -384,10 +389,7 @@
 			<div class="features__grid">
 				<div data-gsap class="feature-card feature-card--primary group">
 					<div class="feature-card__icon">
-						<svg
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
+						<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
 							><path
 								stroke-linecap="round"
 								stroke-linejoin="round"
@@ -405,10 +407,7 @@
 
 				<div data-gsap class="feature-card feature-card--emerald group">
 					<div class="feature-card__icon">
-						<svg
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
+						<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
 							><path
 								stroke-linecap="round"
 								stroke-linejoin="round"
@@ -426,10 +425,7 @@
 
 				<div data-gsap class="feature-card feature-card--indigo group">
 					<div class="feature-card__icon">
-						<svg
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
+						<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
 							><path
 								stroke-linecap="round"
 								stroke-linejoin="round"
@@ -452,9 +448,7 @@
 		<div class="why__inner">
 			<div class="why__grid">
 				<div>
-					<h2 data-gsap class="why__title">
-						Why We Trade SPX 0DTE
-					</h2>
+					<h2 data-gsap class="why__title">Why We Trade SPX 0DTE</h2>
 					<p data-gsap class="why__lede">
 						The S&P 500 Index (SPX) is the premier instrument for professional day traders. Unlike
 						individual stocks like TSLA or NVDA, the SPX offers unique advantages that align with
@@ -500,11 +494,7 @@
 						<div class="why__media-glyph">
 							<span class="why__media-text">SPX</span>
 						</div>
-						<svg
-							class="why__media-curves"
-							viewBox="0 0 100 100"
-							preserveAspectRatio="none"
-						>
+						<svg class="why__media-curves" viewBox="0 0 100 100" preserveAspectRatio="none">
 							<path
 								d="M0,50 Q25,30 50,50 T100,50"
 								fill="none"
@@ -534,9 +524,7 @@
 		<div class="schedule__inner">
 			<div class="schedule__header">
 				<span class="schedule__eyebrow">Routine</span>
-				<h2 data-gsap class="schedule__title">
-					The Daily Trading Routine
-				</h2>
+				<h2 data-gsap class="schedule__title">The Daily Trading Routine</h2>
 				<p class="schedule__lede">
 					Consistency is the hallmark of a professional. This is exactly how we approach every
 					trading day.
@@ -568,7 +556,9 @@
 						</div>
 						<p class="timeline__card-desc">
 							High focus. Voice commentary is active. We execute our primary strategies: Opening
-							Range Breakout or Rejection. <span class="timeline__emph">This is the most profitable window of the day.</span>
+							Range Breakout or Rejection. <span class="timeline__emph"
+								>This is the most profitable window of the day.</span
+							>
 						</p>
 					</div>
 				</div>
@@ -609,9 +599,7 @@
 		<div class="pricing__inner">
 			<div class="pricing__header">
 				<span class="pricing__eyebrow">Investment</span>
-				<h2 class="pricing__title">
-					Membership Access
-				</h2>
+				<h2 class="pricing__title">Membership Access</h2>
 				<p class="pricing__lede">
 					Invest in your education. One disciplined trade can pay for the whole year. Cancel
 					anytime.
@@ -622,16 +610,25 @@
 				<div class="pricing-toggle" role="group">
 					<button
 						onclick={() => (selectedPlan = 'monthly')}
-						class={['pricing-toggle__btn', selectedPlan === 'monthly' && 'pricing-toggle__btn--active']}
-					>Monthly</button>
+						class={[
+							'pricing-toggle__btn',
+							selectedPlan === 'monthly' && 'pricing-toggle__btn--active'
+						]}>Monthly</button
+					>
 					<button
 						onclick={() => (selectedPlan = 'quarterly')}
-						class={['pricing-toggle__btn', selectedPlan === 'quarterly' && 'pricing-toggle__btn--active']}
-					>Quarterly</button>
+						class={[
+							'pricing-toggle__btn',
+							selectedPlan === 'quarterly' && 'pricing-toggle__btn--active'
+						]}>Quarterly</button
+					>
 					<button
 						onclick={() => (selectedPlan = 'annual')}
-						class={['pricing-toggle__btn', selectedPlan === 'annual' && 'pricing-toggle__btn--active']}
-					>Annual</button>
+						class={[
+							'pricing-toggle__btn',
+							selectedPlan === 'annual' && 'pricing-toggle__btn--active'
+						]}>Annual</button
+					>
 
 					<div
 						class="pricing-toggle__indicator"
@@ -647,9 +644,7 @@
 			<div class="pricing__grid">
 				{#each plans as plan (plan.id)}
 					{#if plan.variant === 'simple'}
-						<div
-							class={['plan plan--simple', selectedPlan === plan.id && 'plan--active']}
-						>
+						<div class={['plan plan--simple', selectedPlan === plan.id && 'plan--active']}>
 							<h3 class="plan__name">{plan.label}</h3>
 							<div class="plan__price-row">
 								<span class="plan__price">${plan.price}</span>
@@ -666,9 +661,7 @@
 							<a href={plan.checkoutHref} class="plan__cta plan__cta--ghost">Select {plan.label}</a>
 						</div>
 					{:else if plan.variant === 'featured'}
-						<div
-							class={['plan plan--featured', selectedPlan === plan.id && 'plan--active']}
-						>
+						<div class={['plan plan--featured', selectedPlan === plan.id && 'plan--active']}>
 							<div class="plan__ribbon plan__ribbon--primary">Most Popular</div>
 							<h3 class="plan__name plan__name--lg">{plan.label}</h3>
 							<div class="plan__price-row">
@@ -689,9 +682,7 @@
 							<a href={plan.checkoutHref} class="plan__cta plan__cta--primary">Join {plan.label}</a>
 						</div>
 					{:else if plan.variant === 'highlight'}
-						<div
-							class={['plan plan--highlight', selectedPlan === plan.id && 'plan--active']}
-						>
+						<div class={['plan plan--highlight', selectedPlan === plan.id && 'plan--active']}>
 							<div class="plan__ribbon plan__ribbon--emerald">Best Deal</div>
 							<h3 class="plan__name">{plan.label}</h3>
 							<div class="plan__price-row">
@@ -709,7 +700,9 @@
 									</li>
 								{/each}
 							</ul>
-							<a href={plan.checkoutHref} class="plan__cta plan__cta--emerald">Select {plan.label}</a>
+							<a href={plan.checkoutHref} class="plan__cta plan__cta--emerald"
+								>Select {plan.label}</a
+							>
 						</div>
 					{/if}
 				{/each}
@@ -726,17 +719,11 @@
 
 	<section class="faq">
 		<div class="faq__inner">
-			<h2 class="faq__title">
-				Frequently Asked Questions
-			</h2>
+			<h2 class="faq__title">Frequently Asked Questions</h2>
 			<div class="faq__list">
 				{#each faqList as faq, i (faq.question)}
 					<div class="faq__item">
-						<button
-							class="faq__trigger"
-							onclick={() => toggleFaq(i)}
-							aria-expanded={openFaq === i}
-						>
+						<button class="faq__trigger" onclick={() => toggleFaq(i)} aria-expanded={openFaq === i}>
 							<span class="faq__q">{faq.question}</span>
 							<svg
 								class="faq__chevron {openFaq === i ? 'faq__chevron--open' : ''}"
@@ -752,10 +739,7 @@
 							>
 						</button>
 						{#if openFaq === i}
-							<div
-								transition:slide={{ duration: 300, easing: cubicOut }}
-								class="faq__panel"
-							>
+							<div transition:slide={{ duration: 300, easing: cubicOut }} class="faq__panel">
 								{faq.answer}
 							</div>
 						{/if}
@@ -768,22 +752,17 @@
 	<section class="bell-cta">
 		<div class="bell-cta__pattern" aria-hidden="true"></div>
 		<div class="bell-cta__inner">
-			<h2 class="bell-cta__title">
-				Markets Open at 9:30 AM.
-			</h2>
+			<h2 class="bell-cta__title">Markets Open at 9:30 AM.</h2>
 			<p class="bell-cta__lede">
 				Don't miss the next opening bell. Join the room today and be ready for tomorrow's session.
 			</p>
 			<div class="bell-cta__actions">
-				<a href="#pricing" class="bell-cta__btn">
-					Get Access Now
-				</a>
+				<a href="#pricing" class="bell-cta__btn"> Get Access Now </a>
 			</div>
 			<p class="bell-cta__fine">30-Day Money Back Guarantee &bull; Cancel Anytime</p>
 		</div>
 	</section>
 </div>
-
 
 <style>
 	/* ─────────────────────────────────────────────────────────────────
@@ -969,12 +948,7 @@
 		}
 	}
 	.hero__title-accent {
-		background: linear-gradient(
-			to right,
-			var(--rtp-blue),
-			#818cf8,
-			#fff
-		);
+		background: linear-gradient(to right, var(--rtp-blue), #818cf8, #fff);
 		-webkit-background-clip: text;
 		background-clip: text;
 		color: transparent;

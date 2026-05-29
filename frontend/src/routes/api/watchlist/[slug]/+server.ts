@@ -62,11 +62,7 @@ export const GET: RequestHandler = async ({ params, request }) => {
 	const headers: Record<string, string> = {};
 	if (authHeader) headers['Authorization'] = authHeader;
 
-	const backendData = await fetchBackend(
-		`/api/watchlist/${slug}`,
-		{ headers },
-		'[Watchlist API]'
-	);
+	const backendData = await fetchBackend(`/api/watchlist/${slug}`, { headers }, '[Watchlist API]');
 
 	if (hasSuccess(backendData) && backendData.success) {
 		return json(backendData);

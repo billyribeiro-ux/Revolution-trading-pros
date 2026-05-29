@@ -331,7 +331,7 @@
 			{#if getIsPaymentConnected()}
 				<div class="header-actions">
 					<button class="btn-primary" onclick={openCreateModal}>
-												<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: plus -->
+						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: plus -->
 						<IconPlus size={20} aria-hidden="true" />
 						Create Subscription
 					</button>
@@ -417,7 +417,7 @@
 			{#if failedPayments.length > 0}
 				<div class="bg-red-500/10 border border-red-500/20 rounded-xl p-6 mb-6">
 					<h3 class="text-red-400 font-semibold mb-3 flex items-center gap-2">
-												<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-x error -->
+						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-x error -->
 						<IconCircleXFilled size={20} aria-hidden="true" />
 						{failedPayments.length} Failed Payment{failedPayments.length > 1 ? 's' : ''}
 					</h3>
@@ -440,7 +440,7 @@
 			{#if upcomingRenewals.length > 0}
 				<div class="bg-blue-500/10 border border-blue-500/20 rounded-xl p-6 mb-6">
 					<h3 class="text-blue-400 font-semibold mb-3 flex items-center gap-2">
-												<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: clock-hour (pending) -->
+						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: clock-hour (pending) -->
 						<IconClockHour3 size={20} aria-hidden="true" />
 						{upcomingRenewals.length} Renewal{upcomingRenewals.length > 1 ? 's' : ''} in Next 7 Days
 					</h3>

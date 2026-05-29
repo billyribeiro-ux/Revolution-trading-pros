@@ -118,9 +118,7 @@
 	// FIX-2026-04-26 (P1-6): unsaved-changes guard. Snapshot course on load /
 	// after each save; compare against current state to know if dirty.
 	let lastSavedSnapshot = $state<string>('');
-	let hasUnsavedChanges = $derived(
-		course ? JSON.stringify(course) !== lastSavedSnapshot : false
-	);
+	let hasUnsavedChanges = $derived(course ? JSON.stringify(course) !== lastSavedSnapshot : false);
 
 	beforeNavigate((nav) => {
 		// TODO(modal-confirm): SvelteKit's beforeNavigate is synchronous —

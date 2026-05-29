@@ -67,12 +67,7 @@
 				</div>
 				<div class="form-group">
 					<label for="last_name">Last Name</label>
-					<input
-						id="last_name"
-						name="last_name"
-						type="text"
-						bind:value={newSubscriber.last_name}
-					/>
+					<input id="last_name" name="last_name" type="text" bind:value={newSubscriber.last_name} />
 				</div>
 			</div>
 

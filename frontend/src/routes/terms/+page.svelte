@@ -9,12 +9,10 @@
 
 	<section>
 		<p>
-			<strong>TODO — human copy.</strong> This page intentionally ships without final
-			legal text. Replace this placeholder with terms written or reviewed by counsel
-			covering: account responsibilities, subscription billing and refunds (Stripe
-			interaction), acceptable use, trading-content disclaimers and risk disclosures,
-			intellectual property, limitation of liability, dispute resolution, governing
-			law.
+			<strong>TODO — human copy.</strong> This page intentionally ships without final legal text. Replace
+			this placeholder with terms written or reviewed by counsel covering: account responsibilities, subscription
+			billing and refunds (Stripe interaction), acceptable use, trading-content disclaimers and risk disclosures,
+			intellectual property, limitation of liability, dispute resolution, governing law.
 		</p>
 	</section>
 </article>

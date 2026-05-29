@@ -194,32 +194,36 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	}
 
 	// Call backend at /api/admin/room-content/alerts
-	const backendData = await fetchBackend(`/api/admin/room-content/alerts`, {
-		method: 'POST',
-		headers,
-		body: JSON.stringify({
-			room_slug: slug,
-			alert_type: body.alert_type,
-			ticker: body.ticker.toUpperCase(),
-			title: body.title,
-			message: body.message,
-			notes: body.notes,
-			trade_type: body.trade_type,
-			action: body.action,
-			quantity: body.quantity,
-			option_type: body.option_type,
-			strike: body.strike,
-			expiration: body.expiration,
-			contract_type: body.contract_type,
-			order_type: body.order_type,
-			limit_price: body.limit_price,
-			fill_price: body.fill_price || body.limit_price,
-			tos_string: tosString,
-			entry_alert_id: body.entry_alert_id,
-			trade_plan_id: body.trade_plan_id,
-			is_pinned: body.is_pinned
-		})
-	}, '[Alerts API]');
+	const backendData = await fetchBackend(
+		`/api/admin/room-content/alerts`,
+		{
+			method: 'POST',
+			headers,
+			body: JSON.stringify({
+				room_slug: slug,
+				alert_type: body.alert_type,
+				ticker: body.ticker.toUpperCase(),
+				title: body.title,
+				message: body.message,
+				notes: body.notes,
+				trade_type: body.trade_type,
+				action: body.action,
+				quantity: body.quantity,
+				option_type: body.option_type,
+				strike: body.strike,
+				expiration: body.expiration,
+				contract_type: body.contract_type,
+				order_type: body.order_type,
+				limit_price: body.limit_price,
+				fill_price: body.fill_price || body.limit_price,
+				tos_string: tosString,
+				entry_alert_id: body.entry_alert_id,
+				trade_plan_id: body.trade_plan_id,
+				is_pinned: body.is_pinned
+			})
+		},
+		'[Alerts API]'
+	);
 
 	if (backendData) {
 		return json({

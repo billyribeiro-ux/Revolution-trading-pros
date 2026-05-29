@@ -160,26 +160,30 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	}
 
 	// Call backend at /api/admin/room-content/trade-plan
-	const backendData = await fetchBackend(`/api/admin/room-content/trade-plan`, {
-		method: 'POST',
-		headers,
-		body: JSON.stringify({
-			room_slug: slug,
-			week_of: body.week_of || new Date().toISOString().split('T')[0],
-			ticker: body.ticker.toUpperCase(),
-			bias: body.bias,
-			entry: body.entry,
-			target1: body.target1 || '',
-			target2: body.target2 || '',
-			target3: body.target3 || '',
-			runner: body.runner || '',
-			stop: body.stop,
-			options_strike: body.options_strike,
-			options_exp: body.options_exp,
-			notes: body.notes,
-			sort_order: body.sort_order
-		})
-	}, '[Trade Plans API]');
+	const backendData = await fetchBackend(
+		`/api/admin/room-content/trade-plan`,
+		{
+			method: 'POST',
+			headers,
+			body: JSON.stringify({
+				room_slug: slug,
+				week_of: body.week_of || new Date().toISOString().split('T')[0],
+				ticker: body.ticker.toUpperCase(),
+				bias: body.bias,
+				entry: body.entry,
+				target1: body.target1 || '',
+				target2: body.target2 || '',
+				target3: body.target3 || '',
+				runner: body.runner || '',
+				stop: body.stop,
+				options_strike: body.options_strike,
+				options_exp: body.options_exp,
+				notes: body.notes,
+				sort_order: body.sort_order
+			})
+		},
+		'[Trade Plans API]'
+	);
 
 	if (backendData) {
 		return json({

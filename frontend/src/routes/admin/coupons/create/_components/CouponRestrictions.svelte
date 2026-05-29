@@ -128,10 +128,8 @@
 						class="btn-link"
 						onclick={() => onAction({ kind: 'select-all-plans' })}>Select All</button
 					>
-					<button
-						type="button"
-						class="btn-link"
-						onclick={() => onAction({ kind: 'clear-plans' })}>Clear</button
+					<button type="button" class="btn-link" onclick={() => onAction({ kind: 'clear-plans' })}
+						>Clear</button
 					>
 				</div>
 			</div>

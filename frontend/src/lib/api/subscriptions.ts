@@ -1305,11 +1305,7 @@ class SubscriptionService {
 		if (browser && 'gtag' in window) {
 			(
 				window as unknown as {
-					gtag?: (
-						type: string,
-						event: string,
-						data: Record<string, JsonValue | undefined>
-					) => void;
+					gtag?: (type: string, event: string, data: Record<string, JsonValue | undefined>) => void;
 				}
 			).gtag?.('event', event, data);
 		}

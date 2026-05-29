@@ -247,9 +247,7 @@
 		// so latency is N round-trips of wall-clock max, not sum, and we
 		// surface accurate success/fail counts.
 		const ids = Array.from(selectedTemplates);
-		const results = await Promise.allSettled(
-			ids.map((id) => crmAPI.deleteEmailTemplate(id))
-		);
+		const results = await Promise.allSettled(ids.map((id) => crmAPI.deleteEmailTemplate(id)));
 		const successCount = results.filter((r) => r.status === 'fulfilled').length;
 		const failCount = results.length - successCount;
 

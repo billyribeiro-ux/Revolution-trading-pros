@@ -11,13 +11,7 @@
 		onCancel: () => void;
 	}
 
-	let {
-		newNoteContent,
-		processingAction,
-		onUpdateContent,
-		onConfirm,
-		onCancel
-	}: Props = $props();
+	let { newNoteContent, processingAction, onUpdateContent, onConfirm, onCancel }: Props = $props();
 </script>
 
 <div
@@ -51,9 +45,7 @@
 			</div>
 		</div>
 		<div class="modal-footer">
-			<button class="btn-secondary" onclick={onCancel} disabled={processingAction}>
-				Cancel
-			</button>
+			<button class="btn-secondary" onclick={onCancel} disabled={processingAction}> Cancel </button>
 			<button
 				class="btn-primary"
 				onclick={onConfirm}

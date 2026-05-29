@@ -118,7 +118,9 @@
 				</h1>
 
 				<p data-gsap class="hero__lede">
-					Stop staring at the 1-minute chart. Get high-precision <strong>multi-day swing alerts</strong>
+					Stop staring at the 1-minute chart. Get high-precision <strong
+						>multi-day swing alerts</strong
+					>
 					backed by Dark Pool data. Designed for traders who want financial freedom, not another 9-to-5
 					job.
 				</p>

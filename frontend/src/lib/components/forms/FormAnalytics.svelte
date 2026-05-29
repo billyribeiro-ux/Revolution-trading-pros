@@ -283,7 +283,9 @@
 			<div class="chart-card">
 				<h3>Field Completion Rates</h3>
 				<div class="field-completion">
-					{#each fieldAnalytics.filter((f) => f.completionRate > 0).slice(0, 10) as field (field.label)}
+					{#each fieldAnalytics
+						.filter((f) => f.completionRate > 0)
+						.slice(0, 10) as field (field.label)}
 						<div class="completion-row">
 							<div class="field-name">{field.label}</div>
 							<div class="completion-bar">

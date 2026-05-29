@@ -73,9 +73,7 @@
 	class="reset-password-page flex items-center justify-center px-4 py-12 overflow-hidden relative"
 >
 	<!-- Animated gradient background -->
-	<div
-		class="absolute inset-0 bg-linear-to-br from-slate-950 via-purple-950/30 to-slate-950"
-	></div>
+	<div class="absolute inset-0 bg-linear-to-br from-slate-950 via-purple-950/30 to-slate-950"></div>
 
 	<!-- Floating orbs -->
 	<div
@@ -268,7 +266,13 @@
 					href="/login"
 					class="text-purple-400 hover:text-purple-300 font-semibold transition-colors duration-300 flex items-center justify-center gap-2"
 				>
-					<svg aria-hidden="true" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<svg
+						aria-hidden="true"
+						class="w-4 h-4"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+					>
 						<path
 							stroke-linecap="round"
 							stroke-linejoin="round"

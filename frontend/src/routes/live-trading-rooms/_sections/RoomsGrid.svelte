@@ -72,12 +72,7 @@
 	class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 perspective-container mb-32"
 >
 	{#each rooms as room (room.id)}
-		<article
-			use:tilt
-			class="group relative h-full card-3d"
-			role="region"
-			aria-label={room.name}
-		>
+		<article use:tilt class="group relative h-full card-3d" role="region" aria-label={room.name}>
 			<div
 				class={`absolute -inset-px rounded-3xl bg-linear-to-b opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm 
                     ${room.accent === 'cyan' ? 'from-cyan-500/50' : ''}

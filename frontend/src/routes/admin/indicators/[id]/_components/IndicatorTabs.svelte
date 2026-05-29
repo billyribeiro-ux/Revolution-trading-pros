@@ -12,8 +12,7 @@
 </script>
 
 <nav class="tabs">
-	<button class:active={activeTab === 'details'} onclick={() => onSelect('details')}
-		>Details</button
+	<button class:active={activeTab === 'details'} onclick={() => onSelect('details')}>Details</button
 	>
 	<button class:active={activeTab === 'files'} onclick={() => onSelect('files')}
 		>Files <span class="badge">{filesCount}</span></button

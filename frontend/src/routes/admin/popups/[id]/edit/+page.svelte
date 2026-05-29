@@ -728,9 +728,7 @@
 							<h4 class="text-sm font-semibold text-blue-800 mb-1">Schedule Preview</h4>
 							<p class="text-sm text-blue-700">
 								{#if formData.start_date && formData.end_date}
-									Active from <strong
-										>{new Date(formData.start_date).toLocaleString()}</strong
-									>
+									Active from <strong>{new Date(formData.start_date).toLocaleString()}</strong>
 									to <strong>{new Date(formData.end_date).toLocaleString()}</strong>
 								{:else if formData.start_date}
 									Starts <strong>{new Date(formData.start_date).toLocaleString()}</strong>
@@ -771,7 +769,7 @@
 						<div class="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center">
 							<div class="text-gray-400 mb-3">
 								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chart-bar w-12 h-12 -->
-							<IconChartBar size={48} aria-hidden="true" />
+								<IconChartBar size={48} aria-hidden="true" />
 							</div>
 							<h3 class="text-lg font-medium text-gray-900 mb-2">No A/B Test Running</h3>
 							<p class="text-sm text-gray-500 mb-4">

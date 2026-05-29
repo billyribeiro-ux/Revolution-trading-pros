@@ -163,18 +163,16 @@
 				</h1>
 
 				<p data-gsap class="hero__lede">
-					Stop staring at the 1-minute chart. Get high-precision <strong>multi-day swing alerts</strong>
+					Stop staring at the 1-minute chart. Get high-precision <strong
+						>multi-day swing alerts</strong
+					>
 					designed for traders who want freedom, not another 9-to-5 job.
 				</p>
 
 				<div data-gsap class="hero__cta-row">
 					<a href="#pricing" class="hero__cta hero__cta--primary group">
 						Start Trading Swings
-						<svg
-							class="hero__cta-arrow"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
+						<svg class="hero__cta-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"
 							><path
 								stroke-linecap="round"
 								stroke-linejoin="round"
@@ -183,9 +181,7 @@
 							/></svg
 						>
 					</a>
-					<a href="#process" class="hero__cta hero__cta--ghost">
-						See How It Works
-					</a>
+					<a href="#process" class="hero__cta hero__cta--ghost"> See How It Works </a>
 				</div>
 
 				<div data-gsap class="hero__bullets">
@@ -303,9 +299,7 @@
 		<div class="compare__inner">
 			<div class="compare__header">
 				<span class="compare__eyebrow">Lifestyle First</span>
-				<h2 data-gsap class="compare__title">
-					Choose Your Battle
-				</h2>
+				<h2 data-gsap class="compare__title">Choose Your Battle</h2>
 				<p data-gsap class="compare__lede">
 					Most traders burn out trying to scalp 1-minute candles. We play the bigger timeframe for
 					bigger peace of mind.
@@ -337,7 +331,9 @@
 				<div data-gsap class="compare-card compare-card--good">
 					<div class="compare-card__ribbon">RECOMMENDED</div>
 					<div class="compare-card__head">
-						<div class="compare-card__emoji compare-card__emoji--good">&#x1f9d8;&#x200d;&#x2642;&#xfe0f;</div>
+						<div class="compare-card__emoji compare-card__emoji--good">
+							&#x1f9d8;&#x200d;&#x2642;&#xfe0f;
+						</div>
 						<h3 class="compare-card__title">Swing Trader</h3>
 					</div>
 					<ul class="compare-card__list compare-card__list--bold">
@@ -395,9 +391,7 @@
 		<div class="process__inner">
 			<div class="process__header">
 				<span class="process__eyebrow">How It Works</span>
-				<h2 class="process__title">
-					The Anatomy of a Swing Trade
-				</h2>
+				<h2 class="process__title">The Anatomy of a Swing Trade</h2>
 			</div>
 
 			<div class="process__grid">
@@ -433,7 +427,9 @@
 					</div>
 					<h3 class="pill-card__title">Multi-Channel Alerts</h3>
 					<p class="pill-card__desc">
-						You can't miss the entry. We send alerts via <strong>SMS Text, Email, Push Notification, and Discord</strong>
+						You can't miss the entry. We send alerts via <strong
+							>SMS Text, Email, Push Notification, and Discord</strong
+						>
 						immediately when our criteria are met. You have a full window to enter the trade.
 					</p>
 				</article>
@@ -485,7 +481,14 @@
 
 				<div class="recent__row">
 					<div class="recent__col recent__col--ticker recent__ticker">
-						<img src="/logos/nvda.svg" alt="NVIDIA logo" class="recent__logo" width="20" height="20" loading="lazy" />
+						<img
+							src="/logos/nvda.svg"
+							alt="NVIDIA logo"
+							class="recent__logo"
+							width="20"
+							height="20"
+							loading="lazy"
+						/>
 						NVDA
 					</div>
 					<div class="recent__col recent__col--type recent__type--call">CALLS</div>
@@ -498,7 +501,14 @@
 
 				<div class="recent__row">
 					<div class="recent__col recent__col--ticker recent__ticker">
-						<img src="/logos/amd.svg" alt="AMD logo" class="recent__logo" width="20" height="20" loading="lazy" />
+						<img
+							src="/logos/amd.svg"
+							alt="AMD logo"
+							class="recent__logo"
+							width="20"
+							height="20"
+							loading="lazy"
+						/>
 						AMD
 					</div>
 					<div class="recent__col recent__col--type recent__type--call">CALLS</div>
@@ -511,12 +521,21 @@
 
 				<div class="recent__row recent__row--loss">
 					<div class="recent__col recent__col--ticker recent__ticker">
-						<img src="/logos/tsla.svg" alt="Tesla logo" class="recent__logo" width="20" height="20" loading="lazy" />
+						<img
+							src="/logos/tsla.svg"
+							alt="Tesla logo"
+							class="recent__logo"
+							width="20"
+							height="20"
+							loading="lazy"
+						/>
 						TSLA
 					</div>
 					<div class="recent__col recent__col--type recent__type--put">PUTS</div>
 					<div class="recent__col recent__col--days recent__days">1 Day</div>
-					<div class="recent__col recent__col--return recent__return recent__return--down">-15%</div>
+					<div class="recent__col recent__col--return recent__return recent__return--down">
+						-15%
+					</div>
 					<div class="recent__col recent__col--notes recent__notes">
 						Hit stop loss on reversal. Rule disciplined.
 					</div>
@@ -524,7 +543,14 @@
 
 				<div class="recent__row">
 					<div class="recent__col recent__col--ticker recent__ticker">
-						<img src="/logos/meta.svg" alt="Meta logo" class="recent__logo" width="20" height="20" loading="lazy" />
+						<img
+							src="/logos/meta.svg"
+							alt="Meta logo"
+							class="recent__logo"
+							width="20"
+							height="20"
+							loading="lazy"
+						/>
 						META
 					</div>
 					<div class="recent__col recent__col--type recent__type--call">CALLS</div>
@@ -553,18 +579,27 @@
 					<button
 						type="button"
 						onclick={() => (selectedPlan = 'monthly')}
-						class={['pricing-toggle__btn', selectedPlan === 'monthly' && 'pricing-toggle__btn--active']}
-					>Monthly</button>
+						class={[
+							'pricing-toggle__btn',
+							selectedPlan === 'monthly' && 'pricing-toggle__btn--active'
+						]}>Monthly</button
+					>
 					<button
 						type="button"
 						onclick={() => (selectedPlan = 'quarterly')}
-						class={['pricing-toggle__btn', selectedPlan === 'quarterly' && 'pricing-toggle__btn--active']}
-					>Quarterly</button>
+						class={[
+							'pricing-toggle__btn',
+							selectedPlan === 'quarterly' && 'pricing-toggle__btn--active'
+						]}>Quarterly</button
+					>
 					<button
 						type="button"
 						onclick={() => (selectedPlan = 'annual')}
-						class={['pricing-toggle__btn', selectedPlan === 'annual' && 'pricing-toggle__btn--active']}
-					>Annual</button>
+						class={[
+							'pricing-toggle__btn',
+							selectedPlan === 'annual' && 'pricing-toggle__btn--active'
+						]}>Annual</button
+					>
 
 					<div
 						class="pricing-toggle__indicator"
@@ -586,10 +621,18 @@
 					</div>
 					<div class="plan__perday">$3.20 per day</div>
 					<ul class="plan__features">
-						<li class="plan__feat"><span class="plan__tick">&#x2713;</span> 2-4 Premium Swings / Week</li>
-						<li class="plan__feat"><span class="plan__tick">&#x2713;</span> Instant SMS &amp; Email Alerts</li>
-						<li class="plan__feat"><span class="plan__tick">&#x2713;</span> Private Discord Community</li>
-						<li class="plan__feat"><span class="plan__tick">&#x2713;</span> Swing Bootcamp Video</li>
+						<li class="plan__feat">
+							<span class="plan__tick">&#x2713;</span> 2-4 Premium Swings / Week
+						</li>
+						<li class="plan__feat">
+							<span class="plan__tick">&#x2713;</span> Instant SMS &amp; Email Alerts
+						</li>
+						<li class="plan__feat">
+							<span class="plan__tick">&#x2713;</span> Private Discord Community
+						</li>
+						<li class="plan__feat">
+							<span class="plan__tick">&#x2713;</span> Swing Bootcamp Video
+						</li>
 					</ul>
 					<a href="/checkout/monthly-swings" class="plan__cta plan__cta--ghost">Select Monthly</a>
 				</div>
@@ -607,11 +650,19 @@
 							<span class="plan__tick plan__tick--bold">&#x2713;</span>
 							<span class="plan__feat-bold">Priority Support</span>
 						</li>
-						<li class="plan__feat"><span class="plan__tick plan__tick--bold">&#x2713;</span> 2-4 Premium Swings / Week</li>
-						<li class="plan__feat"><span class="plan__tick plan__tick--bold">&#x2713;</span> Instant SMS &amp; Email Alerts</li>
-						<li class="plan__feat"><span class="plan__tick plan__tick--bold">&#x2713;</span> Private Discord Community</li>
+						<li class="plan__feat">
+							<span class="plan__tick plan__tick--bold">&#x2713;</span> 2-4 Premium Swings / Week
+						</li>
+						<li class="plan__feat">
+							<span class="plan__tick plan__tick--bold">&#x2713;</span> Instant SMS &amp; Email Alerts
+						</li>
+						<li class="plan__feat">
+							<span class="plan__tick plan__tick--bold">&#x2713;</span> Private Discord Community
+						</li>
 					</ul>
-					<a href="/checkout/quarterly-swings" class="plan__cta plan__cta--primary">Join Quarterly</a>
+					<a href="/checkout/quarterly-swings" class="plan__cta plan__cta--primary"
+						>Join Quarterly</a
+					>
 				</div>
 
 				<div class={['plan plan--highlight', selectedPlan === 'annual' && 'plan--active']}>
@@ -626,9 +677,15 @@
 							<span class="plan__tick">&#x2713;</span>
 							<span class="plan__feat-bold">Strategy Video Library</span>
 						</li>
-						<li class="plan__feat"><span class="plan__tick">&#x2713;</span> 2-4 Premium Swings / Week</li>
-						<li class="plan__feat"><span class="plan__tick">&#x2713;</span> Instant SMS &amp; Email Alerts</li>
-						<li class="plan__feat"><span class="plan__tick">&#x2713;</span> Private Discord Community</li>
+						<li class="plan__feat">
+							<span class="plan__tick">&#x2713;</span> 2-4 Premium Swings / Week
+						</li>
+						<li class="plan__feat">
+							<span class="plan__tick">&#x2713;</span> Instant SMS &amp; Email Alerts
+						</li>
+						<li class="plan__feat">
+							<span class="plan__tick">&#x2713;</span> Private Discord Community
+						</li>
 					</ul>
 					<a href="/checkout/annual-swings" class="plan__cta plan__cta--emerald">Select Annual</a>
 				</div>
@@ -657,11 +714,7 @@
 			<div class="faq__list">
 				{#each faqList as faq, i (i)}
 					<div class="faq__item">
-						<button
-							class="faq__trigger"
-							onclick={() => toggleFaq(i)}
-							aria-expanded={openFaq === i}
-						>
+						<button class="faq__trigger" onclick={() => toggleFaq(i)} aria-expanded={openFaq === i}>
 							<span class="faq__q">{faq.question}</span>
 							<svg
 								class="faq__chevron {openFaq === i ? 'faq__chevron--open' : ''}"
@@ -677,10 +730,7 @@
 							>
 						</button>
 						{#if openFaq === i}
-							<div
-								transition:slide={{ duration: 300, easing: cubicOut }}
-								class="faq__panel"
-							>
+							<div transition:slide={{ duration: 300, easing: cubicOut }} class="faq__panel">
 								{faq.answer}
 							</div>
 						{/if}
@@ -704,7 +754,6 @@
 		</div>
 	</section>
 </div>
-
 
 <style>
 	/* ─────────────────────────────────────────────────────────────────
@@ -888,12 +937,7 @@
 		}
 	}
 	.hero__title-accent {
-		background: linear-gradient(
-			to right,
-			var(--rtp-emerald),
-			#6ee7b7,
-			var(--swing-teal-200)
-		);
+		background: linear-gradient(to right, var(--rtp-emerald), #6ee7b7, var(--swing-teal-200));
 		-webkit-background-clip: text;
 		background-clip: text;
 		color: transparent;

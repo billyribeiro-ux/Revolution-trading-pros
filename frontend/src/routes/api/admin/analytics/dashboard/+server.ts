@@ -16,12 +16,7 @@ import { requireAdmin } from '$lib/server/auth';
 // `$lib/server/proxy-fetch` (CLAUDE.md URL-fallback pinned once;
 // `Promise<unknown>` return; `hasSuccess` + `extractBackendData`
 // fix the R18-A Latent Bug §3 short-circuit on `{ data: null }`).
-import {
-	fetchBackend,
-	hasSuccess,
-	isObject,
-	extractBackendData
-} from '$lib/server/proxy-fetch';
+import { fetchBackend, hasSuccess, isObject, extractBackendData } from '$lib/server/proxy-fetch';
 
 // Generate realistic baseline analytics based on actual platform activity
 function generateBuiltInAnalytics(_period: string) {

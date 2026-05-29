@@ -288,8 +288,8 @@
 		>
 			<span aria-hidden="true">⚠</span>
 			<span>
-				TEST MODE active — consent banner is shown to admins only. Public visitors are
-				NOT being prompted and consent is NOT being collected.
+				TEST MODE active — consent banner is shown to admins only. Public visitors are NOT being
+				prompted and consent is NOT being collected.
 			</span>
 		</div>
 	{/if}

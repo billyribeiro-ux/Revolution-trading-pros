@@ -39,7 +39,10 @@ test.describe('our-mission forensic audit', () => {
 		);
 		expect(opacities.length).toBeGreaterThan(0);
 		const stillHidden = opacities.filter((o) => o < 0.99);
-		expect(stillHidden, `Hidden [data-gsap] count: ${stillHidden.length}/${opacities.length}`).toHaveLength(0);
+		expect(
+			stillHidden,
+			`Hidden [data-gsap] count: ${stillHidden.length}/${opacities.length}`
+		).toHaveLength(0);
 
 		// No console errors (excluding the expected anonymous-user 401 from /api/auth/me)
 		const realErrors = consoleErrors.filter(
@@ -53,7 +56,12 @@ test.describe('our-mission forensic audit', () => {
 
 		// Calculator default: $25,000 * 2% = $500
 		await page.locator('#sim-account').scrollIntoViewIfNeeded();
-		const initialRisk = await page.getByText('Dollar Risk (1R)').locator('..').locator('div').nth(1).textContent();
+		const initialRisk = await page
+			.getByText('Dollar Risk (1R)')
+			.locator('..')
+			.locator('div')
+			.nth(1)
+			.textContent();
 		expect(initialRisk?.trim()).toBe('$500');
 
 		// Change account size to $50,000
@@ -61,7 +69,12 @@ test.describe('our-mission forensic audit', () => {
 		await page.locator('#sim-account').blur();
 
 		// New risk: $50,000 * 2% = $1,000
-		const newRisk = await page.getByText('Dollar Risk (1R)').locator('..').locator('div').nth(1).textContent();
+		const newRisk = await page
+			.getByText('Dollar Risk (1R)')
+			.locator('..')
+			.locator('div')
+			.nth(1)
+			.textContent();
 		expect(newRisk?.trim()).toBe('$1000');
 	});
 

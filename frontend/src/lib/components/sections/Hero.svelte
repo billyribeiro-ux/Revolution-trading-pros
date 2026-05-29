@@ -13,12 +13,7 @@
 	 */
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { browser } from '$app/environment';
-	import type {
-		CandlestickData,
-		IChartApi,
-		ISeriesApi,
-		UTCTimestamp
-	} from 'lightweight-charts';
+	import type { CandlestickData, IChartApi, ISeriesApi, UTCTimestamp } from 'lightweight-charts';
 	import type gsap from 'gsap';
 
 	// ============================================================================
@@ -746,7 +741,7 @@
 
 			// PE7: Wait for DOM to be fully ready
 			await tick();
-			await new Promise(resolve => requestAnimationFrame(resolve));
+			await new Promise((resolve) => requestAnimationFrame(resolve));
 
 			// PE7: Verify slide element exists before animating
 			const slide = document.querySelector(`[data-slide="${currentSlide}"]`);
@@ -754,8 +749,8 @@
 				console.warn(`[Hero] Slide ${currentSlide} not found in DOM, retrying...`);
 				// Retry after another tick
 				await tick();
-				await new Promise(resolve => setTimeout(resolve, 100));
-				
+				await new Promise((resolve) => setTimeout(resolve, 100));
+
 				const retrySlide = document.querySelector(`[data-slide="${currentSlide}"]`);
 				if (!retrySlide) {
 					console.error(`[Hero] Slide ${currentSlide} still not found, skipping animation`);
@@ -791,7 +786,10 @@
 	<div class="hero-ambient" aria-hidden="true">
 		<div class="ambient-gradient"></div>
 		<div class="ambient-grid"></div>
-		<div class="ambient-glow" style="--accent-color: {SLIDES[currentSlide]?.accentColor ?? '#00d4ff'}"></div>
+		<div
+			class="ambient-glow"
+			style="--accent-color: {SLIDES[currentSlide]?.accentColor ?? '#00d4ff'}"
+		></div>
 	</div>
 
 	<!-- Chart Background -->

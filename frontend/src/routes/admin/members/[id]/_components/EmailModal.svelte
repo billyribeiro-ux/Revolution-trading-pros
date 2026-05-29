@@ -69,11 +69,7 @@
 			</div>
 			<div class="modal-footer">
 				<button class="btn-secondary" onclick={onClose}>Cancel</button>
-				<button
-					class="btn-primary"
-					onclick={onSend}
-					disabled={!subject || !body || sending}
-				>
+				<button class="btn-primary" onclick={onSend} disabled={!subject || !body || sending}>
 					<IconSend size={18} />
 					{sending ? 'Sending...' : 'Send Email'}
 				</button>

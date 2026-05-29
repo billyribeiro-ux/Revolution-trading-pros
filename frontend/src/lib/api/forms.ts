@@ -1026,7 +1026,11 @@ class FormsService {
 			const isRecord = (v: unknown): v is Record<string, unknown> =>
 				typeof v === 'object' && v !== null && !Array.isArray(v);
 
-			if (isRecord(response) && isRecord(response['data']) && Array.isArray(response['data']['data'])) {
+			if (
+				isRecord(response) &&
+				isRecord(response['data']) &&
+				Array.isArray(response['data']['data'])
+			) {
 				// Paginated wrapped: { data: { data: [], total, per_page } }
 				const inner = response['data'] as { data: unknown[]; total?: number; per_page?: number };
 				forms = inner.data as Form[];
@@ -1486,8 +1490,7 @@ class FormsService {
 		// Required validation — `null`, `undefined`, `false`, `0`, `""`, and `[]`
 		// all fail the truthiness check. For arrays we additionally require
 		// at least one element.
-		const isEmpty =
-			!value || (Array.isArray(value) && value.length === 0);
+		const isEmpty = !value || (Array.isArray(value) && value.length === 0);
 		if (field.required && isEmpty) {
 			errors.push(`${field.label} is required`);
 		}

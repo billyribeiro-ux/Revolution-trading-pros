@@ -358,13 +358,10 @@
 		const entryId = pendingDeleteEntry.id;
 		pendingDeleteEntry = null;
 		try {
-			const response = await fetch(
-				`${API_BASE}/${selectedDatasource.id}/entries/${entryId}`,
-				{
-					method: 'DELETE',
-					credentials: 'include'
-				}
-			);
+			const response = await fetch(`${API_BASE}/${selectedDatasource.id}/entries/${entryId}`, {
+				method: 'DELETE',
+				credentials: 'include'
+			});
 
 			if (!response.ok) throw new Error('Failed to delete entry');
 
@@ -388,15 +385,12 @@
 		entries = orderedEntries;
 
 		try {
-			const response = await fetch(
-				`${API_BASE}/${selectedDatasource.id}/entries/reorder`,
-				{
-					method: 'PUT',
-					credentials: 'include',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ entry_ids: newOrder })
-				}
-			);
+			const response = await fetch(`${API_BASE}/${selectedDatasource.id}/entries/reorder`, {
+				method: 'PUT',
+				credentials: 'include',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ entry_ids: newOrder })
+			});
 
 			if (!response.ok) throw new Error('Failed to reorder entries');
 		} catch (_err) {

@@ -1,10 +1,5 @@
 <script lang="ts">
-	import {
-		IconCreditCard,
-		IconReceipt,
-		IconCalendar,
-		IconChartBar
-	} from '$lib/icons';
+	import { IconCreditCard, IconReceipt, IconCalendar, IconChartBar } from '$lib/icons';
 	import type { Member } from '$lib/api/members';
 	import { formatCurrency, formatDate, getEngagementLabel } from './helpers';
 

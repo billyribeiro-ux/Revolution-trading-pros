@@ -75,9 +75,7 @@
 			<div class="empty-state">
 				<IconFolder size={48} />
 				<p>No categories found</p>
-				<button class="btn-primary" onclick={onAdd}>
-					Create your first category
-				</button>
+				<button class="btn-primary" onclick={onAdd}> Create your first category </button>
 			</div>
 		{:else}
 			{#each categories as category (category.id)}
@@ -122,18 +120,10 @@
 						<button class="action-btn" onclick={() => onEdit(category)} title="Edit">
 							<IconEdit size={18} />
 						</button>
-						<button
-							class="action-btn"
-							onclick={() => onCopySlug(category.slug)}
-							title="Copy slug"
-						>
+						<button class="action-btn" onclick={() => onCopySlug(category.slug)} title="Copy slug">
 							<IconCopy size={18} />
 						</button>
-						<button
-							class="action-btn danger"
-							onclick={() => onDelete(category.id)}
-							title="Delete"
-						>
+						<button class="action-btn danger" onclick={() => onDelete(category.id)} title="Delete">
 							<IconTrash size={18} />
 						</button>
 					</div>

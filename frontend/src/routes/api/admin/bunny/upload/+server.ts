@@ -17,8 +17,7 @@ import { env } from '$env/dynamic/private';
 import { requireAdmin } from '$lib/server/auth';
 
 // FIX-2026-04-26-audit: align with repo-wide proxy env-var chain.
-const BACKEND_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const BACKEND_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 // FIX-2026-04-26-audit (P3): make the default Bunny library id env-driven (was a magic 585929).
 const DEFAULT_BUNNY_LIBRARY_ID = env.BUNNY_VIDEO_LIBRARY_ID || '585929';
 

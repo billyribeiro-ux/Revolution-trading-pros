@@ -47,8 +47,7 @@
 			type="text"
 			bind:value={newTag}
 			placeholder="Add new tag..."
-			onkeydown={(e: KeyboardEvent) =>
-				e.key === 'Enter' && (e.preventDefault(), onCreateTag())}
+			onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && (e.preventDefault(), onCreateTag())}
 		/>
 		<button type="button" class="btn-add-tag" onclick={onCreateTag}>
 			<IconPlus size={16} />

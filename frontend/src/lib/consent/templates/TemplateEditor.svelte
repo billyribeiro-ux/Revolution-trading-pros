@@ -38,9 +38,7 @@
 	// The one-time `template` read is deliberate (we want only the initial
 	// value; the {#key} remount supplies new ones). `untrack` makes that
 	// init-once intent explicit and replaces the prior svelte-ignore directive.
-	let editedTemplate: BannerTemplate = $state(
-		untrack(() => JSON.parse(JSON.stringify(template)))
-	);
+	let editedTemplate: BannerTemplate = $state(untrack(() => JSON.parse(JSON.stringify(template))));
 
 	// Svelte 5: Editor tabs state
 	type EditorTab = 'layout' | 'colors' | 'typography' | 'copy' | 'buttons' | 'advanced';

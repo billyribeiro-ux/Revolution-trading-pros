@@ -44,7 +44,9 @@
 		>
 			<div class="modal-header">
 				<h2>Replace Video</h2>
-				<button class="modal-close" onclick={onClose} type="button" aria-label="Close">&times;</button>
+				<button class="modal-close" onclick={onClose} type="button" aria-label="Close"
+					>&times;</button
+				>
 			</div>
 			<div class="modal-body">
 				<div class="replace-info">
@@ -200,7 +202,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
 		border: none;
 		border-radius: 10px;
 		color: #0d1117;

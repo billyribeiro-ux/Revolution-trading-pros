@@ -29,7 +29,8 @@ const __dirname = dirname(__filename);
 // CONFIGURATION
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const WORKBENCH_URL = (process.env.FRONTEND_URL || process.env.E2E_BASE_URL || 'http://localhost:5173') + '/workbench';
+const WORKBENCH_URL =
+	(process.env.FRONTEND_URL || process.env.E2E_BASE_URL || 'http://localhost:5173') + '/workbench';
 const COMPONENTS_BASE = 'src/lib/components';
 
 // ═══════════════════════════════════════════════════════════════════════════════

@@ -136,7 +136,6 @@
 	{/if}
 </div>
 
-
 <style>
 	.courses-page {
 		background: #f9fafb;

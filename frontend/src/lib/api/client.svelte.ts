@@ -1663,8 +1663,7 @@ export const api = {
 	getMyProducts: () => apiClient.getMyProducts(),
 
 	// Products
-	getIndicators: (params?: { category?: string; sort?: string }) =>
-		apiClient.getIndicators(params),
+	getIndicators: (params?: { category?: string; sort?: string }) => apiClient.getIndicators(params),
 	getIndicator: (slug: string) => apiClient.getIndicator(slug),
 	purchaseProduct: (productId: number, paymentMethod?: string) =>
 		apiClient.purchaseProduct(productId, paymentMethod),

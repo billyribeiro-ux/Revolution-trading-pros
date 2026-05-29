@@ -125,7 +125,13 @@
 
 			<!-- Click + Intro -->
 			<div class="intro-container">
-				Click <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 123 123">
+				Click <svg
+					aria-hidden="true"
+					xmlns="http://www.w3.org/2000/svg"
+					width="40"
+					height="40"
+					viewBox="0 0 123 123"
+				>
 					<g transform="translate(-1632 -1126)">
 						<circle cx="61.5" cy="61.5" r="61.5" transform="translate(1632 1126)" fill="#3879f3" />
 						<g transform="translate(1665.677 1159.678)">

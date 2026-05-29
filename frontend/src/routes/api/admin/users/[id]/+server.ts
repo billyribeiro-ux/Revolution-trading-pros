@@ -30,8 +30,7 @@ import { env } from '$env/dynamic/private';
 import { requireAdmin, requireSuperadmin } from '$lib/server/auth';
 
 // FIX-2026-04-26: canonical env pattern (was PROD_BACKEND, now API_URL — P3-7).
-const API_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const API_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 /**
  * Parse `:id` into a strictly positive integer, or throw a 400.

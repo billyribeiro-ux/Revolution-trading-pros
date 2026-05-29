@@ -8,8 +8,7 @@ export const prerender = true;
 
 export const load = () => ({
 	seo: {
-		title:
-			'Small Account Options Room — PDT-Free SPX Strategy for Accounts Under $25k',
+		title: 'Small Account Options Room — PDT-Free SPX Strategy for Accounts Under $25k',
 		description:
 			'A dedicated small-account options room focused on cash-account execution, PDT-free routines, SPX 0DTE risk control, and account-preservation habits.',
 		og: {
@@ -34,8 +33,7 @@ export const load = () => ({
 			}),
 			buildEvent({
 				name: 'Small Account Options Room — Daily Session',
-				description:
-					'Recurring weekday live session for traders growing accounts under $25k.',
+				description: 'Recurring weekday live session for traders growing accounts under $25k.',
 				url: `${SITE}/live-trading-rooms/small-accounts`,
 				startDate: '2026-05-26T09:30:00-04:00',
 				eventAttendanceMode: 'OnlineEventAttendanceMode',

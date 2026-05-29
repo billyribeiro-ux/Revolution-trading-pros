@@ -524,7 +524,9 @@
 
 	function exportSegmentData(segment: Segment) {
 		// Export segment members as CSV
-		toastStore.success(`Exporting ${formatNumber(segment.memberCount)} members from "${segment.name}"...`);
+		toastStore.success(
+			`Exporting ${formatNumber(segment.memberCount)} members from "${segment.name}"...`
+		);
 		// TODO: Implement actual CSV export
 	}
 
@@ -965,8 +967,7 @@
 		}}
 		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showCreateTagModal = false)}
 	>
-		<div class="modal-content" role="document"
-		>
+		<div class="modal-content" role="document">
 			<div class="modal-header">
 				<h2>Create New Tag</h2>
 				<button class="close-btn" onclick={() => (showCreateTagModal = false)}>
@@ -1035,8 +1036,7 @@
 		}}
 		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showSaveFilterModal = false)}
 	>
-		<div class="modal-content" role="document"
-		>
+		<div class="modal-content" role="document">
 			<div class="modal-header">
 				<h2>Save Current Filter</h2>
 				<button class="close-btn" onclick={() => (showSaveFilterModal = false)}>

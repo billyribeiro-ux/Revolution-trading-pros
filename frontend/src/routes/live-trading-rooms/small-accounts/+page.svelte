@@ -143,14 +143,21 @@
 				</h1>
 
 				<p data-gsap class="hero__lede">
-					Don't just get alerts—learn the execution. Join our live voice &amp; screen-share room where
-					we hunt high-probability setups on SPX optimized for <strong>accounts under $25,000.</strong>
+					Don't just get alerts—learn the execution. Join our live voice &amp; screen-share room
+					where we hunt high-probability setups on SPX optimized for <strong
+						>accounts under $25,000.</strong
+					>
 				</p>
 
 				<div data-gsap class="hero__cta-row">
 					<a href="#pricing" class="hero__cta hero__cta--primary">
 						Join the Small Account Room
-						<svg aria-hidden="true" class="hero__cta-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+						<svg
+							aria-hidden="true"
+							class="hero__cta-arrow"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
 							><path
 								stroke-linecap="round"
 								stroke-linejoin="round"
@@ -159,15 +166,19 @@
 							/></svg
 						>
 					</a>
-					<a href="#daily-routine" class="hero__cta hero__cta--ghost">
-						See Daily Routine
-					</a>
+					<a href="#daily-routine" class="hero__cta hero__cta--ghost"> See Daily Routine </a>
 				</div>
 
 				<div data-gsap class="hero__social">
 					<div class="hero__avatars">
-						<div class="hero__avatar hero__avatar--img" style="background-image: url('/avatars/1.svg')"></div>
-						<div class="hero__avatar hero__avatar--img" style="background-image: url('/avatars/2.svg')"></div>
+						<div
+							class="hero__avatar hero__avatar--img"
+							style="background-image: url('/avatars/1.svg')"
+						></div>
+						<div
+							class="hero__avatar hero__avatar--img"
+							style="background-image: url('/avatars/2.svg')"
+						></div>
 						<div class="hero__avatar hero__avatar--more">+500</div>
 					</div>
 					<p>Traders currently active</p>
@@ -264,9 +275,7 @@
 			<div class="methodology__grid">
 				<div>
 					<span class="methodology__eyebrow">The Methodology</span>
-					<h2 data-gsap class="methodology__title">
-						How We Trade Under $25k
-					</h2>
+					<h2 data-gsap class="methodology__title">How We Trade Under $25k</h2>
 					<p class="methodology__lede">
 						The Pattern Day Trader (PDT) rule restricts margin accounts under $25k to only 3 day
 						trades per week. <strong>We solve this.</strong>
@@ -321,7 +330,9 @@
 							</div>
 							<div class="methodology__media-rhs">
 								<div class="methodology__media-label">Today's P&amp;L</div>
-								<div class="methodology__media-value methodology__media-value--up">+$185.00 (+7.5%)</div>
+								<div class="methodology__media-value methodology__media-value--up">
+									+$185.00 (+7.5%)
+								</div>
 							</div>
 						</div>
 					</div>
@@ -333,9 +344,7 @@
 	<section id="inside-the-room" class="inside">
 		<div class="inside__inner">
 			<div class="inside__header">
-				<h2 data-gsap class="inside__title">
-					Inside The Room
-				</h2>
+				<h2 data-gsap class="inside__title">Inside The Room</h2>
 				<p data-gsap class="inside__lede">
 					We don't just give signals. We teach you how to fish with institutional-grade tools.
 				</p>
@@ -403,9 +412,7 @@
 		<div class="routine__inner">
 			<div class="routine__header">
 				<span class="routine__eyebrow">Structure</span>
-				<h2 data-gsap class="routine__title">
-					Your Daily Routine
-				</h2>
+				<h2 data-gsap class="routine__title">Your Daily Routine</h2>
 				<p class="routine__lede">Consistency is the key to longevity. Here is the plan.</p>
 			</div>
 
@@ -476,8 +483,8 @@
 						</div>
 						<h3 class="timeline__card-title">Review &amp; Analysis</h3>
 						<p class="timeline__card-desc">
-							Volume slows. We review morning trades, answer member Q&amp;A, and teach risk management
-							strategies.
+							Volume slows. We review morning trades, answer member Q&amp;A, and teach risk
+							management strategies.
 						</p>
 					</div>
 				</div>
@@ -513,9 +520,7 @@
 		<div class="pricing__inner">
 			<div class="pricing__header">
 				<span class="pricing__eyebrow">Investment</span>
-				<h2 class="pricing__title">
-					Simple Membership
-				</h2>
+				<h2 class="pricing__title">Simple Membership</h2>
 				<p class="pricing__lede">
 					Invest in your education. One good trade covers your monthly access.
 				</p>
@@ -525,16 +530,25 @@
 				<div class="pricing-toggle">
 					<button
 						onclick={() => (selectedPlan = 'monthly')}
-						class={['pricing-toggle__btn', selectedPlan === 'monthly' && 'pricing-toggle__btn--active']}
-					>Monthly</button>
+						class={[
+							'pricing-toggle__btn',
+							selectedPlan === 'monthly' && 'pricing-toggle__btn--active'
+						]}>Monthly</button
+					>
 					<button
 						onclick={() => (selectedPlan = 'quarterly')}
-						class={['pricing-toggle__btn', selectedPlan === 'quarterly' && 'pricing-toggle__btn--active']}
-					>Quarterly</button>
+						class={[
+							'pricing-toggle__btn',
+							selectedPlan === 'quarterly' && 'pricing-toggle__btn--active'
+						]}>Quarterly</button
+					>
 					<button
 						onclick={() => (selectedPlan = 'annual')}
-						class={['pricing-toggle__btn', selectedPlan === 'annual' && 'pricing-toggle__btn--active']}
-					>Annual</button>
+						class={[
+							'pricing-toggle__btn',
+							selectedPlan === 'annual' && 'pricing-toggle__btn--active'
+						]}>Annual</button
+					>
 
 					<div
 						class="pricing-toggle__indicator"
@@ -556,12 +570,18 @@
 					</div>
 					<div class="plan__perday">$9.85 / trading day</div>
 					<ul class="plan__features">
-						<li class="plan__feat"><span class="plan__tick">&#x2713;</span> Cash-account execution plan</li>
+						<li class="plan__feat">
+							<span class="plan__tick">&#x2713;</span> Cash-account execution plan
+						</li>
 						<li class="plan__feat"><span class="plan__tick">&#x2713;</span> PDT-free SPX setups</li>
-						<li class="plan__feat"><span class="plan__tick">&#x2713;</span> Risk-per-trade guardrails</li>
+						<li class="plan__feat">
+							<span class="plan__tick">&#x2713;</span> Risk-per-trade guardrails
+						</li>
 						<li class="plan__feat"><span class="plan__tick">&#x2713;</span> Small account guide</li>
 					</ul>
-					<a href="/checkout/monthly-small-accounts" class="plan__cta plan__cta--ghost">Select Monthly</a>
+					<a href="/checkout/monthly-small-accounts" class="plan__cta plan__cta--ghost"
+						>Select Monthly</a
+					>
 				</div>
 
 				<div class={['plan plan--featured', selectedPlan === 'quarterly' && 'plan--active']}>
@@ -577,11 +597,19 @@
 							<span class="plan__tick plan__tick--bold">&#x2713;</span>
 							<span class="plan__feat-bold">Priority Support</span>
 						</li>
-						<li class="plan__feat"><span class="plan__tick plan__tick--bold">&#x2713;</span> Cash-account execution plan</li>
-						<li class="plan__feat"><span class="plan__tick plan__tick--bold">&#x2713;</span> PDT-free SPX setups</li>
-						<li class="plan__feat"><span class="plan__tick plan__tick--bold">&#x2713;</span> Small account guide</li>
+						<li class="plan__feat">
+							<span class="plan__tick plan__tick--bold">&#x2713;</span> Cash-account execution plan
+						</li>
+						<li class="plan__feat">
+							<span class="plan__tick plan__tick--bold">&#x2713;</span> PDT-free SPX setups
+						</li>
+						<li class="plan__feat">
+							<span class="plan__tick plan__tick--bold">&#x2713;</span> Small account guide
+						</li>
 					</ul>
-					<a href="/checkout/quarterly-small-accounts" class="plan__cta plan__cta--primary">Join Quarterly</a>
+					<a href="/checkout/quarterly-small-accounts" class="plan__cta plan__cta--primary"
+						>Join Quarterly</a
+					>
 				</div>
 
 				<div class={['plan plan--highlight', selectedPlan === 'annual' && 'plan--active']}>
@@ -596,11 +624,19 @@
 							<span class="plan__tick plan__tick--indigo">&#x2713;</span>
 							<span class="plan__feat-bold">1-on-1 Coaching Call</span>
 						</li>
-						<li class="plan__feat"><span class="plan__tick plan__tick--indigo">&#x2713;</span> Cash-account execution plan</li>
-						<li class="plan__feat"><span class="plan__tick plan__tick--indigo">&#x2713;</span> PDT-free SPX setups</li>
-						<li class="plan__feat"><span class="plan__tick plan__tick--indigo">&#x2713;</span> Account growth review</li>
+						<li class="plan__feat">
+							<span class="plan__tick plan__tick--indigo">&#x2713;</span> Cash-account execution plan
+						</li>
+						<li class="plan__feat">
+							<span class="plan__tick plan__tick--indigo">&#x2713;</span> PDT-free SPX setups
+						</li>
+						<li class="plan__feat">
+							<span class="plan__tick plan__tick--indigo">&#x2713;</span> Account growth review
+						</li>
 					</ul>
-					<a href="/checkout/annual-small-accounts" class="plan__cta plan__cta--indigo">Select Annual</a>
+					<a href="/checkout/annual-small-accounts" class="plan__cta plan__cta--indigo"
+						>Select Annual</a
+					>
 				</div>
 			</div>
 
@@ -627,11 +663,7 @@
 			<div class="faq__list">
 				{#each faqList as faq, i (i)}
 					<div class="faq__item">
-						<button
-							class="faq__trigger"
-							onclick={() => toggleFaq(i)}
-							aria-expanded={openFaq === i}
-						>
+						<button class="faq__trigger" onclick={() => toggleFaq(i)} aria-expanded={openFaq === i}>
 							<span class="faq__q">{faq.question}</span>
 							<svg
 								class="faq__chevron {openFaq === i ? 'faq__chevron--open' : ''}"
@@ -647,10 +679,7 @@
 							>
 						</button>
 						{#if openFaq === i}
-							<div
-								transition:slide={{ duration: 300, easing: cubicOut }}
-								class="faq__panel"
-							>
+							<div transition:slide={{ duration: 300, easing: cubicOut }} class="faq__panel">
 								{faq.answer}
 							</div>
 						{/if}
@@ -663,9 +692,7 @@
 	<section class="bell-cta">
 		<div class="bell-cta__pattern" aria-hidden="true"></div>
 		<div class="bell-cta__inner">
-			<h2 class="bell-cta__title">
-				Market Opens at 9:30 AM ET.
-			</h2>
+			<h2 class="bell-cta__title">Market Opens at 9:30 AM ET.</h2>
 			<p class="bell-cta__lede">
 				Don't trade a small account with large-account habits. Join a room built around PDT-free
 				execution, tight risk, and repeatable account growth.
@@ -675,7 +702,6 @@
 		</div>
 	</section>
 </div>
-
 
 <style>
 	/* ─────────────────────────────────────────────────────────────────
@@ -725,11 +751,7 @@
 			linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
 			linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
 		background-size: 40px 40px;
-		mask-image: radial-gradient(
-			ellipse 60% 50% at 50% 0%,
-			#000 70%,
-			transparent 100%
-		);
+		mask-image: radial-gradient(ellipse 60% 50% at 50% 0%, #000 70%, transparent 100%);
 	}
 	.hero__halo {
 		position: absolute;
@@ -862,11 +884,7 @@
 		}
 	}
 	.hero__title-accent {
-		background: linear-gradient(
-			to right,
-			var(--rtp-primary),
-			var(--rtp-emerald-bright)
-		);
+		background: linear-gradient(to right, var(--rtp-primary), var(--rtp-emerald-bright));
 		-webkit-background-clip: text;
 		background-clip: text;
 		color: transparent;
@@ -1575,12 +1593,7 @@
 		transform: translateX(-1px);
 		height: 100%;
 		width: 2px;
-		background: linear-gradient(
-			to bottom,
-			transparent,
-			var(--rtp-border),
-			transparent
-		);
+		background: linear-gradient(to bottom, transparent, var(--rtp-border), transparent);
 	}
 	@media (min-width: 768px) {
 		.timeline::before {

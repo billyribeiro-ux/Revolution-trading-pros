@@ -183,9 +183,9 @@ describe('extractBackendErrorMessage', () => {
 	});
 
 	it('prefers message over error when both are present', () => {
-		expect(
-			extractBackendErrorMessage({ message: 'primary', error: 'secondary' }, 'fallback')
-		).toBe('primary');
+		expect(extractBackendErrorMessage({ message: 'primary', error: 'secondary' }, 'fallback')).toBe(
+			'primary'
+		);
 	});
 
 	it('returns fallback when value is not an object', () => {

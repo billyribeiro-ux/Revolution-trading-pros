@@ -54,7 +54,6 @@
 			sectionObserver.disconnect();
 		};
 	});
-
 </script>
 
 <div class="indicator-page">

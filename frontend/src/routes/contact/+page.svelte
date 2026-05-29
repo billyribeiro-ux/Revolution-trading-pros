@@ -11,23 +11,19 @@
 	<section class="contact-block">
 		<h2>Support</h2>
 		<p>
-			<strong>TODO — human copy.</strong> Replace this placeholder with verified
-			support email, response-time expectations, and (optionally) a contact form
-			or Discord link.
+			<strong>TODO — human copy.</strong> Replace this placeholder with verified support email, response-time
+			expectations, and (optionally) a contact form or Discord link.
 		</p>
 		<p>
 			Email:
-			<a href="mailto:support@revolution-trading-pros.com">
-				support@revolution-trading-pros.com
-			</a>
+			<a href="mailto:support@revolution-trading-pros.com"> support@revolution-trading-pros.com </a>
 		</p>
 	</section>
 
 	<section class="contact-block">
 		<h2>Sales &amp; Partnerships</h2>
 		<p>
-			<strong>TODO — human copy.</strong> Replace with verified sales / partnership
-			contact channel.
+			<strong>TODO — human copy.</strong> Replace with verified sales / partnership contact channel.
 		</p>
 	</section>
 </article>

@@ -287,7 +287,6 @@
 		color: #166534;
 	}
 
-
 	.savings .bytes {
 		color: #4ade80;
 		font-size: 0.75rem;
@@ -422,7 +421,6 @@
 			0 0 0 4px rgba(255, 255, 255, 0.7);
 	}
 
-
 	.keyboard-hint {
 		margin-top: 0.75rem;
 		text-align: center;
@@ -457,6 +455,5 @@
 			width: 2.5rem;
 			height: 2.5rem;
 		}
-
 	}
 </style>

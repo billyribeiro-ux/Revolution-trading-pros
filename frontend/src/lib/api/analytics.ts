@@ -32,7 +32,6 @@ export type EventProperties = Record<string, JsonValue>;
  */
 type QueryParams = Record<string, string | number | boolean | undefined | null>;
 
-
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
 // ═══════════════════════════════════════════════════════════════════════════

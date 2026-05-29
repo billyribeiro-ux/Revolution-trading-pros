@@ -54,9 +54,11 @@ export function getPriorityColor(priority: string | undefined): string {
 	return colors[priority || 'normal'] || colors.normal;
 }
 
-export function getStatusBadge(
-	status: string | undefined
-): { bg: string; color: string; text: string } {
+export function getStatusBadge(status: string | undefined): {
+	bg: string;
+	color: string;
+	text: string;
+} {
 	const badges: Record<string, { bg: string; color: string; text: string }> = {
 		open: { bg: 'rgba(59, 130, 246, 0.15)', color: '#60a5fa', text: 'Open' },
 		won: { bg: 'rgba(34, 197, 94, 0.15)', color: '#4ade80', text: 'Won' },

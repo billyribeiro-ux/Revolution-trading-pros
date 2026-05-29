@@ -326,7 +326,13 @@
 				<a href={video.href} class="video-card">
 					<div class="video-thumbnail" style="background-image: url('{video.thumbnail}')">
 						<div class="play-overlay">
-							<svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" width="56" height="56">
+							<svg
+								aria-hidden="true"
+								viewBox="0 0 24 24"
+								fill="currentColor"
+								width="56"
+								height="56"
+							>
 								<path d="M8 5v14l11-7z" />
 							</svg>
 						</div>

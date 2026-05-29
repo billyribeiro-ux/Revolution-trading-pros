@@ -167,7 +167,6 @@
 	function handleSocialShare(platform: string) {
 		console.info(`Shared on ${platform}:`, post?.slug);
 	}
-
 </script>
 
 <!-- Reading Progress Indicator -->
@@ -462,7 +461,6 @@
 		{/if}
 	{/if}
 </div>
-
 
 <style>
 	/* 2026 CSS Standards: CSS Layers, oklch colors, container queries, color-mix */

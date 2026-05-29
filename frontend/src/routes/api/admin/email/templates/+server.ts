@@ -16,10 +16,7 @@ import { json, error, isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 import { requireAdmin } from '$lib/server/auth';
-import {
-	fetchBackendWithStatus,
-	isObject
-} from '$lib/server/proxy-fetch';
+import { fetchBackendWithStatus, isObject } from '$lib/server/proxy-fetch';
 
 export const GET: RequestHandler = async (event) => {
 	const { token } = requireAdmin(event);

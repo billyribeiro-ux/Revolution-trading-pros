@@ -230,11 +230,7 @@
 		/>
 
 		{#if showFilters}
-			<FiltersPanel
-				bind:statusFilter
-				onchange={handleStatusFilter}
-				onclear={clearAllFilters}
-			/>
+			<FiltersPanel bind:statusFilter onchange={handleStatusFilter} onclear={clearAllFilters} />
 		{/if}
 
 		<OrdersTable

@@ -138,9 +138,7 @@
 				// objects; normalize to ids here. The polymorphism still papers over
 				// a backend-shape mismatch — track in API contract notes.
 				tags:
-					postData.tags?.map((t: any) =>
-						t && typeof t === 'object' && 'id' in t ? t.id : t
-					) || []
+					postData.tags?.map((t: any) => (t && typeof t === 'object' && 'id' in t ? t.id : t)) || []
 			};
 
 			// Load blocks from the post data
@@ -453,13 +451,7 @@
 					onRemove={removeFeaturedImage}
 				/>
 				<CategoriesPanel bind:post />
-				<TagsPanel
-					bind:post
-					{availableTags}
-					{tagsLoading}
-					bind:newTag
-					onCreateTag={createTag}
-				/>
+				<TagsPanel bind:post {availableTags} {tagsLoading} bind:newTag onCreateTag={createTag} />
 			</div>
 		</div>
 	</div>

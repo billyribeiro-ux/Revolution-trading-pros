@@ -2,10 +2,7 @@
 	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
 	import IconTags from '@tabler/icons-svelte-runes/icons/tags';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import {
-		predefinedCategories,
-		getPredefinedCategoryById
-	} from '$lib/data/predefined-categories';
+	import { predefinedCategories, getPredefinedCategoryById } from '$lib/data/predefined-categories';
 	import type { PostState } from './types';
 
 	type Props = {

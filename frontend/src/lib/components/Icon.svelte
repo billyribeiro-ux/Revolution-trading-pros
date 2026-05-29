@@ -33,14 +33,7 @@
 
 	const SIZES = { xs: 14, sm: 16, md: 20, lg: 24, xl: 32 } as const;
 
-	let {
-		name,
-		size = 'md',
-		stroke = 2,
-		color,
-		class: className = '',
-		label
-	}: Props = $props();
+	let { name, size = 'md', stroke = 2, color, class: className = '', label }: Props = $props();
 
 	const px = $derived(typeof size === 'number' ? size : SIZES[size]);
 	const Component = $derived(Icons[name]);
@@ -48,21 +41,8 @@
 
 {#if Component}
 	{#if label}
-		<Component
-			size={px}
-			{stroke}
-			{color}
-			class={className}
-			aria-label={label}
-			role="img"
-		/>
+		<Component size={px} {stroke} {color} class={className} aria-label={label} role="img" />
 	{:else}
-		<Component
-			size={px}
-			{stroke}
-			{color}
-			class={className}
-			aria-hidden="true"
-		/>
+		<Component size={px} {stroke} {color} class={className} aria-hidden="true" />
 	{/if}
 {/if}

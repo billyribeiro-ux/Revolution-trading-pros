@@ -529,12 +529,9 @@
 		<p class="resources-cta__text">
 			Join our community and get access to professional trading rooms, courses, and indicators.
 		</p>
-		<a href="/signup" class="resources-cta__btn">
-			Get Started Free
-		</a>
+		<a href="/signup" class="resources-cta__btn"> Get Started Free </a>
 	</div>
 </section>
-
 
 <style>
 	/* ─────────────────────────────────────────────────────────────────
@@ -552,12 +549,7 @@
 	   ───────────────────────────────────────────────────────────────── */
 	.resources-hero {
 		position: relative;
-		background: linear-gradient(
-			135deg,
-			var(--rtp-blue),
-			var(--rtp-primary),
-			var(--rtp-emerald)
-		);
+		background: linear-gradient(135deg, var(--rtp-blue), var(--rtp-primary), var(--rtp-emerald));
 		color: #fff;
 		padding: 5rem 1rem 3rem;
 		padding-top: calc(5rem + env(safe-area-inset-top, 0px));
@@ -670,7 +662,9 @@
 		background: var(--rtp-surface);
 		border-radius: 1rem;
 		padding: 1.25rem;
-		box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+		box-shadow:
+			0 10px 15px -3px rgba(0, 0, 0, 0.1),
+			0 4px 6px -4px rgba(0, 0, 0, 0.1);
 		transition: box-shadow var(--rtp-dur-base) var(--rtp-ease-out);
 	}
 
@@ -842,7 +836,9 @@
 		color: var(--rtp-primary);
 		border-radius: 0.5rem;
 		text-decoration: none;
-		box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+		box-shadow:
+			0 10px 15px -3px rgba(0, 0, 0, 0.1),
+			0 4px 6px -4px rgba(0, 0, 0, 0.1);
 		transition:
 			background var(--rtp-dur-base) var(--rtp-ease-out),
 			transform var(--rtp-dur-base) var(--rtp-ease-out);

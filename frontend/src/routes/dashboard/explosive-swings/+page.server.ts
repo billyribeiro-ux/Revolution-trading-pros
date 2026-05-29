@@ -52,8 +52,7 @@ interface RoomResourcesResponse {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const LOG_PREFIX = '[explosive-swings]';
-const DEFAULT_API_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const DEFAULT_API_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // HELPER FUNCTIONS - ICT 7 Clean Architecture

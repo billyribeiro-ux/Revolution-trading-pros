@@ -105,13 +105,7 @@
 					</div>
 					<div class="form-group">
 						<label for="stop">Stop</label>
-						<input
-							id="stop"
-							name="stop"
-							type="text"
-							bind:value={form.stop}
-							placeholder="$136.00"
-						/>
+						<input id="stop" name="stop" type="text" bind:value={form.stop} placeholder="$136.00" />
 					</div>
 				</div>
 
@@ -171,12 +165,7 @@
 					</div>
 					<div class="form-group">
 						<label for="options_exp">Options Exp</label>
-						<input
-							id="options_exp"
-							name="options_exp"
-							type="date"
-							bind:value={form.options_exp}
-						/>
+						<input id="options_exp" name="options_exp" type="date" bind:value={form.options_exp} />
 					</div>
 				</div>
 

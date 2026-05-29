@@ -47,9 +47,9 @@
 	}
 	const narrowedOptions = $derived<Array<OptionShape | string>>(
 		Array.isArray(props.field.options)
-			? (props.field.options
-					.map(narrowOption)
-					.filter((x) => x !== null) as Array<OptionShape | string>)
+			? (props.field.options.map(narrowOption).filter((x) => x !== null) as Array<
+					OptionShape | string
+				>)
 			: []
 	);
 	// Newsletter-style options ({checkbox_label, show_privacy_link, privacy_url})
@@ -60,14 +60,17 @@
 		privacy_url?: string;
 	};
 	const newsletterOptions = $derived<NewsletterOptions>(
-		props.field.options && typeof props.field.options === 'object' && !Array.isArray(props.field.options)
+		props.field.options &&
+			typeof props.field.options === 'object' &&
+			!Array.isArray(props.field.options)
 			? {
 					checkbox_label:
 						typeof (props.field.options as Record<string, unknown>)['checkbox_label'] === 'string'
 							? ((props.field.options as Record<string, unknown>)['checkbox_label'] as string)
 							: undefined,
 					show_privacy_link:
-						typeof (props.field.options as Record<string, unknown>)['show_privacy_link'] === 'boolean'
+						typeof (props.field.options as Record<string, unknown>)['show_privacy_link'] ===
+						'boolean'
 							? ((props.field.options as Record<string, unknown>)['show_privacy_link'] as boolean)
 							: undefined,
 					privacy_url:
@@ -244,8 +247,7 @@
 
 	function isChecked(optionValue: string): boolean {
 		return (
-			Array.isArray(props.value) &&
-			(props.value as JsonValue[]).includes(optionValue as JsonValue)
+			Array.isArray(props.value) && (props.value as JsonValue[]).includes(optionValue as JsonValue)
 		);
 	}
 
@@ -850,7 +852,8 @@
 				{#if narrowedOptions.length > 0}
 					{#each narrowedOptions as option, i (i)}
 						{@const optionValue = typeof option === 'string' ? option : (option.value ?? '')}
-						{@const optionLabel = typeof option === 'string' ? option : (option.label ?? optionValue)}
+						{@const optionLabel =
+							typeof option === 'string' ? option : (option.label ?? optionValue)}
 						<option value={optionValue}>{optionLabel}</option>
 					{/each}
 				{:else}

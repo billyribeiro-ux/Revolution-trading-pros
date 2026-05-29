@@ -15,12 +15,7 @@
 		active: number;
 	}
 
-	let {
-		searchQuery = $bindable(),
-		filterStatus = $bindable(),
-		total,
-		active
-	}: Props = $props();
+	let { searchQuery = $bindable(), filterStatus = $bindable(), total, active }: Props = $props();
 	let inactive = $derived(total - active);
 </script>
 

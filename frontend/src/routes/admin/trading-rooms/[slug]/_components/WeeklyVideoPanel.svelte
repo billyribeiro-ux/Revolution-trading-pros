@@ -15,13 +15,8 @@
 		onAddVideo: () => void;
 	}
 
-	const {
-		isLoadingVideo,
-		currentVideo,
-		archivedVideos,
-		hasArchivedVideos,
-		onAddVideo
-	}: Props = $props();
+	const { isLoadingVideo, currentVideo, archivedVideos, hasArchivedVideos, onAddVideo }: Props =
+		$props();
 </script>
 
 {#if isLoadingVideo}

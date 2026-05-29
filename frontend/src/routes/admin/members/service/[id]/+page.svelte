@@ -382,9 +382,7 @@
 		tabindex="-1"
 		aria-modal="true"
 	>
-		<div class="modal-content"
-			role="document"
-		>
+		<div class="modal-content" role="document">
 			<div class="modal-header">
 				<h2>Send Email to {selectedMembers.size} Member{selectedMembers.size > 1 ? 's' : ''}</h2>
 				<button class="close-btn" onclick={() => (showEmailModal = false)}>

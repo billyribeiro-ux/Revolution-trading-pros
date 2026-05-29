@@ -161,10 +161,7 @@ describe('videoPreloader.preload', () => {
 	it('preload state is keyed by libraryId:videoId (different lib → distinct entry)', async () => {
 		const { videoPreloader } = await import('../videoPreloader');
 		videoPreloader.clear();
-		await videoPreloader.preload(
-			{ videoId: 'v', libraryId: 'lib-A' },
-			{ thumbnail: true }
-		);
+		await videoPreloader.preload({ videoId: 'v', libraryId: 'lib-A' }, { thumbnail: true });
 		// Same videoId, DIFFERENT libraryId → must NOT collide.
 		expect(videoPreloader.isPreloaded({ videoId: 'v', libraryId: 'lib-B' })).toBe(false);
 	});
@@ -198,10 +195,7 @@ describe('videoPreloader.preload — connection-aware guard', () => {
 		const { videoPreloader } = await import('../videoPreloader');
 		videoPreloader.clear();
 
-		await videoPreloader.preload(
-			{ videoId: 'no-go', libraryId: 'lib-1' },
-			{ thumbnail: true }
-		);
+		await videoPreloader.preload({ videoId: 'no-go', libraryId: 'lib-1' }, { thumbnail: true });
 		// CONTRACT: respect data-saver — no state stored.
 		expect(videoPreloader.isPreloaded({ videoId: 'no-go', libraryId: 'lib-1' })).toBe(false);
 		restore();
@@ -378,9 +372,7 @@ describe('preloadVideo Svelte action', () => {
 describe('addBunnyPreconnects', () => {
 	beforeEach(() => {
 		// Clear any preconnects from prior tests.
-		document.head
-			.querySelectorAll('link[rel="preconnect"]')
-			.forEach((node) => node.remove());
+		document.head.querySelectorAll('link[rel="preconnect"]').forEach((node) => node.remove());
 	});
 
 	it('appends preconnect <link> tags for the documented Bunny.net hosts', async () => {

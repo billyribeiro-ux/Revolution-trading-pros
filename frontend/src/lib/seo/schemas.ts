@@ -89,9 +89,7 @@ export function buildArticle(input: ArticleInput): JsonLdArticle {
 		publisher: {
 			'@type': 'Organization',
 			name: publisher.name,
-			logo: publisher.logoUrl
-				? { '@type': 'ImageObject', url: publisher.logoUrl }
-				: undefined
+			logo: publisher.logoUrl ? { '@type': 'ImageObject', url: publisher.logoUrl } : undefined
 		},
 		mainEntityOfPage: {
 			'@type': 'WebPage',
@@ -219,7 +217,10 @@ export interface EventInput {
 	startDate: string;
 	endDate?: string;
 	eventStatus?: 'EventScheduled' | 'EventRescheduled' | 'EventCancelled';
-	eventAttendanceMode?: 'OnlineEventAttendanceMode' | 'OfflineEventAttendanceMode' | 'MixedEventAttendanceMode';
+	eventAttendanceMode?:
+		| 'OnlineEventAttendanceMode'
+		| 'OfflineEventAttendanceMode'
+		| 'MixedEventAttendanceMode';
 	location?: { name: string; url?: string };
 	organizer: { name: string; url: string };
 	isLiveBroadcast?: boolean;

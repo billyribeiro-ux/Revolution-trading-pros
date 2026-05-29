@@ -211,9 +211,7 @@
 			// data (uppercase, underscores) can be diagnosed.
 			const bad = categoryForm.slug.replace(/[a-z0-9-]/g, '');
 			const detail = bad ? ` (invalid: "${[...new Set(bad.split(''))].join('')}")` : '';
-			categoryErrors.push(
-				`Slug can only contain lowercase letters, numbers, and hyphens${detail}`
-			);
+			categoryErrors.push(`Slug can only contain lowercase letters, numbers, and hyphens${detail}`);
 		}
 		return categoryErrors.length === 0;
 	}

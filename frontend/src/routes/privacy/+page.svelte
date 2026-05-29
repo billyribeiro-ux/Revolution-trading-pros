@@ -9,11 +9,10 @@
 
 	<section>
 		<p>
-			<strong>TODO — human copy.</strong> This page intentionally ships without final
-			legal text. Replace this placeholder with a privacy policy written or reviewed
-			by counsel covering: data collected, lawful basis, third-party processors
-			(Stripe, analytics, email), retention, user rights (access / deletion /
-			portability), GDPR / CCPA notes, contact for privacy requests.
+			<strong>TODO — human copy.</strong> This page intentionally ships without final legal text. Replace
+			this placeholder with a privacy policy written or reviewed by counsel covering: data collected,
+			lawful basis, third-party processors (Stripe, analytics, email), retention, user rights (access
+			/ deletion / portability), GDPR / CCPA notes, contact for privacy requests.
 		</p>
 	</section>
 </article>

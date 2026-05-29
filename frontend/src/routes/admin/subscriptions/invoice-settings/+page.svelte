@@ -220,7 +220,7 @@
 				onclick={loadPreview}
 				class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition flex items-center gap-2"
 			>
-								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: eye (preview) -->
+				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: eye (preview) -->
 				<IconEye size={20} aria-hidden="true" />
 				Preview
 			</button>
@@ -228,7 +228,7 @@
 				onclick={downloadPreview}
 				class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition flex items-center gap-2"
 			>
-								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: file-download -->
+				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: file-download -->
 				<IconFileDownload size={20} aria-hidden="true" />
 				Download PDF
 			</button>
@@ -249,7 +249,7 @@
 					</svg>
 					Saving...
 				{:else}
-										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: check (saved) -->
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: check (saved) -->
 					<IconCheck size={20} aria-hidden="true" />
 					Save Changes
 				{/if}
@@ -263,7 +263,7 @@
 			transition:slide
 			class="mb-6 p-4 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-lg flex items-center gap-3"
 		>
-						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-x error -->
+			<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-x error -->
 			<IconCircleXFilled size={20} aria-hidden="true" />
 			{error}
 		</div>
@@ -274,7 +274,7 @@
 			transition:slide
 			class="mb-6 p-4 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-lg flex items-center gap-3"
 		>
-						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-check success -->
+			<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-check success -->
 			<IconCircleCheckFilled size={20} aria-hidden="true" />
 			{success}
 		</div>
@@ -332,7 +332,7 @@
 												/>
 											{:else}
 												<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: photo (logo placeholder) -->
-											<IconPhoto size={40} aria-hidden="true" />
+												<IconPhoto size={40} aria-hidden="true" />
 											{/if}
 										</div>
 										<div class="flex-1">

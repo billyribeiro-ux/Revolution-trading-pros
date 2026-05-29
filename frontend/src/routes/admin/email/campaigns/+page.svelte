@@ -672,8 +672,7 @@
 		}}
 		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showCreateModal = false)}
 	>
-		<div class="modal-content large" role="document"
-		>
+		<div class="modal-content large" role="document">
 			<div class="modal-header">
 				<h2>Create New Campaign</h2>
 				<button class="close-btn" onclick={() => (showCreateModal = false)}>

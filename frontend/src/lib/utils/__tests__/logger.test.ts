@@ -183,7 +183,8 @@ describe('perfLogger (dev mode)', () => {
 		// Log line emitted iff a measure was created. We assert at least one
 		// console.log call mentioning the label.
 		const logged = consoleLogSpy.mock.calls.some(
-			(call: unknown[]) => typeof call[0] === 'string' && (call[0] as string).includes('[PERF] render')
+			(call: unknown[]) =>
+				typeof call[0] === 'string' && (call[0] as string).includes('[PERF] render')
 		);
 		expect(logged).toBe(true);
 	});

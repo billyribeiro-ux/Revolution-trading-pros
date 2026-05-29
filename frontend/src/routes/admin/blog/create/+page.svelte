@@ -146,9 +146,7 @@
 		slugCheckStatus = 'checking';
 		slugCheckTimer = setTimeout(async () => {
 			try {
-				const res = await fetch(
-					`/api/admin/posts?slug=${encodeURIComponent(slug)}&per_page=1`
-				);
+				const res = await fetch(`/api/admin/posts?slug=${encodeURIComponent(slug)}&per_page=1`);
 				if (!res.ok) {
 					slugCheckStatus = 'error';
 					return;

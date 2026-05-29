@@ -864,10 +864,7 @@
 					{#each posts as post (post.id)}
 						<!-- FIX-2026-04-26 (P3-10): drop per-card transition:scale; running 50+
 						     scale animations on every filter change is a perf hit. -->
-						<div
-							class="post-card"
-							class:selected={selectedPosts.has(post.id)}
-						>
+						<div class="post-card" class:selected={selectedPosts.has(post.id)}>
 							<!-- Selection Checkbox -->
 							<div class="post-select">
 								<input
@@ -2528,7 +2525,6 @@
 		.post-title {
 			font-size: 0.9375rem;
 		}
-
 	}
 
 	/* Touch Device Optimizations - Apple HIG 44pt minimum */

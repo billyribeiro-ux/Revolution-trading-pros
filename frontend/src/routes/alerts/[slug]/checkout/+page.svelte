@@ -107,7 +107,13 @@
 		<!-- Header -->
 		<header class="checkout-header">
 			<a href="/alerts/{roomSlug}" class="back-link">
-				<svg aria-hidden="true" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<svg
+					aria-hidden="true"
+					class="w-5 h-5"
+					fill="none"
+					stroke="currentColor"
+					viewBox="0 0 24 24"
+				>
 					<path
 						stroke-linecap="round"
 						stroke-linejoin="round"
@@ -162,7 +168,9 @@
 									clip-rule="evenodd"
 								/>
 							</svg>
-							{selectedPlan.trial_period_days}-day free trial — then {formatPrice(selectedPlan.price)} per {selectedPlan.billing_cycle}
+							{selectedPlan.trial_period_days}-day free trial — then {formatPrice(
+								selectedPlan.price
+							)} per {selectedPlan.billing_cycle}
 						</div>
 					{:else if selectedPlan.trial_days && selectedPlan.trial_days > 0}
 						<div class="trial-notice">
@@ -181,7 +189,9 @@
 						<span>Total Today</span>
 						<span class="total-price">
 							{#if selectedPlan.trial_period_days && selectedPlan.trial_period_days > 0}
-								{selectedPlan.trial_requires_payment_method === false ? '$0.00' : formatPrice(selectedPlan.price)}
+								{selectedPlan.trial_requires_payment_method === false
+									? '$0.00'
+									: formatPrice(selectedPlan.price)}
 							{:else}
 								{formatPrice(selectedPlan.price)}
 							{/if}
@@ -189,7 +199,13 @@
 					</div>
 
 					<button class="checkout-button" onclick={proceedToCheckout} disabled={!selectedPlan}>
-						<svg aria-hidden="true" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<svg
+							aria-hidden="true"
+							class="w-5 h-5"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
 							<path
 								stroke-linecap="round"
 								stroke-linejoin="round"
@@ -207,9 +223,11 @@
 					{#if selectedPlan.trial_period_days && selectedPlan.trial_period_days > 0}
 						<p class="trial-terms">
 							{#if selectedPlan.trial_requires_payment_method === false}
-								No credit card required. After {selectedPlan.trial_period_days} days, your subscription will automatically cancel unless you add a payment method.
+								No credit card required. After {selectedPlan.trial_period_days} days, your subscription
+								will automatically cancel unless you add a payment method.
 							{:else}
-								Your {selectedPlan.trial_period_days}-day free trial starts today. You will not be charged until the trial ends. Cancel anytime before then.
+								Your {selectedPlan.trial_period_days}-day free trial starts today. You will not be
+								charged until the trial ends. Cancel anytime before then.
 							{/if}
 						</p>
 					{/if}

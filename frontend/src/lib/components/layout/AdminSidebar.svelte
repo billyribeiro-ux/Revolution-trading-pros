@@ -399,7 +399,12 @@
 	}
 
 	.nav-item.active {
-		background: rgba(230, 184, 0, 0.12); /* Gold soft background (alpha-blended hex; var doesn't expose RGB triplet) */
+		background: rgba(
+			230,
+			184,
+			0,
+			0.12
+		); /* Gold soft background (alpha-blended hex; var doesn't expose RGB triplet) */
 		color: var(--admin-accent-primary);
 		font-weight: 600;
 	}

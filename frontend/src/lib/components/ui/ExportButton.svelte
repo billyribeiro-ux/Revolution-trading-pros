@@ -108,7 +108,11 @@
 		{#if data.length > 0}
 			<span class="text-slate-500">({data.length})</span>
 		{/if}
-		<Icon name="IconChevronDown" size={16} class="transition-transform duration-200 {isOpen ? 'rotate-180' : ''}" />
+		<Icon
+			name="IconChevronDown"
+			size={16}
+			class="transition-transform duration-200 {isOpen ? 'rotate-180' : ''}"
+		/>
 	</button>
 
 	{#if isOpen}

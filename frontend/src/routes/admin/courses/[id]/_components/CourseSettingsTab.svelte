@@ -60,12 +60,7 @@
 	<div class="form-grid">
 		<div class="form-group">
 			<label for="bunny_lib">Bunny.net Library ID</label>
-			<input
-				id="bunny_lib"
-				name="bunny_lib"
-				type="number"
-				bind:value={course.bunny_library_id}
-			/>
+			<input id="bunny_lib" name="bunny_lib" type="number" bind:value={course.bunny_library_id} />
 		</div>
 	</div>
 </div>

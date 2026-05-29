@@ -482,9 +482,7 @@
 					// requires refactoring this sync generate() into a state-driven flow.
 					if (
 						course.modules.length > 0 &&
-						!confirm(
-							'This will replace your existing modules with a sample curriculum. Continue?'
-						)
+						!confirm('This will replace your existing modules with a sample curriculum. Continue?')
 					) {
 						generating = false;
 						return;
@@ -1622,7 +1620,11 @@
 </svelte:head>
 
 <!-- Modals and Notifications -->
-<PublishWarningModal open={showPublishWarning} onConfirm={confirmPublish} onCancel={cancelPublish} />
+<PublishWarningModal
+	open={showPublishWarning}
+	onConfirm={confirmPublish}
+	onCancel={cancelPublish}
+/>
 
 <PricingAnalysisModal
 	analysis={pricingAnalysis}
@@ -1632,13 +1634,12 @@
 
 <div class="create-page">
 	<!-- Form Messages -->
-	<FormBanners
-		error={formError}
-		success={successMessage}
-		onDismissError={() => (formError = '')}
-	/>
+	<FormBanners error={formError} success={successMessage} onDismissError={() => (formError = '')} />
 	<!-- Centered Page Header -->
-	<PageHeader title="Create New Course" subtitle="Build a comprehensive educational trading course" />
+	<PageHeader
+		title="Create New Course"
+		subtitle="Build a comprehensive educational trading course"
+	/>
 
 	<!-- Actions Row - Centered -->
 	<div class="header-actions">
@@ -2672,13 +2673,7 @@
 						<div class="gallery-grid">
 							{#each course.gallery as image, i (i)}
 								<div class="gallery-item">
-									<img
-										src={image}
-										alt="Gallery {i + 1}"
-										width="320"
-										height="180"
-										loading="lazy"
-									/>
+									<img src={image} alt="Gallery {i + 1}" width="320" height="180" loading="lazy" />
 									<button class="remove-btn" onclick={() => removeFromGallery(i)}>
 										<IconX size={16} />
 									</button>

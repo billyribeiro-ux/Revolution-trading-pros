@@ -89,8 +89,7 @@
 	// Writable $derived — `selectCountry` can override locally, and a prop
 	// change re-syncs the selection.
 	let selectedCountry = $derived<Country>(
-		countries.find((c) => c.code === (props.value?.country_code || defaultCountry)) ||
-			countries[0]
+		countries.find((c) => c.code === (props.value?.country_code || defaultCountry)) || countries[0]
 	);
 	// Writable $derived — `handlePhoneInput` can override locally while the
 	// user types; a prop change re-syncs the displayed value.

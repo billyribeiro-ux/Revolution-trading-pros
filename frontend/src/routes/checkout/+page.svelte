@@ -532,7 +532,7 @@
 											>
 										</label>
 										<div class="card-icons">
-<!-- width/height reserve space (CLS): card logos render at 24px tall
+											<!-- width/height reserve space (CLS): card logos render at 24px tall
 												 (.card-icons img), ~38px wide intrinsic. CSS width:auto keeps
 												 the visual size; the attrs only fix the aspect ratio box. -->
 											<img

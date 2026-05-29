@@ -1,11 +1,5 @@
 <script lang="ts">
-	import {
-		IconArrowLeft,
-		IconMail,
-		IconX,
-		IconPlus,
-		IconFileText
-	} from '$lib/icons';
+	import { IconArrowLeft, IconMail, IconX, IconPlus, IconFileText } from '$lib/icons';
 	import { goto } from '$app/navigation';
 	import type { Member } from '$lib/api/members';
 	import { getMemberInitials, getStatusColor } from './helpers';
@@ -19,14 +13,8 @@
 		onOpenEmailModal: () => void;
 	}
 
-	let {
-		member,
-		tags,
-		onRemoveTag,
-		onOpenTagModal,
-		onOpenNoteModal,
-		onOpenEmailModal
-	}: Props = $props();
+	let { member, tags, onRemoveTag, onOpenTagModal, onOpenNoteModal, onOpenEmailModal }: Props =
+		$props();
 </script>
 
 <div class="page-header">
@@ -39,13 +27,7 @@
 		<div class="member-profile">
 			<div class="member-avatar large">
 				{#if member.avatar}
-					<img
-						src={member.avatar}
-						alt={member.name}
-						width="80"
-						height="80"
-						loading="lazy"
-					/>
+					<img src={member.avatar} alt={member.name} width="80" height="80" loading="lazy" />
 				{:else}
 					{getMemberInitials(member)}
 				{/if}

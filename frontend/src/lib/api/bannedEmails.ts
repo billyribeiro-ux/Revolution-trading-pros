@@ -1358,9 +1358,7 @@ export const error = bannedEmailService.error;
  * on `loadBannedEmails`. Re-derived here so external callers can construct a
  * fully-typed filter bag rather than relying on `any`.
  */
-export type BannedEmailFilters = Parameters<
-	typeof bannedEmailService.loadBannedEmails
->[0];
+export type BannedEmailFilters = Parameters<typeof bannedEmailService.loadBannedEmails>[0];
 
 export const getBannedEmails = (filters?: BannedEmailFilters) =>
 	bannedEmailService.loadBannedEmails(filters);

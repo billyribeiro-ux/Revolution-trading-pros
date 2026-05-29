@@ -23,8 +23,8 @@
 	<div class="temp-password-modal">
 		<h2 id="temp-password-title">Temporary password</h2>
 		<p class="temp-password-subtitle">
-			One-time view for <strong>{memberName}</strong>. Copy it now — it will not be shown again,
-			and we never store it server-side after creation.
+			One-time view for <strong>{memberName}</strong>. Copy it now — it will not be shown again, and
+			we never store it server-side after creation.
 		</p>
 		<div class="temp-password-value">
 			<code>{password}</code>

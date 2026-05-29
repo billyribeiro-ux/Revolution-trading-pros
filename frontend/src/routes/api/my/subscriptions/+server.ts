@@ -20,8 +20,7 @@ import { env } from '$env/dynamic/private';
 
 // SvelteKit-canonical server-side env read (replaces process.env.VITE_API_URL,
 // which only worked because Node fell back to process.env in the dev server).
-const API_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const API_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 // ICT 7: Type-safe response structure
 interface SubscriptionsResponse {

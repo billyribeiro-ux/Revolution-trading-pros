@@ -76,13 +76,7 @@
 	 * return types. Nodes can contain nested nodes (e.g. `publisher: {...}`),
 	 * arrays of nodes (e.g. `mainEntity: [...]`), and primitives.
 	 */
-	type JsonLdValue =
-		| string
-		| number
-		| boolean
-		| null
-		| JsonLdNode
-		| Array<JsonLdValue>;
+	type JsonLdValue = string | number | boolean | null | JsonLdNode | Array<JsonLdValue>;
 	type JsonLdNode = { [key: string]: JsonLdValue | undefined };
 
 	// ═══════════════════════════════════════════════════════════════════════════

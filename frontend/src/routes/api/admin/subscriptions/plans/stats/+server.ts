@@ -17,8 +17,7 @@ import { env } from '$env/dynamic/private';
 import { requireAdmin } from '$lib/server/auth';
 
 // CLAUDE.md hard rule — API_BASE_URL primary, BACKEND_URL fallback, localhost last.
-const BACKEND_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const BACKEND_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 export const GET: RequestHandler = async (event) => {
 	const { token } = requireAdmin(event);

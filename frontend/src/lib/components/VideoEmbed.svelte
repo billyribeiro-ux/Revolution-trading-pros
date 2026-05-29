@@ -1408,13 +1408,7 @@
 		{#if showThumbnail && thumbnailUrl && !hasInteracted && lazyLoad}
 			<div class="thumbnail-container" transition:fade={{ duration: 300 }}>
 				{#if thumbnailLoaded}
-					<img
-						src={thumbnailUrl}
-						alt={title}
-						class="thumbnail-image"
-						width="1280"
-						height="720"
-					/>
+					<img src={thumbnailUrl} alt={title} class="thumbnail-image" width="1280" height="720" />
 				{/if}
 				<button
 					class="play-overlay"

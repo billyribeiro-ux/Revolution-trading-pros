@@ -15,8 +15,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 // Production fallback - Rust API on Fly.io
 import { env } from '$env/dynamic/private';
 import { requireAdmin, requireSuperadmin } from '$lib/server/auth';
-const PROD_BACKEND =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const PROD_BACKEND = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 /**
  * GET /api/admin/member-management

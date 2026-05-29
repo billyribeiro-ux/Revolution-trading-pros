@@ -74,7 +74,9 @@
 
 <!-- JSON-LD Schema Markup -->
 <svelte:head>
-	<script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
+	<script type="application/ld+json">
+{JSON.stringify(breadcrumbSchema)}
+	</script>
 </svelte:head>
 
 <!-- Breadcrumbs Navigation -->

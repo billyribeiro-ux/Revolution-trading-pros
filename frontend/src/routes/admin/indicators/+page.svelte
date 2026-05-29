@@ -154,7 +154,7 @@
 			<div class="actions-row">
 				<a href="/admin/indicators/create" class="btn-primary">
 					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: plus (new indicator) -->
-				<IconPlus size={20} aria-hidden="true" />
+					<IconPlus size={20} aria-hidden="true" />
 					New Indicator
 				</a>
 			</div>

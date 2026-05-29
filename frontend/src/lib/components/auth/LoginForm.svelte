@@ -350,7 +350,6 @@
 				invalidateAll: true,
 				noScroll: false // Allow natural scroll to top
 			});
-
 		} catch (navigationError) {
 			// ICT 11+ Error Recovery: Log error and use native navigation as fallback
 			console.error('[LoginForm:ICT11] SvelteKit navigation failed:', {

@@ -17,8 +17,7 @@ import { json, type RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 
 // CLAUDE.md hard rule — API_BASE_URL primary, BACKEND_URL fallback, localhost last.
-const API_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const API_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 export const GET: RequestHandler = async ({ params, cookies, fetch }) => {
 	const { id } = params;
@@ -51,9 +50,7 @@ export const GET: RequestHandler = async ({ params, cookies, fetch }) => {
 			// R22-A: was: return `{ success: true, data: [] }`. Now: forward the
 			// upstream status as the body's `error.message` so the UI can render
 			// a real error and the student can retry.
-			console.error(
-				`[Course downloads proxy] Backend ${response.status} for course '${id}'`
-			);
+			console.error(`[Course downloads proxy] Backend ${response.status} for course '${id}'`);
 			return json(
 				{
 					success: false,

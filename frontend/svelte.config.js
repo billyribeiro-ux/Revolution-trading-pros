@@ -6,8 +6,7 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 // scope returns undefined for `vite dev`. Detect via the CLI argv instead,
 // which is populated before any module-load. Covers `vite dev`, `vite dev --host`,
 // `pnpm dev`, and the `dev:fast` alias.
-const isDev =
-	process.env.NODE_ENV === 'development' || process.argv.includes('dev');
+const isDev = process.env.NODE_ENV === 'development' || process.argv.includes('dev');
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {

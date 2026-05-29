@@ -16,9 +16,7 @@
 
 	let { days, schedulesByDay, formatTime, onEdit, onDelete }: Props = $props();
 
-	let weekendCount = $derived(
-		(schedulesByDay[0]?.length || 0) + (schedulesByDay[6]?.length || 0)
-	);
+	let weekendCount = $derived((schedulesByDay[0]?.length || 0) + (schedulesByDay[6]?.length || 0));
 </script>
 
 <details class="weekend-section">

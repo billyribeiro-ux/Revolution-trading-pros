@@ -48,9 +48,7 @@
 	class="forgot-password-page flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12 overflow-hidden relative"
 >
 	<!-- Animated gradient background -->
-	<div
-		class="absolute inset-0 bg-linear-to-br from-slate-950 via-amber-950/30 to-slate-950"
-	></div>
+	<div class="absolute inset-0 bg-linear-to-br from-slate-950 via-amber-950/30 to-slate-950"></div>
 
 	<!-- Floating orbs - hidden on small screens to save space -->
 	<div
@@ -170,7 +168,13 @@
 					href="/login"
 					class="text-amber-400 hover:text-amber-300 font-semibold transition-colors duration-300 inline-flex items-center justify-center gap-2 min-h-[44px] px-4"
 				>
-					<svg aria-hidden="true" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<svg
+						aria-hidden="true"
+						class="w-4 h-4"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+					>
 						<path
 							stroke-linecap="round"
 							stroke-linejoin="round"

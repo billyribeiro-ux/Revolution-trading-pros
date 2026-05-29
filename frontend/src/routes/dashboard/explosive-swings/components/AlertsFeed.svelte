@@ -105,7 +105,13 @@
 			{/each}
 		{:else if filteredAlerts.length === 0}
 			<div class="empty-state">
-				<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="empty-icon">
+				<svg
+					aria-hidden="true"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					class="empty-icon"
+				>
 					<path
 						stroke-linecap="round"
 						stroke-linejoin="round"

@@ -373,11 +373,7 @@
 				// trigger can't end up stale (cards stuck invisible).
 				scrollTriggerInstance.refresh();
 				if (document.readyState !== 'complete') {
-					window.addEventListener(
-						'load',
-						() => scrollTriggerInstance?.refresh(),
-						{ once: true }
-					);
+					window.addEventListener('load', () => scrollTriggerInstance?.refresh(), { once: true });
 				}
 			}
 		} catch (e) {

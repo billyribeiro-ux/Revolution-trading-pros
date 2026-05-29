@@ -246,8 +246,7 @@
 
 			// Step 3: Update form with the real Bunny embed URL (interpolating the actual library_id).
 			form.video_url =
-				embedUrlFromBackend ||
-				`https://iframe.mediadelivery.net/embed/${libraryId}/${videoId}`;
+				embedUrlFromBackend || `https://iframe.mediadelivery.net/embed/${libraryId}/${videoId}`;
 			form.video_platform = 'bunny';
 
 			uploadProgress = 100;

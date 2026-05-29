@@ -232,11 +232,7 @@
 				// invisible on a real (image-heavy) marketing page.
 				scrollTriggerInstance.refresh();
 				if (document.readyState !== 'complete') {
-					window.addEventListener(
-						'load',
-						() => scrollTriggerInstance?.refresh(),
-						{ once: true }
-					);
+					window.addEventListener('load', () => scrollTriggerInstance?.refresh(), { once: true });
 				}
 			}
 		} catch (e) {
@@ -351,10 +347,7 @@
 			</div>
 		{/if}
 
-		<div
-			bind:this={cardsRef}
-			class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 relative"
-		>
+		<div bind:this={cardsRef} class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 relative">
 			<!-- FIX-2026-04-26: cursor-follow spotlight removed per user request — disabled to fix UX bug. -->
 			<!-- <div
 				class="pointer-events-none absolute -inset-px opacity-0 md:opacity-100 transition-opacity duration-300 z-0 rounded-3xl"

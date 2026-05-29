@@ -187,7 +187,7 @@
 				<div
 					class="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-2xl shadow-lg shadow-cyan-500/20"
 				>
-										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: users -->
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: users -->
 					<IconUsers size={24} aria-hidden="true" />
 				</div>
 				<div>
@@ -205,7 +205,7 @@
 								? 'bg-white/10 text-white'
 								: 'text-slate-400 hover:text-white'}"
 						>
-														<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: grid -->
+							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: grid -->
 							<IconLayoutGrid size={16} aria-hidden="true" />
 						</button>
 						<button
@@ -215,7 +215,7 @@
 								? 'bg-white/10 text-white'
 								: 'text-slate-400 hover:text-white'}"
 						>
-														<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: list -->
+							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: list -->
 							<IconList size={16} aria-hidden="true" />
 						</button>
 					</div>
@@ -280,7 +280,7 @@
 					<div
 						class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-red-500/10 flex items-center justify-center"
 					>
-												<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: alert-circle error -->
+						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: alert-circle error -->
 						<IconAlertCircle size={32} aria-hidden="true" />
 					</div>
 					<p class="text-red-400 mb-4">{error}</p>
@@ -344,7 +344,7 @@
 										aria-label="Delete segment"
 										class="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
 									>
-																				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: trash -->
+										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: trash -->
 										<IconTrash size={16} aria-hidden="true" />
 									</button>
 								{/if}
@@ -454,7 +454,7 @@
 												aria-label="Delete segment"
 												class="p-2 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
 											>
-																								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: trash (2nd) -->
+												<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: trash (2nd) -->
 												<IconTrash size={16} aria-hidden="true" />
 											</button>
 										{/if}
@@ -483,7 +483,7 @@
 						aria-label="Close modal"
 						class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
 					>
-												<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: x (close) -->
+						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: x (close) -->
 						<IconX size={20} aria-hidden="true" />
 					</button>
 				</div>
@@ -589,7 +589,7 @@
 										aria-label="Remove rule"
 										class="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors"
 									>
-																				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: x (close 2nd) -->
+										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: x (close 2nd) -->
 										<IconX size={16} aria-hidden="true" />
 									</button>
 								{/if}

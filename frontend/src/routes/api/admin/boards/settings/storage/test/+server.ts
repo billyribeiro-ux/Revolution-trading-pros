@@ -12,8 +12,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 import { requireSuperadmin } from '$lib/server/auth';
 
 import { env } from '$env/dynamic/private';
-const PROD_BACKEND =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const PROD_BACKEND = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 const REDACTED_PLACEHOLDER = '__SECRET_UNCHANGED__';
 const SECRET_FIELDS = ['secret_key', 'access_key'] as const;
@@ -22,12 +21,7 @@ function stripUnchangedSecrets(body: Record<string, unknown>): Record<string, un
 	const next: Record<string, unknown> = { ...body };
 	for (const key of SECRET_FIELDS) {
 		const value = next[key];
-		if (
-			value === REDACTED_PLACEHOLDER ||
-			value === '' ||
-			value === null ||
-			value === undefined
-		) {
+		if (value === REDACTED_PLACEHOLDER || value === '' || value === null || value === undefined) {
 			delete next[key];
 		}
 	}
@@ -83,9 +77,6 @@ export const POST: RequestHandler = async (event) => {
 		kitError(response.status, extractErrorMessage(data, 'Storage connection test failed'));
 	} catch (err) {
 		console.warn('Storage test backend unreachable:', err);
-		return json(
-			{ success: false, message: 'Storage backend is not reachable.' },
-			{ status: 503 }
-		);
+		return json({ success: false, message: 'Storage backend is not reachable.' }, { status: 503 });
 	}
 };

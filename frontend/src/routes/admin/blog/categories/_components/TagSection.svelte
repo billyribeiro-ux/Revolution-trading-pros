@@ -73,9 +73,7 @@
 			<div class="empty-state">
 				<IconTag size={48} />
 				<p>No tags found</p>
-				<button class="btn-primary" onclick={onAdd}>
-					Create your first tag
-				</button>
+				<button class="btn-primary" onclick={onAdd}> Create your first tag </button>
 			</div>
 		{:else}
 			{#each tags as tag (tag.id)}
@@ -115,11 +113,7 @@
 						<button class="action-btn" onclick={() => onEdit(tag)} title="Edit">
 							<IconEdit size={18} />
 						</button>
-						<button
-							class="action-btn"
-							onclick={() => onCopySlug(tag.slug)}
-							title="Copy slug"
-						>
+						<button class="action-btn" onclick={() => onCopySlug(tag.slug)} title="Copy slug">
 							<IconCopy size={18} />
 						</button>
 						<button class="action-btn danger" onclick={() => onDelete(tag.id)} title="Delete">

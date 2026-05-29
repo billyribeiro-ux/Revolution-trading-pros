@@ -72,9 +72,7 @@
 			</div>
 		</div>
 		<div class="modal-footer">
-			<button class="btn-secondary" onclick={onCancel} disabled={processingAction}>
-				Cancel
-			</button>
+			<button class="btn-secondary" onclick={onCancel} disabled={processingAction}> Cancel </button>
 			<button class="btn-primary" onclick={onConfirm} disabled={processingAction}>
 				{#if processingAction}
 					<div class="btn-spinner"></div>

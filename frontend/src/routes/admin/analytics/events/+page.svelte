@@ -135,7 +135,7 @@
 				<div
 					class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-2xl shadow-lg shadow-amber-500/20"
 				>
-										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: bolt (events) -->
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: bolt (events) -->
 					<IconBolt size={24} aria-hidden="true" />
 				</div>
 				<div>
@@ -186,7 +186,11 @@
 								class="w-full px-4 py-2.5 pl-11 bg-slate-800/50 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 outline-none transition-all"
 							/>
 							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: search (search input) -->
-							<IconSearch size={16} class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" aria-hidden="true" />
+							<IconSearch
+								size={16}
+								class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"
+								aria-hidden="true"
+							/>
 						</div>
 					</div>
 

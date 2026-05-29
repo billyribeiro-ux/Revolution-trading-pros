@@ -7,7 +7,6 @@
 	import { expoOut } from 'svelte/easing';
 	import type { Attachment } from 'svelte/attachments';
 
-
 	// --- ICONS ---
 	import IconSchool from '@tabler/icons-svelte-runes/icons/school';
 	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
@@ -397,24 +396,20 @@
 						The <span class="trap__heading-accent">Retail</span> Trap.
 					</h2>
 					<p class="trap__lede">
-						90% of traders fail because they treat the market like a casino. They chase alerts,
-						lack a risk model, and trade their P&L instead of the chart.
+						90% of traders fail because they treat the market like a casino. They chase alerts, lack
+						a risk model, and trade their P&L instead of the chart.
 					</p>
 
 					<div class="trap__cards">
 						<div class="trap-card trap-card--bad">
 							<IconX class="trap-card__icon" size={32} />
 							<h3 class="trap-card__heading">Gambling</h3>
-							<p class="trap-card__desc">
-								Entry based on "feeling" rather than statistical edge.
-							</p>
+							<p class="trap-card__desc">Entry based on "feeling" rather than statistical edge.</p>
 						</div>
 						<div class="trap-card trap-card--good">
 							<IconCheck class="trap-card__icon" size={32} />
 							<h3 class="trap-card__heading">Business</h3>
-							<p class="trap-card__desc">
-								Execution based on a pre-defined, backtested playbook.
-							</p>
+							<p class="trap-card__desc">Execution based on a pre-defined, backtested playbook.</p>
 						</div>
 					</div>
 				</div>
@@ -549,7 +544,8 @@
 			<IconRocket size={48} stroke={1} class="final-cta__rocket" />
 			<h2 class="final-cta__heading">Market Opens In... Now.</h2>
 			<p class="final-cta__lede">
-				Join {STUDENT_COUNT.toLocaleString()}+ disciplined traders building wealth through logic, not luck.
+				Join {STUDENT_COUNT.toLocaleString()}+ disciplined traders building wealth through logic,
+				not luck.
 			</p>
 
 			<a href="#curriculum" class="final-cta__button">
@@ -559,7 +555,6 @@
 		</div>
 	</section>
 </div>
-
 
 <style>
 	/* ═════════════════════════════════════════════════════════════════════════

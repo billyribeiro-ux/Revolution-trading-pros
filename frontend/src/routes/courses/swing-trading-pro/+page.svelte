@@ -151,7 +151,6 @@
 			moduleObserver.disconnect();
 		};
 	});
-
 </script>
 
 <div class="course-page">

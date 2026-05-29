@@ -38,14 +38,8 @@ type ChannelCallback = (payload: unknown) => void;
  * string-keyed fields like `data.room_slug` or `data.session_id`. Returns
  * `null` for arrays / primitives / null.
  */
-function asObject(
-	value: JsonValue | undefined
-): { [k: string]: JsonValue | undefined } | null {
-	if (
-		value !== null &&
-		typeof value === 'object' &&
-		!Array.isArray(value)
-	) {
+function asObject(value: JsonValue | undefined): { [k: string]: JsonValue | undefined } | null {
+	if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
 		return value;
 	}
 	return null;

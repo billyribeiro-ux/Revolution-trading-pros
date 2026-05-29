@@ -253,12 +253,10 @@ export const ga4Vendor: VendorConfig = {
 		// GA4 respects consent mode updates automatically.
 		// When consent is revoked, we update consent mode and GA4
 		// will stop collecting data that requires that consent.
-
 		// Note: We don't need to do anything special here because:
 		// 1. Google Consent Mode v2 handles this automatically
 		// 2. The consent mode is updated via applyConsentMode() in the main flow
 		// 3. GA4 checks consent status before each hit
-
 		// If you want to completely stop GA4 from running, you would need to
 		// reload the page (scripts can't be unloaded). This is generally not
 		// recommended as consent mode handles data collection properly.

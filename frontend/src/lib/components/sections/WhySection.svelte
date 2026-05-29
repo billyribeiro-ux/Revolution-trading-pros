@@ -162,20 +162,38 @@
 									: 'text-indigo-500'}"
 						>
 							{#if feature.type === 'grid'}
-								<svg aria-hidden="true" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1">
+								<svg
+									aria-hidden="true"
+									viewBox="0 0 100 100"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1"
+								>
 									<path
 										d="M10 10 H90 M10 30 H90 M10 50 H90 M10 70 H90 M10 90 H90 M10 10 V90 M30 10 V90 M50 10 V90 M70 10 V90 M90 10 V90"
 									/>
 								</svg>
 							{:else if feature.type === 'radar'}
-								<svg aria-hidden="true" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1">
+								<svg
+									aria-hidden="true"
+									viewBox="0 0 100 100"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1"
+								>
 									<circle cx="50" cy="50" r="20" />
 									<circle cx="50" cy="50" r="35" />
 									<circle cx="50" cy="50" r="45" opacity="0.5" />
 									<line x1="50" y1="50" x2="95" y2="50" />
 								</svg>
 							{:else}
-								<svg aria-hidden="true" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1">
+								<svg
+									aria-hidden="true"
+									viewBox="0 0 100 100"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1"
+								>
 									<rect x="20" y="20" width="60" height="60" rx="4" />
 									<path d="M50 20 V10 M50 90 V80 M20 50 H10 M90 50 H80" />
 									<rect x="35" y="35" width="30" height="30" />

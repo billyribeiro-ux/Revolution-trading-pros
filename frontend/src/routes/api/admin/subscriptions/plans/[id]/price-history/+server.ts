@@ -17,8 +17,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { requireAdminToken } from '$lib/server/auth';
 
-const API_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const API_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 async function relay(response: Response): Promise<Response> {
 	const text = await response.text();
@@ -41,17 +40,14 @@ export const GET: RequestHandler = async (event) => {
 	if (!id) return json({ error: 'Missing plan id' }, { status: 400 });
 	const token = requireAdminToken(event);
 	try {
-		const response = await fetch(
-			`${API_URL}/api/admin/subscriptions/plans/${id}/price-history`,
-			{
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json',
-					Accept: 'application/json',
-					Authorization: `Bearer ${token}`
-				}
+		const response = await fetch(`${API_URL}/api/admin/subscriptions/plans/${id}/price-history`, {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+				Accept: 'application/json',
+				Authorization: `Bearer ${token}`
 			}
-		);
+		});
 		return relay(response);
 	} catch (err) {
 		console.error('[API Proxy] plan price-history error:', err);

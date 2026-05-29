@@ -275,13 +275,7 @@
 				{#each videos as video (video.id)}
 					<div class="video-item">
 						<div class="video-thumbnail">
-							<img
-								src={video.thumbnail}
-								alt={video.title}
-								width="160"
-								height="90"
-								loading="lazy"
-							/>
+							<img src={video.thumbnail} alt={video.title} width="160" height="90" loading="lazy" />
 							<span class="duration-badge" class:live={video.isLive}>
 								{#if video.isLive}
 									<span class="live-dot"></span> LIVE

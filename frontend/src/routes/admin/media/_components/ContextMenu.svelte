@@ -23,13 +23,7 @@
 	import IconClipboardCopy from '@tabler/icons-svelte-runes/icons/clipboard-copy';
 	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
 
-	export type ContextAction =
-		| 'view'
-		| 'optimize'
-		| 'crop'
-		| 'ai-analyze'
-		| 'copy-url'
-		| 'delete';
+	export type ContextAction = 'view' | 'optimize' | 'crop' | 'ai-analyze' | 'copy-url' | 'delete';
 
 	let {
 		menu = $bindable(null),

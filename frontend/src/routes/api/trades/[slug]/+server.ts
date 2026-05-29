@@ -193,27 +193,31 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	}
 
 	// Call backend at /api/admin/room-content/trades
-	const backendData = await fetchBackend(`/api/admin/room-content/trades`, {
-		method: 'POST',
-		headers,
-		body: JSON.stringify({
-			room_slug: slug,
-			ticker: body.ticker.toUpperCase(),
-			trade_type: body.trade_type,
-			direction: body.direction,
-			quantity: body.quantity,
-			option_type: body.option_type,
-			strike: body.strike,
-			expiration: body.expiration,
-			contract_type: body.contract_type,
-			entry_alert_id: body.entry_alert_id,
-			entry_price: body.entry_price,
-			entry_date: body.entry_date || new Date().toISOString().split('T')[0],
-			entry_tos_string: body.entry_tos_string,
-			setup: body.setup,
-			notes: body.notes
-		})
-	}, '[Trades API]');
+	const backendData = await fetchBackend(
+		`/api/admin/room-content/trades`,
+		{
+			method: 'POST',
+			headers,
+			body: JSON.stringify({
+				room_slug: slug,
+				ticker: body.ticker.toUpperCase(),
+				trade_type: body.trade_type,
+				direction: body.direction,
+				quantity: body.quantity,
+				option_type: body.option_type,
+				strike: body.strike,
+				expiration: body.expiration,
+				contract_type: body.contract_type,
+				entry_alert_id: body.entry_alert_id,
+				entry_price: body.entry_price,
+				entry_date: body.entry_date || new Date().toISOString().split('T')[0],
+				entry_tos_string: body.entry_tos_string,
+				setup: body.setup,
+				notes: body.notes
+			})
+		},
+		'[Trades API]'
+	);
 
 	if (backendData) {
 		return json({

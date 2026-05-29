@@ -12,8 +12,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 
 import { env } from '$env/dynamic/private';
 import { requireAdmin } from '$lib/server/auth';
-const PROD_BACKEND =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const PROD_BACKEND = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 async function proxy(
 	event: Parameters<RequestHandler>[0],

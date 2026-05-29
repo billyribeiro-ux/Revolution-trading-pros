@@ -167,7 +167,13 @@
 					<ul class="service-features">
 						{#each service.features as feature (feature)}
 							<li>
-								<svg aria-hidden="true" class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+								<svg
+									aria-hidden="true"
+									class="check-icon"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+								>
 									<path
 										stroke-linecap="round"
 										stroke-linejoin="round"
@@ -197,7 +203,13 @@
 
 					<a href={service.href} class="service-cta">
 						View Details & Subscribe
-						<svg aria-hidden="true" class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+						<svg
+							aria-hidden="true"
+							class="arrow-icon"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+						>
 							<path
 								stroke-linecap="round"
 								stroke-linejoin="round"
@@ -293,7 +305,6 @@
 		</div>
 	</section>
 </div>
-
 
 <style>
 	/* ─────────────────────────────────────────────────────────────────

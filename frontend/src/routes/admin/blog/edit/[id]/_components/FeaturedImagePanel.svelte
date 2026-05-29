@@ -12,13 +12,7 @@
 		onRemove: () => void;
 	};
 
-	let {
-		post = $bindable(),
-		uploadingImage,
-		uploadError,
-		onUpload,
-		onRemove
-	}: Props = $props();
+	let { post = $bindable(), uploadingImage, uploadError, onUpload, onRemove }: Props = $props();
 </script>
 
 <div class="sidebar-panel">
@@ -32,11 +26,7 @@
 	{:else if post.featured_image}
 		<div class="featured-image-preview">
 			<!-- TODO(cls): width/height needed — user-uploaded blog featured image; capture intrinsic dims on upload and store alongside URL -->
-			<img
-				src={post.featured_image}
-				alt={post.featured_image_alt || 'Featured'}
-				loading="lazy"
-			/>
+			<img src={post.featured_image} alt={post.featured_image_alt || 'Featured'} loading="lazy" />
 			<button type="button" class="remove-image" onclick={onRemove}>
 				<IconX size={16} />
 			</button>
@@ -86,13 +76,7 @@
 		</div>
 	{:else}
 		<label class="upload-box" class:disabled={uploadingImage}>
-			<input
-				type="file"
-				accept="image/*"
-				onchange={onUpload}
-				hidden
-				disabled={uploadingImage}
-			/>
+			<input type="file" accept="image/*" onchange={onUpload} hidden disabled={uploadingImage} />
 			<IconPhoto size={48} />
 			<span>Click to upload featured image</span>
 		</label>

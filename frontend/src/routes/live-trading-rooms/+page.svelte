@@ -229,18 +229,14 @@
 					];
 
 					btnConfigs.forEach(({ selector, from, delay }) => {
-						gsap.fromTo(
-							selector,
-							from,
-							{
-								x: 0,
-								y: 0,
-								opacity: 1,
-								duration: 0.8,
-								delay: 1.5 + delay,
-								ease: 'back.out(1.7)'
-							}
-						);
+						gsap.fromTo(selector, from, {
+							x: 0,
+							y: 0,
+							opacity: 1,
+							duration: 0.8,
+							delay: 1.5 + delay,
+							ease: 'back.out(1.7)'
+						});
 					});
 
 					// Subtle continuous float for buttons
@@ -480,7 +476,9 @@
 				<div class="ticker__item">
 					<span class="ticker__sym">{item.sym}</span>
 					<span class="ticker__price">{item.price}</span>
-					<span class={['ticker__change', item.up ? 'ticker__change--up' : 'ticker__change--down']}>{item.change}</span>
+					<span class={['ticker__change', item.up ? 'ticker__change--up' : 'ticker__change--down']}
+						>{item.change}</span
+					>
 				</div>
 			{/each}
 		</div>
@@ -494,11 +492,7 @@
 			</div>
 
 			<div class="hero-chart hero__chart-wrap" aria-hidden="true">
-				<svg
-					class="hero__chart-svg"
-					viewBox="0 0 1000 300"
-					preserveAspectRatio="none"
-				>
+				<svg class="hero__chart-svg" viewBox="0 0 1000 300" preserveAspectRatio="none">
 					<defs>
 						<linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
 							<stop offset="0%" stop-color="#3b82f6" stop-opacity="0.2" />
@@ -553,8 +547,8 @@
 				</h1>
 
 				<p class="hero-desc hero__desc">
-					Step inside the <span class="hero__desc-emph">Command Center</span>. Real-time
-					data, institutional signals, and a community of professional traders.
+					Step inside the <span class="hero__desc-emph">Command Center</span>. Real-time data,
+					institutional signals, and a community of professional traders.
 				</p>
 
 				<!-- ═══════════════════════════════════════════════════════════════════════════
@@ -590,17 +584,11 @@
 						<span class="hero__cta-dot"></span>
 						SPX Alerts
 					</a>
-					<a
-						href="/mentorship"
-						class="hero-float-btn hero-float-btn-5 hero__cta hero__cta--cyan"
-					>
+					<a href="/mentorship" class="hero-float-btn hero-float-btn-5 hero__cta hero__cta--cyan">
 						<span class="hero__cta-dot"></span>
 						Mentorship
 					</a>
-					<a
-						href="/indicators"
-						class="hero-float-btn hero-float-btn-6 hero__cta hero__cta--rose"
-					>
+					<a href="/indicators" class="hero-float-btn hero-float-btn-6 hero__cta hero__cta--rose">
 						<span class="hero__cta-dot"></span>
 						Indicators
 					</a>
@@ -615,9 +603,7 @@
 		<section class="benefits">
 			<div class="benefits__halo" aria-hidden="true"></div>
 			<div class="benefits__header">
-				<h2 class="benefits__title">
-					Why the Pros Choose Us
-				</h2>
+				<h2 class="benefits__title">Why the Pros Choose Us</h2>
 				<p class="benefits__lede">
 					We don't just sell courses. We build institutional-grade traders through immersion,
 					technology, and community.
@@ -628,7 +614,13 @@
 					<div class="benefits__card group">
 						<div class="benefits__icon">
 							{#if item.iconType === 'analysis'}
-								<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+								<svg
+									aria-hidden="true"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1.5"
+								>
 									<circle
 										cx="12"
 										cy="12"
@@ -645,12 +637,24 @@
 									/>
 								</svg>
 							{:else if item.iconType === 'radar'}
-								<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+								<svg
+									aria-hidden="true"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1.5"
+								>
 									<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
 									<path class="group-hover:animate-pulse" d="M12 8v4l3 3" stroke-linecap="round" />
 								</svg>
 							{:else if item.iconType === 'strategy'}
-								<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+								<svg
+									aria-hidden="true"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1.5"
+								>
 									<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
 									<path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
 									<path
@@ -662,7 +666,13 @@
 									/>
 								</svg>
 							{:else if item.iconType === 'network'}
-								<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+								<svg
+									aria-hidden="true"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1.5"
+								>
 									<circle cx="12" cy="5" r="2" class="group-hover:fill-current" />
 									<circle
 										cx="5"
@@ -696,20 +706,14 @@
 					The market is waiting. Your desk is ready.
 				</p>
 				<div class="cta__actions">
-					<a href="#rooms-section" class="cta__btn cta__btn--primary">
-						Choose Your Room
-					</a>
-					<a href="/about" class="cta__btn cta__btn--ghost">
-						Talk to an Advisor
-					</a>
+					<a href="#rooms-section" class="cta__btn cta__btn--primary"> Choose Your Room </a>
+					<a href="/about" class="cta__btn cta__btn--ghost"> Talk to an Advisor </a>
 				</div>
 			</div>
 		</section>
 
 		<div class="trust">
-			<h3 class="trust__heading">
-				Trusted by 10,000+ Traders Worldwide
-			</h3>
+			<h3 class="trust__heading">Trusted by 10,000+ Traders Worldwide</h3>
 			<div class="trust__row">
 				<div class="trust__chip"></div>
 				<div class="trust__chip"></div>
@@ -719,7 +723,6 @@
 		</div>
 	</div>
 </div>
-
 
 <style>
 	/* ─────────────────────────────────────────────────────────────────
@@ -872,12 +875,7 @@
 	.hero__grid-fade {
 		position: absolute;
 		inset: 0;
-		background: linear-gradient(
-			to bottom,
-			var(--ltr-bg) 0%,
-			transparent 50%,
-			var(--ltr-bg) 100%
-		);
+		background: linear-gradient(to bottom, var(--ltr-bg) 0%, transparent 50%, var(--ltr-bg) 100%);
 		z-index: 10;
 	}
 	.grid-lines,
@@ -1215,12 +1213,7 @@
 	.hero__rule {
 		width: 6rem;
 		height: 1px;
-		background: linear-gradient(
-			to right,
-			transparent,
-			var(--rtp-primary),
-			transparent
-		);
+		background: linear-gradient(to right, transparent, var(--rtp-primary), transparent);
 		margin-inline: auto;
 		margin-block-start: 4rem;
 		opacity: 0;
@@ -1254,11 +1247,7 @@
 		background-clip: text;
 		-webkit-background-clip: text;
 		color: transparent;
-		background-image: linear-gradient(
-			to bottom,
-			#fff,
-			color-mix(in oklab, #fff 60%, transparent)
-		);
+		background-image: linear-gradient(to bottom, #fff, color-mix(in oklab, #fff 60%, transparent));
 	}
 	@media (min-width: 768px) {
 		.benefits__title {
@@ -1355,11 +1344,7 @@
 		overflow: hidden;
 		border-radius: 1.5rem;
 		margin-block: 3rem;
-		background: linear-gradient(
-			to bottom,
-			color-mix(in oklab, #1e3a8a 20%, transparent),
-			#000
-		);
+		background: linear-gradient(to bottom, color-mix(in oklab, #1e3a8a 20%, transparent), #000);
 		border: 1px solid var(--rtp-border);
 	}
 	.cta__bg-pattern {

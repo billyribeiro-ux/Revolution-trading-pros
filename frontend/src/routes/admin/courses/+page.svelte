@@ -129,10 +129,9 @@
 			//   { success: true, data: { id } }  AND  bare { id }
 			// Previously the bare-entity case silently reported "Failed" while
 			// having created the row, prompting duplicate retries.
-			const created =
-				(data && data.data && data.data.id ? data.data : data && data.id ? data : null) as
-					| { id?: string }
-					| null;
+			const created = (
+				data && data.data && data.data.id ? data.data : data && data.id ? data : null
+			) as { id?: string } | null;
 			if (created?.id && (data.success === undefined || data.success)) {
 				// Redirect to page builder with new course
 				goto(`/admin/page-builder?course=${created.id}`);

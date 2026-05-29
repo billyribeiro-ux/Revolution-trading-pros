@@ -154,10 +154,7 @@ export const POST: RequestHandler = async (event) => {
 	// Bug §2 mitigation, applied uniformly across admin proxies).
 	const rawBody: unknown = await event.request.json();
 	if (!isObject(rawBody)) {
-		return json(
-			{ success: false, error: 'Request body must be a JSON object' },
-			{ status: 400 }
-		);
+		return json({ success: false, error: 'Request body must be a JSON object' }, { status: 400 });
 	}
 	const body = rawBody as TraderCreateBody;
 
@@ -178,7 +175,10 @@ export const POST: RequestHandler = async (event) => {
 
 	// FIX-2026-04-26-audit (P1-11): surface backend failure on POST — a silent mock-create
 	// would persist nothing to the DB while appearing to succeed.
-	console.error('[Trading-rooms traders proxy POST] Backend unavailable or non-success:', backendData);
+	console.error(
+		'[Trading-rooms traders proxy POST] Backend unavailable or non-success:',
+		backendData
+	);
 	return json(
 		{
 			success: false,
