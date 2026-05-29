@@ -472,7 +472,9 @@
 {#if isOpen}
 	<div
 		class="scheduling-overlay"
-		onclick={onClose}
+		onclick={(e) => {
+			if (e.target === e.currentTarget) onClose();
+		}}
 		onkeydown={(e) => e.key === 'Escape' && onClose()}
 		role="dialog"
 		aria-modal="true"
@@ -480,14 +482,7 @@
 		tabindex="-1"
 		transition:fade={{ duration: 150 }}
 	>
-		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-		<div
-			class="scheduling-panel"
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.stopPropagation()}
-			role="document"
-			transition:slide={{ duration: 200 }}
-		>
+		<div class="scheduling-panel" role="document" transition:slide={{ duration: 200 }}>
 			<!-- Header -->
 			<div class="panel-header">
 				<div>

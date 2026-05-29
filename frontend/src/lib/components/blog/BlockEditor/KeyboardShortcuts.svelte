@@ -177,15 +177,15 @@
 {#if isOpen}
 	<div
 		class="shortcuts-overlay"
-		onclick={onClose}
+		onclick={(e: MouseEvent) => {
+			if (e.target === e.currentTarget) onClose();
+		}}
 		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && onClose()}
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"
 	>
-		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-		<!-- svelte-ignore a11y_click_events_have_key_events -->
-		<div class="shortcuts-modal" onclick={(e: MouseEvent) => e.stopPropagation()} role="document">
+		<div class="shortcuts-modal" role="document">
 			<div class="shortcuts-header">
 				<h2>Keyboard Shortcuts</h2>
 				<button class="close-btn" onclick={onClose} aria-label="Close"> ✕ </button>

@@ -104,12 +104,17 @@
 <svelte:window onkeydown={handleKeydown} />
 
 {#if isOpen && item}
-	<!-- svelte-ignore a11y_click_events_have_key_events -->
-	<!-- svelte-ignore a11y_interactive_supports_focus -->
-	<div class="preview-overlay" onclick={handleClose} role="dialog" aria-modal="true">
-		<!-- svelte-ignore a11y_click_events_have_key_events -->
-		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-		<div class="preview-modal" onclick={(e: MouseEvent) => e.stopPropagation()} role="document">
+	<div
+		class="preview-overlay"
+		onclick={(e: MouseEvent) => {
+			if (e.target === e.currentTarget) handleClose();
+		}}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && handleClose()}
+		role="dialog"
+		aria-modal="true"
+		tabindex="-1"
+	>
+		<div class="preview-modal" role="document">
 			<!-- Header -->
 			<div class="preview-header">
 				<h2 class="preview-title">{item.filename}</h2>

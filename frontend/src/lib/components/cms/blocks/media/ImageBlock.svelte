@@ -567,14 +567,15 @@
 
 <!-- Lightbox -->
 {#if isLightboxOpen && sanitizedURL}
-	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<div
 		class="image-block__lightbox"
 		role="dialog"
 		aria-modal="true"
 		aria-label="Image lightbox"
 		tabindex="-1"
-		onclick={closeLightbox}
+		onclick={(e) => {
+			if (e.target === e.currentTarget) closeLightbox();
+		}}
 		onkeydown={handleLightboxKeyDown}
 	>
 		<button
@@ -585,13 +586,10 @@
 		>
 			<IconX size={24} aria-hidden="true" />
 		</button>
-		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_noninteractive_element_interactions -->
-		<!-- TODO(cls): fullscreen lightbox; intrinsic dims of user-uploaded image unknown -->
 		<img
 			src={sanitizedURL}
 			alt={imageAlt}
 			class="image-block__lightbox-image"
-			onclick={(e) => e.stopPropagation()}
 			loading="lazy"
 		/>
 		{#if caption}

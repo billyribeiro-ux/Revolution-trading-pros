@@ -858,16 +858,12 @@
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"
-		onclick={() => (showCreateSegmentModal = false)}
+		onclick={(e: MouseEvent) => {
+			if (e.target === e.currentTarget) showCreateSegmentModal = false;
+		}}
 		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showCreateSegmentModal = false)}
 	>
-		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-		<div
-			class="modal-content large"
-			role="document"
-			onclick={(e: MouseEvent) => e.stopPropagation()}
-			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
-		>
+		<div class="modal-content large" role="document">
 			<div class="modal-header">
 				<h2>Create Smart Segment</h2>
 				<button class="close-btn" onclick={() => (showCreateSegmentModal = false)}>
@@ -964,15 +960,12 @@
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"
-		onclick={() => (showCreateTagModal = false)}
+		onclick={(e: MouseEvent) => {
+			if (e.target === e.currentTarget) showCreateTagModal = false;
+		}}
 		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showCreateTagModal = false)}
 	>
-		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-		<div
-			class="modal-content"
-			role="document"
-			onclick={(e: MouseEvent) => e.stopPropagation()}
-			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+		<div class="modal-content" role="document"
 		>
 			<div class="modal-header">
 				<h2>Create New Tag</h2>
@@ -1037,15 +1030,12 @@
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"
-		onclick={() => (showSaveFilterModal = false)}
+		onclick={(e: MouseEvent) => {
+			if (e.target === e.currentTarget) showSaveFilterModal = false;
+		}}
 		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showSaveFilterModal = false)}
 	>
-		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-		<div
-			class="modal-content"
-			role="document"
-			onclick={(e: MouseEvent) => e.stopPropagation()}
-			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+		<div class="modal-content" role="document"
 		>
 			<div class="modal-header">
 				<h2>Save Current Filter</h2>
