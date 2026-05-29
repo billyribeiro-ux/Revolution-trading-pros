@@ -28,12 +28,7 @@
 		/>
 	</div>
 	<label class="checkbox-label">
-		<input
-			id="page-showhidden"
-			name="page-showhidden"
-			type="checkbox"
-			bind:checked={showHidden}
-		/>
+		<input id="page-showhidden" name="page-showhidden" type="checkbox" bind:checked={showHidden} />
 		<span>Show Hidden</span>
 	</label>
 </div>

@@ -588,9 +588,7 @@
 				pendingPercent = null;
 				bulkUploadApi
 					.updateItemStatus(itemId, { status: 'uploading', progress_percent: percent })
-					.catch((e) =>
-						logger.warn('[uploadFileToBunny] progress update failed', { error: e })
-					);
+					.catch((e) => logger.warn('[uploadFileToBunny] progress update failed', { error: e }));
 			};
 
 			xhr.upload.addEventListener('progress', (e) => {
@@ -1396,13 +1394,7 @@
 								<td class="video-cell">
 									<div class="video-thumbnail-small">
 										{#if video.thumbnail_url}
-											<img
-												src={video.thumbnail_url}
-												alt=""
-												width="80"
-												height="45"
-												loading="lazy"
-											/>
+											<img src={video.thumbnail_url} alt="" width="80" height="45" loading="lazy" />
 										{:else}
 											<div class="thumbnail-placeholder-small">
 												<IconVideo size={20} />

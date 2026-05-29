@@ -40,12 +40,7 @@
 
 {#if props.variant === 'weekly'}
 	{@const { event, selected, conflict, formatTime } = props}
-	<div
-		class="event-card"
-		class:inactive={!event.is_active}
-		class:selected
-		class:conflict
-	>
+	<div class="event-card" class:inactive={!event.is_active} class:selected class:conflict>
 		<div class="event-checkbox">
 			<!-- FIX-2026-04-26 (P3-1): unique id+name per event so a11y label
 				 association and DOM-test selectors stop colliding. -->
@@ -129,10 +124,7 @@
 			{/if}
 		</div>
 		<div class="event-actions">
-			<button
-				class="btn-icon"
-				onclick={() => props.variant === 'weekend' && props.onEdit(event)}
-			>
+			<button class="btn-icon" onclick={() => props.variant === 'weekend' && props.onEdit(event)}>
 				<IconEdit size={16} />
 			</button>
 			<button

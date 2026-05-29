@@ -106,9 +106,7 @@
 
 	// FIX-2026-04-26 (P1-6): unsaved-changes guard.
 	let lastSavedSnapshot = $state<string>('');
-	let hasUnsavedChanges = $derived(
-		lesson ? JSON.stringify(lesson) !== lastSavedSnapshot : false
-	);
+	let hasUnsavedChanges = $derived(lesson ? JSON.stringify(lesson) !== lastSavedSnapshot : false);
 
 	beforeNavigate((nav) => {
 		// TODO(modal-confirm): SvelteKit's beforeNavigate is synchronous —
@@ -323,7 +321,7 @@
 			<div class="header-left">
 				<a href="/admin/courses/{courseId}" class="back-link">
 					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chevron-left (back link) -->
-				<IconChevronLeft size={20} aria-hidden="true" />
+					<IconChevronLeft size={20} aria-hidden="true" />
 					Back to Course
 				</a>
 				<h1>{lesson.title}</h1>
@@ -437,7 +435,7 @@
 									</div>
 								{:else}
 									<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: video (video placeholder) -->
-										<IconVideo size={48} aria-hidden="true" />
+									<IconVideo size={48} aria-hidden="true" />
 									<p>Upload a video or enter a Bunny.net Video GUID</p>
 									<button
 										type="button"
@@ -510,13 +508,7 @@
 						<!-- FIX-2026-04-26 (P1-9): only render <img> when URL passes
 						     scheme validation (https://, http://, or relative). -->
 						{#if safeThumbnailUrl}
-							<img
-								src={safeThumbnailUrl}
-								alt="Thumbnail"
-								width="320"
-								height="180"
-								loading="lazy"
-							/>
+							<img src={safeThumbnailUrl} alt="Thumbnail" width="320" height="180" loading="lazy" />
 						{:else if lesson.thumbnail_url}
 							<div class="no-thumb">Invalid thumbnail URL</div>
 						{:else}
@@ -548,7 +540,7 @@
 										aria-label="Remove download"
 									>
 										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: x (remove download) -->
-									<IconX size={14} aria-hidden="true" />
+										<IconX size={14} aria-hidden="true" />
 									</button>
 								</li>
 							{/each}

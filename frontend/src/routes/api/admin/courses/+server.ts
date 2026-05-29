@@ -8,8 +8,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 import { requireAdminToken } from '$lib/server/auth';
 
 import { env } from '$env/dynamic/private';
-const BACKEND_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const BACKEND_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 /**
  * FIX-2026-04-26 (P0-2 / CC-2): normalize backend response into the
@@ -71,10 +70,7 @@ export const GET: RequestHandler = async (event) => {
 	} catch (err) {
 		if (isHttpError(err)) throw err;
 		console.error('[API] Admin courses list error:', err);
-		return json(
-			{ success: false, error: 'Failed to fetch courses', data: null },
-			{ status: 500 }
-		);
+		return json({ success: false, error: 'Failed to fetch courses', data: null }, { status: 500 });
 	}
 };
 

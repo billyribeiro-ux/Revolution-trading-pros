@@ -16,10 +16,16 @@
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import { toastStore } from '$lib/stores/toast.svelte';
 
+	interface FormImportResult {
+		fields_created?: number;
+		error?: string;
+		[key: string]: unknown;
+	}
+
 	interface Props {
 		formId?: number;
 		formTitle?: string;
-		onImportComplete?: (result: any) => void;
+		onImportComplete?: (result: FormImportResult) => void;
 	}
 
 	let { formId, formTitle: _formTitle, onImportComplete }: Props = $props();

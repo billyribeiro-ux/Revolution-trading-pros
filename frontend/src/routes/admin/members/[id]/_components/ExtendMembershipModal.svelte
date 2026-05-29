@@ -13,15 +13,8 @@
 		onExtend: () => void;
 	}
 
-	let {
-		open,
-		subscription,
-		extendDays,
-		extending,
-		onDaysChange,
-		onClose,
-		onExtend
-	}: Props = $props();
+	let { open, subscription, extendDays, extending, onDaysChange, onClose, onExtend }: Props =
+		$props();
 
 	// Pre-defined quick-pick values. Bounded set — `class:selected` only matches
 	// these six values, so no unbounded class injection.
@@ -30,9 +23,7 @@
 	let previewDate = $derived.by(() => {
 		if (!subscription) return '';
 		const base = subscription.next_payment ? new Date(subscription.next_payment) : new Date();
-		return formatDate(
-			new Date(base.getTime() + extendDays * 24 * 60 * 60 * 1000).toISOString()
-		);
+		return formatDate(new Date(base.getTime() + extendDays * 24 * 60 * 60 * 1000).toISOString());
 	});
 </script>
 
@@ -77,8 +68,7 @@
 						name="extend-days"
 						type="number"
 						value={extendDays}
-						oninput={(e) =>
-							onDaysChange(Number((e.target as HTMLInputElement).value))}
+						oninput={(e) => onDaysChange(Number((e.target as HTMLInputElement).value))}
 						min="1"
 						max="3650"
 						class="extend-custom"

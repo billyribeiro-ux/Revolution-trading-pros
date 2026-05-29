@@ -13,7 +13,9 @@
 	let startIndex = $derived(
 		pagination.total === 0 ? 0 : (pagination.current_page - 1) * pagination.per_page + 1
 	);
-	let endIndex = $derived(Math.min(pagination.current_page * pagination.per_page, pagination.total));
+	let endIndex = $derived(
+		Math.min(pagination.current_page * pagination.per_page, pagination.total)
+	);
 	let lastPage = $derived(Math.max(pagination.last_page, 1));
 	let prevDisabled = $derived(pagination.current_page === 1);
 	let nextDisabled = $derived(pagination.current_page >= lastPage || pagination.total === 0);
@@ -23,7 +25,8 @@
 	<div class="pagination-info">
 		<!-- FIX-2026-04-26 (audit 02 §P2-7): off-by-one on empty list
 			(used to show "Showing 1 to 0 of 0 members"). -->
-		Showing {startIndex} to {endIndex} of {pagination.total} {itemLabel}
+		Showing {startIndex} to {endIndex} of {pagination.total}
+		{itemLabel}
 	</div>
 	<div class="pagination-controls">
 		<button

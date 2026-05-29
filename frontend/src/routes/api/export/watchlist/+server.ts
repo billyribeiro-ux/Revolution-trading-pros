@@ -20,8 +20,7 @@ import { env } from '$env/dynamic/private';
 
 // CLAUDE.md hard rule — API_BASE_URL primary, BACKEND_URL fallback,
 // localhost last. R21-A: restored full fallback chain (was: BACKEND_URL only).
-const BACKEND_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const BACKEND_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 interface TradePlanEntry {
 	ticker: string;
@@ -63,9 +62,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 			// R22-A: was: fall back to 3-row NVDA/META/AMD mock and proceed to
 			// generate the CSV/JSON. Now: fail loudly so the trader doesn't
 			// download phantom tickers and act on them.
-			console.error(
-				`[Export watchlist] Backend ${response.status} for room '${roomSlug}'`
-			);
+			console.error(`[Export watchlist] Backend ${response.status} for room '${roomSlug}'`);
 			error(502, `Unable to fetch trade plan for ${roomSlug}.`);
 		}
 

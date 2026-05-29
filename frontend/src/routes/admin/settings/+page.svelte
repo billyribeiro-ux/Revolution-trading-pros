@@ -838,7 +838,7 @@
 						bind:value={searchQuery}
 						class="search-input"
 					/>
-										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: search -->
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: search -->
 					<IconSearch size={20} aria-hidden="true" />
 				</div>
 
@@ -948,7 +948,7 @@
 										class="btn-docs"
 										title="View documentation"
 									>
-																				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: external-link (docs) -->
+										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: external-link (docs) -->
 										<IconExternalLink size={20} aria-hidden="true" />
 									</a>
 								{/if}
@@ -1071,7 +1071,7 @@
 					title="Close"
 					class="absolute top-6 right-6 text-slate-400 hover:text-white transition-colors"
 				>
-										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: x (close) -->
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: x (close) -->
 					<IconX size={24} aria-hidden="true" />
 				</button>
 			</div>
@@ -1210,7 +1210,7 @@
 				<div
 					class="w-16 h-16 mx-auto mb-4 bg-red-500/10 rounded-full flex items-center justify-center"
 				>
-										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: alert-triangle (error) -->
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: alert-triangle (error) -->
 					<IconAlertTriangle size={32} aria-hidden="true" />
 				</div>
 				<h3 class="text-xl font-bold text-white mb-2">Disconnect {disconnectingService.name}?</h3>

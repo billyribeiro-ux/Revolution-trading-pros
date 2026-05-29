@@ -47,13 +47,7 @@
 		</div>
 		<div class="form-group">
 			<label for="price">Price (USD)</label>
-			<input
-				type="number"
-				id="price"
-				name="price"
-				step="0.01"
-				bind:value={indicator.price}
-			/>
+			<input type="number" id="price" name="price" step="0.01" bind:value={indicator.price} />
 		</div>
 		<div class="form-group">
 			<label for="platform">Platform</label>
@@ -127,8 +121,7 @@
 	</div>
 	<div class="form-group full-width">
 		<label for="long_description">Long Description</label>
-		<textarea id="long_description" rows="8" bind:value={indicator.long_description}
-		></textarea>
+		<textarea id="long_description" rows="8" bind:value={indicator.long_description}></textarea>
 	</div>
 </div>
 

@@ -8,12 +8,7 @@
 		ontoggleFilters: () => void;
 	}
 
-	let {
-		searchQuery = $bindable(''),
-		showFilters,
-		onsearch,
-		ontoggleFilters
-	}: Props = $props();
+	let { searchQuery = $bindable(''), showFilters, onsearch, ontoggleFilters }: Props = $props();
 </script>
 
 <div class="toolbar">

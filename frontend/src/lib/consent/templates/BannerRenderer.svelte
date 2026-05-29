@@ -317,7 +317,7 @@
 			<!-- Icon -->
 			{#if template.showIcon}
 				<div class="icon" style="color: {template.colors.accent}">
-						{@html sanitizeHtml(getIcon(template))}
+					{@html sanitizeHtml(getIcon(template))}
 				</div>
 			{/if}
 

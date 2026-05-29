@@ -126,12 +126,7 @@
 	<div class="form-grid">
 		<div class="form-group full">
 			<label for="card_image">Card Image URL</label>
-			<input
-				id="card_image"
-				name="card_image"
-				type="text"
-				bind:value={course.card_image_url}
-			/>
+			<input id="card_image" name="card_image" type="text" bind:value={course.card_image_url} />
 		</div>
 		<div class="form-group">
 			<label for="badge">Badge Text</label>

@@ -16,8 +16,7 @@ import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireSuperadmin } from '$lib/server/auth';
 
-const API_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const API_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 const SERVICE_KEY_RE = /^[a-z][a-z0-9_]*$/;
 const MAX_BODY_BYTES = 64 * 1024; // 64 KiB — credential payloads are tiny

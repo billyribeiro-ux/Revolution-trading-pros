@@ -525,7 +525,13 @@
 							target="_blank"
 							class="google-sheet-link"
 						>
-							<svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+							<svg
+								aria-hidden="true"
+								viewBox="0 0 24 24"
+								width="20"
+								height="20"
+								fill="currentColor"
+							>
 								<path
 									d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 17h2v-7H7v7zm4 0h2V7h-2v10zm4 0h2v-4h-2v4z"
 								/>
@@ -721,7 +727,13 @@
 				<a href={update.href} class="update-card">
 					<div class="update-thumbnail" style="background-image: url('{update.image}')">
 						<div class="play-overlay">
-							<svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" width="48" height="48">
+							<svg
+								aria-hidden="true"
+								viewBox="0 0 24 24"
+								fill="currentColor"
+								width="48"
+								height="48"
+							>
 								<path d="M8 5v14l11-7z" />
 							</svg>
 						</div>

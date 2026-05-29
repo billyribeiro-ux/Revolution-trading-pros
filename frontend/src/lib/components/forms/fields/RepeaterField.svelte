@@ -56,9 +56,7 @@
 	// Get repeater configuration from field attributes
 	const minItems = $derived(asNumber(props.field.attributes?.['min_items'], 0));
 	const maxItems = $derived(asNumber(props.field.attributes?.['max_items'], 10));
-	const addButtonText = $derived(
-		asString(props.field.attributes?.['add_button_text'], 'Add Item')
-	);
+	const addButtonText = $derived(asString(props.field.attributes?.['add_button_text'], 'Add Item'));
 	const itemLabel = $derived(asString(props.field.attributes?.['item_label'], 'Item'));
 	const collapsible = $derived(asBool(props.field.attributes?.['collapsible'], true));
 	const confirmDelete = $derived(asBool(props.field.attributes?.['confirm_delete'], true));

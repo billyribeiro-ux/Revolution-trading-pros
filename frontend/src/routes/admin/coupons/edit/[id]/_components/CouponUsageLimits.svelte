@@ -71,8 +71,8 @@
 				<option value="repeating">Repeating — first N months</option>
 			</select>
 			<p class="help-text">
-				Editing the duration creates a new Stripe Coupon and flips the pointer; existing
-				subscribers keep their current discount.
+				Editing the duration creates a new Stripe Coupon and flips the pointer; existing subscribers
+				keep their current discount.
 			</p>
 		</div>
 

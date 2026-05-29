@@ -161,20 +161,38 @@
 							class="absolute top-0 right-0 w-40 h-40 opacity-[0.02] group-hover/card:opacity-10 transition-opacity duration-500 pointer-events-none text-white"
 						>
 							{#if feature.type === 'grid'}
-								<svg aria-hidden="true" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="0.5">
+								<svg
+									aria-hidden="true"
+									viewBox="0 0 100 100"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="0.5"
+								>
 									<path
 										d="M10 10 H90 M10 30 H90 M10 50 H90 M10 70 H90 M10 90 H90 M10 10 V90 M30 10 V90 M50 10 V90 M70 10 V90 M90 10 V90"
 									/>
 								</svg>
 							{:else if feature.type === 'radar'}
-								<svg aria-hidden="true" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="0.5">
+								<svg
+									aria-hidden="true"
+									viewBox="0 0 100 100"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="0.5"
+								>
 									<circle cx="50" cy="50" r="20" />
 									<circle cx="50" cy="50" r="35" />
 									<circle cx="50" cy="50" r="45" opacity="0.5" />
 									<line x1="50" y1="50" x2="95" y2="50" />
 								</svg>
 							{:else}
-								<svg aria-hidden="true" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="0.5">
+								<svg
+									aria-hidden="true"
+									viewBox="0 0 100 100"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="0.5"
+								>
 									<rect x="20" y="20" width="60" height="60" rx="4" />
 									<path d="M50 20 V10 M50 90 V80 M20 50 H10 M90 50 H80" />
 									<rect x="35" y="35" width="30" height="30" />
@@ -228,31 +246,31 @@
 				{/if}
 			{/each}
 		</div>
-			<div class="mt-16 text-center" data-gsap>
-				<!-- Premium CTA -->
-				<div class="relative inline-block">
+		<div class="mt-16 text-center" data-gsap>
+			<!-- Premium CTA -->
+			<div class="relative inline-block">
+				<div
+					class="absolute -inset-1 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-2xl blur-xl opacity-60 group-hover:opacity-100 transition-opacity duration-500"
+				></div>
+				<a
+					href="/mentorship"
+					class="relative block px-12 py-6 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-lg font-heading font-bold rounded-2xl hover:shadow-2xl hover:shadow-emerald-500/50 transform hover:scale-105 hover:-translate-y-1 transition-all duration-300 overflow-hidden group"
+				>
+					<span class="relative z-10 flex items-center gap-3">
+						<IconSparkles size={24} class="animate-sparkle" />
+						<span>Apply for Mentorship</span>
+						<IconSparkles size={24} class="animate-sparkle-delayed" />
+					</span>
 					<div
-						class="absolute -inset-1 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-2xl blur-xl opacity-60 group-hover:opacity-100 transition-opacity duration-500"
+						class="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-left"
 					></div>
-					<a
-						href="/mentorship"
-						class="relative block px-12 py-6 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-lg font-heading font-bold rounded-2xl hover:shadow-2xl hover:shadow-emerald-500/50 transform hover:scale-105 hover:-translate-y-1 transition-all duration-300 overflow-hidden group"
-					>
-						<span class="relative z-10 flex items-center gap-3">
-							<IconSparkles size={24} class="animate-sparkle" />
-							<span>Apply for Mentorship</span>
-							<IconSparkles size={24} class="animate-sparkle-delayed" />
-						</span>
-						<div
-							class="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-left"
-						></div>
-					</a>
-				</div>
-
-				<!-- Exclusivity note -->
-				<p class="mt-8 text-sm text-slate-500 italic">
-					Application required • Personalized review • Investment starting at $2,500/month
-				</p>
+				</a>
 			</div>
+
+			<!-- Exclusivity note -->
+			<p class="mt-8 text-sm text-slate-500 italic">
+				Application required • Personalized review • Investment starting at $2,500/month
+			</p>
 		</div>
+	</div>
 </section>

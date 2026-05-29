@@ -35,9 +35,7 @@
 				<!-- FIX-2026-04-26 (P1-9): URL-encode the slug before interpolating
 				     to prevent a stray `?`/`&`/`<` in DB-stored slug from
 				     hijacking the iframe URL. -->
-				<iframe
-					src="/blog/{encodeURIComponent(post.slug)}?preview=true"
-					title="Post Preview"
+				<iframe src="/blog/{encodeURIComponent(post.slug)}?preview=true" title="Post Preview"
 				></iframe>
 			</div>
 		</div>

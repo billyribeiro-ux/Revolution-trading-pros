@@ -22,8 +22,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { requireAdmin } from '$lib/server/auth';
 
-const BACKEND_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const BACKEND_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 /** Shared helper: forward a request to the backend and return a json() response. */
 async function forwardToBackend(
@@ -80,10 +79,18 @@ export const GET: RequestHandler = async (event) => {
 	const queryString = url.search || '';
 
 	try {
-		return await forwardToBackend('GET', `/api/admin/indicators/${id}${queryString}`, token, 'application/json');
+		return await forwardToBackend(
+			'GET',
+			`/api/admin/indicators/${id}${queryString}`,
+			token,
+			'application/json'
+		);
 	} catch (err) {
 		console.error('[Indicators/GET] Fetch failed:', err);
-		return json({ success: false, error: err instanceof Error ? err.message : 'Failed to reach backend' }, { status: 502 });
+		return json(
+			{ success: false, error: err instanceof Error ? err.message : 'Failed to reach backend' },
+			{ status: 502 }
+		);
 	}
 };
 
@@ -100,7 +107,10 @@ export const PUT: RequestHandler = async (event) => {
 		return await forwardToBackend('PUT', `/api/admin/indicators/${id}`, token, contentType, body);
 	} catch (err) {
 		console.error('[Indicators/PUT] Fetch failed:', err);
-		return json({ success: false, error: err instanceof Error ? err.message : 'Failed to reach backend' }, { status: 502 });
+		return json(
+			{ success: false, error: err instanceof Error ? err.message : 'Failed to reach backend' },
+			{ status: 502 }
+		);
 	}
 };
 
@@ -112,10 +122,18 @@ export const DELETE: RequestHandler = async (event) => {
 	const id = params.id;
 
 	try {
-		return await forwardToBackend('DELETE', `/api/admin/indicators/${id}`, token, 'application/json');
+		return await forwardToBackend(
+			'DELETE',
+			`/api/admin/indicators/${id}`,
+			token,
+			'application/json'
+		);
 	} catch (err) {
 		console.error('[Indicators/DELETE] Fetch failed:', err);
-		return json({ success: false, error: err instanceof Error ? err.message : 'Failed to reach backend' }, { status: 502 });
+		return json(
+			{ success: false, error: err instanceof Error ? err.message : 'Failed to reach backend' },
+			{ status: 502 }
+		);
 	}
 };
 
@@ -132,7 +150,10 @@ export const PATCH: RequestHandler = async (event) => {
 		return await forwardToBackend('PATCH', `/api/admin/indicators/${id}`, token, contentType, body);
 	} catch (err) {
 		console.error('[Indicators/PATCH] Fetch failed:', err);
-		return json({ success: false, error: err instanceof Error ? err.message : 'Failed to reach backend' }, { status: 502 });
+		return json(
+			{ success: false, error: err instanceof Error ? err.message : 'Failed to reach backend' },
+			{ status: 502 }
+		);
 	}
 };
 
@@ -149,6 +170,9 @@ export const POST: RequestHandler = async (event) => {
 		return await forwardToBackend('POST', `/api/admin/indicators/${id}`, token, contentType, body);
 	} catch (err) {
 		console.error('[Indicators/POST] Fetch failed:', err);
-		return json({ success: false, error: err instanceof Error ? err.message : 'Failed to reach backend' }, { status: 502 });
+		return json(
+			{ success: false, error: err instanceof Error ? err.message : 'Failed to reach backend' },
+			{ status: 502 }
+		);
 	}
 };

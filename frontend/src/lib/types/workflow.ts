@@ -35,7 +35,7 @@ export interface WorkflowNode {
 	id: number;
 	workflow_id: number;
 	node_type: NodeType;
-	config: Record<string, any>;
+	config: Record<string, unknown>;
 	position_x: number;
 	position_y: number;
 	parent_node_id?: number;
@@ -63,7 +63,7 @@ export interface WorkflowRun {
 	started_at: string;
 	completed_at?: string;
 	duration_ms?: number;
-	context: Record<string, any>;
+	context: Record<string, unknown>;
 	error_message?: string;
 	triggered_by_user_id?: string;
 }
@@ -74,8 +74,8 @@ export interface WorkflowRunLog {
 	node_id: number;
 	status: 'pending' | 'running' | 'completed' | 'failed' | 'skipped';
 	executed_at: string;
-	input_data?: Record<string, any>;
-	output_data?: Record<string, any>;
+	input_data?: Record<string, unknown>;
+	output_data?: Record<string, unknown>;
 	error?: string;
 	duration_ms?: number;
 }
@@ -83,18 +83,18 @@ export interface WorkflowRunLog {
 export interface TriggerConfig {
 	type: string;
 	conditions?: ConditionRule[];
-	[key: string]: any;
+	[key: string]: unknown;
 }
 
 export interface ConditionRule {
 	field: string;
 	operator: string;
-	value: any;
+	value: unknown;
 }
 
 export interface ActionConfig {
 	action_type: string;
-	[key: string]: any;
+	[key: string]: unknown;
 }
 
 // UI-specific types
@@ -105,7 +105,7 @@ export interface NodePosition {
 
 export interface DraggedNode {
 	type: NodeType;
-	config?: Record<string, any>;
+	config?: Record<string, unknown>;
 }
 
 export interface WorkflowCanvas {
@@ -134,7 +134,7 @@ export interface TriggerTemplate {
 		| 'ecommerce'
 		| 'trading'
 		| 'system';
-	config: Record<string, any>;
+	config: Record<string, unknown>;
 }
 
 export interface ActionTemplate {
@@ -153,7 +153,7 @@ export interface ActionTemplate {
 		| 'integration'
 		| 'flow'
 		| 'ai';
-	config: Record<string, any>;
+	config: Record<string, unknown>;
 	requiredFields: string[];
 }
 

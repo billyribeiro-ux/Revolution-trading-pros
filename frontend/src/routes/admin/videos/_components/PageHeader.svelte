@@ -10,14 +10,8 @@
 		onAddVideo: () => void;
 	}
 
-	let {
-		hasSelectedRoom,
-		isLoading,
-		onAnalytics,
-		onBunnyUpload,
-		onRefresh,
-		onAddVideo
-	}: Props = $props();
+	let { hasSelectedRoom, isLoading, onAnalytics, onBunnyUpload, onRefresh, onAddVideo }: Props =
+		$props();
 </script>
 
 <div class="page-header">

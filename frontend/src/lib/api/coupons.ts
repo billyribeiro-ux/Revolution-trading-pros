@@ -815,11 +815,7 @@ class CouponManagementService {
 		});
 	}
 
-	private handleRedemption(data: {
-		couponId: string;
-		code: string;
-		orderTotal: number;
-	}): void {
+	private handleRedemption(data: { couponId: string; code: string; orderTotal: number }): void {
 		// Update metrics for the redeemed coupon
 		this.metrics.update((metrics) => {
 			const couponMetrics = metrics[data.couponId] || this.createEmptyMetrics();
@@ -1539,8 +1535,9 @@ class CouponManagementService {
 
 	private trackEvent(event: string, data: Record<string, JsonValue | undefined>): void {
 		if (!browser) return;
-		const gtag = (window as unknown as { gtag?: (cmd: string, event: string, data: unknown) => void })
-			.gtag;
+		const gtag = (
+			window as unknown as { gtag?: (cmd: string, event: string, data: unknown) => void }
+		).gtag;
 		gtag?.('event', event, data);
 	}
 

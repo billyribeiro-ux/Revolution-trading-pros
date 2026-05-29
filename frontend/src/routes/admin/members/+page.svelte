@@ -474,11 +474,7 @@
 
 		<!-- Stats Grid -->
 		{#if stats}
-			<StatsGrid
-				{stats}
-				{formatCurrency}
-				onRecoverChurned={() => goto('/admin/members/churned')}
-			/>
+			<StatsGrid {stats} {formatCurrency} onRecoverChurned={() => goto('/admin/members/churned')} />
 		{/if}
 
 		<!-- Top Services -->
@@ -689,10 +685,7 @@
 
 				<!-- Pagination -->
 				{#if pagination}
-					<MembersPagination
-						{pagination}
-						onGoToPage={(page) => membersStore.goToPage(page)}
-					/>
+					<MembersPagination {pagination} onGoToPage={(page) => membersStore.goToPage(page)} />
 				{/if}
 			{/if}
 		</div>
@@ -770,7 +763,7 @@
 	/>
 {/if}
 
-	<!-- Delete Confirmation Modal -->
+<!-- Delete Confirmation Modal -->
 {#if showDeleteModal && selectedMemberForDelete}
 	<ConfirmationModal
 		isOpen={showDeleteModal}
@@ -1350,7 +1343,6 @@
 		.admin-page-container {
 			padding: 0.5rem;
 		}
-
 
 		.stats-grid {
 			grid-template-columns: 1fr;

@@ -239,7 +239,11 @@
 		--footer-disclaimer-tint: color-mix(in oklab, var(--rtp-amber) 5%, transparent);
 		--footer-disclaimer-border: color-mix(in oklab, var(--rtp-amber) 20%, transparent);
 
-		background: linear-gradient(180deg, var(--footer-gradient-top) 0%, var(--footer-gradient-bottom) 100%);
+		background: linear-gradient(
+			180deg,
+			var(--footer-gradient-top) 0%,
+			var(--footer-gradient-bottom) 100%
+		);
 		border-top: 1px solid var(--footer-indigo-faint);
 		padding: 4rem 0 2rem;
 		width: 100%;
@@ -311,7 +315,8 @@
 		border: 1px solid var(--footer-indigo-soft);
 		border-radius: var(--rtp-radius-md);
 		color: var(--rtp-text-muted);
-		transition: background var(--rtp-dur-fast) var(--rtp-ease-out),
+		transition:
+			background var(--rtp-dur-fast) var(--rtp-ease-out),
 			color var(--rtp-dur-fast) var(--rtp-ease-out),
 			translate var(--rtp-dur-fast) var(--rtp-ease-out);
 		text-decoration: none;

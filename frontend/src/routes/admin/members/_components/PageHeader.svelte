@@ -51,24 +51,15 @@
 				{exporting ? 'Exporting...' : `Export ${exportFormat.toUpperCase()}`}
 			</button>
 			<div class="export-options">
-				<button
-					onclick={() => onAction({ type: 'export', format: 'csv' })}
-					disabled={exporting}
-				>
+				<button onclick={() => onAction({ type: 'export', format: 'csv' })} disabled={exporting}>
 					<IconDownload size={14} />
 					CSV
 				</button>
-				<button
-					onclick={() => onAction({ type: 'export', format: 'xlsx' })}
-					disabled={exporting}
-				>
+				<button onclick={() => onAction({ type: 'export', format: 'xlsx' })} disabled={exporting}>
 					<IconFileSpreadsheet size={14} />
 					Excel
 				</button>
-				<button
-					onclick={() => onAction({ type: 'export', format: 'pdf' })}
-					disabled={exporting}
-				>
+				<button onclick={() => onAction({ type: 'export', format: 'pdf' })} disabled={exporting}>
 					<IconPdf size={14} />
 					PDF
 				</button>

@@ -19,8 +19,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { requireAdmin } from '$lib/server/auth';
 
-const BACKEND_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const BACKEND_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 async function proxy(method: string, backendPath: string, token: string, request: Request) {
 	const headers: Record<string, string> = {
@@ -80,7 +79,10 @@ export const GET: RequestHandler = async (event) => {
 		return await proxy('GET', path, token, request);
 	} catch (err) {
 		console.error('[Indicators sub-resource GET] Fetch failed:', err);
-		return json({ success: false, error: err instanceof Error ? err.message : 'Failed to reach backend' }, { status: 502 });
+		return json(
+			{ success: false, error: err instanceof Error ? err.message : 'Failed to reach backend' },
+			{ status: 502 }
+		);
 	}
 };
 
@@ -93,7 +95,10 @@ export const POST: RequestHandler = async (event) => {
 		return await proxy('POST', path, token, request);
 	} catch (err) {
 		console.error('[Indicators sub-resource POST] Fetch failed:', err);
-		return json({ success: false, error: err instanceof Error ? err.message : 'Failed to reach backend' }, { status: 502 });
+		return json(
+			{ success: false, error: err instanceof Error ? err.message : 'Failed to reach backend' },
+			{ status: 502 }
+		);
 	}
 };
 
@@ -106,7 +111,10 @@ export const PUT: RequestHandler = async (event) => {
 		return await proxy('PUT', path, token, request);
 	} catch (err) {
 		console.error('[Indicators sub-resource PUT] Fetch failed:', err);
-		return json({ success: false, error: err instanceof Error ? err.message : 'Failed to reach backend' }, { status: 502 });
+		return json(
+			{ success: false, error: err instanceof Error ? err.message : 'Failed to reach backend' },
+			{ status: 502 }
+		);
 	}
 };
 
@@ -119,7 +127,10 @@ export const PATCH: RequestHandler = async (event) => {
 		return await proxy('PATCH', path, token, request);
 	} catch (err) {
 		console.error('[Indicators sub-resource PATCH] Fetch failed:', err);
-		return json({ success: false, error: err instanceof Error ? err.message : 'Failed to reach backend' }, { status: 502 });
+		return json(
+			{ success: false, error: err instanceof Error ? err.message : 'Failed to reach backend' },
+			{ status: 502 }
+		);
 	}
 };
 
@@ -132,6 +143,9 @@ export const DELETE: RequestHandler = async (event) => {
 		return await proxy('DELETE', path, token, request);
 	} catch (err) {
 		console.error('[Indicators sub-resource DELETE] Fetch failed:', err);
-		return json({ success: false, error: err instanceof Error ? err.message : 'Failed to reach backend' }, { status: 502 });
+		return json(
+			{ success: false, error: err instanceof Error ? err.message : 'Failed to reach backend' },
+			{ status: 502 }
+		);
 	}
 };

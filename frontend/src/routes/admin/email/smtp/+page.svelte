@@ -234,7 +234,9 @@
 						autocomplete="current-password"
 						type="password"
 						bind:value={settings.password}
-						placeholder={hasStoredPassword ? 'Leave blank to keep current password' : 'Enter password'}
+						placeholder={hasStoredPassword
+							? 'Leave blank to keep current password'
+							: 'Enter password'}
 					/>
 				</div>
 

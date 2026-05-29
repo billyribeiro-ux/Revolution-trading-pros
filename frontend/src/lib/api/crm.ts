@@ -800,9 +800,7 @@ export class CrmAPI {
 		return apiClient.delete(`/admin/crm/manager-roles/${id}`);
 	}
 
-	async getManagerUsers(filters?: {
-		per_page?: number;
-	}): Promise<PaginatedResponse<ManagerUser>> {
+	async getManagerUsers(filters?: { per_page?: number }): Promise<PaginatedResponse<ManagerUser>> {
 		return apiClient.get('/admin/crm/managers', { params: filters });
 	}
 

@@ -21,9 +21,8 @@
 		{:else}
 			<p class="bio--placeholder">
 				<strong>TODO — bio for {data.author.name}.</strong>
-				Replace this placeholder with first-person credentials, track record, and
-				teaching philosophy. The bio is the E-E-A-T anchor for every article this
-				author byline appears on.
+				Replace this placeholder with first-person credentials, track record, and teaching philosophy.
+				The bio is the E-E-A-T anchor for every article this author byline appears on.
 			</p>
 		{/if}
 	</section>

@@ -10,9 +10,8 @@
 <article class="team-page">
 	<h1>The Team</h1>
 	<p class="lead">
-		<strong>TODO — human copy.</strong> Replace this lede with your team
-		positioning: a sentence about how the team is structured and why it's worth
-		trusting with one's trading education.
+		<strong>TODO — human copy.</strong> Replace this lede with your team positioning: a sentence about
+		how the team is structured and why it's worth trusting with one's trading education.
 	</p>
 
 	<ul class="team-grid">

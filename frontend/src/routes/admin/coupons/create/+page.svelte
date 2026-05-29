@@ -340,12 +340,7 @@
 		<form onsubmit={handleSubmit} class="coupon-form">
 			<!-- SECTION: Basic Info + Duration + Limits/Dates -->
 			<div class="form-section">
-				<CouponBasicFields
-					bind:formData
-					{generating}
-					{discountPreview}
-					onGenerate={generateCode}
-				/>
+				<CouponBasicFields bind:formData {generating} {discountPreview} onGenerate={generateCode} />
 
 				<CouponSubscriptionDuration bind:formData />
 

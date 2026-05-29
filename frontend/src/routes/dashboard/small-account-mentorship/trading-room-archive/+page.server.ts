@@ -12,8 +12,7 @@ import { env } from '$env/dynamic/private';
 import type { PageServerLoad } from './$types';
 
 // FIX-2026-04-26: canonical private-env URL pattern (CLAUDE.md house style).
-const API_ROOT =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const API_ROOT = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 const ROOM_SLUG = 'small-account-mentorship';
 
 // Video response from API
@@ -135,7 +134,10 @@ export const load: PageServerLoad = async ({ url, fetch }): Promise<ArchivePageD
 			dataUnavailable: false
 		};
 	} catch (e) {
-		console.error('[dashboard/small-account-mentorship/trading-room-archive] video fetch failed:', e);
+		console.error(
+			'[dashboard/small-account-mentorship/trading-room-archive] video fetch failed:',
+			e
+		);
 		return {
 			...baseReturn,
 			videos: [],

@@ -16,7 +16,15 @@
 
 	import { loadStripe as loadStripeJS } from '@stripe/stripe-js';
 	import Icon from '$lib/components/Icon.svelte';
-	import type { Stripe, StripeElements, StripeCardElement } from '@stripe/stripe-js';
+	import type {
+		Stripe,
+		StripeElements,
+		StripeCardElement,
+		StripeCardElementChangeEvent,
+		StripePaymentRequestButtonElement,
+		PaymentRequestPaymentMethodEvent,
+		CanMakePaymentResult
+	} from '@stripe/stripe-js';
 
 	interface Props {
 		publicKey: string;
@@ -75,7 +83,7 @@
 	let stripe: Stripe | null = null;
 	let elements: StripeElements | null = null;
 	let cardElement: StripeCardElement | null = null;
-	let paymentRequestButton: any = null;
+	let paymentRequestButton: StripePaymentRequestButtonElement | null = null;
 	let loading = $state(true);
 	let processing = $state(false);
 	let cardError = $state('');
@@ -127,7 +135,7 @@
 				hidePostalCode: !verifyZip
 			});
 
-			cardElement.on('change', (event: any) => {
+			cardElement.on('change', (event: StripeCardElementChangeEvent) => {
 				cardError = event.error?.message || '';
 				cardComplete = event.complete;
 			});
@@ -153,29 +161,35 @@
 					requestPayerEmail: true
 				});
 
-				paymentRequest.canMakePayment().then((result: any) => {
+				paymentRequest.canMakePayment().then((result: CanMakePaymentResult | null) => {
 					if (result && elements) {
 						paymentRequestAvailable = true;
 						paymentRequestButton = elements.create('paymentRequestButton', {
 							paymentRequest
 						});
 						setTimeout(() => {
-							if (paymentRequestRef) {
+							if (paymentRequestRef && paymentRequestButton) {
 								paymentRequestButton.mount(paymentRequestRef);
 							}
 						}, 0);
 					}
 				});
 
-				paymentRequest.on('paymentmethod', async (event: any) => {
+				paymentRequest.on('paymentmethod', async (event: PaymentRequestPaymentMethodEvent) => {
 					processing = true;
 					try {
+						const card = event.paymentMethod.card;
+						if (!card) {
+							event.complete('fail');
+							if (onerror) onerror('Payment failed');
+							return;
+						}
 						const result: StripePaymentResult = {
 							paymentMethodId: event.paymentMethod.id,
-							last4: event.paymentMethod.card.last4,
-							cardBrand: event.paymentMethod.card.brand,
-							expiryMonth: event.paymentMethod.card.exp_month,
-							expiryYear: event.paymentMethod.card.exp_year
+							last4: card.last4,
+							cardBrand: card.brand,
+							expiryMonth: card.exp_month,
+							expiryYear: card.exp_year
 						};
 						event.complete('success');
 						if (onpayment) onpayment(result);

@@ -49,7 +49,14 @@
 				if (belowFold.length > 0) {
 					ScrollTrigger.batch(belowFold, {
 						onEnter: (batch) => {
-							gsap.to(batch, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', stagger: 0.1, overwrite: true });
+							gsap.to(batch, {
+								opacity: 1,
+								y: 0,
+								duration: 0.8,
+								ease: 'power3.out',
+								stagger: 0.1,
+								overwrite: true
+							});
 						},
 						start: 'top 85%',
 						once: true
@@ -87,18 +94,51 @@
 	];
 
 	const glossary = [
-		{ term: 'Expectancy', def: 'The average amount you can expect to win (or lose) per dollar at risk over N trades.' },
-		{ term: 'R-Multiple', def: 'A standardized unit of risk. We measure success in R units, not dollars.' },
-		{ term: 'Auction Theory', def: 'The market is a two-way auction process seeking to facilitate trade and find fair value.' },
-		{ term: 'Alpha Decay', def: 'The reduction in edge effectiveness as more participants exploit the same inefficiency.' },
-		{ term: 'Liquidity', def: 'The ability to enter or exit a position without significant price impact (slippage).' },
-		{ term: 'Variance', def: "The statistical deviation from expected results. The 'luck' factor in the short term." },
-		{ term: 'Absorption', def: 'When aggressive buying/selling is met with passive limit orders, halting price movement.' },
-		{ term: 'Delta', def: 'The difference between buying volume and selling volume at a specific price node.' },
-		{ term: 'Gamma', def: 'The rate of change of Delta. Crucial for understanding options dealer hedging flows.' },
+		{
+			term: 'Expectancy',
+			def: 'The average amount you can expect to win (or lose) per dollar at risk over N trades.'
+		},
+		{
+			term: 'R-Multiple',
+			def: 'A standardized unit of risk. We measure success in R units, not dollars.'
+		},
+		{
+			term: 'Auction Theory',
+			def: 'The market is a two-way auction process seeking to facilitate trade and find fair value.'
+		},
+		{
+			term: 'Alpha Decay',
+			def: 'The reduction in edge effectiveness as more participants exploit the same inefficiency.'
+		},
+		{
+			term: 'Liquidity',
+			def: 'The ability to enter or exit a position without significant price impact (slippage).'
+		},
+		{
+			term: 'Variance',
+			def: "The statistical deviation from expected results. The 'luck' factor in the short term."
+		},
+		{
+			term: 'Absorption',
+			def: 'When aggressive buying/selling is met with passive limit orders, halting price movement.'
+		},
+		{
+			term: 'Delta',
+			def: 'The difference between buying volume and selling volume at a specific price node.'
+		},
+		{
+			term: 'Gamma',
+			def: 'The rate of change of Delta. Crucial for understanding options dealer hedging flows.'
+		},
 		{ term: 'Vanna', def: 'The sensitivity of Delta to changes in Implied Volatility.' },
-		{ term: 'Dark Pools', def: 'Private exchanges for trading securities that are not accessible by the investing public.' },
-		{ term: 'Drawdown', def: 'The peak-to-trough decline during a specific record period of an investment.' }
+		{
+			term: 'Dark Pools',
+			def: 'Private exchanges for trading securities that are not accessible by the investing public.'
+		},
+		{
+			term: 'Drawdown',
+			def: 'The peak-to-trough decline during a specific record period of an investment.'
+		}
 	];
 
 	let filteredGlossary = $derived(
@@ -188,9 +228,7 @@
 				<div class="reality__grid">
 					<div class="reality__copy" data-gsap>
 						<div class="reality__chip">
-							<span class="reality__chip-icon"
-								><IconTrendingUp size={20} stroke={1.5} /></span
-							>
+							<span class="reality__chip-icon"><IconTrendingUp size={20} stroke={1.5} /></span>
 							<span class="reality__chip-label">The Reality Check</span>
 						</div>
 
@@ -203,17 +241,18 @@
 								>
 							</p>
 							<p>
-								Why? Because they enter a battlefield against supercomputers, HFT algorithms, and hedge
-								funds armed only with a smartphone and "hope." They lack the mathematical framework to
-								survive variance.
+								Why? Because they enter a battlefield against supercomputers, HFT algorithms, and
+								hedge funds armed only with a smartphone and "hope." They lack the mathematical
+								framework to survive variance.
 							</p>
 							<div class="reality__callout">
 								<h4 class="reality__callout-title">
 									<IconBrain size={16} stroke={1.5} /> The Cognitive Gap
 								</h4>
 								<p class="reality__callout-body">
-									Retail traders seek dopamine hits (action). Institutional traders seek boredom (execution).
-									The market is designed to transfer wealth from the impatient to the patient.
+									Retail traders seek dopamine hits (action). Institutional traders seek boredom
+									(execution). The market is designed to transfer wealth from the impatient to the
+									patient.
 								</p>
 							</div>
 						</div>
@@ -235,21 +274,33 @@
 										<tr>
 											<td class="compare-table__td compare-table__td--label">Focus</td>
 											<td class="compare-table__td compare-table__td--amateur">Profit (P&amp;L)</td>
-											<td class="compare-table__td compare-table__td--pro">Process &amp; Execution</td>
+											<td class="compare-table__td compare-table__td--pro"
+												>Process &amp; Execution</td
+											>
 										</tr>
 										<tr>
 											<td class="compare-table__td compare-table__td--label">Risk Mgmt</td>
-											<td class="compare-table__td compare-table__td--amateur">Arbitrary / Emotion</td>
-											<td class="compare-table__td compare-table__td--pro">Fixed % (Kelly Criterion)</td>
+											<td class="compare-table__td compare-table__td--amateur"
+												>Arbitrary / Emotion</td
+											>
+											<td class="compare-table__td compare-table__td--pro"
+												>Fixed % (Kelly Criterion)</td
+											>
 										</tr>
 										<tr>
 											<td class="compare-table__td compare-table__td--label">Data Source</td>
-											<td class="compare-table__td compare-table__td--amateur">Lagging Indicators (RSI)</td>
-											<td class="compare-table__td compare-table__td--pro">Order Flow &amp; Volume</td>
+											<td class="compare-table__td compare-table__td--amateur"
+												>Lagging Indicators (RSI)</td
+											>
+											<td class="compare-table__td compare-table__td--pro"
+												>Order Flow &amp; Volume</td
+											>
 										</tr>
 										<tr>
 											<td class="compare-table__td compare-table__td--label">Timeframe</td>
-											<td class="compare-table__td compare-table__td--amateur">Immediate Gratification</td>
+											<td class="compare-table__td compare-table__td--amateur"
+												>Immediate Gratification</td
+											>
 											<td class="compare-table__td compare-table__td--pro">Multi-Quarter Growth</td>
 										</tr>
 										<tr>
@@ -280,8 +331,8 @@
 						Institutional Grade.<br />Retail Accessible.
 					</h2>
 					<p data-gsap class="ecosystem__lede">
-						We built the environment we wished existed when we started. A sanctuary of data, discipline,
-						and truth.
+						We built the environment we wished existed when we started. A sanctuary of data,
+						discipline, and truth.
 					</p>
 				</div>
 
@@ -314,28 +365,31 @@
 				<div class="note__prose">
 					<h3 class="note__title">A Note from the Desk</h3>
 					<p>
-						I started Revolution Trading Pros because I was tired of seeing good people lose money to
-						bad advice. The internet is flooded with "gurus" renting Lamborghinis, selling the dream
-						of easy money.
+						I started Revolution Trading Pros because I was tired of seeing good people lose money
+						to bad advice. The internet is flooded with "gurus" renting Lamborghinis, selling the
+						dream of easy money.
 					</p>
 					<p>
 						<strong>Trading is not easy.</strong> It is the hardest way to make an easy living.
 					</p>
 					<p>
-						When I worked on the institutional side, I saw how the sausage was made. I saw the algorithms
-						designed to hunt retail stop losses. I saw the order flow that moves markets before the news
-						even hits your feed. I realized that the retail trader is playing a game they don't even understand.
+						When I worked on the institutional side, I saw how the sausage was made. I saw the
+						algorithms designed to hunt retail stop losses. I saw the order flow that moves markets
+						before the news even hits your feed. I realized that the retail trader is playing a game
+						they don't even understand.
 					</p>
 					<blockquote class="note__quote">
-						"The gap between 'Retail' and 'Pro' isn't intelligence. It's information and discipline."
+						"The gap between 'Retail' and 'Pro' isn't intelligence. It's information and
+						discipline."
 					</blockquote>
 					<p>
-						We built this platform to bridge that gap. To give you the tools (Bookmap, Gamma Exposure),
-						the data, and the community you need to survive the learning curve and thrive in the volatility.
+						We built this platform to bridge that gap. To give you the tools (Bookmap, Gamma
+						Exposure), the data, and the community you need to survive the learning curve and thrive
+						in the volatility.
 					</p>
 					<p>
-						We don't promise you'll get rich quick. We promise we will tell you the truth about what it
-						takes. We promise to treat you like a professional from day one.
+						We don't promise you'll get rich quick. We promise we will tell you the truth about what
+						it takes. We promise to treat you like a professional from day one.
 					</p>
 					<div class="note__sig">
 						<div class="note__avatar">B</div>
@@ -536,7 +590,7 @@
 		position: absolute;
 		inset: 0;
 		opacity: 0.2;
-		background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNNTkuNSA2MEg2MHYtMC41SDU5LjVWNTBINjB2LTAuNUg1OS41VjQwSDYwdi0wLjVINTkuNVYzMEg2MHYtMC41SDU5LjVWMjBINjB2LTAuNUg1OS41VjEwSDYwdi0wLjVINTkuNVYwSDYwdjYwaC0wLjV6IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDIiLz48L3N2Zz4=");
+		background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNNTkuNSA2MEg2MHYtMC41SDU5LjVWNTBINjB2LTAuNUg1OS41VjQwSDYwdi0wLjVINTkuNVYzMEg2MHYtMC41SDU5LjVWMjBINjB2LTAuNUg1OS41VjEwSDYwdi0wLjVINTkuNVYwSDYwdjYwaC0wLjV6IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDIiLz48L3N2Zz4=');
 	}
 	.mission__content {
 		position: relative;

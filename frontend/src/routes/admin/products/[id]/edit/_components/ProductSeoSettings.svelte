@@ -20,11 +20,7 @@
 	let expanded = $state(false);
 </script>
 
-<button
-	type="button"
-	class="seo-toggle"
-	onclick={() => (expanded = !expanded)}
->
+<button type="button" class="seo-toggle" onclick={() => (expanded = !expanded)}>
 	{expanded ? 'Hide' : 'Show'} SEO Settings
 </button>
 

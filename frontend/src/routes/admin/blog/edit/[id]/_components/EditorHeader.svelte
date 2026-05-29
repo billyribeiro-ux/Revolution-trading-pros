@@ -13,8 +13,7 @@
 		onPublish: () => void;
 	};
 
-	let { status, saveError, saveSuccess, saving, onBack, onSaveDraft, onPublish }: Props =
-		$props();
+	let { status, saveError, saveSuccess, saving, onBack, onSaveDraft, onPublish }: Props = $props();
 </script>
 
 <div class="editor-header">

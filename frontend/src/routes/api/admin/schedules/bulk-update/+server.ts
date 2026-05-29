@@ -13,8 +13,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 import { requireSuperadmin } from '$lib/server/auth';
 
 import { env } from '$env/dynamic/private';
-const BACKEND_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const BACKEND_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 interface BackendResult {
 	data: unknown;
@@ -66,17 +65,11 @@ export const POST: RequestHandler = async (event) => {
 	const { ids, data } = body;
 
 	if (!ids || !Array.isArray(ids) || ids.length === 0) {
-		return json(
-			{ success: false, error: 'Missing or invalid ids array' },
-			{ status: 400 }
-		);
+		return json({ success: false, error: 'Missing or invalid ids array' }, { status: 400 });
 	}
 
 	if (!data || typeof data !== 'object') {
-		return json(
-			{ success: false, error: 'Missing or invalid data object' },
-			{ status: 400 }
-		);
+		return json({ success: false, error: 'Missing or invalid data object' }, { status: 400 });
 	}
 
 	const result = await callBackend('/api/admin/schedules/bulk-update', {

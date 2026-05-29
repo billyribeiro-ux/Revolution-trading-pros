@@ -13,13 +13,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { productsApi, AdminApiError, type Product } from '$lib/api/admin';
-	import {
-		IconBook,
-		IconChartLine,
-		IconCrown,
-		IconShoppingCart,
-		IconX
-	} from '$lib/icons';
+	import { IconBook, IconChartLine, IconCrown, IconShoppingCart, IconX } from '$lib/icons';
 
 	import ProductPageHeader from './_components/ProductPageHeader.svelte';
 	import ProductTypeSelector from './_components/ProductTypeSelector.svelte';
@@ -206,11 +200,7 @@
 			<div class="form-card">
 				<h3>Product Details</h3>
 
-				<ProductTypeSelector
-					{productTypes}
-					selected={formData.type}
-					onSelect={selectType}
-				/>
+				<ProductTypeSelector {productTypes} selected={formData.type} onSelect={selectType} />
 
 				<ProductBasicFields bind:formData {getFieldError} onSlugBlur={generateSlug} />
 

@@ -14,8 +14,7 @@ import { env } from '$env/dynamic/private';
 import type { PageServerLoad } from './$types';
 
 // FIX-2026-04-26: canonical private-env URL pattern (CLAUDE.md house style).
-const API_ROOT =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const API_ROOT = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 export interface VideoResponse {
 	id: number;
@@ -150,8 +149,7 @@ export const load: PageServerLoad = async ({ params, url, fetch }) => {
 		return {
 			...baseReturn,
 			videos: body.data ?? [],
-			meta:
-				body.meta ?? { current_page: page, per_page: perPage, total: 0, last_page: 1 }
+			meta: body.meta ?? { current_page: page, per_page: perPage, total: 0, last_page: 1 }
 		};
 	} catch (e) {
 		console.error('[dashboard/[room_slug]/learning-center] video fetch failed:', e);

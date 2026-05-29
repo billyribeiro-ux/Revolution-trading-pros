@@ -14,10 +14,25 @@
 
 	import { getAuthToken } from '$lib/stores/auth.svelte';
 
+	// The AI endpoints return loose, generation-time field/form shapes (note the
+	// `type` key, not the persisted `field_type`), so these intentionally model
+	// the wire payload rather than the strict `FormField`/`Form` domain types.
+	interface AiGeneratedField {
+		type: string;
+		label: string;
+		name?: string;
+		required?: boolean;
+	}
+
+	interface AiGeneratedForm {
+		fields?: AiGeneratedField[];
+		[key: string]: unknown;
+	}
+
 	interface Props {
 		formId?: number;
-		onFieldsGenerated?: (fields: any[]) => void;
-		onFormGenerated?: (form: any) => void;
+		onFieldsGenerated?: (fields: AiGeneratedField[]) => void;
+		onFormGenerated?: (form: AiGeneratedForm) => void;
 	}
 
 	interface Suggestion {
@@ -39,7 +54,7 @@
 	let prompt = $state('');
 	let isGenerating = $state(false);
 	let isAnalyzing = $state(false);
-	let generatedFields = $state<any[]>([]);
+	let generatedFields = $state<AiGeneratedField[]>([]);
 	let suggestions = $state<Suggestion[]>([]);
 	let analysis = $state<AnalysisResult | null>(null);
 	let activeTab = $state<'generate' | 'suggest' | 'analyze'>('generate');

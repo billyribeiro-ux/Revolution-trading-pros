@@ -29,7 +29,6 @@
 
 		return () => heroObserver.disconnect();
 	});
-
 </script>
 
 <div class="course-page">

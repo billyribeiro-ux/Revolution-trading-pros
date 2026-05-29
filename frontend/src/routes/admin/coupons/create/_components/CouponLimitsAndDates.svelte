@@ -68,12 +68,7 @@
 <!-- Active Toggle -->
 <div class="form-group">
 	<label class="checkbox-label">
-		<input
-			id="is-active"
-			name="is_active"
-			type="checkbox"
-			bind:checked={formData.is_active}
-		/>
+		<input id="is-active" name="is_active" type="checkbox" bind:checked={formData.is_active} />
 		Coupon is active and can be used
 	</label>
 </div>

@@ -257,7 +257,11 @@
 								>
 									<span>{column.label}</span>
 									{#if column.sortable && sortBy === column.key}
-										<Icon name="IconChevronUp" size={16} class="transition-transform {sortDir === 'desc' ? 'rotate-180' : ''}" />
+										<Icon
+											name="IconChevronUp"
+											size={16}
+											class="transition-transform {sortDir === 'desc' ? 'rotate-180' : ''}"
+										/>
 									{/if}
 								</div>
 							</th>

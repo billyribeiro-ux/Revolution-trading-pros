@@ -72,7 +72,14 @@
 			}
 		}}
 	>
-		<img src={imageUrl} alt={props.course.title} class="thumb" loading="lazy" width="80" height="60" />
+		<img
+			src={imageUrl}
+			alt={props.course.title}
+			class="thumb"
+			loading="lazy"
+			width="80"
+			height="60"
+		/>
 		<div class="info">
 			<h4 class="title">{props.course.title}</h4>
 			<div class="meta">

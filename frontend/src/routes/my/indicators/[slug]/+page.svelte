@@ -165,14 +165,7 @@
 			<a href="/my/indicators" class="back-link">← My Indicators</a>
 			<div class="indicator-info">
 				{#if indicator.logo_url}
-					<img
-						src={indicator.logo_url}
-						alt=""
-						class="logo"
-						width="64"
-						height="64"
-						loading="lazy"
-					/>
+					<img src={indicator.logo_url} alt="" class="logo" width="64" height="64" loading="lazy" />
 				{/if}
 				<div>
 					<h1>{indicator.name}</h1>

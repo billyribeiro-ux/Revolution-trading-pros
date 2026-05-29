@@ -552,12 +552,7 @@
 				>
 					<Icon name="IconClock" size={16} />
 					Recent
-					<Icon
-						name="IconChevronDown"
-						size={14}
-						class="chevron"
-						color={undefined}
-					/>
+					<Icon name="IconChevronDown" size={14} class="chevron" color={undefined} />
 				</button>
 			{/if}
 		</div>

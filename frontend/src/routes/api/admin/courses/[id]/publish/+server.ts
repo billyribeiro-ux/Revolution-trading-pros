@@ -8,8 +8,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 import { requireAdminToken } from '$lib/server/auth';
 
 import { env } from '$env/dynamic/private';
-const BACKEND_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const BACKEND_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 function envelope(
 	raw: unknown,

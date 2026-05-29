@@ -48,7 +48,8 @@
 					<span class="p-2 bg-blue-500/10 rounded-lg text-blue-500 border border-blue-500/20"
 						><IconBook size={20} stroke={1.5} /></span
 					>
-					<span class="font-bold tracking-widest uppercase text-sm text-blue-400">The Syllabus</span>
+					<span class="font-bold tracking-widest uppercase text-sm text-blue-400">The Syllabus</span
+					>
 				</div>
 				<h2 class="text-4xl md:text-5xl font-heading font-bold text-white mb-8">
 					From Subjective to <br />

@@ -26,11 +26,25 @@
 		const metrics = document.querySelector<HTMLElement>('[data-gsap-hero="metrics"]');
 		const graphic = document.querySelector<HTMLElement>('[data-gsap-hero="graphic"]');
 
-		if (badge) tl.fromTo(badge, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1, delay: 0.2 });
-		if (title) tl.fromTo(title, { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 1.2, stagger: 0.1 }, '-=0.8');
+		if (badge)
+			tl.fromTo(badge, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1, delay: 0.2 });
+		if (title)
+			tl.fromTo(
+				title,
+				{ y: 40, opacity: 0 },
+				{ y: 0, opacity: 1, duration: 1.2, stagger: 0.1 },
+				'-=0.8'
+			);
 		if (desc) tl.fromTo(desc, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1 }, '-=0.8');
-		if (metrics) tl.fromTo(metrics, { opacity: 0, scale: 0.98 }, { opacity: 1, scale: 1, duration: 1.2 }, '-=0.6');
-		if (graphic) tl.fromTo(graphic, { x: 40, opacity: 0 }, { x: 0, opacity: 1, duration: 1.5 }, '-=1.0');
+		if (metrics)
+			tl.fromTo(
+				metrics,
+				{ opacity: 0, scale: 0.98 },
+				{ opacity: 1, scale: 1, duration: 1.2 },
+				'-=0.6'
+			);
+		if (graphic)
+			tl.fromTo(graphic, { x: 40, opacity: 0 }, { x: 0, opacity: 1, duration: 1.5 }, '-=1.0');
 
 		const observer = new IntersectionObserver(
 			(entries) => {
@@ -39,9 +53,24 @@
 						const target = entry.target as HTMLElement;
 						const children = target.querySelectorAll('.gsap-reveal-item');
 						if (children.length > 0) {
-							gsap.fromTo(children, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: 'power2.out', overwrite: true });
+							gsap.fromTo(
+								children,
+								{ y: 30, opacity: 0 },
+								{
+									y: 0,
+									opacity: 1,
+									duration: 0.8,
+									stagger: 0.1,
+									ease: 'power2.out',
+									overwrite: true
+								}
+							);
 						} else {
-							gsap.fromTo(target, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: 'power2.out', overwrite: true });
+							gsap.fromTo(
+								target,
+								{ y: 30, opacity: 0 },
+								{ y: 0, opacity: 1, duration: 0.8, ease: 'power2.out', overwrite: true }
+							);
 						}
 						observer.unobserve(target);
 					}
@@ -289,8 +318,8 @@
 					</div>
 					<div class="prereq">
 						<p class="prereq__intro">
-							To ensure maximum utility of the 120-minute window, we require the following data points
-							to be uploaded to our encrypted portal 48 hours prior to the session.
+							To ensure maximum utility of the 120-minute window, we require the following data
+							points to be uploaded to our encrypted portal 48 hours prior to the session.
 						</p>
 						<ul class="prereq__list">
 							<li class="prereq__item">
@@ -336,10 +365,10 @@
 							</button>
 							{#if openAccordion === 0}
 								<div transition:slide class="accordion__panel">
-									Revolution Trading Pros operates under a strict code of silence. We execute a Mutual
-									Non-Disclosure Agreement (MNDA) before receiving any trade logs. We do not store client
-									data on cloud servers; all analysis is performed on air-gapped local machines and wiped
-									post-session.
+									Revolution Trading Pros operates under a strict code of silence. We execute a
+									Mutual Non-Disclosure Agreement (MNDA) before receiving any trade logs. We do not
+									store client data on cloud servers; all analysis is performed on air-gapped local
+									machines and wiped post-session.
 								</div>
 							{/if}
 						</div>
@@ -358,9 +387,10 @@
 							</button>
 							{#if openAccordion === 1}
 								<div transition:slide class="accordion__panel">
-									We maintain a rigorous "Chinese Wall." We do not front-run client order flow, nor do
-									we take opposing positions in instruments discussed during the consultation. Our role
-									is strictly advisory; we do not take custody of funds or execute trades on your behalf.
+									We maintain a rigorous "Chinese Wall." We do not front-run client order flow, nor
+									do we take opposing positions in instruments discussed during the consultation.
+									Our role is strictly advisory; we do not take custody of funds or execute trades
+									on your behalf.
 								</div>
 							{/if}
 						</div>
@@ -379,9 +409,10 @@
 							</button>
 							{#if openAccordion === 2}
 								<div transition:slide class="accordion__panel">
-									Sessions are conducted via encrypted video link (Zoom Enterprise/Teams) or in-person
-									in NYC (subject to travel retainer). We provide itemized corporate invoicing suitable
-									for fund administration expenses under "Professional Consultation."
+									Sessions are conducted via encrypted video link (Zoom Enterprise/Teams) or
+									in-person in NYC (subject to travel retainer). We provide itemized corporate
+									invoicing suitable for fund administration expenses under "Professional
+									Consultation."
 								</div>
 							{/if}
 						</div>

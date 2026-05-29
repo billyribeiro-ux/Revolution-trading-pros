@@ -13,7 +13,7 @@
 	import { browser } from '$app/environment';
 	import { scanCookies, openPreferencesModal, consentStore, getVendorInfo } from '$lib/consent';
 	import { t, currentLanguage, getSupportedLanguages, setLanguage } from '$lib/consent/i18n';
-		import {
+	import {
 		generateConsentReceipt,
 		downloadReceiptAsJSON,
 		printReceipt
@@ -391,7 +391,6 @@
 		</footer>
 	</div>
 </div>
-
 
 <style>
 	.cookie-policy {

@@ -9,12 +9,7 @@
 		onSave: () => void;
 	}
 
-	let {
-		open,
-		content = $bindable(),
-		onClose,
-		onSave
-	}: Props = $props();
+	let { open, content = $bindable(), onClose, onSave }: Props = $props();
 </script>
 
 {#if open}

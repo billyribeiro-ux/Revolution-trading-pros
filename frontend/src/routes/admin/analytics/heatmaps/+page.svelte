@@ -129,7 +129,7 @@
 				<div
 					class="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center text-2xl shadow-lg shadow-rose-500/20"
 				>
-										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: pointer/cursor (heatmap) -->
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: pointer/cursor (heatmap) -->
 					<IconPointer size={24} aria-hidden="true" />
 				</div>
 				<div>
@@ -210,7 +210,7 @@
 					<div
 						class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-red-500/10 flex items-center justify-center"
 					>
-												<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: alert-circle error -->
+						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: alert-circle error -->
 						<IconAlertCircle size={32} aria-hidden="true" />
 					</div>
 					<p class="text-red-400 mb-4">{error}</p>
@@ -340,7 +340,7 @@
 										class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-700/50 flex items-center justify-center"
 									>
 										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: pointer (select page placeholder) -->
-									<IconPointer size={32} aria-hidden="true" />
+										<IconPointer size={32} aria-hidden="true" />
 									</div>
 									<p class="text-slate-400">Select a page to view its heatmap</p>
 								</div>

@@ -33,7 +33,6 @@
 
 		return () => heroObserver.disconnect();
 	});
-
 </script>
 
 <div class="indicator-page">

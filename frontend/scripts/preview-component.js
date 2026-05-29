@@ -1,6 +1,4 @@
 #!/usr/bin/env node
-/* eslint-disable no-console -- CLI script: console IS its output channel
-   (usage text, the workbench URL, errors to the terminal). audit 2026-05-17 */
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
  * Component Preview Script - IDE Integration
@@ -29,7 +27,8 @@ const __dirname = dirname(__filename);
 // CONFIGURATION
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const WORKBENCH_URL = (process.env.FRONTEND_URL || process.env.E2E_BASE_URL || 'http://localhost:5173') + '/workbench';
+const WORKBENCH_URL =
+	(process.env.FRONTEND_URL || process.env.E2E_BASE_URL || 'http://localhost:5173') + '/workbench';
 const COMPONENTS_BASE = 'src/lib/components';
 
 // ═══════════════════════════════════════════════════════════════════════════════

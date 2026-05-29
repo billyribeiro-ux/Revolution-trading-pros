@@ -26,12 +26,7 @@
 	import { goto } from '$app/navigation';
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import ExportButton from '$lib/components/ExportButton.svelte';
-	import {
-		IconArrowLeft,
-		IconRefresh,
-		IconAlertTriangle,
-		IconChartBar
-	} from '$lib/icons';
+	import { IconArrowLeft, IconRefresh, IconAlertTriangle, IconChartBar } from '$lib/icons';
 
 	import CampaignOverview from './_components/CampaignOverview.svelte';
 	import MetricsGrid from './_components/MetricsGrid.svelte';

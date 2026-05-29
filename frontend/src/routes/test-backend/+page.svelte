@@ -83,17 +83,14 @@
 		newsletterMessage = '';
 
 		try {
-			const response = await fetch(
-				'http://localhost:8080/api/newsletter/subscribe',
-				{
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						Accept: 'application/json'
-					},
-					body: JSON.stringify({ email: newsletterEmail })
-				}
-			);
+			const response = await fetch('http://localhost:8080/api/newsletter/subscribe', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Accept: 'application/json'
+				},
+				body: JSON.stringify({ email: newsletterEmail })
+			});
 
 			const data = await response.json();
 
@@ -117,17 +114,14 @@
 		popupMessage = '';
 
 		try {
-			const response = await fetch(
-				'http://localhost:8080/api/newsletter/subscribe',
-				{
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						Accept: 'application/json'
-					},
-					body: JSON.stringify({ email: popupEmail })
-				}
-			);
+			const response = await fetch('http://localhost:8080/api/newsletter/subscribe', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Accept: 'application/json'
+				},
+				body: JSON.stringify({ email: popupEmail })
+			});
 
 			const data = await response.json();
 
@@ -153,7 +147,6 @@
 	function closePopup() {
 		showPopup = false;
 	}
-
 </script>
 
 <div class="test-page">

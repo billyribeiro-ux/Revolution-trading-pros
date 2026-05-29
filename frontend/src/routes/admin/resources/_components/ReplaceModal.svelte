@@ -10,13 +10,7 @@
 		onReplace: () => void;
 	};
 
-	let {
-		resource,
-		newFileUrl = $bindable(),
-		isSaving,
-		onClose,
-		onReplace
-	}: Props = $props();
+	let { resource, newFileUrl = $bindable(), isSaving, onClose, onReplace }: Props = $props();
 
 	// Programmatic focus replaces the deprecated `autofocus` attribute on the URL
 	// input — `autofocus` is an a11y anti-pattern (steals focus before screen

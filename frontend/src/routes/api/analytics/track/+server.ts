@@ -14,8 +14,7 @@ import { env } from '$env/dynamic/private';
 // FIX-2026-04-26: env.VITE_API_URL → canonical pattern
 // const PROD_API_ROOT = 'http://localhost:8080';
 // const API_ROOT = env.VITE_API_URL || env.BACKEND_URL || PROD_API_ROOT;
-const API_ROOT =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const API_ROOT = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 const TIMEOUT_MS = 5000; // 5 second timeout for analytics
 
 function generateRequestId(): string {

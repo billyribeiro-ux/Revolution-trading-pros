@@ -193,7 +193,9 @@
 						</div>
 
 						<h1 class="hero__title">
-							Trade Real <span class="hero__title-gradient hero__title-gradient--slate">Capital.</span><br />
+							Trade Real <span class="hero__title-gradient hero__title-gradient--slate"
+								>Capital.</span
+							><br />
 							<span class="hero__title-gradient hero__title-gradient--amber">Real Mentors.</span><br
 							/>
 							<span class="hero__title-mute">Real Time.</span>
@@ -1008,12 +1010,7 @@
 		inset-inline-start: 0;
 		width: 100%;
 		height: 2px;
-		background: linear-gradient(
-			to right,
-			transparent,
-			var(--a-amber-500),
-			transparent
-		);
+		background: linear-gradient(to right, transparent, var(--a-amber-500), transparent);
 		translate: -100% 0;
 		transition: translate 1s cubic-bezier(0.4, 0, 0.2, 1);
 	}
@@ -1568,7 +1565,11 @@
 		width: 5rem;
 		height: 5rem;
 		border-radius: 50%;
-		background: linear-gradient(to bottom right, color-mix(in oklab, #fff 10%, transparent), transparent);
+		background: linear-gradient(
+			to bottom right,
+			color-mix(in oklab, #fff 10%, transparent),
+			transparent
+		);
 		display: flex;
 		align-items: center;
 		justify-content: center;

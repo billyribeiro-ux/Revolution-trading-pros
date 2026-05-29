@@ -29,7 +29,12 @@
 			checkoutHref: '/checkout/monthly-spx',
 			featured: false,
 			variant: 'simple',
-			features: ['SMS & Discord Alerts', 'Live Order Flow Data', 'Daily Pre-Market Prep', 'Cancel Anytime']
+			features: [
+				'SMS & Discord Alerts',
+				'Live Order Flow Data',
+				'Daily Pre-Market Prep',
+				'Cancel Anytime'
+			]
 		},
 		{
 			id: 'quarterly',
@@ -41,7 +46,12 @@
 			checkoutHref: '/checkout/quarterly-spx',
 			featured: true,
 			variant: 'featured',
-			features: ['Everything in Monthly', 'Weekly Video Breakdowns', 'Market Context Reports', 'Priority Support']
+			features: [
+				'Everything in Monthly',
+				'Weekly Video Breakdowns',
+				'Market Context Reports',
+				'Priority Support'
+			]
 		},
 		{
 			id: 'annual',
@@ -53,18 +63,20 @@
 			checkoutHref: '/checkout/annual-spx',
 			featured: false,
 			variant: 'highlight',
-			features: ['Everything in Quarterly', '1-on-1 Strategy Session', 'Annual Members Events', 'Direct DM Access']
+			features: [
+				'Everything in Quarterly',
+				'1-on-1 Strategy Session',
+				'Annual Members Events',
+				'Direct DM Access'
+			]
 		}
 	];
-
-	const minPrice = Math.min(...plans.map((p) => p.price));
-	const maxPrice = Math.max(...plans.map((p) => p.price));
 
 	// --- FAQ Logic ---
 	let openFaq: number | null = $state(null);
 	const toggleFaq = (index: number) => (openFaq = openFaq === index ? null : index);
 
-		// --- GSAP ScrollTrigger Animations ---
+	// --- GSAP ScrollTrigger Animations ---
 	import { browser } from '$app/environment';
 	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
 	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
@@ -176,7 +188,7 @@
 		{
 			variant: 'indigo',
 			title: 'Detailed Strategy Logic',
-			body: "We don't just say \"Buy\". We tell you *why*. Flow, technicals, and gamma levels explained in every alert."
+			body: 'We don\'t just say "Buy". We tell you *why*. Flow, technicals, and gamma levels explained in every alert.'
 		},
 		{
 			variant: 'emerald',
@@ -235,7 +247,12 @@
 				<div data-gsap class="hero__cta-row">
 					<a href="#pricing" class="hero__cta-primary">
 						Start Your Trial
-						<svg class="hero__cta-arrow" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+						<svg
+							class="hero__cta-arrow"
+							aria-hidden="true"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
 							><path
 								stroke-linecap="round"
 								stroke-linejoin="round"
@@ -249,7 +266,12 @@
 
 				<div data-gsap class="hero__trust">
 					<div class="hero__trust-item">
-						<svg class="hero__trust-icon" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+						<svg
+							class="hero__trust-icon"
+							aria-hidden="true"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
 							><path
 								stroke-linecap="round"
 								stroke-linejoin="round"
@@ -260,7 +282,12 @@
 						<span>Verified Data</span>
 					</div>
 					<div class="hero__trust-item">
-						<svg class="hero__trust-icon" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+						<svg
+							class="hero__trust-icon"
+							aria-hidden="true"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
 							><path
 								stroke-linecap="round"
 								stroke-linejoin="round"
@@ -527,7 +554,12 @@
 				</div>
 				<a href="/performance" class="perf__view-all">
 					View Full Ledger
-					<svg aria-hidden="true" class="perf__arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+					<svg
+						aria-hidden="true"
+						class="perf__arrow"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
 						><path
 							stroke-linecap="round"
 							stroke-linejoin="round"
@@ -592,20 +624,23 @@
 					<button
 						type="button"
 						onclick={() => (selectedPlan = 'monthly')}
-						class="pricing__toggle-btn {selectedPlan === 'monthly' ? 'pricing__toggle-btn--active' : ''}"
-						>Monthly</button
+						class="pricing__toggle-btn {selectedPlan === 'monthly'
+							? 'pricing__toggle-btn--active'
+							: ''}">Monthly</button
 					>
 					<button
 						type="button"
 						onclick={() => (selectedPlan = 'quarterly')}
-						class="pricing__toggle-btn {selectedPlan === 'quarterly' ? 'pricing__toggle-btn--active' : ''}"
-						>Quarterly</button
+						class="pricing__toggle-btn {selectedPlan === 'quarterly'
+							? 'pricing__toggle-btn--active'
+							: ''}">Quarterly</button
 					>
 					<button
 						type="button"
 						onclick={() => (selectedPlan = 'annual')}
-						class="pricing__toggle-btn {selectedPlan === 'annual' ? 'pricing__toggle-btn--active' : ''}"
-						>Annual</button
+						class="pricing__toggle-btn {selectedPlan === 'annual'
+							? 'pricing__toggle-btn--active'
+							: ''}">Annual</button
 					>
 
 					<div
@@ -623,9 +658,7 @@
 				{#each plans as plan (plan.id)}
 					{#if plan.variant === 'simple'}
 						<div
-							class="plan plan--simple {selectedPlan === plan.id
-								? 'plan--active'
-								: 'plan--dim'}"
+							class="plan plan--simple {selectedPlan === plan.id ? 'plan--active' : 'plan--dim'}"
 						>
 							<h3 class="plan__label">{plan.label}</h3>
 							<div class="plan__price-row">
@@ -644,9 +677,7 @@
 						</div>
 					{:else if plan.variant === 'featured'}
 						<div
-							class="plan plan--featured {selectedPlan === plan.id
-								? 'plan--active'
-								: 'plan--dim'}"
+							class="plan plan--featured {selectedPlan === plan.id ? 'plan--active' : 'plan--dim'}"
 						>
 							<div class="plan__ribbon">Most Popular</div>
 							<h3 class="plan__label plan__label--large">{plan.label}</h3>
@@ -669,9 +700,7 @@
 						</div>
 					{:else if plan.variant === 'highlight'}
 						<div
-							class="plan plan--highlight {selectedPlan === plan.id
-								? 'plan--active'
-								: 'plan--dim'}"
+							class="plan plan--highlight {selectedPlan === plan.id ? 'plan--active' : 'plan--dim'}"
 						>
 							<div class="plan__ribbon plan__ribbon--emerald">Best Deal</div>
 							<h3 class="plan__label">{plan.label}</h3>
@@ -1308,7 +1337,11 @@
 		}
 	}
 	.stat-strip__value--emerald {
-		background: linear-gradient(to bottom right, var(--spx-emerald-bright), var(--spx-emerald-deep));
+		background: linear-gradient(
+			to bottom right,
+			var(--spx-emerald-bright),
+			var(--spx-emerald-deep)
+		);
 		-webkit-background-clip: text;
 		background-clip: text;
 		color: transparent;

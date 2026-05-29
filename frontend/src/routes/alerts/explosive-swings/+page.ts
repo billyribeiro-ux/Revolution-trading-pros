@@ -10,8 +10,7 @@ export const trailingSlash = 'always';
 
 export const load = () => ({
 	seo: {
-		title:
-			'Explosive Swings Trading Alerts — High-Probability Multi-Day Signals',
+		title: 'Explosive Swings Trading Alerts — High-Probability Multi-Day Signals',
 		description:
 			'Catch 20%+ moves with 3-7 day swing trading alerts. Institutional dark pool analysis and precise options signals for traders with day jobs. 82% historical win rate.',
 		og: {

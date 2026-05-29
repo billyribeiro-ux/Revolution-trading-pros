@@ -41,7 +41,6 @@
 	// Icons
 	import IconTable from '@tabler/icons-svelte-runes/icons/table';
 	import IconBell from '@tabler/icons-svelte-runes/icons/bell';
-	import IconVideo from '@tabler/icons-svelte-runes/icons/video';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
 	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
@@ -107,9 +106,7 @@
 	// re-clobbered local edits any time `data` changed. `untrack` silences the
 	// `state_referenced_locally` warning since we DO want a one-shot initial value
 	// (mutated by load functions / optimistic updates afterwards, not synced).
-	let tradePlanEntries = $state<TradePlanEntry[]>(
-		untrack(() => data.initialData?.tradePlan ?? [])
-	);
+	let tradePlanEntries = $state<TradePlanEntry[]>(untrack(() => data.initialData?.tradePlan ?? []));
 	let isLoadingTradePlan = $state(false);
 	let showTradePlanModal = $state(false);
 	let editingTradePlan = $state<TradePlanEntry | null>(null);

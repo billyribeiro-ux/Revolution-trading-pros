@@ -106,9 +106,7 @@
 	const supportsValidation = $derived(
 		!['heading', 'divider', 'html', 'hidden'].includes(fieldData.field_type)
 	);
-	const showsBasicInputs = $derived(
-		!['heading', 'divider', 'html'].includes(fieldData.field_type)
-	);
+	const showsBasicInputs = $derived(!['heading', 'divider', 'html'].includes(fieldData.field_type));
 
 	// ─────────────────────────────────────────────────────────────────────────
 	// Function bindings: textarea <-> fieldData.options

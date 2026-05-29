@@ -191,7 +191,13 @@
 	{#if closedTrades.length === 0 && activePositions.length === 0 && !isLoading}
 		<div class="empty-state">
 			<div class="empty-icon">
-				<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+				<svg
+					aria-hidden="true"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1.5"
+				>
 					<path
 						stroke-linecap="round"
 						stroke-linejoin="round"

@@ -586,12 +586,7 @@
 		>
 			<IconX size={24} aria-hidden="true" />
 		</button>
-		<img
-			src={sanitizedURL}
-			alt={imageAlt}
-			class="image-block__lightbox-image"
-			loading="lazy"
-		/>
+		<img src={sanitizedURL} alt={imageAlt} class="image-block__lightbox-image" loading="lazy" />
 		{#if caption}
 			<p class="image-block__lightbox-caption">{caption}</p>
 		{/if}

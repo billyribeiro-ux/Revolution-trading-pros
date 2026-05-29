@@ -16,7 +16,11 @@
 	);
 	const tradesToDouble = $derived(Math.ceil(simAccount / expectedValue));
 	const riskOfRuin = $derived(
-		simRisk > 5 ? 'HIGH (Casino Mode)' : simRisk > 2 ? 'MODERATE (Aggressive)' : 'LOW (Institutional)'
+		simRisk > 5
+			? 'HIGH (Casino Mode)'
+			: simRisk > 2
+				? 'MODERATE (Aggressive)'
+				: 'LOW (Institutional)'
 	);
 	const riskColor = $derived(
 		simRisk > 5 ? 'text-red-500' : simRisk > 2 ? 'text-orange-400' : 'text-emerald-400'
@@ -161,8 +165,7 @@
 						</div>
 						<div class="flex justify-between items-center border-b border-white/5 pb-2">
 							<span class="text-slate-400 text-sm">Institutional Viability</span>
-							<span
-								class="font-bold font-mono {simRisk <= 2 ? 'text-emerald-400' : 'text-red-500'}"
+							<span class="font-bold font-mono {simRisk <= 2 ? 'text-emerald-400' : 'text-red-500'}"
 								>{simRisk <= 2 ? 'PASS' : 'FAIL'}</span
 							>
 						</div>

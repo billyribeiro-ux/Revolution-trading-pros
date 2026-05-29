@@ -105,11 +105,7 @@
 
 		contentBlocks.forEach((block) => {
 			const d = block.data ?? block.content ?? {};
-			if (
-				block.type === 'heading' &&
-				(d.level ?? 0) >= 2 &&
-				(d.level ?? 0) <= maxDepth
-			) {
+			if (block.type === 'heading' && (d.level ?? 0) >= 2 && (d.level ?? 0) <= maxDepth) {
 				const text = d.text || '';
 				const id = generateSlug(text, index);
 				headings.push({
@@ -364,7 +360,11 @@
 				<span class="toc-title">{title}</span>
 				<span class="toc-count">{flatItems.length} sections</span>
 				{#if collapsible}
-					<Icon name="IconChevronDown" size={18} class="toc-chevron{isExpanded ? ' rotated' : ''}" />
+					<Icon
+						name="IconChevronDown"
+						size={18}
+						class="toc-chevron{isExpanded ? ' rotated' : ''}"
+					/>
 				{/if}
 			</button>
 
@@ -545,7 +545,6 @@
 	.toc-title-button:hover {
 		color: var(--toc-accent);
 	}
-
 
 	.toc-title {
 		font-size: 0.9375rem;

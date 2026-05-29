@@ -41,8 +41,7 @@ import { env } from '$env/dynamic/private';
 
 // CLAUDE.md hard rule — API_BASE_URL primary, BACKEND_URL fallback,
 // localhost last (dev-only). Do NOT collapse to BACKEND_URL alone.
-const API_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const API_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 /**
  * Fetch from the backend and return the parsed JSON body on 2xx, or
@@ -76,9 +75,7 @@ export async function fetchBackend(
 
 		if (!response.ok) {
 			if (logTag) {
-				console.error(
-					`${logTag} Backend error: ${response.status} ${response.statusText}`
-				);
+				console.error(`${logTag} Backend error: ${response.status} ${response.statusText}`);
 			}
 			return null;
 		}
@@ -233,10 +230,7 @@ export function extractBackendData(value: unknown): unknown {
  * Used in the `error(status, msg)` branches of status-preserving proxies
  * so the backend's validation message reaches the client.
  */
-export function extractBackendErrorMessage(
-	value: unknown,
-	fallback: string
-): string {
+export function extractBackendErrorMessage(value: unknown, fallback: string): string {
 	if (!isObject(value)) return fallback;
 	const message = value.message;
 	if (typeof message === 'string' && message.length > 0) return message;

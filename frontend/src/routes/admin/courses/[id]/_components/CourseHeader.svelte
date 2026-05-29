@@ -18,15 +18,8 @@
 		onSave: () => void;
 	}
 
-	let {
-		courseId,
-		courseTitle,
-		courseSlug,
-		isPublished,
-		saving,
-		onPublishToggle,
-		onSave
-	}: Props = $props();
+	let { courseId, courseTitle, courseSlug, isPublished, saving, onPublishToggle, onSave }: Props =
+		$props();
 </script>
 
 <header class="editor-header">

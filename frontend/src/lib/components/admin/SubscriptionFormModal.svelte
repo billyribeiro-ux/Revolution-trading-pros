@@ -61,7 +61,9 @@
 	let productId = $state(seedIsEdit ? seedSub?.productId || '' : '');
 	let productName = $state(seedIsEdit ? seedSub?.productName || '' : '');
 	let price = $state(seedIsEdit ? seedSub?.price || 0 : 0);
-	let interval = $state<SubscriptionInterval>(seedIsEdit ? seedSub?.interval || 'monthly' : 'monthly');
+	let interval = $state<SubscriptionInterval>(
+		seedIsEdit ? seedSub?.interval || 'monthly' : 'monthly'
+	);
 	let autoRenew = $state(seedIsEdit ? (seedSub?.autoRenew ?? true) : true);
 	let trialDays = $state(0);
 	let notes = $state(seedIsEdit ? seedSub?.notes || '' : '');

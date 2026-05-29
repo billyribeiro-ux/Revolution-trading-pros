@@ -35,9 +35,7 @@
 	let clientPosts = $state<Post[]>([]);
 
 	// Prefer SSR data; fall back to the client-side fetch result when SSR returned empty.
-	const posts = $derived(
-		props.data?.posts?.length ? props.data.posts : clientPosts
-	);
+	const posts = $derived(props.data?.posts?.length ? props.data.posts : clientPosts);
 
 	// Client-side fallback fetch if SSR returned empty.
 	onMount(async () => {
@@ -53,7 +51,6 @@
 			// Network errors handled gracefully - posts remain empty.
 		}
 	});
-
 </script>
 
 <Hero />
@@ -67,4 +64,3 @@
 <LatestBlogsSection {posts} />
 <CTASection />
 <SocialMediaSection />
-

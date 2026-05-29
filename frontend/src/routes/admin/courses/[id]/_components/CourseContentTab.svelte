@@ -85,10 +85,7 @@
 								<span class="duration">{lesson.duration_minutes}m</span>
 							{/if}
 						</a>
-						<button
-							onclick={() => onDeleteLesson(lesson.id, mod.id)}
-							aria-label="Delete lesson"
-						>
+						<button onclick={() => onDeleteLesson(lesson.id, mod.id)} aria-label="Delete lesson">
 							<IconX size={14} aria-hidden="true" />
 						</button>
 					</li>

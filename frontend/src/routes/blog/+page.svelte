@@ -10,7 +10,7 @@
 	import BlurHashImage from '$lib/components/ui/BlurHashImage.svelte';
 	import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
 	import type { Post } from '$lib/types/post';
-	
+
 	// ============================================================================
 	// TypeScript Interfaces
 	// ============================================================================
@@ -204,7 +204,6 @@
 			}
 		};
 	});
-
 </script>
 
 <svelte:head>
@@ -417,7 +416,6 @@
 		{/if}
 	{/if}
 </div>
-
 
 <style>
 	/* 2026 CSS Standards: CSS Layers, oklch colors, container queries, color-mix */

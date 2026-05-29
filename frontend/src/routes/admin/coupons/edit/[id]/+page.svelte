@@ -211,8 +211,7 @@
 			//
 			// Edit page only models 'percentage' / 'fixed'; the type union is
 			// wider for legacy reasons (P3-5) so coerce defensively.
-			const dtype: 'percentage' | 'fixed' =
-				formData.type === 'percentage' ? 'percentage' : 'fixed';
+			const dtype: 'percentage' | 'fixed' = formData.type === 'percentage' ? 'percentage' : 'fixed';
 
 			const updateData: CouponUpdateData = {
 				code: formData.code.trim().toUpperCase(),
@@ -223,9 +222,7 @@
 				max_discount: formData.max_discount_amount ?? undefined,
 				usage_limit: formData.usage_limit ?? undefined,
 				starts_at: formData.valid_from ? new Date(formData.valid_from).toISOString() : undefined,
-				expires_at: formData.valid_until
-					? new Date(formData.valid_until).toISOString()
-					: undefined,
+				expires_at: formData.valid_until ? new Date(formData.valid_until).toISOString() : undefined,
 				is_active: formData.is_active,
 				// Batch 3.5+: subscription duration. Backend recreates the Stripe
 				// Coupon when discount math (type/value/duration) changes.

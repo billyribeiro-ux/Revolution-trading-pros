@@ -237,7 +237,6 @@
 			hasError = false;
 		}
 	});
-
 </script>
 
 <div

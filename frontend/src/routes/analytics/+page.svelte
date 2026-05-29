@@ -244,7 +244,7 @@
 					{#if dashboard.funnels && dashboard.funnels.length > 0}
 						<div class="funnels-list">
 							{#each dashboard.funnels as funnel (funnel.name)}
-							<FunnelChart steps={funnel.steps} title={funnel.name} />
+								<FunnelChart steps={funnel.steps} title={funnel.name} />
 							{/each}
 						</div>
 					{:else}

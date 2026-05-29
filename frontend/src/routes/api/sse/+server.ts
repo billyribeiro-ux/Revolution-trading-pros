@@ -7,8 +7,7 @@ import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
 // FIX-2026-04-26: was empty-stream stub; now real SSE proxy to backend
-const API_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const API_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 // FIX-2026-04-26: old empty-stream stub commented out below
 // export const GET: RequestHandler = async () => {

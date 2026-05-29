@@ -574,7 +574,6 @@
 	</section>
 </div>
 
-
 <style>
 	/* ═════════════════════════════════════════════════════════════════════════
 	   Page-local tokens (one-offs for /indicators only).

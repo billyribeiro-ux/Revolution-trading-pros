@@ -12,10 +12,12 @@ export const load: PageLoad = () => {
 	return {
 		seo: {
 			title: 'Improving Our Services | Revolution Trading Pros',
-			description: "We're upgrading our infrastructure to serve more students with better speed, reliability, and features. Back soon!",
+			description:
+				"We're upgrading our infrastructure to serve more students with better speed, reliability, and features. Back soon!",
 			og: {
 				title: 'Improving Our Services | Revolution Trading Pros',
-				description: "We're upgrading our infrastructure to serve more students with better speed, reliability, and features."
+				description:
+					"We're upgrading our infrastructure to serve more students with better speed, reliability, and features."
 			}
 		}
 	};

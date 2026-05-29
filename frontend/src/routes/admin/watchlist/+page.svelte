@@ -350,13 +350,7 @@
 									<div class="item-cell">
 										<div class="item-thumb">
 											{#if item.video.poster}
-												<img
-													src={item.video.poster}
-													alt=""
-													width="80"
-													height="45"
-													loading="lazy"
-												/>
+												<img src={item.video.poster} alt="" width="80" height="45" loading="lazy" />
 											{:else}
 												<div class="thumb-placeholder">
 													<IconVideo size={20} />

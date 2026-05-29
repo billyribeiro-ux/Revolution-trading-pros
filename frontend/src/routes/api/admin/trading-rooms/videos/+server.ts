@@ -215,10 +215,7 @@ export const POST: RequestHandler = async (event) => {
 	// of a 500 NPE downstream (R18-A Latent Bug §2 mitigation).
 	const rawBody: unknown = await event.request.json();
 	if (!isObject(rawBody)) {
-		return json(
-			{ success: false, error: 'Request body must be a JSON object' },
-			{ status: 400 }
-		);
+		return json({ success: false, error: 'Request body must be a JSON object' }, { status: 400 });
 	}
 	const body = rawBody as VideoCreateBody;
 
@@ -239,7 +236,10 @@ export const POST: RequestHandler = async (event) => {
 
 	// FIX-2026-04-26-audit (P1-11): surface POST failure — a silent mock-create would
 	// persist nothing to the DB while appearing to succeed.
-	console.error('[Trading-rooms videos proxy POST] Backend unavailable or non-success:', backendData);
+	console.error(
+		'[Trading-rooms videos proxy POST] Backend unavailable or non-success:',
+		backendData
+	);
 	return json(
 		{
 			success: false,

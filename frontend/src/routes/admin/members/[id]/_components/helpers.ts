@@ -5,13 +5,7 @@
 // reactivity / no closed-over state in the original — only inputs in, value out
 // — so a plain `.ts` module is safe (no $state survives the move).
 
-import {
-	IconCreditCard,
-	IconReceipt,
-	IconMail,
-	IconUser,
-	IconActivity
-} from '$lib/icons';
+import { IconCreditCard, IconReceipt, IconMail, IconUser, IconActivity } from '$lib/icons';
 import type { Member } from '$lib/api/members';
 
 export function getStatusColor(status: string): string {

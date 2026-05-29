@@ -28,8 +28,7 @@ import type { RequestEvent } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { requireAdmin } from './auth';
 
-const API_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const API_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 /**
  * Allowlist for the `period` query param. Anything outside this set is
@@ -76,7 +75,9 @@ export async function proxyAnalytics(
 	}
 
 	const queryString = forwarded.toString();
-	const url = queryString ? `${API_URL}${upstreamPath}?${queryString}` : `${API_URL}${upstreamPath}`;
+	const url = queryString
+		? `${API_URL}${upstreamPath}?${queryString}`
+		: `${API_URL}${upstreamPath}`;
 
 	const headers: Record<string, string> = {
 		Authorization: `Bearer ${token}`,

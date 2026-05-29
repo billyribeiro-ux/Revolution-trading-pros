@@ -583,7 +583,6 @@ class CheckoutCartService {
 					this.showNotification('Stock availability updated', 'warning');
 				}
 			});
-
 		} catch (error) {
 			logger.error('[CheckoutService] Failed to setup WebSocket', { error });
 			// Fallback to polling if WebSocket fails
@@ -1204,8 +1203,7 @@ class CheckoutCartService {
 					if (!Number.isFinite(numericId)) {
 						throw new Error(`Cart item "${item.name}" has an invalid product id`);
 					}
-					const isSubscription =
-						(item as { type?: string }).type === 'membership';
+					const isSubscription = (item as { type?: string }).type === 'membership';
 					return isSubscription
 						? { plan_id: numericId, quantity: item.quantity }
 						: { product_id: numericId, quantity: item.quantity };
@@ -1346,9 +1344,7 @@ class CheckoutCartService {
 	 * JSON on the client. Callers must construct the right shape per
 	 * `session.paymentProvider`.
 	 */
-	async processPayment(
-		paymentDetails: JsonValue
-	): Promise<{ success: boolean; orderId?: string }> {
+	async processPayment(paymentDetails: JsonValue): Promise<{ success: boolean; orderId?: string }> {
 		this.isLoading.set(true);
 		this.error.set(null);
 

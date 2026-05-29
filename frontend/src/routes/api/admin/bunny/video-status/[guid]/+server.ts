@@ -20,8 +20,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { requireAdmin } from '$lib/server/auth';
 
-const BACKEND_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const BACKEND_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 // GET - Check video processing status
 export const GET: RequestHandler = async (event) => {
@@ -60,8 +59,7 @@ export const GET: RequestHandler = async (event) => {
 			return json(
 				{
 					success: false,
-					error:
-						(payload as { error?: string })?.error || `Backend returned ${response.status}`,
+					error: (payload as { error?: string })?.error || `Backend returned ${response.status}`,
 					status_code: response.status
 				},
 				{ status: response.status }

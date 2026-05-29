@@ -16,8 +16,7 @@ import { env } from '$env/dynamic/private';
  * Resolved API base URL — checks server env first, falls back to Fly prod.
  * Local dev points this at http://localhost:8080 via frontend/.env.local.
  */
-const DEFAULT_API_BASE_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const DEFAULT_API_BASE_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 export interface WatchlistData {
 	id: number;

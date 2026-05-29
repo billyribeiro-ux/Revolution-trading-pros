@@ -13,8 +13,7 @@ import { env } from '$env/dynamic/private';
 import type { PageServerLoad } from './$types';
 
 // FIX-2026-04-26: canonical private-env URL pattern (CLAUDE.md house style).
-const API_ROOT =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const API_ROOT = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 export interface DailyVideo {
 	id: number;
@@ -72,10 +71,7 @@ export const load: PageServerLoad = async ({ params, url, fetch }): Promise<Page
 	// // return getMockData(room_slug as string, page, perPage, search);
 
 	const roomName = getRoomName(room_slug as string);
-	const baseError = (
-		reason: string,
-		actualPage = page
-	): PageData => ({
+	const baseError = (reason: string, actualPage = page): PageData => ({
 		videos: [],
 		pagination: { page: actualPage, perPage, total: 0, totalPages: 1 },
 		roomSlug: room_slug as string,
@@ -85,7 +81,9 @@ export const load: PageServerLoad = async ({ params, url, fetch }): Promise<Page
 	});
 
 	try {
-		const roomRes = await fetch(`${API_ROOT}/api/trading-rooms/${encodeURIComponent(room_slug as string)}`);
+		const roomRes = await fetch(
+			`${API_ROOT}/api/trading-rooms/${encodeURIComponent(room_slug as string)}`
+		);
 		if (!roomRes.ok) return baseError(`Room lookup returned ${roomRes.status}`);
 		const roomBody = (await roomRes.json()) as { data?: { id?: number } };
 		const roomId = roomBody?.data?.id;

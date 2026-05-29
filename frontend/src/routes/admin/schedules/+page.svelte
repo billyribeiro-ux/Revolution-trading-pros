@@ -248,8 +248,8 @@
 		const ranges = schedules
 			.filter((s) => s.is_active)
 			.map((s) => ({ s, range: scheduleToUtcRange(s) }))
-			.filter((x): x is { s: ScheduleEvent; range: { start: number; end: number } } =>
-				x.range !== null
+			.filter(
+				(x): x is { s: ScheduleEvent; range: { start: number; end: number } } => x.range !== null
 			);
 		for (let i = 0; i < ranges.length; i++) {
 			for (let j = i + 1; j < ranges.length; j++) {

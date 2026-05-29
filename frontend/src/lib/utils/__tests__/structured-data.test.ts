@@ -495,7 +495,12 @@ describe('generateStructuredData — VideoObject', () => {
 			]
 		});
 		const clips = data.hasPart as Array<Record<string, unknown>>;
-		expect(clips[0]).toMatchObject({ '@type': 'Clip', name: 'Intro', startOffset: 0, endOffset: 30 });
+		expect(clips[0]).toMatchObject({
+			'@type': 'Clip',
+			name: 'Intro',
+			startOffset: 0,
+			endOffset: 30
+		});
 	});
 });
 

@@ -407,7 +407,7 @@
 					<p class="subtitle">Manage membership plans and Stripe integration</p>
 				</div>
 				<a href="/admin/subscriptions" class="btn-secondary">
-										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chevron-left (back) -->
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chevron-left (back) -->
 					<IconChevronLeft size={20} aria-hidden="true" />
 					Back to Subscriptions
 				</a>
@@ -417,7 +417,7 @@
 		<!-- Success Message -->
 		{#if successMessage}
 			<div class="success-banner">
-								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-check success -->
+				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-check success -->
 				<IconCircleCheckFilled size={20} aria-hidden="true" />
 				{successMessage}
 			</div>
@@ -426,7 +426,7 @@
 		<!-- Error Banner -->
 		{#if error}
 			<div class="error-banner">
-								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-x error -->
+				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-x error -->
 				<IconCircleXFilled size={20} aria-hidden="true" />
 				{error}
 				<button onclick={() => (error = '')} class="ml-auto text-red-300 hover:text-white">×</button
@@ -438,7 +438,7 @@
 		<div class="stats-grid">
 			<div class="stat-card">
 				<div class="stat-icon bg-blue-500/10">
-										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: layers (archive) -->
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: layers (archive) -->
 					<IconLayers size={24} aria-hidden="true" />
 				</div>
 				<div class="stat-content">
@@ -562,7 +562,7 @@
 										<code class="stripe-id">{plan.stripe_price_id}</code>
 									{:else}
 										<span class="missing-stripe">
-																						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: alert-triangle warning -->
+											<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: alert-triangle warning -->
 											<IconAlertTriangle size={16} aria-hidden="true" />
 											Not Set
 										</span>

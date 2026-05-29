@@ -209,7 +209,11 @@
 						placeholder="Search symbols, names, or sectors..."
 						class="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-4 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white lg:max-w-md"
 					/>
-					<Icon name="IconSearch" size={16} class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+					<Icon
+						name="IconSearch"
+						size={16}
+						class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+					/>
 				</div>
 			{/if}
 		</div>
@@ -227,7 +231,11 @@
 						>
 							Symbol
 							{#if sortColumn === 'symbol'}
-								<Icon name="IconChevronUp" size={16} class={sortDirection === 'desc' ? 'rotate-180' : ''} />
+								<Icon
+									name="IconChevronUp"
+									size={16}
+									class={sortDirection === 'desc' ? 'rotate-180' : ''}
+								/>
 							{/if}
 						</button>
 					</th>
@@ -238,7 +246,11 @@
 						>
 							Name
 							{#if sortColumn === 'name'}
-								<Icon name="IconChevronUp" size={16} class={sortDirection === 'desc' ? 'rotate-180' : ''} />
+								<Icon
+									name="IconChevronUp"
+									size={16}
+									class={sortDirection === 'desc' ? 'rotate-180' : ''}
+								/>
 							{/if}
 						</button>
 					</th>

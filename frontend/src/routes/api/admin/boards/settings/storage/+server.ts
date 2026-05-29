@@ -25,8 +25,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 import { requireAdmin, requireSuperadmin } from '$lib/server/auth';
 
 import { env } from '$env/dynamic/private';
-const BACKEND_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const BACKEND_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
 const REDACTED_PLACEHOLDER = '__SECRET_UNCHANGED__';
 const SECRET_FIELDS = ['secret_key', 'access_key'] as const;
@@ -108,12 +107,7 @@ function stripUnchangedSecrets(body: Record<string, unknown>): Record<string, un
 	const next: Record<string, unknown> = { ...body };
 	for (const key of SECRET_FIELDS) {
 		const value = next[key];
-		if (
-			value === REDACTED_PLACEHOLDER ||
-			value === '' ||
-			value === null ||
-			value === undefined
-		) {
+		if (value === REDACTED_PLACEHOLDER || value === '' || value === null || value === undefined) {
 			delete next[key];
 		}
 	}

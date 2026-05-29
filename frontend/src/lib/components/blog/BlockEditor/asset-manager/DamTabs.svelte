@@ -14,7 +14,11 @@
 </script>
 
 <div class="dam-tabs">
-	<button class="tab" class:active={activeTab === 'library'} onclick={() => (activeTab = 'library')}>
+	<button
+		class="tab"
+		class:active={activeTab === 'library'}
+		onclick={() => (activeTab = 'library')}
+	>
 		Library
 	</button>
 	<button class="tab" class:active={activeTab === 'upload'} onclick={() => (activeTab = 'upload')}>

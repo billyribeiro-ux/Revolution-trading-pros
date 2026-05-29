@@ -25,17 +25,13 @@
 		<input
 			type="file"
 			multiple
-			accept={acceptTypes
-				.map((t) => (t === 'document' ? 'application/*' : `${t}/*`))
-				.join(',')}
+			accept={acceptTypes.map((t) => (t === 'document' ? 'application/*' : `${t}/*`)).join(',')}
 			onchange={onFileInput}
 			hidden
 		/>
 	</label>
 	<p class="upload-hint">
-		Supports: {acceptTypes
-			.map((t) => t.charAt(0).toUpperCase() + t.slice(1) + 's')
-			.join(', ')}
+		Supports: {acceptTypes.map((t) => t.charAt(0).toUpperCase() + t.slice(1) + 's').join(', ')}
 	</p>
 </div>
 

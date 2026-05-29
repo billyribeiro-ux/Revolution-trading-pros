@@ -11,11 +11,7 @@
 <div class="filters-panel">
 	<div class="filter-group">
 		<label for="status-filter">Status</label>
-		<select
-			id="status-filter"
-			bind:value={statusFilter}
-			onchange={() => onchange(statusFilter)}
-		>
+		<select id="status-filter" bind:value={statusFilter} onchange={() => onchange(statusFilter)}>
 			<option value="">All Statuses</option>
 			<option value="pending">Pending</option>
 			<option value="completed">Completed</option>

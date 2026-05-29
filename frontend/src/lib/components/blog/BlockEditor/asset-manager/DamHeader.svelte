@@ -29,9 +29,7 @@
 			<input
 				type="file"
 				multiple
-				accept={acceptTypes
-					.map((t) => (t === 'document' ? 'application/*' : `${t}/*`))
-					.join(',')}
+				accept={acceptTypes.map((t) => (t === 'document' ? 'application/*' : `${t}/*`)).join(',')}
 				onchange={onFileInput}
 				hidden
 			/>

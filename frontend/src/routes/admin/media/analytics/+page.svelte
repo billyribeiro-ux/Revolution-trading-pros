@@ -286,7 +286,7 @@
 		<div class="not-connected-state">
 			<div class="not-connected-card">
 				<div class="not-connected-icon">
-										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: loader (not connected) -->
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: loader (not connected) -->
 					<IconLoader size={48} aria-hidden="true" />
 				</div>
 				<h2>Media Analytics Not Connected</h2>
@@ -296,12 +296,12 @@
 				</p>
 				<div class="not-connected-actions">
 					<a href="/admin/connections" class="btn-primary">
-												<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: settings (connect service) -->
+						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: settings (connect service) -->
 						<IconSettings size={16} aria-hidden="true" />
 						Connect Service
 					</a>
 					<button class="btn-secondary" onclick={loadData}>
-												<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: refresh (retry) -->
+						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: refresh (retry) -->
 						<IconRefresh size={16} aria-hidden="true" />
 						Retry
 					</button>
@@ -322,7 +322,7 @@
 		<div class="hero-stats">
 			<div class="hero-card savings" transition:fly={{ y: 20, duration: 500 }}>
 				<div class="hero-icon">
-										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: bolt (savings) -->
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: bolt (savings) -->
 					<IconBolt size={32} aria-hidden="true" />
 				</div>
 				<div class="hero-content">
@@ -363,7 +363,7 @@
 
 			<div class="hero-card cost" transition:fly={{ y: 20, duration: 500, delay: 100 }}>
 				<div class="hero-icon">
-										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: currency-dollar (cost) -->
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: currency-dollar (cost) -->
 					<IconCurrencyDollar size={32} aria-hidden="true" />
 				</div>
 				<div class="hero-content">
@@ -375,7 +375,7 @@
 
 			<div class="hero-card eco" transition:fly={{ y: 20, duration: 500, delay: 200 }}>
 				<div class="hero-icon">
-										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: leaf (eco) -->
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: leaf (eco) -->
 					<IconLeaf size={32} aria-hidden="true" />
 				</div>
 				<div class="hero-content">
@@ -392,7 +392,7 @@
 		<div class="stats-grid">
 			<div class="stat-card" transition:fly={{ y: 20, duration: 400, delay: 300 }}>
 				<div class="stat-icon blue">
-										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: photo (total images) -->
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: photo (total images) -->
 					<IconPhoto size={24} aria-hidden="true" />
 				</div>
 				<div class="stat-info">
@@ -403,7 +403,7 @@
 
 			<div class="stat-card" transition:fly={{ y: 20, duration: 400, delay: 350 }}>
 				<div class="stat-icon green">
-										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-check (optimized) -->
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-check (optimized) -->
 					<IconCircleCheck size={24} aria-hidden="true" />
 				</div>
 				<div class="stat-info">
@@ -414,7 +414,7 @@
 
 			<div class="stat-card" transition:fly={{ y: 20, duration: 400, delay: 400 }}>
 				<div class="stat-icon purple">
-										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: box (original size) -->
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: box (original size) -->
 					<IconBox size={24} aria-hidden="true" />
 				</div>
 				<div class="stat-info">
@@ -425,7 +425,7 @@
 
 			<div class="stat-card" transition:fly={{ y: 20, duration: 400, delay: 450 }}>
 				<div class="stat-icon orange">
-										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: bookmark (optimized size) -->
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: bookmark (optimized size) -->
 					<IconBookmark size={24} aria-hidden="true" />
 				</div>
 				<div class="stat-info">
@@ -436,7 +436,7 @@
 
 			<div class="stat-card" transition:fly={{ y: 20, duration: 400, delay: 500 }}>
 				<div class="stat-icon cyan">
-										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: activity (compression) -->
+					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: activity (compression) -->
 					<IconActivity size={24} aria-hidden="true" />
 				</div>
 				<div class="stat-info">
@@ -597,7 +597,7 @@
 			<div class="insights-grid">
 				<div class="insight-card">
 					<div class="insight-icon green">
-												<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-check-filled (excellent) -->
+						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-check-filled (excellent) -->
 						<IconCircleCheckFilled size={24} aria-hidden="true" />
 					</div>
 					<div class="insight-content">
@@ -627,7 +627,7 @@
 
 				<div class="insight-card">
 					<div class="insight-icon orange">
-												<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: info-circle (recommendation) -->
+						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: info-circle (recommendation) -->
 						<IconInfoCircle size={24} aria-hidden="true" />
 					</div>
 					<div class="insight-content">

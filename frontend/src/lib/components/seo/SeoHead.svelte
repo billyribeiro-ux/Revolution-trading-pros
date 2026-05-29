@@ -179,12 +179,12 @@
 				article:
 					ogType === 'article'
 						? {
-							publishedTime: articlePublishedTime,
-							modifiedTime: articleModifiedTime,
-							author: articleAuthor,
-							section: articleSection,
-							tags: articleTags
-						}
+								publishedTime: articlePublishedTime,
+								modifiedTime: articleModifiedTime,
+								author: articleAuthor,
+								section: articleSection,
+								tags: articleTags
+							}
 						: null
 			},
 			twitter: {
@@ -192,9 +192,10 @@
 				site: twitterSite || null,
 				creator: twitterCreator || null,
 				title: twitterTitle || ogTitle || title || null,
-				description: twitterDescription || ogDescription || (description || '').slice(0, 160) || null,
+				description:
+					twitterDescription || ogDescription || (description || '').slice(0, 160) || null,
 				image: twitterImage || ogImage || defaultImage || null,
-				imageAlt: (twitterImageAlt || ogImageAlt) || null
+				imageAlt: twitterImageAlt || ogImageAlt || null
 			}
 		});
 	}

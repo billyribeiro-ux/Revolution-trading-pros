@@ -991,9 +991,7 @@ export const couponsApi = {
 		});
 	},
 
-	async preview(
-		data: Partial<CouponCreateData> | Record<string, JsonValue>
-	): Promise<
+	async preview(data: Partial<CouponCreateData> | Record<string, JsonValue>): Promise<
 		ApiResponse<{
 			formatted_value: string;
 			example_discount: number;
@@ -1054,7 +1052,7 @@ export const usersApi = {
 		return makeRequest<Record<string, JsonValue>>('/admin/users/stats', {
 			cacheTTL: 60000 // Cache for 1 minute
 		});
-	},
+	}
 
 	// FIX-H-5 (2026-04-29): impersonate() removed. Backend endpoint
 	// /admin/users/:id/impersonate has been deleted along with this
@@ -1131,7 +1129,10 @@ export const emailTemplatesApi = {
 		return response;
 	},
 
-	async preview(id: number, data: Record<string, JsonValue>): Promise<ApiResponse<{ html: string }>> {
+	async preview(
+		id: number,
+		data: Record<string, JsonValue>
+	): Promise<ApiResponse<{ html: string }>> {
 		return makeRequest<{ html: string }>(`/admin/email/templates/${id}/preview`, {
 			method: 'POST',
 			body: JSON.stringify(data),

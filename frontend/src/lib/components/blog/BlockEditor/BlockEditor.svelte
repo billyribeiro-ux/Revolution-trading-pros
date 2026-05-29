@@ -1368,10 +1368,7 @@
 		<div class="header-center">
 			<DevicePreviewToggle device={editorState.devicePreview} onChange={setDevicePreview} />
 
-			<ViewModeToggle
-				mode={editorState.viewMode}
-				onChange={(m) => (editorState.viewMode = m)}
-			/>
+			<ViewModeToggle mode={editorState.viewMode} onChange={(m) => (editorState.viewMode = m)} />
 		</div>
 
 		<div class="header-right">
