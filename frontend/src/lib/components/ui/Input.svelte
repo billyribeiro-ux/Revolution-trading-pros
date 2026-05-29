@@ -1,7 +1,10 @@
 <script lang="ts">
+	// Value is `string | number` to cover both text-like and `type="number"`
+	// inputs — these are the only types this primitive supports (checkbox is
+	// handled by a different component). Was `any`.
 	interface Props {
 		type?: string;
-		value?: any;
+		value?: string | number;
 		placeholder?: string;
 		label?: string;
 		error?: string;

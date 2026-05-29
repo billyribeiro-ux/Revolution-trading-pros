@@ -15,15 +15,47 @@
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import { toastStore } from '$lib/stores/toast.svelte';
 
+	// Entity shape derived from the template reads: `type`/`id` for the API
+	// path, `title` for the preview header, `url` for the canonical fallback.
+	interface SeoEntity {
+		type: string;
+		id: string | number;
+		title: string;
+		url: string;
+	}
+
+	// Persistent SEO meta shape — matches the api/seo/meta payload.
+	interface SeoMeta {
+		title: string;
+		description: string;
+		canonical_url: string;
+		focus_keyword: string;
+		additional_keywords: string[];
+		og_title: string;
+		og_description: string;
+		og_image: string;
+		og_type: string;
+		twitter_title: string;
+		twitter_description: string;
+		twitter_image: string;
+		twitter_card_type: string;
+		noindex: boolean;
+		nofollow: boolean;
+		noarchive: boolean;
+		noimageindex: boolean;
+		nosnippet: boolean;
+		breadcrumb_title: string;
+	}
+
 	interface Props {
-		entity: any;
+		entity: SeoEntity;
 		onsaved?: () => void;
 	}
 
 	let { entity, onsaved }: Props = $props();
 
 	let activeTab = $state('general');
-	let meta: any = $state({
+	let meta: SeoMeta = $state({
 		title: '',
 		description: '',
 		canonical_url: '',

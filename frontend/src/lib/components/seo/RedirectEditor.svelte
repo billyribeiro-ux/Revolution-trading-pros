@@ -1,32 +1,43 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import { IconX, IconDeviceFloppy } from '$lib/icons';
 
+	// Shape derived from the form template and the prop-sync (previously
+	// `any`). Optional on the prop because edit-mode passes a partial row;
+	// create-mode passes `null` and the form starts from defaults below.
+	interface Redirect {
+		id?: number;
+		source_url?: string;
+		destination_url?: string;
+		redirect_type?: string;
+		is_regex?: boolean;
+		is_active?: boolean;
+		notes?: string;
+	}
+
 	interface Props {
-		redirect?: any;
+		redirect?: Redirect | null;
 		onsaved?: () => void;
 		oncancel?: () => void;
 	}
 
 	let { redirect = null, onsaved, oncancel }: Props = $props();
 
-	// Form state initialized with defaults
-	let form = $state({
-		source_url: '',
-		destination_url: '',
-		redirect_type: '301',
-		is_regex: false,
-		is_active: true,
-		notes: ''
-	});
+	// Seed the form once at mount from the (possibly null) redirect prop.
+	// Parent `routes/admin/seo/redirects/+page` gates with {#if showEditor},
+	// so a fresh instance mounts per editing session — making seed-once
+	// behaviourally equivalent to the prior prop-sync $effect. `untrack`
+	// makes the init-once intent explicit. Matches the §A pattern applied
+	// across the admin modals (FieldEditor, MemberFormModal, etc.).
+	const seed = untrack(() => redirect);
 
-	// Sync redirect prop to form state
-	$effect(() => {
-		form.source_url = redirect?.source_url || '';
-		form.destination_url = redirect?.destination_url || '';
-		form.redirect_type = redirect?.redirect_type || '301';
-		form.is_regex = redirect?.is_regex || false;
-		form.is_active = redirect?.is_active !== undefined ? redirect.is_active : true;
-		form.notes = redirect?.notes || '';
+	let form = $state({
+		source_url: seed?.source_url ?? '',
+		destination_url: seed?.destination_url ?? '',
+		redirect_type: seed?.redirect_type ?? '301',
+		is_regex: seed?.is_regex ?? false,
+		is_active: seed?.is_active ?? true,
+		notes: seed?.notes ?? ''
 	});
 
 	let saving = $state(false);
