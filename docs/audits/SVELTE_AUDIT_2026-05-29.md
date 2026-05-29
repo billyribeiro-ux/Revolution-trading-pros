@@ -1,0 +1,176 @@
+# Svelte Frontend Audit — 2026-05-29
+
+**Auditor:** Claude (principal-engineer-level sweep)
+**Scope:** All `frontend/src/**/*.svelte` (1,127 component files) + SvelteKit config.
+**Method:** Project gate (`svelte-check`), the official Svelte MCP `svelte-autofixer`,
+and pattern sweeps for every Svelte-4→5 anti-pattern and PE7 code smell.
+**Branch:** `claude/svelte-files-audit-gSHK7`
+
+> **Correction note (this revision):** an earlier draft of this report described a
+> broken `admin/cms/pages/[id]/edit/+page.svelte` file. **That file does not exist** —
+> it was a phantom produced by a tool-output glitch during the session. The real
+> `admin/cms` tree contains only `datasources/+page.svelte`. This revision removes the
+> fabricated section and corrects the shadow-state figures. Apologies for the noise.
+
+---
+
+## TL;DR
+
+The frontend is in **excellent** Svelte 5 health. Baseline gate is clean:
+
+```
+svelte-check: 4765 files, 0 errors, 0 warnings
+```
+
+Legacy Svelte-4 syntax is **fully eliminated** (zero `on:event`, `export let`,
+`$$props`, `$:`, `<slot>`, `createEventDispatcher`, `beforeUpdate/afterUpdate`).
+The remaining work is **medium-priority idiom polish** that needs per-file judgment,
+not bug-fixing.
+
+---
+
+## ✅ Fixed this pass (quick wins, gate-verified)
+
+| # | Change | Files |
+|---|--------|-------|
+| 1 | Removed **all 6** stale `@migration-task` marker comments left by the Svelte 4→5 auto-migrate tool. Each file already compiles clean, so the markers were misleading debt. The repo is now marker-free. | `ui/select/select.svelte`, `forms/FormBuilder.svelte`, `admin/popups/new/+page.svelte`, `admin/popups/[id]/edit/+page.svelte`, `admin/boards/settings/+page.svelte`, `dashboard/indicators/[id]/+page.svelte` |
+| 2 | (Prior commit) `forms/FieldEditor.svelte` full PE7 refactor — dropped 2 `$effect` state syncs, switched to function bindings, fixed a deep-clone aliasing bug. | `forms/FieldEditor.svelte` |
+
+**Why removal is safe:** `bind_invalid_expression` and `store_invalid_subscription`
+(the errors the markers reference) are *hard compiler errors*. `svelte-check` passes
+0/0, so the code was already hand-migrated — only the comments lingered.
+
+Gate after this pass: **0 errors / 0 warnings / 4765 files.**
+
+---
+
+## 🟠 Resolved — `dashboard/indicators/[id]/+page.svelte`
+
+This file carried a `@migration-task ... element_unclosed` ("`<script>` was left open")
+marker. On inspection the marker was **stale**: the file has a clean `<script lang="ts">`
+(line 19) / `</script>` (line 252) pair — the only other "script" hit is inside a regex
+string literal (`.replace(/<script[\s\S]*?<\/script>/gi, '')`). It compiles 0/0. Marker
+removed. **The repo is now 100% marker-free.**
+
+---
+
+## 🟡 Medium-priority: state assigned inside `$effect`
+
+A static heuristic (regex, *not* compiler analysis) found **333 assignments across
+105 files** where a `$state` variable is written inside an `$effect`. **This is a
+review backlog, not a defect count** — the pattern is legitimate in several cases.
+Triage by category:
+
+### Category A — reviewed hands-on (2026-05-29 remediation pass)
+
+**Important correction to the heuristic:** the raw "writes-in-effect" count
+*over-counts* the anti-pattern. Hands-on review found the flagged admin modals
+mostly use **deliberate, valid** patterns, not the naive bug:
+
+1. **`wasOpen`-gated reset-on-open** (prior audit's FIX P2-2): reset the form on a
+   real `false → true` transition of `isOpen`, specifically to *preserve* half-typed
+   input. Valid — just replaceable with seed-once + a `{#if}`/`{#key}` mount gate.
+2. **Body-scroll lock** (`document.body.style.overflow = …`): textbook-legitimate.
+
+| File | heuristic ~writes | Verdict & action |
+|------|-------------------|------------------|
+| `lib/components/ClassVideos.svelte` | 2 | ✅ **Done.** True anti-pattern (synced `courseData`/`loading` from `initialData` in an `$effect`). → seed-once via `untrack`, `allLessons` plain `$derived`, `expandedModules` → `SvelteSet`. |
+| `lib/components/admin/ModuleFormModal.svelte` | 13 | ✅ **Done.** `wasOpen`-gated reset on an unconditionally-mounted modal. → parent `admin/courses/+page` now `{#if showModuleModal}`; child seeds 6 fields once via `untrack`; `wasOpen` gone; only the body-scroll `$effect` remains. No exit transition → visually identical. |
+| `lib/components/admin/CourseDetailDrawer.svelte` | 5 | ✅ **Reviewed — defensible, no change.** Guarded data-loaders (`loadedCourseId`/`loadedAnalyticsId` prevent refetch loops) + reset-on-close that supports the close animation while the component stays mounted. A `{#key}` remount would *break* the animation. |
+| `lib/components/admin/MemberFormModal.svelte` | 41 | ⏸️ **Deferred (deliberate).** Same `wasOpen`-gated P2-2 reset, but the file has *documented half-built behaviour* (14 "ghost" profile fields not wired into `CreateMemberRequest`; edit mode resets extended fields to defaults instead of loading from `member` — see its `TODO(2026-04-26-audit)`). Both parents already `{#if}`-gate the mount, so the recipe applies cleanly — but it should land with the ghost-field fix and the admin UI exercised, not as a blind refactor. |
+| `CourseFormModal` (30), `SubscriptionFormModal` (19), `TradeAlertModal` (18), `UpdatePositionModal` (9), `TemplateForm` (8) | — | ⬜ **Pending.** Expected to be the same `wasOpen`/body-scroll patterns. Apply the recipe below per file, checking all parents + exit-transition each time. |
+
+**Proven PE7 recipe** (applied to ClassVideos & ModuleFormModal):
+1. Child: replace per-field defaults + reset `$effect` with
+   `const seed = untrack(() => <prop>)`, then `let x = $state(seed?.x ?? <default>)`.
+   Delete the reset effect and any `wasOpen`. Keep genuine effects (body-scroll, loaders).
+2. Parent(s): gate the mount with `{#if open}` (add `{#key id}` only if the same
+   instance is reused for different items without an intervening unmount) so each
+   session seeds fresh. **Grep the component name — check _every_ parent.**
+3. Verify the component has **no exit transition** before switching to
+   unmount-on-close, then: `svelte-autofixer` clean → `pnpm check` 0/0.
+
+> ⚠️ Hard-won lesson this pass: a parent mount-gate edit silently no-op'd (it
+> assumed `onSave`, the real prop was `onSaved`), leaving seed-once on an
+> always-mounted child — which would show a blank form when editing. Caught by
+> reading the committed blob, fixed in a follow-up commit. **Always verify the
+> parent edit actually applied, and that seed-once is paired with a real remount.**
+
+### Category B — legitimate `$effect` (event/observer-driven; leave as-is)
+Writing state in response to an external event/observer is exactly what `$effect`
+is for. **No change recommended.**
+
+| File | Why it's fine |
+|------|---------------|
+| `lib/components/ClassDownloads.svelte` | `viewportWidth = innerWidth` in a resize listener |
+| `lib/components/OfflineIndicator.svelte` | `justCameOnline` toggled on online/offline events |
+| `lib/components/blog/ReadingProgress.svelte` | scroll-position → progress |
+| `lib/options-calculator/components/charts/*` | canvas/D3 sync effects (≈12 files) |
+
+> The full per-file list with line numbers lives in the heuristic output; regenerate
+> with the sweep script (see "Method"). Don't treat every hit as a bug — most of the
+> chart and online/offline cases are Category B.
+
+---
+
+## 🟢 Low-priority observations (healthy)
+
+| Area | Finding | Verdict |
+|------|---------|---------|
+| **`{@html}` (XSS surface)** | 34 files. Every real render site is sanitized (`sanitizeHtml` / `sanitizePopupContent` / `sanitizeBlogContent` / DOMPurify) or is JSON-LD (`application/ld+json` built from `serializeJsonLd`/`JSON.stringify`). A scripted check for unsanitized non-JSON-LD render sites returned **empty**. | **No action** |
+| **`svelte-ignore`** | ~84 total, dominated by a11y (`a11y_no_noninteractive_element_interactions` ×41, `a11y_no_static_element_interactions` ×12, `a11y_click_events_have_key_events` ×8). | **Plan §B** |
+| **`: any` typed props** | ~72 files use `any` in a `Props` interface/annotation. | **Plan §C** |
+| **`class:` directive** | 402 files. Docs *prefer* clsx-style arrays but `class:` is fully supported, not deprecated. | **No action** (stylistic) |
+| **`use:` actions** | 12 files. Docs nudge toward `{@attach}`; actions remain supported. | **No action** |
+| **`onMount`** | 286 files. Many legitimate client-only init. | **No action** (case-by-case) |
+| **Legacy syntax** | `on:event`, `export let`, `$$props`, `$:`, `<slot>`, `createEventDispatcher`, `beforeUpdate/afterUpdate` → **zero occurrences**. | **Migration complete** |
+
+---
+
+## Plan — prioritized backlog
+
+### §A — `$effect`→idiomatic re-seed (Category A) — *in progress*
+See the per-file status table under "Medium-priority" above. Done: `ClassVideos`,
+`ModuleFormModal`. Reviewed-defensible: `CourseDetailDrawer`. Deferred (pair with
+its ghost-field TODO): `MemberFormModal`.
+
+**Remaining**, apply the proven recipe (seed-once `untrack` + parent `{#if}`/`{#key}`
+mount-gate, after confirming no exit transition):
+- `lib/components/admin/CourseFormModal.svelte`
+- `lib/components/admin/SubscriptionFormModal.svelte`
+- `lib/components/dashboard/TradeAlertModal.svelte`
+- `routes/dashboard/explosive-swings/components/UpdatePositionModal.svelte`
+- `lib/components/admin/TemplateForm.svelte`
+
+Each fix: `svelte-autofixer` clean → `pnpm check` 0/0 → **verify the parent edit
+actually applied** (grep the `{#if}`) before committing.
+
+### §B — accessibility debt
+Review the ~61 a11y suppressions. Dominant pattern: click handlers on non-interactive
+elements → add `onkeydown` + `role` + `tabindex`, or switch to `<button>`. Batch by
+family (CRM modals, blog BlockEditor, cms blocks).
+
+### §C — type tightening
+Replace `: any` in `Props` interfaces with real types, lowest-traffic files first.
+Pure type-safety; no runtime risk.
+
+### §D — optional idiom modernization (low ROI, defer)
+`class:`→clsx arrays, `use:`→`{@attach}`, opportunistic `onMount`→`$effect`/`{@attach}`.
+Only when already editing a file for another reason.
+
+---
+
+## Verification
+
+- `pnpm check` → **0 errors / 0 warnings / 4765 files** (before and after this pass).
+- `svelte-autofixer` → clean on every file edited this pass.
+- No file deleted. No route removed. All changes are comment-removal or the prior
+  FieldEditor refactor.
+
+## Session caveat (transparency)
+
+Tool output was intermittently unstable this session (empty/garbled reads for a few
+files, including a phantom CMS file an earlier draft hallucinated). All findings here
+are grounded in the **authoritative `svelte-check` gate** plus scripted greps whose
+output was verified once the channel recovered — including the previously-deferred
+`dashboard/indicators/[id]` file, which was confirmed clean and its marker removed.

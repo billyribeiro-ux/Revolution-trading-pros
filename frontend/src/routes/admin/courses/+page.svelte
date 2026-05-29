@@ -574,17 +574,24 @@
 	onSaved={handleCourseSaved}
 />
 
-<ModuleFormModal
-	isOpen={showModuleModal}
-	mode={moduleModalMode}
-	courseId={selectedCourseId}
-	module={selectedModule}
-	onClose={() => {
-		showModuleModal = false;
-		selectedModule = null;
-	}}
-	onSaved={handleModuleSaved}
-/>
+<!-- {#if} gates the mount so the modal seeds a fresh form per editing
+     session. The child seeds its fields once at mount (via untrack)
+     instead of a wasOpen-gated reset $effect, so it MUST remount per open.
+     The modal has no exit transition, so unmount-on-close is visually
+     identical to its internal {#if isOpen}. -->
+{#if showModuleModal}
+	<ModuleFormModal
+		isOpen={showModuleModal}
+		mode={moduleModalMode}
+		courseId={selectedCourseId}
+		module={selectedModule}
+		onClose={() => {
+			showModuleModal = false;
+			selectedModule = null;
+		}}
+		onSaved={handleModuleSaved}
+	/>
+{/if}
 
 <ConfirmationModal
 	isOpen={showDeleteModal}
