@@ -1,5 +1,3 @@
-<!-- @migration-task Error while migrating Svelte code: `<script>` was left open
-https://svelte.dev/e/element_unclosed -->
 <!--
 	Indicator Detail & Download Page
 	═══════════════════════════════════════════════════════════════════════════

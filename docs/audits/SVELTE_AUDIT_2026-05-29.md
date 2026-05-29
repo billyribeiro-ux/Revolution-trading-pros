@@ -33,7 +33,7 @@ not bug-fixing.
 
 | # | Change | Files |
 |---|--------|-------|
-| 1 | Removed **5** stale `@migration-task` marker comments left by the Svelte 4→5 auto-migrate tool. Each file already compiles clean, so the markers were misleading debt. | `ui/select/select.svelte`, `forms/FormBuilder.svelte`, `admin/popups/new/+page.svelte`, `admin/popups/[id]/edit/+page.svelte`, `admin/boards/settings/+page.svelte` |
+| 1 | Removed **all 6** stale `@migration-task` marker comments left by the Svelte 4→5 auto-migrate tool. Each file already compiles clean, so the markers were misleading debt. The repo is now marker-free. | `ui/select/select.svelte`, `forms/FormBuilder.svelte`, `admin/popups/new/+page.svelte`, `admin/popups/[id]/edit/+page.svelte`, `admin/boards/settings/+page.svelte`, `dashboard/indicators/[id]/+page.svelte` |
 | 2 | (Prior commit) `forms/FieldEditor.svelte` full PE7 refactor — dropped 2 `$effect` state syncs, switched to function bindings, fixed a deep-clone aliasing bug. | `forms/FieldEditor.svelte` |
 
 **Why removal is safe:** `bind_invalid_expression` and `store_invalid_subscription`
@@ -44,19 +44,13 @@ Gate after this pass: **0 errors / 0 warnings / 4765 files.**
 
 ---
 
-## 🟠 Deferred (1 file) — stale marker, needs manual eyes
+## 🟠 Resolved — `dashboard/indicators/[id]/+page.svelte`
 
-### `src/routes/dashboard/indicators/[id]/+page.svelte`
-
-- Carries a `@migration-task ... element_unclosed` ("`<script>` was left open") marker.
-- **The gate compiles it cleanly** (0/0), and `element_unclosed` is a hard parse
-  error — so the marker is almost certainly **stale** (file was hand-fixed after the
-  migration tool bailed) and just needs the comment removed like the other five.
-- **Why deferred:** this specific file's contents could not be reliably read during
-  this session (a tooling glitch returned empty/garbled output for it). Rather than
-  blind-edit a route file, the marker removal is left for a follow-up once the file
-  can be inspected directly. **No code change needed beyond deleting the 2 comment lines** —
-  verify the `<script>`/`</script>` pairing looks correct first, then remove and re-run `pnpm check`.
+This file carried a `@migration-task ... element_unclosed` ("`<script>` was left open")
+marker. On inspection the marker was **stale**: the file has a clean `<script lang="ts">`
+(line 19) / `</script>` (line 252) pair — the only other "script" hit is inside a regex
+string literal (`.replace(/<script[\s\S]*?<\/script>/gi, '')`). It compiles 0/0. Marker
+removed. **The repo is now 100% marker-free.**
 
 ---
 
@@ -108,8 +102,8 @@ is for. **No change recommended.**
 | Area | Finding | Verdict |
 |------|---------|---------|
 | **`{@html}` (XSS surface)** | 34 files. Every real render site is sanitized (`sanitizeHtml` / `sanitizePopupContent` / `sanitizeBlogContent` / DOMPurify) or is JSON-LD (`application/ld+json` built from `serializeJsonLd`/`JSON.stringify`). A scripted check for unsanitized non-JSON-LD render sites returned **empty**. | **No action** |
-| **`svelte-ignore`** | ~84 total, dominated by a11y (`a11y_no_noninteractive_element_interactions` ×41, `a11y_no_static_element_interactions` ×12, `a11y_click_events_have_key_events` ×8). | **Plan §C** |
-| **`: any` typed props** | ~72 files use `any` in a `Props` interface/annotation. | **Plan §D** |
+| **`svelte-ignore`** | ~84 total, dominated by a11y (`a11y_no_noninteractive_element_interactions` ×41, `a11y_no_static_element_interactions` ×12, `a11y_click_events_have_key_events` ×8). | **Plan §B** |
+| **`: any` typed props** | ~72 files use `any` in a `Props` interface/annotation. | **Plan §C** |
 | **`class:` directive** | 402 files. Docs *prefer* clsx-style arrays but `class:` is fully supported, not deprecated. | **No action** (stylistic) |
 | **`use:` actions** | 12 files. Docs nudge toward `{@attach}`; actions remain supported. | **No action** |
 | **`onMount`** | 286 files. Many legitimate client-only init. | **No action** (case-by-case) |
@@ -119,12 +113,7 @@ is for. **No change recommended.**
 
 ## Plan — prioritized backlog
 
-### §A — finish the marker cleanup (tiny)
-Remove the stale `@migration-task` comment from
-`dashboard/indicators/[id]/+page.svelte` once its `<script>` pairing is eyeballed.
-Then the repo is 100% marker-free.
-
-### §B — `$effect`→idiomatic re-seed (Category A)
+### §A — `$effect`→idiomatic re-seed (Category A)
 Convert the prop→state modal/drawer syncs. Suggested order (clearest pattern first):
 1. `ClassVideos.svelte` (2 writes) — init-once / `$derived`.
 2. `CourseDetailDrawer.svelte` (5) — `{#key}` remount on open.
@@ -133,16 +122,16 @@ Convert the prop→state modal/drawer syncs. Suggested order (clearest pattern f
    `TradeAlertModal` 18) — most care; re-seed on open, not on every prop tick.
 Each fix: `svelte-autofixer` until clean → `pnpm check`.
 
-### §C — accessibility debt
+### §B — accessibility debt
 Review the ~61 a11y suppressions. Dominant pattern: click handlers on non-interactive
 elements → add `onkeydown` + `role` + `tabindex`, or switch to `<button>`. Batch by
 family (CRM modals, blog BlockEditor, cms blocks).
 
-### §D — type tightening
+### §C — type tightening
 Replace `: any` in `Props` interfaces with real types, lowest-traffic files first.
 Pure type-safety; no runtime risk.
 
-### §E — optional idiom modernization (low ROI, defer)
+### §D — optional idiom modernization (low ROI, defer)
 `class:`→clsx arrays, `use:`→`{@attach}`, opportunistic `onMount`→`$effect`/`{@attach}`.
 Only when already editing a file for another reason.
 
@@ -158,7 +147,7 @@ Only when already editing a file for another reason.
 ## Session caveat (transparency)
 
 Tool output was intermittently unstable this session (empty/garbled reads for a few
-files, including the phantom CMS file noted at the top). Findings here are grounded in
-the **authoritative `svelte-check` gate** plus scripted greps whose output was
-verified clean. The one item that could not be directly inspected is called out
-explicitly in §🟠 / Plan §A rather than guessed at.
+files, including a phantom CMS file an earlier draft hallucinated). All findings here
+are grounded in the **authoritative `svelte-check` gate** plus scripted greps whose
+output was verified once the channel recovered — including the previously-deferred
+`dashboard/indicators/[id]` file, which was confirmed clean and its marker removed.
