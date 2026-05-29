@@ -11,7 +11,14 @@
 	} from 'lightweight-charts';
 
 	type Direction = 'up' | 'down';
-	type SectionId = 'hero' | 'charts' | 'signals' | 'academy' | 'infrastructure' | 'access';
+	type SectionId =
+		| 'hero'
+		| 'operations'
+		| 'charts'
+		| 'signals'
+		| 'academy'
+		| 'infrastructure'
+		| 'access';
 	type ChartKey = 'main' | 'aapl' | 'nvda';
 	type SignalStatus = 'active' | 'watch' | 'cooling';
 	type AcademyTrackId = 'day' | 'swing';
@@ -54,9 +61,27 @@
 		accent: string;
 	}
 
+	interface OperationsChapter {
+		number: string;
+		title: string;
+		copy: string;
+		metric: string;
+	}
+
+	interface MarketParticle {
+		x: number;
+		y: number;
+		vx: number;
+		vy: number;
+		size: number;
+		phase: number;
+		hue: number;
+	}
+
 	const timeframes = ['1m', '5m', '15m', '1H'];
 	const revealSections: SectionId[] = [
 		'hero',
+		'operations',
 		'charts',
 		'signals',
 		'academy',
@@ -79,6 +104,7 @@
 
 	let visible = $state<Record<SectionId, boolean>>({
 		hero: false,
+		operations: false,
 		charts: false,
 		signals: false,
 		academy: false,
@@ -108,7 +134,7 @@
 		{
 			id: 1,
 			symbol: 'NVDA',
-			type: 'Momentum ignition',
+			type: 'Momentum expansion',
 			price: 1475.2,
 			confidence: 97,
 			age: 2,
@@ -153,8 +179,35 @@
 	const stageLines = [
 		'Resilient data routes',
 		'Scanner model deployment',
-		'Course media migration',
+		'Institutional curriculum migration',
 		'Member room hardening'
+	];
+
+	const operationsChapters: OperationsChapter[] = [
+		{
+			number: '01',
+			title: 'Market Data Layer',
+			copy: 'Tick, quote, chart, watchlist, and scanner data are being normalized into a faster decision layer for equities and index products.',
+			metric: 'sub-20ms feed'
+		},
+		{
+			number: '02',
+			title: 'Options Risk Desk',
+			copy: 'Delta, gamma, theta, IV rank, 0DTE exposure, spread structure, and event risk move into one options workflow.',
+			metric: 'Greeks + IV'
+		},
+		{
+			number: '03',
+			title: 'Scanner Edge Engine',
+			copy: 'Relative volume, liquidity sweeps, sector leadership, dark-pool repeats, and momentum quality are ranked before alerts reach the desk.',
+			metric: '12,847 symbols'
+		},
+		{
+			number: '04',
+			title: 'Education Desk',
+			copy: 'Day Trading University and Swing Trading University now separate stock execution, options strategy, risk protocol, and replay review into institution-grade tracks.',
+			metric: 'stocks + options'
+		}
 	];
 
 	const academyTracks: AcademyTrack[] = [
@@ -204,6 +257,7 @@
 	];
 
 	let shellEl: HTMLDivElement;
+	let cinematicCanvasEl: HTMLCanvasElement;
 	let mainChartEl: HTMLDivElement;
 	let aaplChartEl: HTMLDivElement;
 	let nvdaChartEl: HTMLDivElement;
@@ -218,6 +272,7 @@
 	let chartsReady = false;
 	let statsPlayed = false;
 	let raf = 0;
+	let sceneRaf = 0;
 
 	let chartData = $state<Record<ChartKey, CandlestickData[]>>({
 		main: [],
@@ -253,14 +308,17 @@
 		const cleanupReveal = setupRevealObserver();
 		const cleanupIntervals = startLiveSystems();
 		const cleanupPointer = setupPointerTracking();
+		const cleanupCinema = startCinematicScene();
 
 		visible.hero = true;
 
 		return () => {
 			cancelAnimationFrame(raf);
+			cancelAnimationFrame(sceneRaf);
 			cleanupReveal?.();
 			cleanupIntervals();
 			cleanupPointer();
+			cleanupCinema?.();
 			mainChart?.remove();
 			aaplChart?.remove();
 			nvdaChart?.remove();
@@ -269,6 +327,10 @@
 
 	const mountShell: Attachment<HTMLDivElement> = (node) => {
 		shellEl = node;
+	};
+
+	const mountCinematicCanvas: Attachment<HTMLCanvasElement> = (node) => {
+		cinematicCanvasEl = node;
 	};
 
 	const mountMainChart: Attachment<HTMLDivElement> = (node) => {
@@ -363,6 +425,150 @@
 
 		window.addEventListener('pointermove', handlePointerMove, { passive: true });
 		return () => window.removeEventListener('pointermove', handlePointerMove);
+	}
+
+	function startCinematicScene() {
+		if (!cinematicCanvasEl) return () => {};
+
+		const canvas = cinematicCanvasEl;
+		const context = canvas.getContext('2d', { alpha: true });
+		if (!context) return () => {};
+		const ctx: CanvasRenderingContext2D = context;
+
+		let width = 0;
+		let height = 0;
+		let dpr = 1;
+		let particles: MarketParticle[] = [];
+
+		function createParticles() {
+			const count = Math.min(118, Math.max(58, Math.floor((width * height) / 18000)));
+			particles = Array.from({ length: count }, (_, index) => ({
+				x: (index * 79 + Math.random() * width) % width,
+				y: Math.random() * height,
+				vx: (Math.random() - 0.5) * 0.24,
+				vy: 0.18 + Math.random() * 0.34,
+				size: 0.8 + Math.random() * 1.9,
+				phase: Math.random() * Math.PI * 2,
+				hue: index % 3 === 0 ? 156 : index % 3 === 1 ? 44 : 198
+			}));
+		}
+
+		function resize() {
+			dpr = Math.min(window.devicePixelRatio || 1, 2);
+			width = window.innerWidth;
+			height = window.innerHeight;
+			canvas.width = Math.floor(width * dpr);
+			canvas.height = Math.floor(height * dpr);
+			canvas.style.width = `${width}px`;
+			canvas.style.height = `${height}px`;
+			ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+			createParticles();
+		}
+
+		function drawPricePath(time: number, offset: number, color: string, amplitude: number) {
+			ctx.beginPath();
+			for (let x = -20; x <= width + 20; x += 18) {
+				const normalized = x / width;
+				const y =
+					height * offset +
+					Math.sin(normalized * 10 + time * 0.00055) * amplitude +
+					Math.sin(normalized * 27 + time * 0.00028) * amplitude * 0.42 -
+					scrollProgress * 80;
+				if (x === -20) ctx.moveTo(x, y);
+				else ctx.lineTo(x, y);
+			}
+			ctx.strokeStyle = color;
+			ctx.lineWidth = 1.4;
+			ctx.shadowBlur = 18;
+			ctx.shadowColor = color;
+			ctx.stroke();
+			ctx.shadowBlur = 0;
+		}
+
+		function draw(now = performance.now()) {
+			ctx.clearRect(0, 0, width, height);
+			ctx.globalCompositeOperation = 'lighter';
+
+			const scrollLift = scrollProgress * height * 0.18;
+			const scanX = ((now * 0.055) % (width + 360)) - 180;
+
+			const beam = ctx.createLinearGradient(scanX - 160, 0, scanX + 160, height);
+			beam.addColorStop(0, 'rgba(22, 242, 169, 0)');
+			beam.addColorStop(0.5, 'rgba(22, 242, 169, 0.10)');
+			beam.addColorStop(1, 'rgba(139, 211, 255, 0)');
+			ctx.fillStyle = beam;
+			ctx.fillRect(scanX - 160, 0, 320, height);
+
+			for (let x = -80; x < width + 160; x += 120) {
+				ctx.strokeStyle = 'rgba(248, 212, 119, 0.045)';
+				ctx.lineWidth = 1;
+				ctx.beginPath();
+				ctx.moveTo(x + scrollProgress * 160, 0);
+				ctx.lineTo(x - 240 + scrollProgress * 160, height);
+				ctx.stroke();
+			}
+
+			drawPricePath(now, 0.24, 'rgba(22, 242, 169, 0.28)', 42);
+			drawPricePath(now + 1600, 0.54, 'rgba(248, 212, 119, 0.22)', 56);
+			drawPricePath(now + 3200, 0.78, 'rgba(139, 211, 255, 0.20)', 34);
+
+			for (let index = 0; index < particles.length; index += 1) {
+				const particle = particles[index];
+				const pulse = 0.55 + Math.sin(now * 0.002 + particle.phase) * 0.45;
+				particle.x += particle.vx + Math.sin(now * 0.00035 + particle.phase) * 0.08;
+				particle.y += particle.vy + scrollProgress * 0.28;
+
+				if (particle.y - scrollLift > height + 24) {
+					particle.y = -24 + scrollLift;
+					particle.x = Math.random() * width;
+				}
+				if (particle.x < -24) particle.x = width + 24;
+				if (particle.x > width + 24) particle.x = -24;
+
+				const x = particle.x;
+				const y = particle.y - scrollLift;
+
+				for (let otherIndex = index + 1; otherIndex < particles.length; otherIndex += 1) {
+					const other = particles[otherIndex];
+					const otherY = other.y - scrollLift;
+					const dx = x - other.x;
+					const dy = y - otherY;
+					const distance = Math.hypot(dx, dy);
+					if (distance > 118) continue;
+
+					const alpha = (1 - distance / 118) * 0.13;
+					ctx.strokeStyle = `hsla(${particle.hue}, 92%, 64%, ${alpha})`;
+					ctx.lineWidth = 0.7;
+					ctx.beginPath();
+					ctx.moveTo(x, y);
+					ctx.lineTo(other.x, otherY);
+					ctx.stroke();
+				}
+
+				ctx.fillStyle = `hsla(${particle.hue}, 96%, 64%, ${0.18 + pulse * 0.34})`;
+				ctx.shadowBlur = 12 + pulse * 10;
+				ctx.shadowColor = `hsla(${particle.hue}, 96%, 64%, 0.56)`;
+				ctx.beginPath();
+				ctx.arc(x, y, particle.size + pulse * 0.8, 0, Math.PI * 2);
+				ctx.fill();
+				ctx.shadowBlur = 0;
+			}
+
+			ctx.globalCompositeOperation = 'source-over';
+
+			if (!reducedMotion) {
+				sceneRaf = requestAnimationFrame(draw);
+			}
+		}
+
+		resize();
+		window.addEventListener('resize', resize, { passive: true });
+		draw();
+
+		return () => {
+			window.removeEventListener('resize', resize);
+			cancelAnimationFrame(sceneRaf);
+		};
 	}
 
 	function handleScroll() {
@@ -690,6 +896,8 @@
 		<span></span>
 	</div>
 
+	<canvas class="cinematic-canvas" aria-hidden="true" {@attach mountCinematicCanvas}></canvas>
+
 	<header class="market-tape" aria-label="Live market tape">
 		<div class="tape-track" aria-hidden="true">
 			{#each [...liveTickers, ...liveTickers, ...liveTickers] as ticker, index (ticker.symbol + '-' + index)}
@@ -724,7 +932,7 @@
 
 				<div class="hero-actions">
 					<a class="primary-link" href="#access">Get notified</a>
-					<a class="ghost-link" href="#charts">View the upgrade</a>
+					<a class="ghost-link" href="#operations">View trading stack</a>
 				</div>
 			</div>
 
@@ -750,10 +958,56 @@
 			</div>
 		</section>
 
+		<section id="operations" class="ops-section reveal" class:visible={visible.operations}>
+			<div class="section-heading ops-heading">
+				<p class="section-kicker">Trading operations center</p>
+				<h2>A market-native buildout for faster decisions, cleaner risk, and sharper education.</h2>
+			</div>
+
+			<div class="ops-stage">
+				<div class="ops-reel" aria-label="Trading operations stack">
+					{#each operationsChapters as chapter, index (chapter.number)}
+						<article class="reel-card" style:--chapter-delay={`${index * 110}ms`}>
+							<span>{chapter.number}</span>
+							<h3>{chapter.title}</h3>
+							<p>{chapter.copy}</p>
+							<strong>{chapter.metric}</strong>
+						</article>
+					{/each}
+				</div>
+
+				<div class="systems-theater" aria-label="Trading systems status">
+					<div class="theater-topline">
+						<span>Trading stack</span>
+						<strong>Market Ops Online</strong>
+					</div>
+
+					<div class="launch-core" aria-hidden="true">
+						<span></span>
+						<span></span>
+						<span></span>
+						<div>
+							<strong>99.99%</strong>
+							<small>target uptime</small>
+						</div>
+					</div>
+
+					<div class="terminal-grid" aria-hidden="true">
+						<span>equities.data: normalized</span>
+						<span>options.greeks: mapped</span>
+						<span>scanner.edge: ranked</span>
+						<span>risk.limits: active</span>
+						<span>academy.replay: indexed</span>
+						<span>member.access: hardened</span>
+					</div>
+				</div>
+			</div>
+		</section>
+
 		<section id="charts" class="charts-section reveal" class:visible={visible.charts}>
 			<div class="section-heading">
-				<p class="section-kicker">Scroll-revealed market lab</p>
-				<h2>Live charts wake with the page, then keep moving.</h2>
+				<p class="section-kicker">Market data lab</p>
+				<h2>Charts, liquidity, and scanner data stay connected while the page moves.</h2>
 			</div>
 
 			<div class="chart-stage">
@@ -869,7 +1123,9 @@
 		<section id="academy" class="academy-section reveal" class:visible={visible.academy}>
 			<div class="section-heading">
 				<p class="section-kicker">Trading university</p>
-				<h2>Stocks, options, and institution-grade desk training in one cinematic path.</h2>
+				<h2>
+					Stocks, options, and institution-grade desk training in one professional curriculum path.
+				</h2>
 			</div>
 
 			<div class="academy-cinema">
@@ -935,7 +1191,7 @@
 								<p>{activeAcademy.lab}</p>
 							</div>
 							<div>
-								<span>Release outcome</span>
+								<span>Desk outcome</span>
 								<p>{activeAcademy.outcome}</p>
 							</div>
 						</div>
@@ -1013,8 +1269,8 @@
 				>
 					<div>
 						<p class="section-kicker">Early access</p>
-						<h2>Be first through the door when the platform reopens.</h2>
-						<p>Get the launch note for scanners, academy access, and the upgraded member room.</p>
+						<h2>Get the rollout note when the platform reopens.</h2>
+						<p>Receive the update for scanners, academy access, and the upgraded member room.</p>
 					</div>
 
 					<div class="email-row">
@@ -1107,6 +1363,15 @@
 		box-shadow: 0 0 22px rgba(22, 242, 169, 0.48);
 	}
 
+	.cinematic-canvas {
+		position: fixed;
+		inset: 0;
+		z-index: 0;
+		pointer-events: none;
+		opacity: 0.54;
+		mix-blend-mode: screen;
+	}
+
 	.market-tape {
 		position: sticky;
 		top: 0;
@@ -1181,7 +1446,7 @@
 
 	.page-shell {
 		position: relative;
-		z-index: 1;
+		z-index: 2;
 		width: min(1180px, calc(100% - 36px));
 		margin: 0 auto;
 		padding: clamp(42px, 8vw, 96px) 0 72px;
@@ -1415,6 +1680,7 @@
 		transform: translateY(0);
 	}
 
+	.ops-section,
 	.charts-section,
 	.signals-section,
 	.academy-section,
@@ -1426,6 +1692,203 @@
 	.section-heading {
 		max-width: 780px;
 		margin-bottom: 24px;
+	}
+
+	.ops-section {
+		padding-top: clamp(24px, 4vw, 58px);
+	}
+
+	.ops-heading {
+		max-width: 920px;
+	}
+
+	.ops-stage {
+		display: grid;
+		grid-template-columns: minmax(0, 1.03fr) minmax(340px, 0.72fr);
+		gap: 16px;
+		align-items: stretch;
+	}
+
+	.ops-reel {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 12px;
+	}
+
+	.reel-card,
+	.systems-theater {
+		position: relative;
+		overflow: hidden;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		background:
+			linear-gradient(135deg, rgba(22, 242, 169, 0.075), transparent 50%),
+			linear-gradient(180deg, rgba(255, 255, 255, 0.045), transparent 42%), rgba(12, 15, 20, 0.82);
+		box-shadow: 0 28px 90px rgba(0, 0, 0, 0.36);
+		backdrop-filter: blur(28px);
+	}
+
+	.reel-card {
+		min-height: 242px;
+		display: grid;
+		align-content: space-between;
+		gap: 18px;
+		padding: 18px;
+		animation: reel-rise 760ms cubic-bezier(0.16, 1, 0.3, 1) both;
+		animation-delay: var(--chapter-delay);
+	}
+
+	.reel-card::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background:
+			linear-gradient(100deg, transparent 0 34%, rgba(255, 255, 255, 0.075) 47%, transparent 62%),
+			linear-gradient(180deg, rgba(248, 212, 119, 0.045), transparent);
+		opacity: 0.78;
+		transform: translateX(-120%);
+		animation: projector-sweep 5.8s ease-in-out infinite;
+		animation-delay: calc(var(--chapter-delay) + 700ms);
+	}
+
+	.reel-card > * {
+		position: relative;
+		z-index: 1;
+	}
+
+	.reel-card > span {
+		width: max-content;
+		border: 1px solid rgba(22, 242, 169, 0.24);
+		border-radius: 999px;
+		padding: 5px 10px;
+		color: var(--green);
+		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
+		font-size: 12px;
+		font-weight: 900;
+	}
+
+	.reel-card h3 {
+		max-width: 360px;
+		margin: 0;
+		font-size: clamp(1.45rem, 2.8vw, 2.35rem);
+		line-height: 0.98;
+	}
+
+	.reel-card p {
+		margin: 0;
+		color: var(--muted);
+		line-height: 1.6;
+	}
+
+	.reel-card strong {
+		color: var(--gold);
+		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
+		text-transform: uppercase;
+	}
+
+	.systems-theater {
+		min-height: 496px;
+		display: grid;
+		align-content: space-between;
+		padding: 18px;
+		background:
+			radial-gradient(circle at 50% 42%, rgba(22, 242, 169, 0.12), transparent 40%),
+			linear-gradient(135deg, rgba(248, 212, 119, 0.06), transparent 46%), rgba(8, 10, 14, 0.88);
+	}
+
+	.theater-topline {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 14px;
+		color: var(--dim);
+		font-size: 12px;
+		font-weight: 900;
+		text-transform: uppercase;
+	}
+
+	.theater-topline strong {
+		color: var(--green);
+	}
+
+	.launch-core {
+		position: relative;
+		display: grid;
+		place-items: center;
+		width: min(320px, 72vw);
+		aspect-ratio: 1;
+		margin: 18px auto;
+		border-radius: 50%;
+		background:
+			conic-gradient(from 180deg, var(--green), var(--cyan), var(--gold), var(--green)),
+			radial-gradient(circle, rgba(255, 255, 255, 0.12), transparent 54%);
+		animation: launch-rotate 18s linear infinite;
+	}
+
+	.launch-core > span {
+		position: absolute;
+		inset: calc(var(--ring) * 1px);
+		border: 1px solid rgba(255, 255, 255, 0.18);
+		border-radius: 50%;
+		animation: launch-pulse 2.8s ease-in-out infinite;
+	}
+
+	.launch-core > span:nth-child(1) {
+		--ring: 24;
+	}
+
+	.launch-core > span:nth-child(2) {
+		--ring: 54;
+		animation-delay: 360ms;
+	}
+
+	.launch-core > span:nth-child(3) {
+		--ring: 84;
+		animation-delay: 720ms;
+	}
+
+	.launch-core div {
+		position: relative;
+		z-index: 1;
+		display: grid;
+		place-items: center;
+		width: 58%;
+		aspect-ratio: 1;
+		border: 1px solid rgba(255, 255, 255, 0.12);
+		border-radius: 50%;
+		background: #07090d;
+		transform: rotate(calc(var(--scroll-progress) * -28deg));
+	}
+
+	.launch-core strong {
+		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
+		font-size: clamp(2rem, 4vw, 3.4rem);
+	}
+
+	.launch-core small {
+		color: var(--muted);
+		text-transform: uppercase;
+	}
+
+	.terminal-grid {
+		display: grid;
+		gap: 8px;
+	}
+
+	.terminal-grid span {
+		border: 1px solid rgba(139, 211, 255, 0.12);
+		border-radius: 8px;
+		padding: 10px 12px;
+		color: rgba(139, 211, 255, 0.78);
+		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
+		font-size: 12px;
+		background: rgba(0, 0, 0, 0.22);
+		animation: terminal-glow 3.2s ease-in-out infinite;
+	}
+
+	.terminal-grid span:nth-child(2n) {
+		color: rgba(22, 242, 169, 0.82);
+		animation-delay: 480ms;
 	}
 
 	.chart-stage {
@@ -2118,6 +2581,40 @@
 		}
 	}
 
+	@keyframes reel-rise {
+		from {
+			opacity: 0;
+			transform: translate3d(0, 28px, 0) scale(0.985);
+		}
+	}
+
+	@keyframes projector-sweep {
+		45%,
+		100% {
+			transform: translateX(120%);
+		}
+	}
+
+	@keyframes launch-rotate {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	@keyframes launch-pulse {
+		50% {
+			opacity: 0.28;
+			transform: scale(1.025);
+		}
+	}
+
+	@keyframes terminal-glow {
+		50% {
+			border-color: rgba(22, 242, 169, 0.32);
+			box-shadow: 0 0 28px rgba(22, 242, 169, 0.08);
+		}
+	}
+
 	@keyframes academy-pulse {
 		50% {
 			transform: scale(1.45);
@@ -2140,6 +2637,7 @@
 
 	@media (max-width: 960px) {
 		.hero,
+		.ops-stage,
 		.signals-layout,
 		.infra-grid,
 		.academy-feature,
@@ -2164,6 +2662,7 @@
 
 		.chart-toolbar,
 		.email-row,
+		.ops-reel,
 		.mini-feed-grid,
 		.academy-selector,
 		.asset-lanes,
@@ -2195,6 +2694,10 @@
 
 		.chart-canvas {
 			height: 340px;
+		}
+
+		.systems-theater {
+			min-height: 420px;
 		}
 
 		.form-error {
