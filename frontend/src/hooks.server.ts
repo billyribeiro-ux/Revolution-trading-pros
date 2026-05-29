@@ -31,7 +31,7 @@ const API_BASE_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:80
  * Set MAINTENANCE_MODE = true to activate
  * ═══════════════════════════════════════════════════════════════════════════
  */
-const MAINTENANCE_MODE = false; // Set to true to enable maintenance mode
+const MAINTENANCE_MODE = true; // Set to true to enable maintenance mode
 
 /**
  * Maintenance Mode Handler

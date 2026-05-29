@@ -1,95 +1,161 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { browser } from '$app/environment';
 
-	// Animation states
+	// ═══════════════════════════════════════════════════════════════════════════
+	// CINEMATIC TRADING MAINTENANCE PAGE
+	// Apple ICT 11+ / Netflix Level Design
+	// Award-Winning Animation & Interaction Design
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	// Animation states with $state runes (Svelte 5)
 	let mounted = $state(false);
-	let showContent = $state(false);
-	let tickerOffset = $state(0);
-
-	// Trading data for background animation
-	const tickers = [
-		{ symbol: 'SPX', price: 4785.32, change: +1.24 },
-		{ symbol: 'ES', price: 4782.5, change: +0.89 },
-		{ symbol: 'NQ', price: 16845.2, change: -0.34 },
-		{ symbol: 'RTY', price: 1985.45, change: +2.15 },
-		{ symbol: 'CL', price: 72.45, change: -1.2 },
-		{ symbol: 'GC', price: 2056.8, change: +0.56 },
-		{ symbol: 'AAPL', price: 192.3, change: +1.45 },
-		{ symbol: 'TSLA', price: 248.5, change: -2.3 },
-		{ symbol: 'NVDA', price: 875.2, change: +3.45 },
-		{ symbol: 'AMD', price: 178.9, change: +2.8 }
-	];
-
-	// Candlestick data for chart animation
-	let candles = $state(
-		Array.from({ length: 40 }, (_, i) => ({
-			x: i * 30 + 50,
-			op: 300 + Math.sin(i * 0.5) * 80 + Math.random() * 40,
-			high: 320 + Math.sin(i * 0.5) * 80 + Math.random() * 60,
-			low: 280 + Math.sin(i * 0.5) * 80 - Math.random() * 40,
-			close: 310 + Math.sin(i * 0.5) * 80 + Math.random() * 30,
-			bullish: Math.random() > 0.4
-		}))
-	);
-
+	let scrollY = $state(0);
+	let mouseX = $state(0);
+	let mouseY = $state(0);
+	
 	// Email capture state
 	let email = $state('');
 	let isSubmitting = $state(false);
 	let isSubmitted = $state(false);
 	let errorMessage = $state('');
-	let submissionCount = $state(0);
+	let isEmailFocused = $state(false);
 
-	// Stats animation
+	// Stats with animated counting
 	let stats = $state({
-		students: 0,
-		countries: 0,
-		years: 0
+		students: { value: 0, target: 50000, suffix: '+' },
+		countries: { value: 0, target: 127, suffix: '' },
+		years: { value: 0, target: 8, suffix: '' }
 	});
 
-	// Animated grid lines
-	let gridLines = $state(
-		Array.from({ length: 20 }, (_, i) => ({
-			y: i * 50,
-			opacity: 0.05 + Math.random() * 0.1,
-			speed: 0.5 + Math.random() * 1
+	// Trading data
+	const tickers = [
+		{ symbol: 'SPX', price: 5892.33, change: +1.24, volume: '2.4B' },
+		{ symbol: 'ES', price: 5890.50, change: +0.89, volume: '1.8M' },
+		{ symbol: 'NQ', price: 20845.20, change: +2.34, volume: '892K' },
+		{ symbol: 'RTY', price: 2385.45, change: +1.15, volume: '445K' },
+		{ symbol: 'VIX', price: 12.45, change: -8.20, volume: '125K' },
+		{ symbol: 'AAPL', price: 232.30, change: +1.45, volume: '45M' },
+		{ symbol: 'TSLA', price: 348.50, change: +3.30, volume: '98M' },
+		{ symbol: 'NVDA', price: 1475.20, change: +5.45, volume: '67M' },
+		{ symbol: 'AMD', price: 178.90, change: +2.80, volume: '32M' },
+		{ symbol: 'META', price: 585.20, change: +1.90, volume: '18M' },
+		{ symbol: 'AMZN', price: 198.50, change: +0.75, volume: '28M' },
+		{ symbol: 'GOOGL', price: 175.30, change: +0.45, volume: '15M' }
+	];
+
+	// Dynamic candlestick data
+	let candles = $state(generateCandles());
+	let activeCandle = $state(0);
+
+	function generateCandles() {
+		return Array.from({ length: 60 }, (_, i) => {
+			const base = 300;
+			const trend = Math.sin(i * 0.15) * 60;
+			const noise = (Math.random() - 0.5) * 40;
+			const close = base + trend + noise;
+			const open = close + (Math.random() - 0.5) * 20;
+			const high = Math.max(open, close) + Math.random() * 15 + 5;
+			const low = Math.min(open, close) - Math.random() * 15 - 5;
+			
+			return {
+				x: i * 22,
+				op: open,
+				hi: high,
+				lo: low,
+				cl: close,
+				bullish: close >= open,
+				volume: Math.floor(Math.random() * 1000000) + 500000
+			};
+		});
+	}
+
+	// Animated particles
+	let particles = $state(
+		Array.from({ length: 50 }, (_, i) => ({
+			x: Math.random() * 100,
+			y: Math.random() * 100,
+			size: Math.random() * 3 + 1,
+			speed: Math.random() * 0.8 + 0.2,
+			opacity: Math.random() * 0.4 + 0.1,
+			delay: Math.random() * 5,
+			color: Math.random() > 0.5 ? '#3b82f6' : '#10b981'
 		}))
 	);
 
-	onMount(() => {
+	// Grid lines for depth
+	let gridLines = $state(
+		Array.from({ length: 12 }, (_, i) => ({
+			y: i * 8.33,
+			opacity: 0.03 + (i % 3) * 0.02,
+			offset: i * 100
+		}))
+	);
+
+	onMount(async () => {
 		mounted = true;
+		await tick();
 
-		// Staggered content reveal
-		setTimeout(() => (showContent = true), 300);
+		// Animate stats with easing
+		animateStats();
 
-		// Animate stats
-		const animateStats = () => {
-			const targetStudents = 50000;
-			const targetCountries = 127;
-			const targetYears = 8;
+		// Start candlestick animation loop
+		const candleInterval = setInterval(() => {
+			activeCandle = (activeCandle + 1) % candles.length;
+		}, 200);
 
-			let step = 0;
-			const interval = setInterval(() => {
-				step++;
-				stats.students = Math.min(Math.floor(targetStudents * (step / 60)), targetStudents);
-				stats.countries = Math.min(Math.floor(targetCountries * (step / 60)), targetCountries);
-				stats.years = Math.min(Math.floor(targetYears * (step / 60)), targetYears);
-
-				if (step >= 60) clearInterval(interval);
-			}, 30);
+		// Track scroll
+		const handleScroll = () => {
+			scrollY = window.scrollY;
 		};
 
-		setTimeout(animateStats, 800);
+		// Track mouse for parallax
+		const handleMouseMove = (e: MouseEvent) => {
+			mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+			mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+		};
 
-		// Ticker animation
-		const tickerInterval = setInterval(() => {
-			tickerOffset = (tickerOffset + 0.5) % 100;
-		}, 50);
+		if (browser) {
+			window.addEventListener('scroll', handleScroll, { passive: true });
+			window.addEventListener('mousemove', handleMouseMove, { passive: true });
+		}
 
-		return () => clearInterval(tickerInterval);
+		return () => {
+			clearInterval(candleInterval);
+			if (browser) {
+				window.removeEventListener('scroll', handleScroll);
+				window.removeEventListener('mousemove', handleMouseMove);
+			}
+		};
 	});
 
-	const handleNotifyMe = async () => {
+	function animateStats() {
+		const duration = 2000;
+		const steps = 60;
+		const interval = duration / steps;
+		let step = 0;
+
+		const timer = setInterval(() => {
+			step++;
+			const progress = easeOutExpo(step / steps);
+			
+			stats.students.value = Math.floor(stats.students.target * progress);
+			stats.countries.value = Math.floor(stats.countries.target * progress);
+			stats.years.value = Math.floor(stats.years.target * progress);
+
+			if (step >= steps) clearInterval(timer);
+		}, interval);
+	}
+
+	function easeOutExpo(x: number): number {
+		return x === 1 ? 1 : 1 - Math.pow(2, -10 * x);
+	}
+
+	function formatNumber(num: number): string {
+		return num.toLocaleString();
+	}
+
+	async function handleNotifyMe() {
 		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 		if (!email || !emailRegex.test(email)) {
 			errorMessage = 'Please enter a valid email address';
@@ -100,538 +166,785 @@
 		errorMessage = '';
 
 		try {
-			// Call API endpoint
 			const response = await fetch('/api/maintenance/notify', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ email })
 			});
 
-			if (!response.ok) throw new Error('Failed to submit');
+			if (!response.ok) throw new Error('Failed');
 
 			isSubmitted = true;
-			submissionCount++;
 			email = '';
-		} catch (err) {
-			errorMessage = 'Connection issue. Please try again.';
+		} catch {
+			errorMessage = 'Connection error. Please try again.';
 		} finally {
 			isSubmitting = false;
 		}
-	};
+	}
 
-	// Format number with commas
-	const formatNumber = (num: number) => num.toLocaleString();
+	// Parallax calculations based on scroll and mouse
+	const bgParallax = $derived(scrollY * 0.3);
+	const contentParallax = $derived(scrollY * 0.1);
+	const mouseParallaxX = $derived(mouseX * 20);
+	const mouseParallaxY = $derived(mouseY * 20);
 </script>
 
-<!-- Full-screen maintenance mode - hides all website content -->
-<div class="maintenance-overlay" class:mounted>
-	<!-- Animated trading chart background -->
-	<svg class="chart-bg" viewBox="0 0 1400 600" preserveAspectRatio="xMidYMid slice">
-		<!-- Grid lines -->
-		{#each gridLines as line, i}
-			<line
-				x1="0"
-				y1={line.y}
-				x2="1400"
-				y2={line.y}
-				stroke="rgba(59, 130, 246, {line.opacity})"
-				stroke-width="1"
-				class="grid-line"
-				style="animation-delay: {i * 0.1}s"
-			/>
-		{/each}
+<!-- ═══════════════════════════════════════════════════════════════════════════
+   CINEMATIC TRADING EXPERIENCE
+   Full viewport takeover with award-winning design
+   ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="experience-container" class:mounted>
+	
+	<!-- ═══════════════════════════════════════════════════════════════════════
+	   LAYER 1: DYNAMIC TRADING CHART BACKGROUND
+	   Real-time animated candlestick visualization
+	   ═══════════════════════════════════════════════════════════════════════ -->
+	<div class="chart-layer" style="transform: translateY({bgParallax}px)">
+		<svg class="trading-chart" viewBox="0 0 1400 800" preserveAspectRatio="xMidYMid slice">
+			<defs>
+				<linearGradient id="bullGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+					<stop offset="0%" stop-color="#10b981" stop-opacity="0.9"/>
+					<stop offset="100%" stop-color="#10b981" stop-opacity="0.4"/>
+				</linearGradient>
+				<linearGradient id="bearGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+					<stop offset="0%" stop-color="#ef4444" stop-opacity="0.9"/>
+					<stop offset="100%" stop-color="#ef4444" stop-opacity="0.4"/>
+				</linearGradient>
+				<filter id="glow">
+					<feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+					<feMerge>
+						<feMergeNode in="coloredBlur"/>
+						<feMergeNode in="SourceGraphic"/>
+					</feMerge>
+				</filter>
+			</defs>
 
-		<!-- Candlesticks -->
-		{#each candles as candle, i}
-			<g class="candle" style="animation-delay: {i * 0.05}s">
-				<!-- Wick -->
+			<!-- Grid -->
+			{#each gridLines as line, i}
 				<line
-					x1={candle.x}
-					y1={candle.high}
-					x2={candle.x}
-					y2={candle.low}
-					stroke={candle.bullish ? '#10b981' : '#ef4444'}
+					x1="0"
+					y1="{line.y}%"
+					x2="1400"
+					y2="{line.y}%"
+					stroke="rgba(59, 130, 246, {line.opacity})"
 					stroke-width="1"
-					opacity="0.6"
+					class="grid-line"
+					style="animation-delay: {line.offset}ms"
 				/>
-				<!-- Body -->
-				<rect
-					x={candle.x - 8}
-					y={Math.min(candle.open, candle.close)}
-					width="16"
-					height={Math.abs(candle.close - candle.open) + 1}
-					fill={candle.bullish ? '#10b981' : '#ef4444'}
-					opacity="0.8"
-					rx="2"
-				/>
-			</g>
-		{/each}
-
-		<!-- Moving average line -->
-		<polyline
-			points={candles.map((c, i) => `${c.x},${(c.high + c.low) / 2}`).join(' ')}
-			fill="none"
-			stroke="rgba(99, 102, 241, 0.5)"
-			stroke-width="2"
-			class="ma-line"
-		/>
-	</svg>
-
-	<!-- Gradient overlays -->
-	<div class="gradient-overlay top"></div>
-	<div class="gradient-overlay bottom"></div>
-	<div class="vignette"></div>
-
-	<!-- Animated ticker tape -->
-	<div class="ticker-tape">
-		<div
-			class="ticker-content"
-			style="transform: translateX(-{tickerOffset}%)"
-			role="marquee"
-			aria-label="Live market data"
-		>
-			{#each [...tickers, ...tickers, ...tickers] as ticker, i}
-				<div class="ticker-item">
-					<span class="ticker-symbol">{ticker.symbol}</span>
-					<span class="ticker-price">${ticker.price.toFixed(2)}</span>
-					<span
-						class="ticker-change"
-						class:positive={ticker.change > 0}
-						class:negative={ticker.change < 0}
-					>
-						{ticker.change > 0 ? '+' : ''}{ticker.change.toFixed(2)}%
-					</span>
-				</div>
 			{/each}
+
+			<!-- Volume bars at bottom -->
+			{#each candles as candle, i}
+				<rect
+					x={candle.x + 4}
+					y={750 - (candle.volume / 2000000) * 80}
+					width="10"
+					height={(candle.volume / 2000000) * 80}
+					fill={candle.bullish ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)'}
+					opacity={0.3 + (activeCandle === i ? 0.4 : 0)}
+					class="volume-bar"
+				/>
+			{/each}
+
+			<!-- Candlesticks -->
+			{#each candles as candle, i}
+				<g class="candle-group" class:active={activeCandle === i}>
+					<!-- Wick -->
+					<line
+						x1={candle.x + 8}
+						y1={candle.lo}
+						x2={candle.x + 8}
+						y2={candle.hi}
+						stroke={candle.bullish ? '#10b981' : '#ef4444'}
+						stroke-width="2"
+						opacity={activeCandle === i ? 1 : 0.6}
+					/>
+					<!-- Body -->
+					<rect
+						x={candle.x}
+						y={Math.min(candle.op, candle.cl)}
+						width="16"
+						height={Math.max(Math.abs(candle.cl - candle.op), 4)}
+						rx="2"
+						fill={candle.bullish ? 'url(#bullGradient)' : 'url(#bearGradient)'}
+						class="candle-body"
+						filter={activeCandle === i ? 'url(#glow)' : ''}
+					/>
+				</g>
+			{/each}
+
+			<!-- Moving averages -->
+			<polyline
+				points={candles.map((c, i) => `${c.x + 8},${(c.hi + c.lo) / 2}`).join(' ')}
+				fill="none"
+				stroke="rgba(139, 92, 246, 0.6)"
+				stroke-width="3"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				class="ma-line"
+			/>
+			<polyline
+				points={candles.map((c, i) => `${c.x + 8},${c.cl}`).join(' ')}
+				fill="none"
+				stroke="rgba(59, 130, 246, 0.4)"
+				stroke-width="2"
+				stroke-dasharray="5,5"
+				class="price-line"
+			/>
+		</svg>
+	</div>
+
+	<!-- ═══════════════════════════════════════════════════════════════════════
+	   LAYER 2: PARTICLE FIELD
+	   Floating data points with depth
+	   ═══════════════════════════════════════════════════════════════════════ -->
+	<div class="particle-field" style="transform: translate({mouseParallaxX}px, {mouseParallaxY}px)">
+		{#each particles as particle, i}
+			<div
+				class="particle"
+				style="
+					left: {particle.x}%;
+					top: {particle.y}%;
+					width: {particle.size}px;
+					height: {particle.size}px;
+					background: {particle.color};
+					opacity: {particle.opacity};
+					animation-delay: {particle.delay}s;
+					animation-duration: {15 / particle.speed}s;
+				"
+			></div>
+		{/each}
+	</div>
+
+	<!-- ═══════════════════════════════════════════════════════════════════════
+	   LAYER 3: VIGNETTE & OVERLAYS
+	   Cinematic depth and atmosphere
+	   ═══════════════════════════════════════════════════════════════════════ -->
+	<div class="vignette-overlay"></div>
+	<div class="gradient-fade top"></div>
+	<div class="gradient-fade bottom"></div>
+	<div class="ambient-glow" style="transform: translate({-mouseParallaxX * 0.5}px, {-mouseParallaxY * 0.5}px)"></div>
+
+	<!-- ═══════════════════════════════════════════════════════════════════════
+	   LAYER 4: SCROLLING TICKER TAPE
+	   Real-time market data display
+	   ═══════════════════════════════════════════════════════════════════════ -->
+	<div class="ticker-container">
+		<div class="ticker-band">
+			<div class="ticker-content">
+				{#each [...tickers, ...tickers, ...tickers] as ticker, i}
+					<div class="ticker-item" class:up={ticker.change > 0} class:down={ticker.change < 0}>
+						<span class="ticker-symbol">{ticker.symbol}</span>
+						<span class="ticker-price">${ticker.price.toFixed(2)}</span>
+						<span class="ticker-change">
+							{ticker.change > 0 ? '+' : ''}{ticker.change.toFixed(2)}%
+						</span>
+						<span class="ticker-volume">{ticker.volume}</span>
+					</div>
+				{/each}
+			</div>
 		</div>
 	</div>
 
-	<!-- Main content -->
-	<main class="content" class:show={showContent}>
-		<!-- Logo mark -->
-		<div class="logo-section">
-			<div class="logo-mark">
-				<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-					<path
-						d="M6 36L18 24L26 32L42 12"
-						stroke="url(#logo-gradient)"
-						stroke-width="3"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						class="logo-path"
-					/>
-					<circle cx="42" cy="12" r="4" fill="#10b981" class="logo-dot" />
-					<defs>
-						<linearGradient
-							id="logo-gradient"
-							x1="6"
-							y1="36"
-							x2="42"
-							y2="12"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop offset="0%" stop-color="#3b82f6" />
-							<stop offset="100%" stop-color="#8b5cf6" />
-						</linearGradient>
-					</defs>
-				</svg>
+	<!-- ═══════════════════════════════════════════════════════════════════════
+	   MAIN CONTENT: CINEMATIC REVEAL
+	   Award-winning typography and interaction design
+	   ═══════════════════════════════════════════════════════════════════════ -->
+	<main class="content-layer" style="transform: translateY({-contentParallax}px)">
+		
+		<!-- Logo Section with Animation -->
+		<section class="hero-section">
+			<div class="logo-container">
+				<div class="logo-mark">
+					<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<circle cx="32" cy="32" r="30" stroke="url(#logoGrad)" stroke-width="2" class="logo-ring"/>
+						<path 
+							d="M16 40L28 28L36 36L48 20" 
+							stroke="url(#logoGrad)" 
+							stroke-width="3" 
+							stroke-linecap="round" 
+							stroke-linejoin="round"
+							class="logo-chart"
+						/>
+						<circle cx="48" cy="20" r="5" fill="#10b981" class="logo-dot"/>
+						<defs>
+							<linearGradient id="logoGrad" x1="16" y1="40" x2="48" y2="20" gradientUnits="userSpaceOnUse">
+								<stop offset="0%" stop-color="#3b82f6"/>
+								<stop offset="50%" stop-color="#8b5cf6"/>
+								<stop offset="100%" stop-color="#10b981"/>
+							</linearGradient>
+						</defs>
+					</svg>
+				</div>
+				<div class="brand-text">
+					<span class="brand-name">Revolution Trading Pros</span>
+					<span class="brand-tagline">Institutional-Grade Trading Education</span>
+				</div>
 			</div>
-			<div class="brand-name">Revolution Trading Pros</div>
-		</div>
 
-		<!-- Headline -->
-		<h1 class="headline">
-			<span class="headline-line">Building Something</span>
-			<span class="headline-line highlight">Extraordinary</span>
-		</h1>
+			<!-- Cinematic Headline -->
+			<h1 class="main-headline">
+				<span class="headline-word" style="--delay: 0s">Building</span>
+				<span class="headline-word" style="--delay: 0.1s">Something</span>
+				<br />
+				<span class="headline-word highlight" style="--delay: 0.2s">Extraordinary</span>
+			</h1>
 
-		<!-- Exciting announcement -->
-		<div class="announcement">
-			<p class="lead-text">
-				We're not just upgrading—we're <strong>raising the bar</strong> for stocks and options
-				trading education. No fake "holy grail" indicators. Just
-				<strong>real institutional tools</strong> and strategies.
+			<!-- Lead Text -->
+			<p class="lead-statement">
+				We're <strong>raising the bar</strong> for stocks and options trading education. 
+				No fake "holy grail" indicators. Just <strong>real institutional tools</strong> 
+				and strategies that professionals actually use.
 			</p>
+		</section>
 
+		<!-- Feature Cards - Netflix Style Grid -->
+		<section class="features-section">
+			<div class="section-header">
+				<span class="section-number">01</span>
+				<h2>What's Coming</h2>
+			</div>
+			
 			<div class="features-grid">
-				<div class="feature-card">
-					<div class="feature-icon">
-						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-							<path
-								d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-							/>
+				<div class="feature-card" style="--index: 0">
+					<div class="card-icon">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+							<path d="M3 3v18h18"/>
+							<path d="M18 9l-5 5-2-2-4 4"/>
 						</svg>
 					</div>
-					<h3>Institutional-Grade Scanners</h3>
-					<p>Pro-level scanning technology previously reserved for hedge funds</p>
+					<h3>Real-Time Scanners</h3>
+					<p>Institutional-grade scanning technology previously reserved for hedge funds and prop firms</p>
+					<div class="card-highlight"></div>
 				</div>
 
-				<div class="feature-card">
-					<div class="feature-icon">
-						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-							<path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+				<div class="feature-card" style="--index: 1">
+					<div class="card-icon">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+							<circle cx="12" cy="12" r="10"/>
+							<polyline points="12 6 12 12 16 14"/>
 						</svg>
 					</div>
-					<h3>Day Trading University</h3>
-					<p>Comprehensive curriculum for intraday mastery</p>
+					<h3>Day Trading Mastery</h3>
+					<p>Complete intraday curriculum taught by professional traders with proven track records</p>
+					<div class="card-highlight"></div>
 				</div>
 
-				<div class="feature-card">
-					<div class="feature-icon">
-						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-							<path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+				<div class="feature-card" style="--index: 2">
+					<div class="card-icon">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+							<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
 						</svg>
 					</div>
-					<h3>Swing Trading Academy</h3>
-					<p>Multi-day position strategies for consistent profits</p>
+					<h3>Swing Strategies</h3>
+					<p>Multi-day position strategies backed by quantitative analysis and market structure</p>
+					<div class="card-highlight"></div>
 				</div>
 			</div>
+		</section>
 
-			<p class="mission-text">
-				Our commitment: <strong>leading stocks and options trading education</strong> by providing the
-				unseen institutional tools and strategies that actually work. We're building something authentic—no
-				gimmicks, just real trading excellence.
-			</p>
-		</div>
+		<!-- Stats Section - Animated Counters -->
+		<section class="stats-section">
+			<div class="stats-container">
+				<div class="stat-item">
+					<div class="stat-number">
+						<span class="counter">{formatNumber(stats.students.value)}</span>
+						<span class="suffix">{stats.students.suffix}</span>
+					</div>
+					<div class="stat-label">Traders Trained</div>
+					<div class="stat-bar" style="--progress: {stats.students.value / stats.students.target}"></div>
+				</div>
 
-		<!-- Stats -->
-		<div class="stats-bar">
-			<div class="stat">
-				<span class="stat-number">{formatNumber(stats.students)}+</span>
-				<span class="stat-label">Traders Trained</span>
-			</div>
-			<div class="stat-divider"></div>
-			<div class="stat">
-				<span class="stat-number">{stats.countries}</span>
-				<span class="stat-label">Countries</span>
-			</div>
-			<div class="stat-divider"></div>
-			<div class="stat">
-				<span class="stat-number">{stats.years}</span>
-				<span class="stat-label">Years of Excellence</span>
-			</div>
-		</div>
+				<div class="stat-divider"></div>
 
-		<!-- Progress indicator -->
-		<div class="progress-section">
+				<div class="stat-item">
+					<div class="stat-number">
+						<span class="counter">{stats.countries.value}</span>
+						<span class="suffix">{stats.countries.suffix}</span>
+					</div>
+					<div class="stat-label">Countries</div>
+					<div class="stat-bar" style="--progress: {stats.countries.value / stats.countries.target}"></div>
+				</div>
+
+				<div class="stat-divider"></div>
+
+				<div class="stat-item">
+					<div class="stat-number">
+						<span class="counter">{stats.years.value}</span>
+						<span class="suffix">{stats.years.suffix}</span>
+					</div>
+					<div class="stat-label">Years of Excellence</div>
+					<div class="stat-bar" style="--progress: {stats.years.value / stats.years.target}"></div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Commitment Statement -->
+		<section class="commitment-section">
+			<div class="commitment-card">
+				<div class="commitment-icon">🎯</div>
+				<p class="commitment-text">
+					Our commitment: <strong>Leading stocks and options trading education</strong> 
+					by providing the unseen institutional tools and strategies that professionals use. 
+					No gimmicks. No false promises. Just authentic trading excellence.
+				</p>
+			</div>
+		</section>
+
+		<!-- Progress Indicator -->
+		<section class="progress-section">
 			<div class="progress-header">
-				<span class="progress-label">System Upgrade in Progress</span>
-				<span class="progress-value">Phase 2 of 3</span>
+				<span class="progress-title">System Upgrade</span>
+				<span class="progress-phase">Phase 2 of 3</span>
 			</div>
-			<div class="progress-bar">
+			<div class="progress-track">
 				<div class="progress-fill"></div>
-				<div class="progress-glow"></div>
+				<div class="progress-shimmer"></div>
 			</div>
 			<div class="progress-steps">
-				<span class="step complete">Infrastructure</span>
-				<span class="step active">Platform Expansion</span>
-				<span class="step">Global Launch</span>
+				<div class="step completed">
+					<div class="step-dot"></div>
+					<span>Infrastructure</span>
+				</div>
+				<div class="step active">
+					<div class="step-dot"></div>
+					<span>Platform Expansion</span>
+				</div>
+				<div class="step">
+					<div class="step-dot"></div>
+					<span>Global Launch</span>
+				</div>
 			</div>
-		</div>
+		</section>
 
-		<!-- Email capture -->
-		<div class="cta-section">
+		<!-- Email Capture -->
+		<section class="capture-section">
 			{#if !isSubmitted}
-				<div class="cta-header">
-					<span class="pulse-dot"></span>
-					<p class="cta-text">Be the first to know when we launch</p>
+				<div class="capture-header">
+					<div class="pulse-indicator"></div>
+					<p class="capture-title">Be First to Access</p>
 				</div>
 
-				<div class="email-form">
-					<div class="input-group">
-						<svg class="input-icon" viewBox="0 0 20 20" fill="currentColor">
-							<path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-							<path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+				<div class="email-form" class:focused={isEmailFocused}>
+					<div class="input-container">
+						<svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<rect x="2" y="4" width="20" height="16" rx="2"/>
+							<path d="M2 4l10 8 10-8"/>
 						</svg>
 						<input
 							type="email"
-							placeholder="Enter your email address"
+							placeholder="Enter your email"
 							bind:value={email}
-							onkeydown={(e) => e.key === 'Enter' && handleNotifyMe()}
+							on:focus={() => isEmailFocused = true}
+							on:blur={() => isEmailFocused = false}
+							on:keydown={(e) => e.key === 'Enter' && handleNotifyMe()}
 							disabled={isSubmitting}
 							class="email-input"
 						/>
 					</div>
-					<button class="notify-button" onclick={handleNotifyMe} disabled={isSubmitting}>
+					<button
+						class="submit-button"
+						on:click={handleNotifyMe}
+						disabled={isSubmitting || !email}
+					>
 						{#if isSubmitting}
-							<span class="button-spinner"></span>
-							<span>Joining...</span>
+							<div class="button-spinner"></div>
 						{:else}
-							<svg class="bell-icon" viewBox="0 0 20 20" fill="currentColor">
-								<path
-									d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"
-								/>
+							<span class="button-text">Get Early Access</span>
+							<svg class="button-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<path d="M5 12h14M12 5l7 7-7 7"/>
 							</svg>
-							<span>Get Early Access</span>
 						{/if}
 					</button>
 				</div>
 
 				{#if errorMessage}
-					<p class="error-message" role="alert">
-						<svg viewBox="0 0 20 20" fill="currentColor">
-							<path
-								fill-rule="evenodd"
-								d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-								clip-rule="evenodd"
-							/>
+					<div class="error-banner" role="alert">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<circle cx="12" cy="12" r="10"/>
+							<path d="M12 8v4M12 16h.01"/>
 						</svg>
 						{errorMessage}
-					</p>
+					</div>
 				{/if}
 			{:else}
-				<div class="success-card" role="status">
+				<div class="success-state">
 					<div class="success-animation">
 						<svg class="checkmark" viewBox="0 0 52 52">
-							<circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none" />
-							<path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+							<circle class="checkmark-circle" cx="26" cy="26" r="25"/>
+							<path class="checkmark-check" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
 						</svg>
 					</div>
 					<h3 class="success-title">You're In!</h3>
 					<p class="success-message">
-						<strong>Check your email!</strong> We've sent you a confirmation. You'll be the first to know
-						when we launch our new platform.
+						Check your email for confirmation. You're now on the exclusive list for early access.
 					</p>
-					<div class="success-perks">
-						<span class="perk">🎯 Early access to scanners</span>
-						<span class="perk">📚 Free course preview</span>
-						<span class="perk">💎 VIP launch pricing</span>
+					<div class="perks-list">
+						<span class="perk">🎯 Early scanner access</span>
+						<span class="perk">📚 Free preview content</span>
+						<span class="perk">💎 VIP pricing</span>
 					</div>
 				</div>
 			{/if}
-		</div>
+		</section>
 
-		<!-- Trust indicators -->
-		<div class="trust-section">
-			<p class="trust-text">
-				<span class="shield-icon">🛡️</span>
-				Your email is secure. No spam, ever. Unsubscribe anytime.
-			</p>
-		</div>
+		<!-- Trust Footer -->
+		<footer class="trust-footer">
+			<div class="trust-content">
+				<span class="trust-icon">🛡️</span>
+				<p>Your email is secure. No spam. Unsubscribe anytime.</p>
+			</div>
+		</footer>
+
 	</main>
 
-	<!-- Decorative elements -->
-	<div class="corner-accent top-left"></div>
-	<div class="corner-accent top-right"></div>
-	<div class="corner-accent bottom-left"></div>
-	<div class="corner-accent bottom-right"></div>
+	<!-- Corner Accents -->
+	<div class="corner top-left"></div>
+	<div class="corner top-right"></div>
+	<div class="corner bottom-left"></div>
+	<div class="corner bottom-right"></div>
 </div>
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   MAINTENANCE OVERLAY - Full-screen takeover
-	   This hides ALL website content (no footer, no nav)
+	   BASE CONTAINER - Full viewport cinematic experience
 	   ═══════════════════════════════════════════════════════════════════════════ */
-	.maintenance-overlay {
+	.experience-container {
 		position: fixed;
 		inset: 0;
+		width: 100%;
+		min-height: 100vh;
+		background: linear-gradient(180deg, #050508 0%, #0a0a0f 50%, #0f0f14 100%);
+		overflow-y: auto;
+		overflow-x: hidden;
 		z-index: 99999;
-		background: linear-gradient(135deg, #0a0a0f 0%, #0f172a 50%, #1a0f2e 100%);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		overflow: hidden;
 		opacity: 0;
-		animation: fadeIn 0.8s ease-out forwards;
+		animation: containerFadeIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 	}
 
-	.maintenance-overlay.mounted {
+	.experience-container.mounted {
 		opacity: 1;
 	}
 
-	@keyframes fadeIn {
-		from {
-			opacity: 0;
-		}
-		to {
-			opacity: 1;
-		}
+	@keyframes containerFadeIn {
+		from { opacity: 0; }
+		to { opacity: 1; }
 	}
 
-	/* Trading Chart Background */
-	.chart-bg {
-		position: absolute;
+	/* Scrollbar styling */
+	.experience-container::-webkit-scrollbar {
+		width: 6px;
+	}
+
+	.experience-container::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	.experience-container::-webkit-scrollbar-thumb {
+		background: rgba(59, 130, 246, 0.3);
+		border-radius: 3px;
+	}
+
+	.experience-container::-webkit-scrollbar-thumb:hover {
+		background: rgba(59, 130, 246, 0.5);
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   CHART BACKGROUND LAYER
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.chart-layer {
+		position: fixed;
 		inset: 0;
-		width: 100%;
-		height: 100%;
-		opacity: 0.4;
+		z-index: 1;
 		pointer-events: none;
 	}
 
+	.trading-chart {
+		width: 100%;
+		height: 100%;
+		opacity: 0.6;
+	}
+
 	.grid-line {
-		animation: gridPulse 3s ease-in-out infinite;
+		animation: gridPulse 4s ease-in-out infinite;
 	}
 
 	@keyframes gridPulse {
-		0%,
-		100% {
-			opacity: 0.05;
-		}
-		50% {
-			opacity: 0.15;
-		}
+		0%, 100% { opacity: 0.03; }
+		50% { opacity: 0.08; }
 	}
 
-	.candle {
-		animation: candleFade 0.5s ease-out forwards;
-		opacity: 0;
-		transform-origin: center;
+	.candle-group {
+		transition: all 0.3s ease;
 	}
 
-	@keyframes candleFade {
-		from {
-			opacity: 0;
-			transform: scaleY(0);
-		}
-		to {
-			opacity: 1;
-			transform: scaleY(1);
-		}
+	.candle-group.active {
+		filter: drop-shadow(0 0 8px currentColor);
+	}
+
+	.candle-body {
+		animation: candleGrow 0.5s ease-out backwards;
+	}
+
+	@keyframes candleGrow {
+		from { transform: scaleY(0); opacity: 0; }
+		to { transform: scaleY(1); opacity: 1; }
+	}
+
+	.volume-bar {
+		transition: opacity 0.3s ease;
 	}
 
 	.ma-line {
 		stroke-dasharray: 2000;
 		stroke-dashoffset: 2000;
-		animation: drawLine 4s ease-out forwards;
+		animation: drawLine 3s ease-out forwards;
 	}
 
 	@keyframes drawLine {
-		to {
-			stroke-dashoffset: 0;
+		to { stroke-dashoffset: 0; }
+	}
+
+	.price-line {
+		animation: dashMove 20s linear infinite;
+	}
+
+	@keyframes dashMove {
+		to { stroke-dashoffset: -100; }
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   PARTICLE FIELD
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.particle-field {
+		position: fixed;
+		inset: 0;
+		z-index: 2;
+		pointer-events: none;
+		transition: transform 0.1s ease-out;
+	}
+
+	.particle {
+		position: absolute;
+		border-radius: 50%;
+		animation: float 20s ease-in-out infinite;
+		box-shadow: 0 0 10px currentColor;
+	}
+
+	@keyframes float {
+		0%, 100% {
+			transform: translateY(0) translateX(0);
+			opacity: 0.1;
+		}
+		25% {
+			transform: translateY(-30px) translateX(10px);
+			opacity: 0.4;
+		}
+		50% {
+			transform: translateY(-60px) translateX(-5px);
+			opacity: 0.2;
+		}
+		75% {
+			transform: translateY(-30px) translateX(15px);
+			opacity: 0.3;
 		}
 	}
 
-	/* Gradient Overlays */
-	.gradient-overlay {
-		position: absolute;
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   VIGNETTE & AMBIENT EFFECTS
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.vignette-overlay {
+		position: fixed;
+		inset: 0;
+		z-index: 3;
+		background: radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.6) 100%);
+		pointer-events: none;
+	}
+
+	.gradient-fade {
+		position: fixed;
 		left: 0;
 		right: 0;
 		height: 200px;
+		z-index: 4;
 		pointer-events: none;
 	}
 
-	.gradient-overlay.top {
+	.gradient-fade.top {
 		top: 0;
-		background: linear-gradient(to bottom, rgba(10, 10, 15, 0.9) 0%, transparent 100%);
+		background: linear-gradient(to bottom, rgba(5, 5, 8, 0.95) 0%, transparent 100%);
 	}
 
-	.gradient-overlay.bottom {
+	.gradient-fade.bottom {
 		bottom: 0;
-		background: linear-gradient(to top, rgba(10, 10, 15, 0.9) 0%, transparent 100%);
+		background: linear-gradient(to top, rgba(5, 5, 8, 0.95) 0%, transparent 100%);
 	}
 
-	.vignette {
-		position: absolute;
-		inset: 0;
-		background: radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.4) 100%);
+	.ambient-glow {
+		position: fixed;
+		width: 600px;
+		height: 600px;
+		top: 50%;
+		left: 50%;
+		margin-left: -300px;
+		margin-top: -300px;
+		background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+		z-index: 2;
 		pointer-events: none;
+		transition: transform 0.3s ease-out;
+		animation: glowPulse 8s ease-in-out infinite;
 	}
 
-	/* Ticker Tape */
-	.ticker-tape {
-		position: absolute;
-		top: 2rem;
+	@keyframes glowPulse {
+		0%, 100% { opacity: 0.5; transform: scale(1); }
+		50% { opacity: 0.8; transform: scale(1.1); }
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   TICKER TAPE
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.ticker-container {
+		position: fixed;
+		top: 0;
 		left: 0;
 		right: 0;
-		overflow: hidden;
-		padding: 0.75rem 0;
-		background: rgba(0, 0, 0, 0.3);
-		border-top: 1px solid rgba(59, 130, 246, 0.2);
+		z-index: 10;
+		background: rgba(0, 0, 0, 0.4);
+		backdrop-filter: blur(20px);
 		border-bottom: 1px solid rgba(59, 130, 246, 0.2);
-		backdrop-filter: blur(10px);
+		padding: 12px 0;
+		overflow: hidden;
+	}
+
+	.ticker-band {
+		width: 100%;
+		overflow: hidden;
 	}
 
 	.ticker-content {
 		display: flex;
-		gap: 3rem;
+		gap: 48px;
+		animation: tickerScroll 40s linear infinite;
 		white-space: nowrap;
-		will-change: transform;
+	}
+
+	@keyframes tickerScroll {
+		0% { transform: translateX(0); }
+		100% { transform: translateX(-33.33%); }
 	}
 
 	.ticker-item {
 		display: flex;
 		align-items: center;
-		gap: 0.75rem;
-		font-family: 'SF Mono', monospace;
-		font-size: 0.875rem;
+		gap: 12px;
+		font-family: 'SF Mono', 'Monaco', monospace;
+		font-size: 13px;
+		font-weight: 500;
+		padding: 4px 12px;
+		border-radius: 6px;
+		background: rgba(255, 255, 255, 0.03);
+		transition: all 0.3s ease;
+	}
+
+	.ticker-item:hover {
+		background: rgba(255, 255, 255, 0.08);
+		transform: scale(1.05);
 	}
 
 	.ticker-symbol {
-		color: var(--rtp-text-soft);
+		color: #94a3b8;
 		font-weight: 600;
+		letter-spacing: 0.5px;
 	}
 
 	.ticker-price {
-		color: var(--rtp-text);
+		color: #e2e8f0;
+		font-weight: 500;
 	}
 
 	.ticker-change {
-		font-size: 0.75rem;
-		padding: 0.25rem 0.5rem;
-		border-radius: 9999px;
+		padding: 2px 6px;
+		border-radius: 4px;
+		font-size: 11px;
 		font-weight: 600;
 	}
 
-	.ticker-change.positive {
+	.ticker-item.up .ticker-change {
 		background: rgba(16, 185, 129, 0.2);
 		color: #10b981;
 	}
 
-	.ticker-change.negative {
+	.ticker-item.down .ticker-change {
 		background: rgba(239, 68, 68, 0.2);
 		color: #ef4444;
 	}
 
-	/* Main Content */
-	.content {
+	.ticker-volume {
+		color: #64748b;
+		font-size: 11px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   MAIN CONTENT LAYER
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.content-layer {
 		position: relative;
-		z-index: 10;
-		max-width: 800px;
-		width: 100%;
-		padding: 2rem;
+		z-index: 5;
+		max-width: 900px;
+		margin: 0 auto;
+		padding: 140px 24px 80px;
+		min-height: 100vh;
+		display: flex;
+		flex-direction: column;
+		gap: 80px;
+	}
+
+	/* Hero Section */
+	.hero-section {
 		text-align: center;
-		opacity: 0;
-		transform: translateY(40px) scale(0.95);
-		transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 32px;
 	}
 
-	.content.show {
-		opacity: 1;
-		transform: translateY(0) scale(1);
-	}
-
-	/* Logo */
-	.logo-section {
-		margin-bottom: 2rem;
-	}
-
-	.logo-mark {
-		width: 64px;
-		height: 64px;
-		margin: 0 auto 1rem;
+	.logo-container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 16px;
 		animation: logoFloat 6s ease-in-out infinite;
 	}
 
 	@keyframes logoFloat {
-		0%,
-		100% {
-			transform: translateY(0);
-		}
-		50% {
-			transform: translateY(-10px);
-		}
+		0%, 100% { transform: translateY(0); }
+		50% { transform: translateY(-10px); }
 	}
 
-	.logo-path {
+	.logo-mark {
+		width: 80px;
+		height: 80px;
+	}
+
+	.logo-ring {
+		stroke-dasharray: 200;
+		stroke-dashoffset: 200;
+		animation: drawRing 2s ease-out forwards;
+	}
+
+	@keyframes drawRing {
+		to { stroke-dashoffset: 0; }
+	}
+
+	.logo-chart {
 		stroke-dasharray: 100;
 		stroke-dashoffset: 100;
-		animation: drawLogo 2s ease-out forwards;
+		animation: drawChart 1.5s ease-out 0.5s forwards;
 	}
 
-	@keyframes drawLogo {
-		to {
-			stroke-dashoffset: 0;
-		}
+	@keyframes drawChart {
+		to { stroke-dashoffset: 0; }
 	}
 
 	.logo-dot {
@@ -639,190 +952,350 @@
 	}
 
 	@keyframes pulseDot {
-		0%,
-		100% {
-			opacity: 1;
-			transform: scale(1);
-		}
-		50% {
-			opacity: 0.7;
-			transform: scale(1.2);
-		}
+		0%, 100% { transform: scale(1); opacity: 1; }
+		50% { transform: scale(1.3); opacity: 0.7; }
+	}
+
+	.brand-text {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 4px;
 	}
 
 	.brand-name {
-		font-size: 1rem;
-		color: var(--rtp-text-muted);
-		letter-spacing: 0.2em;
+		font-size: 14px;
+		font-weight: 600;
+		letter-spacing: 0.3em;
 		text-transform: uppercase;
-		font-weight: 500;
+		color: #94a3b8;
+		animation: fadeInUp 0.8s ease-out 0.3s backwards;
 	}
 
-	/* Headline */
-	.headline {
-		margin-bottom: 2rem;
+	.brand-tagline {
+		font-size: 12px;
+		color: #64748b;
+		letter-spacing: 0.1em;
+		animation: fadeInUp 0.8s ease-out 0.5s backwards;
 	}
 
-	.headline-line {
-		display: block;
-		font-size: clamp(2.5rem, 6vw, 4rem);
-		font-weight: 800;
+	@keyframes fadeInUp {
+		from { opacity: 0; transform: translateY(20px); }
+		to { opacity: 1; transform: translateY(0); }
+	}
+
+	/* Cinematic Headline */
+	.main-headline {
+		margin: 0;
 		line-height: 1.1;
-		letter-spacing: -0.02em;
-		color: var(--rtp-text);
 	}
 
-	.headline-line.highlight {
+	.headline-word {
+		display: inline-block;
+		font-size: clamp(2.5rem, 8vw, 5rem);
+		font-weight: 800;
+		color: #f8fafc;
+		letter-spacing: -0.03em;
+		opacity: 0;
+		transform: translateY(40px);
+		animation: wordReveal 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+		animation-delay: var(--delay);
+	}
+
+	@keyframes wordReveal {
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	.headline-word.highlight {
 		background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #10b981 100%);
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
 		background-clip: text;
-		animation: shimmerText 3s ease-in-out infinite;
 		background-size: 200% 200%;
+		animation: 
+			wordReveal 1s cubic-bezier(0.16, 1, 0.3, 1) forwards,
+			gradientShift 4s ease-in-out infinite;
+		animation-delay: var(--delay), 1.5s;
 	}
 
-	@keyframes shimmerText {
-		0%,
-		100% {
-			background-position: 0% 50%;
-		}
-		50% {
-			background-position: 100% 50%;
-		}
+	@keyframes gradientShift {
+		0%, 100% { background-position: 0% 50%; }
+		50% { background-position: 100% 50%; }
 	}
 
-	/* Announcement */
-	.announcement {
-		margin-bottom: 2.5rem;
+	/* Lead Statement */
+	.lead-statement {
+		font-size: clamp(1.125rem, 2.5vw, 1.5rem);
+		line-height: 1.8;
+		color: #94a3b8;
+		max-width: 700px;
+		margin: 0;
+		opacity: 0;
+		animation: fadeInUp 1s ease-out 0.8s forwards;
 	}
 
-	.lead-text {
-		font-size: 1.25rem;
-		color: var(--rtp-text-soft);
-		line-height: 1.7;
-		margin-bottom: 2rem;
-	}
-
-	.lead-text strong {
-		color: var(--rtp-primary);
+	.lead-statement strong {
+		color: #e2e8f0;
 		font-weight: 600;
 	}
 
-	/* Features Grid */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   FEATURES SECTION - Netflix Style Cards
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.features-section {
+		display: flex;
+		flex-direction: column;
+		gap: 24px;
+	}
+
+	.section-header {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+	}
+
+	.section-number {
+		font-size: 12px;
+		font-weight: 700;
+		color: #3b82f6;
+		letter-spacing: 0.2em;
+		padding: 6px 12px;
+		border: 1px solid rgba(59, 130, 246, 0.3);
+		border-radius: 4px;
+	}
+
+	.features-section h2 {
+		font-size: 14px;
+		font-weight: 500;
+		color: #64748b;
+		letter-spacing: 0.15em;
+		text-transform: uppercase;
+		margin: 0;
+	}
+
 	.features-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-		gap: 1.5rem;
-		margin-bottom: 2rem;
+		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+		gap: 20px;
 	}
 
 	.feature-card {
+		position: relative;
 		background: rgba(255, 255, 255, 0.03);
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		border-radius: 1rem;
-		padding: 1.5rem;
-		transition: all 0.3s ease;
-		backdrop-filter: blur(10px);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 16px;
+		padding: 32px;
+		overflow: hidden;
+		transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+		cursor: pointer;
+		opacity: 0;
+		transform: translateY(30px);
+		animation: cardReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+		animation-delay: calc(var(--index) * 0.15s + 1s);
+	}
+
+	@keyframes cardReveal {
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
 	}
 
 	.feature-card:hover {
-		transform: translateY(-5px);
-		background: rgba(255, 255, 255, 0.05);
-		border-color: rgba(59, 130, 246, 0.3);
-		box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+		transform: translateY(-8px) scale(1.02);
+		border-color: rgba(59, 130, 246, 0.4);
+		background: rgba(255, 255, 255, 0.06);
+		box-shadow: 
+			0 20px 40px rgba(0, 0, 0, 0.4),
+			0 0 60px rgba(59, 130, 246, 0.15);
 	}
 
-	.feature-icon {
-		width: 48px;
-		height: 48px;
-		margin: 0 auto 1rem;
-		color: var(--rtp-primary);
+	.card-highlight {
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+		opacity: 0;
+		transition: opacity 0.4s ease;
+	}
+
+	.feature-card:hover .card-highlight {
+		opacity: 1;
+	}
+
+	.card-icon {
+		width: 56px;
+		height: 56px;
 		background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2));
-		border-radius: 12px;
+		border-radius: 14px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		margin-bottom: 20px;
+		color: #60a5fa;
+		transition: all 0.4s ease;
 	}
 
-	.feature-icon svg {
-		width: 24px;
-		height: 24px;
+	.feature-card:hover .card-icon {
+		transform: scale(1.1);
+		background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(139, 92, 246, 0.3));
+		box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+	}
+
+	.card-icon svg {
+		width: 28px;
+		height: 28px;
 	}
 
 	.feature-card h3 {
-		font-size: 1rem;
+		font-size: 1.25rem;
 		font-weight: 600;
-		color: var(--rtp-text);
-		margin-bottom: 0.5rem;
+		color: #f1f5f9;
+		margin: 0 0 12px 0;
 	}
 
 	.feature-card p {
-		font-size: 0.875rem;
-		color: var(--rtp-text-muted);
-		line-height: 1.5;
-	}
-
-	.mission-text {
-		font-size: 1.125rem;
-		color: var(--rtp-text-soft);
+		font-size: 0.9375rem;
+		color: #94a3b8;
 		line-height: 1.6;
-		padding: 1.5rem;
-		background: rgba(16, 185, 129, 0.1);
-		border: 1px solid rgba(16, 185, 129, 0.2);
-		border-radius: 1rem;
-		margin-top: 1rem;
+		margin: 0;
 	}
 
-	.mission-text strong {
-		color: #10b981;
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   STATS SECTION - Animated Counters
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.stats-section {
+		padding: 40px 0;
 	}
 
-	/* Stats Bar */
-	.stats-bar {
+	.stats-container {
 		display: flex;
 		justify-content: center;
-		align-items: center;
-		gap: 2rem;
-		margin-bottom: 2.5rem;
-		padding: 1.5rem;
+		align-items: stretch;
+		gap: 48px;
+		padding: 40px;
 		background: rgba(0, 0, 0, 0.3);
-		border-radius: 1rem;
-		backdrop-filter: blur(10px);
+		border-radius: 24px;
+		border: 1px solid rgba(255, 255, 255, 0.05);
+		backdrop-filter: blur(20px);
 	}
 
-	.stat {
-		text-align: center;
+	.stat-item {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 8px;
+		min-width: 140px;
 	}
 
 	.stat-number {
-		display: block;
-		font-size: 1.75rem;
+		display: flex;
+		align-items: baseline;
+		gap: 4px;
+		font-size: 2.5rem;
 		font-weight: 800;
-		background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+		background: linear-gradient(135deg, #3b82f6, #8b5cf6, #10b981);
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
 		background-clip: text;
+		background-size: 200% 200%;
+		animation: gradientShift 5s ease-in-out infinite;
+	}
+
+	.suffix {
+		font-size: 1.5rem;
+		font-weight: 600;
 	}
 
 	.stat-label {
 		font-size: 0.75rem;
-		color: var(--rtp-text-muted);
+		color: #64748b;
 		text-transform: uppercase;
-		letter-spacing: 0.1em;
+		letter-spacing: 0.15em;
+		font-weight: 500;
+	}
+
+	.stat-bar {
+		width: 100%;
+		height: 3px;
+		background: rgba(255, 255, 255, 0.1);
+		border-radius: 2px;
+		margin-top: 8px;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.stat-bar::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		width: calc(var(--progress) * 100%);
+		background: linear-gradient(90deg, #3b82f6, #10b981);
+		border-radius: 2px;
+		transition: width 0.3s ease;
 	}
 
 	.stat-divider {
 		width: 1px;
-		height: 40px;
 		background: rgba(255, 255, 255, 0.1);
+		align-self: stretch;
 	}
 
-	/* Progress Section */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   COMMITMENT SECTION
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.commitment-section {
+		display: flex;
+		justify-content: center;
+	}
+
+	.commitment-card {
+		max-width: 700px;
+		padding: 40px;
+		background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
+		border: 1px solid rgba(16, 185, 129, 0.2);
+		border-radius: 20px;
+		text-align: center;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.commitment-card::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 2px;
+		background: linear-gradient(90deg, transparent, #10b981, transparent);
+	}
+
+	.commitment-icon {
+		font-size: 40px;
+		margin-bottom: 20px;
+	}
+
+	.commitment-text {
+		font-size: 1.125rem;
+		line-height: 1.8;
+		color: #cbd5e1;
+		margin: 0;
+	}
+
+	.commitment-text strong {
+		color: #f1f5f9;
+		font-weight: 600;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   PROGRESS SECTION
+	   ═══════════════════════════════════════════════════════════════════════════ */
 	.progress-section {
-		margin-bottom: 2.5rem;
-		padding: 1.5rem;
+		padding: 32px;
 		background: rgba(255, 255, 255, 0.02);
-		border-radius: 1rem;
+		border-radius: 16px;
 		border: 1px solid rgba(255, 255, 255, 0.05);
 	}
 
@@ -830,26 +1303,31 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin-bottom: 1rem;
+		margin-bottom: 20px;
+	}
+
+	.progress-title {
 		font-size: 0.875rem;
+		color: #94a3b8;
+		font-weight: 500;
 	}
 
-	.progress-label {
-		color: var(--rtp-text-muted);
-	}
-
-	.progress-value {
-		color: var(--rtp-primary);
+	.progress-phase {
+		font-size: 0.875rem;
+		color: #3b82f6;
 		font-weight: 600;
+		padding: 6px 12px;
+		background: rgba(59, 130, 246, 0.1);
+		border-radius: 20px;
 	}
 
-	.progress-bar {
+	.progress-track {
 		position: relative;
-		height: 8px;
+		height: 6px;
 		background: rgba(255, 255, 255, 0.05);
-		border-radius: 9999px;
+		border-radius: 3px;
 		overflow: hidden;
-		margin-bottom: 1rem;
+		margin-bottom: 24px;
 	}
 
 	.progress-fill {
@@ -857,179 +1335,162 @@
 		height: 100%;
 		width: 66%;
 		background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 50%, #10b981 100%);
-		border-radius: 9999px;
-		animation: progressPulse 2s ease-in-out infinite;
+		border-radius: 3px;
+		animation: progressGlow 2s ease-in-out infinite;
 	}
 
-	.progress-glow {
+	@keyframes progressGlow {
+		0%, 100% { filter: brightness(1); box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
+		50% { filter: brightness(1.3); box-shadow: 0 0 20px rgba(59, 130, 246, 0.8); }
+	}
+
+	.progress-shimmer {
 		position: absolute;
 		height: 100%;
 		width: 66%;
-		background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-		border-radius: 9999px;
-		animation: glowSlide 2s ease-in-out infinite;
+		background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+		animation: shimmer 2s ease-in-out infinite;
 	}
 
-	@keyframes progressPulse {
-		0%,
-		100% {
-			filter: brightness(1);
-		}
-		50% {
-			filter: brightness(1.2);
-		}
-	}
-
-	@keyframes glowSlide {
-		0% {
-			transform: translateX(-100%);
-		}
-		100% {
-			transform: translateX(150%);
-		}
+	@keyframes shimmer {
+		0% { transform: translateX(-100%); }
+		100% { transform: translateX(150%); }
 	}
 
 	.progress-steps {
 		display: flex;
 		justify-content: space-between;
-		font-size: 0.75rem;
 	}
 
 	.step {
-		color: var(--rtp-text-subtle);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 8px;
+		font-size: 0.8125rem;
+		color: #64748b;
 		position: relative;
-		padding-left: 1rem;
 	}
 
-	.step::before {
-		content: '';
-		position: absolute;
-		left: 0;
-		top: 50%;
-		transform: translateY(-50%);
-		width: 6px;
-		height: 6px;
-		border-radius: 50%;
-		background: var(--rtp-text-subtle);
-	}
-
-	.step.complete {
+	.step.completed {
 		color: #10b981;
-	}
-
-	.step.complete::before {
-		background: #10b981;
 	}
 
 	.step.active {
 		color: #3b82f6;
-		font-weight: 600;
+		font-weight: 500;
 	}
 
-	.step.active::before {
-		background: #3b82f6;
-		box-shadow: 0 0 10px #3b82f6;
+	.step-dot {
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		background: currentColor;
+		box-shadow: 0 0 10px currentColor;
+	}
+
+	.step.active .step-dot {
 		animation: stepPulse 2s ease-in-out infinite;
 	}
 
 	@keyframes stepPulse {
-		0%,
-		100% {
-			box-shadow: 0 0 5px #3b82f6;
-		}
-		50% {
-			box-shadow: 0 0 15px #3b82f6;
-		}
+		0%, 100% { box-shadow: 0 0 5px currentColor; }
+		50% { box-shadow: 0 0 15px currentColor, 0 0 30px currentColor; }
 	}
 
-	/* CTA Section */
-	.cta-section {
-		margin-bottom: 1.5rem;
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   EMAIL CAPTURE SECTION
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.capture-section {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 20px;
+		padding: 48px 32px;
+		background: rgba(0, 0, 0, 0.3);
+		border-radius: 24px;
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		backdrop-filter: blur(20px);
 	}
 
-	.cta-header {
+	.capture-header {
 		display: flex;
 		align-items: center;
-		justify-content: center;
-		gap: 0.5rem;
-		margin-bottom: 1rem;
+		gap: 12px;
 	}
 
-	.pulse-dot {
-		width: 8px;
-		height: 8px;
+	.pulse-indicator {
+		width: 10px;
+		height: 10px;
 		background: #10b981;
 		border-radius: 50%;
 		animation: pulseGreen 2s ease-in-out infinite;
 	}
 
 	@keyframes pulseGreen {
-		0%,
-		100% {
-			opacity: 1;
-			transform: scale(1);
-		}
-		50% {
-			opacity: 0.5;
-			transform: scale(1.5);
-		}
+		0%, 100% { opacity: 1; transform: scale(1); }
+		50% { opacity: 0.4; transform: scale(1.5); }
 	}
 
-	.cta-text {
-		font-size: 1rem;
-		color: var(--rtp-text-soft);
+	.capture-title {
+		font-size: 1.125rem;
+		color: #e2e8f0;
+		font-weight: 500;
 		margin: 0;
 	}
 
-	/* Email Form */
 	.email-form {
 		display: flex;
-		flex-direction: column;
-		gap: 0.75rem;
-		max-width: 450px;
-		margin: 0 auto;
+		gap: 12px;
+		width: 100%;
+		max-width: 480px;
+		transition: all 0.3s ease;
 	}
 
-	@media (min-width: 480px) {
+	@media (max-width: 640px) {
 		.email-form {
-			flex-direction: row;
+			flex-direction: column;
 		}
 	}
 
-	.input-group {
+	.input-container {
 		position: relative;
 		flex: 1;
 	}
 
 	.input-icon {
 		position: absolute;
-		left: 1rem;
+		left: 16px;
 		top: 50%;
 		transform: translateY(-50%);
 		width: 20px;
 		height: 20px;
-		color: var(--rtp-text-subtle);
-		pointer-events: none;
+		color: #64748b;
+		transition: color 0.3s ease;
+	}
+
+	.email-form.focused .input-icon {
+		color: #3b82f6;
 	}
 
 	.email-input {
 		width: 100%;
-		padding: 1rem 1rem 1rem 3rem;
+		padding: 16px 16px 16px 48px;
 		background: rgba(255, 255, 255, 0.05);
 		border: 1px solid rgba(255, 255, 255, 0.1);
-		border-radius: 0.75rem;
-		color: var(--rtp-text);
+		border-radius: 12px;
+		color: #f1f5f9;
 		font-size: 1rem;
 		outline: none;
 		transition: all 0.3s ease;
 	}
 
 	.email-input::placeholder {
-		color: var(--rtp-text-subtle);
+		color: #64748b;
 	}
 
 	.email-input:focus {
-		border-color: var(--rtp-primary);
+		border-color: #3b82f6;
 		background: rgba(255, 255, 255, 0.08);
 		box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
 	}
@@ -1039,113 +1500,115 @@
 		cursor: not-allowed;
 	}
 
-	.notify-button {
-		display: inline-flex;
+	.submit-button {
+		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: 0.5rem;
-		padding: 1rem 1.75rem;
+		gap: 8px;
+		padding: 16px 28px;
 		background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-		color: white;
-		font-weight: 600;
-		font-size: 1rem;
 		border: none;
-		border-radius: 0.75rem;
+		border-radius: 12px;
+		color: white;
+		font-size: 1rem;
+		font-weight: 600;
 		cursor: pointer;
-		transition: all 0.3s ease;
+		transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 		white-space: nowrap;
 		position: relative;
 		overflow: hidden;
 	}
 
-	.notify-button::before {
+	.submit-button::before {
 		content: '';
 		position: absolute;
 		inset: 0;
-		background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+		background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%);
 		opacity: 0;
-		transition: opacity 0.3s;
+		transition: opacity 0.3s ease;
 	}
 
-	.notify-button:hover::before {
+	.submit-button:hover::before {
 		opacity: 1;
 	}
 
-	.notify-button:disabled {
-		opacity: 0.7;
+	.submit-button:hover:not(:disabled) {
+		transform: translateY(-2px);
+		box-shadow: 0 15px 40px rgba(59, 130, 246, 0.4);
+	}
+
+	.submit-button:disabled {
+		opacity: 0.6;
 		cursor: not-allowed;
 	}
 
-	.notify-button:not(:disabled):hover {
-		transform: translateY(-2px);
-		box-shadow: 0 15px 30px rgba(59, 130, 246, 0.4);
-	}
-
-	.bell-icon {
+	.button-spinner {
 		width: 20px;
 		height: 20px;
-	}
-
-	.button-spinner {
-		width: 18px;
-		height: 18px;
 		border: 2px solid rgba(255, 255, 255, 0.3);
 		border-top-color: white;
 		border-radius: 50%;
-		animation: spin 1s linear infinite;
+		animation: spin 0.8s linear infinite;
 	}
 
 	@keyframes spin {
-		to {
-			transform: rotate(360deg);
-		}
+		to { transform: rotate(360deg); }
 	}
 
-	.error-message {
+	.button-arrow {
+		width: 18px;
+		height: 18px;
+		transition: transform 0.3s ease;
+	}
+
+	.submit-button:hover .button-arrow {
+		transform: translateX(4px);
+	}
+
+	.error-banner {
 		display: flex;
 		align-items: center;
-		justify-content: center;
-		gap: 0.5rem;
-		margin-top: 0.75rem;
-		font-size: 0.875rem;
+		gap: 8px;
+		padding: 12px 20px;
+		background: rgba(239, 68, 68, 0.1);
+		border: 1px solid rgba(239, 68, 68, 0.3);
+		border-radius: 10px;
 		color: #f87171;
+		font-size: 0.875rem;
+		animation: shake 0.5s ease-in-out;
 	}
 
-	.error-message svg {
-		width: 16px;
-		height: 16px;
+	.error-banner svg {
+		width: 18px;
+		height: 18px;
+		flex-shrink: 0;
 	}
 
-	/* Success Card */
-	.success-card {
-		background: rgba(16, 185, 129, 0.1);
-		border: 1px solid rgba(16, 185, 129, 0.2);
-		border-radius: 1rem;
-		padding: 2rem;
-		animation: successPop 0.5s ease-out;
+	@keyframes shake {
+		0%, 100% { transform: translateX(0); }
+		25% { transform: translateX(-5px); }
+		75% { transform: translateX(5px); }
+	}
+
+	/* Success State */
+	.success-state {
+		text-align: center;
+		animation: successPop 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
 	@keyframes successPop {
-		0% {
-			transform: scale(0.9);
-			opacity: 0;
-		}
-		50% {
-			transform: scale(1.02);
-		}
-		100% {
-			transform: scale(1);
-			opacity: 1;
-		}
+		0% { opacity: 0; transform: scale(0.9) translateY(20px); }
+		50% { transform: scale(1.02); }
+		100% { opacity: 1; transform: scale(1) translateY(0); }
 	}
 
 	.success-animation {
-		margin-bottom: 1rem;
+		margin-bottom: 24px;
 	}
 
 	.checkmark {
-		width: 60px;
-		height: 60px;
+		width: 80px;
+		height: 80px;
 		margin: 0 auto;
 	}
 
@@ -1154,6 +1617,7 @@
 		stroke-width: 3;
 		stroke-dasharray: 166;
 		stroke-dashoffset: 166;
+		fill: none;
 		animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
 	}
 
@@ -1162,110 +1626,132 @@
 		stroke-width: 3;
 		stroke-dasharray: 48;
 		stroke-dashoffset: 48;
+		fill: none;
 		animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.6s forwards;
 	}
 
 	@keyframes stroke {
-		100% {
-			stroke-dashoffset: 0;
-		}
+		100% { stroke-dashoffset: 0; }
 	}
 
 	.success-title {
-		font-size: 1.5rem;
+		font-size: 1.75rem;
 		font-weight: 700;
 		color: #10b981;
-		margin-bottom: 0.5rem;
+		margin: 0 0 12px 0;
 	}
 
 	.success-message {
-		color: var(--rtp-text-soft);
-		margin-bottom: 1.5rem;
+		font-size: 1rem;
+		color: #94a3b8;
+		margin: 0 0 24px 0;
 		line-height: 1.6;
 	}
 
-	.success-perks {
+	.perks-list {
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: center;
-		gap: 0.75rem;
+		gap: 12px;
 	}
 
 	.perk {
 		font-size: 0.875rem;
-		padding: 0.5rem 1rem;
-		background: rgba(16, 185, 129, 0.2);
-		border-radius: 9999px;
-		color: var(--rtp-text);
+		padding: 10px 18px;
+		background: rgba(16, 185, 129, 0.15);
+		border: 1px solid rgba(16, 185, 129, 0.3);
+		border-radius: 20px;
+		color: #e2e8f0;
 	}
 
-	/* Trust Section */
-	.trust-section {
-		margin-top: 1.5rem;
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   TRUST FOOTER
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.trust-footer {
+		text-align: center;
+		padding-top: 20px;
+		border-top: 1px solid rgba(255, 255, 255, 0.05);
 	}
 
-	.trust-text {
-		font-size: 0.8125rem;
-		color: var(--rtp-text-subtle);
+	.trust-content {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: 0.5rem;
+		gap: 8px;
+		font-size: 0.8125rem;
+		color: #64748b;
 	}
 
-	.shield-icon {
-		font-size: 1rem;
+	.trust-icon {
+		font-size: 16px;
 	}
 
-	/* Corner Accents */
-	.corner-accent {
-		position: absolute;
-		width: 100px;
-		height: 100px;
-		border: 2px solid rgba(59, 130, 246, 0.2);
+	.trust-content p {
+		margin: 0;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   CORNER ACCENTS
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.corner {
+		position: fixed;
+		width: 120px;
+		height: 120px;
+		border: 2px solid rgba(59, 130, 246, 0.15);
 		pointer-events: none;
+		z-index: 6;
 	}
 
-	.corner-accent.top-left {
-		top: 2rem;
-		left: 2rem;
+	.corner.top-left {
+		top: 100px;
+		left: 40px;
 		border-right: none;
 		border-bottom: none;
-		border-top-left-radius: 1rem;
+		border-top-left-radius: 16px;
 	}
 
-	.corner-accent.top-right {
-		top: 2rem;
-		right: 2rem;
+	.corner.top-right {
+		top: 100px;
+		right: 40px;
 		border-left: none;
 		border-bottom: none;
-		border-top-right-radius: 1rem;
+		border-top-right-radius: 16px;
 	}
 
-	.corner-accent.bottom-left {
-		bottom: 2rem;
-		left: 2rem;
+	.corner.bottom-left {
+		bottom: 40px;
+		left: 40px;
 		border-right: none;
 		border-top: none;
-		border-bottom-left-radius: 1rem;
+		border-bottom-left-radius: 16px;
 	}
 
-	.corner-accent.bottom-right {
-		bottom: 2rem;
-		right: 2rem;
+	.corner.bottom-right {
+		bottom: 40px;
+		right: 40px;
 		border-left: none;
 		border-top: none;
-		border-bottom-right-radius: 1rem;
+		border-bottom-right-radius: 16px;
 	}
 
-	/* Responsive */
+	/* Responsive Adjustments */
 	@media (max-width: 768px) {
-		.stats-bar {
+		.content-layer {
+			padding: 120px 20px 60px;
+			gap: 60px;
+		}
+
+		.stats-container {
 			flex-direction: column;
-			gap: 1rem;
+			gap: 32px;
+			padding: 32px 24px;
 		}
 
 		.stat-divider {
+			display: none;
+		}
+
+		.corner {
 			display: none;
 		}
 
@@ -1275,12 +1761,26 @@
 
 		.progress-steps {
 			flex-direction: column;
-			gap: 0.5rem;
+			gap: 16px;
 			align-items: center;
 		}
 
-		.corner-accent {
-			display: none;
+		.ticker-item {
+			font-size: 11px;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.headline-word {
+			font-size: 2rem;
+		}
+
+		.commitment-card {
+			padding: 24px;
+		}
+
+		.capture-section {
+			padding: 32px 20px;
 		}
 	}
 </style>
