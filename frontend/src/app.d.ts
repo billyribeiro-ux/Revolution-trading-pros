@@ -1,6 +1,9 @@
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
 
+import type { PayPalNamespace } from '@paypal/paypal-js';
+import type { StripeConstructor } from '@stripe/stripe-js';
+
 /**
  * Consent State interface for server-side access.
  */
@@ -58,9 +61,9 @@ declare global {
 	}
 
 	interface Window {
-		/** YouTube IFrame API */
+		/** YouTube IFrame API (consumers cast `Player` to a local ctor type) */
 		YT?: {
-			Player: any;
+			Player: unknown;
 			PlayerState: {
 				UNSTARTED: number;
 				ENDED: number;
@@ -85,10 +88,14 @@ declare global {
 		_fbq?: Fbq;
 
 		/** Payment Providers */
-		Stripe?: any;
+		Stripe?: StripeConstructor;
+		paypal?: PayPalNamespace | null;
+		// Deferred: these checkout globals have no official npm types matching
+		// our current usage. Square in particular needs an SDK-API review — the
+		// Apple/Google Pay flow (`payments.applePay({...})` + `.attach()`) targets
+		// an older Web Payments SDK than the current `payments.paymentRequest()`.
 		Square?: any;
 		Paddle?: any;
-		paypal?: any;
 		Razorpay?: any;
 		PaystackPop?: any;
 	}
