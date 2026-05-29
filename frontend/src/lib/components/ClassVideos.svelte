@@ -80,12 +80,31 @@
 		initialData = null
 	}: Props = $props();
 
-	let courseData = $state<CourseData | null>(null);
-	let loading = $state(true);
+	// Pure helpers — derive view-model pieces from a CourseData snapshot. Used
+	// both to seed initial $state (SSR-safe, no hydration flash) and after a
+	// client fetch, so there is a single source of truth and zero $effect.
+	function computeAllLessons(cd: CourseData | null): Lesson[] {
+		if (!cd) return [];
+		if (cd.modules && cd.modules.length > 0) {
+			return cd.modules.flatMap((m) => m.lessons || []);
+		}
+		return cd.lessons || [];
+	}
+
+	function computeExpandedModules(cd: CourseData | null): Set<number> {
+		return new Set(cd?.modules?.map((m) => m.module.id) ?? []);
+	}
+
+	// Seed directly from the SSR-provided `initialData` (init-once). The prior
+	// logic gated on `if (initialData && !courseData)` inside an $effect, so it
+	// only ever consumed the first non-null `initialData` — seeding at
+	// declaration is behaviourally equivalent without writing state in an effect.
+	let courseData = $state<CourseData | null>(initialData);
+	let loading = $state(!initialData);
 	let error = $state('');
-	let activeLesson = $state<Lesson | null>(null);
+	let activeLesson = $state<Lesson | null>(computeAllLessons(initialData)[0] ?? null);
 	let viewportWidth = $state(0);
-	let expandedModules = $state<Set<number>>(new Set());
+	let expandedModules = $state<Set<number>>(computeExpandedModules(initialData));
 	let mounted = $state(false);
 
 	const isMobile = $derived(mounted && viewportWidth > 0 && viewportWidth < 640);
@@ -94,23 +113,9 @@
 		bunnyLibraryId || courseData?.course?.bunny_library_id || '390057'
 	);
 
-	const allLessons = $derived.by(() => {
-		if (!courseData) return [];
-		if (courseData.modules && courseData.modules.length > 0) {
-			return courseData.modules.flatMap((m) => m.lessons || []);
-		}
-		return courseData.lessons || [];
-	});
+	const allLessons = $derived(computeAllLessons(courseData));
 
-	const hasModules = $derived(courseData?.modules && courseData.modules.length > 0);
-
-	$effect(() => {
-		if (initialData && !courseData) {
-			courseData = initialData;
-			loading = false;
-			initializeFromData();
-		}
-	});
+	const hasModules = $derived(!!courseData?.modules && courseData.modules.length > 0);
 
 	onMount(() => {
 		mounted = true;
@@ -128,21 +133,6 @@
 		return () => window.removeEventListener('resize', handleResize);
 	});
 
-	function initializeFromData() {
-		if (!courseData) return;
-
-		const lessons = allLessons;
-		if (lessons.length > 0 && !activeLesson) {
-			activeLesson = lessons[0];
-		}
-
-		if (courseData.modules) {
-			const newSet = new Set<number>();
-			courseData.modules.forEach((m) => newSet.add(m.module.id));
-			expandedModules = newSet;
-		}
-	}
-
 	async function fetchCourseData() {
 		loading = true;
 		error = '';
@@ -153,7 +143,8 @@
 
 			if (data.success && data.data) {
 				courseData = data.data;
-				initializeFromData();
+				activeLesson = computeAllLessons(data.data)[0] ?? null;
+				expandedModules = computeExpandedModules(data.data);
 			} else {
 				error = data.error || 'Failed to load course data';
 			}
