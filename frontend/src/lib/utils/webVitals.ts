@@ -22,6 +22,15 @@ interface WebVitalMetric {
 	navigationType?: string;
 }
 
+/**
+ * `layout-shift` PerformanceEntry — not in lib.dom's typings; model the two
+ * fields the CLS observer reads.
+ */
+interface LayoutShiftEntry extends PerformanceEntry {
+	value: number;
+	hadRecentInput: boolean;
+}
+
 interface WebVitalsOptions {
 	/** Analytics endpoint URL */
 	endpoint?: string;
@@ -116,8 +125,9 @@ async function reportMetric(metric: WebVitalMetric, options: WebVitalsOptions): 
 					timestamp: Date.now(),
 					navigationType: metric.navigationType,
 					userAgent: navigator.userAgent,
-					connection: (navigator as any).connection?.effectiveType,
-					deviceMemory: (navigator as any).deviceMemory
+					connection: (navigator as Navigator & { connection?: { effectiveType?: string } })
+						.connection?.effectiveType,
+					deviceMemory: (navigator as Navigator & { deviceMemory?: number }).deviceMemory
 				}),
 				// Use keepalive for page unload scenarios
 				keepalive: true
@@ -142,7 +152,7 @@ function observeLCP(options: WebVitalsOptions): void {
 		const entries = list.getEntries();
 		const lastEntry = entries[entries.length - 1];
 		if (lastEntry) {
-			lcpValue = (lastEntry as any).startTime;
+			lcpValue = lastEntry.startTime;
 		}
 	});
 
@@ -180,7 +190,7 @@ function observeFID(options: WebVitalsOptions): void {
 	const observer = new PerformanceObserver((list) => {
 		const entries = list.getEntries();
 		for (const entry of entries) {
-			const fidEntry = entry as any;
+			const fidEntry = entry as PerformanceEventTiming;
 			const value = fidEntry.processingStart - fidEntry.startTime;
 			const metric: WebVitalMetric = {
 				name: 'FID',
@@ -209,11 +219,11 @@ function observeCLS(options: WebVitalsOptions): void {
 
 	const observer = new PerformanceObserver((list) => {
 		for (const entry of list.getEntries()) {
-			const layoutShift = entry as any;
+			const layoutShift = entry as LayoutShiftEntry;
 			// Only count layout shifts without recent input
 			if (!layoutShift.hadRecentInput) {
-				const firstEntry = sessionEntries[0] as any;
-				const lastEntry = sessionEntries[sessionEntries.length - 1] as any;
+				const firstEntry = sessionEntries[0];
+				const lastEntry = sessionEntries[sessionEntries.length - 1];
 
 				// Start a new session if gap > 1s or total > 5s
 				if (
@@ -326,7 +336,7 @@ function observeINP(options: WebVitalsOptions): void {
 
 	const observer = new PerformanceObserver((list) => {
 		for (const entry of list.getEntries()) {
-			const eventEntry = entry as any;
+			const eventEntry = entry as PerformanceEventTiming;
 			// Only measure discrete events
 			if (
 				eventEntry.interactionId &&

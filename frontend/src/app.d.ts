@@ -77,6 +77,9 @@ declare global {
 		dataLayer?: unknown[];
 		gtag?: (...args: unknown[]) => void;
 
+		/** Plausible Analytics */
+		plausible?: (event: string, options?: { props?: Record<string, unknown> }) => void;
+
 		/** Meta Pixel (fbq) */
 		fbq?: Fbq;
 		_fbq?: Fbq;
