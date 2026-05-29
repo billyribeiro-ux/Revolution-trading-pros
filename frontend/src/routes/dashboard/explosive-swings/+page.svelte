@@ -430,13 +430,19 @@
 	}}
 />
 
-<UpdatePositionModal
-	isOpen={ps.isUpdatePositionModalOpen}
-	position={ps.updatingPosition}
-	roomSlug={ps.ROOM_SLUG}
-	onClose={ps.closeUpdatePositionModal}
-	onSuccess={ps.handlePositionUpdated}
-/>
+<!-- {#if} gates the mount so the modal seeds its form fresh per editing
+     session. The child seeds fields once at mount (via untrack) from
+     position instead of a prop→state sync $effect, so it MUST remount per
+     open. No exit transition → unmount-on-close is visually identical. -->
+{#if ps.isUpdatePositionModalOpen}
+	<UpdatePositionModal
+		isOpen={ps.isUpdatePositionModalOpen}
+		position={ps.updatingPosition}
+		roomSlug={ps.ROOM_SLUG}
+		onClose={ps.closeUpdatePositionModal}
+		onSuccess={ps.handlePositionUpdated}
+	/>
+{/if}
 
 <InvalidatePositionModal
 	isOpen={ps.isInvalidatePositionModalOpen}
