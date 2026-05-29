@@ -14,6 +14,7 @@
 	type SectionId = 'hero' | 'charts' | 'signals' | 'academy' | 'infrastructure' | 'access';
 	type ChartKey = 'main' | 'aapl' | 'nvda';
 	type SignalStatus = 'active' | 'watch' | 'cooling';
+	type AcademyTrackId = 'day' | 'swing';
 
 	interface Ticker {
 		symbol: string;
@@ -40,6 +41,19 @@
 		status: 'migrating' | 'online' | 'standby';
 	}
 
+	interface AcademyTrack {
+		id: AcademyTrackId;
+		number: string;
+		title: string;
+		tagline: string;
+		stockFocus: string[];
+		optionsFocus: string[];
+		curriculum: string[];
+		lab: string;
+		outcome: string;
+		accent: string;
+	}
+
 	const timeframes = ['1m', '5m', '15m', '1H'];
 	const revealSections: SectionId[] = [
 		'hero',
@@ -53,6 +67,7 @@
 	let mounted = $state(false);
 	let reducedMotion = $state(false);
 	let activeTimeframe = $state('5m');
+	let activeAcademyTrack = $state<AcademyTrackId>('day');
 	let scrollProgress = $state(0);
 	let glareX = $state(50);
 	let glareY = $state(30);
@@ -142,6 +157,52 @@
 		'Member room hardening'
 	];
 
+	const academyTracks: AcademyTrack[] = [
+		{
+			id: 'day',
+			number: '01',
+			title: 'Day Trading University',
+			tagline:
+				'An institutional intraday desk curriculum for stocks and options, built around execution quality, tape speed, and repeatable risk.',
+			stockFocus: ['Opening range', 'VWAP execution', 'Tape reading', 'Liquidity sweeps'],
+			optionsFocus: [
+				'0DTE playbooks',
+				'Greeks under pressure',
+				'Premium decay',
+				'Flow confirmation'
+			],
+			curriculum: [
+				'Market structure, auction theory, and pre-market scenario mapping',
+				'Equity momentum, relative volume, news catalysts, and sector rotation',
+				'Options chain reading, delta selection, spread construction, and gamma risk',
+				'Trade management: scaling, invalidation, max loss, review, and journaling'
+			],
+			lab: 'Live-market replay lab with execution scoring, risk heatmaps, and coach review checkpoints.',
+			outcome:
+				'Graduate with a written intraday stock/options playbook, daily prep routine, and measurable execution rules.',
+			accent: '#16f2a9'
+		},
+		{
+			id: 'swing',
+			number: '02',
+			title: 'Swing Trading University',
+			tagline:
+				'A professional portfolio curriculum for stocks and options, focused on multi-day thesis building, catalysts, and volatility-aware sizing.',
+			stockFocus: ['Relative strength', 'Base breakouts', 'Catalyst mapping', 'Position sizing'],
+			optionsFocus: ['Debit spreads', 'Calendars', 'IV rank', 'Event risk'],
+			curriculum: [
+				'Top-down market regime, sector leadership, breadth, and macro calendar analysis',
+				'Equity screening, trend quality, accumulation, and breakout failure diagnostics',
+				'Options strategy selection by volatility, duration, delta, theta, and event calendar',
+				'Portfolio construction: correlation, drawdown control, exits, and post-trade audit'
+			],
+			lab: 'Multi-session portfolio simulator with catalyst timelines, volatility shifts, and scenario stress tests.',
+			outcome:
+				'Graduate with a swing stock/options model portfolio, risk template, watchlist process, and review cadence.',
+			accent: '#f8d477'
+		}
+	];
+
 	let shellEl: HTMLDivElement;
 	let mainChartEl: HTMLDivElement;
 	let aaplChartEl: HTMLDivElement;
@@ -165,11 +226,17 @@
 	});
 
 	const averageConfidence = $derived(
-		Math.round(scannerSignals.reduce((total, signal) => total + signal.confidence, 0) / scannerSignals.length)
+		Math.round(
+			scannerSignals.reduce((total, signal) => total + signal.confidence, 0) / scannerSignals.length
+		)
 	);
 
 	const activeSignals = $derived(
 		scannerSignals.filter((signal) => signal.status === 'active').length
+	);
+
+	const activeAcademy = $derived(
+		academyTracks.find((track) => track.id === activeAcademyTrack) ?? academyTracks[0]
 	);
 
 	const latestMainPrice = $derived(chartData.main.at(-1)?.close ?? 5892.33);
@@ -310,9 +377,8 @@
 		if (chartsReady || !browser || !mainChartEl || !aaplChartEl || !nvdaChartEl) return;
 
 		await tick();
-		const { createChart, CandlestickSeries, AreaSeries, HistogramSeries } = await import(
-			'lightweight-charts'
-		);
+		const { createChart, CandlestickSeries, AreaSeries, HistogramSeries } =
+			await import('lightweight-charts');
 
 		chartData = {
 			main: generateCandles(1487, 5892.33, 76, 0.0045),
@@ -390,8 +456,12 @@
 			lineWidth: 2
 		});
 
-		aaplSeries.setData(chartData.aapl.map((candle) => ({ time: candle.time, value: candle.close })));
-		nvdaSeries.setData(chartData.nvda.map((candle) => ({ time: candle.time, value: candle.close })));
+		aaplSeries.setData(
+			chartData.aapl.map((candle) => ({ time: candle.time, value: candle.close }))
+		);
+		nvdaSeries.setData(
+			chartData.nvda.map((candle) => ({ time: candle.time, value: candle.close }))
+		);
 
 		mainChart.timeScale().fitContent();
 		aaplChart.timeScale().fitContent();
@@ -399,7 +469,10 @@
 		chartsReady = true;
 	}
 
-	function createMiniChart(createChart: typeof import('lightweight-charts').createChart, element: HTMLElement) {
+	function createMiniChart(
+		createChart: typeof import('lightweight-charts').createChart,
+		element: HTMLElement
+	) {
 		return createChart(element, {
 			autoSize: true,
 			layout: {
@@ -530,7 +603,10 @@
 		timers.push(
 			window.setInterval(() => {
 				nodes = nodes.map((node) => {
-					const load = Math.max(18, Math.min(78, node.load + Math.round((Math.random() - 0.48) * 10)));
+					const load = Math.max(
+						18,
+						Math.min(78, node.load + Math.round((Math.random() - 0.48) * 10))
+					);
 					return { ...node, load };
 				});
 			}, 2400)
@@ -617,7 +693,11 @@
 	<header class="market-tape" aria-label="Live market tape">
 		<div class="tape-track" aria-hidden="true">
 			{#each [...liveTickers, ...liveTickers, ...liveTickers] as ticker, index (ticker.symbol + '-' + index)}
-				<div class="ticker-pill" class:up={ticker.direction === 'up'} class:down={ticker.direction === 'down'}>
+				<div
+					class="ticker-pill"
+					class:up={ticker.direction === 'up'}
+					class:down={ticker.direction === 'down'}
+				>
 					<span class="ticker-symbol">{ticker.symbol}</span>
 					<span>${ticker.price.toFixed(2)}</span>
 					<span>{ticker.change >= 0 ? '+' : ''}{ticker.change.toFixed(2)}%</span>
@@ -638,8 +718,8 @@
 				</p>
 				<h1>Trading intelligence is getting a serious upgrade.</h1>
 				<p class="lede">
-					We are rebuilding the member experience around faster market data, sharper scanners, and
-					a cleaner academy path for traders who want repeatable process instead of noise.
+					We are rebuilding the member experience around faster market data, sharper scanners, and a
+					cleaner academy path for traders who want repeatable process instead of noise.
 				</p>
 
 				<div class="hero-actions">
@@ -789,45 +869,86 @@
 		<section id="academy" class="academy-section reveal" class:visible={visible.academy}>
 			<div class="section-heading">
 				<p class="section-kicker">Trading university</p>
-				<h2>A cleaner learning path from first setup to live execution.</h2>
+				<h2>Stocks, options, and institution-grade desk training in one cinematic path.</h2>
 			</div>
 
-			<div class="academy-grid">
-				<article class="academy-track">
-					<span class="track-number">01</span>
-					<h3>Day Trading University</h3>
-					<p>Opening range, VWAP, volume profile, options flow, and live risk routines.</p>
-					<div class="module-stack" aria-label="Day trading curriculum modules">
-						<span>Market prep</span>
-						<span>Execution rules</span>
-						<span>Review loop</span>
-					</div>
-				</article>
+			<div class="academy-cinema">
+				<div class="academy-selector" role="tablist" aria-label="Trading university curriculum">
+					{#each academyTracks as track (track.id)}
+						<button
+							type="button"
+							role="tab"
+							aria-selected={activeAcademyTrack === track.id}
+							class:active={activeAcademyTrack === track.id}
+							style:--track-accent={track.accent}
+							onclick={() => (activeAcademyTrack = track.id)}
+						>
+							<span>{track.number}</span>
+							<strong>{track.title}</strong>
+							<small>Stocks + options</small>
+						</button>
+					{/each}
+				</div>
 
-				<article class="academy-track">
-					<span class="track-number">02</span>
-					<h3>Swing Trading University</h3>
-					<p>Multi-day structure, relative strength, catalysts, position sizing, and exit plans.</p>
-					<svg class="swing-map" viewBox="0 0 420 132" aria-hidden="true">
-						<defs>
-							<linearGradient id="swing-fill" x1="0" x2="0" y1="0" y2="1">
-								<stop offset="0%" stop-color="#f8d477" stop-opacity="0.28" />
-								<stop offset="100%" stop-color="#f8d477" stop-opacity="0" />
-							</linearGradient>
-						</defs>
-						<path d="M0 101 C58 80 73 38 129 47 C181 55 176 96 232 88 C294 79 309 28 420 24" />
-						<path
-							d="M0 101 C58 80 73 38 129 47 C181 55 176 96 232 88 C294 79 309 28 420 24 L420 132 L0 132 Z"
-						/>
-						<circle cx="129" cy="47" r="5" />
-						<circle cx="232" cy="88" r="5" />
-						<circle cx="354" cy="39" r="5" />
-					</svg>
-				</article>
+				<div class="academy-feature" style:--track-accent={activeAcademy.accent}>
+					<div class="academy-hero-card">
+						<div class="academy-orbit" aria-hidden="true">
+							<span></span>
+							<span></span>
+							<span></span>
+						</div>
+						<p class="track-number">{activeAcademy.number}</p>
+						<h3>{activeAcademy.title}</h3>
+						<p>{activeAcademy.tagline}</p>
+						<div class="asset-lanes" aria-label="{activeAcademy.title} asset focus">
+							<div>
+								<strong>Stocks</strong>
+								{#each activeAcademy.stockFocus as item (item)}
+									<span>{item}</span>
+								{/each}
+							</div>
+							<div>
+								<strong>Options</strong>
+								{#each activeAcademy.optionsFocus as item (item)}
+									<span>{item}</span>
+								{/each}
+							</div>
+						</div>
+					</div>
+
+					<div class="curriculum-panel">
+						<div class="curriculum-head">
+							<span>Institutional curriculum</span>
+							<strong>Desk-ready sequence</strong>
+						</div>
+						<div class="curriculum-timeline">
+							{#each activeAcademy.curriculum as module, index (module)}
+								<article style:--module-delay={`${index * 90}ms`}>
+									<span>{String(index + 1).padStart(2, '0')}</span>
+									<p>{module}</p>
+								</article>
+							{/each}
+						</div>
+						<div class="academy-lab">
+							<div>
+								<span>Capstone lab</span>
+								<p>{activeAcademy.lab}</p>
+							</div>
+							<div>
+								<span>Release outcome</span>
+								<p>{activeAcademy.outcome}</p>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 		</section>
 
-		<section id="infrastructure" class="infra-section reveal" class:visible={visible.infrastructure}>
+		<section
+			id="infrastructure"
+			class="infra-section reveal"
+			class:visible={visible.infrastructure}
+		>
 			<div class="section-heading">
 				<p class="section-kicker">Infrastructure</p>
 				<h2>Capacity, reliability, and speed are moving up together.</h2>
@@ -893,9 +1014,7 @@
 					<div>
 						<p class="section-kicker">Early access</p>
 						<h2>Be first through the door when the platform reopens.</h2>
-						<p>
-							Get the launch note for scanners, academy access, and the upgraded member room.
-						</p>
+						<p>Get the launch note for scanners, academy access, and the upgraded member room.</p>
 					</div>
 
 					<div class="email-row">
@@ -1183,7 +1302,6 @@
 	.mini-feed,
 	.radar-panel,
 	.signals-table,
-	.academy-track,
 	.node-list,
 	.stat-board,
 	.access-panel,
@@ -1315,8 +1433,7 @@
 		padding: 18px;
 		border-color: rgba(22, 242, 169, 0.22);
 		background:
-			linear-gradient(180deg, rgba(22, 242, 169, 0.07), transparent 34%),
-			var(--panel-strong);
+			linear-gradient(180deg, rgba(22, 242, 169, 0.07), transparent 34%), var(--panel-strong);
 	}
 
 	.market-label {
@@ -1369,9 +1486,7 @@
 		height: clamp(360px, 54vh, 560px);
 		margin-top: 14px;
 		border-radius: 8px;
-		background:
-			linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent),
-			rgba(0, 0, 0, 0.2);
+		background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent), rgba(0, 0, 0, 0.2);
 	}
 
 	.chart-metrics,
@@ -1445,7 +1560,7 @@
 
 	.signals-layout,
 	.infra-grid,
-	.academy-grid {
+	.academy-feature {
 		display: grid;
 		grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
 		gap: 16px;
@@ -1455,7 +1570,8 @@
 	.signals-table,
 	.node-list,
 	.stat-board,
-	.academy-track {
+	.academy-hero-card,
+	.curriculum-panel {
 		padding: 18px;
 	}
 
@@ -1544,74 +1660,291 @@
 		background: linear-gradient(90deg, var(--green), var(--gold));
 	}
 
-	.academy-grid {
-		grid-template-columns: repeat(2, 1fr);
+	.academy-cinema {
+		display: grid;
+		gap: 16px;
 	}
 
-	.academy-track {
-		min-height: 360px;
+	.academy-selector {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 12px;
+	}
+
+	.academy-selector button {
+		position: relative;
 		overflow: hidden;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		padding: 16px;
+		background: rgba(255, 255, 255, 0.035);
+		color: var(--text);
+		text-align: left;
+		cursor: pointer;
+		transition:
+			transform 220ms ease,
+			border-color 220ms ease,
+			background 220ms ease;
+	}
+
+	.academy-selector button::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		opacity: 0;
 		background:
-			linear-gradient(135deg, rgba(248, 212, 119, 0.1), transparent 42%),
+			linear-gradient(
+				135deg,
+				color-mix(in srgb, var(--track-accent), transparent 82%),
+				transparent
+			),
+			radial-gradient(
+				circle at 88% 18%,
+				color-mix(in srgb, var(--track-accent), transparent 72%),
+				transparent 34%
+			);
+		transition: opacity 220ms ease;
+	}
+
+	.academy-selector button:hover,
+	.academy-selector button.active {
+		transform: translateY(-2px);
+		border-color: color-mix(in srgb, var(--track-accent), transparent 48%);
+		background: rgba(255, 255, 255, 0.06);
+	}
+
+	.academy-selector button.active::before {
+		opacity: 1;
+	}
+
+	.academy-selector button > * {
+		position: relative;
+		z-index: 1;
+		display: block;
+	}
+
+	.academy-selector button > span {
+		color: color-mix(in srgb, var(--track-accent), white 10%);
+		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
+		font-size: 13px;
+	}
+
+	.academy-selector button strong {
+		margin-top: 8px;
+		font-size: clamp(1.1rem, 2vw, 1.45rem);
+	}
+
+	.academy-selector button small {
+		margin-top: 6px;
+		color: var(--muted);
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+	}
+
+	.academy-feature {
+		align-items: stretch;
+	}
+
+	.academy-hero-card,
+	.curriculum-panel {
+		position: relative;
+		overflow: hidden;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		background:
+			linear-gradient(
+				135deg,
+				color-mix(in srgb, var(--track-accent), transparent 90%),
+				transparent 52%
+			),
 			var(--panel);
+		box-shadow: 0 24px 80px rgba(0, 0, 0, 0.34);
+		backdrop-filter: blur(24px);
+	}
+
+	.academy-hero-card {
+		min-height: 510px;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+	}
+
+	.academy-orbit {
+		position: absolute;
+		inset: 18px 18px auto auto;
+		width: 172px;
+		aspect-ratio: 1;
+		border: 1px solid color-mix(in srgb, var(--track-accent), transparent 54%);
+		border-radius: 50%;
+		opacity: 0.54;
+		animation: orbit-float 6s ease-in-out infinite;
+	}
+
+	.academy-orbit::before,
+	.academy-orbit::after,
+	.academy-orbit span {
+		content: '';
+		position: absolute;
+		border-radius: 50%;
+	}
+
+	.academy-orbit::before {
+		inset: 28px;
+		border: 1px solid rgba(255, 255, 255, 0.14);
+	}
+
+	.academy-orbit::after {
+		inset: 64px;
+		background: color-mix(in srgb, var(--track-accent), transparent 24%);
+		box-shadow: 0 0 34px color-mix(in srgb, var(--track-accent), transparent 42%);
+	}
+
+	.academy-orbit span {
+		width: 9px;
+		height: 9px;
+		background: var(--text);
+		box-shadow: 0 0 22px var(--track-accent);
+		animation: academy-pulse 1.8s ease-in-out infinite;
+	}
+
+	.academy-orbit span:nth-child(1) {
+		top: 18px;
+		left: 54px;
+	}
+
+	.academy-orbit span:nth-child(2) {
+		right: 24px;
+		top: 84px;
+		animation-delay: 420ms;
+	}
+
+	.academy-orbit span:nth-child(3) {
+		bottom: 28px;
+		left: 44px;
+		animation-delay: 860ms;
 	}
 
 	.track-number {
-		display: block;
-		color: rgba(248, 212, 119, 0.34);
-		font-size: 72px;
+		margin: 0;
+		color: color-mix(in srgb, var(--track-accent), transparent 48%);
+		font-size: clamp(5rem, 13vw, 9rem);
 		font-weight: 900;
-		line-height: 0.9;
+		line-height: 0.76;
 	}
 
-	.academy-track h3 {
-		margin: 24px 0 10px;
-		font-size: clamp(1.5rem, 3vw, 2.4rem);
+	.academy-hero-card h3 {
+		max-width: 520px;
+		margin: 30px 0 12px;
+		font-size: clamp(2rem, 4vw, 3.6rem);
+		line-height: 0.96;
 	}
 
-	.academy-track p {
-		max-width: 510px;
+	.academy-hero-card p,
+	.curriculum-panel p,
+	.academy-lab p {
 		color: var(--muted);
 		line-height: 1.68;
 	}
 
-	.module-stack {
+	.asset-lanes {
 		display: grid;
-		gap: 8px;
-		margin-top: 26px;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 10px;
+		margin-top: 28px;
 	}
 
-	.module-stack span {
+	.asset-lanes div {
+		display: grid;
+		gap: 8px;
 		border: 1px solid var(--line);
 		border-radius: 8px;
 		padding: 12px;
+		background: rgba(0, 0, 0, 0.18);
+	}
+
+	.asset-lanes strong,
+	.curriculum-head span,
+	.academy-lab span {
+		color: color-mix(in srgb, var(--track-accent), white 10%);
+		font-size: 12px;
+		font-weight: 900;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+	}
+
+	.asset-lanes span {
 		color: var(--text);
-		background: rgba(255, 255, 255, 0.04);
+		font-size: 13px;
 	}
 
-	.swing-map {
-		width: 100%;
-		height: 160px;
-		margin-top: 26px;
+	.curriculum-panel {
+		display: grid;
+		align-content: start;
+		gap: 16px;
 	}
 
-	.swing-map path:first-of-type {
-		fill: none;
-		stroke: var(--gold);
-		stroke-width: 4;
-		stroke-linecap: round;
-		stroke-dasharray: 520;
-		stroke-dashoffset: 520;
-		animation: draw 1.7s ease forwards;
+	.curriculum-head {
+		display: flex;
+		align-items: end;
+		justify-content: space-between;
+		gap: 12px;
+		padding-bottom: 16px;
+		border-bottom: 1px solid var(--line);
 	}
 
-	.swing-map path:last-of-type {
-		fill: url(#swing-fill);
-		stroke: none;
+	.curriculum-head strong {
+		color: var(--text);
+		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
+		font-size: clamp(1rem, 2vw, 1.5rem);
 	}
 
-	.swing-map circle {
-		fill: var(--green);
+	.curriculum-timeline {
+		display: grid;
+		gap: 10px;
+	}
+
+	.curriculum-timeline article {
+		display: grid;
+		grid-template-columns: 52px minmax(0, 1fr);
+		gap: 12px;
+		align-items: start;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		padding: 14px;
+		background: rgba(255, 255, 255, 0.035);
+		animation: curriculum-rise 540ms cubic-bezier(0.16, 1, 0.3, 1) both;
+		animation-delay: var(--module-delay);
+	}
+
+	.curriculum-timeline article > span {
+		display: grid;
+		place-items: center;
+		width: 38px;
+		aspect-ratio: 1;
+		border-radius: 50%;
+		background: color-mix(in srgb, var(--track-accent), transparent 86%);
+		color: var(--track-accent);
+		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
+		font-size: 12px;
+		font-weight: 900;
+	}
+
+	.curriculum-timeline p {
+		margin: 0;
+	}
+
+	.academy-lab {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 10px;
+		margin-top: 2px;
+	}
+
+	.academy-lab div {
+		border: 1px solid color-mix(in srgb, var(--track-accent), transparent 76%);
+		border-radius: 8px;
+		padding: 14px;
+		background: color-mix(in srgb, var(--track-accent), transparent 93%);
 	}
 
 	.node-list {
@@ -1785,9 +2118,23 @@
 		}
 	}
 
-	@keyframes draw {
-		to {
-			stroke-dashoffset: 0;
+	@keyframes academy-pulse {
+		50% {
+			transform: scale(1.45);
+			opacity: 0.56;
+		}
+	}
+
+	@keyframes orbit-float {
+		50% {
+			transform: translate3d(-8px, 10px, 0) rotate(8deg);
+		}
+	}
+
+	@keyframes curriculum-rise {
+		from {
+			opacity: 0;
+			transform: translateY(14px) scale(0.985);
 		}
 	}
 
@@ -1795,6 +2142,7 @@
 		.hero,
 		.signals-layout,
 		.infra-grid,
+		.academy-feature,
 		.access-panel {
 			grid-template-columns: 1fr;
 		}
@@ -1817,7 +2165,9 @@
 		.chart-toolbar,
 		.email-row,
 		.mini-feed-grid,
-		.academy-grid,
+		.academy-selector,
+		.asset-lanes,
+		.academy-lab,
 		.chart-metrics,
 		.radar-stats,
 		.stat-board {
