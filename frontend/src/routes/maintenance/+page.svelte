@@ -1815,18 +1815,27 @@
 		position: relative;
 		display: grid;
 		place-items: center;
+		overflow: hidden;
 		width: min(320px, 72vw);
 		aspect-ratio: 1;
 		margin: 18px auto;
 		border-radius: 50%;
 		background:
-			conic-gradient(from 180deg, var(--green), var(--cyan), var(--gold), var(--green)),
-			radial-gradient(circle, rgba(255, 255, 255, 0.12), transparent 54%);
+			radial-gradient(circle, rgba(255, 255, 255, 0.12), transparent 58%), rgba(7, 9, 13, 0.92);
+	}
+
+	.launch-core::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		background: conic-gradient(from 180deg, var(--green), var(--cyan), var(--gold), var(--green));
 		animation: launch-rotate 18s linear infinite;
 	}
 
 	.launch-core > span {
 		position: absolute;
+		z-index: 1;
 		inset: calc(var(--ring) * 1px);
 		border: 1px solid rgba(255, 255, 255, 0.18);
 		border-radius: 50%;
@@ -1857,7 +1866,6 @@
 		border: 1px solid rgba(255, 255, 255, 0.12);
 		border-radius: 50%;
 		background: #07090d;
-		transform: rotate(calc(var(--scroll-progress) * -28deg));
 	}
 
 	.launch-core strong {
