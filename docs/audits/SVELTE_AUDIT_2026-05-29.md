@@ -61,24 +61,40 @@ A static heuristic (regex, *not* compiler analysis) found **333 assignments acro
 review backlog, not a defect count** — the pattern is legitimate in several cases.
 Triage by category:
 
-### Category A — true anti-pattern (prop → local-state sync on open)
-Admin modals/drawers that copy ~all their fields from a prop into local `$state`
-inside an `$effect`. Preferred fix: re-seed via `{#key open}` remount, or
-`$derived`, or init-once with `untrack` (the pattern used in the FieldEditor fix).
+### Category A — reviewed hands-on (2026-05-29 remediation pass)
 
-| File | ~writes |
-|------|---------|
-| `lib/components/admin/MemberFormModal.svelte` | 41 |
-| `lib/components/admin/CourseFormModal.svelte` | 30 |
-| `lib/components/admin/SubscriptionFormModal.svelte` | 19 |
-| `lib/components/dashboard/TradeAlertModal.svelte` | 18 |
-| `lib/components/admin/ModuleFormModal.svelte` | 13 |
-| `routes/dashboard/explosive-swings/components/UpdatePositionModal.svelte` | 9 |
-| `lib/components/admin/TemplateForm.svelte` | 8 |
-| `lib/components/admin/CourseDetailDrawer.svelte` | 5 |
-| `lib/components/ClassVideos.svelte` | 2 |
+**Important correction to the heuristic:** the raw "writes-in-effect" count
+*over-counts* the anti-pattern. Hands-on review found the flagged admin modals
+mostly use **deliberate, valid** patterns, not the naive bug:
 
-(…and a long tail of 1–6-write files.)
+1. **`wasOpen`-gated reset-on-open** (prior audit's FIX P2-2): reset the form on a
+   real `false → true` transition of `isOpen`, specifically to *preserve* half-typed
+   input. Valid — just replaceable with seed-once + a `{#if}`/`{#key}` mount gate.
+2. **Body-scroll lock** (`document.body.style.overflow = …`): textbook-legitimate.
+
+| File | heuristic ~writes | Verdict & action |
+|------|-------------------|------------------|
+| `lib/components/ClassVideos.svelte` | 2 | ✅ **Done.** True anti-pattern (synced `courseData`/`loading` from `initialData` in an `$effect`). → seed-once via `untrack`, `allLessons` plain `$derived`, `expandedModules` → `SvelteSet`. |
+| `lib/components/admin/ModuleFormModal.svelte` | 13 | ✅ **Done.** `wasOpen`-gated reset on an unconditionally-mounted modal. → parent `admin/courses/+page` now `{#if showModuleModal}`; child seeds 6 fields once via `untrack`; `wasOpen` gone; only the body-scroll `$effect` remains. No exit transition → visually identical. |
+| `lib/components/admin/CourseDetailDrawer.svelte` | 5 | ✅ **Reviewed — defensible, no change.** Guarded data-loaders (`loadedCourseId`/`loadedAnalyticsId` prevent refetch loops) + reset-on-close that supports the close animation while the component stays mounted. A `{#key}` remount would *break* the animation. |
+| `lib/components/admin/MemberFormModal.svelte` | 41 | ⏸️ **Deferred (deliberate).** Same `wasOpen`-gated P2-2 reset, but the file has *documented half-built behaviour* (14 "ghost" profile fields not wired into `CreateMemberRequest`; edit mode resets extended fields to defaults instead of loading from `member` — see its `TODO(2026-04-26-audit)`). Both parents already `{#if}`-gate the mount, so the recipe applies cleanly — but it should land with the ghost-field fix and the admin UI exercised, not as a blind refactor. |
+| `CourseFormModal` (30), `SubscriptionFormModal` (19), `TradeAlertModal` (18), `UpdatePositionModal` (9), `TemplateForm` (8) | — | ⬜ **Pending.** Expected to be the same `wasOpen`/body-scroll patterns. Apply the recipe below per file, checking all parents + exit-transition each time. |
+
+**Proven PE7 recipe** (applied to ClassVideos & ModuleFormModal):
+1. Child: replace per-field defaults + reset `$effect` with
+   `const seed = untrack(() => <prop>)`, then `let x = $state(seed?.x ?? <default>)`.
+   Delete the reset effect and any `wasOpen`. Keep genuine effects (body-scroll, loaders).
+2. Parent(s): gate the mount with `{#if open}` (add `{#key id}` only if the same
+   instance is reused for different items without an intervening unmount) so each
+   session seeds fresh. **Grep the component name — check _every_ parent.**
+3. Verify the component has **no exit transition** before switching to
+   unmount-on-close, then: `svelte-autofixer` clean → `pnpm check` 0/0.
+
+> ⚠️ Hard-won lesson this pass: a parent mount-gate edit silently no-op'd (it
+> assumed `onSave`, the real prop was `onSaved`), leaving seed-once on an
+> always-mounted child — which would show a blank form when editing. Caught by
+> reading the committed blob, fixed in a follow-up commit. **Always verify the
+> parent edit actually applied, and that seed-once is paired with a real remount.**
 
 ### Category B — legitimate `$effect` (event/observer-driven; leave as-is)
 Writing state in response to an external event/observer is exactly what `$effect`
@@ -113,14 +129,21 @@ is for. **No change recommended.**
 
 ## Plan — prioritized backlog
 
-### §A — `$effect`→idiomatic re-seed (Category A)
-Convert the prop→state modal/drawer syncs. Suggested order (clearest pattern first):
-1. `ClassVideos.svelte` (2 writes) — init-once / `$derived`.
-2. `CourseDetailDrawer.svelte` (5) — `{#key}` remount on open.
-3. `TemplateForm.svelte` (8), `ModuleFormModal.svelte` (13) …
-4. The big modals (`MemberFormModal` 41, `CourseFormModal` 30, `SubscriptionFormModal` 19,
-   `TradeAlertModal` 18) — most care; re-seed on open, not on every prop tick.
-Each fix: `svelte-autofixer` until clean → `pnpm check`.
+### §A — `$effect`→idiomatic re-seed (Category A) — *in progress*
+See the per-file status table under "Medium-priority" above. Done: `ClassVideos`,
+`ModuleFormModal`. Reviewed-defensible: `CourseDetailDrawer`. Deferred (pair with
+its ghost-field TODO): `MemberFormModal`.
+
+**Remaining**, apply the proven recipe (seed-once `untrack` + parent `{#if}`/`{#key}`
+mount-gate, after confirming no exit transition):
+- `lib/components/admin/CourseFormModal.svelte`
+- `lib/components/admin/SubscriptionFormModal.svelte`
+- `lib/components/dashboard/TradeAlertModal.svelte`
+- `routes/dashboard/explosive-swings/components/UpdatePositionModal.svelte`
+- `lib/components/admin/TemplateForm.svelte`
+
+Each fix: `svelte-autofixer` clean → `pnpm check` 0/0 → **verify the parent edit
+actually applied** (grep the `{#if}`) before committing.
 
 ### §B — accessibility debt
 Review the ~61 a11y suppressions. Dominant pattern: click handlers on non-interactive
