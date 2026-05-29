@@ -365,18 +365,24 @@
 	</div>
 {/if}
 
-<TradeAlertModal
-	isOpen={alertModalOpen}
-	roomSlug={ps.ROOM_SLUG}
-	editAlert={ps.editingAlert as any}
-	entryAlerts={ps.alerts.filter((a) => a.type === 'ENTRY') as any}
-	onClose={() => {
-		alertModalOpen = false;
-		ps.closeAlertModal();
-		saveAlertError = null;
-	}}
-	onSave={handleSaveAlert}
-/>
+<!-- {#if} gates the mount so the modal seeds its form fresh per editing
+     session. The child seeds fields once at mount (via untrack) from
+     editAlert instead of a prop→state sync $effect, so it MUST remount per
+     open. No exit transition → unmount-on-close is visually identical. -->
+{#if alertModalOpen}
+	<TradeAlertModal
+		isOpen={alertModalOpen}
+		roomSlug={ps.ROOM_SLUG}
+		editAlert={ps.editingAlert as any}
+		entryAlerts={ps.alerts.filter((a) => a.type === 'ENTRY') as any}
+		onClose={() => {
+			alertModalOpen = false;
+			ps.closeAlertModal();
+			saveAlertError = null;
+		}}
+		onSave={handleSaveAlert}
+	/>
+{/if}
 
 <TradeEntryModal
 	isOpen={ps.isTradeEntryModalOpen}

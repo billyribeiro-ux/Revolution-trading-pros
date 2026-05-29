@@ -27,6 +27,7 @@
 	} from '$lib/types/trading';
 	import { buildTosString, validateTosParams } from '$lib/utils/tos-builder';
 	import Icon from '$lib/components/Icon.svelte';
+	import { untrack } from 'svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PROPS
@@ -58,24 +59,33 @@
 	let isSubmitting = $state(false);
 	let errors = $state<string[]>([]);
 
-	// Form fields
-	let alertType = $state<AlertType>('ENTRY');
-	let ticker = $state('');
-	let title = $state('');
-	let message = $state('');
-	let notes = $state('');
-	let tradeType = $state<TradeType>('shares');
-	let action = $state<TradeAction>('BUY');
-	let quantity = $state<number>(100);
-	let optionType = $state<OptionType>('CALL');
-	let strike = $state<number | null>(null);
-	let expiration = $state<string>('');
-	let contractType = $state<ContractType>('Weeklys');
-	let orderType = $state<OrderType>('LMT');
-	let limitPrice = $state<number | null>(null);
-	let fillPrice = $state<number | null>(null);
-	let entryAlertId = $state<number | null>(null);
-	let isPinned = $state(false);
+	// Form fields — seeded once at mount.
+	//
+	// The parent gates this modal behind `{#if alertModalOpen}`, so a fresh
+	// instance mounts per editing session; seeding once from `editAlert`
+	// replaces the prop→state sync $effect that previously ran on open.
+	// `untrack` reads the prop's initial value without registering a reactive
+	// dep (init-once intent; avoids state_referenced_locally). Defaults mirror
+	// resetForm() (still used by handleClose and the create branch).
+	const seedAlert = untrack(() => editAlert);
+
+	let alertType = $state<AlertType>(seedAlert?.alert_type ?? 'ENTRY');
+	let ticker = $state(seedAlert?.ticker ?? '');
+	let title = $state(seedAlert?.title ?? '');
+	let message = $state(seedAlert?.message ?? '');
+	let notes = $state(seedAlert?.notes || '');
+	let tradeType = $state<TradeType>(seedAlert?.trade_type || 'shares');
+	let action = $state<TradeAction>(seedAlert?.action || 'BUY');
+	let quantity = $state<number>(seedAlert?.quantity || 100);
+	let optionType = $state<OptionType>(seedAlert?.option_type || 'CALL');
+	let strike = $state<number | null>(seedAlert?.strike ?? null);
+	let expiration = $state<string>(seedAlert?.expiration || '');
+	let contractType = $state<ContractType>(seedAlert?.contract_type || 'Weeklys');
+	let orderType = $state<OrderType>(seedAlert?.order_type || 'LMT');
+	let limitPrice = $state<number | null>(seedAlert?.limit_price ?? null);
+	let fillPrice = $state<number | null>(seedAlert?.fill_price ?? null);
+	let entryAlertId = $state<number | null>(seedAlert?.entry_alert_id ?? null);
+	let isPinned = $state(seedAlert?.is_pinned ?? false);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE
@@ -124,31 +134,6 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	// EFFECTS
 	// ═══════════════════════════════════════════════════════════════════════════
-
-	// Populate form when editing
-	$effect(() => {
-		if (editAlert) {
-			alertType = editAlert.alert_type;
-			ticker = editAlert.ticker;
-			title = editAlert.title;
-			message = editAlert.message;
-			notes = editAlert.notes || '';
-			tradeType = editAlert.trade_type || 'shares';
-			action = editAlert.action || 'BUY';
-			quantity = editAlert.quantity || 100;
-			optionType = editAlert.option_type || 'CALL';
-			strike = editAlert.strike;
-			expiration = editAlert.expiration || '';
-			contractType = editAlert.contract_type || 'Weeklys';
-			orderType = editAlert.order_type || 'LMT';
-			limitPrice = editAlert.limit_price;
-			fillPrice = editAlert.fill_price;
-			entryAlertId = editAlert.entry_alert_id;
-			isPinned = editAlert.is_pinned;
-		} else {
-			resetForm();
-		}
-	});
 
 	// Auto-generate title based on alert type and ticker
 	$effect(() => {
