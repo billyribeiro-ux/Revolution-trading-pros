@@ -29,19 +29,15 @@
 
 <div
 	class="modal-overlay"
-	onclick={onClose}
+	onclick={(e: MouseEvent) => {
+		if (e.target === e.currentTarget) onClose();
+	}}
 	onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && onClose()}
 	role="dialog"
 	aria-modal="true"
 	tabindex="-1"
 >
-	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<div
-		class="modal"
-		onclick={(e) => e.stopPropagation()}
-		onkeydown={(e) => e.stopPropagation()}
-		role="document"
-	>
+	<div class="modal" role="document">
 		<div class="modal-header">
 			<h2>Bulk Operations</h2>
 			<button class="modal-close" onclick={onClose}>&times;</button>

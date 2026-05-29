@@ -30,19 +30,15 @@
 
 <div
 	class="modal-overlay"
-	onclick={onclose}
+	onclick={(e) => {
+		if (e.target === e.currentTarget) onclose();
+	}}
 	onkeydown={(e) => e.key === 'Escape' && onclose()}
 	role="dialog"
 	tabindex="-1"
 	aria-modal="true"
 >
-	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<div
-		class="modal-content"
-		onclick={(e) => e.stopPropagation()}
-		onkeydown={(e) => e.stopPropagation()}
-		role="document"
-	>
+	<div class="modal-content" role="document">
 		<div class="modal-header">
 			<h2>Order #{selectedOrder.order_number}</h2>
 			<button class="close-btn" onclick={onclose}>
