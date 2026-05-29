@@ -74,7 +74,7 @@ export interface Contact {
 	is_unsubscribed: boolean;
 	do_not_contact: boolean;
 	is_vip: boolean;
-	custom_fields?: Record<string, any>;
+	custom_fields?: Record<string, unknown>;
 	tags?: string[];
 	first_touch_channel?: string;
 	first_touch_campaign?: string;
@@ -141,7 +141,7 @@ export interface Deal {
 	days_in_stage: number;
 	days_in_pipeline: number;
 	stage_changes_count: number;
-	custom_fields?: Record<string, any>;
+	custom_fields?: Record<string, unknown>;
 	tags?: string[];
 	priority: DealPriority;
 	source_channel?: string;
@@ -202,7 +202,7 @@ export interface Activity {
 	type: ActivityType;
 	title?: string;
 	description?: string;
-	metadata?: Record<string, any>;
+	metadata?: Record<string, unknown>;
 	created_by_id?: string;
 	assigned_to_id?: string;
 	due_date?: string;
@@ -255,7 +255,7 @@ export interface SegmentCondition {
 		| 'not_in'
 		| 'is_null'
 		| 'is_not_null';
-	value: any;
+	value: unknown;
 	logic?: 'and' | 'or';
 }
 
@@ -265,7 +265,7 @@ export interface TimelineEvent {
 	category: string;
 	title: string;
 	description?: string;
-	metadata?: Record<string, any>;
+	metadata?: Record<string, unknown>;
 	occurred_at: string;
 	created_by?: {
 		id: string;
@@ -391,7 +391,7 @@ export interface SequenceTracker {
 
 export interface TrackerNote {
 	action: string;
-	data?: Record<string, any>;
+	data?: Record<string, unknown>;
 	at: string;
 }
 
@@ -456,7 +456,7 @@ export interface RecurringCampaign {
 	settings?: SequenceSettings;
 	scheduling_settings?: SchedulingSettings;
 	subscriber_settings?: SubscriberSettings;
-	template_config?: Record<string, any>;
+	template_config?: Record<string, unknown>;
 	labels?: string[];
 	total_campaigns_sent: number;
 	total_emails_sent: number;
@@ -541,7 +541,7 @@ export interface SmartLink {
 	is_active: boolean;
 	click_count: number;
 	unique_clicks: number;
-	click_data?: Record<string, any>;
+	click_data?: Record<string, unknown>;
 	created_by?: string;
 	created_at: string;
 	updated_at: string;
@@ -556,7 +556,7 @@ export interface SmartLinkAction {
 	sequence_id?: string;
 	funnel_id?: string;
 	field?: string;
-	value?: any;
+	value?: unknown;
 }
 
 export interface SmartLinkClick {
@@ -653,7 +653,7 @@ export interface AutomationFunnel {
 	description?: string;
 	status: FunnelStatus;
 	trigger_type: TriggerType;
-	trigger_settings?: Record<string, any>;
+	trigger_settings?: Record<string, unknown>;
 	conditions?: SegmentCondition[];
 	subscribers_count: number;
 	completed_count: number;
@@ -672,7 +672,7 @@ export interface FunnelAction {
 	parent_id?: string;
 	action_type: ActionType;
 	title?: string;
-	settings?: Record<string, any>;
+	settings?: Record<string, unknown>;
 	position: number;
 	condition_type: ConditionType;
 	delay_seconds: number;
@@ -704,7 +704,7 @@ export interface FunnelSubscriber {
 export interface ExecutionLogEntry {
 	action_id?: string;
 	action_type?: string;
-	result: Record<string, any>;
+	result: Record<string, unknown>;
 	at: string;
 }
 
@@ -817,7 +817,7 @@ export interface CrmCompany {
 	linkedin_url?: string;
 	twitter_handle?: string;
 	logo_url?: string;
-	custom_fields?: Record<string, any>;
+	custom_fields?: Record<string, unknown>;
 	owner_id?: string;
 	contacts_count: number;
 	deals_count: number;
@@ -1010,7 +1010,7 @@ export interface EmailTemplate {
 	subject?: string;
 	content: string;
 	design_template: TemplateType;
-	template_config?: Record<string, any>;
+	template_config?: Record<string, unknown>;
 	is_default: boolean;
 	category?: string;
 	thumbnail?: string;
@@ -1067,7 +1067,7 @@ export interface WebhookLog {
 	id: string;
 	webhook_id: string;
 	event: WebhookEvent;
-	payload: Record<string, any>;
+	payload: Record<string, unknown>;
 	response_code?: number;
 	response_body?: string;
 	is_success: boolean;
@@ -1126,7 +1126,7 @@ export interface ImportError {
 export interface ExportJob {
 	id: string;
 	type: ImportType;
-	filters?: Record<string, any>;
+	filters?: Record<string, unknown>;
 	fields: string[];
 	total_records: number;
 	status: ImportStatus;
@@ -1227,7 +1227,7 @@ export interface SystemLog {
 	level: LogLevel;
 	category: LogCategory;
 	message: string;
-	context?: Record<string, any>;
+	context?: Record<string, unknown>;
 	contact_id?: string;
 	user_id?: string;
 	ip_address?: string;
@@ -1261,7 +1261,7 @@ export interface Campaign {
 	email_pre_header?: string;
 	email_body: string;
 	design_template: string;
-	template_config?: Record<string, any>;
+	template_config?: Record<string, unknown>;
 	settings?: SequenceSettings;
 	subscriber_settings?: SubscriberSettings;
 	utm_settings?: UtmSettings;

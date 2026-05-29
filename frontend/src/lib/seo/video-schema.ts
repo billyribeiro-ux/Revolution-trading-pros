@@ -271,7 +271,7 @@ const DEFAULT_OPTIONS: VideoSchemaOptions = {
 export function generateVideoSchema(
 	video: VideoInput,
 	options: Partial<VideoSchemaOptions> = {}
-): Record<string, any> {
+): Record<string, unknown> {
 	const opts = { ...DEFAULT_OPTIONS, ...options };
 
 	// Calculate duration
@@ -283,7 +283,7 @@ export function generateVideoSchema(
 	// Ensure thumbnail is an array
 	const thumbnails = Array.isArray(video.thumbnailUrl) ? video.thumbnailUrl : [video.thumbnailUrl];
 
-	const schema: Record<string, any> = {
+	const schema: Record<string, unknown> = {
 		'@context': 'https://schema.org',
 		'@type': 'VideoObject',
 		name: video.title,
@@ -332,13 +332,14 @@ export function generateVideoSchema(
 
 	// Add author
 	if (video.author) {
-		schema['author'] = {
+		const author: Record<string, unknown> = {
 			'@type': 'Person',
 			name: video.author.name
 		};
 		if (video.author.url) {
-			schema['author']['url'] = video.author.url;
+			author['url'] = video.author.url;
 		}
+		schema['author'] = author;
 	}
 
 	// Add publisher
@@ -359,16 +360,17 @@ export function generateVideoSchema(
 
 	// Add live broadcast event
 	if (video.publication?.isLiveBroadcast) {
-		schema['publication'] = {
+		const publication: Record<string, unknown> = {
 			'@type': 'BroadcastEvent',
 			isLiveBroadcast: true
 		};
 		if (video.publication.startDate) {
-			schema['publication']['startDate'] = video.publication.startDate;
+			publication['startDate'] = video.publication.startDate;
 		}
 		if (video.publication.endDate) {
-			schema['publication']['endDate'] = video.publication.endDate;
+			publication['endDate'] = video.publication.endDate;
 		}
+		schema['publication'] = publication;
 	}
 
 	// Add clips (key moments)
@@ -406,7 +408,7 @@ export function generateSchemaFromDetected(
 		durationSeconds?: number;
 	},
 	options?: Partial<VideoSchemaOptions>
-): Record<string, any> {
+): Record<string, unknown> {
 	return generateVideoSchema(
 		{
 			url: detected.embedUrl,
@@ -424,7 +426,7 @@ export function generateSchemaFromDetected(
 /**
  * Generate Course/Episode schema for video courses
  */
-export function generateCourseVideoSchema(video: VideoInput): Record<string, any> {
+export function generateCourseVideoSchema(video: VideoInput): Record<string, unknown> {
 	if (!video.courseInfo) {
 		return generateVideoSchema(video);
 	}
@@ -459,7 +461,7 @@ export function generateCourseVideoSchema(video: VideoInput): Record<string, any
 /**
  * Generate HowTo schema for tutorial videos
  */
-export function generateHowToVideoSchema(video: VideoInput): Record<string, any> {
+export function generateHowToVideoSchema(video: VideoInput): Record<string, unknown> {
 	if (!video.howToSteps || video.howToSteps.length === 0) {
 		return generateVideoSchema(video);
 	}
@@ -494,7 +496,7 @@ export function generateHowToVideoSchema(video: VideoInput): Record<string, any>
 export function generateVideoGallerySchema(
 	videos: VideoInput[],
 	listName: string
-): Record<string, any> {
+): Record<string, unknown> {
 	return {
 		'@context': 'https://schema.org',
 		'@type': 'ItemList',
@@ -515,14 +517,14 @@ export function generateVideoGallerySchema(
 /**
  * Generate JSON-LD script tag
  */
-export function generateJsonLdScript(schema: Record<string, any>): string {
+export function generateJsonLdScript(schema: Record<string, unknown>): string {
 	return `<script type="application/ld+json">\n${JSON.stringify(schema, null, 2)}\n</script>`;
 }
 
 /**
  * Generate multiple JSON-LD scripts
  */
-export function generateMultipleJsonLdScripts(schemas: Record<string, any>[]): string {
+export function generateMultipleJsonLdScripts(schemas: Record<string, unknown>[]): string {
 	return schemas.map((schema) => generateJsonLdScript(schema)).join('\n');
 }
 
@@ -539,7 +541,7 @@ export interface ValidationResult {
 /**
  * Validate video schema for Google requirements
  */
-export function validateVideoSchema(schema: Record<string, any>): ValidationResult {
+export function validateVideoSchema(schema: Record<string, unknown>): ValidationResult {
 	const errors: string[] = [];
 	const warnings: string[] = [];
 
@@ -559,7 +561,7 @@ export function validateVideoSchema(schema: Record<string, any>): ValidationResu
 	}
 
 	// Description length
-	if (schema['description'] && schema['description'].length < 50) {
+	if (typeof schema['description'] === 'string' && schema['description'].length < 50) {
 		warnings.push('Description is short. Consider adding more detail (50+ characters recommended)');
 	}
 
