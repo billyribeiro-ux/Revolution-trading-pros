@@ -18,9 +18,9 @@
 
 	const { data, isLoading = false }: Props = $props();
 
-	// DOM reference for responsive width measurement (not reactive)
-	// svelte-ignore non_reactive_update
-	let containerEl: HTMLDivElement;
+	// DOM reference for responsive width measurement. Declaring with $state()
+	// keeps bind:this reactive (removes the prior svelte-ignore non_reactive_update).
+	let containerEl: HTMLDivElement | undefined = $state();
 	let width = $state(400);
 	let hoveredIndex: number | null = $state(null);
 	let tooltipX = $state(0);
