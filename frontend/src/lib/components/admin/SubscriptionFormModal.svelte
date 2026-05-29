@@ -15,6 +15,7 @@
 		IconCalendar,
 		IconCurrencyDollar
 	} from '$lib/icons';
+	import { untrack } from 'svelte';
 
 	interface Props {
 		isOpen: boolean;
@@ -43,17 +44,29 @@
 		onSaved?.(sub);
 	};
 
-	// Form state
-	let userId = $state('');
-	let productId = $state('');
-	let productName = $state('');
-	let price = $state(0);
-	let interval = $state<SubscriptionInterval>('monthly');
-	let autoRenew = $state(true);
-	let trialDays = $state(0);
-	let notes = $state('');
+	// Form state — seeded once at mount.
+	//
+	// Supersedes FIX P2-2 (audits/admin-2026-04-26/01-shell-and-dashboard.md),
+	// which gated a reset $effect on a real false → true `isOpen` transition so
+	// half-typed input survived parent re-renders. The parent now gates this
+	// modal behind `{#if showFormModal}`, so a fresh instance mounts per editing
+	// session — seeding once gives the same "reset on open, keep typing while
+	// open" behaviour without an effect or `wasOpen`. `untrack` reads the props'
+	// initial values without registering reactive deps (init-once intent;
+	// avoids state_referenced_locally).
+	const seedIsEdit = untrack(() => mode === 'edit' && !!subscription);
+	const seedSub = untrack(() => subscription);
 
-	// Payment method (for create)
+	let userId = $state(seedIsEdit ? seedSub?.userId || '' : '');
+	let productId = $state(seedIsEdit ? seedSub?.productId || '' : '');
+	let productName = $state(seedIsEdit ? seedSub?.productName || '' : '');
+	let price = $state(seedIsEdit ? seedSub?.price || 0 : 0);
+	let interval = $state<SubscriptionInterval>(seedIsEdit ? seedSub?.interval || 'monthly' : 'monthly');
+	let autoRenew = $state(seedIsEdit ? (seedSub?.autoRenew ?? true) : true);
+	let trialDays = $state(0);
+	let notes = $state(seedIsEdit ? seedSub?.notes || '' : '');
+
+	// Payment method (create only; edit never sets it, so default stands)
 	let paymentMethodType = $state<'card' | 'paypal' | 'bank'>('card');
 
 	// UI state
@@ -66,39 +79,6 @@
 		{ value: 'quarterly', label: 'Quarterly', description: 'Billed every 3 months' },
 		{ value: 'yearly', label: 'Yearly', description: 'Billed annually' }
 	];
-
-	// FIX P2-2 (audits/admin-2026-04-26/01-shell-and-dashboard.md):
-	// Gate the reset on a real false → true transition of `isOpen` so the
-	// admin's half-typed input survives parent re-renders.
-	let wasOpen = false;
-	$effect(() => {
-		const opening = isOpen && !wasOpen;
-		wasOpen = isOpen;
-		if (!opening) return;
-
-		if (mode === 'edit' && subscription) {
-			userId = subscription.userId || '';
-			productId = subscription.productId || '';
-			productName = subscription.productName || '';
-			price = subscription.price || 0;
-			interval = subscription.interval || 'monthly';
-			autoRenew = subscription.autoRenew ?? true;
-			notes = subscription.notes || '';
-			trialDays = 0;
-		} else if (mode === 'create') {
-			userId = '';
-			productId = '';
-			productName = '';
-			price = 0;
-			interval = 'monthly';
-			autoRenew = true;
-			trialDays = 0;
-			notes = '';
-			paymentMethodType = 'card';
-		}
-		error = '';
-		activeSection = 'details';
-	});
 
 	$effect(() => {
 		if (isOpen) {
