@@ -2,6 +2,7 @@
 	import { emailTemplatesApi, AdminApiError, type EmailTemplate } from '$lib/api/admin';
 	import { goto } from '$app/navigation';
 	import { IconDeviceFloppy, IconX } from '$lib/icons';
+	import { untrack } from 'svelte';
 
 	/**
 	 * Edit/Create form for email templates.
@@ -42,29 +43,25 @@
 	const isEdit = $derived(props.isEdit ?? false);
 	const onsaved = $derived(props.onsaved);
 
-	// Form fields
-	let name = $state('');
-	let slug = $state('');
-	let subject = $state('');
-	let email_type = $state('');
-	let body_html = $state('');
-	let body_text = $state('');
-	let variables = $state('');
-	let is_active = $state(true);
+	// Form fields — seeded once at mount.
+	//
+	// Both routes mount this form with a stable `template`: the edit page gates
+	// it behind `{#if loading}…{:else}` so it only mounts once the row has
+	// loaded (non-null), and the new page passes no template at all. Neither
+	// swaps `template` on a live instance, so seeding once at mount replaces the
+	// prop→state sync $effect without any behavioural change. `untrack` reads
+	// the prop's initial value without registering a reactive dep (init-once
+	// intent; avoids state_referenced_locally).
+	const seed = untrack(() => template);
 
-	// Sync with prop changes
-	$effect(() => {
-		if (template) {
-			name = template.name ?? '';
-			slug = template.slug ?? '';
-			subject = template.subject ?? '';
-			email_type = template.email_type ?? '';
-			body_html = template.body_html ?? '';
-			body_text = template.body_text ?? '';
-			variables = template.variables ? JSON.stringify(template.variables, null, 2) : '';
-			is_active = template.is_active ?? true;
-		}
-	});
+	let name = $state(seed?.name ?? '');
+	let slug = $state(seed?.slug ?? '');
+	let subject = $state(seed?.subject ?? '');
+	let email_type = $state(seed?.email_type ?? '');
+	let body_html = $state(seed?.body_html ?? '');
+	let body_text = $state(seed?.body_text ?? '');
+	let variables = $state(seed?.variables ? JSON.stringify(seed.variables, null, 2) : '');
+	let is_active = $state(seed?.is_active ?? true);
 
 	let loading = $state(false);
 	let error = $state('');

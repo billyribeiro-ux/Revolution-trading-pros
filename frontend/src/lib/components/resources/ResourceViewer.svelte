@@ -181,14 +181,18 @@
 </script>
 
 {#if open}
-	<!-- Backdrop -->
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<!-- svelte-ignore a11y_click_events_have_key_events -->
-	<div
-		class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm"
-		onclick={handleClose}
+	<!--
+		Backdrop as <button> so screen readers / keyboard users can dismiss it
+		(replaces a <div onclick> which needed two svelte-ignore directives).
+		The button is purely visual; the actual focus management lives on the
+		modal below.
+	-->
+	<button
+		type="button"
+		class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm border-0 cursor-default"
 		aria-label="Close viewer"
-	></div>
+		onclick={handleClose}
+	></button>
 
 	<!-- Modal -->
 	<div

@@ -667,15 +667,12 @@
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"
-		onclick={() => (showCreateModal = false)}
+		onclick={(e: MouseEvent) => {
+			if (e.target === e.currentTarget) showCreateModal = false;
+		}}
 		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showCreateModal = false)}
 	>
-		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-		<div
-			class="modal-content large"
-			role="document"
-			onclick={(e: MouseEvent) => e.stopPropagation()}
-			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+		<div class="modal-content large" role="document"
 		>
 			<div class="modal-header">
 				<h2>Create New Campaign</h2>

@@ -16,19 +16,15 @@
 
 <div
 	class="modal-overlay"
-	onclick={onClose}
+	onclick={(e) => {
+		if (e.target === e.currentTarget) onClose();
+	}}
 	onkeydown={(e) => e.key === 'Escape' && onClose()}
 	role="dialog"
 	aria-modal="true"
 	tabindex="-1"
 >
-	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<div
-		class="modal modal-small"
-		onclick={(e) => e.stopPropagation()}
-		onkeydown={(e) => e.key === 'Escape' && onClose()}
-		role="document"
-	>
+	<div class="modal modal-small" role="document">
 		<div class="modal-header">
 			<h3>
 				<IconArrowRight size={20} />

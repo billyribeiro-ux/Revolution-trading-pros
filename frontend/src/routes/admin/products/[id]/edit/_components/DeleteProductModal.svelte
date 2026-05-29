@@ -19,20 +19,15 @@
 {#if open}
 	<div
 		class="modal-overlay"
-		onclick={onCancel}
+		onclick={(e: MouseEvent) => {
+			if (e.target === e.currentTarget) onCancel();
+		}}
 		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && onCancel()}
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"
 	>
-		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-		<div
-			class="modal"
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.key === 'Escape' && onCancel()}
-			role="document"
-			tabindex="-1"
-		>
+		<div class="modal" role="document" tabindex="-1">
 			<h3>Delete Product?</h3>
 			<p>
 				Are you sure you want to delete <strong>{productName}</strong>? This action cannot be

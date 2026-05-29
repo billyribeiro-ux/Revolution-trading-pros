@@ -810,16 +810,23 @@
 />
 
 <!-- Subscription Form Modal -->
-<SubscriptionFormModal
-	isOpen={showFormModal}
-	mode={formModalMode}
-	subscription={selectedSubscription}
-	onClose={() => {
-		showFormModal = false;
-		selectedSubscription = null;
-	}}
-	onSaved={handleSubscriptionSaved}
-/>
+<!-- {#if} gates the mount so the modal seeds a fresh form per editing
+     session. The child seeds its fields once at mount (via untrack)
+     instead of a wasOpen-gated reset $effect, so it MUST remount per open.
+     The modal has no exit transition, so unmount-on-close is visually
+     identical to its internal {#if isOpen}. -->
+{#if showFormModal}
+	<SubscriptionFormModal
+		isOpen={showFormModal}
+		mode={formModalMode}
+		subscription={selectedSubscription}
+		onClose={() => {
+			showFormModal = false;
+			selectedSubscription = null;
+		}}
+		onSaved={handleSubscriptionSaved}
+	/>
+{/if}
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════

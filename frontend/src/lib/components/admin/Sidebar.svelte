@@ -39,6 +39,7 @@
 			IconSettings,
 			IconLogout
 		} from '$lib/icons';
+		import type { ComponentType } from 'svelte';
 		import { authStore } from '$lib/stores/auth.svelte';
 		import { goto } from '$app/navigation';
 
@@ -53,7 +54,7 @@
 		interface NavItem {
 			label: string;
 			href: string;
-			icon: any;
+			icon: ComponentType;
 			children?: NavItem[];
 		}
 

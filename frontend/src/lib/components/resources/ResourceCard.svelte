@@ -81,12 +81,26 @@
 	}
 </script>
 
-<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!--
+	`<article role=button>` triggers a11y_no_noninteractive_element_to_interactive_role
+	— the only specific suppression we still need. Adding tabindex + onkeydown
+	(Enter/Space) makes the card keyboard-operable, removing the two previously
+	suppressed warnings (a11y_no_noninteractive_element_interactions and
+	a11y_click_events_have_key_events). Net: 2 suppressions → 1.
+-->
+<!-- svelte-ignore a11y_no_noninteractive_element_to_interactive_role -->
 <article
 	class="resource-card group relative overflow-hidden rounded-xl border border-gray-200 bg-white transition-all duration-300 hover:shadow-lg hover:border-blue-300 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-blue-600 cursor-pointer"
 	class:compact
+	role="button"
+	tabindex="0"
 	onclick={handleCardClick}
+	onkeydown={(e) => {
+		if (e.key === 'Enter' || e.key === ' ') {
+			e.preventDefault();
+			handleCardClick();
+		}
+	}}
 >
 	<!-- Thumbnail / Preview -->
 	<div

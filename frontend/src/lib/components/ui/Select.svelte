@@ -1,7 +1,10 @@
 <script lang="ts">
+	// `unknown` (not `any`) for value/options: this is a UI primitive whose
+	// consumer knows the concrete shape — narrowing at the call site is the
+	// right contract.
 	interface Props {
-		value?: any;
-		options?: { value: any; label: string }[];
+		value?: unknown;
+		options?: { value: unknown; label: string }[];
 		placeholder?: string;
 		label?: string;
 		error?: string;

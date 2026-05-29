@@ -7,7 +7,7 @@
 	 * @author Revolution Trading Pros
 	 * @level L8 Principal Engineer
 	 */
-	import { onMount } from 'svelte';
+	import { onMount, type ComponentType } from 'svelte';
 	import { browser } from '$app/environment';
 	import AnimatedNumber from './AnimatedNumber.svelte';
 	import SkeletonLoader from './SkeletonLoader.svelte';
@@ -21,7 +21,7 @@
 		suffix?: string;
 		trend?: number | null;
 		trendLabel?: string;
-		icon?: any;
+		icon?: ComponentType;
 		color?: 'blue' | 'green' | 'purple' | 'orange' | 'pink' | 'cyan' | 'red';
 		loading?: boolean;
 		delay?: number;

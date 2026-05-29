@@ -12,6 +12,7 @@
 	 * - Notes
 	 */
 	import type { ActivePosition } from '../types';
+	import { untrack } from 'svelte';
 
 	interface Props {
 		isOpen: boolean;
@@ -23,33 +24,28 @@
 
 	const { isOpen, position, roomSlug, onClose, onSuccess }: Props = $props();
 
-	// Form state - initialized from position
-	let entryPrice = $state('');
-	let currentPrice = $state('');
-	let stopLoss = $state('');
-	let target1 = $state('');
-	let target2 = $state('');
-	let target3 = $state('');
-	let status = $state<'WATCHING' | 'ENTRY' | 'ACTIVE'>('ACTIVE');
-	let notes = $state('');
+	// Form state — seeded once at mount from `position`.
+	//
+	// The parent gates this modal behind `{#if isUpdatePositionModalOpen}`, so a
+	// fresh instance mounts per editing session; seeding once replaces the
+	// prop→state sync $effect that previously ran on open. `untrack` reads the
+	// prop's initial value without registering a reactive dep (init-once intent;
+	// avoids state_referenced_locally).
+	const p = untrack(() => position);
+
+	let entryPrice = $state(p?.entryPrice?.toString() ?? '');
+	let currentPrice = $state(p?.currentPrice?.toString() ?? '');
+	let stopLoss = $state(p?.stopLoss?.price?.toString() ?? '');
+	let target1 = $state(p?.targets?.[0]?.price?.toString() ?? '');
+	let target2 = $state(p?.targets?.[1]?.price?.toString() ?? '');
+	let target3 = $state(p?.targets?.[2]?.price?.toString() ?? '');
+	let status = $state<'WATCHING' | 'ENTRY' | 'ACTIVE'>(
+		(p?.status as 'WATCHING' | 'ENTRY' | 'ACTIVE') ?? 'ACTIVE'
+	);
+	let notes = $state(p?.notes ?? '');
 
 	let isSubmitting = $state(false);
 	let error = $state<string | null>(null);
-
-	// Reset form when position changes
-	$effect(() => {
-		if (position && isOpen) {
-			entryPrice = position.entryPrice?.toString() ?? '';
-			currentPrice = position.currentPrice?.toString() ?? '';
-			stopLoss = position.stopLoss?.price?.toString() ?? '';
-			target1 = position.targets?.[0]?.price?.toString() ?? '';
-			target2 = position.targets?.[1]?.price?.toString() ?? '';
-			target3 = position.targets?.[2]?.price?.toString() ?? '';
-			status = position.status as 'WATCHING' | 'ENTRY' | 'ACTIVE';
-			notes = position.notes ?? '';
-			error = null;
-		}
-	});
 
 	function handleClose() {
 		if (!isSubmitting) {

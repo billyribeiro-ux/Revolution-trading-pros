@@ -451,7 +451,9 @@
 		{@const detailedDiff = getDetailedDiff(compareRevisionA, compareRevisionB)}
 		<div
 			class="diff-overlay"
-			onclick={() => (showDiffView = false)}
+			onclick={(e: MouseEvent) => {
+				if (e.target === e.currentTarget) showDiffView = false;
+			}}
 			onkeydown={(e: KeyboardEvent) => {
 				if (e.key === 'Escape') showDiffView = false;
 			}}
@@ -460,13 +462,7 @@
 			aria-labelledby="diff-modal-title"
 			tabindex="-1"
 		>
-			<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-			<div
-				class="diff-modal"
-				onclick={(e: MouseEvent) => e.stopPropagation()}
-				onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
-				role="document"
-			>
+			<div class="diff-modal" role="document">
 				<div class="diff-header">
 					<h4 id="diff-modal-title">Revision Comparison</h4>
 					<div class="diff-header-meta">

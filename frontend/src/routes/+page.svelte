@@ -9,6 +9,8 @@
 	 */
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
+	import type { PageData } from './$types';
+	import type { Post } from '$lib/types/post';
 	import Hero from '$lib/components/sections/Hero.svelte';
 	import TradingRoomsSection from '$lib/components/sections/TradingRoomsSection.svelte';
 	import AlertServicesSection from '$lib/components/sections/AlertServicesSection.svelte';
@@ -25,12 +27,12 @@
 	const API_URL = '';
 
 	interface Props {
-		data: any;
+		data: PageData;
 	}
 	let props: Props = $props();
 
 	// Client-side fallback posts (only used when SSR returned empty)
-	let clientPosts = $state<any[]>([]);
+	let clientPosts = $state<Post[]>([]);
 
 	// Prefer SSR data; fall back to the client-side fetch result when SSR returned empty.
 	const posts = $derived(

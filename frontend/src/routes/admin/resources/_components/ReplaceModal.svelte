@@ -17,6 +17,15 @@
 		onClose,
 		onReplace
 	}: Props = $props();
+
+	// Programmatic focus replaces the deprecated `autofocus` attribute on the URL
+	// input — `autofocus` is an a11y anti-pattern (steals focus before screen
+	// readers can announce the dialog). Setting it from a $effect keeps the
+	// "open → cursor in field" UX while satisfying svelte-check.
+	let urlInput = $state<HTMLInputElement | null>(null);
+	$effect(() => {
+		urlInput?.focus();
+	});
 </script>
 
 <div
@@ -43,14 +52,13 @@
 			</div>
 			<div class="form-group">
 				<label for="new-file-url">New File URL</label>
-				<!-- svelte-ignore a11y_autofocus -->
 				<input
+					bind:this={urlInput}
 					type="url"
 					id="new-file-url"
 					name="new-file-url"
 					bind:value={newFileUrl}
 					placeholder="https://..."
-					autofocus
 				/>
 			</div>
 		</div>

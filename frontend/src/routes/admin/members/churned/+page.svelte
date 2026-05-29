@@ -514,21 +514,17 @@
 
 <!-- Email Modal -->
 {#if showEmailModal}
-	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<div
 		class="modal-overlay"
-		onclick={() => (showEmailModal = false)}
+		onclick={(e: MouseEvent) => {
+			if (e.target === e.currentTarget) showEmailModal = false;
+		}}
 		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showEmailModal = false)}
 		role="dialog"
 		tabindex="-1"
 		aria-modal="true"
 	>
-		<div
-			class="modal-content"
-			onclick={(e: MouseEvent) => e.stopPropagation()}
-			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
-			role="document"
-		>
+		<div class="modal-content" role="document">
 			<div class="modal-header">
 				<div>
 					<h2>Win-Back Campaign</h2>

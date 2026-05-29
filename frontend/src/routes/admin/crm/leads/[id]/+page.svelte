@@ -769,19 +769,15 @@
 {#if showAddNoteModal}
 	<div
 		class="modal-overlay"
-		onclick={() => (showAddNoteModal = false)}
+		onclick={(e: MouseEvent) => {
+			if (e.target === e.currentTarget) showAddNoteModal = false;
+		}}
 		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showAddNoteModal = false)}
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"
 	>
-		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-		<div
-			class="modal"
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.key === 'Escape' && (showAddNoteModal = false)}
-			role="document"
-		>
+		<div class="modal" role="document">
 			<div class="modal-header">
 				<h3>
 					<IconNote size={20} />
@@ -822,19 +818,15 @@
 {#if showConvertModal}
 	<div
 		class="modal-overlay"
-		onclick={() => (showConvertModal = false)}
+		onclick={(e: MouseEvent) => {
+			if (e.target === e.currentTarget) showConvertModal = false;
+		}}
 		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showConvertModal = false)}
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"
 	>
-		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-		<div
-			class="modal modal-small"
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.key === 'Escape' && (showConvertModal = false)}
-			role="document"
-		>
+		<div class="modal modal-small" role="document">
 			<div class="modal-header">
 				<h3>
 					<IconArrowRight size={20} />
@@ -869,19 +861,15 @@
 {#if showDeleteModal}
 	<div
 		class="modal-overlay"
-		onclick={() => (showDeleteModal = false)}
+		onclick={(e: MouseEvent) => {
+			if (e.target === e.currentTarget) showDeleteModal = false;
+		}}
 		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showDeleteModal = false)}
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"
 	>
-		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-		<div
-			class="modal modal-small"
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.key === 'Escape' && (showDeleteModal = false)}
-			role="document"
-		>
+		<div class="modal modal-small" role="document">
 			<div class="modal-header">
 				<h3>
 					<IconTrash size={20} />

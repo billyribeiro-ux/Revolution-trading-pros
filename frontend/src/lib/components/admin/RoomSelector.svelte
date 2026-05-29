@@ -121,9 +121,16 @@
 
 	<!-- Dropdown Panel -->
 	{#if isExpanded}
-		<!-- svelte-ignore a11y_no_static_element_interactions -->
-		<!-- svelte-ignore a11y_click_events_have_key_events -->
-		<div class="dropdown-backdrop" onclick={closeDropdown}></div>
+		<!--
+			Button so a screen reader / keyboard user can dismiss the dropdown.
+			Visually transparent; aria-label gives the assistive announcement.
+		-->
+		<button
+			type="button"
+			class="dropdown-backdrop"
+			aria-label="Close dropdown"
+			onclick={closeDropdown}
+		></button>
 		<div class="dropdown-panel">
 			<!-- Quick Actions -->
 			<div class="quick-actions">
@@ -333,6 +340,10 @@
 		position: fixed;
 		inset: 0;
 		z-index: 40;
+		background: transparent;
+		border: none;
+		padding: 0;
+		cursor: default;
 	}
 
 	.dropdown-panel {

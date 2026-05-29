@@ -29,6 +29,16 @@
 
 	let isEditing = $state(false);
 	let editValue = $state('');
+	// Programmatic focus replaces deprecated `autofocus` (a11y anti-pattern).
+	// $effect fires on isEditing → true, focusing+selecting the input once
+	// it renders.
+	let editInput = $state<HTMLInputElement | null>(null);
+	$effect(() => {
+		if (isEditing) {
+			editInput?.focus();
+			editInput?.select();
+		}
+	});
 
 	let displayValue = $derived.by(() => {
 		const v = value * displayMultiplier;
@@ -101,15 +111,14 @@
 			>
 
 			{#if isEditing}
-				<!-- svelte-ignore a11y_autofocus -->
 				<input
+					bind:this={editInput}
 					type="text"
 					bind:value={editValue}
 					onblur={commitEdit}
 					onkeydown={handleEditKeydown}
 					class="w-16 text-right text-xs px-1 py-0.5 rounded outline-none"
 					style="background: var(--calc-surface-active); color: var(--calc-text); font-family: var(--calc-font-mono); border: 1px solid var(--calc-accent);"
-					autofocus
 				/>
 			{:else}
 				<button

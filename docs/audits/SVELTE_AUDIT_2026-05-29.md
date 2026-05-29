@@ -78,9 +78,18 @@ mostly use **deliberate, valid** patterns, not the naive bug:
 | `lib/components/admin/ModuleFormModal.svelte` | 13 | ✅ **Done.** `wasOpen`-gated reset on an unconditionally-mounted modal. → parent `admin/courses/+page` now `{#if showModuleModal}`; child seeds 6 fields once via `untrack`; `wasOpen` gone; only the body-scroll `$effect` remains. No exit transition → visually identical. |
 | `lib/components/admin/CourseDetailDrawer.svelte` | 5 | ✅ **Reviewed — defensible, no change.** Guarded data-loaders (`loadedCourseId`/`loadedAnalyticsId` prevent refetch loops) + reset-on-close that supports the close animation while the component stays mounted. A `{#key}` remount would *break* the animation. |
 | `lib/components/admin/MemberFormModal.svelte` | 41 | ⏸️ **Deferred (deliberate).** Same `wasOpen`-gated P2-2 reset, but the file has *documented half-built behaviour* (14 "ghost" profile fields not wired into `CreateMemberRequest`; edit mode resets extended fields to defaults instead of loading from `member` — see its `TODO(2026-04-26-audit)`). Both parents already `{#if}`-gate the mount, so the recipe applies cleanly — but it should land with the ghost-field fix and the admin UI exercised, not as a blind refactor. |
-| `CourseFormModal` (30), `SubscriptionFormModal` (19), `TradeAlertModal` (18), `UpdatePositionModal` (9), `TemplateForm` (8) | — | ⬜ **Pending.** Expected to be the same `wasOpen`/body-scroll patterns. Apply the recipe below per file, checking all parents + exit-transition each time. |
+| `lib/components/admin/CourseFormModal.svelte` | 30 | ✅ **Done.** `wasOpen`-gated reset, 14 fields. → parent `admin/courses/+page` now `{#if showFormModal}`; child seeds once via `untrack`; `wasOpen` gone; only body-scroll `$effect` remains. No exit transition. |
+| `lib/components/admin/SubscriptionFormModal.svelte` | 19 | ✅ **Done.** `wasOpen`-gated reset, 8 fields. → parent `admin/subscriptions/+page` now `{#if showFormModal}`; seed-once via `untrack`. `paymentMethodType` keeps its default (edit never set it). |
+| `lib/components/dashboard/TradeAlertModal.svelte` | 18 | ✅ **Done.** Had **two** effects: a prop→state sync (removed → seed-once via `untrack` from `editAlert`, parent now `{#if alertModalOpen}`) and an **auto-title** effect (fills `title` from `ticker`/`action` while typing, only when empty — a legitimate derived-with-escape-hatch; **kept**, autofixer flags it as suggestion-only). |
+| `routes/dashboard/explosive-swings/components/UpdatePositionModal.svelte` | 9 | ✅ **Done.** prop→state sync (`position && isOpen`-gated). → parent now `{#if ps.isUpdatePositionModalOpen}`; seed-once via `untrack`; 0 effects remain. |
+| `lib/components/admin/TemplateForm.svelte` | 8 | ✅ **Done.** Ungated prop-sync effect. Both routes mount with a stable `template` (edit page gates behind `{#if loading}…{:else}`; new page passes none), so **no parent change needed** — seed-once via `untrack` is behaviourally identical. 0 effects remain. |
 
-**Proven PE7 recipe** (applied to ClassVideos & ModuleFormModal):
+**§A status: complete.** 8 of 9 files remediated (ClassVideos, ModuleFormModal,
+CourseFormModal, SubscriptionFormModal, TradeAlertModal, UpdatePositionModal,
+TemplateForm done; CourseDetailDrawer reviewed-defensible). **MemberFormModal is the
+sole deferred item**, intentionally paired with its ghost-field `TODO`.
+
+**Proven PE7 recipe** (applied across all 7 converted files):
 1. Child: replace per-field defaults + reset `$effect` with
    `const seed = untrack(() => <prop>)`, then `let x = $state(seed?.x ?? <default>)`.
    Delete the reset effect and any `wasOpen`. Keep genuine effects (body-scroll, loaders).
@@ -129,26 +138,50 @@ is for. **No change recommended.**
 
 ## Plan — prioritized backlog
 
-### §A — `$effect`→idiomatic re-seed (Category A) — *in progress*
-See the per-file status table under "Medium-priority" above. Done: `ClassVideos`,
-`ModuleFormModal`. Reviewed-defensible: `CourseDetailDrawer`. Deferred (pair with
-its ghost-field TODO): `MemberFormModal`.
+### §A — `$effect`→idiomatic re-seed (Category A) — ✅ **complete**
+See the per-file status table under "Medium-priority" above. **7 files converted**
+(ClassVideos, ModuleFormModal, CourseFormModal, SubscriptionFormModal,
+TradeAlertModal, UpdatePositionModal, TemplateForm), **1 reviewed-defensible**
+(CourseDetailDrawer), **1 deferred-deliberate** (MemberFormModal — pair with its
+ghost-field `TODO(2026-04-26-audit)`).
 
-**Remaining**, apply the proven recipe (seed-once `untrack` + parent `{#if}`/`{#key}`
-mount-gate, after confirming no exit transition):
-- `lib/components/admin/CourseFormModal.svelte`
-- `lib/components/admin/SubscriptionFormModal.svelte`
-- `lib/components/dashboard/TradeAlertModal.svelte`
-- `routes/dashboard/explosive-swings/components/UpdatePositionModal.svelte`
-- `lib/components/admin/TemplateForm.svelte`
+Every converted file: `svelte-autofixer` clean → `pnpm check` 0/0, with the parent
+`{#if}` gate verified from the committed blob before pushing.
 
-Each fix: `svelte-autofixer` clean → `pnpm check` 0/0 → **verify the parent edit
-actually applied** (grep the `{#if}`) before committing.
+**Follow-up (small):** MemberFormModal — apply the recipe in the same PR that wires
+the 14 ghost profile fields into `CreateMemberRequest`/`UpdateMemberRequest` (or
+removes their inputs), with the admin create/edit flow exercised manually.
 
-### §B — accessibility debt
-Review the ~61 a11y suppressions. Dominant pattern: click handlers on non-interactive
-elements → add `onkeydown` + `role` + `tabindex`, or switch to `<button>`. Batch by
-family (CRM modals, blog BlockEditor, cms blocks).
+### §B — accessibility debt — ✅ **substantially complete**
+Eliminated **62 svelte-ignore directives across 35 files** this pass (5 commits:
+batches 1–5). Starting count was ~85; the remaining **23 suppressions across 13
+files** are now all legitimate, documented design trade-offs:
+
+| Remaining category | Files | Why kept |
+|---|---|---|
+| Drag-and-drop / resize handles (`a11y_no_static_element_interactions`) | `ImageCropModal` (8), `WorkflowCanvas` (2), `crm/deals` (kanban) | Mouse-drag has no clean keyboard equivalent without a major UX rebuild (arrow-key resize, drag handles, etc.). |
+| Card/article-as-button (`a11y_no_noninteractive_element_to_interactive_role`) | `ResourceCard`, `AuthorBlock`, others | Semantic-vs-interactivity trade-off; the only way to remove cleanly is a `<button>` wrapper which fights existing layout. |
+| CMS contenteditable editor mode (`a11y_figcaption_parent`, `a11y_no_noninteractive_element_to_interactive_role`) | `VideoBlock`, `ImageBlock`, `GalleryBlock`, `TestimonialBlock`, `AssetManager`, `VirtualBlockList`, `BlockEditor/KeyboardShortcuts` (already done), etc. | CMS editor lets users edit inline; the warnings flag intentional semantic anomalies. |
+| Conditional interactivity (`a11y_no_noninteractive_tabindex`) | `EnterpriseStatCard` | Conditionally clickable based on `clickable` prop; the warning is essentially a false positive when `clickable=false`. |
+| User-uploaded media (`a11y_media_has_caption`) | `AssetManager` (preview `<video>`) | We don't control caption availability for arbitrary uploaded video. |
+| Empty content placeholder (`a11y_missing_content`) | `routes/classes/quickstart-precision-trading-c/+page` | Empty `<h3>` with CSS styling — content gap, not really a11y. |
+
+**The patterns we fixed** (proven recipes, recorded for future PRs):
+- *Modal backdrop click-out:* replaced inner `stopPropagation` + suppression
+  with `onclick={(e) => { if (e.target === e.currentTarget) close(); }}` on the
+  overlay. Applied to ~25 modals.
+- *Standalone backdrops:* replaced `<div onclick>` with `<button>` (transparent
+  CSS reset). Applied to `RoomSelector`, `ResourceViewer`.
+- *`autofocus` anti-pattern:* replaced with `bind:this` + `$effect` programmatic
+  focus. Applied to `ReplaceModal`, `PresetPicker`, `AnimatedSlider`.
+- *`non_reactive_update` on `bind:this`:* declared the ref with `$state()`.
+  Applied to 3 analytics charts.
+- *`state_referenced_locally` seed-from-prop:* replaced with
+  `$state(untrack(() => prop))`. Applied to `TableOfContents`, `ImageCropModal`,
+  `TemplateEditor`.
+- *Cards-as-buttons:* added `role="button"`, `tabindex="0"`, Enter/Space
+  `onkeydown` (kept the role-to-interactive suppression where the element is an
+  `<article>`). Applied to `ResourceCard`.
 
 ### §C — type tightening
 Replace `: any` in `Props` interfaces with real types, lowest-traffic files first.

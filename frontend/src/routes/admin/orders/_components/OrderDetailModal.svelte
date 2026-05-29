@@ -7,9 +7,33 @@
 		status: string;
 	}
 
+	// Shape derived from the template reads. Required fields reflect what the
+	// template unconditionally accesses (and what the backend always returns
+	// on a successful detail fetch); optional fields are template-gated with
+	// {#if orderDetail.field}.
+	interface OrderItem {
+		name: string;
+		quantity: number;
+		unit_price: number;
+		total: number;
+	}
+	interface OrderDetail {
+		status: string;
+		total: number;
+		currency?: string;
+		subtotal: number;
+		discount: number;
+		created_at: string;
+		completed_at?: string;
+		billing_name?: string;
+		billing_email?: string;
+		coupon_code?: string;
+		items?: OrderItem[];
+	}
+
 	interface Props {
 		selectedOrder: Order;
-		orderDetail: any;
+		orderDetail: OrderDetail | null;
 		loadingDetail: boolean;
 		formatCurrency: (amount: number, currency?: string) => string;
 		formatDate: (dateString: string) => string;
@@ -30,19 +54,15 @@
 
 <div
 	class="modal-overlay"
-	onclick={onclose}
+	onclick={(e) => {
+		if (e.target === e.currentTarget) onclose();
+	}}
 	onkeydown={(e) => e.key === 'Escape' && onclose()}
 	role="dialog"
 	tabindex="-1"
 	aria-modal="true"
 >
-	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<div
-		class="modal-content"
-		onclick={(e) => e.stopPropagation()}
-		onkeydown={(e) => e.stopPropagation()}
-		role="document"
-	>
+	<div class="modal-content" role="document">
 		<div class="modal-header">
 			<h2>Order #{selectedOrder.order_number}</h2>
 			<button class="close-btn" onclick={onclose}>

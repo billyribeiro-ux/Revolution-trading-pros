@@ -563,16 +563,23 @@
 	onRefresh={fetchCourses}
 />
 
-<CourseFormModal
-	isOpen={showFormModal}
-	mode={formModalMode}
-	course={selectedCourse}
-	onClose={() => {
-		showFormModal = false;
-		selectedCourse = null;
-	}}
-	onSaved={handleCourseSaved}
-/>
+<!-- {#if} gates the mount so the modal seeds a fresh form per editing
+     session. The child seeds its fields once at mount (via untrack)
+     instead of a wasOpen-gated reset $effect, so it MUST remount per open.
+     The modal has no exit transition, so unmount-on-close is visually
+     identical to its internal {#if isOpen}. -->
+{#if showFormModal}
+	<CourseFormModal
+		isOpen={showFormModal}
+		mode={formModalMode}
+		course={selectedCourse}
+		onClose={() => {
+			showFormModal = false;
+			selectedCourse = null;
+		}}
+		onSaved={handleCourseSaved}
+	/>
+{/if}
 
 <!-- {#if} gates the mount so the modal seeds a fresh form per editing
      session. The child seeds its fields once at mount (via untrack)

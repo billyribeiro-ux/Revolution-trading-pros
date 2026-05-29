@@ -20,6 +20,7 @@
 		IconUser,
 		IconTag
 	} from '$lib/icons';
+	import { untrack } from 'svelte';
 
 	interface Props {
 		isOpen: boolean;
@@ -48,21 +49,34 @@
 		onSaved?.(c);
 	};
 
-	// Form state
-	let title = $state('');
-	let slug = $state('');
-	let description = $state('');
-	let cardDescription = $state('');
-	let priceCents = $state(0);
-	let isFree = $state(true);
-	let level = $state('');
-	let instructorName = $state('');
-	let instructorTitle = $state('');
-	let instructorBio = $state('');
-	let cardBadge = $state('');
-	let cardBadgeColor = $state('#6366f1');
-	let metaTitle = $state('');
-	let metaDescription = $state('');
+	// Form state — seeded once at mount.
+	//
+	// Supersedes FIX P2-2 (audits/admin-2026-04-26/01-shell-and-dashboard.md),
+	// which gated a reset $effect on a real false → true `isOpen` transition to
+	// avoid wiping half-typed input when `course`'s reference changed (e.g. a
+	// SvelteKit load invalidation). The parent now gates this modal behind
+	// `{#if showFormModal}`, so a fresh instance mounts per editing session —
+	// seeding once gives the same "reset on open, keep typing while open"
+	// behaviour without writing state in an effect or hand-tracking `wasOpen`.
+	// `untrack` reads the props' initial values without registering them as
+	// reactive deps (explicit init-once intent; avoids state_referenced_locally).
+	const seedIsEdit = untrack(() => mode === 'edit' && !!course);
+	const seedCourse = untrack(() => course);
+
+	let title = $state(seedIsEdit ? seedCourse?.title || '' : '');
+	let slug = $state(seedIsEdit ? seedCourse?.slug || '' : '');
+	let description = $state(seedIsEdit ? seedCourse?.description || '' : '');
+	let cardDescription = $state(seedIsEdit ? seedCourse?.card_description || '' : '');
+	let priceCents = $state(seedIsEdit ? seedCourse?.price_cents || 0 : 0);
+	let isFree = $state(seedIsEdit ? (seedCourse?.is_free ?? seedCourse?.price_cents === 0) : true);
+	let level = $state(seedIsEdit ? seedCourse?.level || '' : '');
+	let instructorName = $state(seedIsEdit ? seedCourse?.instructor_name || '' : '');
+	let instructorTitle = $state(seedIsEdit ? seedCourse?.instructor_title || '' : '');
+	let instructorBio = $state(seedIsEdit ? seedCourse?.instructor_bio || '' : '');
+	let cardBadge = $state(seedIsEdit ? seedCourse?.card_badge || '' : '');
+	let cardBadgeColor = $state(seedIsEdit ? seedCourse?.card_badge_color || '#6366f1' : '#6366f1');
+	let metaTitle = $state(seedIsEdit ? seedCourse?.meta_title || '' : '');
+	let metaDescription = $state(seedIsEdit ? seedCourse?.meta_description || '' : '');
 
 	// UI state
 	let isLoading = $state(false);
@@ -85,54 +99,6 @@
 		{ value: '#3b82f6', label: 'Blue' },
 		{ value: '#ec4899', label: 'Pink' }
 	];
-
-	// FIX P2-2 (audits/admin-2026-04-26/01-shell-and-dashboard.md):
-	// Gate the reset on a real false → true transition of `isOpen`. The
-	// previous effect re-ran whenever `course`'s reference changed (which
-	// happens any time the parent invalidates a SvelteKit load), wiping
-	// half-typed user input. We now track the previous open state and
-	// only repopulate when the modal is freshly opened. Errors and the
-	// active-section reset are tied to the same gate.
-	let wasOpen = false;
-	$effect(() => {
-		const opening = isOpen && !wasOpen;
-		wasOpen = isOpen;
-		if (!opening) return;
-
-		if (mode === 'edit' && course) {
-			title = course.title || '';
-			slug = course.slug || '';
-			description = course.description || '';
-			cardDescription = course.card_description || '';
-			priceCents = course.price_cents || 0;
-			isFree = course.is_free ?? course.price_cents === 0;
-			level = course.level || '';
-			instructorName = course.instructor_name || '';
-			instructorTitle = course.instructor_title || '';
-			instructorBio = course.instructor_bio || '';
-			cardBadge = course.card_badge || '';
-			cardBadgeColor = course.card_badge_color || '#6366f1';
-			metaTitle = course.meta_title || '';
-			metaDescription = course.meta_description || '';
-		} else if (mode === 'create') {
-			title = '';
-			slug = '';
-			description = '';
-			cardDescription = '';
-			priceCents = 0;
-			isFree = true;
-			level = '';
-			instructorName = '';
-			instructorTitle = '';
-			instructorBio = '';
-			cardBadge = '';
-			cardBadgeColor = '#6366f1';
-			metaTitle = '';
-			metaDescription = '';
-		}
-		error = '';
-		activeSection = 'basic';
-	});
 
 	$effect(() => {
 		if (isOpen) {

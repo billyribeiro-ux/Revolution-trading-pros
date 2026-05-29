@@ -9,9 +9,19 @@
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA
 	 */
 	import { fly } from 'svelte/transition';
+	import type { RoomAlert } from '$lib/types/trading';
+
+	// Toast payload — `type` is the in-app alert state, `alert_type` is the
+	// upstream field (we accept either; see the switch in alertTypeConfig).
+	interface ToastAlert {
+		ticker: string;
+		title: string;
+		type?: RoomAlert['alert_type'];
+		alert_type?: RoomAlert['alert_type'];
+	}
 
 	interface Props {
-		alert: any;
+		alert: ToastAlert;
 		onDismiss: () => void;
 		duration?: number;
 	}
