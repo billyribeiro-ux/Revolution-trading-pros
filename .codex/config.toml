@@ -1,0 +1,13 @@
+[mcp_servers.rust]
+command = "rust-mcp-server"
+args = [
+    "--workspace",
+    "./api",
+]
+
+[mcp_servers.svelte]
+command = "npx"
+args = [
+    "-y",
+    "@sveltejs/mcp",
+]
