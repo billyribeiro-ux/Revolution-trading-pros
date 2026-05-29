@@ -22,8 +22,53 @@ import { env } from '$env/dynamic/private';
 
 // API URL for server-side token validation. Precedence matches every
 // +server.ts proxy and lib/server/axum/client.ts.
-const API_BASE_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const API_BASE_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+
+/**
+ * MAINTENANCE MODE
+ * ═══════════════════════════════════════════════════════════════════════════
+ * When ENABLED, all traffic is redirected to /maintenance
+ * Set MAINTENANCE_MODE = true to activate
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+const MAINTENANCE_MODE = false; // Set to true to enable maintenance mode
+
+/**
+ * Maintenance Mode Handler
+ * Redirects all requests to /maintenance except API and static assets
+ */
+const maintenanceHandler: Handle = async ({ event, resolve }) => {
+	const { pathname } = event.url;
+
+	if (MAINTENANCE_MODE) {
+		// Allow these paths during maintenance:
+		const allowedPaths = [
+			'/maintenance',
+			'/api/maintenance/',
+			'/api/health',
+			'/_app/', // SvelteKit assets
+			'/static/', // Static files
+			'/favicon',
+			'/robots.txt',
+			'/sitemap'
+		];
+
+		const isAllowed = allowedPaths.some((path) => pathname.startsWith(path) || pathname === path);
+
+		if (!isAllowed) {
+			// Redirect to maintenance page
+			return new Response(null, {
+				status: 307, // Temporary Redirect
+				headers: {
+					Location: '/maintenance',
+					'Cache-Control': 'no-store'
+				}
+			});
+		}
+	}
+
+	return resolve(event);
+};
 
 /**
  * Protected routes that require authentication
@@ -474,8 +519,10 @@ const timingHandler: Handle = async ({ event, resolve }) => {
 };
 
 // Combine all handlers in sequence
-// Auth handler runs FIRST to protect routes before any data loading
+// Maintenance handler runs FIRST to redirect all traffic when enabled
+// Auth handler runs second to protect routes before any data loading
 export const handle: Handle = sequence(
+	maintenanceHandler,
 	authHandler,
 	timingHandler,
 	securityHeaders,
