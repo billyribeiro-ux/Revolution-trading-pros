@@ -5,7 +5,7 @@
  * filename sanitization, input validation helpers, and CSP utilities.
  */
 
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import {
 	sanitizeHTML,
 	sanitizeText,
@@ -46,7 +46,7 @@ describe('sanitizeHTML', () => {
 	it('returns empty string for null-like values', () => {
 		// @ts-expect-error testing JS consumers passing wrong types
 		expect(sanitizeHTML(null)).toBe('');
-		// @ts-expect-error
+		// @ts-expect-error -- deliberately passing a non-string to verify the runtime guard
 		expect(sanitizeHTML(undefined)).toBe('');
 	});
 
@@ -223,7 +223,7 @@ describe('sanitizeText', () => {
 	});
 
 	it('returns empty string for null/undefined', () => {
-		// @ts-expect-error
+		// @ts-expect-error -- deliberately passing a non-string to verify the runtime guard
 		expect(sanitizeText(null)).toBe('');
 	});
 
@@ -259,7 +259,7 @@ describe('sanitizeURL', () => {
 	});
 
 	it('returns empty string for null/undefined', () => {
-		// @ts-expect-error
+		// @ts-expect-error -- deliberately passing a non-string to verify the runtime guard
 		expect(sanitizeURL(null)).toBe('');
 	});
 
@@ -359,7 +359,7 @@ describe('sanitizeCSS', () => {
 	});
 
 	it('returns empty string for null/undefined', () => {
-		// @ts-expect-error
+		// @ts-expect-error -- deliberately passing a non-string to verify the runtime guard
 		expect(sanitizeCSS(null)).toBe('');
 	});
 
@@ -601,7 +601,7 @@ describe('sanitizeFilename', () => {
 	});
 
 	it('returns "file" for null input', () => {
-		// @ts-expect-error
+		// @ts-expect-error -- deliberately passing a non-string to verify the runtime guard
 		expect(sanitizeFilename(null)).toBe('file');
 	});
 
@@ -940,7 +940,7 @@ describe('sanitizeSlug', () => {
 	});
 
 	it('returns null for null', () => {
-		// @ts-expect-error
+		// @ts-expect-error -- deliberately passing a non-string to verify the runtime guard
 		expect(sanitizeSlug(null)).toBeNull();
 	});
 
@@ -985,7 +985,7 @@ describe('parseJSONSafe', () => {
 	});
 
 	it('returns null for null input', () => {
-		// @ts-expect-error
+		// @ts-expect-error -- deliberately passing a non-string to verify the runtime guard
 		expect(parseJSONSafe(null)).toBeNull();
 	});
 
@@ -1014,7 +1014,7 @@ describe('validateFile', () => {
 	};
 
 	it('returns invalid for non-File objects', () => {
-		// @ts-expect-error
+		// @ts-expect-error -- deliberately passing a non-string to verify the runtime guard
 		const result = validateFile(null);
 		expect(result.valid).toBe(false);
 	});

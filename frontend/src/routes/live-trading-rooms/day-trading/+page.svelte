@@ -77,8 +77,6 @@
 		}
 	];
 
-	const minPrice = Math.min(...plans.map((p) => p.price));
-
 	// --- FAQ Logic (Svelte 5 Runes) ---
 	let openFaq: number | null = $state(null);
 	const toggleFaq = (index: number) => (openFaq = openFaq === index ? null : index);

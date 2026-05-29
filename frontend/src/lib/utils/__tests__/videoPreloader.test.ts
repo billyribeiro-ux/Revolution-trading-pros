@@ -257,7 +257,6 @@ describe('videoPreloader observe/unobserve', () => {
 
 		const original = global.IntersectionObserver;
 		global.IntersectionObserver = class MockIO {
-			constructor() {}
 			observe = observeSpy;
 			unobserve = unobserveSpy;
 			disconnect = vi.fn();

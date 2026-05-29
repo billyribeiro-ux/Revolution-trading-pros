@@ -214,7 +214,7 @@
 			.writeText(json)
 			.then(() => toastStore.success('Location schema copied to clipboard'))
 			.catch(() => {
-				console.log('Location schema:', json);
+				console.warn('Location schema:', json);
 				toastStore.info('Location schema logged to console');
 			});
 	}

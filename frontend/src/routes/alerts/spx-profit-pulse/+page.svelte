@@ -72,9 +72,6 @@
 		}
 	];
 
-	const minPrice = Math.min(...plans.map((p) => p.price));
-	const maxPrice = Math.max(...plans.map((p) => p.price));
-
 	// --- FAQ Logic ---
 	let openFaq: number | null = $state(null);
 	const toggleFaq = (index: number) => (openFaq = openFaq === index ? null : index);
