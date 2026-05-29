@@ -21,7 +21,7 @@ export interface Span {
 	name: string;
 	startTime: number;
 	endTime?: number;
-	attributes: Record<string, any>;
+	attributes: Record<string, unknown>;
 	events: SpanEvent[];
 	status: SpanStatus;
 	traceId: string;
@@ -32,7 +32,7 @@ export interface Span {
 export interface SpanEvent {
 	name: string;
 	timestamp: number;
-	attributes: Record<string, any>;
+	attributes: Record<string, unknown>;
 }
 
 export interface SpanStatus {
@@ -52,9 +52,18 @@ export interface LogEntry {
 	level: 'debug' | 'info' | 'warn' | 'error' | 'fatal';
 	message: string;
 	timestamp: number;
-	attributes: Record<string, any>;
+	attributes: Record<string, unknown>;
 	traceId?: string;
 	spanId?: string;
+}
+
+/**
+ * `layout-shift` PerformanceEntry — not yet in lib.dom's typings, so model
+ * the two fields we read off it (CLS calculation).
+ */
+interface LayoutShiftEntry extends PerformanceEntry {
+	value: number;
+	hadRecentInput: boolean;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -125,7 +134,7 @@ class TelemetryService {
 	// Tracing
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	startSpan(name: string, attributes: Record<string, any> = {}): string {
+	startSpan(name: string, attributes: Record<string, unknown> = {}): string {
 		const spanId = this.generateId();
 		const traceId = this.currentTraceId || this.generateId();
 		this.currentTraceId = traceId;
@@ -170,7 +179,7 @@ class TelemetryService {
 		});
 	}
 
-	addSpanEvent(spanId: string, name: string, attributes: Record<string, any> = {}): void {
+	addSpanEvent(spanId: string, name: string, attributes: Record<string, unknown> = {}): void {
 		const span = this.spans.get(spanId);
 		if (!span) return;
 
@@ -181,7 +190,7 @@ class TelemetryService {
 		});
 	}
 
-	setSpanAttribute(spanId: string, key: string, value: any): void {
+	setSpanAttribute(spanId: string, key: string, value: unknown): void {
 		const span = this.spans.get(spanId);
 		if (!span) return;
 
@@ -232,7 +241,7 @@ class TelemetryService {
 	// Logging
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	log(level: LogEntry['level'], message: string, attributes: Record<string, any> = {}): void {
+	log(level: LogEntry['level'], message: string, attributes: Record<string, unknown> = {}): void {
 		const entry: LogEntry = {
 			level,
 			message,
@@ -261,31 +270,32 @@ class TelemetryService {
 		}
 	}
 
-	debug(message: string, attributes?: Record<string, any>): void {
+	debug(message: string, attributes?: Record<string, unknown>): void {
 		this.log('debug', message, attributes);
 	}
 
-	info(message: string, attributes?: Record<string, any>): void {
+	info(message: string, attributes?: Record<string, unknown>): void {
 		this.log('info', message, attributes);
 	}
 
-	warn(message: string, attributes?: Record<string, any>): void {
+	warn(message: string, attributes?: Record<string, unknown>): void {
 		this.log('warn', message, attributes);
 	}
 
-	error(message: string, attributes?: Record<string, any>): void {
+	error(message: string, attributes?: Record<string, unknown>): void {
 		this.log('error', message, attributes);
 	}
 
-	fatal(message: string, attributes?: Record<string, any>): void {
+	fatal(message: string, attributes?: Record<string, unknown>): void {
 		this.log('fatal', message, attributes);
 	}
 
-	recordError(error: Error | any, context: Record<string, any> = {}): void {
+	recordError(error: unknown, context: Record<string, unknown> = {}): void {
+		const e = (error ?? {}) as { name?: unknown; message?: unknown; stack?: unknown };
 		const errorInfo = {
-			name: error?.name || 'Error',
-			message: error?.message || String(error),
-			stack: error?.stack,
+			name: typeof e.name === 'string' ? e.name : 'Error',
+			message: typeof e.message === 'string' ? e.message : String(error),
+			stack: typeof e.stack === 'string' ? e.stack : undefined,
 			...context
 		};
 
@@ -338,7 +348,7 @@ class TelemetryService {
 		// Largest Contentful Paint (LCP)
 		new PerformanceObserver((list) => {
 			const entries = list.getEntries();
-			const lastEntry = entries[entries.length - 1] as any;
+			const lastEntry = entries[entries.length - 1] as LargestContentfulPaint;
 			this.recordHistogram('web_vitals_lcp_ms', lastEntry.renderTime || lastEntry.loadTime, {
 				page: window.location.pathname
 			});
@@ -346,8 +356,8 @@ class TelemetryService {
 
 		// First Input Delay (FID)
 		new PerformanceObserver((list) => {
-			const entries = list.getEntries();
-			entries.forEach((entry: any) => {
+			const entries = list.getEntries() as PerformanceEventTiming[];
+			entries.forEach((entry) => {
 				this.recordHistogram('web_vitals_fid_ms', entry.processingStart - entry.startTime, {
 					page: window.location.pathname
 				});
@@ -357,7 +367,7 @@ class TelemetryService {
 		// Cumulative Layout Shift (CLS)
 		let clsValue = 0;
 		new PerformanceObserver((list) => {
-			for (const entry of list.getEntries() as any[]) {
+			for (const entry of list.getEntries() as LayoutShiftEntry[]) {
 				if (!entry.hadRecentInput) {
 					clsValue += entry.value;
 				}
@@ -405,7 +415,12 @@ class TelemetryService {
 		}
 	}
 
-	private async sendTelemetry(data: any): Promise<void> {
+	private async sendTelemetry(data: {
+		spans: Span[];
+		metrics: Metric[];
+		logs: LogEntry[];
+		resource: Record<string, string>;
+	}): Promise<void> {
 		// In production, send to OpenTelemetry collector.
 		// In development, the dev-gated `logger.debug` shows the batch payload
 		// without leaking past the dev sink in prod.
@@ -463,12 +478,12 @@ class TelemetryService {
 
 const telemetry = TelemetryService.getInstance();
 
-export const startSpan = (name: string, attributes?: Record<string, any>) =>
+export const startSpan = (name: string, attributes?: Record<string, unknown>) =>
 	telemetry.startSpan(name, attributes);
 
 export const endSpan = (spanId: string, status?: SpanStatus) => telemetry.endSpan(spanId, status);
 
-export const addSpanEvent = (spanId: string, name: string, attributes?: Record<string, any>) =>
+export const addSpanEvent = (spanId: string, name: string, attributes?: Record<string, unknown>) =>
 	telemetry.addSpanEvent(spanId, name, attributes);
 
 export const recordMetric = (
@@ -487,22 +502,22 @@ export const setGauge = (name: string, value: number, labels?: Record<string, st
 export const recordHistogram = (name: string, value: number, labels?: Record<string, string>) =>
 	telemetry.recordHistogram(name, value, labels);
 
-export const debug = (message: string, attributes?: Record<string, any>) =>
+export const debug = (message: string, attributes?: Record<string, unknown>) =>
 	telemetry.debug(message, attributes);
 
-export const info = (message: string, attributes?: Record<string, any>) =>
+export const info = (message: string, attributes?: Record<string, unknown>) =>
 	telemetry.info(message, attributes);
 
-export const warn = (message: string, attributes?: Record<string, any>) =>
+export const warn = (message: string, attributes?: Record<string, unknown>) =>
 	telemetry.warn(message, attributes);
 
-export const error = (message: string, attributes?: Record<string, any>) =>
+export const error = (message: string, attributes?: Record<string, unknown>) =>
 	telemetry.error(message, attributes);
 
-export const fatal = (message: string, attributes?: Record<string, any>) =>
+export const fatal = (message: string, attributes?: Record<string, unknown>) =>
 	telemetry.fatal(message, attributes);
 
-export const recordError = (err: Error | any, context?: Record<string, any>) =>
+export const recordError = (err: unknown, context?: Record<string, unknown>) =>
 	telemetry.recordError(err, context);
 
 export const recordPageLoad = () => telemetry.recordPageLoad();
@@ -513,8 +528,12 @@ export const recordWebVitals = () => telemetry.recordWebVitals();
 // Decorators & Higher-Order Functions
 // ═══════════════════════════════════════════════════════════════════════════
 
+// Generic function-wrapper constraint: `(...args: any[]) => any` is the
+// idiomatic bound that lets Parameters<T>/ReturnType<T> work for any wrapped
+// function signature. This is one of the sanctioned uses of `any`.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function traced<T extends (...args: any[]) => any>(name: string, fn: T): T {
-	return ((...args: any[]) => {
+	return ((...args: Parameters<T>) => {
 		const spanId = startSpan(name, {
 			'function.name': fn.name,
 			'function.args': JSON.stringify(args)
@@ -541,10 +560,10 @@ export function traced<T extends (...args: any[]) => any>(name: string, fn: T): 
 
 			endSpan(spanId, { code: 'OK' });
 			return result;
-		} catch (err: any) {
+		} catch (err: unknown) {
 			endSpan(spanId, {
 				code: 'ERROR',
-				message: err.message
+				message: err instanceof Error ? err.message : String(err)
 			});
 			throw err;
 		}
