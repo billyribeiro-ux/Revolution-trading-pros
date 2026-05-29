@@ -128,7 +128,7 @@ is for. **No change recommended.**
 |------|---------|---------|
 | **`{@html}` (XSS surface)** | 34 files. Every real render site is sanitized (`sanitizeHtml` / `sanitizePopupContent` / `sanitizeBlogContent` / DOMPurify) or is JSON-LD (`application/ld+json` built from `serializeJsonLd`/`JSON.stringify`). A scripted check for unsanitized non-JSON-LD render sites returned **empty**. | **No action** |
 | **`svelte-ignore`** | ~84 total, dominated by a11y (`a11y_no_noninteractive_element_interactions` ×41, `a11y_no_static_element_interactions` ×12, `a11y_click_events_have_key_events` ×8). | **Plan §B** |
-| **`: any` typed props** | ~72 files use `any` in a `Props` interface/annotation. | **Plan §C** |
+| **`: any` typed props** | **73 files** still use `any` somewhere (down from ~78). `Props`-interface `: any` is being chipped away batch-by-batch. | **Plan §C — in progress** |
 | **`class:` directive** | 402 files. Docs *prefer* clsx-style arrays but `class:` is fully supported, not deprecated. | **No action** (stylistic) |
 | **`use:` actions** | 12 files. Docs nudge toward `{@attach}`; actions remain supported. | **No action** |
 | **`onMount`** | 286 files. Many legitimate client-only init. | **No action** (case-by-case) |
@@ -183,9 +183,27 @@ files** are now all legitimate, documented design trade-offs:
   `onkeydown` (kept the role-to-interactive suppression where the element is an
   `<article>`). Applied to `ResourceCard`.
 
-### §C — type tightening
+### §C — type tightening — 🟡 **in progress**
 Replace `: any` in `Props` interfaces with real types, lowest-traffic files first.
 Pure type-safety; no runtime risk.
+
+Progress (gate held at 0/0 after every batch):
+
+- **Batch 1** (`6d6c956`): Sidebar, EnterpriseStatCard, `+page` (homepage `data` → `PageData`), OrderDetailModal, NewAlertToast.
+- **Batch 2** (`a8e35ab`): RedirectEditor, SeoMetaEditor, Input, Select.
+- **Batch 3** (this pass): the five files whose `: any` lived literally inside an
+  `interface Props` block —
+  - `CountdownTimer` — `onExpire` payload → `{ timeData: TimeData; endDate: string | Date }` (matches the actual `onExpire({ timeData, endDate })` call site).
+  - `AlertNotificationManager` — `onNewAlert` + `_showNotification` → `RoomAlert` (from `$lib/types/trading`; the body already reads `alert_type`/`ticker`/`title`/`id`).
+  - `CalculatedField` — `formData` → `Record<string, unknown>` (+ `parseFloat(String(value))` narrowing) and `onchange` → `(value: number)` (the only value it ever emits).
+  - `FormImportExport` — `onImportComplete` → local `FormImportResult` (`fields_created?`/`error?` + index signature for the rest of the JSON).
+  - `FormAIAssistant` — `onFieldsGenerated`/`onFormGenerated` + `generatedFields` → local `AiGeneratedField`/`AiGeneratedForm` (the AI wire shape uses `type`, **not** the persisted `field_type`, so the strict `FormField`/`Form` types would be wrong here).
+
+Remaining `: any` in `.svelte` files (73) are dominated by third-party SDK interop
+(`forms/pro/*Payment.svelte` Stripe/Square/PayPal/Paddle/Razorpay callbacks) and
+`.map((x: any) => …)` over untyped `fetch().json()` responses in admin/dashboard
+route files — both need real response/SDK types, not a mechanical swap. Those are
+the next batches.
 
 ### §D — optional idiom modernization (low ROI, defer)
 `class:`→clsx arrays, `use:`→`{@attach}`, opportunistic `onMount`→`$effect`/`{@attach}`.

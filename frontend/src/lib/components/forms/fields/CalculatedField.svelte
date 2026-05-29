@@ -17,8 +17,8 @@
 
 	interface Props {
 		field: FormField;
-		formData: Record<string, any>;
-		onchange?: (value: any) => void;
+		formData: Record<string, unknown>;
+		onchange?: (value: number) => void;
 	}
 
 	let props: Props = $props();
@@ -85,7 +85,7 @@
 						return String(value);
 					}
 
-					const parsed = parseFloat(value);
+					const parsed = parseFloat(String(value));
 					return isNaN(parsed) ? '0' : String(parsed);
 				}
 			);

@@ -106,7 +106,7 @@
 		pauseOnBlur?: boolean;
 		showProgressBar?: boolean;
 		showPercentage?: boolean;
-		onExpire?: (data: any) => void;
+		onExpire?: (data: { timeData: TimeData; endDate: string | Date }) => void;
 		onUpdate?: (time: TimeData) => void;
 		onMilestone?: (milestone: number) => void;
 		onWarning?: () => void;

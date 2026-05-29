@@ -10,11 +10,12 @@
 	 */
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import type { RoomAlert } from '$lib/types/trading';
 
 	interface Props {
 		enabled?: boolean;
 		soundEnabled?: boolean;
-		onNewAlert?: (alert: any) => void;
+		onNewAlert?: (alert: RoomAlert) => void;
 	}
 
 	const { enabled = true, soundEnabled = true, onNewAlert }: Props = $props();
@@ -35,7 +36,7 @@
 		}
 	};
 
-	function _showNotification(alert: any) {
+	function _showNotification(alert: RoomAlert) {
 		if (!enabled || !hasPermission) return;
 
 		const notification = new Notification('New Trading Alert', {
