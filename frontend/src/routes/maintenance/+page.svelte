@@ -18,7 +18,7 @@
 	let mounted = $state(false);
 	let mouseX = $state(0);
 	let mouseY = $state(0);
-	
+
 	// Chart containers and APIs
 	let mainChartEl: HTMLDivElement;
 	let miniChartEl1: HTMLDivElement;
@@ -30,11 +30,11 @@
 	let miniSeries1: ISeriesApi<'Candlestick'> | null = null;
 	let miniSeries2: ISeriesApi<'Candlestick'> | null = null;
 	let volumeSeries: ISeriesApi<'Histogram'> | null = null;
-	
+
 	// Real-time data state
-	let lastPrice = $state({ main: 4750.50, mini1: 232.45, mini2: 892.30 });
+	let lastPrice = $state({ main: 4750.5, mini1: 232.45, mini2: 892.3 });
 	let priceDirection = $state({ main: 'up' as 'up' | 'down', mini1: 'up', mini2: 'down' });
-	
+
 	// Section visibility
 	let visible = $state({
 		manifesto: false,
@@ -55,21 +55,53 @@
 	// Live ticker with real updates
 	let liveTickers = $state([
 		{ symbol: 'SPX', basePrice: 5892.33, price: 5892.33, change: 1.24, direction: 'up' as const },
-		{ symbol: 'NQ', basePrice: 20845.20, price: 20845.20, change: 2.34, direction: 'up' as const },
-		{ symbol: 'ES', basePrice: 5890.50, price: 5890.50, change: 0.89, direction: 'up' as const },
-		{ symbol: 'VIX', basePrice: 12.45, price: 12.45, change: -8.20, direction: 'down' as const },
-		{ symbol: 'AAPL', basePrice: 232.30, price: 232.30, change: 1.45, direction: 'up' as const },
-		{ symbol: 'NVDA', basePrice: 1475.20, price: 1475.20, change: 5.45, direction: 'up' as const },
-		{ symbol: 'TSLA', basePrice: 348.50, price: 348.50, change: 3.30, direction: 'up' as const },
-		{ symbol: 'META', basePrice: 585.20, price: 585.20, change: 1.90, direction: 'up' as const }
+		{ symbol: 'NQ', basePrice: 20845.2, price: 20845.2, change: 2.34, direction: 'up' as const },
+		{ symbol: 'ES', basePrice: 5890.5, price: 5890.5, change: 0.89, direction: 'up' as const },
+		{ symbol: 'VIX', basePrice: 12.45, price: 12.45, change: -8.2, direction: 'down' as const },
+		{ symbol: 'AAPL', basePrice: 232.3, price: 232.3, change: 1.45, direction: 'up' as const },
+		{ symbol: 'NVDA', basePrice: 1475.2, price: 1475.2, change: 5.45, direction: 'up' as const },
+		{ symbol: 'TSLA', basePrice: 348.5, price: 348.5, change: 3.3, direction: 'up' as const },
+		{ symbol: 'META', basePrice: 585.2, price: 585.2, change: 1.9, direction: 'up' as const }
 	]);
 
 	// Live scanner signals
 	let scannerSignals = $state([
-		{ id: 1, symbol: 'NVDA', price: 1475.20, type: 'Volume Spike', confidence: 97, time: 0, status: 'active' as const },
-		{ id: 2, symbol: 'AAPL', price: 232.45, type: 'Breakout', confidence: 94, time: 3, status: 'active' },
-		{ id: 3, symbol: 'TSLA', price: 348.50, type: 'Dark Pool', confidence: 91, time: 6, status: 'active' },
-		{ id: 4, symbol: 'SPY', price: 518.75, type: 'Gamma', confidence: 89, time: 9, status: 'fading' as const }
+		{
+			id: 1,
+			symbol: 'NVDA',
+			price: 1475.2,
+			type: 'Volume Spike',
+			confidence: 97,
+			time: 0,
+			status: 'active' as const
+		},
+		{
+			id: 2,
+			symbol: 'AAPL',
+			price: 232.45,
+			type: 'Breakout',
+			confidence: 94,
+			time: 3,
+			status: 'active'
+		},
+		{
+			id: 3,
+			symbol: 'TSLA',
+			price: 348.5,
+			type: 'Dark Pool',
+			confidence: 91,
+			time: 6,
+			status: 'active'
+		},
+		{
+			id: 4,
+			symbol: 'SPY',
+			price: 518.75,
+			type: 'Gamma',
+			confidence: 89,
+			time: 9,
+			status: 'fading' as const
+		}
 	]);
 
 	// Stats
@@ -81,19 +113,23 @@
 	});
 
 	// Generate realistic candle data with pullbacks
-	function generateCandleData(symbol: string, startPrice: number, count: number): CandlestickData[] {
+	function generateCandleData(
+		symbol: string,
+		startPrice: number,
+		count: number
+	): CandlestickData[] {
 		const candles: CandlestickData[] = [];
 		let price = startPrice;
 		const now = new Date();
-		
+
 		// Trend state
 		let trend = 0;
 		let pullbackCounter = 0;
 		let inPullback = false;
-		
+
 		for (let i = count; i >= 0; i--) {
 			const time = new Date(now.getTime() - i * 60000) as UTCTimestamp;
-			
+
 			// Realistic price generation with trends and pullbacks
 			if (!inPullback && Math.random() > 0.7) {
 				// Start pullback
@@ -101,7 +137,7 @@
 				pullbackCounter = Math.floor(Math.random() * 3) + 2;
 				trend = -Math.abs(trend) * 0.5; // Reverse trend
 			}
-			
+
 			if (inPullback) {
 				pullbackCounter--;
 				if (pullbackCounter <= 0) {
@@ -109,17 +145,19 @@
 					trend = (Math.random() - 0.3) * 2; // Resume trend
 				}
 			}
-			
+
 			// Add trend to price
 			const trendMove = trend * (Math.random() * 3 + 1);
 			const noise = (Math.random() - 0.5) * (price * 0.002);
 			const volatility = inPullback ? 1.5 : 1.0;
-			
+
 			const open = price;
 			const close = open + trendMove * volatility + noise;
-			const high = Math.max(open, close) + Math.random() * Math.abs(close - open) * 0.5 + price * 0.001;
-			const low = Math.min(open, close) - Math.random() * Math.abs(close - open) * 0.5 - price * 0.001;
-			
+			const high =
+				Math.max(open, close) + Math.random() * Math.abs(close - open) * 0.5 + price * 0.001;
+			const low =
+				Math.min(open, close) - Math.random() * Math.abs(close - open) * 0.5 - price * 0.001;
+
 			candles.push({
 				time: Math.floor(time.getTime() / 1000) as UTCTimestamp,
 				open: Number(open.toFixed(2)),
@@ -127,49 +165,61 @@
 				low: Number(low.toFixed(2)),
 				close: Number(close.toFixed(2))
 			});
-			
+
 			price = close;
-			
+
 			// Gradually adjust trend
 			if (!inPullback) {
 				trend *= 0.95;
 				trend += (Math.random() - 0.5) * 0.3;
 			}
 		}
-		
+
 		return candles;
 	}
 
 	// Live chart data storage
 	let chartData = {
-		main: { candles: [] as CandlestickData[], currentCandle: null as CandlestickData | null, price: 4750.50 },
-		mini1: { candles: [] as CandlestickData[], currentCandle: null as CandlestickData | null, price: 232.45 },
-		mini2: { candles: [] as CandlestickData[], currentCandle: null as CandlestickData | null, price: 892.30 }
+		main: {
+			candles: [] as CandlestickData[],
+			currentCandle: null as CandlestickData | null,
+			price: 4750.5
+		},
+		mini1: {
+			candles: [] as CandlestickData[],
+			currentCandle: null as CandlestickData | null,
+			price: 232.45
+		},
+		mini2: {
+			candles: [] as CandlestickData[],
+			currentCandle: null as CandlestickData | null,
+			price: 892.3
+		}
 	};
 
 	onMount(async () => {
 		if (!browser) return;
-		
+
 		mounted = true;
 		await tick();
-		
+
 		// Initialize all charts
 		await initCharts();
-		
+
 		// Start all live updates
 		startLivePriceUpdates();
 		startChartUpdates();
 		startTickerUpdates();
 		startScannerUpdates();
 		startStatAnimation();
-		
+
 		// Setup observers and mouse tracking
 		setupIntersectionObserver();
-		
+
 		const handleMouseMove = (e: MouseEvent) => {
 			mouseX = e.clientX;
 			mouseY = e.clientY;
-			
+
 			const button = document.querySelector('.magnetic-btn') as HTMLElement;
 			if (button) {
 				const rect = button.getBoundingClientRect();
@@ -178,7 +228,7 @@
 				const distX = e.clientX - centerX;
 				const distY = e.clientY - centerY;
 				const dist = Math.sqrt(distX * distX + distY * distY);
-				
+
 				if (dist < 150) {
 					btnMagnetX = distX * 0.3;
 					btnMagnetY = distY * 0.3;
@@ -188,12 +238,12 @@
 				}
 			}
 		};
-		
+
 		window.addEventListener('mousemove', handleMouseMove, { passive: true });
-		
+
 		// Trigger initial animation
-		setTimeout(() => visible.manifesto = true, 300);
-		
+		setTimeout(() => (visible.manifesto = true), 300);
+
 		return () => {
 			window.removeEventListener('mousemove', handleMouseMove);
 			if (mainChart) mainChart.remove();
@@ -204,12 +254,12 @@
 
 	async function initCharts() {
 		const { createChart, CandlestickSeries, HistogramSeries } = await import('lightweight-charts');
-		
+
 		// Initialize data
 		chartData.main.candles = generateCandleData('SPX', 4750, 60);
 		chartData.mini1.candles = generateCandleData('AAPL', 232, 40);
 		chartData.mini2.candles = generateCandleData('NVDA', 892, 40);
-		
+
 		// Main Chart - Professional styling
 		mainChart = createChart(mainChartEl, {
 			layout: {
@@ -238,7 +288,7 @@
 			},
 			autoSize: true
 		});
-		
+
 		mainSeries = mainChart.addSeries(CandlestickSeries, {
 			upColor: '#10b981',
 			downColor: '#ef4444',
@@ -247,20 +297,22 @@
 			wickUpColor: '#10b981',
 			wickDownColor: '#ef4444'
 		});
-		
+
 		volumeSeries = mainChart.addSeries(HistogramSeries, {
 			priceFormat: { type: 'volume' },
 			priceScaleId: ''
 		});
 		volumeSeries.priceScale().applyOptions({ scaleMargins: { top: 0.85, bottom: 0 } });
-		
+
 		mainSeries.setData(chartData.main.candles);
-		volumeSeries.setData(chartData.main.candles.map(c => ({
-			time: c.time,
-			value: Math.floor(Math.random() * 1000000) + 500000,
-			color: c.close >= c.open ? 'rgba(16, 185, 129, 0.5)' : 'rgba(239, 68, 68, 0.5)'
-		})));
-		
+		volumeSeries.setData(
+			chartData.main.candles.map((c) => ({
+				time: c.time,
+				value: Math.floor(Math.random() * 1000000) + 500000,
+				color: c.close >= c.open ? 'rgba(16, 185, 129, 0.5)' : 'rgba(239, 68, 68, 0.5)'
+			}))
+		);
+
 		// Mini Chart 1 - AAPL
 		miniChart1 = createChart(miniChartEl1, {
 			layout: {
@@ -274,7 +326,7 @@
 			timeScale: { visible: false },
 			autoSize: true
 		});
-		
+
 		miniSeries1 = miniChart1.addSeries(CandlestickSeries, {
 			upColor: '#10b981',
 			downColor: '#ef4444',
@@ -284,7 +336,7 @@
 			wickDownColor: '#ef4444'
 		});
 		miniSeries1.setData(chartData.mini1.candles);
-		
+
 		// Mini Chart 2 - NVDA
 		miniChart2 = createChart(miniChartEl2, {
 			layout: {
@@ -298,7 +350,7 @@
 			timeScale: { visible: false },
 			autoSize: true
 		});
-		
+
 		miniSeries2 = miniChart2.addSeries(CandlestickSeries, {
 			upColor: '#10b981',
 			downColor: '#ef4444',
@@ -308,7 +360,7 @@
 			wickDownColor: '#ef4444'
 		});
 		miniSeries2.setData(chartData.mini2.candles);
-		
+
 		mainChart.timeScale().fitContent();
 	}
 
@@ -316,10 +368,10 @@
 		// Update main chart price every second
 		setInterval(() => {
 			if (!mainSeries) return;
-			
+
 			const lastCandle = chartData.main.candles[chartData.main.candles.length - 1];
 			const now = Math.floor(Date.now() / 1000) as UTCTimestamp;
-			
+
 			// Check if we need a new candle (every 5 seconds)
 			if (now - lastCandle.time > 5) {
 				// Create new candle
@@ -330,20 +382,21 @@
 					low: lastCandle.close,
 					close: lastCandle.close + (Math.random() - 0.48) * 2
 				};
-				
+
 				chartData.main.candles.push(newCandle);
 				if (chartData.main.candles.length > 60) chartData.main.candles.shift();
-				
+
 				mainSeries.update(newCandle);
-				
+
 				// Update volume
 				const newVolume = Math.floor(Math.random() * 1000000) + 500000;
 				volumeSeries?.update({
 					time: now,
 					value: newVolume,
-					color: newCandle.close >= newCandle.open ? 'rgba(16, 185, 129, 0.5)' : 'rgba(239, 68, 68, 0.5)'
+					color:
+						newCandle.close >= newCandle.open ? 'rgba(16, 185, 129, 0.5)' : 'rgba(239, 68, 68, 0.5)'
 				});
-				
+
 				chartData.main.currentCandle = newCandle;
 			} else {
 				// Update current candle
@@ -351,26 +404,25 @@
 				lastCandle.close = Number((lastCandle.close + move).toFixed(2));
 				lastCandle.high = Math.max(lastCandle.high, lastCandle.close);
 				lastCandle.low = Math.min(lastCandle.low, lastCandle.close);
-				
+
 				mainSeries.update(lastCandle);
 			}
-			
+
 			// Update price display
 			lastPrice.main = lastCandle.close;
 			priceDirection.main = lastCandle.close >= lastCandle.open ? 'up' : 'down';
-			
 		}, 1000);
-		
+
 		// Update mini charts every 2 seconds
 		setInterval(() => {
 			if (!miniSeries1 || !miniSeries2) return;
-			
+
 			[miniSeries1, miniSeries2].forEach((series, idx) => {
 				const key = idx === 0 ? 'mini1' : 'mini2';
 				const candles = chartData[key].candles;
 				const lastCandle = candles[candles.length - 1];
 				const now = Math.floor(Date.now() / 1000) as UTCTimestamp;
-				
+
 				if (now - lastCandle.time > 3) {
 					const newCandle: CandlestickData = {
 						time: now,
@@ -389,7 +441,7 @@
 					lastCandle.low = Math.min(lastCandle.low, lastCandle.close);
 					series.update(lastCandle);
 				}
-				
+
 				lastPrice[key] = lastCandle.close;
 				priceDirection[key] = lastCandle.close >= lastCandle.open ? 'up' : 'down';
 			});
@@ -405,11 +457,11 @@
 
 	function startTickerUpdates() {
 		setInterval(() => {
-			liveTickers = liveTickers.map(ticker => {
+			liveTickers = liveTickers.map((ticker) => {
 				const move = (Math.random() - 0.48) * 0.5;
 				const newPrice = ticker.price + move;
 				const priceChange = ((newPrice - ticker.basePrice) / ticker.basePrice) * 100;
-				
+
 				return {
 					...ticker,
 					price: Number(newPrice.toFixed(2)),
@@ -425,7 +477,14 @@
 			// Randomly add new signals
 			if (Math.random() > 0.6) {
 				const symbols = ['AMD', 'MSFT', 'GOOGL', 'AMZN', 'NFLX', 'CRM', 'UBER', 'COIN'];
-				const types = ['Volume Spike', 'Breakout', 'Dark Pool', 'Gamma', 'Institutional', 'Momentum'];
+				const types = [
+					'Volume Spike',
+					'Breakout',
+					'Dark Pool',
+					'Gamma',
+					'Institutional',
+					'Momentum'
+				];
 				const newSignal = {
 					id: Date.now(),
 					symbol: symbols[Math.floor(Math.random() * symbols.length)],
@@ -435,12 +494,12 @@
 					time: 0,
 					status: 'active' as const
 				};
-				
+
 				scannerSignals = [newSignal, ...scannerSignals.slice(0, 4)];
 			}
-			
+
 			// Age existing signals
-			scannerSignals = scannerSignals.map(signal => ({
+			scannerSignals = scannerSignals.map((signal) => ({
 				...signal,
 				time: signal.time + 1,
 				status: signal.time > 15 ? 'fading' : signal.time > 10 ? 'dimming' : 'active'
@@ -454,16 +513,16 @@
 		const steps = 60;
 		const interval = duration / steps;
 		let step = 0;
-		
+
 		const timer = setInterval(() => {
 			step++;
 			const progress = 1 - Math.pow(1 - step / steps, 3);
-			
+
 			stats.students = Math.floor(targets.students * progress);
 			stats.countries = Math.floor(targets.countries * progress);
 			stats.years = Math.floor(targets.years * progress);
 			stats.servers = Math.floor(targets.servers * progress);
-			
+
 			if (step >= steps) clearInterval(timer);
 		}, interval);
 	}
@@ -471,7 +530,7 @@
 	function setupIntersectionObserver() {
 		const observer = new IntersectionObserver(
 			(entries) => {
-				entries.forEach(entry => {
+				entries.forEach((entry) => {
 					if (entry.isIntersecting) {
 						const id = entry.target.id;
 						if (id) visible[id as keyof typeof visible] = true;
@@ -480,8 +539,8 @@
 			},
 			{ threshold: 0.15 }
 		);
-		
-		['scanners', 'university', 'infrastructure', 'stats'].forEach(id => {
+
+		['scanners', 'university', 'infrastructure', 'stats'].forEach((id) => {
 			const el = document.getElementById(id);
 			if (el) observer.observe(el);
 		});
@@ -519,12 +578,15 @@
 </script>
 
 <div class="experience-container" class:mounted>
-	
 	<!-- Live Market Tape -->
 	<div class="market-tape">
 		<div class="tape-track">
 			{#each [...liveTickers, ...liveTickers, ...liveTickers] as ticker, i}
-				<div class="tape-item" class:up={ticker.direction === 'up'} class:down={ticker.direction === 'down'}>
+				<div
+					class="tape-item"
+					class:up={ticker.direction === 'up'}
+					class:down={ticker.direction === 'down'}
+				>
 					<span class="ticker-symbol">{ticker.symbol}</span>
 					<span class="ticker-price">${ticker.price.toFixed(2)}</span>
 					<span class="ticker-change">
@@ -539,19 +601,21 @@
 	<!-- Ambient Effects -->
 	<div class="ambient-layer">
 		<div class="orb orb-1" style="transform: translate({mouseX * 0.02}px, {mouseY * 0.02}px)"></div>
-		<div class="orb orb-2" style="transform: translate({-mouseX * 0.01}px, {-mouseY * 0.01}px)"></div>
+		<div
+			class="orb orb-2"
+			style="transform: translate({-mouseX * 0.01}px, {-mouseY * 0.01}px)"
+		></div>
 	</div>
 
 	<!-- Main Content -->
 	<main class="content">
-		
 		<!-- MANIFESTO -->
 		<section id="manifesto" class="manifesto" class:visible={visible.manifesto}>
 			<div class="live-badge">
 				<span class="pulse-dot"></span>
 				<span>Platform Evolution in Progress</span>
 			</div>
-			
+
 			<h1 class="manifesto-headline">
 				<span class="line">While Others Chase</span>
 				<span class="line fake">Fake "Holy Grail" Indicators</span>
@@ -559,17 +623,17 @@
 				<span class="line accent">Actually Changes</span>
 				<span class="line accent">Trader's Lives</span>
 			</h1>
-			
+
 			<p class="manifesto-sub">
-				No gimmicks. No false promises. Just institutional-grade tools, 
-				real strategies, and education that produces results.
+				No gimmicks. No false promises. Just institutional-grade tools, real strategies, and
+				education that produces results.
 			</p>
 		</section>
 
 		<!-- LIVE CHARTS SECTION -->
 		<section class="charts-showcase">
 			<div class="section-tag">Live Market Data</div>
-			
+
 			<div class="charts-grid">
 				<!-- Main Chart -->
 				<div class="chart-card main-chart">
@@ -579,7 +643,11 @@
 							<span class="exchange">CME</span>
 						</div>
 						<div class="price-live">
-							<span class="current-price" class:up={priceDirection.main === 'up'} class:down={priceDirection.main === 'down'}>
+							<span
+								class="current-price"
+								class:up={priceDirection.main === 'up'}
+								class:down={priceDirection.main === 'down'}
+							>
 								{lastPrice.main.toFixed(2)}
 							</span>
 							<span class="price-change">
@@ -602,23 +670,31 @@
 						</div>
 					</div>
 				</div>
-				
+
 				<!-- Mini Charts -->
 				<div class="mini-charts">
 					<div class="chart-card mini">
 						<div class="mini-header">
 							<span class="mini-symbol">AAPL</span>
-							<span class="mini-price" class:up={priceDirection.mini1 === 'up'} class:down={priceDirection.mini1 === 'down'}>
+							<span
+								class="mini-price"
+								class:up={priceDirection.mini1 === 'up'}
+								class:down={priceDirection.mini1 === 'down'}
+							>
 								${lastPrice.mini1.toFixed(2)}
 							</span>
 						</div>
 						<div class="mini-container" bind:this={miniChartEl1}></div>
 					</div>
-					
+
 					<div class="chart-card mini">
 						<div class="mini-header">
 							<span class="mini-symbol">NVDA</span>
-							<span class="mini-price" class:up={priceDirection.mini2 === 'up'} class:down={priceDirection.mini2 === 'down'}>
+							<span
+								class="mini-price"
+								class:up={priceDirection.mini2 === 'up'}
+								class:down={priceDirection.mini2 === 'down'}
+							>
 								${lastPrice.mini2.toFixed(2)}
 							</span>
 						</div>
@@ -631,14 +707,14 @@
 		<!-- INSTITUTIONAL SCANNERS -->
 		<section id="scanners" class="scanners-section" class:visible={visible.scanners}>
 			<div class="section-tag">Flagship Technology</div>
-			
+
 			<div class="scanners-card">
 				<div class="scanners-header">
 					<div class="header-icon">
 						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-							<circle cx="12" cy="12" r="3"/>
-							<path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>
-							<path d="M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83"/>
+							<circle cx="12" cy="12" r="3" />
+							<path d="M12 2v4M12 18v4M2 12h4M18 12h4" />
+							<path d="M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83" />
 						</svg>
 					</div>
 					<div class="header-text">
@@ -650,7 +726,7 @@
 						<span class="scan-text">LIVE SCANNING</span>
 					</div>
 				</div>
-				
+
 				<div class="scanner-interface">
 					<div class="scan-visualization">
 						<div class="radar-container">
@@ -659,10 +735,14 @@
 							<div class="radar-ring"></div>
 							<div class="radar-sweep"></div>
 							{#each Array(8) as _, i}
-								<div class="blip" style="--delay: {i * 0.5}s; --x: {20 + Math.random() * 60}%; --y: {20 + Math.random() * 60}%"></div>
+								<div
+									class="blip"
+									style="--delay: {i * 0.5}s; --x: {20 + Math.random() * 60}%; --y: {20 +
+										Math.random() * 60}%"
+								></div>
 							{/each}
 						</div>
-						
+
 						<div class="scan-metrics">
 							<div class="metric">
 								<span class="metric-label">Universe</span>
@@ -674,20 +754,27 @@
 							</div>
 							<div class="metric">
 								<span class="metric-label">Active Signals</span>
-								<span class="metric-value live-counter">{scannerSignals.filter(s => s.status === 'active').length}</span>
+								<span class="metric-value live-counter"
+									>{scannerSignals.filter((s) => s.status === 'active').length}</span
+								>
 							</div>
 						</div>
 					</div>
-					
+
 					<div class="signals-panel">
 						<div class="panel-header">
 							<span>Detected Signals</span>
 							<span class="update-indicator">UPDATING LIVE</span>
 						</div>
-						
+
 						<div class="signals-list">
 							{#each scannerSignals as signal, i}
-								<div class="signal-row" class:fading={signal.status === 'fading'} class:dimming={signal.status === 'dimming'} style="--delay: {i * 100}ms">
+								<div
+									class="signal-row"
+									class:fading={signal.status === 'fading'}
+									class:dimming={signal.status === 'dimming'}
+									style="--delay: {i * 100}ms"
+								>
 									<div class="signal-main">
 										<span class="sig-symbol">{signal.symbol}</span>
 										<span class="sig-type">{signal.type}</span>
@@ -705,7 +792,7 @@
 						</div>
 					</div>
 				</div>
-				
+
 				<div class="scanners-features">
 					<div class="feature-item">
 						<span class="feature-check">◆</span>
@@ -730,15 +817,15 @@
 		<!-- TRADING UNIVERSITY -->
 		<section id="university" class="university-section" class:visible={visible.university}>
 			<div class="section-tag">Education</div>
-			
+
 			<div class="university-grid">
 				<!-- Day Trading -->
 				<div class="uni-card day-trading">
 					<div class="uni-header">
 						<div class="uni-icon amber">
 							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-								<circle cx="12" cy="12" r="10"/>
-								<polyline points="12 6 12 12 16 14"/>
+								<circle cx="12" cy="12" r="10" />
+								<polyline points="12 6 12 12 16 14" />
 							</svg>
 						</div>
 						<div class="uni-title">
@@ -746,7 +833,7 @@
 							<p>Stocks & Options Mastery</p>
 						</div>
 					</div>
-					
+
 					<div class="uni-modules">
 						<div class="module-row">
 							<span class="mod-num">01</span>
@@ -765,18 +852,19 @@
 						<div class="module-row">
 							<span class="mod-num">03</span>
 							<div class="mod-info">
-								<h4>Options Flow Reading</h								<p>Smart money detection</p>
+								<h4>Options Flow Reading</h4>
+								<p>Smart money detection</p>
 							</div>
 						</div>
 					</div>
 				</div>
-				
+
 				<!-- Swing Trading -->
 				<div class="uni-card swing-trading">
 					<div class="uni-header">
 						<div class="uni-icon copper">
 							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-								<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+								<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
 							</svg>
 						</div>
 						<div class="uni-title">
@@ -784,20 +872,26 @@
 							<p>Multi-Day Position Mastery</p>
 						</div>
 					</div>
-					
+
 					<div class="swing-wave">
 						<svg viewBox="0 0 300 100" preserveAspectRatio="none">
 							<defs>
 								<linearGradient id="swingGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-									<stop offset="0%" stop-color="#c87941" stop-opacity="0.3"/>
-									<stop offset="100%" stop-color="#c87941" stop-opacity="0"/>
+									<stop offset="0%" stop-color="#c87941" stop-opacity="0.3" />
+									<stop offset="100%" stop-color="#c87941" stop-opacity="0" />
 								</linearGradient>
 							</defs>
-							<path d="M0,80 Q75,20 150,50 T300,30" fill="none" stroke="#c87941" stroke-width="2" class="wave-line"/>
-							<path d="M0,80 Q75,20 150,50 T300,30 L300,100 L0,100 Z" fill="url(#swingGrad)"/>
-							<circle cx="50" cy="65" r="4" fill="#10b981"/>
+							<path
+								d="M0,80 Q75,20 150,50 T300,30"
+								fill="none"
+								stroke="#c87941"
+								stroke-width="2"
+								class="wave-line"
+							/>
+							<path d="M0,80 Q75,20 150,50 T300,30 L300,100 L0,100 Z" fill="url(#swingGrad)" />
+							<circle cx="50" cy="65" r="4" fill="#10b981" />
 							<text x="50" y="85" fill="#10b981" font-size="8" text-anchor="middle">ENTRY</text>
-							<circle cx="250" cy="35" r="4" fill="#ef4444"/>
+							<circle cx="250" cy="35" r="4" fill="#ef4444" />
 							<text x="250" y="25" fill="#ef4444" font-size="8" text-anchor="middle">+18%</text>
 						</svg>
 						<div class="wave-labels">
@@ -813,14 +907,14 @@
 		<!-- INFRASTRUCTURE -->
 		<section id="infrastructure" class="infra-section" class:visible={visible.infrastructure}>
 			<div class="section-tag">Platform</div>
-			
+
 			<div class="infra-card">
 				<div class="infra-header">
 					<div class="header-icon">
 						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-							<rect x="2" y="2" width="20" height="8" rx="2"/>
-							<rect x="2" y="14" width="20" height="8" rx="2"/>
-							<path d="M6 6h12M6 18h12"/>
+							<rect x="2" y="2" width="20" height="8" rx="2" />
+							<rect x="2" y="14" width="20" height="8" rx="2" />
+							<path d="M6 6h12M6 18h12" />
 						</svg>
 					</div>
 					<div class="header-text">
@@ -828,7 +922,7 @@
 						<p>Scaling to serve more traders globally</p>
 					</div>
 				</div>
-				
+
 				<div class="server-visualization">
 					<div class="server-rack">
 						{#each Array(8) as _, i}
@@ -842,17 +936,24 @@
 								</div>
 								<div class="unit-lights">
 									{#each Array(6) as _, j}
-										<span class="light" class:blink={i < 6 && Math.random() > 0.3} style="--delay: {j * 50}ms"></span>
+										<span
+											class="light"
+											class:blink={i < 6 && Math.random() > 0.3}
+											style="--delay: {j * 50}ms"
+										></span>
 									{/each}
 								</div>
 								<div class="unit-load">
-									<div class="load-bar" style="--load: {i < 6 ? 40 + Math.random() * 40 : 0}%"></div>
+									<div
+										class="load-bar"
+										style="--load: {i < 6 ? 40 + Math.random() * 40 : 0}%"
+									></div>
 									<span class="load-text">{i < 6 ? Math.floor(40 + Math.random() * 40) : 0}%</span>
 								</div>
 							</div>
 						{/each}
 					</div>
-					
+
 					<div class="expansion-metrics">
 						<div class="exp-card">
 							<span class="exp-value">12→24</span>
@@ -907,8 +1008,10 @@
 						<span>Early Access List</span>
 					</div>
 					<h3 class="capture-title">Join the Trading Revolution</h3>
-					<p class="capture-subtitle">Get early access to institutional scanners and university courses</p>
-					
+					<p class="capture-subtitle">
+						Get early access to institutional scanners and university courses
+					</p>
+
 					<div class="input-wrapper">
 						<input
 							type="email"
@@ -929,12 +1032,12 @@
 							{:else}
 								<span>Get Access</span>
 								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-									<path d="M5 12h14M14 5l7 7-7 7"/>
+									<path d="M5 12h14M14 5l7 7-7 7" />
 								</svg>
 							{/if}
 						</button>
 					</div>
-					
+
 					{#if errorMessage}
 						<div class="error-msg">{errorMessage}</div>
 					{/if}
@@ -943,8 +1046,8 @@
 				<div class="success-box">
 					<div class="success-icon">
 						<svg viewBox="0 0 52 52">
-							<circle cx="26" cy="26" r="25" fill="none" stroke="#10b981" stroke-width="2"/>
-							<path d="M14 27l8 8 16-16" fill="none" stroke="#10b981" stroke-width="3"/>
+							<circle cx="26" cy="26" r="25" fill="none" stroke="#10b981" stroke-width="2" />
+							<path d="M14 27l8 8 16-16" fill="none" stroke="#10b981" stroke-width="3" />
 						</svg>
 					</div>
 					<h3>Welcome to the Revolution!</h3>
@@ -961,12 +1064,11 @@
 		<footer class="footer">
 			<div class="security-note">
 				<svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.5">
-					<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+					<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
 				</svg>
 				<span>Secure. No Spam. Institutional-Grade Privacy.</span>
 			</div>
 		</footer>
-
 	</main>
 </div>
 
@@ -991,12 +1093,23 @@
 		overflow-y: auto;
 		overflow-x: hidden;
 		z-index: 99999;
-		font-family: 'Inter', system-ui, -apple-system, sans-serif;
+		font-family:
+			'Inter',
+			system-ui,
+			-apple-system,
+			sans-serif;
 	}
 
-	.experience-container::-webkit-scrollbar { width: 4px; }
-	.experience-container::-webkit-scrollbar-track { background: transparent; }
-	.experience-container::-webkit-scrollbar-thumb { background: var(--copper); border-radius: 2px; }
+	.experience-container::-webkit-scrollbar {
+		width: 4px;
+	}
+	.experience-container::-webkit-scrollbar-track {
+		background: transparent;
+	}
+	.experience-container::-webkit-scrollbar-thumb {
+		background: var(--copper);
+		border-radius: 2px;
+	}
 
 	/* Market Tape */
 	.market-tape {
@@ -1019,8 +1132,12 @@
 	}
 
 	@keyframes scrollTape {
-		0% { transform: translateX(0); }
-		100% { transform: translateX(-33.33%); }
+		0% {
+			transform: translateX(0);
+		}
+		100% {
+			transform: translateX(-33.33%);
+		}
 	}
 
 	.tape-item {
@@ -1036,15 +1153,32 @@
 		transition: all 0.3s ease;
 	}
 
-	.tape-item.up { background: rgba(16, 185, 129, 0.1); }
-	.tape-item.down { background: rgba(239, 68, 68, 0.1); }
+	.tape-item.up {
+		background: rgba(16, 185, 129, 0.1);
+	}
+	.tape-item.down {
+		background: rgba(239, 68, 68, 0.1);
+	}
 
-	.ticker-symbol { color: var(--text-dim); font-weight: 700; }
-	.ticker-price { color: var(--text); }
-	.ticker-change { font-size: 11px; }
-	.tape-item.up .ticker-change { color: var(--green); }
-	.tape-item.down .ticker-change { color: var(--red); }
-	.ticker-arrow { font-size: 10px; }
+	.ticker-symbol {
+		color: var(--text-dim);
+		font-weight: 700;
+	}
+	.ticker-price {
+		color: var(--text);
+	}
+	.ticker-change {
+		font-size: 11px;
+	}
+	.tape-item.up .ticker-change {
+		color: var(--green);
+	}
+	.tape-item.down .ticker-change {
+		color: var(--red);
+	}
+	.ticker-arrow {
+		font-size: 10px;
+	}
 
 	/* Ambient */
 	.ambient-layer {
@@ -1062,8 +1196,20 @@
 		transition: transform 0.3s ease-out;
 	}
 
-	.orb-1 { width: 400px; height: 400px; background: var(--copper); top: 10%; left: -5%; }
-	.orb-2 { width: 300px; height: 300px; background: var(--gold); bottom: 10%; right: 0; }
+	.orb-1 {
+		width: 400px;
+		height: 400px;
+		background: var(--copper);
+		top: 10%;
+		left: -5%;
+	}
+	.orb-2 {
+		width: 300px;
+		height: 300px;
+		background: var(--gold);
+		bottom: 10%;
+		right: 0;
+	}
 
 	/* Content */
 	.content {
@@ -1114,8 +1260,15 @@
 	}
 
 	@keyframes pulse {
-		0%, 100% { opacity: 1; transform: scale(1); }
-		50% { opacity: 0.5; transform: scale(1.2); }
+		0%,
+		100% {
+			opacity: 1;
+			transform: scale(1);
+		}
+		50% {
+			opacity: 0.5;
+			transform: scale(1.2);
+		}
 	}
 
 	.manifesto-headline {
@@ -1126,16 +1279,47 @@
 		letter-spacing: -0.02em;
 	}
 
-	.line { display: block; opacity: 0; animation: revealLine 0.6s ease forwards; }
-	.line:nth-child(1) { animation-delay: 0.1s; color: var(--text); }
-	.line:nth-child(2) { animation-delay: 0.2s; background: linear-gradient(135deg, #ef4444, #dc2626); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-	.line:nth-child(3) { animation-delay: 0.3s; color: var(--text); }
-	.line:nth-child(4) { animation-delay: 0.4s; background: linear-gradient(135deg, var(--gold), var(--copper)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-	.line:nth-child(5) { animation-delay: 0.5s; background: linear-gradient(135deg, var(--gold), var(--copper)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+	.line {
+		display: block;
+		opacity: 0;
+		animation: revealLine 0.6s ease forwards;
+	}
+	.line:nth-child(1) {
+		animation-delay: 0.1s;
+		color: var(--text);
+	}
+	.line:nth-child(2) {
+		animation-delay: 0.2s;
+		background: linear-gradient(135deg, #ef4444, #dc2626);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+	}
+	.line:nth-child(3) {
+		animation-delay: 0.3s;
+		color: var(--text);
+	}
+	.line:nth-child(4) {
+		animation-delay: 0.4s;
+		background: linear-gradient(135deg, var(--gold), var(--copper));
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+	}
+	.line:nth-child(5) {
+		animation-delay: 0.5s;
+		background: linear-gradient(135deg, var(--gold), var(--copper));
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+	}
 
 	@keyframes revealLine {
-		to { opacity: 1; transform: translateY(0); }
-		from { opacity: 0; transform: translateY(20px); }
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+		from {
+			opacity: 0;
+			transform: translateY(20px);
+		}
 	}
 
 	.manifesto-sub {
@@ -1148,7 +1332,11 @@
 		animation: fadeIn 0.8s ease 0.6s forwards;
 	}
 
-	@keyframes fadeIn { to { opacity: 1; } }
+	@keyframes fadeIn {
+		to {
+			opacity: 1;
+		}
+	}
 
 	/* Section Tag */
 	.section-tag {
@@ -1161,7 +1349,9 @@
 	}
 
 	/* Charts Showcase */
-	.charts-showcase { margin: 40px 0; }
+	.charts-showcase {
+		margin: 40px 0;
+	}
 
 	.charts-grid {
 		display: grid;
@@ -1170,7 +1360,9 @@
 	}
 
 	@media (max-width: 900px) {
-		.charts-grid { grid-template-columns: 1fr; }
+		.charts-grid {
+			grid-template-columns: 1fr;
+		}
 	}
 
 	.chart-card {
@@ -1227,8 +1419,12 @@
 		transition: color 0.3s ease;
 	}
 
-	.current-price.up { color: var(--green); }
-	.current-price.down { color: var(--red); }
+	.current-price.up {
+		color: var(--green);
+	}
+	.current-price.down {
+		color: var(--red);
+	}
 
 	.price-change {
 		font-size: 14px;
@@ -1267,7 +1463,8 @@
 		transition: all 0.3s ease;
 	}
 
-	.tf-btn:hover, .tf-btn.active {
+	.tf-btn:hover,
+	.tf-btn.active {
 		background: rgba(16, 185, 129, 0.1);
 		border-color: var(--green);
 		color: var(--green);
@@ -1313,8 +1510,12 @@
 		transition: color 0.3s ease;
 	}
 
-	.mini-price.up { color: var(--green); }
-	.mini-price.down { color: var(--red); }
+	.mini-price.up {
+		color: var(--green);
+	}
+	.mini-price.down {
+		color: var(--red);
+	}
 
 	.mini-container {
 		width: 100%;
@@ -1367,9 +1568,20 @@
 		height: 28px;
 	}
 
-	.header-text { flex: 1; }
-	.header-text h2 { font-size: 1.5rem; font-weight: 700; color: var(--text); margin: 0 0 4px 0; }
-	.header-text p { font-size: 14px; color: var(--text-dim); margin: 0; }
+	.header-text {
+		flex: 1;
+	}
+	.header-text h2 {
+		font-size: 1.5rem;
+		font-weight: 700;
+		color: var(--text);
+		margin: 0 0 4px 0;
+	}
+	.header-text p {
+		font-size: 14px;
+		color: var(--text-dim);
+		margin: 0;
+	}
 
 	.scan-status {
 		display: flex;
@@ -1389,8 +1601,13 @@
 	}
 
 	@keyframes blink {
-		0%, 100% { opacity: 1; }
-		50% { opacity: 0.3; }
+		0%,
+		100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0.3;
+		}
 	}
 
 	.scan-text {
@@ -1408,7 +1625,9 @@
 	}
 
 	@media (max-width: 768px) {
-		.scanner-interface { grid-template-columns: 1fr; }
+		.scanner-interface {
+			grid-template-columns: 1fr;
+		}
 	}
 
 	.scan-visualization {
@@ -1435,25 +1654,44 @@
 		animation: radarExpand 3s ease-out infinite;
 	}
 
-	.radar-ring:nth-child(2) { animation-delay: 1s; }
-	.radar-ring:nth-child(3) { animation-delay: 2s; }
+	.radar-ring:nth-child(2) {
+		animation-delay: 1s;
+	}
+	.radar-ring:nth-child(3) {
+		animation-delay: 2s;
+	}
 
 	@keyframes radarExpand {
-		0% { transform: scale(0); opacity: 1; }
-		100% { transform: scale(1.5); opacity: 0; }
+		0% {
+			transform: scale(0);
+			opacity: 1;
+		}
+		100% {
+			transform: scale(1.5);
+			opacity: 0;
+		}
 	}
 
 	.radar-sweep {
 		position: absolute;
 		inset: 0;
 		border-radius: 50%;
-		background: conic-gradient(from 0deg, transparent 0deg, rgba(16, 185, 129, 0.2) 60deg, transparent 60deg);
+		background: conic-gradient(
+			from 0deg,
+			transparent 0deg,
+			rgba(16, 185, 129, 0.2) 60deg,
+			transparent 60deg
+		);
 		animation: radarSweep 4s linear infinite;
 	}
 
 	@keyframes radarSweep {
-		0% { transform: rotate(0deg); }
-		100% { transform: rotate(360deg); }
+		0% {
+			transform: rotate(0deg);
+		}
+		100% {
+			transform: rotate(360deg);
+		}
 	}
 
 	.blip {
@@ -1470,8 +1708,15 @@
 	}
 
 	@keyframes blipAppear {
-		0%, 100% { opacity: 0; transform: scale(0); }
-		50% { opacity: 1; transform: scale(1); }
+		0%,
+		100% {
+			opacity: 0;
+			transform: scale(0);
+		}
+		50% {
+			opacity: 1;
+			transform: scale(1);
+		}
 	}
 
 	.scan-metrics {
@@ -1507,8 +1752,13 @@
 	}
 
 	@keyframes counterPulse {
-		0% { transform: scale(1.2); color: var(--green); }
-		100% { transform: scale(1); }
+		0% {
+			transform: scale(1.2);
+			color: var(--green);
+		}
+		100% {
+			transform: scale(1);
+		}
 	}
 
 	.signals-panel {
@@ -1559,12 +1809,22 @@
 		transition: all 0.3s ease;
 	}
 
-	.signal-row.fading { opacity: 0.3; }
-	.signal-row.dimming { opacity: 0.6; }
+	.signal-row.fading {
+		opacity: 0.3;
+	}
+	.signal-row.dimming {
+		opacity: 0.6;
+	}
 
 	@keyframes signalEnter {
-		from { opacity: 0; transform: translateX(-20px); }
-		to { opacity: 1; transform: translateX(0); }
+		from {
+			opacity: 0;
+			transform: translateX(-20px);
+		}
+		to {
+			opacity: 1;
+			transform: translateX(0);
+		}
 	}
 
 	.signal-main {
@@ -1670,7 +1930,9 @@
 	}
 
 	@media (max-width: 768px) {
-		.university-grid { grid-template-columns: 1fr; }
+		.university-grid {
+			grid-template-columns: 1fr;
+		}
 	}
 
 	.uni-card {
@@ -1681,8 +1943,12 @@
 		backdrop-filter: blur(10px);
 	}
 
-	.uni-card.day-trading { border-color: rgba(245, 158, 11, 0.2); }
-	.uni-card.swing-trading { border-color: rgba(200, 121, 65, 0.2); }
+	.uni-card.day-trading {
+		border-color: rgba(245, 158, 11, 0.2);
+	}
+	.uni-card.swing-trading {
+		border-color: rgba(200, 121, 65, 0.2);
+	}
 
 	.uni-header {
 		display: flex;
@@ -1712,10 +1978,22 @@
 		color: var(--copper);
 	}
 
-	.uni-icon svg { width: 24px; height: 24px; }
+	.uni-icon svg {
+		width: 24px;
+		height: 24px;
+	}
 
-	.uni-title h3 { font-size: 1.25rem; font-weight: 700; color: var(--text); margin: 0 0 4px 0; }
-	.uni-title p { font-size: 13px; color: var(--text-dim); margin: 0; }
+	.uni-title h3 {
+		font-size: 1.25rem;
+		font-weight: 700;
+		color: var(--text);
+		margin: 0 0 4px 0;
+	}
+	.uni-title p {
+		font-size: 13px;
+		color: var(--text-dim);
+		margin: 0;
+	}
 
 	.uni-modules {
 		display: flex;
@@ -1740,14 +2018,26 @@
 		line-height: 1;
 	}
 
-	.mod-info h4 { font-size: 14px; font-weight: 600; color: var(--text); margin: 0 0 2px 0; }
-	.mod-info p { font-size: 12px; color: var(--text-dim); margin: 0; }
+	.mod-info h4 {
+		font-size: 14px;
+		font-weight: 600;
+		color: var(--text);
+		margin: 0 0 2px 0;
+	}
+	.mod-info p {
+		font-size: 12px;
+		color: var(--text-dim);
+		margin: 0;
+	}
 
 	.swing-wave {
 		margin-top: 20px;
 	}
 
-	.swing-wave svg { width: 100%; height: 100px; }
+	.swing-wave svg {
+		width: 100%;
+		height: 100px;
+	}
 
 	.wave-line {
 		stroke-dasharray: 300;
@@ -1756,7 +2046,9 @@
 	}
 
 	@keyframes drawWave {
-		to { stroke-dashoffset: 0; }
+		to {
+			stroke-dashoffset: 0;
+		}
 	}
 
 	.wave-labels {
@@ -1766,7 +2058,10 @@
 		margin-top: 8px;
 	}
 
-	.wave-labels span { font-size: 11px; color: var(--text-dim); }
+	.wave-labels span {
+		font-size: 11px;
+		color: var(--text-dim);
+	}
 
 	/* Infrastructure Section */
 	.infra-section {
@@ -1802,7 +2097,9 @@
 	}
 
 	@media (max-width: 768px) {
-		.server-visualization { grid-template-columns: 1fr; }
+		.server-visualization {
+			grid-template-columns: 1fr;
+		}
 	}
 
 	.server-rack {
@@ -1829,7 +2126,9 @@
 	}
 
 	@keyframes unitAppear {
-		to { opacity: 1; }
+		to {
+			opacity: 1;
+		}
 	}
 
 	.unit-header {
@@ -1838,7 +2137,11 @@
 		gap: 2px;
 	}
 
-	.unit-id { font-size: 10px; color: var(--text-muted); font-family: 'SF Mono', monospace; }
+	.unit-id {
+		font-size: 10px;
+		color: var(--text-muted);
+		font-family: 'SF Mono', monospace;
+	}
 
 	.unit-status {
 		display: flex;
@@ -1847,9 +2150,19 @@
 		font-size: 9px;
 	}
 
-	.status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--red); }
-	.unit-status.active .status-dot { background: var(--green); animation: blink 1s ease-in-out infinite; }
-	.unit-status.active { color: var(--green); }
+	.status-dot {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: var(--red);
+	}
+	.unit-status.active .status-dot {
+		background: var(--green);
+		animation: blink 1s ease-in-out infinite;
+	}
+	.unit-status.active {
+		color: var(--green);
+	}
 
 	.unit-lights {
 		display: flex;
@@ -1871,8 +2184,12 @@
 	}
 
 	@keyframes lightBlink {
-		from { opacity: 0.3; }
-		to { opacity: 1; }
+		from {
+			opacity: 0.3;
+		}
+		to {
+			opacity: 1;
+		}
 	}
 
 	.unit-load {
@@ -1900,7 +2217,11 @@
 		transition: width 0.5s ease;
 	}
 
-	.load-text { font-size: 10px; color: var(--text-dim); font-family: 'SF Mono', monospace; }
+	.load-text {
+		font-size: 10px;
+		color: var(--text-dim);
+		font-family: 'SF Mono', monospace;
+	}
 
 	.expansion-metrics {
 		display: flex;
@@ -1928,7 +2249,10 @@
 		margin-bottom: 4px;
 	}
 
-	.exp-label { font-size: 12px; color: var(--text-dim); }
+	.exp-label {
+		font-size: 12px;
+		color: var(--text-dim);
+	}
 
 	/* Stats Section */
 	.stats-section {
@@ -2013,7 +2337,9 @@
 		backdrop-filter: blur(10px);
 	}
 
-	.capture-box { text-align: center; }
+	.capture-box {
+		text-align: center;
+	}
 
 	.capture-header {
 		display: inline-flex;
@@ -2062,7 +2388,9 @@
 	}
 
 	@media (max-width: 600px) {
-		.input-wrapper { flex-direction: column; }
+		.input-wrapper {
+			flex-direction: column;
+		}
 	}
 
 	.email-input {
@@ -2128,7 +2456,9 @@
 		font-size: 14px;
 	}
 
-	.success-box { text-align: center; }
+	.success-box {
+		text-align: center;
+	}
 
 	.success-icon {
 		width: 64px;
@@ -2136,7 +2466,10 @@
 		margin: 0 auto 20px;
 	}
 
-	.success-icon svg { width: 100%; height: 100%; }
+	.success-icon svg {
+		width: 100%;
+		height: 100%;
+	}
 
 	.success-box h3 {
 		font-size: 1.5rem;
@@ -2182,13 +2515,26 @@
 		color: var(--text-dim);
 	}
 
-	.security-note svg { width: 16px; height: 16px; }
+	.security-note svg {
+		width: 16px;
+		height: 16px;
+	}
 
 	/* Responsive */
 	@media (max-width: 768px) {
-		.content { padding: 90px 16px 40px; gap: 60px; }
-		.stats-section { flex-wrap: wrap; gap: 16px; }
-		.stat-divider { display: none; }
-		.capture-section { padding: 28px 20px; }
+		.content {
+			padding: 90px 16px 40px;
+			gap: 60px;
+		}
+		.stats-section {
+			flex-wrap: wrap;
+			gap: 16px;
+		}
+		.stat-divider {
+			display: none;
+		}
+		.capture-section {
+			padding: 28px 20px;
+		}
 	}
 </style>
