@@ -152,10 +152,36 @@ Every converted file: `svelte-autofixer` clean → `pnpm check` 0/0, with the pa
 the 14 ghost profile fields into `CreateMemberRequest`/`UpdateMemberRequest` (or
 removes their inputs), with the admin create/edit flow exercised manually.
 
-### §B — accessibility debt
-Review the ~61 a11y suppressions. Dominant pattern: click handlers on non-interactive
-elements → add `onkeydown` + `role` + `tabindex`, or switch to `<button>`. Batch by
-family (CRM modals, blog BlockEditor, cms blocks).
+### §B — accessibility debt — ✅ **substantially complete**
+Eliminated **62 svelte-ignore directives across 35 files** this pass (5 commits:
+batches 1–5). Starting count was ~85; the remaining **23 suppressions across 13
+files** are now all legitimate, documented design trade-offs:
+
+| Remaining category | Files | Why kept |
+|---|---|---|
+| Drag-and-drop / resize handles (`a11y_no_static_element_interactions`) | `ImageCropModal` (8), `WorkflowCanvas` (2), `crm/deals` (kanban) | Mouse-drag has no clean keyboard equivalent without a major UX rebuild (arrow-key resize, drag handles, etc.). |
+| Card/article-as-button (`a11y_no_noninteractive_element_to_interactive_role`) | `ResourceCard`, `AuthorBlock`, others | Semantic-vs-interactivity trade-off; the only way to remove cleanly is a `<button>` wrapper which fights existing layout. |
+| CMS contenteditable editor mode (`a11y_figcaption_parent`, `a11y_no_noninteractive_element_to_interactive_role`) | `VideoBlock`, `ImageBlock`, `GalleryBlock`, `TestimonialBlock`, `AssetManager`, `VirtualBlockList`, `BlockEditor/KeyboardShortcuts` (already done), etc. | CMS editor lets users edit inline; the warnings flag intentional semantic anomalies. |
+| Conditional interactivity (`a11y_no_noninteractive_tabindex`) | `EnterpriseStatCard` | Conditionally clickable based on `clickable` prop; the warning is essentially a false positive when `clickable=false`. |
+| User-uploaded media (`a11y_media_has_caption`) | `AssetManager` (preview `<video>`) | We don't control caption availability for arbitrary uploaded video. |
+| Empty content placeholder (`a11y_missing_content`) | `routes/classes/quickstart-precision-trading-c/+page` | Empty `<h3>` with CSS styling — content gap, not really a11y. |
+
+**The patterns we fixed** (proven recipes, recorded for future PRs):
+- *Modal backdrop click-out:* replaced inner `stopPropagation` + suppression
+  with `onclick={(e) => { if (e.target === e.currentTarget) close(); }}` on the
+  overlay. Applied to ~25 modals.
+- *Standalone backdrops:* replaced `<div onclick>` with `<button>` (transparent
+  CSS reset). Applied to `RoomSelector`, `ResourceViewer`.
+- *`autofocus` anti-pattern:* replaced with `bind:this` + `$effect` programmatic
+  focus. Applied to `ReplaceModal`, `PresetPicker`, `AnimatedSlider`.
+- *`non_reactive_update` on `bind:this`:* declared the ref with `$state()`.
+  Applied to 3 analytics charts.
+- *`state_referenced_locally` seed-from-prop:* replaced with
+  `$state(untrack(() => prop))`. Applied to `TableOfContents`, `ImageCropModal`,
+  `TemplateEditor`.
+- *Cards-as-buttons:* added `role="button"`, `tabindex="0"`, Enter/Space
+  `onkeydown` (kept the role-to-interactive suppression where the element is an
+  `<article>`). Applied to `ResourceCard`.
 
 ### §C — type tightening
 Replace `: any` in `Props` interfaces with real types, lowest-traffic files first.
