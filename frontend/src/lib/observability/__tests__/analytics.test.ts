@@ -316,7 +316,9 @@ describe('Console Adapter', () => {
 describe('Backend Adapter', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
-		(globalThis as unknown as { localStorage: { data: Record<string, unknown> } }).localStorage.data = {};
+		(
+			globalThis as unknown as { localStorage: { data: Record<string, unknown> } }
+		).localStorage.data = {};
 	});
 
 	it('should create singleton instance via getBackendAdapter', () => {
@@ -867,7 +869,9 @@ describe('Integration Tests', () => {
 		vi.clearAllMocks();
 		resetOrchestrator();
 		resetGoogleAnalyticsAdapter();
-		(globalThis as unknown as { localStorage: { data: Record<string, unknown> } }).localStorage.data = {};
+		(
+			globalThis as unknown as { localStorage: { data: Record<string, unknown> } }
+		).localStorage.data = {};
 	});
 
 	it('should handle full user journey', async () => {

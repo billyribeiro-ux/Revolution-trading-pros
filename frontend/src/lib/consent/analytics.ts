@@ -234,8 +234,9 @@ function sendToBehaviorTracker(event: ConsentInteractionEvent): void {
 
 	try {
 		// Check if behavior tracker is available
-		const tracker = (window as Window & { __behaviorTracker?: { trackEvent?: (e: unknown) => void } })
-			.__behaviorTracker;
+		const tracker = (
+			window as Window & { __behaviorTracker?: { trackEvent?: (e: unknown) => void } }
+		).__behaviorTracker;
 		if (tracker && typeof tracker.trackEvent === 'function') {
 			tracker.trackEvent({
 				event_type: `consent_${event.type}`,

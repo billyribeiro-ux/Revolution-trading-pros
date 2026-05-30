@@ -263,10 +263,7 @@ class DatabaseConnection {
 	 * Get an object store from a transaction's store map, or throw if it was
 	 * not opened for this transaction. Replaces non-null assertions on `.get()`.
 	 */
-	private requireStore(
-		stores: Map<StoreName, IDBObjectStore>,
-		name: StoreName
-	): IDBObjectStore {
+	private requireStore(stores: Map<StoreName, IDBObjectStore>, name: StoreName): IDBObjectStore {
 		const store = stores.get(name);
 		if (!store) {
 			throw new Error(`Object store "${name}" is not part of this transaction`);
