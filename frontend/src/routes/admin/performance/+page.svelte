@@ -65,8 +65,8 @@
 				`Caches warmed! Views: ${result.views}, Routes: ${result.routes}, Configs: ${result.configs}`
 			);
 			await loadData();
-		} catch (err: any) {
-			toastStore.error(err.message || 'Failed to warm caches');
+		} catch (err) {
+			toastStore.error(err instanceof Error ? err.message : 'Failed to warm caches');
 		} finally {
 			warmingCaches = false;
 		}

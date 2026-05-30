@@ -18,7 +18,7 @@
 	let error = $state('');
 	let template: Partial<EmailTemplate> | null = $state(null);
 
-	const id = page.params['id']!;
+	const id = page.params['id'];
 
 	onMount(async () => {
 		try {

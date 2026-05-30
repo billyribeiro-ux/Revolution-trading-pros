@@ -14,7 +14,7 @@
 	let loading = $state(true);
 	let error = $state('');
 
-	let formId = $derived(parseInt(page.params['id']!));
+	let formId = $derived(parseInt(page.params['id']));
 
 	onMount(async () => {
 		try {

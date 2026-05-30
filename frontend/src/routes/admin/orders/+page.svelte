@@ -8,6 +8,7 @@
 	 * to reduce parent surface from ~1260 LOC to a coordinator file.
 	 */
 
+	import type { ComponentProps } from 'svelte';
 	import { browser } from '$app/environment';
 	import { toastStore } from '$lib/stores/toast.svelte';
 
@@ -61,7 +62,7 @@
 	let showFilters = $state(false);
 	let selectedOrder = $state<Order | null>(null);
 	let showDetailModal = $state(false);
-	let orderDetail = $state<any>(null);
+	let orderDetail = $state<ComponentProps<typeof OrderDetailModal>['orderDetail']>(null);
 	let loadingDetail = $state(false);
 	let error = $state('');
 

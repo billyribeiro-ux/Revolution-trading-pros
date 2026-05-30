@@ -9,7 +9,7 @@
 	let loading = $state(true);
 	let error = $state('');
 	let preview: { subject?: string; body_html?: string } | null = $state(null);
-	const id = page.params['id']!;
+	const id = page.params['id'];
 
 	onMount(async () => {
 		try {

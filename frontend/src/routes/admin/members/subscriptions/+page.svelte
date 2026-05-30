@@ -34,6 +34,11 @@
 		exportSubscriptions,
 		type EnhancedSubscription
 	} from '$lib/api/subscriptions';
+	import type {
+		SubscriptionFilters,
+		SubscriptionStatus,
+		SubscriptionInterval
+	} from '$lib/stores/subscriptions.svelte';
 	import { logger } from '$lib/utils/logger';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
@@ -110,12 +115,12 @@
 		loading = true;
 		error = '';
 		try {
-			const filters: any = {};
+			const filters: SubscriptionFilters = {};
 			if (statusFilter) {
-				filters.status = [statusFilter];
+				filters.status = [statusFilter as SubscriptionStatus];
 			}
 			if (intervalFilter) {
-				filters.interval = [intervalFilter];
+				filters.interval = [intervalFilter as SubscriptionInterval];
 			}
 			subscriptions = await getSubscriptions(filters, true);
 		} catch (e: unknown) {

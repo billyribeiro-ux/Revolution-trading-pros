@@ -14,7 +14,7 @@
 	let error = $state('');
 	let _submitted = $state(false);
 
-	let formSlug = $derived(page.params.slug!);
+	let formSlug = $derived(page.params.slug);
 
 	onMount(async () => {
 		try {
