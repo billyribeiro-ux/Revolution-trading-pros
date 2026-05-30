@@ -46,6 +46,15 @@ import {
 import { logger } from '$lib/utils/logger';
 
 /**
+ * ApiTrade may optionally carry update-tracking fields that are not part of the
+ * base ApiTrade contract. Narrow access to these optional fields without `any`.
+ */
+interface ApiTradeWithUpdates extends ApiTrade {
+	was_updated?: boolean;
+	updated_at?: string;
+}
+
+/**
  * Creates the reactive state store for the Explosive Swings dashboard.
  * Call this once in +page.svelte and provide via setContext if needed.
  */
@@ -199,14 +208,16 @@ export function createPageState() {
 					progressToTarget1: 0,
 					triggeredAt: new Date(t.entry_date),
 					notes: t.notes,
-					wasUpdated: (t as any).was_updated ?? false,
-					updatedAt: (t as any).updated_at ? new Date((t as any).updated_at) : undefined
+					wasUpdated: (t as ApiTradeWithUpdates).was_updated ?? false,
+					updatedAt: (t as ApiTradeWithUpdates).updated_at
+						? new Date((t as ApiTradeWithUpdates).updated_at as string)
+						: undefined
 				}))
 			: fallbackData.activePositions
 	);
 
 	// Helper to safely validate dates before calling toLocaleDateString
-	function isValidDate(dateValue: any): boolean {
+	function isValidDate(dateValue: string | number | Date | null | undefined): boolean {
 		if (!dateValue) return false;
 		const date = new Date(dateValue);
 		return date instanceof Date && !isNaN(date.getTime());

@@ -16,6 +16,7 @@
 	import PerformanceSummary from './components/PerformanceSummary.svelte';
 	import WeeklyHero from './components/WeeklyHero.svelte';
 	import AlertCard from './components/AlertCard.svelte';
+	import type { ComponentProps } from 'svelte';
 	import AlertFilters from '$lib/components/dashboard/alerts/AlertFilters.svelte';
 	import SidebarComponent from './components/Sidebar.svelte';
 	import NewAlertPulse from './components/NewAlertPulse.svelte';
@@ -33,9 +34,15 @@
 
 	// Remote Commands
 	import { saveAlert, deleteAlertCommand } from './commands.remote';
+	import type { FormattedAlert } from './data.remote';
 
 	// Types
-	import type { AlertCreateInput, AlertUpdateInput } from '$lib/types/trading';
+	import type {
+		AlertCreateInput,
+		AlertUpdateInput,
+		RoomAlert,
+		TradePlanEntry as ApiTradePlanEntry
+	} from '$lib/types/trading';
 	import type { WatchlistData } from '$lib/server/watchlist';
 	import type { RoomResource } from '$lib/api/room-resources';
 
@@ -49,6 +56,9 @@
 	}
 	let props: { data: PageData } = $props();
 	let data = $derived(props.data);
+
+	// Param type of AlertCard's alert callbacks (AlertCard's local Alert shape)
+	type AlertCardAlert = Parameters<NonNullable<ComponentProps<typeof AlertCard>['onCopy']>>[0];
 
 	// ICT 7: Local error state for user feedback
 	let saveAlertError = $state<string | null>(null);
@@ -213,7 +223,9 @@
 		isAdmin={ps.isAdmin}
 		roomSlug={ps.ROOM_SLUG}
 		onAddEntry={() => ps.openTradeEntryModal()}
-		onEditEntry={(entry: any) => ps.openTradeEntryModal(entry)}
+		onEditEntry={(
+			entry: Parameters<NonNullable<ComponentProps<typeof WeeklyHero>['onEditEntry']>>[0]
+		) => ps.openTradeEntryModal(entry as unknown as ApiTradePlanEntry)}
 		onUploadVideo={ps.openPublishWeeklyModal}
 	/>
 
@@ -285,8 +297,8 @@
 							isNotesExpanded={expandedNotes.has(alert.id)}
 							isCopied={ps.copiedAlertId === alert.id}
 							onToggleNotes={toggleNotes}
-							onCopy={(a: any) => ps.copyTradeDetails(a)}
-							onEdit={(a: any) => ps.openAlertModal(a)}
+							onCopy={(a: AlertCardAlert) => ps.copyTradeDetails(a as unknown as FormattedAlert)}
+							onEdit={(a: AlertCardAlert) => ps.openAlertModal(a as unknown as RoomAlert)}
 							onDelete={handleDeleteAlert}
 						/>
 					{/each}
@@ -373,8 +385,8 @@
 	<TradeAlertModal
 		isOpen={alertModalOpen}
 		roomSlug={ps.ROOM_SLUG}
-		editAlert={ps.editingAlert as any}
-		entryAlerts={ps.alerts.filter((a) => a.type === 'ENTRY') as any}
+		editAlert={ps.editingAlert}
+		entryAlerts={ps.alerts.filter((a) => a.type === 'ENTRY') as unknown as RoomAlert[]}
 		onClose={() => {
 			alertModalOpen = false;
 			ps.closeAlertModal();

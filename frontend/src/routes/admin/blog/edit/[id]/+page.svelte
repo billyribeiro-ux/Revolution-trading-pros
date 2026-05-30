@@ -20,6 +20,43 @@
 	import TagsPanel from './_components/TagsPanel.svelte';
 	import type { PostState, TagRow } from './_components/types';
 
+	// Raw block shape as returned by the API (all fields optional / loosely typed).
+	interface RawBlock {
+		id?: string;
+		type: Block['type'];
+		content: Block['content'];
+		settings?: Block['settings'];
+		metadata?: Block['metadata'];
+	}
+
+	// Raw post shape as returned by the API. Tags may arrive as bare ids or
+	// {id,...} objects; categories as string ids. Only the fields read below are
+	// modelled here.
+	interface RawPost {
+		id: number;
+		title?: string;
+		slug?: string;
+		excerpt?: string;
+		content_blocks?: Pick<Block, 'type' | 'content' | 'settings'>[];
+		featured_image?: string;
+		featured_image_alt?: string;
+		featured_image_title?: string;
+		featured_image_caption?: string;
+		featured_image_description?: string;
+		featured_media_id?: number | null;
+		status?: string;
+		published_at?: string | null;
+		allow_comments?: boolean;
+		meta_title?: string;
+		meta_description?: string;
+		meta_keywords?: string[];
+		indexable?: boolean;
+		canonical_url?: string;
+		categories?: string[];
+		tags?: (number | { id: number })[];
+		blocks?: RawBlock[];
+	}
+
 	// Get post ID from URL params
 	const postId = $derived(page.params.id);
 
@@ -107,8 +144,8 @@
 			// be null on fresh page load before the auth store restores.
 			const resp = await fetch(`/api/admin/posts/${postId}`, { credentials: 'include' });
 			if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-			const data = await resp.json();
-			const postData = data.data || data;
+			const data = (await resp.json()) as { data?: RawPost } | RawPost;
+			const postData = ('data' in data && data.data ? data.data : data) as RawPost;
 
 			// Map post data to our state
 			post = {
@@ -137,13 +174,12 @@
 				// FIX-2026-04-26 (P3-11): backend returns either bare ids or {id,...}
 				// objects; normalize to ids here. The polymorphism still papers over
 				// a backend-shape mismatch — track in API contract notes.
-				tags:
-					postData.tags?.map((t: any) => (t && typeof t === 'object' && 'id' in t ? t.id : t)) || []
+				tags: postData.tags?.map((t) => (t && typeof t === 'object' && 'id' in t ? t.id : t)) || []
 			};
 
 			// Load blocks from the post data
 			if (postData.blocks && Array.isArray(postData.blocks) && postData.blocks.length > 0) {
-				contentBlocks = postData.blocks.map((b: any) => ({
+				contentBlocks = postData.blocks.map((b) => ({
 					id: b.id || crypto.randomUUID(),
 					type: b.type,
 					content: b.content,
@@ -336,9 +372,10 @@
 			setTimeout(() => {
 				saveSuccess = '';
 			}, 3000);
-		} catch (error: any) {
+		} catch (error) {
 			logger.error('Failed to save post:', error);
-			saveError = error.message || 'Failed to save post. Please try again.';
+			const err = error as { message?: string };
+			saveError = err.message || 'Failed to save post. Please try again.';
 		} finally {
 			saving = false;
 		}
@@ -368,9 +405,10 @@
 				if (!post.featured_image_title) {
 					post.featured_image_title = result.file.title || file.name.replace(/\.[^/.]+$/, '');
 				}
-			} catch (error: any) {
+			} catch (error) {
 				logger.error('Failed to upload featured image:', error);
-				uploadError = error.message || 'Failed to upload image';
+				const err = error as { message?: string };
+				uploadError = err.message || 'Failed to upload image';
 			} finally {
 				uploadingImage = false;
 			}

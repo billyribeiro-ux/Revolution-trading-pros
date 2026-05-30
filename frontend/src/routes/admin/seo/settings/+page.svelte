@@ -4,7 +4,8 @@
 	import { toastStore } from '$lib/stores/toast.svelte';
 
 	// State using Svelte 5 runes
-	let settings = $state<any>({});
+	type SettingValue = string | number | boolean;
+	let settings = $state<Record<string, Record<string, SettingValue>>>({});
 	let loading = $state(false);
 	let saving = $state(false);
 
@@ -56,13 +57,12 @@
 	async function saveSettings() {
 		saving = true;
 		try {
-			const settingsArray = Object.entries(settings).flatMap(
-				([group, groupSettings]: [string, any]) =>
-					Object.entries(groupSettings).map(([key, value]) => ({
-						key,
-						value,
-						group
-					}))
+			const settingsArray = Object.entries(settings).flatMap(([group, groupSettings]) =>
+				Object.entries(groupSettings).map(([key, value]) => ({
+					key,
+					value,
+					group
+				}))
 			);
 
 			await fetch('/api/seo/settings/bulk-update', {
@@ -80,11 +80,11 @@
 		}
 	}
 
-	function getSetting(group: string, key: string, defaultValue: any = '') {
+	function getSetting(group: string, key: string, defaultValue: SettingValue = '') {
 		return settings[group]?.[key] ?? defaultValue;
 	}
 
-	function setSetting(group: string, key: string, value: any) {
+	function setSetting(group: string, key: string, value: SettingValue) {
 		if (!settings[group]) {
 			settings[group] = {};
 		}
@@ -129,14 +129,14 @@
 								<input
 									id={field.key}
 									type={field.type}
-									value={getSetting(group.key, field.key)}
+									value={String(getSetting(group.key, field.key))}
 									oninput={(e: Event) =>
 										setSetting(group.key, field.key, (e.currentTarget as HTMLInputElement).value)}
 								/>
 							{:else if field.type === 'textarea'}
 								<textarea
 									id={field.key}
-									value={getSetting(group.key, field.key)}
+									value={String(getSetting(group.key, field.key))}
 									oninput={(e: Event) =>
 										setSetting(group.key, field.key, (e.currentTarget as HTMLInputElement).value)}
 									rows="3"
@@ -145,7 +145,7 @@
 								<input
 									id={field.key}
 									type="checkbox"
-									checked={getSetting(group.key, field.key, false)}
+									checked={Boolean(getSetting(group.key, field.key, false))}
 									onchange={(e: Event) =>
 										setSetting(group.key, field.key, (e.currentTarget as HTMLInputElement).checked)}
 								/>

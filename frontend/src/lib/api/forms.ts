@@ -908,8 +908,11 @@ class FormsService {
 	}
 
 	private async saveDraft(form: Form): Promise<void> {
+		// `form.id` is optional on `Form`; a draft without a persisted id can't
+		// be PUT to `/forms/:id`. Guard instead of asserting non-null.
+		if (form.id === undefined) return;
 		try {
-			await this.updateForm(form.id!, { ...form, status: 'draft' });
+			await this.updateForm(form.id, { ...form, status: 'draft' });
 		} catch (error) {
 			logger.error('[FormsService] Failed to save draft', { error });
 		}

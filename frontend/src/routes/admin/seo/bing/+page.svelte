@@ -82,8 +82,9 @@
 			} else {
 				toastStore.error(result.message || 'Failed to submit URL');
 			}
-		} catch (err: any) {
-			toastStore.error(err.message || 'Failed to submit URL');
+		} catch (err) {
+			const e = err as { message?: string };
+			toastStore.error(e.message || 'Failed to submit URL');
 		} finally {
 			submitting = false;
 		}
@@ -124,8 +125,9 @@
 			batchUrls = '';
 			showBatchModal = false;
 			await loadData();
-		} catch (err: any) {
-			toastStore.error(err.message || 'Failed to submit URLs');
+		} catch (err) {
+			const e = err as { message?: string };
+			toastStore.error(e.message || 'Failed to submit URLs');
 		} finally {
 			submitting = false;
 		}
@@ -139,8 +141,9 @@
 			} else {
 				toastStore.error(result.message || 'Failed to submit sitemap');
 			}
-		} catch (err: any) {
-			toastStore.error(err.message || 'Failed to submit sitemap');
+		} catch (err) {
+			const e = err as { message?: string };
+			toastStore.error(e.message || 'Failed to submit sitemap');
 		}
 	}
 

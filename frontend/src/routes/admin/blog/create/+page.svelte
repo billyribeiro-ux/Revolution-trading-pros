@@ -30,6 +30,13 @@
 		// , type BlogCategory
 	} from '$lib/data/predefined-categories';
 
+	// Tag row as returned by /api/admin/tags. `color` is used for badge styling.
+	interface TagRow {
+		id: number;
+		name?: string;
+		color?: string;
+	}
+
 	let post = $state({
 		title: '',
 		slug: '',
@@ -85,7 +92,7 @@
 		}
 	]);
 
-	let availableTags: any[] = $state([]);
+	let availableTags: TagRow[] = $state([]);
 	let saving = $state(false);
 	let saveError = $state('');
 	let saveSuccess = $state('');
@@ -107,8 +114,8 @@
 			// proxy by routing directly to API_BASE_URL.
 			const resp = await fetch('/api/admin/tags', { credentials: 'include' });
 			if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-			const data = await resp.json();
-			availableTags = data.data || data || [];
+			const data = (await resp.json()) as { data?: TagRow[] } | TagRow[];
+			availableTags = (Array.isArray(data) ? data : data.data) || [];
 		} catch (error) {
 			logger.error('Failed to load tags:', error);
 		}
@@ -151,8 +158,8 @@
 					slugCheckStatus = 'error';
 					return;
 				}
-				const body = await res.json();
-				const items: any[] = body?.data ?? [];
+				const body = (await res.json()) as { data?: { slug?: string }[] };
+				const items = body?.data ?? [];
 				const taken = items.some((p) => p.slug === slug);
 				slugCheckStatus = taken ? 'taken' : 'available';
 			} catch {
@@ -222,7 +229,6 @@
 		if (!newTag.trim()) return;
 
 		try {
-			type TagRow = { id: number; name?: string };
 			type TagRes = { data?: TagRow } | TagRow;
 			const data = await api.post<TagRes>('/api/admin/tags', { name: newTag.trim() });
 			const newTagData = (data && 'data' in data && data.data ? data.data : data) as TagRow;
@@ -299,9 +305,10 @@
 
 			// Navigate after short delay to show success message
 			setTimeout(() => goto('/admin/blog'), 1000);
-		} catch (error: any) {
+		} catch (error) {
 			logger.error('Failed to save post:', error);
-			saveError = error.message || 'Failed to save post. Please try again.';
+			const err = error as { message?: string };
+			saveError = err.message || 'Failed to save post. Please try again.';
 		} finally {
 			saving = false;
 		}
@@ -331,9 +338,10 @@
 				if (!post.featured_image_title) {
 					post.featured_image_title = result.file.title || file.name.replace(/\.[^/.]+$/, '');
 				}
-			} catch (error: any) {
+			} catch (error) {
 				logger.error('Failed to upload featured image:', error);
-				uploadError = error.message || 'Failed to upload image';
+				const err = error as { message?: string };
+				uploadError = err.message || 'Failed to upload image';
 			} finally {
 				uploadingImage = false;
 			}
