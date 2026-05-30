@@ -192,7 +192,8 @@ class DatabaseConnection {
 
 			request.onupgradeneeded = (event) => {
 				const db = request.result;
-				const transaction = request.transaction!;
+				const transaction = request.transaction;
+				if (!transaction) return;
 				const oldVersion = event.oldVersion;
 
 				// Run migrations for versions greater than old version
@@ -256,6 +257,21 @@ class DatabaseConnection {
 				reject(error);
 			}
 		});
+	}
+
+	/**
+	 * Get an object store from a transaction's store map, or throw if it was
+	 * not opened for this transaction. Replaces non-null assertions on `.get()`.
+	 */
+	private requireStore(
+		stores: Map<StoreName, IDBObjectStore>,
+		name: StoreName
+	): IDBObjectStore {
+		const store = stores.get(name);
+		if (!store) {
+			throw new Error(`Object store "${name}" is not part of this transaction`);
+		}
+		return store;
 	}
 
 	/**
@@ -353,7 +369,7 @@ class DatabaseConnection {
 
 	async getDraft(id: string): Promise<Draft | null> {
 		return this.transaction(STORES.DRAFTS, 'readonly', async (stores) => {
-			const store = stores.get(STORES.DRAFTS)!;
+			const store = this.requireStore(stores, STORES.DRAFTS);
 			return new Promise<Draft | null>((resolve, reject) => {
 				const request = store.get(id);
 				request.onsuccess = () => resolve(request.result ?? null);
@@ -364,7 +380,7 @@ class DatabaseConnection {
 
 	async getDraftByPostId(postId: number): Promise<Draft | null> {
 		return this.transaction(STORES.DRAFTS, 'readonly', async (stores) => {
-			const store = stores.get(STORES.DRAFTS)!;
+			const store = this.requireStore(stores, STORES.DRAFTS);
 			const index = store.index('postId');
 			return new Promise<Draft | null>((resolve, reject) => {
 				const request = index.get(postId);
@@ -376,7 +392,7 @@ class DatabaseConnection {
 
 	async getAllDrafts(): Promise<Draft[]> {
 		return this.transaction(STORES.DRAFTS, 'readonly', async (stores) => {
-			const store = stores.get(STORES.DRAFTS)!;
+			const store = this.requireStore(stores, STORES.DRAFTS);
 			return new Promise<Draft[]>((resolve, reject) => {
 				const request = store.getAll();
 				request.onsuccess = () => resolve(request.result ?? []);
@@ -387,7 +403,7 @@ class DatabaseConnection {
 
 	async saveDraft(draft: Draft): Promise<void> {
 		await this.transaction(STORES.DRAFTS, 'readwrite', async (stores) => {
-			const store = stores.get(STORES.DRAFTS)!;
+			const store = this.requireStore(stores, STORES.DRAFTS);
 			return new Promise<void>((resolve, reject) => {
 				const request = store.put(draft);
 				request.onsuccess = () => resolve();
@@ -401,7 +417,7 @@ class DatabaseConnection {
 
 	async deleteDraft(id: string): Promise<void> {
 		return this.transaction(STORES.DRAFTS, 'readwrite', async (stores) => {
-			const store = stores.get(STORES.DRAFTS)!;
+			const store = this.requireStore(stores, STORES.DRAFTS);
 			return new Promise<void>((resolve, reject) => {
 				const request = store.delete(id);
 				request.onsuccess = () => resolve();
@@ -412,7 +428,7 @@ class DatabaseConnection {
 
 	async clearDrafts(): Promise<void> {
 		return this.transaction(STORES.DRAFTS, 'readwrite', async (stores) => {
-			const store = stores.get(STORES.DRAFTS)!;
+			const store = this.requireStore(stores, STORES.DRAFTS);
 			return new Promise<void>((resolve, reject) => {
 				const request = store.clear();
 				request.onsuccess = () => resolve();
@@ -427,7 +443,7 @@ class DatabaseConnection {
 
 	async getPendingChange(id: string): Promise<PendingChange | null> {
 		return this.transaction(STORES.PENDING_CHANGES, 'readonly', async (stores) => {
-			const store = stores.get(STORES.PENDING_CHANGES)!;
+			const store = this.requireStore(stores, STORES.PENDING_CHANGES);
 			return new Promise<PendingChange | null>((resolve, reject) => {
 				const request = store.get(id);
 				request.onsuccess = () => resolve(request.result ?? null);
@@ -438,7 +454,7 @@ class DatabaseConnection {
 
 	async getAllPendingChanges(): Promise<PendingChange[]> {
 		return this.transaction(STORES.PENDING_CHANGES, 'readonly', async (stores) => {
-			const store = stores.get(STORES.PENDING_CHANGES)!;
+			const store = this.requireStore(stores, STORES.PENDING_CHANGES);
 			const index = store.index('priority');
 			return new Promise<PendingChange[]>((resolve, reject) => {
 				const request = index.getAll();
@@ -459,7 +475,7 @@ class DatabaseConnection {
 
 	async getPendingChangesByDraftId(draftId: string): Promise<PendingChange[]> {
 		return this.transaction(STORES.PENDING_CHANGES, 'readonly', async (stores) => {
-			const store = stores.get(STORES.PENDING_CHANGES)!;
+			const store = this.requireStore(stores, STORES.PENDING_CHANGES);
 			const index = store.index('draftId');
 			return new Promise<PendingChange[]>((resolve, reject) => {
 				const request = index.getAll(draftId);
@@ -471,7 +487,7 @@ class DatabaseConnection {
 
 	async savePendingChange(change: PendingChange): Promise<void> {
 		return this.transaction(STORES.PENDING_CHANGES, 'readwrite', async (stores) => {
-			const store = stores.get(STORES.PENDING_CHANGES)!;
+			const store = this.requireStore(stores, STORES.PENDING_CHANGES);
 			return new Promise<void>((resolve, reject) => {
 				const request = store.put(change);
 				request.onsuccess = () => resolve();
@@ -482,7 +498,7 @@ class DatabaseConnection {
 
 	async deletePendingChange(id: string): Promise<void> {
 		return this.transaction(STORES.PENDING_CHANGES, 'readwrite', async (stores) => {
-			const store = stores.get(STORES.PENDING_CHANGES)!;
+			const store = this.requireStore(stores, STORES.PENDING_CHANGES);
 			return new Promise<void>((resolve, reject) => {
 				const request = store.delete(id);
 				request.onsuccess = () => resolve();
@@ -493,7 +509,7 @@ class DatabaseConnection {
 
 	async clearPendingChanges(): Promise<void> {
 		return this.transaction(STORES.PENDING_CHANGES, 'readwrite', async (stores) => {
-			const store = stores.get(STORES.PENDING_CHANGES)!;
+			const store = this.requireStore(stores, STORES.PENDING_CHANGES);
 			return new Promise<void>((resolve, reject) => {
 				const request = store.clear();
 				request.onsuccess = () => resolve();
@@ -508,7 +524,7 @@ class DatabaseConnection {
 
 	async getAsset(id: string): Promise<CachedAsset | null> {
 		const asset = await this.transaction(STORES.ASSETS, 'readonly', async (stores) => {
-			const store = stores.get(STORES.ASSETS)!;
+			const store = this.requireStore(stores, STORES.ASSETS);
 			return new Promise<CachedAsset | null>((resolve, reject) => {
 				const request = store.get(id);
 				request.onsuccess = () => resolve(request.result ?? null);
@@ -527,7 +543,7 @@ class DatabaseConnection {
 
 	async getAssetByUrl(url: string): Promise<CachedAsset | null> {
 		const asset = await this.transaction(STORES.ASSETS, 'readonly', async (stores) => {
-			const store = stores.get(STORES.ASSETS)!;
+			const store = this.requireStore(stores, STORES.ASSETS);
 			const index = store.index('url');
 			return new Promise<CachedAsset | null>((resolve, reject) => {
 				const request = index.get(url);
@@ -547,7 +563,7 @@ class DatabaseConnection {
 
 	async getAllAssets(): Promise<CachedAsset[]> {
 		return this.transaction(STORES.ASSETS, 'readonly', async (stores) => {
-			const store = stores.get(STORES.ASSETS)!;
+			const store = this.requireStore(stores, STORES.ASSETS);
 			return new Promise<CachedAsset[]>((resolve, reject) => {
 				const request = store.getAll();
 				request.onsuccess = () => resolve(request.result ?? []);
@@ -558,7 +574,7 @@ class DatabaseConnection {
 
 	async saveAsset(asset: CachedAsset): Promise<void> {
 		return this.transaction(STORES.ASSETS, 'readwrite', async (stores) => {
-			const store = stores.get(STORES.ASSETS)!;
+			const store = this.requireStore(stores, STORES.ASSETS);
 			return new Promise<void>((resolve, reject) => {
 				const request = store.put(asset);
 				request.onsuccess = () => resolve();
@@ -569,7 +585,7 @@ class DatabaseConnection {
 
 	async deleteAsset(id: string): Promise<void> {
 		return this.transaction(STORES.ASSETS, 'readwrite', async (stores) => {
-			const store = stores.get(STORES.ASSETS)!;
+			const store = this.requireStore(stores, STORES.ASSETS);
 			return new Promise<void>((resolve, reject) => {
 				const request = store.delete(id);
 				request.onsuccess = () => resolve();
@@ -580,7 +596,7 @@ class DatabaseConnection {
 
 	async clearAssets(): Promise<void> {
 		return this.transaction(STORES.ASSETS, 'readwrite', async (stores) => {
-			const store = stores.get(STORES.ASSETS)!;
+			const store = this.requireStore(stores, STORES.ASSETS);
 			return new Promise<void>((resolve, reject) => {
 				const request = store.clear();
 				request.onsuccess = () => resolve();
@@ -600,7 +616,7 @@ class DatabaseConnection {
 
 	async getRevision(id: string): Promise<StoredRevision | null> {
 		return this.transaction(STORES.REVISIONS, 'readonly', async (stores) => {
-			const store = stores.get(STORES.REVISIONS)!;
+			const store = this.requireStore(stores, STORES.REVISIONS);
 			return new Promise<StoredRevision | null>((resolve, reject) => {
 				const request = store.get(id);
 				request.onsuccess = () => resolve(request.result ?? null);
@@ -611,7 +627,7 @@ class DatabaseConnection {
 
 	async getRevisionsByDraftId(draftId: string): Promise<StoredRevision[]> {
 		return this.transaction(STORES.REVISIONS, 'readonly', async (stores) => {
-			const store = stores.get(STORES.REVISIONS)!;
+			const store = this.requireStore(stores, STORES.REVISIONS);
 			const index = store.index('draftId');
 			return new Promise<StoredRevision[]>((resolve, reject) => {
 				const request = index.getAll(draftId);
@@ -627,7 +643,7 @@ class DatabaseConnection {
 
 	async getAllRevisions(): Promise<StoredRevision[]> {
 		return this.transaction(STORES.REVISIONS, 'readonly', async (stores) => {
-			const store = stores.get(STORES.REVISIONS)!;
+			const store = this.requireStore(stores, STORES.REVISIONS);
 			return new Promise<StoredRevision[]>((resolve, reject) => {
 				const request = store.getAll();
 				request.onsuccess = () => resolve(request.result ?? []);
@@ -638,7 +654,7 @@ class DatabaseConnection {
 
 	async saveRevision(revision: StoredRevision): Promise<void> {
 		return this.transaction(STORES.REVISIONS, 'readwrite', async (stores) => {
-			const store = stores.get(STORES.REVISIONS)!;
+			const store = this.requireStore(stores, STORES.REVISIONS);
 			return new Promise<void>((resolve, reject) => {
 				const request = store.put(revision);
 				request.onsuccess = () => resolve();
@@ -649,7 +665,7 @@ class DatabaseConnection {
 
 	async deleteRevision(id: string): Promise<void> {
 		return this.transaction(STORES.REVISIONS, 'readwrite', async (stores) => {
-			const store = stores.get(STORES.REVISIONS)!;
+			const store = this.requireStore(stores, STORES.REVISIONS);
 			return new Promise<void>((resolve, reject) => {
 				const request = store.delete(id);
 				request.onsuccess = () => resolve();
@@ -660,7 +676,7 @@ class DatabaseConnection {
 
 	async clearRevisions(): Promise<void> {
 		return this.transaction(STORES.REVISIONS, 'readwrite', async (stores) => {
-			const store = stores.get(STORES.REVISIONS)!;
+			const store = this.requireStore(stores, STORES.REVISIONS);
 			return new Promise<void>((resolve, reject) => {
 				const request = store.clear();
 				request.onsuccess = () => resolve();
