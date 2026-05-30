@@ -299,6 +299,7 @@
 					<div class="row-content">
 						{#each subFields as subField (subField.name)}
 							{#if subField.name}
+								{@const subFieldName = subField.name}
 								<div class="sub-field" style="width: {subField.width ?? 100}%">
 									<label class="sub-field-label" for="{props.field.name}_{row.id}_{subField.name}">
 										{subField.label}
@@ -315,7 +316,7 @@
 											oninput={(e: Event) =>
 												updateFieldValue(
 													index,
-													subField.name!,
+													subFieldName,
 													(e.currentTarget as HTMLInputElement).value
 												)}
 											placeholder={subField.placeholder ?? ''}
@@ -328,7 +329,7 @@
 											oninput={(e: Event) =>
 												updateFieldValue(
 													index,
-													subField.name!,
+													subFieldName,
 													(e.currentTarget as HTMLTextAreaElement).value
 												)}
 											placeholder={subField.placeholder ?? ''}
@@ -343,7 +344,7 @@
 											oninput={(e: Event) =>
 												updateFieldValue(
 													index,
-													subField.name!,
+													subFieldName,
 													(e.currentTarget as HTMLInputElement).valueAsNumber
 												)}
 											placeholder={subField.placeholder ?? ''}
@@ -357,7 +358,7 @@
 											oninput={(e: Event) =>
 												updateFieldValue(
 													index,
-													subField.name!,
+													subFieldName,
 													(e.currentTarget as HTMLInputElement).value
 												)}
 											placeholder={subField.placeholder ?? ''}
@@ -371,7 +372,7 @@
 												onchange={(e: Event) =>
 													updateFieldValue(
 														index,
-														subField.name!,
+														subFieldName,
 														(e.currentTarget as HTMLInputElement).checked
 													)}
 											/>
@@ -384,7 +385,7 @@
 											onchange={(e: Event) =>
 												updateFieldValue(
 													index,
-													subField.name!,
+													subFieldName,
 													(e.currentTarget as HTMLSelectElement).value
 												)}
 											class="sub-field-select"
@@ -410,7 +411,7 @@
 											onchange={(e: Event) =>
 												updateFieldValue(
 													index,
-													subField.name!,
+													subFieldName,
 													(e.currentTarget as HTMLInputElement).value
 												)}
 											class="sub-field-input"
@@ -423,7 +424,7 @@
 											oninput={(e: Event) =>
 												updateFieldValue(
 													index,
-													subField.name!,
+													subFieldName,
 													(e.currentTarget as HTMLInputElement).value
 												)}
 											placeholder={subField.placeholder ?? ''}

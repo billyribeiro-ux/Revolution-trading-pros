@@ -280,15 +280,16 @@
 				};
 			}
 			throw new Error(response.message || 'Upload failed');
-		} catch (error: any) {
+		} catch (error) {
 			// FIX-2026-04-26-audit (P3): the previous fallback returned a
 			// `URL.createObjectURL(file)` blob URL that is only valid for the
 			// current tab — saving the indicator persisted a dead-on-reload URL
 			// to the database. Re-throw instead so the caller surfaces the error
 			// and the admin retries; never silently persist a transient blob URL.
-			logger.error('Server upload failed:', error?.message ?? error);
+			const err = error as { message?: string };
+			logger.error('Server upload failed:', err.message ?? error);
 			throw new Error(
-				`Upload failed: ${error?.message ?? 'unknown error'}. Please retry — the file was not saved.`,
+				`Upload failed: ${err.message ?? 'unknown error'}. Please retry — the file was not saved.`,
 				{ cause: error }
 			);
 		}
@@ -387,8 +388,9 @@
 
 			const uploaded = await uploadToBunny(resizedFile, 'indicators/thumbnails');
 			indicator.thumbnail_url = uploaded.url;
-		} catch (error: any) {
-			thumbnailError = error.message || 'Upload failed';
+		} catch (error) {
+			const err = error as { message?: string };
+			thumbnailError = err.message || 'Upload failed';
 		} finally {
 			thumbnailUploading = false;
 		}
@@ -443,10 +445,11 @@
 				}
 				return pf;
 			});
-		} catch (error: any) {
+		} catch (error) {
+			const err = error as { message?: string };
 			platformFileErrors = {
 				...platformFileErrors,
-				[platformId]: error.message || 'Upload failed'
+				[platformId]: err.message || 'Upload failed'
 			};
 		} finally {
 			platformFileUploading = { ...platformFileUploading, [platformId]: false };
@@ -517,8 +520,9 @@
 				}
 				return doc;
 			});
-		} catch (error: any) {
-			docErrors = { ...docErrors, [index]: error.message || 'Upload failed' };
+		} catch (error) {
+			const err = error as { message?: string };
+			docErrors = { ...docErrors, [index]: err.message || 'Upload failed' };
 		} finally {
 			docUploading = { ...docUploading, [index]: false };
 		}
@@ -623,9 +627,10 @@
 			} else {
 				formError = response.error || 'Failed to create indicator';
 			}
-		} catch (error: any) {
+		} catch (error) {
 			logger.error('Failed to save indicator:', error);
-			formError = error.message || 'Failed to save indicator. Please try again.';
+			const err = error as { message?: string };
+			formError = err.message || 'Failed to save indicator. Please try again.';
 		} finally {
 			saving = false;
 		}

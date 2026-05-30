@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Form, FormField } from '$lib/api/forms';
+	import type { Form, FormField, FormSettings } from '$lib/api/forms';
 	import { getFieldTypes, createForm, updateForm } from '$lib/api/forms';
 	import FieldEditor from './FieldEditor.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
@@ -17,7 +17,13 @@
 
 	let props: Props = $props();
 
-	let formData: Partial<Form> = $state({
+	// `settings` is kept non-optional locally (intersection with
+	// `{ settings: FormSettings }`) so the template can bind to
+	// `formData.settings.*` without non-null assertions; the two assignment
+	// sites below always seed a full settings object.
+	type FormDraft = Partial<Form> & { settings: FormSettings };
+
+	let formData: FormDraft = $state({
 		title: '',
 		description: '',
 		settings: {
@@ -41,17 +47,20 @@
 			formData = {
 				title: '',
 				description: '',
+				styles: {},
+				status: 'draft',
+				fields: [],
+				...props.form,
+				// `...props.form` may carry `settings: undefined`; re-seed defaults
+				// and merge any provided settings so `formData.settings` stays
+				// defined (matching the prior `settings!` template assertions).
 				settings: {
 					success_message: 'Thank you for your submission!',
 					submit_text: 'Submit',
 					send_email: false,
 					email_to: '',
 					...props.form.settings
-				},
-				styles: {},
-				status: 'draft',
-				fields: [],
-				...props.form
+				}
 			};
 			fields = props.form.fields || [];
 		}
@@ -261,7 +270,7 @@
 					<input
 						id="success-message"
 						type="text"
-						bind:value={formData.settings!.success_message}
+						bind:value={formData.settings.success_message}
 						placeholder="Thank you message"
 						class="form-input"
 					/>
@@ -272,7 +281,7 @@
 					<input
 						id="submit-text"
 						type="text"
-						bind:value={formData.settings!.submit_text}
+						bind:value={formData.settings.submit_text}
 						placeholder="Submit"
 						class="form-input"
 					/>
@@ -280,7 +289,7 @@
 
 				<div class="form-group">
 					<label for="send-email" class="checkbox-label">
-						<input id="send-email" type="checkbox" bind:checked={formData.settings!.send_email} />
+						<input id="send-email" type="checkbox" bind:checked={formData.settings.send_email} />
 						<span>Send email notifications</span>
 					</label>
 				</div>
@@ -291,7 +300,7 @@
 						<input
 							id="email-to"
 							type="email"
-							bind:value={formData.settings!.email_to}
+							bind:value={formData.settings.email_to}
 							placeholder="admin@example.com"
 							class="form-input"
 						/>
@@ -308,7 +317,7 @@
 					<input
 						id="redirect-url"
 						type="url"
-						bind:value={formData.settings!.redirect_url}
+						bind:value={formData.settings.redirect_url}
 						placeholder="https://example.com/thank-you"
 						class="form-input"
 					/>
@@ -320,7 +329,7 @@
 					<input
 						id="webhook-url"
 						type="url"
-						bind:value={formData.settings!.webhook_url}
+						bind:value={formData.settings.webhook_url}
 						placeholder="https://example.com/webhook"
 						class="form-input"
 					/>

@@ -499,8 +499,9 @@
 			}
 			showTradePlanModal = false;
 			await loadTradePlan();
-		} catch (err: any) {
-			errorMessage = err.message || 'Failed to save trade plan';
+		} catch (err) {
+			const error = err as { message?: string };
+			errorMessage = error.message || 'Failed to save trade plan';
 		} finally {
 			isSavingTradePlan = false;
 		}
@@ -520,8 +521,9 @@
 			await tradePlanApi.delete(entry.id);
 			successMessage = 'Trade plan entry deleted';
 			await loadTradePlan();
-		} catch (err: any) {
-			errorMessage = err.message || 'Failed to delete entry';
+		} catch (err) {
+			const error = err as { message?: string };
+			errorMessage = error.message || 'Failed to delete entry';
 		}
 	}
 
@@ -601,8 +603,9 @@
 			}
 			showAlertModal = false;
 			await loadAlerts();
-		} catch (err: any) {
-			errorMessage = err.message || 'Failed to save alert';
+		} catch (err) {
+			const error = err as { message?: string };
+			errorMessage = error.message || 'Failed to save alert';
 		} finally {
 			isSavingAlert = false;
 		}
@@ -622,8 +625,9 @@
 			await alertsApi.delete(alert.id);
 			successMessage = 'Alert deleted';
 			await loadAlerts();
-		} catch (err: any) {
-			errorMessage = err.message || 'Failed to delete alert';
+		} catch (err) {
+			const error = err as { message?: string };
+			errorMessage = error.message || 'Failed to delete alert';
 		}
 	}
 
@@ -632,8 +636,9 @@
 			await alertsApi.update(alert.id, { is_pinned: !alert.is_pinned });
 			successMessage = alert.is_pinned ? 'Alert unpinned' : 'Alert pinned';
 			await loadAlerts();
-		} catch (err: any) {
-			errorMessage = err.message || 'Failed to update alert';
+		} catch (err) {
+			const error = err as { message?: string };
+			errorMessage = error.message || 'Failed to update alert';
 		}
 	}
 
@@ -642,8 +647,9 @@
 			await alertsApi.update(alert.id, { is_new: !alert.is_new });
 			successMessage = alert.is_new ? 'Alert marked as read' : 'Alert marked as new';
 			await loadAlerts();
-		} catch (err: any) {
-			errorMessage = err.message || 'Failed to update alert';
+		} catch (err) {
+			const error = err as { message?: string };
+			errorMessage = error.message || 'Failed to update alert';
 		}
 	}
 
@@ -685,8 +691,9 @@
 			successMessage = 'Weekly video published (previous video archived)';
 			showVideoModal = false;
 			await loadWeeklyVideo();
-		} catch (err: any) {
-			errorMessage = err.message || 'Failed to save video';
+		} catch (err) {
+			const error = err as { message?: string };
+			errorMessage = error.message || 'Failed to save video';
 		} finally {
 			isSavingVideo = false;
 		}
@@ -726,8 +733,9 @@
 			closingTrade = null;
 			await loadTrades();
 			await loadRoomStats();
-		} catch (err: any) {
-			errorMessage = err.message || 'Failed to close trade';
+		} catch (err) {
+			const error = err as { message?: string };
+			errorMessage = error.message || 'Failed to close trade';
 		} finally {
 			isClosingTrade = false;
 		}
@@ -747,8 +755,9 @@
 			await tradesApi.delete(trade.id);
 			successMessage = 'Trade deleted';
 			await loadTrades();
-		} catch (err: any) {
-			errorMessage = err.message || 'Failed to delete trade';
+		} catch (err) {
+			const error = err as { message?: string };
+			errorMessage = error.message || 'Failed to delete trade';
 		}
 	}
 
@@ -761,8 +770,9 @@
 			await roomResourcesApi.delete(videoId);
 			successMessage = 'Video deleted';
 			await loadVideoResources();
-		} catch (err: any) {
-			errorMessage = err.message || 'Failed to delete video';
+		} catch (err) {
+			const error = err as { message?: string };
+			errorMessage = error.message || 'Failed to delete video';
 		}
 	}
 
