@@ -11,11 +11,8 @@
 /// <reference lib="dom" />
 /// <reference lib="dom.iterable" />
 
-// Ensure global types are available
-declare global {
-	interface Window {
-		gtag?: (...args: any[]) => void;
-	}
-}
+// `window.gtag` is declared canonically in src/app.d.ts (typed with
+// `unknown[]`); no Window augmentation needed here. This file exists only to
+// pull in the DOM libs above for client-side modules.
 
 export {};

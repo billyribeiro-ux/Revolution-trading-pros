@@ -23,15 +23,15 @@ export function trackPageView(url: string): void {
 	}
 
 	// Google Analytics
-	if (typeof window !== 'undefined' && (window as any).gtag) {
-		(window as any).gtag('config', 'GA_MEASUREMENT_ID', {
+	if (typeof window !== 'undefined' && window.gtag) {
+		window.gtag('config', 'GA_MEASUREMENT_ID', {
 			page_path: url
 		});
 	}
 
 	// Plausible
-	if (typeof window !== 'undefined' && (window as any).plausible) {
-		(window as any).plausible('pageview');
+	if (typeof window !== 'undefined' && window.plausible) {
+		window.plausible('pageview');
 	}
 }
 
@@ -45,8 +45,8 @@ export function trackEvent({ action, category, label, value }: AnalyticsEvent): 
 	}
 
 	// Google Analytics
-	if (typeof window !== 'undefined' && (window as any).gtag) {
-		(window as any).gtag('event', action, {
+	if (typeof window !== 'undefined' && window.gtag) {
+		window.gtag('event', action, {
 			event_category: category,
 			event_label: label,
 			value: value
@@ -54,8 +54,8 @@ export function trackEvent({ action, category, label, value }: AnalyticsEvent): 
 	}
 
 	// Plausible
-	if (typeof window !== 'undefined' && (window as any).plausible) {
-		(window as any).plausible(action, {
+	if (typeof window !== 'undefined' && window.plausible) {
+		window.plausible(action, {
 			props: { category, label, value }
 		});
 	}

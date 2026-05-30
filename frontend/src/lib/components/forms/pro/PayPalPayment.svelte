@@ -99,7 +99,7 @@
 	}
 
 	function renderButtons() {
-		if (buttonsRendered || !window.paypal) return;
+		if (buttonsRendered || !window.paypal?.Buttons) return;
 
 		window.paypal
 			.Buttons({
@@ -110,8 +110,9 @@
 					label: 'paypal',
 					height: 45
 				},
-				createOrder: (_data: any, actions: any) => {
+				createOrder: (_data, actions) => {
 					return actions.order.create({
+						intent: 'CAPTURE',
 						purchase_units: [
 							{
 								description: description,
@@ -123,14 +124,15 @@
 						]
 					});
 				},
-				onApprove: async (data: any, actions: any) => {
+				onApprove: async (data, actions) => {
 					try {
-						const order = await actions.order.capture();
+						const order = await actions.order?.capture();
+						if (!order) throw new Error('Order capture returned no result');
 
 						const result: PayPalPaymentResult = {
-							orderId: data.orderID,
-							payerId: data.payerID,
-							status: order.status,
+							orderId: data.orderID ?? '',
+							payerId: data.payerID ?? '',
+							status: order.status ?? '',
 							captureId: order.purchase_units?.[0]?.payments?.captures?.[0]?.id,
 							payerEmail: order.payer?.email_address,
 							payerName: order.payer?.name?.given_name
@@ -142,9 +144,9 @@
 						if (onerror) onerror('Payment capture failed');
 					}
 				},
-				onError: (err: any) => {
+				onError: (err) => {
 					paypalError = 'Payment was cancelled or failed';
-					if (onerror) onerror(err.message || 'PayPal error');
+					if (onerror) onerror(typeof err.message === 'string' ? err.message : 'PayPal error');
 				},
 				onCancel: () => {
 					paypalError = 'Payment was cancelled';
