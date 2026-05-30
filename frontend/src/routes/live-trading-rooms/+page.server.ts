@@ -11,7 +11,7 @@
  * @version 1.0.0
  */
 
-import type { PageServerLoad } from './.types';
+import type { PageServerLoad } from './$types';
 import type { SEOInput } from '$lib/seo/types';
 import { buildBreadcrumb, buildItemList } from '$lib/seo/schemas';
 

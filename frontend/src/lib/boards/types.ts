@@ -248,7 +248,7 @@ export interface CustomFieldValue {
 	id: string;
 	task_id: string;
 	field_id: string;
-	value: any;
+	value: unknown;
 	created_at: string;
 	updated_at: string;
 
@@ -446,8 +446,8 @@ export type ActivityType =
 
 export interface ActivityChange {
 	field: string;
-	old_value: any;
-	new_value: any;
+	old_value: unknown;
+	new_value: unknown;
 }
 
 // =====================================================
@@ -557,7 +557,7 @@ export interface WebhookPayload {
 	event: WebhookEvent;
 	board_id: string;
 	task_id?: string;
-	data: any;
+	data: unknown;
 	timestamp: string;
 }
 
