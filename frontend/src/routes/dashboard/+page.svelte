@@ -19,7 +19,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, type ComponentProps } from 'svelte';
 	import { dev } from '$app/environment';
 	import { user, isAuthenticated, isInitializing } from '$lib/stores/auth.svelte';
 	import { getUserMemberships, type UserMembershipsResponse } from '$lib/api/user-memberships';
@@ -484,7 +484,9 @@
 
 	<!-- Weekly Watchlist Section - SSR pre-fetched for 0ms loading -->
 	<section class="dashboard__content-section">
-		<WeeklyWatchlist data={(data as { watchlist?: any }).watchlist} />
+		<WeeklyWatchlist
+			data={(data as { watchlist?: ComponentProps<typeof WeeklyWatchlist>['data'] }).watchlist}
+		/>
 		<!-- Divider -->
 		<div class="section-divider">
 			<div class="section-divider__line"></div>

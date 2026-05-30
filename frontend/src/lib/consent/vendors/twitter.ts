@@ -39,18 +39,18 @@ function initializeTwitter(pixelId: string): void {
 	if (!window.twq) {
 		const queue: unknown[][] = [];
 
-		const twqFunc: any = function (...args: unknown[]) {
+		const twqFunc = function (...args: unknown[]) {
 			if (twqFunc.exe) {
 				twqFunc.exe.apply(twqFunc, args);
 			} else {
 				queue.push(args);
 			}
-		};
+		} as NonNullable<Window['twq']>;
 
 		twqFunc.version = '1.1';
 		twqFunc.queue = queue;
 
-		window.twq = twqFunc as typeof window.twq;
+		window.twq = twqFunc;
 	}
 
 	// Load Twitter script
@@ -72,8 +72,9 @@ function initializeTwitter(pixelId: string): void {
 function processEventQueue(): void {
 	if (!window.twq || !twitterReady) return;
 
-	while (eventQueue.length > 0) {
-		const { event, data } = eventQueue.shift()!;
+	let queued: { event: string; data?: Record<string, unknown> } | undefined;
+	while ((queued = eventQueue.shift()) !== undefined) {
+		const { event, data } = queued;
 		window.twq?.('event', event, data || {});
 	}
 }

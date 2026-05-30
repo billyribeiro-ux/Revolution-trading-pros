@@ -22,6 +22,12 @@
 
 	const { isOpen, position, roomSlug, onClose, onSuccess }: Props = $props();
 
+	interface OpenTradeRow {
+		id: string;
+		ticker: string;
+		entry_price: number;
+	}
+
 	let isSaving = $state(false);
 	let errorMessage = $state('');
 	let modalRef = $state<HTMLDivElement | null>(null);
@@ -116,8 +122,8 @@
 
 			// Match on ticker AND entry price to avoid closing wrong position
 			const trade =
-				tradesData.data.find(
-					(t: any) =>
+				(tradesData.data as OpenTradeRow[]).find(
+					(t) =>
 						t.ticker === position.ticker &&
 						position.entryPrice !== null &&
 						Math.abs(t.entry_price - position.entryPrice) < 0.01

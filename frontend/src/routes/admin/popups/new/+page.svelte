@@ -371,7 +371,7 @@
 		}
 
 		// Build trigger rules based on type
-		const triggerRules: Record<string, any> = {};
+		const triggerRules: Record<string, unknown> = {};
 
 		switch (formData.type) {
 			case 'timed':
@@ -430,11 +430,12 @@
 			await popupsApi.create(formData);
 			addToast({ type: 'success', message: 'Popup created successfully!' });
 			goto('/admin/popups');
-		} catch (error: any) {
+		} catch (error) {
 			console.error('Failed to create popup:', error);
+			const err = error as { response?: { data?: { message?: string } } };
 			addToast({
 				type: 'error',
-				message: error.response?.data?.message || 'Failed to create popup'
+				message: err.response?.data?.message || 'Failed to create popup'
 			});
 		} finally {
 			loading = false;

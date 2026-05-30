@@ -786,7 +786,9 @@
 								<button
 									type="button"
 									class="detail-btn danger"
-									onclick={() => handleDelete(selectedComponent!)}
+									onclick={() => {
+										if (selectedComponent) handleDelete(selectedComponent);
+									}}
 									title="Delete"
 									disabled={selectedComponent.is_locked}
 								>
@@ -921,7 +923,9 @@
 									<button
 										type="button"
 										class="insert-btn"
-										onclick={() => handleInsert(selectedComponent!)}
+										onclick={() => {
+											if (selectedComponent) handleInsert(selectedComponent);
+										}}
 									>
 										<IconPlus size={18} />
 										Insert into Editor

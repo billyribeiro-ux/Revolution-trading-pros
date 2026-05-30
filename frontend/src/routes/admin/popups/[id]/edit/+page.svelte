@@ -190,7 +190,7 @@
 		}
 
 		// Build trigger rules based on type
-		const triggerRules: Record<string, any> = {};
+		const triggerRules: Record<string, unknown> = {};
 
 		switch (formData.type) {
 			case 'timed':
@@ -211,11 +211,12 @@
 			await popupsApi.update(popupId, formData);
 			addToast({ type: 'success', message: 'Popup updated successfully!' });
 			goto('/admin/popups');
-		} catch (error: any) {
+		} catch (error) {
 			console.error('Failed to update popup:', error);
+			const err = error as { response?: { data?: { message?: string } } };
 			addToast({
 				type: 'error',
-				message: error.response?.data?.message || 'Failed to update popup'
+				message: err.response?.data?.message || 'Failed to update popup'
 			});
 		} finally {
 			loading = false;

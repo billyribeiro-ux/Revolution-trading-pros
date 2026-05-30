@@ -744,7 +744,7 @@ describe('GalleryBlock - Edit Mode Add Image', () => {
 		await fireEvent.input(altInput, { target: { value: 'New image' } });
 
 		const submitButton = container.querySelector('.add-form-submit');
-		await fireEvent.click(submitButton!);
+		await fireEvent.click(submitButton as Element);
 
 		expect(onUpdate).toHaveBeenCalledWith({
 			content: expect.objectContaining({
@@ -782,7 +782,7 @@ describe('GalleryBlock - Edit Mode Add Image', () => {
 		});
 
 		const form = container.querySelector('.gallery-add-form');
-		await fireEvent.keyDown(form!, { key: 'Escape' });
+		await fireEvent.keyDown(form as Element, { key: 'Escape' });
 
 		await waitFor(() => {
 			expect(container.querySelector('.gallery-add-form')).not.toBeInTheDocument();

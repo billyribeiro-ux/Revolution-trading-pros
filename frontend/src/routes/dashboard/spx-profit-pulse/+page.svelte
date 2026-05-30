@@ -16,15 +16,26 @@
 	let props = $props();
 	let data = $derived(props.data);
 
+	interface SpxAlertRow {
+		id: number | string;
+		title?: string;
+		date?: string;
+		excerpt?: string;
+		href?: string;
+		image?: string;
+		video?: { thumbnail?: string };
+		is_video?: boolean;
+	}
+
 	// Transform SSR alerts to LatestUpdates format
 	const latestUpdatesItems = $derived(
-		(data.alerts || []).map((alert: any) => ({
+		((data.alerts || []) as SpxAlertRow[]).map((alert) => ({
 			id: alert.id,
 			type: 'Daily Video',
-			title: alert.title,
-			date: alert.date,
-			excerpt: alert.excerpt,
-			href: alert.href,
+			title: alert.title ?? '',
+			date: alert.date ?? '',
+			excerpt: alert.excerpt ?? '',
+			href: alert.href ?? '',
 			image:
 				alert.image ||
 				alert.video?.thumbnail ||
