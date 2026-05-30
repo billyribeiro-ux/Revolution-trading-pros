@@ -228,10 +228,13 @@ export function findNearbyLocations(
 ): (Location & { distance: number })[] {
 	return locations
 		.filter((loc) => loc.address.coordinates && loc.isActive)
-		.map((loc) => ({
-			...loc,
-			distance: calculateDistance(center, loc.address.coordinates!, unit)
-		}))
+		.map((loc) => {
+			const coords = loc.address.coordinates;
+			return {
+				...loc,
+				distance: coords ? calculateDistance(center, coords, unit) : Infinity
+			};
+		})
 		.filter((loc) => loc.distance <= radius)
 		.sort((a, b) => a.distance - b.distance);
 }
@@ -243,8 +246,8 @@ export function findNearbyLocations(
 /**
  * Generate LocalBusiness JSON-LD schema for a location
  */
-export function generateLocationSchema(location: Location): Record<string, any> {
-	const schema: Record<string, any> = {
+export function generateLocationSchema(location: Location): Record<string, unknown> {
+	const schema: Record<string, unknown> = {
 		'@context': 'https://schema.org',
 		'@type': location.businessType || 'LocalBusiness',
 		name: location.name
@@ -305,7 +308,7 @@ export function generateLocationSchema(location: Location): Record<string, any> 
 	// Special hours
 	if (location.specialHours && location.specialHours.length > 0) {
 		schema['specialOpeningHoursSpecification'] = location.specialHours.map((sh) => {
-			const spec: Record<string, any> = {
+			const spec: Record<string, unknown> = {
 				'@type': 'OpeningHoursSpecification',
 				validFrom: sh.date,
 				validThrough: sh.date
@@ -396,7 +399,7 @@ export function generateLocationSchema(location: Location): Record<string, any> 
 export function generateMultiLocationSchema(
 	organizationName: string,
 	locations: Location[]
-): Record<string, any> {
+): Record<string, unknown> {
 	return {
 		'@context': 'https://schema.org',
 		'@type': 'Organization',
@@ -418,21 +421,23 @@ export function generateKml(
 ): string {
 	const placemarks = locations
 		.filter((loc) => loc.isActive && loc.address.coordinates)
-		.map(
-			(loc) => `
+		.map((loc) => {
+			const phone = loc.contacts.find((c) => c.type === 'phone')?.value;
+			const coords = loc.address.coordinates;
+			return `
 		<Placemark>
 			<name>${escapeXml(loc.name)}</name>
 			<description><![CDATA[
 				<p>${escapeXml(loc.address.streetAddress)}</p>
 				<p>${escapeXml(loc.address.addressLocality)}, ${escapeXml(loc.address.addressRegion)} ${escapeXml(loc.address.postalCode)}</p>
-				${loc.contacts.find((c) => c.type === 'phone')?.value ? `<p>Phone: ${loc.contacts.find((c) => c.type === 'phone')!.value}</p>` : ''}
+				${phone ? `<p>Phone: ${phone}</p>` : ''}
 			]]></description>
 			<Point>
-				<coordinates>${loc.address.coordinates!.longitude},${loc.address.coordinates!.latitude},0</coordinates>
+				<coordinates>${coords?.longitude ?? 0},${coords?.latitude ?? 0},0</coordinates>
 			</Point>
 		</Placemark>
-	`
-		)
+	`;
+		})
 		.join('');
 
 	return `<?xml version="1.0" encoding="UTF-8"?>
