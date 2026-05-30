@@ -61,7 +61,7 @@
 		title: '',
 		delay_seconds: 0,
 		delay_unit: 'minutes' as 'minutes' | 'hours' | 'days',
-		settings: {} as Record<string, any>
+		settings: {} as Record<string, unknown>
 	});
 
 	// Available resources

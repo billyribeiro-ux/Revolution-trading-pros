@@ -49,7 +49,14 @@
 		title: '',
 		description: '',
 		trigger_type: '' as TriggerType | '',
-		trigger_settings: {} as Record<string, any>,
+		trigger_settings: {} as {
+			tag_id?: string;
+			list_id?: string;
+			form_id?: string;
+			event_name?: string;
+			run_once?: boolean;
+			skip_if_active?: boolean;
+		},
 		conditions: [] as SegmentCondition[],
 		status: 'draft' as FunnelStatus
 	});

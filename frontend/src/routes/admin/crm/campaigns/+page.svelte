@@ -20,7 +20,7 @@
 	 * @version 1.0.0 (December 2025)
 	 */
 
-	import { onMount } from 'svelte';
+	import { onMount, type Component } from 'svelte';
 	import {
 		IconMail,
 		IconPlus,
@@ -198,7 +198,7 @@
 	}
 
 	function getStatusIcon(status: string) {
-		const icons: Record<string, any> = {
+		const icons: Record<string, Component<{ size?: number | string }>> = {
 			draft: IconEdit,
 			scheduled: IconClock,
 			sending: IconSend,
