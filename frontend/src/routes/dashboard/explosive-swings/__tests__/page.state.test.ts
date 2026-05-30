@@ -295,7 +295,7 @@ describe('createPageState()', () => {
 				}
 			];
 
-			vi.mocked(getTradePlan).mockResolvedValueOnce(mockEntries as any);
+			vi.mocked(getTradePlan).mockResolvedValueOnce(mockEntries as unknown as Awaited<ReturnType<typeof getTradePlan>>);
 
 			const state = createPageState();
 			await state.fetchTradePlan();
@@ -348,7 +348,7 @@ describe('createPageState()', () => {
 				createMockTrade({ id: 3, status: 'open' })
 			];
 
-			vi.mocked(getTrades).mockResolvedValueOnce(mockTrades as any);
+			vi.mocked(getTrades).mockResolvedValueOnce(mockTrades as unknown as Awaited<ReturnType<typeof getTrades>>);
 
 			const state = createPageState();
 			await state.fetchAllTrades();
@@ -580,7 +580,7 @@ describe('createPageState()', () => {
 
 			it('should open alert modal with editing alert', () => {
 				const state = createPageState();
-				const alert = { id: 1, ticker: 'NVDA' } as any;
+				const alert = { id: 1, ticker: 'NVDA' } as unknown as Parameters<typeof state.openAlertModal>[0];
 
 				state.openAlertModal(alert);
 
@@ -590,7 +590,7 @@ describe('createPageState()', () => {
 
 			it('should close alert modal and clear editing state', () => {
 				const state = createPageState();
-				const alert = { id: 1, ticker: 'NVDA' } as any;
+				const alert = { id: 1, ticker: 'NVDA' } as unknown as Parameters<typeof state.openAlertModal>[0];
 
 				state.openAlertModal(alert);
 				state.closeAlertModal();
@@ -611,7 +611,7 @@ describe('createPageState()', () => {
 
 			it('should open with editing entry', () => {
 				const state = createPageState();
-				const entry = { ticker: 'NVDA' } as any;
+				const entry = { ticker: 'NVDA' } as unknown as Parameters<typeof state.openTradeEntryModal>[0];
 
 				state.openTradeEntryModal(entry);
 
@@ -621,7 +621,7 @@ describe('createPageState()', () => {
 
 			it('should close and clear state', () => {
 				const state = createPageState();
-				const entry = { ticker: 'NVDA' } as any;
+				const entry = { ticker: 'NVDA' } as unknown as Parameters<typeof state.openTradeEntryModal>[0];
 
 				state.openTradeEntryModal(entry);
 				state.closeTradeEntryModal();
@@ -636,7 +636,7 @@ describe('createPageState()', () => {
 				const state = createPageState();
 				const position = createMockActivePosition();
 
-				state.openClosePositionModal(position as any);
+				state.openClosePositionModal(position as unknown as Parameters<typeof state.openClosePositionModal>[0]);
 
 				expect(state.isClosePositionModalOpen).toBe(true);
 				expect(state.closingPosition).toEqual(position);
@@ -646,7 +646,7 @@ describe('createPageState()', () => {
 				const state = createPageState();
 				const position = createMockActivePosition();
 
-				state.openClosePositionModal(position as any);
+				state.openClosePositionModal(position as unknown as Parameters<typeof state.openClosePositionModal>[0]);
 				state.closeClosePositionModal();
 
 				expect(state.isClosePositionModalOpen).toBe(false);
@@ -683,7 +683,7 @@ describe('createPageState()', () => {
 				const state = createPageState();
 				const position = createMockActivePosition();
 
-				state.openUpdatePositionModal(position as any);
+				state.openUpdatePositionModal(position as unknown as Parameters<typeof state.openUpdatePositionModal>[0]);
 
 				expect(state.isUpdatePositionModalOpen).toBe(true);
 				expect(state.updatingPosition).toEqual(position);
@@ -693,7 +693,7 @@ describe('createPageState()', () => {
 				const state = createPageState();
 				const position = createMockActivePosition();
 
-				state.openUpdatePositionModal(position as any);
+				state.openUpdatePositionModal(position as unknown as Parameters<typeof state.openUpdatePositionModal>[0]);
 				state.closeUpdatePositionModal();
 
 				expect(state.isUpdatePositionModalOpen).toBe(false);
@@ -706,7 +706,7 @@ describe('createPageState()', () => {
 				const state = createPageState();
 				const position = createMockActivePosition();
 
-				state.openInvalidatePositionModal(position as any);
+				state.openInvalidatePositionModal(position as unknown as Parameters<typeof state.openInvalidatePositionModal>[0]);
 
 				expect(state.isInvalidatePositionModalOpen).toBe(true);
 				expect(state.invalidatingPosition).toEqual(position);
@@ -716,7 +716,7 @@ describe('createPageState()', () => {
 				const state = createPageState();
 				const position = createMockActivePosition();
 
-				state.openInvalidatePositionModal(position as any);
+				state.openInvalidatePositionModal(position as unknown as Parameters<typeof state.openInvalidatePositionModal>[0]);
 				state.closeInvalidatePositionModal();
 
 				expect(state.isInvalidatePositionModalOpen).toBe(false);
@@ -802,7 +802,7 @@ describe('createPageState()', () => {
 			const state = createPageState();
 			const position = createMockActivePosition();
 
-			await state.deletePosition(position as any);
+			await state.deletePosition(position as unknown as Parameters<typeof state.deletePosition>[0]);
 
 			expect(deleteTrade).toHaveBeenCalledWith({
 				tradeId: Number(position.id)
@@ -816,7 +816,7 @@ describe('createPageState()', () => {
 			const position = createMockActivePosition();
 
 			// deletePosition re-throws errors for UI to handle
-			await expect(state.deletePosition(position as any)).rejects.toThrow();
+			await expect(state.deletePosition(position as unknown as Parameters<typeof state.deletePosition>[0])).rejects.toThrow();
 		});
 	});
 
