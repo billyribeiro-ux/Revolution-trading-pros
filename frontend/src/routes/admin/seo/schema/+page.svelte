@@ -4,10 +4,18 @@
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import { toastStore } from '$lib/stores/toast.svelte';
 
+	interface SchemaItem {
+		id: number;
+		schema_type?: string;
+		name?: string;
+		entity_type?: string;
+		entity_id?: string | number;
+	}
+
 	// State using Svelte 5 runes
-	let schemas = $state<any[]>([]);
+	let schemas = $state<SchemaItem[]>([]);
 	let loading = $state(false);
-	let showPreview = $state<any>(null);
+	let showPreview = $state<unknown>(null);
 
 	// Delete confirmation modal state
 	let showDeleteSchemaModal = $state(false);

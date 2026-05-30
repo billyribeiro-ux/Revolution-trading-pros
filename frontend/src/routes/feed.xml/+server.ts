@@ -18,7 +18,7 @@
  * @see https://www.rssboard.org/rss-enclosures-use-case
  */
 
-import type { RequestHandler } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
 import { API_BASE_URL } from '$lib/api/config';
 import type { Post, PaginatedPosts } from '$lib/types/post';
 
@@ -60,6 +60,26 @@ const MAX_FEED_ITEMS = 50;
 interface FeedPost extends Post {
 	categories?: string[];
 	tags?: string[];
+}
+
+/**
+ * Loosely-typed content block from the CMS content system. Blocks may be plain
+ * strings (legacy paragraphs) or objects with a `type` discriminator plus a
+ * variety of optional payload fields depending on the block kind.
+ */
+interface ContentBlock {
+	type?: string;
+	content?: string;
+	text?: string;
+	level?: number;
+	url?: string;
+	src?: string;
+	alt?: string;
+	caption?: string;
+	style?: string;
+	items?: string[];
+	code?: string;
+	html?: string;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -110,7 +130,7 @@ function formatRFC822Date(dateStr: string): string {
  * @param blocks - Content blocks array
  * @returns HTML string
  */
-function contentBlocksToHtml(blocks: any[] | null): string {
+function contentBlocksToHtml(blocks: Array<string | ContentBlock> | null): string {
 	if (!blocks || !Array.isArray(blocks) || blocks.length === 0) {
 		return '';
 	}

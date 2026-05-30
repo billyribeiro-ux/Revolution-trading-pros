@@ -12,8 +12,27 @@
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import { logger } from '$lib/utils/logger';
 
-	let keywords: any[] = $state([]);
-	let stats: any = $state(null);
+	interface Keyword {
+		id: number;
+		keyword: string;
+		current_rank?: number;
+		rank_change?: number | null;
+		search_volume?: number;
+		competition?: number | null;
+		target_url?: string;
+	}
+
+	interface KeywordStats {
+		total?: number;
+		top_3?: number;
+		top_10?: number;
+		avg_position?: number;
+		top_keywords?: Keyword[];
+		opportunity_keywords?: Keyword[];
+	}
+
+	let keywords: Keyword[] = $state([]);
+	let stats: KeywordStats | null = $state(null);
 	let loading = $state(false);
 	let searchQuery = $state('');
 	let showDeleteModal = $state(false);
@@ -189,7 +208,7 @@
 								{/if}
 							</td>
 							<td>
-								{#if keyword.rank_change !== null && keyword.rank_change !== 0}
+								{#if keyword.rank_change != null && keyword.rank_change !== 0}
 									{@const TrendIcon = getTrendIcon(keyword.rank_change)}
 									<div class="trend {getTrendClass(keyword.rank_change)}">
 										<TrendIcon size={16} />
@@ -201,7 +220,7 @@
 							</td>
 							<td>{keyword.search_volume?.toLocaleString() || '—'}</td>
 							<td>
-								{#if keyword.competition !== null}
+								{#if keyword.competition != null}
 									<div class="competition-bar">
 										<div class="competition-fill" style="width: {keyword.competition * 100}%"></div>
 										<span class="competition-value">{Math.round(keyword.competition * 100)}%</span>
@@ -253,7 +272,7 @@
 					<div class="opportunity-card">
 						<div class="opp-header">
 							<span class="rank-badge top-20">#{keyword.current_rank}</span>
-							<span class="competition-badge">{Math.round(keyword.competition * 100)}% comp.</span>
+							<span class="competition-badge">{Math.round((keyword.competition ?? 0) * 100)}% comp.</span>
 						</div>
 						<div class="opp-keyword">{keyword.keyword}</div>
 						<div class="opp-volume">{keyword.search_volume?.toLocaleString()} searches/mo</div>

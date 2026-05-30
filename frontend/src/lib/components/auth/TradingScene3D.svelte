@@ -12,10 +12,14 @@
 	 */
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
+	import type { Canvas } from '@threlte/core';
+	import type Scene3D from './Scene3D.svelte';
 
 	let mounted = $state(false);
-	let ThrelteCanvas: any = $state(null);
-	let Scene3DComponent: any = $state(null);
+	// Lazily-imported Svelte components, typed from their modules so the markup
+	// below renders them with the correct props.
+	let ThrelteCanvas: typeof Canvas | null = $state(null);
+	let Scene3DComponent: typeof Scene3D | null = $state(null);
 
 	onMount(async () => {
 		if (!browser) return;

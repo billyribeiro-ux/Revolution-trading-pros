@@ -6,7 +6,11 @@
 	 * Enterprise-grade modal for subscription CRUD operations with plan management.
 	 */
 	import type { Subscription, SubscriptionInterval } from '$lib/stores/subscriptions.svelte';
-	import { createSubscription, updateSubscription } from '$lib/api/subscriptions';
+	import {
+		createSubscription,
+		updateSubscription,
+		type EnhancedSubscription
+	} from '$lib/api/subscriptions';
 	import {
 		IconX,
 		IconCreditCard,
@@ -143,7 +147,10 @@
 					data.isTrialing = true;
 				}
 
-				const result = await createSubscription(data as any);
+				// The form builds a store-shaped `Subscription`; the API client expects
+				// the richer `EnhancedSubscription`. The two share the submitted fields,
+				// so bridge the divergent shapes via `unknown`.
+				const result = await createSubscription(data as unknown as Partial<EnhancedSubscription>);
 				handleSaved(result as Subscription);
 				onClose();
 			} else if (mode === 'edit' && subscription) {
@@ -165,7 +172,10 @@
 					data.notes = notes.trim() || undefined;
 				}
 
-				const result = await updateSubscription(subscription.id, data as any);
+				const result = await updateSubscription(
+					subscription.id,
+					data as unknown as Partial<EnhancedSubscription>
+				);
 				handleSaved(result as Subscription);
 				onClose();
 			}

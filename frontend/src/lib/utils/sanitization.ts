@@ -730,8 +730,11 @@ export function buildCSP(config: CSPConfig = {}): string {
 
 	// Build the header string
 	const directiveStrings = Object.entries(directives)
-		.filter(([, values]) => values && values.length > 0)
-		.map(([key, values]) => `${key} ${values!.join(' ')}`);
+		.filter((entry): entry is [string, string[]] => {
+			const values = entry[1];
+			return Array.isArray(values) && values.length > 0;
+		})
+		.map(([key, values]) => `${key} ${values.join(' ')}`);
 
 	// Add upgrade-insecure-requests
 	directiveStrings.push('upgrade-insecure-requests');
@@ -750,8 +753,11 @@ export function buildCSP(config: CSPConfig = {}): string {
  */
 export function buildCustomCSP(directives: CSPDirectives): string {
 	return Object.entries(directives)
-		.filter(([, values]) => values && values.length > 0)
-		.map(([key, values]) => `${key} ${values!.join(' ')}`)
+		.filter((entry): entry is [string, string[]] => {
+			const values = entry[1];
+			return Array.isArray(values) && values.length > 0;
+		})
+		.map(([key, values]) => `${key} ${values.join(' ')}`)
 		.join('; ');
 }
 

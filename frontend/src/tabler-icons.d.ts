@@ -18,7 +18,7 @@ declare module '@tabler/icons-svelte' {
 
 	type IconComponent = Component<IconProps>;
 
-	// Export all icons as any to bypass TS checking
+	// Export each icon as a typed Svelte component
 	export const IconAB: IconComponent;
 	export const IconAB2: IconComponent;
 	export const IconActivity: IconComponent;

@@ -110,10 +110,10 @@
 				delete testPayload.password;
 			}
 
-			const result: any = await apiFetch('/admin/email/settings/test', {
+			const result = (await apiFetch('/admin/email/settings/test', {
 				method: 'POST',
 				body: JSON.stringify(testPayload)
-			});
+			})) as { success?: boolean; message?: string; error?: string } | null;
 
 			if (result && result.success === true) {
 				message = result.message || 'Connection test successful! Email delivery is working.';
@@ -128,20 +128,21 @@
 				message = result?.message || 'Test completed. Check your inbox for a test email.';
 				messageType = 'success';
 			}
-		} catch (error: any) {
+		} catch (error) {
+			const err = error as { name?: string; message?: string; status?: number };
 			// Handle different types of errors
-			if (error.name === 'TypeError' && error.message === 'Failed to fetch') {
+			if (err.name === 'TypeError' && err.message === 'Failed to fetch') {
 				message =
 					'Network error: Unable to reach the server. Please check your internet connection and try again.';
-			} else if (error.status === 401) {
+			} else if (err.status === 401) {
 				message = 'Authentication error: Please log in again and retry.';
-			} else if (error.status === 403) {
+			} else if (err.status === 403) {
 				message = 'Permission denied: You do not have access to test email settings.';
-			} else if (error.status === 500) {
+			} else if (err.status === 500) {
 				message =
 					'Server error: The email test failed on the server. Please check your SMTP configuration.';
-			} else if (error.message) {
-				message = `Test failed: ${error.message}`;
+			} else if (err.message) {
+				message = `Test failed: ${err.message}`;
 			} else {
 				message = 'Test failed: An unexpected error occurred. Please try again.';
 			}
