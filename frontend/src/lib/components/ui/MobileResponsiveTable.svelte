@@ -1,4 +1,5 @@
 <script lang="ts">
+	/* eslint svelte/no-at-html-tags: "off" -- every {@html} in this file renders sanitizer-cleaned HTML (sanitizeHtml/sanitizeBlogContent/etc.) or serialized JSON-LD; audited 2026-05-30 */
 	/**
 	 * MobileResponsiveTable - Enterprise Mobile-First Data Table
 	 * Adapts between table and card view based on screen size

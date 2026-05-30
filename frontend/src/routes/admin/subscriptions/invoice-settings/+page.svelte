@@ -1,4 +1,5 @@
 <script lang="ts">
+	/* eslint svelte/no-at-html-tags: "off" -- every {@html} in this file renders sanitizer-cleaned HTML (sanitizeHtml/sanitizeBlogContent/etc.) or serialized JSON-LD; audited 2026-05-30 */
 	import { fade, slide } from 'svelte/transition';
 	import { browser } from '$app/environment';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
