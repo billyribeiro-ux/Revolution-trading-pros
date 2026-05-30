@@ -92,7 +92,9 @@
 
 			const paymentRef = reference || generateReference();
 
-			const handler = window.PaystackPop.setup({
+			const paystack = window.PaystackPop;
+			if (!paystack) throw new Error('Paystack SDK unavailable');
+			const handler = paystack.setup({
 				key: publicKey,
 				email,
 				amount: Math.round(amount * 100), // Paystack expects amount in kobo
@@ -102,11 +104,11 @@
 				lastname: lastName,
 				phone,
 				channels,
-				callback: (response: any) => {
+				callback: (response: PaystackResponse) => {
 					const result: PaystackPaymentResult = {
 						reference: response.reference,
-						transactionId: response.transaction,
-						status: response.status,
+						transactionId: response.transaction ?? '',
+						status: response.status ?? '',
 						channel: response.channel
 					};
 

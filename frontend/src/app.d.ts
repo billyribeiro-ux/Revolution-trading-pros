@@ -3,6 +3,7 @@
 
 import type { PayPalNamespace } from '@paypal/paypal-js';
 import type { StripeConstructor } from '@stripe/stripe-js';
+import type { Square } from '@square/web-payments-sdk-types';
 
 /**
  * Consent State interface for server-side access.
@@ -60,6 +61,83 @@ declare global {
 		// interface Platform {}
 	}
 
+	/**
+	 * Hand-written minimal types for checkout SDK globals with no official npm
+	 * typings matching our usage (loaded via <script>). Modelled on each
+	 * vendor's official docs, covering only the surface our components touch.
+	 */
+	// Paddle Classic (Paddle.js)
+	interface PaddleEventData {
+		event: string;
+		eventData?: { error?: string; [key: string]: unknown };
+		checkoutData?: {
+			checkout?: { id?: string; coupon?: { coupon_code?: string } };
+			product?: { id?: number };
+			subscription?: { plan_id?: number };
+			user?: { email?: string; country?: string };
+			[key: string]: unknown;
+		};
+		[key: string]: unknown;
+	}
+	interface PaddleClassic {
+		Setup(options: { vendor?: number; eventCallback?: (data: PaddleEventData) => void }): void;
+		Environment: { set(environment: string): void };
+		Checkout: { open(options: Record<string, unknown>): void };
+	}
+
+	// Razorpay Checkout (checkout.js)
+	interface RazorpaySuccessResponse {
+		razorpay_payment_id: string;
+		razorpay_order_id?: string;
+		razorpay_signature?: string;
+	}
+	interface RazorpayFailureResponse {
+		error?: { code?: string; description?: string; reason?: string; [key: string]: unknown };
+	}
+	interface RazorpayInstance {
+		on(event: 'payment.failed', handler: (response: RazorpayFailureResponse) => void): void;
+		open(): void;
+	}
+	interface RazorpayOptions {
+		key: string;
+		amount: number;
+		currency?: string;
+		name?: string;
+		description?: string;
+		order_id?: string;
+		handler?: (response: RazorpaySuccessResponse) => void;
+		prefill?: Record<string, string>;
+		theme?: { color?: string };
+		[key: string]: unknown;
+	}
+	interface RazorpayConstructor {
+		new (options: RazorpayOptions): RazorpayInstance;
+	}
+
+	// Paystack Inline (inline.js)
+	interface PaystackResponse {
+		reference: string;
+		transaction?: string;
+		status?: string;
+		channel?: string;
+		[key: string]: unknown;
+	}
+	interface PaystackHandler {
+		openIframe(): void;
+	}
+	interface PaystackPop {
+		setup(options: {
+			key: string;
+			email: string;
+			amount: number;
+			currency?: string;
+			ref?: string;
+			callback?: (response: PaystackResponse) => void;
+			onClose?: () => void;
+			[key: string]: unknown;
+		}): PaystackHandler;
+	}
+
 	interface Window {
 		/** YouTube IFrame API (consumers cast `Player` to a local ctor type) */
 		YT?: {
@@ -90,14 +168,10 @@ declare global {
 		/** Payment Providers */
 		Stripe?: StripeConstructor;
 		paypal?: PayPalNamespace | null;
-		// Deferred: these checkout globals have no official npm types matching
-		// our current usage. Square in particular needs an SDK-API review — the
-		// Apple/Google Pay flow (`payments.applePay({...})` + `.attach()`) targets
-		// an older Web Payments SDK than the current `payments.paymentRequest()`.
-		Square?: any;
-		Paddle?: any;
-		Razorpay?: any;
-		PaystackPop?: any;
+		Square?: Square;
+		Paddle?: PaddleClassic;
+		Razorpay?: RazorpayConstructor;
+		PaystackPop?: PaystackPop;
 	}
 }
 
