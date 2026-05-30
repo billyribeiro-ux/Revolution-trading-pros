@@ -46,8 +46,44 @@
 	// State Management
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let posts = $state<any[]>([]);
-	let stats = $state<any>(null);
+	// Admin list-view post shape: the persisted post plus admin-only analytics
+	// (seo_score/engagement_rate) and the row-selection flag. Index signature
+	// covers the raw `...post` API spread and the dynamic updatePostMetric write.
+	type AdminPostCategory = string | { id?: string; name?: string; color?: string };
+	interface AdminBlogPost {
+		id: number;
+		title: string;
+		slug: string;
+		excerpt?: string | null;
+		status?: string;
+		featured?: boolean;
+		featured_image?: string | null;
+		author?: { name?: string } | null;
+		categories?: AdminPostCategory[];
+		tags?: unknown[];
+		comments?: number;
+		likes?: number;
+		shares?: number;
+		view_count?: number;
+		word_count?: number;
+		avg_read_time?: number;
+		bounce_rate?: number;
+		engagement_rate?: number;
+		seo_score?: number;
+		meta_description?: string | null;
+		publish_at?: string | null;
+		published_at?: string | null;
+		selected?: boolean;
+	}
+
+	interface AppNotification {
+		id: string;
+		type: 'success' | 'error' | 'warning' | 'info';
+		message: string;
+	}
+
+	let posts = $state<AdminBlogPost[]>([]);
+	let stats = $state<import('svelte').ComponentProps<typeof StatsGrid>['stats']>(null);
 	let loading = $state(false);
 	let searchQuery = $state('');
 	let statusFilter = $state('all');
@@ -60,16 +96,16 @@
 	let sortBy = $state('created_at');
 	let sortOrder = $state<'asc' | 'desc'>('desc');
 	let dateRange = $state({ start: '', end: '' });
-	let previewPost = $state<any>(null);
+	let previewPost = $state<import('svelte').ComponentProps<typeof PreviewModal>['post']>(null);
 	let activeActionMenu = $state<number | null>(null);
 	let ws = $state<WebSocket | null>(null);
 	let showExportModal = $state(false);
 	let exportFormat = $state<'csv' | 'json' | 'wordpress'>('csv');
 	// Schedule modal state removed 2026-04-27 with the modal itself; see TODO marker below.
 	let showAnalyticsModal = $state(false);
-	let analyticsPost = $state<any>(null);
+	let analyticsPost = $state<import('svelte').ComponentProps<typeof AnalyticsModal>['post']>(null);
 	let refreshInterval = $state<ReturnType<typeof setInterval> | undefined>(undefined);
-	let notifications = $state<any[]>([]);
+	let notifications = $state<AppNotification[]>([]);
 
 	// Delete confirmation modal state
 	let showDeleteModal = $state(false);
@@ -149,17 +185,18 @@
 			const data = await adminFetch(`/api/admin/posts?${params}`);
 
 			// Enhance posts with additional data
-			posts = (data.data || []).map((post: any) => ({
+			posts = (data.data || []).map((post: AdminBlogPost) => ({
 				...post,
 				seo_score: calculateSeoScore(post),
 				engagement_rate: calculateEngagementRate(post),
 				selected: selectedPosts.has(post.id)
 			}));
-		} catch (error: any) {
+		} catch (error) {
+			const err = error as { status?: number; message?: string };
 			logger.error('Failed to load posts', { error });
 			// FIX-2026-04-26 (P1-8): on 401, stop polling so we don't blast the
 			// expired session every 30s.
-			if (error?.status === 401 || /401|Unauthorized/i.test(String(error?.message || ''))) {
+			if (err?.status === 401 || /401|Unauthorized/i.test(String(err?.message || ''))) {
 				pollAuthBlocked = true;
 				showNotification('error', 'Session expired — please re-login');
 			} else {
@@ -224,12 +261,12 @@
 		}
 	}
 
-	function updatePostMetric(postId: number, metric: string, value: any) {
+	function updatePostMetric(postId: number, metric: string, value: unknown) {
 		// FIX-2026-04-26 (P2-2): drop `posts = posts;` self-assignment — array
 		// element mutation is reactive in Svelte 5 runes.
 		const post = posts.find((p) => p.id === postId);
 		if (post) {
-			post[metric] = value;
+			(post as unknown as Record<string, unknown>)[metric] = value;
 		}
 	}
 
@@ -363,7 +400,7 @@
 		}
 	}
 
-	async function toggleStatus(post: any) {
+	async function toggleStatus(post: AdminBlogPost) {
 		const newStatus = post.status === 'published' ? 'draft' : 'published';
 
 		try {
@@ -381,7 +418,7 @@
 		}
 	}
 
-	async function toggleFeatured(post: any) {
+	async function toggleFeatured(post: AdminBlogPost) {
 		try {
 			await adminFetch(`/api/admin/posts/${post.id}/featured`, {
 				method: 'PATCH',
@@ -452,43 +489,47 @@
 	// Analytics & SEO
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	function calculateSeoScore(post: any): number {
+	function calculateSeoScore(post: AdminBlogPost): number {
 		let score = 0;
 
 		// Title length (60-70 chars optimal)
-		if (post.title?.length >= 30 && post.title?.length <= 70) score += 20;
-		else if (post.title?.length > 0) score += 10;
+		const titleLen = post.title?.length ?? 0;
+		if (titleLen >= 30 && titleLen <= 70) score += 20;
+		else if (titleLen > 0) score += 10;
 
 		// Meta description
-		if (post.meta_description?.length >= 120 && post.meta_description?.length <= 160) score += 20;
-		else if (post.meta_description?.length > 0) score += 10;
+		const metaLen = post.meta_description?.length ?? 0;
+		if (metaLen >= 120 && metaLen <= 160) score += 20;
+		else if (metaLen > 0) score += 10;
 
 		// Featured image
 		if (post.featured_image) score += 15;
 
 		// Categories and tags
-		if (post.categories?.length > 0) score += 10;
-		if (post.tags?.length > 0) score += 10;
+		if ((post.categories?.length ?? 0) > 0) score += 10;
+		if ((post.tags?.length ?? 0) > 0) score += 10;
 
 		// URL slug
 		if (post.slug && post.slug.length < 60) score += 10;
 
 		// Content length (min 300 words assumed)
-		if (post.word_count >= 1500) score += 15;
-		else if (post.word_count >= 500) score += 10;
-		else if (post.word_count >= 300) score += 5;
+		const wordCount = post.word_count ?? 0;
+		if (wordCount >= 1500) score += 15;
+		else if (wordCount >= 500) score += 10;
+		else if (wordCount >= 300) score += 5;
 
 		return Math.min(score, 100);
 	}
 
-	function calculateEngagementRate(post: any): number {
-		if (!post.view_count || post.view_count === 0) return 0;
+	function calculateEngagementRate(post: AdminBlogPost): number {
+		const views = post.view_count ?? 0;
+		if (views === 0) return 0;
 
 		const interactions = (post.likes || 0) + (post.comments || 0) + (post.shares || 0);
-		return Math.round((interactions / post.view_count) * 100);
+		return Math.round((interactions / views) * 100);
 	}
 
-	async function loadPostAnalytics(post: any) {
+	async function loadPostAnalytics(post: AdminBlogPost) {
 		analyticsPost = post;
 		showAnalyticsModal = true;
 
@@ -895,7 +936,7 @@
 									{#if post.status === 'scheduled'}
 										<div class="scheduled-overlay">
 											<IconClock size={20} />
-											{formatDateTime(post.publish_at)}
+											{formatDateTime(post.publish_at ?? '')}
 										</div>
 									{/if}
 								</div>
@@ -1116,7 +1157,7 @@
 										</span>
 									</td>
 									<td class="hidden-mobile hidden-tablet">
-										{#if post.categories?.length > 0}
+										{#if (post.categories?.length ?? 0) > 0}
 											<div class="table-category-tags">
 												{#each (post.categories || []).slice(0, 2) as categoryId, i (i)}
 													{@const category =
@@ -1130,8 +1171,8 @@
 														>
 													{/if}
 												{/each}
-												{#if post.categories.length > 2}
-													<span class="more-tag">+{post.categories.length - 2}</span>
+												{#if (post.categories?.length ?? 0) > 2}
+													<span class="more-tag">+{(post.categories?.length ?? 0) - 2}</span>
 												{/if}
 											</div>
 										{:else}
