@@ -136,7 +136,7 @@ export function configureGoogleUrlPassthrough(enabled: boolean): void {
 	window.dataLayer = window.dataLayer || [];
 	if (typeof window.gtag !== 'function') {
 		window.gtag = function (...args: unknown[]) {
-			window.dataLayer!.push(args);
+			window.dataLayer?.push(args);
 		};
 	}
 

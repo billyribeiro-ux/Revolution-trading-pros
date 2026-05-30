@@ -58,7 +58,7 @@ export function setBingDefaultConsent(consent: ConsentState): void {
 	const params = mapConsentToBing(consent);
 
 	// Push consent default to UET queue
-	window.uetq!.push('consent', 'default', {
+	window.uetq?.push('consent', 'default', {
 		ad_storage: params.ad_storage
 	});
 }
@@ -77,7 +77,7 @@ export function updateBingConsent(consent: ConsentState): void {
 	const params = mapConsentToBing(consent);
 
 	// Push consent update to UET queue
-	window.uetq!.push('consent', 'update', {
+	window.uetq?.push('consent', 'update', {
 		ad_storage: params.ad_storage
 	});
 }
@@ -123,7 +123,7 @@ export function grantAllBingConsent(): void {
 
 	ensureUetq();
 
-	window.uetq!.push('consent', 'update', {
+	window.uetq?.push('consent', 'update', {
 		ad_storage: 'granted'
 	});
 
@@ -138,7 +138,7 @@ export function denyAllBingConsent(): void {
 
 	ensureUetq();
 
-	window.uetq!.push('consent', 'update', {
+	window.uetq?.push('consent', 'update', {
 		ad_storage: 'denied'
 	});
 
