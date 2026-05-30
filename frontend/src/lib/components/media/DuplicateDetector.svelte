@@ -123,9 +123,10 @@
 
 	async function mergeDuplicates() {
 		if (!selectedGroup || !selectedKeepId) return;
+		const group = selectedGroup;
 
 		isMerging = true;
-		const idsToMerge = selectedGroup.files.map((f) => f.id);
+		const idsToMerge = group.files.map((f) => f.id);
 
 		try {
 			const response = await fetch(`${apiEndpoint}/merge`, {
@@ -146,7 +147,7 @@
 			}
 
 			// Remove merged group from list
-			duplicates = duplicates.filter((g) => g.hash !== selectedGroup!.hash);
+			duplicates = duplicates.filter((g) => g.hash !== group.hash);
 			closeModal();
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Merge failed';

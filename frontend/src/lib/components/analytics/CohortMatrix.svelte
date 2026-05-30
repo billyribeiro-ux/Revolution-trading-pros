@@ -51,7 +51,8 @@
 			const values = data
 				.filter((row) => row.periods && row.periods[period])
 				.map((row) => {
-					const periodData = row.periods![period];
+					const periodData = (row.periods ?? {})[period];
+					if (periodData === undefined) return 0;
 					return typeof periodData === 'number' ? periodData : periodData.retention_rate;
 				});
 

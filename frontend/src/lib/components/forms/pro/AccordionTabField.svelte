@@ -16,7 +16,7 @@
 		id: string;
 		title: string;
 		icon?: string;
-		content?: any;
+		content?: string;
 	}
 
 	interface Props {

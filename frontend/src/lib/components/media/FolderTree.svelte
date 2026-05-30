@@ -41,7 +41,8 @@
 
 		// Build tree
 		folders.forEach((folder) => {
-			const node = map.get(folder.id)!;
+			const node = map.get(folder.id);
+			if (!node) return;
 			if (folder.parent_id) {
 				const parent = map.get(folder.parent_id);
 				if (parent) {

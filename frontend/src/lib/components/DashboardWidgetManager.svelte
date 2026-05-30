@@ -117,7 +117,8 @@
 
 	function handleDragEnd() {
 		if (draggedWidget && dragOverIndex !== null) {
-			const fromIndex = visibleWidgets.findIndex((w) => w.id === draggedWidget!.id);
+			const dragged = draggedWidget;
+			const fromIndex = visibleWidgets.findIndex((w) => w.id === dragged.id);
 			if (fromIndex !== -1 && fromIndex !== dragOverIndex) {
 				widgetStore.reorderWidgets(fromIndex, dragOverIndex);
 			}

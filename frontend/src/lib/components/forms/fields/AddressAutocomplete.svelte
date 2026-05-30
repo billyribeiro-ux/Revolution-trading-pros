@@ -146,8 +146,14 @@
 		}
 	}
 
+	interface PlaceResult {
+		formatted_address?: string;
+		geometry?: { location?: { lat?: number; lng?: number } };
+		address_components?: Array<{ long_name: string; short_name: string; types: string[] }>;
+	}
+
 	// Parse Google Places address components
-	function parseAddressComponents(place: any): AddressComponents {
+	function parseAddressComponents(place: PlaceResult): AddressComponents {
 		const components: AddressComponents = {
 			street_number: '',
 			street_name: '',

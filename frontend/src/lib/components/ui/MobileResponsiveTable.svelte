@@ -152,8 +152,9 @@
 	let exportColumns = $derived(
 		columns.map((col) => {
 			const base = { key: col.key, label: col.label };
-			if (col.render) {
-				return { ...base, format: (value: unknown) => col.render!(value, {}) } as ExportColumn;
+			const render = col.render;
+			if (render) {
+				return { ...base, format: (value: unknown) => render(value, {}) } as ExportColumn;
 			}
 			return base as ExportColumn;
 		})

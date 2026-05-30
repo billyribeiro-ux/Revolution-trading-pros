@@ -135,8 +135,9 @@
 
 				uploaded.push(result.data);
 				onupload?.(result.data);
-			} catch (error: any) {
-				const message = error?.response?.data?.message || error?.message || 'Upload failed';
+			} catch (error) {
+				const err = error as { response?: { data?: { message?: string } }; message?: string };
+				const message = err?.response?.data?.message || err?.message || 'Upload failed';
 				failed.push({ file, error: message });
 				onerror?.({ file, error: message });
 				uploadProgress.set(file.name, -1);

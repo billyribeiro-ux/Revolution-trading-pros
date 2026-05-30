@@ -7,6 +7,7 @@
 	 * @author Revolution Trading Pros
 	 * @level L8 Principal Engineer
 	 */
+	import type { ComponentType } from 'svelte';
 	import EnterpriseStatCard from './EnterpriseStatCard.svelte';
 	import SkeletonLoader from './SkeletonLoader.svelte';
 
@@ -20,7 +21,7 @@
 		suffix?: string;
 		trend?: number | null;
 		trendLabel?: string;
-		icon?: any;
+		icon?: ComponentType;
 		color?: 'blue' | 'green' | 'purple' | 'orange' | 'pink' | 'cyan' | 'red';
 		sparklineData?: number[];
 		target?: number | null;
@@ -69,7 +70,7 @@
 				suffix={stat.suffix ?? ''}
 				trend={stat.trend ?? null}
 				trendLabel={stat.trendLabel ?? 'vs last period'}
-				icon={stat.icon ?? null}
+				icon={stat.icon ?? undefined}
 				color={stat.color ?? 'blue'}
 				sparklineData={stat.sparklineData ?? []}
 				target={stat.target ?? null}

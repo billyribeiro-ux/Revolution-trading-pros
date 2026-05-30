@@ -11,12 +11,13 @@
 	@version 1.0.0 - January 2026 - Extracted from Day Trading Room
 -->
 <script lang="ts">
+	import type { Snippet } from 'svelte';
 	interface SidebarSection {
 		heading: string;
 		subheading?: string;
 		content: 'schedule' | 'links' | 'custom';
 		links?: Array<{ text: string; href: string; external?: boolean }>;
-		customContent?: any;
+		customContent?: Snippet;
 	}
 
 	interface Props {

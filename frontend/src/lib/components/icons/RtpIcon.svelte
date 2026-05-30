@@ -14,6 +14,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
+	import type { Component } from 'svelte';
 	// Core icons for dashboard - using Tabler Icons
 	import IconDashboard from '@tabler/icons-svelte-runes/icons/dashboard';
 	import IconMenu2 from '@tabler/icons-svelte-runes/icons/menu-2';
@@ -118,7 +119,10 @@
 	// Trading platform icons matching Simpler Trading aesthetic
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	const iconMap: Record<string, any> = {
+	const iconMap: Record<
+		string,
+		Component<{ size?: number | string; color?: string; stroke?: number | string }>
+	> = {
 		// Navigation
 		home: IconDashboard,
 		dashboard: IconDashboard,
