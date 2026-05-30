@@ -13,6 +13,8 @@ import type { ConsentState } from './types';
 import { consentStore } from './store.svelte';
 import { logger } from '$lib/utils/logger';
 import { get } from 'svelte/store';
+import type { BehaviorTracker } from '$lib/behavior/tracker';
+import type { BehaviorEventType } from '$lib/behavior/types';
 
 /**
  * Track if the behavior tracker has been initialized.
@@ -23,7 +25,7 @@ let trackerEnabled = false;
 /**
  * Reference to the behavior tracker instance.
  */
-let behaviorTracker: any = null;
+let behaviorTracker: BehaviorTracker | null = null;
 
 /**
  * Store the unsubscribe function for cleanup.
@@ -103,7 +105,8 @@ async function enableTracking(): Promise<void> {
 		});
 
 		// Expose for consent analytics integration
-		(window as any).__behaviorTracker = behaviorTracker;
+		(window as Window & { __behaviorTracker?: BehaviorTracker | null }).__behaviorTracker =
+			behaviorTracker;
 
 		trackerEnabled = true;
 		logger.debug('[BehaviorIntegration] Tracking enabled');
@@ -124,7 +127,7 @@ function disableTracking(): void {
 		}
 
 		behaviorTracker = null;
-		(window as any).__behaviorTracker = null;
+		(window as Window & { __behaviorTracker?: BehaviorTracker | null }).__behaviorTracker = null;
 		trackerEnabled = false;
 
 		logger.debug('[BehaviorIntegration] Tracking disabled');
@@ -148,7 +151,10 @@ export function setBehaviorUserId(userId: string | null): void {
 /**
  * Track a custom event (if consent is granted).
  */
-export function trackBehaviorEvent(eventType: string, metadata?: Record<string, unknown>): void {
+export function trackBehaviorEvent(
+	eventType: BehaviorEventType,
+	metadata?: Record<string, unknown>
+): void {
 	if (!browser || !trackerEnabled || !behaviorTracker) {
 		logger.debug('[BehaviorIntegration] Cannot track event - tracking not enabled');
 		return;
@@ -176,7 +182,7 @@ export function isBehaviorTrackingEnabled(): boolean {
 /**
  * Get the current behavior tracker instance (if any).
  */
-export function getBehaviorTracker(): any {
+export function getBehaviorTracker(): BehaviorTracker | null {
 	return behaviorTracker;
 }
 

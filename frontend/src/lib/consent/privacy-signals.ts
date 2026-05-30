@@ -65,13 +65,13 @@ export function isDNTEnabled(): boolean {
 	}
 
 	// Check older IE implementation
-	const msDoNotTrack = (navigator as any).msDoNotTrack;
+	const msDoNotTrack = (navigator as Navigator & { msDoNotTrack?: string }).msDoNotTrack;
 	if (msDoNotTrack === '1') {
 		return true;
 	}
 
 	// Check window.doNotTrack (older spec)
-	const windowDNT = (window as any).doNotTrack;
+	const windowDNT = (window as Window & { doNotTrack?: string }).doNotTrack;
 	if (windowDNT === '1' || windowDNT === 'yes') {
 		return true;
 	}
@@ -87,13 +87,15 @@ export function isGPCEnabled(): boolean {
 	if (!browser) return false;
 
 	// Standard GPC signal
-	const gpc = (navigator as any).globalPrivacyControl;
+	const gpc = (navigator as Navigator & { globalPrivacyControl?: boolean | string })
+		.globalPrivacyControl;
 	if (gpc === true || gpc === '1') {
 		return true;
 	}
 
 	// Some browsers set it on the DOM
-	const domGPC = (document as any).globalPrivacyControl;
+	const domGPC = (document as Document & { globalPrivacyControl?: boolean | string })
+		.globalPrivacyControl;
 	if (domGPC === true || domGPC === '1') {
 		return true;
 	}
