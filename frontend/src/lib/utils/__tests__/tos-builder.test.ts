@@ -239,34 +239,34 @@ describe('parseTosString', () => {
 		const built = 'BUY +1 AAPL 100 (Weeklys) 27 FEB 26 255 CALL @9.55 LMT';
 		const parsed = parseTosString(built);
 		expect(parsed).not.toBeNull();
-		expect(parsed!.trade_type).toBe('options');
-		expect(parsed!.action).toBe('BUY');
-		expect(parsed!.quantity).toBe(1);
-		expect(parsed!.ticker).toBe('AAPL');
-		expect(parsed!.option_type).toBe('CALL');
-		expect(parsed!.strike).toBe(255);
-		expect(parsed!.expiration).toBe('2026-02-27');
-		expect(parsed!.contract_type).toBe('Weeklys');
-		expect(parsed!.order_type).toBe('LMT');
-		expect(parsed!.limit_price).toBe(9.55);
+		expect(parsed?.trade_type).toBe('options');
+		expect(parsed?.action).toBe('BUY');
+		expect(parsed?.quantity).toBe(1);
+		expect(parsed?.ticker).toBe('AAPL');
+		expect(parsed?.option_type).toBe('CALL');
+		expect(parsed?.strike).toBe(255);
+		expect(parsed?.expiration).toBe('2026-02-27');
+		expect(parsed?.contract_type).toBe('Weeklys');
+		expect(parsed?.order_type).toBe('LMT');
+		expect(parsed?.limit_price).toBe(9.55);
 	});
 
 	it('round-trips a shares string', () => {
 		const built = 'BUY +100 AAPL @255.03 LMT';
 		const parsed = parseTosString(built);
 		expect(parsed).not.toBeNull();
-		expect(parsed!.trade_type).toBe('shares');
-		expect(parsed!.quantity).toBe(100);
-		expect(parsed!.ticker).toBe('AAPL');
-		expect(parsed!.order_type).toBe('LMT');
-		expect(parsed!.limit_price).toBe(255.03);
+		expect(parsed?.trade_type).toBe('shares');
+		expect(parsed?.quantity).toBe(100);
+		expect(parsed?.ticker).toBe('AAPL');
+		expect(parsed?.order_type).toBe('LMT');
+		expect(parsed?.limit_price).toBe(255.03);
 	});
 
 	it('parses MKT orders without limit_price', () => {
 		const parsed = parseTosString('BUY +1 SPY 100 (Standard) 19 APR 26 500 CALL MKT');
 		expect(parsed).not.toBeNull();
-		expect(parsed!.order_type).toBe('MKT');
-		expect(parsed!.limit_price).toBeUndefined();
+		expect(parsed?.order_type).toBe('MKT');
+		expect(parsed?.limit_price).toBeUndefined();
 	});
 
 	it('returns null for unknown action (NEGATIVE)', () => {

@@ -51,6 +51,7 @@
 -->
 
 <script lang="ts">
+	/* eslint svelte/no-at-html-tags: "off" -- every {@html} in this file renders sanitizer-cleaned HTML (sanitizeHtml/sanitizeBlogContent/etc.) or serialized JSON-LD; audited 2026-05-30 */
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { scale, fade } from 'svelte/transition';
 	import { spring, tweened } from 'svelte/motion';

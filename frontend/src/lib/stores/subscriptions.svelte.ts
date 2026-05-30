@@ -374,7 +374,10 @@ export const subscriptionStore = {
 
 		try {
 			const { updatePaymentMethod } = await import('$lib/api/subscriptions');
-			const updated = await updatePaymentMethod(subscriptionId, paymentMethod as any);
+			const updated = await updatePaymentMethod(
+				subscriptionId,
+				paymentMethod as import('$lib/api/subscriptions').PaymentMethod
+			);
 
 			subscriptionState = {
 				...subscriptionState,
@@ -468,12 +471,14 @@ export function getFilteredSubscriptions() {
 
 	// Filter by status
 	if (filters.status && filters.status.length > 0) {
-		filtered = filtered.filter((sub) => filters.status!.includes(sub.status));
+		const status = filters.status;
+		filtered = filtered.filter((sub) => status.includes(sub.status));
 	}
 
 	// Filter by interval
 	if (filters.interval && filters.interval.length > 0) {
-		filtered = filtered.filter((sub) => filters.interval!.includes(sub.interval));
+		const interval = filters.interval;
+		filtered = filtered.filter((sub) => interval.includes(sub.interval));
 	}
 
 	// Search filter
@@ -489,11 +494,13 @@ export function getFilteredSubscriptions() {
 
 	// Date filters
 	if (filters.dateFrom) {
-		filtered = filtered.filter((sub) => sub.createdAt >= filters.dateFrom!);
+		const dateFrom = filters.dateFrom;
+		filtered = filtered.filter((sub) => sub.createdAt >= dateFrom);
 	}
 
 	if (filters.dateTo) {
-		filtered = filtered.filter((sub) => sub.createdAt <= filters.dateTo!);
+		const dateTo = filters.dateTo;
+		filtered = filtered.filter((sub) => sub.createdAt <= dateTo);
 	}
 
 	return filtered;
