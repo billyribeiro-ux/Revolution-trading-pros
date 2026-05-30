@@ -4,7 +4,14 @@
 	import { toastStore } from '$lib/stores/toast.svelte';
 
 	// State using Svelte 5 runes
-	let articles = $state<any[]>([]);
+	interface NewsArticle {
+		id: number | string;
+		title: string;
+		url: string;
+		publishedAt: string;
+		inSitemap: boolean;
+	}
+	let articles = $state<NewsArticle[]>([]);
 	let settings = $state({
 		enabled: true,
 		publicationName: 'Revolution Trading Pros',

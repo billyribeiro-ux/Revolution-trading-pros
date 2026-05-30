@@ -12,7 +12,19 @@
 	import { toastStore } from '$lib/stores/toast.svelte';
 
 	// State using Svelte 5 runes
-	let videos = $state<any[]>([]);
+	interface SitemapVideo {
+		id: number;
+		title: string;
+		platform: string;
+		videoId?: string;
+		duration: number;
+		views: number;
+		thumbnail: string;
+		pageUrl: string;
+		publishedAt?: string;
+		isLive?: boolean;
+	}
+	let videos = $state<SitemapVideo[]>([]);
 	let settings = $state({
 		enabled: true,
 		includeThumbnails: true,

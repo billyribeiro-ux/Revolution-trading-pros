@@ -6,7 +6,16 @@
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	let loading = $state(true);
-	let users = $state<any[]>([]);
+	interface AdminUser {
+		id: number;
+		email: string;
+		name?: string;
+		first_name?: string;
+		last_name?: string;
+		roles?: Array<{ id: number | string; name: string }>;
+		created_at: string;
+	}
+	let users = $state<AdminUser[]>([]);
 	let error = $state('');
 	let showDeleteModal = $state(false);
 	let pendingDeleteId = $state<number | null>(null);
@@ -21,7 +30,9 @@
 		error = '';
 		try {
 			const response = await usersApi.list();
-			users = response.data || [];
+			// API returns roles as {id,name} objects (richer than the auth User type);
+			// model that locally via AdminUser.
+			users = (response.data ?? []) as unknown as AdminUser[];
 		} catch (err) {
 			if (err instanceof AdminApiError) {
 				if (err.status === 401) {

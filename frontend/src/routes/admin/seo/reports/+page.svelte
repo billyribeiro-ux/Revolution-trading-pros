@@ -25,7 +25,14 @@
 
 	// State using Svelte 5 runes
 	let templates = $state<ReportTemplate[]>([]);
-	let reports = $state<any[]>([]);
+	interface GeneratedReport {
+		id: number | string;
+		templateName: string;
+		status: string;
+		generatedAt: string;
+		recipients: number;
+	}
+	let reports = $state<GeneratedReport[]>([]);
 	let showAddModal = $state(false);
 	let editingTemplate = $state<ReportTemplate | null>(null);
 

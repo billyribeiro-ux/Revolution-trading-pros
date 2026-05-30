@@ -35,7 +35,7 @@
 	let subscriptions = $state<Subscription[]>([]);
 	let stats = $state<SubscriptionStats | null>(null);
 	let upcomingRenewals = $state<Subscription[]>([]);
-	let failedPayments = $state<any[]>([]);
+	let failedPayments = $state<ReturnType<typeof getFailedPayments>>([]);
 	let loading = $state(true);
 	let error = $state('');
 
@@ -424,9 +424,9 @@
 					<div class="space-y-2">
 						{#each failedPayments.slice(0, 3) as payment (payment.id)}
 							<div class="flex items-center justify-between text-sm">
-								<span class="text-slate-300">{payment.subscriptionId}</span>
+								<span class="text-slate-300">{payment.id}</span>
 								<button
-									onclick={() => handleRetryPayment(payment.subscriptionId, payment.id)}
+									onclick={() => handleRetryPayment(payment.id, payment.id)}
 									class="text-emerald-400 hover:text-emerald-300 font-medium"
 								>
 									Retry Payment

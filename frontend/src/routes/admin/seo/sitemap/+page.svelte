@@ -5,7 +5,12 @@
 	import { logger } from '$lib/utils/logger';
 
 	// State using Svelte 5 runes
-	let stats = $state<any>(null);
+	interface SitemapStats {
+		total_urls: number;
+		file_size: number;
+		last_generated: number;
+	}
+	let stats = $state<SitemapStats | null>(null);
 	let generating = $state(false);
 	let submitting = $state(false);
 	let showSitemapXml = $state(false);
