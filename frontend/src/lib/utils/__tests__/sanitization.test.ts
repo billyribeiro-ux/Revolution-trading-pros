@@ -967,7 +967,7 @@ describe('sanitizeSlug', () => {
 	it('limits to 100 characters', () => {
 		const long = 'a'.repeat(120);
 		const result = sanitizeSlug(long);
-		expect(result!.length).toBeLessThanOrEqual(100);
+		expect(result?.length).toBeLessThanOrEqual(100);
 	});
 
 	it('returns null for input that sanitizes to empty', () => {

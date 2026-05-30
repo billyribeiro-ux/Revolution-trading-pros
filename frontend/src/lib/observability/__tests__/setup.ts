@@ -80,8 +80,9 @@ const mockDocument = {
 	head: {
 		appendChild: vi.fn((element: { onload?: (() => void) | null }) => {
 			// Simulate async script load
-			if (element.onload) {
-				Promise.resolve().then(() => element.onload!());
+			const onload = element.onload;
+			if (onload) {
+				Promise.resolve().then(() => onload());
 			}
 		})
 	},
