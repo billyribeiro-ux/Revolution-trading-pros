@@ -61,7 +61,6 @@
 		onerror
 	}: Props = $props();
 
-	let payments: Payments | null = null;
 	let card: Card | null = null;
 	let applePay: ApplePay | null = null;
 	let googlePay: GooglePay | null = null;
@@ -113,7 +112,6 @@
 			const sdk = window.Square;
 			if (!sdk) throw new Error('Square Web Payments SDK unavailable');
 			const pay = sdk.payments(applicationId, locationId);
-			payments = pay;
 
 			// Initialize Card
 			const cardInstance = await pay.card();
