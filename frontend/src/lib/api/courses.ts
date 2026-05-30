@@ -370,12 +370,11 @@ export interface CourseQueryParams {
 // API RESPONSE WRAPPER
 // ═══════════════════════════════════════════════════════════════════════════════════
 
-interface ApiResponse<T> {
-	success: boolean;
-	data?: T;
-	error?: string;
-	message?: string;
-}
+// Discriminated on `success` so a `if (!data.success) throw` guard narrows
+// `data.data` to T (no non-null assertions needed at the return sites).
+type ApiResponse<T> =
+	| { success: true; data: T; message?: string }
+	| { success: false; data?: undefined; error?: string; message?: string };
 
 // ═══════════════════════════════════════════════════════════════════════════════════
 // ADMIN COURSES API
@@ -393,14 +392,14 @@ export const adminCoursesApi = {
 		const res = await fetch(`/api/admin/courses?${searchParams}`);
 		const data: ApiResponse<PaginatedCourses> = await res.json();
 		if (!data.success) throw new Error(data.error || 'Failed to fetch courses');
-		return data.data!;
+		return data.data;
 	},
 
 	async get(id: string): Promise<CourseWithContent> {
 		const res = await fetch(`/api/admin/courses/${id}`);
 		const data: ApiResponse<CourseWithContent> = await res.json();
 		if (!data.success) throw new Error(data.error || 'Failed to fetch course');
-		return data.data!;
+		return data.data;
 	},
 
 	async create(input: CreateCourseRequest): Promise<Course> {
@@ -411,7 +410,7 @@ export const adminCoursesApi = {
 		});
 		const data: ApiResponse<Course> = await res.json();
 		if (!data.success) throw new Error(data.error || 'Failed to create course');
-		return data.data!;
+		return data.data;
 	},
 
 	async update(id: string, input: UpdateCourseRequest): Promise<Course> {
@@ -422,7 +421,7 @@ export const adminCoursesApi = {
 		});
 		const data: ApiResponse<Course> = await res.json();
 		if (!data.success) throw new Error(data.error || 'Failed to update course');
-		return data.data!;
+		return data.data;
 	},
 
 	async delete(id: string): Promise<void> {
@@ -435,14 +434,14 @@ export const adminCoursesApi = {
 		const res = await fetch(`/api/admin/courses/${id}/publish`, { method: 'POST' });
 		const data: ApiResponse<Course> = await res.json();
 		if (!data.success) throw new Error(data.error || 'Failed to publish course');
-		return data.data!;
+		return data.data;
 	},
 
 	async unpublish(id: string): Promise<Course> {
 		const res = await fetch(`/api/admin/courses/${id}/unpublish`, { method: 'POST' });
 		const data: ApiResponse<Course> = await res.json();
 		if (!data.success) throw new Error(data.error || 'Failed to unpublish course');
-		return data.data!;
+		return data.data;
 	},
 
 	// Modules
@@ -450,7 +449,7 @@ export const adminCoursesApi = {
 		const res = await fetch(`/api/admin/courses/${courseId}/modules`);
 		const data: ApiResponse<CourseModule[]> = await res.json();
 		if (!data.success) throw new Error(data.error || 'Failed to fetch modules');
-		return data.data!;
+		return data.data;
 	},
 
 	async createModule(courseId: string, input: CreateModuleRequest): Promise<CourseModule> {
@@ -461,7 +460,7 @@ export const adminCoursesApi = {
 		});
 		const data: ApiResponse<CourseModule> = await res.json();
 		if (!data.success) throw new Error(data.error || 'Failed to create module');
-		return data.data!;
+		return data.data;
 	},
 
 	async updateModule(
@@ -476,7 +475,7 @@ export const adminCoursesApi = {
 		});
 		const data: ApiResponse<CourseModule> = await res.json();
 		if (!data.success) throw new Error(data.error || 'Failed to update module');
-		return data.data!;
+		return data.data;
 	},
 
 	async deleteModule(courseId: string, moduleId: number): Promise<void> {
@@ -502,7 +501,7 @@ export const adminCoursesApi = {
 		const res = await fetch(`/api/admin/courses/${courseId}/lessons`);
 		const data: ApiResponse<LessonListItem[]> = await res.json();
 		if (!data.success) throw new Error(data.error || 'Failed to fetch lessons');
-		return data.data!;
+		return data.data;
 	},
 
 	async getLesson(
@@ -512,7 +511,7 @@ export const adminCoursesApi = {
 		const res = await fetch(`/api/admin/courses/${courseId}/lessons/${lessonId}`);
 		const data: ApiResponse<{ lesson: Lesson; downloads: CourseDownload[] }> = await res.json();
 		if (!data.success) throw new Error(data.error || 'Failed to fetch lesson');
-		return data.data!;
+		return data.data;
 	},
 
 	async createLesson(courseId: string, input: CreateLessonRequest): Promise<Lesson> {
@@ -523,7 +522,7 @@ export const adminCoursesApi = {
 		});
 		const data: ApiResponse<Lesson> = await res.json();
 		if (!data.success) throw new Error(data.error || 'Failed to create lesson');
-		return data.data!;
+		return data.data;
 	},
 
 	async updateLesson(
@@ -538,7 +537,7 @@ export const adminCoursesApi = {
 		});
 		const data: ApiResponse<Lesson> = await res.json();
 		if (!data.success) throw new Error(data.error || 'Failed to update lesson');
-		return data.data!;
+		return data.data;
 	},
 
 	async deleteLesson(courseId: string, lessonId: string): Promise<void> {
@@ -564,7 +563,7 @@ export const adminCoursesApi = {
 		const res = await fetch(`/api/admin/courses/${courseId}/downloads`);
 		const data: ApiResponse<CourseDownload[]> = await res.json();
 		if (!data.success) throw new Error(data.error || 'Failed to fetch downloads');
-		return data.data!;
+		return data.data;
 	},
 
 	async createDownload(courseId: string, input: CreateDownloadRequest): Promise<CourseDownload> {
@@ -575,7 +574,7 @@ export const adminCoursesApi = {
 		});
 		const data: ApiResponse<CourseDownload> = await res.json();
 		if (!data.success) throw new Error(data.error || 'Failed to create download');
-		return data.data!;
+		return data.data;
 	},
 
 	async updateDownload(
@@ -590,7 +589,7 @@ export const adminCoursesApi = {
 		});
 		const data: ApiResponse<CourseDownload> = await res.json();
 		if (!data.success) throw new Error(data.error || 'Failed to update download');
-		return data.data!;
+		return data.data;
 	},
 
 	async deleteDownload(courseId: string, downloadId: number): Promise<void> {
@@ -638,14 +637,14 @@ export const coursesApi = {
 		const res = await fetch(`/api/courses?${searchParams}`);
 		const data: ApiResponse<PaginatedCourses> = await res.json();
 		if (!data.success) throw new Error(data.error || 'Failed to fetch courses');
-		return data.data!;
+		return data.data;
 	},
 
 	async get(slug: string): Promise<{ course: Course; modules: ModuleWithLessons[] }> {
 		const res = await fetch(`/api/courses/${slug}`);
 		const data: ApiResponse<{ course: Course; modules: ModuleWithLessons[] }> = await res.json();
 		if (!data.success) throw new Error(data.error || 'Failed to fetch course');
-		return data.data!;
+		return data.data;
 	}
 };
 
@@ -658,14 +657,14 @@ export const myCoursesApi = {
 		const res = await fetch('/api/my/courses');
 		const data: ApiResponse<EnrollmentWithCourse[]> = await res.json();
 		if (!data.success) throw new Error(data.error || 'Failed to fetch enrollments');
-		return data.data!;
+		return data.data;
 	},
 
 	async getPlayer(slug: string): Promise<CoursePlayerData> {
 		const res = await fetch(`/api/my/courses/${slug}/player`);
 		const data: ApiResponse<CoursePlayerData> = await res.json();
 		if (!data.success) throw new Error(data.error || 'Failed to fetch player data');
-		return data.data!;
+		return data.data;
 	},
 
 	async updateProgress(slug: string, input: UpdateProgressRequest): Promise<UserLessonProgress> {
@@ -676,7 +675,7 @@ export const myCoursesApi = {
 		});
 		const data: ApiResponse<UserLessonProgress> = await res.json();
 		if (!data.success) throw new Error(data.error || 'Failed to update progress');
-		return data.data!;
+		return data.data;
 	},
 
 	async getDownloads(slug: string): Promise<{ downloads: CourseDownload[]; is_enrolled: boolean }> {
@@ -684,6 +683,6 @@ export const myCoursesApi = {
 		const data: ApiResponse<{ downloads: CourseDownload[]; is_enrolled: boolean }> =
 			await res.json();
 		if (!data.success) throw new Error(data.error || 'Failed to fetch downloads');
-		return data.data!;
+		return data.data;
 	}
 };
