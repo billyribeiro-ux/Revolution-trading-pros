@@ -97,7 +97,7 @@ describe('useImageUpload', () => {
 		originalXHR = global.XMLHttpRequest;
 		global.XMLHttpRequest = function MockXMLHttpRequest() {
 			return mockXHR;
-		} as any;
+		} as unknown as typeof XMLHttpRequest;
 	});
 
 	afterEach(() => {
@@ -732,11 +732,11 @@ describe('useImageUpload', () => {
 			const mockInput = {
 				type: '',
 				accept: '',
-				onchange: null as any,
+				onchange: null,
 				click: mockClick
 			};
 
-			vi.spyOn(document, 'createElement').mockReturnValue(mockInput as any);
+			vi.spyOn(document, 'createElement').mockReturnValue(mockInput as unknown as HTMLInputElement);
 
 			hook.openFilePicker();
 
@@ -807,7 +807,7 @@ describe('createPresignedUploader', () => {
 
 		const mockXHR = {
 			open: vi.fn(),
-			send: vi.fn(function (this: any) {
+			send: vi.fn(function (this: { status: number; onload?: ((e: Event) => void) | null }) {
 				setTimeout(() => {
 					this.status = 200;
 					if (this.onload) this.onload(new Event('load'));
@@ -817,7 +817,11 @@ describe('createPresignedUploader', () => {
 			upload: {
 				addEventListener: vi.fn()
 			},
-			addEventListener: vi.fn(function (this: any, event: string, handler: () => void) {
+			addEventListener: vi.fn(function (
+				this: { onload?: (() => void) | null },
+				event: string,
+				handler: () => void
+			) {
 				if (event === 'load') {
 					this.onload = handler;
 				}
@@ -827,7 +831,7 @@ describe('createPresignedUploader', () => {
 
 		global.XMLHttpRequest = function MockXMLHttpRequest() {
 			return mockXHR;
-		} as any;
+		} as unknown as typeof XMLHttpRequest;
 	});
 
 	afterEach(() => {
@@ -945,7 +949,7 @@ describe('Edge Cases', () => {
 		const originalXHR = global.XMLHttpRequest;
 		global.XMLHttpRequest = function MockXMLHttpRequest() {
 			return mockXHR;
-		} as any;
+		} as unknown as typeof XMLHttpRequest;
 
 		try {
 			const onSuccess = vi.fn();
