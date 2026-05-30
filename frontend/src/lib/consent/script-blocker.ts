@@ -236,7 +236,10 @@ export function startScriptBlocking(): void {
 		tagName: K,
 		options?: ElementCreationOptions
 	): HTMLElementTagNameMap[K] {
-		const element = originalCreateElement!(tagName, options);
+		const element = (originalCreateElement ?? document.createElement.bind(document))(
+			tagName,
+			options
+		);
 
 		if (tagName.toLowerCase() === 'script') {
 			const script = element as HTMLScriptElement;

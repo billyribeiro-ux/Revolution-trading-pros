@@ -48,7 +48,11 @@
 		if (!browser) return;
 
 		// Memory (if available)
-		const perfMemory = (performance as any).memory;
+		const perfMemory = (
+			performance as Performance & {
+				memory?: { usedJSHeapSize: number; totalJSHeapSize: number; jsHeapSizeLimit: number };
+			}
+		).memory;
 		if (perfMemory) {
 			memory = {
 				used: Math.round(perfMemory.usedJSHeapSize / 1024 / 1024),

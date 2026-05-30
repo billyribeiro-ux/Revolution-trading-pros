@@ -10,7 +10,7 @@
  * @version 2.0.0
  */
 
-import type { VendorConfig } from '../types';
+import type { VendorConfig, ConsentCategory } from '../types';
 import { ga4Vendor } from './ga4';
 import { metaPixelVendor } from './meta-pixel';
 import { tiktokVendor } from './tiktok';
@@ -55,7 +55,7 @@ export function getVendor(id: string): VendorConfig | undefined {
  * Get all vendors that require a specific consent category.
  */
 export function getVendorsByCategory(category: string): VendorConfig[] {
-	return vendors.filter((v) => v.requiredCategories.includes(category as any));
+	return vendors.filter((v) => v.requiredCategories.includes(category as ConsentCategory));
 }
 
 /**

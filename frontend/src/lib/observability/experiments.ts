@@ -212,10 +212,9 @@ async function fetchExperimentConfig(): Promise<void> {
 					assignments: {
 						...state.assignments,
 						...Object.fromEntries(
-							Object.entries(data.experiments).map(([key, val]: [string, any]) => [
-								key,
-								val.variant
-							])
+							Object.entries(data.experiments as Record<string, { variant: string }>).map(
+								([key, val]) => [key, val.variant]
+							)
 						)
 					}
 				}));
