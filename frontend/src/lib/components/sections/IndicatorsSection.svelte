@@ -131,6 +131,8 @@
 	// ============================================================================
 	function drawChart() {
 		if (!chartCtx || !canvasRef || !chartRef) return;
+		// Stable non-null ref so the forEach closures below don't need `!`.
+		const ctx = chartCtx;
 
 		// Use CSS dimensions, not canvas dimensions (which are scaled by DPR)
 		const rect = chartRef.getBoundingClientRect();
@@ -177,18 +179,18 @@
 			const lowY = height - ((candle.low - minPrice) / priceRange) * height * 0.7 - height * 0.15;
 
 			// Wick
-			chartCtx!.strokeStyle = candle.bullish ? '#10b981' : '#ef4444';
-			chartCtx!.lineWidth = 1;
-			chartCtx!.beginPath();
-			chartCtx!.moveTo(x + candleWidth / 2, highY);
-			chartCtx!.lineTo(x + candleWidth / 2, lowY);
-			chartCtx!.stroke();
+			ctx.strokeStyle = candle.bullish ? '#10b981' : '#ef4444';
+			ctx.lineWidth = 1;
+			ctx.beginPath();
+			ctx.moveTo(x + candleWidth / 2, highY);
+			ctx.lineTo(x + candleWidth / 2, lowY);
+			ctx.stroke();
 
 			// Body
-			chartCtx!.fillStyle = candle.bullish ? '#10b981' : '#ef4444';
+			ctx.fillStyle = candle.bullish ? '#10b981' : '#ef4444';
 			const bodyTop = Math.min(openY, closeY);
 			const bodyHeight = Math.abs(closeY - openY) || 1;
-			chartCtx!.fillRect(x, bodyTop, candleWidth, bodyHeight);
+			ctx.fillRect(x, bodyTop, candleWidth, bodyHeight);
 		});
 
 		// Draw RSI line (bottom section)
@@ -200,8 +202,8 @@
 			rsiVisible.forEach((rsi, i) => {
 				const x = i * (candleWidth + gap) + candleWidth / 2;
 				const y = height - (rsi / 100) * height * 0.2 - 5;
-				if (i === 0) chartCtx!.moveTo(x, y);
-				else chartCtx!.lineTo(x, y);
+				if (i === 0) ctx.moveTo(x, y);
+				else ctx.lineTo(x, y);
 			});
 			chartCtx.stroke();
 
@@ -521,7 +523,7 @@
 								class="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg bg-zinc-800/80 backdrop-blur-sm border border-zinc-700/50"
 							>
 								<span class="text-[10px] sm:text-xs font-mono text-zinc-300">
-									{indicators[activeIndicator]!.name} Active
+									{indicators[activeIndicator]?.name} Active
 								</span>
 							</div>
 						</div>
