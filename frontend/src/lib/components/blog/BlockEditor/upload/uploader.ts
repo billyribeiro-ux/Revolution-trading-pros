@@ -222,8 +222,9 @@ export async function uploadImage(file: File, options: UploadOptions = {}): Prom
 		}
 	}
 
-	onError?.(lastError!);
-	throw lastError;
+	const finalError = lastError ?? new Error('Upload failed');
+	onError?.(finalError);
+	throw finalError;
 }
 
 // =============================================================================

@@ -107,7 +107,13 @@
 	let calendarMonth = $state(new Date());
 
 	// History
-	let scheduleHistory = $state<any[]>([]);
+	interface ScheduleHistoryItem {
+		id?: number | string;
+		event_type: string;
+		new_status?: string;
+		created_at: string;
+	}
+	let scheduleHistory = $state<ScheduleHistoryItem[]>([]);
 
 	// Common timezones
 	const commonTimezones = [

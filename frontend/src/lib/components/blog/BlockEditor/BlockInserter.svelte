@@ -8,6 +8,7 @@
 
 <script lang="ts">
 	import { fade, fly, scale } from 'svelte/transition';
+	import type { Component } from 'svelte';
 	import IconAlignLeft from '@tabler/icons-svelte-runes/icons/align-left';
 	import IconH1 from '@tabler/icons-svelte-runes/icons/h-1';
 	import IconQuote from '@tabler/icons-svelte-runes/icons/quote';
@@ -106,7 +107,7 @@
 	// Icon Mapping
 	// ==========================================================================
 
-	const BLOCK_ICONS: Record<string, any> = {
+	const BLOCK_ICONS: Record<string, Component<{ size?: number | string }>> = {
 		paragraph: IconAlignLeft,
 		heading: IconH1,
 		quote: IconQuote,

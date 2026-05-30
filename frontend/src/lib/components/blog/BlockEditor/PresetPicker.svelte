@@ -18,7 +18,7 @@
 
 <script lang="ts">
 	import { fade, fly, scale } from 'svelte/transition';
-	import { onMount } from 'svelte';
+	import { onMount, type Component } from 'svelte';
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
@@ -137,7 +137,10 @@
 	// Category Configuration
 	// ==========================================================================
 
-	const CATEGORY_CONFIG: Record<string, { name: string; icon: any; color: string }> = {
+	const CATEGORY_CONFIG: Record<
+		string,
+		{ name: string; icon: Component<{ size?: number | string }>; color: string }
+	> = {
 		default: { name: 'Default', icon: IconStarFilled, color: '#3b82f6' },
 		brand: { name: 'Brand', icon: IconPalette, color: '#8b5cf6' },
 		trading: { name: 'Trading', icon: IconChartBar, color: '#ef4444' },

@@ -140,7 +140,7 @@
 
 			// Update counters
 			if (counters[level - 1] !== undefined) {
-				counters[level - 1]!++;
+				counters[level - 1] += 1;
 			}
 			for (let i = level; i < counters.length; i++) {
 				counters[i] = 0;
