@@ -20,9 +20,9 @@ declare module 'lottie-web/build/player/lottie_light.min.js' {
 		renderer?: 'svg' | 'canvas' | 'html';
 		loop?: boolean;
 		autoplay?: boolean;
-		animationData?: any;
+		animationData?: unknown;
 		path?: string;
-		rendererSettings?: any;
+		rendererSettings?: unknown;
 	}
 
 	export function loadAnimation(params: AnimationConfig): AnimationItem;

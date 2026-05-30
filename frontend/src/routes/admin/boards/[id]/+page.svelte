@@ -237,10 +237,11 @@
 
 	async function updateTask(data: Partial<Task>) {
 		if (!selectedTask) return;
+		const target = selectedTask;
 
 		try {
-			const updated = await boardsAPI.updateTask(boardId, selectedTask.id, data);
-			tasks = tasks.map((t) => (t.id === selectedTask!.id ? updated : t));
+			const updated = await boardsAPI.updateTask(boardId, target.id, data);
+			tasks = tasks.map((t) => (t.id === target.id ? updated : t));
 			selectedTask = updated;
 		} catch (error) {
 			logger.error('[BoardPage] Failed to update task', { error });
@@ -254,11 +255,12 @@
 
 	async function confirmDeleteTask() {
 		if (!selectedTask) return;
+		const target = selectedTask;
 		showDeleteTaskModal = false;
 
 		try {
-			await boardsAPI.deleteTask(boardId, selectedTask.id);
-			tasks = tasks.filter((t) => t.id !== selectedTask!.id);
+			await boardsAPI.deleteTask(boardId, target.id);
+			tasks = tasks.filter((t) => t.id !== target.id);
 			closeTaskModal();
 		} catch (error) {
 			logger.error('[BoardPage] Failed to delete task', { error });
@@ -267,10 +269,11 @@
 
 	async function completeTask() {
 		if (!selectedTask) return;
+		const target = selectedTask;
 
 		try {
-			const updated = await boardsAPI.completeTask(boardId, selectedTask.id);
-			tasks = tasks.map((t) => (t.id === selectedTask!.id ? updated : t));
+			const updated = await boardsAPI.completeTask(boardId, target.id);
+			tasks = tasks.map((t) => (t.id === target.id ? updated : t));
 			selectedTask = updated;
 		} catch (error) {
 			logger.error('[BoardPage] Failed to complete task', { error });

@@ -11,10 +11,13 @@
 -->
 <script lang="ts">
 	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
+	import type { PageData } from './$types';
 
-	/** @type {{ data: any }} */
-	let props = $props();
-	let data = $derived(props.data);
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
 </script>
 
 <svelte:head>

@@ -2,7 +2,13 @@
 	import { onMount } from 'svelte';
 	import type { Form, FormField } from '$lib/api/forms';
 	import { submitForm } from '$lib/api/forms';
+	import type { JsonValue } from '$lib/api/_types';
 	import FormFieldRenderer from './FormFieldRenderer.svelte';
+
+	// Mirrors FormFieldRenderer's local `FieldValue` (File acceptable for
+	// file/image inputs even though the JSON submit payload narrows it back
+	// out at the upload boundary).
+	type FieldValue = JsonValue | File | undefined;
 
 	interface Props {
 		form: Form;
@@ -12,7 +18,7 @@
 
 	let props: Props = $props();
 
-	let formData: Record<string, any> = $state({});
+	let formData: Record<string, FieldValue> = $state({});
 	let errors: Record<string, string[]> = $state({});
 	let isSubmitting = $state(false);
 	let submitSuccess = $state(false);
@@ -104,7 +110,7 @@
 	}
 
 	// Handle field value change
-	function handleFieldChange(fieldName: string, value: any) {
+	function handleFieldChange(fieldName: string, value: FieldValue) {
 		formData[fieldName] = value;
 		updateVisibleFields();
 
@@ -127,12 +133,19 @@
 		submitMessage = '';
 
 		try {
-			// ICT 7 Fix: Include honeypot fields in submission for server-side spam detection
-			const submissionData = {
-				...formData,
+			// ICT 7 Fix: Include honeypot fields in submission for server-side spam detection.
+			// Narrow `formData` (Record<string, FieldValue>) to the JSON shape
+			// `submitForm` expects. File objects don't serialise to JSON and
+			// are handled by separate upload endpoints — drop them here so
+			// the submit body remains a plain JSON document.
+			const submissionData: Record<string, JsonValue> = {
 				_hp_website: honeypotWebsite,
 				_hp_email: honeypotEmail
 			};
+			for (const [key, value] of Object.entries(formData)) {
+				if (value === undefined || value instanceof File) continue;
+				submissionData[key] = value;
+			}
 
 			const result = await submitForm(props.form.slug, submissionData);
 

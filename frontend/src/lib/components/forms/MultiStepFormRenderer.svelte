@@ -3,7 +3,13 @@
 	import Icon from '$lib/components/Icon.svelte';
 	import type { Form, FormField } from '$lib/api/forms';
 	import { submitForm } from '$lib/api/forms';
+	import type { JsonValue } from '$lib/api/_types';
 	import FormFieldRenderer from './FormFieldRenderer.svelte';
+
+	// Mirrors FormFieldRenderer's local `FieldValue` (File acceptable for
+	// file/image inputs even though the JSON submit payload narrows it back
+	// out at the upload boundary).
+	type FieldValue = JsonValue | File | undefined;
 
 	interface FormStep {
 		id: number;
@@ -35,7 +41,7 @@
 	}: Props = $props();
 
 	// Form state
-	let formData: Record<string, any> = $state({});
+	let formData: Record<string, FieldValue> = $state({});
 	let errors: Record<string, string[]> = $state({});
 	let isSubmitting = $state(false);
 	let submitSuccess = $state(false);
@@ -244,7 +250,7 @@
 	}
 
 	// Handle field change
-	function handleFieldChange(fieldName: string, value: any) {
+	function handleFieldChange(fieldName: string, value: FieldValue) {
 		formData[fieldName] = value;
 		updateVisibleFields();
 
@@ -284,7 +290,7 @@
 				// Email validation
 				if (field.field_type === 'email') {
 					const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-					if (!emailRegex.test(value)) {
+					if (!emailRegex.test(String(value))) {
 						validationErrors.push('Please enter a valid email address');
 					}
 				}
@@ -308,7 +314,7 @@
 				// Pattern validation
 				if (field.validation.pattern) {
 					const regex = new RegExp(field.validation.pattern);
-					if (!regex.test(value)) {
+					if (!regex.test(String(value))) {
 						validationErrors.push(field.validation.pattern_message || 'Invalid format');
 					}
 				}
@@ -414,7 +420,17 @@
 		submitMessage = '';
 
 		try {
-			const result = await submitForm(form.slug, formData);
+			// Narrow `formData` (Record<string, FieldValue>) to the JSON shape
+			// `submitForm` expects. File objects don't serialise to JSON and
+			// are handled by separate upload endpoints — drop them here so
+			// the submit body remains a plain JSON document.
+			const submitPayload: Record<string, JsonValue> = {};
+			for (const [key, value] of Object.entries(formData)) {
+				if (value === undefined || value instanceof File) continue;
+				submitPayload[key] = value;
+			}
+
+			const result = await submitForm(form.slug, submitPayload);
 
 			if (result.success) {
 				submitSuccess = true;

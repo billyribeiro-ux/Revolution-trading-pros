@@ -2,9 +2,14 @@
 	import { onMount } from 'svelte';
 	import { IconSearch, IconFileText, IconEye } from '$lib/icons';
 	import SeoMetaEditor from '$lib/components/seo/SeoMetaEditor.svelte';
+	import type { ComponentProps } from 'svelte';
 
-	let entities: any[] = $state([]);
-	let selectedEntity: any = $state(null);
+	type SeoEntity = ComponentProps<typeof SeoMetaEditor>['entity'] & {
+		seo_score?: number;
+	};
+
+	let entities: SeoEntity[] = $state([]);
+	let selectedEntity: SeoEntity | null = $state(null);
 	let loading = $state(false);
 	let searchQuery = $state('');
 

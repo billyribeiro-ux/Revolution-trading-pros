@@ -36,7 +36,7 @@
 		IconBrandFacebook,
 		IconChevronDown
 	} from '$lib/icons';
-	import { productsApi, AdminApiError } from '$lib/api/admin';
+	import { productsApi, AdminApiError, type Product } from '$lib/api/admin';
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import { logger } from '$lib/utils/logger';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
@@ -246,7 +246,7 @@
 	let showRemoveModuleModal = $state(false);
 	let showLoadDraftModal = $state(false);
 	let pendingRemoveModuleId = $state<string | null>(null);
-	let pendingDraft = $state<{ course: any; date: Date } | null>(null);
+	let pendingDraft = $state<{ course: typeof course; date: Date } | null>(null);
 
 	function removeModule(moduleId: string) {
 		pendingRemoveModuleId = moduleId;
@@ -400,11 +400,12 @@
 		event.stopPropagation();
 
 		if (draggedModule) {
-			const fromIndex = course.modules.findIndex((m) => m.id === draggedModule!.id);
+			const dragged = draggedModule;
+			const fromIndex = course.modules.findIndex((m) => m.id === dragged.id);
 			if (fromIndex !== targetIndex && fromIndex !== -1) {
 				const newModules = [...course.modules];
 				newModules.splice(fromIndex, 1);
-				newModules.splice(targetIndex, 0, draggedModule);
+				newModules.splice(targetIndex, 0, dragged);
 				course.modules = newModules;
 				reorderModules();
 				hasUnsavedChanges = true;
@@ -421,11 +422,12 @@
 		if (draggedLesson) {
 			const module = course.modules.find((m) => m.id === moduleId);
 			if (module) {
-				const fromIndex = module.lessons.findIndex((l) => l.id === draggedLesson!.id);
+				const dragged = draggedLesson;
+				const fromIndex = module.lessons.findIndex((l) => l.id === dragged.id);
 				if (fromIndex !== targetIndex && fromIndex !== -1) {
 					const newLessons = [...module.lessons];
 					newLessons.splice(fromIndex, 1);
-					newLessons.splice(targetIndex, 0, draggedLesson);
+					newLessons.splice(targetIndex, 0, dragged);
 					module.lessons = newLessons;
 					reorderLessons(module);
 					course.modules = course.modules;
@@ -979,9 +981,10 @@
 			} else {
 				throw new Error(response.message || 'Upload failed - no URL returned');
 			}
-		} catch (error: any) {
+		} catch (error) {
 			logger.error('Failed to upload image', { error });
-			formError = error.message || 'Failed to upload image. Please try again.';
+			const err = error as { message?: string };
+			formError = err.message || 'Failed to upload image. Please try again.';
 
 			// Fallback: Use local preview if server upload fails
 			const url = URL.createObjectURL(file);
@@ -1036,9 +1039,10 @@
 			} else {
 				throw new Error(response.message || 'Upload failed - no URL returned');
 			}
-		} catch (error: any) {
+		} catch (error) {
 			logger.error('Failed to upload video', { error });
-			formError = error.message || 'Failed to upload video. Please try again.';
+			const err = error as { message?: string };
+			formError = err.message || 'Failed to upload video. Please try again.';
 
 			// Fallback: Use local preview if server upload fails
 			course.promo_video = URL.createObjectURL(file);
@@ -1364,7 +1368,7 @@
 
 		// Simulate API call
 		try {
-			const payload: any = {
+			const payload: Partial<Product> = {
 				name: course.name,
 				slug: course.slug || undefined,
 				type: 'course',
@@ -1433,7 +1437,7 @@
 					},
 					bonuses: course.bonuses,
 					resources: course.resources
-				}
+				} as unknown as Product['metadata']
 			};
 
 			await productsApi.create(payload);
@@ -1445,7 +1449,7 @@
 			// Show success and redirect
 			successMessage = 'Course created successfully! Redirecting...';
 			setTimeout(() => goto('/admin/courses'), 1500);
-		} catch (error: any) {
+		} catch (error) {
 			if (error instanceof AdminApiError) {
 				if (error.status === 401) {
 					goto('/login');
@@ -1464,7 +1468,8 @@
 					formError = error.message;
 				}
 			} else {
-				formError = error.message || 'Failed to save course. Please try again.';
+				const err = error as { message?: string };
+				formError = err.message || 'Failed to save course. Please try again.';
 			}
 			logger.error('Save error', { error });
 		} finally {

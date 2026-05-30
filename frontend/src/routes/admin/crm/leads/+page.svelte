@@ -234,12 +234,13 @@
 
 		// Sorting
 		result.sort((a, b) => {
-			let aVal: any = a[sortBy as keyof Lead];
-			let bVal: any = b[sortBy as keyof Lead];
+			type SortVal = string | number | null | undefined;
+			let aVal: SortVal = a[sortBy as keyof Lead] as SortVal;
+			let bVal: SortVal = b[sortBy as keyof Lead] as SortVal;
 
 			if (sortBy === 'full_name') {
-				aVal = aVal?.toLowerCase() || '';
-				bVal = bVal?.toLowerCase() || '';
+				aVal = (typeof aVal === 'string' ? aVal.toLowerCase() : '') || '';
+				bVal = (typeof bVal === 'string' ? bVal.toLowerCase() : '') || '';
 			}
 
 			if (aVal === undefined || aVal === null) aVal = sortOrder === 'asc' ? Infinity : -Infinity;

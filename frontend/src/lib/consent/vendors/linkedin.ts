@@ -38,10 +38,14 @@ function initializeLinkedIn(partnerId: string): void {
 
 	// Create lintrk stub if not present
 	if (!window.lintrk) {
-		window.lintrk = function (action: string, data?: Record<string, unknown>) {
-			window.lintrk!.q = window.lintrk!.q || [];
-			window.lintrk!.q.push([action, data]);
+		const lintrk: NonNullable<Window['lintrk']> = function (
+			action: string,
+			data?: Record<string, unknown>
+		) {
+			lintrk.q = lintrk.q || [];
+			lintrk.q.push([action, data]);
 		};
+		window.lintrk = lintrk;
 	}
 
 	// Load LinkedIn script
@@ -63,9 +67,9 @@ function initializeLinkedIn(partnerId: string): void {
 function processEventQueue(): void {
 	if (!window.lintrk || !linkedinReady) return;
 
-	while (eventQueue.length > 0) {
-		const { conversionId, data } = eventQueue.shift()!;
-		window.lintrk('track', { conversion_id: conversionId, ...data });
+	let queued: { conversionId: string; data?: Record<string, unknown> } | undefined;
+	while ((queued = eventQueue.shift())) {
+		window.lintrk('track', { conversion_id: queued.conversionId, ...queued.data });
 	}
 }
 

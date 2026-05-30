@@ -47,16 +47,25 @@
 	onMount(() => {
 		isClient = true;
 
-		if (typeof window !== 'undefined' && (window as any).richpanel) {
-			(window as any).richpanel.track('view_article', {
+		if (
+			typeof window !== 'undefined' &&
+			(window as unknown as { richpanel?: { track: (event: string, data: unknown) => void } })
+				.richpanel
+		) {
+			(
+				window as unknown as { richpanel: { track: (event: string, data: unknown) => void } }
+			).richpanel.track('view_article', {
 				id: 1142327,
 				name: 'Quickstart To Precision Trading',
 				url: window.location.href
 			});
 		}
 
-		if (typeof window !== 'undefined' && (window as any).gtag) {
-			(window as any).gtag('event', 'page_view', {
+		if (
+			typeof window !== 'undefined' &&
+			(window as unknown as { gtag?: (...args: unknown[]) => void }).gtag
+		) {
+			(window as unknown as { gtag: (...args: unknown[]) => void }).gtag('event', 'page_view', {
 				page_title: 'Quickstart To Precision Trading',
 				page_location: window.location.href,
 				page_path: window.location.pathname,

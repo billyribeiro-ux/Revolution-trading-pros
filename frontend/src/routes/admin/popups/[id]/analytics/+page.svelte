@@ -14,10 +14,56 @@
 		IconCalendar
 	} from '$lib/icons';
 
-	const popupId = parseInt(page.params.id!);
+	interface MetricTrend {
+		total: number;
+		today: number;
+		this_week: number;
+		this_month: number;
+		trend: 'up' | 'down' | 'stable';
+		trend_percentage: number;
+	}
+
+	interface ConversionRate {
+		overall: number;
+		today: number;
+		this_week: number;
+		this_month: number;
+	}
+
+	interface DeviceBreakdown {
+		desktop: number;
+		tablet: number;
+		mobile: number;
+	}
+
+	interface TopPageData {
+		url: string;
+		views: number;
+		conversions: number;
+		conversion_rate: number;
+	}
+
+	interface TimelinePoint {
+		date: string;
+		count: number;
+	}
+
+	interface PopupAnalyticsView {
+		views: MetricTrend;
+		conversions: MetricTrend;
+		conversion_rate: ConversionRate;
+		device_breakdown: DeviceBreakdown;
+		top_pages?: TopPageData[];
+		timeline: {
+			views?: TimelinePoint[];
+			conversions?: TimelinePoint[];
+		};
+	}
+
+	const popupId = parseInt(page.params.id ?? '');
 
 	let popup = $state<Popup | null>(null);
-	let analytics = $state<any>(null);
+	let analytics = $state<PopupAnalyticsView | null>(null);
 	let loading = $state(true);
 
 	onMount(async () => {
@@ -32,8 +78,8 @@
 			const popupResponse = await popupsApi.get(popupId);
 			popup = popupResponse.popup ?? null;
 
-			// Load analytics data - getAnalytics returns PopupAnalytics directly
-			analytics = await popupsApi.getAnalytics(popupId);
+			// Load analytics data - getAnalytics returns the analytics view shape at runtime
+			analytics = (await popupsApi.getAnalytics(popupId)) as unknown as PopupAnalyticsView;
 		} catch (error) {
 			console.error('Failed to load analytics:', error);
 			addToast({ type: 'error', message: 'Failed to load analytics' });
@@ -421,7 +467,8 @@
 									<div
 										class="bg-blue-600 h-4 rounded-full flex items-center justify-end pr-2"
 										style="width: {Math.max(
-											(day.count / Math.max(...analytics.timeline.views.map((d: any) => d.count))) *
+											(day.count /
+												Math.max(...analytics.timeline.views.map((d: TimelinePoint) => d.count))) *
 												100,
 											5
 										)}%"
@@ -451,7 +498,10 @@
 										class="bg-green-600 h-4 rounded-full flex items-center justify-end pr-2"
 										style="width: {Math.max(
 											(day.count /
-												Math.max(...analytics.timeline.conversions.map((d: any) => d.count), 1)) *
+												Math.max(
+													...analytics.timeline.conversions.map((d: TimelinePoint) => d.count),
+													1
+												)) *
 												100,
 											5
 										)}%"

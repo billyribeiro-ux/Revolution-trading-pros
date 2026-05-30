@@ -93,8 +93,8 @@ function initializeTikTok(pixelId: string): void {
 	}
 
 	// Load the pixel
-	window.ttq!.load(pixelId);
-	window.ttq!.page();
+	window.ttq?.load(pixelId);
+	window.ttq?.page();
 
 	tiktokReady = true;
 
@@ -110,9 +110,9 @@ function initializeTikTok(pixelId: string): void {
 function processEventQueue(): void {
 	if (!window.ttq || !tiktokReady) return;
 
-	while (eventQueue.length > 0) {
-		const { event, data } = eventQueue.shift()!;
-		window.ttq.track(event, data);
+	let queued: { event: string; data?: Record<string, unknown> } | undefined;
+	while ((queued = eventQueue.shift())) {
+		window.ttq.track(queued.event, queued.data);
 	}
 }
 

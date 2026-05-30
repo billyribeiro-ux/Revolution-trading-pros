@@ -38,13 +38,14 @@
 
 	function renderHeatmap() {
 		if (!ctx) return;
+		const c = ctx;
 
 		// Clear canvas
-		ctx.clearRect(0, 0, width, height);
+		c.clearRect(0, 0, width, height);
 
 		// Create gradient for each data point
 		data.forEach((point) => {
-			const gradient = ctx!.createRadialGradient(
+			const gradient = c.createRadialGradient(
 				point.x,
 				point.y,
 				0,
@@ -65,8 +66,8 @@
 			gradient.addColorStop(0.5, `rgba(${color}, ${point.intensity * 0.5})`);
 			gradient.addColorStop(1, `rgba(${color}, 0)`);
 
-			ctx!.fillStyle = gradient;
-			ctx!.fillRect(0, 0, width, height);
+			c.fillStyle = gradient;
+			c.fillRect(0, 0, width, height);
 		});
 	}
 

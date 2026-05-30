@@ -53,6 +53,15 @@
 		trial_days: number;
 	}
 
+	interface ProrationPreview {
+		proration: {
+			current_plan_credit: number;
+			new_plan_cost: number;
+			proration_amount: number;
+		};
+		summary: string;
+	}
+
 	// State
 	let subscriptions = $state<Subscription[]>([]);
 	let availablePlans = $state<Plan[]>([]);
@@ -67,7 +76,7 @@
 	let cancelReason = $state('');
 	let cancelImmediately = $state(false);
 	let selectedNewPlanId = $state<number | null>(null);
-	let prorationPreview = $state<any>(null);
+	let prorationPreview = $state<ProrationPreview | null>(null);
 	let processingAction = $state(false);
 
 	onMount(async () => {
@@ -149,8 +158,8 @@
 			await loadData();
 
 			setTimeout(() => (successMessage = ''), 5000);
-		} catch (err: any) {
-			error = err.message;
+		} catch (err) {
+			error = err instanceof Error ? err.message : 'Failed to cancel subscription';
 		} finally {
 			processingAction = false;
 		}
@@ -216,8 +225,8 @@
 			await loadData();
 
 			setTimeout(() => (successMessage = ''), 5000);
-		} catch (err: any) {
-			error = err.message;
+		} catch (err) {
+			error = err instanceof Error ? err.message : 'Failed to change plan';
 		} finally {
 			processingAction = false;
 		}
@@ -236,8 +245,8 @@
 			const data = await res.json();
 			if (!res.ok) throw new Error(data.error || 'Failed to open billing portal');
 			window.location.href = data.url;
-		} catch (err: any) {
-			error = err.message;
+		} catch (err) {
+			error = err instanceof Error ? err.message : 'Failed to open billing portal';
 			openingPortal = false;
 		}
 	}
@@ -274,8 +283,8 @@
 			await loadData();
 
 			setTimeout(() => (successMessage = ''), 5000);
-		} catch (err: any) {
-			error = err.message;
+		} catch (err) {
+			error = err instanceof Error ? err.message : 'Failed to reactivate';
 		} finally {
 			processingAction = false;
 		}

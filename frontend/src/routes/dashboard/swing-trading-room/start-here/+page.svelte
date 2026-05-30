@@ -665,7 +665,10 @@
 
 <!-- Weekly Watchlist Section - SSR pre-fetched for 0ms loading -->
 <div class="dashboard__content-section u--background-color-white">
-	<WeeklyWatchlist data={(data as { watchlist?: any }).watchlist} />
+	<WeeklyWatchlist
+		data={(data as { watchlist?: import('svelte').ComponentProps<typeof WeeklyWatchlist>['data'] })
+			.watchlist}
+	/>
 </div>
 
 <style>

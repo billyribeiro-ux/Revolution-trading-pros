@@ -122,7 +122,7 @@ describe('useBlockValidation', () => {
 
 		it('validates required fields - fails for null value', () => {
 			const block = createMockBlock({
-				content: { text: null as any }
+				content: { text: null as unknown as string }
 			});
 
 			const rules: ValidationRule[] = [
@@ -1216,7 +1216,7 @@ describe('PRESET_RULES', () => {
 describe('BLOCK_VALIDATION_RULES', () => {
 	it('has rules for image blocks', () => {
 		expect(BLOCK_VALIDATION_RULES.image).toBeDefined();
-		expect(BLOCK_VALIDATION_RULES.image!.length).toBeGreaterThan(0);
+		expect(BLOCK_VALIDATION_RULES.image?.length).toBeGreaterThan(0);
 	});
 
 	it('has rules for tradingIdea blocks', () => {

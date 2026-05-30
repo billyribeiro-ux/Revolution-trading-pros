@@ -53,6 +53,7 @@
 	import { goto } from '$app/navigation';
 	import { usersApi, AdminApiError } from '$lib/api/admin';
 	import { logger } from '$lib/utils/logger';
+	import type { IconComponent } from '$lib/icons';
 	import {
 		IconCheck,
 		IconUser,
@@ -136,7 +137,7 @@
 		// Meta
 		notes: string;
 		tags: string[];
-		custom_fields: Record<string, any>;
+		custom_fields: Record<string, unknown>;
 	}
 
 	interface AccessScope {
@@ -180,11 +181,26 @@
 		name: string;
 		key: 'admin' | 'trader' | 'member';
 		description: string;
-		icon: any;
+		icon: IconComponent;
 		color: string;
 		permissions: string[];
 		restrictions: string[];
 		accessLevel: number;
+	}
+
+	// Lookup option shapes returned by the organization APIs. Only the fields
+	// actually read in this component are typed; extras are tolerated.
+	interface LookupOption {
+		id: string;
+		name?: string;
+	}
+
+	interface LocationOption extends LookupOption {
+		timezone?: string;
+	}
+
+	interface OnboardingPlanOption extends LookupOption {
+		duration?: number;
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -356,12 +372,12 @@
 	});
 
 	// Lookup data (Svelte 5 $state)
-	let departments = $state<any[]>([]);
-	let teams = $state<any[]>([]);
-	let managers = $state<any[]>([]);
-	let locations = $state<any[]>([]);
-	let trainingModules = $state<any[]>([]);
-	let onboardingPlans = $state<any[]>([]);
+	let departments = $state<LookupOption[]>([]);
+	let teams = $state<LookupOption[]>([]);
+	let managers = $state<LookupOption[]>([]);
+	let locations = $state<LocationOption[]>([]);
+	let trainingModules = $state<LookupOption[]>([]);
+	let onboardingPlans = $state<OnboardingPlanOption[]>([]);
 
 	// Progress calculation
 	let completionPercentage = $derived(calculateCompletion());
@@ -1001,11 +1017,11 @@
 		};
 	}
 
-	async function sendNotifications(_user: any) {
+	async function sendNotifications(_user: unknown) {
 		// FIX-2026-04-26: dropped console.log per audit §E. TODO: wire to notification svc.
 	}
 
-	function trackUserCreation(_user: any) {
+	function trackUserCreation(_user: unknown) {
 		// FIX-2026-04-26: dropped console.log per audit §E. TODO: wire to analytics.
 	}
 

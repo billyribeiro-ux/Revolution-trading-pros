@@ -10,9 +10,22 @@
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import { logger } from '$lib/utils/logger';
 
+	interface GscStatus {
+		connected?: boolean;
+		site_info?: {
+			site_url?: string;
+			permission_level?: string;
+		};
+	}
+
+	interface GscSite {
+		site_url: string;
+		permission_level?: string;
+	}
+
 	// State using Svelte 5 runes
-	let status = $state<any>(null);
-	let sites = $state<any[]>([]);
+	let status = $state<GscStatus | null>(null);
+	let sites = $state<GscSite[]>([]);
 	let _loading = $state(false);
 	let importing = $state(false);
 
@@ -26,7 +39,7 @@
 			const response = await fetch('/api/seo/gsc/status');
 			status = await response.json();
 
-			if (status.connected) {
+			if (status?.connected) {
 				loadSites();
 			}
 		} catch (error) {

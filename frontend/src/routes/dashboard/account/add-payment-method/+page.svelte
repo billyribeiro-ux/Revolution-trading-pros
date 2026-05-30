@@ -11,13 +11,36 @@
 		error?: string;
 	}
 
+	// Minimal local typings for the slice of Stripe.js this page uses. The full
+	// Stripe SDK types are not installed; we only need a few methods.
+	interface StripeCardElement {
+		mount(selector: string): void;
+		on(event: 'change', handler: (event: StripeCardChangeEvent) => void): void;
+	}
+	interface StripeCardChangeEvent {
+		error?: { message: string };
+	}
+	interface StripeElements {
+		create(type: 'card', options?: Record<string, unknown>): StripeCardElement;
+	}
+	interface StripePaymentMethod {
+		id: string;
+	}
+	interface StripeInstance {
+		elements(): StripeElements;
+		createPaymentMethod(params: Record<string, unknown>): Promise<{
+			error?: { message: string };
+			paymentMethod: StripePaymentMethod;
+		}>;
+	}
+	type StripeConstructor = (publishableKey: string) => StripeInstance;
+
 	let props: { data: PageData; form?: ActionData } = $props();
 	let data = $derived(props.data);
 	let form = $derived(props.form);
 
-	let stripe: any = $state(null);
-	let elements: any = $state(null);
-	let cardElement: any = $state(null);
+	let stripe: StripeInstance | null = $state(null);
+	let cardElement: StripeCardElement | null = $state(null);
 	let isLoading = $state(false);
 	let errorMessage = $state('');
 	let setAsDefault = $state(true);
@@ -38,11 +61,13 @@
 			.then((res) => res.json())
 			.then((config) => {
 				// Support both snake_case and camelCase for compatibility
-				stripe = (window as any).Stripe(config.publishableKey || config.publishable_key);
-				elements = stripe.elements();
+				const stripeCtor = (window as unknown as { Stripe: StripeConstructor }).Stripe;
+				const stripeInstance = stripeCtor(config.publishableKey || config.publishable_key);
+				stripe = stripeInstance;
+				const elementsInstance = stripeInstance.elements();
 
 				// Create card element
-				cardElement = elements.create('card', {
+				const card = elementsInstance.create('card', {
 					style: {
 						base: {
 							fontSize: '15px',
@@ -59,9 +84,10 @@
 					}
 				});
 
-				cardElement.mount('#card-element');
+				cardElement = card;
+				card.mount('#card-element');
 
-				cardElement.on('change', (event: any) => {
+				card.on('change', (event: StripeCardChangeEvent) => {
 					if (event.error) {
 						errorMessage = event.error.message;
 					} else {
@@ -80,7 +106,9 @@
 	async function handleSubmit(event: SubmitEvent) {
 		event.preventDefault();
 
-		if (!stripe || !cardElement) {
+		const stripeInstance = stripe;
+		const card = cardElement;
+		if (!stripeInstance || !card) {
 			errorMessage = 'Payment form not loaded. Please refresh the page.';
 			return;
 		}
@@ -90,9 +118,9 @@
 
 		try {
 			// Create payment method
-			const { error, paymentMethod } = await stripe.createPaymentMethod({
+			const { error, paymentMethod } = await stripeInstance.createPaymentMethod({
 				type: 'card',
-				card: cardElement,
+				card,
 				billing_details: {
 					email: data.user.email
 				}

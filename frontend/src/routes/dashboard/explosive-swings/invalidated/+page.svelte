@@ -18,6 +18,16 @@
 		invalidatedAt: string;
 	}
 
+	interface InvalidatedTradeRow {
+		id: number;
+		ticker: string;
+		entry_date: string;
+		entry_price: number;
+		setup?: string;
+		invalidation_reason?: string;
+		updated_at: string;
+	}
+
 	let trades = $state<InvalidatedTrade[]>([]);
 	let isLoading = $state(true);
 	let error = $state<string | null>(null);
@@ -43,7 +53,7 @@
 			// API returns { data: [...], meta: {...} }
 			const data = result.data || [];
 
-			trades = data.map((t: any) => ({
+			trades = (data as InvalidatedTradeRow[]).map((t) => ({
 				id: t.id,
 				ticker: t.ticker,
 				entryDate: t.entry_date,

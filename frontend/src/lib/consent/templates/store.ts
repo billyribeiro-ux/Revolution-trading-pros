@@ -101,7 +101,11 @@ export const activeTemplate = derived(
 		// Get from registry
 		const baseTemplate = getTemplate($config.templateId);
 		if (!baseTemplate) {
-			return getTemplate(DEFAULT_TEMPLATE_ID)!;
+			const defaultTemplate = getTemplate(DEFAULT_TEMPLATE_ID);
+			if (!defaultTemplate) {
+				throw new Error(`Default template "${DEFAULT_TEMPLATE_ID}" not found in registry`);
+			}
+			return defaultTemplate;
 		}
 
 		return applyCustomization(baseTemplate, $config.customization);
@@ -227,10 +231,72 @@ interface BackendBannerTemplate {
 }
 
 /**
+ * Raw template payload as returned by the Rust API (snake_case columns).
+ * Only the fields read by `convertBackendTemplate` are modelled; all are
+ * optional because the backend may omit nulls.
+ */
+interface RawBackendTemplate {
+	id: number | string;
+	name: string;
+	description?: string;
+	category?: string;
+	layout_type?: string;
+	position?: string;
+	is_system?: boolean;
+	background_color?: string;
+	text_color?: string;
+	link_color?: string;
+	title_color?: string;
+	border_color?: string;
+	accept_btn_bg?: string;
+	accept_btn_text?: string;
+	reject_btn_bg?: string;
+	reject_btn_text?: string;
+	settings_btn_bg?: string;
+	settings_btn_text?: string;
+	toggle_active_color?: string;
+	toggle_inactive_color?: string;
+	font_family?: string;
+	title_font_size?: number;
+	title_font_weight?: number;
+	body_font_size?: number;
+	body_font_weight?: number;
+	btn_font_size?: number;
+	btn_font_weight?: number;
+	padding_top?: number;
+	padding_bottom?: number;
+	padding_left?: number;
+	padding_right?: number;
+	btn_padding_x?: number;
+	btn_padding_y?: number;
+	btn_margin?: number;
+	btn_border_radius?: number;
+	container_border_radius?: number;
+	container_max_width?: number;
+	animation_type?: string;
+	animation_duration?: number;
+	title?: string;
+	accept_btn_label?: string;
+	reject_btn_label?: string;
+	settings_btn_label?: string;
+	privacy_link_text?: string;
+	cookie_link_text?: string;
+	show_reject_btn?: boolean;
+	show_settings_btn?: boolean;
+	show_privacy_link?: boolean;
+	show_cookie_link?: boolean;
+	close_on_scroll?: boolean;
+	close_on_scroll_distance?: number;
+	show_close_btn?: boolean;
+	block_page_scroll?: boolean;
+	show_powered_by?: boolean;
+}
+
+/**
  * Convert backend template format to frontend format
  * Note: Returns BackendBannerTemplate which has a different structure than BannerTemplate
  */
-function convertBackendTemplate(backendTemplate: any): BackendBannerTemplate {
+function convertBackendTemplate(backendTemplate: RawBackendTemplate): BackendBannerTemplate {
 	return {
 		id: backendTemplate.id.toString(),
 		name: backendTemplate.name,
@@ -306,65 +372,83 @@ function convertBackendTemplate(backendTemplate: any): BackendBannerTemplate {
 }
 
 /**
- * Convert frontend template to backend API format
- * Accepts any template-like object and extracts relevant properties
+ * Convert frontend template to backend API format.
+ *
+ * Accepts either a frontend `BannerTemplate` or a (partial)
+ * `BackendBannerTemplate`. Their nested sub-objects differ in shape, so each
+ * group is narrowed to an open `Record<string, unknown>` before reading the
+ * individual fields with optional chaining (mirroring the prior `any` access
+ * without losing type safety on the call sites).
  */
 function convertToBackendFormat(
-	template: Partial<BackendBannerTemplate> | BannerTemplate | any
-): any {
+	template: Partial<BackendBannerTemplate> | BannerTemplate
+): Record<string, unknown> {
+	const t = template as Record<string, unknown>;
+	const asRecord = (value: unknown): Record<string, unknown> | undefined =>
+		value && typeof value === 'object' ? (value as Record<string, unknown>) : undefined;
+
+	const colors = asRecord(t.colors);
+	const typography = asRecord(t.typography);
+	const spacing = asRecord(t.spacing);
+	const padding = asRecord(spacing?.padding);
+	const buttonPadding = asRecord(spacing?.buttonPadding);
+	const animation = asRecord(t.animation);
+	const copy = asRecord(t.copy);
+	const options = asRecord(t.options);
+
 	return {
-		name: template.name,
-		description: template.description,
-		category: template.category,
-		layout_type: template.layout,
-		position: template.position,
-		background_color: template.colors?.background,
-		text_color: template.colors?.text,
-		link_color: template.colors?.link,
-		title_color: template.colors?.title,
-		border_color: template.colors?.border,
-		accept_btn_bg: template.colors?.acceptBg,
-		accept_btn_text: template.colors?.acceptText,
-		reject_btn_bg: template.colors?.rejectBg,
-		reject_btn_text: template.colors?.rejectText,
-		settings_btn_bg: template.colors?.settingsBg,
-		settings_btn_text: template.colors?.settingsText,
-		toggle_active_color: template.colors?.toggleActive,
-		toggle_inactive_color: template.colors?.toggleInactive,
-		font_family: template.typography?.fontFamily,
-		title_font_size: template.typography?.titleSize,
-		title_font_weight: template.typography?.titleWeight,
-		body_font_size: template.typography?.bodySize,
-		body_font_weight: template.typography?.bodyWeight,
-		btn_font_size: template.typography?.buttonSize,
-		btn_font_weight: template.typography?.buttonWeight,
-		padding_top: template.spacing?.padding?.top,
-		padding_bottom: template.spacing?.padding?.bottom,
-		padding_left: template.spacing?.padding?.left,
-		padding_right: template.spacing?.padding?.right,
-		btn_padding_x: template.spacing?.buttonPadding?.x,
-		btn_padding_y: template.spacing?.buttonPadding?.y,
-		btn_margin: template.spacing?.buttonMargin,
-		btn_border_radius: template.spacing?.borderRadius,
-		container_border_radius: template.spacing?.containerRadius,
-		container_max_width: template.spacing?.maxWidth,
-		animation_type: template.animation?.type,
-		animation_duration: template.animation?.duration,
-		title: template.copy?.title,
-		accept_btn_label: template.copy?.acceptButton,
-		reject_btn_label: template.copy?.rejectButton,
-		settings_btn_label: template.copy?.settingsButton,
-		privacy_link_text: template.copy?.privacyLinkText,
-		cookie_link_text: template.copy?.cookieLinkText,
-		show_reject_btn: template.options?.showRejectButton,
-		show_settings_btn: template.options?.showSettingsButton,
-		show_privacy_link: template.options?.showPrivacyLink,
-		show_cookie_link: template.options?.showCookieLink,
-		close_on_scroll: template.options?.closeOnScroll,
-		close_on_scroll_distance: template.options?.closeOnScrollDistance,
-		show_close_btn: template.options?.showCloseButton,
-		block_page_scroll: template.options?.blockPageScroll,
-		show_powered_by: template.options?.showPoweredBy
+		name: t.name,
+		description: t.description,
+		category: t.category,
+		layout_type: t.layout,
+		position: t.position,
+		background_color: colors?.background,
+		text_color: colors?.text,
+		link_color: colors?.link,
+		title_color: colors?.title,
+		border_color: colors?.border,
+		accept_btn_bg: colors?.acceptBg,
+		accept_btn_text: colors?.acceptText,
+		reject_btn_bg: colors?.rejectBg,
+		reject_btn_text: colors?.rejectText,
+		settings_btn_bg: colors?.settingsBg,
+		settings_btn_text: colors?.settingsText,
+		toggle_active_color: colors?.toggleActive,
+		toggle_inactive_color: colors?.toggleInactive,
+		font_family: typography?.fontFamily,
+		title_font_size: typography?.titleSize,
+		title_font_weight: typography?.titleWeight,
+		body_font_size: typography?.bodySize,
+		body_font_weight: typography?.bodyWeight,
+		btn_font_size: typography?.buttonSize,
+		btn_font_weight: typography?.buttonWeight,
+		padding_top: padding?.top,
+		padding_bottom: padding?.bottom,
+		padding_left: padding?.left,
+		padding_right: padding?.right,
+		btn_padding_x: buttonPadding?.x,
+		btn_padding_y: buttonPadding?.y,
+		btn_margin: spacing?.buttonMargin,
+		btn_border_radius: spacing?.borderRadius,
+		container_border_radius: spacing?.containerRadius,
+		container_max_width: spacing?.maxWidth,
+		animation_type: animation?.type,
+		animation_duration: animation?.duration,
+		title: copy?.title,
+		accept_btn_label: copy?.acceptButton,
+		reject_btn_label: copy?.rejectButton,
+		settings_btn_label: copy?.settingsButton,
+		privacy_link_text: copy?.privacyLinkText,
+		cookie_link_text: copy?.cookieLinkText,
+		show_reject_btn: options?.showRejectButton,
+		show_settings_btn: options?.showSettingsButton,
+		show_privacy_link: options?.showPrivacyLink,
+		show_cookie_link: options?.showCookieLink,
+		close_on_scroll: options?.closeOnScroll,
+		close_on_scroll_distance: options?.closeOnScrollDistance,
+		show_close_btn: options?.showCloseButton,
+		block_page_scroll: options?.blockPageScroll,
+		show_powered_by: options?.showPoweredBy
 	};
 }
 

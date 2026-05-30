@@ -126,6 +126,7 @@ export interface Popup {
 	// downstream errors across `admin/popups/{new,[id]}/+page.svelte` and the
 	// popup-demo routes — out of R23-A's scope. Keep `any` here and tighten
 	// in a dedicated sweep after the admin-popup editor is rewritten.
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- legacy WP popup config blob; narrowing cascades ~110 errors (R23-A)
 	content: any;
 	successMessage?: string;
 	variantTitle?: string;
@@ -136,7 +137,9 @@ export interface Popup {
 	closeOnEscape?: boolean;
 
 	// Design — see comment above; left as `any` until the admin editor migrates.
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- legacy WP popup config blob (R23-A)
 	design: any;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- legacy WP popup config blob (R23-A)
 	animation: any;
 	attentionAnimation?: {
 		enabled: boolean;
@@ -218,8 +221,11 @@ export interface Popup {
 	// expected by `admin/popups/new` and `admin/popups/[id]/edit` pages —
 	// narrowing them surfaces ~20 downstream errors. Out of R23-A's scope.
 	priority?: number;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- legacy WP popup rules blob; narrowing cascades ~20 errors (R23-A)
 	trigger_rules?: any;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- legacy WP popup rules blob (R23-A)
 	display_rules?: any;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- legacy WP popup rules blob (R23-A)
 	frequency_rules?: any;
 	show_close_button?: boolean;
 	close_on_overlay_click?: boolean;

@@ -453,12 +453,13 @@
 	// Connect service - ICT 7: Use adminFetch for authenticated requests
 	async function connectService() {
 		if (!selectedService) return;
+		const service = selectedService;
 
 		isConnecting = true;
 		testResult = null;
 
 		// Validate required fields
-		for (const field of selectedService.fields) {
+		for (const field of service.fields) {
 			if (field.required && !credentialValues[field.key]) {
 				testResult = { success: false, error: `${field.label} is required` };
 				isConnecting = false;
@@ -468,7 +469,7 @@
 
 		try {
 			const startTime = performance.now();
-			const data = await adminFetch(`/api/admin/connections/${selectedService.key}/connect`, {
+			const data = await adminFetch(`/api/admin/connections/${service.key}/connect`, {
 				method: 'POST',
 				body: JSON.stringify({
 					credentials: credentialValues,
@@ -479,7 +480,7 @@
 
 			if (data.success) {
 				// Update local state
-				const idx = allServices.findIndex((s) => s.key === selectedService!.key);
+				const idx = allServices.findIndex((s) => s.key === service.key);
 				if (idx !== -1) {
 					allServices[idx] = {
 						...allServices[idx],
@@ -490,7 +491,7 @@
 				}
 
 				showConnectModal = false;
-				toastStore.success(`${selectedService.name} connected successfully! (${latency}ms)`);
+				toastStore.success(`${service.name} connected successfully! (${latency}ms)`);
 				await fetchServices();
 			} else {
 				testResult = {
@@ -536,18 +537,18 @@
 	// Disconnect service - ICT 7: Use adminFetch for authenticated requests
 	async function disconnectService() {
 		if (!disconnectingService) return;
+		const service = disconnectingService;
 
 		isDisconnecting = true;
 
 		try {
-			const data = await adminFetch(
-				`/api/admin/connections/${disconnectingService.key}/disconnect`,
-				{ method: 'POST' }
-			);
+			const data = await adminFetch(`/api/admin/connections/${service.key}/disconnect`, {
+				method: 'POST'
+			});
 
 			if (data.success) {
 				// Update local state
-				const idx = allServices.findIndex((s) => s.key === disconnectingService!.key);
+				const idx = allServices.findIndex((s) => s.key === service.key);
 				if (idx !== -1) {
 					allServices[idx] = {
 						...allServices[idx],
@@ -558,7 +559,7 @@
 				}
 
 				showDisconnectConfirm = false;
-				toastStore.success(`${disconnectingService.name} disconnected successfully`);
+				toastStore.success(`${service.name} disconnected successfully`);
 				await fetchServices();
 			} else {
 				toastStore.error(data.error || 'Failed to disconnect');

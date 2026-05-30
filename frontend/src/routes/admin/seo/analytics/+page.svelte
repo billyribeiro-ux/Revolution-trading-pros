@@ -11,10 +11,39 @@
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 	import { logger } from '$lib/utils/logger';
 
+	interface SeoStats {
+		total_impressions?: number;
+		total_clicks?: number;
+		avg_ctr?: number;
+		avg_position?: number | null;
+	}
+
+	interface SeoTopPage {
+		url: string;
+		total_impressions?: number;
+		total_clicks?: number;
+		avg_ctr?: number;
+		avg_position?: number | null;
+	}
+
+	interface SeoComparisonChange {
+		direction: string;
+		percentage: number;
+	}
+
+	interface SeoComparison {
+		change?: {
+			impressions?: SeoComparisonChange;
+			clicks?: SeoComparisonChange;
+			ctr?: SeoComparisonChange;
+			position?: SeoComparisonChange;
+		};
+	}
+
 	let connectionLoading = $state(true);
-	let stats: any = $state(null);
-	let topPages: any[] = $state([]);
-	let comparison: any = $state(null);
+	let stats: SeoStats | null = $state(null);
+	let topPages: SeoTopPage[] = $state([]);
+	let comparison: SeoComparison | null = $state(null);
 	let loading = $state(false);
 
 	let dateRange = {
@@ -172,7 +201,7 @@
 
 				<div class="metric-card">
 					<div class="metric-label">Average CTR</div>
-					<div class="metric-value">{(stats.avg_ctr * 100).toFixed(2)}%</div>
+					<div class="metric-value">{((stats.avg_ctr ?? 0) * 100).toFixed(2)}%</div>
 					{#if comparison?.change?.ctr}
 						{@const CtrIcon = getTrendIcon(comparison.change.ctr.direction)}
 						<div class="metric-change {getTrendClass(comparison.change.ctr.direction)}">
@@ -218,7 +247,7 @@
 									</td>
 									<td class="number">{formatNumber(page.total_impressions || 0)}</td>
 									<td class="number">{formatNumber(page.total_clicks || 0)}</td>
-									<td class="number">{(page.avg_ctr * 100).toFixed(2)}%</td>
+									<td class="number">{((page.avg_ctr ?? 0) * 100).toFixed(2)}%</td>
 									<td class="number">{page.avg_position ? page.avg_position.toFixed(1) : '—'}</td>
 								</tr>
 							{/each}

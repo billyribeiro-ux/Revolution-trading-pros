@@ -535,17 +535,15 @@
 		announceToScreenReader(message);
 	}
 
-	function trackEvent(eventName: string, data: Record<string, any> = {}): void {
+	function trackEvent(eventName: string, data: Record<string, unknown> = {}): void {
 		if (!browser) return;
 
 		// Send to analytics service
 		try {
-			if ('gtag' in window) {
-				(window as any).gtag('event', eventName, {
-					event_category: 'admin_toolbar',
-					...data
-				});
-			}
+			window.gtag?.('event', eventName, {
+				event_category: 'admin_toolbar',
+				...data
+			});
 		} catch (error) {
 			logger.error('[Analytics] Failed to track event', { error });
 		}

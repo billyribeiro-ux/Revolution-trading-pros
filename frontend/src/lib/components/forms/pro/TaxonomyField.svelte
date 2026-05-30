@@ -111,9 +111,11 @@
 		});
 
 		terms.forEach((term) => {
-			const node = map.get(term.id)!;
-			if (term.parent && map.has(term.parent)) {
-				map.get(term.parent)!.children!.push(node);
+			const node = map.get(term.id);
+			if (!node) return;
+			const parent = term.parent && map.has(term.parent) ? map.get(term.parent) : undefined;
+			if (parent) {
+				(parent.children ??= []).push(node);
 			} else {
 				roots.push(node);
 			}

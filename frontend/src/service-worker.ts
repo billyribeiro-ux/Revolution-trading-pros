@@ -47,9 +47,9 @@ const sw = self as unknown as ServiceWorkerGlobalScope;
 const IS_PRODUCTION = true; // Set to false for debugging
 // Production-safe by construction: short-circuits on IS_PRODUCTION.
 // eslint-disable-next-line no-console
-const log = (...args: any[]) => !IS_PRODUCTION && console.log(...args);
-const warn = (...args: any[]) => !IS_PRODUCTION && console.warn(...args);
-const error = (...args: any[]) => console.error(...args); // Always log errors
+const log = (...args: unknown[]) => !IS_PRODUCTION && console.log(...args);
+const warn = (...args: unknown[]) => !IS_PRODUCTION && console.warn(...args);
+const error = (...args: unknown[]) => console.error(...args); // Always log errors
 
 // Cache name includes version to ensure fresh caches on new deployments
 const CACHE_NAME = `cache-${version}`;

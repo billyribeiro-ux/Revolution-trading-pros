@@ -19,8 +19,18 @@
 
 	let { formId }: Props = $props();
 
+	// The backend's submission-stats endpoint returns these summary counts.
+	// (The shared `FormAnalytics` type models a different, richer payload, so we
+	// describe only the fields this template renders.)
+	interface SubmissionStats {
+		total_submissions?: number;
+		unread_count?: number;
+		starred_count?: number;
+		recent_submissions?: number;
+	}
+
 	let submissions: FormSubmission[] = $state([]);
-	let stats: any = $state(null);
+	let stats: SubmissionStats | null = $state(null);
 	let loading = $state(true);
 	let error = $state('');
 	let currentPage = $state(1);
@@ -52,7 +62,7 @@
 
 			submissions = submissionsData.submissions;
 			totalPages = Math.ceil((submissionsData.total ?? 0) / (submissionsData.perPage ?? 10));
-			stats = statsData;
+			stats = statsData as unknown as SubmissionStats;
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load submissions';
 		} finally {
@@ -322,7 +332,7 @@
 										onchange={(e: Event) =>
 											handleStatusChange(
 												submission,
-												(e.currentTarget as HTMLInputElement).value as any
+												(e.currentTarget as HTMLSelectElement).value as FormSubmission['status']
 											)}
 									>
 										<option value="unread">Unread</option>

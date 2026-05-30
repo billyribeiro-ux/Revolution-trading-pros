@@ -5,7 +5,7 @@
 	import BlockRenderer from '$lib/components/cms/blocks/BlockRenderer.svelte';
 	import { createBlock, deserializeBlocks } from '$lib/utils/blocks';
 	import { IconPlus } from '$lib/icons';
-	import type { Block } from '$lib/components/cms/blocks/types';
+	import type { Block, BlockType } from '$lib/components/cms/blocks/types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 	import { toastStore } from '$lib/stores/toast.svelte';
 
@@ -71,8 +71,8 @@
 		selectedBlockId = blockId;
 	}
 
-	function addBlock(type: string = 'paragraph'): void {
-		const newBlock = createBlock(type as any);
+	function addBlock(type: BlockType = 'paragraph'): void {
+		const newBlock = createBlock(type);
 		blocks = [...blocks, newBlock];
 		selectedBlockId = newBlock.id;
 

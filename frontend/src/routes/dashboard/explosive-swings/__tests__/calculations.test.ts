@@ -554,7 +554,12 @@ describe('getPositionStatusColor()', () => {
 
 	describe('default case', () => {
 		it('should return default badge class for unknown status', () => {
-			expect(getPositionStatusColor(5, 'UNKNOWN' as any)).toBe('badge-default');
+			expect(
+				getPositionStatusColor(
+					5,
+					'UNKNOWN' as unknown as Parameters<typeof getPositionStatusColor>[1]
+				)
+			).toBe('badge-default');
 		});
 	});
 });

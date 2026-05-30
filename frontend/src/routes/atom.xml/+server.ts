@@ -107,16 +107,22 @@ function formatISO8601(dateStr: string | Date): string {
  * @param blocks - Content blocks array
  * @returns HTML string
  */
-function contentBlocksToHtml(blocks: any[] | null): string {
+function contentBlocksToHtml(blocks: unknown[] | null): string {
 	if (!blocks || !Array.isArray(blocks) || blocks.length === 0) {
 		return '';
 	}
 
 	return blocks
-		.map((block) => {
-			if (typeof block === 'string') {
-				return `<p>${block}</p>`;
+		.map((rawBlock) => {
+			if (typeof rawBlock === 'string') {
+				return `<p>${rawBlock}</p>`;
 			}
+
+			if (typeof rawBlock !== 'object' || rawBlock === null) {
+				return '';
+			}
+
+			const block = rawBlock as Record<string, unknown>;
 
 			// Handle common block types
 			switch (block.type) {
@@ -129,16 +135,17 @@ function contentBlocksToHtml(blocks: any[] | null): string {
 				case 'image':
 					const src = block.url || block.src || '';
 					const alt = block.alt || block.caption || '';
-					return `<figure><img src="${src}" alt="${escapeXml(alt)}" />${block.caption ? `<figcaption>${escapeXml(block.caption)}</figcaption>` : ''}</figure>`;
+					return `<figure><img src="${src}" alt="${escapeXml(String(alt))}" />${block.caption ? `<figcaption>${escapeXml(String(block.caption))}</figcaption>` : ''}</figure>`;
 				case 'list':
 					const tag = block.style === 'ordered' ? 'ol' : 'ul';
-					const items = (block.items || []).map((item: string) => `<li>${item}</li>`).join('');
+					const listItems = Array.isArray(block.items) ? (block.items as unknown[]) : [];
+					const items = listItems.map((item) => `<li>${String(item)}</li>`).join('');
 					return `<${tag}>${items}</${tag}>`;
 				case 'quote':
 				case 'blockquote':
 					return `<blockquote>${block.content || block.text || ''}</blockquote>`;
 				case 'code':
-					return `<pre><code>${escapeXml(block.content || block.code || '')}</code></pre>`;
+					return `<pre><code>${escapeXml(String(block.content || block.code || ''))}</code></pre>`;
 				case 'html':
 				case 'raw':
 					return block.content || block.html || '';

@@ -11,13 +11,30 @@
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import { logger } from '$lib/utils/logger';
 
-	let logs: any[] = $state([]);
-	let stats: any = $state(null);
+	interface Seo404Log {
+		id: number;
+		url: string;
+		hits: number;
+		last_hit_at: string;
+		referer?: string | null;
+		is_resolved?: boolean;
+		is_ignored?: boolean;
+	}
+
+	interface Seo404Stats {
+		total: number;
+		unresolved: number;
+		resolved: number;
+		total_hits?: number;
+	}
+
+	let logs: Seo404Log[] = $state([]);
+	let stats: Seo404Stats | null = $state(null);
 	let loading = $state(false);
 	let searchQuery = $state('');
 	let selectedIds: number[] = $state([]);
 	let showCreateRedirect = $state(false);
-	let selected404: any = $state(null);
+	let selected404: Seo404Log | null = $state(null);
 
 	// Delete confirmation modal state
 	let showDeleteModal = $state(false);
@@ -57,7 +74,7 @@
 		}
 	}
 
-	function createRedirect(log: any) {
+	function createRedirect(log: Seo404Log) {
 		selected404 = log;
 		showCreateRedirect = true;
 	}

@@ -17,12 +17,14 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 // Create a mock state manager
 const mockStateManager = {
-	getAIGeneratedState: vi.fn(() => ({
-		loading: false,
-		error: null,
-		output: null,
-		lastGenerated: null
-	})),
+	getAIGeneratedState: vi.fn(
+		(): AIBlockState => ({
+			loading: false,
+			error: null,
+			output: null,
+			lastGenerated: null
+		})
+	),
 	setAIGeneratedState: vi.fn(),
 	getAISummaryState: vi.fn(() => ({
 		loading: false,
@@ -52,6 +54,7 @@ vi.mock('$lib/stores/blockState.svelte', () => ({
 
 // Import the hook after mocking
 import { useAIGeneration, type AIGenerationType } from '../useAIGeneration.svelte';
+import type { AIBlockState } from '$lib/stores/blockState.svelte';
 
 // ============================================================================
 // Test Setup
@@ -767,7 +770,7 @@ describe('useAIGeneration', () => {
 				error: 'Previous error',
 				output: null,
 				lastGenerated: null
-			} as any);
+			});
 
 			(global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
 				ok: true,
@@ -791,7 +794,7 @@ describe('useAIGeneration', () => {
 				error: null,
 				output: 'Previous output',
 				lastGenerated: Date.now()
-			} as any);
+			});
 
 			const hook = useAIGeneration({
 				blockId: mockBlockId,
@@ -824,7 +827,7 @@ describe('useAIGeneration', () => {
 				error: null,
 				output: 'Content to copy',
 				lastGenerated: Date.now()
-			} as any);
+			});
 
 			const hook = useAIGeneration({
 				blockId: mockBlockId,

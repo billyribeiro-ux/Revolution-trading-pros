@@ -17,8 +17,13 @@
 	import { browser } from '$app/environment';
 	import TestimonialCarousel from './TestimonialCarousel.svelte';
 
-	// GSAP loaded dynamically to prevent SSR blocking
-	let gsap: any = null;
+	// GSAP loaded dynamically to prevent SSR blocking. The `gsap` package ships
+	// a global `gsap` namespace via its types, so `typeof globalThis.gsap` is the
+	// runtime singleton type and `gsap.Context` is the type returned by
+	// `gsap.context(...)`. Replaces `any` while keeping `null` until the dynamic
+	// import resolves.
+	type GsapInstance = typeof globalThis.gsap;
+	let gsap: GsapInstance | null = null;
 
 	// Props
 	interface Props {
@@ -36,7 +41,7 @@
 	let containerRef = $state<HTMLElement | null>(null);
 	let canvasRef = $state<HTMLCanvasElement | null>(null);
 	let animationId: number | null = null;
-	let gsapContext: any = null; // GSAP context for proper cleanup
+	let gsapContext: globalThis.gsap.Context | null = null; // GSAP context for proper cleanup
 
 	// Candlestick data (simulated market movement)
 	interface Candle {
@@ -274,12 +279,17 @@
 			const gsapModule = await import('gsap');
 			gsap = gsapModule.default;
 
-			// GSAP 3.12+ pattern: use gsap.context() for proper cleanup
-			if (showTickers && containerRef && gsap) {
-				gsapContext = gsap.context(() => {
-					const tickerCards = containerRef!.querySelectorAll('.ticker-card');
+			// GSAP 3.12+ pattern: use gsap.context() for proper cleanup.
+			// Capture non-null locals so the inner closure scopes its query and
+			// calls without re-checking the (typed-as-nullable) `containerRef`
+			// state / `gsap` module variable across the async IIFE boundary.
+			const container = containerRef;
+			const gsapRef = gsap;
+			if (showTickers && container && gsapRef) {
+				gsapContext = gsapRef.context(() => {
+					const tickerCards = container.querySelectorAll('.ticker-card');
 					if (tickerCards.length > 0) {
-						gsap.fromTo(
+						gsapRef.fromTo(
 							tickerCards,
 							{ opacity: 0, y: 20, scale: 0.9 },
 							{
@@ -293,7 +303,7 @@
 						);
 
 						// Floating animation
-						gsap.to(tickerCards, {
+						gsapRef.to(tickerCards, {
 							y: -8,
 							duration: 3,
 							ease: 'sine.inOut',
@@ -302,7 +312,7 @@
 							yoyo: true
 						});
 					}
-				}, containerRef);
+				}, container);
 			}
 		})();
 

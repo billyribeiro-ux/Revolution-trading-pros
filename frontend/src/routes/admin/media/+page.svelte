@@ -160,7 +160,7 @@
 			currentPage = response.meta.current_page;
 			totalPages = response.meta.last_page;
 			totalItems = response.meta.total;
-		} catch (_e: any) {
+		} catch {
 			showToast('Failed to load media', 'error');
 		} finally {
 			isLoading = false;
@@ -253,11 +253,11 @@
 			items = [result, ...items];
 			totalItems++;
 			loadStatistics();
-		} catch (e: any) {
+		} catch (e) {
 			const errorItem = uploadQueue[idx];
 			if (errorItem) {
 				errorItem.status = 'error';
-				errorItem.error = e.message || 'Upload failed';
+				errorItem.error = (e as { message?: string }).message || 'Upload failed';
 			}
 		}
 
@@ -332,8 +332,8 @@
 			if (detailItem?.id === item.id) detailItem = updatedItem;
 			showToast('Image optimized', 'success');
 			loadStatistics();
-		} catch (e: any) {
-			showToast(e.message || 'Optimization failed', 'error');
+		} catch (e) {
+			showToast((e as { message?: string }).message || 'Optimization failed', 'error');
 		}
 	}
 
@@ -362,8 +362,8 @@
 
 			showToast('File deleted', 'success');
 			loadStatistics();
-		} catch (e: any) {
-			showToast(e.message || 'Delete failed', 'error');
+		} catch (e) {
+			showToast((e as { message?: string }).message || 'Delete failed', 'error');
 		}
 	}
 
@@ -398,8 +398,8 @@
 			if (detailItem?.id === item.id) detailItem = updatedItem;
 
 			showToast('AI analysis complete', 'success');
-		} catch (e: any) {
-			showToast(e.message || 'AI analysis failed', 'error');
+		} catch (e) {
+			showToast((e as { message?: string }).message || 'AI analysis failed', 'error');
 		} finally {
 			isAnalyzing = false;
 		}
@@ -427,8 +427,8 @@
 			if (detailItem?.id === item.id) detailItem = updatedItem;
 
 			showToast('Alt text generated', 'success');
-		} catch (e: any) {
-			showToast(e.message || 'Failed to generate alt text', 'error');
+		} catch (e) {
+			showToast((e as { message?: string }).message || 'Failed to generate alt text', 'error');
 		} finally {
 			isAnalyzing = false;
 		}
@@ -444,14 +444,15 @@
 		cropArea: { x: number; y: number; width: number; height: number };
 		aspectRatio: string;
 	}) {
-		if (!detailItem) return;
+		const cropTarget = detailItem;
+		if (!cropTarget) return;
 
 		try {
 			const formData = new FormData();
-			formData.append('file', cropResult.blob, detailItem.filename);
+			formData.append('file', cropResult.blob, cropTarget.filename);
 
 			// FIX-2026-04-26-audit (P1-7): same-origin admin proxy; multipart streamed verbatim.
-			const response = await fetch(`/api/admin/media/${detailItem.id}/replace`, {
+			const response = await fetch(`/api/admin/media/${cropTarget.id}/replace`, {
 				method: 'POST',
 				body: formData
 			});
@@ -459,14 +460,14 @@
 			if (!response.ok) throw new Error('Failed to save crop');
 
 			const apiResult = await response.json();
-			items = items.map((i) => (i.id === detailItem!.id ? apiResult.data : i));
+			items = items.map((i) => (i.id === cropTarget.id ? apiResult.data : i));
 			detailItem = apiResult.data;
 
 			showCropModal = false;
 			showToast('Image cropped and saved', 'success');
 			loadStatistics();
-		} catch (e: any) {
-			showToast(e.message || 'Failed to save crop', 'error');
+		} catch (e) {
+			showToast((e as { message?: string }).message || 'Failed to save crop', 'error');
 		}
 	}
 
@@ -498,8 +499,8 @@
 
 			selectedIds = new Set();
 			loadStatistics();
-		} catch (e: any) {
-			showToast(e.message || 'Bulk optimization failed', 'error');
+		} catch (e) {
+			showToast((e as { message?: string }).message || 'Bulk optimization failed', 'error');
 		}
 	}
 
@@ -520,8 +521,8 @@
 			selectedIds = new Set();
 			showToast(`${ids.length} items deleted`, 'success');
 			loadStatistics();
-		} catch (e: any) {
-			showToast(e.message || 'Bulk delete failed', 'error');
+		} catch (e) {
+			showToast((e as { message?: string }).message || 'Bulk delete failed', 'error');
 		}
 	}
 
@@ -1108,9 +1109,10 @@
 							value={detailItem.alt_text || ''}
 							onblur={async (e: FocusEvent) => {
 								const target = e.target as HTMLTextAreaElement;
-								if (target.value !== detailItem?.alt_text) {
-									await mediaApi.update(detailItem!.id, { alt_text: target.value });
-									detailItem = { ...detailItem!, alt_text: target.value };
+								const current = detailItem;
+								if (current && target.value !== current.alt_text) {
+									await mediaApi.update(current.id, { alt_text: target.value });
+									detailItem = { ...current, alt_text: target.value };
 									showToast('Alt text saved', 'success');
 								}
 							}}

@@ -144,10 +144,12 @@ const filteredEntriesValue = $derived.by(() => {
 		result = result.filter((e) => e.userId === filters.userId);
 	}
 	if (filters.startDate) {
-		result = result.filter((e) => e.timestamp >= filters.startDate!);
+		const startDate = filters.startDate;
+		result = result.filter((e) => e.timestamp >= startDate);
 	}
 	if (filters.endDate) {
-		result = result.filter((e) => e.timestamp <= filters.endDate!);
+		const endDate = filters.endDate;
+		result = result.filter((e) => e.timestamp <= endDate);
 	}
 	if (filters.search) {
 		const search = filters.search.toLowerCase();

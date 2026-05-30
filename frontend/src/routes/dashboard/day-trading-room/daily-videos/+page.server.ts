@@ -46,6 +46,16 @@ export interface PageData {
 	error?: string;
 }
 
+interface BackendVideoRow {
+	id: string;
+	title: string;
+	slug: string;
+	published_at: string;
+	trader?: { name?: string };
+	description?: string;
+	thumbnail_url?: string;
+}
+
 export const load = (async ({ url, fetch, cookies }): Promise<PageData> => {
 	const page = parseInt(url.searchParams.get('page') || '1');
 	const search = url.searchParams.get('search') || '';
@@ -76,7 +86,8 @@ export const load = (async ({ url, fetch, cookies }): Promise<PageData> => {
 			const data = await response.json();
 
 			// Transform backend response to frontend format
-			const videos: DailyVideo[] = (data.data?.videos || []).map((v: any) => ({
+			const videoRows = (data.data?.videos || []) as BackendVideoRow[];
+			const videos: DailyVideo[] = videoRows.map((v) => ({
 				id: v.id,
 				title: v.title,
 				slug: v.slug,

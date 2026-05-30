@@ -23,6 +23,19 @@
 		winRate: number | null;
 	}
 
+	interface ArchivedWeekRow {
+		id: number;
+		week_of: string;
+		week_title: string;
+		video_title: string;
+		video_url: string;
+		thumbnail_url: string | null;
+		duration: string | null;
+		alert_count?: number;
+		trade_count?: number;
+		win_rate: number | null;
+	}
+
 	let weeks = $state<ArchivedWeek[]>([]);
 	let isLoading = $state(true);
 	let error = $state<string | null>(null);
@@ -52,7 +65,7 @@
 				throw new Error(result.error || 'Failed to load archive');
 			}
 
-			weeks = (result.data || []).map((w: any) => ({
+			weeks = ((result.data || []) as ArchivedWeekRow[]).map((w) => ({
 				id: w.id,
 				weekOf: w.week_of,
 				weekTitle: w.week_title,

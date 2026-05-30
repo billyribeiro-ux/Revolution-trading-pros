@@ -146,10 +146,11 @@
 
 	async function handleConfirmDelete() {
 		if (!itemToDelete) return;
+		const deleteSlug = itemToDelete.slug;
 
 		try {
-			await watchlistApi.delete(itemToDelete.slug);
-			items = items.filter((i) => i.slug !== itemToDelete!.slug);
+			await watchlistApi.delete(deleteSlug);
+			items = items.filter((i) => i.slug !== deleteSlug);
 		} catch (err) {
 			logger.error('Failed to delete item:', err);
 		}

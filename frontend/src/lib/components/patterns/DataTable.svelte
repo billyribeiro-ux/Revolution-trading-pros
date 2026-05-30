@@ -28,12 +28,16 @@
 	let sortDirection = $state<'asc' | 'desc'>('asc');
 
 	let sortedData = $derived.by(() => {
-		if (!sortKey) return props.data;
+		const key = sortKey;
+		if (!key) return props.data;
 		return [...props.data].sort((a, b) => {
-			const aVal = a[sortKey!];
-			const bVal = b[sortKey!];
+			// Cell values are `unknown`; coerce to a comparable primitive for the
+			// `<` operator. `number | string` preserves the prior ordering for the
+			// numeric and string columns this table is used with.
+			const aVal = a[key] as number | string;
+			const bVal = b[key] as number | string;
 			if (aVal === bVal) return 0;
-			const comparison = aVal! < bVal! ? -1 : 1;
+			const comparison = aVal < bVal ? -1 : 1;
 			return sortDirection === 'asc' ? comparison : -comparison;
 		});
 	});

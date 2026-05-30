@@ -682,7 +682,9 @@
 							class:open={activeDropdown === item.id}
 							onclick={() => toggleDropdown(item.id)}
 							onkeydown={(e: KeyboardEvent) =>
-								activeDropdown === item.id && handleDropdownKeydown(e, item.submenu!)}
+								item.submenu &&
+								activeDropdown === item.id &&
+								handleDropdownKeydown(e, item.submenu)}
 							aria-expanded={activeDropdown === item.id}
 							aria-haspopup="menu"
 							aria-controls="dropdown-{item.id}"
@@ -723,7 +725,9 @@
 						class="nav-link"
 						class:active={currentPath === item.href}
 						aria-current={currentPath === item.href ? 'page' : undefined}
-						onclick={() => dispatch('nav:click', { href: item.href!, label: item.label })}
+						onclick={() => {
+							if (item.href) dispatch('nav:click', { href: item.href, label: item.label });
+						}}
 					>
 						{item.label}
 						{#if item.badge}

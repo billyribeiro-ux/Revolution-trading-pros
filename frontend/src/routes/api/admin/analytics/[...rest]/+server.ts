@@ -63,34 +63,34 @@ function upstreamPath(rest: string): string {
 }
 
 export const GET: RequestHandler = (event) =>
-	proxyAnalytics(event, upstreamPath(event.params.rest!), {
+	proxyAnalytics(event, upstreamPath(event.params.rest), {
 		method: 'GET',
 		forwardQuery: ALLOWED_QUERY
 	});
 
 export const POST: RequestHandler = (event) =>
-	proxyAnalytics(event, upstreamPath(event.params.rest!), {
+	proxyAnalytics(event, upstreamPath(event.params.rest), {
 		method: 'POST',
 		forwardQuery: ALLOWED_QUERY,
 		forwardBody: true
 	});
 
 export const PUT: RequestHandler = (event) =>
-	proxyAnalytics(event, upstreamPath(event.params.rest!), {
+	proxyAnalytics(event, upstreamPath(event.params.rest), {
 		method: 'PUT',
 		forwardQuery: ALLOWED_QUERY,
 		forwardBody: true
 	});
 
 export const PATCH: RequestHandler = (event) =>
-	proxyAnalytics(event, upstreamPath(event.params.rest!), {
+	proxyAnalytics(event, upstreamPath(event.params.rest), {
 		method: 'PATCH',
 		forwardQuery: ALLOWED_QUERY,
 		forwardBody: true
 	});
 
 export const DELETE: RequestHandler = (event) =>
-	proxyAnalytics(event, upstreamPath(event.params.rest!), {
+	proxyAnalytics(event, upstreamPath(event.params.rest), {
 		method: 'DELETE',
 		forwardQuery: ALLOWED_QUERY
 	});

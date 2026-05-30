@@ -124,7 +124,15 @@
 	let cardsRef = $state<HTMLElement | null>(null);
 	// ICT11+ Fix: Start false, set true in onMount to trigger in: transitions
 	let isVisible = $state(false);
-	let scrollTriggerInstance: any = null;
+	interface ScrollTriggerLike {
+		trigger?: Element;
+		kill(): void;
+	}
+	interface ScrollTriggerStatic {
+		getAll(): ScrollTriggerLike[];
+		refresh(): void;
+	}
+	let scrollTriggerInstance: ScrollTriggerStatic | null = null;
 	let prefersReducedMotion = $state(false);
 
 	// FIX-2026-04-26: cursor-follow spotlight removed per user request — disabled to fix UX bug.
@@ -167,12 +175,12 @@
 			// Previously used killAll() which destroyed ALL ScrollTriggers globally,
 			// causing layout breaks when scrolling to bottom of page
 			if (scrollTriggerInstance && (cardsRef || sectionRef)) {
-				scrollTriggerInstance.getAll().forEach((st: any) => {
+				scrollTriggerInstance.getAll().forEach((st) => {
 					if (
 						st.trigger === cardsRef ||
 						st.trigger === sectionRef ||
-						cardsRef?.contains(st.trigger) ||
-						sectionRef?.contains(st.trigger)
+						cardsRef?.contains(st.trigger ?? null) ||
+						sectionRef?.contains(st.trigger ?? null)
 					) {
 						st.kill();
 					}
@@ -230,7 +238,7 @@
 				// post-load refresh those positions are stale and the
 				// trigger can never fire, leaving the cards permanently
 				// invisible on a real (image-heavy) marketing page.
-				scrollTriggerInstance.refresh();
+				ScrollTrigger.refresh();
 				if (document.readyState !== 'complete') {
 					window.addEventListener('load', () => scrollTriggerInstance?.refresh(), { once: true });
 				}

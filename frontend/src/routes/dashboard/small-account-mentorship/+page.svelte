@@ -9,7 +9,7 @@
 	 * @version 3.0.0 - Unified Room Resources
 	 * @svelte5 Fully compliant with Svelte 5 runes and SvelteKit best practices
 	 */
-	import { onMount } from 'svelte';
+	import { onMount, type ComponentProps } from 'svelte';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
 	import LatestUpdates from '$lib/components/dashboard/LatestUpdates.svelte';
@@ -28,6 +28,16 @@
 			latestUpdates?: RoomResource[];
 			documents?: RoomResource[];
 			roomId?: number;
+		};
+	}
+
+	// Minimal shape of the Google Calendar events.list() response we consume
+	interface GapiCalendarResponse {
+		result: {
+			items?: Array<{
+				summary?: string;
+				start: { dateTime: string };
+			}>;
 		};
 	}
 
@@ -177,7 +187,7 @@
 							fields: 'items(summary,start/dateTime)'
 						});
 					})
-					.then((response: any) => {
+					.then((response: GapiCalendarResponse) => {
 						const dateOptions: Intl.DateTimeFormatOptions = {
 							month: 'short',
 							day: 'numeric',
@@ -195,7 +205,7 @@
 							}
 						}
 					})
-					.catch((error: any) => {
+					.catch((error: unknown) => {
 						logger.warn('Calendar Error:', error);
 					});
 			});
@@ -266,7 +276,9 @@
 
 		<!-- WEEKLY WATCHLIST SECTION - SSR pre-fetched for 0ms loading -->
 		<div class="dashboard__content-section u--background-color-white">
-			<WeeklyWatchlist data={(data as { watchlist?: any }).watchlist} />
+			<WeeklyWatchlist
+				data={(data as { watchlist?: ComponentProps<typeof WeeklyWatchlist>['data'] }).watchlist}
+			/>
 		</div>
 	</div>
 

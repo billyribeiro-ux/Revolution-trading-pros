@@ -375,7 +375,13 @@
 
 				<!-- Action Buttons -->
 				<div class="action-buttons">
-					<button type="button" class="btn-action" onclick={() => onEdit?.(courseData!)}>
+					<button
+						type="button"
+						class="btn-action"
+						onclick={() => {
+							if (courseData) onEdit?.(courseData);
+						}}
+					>
 						<IconEdit size={16} />
 						Edit
 					</button>
@@ -439,7 +445,9 @@
 							<button
 								type="button"
 								class="btn-add-module"
-								onclick={() => onAddModule?.(courseData!.id)}
+								onclick={() => {
+									if (courseData) onAddModule?.(courseData.id);
+								}}
 							>
 								<IconPlus size={18} />
 								Add Module

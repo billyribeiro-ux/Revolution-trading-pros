@@ -26,8 +26,8 @@
 	let exitIntentTriggered = $state(false);
 
 	// Timers
-	let timeInterval: any;
-	let showTimeout: any;
+	let timeInterval: ReturnType<typeof setInterval> | undefined;
+	let showTimeout: ReturnType<typeof setTimeout> | undefined;
 
 	// Accessibility
 	let popupElement: HTMLElement | null = $state(null);
@@ -211,7 +211,7 @@
 		}
 	}
 
-	async function handleConversion(type: string, data: any = {}) {
+	async function handleConversion(type: string, data: Record<string, unknown> = {}) {
 		if (!currentPopup || !viewId) return;
 
 		try {
@@ -326,7 +326,13 @@
 		}
 	}
 
-	function getButtonStyles(design: any): string {
+	function getButtonStyles(design: {
+		buttonColor?: string;
+		buttonTextColor?: string;
+		buttonBorderRadius?: string | number;
+		buttonShadow?: string;
+		buttonPadding?: string;
+	}): string {
 		const styles: string[] = [];
 
 		if (design?.buttonColor) {

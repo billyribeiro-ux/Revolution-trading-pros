@@ -19,8 +19,10 @@
 	import { cartStore } from '$lib/stores/cart.svelte';
 	import { getProductBySlug, productToCartItem } from '$lib/data/products';
 
-	// Get the product slug from the URL
-	const slug = page.params.slug!;
+	// Get the product slug from the URL. The `[slug]` route segment is always
+	// present at runtime; the `?? ''` keeps the type as `string` without a
+	// non-null assertion (an empty slug simply yields no product → error path).
+	const slug = page.params.slug ?? '';
 	const product = getProductBySlug(slug);
 
 	let error = $state<string | null>(null);

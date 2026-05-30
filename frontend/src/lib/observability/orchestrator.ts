@@ -155,7 +155,7 @@ class AnalyticsOrchestrator {
 
 		for (const [id, adapter] of this._adapters) {
 			if ('metrics' in adapter) {
-				adapterMetrics[id] = (adapter as any).metrics;
+				adapterMetrics[id] = (adapter as AnalyticsAdapter & { metrics: AdapterMetrics }).metrics;
 			}
 		}
 
@@ -176,8 +176,10 @@ class AnalyticsOrchestrator {
 
 		// Merge custom config with defaults
 		const defaults = getDefaultConfig();
-		const ga = defaults.googleAnalytics!;
-		const be = defaults.backend!;
+		// `getDefaultConfig()` always populates these, but the type marks them
+		// optional — fall back to minimal valid configs to avoid `!` assertions.
+		const ga = defaults.googleAnalytics ?? { measurementId: '' };
+		const be = defaults.backend ?? { endpoint: '' };
 		this._config = {
 			...defaults,
 			...customConfig,
@@ -440,9 +442,9 @@ class AnalyticsOrchestrator {
 
 		for (const adapter of this._adapters.values()) {
 			try {
-				const fn = (adapter as any)[method];
+				const fn = (adapter as unknown as Record<string, unknown>)[method];
 				if (typeof fn === 'function') {
-					fn.apply(adapter, args);
+					(fn as (...a: unknown[]) => unknown).apply(adapter, args);
 				}
 			} catch (error) {
 				this._failedEvents++;

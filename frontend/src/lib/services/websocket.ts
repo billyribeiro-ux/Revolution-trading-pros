@@ -122,6 +122,21 @@ class WebSocketService {
 	constructor(private url: string) {}
 
 	/**
+	 * Register a callback for a channel, lazily creating its callback set.
+	 * Returns the (now guaranteed-present) set so callers avoid a
+	 * non-null-asserted `Map.get`.
+	 */
+	private addCallback(channel: string, callback: ChannelCallback): Set<ChannelCallback> {
+		let callbacks = this.subscriptions.get(channel);
+		if (!callbacks) {
+			callbacks = new Set();
+			this.subscriptions.set(channel, callbacks);
+		}
+		callbacks.add(callback);
+		return callbacks;
+	}
+
+	/**
 	 * Connect to WebSocket server
 	 */
 	connect(): void {
@@ -181,11 +196,7 @@ class WebSocketService {
 	subscribeToWidget(widgetId: string, callback: (data: JsonValue) => void): () => void {
 		const channel = `widget:${widgetId}`;
 
-		if (!this.subscriptions.has(channel)) {
-			this.subscriptions.set(channel, new Set());
-		}
-
-		this.subscriptions.get(channel)!.add(callback as ChannelCallback);
+		this.addCallback(channel, callback as ChannelCallback);
 
 		// Send subscription message to server
 		this.send({
@@ -211,11 +222,7 @@ class WebSocketService {
 	subscribeToDashboard(dashboardId: string, callback: (changes: JsonValue) => void): () => void {
 		const channel = `dashboard:${dashboardId}`;
 
-		if (!this.subscriptions.has(channel)) {
-			this.subscriptions.set(channel, new Set());
-		}
-
-		this.subscriptions.get(channel)!.add(callback as ChannelCallback);
+		this.addCallback(channel, callback as ChannelCallback);
 
 		this.send({
 			action: 'subscribe',
@@ -242,11 +249,7 @@ class WebSocketService {
 	): () => void {
 		const channel = `user:${userId}:notifications`;
 
-		if (!this.subscriptions.has(channel)) {
-			this.subscriptions.set(channel, new Set());
-		}
-
-		this.subscriptions.get(channel)!.add(callback as ChannelCallback);
+		this.addCallback(channel, callback as ChannelCallback);
 
 		this.send({
 			action: 'subscribe',
@@ -275,11 +278,7 @@ class WebSocketService {
 		const channel = userId ? `user:${userId}:cart` : `session:${sessionId}:cart`;
 		const wsChannel = userId ? `private-user.${userId}.cart` : `private-session.${sessionId}.cart`;
 
-		if (!this.subscriptions.has(channel)) {
-			this.subscriptions.set(channel, new Set());
-		}
-
-		this.subscriptions.get(channel)!.add(callback as ChannelCallback);
+		this.addCallback(channel, callback as ChannelCallback);
 
 		this.send({
 			action: 'subscribe',
@@ -308,11 +307,7 @@ class WebSocketService {
 		const channel = `room:${roomSlug}:alerts`;
 		const wsChannel = `room.${roomSlug}.alerts`;
 
-		if (!this.subscriptions.has(channel)) {
-			this.subscriptions.set(channel, new Set());
-		}
-
-		this.subscriptions.get(channel)!.add(callback as ChannelCallback);
+		this.addCallback(channel, callback as ChannelCallback);
 
 		this.send({
 			action: 'subscribe',
@@ -340,11 +335,7 @@ class WebSocketService {
 		const channel = `room:${roomSlug}:trades`;
 		const wsChannel = `room.${roomSlug}.trades`;
 
-		if (!this.subscriptions.has(channel)) {
-			this.subscriptions.set(channel, new Set());
-		}
-
-		this.subscriptions.get(channel)!.add(callback as ChannelCallback);
+		this.addCallback(channel, callback as ChannelCallback);
 
 		this.send({
 			action: 'subscribe',
@@ -372,11 +363,7 @@ class WebSocketService {
 		const channel = `room:${roomSlug}:stats`;
 		const wsChannel = `room.${roomSlug}.stats`;
 
-		if (!this.subscriptions.has(channel)) {
-			this.subscriptions.set(channel, new Set());
-		}
-
-		this.subscriptions.get(channel)!.add(callback as ChannelCallback);
+		this.addCallback(channel, callback as ChannelCallback);
 
 		this.send({
 			action: 'subscribe',

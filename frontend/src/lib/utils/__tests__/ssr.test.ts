@@ -387,20 +387,20 @@ describe('createIntersectionObserver', () => {
 
 	it('NEGATIVE: returns null when IntersectionObserver constructor missing', () => {
 		const original = global.IntersectionObserver;
+		// Treat the globals as a loose, mutable record so we can null out and
+		// re-attach the `IntersectionObserver` constructor without `any`.
+		const globalRecord = global as unknown as { IntersectionObserver?: unknown };
+		const windowRecord = window as unknown as { IntersectionObserver?: unknown };
 		// Simulate a browser that lacks the API (e.g. very old Safari).
 		// We delete it from window, then restore.
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		(global as any).IntersectionObserver = undefined;
+		globalRecord.IntersectionObserver = undefined;
 		// Trick: the helper checks `'IntersectionObserver' in window` —
 		// `in` returns true for `undefined` keys too, so we must delete.
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		delete (window as any).IntersectionObserver;
+		delete windowRecord.IntersectionObserver;
 		const obs = createIntersectionObserver(vi.fn());
 		expect(obs).toBeNull();
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		(global as any).IntersectionObserver = original;
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		(window as any).IntersectionObserver = original;
+		globalRecord.IntersectionObserver = original;
+		windowRecord.IntersectionObserver = original;
 	});
 });
 

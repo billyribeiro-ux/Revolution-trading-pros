@@ -63,7 +63,7 @@ export const GET: RequestHandler = async (event) => {
 	// into the upstream URL. Previously `period=30d&secret=true` would pass
 	// straight through.
 	const rawPeriod = url.searchParams.get('period');
-	const period = isValidPeriod(rawPeriod) ? rawPeriod! : '30d';
+	const period = rawPeriod !== null && isValidPeriod(rawPeriod) ? rawPeriod : '30d';
 
 	// Try to get real analytics from backend first
 	const params = new URLSearchParams({ period });

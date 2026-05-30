@@ -79,7 +79,57 @@
 	// FIX P1-4: include the failing endpoint + statusText in the thrown
 	// error so the dashboard banner can show something more useful than
 	// "Failed to load some statistics".
-	async function localFetch<T = any>(endpoint: string, signal?: AbortSignal): Promise<T> {
+	// Loose response shapes for the dashboard stat endpoints. The backend
+	// returns heterogeneous JSON whose fields are all optional from the
+	// frontend's perspective; these interfaces capture only the fields read
+	// below so the `?.` chains stay type-safe without resorting to `any`.
+	interface MembersStatsResponse {
+		overview?: { total_members?: number };
+		total?: number;
+		subscriptions?: { active?: number };
+		revenue?: { mrr?: number };
+	}
+	interface CouponsResponse {
+		coupons?: Array<{ is_active?: boolean }>;
+		data?: Array<{ is_active?: boolean }>;
+		total?: number;
+	}
+	interface PostsStatsResponse {
+		total_posts?: number;
+		published?: number;
+	}
+	interface ProductsStatsResponse {
+		total?: number;
+		active?: number;
+	}
+	interface KpiMetric {
+		value?: number;
+		change?: number;
+	}
+	interface AnalyticsResponse {
+		data?: AnalyticsResponse;
+		kpis?: {
+			sessions?: KpiMetric;
+			pageviews?: KpiMetric;
+			unique_visitors?: KpiMetric;
+			users?: KpiMetric;
+			new_users?: KpiMetric;
+			bounce_rate?: KpiMetric;
+			avg_session_duration?: KpiMetric;
+		};
+		top_pages?: { path: string; views: number; change: number }[];
+		seo?: {
+			search_traffic?: number;
+			impressions?: number;
+			clicks?: number;
+			keywords?: number;
+			avg_position?: number;
+			indexed_pages?: number;
+			avg_ctr?: number;
+		};
+	}
+
+	async function localFetch<T = unknown>(endpoint: string, signal?: AbortSignal): Promise<T> {
 		const url = endpoint.startsWith('http')
 			? endpoint
 			: endpoint.startsWith('/api/')
@@ -233,11 +283,14 @@
 			// ICT 7: Use correct backend endpoints
 			const [membersRes, couponsRes, postsRes, productsRes, analyticsRes] =
 				await Promise.allSettled([
-					localFetch('/api/admin/members/stats', abort.signal),
-					localFetch('/api/admin/coupons', abort.signal),
-					localFetch('/api/admin/posts/stats', abort.signal),
-					localFetch('/api/admin/products/stats', abort.signal),
-					localFetch(`/api/admin/analytics/dashboard?period=${selectedPeriod}`, abort.signal)
+					localFetch<MembersStatsResponse>('/api/admin/members/stats', abort.signal),
+					localFetch<CouponsResponse>('/api/admin/coupons', abort.signal),
+					localFetch<PostsStatsResponse>('/api/admin/posts/stats', abort.signal),
+					localFetch<ProductsStatsResponse>('/api/admin/products/stats', abort.signal),
+					localFetch<AnalyticsResponse>(
+						`/api/admin/analytics/dashboard?period=${selectedPeriod}`,
+						abort.signal
+					)
 				]);
 
 			// If a newer fetch superseded us, drop our results on the floor.
@@ -259,7 +312,7 @@
 				const couponsData = couponsRes.value;
 				const coupons = couponsData?.coupons || couponsData?.data || couponsData || [];
 				stats.activeCoupons = Array.isArray(coupons)
-					? coupons.filter((c: any) => c.is_active).length
+					? coupons.filter((c: { is_active?: boolean }) => c.is_active).length
 					: couponsData?.total || 0;
 			}
 

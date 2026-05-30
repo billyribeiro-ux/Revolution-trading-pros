@@ -749,22 +749,21 @@
 
 	function initializeHTML5Player() {
 		if (!videoElement) return;
+		const el = videoElement;
 
-		videoElement.addEventListener('loadedmetadata', handleLoadedMetadata);
-		videoElement.addEventListener('play', handlePlay);
-		videoElement.addEventListener('pause', handlePause);
-		videoElement.addEventListener('ended', handleEnded);
-		videoElement.addEventListener('timeupdate', () =>
-			handleTimeUpdate(videoElement!.currentTime, videoElement!.duration)
-		);
-		videoElement.addEventListener('progress', handleProgress);
-		videoElement.addEventListener('error', (e) => handleError(e));
-		videoElement.addEventListener('volumechange', handleVolumeChange);
-		videoElement.addEventListener('waiting', () => (_isBuffering = true));
-		videoElement.addEventListener('playing', () => (_isBuffering = false));
+		el.addEventListener('loadedmetadata', handleLoadedMetadata);
+		el.addEventListener('play', handlePlay);
+		el.addEventListener('pause', handlePause);
+		el.addEventListener('ended', handleEnded);
+		el.addEventListener('timeupdate', () => handleTimeUpdate(el.currentTime, el.duration));
+		el.addEventListener('progress', handleProgress);
+		el.addEventListener('error', (e) => handleError(e));
+		el.addEventListener('volumechange', handleVolumeChange);
+		el.addEventListener('waiting', () => (_isBuffering = true));
+		el.addEventListener('playing', () => (_isBuffering = false));
 
 		if (startTime > 0) {
-			videoElement.currentTime = startTime;
+			el.currentTime = startTime;
 		}
 
 		handleReady();

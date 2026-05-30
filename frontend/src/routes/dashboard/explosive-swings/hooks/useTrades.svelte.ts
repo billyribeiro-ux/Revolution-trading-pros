@@ -195,6 +195,7 @@ export function useTrades(options: UseTradesOptions = {}): UseTradesReturn {
 	// Transform open trades to ActivePosition format with real-time prices
 	const activePositions = $derived<ActivePosition[]>(
 		openTrades.map((t) => {
+			const tradeExt = t as ApiTradeExtended;
 			const tickerUpper = t.ticker.toUpperCase();
 			const priceData = realTimePrices.get(tickerUpper);
 
@@ -232,10 +233,8 @@ export function useTrades(options: UseTradesOptions = {}): UseTradesReturn {
 				progressToTarget1: Math.round(progressToTarget1),
 				triggeredAt: new Date(t.entry_date),
 				notes: t.notes,
-				wasUpdated: (t as ApiTradeExtended).was_updated ?? false,
-				updatedAt: (t as ApiTradeExtended).updated_at
-					? new Date((t as ApiTradeExtended).updated_at!)
-					: undefined
+				wasUpdated: tradeExt.was_updated ?? false,
+				updatedAt: tradeExt.updated_at ? new Date(tradeExt.updated_at) : undefined
 			};
 		})
 	);

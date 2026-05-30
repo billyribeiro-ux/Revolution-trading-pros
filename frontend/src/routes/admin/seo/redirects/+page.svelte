@@ -12,12 +12,30 @@
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import { logger } from '$lib/utils/logger';
 
-	let redirects: any[] = $state([]);
-	let stats: any = $state(null);
+	interface Redirect {
+		id: number;
+		source_url: string;
+		destination_url: string;
+		redirect_type: string;
+		is_regex?: boolean;
+		is_active?: boolean;
+		hits?: number;
+		notes?: string;
+	}
+
+	interface RedirectStats {
+		total: number;
+		active: number;
+		inactive: number;
+		total_hits?: number;
+	}
+
+	let redirects: Redirect[] = $state([]);
+	let stats: RedirectStats | null = $state(null);
 	let loading = $state(false);
 	let searchQuery = $state('');
 	let showEditor = $state(false);
-	let editingRedirect: any = $state(null);
+	let editingRedirect: Redirect | null = $state(null);
 	let selectedIds: number[] = $state([]);
 
 	const filterTypes = ['all', '301', '302', '307', '308', '410'];
@@ -60,7 +78,7 @@
 		showEditor = true;
 	}
 
-	function editRedirect(redirect: any) {
+	function editRedirect(redirect: Redirect) {
 		editingRedirect = redirect;
 		showEditor = true;
 	}
@@ -89,7 +107,7 @@
 		pendingDeleteRedirectId = null;
 	}
 
-	async function toggleRedirect(redirect: any) {
+	async function toggleRedirect(redirect: Redirect) {
 		try {
 			await fetch(`/api/seo/redirects/${redirect.id}/toggle`, { method: 'POST' });
 			redirect.is_active = !redirect.is_active;

@@ -116,12 +116,18 @@ export function initReadingAnalytics(config: {
 		if (opts.debug) console.warn('[Reading Analytics] Content element not found:', contentSelector);
 		return () => {};
 	}
+	// Capture into a non-null local so closures don't need a `!` assertion.
+	const content = contentElement;
+
+	// Resolve option fields that have defaults so we don't need `!` assertions.
+	const milestones = opts.milestones ?? DEFAULT_OPTIONS.milestones ?? [];
+	const minTime = opts.minTime ?? DEFAULT_OPTIONS.minTime ?? 0;
 
 	/**
 	 * Calculate current scroll depth percentage
 	 */
 	function getScrollDepth(): number {
-		const rect = contentElement!.getBoundingClientRect();
+		const rect = content.getBoundingClientRect();
 		const viewportHeight = window.innerHeight;
 		const contentTop = rect.top + window.scrollY;
 		const contentHeight = rect.height;
@@ -170,7 +176,7 @@ export function initReadingAnalytics(config: {
 		metrics.readCompletion = calculateReadCompletion();
 
 		// Check milestones
-		for (const milestone of opts.milestones!) {
+		for (const milestone of milestones) {
 			if (currentDepth >= milestone && !metrics.milestones.has(milestone)) {
 				metrics.milestones.add(milestone);
 
@@ -188,7 +194,7 @@ export function initReadingAnalytics(config: {
 				sendEvent('milestone', { milestone });
 
 				// Check for completion (100% scroll + minimum time)
-				if (milestone === 100 && metrics.timeOnPage >= opts.minTime!) {
+				if (milestone === 100 && metrics.timeOnPage >= minTime) {
 					handleCompletion();
 				}
 			}
@@ -296,7 +302,7 @@ export function initReadingAnalytics(config: {
 		}
 
 		// Send final metrics on cleanup
-		if (!reported && metrics.timeOnPage >= opts.minTime!) {
+		if (!reported && metrics.timeOnPage >= minTime) {
 			sendEvent('leave', {
 				maxScrollDepth: metrics.maxScrollDepth,
 				timeOnPage: metrics.timeOnPage,

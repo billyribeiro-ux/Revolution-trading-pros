@@ -5,6 +5,28 @@
 	import { IconCheck, IconX, IconUser } from '$lib/icons';
 	import { logger } from '$lib/utils/logger';
 
+	interface UserRole {
+		name: string;
+	}
+
+	interface AdminUser {
+		name?: string;
+		first_name?: string;
+		last_name?: string;
+		email?: string;
+		roles?: UserRole[];
+	}
+
+	interface UpdateUserPayload {
+		name: string;
+		first_name: string;
+		last_name: string;
+		email: string;
+		roles: string[];
+		password?: string;
+		password_confirmation?: string;
+	}
+
 	let loading = $state(true);
 	let saving = $state(false);
 	let error = $state('');
@@ -20,7 +42,7 @@
 		roles: [] as string[]
 	});
 
-	let userId = $derived(parseInt(page.params.id!));
+	let userId = $derived(parseInt(page.params.id ?? ''));
 
 	// P1-6: load once on mount — $effect re-ran on every re-instantiation
 	onMount(() => {
@@ -52,7 +74,7 @@
 			}
 
 			const result = await response.json();
-			const user = result.data;
+			const user: AdminUser | undefined = result.data;
 
 			if (!user) {
 				error = 'User not found. Please check the user ID and try again.';
@@ -63,9 +85,10 @@
 			formData.first_name = user.first_name || '';
 			formData.last_name = user.last_name || '';
 			formData.email = user.email || '';
-			formData.roles = user.roles?.map((r: any) => r.name) || [];
-		} catch (err: any) {
-			if (err?.name === 'TypeError' && err?.message === 'Failed to fetch') {
+			formData.roles = user.roles?.map((r) => r.name) || [];
+		} catch (err) {
+			const e = err as { name?: string; message?: string };
+			if (e?.name === 'TypeError' && e?.message === 'Failed to fetch') {
 				error = 'Network error. Please check your connection and try again.';
 			} else {
 				error = 'Failed to load user. Please try again.';
@@ -93,7 +116,7 @@
 
 		saving = true;
 		try {
-			const payload: any = {
+			const payload: UpdateUserPayload = {
 				name: formData.name || `${formData.first_name} ${formData.last_name}`.trim(),
 				first_name: formData.first_name,
 				last_name: formData.last_name,
@@ -123,8 +146,8 @@
 			setTimeout(() => {
 				goto('/admin/users');
 			}, 1500);
-		} catch (err: any) {
-			error = err.message || 'Failed to update user';
+		} catch (err) {
+			error = (err as { message?: string }).message || 'Failed to update user';
 			logger.error('Failed to update user:', err);
 		} finally {
 			saving = false;

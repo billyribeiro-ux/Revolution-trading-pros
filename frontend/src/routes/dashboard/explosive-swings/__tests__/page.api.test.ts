@@ -503,9 +503,9 @@ describe('fetchWeeklyVideo()', () => {
 
 	describe('error handling', () => {
 		it('should return null on 404 error', async () => {
-			const error = new Error('Not found');
-			(error as any).name = 'ApiError';
-			(error as any).statusCode = 404;
+			const error = new Error('Not found') as Error & { statusCode: number };
+			error.name = 'ApiError';
+			error.statusCode = 404;
 			mockApiGet.mockRejectedValueOnce(error);
 
 			const result = await fetchWeeklyVideo('explosive-swings');

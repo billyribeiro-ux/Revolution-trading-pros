@@ -82,7 +82,7 @@
 				target2: editEntry.target2 || '',
 				target3: editEntry.target3 || '',
 				runner: editEntry.runner || '',
-				runner_stop: (editEntry as any).runner_stop || '',
+				runner_stop: editEntry.runner_stop || '',
 				stop: editEntry.stop || '',
 				options_strike: editEntry.options_strike || '',
 				options_exp: editEntry.options_exp || '',

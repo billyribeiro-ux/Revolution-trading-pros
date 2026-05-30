@@ -252,7 +252,11 @@ export class EnhancedApiClient {
 				response.status >= 200 &&
 				response.status < 300
 			) {
-				this.setCache(fullURL, response.data, interceptedConfig.cacheTTL!);
+				this.setCache(
+					fullURL,
+					response.data,
+					interceptedConfig.cacheTTL ?? this.defaultConfig.cacheTTL ?? 300000
+				);
 			}
 
 			// Run response interceptors
@@ -335,10 +339,11 @@ export class EnhancedApiClient {
 		config: RequestConfig,
 		spanId?: string
 	): Promise<ApiResponse<T>> {
+		const timeoutMs = config.timeout ?? this.defaultConfig.timeout ?? 30000;
 		const executeFetch = async (): Promise<ApiResponse<T>> => {
 			// Add timeout
 			const controller = new AbortController();
-			const timeoutId = setTimeout(() => controller.abort(), config.timeout!);
+			const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
 			try {
 				const response = await fetch(url, {
@@ -381,7 +386,7 @@ export class EnhancedApiClient {
 				// actually inspects is `error.name === 'AbortError'` (DOMException
 				// from `signal.abort()`); rethrow everything else untouched.
 				if (error instanceof Error && error.name === 'AbortError') {
-					throw new ApiError(`Request timeout after ${config.timeout}ms`, 408, 'Request Timeout');
+					throw new ApiError(`Request timeout after ${timeoutMs}ms`, 408, 'Request Timeout');
 				}
 
 				throw error;

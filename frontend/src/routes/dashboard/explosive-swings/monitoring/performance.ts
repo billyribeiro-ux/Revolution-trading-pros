@@ -152,10 +152,12 @@ class PerformanceMonitor {
 			const duration = measure?.duration ?? 0;
 
 			// Store for aggregation
-			if (!this.metrics.has(name)) {
-				this.metrics.set(name, []);
+			let samples = this.metrics.get(name);
+			if (!samples) {
+				samples = [];
+				this.metrics.set(name, samples);
 			}
-			this.metrics.get(name)!.push(duration);
+			samples.push(duration);
 
 			// Cleanup
 			performance.clearMarks(`${name}-start`);

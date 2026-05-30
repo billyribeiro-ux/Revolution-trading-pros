@@ -54,7 +54,13 @@
 	async function loadSubscribers() {
 		loading = true;
 		try {
-			const params: any = { page, per_page: perPage };
+			const params: {
+				status?: string;
+				search?: string;
+				tags?: string[];
+				page?: number;
+				per_page?: number;
+			} = { page, per_page: perPage };
 			if (searchQuery) params.search = searchQuery;
 			if (statusFilter !== 'all') params.status = statusFilter;
 			if (selectedTags.length > 0) params.tags = selectedTags;
@@ -102,8 +108,9 @@
 			newSubscriber = { email: '', first_name: '', last_name: '', tags: '' };
 			await loadSubscribers();
 			await loadStats();
-		} catch (err: any) {
-			toastStore.error(err.message || 'Failed to add subscriber');
+		} catch (err) {
+			const message = err instanceof Error ? err.message : undefined;
+			toastStore.error(message || 'Failed to add subscriber');
 		}
 	}
 
@@ -122,8 +129,9 @@
 			toastStore.success('Subscriber deleted');
 			await loadSubscribers();
 			await loadStats();
-		} catch (err: any) {
-			toastStore.error(err.message || 'Failed to delete subscriber');
+		} catch (err) {
+			const message = err instanceof Error ? err.message : undefined;
+			toastStore.error(message || 'Failed to delete subscriber');
 		}
 	}
 
@@ -133,8 +141,9 @@
 			toastStore.success('Subscriber unsubscribed');
 			await loadSubscribers();
 			await loadStats();
-		} catch (err: any) {
-			toastStore.error(err.message || 'Failed to unsubscribe');
+		} catch (err) {
+			const message = err instanceof Error ? err.message : undefined;
+			toastStore.error(message || 'Failed to unsubscribe');
 		}
 	}
 
@@ -144,8 +153,9 @@
 			toastStore.success('Subscriber resubscribed');
 			await loadSubscribers();
 			await loadStats();
-		} catch (err: any) {
-			toastStore.error(err.message || 'Failed to resubscribe');
+		} catch (err) {
+			const message = err instanceof Error ? err.message : undefined;
+			toastStore.error(message || 'Failed to resubscribe');
 		}
 	}
 
@@ -178,8 +188,9 @@
 			selectedSubscribers = new Set();
 			await loadSubscribers();
 			await loadStats();
-		} catch (err: any) {
-			toastStore.error(err.message || 'Failed to delete subscribers');
+		} catch (err) {
+			const message = err instanceof Error ? err.message : undefined;
+			toastStore.error(message || 'Failed to delete subscribers');
 		}
 	}
 
