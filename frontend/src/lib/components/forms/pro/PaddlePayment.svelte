@@ -83,12 +83,14 @@
 			}
 
 			// Initialize Paddle
+			const paddle = window.Paddle;
+			if (!paddle) throw new Error('Paddle SDK unavailable');
 			if (testMode) {
-				window.Paddle.Environment.set('sandbox');
+				paddle.Environment.set('sandbox');
 			}
-			window.Paddle.Setup({
+			paddle.Setup({
 				vendor: vendorId,
-				eventCallback: (data: any) => {
+				eventCallback: (data: PaddleEventData) => {
 					handlePaddleEvent(data);
 				}
 			});
@@ -101,15 +103,15 @@
 		}
 	}
 
-	function handlePaddleEvent(data: any) {
+	function handlePaddleEvent(data: PaddleEventData) {
 		switch (data.event) {
 			case 'Checkout.Complete':
 				const result: PaddlePaymentResult = {
-					checkoutId: data.checkoutData?.checkout?.id,
+					checkoutId: data.checkoutData?.checkout?.id ?? '',
 					productId: data.checkoutData?.product?.id,
 					planId: data.checkoutData?.subscription?.plan_id,
-					email: data.checkoutData?.user?.email,
-					country: data.checkoutData?.user?.country,
+					email: data.checkoutData?.user?.email ?? '',
+					country: data.checkoutData?.user?.country ?? '',
 					coupon: data.checkoutData?.checkout?.coupon?.coupon_code,
 					status: 'complete'
 				};
@@ -139,7 +141,7 @@
 			email: customerEmail || undefined,
 			country: customerCountry || undefined,
 			passthrough: JSON.stringify(passthrough),
-			successCallback: (_data: any) => {
+			successCallback: (_data: unknown) => {
 				processing = false;
 			},
 			closeCallback: () => {

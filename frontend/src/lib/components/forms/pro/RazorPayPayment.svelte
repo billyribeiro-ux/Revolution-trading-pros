@@ -108,7 +108,7 @@
 						}
 					: undefined,
 				theme,
-				handler: (response: any) => {
+				handler: (response: RazorpaySuccessResponse) => {
 					const result: RazorPayPaymentResult = {
 						paymentId: response.razorpay_payment_id,
 						orderId: response.razorpay_order_id,
@@ -124,9 +124,11 @@
 				}
 			};
 
-			const rzp = new window.Razorpay(options);
+			const RazorpayCtor = window.Razorpay;
+			if (!RazorpayCtor) throw new Error('Razorpay SDK unavailable');
+			const rzp = new RazorpayCtor(options);
 
-			rzp.on('payment.failed', (response: any) => {
+			rzp.on('payment.failed', (response: RazorpayFailureResponse) => {
 				paymentError = response.error?.description || 'Payment failed';
 				if (onerror) onerror(paymentError);
 			});
