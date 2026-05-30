@@ -6,12 +6,12 @@
 	 * Reusable dropdown menu for table row actions.
 	 * Supports icons, dividers, and danger actions.
 	 */
-	import { IconDotsVertical } from '$lib/icons';
+	import { IconDotsVertical, type IconComponent } from '$lib/icons';
 
 	interface Action {
 		id: string;
 		label: string;
-		icon?: any;
+		icon?: IconComponent;
 		variant?: 'default' | 'danger' | 'warning' | 'success';
 		dividerBefore?: boolean;
 		disabled?: boolean;

@@ -411,7 +411,7 @@
 							<button
 								type="button"
 								class="btn-copy"
-								onclick={() => copyPassword(temporaryPassword!)}
+								onclick={() => temporaryPassword && copyPassword(temporaryPassword)}
 								title="Copy password"
 							>
 								{#if copiedPassword}

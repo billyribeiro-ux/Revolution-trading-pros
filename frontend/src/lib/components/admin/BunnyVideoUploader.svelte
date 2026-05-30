@@ -158,7 +158,16 @@
 		}
 	}
 
-	async function waitForProcessing(videoGuid: string, maxAttempts = 30): Promise<any> {
+	async function waitForProcessing(
+		videoGuid: string,
+		maxAttempts = 30
+	): Promise<{
+		video_url?: string;
+		embed_url?: string;
+		thumbnail_url?: string;
+		duration?: number;
+		[key: string]: unknown;
+	}> {
 		for (let i = 0; i < maxAttempts; i++) {
 			await new Promise((resolve) => setTimeout(resolve, 2000));
 

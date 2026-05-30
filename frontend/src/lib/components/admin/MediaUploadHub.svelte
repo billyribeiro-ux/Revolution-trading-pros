@@ -57,7 +57,7 @@
 		progress: number;
 		error?: string;
 		previewUrl?: string;
-		result?: any;
+		result?: unknown;
 	}
 
 	interface Props {
