@@ -36,17 +36,17 @@ global.IntersectionObserver = class IntersectionObserver {
 		return [];
 	}
 	unobserve() {}
-} as any;
+} as unknown as typeof IntersectionObserver;
 
 // Mock ResizeObserver
 global.ResizeObserver = class ResizeObserver {
 	disconnect() {}
 	observe() {}
 	unobserve() {}
-} as any;
+} as unknown as typeof ResizeObserver;
 
 // Mock performance APIs
-const perf = performance as any;
+const perf = performance as unknown as Record<string, unknown>;
 if (!('mark' in perf)) {
 	perf.mark = vi.fn();
 }
@@ -72,7 +72,7 @@ if (!global.crypto) {
 			}
 			return arr;
 		}
-	} as any;
+	} as unknown as Crypto;
 }
 
 // Mock HTMLCanvasElement.toDataURL (returns null in JSDOM, breaks image format detection)
@@ -115,8 +115,8 @@ HTMLCanvasElement.prototype.toDataURL = function (type?: string) {
 if (typeof globalThis.DataTransfer === 'undefined') {
 	globalThis.DataTransfer = class DataTransfer {
 		private data: Map<string, string> = new Map();
-		items: any[] = [];
-		files: any[] = [];
+		items: unknown[] = [];
+		files: unknown[] = [];
 		types: string[] = [];
 		dropEffect = 'none';
 		effectAllowed = 'all';
@@ -132,7 +132,7 @@ if (typeof globalThis.DataTransfer === 'undefined') {
 			this.types = [];
 		}
 		setDragImage() {}
-	} as any;
+	} as unknown as typeof DataTransfer;
 }
 
 // Polyfill document.execCommand (removed in jsdom 29 — still used by ParagraphBlock paste handler)
@@ -148,7 +148,7 @@ if (typeof globalThis.ClipboardEvent === 'undefined') {
 			super(type, eventInitDict);
 			this.clipboardData = eventInitDict?.clipboardData ?? null;
 		}
-	} as any;
+	} as unknown as typeof ClipboardEvent;
 }
 
 // Mock clipboard
@@ -162,7 +162,7 @@ Object.assign(navigator, {
 // Suppress console errors for expected test failures
 const originalError = console.error;
 beforeAll(() => {
-	console.error = (...args: any[]) => {
+	console.error = (...args: unknown[]) => {
 		if (
 			typeof args[0] === 'string' &&
 			(args[0].includes('Not implemented: HTMLFormElement.prototype.submit') ||
