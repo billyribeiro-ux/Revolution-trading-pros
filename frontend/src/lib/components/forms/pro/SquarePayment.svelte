@@ -7,6 +7,11 @@
 	 * - Card payments
 	 * - Apple Pay / Google Pay
 	 * - ACH bank transfers
+	 *
+	 * NOTE: This component is not yet wired into any route/form (FluentForms Pro
+	 * port). The Apple/Google Pay flow follows the current Web Payments SDK API
+	 * (paymentRequest → applePay/googlePay → tokenize) but has NOT been verified
+	 * against a live Square sandbox — do that before enabling it in production.
 	 */
 
 	interface Props {
@@ -33,6 +38,13 @@
 	}
 
 	import Icon from '$lib/components/Icon.svelte';
+	import type {
+		Payments,
+		Card,
+		ApplePay,
+		GooglePay,
+		PaymentRequest
+	} from '@square/web-payments-sdk-types';
 
 	let {
 		applicationId,
@@ -49,13 +61,14 @@
 		onerror
 	}: Props = $props();
 
-	let payments: any = null;
-	let card: any = null;
+	let payments: Payments | null = null;
+	let card: Card | null = null;
+	let applePay: ApplePay | null = null;
+	let googlePay: GooglePay | null = null;
 	let loading = $state(true);
 	let processing = $state(false);
 	let cardError = $state('');
 	let cardContainerRef = $state<HTMLDivElement>();
-	let applePayContainerRef = $state<HTMLDivElement>();
 	let googlePayContainerRef = $state<HTMLDivElement>();
 	let applePayAvailable = $state(false);
 	let googlePayAvailable = $state(false);
@@ -65,9 +78,21 @@
 			loadSquare();
 		}
 		return () => {
-			if (card) card.destroy();
+			void card?.destroy();
+			void applePay?.destroy();
+			void googlePay?.destroy();
 		};
 	});
+
+	// Digital wallets (Apple Pay / Google Pay) require a PaymentRequest. `amount`
+	// is a decimal string in major units (e.g. "10.00"), not cents.
+	function buildPaymentRequest(sdk: Payments): PaymentRequest {
+		return sdk.paymentRequest({
+			countryCode: 'US',
+			currencyCode: currency,
+			total: { amount: amount.toFixed(2), label: 'Total' }
+		});
+	}
 
 	async function loadSquare() {
 		try {
@@ -85,77 +110,36 @@
 				});
 			}
 
-			payments = window.Square.payments(applicationId, locationId);
+			const sdk = window.Square;
+			if (!sdk) throw new Error('Square Web Payments SDK unavailable');
+			const pay = sdk.payments(applicationId, locationId);
+			payments = pay;
 
 			// Initialize Card
-			card = await payments.card();
-			await card.attach(cardContainerRef);
+			const cardInstance = await pay.card();
+			card = cardInstance;
+			if (cardContainerRef) await cardInstance.attach(cardContainerRef);
 
-			// Check Apple Pay availability
-			if (enableApplePay && applePayContainerRef) {
+			// Apple Pay: built from a PaymentRequest. `ApplePay` has no `attach()`
+			// — we render our own button and call `tokenize()` on click.
+			if (enableApplePay) {
 				try {
-					const applePay = await payments.applePay({
-						countryCode: 'US',
-						currencyCode: currency,
-						total: {
-							amount: (amount * 100).toString(),
-							label: 'Total'
-						}
-					});
+					applePay = await pay.applePay(buildPaymentRequest(pay));
 					applePayAvailable = true;
-					await applePay.attach(applePayContainerRef);
-
-					applePay.addEventListener('payment', async (_event: any) => {
-						processing = true;
-						try {
-							const result = await applePay.tokenize();
-							if (result.status === 'OK') {
-								if (onpayment) {
-									onpayment({
-										token: result.token,
-										cardBrand: 'Apple Pay'
-									});
-								}
-							}
-						} finally {
-							processing = false;
-						}
-					});
 				} catch {
-					// Apple Pay not available
+					// Apple Pay unavailable on this device/browser
 				}
 			}
 
-			// Check Google Pay availability
+			// Google Pay: `attach()` renders the wallet button; `tokenize()` on click.
 			if (enableGooglePay && googlePayContainerRef) {
 				try {
-					const googlePay = await payments.googlePay({
-						countryCode: 'US',
-						currencyCode: currency,
-						totalPrice: amount.toString(),
-						totalPriceStatus: 'FINAL'
-					});
+					const gp = await pay.googlePay(buildPaymentRequest(pay));
+					googlePay = gp;
+					await gp.attach(googlePayContainerRef);
 					googlePayAvailable = true;
-					await googlePay.attach(googlePayContainerRef);
-
-					googlePay.addEventListener('payment', async (_event: any) => {
-						processing = true;
-						try {
-							const result = await googlePay.tokenize();
-							if (result.status === 'OK') {
-								if (onpayment) {
-									onpayment({
-										token: result.token,
-										cardBrand: 'Google Pay'
-									});
-								}
-							}
-						} finally {
-							processing = false;
-						}
-					});
 				} catch {
-					// Google Pay not available
+					// Google Pay unavailable
 				}
 			}
 
@@ -164,6 +148,28 @@
 			loading = false;
 			cardError = 'Failed to load payment form';
 			if (onerror) onerror('Failed to initialize Square');
+		}
+	}
+
+	async function payWithWallet(wallet: ApplePay | GooglePay, brand: string) {
+		if (processing) return;
+		processing = true;
+		cardError = '';
+		try {
+			const result = await wallet.tokenize();
+			if (result.status === 'OK' && result.token) {
+				if (onpayment) onpayment({ token: result.token, cardBrand: brand });
+			} else {
+				const msg =
+					'errors' in result ? result.errors?.map((e) => e.message).join(', ') : undefined;
+				cardError = msg || `${brand} payment failed`;
+				if (onerror) onerror(cardError);
+			}
+		} catch (err) {
+			cardError = err instanceof Error ? err.message : `${brand} payment failed`;
+			if (onerror) onerror(cardError);
+		} finally {
+			processing = false;
 		}
 	}
 
@@ -176,7 +182,7 @@
 		try {
 			const result = await card.tokenize();
 
-			if (result.status === 'OK') {
+			if (result.status === 'OK' && result.token) {
 				const paymentResult: SquarePaymentResult = {
 					token: result.token,
 					last4: result.details?.card?.last4,
@@ -187,7 +193,8 @@
 
 				if (onpayment) onpayment(paymentResult);
 			} else {
-				const errorMessages = result.errors?.map((e: any) => e.message).join(', ');
+				const errorMessages =
+					'errors' in result ? result.errors?.map((e) => e.message).join(', ') : undefined;
 				cardError = errorMessages || 'Card tokenization failed';
 				if (onerror) onerror(cardError);
 			}
@@ -227,10 +234,31 @@
 		{#if applePayAvailable || googlePayAvailable}
 			<div class="digital-wallets">
 				{#if applePayAvailable}
-					<div bind:this={applePayContainerRef} class="wallet-button"></div>
+					<button
+						type="button"
+						class="wallet-button apple-pay-button"
+						aria-label="Pay with Apple Pay"
+						disabled={processing}
+						onclick={() => applePay && payWithWallet(applePay, 'Apple Pay')}
+					></button>
 				{/if}
 				{#if googlePayAvailable}
-					<div bind:this={googlePayContainerRef} class="wallet-button"></div>
+					<!-- GooglePay.attach() renders the wallet button into this element;
+					     clicking it triggers tokenize() (Square Web Payments SDK). -->
+					<div
+						bind:this={googlePayContainerRef}
+						class="wallet-button"
+						role="button"
+						tabindex="0"
+						aria-label="Pay with Google Pay"
+						onclick={() => googlePay && payWithWallet(googlePay, 'Google Pay')}
+						onkeydown={(e) => {
+							if (e.key === 'Enter' || e.key === ' ') {
+								e.preventDefault();
+								if (googlePay) payWithWallet(googlePay, 'Google Pay');
+							}
+						}}
+					></div>
 				{/if}
 			</div>
 			<div class="divider">
@@ -325,6 +353,17 @@
 
 	.wallet-button {
 		min-height: 48px;
+		cursor: pointer;
+	}
+
+	.apple-pay-button {
+		-webkit-appearance: -apple-pay-button;
+		appearance: -apple-pay-button;
+		-apple-pay-button-type: plain;
+		-apple-pay-button-style: black;
+		border: none;
+		border-radius: 0.375rem;
+		width: 100%;
 	}
 
 	.divider {
