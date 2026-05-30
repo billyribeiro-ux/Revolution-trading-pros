@@ -41,13 +41,14 @@
 	$effect(() => {
 		if (typeof window === 'undefined') return;
 
-		const contentElement = document.querySelector(contentSelector);
+		const contentElement: Element | null = document.querySelector(contentSelector);
 		if (!contentElement) return;
+		const el: Element = contentElement;
 
 		let rafId: number | null = null;
 
 		function updateProgress() {
-			const rect = contentElement!.getBoundingClientRect();
+			const rect = el.getBoundingClientRect();
 			const viewportHeight = window.innerHeight;
 			const contentTop = rect.top + window.scrollY;
 			const contentHeight = rect.height;

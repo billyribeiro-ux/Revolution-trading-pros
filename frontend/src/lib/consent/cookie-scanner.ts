@@ -402,7 +402,7 @@ export function scanCookies(): CookieScanResult {
 		if (!byVendor[vendor]) {
 			byVendor[vendor] = [];
 		}
-		byVendor[vendor]!.push(cookie);
+		byVendor[vendor].push(cookie);
 	});
 
 	return {

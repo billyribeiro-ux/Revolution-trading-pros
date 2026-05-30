@@ -312,7 +312,7 @@
 
 				<!-- Action Buttons -->
 				<div class="action-buttons">
-					<button type="button" class="btn-action" onclick={() => onEdit?.(data!.member)}>
+					<button type="button" class="btn-action" onclick={() => data && onEdit?.(data.member)}>
 						<IconEdit size={16} />
 						Edit
 					</button>

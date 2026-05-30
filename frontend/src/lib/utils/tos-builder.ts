@@ -87,7 +87,7 @@ export function buildTosString(params: TosStringParams): string {
 	const qtyStr = `${sign}${quantity}`;
 
 	// Build price portion
-	const priceStr = order_type === 'MKT' ? 'MKT' : `@${formatPrice(limit_price!)} LMT`;
+	const priceStr = order_type === 'MKT' ? 'MKT' : `@${formatPrice(limit_price ?? 0)} LMT`;
 
 	if (trade_type === 'shares') {
 		// SHARES FORMAT: BUY +100 AAPL @255.03 LMT

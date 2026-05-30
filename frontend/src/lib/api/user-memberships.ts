@@ -184,7 +184,7 @@ function enhanceMemberships(memberships: UserMembership[]): UserMembership[] {
 
 		// Calculate days until expiry
 		if (membership.nextBillingDate || membership.expiresAt) {
-			const expiryDate = new Date(membership.nextBillingDate || membership.expiresAt!);
+			const expiryDate = new Date(membership.nextBillingDate || membership.expiresAt || Date.now());
 			const daysUntil = Math.ceil((expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
 			enhanced.daysUntilExpiry = daysUntil;
 

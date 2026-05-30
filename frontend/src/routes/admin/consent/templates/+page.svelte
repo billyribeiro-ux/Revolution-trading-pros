@@ -114,7 +114,8 @@
 
 	function handleCreateNew() {
 		// Create a new template based on default
-		const baseTemplate = BANNER_TEMPLATES.find((t) => t.id === DEFAULT_TEMPLATE_ID)!;
+		const baseTemplate = BANNER_TEMPLATES.find((t) => t.id === DEFAULT_TEMPLATE_ID);
+		if (!baseTemplate) return;
 		editingTemplate = {
 			...JSON.parse(JSON.stringify(baseTemplate)),
 			id: `custom-${Date.now().toString(36)}`,

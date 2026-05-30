@@ -189,7 +189,7 @@
 									? 'always'
 									: 'once-per-session'
 			}
-		} as any;
+		} as unknown as Parameters<typeof popupStore.canShow>[0];
 
 		return popupStore.canShow(storePopup);
 	}

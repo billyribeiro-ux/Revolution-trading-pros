@@ -22,7 +22,7 @@
 
 	import { browser } from '$app/environment';
 	// FIX-2026-04-26 (CLAUDE.md): init/cleanup belongs in onMount, not $effect.
-	import { onMount } from 'svelte';
+	import { onMount, type Component } from 'svelte';
 	import {
 		IconVideo,
 		IconFileText,
@@ -68,7 +68,11 @@
 	// TYPES & CONSTANTS
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	const RESOURCE_TYPES: { id: ResourceType; name: string; icon: any }[] = [
+	const RESOURCE_TYPES: {
+		id: ResourceType;
+		name: string;
+		icon: Component<{ size?: number | string }>;
+	}[] = [
 		{ id: 'video', name: 'Videos', icon: IconVideo },
 		{ id: 'pdf', name: 'PDFs', icon: IconFileText },
 		{ id: 'document', name: 'Documents', icon: IconFile },

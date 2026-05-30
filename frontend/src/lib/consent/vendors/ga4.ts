@@ -61,10 +61,12 @@ function enableSilentHistoryMode(): () => void {
 	const silentReplaceState = originalReplaceState.bind(history);
 
 	// Mark as "external" to prevent SvelteKit warning
-	(silentPushState as typeof silentPushState & { __sveltekit_external?: boolean }).__sveltekit_external =
-		true;
-	(silentReplaceState as typeof silentReplaceState & { __sveltekit_external?: boolean }).__sveltekit_external =
-		true;
+	(
+		silentPushState as typeof silentPushState & { __sveltekit_external?: boolean }
+	).__sveltekit_external = true;
+	(
+		silentReplaceState as typeof silentReplaceState & { __sveltekit_external?: boolean }
+	).__sveltekit_external = true;
 
 	// Replace temporarily
 	history.pushState = silentPushState;

@@ -31,8 +31,8 @@
 		try {
 			const response = await mediaApi.getStatistics();
 			statistics = response.data;
-		} catch (e: any) {
-			error = e?.message || 'Failed to load statistics';
+		} catch (e) {
+			error = e instanceof Error ? e.message : 'Failed to load statistics';
 		} finally {
 			loading = false;
 		}

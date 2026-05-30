@@ -50,8 +50,8 @@ class CrmStore {
 	get contactsByStatus(): Record<string, Contact[]> {
 		return this.contacts.reduce(
 			(acc, contact) => {
-				if (!acc[contact.status]) acc[contact.status] = [];
-				acc[contact.status]!.push(contact);
+				const bucket = (acc[contact.status] ??= []);
+				bucket.push(contact);
 				return acc;
 			},
 			{} as Record<string, Contact[]>

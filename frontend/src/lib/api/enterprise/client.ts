@@ -814,7 +814,7 @@ export class EnterpriseClient {
 		if (!this.eventHandlers.has(event)) {
 			this.eventHandlers.set(event, new Set());
 		}
-		this.eventHandlers.get(event)!.add(handler as ApiEventHandler);
+		this.eventHandlers.get(event)?.add(handler as ApiEventHandler);
 
 		return () => {
 			this.eventHandlers.get(event)?.delete(handler as ApiEventHandler);

@@ -623,7 +623,7 @@ class EnterpriseApiClient {
 			signal: this.createAbortSignal(config.timeout)
 		};
 
-		if (config.body && ['POST', 'PUT', 'PATCH'].includes(requestConfig.method!)) {
+		if (config.body && ['POST', 'PUT', 'PATCH'].includes(requestConfig.method ?? '')) {
 			requestConfig.body = JSON.stringify(config.body);
 		}
 

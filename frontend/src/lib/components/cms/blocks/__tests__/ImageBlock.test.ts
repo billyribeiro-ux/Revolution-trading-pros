@@ -488,9 +488,10 @@ describe('ImageBlock - URL Input', () => {
 		await fireEvent.click(addButton);
 
 		// Dangerous URLs should not be passed to onUpdate
-		const urlCalls = onUpdate.mock.calls.filter((call: any[]) =>
-			call[0]?.content?.mediaUrl?.includes('javascript')
-		);
+		const urlCalls = onUpdate.mock.calls.filter((call: unknown[]) => {
+			const arg = call[0] as { content?: { mediaUrl?: string } } | undefined;
+			return arg?.content?.mediaUrl?.includes('javascript');
+		});
 		expect(urlCalls.length).toBe(0);
 	});
 

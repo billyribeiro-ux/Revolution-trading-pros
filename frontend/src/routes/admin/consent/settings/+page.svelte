@@ -73,6 +73,9 @@
 		proof_retention_days: number;
 		proof_auto_delete: boolean;
 
+		// Dynamic per-script block toggles bound via bind:checked (boolean) with
+		// runtime keys; index signature must stay loose for the binding.
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- dynamic bind:checked key map
 		[key: string]: any;
 	}
 

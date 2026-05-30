@@ -632,7 +632,8 @@ export function detectBrowserLanguage(): SupportedLanguage {
 	if (!browser) return 'en';
 
 	try {
-		const browserLang = navigator.language || (navigator as any).userLanguage;
+		const browserLang =
+			navigator.language || (navigator as Navigator & { userLanguage?: string }).userLanguage;
 		if (browserLang) {
 			const lang = browserLang.split('-')[0].toLowerCase() as SupportedLanguage;
 			if (translations[lang]) {

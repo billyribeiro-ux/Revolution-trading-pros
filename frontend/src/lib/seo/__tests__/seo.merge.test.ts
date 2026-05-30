@@ -101,7 +101,7 @@ describe('mergeSEO', () => {
 		};
 		const result = mergeSEO(a, b);
 		expect(result.jsonld).toHaveLength(1);
-		expect((result.jsonld![0] as Record<string, unknown>).name).toBe('New');
+		expect((result.jsonld?.[0] as Record<string, unknown>).name).toBe('New');
 	});
 
 	it('null jsonld removes all JSON-LD', () => {

@@ -103,7 +103,7 @@ HTMLCanvasElement.prototype.toBlob = vi.fn(function (
 	callback: BlobCallback
 ) {
 	callback(new Blob(['mock-thumbnail'], { type: 'image/jpeg' }));
-}) as any;
+}) as unknown as typeof HTMLCanvasElement.prototype.toBlob;
 
 // Mock URL.createObjectURL and revokeObjectURL
 const mockObjectURLs = new Map<string, Blob>();

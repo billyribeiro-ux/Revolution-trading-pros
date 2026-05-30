@@ -87,6 +87,10 @@
 	// ============================================
 	// COMPONENT MAP - ALL BLOCK TYPES
 	// ============================================
+	// Heterogeneous block registry: each block component declares its own Props,
+	// so no single concrete prop type fits. Rendered via <svelte:component> with
+	// the block narrowed at runtime by `props.block.type`.
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- mixed-Props component registry
 	const blockComponentMap: Record<string, Component<any>> = {
 		// Content
 		paragraph: ParagraphBlock,

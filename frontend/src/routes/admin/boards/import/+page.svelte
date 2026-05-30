@@ -94,8 +94,8 @@
 
 			// Poll for status updates
 			pollImportStatus();
-		} catch (err: any) {
-			error = err.message || 'Failed to start import';
+		} catch (err) {
+			error = err instanceof Error ? err.message : 'Failed to start import';
 		} finally {
 			loading = false;
 		}

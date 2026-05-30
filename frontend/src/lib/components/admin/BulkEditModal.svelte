@@ -64,7 +64,7 @@
 	];
 
 	async function saveBulkEdit() {
-		const updates: any = {};
+		const updates: Record<string, unknown> = {};
 
 		if (updateContentType && contentType) updates.content_type = contentType;
 		if (updateTrader) updates.trader_id = traderId;

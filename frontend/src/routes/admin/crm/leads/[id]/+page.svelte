@@ -96,7 +96,7 @@
 		next_followup_at?: string;
 		created_at: string;
 		updated_at: string;
-		custom_fields?: Record<string, any>;
+		custom_fields?: Record<string, unknown>;
 	}
 
 	interface TimelineEvent {

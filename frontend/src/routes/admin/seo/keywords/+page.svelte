@@ -272,7 +272,9 @@
 					<div class="opportunity-card">
 						<div class="opp-header">
 							<span class="rank-badge top-20">#{keyword.current_rank}</span>
-							<span class="competition-badge">{Math.round((keyword.competition ?? 0) * 100)}% comp.</span>
+							<span class="competition-badge"
+								>{Math.round((keyword.competition ?? 0) * 100)}% comp.</span
+							>
 						</div>
 						<div class="opp-keyword">{keyword.keyword}</div>
 						<div class="opp-volume">{keyword.search_volume?.toLocaleString()} searches/mo</div>

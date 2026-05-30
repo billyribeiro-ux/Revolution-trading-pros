@@ -361,8 +361,13 @@ export function useBlockValidation(block: Block, rules: ValidationRule[]) {
 				// Skip if empty and not required
 				if (isEmpty(value) && !rule.required) return null;
 
+				// asyncRules is filtered on `rule.asyncCustom`, but the narrowing is
+				// lost inside this async closure — guard to recover it.
+				const asyncCustom = rule.asyncCustom;
+				if (!asyncCustom) return null;
+
 				try {
-					const isValid = await rule.asyncCustom!(value, block);
+					const isValid = await asyncCustom(value, block);
 					if (!isValid) {
 						return {
 							field: rule.field,

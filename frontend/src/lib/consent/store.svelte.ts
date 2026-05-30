@@ -249,7 +249,7 @@ function createConsentStore() {
 				} else {
 					logConsentUpdated(newState, previousState, method);
 				}
-				trackConsentInteraction('save_preferences', categories as any);
+				trackConsentInteraction('save_preferences', categories);
 
 				// Dispatch event
 				dispatchConsentEvent(previousState, newState);

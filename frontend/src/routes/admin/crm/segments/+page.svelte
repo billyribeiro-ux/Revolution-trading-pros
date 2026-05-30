@@ -60,7 +60,7 @@
 	interface SegmentCondition {
 		field: string;
 		operator: string;
-		value: any;
+		value: unknown;
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════

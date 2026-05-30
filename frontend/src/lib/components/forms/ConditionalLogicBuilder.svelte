@@ -276,7 +276,8 @@
 							value={rule.operator}
 							onchange={(e: Event) =>
 								updateRule(index, {
-									operator: (e.currentTarget as HTMLSelectElement).value as any
+									operator: (e.currentTarget as HTMLSelectElement)
+										.value as ConditionalRule['operator']
 								})}
 							class="rule-select operator-select"
 						>
