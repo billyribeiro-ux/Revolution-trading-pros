@@ -1077,7 +1077,7 @@ export function scheduleIdleWork<T>(
 		const { timeout = 1000 } = options || {};
 
 		if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-			window.requestIdleCallback!(
+			window.requestIdleCallback?.(
 				(deadline) => {
 					try {
 						const result = work(deadline);

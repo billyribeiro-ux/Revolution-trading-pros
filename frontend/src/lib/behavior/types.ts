@@ -61,8 +61,8 @@ export interface BehaviorEvent {
 	element?: string;
 	element_selector?: string;
 	coordinates?: { x: number; y: number };
-	event_value?: any;
-	event_metadata?: Record<string, any>;
+	event_value?: unknown;
+	event_metadata?: Record<string, unknown>;
 }
 
 export interface PageViewEvent extends BehaviorEvent {

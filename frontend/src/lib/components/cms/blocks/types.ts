@@ -166,7 +166,8 @@ export interface BlockContent {
 	authorPhoto?: string;
 	authorSocials?: Array<{ platform: string; url: string }>;
 
-	// Any other data
+	// Dynamic block-field escape hatch; consumers narrow per field.
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	[key: string]: any;
 }
 
@@ -223,7 +224,8 @@ export interface BlockSettings {
 	padding?: 'none' | 'small' | 'medium' | 'large'; // Group
 	targetDate?: string; // Countdown
 
-	// Any other settings
+	// Dynamic block-field escape hatch; consumers narrow per field.
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	[key: string]: any;
 }
 
@@ -234,6 +236,8 @@ export interface BlockMetadata {
 	createdBy?: string;
 	version?: number;
 	locked?: boolean;
+	// Dynamic metadata escape hatch; consumers narrow per field.
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	[key: string]: any;
 }
 

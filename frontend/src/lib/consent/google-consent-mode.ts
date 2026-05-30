@@ -34,7 +34,7 @@ function ensureGtag(): void {
 	// Create gtag function if not present
 	if (typeof window.gtag !== 'function') {
 		window.gtag = function (...args: unknown[]) {
-			window.dataLayer!.push(args);
+			window.dataLayer?.push(args);
 		};
 	}
 }
@@ -90,7 +90,7 @@ export function setDefaultConsent(consent: ConsentState, waitForUpdate?: number)
 		consentParams.wait_for_update = waitForUpdate;
 	}
 
-	window.gtag!('consent', 'default', consentParams);
+	window.gtag?.('consent', 'default', consentParams);
 }
 
 /**
@@ -106,7 +106,7 @@ export function updateConsent(consent: ConsentState): void {
 
 	const params = mapConsentToGoogle(consent);
 
-	window.gtag!('consent', 'update', params);
+	window.gtag?.('consent', 'update', params);
 }
 
 /**
@@ -162,7 +162,7 @@ export function grantAllConsent(): void {
 		security_storage: 'granted'
 	};
 
-	window.gtag!('consent', 'update', params);
+	window.gtag?.('consent', 'update', params);
 	consentInitialized = true;
 }
 
@@ -184,6 +184,6 @@ export function denyNonEssentialConsent(): void {
 		security_storage: 'granted' // Always granted
 	};
 
-	window.gtag!('consent', 'update', params);
+	window.gtag?.('consent', 'update', params);
 	consentInitialized = true;
 }

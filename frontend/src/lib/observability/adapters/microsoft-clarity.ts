@@ -266,11 +266,11 @@ class MicrosoftClarityAdapter implements AnalyticsAdapter {
 					// Configure Clarity
 					if (window.clarity) {
 						// Set cookie consent mode
-						window.clarity!('consent', this._consent.analytics);
+						window.clarity?.('consent', this._consent.analytics);
 
 						// Enable/disable content tracking
 						if (clarityConfig.content !== undefined) {
-							window.clarity!('set', 'content', clarityConfig.content);
+							window.clarity?.('set', 'content', clarityConfig.content);
 						}
 					}
 
@@ -303,7 +303,7 @@ class MicrosoftClarityAdapter implements AnalyticsAdapter {
 
 		// Update Clarity consent
 		if (window.clarity) {
-			window.clarity!('consent', consent.analytics);
+			window.clarity?.('consent', consent.analytics);
 		}
 
 		// If consent just granted and not yet loaded, initialize
@@ -324,10 +324,10 @@ class MicrosoftClarityAdapter implements AnalyticsAdapter {
 
 		try {
 			// Clarity automatically tracks page views, but we can add custom tags
-			window.clarity!('set', 'pageType', payload.page_type || 'page');
+			window.clarity?.('set', 'pageType', payload.page_type || 'page');
 
 			if (payload.content_group) {
-				window.clarity!('set', 'contentGroup', payload.content_group);
+				window.clarity?.('set', 'contentGroup', payload.content_group);
 			}
 
 			this._metrics.eventsTracked++;
@@ -350,11 +350,11 @@ class MicrosoftClarityAdapter implements AnalyticsAdapter {
 
 		try {
 			// Set custom tag for the event
-			window.clarity!('set', eventName, payload?.event_label || 'true');
+			window.clarity?.('set', eventName, payload?.event_label || 'true');
 
 			// Add additional properties as tags
 			if (payload?.event_category) {
-				window.clarity!('set', `${eventName}_category`, payload.event_category);
+				window.clarity?.('set', `${eventName}_category`, payload.event_category);
 			}
 
 			this._metrics.eventsTracked++;
@@ -381,18 +381,18 @@ class MicrosoftClarityAdapter implements AnalyticsAdapter {
 
 		try {
 			// Set popup-specific tags for filtering in Clarity dashboard
-			window.clarity!('set', 'popupId', popupId);
-			window.clarity!('set', 'popupEvent', eventType);
+			window.clarity?.('set', 'popupId', popupId);
+			window.clarity?.('set', 'popupEvent', eventType);
 
 			if (metadata) {
 				Object.entries(metadata).forEach(([key, value]) => {
-					window.clarity!('set', `popup_${key}`, String(value));
+					window.clarity?.('set', `popup_${key}`, String(value));
 				});
 			}
 
 			// Upgrade session priority for popup interactions
 			if (eventType === 'conversion') {
-				window.clarity!('upgrade', 'popup_conversion');
+				window.clarity?.('upgrade', 'popup_conversion');
 			}
 
 			this._metrics.eventsTracked++;
@@ -414,9 +414,9 @@ class MicrosoftClarityAdapter implements AnalyticsAdapter {
 		if (!this.isReady || !window.clarity) return;
 
 		try {
-			window.clarity!('set', 'clickElement', elementId);
-			window.clarity!('set', 'clickType', elementType);
-			window.clarity!('set', 'clickPosition', `${x},${y}`);
+			window.clarity?.('set', 'clickElement', elementId);
+			window.clarity?.('set', 'clickType', elementType);
+			window.clarity?.('set', 'clickPosition', `${x},${y}`);
 
 			this._metrics.eventsTracked++;
 		} catch (_error) {
@@ -432,20 +432,20 @@ class MicrosoftClarityAdapter implements AnalyticsAdapter {
 
 		if (this.isReady && window.clarity) {
 			// Set user ID for session association
-			window.clarity!('identify', payload.user_id);
+			window.clarity?.('identify', payload.user_id);
 
 			// Set user properties as custom tags
 			if (payload.email) {
-				window.clarity!('set', 'userEmail', payload.email);
+				window.clarity?.('set', 'userEmail', payload.email);
 			}
 			if (payload.name) {
-				window.clarity!('set', 'userName', payload.name);
+				window.clarity?.('set', 'userName', payload.name);
 			}
 
 			// Set custom dimensions
 			Object.entries(payload).forEach(([key, value]) => {
 				if (key !== 'user_id' && value !== undefined) {
-					window.clarity!('set', `user_${key}`, String(value));
+					window.clarity?.('set', `user_${key}`, String(value));
 				}
 			});
 		}
@@ -462,7 +462,7 @@ class MicrosoftClarityAdapter implements AnalyticsAdapter {
 		if (!browser || !this.isReady || !window.clarity) return;
 
 		Object.entries(properties).forEach(([key, value]) => {
-			window.clarity!('set', key, String(value));
+			window.clarity?.('set', key, String(value));
 		});
 
 		if (this._config?.debug) {
@@ -476,7 +476,7 @@ class MicrosoftClarityAdapter implements AnalyticsAdapter {
 	upgradeSession(reason: string): void {
 		if (!this.isReady || !window.clarity) return;
 
-		window.clarity!('upgrade', reason);
+		window.clarity?.('upgrade', reason);
 
 		if (this._config?.debug) {
 			logger.debug('[Clarity] Session upgraded:', reason);

@@ -328,8 +328,10 @@ export function isValidEventName(name: string): boolean {
 	return /^[a-z0-9_]+$/.test(name) && name.length <= 100;
 }
 
-export function sanitizeEventProperties(properties: Record<string, any>): Record<string, any> {
-	const sanitized: Record<string, any> = {};
+export function sanitizeEventProperties(
+	properties: Record<string, unknown>
+): Record<string, unknown> {
+	const sanitized: Record<string, unknown> = {};
 
 	for (const [key, value] of Object.entries(properties)) {
 		// Skip invalid keys
