@@ -128,7 +128,12 @@
 		candles.forEach((d, i) => {
 			const isGreen = d.close > d.open;
 			const candleColor = isGreen ? '#10b981' : '#ef4444';
-			const xPos = x(i.toString())! + x.bandwidth() / 2;
+			// `x(i.toString())` is `number | undefined` from d3's band scale; the
+			// domain was built from `candles.map(_, i => i.toString())` so the key
+			// is always present. Capture into a guarded const to drop the `!`.
+			const xBand = x(i.toString());
+			if (xBand === undefined) return;
+			const xPos = xBand + x.bandwidth() / 2;
 
 			// Wick
 			g.append('line')
@@ -139,13 +144,9 @@
 				.attr('stroke', candleColor)
 				.attr('stroke-width', 1);
 
-			// Body. `x(i.toString())` is `number | undefined` from d3's band
-			// scale; we built the domain from `candles.map(_, i => i.toString())`
-			// so the key is always present. The pre-R24-A code used `as any` to
-			// hide the strict-null mismatch — non-null assertion matches the
-			// wick block above which already uses `!`. LB-CHART-1.
+			// Body
 			g.append('rect')
-				.attr('x', x(i.toString())!)
+				.attr('x', xBand)
 				.attr('y', y(Math.max(d.open, d.close)))
 				.attr('width', x.bandwidth())
 				.attr('height', Math.abs(y(d.open) - y(d.close)) || 1)
@@ -166,7 +167,9 @@
 			.data(data)
 			.enter()
 			.append('rect')
-			.attr('x', (_d, i) => x(i.toString())!)
+			// Band scale always has a value for keys built from these indices;
+			// `?? 0` satisfies the `number | undefined` return without a `!`.
+			.attr('x', (_d, i) => x(i.toString()) ?? 0)
 			.attr('y', (d) => y(d))
 			.attr('width', x.bandwidth())
 			.attr('height', (d) => height - y(d))

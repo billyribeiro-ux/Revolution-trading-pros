@@ -232,19 +232,25 @@ export const actions: Actions = {
 					avatarUrl: updatedProfile.avatar_url
 				}
 			};
-		} catch (error: any) {
-			console.error('[Account] Profile update failed:', error);
+		} catch (e) {
+			console.error('[Account] Profile update failed:', e);
+
+			const err = e as {
+				errors?: Record<string, unknown>;
+				message?: string;
+				status?: number;
+			};
 
 			// Handle API errors with proper messages
-			if (error?.errors) {
+			if (err?.errors) {
 				// Backend validation errors
-				const firstError = Object.values(error.errors)[0];
+				const firstError = Object.values(err.errors)[0];
 				const errorMessage = Array.isArray(firstError) ? firstError[0] : 'Validation failed';
 				return fail(400, { error: errorMessage });
 			}
 
-			if (error?.message) {
-				return fail(error.status || 500, { error: error.message });
+			if (err?.message) {
+				return fail(err.status || 500, { error: err.message });
 			}
 
 			return fail(500, { error: 'Failed to update profile. Please try again.' });
@@ -308,23 +314,29 @@ export const actions: Actions = {
 				success: true,
 				message: result.message || 'Password changed successfully!'
 			};
-		} catch (error: any) {
-			console.error('[Account] Password update failed:', error);
+		} catch (e) {
+			console.error('[Account] Password update failed:', e);
+
+			const err = e as {
+				errors?: Record<string, unknown>;
+				message?: string;
+				status?: number;
+			};
 
 			// Handle API errors with proper messages
-			if (error?.errors) {
+			if (err?.errors) {
 				// Backend validation errors
-				const firstError = Object.values(error.errors)[0];
+				const firstError = Object.values(err.errors)[0];
 				const errorMessage = Array.isArray(firstError) ? firstError[0] : 'Validation failed';
 				return fail(400, { error: errorMessage });
 			}
 
-			if (error?.message) {
+			if (err?.message) {
 				// Handle specific error messages from backend
-				if (error.message.includes('current password')) {
+				if (err.message.includes('current password')) {
 					return fail(401, { error: 'Current password is incorrect' });
 				}
-				return fail(error.status || 500, { error: error.message });
+				return fail(err.status || 500, { error: err.message });
 			}
 
 			return fail(500, { error: 'Failed to change password. Please try again.' });

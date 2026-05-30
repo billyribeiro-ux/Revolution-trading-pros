@@ -217,7 +217,9 @@ describe('lazyLoadOnVisible', () => {
 		expect(observeSpy).toHaveBeenCalledWith(element);
 
 		// Fire the intersection.
-		captured!([{ isIntersecting: true } as IntersectionObserverEntry]);
+		const fireIntersection = captured as ((entries: IntersectionObserverEntry[]) => void) | null;
+		if (!fireIntersection) throw new Error('IntersectionObserver callback was not captured');
+		fireIntersection([{ isIntersecting: true } as IntersectionObserverEntry]);
 
 		const result = await promise;
 		expect(result).toBe(fake);
@@ -242,9 +244,11 @@ describe('lazyLoadOnVisible', () => {
 		const promise = lazyLoadOnVisible(element, importFn);
 
 		// Race: non-intersecting entry must NOT trigger import.
-		captured!([{ isIntersecting: false } as IntersectionObserverEntry]);
+		const fire = captured as ((entries: IntersectionObserverEntry[]) => void) | null;
+		if (!fire) throw new Error('IntersectionObserver callback was not captured');
+		fire([{ isIntersecting: false } as IntersectionObserverEntry]);
 		// Now fire an intersecting one to unblock the test.
-		captured!([{ isIntersecting: true } as IntersectionObserverEntry]);
+		fire([{ isIntersecting: true } as IntersectionObserverEntry]);
 		await promise;
 
 		// Only the second (intersecting) entry should have triggered an import.

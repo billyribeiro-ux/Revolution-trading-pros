@@ -35,8 +35,19 @@ import { vi } from 'vitest';
  * });
  * ```
  */
+/**
+ * Minimal structural type for a legacy Svelte component constructor as used by
+ * these tests (target + props instantiation, plus $set/$destroy lifecycle).
+ */
+interface LegacyComponentConstructor<T> {
+	new (options: { target: HTMLElement; props: T }): {
+		$set(props: Partial<T>): void;
+		$destroy(): void;
+	};
+}
+
 export function renderWithProviders<T extends Record<string, unknown>>(
-	component: any,
+	component: LegacyComponentConstructor<T>,
 	props: T = {} as T,
 	options: RenderOptions = {}
 ) {
@@ -44,7 +55,7 @@ export function renderWithProviders<T extends Record<string, unknown>>(
 	document.body.appendChild(container);
 
 	// Create component instance
-	const instance = new (component as any)({
+	const instance = new component({
 		target: container,
 		props
 	});

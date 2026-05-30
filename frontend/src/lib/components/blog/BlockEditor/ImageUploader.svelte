@@ -190,17 +190,32 @@
 		assetManagerOpen = true;
 	}
 
-	function handleAssetSelect(asset: any) {
+	// Subset of AssetManager's `Asset` shape that handleAssetSelect consumes.
+	// Field types match AssetManager's `Asset` so this stays a valid `onSelect`
+	// handler (contravariant param) without an `any`.
+	interface SelectedAsset {
+		id: string;
+		cdn_url: string;
+		filename: string;
+		mime_type: string;
+		file_size: number;
+		width: number | null;
+		height: number | null;
+		blurhash: string | null;
+		created_at: string | null;
+	}
+
+	function handleAssetSelect(asset: SelectedAsset) {
 		// Convert asset to UploadResult format
 		const result: UploadResult = {
-			id: asset.id,
+			id: parseInt(asset.id, 10) || 0,
 			url: asset.cdn_url,
 			filename: asset.filename,
 			mimeType: asset.mime_type || 'image/jpeg',
 			size: asset.file_size,
-			width: asset.width,
-			height: asset.height,
-			blurhash: asset.blurhash,
+			width: asset.width ?? 0,
+			height: asset.height ?? 0,
+			blurhash: asset.blurhash ?? undefined,
 			createdAt: asset.created_at || new Date().toISOString()
 		};
 
@@ -464,8 +479,9 @@
 		uploadQueue[idx].controller?.abort();
 
 		// Clean up
-		if (uploadQueue[idx].previewUrl) {
-			URL.revokeObjectURL(uploadQueue[idx].previewUrl!);
+		const previewUrl = uploadQueue[idx].previewUrl;
+		if (previewUrl) {
+			URL.revokeObjectURL(previewUrl);
 		}
 
 		// Remove from queue
@@ -476,8 +492,9 @@
 		const idx = uploadQueue.findIndex((item) => item.id === itemId);
 		if (idx === -1) return;
 
-		if (uploadQueue[idx].previewUrl) {
-			URL.revokeObjectURL(uploadQueue[idx].previewUrl!);
+		const previewUrl = uploadQueue[idx].previewUrl;
+		if (previewUrl) {
+			URL.revokeObjectURL(previewUrl);
 		}
 
 		uploadQueue = uploadQueue.filter((item) => item.id !== itemId);

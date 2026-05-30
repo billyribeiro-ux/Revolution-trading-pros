@@ -57,7 +57,7 @@ interface RequestRecord {
 // Circuit Breaker Implementation
 // ═══════════════════════════════════════════════════════════════════════════
 
-export class CircuitBreaker<T = any> {
+export class CircuitBreaker<T = unknown> {
 	private config: CircuitBreakerConfig;
 	private state: CircuitState = 'CLOSED';
 	private failures = 0;
@@ -125,15 +125,16 @@ export class CircuitBreaker<T = any> {
 			this.onSuccess(duration);
 
 			return result;
-		} catch (error: any) {
+		} catch (error) {
 			const duration = performance.now() - startTime;
-			this.onFailure(duration, error);
+			const err = error instanceof Error ? error : new Error(String(error));
+			this.onFailure(duration, err);
 
 			if (this.fallbackFn) {
 				warn(`Request failed, using fallback for ${this.config.name}`, {
-					error: error.message
+					error: err.message
 				});
-				return this.fallbackFn(error) as Promise<R>;
+				return this.fallbackFn(err) as Promise<R>;
 			}
 
 			throw error;
@@ -445,10 +446,12 @@ class CircuitBreakerRegistry {
 	}
 
 	get(name: string, config?: Partial<CircuitBreakerConfig>): CircuitBreaker {
-		if (!this.breakers.has(name)) {
-			this.breakers.set(name, new CircuitBreaker({ ...config, name }));
+		let breaker = this.breakers.get(name);
+		if (!breaker) {
+			breaker = new CircuitBreaker({ ...config, name });
+			this.breakers.set(name, breaker);
 		}
-		return this.breakers.get(name)!;
+		return breaker;
 	}
 
 	getAll(): Map<string, CircuitBreaker> {

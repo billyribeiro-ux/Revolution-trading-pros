@@ -177,11 +177,11 @@ export class PerformanceMonitor {
 			metadata
 		};
 
-		if (!this.metrics.has(name)) {
-			this.metrics.set(name, []);
+		let entries = this.metrics.get(name);
+		if (!entries) {
+			entries = [];
+			this.metrics.set(name, entries);
 		}
-
-		const entries = this.metrics.get(name)!;
 		entries.push(entry);
 
 		// Keep only the last 100 entries per metric to prevent memory bloat
@@ -400,7 +400,7 @@ export function debounce<T extends (...args: never[]) => unknown>(
 	let result: ReturnType<T> | undefined;
 
 	const invokeFunc = (time: number): ReturnType<T> => {
-		const args = lastArgs!;
+		const args = (lastArgs ?? []) as Parameters<T>;
 		const thisArg = lastThis;
 
 		lastArgs = undefined;
@@ -535,7 +535,7 @@ export function throttle<T extends (...args: never[]) => unknown>(
 	let result: ReturnType<T>;
 
 	const invokeFunc = (): ReturnType<T> => {
-		const args = lastArgs!;
+		const args = (lastArgs ?? []) as Parameters<T>;
 		const thisArg = lastThis;
 		lastArgs = undefined;
 		lastThis = undefined;
@@ -848,7 +848,8 @@ export async function preloadImages(
 
 	const worker = async () => {
 		while (queue.length > 0) {
-			const src = queue.shift()!;
+			const src = queue.shift();
+			if (src === undefined) break;
 			try {
 				const img = await preloadImage(src);
 				results.set(src, img);

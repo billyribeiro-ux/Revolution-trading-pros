@@ -260,18 +260,25 @@
 			// the (typed-as-nullable) `gsap` module variable.
 			const gsapRef = gsap;
 
+			// Local non-null ref so the inner closure can scope queries without
+			// re-checking the (typed-as-nullable) `cardRef` state. `onMount`
+			// already guards `!cardRef` above, but TS narrowing doesn't persist
+			// across this async IIFE boundary.
+			const card = cardRef;
+			if (!card) return;
+
 			// GSAP 3.12+ pattern: use gsap.context() for proper cleanup
 			gsapContext = gsapRef.context(() => {
 				// Entrance animation - scope selectors to cardRef to avoid GSAP warnings
 				const tl = gsapRef.timeline({ defaults: { ease: 'power3.out' } });
 
 				// Get scoped elements
-				const formHeader = cardRef!.querySelector('.form-header');
-				const formFields = cardRef!.querySelectorAll('.form-field');
-				const socialLogin = cardRef!.querySelector('.social-login');
-				const formActions = cardRef!.querySelector('.form-actions');
+				const formHeader = card.querySelector('.form-header');
+				const formFields = card.querySelectorAll('.form-field');
+				const socialLogin = card.querySelector('.social-login');
+				const formActions = card.querySelector('.form-actions');
 
-				tl.from(cardRef, {
+				tl.from(card, {
 					opacity: 0,
 					y: 40,
 					scale: 0.95,
@@ -290,7 +297,7 @@
 				if (formActions) {
 					tl.from(formActions, { opacity: 0, y: 20, duration: 0.4 }, '-=0.2');
 				}
-			}, cardRef);
+			}, card);
 
 			// Focus email input after animation (only if not pre-filled)
 			setTimeout(() => {

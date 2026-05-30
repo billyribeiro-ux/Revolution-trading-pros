@@ -34,11 +34,12 @@ function initializePinterest(tagId: string): void {
 
 	// Create pintrk stub if not present
 	if (!window.pintrk) {
-		window.pintrk = function (...args: unknown[]) {
-			window.pintrk!.queue = window.pintrk!.queue || [];
-			window.pintrk!.queue.push(args);
+		const pintrk: NonNullable<Window['pintrk']> = function (...args: unknown[]) {
+			pintrk.queue = pintrk.queue || [];
+			pintrk.queue.push(args);
 		};
-		window.pintrk.version = '3.0';
+		pintrk.version = '3.0';
+		window.pintrk = pintrk;
 	}
 
 	// Load Pinterest script
@@ -61,9 +62,9 @@ function initializePinterest(tagId: string): void {
 function processEventQueue(): void {
 	if (!window.pintrk || !pinterestReady) return;
 
-	while (eventQueue.length > 0) {
-		const { event, data } = eventQueue.shift()!;
-		window.pintrk('track', event, data);
+	let queued: { event: string; data?: Record<string, unknown> } | undefined;
+	while ((queued = eventQueue.shift())) {
+		window.pintrk('track', queued.event, queued.data);
 	}
 }
 

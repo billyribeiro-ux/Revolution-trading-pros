@@ -55,7 +55,7 @@
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { scale, fade } from 'svelte/transition';
 	import { spring, tweened } from 'svelte/motion';
-	import { popupStore, activePopup, type Popup } from '$lib/stores/popups.svelte';
+	import { popupStore, activePopup, type Popup, type PopupButton } from '$lib/stores/popups.svelte';
 	import { browser } from '$app/environment';
 	import { page } from '$app/state';
 	import { IconX, IconLoader, IconCheck, IconAlertCircle } from '$lib/icons';
@@ -71,6 +71,7 @@
 	let isSubmitting = $state(false);
 	let submitSuccess = $state(false);
 	let submitError = $state('');
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- dynamic form-field map bound via bind:value/bind:checked to heterogeneous inputs (string + boolean); no single concrete type fits both
 	let formData = $state<Record<string, any>>({});
 	let formErrors = $state<Record<string, string>>({});
 	let modalElement = $state<HTMLDivElement>();
@@ -652,7 +653,7 @@
 		}
 	}
 
-	function handleButtonClick(button: any) {
+	function handleButtonClick(button: PopupButton) {
 		userInteracted = true;
 		interactionTime = Date.now() - impressionTime;
 
@@ -691,7 +692,7 @@
 		// Record conversion for CTA clicks
 		if (button.action !== 'close' && currentPopup) {
 			popupStore.recordConversion(currentPopup.id, {
-				action: button.action,
+				action: button.action ?? '',
 				buttonText: button.text,
 				variant: variantId
 			});
@@ -855,10 +856,10 @@
 		}
 	}
 
-	function trackEvent(eventName: string, data: Record<string, any>) {
+	function trackEvent(eventName: string, data: Record<string, unknown>) {
 		// Send to analytics
 		if (browser && 'gtag' in window) {
-			(window as any).gtag('event', eventName, data);
+			window.gtag?.('event', eventName, data);
 		}
 
 		// Log in development

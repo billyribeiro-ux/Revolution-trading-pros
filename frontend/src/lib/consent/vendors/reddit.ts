@@ -36,10 +36,11 @@ function initializeReddit(pixelId: string): void {
 
 	// Create rdt stub if not present
 	if (!window.rdt) {
-		window.rdt = function (...args: unknown[]) {
-			window.rdt!.callQueue = window.rdt!.callQueue || [];
-			window.rdt!.callQueue.push(args);
+		const rdt: NonNullable<Window['rdt']> = function (...args: unknown[]) {
+			rdt.callQueue = rdt.callQueue || [];
+			rdt.callQueue.push(args);
 		};
+		window.rdt = rdt;
 	}
 
 	// Load Reddit script
@@ -67,9 +68,9 @@ function initializeReddit(pixelId: string): void {
 function processEventQueue(): void {
 	if (!window.rdt || !redditReady) return;
 
-	while (eventQueue.length > 0) {
-		const { event, data } = eventQueue.shift()!;
-		window.rdt('track', event, data);
+	let queued: { event: string; data?: Record<string, unknown> } | undefined;
+	while ((queued = eventQueue.shift())) {
+		window.rdt('track', queued.event, queued.data);
 	}
 }
 
