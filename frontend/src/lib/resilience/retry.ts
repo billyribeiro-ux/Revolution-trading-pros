@@ -102,14 +102,14 @@ export class RetryPolicy {
 				}
 
 				return result;
-			} catch (error: any) {
-				lastError = error;
+			} catch (error) {
+				lastError = error instanceof Error ? error : new Error(String(error));
 
 				// Check if error is retryable
 				if (!this.isRetryable(error)) {
 					incrementCounter('retry_non_retryable_error_total', {
 						context: context || 'unknown',
-						error_type: error.name
+						error_type: lastError.name
 					});
 					throw error;
 				}
@@ -137,12 +137,12 @@ export class RetryPolicy {
 
 				// Call retry callback
 				if (this.config.onRetry) {
-					this.config.onRetry(attempt, error);
+					this.config.onRetry(attempt, lastError);
 				}
 
 				warn(`Retry attempt ${attempt}/${this.config.maxAttempts} failed, retrying in ${delay}ms`, {
 					context,
-					error: error.message
+					error: lastError.message
 				});
 
 				incrementCounter('retry_attempt_total', {
@@ -162,11 +162,18 @@ export class RetryPolicy {
 	/**
 	 * Check if error is retryable
 	 */
-	private isRetryable(error: any): boolean {
+	private isRetryable(error: unknown): boolean {
+		const err = error as {
+			name?: string;
+			message?: string;
+			status?: number;
+			response?: { status?: number };
+			constructor?: { name?: string };
+		};
 		// Check error name/type
 		if (this.config.retryableErrors) {
-			const errorName = error.name || error.constructor?.name || '';
-			const errorMessage = error.message || '';
+			const errorName = err.name || err.constructor?.name || '';
+			const errorMessage = err.message || '';
 
 			for (const retryableError of this.config.retryableErrors) {
 				if (errorName.includes(retryableError) || errorMessage.includes(retryableError)) {
@@ -176,13 +183,13 @@ export class RetryPolicy {
 		}
 
 		// Check HTTP status code
-		if (error.status && this.config.retryableStatusCodes) {
-			return this.config.retryableStatusCodes.includes(error.status);
+		if (err.status && this.config.retryableStatusCodes) {
+			return this.config.retryableStatusCodes.includes(err.status);
 		}
 
 		// Check response status
-		if (error.response?.status && this.config.retryableStatusCodes) {
-			return this.config.retryableStatusCodes.includes(error.response.status);
+		if (err.response?.status && this.config.retryableStatusCodes) {
+			return this.config.retryableStatusCodes.includes(err.response.status);
 		}
 
 		return false;
@@ -307,7 +314,7 @@ export async function retryWithHandler<T>(
 // Idempotency Helper
 // ═══════════════════════════════════════════════════════════════════════════
 
-const idempotencyKeys = new Map<string, Promise<any>>();
+const idempotencyKeys = new Map<string, Promise<unknown>>();
 
 /**
  * Execute function with idempotency guarantee
@@ -319,9 +326,10 @@ export async function withIdempotency<T>(
 	ttl: number = 60000 // 1 minute
 ): Promise<T> {
 	// Check if request is already in flight
-	if (idempotencyKeys.has(key)) {
+	const inFlight = idempotencyKeys.get(key);
+	if (inFlight) {
 		warn('Idempotent request already in flight, returning existing promise', { key });
-		return idempotencyKeys.get(key)!;
+		return inFlight as Promise<T>;
 	}
 
 	// Execute and cache promise
@@ -346,7 +354,7 @@ export async function withIdempotency<T>(
 /**
  * Generate idempotency key from request details
  */
-export function generateIdempotencyKey(method: string, url: string, body?: any): string {
+export function generateIdempotencyKey(method: string, url: string, body?: unknown): string {
 	const bodyStr = body ? JSON.stringify(body) : '';
 	const combined = `${method}:${url}:${bodyStr}`;
 

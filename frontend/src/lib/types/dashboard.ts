@@ -25,11 +25,11 @@ export interface DashboardWidget {
 	position_y: number;
 	width: number;
 	height: number;
-	config?: Record<string, any>;
+	config?: Record<string, unknown>;
 	data_provider?: string;
 	refresh_interval: number;
 	is_visible: boolean;
-	data?: any;
+	data?: unknown;
 }
 
 export type WidgetType =
@@ -74,7 +74,7 @@ export interface SystemHealthData {
 export interface ServiceHealth {
 	service_name: string;
 	overall_status: 'healthy' | 'warning' | 'critical';
-	metrics: any;
+	metrics: unknown;
 	critical_count: number;
 	warning_count: number;
 }
