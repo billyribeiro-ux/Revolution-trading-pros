@@ -85,6 +85,7 @@ export interface SocialShareState {
 }
 
 export interface ReusableComponentState {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- heterogeneous reusable-component payload indexed by callers; unknown[] cascades into its own read sites
 	data: any[] | null;
 	loading: boolean;
 	error: string | null;

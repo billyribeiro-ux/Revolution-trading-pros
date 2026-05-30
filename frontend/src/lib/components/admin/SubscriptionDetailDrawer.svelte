@@ -269,6 +269,7 @@
 </script>
 
 {#if isOpen && subscription}
+	{@const sub = subscription}
 	<div
 		class="drawer-backdrop"
 		role="presentation"
@@ -327,7 +328,7 @@
 
 			<!-- Action Buttons -->
 			<div class="action-buttons">
-				<button type="button" class="btn-action" onclick={() => onEdit?.(subscription!)}>
+				<button type="button" class="btn-action" onclick={() => onEdit?.(sub)}>
 					<IconEdit size={16} />
 					Edit
 				</button>

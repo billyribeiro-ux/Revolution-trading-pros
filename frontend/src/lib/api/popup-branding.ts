@@ -291,7 +291,7 @@ export const THEME_PRESETS: Record<string, ThemePreset> = {
 export const DEFAULT_BRANDING: BrandingConfig = {
 	fonts: DEFAULT_FONTS,
 	typography: DEFAULT_TYPOGRAPHY,
-	colors: THEME_PRESETS['dark']?.colors ?? THEME_PRESETS['dark']!.colors,
+	colors: THEME_PRESETS['dark'].colors,
 	theme: 'dark',
 	borderRadius: {
 		sm: '4px',
