@@ -148,6 +148,7 @@ export class LRUCache<T> {
 }
 
 // Memoization decorator
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- generic function-wrapper constraint; T is recovered via Parameters<T>/ReturnType<T>
 export function memoize<T extends (...args: any[]) => any>(
 	fn: T,
 	options: { maxAge?: number; keyFn?: (...args: Parameters<T>) => string } = {}
@@ -170,6 +171,6 @@ export function memoize<T extends (...args: any[]) => any>(
 }
 
 // Global caches
-export const blockCache = new LRUCache<any>(50 * 1024 * 1024, 5 * 60 * 1000);
+export const blockCache = new LRUCache<unknown>(50 * 1024 * 1024, 5 * 60 * 1000);
 export const imageCache = new LRUCache<string>(100 * 1024 * 1024, 30 * 60 * 1000);
 export const renderCache = new LRUCache<string>(20 * 1024 * 1024, 60 * 1000);
