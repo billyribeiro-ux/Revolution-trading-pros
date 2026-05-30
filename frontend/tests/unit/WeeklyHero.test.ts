@@ -122,14 +122,14 @@ describe('isValidVideoUrl', () => {
 		});
 
 		it('rejects null/undefined', () => {
-			expect(isValidVideoUrl(null as any)).toBe(false);
-			expect(isValidVideoUrl(undefined as any)).toBe(false);
+			expect(isValidVideoUrl(null as unknown as string)).toBe(false);
+			expect(isValidVideoUrl(undefined as unknown as string)).toBe(false);
 		});
 
 		it('rejects non-string types', () => {
-			expect(isValidVideoUrl(123 as any)).toBe(false);
-			expect(isValidVideoUrl({} as any)).toBe(false);
-			expect(isValidVideoUrl([] as any)).toBe(false);
+			expect(isValidVideoUrl(123 as unknown as string)).toBe(false);
+			expect(isValidVideoUrl({} as unknown as string)).toBe(false);
+			expect(isValidVideoUrl([] as unknown as string)).toBe(false);
 		});
 
 		it('rejects malformed URLs', () => {
@@ -226,7 +226,7 @@ describe('WeeklyHero Component Logic', () => {
 			});
 
 			invalidTabs.forEach((tab: string | number | null | undefined) => {
-				expect(['video', 'entries'].includes(tab as any)).toBe(false);
+				expect(['video', 'entries'].includes(tab as string)).toBe(false);
 			});
 		});
 	});

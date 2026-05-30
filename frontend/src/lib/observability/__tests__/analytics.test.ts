@@ -123,7 +123,7 @@ describe('Adapter Types', () => {
 describe('GoogleAnalytics Adapter', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
-		(globalThis as any).window.dataLayer = [];
+		(globalThis as unknown as { window: { dataLayer: unknown[] } }).window.dataLayer = [];
 		resetGoogleAnalyticsAdapter();
 	});
 
@@ -202,7 +202,7 @@ describe('GoogleAnalytics Adapter', () => {
 	it('should track purchase', () => {
 		const adapter = createGoogleAnalyticsAdapter();
 		expect(() => {
-			adapter.trackPurchase!({
+			adapter.trackPurchase?.({
 				transaction_id: 'T-123',
 				value: 99.99,
 				currency: 'USD',
@@ -214,7 +214,7 @@ describe('GoogleAnalytics Adapter', () => {
 	it('should identify user', () => {
 		const adapter = createGoogleAnalyticsAdapter();
 		expect(() => {
-			adapter.identify!({
+			adapter.identify?.({
 				user_id: 'user-123',
 				email: 'test@example.com',
 				name: 'Test User'
@@ -225,14 +225,14 @@ describe('GoogleAnalytics Adapter', () => {
 	it('should reset user', () => {
 		const adapter = createGoogleAnalyticsAdapter();
 		expect(() => {
-			adapter.reset!();
+			adapter.reset?.();
 		}).not.toThrow();
 	});
 
 	it('should handle consent change', () => {
 		const adapter = createGoogleAnalyticsAdapter();
 		expect(() => {
-			adapter.onConsentChange!({ analytics: true, marketing: true });
+			adapter.onConsentChange?.({ analytics: true, marketing: true });
 		}).not.toThrow();
 	});
 });
@@ -316,7 +316,7 @@ describe('Console Adapter', () => {
 describe('Backend Adapter', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
-		(globalThis as any).localStorage.data = {};
+		(globalThis as unknown as { localStorage: { data: Record<string, unknown> } }).localStorage.data = {};
 	});
 
 	it('should create singleton instance via getBackendAdapter', () => {
@@ -393,7 +393,7 @@ describe('Backend Adapter', () => {
 			consent: { analytics: true, marketing: false }
 		});
 
-		adapter.identify!({
+		adapter.identify?.({
 			user_id: 'user-456',
 			email: 'user@test.com'
 		});
@@ -411,7 +411,7 @@ describe('Backend Adapter', () => {
 		});
 
 		adapter.trackEvent('test_event', {});
-		adapter.onConsentChange!({ analytics: false, marketing: false });
+		adapter.onConsentChange?.({ analytics: false, marketing: false });
 
 		expect(adapter.metrics.queueSize).toBe(0);
 	});
@@ -867,7 +867,7 @@ describe('Integration Tests', () => {
 		vi.clearAllMocks();
 		resetOrchestrator();
 		resetGoogleAnalyticsAdapter();
-		(globalThis as any).localStorage.data = {};
+		(globalThis as unknown as { localStorage: { data: Record<string, unknown> } }).localStorage.data = {};
 	});
 
 	it('should handle full user journey', async () => {
