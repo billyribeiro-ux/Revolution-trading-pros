@@ -655,7 +655,7 @@ export class ApiClient implements Disposable {
 			}
 		}
 
-		throw lastError!;
+		throw lastError ?? new Error('Request failed');
 	}
 
 	private async executeRequest<T>(

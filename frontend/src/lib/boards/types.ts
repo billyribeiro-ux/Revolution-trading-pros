@@ -756,7 +756,7 @@ export interface DefaultLabel {
 export interface BoardIntegration {
 	type: 'slack' | 'discord' | 'teams' | 'email' | 'fluentcrm';
 	is_enabled: boolean;
-	config: Record<string, any>;
+	config: Record<string, unknown>;
 }
 
 // =====================================================
