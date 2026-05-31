@@ -16,7 +16,7 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
-	import {  } from 'svelte';
+	import {} from 'svelte';
 	import pastMembersApi, {
 		type TimePeriod,
 		type PastMember,
@@ -230,7 +230,7 @@
 		} else {
 			selectedMembers.add(id);
 		}
-		selectedMembers = newSet;
+		selectedMembers = new Set();
 	}
 
 	function selectAllMembers(): void {
