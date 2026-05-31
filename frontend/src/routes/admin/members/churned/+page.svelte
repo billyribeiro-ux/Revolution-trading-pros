@@ -95,7 +95,6 @@
 			toastStore.success(result.message);
 			showEmailModal = false;
 			selectedMembers.clear();
-			selectedMembers = selectedMembers;
 		} catch {
 			// FIX-2026-04-26: replaced native alert() with toastStore.error.
 			// Old: alert('Failed to send emails');
@@ -441,7 +440,6 @@
 										onclick={() => {
 											selectedMembers.clear();
 											selectedMembers.add(member.id);
-											selectedMembers = selectedMembers;
 											startCampaign('free_trial');
 										}}
 									>
@@ -453,7 +451,6 @@
 										onclick={() => {
 											selectedMembers.clear();
 											selectedMembers.add(member.id);
-											selectedMembers = selectedMembers;
 											showEmailModal = true;
 										}}
 									>

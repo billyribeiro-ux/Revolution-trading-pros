@@ -297,7 +297,6 @@
 				const item = items[i];
 				if (item) selectedIds.add(item.id);
 			}
-			selectedIds = selectedIds;
 		} else if (event.metaKey || event.ctrlKey) {
 			// Toggle select
 			if (selectedIds.has(item.id)) {
@@ -931,7 +930,6 @@
 													} else {
 														selectedIds.add(item.id);
 													}
-													selectedIds = selectedIds;
 												}}
 											/>
 										</div>
@@ -956,7 +954,6 @@
 												} else {
 													selectedIds.add(item.id);
 												}
-												selectedIds = selectedIds;
 											}}
 										/>
 									</div>

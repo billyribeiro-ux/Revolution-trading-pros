@@ -140,7 +140,6 @@
 			toastStore.success(result.message);
 			showRecoveryModal = false;
 			selectedCarts.clear();
-			selectedCarts = selectedCarts;
 			await loadDashboard();
 		} catch (error) {
 			toastStore.error(error instanceof Error ? error.message : 'Failed to send recovery emails');
@@ -587,7 +586,6 @@
 												onclick={() => {
 													selectedCarts.clear();
 													selectedCarts.add(cart.id);
-													selectedCarts = selectedCarts;
 													showRecoveryModal = true;
 												}}
 											>
