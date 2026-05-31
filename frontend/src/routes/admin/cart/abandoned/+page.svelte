@@ -111,7 +111,6 @@
 		} else {
 			selectedCarts.add(id);
 		}
-		selectedCarts = selectedCarts;
 	}
 
 	function selectAllCarts() {
@@ -120,7 +119,6 @@
 		} else {
 			carts.forEach((c) => selectedCarts.add(c.id));
 		}
-		selectedCarts = selectedCarts;
 	}
 
 	async function handleSendRecovery() {
