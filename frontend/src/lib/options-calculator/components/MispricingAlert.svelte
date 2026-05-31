@@ -2,6 +2,7 @@
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
 	import IconTrendingDown from '@tabler/icons-svelte-runes/icons/trending-down';
+	import { SvelteSet } from 'svelte';
 	import gsap from 'gsap';
 	import { price as bsPrice } from '../engine/black-scholes.js';
 	import type { MarketDataService } from '../data/market-data-service.svelte.js';
@@ -16,7 +17,7 @@
 
 	let { marketData, calc }: Props = $props();
 
-	let dismissed = $state<Set<string>>(new Set());
+	let dismissed = $state<SvelteSet<string>>(new SvelteSet());
 	let alertEl: HTMLDivElement | undefined = $state();
 
 	let mispricings = $derived.by<MispricingResult[]>(() => {
@@ -71,7 +72,7 @@
 	});
 
 	function dismiss(symbol: string) {
-		dismissed = new Set([...dismissed, symbol]);
+		dismissed.add(symbol);
 	}
 
 	$effect(() => {
@@ -137,7 +138,7 @@
 
 				<button
 					onclick={() => dismiss(mp.option.symbol)}
-					class="cursor-pointer flex-shrink-0"
+					class="cursor-pointer shrink-0"
 					style="color: var(--calc-text-muted);"
 					aria-label="Dismiss"
 				>

@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	// FIX-2026-04-26 (CLAUDE.md): init/cleanup belongs in onMount, not $effect.
-	import { onMount } from 'svelte';
+	import { onMount, SvelteSet } from 'svelte';
 	import { slide, scale } from 'svelte/transition';
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import {
@@ -90,7 +90,7 @@
 	let categoryFilter = $state('all');
 
 	// New state for improvements
-	let selectedPosts = $state(new Set<number>());
+	let selectedPosts = $state(new SvelteSet<number>());
 	let selectAll = $state(false);
 	let viewMode = $state<'grid' | 'list'>('grid');
 	let sortBy = $state('created_at');
@@ -286,7 +286,7 @@
 	function toggleSelectAll() {
 		selectAll = !selectAll;
 		if (selectAll) {
-			selectedPosts = new Set(posts.map((p) => p.id));
+			selectedPosts = new SvelteSet(posts.map((p) => p.id));
 		} else {
 			selectedPosts.clear();
 		}
@@ -302,7 +302,7 @@
 		} else {
 			selectedPosts.add(postId);
 		}
-		selectedPosts = new Set(selectedPosts);
+		// Note: SvelteSet mutations are reactive, no need to reassign
 
 		const post = posts.find((p) => p.id === postId);
 		if (post) post.selected = !post.selected;

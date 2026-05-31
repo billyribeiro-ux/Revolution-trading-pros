@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, SvelteSet } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { churnedStore, emailStore } from '$lib/stores/members.svelte';
 	import type { Member } from '$lib/api/members';
@@ -36,7 +36,7 @@
 	let searchQuery = $state('');
 	let winbackPotential = $state('');
 	let churnedWithinDays = $state('');
-	let selectedMembers = $state<Set<number>>(new Set());
+	let selectedMembers = $state<SvelteSet<number>>(new SvelteSet());
 	let showEmailModal = $state(false);
 	let emailSubject = $state('');
 	let emailBody = $state('');
@@ -210,7 +210,7 @@
 		<button
 			class="campaign-card free-trial"
 			onclick={() => {
-				selectedMembers = new Set(members.map((m) => m.id));
+				selectedMembers = new SvelteSet(members.map((m) => m.id));
 				startCampaign('free_trial');
 			}}
 		>
@@ -227,7 +227,7 @@
 		<button
 			class="campaign-card promo"
 			onclick={() => {
-				selectedMembers = new Set(members.map((m) => m.id));
+				selectedMembers = new SvelteSet(members.map((m) => m.id));
 				startCampaign('promo');
 			}}
 		>
@@ -243,7 +243,7 @@
 		<button
 			class="campaign-card winback"
 			onclick={() => {
-				selectedMembers = new Set(members.map((m) => m.id));
+				selectedMembers = new SvelteSet(members.map((m) => m.id));
 				startCampaign('winback');
 			}}
 		>

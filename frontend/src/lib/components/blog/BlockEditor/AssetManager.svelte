@@ -18,7 +18,7 @@
 -->
 
 <script lang="ts">
-	import { onDestroy } from 'svelte';
+	import { onDestroy, SvelteSet } from 'svelte';
 	import { fade, fly, slide, scale } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { flip } from 'svelte/animate';
@@ -124,7 +124,7 @@
 
 	// Assets
 	let assets = $state<Asset[]>([]);
-	let selectedAssets = $state<Set<string>>(new Set());
+	let selectedAssets = $state<SvelteSet<string>>(new SvelteSet());
 	let selectedAsset = $state<Asset | null>(null);
 	let assetUsage = $state<AssetUsage[]>([]);
 
@@ -387,7 +387,7 @@
 
 			if (response.ok) {
 				assets = assets.filter((a) => !selectedAssets.has(a.id));
-				selectedAssets = new Set();
+				selectedAssets.clear();
 				selectedAsset = null;
 				sidebarOpen = false;
 			}
@@ -417,7 +417,7 @@
 	//
 	// 		if (response.ok) {
 	// 			await fetchAssets(true);
-	// 			selectedAssets = new Set();
+	// 			selectedAssets.clear();
 	// 		}
 	// 	} catch (error) {
 	// 		console.error('Failed to move assets:', error);
@@ -625,7 +625,8 @@
 			}
 			selectedAssets = new Set(selectedAssets);
 		} else {
-			selectedAssets = new Set([asset.id]);
+			selectedAssets.clear();
+			selectedAssets.add(asset.id);
 		}
 	}
 
@@ -864,7 +865,7 @@
 									</button>
 									<button
 										class="bulk-btn"
-										onclick={() => (selectedAssets = new Set())}
+										onclick={() => selectedAssets.clear()}
 										title="Clear selection"
 									>
 										<Icon name="IconX" size={14} />

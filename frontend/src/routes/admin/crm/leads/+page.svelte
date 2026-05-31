@@ -27,6 +27,7 @@
 	 */
 
 	import { browser } from '$app/environment';
+	import { SvelteSet } from 'svelte';
 	import {
 		IconUsers,
 		IconUserPlus,
@@ -126,7 +127,7 @@
 	let selectedSource = $state<string>('all');
 	let sortBy = $state<string>('created_at');
 	let sortOrder = $state<'asc' | 'desc'>('desc');
-	let selectedLeads = $state<Set<string>>(new Set());
+	let selectedLeads = $state<SvelteSet<string>>(new SvelteSet());
 	let showFilters = $state(false);
 	let _viewMode = $state<'list' | 'kanban'>('list');
 
@@ -453,7 +454,7 @@
 			await api.post('/api/admin/crm/leads/bulk-delete', {
 				ids: Array.from(selectedLeads)
 			});
-			selectedLeads = new Set();
+			selectedLeads.clear();
 			showBulkDeleteModal = false;
 			await loadData();
 		} catch (error_) {
@@ -482,7 +483,7 @@
 				ids: Array.from(selectedLeads),
 				status: pendingBulkStatus
 			});
-			selectedLeads = new Set();
+			selectedLeads.clear();
 			showBulkStatusModal = false;
 			pendingBulkStatus = '';
 			await loadData();
@@ -541,20 +542,18 @@
 
 	function toggleSelectAll() {
 		if (isAllSelected) {
-			selectedLeads = new Set();
+			selectedLeads.clear();
 		} else {
-			selectedLeads = new Set(paginatedLeads.map((l) => l.id));
+			selectedLeads = new SvelteSet(paginatedLeads.map((l) => l.id));
 		}
 	}
 
 	function toggleSelectLead(leadId: string) {
-		const newSet = new Set(selectedLeads);
-		if (newSet.has(leadId)) {
-			newSet.delete(leadId);
+		if (selectedLeads.has(leadId)) {
+			selectedLeads.delete(leadId);
 		} else {
-			newSet.add(leadId);
+			selectedLeads.add(leadId);
 		}
-		selectedLeads = newSet;
 	}
 
 	function formatCurrency(amount: number): string {

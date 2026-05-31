@@ -19,6 +19,7 @@
 	import { API_BASE_URL } from '$lib/api/config';
 	import { getAuthToken } from '$lib/stores/auth.svelte';
 	import type { SEOAnalysis, HeadingNode } from './types';
+	import { SvelteSet } from 'svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES
@@ -103,7 +104,9 @@
 	/** Analysis state */
 	let isAnalyzing = $state(false);
 	let analysis = $state<SEOAnalysis | null>(null);
-	let expandedCategories = $state<Set<string>>(new Set(['overall', 'title', 'content']));
+	let expandedCategories = $state<SvelteSet<string>>(
+		new SvelteSet(['overall', 'title', 'content'])
+	);
 	let apiError = $state<string | null>(null);
 	let usedFallback = $state(false);
 
@@ -970,7 +973,7 @@
 		} else {
 			expandedCategories.add(category);
 		}
-		expandedCategories = new Set(expandedCategories);
+		// SvelteSet mutations are reactive - no reassignment needed
 	}
 
 	/** Get issues by category */

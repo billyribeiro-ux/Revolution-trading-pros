@@ -73,7 +73,7 @@
 			href="https://revolutiontradingpros.com"
 			target="_blank"
 			rel="noopener"
-			class="flex items-center gap-1 text-[10px] font-semibold px-3 py-1.5 rounded-lg flex-shrink-0 transition-all duration-200"
+			class="flex items-center gap-1 text-[10px] font-semibold px-3 py-1.5 rounded-lg shrink-0 transition-all duration-200"
 			style="background: var(--calc-accent); color: white;"
 		>
 			Learn More
@@ -83,7 +83,7 @@
 		<!-- Dismiss -->
 		<button
 			onclick={handleDismiss}
-			class="flex-shrink-0 cursor-pointer p-1 rounded-md transition-colors"
+			class="shrink-0 cursor-pointer p-1 rounded-md transition-colors"
 			style="color: var(--calc-text-muted);"
 			aria-label="Dismiss banner"
 		>

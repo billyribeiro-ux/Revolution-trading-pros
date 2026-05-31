@@ -23,7 +23,7 @@
 	import IconKey from '@tabler/icons-svelte-runes/icons/key';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconDeviceFloppy from '@tabler/icons-svelte-runes/icons/device-floppy';
-	import { onMount } from 'svelte';
+	import { onMount, SvelteSet } from 'svelte';
 	import { crmAPI } from '$lib/api/crm';
 	import type { Webhook, WebhookEvent } from '$lib/crm/types';
 	import {
@@ -43,7 +43,7 @@
 	let url = $state('');
 	let secret = $state('');
 	let isActive = $state(true);
-	let selectedEvents = $state<Set<WebhookEvent>>(new Set());
+	let selectedEvents = $state<SvelteSet<WebhookEvent>>(new SvelteSet());
 	let customHeaders = $state<Array<{ key: string; value: string }>>([]);
 
 	let availableEvents = $state<Record<string, string>>({});
@@ -118,7 +118,7 @@
 			url = webhook.url;
 			secret = webhook.secret || '';
 			isActive = webhook.is_active;
-			selectedEvents = new Set(webhook.events);
+			selectedEvents = new SvelteSet(webhook.events);
 
 			// Convert headers object to array
 			if (webhook.headers) {
@@ -206,21 +206,19 @@
 	}
 
 	function toggleEvent(event: WebhookEvent) {
-		const newSet = new Set(selectedEvents);
-		if (newSet.has(event)) {
-			newSet.delete(event);
+		if (selectedEvents.has(event)) {
+			selectedEvents.delete(event);
 		} else {
-			newSet.add(event);
+			selectedEvents.add(event);
 		}
-		selectedEvents = newSet;
 	}
 
 	function selectAllEvents() {
-		selectedEvents = new Set(Object.keys(availableEvents) as WebhookEvent[]);
+		selectedEvents = new SvelteSet(Object.keys(availableEvents) as WebhookEvent[]);
 	}
 
 	function clearAllEvents() {
-		selectedEvents = new Set();
+		selectedEvents.clear();
 	}
 
 	function addHeader() {

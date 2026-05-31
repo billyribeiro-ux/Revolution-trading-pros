@@ -10,6 +10,7 @@
 	 * @requires Svelte 5.0+ / SvelteKit 2.0+
 	 */
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
+	import { SvelteSet } from 'svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPE DEFINITIONS - Principal Engineer ICT 11 Standards
@@ -263,29 +264,25 @@
 	const alerts = $derived<Alert[]>(fallbackAlerts);
 
 	// Track which alert notes are expanded
-	let expandedNotes = $state<Set<number>>(new Set());
+	let expandedNotes = $state<SvelteSet<number>>(new SvelteSet());
 
 	// Track which trade plan notes are expanded
-	let expandedTradeNotes = $state<Set<string>>(new Set());
+	let expandedTradeNotes = $state<SvelteSet<string>>(new SvelteSet());
 
 	function toggleTradeNotes(ticker: string) {
-		const newExpanded = new Set(expandedTradeNotes);
-		if (newExpanded.has(ticker)) {
-			newExpanded.delete(ticker);
+		if (expandedTradeNotes.has(ticker)) {
+			expandedTradeNotes.delete(ticker);
 		} else {
-			newExpanded.add(ticker);
+			expandedTradeNotes.add(ticker);
 		}
-		expandedTradeNotes = newExpanded;
 	}
 
 	function toggleNotes(alertId: number) {
-		const newExpanded = new Set(expandedNotes);
-		if (newExpanded.has(alertId)) {
-			newExpanded.delete(alertId);
+		if (expandedNotes.has(alertId)) {
+			expandedNotes.delete(alertId);
 		} else {
-			newExpanded.add(alertId);
+			expandedNotes.add(alertId);
 		}
-		expandedNotes = newExpanded;
 	}
 
 	// Filter alerts

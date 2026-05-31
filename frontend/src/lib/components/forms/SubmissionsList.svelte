@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, SvelteSet } from 'svelte';
 	import type { FormSubmission } from '$lib/api/forms';
 	import {
 		getSubmissions,
@@ -36,7 +36,7 @@
 	let currentPage = $state(1);
 	let totalPages = $state(1);
 	let statusFilter: string = $state('');
-	let selectedSubmissions: Set<string> = $state(new Set());
+	let selectedSubmissions: SvelteSet<string> = $state(new SvelteSet());
 
 	// Confirmation modal state (replaces native confirm())
 	let showDeleteOneModal = $state(false);
@@ -169,9 +169,8 @@
 		if (selectedSubmissions.size === submissions.length) {
 			selectedSubmissions.clear();
 		} else {
-			selectedSubmissions = new Set(submissions.map((s) => s.submission_id));
+			selectedSubmissions = new SvelteSet(submissions.map((s) => s.submission_id));
 		}
-		selectedSubmissions = selectedSubmissions;
 	}
 
 	function handleFilterChange(event: Event) {

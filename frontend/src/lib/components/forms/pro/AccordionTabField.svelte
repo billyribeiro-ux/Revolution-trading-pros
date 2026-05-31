@@ -11,6 +11,7 @@
 
 	import { sanitizeHtml } from '$lib/sanitize';
 	import Icon from '$lib/components/Icon.svelte';
+	import { SvelteSet } from 'svelte';
 
 	interface Section {
 		id: string;
@@ -41,13 +42,13 @@
 		disabled = false
 	}: Props = $props();
 
-	let openSections = $state<Set<string>>(new Set());
+	let openSections = $state<SvelteSet<string>>(new SvelteSet());
 	let activeTab = $state('');
 
 	// Initialize with default values on mount
 	$effect(() => {
 		if (defaultOpen && openSections.size === 0) {
-			openSections = new Set([defaultOpen]);
+			openSections = new SvelteSet([defaultOpen]);
 		}
 		if (!activeTab && (defaultOpen || sections[0]?.id)) {
 			activeTab = defaultOpen || sections[0]?.id || '';
@@ -62,18 +63,14 @@
 			return;
 		}
 
-		const newOpenSections = new Set(openSections);
-
-		if (newOpenSections.has(sectionId)) {
-			newOpenSections.delete(sectionId);
+		if (openSections.has(sectionId)) {
+			openSections.delete(sectionId);
 		} else {
 			if (!allowMultiple) {
-				newOpenSections.clear();
+				openSections.clear();
 			}
-			newOpenSections.add(sectionId);
+			openSections.add(sectionId);
 		}
-
-		openSections = newOpenSections;
 	}
 
 	function isOpen(sectionId: string): boolean {

@@ -2,9 +2,9 @@
 /**
  * CountdownTimer Component - Google L7+ Enterprise Implementation
  * ═══════════════════════════════════════════════════════════════════════════
- * 
+ *
  * ENTERPRISE FEATURES:
- * 
+ *
  * 1. ADVANCED DISPLAY MODES:
  *    - Digital clock format
  *    - Circular progress rings
@@ -12,7 +12,7 @@
  *    - Minimal text
  *    - Bar chart style
  *    - Custom formats
- * 
+ *
  * 2. TIME FEATURES:
  *    - Timezone support
  *    - Server sync
@@ -20,7 +20,7 @@
  *    - Multiple timers
  *    - Pause/Resume
  *    - Dynamic updates
- * 
+ *
  * 3. VISUAL EFFECTS:
  *    - Smooth animations
  *    - Urgency indicators
@@ -28,7 +28,7 @@
  *    - Particle effects
  *    - Glow effects
  *    - Custom themes
- * 
+ *
  * 4. EVENTS & HOOKS:
  *    - Milestone callbacks
  *    - Warning thresholds
@@ -36,7 +36,7 @@
  *    - Update events
  *    - Format functions
  *    - Custom triggers
- * 
+ *
  * 5. ACCESSIBILITY:
  *    - Screen reader updates
  *    - ARIA labels
@@ -44,7 +44,7 @@
  *    - High contrast
  *    - Reduced motion
  *    - Focus management
- * 
+ *
  * @version 3.0.0 (Google L7+ Enterprise)
  * @component
  */
@@ -52,7 +52,7 @@
 
 <script lang="ts">
 	/* eslint svelte/no-at-html-tags: "off" -- every {@html} in this file renders sanitizer-cleaned HTML (sanitizeHtml/sanitizeBlogContent/etc.) or serialized JSON-LD; audited 2026-05-30 */
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount, onDestroy, SvelteSet } from 'svelte';
 	import { spring, tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
@@ -219,7 +219,7 @@
 	let _lastUpdateTime: number = 0;
 	let currentColor: string = $state('#6366f1');
 	let previousValues: Partial<TimeData> = {};
-	let milestonesReached: Set<number> = new Set();
+	let milestonesReached: SvelteSet<number> = new SvelteSet();
 
 	// Sync timerColor prop to currentColor state
 	$effect(() => {

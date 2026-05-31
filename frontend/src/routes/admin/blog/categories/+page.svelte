@@ -50,8 +50,8 @@
 	let showHidden = $state(false);
 
 	// Selection for bulk operations
-	let selectedCategories = $state(new Set<number>());
-	let selectedTags = $state(new Set<number>());
+	let selectedCategories = $state(new SvelteSet<number>());
+	let selectedTags = $state(new SvelteSet<number>());
 
 	// Forms
 	let categoryForm = $state<CategoryFormData>({
@@ -353,8 +353,8 @@
 			await categoriesApi.bulkDelete(Array.from(selectedCategories));
 			showToastMessage('Categories deleted successfully', 'success');
 			// FIX-2026-04-26 (P2-2): Set mutations are reactive in Svelte 5 — drop
-			// the legacy self-assignment hack and reassign with a fresh Set.
-			selectedCategories = new Set();
+			// the legacy self-assignment hack and reassign with a fresh SvelteSet.
+			selectedCategories = new SvelteSet();
 			await loadCategories();
 		} catch (error) {
 			if (error instanceof AdminApiError) {
@@ -374,7 +374,7 @@
 			await tagsApi.bulkDelete(Array.from(selectedTags));
 			showToastMessage('Tags deleted successfully', 'success');
 			// FIX-2026-04-26 (P2-2): drop legacy self-assignment hack.
-			selectedTags = new Set();
+			selectedTags = new SvelteSet();
 			await loadTags();
 		} catch (error) {
 			if (error instanceof AdminApiError) {
@@ -383,15 +383,14 @@
 		}
 	}
 
-	// Selection toggles invoked from the row children. The Set is reassigned
-	// with a fresh copy so the $state proxy emits a reactive update.
+	// Selection toggles invoked from the row children. SvelteSet mutations
+	// are fully reactive in Svelte 5 — no reassignment needed.
 	function toggleCategorySelect(id: number, checked: boolean) {
 		if (checked) {
 			selectedCategories.add(id);
 		} else {
 			selectedCategories.delete(id);
 		}
-		selectedCategories = new Set(selectedCategories);
 	}
 
 	function toggleTagSelect(id: number, checked: boolean) {
@@ -400,7 +399,6 @@
 		} else {
 			selectedTags.delete(id);
 		}
-		selectedTags = new Set(selectedTags);
 	}
 
 	function copyCategorySlug(slug: string) {

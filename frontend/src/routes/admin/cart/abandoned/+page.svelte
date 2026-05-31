@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, SvelteSet } from 'svelte';
 	import { goto } from '$app/navigation';
 	import abandonedCartsApi, {
 		type AbandonedCart,
@@ -37,7 +37,7 @@
 	let pagination = $state({ current_page: 1, last_page: 1, per_page: 20, total: 0 });
 	let searchQuery = $state('');
 	let statusFilter = $state<CartStatus | ''>('');
-	let selectedCarts = $state<Set<number>>(new Set());
+	let selectedCarts = $state<SvelteSet<number>>(new SvelteSet());
 
 	// Modal state
 	let showRecoveryModal = $state(false);
@@ -414,7 +414,9 @@
 				class="action-card reminder"
 				onclick={() => {
 					recoveryTemplate = 'reminder_1';
-					selectedCarts = new Set(carts.filter((c) => c.status === 'pending').map((c) => c.id));
+					selectedCarts = new SvelteSet(
+						carts.filter((c) => c.status === 'pending').map((c) => c.id)
+					);
 					showRecoveryModal = true;
 				}}
 			>
@@ -432,7 +434,9 @@
 				class="action-card urgency"
 				onclick={() => {
 					recoveryTemplate = 'reminder_2';
-					selectedCarts = new Set(carts.filter((c) => c.status === 'email_sent').map((c) => c.id));
+					selectedCarts = new SvelteSet(
+						carts.filter((c) => c.status === 'email_sent').map((c) => c.id)
+					);
 					showRecoveryModal = true;
 				}}
 			>
@@ -450,7 +454,7 @@
 				class="action-card discount"
 				onclick={() => {
 					recoveryTemplate = 'final_discount';
-					selectedCarts = new Set(
+					selectedCarts = new SvelteSet(
 						carts
 							.filter((c) => c.status === 'email_sent' || c.status === 'clicked')
 							.map((c) => c.id)

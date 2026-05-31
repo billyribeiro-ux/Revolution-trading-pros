@@ -1,11 +1,12 @@
 <!--
 	Folder Tree Component
 	═══════════════════════════════════════════════════════════════════════════
-	
+
 	Hierarchical folder navigation with drag-and-drop support.
 -->
 
 <script lang="ts">
+	import { SvelteSet } from 'svelte';
 	import { mediaStore as _mediaStore, getCurrentFolders } from '$lib/stores/media.svelte';
 	import type { MediaFolder } from '$lib/api/media';
 	import { IconFolder, IconChevronRight, IconChevronDown, IconPlus } from '$lib/icons';
@@ -22,7 +23,7 @@
 		onCreateFolder = () => {}
 	}: Props = $props();
 
-	let expandedFolders = $state(new Set<string>());
+	let expandedFolders = $state(new SvelteSet<string>());
 
 	type FolderNode = MediaFolder & { children: FolderNode[] };
 
@@ -216,7 +217,7 @@
 	}
 
 	.folder-item :global(.folder-icon) {
-		@apply flex-shrink-0;
+		@apply shrink-0;
 	}
 
 	.folder-item.active :global(.folder-icon) {

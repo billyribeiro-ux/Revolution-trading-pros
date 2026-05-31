@@ -22,7 +22,7 @@
 
 	import { browser } from '$app/environment';
 	// FIX-2026-04-26 (CLAUDE.md): init/cleanup belongs in onMount, not $effect.
-	import { onMount, type Component } from 'svelte';
+	import { onMount, type Component, SvelteSet } from 'svelte';
 	import {
 		IconVideo,
 		IconFileText,
@@ -205,7 +205,7 @@
 	let newFileUrl = $state('');
 
 	// ICT 7: Bulk operations state
-	let selectedResources = $state<Set<number>>(new Set());
+	let selectedResources = $state<SvelteSet<number>>(new SvelteSet());
 	let bulkAction = $state<'publish' | 'unpublish' | 'feature' | 'unfeature' | 'access' | 'delete'>(
 		'publish'
 	);
@@ -597,7 +597,7 @@
 						showSuccess(`Deleted ${deleteResult.deleted_count} resources`);
 						// FIX-2026-04-26 (P3-9): drop legacy clear+self-reassign hack;
 						// reassign with a fresh empty Set is equivalent and clearer.
-						selectedResources = new Set();
+						selectedResources.clear();
 						await loadResources();
 					}
 					showBulkModal = false;
@@ -609,8 +609,8 @@
 			if (result.success) {
 				showSuccess(`Updated ${result.updated_count} resources`);
 				// FIX-2026-04-26 (P3-9): clear+self-reassign is dead in Svelte 5;
-				// just reassign a fresh empty Set.
-				selectedResources = new Set();
+				// just clear the SvelteSet.
+				selectedResources.clear();
 				await loadResources();
 			}
 		} catch (err) {

@@ -11,6 +11,7 @@
 -->
 <script lang="ts">
 	import { IconChevronRight } from '$lib/icons';
+	import { SvelteSet } from 'svelte';
 	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
 	import type { PageData } from './$types';
 
@@ -22,17 +23,15 @@
 	let { data }: Props = $props();
 
 	// Accordion state management - Svelte 5 runes
-	let openAccordions = $state<Set<number>>(new Set());
+	let openAccordions = $state<SvelteSet<number>>(new SvelteSet());
 
 	// Toggle accordion with Set reassignment for reactivity
 	function toggleAccordion(index: number): void {
-		const updated = new Set(openAccordions);
-		if (updated.has(index)) {
-			updated.delete(index);
+		if (openAccordions.has(index)) {
+			openAccordions.delete(index);
 		} else {
-			updated.add(index);
+			openAccordions.add(index);
 		}
-		openAccordions = updated;
 	}
 
 	// Check if accordion is open

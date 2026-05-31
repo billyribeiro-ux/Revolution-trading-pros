@@ -16,7 +16,7 @@
 
 <script lang="ts">
 	/* eslint svelte/no-at-html-tags: "off" -- every {@html} in this file renders sanitizer-cleaned HTML (sanitizeHtml/sanitizeBlogContent/etc.) or serialized JSON-LD; audited 2026-05-30 */
-	import { onMount } from 'svelte';
+	import { onMount, SvelteSet } from 'svelte';
 	import IconTemplate from '@tabler/icons-svelte-runes/icons/template';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
@@ -51,7 +51,7 @@
 	let searchQuery = $state('');
 	let debouncedSearch = $state('');
 	let selectedCategory = $state('');
-	let selectedTemplates = $state<Set<string>>(new Set());
+	let selectedTemplates = $state<SvelteSet<string>>(new SvelteSet());
 	let isInitialLoad = $state(true);
 
 	// Pagination state
@@ -188,7 +188,7 @@
 			categories = categoriesResponse || [];
 
 			// Clear selection when data changes
-			selectedTemplates = new Set();
+			selectedTemplates.clear();
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load templates';
 			showToast('error', error);
@@ -253,7 +253,7 @@
 		const failCount = results.length - successCount;
 
 		isBulkDeleting = false;
-		selectedTemplates = new Set();
+		selectedTemplates.clear();
 
 		if (failCount === 0) {
 			showToast(
@@ -295,20 +295,18 @@
 
 	function toggleSelectAll() {
 		if (allSelected) {
-			selectedTemplates = new Set();
+			selectedTemplates.clear();
 		} else {
-			selectedTemplates = new Set(templates.map((t) => t.id));
+			selectedTemplates = new SvelteSet(templates.map((t) => t.id));
 		}
 	}
 
 	function toggleSelectTemplate(id: string) {
-		const newSet = new Set(selectedTemplates);
-		if (newSet.has(id)) {
-			newSet.delete(id);
+		if (selectedTemplates.has(id)) {
+			selectedTemplates.delete(id);
 		} else {
-			newSet.add(id);
+			selectedTemplates.add(id);
 		}
-		selectedTemplates = newSet;
 	}
 
 	// =====================================================
@@ -515,7 +513,7 @@
 					</button>
 					<button
 						class="btn-bulk-clear"
-						onclick={() => (selectedTemplates = new Set())}
+						onclick={() => selectedTemplates.clear()}
 						aria-label="Clear selection"
 					>
 						<IconX size={16} />

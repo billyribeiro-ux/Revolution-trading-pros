@@ -74,7 +74,7 @@
 	// Component state (Svelte 5 $state rune)
 	let heroTab = $state<'video' | 'entries'>('video');
 	let isCollapsed = $state(false);
-	let expandedTradeNotes = $state(new Set<string>());
+	let expandedTradeNotes = $state(new SvelteSet<string>());
 
 	// Video player state
 	let isVideoPlaying = $state(false);
@@ -127,13 +127,11 @@
 	}
 
 	function toggleTradeNotes(ticker: string) {
-		const newSet = new Set(expandedTradeNotes);
-		if (newSet.has(ticker)) {
-			newSet.delete(ticker);
+		if (expandedTradeNotes.has(ticker)) {
+			expandedTradeNotes.delete(ticker);
 		} else {
-			newSet.add(ticker);
+			expandedTradeNotes.add(ticker);
 		}
-		expandedTradeNotes = newSet;
 	}
 </script>
 

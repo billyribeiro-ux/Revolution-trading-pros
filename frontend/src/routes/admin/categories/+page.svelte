@@ -15,7 +15,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	// FIX-2026-04-26 (CLAUDE.md / P3-13): init belongs in onMount, not $effect.
-	import { onMount } from 'svelte';
+	import { onMount, SvelteSet } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import IconFolder from '@tabler/icons-svelte-runes/icons/folder';
 	import IconFolderPlus from '@tabler/icons-svelte-runes/icons/folder-plus';
@@ -55,7 +55,7 @@
 	let editingCategory = $state<Category | null>(null);
 
 	// Selection for bulk operations
-	let selectedIds = $state<Set<number>>(new Set());
+	let selectedIds = $state<SvelteSet<number>>(new SvelteSet());
 
 	// Form data
 	let categoryForm = $state({
@@ -233,7 +233,7 @@
 			await categoriesApi.delete(id);
 			showToastMessage('Category deleted successfully', 'success');
 			selectedIds.delete(id);
-			selectedIds = new Set(selectedIds);
+			// SvelteSet mutations are reactive - no reassignment needed
 			await loadCategories();
 		} catch (err) {
 			console.error('Failed to delete category:', err);
@@ -262,7 +262,7 @@
 		const count = selectedIds.size;
 		try {
 			await categoriesApi.bulkDelete(Array.from(selectedIds));
-			selectedIds = new Set();
+			selectedIds.clear();
 			showToastMessage(`${count} categories deleted successfully`, 'success');
 			await loadCategories();
 		} catch (err) {
@@ -281,7 +281,7 @@
 		const count = selectedIds.size;
 		try {
 			await categoriesApi.bulkUpdateVisibility(Array.from(selectedIds), visible);
-			selectedIds = new Set();
+			selectedIds.clear();
 			showToastMessage(
 				`${count} categories ${visible ? 'shown' : 'hidden'} successfully`,
 				'success'
@@ -302,7 +302,7 @@
 		try {
 			await categoriesApi.merge(Array.from(selectedIds), mergeForm.targetId);
 			showToastMessage('Categories merged successfully', 'success');
-			selectedIds = new Set();
+			selectedIds.clear();
 			showMergeModal = false;
 			mergeForm.targetId = null;
 			await loadCategories();
@@ -421,14 +421,14 @@
 		} else {
 			selectedIds.add(id);
 		}
-		selectedIds = new Set(selectedIds);
+		// SvelteSet mutations are reactive - no reassignment needed
 	}
 
 	function toggleSelectAll() {
 		if (allSelected) {
-			selectedIds = new Set();
+			selectedIds.clear();
 		} else {
-			selectedIds = new Set(filteredCategories.map((c) => c.id));
+			selectedIds = new SvelteSet(filteredCategories.map((c) => c.id));
 		}
 	}
 

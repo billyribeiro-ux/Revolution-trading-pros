@@ -1,27 +1,26 @@
 <!--
 	URL: /dashboard/explosive-swings/start-here
-	
+
 	Getting Started with Explosive Swings - Pixel Perfect Match
 	═══════════════════════════════════════════════════════════════════════════
 	Apple ICT 11+ Principal Engineer Implementation
 	Based on Day Trading Room Start Here pattern - Svelte 5
-	
+
 	@version 1.0.0
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
 	import { IconPlus, IconMinus } from '$lib/icons';
+	import { SvelteSet } from 'svelte';
 
 	// Accordion state management - Svelte 5 runes
-	let openAccordions = $state<Set<number>>(new Set());
+	let openAccordions = $state<SvelteSet<number>>(new SvelteSet());
 
 	function toggleAccordion(index: number) {
 		if (openAccordions.has(index)) {
 			openAccordions.delete(index);
-			openAccordions = new Set(openAccordions);
 		} else {
 			openAccordions.add(index);
-			openAccordions = new Set(openAccordions);
 		}
 	}
 

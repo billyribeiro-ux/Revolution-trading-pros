@@ -24,6 +24,7 @@
 	import { fly, fade, scale, slide } from 'svelte/transition';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
+	import { SvelteSet } from 'svelte';
 	import DropZone from '$lib/components/media/DropZone.svelte';
 	import OptimizedImage from '$lib/components/media/OptimizedImage.svelte';
 	import ImageCropModal from '$lib/components/media/ImageCropModal.svelte';
@@ -62,7 +63,7 @@
 
 	// Data
 	let items = $state<MediaItem[]>([]);
-	let selectedIds = $state(new Set<string>());
+	let selectedIds = $state(new SvelteSet<string>());
 	let focusedId = $state<string | null>(null);
 
 	// Delete confirmation modal state
@@ -307,7 +308,8 @@
 			selectedIds = selectedIds;
 		} else {
 			// Single select and show details
-			selectedIds = new Set([item.id]);
+			selectedIds.clear();
+			selectedIds.add(item.id);
 			focusedId = item.id;
 			detailItem = item;
 			showDetailsPanel = true;
@@ -477,9 +479,9 @@
 
 	function selectAll() {
 		if (selectedIds.size === items.length) {
-			selectedIds = new Set();
+			selectedIds.clear();
 		} else {
-			selectedIds = new Set(items.map((i) => i.id));
+			selectedIds = new SvelteSet(items.map((i) => i.id));
 		}
 	}
 
@@ -497,7 +499,7 @@
 					: i
 			);
 
-			selectedIds = new Set();
+			selectedIds.clear();
 			loadStatistics();
 		} catch (e) {
 			showToast((e as { message?: string }).message || 'Bulk optimization failed', 'error');
@@ -518,7 +520,7 @@
 			await mediaApi.bulkDelete(ids);
 			items = items.filter((i) => !selectedIds.has(i.id));
 			totalItems -= ids.length;
-			selectedIds = new Set();
+			selectedIds.clear();
 			showToast(`${ids.length} items deleted`, 'success');
 			loadStatistics();
 		} catch (e) {
@@ -559,7 +561,10 @@
 					const nextItem = items[currentIndex + 1];
 					if (nextItem) {
 						focusedId = nextItem.id;
-						if (!event.shiftKey) selectedIds = new Set([focusedId]);
+						if (!event.shiftKey) {
+							selectedIds.clear();
+							selectedIds.add(focusedId);
+						}
 					}
 				}
 				event.preventDefault();
@@ -570,7 +575,10 @@
 					const prevItem = items[currentIndex - 1];
 					if (prevItem) {
 						focusedId = prevItem.id;
-						if (!event.shiftKey) selectedIds = new Set([focusedId]);
+						if (!event.shiftKey) {
+							selectedIds.clear();
+							selectedIds.add(focusedId);
+						}
 					}
 				}
 				event.preventDefault();
@@ -582,7 +590,10 @@
 					const downItem = items[currentIndex + cols];
 					if (downItem) {
 						focusedId = downItem.id;
-						if (!event.shiftKey) selectedIds = new Set([focusedId]);
+						if (!event.shiftKey) {
+							selectedIds.clear();
+							selectedIds.add(focusedId);
+						}
 					}
 				}
 				event.preventDefault();
@@ -594,7 +605,10 @@
 					const upItem = items[currentIndex - colsUp];
 					if (upItem) {
 						focusedId = upItem.id;
-						if (!event.shiftKey) selectedIds = new Set([focusedId]);
+						if (!event.shiftKey) {
+							selectedIds.clear();
+							selectedIds.add(focusedId);
+						}
 					}
 				}
 				event.preventDefault();
@@ -639,7 +653,7 @@
 				break;
 
 			case 'Escape':
-				selectedIds = new Set();
+				selectedIds.clear();
 				contextMenu = null;
 				showDetailsPanel = false;
 				break;

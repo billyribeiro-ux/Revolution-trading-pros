@@ -22,7 +22,7 @@
 	 * @see https://fluentforms.com/wordpress-form-shortcode/
 	 */
 
-	import { onMount } from 'svelte';
+	import { onMount, SvelteSet } from 'svelte';
 	import {
 		previewForm,
 		getFormById,
@@ -109,7 +109,7 @@
 	let isSubmitting = $state(false);
 	let submitted = $state(false);
 	let submitMessage = $state('');
-	let visibleFields: Set<number> = $state(new Set());
+	let visibleFields: SvelteSet<number> = $state(new SvelteSet());
 
 	onMount(async () => {
 		await loadForm();
@@ -197,7 +197,7 @@
 
 	function updateVisibleFields() {
 		if (!formInstance?.fields) return;
-		const newVisible = new Set<number>();
+		const newVisible = new SvelteSet<number>();
 		formInstance.fields.forEach((field) => {
 			if (field.id && shouldDisplayField(field)) {
 				newVisible.add(field.id);

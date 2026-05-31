@@ -21,17 +21,17 @@
 
 	const { trades, isAdmin = false, onCloseTrade }: Props = $props();
 
+	import { SvelteSet } from 'svelte';
+
 	// Track expanded notes
-	let expandedNotes = $state<Set<number>>(new Set());
+	let expandedNotes = $state<SvelteSet<number>>(new SvelteSet());
 
 	function toggleNotes(tradeId: number) {
-		const newSet = new Set(expandedNotes);
-		if (newSet.has(tradeId)) {
-			newSet.delete(tradeId);
+		if (expandedNotes.has(tradeId)) {
+			expandedNotes.delete(tradeId);
 		} else {
-			newSet.add(tradeId);
+			expandedNotes.add(tradeId);
 		}
-		expandedNotes = newSet;
 	}
 
 	function formatPrice(price: number | null): string {

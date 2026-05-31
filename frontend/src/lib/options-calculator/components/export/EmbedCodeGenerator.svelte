@@ -69,7 +69,7 @@
 
 {#if calc.showEmbedCode}
 	<div
-		class="fixed inset-0 z-[9995] flex items-center justify-center p-4"
+		class="fixed inset-0 z-9995 flex items-center justify-center p-4"
 		role="dialog"
 		aria-modal="true"
 		aria-label="Embed Code Generator"

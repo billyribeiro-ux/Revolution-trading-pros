@@ -18,7 +18,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, SvelteSet } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { ROOMS } from '$lib/config/rooms';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
@@ -57,7 +57,7 @@
 	let formData = $state<ScheduleForm>(getDefaultFormData());
 
 	// Bulk selection
-	let selectedIds = $state<Set<number>>(new Set());
+	let selectedIds = $state<SvelteSet<number>>(new SvelteSet());
 	// Pure projection of selection size (selectedIds is reassigned on every
 	// mutation, so $derived tracks it correctly) — was a state+$effect.
 	let showBulkActions = $derived(selectedIds.size > 0);
@@ -297,7 +297,7 @@
 		// Track filter inputs so the effect re-runs when they change.
 		void filterActive;
 		void filterDay;
-		selectedIds = new Set();
+		selectedIds.clear();
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -479,7 +479,7 @@
 
 			success = 'Schedule deleted successfully';
 			selectedIds.delete(id);
-			selectedIds = new Set(selectedIds);
+			// SvelteSet mutations are reactive - no reassignment needed
 			await loadSchedules();
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Failed to delete schedule';
@@ -545,7 +545,7 @@
 			if (!response.ok) throw new Error('Failed to delete schedules');
 
 			success = `${selectedIds.size} schedules deleted`;
-			selectedIds = new Set();
+			selectedIds.clear();
 			await loadSchedules();
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Failed to delete schedules';
@@ -567,7 +567,7 @@
 			if (!response.ok) throw new Error('Failed to update schedules');
 
 			success = `${selectedIds.size} schedules ${active ? 'activated' : 'deactivated'}`;
-			selectedIds = new Set();
+			selectedIds.clear();
 			await loadSchedules();
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Failed to update schedules';
@@ -581,7 +581,7 @@
 	function selectRoom(roomId: string) {
 		selectedRoomId = roomId;
 		// FIX-2026-04-26 (P2-7): clear bulk selection so a hidden ID can't be bulk-deleted.
-		selectedIds = new Set();
+		selectedIds.clear();
 		// FIX-2026-04-26 (P2): Was previously $effect(()=>{ if(selectedRoomId) loadSchedules() })
 		// — replaced with explicit reload here to break the write-while-reading cascade.
 		void loadSchedules();
@@ -641,7 +641,7 @@
 		} else {
 			selectedIds.add(id);
 		}
-		selectedIds = new Set(selectedIds);
+		// SvelteSet mutations are reactive - no reassignment needed
 	}
 
 	function isConflicting(scheduleId: number): boolean {
@@ -705,7 +705,7 @@
 				selectedCount={selectedIds.size}
 				onbulkToggleActive={bulkToggleActive}
 				onbulkDelete={bulkDelete}
-				onclear={() => (selectedIds = new Set())}
+				onclear={() => selectedIds.clear()}
 			/>
 		{/if}
 

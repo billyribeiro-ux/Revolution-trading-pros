@@ -22,7 +22,7 @@
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, SvelteSet } from 'svelte';
 	import { goto } from '$app/navigation';
 	import {
 		productsApi,
@@ -77,8 +77,8 @@
 	});
 
 	// Track selected items for include/exclude
-	let selectedProducts = $state<Set<number>>(new Set());
-	let selectedPlans = $state<Set<number>>(new Set());
+	let selectedProducts = $state<SvelteSet<number>>(new SvelteSet());
+	let selectedPlans = $state<SvelteSet<number>>(new SvelteSet());
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Computed Values
@@ -160,30 +160,28 @@
 				restrictionTab = action.tab;
 				return;
 			case 'toggle-product': {
-				const next = new Set(selectedProducts);
-				if (next.has(action.productId)) next.delete(action.productId);
-				else next.add(action.productId);
-				selectedProducts = next;
+				// SvelteSet mutations are reactive - modify directly
+				if (selectedProducts.has(action.productId)) selectedProducts.delete(action.productId);
+				else selectedProducts.add(action.productId);
 				return;
 			}
 			case 'toggle-plan': {
-				const next = new Set(selectedPlans);
-				if (next.has(action.planId)) next.delete(action.planId);
-				else next.add(action.planId);
-				selectedPlans = next;
+				// SvelteSet mutations are reactive - modify directly
+				if (selectedPlans.has(action.planId)) selectedPlans.delete(action.planId);
+				else selectedPlans.add(action.planId);
 				return;
 			}
 			case 'select-all-products':
-				selectedProducts = new Set(availableProducts.map((p) => p.id));
+				selectedProducts = new SvelteSet(availableProducts.map((p) => p.id));
 				return;
 			case 'clear-products':
-				selectedProducts = new Set();
+				selectedProducts.clear();
 				return;
 			case 'select-all-plans':
-				selectedPlans = new Set(availablePlans.map((p) => p.id));
+				selectedPlans = new SvelteSet(availablePlans.map((p) => p.id));
 				return;
 			case 'clear-plans':
-				selectedPlans = new Set();
+				selectedPlans.clear();
 				return;
 		}
 	}

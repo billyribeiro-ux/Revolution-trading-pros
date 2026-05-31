@@ -16,6 +16,7 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
+	import { SvelteSet } from 'svelte';
 	import pastMembersApi, {
 		type TimePeriod,
 		type PastMember,
@@ -66,7 +67,7 @@
 	let selectedPeriod = $state<TimePeriod>('30d');
 	let members = $state<PastMember[]>([]);
 	let searchQuery = $state('');
-	let selectedMembers = $state<Set<number>>(new Set());
+	let selectedMembers = $state<SvelteSet<number>>(new SvelteSet());
 
 	// Loading states
 	let isLoading = $state(true);
@@ -215,7 +216,7 @@
 
 	async function handlePeriodChange(period: TimePeriod): Promise<void> {
 		selectedPeriod = period;
-		selectedMembers = new Set();
+		selectedMembers.clear();
 		await loadPeriodMembers();
 	}
 
@@ -224,20 +225,19 @@
 	}
 
 	function toggleMemberSelection(id: number): void {
-		const newSet = new Set(selectedMembers);
-		if (newSet.has(id)) {
-			newSet.delete(id);
+		if (selectedMembers.has(id)) {
+			selectedMembers.delete(id);
 		} else {
-			newSet.add(id);
+			selectedMembers.add(id);
 		}
 		selectedMembers = newSet;
 	}
 
 	function selectAllMembers(): void {
 		if (allSelected) {
-			selectedMembers = new Set();
+			selectedMembers.clear();
 		} else {
-			selectedMembers = new Set(members.map((m) => m.id));
+			selectedMembers = new SvelteSet(members.map((m) => m.id));
 		}
 	}
 
@@ -259,7 +259,7 @@
 
 			toastStore.success(result.message);
 			showEmailModal = false;
-			selectedMembers = new Set();
+			selectedMembers.clear();
 
 			// Refresh dashboard after campaign
 			await refreshDashboard();
