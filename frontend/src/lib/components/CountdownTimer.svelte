@@ -52,7 +52,7 @@
 
 <script lang="ts">
 	/* eslint svelte/no-at-html-tags: "off" -- every {@html} in this file renders sanitizer-cleaned HTML (sanitizeHtml/sanitizeBlogContent/etc.) or serialized JSON-LD; audited 2026-05-30 */
-	import { onMount, onDestroy, SvelteSet } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import { spring, tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
@@ -219,7 +219,7 @@
 	let _lastUpdateTime: number = 0;
 	let currentColor: string = $state('#6366f1');
 	let previousValues: Partial<TimeData> = {};
-	let milestonesReached: SvelteSet<number> = new SvelteSet();
+	let milestonesReached: Set<number> = new Set();
 
 	// Sync timerColor prop to currentColor state
 	$effect(() => {

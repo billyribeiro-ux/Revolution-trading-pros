@@ -11,7 +11,7 @@
 -->
 <script lang="ts">
 	import { IconChevronRight } from '$lib/icons';
-	import { SvelteSet } from 'svelte';
+	import {  } from 'svelte';
 	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
 	import type { PageData } from './$types';
 
@@ -23,7 +23,7 @@
 	let { data }: Props = $props();
 
 	// Accordion state management - Svelte 5 runes
-	let openAccordions = $state<SvelteSet<number>>(new SvelteSet());
+	let openAccordions = $state<Set<number>>(new Set());
 
 	// Toggle accordion with Set reassignment for reactivity
 	function toggleAccordion(index: number): void {

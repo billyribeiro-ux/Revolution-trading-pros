@@ -16,7 +16,7 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
-	import { SvelteSet } from 'svelte';
+	import {  } from 'svelte';
 	import pastMembersApi, {
 		type TimePeriod,
 		type PastMember,
@@ -67,7 +67,7 @@
 	let selectedPeriod = $state<TimePeriod>('30d');
 	let members = $state<PastMember[]>([]);
 	let searchQuery = $state('');
-	let selectedMembers = $state<SvelteSet<number>>(new SvelteSet());
+	let selectedMembers = $state<Set<number>>(new Set());
 
 	// Loading states
 	let isLoading = $state(true);
@@ -237,7 +237,7 @@
 		if (allSelected) {
 			selectedMembers.clear();
 		} else {
-			selectedMembers = new SvelteSet(members.map((m) => m.id));
+			selectedMembers = new Set(members.map((m) => m.id));
 		}
 	}
 

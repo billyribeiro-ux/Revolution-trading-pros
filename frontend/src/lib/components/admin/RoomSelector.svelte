@@ -74,7 +74,7 @@
 			selectedRooms = selectedRooms.filter((id) => !groupIds.includes(id));
 		} else {
 			// Select all in group
-			const newSelection = new SvelteSet([...selectedRooms, ...groupIds]);
+			const newSelection = new Set([...selectedRooms, ...groupIds]);
 			selectedRooms = Array.from(newSelection);
 		}
 	}

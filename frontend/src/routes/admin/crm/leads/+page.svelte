@@ -27,7 +27,7 @@
 	 */
 
 	import { browser } from '$app/environment';
-	import { SvelteSet } from 'svelte';
+	import {  } from 'svelte';
 	import {
 		IconUsers,
 		IconUserPlus,
@@ -127,7 +127,7 @@
 	let selectedSource = $state<string>('all');
 	let sortBy = $state<string>('created_at');
 	let sortOrder = $state<'asc' | 'desc'>('desc');
-	let selectedLeads = $state<SvelteSet<string>>(new SvelteSet());
+	let selectedLeads = $state<Set<string>>(new Set());
 	let showFilters = $state(false);
 	let _viewMode = $state<'list' | 'kanban'>('list');
 
@@ -544,7 +544,7 @@
 		if (isAllSelected) {
 			selectedLeads.clear();
 		} else {
-			selectedLeads = new SvelteSet(paginatedLeads.map((l) => l.id));
+			selectedLeads = new Set(paginatedLeads.map((l) => l.id));
 		}
 	}
 

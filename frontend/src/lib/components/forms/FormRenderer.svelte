@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount, SvelteSet } from 'svelte';
+	import { onMount } from 'svelte';
 	import type { Form, FormField } from '$lib/api/forms';
 	import { submitForm } from '$lib/api/forms';
 	import type { JsonValue } from '$lib/api/_types';
@@ -23,7 +23,7 @@
 	let isSubmitting = $state(false);
 	let submitSuccess = $state(false);
 	let submitMessage = $state('');
-	let visibleFields: SvelteSet<number> = $state(new SvelteSet());
+	let visibleFields: Set<number> = $state(new Set());
 
 	// ICT 7 Fix: Honeypot fields for spam protection (hidden from users, visible to bots)
 	let honeypotWebsite = $state('');
@@ -100,7 +100,7 @@
 	function updateVisibleFields() {
 		if (!props.form.fields) return;
 
-		const newVisibleFields = new SvelteSet<number>();
+		const newVisibleFields = new Set<number>();
 		props.form.fields.forEach((field) => {
 			if (field.id && shouldDisplayField(field)) {
 				newVisibleFields.add(field.id);

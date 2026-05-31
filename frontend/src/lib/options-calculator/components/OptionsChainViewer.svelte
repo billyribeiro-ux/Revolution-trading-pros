@@ -1,6 +1,6 @@
 <script lang="ts">
 	import IconLoader2 from '@tabler/icons-svelte-runes/icons/loader-2';
-	import { SvelteSet } from 'svelte';
+	import {  } from 'svelte';
 	import gsap from 'gsap';
 	import { price as bsPrice } from '../engine/black-scholes.js';
 	import type { MarketDataService } from '../data/market-data-service.svelte.js';
@@ -95,7 +95,7 @@
 
 	let strikes = $derived.by(() => {
 		if (!chain) return [];
-		const strikeSet = new SvelteSet<number>();
+		const strikeSet = new Set<number>();
 		for (const c of chain.calls) strikeSet.add(c.strike);
 		for (const p of chain.puts) strikeSet.add(p.strike);
 		return [...strikeSet].sort((a, b) => a - b);

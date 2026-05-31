@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount, SvelteSet } from 'svelte';
+	import { onMount } from 'svelte';
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import { emailApi, type EmailSubscriber } from '$lib/api/email';
@@ -22,7 +22,7 @@
 	let searchQuery = $state('');
 	let statusFilter = $state('all');
 	let selectedTags = $state<string[]>([]);
-	let selectedSubscribers = $state(new SvelteSet<string>());
+	let selectedSubscribers = $state(new Set<string>());
 
 	// Modal states
 	let showAddModal = $state(false);
@@ -224,7 +224,7 @@
 		if (selectedSubscribers.size === subscribers.length) {
 			selectedSubscribers.clear();
 		} else {
-			selectedSubscribers = new SvelteSet(subscribers.map((s) => s.id));
+			selectedSubscribers = new Set(subscribers.map((s) => s.id));
 		}
 	}
 

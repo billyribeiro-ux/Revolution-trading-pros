@@ -24,7 +24,7 @@
 	import { fly, fade, scale, slide } from 'svelte/transition';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
-	import { SvelteSet } from 'svelte';
+	import {  } from 'svelte';
 	import DropZone from '$lib/components/media/DropZone.svelte';
 	import OptimizedImage from '$lib/components/media/OptimizedImage.svelte';
 	import ImageCropModal from '$lib/components/media/ImageCropModal.svelte';
@@ -63,7 +63,7 @@
 
 	// Data
 	let items = $state<MediaItem[]>([]);
-	let selectedIds = $state(new SvelteSet<string>());
+	let selectedIds = $state(new Set<string>());
 	let focusedId = $state<string | null>(null);
 
 	// Delete confirmation modal state
@@ -478,7 +478,7 @@
 		if (selectedIds.size === items.length) {
 			selectedIds.clear();
 		} else {
-			selectedIds = new SvelteSet(items.map((i) => i.id));
+			selectedIds = new Set(items.map((i) => i.id));
 		}
 	}
 

@@ -3,7 +3,7 @@
  * ClassVideos Component - Course Video Player with Lesson List
  * ═══════════════════════════════════════════════════════════════════════════
  * Apple ICT 11+ Principal Engineer Grade - January 2026
- * 
+ *
  * Features:
  * - SSR-safe: Uses $effect for client-side only operations
  * - Hydration-safe: Proper browser checks and state management
@@ -11,13 +11,13 @@
  * - Bunny.net integration with BunnyVideoPlayer
  * - Module-organized lesson list with progress tracking
  * - Mobile-first responsive design
- * 
+ *
  * @version 1.0.0
  */
 -->
 <script lang="ts">
 	import { onMount, untrack } from 'svelte';
-	import { SvelteSet } from 'svelte/reactivity';
+	import {  } from 'svelte/reactivity';
 	import BunnyVideoPlayer from '$lib/components/video/BunnyVideoPlayer.svelte';
 	import Icon from '$lib/components/Icon.svelte';
 
@@ -92,8 +92,8 @@
 		return cd.lessons || [];
 	}
 
-	function computeExpandedModules(cd: CourseData | null): SvelteSet<number> {
-		return new SvelteSet(cd?.modules?.map((m) => m.module.id) ?? []);
+	function computeExpandedModules(cd: CourseData | null): Set<number> {
+		return new Set(cd?.modules?.map((m) => m.module.id) ?? []);
 	}
 
 	// Seed directly from the SSR-provided `initialData` (init-once). The prior
@@ -110,7 +110,7 @@
 	let error = $state('');
 	let activeLesson = $state<Lesson | null>(computeAllLessons(seed)[0] ?? null);
 	let viewportWidth = $state(0);
-	let expandedModules = $state<SvelteSet<number>>(computeExpandedModules(seed));
+	let expandedModules = $state<Set<number>>(computeExpandedModules(seed));
 	let mounted = $state(false);
 
 	const isMobile = $derived(mounted && viewportWidth > 0 && viewportWidth < 640);
@@ -167,7 +167,7 @@
 	}
 
 	function toggleModule(moduleId: number) {
-		// SvelteSet is deeply reactive — mutate in place; no clone/reassign needed.
+		//  is deeply reactive — mutate in place; no clone/reassign needed.
 		if (expandedModules.has(moduleId)) {
 			expandedModules.delete(moduleId);
 		} else {

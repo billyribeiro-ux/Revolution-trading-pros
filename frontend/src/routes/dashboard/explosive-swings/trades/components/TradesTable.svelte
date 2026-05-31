@@ -21,10 +21,10 @@
 
 	const { trades, isAdmin = false, onCloseTrade }: Props = $props();
 
-	import { SvelteSet } from 'svelte';
+	import {  } from 'svelte';
 
 	// Track expanded notes
-	let expandedNotes = $state<SvelteSet<number>>(new SvelteSet());
+	let expandedNotes = $state<Set<number>>(new Set());
 
 	function toggleNotes(tradeId: number) {
 		if (expandedNotes.has(tradeId)) {

@@ -17,7 +17,7 @@
 	 * @version 4.0.0 - December 2025 - Real API Integration
 	 */
 
-	import { onMount, onDestroy, SvelteSet } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import {
 		IconVideo,
 		IconSearch,
@@ -181,7 +181,7 @@
 	let analyticsPeriod = $state<'7d' | '30d' | '90d'>('30d');
 
 	// ICT 7 ADDITION: Bulk Operations State
-	let selectedVideoIds = $state<SvelteSet<number>>(new SvelteSet());
+	let selectedVideoIds = $state<Set<number>>(new Set());
 	let isBulkActionLoading = $state(false);
 	let showBulkTagsModal = $state(false);
 	let bulkTagsToAdd = $state<string[]>([]);
@@ -786,7 +786,7 @@
 		if (selectedVideoIds.size === filteredVideos.length) {
 			selectedVideoIds.clear();
 		} else {
-			selectedVideoIds = new SvelteSet(filteredVideos.map((v) => v.id));
+			selectedVideoIds = new Set(filteredVideos.map((v) => v.id));
 		}
 	}
 
@@ -965,7 +965,7 @@
 	//          allocate a fresh Set on every video reload.
 	$effect(() => {
 		if (selectedVideoIds.size === 0) return;
-		const validIds = new SvelteSet(videos.map((v) => v.id));
+		const validIds = new Set(videos.map((v) => v.id));
 		let allValid = true;
 		for (const id of selectedVideoIds) {
 			if (!validIds.has(id)) {
@@ -974,7 +974,7 @@
 			}
 		}
 		if (allValid) return;
-		const newSelection = new SvelteSet<number>();
+		const newSelection = new Set<number>();
 		for (const id of selectedVideoIds) {
 			if (validIds.has(id)) newSelection.add(id);
 		}
@@ -1066,7 +1066,7 @@
 
 	// Get unique categories used in current videos
 	const usedCategories = $derived.by(() => {
-		const categoryIds = new SvelteSet<string>();
+		const categoryIds = new Set<string>();
 		videos.forEach((v) => v.categories.forEach((c) => categoryIds.add(c)));
 		return Array.from(categoryIds)
 			.map((id) => getCategoryById(id))

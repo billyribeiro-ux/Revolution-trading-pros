@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount, SvelteSet } from 'svelte';
+	import { onMount } from 'svelte';
 	import Icon from '$lib/components/Icon.svelte';
 	import type { Form, FormField } from '$lib/api/forms';
 	import { submitForm } from '$lib/api/forms';
@@ -46,13 +46,13 @@
 	let isSubmitting = $state(false);
 	let submitSuccess = $state(false);
 	let submitMessage = $state('');
-	let visibleFields: SvelteSet<number> = $state(new SvelteSet());
+	let visibleFields: Set<number> = $state(new Set());
 
 	// Multi-step state
 	let currentStep = $state(0);
 	let steps: FormStep[] = $state([]);
 	let stepValidation: Record<number, boolean> = $state({});
-	let visitedSteps: SvelteSet<number> = $state(new SvelteSet([0]));
+	let visitedSteps: Set<number> = $state(new Set([0]));
 	let animationDirection = $state<'forward' | 'backward'>('forward');
 	let isAnimating = $state(false);
 
@@ -181,7 +181,7 @@
 
 			formData = progressData.formData || {};
 			currentStep = Math.min(progressData.currentStep || 0, steps.length - 1);
-			visitedSteps = new SvelteSet(progressData.visitedSteps || [0]);
+			visitedSteps = new Set(progressData.visitedSteps || [0]);
 		} catch (e) {
 			console.warn('Failed to restore form progress:', e);
 		}
@@ -240,7 +240,7 @@
 	function updateVisibleFields() {
 		if (!form.fields) return;
 
-		const newVisibleFields = new SvelteSet<number>();
+		const newVisibleFields = new Set<number>();
 		form.fields.forEach((field) => {
 			if (field.id && shouldDisplayField(field)) {
 				newVisibleFields.add(field.id);
@@ -442,7 +442,7 @@
 				// Reset form
 				formData = {};
 				currentStep = 0;
-				visitedSteps = new SvelteSet([0]);
+				visitedSteps = new Set([0]);
 				if (form.fields) {
 					form.fields.forEach((field) => {
 						if (field.default_value) {

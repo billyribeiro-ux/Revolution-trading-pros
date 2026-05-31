@@ -91,8 +91,8 @@
 
 	// Get diff between current and revision
 	function getDiff(revision: Revision): { added: number; removed: number; modified: number } {
-		const currentIds = new SvelteSet(currentBlocks.map((b) => b.id));
-		const revisionIds = new SvelteSet(revision.blocks.map((b) => b.id));
+		const currentIds = new Set(currentBlocks.map((b) => b.id));
+		const revisionIds = new Set(revision.blocks.map((b) => b.id));
 
 		let added = 0;
 		let removed = 0;
@@ -174,8 +174,8 @@
 	} {
 		const blocksA = revA.blocks;
 		const blocksB = revB.blocks;
-		const idsA = new SvelteSet(blocksA.map((b) => b.id));
-		const idsB = new SvelteSet(blocksB.map((b) => b.id));
+		const idsA = new Set(blocksA.map((b) => b.id));
+		const idsB = new Set(blocksB.map((b) => b.id));
 
 		const added: Block[] = [];
 		const removed: Block[] = [];

@@ -10,7 +10,7 @@
 	 * @requires Svelte 5.0+ / SvelteKit 2.0+
 	 */
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
-	import { SvelteSet } from 'svelte';
+	import {  } from 'svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPE DEFINITIONS - Principal Engineer ICT 11 Standards
@@ -264,10 +264,10 @@
 	const alerts = $derived<Alert[]>(fallbackAlerts);
 
 	// Track which alert notes are expanded
-	let expandedNotes = $state<SvelteSet<number>>(new SvelteSet());
+	let expandedNotes = $state<Set<number>>(new Set());
 
 	// Track which trade plan notes are expanded
-	let expandedTradeNotes = $state<SvelteSet<string>>(new SvelteSet());
+	let expandedTradeNotes = $state<Set<string>>(new Set());
 
 	function toggleTradeNotes(ticker: string) {
 		if (expandedTradeNotes.has(ticker)) {

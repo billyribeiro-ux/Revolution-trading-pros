@@ -53,10 +53,8 @@
 		onchange
 	}: Props = $props();
 
-	import { SvelteSet } from 'svelte';
-
 	// State
-	let selectedOptions: SvelteSet<string> = $state(new SvelteSet());
+	let selectedOptions: Set<string> = $state(new Set());
 	let answered = $state(false);
 	let currentScore = $state(0);
 	let feedbackMessage = $state('');
@@ -77,9 +75,9 @@
 	$effect(() => {
 		if (value) {
 			if (Array.isArray(value)) {
-				selectedOptions = new SvelteSet(value);
+				selectedOptions = new Set(value);
 			} else {
-				selectedOptions = new SvelteSet([value]);
+				selectedOptions = new Set([value]);
 			}
 		}
 	});
@@ -104,7 +102,7 @@
 			return selectedOption?.isCorrect ?? false;
 		} else {
 			// Multiple choice - all correct must be selected, no incorrect
-			const correctIds = new SvelteSet(options.filter((o) => o.isCorrect).map((o) => o.id));
+			const correctIds = new Set(options.filter((o) => o.isCorrect).map((o) => o.id));
 			const selectedCorrect = [...selectedOptions].filter((id) => correctIds.has(id));
 			const selectedIncorrect = [...selectedOptions].filter((id) => !correctIds.has(id));
 
@@ -136,7 +134,7 @@
 			} else {
 				selectedOptions.add(optionId);
 			}
-			// SvelteSet mutations are reactive - no reassignment needed
+			// Set mutations are reactive - no reassignment needed
 		} else {
 			// Single selection
 			selectedOptions.clear();

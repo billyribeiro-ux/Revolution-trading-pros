@@ -15,7 +15,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	// FIX-2026-04-26 (CLAUDE.md / P3-13): init belongs in onMount, not $effect.
-	import { onMount, SvelteSet } from 'svelte';
+	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import IconFolder from '@tabler/icons-svelte-runes/icons/folder';
 	import IconFolderPlus from '@tabler/icons-svelte-runes/icons/folder-plus';
@@ -55,7 +55,7 @@
 	let editingCategory = $state<Category | null>(null);
 
 	// Selection for bulk operations
-	let selectedIds = $state<SvelteSet<number>>(new SvelteSet());
+	let selectedIds = $state<Set<number>>(new Set());
 
 	// Form data
 	let categoryForm = $state({
@@ -233,7 +233,7 @@
 			await categoriesApi.delete(id);
 			showToastMessage('Category deleted successfully', 'success');
 			selectedIds.delete(id);
-			// SvelteSet mutations are reactive - no reassignment needed
+			//  mutations are reactive - no reassignment needed
 			await loadCategories();
 		} catch (err) {
 			console.error('Failed to delete category:', err);
@@ -421,14 +421,14 @@
 		} else {
 			selectedIds.add(id);
 		}
-		// SvelteSet mutations are reactive - no reassignment needed
+		//  mutations are reactive - no reassignment needed
 	}
 
 	function toggleSelectAll() {
 		if (allSelected) {
 			selectedIds.clear();
 		} else {
-			selectedIds = new SvelteSet(filteredCategories.map((c) => c.id));
+			selectedIds = new Set(filteredCategories.map((c) => c.id));
 		}
 	}
 

@@ -163,7 +163,7 @@
 
 	// Available platforms list
 	const availablePlatforms = $derived.by(() => {
-		const platforms = new SvelteSet<string>();
+		const platforms = new Set<string>();
 		for (const file of files) {
 			platforms.add(platformNames[file.platform.toLowerCase()] || file.platform);
 		}

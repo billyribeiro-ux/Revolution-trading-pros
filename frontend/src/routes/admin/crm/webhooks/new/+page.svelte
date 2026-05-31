@@ -22,7 +22,7 @@
 	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
 	import IconKey from '@tabler/icons-svelte-runes/icons/key';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import { onMount, SvelteSet } from 'svelte';
+	import { onMount } from 'svelte';
 	import { crmAPI } from '$lib/api/crm';
 	import type { WebhookEvent } from '$lib/crm/types';
 	import {
@@ -39,7 +39,7 @@
 	let url = $state('');
 	let secret = $state('');
 	let isActive = $state(true);
-	let selectedEvents = $state<SvelteSet<WebhookEvent>>(new SvelteSet());
+	let selectedEvents = $state<Set<WebhookEvent>>(new Set());
 	let customHeaders = $state<Array<{ key: string; value: string }>>([]);
 
 	let availableEvents = $state<Record<string, string>>({});
@@ -175,7 +175,7 @@
 	}
 
 	function selectAllEvents() {
-		selectedEvents = new SvelteSet(Object.keys(availableEvents) as WebhookEvent[]);
+		selectedEvents = new Set(Object.keys(availableEvents) as WebhookEvent[]);
 	}
 
 	function clearAllEvents() {

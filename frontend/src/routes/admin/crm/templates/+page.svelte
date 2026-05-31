@@ -16,7 +16,7 @@
 
 <script lang="ts">
 	/* eslint svelte/no-at-html-tags: "off" -- every {@html} in this file renders sanitizer-cleaned HTML (sanitizeHtml/sanitizeBlogContent/etc.) or serialized JSON-LD; audited 2026-05-30 */
-	import { onMount, SvelteSet } from 'svelte';
+	import { onMount } from 'svelte';
 	import IconTemplate from '@tabler/icons-svelte-runes/icons/template';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
@@ -51,7 +51,7 @@
 	let searchQuery = $state('');
 	let debouncedSearch = $state('');
 	let selectedCategory = $state('');
-	let selectedTemplates = $state<SvelteSet<string>>(new SvelteSet());
+	let selectedTemplates = $state<Set<string>>(new Set());
 	let isInitialLoad = $state(true);
 
 	// Pagination state
@@ -297,7 +297,7 @@
 		if (allSelected) {
 			selectedTemplates.clear();
 		} else {
-			selectedTemplates = new SvelteSet(templates.map((t) => t.id));
+			selectedTemplates = new Set(templates.map((t) => t.id));
 		}
 	}
 

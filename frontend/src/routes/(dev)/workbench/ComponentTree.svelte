@@ -9,7 +9,7 @@
 	 * @standards Apple Principal Engineer ICT Level 7+
 	 */
 	import type { ComponentInfo, ComponentTree } from './+page.server';
-	import { SvelteSet } from 'svelte/reactivity';
+	import {  } from 'svelte/reactivity';
 
 	interface Props {
 		tree: ComponentTree;
@@ -24,10 +24,10 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	let searchQuery = $state('');
-	// SvelteSet is already reactive on its contents (.add/.delete/.has);
+	//  is already reactive on its contents (.add/.delete/.has);
 	// wrapping in $state double-wraps reactivity (svelte/no-unnecessary-state-wrap).
-	const expandedFolders = new SvelteSet<string>(['root']);
-	const favorites = new SvelteSet<string>();
+	const expandedFolders = new Set<string>(['root']);
+	const favorites = new Set<string>();
 	let recentComponents = $state<string[]>([]);
 
 	// Load favorites and recent from localStorage
@@ -38,7 +38,7 @@
 
 			if (savedFavorites) {
 				// Mutate the existing reactive set in place (it's `const` now);
-				// SvelteSet tracks .add/.clear so the UI still updates.
+				//  tracks .add/.clear so the UI still updates.
 				favorites.clear();
 				for (const path of JSON.parse(savedFavorites) as string[]) {
 					favorites.add(path);

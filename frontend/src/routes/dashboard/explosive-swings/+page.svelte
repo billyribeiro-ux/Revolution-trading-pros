@@ -4,7 +4,7 @@
 	 * @version 6.0.0 - WebSocket Real-Time Alerts (Phase 3)
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA
 	 */
-	import { onMount, onDestroy, SvelteSet } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import { createPageState } from './page.state.svelte';
 	import { createRealtimeState } from './realtime.svelte';
 
@@ -111,7 +111,7 @@
 	let alertModalOpen = $state(false);
 
 	// Expanded notes tracking (local UI state)
-	let expandedNotes = $state(new SvelteSet<number>());
+	let expandedNotes = $state(new Set<number>());
 
 	// Sync modal state from state module
 	$effect(() => {

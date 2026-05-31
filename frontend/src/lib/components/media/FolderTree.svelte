@@ -6,7 +6,7 @@
 -->
 
 <script lang="ts">
-	import { SvelteSet } from 'svelte';
+	import {  } from 'svelte';
 	import { mediaStore as _mediaStore, getCurrentFolders } from '$lib/stores/media.svelte';
 	import type { MediaFolder } from '$lib/api/media';
 	import { IconFolder, IconChevronRight, IconChevronDown, IconPlus } from '$lib/icons';
@@ -23,7 +23,7 @@
 		onCreateFolder = () => {}
 	}: Props = $props();
 
-	let expandedFolders = $state(new SvelteSet<string>());
+	let expandedFolders = $state(new Set<string>());
 
 	type FolderNode = MediaFolder & { children: FolderNode[] };
 

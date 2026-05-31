@@ -2,7 +2,7 @@
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
 	import IconTrendingDown from '@tabler/icons-svelte-runes/icons/trending-down';
-	import { SvelteSet } from 'svelte';
+	import {  } from 'svelte';
 	import gsap from 'gsap';
 	import { price as bsPrice } from '../engine/black-scholes.js';
 	import type { MarketDataService } from '../data/market-data-service.svelte.js';
@@ -17,7 +17,7 @@
 
 	let { marketData, calc }: Props = $props();
 
-	let dismissed = $state<SvelteSet<string>>(new SvelteSet());
+	let dismissed = $state<Set<string>>(new Set());
 	let alertEl: HTMLDivElement | undefined = $state();
 
 	let mispricings = $derived.by<MispricingResult[]>(() => {

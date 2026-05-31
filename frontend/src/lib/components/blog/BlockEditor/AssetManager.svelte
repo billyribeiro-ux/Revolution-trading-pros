@@ -18,7 +18,7 @@
 -->
 
 <script lang="ts">
-	import { onDestroy, SvelteSet } from 'svelte';
+	import { onDestroy } from 'svelte';
 	import { fade, fly, slide, scale } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { flip } from 'svelte/animate';
@@ -124,7 +124,7 @@
 
 	// Assets
 	let assets = $state<Asset[]>([]);
-	let selectedAssets = $state<SvelteSet<string>>(new SvelteSet());
+	let selectedAssets = $state<Set<string>>(new Set());
 	let selectedAsset = $state<Asset | null>(null);
 	let assetUsage = $state<AssetUsage[]>([]);
 

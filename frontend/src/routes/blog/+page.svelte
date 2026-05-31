@@ -6,7 +6,7 @@
 	 * Updated: CSS layers, oklch colors, container queries, modern image optimization
 	 */
 	import { preloadData } from '$app/navigation';
-	import { onMount, SvelteSet } from 'svelte';
+	import { onMount } from 'svelte';
 	import BlurHashImage from '$lib/components/ui/BlurHashImage.svelte';
 	import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
 	import type { Post } from '$lib/types/post';
@@ -52,7 +52,7 @@
 	let loading = $state(true);
 	let error = $state('');
 	let abortController = $state<AbortController | null>(null);
-	let prefetchedSlugs = $state(new SvelteSet<string>());
+	let prefetchedSlugs = $state(new Set<string>());
 
 	const MAX_RETRIES = 3;
 	const RETRY_DELAY = 2000;

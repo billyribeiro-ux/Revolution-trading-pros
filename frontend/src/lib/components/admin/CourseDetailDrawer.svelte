@@ -33,7 +33,7 @@
 		IconFile
 	} from '$lib/icons';
 	import ConfirmationModal from './ConfirmationModal.svelte';
-	import { SvelteSet } from 'svelte';
+	import {  } from 'svelte';
 
 	// FIX-2026-04-26: Analytics tab now wired to real backend data via
 	// GET /api/admin/courses/:id/analytics. Previously the metric rows below
@@ -89,7 +89,7 @@
 	let isProcessingAction = $state(false);
 
 	// Expanded modules
-	let expandedModules = $state<SvelteSet<number>>(new SvelteSet());
+	let expandedModules = $state<Set<number>>(new Set());
 
 	// FIX-2026-04-26: analytics for the Analytics tab. Loaded alongside course
 	// data; safe to render `null` (we fall back to em-dash while loading).
@@ -129,7 +129,7 @@
 			courseData = await adminCoursesApi.get(courseId);
 			// Auto-expand first module
 			if (courseData.modules.length > 0) {
-				expandedModules = new SvelteSet([courseData.modules[0].id]);
+				expandedModules = new Set([courseData.modules[0].id]);
 			}
 			// FIX-2026-04-26: fetch analytics in parallel-ish (after course load so
 			// we have the canonical course id). Failure is non-fatal — drawer keeps

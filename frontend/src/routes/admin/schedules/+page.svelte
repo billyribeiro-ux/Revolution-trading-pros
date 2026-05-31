@@ -18,7 +18,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import { onMount, SvelteSet } from 'svelte';
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { ROOMS } from '$lib/config/rooms';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
@@ -57,7 +57,7 @@
 	let formData = $state<ScheduleForm>(getDefaultFormData());
 
 	// Bulk selection
-	let selectedIds = $state<SvelteSet<number>>(new SvelteSet());
+	let selectedIds = $state<Set<number>>(new Set());
 	// Pure projection of selection size (selectedIds is reassigned on every
 	// mutation, so $derived tracks it correctly) — was a state+$effect.
 	let showBulkActions = $derived(selectedIds.size > 0);
@@ -479,7 +479,7 @@
 
 			success = 'Schedule deleted successfully';
 			selectedIds.delete(id);
-			// SvelteSet mutations are reactive - no reassignment needed
+			//  mutations are reactive - no reassignment needed
 			await loadSchedules();
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Failed to delete schedule';
@@ -641,7 +641,7 @@
 		} else {
 			selectedIds.add(id);
 		}
-		// SvelteSet mutations are reactive - no reassignment needed
+		//  mutations are reactive - no reassignment needed
 	}
 
 	function isConflicting(scheduleId: number): boolean {

@@ -22,7 +22,7 @@
 -->
 
 <script lang="ts">
-	import { onMount, SvelteSet } from 'svelte';
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import {
 		productsApi,
@@ -77,8 +77,8 @@
 	});
 
 	// Track selected items for include/exclude
-	let selectedProducts = $state<SvelteSet<number>>(new SvelteSet());
-	let selectedPlans = $state<SvelteSet<number>>(new SvelteSet());
+	let selectedProducts = $state<Set<number>>(new Set());
+	let selectedPlans = $state<Set<number>>(new Set());
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Computed Values
@@ -160,25 +160,25 @@
 				restrictionTab = action.tab;
 				return;
 			case 'toggle-product': {
-				// SvelteSet mutations are reactive - modify directly
+				// Set mutations are reactive - modify directly
 				if (selectedProducts.has(action.productId)) selectedProducts.delete(action.productId);
 				else selectedProducts.add(action.productId);
 				return;
 			}
 			case 'toggle-plan': {
-				// SvelteSet mutations are reactive - modify directly
+				// Set mutations are reactive - modify directly
 				if (selectedPlans.has(action.planId)) selectedPlans.delete(action.planId);
 				else selectedPlans.add(action.planId);
 				return;
 			}
 			case 'select-all-products':
-				selectedProducts = new SvelteSet(availableProducts.map((p) => p.id));
+				selectedProducts = new Set(availableProducts.map((p) => p.id));
 				return;
 			case 'clear-products':
 				selectedProducts.clear();
 				return;
 			case 'select-all-plans':
-				selectedPlans = new SvelteSet(availablePlans.map((p) => p.id));
+				selectedPlans = new Set(availablePlans.map((p) => p.id));
 				return;
 			case 'clear-plans':
 				selectedPlans.clear();
