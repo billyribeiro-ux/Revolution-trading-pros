@@ -9,7 +9,8 @@
 	 * @standards Apple Principal Engineer ICT Level 7+
 	 */
 	import type { ComponentInfo, ComponentTree } from './+page.server';
-	import {  } from 'svelte/reactivity';
+	import { SvelteSet } from 'svelte/reactivity';
+	import {} from 'svelte';
 
 	interface Props {
 		tree: ComponentTree;
@@ -24,10 +25,9 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	let searchQuery = $state('');
-	//  is already reactive on its contents (.add/.delete/.has);
-	// wrapping in $state double-wraps reactivity (svelte/no-unnecessary-state-wrap).
-	const expandedFolders = new Set<string>(['root']);
-	const favorites = new Set<string>();
+	// Svelte 5: Use SvelteSet for reactive Sets
+	let expandedFolders = new SvelteSet<string>(['root']);
+	let favorites = new SvelteSet<string>();
 	let recentComponents = $state<string[]>([]);
 
 	// Load favorites and recent from localStorage

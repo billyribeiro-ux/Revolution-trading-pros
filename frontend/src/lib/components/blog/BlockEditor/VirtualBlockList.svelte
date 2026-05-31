@@ -195,7 +195,6 @@
 
 						if (!current || Math.abs(current.height - height) > 1) {
 							blockMeasurements.set(blockId, { height, measured: true });
-							blockMeasurements = new Map(blockMeasurements);
 						}
 					}
 				}
@@ -330,7 +329,6 @@
 	function measureBlock(element: HTMLDivElement, blockId: string) {
 		// Store the reference
 		blockRefs.set(blockId, element);
-		blockRefs = new Map(blockRefs);
 
 		// Observe for height changes
 		if (resizeObserver) {
@@ -344,14 +342,12 @@
 					resizeObserver.unobserve(element);
 				}
 				blockRefs.delete(blockId);
-				blockRefs = new Map(blockRefs);
 			},
 			update(newBlockId: string) {
 				// Handle block ID changes (rare but possible)
 				if (newBlockId !== blockId) {
 					blockRefs.delete(blockId);
 					blockRefs.set(newBlockId, element);
-					blockRefs = new Map(blockRefs);
 					blockId = newBlockId;
 				}
 			}

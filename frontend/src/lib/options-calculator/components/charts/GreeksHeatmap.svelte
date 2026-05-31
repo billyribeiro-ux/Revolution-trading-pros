@@ -18,6 +18,13 @@
 	let tooltipEl: HTMLDivElement | undefined = $state();
 	let width = $state(600);
 	let height = $state(350);
+	let tooltipData = $state<{
+		strike: number;
+		expiry: number;
+		value: number;
+		greekName: string;
+	} | null>(null);
+	let tooltipPosition = $state<{ x: number; y: number }>({ x: 0, y: 0 });
 
 	const margin = { top: 30, right: 80, bottom: 50, left: 70 };
 
@@ -114,22 +121,17 @@
 					select(event.currentTarget as SVGRectElement)
 						.attr('stroke', 'var(--calc-text)')
 						.attr('stroke-width', 2);
-					if (tooltipEl) {
-						tooltipEl.style.display = 'block';
-						tooltipEl.style.left = `${event.offsetX + 12}px`;
-						tooltipEl.style.top = `${event.offsetY - 40}px`;
-						tooltipEl.innerHTML = `
-							<div style="font-family: var(--calc-font-mono); font-size: 11px;">
-								<div style="color: var(--calc-text-secondary);">Strike: $${cell.strike.toFixed(1)}</div>
-								<div style="color: var(--calc-text-secondary);">Expiry: ${(cell.expiry * 365).toFixed(0)}d</div>
-								<div style="color: var(--calc-text); font-weight: 600;">${greekName}: ${cell.value.toFixed(6)}</div>
-							</div>
-						`;
-					}
+					tooltipData = {
+						strike: cell.strike,
+						expiry: cell.expiry,
+						value: cell.value,
+						greekName
+					};
+					tooltipPosition = { x: event.offsetX + 12, y: event.offsetY - 40 };
 				})
 				.on('mouseleave', (event: MouseEvent) => {
 					select(event.currentTarget as SVGRectElement).attr('stroke', 'none');
-					if (tooltipEl) tooltipEl.style.display = 'none';
+					tooltipData = null;
 				});
 		}
 

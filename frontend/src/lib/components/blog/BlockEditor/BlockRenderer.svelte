@@ -3,7 +3,7 @@
  * Block Renderer - Component-Based Architecture
  * ═══════════════════════════════════════════════════════════════════════════
  * REFACTORED: Jan 2026 - Reduced from 3,991 lines to ~150 lines
- * 
+ *
  * All block rendering is now delegated to individual components in cms/blocks/
  * This file is just a router that maps block types to their components.
  */
@@ -90,7 +90,6 @@
 	// Heterogeneous block registry: each block component declares its own Props,
 	// so no single concrete prop type fits. Rendered via <svelte:component> with
 	// the block narrowed at runtime by `props.block.type`.
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- mixed-Props component registry
 	const blockComponentMap: Record<string, Component<any>> = {
 		// Content
 		paragraph: ParagraphBlock,

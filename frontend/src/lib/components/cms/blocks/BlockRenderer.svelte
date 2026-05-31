@@ -75,7 +75,6 @@
 	// Heterogeneous block registry: each block component declares its own Props,
 	// so no single concrete prop type fits. Rendered with the block narrowed at
 	// runtime by `props.block.type`.
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- mixed-Props component registry
 	const componentMap: Record<string, Component<any>> = {
 		// Content
 		paragraph: ParagraphBlock,

@@ -33,7 +33,7 @@
 		IconFile
 	} from '$lib/icons';
 	import ConfirmationModal from './ConfirmationModal.svelte';
-	import {  } from 'svelte';
+	import {} from 'svelte';
 
 	// FIX-2026-04-26: Analytics tab now wired to real backend data via
 	// GET /api/admin/courses/:id/analytics. Previously the metric rows below

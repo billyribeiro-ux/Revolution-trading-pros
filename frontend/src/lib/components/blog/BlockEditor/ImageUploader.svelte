@@ -396,7 +396,6 @@
 			// Step 1: Process image (if enabled)
 			if (processBeforeUpload && canProcessImage(item.file)) {
 				uploadQueue[idx].status = 'processing';
-				uploadQueue = uploadQueue;
 
 				const processed = await processImage(item.file, {
 					maxWidth: 2000,
@@ -414,12 +413,10 @@
 					URL.revokeObjectURL(item.previewUrl);
 				}
 				uploadQueue[idx].previewUrl = processed.dataUrl;
-				uploadQueue = uploadQueue;
 			}
 
 			// Step 2: Upload
 			uploadQueue[idx].status = 'uploading';
-			uploadQueue = uploadQueue;
 
 			const fileToUpload = uploadQueue[idx].processedImage?.file || item.file;
 
@@ -429,7 +426,6 @@
 					const currentIdx = uploadQueue.findIndex((i) => i.id === itemId);
 					if (currentIdx !== -1) {
 						uploadQueue[currentIdx].progress = progress;
-						uploadQueue = uploadQueue;
 					}
 				},
 				signal: item.controller?.signal
@@ -443,7 +439,6 @@
 			uploadQueue[idx].status = 'complete';
 			uploadQueue[idx].progress = 100;
 			uploadQueue[idx].result = result;
-			uploadQueue = uploadQueue;
 
 			// Notify parent
 			onUpload(result);
@@ -452,7 +447,6 @@
 			if (currentIdx !== -1) {
 				uploadQueue[currentIdx].status = 'error';
 				uploadQueue[currentIdx].error = error instanceof Error ? error.message : 'Upload failed';
-				uploadQueue = uploadQueue;
 			}
 		}
 	}
@@ -466,7 +460,6 @@
 		uploadQueue[idx].progress = 0;
 		uploadQueue[idx].error = undefined;
 		uploadQueue[idx].controller = new UploadController();
-		uploadQueue = uploadQueue;
 
 		startUpload(itemId);
 	}

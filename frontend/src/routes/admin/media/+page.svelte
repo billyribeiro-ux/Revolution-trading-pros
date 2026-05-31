@@ -24,7 +24,6 @@
 	import { fly, fade, scale, slide } from 'svelte/transition';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
-	import {  } from 'svelte';
 	import DropZone from '$lib/components/media/DropZone.svelte';
 	import OptimizedImage from '$lib/components/media/OptimizedImage.svelte';
 	import ImageCropModal from '$lib/components/media/ImageCropModal.svelte';
@@ -483,11 +482,11 @@
 	}
 
 	async function bulkOptimize() {
-		const ids = Array.from(selectedIds);
+		const ids = Array.from(selectedIds) as string[];
 		if (ids.length === 0) return;
 
 		try {
-			const response = await mediaApi.bulkOptimize(ids);
+			const response = await mediaApi.bulkOptimize(ids as string[]);
 			showToast(`${response.success} images queued for optimization`, 'success');
 
 			items = items.map((i) =>
@@ -510,11 +509,11 @@
 	}
 
 	async function confirmBulkDelete() {
-		const ids = Array.from(selectedIds);
+		const ids = Array.from(selectedIds) as string[];
 		showBulkDeleteModal = false;
 
 		try {
-			await mediaApi.bulkDelete(ids);
+			await mediaApi.bulkDelete(ids as string[]);
 			items = items.filter((i) => !selectedIds.has(i.id));
 			totalItems -= ids.length;
 			selectedIds.clear();

@@ -18,6 +18,8 @@
 	let tooltipEl: HTMLDivElement | undefined = $state();
 	let width = $state(600);
 	let height = $state(350);
+	let tooltipData = $state<{ underlyingPrice: number; profit: number } | null>(null);
+	let tooltipPosition = $state<{ x: number; y: number }>({ x: 0, y: 0 });
 
 	const margin = { top: 20, right: 30, bottom: 40, left: 60 };
 
@@ -260,16 +262,11 @@
 				crosshairLineH.attr('y1', cy).attr('y2', cy);
 				crosshairDot.attr('cx', cx).attr('cy', cy);
 
-				if (tooltipEl) {
-					tooltipEl.style.left = `${cx + margin.left + 12}px`;
-					tooltipEl.style.top = `${cy + margin.top - 20}px`;
-					tooltipEl.innerHTML = `
-						<div style="font-family: var(--calc-font-mono); font-size: 11px;">
-							<div style="color: var(--calc-text-secondary);">Price: $${d.underlyingPrice.toFixed(2)}</div>
-							<div style="color: ${d.profit >= 0 ? 'var(--calc-profit)' : 'var(--calc-loss)'};">P&L: ${d.profit >= 0 ? '+' : ''}$${d.profit.toFixed(2)}</div>
-						</div>
-					`;
-				}
+				tooltipData = {
+					underlyingPrice: d.underlyingPrice,
+					profit: d.profit
+				};
+				tooltipPosition = { x: cx + margin.left + 12, y: cy + margin.top - 20 };
 			});
 	});
 </script>

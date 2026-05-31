@@ -284,7 +284,6 @@
 		if (idx === -1) return;
 
 		uploadQueue[idx].status = 'uploading';
-		uploadQueue = uploadQueue;
 
 		const formData = new FormData();
 		formData.append('file', item.file);
@@ -297,7 +296,6 @@
 				if (e.lengthComputable) {
 					const progress = Math.round((e.loaded / e.total) * 100);
 					uploadQueue[idx].progress = progress;
-					uploadQueue = uploadQueue;
 					updateTotalProgress();
 				}
 			};
@@ -308,7 +306,6 @@
 					uploadQueue[idx].status = 'complete';
 					uploadQueue[idx].progress = 100;
 					uploadQueue[idx].result = response.data;
-					uploadQueue = uploadQueue;
 					resolve();
 				} else {
 					reject(new Error(`Upload failed: ${xhr.statusText}`));
@@ -329,7 +326,6 @@
 		if (idx === -1) return;
 
 		uploadQueue[idx].status = 'uploading';
-		uploadQueue = uploadQueue;
 
 		// FIX P0-4: same-origin proxy at /api/admin/bunny/create-video.
 		const createResponse = await fetch(`${ADMIN_API_BASE}/bunny/create-video`, {
@@ -356,7 +352,6 @@
 				if (e.lengthComputable) {
 					const progress = Math.round((e.loaded / e.total) * 100);
 					uploadQueue[idx].progress = progress;
-					uploadQueue = uploadQueue;
 					updateTotalProgress();
 				}
 			};
@@ -364,7 +359,6 @@
 			xhr.onload = () => {
 				if (xhr.status >= 200 && xhr.status < 300) {
 					uploadQueue[idx].status = 'processing';
-					uploadQueue = uploadQueue;
 					resolve();
 				} else {
 					reject(new Error(`Video upload failed: ${xhr.statusText}`));
@@ -383,7 +377,6 @@
 
 		uploadQueue[idx].status = 'complete';
 		uploadQueue[idx].progress = 100;
-		uploadQueue = uploadQueue;
 	}
 
 	async function pollVideoStatus(videoGuid: string, idx: number): Promise<void> {
