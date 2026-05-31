@@ -305,7 +305,6 @@
 			} else {
 				selectedIds.add(item.id);
 			}
-			selectedIds = selectedIds;
 		} else {
 			// Single select and show details
 			selectedIds.clear();
@@ -354,7 +353,6 @@
 			await mediaApi.delete(item.id);
 			items = items.filter((i) => i.id !== item.id);
 			selectedIds.delete(item.id);
-			selectedIds = selectedIds;
 			totalItems--;
 
 			if (detailItem?.id === item.id) {
@@ -632,7 +630,6 @@
 					} else {
 						selectedIds.add(focusedId);
 					}
-					selectedIds = selectedIds;
 				}
 				event.preventDefault();
 				break;

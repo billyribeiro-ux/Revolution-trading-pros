@@ -352,7 +352,6 @@
 			if (response.ok) {
 				assets = assets.filter((a) => a.id !== assetId);
 				selectedAssets.delete(assetId);
-				selectedAssets = new Set(selectedAssets);
 				if (selectedAsset?.id === assetId) {
 					selectedAsset = null;
 					sidebarOpen = false;
@@ -623,7 +622,6 @@
 			} else {
 				selectedAssets.add(asset.id);
 			}
-			selectedAssets = new Set(selectedAssets);
 		} else {
 			selectedAssets.clear();
 			selectedAssets.add(asset.id);

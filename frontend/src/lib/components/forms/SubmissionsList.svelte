@@ -162,7 +162,6 @@
 		} else {
 			selectedSubmissions.add(submissionId);
 		}
-		selectedSubmissions = selectedSubmissions;
 	}
 
 	function toggleSelectAll() {

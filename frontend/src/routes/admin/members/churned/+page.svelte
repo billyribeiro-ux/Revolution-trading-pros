@@ -69,7 +69,6 @@
 		} else {
 			selectedMembers.add(id);
 		}
-		selectedMembers = selectedMembers;
 	}
 
 	function selectAllMembers() {
@@ -78,7 +77,6 @@
 		} else {
 			members.forEach((m) => selectedMembers.add(m.id));
 		}
-		selectedMembers = selectedMembers;
 	}
 
 	async function handleBulkEmail() {
