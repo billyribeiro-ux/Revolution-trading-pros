@@ -46,21 +46,9 @@ ignore = [
     { id = "RUSTSEC-2026-0099", reason = "rustls-webpki 0.101.x DNS wildcard constraint bug; pulled via reqwest 0.11. Track as `bump reqwest to 0.12`." },
     { id = "RUSTSEC-2026-0104", reason = "rustls-webpki 0.101.x CRL parser panic; pulled via reqwest 0.11. We don't accept CRLs. Track as `bump reqwest to 0.12`." },
 
-    # ── aws-lc-rs / aws-lc-sys (transitive via aws-sdk-s3) ───────────────
-    # Five 2026-04 advisories all pin on upstream aws-lc-rs releases.
-    # We use AWS SDK only for S3 PutObject/GetObject against R2 — none of
-    # the code paths exercise PKCS7_verify, X.509 name constraints, or
-    # AES-CCM. Track as `bump aws-sdk-s3 once aws-lc-rs ships fix`.
-    { id = "RUSTSEC-2026-0044", reason = "AWS-LC X.509 name-constraint bypass; we don't validate user-supplied certs through aws-lc. Track upstream fix." },
-    { id = "RUSTSEC-2026-0045", reason = "AES-CCM timing side-channel; we don't use AES-CCM (S3 uses AES-GCM/SHA256). Track upstream fix." },
-    { id = "RUSTSEC-2026-0046", reason = "PKCS7_verify chain bypass; we don't call PKCS7 APIs. Track upstream fix." },
-    { id = "RUSTSEC-2026-0047", reason = "PKCS7_verify signature bypass; we don't call PKCS7 APIs. Track upstream fix." },
-    { id = "RUSTSEC-2026-0048", reason = "CRL distribution-point logic; we don't process CRLs. Track upstream fix." },
-
     # ── miscellaneous unmaintained / unsound ─────────────────────────────
     { id = "RUSTSEC-2024-0370", reason = "proc-macro-error unmaintained; transitive via validator_derive. Replace by bumping validator." },
     { id = "RUSTSEC-2025-0134", reason = "rustls-pemfile unmaintained; transitive via reqwest 0.11. Resolved by reqwest 0.12 bump." },
-    { id = "RUSTSEC-2026-0097", reason = "rand 0.8.5 custom-logger unsoundness; we use the default logger / no `rand::rng()` with custom hooks. Bump to rand 0.8.6 when sqlx allows." },
 ]
 
 # ────────────────────────────────────────────────────────────────────────
