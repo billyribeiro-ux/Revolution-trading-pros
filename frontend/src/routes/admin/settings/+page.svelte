@@ -83,7 +83,66 @@
 		needs_attention: number;
 	}
 
-	// State
+	// ── Site Settings (General tab) ──────────────────────────────────────────
+	interface SiteSettings {
+		site_name: string;
+		maintenance_mode: boolean;
+		maintenance_message: string | null;
+	}
+
+	let siteSettings = $state<SiteSettings>({
+		site_name: '',
+		maintenance_mode: false,
+		maintenance_message: null
+	});
+	let isLoadingSettings = $state(false);
+	let isSavingMaintenance = $state(false);
+	let maintenanceError = $state<string | null>(null);
+
+	async function fetchSiteSettings() {
+		isLoadingSettings = true;
+		maintenanceError = null;
+		try {
+			const data = await adminFetch('/api/admin/site-settings');
+			siteSettings = {
+				site_name: data.data?.site_name ?? data.site_name ?? '',
+				maintenance_mode: data.data?.maintenance_mode ?? data.maintenance_mode ?? false,
+				maintenance_message: data.data?.maintenance_message ?? data.maintenance_message ?? null
+			};
+		} catch (e) {
+			console.error('Failed to load site settings:', e);
+			maintenanceError = 'Could not load site settings.';
+		} finally {
+			isLoadingSettings = false;
+		}
+	}
+
+	async function toggleMaintenanceMode() {
+		isSavingMaintenance = true;
+		maintenanceError = null;
+		const next = !siteSettings.maintenance_mode;
+		try {
+			const data = await adminFetch('/api/admin/site-settings', {
+				method: 'PATCH',
+				body: JSON.stringify({ maintenance_mode: next })
+			});
+			const updated = data.data ?? data;
+			siteSettings.maintenance_mode = updated.maintenance_mode ?? next;
+			toastStore.success(
+				siteSettings.maintenance_mode
+					? 'Maintenance mode enabled — public traffic is blocked.'
+					: 'Maintenance mode disabled — site is live.'
+			);
+		} catch (e) {
+			console.error('Failed to toggle maintenance mode:', e);
+			maintenanceError = 'Failed to update maintenance mode.';
+			toastStore.error('Failed to update maintenance mode.');
+		} finally {
+			isSavingMaintenance = false;
+		}
+	}
+
+	// ── Integrations state ────────────────────────────────────────────────────
 	let allServices = $state<Service[]>([]);
 	let categories = $state<Record<string, Category>>({});
 	let summary = $state<Summary>({
@@ -687,6 +746,7 @@
 		if (!browser) return;
 
 		fetchServices();
+		fetchSiteSettings();
 		// Auto-refresh every 30 seconds
 		refreshInterval = setInterval(fetchServices, 30000);
 
@@ -972,55 +1032,63 @@
 				<div class="settings-panel">
 					<h2 class="panel-title">General Settings</h2>
 
-					<div class="settings-list">
-						<div class="setting-row">
-							<div class="setting-info">
-								<h3>Site Name</h3>
-								<p>Your website display name</p>
+					{#if isLoadingSettings}
+						<div class="loading">
+							<div class="spinner"></div>
+							<p>Loading settings...</p>
+						</div>
+					{:else}
+						<div class="settings-list">
+							<div class="setting-row">
+								<div class="setting-info">
+									<h3>Site Name</h3>
+									<p>Your website display name</p>
+								</div>
+								<input
+									id="site-name"
+									name="site_name"
+									type="text"
+									bind:value={siteSettings.site_name}
+									class="setting-input"
+								/>
 							</div>
-							<input
-								id="site-name"
-								name="site_name"
-								type="text"
-								value="Revolution Trading Pros"
-								class="setting-input"
-							/>
-						</div>
 
-						<div class="setting-row">
-							<div class="setting-info">
-								<h3>Maintenance Mode</h3>
-								<p>Temporarily disable public access</p>
+							<!-- ── Maintenance Mode Toggle ─────────────────────────────────────── -->
+							<div class="setting-row setting-row--maintenance {siteSettings.maintenance_mode ? 'maintenance-active' : ''}">
+								<div class="setting-info">
+									<h3>
+										Maintenance Mode
+										{#if siteSettings.maintenance_mode}
+											<span class="maintenance-badge">ACTIVE</span>
+										{/if}
+									</h3>
+									<p>
+										{siteSettings.maintenance_mode
+											? 'Public traffic is redirected — only admins can access the site.'
+											: 'Site is live and publicly accessible.'}
+									</p>
+									{#if maintenanceError}
+										<p class="maintenance-error">{maintenanceError}</p>
+									{/if}
+								</div>
+								<button
+									type="button"
+									aria-label="Toggle maintenance mode"
+									aria-pressed={siteSettings.maintenance_mode}
+									title="Toggle maintenance mode"
+									class="toggle-switch {siteSettings.maintenance_mode ? 'toggle-on' : ''}"
+									disabled={isSavingMaintenance}
+									onclick={toggleMaintenanceMode}
+								>
+									{#if isSavingMaintenance}
+										<span class="toggle-spinner"></span>
+									{:else}
+										<span class="toggle-slider"></span>
+									{/if}
+								</button>
 							</div>
-							<button
-								type="button"
-								aria-label="Toggle maintenance mode"
-								title="Toggle maintenance mode"
-								class="toggle-switch"
-							>
-								<span class="toggle-slider"></span>
-							</button>
 						</div>
-
-						<div class="setting-row">
-							<div class="setting-info">
-								<h3>Debug Mode</h3>
-								<p>Enable detailed error logging</p>
-							</div>
-							<button
-								type="button"
-								aria-label="Toggle debug mode"
-								title="Toggle debug mode"
-								class="toggle-switch"
-							>
-								<span class="toggle-slider"></span>
-							</button>
-						</div>
-
-						<div class="settings-actions">
-							<button class="btn-connect"> Save Settings </button>
-						</div>
-					</div>
+					{/if}
 				</div>
 			</div>
 		{/if}
@@ -1050,7 +1118,7 @@
 			<!-- Header -->
 			<div class="relative p-6 border-b border-white/10">
 				<div
-					class="absolute inset-0 bg-gradient-to-r opacity-50"
+					class="absolute inset-0 bg-linear-to-r opacity-50"
 					style="background: linear-gradient(135deg, {selectedService.color}15, transparent);"
 				></div>
 				<div class="relative flex items-center gap-4">
@@ -1172,7 +1240,7 @@
 				<button
 					onclick={connectService}
 					disabled={isConnecting}
-					class="flex-1 px-4 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white rounded-xl font-medium transition-all shadow-lg shadow-amber-500/20 disabled:opacity-50"
+					class="flex-1 px-4 py-3 bg-linear-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white rounded-xl font-medium transition-all shadow-lg shadow-amber-500/20 disabled:opacity-50"
 				>
 					{#if isConnecting}
 						<span class="flex items-center justify-center gap-2">
@@ -1955,6 +2023,66 @@
 		background: #f1f5f9;
 		border-radius: 50%;
 		transition: all 0.2s ease;
+	}
+
+	.toggle-switch.toggle-on {
+		background: #ef4444;
+	}
+
+	.toggle-switch.toggle-on .toggle-slider {
+		transform: translateX(24px);
+	}
+
+	.toggle-switch:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	.toggle-spinner {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
+		width: 16px;
+		height: 16px;
+		border: 2px solid rgba(255, 255, 255, 0.3);
+		border-top-color: #f1f5f9;
+		border-radius: 50%;
+		animation: spin 0.6s linear infinite;
+	}
+
+	@keyframes spin {
+		to { transform: translate(-50%, -50%) rotate(360deg); }
+	}
+
+	.setting-row--maintenance {
+		transition: background 0.3s ease, border-color 0.3s ease;
+	}
+
+	.setting-row--maintenance.maintenance-active {
+		background: rgba(239, 68, 68, 0.08);
+		border: 1px solid rgba(239, 68, 68, 0.25);
+	}
+
+	.maintenance-badge {
+		display: inline-flex;
+		align-items: center;
+		margin-left: 0.5rem;
+		padding: 0.125rem 0.5rem;
+		background: rgba(239, 68, 68, 0.15);
+		border: 1px solid rgba(239, 68, 68, 0.4);
+		border-radius: 9999px;
+		font-size: 0.6875rem;
+		font-weight: 700;
+		color: #f87171;
+		letter-spacing: 0.05em;
+		vertical-align: middle;
+	}
+
+	.maintenance-error {
+		font-size: 0.8125rem;
+		color: #f87171;
+		margin-top: 0.25rem;
 	}
 
 	.settings-actions {

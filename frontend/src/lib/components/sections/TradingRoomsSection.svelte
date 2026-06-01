@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { cubicOut } from 'svelte/easing';
+	import { cubicOut, expoOut } from 'svelte/easing';
 	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
 	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
 	import IconBuilding from '@tabler/icons-svelte-runes/icons/building';
@@ -58,13 +58,26 @@
 	let isVisible = $state(false);
 	let containerRef = $state<HTMLElement | null>(null);
 
-	function heavySlide(_node: Element, { delay = 0, duration = 1000 }) {
+	// Header: slides in from the left like a data feed initialising
+	function slideFromLeft(_node: Element, { delay = 0, duration = 900 }) {
+		return {
+			delay,
+			duration,
+			css: (t: number) => {
+				const eased = expoOut(t);
+				return `opacity: ${eased}; transform: translateX(${(1 - eased) * -60}px);`;
+			}
+		};
+	}
+
+	// Cards: rise up from further below with a subtle spring
+	function riseUp(_node: Element, { delay = 0, duration = 800 }) {
 		return {
 			delay,
 			duration,
 			css: (t: number) => {
 				const eased = cubicOut(t);
-				return `opacity: ${eased}; transform: translateY(${(1 - eased) * 20}px);`;
+				return `opacity: ${eased}; transform: translateY(${(1 - eased) * 60}px);`;
 			}
 		};
 	}
@@ -108,7 +121,7 @@
 >
 	<div class="absolute inset-0 pointer-events-none">
 		<div
-			class="absolute inset-0 bg-[linear-gradient(to_right,#18181b_1px,transparent_1px),linear-gradient(to_bottom,#18181b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-40"
+			class="absolute inset-0 bg-[linear-gradient(to_right,#18181b_1px,transparent_1px),linear-gradient(to_bottom,#18181b_1px,transparent_1px)] bg-size-[4rem_4rem] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-40"
 		></div>
 	</div>
 
@@ -116,7 +129,7 @@
 		<div class="max-w-3xl mx-auto text-center mb-20">
 			{#if isVisible}
 				<div
-					in:heavySlide={{ delay: 0, duration: 1000 }}
+					in:slideFromLeft={{ delay: 0, duration: 900 }}
 					class="inline-flex items-center justify-center gap-2 mb-6"
 				>
 					<span class="relative flex h-2 w-2">
@@ -131,14 +144,14 @@
 				</div>
 
 				<h2
-					in:heavySlide={{ delay: 100 }}
+					in:slideFromLeft={{ delay: 80, duration: 1000 }}
 					class="text-3xl md:text-5xl font-medium tracking-tight text-white mb-6"
 				>
 					Professional Trading Environments
 				</h2>
 
 				<p
-					in:heavySlide={{ delay: 200 }}
+					in:slideFromLeft={{ delay: 160, duration: 1000 }}
 					class="text-base md:text-lg text-zinc-500 leading-relaxed font-light max-w-2xl mx-auto"
 				>
 					Select an environment tailored to your liquidity requirements.
@@ -154,7 +167,7 @@
 				{@const IconComponent = item.icon}
 				{#if isVisible}
 					<div
-						in:heavySlide={{ delay: 300 + i * 100 }}
+						in:riseUp={{ delay: 200 + i * 120, duration: 800 }}
 						class="relative group bg-zinc-950 p-8 lg:p-10 flex flex-col h-[420px] overflow-hidden"
 					>
 						{#if item.type === 'candles'}
@@ -285,7 +298,7 @@
 						{/if}
 
 						<div
-							class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/80 to-transparent opacity-90 group-hover:opacity-40 transition-opacity duration-500 pointer-events-none"
+							class="absolute inset-0 bg-linear-to-t from-zinc-950 via-zinc-950/80 to-transparent opacity-90 group-hover:opacity-40 transition-opacity duration-500 pointer-events-none"
 						></div>
 
 						<div class="relative z-10 flex justify-between items-start mb-8">
@@ -301,7 +314,7 @@
 							</span>
 						</div>
 
-						<div class="relative z-10 flex-grow">
+						<div class="relative z-10 grow">
 							<h3
 								class="text-xl font-medium text-white mb-2 group-hover:scale-105 transition-transform duration-500 origin-left"
 							>

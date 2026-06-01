@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { cubicOut } from 'svelte/easing';
+	import { cubicOut, quintOut } from 'svelte/easing';
 	import IconSitemap from '@tabler/icons-svelte-runes/icons/sitemap';
 	import IconShield from '@tabler/icons-svelte-runes/icons/shield';
 	import IconCpu from '@tabler/icons-svelte-runes/icons/cpu';
@@ -51,13 +51,26 @@
 		mouse.y = e.clientY - rect.top;
 	};
 
-	function heavySlide(_node: Element, { delay = 0, duration = 1000 }) {
+	// Header: slides in from the right like infrastructure booting right-to-left
+	function slideFromRight(_node: Element, { delay = 0, duration = 900 }) {
+		return {
+			delay,
+			duration,
+			css: (t: number) => {
+				const eased = quintOut(t);
+				return `opacity: ${eased}; transform: translateX(${(1 - eased) * 50}px);`;
+			}
+		};
+	}
+
+	// Cards: bounce up from below with a deeper travel distance
+	function bounceUp(_node: Element, { delay = 0, duration = 700 }) {
 		return {
 			delay,
 			duration,
 			css: (t: number) => {
 				const eased = cubicOut(t);
-				return `opacity: ${eased}; transform: translateY(${(1 - eased) * 20}px);`;
+				return `opacity: ${eased}; transform: translateY(${(1 - eased) * 50}px) scale(${0.96 + eased * 0.04});`;
 			}
 		};
 	}
@@ -113,7 +126,7 @@
 		<div class="max-w-4xl mx-auto text-center mb-24">
 			{#if isVisible}
 				<div
-					in:heavySlide={{ delay: 0, duration: 1000 }}
+					in:slideFromRight={{ delay: 0, duration: 900 }}
 					class="inline-flex items-center gap-3 px-4 py-1.5 border border-zinc-800/30 bg-zinc-900/10 text-zinc-400 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm"
 				>
 					<IconBuilding size={14} />
@@ -121,14 +134,14 @@
 				</div>
 
 				<h2
-					in:heavySlide={{ delay: 100 }}
+					in:slideFromRight={{ delay: 80, duration: 950 }}
 					class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight"
 				>
 					Trading <span class="text-slate-700">Framework.</span>
 				</h2>
 
 				<p
-					in:heavySlide={{ delay: 200 }}
+					in:slideFromRight={{ delay: 160, duration: 950 }}
 					class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto"
 				>
 					We don't build retail platforms. We engineer institutional trading systems. Verified by
@@ -143,7 +156,7 @@
 				{@const IconComponent = feature.icon}
 				{#if isVisible}
 					<div
-						in:heavySlide={{ delay: 300 + i * 150 }}
+						in:bounceUp={{ delay: 250 + i * 120, duration: 700 }}
 						class="relative group/card bg-zinc-950/50 border border-zinc-800 rounded-xl p-8 hover:bg-zinc-900/30 transition-all duration-500 overflow-hidden"
 					>
 						<!-- Spotlight Overlay -->

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { cubicOut } from 'svelte/easing';
+	import { cubicOut, quintOut } from 'svelte/easing';
 	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
 	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
 	import IconNews from '@tabler/icons-svelte-runes/icons/news';
@@ -62,13 +62,26 @@
 		});
 	});
 
-	function heavySlide(_node: Element, { delay = 0, duration = 1000 }) {
+	// Header: slides from the right like a wire report printing in
+	function slideFromRight(_node: Element, { delay = 0, duration = 900 }) {
+		return {
+			delay,
+			duration,
+			css: (t: number) => {
+				const eased = quintOut(t);
+				return `opacity: ${eased}; transform: translateX(${(1 - eased) * 60}px);`;
+			}
+		};
+	}
+
+	// Cards: fly up from further below — greater vertical travel
+	function flyUp(_node: Element, { delay = 0, duration = 800 }) {
 		return {
 			delay,
 			duration,
 			css: (t: number) => {
 				const eased = cubicOut(t);
-				return `opacity: ${eased}; transform: translateY(${(1 - eased) * 20}px);`;
+				return `opacity: ${eased}; transform: translateY(${(1 - eased) * 80}px);`;
 			}
 		};
 	}
@@ -104,7 +117,7 @@
 		<div class="max-w-4xl mx-auto text-center mb-24">
 			{#if isVisible}
 				<div
-					in:heavySlide={{ delay: 0, duration: 1000 }}
+					in:slideFromRight={{ delay: 0, duration: 900 }}
 					class="inline-flex items-center gap-3 px-4 py-1.5 border border-amber-900/30 bg-amber-950/10 text-amber-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm"
 				>
 					<IconNews size={14} />
@@ -112,14 +125,14 @@
 				</div>
 
 				<h2
-					in:heavySlide={{ delay: 100 }}
+					in:slideFromRight={{ delay: 80, duration: 950 }}
 					class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight"
 				>
 					Market <span class="text-slate-700">Analysis.</span>
 				</h2>
 
 				<p
-					in:heavySlide={{ delay: 200 }}
+					in:slideFromRight={{ delay: 160, duration: 950 }}
 					class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto"
 				>
 					We don't publish retail content. We deliver institutional-grade market intelligence.
@@ -135,7 +148,7 @@
 						{#if isVisible}
 							<a
 								href="/blog/{leadPost.slug}"
-								in:heavySlide={{ delay: 300 }}
+								in:flyUp={{ delay: 200, duration: 900 }}
 								class="relative group block h-full bg-[#050505] border border-white/10 overflow-hidden hover:border-amber-600/50 transition-colors duration-500"
 							>
 								<div class="relative h-[400px] overflow-hidden">
@@ -204,7 +217,7 @@
 				<div class="lg:col-span-4 flex flex-col h-full border-l border-white/5 lg:pl-12">
 					{#if isVisible}
 						<div
-							in:heavySlide={{ delay: 400 }}
+							in:flyUp={{ delay: 350, duration: 800 }}
 							class="mb-8 flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-slate-500"
 						>
 							<IconNews size={14} />

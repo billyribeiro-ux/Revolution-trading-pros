@@ -27,11 +27,37 @@ const API_BASE_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:80
 /**
  * MAINTENANCE MODE
  * ═══════════════════════════════════════════════════════════════════════════
- * When ENABLED, all traffic is redirected to /maintenance
- * Set MAINTENANCE_MODE = true to activate
+ * Controlled via Admin → Settings → General → Maintenance Mode toggle.
+ * Value is read from cms_site_settings in the DB (via the CMS v2 public
+ * endpoint) and cached for 30 s so we don't hit the DB on every request.
+ * Fallback: true (safe default keeps site protected if DB is unreachable).
  * ═══════════════════════════════════════════════════════════════════════════
  */
-const MAINTENANCE_MODE = true; // Set to true to enable maintenance mode
+let _maintenanceModeCache: { value: boolean; expiresAt: number } | null = null;
+const MAINTENANCE_CACHE_TTL_MS = 30_000;
+
+async function isMaintenanceModeEnabled(): Promise<boolean> {
+	const now = Date.now();
+	if (_maintenanceModeCache && now < _maintenanceModeCache.expiresAt) {
+		return _maintenanceModeCache.value;
+	}
+	try {
+		const res = await fetch(`${API_BASE_URL}/api/cms/settings`, {
+			headers: { Accept: 'application/json' },
+			signal: AbortSignal.timeout(2000)
+		});
+		if (res.ok) {
+			const json = await res.json();
+			const mode = (json.data ?? json)?.maintenance_mode as boolean | undefined;
+			_maintenanceModeCache = { value: mode ?? false, expiresAt: now + MAINTENANCE_CACHE_TTL_MS };
+			return _maintenanceModeCache.value;
+		}
+	} catch {
+		// DB / API unreachable — preserve last cached value or default to true (safe)
+		if (_maintenanceModeCache) return _maintenanceModeCache.value;
+	}
+	return true;
+}
 
 /**
  * Maintenance Mode Handler
@@ -40,7 +66,13 @@ const MAINTENANCE_MODE = true; // Set to true to enable maintenance mode
 const maintenanceHandler: Handle = async ({ event, resolve }) => {
 	const { pathname } = event.url;
 
-	if (MAINTENANCE_MODE) {
+	// Localhost always bypasses maintenance mode
+	const isLocalhost =
+		event.url.hostname === 'localhost' || event.url.hostname === '127.0.0.1';
+
+	const maintenanceMode = isLocalhost ? false : await isMaintenanceModeEnabled();
+
+	if (maintenanceMode) {
 		// Allow these paths during maintenance:
 		const allowedPaths = [
 			'/maintenance',
@@ -56,7 +88,29 @@ const maintenanceHandler: Handle = async ({ event, resolve }) => {
 		const isAllowed = allowedPaths.some((path) => pathname.startsWith(path) || pathname === path);
 
 		if (!isAllowed) {
-			// Redirect to maintenance page
+			// Admin bypass: if the user has a valid admin token, let them through
+			const accessToken =
+				event.cookies.get('rtp_access_token') ||
+				event.request.headers.get('Authorization')?.replace('Bearer ', '');
+
+			if (accessToken) {
+				try {
+					const res = await fetch(`${API_BASE_URL}/api/auth/me`, {
+						headers: { Authorization: `Bearer ${accessToken}`, Accept: 'application/json' }
+					});
+					if (res.ok) {
+						const json = await res.json();
+						const role = (json.data || json)?.role as string | undefined;
+						if (role === 'admin' || role === 'superadmin') {
+							return resolve(event);
+						}
+					}
+				} catch {
+					// API unreachable during maintenance — fall through to redirect
+				}
+			}
+
+			// Redirect everyone else to maintenance page
 			return new Response(null, {
 				status: 307, // Temporary Redirect
 				headers: {

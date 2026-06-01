@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { cubicOut } from 'svelte/easing';
+	import { cubicOut, expoOut } from 'svelte/easing';
 	// Using the direct path imports as requested in your snippet
 	import IconSitemap from '@tabler/icons-svelte-runes/icons/sitemap';
 	import IconShieldLock from '@tabler/icons-svelte-runes/icons/shield-lock';
@@ -55,13 +55,26 @@
 		mouse.y = e.clientY - rect.top;
 	};
 
-	function heavySlide(_node: Element, { delay = 0, duration = 1000 }) {
+	// Header: slides in from the left (matches left-aligned copy layout)
+	function wipeLeft(_node: Element, { delay = 0, duration = 900 }) {
+		return {
+			delay,
+			duration,
+			css: (t: number) => {
+				const eased = expoOut(t);
+				return `opacity: ${eased}; transform: translateX(${(1 - eased) * -40}px);`;
+			}
+		};
+	}
+
+	// Cards: drop down from above with stagger — "tiles loading"
+	function dropIn(_node: Element, { delay = 0, duration = 650 }) {
 		return {
 			delay,
 			duration,
 			css: (t: number) => {
 				const eased = cubicOut(t);
-				return `opacity: ${eased}; transform: translateY(${(1 - eased) * 20}px);`;
+				return `opacity: ${eased}; transform: translateY(${(1 - eased) * -40}px);`;
 			}
 		};
 	}
@@ -115,7 +128,7 @@
 		<div class="max-w-3xl mb-24">
 			{#if isVisible}
 				<div
-					in:heavySlide={{ delay: 0, duration: 1000 }}
+					in:wipeLeft={{ delay: 0, duration: 900 }}
 					class="inline-flex items-center gap-3 px-3 py-1 border border-amber-900/30 bg-amber-900/10 text-amber-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8"
 				>
 					<span class="relative flex h-2 w-2">
@@ -128,14 +141,14 @@
 				</div>
 
 				<h2
-					in:heavySlide={{ delay: 100 }}
+					in:wipeLeft={{ delay: 80, duration: 950 }}
 					class="text-4xl md:text-6xl font-serif text-white mb-8 tracking-tight"
 				>
 					Core <span class="text-slate-700">Infrastructure.</span>
 				</h2>
 
 				<p
-					in:heavySlide={{ delay: 200 }}
+					in:wipeLeft={{ delay: 160, duration: 950 }}
 					class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl border-l-2 border-white/10 pl-6"
 				>
 					We replaced marketing hype with financial engineering. Our ecosystem combines structured
@@ -149,7 +162,7 @@
 				{@const IconComponent = feature.icon}
 				{#if isVisible}
 					<div
-						in:heavySlide={{ delay: 300 + i * 150 }}
+						in:dropIn={{ delay: 250 + i * 130, duration: 650 }}
 						class="relative group/card bg-[#080808] border border-white/10 p-10 overflow-hidden hover:border-amber-900/50 transition-colors duration-500"
 					>
 						<div

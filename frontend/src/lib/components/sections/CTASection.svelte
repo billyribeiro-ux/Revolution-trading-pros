@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { cubicOut } from 'svelte/easing';
+	import { cubicOut, elasticOut } from 'svelte/easing';
 	import IconLockSquare from '@tabler/icons-svelte-runes/icons/lock-square';
 	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
 	import IconServer from '@tabler/icons-svelte-runes/icons/server';
@@ -22,14 +22,26 @@
 		mouse.y = e.clientY - rect.top;
 	};
 
-	// Heavy, expensive-feeling transition
-	function heavySlide(_node: Element, { delay = 0, duration = 1000 }) {
+	// Header: scale + fade from center — terminal boot sequence
+	function terminalBoot(_node: Element, { delay = 0, duration = 900 }) {
 		return {
 			delay,
 			duration,
 			css: (t: number) => {
 				const eased = cubicOut(t);
-				return `opacity: ${eased}; transform: translateY(${(1 - eased) * 20}px);`;
+				return `opacity: ${eased}; transform: scale(${0.92 + eased * 0.08});`;
+			}
+		};
+	}
+
+	// CTA block: slides up with slight spring
+	function springUp(_node: Element, { delay = 0, duration = 800 }) {
+		return {
+			delay,
+			duration,
+			css: (t: number) => {
+				const eased = cubicOut(t);
+				return `opacity: ${eased}; transform: translateY(${(1 - eased) * 40}px) scale(${0.97 + eased * 0.03});`;
 			}
 		};
 	}
@@ -110,7 +122,7 @@
 		<div class="text-center">
 			{#if isVisible}
 				<div
-					in:heavySlide={{ delay: 0, duration: 1000 }}
+					in:terminalBoot={{ delay: 0, duration: 900 }}
 					class="inline-flex items-center justify-center gap-3 mb-10"
 				>
 					<span class="relative flex h-2 w-2">
@@ -125,7 +137,7 @@
 				</div>
 
 				<h2
-					in:heavySlide={{ delay: 100 }}
+					in:terminalBoot={{ delay: 100, duration: 900 }}
 					class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight leading-[0.95]"
 				>
 					Professional <br />
@@ -133,7 +145,7 @@
 				</h2>
 
 				<p
-					in:heavySlide={{ delay: 200 }}
+					in:terminalBoot={{ delay: 200, duration: 900 }}
 					class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto mb-16"
 				>
 					This is not a game. It is a business. Authenticate now to access institutional-grade
@@ -141,7 +153,7 @@
 				</p>
 
 				<div
-					in:heavySlide={{ delay: 300 }}
+					in:springUp={{ delay: 250, duration: 900 }}
 					class="relative max-w-xl mx-auto group perspective-1000"
 				>
 					<div
@@ -214,7 +226,7 @@
 				</div>
 
 				<div
-					in:heavySlide={{ delay: 400 }}
+					in:springUp={{ delay: 380, duration: 800 }}
 					class="mt-16 pt-8 border-t border-white/5 grid grid-cols-2 md:grid-cols-4 gap-8"
 				>
 					<div class="text-center md:text-left">

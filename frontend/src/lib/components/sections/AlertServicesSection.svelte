@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { cubicOut } from 'svelte/easing';
+	import { cubicOut, backOut } from 'svelte/easing';
 	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
 	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
 	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
@@ -63,13 +63,26 @@
 		mouse.y = e.clientY - rect.top;
 	};
 
-	function heavySlide(_node: Element, { delay = 0, duration = 1000 }) {
+	// Header: clips in from top like a signal broadcast
+	function clipReveal(_node: Element, { delay = 0, duration = 700 }) {
 		return {
 			delay,
 			duration,
 			css: (t: number) => {
 				const eased = cubicOut(t);
-				return `opacity: ${eased}; transform: translateY(${(1 - eased) * 20}px);`;
+				return `opacity: ${eased}; clip-path: inset(${(1 - eased) * 100}% 0 0 0);`;
+			}
+		};
+	}
+
+	// Cards: scale up from slightly below — like a card being dealt
+	function scalePop(_node: Element, { delay = 0, duration = 600 }) {
+		return {
+			delay,
+			duration,
+			css: (t: number) => {
+				const eased = backOut(t);
+				return `opacity: ${t}; transform: scale(${0.88 + eased * 0.12}) translateY(${(1 - cubicOut(t)) * 30}px);`;
 			}
 		};
 	}
@@ -123,7 +136,7 @@
 		<div class="max-w-4xl mx-auto text-center mb-24">
 			{#if isVisible}
 				<div
-					in:heavySlide={{ delay: 0, duration: 1000 }}
+					in:clipReveal={{ delay: 0, duration: 700 }}
 					class="inline-flex items-center gap-3 px-4 py-1.5 border border-amber-900/30 bg-amber-950/10 text-amber-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm"
 				>
 					<IconBolt size={14} />
@@ -131,14 +144,14 @@
 				</div>
 
 				<h2
-					in:heavySlide={{ delay: 100 }}
+					in:clipReveal={{ delay: 80, duration: 750 }}
 					class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight"
 				>
 					Alert <span class="text-slate-700">Systems.</span>
 				</h2>
 
 				<p
-					in:heavySlide={{ delay: 200 }}
+					in:clipReveal={{ delay: 160, duration: 750 }}
 					class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto"
 				>
 					We don't send generic alerts. We deliver institutional-grade signal intelligence. Verified
@@ -155,7 +168,7 @@
 				{@const IconComponent = item.icon}
 				{#if isVisible}
 					<div
-						in:heavySlide={{ delay: 300 + i * 150 }}
+						in:scalePop={{ delay: 200 + i * 150, duration: 600 }}
 						class="relative group/card bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden hover:border-zinc-700 transition-colors duration-500"
 					>
 						<div
@@ -340,7 +353,7 @@
 		</div>
 
 		{#if isVisible}
-			<div in:heavySlide={{ delay: 600 }} class="mt-12 text-center border-t border-zinc-900 pt-8">
+			<div in:clipReveal={{ delay: 500, duration: 700 }} class="mt-12 text-center border-t border-zinc-900 pt-8">
 				<div class="inline-flex items-center gap-6 text-xs text-zinc-500 font-mono">
 					<span class="flex items-center gap-2">
 						<IconTarget size={14} />
