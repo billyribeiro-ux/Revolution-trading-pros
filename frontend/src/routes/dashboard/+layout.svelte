@@ -474,12 +474,10 @@
 					created_at: new Date().toISOString()
 				};
 				authStore.setUser(serverUser);
-
-				try {
-					await authStore.refreshToken();
-				} catch (error) {
-					logger.warn('[Dashboard] Token refresh error (will use cookies):', error);
-				}
+				// NOTE: Token refresh is handled by initializeAuth() in the root
+				// layout onMount. Calling refreshToken() here is redundant and
+				// produces a 401 + error log on every dashboard load when the
+				// refresh token has expired (user just logged in fresh, no RT yet).
 			}
 
 			await loadMembershipsData();

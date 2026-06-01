@@ -17,8 +17,10 @@
 	@version 2.0.0 - January 2026 - SSR-first with auto-fetch fallback
 -->
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { watchlistApi } from '$lib/api/watchlist';
+	import { isAuthenticated } from '$lib/stores/auth.svelte';
 
 	interface WatchlistData {
 		id: number;
@@ -41,23 +43,15 @@
 		className?: string;
 	}
 
-	let props: Props = $props();
-
-	// Derived props with defaults
-	let data = $derived(props.data ?? null);
-	let roomSlug = $derived(props.roomSlug);
-	let href = $derived(props.href);
-	let className = $derived(props.className ?? '');
+	let { data = null, roomSlug, href, className = '' }: Props = $props();
 
 	// Client-side state (only used if no SSR data)
 	let clientData = $state<WatchlistData | null>(null);
 	let isLoading = $state(false);
 	let hasError = $state(false);
 
-	// Resolved watchlist data: SSR data takes priority, then client fetch
+	// Pure derivations — no side effects
 	const watchlist = $derived(data || clientData);
-
-	// Computed display values
 	const displayTitle = $derived(watchlist?.title || 'Weekly Watchlist');
 	const _displayTrader = $derived(watchlist?.trader || 'Trading Team');
 	const displayWeekOf = $derived(formatWeekOf(watchlist?.weekOf));
@@ -69,7 +63,6 @@
 		href || (watchlist?.slug ? `/watchlist/${watchlist.slug}` : '/watchlist/latest')
 	);
 
-	// Format week_of date
 	function formatWeekOf(dateStr?: string): string {
 		if (!dateStr) return 'This Week';
 		try {
@@ -84,27 +77,62 @@
 		}
 	}
 
-	// Client-side fetch fallback (only if no SSR data)
-	$effect(() => {
-		if (!browser || data) return; // Skip if SSR data exists
+	// Client-side fetch — runs once on mount, only if no SSR data was provided.
+	// Gated on isAuthenticated so we never hit the API with a null token,
+	// which causes the proxy to return 502 (backend 401 → fetchBackend returns
+	// null → proxy emits 502). If auth hasn't resolved yet we defer via a
+	// short poll rather than a reactive $effect (avoids the state-in-$effect
+	// malpractice pattern flagged by svelte autofixer).
+	onMount(() => {
+		if (!browser || data) return;
 
-		isLoading = true;
-		hasError = false;
+		const attemptFetch = async () => {
+			// Wait up to 3s for auth to be initialized before fetching
+			const MAX_WAIT_MS = 3000;
+			const POLL_INTERVAL_MS = 100;
+			let waited = 0;
 
-		watchlistApi
-			.getLatest(roomSlug)
-			.then((response) => {
+			while (!isAuthenticated.current && waited < MAX_WAIT_MS) {
+				await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS));
+				waited += POLL_INTERVAL_MS;
+			}
+
+			// Still not authenticated — don't fire an unauthenticated request
+			if (!isAuthenticated.current) return;
+
+			isLoading = true;
+			hasError = false;
+
+			try {
+				const response = await watchlistApi.getLatest(roomSlug);
 				if (response.success && response.data) {
 					clientData = response.data;
 				}
-			})
-			.catch((err) => {
+			} catch (err) {
+				// Single retry on 502/503 (backend startup race)
+				const is5xx =
+					err instanceof Error &&
+					(err.message.includes('502') || err.message.includes('503'));
+				if (is5xx) {
+					await new Promise((r) => setTimeout(r, 2000));
+					try {
+						const retry = await watchlistApi.getLatest(roomSlug);
+						if (retry.success && retry.data) {
+							clientData = retry.data;
+							return;
+						}
+					} catch {
+						// retry also failed, fall through to error state
+					}
+				}
 				console.warn('[WeeklyWatchlist] Failed to fetch:', err);
 				hasError = true;
-			})
-			.finally(() => {
+			} finally {
 				isLoading = false;
-			});
+			}
+		};
+
+		attemptFetch();
 	});
 </script>
 

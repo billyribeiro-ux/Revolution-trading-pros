@@ -492,8 +492,14 @@ class AuthenticationService {
 				// Otherwise, continue with normal flow
 			}
 
-			// Try to refresh token once
-			if (retriesLeft === MAX_RETRIES) {
+			// Only attempt refresh + clearAuth if there was an active session.
+			// A 401 on an unauthenticated probe (e.g. /me on the login page) is
+			// expected — there is no token to refresh and nothing to clear. Calling
+			// clearAuth() in that case wipes any auth state that may have just been
+			// set by a concurrent login response (race condition on /login page load).
+			const hadSession = !!authStore.getToken();
+
+			if (hadSession && retriesLeft === MAX_RETRIES) {
 				try {
 					await this.refreshToken();
 					return this.executeRequest<T>(endpoint, options, skipAuth, retriesLeft - 1);
@@ -507,7 +513,9 @@ class AuthenticationService {
 				}
 			}
 
-			authStore.clearAuth();
+			if (hadSession) {
+				authStore.clearAuth();
+			}
 			throw new UnauthorizedError();
 		}
 
