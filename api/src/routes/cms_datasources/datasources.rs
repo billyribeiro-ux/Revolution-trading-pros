@@ -52,17 +52,17 @@ pub(super) async fn list_datasources(
         _ => "DESC",
     };
 
-    let search_pattern = query.search.as_ref().map(|s| format!("%{}%", s));
+    let search_pattern = query.search.as_ref().map(|s| format!("%{s}%"));
 
     // Count total
     let count_result: (i64,) = sqlx::query_as(
-        r#"
+        r"
         SELECT COUNT(*)
         FROM cms_datasources
         WHERE deleted_at IS NULL
           AND ($1::text IS NULL OR name ILIKE $1 OR description ILIKE $1)
           AND ($2::boolean IS NULL OR is_system = $2)
-        "#,
+        ",
     )
     .bind(&search_pattern)
     .bind(query.is_system)
@@ -74,17 +74,16 @@ pub(super) async fn list_datasources(
 
     // Fetch datasources
     let datasources: Vec<CmsDatasourceSummary> = sqlx::query_as(&format!(
-        r#"
+        r"
         SELECT id, name, slug, description, icon, color, entry_count,
                is_system, is_locked, created_at, updated_at
         FROM cms_datasources
         WHERE deleted_at IS NULL
           AND ($1::text IS NULL OR name ILIKE $1 OR description ILIKE $1)
           AND ($2::boolean IS NULL OR is_system = $2)
-        ORDER BY is_system DESC, {} {}
+        ORDER BY is_system DESC, {sort_column} {sort_order}
         LIMIT $3 OFFSET $4
-        "#,
-        sort_column, sort_order
+        "
     ))
     .bind(&search_pattern)
     .bind(query.is_system)
@@ -127,13 +126,13 @@ pub(super) async fn get_datasource(
     require_cms_editor(&user)?;
 
     let datasource: CmsDatasource = sqlx::query_as(
-        r#"
+        r"
         SELECT id, name, slug, description, icon, color, entry_count,
                is_system, is_locked, created_at, updated_at,
                created_by, updated_by, deleted_at
         FROM cms_datasources
         WHERE id = $1 AND deleted_at IS NULL
-        "#,
+        ",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -168,13 +167,13 @@ pub(super) async fn get_datasource_by_slug(
     require_cms_editor(&user)?;
 
     let datasource: CmsDatasource = sqlx::query_as(
-        r#"
+        r"
         SELECT id, name, slug, description, icon, color, entry_count,
                is_system, is_locked, created_at, updated_at,
                created_by, updated_by, deleted_at
         FROM cms_datasources
         WHERE slug = $1 AND deleted_at IS NULL
-        "#,
+        ",
     )
     .bind(&slug)
     .fetch_optional(&state.db.pool)
@@ -232,13 +231,13 @@ pub(super) async fn create_datasource(
 
     let new_id = Uuid::new_v4();
     let datasource: CmsDatasource = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO cms_datasources (id, name, slug, description, icon, color, created_by)
         VALUES ($1, $2, $3, $4, $5, $6, $7)
         RETURNING id, name, slug, description, icon, color, entry_count,
                   is_system, is_locked, created_at, updated_at,
                   created_by, updated_by, deleted_at
-        "#,
+        ",
     )
     .bind(new_id)
     .bind(request.name.trim())
@@ -324,7 +323,7 @@ pub(super) async fn update_datasource(
             })?;
 
     let datasource: CmsDatasource = sqlx::query_as(
-        r#"
+        r"
         UPDATE cms_datasources
         SET name = COALESCE($2, name),
             slug = COALESCE($3, slug),
@@ -338,7 +337,7 @@ pub(super) async fn update_datasource(
         RETURNING id, name, slug, description, icon, color, entry_count,
                   is_system, is_locked, created_at, updated_at,
                   created_by, updated_by, deleted_at
-        "#,
+        ",
     )
     .bind(id)
     .bind(&request.name)
@@ -447,13 +446,13 @@ pub(super) async fn duplicate_datasource(
 
     // Fetch original
     let original: CmsDatasource = sqlx::query_as(
-        r#"
+        r"
         SELECT id, name, slug, description, icon, color, entry_count,
                is_system, is_locked, created_at, updated_at,
                created_by, updated_by, deleted_at
         FROM cms_datasources
         WHERE id = $1 AND deleted_at IS NULL
-        "#,
+        ",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -482,13 +481,13 @@ pub(super) async fn duplicate_datasource(
 
     // Create duplicated datasource
     let duplicated: CmsDatasource = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO cms_datasources (id, name, slug, description, icon, color, is_system, is_locked, created_by)
         VALUES ($1, $2, $3, $4, $5, $6, false, false, $7)
         RETURNING id, name, slug, description, icon, color, entry_count,
                   is_system, is_locked, created_at, updated_at,
                   created_by, updated_by, deleted_at
-        "#,
+        ",
     )
     .bind(dup_id)
     .bind(&new_name)
@@ -503,12 +502,12 @@ pub(super) async fn duplicate_datasource(
 
     // Copy all entries
     sqlx::query(
-        r#"
+        r"
         INSERT INTO cms_datasource_entries (datasource_id, name, value, dimension, sort_order, metadata)
         SELECT $2, name, value, dimension, sort_order, metadata
         FROM cms_datasource_entries
         WHERE datasource_id = $1
-        "#,
+        ",
     )
     .bind(original.id)
     .bind(dup_id)

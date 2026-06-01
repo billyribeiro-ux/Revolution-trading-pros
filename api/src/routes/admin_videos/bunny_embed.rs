@@ -60,11 +60,11 @@ pub(super) async fn bunny_webhook(
         let mut param_idx = 2;
 
         if duration.is_some() {
-            query.push_str(&format!(", duration = ${}", param_idx));
+            query.push_str(&format!(", duration = ${param_idx}"));
             param_idx += 1;
         }
         if thumbnail_url.is_some() {
-            query.push_str(&format!(", bunny_thumbnail_url = ${}", param_idx));
+            query.push_str(&format!(", bunny_thumbnail_url = ${param_idx}"));
             param_idx += 1;
         }
         if let (Some(_w), Some(_h)) = (width, height) {
@@ -75,7 +75,7 @@ pub(super) async fn bunny_webhook(
             param_idx += 2;
         }
 
-        query.push_str(&format!(" WHERE bunny_video_guid = ${}", param_idx));
+        query.push_str(&format!(" WHERE bunny_video_guid = ${param_idx}"));
 
         let mut sqlx_query = sqlx::query(&query).bind(encoding_status);
 
@@ -165,10 +165,8 @@ pub(super) async fn generate_thumbnail(
                 .get("timestamp_seconds")
                 .and_then(|v| v.as_i64())
                 .unwrap_or(0);
-            let thumbnail_url = format!(
-                "https://vz-{}.b-cdn.net/{}/thumbnail.jpg?time={}",
-                library_id, guid, timestamp
-            );
+            let thumbnail_url =
+                format!("https://vz-{library_id}.b-cdn.net/{guid}/thumbnail.jpg?time={timestamp}");
 
             // Update video record with new thumbnail
             let _ = sqlx::query(
@@ -230,18 +228,15 @@ pub(super) async fn get_embed_code(
                 "bunny" => {
                     if let (Some(g), Some(lib)) = (guid, library_id) {
                         let url = format!(
-                            "https://iframe.mediadelivery.net/embed/{}/{}?autoplay={}&responsive={}",
-                            lib, g, autoplay, responsive
+                            "https://iframe.mediadelivery.net/embed/{lib}/{g}?autoplay={autoplay}&responsive={responsive}"
                         );
                         let html = if responsive {
                             format!(
-                                r#"<div style="position:relative;padding-top:56.25%;"><iframe src="{}" loading="lazy" style="border:none;position:absolute;top:0;height:100%;width:100%;" allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;" allowfullscreen="true"></iframe></div>"#,
-                                url
+                                r#"<div style="position:relative;padding-top:56.25%;"><iframe src="{url}" loading="lazy" style="border:none;position:absolute;top:0;height:100%;width:100%;" allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;" allowfullscreen="true"></iframe></div>"#
                             )
                         } else {
                             format!(
-                                r#"<iframe src="{}" width="{}" height="{}" loading="lazy" style="border:none;" allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;" allowfullscreen="true"></iframe>"#,
-                                url, width, height
+                                r#"<iframe src="{url}" width="{width}" height="{height}" loading="lazy" style="border:none;" allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;" allowfullscreen="true"></iframe>"#
                             )
                         };
                         (url, html)

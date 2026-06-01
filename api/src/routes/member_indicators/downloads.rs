@@ -52,10 +52,10 @@ pub(super) async fn generate_download_url(
 
     // ICT 7 FIX: Check ownership using user_indicators table (uses i64)
     let has_access: Option<(i64,)> = sqlx::query_as(
-        r#"
+        r"
         SELECT id FROM user_indicators
         WHERE user_id = $1 AND indicator_id = $2
-        "#,
+        ",
     )
     .bind(user_id)
     .bind(indicator.0)
@@ -98,7 +98,7 @@ pub(super) async fn generate_download_url(
     let expiry_timestamp = expires_at.timestamp();
 
     // Hash format: SHA256(user_id + file_id + expiry + secret)
-    let hash_input = format!("{}{}{}{}", user_id, file_id, expiry_timestamp, secret);
+    let hash_input = format!("{user_id}{file_id}{expiry_timestamp}{secret}");
     let mut hasher = Sha256::new();
     hasher.update(hash_input.as_bytes());
     let token = format!("{:x}", hasher.finalize());
@@ -106,11 +106,11 @@ pub(super) async fn generate_download_url(
     // ICT 7 FIX: Store download record with i64 indicator_id
     // Note: indicator_downloads table may not exist; this is optional tracking
     sqlx::query(
-        r#"
+        r"
         INSERT INTO indicator_downloads (user_id, indicator_id, file_id, download_token, token_expires_at, ownership_id)
         VALUES ($1, $2, $3, $4, $5, $6)
         ON CONFLICT DO NOTHING
-        "#,
+        ",
     )
     .bind(user_id as i32)
     .bind(indicator.0)
@@ -126,8 +126,7 @@ pub(super) async fn generate_download_url(
     let base_url = std::env::var("API_BASE_URL")
         .unwrap_or_else(|_| "https://api.revolution-trading.com".to_string());
     let download_url = format!(
-        "{}/download/indicator/{}/{}?token={}&expires={}",
-        base_url, slug, file_id, token, expiry_timestamp
+        "{base_url}/download/indicator/{slug}/{file_id}?token={token}&expires={expiry_timestamp}"
     );
 
     Ok(Json(json!({
@@ -165,12 +164,12 @@ pub(super) async fn download_file(
 
     // Find download record
     let download: Option<(i32, i32, Option<i32>, Option<i32>)> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, file_id, download_count, max_downloads
         FROM indicator_downloads
         WHERE download_token = $1
         AND token_expires_at > NOW()
-        "#,
+        ",
     )
     .bind(token)
     .fetch_optional(&state.db.pool)
@@ -215,11 +214,11 @@ pub(super) async fn download_file(
 
     // Update download count
     sqlx::query(
-        r#"
+        r"
         UPDATE indicator_downloads
         SET download_count = download_count + 1, downloaded_at = NOW(), status = 'completed'
         WHERE id = $1
-        "#,
+        ",
     )
     .bind(download.0)
     .execute(&state.db.pool)
@@ -242,7 +241,7 @@ pub(super) async fn download_file(
     let cdn_url = file.cdn_url.unwrap_or_else(|| file.file_path.clone());
 
     let safe_name = sanitize_filename_for_disposition(&file.file_name);
-    let disposition = format!("attachment; filename=\"{}\"", safe_name);
+    let disposition = format!("attachment; filename=\"{safe_name}\"");
 
     let response = Response::builder()
         .status(StatusCode::FOUND)
@@ -323,7 +322,7 @@ pub(super) async fn get_download_history(
     let offset = (page - 1) * per_page;
 
     let downloads: Vec<DownloadHistoryRow> = sqlx::query_as(
-        r#"
+        r"
         SELECT
             d.id,
             d.indicator_id,
@@ -340,7 +339,7 @@ pub(super) async fn get_download_history(
         WHERE d.user_id = $1
         ORDER BY d.downloaded_at DESC NULLS LAST, d.created_at DESC
         LIMIT $2 OFFSET $3
-        "#,
+        ",
     )
     .bind(user_id as i32)
     .bind(per_page as i64)

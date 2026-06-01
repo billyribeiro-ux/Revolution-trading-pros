@@ -27,12 +27,12 @@ pub(super) async fn get_memberships(
     // Try to fetch subscriptions - handle case where table doesn't exist
     // Note: Using user_memberships table (not user_subscriptions)
     let subscriptions_result: Result<Vec<UserSubscriptionDbRow>, _> = sqlx::query_as(
-        r#"
+        r"
         SELECT s.id, s.user_id, s.plan_id, s.starts_at, s.expires_at, s.status, s.created_at
         FROM user_memberships s
         WHERE s.user_id = $1 AND s.status IN ('active', 'trialing', 'pending')
         ORDER BY s.created_at DESC
-        "#,
+        ",
     )
     .bind(user.id)
     .fetch_all(&state.db.pool)

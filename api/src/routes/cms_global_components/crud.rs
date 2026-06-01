@@ -61,18 +61,18 @@ pub(super) async fn list_global_components(
     };
 
     // Prepare search pattern if provided
-    let search_pattern = query.search.as_ref().map(|s| format!("%{}%", s));
+    let search_pattern = query.search.as_ref().map(|s| format!("%{s}%"));
 
     // Count total
     let count_result: (i64,) = sqlx::query_as(
-        r#"
+        r"
         SELECT COUNT(*)
         FROM cms_global_components
         WHERE ($1::boolean OR deleted_at IS NULL)
           AND ($2::text IS NULL OR category::text = $2)
           AND ($3::text IS NULL OR name ILIKE $3 OR description ILIKE $3)
           AND ($4::boolean IS NULL OR is_global = $4)
-        "#,
+        ",
     )
     .bind(include_deleted)
     .bind(&query.category)
@@ -86,7 +86,7 @@ pub(super) async fn list_global_components(
 
     // Fetch components with safe sort columns
     let components: Vec<GlobalComponentSummary> = sqlx::query_as(&format!(
-        r#"
+        r"
         SELECT id, name, slug, description, category::text, tags, thumbnail_url,
                usage_count, is_global, is_locked, version, created_at, updated_at
         FROM cms_global_components
@@ -94,10 +94,9 @@ pub(super) async fn list_global_components(
           AND ($2::text IS NULL OR category::text = $2)
           AND ($3::text IS NULL OR name ILIKE $3 OR description ILIKE $3)
           AND ($4::boolean IS NULL OR is_global = $4)
-        ORDER BY {} {}
+        ORDER BY {sort_column} {sort_order}
         LIMIT $5 OFFSET $6
-        "#,
-        sort_column, sort_order
+        "
     ))
     .bind(include_deleted)
     .bind(&query.category)
@@ -111,13 +110,13 @@ pub(super) async fn list_global_components(
 
     // Get category counts for sidebar filters
     let categories: Vec<CategoryCount> = sqlx::query_as(
-        r#"
+        r"
         SELECT category::text as category, COUNT(*) as count
         FROM cms_global_components
         WHERE deleted_at IS NULL
         GROUP BY category
         ORDER BY count DESC
-        "#,
+        ",
     )
     .fetch_all(&state.db.pool)
     .await
@@ -157,13 +156,13 @@ pub(super) async fn get_global_component(
     require_cms_editor(&user)?;
 
     let component: GlobalComponent = sqlx::query_as(
-        r#"
+        r"
         SELECT id, name, slug, description, component_data, category,
                tags, thumbnail_url, usage_count, is_global, is_locked, version,
                deleted_at, created_at, updated_at, created_by, updated_by
         FROM cms_global_components
         WHERE id = $1 AND deleted_at IS NULL
-        "#,
+        ",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -197,7 +196,7 @@ pub(super) async fn get_global_component(
 
     // Get recent versions (last 5)
     let recent_versions: Vec<GlobalComponentVersion> = sqlx::query_as(
-        r#"
+        r"
         SELECT v.id, v.component_id, v.version, v.component_data,
                v.change_message, v.created_by, u.name as created_by_name, v.created_at
         FROM cms_global_component_versions v
@@ -205,7 +204,7 @@ pub(super) async fn get_global_component(
         WHERE v.component_id = $1
         ORDER BY v.version DESC
         LIMIT 5
-        "#,
+        ",
     )
     .bind(id)
     .fetch_all(&state.db.pool)
@@ -242,13 +241,13 @@ pub(super) async fn get_global_component_by_slug(
     require_cms_editor(&user)?;
 
     let component: GlobalComponent = sqlx::query_as(
-        r#"
+        r"
         SELECT id, name, slug, description, component_data, category,
                tags, thumbnail_url, usage_count, is_global, is_locked, version,
                deleted_at, created_at, updated_at, created_by, updated_by
         FROM cms_global_components
         WHERE slug = $1 AND deleted_at IS NULL
-        "#,
+        ",
     )
     .bind(&slug)
     .fetch_optional(&state.db.pool)
@@ -299,7 +298,7 @@ pub(super) async fn create_global_component(
 
     let new_id = Uuid::new_v4();
     let component: GlobalComponent = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO cms_global_components (
             id, name, slug, description, component_data, category, tags,
             thumbnail_url, usage_count, is_global, is_locked, version,
@@ -309,7 +308,7 @@ pub(super) async fn create_global_component(
         RETURNING id, name, slug, description, component_data, category,
                   tags, thumbnail_url, usage_count, is_global, is_locked, version,
                   deleted_at, created_at, updated_at, created_by, updated_by
-        "#,
+        ",
     )
     .bind(new_id)
     .bind(request.name.trim())
@@ -410,7 +409,7 @@ pub(super) async fn update_global_component(
     };
 
     let component: GlobalComponent = sqlx::query_as(
-        r#"
+        r"
         UPDATE cms_global_components
         SET name = COALESCE($2, name),
             slug = COALESCE($3, slug),
@@ -428,7 +427,7 @@ pub(super) async fn update_global_component(
         RETURNING id, name, slug, description, component_data, category,
                   tags, thumbnail_url, usage_count, is_global, is_locked, version,
                   deleted_at, created_at, updated_at, created_by, updated_by
-        "#,
+        ",
     )
     .bind(id)
     .bind(&request.name)
@@ -556,13 +555,13 @@ pub(super) async fn duplicate_global_component(
 
     // Fetch the original component
     let original: GlobalComponent = sqlx::query_as(
-        r#"
+        r"
         SELECT id, name, slug, description, component_data, category,
                tags, thumbnail_url, usage_count, is_global, is_locked, version,
                deleted_at, created_at, updated_at, created_by, updated_by
         FROM cms_global_components
         WHERE id = $1 AND deleted_at IS NULL
-        "#,
+        ",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -580,7 +579,7 @@ pub(super) async fn duplicate_global_component(
 
     let dup_id = Uuid::new_v4();
     let duplicated: GlobalComponent = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO cms_global_components (
             id, name, slug, description, component_data, category, tags,
             thumbnail_url, usage_count, is_global, is_locked, version,
@@ -590,7 +589,7 @@ pub(super) async fn duplicate_global_component(
         RETURNING id, name, slug, description, component_data, category,
                   tags, thumbnail_url, usage_count, is_global, is_locked, version,
                   deleted_at, created_at, updated_at, created_by, updated_by
-        "#,
+        ",
     )
     .bind(dup_id)
     .bind(&new_name)

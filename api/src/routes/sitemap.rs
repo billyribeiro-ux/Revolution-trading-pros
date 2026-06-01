@@ -82,8 +82,7 @@ pub async fn sitemap_index(State(state): State<AppState>) -> Response {
     for i in 1..=sitemap_count {
         content.push_str("  <sitemap>\n");
         content.push_str(&format!(
-            "    <loc>{}/api/sitemap/posts/{}</loc>\n",
-            site_url, i
+            "    <loc>{site_url}/api/sitemap/posts/{i}</loc>\n"
         ));
         content.push_str(&format!(
             "    <lastmod>{}</lastmod>\n",
@@ -95,8 +94,7 @@ pub async fn sitemap_index(State(state): State<AppState>) -> Response {
     // Categories sitemap
     content.push_str("  <sitemap>\n");
     content.push_str(&format!(
-        "    <loc>{}/api/sitemap/categories</loc>\n",
-        site_url
+        "    <loc>{site_url}/api/sitemap/categories</loc>\n"
     ));
     content.push_str(&format!(
         "    <lastmod>{}</lastmod>\n",
@@ -106,7 +104,7 @@ pub async fn sitemap_index(State(state): State<AppState>) -> Response {
 
     // Tags sitemap
     content.push_str("  <sitemap>\n");
-    content.push_str(&format!("    <loc>{}/api/sitemap/tags</loc>\n", site_url));
+    content.push_str(&format!("    <loc>{site_url}/api/sitemap/tags</loc>\n"));
     content.push_str(&format!(
         "    <lastmod>{}</lastmod>\n",
         Utc::now().format("%Y-%m-%d")
@@ -150,28 +148,28 @@ pub async fn main_sitemap(State(state): State<AppState>) -> Response {
 
     // Static pages
     content.push_str(&build_url(
-        &format!("{}/", site_url),
+        &format!("{site_url}/"),
         &Utc::now(),
         "daily",
         "1.0",
         None,
     ));
     content.push_str(&build_url(
-        &format!("{}/blog", site_url),
+        &format!("{site_url}/blog"),
         &Utc::now(),
         "daily",
         "0.9",
         None,
     ));
     content.push_str(&build_url(
-        &format!("{}/about", site_url),
+        &format!("{site_url}/about"),
         &Utc::now(),
         "monthly",
         "0.7",
         None,
     ));
     content.push_str(&build_url(
-        &format!("{}/contact", site_url),
+        &format!("{site_url}/contact"),
         &Utc::now(),
         "monthly",
         "0.6",
@@ -191,7 +189,7 @@ pub async fn main_sitemap(State(state): State<AppState>) -> Response {
 
     for (slug, last_modified) in posts {
         content.push_str(&build_url(
-            &format!("{}/blog/{}", site_url, slug),
+            &format!("{site_url}/blog/{slug}"),
             &last_modified,
             "weekly",
             "0.8",
@@ -208,7 +206,7 @@ pub async fn main_sitemap(State(state): State<AppState>) -> Response {
 
     for (slug, updated_at) in categories {
         content.push_str(&build_url(
-            &format!("{}/blog/category/{}", site_url, slug),
+            &format!("{site_url}/blog/category/{slug}"),
             &updated_at,
             "weekly",
             "0.6",
@@ -224,7 +222,7 @@ pub async fn main_sitemap(State(state): State<AppState>) -> Response {
 
     for (slug, updated_at) in tags {
         content.push_str(&build_url(
-            &format!("{}/blog/tag/{}", site_url, slug),
+            &format!("{site_url}/blog/tag/{slug}"),
             &updated_at,
             "weekly",
             "0.5",
@@ -252,7 +250,7 @@ pub async fn main_sitemap(State(state): State<AppState>) -> Response {
 /// GET /sitemap/posts/:page - Generate posts sitemap (paginated)
 #[tracing::instrument(skip(state))]
 pub async fn posts(State(state): State<AppState>, Path(page): Path<i64>) -> Response {
-    let cache_key = format!("sitemap:posts:{}", page);
+    let cache_key = format!("sitemap:posts:{page}");
     {
         let cache = SITEMAP_CACHE.read().await;
         if let Some(cached) = cache.get(&cache_key) {
@@ -283,7 +281,7 @@ pub async fn posts(State(state): State<AppState>, Path(page): Path<i64>) -> Resp
 
     for (slug, last_modified, featured_image) in posts {
         content.push_str(&build_url(
-            &format!("{}/blog/{}", site_url, slug),
+            &format!("{site_url}/blog/{slug}"),
             &last_modified,
             "weekly",
             "0.8",
@@ -334,7 +332,7 @@ pub async fn categories(State(state): State<AppState>) -> Response {
 
     for (slug, updated_at) in categories {
         content.push_str(&build_url(
-            &format!("{}/blog/category/{}", site_url, slug),
+            &format!("{site_url}/blog/category/{slug}"),
             &updated_at,
             "weekly",
             "0.6",
@@ -384,7 +382,7 @@ pub async fn tags_sitemap(State(state): State<AppState>) -> Response {
 
     for (slug, updated_at) in tags {
         content.push_str(&build_url(
-            &format!("{}/blog/tag/{}", site_url, slug),
+            &format!("{site_url}/blog/tag/{slug}"),
             &updated_at,
             "weekly",
             "0.5",
@@ -442,8 +440,8 @@ fn build_url(
         "    <lastmod>{}</lastmod>\n",
         lastmod.format("%Y-%m-%d")
     ));
-    url.push_str(&format!("    <changefreq>{}</changefreq>\n", changefreq));
-    url.push_str(&format!("    <priority>{}</priority>\n", priority));
+    url.push_str(&format!("    <changefreq>{changefreq}</changefreq>\n"));
+    url.push_str(&format!("    <priority>{priority}</priority>\n"));
 
     if let Some(img) = image {
         url.push_str("    <image:image>\n");

@@ -87,9 +87,9 @@ pub(super) async fn change_plan_price(
     }
 
     let plan: PlanForPriceChange = sqlx::query_as(
-        r#"SELECT id, name, stripe_price_id, stripe_product_id,
+        r"SELECT id, name, stripe_price_id, stripe_product_id,
                   (price * 100)::BIGINT AS price_cents
-           FROM membership_plans WHERE id = $1"#,
+           FROM membership_plans WHERE id = $1",
     )
     .bind(plan_id)
     .fetch_optional(&state.db.pool)
@@ -165,10 +165,10 @@ pub(super) async fn change_plan_price(
     })?;
 
     sqlx::query(
-        r#"UPDATE membership_plans
+        r"UPDATE membership_plans
            SET stripe_price_id = $1, stripe_product_id = $2,
                price = $3::BIGINT / 100.0, updated_at = NOW()
-           WHERE id = $4"#,
+           WHERE id = $4",
     )
     .bind(&new_price_id)
     .bind(&product_id)
@@ -185,12 +185,12 @@ pub(super) async fn change_plan_price(
     })?;
 
     let history_id: i64 = sqlx::query_scalar(
-        r#"INSERT INTO membership_plan_price_history (
+        r"INSERT INTO membership_plan_price_history (
             plan_id, old_stripe_price_id, new_stripe_price_id,
             old_amount_cents, new_amount_cents, currency, billing_interval,
             apply_to, changed_by_user_id, changed_at
         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW())
-        RETURNING id"#,
+        RETURNING id",
     )
     .bind(plan_id)
     .bind(&old_price_id)
@@ -243,11 +243,11 @@ pub(super) async fn change_plan_price(
         // backed by Stripe — the per-row "stripe_price_id" lives only on the
         // Stripe side, so the plan_id + Stripe-provider check is sufficient.
         let active_subs: Vec<(String,)> = sqlx::query_as(
-            r#"SELECT stripe_subscription_id FROM user_memberships
+            r"SELECT stripe_subscription_id FROM user_memberships
                WHERE plan_id = $1
                  AND status IN ('active', 'trial', 'past_due')
                  AND stripe_subscription_id IS NOT NULL
-                 AND payment_provider = 'stripe'"#,
+                 AND payment_provider = 'stripe'",
         )
         .bind(plan_id)
         .fetch_all(&state.db.pool)
@@ -303,11 +303,11 @@ pub(super) async fn change_plan_price(
 
         // Record migration counts onto the history row.
         sqlx::query(
-            r#"UPDATE membership_plan_price_history
+            r"UPDATE membership_plan_price_history
                SET subscriptions_migrated = $1,
                    subscriptions_failed = $2,
                    failure_details = $3
-               WHERE id = $4"#,
+               WHERE id = $4",
         )
         .bind(migrated)
         .bind(failed)
@@ -352,14 +352,14 @@ pub(super) async fn list_plan_price_history(
     Path(plan_id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let rows: Vec<PriceHistoryRow> = sqlx::query_as(
-        r#"SELECT id, plan_id, old_stripe_price_id, new_stripe_price_id,
+        r"SELECT id, plan_id, old_stripe_price_id, new_stripe_price_id,
                   old_amount_cents, new_amount_cents, currency, billing_interval,
                   apply_to, subscriptions_migrated, subscriptions_failed,
                   failure_details, changed_by_user_id, changed_at
            FROM membership_plan_price_history
            WHERE plan_id = $1
            ORDER BY changed_at DESC
-           LIMIT 100"#,
+           LIMIT 100",
     )
     .bind(plan_id)
     .fetch_all(&state.db.pool)

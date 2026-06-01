@@ -27,9 +27,9 @@ pub(super) async fn create_subscription(
     // Get the plan
     // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
     let plan: MembershipPlanRow = sqlx::query_as(
-        r#"SELECT id, name, slug, description, (price * 100)::BIGINT AS price_cents, billing_cycle,
+        r"SELECT id, name, slug, description, (price * 100)::BIGINT AS price_cents, billing_cycle,
            is_active, metadata, stripe_price_id, features, trial_days, created_at, updated_at
-           FROM membership_plans WHERE id = $1 AND is_active = true"#,
+           FROM membership_plans WHERE id = $1 AND is_active = true",
     )
     .bind(input.plan_id)
     .fetch_optional(&state.db.pool)
@@ -81,7 +81,7 @@ pub(super) async fn create_subscription(
             "{}/account/subscriptions?status=success&plan={}",
             app_url, plan.slug
         );
-        let cancel_url = format!("{}/account/subscriptions?status=cancel", app_url);
+        let cancel_url = format!("{app_url}/account/subscriptions?status=cancel");
 
         let checkout_url = state
             .services
@@ -144,7 +144,7 @@ pub(super) async fn create_subscription(
 
     // For free plans or trials, create subscription directly
     let subscription: UserSubscriptionRow = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO user_memberships (
             user_id, plan_id, starts_at, status, payment_provider,
             trial_ends_at, current_period_start, current_period_end,
@@ -152,7 +152,7 @@ pub(super) async fn create_subscription(
         )
         VALUES ($1, $2, NOW(), $3, 'free', $4, $5, $6, false, NOW(), NOW())
         RETURNING *
-        "#,
+        ",
     )
     .bind(user.id)
     .bind(input.plan_id)
@@ -184,7 +184,7 @@ pub(super) async fn create_subscription(
             "trial_ends_at": trial_ends_at.map(|d| d.format("%Y-%m-%d").to_string())
         },
         "message": if has_trial {
-            format!("Subscription created with {}-day trial", trial_days)
+            format!("Subscription created with {trial_days}-day trial")
         } else {
             "Subscription created successfully".to_string()
         }

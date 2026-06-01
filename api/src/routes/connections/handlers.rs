@@ -34,26 +34,26 @@ pub(super) async fn get_connections_status(
 
     // Get database connections
     let mut sql = String::from(
-        r#"
+        r"
         SELECT id, service_key, name, category, description, status, health_score,
                health_status, environment, credentials_encrypted, settings,
                webhook_url, webhook_secret, api_calls_today, api_calls_total,
                last_error, last_verified_at, connected_at, created_at, updated_at
         FROM service_connections
         WHERE 1=1
-        "#,
+        ",
     );
 
     let mut bind_count = 0;
 
     if query.category.is_some() {
         bind_count += 1;
-        sql.push_str(&format!(" AND category = ${}", bind_count));
+        sql.push_str(&format!(" AND category = ${bind_count}"));
     }
 
     if query.status.is_some() {
         bind_count += 1;
-        sql.push_str(&format!(" AND status = ${}", bind_count));
+        sql.push_str(&format!(" AND status = ${bind_count}"));
     }
 
     sql.push_str(" ORDER BY category, name");
@@ -254,14 +254,14 @@ pub(super) async fn get_connection(
     }
 
     let connection: Option<ServiceConnection> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, service_key, name, category, description, status, health_score,
                health_status, environment, credentials_encrypted, settings,
                webhook_url, webhook_secret, api_calls_today, api_calls_total,
                last_error, last_verified_at, connected_at, created_at, updated_at
         FROM service_connections
         WHERE service_key = $1
-        "#,
+        ",
     )
     .bind(&key)
     .fetch_optional(state.db.pool())
@@ -393,7 +393,7 @@ pub(super) async fn connect_service(
     let connection: ServiceConnection = if let Some(id) = existing {
         // Update existing connection
         sqlx::query_as(
-            r#"
+            r"
             UPDATE service_connections
             SET credentials_encrypted = $2,
                 environment = $3,
@@ -409,7 +409,7 @@ pub(super) async fn connect_service(
                       health_status, environment, credentials_encrypted, settings,
                       webhook_url, webhook_secret, api_calls_today, api_calls_total,
                       last_error, last_verified_at, connected_at, created_at, updated_at
-            "#,
+            ",
         )
         .bind(id)
         .bind(&encrypted_creds)
@@ -426,7 +426,7 @@ pub(super) async fn connect_service(
     } else {
         // Create new connection
         sqlx::query_as(
-            r#"
+            r"
             INSERT INTO service_connections (
                 service_key, name, category, description, credentials_encrypted,
                 environment, settings, status, health_score, health_status,
@@ -439,7 +439,7 @@ pub(super) async fn connect_service(
                       health_status, environment, credentials_encrypted, settings,
                       webhook_url, webhook_secret, api_calls_today, api_calls_total,
                       last_error, last_verified_at, connected_at, created_at, updated_at
-            "#,
+            ",
         )
         .bind(&key)
         .bind(def["name"].as_str().unwrap_or(&key))
@@ -616,7 +616,7 @@ pub(super) async fn test_connection(
     // Update connection status in database
     if success {
         let _ = sqlx::query(
-            r#"
+            r"
             UPDATE service_connections
             SET health_score = 100,
                 health_status = 'healthy',
@@ -624,14 +624,14 @@ pub(super) async fn test_connection(
                 last_error = NULL,
                 updated_at = NOW()
             WHERE service_key = $1
-            "#,
+            ",
         )
         .bind(&key)
         .execute(state.db.pool())
         .await;
     } else {
         let _ = sqlx::query(
-            r#"
+            r"
             UPDATE service_connections
             SET health_score = 0,
                 health_status = 'error',
@@ -639,7 +639,7 @@ pub(super) async fn test_connection(
                 last_error = $2,
                 updated_at = NOW()
             WHERE service_key = $1
-            "#,
+            ",
         )
         .bind(&key)
         .bind(&error_msg)
@@ -700,7 +700,7 @@ pub(super) async fn disconnect_service(
 
     // Clear credentials and update status
     sqlx::query(
-        r#"
+        r"
         UPDATE service_connections
         SET credentials_encrypted = NULL,
             status = 'disconnected',
@@ -710,7 +710,7 @@ pub(super) async fn disconnect_service(
             webhook_secret = NULL,
             updated_at = NOW()
         WHERE service_key = $1
-        "#,
+        ",
     )
     .bind(&key)
     .execute(state.db.pool())

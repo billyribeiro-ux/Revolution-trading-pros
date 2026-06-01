@@ -63,18 +63,18 @@ pub(super) async fn list_member_filters(
     let per_page = query.per_page.unwrap_or(50).min(100);
     let offset = (page - 1) * per_page;
 
-    let search_pattern: Option<String> = query.search.as_ref().map(|s| format!("%{}%", s));
+    let search_pattern: Option<String> = query.search.as_ref().map(|s| format!("%{s}%"));
 
     // Gracefully handle missing table - return empty array instead of 500 error
     let filters: Vec<MemberFilter> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, name, description, filters, is_default, is_public, created_by, created_at, updated_at
         FROM member_filters
         WHERE ($1::text IS NULL OR name ILIKE $1 OR description ILIKE $1)
           AND ($2::boolean IS NULL OR is_public = $2)
         ORDER BY is_default DESC, name ASC
         LIMIT $3 OFFSET $4
-        "#
+        "
     )
     .bind(search_pattern.as_deref())
     .bind(query.is_public)
@@ -88,12 +88,12 @@ pub(super) async fn list_member_filters(
     });
 
     let total: i64 = sqlx::query_as::<_, (i64,)>(
-        r#"
+        r"
         SELECT COUNT(*)
         FROM member_filters
         WHERE ($1::text IS NULL OR name ILIKE $1 OR description ILIKE $1)
           AND ($2::boolean IS NULL OR is_public = $2)
-        "#,
+        ",
     )
     .bind(search_pattern.as_deref())
     .bind(query.is_public)
@@ -138,11 +138,11 @@ pub(super) async fn create_member_filter(
     Json(input): Json<CreateMemberFilterRequest>,
 ) -> Result<Json<MemberFilter>, (StatusCode, Json<serde_json::Value>)> {
     let filter: MemberFilter = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO member_filters (name, description, filters, is_default, is_public, created_by, created_at, updated_at)
         VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
         RETURNING id, name, description, filters, is_default, is_public, created_by, created_at, updated_at
-        "#
+        "
     )
     .bind(&input.name)
     .bind(&input.description)
@@ -175,23 +175,23 @@ pub(super) async fn update_member_filter(
 
     if input.name.is_some() {
         param_count += 1;
-        set_clauses.push(format!("name = ${}", param_count));
+        set_clauses.push(format!("name = ${param_count}"));
     }
     if input.description.is_some() {
         param_count += 1;
-        set_clauses.push(format!("description = ${}", param_count));
+        set_clauses.push(format!("description = ${param_count}"));
     }
     if input.filters.is_some() {
         param_count += 1;
-        set_clauses.push(format!("filters = ${}", param_count));
+        set_clauses.push(format!("filters = ${param_count}"));
     }
     if input.is_default.is_some() {
         param_count += 1;
-        set_clauses.push(format!("is_default = ${}", param_count));
+        set_clauses.push(format!("is_default = ${param_count}"));
     }
     if input.is_public.is_some() {
         param_count += 1;
-        set_clauses.push(format!("is_public = ${}", param_count));
+        set_clauses.push(format!("is_public = ${param_count}"));
     }
 
     set_clauses.push("updated_at = NOW()".to_string());

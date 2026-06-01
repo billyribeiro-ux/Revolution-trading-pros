@@ -102,7 +102,7 @@ pub async fn seed_user(pool: &sqlx::PgPool, email: &str, name: &str, role: &str)
         .expect("argon2 hashing must succeed");
 
     let row: (i64,) = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO users (email, password_hash, name, role, email_verified_at, created_at, updated_at)
         VALUES ($1, $2, $3, $4, NOW(), NOW(), NOW())
         ON CONFLICT (email) DO UPDATE SET
@@ -111,7 +111,7 @@ pub async fn seed_user(pool: &sqlx::PgPool, email: &str, name: &str, role: &str)
             email_verified_at = COALESCE(users.email_verified_at, NOW()),
             updated_at = NOW()
         RETURNING id
-        "#,
+        ",
     )
     .bind(email)
     .bind(&password_hash)

@@ -49,7 +49,7 @@ pub(super) async fn admin_list_videos(
             chrono::NaiveDateTime,
         ),
     >(
-        r#"
+        r"
         SELECT v.id, v.title, v.slug, v.description, v.video_url, v.thumbnail_url,
                v.duration, v.content_type, v.is_published, v.created_at
         FROM unified_videos v
@@ -58,7 +58,7 @@ pub(super) async fn admin_list_videos(
           AND ($2::boolean IS NULL OR v.is_published = $2)
         ORDER BY v.created_at DESC
         LIMIT $3 OFFSET $4
-        "#,
+        ",
     )
     .bind(&query.content_type)
     .bind(query.is_published)
@@ -145,7 +145,7 @@ pub(super) async fn admin_list_videos_by_room(
                 chrono::NaiveDateTime,
             ),
         >(
-            r#"
+            r"
             SELECT v.id, v.title, v.slug, v.description, v.video_url, v.thumbnail_url,
                    v.duration, v.content_type, v.is_published, v.created_at
             FROM unified_videos v
@@ -156,7 +156,7 @@ pub(super) async fn admin_list_videos_by_room(
               AND ($3::boolean IS NULL OR v.is_published = $3)
             ORDER BY v.created_at DESC
             LIMIT $4 OFFSET $5
-            "#,
+            ",
         )
         .bind(rid)
         .bind(&query.content_type)

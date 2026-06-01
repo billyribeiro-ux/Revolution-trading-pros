@@ -32,7 +32,7 @@ pub(super) async fn admin_list_trading_rooms(
     );
 
     let rooms_result = sqlx::query_as::<_, TradingRoom>(
-        r#"
+        r"
         SELECT id, name, slug, type, description, short_description,
                icon, color, logo_url, image_url, sort_order,
                is_active, is_featured, is_public,
@@ -41,7 +41,7 @@ pub(super) async fn admin_list_trading_rooms(
         FROM trading_rooms
         WHERE ($1::bool IS NULL OR is_active = $1)
         ORDER BY sort_order ASC
-        "#,
+        ",
     )
     .bind(query.active_only)
     .fetch_all(&state.db.pool)
@@ -119,7 +119,7 @@ pub(super) async fn admin_get_trading_room(
     );
 
     let room_result = sqlx::query_as::<_, TradingRoom>(
-        r#"
+        r"
         SELECT id, name, slug, type, description, short_description,
                icon, color, logo_url, image_url, sort_order,
                is_active, is_featured, is_public,
@@ -127,7 +127,7 @@ pub(super) async fn admin_get_trading_room(
                created_at, updated_at
         FROM trading_rooms
         WHERE slug = $1
-        "#,
+        ",
     )
     .bind(&slug)
     .fetch_optional(&state.db.pool)
@@ -209,12 +209,12 @@ pub(super) async fn admin_list_sections(
     );
 
     let sections_result = sqlx::query_as::<_, RoomSection>(
-        r#"
+        r"
         SELECT id, section_key, name, description, icon, sort_order,
                is_active, allowed_resource_types, max_items, restricted_to_rooms
         FROM room_sections
         ORDER BY sort_order ASC
-        "#,
+        ",
     )
     .fetch_all(&state.db.pool)
     .await;
@@ -296,7 +296,7 @@ pub(super) async fn admin_list_traders(
             chrono::DateTime<chrono::Utc>,
         ),
     >(
-        r#"
+        r"
         SELECT t.id, t.user_id, t.name, t.slug, t.title, t.bio,
                t.avatar_url, t.trading_style, t.years_experience,
                t.is_active, t.is_featured, t.created_at
@@ -304,7 +304,7 @@ pub(super) async fn admin_list_traders(
         WHERE ($1::boolean IS NULL OR t.is_active = $1)
         ORDER BY t.is_featured DESC, t.name ASC
         LIMIT $2 OFFSET $3
-        "#,
+        ",
     )
     .bind(query.active_only)
     .bind(per_page)

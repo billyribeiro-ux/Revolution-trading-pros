@@ -111,12 +111,12 @@ pub(super) async fn clone_video(
     let new_title = input.get("new_title").and_then(|v| v.as_str());
 
     let result: Option<(i64, String)> = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO unified_videos (title, slug, description, video_url, video_platform, thumbnail_url, duration, content_type, is_published, video_date, created_at, updated_at)
         SELECT COALESCE($2, title || ' (Copy)'), slug || '-copy-' || $1, description, video_url, video_platform, thumbnail_url, duration, content_type, false, video_date, NOW(), NOW()
         FROM unified_videos WHERE id = $1
         RETURNING id, slug
-        "#
+        "
     )
     .bind(id)
     .bind(new_title)
@@ -192,10 +192,10 @@ pub(super) async fn export_videos_csv(
     // Fetch all videos for export
     #[allow(clippy::type_complexity)]
     let videos: Vec<(i64, String, String, String, i32, i32, bool, chrono::NaiveDateTime)> = sqlx::query_as(
-        r#"SELECT id, title, slug, content_type, views_count, COALESCE(duration, 0), is_published, created_at
+        r"SELECT id, title, slug, content_type, views_count, COALESCE(duration, 0), is_published, created_at
            FROM unified_videos
            WHERE deleted_at IS NULL
-           ORDER BY created_at DESC"#
+           ORDER BY created_at DESC"
     )
     .fetch_all(&state.db.pool)
     .await

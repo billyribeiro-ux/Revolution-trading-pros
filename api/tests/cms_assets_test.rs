@@ -516,8 +516,7 @@ fn create_folder_and_bulk_dtos_required_fields_negative_pin() {
         let r = serde_json::from_value::<UploadConfirmRequest>(obj);
         assert!(
             r.is_err(),
-            "UploadConfirmRequest without {} must fail — upload confirmation must have all four required fields",
-            missing
+            "UploadConfirmRequest without {missing} must fail — upload confirmation must have all four required fields"
         );
     }
 

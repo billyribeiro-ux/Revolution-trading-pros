@@ -364,7 +364,7 @@ fn create_and_update_indicator_request_price_cents_round_trips_as_optional_i64()
     // be called as a true PATCH (touch updated_at only). A regression
     // that made any field required would 400 here.
     let req: UpdateIndicatorRequest =
-        serde_json::from_str(r#"{}"#).expect("UpdateIndicatorRequest must accept empty body");
+        serde_json::from_str(r"{}").expect("UpdateIndicatorRequest must accept empty body");
     assert!(req.price_cents.is_none());
     assert!(req.name.is_none());
     assert!(req.slug.is_none());

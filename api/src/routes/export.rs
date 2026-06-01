@@ -177,8 +177,8 @@ pub async fn export_alerts_csv(
 
     // Generate filename with timestamp
     let timestamp = chrono::Utc::now().format("%Y%m%d_%H%M%S");
-    let filename = format!("{}_alerts_{}.csv", room_slug, timestamp);
-    let content_disposition = format!("attachment; filename=\"{}\"", filename);
+    let filename = format!("{room_slug}_alerts_{timestamp}.csv");
+    let content_disposition = format!("attachment; filename=\"{filename}\"");
 
     Ok((
         StatusCode::OK,
@@ -239,8 +239,8 @@ pub async fn export_trades_csv(
 
     // Generate filename with timestamp
     let timestamp = chrono::Utc::now().format("%Y%m%d_%H%M%S");
-    let filename = format!("{}_trades_{}.csv", room_slug, timestamp);
-    let content_disposition = format!("attachment; filename=\"{}\"", filename);
+    let filename = format!("{room_slug}_trades_{timestamp}.csv");
+    let content_disposition = format!("attachment; filename=\"{filename}\"");
 
     Ok((
         StatusCode::OK,

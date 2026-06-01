@@ -568,15 +568,15 @@ pub fn format_duration_seconds(seconds: i32) -> String {
     let minutes = (seconds % 3600) / 60;
     let secs = seconds % 60;
     if hours > 0 {
-        format!("{}:{:02}:{:02}", hours, minutes, secs)
+        format!("{hours}:{minutes:02}:{secs:02}")
     } else {
-        format!("{}:{:02}", minutes, secs)
+        format!("{minutes}:{secs:02}")
     }
 }
 
 pub fn format_file_size(bytes: i64) -> String {
     if bytes < 1024 {
-        format!("{} B", bytes)
+        format!("{bytes} B")
     } else if bytes < 1024 * 1024 {
         format!("{:.1} KB", bytes as f64 / 1024.0)
     } else if bytes < 1024 * 1024 * 1024 {
@@ -593,8 +593,7 @@ pub fn get_indicator_embed_url(
 ) -> Option<String> {
     if let (Some(guid), Some(lib_id)) = (bunny_guid, bunny_library) {
         return Some(format!(
-            "https://iframe.mediadelivery.net/embed/{}/{}",
-            lib_id, guid
+            "https://iframe.mediadelivery.net/embed/{lib_id}/{guid}"
         ));
     }
     video_url.clone()
@@ -605,15 +604,9 @@ pub fn generate_download_url(file_url: &str, file_name: &str) -> String {
     // In production, this would generate a presigned URL from R2/S3
     // For now, return the direct URL with download disposition hint
     if file_url.contains('?') {
-        format!(
-            "{}&response-content-disposition=attachment%3B%20filename%3D{}",
-            file_url, file_name
-        )
+        format!("{file_url}&response-content-disposition=attachment%3B%20filename%3D{file_name}")
     } else {
-        format!(
-            "{}?response-content-disposition=attachment%3B%20filename%3D{}",
-            file_url, file_name
-        )
+        format!("{file_url}?response-content-disposition=attachment%3B%20filename%3D{file_name}")
     }
 }
 

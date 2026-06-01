@@ -198,9 +198,9 @@ impl FromRequestParts<AppState> for User {
         // ICT 7 FIX: Use explicit column list to avoid SQLx FromRow deserialization errors
         // when database has additional columns not present in User struct
         let user: User = sqlx::query_as(
-            r#"SELECT id, email, password_hash, name, role, is_active, email_verified_at,
+            r"SELECT id, email, password_hash, name, role, is_active, email_verified_at,
                       avatar_url, mfa_enabled, created_at, updated_at
-               FROM users WHERE id = $1"#,
+               FROM users WHERE id = $1",
         )
         .bind(claims.sub)
         .fetch_optional(&state.db.pool)

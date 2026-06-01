@@ -163,8 +163,7 @@ fn health_responses_embed_cargo_pkg_version() {
     // Sanity: version contains at least one dot (semver-shaped).
     assert!(
         version.contains('.'),
-        "CARGO_PKG_VERSION ({}) MUST be semver-shaped (contain '.')",
-        version
+        "CARGO_PKG_VERSION ({version}) MUST be semver-shaped (contain '.')"
     );
 }
 
@@ -258,11 +257,10 @@ fn health_ddl_endpoints_use_super_admin_extractor() {
         extractor_param_hits, 3,
         "routes/health.rs MUST have exactly 3 handlers taking \
          `admin: SuperAdminUser,` (setup_db, run_migrations, \
-         init_db) — found {} (regression risk: any handler that \
+         init_db) — found {extractor_param_hits} (regression risk: any handler that \
          dropped this would silently downgrade to public access \
          since /setup-db's ENVIRONMENT check defaults to \
-         'production' only when UNSET)",
-        extractor_param_hits
+         'production' only when UNSET)"
     );
 
     // Belt-and-braces: NO handler MUST take AdminUser (the broader

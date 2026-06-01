@@ -23,7 +23,7 @@ pub(super) async fn get_my_subscriptions(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // ICT 7+ Fix: Join with membership_plans to get full plan details
     let subscriptions: Vec<UserSubscriptionWithPlanRow> = sqlx::query_as(
-        r#"
+        r"
         SELECT
             um.id,
             um.user_id,
@@ -52,7 +52,7 @@ pub(super) async fn get_my_subscriptions(
         LEFT JOIN membership_plans mp ON um.plan_id = mp.id
         WHERE um.user_id = $1
         ORDER BY um.created_at DESC
-        "#,
+        ",
     )
     .bind(user.id)
     .fetch_all(&state.db.pool)

@@ -81,8 +81,8 @@ async fn get_security_events(
         } else {
             "$1"
         };
-        sql.push_str(&format!(" AND severity = {}", param_num));
-        count_sql.push_str(&format!(" AND severity = {}", param_num));
+        sql.push_str(&format!(" AND severity = {param_num}"));
+        count_sql.push_str(&format!(" AND severity = {param_num}"));
     }
     if query.user_id.is_some() {
         let param_num = match (query.event_type.is_some(), query.severity.is_some()) {
@@ -90,8 +90,8 @@ async fn get_security_events(
             (true, false) | (false, true) => "$2",
             (false, false) => "$1",
         };
-        sql.push_str(&format!(" AND user_id = {}", param_num));
-        count_sql.push_str(&format!(" AND user_id = {}", param_num));
+        sql.push_str(&format!(" AND user_id = {param_num}"));
+        count_sql.push_str(&format!(" AND user_id = {param_num}"));
     }
 
     sql.push_str(" ORDER BY created_at DESC LIMIT $");

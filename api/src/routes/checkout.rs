@@ -190,9 +190,9 @@ async fn create_checkout(
             min_purchase_cents: Option<i64>,
         }
         let row: Option<CouponRow> = sqlx::query_as(
-            r#"SELECT id, stripe_coupon_id, is_active, expires_at, usage_limit, usage_count,
+            r"SELECT id, stripe_coupon_id, is_active, expires_at, usage_limit, usage_count,
                       (min_purchase * 100)::BIGINT AS min_purchase_cents
-               FROM coupons WHERE UPPER(code) = UPPER($1) LIMIT 1"#,
+               FROM coupons WHERE UPPER(code) = UPPER($1) LIMIT 1",
         )
         .bind(code)
         .fetch_optional(&state.db.pool)
@@ -299,14 +299,14 @@ async fn create_checkout(
     // Original pool reference: .fetch_one(&state.db.pool)
     // DB columns are NUMERIC(10,2); convert from cents at the SQL boundary
     let order: OrderId = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO orders (user_id, order_number, status, subtotal, discount, tax, total, currency,
                            billing_name, billing_email, billing_address, coupon_id, coupon_code, created_at, updated_at)
         VALUES ($1, $2, 'pending',
                 $3::BIGINT / 100.0, $4::BIGINT / 100.0, $5::BIGINT / 100.0, $6::BIGINT / 100.0,
                 'USD', $7, $8, $9, $10, $11, NOW(), NOW())
         RETURNING id
-        "#
+        "
     )
     .bind(user.id)
     .bind(&order_number)
@@ -351,10 +351,10 @@ async fn create_checkout(
             .and_then(|t| t.as_i64())
             .unwrap_or(0);
         sqlx::query(
-            r#"
+            r"
             INSERT INTO order_items (order_id, product_id, plan_id, name, quantity, unit_price, total, created_at)
             VALUES ($1, $2, $3, $4, $5, $6::BIGINT / 100.0, $7::BIGINT / 100.0, NOW())
-            "#
+            "
         )
         .bind(order.id)
         .bind(item.get("type").and_then(|t| if t == "product" { item.get("id").and_then(|i| i.as_i64()) } else { None }))
@@ -387,8 +387,8 @@ async fn create_checkout(
         ));
     }
     let app_url = state.config.app_url.trim_end_matches('/');
-    let success_url = format!("{}{}", app_url, success_path);
-    let cancel_url = format!("{}{}", app_url, cancel_path);
+    let success_url = format!("{app_url}{success_path}");
+    let cancel_url = format!("{app_url}{cancel_path}");
 
     // Build Stripe line items from our cart items
     // Subscriptions use stripe_price_id (the price is Stripe-authoritative).
@@ -458,7 +458,7 @@ async fn create_checkout(
             .unwrap_or_else(|| user.email.clone()),
         customer_name: input.billing_name.clone(),
         line_items: stripe_line_items,
-        success_url: format!("{}?order={}", success_url, order_number),
+        success_url: format!("{success_url}?order={order_number}"),
         cancel_url: cancel_url.clone(),
         metadata,
         // Mutually exclusive with discounts[]. When DB-mirrored coupon is
@@ -571,14 +571,14 @@ async fn get_order(
     }
 
     let order: OrderRow = sqlx::query_as(
-        r#"SELECT id, user_id, order_number, status,
+        r"SELECT id, user_id, order_number, status,
                   (subtotal * 100)::BIGINT AS subtotal_cents,
                   (discount * 100)::BIGINT AS discount_cents,
                   (tax * 100)::BIGINT      AS tax_cents,
                   (total * 100)::BIGINT    AS total_cents,
                   currency, coupon_code, billing_name, billing_email,
                   completed_at, created_at
-           FROM orders WHERE order_number = $1 AND user_id = $2"#,
+           FROM orders WHERE order_number = $1 AND user_id = $2",
     )
     .bind(&order_number)
     .bind(user.id)
@@ -609,10 +609,10 @@ async fn get_order(
     }
 
     let items: Vec<OrderItemRow> = sqlx::query_as(
-        r#"SELECT id, product_id, plan_id, name, quantity,
+        r"SELECT id, product_id, plan_id, name, quantity,
                   (unit_price * 100)::BIGINT AS unit_price_cents,
                   (total      * 100)::BIGINT AS total_cents
-           FROM order_items WHERE order_id = $1"#,
+           FROM order_items WHERE order_id = $1",
     )
     .bind(order.id)
     .fetch_all(&state.db.pool)
@@ -646,10 +646,10 @@ async fn get_orders(
     }
 
     let orders: Vec<OrderSummary> = sqlx::query_as(
-        r#"SELECT id, order_number, status,
+        r"SELECT id, order_number, status,
                   (total * 100)::BIGINT AS total_cents,
                   currency, created_at
-           FROM orders WHERE user_id = $1 ORDER BY created_at DESC"#,
+           FROM orders WHERE user_id = $1 ORDER BY created_at DESC",
     )
     .bind(user.id)
     .fetch_all(&state.db.pool)

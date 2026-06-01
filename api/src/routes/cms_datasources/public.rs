@@ -40,13 +40,13 @@ pub(super) async fn public_get_entries(
 
     // Fetch entries
     let entries: Vec<PublicEntryResponse> = sqlx::query_as(
-        r#"
+        r"
         SELECT e.name, e.value
         FROM cms_datasource_entries e
         JOIN cms_datasources d ON e.datasource_id = d.id
         WHERE d.slug = $1 AND d.deleted_at IS NULL AND e.dimension = $2
         ORDER BY e.sort_order, e.name
-        "#,
+        ",
     )
     .bind(&slug)
     .bind(&dimension)

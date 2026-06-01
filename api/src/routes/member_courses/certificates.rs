@@ -45,11 +45,11 @@ pub(super) async fn get_certificate(
     // Check enrollment and completion
     #[allow(clippy::type_complexity)]
     let enrollment: Option<(i64, Option<i32>, Option<bool>, Option<String>)> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, progress_percent, certificate_issued, certificate_url
         FROM user_course_enrollments
         WHERE user_id = $1 AND course_id = $2
-        "#,
+        ",
     )
     .bind(user_id)
     .bind(course.0)
@@ -119,21 +119,19 @@ pub(super) async fn get_certificate(
 
     // In production, this would generate a PDF using a template
     // For now, we store certificate data and return a verification URL
-    let certificate_url = format!(
-        "https://revolution-trading-pros.com/certificates/verify/{}",
-        cert_id
-    );
+    let certificate_url =
+        format!("https://revolution-trading-pros.com/certificates/verify/{cert_id}");
 
     // Update enrollment with certificate info
     sqlx::query(
-        r#"
+        r"
         UPDATE user_course_enrollments
         SET certificate_issued = true,
             certificate_url = $1,
             certificate_issued_at = NOW(),
             completed_at = COALESCE(completed_at, NOW())
         WHERE id = $2
-        "#,
+        ",
     )
     .bind(&certificate_url)
     .bind(enrollment.0)
@@ -189,11 +187,11 @@ pub(super) async fn resume_course(
 
     // Get enrollment with current lesson
     let enrollment: Option<(i64, Option<Uuid>, Option<i32>)> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, current_lesson_id, progress_percent
         FROM user_course_enrollments
         WHERE user_id = $1 AND course_id = $2
-        "#,
+        ",
     )
     .bind(user_id)
     .bind(course.0)
@@ -217,12 +215,12 @@ pub(super) async fn resume_course(
         enrollment.1
     {
         sqlx::query_as(
-            r#"
+            r"
             SELECT l.id, l.title, l.slug, p.video_position_seconds, l.duration_minutes
             FROM lessons l
             LEFT JOIN user_lesson_progress p ON p.lesson_id = l.id AND p.user_id = $1
             WHERE l.id = $2
-            "#,
+            ",
         )
         .bind(user_id)
         .bind(lesson_id)
@@ -233,14 +231,14 @@ pub(super) async fn resume_course(
     } else {
         // Get first uncompleted lesson
         sqlx::query_as(
-            r#"
+            r"
             SELECT l.id, l.title, l.slug, p.video_position_seconds, l.duration_minutes
             FROM lessons l
             LEFT JOIN user_lesson_progress p ON p.lesson_id = l.id AND p.user_id = $1 AND p.enrollment_id = $2
             WHERE l.course_id = $3 AND (p.is_completed IS NULL OR p.is_completed = false)
             ORDER BY COALESCE(l.sort_order, l.position)
             LIMIT 1
-            "#,
+            ",
         )
         .bind(user_id)
         .bind(enrollment.0)

@@ -147,7 +147,7 @@ async fn search_content(
     // and project (uuid 1.x) when calling PostgreSQL functions returning complex types.
     // This is a documented technical constraint, not a workaround.
     let results: Vec<SearchResultItem> = sqlx::query_as::<_, SearchResultItem>(
-        r#"
+        r"
         SELECT
             id,
             content_type::text as content_type,
@@ -168,7 +168,7 @@ async fn search_content(
             $6::integer,
             true
         )
-        "#,
+        ",
     )
     .bind(&query.q)
     .bind(content_types.as_deref())
@@ -182,13 +182,13 @@ async fn search_content(
 
     // Get total count for pagination
     let total: (i64,) = sqlx::query_as(
-        r#"
+        r"
         SELECT COUNT(*)
         FROM cms_content
         WHERE deleted_at IS NULL
         AND status = 'published'
         AND search_vector @@ websearch_to_tsquery('english', $1)
-        "#,
+        ",
     )
     .bind(&query.q)
     .fetch_one(&state.db.pool)
@@ -290,7 +290,7 @@ async fn get_sitemap_entries(
 
     // NOTE: Uses runtime query due to uuid crate version conflict (see search query comment)
     let entries: Vec<SitemapEntry> = sqlx::query_as::<_, SitemapEntry>(
-        r#"
+        r"
         SELECT
             content_type::text as content_type,
             slug::varchar as slug,
@@ -310,7 +310,7 @@ async fn get_sitemap_entries(
                 ELSE 'monthly'
             END::varchar as changefreq
         FROM cms_get_all_slugs($1::cms_content_type, $2)
-        "#,
+        ",
     )
     .bind(None::<String>)
     .bind(locale)
@@ -331,7 +331,7 @@ async fn get_menu_by_location(
     Path(location): Path<String>,
 ) -> ApiResult<JsonValue> {
     let menu: Option<JsonValue> = sqlx::query_scalar(
-        r#"
+        r"
         SELECT jsonb_build_object(
             'id', id,
             'name', name,
@@ -342,7 +342,7 @@ async fn get_menu_by_location(
         )
         FROM cms_navigation_menus
         WHERE (location = $1 OR slug = $1) AND is_active = true
-        "#,
+        ",
     )
     .bind(&location)
     .fetch_optional(&state.db.pool)
@@ -356,7 +356,7 @@ async fn get_menu_by_location(
 /// Get all active menus
 async fn get_all_menus(State(state): State<AppState>) -> ApiResult<Vec<JsonValue>> {
     let menus: Vec<JsonValue> = sqlx::query_scalar(
-        r#"
+        r"
         SELECT jsonb_build_object(
             'id', id,
             'name', name,
@@ -367,7 +367,7 @@ async fn get_all_menus(State(state): State<AppState>) -> ApiResult<Vec<JsonValue
         FROM cms_navigation_menus
         WHERE is_active = true
         ORDER BY name
-        "#,
+        ",
     )
     .fetch_all(&state.db.pool)
     .await
@@ -388,15 +388,15 @@ async fn check_redirect(
     let normalized_path = if path.starts_with('/') {
         path.clone()
     } else {
-        format!("/{}", path)
+        format!("/{path}")
     };
 
     let redirect: Option<(String, i32)> = sqlx::query_as(
-        r#"
+        r"
         SELECT target_path, status_code
         FROM cms_redirects
         WHERE source_path = $1 AND is_active = true
-        "#,
+        ",
     )
     .bind(&normalized_path)
     .fetch_optional(&state.db.pool)
@@ -439,7 +439,7 @@ async fn check_redirect(
 /// Get all tags with usage counts
 async fn get_all_tags(State(state): State<AppState>) -> ApiResult<Vec<JsonValue>> {
     let tags: Vec<JsonValue> = sqlx::query_scalar(
-        r#"
+        r"
         SELECT jsonb_build_object(
             'id', id,
             'name', name,
@@ -451,7 +451,7 @@ async fn get_all_tags(State(state): State<AppState>) -> ApiResult<Vec<JsonValue>
         FROM cms_tags
         WHERE usage_count > 0
         ORDER BY usage_count DESC, name
-        "#,
+        ",
     )
     .fetch_all(&state.db.pool)
     .await
@@ -470,7 +470,7 @@ async fn get_content_by_tag(
     let offset = query.offset.unwrap_or(0) as i32;
 
     let result: JsonValue = sqlx::query_scalar(
-        r#"
+        r"
         SELECT jsonb_build_object(
             'tag', (
                 SELECT jsonb_build_object(
@@ -520,7 +520,7 @@ async fn get_content_by_tag(
                 'offset', $3
             )
         )
-        "#,
+        ",
     )
     .bind(&tag_slug)
     .bind(limit)

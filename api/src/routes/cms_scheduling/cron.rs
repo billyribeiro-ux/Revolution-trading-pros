@@ -46,14 +46,14 @@ pub(super) async fn process_pending_schedules(
 
     // Get pending schedules that are due
     let pending: Vec<(Uuid, Uuid, ScheduleAction, Option<JsonValue>)> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, content_id, action, staged_data
         FROM cms_schedules
         WHERE status = 'pending' AND scheduled_at <= NOW()
         ORDER BY scheduled_at ASC
         LIMIT 100
         FOR UPDATE SKIP LOCKED
-        "#,
+        ",
     )
     .fetch_all(&state.db.pool)
     .await
@@ -84,11 +84,11 @@ pub(super) async fn process_pending_schedules(
 
                 // Log success
                 let _ = sqlx::query(
-                    r#"
+                    r"
                     INSERT INTO cms_schedule_history (
                         schedule_id, content_id, event_type, previous_status, new_status
                     ) VALUES ($1, $2, 'schedule_executed', 'processing', 'completed')
-                    "#,
+                    ",
                 )
                 .bind(schedule_id)
                 .bind(content_id)
@@ -98,7 +98,7 @@ pub(super) async fn process_pending_schedules(
             Err(e) => {
                 failed += 1;
                 let error_msg = e.to_string();
-                errors.push(format!("Schedule {}: {}", schedule_id, error_msg));
+                errors.push(format!("Schedule {schedule_id}: {error_msg}"));
 
                 // Check retry count
                 let schedule: Option<CmsSchedule> =
@@ -112,13 +112,13 @@ pub(super) async fn process_pending_schedules(
                 if let Some(s) = schedule {
                     if s.retry_count < s.max_retries {
                         let _ = sqlx::query(
-                            r#"
+                            r"
                             UPDATE cms_schedules SET
                                 status = 'pending',
                                 retry_count = retry_count + 1,
                                 error_message = $2
                             WHERE id = $1
-                            "#,
+                            ",
                         )
                         .bind(schedule_id)
                         .bind(&error_msg)
@@ -126,13 +126,13 @@ pub(super) async fn process_pending_schedules(
                         .await;
                     } else {
                         let _ = sqlx::query(
-                            r#"
+                            r"
                             UPDATE cms_schedules SET
                                 status = 'failed',
                                 executed_at = NOW(),
                                 error_message = $2
                             WHERE id = $1
-                            "#,
+                            ",
                         )
                         .bind(schedule_id)
                         .bind(&error_msg)
@@ -188,7 +188,7 @@ async fn execute_schedule_action(
             if let Some(data) = staged_data {
                 // Apply staged changes
                 sqlx::query(
-                    r#"
+                    r"
                     UPDATE cms_content SET
                         title = COALESCE($2->>'title', title),
                         content = COALESCE($2->>'content', content),
@@ -197,7 +197,7 @@ async fn execute_schedule_action(
                         updated_at = NOW(),
                         version = version + 1
                     WHERE id = $1
-                    "#,
+                    ",
                 )
                 .bind(content_id)
                 .bind(data)
@@ -235,14 +235,14 @@ pub(super) async fn process_pending_releases(
 
     // Get pending releases
     let pending: Vec<(Uuid, bool)> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, stop_on_error
         FROM cms_releases
         WHERE status = 'scheduled' AND scheduled_at <= NOW()
         ORDER BY scheduled_at ASC
         LIMIT 10
         FOR UPDATE SKIP LOCKED
-        "#,
+        ",
     )
     .fetch_all(&state.db.pool)
     .await
@@ -259,12 +259,12 @@ pub(super) async fn process_pending_releases(
 
         // Get release items
         let items: Vec<(Uuid, Uuid, ScheduleAction, Option<JsonValue>)> = sqlx::query_as(
-            r#"
+            r"
             SELECT id, content_id, action, staged_data
             FROM cms_release_items
             WHERE release_id = $1 AND status = 'pending'
             ORDER BY order_index ASC
-            "#,
+            ",
         )
         .bind(release_id)
         .fetch_all(&state.db.pool)
@@ -297,10 +297,7 @@ pub(super) async fn process_pending_releases(
                     .await;
 
                     release_failed = true;
-                    errors.push(format!(
-                        "Release {} item {}: {}",
-                        release_id, item_id, error_msg
-                    ));
+                    errors.push(format!("Release {release_id} item {item_id}: {error_msg}"));
 
                     if stop_on_error {
                         break;

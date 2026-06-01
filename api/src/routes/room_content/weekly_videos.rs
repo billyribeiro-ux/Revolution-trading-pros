@@ -68,9 +68,9 @@ pub(super) async fn get_weekly_video(
         .cache
         .get_or_fetch(&cache_key, cache_ttl::WEEKLY_VIDEO, || async {
             let video: Option<WeeklyVideo> = sqlx::query_as(
-                r#"SELECT * FROM room_weekly_videos
+                r"SELECT * FROM room_weekly_videos
                    WHERE room_slug = $1 AND is_current = true AND is_published = true
-                   LIMIT 1"#,
+                   LIMIT 1",
             )
             .bind(&room_slug)
             .fetch_optional(&state.db.pool)
@@ -112,10 +112,10 @@ pub(super) async fn list_weekly_videos(
         .cache
         .get_or_fetch(&cache_key, cache_ttl::WEEKLY_VIDEOS, || async {
             let videos: Vec<WeeklyVideo> = sqlx::query_as(
-                r#"SELECT * FROM room_weekly_videos
+                r"SELECT * FROM room_weekly_videos
                    WHERE room_slug = $1
                    ORDER BY week_of DESC
-                   LIMIT $2 OFFSET $3"#,
+                   LIMIT $2 OFFSET $3",
             )
             .bind(&room_slug)
             .bind(per_page)
@@ -180,13 +180,13 @@ pub(super) async fn create_weekly_video(
     // Create new current video
     // room_id references trading_rooms.id, NOT membership_plans.id
     let video: WeeklyVideo = sqlx::query_as(
-        r#"INSERT INTO room_weekly_videos
+        r"INSERT INTO room_weekly_videos
            (room_id, room_slug, week_of, week_title, video_title, video_url, video_platform, thumbnail_url, duration, description, is_current, is_published)
            VALUES (
                (SELECT id FROM trading_rooms WHERE slug = $1 LIMIT 1),
                $1, $2, $3, $4, $5, $6, $7, $8, $9, true, true
            )
-           RETURNING *"#
+           RETURNING *"
     )
     .bind(&input.room_slug)
     .bind(week_of)
@@ -242,7 +242,7 @@ pub(super) async fn list_archived_videos(
         Option<String>,
         Option<String>,
     )> = sqlx::query_as(
-        r#"SELECT
+        r"SELECT
             v.id,
             v.week_of,
             v.week_title,
@@ -254,7 +254,7 @@ pub(super) async fn list_archived_videos(
         WHERE v.room_slug = $1
         AND v.is_current = FALSE
         AND EXTRACT(YEAR FROM v.week_of) = $2
-        ORDER BY v.week_of DESC"#,
+        ORDER BY v.week_of DESC",
     )
     .bind(&room_slug)
     .bind(year)
@@ -273,9 +273,9 @@ pub(super) async fn list_archived_videos(
     for (id, week_of, week_title, video_title, video_url, thumbnail_url, duration) in videos {
         // Get alert count for this week
         let alert_count: (i64,) = sqlx::query_as(
-            r#"SELECT COUNT(*) FROM room_alerts
+            r"SELECT COUNT(*) FROM room_alerts
                WHERE room_slug = $1
-               AND DATE_TRUNC('week', published_at) = DATE_TRUNC('week', $2::date)"#,
+               AND DATE_TRUNC('week', published_at) = DATE_TRUNC('week', $2::date)",
         )
         .bind(&room_slug)
         .bind(week_of)
@@ -285,13 +285,13 @@ pub(super) async fn list_archived_videos(
 
         // Get trade count and win rate for this week
         let trade_stats: (i64, Option<f64>) = sqlx::query_as(
-            r#"SELECT
+            r"SELECT
                 COUNT(*),
                 ROUND(100.0 * COUNT(*) FILTER (WHERE result = 'WIN') / NULLIF(COUNT(*) FILTER (WHERE status = 'closed'), 0), 1)
                FROM room_trades
                WHERE room_slug = $1
                AND DATE_TRUNC('week', entry_date) = DATE_TRUNC('week', $2::date)
-               AND deleted_at IS NULL"#
+               AND deleted_at IS NULL"
         )
         .bind(&room_slug)
         .bind(week_of)

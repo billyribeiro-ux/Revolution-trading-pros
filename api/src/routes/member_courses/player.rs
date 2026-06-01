@@ -29,11 +29,11 @@ pub(super) async fn get_my_courses(
     let user_id = user.id;
 
     let enrollments: Vec<UserCourseEnrollment> = sqlx::query_as(
-        r#"
+        r"
         SELECT * FROM user_course_enrollments
         WHERE user_id = $1
         ORDER BY last_accessed_at DESC NULLS LAST
-        "#,
+        ",
     )
     .bind(user_id)
     .fetch_all(&state.db.pool)
@@ -43,14 +43,14 @@ pub(super) async fn get_my_courses(
     let mut result = Vec::new();
     for enrollment in enrollments {
         let course: Option<CourseListItem> = sqlx::query_as(
-            r#"
+            r"
             SELECT id, title, slug, description, card_image_url, card_description,
                    card_badge, card_badge_color, instructor_name, instructor_avatar_url,
                    level, price_cents, is_free, is_published, status, module_count,
                    lesson_count, total_duration_minutes, enrollment_count, avg_rating,
                    review_count, created_at
             FROM courses WHERE id = $1
-            "#,
+            ",
         )
         .bind(enrollment.course_id)
         .fetch_optional(&state.db.pool)
@@ -148,13 +148,13 @@ pub(super) async fn get_course_player(
             .unwrap_or_default();
 
     let lessons: Vec<LessonListItem> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, course_id, module_id, title, slug, description, duration_minutes,
                position, sort_order, is_free, is_preview, is_published,
                bunny_video_guid, thumbnail_url
         FROM lessons WHERE course_id = $1
         ORDER BY COALESCE(sort_order, position)
-        "#,
+        ",
     )
     .bind(course.id)
     .fetch_all(&state.db.pool)
@@ -286,7 +286,7 @@ pub(super) async fn update_lesson_progress(
 
     // Upsert progress
     let progress: UserLessonProgress = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO user_lesson_progress (
             user_id, lesson_id, enrollment_id, video_position_seconds,
             video_duration_seconds, is_completed
@@ -298,7 +298,7 @@ pub(super) async fn update_lesson_progress(
             last_accessed_at = NOW(),
             view_count = user_lesson_progress.view_count + 1
         RETURNING *
-        "#,
+        ",
     )
     .bind(user_id)
     .bind(input.lesson_id)
@@ -317,11 +317,11 @@ pub(super) async fn update_lesson_progress(
 
     // Update enrollment last accessed
     sqlx::query(
-        r#"
+        r"
         UPDATE user_course_enrollments
         SET current_lesson_id = $1, last_accessed_at = NOW()
         WHERE id = $2
-        "#,
+        ",
     )
     .bind(input.lesson_id)
     .bind(enrollment.id)
@@ -372,11 +372,11 @@ pub(super) async fn get_course_downloads(
     .flatten();
 
     let downloads: Vec<CourseDownload> = sqlx::query_as(
-        r#"
+        r"
         SELECT * FROM course_downloads
         WHERE course_id = $1 AND (is_public = true OR $2 = true)
         ORDER BY sort_order
-        "#,
+        ",
     )
     .bind(course.0)
     .bind(enrolled.is_some())

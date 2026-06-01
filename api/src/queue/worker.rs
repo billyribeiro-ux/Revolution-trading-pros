@@ -104,7 +104,7 @@ async fn process_webhook_deliveries(pool: &PgPool) -> Result<u32> {
 
     // Get pending webhook deliveries - fail silently if table doesn't exist
     let deliveries: Vec<WebhookDeliveryRow> = match sqlx::query_as(
-        r#"
+        r"
         SELECT wd.id, wd.webhook_id, wd.event_type, wd.payload, wd.attempt_count
         FROM webhook_deliveries wd
         JOIN webhooks w ON w.id = wd.webhook_id AND w.is_active = true
@@ -113,7 +113,7 @@ async fn process_webhook_deliveries(pool: &PgPool) -> Result<u32> {
         ORDER BY wd.created_at ASC
         LIMIT 10
         FOR UPDATE OF wd SKIP LOCKED
-        "#,
+        ",
     )
     .fetch_all(pool)
     .await
@@ -171,7 +171,7 @@ async fn process_webhook_deliveries(pool: &PgPool) -> Result<u32> {
         // Add HMAC signature if secret is set
         if let Some(ref secret) = webhook.secret {
             let signature = generate_webhook_signature(&payload_str, secret);
-            request = request.header("X-Webhook-Signature", format!("sha256={}", signature));
+            request = request.header("X-Webhook-Signature", format!("sha256={signature}"));
         }
 
         // Add custom headers
@@ -200,7 +200,7 @@ async fn process_webhook_deliveries(pool: &PgPool) -> Result<u32> {
                 if status >= 200 && status < 300 {
                     // Success
                     sqlx::query(
-                        r#"
+                        r"
                         UPDATE webhook_deliveries SET
                             status = 'delivered',
                             response_status = $1,
@@ -208,7 +208,7 @@ async fn process_webhook_deliveries(pool: &PgPool) -> Result<u32> {
                             completed_at = NOW(),
                             attempts = attempts + 1
                         WHERE id = $3
-                        "#,
+                        ",
                     )
                     .bind(status)
                     .bind(body_truncated)
@@ -226,7 +226,7 @@ async fn process_webhook_deliveries(pool: &PgPool) -> Result<u32> {
                     let new_attempts = delivery.attempt_count + 1;
                     if new_attempts >= webhook.retry_count {
                         sqlx::query(
-                            r#"
+                            r"
                             UPDATE webhook_deliveries SET
                                 status = 'failed',
                                 response_status = $1,
@@ -234,7 +234,7 @@ async fn process_webhook_deliveries(pool: &PgPool) -> Result<u32> {
                                 error_message = 'Max retries exceeded',
                                 attempts = attempts + 1
                             WHERE id = $3
-                            "#,
+                            ",
                         )
                         .bind(status)
                         .bind(body_truncated)
@@ -252,14 +252,14 @@ async fn process_webhook_deliveries(pool: &PgPool) -> Result<u32> {
                         };
 
                         sqlx::query(
-                            r#"
+                            r"
                             UPDATE webhook_deliveries SET
                                 response_status = $1,
                                 response_body = $2,
                                 attempts = attempts + 1,
                                 next_retry_at = NOW() + INTERVAL '1 second' * $3
                             WHERE id = $4
-                            "#,
+                            ",
                         )
                         .bind(status)
                         .bind(body_truncated)
@@ -285,13 +285,13 @@ async fn process_webhook_deliveries(pool: &PgPool) -> Result<u32> {
 
                 if new_attempts >= webhook.retry_count {
                     sqlx::query(
-                        r#"
+                        r"
                         UPDATE webhook_deliveries SET
                             status = 'failed',
                             error_message = $1,
                             attempts = attempts + 1
                         WHERE id = $2
-                        "#,
+                        ",
                     )
                     .bind(&error_msg)
                     .bind(delivery.id)
@@ -307,13 +307,13 @@ async fn process_webhook_deliveries(pool: &PgPool) -> Result<u32> {
                     };
 
                     sqlx::query(
-                        r#"
+                        r"
                         UPDATE webhook_deliveries SET
                             error_message = $1,
                             attempts = attempts + 1,
                             next_retry_at = NOW() + INTERVAL '1 second' * $2
                         WHERE id = $3
-                        "#,
+                        ",
                     )
                     .bind(&error_msg)
                     .bind(backoff_seconds)
@@ -349,14 +349,14 @@ async fn process_scheduled_content(pool: &PgPool) -> Result<u32> {
 
     // Get due scheduled content
     let scheduled: Vec<ScheduledRow> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, content_type, content_id, scheduled_action
         FROM scheduled_content
         WHERE status = 'scheduled' AND scheduled_at <= NOW()
         ORDER BY scheduled_at ASC
         LIMIT 10
         FOR UPDATE SKIP LOCKED
-        "#,
+        ",
     )
     .fetch_all(pool)
     .await?;
@@ -421,13 +421,13 @@ async fn process_scheduled_content(pool: &PgPool) -> Result<u32> {
             Ok(_) => {
                 // Mark as executed
                 sqlx::query(
-                    r#"
+                    r"
                     UPDATE scheduled_content SET
                         status = 'executed',
                         executed_at = NOW(),
                         updated_at = NOW()
                     WHERE id = $1
-                    "#,
+                    ",
                 )
                 .bind(item.id)
                 .execute(pool)
@@ -435,12 +435,12 @@ async fn process_scheduled_content(pool: &PgPool) -> Result<u32> {
 
                 // Also update workflow status if exists
                 sqlx::query(
-                    r#"
+                    r"
                     UPDATE content_workflow_status SET
                         current_stage = 'published',
                         updated_at = NOW()
                     WHERE content_type = $1 AND content_id = $2
-                    "#,
+                    ",
                 )
                 .bind(&item.content_type)
                 .bind(item.content_id)
@@ -457,13 +457,13 @@ async fn process_scheduled_content(pool: &PgPool) -> Result<u32> {
             Err(e) => {
                 // Mark as failed
                 sqlx::query(
-                    r#"
+                    r"
                     UPDATE scheduled_content SET
                         status = 'failed',
                         error_message = $1,
                         updated_at = NOW()
                     WHERE id = $2
-                    "#,
+                    ",
                 )
                 .bind(e.to_string())
                 .bind(item.id)
@@ -489,10 +489,10 @@ async fn process_scheduled_content(pool: &PgPool) -> Result<u32> {
 /// Clean up expired preview tokens
 async fn cleanup_expired_tokens(pool: &PgPool) -> Result<u32> {
     let result = sqlx::query(
-        r#"
+        r"
         DELETE FROM preview_tokens
         WHERE expires_at < NOW() - INTERVAL '7 days'
-        "#,
+        ",
     )
     .execute(pool)
     .await?;
@@ -577,7 +577,7 @@ async fn process_next_job(db: &Database) -> anyhow::Result<Option<i64>> {
     // Fetch next job using SELECT FOR UPDATE SKIP LOCKED
     // Fail silently if table/columns don't exist
     let job: Option<Job> = match sqlx::query_as(
-        r#"
+        r"
         SELECT * FROM jobs
         WHERE status = 'pending'
           AND available_at <= NOW()
@@ -585,7 +585,7 @@ async fn process_next_job(db: &Database) -> anyhow::Result<Option<i64>> {
         ORDER BY available_at ASC
         LIMIT 1
         FOR UPDATE SKIP LOCKED
-        "#,
+        ",
     )
     .fetch_optional(&db.pool)
     .await

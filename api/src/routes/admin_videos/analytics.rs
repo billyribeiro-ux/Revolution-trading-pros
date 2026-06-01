@@ -167,11 +167,11 @@ pub(super) async fn update_watch_progress(
 
     // Upsert watch progress
     let result = sqlx::query(
-        r#"INSERT INTO video_watch_progress (user_id, video_id, current_time_seconds, completion_percent, completed, last_watched_at, created_at, updated_at)
+        r"INSERT INTO video_watch_progress (user_id, video_id, current_time_seconds, completion_percent, completed, last_watched_at, created_at, updated_at)
            VALUES ($1, $2, $3, $4, $5, NOW(), NOW(), NOW())
            ON CONFLICT (user_id, video_id)
            DO UPDATE SET current_time_seconds = $3, completion_percent = $4, completed = $5, last_watched_at = NOW(), updated_at = NOW()
-           RETURNING id"#
+           RETURNING id"
     )
     .bind(user_id)
     .bind(video_id)

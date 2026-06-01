@@ -52,14 +52,14 @@ pub(super) async fn get_audit_logs(
     }
 
     let logs: Vec<AuditLogEntry> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, admin_id, admin_email, action, entity_type, entity_id,
                old_value, new_value, metadata, created_at
         FROM admin_audit_logs
         WHERE entity_type IN ('service_connection', 'integration_webhook')
         ORDER BY created_at DESC
         LIMIT $1 OFFSET $2
-        "#,
+        ",
     )
     .bind(limit)
     .bind(offset)

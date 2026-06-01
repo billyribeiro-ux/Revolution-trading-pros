@@ -66,14 +66,14 @@ async fn schema_sql_plus_seed_makes_embedded_migrator_a_noop() {
     // Step 2: seed _sqlx_migrations with the REAL SHA-384 of every
     // committed migration file (exactly what sqlx::migrate! embedded).
     sqlx::query(
-        r#"CREATE TABLE IF NOT EXISTS public._sqlx_migrations (
+        r"CREATE TABLE IF NOT EXISTS public._sqlx_migrations (
                version        BIGINT PRIMARY KEY,
                description    TEXT        NOT NULL,
                installed_on   TIMESTAMPTZ NOT NULL DEFAULT now(),
                success        BOOLEAN     NOT NULL,
                checksum       BYTEA       NOT NULL,
                execution_time BIGINT      NOT NULL
-           )"#,
+           )",
     )
     .execute(&pool)
     .await

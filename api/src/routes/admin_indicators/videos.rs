@@ -19,11 +19,11 @@ pub(super) async fn list_indicator_videos(
     Path(indicator_id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let videos: Vec<IndicatorVideoRow> = sqlx::query_as(
-        r#"
+        r"
         SELECT * FROM indicator_videos
         WHERE indicator_id = $1
         ORDER BY display_order, id
-        "#,
+        ",
     )
     .bind(indicator_id)
     .fetch_all(&state.db.pool)
@@ -49,7 +49,7 @@ pub(super) async fn create_indicator_video(
     Json(input): Json<CreateVideoRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let video: IndicatorVideoRow = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO indicator_videos (
             indicator_id, title, description, bunny_video_guid, bunny_library_id,
             embed_url, play_url, thumbnail_url, duration_seconds, display_order,
@@ -57,7 +57,7 @@ pub(super) async fn create_indicator_video(
         )
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
         RETURNING *
-        "#,
+        ",
     )
     .bind(indicator_id)
     .bind(&input.title)

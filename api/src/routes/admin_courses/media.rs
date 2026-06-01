@@ -23,11 +23,11 @@ pub(super) async fn list_downloads(
     Path(course_id): Path<Uuid>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let downloads: Vec<CourseDownload> = sqlx::query_as(
-        r#"
+        r"
         SELECT * FROM course_downloads
         WHERE course_id = $1 OR lesson_id IN (SELECT id FROM lessons WHERE course_id = $1)
         ORDER BY sort_order
-        "#,
+        ",
     )
     .bind(course_id)
     .fetch_all(&state.db.pool)
@@ -52,13 +52,13 @@ pub(super) async fn create_download(
     Json(input): Json<CreateDownloadRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let download: CourseDownload = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO course_downloads (
             course_id, module_id, lesson_id, title, description, file_name, file_path,
             file_size_bytes, file_type, mime_type, download_url, category, sort_order, is_public
         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
         RETURNING *
-        "#,
+        ",
     )
     .bind(input.course_id.or(Some(course_id)))
     .bind(input.module_id)
@@ -97,7 +97,7 @@ pub(super) async fn update_download(
     Json(input): Json<UpdateDownloadRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let download: CourseDownload = sqlx::query_as(
-        r#"
+        r"
         UPDATE course_downloads SET
             title = COALESCE($1, title),
             description = COALESCE($2, description),
@@ -107,7 +107,7 @@ pub(super) async fn update_download(
             updated_at = NOW()
         WHERE id = $6 AND (course_id = $7 OR lesson_id IN (SELECT id FROM lessons WHERE course_id = $7))
         RETURNING *
-        "#,
+        ",
     )
     .bind(&input.title)
     .bind(&input.description)
@@ -187,8 +187,7 @@ pub(super) async fn create_video_upload(
     let client = reqwest::Client::new();
     let response = client
         .post(format!(
-            "https://video.bunnycdn.com/library/{}/videos",
-            library_id
+            "https://video.bunnycdn.com/library/{library_id}/videos"
         ))
         .header("AccessKey", &api_key)
         .header("Content-Type", "application/json")
@@ -222,12 +221,11 @@ pub(super) async fn create_video_upload(
 
     // Generate TUS upload URL with authentication
     let tus_url = format!(
-        "https://video.bunnycdn.com/tusupload?libraryId={}&videoId={}&expirationTime={}",
-        library_id, video_guid, expiry
+        "https://video.bunnycdn.com/tusupload?libraryId={library_id}&videoId={video_guid}&expirationTime={expiry}"
     );
 
     // Generate authorization signature for TUS
-    let signature_string = format!("{}{}{}", library_id, api_key, expiry);
+    let signature_string = format!("{library_id}{api_key}{expiry}");
     let signature = format!("{:x}", md5::compute(signature_string.as_bytes()));
 
     Ok(Json(json!({
@@ -265,12 +263,9 @@ pub(super) async fn get_upload_url(
     let cdn_url = std::env::var("BUNNY_CDN_URL")
         .unwrap_or_else(|_| "https://revolution-downloads.b-cdn.net".to_string());
 
-    let file_path = format!("courses/{}/{}", course_id, file_name);
-    let upload_url = format!(
-        "https://storage.bunnycdn.com/{}/{}",
-        storage_zone, file_path
-    );
-    let download_url = format!("{}/{}", cdn_url, file_path);
+    let file_path = format!("courses/{course_id}/{file_name}");
+    let upload_url = format!("https://storage.bunnycdn.com/{storage_zone}/{file_path}");
+    let download_url = format!("{cdn_url}/{file_path}");
 
     // SECURITY: Do NOT return BUNNY_STORAGE_API_KEY to the client.
     // File uploads should go through a backend proxy endpoint instead of

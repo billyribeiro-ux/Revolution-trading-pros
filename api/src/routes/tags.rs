@@ -86,8 +86,7 @@ pub async fn index(
     let tags: Vec<Tag> = match (&search_pattern, fetch_all) {
         (Some(pattern), false) => {
             let query = format!(
-                "SELECT id, name, slug FROM tags WHERE (name ILIKE $1 OR slug ILIKE $1) ORDER BY {} {} LIMIT $2 OFFSET $3",
-                sort_column, sort_direction
+                "SELECT id, name, slug FROM tags WHERE (name ILIKE $1 OR slug ILIKE $1) ORDER BY {sort_column} {sort_direction} LIMIT $2 OFFSET $3"
             );
             sqlx::query_as(&query)
                 .bind(pattern)
@@ -98,8 +97,7 @@ pub async fn index(
         }
         (Some(pattern), true) => {
             let query = format!(
-                "SELECT id, name, slug FROM tags WHERE (name ILIKE $1 OR slug ILIKE $1) ORDER BY {} {}",
-                sort_column, sort_direction
+                "SELECT id, name, slug FROM tags WHERE (name ILIKE $1 OR slug ILIKE $1) ORDER BY {sort_column} {sort_direction}"
             );
             sqlx::query_as(&query)
                 .bind(pattern)
@@ -108,8 +106,7 @@ pub async fn index(
         }
         (None, false) => {
             let query = format!(
-                "SELECT id, name, slug FROM tags ORDER BY {} {} LIMIT $1 OFFSET $2",
-                sort_column, sort_direction
+                "SELECT id, name, slug FROM tags ORDER BY {sort_column} {sort_direction} LIMIT $1 OFFSET $2"
             );
             sqlx::query_as(&query)
                 .bind(per_page)
@@ -119,8 +116,7 @@ pub async fn index(
         }
         (None, true) => {
             let query = format!(
-                "SELECT id, name, slug FROM tags ORDER BY {} {}",
-                sort_column, sort_direction
+                "SELECT id, name, slug FROM tags ORDER BY {sort_column} {sort_direction}"
             );
             sqlx::query_as(&query)
                 .fetch_all(state.db.pool())
@@ -238,11 +234,11 @@ pub async fn update(
     let mut param_count = 1;
 
     if payload.name.is_some() {
-        updates.push(format!("name = ${}", param_count));
+        updates.push(format!("name = ${param_count}"));
         param_count += 1;
     }
     if payload.slug.is_some() {
-        updates.push(format!("slug = ${}", param_count));
+        updates.push(format!("slug = ${param_count}"));
         param_count += 1;
     }
 

@@ -46,12 +46,12 @@ pub(super) async fn sync_component_usage(
         current_version: i32,
     }
     let existing: ExistingUsage = sqlx::query_as(
-        r#"
+        r"
         SELECT u.is_synced, u.component_id, c.version as current_version
         FROM cms_global_component_usage u
         JOIN cms_global_components c ON c.id = u.component_id
         WHERE u.id = $1
-        "#,
+        ",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -71,13 +71,13 @@ pub(super) async fn sync_component_usage(
 
     // Update synced version
     let usage: GlobalComponentUsage = sqlx::query_as(
-        r#"
+        r"
         UPDATE cms_global_component_usage
         SET synced_version = $2
         WHERE id = $1
         RETURNING id, component_id, content_id, instance_id, is_synced, synced_version,
                   detached_at, detached_by, created_at
-        "#,
+        ",
     )
     .bind(id)
     .bind(existing.current_version)
@@ -144,13 +144,13 @@ pub(super) async fn detach_component_usage(
 
     // Detach the usage
     let usage: GlobalComponentUsage = sqlx::query_as(
-        r#"
+        r"
         UPDATE cms_global_component_usage
         SET is_synced = false, detached_at = NOW(), detached_by = $2
         WHERE id = $1
         RETURNING id, component_id, content_id, instance_id, is_synced, synced_version,
                   detached_at, detached_by, created_at
-        "#,
+        ",
     )
     .bind(id)
     .bind(cms_user_id)
@@ -190,12 +190,12 @@ pub(super) async fn reattach_component_usage(
         current_version: i32,
     }
     let existing: ExistingUsage = sqlx::query_as(
-        r#"
+        r"
         SELECT u.is_synced, c.version as current_version
         FROM cms_global_component_usage u
         JOIN cms_global_components c ON c.id = u.component_id
         WHERE u.id = $1
-        "#,
+        ",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -214,13 +214,13 @@ pub(super) async fn reattach_component_usage(
 
     // Re-attach and sync to latest version
     let usage: GlobalComponentUsage = sqlx::query_as(
-        r#"
+        r"
         UPDATE cms_global_component_usage
         SET is_synced = true, synced_version = $2, detached_at = NULL, detached_by = NULL
         WHERE id = $1
         RETURNING id, component_id, content_id, instance_id, is_synced, synced_version,
                   detached_at, detached_by, created_at
-        "#,
+        ",
     )
     .bind(id)
     .bind(existing.current_version)

@@ -41,14 +41,14 @@ pub(super) async fn get_my_indicators(
             chrono::NaiveDateTime, // purchased_at (was access_granted_at)
         ),
     >(
-        r#"
+        r"
         SELECT i.id, i.name, i.slug, i.description, i.thumbnail, i.download_url, ui.purchased_at
         FROM user_indicators ui
         JOIN indicators i ON ui.indicator_id = i.id
         WHERE ui.user_id = $1
         AND i.is_active = true
         ORDER BY ui.purchased_at DESC
-        "#,
+        ",
     )
     .bind(user_id)
     .fetch_all(&state.db.pool)
@@ -109,11 +109,11 @@ pub(super) async fn get_indicator_downloads(
 
     // ICT 7 FIX: Check ownership using user_indicators table (uses i64)
     let ownership: Option<(i64, i64, i64, chrono::NaiveDateTime, Option<String>)> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, user_id, indicator_id, purchased_at, license_key
         FROM user_indicators
         WHERE user_id = $1 AND indicator_id = $2
-        "#,
+        ",
     )
     .bind(user_id)
     .bind(indicator.id)
@@ -131,11 +131,11 @@ pub(super) async fn get_indicator_downloads(
 
     // ICT 7 FIX: Get files from indicator_files table (uses i64 indicator_id)
     let files: Vec<IndicatorFile> = sqlx::query_as(
-        r#"
+        r"
         SELECT * FROM indicator_files
         WHERE indicator_id = $1 AND is_active = true
         ORDER BY platform, display_order
-        "#,
+        ",
     )
     .bind(indicator.id)
     .fetch_all(&state.db.pool)

@@ -31,13 +31,13 @@ pub(super) async fn list_teams(
     );
 
     let mut sql = String::from(
-        r#"
+        r"
         SELECT t.id, t.name, t.slug, t.description, t.color, t.icon, t.is_active,
                COALESCE((SELECT COUNT(*) FROM team_members tm WHERE tm.team_id = t.id)::int, 0) as member_count,
                t.created_at, t.updated_at
         FROM teams t
         WHERE 1=1
-        "#,
+        ",
     );
 
     let mut bind_count = 0;
@@ -49,8 +49,7 @@ pub(super) async fn list_teams(
     if query.search.is_some() {
         bind_count += 1;
         sql.push_str(&format!(
-            " AND (t.name ILIKE '%' || ${} || '%' OR t.description ILIKE '%' || ${} || '%')",
-            bind_count, bind_count
+            " AND (t.name ILIKE '%' || ${bind_count} || '%' OR t.description ILIKE '%' || ${bind_count} || '%')"
         ));
     }
 
@@ -84,13 +83,13 @@ pub(super) async fn get_team(
     tracing::info!(admin_id = admin.0.id, team_id = id, "Admin fetching team");
 
     let team: Option<Team> = sqlx::query_as(
-        r#"
+        r"
         SELECT t.id, t.name, t.slug, t.description, t.color, t.icon, t.is_active,
                COALESCE((SELECT COUNT(*) FROM team_members tm WHERE tm.team_id = t.id)::int, 0) as member_count,
                t.created_at, t.updated_at
         FROM teams t
         WHERE t.id = $1
-        "#,
+        ",
     )
     .bind(id)
     .fetch_optional(state.db.pool())
@@ -154,11 +153,11 @@ pub(super) async fn create_team(
     }
 
     let team: Team = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO teams (name, slug, description, color, icon, is_active, created_at, updated_at)
         VALUES ($1, $2, $3, $4, $5, true, NOW(), NOW())
         RETURNING id, name, slug, description, color, icon, is_active, 0 as member_count, created_at, updated_at
-        "#,
+        ",
     )
     .bind(&input.name)
     .bind(&slug)
@@ -249,7 +248,7 @@ pub(super) async fn update_team(
     let new_slug = input.name.as_ref().map(|n| generate_slug(n));
 
     let team: Team = sqlx::query_as(
-        r#"
+        r"
         UPDATE teams
         SET name = COALESCE($2, name),
             slug = COALESCE($3, slug),
@@ -260,7 +259,7 @@ pub(super) async fn update_team(
             updated_at = NOW()
         WHERE id = $1
         RETURNING id, name, slug, description, color, icon, is_active, 0 as member_count, created_at, updated_at
-        "#,
+        ",
     )
     .bind(id)
     .bind(&input.name)

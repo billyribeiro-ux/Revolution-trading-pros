@@ -56,13 +56,13 @@ pub(super) async fn get_form_analytics(
 
     // Get submission trends (last 30 days)
     let trends: Vec<(String, i64)> = sqlx::query_as(
-        r#"
+        r"
         SELECT DATE(created_at)::text as date, COUNT(*) as count
         FROM form_submissions
         WHERE form_id = $1 AND created_at > NOW() - INTERVAL '30 days'
         GROUP BY DATE(created_at)
         ORDER BY date DESC
-        "#,
+        ",
     )
     .bind(form_id)
     .fetch_all(&state.db.pool)
@@ -71,12 +71,12 @@ pub(super) async fn get_form_analytics(
 
     // Get status breakdown
     let status_breakdown: Vec<(String, i64)> = sqlx::query_as(
-        r#"
+        r"
         SELECT COALESCE(status, 'unread') as status, COUNT(*) as count
         FROM form_submissions
         WHERE form_id = $1
         GROUP BY status
-        "#,
+        ",
     )
     .bind(form_id)
     .fetch_all(&state.db.pool)

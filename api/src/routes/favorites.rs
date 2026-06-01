@@ -77,10 +77,10 @@ async fn list_favorites(
     let favorites: Vec<UserFavorite> = match (&query.room_slug, &query.item_type) {
         (Some(room), Some(item_type)) => {
             sqlx::query_as(
-                r#"SELECT * FROM user_favorites 
+                r"SELECT * FROM user_favorites 
                    WHERE user_id = $1 AND room_slug = $4 AND item_type = $5
                    ORDER BY created_at DESC
-                   LIMIT $2 OFFSET $3"#,
+                   LIMIT $2 OFFSET $3",
             )
             .bind(auth.id)
             .bind(per_page)
@@ -92,10 +92,10 @@ async fn list_favorites(
         }
         (Some(room), None) => {
             sqlx::query_as(
-                r#"SELECT * FROM user_favorites 
+                r"SELECT * FROM user_favorites 
                    WHERE user_id = $1 AND room_slug = $4
                    ORDER BY created_at DESC
-                   LIMIT $2 OFFSET $3"#,
+                   LIMIT $2 OFFSET $3",
             )
             .bind(auth.id)
             .bind(per_page)
@@ -106,10 +106,10 @@ async fn list_favorites(
         }
         (None, Some(item_type)) => {
             sqlx::query_as(
-                r#"SELECT * FROM user_favorites 
+                r"SELECT * FROM user_favorites 
                    WHERE user_id = $1 AND item_type = $4
                    ORDER BY created_at DESC
-                   LIMIT $2 OFFSET $3"#,
+                   LIMIT $2 OFFSET $3",
             )
             .bind(auth.id)
             .bind(per_page)
@@ -120,10 +120,10 @@ async fn list_favorites(
         }
         (None, None) => {
             sqlx::query_as(
-                r#"SELECT * FROM user_favorites 
+                r"SELECT * FROM user_favorites 
                    WHERE user_id = $1
                    ORDER BY created_at DESC
-                   LIMIT $2 OFFSET $3"#,
+                   LIMIT $2 OFFSET $3",
             )
             .bind(auth.id)
             .bind(per_page)
@@ -193,10 +193,10 @@ async fn add_favorite(
     }
 
     let favorite: UserFavorite = sqlx::query_as(
-        r#"INSERT INTO user_favorites 
+        r"INSERT INTO user_favorites 
            (user_id, room_slug, item_type, item_id, title, excerpt, href, thumbnail_url)
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-           RETURNING *"#,
+           RETURNING *",
     )
     .bind(auth.id)
     .bind(&input.room_slug)
@@ -324,9 +324,9 @@ async fn list_room_favorites(
     Path(room_slug): Path<String>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let favorites: Vec<UserFavorite> = sqlx::query_as(
-        r#"SELECT * FROM user_favorites 
+        r"SELECT * FROM user_favorites 
            WHERE user_id = $1 AND room_slug = $2
-           ORDER BY created_at DESC"#,
+           ORDER BY created_at DESC",
     )
     .bind(auth.id)
     .bind(&room_slug)

@@ -221,7 +221,7 @@ impl ExportService {
         ])
         .map_err(|e| {
             error!(error = ?e, "Failed to write CSV header");
-            ApiError::internal_error(&format!("CSV header error: {}", e))
+            ApiError::internal_error(&format!("CSV header error: {e}"))
         })?;
 
         // Write data rows
@@ -233,10 +233,7 @@ impl ExportService {
                 &alert.ticker,
                 alert.title.as_deref().unwrap_or(""),
                 alert.action.as_deref().unwrap_or(""),
-                &alert
-                    .strike
-                    .map(|s| format!("{:.2}", s))
-                    .unwrap_or_default(),
+                &alert.strike.map(|s| format!("{s:.2}")).unwrap_or_default(),
                 &alert
                     .expiration
                     .map(|d| d.format("%Y-%m-%d").to_string())
@@ -251,13 +248,13 @@ impl ExportService {
             ])
             .map_err(|e| {
                 error!(error = ?e, alert_id = alert.id, "Failed to write alert row");
-                ApiError::internal_error(&format!("CSV row error: {}", e))
+                ApiError::internal_error(&format!("CSV row error: {e}"))
             })?;
         }
 
         let csv_data = wtr.into_inner().map_err(|e| {
             error!(error = ?e, "Failed to finalize CSV");
-            ApiError::internal_error(&format!("CSV finalization error: {}", e))
+            ApiError::internal_error(&format!("CSV finalization error: {e}"))
         })?;
 
         info!(
@@ -326,7 +323,7 @@ impl ExportService {
         ])
         .map_err(|e| {
             error!(error = ?e, "Failed to write CSV header");
-            ApiError::internal_error(&format!("CSV header error: {}", e))
+            ApiError::internal_error(&format!("CSV header error: {e}"))
         })?;
 
         // Write data rows
@@ -345,23 +342,20 @@ impl ExportService {
                     .unwrap_or_default(),
                 &trade
                     .exit_price
-                    .map(|p| format!("{:.2}", p))
+                    .map(|p| format!("{p:.2}"))
                     .unwrap_or_default(),
                 &trade.status,
                 trade.result.as_deref().unwrap_or(""),
-                &trade.pnl.map(|p| format!("{:.2}", p)).unwrap_or_default(),
+                &trade.pnl.map(|p| format!("{p:.2}")).unwrap_or_default(),
                 &trade
                     .pnl_percent
-                    .map(|p| format!("{:.2}", p))
+                    .map(|p| format!("{p:.2}"))
                     .unwrap_or_default(),
                 &trade
                     .holding_days
                     .map(|d| d.to_string())
                     .unwrap_or_default(),
-                &trade
-                    .strike
-                    .map(|s| format!("{:.2}", s))
-                    .unwrap_or_default(),
+                &trade.strike.map(|s| format!("{s:.2}")).unwrap_or_default(),
                 &trade
                     .expiration
                     .map(|d| d.format("%Y-%m-%d").to_string())
@@ -374,13 +368,13 @@ impl ExportService {
             ])
             .map_err(|e| {
                 error!(error = ?e, trade_id = trade.id, "Failed to write trade row");
-                ApiError::internal_error(&format!("CSV row error: {}", e))
+                ApiError::internal_error(&format!("CSV row error: {e}"))
             })?;
         }
 
         let csv_data = wtr.into_inner().map_err(|e| {
             error!(error = ?e, "Failed to finalize CSV");
-            ApiError::internal_error(&format!("CSV finalization error: {}", e))
+            ApiError::internal_error(&format!("CSV finalization error: {e}"))
         })?;
 
         info!(
@@ -464,7 +458,7 @@ impl ExportService {
             || filters.ticker.is_some()
         {
             sqlx::query_as(
-                r#"
+                r"
                 SELECT
                     id, alert_type, ticker, title, message, notes,
                     action, strike, expiration, tos_string, is_pinned, published_at
@@ -477,7 +471,7 @@ impl ExportService {
                     AND ($5::text IS NULL OR ticker = $5)
                 ORDER BY published_at DESC
                 LIMIT $6
-                "#,
+                ",
             )
             .bind(room_slug)
             .bind(filters.start_date)
@@ -489,7 +483,7 @@ impl ExportService {
             .await
         } else {
             sqlx::query_as(
-                r#"
+                r"
                 SELECT
                     id, alert_type, ticker, title, message, notes,
                     action, strike, expiration, tos_string, is_pinned, published_at
@@ -497,7 +491,7 @@ impl ExportService {
                 WHERE room_slug = $1 AND deleted_at IS NULL
                 ORDER BY published_at DESC
                 LIMIT $2
-                "#,
+                ",
             )
             .bind(room_slug)
             .bind(limit)
@@ -506,7 +500,7 @@ impl ExportService {
         }
         .map_err(|e| {
             error!(error = ?e, room = room_slug, "Failed to fetch alerts for export");
-            ApiError::internal_error(&format!("Database error: {}", e))
+            ApiError::internal_error(&format!("Database error: {e}"))
         })?;
 
         Ok(alerts)
@@ -528,7 +522,7 @@ impl ExportService {
             || filters.ticker.is_some()
         {
             sqlx::query_as(
-                r#"
+                r"
                 SELECT
                     id, ticker, trade_type, direction, quantity,
                     option_type, strike, expiration,
@@ -546,7 +540,7 @@ impl ExportService {
                     AND ($6::text IS NULL OR ticker = $6)
                 ORDER BY entry_date DESC
                 LIMIT $7
-                "#,
+                ",
             )
             .bind(room_slug)
             .bind(filters.start_date)
@@ -559,7 +553,7 @@ impl ExportService {
             .await
         } else {
             sqlx::query_as(
-                r#"
+                r"
                 SELECT
                     id, ticker, trade_type, direction, quantity,
                     option_type, strike, expiration,
@@ -571,7 +565,7 @@ impl ExportService {
                 WHERE room_slug = $1 AND deleted_at IS NULL
                 ORDER BY entry_date DESC
                 LIMIT $2
-                "#,
+                ",
             )
             .bind(room_slug)
             .bind(limit)
@@ -580,7 +574,7 @@ impl ExportService {
         }
         .map_err(|e| {
             error!(error = ?e, room = room_slug, "Failed to fetch trades for export");
-            ApiError::internal_error(&format!("Database error: {}", e))
+            ApiError::internal_error(&format!("Database error: {e}"))
         })?;
 
         Ok(trades)
@@ -607,7 +601,7 @@ impl ExportService {
         }
 
         let stats: StatsRow = sqlx::query_as(
-            r#"
+            r"
             SELECT
                 COUNT(*) FILTER (WHERE status = 'closed') as total_trades,
                 COUNT(*) FILTER (WHERE result = 'WIN') as wins,
@@ -623,7 +617,7 @@ impl ExportService {
                 AND deleted_at IS NULL
                 AND entry_date >= $2
                 AND entry_date <= $3
-            "#,
+            ",
         )
         .bind(room_slug)
         .bind(date_range.start)
@@ -632,7 +626,7 @@ impl ExportService {
         .await
         .map_err(|e| {
             error!(error = ?e, "Failed to calculate stats");
-            ApiError::internal_error(&format!("Stats calculation error: {}", e))
+            ApiError::internal_error(&format!("Stats calculation error: {e}"))
         })?;
 
         // Calculate streak
@@ -683,7 +677,7 @@ impl ExportService {
         }
 
         let results: Vec<ResultRow> = sqlx::query_as(
-            r#"
+            r"
             SELECT result
             FROM room_trades
             WHERE room_slug = $1
@@ -693,7 +687,7 @@ impl ExportService {
                 AND entry_date <= $3
             ORDER BY exit_date DESC
             LIMIT 50
-            "#,
+            ",
         )
         .bind(room_slug)
         .bind(date_range.start)
@@ -702,7 +696,7 @@ impl ExportService {
         .await
         .map_err(|e| {
             error!(error = ?e, "Failed to fetch streak data");
-            ApiError::internal_error(&format!("Streak calculation error: {}", e))
+            ApiError::internal_error(&format!("Streak calculation error: {e}"))
         })?;
 
         if results.is_empty() {
@@ -751,7 +745,7 @@ impl ExportService {
         }
 
         let rows: Vec<SummaryRow> = sqlx::query_as(
-            r#"
+            r"
             SELECT
                 id, ticker, direction, entry_date, exit_date,
                 entry_price, exit_price, pnl, pnl_percent, result
@@ -763,7 +757,7 @@ impl ExportService {
                 AND entry_date <= $3
             ORDER BY exit_date DESC
             LIMIT 100
-            "#,
+            ",
         )
         .bind(room_slug)
         .bind(date_range.start)
@@ -772,7 +766,7 @@ impl ExportService {
         .await
         .map_err(|e| {
             error!(error = ?e, "Failed to fetch trade summaries");
-            ApiError::internal_error(&format!("Trade summaries error: {}", e))
+            ApiError::internal_error(&format!("Trade summaries error: {e}"))
         })?;
 
         Ok(rows

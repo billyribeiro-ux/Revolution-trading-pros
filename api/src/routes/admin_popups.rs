@@ -53,17 +53,16 @@ async fn list_popups(
     let mut param_idx = 1usize;
 
     if query.status.is_some() {
-        conditions.push(format!("status = ${}", param_idx));
+        conditions.push(format!("status = ${param_idx}"));
         param_idx += 1;
     }
     if query.popup_type.is_some() {
-        conditions.push(format!("type = ${}", param_idx));
+        conditions.push(format!("type = ${param_idx}"));
         param_idx += 1;
     }
     if query.search.is_some() {
         conditions.push(format!(
-            "(name ILIKE ${} OR title ILIKE ${})",
-            param_idx, param_idx
+            "(name ILIKE ${param_idx} OR title ILIKE ${param_idx})"
         ));
         param_idx += 1;
     }
@@ -79,7 +78,7 @@ async fn list_popups(
     // formatted into the SQL text itself. ORDER BY uses literal column
     // names. LIMIT and OFFSET are bound through `param_idx` placeholders.
     let sql = format!(
-        r#"
+        r"
         SELECT id, name, type as popup_type, status, priority, title, content,
                cta_text, cta_url, cta_new_tab, position, size, animation,
                show_close_button, close_on_overlay_click, close_on_escape,
@@ -92,14 +91,14 @@ async fn list_popups(
         FROM popups
         WHERE 1=1{}
         ORDER BY priority DESC, created_at DESC LIMIT ${} OFFSET ${}
-        "#,
+        ",
         where_clause,
         param_idx,
         param_idx + 1
     );
     // SAFETY: see comment on `sql` above — `where_clause` carries only
     // bind-parameter placeholders, never user input.
-    let count_sql = format!("SELECT COUNT(*) FROM popups WHERE 1=1{}", where_clause);
+    let count_sql = format!("SELECT COUNT(*) FROM popups WHERE 1=1{where_clause}");
 
     // Bind parameters for the main query
     let mut q = sqlx::query_as::<_, crate::models::popup::Popup>(&sql);
@@ -110,7 +109,7 @@ async fn list_popups(
         q = q.bind(popup_type);
     }
     if let Some(ref search) = query.search {
-        let search_pattern = format!("%{}%", search);
+        let search_pattern = format!("%{search}%");
         q = q.bind(search_pattern);
     }
     q = q.bind(per_page);
@@ -145,7 +144,7 @@ async fn list_popups(
         cq = cq.bind(popup_type);
     }
     if let Some(ref search) = query.search {
-        let search_pattern = format!("%{}%", search);
+        let search_pattern = format!("%{search}%");
         cq = cq.bind(search_pattern);
     }
 
@@ -168,7 +167,7 @@ async fn get_popup(
     Path(id): Path<i32>,
 ) -> Result<Json<PopupResponse>, (StatusCode, Json<serde_json::Value>)> {
     let popup: crate::models::popup::Popup = sqlx::query_as(
-        r#"
+        r"
         SELECT id, name, type as popup_type, status, priority, title, content,
                cta_text, cta_url, cta_new_tab, position, size, animation,
                show_close_button, close_on_overlay_click, close_on_escape,
@@ -180,7 +179,7 @@ async fn get_popup(
                created_by, created_at, updated_at
         FROM popups
         WHERE id = $1
-        "#,
+        ",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -227,7 +226,7 @@ async fn create_popup(
     let design = req.design.unwrap_or_default();
 
     let result = sqlx::query(
-        r#"
+        r"
         INSERT INTO popups (
             name, type, status, priority, title, content,
             cta_text, cta_url, cta_new_tab, position, size, animation,
@@ -247,7 +246,7 @@ async fn create_popup(
             0, 0, 0.0,
             NOW(), NOW()
         ) RETURNING id
-        "#,
+        ",
     )
     .bind(&req.name)
     .bind(&popup_type)
@@ -308,7 +307,7 @@ async fn update_popup(
 
     // Use parameterized COALESCE query - all values are bound as parameters
     let result = sqlx::query(
-        r#"
+        r"
         UPDATE popups SET
             name = COALESCE($1, name),
             type = COALESCE($2, type),
@@ -323,7 +322,7 @@ async fn update_popup(
             animation = COALESCE($11, animation),
             updated_at = NOW()
         WHERE id = $12
-        "#,
+        ",
     )
     .bind(&req.name)
     .bind(&req.popup_type)
@@ -393,7 +392,7 @@ async fn duplicate_popup(
     Path(id): Path<i32>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let result = sqlx::query(
-        r#"
+        r"
         INSERT INTO popups (
             name, type, status, priority, title, content,
             cta_text, cta_url, cta_new_tab, position, size, animation,
@@ -415,7 +414,7 @@ async fn duplicate_popup(
             NOW(), NOW()
         FROM popups WHERE id = $1
         RETURNING id
-        "#,
+        ",
     )
     .bind(id)
     .fetch_one(&state.db.pool)
@@ -481,14 +480,14 @@ async fn get_popup_analytics(
 
     // Try to get detailed event stats, but provide defaults if table doesn't exist
     let (today_views, week_views, month_views): (i64, i64, i64) = sqlx::query_as(
-        r#"
+        r"
         SELECT
             COALESCE(SUM(CASE WHEN created_at >= $2::timestamp THEN 1 ELSE 0 END), 0),
             COALESCE(SUM(CASE WHEN created_at >= $3::timestamp THEN 1 ELSE 0 END), 0),
             COALESCE(SUM(CASE WHEN created_at >= $4::timestamp THEN 1 ELSE 0 END), 0)
         FROM popup_events
         WHERE popup_id = $1 AND event_type = 'view'
-        "#,
+        ",
     )
     .bind(id)
     .bind(today_start)
@@ -500,14 +499,14 @@ async fn get_popup_analytics(
     .unwrap_or((0, 0, 0));
 
     let (today_conv, week_conv, month_conv): (i64, i64, i64) = sqlx::query_as(
-        r#"
+        r"
         SELECT
             COALESCE(SUM(CASE WHEN created_at >= $2::timestamp THEN 1 ELSE 0 END), 0),
             COALESCE(SUM(CASE WHEN created_at >= $3::timestamp THEN 1 ELSE 0 END), 0),
             COALESCE(SUM(CASE WHEN created_at >= $4::timestamp THEN 1 ELSE 0 END), 0)
         FROM popup_events
         WHERE popup_id = $1 AND event_type = 'conversion'
-        "#,
+        ",
     )
     .bind(id)
     .bind(today_start)
@@ -520,12 +519,12 @@ async fn get_popup_analytics(
 
     // Device breakdown
     let device_stats: Vec<(String, i64)> = sqlx::query_as(
-        r#"
+        r"
         SELECT COALESCE(device_type, 'desktop'), COUNT(*)
         FROM popup_events
         WHERE popup_id = $1 AND event_type = 'view'
         GROUP BY device_type
-        "#,
+        ",
     )
     .bind(id)
     .fetch_all(&state.db.pool)
@@ -549,7 +548,7 @@ async fn get_popup_analytics(
 
     // Top pages
     let top_pages: Vec<(String, i64, i64)> = sqlx::query_as(
-        r#"
+        r"
         SELECT
             COALESCE(page_url, '/'),
             COUNT(*) FILTER (WHERE event_type = 'view'),
@@ -559,7 +558,7 @@ async fn get_popup_analytics(
         GROUP BY page_url
         ORDER BY COUNT(*) DESC
         LIMIT 10
-        "#,
+        ",
     )
     .bind(id)
     .fetch_all(&state.db.pool)
@@ -582,13 +581,13 @@ async fn get_popup_analytics(
 
     // Timeline data (last 30 days)
     let timeline_views: Vec<(String, i64)> = sqlx::query_as(
-        r#"
+        r"
         SELECT DATE(created_at)::text, COUNT(*)
         FROM popup_events
         WHERE popup_id = $1 AND event_type = 'view' AND created_at >= $2::timestamp
         GROUP BY DATE(created_at)
         ORDER BY DATE(created_at)
-        "#,
+        ",
     )
     .bind(id)
     .bind(month_start)
@@ -597,13 +596,13 @@ async fn get_popup_analytics(
     .unwrap_or_default();
 
     let timeline_conversions: Vec<(String, i64)> = sqlx::query_as(
-        r#"
+        r"
         SELECT DATE(created_at)::text, COUNT(*)
         FROM popup_events
         WHERE popup_id = $1 AND event_type = 'conversion' AND created_at >= $2::timestamp
         GROUP BY DATE(created_at)
         ORDER BY DATE(created_at)
-        "#,
+        ",
     )
     .bind(id)
     .bind(month_start)
@@ -719,11 +718,11 @@ async fn create_ab_test(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Create A/B test record
     let test_result = sqlx::query(
-        r#"
+        r"
         INSERT INTO popup_ab_tests (name, base_popup_id, status, confidence_threshold, created_at, updated_at)
         VALUES ($1, $2, 'draft', $3, NOW(), NOW())
         RETURNING id
-        "#,
+        ",
     )
     .bind(&body.name)
     .bind(base_popup_id)
@@ -746,7 +745,7 @@ async fn create_ab_test(
                     .unwrap_or(100 / (body.variants.len() as i32 + 1));
 
                 let _ = sqlx::query(
-                    r#"
+                    r"
                     INSERT INTO popups (
                         name, type, status, priority, title, content,
                         ab_test_id, variant_name, traffic_allocation,
@@ -766,7 +765,7 @@ async fn create_ab_test(
                         0, 0, 0.0,
                         NOW(), NOW()
                     FROM popups WHERE id = $1
-                    "#,
+                    ",
                 )
                 .bind(base_popup_id)
                 .bind(&variant_name)
@@ -812,12 +811,12 @@ async fn get_ab_test_results(
     Path(test_id): Path<i32>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let variants: Vec<(i32, String, i64, i64, f64)> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, variant_name, total_views, total_conversions, conversion_rate
         FROM popups
         WHERE ab_test_id = $1
         ORDER BY conversion_rate DESC
-        "#,
+        ",
     )
     .bind(test_id)
     .fetch_all(&state.db.pool)

@@ -43,14 +43,14 @@ pub(super) async fn duplicate_preset(
 
     // Fetch the original preset
     let original: CmsPreset = sqlx::query_as(
-        r#"
+        r"
         SELECT id, block_type, name, slug, description, preset_data,
                thumbnail_url, thumbnail_blurhash, category,
                tags, is_default, is_locked, is_global, usage_count, version,
                created_at, updated_at, created_by, updated_by, deleted_at
         FROM cms_presets
         WHERE id = $1 AND deleted_at IS NULL
-        "#,
+        ",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -78,7 +78,7 @@ pub(super) async fn duplicate_preset(
 
     let dup_id = Uuid::new_v4();
     let duplicated: CmsPreset = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO cms_presets (
             id, block_type, name, slug, description, preset_data,
             thumbnail_url, thumbnail_blurhash, category, tags,
@@ -90,7 +90,7 @@ pub(super) async fn duplicate_preset(
                   thumbnail_url, thumbnail_blurhash, category,
                   tags, is_default, is_locked, is_global, usage_count, version,
                   created_at, updated_at, created_by, updated_by, deleted_at
-        "#,
+        ",
     )
     .bind(dup_id)
     .bind(&original.block_type)
@@ -141,7 +141,7 @@ pub(super) async fn apply_preset(
 
     // Increment usage count and return updated preset
     let preset: CmsPreset = sqlx::query_as(
-        r#"
+        r"
         UPDATE cms_presets
         SET usage_count = usage_count + 1
         WHERE id = $1 AND deleted_at IS NULL
@@ -149,7 +149,7 @@ pub(super) async fn apply_preset(
                   thumbnail_url, thumbnail_blurhash, category,
                   tags, is_default, is_locked, is_global, usage_count, version,
                   created_at, updated_at, created_by, updated_by, deleted_at
-        "#,
+        ",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -226,7 +226,7 @@ pub(super) async fn save_block_as_preset(
     let category = request.category.unwrap_or(CmsPresetCategory::Custom);
 
     let preset: CmsPreset = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO cms_presets (
             id, block_type, name, slug, description, preset_data,
             thumbnail_url, category, tags,
@@ -238,7 +238,7 @@ pub(super) async fn save_block_as_preset(
                   thumbnail_url, thumbnail_blurhash, category,
                   tags, is_default, is_locked, is_global, usage_count, version,
                   created_at, updated_at, created_by, updated_by, deleted_at
-        "#,
+        ",
     )
     .bind(new_id)
     .bind(request.block_type.trim())

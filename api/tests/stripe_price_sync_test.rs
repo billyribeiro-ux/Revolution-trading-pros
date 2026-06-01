@@ -42,8 +42,7 @@ async fn create_product_returns_id() {
     let product_id = result.unwrap();
     assert!(
         product_id.starts_with("prod_"),
-        "Stripe product id should start with prod_, got {}",
-        product_id
+        "Stripe product id should start with prod_, got {product_id}"
     );
 }
 
@@ -144,8 +143,7 @@ async fn create_price_rejects_bad_interval() {
     let msg = result.unwrap_err().to_string();
     assert!(
         msg.contains("Unsupported billing_interval"),
-        "Expected validation error, got: {}",
-        msg
+        "Expected validation error, got: {msg}"
     );
 }
 

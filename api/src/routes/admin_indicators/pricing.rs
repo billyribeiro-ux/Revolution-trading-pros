@@ -46,9 +46,9 @@ pub(super) async fn change_indicator_price(
     }
 
     let indicator: IndicatorForPriceChange = sqlx::query_as(
-        r#"SELECT id, name, stripe_price_id, stripe_product_id,
+        r"SELECT id, name, stripe_price_id, stripe_product_id,
                   COALESCE(price_cents, (price * 100)::BIGINT) AS price_cents
-           FROM indicators WHERE id = $1"#,
+           FROM indicators WHERE id = $1",
     )
     .bind(indicator_id)
     .fetch_optional(&state.db.pool)
@@ -98,12 +98,12 @@ pub(super) async fn change_indicator_price(
     })?;
 
     sqlx::query(
-        r#"UPDATE indicators
+        r"UPDATE indicators
            SET stripe_price_id = $1,
                stripe_product_id = $2,
                price_cents = $3::BIGINT,
                updated_at = NOW()
-           WHERE id = $4"#,
+           WHERE id = $4",
     )
     .bind(&new_price_id)
     .bind(&product_id)
@@ -126,8 +126,8 @@ pub(super) async fn change_indicator_price(
         "changed_by_user_id": admin.id,
     });
     if let Err(e) = sqlx::query(
-        r#"INSERT INTO security_events (user_id, event_type, event_category, severity, details)
-           VALUES ($1, 'indicator_price_changed', 'billing', 'medium', $2)"#,
+        r"INSERT INTO security_events (user_id, event_type, event_category, severity, details)
+           VALUES ($1, 'indicator_price_changed', 'billing', 'medium', $2)",
     )
     .bind(admin.id)
     .bind(&details)

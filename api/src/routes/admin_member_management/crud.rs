@@ -32,10 +32,10 @@ pub(super) async fn get_member_full(
 
     // Get member basic info
     let member: MemberDetail = sqlx::query_as(
-        r#"
+        r"
         SELECT id, name, email, role, avatar_url, email_verified_at, mfa_enabled, created_at, updated_at
         FROM users WHERE id = $1
-        "#,
+        ",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -50,7 +50,7 @@ pub(super) async fn get_member_full(
 
     // Subscriptions — joined with membership_plans for canonical price/name (cents)
     let subscriptions: Vec<MemberSubscription> = sqlx::query_as(
-        r#"
+        r"
         SELECT um.id,
                mp.name AS product_name,
                um.status,
@@ -64,7 +64,7 @@ pub(super) async fn get_member_full(
         LEFT JOIN membership_plans mp ON mp.id = um.plan_id
         WHERE um.user_id = $1
         ORDER BY um.created_at DESC
-        "#,
+        ",
     )
     .bind(id)
     .fetch_all(&state.db.pool)
@@ -73,7 +73,7 @@ pub(super) async fn get_member_full(
 
     // Orders for the user — read from `orders` table (canonical), in cents
     let orders: Vec<MemberOrder> = sqlx::query_as(
-        r#"
+        r"
         SELECT id,
                order_number,
                (total * 100)::BIGINT AS total_cents,
@@ -83,7 +83,7 @@ pub(super) async fn get_member_full(
         WHERE user_id = $1
         ORDER BY created_at DESC
         LIMIT 50
-        "#,
+        ",
     )
     .bind(id)
     .fetch_all(&state.db.pool)
@@ -92,13 +92,13 @@ pub(super) async fn get_member_full(
 
     // Get recent activity
     let activity: Vec<MemberActivity> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, user_id, action, description, metadata, ip_address, user_agent, created_at
         FROM user_activity_log
         WHERE user_id = $1
         ORDER BY created_at DESC
         LIMIT 20
-        "#,
+        ",
     )
     .bind(id)
     .fetch_all(&state.db.pool)
@@ -107,13 +107,13 @@ pub(super) async fn get_member_full(
 
     // Get notes
     let notes: Vec<MemberNote> = sqlx::query_as(
-        r#"
+        r"
         SELECT mn.id, mn.user_id, mn.content, mn.created_by, u.name as created_by_name, mn.created_at
         FROM member_notes mn
         LEFT JOIN users u ON u.id = mn.created_by
         WHERE mn.user_id = $1
         ORDER BY mn.created_at DESC
-        "#,
+        ",
     )
     .bind(id)
     .fetch_all(&state.db.pool)
@@ -122,11 +122,11 @@ pub(super) async fn get_member_full(
 
     // Get ban status
     let ban_info: Option<(String, Option<NaiveDateTime>, Option<String>)> = sqlx::query_as(
-        r#"
+        r"
         SELECT status, banned_until, ban_reason
         FROM user_status
         WHERE user_id = $1
-        "#,
+        ",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -142,12 +142,12 @@ pub(super) async fn get_member_full(
 
     // Get tags
     let tags: Vec<String> = sqlx::query_scalar(
-        r#"
+        r"
         SELECT mt.name
         FROM member_tags mt
         JOIN user_member_tags umt ON umt.tag_id = mt.id
         WHERE umt.user_id = $1
-        "#,
+        ",
     )
     .bind(id)
     .fetch_all(&state.db.pool)
@@ -357,11 +357,11 @@ pub(super) async fn create_member(
     // Create user
     // Original pool reference: .fetch_one(&state.db.pool)
     let member: MemberDetail = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO users (name, email, password_hash, role, created_at, updated_at)
         VALUES ($1, $2, $3, $4, NOW(), NOW())
         RETURNING id, name, email, role, avatar_url, email_verified_at, mfa_enabled, created_at, updated_at
-        "#,
+        ",
     )
     .bind(&input.name)
     .bind(&input.email)
@@ -379,10 +379,10 @@ pub(super) async fn create_member(
     // Log activity
     // Original pool reference: .execute(&state.db.pool)
     let _ = sqlx::query(
-        r#"
+        r"
         INSERT INTO user_activity_log (user_id, action, description, created_at)
         VALUES ($1, 'account_created', 'Account created by admin', NOW())
-        "#,
+        ",
     )
     .bind(member.id)
     .execute(&mut *tx)
@@ -466,23 +466,23 @@ pub(super) async fn update_member(
 
     if input.name.is_some() {
         param_idx += 1;
-        updates.push(format!("name = ${}", param_idx));
+        updates.push(format!("name = ${param_idx}"));
     }
     if input.email.is_some() {
         param_idx += 1;
-        updates.push(format!("email = ${}", param_idx));
+        updates.push(format!("email = ${param_idx}"));
     }
     if input.role.is_some() {
         param_idx += 1;
-        updates.push(format!("role = ${}", param_idx));
+        updates.push(format!("role = ${param_idx}"));
     }
     if input.avatar_url.is_some() {
         param_idx += 1;
-        updates.push(format!("avatar_url = ${}", param_idx));
+        updates.push(format!("avatar_url = ${param_idx}"));
     }
     if input.password.is_some() {
         param_idx += 1;
-        updates.push(format!("password_hash = ${}", param_idx));
+        updates.push(format!("password_hash = ${param_idx}"));
     }
 
     updates.push("updated_at = NOW()".to_string());
@@ -537,10 +537,10 @@ pub(super) async fn update_member(
 
     // Log activity
     let _ = sqlx::query(
-        r#"
+        r"
         INSERT INTO user_activity_log (user_id, action, description, created_at)
         VALUES ($1, 'profile_updated_by_admin', 'Profile updated by admin', NOW())
-        "#,
+        ",
     )
     .bind(id)
     .execute(&state.db.pool)
@@ -592,9 +592,9 @@ pub(super) async fn delete_member(
     }
 
     // Soft delete: anonymize data but keep record for audit
-    let deleted_email = format!("deleted_{}@removed.local", id);
+    let deleted_email = format!("deleted_{id}@removed.local");
     let result = sqlx::query(
-        r#"
+        r"
         UPDATE users
         SET email = $2,
             name = 'Deleted User',
@@ -603,7 +603,7 @@ pub(super) async fn delete_member(
             avatar_url = NULL,
             updated_at = NOW()
         WHERE id = $1
-        "#,
+        ",
     )
     .bind(id)
     .bind(&deleted_email)
@@ -633,10 +633,10 @@ pub(super) async fn delete_member(
 
     // Log activity
     let _ = sqlx::query(
-        r#"
+        r"
         INSERT INTO user_activity_log (user_id, action, description, created_at)
         VALUES ($1, 'account_deleted', 'Account deleted by admin', NOW())
-        "#,
+        ",
     )
     .bind(id)
     .execute(&state.db.pool)

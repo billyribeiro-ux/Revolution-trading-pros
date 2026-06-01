@@ -40,14 +40,14 @@ pub(super) async fn get_preset(
     require_cms_editor(&user)?;
 
     let preset: CmsPreset = sqlx::query_as(
-        r#"
+        r"
         SELECT id, block_type, name, slug, description, preset_data,
                thumbnail_url, thumbnail_blurhash, category,
                tags, is_default, is_locked, is_global, usage_count, version,
                created_at, updated_at, created_by, updated_by, deleted_at
         FROM cms_presets
         WHERE id = $1 AND deleted_at IS NULL
-        "#,
+        ",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -85,14 +85,14 @@ pub(super) async fn get_preset_by_slug(
     require_cms_editor(&user)?;
 
     let preset: CmsPreset = sqlx::query_as(
-        r#"
+        r"
         SELECT id, block_type, name, slug, description, preset_data,
                thumbnail_url, thumbnail_blurhash, category,
                tags, is_default, is_locked, is_global, usage_count, version,
                created_at, updated_at, created_by, updated_by, deleted_at
         FROM cms_presets
         WHERE block_type = $1 AND slug = $2 AND deleted_at IS NULL
-        "#,
+        ",
     )
     .bind(&block_type)
     .bind(&slug)

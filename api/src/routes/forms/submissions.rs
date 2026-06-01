@@ -30,14 +30,14 @@ pub(super) async fn list_submissions(
     let offset = (page - 1) * per_page;
 
     let submissions: Vec<FormSubmissionRow> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, form_id, data, COALESCE(status, 'unread') as status, ip_address, user_agent, created_at
         FROM form_submissions
         WHERE form_id = $1
           AND ($4::text IS NULL OR status = $4)
         ORDER BY created_at DESC
         LIMIT $2 OFFSET $3
-        "#,
+        ",
     )
     .bind(form_id)
     .bind(per_page)
@@ -395,12 +395,12 @@ pub(super) async fn export_submissions(
     );
 
     let submissions: Vec<FormSubmissionRow> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, form_id, data, COALESCE(status, 'unread') as status, ip_address, user_agent, created_at
         FROM form_submissions
         WHERE form_id = $1
         ORDER BY created_at DESC
-        "#,
+        ",
     )
     .bind(form_id)
     .fetch_all(&state.db.pool)
@@ -479,7 +479,7 @@ pub(super) async fn export_submissions(
         csv.push('\n');
     }
 
-    let filename = format!("form-{}-submissions.csv", form_id);
+    let filename = format!("form-{form_id}-submissions.csv");
 
     Ok((
         StatusCode::OK,
@@ -487,7 +487,7 @@ pub(super) async fn export_submissions(
             (axum::http::header::CONTENT_TYPE, "text/csv".to_string()),
             (
                 axum::http::header::CONTENT_DISPOSITION,
-                format!("attachment; filename=\"{}\"", filename),
+                format!("attachment; filename=\"{filename}\""),
             ),
         ],
         csv,

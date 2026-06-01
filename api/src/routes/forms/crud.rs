@@ -24,10 +24,10 @@ pub(super) async fn list_forms(
     let per_page = query.per_page.unwrap_or(20).min(100);
     let offset = (page - 1) * per_page;
 
-    let search_pattern: Option<String> = query.search.as_ref().map(|s| format!("%{}%", s));
+    let search_pattern: Option<String> = query.search.as_ref().map(|s| format!("%{s}%"));
 
     let forms: Vec<FormRow> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, name, slug, description, fields, settings, is_published,
                COALESCE(submission_count, 0) as submission_count, created_at, updated_at
         FROM forms
@@ -35,7 +35,7 @@ pub(super) async fn list_forms(
           AND ($2::text IS NULL OR name ILIKE $2 OR description ILIKE $2)
         ORDER BY created_at DESC
         LIMIT $3 OFFSET $4
-        "#,
+        ",
     )
     .bind(query.is_published)
     .bind(search_pattern.as_deref())
@@ -52,11 +52,11 @@ pub(super) async fn list_forms(
     })?;
 
     let total: (i64,) = sqlx::query_as(
-        r#"
+        r"
         SELECT COUNT(*) FROM forms
         WHERE ($1::boolean IS NULL OR is_published = $1)
           AND ($2::text IS NULL OR name ILIKE $2 OR description ILIKE $2)
-        "#,
+        ",
     )
     .bind(query.is_published)
     .bind(search_pattern.as_deref())
@@ -82,11 +82,11 @@ pub(super) async fn get_form(
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let form: FormRow = sqlx::query_as(
-        r#"
+        r"
         SELECT id, name, slug, description, fields, settings, is_published,
                COALESCE(submission_count, 0) as submission_count, created_at, updated_at
         FROM forms WHERE id = $1
-        "#,
+        ",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -125,11 +125,11 @@ pub(super) async fn create_form(
     let settings = input.settings.unwrap_or(json!({}));
 
     let form: FormRow = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO forms (name, slug, description, fields, settings, is_published, submission_count, created_at, updated_at)
         VALUES ($1, $2, $3, $4, $5, $6, 0, NOW(), NOW())
         RETURNING id, name, slug, description, fields, settings, is_published, submission_count, created_at, updated_at
-        "#
+        "
     )
     .bind(&input.name)
     .bind(&slug)
@@ -166,7 +166,7 @@ pub(super) async fn update_form(
 
     // Build dynamic update - simplified approach
     let form: FormRow = sqlx::query_as(
-        r#"
+        r"
         UPDATE forms SET
             name = COALESCE($2, name),
             slug = CASE WHEN $2 IS NOT NULL THEN LOWER(REPLACE($2, ' ', '-')) ELSE slug END,
@@ -177,7 +177,7 @@ pub(super) async fn update_form(
             updated_at = NOW()
         WHERE id = $1
         RETURNING id, name, slug, description, fields, settings, is_published, submission_count, created_at, updated_at
-        "#
+        "
     )
     .bind(id)
     .bind(&input.name)
@@ -272,11 +272,11 @@ pub(super) async fn publish_form(
     tracing::info!(target: "security", event = "form_publish", user_id = %user.id, form_id = %id, "Publishing form");
 
     let form: FormRow = sqlx::query_as(
-        r#"
+        r"
         UPDATE forms SET is_published = true, updated_at = NOW()
         WHERE id = $1
         RETURNING id, name, slug, description, fields, settings, is_published, submission_count, created_at, updated_at
-        "#
+        "
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -296,11 +296,11 @@ pub(super) async fn unpublish_form(
     tracing::info!(target: "security", event = "form_unpublish", user_id = %user.id, form_id = %id, "Unpublishing form");
 
     let form: FormRow = sqlx::query_as(
-        r#"
+        r"
         UPDATE forms SET is_published = false, updated_at = NOW()
         WHERE id = $1
         RETURNING id, name, slug, description, fields, settings, is_published, submission_count, created_at, updated_at
-        "#
+        "
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -320,13 +320,13 @@ pub(super) async fn duplicate_form(
     tracing::info!(target: "security", event = "form_duplicate", user_id = %user.id, form_id = %id, "Duplicating form");
 
     let form: FormRow = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO forms (name, slug, description, fields, settings, is_published, submission_count, created_at, updated_at)
         SELECT CONCAT(name, ' (Copy)'), CONCAT(slug, '-copy-', EXTRACT(EPOCH FROM NOW())::int),
                description, fields, settings, false, 0, NOW(), NOW()
         FROM forms WHERE id = $1
         RETURNING id, name, slug, description, fields, settings, is_published, submission_count, created_at, updated_at
-        "#
+        "
     )
     .bind(id)
     .fetch_optional(&state.db.pool)

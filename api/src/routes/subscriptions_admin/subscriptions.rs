@@ -30,7 +30,7 @@ pub(super) async fn list_subscriptions(
     let offset = (page - 1) * per_page;
 
     let subscriptions: Vec<SubscriptionRow> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, user_id, plan_id, status, starts_at, expires_at, cancelled_at,
                payment_provider, stripe_subscription_id, stripe_customer_id, created_at, updated_at
         FROM user_memberships
@@ -39,7 +39,7 @@ pub(super) async fn list_subscriptions(
           AND ($3::bigint IS NULL OR plan_id = $3)
         ORDER BY created_at DESC
         LIMIT $4 OFFSET $5
-        "#,
+        ",
     )
     .bind(query.status.as_deref())
     .bind(query.user_id)
@@ -59,12 +59,12 @@ pub(super) async fn list_subscriptions(
     // FIX-2026-04-26 (audit 02 §P1-11): propagate DB errors instead of
     // silently rendering `total: 0` on connection drop.
     let total: (i64,) = sqlx::query_as(
-        r#"
+        r"
         SELECT COUNT(*) FROM user_memberships
         WHERE ($1::text IS NULL OR status = $1)
           AND ($2::bigint IS NULL OR user_id = $2)
           AND ($3::bigint IS NULL OR plan_id = $3)
-        "#,
+        ",
     )
     .bind(query.status.as_deref())
     .bind(query.user_id)
@@ -97,11 +97,11 @@ pub(super) async fn get_subscription(
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let subscription: SubscriptionRow = sqlx::query_as(
-        r#"
+        r"
         SELECT id, user_id, plan_id, status, starts_at, expires_at, cancelled_at,
                payment_provider, stripe_subscription_id, stripe_customer_id, created_at, updated_at
         FROM user_memberships WHERE id = $1
-        "#,
+        ",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -140,12 +140,12 @@ pub(super) async fn create_subscription(
     let status = input.status.as_deref().unwrap_or("active");
 
     let subscription: SubscriptionRow = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO user_memberships (user_id, plan_id, status, starts_at, expires_at, created_at, updated_at)
         VALUES ($1, $2, $3, COALESCE($4::timestamp, NOW()), $5::timestamp, NOW(), NOW())
         RETURNING id, user_id, plan_id, status, starts_at, expires_at, cancelled_at,
                   payment_provider, stripe_subscription_id, stripe_customer_id, created_at, updated_at
-        "#
+        "
     )
     .bind(input.user_id)
     .bind(input.plan_id)
@@ -180,7 +180,7 @@ pub(super) async fn update_subscription(
     );
 
     let subscription: SubscriptionRow = sqlx::query_as(
-        r#"
+        r"
         UPDATE user_memberships SET
             status = COALESCE($2, status),
             plan_id = COALESCE($3, plan_id),
@@ -190,7 +190,7 @@ pub(super) async fn update_subscription(
         WHERE id = $1
         RETURNING id, user_id, plan_id, status, starts_at, expires_at, cancelled_at,
                   payment_provider, stripe_subscription_id, stripe_customer_id, created_at, updated_at
-        "#
+        "
     )
     .bind(id)
     .bind(&input.status)

@@ -23,21 +23,21 @@ pub(super) fn get_embed_url(video: &UnifiedVideoRow) -> String {
     match video.video_platform.as_str() {
         "bunny" => {
             if let (Some(guid), Some(lib_id)) = (&video.bunny_video_guid, video.bunny_library_id) {
-                format!("https://iframe.mediadelivery.net/embed/{}/{}", lib_id, guid)
+                format!("https://iframe.mediadelivery.net/embed/{lib_id}/{guid}")
             } else {
                 video.video_url.clone()
             }
         }
         "vimeo" => {
             if let Some(id) = &video.video_id {
-                format!("https://player.vimeo.com/video/{}", id)
+                format!("https://player.vimeo.com/video/{id}")
             } else {
                 video.video_url.clone()
             }
         }
         "youtube" => {
             if let Some(id) = &video.video_id {
-                format!("https://www.youtube.com/embed/{}", id)
+                format!("https://www.youtube.com/embed/{id}")
             } else {
                 video.video_url.clone()
             }
@@ -53,9 +53,9 @@ pub(super) fn format_duration(seconds: Option<i32>) -> String {
             let minutes = (d % 3600) / 60;
             let secs = d % 60;
             if hours > 0 {
-                format!("{}:{:02}:{:02}", hours, minutes, secs)
+                format!("{hours}:{minutes:02}:{secs:02}")
             } else {
-                format!("{}:{:02}", minutes, secs)
+                format!("{minutes}:{secs:02}")
             }
         }
         _ => String::new(),

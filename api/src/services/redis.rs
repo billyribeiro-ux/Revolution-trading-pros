@@ -154,12 +154,12 @@ impl RedisService {
             is_valid: true,
         };
 
-        let key = format!("{}{}", SESSION_PREFIX, session_id);
+        let key = format!("{SESSION_PREFIX}{session_id}");
         let value = serde_json::to_string(&session)?;
         self.set(&key, &value, Some(SESSION_TTL_SECONDS)).await?;
 
         // Also track user's active sessions
-        let user_sessions_key = format!("user_sessions:{}", user_id);
+        let user_sessions_key = format!("user_sessions:{user_id}");
         let mut conn = self.conn.clone();
         let _: () = conn.sadd(&user_sessions_key, session_id).await?;
         let _: () = conn
@@ -179,7 +179,7 @@ impl RedisService {
 
     /// Get session data from Redis
     pub async fn get_session(&self, session_id: &str) -> Result<Option<SessionData>> {
-        let key = format!("{}{}", SESSION_PREFIX, session_id);
+        let key = format!("{SESSION_PREFIX}{session_id}");
         match self.get(&key).await? {
             Some(value) => {
                 let session: SessionData = serde_json::from_str(&value)?;
@@ -205,7 +205,7 @@ impl RedisService {
 
     /// Update session last activity (keep-alive)
     pub async fn touch_session(&self, session_id: &str) -> Result<bool> {
-        let key = format!("{}{}", SESSION_PREFIX, session_id);
+        let key = format!("{SESSION_PREFIX}{session_id}");
         match self.get(&key).await? {
             Some(value) => {
                 let mut session: SessionData = serde_json::from_str(&value)?;
@@ -220,7 +220,7 @@ impl RedisService {
 
     /// Invalidate a specific session (logout)
     pub async fn invalidate_session(&self, session_id: &str) -> Result<()> {
-        let key = format!("{}{}", SESSION_PREFIX, session_id);
+        let key = format!("{SESSION_PREFIX}{session_id}");
 
         // Get session to find user_id
         if let Some(value) = self.get(&key).await? {
@@ -246,14 +246,14 @@ impl RedisService {
 
     /// Invalidate all sessions for a user (force logout everywhere)
     pub async fn invalidate_all_user_sessions(&self, user_id: i64) -> Result<u32> {
-        let user_sessions_key = format!("user_sessions:{}", user_id);
+        let user_sessions_key = format!("user_sessions:{user_id}");
         let mut conn = self.conn.clone();
 
         let session_ids: Vec<String> = conn.smembers(&user_sessions_key).await?;
         let count = session_ids.len() as u32;
 
         for session_id in session_ids {
-            let key = format!("{}{}", SESSION_PREFIX, session_id);
+            let key = format!("{SESSION_PREFIX}{session_id}");
             self.delete(&key).await?;
         }
 
@@ -286,7 +286,7 @@ impl RedisService {
     /// blacklist check's fail-closed behavior — a Redis fault must not open a
     /// window for a revoked token.
     pub async fn get_token_version(&self, user_id: i64) -> Result<i64> {
-        let key = format!("{}{}", TOKEN_VERSION_PREFIX, user_id);
+        let key = format!("{TOKEN_VERSION_PREFIX}{user_id}");
         let mut conn = self.conn.clone();
         let value: Option<i64> = conn.get(&key).await?;
         match value {
@@ -322,7 +322,7 @@ impl RedisService {
     ///
     /// Returns the new epoch value.
     pub async fn bump_token_version(&self, user_id: i64) -> Result<i64> {
-        let key = format!("{}{}", TOKEN_VERSION_PREFIX, user_id);
+        let key = format!("{TOKEN_VERSION_PREFIX}{user_id}");
         let mut conn = self.conn.clone();
         // Atomic INCR + (re)set the TTL together so a crash between the two
         // can't leave a never-expiring key, and so the epoch always outlives
@@ -353,7 +353,7 @@ impl RedisService {
     /// Check if login is allowed and track attempt
     /// Implements progressive delays and account lockout
     pub async fn check_login_rate_limit(&self, identifier: &str) -> Result<RateLimitResult> {
-        let key = format!("{}{}", LOGIN_ATTEMPTS_PREFIX, identifier);
+        let key = format!("{LOGIN_ATTEMPTS_PREFIX}{identifier}");
         let now = chrono::Utc::now().timestamp();
 
         // Get current attempts
@@ -442,7 +442,7 @@ impl RedisService {
 
     /// Record a failed login attempt
     pub async fn record_failed_login(&self, identifier: &str) -> Result<()> {
-        let key = format!("{}{}", LOGIN_ATTEMPTS_PREFIX, identifier);
+        let key = format!("{LOGIN_ATTEMPTS_PREFIX}{identifier}");
         let now = chrono::Utc::now().timestamp();
 
         let mut attempts = match self.get(&key).await? {
@@ -472,7 +472,7 @@ impl RedisService {
 
     /// Clear login attempts on successful login
     pub async fn clear_login_attempts(&self, identifier: &str) -> Result<()> {
-        let key = format!("{}{}", LOGIN_ATTEMPTS_PREFIX, identifier);
+        let key = format!("{LOGIN_ATTEMPTS_PREFIX}{identifier}");
         self.delete(&key).await?;
         Ok(())
     }
@@ -483,14 +483,14 @@ impl RedisService {
 
     /// Add a token to the blacklist (for logout)
     pub async fn blacklist_token(&self, token_hash: &str, expires_in: u64) -> Result<()> {
-        let key = format!("{}{}", TOKEN_BLACKLIST_PREFIX, token_hash);
+        let key = format!("{TOKEN_BLACKLIST_PREFIX}{token_hash}");
         self.set(&key, "1", Some(expires_in)).await?;
         Ok(())
     }
 
     /// Check if a token is blacklisted
     pub async fn is_token_blacklisted(&self, token_hash: &str) -> Result<bool> {
-        let key = format!("{}{}", TOKEN_BLACKLIST_PREFIX, token_hash);
+        let key = format!("{TOKEN_BLACKLIST_PREFIX}{token_hash}");
         Ok(self.get(&key).await?.is_some())
     }
 
@@ -517,7 +517,7 @@ impl RedisService {
     /// Cache user data for fast auth lookups
     /// ICT 7+: Reduces database queries by 60-80% for authenticated requests
     pub async fn cache_user(&self, user_id: i64, user_json: &str) -> Result<()> {
-        let key = format!("{}{}", USER_CACHE_PREFIX, user_id);
+        let key = format!("{USER_CACHE_PREFIX}{user_id}");
         self.set(&key, user_json, Some(USER_CACHE_TTL_SECONDS))
             .await?;
         tracing::debug!(
@@ -533,7 +533,7 @@ impl RedisService {
     /// Get cached user data
     /// Returns None if not cached or expired
     pub async fn get_cached_user(&self, user_id: i64) -> Result<Option<String>> {
-        let key = format!("{}{}", USER_CACHE_PREFIX, user_id);
+        let key = format!("{USER_CACHE_PREFIX}{user_id}");
         let result = self.get(&key).await?;
         if result.is_some() {
             tracing::debug!(
@@ -548,7 +548,7 @@ impl RedisService {
 
     /// Invalidate user cache (call on user update/delete/password change)
     pub async fn invalidate_user_cache(&self, user_id: i64) -> Result<()> {
-        let key = format!("{}{}", USER_CACHE_PREFIX, user_id);
+        let key = format!("{USER_CACHE_PREFIX}{user_id}");
         self.delete(&key).await?;
         tracing::info!(
             target = "security",
@@ -570,7 +570,7 @@ impl RedisService {
         max_requests: i64,
         window_seconds: u64,
     ) -> Result<RateLimitResult> {
-        let key = format!("{}ip:{}", RATE_LIMIT_PREFIX, ip);
+        let key = format!("{RATE_LIMIT_PREFIX}ip:{ip}");
         let count = self.incr(&key, window_seconds).await?;
 
         let remaining = (max_requests - count).max(0) as i32;

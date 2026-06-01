@@ -89,7 +89,7 @@ pub(super) async fn create_preset(
     let category = request.category.unwrap_or(CmsPresetCategory::Custom);
 
     let preset: CmsPreset = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO cms_presets (
             id, block_type, name, slug, description, preset_data,
             thumbnail_url, thumbnail_blurhash, category, tags,
@@ -101,7 +101,7 @@ pub(super) async fn create_preset(
                   thumbnail_url, thumbnail_blurhash, category,
                   tags, is_default, is_locked, is_global, usage_count, version,
                   created_at, updated_at, created_by, updated_by, deleted_at
-        "#,
+        ",
     )
     .bind(new_id)
     .bind(request.block_type.trim())
@@ -211,7 +211,7 @@ pub(super) async fn update_preset(
     }
 
     let preset: CmsPreset = sqlx::query_as(
-        r#"
+        r"
         UPDATE cms_presets
         SET name = COALESCE($2, name),
             slug = COALESCE($3, slug),
@@ -232,7 +232,7 @@ pub(super) async fn update_preset(
                   thumbnail_url, thumbnail_blurhash, category,
                   tags, is_default, is_locked, is_global, usage_count, version,
                   created_at, updated_at, created_by, updated_by, deleted_at
-        "#,
+        ",
     )
     .bind(id)
     .bind(&request.name)

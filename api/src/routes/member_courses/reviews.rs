@@ -86,8 +86,8 @@ pub(super) async fn submit_review(
 
     // Create new review
     let review = sqlx::query_as::<_, (i64, i16, NaiveDateTime)>(
-        r#"INSERT INTO course_reviews (user_id, course_id, rating, title, content, is_verified_purchase, is_approved)
-           VALUES ($1, $2, $3, $4, $5, $6, true) RETURNING id, rating, created_at"#
+        r"INSERT INTO course_reviews (user_id, course_id, rating, title, content, is_verified_purchase, is_approved)
+           VALUES ($1, $2, $3, $4, $5, $6, true) RETURNING id, rating, created_at"
     )
     .bind(user_id)
     .bind(course.0)

@@ -91,7 +91,7 @@ pub(super) async fn upload_avatar(
                 )
             })?;
 
-            let file_path = format!("{}/{}", upload_dir, filename);
+            let file_path = format!("{upload_dir}/{filename}");
             tokio::fs::write(&file_path, &data).await.map_err(|e| {
                 tracing::error!("Failed to write avatar file: {}", e);
                 (
@@ -101,7 +101,7 @@ pub(super) async fn upload_avatar(
             })?;
 
             // Generate URL for avatar
-            let avatar_url = format!("/uploads/avatars/{}", filename);
+            let avatar_url = format!("/uploads/avatars/{filename}");
 
             // Update user avatar_url in database
             sqlx::query("UPDATE users SET avatar_url = $1, updated_at = NOW() WHERE id = $2")
@@ -148,7 +148,7 @@ pub(super) async fn delete_avatar(
     if let Some(avatar_url) = &user.avatar_url {
         // Try to delete the file if it's a local file
         if avatar_url.starts_with("/uploads/") {
-            let file_path = format!(".{}", avatar_url);
+            let file_path = format!(".{avatar_url}");
             tokio::fs::remove_file(&file_path).await.ok(); // Ignore errors
         }
     }

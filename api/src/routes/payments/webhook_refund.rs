@@ -39,12 +39,12 @@ pub(super) async fn handle_refund(
         };
 
         sqlx::query(
-            r#"UPDATE orders SET
+            r"UPDATE orders SET
                status = $1,
                refund_amount = COALESCE(refund_amount, 0) + ($2::BIGINT / 100.0),
                refunded_at = CASE WHEN $1 = 'refunded' THEN NOW() ELSE refunded_at END,
                updated_at = NOW()
-               WHERE payment_intent_id = $3"#,
+               WHERE payment_intent_id = $3",
         )
         .bind(refund_status)
         .bind(refund_amount_cents)
@@ -74,13 +74,13 @@ pub(super) async fn handle_refund(
         if is_full_refund {
             // Revoke subscription membership
             sqlx::query(
-                r#"UPDATE user_memberships SET status = 'cancelled', cancelled_at = NOW(), updated_at = NOW()
+                r"UPDATE user_memberships SET status = 'cancelled', cancelled_at = NOW(), updated_at = NOW()
                    WHERE id IN (
                        SELECT um.id FROM user_memberships um
                        JOIN orders o ON o.user_id = um.user_id
                        WHERE o.payment_intent_id = $1
                          AND um.status != 'cancelled'
-                   )"#,
+                   )",
             )
             .bind(pi)
             .execute(&mut **tx)
@@ -95,9 +95,9 @@ pub(super) async fn handle_refund(
 
             // Revoke course enrollment access
             sqlx::query(
-                r#"UPDATE user_course_enrollments SET is_active = false
+                r"UPDATE user_course_enrollments SET is_active = false
                    WHERE user_id = (SELECT user_id FROM orders WHERE payment_intent_id = $1 LIMIT 1)
-                     AND is_active = true"#,
+                     AND is_active = true",
             )
             .bind(pi)
             .execute(&mut **tx)
@@ -112,9 +112,9 @@ pub(super) async fn handle_refund(
 
             // Revoke indicator access
             sqlx::query(
-                r#"UPDATE user_indicator_access SET is_active = false
+                r"UPDATE user_indicator_access SET is_active = false
                    WHERE user_id = (SELECT user_id FROM orders WHERE payment_intent_id = $1 LIMIT 1)
-                     AND is_active = true"#,
+                     AND is_active = true",
             )
             .bind(pi)
             .execute(&mut **tx)
@@ -154,11 +154,11 @@ pub(super) async fn handle_refund(
             order_number: String,
         }
         let info: Option<RefundEmailInfo> = sqlx::query_as(
-            r#"SELECT u.email, u.name, o.order_number
+            r"SELECT u.email, u.name, o.order_number
                FROM orders o
                JOIN users u ON u.id = o.user_id
                WHERE o.payment_intent_id = $1
-               LIMIT 1"#,
+               LIMIT 1",
         )
         .bind(pi)
         .fetch_optional(&mut **tx)
@@ -218,10 +218,10 @@ pub(super) async fn handle_dispute_created(
 
     // Insert dispute record
     sqlx::query(
-        r#"INSERT INTO payment_disputes
+        r"INSERT INTO payment_disputes
            (stripe_dispute_id, stripe_charge_id, reason, status, amount_cents, currency, response_deadline)
            VALUES ($1, $2, $3, $4, $5, $6, $7)
-           ON CONFLICT (stripe_dispute_id) DO NOTHING"#,
+           ON CONFLICT (stripe_dispute_id) DO NOTHING",
     )
     .bind(dispute_id)
     .bind(charge_id)
@@ -246,8 +246,8 @@ pub(super) async fn handle_dispute_created(
     // it is propagated so the security audit row and the dispute row are
     // atomic (Stripe retries the event on failure).
     sqlx::query(
-        r#"INSERT INTO security_events (event_type, details, created_at)
-           VALUES ('chargeback_dispute', $1, NOW())"#,
+        r"INSERT INTO security_events (event_type, details, created_at)
+           VALUES ('chargeback_dispute', $1, NOW())",
     )
     .bind(json!({
         "dispute_id": dispute_id,

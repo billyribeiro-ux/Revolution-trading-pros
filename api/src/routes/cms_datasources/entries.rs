@@ -48,7 +48,7 @@ pub(super) async fn list_entries(
         .dimension
         .clone()
         .unwrap_or_else(|| "default".to_string());
-    let search_pattern = query.search.as_ref().map(|s| format!("%{}%", s));
+    let search_pattern = query.search.as_ref().map(|s| format!("%{s}%"));
 
     // Verify datasource exists
     let exists: (bool,) = sqlx::query_as(
@@ -67,13 +67,13 @@ pub(super) async fn list_entries(
 
     // Count total
     let count_result: (i64,) = sqlx::query_as(
-        r#"
+        r"
         SELECT COUNT(*)
         FROM cms_datasource_entries
         WHERE datasource_id = $1
           AND dimension = $2
           AND ($3::text IS NULL OR name ILIKE $3 OR value ILIKE $3)
-        "#,
+        ",
     )
     .bind(datasource_id)
     .bind(&dimension)
@@ -86,7 +86,7 @@ pub(super) async fn list_entries(
 
     // Fetch entries
     let entries: Vec<CmsDatasourceEntrySummary> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, name, value, dimension, sort_order, metadata
         FROM cms_datasource_entries
         WHERE datasource_id = $1
@@ -94,7 +94,7 @@ pub(super) async fn list_entries(
           AND ($3::text IS NULL OR name ILIKE $3 OR value ILIKE $3)
         ORDER BY sort_order, name
         LIMIT $4 OFFSET $5
-        "#,
+        ",
     )
     .bind(datasource_id)
     .bind(&dimension)
@@ -107,12 +107,12 @@ pub(super) async fn list_entries(
 
     // Get available dimensions
     let dimensions: Vec<String> = sqlx::query_scalar(
-        r#"
+        r"
         SELECT DISTINCT dimension
         FROM cms_datasource_entries
         WHERE datasource_id = $1
         ORDER BY dimension
-        "#,
+        ",
     )
     .bind(datasource_id)
     .fetch_all(&state.db.pool)
@@ -197,11 +197,11 @@ pub(super) async fn create_entry(
 
     let new_id = Uuid::new_v4();
     let entry: CmsDatasourceEntry = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO cms_datasource_entries (id, datasource_id, name, value, dimension, sort_order, metadata)
         VALUES ($1, $2, $3, $4, $5, $6, $7)
         RETURNING id, datasource_id, name, value, dimension, sort_order, metadata, created_at, updated_at
-        "#,
+        ",
     )
     .bind(new_id)
     .bind(datasource_id)
@@ -284,11 +284,11 @@ pub(super) async fn bulk_create_entries(
             .unwrap_or_else(|| "default".to_string());
 
         let result = sqlx::query(
-            r#"
+            r"
             INSERT INTO cms_datasource_entries (id, datasource_id, name, value, dimension, sort_order, metadata)
             VALUES ($1, $2, $3, $4, $5, $6, $7)
             ON CONFLICT (datasource_id, value, dimension) DO NOTHING
-            "#,
+            ",
         )
         .bind(Uuid::new_v4())
         .bind(datasource_id)
@@ -346,7 +346,7 @@ pub(super) async fn update_entry(
     require_cms_editor(&user)?;
 
     let entry: CmsDatasourceEntry = sqlx::query_as(
-        r#"
+        r"
         UPDATE cms_datasource_entries
         SET name = COALESCE($3, name),
             value = COALESCE($4, value),
@@ -356,7 +356,7 @@ pub(super) async fn update_entry(
             updated_at = NOW()
         WHERE id = $1 AND datasource_id = $2
         RETURNING id, datasource_id, name, value, dimension, sort_order, metadata, created_at, updated_at
-        "#,
+        ",
     )
     .bind(entry_id)
     .bind(datasource_id)

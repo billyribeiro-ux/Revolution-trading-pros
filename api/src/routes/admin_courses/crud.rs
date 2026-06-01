@@ -46,16 +46,15 @@ pub(super) async fn list_courses(
 
     // Build safe query with parameterized bindings
     let query = format!(
-        r#"
+        r"
         SELECT id, title, slug, description, price_cents, is_published,
                thumbnail, level, created_at
         FROM courses
         WHERE ($1::text IS NULL OR level = $1)
           AND ($2::text IS NULL OR title ILIKE '%' || $2 || '%' OR description ILIKE '%' || $2 || '%')
-        ORDER BY {} {}
+        ORDER BY {safe_sort_by} {safe_sort_order}
         LIMIT $3 OFFSET $4
-        "#,
-        safe_sort_by, safe_sort_order
+        "
     );
 
     // Query base course data with parameterized values
@@ -147,18 +146,18 @@ pub(super) async fn get_course(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let course: Course = if let Ok(uuid) = Uuid::parse_str(&id) {
         sqlx::query_as(
-            r#"
+            r"
             SELECT * FROM courses WHERE id = $1
-            "#,
+            ",
         )
         .bind(uuid)
         .fetch_optional(&state.db.pool)
         .await
     } else {
         sqlx::query_as(
-            r#"
+            r"
             SELECT * FROM courses WHERE slug = $1
-            "#,
+            ",
         )
         .bind(&id)
         .fetch_optional(&state.db.pool)
@@ -178,11 +177,11 @@ pub(super) async fn get_course(
     })?;
 
     let modules: Vec<crate::models::course::CourseModule> = sqlx::query_as(
-        r#"
+        r"
         SELECT * FROM course_modules_v2
         WHERE course_id = $1
         ORDER BY sort_order
-        "#,
+        ",
     )
     .bind(course.id)
     .fetch_all(&state.db.pool)
@@ -190,14 +189,14 @@ pub(super) async fn get_course(
     .unwrap_or_default();
 
     let lessons: Vec<LessonListItem> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, course_id, module_id, title, slug, description, duration_minutes,
                position, sort_order, is_free, is_preview, is_published,
                bunny_video_guid, thumbnail_url
         FROM lessons
         WHERE course_id = $1
         ORDER BY COALESCE(sort_order, position)
-        "#,
+        ",
     )
     .bind(course.id)
     .fetch_all(&state.db.pool)
@@ -205,11 +204,11 @@ pub(super) async fn get_course(
     .unwrap_or_default();
 
     let downloads: Vec<CourseDownload> = sqlx::query_as(
-        r#"
+        r"
         SELECT * FROM course_downloads
         WHERE course_id = $1
         ORDER BY sort_order
-        "#,
+        ",
     )
     .bind(course.id)
     .fetch_all(&state.db.pool)
@@ -273,7 +272,7 @@ pub(super) async fn create_course(
     }
 
     let course: Course = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO courses (
             id, title, slug, description, card_description, card_image_url,
             card_badge, card_badge_color, price_cents, is_free, level,
@@ -285,7 +284,7 @@ pub(super) async fn create_course(
             $11, $12, $13, $14, $15, $16, $17, $18, $19, 'draft', false
         )
         RETURNING *
-        "#,
+        ",
     )
     .bind(&input.title)
     .bind(&slug)
@@ -358,17 +357,17 @@ pub(super) async fn update_course(
     add_update!("status", input.status);
 
     if input.price_cents.is_some() {
-        updates.push(format!("price_cents = ${}", param_count));
+        updates.push(format!("price_cents = ${param_count}"));
         param_count += 1;
     }
 
     if input.is_free.is_some() {
-        updates.push(format!("is_free = ${}", param_count));
+        updates.push(format!("is_free = ${param_count}"));
         param_count += 1;
     }
 
     if input.is_published.is_some() {
-        updates.push(format!("is_published = ${}", param_count));
+        updates.push(format!("is_published = ${param_count}"));
         param_count += 1;
         if input.is_published == Some(true) {
             updates.push("published_at = NOW()".to_string());
@@ -377,22 +376,22 @@ pub(super) async fn update_course(
     }
 
     if input.bunny_library_id.is_some() {
-        updates.push(format!("bunny_library_id = ${}", param_count));
+        updates.push(format!("bunny_library_id = ${param_count}"));
         param_count += 1;
     }
 
     if input.what_you_learn.is_some() {
-        updates.push(format!("what_you_learn = ${}", param_count));
+        updates.push(format!("what_you_learn = ${param_count}"));
         param_count += 1;
     }
 
     if input.requirements.is_some() {
-        updates.push(format!("requirements = ${}", param_count));
+        updates.push(format!("requirements = ${param_count}"));
         param_count += 1;
     }
 
     if input.target_audience.is_some() {
-        updates.push(format!("target_audience = ${}", param_count));
+        updates.push(format!("target_audience = ${param_count}"));
         param_count += 1;
     }
 
@@ -524,12 +523,12 @@ pub(super) async fn publish_course(
     Path(id): Path<Uuid>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let course: Course = sqlx::query_as(
-        r#"
+        r"
         UPDATE courses
         SET is_published = true, status = 'published', published_at = NOW(), updated_at = NOW()
         WHERE id = $1
         RETURNING *
-        "#,
+        ",
     )
     .bind(id)
     .fetch_one(&state.db.pool)
@@ -554,12 +553,12 @@ pub(super) async fn unpublish_course(
     Path(id): Path<Uuid>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let course: Course = sqlx::query_as(
-        r#"
+        r"
         UPDATE courses
         SET is_published = false, status = 'draft', updated_at = NOW()
         WHERE id = $1
         RETURNING *
-        "#,
+        ",
     )
     .bind(id)
     .fetch_one(&state.db.pool)
@@ -585,12 +584,12 @@ pub(super) async fn archive_course(
     Path(id): Path<Uuid>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let course: Course = sqlx::query_as(
-        r#"
+        r"
         UPDATE courses
         SET is_published = false, status = 'archived', updated_at = NOW()
         WHERE id = $1
         RETURNING *
-        "#,
+        ",
     )
     .bind(id)
     .fetch_one(&state.db.pool)
@@ -616,12 +615,12 @@ pub(super) async fn restore_course(
     Path(id): Path<Uuid>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let course: Course = sqlx::query_as(
-        r#"
+        r"
         UPDATE courses
         SET status = 'draft', updated_at = NOW()
         WHERE id = $1
         RETURNING *
-        "#,
+        ",
     )
     .bind(id)
     .fetch_one(&state.db.pool)

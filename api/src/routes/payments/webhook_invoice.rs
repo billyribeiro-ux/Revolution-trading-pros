@@ -92,7 +92,7 @@ pub(super) async fn handle_payment_failed(
         // rolls back and Stripe redelivers (the email below is best-effort and
         // is not reached on the error path).
         sqlx::query(
-            r#"UPDATE user_memberships SET
+            r"UPDATE user_memberships SET
                status = 'past_due',
                grace_period_end = CASE
                    WHEN grace_period_end IS NULL OR grace_period_end < NOW()
@@ -102,7 +102,7 @@ pub(super) async fn handle_payment_failed(
                payment_failure_count = $2,
                last_payment_failure = NOW(),
                updated_at = NOW()
-               WHERE stripe_subscription_id = $3"#,
+               WHERE stripe_subscription_id = $3",
         )
         .bind(grace_period_end.naive_utc())
         .bind(attempt_count)
@@ -135,14 +135,14 @@ pub(super) async fn handle_payment_failed(
             }
 
             let user_info: Option<UserSubscription> = sqlx::query_as(
-                r#"SELECT u.email, COALESCE(u.name, u.email) as name,
+                r"SELECT u.email, COALESCE(u.name, u.email) as name,
                    COALESCE(mp.name, 'Subscription') as plan_name,
                    (mp.price * 100)::BIGINT as price_cents
                    FROM user_memberships um
                    JOIN users u ON um.user_id = u.id
                    LEFT JOIN membership_plans mp ON um.plan_id = mp.id
                    WHERE um.stripe_subscription_id = $1
-                   LIMIT 1"#,
+                   LIMIT 1",
             )
             .bind(sub_id)
             .fetch_optional(&mut **tx)

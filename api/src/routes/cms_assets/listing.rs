@@ -33,7 +33,7 @@ pub(super) async fn list_assets(
 
     // Folder filter
     if let Some(folder_id) = params.folder_id {
-        conditions.push(format!("folder_id = ${}", param_idx));
+        conditions.push(format!("folder_id = ${param_idx}"));
         bind_values.push(folder_id.to_string());
         param_idx += 1;
     }
@@ -47,7 +47,7 @@ pub(super) async fn list_assets(
             "document" => "application/%",
             _ => "%",
         };
-        conditions.push(format!("mime_type LIKE ${}", param_idx));
+        conditions.push(format!("mime_type LIKE ${param_idx}"));
         bind_values.push(mime_prefix.to_string());
         param_idx += 1;
     }
@@ -64,7 +64,7 @@ pub(super) async fn list_assets(
                 "(filename ILIKE ${} OR title ILIKE ${} OR alt_text ILIKE ${} OR description ILIKE ${})",
                 param_idx, param_idx + 1, param_idx + 2, param_idx + 3
             ));
-            let pattern = format!("%{}%", sanitized);
+            let pattern = format!("%{sanitized}%");
             bind_values.push(pattern.clone());
             bind_values.push(pattern.clone());
             bind_values.push(pattern.clone());
@@ -77,7 +77,7 @@ pub(super) async fn list_assets(
     if let Some(ref tags_str) = params.tags {
         let tags: Vec<&str> = tags_str.split(',').map(|s| s.trim()).collect();
         if !tags.is_empty() {
-            conditions.push(format!("tags && ${}", param_idx));
+            conditions.push(format!("tags && ${param_idx}"));
             bind_values.push(format!("{{{}}}", tags.join(",")));
             param_idx += 1;
         }
@@ -85,12 +85,12 @@ pub(super) async fn list_assets(
 
     // Dimension filters
     if let Some(min_w) = params.min_width {
-        conditions.push(format!("width >= ${}", param_idx));
+        conditions.push(format!("width >= ${param_idx}"));
         bind_values.push(min_w.to_string());
         param_idx += 1;
     }
     if let Some(max_w) = params.max_width {
-        conditions.push(format!("width <= ${}", param_idx));
+        conditions.push(format!("width <= ${param_idx}"));
         bind_values.push(max_w.to_string());
         #[allow(unused_assignments)]
         {
@@ -133,7 +133,7 @@ pub(super) async fn list_assets(
     };
 
     // Get total count
-    let count_query = format!("SELECT COUNT(*) FROM cms_assets{}", where_clause);
+    let count_query = format!("SELECT COUNT(*) FROM cms_assets{where_clause}");
     let mut count_q = sqlx::query_scalar::<_, i64>(&count_query);
     for val in &bind_values {
         count_q = count_q.bind(val);
@@ -147,14 +147,14 @@ pub(super) async fn list_assets(
     // Format-string injection through them is therefore impossible. LIMIT
     // and OFFSET are bound as parameters below — never formatted in.
     let query = format!(
-        r#"
+        r"
         SELECT id, folder_id, filename, mime_type, file_size, cdn_url,
                width, height, blurhash, thumbnail_url, title, alt_text,
                tags, usage_count, created_at
         FROM cms_assets{}
         ORDER BY {} {}
         LIMIT ${} OFFSET ${}
-        "#,
+        ",
         where_clause,
         sort_column,
         sort_direction,
@@ -201,7 +201,7 @@ pub(super) async fn recent_assets(
         .min(50);
 
     let assets: Vec<AssetSummary> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, folder_id, filename, mime_type, file_size, cdn_url,
                width, height, blurhash, thumbnail_url, title, alt_text,
                tags, usage_count, created_at
@@ -209,7 +209,7 @@ pub(super) async fn recent_assets(
         WHERE deleted_at IS NULL
         ORDER BY created_at DESC
         LIMIT $1
-        "#,
+        ",
     )
     .bind(limit)
     .fetch_all(state.db.pool())
@@ -227,7 +227,7 @@ pub(super) async fn get_asset(
     Path(id): Path<Uuid>,
 ) -> Result<Json<Asset>, ApiError> {
     let asset: Option<Asset> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, folder_id, filename, original_filename, mime_type, file_size,
                file_extension, storage_provider, storage_key, cdn_url,
                width, height, aspect_ratio, blurhash, dominant_color,
@@ -237,7 +237,7 @@ pub(super) async fn get_asset(
                deleted_at, version, created_at, updated_at, created_by, updated_by
         FROM cms_assets
         WHERE id = $1
-        "#,
+        ",
     )
     .bind(id)
     .fetch_optional(state.db.pool())

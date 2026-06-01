@@ -31,13 +31,13 @@ pub(super) async fn list_departments(
     );
 
     let mut sql = String::from(
-        r#"
+        r"
         SELECT d.id, d.name, d.slug, d.description, d.color, d.icon, d.parent_id, d.is_active,
                COALESCE((SELECT COUNT(*) FROM department_members dm WHERE dm.department_id = d.id)::int, 0) as member_count,
                d.created_at, d.updated_at
         FROM departments d
         WHERE 1=1
-        "#,
+        ",
     );
 
     let mut bind_count = 0;
@@ -49,8 +49,7 @@ pub(super) async fn list_departments(
     if query.search.is_some() {
         bind_count += 1;
         sql.push_str(&format!(
-            " AND (d.name ILIKE '%' || ${} || '%' OR d.description ILIKE '%' || ${} || '%')",
-            bind_count, bind_count
+            " AND (d.name ILIKE '%' || ${bind_count} || '%' OR d.description ILIKE '%' || ${bind_count} || '%')"
         ));
     }
 
@@ -88,13 +87,13 @@ pub(super) async fn get_department(
     );
 
     let department: Option<Department> = sqlx::query_as(
-        r#"
+        r"
         SELECT d.id, d.name, d.slug, d.description, d.color, d.icon, d.parent_id, d.is_active,
                COALESCE((SELECT COUNT(*) FROM department_members dm WHERE dm.department_id = d.id)::int, 0) as member_count,
                d.created_at, d.updated_at
         FROM departments d
         WHERE d.id = $1
-        "#,
+        ",
     )
     .bind(id)
     .fetch_optional(state.db.pool())
@@ -161,11 +160,11 @@ pub(super) async fn create_department(
     let slug = generate_slug(&input.name);
 
     let department: Department = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO departments (name, slug, description, color, icon, parent_id, is_active, created_at, updated_at)
         VALUES ($1, $2, $3, $4, $5, $6, true, NOW(), NOW())
         RETURNING id, name, slug, description, color, icon, parent_id, is_active, 0 as member_count, created_at, updated_at
-        "#,
+        ",
     )
     .bind(&input.name)
     .bind(&slug)
@@ -281,7 +280,7 @@ pub(super) async fn update_department(
     let new_slug = input.name.as_ref().map(|n| generate_slug(n));
 
     let department: Department = sqlx::query_as(
-        r#"
+        r"
         UPDATE departments
         SET name = COALESCE($2, name),
             slug = COALESCE($3, slug),
@@ -293,7 +292,7 @@ pub(super) async fn update_department(
             updated_at = NOW()
         WHERE id = $1
         RETURNING id, name, slug, description, color, icon, parent_id, is_active, 0 as member_count, created_at, updated_at
-        "#,
+        ",
     )
     .bind(id)
     .bind(&input.name)

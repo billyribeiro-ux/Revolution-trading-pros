@@ -172,7 +172,7 @@ impl MfaService {
 
         // Insert or update MFA secret
         sqlx::query(
-            r#"
+            r"
             INSERT INTO user_mfa_secrets (user_id, totp_secret, backup_codes, backup_codes_generated_at)
             VALUES ($1, $2, $3, NOW())
             ON CONFLICT (user_id) DO UPDATE SET
@@ -182,7 +182,7 @@ impl MfaService {
                 backup_codes_generated_at = NOW(),
                 backup_codes_used = 0,
                 updated_at = NOW()
-            "#,
+            ",
         )
         .bind(user_id)
         .bind(&secret)
@@ -229,10 +229,10 @@ impl MfaService {
 
         // Mark as verified and enable MFA
         sqlx::query(
-            r#"
+            r"
             UPDATE user_mfa_secrets SET totp_verified_at = NOW(), updated_at = NOW()
             WHERE user_id = $1
-            "#,
+            ",
         )
         .bind(user_id)
         .execute(&self.pool)
@@ -301,8 +301,7 @@ impl MfaService {
                 // surface as a 500, not crash the worker.
                 let updated_codes_json = serde_json::to_value(&updated_codes).map_err(|e| {
                     ApiError::internal_error(&format!(
-                        "Failed to serialize updated backup codes: {}",
-                        e
+                        "Failed to serialize updated backup codes: {e}"
                     ))
                 })?;
 
@@ -316,11 +315,11 @@ impl MfaService {
                 })?;
 
                 sqlx::query(
-                    r#"
+                    r"
                     UPDATE user_mfa_secrets
                     SET backup_codes = $1, backup_codes_used = backup_codes_used + 1, updated_at = NOW()
                     WHERE user_id = $2
-                    "#,
+                    ",
                 )
                 .bind(updated_codes_json)
                 .bind(user_id)
@@ -392,11 +391,11 @@ impl MfaService {
             .map_err(|_| ApiError::internal_error("JSON error"))?;
 
         sqlx::query(
-            r#"
+            r"
             UPDATE user_mfa_secrets
             SET backup_codes = $1, backup_codes_generated_at = NOW(), backup_codes_used = 0, updated_at = NOW()
             WHERE user_id = $2 AND totp_verified_at IS NOT NULL
-            "#,
+            ",
         )
         .bind(&backup_codes_json)
         .bind(user_id)
@@ -436,10 +435,10 @@ impl MfaService {
         E: sqlx::Executor<'c, Database = sqlx::Postgres>,
     {
         sqlx::query(
-            r#"
+            r"
             INSERT INTO mfa_attempts (user_id, ip_address, success, attempt_type)
             VALUES ($1, $2::INET, $3, $4)
-            "#,
+            ",
         )
         .bind(user_id)
         .bind(ip_address.unwrap_or("0.0.0.0"))
@@ -460,13 +459,13 @@ impl MfaService {
     ) -> Result<bool, ApiError> {
         // Allow max 5 failed attempts in 15 minutes
         let count: i64 = sqlx::query_scalar(
-            r#"
+            r"
             SELECT COUNT(*) FROM mfa_attempts
             WHERE user_id = $1
             AND ip_address = $2::INET
             AND success = false
             AND created_at > NOW() - INTERVAL '15 minutes'
-            "#,
+            ",
         )
         .bind(user_id)
         .bind(ip_address)

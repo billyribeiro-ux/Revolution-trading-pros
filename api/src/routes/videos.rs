@@ -66,21 +66,21 @@ fn get_embed_url(video: &UnifiedVideoRow) -> String {
     match video.video_platform.as_str() {
         "bunny" => {
             if let (Some(guid), Some(lib_id)) = (&video.bunny_video_guid, video.bunny_library_id) {
-                format!("https://iframe.mediadelivery.net/embed/{}/{}", lib_id, guid)
+                format!("https://iframe.mediadelivery.net/embed/{lib_id}/{guid}")
             } else {
                 video.video_url.clone()
             }
         }
         "vimeo" => {
             if let Some(id) = &video.video_id {
-                format!("https://player.vimeo.com/video/{}", id)
+                format!("https://player.vimeo.com/video/{id}")
             } else {
                 video.video_url.clone()
             }
         }
         "youtube" => {
             if let Some(id) = &video.video_id {
-                format!("https://www.youtube.com/embed/{}", id)
+                format!("https://www.youtube.com/embed/{id}")
             } else {
                 video.video_url.clone()
             }
@@ -96,9 +96,9 @@ fn format_duration(seconds: Option<i32>) -> String {
             let minutes = (d % 3600) / 60;
             let secs = d % 60;
             if hours > 0 {
-                format!("{}:{:02}:{:02}", hours, minutes, secs)
+                format!("{hours}:{minutes:02}:{secs:02}")
             } else {
-                format!("{}:{:02}", minutes, secs)
+                format!("{minutes}:{secs:02}")
             }
         }
         _ => String::new(),
@@ -194,7 +194,7 @@ async fn list_videos(
     // content_type — string equality
     if let Some(ref content_type) = query.content_type {
         let ph = next_placeholder!();
-        where_clauses.push(format!("v.content_type = {}", ph));
+        where_clauses.push(format!("v.content_type = {ph}"));
         args.add(content_type.clone()).map_err(args_err)?;
     }
 
@@ -203,8 +203,7 @@ async fn list_videos(
         let ph = next_placeholder!();
         where_clauses.push(format!(
             "EXISTS (SELECT 1 FROM video_room_assignments vra \
-             WHERE vra.video_id = v.id AND vra.trading_room_id = {})",
-            ph
+             WHERE vra.video_id = v.id AND vra.trading_room_id = {ph})"
         ));
         args.add(room_id).map_err(args_err)?;
     }
@@ -218,7 +217,7 @@ async fn list_videos(
             .collect();
         for tag in tag_list {
             let ph = next_placeholder!();
-            where_clauses.push(format!("v.tags @> {}::jsonb", ph));
+            where_clauses.push(format!("v.tags @> {ph}::jsonb"));
             // Bind a single-element JSON array containing the tag string.
             let json_arr = serde_json::Value::Array(vec![serde_json::Value::String(tag)]);
             args.add(json_arr).map_err(args_err)?;
@@ -228,7 +227,7 @@ async fn list_videos(
     // difficulty_level — string equality
     if let Some(ref difficulty) = query.difficulty_level {
         let ph = next_placeholder!();
-        where_clauses.push(format!("v.difficulty_level = {}", ph));
+        where_clauses.push(format!("v.difficulty_level = {ph}"));
         args.add(difficulty.clone()).map_err(args_err)?;
     }
 
@@ -238,12 +237,11 @@ async fn list_videos(
             .replace('\\', "\\\\")
             .replace('%', "\\%")
             .replace('_', "\\_");
-        let pattern = format!("%{}%", escaped);
+        let pattern = format!("%{escaped}%");
         let ph = next_placeholder!();
         // Bind once, reference twice — second reference re-uses same placeholder index.
         where_clauses.push(format!(
-            "(v.title ILIKE {ph} ESCAPE '\\' OR v.description ILIKE {ph} ESCAPE '\\')",
-            ph = ph
+            "(v.title ILIKE {ph} ESCAPE '\\' OR v.description ILIKE {ph} ESCAPE '\\')"
         ));
         args.add(pattern).map_err(args_err)?;
     }
@@ -256,17 +254,16 @@ async fn list_videos(
 
     let where_sql = where_clauses.join(" AND ");
     let sql = format!(
-        "SELECT v.* FROM unified_videos v WHERE {} \
+        "SELECT v.* FROM unified_videos v WHERE {where_sql} \
          ORDER BY v.video_date DESC, v.created_at DESC \
-         LIMIT {} OFFSET {}",
-        where_sql, limit_ph, offset_ph
+         LIMIT {limit_ph} OFFSET {offset_ph}"
     );
 
     // Build a separate args bag for the COUNT query (sqlx PgArguments isn't Clone).
     // `where_sql` only contains AND-joined clauses (no LIMIT/OFFSET), so we reuse it as-is.
     let mut count_args = sqlx::postgres::PgArguments::default();
     rebuild_count_args(&mut count_args, &query)?;
-    let count_sql = format!("SELECT COUNT(*) FROM unified_videos v WHERE {}", where_sql);
+    let count_sql = format!("SELECT COUNT(*) FROM unified_videos v WHERE {where_sql}");
 
     let videos: Vec<UnifiedVideoRow> = sqlx::query_as_with(&sql, args)
         .fetch_all(&state.db.pool)
@@ -339,7 +336,7 @@ fn rebuild_count_args(
             .replace('\\', "\\\\")
             .replace('%', "\\%")
             .replace('_', "\\_");
-        let pattern = format!("%{}%", escaped);
+        let pattern = format!("%{escaped}%");
         args.add(pattern).map_err(args_err)?;
     }
     Ok(())
@@ -427,7 +424,7 @@ async fn get_related_videos(
 
     // Find related videos with same content_type or overlapping tags
     let related: Vec<UnifiedVideoRow> = sqlx::query_as(
-        r#"SELECT * FROM unified_videos
+        r"SELECT * FROM unified_videos
            WHERE id != $1
              AND is_published = true
              AND deleted_at IS NULL
@@ -435,7 +432,7 @@ async fn get_related_videos(
            ORDER BY
              CASE WHEN content_type = $2 THEN 1 ELSE 2 END,
              video_date DESC
-           LIMIT 6"#
+           LIMIT 6"
     )
     .bind(id)
     .bind(&content_type)
@@ -459,13 +456,13 @@ async fn get_weekly_videos(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Get current week's start and end dates
     let videos: Vec<UnifiedVideoRow> = sqlx::query_as(
-        r#"SELECT * FROM unified_videos
+        r"SELECT * FROM unified_videos
            WHERE content_type = 'weekly_watchlist'
              AND is_published = true
              AND deleted_at IS NULL
              AND video_date >= date_trunc('week', CURRENT_DATE)
              AND video_date < date_trunc('week', CURRENT_DATE) + INTERVAL '7 days'
-           ORDER BY video_date DESC, created_at DESC"#,
+           ORDER BY video_date DESC, created_at DESC",
     )
     .fetch_all(&state.db.pool)
     .await
@@ -474,12 +471,12 @@ async fn get_weekly_videos(
     // If no videos for current week, get most recent weekly videos
     let videos = if videos.is_empty() {
         sqlx::query_as(
-            r#"SELECT * FROM unified_videos
+            r"SELECT * FROM unified_videos
                WHERE content_type = 'weekly_watchlist'
                  AND is_published = true
                  AND deleted_at IS NULL
                ORDER BY video_date DESC
-               LIMIT 10"#,
+               LIMIT 10",
         )
         .fetch_all(&state.db.pool)
         .await
@@ -516,13 +513,13 @@ async fn get_watch_history(
         Option<String>,
         Option<i32>,
     )> = sqlx::query_as(
-        r#"SELECT wp.video_id, wp.current_time_seconds, wp.completion_percent, wp.completed,
+        r"SELECT wp.video_id, wp.current_time_seconds, wp.completion_percent, wp.completed,
                   wp.last_watched_at, v.title, v.thumbnail_url, v.duration
            FROM video_watch_progress wp
            JOIN unified_videos v ON v.id = wp.video_id
            WHERE wp.user_id = $1 AND v.deleted_at IS NULL
            ORDER BY wp.last_watched_at DESC
-           LIMIT $2"#,
+           LIMIT $2",
     )
     .bind(user_id)
     .bind(limit as i32)

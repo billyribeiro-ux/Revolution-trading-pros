@@ -59,12 +59,12 @@ pub(super) async fn ensure_unique_slug(
         let exists: bool = match exclude_id {
             Some(id) => {
                 let result: (bool,) = sqlx::query_as(
-                    r#"
+                    r"
                     SELECT EXISTS(
                         SELECT 1 FROM cms_global_components
                         WHERE slug = $1 AND id != $2 AND deleted_at IS NULL
                     )
-                    "#,
+                    ",
                 )
                 .bind(&slug)
                 .bind(id)
@@ -75,12 +75,12 @@ pub(super) async fn ensure_unique_slug(
             }
             None => {
                 let result: (bool,) = sqlx::query_as(
-                    r#"
+                    r"
                     SELECT EXISTS(
                         SELECT 1 FROM cms_global_components
                         WHERE slug = $1 AND deleted_at IS NULL
                     )
-                    "#,
+                    ",
                 )
                 .bind(&slug)
                 .fetch_one(pool)
@@ -95,7 +95,7 @@ pub(super) async fn ensure_unique_slug(
         }
 
         suffix += 1;
-        slug = format!("{}-{}", base_slug, suffix);
+        slug = format!("{base_slug}-{suffix}");
     }
 }
 
@@ -118,12 +118,12 @@ pub(super) async fn create_version_record(
     created_by: Option<Uuid>,
 ) -> Result<(), ApiError> {
     sqlx::query(
-        r#"
+        r"
         INSERT INTO cms_global_component_versions (
             id, component_id, version, component_data, change_message, created_by, created_at
         )
         VALUES ($1, $2, $3, $4, $5, $6, NOW())
-        "#,
+        ",
     )
     .bind(Uuid::new_v4())
     .bind(component_id)

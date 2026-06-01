@@ -28,7 +28,7 @@ pub(super) async fn get_version_history(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Get all versions of this resource (including current and previous)
     let versions: Vec<RoomResource> = sqlx::query_as(
-        r#"
+        r"
         WITH RECURSIVE version_chain AS (
             SELECT * FROM room_resources WHERE id = $1 AND deleted_at IS NULL
             UNION ALL
@@ -37,7 +37,7 @@ pub(super) async fn get_version_history(
             WHERE r.deleted_at IS NULL
         )
         SELECT * FROM version_chain ORDER BY version DESC
-        "#,
+        ",
     )
     .bind(id)
     .fetch_all(&state.db.pool)

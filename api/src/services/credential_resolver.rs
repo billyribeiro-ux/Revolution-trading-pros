@@ -155,7 +155,7 @@ impl CredentialResolver {
         // with NULL environment — that's the "set-and-forget" default for
         // admins who don't toggle test/live.
         let row: Result<Option<DbCreds>, sqlx::Error> = sqlx::query_as::<_, DbCreds>(
-            r#"
+            r"
             SELECT credentials_encrypted, webhook_secret, environment
             FROM service_connections
             WHERE service_key = $1
@@ -164,7 +164,7 @@ impl CredentialResolver {
             ORDER BY (environment = $2) DESC NULLS LAST,
                      last_verified_at DESC NULLS LAST
             LIMIT 1
-            "#,
+            ",
         )
         .bind(service)
         .bind(environment)
@@ -261,7 +261,7 @@ fn decrypt_credentials(encrypted: &str) -> HashMap<String, String> {
 }
 
 fn cache_key(service: &str, environment: &str) -> String {
-    format!("{}|{}", service, environment)
+    format!("{service}|{environment}")
 }
 
 #[derive(sqlx::FromRow)]

@@ -118,13 +118,13 @@ pub(super) async fn clone_course(
 
     // Create new course
     let new_course: CourseEnhanced = sqlx::query_as(
-        r#"INSERT INTO courses_enhanced
+        r"INSERT INTO courses_enhanced
            (title, slug, subtitle, description, description_html, thumbnail_url,
             trailer_video_url, difficulty_level, category, tags, instructor_id,
             is_published, is_free, required_plan_id, price_cents, certificate_enabled,
             completion_threshold_percent)
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, false, $12, $13, $14, $15, $16)
-           RETURNING *"#,
+           RETURNING *",
     )
     .bind(&new_title)
     .bind(&new_slug)
@@ -170,10 +170,10 @@ pub(super) async fn clone_course(
 
     for section in &sections {
         let new_section: (i64,) = sqlx::query_as(
-            r#"INSERT INTO course_sections
+            r"INSERT INTO course_sections
                (course_id, title, description, sort_order, section_type, unlock_type, is_published)
                VALUES ($1, $2, $3, $4, $5, $6, $7)
-               RETURNING id"#,
+               RETURNING id",
         )
         .bind(new_course.id)
         .bind(&section.title)
@@ -211,11 +211,11 @@ pub(super) async fn clone_course(
     for lesson in &lessons {
         if let Some(&new_section_id) = section_map.get(&lesson.section_id) {
             sqlx::query(
-                r#"INSERT INTO course_lessons
+                r"INSERT INTO course_lessons
                    (course_id, section_id, title, description, content_html, video_url,
                     bunny_video_guid, bunny_library_id, duration_seconds, thumbnail_url,
                     sort_order, lesson_type, is_preview, is_published, completion_type, required_watch_percent)
-                   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)"#
+                   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)"
             )
             .bind(new_course.id)
             .bind(new_section_id)

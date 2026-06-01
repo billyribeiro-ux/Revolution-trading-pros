@@ -31,7 +31,7 @@ lazy_static::lazy_static! {
 
     /// Match all `<img ...>` tags.
     pub(super) static ref IMG_TOTAL_RE: Regex =
-        Regex::new(r#"<img[^>]*>"#).expect("static regex must compile");
+        Regex::new(r"<img[^>]*>").expect("static regex must compile");
 
     /// Match `<img>` tags that have a non-empty `alt="..."`.
     pub(super) static ref IMG_WITH_ALT_RE: Regex =

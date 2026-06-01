@@ -65,7 +65,7 @@ async fn test_list_trades_with_pagination() {
     // Create 15 trades for pagination testing
     for i in 0..15 {
         let trade =
-            TradeBuilder::long_call(&room.slug, &format!("TICK{}", i), 500.0 + i as f64, 2.50)
+            TradeBuilder::long_call(&room.slug, &format!("TICK{i}"), 500.0 + i as f64, 2.50)
                 .build_json();
 
         ctx.app
@@ -163,7 +163,7 @@ async fn test_list_trades_filter_by_status_open() {
         .oneshot(
             Request::builder()
                 .method("PUT")
-                .uri(format!("/api/admin/room-content/trades/{}/close", trade_id))
+                .uri(format!("/api/admin/room-content/trades/{trade_id}/close"))
                 .header(header::CONTENT_TYPE, "application/json")
                 .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::from(close_payload.to_string()))
@@ -234,7 +234,7 @@ async fn test_list_trades_filter_by_status_closed() {
         .oneshot(
             Request::builder()
                 .method("PUT")
-                .uri(format!("/api/admin/room-content/trades/{}/close", trade_id))
+                .uri(format!("/api/admin/room-content/trades/{trade_id}/close"))
                 .header(header::CONTENT_TYPE, "application/json")
                 .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::from(close_payload.to_string()))
@@ -601,7 +601,7 @@ async fn test_close_trade_winning() {
         .oneshot(
             Request::builder()
                 .method("PUT")
-                .uri(format!("/api/admin/room-content/trades/{}/close", trade_id))
+                .uri(format!("/api/admin/room-content/trades/{trade_id}/close"))
                 .header(header::CONTENT_TYPE, "application/json")
                 .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::from(close_payload.to_string()))
@@ -668,7 +668,7 @@ async fn test_close_trade_losing() {
         .oneshot(
             Request::builder()
                 .method("PUT")
-                .uri(format!("/api/admin/room-content/trades/{}/close", trade_id))
+                .uri(format!("/api/admin/room-content/trades/{trade_id}/close"))
                 .header(header::CONTENT_TYPE, "application/json")
                 .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::from(close_payload.to_string()))
@@ -730,7 +730,7 @@ async fn test_close_trade_calculates_holding_days() {
         .oneshot(
             Request::builder()
                 .method("PUT")
-                .uri(format!("/api/admin/room-content/trades/{}/close", trade_id))
+                .uri(format!("/api/admin/room-content/trades/{trade_id}/close"))
                 .header(header::CONTENT_TYPE, "application/json")
                 .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::from(close_payload.to_string()))
@@ -813,7 +813,7 @@ async fn test_close_trade_with_exit_alert_link() {
         .oneshot(
             Request::builder()
                 .method("PUT")
-                .uri(format!("/api/admin/room-content/trades/{}/close", trade_id))
+                .uri(format!("/api/admin/room-content/trades/{trade_id}/close"))
                 .header(header::CONTENT_TYPE, "application/json")
                 .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::from(close_payload.to_string()))
@@ -868,7 +868,7 @@ async fn test_close_trade_with_custom_exit_date() {
         .oneshot(
             Request::builder()
                 .method("PUT")
-                .uri(format!("/api/admin/room-content/trades/{}/close", trade_id))
+                .uri(format!("/api/admin/room-content/trades/{trade_id}/close"))
                 .header(header::CONTENT_TYPE, "application/json")
                 .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::from(close_payload.to_string()))
@@ -929,8 +929,7 @@ async fn test_invalidate_trade() {
             Request::builder()
                 .method("POST")
                 .uri(format!(
-                    "/api/admin/room-content/trades/{}/invalidate",
-                    trade_id
+                    "/api/admin/room-content/trades/{trade_id}/invalidate"
                 ))
                 .header(header::CONTENT_TYPE, "application/json")
                 .header(header::AUTHORIZATION, admin.auth_header())
@@ -980,7 +979,7 @@ async fn test_invalidated_trade_not_counted_in_stats() {
         .oneshot(
             Request::builder()
                 .method("PUT")
-                .uri(format!("/api/admin/room-content/trades/{}/close", win_id))
+                .uri(format!("/api/admin/room-content/trades/{win_id}/close"))
                 .header(header::CONTENT_TYPE, "application/json")
                 .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::from(json!({"exit_price": 4.00}).to_string()))
@@ -1013,8 +1012,7 @@ async fn test_invalidated_trade_not_counted_in_stats() {
             Request::builder()
                 .method("POST")
                 .uri(format!(
-                    "/api/admin/room-content/trades/{}/invalidate",
-                    inv_id
+                    "/api/admin/room-content/trades/{inv_id}/invalidate"
                 ))
                 .header(header::CONTENT_TYPE, "application/json")
                 .header(header::AUTHORIZATION, admin.auth_header())
@@ -1091,7 +1089,7 @@ async fn test_update_trade() {
         .oneshot(
             Request::builder()
                 .method("PUT")
-                .uri(format!("/api/admin/room-content/trades/{}", trade_id))
+                .uri(format!("/api/admin/room-content/trades/{trade_id}"))
                 .header(header::CONTENT_TYPE, "application/json")
                 .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::from(update_payload.to_string()))
@@ -1149,7 +1147,7 @@ async fn test_update_trade_partial() {
         .oneshot(
             Request::builder()
                 .method("PUT")
-                .uri(format!("/api/admin/room-content/trades/{}", trade_id))
+                .uri(format!("/api/admin/room-content/trades/{trade_id}"))
                 .header(header::CONTENT_TYPE, "application/json")
                 .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::from(update_payload.to_string()))
@@ -1204,7 +1202,7 @@ async fn test_delete_trade() {
         .oneshot(
             Request::builder()
                 .method("DELETE")
-                .uri(format!("/api/admin/room-content/trades/{}", trade_id))
+                .uri(format!("/api/admin/room-content/trades/{trade_id}"))
                 .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
@@ -1288,7 +1286,7 @@ async fn test_close_trade_requires_admin() {
         .oneshot(
             Request::builder()
                 .method("PUT")
-                .uri(format!("/api/admin/room-content/trades/{}/close", trade_id))
+                .uri(format!("/api/admin/room-content/trades/{trade_id}/close"))
                 .header(header::CONTENT_TYPE, "application/json")
                 .header(header::AUTHORIZATION, member.auth_header())
                 .body(Body::from(close_payload.to_string()))
@@ -1397,7 +1395,7 @@ async fn test_trade_status_transitions() {
         .oneshot(
             Request::builder()
                 .method("PUT")
-                .uri(format!("/api/admin/room-content/trades/{}/close", trade_id))
+                .uri(format!("/api/admin/room-content/trades/{trade_id}/close"))
                 .header(header::CONTENT_TYPE, "application/json")
                 .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::from(close_payload.to_string()))
@@ -1447,7 +1445,7 @@ async fn test_trade_cannot_transition_from_closed_to_invalidated() {
         .oneshot(
             Request::builder()
                 .method("PUT")
-                .uri(format!("/api/admin/room-content/trades/{}/close", trade_id))
+                .uri(format!("/api/admin/room-content/trades/{trade_id}/close"))
                 .header(header::CONTENT_TYPE, "application/json")
                 .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::from(json!({"exit_price": 8.00}).to_string()))
@@ -1465,8 +1463,7 @@ async fn test_trade_cannot_transition_from_closed_to_invalidated() {
             Request::builder()
                 .method("POST")
                 .uri(format!(
-                    "/api/admin/room-content/trades/{}/invalidate",
-                    trade_id
+                    "/api/admin/room-content/trades/{trade_id}/invalidate"
                 ))
                 .header(header::CONTENT_TYPE, "application/json")
                 .header(header::AUTHORIZATION, admin.auth_header())

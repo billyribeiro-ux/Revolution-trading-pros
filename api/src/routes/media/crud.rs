@@ -44,7 +44,7 @@ pub(super) async fn index(
                 param_idx + 1,
                 param_idx + 2
             ));
-            let pattern = format!("%{}%", sanitized);
+            let pattern = format!("%{sanitized}%");
             bind_values.push(pattern.clone());
             bind_values.push(pattern.clone());
             bind_values.push(pattern);
@@ -56,8 +56,8 @@ pub(super) async fn index(
     if let Some(media_type) = &params.r#type {
         let allowed_types = ["image", "video", "audio", "application", "text"];
         if allowed_types.contains(&media_type.as_str()) {
-            conditions.push(format!("mime_type LIKE ${}", param_idx));
-            bind_values.push(format!("{}%", media_type));
+            conditions.push(format!("mime_type LIKE ${param_idx}"));
+            bind_values.push(format!("{media_type}%"));
             param_idx += 1;
         }
     }
@@ -71,7 +71,7 @@ pub(super) async fn index(
             .take(50)
             .collect();
         if !sanitized.is_empty() {
-            conditions.push(format!("collection = ${}", param_idx));
+            conditions.push(format!("collection = ${param_idx}"));
             bind_values.push(sanitized);
             #[allow(unused_assignments)]
             {
@@ -87,7 +87,7 @@ pub(super) async fn index(
 
     // Optimization filter - boolean, safe
     if let Some(is_optimized) = params.is_optimized {
-        conditions.push(format!("is_optimized = {}", is_optimized));
+        conditions.push(format!("is_optimized = {is_optimized}"));
     }
 
     // Sorting - whitelist validation (no user input in query)
@@ -126,7 +126,7 @@ pub(super) async fn index(
     };
 
     // Get total count with parameterized query
-    let count_query = format!("SELECT COUNT(*) FROM media WHERE 1=1{}", where_clause);
+    let count_query = format!("SELECT COUNT(*) FROM media WHERE 1=1{where_clause}");
 
     let mut count_q = sqlx::query_scalar::<_, i64>(&count_query);
     for val in &bind_values {
@@ -231,23 +231,23 @@ pub(super) async fn update(
     let mut param_count = 1;
 
     if payload.title.is_some() {
-        updates.push(format!("title = ${}", param_count));
+        updates.push(format!("title = ${param_count}"));
         param_count += 1;
     }
     if payload.alt_text.is_some() {
-        updates.push(format!("alt_text = ${}", param_count));
+        updates.push(format!("alt_text = ${param_count}"));
         param_count += 1;
     }
     if payload.caption.is_some() {
-        updates.push(format!("caption = ${}", param_count));
+        updates.push(format!("caption = ${param_count}"));
         param_count += 1;
     }
     if payload.description.is_some() {
-        updates.push(format!("description = ${}", param_count));
+        updates.push(format!("description = ${param_count}"));
         param_count += 1;
     }
     if payload.collection.is_some() {
-        updates.push(format!("collection = ${}", param_count));
+        updates.push(format!("collection = ${param_count}"));
         param_count += 1;
     }
 

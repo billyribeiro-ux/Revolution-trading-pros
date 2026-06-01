@@ -53,10 +53,10 @@ pub(super) async fn list_trades(
         let trades: Vec<RoomTrade> = match &query.status {
             Some(status) => {
                 sqlx::query_as(
-                    r#"SELECT * FROM room_trades
+                    r"SELECT * FROM room_trades
                        WHERE room_slug = $1 AND deleted_at IS NULL AND status = $4 AND ticker = $5
                        ORDER BY entry_date DESC
-                       LIMIT $2 OFFSET $3"#,
+                       LIMIT $2 OFFSET $3",
                 )
                 .bind(&room_slug)
                 .bind(per_page)
@@ -68,10 +68,10 @@ pub(super) async fn list_trades(
             }
             None => {
                 sqlx::query_as(
-                    r#"SELECT * FROM room_trades
+                    r"SELECT * FROM room_trades
                        WHERE room_slug = $1 AND deleted_at IS NULL AND ticker = $4
                        ORDER BY entry_date DESC
-                       LIMIT $2 OFFSET $3"#,
+                       LIMIT $2 OFFSET $3",
                 )
                 .bind(&room_slug)
                 .bind(per_page)
@@ -122,10 +122,10 @@ pub(super) async fn list_trades(
             let trades: Vec<RoomTrade> = match &status_filter {
                 Some(status) => {
                     sqlx::query_as(
-                        r#"SELECT * FROM room_trades
+                        r"SELECT * FROM room_trades
                            WHERE room_slug = $1 AND deleted_at IS NULL AND status = $4
                            ORDER BY entry_date DESC
-                           LIMIT $2 OFFSET $3"#,
+                           LIMIT $2 OFFSET $3",
                     )
                     .bind(&room_slug)
                     .bind(per_page)
@@ -136,10 +136,10 @@ pub(super) async fn list_trades(
                 }
                 None => {
                     sqlx::query_as(
-                        r#"SELECT * FROM room_trades
+                        r"SELECT * FROM room_trades
                            WHERE room_slug = $1 AND deleted_at IS NULL
                            ORDER BY entry_date DESC
-                           LIMIT $2 OFFSET $3"#,
+                           LIMIT $2 OFFSET $3",
                     )
                     .bind(&room_slug)
                     .bind(per_page)
@@ -201,7 +201,7 @@ pub(super) async fn create_trade(
         .and_then(|e| NaiveDate::parse_from_str(e, "%Y-%m-%d").ok());
 
     let trade: RoomTrade = sqlx::query_as(
-        r#"INSERT INTO room_trades
+        r"INSERT INTO room_trades
            (room_id, room_slug, ticker, trade_type, direction, quantity,
             option_type, strike, expiration, contract_type,
             entry_alert_id, entry_price, entry_date, entry_tos_string,
@@ -213,7 +213,7 @@ pub(super) async fn create_trade(
                $10, $11, $12, $13,
                $14, 'open', $15
            )
-           RETURNING *"#,
+           RETURNING *",
     )
     .bind(&input.room_slug)
     .bind(input.ticker.to_uppercase())
@@ -317,7 +317,7 @@ pub(super) async fn close_trade(
     let result = if pnl > 0.0 { "WIN" } else { "LOSS" };
 
     let trade: RoomTrade = sqlx::query_as(
-        r#"UPDATE room_trades SET
+        r"UPDATE room_trades SET
            exit_alert_id = $2,
            exit_price = $3,
            exit_date = $4,
@@ -330,7 +330,7 @@ pub(super) async fn close_trade(
            notes = COALESCE($10, notes),
            updated_at = NOW()
            WHERE id = $1 AND deleted_at IS NULL
-           RETURNING *"#,
+           RETURNING *",
     )
     .bind(id)
     .bind(input.exit_alert_id)
@@ -398,12 +398,12 @@ pub(super) async fn invalidate_trade(
     Json(input): Json<InvalidateTradeRequest>,
 ) -> Result<Json<RoomTrade>, (StatusCode, Json<serde_json::Value>)> {
     let trade: RoomTrade = sqlx::query_as(
-        r#"UPDATE room_trades SET
+        r"UPDATE room_trades SET
            status = 'invalidated',
            invalidation_reason = $2,
            updated_at = NOW()
            WHERE id = $1 AND deleted_at IS NULL
-           RETURNING *"#,
+           RETURNING *",
     )
     .bind(id)
     .bind(&input.reason)
@@ -463,7 +463,7 @@ pub(super) async fn update_trade(
     Json(input): Json<UpdateTradeRequest>,
 ) -> Result<Json<RoomTrade>, (StatusCode, Json<serde_json::Value>)> {
     let trade: RoomTrade = sqlx::query_as(
-        r#"UPDATE room_trades SET
+        r"UPDATE room_trades SET
            ticker = COALESCE($2, ticker),
            entry_price = COALESCE($3, entry_price),
            quantity = COALESCE($4, quantity),
@@ -471,7 +471,7 @@ pub(super) async fn update_trade(
            was_updated = true,
            updated_at = NOW()
            WHERE id = $1 AND deleted_at IS NULL
-           RETURNING *"#,
+           RETURNING *",
     )
     .bind(id)
     .bind(input.ticker.map(|t| t.to_uppercase()))

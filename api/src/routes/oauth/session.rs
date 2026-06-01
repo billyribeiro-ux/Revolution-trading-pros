@@ -43,7 +43,7 @@ pub(super) fn oauth_callback_response_with_cookies(
     let app_url = state.config.app_url.trim_end_matches('/');
     // No tokens in the URL — only the provider name (UX, so the callback
     // page can show "Signed in with Google" if it wants).
-    let redirect_to = format!("{}/auth/callback?provider={}", app_url, provider);
+    let redirect_to = format!("{app_url}/auth/callback?provider={provider}");
 
     // Cookies use the SAME names hooks.server.ts already reads
     // (rtp_access_token, rtp_refresh_token, rtp_session_id) so this

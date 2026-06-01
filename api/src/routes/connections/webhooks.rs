@@ -43,14 +43,14 @@ pub(super) async fn list_webhooks(
     ))?;
 
     let webhooks: Vec<IntegrationWebhook> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, connection_id, name, url, secret, events, is_active,
                last_triggered_at, last_status_code, failure_count,
                created_at, updated_at
         FROM integration_webhooks
         WHERE connection_id = $1
         ORDER BY name
-        "#,
+        ",
     )
     .bind(connection_id)
     .fetch_all(state.db.pool())
@@ -115,7 +115,7 @@ pub(super) async fn create_webhook(
     let secret = generate_webhook_secret();
 
     let webhook: IntegrationWebhook = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO integration_webhooks (
             connection_id, name, url, secret, events, is_active,
             created_at, updated_at
@@ -123,7 +123,7 @@ pub(super) async fn create_webhook(
         RETURNING id, connection_id, name, url, secret, events, is_active,
                   last_triggered_at, last_status_code, failure_count,
                   created_at, updated_at
-        "#,
+        ",
     )
     .bind(connection_id)
     .bind(&input.name)

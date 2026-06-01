@@ -52,11 +52,11 @@ pub(super) async fn enroll_user(
     .unwrap_or((0,));
 
     let enrollment: UserCourseEnrollment = sqlx::query_as(
-        r#"INSERT INTO user_course_enrollments
+        r"INSERT INTO user_course_enrollments
            (user_id, course_id, enrollment_source, total_lessons)
            VALUES ($1, $2, $3, $4)
            ON CONFLICT (user_id, course_id) DO UPDATE SET is_active = true
-           RETURNING *"#,
+           RETURNING *",
     )
     .bind(user_id)
     .bind(course_id)
@@ -103,10 +103,10 @@ pub(super) async fn get_enrollments(
     let offset = (page - 1) * per_page;
 
     let enrollments: Vec<UserCourseEnrollment> = sqlx::query_as(
-        r#"SELECT * FROM user_course_enrollments
+        r"SELECT * FROM user_course_enrollments
            WHERE course_id = $1 AND is_active = true
            ORDER BY enrolled_at DESC
-           LIMIT $2 OFFSET $3"#,
+           LIMIT $2 OFFSET $3",
     )
     .bind(course_id)
     .bind(per_page)
@@ -195,7 +195,7 @@ pub(super) async fn update_lesson_progress(
     let is_completed = watch_percent >= required_percent;
 
     sqlx::query(
-        r#"INSERT INTO user_lesson_progress
+        r"INSERT INTO user_lesson_progress
            (user_id, course_id, lesson_id, watch_position_seconds, watch_percent, is_completed, completed_at)
            VALUES ($1, $2, $3, $4, $5, $6, $7)
            ON CONFLICT (user_id, lesson_id) DO UPDATE SET
@@ -204,7 +204,7 @@ pub(super) async fn update_lesson_progress(
              watch_percent = GREATEST(user_lesson_progress.watch_percent, $5),
              is_completed = user_lesson_progress.is_completed OR $6,
              completed_at = CASE WHEN NOT user_lesson_progress.is_completed AND $6 THEN NOW() ELSE user_lesson_progress.completed_at END,
-             last_watched_at = NOW()"#
+             last_watched_at = NOW()"
     )
     .bind(user_id)
     .bind(course_id)

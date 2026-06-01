@@ -70,7 +70,7 @@ pub(super) async fn list_revisions(
 
     // Get revisions with creator names
     let revisions: Vec<CmsRevisionWithCreator> = sqlx::query_as(
-        r#"
+        r"
         SELECT
             r.id, r.content_id, r.revision_number, r.is_current, r.data,
             r.change_summary, r.changed_fields, r.created_at, r.created_by,
@@ -81,7 +81,7 @@ pub(super) async fn list_revisions(
         WHERE r.content_id = $1
         ORDER BY r.revision_number DESC
         LIMIT $2 OFFSET $3
-        "#,
+        ",
     )
     .bind(content_id)
     .bind(limit)
@@ -161,14 +161,14 @@ pub(super) async fn get_revision(
     require_cms_editor(&user)?;
 
     let revision: CmsRevisionExtended = sqlx::query_as(
-        r#"
+        r"
         SELECT
             id, content_id, revision_number, is_current, data,
             change_summary, changed_fields, created_at, created_by,
             change_type, word_count, diff_stats
         FROM cms_revisions
         WHERE content_id = $1 AND revision_number = $2
-        "#,
+        ",
     )
     .bind(content_id)
     .bind(version)
@@ -178,7 +178,7 @@ pub(super) async fn get_revision(
     .ok_or_else(|| {
         api_error(
             StatusCode::NOT_FOUND,
-            &format!("Revision {} not found for content", version),
+            &format!("Revision {version} not found for content"),
         )
     })?;
 
@@ -243,7 +243,7 @@ pub(super) async fn compare_revisions(
 
     // Fetch both revisions with creator info
     let from_revision: Option<CmsRevisionWithCreator> = sqlx::query_as(
-        r#"
+        r"
         SELECT
             r.id, r.content_id, r.revision_number, r.is_current, r.data,
             r.change_summary, r.changed_fields, r.created_at, r.created_by,
@@ -252,7 +252,7 @@ pub(super) async fn compare_revisions(
         FROM cms_revisions r
         LEFT JOIN cms_users u ON r.created_by = u.id
         WHERE r.content_id = $1 AND r.revision_number = $2
-        "#,
+        ",
     )
     .bind(content_id)
     .bind(v1)
@@ -261,7 +261,7 @@ pub(super) async fn compare_revisions(
     .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
     let to_revision: Option<CmsRevisionWithCreator> = sqlx::query_as(
-        r#"
+        r"
         SELECT
             r.id, r.content_id, r.revision_number, r.is_current, r.data,
             r.change_summary, r.changed_fields, r.created_at, r.created_by,
@@ -270,7 +270,7 @@ pub(super) async fn compare_revisions(
         FROM cms_revisions r
         LEFT JOIN cms_users u ON r.created_by = u.id
         WHERE r.content_id = $1 AND r.revision_number = $2
-        "#,
+        ",
     )
     .bind(content_id)
     .bind(v2)
@@ -279,10 +279,10 @@ pub(super) async fn compare_revisions(
     .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
     let from_rev = from_revision
-        .ok_or_else(|| api_error(StatusCode::NOT_FOUND, &format!("Revision {} not found", v1)))?;
+        .ok_or_else(|| api_error(StatusCode::NOT_FOUND, &format!("Revision {v1} not found")))?;
 
     let to_rev = to_revision
-        .ok_or_else(|| api_error(StatusCode::NOT_FOUND, &format!("Revision {} not found", v2)))?;
+        .ok_or_else(|| api_error(StatusCode::NOT_FOUND, &format!("Revision {v2} not found")))?;
 
     let from_name = from_rev.created_by_name.clone();
     let to_name = to_rev.created_by_name.clone();
@@ -358,14 +358,14 @@ pub(super) async fn restore_revision(
 
     // Verify the revision exists
     let revision: CmsRevisionExtended = sqlx::query_as(
-        r#"
+        r"
         SELECT
             id, content_id, revision_number, is_current, data,
             change_summary, changed_fields, created_at, created_by,
             change_type, word_count, diff_stats
         FROM cms_revisions
         WHERE content_id = $1 AND revision_number = $2
-        "#,
+        ",
     )
     .bind(content_id)
     .bind(version)
@@ -375,7 +375,7 @@ pub(super) async fn restore_revision(
     .ok_or_else(|| {
         api_error(
             StatusCode::NOT_FOUND,
-            &format!("Revision {} not found", version),
+            &format!("Revision {version} not found"),
         )
     })?;
 
@@ -395,7 +395,7 @@ pub(super) async fn restore_revision(
     .unwrap_or((content.version,));
 
     Ok(Json(RestoreResponse {
-        message: format!("Successfully restored content to revision {}", version),
+        message: format!("Successfully restored content to revision {version}"),
         restored_from_revision: version,
         new_revision_number: new_revision_number.0,
         new_content_version: content.version,

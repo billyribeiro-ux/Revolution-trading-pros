@@ -169,9 +169,9 @@ fn get_production_rules(site_url: &str) -> String {
     // Sitemap location
     rules.push(String::new());
     rules.push("# Sitemaps".to_string());
-    rules.push(format!("Sitemap: {}/api/sitemap", site_url));
-    rules.push(format!("Sitemap: {}/api/sitemap/categories", site_url));
-    rules.push(format!("Sitemap: {}/api/sitemap/tags", site_url));
+    rules.push(format!("Sitemap: {site_url}/api/sitemap"));
+    rules.push(format!("Sitemap: {site_url}/api/sitemap/categories"));
+    rules.push(format!("Sitemap: {site_url}/api/sitemap/tags"));
 
     // Host directive
     rules.push(String::new());
@@ -182,7 +182,7 @@ fn get_production_rules(site_url: &str) -> String {
         .split('/')
         .next()
         .unwrap_or("revolutiontradingpros.com");
-    rules.push(format!("Host: {}", host));
+    rules.push(format!("Host: {host}"));
 
     rules.join("\n")
 }

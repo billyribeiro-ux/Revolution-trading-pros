@@ -155,11 +155,10 @@ fn admin_handlers_use_admin_user_extractor() {
 
         assert!(
             source.contains("AdminUser"),
-            "{}: must import or extract `AdminUser` (per CLAUDE.md \
+            "{sub}: must import or extract `AdminUser` (per CLAUDE.md \
              admin-gated routes contract). A regression that dropped \
              this extractor would expose admin endpoints to plain \
-             users.",
-            sub
+             users."
         );
 
         // Defence-in-depth: NO sub-module should use `SuperAdminUser`
@@ -186,12 +185,11 @@ fn admin_handlers_use_admin_user_extractor() {
             .count();
         assert_eq!(
             extractor_hits, 0,
-            "{}: must NOT use `SuperAdminUser` as a handler extractor \
+            "{sub}: must NOT use `SuperAdminUser` as a handler extractor \
              — that extractor is reserved for DDL endpoints in \
              health.rs per FULL_REPO_AUDIT_2026-05-17 P1-4 #2. \
              Admin sub-modules use plain `AdminUser` (admin or \
-             super-admin role).",
-            sub
+             super-admin role)."
         );
     }
 }
@@ -310,12 +308,11 @@ fn admin_path_id_extractors_are_i64_not_i32() {
         // correct because settings.key is a string slug, not an id.)
         assert!(
             !source.contains("Path<i32>"),
-            "{}: MUST NOT use `Path<i32>` for any `:id` extractor — \
+            "{sub}: MUST NOT use `Path<i32>` for any `:id` extractor — \
              admin resources have BIGSERIAL PKs (users / coupons / \
              memberships / campaigns). Per CLAUDE.md \"Money / cents \
              — i64 ONLY, BIGINT ONLY\" rule applied to FK ids: i32 \
-             silently truncates past 2.1B rows.",
-            sub
+             silently truncates past 2.1B rows."
         );
     }
 

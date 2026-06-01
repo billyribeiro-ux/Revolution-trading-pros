@@ -33,7 +33,7 @@ pub(super) async fn list_plans(
 
     // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
     let plans: Vec<SubscriptionPlanRow> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, name, slug, description, (price * 100)::BIGINT AS price_cents, billing_cycle, is_active,
                stripe_price_id, features, trial_days, trial_period_days,
                trial_requires_payment_method, created_at, updated_at
@@ -41,7 +41,7 @@ pub(super) async fn list_plans(
         WHERE ($1::boolean IS NULL OR is_active = $1)
         ORDER BY price ASC
         LIMIT $2 OFFSET $3
-        "#,
+        ",
     )
     .bind(query.is_active)
     .bind(per_page)
@@ -90,12 +90,12 @@ pub(super) async fn get_plan(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
     let plan: SubscriptionPlanRow = sqlx::query_as(
-        r#"
+        r"
         SELECT id, name, slug, description, (price * 100)::BIGINT AS price_cents, billing_cycle, is_active,
                stripe_price_id, features, trial_days, trial_period_days,
                trial_requires_payment_method, created_at, updated_at
         FROM membership_plans WHERE id = $1
-        "#,
+        ",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -135,11 +135,11 @@ pub(super) async fn create_plan(
 
     // Cents at the API surface; convert to NUMERIC at SQL boundary
     let plan: SubscriptionPlanRow = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO membership_plans (name, slug, description, price, billing_cycle, is_active, stripe_price_id, features, trial_days, trial_period_days, trial_requires_payment_method, created_at, updated_at)
         VALUES ($1, $2, $3, $4::BIGINT / 100.0, $5, $6, $7, $8, $9, $10, $11, NOW(), NOW())
         RETURNING id, name, slug, description, (price * 100)::BIGINT AS price_cents, billing_cycle, is_active, stripe_price_id, features, trial_days, trial_period_days, trial_requires_payment_method, created_at, updated_at
-        "#
+        "
     )
     .bind(&input.name)
     .bind(&slug)
@@ -180,7 +180,7 @@ pub(super) async fn update_plan(
     );
 
     let plan: SubscriptionPlanRow = sqlx::query_as(
-        r#"
+        r"
         UPDATE membership_plans SET
             name = COALESCE($2, name),
             slug = CASE WHEN $2 IS NOT NULL THEN LOWER(REPLACE($2, ' ', '-')) ELSE slug END,
@@ -196,7 +196,7 @@ pub(super) async fn update_plan(
             updated_at = NOW()
         WHERE id = $1
         RETURNING id, name, slug, description, (price * 100)::BIGINT AS price_cents, billing_cycle, is_active, stripe_price_id, features, trial_days, trial_period_days, trial_requires_payment_method, created_at, updated_at
-        "#
+        "
     )
     .bind(id)
     .bind(&input.name)

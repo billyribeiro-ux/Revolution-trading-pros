@@ -126,11 +126,11 @@ pub(super) async fn register(
     // Create user with email_verified_at = NULL (unverified)
     // Original pool reference: .fetch_one(&state.db.pool)
     let user: User = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO users (email, password_hash, name, role, email_verified_at, created_at, updated_at)
         VALUES ($1, $2, $3, 'user', NULL, NOW(), NOW())
         RETURNING id, email, password_hash, name, role, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at
-        "#,
+        ",
     )
     .bind(&input.email)
     .bind(&password_hash)
@@ -163,10 +163,10 @@ pub(super) async fn register(
 
     // Store verification token (expires in 24 hours)
     sqlx::query(
-        r#"
+        r"
         INSERT INTO email_verification_tokens (user_id, token, expires_at)
         VALUES ($1, $2, NOW() + INTERVAL '24 hours')
-        "#,
+        ",
     )
     .bind(user.id)
     .bind(&hashed_token)

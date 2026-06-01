@@ -83,7 +83,10 @@ fn secs_until_09_utc() -> u64 {
     } else {
         today_9am + chrono::Duration::days(1)
     };
-    (candidate - now).num_seconds().max(1) as u64
+    // max(1) guarantees non-negative; the cast is intentionally safe.
+    #[allow(clippy::cast_sign_loss)]
+    let secs = (candidate - now).num_seconds().max(1) as u64;
+    secs
 }
 
 /// Run one pass. Returns (renewals_queued, trials_queued).
@@ -116,7 +119,7 @@ async fn run_renewal_reminders(state: &AppState) -> anyhow::Result<usize> {
     }
 
     let rows: Vec<RenewalRow> = sqlx::query_as(
-        r#"SELECT
+        r"SELECT
                u.email,
                COALESCE(u.name, u.email) AS name,
                mp.name AS plan_name,
@@ -135,7 +138,7 @@ async fn run_renewal_reminders(state: &AppState) -> anyhow::Result<usize> {
                  WHERE el.to_email = u.email
                    AND el.template_alias = 'subscription-renewal-reminder'
                    AND el.queued_at > NOW() - INTERVAL '24 hours'
-             )"#,
+             )",
     )
     .fetch_all(&state.db.pool)
     .await?;
@@ -189,7 +192,7 @@ async fn run_trial_ending_reminders(state: &AppState) -> anyhow::Result<usize> {
     // restrict by `status = 'trialing'` so we don't catch ordinary
     // billing renewals.
     let rows: Vec<TrialRow> = sqlx::query_as(
-        r#"SELECT
+        r"SELECT
                u.email,
                COALESCE(u.name, u.email) AS name,
                mp.name AS plan_name,
@@ -206,7 +209,7 @@ async fn run_trial_ending_reminders(state: &AppState) -> anyhow::Result<usize> {
                  WHERE el.to_email = u.email
                    AND el.template_alias = 'trial-ending'
                    AND el.queued_at > NOW() - INTERVAL '24 hours'
-             )"#,
+             )",
     )
     .fetch_all(&state.db.pool)
     .await?;

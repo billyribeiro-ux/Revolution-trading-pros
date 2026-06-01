@@ -52,7 +52,7 @@ pub(super) async fn export_members(
     #[allow(clippy::type_complexity)]
     let members: Vec<(i64, Option<String>, String, Option<String>, NaiveDateTime)> =
         sqlx::query_as(
-            r#"
+            r"
             SELECT u.id, u.name, u.email, u.role, u.created_at
             FROM users u
             WHERE ($1::text IS NULL OR (
@@ -68,7 +68,7 @@ pub(super) async fn export_members(
             AND ($3::date IS NULL OR u.created_at <= $3::date + INTERVAL '1 day')
             ORDER BY u.created_at DESC
             LIMIT 10000
-            "#,
+            ",
         )
         .bind(status_filter)
         .bind(date_from)
@@ -196,9 +196,9 @@ fn generate_xlsx(
     }
 
     content.push_str(
-        r#"  </Table>
+        r"  </Table>
  </Worksheet>
-</Workbook>"#,
+</Workbook>",
     );
 
     content.into_bytes()
@@ -234,7 +234,7 @@ fn generate_pdf(
     // Create a minimal valid PDF
     let content = lines.join("\n");
     let pdf = format!(
-        r#"%PDF-1.4
+        r"%PDF-1.4
 1 0 obj
 << /Type /Catalog /Pages 2 0 R >>
 endobj
@@ -269,7 +269,7 @@ trailer
 << /Size 6 /Root 1 0 R >>
 startxref
 {}
-%%EOF"#,
+%%EOF",
         content.len() + 50,
         content
             .lines()

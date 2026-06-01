@@ -71,7 +71,7 @@ pub(super) async fn get_metrics(
 
     // MRR in integer cents — sum active+trialing memberships' plan prices, normalized to monthly
     let mrr_result: Option<(i64,)> = sqlx::query_as(
-        r#"
+        r"
         SELECT COALESCE(SUM(
             CASE mp.billing_cycle
                 WHEN 'monthly'   THEN (mp.price * 100)::BIGINT
@@ -84,7 +84,7 @@ pub(super) async fn get_metrics(
         FROM user_memberships um
         JOIN membership_plans mp ON um.plan_id = mp.id
         WHERE um.status IN ('active', 'trialing')
-        "#,
+        ",
     )
     .fetch_optional(&state.db.pool)
     .await
@@ -112,12 +112,12 @@ pub(super) async fn get_metrics(
     // ICT 7+ Enterprise: Calculate churn rate
     // Churn = (Cancelled this month / Active at start of month) * 100
     let active_start_of_month: (i64,) = sqlx::query_as(
-        r#"
+        r"
         SELECT COUNT(*) FROM user_memberships
         WHERE starts_at < date_trunc('month', CURRENT_DATE)
         AND (cancelled_at IS NULL OR cancelled_at >= date_trunc('month', CURRENT_DATE))
         AND status IN ('active', 'cancelled')
-        "#,
+        ",
     )
     .fetch_one(&state.db.pool)
     .await
@@ -132,13 +132,13 @@ pub(super) async fn get_metrics(
     // ICT 7+ Enterprise: Calculate Average Lifetime Value (LTV)
     // LTV = Average subscription duration * ARPU (Average Revenue Per User)
     let avg_duration_months: Option<(f64,)> = sqlx::query_as(
-        r#"
+        r"
         SELECT COALESCE(AVG(
             EXTRACT(EPOCH FROM (COALESCE(cancelled_at, NOW()) - starts_at)) / (30.0 * 24.0 * 3600.0)
         ), 0)
         FROM user_memberships
         WHERE starts_at IS NOT NULL
-        "#,
+        ",
     )
     .fetch_optional(&state.db.pool)
     .await
@@ -232,7 +232,7 @@ pub(super) async fn export_subscriptions(
         Option<String>,
         Option<String>,
     )> = sqlx::query_as(
-        r#"
+        r"
         SELECT
             us.id,
             us.user_id,
@@ -247,7 +247,7 @@ pub(super) async fn export_subscriptions(
         LEFT JOIN users u ON us.user_id = u.id
         ORDER BY us.created_at DESC
         LIMIT 10000
-        "#,
+        ",
     )
     .fetch_all(state.db.pool())
     .await

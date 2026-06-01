@@ -103,8 +103,7 @@ impl Services {
                         "ICT 7+ SECURITY: Redis connection FAILED in production - this is CRITICAL"
                     );
                     return Err(anyhow!(
-                        "Redis is required in production for security features (rate limiting, session management). Error: {}",
-                        e
+                        "Redis is required in production for security features (rate limiting, session management). Error: {e}"
                     ));
                 }
                 tracing::warn!("Redis connection failed (dev mode - continuing): {}", e);

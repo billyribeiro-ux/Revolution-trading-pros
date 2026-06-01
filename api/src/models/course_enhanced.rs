@@ -468,9 +468,9 @@ pub fn format_duration_minutes(minutes: i32) -> String {
     let hours = minutes / 60;
     let mins = minutes % 60;
     if hours > 0 {
-        format!("{}h {}m", hours, mins)
+        format!("{hours}h {mins}m")
     } else {
-        format!("{}m", mins)
+        format!("{mins}m")
     }
 }
 
@@ -479,15 +479,15 @@ pub fn format_duration_seconds(seconds: i32) -> String {
     let minutes = (seconds % 3600) / 60;
     let secs = seconds % 60;
     if hours > 0 {
-        format!("{}:{:02}:{:02}", hours, minutes, secs)
+        format!("{hours}:{minutes:02}:{secs:02}")
     } else {
-        format!("{}:{:02}", minutes, secs)
+        format!("{minutes}:{secs:02}")
     }
 }
 
 pub fn format_file_size(bytes: i64) -> String {
     if bytes < 1024 {
-        format!("{} B", bytes)
+        format!("{bytes} B")
     } else if bytes < 1024 * 1024 {
         format!("{:.1} KB", bytes as f64 / 1024.0)
     } else if bytes < 1024 * 1024 * 1024 {
@@ -504,8 +504,7 @@ pub fn get_embed_url(
 ) -> Option<String> {
     if let (Some(guid), Some(lib_id)) = (bunny_guid, bunny_library) {
         return Some(format!(
-            "https://iframe.mediadelivery.net/embed/{}/{}",
-            lib_id, guid
+            "https://iframe.mediadelivery.net/embed/{lib_id}/{guid}"
         ));
     }
     video_url.clone()

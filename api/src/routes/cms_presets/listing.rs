@@ -63,11 +63,11 @@ pub(super) async fn list_presets(
     };
 
     // Prepare search pattern if provided
-    let search_pattern = query.search.as_ref().map(|s| format!("%{}%", s));
+    let search_pattern = query.search.as_ref().map(|s| format!("%{s}%"));
 
     // Count total using parameterized query
     let count_result: (i64,) = sqlx::query_as(
-        r#"
+        r"
         SELECT COUNT(*)
         FROM cms_presets
         WHERE deleted_at IS NULL
@@ -76,7 +76,7 @@ pub(super) async fn list_presets(
           AND ($3::text IS NULL OR name ILIKE $3 OR description ILIKE $3)
           AND ($4::boolean IS NULL OR is_global = $4)
           AND ($5::boolean IS NULL OR is_default = $5)
-        "#,
+        ",
     )
     .bind(&query.block_type)
     .bind(&query.category)
@@ -91,7 +91,7 @@ pub(super) async fn list_presets(
 
     // Fetch presets using parameterized query with safe sort columns
     let presets: Vec<CmsPresetSummary> = sqlx::query_as(&format!(
-        r#"
+        r"
         SELECT id, block_type, name, slug, description, thumbnail_url, thumbnail_blurhash,
                category::text as category, tags, is_default, is_locked, is_global,
                usage_count, created_at, updated_at
@@ -102,10 +102,9 @@ pub(super) async fn list_presets(
           AND ($3::text IS NULL OR name ILIKE $3 OR description ILIKE $3)
           AND ($4::boolean IS NULL OR is_global = $4)
           AND ($5::boolean IS NULL OR is_default = $5)
-        ORDER BY is_default DESC, {} {}
+        ORDER BY is_default DESC, {sort_column} {sort_order}
         LIMIT $6 OFFSET $7
-        "#,
-        sort_column, sort_order
+        "
     ))
     .bind(&query.block_type)
     .bind(&query.category)
@@ -155,14 +154,14 @@ pub(super) async fn get_presets_by_block_type(
 
     // Fetch all presets for this block type
     let presets: Vec<CmsPresetSummary> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, block_type, name, slug, description, thumbnail_url, thumbnail_blurhash,
                category::text as category, tags, is_default, is_locked, is_global,
                usage_count, created_at, updated_at
         FROM cms_presets
         WHERE block_type = $1 AND deleted_at IS NULL AND is_global = true
         ORDER BY category, is_default DESC, usage_count DESC, name
-        "#,
+        ",
     )
     .bind(&block_type)
     .fetch_all(&state.db.pool)
@@ -236,7 +235,7 @@ pub(super) async fn get_block_types_with_presets(
     require_cms_editor(&user)?;
 
     let block_types: Vec<BlockTypeWithPresets> = sqlx::query_as(
-        r#"
+        r"
         SELECT
             block_type,
             COUNT(*)::BIGINT AS preset_count,
@@ -245,7 +244,7 @@ pub(super) async fn get_block_types_with_presets(
         WHERE deleted_at IS NULL AND is_global = true
         GROUP BY block_type
         ORDER BY block_type
-        "#,
+        ",
     )
     .fetch_all(&state.db.pool)
     .await

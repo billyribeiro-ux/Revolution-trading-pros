@@ -121,11 +121,11 @@ async fn validate_coupon(
 
     // Find coupon - ICT 11+ Fix: Use Laravel production schema column names
     let coupon: Option<Coupon> = sqlx::query_as(
-        r#"SELECT id, code, type, value, max_uses, current_uses,
+        r"SELECT id, code, type, value, max_uses, current_uses,
                   expiry_date, applicable_products, min_purchase_amount,
                   is_active, created_at, updated_at
            FROM coupons
-           WHERE UPPER(code) = $1"#,
+           WHERE UPPER(code) = $1",
     )
     .bind(&code)
     .fetch_optional(&state.db.pool)
@@ -195,8 +195,7 @@ async fn validate_coupon(
                     coupon: None,
                     discount_amount_cents: None,
                     error: Some(format!(
-                        "Minimum purchase of ${:.2} required",
-                        min_purchase_dollars
+                        "Minimum purchase of ${min_purchase_dollars:.2} required"
                     )),
                 }));
             }
@@ -264,7 +263,7 @@ async fn get_user_coupons(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Get coupons assigned to user or public coupons
     let coupons: Vec<UserCoupon> = sqlx::query_as::<_, UserCoupon>(
-        r#"SELECT
+        r"SELECT
             c.id,
             c.code,
             c.description,
@@ -285,7 +284,7 @@ async fn get_user_coupons(
             -- User-specific coupons
             uc.user_id = $1
         )
-        ORDER BY c.expires_at ASC NULLS LAST, c.created_at DESC"#,
+        ORDER BY c.expires_at ASC NULLS LAST, c.created_at DESC",
     )
     .bind(user.id)
     .fetch_all(&state.db.pool)
@@ -313,13 +312,13 @@ async fn list_coupons(
     // ICT 7 FIX: Use Laravel production schema column names
     let coupons: Vec<Coupon> = if query.active_only.unwrap_or(false) {
         sqlx::query_as(
-            r#"SELECT id, code, type, value, max_uses, current_uses,
+            r"SELECT id, code, type, value, max_uses, current_uses,
                       expiry_date, applicable_products, min_purchase_amount,
                       is_active, created_at, updated_at
                FROM coupons
                WHERE is_active = true
                ORDER BY created_at DESC
-               LIMIT $1 OFFSET $2"#,
+               LIMIT $1 OFFSET $2",
         )
         .bind(limit)
         .bind(offset)
@@ -334,12 +333,12 @@ async fn list_coupons(
         })?
     } else {
         sqlx::query_as(
-            r#"SELECT id, code, type, value, max_uses, current_uses,
+            r"SELECT id, code, type, value, max_uses, current_uses,
                       expiry_date, applicable_products, min_purchase_amount,
                       is_active, created_at, updated_at
                FROM coupons
                ORDER BY created_at DESC
-               LIMIT $1 OFFSET $2"#,
+               LIMIT $1 OFFSET $2",
         )
         .bind(limit)
         .bind(offset)
@@ -411,14 +410,14 @@ async fn create_coupon(
 
     // ICT 7 FIX: Use Laravel production schema column names
     let coupon: Coupon = sqlx::query_as(
-        r#"INSERT INTO coupons (
+        r"INSERT INTO coupons (
             code, type, value, max_uses, current_uses,
             expiry_date, applicable_products, min_purchase_amount,
             is_active, created_at, updated_at
         ) VALUES ($1, $2, $3, $4, 0, $5, $6, $7, $8, NOW(), NOW())
         RETURNING id, code, type, value, max_uses, current_uses,
                   expiry_date, applicable_products, min_purchase_amount,
-                  is_active, created_at, updated_at"#,
+                  is_active, created_at, updated_at",
     )
     .bind(&code)
     .bind(&input.discount_type)
@@ -480,7 +479,7 @@ async fn update_coupon(
 
     // ICT 7 FIX: Use Laravel production schema column names
     let coupon: Coupon = sqlx::query_as(
-        r#"UPDATE coupons SET
+        r"UPDATE coupons SET
             type = COALESCE($2, type),
             value = COALESCE($3, value),
             max_uses = COALESCE($4, max_uses),
@@ -492,7 +491,7 @@ async fn update_coupon(
         WHERE id = $1
         RETURNING id, code, type, value, max_uses, current_uses,
                   expiry_date, applicable_products, min_purchase_amount,
-                  is_active, created_at, updated_at"#,
+                  is_active, created_at, updated_at",
     )
     .bind(id)
     .bind(&input.discount_type)
@@ -717,10 +716,10 @@ async fn get_coupon(
     Path(id): Path<i64>,
 ) -> Result<Json<Coupon>, (StatusCode, Json<serde_json::Value>)> {
     let coupon: Coupon = sqlx::query_as(
-        r#"SELECT id, code, type, value, max_uses, current_uses,
+        r"SELECT id, code, type, value, max_uses, current_uses,
                   expiry_date, applicable_products, min_purchase_amount,
                   is_active, created_at, updated_at
-           FROM coupons WHERE id = $1"#,
+           FROM coupons WHERE id = $1",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)

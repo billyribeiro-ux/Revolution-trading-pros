@@ -95,7 +95,7 @@ pub(super) async fn handle_checkout_completed(
             };
 
         sqlx::query(
-            r#"UPDATE orders SET
+            r"UPDATE orders SET
                 status = 'completed',
                 payment_provider = 'stripe',
                 payment_intent_id = $1,
@@ -105,7 +105,7 @@ pub(super) async fn handle_checkout_completed(
                 coupon_code = COALESCE($6, coupon_code),
                 completed_at = NOW(),
                 updated_at = NOW()
-            WHERE id = $2"#,
+            WHERE id = $2",
         )
         .bind(&session.payment_intent)
         .bind(order_id)
@@ -190,7 +190,7 @@ pub(super) async fn handle_checkout_completed(
                         // retries — NOT log-and-continue (which previously left
                         // a charged customer with no membership).
                         sqlx::query(
-                            r#"INSERT INTO user_memberships (
+                            r"INSERT INTO user_memberships (
                                 user_id, plan_id, starts_at, status,
                                 payment_provider, stripe_subscription_id, stripe_customer_id,
                                 current_period_start, current_period_end,
@@ -200,7 +200,7 @@ pub(super) async fn handle_checkout_completed(
                                 status = 'active',
                                 current_period_start = EXCLUDED.current_period_start,
                                 current_period_end = EXCLUDED.current_period_end,
-                                updated_at = NOW()"#,
+                                updated_at = NOW()",
                         )
                         .bind(user_id)
                         .bind(plan_id)
@@ -314,11 +314,11 @@ pub(super) async fn handle_checkout_completed(
                         // with the ownership row or the whole tx rolls back and
                         // Stripe retries.
                         sqlx::query(
-                            r#"INSERT INTO user_products (user_id, product_id, purchased_at, order_id)
+                            r"INSERT INTO user_products (user_id, product_id, purchased_at, order_id)
                                VALUES ($1, $2, NOW(), $3)
                                ON CONFLICT (user_id, product_id) DO UPDATE SET
                                    purchased_at = COALESCE(user_products.purchased_at, NOW()),
-                                   order_id = COALESCE(user_products.order_id, $3)"#
+                                   order_id = COALESCE(user_products.order_id, $3)"
                         )
                         .bind(user_id)
                         .bind(product_id)
@@ -349,10 +349,10 @@ pub(super) async fn handle_checkout_completed(
                             // P0-4: course access is part of the atomic
                             // provision; propagate on failure.
                             sqlx::query(
-                                r#"INSERT INTO user_course_enrollments (user_id, course_id, is_active, enrolled_at)
+                                r"INSERT INTO user_course_enrollments (user_id, course_id, is_active, enrolled_at)
                                    VALUES ($1, $2, true, NOW())
                                    ON CONFLICT (user_id, course_id) DO UPDATE SET
-                                       is_active = true"#
+                                       is_active = true"
                             )
                             .bind(user_id)
                             .bind(course_id)
@@ -383,11 +383,11 @@ pub(super) async fn handle_checkout_completed(
                             // P0-4: indicator access is part of the atomic
                             // provision; propagate on failure.
                             sqlx::query(
-                                r#"INSERT INTO user_indicator_access (user_id, indicator_id, is_active, granted_at)
+                                r"INSERT INTO user_indicator_access (user_id, indicator_id, is_active, granted_at)
                                    VALUES ($1, $2, true, NOW())
                                    ON CONFLICT (user_id, indicator_id) DO UPDATE SET
                                        is_active = true,
-                                       granted_at = COALESCE(user_indicator_access.granted_at, NOW())"#
+                                       granted_at = COALESCE(user_indicator_access.granted_at, NOW())"
                             )
                             .bind(user_id)
                             .bind(indicator_id)
@@ -422,10 +422,10 @@ pub(super) async fn handle_checkout_completed(
                             // propagates (rollback + Stripe retry). A genuine
                             // no-match still yields None and is skipped.
                             let indicator_id: Option<i64> = sqlx::query_scalar(
-                                r#"SELECT i.id FROM indicators i
+                                r"SELECT i.id FROM indicators i
                                    JOIN products p ON LOWER(p.name) LIKE CONCAT('%', LOWER(i.name), '%')
                                    WHERE p.id = $1
-                                   LIMIT 1"#
+                                   LIMIT 1"
                             )
                             .bind(product_id)
                             .fetch_optional(&mut **tx)
@@ -442,11 +442,11 @@ pub(super) async fn handle_checkout_completed(
                                 // P0-4: by-type indicator access is part of the
                                 // atomic provision; propagate on failure.
                                 sqlx::query(
-                                    r#"INSERT INTO user_indicator_access (user_id, indicator_id, is_active, granted_at)
+                                    r"INSERT INTO user_indicator_access (user_id, indicator_id, is_active, granted_at)
                                        VALUES ($1, $2, true, NOW())
                                        ON CONFLICT (user_id, indicator_id) DO UPDATE SET
                                            is_active = true,
-                                           granted_at = COALESCE(user_indicator_access.granted_at, NOW())"#
+                                           granted_at = COALESCE(user_indicator_access.granted_at, NOW())"
                                 )
                                 .bind(user_id)
                                 .bind(ind_id)
@@ -523,11 +523,11 @@ pub(super) async fn handle_checkout_completed(
                         current_period_end: Option<chrono::NaiveDateTime>,
                     }
                     let plan_info: Option<PlanInfo> = sqlx::query_as(
-                        r#"SELECT mp.name AS plan_name, um.current_period_end
+                        r"SELECT mp.name AS plan_name, um.current_period_end
                            FROM user_memberships um
                            JOIN membership_plans mp ON mp.id = um.plan_id
                            WHERE um.stripe_subscription_id = $1
-                           ORDER BY um.id DESC LIMIT 1"#,
+                           ORDER BY um.id DESC LIMIT 1",
                     )
                     .bind(session.subscription.as_deref().unwrap_or(""))
                     .fetch_optional(&mut **tx)

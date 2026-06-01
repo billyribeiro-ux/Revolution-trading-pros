@@ -172,7 +172,7 @@ impl EmailService {
         //    the new spec columns (`to_email`, `template_alias`,
         //    `model`, `queued_at`) are written from the same values.
         let log_id: i64 = match sqlx::query_scalar(
-            r#"INSERT INTO email_logs (
+            r"INSERT INTO email_logs (
                 email, to_email,
                 subject,
                 template_type, template_alias,
@@ -180,10 +180,10 @@ impl EmailService {
                 status, provider,
                 queued_at, created_at
                ) VALUES ($1, $1, $2, $3, $3, $4, 'queued', 'postmark', NOW(), NOW())
-               RETURNING id"#,
+               RETURNING id",
         )
         .bind(to)
-        .bind(format!("[template:{}]", template_alias)) // legacy `subject` NOT NULL
+        .bind(format!("[template:{template_alias}]")) // legacy `subject` NOT NULL
         .bind(template_alias)
         .bind(&model)
         .fetch_one(pool)
@@ -198,7 +198,7 @@ impl EmailService {
                     template = %template_alias,
                     "Failed to write email_logs row; aborting send"
                 );
-                return Err(anyhow::anyhow!("email_logs insert failed: {}", e));
+                return Err(anyhow::anyhow!("email_logs insert failed: {e}"));
             }
         };
 
@@ -252,9 +252,9 @@ impl EmailService {
                     message: None,
                 });
                 let _ = sqlx::query(
-                    r#"UPDATE email_logs
+                    r"UPDATE email_logs
                        SET status = 'sent', sent_at = NOW(), provider_message_id = $1
-                       WHERE id = $2"#,
+                       WHERE id = $2",
                 )
                 .bind(parsed.message_id.as_deref())
                 .bind(log_id)
@@ -276,11 +276,11 @@ impl EmailService {
                     .text()
                     .await
                     .unwrap_or_else(|_| "<no response body>".to_string());
-                let err_msg = format!("Postmark HTTP {}: {}", status, body);
+                let err_msg = format!("Postmark HTTP {status}: {body}");
                 let _ = sqlx::query(
-                    r#"UPDATE email_logs
+                    r"UPDATE email_logs
                        SET status = 'failed', error = $1, error_message = $1
-                       WHERE id = $2"#,
+                       WHERE id = $2",
                 )
                 .bind(&err_msg)
                 .bind(log_id)
@@ -297,11 +297,11 @@ impl EmailService {
                 Err(anyhow::anyhow!(err_msg))
             }
             Err(e) => {
-                let err_msg = format!("Postmark transport error: {}", e);
+                let err_msg = format!("Postmark transport error: {e}");
                 let _ = sqlx::query(
-                    r#"UPDATE email_logs
+                    r"UPDATE email_logs
                        SET status = 'failed', error = $1, error_message = $1
-                       WHERE id = $2"#,
+                       WHERE id = $2",
                 )
                 .bind(&err_msg)
                 .bind(log_id)
@@ -374,7 +374,7 @@ impl EmailService {
                 .await
                 .unwrap_or_else(|_| "Unknown error".to_string());
             tracing::error!("Postmark API error: {}", error_text);
-            return Err(anyhow::anyhow!("Failed to send email: {}", error_text));
+            return Err(anyhow::anyhow!("Failed to send email: {error_text}"));
         }
 
         tracing::info!("Email sent successfully to {}", to);
@@ -427,13 +427,12 @@ impl EmailService {
         );
 
         let text = format!(
-            "Hi {},\n\n\
+            "Hi {name},\n\n\
             Thank you for registering with Revolution Trading Pros!\n\n\
-            Please verify your email by visiting this link:\n{}\n\n\
+            Please verify your email by visiting this link:\n{verification_url}\n\n\
             This link will expire in 24 hours.\n\n\
             If you didn't create an account, you can safely ignore this email.\n\n\
-            - The Revolution Trading Pros Team",
-            name, verification_url
+            - The Revolution Trading Pros Team"
         );
 
         self.send(to, subject, &html, Some(&text)).await
@@ -486,7 +485,7 @@ impl EmailService {
         );
 
         let text = format!(
-            "Hi {},\n\n\
+            "Hi {name},\n\n\
             Your email has been verified and your account is now fully activated!\n\n\
             Welcome to the Revolution Trading Pros community.\n\n\
             Get started:\n\
@@ -494,9 +493,8 @@ impl EmailService {
             - Explore professional trading courses\n\
             - Set up real-time trading alerts\n\
             - Join our Discord community\n\n\
-            Visit your dashboard: {}\n\n\
-            - The Revolution Trading Pros Team",
-            name, dashboard_url
+            Visit your dashboard: {dashboard_url}\n\n\
+            - The Revolution Trading Pros Team"
         );
 
         self.send(to, subject, &html, Some(&text)).await
@@ -557,13 +555,12 @@ impl EmailService {
         );
 
         let text = format!(
-            "Hi {},\n\n\
+            "Hi {name},\n\n\
             We received a request to reset your password.\n\n\
-            Click this link to reset your password:\n{}\n\n\
+            Click this link to reset your password:\n{reset_url}\n\n\
             This link will expire in 1 hour.\n\n\
             If you didn't request this, please ignore this email.\n\n\
-            - The Revolution Trading Pros Team",
-            name, reset_url
+            - The Revolution Trading Pros Team"
         );
 
         self.send(to, subject, &html, Some(&text)).await
@@ -632,18 +629,17 @@ impl EmailService {
         );
 
         let text = format!(
-            "Hi {},\n\n\
-            We were unable to process the payment for your {} subscription.\n\n\
+            "Hi {name},\n\n\
+            We were unable to process the payment for your {subscription_name} subscription.\n\n\
             What this means: Your subscription access may be limited until we can successfully process your payment.\n\n\
             Common reasons for payment failure:\n\
             - Insufficient funds\n\
             - Card expired or cancelled\n\
             - Incorrect billing information\n\
             - Card issuer declined the transaction\n\n\
-            Please update your payment method: {}\n\n\
+            Please update your payment method: {billing_url}\n\n\
             Need help? Contact support@revolutiontradingpros.com\n\n\
-            - The Revolution Trading Pros Team",
-            name, subscription_name, billing_url
+            - The Revolution Trading Pros Team"
         );
 
         self.send(to, subject, &html, Some(&text)).await
@@ -665,7 +661,7 @@ impl EmailService {
         has_trial: bool,
         trial_days: i32,
     ) -> Result<()> {
-        let subject = format!("Subscription Confirmed - {}", plan_name);
+        let subject = format!("Subscription Confirmed - {plan_name}");
         let dashboard_url = format!("{}/my/subscriptions", self.app_url);
 
         let trial_notice = if has_trial {
@@ -673,11 +669,10 @@ impl EmailService {
                 r#"<div style="background: #dbeafe; border-left: 4px solid #3b82f6;
                             padding: 16px; margin: 24px 0; border-radius: 0 8px 8px 0;">
                     <p style="color: #1e40af; margin: 0; font-size: 14px;">
-                        <strong>Trial Period:</strong> You have a {}-day free trial.
+                        <strong>Trial Period:</strong> You have a {trial_days}-day free trial.
                         Your card won't be charged until the trial ends.
                     </p>
-                </div>"#,
-                trial_days
+                </div>"#
             )
         } else {
             String::new()
@@ -734,7 +729,7 @@ impl EmailService {
         let text = format!(
             "Hi {},\n\nYour subscription to {} has been confirmed!\n\nPlan: {}\nPrice: ${:.2}/{}\n\n{}\nManage: {}\n\n- The Revolution Trading Pros Team",
             name, plan_name, plan_name, price, billing_cycle,
-            if has_trial { format!("You have a {}-day free trial.", trial_days) } else { String::new() },
+            if has_trial { format!("You have a {trial_days}-day free trial.") } else { String::new() },
             dashboard_url
         );
 
@@ -788,7 +783,7 @@ impl EmailService {
                 html_escape(plan_name),
                 message,
                 if !cancel_immediately {
-                    format!("<br><strong>Access until:</strong> {}", end_date)
+                    format!("<br><strong>Access until:</strong> {end_date}")
                 } else {
                     String::new()
                 },
@@ -797,8 +792,7 @@ impl EmailService {
         );
 
         let text = format!(
-            "Hi {},\n\nYour {} subscription has been cancelled.\n\n{}\n\n- The Revolution Trading Pros Team",
-            name, plan_name, message
+            "Hi {name},\n\nYour {plan_name} subscription has been cancelled.\n\n{message}\n\n- The Revolution Trading Pros Team"
         );
 
         self.send(to, subject, &html, Some(&text)).await
@@ -865,8 +859,7 @@ impl EmailService {
         );
 
         let text = format!(
-            "Hi {},\n\nPayment of ${:.2} for {} failed.\n\n{}\nGrace period ends: {}\n\nUpdate payment: {}\n\n- The Revolution Trading Pros Team",
-            name, amount, plan_name, urgency, grace_period_end, update_url
+            "Hi {name},\n\nPayment of ${amount:.2} for {plan_name} failed.\n\n{urgency}\nGrace period ends: {grace_period_end}\n\nUpdate payment: {update_url}\n\n- The Revolution Trading Pros Team"
         );
 
         self.send(to, subject, &html, Some(&text)).await
@@ -883,7 +876,7 @@ impl EmailService {
         renewal_date: &str,
     ) -> Result<()> {
         let amount = amount_cents as f64 / 100.0; // display only
-        let subject = format!("Subscription Renewal Reminder - {}", plan_name);
+        let subject = format!("Subscription Renewal Reminder - {plan_name}");
         let manage_url = format!("{}/my/subscriptions", self.app_url);
 
         let html = Self::email_template(
@@ -920,8 +913,7 @@ impl EmailService {
         );
 
         let text = format!(
-            "Hi {},\n\nYour {} subscription will renew on {} for ${:.2}.\n\nManage: {}\n\n- The Revolution Trading Pros Team",
-            name, plan_name, renewal_date, amount, manage_url
+            "Hi {name},\n\nYour {plan_name} subscription will renew on {renewal_date} for ${amount:.2}.\n\nManage: {manage_url}\n\n- The Revolution Trading Pros Team"
         );
 
         self.send(to, &subject, &html, Some(&text)).await
@@ -976,8 +968,7 @@ impl EmailService {
         );
 
         let text = format!(
-            "Hi {},\n\nYour trial for {} ends on {}. You'll be charged ${:.2}/{}.\n\nManage: {}\n\n- The Revolution Trading Pros Team",
-            name, plan_name, trial_end_date, price, billing_cycle, manage_url
+            "Hi {name},\n\nYour trial for {plan_name} ends on {trial_end_date}. You'll be charged ${price:.2}/{billing_cycle}.\n\nManage: {manage_url}\n\n- The Revolution Trading Pros Team"
         );
 
         self.send(to, subject, &html, Some(&text)).await
@@ -993,7 +984,7 @@ impl EmailService {
         new_price: f64,
         billing_cycle: &str,
     ) -> Result<()> {
-        let subject = format!("Subscription Upgraded to {}", new_plan);
+        let subject = format!("Subscription Upgraded to {new_plan}");
         let manage_url = format!("{}/my/subscriptions", self.app_url);
 
         let html = Self::email_template(
@@ -1034,8 +1025,7 @@ impl EmailService {
         );
 
         let text = format!(
-            "Hi {},\n\nUpgraded from {} to {}. New price: ${:.2}/{}\n\nView: {}\n\n- The Revolution Trading Pros Team",
-            name, old_plan, new_plan, new_price, billing_cycle, manage_url
+            "Hi {name},\n\nUpgraded from {old_plan} to {new_plan}. New price: ${new_price:.2}/{billing_cycle}\n\nView: {manage_url}\n\n- The Revolution Trading Pros Team"
         );
 
         self.send(to, &subject, &html, Some(&text)).await
@@ -1114,7 +1104,7 @@ impl EmailService {
             if name.is_empty() {
                 String::new()
             } else {
-                format!(" {}", name)
+                format!(" {name}")
             },
             confirm_url
         );
@@ -1175,7 +1165,7 @@ impl EmailService {
             if name.is_empty() {
                 String::new()
             } else {
-                format!(" {}", name)
+                format!(" {name}")
             },
             "View this email in your browser for the full content.",
             unsubscribe_url
@@ -1186,7 +1176,7 @@ impl EmailService {
 
     /// Send order confirmation email
     pub async fn send_order_confirmation(&self, to: &str, order_number: &str) -> Result<()> {
-        let subject = format!("Order Confirmed - #{}", order_number);
+        let subject = format!("Order Confirmed - #{order_number}");
         let orders_url = format!("{}/dashboard/account/orders", self.app_url);
 
         let html = Self::email_template(
@@ -1197,7 +1187,7 @@ impl EmailService {
                     <div style="font-size: 64px;">✅</div>
                 </div>
                 <p style="font-size: 16px; color: #374151; margin-bottom: 20px; text-align: center;">
-                    Thank you for your purchase! Your order <strong>#{}</strong> has been confirmed.
+                    Thank you for your purchase! Your order <strong>#{order_number}</strong> has been confirmed.
                 </p>
                 <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 12px;
                             padding: 20px; margin: 24px 0; text-align: center;">
@@ -1206,7 +1196,7 @@ impl EmailService {
                     </p>
                 </div>
                 <div style="text-align: center; margin: 32px 0;">
-                    <a href="{}"
+                    <a href="{orders_url}"
                        style="display: inline-block; background: linear-gradient(135deg, #10b981, #059669);
                               color: white; text-decoration: none; padding: 16px 32px;
                               border-radius: 12px; font-weight: 700; font-size: 16px;
@@ -1217,18 +1207,16 @@ impl EmailService {
                 <p style="font-size: 14px; color: #6b7280; margin-top: 24px; text-align: center;">
                     If you have any questions about your order, please contact our support team.
                 </p>
-                "#,
-                order_number, orders_url
+                "#
             ),
         );
 
         let text = format!(
             "Order Confirmed!\n\n\
-            Thank you for your purchase! Your order #{} has been confirmed.\n\n\
+            Thank you for your purchase! Your order #{order_number} has been confirmed.\n\n\
             Your order is now being processed. You will receive access to your purchases shortly.\n\n\
-            View your orders: {}\n\n\
-            - The Revolution Trading Pros Team",
-            order_number, orders_url
+            View your orders: {orders_url}\n\n\
+            - The Revolution Trading Pros Team"
         );
 
         self.send(to, &subject, &html, Some(&text)).await
@@ -1242,7 +1230,7 @@ impl EmailService {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{}</title>
+    <title>{title}</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
     <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
@@ -1260,9 +1248,9 @@ impl EmailService {
         <div style="background: white; border-radius: 24px; padding: 40px; 
                     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 10px 15px rgba(0, 0, 0, 0.1);">
             <h2 style="color: #111827; font-size: 28px; margin: 0 0 24px 0; font-weight: 700;">
-                {}
+                {title}
             </h2>
-            {}
+            {content}
         </div>
         
         <!-- Footer -->
@@ -1276,8 +1264,7 @@ impl EmailService {
         </div>
     </div>
 </body>
-</html>"#,
-            title, title, content
+</html>"#
         )
     }
 }

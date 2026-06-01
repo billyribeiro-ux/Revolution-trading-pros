@@ -43,11 +43,11 @@ pub(super) async fn create_section(
     });
 
     let section: CourseSection = sqlx::query_as(
-        r#"INSERT INTO course_sections
+        r"INSERT INTO course_sections
            (course_id, title, description, sort_order, section_type, unlock_type,
             unlock_after_section_id, unlock_date, is_published)
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-           RETURNING *"#,
+           RETURNING *",
     )
     .bind(course_id)
     .bind(&input.title)
@@ -99,7 +99,7 @@ pub(super) async fn update_section(
 
     // ICT 7+ SECURITY FIX: Parameterized query
     sqlx::query(
-        r#"UPDATE course_sections SET
+        r"UPDATE course_sections SET
             title = COALESCE($3, title),
             description = COALESCE($4, description),
             section_type = COALESCE($5, section_type),
@@ -108,7 +108,7 @@ pub(super) async fn update_section(
             unlock_date = COALESCE($8, unlock_date),
             is_published = COALESCE($9, is_published),
             updated_at = NOW()
-        WHERE id = $1 AND course_id = $2"#,
+        WHERE id = $1 AND course_id = $2",
     )
     .bind(section_id)
     .bind(course_id)

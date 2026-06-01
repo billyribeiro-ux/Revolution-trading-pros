@@ -60,12 +60,12 @@ pub(super) async fn export_entries_csv(
 
     // Fetch all entries
     let entries: Vec<CsvEntryRow> = sqlx::query_as(
-        r#"
+        r"
         SELECT name, value, dimension
         FROM cms_datasource_entries
         WHERE datasource_id = $1
         ORDER BY dimension, sort_order, name
-        "#,
+        ",
     )
     .bind(datasource_id)
     .fetch_all(&state.db.pool)
@@ -91,7 +91,7 @@ pub(super) async fn export_entries_csv(
             (axum::http::header::CONTENT_TYPE, "text/csv".to_string()),
             (
                 axum::http::header::CONTENT_DISPOSITION,
-                format!("attachment; filename=\"{}\"", filename),
+                format!("attachment; filename=\"{filename}\""),
             ),
         ],
         csv_content,
@@ -138,21 +138,17 @@ pub(super) async fn import_entries_csv(
 
     // Get the file from multipart
     let mut csv_content = String::new();
-    while let Some(field) = multipart.next_field().await.map_err(|e| {
-        ApiError::new(
-            StatusCode::BAD_REQUEST,
-            format!("Failed to read file: {}", e),
-        )
-    })? {
+    while let Some(field) = multipart
+        .next_field()
+        .await
+        .map_err(|e| ApiError::new(StatusCode::BAD_REQUEST, format!("Failed to read file: {e}")))?
+    {
         if field.name() == Some("file") {
             let bytes = field.bytes().await.map_err(|e| {
-                ApiError::new(
-                    StatusCode::BAD_REQUEST,
-                    format!("Failed to read file: {}", e),
-                )
+                ApiError::new(StatusCode::BAD_REQUEST, format!("Failed to read file: {e}"))
             })?;
             csv_content = String::from_utf8(bytes.to_vec()).map_err(|e| {
-                ApiError::new(StatusCode::BAD_REQUEST, format!("Invalid UTF-8: {}", e))
+                ApiError::new(StatusCode::BAD_REQUEST, format!("Invalid UTF-8: {e}"))
             })?;
         }
     }
@@ -194,11 +190,11 @@ pub(super) async fn import_entries_csv(
                 }
 
                 let result = sqlx::query(
-                    r#"
+                    r"
                     INSERT INTO cms_datasource_entries (id, datasource_id, name, value, dimension, sort_order)
                     VALUES ($1, $2, $3, $4, $5, $6)
                     ON CONFLICT (datasource_id, value, dimension) DO UPDATE SET name = EXCLUDED.name
-                    "#,
+                    ",
                 )
                 .bind(Uuid::new_v4())
                 .bind(datasource_id)

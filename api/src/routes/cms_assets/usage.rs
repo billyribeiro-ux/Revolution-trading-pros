@@ -23,7 +23,7 @@ pub(super) async fn get_asset_usage(
     Path(id): Path<Uuid>,
 ) -> Result<Json<Vec<AssetUsage>>, ApiError> {
     let usage: Vec<AssetUsage> = sqlx::query_as(
-        r#"
+        r"
         SELECT u.id, u.asset_id, u.content_type, u.content_id,
                c.title as content_title, c.slug as content_slug,
                u.field_name, u.created_at
@@ -31,7 +31,7 @@ pub(super) async fn get_asset_usage(
         LEFT JOIN cms_content c ON c.id = u.content_id
         WHERE u.asset_id = $1
         ORDER BY u.created_at DESC
-        "#,
+        ",
     )
     .bind(id)
     .fetch_all(state.db.pool())
@@ -65,11 +65,11 @@ pub(super) async fn track_usage(
     if let Some(content_id) = content_id {
         // Upsert usage record
         sqlx::query(
-            r#"
+            r"
             INSERT INTO cms_asset_usage (id, asset_id, content_type, content_id, field_name, created_at)
             VALUES ($1, $2, $3, $4, $5, NOW())
             ON CONFLICT (asset_id, content_id, field_name) DO UPDATE SET created_at = NOW()
-            "#,
+            ",
         )
         .bind(Uuid::new_v4())
         .bind(id)

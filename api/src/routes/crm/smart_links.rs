@@ -49,17 +49,17 @@ async fn list_smart_links(
     Query(filters): Query<ListFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let per_page = filters.per_page.unwrap_or(50).min(100);
-    let search_pattern = filters.search.as_ref().map(|s| format!("%{}%", s));
+    let search_pattern = filters.search.as_ref().map(|s| format!("%{s}%"));
 
     let links: Vec<SmartLink> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, title, short, target_url, is_active, click_count, unique_clicks,
                actions, created_at, updated_at
         FROM crm_smart_links
         WHERE ($1::text IS NULL OR title ILIKE $1)
         ORDER BY created_at DESC
         LIMIT $2
-        "#,
+        ",
     )
     .bind(search_pattern.as_deref())
     .bind(per_page)
@@ -87,11 +87,11 @@ async fn create_smart_link(
     let short = uuid::Uuid::new_v4().to_string()[..8].to_string();
 
     let link: SmartLink = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO crm_smart_links (title, short, target_url, is_active, click_count, unique_clicks, actions, created_at, updated_at)
         VALUES ($1, $2, $3, true, 0, 0, $4, NOW(), NOW())
         RETURNING id, title, short, target_url, is_active, click_count, unique_clicks, actions, created_at, updated_at
-        "#,
+        ",
     )
     .bind(&input.title)
     .bind(&short)

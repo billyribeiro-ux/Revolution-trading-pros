@@ -13,7 +13,7 @@ use crate::middleware::admin::AdminUser;
 use crate::models::video::{
     get_all_tags, get_content_types, get_difficulty_levels, get_platforms, BulkAssignRequest,
     BulkDeleteRequest, BulkPublishRequest, CreateVideoRequest, PaginationMeta, RoomInfo,
-    UpdateVideoRequest, VideoListQuery, VideoStats, VideoStatsResponse, VideoTypeStats,
+    TraderInfo, UpdateVideoRequest, VideoListQuery, VideoStats, VideoStatsResponse, VideoTypeStats,
 };
 use crate::AppState;
 
@@ -35,25 +35,24 @@ pub(super) async fn list_videos(
     let mut param_idx = 1usize;
 
     if query.content_type.is_some() {
-        conditions.push(format!("content_type = ${}", param_idx));
+        conditions.push(format!("content_type = ${param_idx}"));
         param_idx += 1;
     }
     if query.is_published.is_some() {
-        conditions.push(format!("is_published = ${}", param_idx));
+        conditions.push(format!("is_published = ${param_idx}"));
         param_idx += 1;
     }
     if query.is_featured.is_some() {
-        conditions.push(format!("is_featured = ${}", param_idx));
+        conditions.push(format!("is_featured = ${param_idx}"));
         param_idx += 1;
     }
     if query.trader_id.is_some() {
-        conditions.push(format!("trader_id = ${}", param_idx));
+        conditions.push(format!("trader_id = ${param_idx}"));
         param_idx += 1;
     }
     if query.search.is_some() {
         conditions.push(format!(
-            "(title ILIKE ${} OR description ILIKE ${})",
-            param_idx, param_idx
+            "(title ILIKE ${param_idx} OR description ILIKE ${param_idx})"
         ));
         param_idx += 1;
     }
@@ -64,7 +63,7 @@ pub(super) async fn list_videos(
         .map(|t| t.split(',').map(|s| s.trim().to_string()).collect())
         .unwrap_or_default();
     for _ in &tag_list {
-        conditions.push(format!("tags @> ${}", param_idx));
+        conditions.push(format!("tags @> ${param_idx}"));
         param_idx += 1;
     }
 
@@ -98,10 +97,8 @@ pub(super) async fn list_videos(
         "SELECT * FROM unified_videos WHERE deleted_at IS NULL{} ORDER BY {} {} LIMIT ${} OFFSET ${}",
         where_clause, sort_by, sort_dir, param_idx, param_idx + 1
     );
-    let count_sql = format!(
-        "SELECT COUNT(*) FROM unified_videos WHERE deleted_at IS NULL{}",
-        where_clause
-    );
+    let count_sql =
+        format!("SELECT COUNT(*) FROM unified_videos WHERE deleted_at IS NULL{where_clause}");
 
     // Bind parameters for the main query
     let mut q = sqlx::query_as::<_, UnifiedVideoRow>(&sql);
@@ -118,7 +115,7 @@ pub(super) async fn list_videos(
         q = q.bind(trader_id);
     }
     if let Some(ref search) = query.search {
-        let search_pattern = format!("%{}%", search);
+        let search_pattern = format!("%{search}%");
         q = q.bind(search_pattern);
     }
     for tag in &tag_list {
@@ -150,7 +147,7 @@ pub(super) async fn list_videos(
         cq = cq.bind(trader_id);
     }
     if let Some(ref search) = query.search {
-        let search_pattern = format!("%{}%", search);
+        let search_pattern = format!("%{search}%");
         cq = cq.bind(search_pattern);
     }
     for tag in &tag_list {
@@ -163,8 +160,25 @@ pub(super) async fn list_videos(
     // Fetch related data for each video
     let mut responses = Vec::new();
     for video in videos {
-        let trader = None; // TODO: Fetch trader if trader_id exists
-        let rooms: Vec<RoomInfo> = vec![]; // TODO: Fetch room assignments
+        let trader: Option<TraderInfo> = if let Some(tid) = video.trader_id {
+            sqlx::query_as("SELECT id, name, slug FROM traders WHERE id = $1")
+                .bind(tid)
+                .fetch_optional(&state.db.pool)
+                .await
+                .unwrap_or(None)
+        } else {
+            None
+        };
+        let rooms: Vec<RoomInfo> = sqlx::query_as(
+            r"SELECT tr.id, tr.name, tr.slug
+               FROM trading_rooms tr
+               JOIN video_room_assignments vra ON vra.trading_room_id = tr.id
+               WHERE vra.video_id = $1",
+        )
+        .bind(video.id)
+        .fetch_all(&state.db.pool)
+        .await
+        .unwrap_or_default();
         responses.push(video_to_response(video, trader, rooms));
     }
 
@@ -206,8 +220,25 @@ pub(super) async fn get_video(
                 )
             })?;
 
-    let trader = None; // TODO: Fetch trader
-    let rooms: Vec<RoomInfo> = vec![]; // TODO: Fetch rooms
+    let trader: Option<TraderInfo> = if let Some(tid) = video.trader_id {
+        sqlx::query_as("SELECT id, name, slug FROM traders WHERE id = $1")
+            .bind(tid)
+            .fetch_optional(&state.db.pool)
+            .await
+            .unwrap_or(None)
+    } else {
+        None
+    };
+    let rooms: Vec<RoomInfo> = sqlx::query_as(
+        r"SELECT tr.id, tr.name, tr.slug
+           FROM trading_rooms tr
+           JOIN video_room_assignments vra ON vra.trading_room_id = tr.id
+           WHERE vra.video_id = $1",
+    )
+    .bind(video.id)
+    .fetch_all(&state.db.pool)
+    .await
+    .unwrap_or_default();
 
     Ok(Json(json!({
         "success": true,
@@ -256,13 +287,13 @@ pub(super) async fn create_video(
         .unwrap_or(json!([]));
 
     let video: UnifiedVideoRow = sqlx::query_as(
-        r#"INSERT INTO unified_videos (
+        r"INSERT INTO unified_videos (
             title, slug, description, video_url, video_platform, content_type,
             video_date, trader_id, is_published, is_featured, tags,
             thumbnail_url, difficulty_level, category, session_type, duration
         )
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
-        RETURNING *"#,
+        RETURNING *",
     )
     .bind(&input.title)
     .bind(&slug)
@@ -320,31 +351,31 @@ pub(super) async fn update_video(
     let mut bind_count = 1;
 
     if input.title.is_some() {
-        updates.push(format!("title = ${}", bind_count));
+        updates.push(format!("title = ${bind_count}"));
         bind_count += 1;
     }
     if input.description.is_some() {
-        updates.push(format!("description = ${}", bind_count));
+        updates.push(format!("description = ${bind_count}"));
         bind_count += 1;
     }
     if input.video_url.is_some() {
-        updates.push(format!("video_url = ${}", bind_count));
+        updates.push(format!("video_url = ${bind_count}"));
         bind_count += 1;
     }
     if input.thumbnail_url.is_some() {
-        updates.push(format!("thumbnail_url = ${}", bind_count));
+        updates.push(format!("thumbnail_url = ${bind_count}"));
         bind_count += 1;
     }
     if input.is_published.is_some() {
-        updates.push(format!("is_published = ${}", bind_count));
+        updates.push(format!("is_published = ${bind_count}"));
         bind_count += 1;
     }
     if input.is_featured.is_some() {
-        updates.push(format!("is_featured = ${}", bind_count));
+        updates.push(format!("is_featured = ${bind_count}"));
         bind_count += 1;
     }
     if input.tags.is_some() {
-        updates.push(format!("tags = ${}", bind_count));
+        updates.push(format!("tags = ${bind_count}"));
         bind_count += 1;
     }
 
@@ -484,8 +515,26 @@ pub(super) async fn get_stats(
                 room_archive: room_archive.0,
             },
             total_views: total_views.0,
-            this_week: 0,  // TODO: Calculate
-            this_month: 0, // TODO: Calculate
+            this_week: {
+                let r: (i64,) = sqlx::query_as(
+                    "SELECT COUNT(*) FROM unified_videos WHERE deleted_at IS NULL \
+                     AND created_at >= date_trunc('week', NOW())",
+                )
+                .fetch_one(&state.db.pool)
+                .await
+                .unwrap_or((0,));
+                r.0
+            },
+            this_month: {
+                let r: (i64,) = sqlx::query_as(
+                    "SELECT COUNT(*) FROM unified_videos WHERE deleted_at IS NULL \
+                     AND created_at >= date_trunc('month', NOW())",
+                )
+                .fetch_one(&state.db.pool)
+                .await
+                .unwrap_or((0,));
+                r.0
+            },
         },
     }))
 }
@@ -493,7 +542,7 @@ pub(super) async fn get_stats(
 /// Get video options (tags, platforms, content types, etc.)
 pub(super) async fn get_options(
     _admin: AdminUser,
-    State(_state): State<AppState>,
+    State(state): State<AppState>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     Ok(Json(json!({
         "success": true,
@@ -502,8 +551,18 @@ pub(super) async fn get_options(
             "platforms": get_platforms(),
             "difficulty_levels": get_difficulty_levels(),
             "tags": get_all_tags(),
-            "trading_rooms": [], // TODO: Fetch from database
-            "traders": [] // TODO: Fetch from database
+            "trading_rooms": sqlx::query_as::<_, RoomInfo>(
+                "SELECT id, name, slug FROM trading_rooms WHERE is_active = true ORDER BY name"
+            )
+            .fetch_all(&state.db.pool)
+            .await
+            .unwrap_or_default(),
+            "traders": sqlx::query_as::<_, TraderInfo>(
+                "SELECT id, name, slug FROM traders ORDER BY name"
+            )
+            .fetch_all(&state.db.pool)
+            .await
+            .unwrap_or_default()
         }
     })))
 }

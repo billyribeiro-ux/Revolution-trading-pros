@@ -84,10 +84,10 @@ pub(super) async fn forgot_password(
         // — pre-existing latent bug surfaced during Batch 6 verification
         // scenario E. Let the sequence default handle the id.
         sqlx::query(
-            r#"
+            r"
             INSERT INTO password_resets (email, token, expires_at, created_at)
             VALUES ($1, $2, NOW() + INTERVAL '1 hour', NOW())
-            "#,
+            ",
         )
         .bind(&user.email)
         .bind(&hashed_token)
@@ -191,10 +191,10 @@ pub(super) async fn reset_password(
     let hashed_token = hash_token(&input.token);
 
     let reset_record: Option<(uuid::Uuid, String)> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, email FROM password_resets
         WHERE token = $1 AND email = $2 AND expires_at > NOW()
-        "#,
+        ",
     )
     .bind(&hashed_token)
     .bind(&input.email)
@@ -333,8 +333,8 @@ pub(super) async fn reset_password(
         // Audit trail row in security_events. event_category/severity match
         // the schema used by H-7 role_change writes (admin.rs:332-339).
         if let Err(e) = sqlx::query(
-            r#"INSERT INTO security_events (user_id, event_type, event_category, severity, details)
-               VALUES ($1, 'password_reset', 'authentication', 'high', '{}'::jsonb)"#,
+            r"INSERT INTO security_events (user_id, event_type, event_category, severity, details)
+               VALUES ($1, 'password_reset', 'authentication', 'high', '{}'::jsonb)",
         )
         .bind(uid)
         .execute(&state.db.pool)

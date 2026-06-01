@@ -96,7 +96,7 @@ async fn get_room_analytics(
         .await
         .map_err(|e| {
             error!("Failed to get room analytics for {}: {}", slug, e);
-            ApiError::internal_error(&format!("Failed to get analytics: {}", e))
+            ApiError::internal_error(&format!("Failed to get analytics: {e}"))
         })?;
 
     Ok(Json(analytics))
@@ -123,7 +123,7 @@ async fn get_equity_curve(
         .await
         .map_err(|e| {
             error!("Failed to get equity curve for {}: {}", slug, e);
-            ApiError::internal_error(&format!("Failed to get equity curve: {}", e))
+            ApiError::internal_error(&format!("Failed to get equity curve: {e}"))
         })?;
 
     Ok(Json(json!({
@@ -160,7 +160,7 @@ async fn get_ticker_analytics(
             "Failed to get ticker analytics for {} in {}: {}",
             ticker, slug, e
         );
-        ApiError::internal_error(&format!("Failed to get ticker analytics: {}", e))
+        ApiError::internal_error(&format!("Failed to get ticker analytics: {e}"))
     })?;
 
     match analytics {
@@ -169,8 +169,7 @@ async fn get_ticker_analytics(
             "data": data
         }))),
         None => Err(ApiError::not_found(&format!(
-            "No trades found for ticker {} in room {}",
-            ticker, slug
+            "No trades found for ticker {ticker} in room {slug}"
         ))),
     }
 }
@@ -195,7 +194,7 @@ async fn get_monthly_returns(
         .await
         .map_err(|e| {
             error!("Failed to get monthly returns for {}: {}", slug, e);
-            ApiError::internal_error(&format!("Failed to get monthly returns: {}", e))
+            ApiError::internal_error(&format!("Failed to get monthly returns: {e}"))
         })?;
 
     Ok(Json(json!({
@@ -228,7 +227,7 @@ async fn get_ticker_performance(
         .await
         .map_err(|e| {
             error!("Failed to get ticker performance for {}: {}", slug, e);
-            ApiError::internal_error(&format!("Failed to get ticker performance: {}", e))
+            ApiError::internal_error(&format!("Failed to get ticker performance: {e}"))
         })?;
 
     Ok(Json(json!({
@@ -261,7 +260,7 @@ async fn get_setup_performance(
         .await
         .map_err(|e| {
             error!("Failed to get setup performance for {}: {}", slug, e);
-            ApiError::internal_error(&format!("Failed to get setup performance: {}", e))
+            ApiError::internal_error(&format!("Failed to get setup performance: {e}"))
         })?;
 
     Ok(Json(json!({

@@ -314,10 +314,9 @@ impl Config {
             const PROD_INDICATORS: &[&str] = &["revolutiontradingpros.com"];
             if PROD_INDICATORS.iter().any(|d| app_url.contains(d)) {
                 panic!(
-                    "FATAL: ENVIRONMENT=development but APP_URL ({}) looks like production. \
+                    "FATAL: ENVIRONMENT=development but APP_URL ({app_url}) looks like production. \
                      Refusing to start with placeholder credentials in production. \
-                     Set ENVIRONMENT=production or fix APP_URL.",
-                    app_url
+                     Set ENVIRONMENT=production or fix APP_URL."
                 );
             }
         }
@@ -715,9 +714,9 @@ mod tests {
             jwt_secret: "test-jwt-secret-thirty-two-chars-or-more-for-tests-only-not-a-real-secret"
                 .to_string(),
             jwt_expires_in: 1,
-            stripe_secret_key: format!("sk_live_{}", body),
-            stripe_publishable_key: format!("pk_live_{}", body),
-            stripe_webhook_secret: format!("whsec_{}", body),
+            stripe_secret_key: format!("sk_live_{body}"),
+            stripe_publishable_key: format!("pk_live_{body}"),
+            stripe_webhook_secret: format!("whsec_{body}"),
             cors_origins: vec![],
             trusted_proxy_cidrs: vec![],
             postmark_token: None,
@@ -753,9 +752,9 @@ mod tests {
         let body = "TEST".repeat(8);
         let mut cfg = live_config();
         cfg.environment = "development".to_string();
-        cfg.stripe_secret_key = format!("sk_test_{}", body);
+        cfg.stripe_secret_key = format!("sk_test_{body}");
         cfg.stripe_webhook_secret = "whsec_placeholder".to_string();
-        cfg.stripe_publishable_key = format!("pk_test_{}", body);
+        cfg.stripe_publishable_key = format!("pk_test_{body}");
         // Should not panic; dev/staging keep test-mode keys.
         cfg.validate_production_secrets();
     }
@@ -765,7 +764,7 @@ mod tests {
     fn validate_production_secrets_panics_on_test_secret() {
         let body = "TEST".repeat(8);
         let mut cfg = live_config();
-        cfg.stripe_secret_key = format!("sk_test_{}", body);
+        cfg.stripe_secret_key = format!("sk_test_{body}");
         cfg.validate_production_secrets();
     }
 
@@ -790,7 +789,7 @@ mod tests {
     fn validate_production_secrets_panics_on_bad_webhook_prefix() {
         let body = "TEST".repeat(8);
         let mut cfg = live_config();
-        cfg.stripe_webhook_secret = format!("wrong_prefix_{}", body);
+        cfg.stripe_webhook_secret = format!("wrong_prefix_{body}");
         cfg.validate_production_secrets();
     }
 
@@ -799,7 +798,7 @@ mod tests {
     fn validate_production_secrets_panics_on_test_publishable() {
         let body = "TEST".repeat(8);
         let mut cfg = live_config();
-        cfg.stripe_publishable_key = format!("pk_test_{}", body);
+        cfg.stripe_publishable_key = format!("pk_test_{body}");
         cfg.validate_production_secrets();
     }
 

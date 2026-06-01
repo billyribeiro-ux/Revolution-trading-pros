@@ -53,7 +53,7 @@ pub(super) async fn admin_get_rooms_stats(
     // Collect the canonical room-slug list from `trading_rooms` if available,
     // otherwise fall back to the hardcoded room slugs used elsewhere.
     let db_slugs: Vec<String> = sqlx::query_scalar::<_, String>(
-        r#"SELECT slug FROM trading_rooms WHERE is_active = true ORDER BY sort_order ASC"#,
+        r"SELECT slug FROM trading_rooms WHERE is_active = true ORDER BY sort_order ASC",
     )
     .fetch_all(&state.db.pool)
     .await
@@ -76,9 +76,9 @@ pub(super) async fn admin_get_rooms_stats(
 
     for slug in room_slugs {
         let watchlist_count: i64 = sqlx::query_scalar(
-            r#"SELECT COALESCE(COUNT(*), 0)::BIGINT
+            r"SELECT COALESCE(COUNT(*), 0)::BIGINT
                FROM watchlist_entries
-               WHERE room_slug = $1 AND is_active = true"#,
+               WHERE room_slug = $1 AND is_active = true",
         )
         .bind(&slug)
         .fetch_one(&state.db.pool)
@@ -92,11 +92,11 @@ pub(super) async fn admin_get_rooms_stats(
         })?;
 
         let modules_count: i64 = sqlx::query_scalar(
-            r#"SELECT COALESCE(COUNT(*), 0)::BIGINT
+            r"SELECT COALESCE(COUNT(*), 0)::BIGINT
                FROM unified_videos
                WHERE room_slug = $1
                  AND is_published = true
-                 AND deleted_at IS NULL"#,
+                 AND deleted_at IS NULL",
         )
         .bind(&slug)
         .fetch_one(&state.db.pool)
@@ -111,12 +111,12 @@ pub(super) async fn admin_get_rooms_stats(
 
         // "Articles" maps to non-video room resources (PDFs, docs, etc.).
         let articles_count: i64 = sqlx::query_scalar(
-            r#"SELECT COALESCE(COUNT(*), 0)::BIGINT
+            r"SELECT COALESCE(COUNT(*), 0)::BIGINT
                FROM room_resources
                WHERE room_slug = $1
                  AND is_published = true
                  AND deleted_at IS NULL
-                 AND resource_type <> 'video'"#,
+                 AND resource_type <> 'video'",
         )
         .bind(&slug)
         .fetch_one(&state.db.pool)

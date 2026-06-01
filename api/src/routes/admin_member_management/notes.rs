@@ -22,13 +22,13 @@ pub(super) async fn get_notes(
     let _ = &admin; // Admin authorization handled by extractor
 
     let notes: Vec<MemberNote> = sqlx::query_as(
-        r#"
+        r"
         SELECT mn.id, mn.user_id, mn.content, mn.created_by, u.name as created_by_name, mn.created_at
         FROM member_notes mn
         LEFT JOIN users u ON u.id = mn.created_by
         WHERE mn.user_id = $1
         ORDER BY mn.created_at DESC
-        "#,
+        ",
     )
     .bind(id)
     .fetch_all(&state.db.pool)
@@ -54,11 +54,11 @@ pub(super) async fn create_note(
     }
 
     let note: MemberNote = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO member_notes (user_id, content, created_by, created_at)
         VALUES ($1, $2, $3, NOW())
         RETURNING id, user_id, content, created_by, NULL::text as created_by_name, created_at
-        "#,
+        ",
     )
     .bind(id)
     .bind(&input.content)

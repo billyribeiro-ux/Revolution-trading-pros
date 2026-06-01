@@ -19,10 +19,10 @@ pub(super) async fn get_summary(
 ) -> Result<Json<PaymentSummary>, (StatusCode, Json<serde_json::Value>)> {
     // Revenue today (UTC) — integer cents.
     let revenue_today_cents: i64 = sqlx::query_scalar(
-        r#"SELECT COALESCE(SUM((total * 100)::BIGINT), 0)::BIGINT
+        r"SELECT COALESCE(SUM((total * 100)::BIGINT), 0)::BIGINT
            FROM orders
            WHERE status = 'completed'
-             AND completed_at >= DATE_TRUNC('day', NOW())"#,
+             AND completed_at >= DATE_TRUNC('day', NOW())",
     )
     .fetch_one(&state.db.pool)
     .await
@@ -36,10 +36,10 @@ pub(super) async fn get_summary(
 
     // Revenue last 7 days — integer cents.
     let revenue_week_cents: i64 = sqlx::query_scalar(
-        r#"SELECT COALESCE(SUM((total * 100)::BIGINT), 0)::BIGINT
+        r"SELECT COALESCE(SUM((total * 100)::BIGINT), 0)::BIGINT
            FROM orders
            WHERE status = 'completed'
-             AND completed_at >= NOW() - INTERVAL '7 days'"#,
+             AND completed_at >= NOW() - INTERVAL '7 days'",
     )
     .fetch_one(&state.db.pool)
     .await
@@ -53,10 +53,10 @@ pub(super) async fn get_summary(
 
     // Revenue current calendar month — integer cents.
     let revenue_month_cents: i64 = sqlx::query_scalar(
-        r#"SELECT COALESCE(SUM((total * 100)::BIGINT), 0)::BIGINT
+        r"SELECT COALESCE(SUM((total * 100)::BIGINT), 0)::BIGINT
            FROM orders
            WHERE status = 'completed'
-             AND completed_at >= DATE_TRUNC('month', NOW())"#,
+             AND completed_at >= DATE_TRUNC('month', NOW())",
     )
     .fetch_one(&state.db.pool)
     .await
@@ -71,7 +71,7 @@ pub(super) async fn get_summary(
     // MRR: sum active+trialing memberships' plan prices, normalized to monthly,
     // returned in integer cents.
     let mrr_cents: i64 = sqlx::query_scalar(
-        r#"SELECT COALESCE(SUM(
+        r"SELECT COALESCE(SUM(
                 CASE LOWER(mp.billing_cycle)
                     WHEN 'monthly'   THEN (mp.price * 100)::BIGINT
                     WHEN 'quarterly' THEN ((mp.price * 100) / 3)::BIGINT
@@ -82,7 +82,7 @@ pub(super) async fn get_summary(
            ), 0)::BIGINT
            FROM user_memberships um
            JOIN membership_plans mp ON mp.id = um.plan_id
-           WHERE um.status IN ('active', 'trialing')"#,
+           WHERE um.status IN ('active', 'trialing')",
     )
     .fetch_one(&state.db.pool)
     .await
@@ -96,9 +96,9 @@ pub(super) async fn get_summary(
 
     // Pending and failed order counts.
     let pending_count: i64 = sqlx::query_scalar(
-        r#"SELECT COALESCE(COUNT(*), 0)::BIGINT
+        r"SELECT COALESCE(COUNT(*), 0)::BIGINT
            FROM orders
-           WHERE status = 'pending'"#,
+           WHERE status = 'pending'",
     )
     .fetch_one(&state.db.pool)
     .await
@@ -111,9 +111,9 @@ pub(super) async fn get_summary(
     })?;
 
     let failed_count: i64 = sqlx::query_scalar(
-        r#"SELECT COALESCE(COUNT(*), 0)::BIGINT
+        r"SELECT COALESCE(COUNT(*), 0)::BIGINT
            FROM orders
-           WHERE status = 'failed'"#,
+           WHERE status = 'failed'",
     )
     .fetch_one(&state.db.pool)
     .await

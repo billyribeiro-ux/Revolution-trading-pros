@@ -87,12 +87,12 @@ pub async fn admin_update_status(
     };
 
     sqlx::query(
-        r#"UPDATE orders SET
+        r"UPDATE orders SET
             status = $2,
             completed_at = COALESCE($3, completed_at),
             refunded_at = COALESCE($4, refunded_at),
             updated_at = NOW()
-        WHERE id = $1"#
+        WHERE id = $1"
     )
     .bind(id)
     .bind(&input.status)
@@ -227,11 +227,11 @@ pub async fn admin_refund(
 
     // Update order status
     sqlx::query(
-        r#"UPDATE orders SET
+        r"UPDATE orders SET
             status = $2,
             refunded_at = NOW(),
             updated_at = NOW()
-        WHERE id = $1"#
+        WHERE id = $1"
     )
     .bind(id)
     .bind(new_status)

@@ -56,10 +56,10 @@ pub(super) async fn list_trade_plans(
 
             let entries: Vec<TradePlanEntry> = if let Some(week) = week_parsed {
                 sqlx::query_as(
-                    r#"SELECT * FROM room_trade_plans
+                    r"SELECT * FROM room_trade_plans
                        WHERE room_slug = $1 AND week_of = $2 AND deleted_at IS NULL AND is_active = true
                        ORDER BY sort_order ASC, created_at DESC
-                       LIMIT $3 OFFSET $4"#
+                       LIMIT $3 OFFSET $4"
                 )
                 .bind(&room_slug)
                 .bind(week)
@@ -70,11 +70,11 @@ pub(super) async fn list_trade_plans(
             } else {
                 // Get current week's entries
                 sqlx::query_as(
-                    r#"SELECT * FROM room_trade_plans
+                    r"SELECT * FROM room_trade_plans
                        WHERE room_slug = $1 AND deleted_at IS NULL AND is_active = true
                        AND week_of = (SELECT MAX(week_of) FROM room_trade_plans WHERE room_slug = $1 AND deleted_at IS NULL)
                        ORDER BY sort_order ASC, created_at DESC
-                       LIMIT $2 OFFSET $3"#
+                       LIMIT $2 OFFSET $3"
                 )
                 .bind(&room_slug)
                 .bind(per_page)
@@ -136,7 +136,7 @@ pub(super) async fn create_trade_plan(
         .and_then(|e| NaiveDate::parse_from_str(&e, "%Y-%m-%d").ok());
 
     let entry: TradePlanEntry = sqlx::query_as(
-        r#"INSERT INTO room_trade_plans
+        r"INSERT INTO room_trade_plans
            (room_id, room_slug, week_of, ticker, bias, entry, target1, target2, target3, runner, runner_stop, stop, options_strike, options_exp, notes, sort_order)
            VALUES (
                COALESCE(
@@ -146,7 +146,7 @@ pub(super) async fn create_trade_plan(
                ),
                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15
            )
-           RETURNING *"#
+           RETURNING *"
     )
     .bind(&input.room_slug)
     .bind(week_of)
@@ -220,7 +220,7 @@ pub(super) async fn update_trade_plan(
         .and_then(|e| NaiveDate::parse_from_str(&e, "%Y-%m-%d").ok());
 
     let entry: TradePlanEntry = sqlx::query_as(
-        r#"UPDATE room_trade_plans SET
+        r"UPDATE room_trade_plans SET
            ticker = COALESCE($2, ticker),
            bias = COALESCE($3, bias),
            entry = COALESCE($4, entry),
@@ -236,7 +236,7 @@ pub(super) async fn update_trade_plan(
            sort_order = COALESCE($14, sort_order),
            is_active = COALESCE($15, is_active)
            WHERE id = $1 AND deleted_at IS NULL
-           RETURNING *"#,
+           RETURNING *",
     )
     .bind(id)
     .bind(input.ticker.map(|t| t.to_uppercase()))

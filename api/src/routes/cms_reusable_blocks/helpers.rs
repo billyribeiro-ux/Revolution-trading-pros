@@ -91,6 +91,6 @@ pub(super) async fn ensure_unique_slug(
         }
 
         suffix += 1;
-        slug = format!("{}-{}", base_slug, suffix);
+        slug = format!("{base_slug}-{suffix}");
     }
 }

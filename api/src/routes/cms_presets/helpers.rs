@@ -70,12 +70,12 @@ pub(super) async fn ensure_unique_slug(
         let exists: bool = match exclude_id {
             Some(id) => {
                 let result: (bool,) = sqlx::query_as(
-                    r#"
+                    r"
                     SELECT EXISTS(
                         SELECT 1 FROM cms_presets
                         WHERE block_type = $1 AND slug = $2 AND id != $3 AND deleted_at IS NULL
                     )
-                    "#,
+                    ",
                 )
                 .bind(block_type)
                 .bind(&slug)
@@ -89,12 +89,12 @@ pub(super) async fn ensure_unique_slug(
             }
             None => {
                 let result: (bool,) = sqlx::query_as(
-                    r#"
+                    r"
                     SELECT EXISTS(
                         SELECT 1 FROM cms_presets
                         WHERE block_type = $1 AND slug = $2 AND deleted_at IS NULL
                     )
-                    "#,
+                    ",
                 )
                 .bind(block_type)
                 .bind(&slug)
@@ -112,6 +112,6 @@ pub(super) async fn ensure_unique_slug(
         }
 
         suffix += 1;
-        slug = format!("{}-{}", base_slug, suffix);
+        slug = format!("{base_slug}-{suffix}");
     }
 }

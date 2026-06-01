@@ -104,7 +104,7 @@ pub async fn index(
         },
         if params.parent_id.is_some() {
             let idx = 1 + params.search.is_some() as usize + params.is_visible.is_some() as usize;
-            format!("AND parent_id = ${}", idx)
+            format!("AND parent_id = ${idx}")
         } else {
             "".to_string()
         },
@@ -126,7 +126,7 @@ pub async fn index(
         fetch_all,
     ) {
         (Some(pattern), Some(vis), Some(pid), false) => {
-            sqlx::query_as(&format!("{} LIMIT $4 OFFSET $5", base_query))
+            sqlx::query_as(&format!("{base_query} LIMIT $4 OFFSET $5"))
                 .bind(pattern)
                 .bind(vis)
                 .bind(pid)
@@ -136,7 +136,7 @@ pub async fn index(
                 .await
         }
         (Some(pattern), Some(vis), None, false) => {
-            sqlx::query_as(&format!("{} LIMIT $3 OFFSET $4", base_query))
+            sqlx::query_as(&format!("{base_query} LIMIT $3 OFFSET $4"))
                 .bind(pattern)
                 .bind(vis)
                 .bind(per_page)
@@ -145,7 +145,7 @@ pub async fn index(
                 .await
         }
         (Some(pattern), None, Some(pid), false) => {
-            sqlx::query_as(&format!("{} LIMIT $3 OFFSET $4", base_query))
+            sqlx::query_as(&format!("{base_query} LIMIT $3 OFFSET $4"))
                 .bind(pattern)
                 .bind(pid)
                 .bind(per_page)
@@ -154,7 +154,7 @@ pub async fn index(
                 .await
         }
         (Some(pattern), None, None, false) => {
-            sqlx::query_as(&format!("{} LIMIT $2 OFFSET $3", base_query))
+            sqlx::query_as(&format!("{base_query} LIMIT $2 OFFSET $3"))
                 .bind(pattern)
                 .bind(per_page)
                 .bind(offset)
@@ -162,7 +162,7 @@ pub async fn index(
                 .await
         }
         (None, Some(vis), Some(pid), false) => {
-            sqlx::query_as(&format!("{} LIMIT $3 OFFSET $4", base_query))
+            sqlx::query_as(&format!("{base_query} LIMIT $3 OFFSET $4"))
                 .bind(vis)
                 .bind(pid)
                 .bind(per_page)
@@ -171,7 +171,7 @@ pub async fn index(
                 .await
         }
         (None, Some(vis), None, false) => {
-            sqlx::query_as(&format!("{} LIMIT $2 OFFSET $3", base_query))
+            sqlx::query_as(&format!("{base_query} LIMIT $2 OFFSET $3"))
                 .bind(vis)
                 .bind(per_page)
                 .bind(offset)
@@ -179,7 +179,7 @@ pub async fn index(
                 .await
         }
         (None, None, Some(pid), false) => {
-            sqlx::query_as(&format!("{} LIMIT $2 OFFSET $3", base_query))
+            sqlx::query_as(&format!("{base_query} LIMIT $2 OFFSET $3"))
                 .bind(pid)
                 .bind(per_page)
                 .bind(offset)
@@ -187,7 +187,7 @@ pub async fn index(
                 .await
         }
         (None, None, None, false) => {
-            sqlx::query_as(&format!("{} LIMIT $1 OFFSET $2", base_query))
+            sqlx::query_as(&format!("{base_query} LIMIT $1 OFFSET $2"))
                 .bind(per_page)
                 .bind(offset)
                 .fetch_all(state.db.pool())
@@ -417,23 +417,23 @@ pub async fn update(
     let mut param_count = 1;
 
     if payload.name.is_some() {
-        updates.push(format!("name = ${}", param_count));
+        updates.push(format!("name = ${param_count}"));
         param_count += 1;
     }
     if payload.slug.is_some() {
-        updates.push(format!("slug = ${}", param_count));
+        updates.push(format!("slug = ${param_count}"));
         param_count += 1;
     }
     if payload.description.is_some() {
-        updates.push(format!("description = ${}", param_count));
+        updates.push(format!("description = ${param_count}"));
         param_count += 1;
     }
     if payload.parent_id.is_some() {
-        updates.push(format!("parent_id = ${}", param_count));
+        updates.push(format!("parent_id = ${param_count}"));
         param_count += 1;
     }
 
-    updates.push(format!("updated_at = ${}", param_count));
+    updates.push(format!("updated_at = ${param_count}"));
 
     let query_str = format!(
         "UPDATE categories SET {} WHERE id = ${} RETURNING *",

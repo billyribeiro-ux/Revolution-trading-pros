@@ -35,13 +35,13 @@ use crate::models::cms::{
 /// Get CMS user by ID
 pub async fn get_cms_user(pool: &PgPool, id: Uuid) -> Result<Option<CmsUser>> {
     let user: Option<CmsUser> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, user_id, display_name, avatar_url, bio, role,
                permissions, allowed_content_types, preferences, notification_settings,
                is_active, last_login_at, created_at, updated_at, created_by, updated_by
         FROM cms_users
         WHERE id = $1
-        "#,
+        ",
     )
     .bind(id)
     .fetch_optional(pool)
@@ -53,13 +53,13 @@ pub async fn get_cms_user(pool: &PgPool, id: Uuid) -> Result<Option<CmsUser>> {
 /// Get CMS user by main user ID
 pub async fn get_cms_user_by_user_id(pool: &PgPool, user_id: i64) -> Result<Option<CmsUser>> {
     let user: Option<CmsUser> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, user_id, display_name, avatar_url, bio, role,
                permissions, allowed_content_types, preferences, notification_settings,
                is_active, last_login_at, created_at, updated_at, created_by, updated_by
         FROM cms_users
         WHERE user_id = $1
-        "#,
+        ",
     )
     .bind(user_id)
     .fetch_optional(pool)
@@ -76,7 +76,7 @@ pub async fn upsert_cms_user(
     role: CmsUserRole,
 ) -> Result<CmsUser> {
     let user: CmsUser = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO cms_users (user_id, display_name, role)
         VALUES ($1, $2, $3)
         ON CONFLICT (user_id) DO UPDATE SET
@@ -86,7 +86,7 @@ pub async fn upsert_cms_user(
         RETURNING id, user_id, display_name, avatar_url, bio, role,
                   permissions, allowed_content_types, preferences, notification_settings,
                   is_active, last_login_at, created_at, updated_at, created_by, updated_by
-        "#,
+        ",
     )
     .bind(user_id)
     .bind(display_name)
@@ -104,12 +104,12 @@ pub async fn upsert_cms_user(
 /// List all asset folders
 pub async fn list_asset_folders(pool: &PgPool) -> Result<Vec<CmsAssetFolder>> {
     let folders: Vec<CmsAssetFolder> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, name, slug, parent_id, path, depth, description, color, icon,
                is_public, allowed_roles, sort_order, created_at, updated_at, created_by, updated_by
         FROM cms_asset_folders
         ORDER BY path, sort_order
-        "#,
+        ",
     )
     .fetch_all(pool)
     .await?;
@@ -120,12 +120,12 @@ pub async fn list_asset_folders(pool: &PgPool) -> Result<Vec<CmsAssetFolder>> {
 /// Get asset folder by ID
 pub async fn get_asset_folder(pool: &PgPool, id: Uuid) -> Result<Option<CmsAssetFolder>> {
     let folder: Option<CmsAssetFolder> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, name, slug, parent_id, path, depth, description, color, icon,
                is_public, allowed_roles, sort_order, created_at, updated_at, created_by, updated_by
         FROM cms_asset_folders
         WHERE id = $1
-        "#,
+        ",
     )
     .bind(id)
     .fetch_optional(pool)
@@ -143,12 +143,12 @@ pub async fn create_asset_folder(
     let slug = slug::slugify(&request.name);
 
     let folder: CmsAssetFolder = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO cms_asset_folders (name, slug, parent_id, description, color, icon, is_public, created_by)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
         RETURNING id, name, slug, parent_id, path, depth, description, color, icon,
                   is_public, allowed_roles, sort_order, created_at, updated_at, created_by, updated_by
-        "#,
+        ",
     )
     .bind(&request.name)
     .bind(&slug)
@@ -172,7 +172,7 @@ pub async fn update_asset_folder(
     updated_by: Option<Uuid>,
 ) -> Result<CmsAssetFolder> {
     let folder: CmsAssetFolder = sqlx::query_as(
-        r#"
+        r"
         UPDATE cms_asset_folders SET
             name = COALESCE($1, name),
             slug = COALESCE($2, slug),
@@ -186,7 +186,7 @@ pub async fn update_asset_folder(
         WHERE id = $10
         RETURNING id, name, slug, parent_id, path, depth, description, color, icon,
                   is_public, allowed_roles, sort_order, created_at, updated_at, created_by, updated_by
-        "#,
+        ",
     )
     .bind(&request.name)
     .bind(request.name.as_ref().map(slug::slugify))
@@ -240,7 +240,7 @@ pub async fn list_assets(
     let sort_order = query.sort_order.as_deref().unwrap_or("DESC");
 
     let assets: Vec<CmsAssetSummary> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, folder_id, filename, mime_type, file_size, cdn_url,
                width, height, blurhash, thumbnail_url, title, alt_text, usage_count, created_at
         FROM cms_assets
@@ -259,7 +259,7 @@ pub async fn list_assets(
             CASE WHEN $5 = 'usage_count' AND $6 = 'ASC' THEN usage_count END ASC,
             created_at DESC
         LIMIT $7 OFFSET $8
-        "#,
+        ",
     )
     .bind(query.folder_id)
     .bind(&query.mime_type)
@@ -273,14 +273,14 @@ pub async fn list_assets(
     .await?;
 
     let total: (i64,) = sqlx::query_as(
-        r#"
+        r"
         SELECT COUNT(*)
         FROM cms_assets
         WHERE ($1::uuid IS NULL OR folder_id = $1)
           AND ($2::text IS NULL OR mime_type LIKE $2 || '%')
           AND ($3::text IS NULL OR filename ILIKE '%' || $3 || '%' OR title ILIKE '%' || $3 || '%')
           AND ($4::boolean OR deleted_at IS NULL)
-        "#,
+        ",
     )
     .bind(query.folder_id)
     .bind(&query.mime_type)
@@ -303,7 +303,7 @@ pub async fn list_assets(
 /// Get asset by ID
 pub async fn get_asset(pool: &PgPool, id: Uuid) -> Result<Option<CmsAsset>> {
     let asset: Option<CmsAsset> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, folder_id, filename, original_filename, mime_type, file_size, file_extension,
                storage_provider, storage_key, cdn_url, width, height, aspect_ratio, blurhash, dominant_color,
                duration_seconds, video_codec, audio_codec, bunny_video_id, bunny_library_id, thumbnail_url,
@@ -311,7 +311,7 @@ pub async fn get_asset(pool: &PgPool, id: Uuid) -> Result<Option<CmsAsset>> {
                tags, usage_count, last_used_at, deleted_at, version, created_at, updated_at, created_by, updated_by
         FROM cms_assets
         WHERE id = $1
-        "#,
+        ",
     )
     .bind(id)
     .fetch_optional(pool)
@@ -334,7 +334,7 @@ pub async fn create_asset(
     };
 
     let asset: CmsAsset = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO cms_assets (
             folder_id, filename, original_filename, mime_type, file_size, file_extension,
             storage_key, cdn_url, width, height, aspect_ratio, blurhash, dominant_color,
@@ -345,7 +345,7 @@ pub async fn create_asset(
                   duration_seconds, video_codec, audio_codec, bunny_video_id, bunny_library_id, thumbnail_url,
                   variants, title, alt_text, caption, description, credits, seo_title, seo_description,
                   tags, usage_count, last_used_at, deleted_at, version, created_at, updated_at, created_by, updated_by
-        "#,
+        ",
     )
     .bind(request.folder_id)
     .bind(&request.filename)
@@ -378,7 +378,7 @@ pub async fn update_asset(
     updated_by: Option<Uuid>,
 ) -> Result<CmsAsset> {
     let asset: CmsAsset = sqlx::query_as(
-        r#"
+        r"
         UPDATE cms_assets SET
             folder_id = COALESCE($1, folder_id),
             title = COALESCE($2, title),
@@ -397,7 +397,7 @@ pub async fn update_asset(
                   duration_seconds, video_codec, audio_codec, bunny_video_id, bunny_library_id, thumbnail_url,
                   variants, title, alt_text, caption, description, credits, seo_title, seo_description,
                   tags, usage_count, last_used_at, deleted_at, version, created_at, updated_at, created_by, updated_by
-        "#,
+        ",
     )
     .bind(request.folder_id)
     .bind(&request.title)
@@ -453,7 +453,7 @@ pub async fn list_content(
     let sort_order = query.sort_order.as_deref().unwrap_or("DESC");
 
     let content: Vec<CmsContentSummary> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, content_type, slug, locale, title, excerpt, featured_image_id,
                author_id, status, published_at, created_at, updated_at
         FROM cms_content
@@ -474,7 +474,7 @@ pub async fn list_content(
             CASE WHEN $7 = 'title' AND $8 = 'ASC' THEN title END ASC,
             created_at DESC
         LIMIT $9 OFFSET $10
-        "#,
+        ",
     )
     .bind(&query.content_type)
     .bind(&query.status)
@@ -490,7 +490,7 @@ pub async fn list_content(
     .await?;
 
     let total: (i64,) = sqlx::query_as(
-        r#"
+        r"
         SELECT COUNT(*)
         FROM cms_content
         WHERE ($1::cms_content_type IS NULL OR content_type = $1)
@@ -499,7 +499,7 @@ pub async fn list_content(
           AND ($4::text IS NULL OR locale = $4)
           AND ($5::text IS NULL OR title ILIKE '%' || $5 || '%' OR slug ILIKE '%' || $5 || '%')
           AND ($6::boolean OR deleted_at IS NULL)
-        "#,
+        ",
     )
     .bind(&query.content_type)
     .bind(&query.status)
@@ -524,7 +524,7 @@ pub async fn list_content(
 /// Get content by ID
 pub async fn get_content(pool: &PgPool, id: Uuid) -> Result<Option<CmsContent>> {
     let content: Option<CmsContent> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, content_type, slug, locale, is_primary_locale, parent_content_id,
                title, subtitle, excerpt, content, content_blocks,
                featured_image_id, og_image_id, gallery_ids,
@@ -535,7 +535,7 @@ pub async fn get_content(pool: &PgPool, id: Uuid) -> Result<Option<CmsContent>> 
                deleted_at, version, created_at, updated_at, created_by, updated_by
         FROM cms_content
         WHERE id = $1
-        "#,
+        ",
     )
     .bind(id)
     .fetch_optional(pool)
@@ -554,7 +554,7 @@ pub async fn get_content_by_slug(
     let locale = locale.unwrap_or("en");
 
     let content: Option<CmsContent> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, content_type, slug, locale, is_primary_locale, parent_content_id,
                title, subtitle, excerpt, content, content_blocks,
                featured_image_id, og_image_id, gallery_ids,
@@ -565,7 +565,7 @@ pub async fn get_content_by_slug(
                deleted_at, version, created_at, updated_at, created_by, updated_by
         FROM cms_content
         WHERE content_type = $1 AND slug = $2 AND locale = $3 AND deleted_at IS NULL
-        "#,
+        ",
     )
     .bind(&content_type)
     .bind(slug)
@@ -586,7 +586,7 @@ pub async fn create_content(
     let slug = slug::slugify(&request.slug);
 
     let content: CmsContent = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO cms_content (
             content_type, slug, locale, title, subtitle, excerpt, content, content_blocks,
             featured_image_id, og_image_id, meta_title, meta_description, meta_keywords,
@@ -600,7 +600,7 @@ pub async fn create_content(
                   scheduled_publish_at, scheduled_unpublish_at,
                   primary_category_id, categories, custom_fields, template,
                   deleted_at, version, created_at, updated_at, created_by, updated_by
-        "#,
+        ",
     )
     .bind(&request.content_type)
     .bind(&slug)
@@ -663,7 +663,7 @@ pub async fn update_content(
         .ok_or_else(|| anyhow!("Content not found"))?;
 
     let content: CmsContent = sqlx::query_as(
-        r#"
+        r"
         UPDATE cms_content SET
             slug = COALESCE($1, slug),
             title = COALESCE($2, title),
@@ -697,7 +697,7 @@ pub async fn update_content(
                   scheduled_publish_at, scheduled_unpublish_at,
                   primary_category_id, categories, custom_fields, template,
                   deleted_at, version, created_at, updated_at, created_by, updated_by
-        "#,
+        ",
     )
     .bind(request.slug.as_ref().map(slug::slugify))
     .bind(&request.title)
@@ -771,7 +771,7 @@ pub async fn transition_content_status(
         };
 
     let content: CmsContent = sqlx::query_as(
-        r#"
+        r"
         UPDATE cms_content SET
             status = $1,
             published_at = $2,
@@ -787,7 +787,7 @@ pub async fn transition_content_status(
                   scheduled_publish_at, scheduled_unpublish_at,
                   primary_category_id, categories, custom_fields, template,
                   deleted_at, version, created_at, updated_at, created_by, updated_by
-        "#,
+        ",
     )
     .bind(&request.status)
     .bind(published_at)
@@ -799,10 +799,10 @@ pub async fn transition_content_status(
 
     // Log workflow transition
     sqlx::query(
-        r#"
+        r"
         INSERT INTO cms_workflow_log (content_id, from_status, to_status, transitioned_by, comment)
         VALUES ($1, $2, $3, $4, $5)
-        "#,
+        ",
     )
     .bind(id)
     .bind(&old_content.status)
@@ -885,13 +885,13 @@ pub async fn get_revisions(
     limit: i64,
 ) -> Result<Vec<CmsRevision>> {
     let revisions: Vec<CmsRevision> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, content_id, revision_number, is_current, data, change_summary, changed_fields, created_at, created_by
         FROM cms_revisions
         WHERE content_id = $1
         ORDER BY revision_number DESC
         LIMIT $2
-        "#,
+        ",
     )
     .bind(content_id)
     .bind(limit)
@@ -909,11 +909,11 @@ pub async fn restore_revision(
     restored_by: Option<Uuid>,
 ) -> Result<CmsContent> {
     let revision: CmsRevision = sqlx::query_as(
-        r#"
+        r"
         SELECT id, content_id, revision_number, is_current, data, change_summary, changed_fields, created_at, created_by
         FROM cms_revisions
         WHERE content_id = $1 AND revision_number = $2
-        "#,
+        ",
     )
     .bind(content_id)
     .bind(revision_number)
@@ -924,7 +924,7 @@ pub async fn restore_revision(
     let stored_content: CmsContent = serde_json::from_value(revision.data)?;
 
     let content: CmsContent = sqlx::query_as(
-        r#"
+        r"
         UPDATE cms_content SET
             title = $1, subtitle = $2, excerpt = $3, content = $4, content_blocks = $5,
             featured_image_id = $6, meta_title = $7, meta_description = $8,
@@ -938,7 +938,7 @@ pub async fn restore_revision(
                   scheduled_publish_at, scheduled_unpublish_at,
                   primary_category_id, categories, custom_fields, template,
                   deleted_at, version, created_at, updated_at, created_by, updated_by
-        "#,
+        ",
     )
     .bind(&stored_content.title)
     .bind(&stored_content.subtitle)
@@ -960,7 +960,7 @@ pub async fn restore_revision(
         content_id,
         &content,
         restored_by,
-        Some(&format!("Restored from revision {}", revision_number)),
+        Some(&format!("Restored from revision {revision_number}")),
         None,
     )
     .await?;
@@ -975,12 +975,12 @@ pub async fn restore_revision(
 /// List all tags
 pub async fn list_tags(pool: &PgPool) -> Result<Vec<CmsTag>> {
     let tags: Vec<CmsTag> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, name, slug, parent_id, description, color, icon,
                meta_title, meta_description, usage_count, created_at, updated_at, created_by
         FROM cms_tags
         ORDER BY name
-        "#,
+        ",
     )
     .fetch_all(pool)
     .await?;
@@ -997,12 +997,12 @@ pub async fn create_tag(
     let slug = slug::slugify(&request.name);
 
     let tag: CmsTag = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO cms_tags (name, slug, parent_id, description, color, icon, created_by)
         VALUES ($1, $2, $3, $4, $5, $6, $7)
         RETURNING id, name, slug, parent_id, description, color, icon,
                   meta_title, meta_description, usage_count, created_at, updated_at, created_by
-        "#,
+        ",
     )
     .bind(&request.name)
     .bind(&slug)
@@ -1025,11 +1025,11 @@ pub async fn add_tag_to_content(
     created_by: Option<Uuid>,
 ) -> Result<()> {
     sqlx::query(
-        r#"
+        r"
         INSERT INTO cms_content_tags (content_id, tag_id, created_by)
         VALUES ($1, $2, $3)
         ON CONFLICT (content_id, tag_id) DO NOTHING
-        "#,
+        ",
     )
     .bind(content_id)
     .bind(tag_id)
@@ -1054,14 +1054,14 @@ pub async fn remove_tag_from_content(pool: &PgPool, content_id: Uuid, tag_id: Uu
 /// Get tags for content
 pub async fn get_content_tags(pool: &PgPool, content_id: Uuid) -> Result<Vec<CmsTag>> {
     let tags: Vec<CmsTag> = sqlx::query_as(
-        r#"
+        r"
         SELECT t.id, t.name, t.slug, t.parent_id, t.description, t.color, t.icon,
                t.meta_title, t.meta_description, t.usage_count, t.created_at, t.updated_at, t.created_by
         FROM cms_tags t
         JOIN cms_content_tags ct ON t.id = ct.tag_id
         WHERE ct.content_id = $1
         ORDER BY ct.sort_order, t.name
-        "#,
+        ",
     )
     .bind(content_id)
     .fetch_all(pool)
@@ -1077,14 +1077,14 @@ pub async fn get_content_tags(pool: &PgPool, content_id: Uuid) -> Result<Vec<Cms
 /// Get comments for content
 pub async fn get_content_comments(pool: &PgPool, content_id: Uuid) -> Result<Vec<CmsComment>> {
     let comments: Vec<CmsComment> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, content_id, parent_id, thread_id, body, block_id, selection_start, selection_end,
                is_resolved, resolved_by, resolved_at, mentioned_users, deleted_at,
                created_at, updated_at, created_by
         FROM cms_comments
         WHERE content_id = $1 AND deleted_at IS NULL
         ORDER BY created_at
-        "#,
+        ",
     )
     .bind(content_id)
     .fetch_all(pool)
@@ -1113,14 +1113,14 @@ pub async fn create_comment(
     };
 
     let comment: CmsComment = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO cms_comments (content_id, parent_id, thread_id, body, block_id,
                                   selection_start, selection_end, mentioned_users, created_by)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         RETURNING id, content_id, parent_id, thread_id, body, block_id, selection_start, selection_end,
                   is_resolved, resolved_by, resolved_at, mentioned_users, deleted_at,
                   created_at, updated_at, created_by
-        "#,
+        ",
     )
     .bind(content_id)
     .bind(request.parent_id)
@@ -1157,7 +1157,7 @@ pub async fn resolve_comment(pool: &PgPool, id: Uuid, resolved_by: Uuid) -> Resu
 /// Get site settings (singleton)
 pub async fn get_site_settings(pool: &PgPool) -> Result<CmsSiteSettings> {
     let settings: CmsSiteSettings = sqlx::query_as(
-        r#"
+        r"
         SELECT id, site_name, site_tagline, site_description,
                logo_light_id, logo_dark_id, favicon_id, og_default_image_id,
                contact_email, support_email, phone, address, social_links,
@@ -1168,7 +1168,7 @@ pub async fn get_site_settings(pool: &PgPool) -> Result<CmsSiteSettings> {
                settings, updated_at, updated_by
         FROM cms_site_settings
         WHERE id = '00000000-0000-0000-0000-000000000001'::uuid
-        "#,
+        ",
     )
     .fetch_one(pool)
     .await?;
@@ -1183,7 +1183,7 @@ pub async fn update_site_settings(
     updated_by: Option<Uuid>,
 ) -> Result<CmsSiteSettings> {
     let settings: CmsSiteSettings = sqlx::query_as(
-        r#"
+        r"
         UPDATE cms_site_settings SET
             site_name = COALESCE($1, site_name),
             site_tagline = COALESCE($2, site_tagline),
@@ -1219,7 +1219,7 @@ pub async fn update_site_settings(
                   maintenance_mode, maintenance_message,
                   head_scripts, body_start_scripts, body_end_scripts, custom_css,
                   settings, updated_at, updated_by
-        "#,
+        ",
     )
     .bind(&request.site_name)
     .bind(&request.site_tagline)
@@ -1258,11 +1258,11 @@ pub async fn update_site_settings(
 /// List navigation menus
 pub async fn list_navigation_menus(pool: &PgPool) -> Result<Vec<CmsNavigationMenu>> {
     let menus: Vec<CmsNavigationMenu> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, name, slug, location, items, is_active, created_at, updated_at, created_by, updated_by
         FROM cms_navigation_menus
         ORDER BY name
-        "#,
+        ",
     )
     .fetch_all(pool)
     .await?;
@@ -1273,11 +1273,11 @@ pub async fn list_navigation_menus(pool: &PgPool) -> Result<Vec<CmsNavigationMen
 /// Get navigation menu by slug
 pub async fn get_navigation_menu(pool: &PgPool, slug: &str) -> Result<Option<CmsNavigationMenu>> {
     let menu: Option<CmsNavigationMenu> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, name, slug, location, items, is_active, created_at, updated_at, created_by, updated_by
         FROM cms_navigation_menus
         WHERE slug = $1
-        "#,
+        ",
     )
     .bind(slug)
     .fetch_optional(pool)
@@ -1295,11 +1295,11 @@ pub async fn create_navigation_menu(
     let slug = slug::slugify(&request.name);
 
     let menu: CmsNavigationMenu = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO cms_navigation_menus (name, slug, location, items, created_by)
         VALUES ($1, $2, $3, $4, $5)
         RETURNING id, name, slug, location, items, is_active, created_at, updated_at, created_by, updated_by
-        "#,
+        ",
     )
     .bind(&request.name)
     .bind(&slug)
@@ -1320,7 +1320,7 @@ pub async fn update_navigation_menu(
     updated_by: Option<Uuid>,
 ) -> Result<CmsNavigationMenu> {
     let menu: CmsNavigationMenu = sqlx::query_as(
-        r#"
+        r"
         UPDATE cms_navigation_menus SET
             name = COALESCE($1, name),
             slug = COALESCE($2, slug),
@@ -1330,7 +1330,7 @@ pub async fn update_navigation_menu(
             updated_by = $6
         WHERE id = $7
         RETURNING id, name, slug, location, items, is_active, created_at, updated_at, created_by, updated_by
-        "#,
+        ",
     )
     .bind(&request.name)
     .bind(request.name.as_ref().map(slug::slugify))
@@ -1352,12 +1352,12 @@ pub async fn update_navigation_menu(
 /// List redirects
 pub async fn list_redirects(pool: &PgPool) -> Result<Vec<CmsRedirect>> {
     let redirects: Vec<CmsRedirect> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, source_path, target_path, status_code, is_regex, preserve_query_string,
                hit_count, last_hit_at, is_active, created_at, updated_at, created_by
         FROM cms_redirects
         ORDER BY source_path
-        "#,
+        ",
     )
     .fetch_all(pool)
     .await?;
@@ -1372,12 +1372,12 @@ pub async fn create_redirect(
     created_by: Option<Uuid>,
 ) -> Result<CmsRedirect> {
     let redirect: CmsRedirect = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO cms_redirects (source_path, target_path, status_code, is_regex, preserve_query_string, created_by)
         VALUES ($1, $2, $3, $4, $5, $6)
         RETURNING id, source_path, target_path, status_code, is_regex, preserve_query_string,
                   hit_count, last_hit_at, is_active, created_at, updated_at, created_by
-        "#,
+        ",
     )
     .bind(&request.source_path)
     .bind(&request.target_path)
@@ -1405,12 +1405,12 @@ pub async fn delete_redirect(pool: &PgPool, id: Uuid) -> Result<()> {
 pub async fn match_redirect(pool: &PgPool, path: &str) -> Result<Option<CmsRedirect>> {
     // First try exact match
     let exact: Option<CmsRedirect> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, source_path, target_path, status_code, is_regex, preserve_query_string,
                hit_count, last_hit_at, is_active, created_at, updated_at, created_by
         FROM cms_redirects
         WHERE source_path = $1 AND is_active = true AND is_regex = false
-        "#,
+        ",
     )
     .bind(path)
     .fetch_optional(pool)
@@ -1425,7 +1425,39 @@ pub async fn match_redirect(pool: &PgPool, path: &str) -> Result<Option<CmsRedir
         return Ok(exact);
     }
 
-    // TODO: Implement regex matching if needed
+    // Regex matching: fetch all active regex redirects and test each against the path.
+    // Sorted by source_path length desc so more-specific patterns win over catch-alls.
+    let regex_redirects: Vec<CmsRedirect> = sqlx::query_as(
+        r"
+        SELECT id, source_path, target_path, status_code, is_regex, preserve_query_string,
+               hit_count, last_hit_at, is_active, created_at, updated_at, created_by
+        FROM cms_redirects
+        WHERE is_active = true AND is_regex = true
+        ORDER BY length(source_path) DESC
+        ",
+    )
+    .fetch_all(pool)
+    .await?;
+
+    for redirect in regex_redirects {
+        let Ok(re) = regex::Regex::new(&redirect.source_path) else {
+            tracing::warn!(
+                pattern = %redirect.source_path,
+                "cms_redirect: skipping invalid regex pattern"
+            );
+            continue;
+        };
+        if re.is_match(path) {
+            sqlx::query(
+                "UPDATE cms_redirects SET hit_count = hit_count + 1, last_hit_at = NOW() WHERE id = $1",
+            )
+            .bind(redirect.id)
+            .execute(pool)
+            .await?;
+            return Ok(Some(redirect));
+        }
+    }
+
     Ok(None)
 }
 
@@ -1446,11 +1478,11 @@ pub async fn log_cms_audit(
     metadata: Option<JsonValue>,
 ) -> Result<Uuid> {
     let audit_id: Uuid = sqlx::query_scalar(
-        r#"
+        r"
         INSERT INTO cms_audit_log (action, entity_type, entity_id, user_id, old_values, new_values, metadata)
         VALUES ($1, $2, $3, $4, $5, $6, $7)
         RETURNING id
-        "#,
+        ",
     )
     .bind(action)
     .bind(entity_type)

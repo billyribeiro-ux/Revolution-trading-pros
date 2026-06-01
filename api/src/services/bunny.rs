@@ -75,7 +75,7 @@ impl BunnyClient {
             let status = response.status();
             let text = response.text().await.unwrap_or_default();
             error!("Bunny create video failed: {} - {}", status, text);
-            return Err(BunnyError::Api(format!("Status {}: {}", status, text)));
+            return Err(BunnyError::Api(format!("Status {status}: {text}")));
         }
 
         response
@@ -142,7 +142,7 @@ impl BunnyClient {
         if !response.status().is_success() {
             let status = response.status();
             let text = response.text().await.unwrap_or_default();
-            return Err(BunnyError::Api(format!("Status {}: {}", status, text)));
+            return Err(BunnyError::Api(format!("Status {status}: {text}")));
         }
 
         response
@@ -222,10 +222,7 @@ impl BunnyClient {
         if !response.status().is_success() {
             let status = response.status();
             let text = response.text().await.unwrap_or_default();
-            return Err(BunnyError::Api(format!(
-                "Upload failed: {} - {}",
-                status, text
-            )));
+            return Err(BunnyError::Api(format!("Upload failed: {status} - {text}")));
         }
 
         // Return CDN URL
@@ -352,9 +349,9 @@ pub enum BunnyError {
 impl std::fmt::Display for BunnyError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            BunnyError::Request(e) => write!(f, "Request error: {}", e),
-            BunnyError::Api(e) => write!(f, "API error: {}", e),
-            BunnyError::Parse(e) => write!(f, "Parse error: {}", e),
+            BunnyError::Request(e) => write!(f, "Request error: {e}"),
+            BunnyError::Api(e) => write!(f, "API error: {e}"),
+            BunnyError::Parse(e) => write!(f, "Parse error: {e}"),
             BunnyError::NotFound => write!(f, "Not found"),
             BunnyError::NotConfigured => write!(f, "Bunny.net not configured"),
         }
@@ -383,5 +380,5 @@ pub fn get_encoding_status(status: i32) -> &'static str {
 /// Generate unique thumbnail path
 pub fn generate_thumbnail_path(video_id: i64) -> String {
     let date = chrono::Utc::now().format("%Y/%m/%d");
-    format!("thumbnails/{}/{}.jpg", date, video_id)
+    format!("thumbnails/{date}/{video_id}.jpg")
 }

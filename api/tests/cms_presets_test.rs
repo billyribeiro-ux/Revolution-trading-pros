@@ -179,8 +179,7 @@ fn cms_preset_category_wire_format_is_lowercase() {
         assert_eq!(
             wire.as_str(),
             Some(expected_str),
-            "category MUST serialize as lowercase `{}`",
-            expected_str
+            "category MUST serialize as lowercase `{expected_str}`"
         );
 
         // Deserialize the lowercase string back.

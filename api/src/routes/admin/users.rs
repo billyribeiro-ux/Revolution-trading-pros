@@ -69,10 +69,10 @@ pub(super) async fn list_users(
 
     // ICT 11+ SECURITY: Use NULL-safe parameterized queries
     // This approach is SQL injection proof and compile-time verified
-    let search_pattern: Option<String> = query.search.as_ref().map(|s| format!("%{}%", s));
+    let search_pattern: Option<String> = query.search.as_ref().map(|s| format!("%{s}%"));
 
     let users: Vec<AdminUserRow> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, name, email, role, is_active, email_verified_at, last_login_at, created_at, updated_at
         FROM users
         WHERE ($1::text IS NULL OR role = $1)
@@ -80,7 +80,7 @@ pub(super) async fn list_users(
           AND ($3::text IS NULL OR name ILIKE $3 OR email ILIKE $3)
         ORDER BY created_at DESC
         LIMIT $4 OFFSET $5
-        "#
+        "
     )
     .bind(query.role.as_deref())
     .bind(query.is_active)
@@ -95,13 +95,13 @@ pub(super) async fn list_users(
     })?;
 
     let total: (i64,) = sqlx::query_as(
-        r#"
+        r"
         SELECT COUNT(*)
         FROM users
         WHERE ($1::text IS NULL OR role = $1)
           AND ($2::boolean IS NULL OR is_active = $2)
           AND ($3::text IS NULL OR name ILIKE $3 OR email ILIKE $3)
-        "#,
+        ",
     )
     .bind(query.role.as_deref())
     .bind(query.is_active)
@@ -169,11 +169,11 @@ pub(super) async fn create_user(
     let role = input.role.unwrap_or_else(|| "user".to_string());
 
     let user: AdminUserRow = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO users (name, email, password_hash, role, is_active, created_at, updated_at)
         VALUES ($1, $2, $3, $4, true, NOW(), NOW())
         RETURNING id, name, email, role, is_active, email_verified_at, last_login_at, created_at, updated_at
-        "#
+        "
     )
     .bind(&input.name)
     .bind(&input.email)
@@ -242,19 +242,19 @@ pub(super) async fn update_user(
 
     if input.name.is_some() {
         param_count += 1;
-        set_clauses.push(format!("name = ${}", param_count));
+        set_clauses.push(format!("name = ${param_count}"));
     }
     if input.email.is_some() {
         param_count += 1;
-        set_clauses.push(format!("email = ${}", param_count));
+        set_clauses.push(format!("email = ${param_count}"));
     }
     if input.role.is_some() {
         param_count += 1;
-        set_clauses.push(format!("role = ${}", param_count));
+        set_clauses.push(format!("role = ${param_count}"));
     }
     if input.is_active.is_some() {
         param_count += 1;
-        set_clauses.push(format!("is_active = ${}", param_count));
+        set_clauses.push(format!("is_active = ${param_count}"));
     }
 
     set_clauses.push("updated_at = NOW()".to_string());
@@ -308,8 +308,8 @@ pub(super) async fn update_user(
             "target_user_id": id
         });
         if let Err(e) = sqlx::query(
-            r#"INSERT INTO security_events (user_id, event_type, event_category, severity, details)
-               VALUES ($1, 'role_change', 'access_control', 'high', $2)"#,
+            r"INSERT INTO security_events (user_id, event_type, event_category, severity, details)
+               VALUES ($1, 'role_change', 'access_control', 'high', $2)",
         )
         .bind(id)
         .bind(&details)

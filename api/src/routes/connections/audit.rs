@@ -17,12 +17,12 @@ pub(super) async fn log_connection_audit(
     metadata: Option<serde_json::Value>,
 ) {
     let _ = sqlx::query(
-        r#"
+        r"
         INSERT INTO admin_audit_logs (
             admin_id, admin_email, action, entity_type, entity_id,
             old_value, new_value, metadata, created_at
         ) VALUES ($1, $2, $3, $4, $5, $6::text, $7::text, $8, NOW())
-        "#,
+        ",
     )
     .bind(admin_id)
     .bind(admin_email)

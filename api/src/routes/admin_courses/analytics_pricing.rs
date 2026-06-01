@@ -37,12 +37,12 @@ pub(super) async fn get_course_analytics(
     // whether the property is stored as a string or a uuid.
     // TODO: implement dedicated `course_views` table for higher-fidelity tracking.
     let total_views: (i64,) = sqlx::query_as(
-        r#"
+        r"
         SELECT COUNT(*)::bigint
         FROM analytics_events
         WHERE event_type IN ('course_view', 'page_view')
           AND (properties->>'course_id') = $1::text
-        "#,
+        ",
     )
     .bind(course_id)
     .fetch_one(&state.db.pool)
@@ -51,12 +51,12 @@ pub(super) async fn get_course_analytics(
 
     // Unique Visitors: distinct sessions (or users) who viewed this course.
     let unique_visitors: (i64,) = sqlx::query_as(
-        r#"
+        r"
         SELECT COUNT(DISTINCT COALESCE(session_id, user_id::text))::bigint
         FROM analytics_events
         WHERE event_type IN ('course_view', 'page_view')
           AND (properties->>'course_id') = $1::text
-        "#,
+        ",
     )
     .bind(course_id)
     .fetch_one(&state.db.pool)
@@ -81,7 +81,7 @@ pub(super) async fn get_course_analytics(
     // Avg Time on Course (seconds) = mean of per-user total watch time.
     // Falls back to 0 when no progress rows exist.
     let avg_time: (Option<f64>,) = sqlx::query_as(
-        r#"
+        r"
         SELECT AVG(per_user_total)::float8
         FROM (
             SELECT user_id, SUM(watch_time_total_seconds)::bigint AS per_user_total
@@ -89,7 +89,7 @@ pub(super) async fn get_course_analytics(
             WHERE course_id = $1
             GROUP BY user_id
         ) t
-        "#,
+        ",
     )
     .bind(course_id)
     .fetch_one(&state.db.pool)
@@ -130,13 +130,13 @@ pub(super) async fn get_course_analytics(
     // TODO: when order_items.course_id column lands, swap the metadata-JSON path
     // for a direct FK match. For now we look at order_items.metadata->>'course_id'.
     let revenue: (Option<f64>,) = sqlx::query_as(
-        r#"
+        r"
         SELECT COALESCE(SUM(oi.total), 0)::float8
         FROM order_items oi
         JOIN orders o ON o.id = oi.order_id
         WHERE o.status = 'completed'
           AND (oi.metadata->>'course_id') = $1::text
-        "#,
+        ",
     )
     .bind(course_id)
     .fetch_one(&state.db.pool)
@@ -149,14 +149,14 @@ pub(super) async fn get_course_analytics(
     #[allow(clippy::type_complexity)]
     let recent_rows: Vec<(i64, Option<String>, Option<chrono::DateTime<chrono::Utc>>)> =
         sqlx::query_as(
-            r#"
+            r"
             SELECT e.user_id, u.email, e.enrolled_at
             FROM user_course_enrollments e
             LEFT JOIN users u ON u.id = e.user_id
             WHERE e.course_id = $1
             ORDER BY e.enrolled_at DESC NULLS LAST
             LIMIT 5
-            "#,
+            ",
         )
         .bind(course_id)
         .fetch_all(&state.db.pool)
@@ -227,8 +227,8 @@ pub(super) async fn change_course_price(
     }
 
     let course: CourseForPriceChange = sqlx::query_as(
-        r#"SELECT id, title, stripe_price_id, stripe_product_id, price_cents
-           FROM courses WHERE id = $1"#,
+        r"SELECT id, title, stripe_price_id, stripe_product_id, price_cents
+           FROM courses WHERE id = $1",
     )
     .bind(course_id)
     .fetch_optional(&state.db.pool)
@@ -278,9 +278,9 @@ pub(super) async fn change_course_price(
     })?;
 
     sqlx::query(
-        r#"UPDATE courses
+        r"UPDATE courses
            SET stripe_price_id = $1, stripe_product_id = $2, price_cents = $3, updated_at = NOW()
-           WHERE id = $4"#,
+           WHERE id = $4",
     )
     .bind(&new_price_id)
     .bind(&product_id)
@@ -307,8 +307,8 @@ pub(super) async fn change_course_price(
         "changed_by_user_id": admin.id,
     });
     if let Err(e) = sqlx::query(
-        r#"INSERT INTO security_events (user_id, event_type, event_category, severity, details)
-           VALUES ($1, 'course_price_changed', 'billing', 'medium', $2)"#,
+        r"INSERT INTO security_events (user_id, event_type, event_category, severity, details)
+           VALUES ($1, 'course_price_changed', 'billing', 'medium', $2)",
     )
     .bind(admin.id)
     .bind(&details)

@@ -73,10 +73,10 @@ pub(super) async fn apple_init(
 
     // Store state and nonce in database
     sqlx::query(
-        r#"
+        r"
         INSERT INTO oauth_states (state, provider, nonce, expires_at)
         VALUES ($1, 'apple', $2, NOW() + INTERVAL '10 minutes')
-        "#,
+        ",
     )
     .bind(&oauth_state)
     .bind(&nonce)
@@ -135,7 +135,7 @@ pub(super) async fn apple_callback(
         return Ok(Redirect::to(&format!(
             "{}/login?error={}",
             state.config.app_url,
-            urlencoding::encode(&format!("Apple sign-in failed: {}", error))
+            urlencoding::encode(&format!("Apple sign-in failed: {error}"))
         ))
         .into_response());
     }
@@ -218,7 +218,7 @@ pub(super) async fn apple_callback(
 
     let name = user_info.and_then(|u| {
         u.name.and_then(|n| match (n.first_name, n.last_name) {
-            (Some(first), Some(last)) => Some(format!("{} {}", first, last)),
+            (Some(first), Some(last)) => Some(format!("{first} {last}")),
             (Some(first), None) => Some(first),
             (None, Some(last)) => Some(last),
             (None, None) => None,

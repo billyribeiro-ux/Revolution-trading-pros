@@ -28,14 +28,14 @@ pub async fn admin_index(
 
     // Build query with filters
     let mut sql = String::from(
-        r#"SELECT o.id, o.order_number, o.status, (o.total * 100)::BIGINT AS total_cents, o.currency,
+        r"SELECT o.id, o.order_number, o.status, (o.total * 100)::BIGINT AS total_cents, o.currency,
                   u.email as user_email, u.name as user_name, o.payment_provider,
                   o.created_at, o.completed_at,
                   COUNT(oi.id)::INT as item_count
            FROM orders o
            LEFT JOIN users u ON o.user_id = u.id
            LEFT JOIN order_items oi ON o.id = oi.order_id
-           WHERE 1=1"#,
+           WHERE 1=1",
     );
 
     let mut bind_count = 0;
@@ -43,7 +43,7 @@ pub async fn admin_index(
     if let Some(ref status) = query.status {
         if !status.is_empty() {
             bind_count += 1;
-            sql.push_str(&format!(" AND o.status = ${}", bind_count));
+            sql.push_str(&format!(" AND o.status = ${bind_count}"));
         }
     }
 
@@ -51,14 +51,13 @@ pub async fn admin_index(
         if !search.is_empty() {
             bind_count += 1;
             sql.push_str(&format!(
-                " AND (o.order_number ILIKE ${0} OR u.email ILIKE ${0} OR u.name ILIKE ${0})",
-                bind_count
+                " AND (o.order_number ILIKE ${bind_count} OR u.email ILIKE ${bind_count} OR u.name ILIKE ${bind_count})"
             ));
         }
     }
 
     sql.push_str(" GROUP BY o.id, u.email, u.name ORDER BY o.created_at DESC");
-    sql.push_str(&format!(" LIMIT {} OFFSET {}", per_page, offset));
+    sql.push_str(&format!(" LIMIT {per_page} OFFSET {offset}"));
 
     #[derive(sqlx::FromRow)]
     struct AdminOrderRow {
@@ -78,7 +77,7 @@ pub async fn admin_index(
     // Execute query based on filters
     let orders: Vec<AdminOrderRow> = match (&query.status, &query.search) {
         (Some(status), Some(search)) if !status.is_empty() && !search.is_empty() => {
-            let search_pattern = format!("%{}%", search);
+            let search_pattern = format!("%{search}%");
             sqlx::query_as::<_, AdminOrderRow>(&sql)
                 .bind(status)
                 .bind(&search_pattern)
@@ -92,7 +91,7 @@ pub async fn admin_index(
                 .await
         }
         (_, Some(search)) if !search.is_empty() => {
-            let search_pattern = format!("%{}%", search);
+            let search_pattern = format!("%{search}%");
             sqlx::query_as::<_, AdminOrderRow>(&sql)
                 .bind(&search_pattern)
                 .fetch_all(&state.db.pool)
@@ -100,7 +99,7 @@ pub async fn admin_index(
         }
         _ => {
             sqlx::query_as::<_, AdminOrderRow>(
-                r#"SELECT o.id, o.order_number, o.status, (o.total * 100)::BIGINT AS total_cents, o.currency,
+                r"SELECT o.id, o.order_number, o.status, (o.total * 100)::BIGINT AS total_cents, o.currency,
                           u.email as user_email, u.name as user_name, o.payment_provider,
                           o.created_at, o.completed_at,
                           COUNT(oi.id)::INT as item_count
@@ -109,7 +108,7 @@ pub async fn admin_index(
                    LEFT JOIN order_items oi ON o.id = oi.order_id
                    GROUP BY o.id, u.email, u.name
                    ORDER BY o.created_at DESC
-                   LIMIT $1 OFFSET $2"#,
+                   LIMIT $1 OFFSET $2",
             )
             .bind(per_page)
             .bind(offset)
@@ -132,31 +131,30 @@ pub async fn admin_index(
     // visible result set. Errors propagate via `?` instead of being
     // swallowed by `unwrap_or(0)` (per CLAUDE.md error-handling rule).
     let mut count_sql = String::from(
-        r#"SELECT COUNT(DISTINCT o.id)
+        r"SELECT COUNT(DISTINCT o.id)
            FROM orders o
            LEFT JOIN users u ON o.user_id = u.id
-           WHERE 1=1"#,
+           WHERE 1=1",
     );
     let mut count_bind_count = 0;
     if let Some(ref status) = query.status {
         if !status.is_empty() {
             count_bind_count += 1;
-            count_sql.push_str(&format!(" AND o.status = ${}", count_bind_count));
+            count_sql.push_str(&format!(" AND o.status = ${count_bind_count}"));
         }
     }
     if let Some(ref search) = query.search {
         if !search.is_empty() {
             count_bind_count += 1;
             count_sql.push_str(&format!(
-                " AND (o.order_number ILIKE ${0} OR u.email ILIKE ${0} OR u.name ILIKE ${0})",
-                count_bind_count
+                " AND (o.order_number ILIKE ${count_bind_count} OR u.email ILIKE ${count_bind_count} OR u.name ILIKE ${count_bind_count})"
             ));
         }
     }
 
     let total_count: i64 = match (&query.status, &query.search) {
         (Some(status), Some(search)) if !status.is_empty() && !search.is_empty() => {
-            let search_pattern = format!("%{}%", search);
+            let search_pattern = format!("%{search}%");
             sqlx::query_scalar(&count_sql)
                 .bind(status)
                 .bind(&search_pattern)
@@ -170,7 +168,7 @@ pub async fn admin_index(
                 .await
         }
         (_, Some(search)) if !search.is_empty() => {
-            let search_pattern = format!("%{}%", search);
+            let search_pattern = format!("%{search}%");
             sqlx::query_scalar(&count_sql)
                 .bind(&search_pattern)
                 .fetch_one(&state.db.pool)
@@ -245,22 +243,22 @@ async fn get_admin_order_stats(state: &AppState) -> Result<AdminOrderStats, sqlx
     }
 
     let stats: StatsRow = sqlx::query_as(
-        r#"SELECT
+        r"SELECT
             COUNT(*) as total_orders,
             COUNT(*) FILTER (WHERE status = 'completed') as completed_orders,
             COUNT(*) FILTER (WHERE status = 'pending') as pending_orders,
             COUNT(*) FILTER (WHERE status IN ('refunded', 'partial_refund')) as refunded_orders,
             COALESCE(SUM((total * 100)::BIGINT) FILTER (WHERE status = 'completed'), 0)::BIGINT as total_revenue_cents
-           FROM orders"#,
+           FROM orders",
     )
     .fetch_one(&state.db.pool)
     .await?;
 
     let revenue_this_month_cents: i64 = sqlx::query_scalar(
-        r#"SELECT COALESCE(SUM((total * 100)::BIGINT), 0)::BIGINT
+        r"SELECT COALESCE(SUM((total * 100)::BIGINT), 0)::BIGINT
            FROM orders
            WHERE status = 'completed'
-           AND created_at >= DATE_TRUNC('month', CURRENT_DATE)"#,
+           AND created_at >= DATE_TRUNC('month', CURRENT_DATE)",
     )
     .fetch_one(&state.db.pool)
     .await
@@ -292,12 +290,12 @@ pub async fn admin_show(
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let order: Option<OrderRow> = sqlx::query_as::<_, OrderRow>(
-        r#"SELECT id, order_number, status, (subtotal * 100)::BIGINT AS subtotal_cents, (discount * 100)::BIGINT AS discount_cents,
+        r"SELECT id, order_number, status, (subtotal * 100)::BIGINT AS subtotal_cents, (discount * 100)::BIGINT AS discount_cents,
                   (tax * 100)::BIGINT AS tax_cents, (total * 100)::BIGINT AS total_cents, currency,
                   billing_name, billing_email, billing_address, payment_provider,
                   coupon_code, created_at, completed_at
            FROM orders
-           WHERE id = $1"#,
+           WHERE id = $1",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)

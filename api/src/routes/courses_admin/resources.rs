@@ -39,11 +39,11 @@ pub(super) async fn create_resource(
     let sort_order = max_order.0.unwrap_or(0) + 1;
 
     let resource: CourseResource = sqlx::query_as(
-        r#"INSERT INTO course_resources
+        r"INSERT INTO course_resources
            (course_id, section_id, lesson_id, title, description, file_url, file_name,
             file_type, file_size_bytes, sort_order, version)
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-           RETURNING *"#,
+           RETURNING *",
     )
     .bind(course_id)
     .bind(input.section_id)

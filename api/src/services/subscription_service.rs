@@ -39,7 +39,7 @@ impl<'a> SubscriptionService<'a> {
         user_id: i64,
     ) -> Result<Vec<UserSubscriptionWithPlan>, ApiError> {
         let subscriptions = sqlx::query_as::<_, SubscriptionQueryRow>(
-            r#"
+            r"
             SELECT 
                 um.id,
                 um.user_id,
@@ -61,7 +61,7 @@ impl<'a> SubscriptionService<'a> {
             JOIN membership_plans mp ON um.plan_id = mp.id
             WHERE um.user_id = $1
             ORDER BY um.created_at DESC
-            "#,
+            ",
         )
         .bind(user_id)
         .fetch_all(self.db)
@@ -69,7 +69,7 @@ impl<'a> SubscriptionService<'a> {
         .map_err(|e| {
             ApiError::new(
                 axum::http::StatusCode::INTERNAL_SERVER_ERROR,
-                format!("Database error: {}", e),
+                format!("Database error: {e}"),
             )
         })?;
 
@@ -102,7 +102,7 @@ impl<'a> SubscriptionService<'a> {
         subscription_id: i64,
     ) -> Result<Option<UserSubscriptionWithPlan>, ApiError> {
         let subscription = sqlx::query_as::<_, SubscriptionQueryRow>(
-            r#"
+            r"
             SELECT 
                 um.id,
                 um.user_id,
@@ -123,7 +123,7 @@ impl<'a> SubscriptionService<'a> {
             FROM user_memberships um
             JOIN membership_plans mp ON um.plan_id = mp.id
             WHERE um.id = $1 AND um.user_id = $2
-            "#,
+            ",
         )
         .bind(subscription_id)
         .bind(user_id)
@@ -132,7 +132,7 @@ impl<'a> SubscriptionService<'a> {
         .map_err(|e| {
             ApiError::new(
                 axum::http::StatusCode::INTERNAL_SERVER_ERROR,
-                format!("Database error: {}", e),
+                format!("Database error: {e}"),
             )
         })?;
 

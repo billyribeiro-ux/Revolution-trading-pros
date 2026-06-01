@@ -24,14 +24,14 @@ pub(super) async fn get_presets_by_block_type_public(
 ) -> ApiResult<GroupedPresetsResponse> {
     // Fetch all global presets for this block type
     let presets: Vec<CmsPresetSummary> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, block_type, name, slug, description, thumbnail_url, thumbnail_blurhash,
                category::text as category, tags, is_default, is_locked, is_global,
                usage_count, created_at, updated_at
         FROM cms_presets
         WHERE block_type = $1 AND deleted_at IS NULL AND is_global = true
         ORDER BY category, is_default DESC, usage_count DESC, name
-        "#,
+        ",
     )
     .bind(&block_type)
     .fetch_all(&state.db.pool)

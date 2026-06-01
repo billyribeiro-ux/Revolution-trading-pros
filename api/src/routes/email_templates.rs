@@ -80,16 +80,16 @@ async fn list_templates(
     let per_page = query.per_page.unwrap_or(20).min(100);
     let offset = (page - 1) * per_page;
 
-    let search_pattern: Option<String> = query.search.as_ref().map(|s| format!("%{}%", s));
+    let search_pattern: Option<String> = query.search.as_ref().map(|s| format!("%{s}%"));
 
     let templates: Vec<EmailTemplateRow> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, name, slug, subject, html_content AS body, variables, is_active, created_at, updated_at
         FROM email_templates
         WHERE ($1::text IS NULL OR name ILIKE $1 OR subject ILIKE $1)
         ORDER BY created_at DESC
         LIMIT $2 OFFSET $3
-        "#,
+        ",
     )
     .bind(search_pattern.as_deref())
     .bind(per_page)
@@ -105,10 +105,10 @@ async fn list_templates(
     })?;
 
     let total: (i64,) = sqlx::query_as(
-        r#"
+        r"
         SELECT COUNT(*) FROM email_templates
         WHERE ($1::text IS NULL OR name ILIKE $1 OR subject ILIKE $1)
-        "#,
+        ",
     )
     .bind(search_pattern.as_deref())
     .fetch_one(&state.db.pool)
@@ -162,11 +162,11 @@ async fn create_template(
     let variables = input.variables.unwrap_or(json!([]));
 
     let template: EmailTemplateRow = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO email_templates (name, slug, subject, html_content, variables, is_active, created_at, updated_at)
         VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
         RETURNING id, name, slug, subject, html_content AS body, variables, is_active, created_at, updated_at
-        "#
+        "
     )
     .bind(&input.name)
     .bind(&slug)
@@ -202,7 +202,7 @@ async fn update_template(
     );
 
     let template: EmailTemplateRow = sqlx::query_as(
-        r#"
+        r"
         UPDATE email_templates SET
             name = COALESCE($2, name),
             slug = CASE WHEN $2 IS NOT NULL THEN LOWER(REPLACE($2, ' ', '-')) ELSE slug END,
@@ -213,7 +213,7 @@ async fn update_template(
             updated_at = NOW()
         WHERE id = $1
         RETURNING id, name, slug, subject, html_content AS body, variables, is_active, created_at, updated_at
-        "#,
+        ",
     )
     .bind(id)
     .bind(&input.name)
@@ -316,7 +316,7 @@ async fn preview_template(
 
     if let Some(data_obj) = input.data.as_object() {
         for (key, value) in data_obj {
-            let placeholder = format!("{{{{{}}}}}", key);
+            let placeholder = format!("{{{{{key}}}}}");
             let value_string = value.to_string();
             let raw_value = value.as_str().unwrap_or(&value_string);
 
@@ -358,7 +358,7 @@ fn is_valid_email(email: &str) -> bool {
 
 /// Send test email (admin)
 async fn send_test_email(
-    State(_state): State<AppState>,
+    State(state): State<AppState>,
     AdminUser(user): AdminUser,
     Path(id): Path<i64>,
     Json(input): Json<SendTestRequest>,
@@ -381,14 +381,53 @@ async fn send_test_email(
         "Admin sending test email"
     );
 
-    // TODO: Integrate with actual email service (Postmark, SendGrid, etc.)
-    // For now, return success as placeholder
+    // Send test email via Postmark using the template's slug as the alias.
+    // Falls back to graceful no-op if POSTMARK_TOKEN is not set.
+    let template: Option<EmailTemplateRow> =
+        sqlx::query_as("SELECT * FROM email_templates WHERE id = $1")
+            .bind(id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": format!("DB error: {}", e)})),
+                )
+            })?;
 
-    Ok(Json(json!({
-        "message": format!("Test email would be sent to {}", email),
-        "note": "Email service integration pending",
-        "template_id": id
-    })))
+    let alias = template
+        .as_ref()
+        .map(|t| t.slug.clone())
+        .unwrap_or_else(|| format!("template-{id}"));
+
+    let model = serde_json::json!({
+        "recipient": &email,
+        "admin_name": user.name,
+        "template_id": id,
+        "app_url": state.config.app_url,
+        "test": true,
+    });
+
+    match state
+        .services
+        .email
+        .send_transactional(&state.db.pool, &email, &alias, model)
+        .await
+    {
+        Ok(()) => Ok(Json(json!({
+            "message": format!("Test email sent to {}", email),
+            "template_id": id,
+            "alias": alias,
+            "email_service_enabled": state.services.email.is_enabled(),
+        }))),
+        Err(e) => Err((
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({
+                "error": format!("Failed to send test email: {}", e),
+                "template_id": id,
+            })),
+        )),
+    }
 }
 
 /// GET /admin/email/settings - Get email configuration settings

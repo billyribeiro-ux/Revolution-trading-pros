@@ -56,7 +56,7 @@ pub(super) async fn generate_secure_download(
             })?;
 
     // Construct the secure download URL
-    let secure_url = format!("/api/room-resources/{}/download?token={}", id, token);
+    let secure_url = format!("/api/room-resources/{id}/download?token={token}");
 
     // Track download attempt
     let _ = sqlx::query(

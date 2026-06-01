@@ -40,7 +40,7 @@ pub(super) async fn send_renewal_reminders(
     }
 
     let subscriptions: Vec<RenewalSubscription> = sqlx::query_as(
-        r#"
+        r"
         SELECT
             um.id,
             u.email as user_email,
@@ -57,7 +57,7 @@ pub(super) async fn send_renewal_reminders(
         AND um.renewal_reminder_sent_at IS NULL
         ORDER BY um.current_period_end ASC
         LIMIT 100
-        "#,
+        ",
     )
     .fetch_all(&state.db.pool)
     .await
@@ -146,7 +146,7 @@ pub(super) async fn send_trial_ending_notifications(
     }
 
     let subscriptions: Vec<TrialSubscription> = sqlx::query_as(
-        r#"
+        r"
         SELECT
             um.id,
             u.email as user_email,
@@ -163,7 +163,7 @@ pub(super) async fn send_trial_ending_notifications(
         AND um.trial_ending_reminder_sent_at IS NULL
         ORDER BY um.trial_ends_at ASC
         LIMIT 100
-        "#,
+        ",
     )
     .fetch_all(&state.db.pool)
     .await
@@ -250,12 +250,12 @@ pub(super) async fn send_cancellation_email(
     }
 
     let sub: CancelledSubscription = sqlx::query_as(
-        r#"
+        r"
         SELECT mp.name as plan_name, um.current_period_end, um.cancel_at_period_end, um.status
         FROM user_memberships um
         JOIN membership_plans mp ON um.plan_id = mp.id
         WHERE um.id = $1 AND um.user_id = $2
-        "#,
+        ",
     )
     .bind(id)
     .bind(user.id)

@@ -60,7 +60,7 @@ pub(super) async fn list_indicators(
     // Money is integer cents at the Rust boundary; project explicit columns
     // so the FromRow shape matches IndicatorRow.
     let indicators: Vec<IndicatorRow> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, name, slug, description, long_description,
                price_cents,
                is_active, platform, version, download_url, documentation_url,
@@ -72,7 +72,7 @@ pub(super) async fn list_indicators(
         AND ($3::TEXT IS NULL OR name ILIKE '%' || $3 || '%' OR description ILIKE '%' || $3 || '%')
         ORDER BY created_at DESC
         LIMIT $4 OFFSET $5
-        "#,
+        ",
     )
     .bind(params.is_active)
     .bind(&platform)
@@ -90,12 +90,12 @@ pub(super) async fn list_indicators(
 
     // ICT 7: Parameterized count query
     let total: (i64,) = sqlx::query_as(
-        r#"
+        r"
         SELECT COUNT(*) FROM indicators
         WHERE ($1::BOOLEAN IS NULL OR is_active = $1)
         AND ($2::TEXT IS NULL OR LOWER(platform) = $2)
         AND ($3::TEXT IS NULL OR name ILIKE '%' || $3 || '%' OR description ILIKE '%' || $3 || '%')
-        "#,
+        ",
     )
     .bind(params.is_active)
     .bind(&platform)
@@ -123,13 +123,13 @@ pub(super) async fn get_indicator(
     State(state): State<AppState>,
     Path(id): Path<String>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let select_cols = r#"id, name, slug, description, long_description,
+    let select_cols = r"id, name, slug, description, long_description,
         price_cents,
         is_active, platform, version, download_url, documentation_url,
         thumbnail, screenshots, features, requirements,
-        meta_title, meta_description, created_at, updated_at"#;
-    let by_id_sql = format!("SELECT {} FROM indicators WHERE id = $1", select_cols);
-    let by_slug_sql = format!("SELECT {} FROM indicators WHERE slug = $1", select_cols);
+        meta_title, meta_description, created_at, updated_at";
+    let by_id_sql = format!("SELECT {select_cols} FROM indicators WHERE id = $1");
+    let by_slug_sql = format!("SELECT {select_cols} FROM indicators WHERE slug = $1");
     let indicator: IndicatorRow = if let Ok(numeric_id) = id.parse::<i64>() {
         sqlx::query_as(&by_id_sql)
             .bind(numeric_id)
@@ -188,7 +188,7 @@ pub(super) async fn create_indicator(
     // Money is integer cents. Migration 061 drops the legacy NUMERIC `price`
     // column; we only write `price_cents` here.
     let indicator: IndicatorRow = sqlx::query_as(
-        r#"INSERT INTO indicators (
+        r"INSERT INTO indicators (
             name, slug, description, long_description,
             price_cents,
             platform, version,
@@ -202,7 +202,7 @@ pub(super) async fn create_indicator(
             price_cents,
             is_active, platform, version, download_url, documentation_url,
             thumbnail, screenshots, features, requirements,
-            meta_title, meta_description, created_at, updated_at"#,
+            meta_title, meta_description, created_at, updated_at",
     )
     .bind(&input.name)
     .bind(&slug)
@@ -242,7 +242,7 @@ pub(super) async fn update_indicator(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Money is integer cents (Migration 061 drops legacy NUMERIC `price`).
     let indicator: IndicatorRow = sqlx::query_as(
-        r#"UPDATE indicators SET
+        r"UPDATE indicators SET
             name = COALESCE($1, name),
             slug = COALESCE($2, slug),
             description = COALESCE($3, description),
@@ -264,7 +264,7 @@ pub(super) async fn update_indicator(
             price_cents,
             is_active, platform, version, download_url, documentation_url,
             thumbnail, screenshots, features, requirements,
-            meta_title, meta_description, created_at, updated_at"#,
+            meta_title, meta_description, created_at, updated_at",
     )
     .bind(&input.name)
     .bind(&input.slug)
@@ -326,14 +326,14 @@ pub(super) async fn toggle_indicator(
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let indicator: IndicatorRow = sqlx::query_as(
-        r#"UPDATE indicators
+        r"UPDATE indicators
            SET is_active = NOT COALESCE(is_active, false), updated_at = NOW()
            WHERE id = $1
            RETURNING id, name, slug, description, long_description,
                price_cents,
                is_active, platform, version, download_url, documentation_url,
                thumbnail, screenshots, features, requirements,
-               meta_title, meta_description, created_at, updated_at"#,
+               meta_title, meta_description, created_at, updated_at",
     )
     .bind(id)
     .fetch_one(&state.db.pool)

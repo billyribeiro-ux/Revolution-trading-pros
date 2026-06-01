@@ -42,7 +42,7 @@ pub(super) async fn admin_list_schedules(
     );
 
     let schedules: Vec<ScheduleRow> = sqlx::query_as(
-        r#"
+        r"
         SELECT
             s.id, s.plan_id, s.title, s.description, s.trader_name, s.trader_id,
             s.day_of_week, s.start_time, s.end_time, s.timezone,
@@ -50,7 +50,7 @@ pub(super) async fn admin_list_schedules(
             s.is_active, s.room_url, s.room_type, s.created_at, s.updated_at
         FROM trading_room_schedules s
         ORDER BY s.plan_id, s.day_of_week, s.start_time
-        "#,
+        ",
     )
     .fetch_all(&state.db.pool)
     .await
@@ -83,7 +83,7 @@ pub(super) async fn admin_get_plan_schedules(
     );
 
     let schedules: Vec<ScheduleRow> = sqlx::query_as(
-        r#"
+        r"
         SELECT
             id, plan_id, title, description, trader_name, trader_id,
             day_of_week, start_time, end_time, timezone,
@@ -92,7 +92,7 @@ pub(super) async fn admin_get_plan_schedules(
         FROM trading_room_schedules
         WHERE plan_id = $1
         ORDER BY day_of_week, start_time
-        "#,
+        ",
     )
     .bind(plan_id)
     .fetch_all(&state.db.pool)
@@ -166,7 +166,7 @@ pub(super) async fn admin_create_schedule(
 
     // Insert schedule
     let schedule: ScheduleRow = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO trading_room_schedules (
             plan_id, title, description, trader_name, trader_id,
             day_of_week, start_time, end_time, timezone,
@@ -175,7 +175,7 @@ pub(super) async fn admin_create_schedule(
         )
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
         RETURNING *
-        "#,
+        ",
     )
     .bind(input.plan_id)
     .bind(&input.title)
@@ -237,47 +237,47 @@ pub(super) async fn admin_update_schedule(
     let mut param_count = 1;
 
     if input.title.is_some() {
-        updates.push(format!("title = ${}", param_count));
+        updates.push(format!("title = ${param_count}"));
         param_count += 1;
     }
     if input.description.is_some() {
-        updates.push(format!("description = ${}", param_count));
+        updates.push(format!("description = ${param_count}"));
         param_count += 1;
     }
     if input.trader_name.is_some() {
-        updates.push(format!("trader_name = ${}", param_count));
+        updates.push(format!("trader_name = ${param_count}"));
         param_count += 1;
     }
     if input.day_of_week.is_some() {
-        updates.push(format!("day_of_week = ${}", param_count));
+        updates.push(format!("day_of_week = ${param_count}"));
         param_count += 1;
     }
     if input.start_time.is_some() {
-        updates.push(format!("start_time = ${}", param_count));
+        updates.push(format!("start_time = ${param_count}"));
         param_count += 1;
     }
     if input.end_time.is_some() {
-        updates.push(format!("end_time = ${}", param_count));
+        updates.push(format!("end_time = ${param_count}"));
         param_count += 1;
     }
     if input.timezone.is_some() {
-        updates.push(format!("timezone = ${}", param_count));
+        updates.push(format!("timezone = ${param_count}"));
         param_count += 1;
     }
     if input.is_active.is_some() {
-        updates.push(format!("is_active = ${}", param_count));
+        updates.push(format!("is_active = ${param_count}"));
         param_count += 1;
     }
     if input.room_url.is_some() {
-        updates.push(format!("room_url = ${}", param_count));
+        updates.push(format!("room_url = ${param_count}"));
         param_count += 1;
     }
     if input.room_type.is_some() {
-        updates.push(format!("room_type = ${}", param_count));
+        updates.push(format!("room_type = ${param_count}"));
         param_count += 1;
     }
 
-    updates.push(format!("updated_by = ${}", param_count));
+    updates.push(format!("updated_by = ${param_count}"));
     param_count += 1;
     updates.push(format!("updated_at = NOW()"));
 

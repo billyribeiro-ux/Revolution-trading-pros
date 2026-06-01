@@ -56,13 +56,13 @@ pub(super) async fn enroll_user(
     };
 
     let enrollment = sqlx::query_as::<_, (i64, Uuid, i64, Option<i32>, String, NaiveDateTime)>(
-        r#"
+        r"
         INSERT INTO user_course_enrollments (
             user_id, course_id, status, progress_percent, is_lifetime_access,
             access_expires_at, enrolled_at
         ) VALUES ($1, $2, 'active', 0, $3, $4, NOW())
         RETURNING id, course_id, user_id, progress_percent, status, enrolled_at
-        "#,
+        ",
     )
     .bind(input.user_id)
     .bind(course_id)
@@ -118,13 +118,13 @@ pub(super) async fn list_enrollments(
             Option<bool>,
         ),
     >(
-        r#"
+        r"
         SELECT e.id, e.user_id, e.progress_percent, e.status, e.enrolled_at,
                e.completed_at, e.certificate_issued
         FROM user_course_enrollments e
         WHERE e.course_id = $1
         ORDER BY e.enrolled_at DESC
-        "#,
+        ",
     )
     .bind(course_id)
     .fetch_all(&state.db.pool)

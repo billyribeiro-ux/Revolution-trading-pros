@@ -58,7 +58,7 @@ pub(super) async fn list_public_indicators(
     // ICT 7: Use parameterized queries - matching actual database schema.
     // Money is integer cents (Migration 061 dropped legacy NUMERIC `price`).
     let indicators: Vec<IndicatorListItem> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, name, slug, description, price_cents, is_active, platform, thumbnail, created_at
         FROM indicators
         WHERE is_active = true
@@ -67,7 +67,7 @@ pub(super) async fn list_public_indicators(
         AND ($3::TEXT IS NULL OR name ILIKE '%' || $3 || '%' OR description ILIKE '%' || $3 || '%')
         ORDER BY created_at DESC
         LIMIT $4 OFFSET $5
-        "#,
+        ",
     )
     .bind(params.is_free)
     .bind(&platform)
@@ -85,13 +85,13 @@ pub(super) async fn list_public_indicators(
 
     // ICT 7: Parameterized count query
     let total: (i64,) = sqlx::query_as(
-        r#"
+        r"
         SELECT COUNT(*) FROM indicators
         WHERE is_active = true
         AND ($1::BOOLEAN IS NULL OR is_active = $1)
         AND ($2::TEXT IS NULL OR LOWER(platform) = $2)
         AND ($3::TEXT IS NULL OR name ILIKE '%' || $3 || '%' OR description ILIKE '%' || $3 || '%')
-        "#,
+        ",
     )
     .bind(params.is_free)
     .bind(&platform)

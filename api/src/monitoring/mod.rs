@@ -98,7 +98,7 @@ async fn metrics_endpoint(State(metrics): State<Metrics>) -> String {
     let snapshot = metrics.snapshot();
 
     format!(
-        r#"# HELP requests_total Total number of requests
+        r"# HELP requests_total Total number of requests
 # TYPE requests_total counter
 requests_total {}
 
@@ -121,7 +121,7 @@ auth_success {}
 # HELP auth_failures Total number of failed authentications
 # TYPE auth_failures counter
 auth_failures {}
-"#,
+",
         snapshot.requests_total,
         snapshot.requests_success,
         snapshot.requests_error,

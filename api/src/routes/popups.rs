@@ -100,7 +100,7 @@ async fn get_active_popups(
 
     // Fetch all published popups that match the targeting criteria
     let popups_result: Result<Vec<PopupRow>, _> = sqlx::query_as(
-        r#"
+        r"
         SELECT
             id, name, type as popup_type, status, priority,
             title, content, cta_text, cta_url, cta_new_tab,
@@ -115,7 +115,7 @@ async fn get_active_popups(
           AND (start_date IS NULL OR start_date <= $1)
           AND (end_date IS NULL OR end_date >= $1)
         ORDER BY priority DESC
-        "#,
+        ",
     )
     .bind(now)
     .fetch_all(&state.db.pool)
@@ -294,10 +294,10 @@ async fn track_impression(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Insert event
     let _ = sqlx::query(
-        r#"
+        r"
         INSERT INTO popup_events (popup_id, event_type, session_id, page_url, device_type, created_at)
         VALUES ($1, 'view', $2, $3, $4, NOW())
-        "#,
+        ",
     )
     .bind(id)
     .bind(&body.session_id)
@@ -308,7 +308,7 @@ async fn track_impression(
 
     // Update popup total views
     let _ = sqlx::query(
-        r#"
+        r"
         UPDATE popups
         SET total_views = total_views + 1,
             conversion_rate = CASE
@@ -317,7 +317,7 @@ async fn track_impression(
                 ELSE 0
             END
         WHERE id = $1
-        "#,
+        ",
     )
     .bind(id)
     .execute(&state.db.pool)
@@ -334,10 +334,10 @@ async fn track_conversion(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Insert event
     let _ = sqlx::query(
-        r#"
+        r"
         INSERT INTO popup_events (popup_id, event_type, session_id, page_url, device_type, metadata, created_at)
         VALUES ($1, 'conversion', $2, $3, $4, $5, NOW())
-        "#,
+        ",
     )
     .bind(id)
     .bind(&body.session_id)
@@ -349,7 +349,7 @@ async fn track_conversion(
 
     // Update popup totals
     let _ = sqlx::query(
-        r#"
+        r"
         UPDATE popups
         SET total_conversions = total_conversions + 1,
             conversion_rate = CASE
@@ -358,7 +358,7 @@ async fn track_conversion(
                 ELSE 0
             END
         WHERE id = $1
-        "#,
+        ",
     )
     .bind(id)
     .execute(&state.db.pool)
@@ -421,10 +421,10 @@ async fn submit_popup_form(
 
     // Store form submission
     let _ = sqlx::query(
-        r#"
+        r"
         INSERT INTO popup_form_submissions (popup_id, form_id, data, session_id, metadata, created_at)
         VALUES ($1, $2, $3, $4, $5, NOW())
-        "#,
+        ",
     )
     .bind(id)
     .bind(form_id)
@@ -436,10 +436,10 @@ async fn submit_popup_form(
 
     // Track as conversion
     let _ = sqlx::query(
-        r#"
+        r"
         INSERT INTO popup_events (popup_id, event_type, session_id, metadata, created_at)
         VALUES ($1, 'conversion', $2, $3, NOW())
-        "#,
+        ",
     )
     .bind(id)
     .bind(&body.session_id)
@@ -449,7 +449,7 @@ async fn submit_popup_form(
 
     // Update conversion count
     let _ = sqlx::query(
-        r#"
+        r"
         UPDATE popups
         SET total_conversions = total_conversions + 1,
             conversion_rate = CASE
@@ -458,7 +458,7 @@ async fn submit_popup_form(
                 ELSE 0
             END
         WHERE id = $1
-        "#,
+        ",
     )
     .bind(id)
     .execute(&state.db.pool)
@@ -486,10 +486,10 @@ async fn track_events_batch(
     let event_count = body.events.len();
     for event in body.events {
         let _ = sqlx::query(
-            r#"
+            r"
             INSERT INTO popup_events (popup_id, event_type, session_id, page_url, device_type, metadata, created_at)
             VALUES ($1, $2, $3, $4, $5, $6, NOW())
-            "#,
+            ",
         )
         .bind(event.popup_id)
         .bind(&event.event_type)

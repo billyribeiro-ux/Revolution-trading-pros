@@ -59,14 +59,14 @@ async fn list_layouts(
 
     // ICT 7 SECURITY FIX: Use parameterized queries instead of string interpolation
     let layouts: Vec<PageLayoutListItem> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, course_id, title, slug, status, version, created_at, updated_at
         FROM page_layouts
         WHERE ($1::uuid IS NULL OR course_id = $1)
           AND ($2::text IS NULL OR status = $2)
         ORDER BY updated_at DESC
         LIMIT $3 OFFSET $4
-        "#,
+        ",
     )
     .bind(params.course_id)
     .bind(params.status.as_deref())
@@ -84,12 +84,12 @@ async fn list_layouts(
 
     // ICT 7 SECURITY FIX: Parameterized count query
     let total: (i64,) = sqlx::query_as(
-        r#"
+        r"
         SELECT COUNT(*)
         FROM page_layouts
         WHERE ($1::uuid IS NULL OR course_id = $1)
           AND ($2::text IS NULL OR status = $2)
-        "#,
+        ",
     )
     .bind(params.course_id)
     .bind(params.status.as_deref())
@@ -126,7 +126,7 @@ async fn get_layout(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     require_admin(&user)?;
 
-    let layout: PageLayout = sqlx::query_as(r#"SELECT * FROM page_layouts WHERE id = $1"#)
+    let layout: PageLayout = sqlx::query_as(r"SELECT * FROM page_layouts WHERE id = $1")
         .bind(id)
         .fetch_optional(&state.db.pool)
         .await
@@ -160,7 +160,7 @@ async fn get_layout_by_course(
     require_admin(&user)?;
 
     let layout: Option<PageLayout> = sqlx::query_as(
-        r#"SELECT * FROM page_layouts WHERE course_id = $1 ORDER BY updated_at DESC LIMIT 1"#,
+        r"SELECT * FROM page_layouts WHERE course_id = $1 ORDER BY updated_at DESC LIMIT 1",
     )
     .bind(course_id)
     .fetch_optional(&state.db.pool)
@@ -207,11 +207,11 @@ async fn create_layout(
     let blocks = input.blocks.unwrap_or_else(|| json!([]));
 
     let layout: PageLayout = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO page_layouts (course_id, title, slug, description, blocks, status, created_by)
         VALUES ($1, $2, $3, $4, $5, 'draft', $6)
         RETURNING *
-        "#,
+        ",
     )
     .bind(input.course_id)
     .bind(&input.title)
@@ -288,11 +288,11 @@ async fn update_layout(
 
         if let Some(layout) = current {
             let _ = sqlx::query(
-                r#"
+                r"
                 INSERT INTO page_layout_versions (layout_id, version, blocks, created_by)
                 VALUES ($1, $2, $3, $4)
                 ON CONFLICT (layout_id, version) DO NOTHING
-                "#,
+                ",
             )
             .bind(id)
             .bind(layout.version.unwrap_or(1))
@@ -304,7 +304,7 @@ async fn update_layout(
     }
 
     let layout: PageLayout = sqlx::query_as(
-        r#"
+        r"
         UPDATE page_layouts SET
             title = COALESCE($1, title),
             slug = COALESCE($2, slug),
@@ -317,7 +317,7 @@ async fn update_layout(
             updated_by = $7
         WHERE id = $6
         RETURNING *
-        "#,
+        ",
     )
     .bind(&input.title)
     .bind(&input.slug)
@@ -427,12 +427,12 @@ async fn publish_layout(
     require_admin(&user)?;
 
     let layout: PageLayout = sqlx::query_as(
-        r#"
+        r"
         UPDATE page_layouts
         SET status = 'published', published_at = NOW(), updated_at = NOW(), published_by = $2
         WHERE id = $1
         RETURNING *
-        "#,
+        ",
     )
     .bind(id)
     .bind(user.id)
@@ -476,12 +476,12 @@ async fn unpublish_layout(
     require_admin(&user)?;
 
     let layout: PageLayout = sqlx::query_as(
-        r#"
+        r"
         UPDATE page_layouts
         SET status = 'draft', updated_at = NOW()
         WHERE id = $1
         RETURNING *
-        "#,
+        ",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -524,12 +524,12 @@ async fn get_layout_versions(
     require_admin(&user)?;
 
     let versions: Vec<PageLayoutVersion> = sqlx::query_as(
-        r#"
+        r"
         SELECT * FROM page_layout_versions
         WHERE layout_id = $1
         ORDER BY version DESC
         LIMIT 50
-        "#,
+        ",
     )
     .bind(id)
     .fetch_all(&state.db.pool)
@@ -595,11 +595,11 @@ async fn restore_layout_version(
 
     if let Some(layout) = current {
         let _ = sqlx::query(
-            r#"
+            r"
             INSERT INTO page_layout_versions (layout_id, version, blocks, created_by)
             VALUES ($1, $2, $3, $4)
             ON CONFLICT (layout_id, version) DO NOTHING
-            "#,
+            ",
         )
         .bind(id)
         .bind(layout.version.unwrap_or(1))
@@ -610,7 +610,7 @@ async fn restore_layout_version(
     }
 
     let layout: PageLayout = sqlx::query_as(
-        r#"
+        r"
         UPDATE page_layouts SET
             blocks = $1,
             version = COALESCE(version, 0) + 1,
@@ -618,7 +618,7 @@ async fn restore_layout_version(
             updated_by = $3
         WHERE id = $2
         RETURNING *
-        "#,
+        ",
     )
     .bind(&version_data.blocks)
     .bind(id)
@@ -691,11 +691,11 @@ async fn duplicate_layout(
     );
 
     let layout: PageLayout = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO page_layouts (course_id, title, slug, description, blocks, status, created_by)
         VALUES ($1, $2, $3, $4, $5, 'draft', $6)
         RETURNING *
-        "#,
+        ",
     )
     .bind(original.course_id)
     .bind(&new_title)

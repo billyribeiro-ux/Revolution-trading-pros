@@ -63,18 +63,18 @@ pub(super) async fn list_segments(
     let per_page = query.per_page.unwrap_or(50).min(100);
     let offset = (page - 1) * per_page;
 
-    let search_pattern: Option<String> = query.search.as_ref().map(|s| format!("%{}%", s));
+    let search_pattern: Option<String> = query.search.as_ref().map(|s| format!("%{s}%"));
 
     // Gracefully handle missing table - return empty array instead of 500 error
     let segments: Vec<MemberSegment> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, name, slug, description, rules, member_count, is_active, created_at, updated_at
         FROM member_segments
         WHERE ($1::text IS NULL OR name ILIKE $1 OR description ILIKE $1)
           AND ($2::boolean IS NULL OR is_active = $2)
         ORDER BY created_at DESC
         LIMIT $3 OFFSET $4
-        "#,
+        ",
     )
     .bind(search_pattern.as_deref())
     .bind(query.is_active)
@@ -91,12 +91,12 @@ pub(super) async fn list_segments(
     });
 
     let total: i64 = sqlx::query_as::<_, (i64,)>(
-        r#"
+        r"
         SELECT COUNT(*)
         FROM member_segments
         WHERE ($1::text IS NULL OR name ILIKE $1 OR description ILIKE $1)
           AND ($2::boolean IS NULL OR is_active = $2)
-        "#,
+        ",
     )
     .bind(search_pattern.as_deref())
     .bind(query.is_active)
@@ -152,11 +152,11 @@ pub(super) async fn create_segment(
     });
 
     let segment: MemberSegment = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO member_segments (name, slug, description, rules, member_count, is_active, created_at, updated_at)
         VALUES ($1, $2, $3, $4, 0, $5, NOW(), NOW())
         RETURNING id, name, slug, description, rules, member_count, is_active, created_at, updated_at
-        "#
+        "
     )
     .bind(&input.name)
     .bind(&slug)
@@ -189,23 +189,23 @@ pub(super) async fn update_segment(
 
     if input.name.is_some() {
         param_count += 1;
-        set_clauses.push(format!("name = ${}", param_count));
+        set_clauses.push(format!("name = ${param_count}"));
     }
     if input.slug.is_some() {
         param_count += 1;
-        set_clauses.push(format!("slug = ${}", param_count));
+        set_clauses.push(format!("slug = ${param_count}"));
     }
     if input.description.is_some() {
         param_count += 1;
-        set_clauses.push(format!("description = ${}", param_count));
+        set_clauses.push(format!("description = ${param_count}"));
     }
     if input.rules.is_some() {
         param_count += 1;
-        set_clauses.push(format!("rules = ${}", param_count));
+        set_clauses.push(format!("rules = ${param_count}"));
     }
     if input.is_active.is_some() {
         param_count += 1;
-        set_clauses.push(format!("is_active = ${}", param_count));
+        set_clauses.push(format!("is_active = ${param_count}"));
     }
 
     set_clauses.push("updated_at = NOW()".to_string());

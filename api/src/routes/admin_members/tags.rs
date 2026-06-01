@@ -71,17 +71,17 @@ pub(super) async fn list_member_tags(
     let per_page = query.per_page.unwrap_or(100).min(500);
     let offset = (page - 1) * per_page;
 
-    let search_pattern: Option<String> = query.search.as_ref().map(|s| format!("%{}%", s));
+    let search_pattern: Option<String> = query.search.as_ref().map(|s| format!("%{s}%"));
 
     // Gracefully handle missing table - return empty array instead of 500 error
     let tags: Vec<MemberTag> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, name, slug, color, description, member_count, created_at, updated_at
         FROM member_tags
         WHERE ($1::text IS NULL OR name ILIKE $1 OR description ILIKE $1)
         ORDER BY name ASC
         LIMIT $2 OFFSET $3
-        "#,
+        ",
     )
     .bind(search_pattern.as_deref())
     .bind(per_page)
@@ -97,11 +97,11 @@ pub(super) async fn list_member_tags(
     });
 
     let total: i64 = sqlx::query_as::<_, (i64,)>(
-        r#"
+        r"
         SELECT COUNT(*)
         FROM member_tags
         WHERE ($1::text IS NULL OR name ILIKE $1 OR description ILIKE $1)
-        "#,
+        ",
     )
     .bind(search_pattern.as_deref())
     .fetch_one(&state.db.pool)
@@ -156,11 +156,11 @@ pub(super) async fn create_member_tag(
     });
 
     let tag: MemberTag = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO member_tags (name, slug, color, description, member_count, created_at, updated_at)
         VALUES ($1, $2, $3, $4, 0, NOW(), NOW())
         RETURNING id, name, slug, color, description, member_count, created_at, updated_at
-        "#
+        "
     )
     .bind(&input.name)
     .bind(&slug)
@@ -191,19 +191,19 @@ pub(super) async fn update_member_tag(
 
     if input.name.is_some() {
         param_count += 1;
-        set_clauses.push(format!("name = ${}", param_count));
+        set_clauses.push(format!("name = ${param_count}"));
     }
     if input.slug.is_some() {
         param_count += 1;
-        set_clauses.push(format!("slug = ${}", param_count));
+        set_clauses.push(format!("slug = ${param_count}"));
     }
     if input.color.is_some() {
         param_count += 1;
-        set_clauses.push(format!("color = ${}", param_count));
+        set_clauses.push(format!("color = ${param_count}"));
     }
     if input.description.is_some() {
         param_count += 1;
-        set_clauses.push(format!("description = ${}", param_count));
+        set_clauses.push(format!("description = ${param_count}"));
     }
 
     set_clauses.push("updated_at = NOW()".to_string());
@@ -288,11 +288,11 @@ pub(super) async fn assign_tag_to_user(
     Json(input): Json<AssignTagRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     sqlx::query(
-        r#"
+        r"
         INSERT INTO user_member_tags (user_id, tag_id, created_at)
         VALUES ($1, $2, NOW())
         ON CONFLICT (user_id, tag_id) DO NOTHING
-        "#,
+        ",
     )
     .bind(input.user_id)
     .bind(input.tag_id)
@@ -360,11 +360,11 @@ pub(super) async fn bulk_assign_tags(
     for user_id in &input.user_ids {
         for tag_id in &input.tag_ids {
             let result = sqlx::query(
-                r#"
+                r"
                 INSERT INTO user_member_tags (user_id, tag_id, created_at)
                 VALUES ($1, $2, NOW())
                 ON CONFLICT (user_id, tag_id) DO NOTHING
-                "#,
+                ",
             )
             .bind(user_id)
             .bind(tag_id)

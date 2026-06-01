@@ -18,7 +18,7 @@ impl<'a> OrderService<'a> {
 
     pub async fn get_user_orders(&self, user_id: Uuid) -> Result<Vec<OrderSummary>, ApiError> {
         let orders = sqlx::query_as::<_, OrderSummary>(
-            r#"
+            r"
             SELECT
                 o.id,
                 o.order_number,
@@ -32,7 +32,7 @@ impl<'a> OrderService<'a> {
             WHERE o.user_id = $1
             GROUP BY o.id, o.order_number, o.status, o.total, o.currency, o.created_at
             ORDER BY o.created_at DESC
-            "#,
+            ",
         )
         .bind(user_id)
         .fetch_all(self.db)
@@ -40,7 +40,7 @@ impl<'a> OrderService<'a> {
         .map_err(|e| {
             ApiError::new(
                 axum::http::StatusCode::INTERNAL_SERVER_ERROR,
-                format!("Database error: {}", e),
+                format!("Database error: {e}"),
             )
         })?;
 
@@ -78,7 +78,7 @@ impl<'a> OrderService<'a> {
         }
 
         let order = sqlx::query_as::<_, OrderQueryRow>(
-            r#"
+            r"
             SELECT
                 id,
                 order_number,
@@ -93,7 +93,7 @@ impl<'a> OrderService<'a> {
                 created_at
             FROM orders
             WHERE id = $1 AND user_id = $2
-            "#,
+            ",
         )
         .bind(order_id)
         .bind(user_id)
@@ -102,7 +102,7 @@ impl<'a> OrderService<'a> {
         .map_err(|e| {
             ApiError::new(
                 axum::http::StatusCode::INTERNAL_SERVER_ERROR,
-                format!("Database error: {}", e),
+                format!("Database error: {e}"),
             )
         })?;
 
@@ -111,7 +111,7 @@ impl<'a> OrderService<'a> {
         };
 
         let items = sqlx::query_as::<_, OrderItemQueryRow>(
-            r#"
+            r"
             SELECT
                 id,
                 name,
@@ -121,7 +121,7 @@ impl<'a> OrderService<'a> {
             FROM order_items
             WHERE order_id = $1
             ORDER BY created_at
-            "#,
+            ",
         )
         .bind(order_id)
         .fetch_all(self.db)
@@ -129,7 +129,7 @@ impl<'a> OrderService<'a> {
         .map_err(|e| {
             ApiError::new(
                 axum::http::StatusCode::INTERNAL_SERVER_ERROR,
-                format!("Database error: {}", e),
+                format!("Database error: {e}"),
             )
         })?;
 

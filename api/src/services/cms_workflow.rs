@@ -96,12 +96,12 @@ pub async fn get_or_create_workflow_status(
 
     // Create new workflow if doesn't exist
     let workflow: WorkflowStatus = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO cms_workflow_status (content_id, current_stage, priority)
         VALUES ($1, 'draft', 'normal')
         RETURNING id, content_id, current_stage, previous_stage, assigned_to, assigned_by,
                   assigned_at, due_date, priority, notes, transition_comment, created_at, updated_at
-        "#,
+        ",
     )
     .bind(content_id)
     .fetch_one(pool)
@@ -116,12 +116,12 @@ pub async fn get_workflow_status(
     content_id: Uuid,
 ) -> Result<Option<WorkflowStatus>> {
     let workflow: Option<WorkflowStatus> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, content_id, current_stage, previous_stage, assigned_to, assigned_by,
                assigned_at, due_date, priority, notes, transition_comment, created_at, updated_at
         FROM cms_workflow_status
         WHERE content_id = $1
-        "#,
+        ",
     )
     .bind(content_id)
     .fetch_optional(pool)
@@ -139,7 +139,7 @@ pub async fn transition_workflow(
     comment: Option<String>,
 ) -> Result<WorkflowStatus> {
     let workflow: WorkflowStatus = sqlx::query_as(
-        r#"
+        r"
         UPDATE cms_workflow_status
         SET previous_stage = current_stage,
             current_stage = $1,
@@ -148,7 +148,7 @@ pub async fn transition_workflow(
         WHERE content_id = $3
         RETURNING id, content_id, current_stage, previous_stage, assigned_to, assigned_by,
                   assigned_at, due_date, priority, notes, transition_comment, created_at, updated_at
-        "#,
+        ",
     )
     .bind(to_stage)
     .bind(&comment)
@@ -170,7 +170,7 @@ pub async fn assign_for_review(
     notes: Option<String>,
 ) -> Result<WorkflowStatus> {
     let workflow: WorkflowStatus = sqlx::query_as(
-        r#"
+        r"
         UPDATE cms_workflow_status
         SET assigned_to = $1,
             assigned_by = $2,
@@ -183,7 +183,7 @@ pub async fn assign_for_review(
         WHERE content_id = $6
         RETURNING id, content_id, current_stage, previous_stage, assigned_to, assigned_by,
                   assigned_at, due_date, priority, notes, transition_comment, created_at, updated_at
-        "#,
+        ",
     )
     .bind(assigned_to)
     .bind(assigned_by)
@@ -200,7 +200,7 @@ pub async fn assign_for_review(
 /// Get all assignments for a user
 pub async fn get_user_assignments(pool: &PgPool, user_id: i64) -> Result<Vec<WorkflowStatus>> {
     let assignments: Vec<WorkflowStatus> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, content_id, current_stage, previous_stage, assigned_to, assigned_by,
                assigned_at, due_date, priority, notes, transition_comment, created_at, updated_at
         FROM cms_workflow_status
@@ -215,7 +215,7 @@ pub async fn get_user_assignments(pool: &PgPool, user_id: i64) -> Result<Vec<Wor
             END,
             due_date NULLS LAST,
             created_at DESC
-        "#,
+        ",
     )
     .bind(user_id)
     .fetch_all(pool)
@@ -231,13 +231,13 @@ pub async fn get_workflow_history(
     limit: i64,
 ) -> Result<Vec<WorkflowHistory>> {
     let history: Vec<WorkflowHistory> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, workflow_id, content_id, from_stage, to_stage, comment, transitioned_by, created_at
         FROM cms_workflow_history
         WHERE content_id = $1
         ORDER BY created_at DESC
         LIMIT $2
-        "#,
+        ",
     )
     .bind(content_id)
     .bind(limit)
@@ -250,12 +250,12 @@ pub async fn get_workflow_history(
 /// Get pending review count for user
 pub async fn get_pending_review_count(pool: &PgPool, user_id: i64) -> Result<i64> {
     let count: (i64,) = sqlx::query_as(
-        r#"
+        r"
         SELECT COUNT(*)
         FROM cms_workflow_status
         WHERE assigned_to = $1
           AND current_stage = 'in_review'
-        "#,
+        ",
     )
     .bind(user_id)
     .fetch_one(pool)
@@ -267,7 +267,7 @@ pub async fn get_pending_review_count(pool: &PgPool, user_id: i64) -> Result<i64
 /// Get overdue assignments for user
 pub async fn get_overdue_assignments(pool: &PgPool, user_id: i64) -> Result<Vec<WorkflowStatus>> {
     let assignments: Vec<WorkflowStatus> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, content_id, current_stage, previous_stage, assigned_to, assigned_by,
                assigned_at, due_date, priority, notes, transition_comment, created_at, updated_at
         FROM cms_workflow_status
@@ -275,7 +275,7 @@ pub async fn get_overdue_assignments(pool: &PgPool, user_id: i64) -> Result<Vec<
           AND current_stage NOT IN ('published', 'archived')
           AND due_date < NOW()
         ORDER BY due_date ASC
-        "#,
+        ",
     )
     .bind(user_id)
     .fetch_all(pool)
@@ -287,7 +287,7 @@ pub async fn get_overdue_assignments(pool: &PgPool, user_id: i64) -> Result<Vec<
 /// Unassign content
 pub async fn unassign_content(pool: &PgPool, content_id: Uuid) -> Result<WorkflowStatus> {
     let workflow: WorkflowStatus = sqlx::query_as(
-        r#"
+        r"
         UPDATE cms_workflow_status
         SET assigned_to = NULL,
             assigned_by = NULL,
@@ -298,7 +298,7 @@ pub async fn unassign_content(pool: &PgPool, content_id: Uuid) -> Result<Workflo
         WHERE content_id = $1
         RETURNING id, content_id, current_stage, previous_stage, assigned_to, assigned_by,
                   assigned_at, due_date, priority, notes, transition_comment, created_at, updated_at
-        "#,
+        ",
     )
     .bind(content_id)
     .fetch_one(pool)

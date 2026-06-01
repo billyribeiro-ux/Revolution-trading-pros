@@ -49,11 +49,11 @@ pub async fn generate_preview_token(
     let expires_at = Utc::now() + Duration::hours(expires_in_hours);
 
     let token: PreviewToken = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO cms_preview_tokens (content_id, expires_at, max_views, created_by)
         VALUES ($1, $2, $3, $4)
         RETURNING id, content_id, token, max_views, view_count, expires_at, created_by, created_at, last_accessed_at
-        "#,
+        ",
     )
     .bind(content_id)
     .bind(expires_at)
@@ -69,7 +69,7 @@ pub async fn generate_preview_token(
 pub async fn validate_preview_token(pool: &PgPool, token: Uuid) -> Result<Option<PreviewToken>> {
     // Get token and increment view count
     let preview: Option<PreviewToken> = sqlx::query_as(
-        r#"
+        r"
         UPDATE cms_preview_tokens
         SET view_count = view_count + 1,
             last_accessed_at = NOW()
@@ -77,7 +77,7 @@ pub async fn validate_preview_token(pool: &PgPool, token: Uuid) -> Result<Option
           AND expires_at > NOW()
           AND (max_views IS NULL OR view_count < max_views)
         RETURNING id, content_id, token, max_views, view_count, expires_at, created_by, created_at, last_accessed_at
-        "#,
+        ",
     )
     .bind(token)
     .fetch_optional(pool)
@@ -89,11 +89,11 @@ pub async fn validate_preview_token(pool: &PgPool, token: Uuid) -> Result<Option
 /// Get preview token by token UUID
 pub async fn get_preview_token(pool: &PgPool, token: Uuid) -> Result<Option<PreviewToken>> {
     let preview: Option<PreviewToken> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, content_id, token, max_views, view_count, expires_at, created_by, created_at, last_accessed_at
         FROM cms_preview_tokens
         WHERE token = $1
-        "#,
+        ",
     )
     .bind(token)
     .fetch_optional(pool)
@@ -108,12 +108,12 @@ pub async fn get_content_preview_tokens(
     content_id: Uuid,
 ) -> Result<Vec<PreviewToken>> {
     let tokens: Vec<PreviewToken> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, content_id, token, max_views, view_count, expires_at, created_by, created_at, last_accessed_at
         FROM cms_preview_tokens
         WHERE content_id = $1
         ORDER BY created_at DESC
-        "#,
+        ",
     )
     .bind(content_id)
     .fetch_all(pool)
@@ -125,10 +125,10 @@ pub async fn get_content_preview_tokens(
 /// Revoke a preview token
 pub async fn revoke_preview_token(pool: &PgPool, token: Uuid) -> Result<bool> {
     let result = sqlx::query(
-        r#"
+        r"
         DELETE FROM cms_preview_tokens
         WHERE token = $1
-        "#,
+        ",
     )
     .bind(token)
     .execute(pool)
@@ -140,10 +140,10 @@ pub async fn revoke_preview_token(pool: &PgPool, token: Uuid) -> Result<bool> {
 /// Revoke all preview tokens for content
 pub async fn revoke_content_preview_tokens(pool: &PgPool, content_id: Uuid) -> Result<i64> {
     let result = sqlx::query(
-        r#"
+        r"
         DELETE FROM cms_preview_tokens
         WHERE content_id = $1
-        "#,
+        ",
     )
     .bind(content_id)
     .execute(pool)
@@ -155,11 +155,11 @@ pub async fn revoke_content_preview_tokens(pool: &PgPool, content_id: Uuid) -> R
 /// Clean up expired preview tokens
 pub async fn cleanup_expired_tokens(pool: &PgPool) -> Result<i64> {
     let result = sqlx::query(
-        r#"
+        r"
         DELETE FROM cms_preview_tokens
         WHERE expires_at < NOW()
            OR (max_views IS NOT NULL AND view_count >= max_views)
-        "#,
+        ",
     )
     .execute(pool)
     .await?;
@@ -170,13 +170,13 @@ pub async fn cleanup_expired_tokens(pool: &PgPool) -> Result<i64> {
 /// Get active preview token count for content
 pub async fn get_active_token_count(pool: &PgPool, content_id: Uuid) -> Result<i64> {
     let count: (i64,) = sqlx::query_as(
-        r#"
+        r"
         SELECT COUNT(*)
         FROM cms_preview_tokens
         WHERE content_id = $1
           AND expires_at > NOW()
           AND (max_views IS NULL OR view_count < max_views)
-        "#,
+        ",
     )
     .bind(content_id)
     .fetch_one(pool)
@@ -192,12 +192,12 @@ pub async fn extend_preview_token(
     additional_hours: i64,
 ) -> Result<PreviewToken> {
     let preview: PreviewToken = sqlx::query_as(
-        r#"
+        r"
         UPDATE cms_preview_tokens
         SET expires_at = expires_at + INTERVAL '1 hour' * $1
         WHERE token = $2
         RETURNING id, content_id, token, max_views, view_count, expires_at, created_by, created_at, last_accessed_at
-        "#,
+        ",
     )
     .bind(additional_hours)
     .bind(token)

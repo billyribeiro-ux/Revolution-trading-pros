@@ -45,7 +45,7 @@ pub(super) async fn ban_member(
     // Upsert user status
     // Original pool reference: .execute(&state.db.pool)
     sqlx::query(
-        r#"
+        r"
         INSERT INTO user_status (user_id, status, banned_until, ban_reason, updated_at)
         VALUES ($1, 'banned', $2, $3, NOW())
         ON CONFLICT (user_id) DO UPDATE SET
@@ -53,7 +53,7 @@ pub(super) async fn ban_member(
             banned_until = $2,
             ban_reason = $3,
             updated_at = NOW()
-        "#,
+        ",
     )
     .bind(id)
     .bind(banned_until)
@@ -70,17 +70,17 @@ pub(super) async fn ban_member(
     // Log activity
     // Original pool reference: .execute(&state.db.pool)
     let _ = sqlx::query(
-        r#"
+        r"
         INSERT INTO user_activity_log (user_id, action, description, metadata, created_at)
         VALUES ($1, 'account_banned', $2, $3, NOW())
-        "#,
+        ",
     )
     .bind(id)
     .bind(format!(
         "Account banned{}",
         input
             .duration_days
-            .map(|d| format!(" for {} days", d))
+            .map(|d| format!(" for {d} days"))
             .unwrap_or_default()
     ))
     .bind(json!({
@@ -134,7 +134,7 @@ pub(super) async fn suspend_member(
 
     // Original pool reference: .execute(&state.db.pool)
     sqlx::query(
-        r#"
+        r"
         INSERT INTO user_status (user_id, status, banned_until, ban_reason, updated_at)
         VALUES ($1, 'suspended', $2, $3, NOW())
         ON CONFLICT (user_id) DO UPDATE SET
@@ -142,7 +142,7 @@ pub(super) async fn suspend_member(
             banned_until = $2,
             ban_reason = $3,
             updated_at = NOW()
-        "#,
+        ",
     )
     .bind(id)
     .bind(suspended_until)
@@ -158,17 +158,17 @@ pub(super) async fn suspend_member(
 
     // Original pool reference: .execute(&state.db.pool)
     let _ = sqlx::query(
-        r#"
+        r"
         INSERT INTO user_activity_log (user_id, action, description, metadata, created_at)
         VALUES ($1, 'account_suspended', $2, $3, NOW())
-        "#,
+        ",
     )
     .bind(id)
     .bind(format!(
         "Account suspended{}",
         input
             .duration_days
-            .map(|d| format!(" for {} days", d))
+            .map(|d| format!(" for {d} days"))
             .unwrap_or_default()
     ))
     .bind(json!({
@@ -210,11 +210,11 @@ pub(super) async fn unban_member(
 
     // Original pool reference: .execute(&state.db.pool)
     sqlx::query(
-        r#"
+        r"
         UPDATE user_status
         SET status = 'active', banned_until = NULL, ban_reason = NULL, updated_at = NOW()
         WHERE user_id = $1
-        "#,
+        ",
     )
     .bind(id)
     .execute(&mut *tx)
@@ -228,10 +228,10 @@ pub(super) async fn unban_member(
 
     // Original pool reference: .execute(&state.db.pool)
     let _ = sqlx::query(
-        r#"
+        r"
         INSERT INTO user_activity_log (user_id, action, description, metadata, created_at)
         VALUES ($1, 'account_unbanned', 'Account unbanned by admin', $2, NOW())
-        "#,
+        ",
     )
     .bind(id)
     .bind(json!({"unbanned_by": admin.0.id}))

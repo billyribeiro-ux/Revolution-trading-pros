@@ -194,7 +194,7 @@ async fn create_video(
 
     // Create video in Bunny.net
     let client = reqwest::Client::new();
-    let create_url = format!("{}/library/{}/videos", BUNNY_API_BASE, library_id);
+    let create_url = format!("{BUNNY_API_BASE}/library/{library_id}/videos");
 
     let mut body = json!({
         "title": bunny_title,
@@ -237,26 +237,20 @@ async fn create_video(
     let video_guid = bunny_response["guid"].as_str().unwrap_or("");
 
     // Generate URLs
-    let upload_url = format!(
-        "{}/library/{}/videos/{}",
-        BUNNY_API_BASE, library_id, video_guid
-    );
+    let upload_url = format!("{BUNNY_API_BASE}/library/{library_id}/videos/{video_guid}");
     let video_url = format!("{}/{}/play_720p.mp4", get_bunny_cdn_url(), video_guid);
-    let embed_url = format!(
-        "https://iframe.mediadelivery.net/embed/{}/{}",
-        library_id, video_guid
-    );
+    let embed_url = format!("https://iframe.mediadelivery.net/embed/{library_id}/{video_guid}");
 
     // Track upload in database with room_slug
     let _ = sqlx::query(
-        r#"
+        r"
         INSERT INTO bunny_uploads (video_guid, library_id, title, room_slug, status, upload_started_at)
         VALUES ($1, $2, $3, $4, 'uploading', NOW())
         ON CONFLICT (video_guid) DO UPDATE SET
             status = 'uploading',
             room_slug = EXCLUDED.room_slug,
             upload_started_at = NOW()
-        "#,
+        ",
     )
     .bind(video_guid)
     .bind(library_id)
@@ -302,10 +296,7 @@ async fn get_video_status(
 
     // Get video status from Bunny.net
     let client = reqwest::Client::new();
-    let status_url = format!(
-        "{}/library/{}/videos/{}",
-        BUNNY_API_BASE, library_id, video_guid
-    );
+    let status_url = format!("{BUNNY_API_BASE}/library/{library_id}/videos/{video_guid}");
 
     let response = client
         .get(&status_url)
@@ -353,14 +344,14 @@ async fn get_video_status(
     // Update database status
     if status == "ready" || status == "failed" {
         let _ = sqlx::query(
-            r#"
+            r"
             UPDATE bunny_uploads SET 
                 status = $1,
                 duration_seconds = $2,
                 thumbnail_url = $3,
                 upload_completed_at = CASE WHEN $1 = 'ready' THEN NOW() ELSE upload_completed_at END
             WHERE video_guid = $4
-            "#,
+            ",
         )
         .bind(status)
         .bind(duration)
@@ -371,10 +362,7 @@ async fn get_video_status(
     }
 
     let video_url = format!("{}/{}/play_720p.mp4", get_bunny_cdn_url(), video_guid);
-    let embed_url = format!(
-        "https://iframe.mediadelivery.net/embed/{}/{}",
-        library_id, video_guid
-    );
+    let embed_url = format!("https://iframe.mediadelivery.net/embed/{library_id}/{video_guid}");
 
     Ok(Json(json!({
         "success": true,
@@ -396,12 +384,12 @@ async fn list_uploads(
     #[allow(clippy::type_complexity)]
     let uploads: Vec<(String, i64, String, String, Option<i32>, Option<String>, chrono::NaiveDateTime)> =
         sqlx::query_as::<_, (String, i64, String, String, Option<i32>, Option<String>, chrono::NaiveDateTime)>(
-            r#"
+            r"
             SELECT video_guid, library_id, title, status, duration_seconds, thumbnail_url, upload_started_at
             FROM bunny_uploads
             ORDER BY upload_started_at DESC
             LIMIT 50
-            "#
+            "
         )
         .fetch_all(&state.db.pool)
         .await
@@ -527,10 +515,7 @@ async fn upload_video(
 
     // Upload to Bunny.net
     let client = reqwest::Client::new();
-    let upload_url = format!(
-        "{}/library/{}/videos/{}",
-        BUNNY_API_BASE, library_id, video_guid
-    );
+    let upload_url = format!("{BUNNY_API_BASE}/library/{library_id}/videos/{video_guid}");
 
     let response = client
         .put(&upload_url)
@@ -556,10 +541,7 @@ async fn upload_video(
         ));
     }
 
-    let embed_url = format!(
-        "https://iframe.mediadelivery.net/embed/{}/{}",
-        library_id, video_guid
-    );
+    let embed_url = format!("https://iframe.mediadelivery.net/embed/{library_id}/{video_guid}");
     let video_url = format!("{}/{}/play_720p.mp4", get_bunny_cdn_url(), video_guid);
 
     Ok(Json(json!({

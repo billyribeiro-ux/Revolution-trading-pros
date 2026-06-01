@@ -23,10 +23,9 @@ pub(super) fn day_name(day: i32) -> String {
 pub(super) fn parse_time(time_str: &str) -> Result<NaiveTime, String> {
     NaiveTime::parse_from_str(time_str, "%H:%M")
         .or_else(|_| NaiveTime::parse_from_str(time_str, "%H:%M:%S"))
-        .map_err(|e| format!("Invalid time format: {}", e))
+        .map_err(|e| format!("Invalid time format: {e}"))
 }
 
 pub(super) fn parse_date(date_str: &str) -> Result<NaiveDate, String> {
-    NaiveDate::parse_from_str(date_str, "%Y-%m-%d")
-        .map_err(|e| format!("Invalid date format: {}", e))
+    NaiveDate::parse_from_str(date_str, "%Y-%m-%d").map_err(|e| format!("Invalid date format: {e}"))
 }

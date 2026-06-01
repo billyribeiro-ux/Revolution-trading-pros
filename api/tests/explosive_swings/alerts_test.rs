@@ -65,8 +65,8 @@ async fn test_list_alerts_with_pagination() {
 
     // Create 25 alerts for pagination testing
     for i in 0..25 {
-        let alert = AlertBuilder::entry(&room.slug, &format!("TICK{}", i))
-            .with_title(format!("Alert {}", i))
+        let alert = AlertBuilder::entry(&room.slug, &format!("TICK{i}"))
+            .with_title(format!("Alert {i}"))
             .build_json();
 
         ctx.app
@@ -648,7 +648,7 @@ async fn test_update_alert() {
         .oneshot(
             Request::builder()
                 .method("PUT")
-                .uri(format!("/api/admin/room-content/alerts/{}", alert_id))
+                .uri(format!("/api/admin/room-content/alerts/{alert_id}"))
                 .header(header::CONTENT_TYPE, "application/json")
                 .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::from(update_payload.to_string()))
@@ -708,7 +708,7 @@ async fn test_update_alert_partial() {
         .oneshot(
             Request::builder()
                 .method("PUT")
-                .uri(format!("/api/admin/room-content/alerts/{}", alert_id))
+                .uri(format!("/api/admin/room-content/alerts/{alert_id}"))
                 .header(header::CONTENT_TYPE, "application/json")
                 .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::from(update_payload.to_string()))
@@ -768,7 +768,7 @@ async fn test_update_alert_mark_as_read() {
         .oneshot(
             Request::builder()
                 .method("PUT")
-                .uri(format!("/api/admin/room-content/alerts/{}", alert_id))
+                .uri(format!("/api/admin/room-content/alerts/{alert_id}"))
                 .header(header::CONTENT_TYPE, "application/json")
                 .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::from(update_payload.to_string()))
@@ -821,7 +821,7 @@ async fn test_delete_alert() {
         .oneshot(
             Request::builder()
                 .method("DELETE")
-                .uri(format!("/api/admin/room-content/alerts/{}", alert_id))
+                .uri(format!("/api/admin/room-content/alerts/{alert_id}"))
                 .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
@@ -869,7 +869,7 @@ async fn test_delete_alert_soft_delete() {
         .oneshot(
             Request::builder()
                 .method("DELETE")
-                .uri(format!("/api/admin/room-content/alerts/{}", alert_id))
+                .uri(format!("/api/admin/room-content/alerts/{alert_id}"))
                 .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
@@ -1006,7 +1006,7 @@ async fn test_update_alert_requires_admin() {
         .oneshot(
             Request::builder()
                 .method("PUT")
-                .uri(format!("/api/admin/room-content/alerts/{}", alert_id))
+                .uri(format!("/api/admin/room-content/alerts/{alert_id}"))
                 .header(header::CONTENT_TYPE, "application/json")
                 .header(header::AUTHORIZATION, member.auth_header())
                 .body(Body::from(update_payload.to_string()))
@@ -1055,7 +1055,7 @@ async fn test_delete_alert_requires_admin() {
         .oneshot(
             Request::builder()
                 .method("DELETE")
-                .uri(format!("/api/admin/room-content/alerts/{}", alert_id))
+                .uri(format!("/api/admin/room-content/alerts/{alert_id}"))
                 .header(header::AUTHORIZATION, member.auth_header())
                 .body(Body::empty())
                 .unwrap(),

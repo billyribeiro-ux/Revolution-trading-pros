@@ -45,10 +45,10 @@ pub(super) async fn build_order_detail(
 ) -> Result<OrderDetailResponse, (StatusCode, Json<serde_json::Value>)> {
     // Fetch order items
     let items: Vec<OrderItemRow> = sqlx::query_as::<_, OrderItemRow>(
-        r#"SELECT id, product_id, plan_id, name, quantity, (unit_price * 100)::BIGINT AS unit_price_cents, (total * 100)::BIGINT AS total_cents
+        r"SELECT id, product_id, plan_id, name, quantity, (unit_price * 100)::BIGINT AS unit_price_cents, (total * 100)::BIGINT AS total_cents
            FROM order_items
            WHERE order_id = $1
-           ORDER BY id"#,
+           ORDER BY id",
     )
     .bind(order.id)
     .fetch_all(&state.db.pool)
@@ -160,9 +160,9 @@ pub(super) async fn grant_order_products(
         if let Some(product_id) = item.product_id {
             // Insert into user_products if not exists
             sqlx::query(
-                r#"INSERT INTO user_products (user_id, product_id, purchased_at, order_id, created_at, updated_at)
+                r"INSERT INTO user_products (user_id, product_id, purchased_at, order_id, created_at, updated_at)
                    VALUES ($1, $2, NOW(), $3, NOW(), NOW())
-                   ON CONFLICT (user_id, product_id) DO NOTHING"#
+                   ON CONFLICT (user_id, product_id) DO NOTHING"
             )
             .bind(user_id)
             .bind(product_id)

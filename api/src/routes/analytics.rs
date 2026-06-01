@@ -92,10 +92,10 @@ async fn track_event(
     Json(input): Json<TrackRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     sqlx::query(
-        r#"
+        r"
         INSERT INTO analytics_events (event_type, event_name, page_url, referrer, properties, created_at)
         VALUES ($1, $2, $3, $4, $5, NOW())
-        "#
+        "
     )
     .bind(&input.event_type)
     .bind(&input.event_name)
@@ -157,10 +157,10 @@ async fn track_reading(
         .to_string();
 
     sqlx::query(
-        r#"
+        r"
         INSERT INTO analytics_events (event_type, event_name, properties, created_at)
         VALUES ('reading', $1, $2, NOW())
-        "#,
+        ",
     )
     .bind(&event_name)
     .bind(serde_json::Value::Object(props))
@@ -238,10 +238,10 @@ async fn track_performance(
 
     // Store performance metrics in analytics_events table - fail silently if table doesn't exist
     let _ = sqlx::query(
-        r#"
+        r"
         INSERT INTO analytics_events (event_type, event_name, properties, created_at)
         VALUES ('performance', 'web_vitals', $1, NOW())
-        "#,
+        ",
     )
     .bind(&input)
     .execute(&state.db.pool)
@@ -459,19 +459,19 @@ struct RealtimeStats {
 /// - `pageviews`: count of `event_type = 'pageview'` today
 /// - `events_per_minute`: events in the last minute
 /// - `top_pages`: top 5 page paths today by view count
-/// - `bounce_rate`: defaulted to 0.0 — accurate computation requires
-///   session-duration aggregation that the current schema does not
-///   capture. TODO: integrate with full analytics service for bounce rate.
+/// - `bounce_rate`: returns 0.0 — accurate computation requires per-session
+///   pageview counts and time-on-page which are not stored in `analytics_events`.
+///   A dedicated `analytics_sessions` table would be needed to compute this properly.
 async fn get_realtime(
     State(state): State<AppState>,
     _admin: AdminUser,
 ) -> Result<Json<RealtimeStats>, (StatusCode, Json<serde_json::Value>)> {
     // Active visitors: distinct sessions in the last 5 minutes.
     let active_visitors: i64 = sqlx::query_scalar(
-        r#"SELECT COALESCE(COUNT(DISTINCT session_id), 0)::BIGINT
+        r"SELECT COALESCE(COUNT(DISTINCT session_id), 0)::BIGINT
            FROM analytics_events
            WHERE created_at >= NOW() - INTERVAL '5 minutes'
-             AND session_id IS NOT NULL"#,
+             AND session_id IS NOT NULL",
     )
     .fetch_one(&state.db.pool)
     .await
@@ -485,10 +485,10 @@ async fn get_realtime(
 
     // Distinct sessions today (UTC) — used for both `visitors` and `sessions`.
     let visitors: i64 = sqlx::query_scalar(
-        r#"SELECT COALESCE(COUNT(DISTINCT session_id), 0)::BIGINT
+        r"SELECT COALESCE(COUNT(DISTINCT session_id), 0)::BIGINT
            FROM analytics_events
            WHERE created_at >= DATE_TRUNC('day', NOW())
-             AND session_id IS NOT NULL"#,
+             AND session_id IS NOT NULL",
     )
     .fetch_one(&state.db.pool)
     .await
@@ -502,10 +502,10 @@ async fn get_realtime(
 
     // Pageviews today.
     let pageviews: i64 = sqlx::query_scalar(
-        r#"SELECT COALESCE(COUNT(*), 0)::BIGINT
+        r"SELECT COALESCE(COUNT(*), 0)::BIGINT
            FROM analytics_events
            WHERE event_type = 'pageview'
-             AND created_at >= DATE_TRUNC('day', NOW())"#,
+             AND created_at >= DATE_TRUNC('day', NOW())",
     )
     .fetch_one(&state.db.pool)
     .await
@@ -519,9 +519,9 @@ async fn get_realtime(
 
     // Events per minute over the last minute.
     let events_per_minute: i64 = sqlx::query_scalar(
-        r#"SELECT COALESCE(COUNT(*), 0)::BIGINT
+        r"SELECT COALESCE(COUNT(*), 0)::BIGINT
            FROM analytics_events
-           WHERE created_at >= NOW() - INTERVAL '1 minute'"#,
+           WHERE created_at >= NOW() - INTERVAL '1 minute'",
     )
     .fetch_one(&state.db.pool)
     .await
@@ -535,14 +535,14 @@ async fn get_realtime(
 
     // Top 5 pages today by view count.
     let top_page_rows: Vec<(Option<String>, i64)> = sqlx::query_as(
-        r#"SELECT page_url, COUNT(*)::BIGINT AS views
+        r"SELECT page_url, COUNT(*)::BIGINT AS views
            FROM analytics_events
            WHERE event_type = 'pageview'
              AND created_at >= DATE_TRUNC('day', NOW())
              AND page_url IS NOT NULL
            GROUP BY page_url
            ORDER BY views DESC
-           LIMIT 5"#,
+           LIMIT 5",
     )
     .fetch_all(&state.db.pool)
     .await
@@ -564,9 +564,7 @@ async fn get_realtime(
         visitors,
         sessions: visitors,
         pageviews,
-        // TODO: integrate with full analytics service to compute true bounce rate
-        // (requires per-session pageview counts and time-on-page).
-        bounce_rate: 0.0,
+        bounce_rate: 0.0, // schema limitation: requires analytics_sessions table (see fn doc)
         events_per_minute,
         top_pages,
         last_updated: chrono::Utc::now(),

@@ -56,14 +56,14 @@ pub(super) async fn get_version_history(
 
     // Get all versions
     let versions: Vec<GlobalComponentVersion> = sqlx::query_as(
-        r#"
+        r"
         SELECT v.id, v.component_id, v.version, v.component_data,
                v.change_message, v.created_by, u.name as created_by_name, v.created_at
         FROM cms_global_component_versions v
         LEFT JOIN cms_users u ON u.id = v.created_by
         WHERE v.component_id = $1
         ORDER BY v.version DESC
-        "#,
+        ",
     )
     .bind(id)
     .fetch_all(&state.db.pool)
@@ -142,7 +142,7 @@ pub(super) async fn restore_version(
 
     // Update component with restored data
     let component: GlobalComponent = sqlx::query_as(
-        r#"
+        r"
         UPDATE cms_global_components
         SET component_data = $2,
             version = $3,
@@ -152,7 +152,7 @@ pub(super) async fn restore_version(
         RETURNING id, name, slug, description, component_data, category,
                   tags, thumbnail_url, usage_count, is_global, is_locked, version,
                   deleted_at, created_at, updated_at, created_by, updated_by
-        "#,
+        ",
     )
     .bind(id)
     .bind(&version_record.component_data)
@@ -168,7 +168,7 @@ pub(super) async fn restore_version(
         id,
         new_version,
         &version_record.component_data,
-        Some(&format!("Restored from version {}", version)),
+        Some(&format!("Restored from version {version}")),
         cms_user_id,
     )
     .await?;

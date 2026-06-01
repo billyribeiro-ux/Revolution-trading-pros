@@ -19,13 +19,13 @@ pub(super) async fn get_global_component_public(
     Path(slug): Path<String>,
 ) -> ApiResult<GlobalComponent> {
     let component: GlobalComponent = sqlx::query_as(
-        r#"
+        r"
         SELECT id, name, slug, description, component_data, category, tags,
                thumbnail_url, usage_count, is_global, is_locked, version,
                deleted_at, created_at, updated_at, created_by, updated_by
         FROM cms_global_components
         WHERE slug = $1 AND deleted_at IS NULL AND is_global = true
-        "#,
+        ",
     )
     .bind(&slug)
     .fetch_optional(&state.db.pool)
@@ -42,13 +42,13 @@ pub(super) async fn get_global_component_by_id_public(
     Path(id): Path<Uuid>,
 ) -> ApiResult<GlobalComponent> {
     let component: GlobalComponent = sqlx::query_as(
-        r#"
+        r"
         SELECT id, name, slug, description, component_data, category, tags,
                thumbnail_url, usage_count, is_global, is_locked, version,
                deleted_at, created_at, updated_at, created_by, updated_by
         FROM cms_global_components
         WHERE id = $1 AND deleted_at IS NULL AND is_global = true
-        "#,
+        ",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)

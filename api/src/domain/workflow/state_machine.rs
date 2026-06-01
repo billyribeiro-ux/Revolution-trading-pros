@@ -322,8 +322,7 @@ impl WorkflowStateMachine {
             .get(&(current_status, action))
             .ok_or_else(|| WorkflowError::InvariantViolation {
                 message: format!(
-                    "transition ({:?}, {:?}) missing after can_perform_action succeeded",
-                    current_status, action
+                    "transition ({current_status:?}, {action:?}) missing after can_perform_action succeeded"
                 ),
             })?;
 

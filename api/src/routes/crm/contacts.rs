@@ -84,10 +84,10 @@ async fn list_contacts(
     let page = filters.page.unwrap_or(1).max(1);
     let per_page = filters.per_page.unwrap_or(50).min(100);
     let offset = (page - 1) * per_page;
-    let search_pattern = filters.search.as_ref().map(|s| format!("%{}%", s));
+    let search_pattern = filters.search.as_ref().map(|s| format!("%{s}%"));
 
     let contacts: Vec<CrmContact> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, email, first_name, last_name, phone, company, job_title,
                status, source, COALESCE(score, 0) as score, tags, custom_fields,
                last_contacted_at, created_at, updated_at
@@ -96,7 +96,7 @@ async fn list_contacts(
           AND ($2::text IS NULL OR email ILIKE $2 OR first_name ILIKE $2 OR last_name ILIKE $2)
         ORDER BY created_at DESC
         LIMIT $3 OFFSET $4
-        "#,
+        ",
     )
     .bind(filters.status.as_deref())
     .bind(search_pattern.as_deref())
@@ -112,13 +112,13 @@ async fn list_contacts(
         )
     })?;
 
-    let search_pattern2 = filters.search.as_ref().map(|s| format!("%{}%", s));
+    let search_pattern2 = filters.search.as_ref().map(|s| format!("%{s}%"));
     let total: (i64,) = sqlx::query_as(
-        r#"
+        r"
         SELECT COUNT(*) FROM contacts
         WHERE ($1::text IS NULL OR status = $1)
           AND ($2::text IS NULL OR email ILIKE $2 OR first_name ILIKE $2 OR last_name ILIKE $2)
-        "#,
+        ",
     )
     .bind(filters.status.as_deref())
     .bind(search_pattern2.as_deref())
@@ -143,10 +143,10 @@ async fn get_contact(
     Path(id): Path<i64>,
 ) -> Result<Json<CrmContact>, (StatusCode, Json<serde_json::Value>)> {
     let contact: CrmContact = sqlx::query_as(
-        r#"SELECT id, email, first_name, last_name, phone, company, job_title,
+        r"SELECT id, email, first_name, last_name, phone, company, job_title,
                   status, source, COALESCE(score, 0) as score, tags, custom_fields,
                   last_contacted_at, created_at, updated_at
-           FROM contacts WHERE id = $1"#,
+           FROM contacts WHERE id = $1",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -176,13 +176,13 @@ async fn create_contact(
     let status = input.status.unwrap_or_else(|| "lead".to_string());
 
     let contact: CrmContact = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO contacts (email, first_name, last_name, phone, company, job_title,
                               source, status, tags, custom_fields, score, created_at, updated_at)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 0, NOW(), NOW())
         RETURNING id, email, first_name, last_name, phone, company, job_title,
                   status, source, score, tags, custom_fields, last_contacted_at, created_at, updated_at
-        "#,
+        ",
     )
     .bind(&input.email)
     .bind(&input.first_name)
@@ -216,7 +216,7 @@ async fn update_contact(
     let tags = input.tags.and_then(|t| serde_json::to_value(t).ok());
 
     let contact: CrmContact = sqlx::query_as(
-        r#"
+        r"
         UPDATE contacts SET
             email = COALESCE($2, email),
             first_name = COALESCE($3, first_name),
@@ -231,7 +231,7 @@ async fn update_contact(
         WHERE id = $1
         RETURNING id, email, first_name, last_name, phone, company, job_title,
                   status, source, score, tags, custom_fields, last_contacted_at, created_at, updated_at
-        "#,
+        ",
     )
     .bind(id)
     .bind(&input.email)
@@ -287,12 +287,12 @@ async fn recalculate_contact_score(
 ) -> Result<Json<CrmContact>, (StatusCode, Json<serde_json::Value>)> {
     // Simple scoring algorithm - can be expanded
     let contact: CrmContact = sqlx::query_as(
-        r#"
+        r"
         UPDATE contacts SET score = 50, updated_at = NOW()
         WHERE id = $1
         RETURNING id, email, first_name, last_name, phone, company, job_title,
                   status, source, score, tags, custom_fields, last_contacted_at, created_at, updated_at
-        "#,
+        ",
     )
     .bind(id)
     .fetch_one(&state.db.pool)

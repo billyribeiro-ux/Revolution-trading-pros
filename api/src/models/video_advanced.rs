@@ -711,9 +711,9 @@ pub fn format_duration(seconds: i32) -> String {
     let minutes = (seconds % 3600) / 60;
     let secs = seconds % 60;
     if hours > 0 {
-        format!("{}:{:02}:{:02}", hours, minutes, secs)
+        format!("{hours}:{minutes:02}:{secs:02}")
     } else {
-        format!("{}:{:02}", minutes, secs)
+        format!("{minutes}:{secs:02}")
     }
 }
 
@@ -775,7 +775,7 @@ fn format_vtt_time(seconds: f64) -> String {
     let hours = total_secs / 3600;
     let mins = (total_secs % 3600) / 60;
     let secs = total_secs % 60;
-    format!("{:02}:{:02}:{:02}.{:03}", hours, mins, secs, millis)
+    format!("{hours:02}:{mins:02}:{secs:02}.{millis:03}")
 }
 
 fn format_srt_time(seconds: f64) -> String {
@@ -784,5 +784,5 @@ fn format_srt_time(seconds: f64) -> String {
     let hours = total_secs / 3600;
     let mins = (total_secs % 3600) / 60;
     let secs = total_secs % 60;
-    format!("{:02}:{:02}:{:02},{:03}", hours, mins, secs, millis)
+    format!("{hours:02}:{mins:02}:{secs:02},{millis:03}")
 }

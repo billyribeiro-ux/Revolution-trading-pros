@@ -39,14 +39,14 @@ pub(super) async fn generate_invoice(
     }
 
     let order: OrderInvoiceData = sqlx::query_as(
-        r#"SELECT id, order_number, user_id, status,
+        r"SELECT id, order_number, user_id, status,
                   (subtotal * 100)::BIGINT AS subtotal_cents,
                   (discount * 100)::BIGINT AS discount_cents,
                   (tax * 100)::BIGINT      AS tax_cents,
                   (total * 100)::BIGINT    AS total_cents,
                   currency, billing_name, billing_email,
                   billing_address, coupon_code, created_at, completed_at
-           FROM orders WHERE id = $1"#,
+           FROM orders WHERE id = $1",
     )
     .bind(input.order_id)
     .fetch_optional(&state.db.pool)

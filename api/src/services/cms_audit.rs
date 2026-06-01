@@ -73,7 +73,7 @@ pub async fn log_audit(
     metadata: Option<JsonValue>,
 ) -> Result<Uuid> {
     let audit_id: Uuid = sqlx::query_scalar(
-        r#"
+        r"
         INSERT INTO cms_audit_logs (
             action, entity_type, entity_id, user_id, user_email,
             old_values, new_values, metadata, ip_address, user_agent
@@ -81,7 +81,7 @@ pub async fn log_audit(
             $1, $2, $3, $4, $5, $6, $7, $8, $9::inet, $10
         )
         RETURNING id
-        "#,
+        ",
     )
     .bind(action)
     .bind(entity_type)
@@ -102,55 +102,55 @@ pub async fn log_audit(
 /// Get audit logs with filtering
 pub async fn get_audit_logs(pool: &PgPool, query: &AuditLogQuery) -> Result<Vec<CmsAuditLog>> {
     let mut sql = String::from(
-        r#"
+        r"
         SELECT id, action, entity_type, entity_id, user_id, user_email,
                old_values, new_values, metadata, ip_address, user_agent, created_at
         FROM cms_audit_logs
         WHERE 1=1
-        "#,
+        ",
     );
 
     let mut bind_count = 0;
 
     if query.entity_type.is_some() {
         bind_count += 1;
-        sql.push_str(&format!(" AND entity_type = ${}", bind_count));
+        sql.push_str(&format!(" AND entity_type = ${bind_count}"));
     }
 
     if query.entity_id.is_some() {
         bind_count += 1;
-        sql.push_str(&format!(" AND entity_id = ${}", bind_count));
+        sql.push_str(&format!(" AND entity_id = ${bind_count}"));
     }
 
     if query.user_id.is_some() {
         bind_count += 1;
-        sql.push_str(&format!(" AND user_id = ${}", bind_count));
+        sql.push_str(&format!(" AND user_id = ${bind_count}"));
     }
 
     if query.action.is_some() {
         bind_count += 1;
-        sql.push_str(&format!(" AND action = ${}", bind_count));
+        sql.push_str(&format!(" AND action = ${bind_count}"));
     }
 
     if query.start_date.is_some() {
         bind_count += 1;
-        sql.push_str(&format!(" AND created_at >= ${}", bind_count));
+        sql.push_str(&format!(" AND created_at >= ${bind_count}"));
     }
 
     if query.end_date.is_some() {
         bind_count += 1;
-        sql.push_str(&format!(" AND created_at <= ${}", bind_count));
+        sql.push_str(&format!(" AND created_at <= ${bind_count}"));
     }
 
     sql.push_str(" ORDER BY created_at DESC");
 
     let limit = query.limit.unwrap_or(100).min(1000);
     bind_count += 1;
-    sql.push_str(&format!(" LIMIT ${}", bind_count));
+    sql.push_str(&format!(" LIMIT ${bind_count}"));
 
     let offset = query.offset.unwrap_or(0);
     bind_count += 1;
-    sql.push_str(&format!(" OFFSET ${}", bind_count));
+    sql.push_str(&format!(" OFFSET ${bind_count}"));
 
     let mut query_builder = sqlx::query_as::<_, CmsAuditLog>(&sql);
 
@@ -187,32 +187,32 @@ pub async fn get_audit_log_count(pool: &PgPool, query: &AuditLogQuery) -> Result
 
     if query.entity_type.is_some() {
         bind_count += 1;
-        sql.push_str(&format!(" AND entity_type = ${}", bind_count));
+        sql.push_str(&format!(" AND entity_type = ${bind_count}"));
     }
 
     if query.entity_id.is_some() {
         bind_count += 1;
-        sql.push_str(&format!(" AND entity_id = ${}", bind_count));
+        sql.push_str(&format!(" AND entity_id = ${bind_count}"));
     }
 
     if query.user_id.is_some() {
         bind_count += 1;
-        sql.push_str(&format!(" AND user_id = ${}", bind_count));
+        sql.push_str(&format!(" AND user_id = ${bind_count}"));
     }
 
     if query.action.is_some() {
         bind_count += 1;
-        sql.push_str(&format!(" AND action = ${}", bind_count));
+        sql.push_str(&format!(" AND action = ${bind_count}"));
     }
 
     if query.start_date.is_some() {
         bind_count += 1;
-        sql.push_str(&format!(" AND created_at >= ${}", bind_count));
+        sql.push_str(&format!(" AND created_at >= ${bind_count}"));
     }
 
     if query.end_date.is_some() {
         bind_count += 1;
-        sql.push_str(&format!(" AND created_at <= ${}", bind_count));
+        sql.push_str(&format!(" AND created_at <= ${bind_count}"));
     }
 
     let mut query_builder = sqlx::query_scalar::<_, i64>(&sql);
@@ -244,10 +244,10 @@ pub async fn get_audit_log_count(pool: &PgPool, query: &AuditLogQuery) -> Result
 /// Clean up old audit logs (for data retention policies)
 pub async fn cleanup_old_audit_logs(pool: &PgPool, days_to_keep: i32) -> Result<i64> {
     let result = sqlx::query(
-        r#"
+        r"
         DELETE FROM cms_audit_logs
         WHERE created_at < NOW() - INTERVAL '1 day' * $1
-        "#,
+        ",
     )
     .bind(days_to_keep)
     .execute(pool)

@@ -87,7 +87,7 @@ async fn list_leads(
     let page = filters.page.unwrap_or(1).max(1);
     let per_page = filters.per_page.unwrap_or(25).min(100);
     let offset = (page - 1) * per_page;
-    let search_pattern = filters.search.as_ref().map(|s| format!("%{}%", s));
+    let search_pattern = filters.search.as_ref().map(|s| format!("%{s}%"));
 
     // Lead statuses from the frontend Lead interface
     let lead_statuses = [
@@ -102,7 +102,7 @@ async fn list_leads(
     ];
 
     let leads: Vec<CrmLead> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, email, first_name, last_name, phone, company, job_title,
                status, source, COALESCE(score, 0) as score, tags, custom_fields,
                last_contacted_at, created_at, updated_at
@@ -113,7 +113,7 @@ async fn list_leads(
           AND ($3::text IS NULL OR email ILIKE $3 OR first_name ILIKE $3 OR last_name ILIKE $3 OR company ILIKE $3)
         ORDER BY created_at DESC
         LIMIT $4 OFFSET $5
-        "#,
+        ",
     )
     .bind(filters.status.as_deref())
     .bind(filters.source.as_deref())
@@ -130,7 +130,7 @@ async fn list_leads(
         .iter()
         .map(|lead| {
             let full_name = match (&lead.first_name, &lead.last_name) {
-                (Some(f), Some(l)) => format!("{} {}", f, l),
+                (Some(f), Some(l)) => format!("{f} {l}"),
                 (Some(f), None) => f.clone(),
                 (None, Some(l)) => l.clone(),
                 (None, None) => lead.email.clone(),
@@ -163,17 +163,17 @@ async fn list_leads(
 
     // Get total count
     let total: (i64,) = sqlx::query_as(
-        r#"
+        r"
         SELECT COUNT(*) FROM contacts
         WHERE status IN ('new', 'contacted', 'qualified', 'proposal', 'negotiation', 'won', 'lost', 'lead')
           AND ($1::text IS NULL OR status = $1)
           AND ($2::text IS NULL OR source = $2)
           AND ($3::text IS NULL OR email ILIKE $3 OR first_name ILIKE $3 OR last_name ILIKE $3 OR company ILIKE $3)
-        "#,
+        ",
     )
     .bind(filters.status.as_deref())
     .bind(filters.source.as_deref())
-    .bind(filters.search.as_ref().map(|s| format!("%{}%", s)).as_deref())
+    .bind(filters.search.as_ref().map(|s| format!("%{s}%")).as_deref())
     .fetch_one(&state.db.pool)
     .await
     .unwrap_or((0,));
@@ -279,13 +279,13 @@ async fn create_lead(
     let status = input.status.unwrap_or_else(|| "new".to_string());
 
     let lead: CrmLead = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO contacts (email, first_name, last_name, phone, company, job_title,
                               source, status, tags, custom_fields, score, created_at, updated_at)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 0, NOW(), NOW())
         RETURNING id, email, first_name, last_name, phone, company, job_title,
                   status, source, score, tags, custom_fields, last_contacted_at, created_at, updated_at
-        "#,
+        ",
     )
     .bind(&input.email)
     .bind(&input.first_name)
@@ -308,7 +308,7 @@ async fn create_lead(
     })?;
 
     let full_name = match (&lead.first_name, &lead.last_name) {
-        (Some(f), Some(l)) => format!("{} {}", f, l),
+        (Some(f), Some(l)) => format!("{f} {l}"),
         (Some(f), None) => f.clone(),
         (None, Some(l)) => l.clone(),
         (None, None) => lead.email.clone(),
@@ -343,7 +343,7 @@ async fn update_lead(
     let tags = input.tags.and_then(|t| serde_json::to_value(t).ok());
 
     let lead: CrmLead = sqlx::query_as(
-        r#"
+        r"
         UPDATE contacts SET
             email = COALESCE($2, email),
             first_name = COALESCE($3, first_name),
@@ -358,7 +358,7 @@ async fn update_lead(
         WHERE id = $1
         RETURNING id, email, first_name, last_name, phone, company, job_title,
                   status, source, score, tags, custom_fields, last_contacted_at, created_at, updated_at
-        "#,
+        ",
     )
     .bind(id)
     .bind(&input.email)
@@ -375,7 +375,7 @@ async fn update_lead(
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
 
     let full_name = match (&lead.first_name, &lead.last_name) {
-        (Some(f), Some(l)) => format!("{} {}", f, l),
+        (Some(f), Some(l)) => format!("{f} {l}"),
         (Some(f), None) => f.clone(),
         (None, Some(l)) => l.clone(),
         (None, None) => lead.email.clone(),

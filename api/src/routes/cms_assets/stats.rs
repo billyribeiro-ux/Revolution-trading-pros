@@ -94,12 +94,12 @@ pub(super) async fn get_all_tags(
     _admin: AdminUser,
 ) -> Result<Json<Vec<String>>, ApiError> {
     let tags: Vec<(String,)> = sqlx::query_as(
-        r#"
+        r"
         SELECT DISTINCT unnest(tags) as tag
         FROM cms_assets
         WHERE deleted_at IS NULL AND tags IS NOT NULL
         ORDER BY tag
-        "#,
+        ",
     )
     .fetch_all(state.db.pool())
     .await

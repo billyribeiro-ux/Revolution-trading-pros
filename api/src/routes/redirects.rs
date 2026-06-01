@@ -257,23 +257,23 @@ pub async fn update(
     let mut param_count = 1;
 
     if payload.from_path.is_some() {
-        updates.push(format!("from_path = ${}", param_count));
+        updates.push(format!("from_path = ${param_count}"));
         param_count += 1;
     }
     if payload.to_path.is_some() {
-        updates.push(format!("to_path = ${}", param_count));
+        updates.push(format!("to_path = ${param_count}"));
         param_count += 1;
     }
     if payload.status_code.is_some() {
-        updates.push(format!("status_code = ${}", param_count));
+        updates.push(format!("status_code = ${param_count}"));
         param_count += 1;
     }
     if payload.is_active.is_some() {
-        updates.push(format!("is_active = ${}", param_count));
+        updates.push(format!("is_active = ${param_count}"));
         param_count += 1;
     }
 
-    updates.push(format!("updated_at = ${}", param_count));
+    updates.push(format!("updated_at = ${param_count}"));
 
     let query_str = format!(
         "UPDATE redirects SET {} WHERE id = ${} RETURNING *",

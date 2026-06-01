@@ -37,7 +37,7 @@ pub(super) async fn get_trading_rooms(
     );
 
     let rooms: Vec<TradingRoomPlan> = sqlx::query_as(
-        r#"
+        r"
         SELECT
             id,
             name,
@@ -47,7 +47,7 @@ pub(super) async fn get_trading_rooms(
         WHERE is_active = true
           AND (metadata->>'type' = 'trading-room' OR metadata->>'type' = 'alert-service')
         ORDER BY name
-        "#,
+        ",
     )
     .fetch_all(&state.db.pool)
     .await
@@ -102,7 +102,7 @@ pub(super) async fn get_schedule_by_plan(
 
     // Get schedules
     let schedules: Vec<ScheduleRow> = sqlx::query_as(
-        r#"
+        r"
         SELECT
             id, plan_id, title, description, trader_name, trader_id,
             day_of_week, start_time, end_time, timezone,
@@ -111,7 +111,7 @@ pub(super) async fn get_schedule_by_plan(
         FROM trading_room_schedules
         WHERE plan_id = $1 AND is_active = true
         ORDER BY day_of_week, start_time
-        "#,
+        ",
     )
     .bind(plan.id)
     .fetch_all(&state.db.pool)
@@ -194,7 +194,7 @@ pub(super) async fn get_upcoming_events(
 
     // Get schedules with date calculation
     let schedules: Vec<ScheduleRow> = sqlx::query_as(
-        r#"
+        r"
         SELECT
             id, plan_id, title, description, trader_name, trader_id,
             day_of_week, start_time, end_time, timezone,
@@ -203,7 +203,7 @@ pub(super) async fn get_upcoming_events(
         FROM trading_room_schedules
         WHERE plan_id = $1 AND is_active = true
         ORDER BY day_of_week, start_time
-        "#,
+        ",
     )
     .bind(plan.id)
     .fetch_all(&state.db.pool)
@@ -221,13 +221,13 @@ pub(super) async fn get_upcoming_events(
     let end_date = today + chrono::Duration::days(days as i64);
 
     let exceptions: Vec<ScheduleExceptionRow> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, schedule_id, exception_date, exception_type,
                new_start_time, new_end_time, new_trader_name, reason, created_at
         FROM schedule_exceptions
         WHERE schedule_id IN (SELECT id FROM trading_room_schedules WHERE plan_id = $1)
           AND exception_date >= $2 AND exception_date <= $3
-        "#,
+        ",
     )
     .bind(plan.id)
     .bind(today)

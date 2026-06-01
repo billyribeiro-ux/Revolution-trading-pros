@@ -29,14 +29,14 @@ pub(super) async fn index(
     // Build query with optional status filter
     let orders: Vec<OrderRow> = if let Some(ref status) = query.status {
         sqlx::query_as::<_, OrderRow>(
-            r#"SELECT id, order_number, status, (subtotal * 100)::BIGINT AS subtotal_cents, (discount * 100)::BIGINT AS discount_cents,
+            r"SELECT id, order_number, status, (subtotal * 100)::BIGINT AS subtotal_cents, (discount * 100)::BIGINT AS discount_cents,
                       (tax * 100)::BIGINT AS tax_cents, (total * 100)::BIGINT AS total_cents, currency,
                       billing_name, billing_email, billing_address, payment_provider,
                       coupon_code, created_at, completed_at
                FROM orders
                WHERE user_id = $1 AND status = $2
                ORDER BY created_at DESC
-               LIMIT $3 OFFSET $4"#,
+               LIMIT $3 OFFSET $4",
         )
         .bind(user.id)
         .bind(status)
@@ -46,14 +46,14 @@ pub(super) async fn index(
         .await
     } else {
         sqlx::query_as::<_, OrderRow>(
-            r#"SELECT id, order_number, status, (subtotal * 100)::BIGINT AS subtotal_cents, (discount * 100)::BIGINT AS discount_cents,
+            r"SELECT id, order_number, status, (subtotal * 100)::BIGINT AS subtotal_cents, (discount * 100)::BIGINT AS discount_cents,
                       (tax * 100)::BIGINT AS tax_cents, (total * 100)::BIGINT AS total_cents, currency,
                       billing_name, billing_email, billing_address, payment_provider,
                       coupon_code, created_at, completed_at
                FROM orders
                WHERE user_id = $1
                ORDER BY created_at DESC
-               LIMIT $2 OFFSET $3"#,
+               LIMIT $2 OFFSET $3",
         )
         .bind(user.id)
         .bind(per_page)
@@ -144,12 +144,12 @@ pub(super) async fn show(
     // Try to parse as i64 ID first, then as UUID
     let order: Option<OrderRow> = if let Ok(order_id) = id.parse::<i64>() {
         sqlx::query_as::<_, OrderRow>(
-            r#"SELECT id, order_number, status, (subtotal * 100)::BIGINT AS subtotal_cents, (discount * 100)::BIGINT AS discount_cents,
+            r"SELECT id, order_number, status, (subtotal * 100)::BIGINT AS subtotal_cents, (discount * 100)::BIGINT AS discount_cents,
                       (tax * 100)::BIGINT AS tax_cents, (total * 100)::BIGINT AS total_cents, currency,
                       billing_name, billing_email, billing_address, payment_provider,
                       coupon_code, created_at, completed_at
                FROM orders
-               WHERE id = $1 AND user_id = $2"#,
+               WHERE id = $1 AND user_id = $2",
         )
         .bind(order_id)
         .bind(user.id)
@@ -158,12 +158,12 @@ pub(super) async fn show(
     } else if let Ok(uuid) = Uuid::parse_str(&id) {
         // Legacy UUID support
         sqlx::query_as::<_, OrderRow>(
-            r#"SELECT id, order_number, status, (subtotal * 100)::BIGINT AS subtotal_cents, (discount * 100)::BIGINT AS discount_cents,
+            r"SELECT id, order_number, status, (subtotal * 100)::BIGINT AS subtotal_cents, (discount * 100)::BIGINT AS discount_cents,
                       (tax * 100)::BIGINT AS tax_cents, (total * 100)::BIGINT AS total_cents, currency,
                       billing_name, billing_email, billing_address, payment_provider,
                       coupon_code, created_at, completed_at
                FROM orders
-               WHERE uuid = $1 AND user_id = $2"#,
+               WHERE uuid = $1 AND user_id = $2",
         )
         .bind(uuid)
         .bind(user.id)
@@ -204,12 +204,12 @@ pub(super) async fn show_by_number(
     Path(order_number): Path<String>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let order: Option<OrderRow> = sqlx::query_as::<_, OrderRow>(
-        r#"SELECT id, order_number, status, (subtotal * 100)::BIGINT AS subtotal_cents, (discount * 100)::BIGINT AS discount_cents,
+        r"SELECT id, order_number, status, (subtotal * 100)::BIGINT AS subtotal_cents, (discount * 100)::BIGINT AS discount_cents,
                   (tax * 100)::BIGINT AS tax_cents, (total * 100)::BIGINT AS total_cents, currency,
                   billing_name, billing_email, billing_address, payment_provider,
                   coupon_code, created_at, completed_at
            FROM orders
-           WHERE order_number = $1 AND user_id = $2"#,
+           WHERE order_number = $1 AND user_id = $2",
     )
     .bind(&order_number)
     .bind(user.id)

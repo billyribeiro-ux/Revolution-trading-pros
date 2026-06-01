@@ -30,7 +30,7 @@ pub(super) async fn list_courses(
 
     // ICT 7+ SECURITY FIX: Parameterized queries to prevent SQL injection
     let courses: Vec<CourseEnhanced> = sqlx::query_as(
-        r#"SELECT * FROM courses_enhanced
+        r"SELECT * FROM courses_enhanced
            WHERE deleted_at IS NULL
              AND ($1::text IS NULL OR difficulty_level = $1)
              AND ($2::text IS NULL OR category = $2)
@@ -39,7 +39,7 @@ pub(super) async fn list_courses(
              AND ($5::boolean IS NULL OR is_featured = $5)
              AND ($6::text IS NULL OR title ILIKE '%' || $6 || '%' OR description ILIKE '%' || $6 || '%')
            ORDER BY is_featured DESC, created_at DESC
-           LIMIT $7 OFFSET $8"#
+           LIMIT $7 OFFSET $8"
     )
     .bind(query.difficulty_level.as_deref())
     .bind(query.category.as_deref())
@@ -60,14 +60,14 @@ pub(super) async fn list_courses(
     })?;
 
     let total: (i64,) = sqlx::query_as(
-        r#"SELECT COUNT(*) FROM courses_enhanced
+        r"SELECT COUNT(*) FROM courses_enhanced
            WHERE deleted_at IS NULL
              AND ($1::text IS NULL OR difficulty_level = $1)
              AND ($2::text IS NULL OR category = $2)
              AND ($3::bigint IS NULL OR instructor_id = $3)
              AND ($4::boolean IS NULL OR is_published = $4)
              AND ($5::boolean IS NULL OR is_featured = $5)
-             AND ($6::text IS NULL OR title ILIKE '%' || $6 || '%' OR description ILIKE '%' || $6 || '%')"#
+             AND ($6::text IS NULL OR title ILIKE '%' || $6 || '%' OR description ILIKE '%' || $6 || '%')"
     )
     .bind(query.difficulty_level.as_deref())
     .bind(query.category.as_deref())
@@ -381,13 +381,13 @@ pub(super) async fn create_course(
         .map(|p| serde_json::to_value(p).unwrap_or_default());
 
     let course: CourseEnhanced = sqlx::query_as(
-        r#"INSERT INTO courses_enhanced
+        r"INSERT INTO courses_enhanced
            (title, slug, subtitle, description, description_html, thumbnail_url,
             trailer_video_url, difficulty_level, category, tags, instructor_id,
             is_published, is_featured, is_free, required_plan_id, price_cents,
             prerequisite_course_ids, certificate_enabled, completion_threshold_percent)
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
-           RETURNING *"#
+           RETURNING *"
     )
     .bind(&input.title)
     .bind(&slug)
@@ -457,7 +457,7 @@ pub(super) async fn update_course(
 
     // ICT 7+ SECURITY FIX: Parameterized query
     let result: Option<(i64, String)> = sqlx::query_as(
-        r#"UPDATE courses_enhanced SET
+        r"UPDATE courses_enhanced SET
             title = COALESCE($2, title),
             slug = COALESCE($3, slug),
             subtitle = COALESCE($4, subtitle),
@@ -480,7 +480,7 @@ pub(super) async fn update_course(
             completion_threshold_percent = COALESCE($21, completion_threshold_percent),
             updated_at = NOW()
         WHERE id = $1 AND deleted_at IS NULL
-        RETURNING id, title"#,
+        RETURNING id, title",
     )
     .bind(course_id)
     .bind(&input.title)

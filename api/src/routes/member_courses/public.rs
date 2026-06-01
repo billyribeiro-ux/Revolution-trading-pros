@@ -40,7 +40,7 @@ pub(super) async fn list_published_courses(
     };
 
     let query = format!(
-        r#"
+        r"
         SELECT id, title, slug, description, card_image_url, card_description,
                card_badge, card_badge_color, instructor_name, instructor_avatar_url,
                level, price_cents, is_free, is_published, status, module_count,
@@ -51,10 +51,9 @@ pub(super) async fn list_published_courses(
           AND ($1::text IS NULL OR level = $1)
           AND ($2::text IS NULL OR title ILIKE '%' || $2 || '%' OR description ILIKE '%' || $2 || '%')
           AND ($3::boolean IS NULL OR is_free = $3)
-        ORDER BY {} {}
+        ORDER BY {safe_sort_by} {safe_sort_order}
         LIMIT $4 OFFSET $5
-        "#,
-        safe_sort_by, safe_sort_order
+        "
     );
 
     let courses: Vec<CourseListItem> = sqlx::query_as(&query)
@@ -73,13 +72,13 @@ pub(super) async fn list_published_courses(
         })?;
 
     // Get total with same filters
-    let count_query = r#"
+    let count_query = r"
         SELECT COUNT(*) FROM courses
         WHERE is_published = true AND status = 'published'
           AND ($1::text IS NULL OR level = $1)
           AND ($2::text IS NULL OR title ILIKE '%' || $2 || '%' OR description ILIKE '%' || $2 || '%')
           AND ($3::boolean IS NULL OR is_free = $3)
-    "#;
+    ";
 
     let total: (i64,) = sqlx::query_as(count_query)
         .bind(params.level.as_deref())
@@ -115,10 +114,10 @@ pub(super) async fn get_course_detail(
     Path(slug): Path<String>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let course: Course = sqlx::query_as(
-        r#"
+        r"
         SELECT * FROM courses
         WHERE slug = $1 AND is_published = true
-        "#,
+        ",
     )
     .bind(&slug)
     .fetch_optional(&state.db.pool)
@@ -137,11 +136,11 @@ pub(super) async fn get_course_detail(
     })?;
 
     let modules: Vec<CourseModule> = sqlx::query_as(
-        r#"
+        r"
         SELECT * FROM course_modules_v2
         WHERE course_id = $1 AND is_published = true
         ORDER BY sort_order
-        "#,
+        ",
     )
     .bind(course.id)
     .fetch_all(&state.db.pool)
@@ -149,14 +148,14 @@ pub(super) async fn get_course_detail(
     .unwrap_or_default();
 
     let lessons: Vec<LessonListItem> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, course_id, module_id, title, slug, description, duration_minutes,
                position, sort_order, is_free, is_preview, is_published,
                bunny_video_guid, thumbnail_url
         FROM lessons
         WHERE course_id = $1 AND (is_published = true OR is_published IS NULL)
         ORDER BY COALESCE(sort_order, position)
-        "#,
+        ",
     )
     .bind(course.id)
     .fetch_all(&state.db.pool)
@@ -210,8 +209,8 @@ pub(super) async fn get_course_reviews(
         })?;
 
     let reviews: Vec<serde_json::Value> = sqlx::query_as::<_, (i64, i64, i16, Option<String>, Option<String>, bool, NaiveDateTime)>(
-        r#"SELECT r.id, r.user_id, r.rating, r.title, r.content, r.is_verified_purchase, r.created_at
-           FROM course_reviews r WHERE r.course_id = $1 AND r.is_approved = true ORDER BY r.created_at DESC LIMIT 50"#,
+        r"SELECT r.id, r.user_id, r.rating, r.title, r.content, r.is_verified_purchase, r.created_at
+           FROM course_reviews r WHERE r.course_id = $1 AND r.is_approved = true ORDER BY r.created_at DESC LIMIT 50",
     )
     .bind(course.0)
     .fetch_all(&state.db.pool)

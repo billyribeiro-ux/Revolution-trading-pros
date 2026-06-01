@@ -25,17 +25,17 @@ pub(super) async fn list_public_forms(
     let per_page = query.per_page.unwrap_or(20).min(100);
     let offset = (page - 1) * per_page;
 
-    let search_pattern = query.search.as_ref().map(|s| format!("%{}%", s));
+    let search_pattern = query.search.as_ref().map(|s| format!("%{s}%"));
 
     let forms: Vec<FormRow> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, name, slug, description, fields, settings, is_published, submission_count, created_at, updated_at
         FROM forms
         WHERE is_published = true
           AND ($1::text IS NULL OR name ILIKE $1 OR description ILIKE $1)
         ORDER BY created_at DESC
         LIMIT $2 OFFSET $3
-        "#
+        "
     )
     .bind(search_pattern.as_deref())
     .bind(per_page)
@@ -382,7 +382,7 @@ fn validate_form_submission(
                 errors
                     .entry(field_name.to_string())
                     .or_default()
-                    .push(format!("{} is required", field_label));
+                    .push(format!("{field_label} is required"));
                 continue;
             }
 
@@ -399,7 +399,7 @@ fn validate_form_submission(
                 errors
                     .entry(field_name.to_string())
                     .or_default()
-                    .push(format!("{} must be a valid email address", field_label));
+                    .push(format!("{field_label} must be a valid email address"));
             }
 
             // Min/max length validation
@@ -410,8 +410,7 @@ fn validate_form_submission(
                             .entry(field_name.to_string())
                             .or_default()
                             .push(format!(
-                                "{} must be at least {} characters",
-                                field_label, min_length
+                                "{field_label} must be at least {min_length} characters"
                             ));
                     }
                 }
@@ -422,8 +421,7 @@ fn validate_form_submission(
                             .entry(field_name.to_string())
                             .or_default()
                             .push(format!(
-                                "{} must be no more than {} characters",
-                                field_label, max_length
+                                "{field_label} must be no more than {max_length} characters"
                             ));
                     }
                 }
@@ -452,7 +450,7 @@ fn validate_form_submission(
                                 errors
                                     .entry(field_name.to_string())
                                     .or_default()
-                                    .push(format!("{} must be at least {}", field_label, min));
+                                    .push(format!("{field_label} must be at least {min}"));
                             }
                         }
                         if let Some(max) = validation.get("max").and_then(|v| v.as_f64()) {
@@ -460,7 +458,7 @@ fn validate_form_submission(
                                 errors
                                     .entry(field_name.to_string())
                                     .or_default()
-                                    .push(format!("{} must be no more than {}", field_label, max));
+                                    .push(format!("{field_label} must be no more than {max}"));
                             }
                         }
                     }
@@ -545,7 +543,7 @@ pub(super) async fn track_form_view(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Update view count (we'll add a view_count column if not exists)
     sqlx::query(
-        r#"
+        r"
         UPDATE forms
         SET settings = jsonb_set(
             COALESCE(settings, '{}'::jsonb),
@@ -553,7 +551,7 @@ pub(super) async fn track_form_view(
             (COALESCE((settings->>'view_count')::int, 0) + 1)::text::jsonb
         )
         WHERE slug = $1 AND is_published = true
-        "#,
+        ",
     )
     .bind(&slug)
     .execute(&state.db.pool)

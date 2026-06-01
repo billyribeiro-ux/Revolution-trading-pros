@@ -233,17 +233,14 @@ fn mfa_generate_backup_codes_shape_10_codes_dashed_format() {
         assert_eq!(
             code.len(),
             9,
-            "backup code {} MUST be 9 chars (4 + dash + 4); got '{}'",
-            i,
-            code
+            "backup code {i} MUST be 9 chars (4 + dash + 4); got '{code}'"
         );
 
         // Dash at position 4.
         let bytes = code.as_bytes();
         assert_eq!(
             bytes[4], b'-',
-            "backup code {} MUST have '-' at position 4; got '{}'",
-            i, code
+            "backup code {i} MUST have '-' at position 4; got '{code}'"
         );
 
         // First 4 and last 4 are base36 (0-9 + A-Z uppercase).
@@ -253,12 +250,8 @@ fn mfa_generate_backup_codes_shape_10_codes_dashed_format() {
             }
             assert!(
                 ch.is_ascii_digit() || ch.is_ascii_uppercase(),
-                "backup code {} char {} ('{}') MUST be base36 alphanumeric \
-                 (0-9 + uppercase A-Z); got '{}'",
-                i,
-                pos,
-                ch,
-                code
+                "backup code {i} char {pos} ('{ch}') MUST be base36 alphanumeric \
+                 (0-9 + uppercase A-Z); got '{code}'"
             );
         }
     }
@@ -271,10 +264,9 @@ fn mfa_generate_backup_codes_shape_10_codes_dashed_format() {
     for code in &codes {
         assert!(
             seen.insert(code.clone()),
-            "duplicate backup code '{}' — a regression that returned \
+            "duplicate backup code '{code}' — a regression that returned \
              [generate_one().clone(); 10] would silently break the \
-             one-time-use guarantee.",
-            code
+             one-time-use guarantee."
         );
     }
 }
@@ -330,8 +322,7 @@ fn mfa_verify_totp_accepts_current_rejects_far_past() {
         panic!(
             "verify_totp ACCEPTED a code from 1 hour ago that doesn't \
              match the current code — drift window MUST be ±1 period only. \
-             past_code={} current_code={}",
-            past_code, current_code
+             past_code={past_code} current_code={current_code}"
         );
     }
 
@@ -340,9 +331,8 @@ fn mfa_verify_totp_accepts_current_rejects_far_past() {
     // Same collision-tolerance comment as above.
     if bad && current_code != "000000" {
         panic!(
-            "verify_totp ACCEPTED '000000' when current code is {} — \
-             the constant_time_eq comparison MUST distinguish",
-            current_code
+            "verify_totp ACCEPTED '000000' when current code is {current_code} — \
+             the constant_time_eq comparison MUST distinguish"
         );
     }
 }
@@ -378,21 +368,18 @@ fn mfa_generate_qr_uri_shape_and_unencoded_secret() {
     // Starts with the otpauth:// scheme.
     assert!(
         uri.starts_with("otpauth://totp/"),
-        "QR URI MUST start with otpauth://totp/ — got '{}'",
-        uri
+        "QR URI MUST start with otpauth://totp/ — got '{uri}'"
     );
 
     // Issuer and email are URL-encoded (the `+` and `@` and space
     // are special).
     assert!(
         uri.contains("Revolution%20Trading%20Pros"),
-        "QR URI MUST URL-encode the issuer's spaces; got '{}'",
-        uri
+        "QR URI MUST URL-encode the issuer's spaces; got '{uri}'"
     );
     assert!(
         uri.contains("%40example.com"),
-        "QR URI MUST URL-encode the email's '@'; got '{}'",
-        uri
+        "QR URI MUST URL-encode the email's '@'; got '{uri}'"
     );
 
     // R9-D NEGATIVE: the SECRET MUST appear UNENCODED — base32 chars
@@ -402,8 +389,7 @@ fn mfa_generate_qr_uri_shape_and_unencoded_secret() {
     // enrollment.
     assert!(
         uri.contains("secret=JBSWY3DPEHPK3PXP"),
-        "QR URI MUST contain the raw base32 secret unencoded; got '{}'",
-        uri
+        "QR URI MUST contain the raw base32 secret unencoded; got '{uri}'"
     );
 
     // Algorithm, digits, period are fixed per the TOTP constants.

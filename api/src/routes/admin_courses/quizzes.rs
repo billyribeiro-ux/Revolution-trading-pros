@@ -24,10 +24,10 @@ pub(super) async fn list_quizzes(
     Path(course_id): Path<Uuid>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let quizzes: Vec<serde_json::Value> = sqlx::query_as::<_, (i64, String, Option<String>, Option<Uuid>, Option<i64>, String, Option<i32>, bool, i32, NaiveDateTime)>(
-        r#"
+        r"
         SELECT id, title, description, lesson_id, module_id, quiz_type, passing_score, is_published, sort_order, created_at
         FROM course_quizzes WHERE course_id = $1 ORDER BY sort_order
-        "#,
+        ",
     )
     .bind(course_id)
     .fetch_all(&state.db.pool)
@@ -87,14 +87,14 @@ pub(super) async fn create_quiz(
             .unwrap_or((None,));
 
     let quiz = sqlx::query_as::<_, (i64, String, String, bool, NaiveDateTime)>(
-        r#"
+        r"
         INSERT INTO course_quizzes (
             course_id, lesson_id, module_id, title, description, quiz_type,
             passing_score, time_limit_minutes, max_attempts, shuffle_questions,
             shuffle_answers, show_correct_answers, is_required, is_published, sort_order
         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, false, $14)
         RETURNING id, title, quiz_type, is_published, created_at
-        "#,
+        ",
     )
     .bind(course_id)
     .bind(lesson_id)
@@ -157,12 +157,12 @@ pub(super) async fn get_quiz(
             i32,
         ),
     >(
-        r#"
+        r"
         SELECT id, course_id, title, description, quiz_type, passing_score, time_limit_minutes,
                max_attempts, shuffle_questions, shuffle_answers, show_correct_answers, is_required,
                is_published, sort_order
         FROM course_quizzes WHERE id = $1 AND course_id = $2
-        "#,
+        ",
     )
     .bind(quiz_id)
     .bind(course_id)
@@ -190,8 +190,8 @@ pub(super) async fn get_quiz(
     })?;
 
     let questions: Vec<serde_json::Value> = sqlx::query_as::<_, (i64, String, String, Option<String>, i32, i32)>(
-        r#"SELECT id, question_type, question_text, explanation, points, sort_order
-           FROM quiz_questions WHERE quiz_id = $1 ORDER BY sort_order"#,
+        r"SELECT id, question_type, question_text, explanation, points, sort_order
+           FROM quiz_questions WHERE quiz_id = $1 ORDER BY sort_order",
     )
     .bind(quiz_id)
     .fetch_all(&state.db.pool)
@@ -218,7 +218,7 @@ pub(super) async fn update_quiz(
     Json(input): Json<serde_json::Value>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     sqlx::query(
-        r#"
+        r"
         UPDATE course_quizzes SET
             title = COALESCE($1, title),
             description = COALESCE($2, description),
@@ -233,7 +233,7 @@ pub(super) async fn update_quiz(
             is_published = COALESCE($11, is_published),
             updated_at = NOW()
         WHERE id = $12 AND course_id = $13
-        "#,
+        ",
     )
     .bind(input["title"].as_str())
     .bind(input["description"].as_str())
@@ -305,11 +305,11 @@ pub(super) async fn add_quiz_question(
             .unwrap_or((None,));
 
     let question = sqlx::query_as::<_, (i64, String, String, i32)>(
-        r#"
+        r"
         INSERT INTO quiz_questions (quiz_id, question_type, question_text, explanation, points, sort_order)
         VALUES ($1, $2, $3, $4, $5, $6)
         RETURNING id, question_type, question_text, points
-        "#,
+        ",
     )
     .bind(quiz_id)
     .bind(question_type)

@@ -157,10 +157,10 @@ impl PgContentRepository {
 impl ContentRepository for PgContentRepository {
     async fn find_by_id(&self, id: Uuid) -> Result<Option<Content>> {
         let result = sqlx::query_as::<_, CmsContent>(
-            r#"
+            r"
             SELECT * FROM cms_content
             WHERE id = $1 AND deleted_at IS NULL
-            "#,
+            ",
         )
         .bind(id)
         .fetch_optional(&self.pool)
@@ -179,13 +179,13 @@ impl ContentRepository for PgContentRepository {
         let locale = locale.unwrap_or("en");
 
         let result = sqlx::query_as::<_, CmsContent>(
-            r#"
+            r"
             SELECT * FROM cms_content
             WHERE content_type = $1
               AND slug = $2
               AND locale = $3
               AND deleted_at IS NULL
-            "#,
+            ",
         )
         .bind(cms_type)
         .bind(slug)
@@ -216,7 +216,7 @@ impl ContentRepository for PgContentRepository {
 
         // Build dynamic query
         let base_query = format!(
-            r#"
+            r"
             SELECT id, content_type, slug, locale, title, excerpt, featured_image_id,
                    author_id, status, published_at, created_at, updated_at
             FROM cms_content
@@ -226,13 +226,12 @@ impl ContentRepository for PgContentRepository {
               AND ($3::uuid IS NULL OR author_id = $3)
               AND ($4::varchar IS NULL OR locale = $4)
               AND ($5::varchar IS NULL OR title ILIKE '%' || $5 || '%')
-            ORDER BY {} {}
+            ORDER BY {sort_by} {order_direction}
             LIMIT $6 OFFSET $7
-            "#,
-            sort_by, order_direction
+            "
         );
 
-        let count_query = r#"
+        let count_query = r"
             SELECT COUNT(*)
             FROM cms_content
             WHERE deleted_at IS NULL
@@ -241,7 +240,7 @@ impl ContentRepository for PgContentRepository {
               AND ($3::uuid IS NULL OR author_id = $3)
               AND ($4::varchar IS NULL OR locale = $4)
               AND ($5::varchar IS NULL OR title ILIKE '%' || $5 || '%')
-        "#;
+        ";
 
         let cms_type: Option<CmsContentType> = query.content_type;
         let cms_status: Option<CmsContentStatus> = query.status;
@@ -282,7 +281,7 @@ impl ContentRepository for PgContentRepository {
         let cms_status: CmsContentStatus = content.status.into();
 
         let result = sqlx::query_as::<_, CmsContent>(
-            r#"
+            r"
             INSERT INTO cms_content (
                 id, content_type, slug, locale, is_primary_locale, parent_content_id,
                 title, subtitle, excerpt, content, content_blocks,
@@ -298,7 +297,7 @@ impl ContentRepository for PgContentRepository {
                 $27, $28, $29, $30, $31, $32, $32
             )
             RETURNING *
-            "#,
+            ",
         )
         .bind(content.id)
         .bind(cms_type)
@@ -344,7 +343,7 @@ impl ContentRepository for PgContentRepository {
 
         // Optimistic locking check
         let result = sqlx::query_as::<_, CmsContent>(
-            r#"
+            r"
             UPDATE cms_content SET
                 content_type = $2,
                 slug = $3,
@@ -380,7 +379,7 @@ impl ContentRepository for PgContentRepository {
                 updated_by = $31
             WHERE id = $1 AND version = $32 AND deleted_at IS NULL
             RETURNING *
-            "#,
+            ",
         )
         .bind(content.id)
         .bind(cms_type)
@@ -436,11 +435,11 @@ impl ContentRepository for PgContentRepository {
 
     async fn soft_delete(&self, id: Uuid, user_id: Option<Uuid>) -> Result<()> {
         sqlx::query(
-            r#"
+            r"
             UPDATE cms_content
             SET deleted_at = NOW(), updated_at = NOW(), updated_by = $2
             WHERE id = $1 AND deleted_at IS NULL
-            "#,
+            ",
         )
         .bind(id)
         .bind(user_id)
@@ -452,11 +451,11 @@ impl ContentRepository for PgContentRepository {
 
     async fn restore(&self, id: Uuid, user_id: Option<Uuid>) -> Result<()> {
         sqlx::query(
-            r#"
+            r"
             UPDATE cms_content
             SET deleted_at = NULL, updated_at = NOW(), updated_by = $2
             WHERE id = $1 AND deleted_at IS NOT NULL
-            "#,
+            ",
         )
         .bind(id)
         .bind(user_id)
@@ -492,7 +491,7 @@ impl ContentRepository for PgContentRepository {
         };
 
         let result = sqlx::query_as::<_, CmsContent>(
-            r#"
+            r"
             UPDATE cms_content
             SET status = $2,
                 published_at = COALESCE($3, published_at),
@@ -501,7 +500,7 @@ impl ContentRepository for PgContentRepository {
                 updated_by = $4
             WHERE id = $1 AND deleted_at IS NULL
             RETURNING *
-            "#,
+            ",
         )
         .bind(id)
         .bind(cms_status)
@@ -515,10 +514,10 @@ impl ContentRepository for PgContentRepository {
                 // Log workflow transition
                 if let Some(comment) = comment {
                     sqlx::query(
-                        r#"
+                        r"
                         INSERT INTO cms_audit_log (action, entity_type, entity_id, user_id, metadata)
                         VALUES ('status_transition', 'content', $1, $2, $3)
-                        "#,
+                        ",
                     )
                     .bind(id)
                     .bind(user_id)
@@ -554,11 +553,11 @@ impl ContentRepository for PgContentRepository {
         let data = serde_json::to_value(content)?;
 
         let revision = sqlx::query_as::<_, CmsRevision>(
-            r#"
+            r"
             INSERT INTO cms_revisions (content_id, revision_number, is_current, data, created_by)
             VALUES ($1, $2, true, $3, $4)
             RETURNING *
-            "#,
+            ",
         )
         .bind(content.id)
         .bind(next_revision)
@@ -581,11 +580,11 @@ impl ContentRepository for PgContentRepository {
 
     async fn list_revisions(&self, content_id: Uuid) -> Result<Vec<CmsRevision>> {
         let revisions = sqlx::query_as::<_, CmsRevision>(
-            r#"
+            r"
             SELECT * FROM cms_revisions
             WHERE content_id = $1
             ORDER BY revision_number DESC
-            "#,
+            ",
         )
         .bind(content_id)
         .fetch_all(&self.pool)
@@ -620,7 +619,7 @@ impl ContentRepository for PgContentRepository {
             content_types.map(|types| types.into_iter().map(|t| t.into()).collect());
 
         let results = sqlx::query_as::<_, CmsContentSummary>(
-            r#"
+            r"
             SELECT id, content_type, slug, locale, title, excerpt, featured_image_id,
                    author_id, status, published_at, created_at, updated_at
             FROM cms_content
@@ -639,7 +638,7 @@ impl ContentRepository for PgContentRepository {
               END,
               published_at DESC
             LIMIT $3
-            "#,
+            ",
         )
         .bind(query)
         .bind(&cms_types)
@@ -659,13 +658,13 @@ impl ContentRepository for PgContentRepository {
         let cms_status: Option<CmsContentStatus> = status.map(|s| s.into());
 
         let result: (i64,) = sqlx::query_as(
-            r#"
+            r"
             SELECT COUNT(*)
             FROM cms_content
             WHERE deleted_at IS NULL
               AND ($1::cms_content_type IS NULL OR content_type = $1)
               AND ($2::cms_content_status IS NULL OR status = $2)
-            "#,
+            ",
         )
         .bind(&cms_type)
         .bind(&cms_status)
@@ -684,7 +683,7 @@ impl ContentRepository for PgContentRepository {
         let cms_type: CmsContentType = content_type.into();
 
         let result: (bool,) = sqlx::query_as(
-            r#"
+            r"
             SELECT EXISTS(
                 SELECT 1 FROM cms_content
                 WHERE content_type = $1
@@ -692,7 +691,7 @@ impl ContentRepository for PgContentRepository {
                   AND deleted_at IS NULL
                   AND ($3::uuid IS NULL OR id != $3)
             )
-            "#,
+            ",
         )
         .bind(cms_type)
         .bind(slug)

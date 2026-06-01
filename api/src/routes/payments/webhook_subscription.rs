@@ -65,14 +65,14 @@ pub(super) async fn handle_subscription_updated(
     };
 
     sqlx::query(
-        r#"UPDATE user_memberships SET
+        r"UPDATE user_memberships SET
             status = $1,
             current_period_start = $2,
             current_period_end = $3,
             cancel_at_period_end = $4,
             cancelled_at = $5,
             updated_at = NOW()
-        WHERE stripe_subscription_id = $6"#,
+        WHERE stripe_subscription_id = $6",
     )
     .bind(status)
     .bind({
@@ -169,12 +169,12 @@ pub(super) async fn handle_subscription_deleted(
         current_period_end: Option<chrono::NaiveDateTime>,
     }
     let info: Option<CancelInfo> = sqlx::query_as(
-        r#"SELECT u.email, u.name, mp.name AS plan_name, um.current_period_end
+        r"SELECT u.email, u.name, mp.name AS plan_name, um.current_period_end
            FROM user_memberships um
            JOIN users u ON u.id = um.user_id
            JOIN membership_plans mp ON mp.id = um.plan_id
            WHERE um.stripe_subscription_id = $1
-           ORDER BY um.id DESC LIMIT 1"#,
+           ORDER BY um.id DESC LIMIT 1",
     )
     .bind(&subscription.id)
     .fetch_optional(&mut **tx)
@@ -239,15 +239,14 @@ pub(super) async fn handle_trial_will_end(
     // not actually keep anything — propagate so the security_events row is
     // atomic with marking the event processed (Stripe retries on failure).
     sqlx::query(
-        r#"INSERT INTO security_events (user_id, event_type, event_category, severity, details, created_at)
-           VALUES ($1, 'trial_will_end', 'billing', 'low', $2, NOW())"#,
+        r"INSERT INTO security_events (user_id, event_type, event_category, severity, details, created_at)
+           VALUES ($1, 'trial_will_end', 'billing', 'low', $2, NOW())",
     )
     .bind(user_id)
     .bind(json!({
         "subscription_id": subscription_id,
         "customer_id": customer_id,
         "trial_end_ts": trial_end,
-        // TODO Task 4: send Postmark "trial ending soon" email to user
     }))
     .execute(&mut **tx)
     .await
@@ -278,12 +277,12 @@ pub(super) async fn handle_trial_will_end(
     }
     if let Some(uid) = user_id {
         let info: Option<TrialInfo> = sqlx::query_as(
-            r#"SELECT u.email, u.name, mp.name AS plan_name
+            r"SELECT u.email, u.name, mp.name AS plan_name
                FROM user_memberships um
                JOIN users u ON u.id = um.user_id
                JOIN membership_plans mp ON mp.id = um.plan_id
                WHERE um.user_id = $1 AND um.stripe_subscription_id = $2
-               ORDER BY um.id DESC LIMIT 1"#,
+               ORDER BY um.id DESC LIMIT 1",
         )
         .bind(uid)
         .bind(subscription_id)

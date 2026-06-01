@@ -37,10 +37,10 @@ async fn list_log(
     }
 
     let rows: Vec<LogRow> = sqlx::query_as(
-        r#"SELECT id, run_at, discrepancies_found, log
+        r"SELECT id, run_at, discrepancies_found, log
            FROM reconciliation_log
            ORDER BY run_at DESC
-           LIMIT $1 OFFSET $2"#,
+           LIMIT $1 OFFSET $2",
     )
     .bind(limit)
     .bind(offset)

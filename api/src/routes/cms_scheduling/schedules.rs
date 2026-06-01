@@ -65,12 +65,12 @@ pub(super) async fn create_schedule(
 
     // Create the schedule
     let schedule: CmsSchedule = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO cms_schedules (
             content_id, action, scheduled_at, timezone, staged_data, notes, created_by
         ) VALUES ($1, $2, $3, $4, $5, $6, $7)
         RETURNING *
-        "#,
+        ",
     )
     .bind(req.content_id)
     .bind(&req.action)
@@ -85,11 +85,11 @@ pub(super) async fn create_schedule(
 
     // Log to history
     let _ = sqlx::query(
-        r#"
+        r"
         INSERT INTO cms_schedule_history (
             schedule_id, content_id, event_type, new_status, user_id, event_data
         ) VALUES ($1, $2, 'schedule_created', 'pending', $3, $4)
-        "#,
+        ",
     )
     .bind(schedule.id)
     .bind(req.content_id)
@@ -129,7 +129,7 @@ pub(super) async fn list_schedules(
 
     // Build dynamic query
     let mut sql = String::from(
-        r#"
+        r"
         SELECT
             s.id, s.content_id, s.action, s.scheduled_at, s.timezone,
             s.status, s.executed_at, s.error_message, s.notes,
@@ -142,7 +142,7 @@ pub(super) async fn list_schedules(
         LEFT JOIN cms_content_types ct ON c.content_type_id = ct.id
         LEFT JOIN users u ON s.created_by = u.id
         WHERE 1=1
-        "#,
+        ",
     );
 
     // Build parameterized query to prevent SQL injection
@@ -150,12 +150,12 @@ pub(super) async fn list_schedules(
     let mut bind_values: Vec<String> = Vec::new();
 
     if let Some(ref status) = query.status {
-        sql.push_str(&format!(" AND s.status = ${}", param_idx));
+        sql.push_str(&format!(" AND s.status = ${param_idx}"));
         bind_values.push(status.clone());
         param_idx += 1;
     }
     if let Some(content_id) = query.content_id {
-        sql.push_str(&format!(" AND s.content_id = ${}", param_idx));
+        sql.push_str(&format!(" AND s.content_id = ${param_idx}"));
         bind_values.push(content_id.to_string());
         param_idx += 1;
     }
@@ -184,12 +184,12 @@ pub(super) async fn list_schedules(
     let mut count_bind_values: Vec<String> = Vec::new();
 
     if let Some(ref status) = query.status {
-        count_sql.push_str(&format!(" AND s.status = ${}", count_param_idx));
+        count_sql.push_str(&format!(" AND s.status = ${count_param_idx}"));
         count_bind_values.push(status.clone());
         count_param_idx += 1;
     }
     if let Some(content_id) = query.content_id {
-        count_sql.push_str(&format!(" AND s.content_id = ${}", count_param_idx));
+        count_sql.push_str(&format!(" AND s.content_id = ${count_param_idx}"));
         count_bind_values.push(content_id.to_string());
     }
 
@@ -230,7 +230,7 @@ pub(super) async fn get_schedule(
     require_cms_editor(&user)?;
 
     let schedule: CmsScheduleExtended = sqlx::query_as(
-        r#"
+        r"
         SELECT
             s.id, s.content_id, s.action, s.scheduled_at, s.timezone,
             s.status, s.executed_at, s.error_message, s.notes,
@@ -243,7 +243,7 @@ pub(super) async fn get_schedule(
         LEFT JOIN cms_content_types ct ON c.content_type_id = ct.id
         LEFT JOIN users u ON s.created_by = u.id
         WHERE s.id = $1
-        "#,
+        ",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -305,7 +305,7 @@ pub(super) async fn update_schedule(
     }
 
     let schedule: CmsSchedule = sqlx::query_as(
-        r#"
+        r"
         UPDATE cms_schedules SET
             action = COALESCE($2, action),
             scheduled_at = COALESCE($3, scheduled_at),
@@ -314,7 +314,7 @@ pub(super) async fn update_schedule(
             notes = COALESCE($6, notes)
         WHERE id = $1
         RETURNING *
-        "#,
+        ",
     )
     .bind(id)
     .bind(&req.action)
@@ -328,11 +328,11 @@ pub(super) async fn update_schedule(
 
     // Log to history
     let _ = sqlx::query(
-        r#"
+        r"
         INSERT INTO cms_schedule_history (
             schedule_id, content_id, event_type, user_id, event_data
         ) VALUES ($1, $2, 'schedule_updated', $3, $4)
-        "#,
+        ",
     )
     .bind(id)
     .bind(existing.content_id)
@@ -372,14 +372,14 @@ pub(super) async fn cancel_schedule(
     require_cms_editor(&user)?;
 
     let schedule: CmsSchedule = sqlx::query_as(
-        r#"
+        r"
         UPDATE cms_schedules SET
             status = 'cancelled',
             cancelled_by = $2,
             cancelled_at = NOW()
         WHERE id = $1 AND status = 'pending'
         RETURNING *
-        "#,
+        ",
     )
     .bind(id)
     .bind(user.id)
@@ -395,11 +395,11 @@ pub(super) async fn cancel_schedule(
 
     // Log to history
     let _ = sqlx::query(
-        r#"
+        r"
         INSERT INTO cms_schedule_history (
             schedule_id, content_id, event_type, previous_status, new_status, user_id
         ) VALUES ($1, $2, 'schedule_cancelled', 'pending', 'cancelled', $3)
-        "#,
+        ",
     )
     .bind(id)
     .bind(schedule.content_id)
@@ -432,10 +432,10 @@ pub(super) async fn delete_schedule(
     require_cms_admin(&user)?;
 
     let result = sqlx::query(
-        r#"
+        r"
         DELETE FROM cms_schedules
         WHERE id = $1 AND status IN ('cancelled', 'completed', 'failed')
-        "#,
+        ",
     )
     .bind(id)
     .execute(&state.db.pool)

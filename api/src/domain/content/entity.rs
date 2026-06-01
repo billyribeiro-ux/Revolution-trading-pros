@@ -414,7 +414,7 @@ impl Content {
             ContentStatus::Approved | ContentStatus::Published if !user_role.can_approve() => {
                 return Err(ContentError::PermissionDenied {
                     role: user_role.clone(),
-                    action: format!("transition to {:?}", new_status),
+                    action: format!("transition to {new_status:?}"),
                 });
             }
             ContentStatus::Scheduled if self.scheduled_publish_at.is_none() => {

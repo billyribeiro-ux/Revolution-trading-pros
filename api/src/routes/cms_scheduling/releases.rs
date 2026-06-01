@@ -53,13 +53,13 @@ pub(super) async fn create_release(
     };
 
     let release: CmsRelease = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO cms_releases (
             name, description, scheduled_at, timezone, status,
             stop_on_error, notify_on_complete, created_by
         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
         RETURNING *
-        "#,
+        ",
     )
     .bind(&req.name)
     .bind(&req.description)
@@ -75,14 +75,14 @@ pub(super) async fn create_release(
 
     // Log to history
     let _ = sqlx::query(
-        r#"
+        r"
         INSERT INTO cms_schedule_history (
             release_id, event_type, new_status, user_id, event_data
         ) VALUES ($1, 'release_created', $2, $3, $4)
-        "#,
+        ",
     )
     .bind(release.id)
-    .bind(format!("{:?}", status).to_lowercase())
+    .bind(format!("{status:?}").to_lowercase())
     .bind(user.id)
     .bind(json!({
         "name": req.name,
@@ -198,7 +198,7 @@ pub(super) async fn get_release(
         .ok_or_else(|| api_error(StatusCode::NOT_FOUND, "Release not found"))?;
 
     let items: Vec<CmsReleaseItemExtended> = sqlx::query_as(
-        r#"
+        r"
         SELECT
             ri.id, ri.release_id, ri.content_id, ri.action, ri.order_index,
             ri.status, ri.executed_at, ri.error_message,
@@ -209,7 +209,7 @@ pub(super) async fn get_release(
         LEFT JOIN cms_content_types ct ON c.content_type_id = ct.id
         WHERE ri.release_id = $1
         ORDER BY ri.order_index ASC
-        "#,
+        ",
     )
     .bind(id)
     .fetch_all(&state.db.pool)
@@ -266,7 +266,7 @@ pub(super) async fn update_release(
     };
 
     let release: CmsRelease = sqlx::query_as(
-        r#"
+        r"
         UPDATE cms_releases SET
             name = COALESCE($2, name),
             description = COALESCE($3, description),
@@ -277,7 +277,7 @@ pub(super) async fn update_release(
             status = COALESCE($8, status)
         WHERE id = $1 AND status IN ('draft', 'scheduled')
         RETURNING *
-        "#,
+        ",
     )
     .bind(id)
     .bind(&req.name)
@@ -369,12 +369,12 @@ pub(super) async fn add_release_item(
     };
 
     let item: CmsReleaseItem = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO cms_release_items (
             release_id, content_id, action, order_index, staged_data
         ) VALUES ($1, $2, $3, $4, $5)
         RETURNING *
-        "#,
+        ",
     )
     .bind(release_id)
     .bind(req.content_id)
@@ -419,14 +419,14 @@ pub(super) async fn remove_release_item(
     require_cms_editor(&user)?;
 
     let result = sqlx::query(
-        r#"
+        r"
         DELETE FROM cms_release_items ri
         USING cms_releases r
         WHERE ri.id = $1
           AND ri.release_id = $2
           AND r.id = ri.release_id
           AND r.status IN ('draft', 'scheduled')
-        "#,
+        ",
     )
     .bind(item_id)
     .bind(release_id)
@@ -483,14 +483,14 @@ pub(super) async fn schedule_release(
     }
 
     let release: CmsRelease = sqlx::query_as(
-        r#"
+        r"
         UPDATE cms_releases SET
             scheduled_at = $2,
             timezone = $3,
             status = 'scheduled'
         WHERE id = $1 AND status = 'draft'
         RETURNING *
-        "#,
+        ",
     )
     .bind(id)
     .bind(req.scheduled_at)
@@ -507,11 +507,11 @@ pub(super) async fn schedule_release(
 
     // Log to history
     let _ = sqlx::query(
-        r#"
+        r"
         INSERT INTO cms_schedule_history (
             release_id, event_type, previous_status, new_status, user_id, event_data
         ) VALUES ($1, 'release_scheduled', 'draft', 'scheduled', $2, $3)
-        "#,
+        ",
     )
     .bind(id)
     .bind(user.id)
@@ -554,14 +554,14 @@ pub(super) async fn cancel_release(
     require_cms_editor(&user)?;
 
     let release: CmsRelease = sqlx::query_as(
-        r#"
+        r"
         UPDATE cms_releases SET
             status = 'cancelled',
             cancelled_by = $2,
             cancelled_at = NOW()
         WHERE id = $1 AND status IN ('draft', 'scheduled')
         RETURNING *
-        "#,
+        ",
     )
     .bind(id)
     .bind(user.id)
@@ -600,10 +600,10 @@ pub(super) async fn delete_release(
     require_cms_admin(&user)?;
 
     let result = sqlx::query(
-        r#"
+        r"
         DELETE FROM cms_releases
         WHERE id = $1 AND status IN ('cancelled', 'completed', 'failed')
-        "#,
+        ",
     )
     .bind(id)
     .execute(&state.db.pool)

@@ -65,10 +65,10 @@ pub(super) async fn deactivate_account(
     // Log the deactivation reason
     if let Some(reason) = &input.reason {
         sqlx::query(
-            r#"
+            r"
             INSERT INTO user_activity_log (user_id, action, description, created_at)
             VALUES ($1, 'account_deactivation_requested', $2, NOW())
-            "#,
+            ",
         )
         .bind(user.id)
         .bind(reason)
@@ -100,7 +100,7 @@ pub(super) async fn deactivate_account(
 
         // Soft delete the user (keep for audit trail, anonymize PII)
         sqlx::query(
-            r#"
+            r"
             UPDATE users SET
                 email = CONCAT('deleted_', id, '@deactivated.local'),
                 name = 'Deleted User',
@@ -112,7 +112,7 @@ pub(super) async fn deactivate_account(
                 deleted_at = NOW(),
                 updated_at = NOW()
             WHERE id = $1
-            "#,
+            ",
         )
         .bind(user.id)
         .execute(&mut *tx)
@@ -146,12 +146,12 @@ pub(super) async fn deactivate_account(
     } else {
         // Soft deactivation - keep data but disable account
         sqlx::query(
-            r#"
+            r"
             UPDATE users SET
                 status = 'deactivated',
                 updated_at = NOW()
             WHERE id = $1
-            "#,
+            ",
         )
         .bind(user.id)
         .execute(&mut *tx)

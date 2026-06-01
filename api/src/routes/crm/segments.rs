@@ -52,10 +52,10 @@ async fn list_segments(
     Query(filters): Query<ListFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let per_page = filters.per_page.unwrap_or(50).min(100);
-    let search_pattern = filters.search.as_ref().map(|s| format!("%{}%", s));
+    let search_pattern = filters.search.as_ref().map(|s| format!("%{s}%"));
 
     let segments: Vec<ContactSegment> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, title, slug, description, conditions, match_type,
                COALESCE(contacts_count, 0) as contacts_count, is_active,
                last_synced_at, created_at, updated_at
@@ -63,7 +63,7 @@ async fn list_segments(
         WHERE ($1::text IS NULL OR title ILIKE $1)
         ORDER BY created_at DESC
         LIMIT $2
-        "#,
+        ",
     )
     .bind(search_pattern.as_deref())
     .bind(per_page)
@@ -92,11 +92,11 @@ async fn create_segment(
     let match_type = input.match_type.unwrap_or_else(|| "all".to_string());
 
     let segment: ContactSegment = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO crm_segments (title, slug, description, conditions, match_type, contacts_count, is_active, created_at, updated_at)
         VALUES ($1, $2, $3, $4, $5, 0, true, NOW(), NOW())
         RETURNING id, title, slug, description, conditions, match_type, contacts_count, is_active, last_synced_at, created_at, updated_at
-        "#,
+        ",
     )
     .bind(&input.title)
     .bind(&slug)
@@ -152,11 +152,11 @@ async fn sync_segment(
     Path(id): Path<i64>,
 ) -> Result<Json<ContactSegment>, (StatusCode, Json<serde_json::Value>)> {
     let segment: ContactSegment = sqlx::query_as(
-        r#"
+        r"
         UPDATE crm_segments SET last_synced_at = NOW(), updated_at = NOW()
         WHERE id = $1
         RETURNING id, title, slug, description, conditions, match_type, contacts_count, is_active, last_synced_at, created_at, updated_at
-        "#,
+        ",
     )
     .bind(id)
     .fetch_one(&state.db.pool)
@@ -186,11 +186,11 @@ async fn duplicate_segment(
     let new_slug = format!("{}-copy", original.slug);
 
     let segment: ContactSegment = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO crm_segments (title, slug, description, conditions, match_type, contacts_count, is_active, created_at, updated_at)
         VALUES ($1, $2, $3, $4, $5, 0, false, NOW(), NOW())
         RETURNING id, title, slug, description, conditions, match_type, contacts_count, is_active, last_synced_at, created_at, updated_at
-        "#,
+        ",
     )
     .bind(&new_title)
     .bind(&new_slug)

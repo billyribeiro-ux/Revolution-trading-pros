@@ -167,7 +167,7 @@ async fn test_admin_list_users_no_filters() {
         .oneshot(
             Request::builder()
                 .uri("/api/admin/users")
-                .header(header::AUTHORIZATION, format!("Bearer {}", admin_token))
+                .header(header::AUTHORIZATION, format!("Bearer {admin_token}"))
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -189,7 +189,7 @@ async fn test_admin_list_users_with_role_filter() {
         .oneshot(
             Request::builder()
                 .uri("/api/admin/users?role=admin")
-                .header(header::AUTHORIZATION, format!("Bearer {}", admin_token))
+                .header(header::AUTHORIZATION, format!("Bearer {admin_token}"))
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -210,7 +210,7 @@ async fn test_admin_list_users_with_search() {
         .oneshot(
             Request::builder()
                 .uri("/api/admin/users?search=admin")
-                .header(header::AUTHORIZATION, format!("Bearer {}", admin_token))
+                .header(header::AUTHORIZATION, format!("Bearer {admin_token}"))
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -232,7 +232,7 @@ async fn test_admin_list_users_sql_injection_attempt() {
         .oneshot(
             Request::builder()
                 .uri("/api/admin/users?search=' OR '1'='1")
-                .header(header::AUTHORIZATION, format!("Bearer {}", admin_token))
+                .header(header::AUTHORIZATION, format!("Bearer {admin_token}"))
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -255,7 +255,7 @@ async fn test_admin_access_denied_for_regular_user() {
         .oneshot(
             Request::builder()
                 .uri("/api/admin/users")
-                .header(header::AUTHORIZATION, format!("Bearer {}", user_token))
+                .header(header::AUTHORIZATION, format!("Bearer {user_token}"))
                 .body(Body::empty())
                 .unwrap(),
         )

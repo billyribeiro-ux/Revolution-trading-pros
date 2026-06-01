@@ -329,13 +329,13 @@ impl RoomSearchService {
         // Add ticker filter
         if filters.ticker.is_some() {
             let idx = 4 + filters.from_date.is_some() as usize + filters.to_date.is_some() as usize;
-            conditions.push(format!("UPPER(ticker) = UPPER(${})", idx));
+            conditions.push(format!("UPPER(ticker) = UPPER(${idx})"));
         }
 
         let where_clause = conditions.join(" AND ");
 
         let query = format!(
-            r#"
+            r"
             SELECT
                 id,
                 ticker,
@@ -354,11 +354,10 @@ impl RoomSearchService {
                     'StartSel=<mark>, StopSel=</mark>, MaxWords=50, MinWords=20'
                 ) as highlight
             FROM room_alerts
-            WHERE {}
+            WHERE {where_clause}
             ORDER BY relevance_score DESC, published_at DESC
             LIMIT $3
-            "#,
-            where_clause
+            "
         );
 
         // Build and execute query with dynamic bindings
@@ -412,13 +411,13 @@ impl RoomSearchService {
         }
         if filters.ticker.is_some() {
             let idx = 4 + filters.from_date.is_some() as usize + filters.to_date.is_some() as usize;
-            conditions.push(format!("UPPER(ticker) = UPPER(${})", idx));
+            conditions.push(format!("UPPER(ticker) = UPPER(${idx})"));
         }
 
         let where_clause = conditions.join(" AND ");
 
         let query = format!(
-            r#"
+            r"
             SELECT
                 id,
                 ticker,
@@ -442,11 +441,10 @@ impl RoomSearchService {
                     'StartSel=<mark>, StopSel=</mark>, MaxWords=50, MinWords=20'
                 ) as highlight
             FROM room_trades
-            WHERE {}
+            WHERE {where_clause}
             ORDER BY relevance_score DESC, entry_date DESC
             LIMIT $3
-            "#,
-            where_clause
+            "
         );
 
         let mut query_builder = sqlx::query_as::<_, TradeSearchResult>(&query)
@@ -499,13 +497,13 @@ impl RoomSearchService {
         }
         if filters.ticker.is_some() {
             let idx = 4 + filters.from_date.is_some() as usize + filters.to_date.is_some() as usize;
-            conditions.push(format!("UPPER(ticker) = UPPER(${})", idx));
+            conditions.push(format!("UPPER(ticker) = UPPER(${idx})"));
         }
 
         let where_clause = conditions.join(" AND ");
 
         let query = format!(
-            r#"
+            r"
             SELECT
                 id,
                 ticker,
@@ -527,11 +525,10 @@ impl RoomSearchService {
                     'StartSel=<mark>, StopSel=</mark>, MaxWords=50, MinWords=20'
                 ) as highlight
             FROM room_trade_plans
-            WHERE {}
+            WHERE {where_clause}
             ORDER BY relevance_score DESC, week_of DESC
             LIMIT $3
-            "#,
-            where_clause
+            "
         );
 
         let mut query_builder = sqlx::query_as::<_, TradePlanSearchResult>(&query)
@@ -568,7 +565,7 @@ impl RoomSearchService {
     ) -> Result<SearchSuggestions, SearchError> {
         // Get matching tickers from alerts
         let tickers: Vec<(String,)> = sqlx::query_as(
-            r#"
+            r"
             SELECT DISTINCT UPPER(ticker) as ticker
             FROM room_alerts
             WHERE room_slug = $1
@@ -588,7 +585,7 @@ impl RoomSearchService {
             AND deleted_at IS NULL
             ORDER BY 1
             LIMIT $3
-            "#,
+            ",
         )
         .bind(room_slug)
         .bind(prefix)
@@ -642,8 +639,8 @@ pub enum SearchError {
 impl std::fmt::Display for SearchError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            SearchError::DatabaseError(msg) => write!(f, "Database error: {}", msg),
-            SearchError::InvalidQuery(msg) => write!(f, "Invalid query: {}", msg),
+            SearchError::DatabaseError(msg) => write!(f, "Database error: {msg}"),
+            SearchError::InvalidQuery(msg) => write!(f, "Invalid query: {msg}"),
         }
     }
 }

@@ -148,10 +148,10 @@ pub(super) async fn webhook(
     // Upsert the observation row (idempotent) and read back whether it has
     // already been fully processed. `processed_at` is the authority.
     let already_processed: Option<bool> = sqlx::query_scalar(
-        r#"INSERT INTO webhook_events (event_id, event_type, payload)
+        r"INSERT INTO webhook_events (event_id, event_type, payload)
            VALUES ($1, $2, $3)
            ON CONFLICT (event_id) DO UPDATE SET event_type = EXCLUDED.event_type
-           RETURNING (processed_at IS NOT NULL)"#,
+           RETURNING (processed_at IS NOT NULL)",
     )
     .bind(&event.id)
     .bind(&event.event_type)

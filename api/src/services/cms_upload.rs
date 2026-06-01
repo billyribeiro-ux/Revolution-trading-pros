@@ -144,7 +144,7 @@ pub fn validate_upload(
     };
 
     if !is_allowed {
-        return Err(anyhow!("File type {} is not allowed", mime_type));
+        return Err(anyhow!("File type {mime_type} is not allowed"));
     }
 
     // Validate filename (basic security check)
@@ -172,11 +172,11 @@ pub fn generate_storage_key(
         .to_lowercase();
 
     // Generate unique filename
-    let filename = format!("{}.{}", uuid, extension);
+    let filename = format!("{uuid}.{extension}");
 
     // Build storage key with folder structure
     let folder = folder_path.unwrap_or(asset_type.as_str());
-    let storage_key = format!("{}/{}/{}", folder, timestamp, filename);
+    let storage_key = format!("{folder}/{timestamp}/{filename}");
 
     (storage_key, filename)
 }
@@ -202,7 +202,7 @@ pub async fn upload_to_r2(
         .cache_control("public, max-age=31536000, immutable")
         .send()
         .await
-        .map_err(|e| anyhow!("Failed to upload to R2: {}", e))?;
+        .map_err(|e| anyhow!("Failed to upload to R2: {e}"))?;
 
     let cdn_url = format!("{}/{}", config.cdn_url.trim_end_matches('/'), storage_key);
 
@@ -221,7 +221,7 @@ pub async fn delete_from_r2(
         .key(storage_key)
         .send()
         .await
-        .map_err(|e| anyhow!("Failed to delete from R2: {}", e))?;
+        .map_err(|e| anyhow!("Failed to delete from R2: {e}"))?;
 
     Ok(())
 }

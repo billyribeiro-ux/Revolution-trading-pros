@@ -141,7 +141,7 @@ async fn ready_check(
         .map_err(|e| {
             (
                 axum::http::StatusCode::SERVICE_UNAVAILABLE,
-                format!("Database not ready: {}", e),
+                format!("Database not ready: {e}"),
             )
         })?;
 
@@ -178,7 +178,7 @@ async fn setup_db(
 
     tracing::info!("Admin {} running setup-db", admin.0.email);
     // Create email_verification_tokens table
-    let create_table = r#"
+    let create_table = r"
         DROP TABLE IF EXISTS email_verification_tokens CASCADE;
         CREATE TABLE email_verification_tokens (
             id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -201,7 +201,7 @@ async fn setup_db(
         );
         CREATE INDEX IF NOT EXISTS idx_password_resets_email ON password_resets(email);
         CREATE INDEX IF NOT EXISTS idx_password_resets_token ON password_resets(token);
-    "#;
+    ";
 
     sqlx::raw_sql(create_table)
         .execute(&state.db.pool)
@@ -212,7 +212,7 @@ async fn setup_db(
                 axum::http::StatusCode::INTERNAL_SERVER_ERROR,
                 Json(SetupResponse {
                     success: false,
-                    message: format!("Failed to create table: {}", e),
+                    message: format!("Failed to create table: {e}"),
                 }),
             )
         })?;
@@ -226,14 +226,14 @@ async fn setup_db(
     ) {
         // First, try to update existing user
         let update_result = sqlx::query(
-            r#"
+            r"
             UPDATE users 
             SET password_hash = $1,
                 role = 'super_admin',
                 email_verified_at = COALESCE(email_verified_at, NOW()),
                 updated_at = NOW()
             WHERE email = $2
-            "#,
+            ",
         )
         .bind(bootstrap_password_hash)
         .bind(bootstrap_email)
@@ -245,7 +245,7 @@ async fn setup_db(
                 axum::http::StatusCode::INTERNAL_SERVER_ERROR,
                 Json(SetupResponse {
                     success: false,
-                    message: format!("Failed to update bootstrap user: {}", e),
+                    message: format!("Failed to update bootstrap user: {e}"),
                 }),
             )
         })?;
@@ -253,10 +253,10 @@ async fn setup_db(
         // If no rows were updated, insert a new user
         if update_result.rows_affected() == 0 {
             sqlx::query(
-                r#"
+                r"
                 INSERT INTO users (email, password_hash, name, role, email_verified_at, created_at, updated_at)
                 VALUES ($1, $2, $3, 'super_admin', NOW(), NOW(), NOW())
-                "#,
+                ",
             )
             .bind(bootstrap_email)
             .bind(bootstrap_password_hash)
@@ -269,7 +269,7 @@ async fn setup_db(
                     axum::http::StatusCode::INTERNAL_SERVER_ERROR,
                     Json(SetupResponse {
                         success: false,
-                        message: format!("Failed to create bootstrap user: {}", e),
+                        message: format!("Failed to create bootstrap user: {e}"),
                     }),
                 )
             })?;
@@ -315,7 +315,7 @@ async fn run_migrations(
                 axum::http::StatusCode::INTERNAL_SERVER_ERROR,
                 Json(SetupResponse {
                     success: false,
-                    message: format!("Failed to run migration: {}", e),
+                    message: format!("Failed to run migration: {e}"),
                 }),
             )
         })?;

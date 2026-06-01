@@ -27,11 +27,11 @@ pub(super) async fn list_modules(
     Path(course_id): Path<Uuid>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let modules: Vec<CourseModule> = sqlx::query_as(
-        r#"
+        r"
         SELECT * FROM course_modules_v2
         WHERE course_id = $1
         ORDER BY sort_order
-        "#,
+        ",
     )
     .bind(course_id)
     .fetch_all(&state.db.pool)
@@ -65,11 +65,11 @@ pub(super) async fn create_module(
     let sort_order = input.sort_order.unwrap_or(max_order.0.unwrap_or(0) + 1);
 
     let module: CourseModule = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO course_modules_v2 (course_id, title, description, sort_order, is_published, drip_enabled, drip_days)
         VALUES ($1, $2, $3, $4, $5, $6, $7)
         RETURNING *
-        "#,
+        ",
     )
     .bind(course_id)
     .bind(&input.title)
@@ -101,7 +101,7 @@ pub(super) async fn update_module(
     Json(input): Json<UpdateModuleRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let module: CourseModule = sqlx::query_as(
-        r#"
+        r"
         UPDATE course_modules_v2 SET
             title = COALESCE($1, title),
             description = COALESCE($2, description),
@@ -112,7 +112,7 @@ pub(super) async fn update_module(
             updated_at = NOW()
         WHERE id = $7 AND course_id = $8
         RETURNING *
-        "#,
+        ",
     )
     .bind(&input.title)
     .bind(&input.description)
@@ -202,14 +202,14 @@ pub(super) async fn list_lessons(
     Path(course_id): Path<Uuid>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let lessons: Vec<LessonListItem> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, course_id, module_id, title, slug, description, duration_minutes,
                position, sort_order, is_free, is_preview, is_published,
                bunny_video_guid, thumbnail_url
         FROM lessons
         WHERE course_id = $1
         ORDER BY COALESCE(sort_order, position)
-        "#,
+        ",
     )
     .bind(course_id)
     .fetch_all(&state.db.pool)
@@ -233,9 +233,9 @@ pub(super) async fn get_lesson(
     Path((course_id, lesson_id)): Path<(Uuid, Uuid)>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let lesson: Lesson = sqlx::query_as(
-        r#"
+        r"
         SELECT * FROM lessons WHERE id = $1 AND course_id = $2
-        "#,
+        ",
     )
     .bind(lesson_id)
     .bind(course_id)
@@ -255,9 +255,9 @@ pub(super) async fn get_lesson(
     })?;
 
     let downloads: Vec<CourseDownload> = sqlx::query_as(
-        r#"
+        r"
         SELECT * FROM course_downloads WHERE lesson_id = $1 ORDER BY sort_order
-        "#,
+        ",
     )
     .bind(lesson_id)
     .fetch_all(&state.db.pool)
@@ -292,7 +292,7 @@ pub(super) async fn create_lesson(
     let sort_order = input.sort_order.unwrap_or(max_order.0.unwrap_or(0) + 1);
 
     let lesson: Lesson = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO lessons (
             id, course_id, module_id, title, slug, description, video_url,
             bunny_video_guid, thumbnail_url, duration_minutes, content_html,
@@ -301,7 +301,7 @@ pub(super) async fn create_lesson(
             gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $14, $15
         )
         RETURNING *
-        "#,
+        ",
     )
     .bind(course_id)
     .bind(input.module_id)
@@ -341,7 +341,7 @@ pub(super) async fn update_lesson(
     Json(input): Json<UpdateLessonRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let lesson: Lesson = sqlx::query_as(
-        r#"
+        r"
         UPDATE lessons SET
             title = COALESCE($1, title),
             slug = COALESCE($2, slug),
@@ -360,7 +360,7 @@ pub(super) async fn update_lesson(
             updated_at = NOW()
         WHERE id = $15 AND course_id = $16
         RETURNING *
-        "#,
+        ",
     )
     .bind(&input.title)
     .bind(&input.slug)

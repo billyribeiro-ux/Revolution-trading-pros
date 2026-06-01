@@ -209,7 +209,7 @@ impl RoomAnalyticsService {
         let date_filter = Self::build_date_filter("exit_date", from, to);
 
         let query = format!(
-            r#"
+            r"
             SELECT
                 COUNT(*) as total_trades,
                 COUNT(*) FILTER (WHERE result = 'WIN') as wins,
@@ -225,9 +225,8 @@ impl RoomAnalyticsService {
             WHERE room_slug = $1
             AND status = 'closed'
             AND deleted_at IS NULL
-            {}
-            "#,
-            date_filter
+            {date_filter}
+            "
         );
 
         let mut query_builder = sqlx::query_as::<_, SummaryRow>(&query).bind(room_slug);
@@ -288,7 +287,7 @@ impl RoomAnalyticsService {
     /// Get current win/loss streak
     async fn get_current_streak(&self, room_slug: &str) -> Result<StreakRow, sqlx::Error> {
         let row: Option<StreakRow> = sqlx::query_as(
-            r#"
+            r"
             WITH recent_trades AS (
                 SELECT result, exit_date,
                        ROW_NUMBER() OVER (ORDER BY exit_date DESC) as rn
@@ -311,7 +310,7 @@ impl RoomAnalyticsService {
             SELECT
                 (SELECT COUNT(*)::INT FROM streak_calc) as current_streak,
                 (SELECT result FROM recent_trades WHERE rn = 1) as streak_type
-            "#,
+            ",
         )
         .bind(room_slug)
         .fetch_optional(&self.pool)
@@ -333,7 +332,7 @@ impl RoomAnalyticsService {
         let date_filter = Self::build_date_filter("exit_date", from, to);
 
         let query = format!(
-            r#"
+            r"
             WITH equity AS (
                 SELECT
                     exit_date,
@@ -342,7 +341,7 @@ impl RoomAnalyticsService {
                 WHERE room_slug = $1
                 AND status = 'closed'
                 AND deleted_at IS NULL
-                {}
+                {date_filter}
                 ORDER BY exit_date
             ),
             peaks AS (
@@ -359,8 +358,7 @@ impl RoomAnalyticsService {
             )
             SELECT COALESCE(MIN(drawdown), 0) as max_drawdown
             FROM drawdowns
-            "#,
-            date_filter
+            "
         );
 
         let mut query_builder = sqlx::query_scalar::<_, f64>(&query).bind(room_slug);
@@ -386,7 +384,7 @@ impl RoomAnalyticsService {
         let date_filter = Self::build_date_filter("exit_date", from, to);
 
         let query = format!(
-            r#"
+            r"
             SELECT
                 ticker,
                 COUNT(*)::BIGINT as total_trades,
@@ -402,11 +400,10 @@ impl RoomAnalyticsService {
             WHERE room_slug = $1
             AND status = 'closed'
             AND deleted_at IS NULL
-            {}
+            {date_filter}
             GROUP BY ticker
             ORDER BY total_pnl DESC
-            "#,
-            date_filter
+            "
         );
 
         let mut query_builder = sqlx::query_as::<_, TickerPerformance>(&query).bind(room_slug);
@@ -431,7 +428,7 @@ impl RoomAnalyticsService {
         let date_filter = Self::build_date_filter("exit_date", from, to);
 
         let query = format!(
-            r#"
+            r"
             SELECT
                 COALESCE(setup, 'Unknown') as setup,
                 COUNT(*)::BIGINT as total_trades,
@@ -447,11 +444,10 @@ impl RoomAnalyticsService {
             WHERE room_slug = $1
             AND status = 'closed'
             AND deleted_at IS NULL
-            {}
+            {date_filter}
             GROUP BY COALESCE(setup, 'Unknown')
             ORDER BY total_pnl DESC
-            "#,
-            date_filter
+            "
         );
 
         let mut query_builder = sqlx::query_as::<_, SetupPerformance>(&query).bind(room_slug);
@@ -476,7 +472,7 @@ impl RoomAnalyticsService {
         let date_filter = Self::build_date_filter("exit_date", from, to);
 
         let query = format!(
-            r#"
+            r"
             SELECT
                 TO_CHAR(exit_date, 'YYYY-MM') as month,
                 COALESCE(SUM(pnl), 0) as pnl,
@@ -486,11 +482,10 @@ impl RoomAnalyticsService {
             WHERE room_slug = $1
             AND status = 'closed'
             AND deleted_at IS NULL
-            {}
+            {date_filter}
             GROUP BY TO_CHAR(exit_date, 'YYYY-MM')
             ORDER BY month DESC
-            "#,
-            date_filter
+            "
         );
 
         let mut query_builder = sqlx::query_as::<_, MonthlyRow>(&query).bind(room_slug);
@@ -536,7 +531,7 @@ impl RoomAnalyticsService {
         let date_filter = Self::build_date_filter("exit_date", from, to);
 
         let query = format!(
-            r#"
+            r"
             SELECT
                 exit_date,
                 SUM(pnl) OVER (ORDER BY exit_date, id) as cumulative_pnl,
@@ -545,10 +540,9 @@ impl RoomAnalyticsService {
             WHERE room_slug = $1
             AND status = 'closed'
             AND deleted_at IS NULL
-            {}
+            {date_filter}
             ORDER BY exit_date, id
-            "#,
-            date_filter
+            "
         );
 
         let mut query_builder = sqlx::query_as::<_, EquityCurveRow>(&query).bind(room_slug);
@@ -584,7 +578,7 @@ impl RoomAnalyticsService {
         let date_filter = Self::build_date_filter("exit_date", from, to);
 
         let query = format!(
-            r#"
+            r"
             WITH equity AS (
                 SELECT
                     exit_date,
@@ -594,7 +588,7 @@ impl RoomAnalyticsService {
                 WHERE room_slug = $1
                 AND status = 'closed'
                 AND deleted_at IS NULL
-                {}
+                {date_filter}
                 ORDER BY exit_date, id
             ),
             peaks AS (
@@ -639,8 +633,7 @@ impl RoomAnalyticsService {
             FROM drawdown_summary
             ORDER BY start_date DESC
             LIMIT 10
-            "#,
-            date_filter
+            "
         );
 
         #[derive(Debug, FromRow)]
@@ -682,7 +675,7 @@ impl RoomAnalyticsService {
         ticker: &str,
     ) -> Result<Option<TickerPerformance>, sqlx::Error> {
         let result: Option<TickerPerformance> = sqlx::query_as(
-            r#"
+            r"
             SELECT
                 ticker,
                 COUNT(*)::BIGINT as total_trades,
@@ -700,7 +693,7 @@ impl RoomAnalyticsService {
             AND status = 'closed'
             AND deleted_at IS NULL
             GROUP BY ticker
-            "#,
+            ",
         )
         .bind(room_slug)
         .bind(ticker)
@@ -721,12 +714,12 @@ impl RoomAnalyticsService {
 
         if from.is_some() {
             param_num += 1;
-            filters.push(format!("AND {} >= ${}", date_column, param_num));
+            filters.push(format!("AND {date_column} >= ${param_num}"));
         }
 
         if to.is_some() {
             param_num += 1;
-            filters.push(format!("AND {} <= ${}", date_column, param_num));
+            filters.push(format!("AND {date_column} <= ${param_num}"));
         }
 
         filters.join(" ")

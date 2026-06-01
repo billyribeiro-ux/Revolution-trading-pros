@@ -181,13 +181,13 @@ pub fn hash_password(password: &str) -> Result<String> {
         4,        // 4 parallel lanes
         Some(32), // 32-byte output
     )
-    .map_err(|e| anyhow::anyhow!("Invalid Argon2 params: {}", e))?;
+    .map_err(|e| anyhow::anyhow!("Invalid Argon2 params: {e}"))?;
 
     let argon2 = Argon2::new(Algorithm::Argon2id, Version::V0x13, params);
 
     let hash = argon2
         .hash_password(password.as_bytes(), &salt)
-        .map_err(|e| anyhow::anyhow!("Password hashing failed: {}", e))?;
+        .map_err(|e| anyhow::anyhow!("Password hashing failed: {e}"))?;
     Ok(hash.to_string())
 }
 
@@ -215,13 +215,13 @@ pub fn verify_password(password: &str, hash: &str) -> Result<bool> {
             Ok(valid) => Ok(valid),
             Err(e) => {
                 tracing::warn!("Bcrypt verification error: {}", e);
-                Err(anyhow::anyhow!("Password verification failed: {}", e))
+                Err(anyhow::anyhow!("Password verification failed: {e}"))
             }
         }
     } else if hash.starts_with("$argon2") {
         // Argon2 hash (new Rust API users)
         let parsed_hash =
-            PasswordHash::new(hash).map_err(|e| anyhow::anyhow!("Invalid Argon2 hash: {}", e))?;
+            PasswordHash::new(hash).map_err(|e| anyhow::anyhow!("Invalid Argon2 hash: {e}"))?;
         Ok(Argon2::default()
             .verify_password(password.as_bytes(), &parsed_hash)
             .is_ok())
@@ -468,8 +468,7 @@ mod jwt_token_type_tests {
         let msg = format!("{}", result.unwrap_err());
         assert!(
             msg.contains("token type"),
-            "error should mention token type, got: {}",
-            msg
+            "error should mention token type, got: {msg}"
         );
     }
 

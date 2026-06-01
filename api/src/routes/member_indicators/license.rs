@@ -25,7 +25,7 @@ use crate::AppState;
 fn generate_license_key(user_id: i64, indicator_id: i64) -> String {
     let secret = std::env::var("MEMBER_LICENSE_SECRET").unwrap_or_else(|_| "".to_string());
     let timestamp = chrono::Utc::now().timestamp();
-    let input = format!("{}-{}-{}-{}", user_id, indicator_id, timestamp, secret);
+    let input = format!("{user_id}-{indicator_id}-{timestamp}-{secret}");
     let mut hasher = Sha256::new();
     hasher.update(input.as_bytes());
     let hash = format!("{:x}", hasher.finalize());
@@ -80,11 +80,11 @@ pub(super) async fn validate_license_key(
         chrono::NaiveDateTime,
         Option<chrono::NaiveDateTime>,
     )> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, user_id, purchased_at, expires_at
         FROM user_indicators
         WHERE indicator_id = $1 AND license_key = $2
-        "#,
+        ",
     )
     .bind(indicator_id)
     .bind(license_key)

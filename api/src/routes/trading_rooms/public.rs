@@ -24,7 +24,7 @@ pub(super) async fn list_trading_rooms(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Try to fetch from database first
     let rooms_result = sqlx::query_as::<_, TradingRoom>(
-        r#"
+        r"
         SELECT id, name, slug, type, description, short_description,
                icon, color, logo_url, image_url, sort_order,
                is_active, is_featured, is_public,
@@ -33,7 +33,7 @@ pub(super) async fn list_trading_rooms(
         FROM trading_rooms
         WHERE ($1::bool IS NULL OR is_active = $1)
         ORDER BY sort_order ASC
-        "#,
+        ",
     )
     .bind(query.active_only)
     .fetch_all(&state.db.pool)
@@ -103,7 +103,7 @@ pub(super) async fn get_trading_room(
     Path(slug): Path<String>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let room_result = sqlx::query_as::<_, TradingRoom>(
-        r#"
+        r"
         SELECT id, name, slug, type, description, short_description,
                icon, color, logo_url, image_url, sort_order,
                is_active, is_featured, is_public,
@@ -111,7 +111,7 @@ pub(super) async fn get_trading_room(
                created_at, updated_at
         FROM trading_rooms
         WHERE slug = $1 AND is_active = true
-        "#,
+        ",
     )
     .bind(&slug)
     .fetch_optional(&state.db.pool)
@@ -189,13 +189,13 @@ pub(super) async fn list_sections(
     State(state): State<AppState>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let sections_result = sqlx::query_as::<_, RoomSection>(
-        r#"
+        r"
         SELECT id, section_key, name, description, icon, sort_order,
                is_active, allowed_resource_types, max_items, restricted_to_rooms
         FROM room_sections
         WHERE is_active = true
         ORDER BY sort_order ASC
-        "#,
+        ",
     )
     .fetch_all(&state.db.pool)
     .await;

@@ -70,10 +70,10 @@ pub(super) async fn google_init(
 
     // Store state in database
     sqlx::query(
-        r#"
+        r"
         INSERT INTO oauth_states (state, provider, code_verifier, expires_at)
         VALUES ($1, 'google', $2, NOW() + INTERVAL '10 minutes')
-        "#,
+        ",
     )
     .bind(&oauth_state)
     .bind(&code_verifier)
@@ -138,7 +138,7 @@ pub(super) async fn google_callback(
         return Ok(Redirect::to(&format!(
             "{}/login?error={}",
             state.config.app_url,
-            urlencoding::encode(&format!("Google sign-in failed: {}", error))
+            urlencoding::encode(&format!("Google sign-in failed: {error}"))
         ))
         .into_response());
     }
@@ -289,7 +289,7 @@ pub(super) async fn google_callback(
     let name = user_info
         .name
         .or_else(|| match (&user_info.given_name, &user_info.family_name) {
-            (Some(first), Some(last)) => Some(format!("{} {}", first, last)),
+            (Some(first), Some(last)) => Some(format!("{first} {last}")),
             (Some(first), None) => Some(first.clone()),
             _ => None,
         });

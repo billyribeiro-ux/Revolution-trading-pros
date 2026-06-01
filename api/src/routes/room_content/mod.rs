@@ -545,21 +545,11 @@ mod tests {
         let qty_prefix = if action == "BUY" { "+" } else { "-" };
         let exp_str = expiration.format("%d %b %y").to_string().to_uppercase();
         let price_str = match (order_type, limit_price) {
-            ("LMT", Some(price)) => format!("@{:.2} LMT", price),
+            ("LMT", Some(price)) => format!("@{price:.2} LMT"),
             _ => "@MKT".to_string(),
         };
         format!(
-            "{} {}{} {} {} ({}) {} {} {} {}",
-            action,
-            qty_prefix,
-            quantity,
-            ticker,
-            shares_per_contract,
-            contract_type,
-            exp_str,
-            strike,
-            option_type,
-            price_str
+            "{action} {qty_prefix}{quantity} {ticker} {shares_per_contract} ({contract_type}) {exp_str} {strike} {option_type} {price_str}"
         )
     }
 
@@ -572,13 +562,10 @@ mod tests {
     ) -> String {
         let qty_prefix = if action == "BUY" { "+" } else { "-" };
         let price_str = match (order_type, limit_price) {
-            ("LMT", Some(price)) => format!("@{:.2} LMT", price),
+            ("LMT", Some(price)) => format!("@{price:.2} LMT"),
             _ => "@MKT".to_string(),
         };
-        format!(
-            "{} {}{} {} {}",
-            action, qty_prefix, quantity, ticker, price_str
-        )
+        format!("{action} {qty_prefix}{quantity} {ticker} {price_str}")
     }
 
     // ── TOS formatter unit tests ──────────────────────────────────────────────────

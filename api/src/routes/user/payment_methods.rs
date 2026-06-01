@@ -80,10 +80,10 @@ pub(super) async fn get_payment_methods(
     }
 
     let subscriptions: Vec<SubscriptionRow> = sqlx::query_as(
-        r#"SELECT um.stripe_subscription_id, mp.name as plan_name
+        r"SELECT um.stripe_subscription_id, mp.name as plan_name
            FROM user_memberships um
            LEFT JOIN membership_plans mp ON um.plan_id = mp.id
-           WHERE um.user_id = $1 AND um.status IN ('active', 'trialing', 'past_due')"#,
+           WHERE um.user_id = $1 AND um.status IN ('active', 'trialing', 'past_due')",
     )
     .bind(user.id)
     .fetch_all(&state.db.pool)

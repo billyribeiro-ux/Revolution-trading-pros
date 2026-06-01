@@ -54,8 +54,7 @@ pub(super) fn analyze_title(
             severity: SeoIssueSeverity::Warning,
             category: SeoIssueCategory::Title,
             message: format!(
-                "Title is too short ({} chars). Aim for {}-{} characters.",
-                title_len, TITLE_OPTIMAL_MIN, TITLE_OPTIMAL_MAX
+                "Title is too short ({title_len} chars). Aim for {TITLE_OPTIMAL_MIN}-{TITLE_OPTIMAL_MAX} characters."
             ),
             impact: Some("medium".to_string()),
         });
@@ -65,8 +64,7 @@ pub(super) fn analyze_title(
             severity: SeoIssueSeverity::Warning,
             category: SeoIssueCategory::Title,
             message: format!(
-                "Title is too long ({} chars). Keep under {} characters.",
-                title_len, TITLE_OPTIMAL_MAX
+                "Title is too long ({title_len} chars). Keep under {TITLE_OPTIMAL_MAX} characters."
             ),
             impact: Some("medium".to_string()),
         });
@@ -75,14 +73,14 @@ pub(super) fn analyze_title(
         issues.push(SeoIssue {
             severity: SeoIssueSeverity::Success,
             category: SeoIssueCategory::Title,
-            message: format!("Title length is optimal ({} chars)", title_len),
+            message: format!("Title length is optimal ({title_len} chars)"),
             impact: None,
         });
     } else {
         issues.push(SeoIssue {
             severity: SeoIssueSeverity::Info,
             category: SeoIssueCategory::Title,
-            message: format!("Title length is acceptable ({} chars)", title_len),
+            message: format!("Title length is acceptable ({title_len} chars)"),
             impact: None,
         });
     }
@@ -194,8 +192,7 @@ pub(super) fn analyze_meta_description(
             severity: SeoIssueSeverity::Warning,
             category: SeoIssueCategory::Meta,
             message: format!(
-                "Meta description is too short ({} chars). Aim for {}-{} characters.",
-                meta_len, META_OPTIMAL_MIN, META_OPTIMAL_MAX
+                "Meta description is too short ({meta_len} chars). Aim for {META_OPTIMAL_MIN}-{META_OPTIMAL_MAX} characters."
             ),
             impact: Some("medium".to_string()),
         });
@@ -205,8 +202,7 @@ pub(super) fn analyze_meta_description(
             severity: SeoIssueSeverity::Warning,
             category: SeoIssueCategory::Meta,
             message: format!(
-                "Meta description is too long ({} chars). Keep under {} characters.",
-                meta_len, META_OPTIMAL_MAX
+                "Meta description is too long ({meta_len} chars). Keep under {META_OPTIMAL_MAX} characters."
             ),
             impact: Some("low".to_string()),
         });
@@ -215,14 +211,14 @@ pub(super) fn analyze_meta_description(
         issues.push(SeoIssue {
             severity: SeoIssueSeverity::Success,
             category: SeoIssueCategory::Meta,
-            message: format!("Meta description length is optimal ({} chars)", meta_len),
+            message: format!("Meta description length is optimal ({meta_len} chars)"),
             impact: None,
         });
     } else {
         issues.push(SeoIssue {
             severity: SeoIssueSeverity::Info,
             category: SeoIssueCategory::Meta,
-            message: format!("Meta description length is acceptable ({} chars)", meta_len),
+            message: format!("Meta description length is acceptable ({meta_len} chars)"),
             impact: None,
         });
     }
@@ -291,8 +287,7 @@ pub(super) fn analyze_content(
             severity: SeoIssueSeverity::Error,
             category: SeoIssueCategory::Content,
             message: format!(
-                "Content is too short ({} words). Aim for at least {} words.",
-                word_count, MIN_WORD_COUNT
+                "Content is too short ({word_count} words). Aim for at least {MIN_WORD_COUNT} words."
             ),
             impact: Some("high".to_string()),
         });
@@ -302,8 +297,7 @@ pub(super) fn analyze_content(
             severity: SeoIssueSeverity::Warning,
             category: SeoIssueCategory::Content,
             message: format!(
-                "Content is relatively short ({} words). Consider expanding to {}+ words.",
-                word_count, EXCELLENT_WORD_COUNT
+                "Content is relatively short ({word_count} words). Consider expanding to {EXCELLENT_WORD_COUNT}+ words."
             ),
             impact: Some("medium".to_string()),
         });
@@ -312,14 +306,14 @@ pub(super) fn analyze_content(
         issues.push(SeoIssue {
             severity: SeoIssueSeverity::Success,
             category: SeoIssueCategory::Content,
-            message: format!("Excellent content length ({} words)", word_count),
+            message: format!("Excellent content length ({word_count} words)"),
             impact: None,
         });
     } else {
         issues.push(SeoIssue {
             severity: SeoIssueSeverity::Success,
             category: SeoIssueCategory::Content,
-            message: format!("Good content length ({} words)", word_count),
+            message: format!("Good content length ({word_count} words)"),
             impact: None,
         });
     }
@@ -342,8 +336,7 @@ pub(super) fn analyze_content(
                     severity: SeoIssueSeverity::Warning,
                     category: SeoIssueCategory::Keyword,
                     message: format!(
-                        "Keyword density is low ({:.1}%). Aim for {:.1}-{:.1}%.",
-                        keyword_density, KEYWORD_DENSITY_OPTIMAL_MIN, KEYWORD_DENSITY_OPTIMAL_MAX
+                        "Keyword density is low ({keyword_density:.1}%). Aim for {KEYWORD_DENSITY_OPTIMAL_MIN:.1}-{KEYWORD_DENSITY_OPTIMAL_MAX:.1}%."
                     ),
                     impact: Some("medium".to_string()),
                 });
@@ -353,8 +346,7 @@ pub(super) fn analyze_content(
                     severity: SeoIssueSeverity::Warning,
                     category: SeoIssueCategory::Keyword,
                     message: format!(
-                        "Keyword density is too high ({:.1}%). This may be seen as keyword stuffing.",
-                        keyword_density
+                        "Keyword density is too high ({keyword_density:.1}%). This may be seen as keyword stuffing."
                     ),
                     impact: Some("medium".to_string()),
                 });
@@ -365,14 +357,14 @@ pub(super) fn analyze_content(
                 issues.push(SeoIssue {
                     severity: SeoIssueSeverity::Success,
                     category: SeoIssueCategory::Keyword,
-                    message: format!("Keyword density is optimal ({:.1}%)", keyword_density),
+                    message: format!("Keyword density is optimal ({keyword_density:.1}%)"),
                     impact: None,
                 });
             } else {
                 issues.push(SeoIssue {
                     severity: SeoIssueSeverity::Info,
                     category: SeoIssueCategory::Keyword,
-                    message: format!("Keyword density is acceptable ({:.1}%)", keyword_density),
+                    message: format!("Keyword density is acceptable ({keyword_density:.1}%)"),
                     impact: None,
                 });
             }
@@ -431,8 +423,7 @@ pub(super) fn analyze_readability(
             severity: SeoIssueSeverity::Warning,
             category: SeoIssueCategory::Readability,
             message: format!(
-                "Sentences are too long on average ({:.0} words). Aim for under 20 words.",
-                avg_sentence_length
+                "Sentences are too long on average ({avg_sentence_length:.0} words). Aim for under 20 words."
             ),
             impact: Some("medium".to_string()),
         });
@@ -443,8 +434,7 @@ pub(super) fn analyze_readability(
             severity: SeoIssueSeverity::Info,
             category: SeoIssueCategory::Readability,
             message: format!(
-                "Average sentence length is slightly high ({:.0} words)",
-                avg_sentence_length
+                "Average sentence length is slightly high ({avg_sentence_length:.0} words)"
             ),
             impact: Some("low".to_string()),
         });
@@ -453,10 +443,7 @@ pub(super) fn analyze_readability(
         issues.push(SeoIssue {
             severity: SeoIssueSeverity::Success,
             category: SeoIssueCategory::Readability,
-            message: format!(
-                "Good average sentence length ({:.0} words)",
-                avg_sentence_length
-            ),
+            message: format!("Good average sentence length ({avg_sentence_length:.0} words)"),
             impact: None,
         });
     }
@@ -466,10 +453,7 @@ pub(super) fn analyze_readability(
         issues.push(SeoIssue {
             severity: SeoIssueSeverity::Success,
             category: SeoIssueCategory::Readability,
-            message: format!(
-                "Good readability score ({:.0} Flesch Reading Ease)",
-                flesch_score
-            ),
+            message: format!("Good readability score ({flesch_score:.0} Flesch Reading Ease)"),
             impact: None,
         });
     } else if flesch_score >= 30.0 {
@@ -477,8 +461,7 @@ pub(super) fn analyze_readability(
             severity: SeoIssueSeverity::Warning,
             category: SeoIssueCategory::Readability,
             message: format!(
-                "Content may be difficult to read ({:.0} Flesch Reading Ease). Aim for 60+.",
-                flesch_score
+                "Content may be difficult to read ({flesch_score:.0} Flesch Reading Ease). Aim for 60+."
             ),
             impact: Some("medium".to_string()),
         });
@@ -490,8 +473,7 @@ pub(super) fn analyze_readability(
             severity: SeoIssueSeverity::Error,
             category: SeoIssueCategory::Readability,
             message: format!(
-                "Content is very difficult to read ({:.0} Flesch Reading Ease)",
-                flesch_score
+                "Content is very difficult to read ({flesch_score:.0} Flesch Reading Ease)"
             ),
             impact: Some("high".to_string()),
         });
@@ -561,10 +543,7 @@ pub(super) fn analyze_readability(
         issues.push(SeoIssue {
             severity: SeoIssueSeverity::Warning,
             category: SeoIssueCategory::Readability,
-            message: format!(
-                "Too much passive voice detected (~{:.0}%)",
-                passive_percentage
-            ),
+            message: format!("Too much passive voice detected (~{passive_percentage:.0}%)"),
             impact: Some("low".to_string()),
         });
         suggestions.push("Use more active voice for engaging content".to_string());
@@ -573,7 +552,7 @@ pub(super) fn analyze_readability(
         issues.push(SeoIssue {
             severity: SeoIssueSeverity::Info,
             category: SeoIssueCategory::Readability,
-            message: format!("Some passive voice detected (~{:.0}%)", passive_percentage),
+            message: format!("Some passive voice detected (~{passive_percentage:.0}%)"),
             impact: None,
         });
     } else {
@@ -754,10 +733,7 @@ pub(super) fn analyze_structure(
         issues.push(SeoIssue {
             severity: SeoIssueSeverity::Warning,
             category: SeoIssueCategory::Headings,
-            message: format!(
-                "Multiple H1 headings found ({}). Use only one H1 per page.",
-                h1_count
-            ),
+            message: format!("Multiple H1 headings found ({h1_count}). Use only one H1 per page."),
             impact: Some("medium".to_string()),
         });
         score -= 15;
@@ -777,17 +753,14 @@ pub(super) fn analyze_structure(
         issues.push(SeoIssue {
             severity: SeoIssueSeverity::Info,
             category: SeoIssueCategory::Structure,
-            message: format!(
-                "Only {} H2 subheading(s) found. Consider adding more.",
-                h2_count
-            ),
+            message: format!("Only {h2_count} H2 subheading(s) found. Consider adding more."),
             impact: Some("low".to_string()),
         });
     } else {
         issues.push(SeoIssue {
             severity: SeoIssueSeverity::Success,
             category: SeoIssueCategory::Structure,
-            message: format!("Good number of H2 subheadings ({})", h2_count),
+            message: format!("Good number of H2 subheadings ({h2_count})"),
             impact: None,
         });
     }
@@ -859,7 +832,7 @@ pub(super) fn analyze_structure(
         issues.push(SeoIssue {
             severity: SeoIssueSeverity::Warning,
             category: SeoIssueCategory::Images,
-            message: format!("{} image(s) missing alt text", images_without_alt),
+            message: format!("{images_without_alt} image(s) missing alt text"),
             impact: Some("medium".to_string()),
         });
         suggestions.push("Add descriptive alt text to all images".to_string());
@@ -904,7 +877,7 @@ pub(super) fn analyze_links(
         issues.push(SeoIssue {
             severity: SeoIssueSeverity::Success,
             category: SeoIssueCategory::Links,
-            message: format!("{} internal link(s) found", internal_count),
+            message: format!("{internal_count} internal link(s) found"),
             impact: None,
         });
     }
@@ -916,7 +889,7 @@ pub(super) fn analyze_links(
         issues.push(SeoIssue {
             severity: SeoIssueSeverity::Success,
             category: SeoIssueCategory::Links,
-            message: format!("{} external link(s) found", external_count),
+            message: format!("{external_count} external link(s) found"),
             impact: None,
         });
     }

@@ -20,11 +20,11 @@ pub(super) async fn list_indicator_files(
     Path(indicator_id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let files: Vec<IndicatorFileRow> = sqlx::query_as(
-        r#"
+        r"
         SELECT * FROM indicator_files
         WHERE indicator_id = $1
         ORDER BY platform, display_order, created_at DESC
-        "#,
+        ",
     )
     .bind(indicator_id)
     .fetch_all(&state.db.pool)
@@ -71,11 +71,11 @@ pub(super) async fn create_indicator_file(
     // If this is marked as current version, unmark other files for same platform
     if input.version.is_some() {
         let _ = sqlx::query(
-            r#"
+            r"
             UPDATE indicator_files
             SET is_current_version = false
             WHERE indicator_id = $1 AND platform = $2
-            "#,
+            ",
         )
         .bind(indicator_id)
         .bind(&input.platform)
@@ -84,7 +84,7 @@ pub(super) async fn create_indicator_file(
     }
 
     let file: IndicatorFileRow = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO indicator_files (
             indicator_id, file_name, original_name, file_path, file_size_bytes,
             file_type, mime_type, platform, platform_version, storage_key, cdn_url,
@@ -92,7 +92,7 @@ pub(super) async fn create_indicator_file(
         )
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, true, true)
         RETURNING *
-        "#,
+        ",
     )
     .bind(indicator_id)
     .bind(&input.file_name)
@@ -146,11 +146,11 @@ pub(super) async fn update_indicator_file(
 
         if let Some((platform,)) = file {
             let _ = sqlx::query(
-                r#"
+                r"
                 UPDATE indicator_files
                 SET is_current_version = false
                 WHERE indicator_id = $1 AND platform = $2 AND id != $3
-                "#,
+                ",
             )
             .bind(indicator_id)
             .bind(&platform)
@@ -161,7 +161,7 @@ pub(super) async fn update_indicator_file(
     }
 
     let file: IndicatorFileRow = sqlx::query_as(
-        r#"
+        r"
         UPDATE indicator_files SET
             display_name = COALESCE($1, display_name),
             display_order = COALESCE($2, display_order),
@@ -173,7 +173,7 @@ pub(super) async fn update_indicator_file(
             updated_at = NOW()
         WHERE id = $8 AND indicator_id = $9
         RETURNING *
-        "#,
+        ",
     )
     .bind(&input.display_name)
     .bind(input.display_order)

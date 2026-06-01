@@ -77,14 +77,14 @@ pub(super) async fn admin_bulk_schedules(
             .map_err(|e| (StatusCode::BAD_REQUEST, Json(json!({"error": e}))))?;
 
         sqlx::query(
-            r#"
+            r"
             INSERT INTO trading_room_schedules (
                 plan_id, title, description, trader_name, trader_id,
                 day_of_week, start_time, end_time, timezone,
                 is_recurring, room_url, room_type, created_by
             )
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
-            "#,
+            ",
         )
         .bind(input.plan_id)
         .bind(&schedule.title)
@@ -170,7 +170,7 @@ pub(super) async fn admin_create_exception(
         .map_err(|e| (StatusCode::BAD_REQUEST, Json(json!({"error": e}))))?;
 
     let exception: ScheduleExceptionRow = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO schedule_exceptions (
             schedule_id, exception_date, exception_type,
             new_start_time, new_end_time, new_trader_name, reason, created_by
@@ -183,7 +183,7 @@ pub(super) async fn admin_create_exception(
             new_trader_name = EXCLUDED.new_trader_name,
             reason = EXCLUDED.reason
         RETURNING *
-        "#,
+        ",
     )
     .bind(input.schedule_id)
     .bind(exception_date)

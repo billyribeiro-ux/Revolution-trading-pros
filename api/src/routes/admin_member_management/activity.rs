@@ -28,13 +28,13 @@ pub(super) async fn get_activity(
 
     let activity: Vec<MemberActivity> = if let Some(ref action) = query.action {
         sqlx::query_as(
-            r#"
+            r"
             SELECT id, user_id, action, description, metadata, ip_address, user_agent, created_at
             FROM user_activity_log
             WHERE user_id = $1 AND action = $2
             ORDER BY created_at DESC
             LIMIT $3 OFFSET $4
-            "#,
+            ",
         )
         .bind(id)
         .bind(action)
@@ -45,13 +45,13 @@ pub(super) async fn get_activity(
         .unwrap_or_default()
     } else {
         sqlx::query_as(
-            r#"
+            r"
             SELECT id, user_id, action, description, metadata, ip_address, user_agent, created_at
             FROM user_activity_log
             WHERE user_id = $1
             ORDER BY created_at DESC
             LIMIT $2 OFFSET $3
-            "#,
+            ",
         )
         .bind(id)
         .bind(per_page)

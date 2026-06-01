@@ -20,9 +20,9 @@ pub(super) async fn list_plans(
 ) -> Result<Json<Vec<MembershipPlanRow>>, (StatusCode, Json<serde_json::Value>)> {
     // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
     let plans: Vec<MembershipPlanRow> = sqlx::query_as(
-        r#"SELECT id, name, slug, description, (price * 100)::BIGINT AS price_cents, billing_cycle,
+        r"SELECT id, name, slug, description, (price * 100)::BIGINT AS price_cents, billing_cycle,
            is_active, metadata, stripe_price_id, features, trial_days, created_at, updated_at
-           FROM membership_plans WHERE is_active = true ORDER BY price ASC"#,
+           FROM membership_plans WHERE is_active = true ORDER BY price ASC",
     )
     .fetch_all(&state.db.pool)
     .await
@@ -43,9 +43,9 @@ pub(super) async fn get_plan(
 ) -> Result<Json<MembershipPlanRow>, (StatusCode, Json<serde_json::Value>)> {
     // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
     let plan: MembershipPlanRow = sqlx::query_as(
-        r#"SELECT id, name, slug, description, (price * 100)::BIGINT AS price_cents, billing_cycle,
+        r"SELECT id, name, slug, description, (price * 100)::BIGINT AS price_cents, billing_cycle,
            is_active, metadata, stripe_price_id, features, trial_days, created_at, updated_at
-           FROM membership_plans WHERE slug = $1"#,
+           FROM membership_plans WHERE slug = $1",
     )
     .bind(&slug)
     .fetch_optional(&state.db.pool)
@@ -73,7 +73,7 @@ pub(super) async fn get_room_plans(
     Path(room_slug): Path<String>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let plans: Vec<MembershipPlanExtended> = sqlx::query_as(
-        r#"SELECT
+        r"SELECT
             mp.id, mp.name, mp.slug, mp.display_name, mp.description,
             (mp.price * 100)::BIGINT AS price_cents, mp.billing_cycle,
             mp.interval_count, mp.savings_percent, mp.is_popular,
@@ -83,7 +83,7 @@ pub(super) async fn get_room_plans(
         FROM membership_plans mp
         JOIN trading_rooms tr ON tr.id = mp.room_id
         WHERE tr.slug = $1 AND mp.is_active = true
-        ORDER BY mp.sort_order ASC"#,
+        ORDER BY mp.sort_order ASC",
     )
     .bind(&room_slug)
     .fetch_all(&state.db.pool)

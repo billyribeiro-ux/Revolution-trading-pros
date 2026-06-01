@@ -38,10 +38,10 @@ pub(super) async fn verify_email(
 
     // Find the verification token
     let token_record: Option<(i64, i64)> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, user_id FROM email_verification_tokens
         WHERE token = $1 AND expires_at > NOW()
-        "#,
+        ",
     )
     .bind(&hashed_token)
     .fetch_optional(&state.db.pool)
@@ -221,10 +221,10 @@ pub(super) async fn resend_verification(
     // ICT 11+ SECURITY: Store verification token with 24-hour expiry
     // Original pool reference: .execute(&state.db.pool)
     sqlx::query(
-        r#"
+        r"
         INSERT INTO email_verification_tokens (user_id, token, expires_at)
         VALUES ($1, $2, NOW() + INTERVAL '24 hours')
-        "#,
+        ",
     )
     .bind(user.id)
     .bind(&hashed_token)

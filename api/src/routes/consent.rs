@@ -195,12 +195,12 @@ async fn save_to_storage(
 ) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
     // Single statement, single table → no transaction needed.
     sqlx::query(
-        r#"
+        r"
         INSERT INTO settings (key, value, description, created_at, updated_at)
         VALUES ($1, $2, 'Consent Management Settings (JSON blob)', NOW(), NOW())
         ON CONFLICT (key)
         DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()
-        "#,
+        ",
     )
     .bind(STORAGE_KEY)
     .bind(sqlx::types::Json(settings))

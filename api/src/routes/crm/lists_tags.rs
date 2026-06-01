@@ -66,10 +66,10 @@ async fn list_contact_lists(
     Query(filters): Query<ListFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let per_page = filters.per_page.unwrap_or(50).min(100);
-    let search_pattern = filters.search.as_ref().map(|s| format!("%{}%", s));
+    let search_pattern = filters.search.as_ref().map(|s| format!("%{s}%"));
 
     let lists: Vec<ContactList> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, title, slug, description, is_public,
                COALESCE(contacts_count, 0) as contacts_count, created_at, updated_at
         FROM crm_lists
@@ -77,7 +77,7 @@ async fn list_contact_lists(
           AND ($2::boolean IS NULL OR is_public = $2)
         ORDER BY created_at DESC
         LIMIT $3
-        "#,
+        ",
     )
     .bind(search_pattern.as_deref())
     .bind(filters.is_public)
@@ -106,11 +106,11 @@ async fn create_contact_list(
     let slug = input.title.to_lowercase().replace(' ', "-");
 
     let list: ContactList = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO crm_lists (title, slug, description, is_public, contacts_count, created_at, updated_at)
         VALUES ($1, $2, $3, $4, 0, NOW(), NOW())
         RETURNING id, title, slug, description, is_public, contacts_count, created_at, updated_at
-        "#,
+        ",
     )
     .bind(&input.title)
     .bind(&slug)
@@ -172,17 +172,17 @@ async fn list_contact_tags(
     Query(filters): Query<ListFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let per_page = filters.per_page.unwrap_or(50).min(100);
-    let search_pattern = filters.search.as_ref().map(|s| format!("%{}%", s));
+    let search_pattern = filters.search.as_ref().map(|s| format!("%{s}%"));
 
     let tags: Vec<ContactTag> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, title, slug, description, color,
                COALESCE(contacts_count, 0) as contacts_count, created_at, updated_at
         FROM crm_tags
         WHERE ($1::text IS NULL OR title ILIKE $1)
         ORDER BY created_at DESC
         LIMIT $2
-        "#,
+        ",
     )
     .bind(search_pattern.as_deref())
     .bind(per_page)
@@ -210,11 +210,11 @@ async fn create_contact_tag(
     let slug = input.title.to_lowercase().replace(' ', "-");
 
     let tag: ContactTag = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO crm_tags (title, slug, description, color, contacts_count, created_at, updated_at)
         VALUES ($1, $2, $3, $4, 0, NOW(), NOW())
         RETURNING id, title, slug, description, color, contacts_count, created_at, updated_at
-        "#,
+        ",
     )
     .bind(&input.title)
     .bind(&slug)

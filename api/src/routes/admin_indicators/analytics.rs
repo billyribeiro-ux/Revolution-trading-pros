@@ -27,13 +27,13 @@ pub(super) async fn get_download_analytics(
 
     // Downloads by platform
     let by_platform: Vec<(String, i64)> = sqlx::query_as(
-        r#"
+        r"
         SELECT platform, COALESCE(SUM(COALESCE(download_count, 0)), 0) as count
         FROM indicator_files
         WHERE indicator_id = $1
         GROUP BY platform
         ORDER BY count DESC
-        "#,
+        ",
     )
     .bind(indicator_id)
     .fetch_all(&state.db.pool)

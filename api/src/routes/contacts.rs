@@ -91,11 +91,11 @@ async fn list_contacts(
     });
 
     // ICT 7: Prepare search pattern for ILIKE
-    let search_pattern = query.search.as_ref().map(|s| format!("%{}%", s));
+    let search_pattern = query.search.as_ref().map(|s| format!("%{s}%"));
 
     // ICT 7: Use fully parameterized queries
     let contacts: Vec<ContactRow> = sqlx::query_as(
-        r#"
+        r"
         SELECT * FROM contacts
         WHERE ($1::TEXT IS NULL OR status = $1)
         AND ($2::TEXT IS NULL OR (
@@ -106,7 +106,7 @@ async fn list_contacts(
         ))
         ORDER BY created_at DESC
         LIMIT $3 OFFSET $4
-        "#,
+        ",
     )
     .bind(&status)
     .bind(&search_pattern)
@@ -122,7 +122,7 @@ async fn list_contacts(
     })?;
 
     let total: (i64,) = sqlx::query_as(
-        r#"
+        r"
         SELECT COUNT(*) FROM contacts
         WHERE ($1::TEXT IS NULL OR status = $1)
         AND ($2::TEXT IS NULL OR (
@@ -131,7 +131,7 @@ async fn list_contacts(
             last_name ILIKE $2 OR
             company ILIKE $2
         ))
-        "#,
+        ",
     )
     .bind(&status)
     .bind(&search_pattern)
@@ -191,11 +191,11 @@ async fn create_contact(
     let status = input.status.unwrap_or_else(|| "lead".to_string());
 
     let contact: ContactRow = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO contacts (email, first_name, last_name, phone, company, job_title, source, status, tags, custom_fields, created_at, updated_at)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), NOW())
         RETURNING *
-        "#
+        "
     )
     .bind(&input.email)
     .bind(&input.first_name)
@@ -240,7 +240,7 @@ async fn update_contact(
 
     // ICT 7: Use fully parameterized query with COALESCE for optional updates
     let contact: ContactRow = sqlx::query_as(
-        r#"
+        r"
         UPDATE contacts SET
             email = COALESCE($2, email),
             first_name = COALESCE($3, first_name),
@@ -251,7 +251,7 @@ async fn update_contact(
             updated_at = NOW()
         WHERE id = $1
         RETURNING *
-        "#,
+        ",
     )
     .bind(id)
     .bind(&input.email)

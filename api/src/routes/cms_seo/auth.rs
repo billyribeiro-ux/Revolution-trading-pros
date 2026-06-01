@@ -36,7 +36,7 @@ pub(super) async fn check_rate_limit(
     user_id: i64,
 ) -> Result<(), (StatusCode, Json<JsonValue>)> {
     if let Some(ref redis) = state.services.redis {
-        let key = format!("cms_seo_rate_limit:{}", user_id);
+        let key = format!("cms_seo_rate_limit:{user_id}");
         match redis
             .check_rate_limit(&key, RATE_LIMIT_MAX_REQUESTS, RATE_LIMIT_WINDOW_SECONDS)
             .await

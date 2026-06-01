@@ -19,11 +19,11 @@ pub async fn enqueue(
     let job = Job::new(queue, job_type, payload);
 
     let result = sqlx::query_scalar::<_, i64>(
-        r#"
+        r"
         INSERT INTO jobs (queue, job_type, payload, status, attempts, max_attempts, available_at, created_at)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
         RETURNING id
-        "#,
+        ",
     )
     .bind(&job.queue)
     .bind(&job.job_type)
@@ -52,11 +52,11 @@ pub async fn enqueue_delayed(
     job.available_at = run_at;
 
     let result = sqlx::query_scalar::<_, i64>(
-        r#"
+        r"
         INSERT INTO jobs (queue, job_type, payload, status, attempts, max_attempts, available_at, created_at)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
         RETURNING id
-        "#,
+        ",
     )
     .bind(&job.queue)
     .bind(&job.job_type)

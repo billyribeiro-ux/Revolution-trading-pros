@@ -71,7 +71,7 @@ pub(super) async fn get_component_usage(
         created_at: DateTime<Utc>,
     }
     let usage_rows: Vec<UsageRow> = sqlx::query_as(
-        r#"
+        r"
         SELECT
             u.id,
             u.component_id,
@@ -89,7 +89,7 @@ pub(super) async fn get_component_usage(
         JOIN cms_content c ON c.id = u.content_id
         WHERE u.component_id = $1
         ORDER BY u.created_at DESC
-        "#,
+        ",
     )
     .bind(id)
     .bind(current.version)
@@ -178,14 +178,14 @@ pub(super) async fn track_component_usage(
 
     // Create usage record
     let usage: GlobalComponentUsage = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO cms_global_component_usage (
             id, component_id, content_id, instance_id, is_synced, synced_version, created_at
         )
         VALUES ($1, $2, $3, $4, $5, $6, NOW())
         RETURNING id, component_id, content_id, instance_id, is_synced, synced_version,
                   detached_at, detached_by, created_at
-        "#,
+        ",
     )
     .bind(Uuid::new_v4())
     .bind(request.component_id)

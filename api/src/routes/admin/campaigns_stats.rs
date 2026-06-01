@@ -71,11 +71,11 @@ pub(super) async fn create_campaign(
     Json(input): Json<CreateCampaignRequest>,
 ) -> Result<Json<CampaignRow>, (StatusCode, Json<serde_json::Value>)> {
     let campaign: CampaignRow = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO campaigns (name, description, campaign_type, status, start_date, end_date, target_audience, metrics, created_at, updated_at)
         VALUES ($1, $2, $3, $4, $5, $6, $7, '{}'::jsonb, NOW(), NOW())
         RETURNING *
-        "#
+        "
     )
     .bind(&input.name)
     .bind(&input.description)
@@ -358,7 +358,7 @@ pub(super) async fn get_user_subscriptions(
         Option<chrono::NaiveDateTime>,
         chrono::NaiveDateTime,
     )> = sqlx::query_as(
-        r#"
+        r"
         SELECT
             um.id, um.status,
             (mp.price * 100)::BIGINT AS price_cents,
@@ -369,7 +369,7 @@ pub(super) async fn get_user_subscriptions(
         LEFT JOIN membership_plans mp ON mp.id = um.plan_id
         WHERE um.user_id = $1
         ORDER BY um.created_at DESC
-        "#,
+        ",
     )
     .bind(id)
     .fetch_all(state.db.pool())
@@ -437,7 +437,7 @@ pub(super) async fn get_email_status(
         last_send_at: Option<chrono::DateTime<chrono::Utc>>,
     }
     let counts: Counts = sqlx::query_as(
-        r#"SELECT
+        r"SELECT
                COUNT(*) FILTER (WHERE status = 'sent' AND queued_at > NOW() - INTERVAL '24 hours')
                    AS sent,
                COUNT(*) FILTER (WHERE status = 'failed' AND queued_at > NOW() - INTERVAL '24 hours')
@@ -445,7 +445,7 @@ pub(super) async fn get_email_status(
                COUNT(*) FILTER (WHERE status = 'skipped_no_token' AND queued_at > NOW() - INTERVAL '24 hours')
                    AS skipped,
                MAX(sent_at) FILTER (WHERE status = 'sent') AS last_send_at
-           FROM email_logs"#,
+           FROM email_logs",
     )
     .fetch_one(&state.db.pool)
     .await
@@ -504,14 +504,14 @@ pub(super) async fn list_email_logs(
         sent_at: Option<chrono::DateTime<chrono::Utc>>,
     }
     let rows: Vec<Row> = sqlx::query_as(
-        r#"SELECT id, to_email, template_alias, status,
+        r"SELECT id, to_email, template_alias, status,
                   provider_message_id, error, model,
                   queued_at, sent_at
            FROM email_logs
            WHERE ($1::TEXT IS NULL OR status = $1)
              AND ($2::TEXT IS NULL OR template_alias = $2)
            ORDER BY queued_at DESC NULLS LAST, id DESC
-           LIMIT $3"#,
+           LIMIT $3",
     )
     .bind(query.status.as_deref())
     .bind(query.template_alias.as_deref())

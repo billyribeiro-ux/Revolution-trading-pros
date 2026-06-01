@@ -89,11 +89,11 @@ pub(super) async fn list_all_plans(
     AdminUser(_user): AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let plans: Vec<MembershipPlanRow> = sqlx::query_as(
-        r#"SELECT id, name, slug, description,
+        r"SELECT id, name, slug, description,
            (price * 100)::BIGINT AS price_cents,
            billing_cycle,
            is_active, metadata, stripe_price_id, features, trial_days, created_at, updated_at
-           FROM membership_plans ORDER BY price ASC"#,
+           FROM membership_plans ORDER BY price ASC",
     )
     .fetch_all(&state.db.pool)
     .await
@@ -122,7 +122,7 @@ pub(super) async fn list_user_memberships(
     let offset = (page - 1) * per_page;
 
     let memberships: Vec<AdminUserMembershipRow> = sqlx::query_as(
-        r#"
+        r"
         SELECT
             um.id, um.user_id, um.plan_id,
             mp.name as plan_name, mp.slug as plan_slug,
@@ -137,7 +137,7 @@ pub(super) async fn list_user_memberships(
           AND ($3::text IS NULL OR um.status = $3)
         ORDER BY um.created_at DESC
         LIMIT $4 OFFSET $5
-        "#,
+        ",
     )
     .bind(query.user_id)
     .bind(query.plan_id)
@@ -154,12 +154,12 @@ pub(super) async fn list_user_memberships(
     })?;
 
     let total: (i64,) = sqlx::query_as(
-        r#"
+        r"
         SELECT COUNT(*) FROM user_memberships um
         WHERE ($1::bigint IS NULL OR um.user_id = $1)
           AND ($2::bigint IS NULL OR um.plan_id = $2)
           AND ($3::text IS NULL OR um.status = $3)
-        "#,
+        ",
     )
     .bind(query.user_id)
     .bind(query.plan_id)
@@ -191,7 +191,7 @@ pub(super) async fn get_user_membership(
     Path(id): Path<i64>,
 ) -> Result<Json<AdminUserMembershipRow>, (StatusCode, Json<serde_json::Value>)> {
     let membership: AdminUserMembershipRow = sqlx::query_as(
-        r#"
+        r"
         SELECT
             um.id, um.user_id, um.plan_id,
             mp.name as plan_name, mp.slug as plan_slug,
@@ -202,7 +202,7 @@ pub(super) async fn get_user_membership(
         FROM user_memberships um
         LEFT JOIN membership_plans mp ON mp.id = um.plan_id
         WHERE um.id = $1
-        "#,
+        ",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -250,11 +250,11 @@ pub(super) async fn grant_membership(
 
     // Verify plan exists
     let plan: Option<MembershipPlanRow> = sqlx::query_as(
-        r#"SELECT id, name, slug, description,
+        r"SELECT id, name, slug, description,
            (price * 100)::BIGINT AS price_cents,
            billing_cycle,
            is_active, metadata, stripe_price_id, features, trial_days, created_at, updated_at
-           FROM membership_plans WHERE id = $1"#,
+           FROM membership_plans WHERE id = $1",
     )
     .bind(input.plan_id)
     .fetch_optional(&state.db.pool)
@@ -279,7 +279,7 @@ pub(super) async fn grant_membership(
         .unwrap_or_else(|| chrono::Utc::now().naive_utc());
 
     let membership: AdminUserMembershipRow = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO user_memberships (user_id, plan_id, starts_at, expires_at, status, payment_provider, cancel_at_period_end, current_period_start, current_period_end, created_at, updated_at)
         VALUES ($1, $2, $3, $4, $5, 'admin', false, $3, $4, NOW(), NOW())
         RETURNING id, user_id, plan_id,
@@ -287,7 +287,7 @@ pub(super) async fn grant_membership(
             (SELECT slug FROM membership_plans WHERE id = $2) as plan_slug,
             starts_at, expires_at, cancelled_at, status, payment_provider, stripe_subscription_id,
             current_period_start, current_period_end, cancel_at_period_end, created_at, updated_at
-        "#
+        "
     )
     .bind(input.user_id)
     .bind(input.plan_id)
@@ -317,16 +317,16 @@ pub(super) async fn update_user_membership(
 
     if input.expires_at.is_some() {
         param_count += 1;
-        set_clauses.push(format!("expires_at = ${}", param_count));
-        set_clauses.push(format!("current_period_end = ${}", param_count));
+        set_clauses.push(format!("expires_at = ${param_count}"));
+        set_clauses.push(format!("current_period_end = ${param_count}"));
     }
     if input.status.is_some() {
         param_count += 1;
-        set_clauses.push(format!("status = ${}", param_count));
+        set_clauses.push(format!("status = ${param_count}"));
     }
     if input.cancel_at_period_end.is_some() {
         param_count += 1;
-        set_clauses.push(format!("cancel_at_period_end = ${}", param_count));
+        set_clauses.push(format!("cancel_at_period_end = ${param_count}"));
     }
 
     set_clauses.push("updated_at = NOW()".to_string());
@@ -339,14 +339,14 @@ pub(super) async fn update_user_membership(
     }
 
     let sql = format!(
-        r#"
+        r"
         UPDATE user_memberships SET {} WHERE id = $1
         RETURNING id, user_id, plan_id,
             (SELECT name FROM membership_plans WHERE id = plan_id) as plan_name,
             (SELECT slug FROM membership_plans WHERE id = plan_id) as plan_slug,
             starts_at, expires_at, cancelled_at, status, payment_provider, stripe_subscription_id,
             current_period_start, current_period_end, cancel_at_period_end, created_at, updated_at
-        "#,
+        ",
         set_clauses.join(", ")
     );
 
@@ -409,7 +409,7 @@ pub(super) async fn get_user_memberships_by_user(
     Path(user_id): Path<i64>,
 ) -> Result<Json<Vec<AdminUserMembershipRow>>, (StatusCode, Json<serde_json::Value>)> {
     let memberships: Vec<AdminUserMembershipRow> = sqlx::query_as(
-        r#"
+        r"
         SELECT
             um.id, um.user_id, um.plan_id,
             mp.name as plan_name, mp.slug as plan_slug,
@@ -421,7 +421,7 @@ pub(super) async fn get_user_memberships_by_user(
         LEFT JOIN membership_plans mp ON mp.id = um.plan_id
         WHERE um.user_id = $1
         ORDER BY um.created_at DESC
-        "#,
+        ",
     )
     .bind(user_id)
     .fetch_all(&state.db.pool)

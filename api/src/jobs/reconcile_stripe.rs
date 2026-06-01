@@ -81,7 +81,10 @@ fn secs_until_03_utc() -> u64 {
         today_3am + chrono::Duration::days(1)
     };
 
-    (candidate - now).num_seconds().max(1) as u64
+    // max(1) guarantees non-negative; the cast is intentionally safe.
+    #[allow(clippy::cast_sign_loss)]
+    let secs = (candidate - now).num_seconds().max(1) as u64;
+    secs
 }
 
 /// Run one reconciliation pass. Returns the number of discrepancies corrected.
@@ -125,10 +128,10 @@ pub async fn run_once(state: &AppState) -> anyhow::Result<usize> {
     }
 
     let db_rows: Vec<MembershipRow> = sqlx::query_as(
-        r#"SELECT id, stripe_subscription_id, status, cancel_at_period_end, current_period_end
+        r"SELECT id, stripe_subscription_id, status, cancel_at_period_end, current_period_end
            FROM user_memberships
            WHERE stripe_subscription_id IS NOT NULL
-             AND status NOT IN ('cancelled', 'expired')"#,
+             AND status NOT IN ('cancelled', 'expired')",
     )
     .fetch_all(&state.db.pool)
     .await?;
@@ -211,10 +214,10 @@ pub async fn run_once(state: &AppState) -> anyhow::Result<usize> {
 
     // ── 4. Write reconciliation_log row ─────────────────────────────────────
     sqlx::query(
-        r#"INSERT INTO reconciliation_log (run_at, discrepancies_found, log)
-           VALUES (NOW(), $1, $2)"#,
+        r"INSERT INTO reconciliation_log (run_at, discrepancies_found, log)
+           VALUES (NOW(), $1, $2)",
     )
-    .bind(discrepancies as i32)
+    .bind(i32::try_from(discrepancies).unwrap_or(i32::MAX))
     .bind(serde_json::Value::Array(log_entries))
     .execute(&state.db.pool)
     .await?;

@@ -63,7 +63,7 @@ pub(super) async fn bulk_create_resources(
             .unwrap_or(json!([]));
 
         let result = sqlx::query(
-            r#"
+            r"
             INSERT INTO room_resources (
                 title, slug, description, resource_type, content_type,
                 file_url, mime_type, file_size, video_platform, bunny_video_guid,
@@ -76,7 +76,7 @@ pub(super) async fn bulk_create_resources(
                 $11, $12, $13, $14, $15, $16, $17, $18, $19, $20,
                 $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31
             )
-            "#,
+            ",
         )
         .bind(&resource_input.title)
         .bind(&slug)
@@ -139,27 +139,27 @@ pub(super) async fn bulk_update_resources(
     let mut param_idx = 1;
 
     if input.updates.is_published.is_some() {
-        updates.push(format!("is_published = ${}", param_idx));
+        updates.push(format!("is_published = ${param_idx}"));
         param_idx += 1;
     }
     if input.updates.is_featured.is_some() {
-        updates.push(format!("is_featured = ${}", param_idx));
+        updates.push(format!("is_featured = ${param_idx}"));
         param_idx += 1;
     }
     if input.updates.is_pinned.is_some() {
-        updates.push(format!("is_pinned = ${}", param_idx));
+        updates.push(format!("is_pinned = ${param_idx}"));
         param_idx += 1;
     }
     if input.updates.access_level.is_some() {
-        updates.push(format!("access_level = ${}", param_idx));
+        updates.push(format!("access_level = ${param_idx}"));
         param_idx += 1;
     }
     if input.updates.category.is_some() {
-        updates.push(format!("category = ${}", param_idx));
+        updates.push(format!("category = ${param_idx}"));
         param_idx += 1;
     }
     if input.updates.section.is_some() {
-        updates.push(format!("section = ${}", param_idx));
+        updates.push(format!("section = ${param_idx}"));
         param_idx += 1;
     }
 
@@ -250,8 +250,7 @@ pub(super) async fn bulk_delete_resources(
         .join(",");
 
     let query_str = format!(
-        "UPDATE room_resources SET deleted_at = NOW() WHERE id IN ({}) AND deleted_at IS NULL",
-        placeholders
+        "UPDATE room_resources SET deleted_at = NOW() WHERE id IN ({placeholders}) AND deleted_at IS NULL"
     );
 
     let mut query = sqlx::query(&query_str);

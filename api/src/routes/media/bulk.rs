@@ -65,12 +65,12 @@ pub(super) async fn bulk_delete(
                 Ok(_) => deleted_count += 1,
                 Err(e) => {
                     failed_count += 1;
-                    errors.push(format!("ID {}: {}", id, e));
+                    errors.push(format!("ID {id}: {e}"));
                 }
             }
         } else {
             failed_count += 1;
-            errors.push(format!("ID {}: Not found", id));
+            errors.push(format!("ID {id}: Not found"));
         }
     }
 
@@ -173,13 +173,13 @@ pub(super) async fn cleanup_orphaned_files(
     // Step 1: Find database records with paths that don't exist in R2
     // (This is a simplified check - in production, you'd verify against R2 directly)
     let orphaned_records: Vec<(i64, String)> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, path FROM media
         WHERE path IS NOT NULL
         AND created_at < NOW() - INTERVAL '24 hours'
         ORDER BY created_at ASC
         LIMIT 100
-        "#,
+        ",
     )
     .fetch_all(state.db.pool())
     .await
@@ -215,7 +215,7 @@ pub(super) async fn cleanup_orphaned_files(
                 Ok(_) => result.db_records_cleaned += 1,
                 Err(e) => result
                     .errors
-                    .push(format!("Failed to delete record {}: {}", id, e)),
+                    .push(format!("Failed to delete record {id}: {e}")),
             }
         }
     }

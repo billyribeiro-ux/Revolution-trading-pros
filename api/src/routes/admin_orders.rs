@@ -91,9 +91,9 @@ pub async fn admin_export(
     // Build query with the same filter shape as admin_index.
     let rows: Vec<ExportRow> = match (&query.status, &query.search) {
         (Some(status), Some(search)) if !status.is_empty() && !search.is_empty() => {
-            let pattern = format!("%{}%", search);
+            let pattern = format!("%{search}%");
             sqlx::query_as::<_, ExportRow>(
-                r#"SELECT o.id, o.order_number, o.status,
+                r"SELECT o.id, o.order_number, o.status,
                           (o.total * 100)::BIGINT AS total_cents, o.currency,
                           u.email AS user_email, u.name AS user_name,
                           o.payment_provider, COUNT(oi.id) AS item_count,
@@ -105,7 +105,7 @@ pub async fn admin_export(
                      AND (o.order_number ILIKE $2 OR u.email ILIKE $2 OR u.name ILIKE $2)
                    GROUP BY o.id, u.email, u.name
                    ORDER BY o.created_at DESC
-                   LIMIT 10000"#,
+                   LIMIT 10000",
             )
             .bind(status)
             .bind(&pattern)
@@ -114,7 +114,7 @@ pub async fn admin_export(
         }
         (Some(status), _) if !status.is_empty() => {
             sqlx::query_as::<_, ExportRow>(
-                r#"SELECT o.id, o.order_number, o.status,
+                r"SELECT o.id, o.order_number, o.status,
                           (o.total * 100)::BIGINT AS total_cents, o.currency,
                           u.email AS user_email, u.name AS user_name,
                           o.payment_provider, COUNT(oi.id) AS item_count,
@@ -125,16 +125,16 @@ pub async fn admin_export(
                    WHERE o.status = $1
                    GROUP BY o.id, u.email, u.name
                    ORDER BY o.created_at DESC
-                   LIMIT 10000"#,
+                   LIMIT 10000",
             )
             .bind(status)
             .fetch_all(&state.db.pool)
             .await
         }
         (_, Some(search)) if !search.is_empty() => {
-            let pattern = format!("%{}%", search);
+            let pattern = format!("%{search}%");
             sqlx::query_as::<_, ExportRow>(
-                r#"SELECT o.id, o.order_number, o.status,
+                r"SELECT o.id, o.order_number, o.status,
                           (o.total * 100)::BIGINT AS total_cents, o.currency,
                           u.email AS user_email, u.name AS user_name,
                           o.payment_provider, COUNT(oi.id) AS item_count,
@@ -147,7 +147,7 @@ pub async fn admin_export(
                       OR u.name ILIKE $1
                    GROUP BY o.id, u.email, u.name
                    ORDER BY o.created_at DESC
-                   LIMIT 10000"#,
+                   LIMIT 10000",
             )
             .bind(&pattern)
             .fetch_all(&state.db.pool)
@@ -155,7 +155,7 @@ pub async fn admin_export(
         }
         _ => {
             sqlx::query_as::<_, ExportRow>(
-                r#"SELECT o.id, o.order_number, o.status,
+                r"SELECT o.id, o.order_number, o.status,
                           (o.total * 100)::BIGINT AS total_cents, o.currency,
                           u.email AS user_email, u.name AS user_name,
                           o.payment_provider, COUNT(oi.id) AS item_count,
@@ -165,7 +165,7 @@ pub async fn admin_export(
                    LEFT JOIN order_items oi ON o.id = oi.order_id
                    GROUP BY o.id, u.email, u.name
                    ORDER BY o.created_at DESC
-                   LIMIT 10000"#,
+                   LIMIT 10000",
             )
             .fetch_all(&state.db.pool)
             .await
@@ -217,7 +217,7 @@ pub async fn admin_export(
             (header::CONTENT_TYPE, "text/csv; charset=utf-8".to_string()),
             (
                 header::CONTENT_DISPOSITION,
-                format!("attachment; filename=\"{}\"", filename),
+                format!("attachment; filename=\"{filename}\""),
             ),
         ],
         body,
@@ -257,13 +257,13 @@ pub async fn admin_stats(
     }
 
     let stats: StatsRow = sqlx::query_as(
-        r#"SELECT
+        r"SELECT
             COUNT(*) AS total_orders,
             COUNT(*) FILTER (WHERE status = 'completed') AS completed_orders,
             COUNT(*) FILTER (WHERE status = 'pending') AS pending_orders,
             COUNT(*) FILTER (WHERE status IN ('refunded', 'partial_refund')) AS refunded_orders,
             COALESCE(SUM((total * 100)::BIGINT) FILTER (WHERE status = 'completed'), 0)::BIGINT AS total_revenue_cents
-           FROM orders"#,
+           FROM orders",
     )
     .fetch_one(&state.db.pool)
     .await
@@ -276,10 +276,10 @@ pub async fn admin_stats(
     })?;
 
     let revenue_this_month_cents: i64 = sqlx::query_scalar(
-        r#"SELECT COALESCE(SUM((total * 100)::BIGINT), 0)::BIGINT
+        r"SELECT COALESCE(SUM((total * 100)::BIGINT), 0)::BIGINT
            FROM orders
            WHERE status = 'completed'
-             AND created_at >= DATE_TRUNC('month', CURRENT_DATE)"#,
+             AND created_at >= DATE_TRUNC('month', CURRENT_DATE)",
     )
     .fetch_one(&state.db.pool)
     .await

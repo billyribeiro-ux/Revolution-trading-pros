@@ -25,7 +25,7 @@ pub(super) async fn list_folders(
     _admin: AdminUser,
 ) -> Result<Json<Vec<AssetFolder>>, ApiError> {
     let folders: Vec<AssetFolder> = sqlx::query_as(
-        r#"
+        r"
         WITH folder_counts AS (
             SELECT folder_id, COUNT(*) as cnt
             FROM cms_assets
@@ -40,7 +40,7 @@ pub(super) async fn list_folders(
         FROM cms_asset_folders f
         LEFT JOIN folder_counts fc ON fc.folder_id = f.id
         ORDER BY f.path, f.name
-        "#,
+        ",
     )
     .fetch_all(state.db.pool())
     .await
@@ -70,18 +70,18 @@ pub(super) async fn create_folder(
 
         match parent {
             Some((parent_path, parent_depth)) => {
-                (format!("{}/{}", parent_path, slug), parent_depth + 1)
+                (format!("{parent_path}/{slug}"), parent_depth + 1)
             }
             None => return Err(ApiError::not_found("Parent folder not found")),
         }
     } else {
-        (format!("/{}", slug), 0)
+        (format!("/{slug}"), 0)
     };
 
     let cms_user_id = get_cms_user_id(state.db.pool(), &admin).await;
 
     let folder: AssetFolder = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO cms_asset_folders (
             id, name, slug, parent_id, path, depth, color, icon,
             created_at, updated_at, created_by
@@ -91,7 +91,7 @@ pub(super) async fn create_folder(
         )
         RETURNING id, name, slug, parent_id, path, depth, color, icon,
                   0 as asset_count, created_at, updated_at, created_by
-        "#,
+        ",
     )
     .bind(Uuid::new_v4())
     .bind(&payload.name)
@@ -122,21 +122,21 @@ pub(super) async fn update_folder(
     let mut param_idx = 1;
 
     if payload.name.is_some() {
-        updates.push(format!("name = ${}", param_idx));
+        updates.push(format!("name = ${param_idx}"));
         param_idx += 1;
-        updates.push(format!("slug = ${}", param_idx));
+        updates.push(format!("slug = ${param_idx}"));
         param_idx += 1;
     }
     if payload.color.is_some() {
-        updates.push(format!("color = ${}", param_idx));
+        updates.push(format!("color = ${param_idx}"));
         param_idx += 1;
     }
     if payload.icon.is_some() {
-        updates.push(format!("icon = ${}", param_idx));
+        updates.push(format!("icon = ${param_idx}"));
         param_idx += 1;
     }
     updates.push("updated_at = NOW()".to_string());
-    updates.push(format!("updated_by = ${}", param_idx));
+    updates.push(format!("updated_by = ${param_idx}"));
     param_idx += 1;
 
     if updates.len() <= 2 {
@@ -144,13 +144,13 @@ pub(super) async fn update_folder(
     }
 
     let query = format!(
-        r#"
+        r"
         UPDATE cms_asset_folders
         SET {}
         WHERE id = ${}
         RETURNING id, name, slug, parent_id, path, depth, color, icon,
                   0 as asset_count, created_at, updated_at, created_by
-        "#,
+        ",
         updates.join(", "),
         param_idx
     );

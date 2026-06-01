@@ -244,8 +244,7 @@ fn create_user_required_fields_negative_pin() {
         let r = serde_json::from_value::<CreateUser>(obj);
         assert!(
             r.is_err(),
-            "CreateUser without {} must fail deserialization — DB has NOT NULL on the corresponding users column",
-            missing
+            "CreateUser without {missing} must fail deserialization — DB has NOT NULL on the corresponding users column"
         );
     }
 }
@@ -300,8 +299,7 @@ fn refresh_and_reset_password_request_required_fields_negative_pin() {
         let r = serde_json::from_value::<ResetPasswordRequest>(obj);
         assert!(
             r.is_err(),
-            "ResetPasswordRequest without {} must fail — password reset must have all four fields",
-            missing
+            "ResetPasswordRequest without {missing} must fail — password reset must have all four fields"
         );
     }
 }

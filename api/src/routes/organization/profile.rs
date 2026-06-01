@@ -25,7 +25,7 @@ pub(super) async fn get_organization_profile(
     );
 
     let profile: Option<OrganizationProfile> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, name, slug, description, logo_url, favicon_url,
                primary_color, secondary_color, contact_email, contact_phone,
                address, city, state, country, postal_code, website_url,
@@ -33,7 +33,7 @@ pub(super) async fn get_organization_profile(
                created_at, updated_at
         FROM organization_profile
         LIMIT 1
-        "#,
+        ",
     )
     .fetch_optional(state.db.pool())
     .await
@@ -99,7 +99,7 @@ pub(super) async fn update_organization_profile(
     let slug = input.name.as_ref().map(|n| generate_slug(n));
 
     let profile: OrganizationProfile = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO organization_profile (
             id, name, slug, description, logo_url, favicon_url,
             primary_color, secondary_color, contact_email, contact_phone,
@@ -141,7 +141,7 @@ pub(super) async fn update_organization_profile(
                   address, city, state, country, postal_code, website_url,
                   social_links, business_hours, timezone, currency, tax_id,
                   created_at, updated_at
-        "#,
+        ",
     )
     .bind(&input.name)
     .bind(&slug)

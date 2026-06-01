@@ -48,10 +48,7 @@ pub mod cache_keys {
     /// ```
     #[inline]
     pub fn alerts(room_slug: &str, page: i64, limit: i64) -> String {
-        format!(
-            "{}:{}:alerts:{}:p{}:l{}",
-            CACHE_PREFIX, KEY_VERSION, room_slug, page, limit
-        )
+        format!("{CACHE_PREFIX}:{KEY_VERSION}:alerts:{room_slug}:p{page}:l{limit}")
     }
 
     /// Generate cache key for a single alert
@@ -61,10 +58,7 @@ pub mod cache_keys {
     /// * `alert_id` - The alert's database ID
     #[inline]
     pub fn alert(room_slug: &str, alert_id: i64) -> String {
-        format!(
-            "{}:{}:alert:{}:{}",
-            CACHE_PREFIX, KEY_VERSION, room_slug, alert_id
-        )
+        format!("{CACHE_PREFIX}:{KEY_VERSION}:alert:{room_slug}:{alert_id}")
     }
 
     /// Generate cache key for trades list
@@ -77,19 +71,13 @@ pub mod cache_keys {
     #[inline]
     pub fn trades(room_slug: &str, status: Option<&str>, page: i64, limit: i64) -> String {
         let status_part = status.unwrap_or("all");
-        format!(
-            "{}:{}:trades:{}:s{}:p{}:l{}",
-            CACHE_PREFIX, KEY_VERSION, room_slug, status_part, page, limit
-        )
+        format!("{CACHE_PREFIX}:{KEY_VERSION}:trades:{room_slug}:s{status_part}:p{page}:l{limit}")
     }
 
     /// Generate cache key for a single trade
     #[inline]
     pub fn trade(room_slug: &str, trade_id: i64) -> String {
-        format!(
-            "{}:{}:trade:{}:{}",
-            CACHE_PREFIX, KEY_VERSION, room_slug, trade_id
-        )
+        format!("{CACHE_PREFIX}:{KEY_VERSION}:trade:{room_slug}:{trade_id}")
     }
 
     /// Generate cache key for trade plans list
@@ -103,51 +91,38 @@ pub mod cache_keys {
     pub fn trade_plans(room_slug: &str, week_of: Option<&str>, page: i64, limit: i64) -> String {
         let week_part = week_of.unwrap_or("current");
         format!(
-            "{}:{}:trade_plans:{}:w{}:p{}:l{}",
-            CACHE_PREFIX, KEY_VERSION, room_slug, week_part, page, limit
+            "{CACHE_PREFIX}:{KEY_VERSION}:trade_plans:{room_slug}:w{week_part}:p{page}:l{limit}"
         )
     }
 
     /// Generate cache key for a single trade plan
     #[inline]
     pub fn trade_plan(room_slug: &str, plan_id: i64) -> String {
-        format!(
-            "{}:{}:trade_plan:{}:{}",
-            CACHE_PREFIX, KEY_VERSION, room_slug, plan_id
-        )
+        format!("{CACHE_PREFIX}:{KEY_VERSION}:trade_plan:{room_slug}:{plan_id}")
     }
 
     /// Generate cache key for room statistics
     #[inline]
     pub fn stats(room_slug: &str) -> String {
-        format!("{}:{}:stats:{}", CACHE_PREFIX, KEY_VERSION, room_slug)
+        format!("{CACHE_PREFIX}:{KEY_VERSION}:stats:{room_slug}")
     }
 
     /// Generate cache key for current weekly video
     #[inline]
     pub fn weekly_video(room_slug: &str) -> String {
-        format!(
-            "{}:{}:weekly_video:{}",
-            CACHE_PREFIX, KEY_VERSION, room_slug
-        )
+        format!("{CACHE_PREFIX}:{KEY_VERSION}:weekly_video:{room_slug}")
     }
 
     /// Generate cache key for weekly videos list
     #[inline]
     pub fn weekly_videos(room_slug: &str, page: i64, limit: i64) -> String {
-        format!(
-            "{}:{}:weekly_videos:{}:p{}:l{}",
-            CACHE_PREFIX, KEY_VERSION, room_slug, page, limit
-        )
+        format!("{CACHE_PREFIX}:{KEY_VERSION}:weekly_videos:{room_slug}:p{page}:l{limit}")
     }
 
     /// Generate cache key for archived videos
     #[inline]
     pub fn archived_videos(room_slug: &str, year: i32) -> String {
-        format!(
-            "{}:{}:archived_videos:{}:y{}",
-            CACHE_PREFIX, KEY_VERSION, room_slug, year
-        )
+        format!("{CACHE_PREFIX}:{KEY_VERSION}:archived_videos:{room_slug}:y{year}")
     }
 
     // ═══════════════════════════════════════════════════════════════════════════════
@@ -157,40 +132,37 @@ pub mod cache_keys {
     /// Pattern to match all alerts for a room (for cache invalidation)
     #[inline]
     pub fn alerts_pattern(room_slug: &str) -> String {
-        format!("{}:{}:alert*:{}:*", CACHE_PREFIX, KEY_VERSION, room_slug)
+        format!("{CACHE_PREFIX}:{KEY_VERSION}:alert*:{room_slug}:*")
     }
 
     /// Pattern to match all trades for a room
     #[inline]
     pub fn trades_pattern(room_slug: &str) -> String {
-        format!("{}:{}:trade*:{}:*", CACHE_PREFIX, KEY_VERSION, room_slug)
+        format!("{CACHE_PREFIX}:{KEY_VERSION}:trade*:{room_slug}:*")
     }
 
     /// Pattern to match all trade plans for a room
     #[inline]
     pub fn trade_plans_pattern(room_slug: &str) -> String {
-        format!(
-            "{}:{}:trade_plan*:{}:*",
-            CACHE_PREFIX, KEY_VERSION, room_slug
-        )
+        format!("{CACHE_PREFIX}:{KEY_VERSION}:trade_plan*:{room_slug}:*")
     }
 
     /// Pattern to match all videos for a room
     #[inline]
     pub fn videos_pattern(room_slug: &str) -> String {
-        format!("{}:{}:*video*:{}*", CACHE_PREFIX, KEY_VERSION, room_slug)
+        format!("{CACHE_PREFIX}:{KEY_VERSION}:*video*:{room_slug}*")
     }
 
     /// Pattern to match all cache entries for a room
     #[inline]
     pub fn room_pattern(room_slug: &str) -> String {
-        format!("{}:{}:*:{}*", CACHE_PREFIX, KEY_VERSION, room_slug)
+        format!("{CACHE_PREFIX}:{KEY_VERSION}:*:{room_slug}*")
     }
 
     /// Pattern to match all cache entries (for emergency flush)
     #[inline]
     pub fn all_pattern() -> String {
-        format!("{}:{}:*", CACHE_PREFIX, KEY_VERSION)
+        format!("{CACHE_PREFIX}:{KEY_VERSION}:*")
     }
 }
 

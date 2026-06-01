@@ -40,27 +40,27 @@ pub(super) async fn list_resources(
     let mut param_idx = 1usize;
 
     if query.room_id.is_some() {
-        conditions.push(format!("trading_room_id = ${}", param_idx));
+        conditions.push(format!("trading_room_id = ${param_idx}"));
         param_idx += 1;
     }
     if query.resource_type.is_some() {
-        conditions.push(format!("resource_type = ${}", param_idx));
+        conditions.push(format!("resource_type = ${param_idx}"));
         param_idx += 1;
     }
     if query.content_type.is_some() {
-        conditions.push(format!("content_type = ${}", param_idx));
+        conditions.push(format!("content_type = ${param_idx}"));
         param_idx += 1;
     }
     if query.is_featured.is_some() {
-        conditions.push(format!("is_featured = ${}", param_idx));
+        conditions.push(format!("is_featured = ${param_idx}"));
         param_idx += 1;
     }
     if query.difficulty_level.is_some() {
-        conditions.push(format!("difficulty_level = ${}", param_idx));
+        conditions.push(format!("difficulty_level = ${param_idx}"));
         param_idx += 1;
     }
     if query.section.is_some() {
-        conditions.push(format!("section = ${}", param_idx));
+        conditions.push(format!("section = ${param_idx}"));
         param_idx += 1;
     }
     // Tags: each tag gets its own JSONB containment check
@@ -70,26 +70,25 @@ pub(super) async fn list_resources(
         .map(|t| t.split(',').map(|s| s.trim().to_string()).collect())
         .unwrap_or_default();
     for _ in &tag_list {
-        conditions.push(format!("tags @> ${}", param_idx));
+        conditions.push(format!("tags @> ${param_idx}"));
         param_idx += 1;
     }
     if query.search.is_some() {
         conditions.push(format!(
-            "(title ILIKE ${} OR description ILIKE ${})",
-            param_idx, param_idx
+            "(title ILIKE ${param_idx} OR description ILIKE ${param_idx})"
         ));
         param_idx += 1;
     }
     if query.access_level.is_some() {
-        conditions.push(format!("access_level = ${}", param_idx));
+        conditions.push(format!("access_level = ${param_idx}"));
         param_idx += 1;
     }
     if query.course_id.is_some() {
-        conditions.push(format!("course_id = ${}", param_idx));
+        conditions.push(format!("course_id = ${param_idx}"));
         param_idx += 1;
     }
     if query.lesson_id.is_some() {
-        conditions.push(format!("lesson_id = ${}", param_idx));
+        conditions.push(format!("lesson_id = ${param_idx}"));
         param_idx += 1;
     }
 
@@ -110,8 +109,7 @@ pub(super) async fn list_resources(
         where_clause, param_idx, param_idx + 1
     );
     let count_sql = format!(
-        "SELECT COUNT(*) FROM room_resources WHERE is_published = true AND deleted_at IS NULL{}",
-        where_clause
+        "SELECT COUNT(*) FROM room_resources WHERE is_published = true AND deleted_at IS NULL{where_clause}"
     );
 
     // Helper macro-like closure to bind params to a query
@@ -140,7 +138,7 @@ pub(super) async fn list_resources(
         q = q.bind(tag_json);
     }
     if let Some(ref search) = query.search {
-        let search_pattern = format!("%{}%", search);
+        let search_pattern = format!("%{search}%");
         q = q.bind(search_pattern);
     }
     if let Some(ref access_level) = query.access_level {
@@ -187,7 +185,7 @@ pub(super) async fn list_resources(
         cq = cq.bind(tag_json);
     }
     if let Some(ref search) = query.search {
-        let search_pattern = format!("%{}%", search);
+        let search_pattern = format!("%{search}%");
         cq = cq.bind(search_pattern);
     }
     if let Some(ref access_level) = query.access_level {
@@ -336,19 +334,19 @@ pub(super) async fn list_stock_lists(
     let mut param_idx = 1usize;
 
     if query.room_id.is_some() {
-        conditions.push(format!("trading_room_id = ${}", param_idx));
+        conditions.push(format!("trading_room_id = ${param_idx}"));
         param_idx += 1;
     }
     if query.list_type.is_some() {
-        conditions.push(format!("list_type = ${}", param_idx));
+        conditions.push(format!("list_type = ${param_idx}"));
         param_idx += 1;
     }
     if query.is_active.is_some() {
-        conditions.push(format!("is_active = ${}", param_idx));
+        conditions.push(format!("is_active = ${param_idx}"));
         param_idx += 1;
     }
     if query.week_of.is_some() {
-        conditions.push(format!("week_of = ${}", param_idx));
+        conditions.push(format!("week_of = ${param_idx}"));
         param_idx += 1;
     }
 
@@ -369,7 +367,7 @@ pub(super) async fn list_stock_lists(
     );
     // SAFETY: see comment on `sql` above — `where_clause` carries only
     // bind-parameter placeholders.
-    let count_sql = format!("SELECT COUNT(*) FROM stock_lists WHERE 1=1{}", where_clause);
+    let count_sql = format!("SELECT COUNT(*) FROM stock_lists WHERE 1=1{where_clause}");
 
     // Bind parameters for the main query
     let mut q = sqlx::query_as::<_, StockList>(&sql);
@@ -525,11 +523,11 @@ pub(super) async fn track_resource_access(
         if let Some((resource_type, title, thumbnail)) = resource {
             // Upsert into recently_accessed
             let _ = sqlx::query(
-                r#"
+                r"
                 INSERT INTO resource_access_log (user_id, resource_id, resource_type, resource_title, resource_thumbnail)
                 VALUES ($1, $2, $3, $4, $5)
                 ON CONFLICT (user_id, resource_id) DO UPDATE SET accessed_at = NOW()
-                "#
+                "
             )
             .bind(uid)
             .bind(id)
@@ -728,13 +726,13 @@ pub(super) async fn get_favorite_resources(
     let offset = (page - 1) * per_page;
 
     let resources: Vec<RoomResource> = sqlx::query_as(
-        r#"
+        r"
         SELECT r.* FROM room_resources r
         INNER JOIN resource_favorites f ON r.id = f.resource_id
         WHERE f.user_id = $1 AND r.deleted_at IS NULL
         ORDER BY f.created_at DESC
         LIMIT $2 OFFSET $3
-        "#,
+        ",
     )
     .bind(user_id)
     .bind(per_page)

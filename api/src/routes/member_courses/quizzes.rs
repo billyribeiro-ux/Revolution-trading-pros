@@ -61,8 +61,8 @@ pub(super) async fn get_course_quizzes(
     }
 
     let quizzes: Vec<serde_json::Value> = sqlx::query_as::<_, (i64, String, Option<String>, String, Option<i32>, Option<i32>, Option<i32>, bool)>(
-        r#"SELECT id, title, description, quiz_type, passing_score, time_limit_minutes, max_attempts, is_required
-           FROM course_quizzes WHERE course_id = $1 AND is_published = true ORDER BY sort_order"#,
+        r"SELECT id, title, description, quiz_type, passing_score, time_limit_minutes, max_attempts, is_required
+           FROM course_quizzes WHERE course_id = $1 AND is_published = true ORDER BY sort_order",
     )
     .bind(course.0)
     .fetch_all(&state.db.pool)
@@ -159,7 +159,7 @@ pub(super) async fn start_quiz(
     // reaches this format string. `quiz_id` is bound below as `$1`.
     let order_clause = if quiz.4 { "RANDOM()" } else { "sort_order" };
     let questions: Vec<serde_json::Value> = sqlx::query_as::<_, (i64, String, String, i32)>(
-        &format!("SELECT id, question_type, question_text, points FROM quiz_questions WHERE quiz_id = $1 ORDER BY {}", order_clause)
+        &format!("SELECT id, question_type, question_text, points FROM quiz_questions WHERE quiz_id = $1 ORDER BY {order_clause}")
     )
     .bind(quiz_id)
     .fetch_all(&state.db.pool)
@@ -182,8 +182,7 @@ pub(super) async fn start_quiz(
         // reaches this format string. `question_id` is bound below as `$1`.
         let answer_order = if quiz.5 { "RANDOM()" } else { "sort_order" };
         let answers: Vec<serde_json::Value> = sqlx::query_as::<_, (i64, String)>(&format!(
-            "SELECT id, answer_text FROM quiz_answers WHERE question_id = $1 ORDER BY {}",
-            answer_order
+            "SELECT id, answer_text FROM quiz_answers WHERE question_id = $1 ORDER BY {answer_order}"
         ))
         .bind(question_id)
         .fetch_all(&state.db.pool)
@@ -206,8 +205,8 @@ pub(super) async fn start_quiz(
 
     // Create attempt
     let attempt = sqlx::query_as::<_, (i64, i32, NaiveDateTime)>(
-        r#"INSERT INTO user_quiz_attempts (user_id, quiz_id, enrollment_id, max_score, attempt_number, started_at)
-           VALUES ($1, $2, $3, $4, $5, NOW()) RETURNING id, attempt_number, started_at"#
+        r"INSERT INTO user_quiz_attempts (user_id, quiz_id, enrollment_id, max_score, attempt_number, started_at)
+           VALUES ($1, $2, $3, $4, $5, NOW()) RETURNING id, attempt_number, started_at"
     )
     .bind(user_id)
     .bind(quiz_id)
@@ -315,7 +314,7 @@ pub(super) async fn submit_quiz(
 
     // Update attempt
     sqlx::query(
-        r#"UPDATE user_quiz_attempts SET score = $1, score_percent = $2, passed = $3, completed_at = NOW(), time_spent_seconds = $4, answers = $5 WHERE id = $6"#
+        r"UPDATE user_quiz_attempts SET score = $1, score_percent = $2, passed = $3, completed_at = NOW(), time_spent_seconds = $4, answers = $5 WHERE id = $6"
     )
     .bind(total_score)
     .bind(score_percent)

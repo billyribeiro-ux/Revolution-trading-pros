@@ -249,7 +249,7 @@ fn resolved_creds_clones_and_debugs_without_panic() {
     // Debug MUST work (per the derive on line 44). The pin does
     // NOT assert what Debug emits — that's the footgun. It only
     // asserts that calling Debug::fmt does not panic.
-    let _ = format!("{:?}", cloned);
+    let _ = format!("{cloned:?}");
 }
 
 // ── 4. R9-D NEGATIVE: no money/PK DTOs on credential surface ─────────

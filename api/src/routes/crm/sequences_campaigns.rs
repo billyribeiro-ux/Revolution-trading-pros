@@ -93,17 +93,17 @@ async fn list_sequences(
     Query(filters): Query<ListFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let per_page = filters.per_page.unwrap_or(50).min(100);
-    let search_pattern = filters.search.as_ref().map(|s| format!("%{}%", s));
+    let search_pattern = filters.search.as_ref().map(|s| format!("%{s}%"));
 
     let sequences: Vec<EmailSequence> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, title, status, trigger_type, email_count, total_subscribers,
                emails_sent, open_rate, click_rate, created_at, updated_at
         FROM crm_sequences
         WHERE ($1::text IS NULL OR title ILIKE $1)
         ORDER BY created_at DESC
         LIMIT $2
-        "#,
+        ",
     )
     .bind(search_pattern.as_deref())
     .bind(per_page)
@@ -131,11 +131,11 @@ async fn create_sequence(
     let status = input.status.unwrap_or_else(|| "draft".to_string());
 
     let sequence: EmailSequence = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO crm_sequences (title, status, trigger_type, email_count, total_subscribers, emails_sent, open_rate, click_rate, created_at, updated_at)
         VALUES ($1, $2, $3, 0, 0, 0, 0.0, 0.0, NOW(), NOW())
         RETURNING id, title, status, trigger_type, email_count, total_subscribers, emails_sent, open_rate, click_rate, created_at, updated_at
-        "#,
+        ",
     )
     .bind(&input.title)
     .bind(&status)
@@ -193,17 +193,17 @@ async fn list_campaigns(
     Query(filters): Query<ListFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let per_page = filters.per_page.unwrap_or(50).min(100);
-    let search_pattern = filters.search.as_ref().map(|s| format!("%{}%", s));
+    let search_pattern = filters.search.as_ref().map(|s| format!("%{s}%"));
 
     let campaigns: Vec<Campaign> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, title, subject, status, scheduled_at, sent_at, recipients_count,
                emails_sent, opens, clicks, open_rate, click_rate, template_id, created_at, updated_at
         FROM crm_campaigns
         WHERE ($1::text IS NULL OR title ILIKE $1)
         ORDER BY created_at DESC
         LIMIT $2
-        "#,
+        ",
     )
     .bind(search_pattern.as_deref())
     .bind(per_page)
@@ -224,11 +224,11 @@ async fn create_campaign(
     Json(input): Json<CreateCampaignInput>,
 ) -> Result<Json<Campaign>, (StatusCode, Json<serde_json::Value>)> {
     let campaign: Campaign = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO crm_campaigns (title, subject, status, template_id, recipients_count, emails_sent, opens, clicks, open_rate, click_rate, created_at, updated_at)
         VALUES ($1, $2, 'draft', $3, 0, 0, 0, 0, 0.0, 0.0, NOW(), NOW())
         RETURNING id, title, subject, status, scheduled_at, sent_at, recipients_count, emails_sent, opens, clicks, open_rate, click_rate, template_id, created_at, updated_at
-        "#,
+        ",
     )
     .bind(&input.title)
     .bind(&input.subject)
@@ -295,11 +295,11 @@ async fn duplicate_campaign(
     let new_title = format!("{} (Copy)", original.title);
 
     let campaign: Campaign = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO crm_campaigns (title, subject, status, template_id, recipients_count, emails_sent, opens, clicks, open_rate, click_rate, created_at, updated_at)
         VALUES ($1, $2, 'draft', $3, 0, 0, 0, 0, 0.0, 0.0, NOW(), NOW())
         RETURNING id, title, subject, status, scheduled_at, sent_at, recipients_count, emails_sent, opens, clicks, open_rate, click_rate, template_id, created_at, updated_at
-        "#,
+        ",
     )
     .bind(&new_title)
     .bind(&original.subject)
@@ -321,17 +321,17 @@ async fn list_recurring_campaigns(
     Query(filters): Query<ListFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let per_page = filters.per_page.unwrap_or(50).min(100);
-    let search_pattern = filters.search.as_ref().map(|s| format!("%{}%", s));
+    let search_pattern = filters.search.as_ref().map(|s| format!("%{s}%"));
 
     let campaigns: Vec<RecurringCampaign> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, title, status, scheduling_settings, total_campaigns_sent, total_emails_sent,
                total_revenue, last_sent_at, next_scheduled_at, created_at, updated_at
         FROM crm_recurring_campaigns
         WHERE ($1::text IS NULL OR title ILIKE $1)
         ORDER BY created_at DESC
         LIMIT $2
-        "#,
+        ",
     )
     .bind(search_pattern.as_deref())
     .bind(per_page)

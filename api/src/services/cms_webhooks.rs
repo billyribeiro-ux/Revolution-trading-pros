@@ -362,7 +362,7 @@ pub async fn deliver_webhook(
     if let Some(secret) = &config.secret {
         let signature = generate_signature(&payload_str, secret);
         request = request
-            .header("X-Webhook-Signature", format!("sha256={}", signature))
+            .header("X-Webhook-Signature", format!("sha256={signature}"))
             .header("X-Webhook-Timestamp", Utc::now().timestamp().to_string());
     }
 
@@ -399,7 +399,7 @@ pub async fn deliver_webhook(
                 error: if success {
                     None
                 } else {
-                    Some(format!("HTTP {}", status))
+                    Some(format!("HTTP {status}"))
                 },
             }
         }
@@ -426,7 +426,7 @@ pub async fn process_pending_deliveries(
 
     // Get pending deliveries
     let deliveries: Vec<(Uuid, Uuid, JsonValue, i32)> = sqlx::query_as(
-        r#"
+        r"
         SELECT d.id, d.webhook_id, d.payload, d.attempts
         FROM cms_webhook_deliveries d
         WHERE d.status = 'pending'
@@ -434,7 +434,7 @@ pub async fn process_pending_deliveries(
         ORDER BY d.created_at
         LIMIT $1
         FOR UPDATE SKIP LOCKED
-        "#,
+        ",
     )
     .bind(batch_size)
     .fetch_all(pool)
@@ -486,7 +486,7 @@ pub async fn process_pending_deliveries(
         };
 
         sqlx::query(
-            r#"
+            r"
             UPDATE cms_webhook_deliveries
             SET status = $1,
                 attempts = attempts + 1,
@@ -497,7 +497,7 @@ pub async fn process_pending_deliveries(
                 delivered_at = CASE WHEN $1 = 'delivered' THEN NOW() ELSE NULL END,
                 next_retry_at = $6
             WHERE id = $7
-            "#,
+            ",
         )
         .bind(new_status)
         .bind(result.status_code)
@@ -582,13 +582,13 @@ pub async fn get_webhook_deliveries(
 /// Retry a failed delivery
 pub async fn retry_delivery(pool: &PgPool, delivery_id: Uuid) -> Result<()> {
     sqlx::query(
-        r#"
+        r"
         UPDATE cms_webhook_deliveries
         SET status = 'pending',
             next_retry_at = NULL,
             error_message = NULL
         WHERE id = $1 AND status IN ('failed', 'retrying')
-        "#,
+        ",
     )
     .bind(delivery_id)
     .execute(pool)

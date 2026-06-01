@@ -396,7 +396,7 @@ async fn create_post(
         if !exists {
             break;
         }
-        final_slug = format!("{}-{}", base_slug, counter);
+        final_slug = format!("{base_slug}-{counter}");
         counter += 1;
         if counter > 100 {
             return Err((
@@ -424,7 +424,7 @@ async fn create_post(
     };
 
     let post: PostRow = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO posts (
             author_id, title, slug, excerpt, content_blocks, featured_image,
             status, published_at, meta_title, meta_description, indexable,
@@ -440,7 +440,7 @@ async fn create_post(
             NOW(), NOW()
         )
         RETURNING *
-        "#,
+        ",
     )
     .bind(admin.0.id)
     .bind(&input.title)
@@ -549,7 +549,7 @@ async fn update_post(
             if !exists {
                 break;
             }
-            candidate_slug = format!("{}-{}", base_slug, counter);
+            candidate_slug = format!("{base_slug}-{counter}");
             counter += 1;
             if counter > 100 {
                 return Err((
@@ -605,7 +605,7 @@ async fn update_post(
     let allow_comments = input.allow_comments.unwrap_or(current.allow_comments);
 
     let post: PostRow = sqlx::query_as(
-        r#"UPDATE posts SET
+        r"UPDATE posts SET
             title = $1, slug = $2, excerpt = $3, status = $4, indexable = $5,
             content_blocks = $6, featured_image = $7, meta_title = $8,
             meta_description = $9, canonical_url = $10, schema_markup = $11,
@@ -615,7 +615,7 @@ async fn update_post(
             featured_image_description = $17, meta_keywords = $18,
             allow_comments = $19,
             updated_at = NOW()
-        WHERE id = $20 RETURNING *"#,
+        WHERE id = $20 RETURNING *",
     )
     .bind(&title)
     .bind(&final_slug)
@@ -765,11 +765,11 @@ async fn publish_post(
     Path(id): Path<i64>,
 ) -> Result<Json<PostRow>, (StatusCode, Json<serde_json::Value>)> {
     let post: PostRow = sqlx::query_as(
-        r#"UPDATE posts SET
+        r"UPDATE posts SET
             status = 'published',
             published_at = COALESCE(published_at, NOW()),
             updated_at = NOW()
-        WHERE id = $1 RETURNING *"#,
+        WHERE id = $1 RETURNING *",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -797,7 +797,7 @@ async fn unpublish_post(
     Path(id): Path<i64>,
 ) -> Result<Json<PostRow>, (StatusCode, Json<serde_json::Value>)> {
     let post: PostRow = sqlx::query_as(
-        r#"UPDATE posts SET status = 'draft', updated_at = NOW() WHERE id = $1 RETURNING *"#,
+        r"UPDATE posts SET status = 'draft', updated_at = NOW() WHERE id = $1 RETURNING *",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -825,7 +825,7 @@ async fn archive_post(
     Path(id): Path<i64>,
 ) -> Result<Json<PostRow>, (StatusCode, Json<serde_json::Value>)> {
     let post: PostRow = sqlx::query_as(
-        r#"UPDATE posts SET status = 'archived', updated_at = NOW() WHERE id = $1 RETURNING *"#,
+        r"UPDATE posts SET status = 'archived', updated_at = NOW() WHERE id = $1 RETURNING *",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -887,7 +887,7 @@ async fn get_related_posts(
     // propagates via the same house 500 shape used elsewhere in this file
     // (e.g. `archive_post`) instead of being swallowed.
     let related: Vec<PostRow> = sqlx::query_as(
-        r#"
+        r"
         SELECT DISTINCT p.* FROM posts p
         LEFT JOIN post_tags pt1 ON p.id = pt1.post_id
         LEFT JOIN post_tags pt2 ON pt1.tag_id = pt2.tag_id AND pt2.post_id = $1
@@ -903,7 +903,7 @@ async fn get_related_posts(
           CASE WHEN pt2.post_id IS NOT NULL THEN 0 ELSE 1 END,  -- Prioritize shared tags
           p.published_at DESC NULLS LAST
         LIMIT 5
-        "#,
+        ",
     )
     .bind(current.id)
     .fetch_all(&state.db.pool)
@@ -918,12 +918,12 @@ async fn get_related_posts(
     // If no related posts found via tags/category, fall back to recent posts.
     let final_related = if related.is_empty() {
         sqlx::query_as(
-            r#"
+            r"
             SELECT * FROM posts
             WHERE id != $1 AND status = 'published'
             ORDER BY published_at DESC NULLS LAST
             LIMIT 5
-            "#,
+            ",
         )
         .bind(current.id)
         .fetch_all(&state.db.pool)

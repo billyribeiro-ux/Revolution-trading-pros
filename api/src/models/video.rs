@@ -302,24 +302,21 @@ impl UnifiedVideo {
             "bunny" => {
                 if let Some(guid) = &self.bunny_video_guid {
                     if let Some(lib_id) = self.bunny_library_id {
-                        return format!(
-                            "https://iframe.mediadelivery.net/embed/{}/{}",
-                            lib_id, guid
-                        );
+                        return format!("https://iframe.mediadelivery.net/embed/{lib_id}/{guid}");
                     }
                 }
                 self.video_url.clone()
             }
             "vimeo" => {
                 if let Some(id) = &self.video_id {
-                    format!("https://player.vimeo.com/video/{}", id)
+                    format!("https://player.vimeo.com/video/{id}")
                 } else {
                     self.video_url.clone()
                 }
             }
             "youtube" => {
                 if let Some(id) = &self.video_id {
-                    format!("https://www.youtube.com/embed/{}", id)
+                    format!("https://www.youtube.com/embed/{id}")
                 } else {
                     self.video_url.clone()
                 }
@@ -335,9 +332,9 @@ impl UnifiedVideo {
                 let minutes = (d % 3600) / 60;
                 let seconds = d % 60;
                 if hours > 0 {
-                    format!("{}:{:02}:{:02}", hours, minutes, seconds)
+                    format!("{hours}:{minutes:02}:{seconds:02}")
                 } else {
-                    format!("{}:{:02}", minutes, seconds)
+                    format!("{minutes}:{seconds:02}")
                 }
             }
             _ => String::new(),

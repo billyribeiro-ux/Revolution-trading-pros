@@ -173,7 +173,7 @@ pub(super) async fn enforce_ip_rate_limit_strict(
     };
 
     // Scope key by bucket + IP so register/forgot/reset are independently throttled.
-    let key = format!("{}:{}", bucket_key, ip);
+    let key = format!("{bucket_key}:{ip}");
     match redis
         .check_ip_rate_limit(&key, max_requests, window_seconds)
         .await

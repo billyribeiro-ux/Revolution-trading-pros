@@ -63,7 +63,7 @@ async fn test_list_trade_plans_with_pagination() {
 
     // Create 15 trade plans for pagination testing
     for i in 0..15 {
-        let plan = TradePlanBuilder::bullish(&room.slug, &format!("TICK{}", i))
+        let plan = TradePlanBuilder::bullish(&room.slug, &format!("TICK{i}"))
             .with_sort_order(i)
             .build_json();
 
@@ -626,7 +626,7 @@ async fn test_update_trade_plan() {
         .oneshot(
             Request::builder()
                 .method("PUT")
-                .uri(format!("/api/admin/room-content/trade-plan/{}", plan_id))
+                .uri(format!("/api/admin/room-content/trade-plan/{plan_id}"))
                 .header(header::CONTENT_TYPE, "application/json")
                 .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::from(update_payload.to_string()))
@@ -687,7 +687,7 @@ async fn test_update_trade_plan_change_bias() {
         .oneshot(
             Request::builder()
                 .method("PUT")
-                .uri(format!("/api/admin/room-content/trade-plan/{}", plan_id))
+                .uri(format!("/api/admin/room-content/trade-plan/{plan_id}"))
                 .header(header::CONTENT_TYPE, "application/json")
                 .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::from(update_payload.to_string()))
@@ -742,7 +742,7 @@ async fn test_update_trade_plan_deactivate() {
         .oneshot(
             Request::builder()
                 .method("PUT")
-                .uri(format!("/api/admin/room-content/trade-plan/{}", plan_id))
+                .uri(format!("/api/admin/room-content/trade-plan/{plan_id}"))
                 .header(header::CONTENT_TYPE, "application/json")
                 .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::from(update_payload.to_string()))
@@ -801,7 +801,7 @@ async fn test_update_trade_plan_partial() {
         .oneshot(
             Request::builder()
                 .method("PUT")
-                .uri(format!("/api/admin/room-content/trade-plan/{}", plan_id))
+                .uri(format!("/api/admin/room-content/trade-plan/{plan_id}"))
                 .header(header::CONTENT_TYPE, "application/json")
                 .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::from(update_payload.to_string()))
@@ -860,7 +860,7 @@ async fn test_delete_trade_plan() {
         .oneshot(
             Request::builder()
                 .method("DELETE")
-                .uri(format!("/api/admin/room-content/trade-plan/{}", plan_id))
+                .uri(format!("/api/admin/room-content/trade-plan/{plan_id}"))
                 .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
@@ -907,7 +907,7 @@ async fn test_delete_trade_plan_soft_delete() {
         .oneshot(
             Request::builder()
                 .method("DELETE")
-                .uri(format!("/api/admin/room-content/trade-plan/{}", plan_id))
+                .uri(format!("/api/admin/room-content/trade-plan/{plan_id}"))
                 .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
@@ -1020,7 +1020,7 @@ async fn test_update_trade_plan_requires_admin() {
         .oneshot(
             Request::builder()
                 .method("PUT")
-                .uri(format!("/api/admin/room-content/trade-plan/{}", plan_id))
+                .uri(format!("/api/admin/room-content/trade-plan/{plan_id}"))
                 .header(header::CONTENT_TYPE, "application/json")
                 .header(header::AUTHORIZATION, member.auth_header())
                 .body(Body::from(update_payload.to_string()))
@@ -1069,7 +1069,7 @@ async fn test_delete_trade_plan_requires_admin() {
         .oneshot(
             Request::builder()
                 .method("DELETE")
-                .uri(format!("/api/admin/room-content/trade-plan/{}", plan_id))
+                .uri(format!("/api/admin/room-content/trade-plan/{plan_id}"))
                 .header(header::AUTHORIZATION, member.auth_header())
                 .body(Body::empty())
                 .unwrap(),
@@ -1408,10 +1408,7 @@ async fn test_only_active_plans_returned() {
         .oneshot(
             Request::builder()
                 .method("PUT")
-                .uri(format!(
-                    "/api/admin/room-content/trade-plan/{}",
-                    inactive_id
-                ))
+                .uri(format!("/api/admin/room-content/trade-plan/{inactive_id}"))
                 .header(header::CONTENT_TYPE, "application/json")
                 .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::from(json!({"is_active": false}).to_string()))

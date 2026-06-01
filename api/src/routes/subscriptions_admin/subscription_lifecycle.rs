@@ -27,12 +27,12 @@ pub(super) async fn cancel_subscription(
     tracing::info!(target: "security", event = "subscription_cancel", admin_id = %user.id, subscription_id = %id, "Cancelling subscription");
 
     let subscription: SubscriptionRow = sqlx::query_as(
-        r#"
+        r"
         UPDATE user_memberships SET status = 'cancelled', cancelled_at = NOW(), updated_at = NOW()
         WHERE id = $1
         RETURNING id, user_id, plan_id, status, starts_at, expires_at, cancelled_at,
                   payment_provider, stripe_subscription_id, stripe_customer_id, created_at, updated_at
-        "#
+        "
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -54,12 +54,12 @@ pub(super) async fn pause_subscription(
     tracing::info!(target: "security", event = "subscription_pause", admin_id = %user.id, subscription_id = %id, "Pausing subscription");
 
     let subscription: SubscriptionRow = sqlx::query_as(
-        r#"
+        r"
         UPDATE user_memberships SET status = 'paused', updated_at = NOW()
         WHERE id = $1
         RETURNING id, user_id, plan_id, status, starts_at, expires_at, cancelled_at,
                   payment_provider, stripe_subscription_id, stripe_customer_id, created_at, updated_at
-        "#
+        "
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -81,12 +81,12 @@ pub(super) async fn resume_subscription(
     tracing::info!(target: "security", event = "subscription_resume", admin_id = %user.id, subscription_id = %id, "Resuming subscription");
 
     let subscription: SubscriptionRow = sqlx::query_as(
-        r#"
+        r"
         UPDATE user_memberships SET status = 'active', updated_at = NOW()
         WHERE id = $1
         RETURNING id, user_id, plan_id, status, starts_at, expires_at, cancelled_at,
                   payment_provider, stripe_subscription_id, stripe_customer_id, created_at, updated_at
-        "#
+        "
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -108,7 +108,7 @@ pub(super) async fn renew_subscription(
     tracing::info!(target: "security", event = "subscription_renew", admin_id = %user.id, subscription_id = %id, "Renewing subscription");
 
     let subscription: SubscriptionRow = sqlx::query_as(
-        r#"
+        r"
         UPDATE user_memberships SET
             status = 'active',
             starts_at = NOW(),
@@ -117,7 +117,7 @@ pub(super) async fn renew_subscription(
         WHERE id = $1
         RETURNING id, user_id, plan_id, status, starts_at, expires_at, cancelled_at,
                   payment_provider, stripe_subscription_id, stripe_customer_id, created_at, updated_at
-        "#
+        "
     )
     .bind(id)
     .fetch_optional(&state.db.pool)

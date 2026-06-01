@@ -36,9 +36,9 @@ pub(super) async fn change_plan(
 
     // Get current plan
     let current_plan: MembershipPlanRow = sqlx::query_as(
-        r#"SELECT id, name, slug, description, (price * 100)::BIGINT AS price_cents, billing_cycle,
+        r"SELECT id, name, slug, description, (price * 100)::BIGINT AS price_cents, billing_cycle,
            is_active, metadata, stripe_price_id, features, trial_days, created_at, updated_at
-           FROM membership_plans WHERE id = $1"#,
+           FROM membership_plans WHERE id = $1",
     )
     .bind(subscription.plan_id)
     .fetch_optional(&state.db.pool)
@@ -58,9 +58,9 @@ pub(super) async fn change_plan(
 
     // Get new plan
     let new_plan: MembershipPlanRow = sqlx::query_as(
-        r#"SELECT id, name, slug, description, (price * 100)::BIGINT AS price_cents, billing_cycle,
+        r"SELECT id, name, slug, description, (price * 100)::BIGINT AS price_cents, billing_cycle,
            is_active, metadata, stripe_price_id, features, trial_days, created_at, updated_at
-           FROM membership_plans WHERE id = $1 AND is_active = true"#,
+           FROM membership_plans WHERE id = $1 AND is_active = true",
     )
     .bind(input.new_plan_id)
     .fetch_optional(&state.db.pool)
@@ -219,9 +219,9 @@ pub(super) async fn preview_plan_change(
 
     // Get current plan
     let current_plan: MembershipPlanRow = sqlx::query_as(
-        r#"SELECT id, name, slug, description, (price * 100)::BIGINT AS price_cents, billing_cycle,
+        r"SELECT id, name, slug, description, (price * 100)::BIGINT AS price_cents, billing_cycle,
            is_active, metadata, stripe_price_id, features, trial_days, created_at, updated_at
-           FROM membership_plans WHERE id = $1"#,
+           FROM membership_plans WHERE id = $1",
     )
     .bind(subscription.plan_id)
     .fetch_optional(&state.db.pool)
@@ -241,9 +241,9 @@ pub(super) async fn preview_plan_change(
 
     // Get new plan
     let new_plan: MembershipPlanRow = sqlx::query_as(
-        r#"SELECT id, name, slug, description, (price * 100)::BIGINT AS price_cents, billing_cycle,
+        r"SELECT id, name, slug, description, (price * 100)::BIGINT AS price_cents, billing_cycle,
            is_active, metadata, stripe_price_id, features, trial_days, created_at, updated_at
-           FROM membership_plans WHERE id = $1 AND is_active = true"#,
+           FROM membership_plans WHERE id = $1 AND is_active = true",
     )
     .bind(input.new_plan_id)
     .fetch_optional(&state.db.pool)
@@ -311,7 +311,7 @@ pub(super) async fn preview_plan_change(
         "is_upgrade": is_upgrade,
         "proration": proration,
         "summary": if proration_amount_cents >= 0 {
-            format!("You will be charged ${:.2} today", proration_amount_dollars)
+            format!("You will be charged ${proration_amount_dollars:.2} today")
         } else {
             format!("You will receive a ${:.2} credit", proration_amount_dollars.abs())
         }

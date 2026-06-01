@@ -178,13 +178,13 @@ impl TestUser {
     /// Create a test user with specified role
     pub async fn create(ctx: &TestContext, role: &str) -> Self {
         let id = TestContext::next_user_id();
-        let email = format!("test_{}_{id}@explosiveswings.test", role);
+        let email = format!("test_{role}_{id}@explosiveswings.test");
         let name = format!("Test {} User {}", role.to_uppercase(), id);
         let password_hash = hash_password("TestPassword123!@#").expect("Failed to hash password");
 
         // Insert user into database
         sqlx::query(
-            r#"
+            r"
             INSERT INTO users (id, email, password_hash, name, role, email_verified_at, created_at, updated_at)
             VALUES ($1, $2, $3, $4, $5, NOW(), NOW(), NOW())
             ON CONFLICT (id) DO UPDATE SET
@@ -193,7 +193,7 @@ impl TestUser {
                 name = EXCLUDED.name,
                 role = EXCLUDED.role,
                 updated_at = NOW()
-            "#,
+            ",
         )
         .bind(id)
         .bind(&email)
@@ -243,16 +243,16 @@ impl TestTradingRoom {
     /// Create a custom trading room
     pub async fn create(ctx: &TestContext, name: &str, slug: &str) -> Self {
         let result: (i64,) = sqlx::query_as(
-            r#"
+            r"
             INSERT INTO trading_rooms (name, slug, description, is_active, created_at, updated_at)
             VALUES ($1, $2, $3, true, NOW(), NOW())
             ON CONFLICT (slug) DO UPDATE SET name = EXCLUDED.name
             RETURNING id
-            "#,
+            ",
         )
         .bind(name)
         .bind(slug)
-        .bind(format!("{} trading room for testing", name))
+        .bind(format!("{name} trading room for testing"))
         .fetch_one(&ctx.pool)
         .await
         .expect("Failed to create test trading room");
@@ -330,8 +330,8 @@ impl AlertBuilder {
         Self::new(room_slug)
             .with_alert_type("ENTRY")
             .with_ticker(ticker)
-            .with_title(format!("ENTRY: {} Call", ticker))
-            .with_message(format!("Opening {} call position", ticker))
+            .with_title(format!("ENTRY: {ticker} Call"))
+            .with_message(format!("Opening {ticker} call position"))
     }
 
     /// Create an exit alert builder
@@ -339,8 +339,8 @@ impl AlertBuilder {
         Self::new(room_slug)
             .with_alert_type("EXIT")
             .with_ticker(ticker)
-            .with_title(format!("EXIT: {} Call", ticker))
-            .with_message(format!("Closing {} call position", ticker))
+            .with_title(format!("EXIT: {ticker} Call"))
+            .with_message(format!("Closing {ticker} call position"))
             .with_action("SELL")
             .with_entry_alert_id(entry_alert_id)
     }
@@ -350,8 +350,8 @@ impl AlertBuilder {
         Self::new(room_slug)
             .with_alert_type("UPDATE")
             .with_ticker(ticker)
-            .with_title(format!("UPDATE: {}", ticker))
-            .with_message(format!("Updating {} position info", ticker))
+            .with_title(format!("UPDATE: {ticker}"))
+            .with_message(format!("Updating {ticker} position info"))
             .with_entry_alert_id(entry_alert_id)
     }
 
@@ -912,22 +912,12 @@ impl TosFormatter {
         let exp_str = expiration.format("%d %b %y").to_string().to_uppercase();
 
         let price_str = match (order_type, limit_price) {
-            ("LMT", Some(price)) => format!("@{:.2} LMT", price),
+            ("LMT", Some(price)) => format!("@{price:.2} LMT"),
             _ => "@MKT".to_string(),
         };
 
         format!(
-            "{} {}{} {} {} ({}) {} {} {} {}",
-            action,
-            qty_prefix,
-            quantity,
-            ticker,
-            shares_per_contract,
-            contract_type,
-            exp_str,
-            strike,
-            option_type,
-            price_str
+            "{action} {qty_prefix}{quantity} {ticker} {shares_per_contract} ({contract_type}) {exp_str} {strike} {option_type} {price_str}"
         )
     }
 
@@ -943,14 +933,11 @@ impl TosFormatter {
         let qty_prefix = if action == "BUY" { "+" } else { "-" };
 
         let price_str = match (order_type, limit_price) {
-            ("LMT", Some(price)) => format!("@{:.2} LMT", price),
+            ("LMT", Some(price)) => format!("@{price:.2} LMT"),
             _ => "@MKT".to_string(),
         };
 
-        format!(
-            "{} {}{} {} {}",
-            action, qty_prefix, quantity, ticker, price_str
-        )
+        format!("{action} {qty_prefix}{quantity} {ticker} {price_str}")
     }
 }
 
@@ -981,8 +968,7 @@ pub async fn assert_status_and_json(
     let body = body_to_json(response).await;
     assert_eq!(
         status, expected_status,
-        "Expected status {} but got {}. Body: {}",
-        expected_status, status, body
+        "Expected status {expected_status} but got {status}. Body: {body}"
     );
     body
 }

@@ -28,15 +28,15 @@ type HmacSha256 = Hmac<Sha256>;
 
 /// Generate a secure HMAC-based token for email actions
 fn generate_secure_token(subscriber_id: i64, email: &str, action: &str, secret: &[u8]) -> String {
-    let data = format!("{}:{}:{}", subscriber_id, email, action);
+    let data = format!("{subscriber_id}:{email}:{action}");
     let mut mac = HmacSha256::new_from_slice(secret)
         .expect("HMAC-SHA256 accepts any key length per RFC 2104");
     mac.update(data.as_bytes());
     let result = mac.finalize();
     let signature = URL_SAFE_NO_PAD.encode(result.into_bytes());
     // Token format: base64(id:email):signature
-    let payload = URL_SAFE_NO_PAD.encode(format!("{}:{}", subscriber_id, email));
-    format!("{}:{}", payload, signature)
+    let payload = URL_SAFE_NO_PAD.encode(format!("{subscriber_id}:{email}"));
+    format!("{payload}:{signature}")
 }
 
 /// Verify and decode a secure token
@@ -223,10 +223,10 @@ async fn subscribe(
 
     // Check if already subscribed
     let existing: Option<SubscriberRow> = sqlx::query_as(
-        r#"SELECT id, email, name, status, source, ip_address, user_agent, tags, metadata,
+        r"SELECT id, email, name, status, source, ip_address, user_agent, tags, metadata,
                       COALESCE(gdpr_consent, false) as gdpr_consent, consent_ip, consent_source,
                       confirmed_at, unsubscribed_at, created_at, updated_at
-               FROM newsletter_subscribers WHERE LOWER(email) = $1"#,
+               FROM newsletter_subscribers WHERE LOWER(email) = $1",
     )
     .bind(&email)
     .fetch_optional(&state.db.pool)
@@ -248,15 +248,43 @@ async fn subscribe(
 
         // Generate new confirmation token and resend
         let token = generate_secure_token(subscriber.id, &email, "confirm", &get_token_secret());
-
-        // TODO: Actually send confirmation email via email service
-        tracing::info!(
-            target: "newsletter",
-            event = "confirmation_resent",
-            subscriber_id = %subscriber.id,
-            email = %email,
-            "Resending confirmation email"
+        let confirm_url = format!(
+            "{}/newsletter/confirm?token={}",
+            state.config.app_url, token
         );
+
+        let email_model = serde_json::json!({
+            "name": subscriber.name.as_deref().unwrap_or("Subscriber"),
+            "confirm_url": confirm_url,
+            "app_url": state.config.app_url,
+        });
+        if let Err(e) = state
+            .services
+            .email
+            .send_transactional(
+                &state.db.pool,
+                &email,
+                "newsletter-confirmation",
+                email_model,
+            )
+            .await
+        {
+            tracing::warn!(
+                target: "newsletter",
+                event = "confirmation_resend_email_failed",
+                subscriber_id = %subscriber.id,
+                error = %e,
+                "Failed to resend newsletter confirmation email"
+            );
+        } else {
+            tracing::info!(
+                target: "newsletter",
+                event = "confirmation_resent",
+                subscriber_id = %subscriber.id,
+                email = %email,
+                "Resending confirmation email"
+            );
+        }
 
         return Ok(Json(json!({
             "message": "Confirmation email resent. Please check your inbox.",
@@ -268,7 +296,7 @@ async fn subscribe(
     let tags = input.tags.map(|t| serde_json::to_value(t).ok()).flatten();
 
     let subscriber: SubscriberRow = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO newsletter_subscribers (
             email, name, status, source, tags, ip_address, user_agent,
             gdpr_consent, consent_ip, consent_source, created_at, updated_at
@@ -277,7 +305,7 @@ async fn subscribe(
         RETURNING id, email, name, status, source, ip_address, user_agent, tags, metadata,
                   COALESCE(gdpr_consent, false) as gdpr_consent, consent_ip, consent_source,
                   confirmed_at, unsubscribed_at, created_at, updated_at
-        "#,
+        ",
     )
     .bind(&email)
     .bind(&input.name)
@@ -316,8 +344,35 @@ async fn subscribe(
         "New newsletter subscription (pending confirmation)"
     );
 
-    // TODO: Send confirmation email with token
-    // email_service.send_newsletter_confirmation(&email, &subscriber.name.unwrap_or_default(), &confirm_token).await?;
+    // Send confirmation email via Postmark (graceful no-op if POSTMARK_TOKEN unset)
+    let confirm_url = format!(
+        "{}/newsletter/confirm?token={}",
+        state.config.app_url, confirm_token
+    );
+    let email_model = serde_json::json!({
+        "name": subscriber.name.as_deref().unwrap_or("Subscriber"),
+        "confirm_url": confirm_url,
+        "app_url": state.config.app_url,
+    });
+    if let Err(e) = state
+        .services
+        .email
+        .send_transactional(
+            &state.db.pool,
+            &email,
+            "newsletter-confirmation",
+            email_model,
+        )
+        .await
+    {
+        tracing::warn!(
+            target: "newsletter",
+            event = "confirmation_email_failed",
+            subscriber_id = %subscriber.id,
+            error = %e,
+            "Failed to send newsletter confirmation email — subscriber created but email not delivered"
+        );
+    }
 
     Ok(Json(json!({
         "message": "Please check your email to confirm your subscription",
@@ -348,9 +403,9 @@ async fn confirm(
 
     // Verify subscriber exists and email matches
     let result = sqlx::query(
-        r#"UPDATE newsletter_subscribers
+        r"UPDATE newsletter_subscribers
            SET status = 'confirmed', confirmed_at = NOW(), updated_at = NOW()
-           WHERE id = $1 AND LOWER(email) = LOWER($2) AND status = 'pending'"#,
+           WHERE id = $1 AND LOWER(email) = LOWER($2) AND status = 'pending'",
     )
     .bind(subscriber_id)
     .bind(&email)
@@ -412,12 +467,12 @@ async fn unsubscribe(
         .map(|r| json!({"unsubscribe_reason": r}));
 
     let result = sqlx::query(
-        r#"UPDATE newsletter_subscribers
+        r"UPDATE newsletter_subscribers
            SET status = 'unsubscribed',
                unsubscribed_at = NOW(),
                updated_at = NOW(),
                metadata = COALESCE($3, metadata)
-           WHERE id = $1 AND LOWER(email) = LOWER($2)"#,
+           WHERE id = $1 AND LOWER(email) = LOWER($2)",
     )
     .bind(subscriber_id)
     .bind(&email)
@@ -491,7 +546,7 @@ async fn list_subscribers(
         .map(|s| format!("%{}%", s.replace('%', "\\%").replace('_', "\\_")));
 
     let subscribers: Vec<SubscriberRow> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, email, name, status, source, ip_address, user_agent, tags, metadata,
                COALESCE(gdpr_consent, false) as gdpr_consent, consent_ip, consent_source,
                confirmed_at, unsubscribed_at, created_at, updated_at
@@ -500,7 +555,7 @@ async fn list_subscribers(
           AND ($2::text IS NULL OR email ILIKE $2 OR name ILIKE $2)
         ORDER BY created_at DESC
         LIMIT $3 OFFSET $4
-        "#,
+        ",
     )
     .bind(status_filter)
     .bind(search_pattern.as_deref())
@@ -517,12 +572,12 @@ async fn list_subscribers(
     })?;
 
     let total: (i64,) = sqlx::query_as(
-        r#"
+        r"
         SELECT COUNT(*)
         FROM newsletter_subscribers
         WHERE ($1::text IS NULL OR status = $1)
           AND ($2::text IS NULL OR email ILIKE $2 OR name ILIKE $2)
-        "#,
+        ",
     )
     .bind(status_filter)
     .bind(search_pattern.as_deref())
@@ -555,7 +610,7 @@ async fn get_stats(
 
     // Single optimized query for all stats
     let stats: (i64, i64, i64, i64, i64) = sqlx::query_as(
-        r#"
+        r"
         SELECT
             COUNT(*) as total,
             COUNT(*) FILTER (WHERE status = 'confirmed') as confirmed,
@@ -563,7 +618,7 @@ async fn get_stats(
             COUNT(*) FILTER (WHERE status = 'unsubscribed') as unsubscribed,
             COUNT(*) FILTER (WHERE gdpr_consent = true) as with_consent
         FROM newsletter_subscribers
-        "#,
+        ",
     )
     .fetch_one(&state.db.pool)
     .await
@@ -649,10 +704,10 @@ async fn export_subscriber(
     );
 
     let subscriber: SubscriberRow = sqlx::query_as(
-        r#"SELECT id, email, name, status, source, ip_address, user_agent, tags, metadata,
+        r"SELECT id, email, name, status, source, ip_address, user_agent, tags, metadata,
                   COALESCE(gdpr_consent, false) as gdpr_consent, consent_ip, consent_source,
                   confirmed_at, unsubscribed_at, created_at, updated_at
-           FROM newsletter_subscribers WHERE id = $1"#,
+           FROM newsletter_subscribers WHERE id = $1",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)

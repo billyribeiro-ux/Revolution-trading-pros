@@ -172,10 +172,7 @@ pub fn rate_limited(retry_after: Option<i64>) -> ApiError {
     .with_code("RATE_LIMITED");
 
     if let Some(seconds) = retry_after {
-        error.message = format!(
-            "Too many requests. Please try again in {} seconds.",
-            seconds
-        );
+        error.message = format!("Too many requests. Please try again in {seconds} seconds.");
     }
 
     error
@@ -241,7 +238,7 @@ impl From<anyhow::Error> for ApiError {
 /// Validate that a field is not empty
 pub fn validate_not_empty(field: &str, value: &str) -> Result<(), (String, String)> {
     if value.trim().is_empty() {
-        Err((field.to_string(), format!("{} is required", field)))
+        Err((field.to_string(), format!("{field} is required")))
     } else {
         Ok(())
     }
@@ -263,7 +260,7 @@ pub fn validate_min_length(field: &str, value: &str, min: usize) -> Result<(), (
     if value.len() < min {
         Err((
             field.to_string(),
-            format!("{} must be at least {} characters", field, min),
+            format!("{field} must be at least {min} characters"),
         ))
     } else {
         Ok(())
@@ -276,7 +273,7 @@ pub fn validate_max_length(field: &str, value: &str, max: usize) -> Result<(), (
     if value.len() > max {
         Err((
             field.to_string(),
-            format!("{} must be no more than {} characters", field, max),
+            format!("{field} must be no more than {max} characters"),
         ))
     } else {
         Ok(())

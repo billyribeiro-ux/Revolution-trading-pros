@@ -33,7 +33,7 @@ pub(super) async fn check_updates(
         Option<String>,
         chrono::NaiveDateTime,
     )> = sqlx::query_as(
-        r#"
+        r"
         SELECT
             i.id,
             i.name,
@@ -47,7 +47,7 @@ pub(super) async fn check_updates(
         JOIN indicators i ON ui.indicator_id = i.id
         WHERE ui.user_id = $1 AND i.is_active = true
         ORDER BY i.updated_at DESC NULLS LAST
-        "#,
+        ",
     )
     .bind(user_id)
     .fetch_all(&state.db.pool)
@@ -118,11 +118,11 @@ pub(super) async fn get_installation_guide(
 
     // Get platform-specific installation guide from trading_platforms table
     let platform_guide: Option<(String, Option<String>, Option<String>)> = sqlx::query_as(
-        r#"
+        r"
         SELECT name, install_instructions, documentation_url
         FROM trading_platforms
         WHERE LOWER(slug) = LOWER($1) OR LOWER(name) = LOWER($1)
-        "#,
+        ",
     )
     .bind(&platform)
     .fetch_optional(&state.db.pool)
@@ -132,12 +132,12 @@ pub(super) async fn get_installation_guide(
 
     // Get platform-specific files for this indicator
     let files: Vec<(String, Option<String>, Option<String>)> = sqlx::query_as(
-        r#"
+        r"
         SELECT file_name, display_name, version
         FROM indicator_files
         WHERE indicator_id = $1 AND LOWER(platform) = LOWER($2) AND is_active = true
         ORDER BY is_current_version DESC, display_order
-        "#,
+        ",
     )
     .bind(indicator_id)
     .bind(&platform)
@@ -186,7 +186,7 @@ pub(super) async fn get_installation_guide(
 /// Get default installation instructions for a platform
 fn get_default_instructions(platform: &str) -> String {
     match platform.to_lowercase().as_str() {
-        "thinkorswim" | "tos" => r#"
+        "thinkorswim" | "tos" => r"
 ## ThinkorSwim Installation
 
 1. Download the indicator file (.ts extension)
@@ -196,7 +196,7 @@ fn get_default_instructions(platform: &str) -> String {
 5. Apply to any chart by right-clicking and selecting Studies > Add Study
 
 **Tip:** Make sure to save the workspace after adding the indicator.
-"#.to_string(),
+".to_string(),
         "tradingview" => r#"
 ## TradingView Installation
 
@@ -208,7 +208,7 @@ fn get_default_instructions(platform: &str) -> String {
 
 **Note:** TradingView indicators are cloud-based and don't require file downloads.
 "#.to_string(),
-        "metatrader" | "mt4" | "mt5" => r#"
+        "metatrader" | "mt4" | "mt5" => r"
 ## MetaTrader Installation
 
 1. Download the indicator file (.mq4/.mq5 or .ex4/.ex5)
@@ -219,8 +219,8 @@ fn get_default_instructions(platform: &str) -> String {
 6. Find the indicator in Navigator > Indicators
 
 **Tip:** Make sure to compile .mq4/.mq5 files if needed.
-"#.to_string(),
-        "ninjatrader" => r#"
+".to_string(),
+        "ninjatrader" => r"
 ## NinjaTrader Installation
 
 1. Download the indicator .zip file
@@ -231,8 +231,8 @@ fn get_default_instructions(platform: &str) -> String {
 6. The indicator will appear in your Indicators list
 
 **Note:** Restart NinjaTrader if the indicator doesn't appear immediately.
-"#.to_string(),
-        "tradestation" => r#"
+".to_string(),
+        "tradestation" => r"
 ## TradeStation Installation
 
 1. Download the indicator .eld file
@@ -243,10 +243,9 @@ fn get_default_instructions(platform: &str) -> String {
 6. Follow the import wizard
 
 **Tip:** You may need to verify the indicator in the TradeStation scanner.
-"#.to_string(),
+".to_string(),
         _ => format!(
-            "## {} Installation\n\n1. Download the indicator file\n2. Follow the platform's standard import process\n3. Consult the platform's documentation for detailed steps\n\nContact support if you need assistance.",
-            platform
+            "## {platform} Installation\n\n1. Download the indicator file\n2. Follow the platform's standard import process\n3. Consult the platform's documentation for detailed steps\n\nContact support if you need assistance."
         ),
     }
 }

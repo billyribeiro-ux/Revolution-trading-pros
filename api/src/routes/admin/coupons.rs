@@ -75,14 +75,14 @@ pub(super) async fn list_coupons(
     // Money is integer cents at the Rust boundary (architecture standard §1.2).
     // DB columns remain NUMERIC(10,2) as a display cache; convert at the SQL edge.
     let coupons: Vec<CouponRow> = sqlx::query_as(
-        r#"SELECT
+        r"SELECT
             id, code, description, discount_type,
             (discount_value * 100)::BIGINT AS discount_value_cents,
             (min_purchase * 100)::BIGINT AS min_purchase_cents,
             (max_discount * 100)::BIGINT AS max_discount_cents,
             usage_limit, usage_count, is_active, starts_at, expires_at,
             applicable_products, applicable_plans, stripe_coupon_id, duration, duration_in_months, created_at, updated_at
-        FROM coupons ORDER BY created_at DESC"#,
+        FROM coupons ORDER BY created_at DESC",
     )
     .fetch_all(&state.db.pool)
     .await
@@ -192,7 +192,7 @@ pub(super) async fn create_coupon(
 
     // ── INSERT the DB row (with Stripe pointer) ─────────────────────────
     let coupon_result: Result<CouponRow, sqlx::Error> = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO coupons (code, description, discount_type, discount_value, min_purchase, max_discount,
                              usage_limit, usage_count, is_active, starts_at, expires_at,
                              applicable_products, applicable_plans,
@@ -208,7 +208,7 @@ pub(super) async fn create_coupon(
             (max_discount * 100)::BIGINT AS max_discount_cents,
             usage_limit, usage_count, is_active, starts_at, expires_at,
             applicable_products, applicable_plans, stripe_coupon_id, duration, duration_in_months, created_at, updated_at
-        "#,
+        ",
     )
     .bind(&input.code)
     .bind(&input.description)
@@ -316,14 +316,14 @@ pub(super) async fn get_coupon(
     Path(id): Path<i64>,
 ) -> Result<Json<CouponRow>, (StatusCode, Json<serde_json::Value>)> {
     let coupon: Option<CouponRow> = sqlx::query_as(
-        r#"SELECT
+        r"SELECT
             id, code, description, discount_type,
             (discount_value * 100)::BIGINT AS discount_value_cents,
             (min_purchase * 100)::BIGINT AS min_purchase_cents,
             (max_discount * 100)::BIGINT AS max_discount_cents,
             usage_limit, usage_count, is_active, starts_at, expires_at,
             applicable_products, applicable_plans, stripe_coupon_id, duration, duration_in_months, created_at, updated_at
-        FROM coupons WHERE id = $1"#,
+        FROM coupons WHERE id = $1",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -416,10 +416,10 @@ pub(super) async fn update_coupon(
         stripe_coupon_id: Option<String>,
     }
     let existing: ExistingCoupon = sqlx::query_as(
-        r#"SELECT discount_type,
+        r"SELECT discount_type,
                   (discount_value * 100)::BIGINT AS discount_value_cents,
                   duration, duration_in_months, stripe_coupon_id
-           FROM coupons WHERE id = $1"#,
+           FROM coupons WHERE id = $1",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -522,7 +522,7 @@ pub(super) async fn update_coupon(
 
     // ── DB UPDATE ───────────────────────────────────────────────────────
     let coupon_result: Result<Option<CouponRow>, sqlx::Error> = sqlx::query_as(
-        r#"
+        r"
         UPDATE coupons SET
             code = COALESCE(NULLIF(UPPER($2), ''), code),
             description = COALESCE($3, description),
@@ -547,7 +547,7 @@ pub(super) async fn update_coupon(
             (max_discount * 100)::BIGINT AS max_discount_cents,
             usage_limit, usage_count, is_active, starts_at, expires_at,
             applicable_products, applicable_plans, stripe_coupon_id, duration, duration_in_months, created_at, updated_at
-        "#,
+        ",
     )
     .bind(id)
     .bind(&input.code)
@@ -603,8 +603,8 @@ pub(super) async fn update_coupon(
                     fields_changed.push("duration_in_months");
                 }
                 if let Err(e) = sqlx::query(
-                    r#"INSERT INTO security_events (user_id, event_type, details, created_at)
-                       VALUES ($1, 'coupon_recreated', $2::JSONB, NOW())"#,
+                    r"INSERT INTO security_events (user_id, event_type, details, created_at)
+                       VALUES ($1, 'coupon_recreated', $2::JSONB, NOW())",
                 )
                 .bind(user.id)
                 .bind(json!({
@@ -681,13 +681,13 @@ pub(super) async fn sync_coupon_to_stripe(
 ) -> Result<Json<CouponRow>, (StatusCode, Json<serde_json::Value>)> {
     // Read existing row.
     let row: Option<CouponRow> = sqlx::query_as(
-        r#"SELECT id, code, description, discount_type,
+        r"SELECT id, code, description, discount_type,
             (discount_value * 100)::BIGINT AS discount_value_cents,
             (min_purchase * 100)::BIGINT AS min_purchase_cents,
             (max_discount * 100)::BIGINT AS max_discount_cents,
             usage_limit, usage_count, is_active, starts_at, expires_at,
             applicable_products, applicable_plans, stripe_coupon_id, duration, duration_in_months, created_at, updated_at
-        FROM coupons WHERE id = $1"#,
+        FROM coupons WHERE id = $1",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -765,14 +765,14 @@ pub(super) async fn sync_coupon_to_stripe(
 
     // Persist stripe_coupon_id on the DB row.
     let updated: CouponRow = sqlx::query_as(
-        r#"UPDATE coupons SET stripe_coupon_id = $1, updated_at = NOW()
+        r"UPDATE coupons SET stripe_coupon_id = $1, updated_at = NOW()
            WHERE id = $2
            RETURNING id, code, description, discount_type,
                (discount_value * 100)::BIGINT AS discount_value_cents,
                (min_purchase * 100)::BIGINT AS min_purchase_cents,
                (max_discount * 100)::BIGINT AS max_discount_cents,
                usage_limit, usage_count, is_active, starts_at, expires_at,
-               applicable_products, applicable_plans, stripe_coupon_id, duration, duration_in_months, created_at, updated_at"#,
+               applicable_products, applicable_plans, stripe_coupon_id, duration, duration_in_months, created_at, updated_at",
     )
     .bind(&created.id)
     .bind(id)
@@ -819,14 +819,14 @@ pub(super) async fn validate_coupon(
     Path(code): Path<String>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let coupon: Option<CouponRow> = sqlx::query_as(
-        r#"SELECT
+        r"SELECT
             id, code, description, discount_type,
             (discount_value * 100)::BIGINT AS discount_value_cents,
             (min_purchase * 100)::BIGINT AS min_purchase_cents,
             (max_discount * 100)::BIGINT AS max_discount_cents,
             usage_limit, usage_count, is_active, starts_at, expires_at,
             applicable_products, applicable_plans, stripe_coupon_id, duration, duration_in_months, created_at, updated_at
-        FROM coupons WHERE UPPER(code) = UPPER($1) AND is_active = true"#,
+        FROM coupons WHERE UPPER(code) = UPPER($1) AND is_active = true",
     )
     .bind(&code)
     .fetch_optional(&state.db.pool)

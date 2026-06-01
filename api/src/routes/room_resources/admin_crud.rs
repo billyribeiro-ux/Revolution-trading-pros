@@ -43,29 +43,28 @@ pub(super) async fn admin_list_resources(
     let mut param_idx = 1usize;
 
     if query.room_id.is_some() {
-        conditions.push(format!("trading_room_id = ${}", param_idx));
+        conditions.push(format!("trading_room_id = ${param_idx}"));
         param_idx += 1;
     }
     if query.resource_type.is_some() {
-        conditions.push(format!("resource_type = ${}", param_idx));
+        conditions.push(format!("resource_type = ${param_idx}"));
         param_idx += 1;
     }
     if query.content_type.is_some() {
-        conditions.push(format!("content_type = ${}", param_idx));
+        conditions.push(format!("content_type = ${param_idx}"));
         param_idx += 1;
     }
     if query.is_published.is_some() {
-        conditions.push(format!("is_published = ${}", param_idx));
+        conditions.push(format!("is_published = ${param_idx}"));
         param_idx += 1;
     }
     if query.section.is_some() {
-        conditions.push(format!("section = ${}", param_idx));
+        conditions.push(format!("section = ${param_idx}"));
         param_idx += 1;
     }
     if query.search.is_some() {
         conditions.push(format!(
-            "(title ILIKE ${} OR description ILIKE ${})",
-            param_idx, param_idx
+            "(title ILIKE ${param_idx} OR description ILIKE ${param_idx})"
         ));
         param_idx += 1;
     }
@@ -80,10 +79,8 @@ pub(super) async fn admin_list_resources(
         "SELECT * FROM room_resources WHERE deleted_at IS NULL{} ORDER BY created_at DESC LIMIT ${} OFFSET ${}",
         where_clause, param_idx, param_idx + 1
     );
-    let count_sql = format!(
-        "SELECT COUNT(*) FROM room_resources WHERE deleted_at IS NULL{}",
-        where_clause
-    );
+    let count_sql =
+        format!("SELECT COUNT(*) FROM room_resources WHERE deleted_at IS NULL{where_clause}");
 
     // Bind parameters for the main query
     let mut q = sqlx::query_as::<_, RoomResource>(&sql);
@@ -103,7 +100,7 @@ pub(super) async fn admin_list_resources(
         q = q.bind(section);
     }
     if let Some(ref search) = query.search {
-        let search_pattern = format!("%{}%", search);
+        let search_pattern = format!("%{search}%");
         q = q.bind(search_pattern);
     }
     q = q.bind(per_page);
@@ -134,7 +131,7 @@ pub(super) async fn admin_list_resources(
         cq = cq.bind(section);
     }
     if let Some(ref search) = query.search {
-        let search_pattern = format!("%{}%", search);
+        let search_pattern = format!("%{search}%");
         cq = cq.bind(search_pattern);
     }
 
@@ -176,7 +173,7 @@ pub(super) async fn create_resource(
         .unwrap_or(json!([]));
 
     let resource: RoomResource = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO room_resources (
             title, slug, description, resource_type, content_type,
             file_url, mime_type, file_size, video_platform, bunny_video_guid,
@@ -189,7 +186,7 @@ pub(super) async fn create_resource(
             $21, $22, $23, $24
         )
         RETURNING *
-        "#,
+        ",
     )
     .bind(&input.title)
     .bind(&slug)
@@ -243,91 +240,91 @@ pub(super) async fn update_resource(
     let mut param_idx = 1;
 
     if input.title.is_some() {
-        updates.push(format!("title = ${}", param_idx));
+        updates.push(format!("title = ${param_idx}"));
         param_idx += 1;
     }
     if input.description.is_some() {
-        updates.push(format!("description = ${}", param_idx));
+        updates.push(format!("description = ${param_idx}"));
         param_idx += 1;
     }
     if input.resource_type.is_some() {
-        updates.push(format!("resource_type = ${}", param_idx));
+        updates.push(format!("resource_type = ${param_idx}"));
         param_idx += 1;
     }
     if input.content_type.is_some() {
-        updates.push(format!("content_type = ${}", param_idx));
+        updates.push(format!("content_type = ${param_idx}"));
         param_idx += 1;
     }
     if input.file_url.is_some() {
-        updates.push(format!("file_url = ${}", param_idx));
+        updates.push(format!("file_url = ${param_idx}"));
         param_idx += 1;
     }
     if input.mime_type.is_some() {
-        updates.push(format!("mime_type = ${}", param_idx));
+        updates.push(format!("mime_type = ${param_idx}"));
         param_idx += 1;
     }
     if input.file_size.is_some() {
-        updates.push(format!("file_size = ${}", param_idx));
+        updates.push(format!("file_size = ${param_idx}"));
         param_idx += 1;
     }
     if input.video_platform.is_some() {
-        updates.push(format!("video_platform = ${}", param_idx));
+        updates.push(format!("video_platform = ${param_idx}"));
         param_idx += 1;
     }
     if input.bunny_video_guid.is_some() {
-        updates.push(format!("bunny_video_guid = ${}", param_idx));
+        updates.push(format!("bunny_video_guid = ${param_idx}"));
         param_idx += 1;
     }
     if input.bunny_library_id.is_some() {
-        updates.push(format!("bunny_library_id = ${}", param_idx));
+        updates.push(format!("bunny_library_id = ${param_idx}"));
         param_idx += 1;
     }
     if input.duration.is_some() {
-        updates.push(format!("duration = ${}", param_idx));
+        updates.push(format!("duration = ${param_idx}"));
         param_idx += 1;
     }
     if input.thumbnail_url.is_some() {
-        updates.push(format!("thumbnail_url = ${}", param_idx));
+        updates.push(format!("thumbnail_url = ${param_idx}"));
         param_idx += 1;
     }
     if input.width.is_some() {
-        updates.push(format!("width = ${}", param_idx));
+        updates.push(format!("width = ${param_idx}"));
         param_idx += 1;
     }
     if input.height.is_some() {
-        updates.push(format!("height = ${}", param_idx));
+        updates.push(format!("height = ${param_idx}"));
         param_idx += 1;
     }
     if input.trader_id.is_some() {
-        updates.push(format!("trader_id = ${}", param_idx));
+        updates.push(format!("trader_id = ${param_idx}"));
         param_idx += 1;
     }
     if input.resource_date.is_some() {
-        updates.push(format!("resource_date = ${}", param_idx));
+        updates.push(format!("resource_date = ${param_idx}"));
         param_idx += 1;
     }
     if input.is_published.is_some() {
-        updates.push(format!("is_published = ${}", param_idx));
+        updates.push(format!("is_published = ${param_idx}"));
         param_idx += 1;
     }
     if input.is_featured.is_some() {
-        updates.push(format!("is_featured = ${}", param_idx));
+        updates.push(format!("is_featured = ${param_idx}"));
         param_idx += 1;
     }
     if input.is_pinned.is_some() {
-        updates.push(format!("is_pinned = ${}", param_idx));
+        updates.push(format!("is_pinned = ${param_idx}"));
         param_idx += 1;
     }
     if input.category.is_some() {
-        updates.push(format!("category = ${}", param_idx));
+        updates.push(format!("category = ${param_idx}"));
         param_idx += 1;
     }
     if input.tags.is_some() {
-        updates.push(format!("tags = ${}", param_idx));
+        updates.push(format!("tags = ${param_idx}"));
         param_idx += 1;
     }
     if input.difficulty_level.is_some() {
-        updates.push(format!("difficulty_level = ${}", param_idx));
+        updates.push(format!("difficulty_level = ${param_idx}"));
         param_idx += 1;
     }
 
@@ -598,11 +595,11 @@ pub(super) async fn create_stock_list(
         .and_then(|d| chrono::NaiveDate::parse_from_str(d, "%Y-%m-%d").ok());
 
     let list: StockList = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO stock_lists (name, slug, description, list_type, trading_room_id, symbols, is_active, is_featured, week_of)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         RETURNING *
-        "#
+        "
     )
     .bind(&input.name)
     .bind(&slug)
@@ -638,13 +635,13 @@ pub(super) async fn update_stock_list(
         .and_then(|d| chrono::NaiveDate::parse_from_str(d, "%Y-%m-%d").ok());
 
     let list: StockList = sqlx::query_as(
-        r#"
+        r"
         UPDATE stock_lists SET
             name = $1, description = $2, list_type = $3, symbols = $4,
             is_active = $5, is_featured = $6, week_of = $7, updated_at = NOW()
         WHERE id = $8
         RETURNING *
-        "#,
+        ",
     )
     .bind(&input.name)
     .bind(&input.description)
@@ -764,8 +761,7 @@ pub(super) async fn get_resource_analytics(
 
     // Total counts
     let totals_sql = format!(
-        "SELECT COUNT(*), COALESCE(SUM(views_count), 0), COALESCE(SUM(downloads_count), 0) FROM room_resources WHERE deleted_at IS NULL{}",
-        room_filter
+        "SELECT COUNT(*), COALESCE(SUM(views_count), 0), COALESCE(SUM(downloads_count), 0) FROM room_resources WHERE deleted_at IS NULL{room_filter}"
     );
     let mut totals_q = sqlx::query_as::<_, (i64, i64, i64)>(&totals_sql);
     if let Some(rid) = room_id {
@@ -783,8 +779,7 @@ pub(super) async fn get_resource_analytics(
 
     // By type
     let by_type_sql = format!(
-        "SELECT resource_type, COUNT(*) as count, COALESCE(SUM(views_count), 0) as total_views, COALESCE(SUM(downloads_count), 0) as total_downloads FROM room_resources WHERE deleted_at IS NULL{} GROUP BY resource_type ORDER BY count DESC",
-        room_filter
+        "SELECT resource_type, COUNT(*) as count, COALESCE(SUM(views_count), 0) as total_views, COALESCE(SUM(downloads_count), 0) as total_downloads FROM room_resources WHERE deleted_at IS NULL{room_filter} GROUP BY resource_type ORDER BY count DESC"
     );
     let mut by_type_q = sqlx::query_as::<_, TypeStats>(&by_type_sql);
     if let Some(rid) = room_id {
@@ -797,8 +792,7 @@ pub(super) async fn get_resource_analytics(
 
     // By access level
     let by_access_sql = format!(
-        "SELECT COALESCE(access_level, 'premium') as access_level, COUNT(*) as count FROM room_resources WHERE deleted_at IS NULL{} GROUP BY access_level ORDER BY count DESC",
-        room_filter
+        "SELECT COALESCE(access_level, 'premium') as access_level, COUNT(*) as count FROM room_resources WHERE deleted_at IS NULL{room_filter} GROUP BY access_level ORDER BY count DESC"
     );
     let mut by_access_q = sqlx::query_as::<_, AccessStats>(&by_access_sql);
     if let Some(rid) = room_id {
@@ -811,8 +805,7 @@ pub(super) async fn get_resource_analytics(
 
     // Top viewed
     let top_viewed_sql = format!(
-        "SELECT id, title, resource_type, views_count, downloads_count, created_at FROM room_resources WHERE deleted_at IS NULL{} ORDER BY views_count DESC LIMIT 10",
-        room_filter
+        "SELECT id, title, resource_type, views_count, downloads_count, created_at FROM room_resources WHERE deleted_at IS NULL{room_filter} ORDER BY views_count DESC LIMIT 10"
     );
     let mut top_viewed_q = sqlx::query_as::<_, ResourceStats>(&top_viewed_sql);
     if let Some(rid) = room_id {
@@ -825,8 +818,7 @@ pub(super) async fn get_resource_analytics(
 
     // Top downloaded
     let top_downloaded_sql = format!(
-        "SELECT id, title, resource_type, views_count, downloads_count, created_at FROM room_resources WHERE deleted_at IS NULL{} ORDER BY downloads_count DESC LIMIT 10",
-        room_filter
+        "SELECT id, title, resource_type, views_count, downloads_count, created_at FROM room_resources WHERE deleted_at IS NULL{room_filter} ORDER BY downloads_count DESC LIMIT 10"
     );
     let mut top_downloaded_q = sqlx::query_as::<_, ResourceStats>(&top_downloaded_sql);
     if let Some(rid) = room_id {
@@ -839,8 +831,7 @@ pub(super) async fn get_resource_analytics(
 
     // Recent uploads
     let recent_uploads_sql = format!(
-        "SELECT id, title, resource_type, views_count, downloads_count, created_at FROM room_resources WHERE deleted_at IS NULL{} ORDER BY created_at DESC LIMIT 10",
-        room_filter
+        "SELECT id, title, resource_type, views_count, downloads_count, created_at FROM room_resources WHERE deleted_at IS NULL{room_filter} ORDER BY created_at DESC LIMIT 10"
     );
     let mut recent_uploads_q = sqlx::query_as::<_, ResourceStats>(&recent_uploads_sql);
     if let Some(rid) = room_id {

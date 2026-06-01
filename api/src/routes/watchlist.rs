@@ -49,11 +49,11 @@ async fn list_watchlist(
     let offset = (page - 1) * per_page;
 
     // ICT 7 SECURITY: Build search pattern safely for ILIKE
-    let search_pattern = query.search.as_ref().map(|s| format!("%{}%", s));
+    let search_pattern = query.search.as_ref().map(|s| format!("%{s}%"));
 
     // ICT 7 SECURITY: Use fully parameterized queries - NO string interpolation
     let entries_result = sqlx::query_as::<_, WatchlistEntry>(
-        r#"
+        r"
         SELECT * FROM watchlist_entries
         WHERE deleted_at IS NULL
           AND ($1::text IS NULL OR status = $1)
@@ -65,7 +65,7 @@ async fn list_watchlist(
           ))
         ORDER BY week_of DESC
         LIMIT $4 OFFSET $5
-        "#,
+        ",
     )
     .bind(query.status.as_deref())
     .bind(query.room.as_deref())
@@ -76,9 +76,9 @@ async fn list_watchlist(
     .await;
 
     // ICT 7 SECURITY: Parameterized count query
-    let search_pattern_count = query.search.as_ref().map(|s| format!("%{}%", s));
+    let search_pattern_count = query.search.as_ref().map(|s| format!("%{s}%"));
     let total_result: Result<(i64,), _> = sqlx::query_as(
-        r#"
+        r"
         SELECT COUNT(*) FROM watchlist_entries
         WHERE deleted_at IS NULL
           AND ($1::text IS NULL OR status = $1)
@@ -88,7 +88,7 @@ async fn list_watchlist(
               trader ILIKE $3 OR
               description ILIKE $3
           ))
-        "#,
+        ",
     )
     .bind(query.status.as_deref())
     .bind(query.room.as_deref())
@@ -225,14 +225,14 @@ async fn create_watchlist(
     let slug = body.slug.clone().unwrap_or_else(|| {
         let date_str = week_of.format("%m%d%Y").to_string();
         let trader_slug = body.trader.to_lowercase().replace(' ', "-");
-        format!("{}-{}", date_str, trader_slug)
+        format!("{date_str}-{trader_slug}")
     });
 
     // Generate date_posted
     let date_posted = week_of.format("%B %-d, %Y").to_string();
 
     // Generate subtitle
-    let subtitle = format!("Week of {}", date_posted);
+    let subtitle = format!("Week of {date_posted}");
 
     // Default rooms to all if not specified
     let rooms = body.rooms.clone().unwrap_or_else(|| {
@@ -269,7 +269,7 @@ async fn create_watchlist(
 
     // Insert into database
     let result = sqlx::query_as::<_, WatchlistEntry>(
-        r#"
+        r"
         INSERT INTO watchlist_entries (
             slug, title, subtitle, trader, trader_image,
             date_posted, week_of,
@@ -278,7 +278,7 @@ async fn create_watchlist(
             description, status, rooms
         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
         RETURNING *
-        "#,
+        ",
     )
     .bind(&slug)
     .bind(&body.title)
@@ -295,7 +295,7 @@ async fn create_watchlist(
     .bind(
         body.description
             .as_ref()
-            .unwrap_or(&format!("Week starting on {}.", date_posted)),
+            .unwrap_or(&format!("Week starting on {date_posted}.")),
     )
     .bind(body.status.as_ref().unwrap_or(&"draft".to_string()))
     .bind(&rooms_json)
@@ -354,19 +354,19 @@ async fn update_watchlist(
     let mut bind_count = 1;
 
     if body.title.is_some() {
-        updates.push(format!("title = ${}", bind_count));
+        updates.push(format!("title = ${bind_count}"));
         bind_count += 1;
     }
     if body.trader.is_some() {
-        updates.push(format!("trader = ${}", bind_count));
+        updates.push(format!("trader = ${bind_count}"));
         bind_count += 1;
     }
     if body.description.is_some() {
-        updates.push(format!("description = ${}", bind_count));
+        updates.push(format!("description = ${bind_count}"));
         bind_count += 1;
     }
     if body.status.is_some() {
-        updates.push(format!("status = ${}", bind_count));
+        updates.push(format!("status = ${bind_count}"));
         bind_count += 1;
     }
 

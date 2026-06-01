@@ -438,8 +438,7 @@ fn ws_params_optional_and_test_broadcast_request_required_negative_pin() {
         let r = serde_json::from_value::<TestBroadcastRequest>(obj);
         assert!(
             r.is_err(),
-            "TestBroadcastRequest without {} must fail — admin probe must require explicit scope",
-            missing
+            "TestBroadcastRequest without {missing} must fail — admin probe must require explicit scope"
         );
     }
 }

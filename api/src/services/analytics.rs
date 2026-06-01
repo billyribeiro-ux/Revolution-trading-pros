@@ -425,7 +425,7 @@ impl AnalyticsService {
         to_date: NaiveDate,
     ) -> Result<Vec<TradeRow>, sqlx::Error> {
         sqlx::query_as::<_, TradeRow>(
-            r#"
+            r"
             SELECT id, ticker, entry_date, exit_date, entry_price, exit_price,
                    pnl, pnl_percent, result, setup, holding_days, direction
             FROM room_trades
@@ -435,7 +435,7 @@ impl AnalyticsService {
               AND exit_date >= $2
               AND exit_date <= $3
             ORDER BY exit_date ASC
-            "#,
+            ",
         )
         .bind(room_slug)
         .bind(from_date)
@@ -452,7 +452,7 @@ impl AnalyticsService {
         to_date: NaiveDate,
     ) -> Result<Vec<AlertRow>, sqlx::Error> {
         sqlx::query_as::<_, AlertRow>(
-            r#"
+            r"
             SELECT id, alert_type, ticker, published_at, trade_plan_id
             FROM room_alerts
             WHERE room_slug = $1
@@ -461,7 +461,7 @@ impl AnalyticsService {
               AND DATE(published_at) >= $2
               AND DATE(published_at) <= $3
             ORDER BY published_at ASC
-            "#,
+            ",
         )
         .bind(room_slug)
         .bind(from_date)
@@ -700,7 +700,7 @@ impl AnalyticsService {
         to_date: NaiveDate,
     ) -> Result<Vec<TickerPerformance>, sqlx::Error> {
         let rows = sqlx::query_as::<_, TickerStatsRow>(
-            r#"
+            r"
             SELECT
                 ticker,
                 COUNT(*) as total_trades,
@@ -721,7 +721,7 @@ impl AnalyticsService {
               AND exit_date <= $3
             GROUP BY ticker
             ORDER BY total_pnl DESC
-            "#,
+            ",
         )
         .bind(room_slug)
         .bind(from_date)
@@ -764,7 +764,7 @@ impl AnalyticsService {
         to_date: NaiveDate,
     ) -> Result<Vec<SetupPerformance>, sqlx::Error> {
         let rows = sqlx::query_as::<_, SetupStatsRow>(
-            r#"
+            r"
             SELECT
                 COALESCE(setup, 'Unknown') as setup,
                 COUNT(*) as total_trades,
@@ -780,7 +780,7 @@ impl AnalyticsService {
               AND exit_date <= $3
             GROUP BY COALESCE(setup, 'Unknown')
             ORDER BY total_trades DESC
-            "#,
+            ",
         )
         .bind(room_slug)
         .bind(from_date)
@@ -842,7 +842,7 @@ impl AnalyticsService {
         to_date: NaiveDate,
     ) -> Result<Vec<MonthlyPerformance>, sqlx::Error> {
         let rows = sqlx::query_as::<_, MonthlyStatsRow>(
-            r#"
+            r"
             SELECT
                 EXTRACT(YEAR FROM exit_date)::int as year,
                 EXTRACT(MONTH FROM exit_date)::int as month,
@@ -859,7 +859,7 @@ impl AnalyticsService {
               AND exit_date <= $3
             GROUP BY EXTRACT(YEAR FROM exit_date), EXTRACT(MONTH FROM exit_date)
             ORDER BY year DESC, month DESC
-            "#,
+            ",
         )
         .bind(room_slug)
         .bind(from_date)

@@ -79,22 +79,22 @@ pub(super) async fn get_history(
     let mut conditions: Vec<(&str, String)> = Vec::new();
 
     if let Some(schedule_id) = query.schedule_id {
-        sql.push_str(&format!(" AND schedule_id = ${}", param_idx));
+        sql.push_str(&format!(" AND schedule_id = ${param_idx}"));
         conditions.push(("uuid", schedule_id.to_string()));
         param_idx += 1;
     }
     if let Some(release_id) = query.release_id {
-        sql.push_str(&format!(" AND release_id = ${}", param_idx));
+        sql.push_str(&format!(" AND release_id = ${param_idx}"));
         conditions.push(("uuid", release_id.to_string()));
         param_idx += 1;
     }
     if let Some(content_id) = query.content_id {
-        sql.push_str(&format!(" AND content_id = ${}", param_idx));
+        sql.push_str(&format!(" AND content_id = ${param_idx}"));
         conditions.push(("uuid", content_id.to_string()));
         param_idx += 1;
     }
     if let Some(ref event_type) = query.event_type {
-        sql.push_str(&format!(" AND event_type = ${}", param_idx));
+        sql.push_str(&format!(" AND event_type = ${param_idx}"));
         conditions.push(("string", event_type.clone()));
         param_idx += 1;
     }
@@ -122,11 +122,11 @@ pub(super) async fn get_history(
     let mut count_param_idx = 1;
 
     if query.schedule_id.is_some() {
-        count_sql.push_str(&format!(" AND schedule_id = ${}", count_param_idx));
+        count_sql.push_str(&format!(" AND schedule_id = ${count_param_idx}"));
         count_param_idx += 1;
     }
     if query.release_id.is_some() {
-        count_sql.push_str(&format!(" AND release_id = ${}", count_param_idx));
+        count_sql.push_str(&format!(" AND release_id = ${count_param_idx}"));
     }
 
     let mut count_query = sqlx::query_as::<_, (i64,)>(&count_sql);

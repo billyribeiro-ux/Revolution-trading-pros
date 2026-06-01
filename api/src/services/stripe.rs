@@ -360,7 +360,7 @@ impl StripeService {
 
         let response: serde_json::Value = self
             .client
-            .get(format!("{}/customers", STRIPE_API_BASE))
+            .get(format!("{STRIPE_API_BASE}/customers"))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
             .query(&search_params)
@@ -384,13 +384,13 @@ impl StripeService {
 
         if let Some(meta) = metadata {
             for (k, v) in meta {
-                params.push((format!("metadata[{}]", k), v));
+                params.push((format!("metadata[{k}]"), v));
             }
         }
 
         let response: StripeCustomer = self
             .client
-            .post(format!("{}/customers", STRIPE_API_BASE))
+            .post(format!("{STRIPE_API_BASE}/customers"))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
             .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
@@ -435,29 +435,29 @@ impl StripeService {
         for (i, item) in config.line_items.iter().enumerate() {
             if let Some(ref price_id) = item.price_id {
                 // Use existing Stripe price
-                form_params.push((format!("line_items[{}][price]", i), price_id.clone()));
+                form_params.push((format!("line_items[{i}][price]"), price_id.clone()));
                 form_params.push((
-                    format!("line_items[{}][quantity]", i),
+                    format!("line_items[{i}][quantity]"),
                     item.quantity.to_string(),
                 ));
             } else {
                 // Create ad-hoc price
                 form_params.push((
-                    format!("line_items[{}][price_data][currency]", i),
+                    format!("line_items[{i}][price_data][currency]"),
                     item.currency.clone(),
                 ));
                 form_params.push((
-                    format!("line_items[{}][price_data][unit_amount]", i),
+                    format!("line_items[{i}][price_data][unit_amount]"),
                     item.amount.to_string(),
                 ));
                 form_params.push((
-                    format!("line_items[{}][price_data][product_data][name]", i),
+                    format!("line_items[{i}][price_data][product_data][name]"),
                     item.name.clone(),
                 ));
 
                 if let Some(ref desc) = item.description {
                     form_params.push((
-                        format!("line_items[{}][price_data][product_data][description]", i),
+                        format!("line_items[{i}][price_data][product_data][description]"),
                         desc.clone(),
                     ));
                 }
@@ -467,17 +467,17 @@ impl StripeService {
                     let interval = item.interval.as_deref().unwrap_or("month");
                     let count = item.interval_count.unwrap_or(1);
                     form_params.push((
-                        format!("line_items[{}][price_data][recurring][interval]", i),
+                        format!("line_items[{i}][price_data][recurring][interval]"),
                         interval.to_string(),
                     ));
                     form_params.push((
-                        format!("line_items[{}][price_data][recurring][interval_count]", i),
+                        format!("line_items[{i}][price_data][recurring][interval_count]"),
                         count.to_string(),
                     ));
                 }
 
                 form_params.push((
-                    format!("line_items[{}][quantity]", i),
+                    format!("line_items[{i}][quantity]"),
                     item.quantity.to_string(),
                 ));
             }
@@ -485,7 +485,7 @@ impl StripeService {
 
         // Metadata
         for (k, v) in config.metadata {
-            form_params.push((format!("metadata[{}]", k), v));
+            form_params.push((format!("metadata[{k}]"), v));
         }
 
         // Discounts (server-applied via Stripe Coupon mirror) and
@@ -497,10 +497,10 @@ impl StripeService {
         if !config.discounts.is_empty() {
             for (i, d) in config.discounts.iter().enumerate() {
                 if let Some(ref c) = d.coupon {
-                    form_params.push((format!("discounts[{}][coupon]", i), c.clone()));
+                    form_params.push((format!("discounts[{i}][coupon]"), c.clone()));
                 }
                 if let Some(ref pc) = d.promotion_code {
-                    form_params.push((format!("discounts[{}][promotion_code]", i), pc.clone()));
+                    form_params.push((format!("discounts[{i}][promotion_code]"), pc.clone()));
                 }
             }
         } else if config.allow_promotion_codes {
@@ -540,7 +540,7 @@ impl StripeService {
 
         let response = self
             .client
-            .post(format!("{}/checkout/sessions", STRIPE_API_BASE))
+            .post(format!("{STRIPE_API_BASE}/checkout/sessions"))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
             .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
@@ -608,10 +608,7 @@ impl StripeService {
     pub async fn get_checkout_session(&self, session_id: &str) -> Result<StripeCheckoutSession> {
         let response: StripeCheckoutSession = self
             .client
-            .get(format!(
-                "{}/checkout/sessions/{}",
-                STRIPE_API_BASE, session_id
-            ))
+            .get(format!("{STRIPE_API_BASE}/checkout/sessions/{session_id}"))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
             .query(&[("expand[]", "subscription"), ("expand[]", "payment_intent")])
@@ -633,7 +630,7 @@ impl StripeService {
 
         let response: StripeBillingPortal = self
             .client
-            .post(format!("{}/billing_portal/sessions", STRIPE_API_BASE))
+            .post(format!("{STRIPE_API_BASE}/billing_portal/sessions"))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
             .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
@@ -678,7 +675,7 @@ impl StripeService {
 
         let mut form: Vec<(String, String)> = vec![("duration".into(), req.duration.clone())];
         if let Some(p) = req.percent_off {
-            form.push(("percent_off".into(), format!("{}", p)));
+            form.push(("percent_off".into(), format!("{p}")));
         }
         if let Some(a) = req.amount_off_cents {
             form.push(("amount_off".into(), a.to_string()));
@@ -699,7 +696,7 @@ impl StripeService {
 
         let response = self
             .client
-            .post(format!("{}/coupons", STRIPE_API_BASE))
+            .post(format!("{STRIPE_API_BASE}/coupons"))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
             .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
@@ -727,7 +724,7 @@ impl StripeService {
     pub async fn retrieve_coupon(&self, coupon_id: &str) -> Result<StripeCoupon> {
         let response = self
             .client
-            .get(format!("{}/coupons/{}", STRIPE_API_BASE, coupon_id))
+            .get(format!("{STRIPE_API_BASE}/coupons/{coupon_id}"))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
             .send()
@@ -748,7 +745,7 @@ impl StripeService {
     pub async fn delete_coupon(&self, coupon_id: &str) -> Result<()> {
         let response = self
             .client
-            .delete(format!("{}/coupons/{}", STRIPE_API_BASE, coupon_id))
+            .delete(format!("{STRIPE_API_BASE}/coupons/{coupon_id}"))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
             .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
@@ -773,10 +770,7 @@ impl StripeService {
     ) -> Result<StripeCheckoutSession> {
         let response: StripeCheckoutSession = self
             .client
-            .get(format!(
-                "{}/checkout/sessions/{}",
-                STRIPE_API_BASE, session_id
-            ))
+            .get(format!("{STRIPE_API_BASE}/checkout/sessions/{session_id}"))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
             .query(&[(
@@ -804,10 +798,7 @@ impl StripeService {
     pub async fn get_subscription(&self, subscription_id: &str) -> Result<StripeSubscription> {
         let response: StripeSubscription = self
             .client
-            .get(format!(
-                "{}/subscriptions/{}",
-                STRIPE_API_BASE, subscription_id
-            ))
+            .get(format!("{STRIPE_API_BASE}/subscriptions/{subscription_id}"))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
             .query(&[("expand[]", "items.data")])
@@ -828,10 +819,7 @@ impl StripeService {
         if immediately {
             let response: StripeSubscription = self
                 .client
-                .delete(format!(
-                    "{}/subscriptions/{}",
-                    STRIPE_API_BASE, subscription_id
-                ))
+                .delete(format!("{STRIPE_API_BASE}/subscriptions/{subscription_id}"))
                 .basic_auth(&self.secret_key, None::<&str>)
                 .header("Stripe-Version", STRIPE_API_VERSION)
                 .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
@@ -844,10 +832,7 @@ impl StripeService {
         } else {
             let response: StripeSubscription = self
                 .client
-                .post(format!(
-                    "{}/subscriptions/{}",
-                    STRIPE_API_BASE, subscription_id
-                ))
+                .post(format!("{STRIPE_API_BASE}/subscriptions/{subscription_id}"))
                 .basic_auth(&self.secret_key, None::<&str>)
                 .header("Stripe-Version", STRIPE_API_VERSION)
                 .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
@@ -869,10 +854,7 @@ impl StripeService {
     ) -> Result<StripeSubscription> {
         let response: StripeSubscription = self
             .client
-            .post(format!(
-                "{}/subscriptions/{}",
-                STRIPE_API_BASE, subscription_id
-            ))
+            .post(format!("{STRIPE_API_BASE}/subscriptions/{subscription_id}"))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
             .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
@@ -946,7 +928,7 @@ impl StripeService {
 
         let response: StripeRefund = self
             .client
-            .post(format!("{}/refunds", STRIPE_API_BASE))
+            .post(format!("{STRIPE_API_BASE}/refunds"))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
             .header(
@@ -1013,7 +995,7 @@ impl StripeService {
         // Compute expected signature — payload must be exact bytes; lossy conversion breaks HMAC
         let payload_str = std::str::from_utf8(payload)
             .map_err(|_| anyhow!("Webhook payload contains invalid UTF-8"))?;
-        let signed_payload = format!("{}.{}", timestamp, payload_str);
+        let signed_payload = format!("{timestamp}.{payload_str}");
 
         type HmacSha256 = Hmac<Sha256>;
         let mut mac = HmacSha256::new_from_slice(webhook_secret.as_bytes())
@@ -1049,8 +1031,7 @@ impl StripeService {
         // Attach payment method to customer
         self.client
             .post(format!(
-                "{}/payment_methods/{}/attach",
-                STRIPE_API_BASE, payment_method_id
+                "{STRIPE_API_BASE}/payment_methods/{payment_method_id}/attach"
             ))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
@@ -1062,7 +1043,7 @@ impl StripeService {
 
         // Set as default invoice payment method
         self.client
-            .post(format!("{}/customers/{}", STRIPE_API_BASE, customer_id))
+            .post(format!("{STRIPE_API_BASE}/customers/{customer_id}"))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
             .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
@@ -1096,7 +1077,7 @@ impl StripeService {
 
         let invoices: InvoiceList = self
             .client
-            .get(format!("{}/invoices", STRIPE_API_BASE))
+            .get(format!("{STRIPE_API_BASE}/invoices"))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
             .query(&[
@@ -1156,7 +1137,7 @@ impl StripeService {
     ) -> Result<Vec<StripePaymentMethod>> {
         let response: PaymentMethodsList = self
             .client
-            .get(format!("{}/payment_methods", STRIPE_API_BASE))
+            .get(format!("{STRIPE_API_BASE}/payment_methods"))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
             .query(&[
@@ -1182,8 +1163,7 @@ impl StripeService {
         let response: StripePaymentMethod = self
             .client
             .post(format!(
-                "{}/payment_methods/{}/attach",
-                STRIPE_API_BASE, payment_method_id
+                "{STRIPE_API_BASE}/payment_methods/{payment_method_id}/attach"
             ))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
@@ -1206,8 +1186,7 @@ impl StripeService {
         let response: StripePaymentMethod = self
             .client
             .post(format!(
-                "{}/payment_methods/{}/detach",
-                STRIPE_API_BASE, payment_method_id
+                "{STRIPE_API_BASE}/payment_methods/{payment_method_id}/detach"
             ))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
@@ -1226,8 +1205,7 @@ impl StripeService {
         let response: StripePaymentMethod = self
             .client
             .get(format!(
-                "{}/payment_methods/{}",
-                STRIPE_API_BASE, payment_method_id
+                "{STRIPE_API_BASE}/payment_methods/{payment_method_id}"
             ))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
@@ -1247,7 +1225,7 @@ impl StripeService {
     pub async fn create_product(&self, name: &str) -> Result<String> {
         let response = self
             .client
-            .post(format!("{}/products", STRIPE_API_BASE))
+            .post(format!("{STRIPE_API_BASE}/products"))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
             .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
@@ -1299,15 +1277,14 @@ impl StripeService {
             "one_time" => {} // No recurring stanza
             other => {
                 return Err(anyhow!(
-                    "Unsupported billing_interval '{}': expected month|year|one_time",
-                    other
+                    "Unsupported billing_interval '{other}': expected month|year|one_time"
                 ));
             }
         }
 
         let response = self
             .client
-            .post(format!("{}/prices", STRIPE_API_BASE))
+            .post(format!("{STRIPE_API_BASE}/prices"))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
             .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
@@ -1335,7 +1312,7 @@ impl StripeService {
     pub async fn get_price(&self, price_id: &str) -> Result<StripePrice> {
         let response = self
             .client
-            .get(format!("{}/prices/{}", STRIPE_API_BASE, price_id))
+            .get(format!("{STRIPE_API_BASE}/prices/{price_id}"))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
             .send()
@@ -1356,7 +1333,7 @@ impl StripeService {
     /// are unaffected.
     pub async fn deactivate_price(&self, price_id: &str) -> Result<()> {
         self.client
-            .post(format!("{}/prices/{}", STRIPE_API_BASE, price_id))
+            .post(format!("{STRIPE_API_BASE}/prices/{price_id}"))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
             .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
@@ -1380,7 +1357,7 @@ impl StripeService {
 
         let response = self
             .client
-            .get(format!("{}/subscription_items", STRIPE_API_BASE))
+            .get(format!("{STRIPE_API_BASE}/subscription_items"))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
             .query(&[("subscription", subscription_id), ("limit", "100")])
@@ -1415,10 +1392,7 @@ impl StripeService {
     ) -> Result<()> {
         let items = self.list_subscription_items(subscription_id).await?;
         let item = items.first().ok_or_else(|| {
-            anyhow!(
-                "Subscription {} has no items; cannot migrate price",
-                subscription_id
-            )
+            anyhow!("Subscription {subscription_id} has no items; cannot migrate price")
         })?;
 
         let mut params: Vec<(String, String)> = vec![
@@ -1436,10 +1410,7 @@ impl StripeService {
 
         let response = self
             .client
-            .post(format!(
-                "{}/subscriptions/{}",
-                STRIPE_API_BASE, subscription_id
-            ))
+            .post(format!("{STRIPE_API_BASE}/subscriptions/{subscription_id}"))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
             .header("Idempotency-Key", uuid::Uuid::new_v4().to_string())
@@ -1487,7 +1458,7 @@ impl StripeService {
 
             let page: Page = self
                 .client
-                .get(format!("{}/subscriptions", STRIPE_API_BASE))
+                .get(format!("{STRIPE_API_BASE}/subscriptions"))
                 .basic_auth(&self.secret_key, None::<&str>)
                 .header("Stripe-Version", STRIPE_API_VERSION)
                 .query(&params)
@@ -1516,7 +1487,7 @@ impl StripeService {
     ) -> Result<Option<String>> {
         let response: serde_json::Value = self
             .client
-            .get(format!("{}/customers/{}", STRIPE_API_BASE, customer_id))
+            .get(format!("{STRIPE_API_BASE}/customers/{customer_id}"))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
             .send()

@@ -194,8 +194,7 @@ fn cms_reusable_block_category_wire_is_lowercase_not_pascal() {
         assert_eq!(
             wire.as_str(),
             Some(expected),
-            "category variant must serialize as lowercase string {:?}",
-            expected
+            "category variant must serialize as lowercase string {expected:?}"
         );
 
         // NEGATIVE: PascalCase variant must NOT round-trip from itself
@@ -207,7 +206,7 @@ fn cms_reusable_block_category_wire_is_lowercase_not_pascal() {
         );
         if pascal != expected {
             let pascal_attempt =
-                serde_json::from_str::<CmsReusableBlockCategory>(&format!("\"{}\"", pascal));
+                serde_json::from_str::<CmsReusableBlockCategory>(&format!("\"{pascal}\""));
             // We don't strictly require this to fail (serde may accept
             // either case in some configs), but PascalCase MUST NOT be
             // what we EMIT. The wire-format pin above is the load-bearing

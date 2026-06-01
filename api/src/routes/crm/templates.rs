@@ -49,16 +49,16 @@ async fn list_templates(
     Query(filters): Query<ListFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let per_page = filters.per_page.unwrap_or(50).min(100);
-    let search_pattern = filters.search.as_ref().map(|s| format!("%{}%", s));
+    let search_pattern = filters.search.as_ref().map(|s| format!("%{s}%"));
 
     let templates: Vec<EmailTemplate> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, title, subject, body, category, thumbnail, is_global, created_at, updated_at
         FROM crm_templates
         WHERE ($1::text IS NULL OR title ILIKE $1)
         ORDER BY created_at DESC
         LIMIT $2
-        "#,
+        ",
     )
     .bind(search_pattern.as_deref())
     .bind(per_page)
@@ -84,11 +84,11 @@ async fn create_template(
     Json(input): Json<CreateTemplateInput>,
 ) -> Result<Json<EmailTemplate>, (StatusCode, Json<serde_json::Value>)> {
     let template: EmailTemplate = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO crm_templates (title, subject, body, category, is_global, created_at, updated_at)
         VALUES ($1, $2, $3, $4, false, NOW(), NOW())
         RETURNING id, title, subject, body, category, thumbnail, is_global, created_at, updated_at
-        "#,
+        ",
     )
     .bind(&input.title)
     .bind(&input.subject)

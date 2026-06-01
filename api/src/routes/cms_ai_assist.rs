@@ -274,7 +274,7 @@ async fn check_rate_limit(
     user_id: i64,
 ) -> Result<(), (StatusCode, Json<JsonValue>)> {
     if let Some(ref redis) = state.services.redis {
-        let key = format!("ai_assist_rate_limit:{}", user_id);
+        let key = format!("ai_assist_rate_limit:{user_id}");
         match redis
             .check_rate_limit(&key, RATE_LIMIT_MAX_REQUESTS, RATE_LIMIT_WINDOW_SECONDS)
             .await
@@ -321,7 +321,7 @@ fn generate_prompt(request: &AiAssistRequest) -> String {
     let max_length_instruction = request
         .options
         .max_length
-        .map(|len| format!("\n\nKeep the output under {} characters.", len))
+        .map(|len| format!("\n\nKeep the output under {len} characters."))
         .unwrap_or_default();
 
     match request.action {
@@ -430,7 +430,7 @@ async fn call_claude_api(
         .json(&request_body)
         .send()
         .await
-        .map_err(|e| format!("Failed to call Claude API: {}", e))?;
+        .map_err(|e| format!("Failed to call Claude API: {e}"))?;
 
     if !response.status().is_success() {
         let status = response.status();
@@ -444,13 +444,13 @@ async fn call_claude_api(
             error = %error_text,
             "Claude API error"
         );
-        return Err(format!("Claude API error ({}): {}", status, error_text));
+        return Err(format!("Claude API error ({status}): {error_text}"));
     }
 
     let response_data: ClaudeApiResponse = response
         .json()
         .await
-        .map_err(|e| format!("Failed to parse Claude response: {}", e))?;
+        .map_err(|e| format!("Failed to parse Claude response: {e}"))?;
 
     // Extract text from response
     let text = response_data
@@ -507,14 +507,14 @@ async fn save_history(
     let options_json = serde_json::to_value(&request.options).ok();
 
     let record: (i64,) = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO cms_ai_assist_history (
             user_id, action, input_content, output_content, options,
             content_id, block_id, model, input_tokens, output_tokens,
             processing_time_ms, created_at
         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW())
         RETURNING id
-        "#,
+        ",
     )
     .bind(user_id)
     .bind(request.action.to_string())
@@ -806,13 +806,13 @@ async fn ai_assist_stream(
         // Save to history
         let options_json = serde_json::to_value(&options).ok();
         let _ = sqlx::query(
-            r#"
+            r"
             INSERT INTO cms_ai_assist_history (
                 user_id, action, input_content, output_content, options,
                 content_id, block_id, model, input_tokens, output_tokens,
                 processing_time_ms, created_at
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW())
-            "#,
+            ",
         )
         .bind(user_id)
         .bind(&action)
@@ -873,24 +873,24 @@ async fn get_ai_history(
 
     // Build query with optional filters
     let mut sql = String::from(
-        r#"
+        r"
         SELECT id, user_id, action, input_content, output_content, options,
                content_id, block_id, model, input_tokens, output_tokens,
                processing_time_ms, created_at
         FROM cms_ai_assist_history
         WHERE user_id = $1
-        "#,
+        ",
     );
 
     let mut param_index = 2;
     let mut conditions = Vec::new();
 
     if query.action.is_some() {
-        conditions.push(format!("action = ${}", param_index));
+        conditions.push(format!("action = ${param_index}"));
         param_index += 1;
     }
     if query.content_id.is_some() {
-        conditions.push(format!("content_id = ${}", param_index));
+        conditions.push(format!("content_id = ${param_index}"));
     }
 
     if !conditions.is_empty() {
@@ -932,7 +932,7 @@ async fn get_ai_history(
                 .await
         } else {
             sqlx::query_as(
-                r#"
+                r"
             SELECT id, user_id, action, input_content, output_content, options,
                    content_id, block_id, model, input_tokens, output_tokens,
                    processing_time_ms, created_at
@@ -940,7 +940,7 @@ async fn get_ai_history(
             WHERE user_id = $1
             ORDER BY created_at DESC
             LIMIT $2 OFFSET $3
-            "#,
+            ",
             )
             .bind(user.id)
             .bind(limit)

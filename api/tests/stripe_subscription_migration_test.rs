@@ -38,7 +38,7 @@ fn maybe_key() -> Option<String> {
 async fn create_test_customer(client: &reqwest::Client, secret: &str) -> String {
     // Create customer
     let cust: serde_json::Value = client
-        .post(format!("{}/customers", STRIPE_API_BASE))
+        .post(format!("{STRIPE_API_BASE}/customers"))
         .basic_auth(secret, None::<&str>)
         .form(&[("email", "rtp-test@example.com")])
         .send()
@@ -53,8 +53,7 @@ async fn create_test_customer(client: &reqwest::Client, secret: &str) -> String 
     // Attach Stripe's universal test PM (`pm_card_visa`)
     client
         .post(format!(
-            "{}/payment_methods/pm_card_visa/attach",
-            STRIPE_API_BASE
+            "{STRIPE_API_BASE}/payment_methods/pm_card_visa/attach"
         ))
         .basic_auth(secret, None::<&str>)
         .form(&[("customer", customer_id.as_str())])
@@ -66,7 +65,7 @@ async fn create_test_customer(client: &reqwest::Client, secret: &str) -> String 
 
     // Set as default
     client
-        .post(format!("{}/customers/{}", STRIPE_API_BASE, customer_id))
+        .post(format!("{STRIPE_API_BASE}/customers/{customer_id}"))
         .basic_auth(secret, None::<&str>)
         .form(&[("invoice_settings[default_payment_method]", "pm_card_visa")])
         .send()
@@ -86,7 +85,7 @@ async fn create_subscription(
     price_id: &str,
 ) -> String {
     let resp: serde_json::Value = client
-        .post(format!("{}/subscriptions", STRIPE_API_BASE))
+        .post(format!("{STRIPE_API_BASE}/subscriptions"))
         .basic_auth(secret, None::<&str>)
         .form(&[
             ("customer", customer_id),
@@ -103,14 +102,14 @@ async fn create_subscription(
 
     resp["id"]
         .as_str()
-        .unwrap_or_else(|| panic!("create subscription failed: {}", resp))
+        .unwrap_or_else(|| panic!("create subscription failed: {resp}"))
         .to_string()
 }
 
 /// Fetch a subscription's first item's price.id (the canonical "current price").
 async fn current_price_id(client: &reqwest::Client, secret: &str, sub_id: &str) -> String {
     let resp: serde_json::Value = client
-        .get(format!("{}/subscriptions/{}", STRIPE_API_BASE, sub_id))
+        .get(format!("{STRIPE_API_BASE}/subscriptions/{sub_id}"))
         .basic_auth(secret, None::<&str>)
         .send()
         .await
@@ -121,7 +120,7 @@ async fn current_price_id(client: &reqwest::Client, secret: &str, sub_id: &str) 
 
     resp["items"]["data"][0]["price"]["id"]
         .as_str()
-        .unwrap_or_else(|| panic!("no items[0].price.id in {}", resp))
+        .unwrap_or_else(|| panic!("no items[0].price.id in {resp}"))
         .to_string()
 }
 
@@ -212,7 +211,7 @@ async fn migrate_subscription_immediate_proration_swaps_price() {
     // We list invoices for the customer; the latest should reference the
     // new price.
     let invoices: serde_json::Value = client
-        .get(format!("{}/invoices", STRIPE_API_BASE))
+        .get(format!("{STRIPE_API_BASE}/invoices"))
         .basic_auth(secret.as_str(), None::<&str>)
         .query(&[("customer", customer.as_str()), ("limit", "5")])
         .send()
@@ -227,8 +226,7 @@ async fn migrate_subscription_immediate_proration_swaps_price() {
             .as_array()
             .map(|a| !a.is_empty())
             .unwrap_or(false),
-        "expected at least one invoice for the customer, got: {}",
-        invoices
+        "expected at least one invoice for the customer, got: {invoices}"
     );
 }
 

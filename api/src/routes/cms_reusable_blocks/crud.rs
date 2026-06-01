@@ -59,18 +59,18 @@ pub(super) async fn list_reusable_blocks(
     };
 
     // Prepare search pattern if provided
-    let search_pattern = query.search.as_ref().map(|s| format!("%{}%", s));
+    let search_pattern = query.search.as_ref().map(|s| format!("%{s}%"));
 
     // Count total using parameterized query
     let count_result: (i64,) = sqlx::query_as(
-        r#"
+        r"
         SELECT COUNT(*)
         FROM cms_reusable_blocks
         WHERE ($1::boolean OR deleted_at IS NULL)
           AND ($2::text IS NULL OR category::text = $2)
           AND ($3::text IS NULL OR name ILIKE $3 OR description ILIKE $3)
           AND ($4::boolean IS NULL OR is_global = $4)
-        "#,
+        ",
     )
     .bind(include_deleted)
     .bind(&query.category)
@@ -85,7 +85,7 @@ pub(super) async fn list_reusable_blocks(
     // Fetch blocks using parameterized query with safe sort columns
     // Note: sort_column and sort_order are validated against whitelists above
     let blocks: Vec<CmsReusableBlockSummary> = sqlx::query_as(&format!(
-        r#"
+        r"
         SELECT id, name, slug, description, category, tags, thumbnail_url,
                usage_count, is_global, is_locked, version, created_at, updated_at
         FROM cms_reusable_blocks
@@ -93,10 +93,9 @@ pub(super) async fn list_reusable_blocks(
           AND ($2::text IS NULL OR category::text = $2)
           AND ($3::text IS NULL OR name ILIKE $3 OR description ILIKE $3)
           AND ($4::boolean IS NULL OR is_global = $4)
-        ORDER BY {} {}
+        ORDER BY {sort_column} {sort_order}
         LIMIT $5 OFFSET $6
-        "#,
-        sort_column, sort_order
+        "
     ))
     .bind(include_deleted)
     .bind(&query.category)

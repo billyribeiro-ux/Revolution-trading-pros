@@ -47,8 +47,7 @@ pub(super) async fn create_or_get_oauth_user(
 
     let existing_oauth_user: Option<User> = sqlx::query_as(&format!(
         "SELECT id, email, password_hash, name, role, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at
-         FROM users WHERE {} = $1",
-        provider_column
+         FROM users WHERE {provider_column} = $1"
     ))
     .bind(provider_id)
     .fetch_optional(&state.db.pool)
@@ -95,8 +94,7 @@ pub(super) async fn create_or_get_oauth_user(
     if let Some(user) = existing_email_user {
         // ICT 7: Link OAuth to existing account
         let update_query = format!(
-            "UPDATE users SET {} = $1, oauth_linked_at = COALESCE(oauth_linked_at, NOW()), updated_at = NOW() WHERE id = $2",
-            provider_column
+            "UPDATE users SET {provider_column} = $1, oauth_linked_at = COALESCE(oauth_linked_at, NOW()), updated_at = NOW() WHERE id = $2"
         );
 
         sqlx::query(&update_query)
@@ -165,15 +163,14 @@ pub(super) async fn create_or_get_oauth_user(
     })?;
 
     let insert_query = format!(
-        r#"
+        r"
         INSERT INTO users (
             email, password_hash, name, role, email_verified_at, avatar_url,
-            {}, oauth_provider, oauth_linked_at, created_at, updated_at
+            {provider_column}, oauth_provider, oauth_linked_at, created_at, updated_at
         )
         VALUES ($1, $2, $3, 'user', NOW(), $4, $5, $6, NOW(), NOW(), NOW())
         RETURNING id, email, password_hash, name, role, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at
-        "#,
-        provider_column
+        "
     );
 
     let new_user: User = sqlx::query_as(&insert_query)
@@ -227,10 +224,10 @@ async fn log_oauth_action(
     user_agent: Option<&str>,
 ) {
     let _ = sqlx::query(
-        r#"
+        r"
         INSERT INTO oauth_audit_log (user_id, provider, action, provider_user_id, ip_address, user_agent)
         VALUES ($1, $2, $3, $4, $5, $6)
-        "#,
+        ",
     )
     .bind(user_id)
     .bind(provider.to_string())

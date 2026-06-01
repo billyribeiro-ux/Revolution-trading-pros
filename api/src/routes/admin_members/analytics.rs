@@ -49,7 +49,7 @@ pub(super) async fn analytics_metrics(
 
     // MRR cents — joined to membership_plans (user_memberships has no price/billing_period)
     let mrr_cents: i64 = sqlx::query_scalar::<_, Option<i64>>(
-        r#"SELECT SUM(
+        r"SELECT SUM(
               CASE LOWER(mp.billing_cycle)
                   WHEN 'yearly'    THEN ((mp.price * 100) / 12)::BIGINT
                   WHEN 'annual'    THEN ((mp.price * 100) / 12)::BIGINT
@@ -59,7 +59,7 @@ pub(super) async fn analytics_metrics(
            )::BIGINT
            FROM user_memberships um
            JOIN membership_plans mp ON mp.id = um.plan_id
-           WHERE um.status IN ('active', 'trialing')"#,
+           WHERE um.status IN ('active', 'trialing')",
     )
     .fetch_one(&state.db.pool)
     .await
@@ -85,13 +85,13 @@ pub(super) async fn analytics_growth(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Get monthly growth data
     let growth_data: Vec<(String, i64)> = sqlx::query_as(
-        r#"
+        r"
         SELECT TO_CHAR(created_at, 'YYYY-MM') as month, COUNT(*) as count
         FROM users
         WHERE created_at >= CURRENT_DATE - INTERVAL '12 months'
         GROUP BY TO_CHAR(created_at, 'YYYY-MM')
         ORDER BY month
-        "#,
+        ",
     )
     .fetch_all(&state.db.pool)
     .await
@@ -139,9 +139,9 @@ pub(super) async fn analytics_revenue(
     // to operators making pricing decisions — propagate via the house shape
     // instead of the prior `.ok().flatten().unwrap_or(0)` swallow.
     let total_revenue_cents: i64 = sqlx::query_scalar::<_, Option<i64>>(
-        r#"SELECT SUM((mp.price * 100)::BIGINT)::BIGINT
+        r"SELECT SUM((mp.price * 100)::BIGINT)::BIGINT
            FROM user_memberships um
-           JOIN membership_plans mp ON mp.id = um.plan_id"#,
+           JOIN membership_plans mp ON mp.id = um.plan_id",
     )
     .fetch_one(&state.db.pool)
     .await
@@ -154,7 +154,7 @@ pub(super) async fn analytics_revenue(
     .unwrap_or(0);
 
     let mrr_cents: i64 = sqlx::query_scalar::<_, Option<i64>>(
-        r#"SELECT SUM(
+        r"SELECT SUM(
               CASE LOWER(mp.billing_cycle)
                   WHEN 'yearly'    THEN ((mp.price * 100) / 12)::BIGINT
                   WHEN 'annual'    THEN ((mp.price * 100) / 12)::BIGINT
@@ -164,7 +164,7 @@ pub(super) async fn analytics_revenue(
            )::BIGINT
            FROM user_memberships um
            JOIN membership_plans mp ON mp.id = um.plan_id
-           WHERE um.status IN ('active', 'trialing')"#,
+           WHERE um.status IN ('active', 'trialing')",
     )
     .fetch_one(&state.db.pool)
     .await
@@ -183,9 +183,9 @@ pub(super) async fn analytics_revenue(
     // the SQL boundary — never float math in Rust). ROUND() to whole cents
     // before the BIGINT cast so the average lands on an exact cent.
     let avg_order_value_cents: i64 = sqlx::query_scalar::<_, Option<i64>>(
-        r#"SELECT ROUND(AVG(total) * 100)::BIGINT
+        r"SELECT ROUND(AVG(total) * 100)::BIGINT
            FROM orders
-           WHERE status = 'completed'"#,
+           WHERE status = 'completed'",
     )
     .fetch_one(&state.db.pool)
     .await
@@ -202,13 +202,13 @@ pub(super) async fn analytics_revenue(
     // bucketed by completed_at (falling back to created_at when an order has
     // no completion timestamp). Integer cents end-to-end.
     let monthly_rows: Vec<(String, i64)> = sqlx::query_as::<_, (String, i64)>(
-        r#"SELECT TO_CHAR(DATE_TRUNC('month', COALESCE(completed_at, created_at)), 'YYYY-MM') AS month,
+        r"SELECT TO_CHAR(DATE_TRUNC('month', COALESCE(completed_at, created_at)), 'YYYY-MM') AS month,
                   SUM((total * 100)::BIGINT)::BIGINT AS revenue_cents
            FROM orders
            WHERE status = 'completed'
              AND COALESCE(completed_at, created_at) >= DATE_TRUNC('month', CURRENT_DATE) - INTERVAL '11 months'
            GROUP BY 1
-           ORDER BY 1"#,
+           ORDER BY 1",
     )
     .fetch_all(&state.db.pool)
     .await

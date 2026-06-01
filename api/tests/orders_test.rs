@@ -251,7 +251,7 @@ fn refund_order_request_amount_cents_round_trips_optional_i64() {
 
     // Case B: full refund — missing amount_cents must produce None,
     // not a 400. Reason is also optional.
-    let payload_full = r#"{}"#;
+    let payload_full = r"{}";
     let req: RefundOrderRequest =
         serde_json::from_str(payload_full).expect("RefundOrderRequest must accept empty body");
     assert!(

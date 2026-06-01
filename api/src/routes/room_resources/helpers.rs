@@ -25,21 +25,21 @@ pub(super) fn get_embed_url(resource: &RoomResource) -> String {
             if let (Some(guid), Some(lib_id)) =
                 (&resource.bunny_video_guid, resource.bunny_library_id)
             {
-                format!("https://iframe.mediadelivery.net/embed/{}/{}", lib_id, guid)
+                format!("https://iframe.mediadelivery.net/embed/{lib_id}/{guid}")
             } else {
                 resource.file_url.clone()
             }
         }
         Some("vimeo") => {
             if let Some(id) = &resource.video_id {
-                format!("https://player.vimeo.com/video/{}", id)
+                format!("https://player.vimeo.com/video/{id}")
             } else {
                 resource.file_url.clone()
             }
         }
         Some("youtube") => {
             if let Some(id) = &resource.video_id {
-                format!("https://www.youtube.com/embed/{}", id)
+                format!("https://www.youtube.com/embed/{id}")
             } else {
                 resource.file_url.clone()
             }
@@ -55,9 +55,9 @@ pub(super) fn format_duration(seconds: Option<i32>) -> String {
             let minutes = (d % 3600) / 60;
             let secs = d % 60;
             if hours > 0 {
-                format!("{}:{:02}:{:02}", hours, minutes, secs)
+                format!("{hours}:{minutes:02}:{secs:02}")
             } else {
-                format!("{}:{:02}", minutes, secs)
+                format!("{minutes}:{secs:02}")
             }
         }
         _ => String::new(),
@@ -74,7 +74,7 @@ pub(super) fn format_file_size(bytes: Option<i64>) -> String {
             } else if b >= 1024 {
                 format!("{:.2} KB", b as f64 / 1024.0)
             } else {
-                format!("{} bytes", b)
+                format!("{b} bytes")
             }
         }
         _ => String::new(),

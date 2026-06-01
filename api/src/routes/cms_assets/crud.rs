@@ -50,7 +50,7 @@ pub(super) async fn create_asset(
     let cms_user_id = get_cms_user_id(state.db.pool(), &admin).await;
 
     let asset: Asset = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO cms_assets (
             id, folder_id, filename, original_filename, mime_type, file_size,
             file_extension, storage_provider, storage_key, cdn_url,
@@ -65,7 +65,7 @@ pub(super) async fn create_asset(
             NOW(), NOW(), $18
         )
         RETURNING *
-        "#,
+        ",
     )
     .bind(Uuid::new_v4())
     .bind(payload.folder_id)
@@ -111,39 +111,39 @@ pub(super) async fn update_asset(
     let mut param_count = 1;
 
     if payload.folder_id.is_some() {
-        updates.push(format!("folder_id = ${}", param_count));
+        updates.push(format!("folder_id = ${param_count}"));
         param_count += 1;
     }
     if payload.title.is_some() {
-        updates.push(format!("title = ${}", param_count));
+        updates.push(format!("title = ${param_count}"));
         param_count += 1;
     }
     if payload.alt_text.is_some() {
-        updates.push(format!("alt_text = ${}", param_count));
+        updates.push(format!("alt_text = ${param_count}"));
         param_count += 1;
     }
     if payload.caption.is_some() {
-        updates.push(format!("caption = ${}", param_count));
+        updates.push(format!("caption = ${param_count}"));
         param_count += 1;
     }
     if payload.description.is_some() {
-        updates.push(format!("description = ${}", param_count));
+        updates.push(format!("description = ${param_count}"));
         param_count += 1;
     }
     if payload.credits.is_some() {
-        updates.push(format!("credits = ${}", param_count));
+        updates.push(format!("credits = ${param_count}"));
         param_count += 1;
     }
     if payload.seo_title.is_some() {
-        updates.push(format!("seo_title = ${}", param_count));
+        updates.push(format!("seo_title = ${param_count}"));
         param_count += 1;
     }
     if payload.seo_description.is_some() {
-        updates.push(format!("seo_description = ${}", param_count));
+        updates.push(format!("seo_description = ${param_count}"));
         param_count += 1;
     }
     if payload.tags.is_some() {
-        updates.push(format!("tags = ${}", param_count));
+        updates.push(format!("tags = ${param_count}"));
         param_count += 1;
     }
 
@@ -152,7 +152,7 @@ pub(super) async fn update_asset(
     }
 
     updates.push("updated_at = NOW()".to_string());
-    updates.push(format!("updated_by = ${}", param_count));
+    updates.push(format!("updated_by = ${param_count}"));
     param_count += 1;
     updates.push("version = version + 1".to_string());
 
@@ -306,7 +306,7 @@ pub(super) async fn replace_asset(
 
     // Update asset
     let asset: Asset = sqlx::query_as(
-        r#"
+        r"
         UPDATE cms_assets SET
             original_filename = $1, mime_type = $2, file_size = $3,
             file_extension = $4, storage_key = $5, cdn_url = $6,
@@ -314,7 +314,7 @@ pub(super) async fn replace_asset(
             version = version + 1, updated_at = NOW(), updated_by = $10
         WHERE id = $11
         RETURNING *
-        "#,
+        ",
     )
     .bind(&payload.original_filename)
     .bind(&payload.mime_type)

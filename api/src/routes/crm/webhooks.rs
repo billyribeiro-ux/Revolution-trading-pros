@@ -49,17 +49,17 @@ async fn list_webhooks(
     Query(filters): Query<ListFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let per_page = filters.per_page.unwrap_or(50).min(100);
-    let search_pattern = filters.search.as_ref().map(|s| format!("%{}%", s));
+    let search_pattern = filters.search.as_ref().map(|s| format!("%{s}%"));
 
     let webhooks: Vec<Webhook> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, name, url, events, is_active, trigger_count, failure_count,
                last_triggered_at, created_at, updated_at
         FROM crm_webhooks
         WHERE ($1::text IS NULL OR name ILIKE $1)
         ORDER BY created_at DESC
         LIMIT $2
-        "#,
+        ",
     )
     .bind(search_pattern.as_deref())
     .bind(per_page)
@@ -85,11 +85,11 @@ async fn create_webhook(
     Json(input): Json<CreateWebhookInput>,
 ) -> Result<Json<Webhook>, (StatusCode, Json<serde_json::Value>)> {
     let webhook: Webhook = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO crm_webhooks (name, url, events, is_active, trigger_count, failure_count, created_at, updated_at)
         VALUES ($1, $2, $3, true, 0, 0, NOW(), NOW())
         RETURNING id, name, url, events, is_active, trigger_count, failure_count, last_triggered_at, created_at, updated_at
-        "#,
+        ",
     )
     .bind(&input.name)
     .bind(&input.url)

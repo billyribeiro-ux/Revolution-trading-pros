@@ -36,12 +36,12 @@ pub(super) async fn create_lesson(
     let sort_order = max_order.0.unwrap_or(0) + 1;
 
     let lesson: CourseLesson = sqlx::query_as(
-        r#"INSERT INTO course_lessons
+        r"INSERT INTO course_lessons
            (course_id, section_id, title, description, content_html, video_url,
             bunny_video_guid, thumbnail_url, sort_order, lesson_type, is_preview,
             is_published, completion_type, required_watch_percent)
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
-           RETURNING *"#,
+           RETURNING *",
     )
     .bind(course_id)
     .bind(input.section_id)
@@ -92,7 +92,7 @@ pub(super) async fn update_lesson(
 
     // ICT 7+ SECURITY FIX: Parameterized query
     sqlx::query(
-        r#"UPDATE course_lessons SET
+        r"UPDATE course_lessons SET
             section_id = COALESCE($3, section_id),
             title = COALESCE($4, title),
             description = COALESCE($5, description),
@@ -107,7 +107,7 @@ pub(super) async fn update_lesson(
             completion_type = COALESCE($14, completion_type),
             required_watch_percent = COALESCE($15, required_watch_percent),
             updated_at = NOW()
-        WHERE id = $1 AND course_id = $2"#,
+        WHERE id = $1 AND course_id = $2",
     )
     .bind(lesson_id)
     .bind(course_id)

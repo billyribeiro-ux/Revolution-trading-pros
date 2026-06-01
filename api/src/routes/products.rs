@@ -64,7 +64,7 @@ async fn list_products(
     let (products, total) = if let Some(ref product_type) = query.product_type {
         if let Some(ref search) = query.search {
             // Both type and search filters
-            let search_pattern = format!("%{}%", search);
+            let search_pattern = format!("%{search}%");
             let products: Vec<ProductRow> = sqlx::query_as(
                 "SELECT id, name, slug, type, description, long_description, (price * 100)::BIGINT AS price_cents, is_active, metadata, thumbnail, meta_title, meta_description, indexable, canonical_url, created_at, updated_at FROM products WHERE is_active = $1 AND type = $2 AND (name ILIKE $3 OR description ILIKE $3) ORDER BY created_at DESC LIMIT $4 OFFSET $5"
             )
@@ -118,7 +118,7 @@ async fn list_products(
         }
     } else if let Some(ref search) = query.search {
         // Only search filter
-        let search_pattern = format!("%{}%", search);
+        let search_pattern = format!("%{search}%");
         let products: Vec<ProductRow> = sqlx::query_as(
             "SELECT id, name, slug, type, description, long_description, (price * 100)::BIGINT AS price_cents, is_active, metadata, thumbnail, meta_title, meta_description, indexable, canonical_url, created_at, updated_at FROM products WHERE is_active = $1 AND (name ILIKE $2 OR description ILIKE $2) ORDER BY created_at DESC LIMIT $3 OFFSET $4"
         )
@@ -222,11 +222,11 @@ async fn create_product(
     // Input price is integer cents per architecture standard. NUMERIC column receives
     // cents/100 at the SQL boundary; Rust math stays in i64.
     let product: ProductRow = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO products (name, slug, type, description, long_description, price, is_active, metadata, thumbnail, meta_title, meta_description, indexable, canonical_url, created_at, updated_at)
         VALUES ($1, $2, $3, $4, $5, $6::BIGINT / 100.0, $7, $8, $9, $10, $11, $12, $13, NOW(), NOW())
         RETURNING id, name, slug, type, description, long_description, (price * 100)::BIGINT AS price_cents, is_active, metadata, thumbnail, meta_title, meta_description, indexable, canonical_url, created_at, updated_at
-        "#,
+        ",
     )
     .bind(&input.name)
     .bind(&slug)
@@ -270,7 +270,7 @@ async fn update_product(
     let slug = input.name.as_ref().map(slug::slugify);
 
     let product: ProductRow = sqlx::query_as(
-        r#"
+        r"
         UPDATE products SET
             name = COALESCE($2, name),
             slug = COALESCE($3, slug),
@@ -288,7 +288,7 @@ async fn update_product(
             updated_at = NOW()
         WHERE id = $1
         RETURNING id, name, slug, type, description, long_description, (price * 100)::BIGINT AS price_cents, is_active, metadata, thumbnail, meta_title, meta_description, indexable, canonical_url, created_at, updated_at
-        "#,
+        ",
     )
     .bind(id)
     .bind(&input.name)
@@ -366,12 +366,12 @@ async fn get_user_products(
     user: User,
 ) -> Result<Json<Vec<ProductRow>>, (StatusCode, Json<serde_json::Value>)> {
     let products: Vec<ProductRow> = sqlx::query_as(
-        r#"
+        r"
         SELECT p.* FROM products p
         INNER JOIN user_products up ON p.id = up.product_id
         WHERE up.user_id = $1
         ORDER BY up.purchased_at DESC
-        "#,
+        ",
     )
     .bind(user.id)
     .fetch_all(&state.db.pool)
@@ -523,17 +523,17 @@ async fn list_products_admin(
     let offset = (page - 1) * per_page;
 
     // Admin sees ALL products (active and inactive)
-    let search_pattern: Option<String> = query.search.as_ref().map(|s| format!("%{}%", s));
+    let search_pattern: Option<String> = query.search.as_ref().map(|s| format!("%{s}%"));
 
     let products: Vec<ProductRow> = sqlx::query_as(
-        r#"
+        r"
         SELECT id, name, slug, type, description, long_description, (price * 100)::BIGINT AS price_cents, is_active, metadata, thumbnail, meta_title, meta_description, indexable, canonical_url, created_at, updated_at FROM products
         WHERE ($1::text IS NULL OR type = $1)
           AND ($2::boolean IS NULL OR is_active = $2)
           AND ($3::text IS NULL OR name ILIKE $3 OR description ILIKE $3)
         ORDER BY created_at DESC
         LIMIT $4 OFFSET $5
-        "#,
+        ",
     )
     .bind(query.product_type.as_deref())
     .bind(query.is_active)
@@ -551,12 +551,12 @@ async fn list_products_admin(
     })?;
 
     let total: (i64,) = sqlx::query_as(
-        r#"
+        r"
         SELECT COUNT(*) FROM products
         WHERE ($1::text IS NULL OR type = $1)
           AND ($2::boolean IS NULL OR is_active = $2)
           AND ($3::text IS NULL OR name ILIKE $3 OR description ILIKE $3)
-        "#,
+        ",
     )
     .bind(query.product_type.as_deref())
     .bind(query.is_active)

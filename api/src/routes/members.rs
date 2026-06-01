@@ -97,7 +97,7 @@ pub async fn index(
         .search
         .as_ref()
         .filter(|s| !s.is_empty() && s.len() <= 100)
-        .map(|s| format!("%{}%", s));
+        .map(|s| format!("%{s}%"));
 
     // Validate dates
     let date_from = params
@@ -114,17 +114,16 @@ pub async fn index(
     // Build dynamic query with parameterized bindings
     // Using a single query with COALESCE/NULL checks for optional filters
     let members: Vec<Member> = sqlx::query_as(&format!(
-        r#"
+        r"
             SELECT id, name, email, created_at, updated_at
             FROM users
             WHERE
                 ($1::TEXT IS NULL OR (name ILIKE $1 OR email ILIKE $1))
                 AND ($2::DATE IS NULL OR created_at >= $2::DATE)
                 AND ($3::DATE IS NULL OR created_at <= $3::DATE + INTERVAL '1 day')
-            ORDER BY {} {}
+            ORDER BY {sort_column} {sort_direction}
             LIMIT $4 OFFSET $5
-            "#,
-        sort_column, sort_direction
+            "
     ))
     .bind(&search_pattern)
     .bind(&date_from)
@@ -137,14 +136,14 @@ pub async fn index(
 
     // Get total count with same filters
     let total: i64 = sqlx::query_scalar(
-        r#"
+        r"
         SELECT COUNT(*)
         FROM users
         WHERE
             ($1::TEXT IS NULL OR (name ILIKE $1 OR email ILIKE $1))
             AND ($2::DATE IS NULL OR created_at >= $2::DATE)
             AND ($3::DATE IS NULL OR created_at <= $3::DATE + INTERVAL '1 day')
-        "#,
+        ",
     )
     .bind(&search_pattern)
     .bind(&date_from)
@@ -232,7 +231,7 @@ pub async fn stats(
 
     // MRR — integer cents, joined to membership_plans (user_memberships has no price/billing_period columns)
     let mrr_cents: i64 = sqlx::query_scalar(
-        r#"SELECT COALESCE(SUM(
+        r"SELECT COALESCE(SUM(
               CASE LOWER(mp.billing_cycle)
                   WHEN 'yearly'    THEN ((mp.price * 100) / 12)::BIGINT
                   WHEN 'annual'    THEN ((mp.price * 100) / 12)::BIGINT
@@ -242,7 +241,7 @@ pub async fn stats(
            ), 0)::BIGINT
            FROM user_memberships um
            JOIN membership_plans mp ON mp.id = um.plan_id
-           WHERE um.status IN ('active', 'trialing')"#,
+           WHERE um.status IN ('active', 'trialing')",
     )
     .fetch_one(state.db.pool())
     .await
@@ -250,9 +249,9 @@ pub async fn stats(
 
     // Total revenue (cents) — sum across ALL memberships (lifetime), joined to plans
     let total_revenue_cents: i64 = sqlx::query_scalar(
-        r#"SELECT COALESCE(SUM((mp.price * 100)::BIGINT), 0)::BIGINT
+        r"SELECT COALESCE(SUM((mp.price * 100)::BIGINT), 0)::BIGINT
            FROM user_memberships um
-           JOIN membership_plans mp ON mp.id = um.plan_id"#,
+           JOIN membership_plans mp ON mp.id = um.plan_id",
     )
     .fetch_one(state.db.pool())
     .await
@@ -287,7 +286,7 @@ pub async fn services(
 ) -> Result<Json<serde_json::Value>, ApiError> {
     // Distinct services. user_memberships has no product_id/product_name/price; canonical is membership_plans.
     let services: Vec<(i64, Option<String>, Option<String>, Option<i64>, i64)> = sqlx::query_as(
-        r#"
+        r"
         SELECT
             mp.id as id,
             mp.name as name,
@@ -300,7 +299,7 @@ pub async fn services(
         GROUP BY mp.id, mp.name, mp.price
         ORDER BY members_count DESC
         LIMIT 50
-        "#,
+        ",
     )
     .fetch_all(state.db.pool())
     .await
@@ -311,7 +310,7 @@ pub async fn services(
         .map(|(id, name, svc_type, price_cents, count)| {
             serde_json::json!({
                 "id": id,
-                "name": name.unwrap_or_else(|| format!("Service {}", id)),
+                "name": name.unwrap_or_else(|| format!("Service {id}")),
                 "type": svc_type.unwrap_or_else(|| "subscription".to_string()),
                 "price_cents": price_cents.unwrap_or(0),
                 "is_active": true,
@@ -410,7 +409,7 @@ pub async fn members_by_service(
         .search
         .as_ref()
         .filter(|s| !s.is_empty() && s.len() <= 100)
-        .map(|s| format!("%{}%", s));
+        .map(|s| format!("%{s}%"));
 
     // Validate status against allowlist
     let status_filter = params.status.as_ref().and_then(|s| match s.as_str() {
@@ -420,7 +419,7 @@ pub async fn members_by_service(
 
     // Get members using parameterized queries
     let members: Vec<Member> = sqlx::query_as(
-        r#"
+        r"
         SELECT DISTINCT u.id, u.name, u.email, u.created_at, u.updated_at
         FROM users u
         JOIN user_memberships us ON u.id = us.user_id
@@ -429,7 +428,7 @@ pub async fn members_by_service(
             AND ($3::TEXT IS NULL OR (u.name ILIKE $3 OR u.email ILIKE $3))
         ORDER BY u.created_at DESC
         LIMIT $4 OFFSET $5
-        "#,
+        ",
     )
     .bind(service_id)
     .bind(&status_filter)
@@ -442,14 +441,14 @@ pub async fn members_by_service(
 
     // Get total count
     let total: i64 = sqlx::query_scalar(
-        r#"
+        r"
         SELECT COUNT(DISTINCT u.id)
         FROM users u
         JOIN user_memberships us ON u.id = us.user_id
         WHERE (us.plan_id = $1)
             AND ($2::TEXT IS NULL OR us.status = $2)
             AND ($3::TEXT IS NULL OR (u.name ILIKE $3 OR u.email ILIKE $3))
-        "#,
+        ",
     )
     .bind(service_id)
     .bind(&status_filter)
@@ -460,11 +459,11 @@ pub async fn members_by_service(
 
     // Get stats
     let active_count: i64 = sqlx::query_scalar(
-        r#"
+        r"
         SELECT COUNT(DISTINCT u.id) FROM users u
         JOIN user_memberships us ON u.id = us.user_id
         WHERE (us.plan_id = $1) AND us.status = 'active'
-        "#,
+        ",
     )
     .bind(service_id)
     .fetch_one(state.db.pool())
@@ -472,11 +471,11 @@ pub async fn members_by_service(
     .unwrap_or(0);
 
     let trial_count: i64 = sqlx::query_scalar(
-        r#"
+        r"
         SELECT COUNT(DISTINCT u.id) FROM users u
         JOIN user_memberships us ON u.id = us.user_id
         WHERE (us.plan_id = $1) AND us.status = 'trial'
-        "#,
+        ",
     )
     .bind(service_id)
     .fetch_one(state.db.pool())
@@ -485,12 +484,12 @@ pub async fn members_by_service(
 
     // Service revenue (cents) — joined to membership_plans for canonical price
     let total_revenue_cents: i64 = sqlx::query_scalar(
-        r#"
+        r"
         SELECT COALESCE(SUM((mp.price * 100)::BIGINT), 0)::BIGINT
         FROM user_memberships um
         JOIN membership_plans mp ON mp.id = um.plan_id
         WHERE um.plan_id = $1
-        "#,
+        ",
     )
     .bind(service_id)
     .fetch_one(state.db.pool())
@@ -502,7 +501,7 @@ pub async fn members_by_service(
     Ok(Json(serde_json::json!({
         "service": {
             "id": svc_id,
-            "name": svc_name.unwrap_or_else(|| format!("Service {}", svc_id)),
+            "name": svc_name.unwrap_or_else(|| format!("Service {svc_id}")),
             "type": svc_type.unwrap_or_else(|| "subscription".to_string())
         },
         "stats": {
@@ -539,7 +538,7 @@ pub async fn churned_members(
         .search
         .as_ref()
         .filter(|s| !s.is_empty() && s.len() <= 100)
-        .map(|s| format!("%{}%", s));
+        .map(|s| format!("%{s}%"));
 
     // Validate dates
     let date_from = params
@@ -555,7 +554,7 @@ pub async fn churned_members(
 
     // Get churned members using parameterized queries
     let members: Vec<Member> = sqlx::query_as(
-        r#"
+        r"
         SELECT DISTINCT u.id, u.name, u.email, u.created_at, u.updated_at
         FROM users u
         JOIN user_memberships us ON u.id = us.user_id
@@ -568,7 +567,7 @@ pub async fn churned_members(
         AND ($3::DATE IS NULL OR us.cancelled_at <= $3::DATE + INTERVAL '1 day')
         ORDER BY us.cancelled_at DESC NULLS LAST, u.created_at DESC
         LIMIT $4 OFFSET $5
-        "#,
+        ",
     )
     .bind(&search_pattern)
     .bind(&date_from)
@@ -581,7 +580,7 @@ pub async fn churned_members(
 
     // Get total count
     let total: i64 = sqlx::query_scalar(
-        r#"
+        r"
         SELECT COUNT(DISTINCT u.id)
         FROM users u
         JOIN user_memberships us ON u.id = us.user_id
@@ -592,7 +591,7 @@ pub async fn churned_members(
         AND ($1::TEXT IS NULL OR (u.name ILIKE $1 OR u.email ILIKE $1))
         AND ($2::DATE IS NULL OR us.cancelled_at >= $2::DATE)
         AND ($3::DATE IS NULL OR us.cancelled_at <= $3::DATE + INTERVAL '1 day')
-        "#,
+        ",
     )
     .bind(&search_pattern)
     .bind(&date_from)
@@ -612,10 +611,10 @@ pub async fn churned_members(
     .unwrap_or(0);
 
     let lost_revenue_cents: i64 = sqlx::query_scalar(
-        r#"SELECT COALESCE(SUM((mp.price * 100)::BIGINT), 0)::BIGINT
+        r"SELECT COALESCE(SUM((mp.price * 100)::BIGINT), 0)::BIGINT
            FROM user_memberships um
            JOIN membership_plans mp ON um.plan_id = mp.id
-           WHERE um.status IN ('cancelled', 'expired')"#,
+           WHERE um.status IN ('cancelled', 'expired')",
     )
     .fetch_one(state.db.pool())
     .await
@@ -655,52 +654,52 @@ pub async fn export_members(
     let members: Vec<Member> = match params.status.as_deref() {
         Some("active") => {
             sqlx::query_as(
-                r#"
+                r"
                 SELECT u.id, u.name, u.email, u.created_at, u.updated_at
                 FROM users u
                 WHERE u.id IN (SELECT DISTINCT user_id FROM user_memberships WHERE status = 'active')
                 ORDER BY u.created_at DESC
                 LIMIT 10000
-                "#,
+                ",
             )
             .fetch_all(state.db.pool())
             .await
         }
         Some("churned") => {
             sqlx::query_as(
-                r#"
+                r"
                 SELECT u.id, u.name, u.email, u.created_at, u.updated_at
                 FROM users u
                 WHERE u.id IN (SELECT DISTINCT user_id FROM user_memberships WHERE status IN ('cancelled', 'expired'))
                 AND u.id NOT IN (SELECT DISTINCT user_id FROM user_memberships WHERE status = 'active')
                 ORDER BY u.created_at DESC
                 LIMIT 10000
-                "#,
+                ",
             )
             .fetch_all(state.db.pool())
             .await
         }
         Some("trial") => {
             sqlx::query_as(
-                r#"
+                r"
                 SELECT u.id, u.name, u.email, u.created_at, u.updated_at
                 FROM users u
                 WHERE u.id IN (SELECT DISTINCT user_id FROM user_memberships WHERE status = 'trial')
                 ORDER BY u.created_at DESC
                 LIMIT 10000
-                "#,
+                ",
             )
             .fetch_all(state.db.pool())
             .await
         }
         _ => {
             sqlx::query_as(
-                r#"
+                r"
                 SELECT u.id, u.name, u.email, u.created_at, u.updated_at
                 FROM users u
                 ORDER BY u.created_at DESC
                 LIMIT 10000
-                "#,
+                ",
             )
             .fetch_all(state.db.pool())
             .await
@@ -776,14 +775,14 @@ pub async fn show(
                     Option<NaiveDateTime>,
                 ),
             >(
-                r#"SELECT um.id, um.status,
+                r"SELECT um.id, um.status,
                           (mp.price * 100)::BIGINT AS price_cents,
                           mp.billing_cycle AS billing_period,
                           um.created_at
                    FROM user_memberships um
                    LEFT JOIN membership_plans mp ON mp.id = um.plan_id
                    WHERE um.user_id = $1
-                   ORDER BY um.created_at DESC"#,
+                   ORDER BY um.created_at DESC",
             )
             .bind(id)
             .fetch_all(state.db.pool())

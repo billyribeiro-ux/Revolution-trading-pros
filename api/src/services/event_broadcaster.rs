@@ -206,7 +206,7 @@ impl UnifiedEventBroadcaster {
         // Broadcast to SSE clients (using CMS content type for backwards compatibility)
         crate::routes::realtime::emit_content_created(
             &self.sse_broadcaster,
-            &format!("alert:{}", room_slug),
+            &format!("alert:{room_slug}"),
             data.id,
             data.title,
             0, // No user tracking in trading room alerts
@@ -242,7 +242,7 @@ impl UnifiedEventBroadcaster {
 
         crate::routes::realtime::emit_content_updated(
             &self.sse_broadcaster,
-            &format!("alert:{}", room_slug),
+            &format!("alert:{room_slug}"),
             data.id,
             data.title,
             0,
@@ -264,7 +264,7 @@ impl UnifiedEventBroadcaster {
 
         crate::routes::realtime::emit_content_deleted(
             &self.sse_broadcaster,
-            &format!("alert:{}", room_slug),
+            &format!("alert:{room_slug}"),
             alert_id,
             0,
         );
@@ -304,7 +304,7 @@ impl UnifiedEventBroadcaster {
 
         crate::routes::realtime::emit_content_created(
             &self.sse_broadcaster,
-            &format!("trade:{}", room_slug),
+            &format!("trade:{room_slug}"),
             data.id,
             Some(format!("{} {}", data.ticker, data.direction)),
             0,
@@ -342,14 +342,14 @@ impl UnifiedEventBroadcaster {
 
         crate::routes::realtime::emit_content_published(
             &self.sse_broadcaster,
-            &format!("trade:{}", room_slug),
+            &format!("trade:{room_slug}"),
             data.id,
             Some(format!(
                 "{} {} - {}",
                 data.ticker,
                 data.result.as_deref().unwrap_or("CLOSED"),
                 data.pnl_percent
-                    .map(|p| format!("{:+.2}%", p))
+                    .map(|p| format!("{p:+.2}%"))
                     .unwrap_or_default()
             )),
             0,
@@ -389,7 +389,7 @@ impl UnifiedEventBroadcaster {
 
         crate::routes::realtime::emit_content_updated(
             &self.sse_broadcaster,
-            &format!("trade:{}", room_slug),
+            &format!("trade:{room_slug}"),
             data.id,
             Some(format!("{} UPDATE", data.ticker)),
             0,
@@ -490,7 +490,7 @@ impl UnifiedEventBroadcaster {
 
         crate::routes::realtime::emit_content_created(
             &self.sse_broadcaster,
-            &format!("trade_plan:{}", room_slug),
+            &format!("trade_plan:{room_slug}"),
             data.id,
             Some(format!("{} {}", data.ticker, data.bias)),
             0,
@@ -528,7 +528,7 @@ impl UnifiedEventBroadcaster {
 
         crate::routes::realtime::emit_content_updated(
             &self.sse_broadcaster,
-            &format!("trade_plan:{}", room_slug),
+            &format!("trade_plan:{room_slug}"),
             data.id,
             Some(format!("{} {}", data.ticker, data.bias)),
             0,
@@ -551,7 +551,7 @@ impl UnifiedEventBroadcaster {
 
         crate::routes::realtime::emit_content_deleted(
             &self.sse_broadcaster,
-            &format!("trade_plan:{}", room_slug),
+            &format!("trade_plan:{room_slug}"),
             entry_id,
             0,
         );
@@ -586,7 +586,7 @@ impl UnifiedEventBroadcaster {
 
         crate::routes::realtime::emit_content_published(
             &self.sse_broadcaster,
-            &format!("video:{}", room_slug),
+            &format!("video:{room_slug}"),
             data.id,
             Some(data.video_title.clone()),
             0,

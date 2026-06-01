@@ -341,10 +341,10 @@ pub struct WsParams {
     /// Initial rooms to subscribe to (comma-separated)
     pub rooms: Option<String>,
 
-    /// Authentication token (optional, for authenticated connections)
-    /// TODO: This token is currently accepted but never validated against JWT.
-    /// Implement proper JWT validation to authenticate WebSocket connections
-    /// and restrict room subscriptions based on user membership/permissions.
+    /// Authentication token (optional, for authenticated connections).
+    /// When present it is validated against `jwt_secret` before the upgrade;
+    /// invalid / expired tokens are rejected with HTTP 401 (close code 4001).
+    /// Room subscriptions without a token are also rejected.
     pub token: Option<String>,
 }
 
@@ -359,13 +359,9 @@ pub async fn ws_handler(
     State(state): State<AppState>,
     Query(params): Query<WsParams>,
 ) -> impl IntoResponse {
-    // TODO: Validate JWT token — validation now happens here.
-    // If a token is supplied, it must be a valid, non-expired JWT signed with
-    // the application's JWT_SECRET.  Reject with close code 4001 on failure.
-    // FIX-2026-04-26 (Priority 9): Require JWT for room subscriptions.
-    // Anonymous (no-token) connections are now rejected if any room is requested.
-    // Public/global broadcast connections (no rooms requested) remain allowed for
-    // backwards compatibility with public health/heartbeat consumers.
+    // JWT validation: if a token is supplied it must be valid and non-expired.
+    // Room subscriptions without a token are rejected (FIX-2026-04-26 Priority 9).
+    // Public/global heartbeat connections (no rooms) remain allowed.
     let has_room_request = params
         .rooms
         .as_ref()

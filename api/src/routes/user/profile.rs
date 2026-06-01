@@ -99,7 +99,7 @@ pub(super) async fn update_profile(
             .display_name
             .clone()
             .or_else(|| match (&input.first_name, &input.last_name) {
-                (Some(f), Some(l)) => Some(format!("{} {}", f, l)),
+                (Some(f), Some(l)) => Some(format!("{f} {l}")),
                 (Some(f), None) => Some(f.clone()),
                 (None, Some(l)) => Some(l.clone()),
                 (None, None) => None,
@@ -143,13 +143,13 @@ pub(super) async fn update_profile(
 
     // Update profile fields in database
     sqlx::query(
-        r#"UPDATE users SET
+        r"UPDATE users SET
             first_name = COALESCE($1, first_name),
             last_name = COALESCE($2, last_name),
             name = COALESCE($3, name),
             email = COALESCE($4, email),
             updated_at = NOW()
-        WHERE id = $5"#,
+        WHERE id = $5",
     )
     .bind(&input.first_name)
     .bind(&input.last_name)
@@ -192,11 +192,11 @@ pub(super) async fn update_profile(
             })?;
 
         sqlx::query(
-            r#"
+            r"
             INSERT INTO email_verification_tokens (user_id, token, expires_at)
             VALUES ($1, $2, NOW() + INTERVAL '24 hours')
             ON CONFLICT (user_id) DO UPDATE SET token = $2, expires_at = NOW() + INTERVAL '24 hours'
-            "#,
+            ",
         )
         .bind(user.id)
         .bind(hashed_token)

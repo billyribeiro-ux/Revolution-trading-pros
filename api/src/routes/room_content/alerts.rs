@@ -50,10 +50,10 @@ pub(super) async fn list_alerts(
         .cache
         .get_or_fetch(&cache_key, cache_ttl::ALERTS, || async {
             let alerts: Vec<RoomAlert> = sqlx::query_as(
-                r#"SELECT * FROM room_alerts
+                r"SELECT * FROM room_alerts
                    WHERE room_slug = $1 AND deleted_at IS NULL AND is_published = true
                    ORDER BY is_pinned DESC, published_at DESC
-                   LIMIT $2 OFFSET $3"#,
+                   LIMIT $2 OFFSET $3",
             )
             .bind(&room_slug)
             .bind(per_page)
@@ -114,7 +114,7 @@ pub(super) async fn create_alert(
         .and_then(|e| NaiveDate::parse_from_str(e, "%Y-%m-%d").ok());
 
     let alert: RoomAlert = sqlx::query_as(
-        r#"INSERT INTO room_alerts
+        r"INSERT INTO room_alerts
            (room_id, room_slug, alert_type, ticker, title, message, notes,
             trade_type, action, quantity, option_type, strike, expiration, contract_type,
             order_type, limit_price, fill_price, tos_string, entry_alert_id, trade_plan_id,
@@ -126,7 +126,7 @@ pub(super) async fn create_alert(
                $14, $15, $16, $17, $18, $19,
                $20, $21, $22
            )
-           RETURNING *"#,
+           RETURNING *",
     )
     .bind(&input.room_slug)
     .bind(input.alert_type.to_uppercase())
@@ -211,7 +211,7 @@ pub(super) async fn update_alert(
         .and_then(|e| NaiveDate::parse_from_str(e, "%Y-%m-%d").ok());
 
     let alert: RoomAlert = sqlx::query_as(
-        r#"UPDATE room_alerts SET
+        r"UPDATE room_alerts SET
            alert_type = COALESCE($2, alert_type),
            ticker = COALESCE($3, ticker),
            title = COALESCE($4, title),
@@ -235,7 +235,7 @@ pub(super) async fn update_alert(
            is_pinned = COALESCE($22, is_pinned),
            updated_at = NOW()
            WHERE id = $1 AND deleted_at IS NULL
-           RETURNING *"#,
+           RETURNING *",
     )
     .bind(id)
     .bind(input.alert_type.map(|t| t.to_uppercase()))

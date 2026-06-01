@@ -77,7 +77,7 @@ pub(super) async fn presigned_upload(
     let upload_url = storage
         .presigned_upload_url(&file_key, &payload.content_type, expires_in)
         .await
-        .map_err(|e| ApiError::internal_error(&format!("Failed to generate upload URL: {}", e)))?;
+        .map_err(|e| ApiError::internal_error(&format!("Failed to generate upload URL: {e}")))?;
 
     // Get public URL
     let public_url = format!("{}/{}", state.config.r2_public_url, file_key);
@@ -131,7 +131,7 @@ pub(super) async fn confirm_upload(
 
     // Insert into database
     let media: Media = sqlx::query_as(
-        r#"
+        r"
         INSERT INTO media (
             filename, original_filename, mime_type, size, path, url,
             title, alt_text, caption, description, collection,
@@ -144,7 +144,7 @@ pub(super) async fn confirm_upload(
         RETURNING id, filename, original_filename, mime_type, size, path, url,
                   title, alt_text, caption, description, collection, is_optimized,
                   width, height, created_at, updated_at
-        "#,
+        ",
     )
     .bind(&filename)
     .bind(&payload.original_filename)
@@ -205,7 +205,7 @@ pub(super) async fn direct_upload(
     while let Some(field) = multipart
         .next_field()
         .await
-        .map_err(|e| ApiError::validation_error(&format!("Failed to read multipart: {}", e)))?
+        .map_err(|e| ApiError::validation_error(&format!("Failed to read multipart: {e}")))?
     {
         let name = field.name().unwrap_or("file").to_string();
 
@@ -234,8 +234,7 @@ pub(super) async fn direct_upload(
         // ICT 7 SECURITY: Validate content type against whitelist
         if !allowed_types.contains(&content_type.as_str()) {
             return Err(ApiError::validation_error(&format!(
-                "File type '{}' not allowed. Allowed types: images, videos, PDFs, documents",
-                content_type
+                "File type '{content_type}' not allowed. Allowed types: images, videos, PDFs, documents"
             )));
         }
 
@@ -243,7 +242,7 @@ pub(super) async fn direct_upload(
         let data = field
             .bytes()
             .await
-            .map_err(|e| ApiError::validation_error(&format!("Failed to read file: {}", e)))?;
+            .map_err(|e| ApiError::validation_error(&format!("Failed to read file: {e}")))?;
 
         let size = data.len() as i64;
 
@@ -266,7 +265,7 @@ pub(super) async fn direct_upload(
         let public_url = storage
             .upload(data.to_vec(), &content_type, folder)
             .await
-            .map_err(|e| ApiError::internal_error(&format!("Upload failed: {}", e)))?;
+            .map_err(|e| ApiError::internal_error(&format!("Upload failed: {e}")))?;
 
         // Extract key from URL
         let file_key = public_url
@@ -277,7 +276,7 @@ pub(super) async fn direct_upload(
 
         // Insert into database
         let media: Media = sqlx::query_as(
-            r#"
+            r"
             INSERT INTO media (
                 filename, original_filename, mime_type, size, path, url,
                 is_optimized, created_at, updated_at
@@ -288,7 +287,7 @@ pub(super) async fn direct_upload(
             RETURNING id, filename, original_filename, mime_type, size, path, url,
                       title, alt_text, caption, description, collection, is_optimized,
                       width, height, created_at, updated_at
-            "#,
+            ",
         )
         .bind(&stored_filename)
         .bind(&filename)
