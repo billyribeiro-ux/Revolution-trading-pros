@@ -17,7 +17,6 @@
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 */
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
 	import {
 		IconBrandTwitter,
@@ -28,9 +27,11 @@
 
 	// --- State (Svelte 5 Runes) ---
 	let currentYear = $state(new Date().getFullYear());
-	let containerRef = $state<HTMLElement | null>(null);
-	// ICT11+ Fix: Start false, set true in onMount to trigger in: transitions
-	let isVisible = $state(false);
+	// Footer always renders from first paint — no lazy-load gate.
+	// Starting false caused a dark-background flash on dashboard pages where
+	// the footer is immediately in view and the IntersectionObserver fires
+	// async (after a microtask), leaving an empty dark wrapper visible briefly.
+	let isVisible = $state(true);
 
 	// --- Transition Function (matching MentorshipSection exactly) ---
 	function heavySlide(_node: Element, { delay = 0, duration = 1000 }) {
@@ -44,38 +45,9 @@
 		};
 	}
 
-	// --- Intersection Observer for Viewport Detection ---
-	let observer: IntersectionObserver | null = null;
-
 	onMount(() => {
 		// Ensures correct year even if the page is prerendered at build time.
 		currentYear = new Date().getFullYear();
-
-		if (!browser) {
-			isVisible = true;
-			return;
-		}
-
-		queueMicrotask(() => {
-			if (!containerRef) {
-				isVisible = true;
-				return;
-			}
-
-			observer = new IntersectionObserver(
-				(entries) => {
-					if (entries[0]?.isIntersecting) {
-						isVisible = true;
-						observer?.disconnect();
-					}
-				},
-				{ threshold: 0.1, rootMargin: '50px' }
-			);
-
-			observer.observe(containerRef);
-		});
-
-		return () => observer?.disconnect();
 	});
 
 	const footerLinks = {
@@ -122,9 +94,6 @@
 		}
 	];
 </script>
-
-<!-- Invisible sentinel element for IntersectionObserver - always in DOM -->
-<div bind:this={containerRef} class="footer-sentinel" aria-hidden="true"></div>
 
 {#if isVisible}
 	<footer in:heavySlide={{ delay: 0, duration: 800 }} class="marketing-footer">
@@ -213,14 +182,6 @@
 	.marketing-footer *::before,
 	.marketing-footer *::after {
 		box-sizing: border-box;
-	}
-
-	/* Invisible sentinel for IntersectionObserver - must be in DOM before conditional content */
-	.footer-sentinel {
-		position: absolute;
-		width: 1px;
-		height: 1px;
-		pointer-events: none;
 	}
 
 	/* Footer-local tokens.
