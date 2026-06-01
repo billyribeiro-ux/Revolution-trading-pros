@@ -703,7 +703,7 @@
 	   Responsive Design
 	   ========================================================================== */
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.video-placeholder {
 			padding: 2rem 1rem;
 		}

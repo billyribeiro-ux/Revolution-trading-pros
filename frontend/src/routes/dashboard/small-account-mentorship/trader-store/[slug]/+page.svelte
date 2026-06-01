@@ -1015,7 +1015,7 @@
 		}
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.trader-photo__img {
 			width: 150px;
 		}

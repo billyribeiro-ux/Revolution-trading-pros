@@ -87,7 +87,7 @@
 		font-weight: 500;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.metadata-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}

@@ -239,7 +239,7 @@
 	}
 
 	/* Mobile responsive */
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.nav-text {
 			display: none;
 		}

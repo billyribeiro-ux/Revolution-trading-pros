@@ -228,7 +228,7 @@
 		color: var(--admin-accent-primary);
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.btn-primary,
 		.btn-secondary {
 			padding: 0.5rem 0.75rem;

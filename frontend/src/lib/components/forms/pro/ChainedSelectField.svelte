@@ -233,7 +233,7 @@
 		border-color: #ef4444;
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.selects-container.horizontal {
 			flex-direction: column;
 		}

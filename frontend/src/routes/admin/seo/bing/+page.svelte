@@ -1095,7 +1095,7 @@ https://yourdomain.com/page-3"
 		border-top: 1px solid rgba(148, 163, 184, 0.1);
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.stats-grid,
 		.loading-grid {
 			grid-template-columns: repeat(2, 1fr);

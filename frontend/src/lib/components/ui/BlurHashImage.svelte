@@ -83,7 +83,7 @@
 		if (!autoSrcset) return '';
 
 		// Responsive sizes based on common viewport breakpoints
-		return '(max-width: 640px) 100vw, (max-width: 1024px) 75vw, 50vw';
+		return '(max-width: 639.98px) 100vw, (max-width: 1023.98px) 75vw, 50vw';
 	}
 
 	// State using Svelte 5 runes

@@ -2246,7 +2246,7 @@
 	}
 
 	/* Responsive */
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		.editor-sidebar {
 			width: 280px;
 		}
@@ -2256,7 +2256,7 @@
 		}
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.editor-header {
 			flex-wrap: wrap;
 		}

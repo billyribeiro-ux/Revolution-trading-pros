@@ -357,7 +357,31 @@
 </header>
 
 <!-- Dashboard Content -->
-{#if !isLoading}
+{#if isLoading}
+	<!-- CLS GUARD: reserve the card-grid footprint with a theme-matched skeleton
+	     while memberships load client-side, so real cards swap in-place instead
+	     of pushing the page down (empty → full pop-in). Reuses the SAME grid
+	     classes as the real content for an identical layout footprint. -->
+	<section class="dashboard__content-section" aria-hidden="true">
+		<h2 class="section-title">Memberships</h2>
+		<div class="membership-cards">
+			{#each Array(3) as _, i (i)}
+				<div class="membership-card-col">
+					<article class="membership-card sk-card">
+						<div class="sk-card__header">
+							<span class="sk sk-dot"></span>
+							<span class="sk sk-line"></span>
+						</div>
+						<div class="sk-card__actions">
+							<span class="sk sk-line sk-line--sm"></span>
+						</div>
+					</article>
+				</div>
+			{/each}
+		</div>
+		<div class="section-divider"><div class="section-divider__line"></div></div>
+	</section>
+{:else}
 	<!-- Memberships Section -->
 	{#if membershipCards.length > 0}
 		<section class="dashboard__content-section">
@@ -1223,7 +1247,7 @@
 	 * RESPONSIVE
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.dashboard__header {
 			padding: 20px;
 			flex-direction: column;
@@ -1276,6 +1300,69 @@
 		.dropdown-arrow,
 		.dropdown-menu {
 			transition: none;
+			animation: none;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * CLS SKELETON — light-theme placeholder matching the membership card footprint
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	.sk-card {
+		min-height: 140px;
+		padding: 0;
+	}
+
+	.sk-card__header {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 20px;
+	}
+
+	.sk-card__actions {
+		margin-top: auto;
+		border-top: 1px solid #ededed;
+		padding: 15px 20px;
+	}
+
+	.sk {
+		background: linear-gradient(90deg, #ececec 25%, #f5f5f5 37%, #ececec 63%);
+		background-size: 400% 100%;
+		animation: sk-shimmer 1.4s ease-in-out infinite;
+		border-radius: 4px;
+		display: block;
+	}
+
+	.sk-dot {
+		width: 50px;
+		height: 50px;
+		border-radius: 50%;
+		flex-shrink: 0;
+	}
+
+	.sk-line {
+		height: 14px;
+		width: 60%;
+	}
+
+	.sk-line--sm {
+		height: 12px;
+		width: 40%;
+		margin: 0 auto;
+	}
+
+	@keyframes sk-shimmer {
+		0% {
+			background-position: 100% 0;
+		}
+		100% {
+			background-position: -100% 0;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.sk {
 			animation: none;
 		}
 	}

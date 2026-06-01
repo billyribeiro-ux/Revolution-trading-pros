@@ -381,7 +381,7 @@
 		background: #059669;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.page-header {
 			padding: 32px 16px;
 		}

@@ -4533,13 +4533,13 @@
 	}
 
 	/* Responsive */
-	@media (max-width: 1280px) {
+	@media (max-width: 1279.98px) {
 		.content-wrapper {
 			grid-template-columns: 240px 1fr;
 		}
 	}
 
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		.create-page {
 			padding: 1rem;
 		}
@@ -4567,7 +4567,7 @@
 		}
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		/* .page-header mobile rule moved to _components/PageHeader.svelte */
 
 		.form-row {

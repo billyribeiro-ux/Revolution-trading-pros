@@ -1263,7 +1263,7 @@
 	}
 
 	/* Responsive */
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.current-video-card {
 			grid-template-columns: 1fr;
 		}

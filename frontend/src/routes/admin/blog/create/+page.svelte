@@ -1320,7 +1320,7 @@
 		min-height: calc(100vh - 60px);
 	}
 
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		.editor-layout {
 			grid-template-columns: 1fr;
 		}

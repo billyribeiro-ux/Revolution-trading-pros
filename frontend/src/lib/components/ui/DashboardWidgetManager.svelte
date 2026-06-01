@@ -181,7 +181,7 @@
 	}
 
 	/* Mobile responsive */
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.widget-grid {
 			grid-template-columns: 1fr;
 		}
@@ -191,7 +191,7 @@
 		}
 	}
 
-	@media (min-width: 768px) and (max-width: 1024px) {
+	@media (min-width: 768px) and (max-width: 1023.98px) {
 		.widget-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}

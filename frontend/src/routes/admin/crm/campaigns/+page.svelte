@@ -798,13 +798,13 @@
 	}
 
 	/* Responsive */
-	@media (max-width: 1200px) {
+	@media (max-width: 1199.98px) {
 		.stats-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.campaigns-page {
 			padding: 16px;
 		}

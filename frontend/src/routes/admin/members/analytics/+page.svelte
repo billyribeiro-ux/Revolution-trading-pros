@@ -1207,7 +1207,7 @@
 		color: #f87171;
 	}
 
-	@media (max-width: 1200px) {
+	@media (max-width: 1199.98px) {
 		.metrics-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}
@@ -1221,7 +1221,7 @@
 		}
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.header-content {
 			flex-direction: column;
 			gap: 1rem;

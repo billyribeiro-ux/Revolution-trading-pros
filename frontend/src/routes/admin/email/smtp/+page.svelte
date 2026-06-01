@@ -419,7 +419,7 @@
 		cursor: not-allowed;
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.form-grid {
 			grid-template-columns: 1fr;
 		}

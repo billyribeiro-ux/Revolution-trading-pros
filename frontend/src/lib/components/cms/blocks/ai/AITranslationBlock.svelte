@@ -412,7 +412,7 @@
 		cursor: pointer;
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.side-by-side .translation-panels {
 			flex-direction: column;
 		}

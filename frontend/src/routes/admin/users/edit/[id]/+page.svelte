@@ -618,7 +618,7 @@
 		padding-top: 1rem;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.page-header {
 			flex-direction: column;
 			align-items: flex-start;

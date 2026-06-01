@@ -1362,7 +1362,7 @@
 		background: var(--bg-secondary, #f9fafb);
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.diff-block-pair {
 			grid-template-columns: 1fr;
 		}

@@ -870,13 +870,13 @@
 		color: var(--primary-400);
 	}
 
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		.overview-grid {
 			grid-template-columns: 1fr;
 		}
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.tabs {
 			overflow-x: auto;
 			padding-bottom: 0.5rem;

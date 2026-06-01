@@ -134,7 +134,7 @@
 		accent-color: var(--primary-500);
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.form-row {
 			grid-template-columns: 1fr;
 		}

@@ -511,7 +511,7 @@
 		text-decoration: underline;
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.contact-support--container {
 			flex-direction: column;
 			text-align: center;
@@ -666,7 +666,7 @@
 		color: #555;
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.charts-columns {
 			flex-direction: column;
 		}

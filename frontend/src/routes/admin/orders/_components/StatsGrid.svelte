@@ -143,13 +143,13 @@
 		color: var(--admin-text-muted);
 	}
 
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		.stats-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.stats-grid {
 			grid-template-columns: 1fr;
 		}

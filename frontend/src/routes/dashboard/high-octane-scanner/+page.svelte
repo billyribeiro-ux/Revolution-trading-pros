@@ -1169,7 +1169,7 @@
 		background: #0f2d42;
 	}
 
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		.video-container {
 			flex-direction: column;
 		}
@@ -1189,7 +1189,7 @@
 		}
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.hero-header {
 			flex-direction: column;
 			text-align: center;
@@ -1242,7 +1242,7 @@
 		letter-spacing: 0.05em;
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.stats-bar {
 			gap: 30px;
 		}
@@ -1264,7 +1264,7 @@
 		margin: 0 auto;
 	}
 
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		.main-grid {
 			grid-template-columns: 1fr;
 		}

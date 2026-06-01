@@ -575,7 +575,7 @@
 		font-style: italic;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.completion-row {
 			grid-template-columns: 1fr;
 			gap: 0.5rem;

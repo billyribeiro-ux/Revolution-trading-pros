@@ -109,7 +109,7 @@
 		color: #64748b;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.stats-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}

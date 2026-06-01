@@ -376,7 +376,7 @@
 		cursor: not-allowed;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.form-row-first,
 		.form-row-last {
 			width: 100%;

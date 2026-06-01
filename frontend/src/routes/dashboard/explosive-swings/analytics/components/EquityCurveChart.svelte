@@ -405,7 +405,7 @@
 		}
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.equity-curve-chart {
 			padding: 16px;
 		}

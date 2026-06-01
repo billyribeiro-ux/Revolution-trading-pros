@@ -745,7 +745,7 @@
 	}
 
 	/* Responsive */
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.dashboard__page-title {
 			font-size: 24px;
 		}
@@ -828,7 +828,7 @@
 		font-weight: 700;
 	}
 
-	@media (max-width: 576px) {
+	@media (max-width: 575.98px) {
 		.pagination-wrapper {
 			padding: 30px 0;
 		}

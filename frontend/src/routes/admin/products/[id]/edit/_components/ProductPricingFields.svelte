@@ -138,7 +138,7 @@
 		padding-left: 2.25rem;
 	}
 
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		.form-row {
 			grid-template-columns: 1fr;
 		}

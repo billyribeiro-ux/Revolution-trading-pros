@@ -910,7 +910,7 @@
 		gap: 1rem;
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.trigger-grid {
 			grid-template-columns: 1fr;
 		}
@@ -1152,7 +1152,7 @@
 	}
 
 	/* Responsive */
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.new-automation-page {
 			padding: 16px;
 		}

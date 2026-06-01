@@ -439,7 +439,7 @@
 	}
 
 	/* Mobile adjustments */
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.size-info-bar {
 			flex-wrap: wrap;
 			gap: 0.5rem;

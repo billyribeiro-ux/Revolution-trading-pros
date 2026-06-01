@@ -126,7 +126,7 @@
 		color: var(--primary-400);
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.filters-bar {
 			flex-direction: column;
 			align-items: stretch;

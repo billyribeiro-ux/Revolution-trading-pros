@@ -288,7 +288,7 @@
 		font-family: inherit;
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.shortcuts-overlay {
 			padding: 1rem;
 		}

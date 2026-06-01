@@ -414,7 +414,7 @@ ${'</'}script>`);
 		}
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.embed-type-selector {
 			grid-template-columns: 1fr;
 		}

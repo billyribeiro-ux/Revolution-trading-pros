@@ -192,7 +192,7 @@
 	}
 
 	/* Responsive */
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.card {
 			padding: 8px 10px;
 		}

@@ -213,7 +213,7 @@
 	}
 
 	/* Responsive grid adjustments */
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.media-skeleton-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}

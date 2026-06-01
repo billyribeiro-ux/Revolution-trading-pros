@@ -406,7 +406,7 @@
 	}
 
 	/* Responsive */
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.trade-tracker {
 			padding: var(--space-6) var(--space-4);
 		}

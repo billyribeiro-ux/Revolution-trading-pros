@@ -1489,7 +1489,7 @@
 		}
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.settings-page {
 			padding: 1rem;
 		}

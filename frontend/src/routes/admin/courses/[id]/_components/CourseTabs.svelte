@@ -54,7 +54,7 @@
 		border-bottom-color: #143e59;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.tabs {
 			overflow-x: auto;
 		}

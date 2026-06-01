@@ -531,7 +531,7 @@
 	}
 
 	/* Mobile */
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.tabs-block.vertical {
 			flex-direction: column;
 		}

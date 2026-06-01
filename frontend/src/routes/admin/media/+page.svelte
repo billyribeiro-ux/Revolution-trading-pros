@@ -1954,7 +1954,7 @@
 	/* ═══════════════════════════════════════════════════════════════════════════
      Responsive
      ═══════════════════════════════════════════════════════════════════════════ */
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		.admin-media.details-open .media-content {
 			margin-right: 0;
 		}
@@ -1965,7 +1965,7 @@
 		}
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.media-page {
 			padding: 1rem;
 		}

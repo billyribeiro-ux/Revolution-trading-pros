@@ -129,7 +129,7 @@
 	}
 
 	/* Mobile */
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.empty-state {
 			padding: 48px 16px;
 		}

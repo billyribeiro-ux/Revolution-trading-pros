@@ -1015,7 +1015,7 @@
 		background: #e5e7eb;
 	}
 
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		.editor-content {
 			grid-template-columns: 1fr;
 		}
@@ -1024,7 +1024,7 @@
 		}
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.editor-header {
 			flex-direction: column;
 			gap: 16px;

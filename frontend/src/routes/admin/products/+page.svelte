@@ -694,7 +694,7 @@
 	 * RESPONSIVE
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.type-filter {
 			gap: 0.5rem;
 		}

@@ -336,7 +336,7 @@
 		color: rgba(255, 255, 255, 0.8);
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.admin-trading-rooms {
 			padding: 1rem;
 		}

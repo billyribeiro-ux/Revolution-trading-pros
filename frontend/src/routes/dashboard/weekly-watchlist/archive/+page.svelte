@@ -248,7 +248,7 @@
 	}
 
 	/* Responsive */
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.dashboard__header,
 		.archive-section {
 			padding: 15px 20px;
@@ -354,7 +354,7 @@
 		}
 	}
 
-	@media (max-width: 576px) {
+	@media (max-width: 575.98px) {
 		.col-sm-6 {
 			flex: 0 0 100%;
 			max-width: 100%;

@@ -2443,7 +2443,7 @@
 	/* Responsive */
 	/* ========================================================================== */
 
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		/* .folders-sidebar display:none moved into FoldersSidebar (R6-C #8). */
 
 		.library-layout.sidebar-open .asset-content {
@@ -2455,7 +2455,7 @@
 		}
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.dam-modal {
 			height: 100vh;
 			max-height: none;

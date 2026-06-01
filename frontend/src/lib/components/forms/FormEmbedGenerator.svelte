@@ -651,7 +651,7 @@
 		background: #6b7280;
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.embed-types {
 			grid-template-columns: 1fr;
 		}

@@ -1848,7 +1848,7 @@
 	/* ============================================
 	   RESPONSIVE - Tablet (< md: 768px)
 	   ============================================ */
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.modal-backdrop {
 			padding: var(--space-4);
 			align-items: flex-start;
@@ -1894,7 +1894,7 @@
 	/* ============================================
 	   RESPONSIVE - Mobile (< sm: 640px)
 	   ============================================ */
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.modal-backdrop {
 			padding: var(--space-3);
 			padding-top: var(--space-4);

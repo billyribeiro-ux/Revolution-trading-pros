@@ -217,7 +217,7 @@
 		background: rgba(230, 184, 0, 0.2);
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.page-header {
 			flex-direction: column;
 			gap: 1rem;

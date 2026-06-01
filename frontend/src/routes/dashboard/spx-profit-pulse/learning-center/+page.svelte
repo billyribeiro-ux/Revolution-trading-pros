@@ -734,7 +734,7 @@
 	}
 
 	/* Responsive */
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		#term_filter {
 			padding: 15px;
 		}

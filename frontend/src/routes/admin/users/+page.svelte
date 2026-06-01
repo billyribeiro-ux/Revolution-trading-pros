@@ -544,7 +544,7 @@
 		color: #f87171;
 	}
 
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		.users-table {
 			overflow-x: auto;
 		}
@@ -554,7 +554,7 @@
 		}
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.page-header {
 			flex-direction: column;
 			align-items: flex-start;

@@ -1875,7 +1875,7 @@
 		border: 1px solid;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.tabs-container {
 			flex-direction: column;
 			gap: 1rem;

@@ -934,7 +934,7 @@
 	}
 
 	/* Responsive */
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.popup-panel {
 			max-width: 100%;
 			border-radius: 16px 16px 0 0;

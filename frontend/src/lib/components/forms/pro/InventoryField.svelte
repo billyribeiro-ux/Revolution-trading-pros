@@ -607,7 +607,7 @@
 	}
 
 	/* Responsive */
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.products-container.layout-grid {
 			grid-template-columns: 1fr;
 		}

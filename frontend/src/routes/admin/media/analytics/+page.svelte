@@ -1356,7 +1356,7 @@
 	}
 
 	/* Responsive */
-	@media (max-width: 1200px) {
+	@media (max-width: 1199.98px) {
 		.hero-stats {
 			grid-template-columns: 1fr;
 		}
@@ -1374,7 +1374,7 @@
 		}
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.header {
 			flex-direction: column;
 			align-items: flex-start;

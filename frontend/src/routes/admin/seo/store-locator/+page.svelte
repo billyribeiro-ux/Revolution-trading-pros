@@ -793,7 +793,7 @@
 		margin-top: 2rem;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.store-locator-page {
 			padding: 1rem;
 		}

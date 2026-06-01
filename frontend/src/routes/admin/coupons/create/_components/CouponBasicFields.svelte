@@ -339,7 +339,7 @@
 		font-size: 1.1rem;
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.discount-type-toggle {
 			grid-template-columns: 1fr;
 		}

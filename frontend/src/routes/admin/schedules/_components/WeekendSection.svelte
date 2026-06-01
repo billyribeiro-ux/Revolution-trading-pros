@@ -116,7 +116,7 @@
 		font-size: 13px;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.weekend-grid {
 			grid-template-columns: 1fr;
 		}

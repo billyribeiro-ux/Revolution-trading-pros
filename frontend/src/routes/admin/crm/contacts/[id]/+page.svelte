@@ -793,7 +793,7 @@
 		}
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.tabs-nav {
 			justify-content: flex-start;
 		}

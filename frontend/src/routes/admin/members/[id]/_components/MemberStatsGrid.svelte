@@ -126,7 +126,7 @@
 		letter-spacing: 0.05em;
 	}
 
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		.stats-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}

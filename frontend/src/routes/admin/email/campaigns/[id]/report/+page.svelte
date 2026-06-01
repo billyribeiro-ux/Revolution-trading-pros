@@ -677,7 +677,7 @@
 	}
 
 	/* Responsive */
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.report-page {
 			padding: 0 1rem 1.5rem;
 		}

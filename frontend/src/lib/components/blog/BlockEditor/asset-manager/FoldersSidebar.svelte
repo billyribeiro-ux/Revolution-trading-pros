@@ -153,7 +153,7 @@
 		flex-shrink: 0;
 	}
 
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		.folders-sidebar {
 			display: none;
 		}

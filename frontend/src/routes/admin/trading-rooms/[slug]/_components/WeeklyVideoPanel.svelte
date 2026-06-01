@@ -252,7 +252,7 @@
 		color: #94a3b8;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.video-content {
 			flex-direction: column;
 		}

@@ -273,13 +273,13 @@
 	   `.media-grid-wrap` *parent*; on `.media-grid` the value is inherited.
 	   Direct declarations on `.media-grid` (below) override an inherited
 	   value cleanly via specificity. */
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		.media-grid {
 			--columns: 3;
 		}
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.media-grid {
 			--columns: 2;
 		}

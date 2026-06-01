@@ -107,7 +107,7 @@
 		margin-left: auto;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.date-range-picker {
 			flex-direction: column;
 			align-items: flex-start;

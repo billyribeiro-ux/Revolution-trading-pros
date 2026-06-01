@@ -783,7 +783,7 @@
 		}
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.image-seo-page {
 			padding: 1rem;
 		}
