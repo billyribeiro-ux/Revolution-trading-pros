@@ -29,14 +29,20 @@ import { env } from '$env/dynamic/private';
 // const API_ROOT = env.VITE_API_URL || env.BACKEND_URL || PROD_API_ROOT;
 const API_ROOT = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
-// ICT 7: Retry configuration with exponential backoff
-const MAX_RETRIES = 3;
+// ICT 7: Retry configuration with exponential backoff.
+// In dev the backend is frequently down; retrying 3× with 1-2-4 s backoff
+// floods the Vite error overlay on every HMR reload because the module-level
+// circuit breaker resets on each reload. Fail fast in dev (0 retries = 1
+// attempt), retry in prod.
+const IS_DEV = process.env.NODE_ENV === 'development';
+const MAX_RETRIES = IS_DEV ? 0 : 3;
 const INITIAL_RETRY_DELAY_MS = 1000;
 const MAX_RETRY_DELAY_MS = 8000;
 const BACKOFF_MULTIPLIER = 2;
 
-// ICT 7: Timeout configuration
-const DEFAULT_TIMEOUT_MS = 30000; // 30 seconds
+// ICT 7: Timeout configuration — shorter in dev so dead-backend requests
+// don't each block for 30 s, flooding the Vite error overlay.
+const DEFAULT_TIMEOUT_MS = IS_DEV ? 5000 : 30000;
 const UPLOAD_TIMEOUT_MS = 60000; // 60 seconds for file uploads
 
 // ICT 7: Circuit breaker state (in-memory, resets on deploy)
@@ -44,7 +50,7 @@ const circuitBreaker = {
 	failures: 0,
 	lastFailure: 0,
 	isOpen: false,
-	threshold: 5, // Open circuit after 5 consecutive failures
+	threshold: IS_DEV ? 3 : 5, // Open faster in dev — backend frequently down
 	resetTimeout: 30000 // Try again after 30 seconds
 };
 
@@ -276,10 +282,10 @@ async function proxyRequest(
 			// Timeout or network error
 			if (lastError.name === 'AbortError') {
 				lastStatus = 504;
-				console.error(`[API Proxy] Timeout after ${timeout}ms for ${path}`);
+				(IS_DEV ? console.warn : console.error)(`[API Proxy] Timeout after ${timeout}ms for ${path}`);
 			} else {
 				lastStatus = 502;
-				console.error(`[API Proxy] Network error for ${path}:`, lastError.message);
+				(IS_DEV ? console.warn : console.error)(`[API Proxy] Network error for ${path}:`, lastError.message);
 			}
 		}
 	}
@@ -287,7 +293,10 @@ async function proxyRequest(
 	// All retries exhausted
 	recordFailure();
 	const duration = Date.now() - startTime;
-	console.error(
+	// Use warn in dev (backend down is normal/expected) so Vite's error
+	// overlay counter doesn't increment. Use error in prod for alerting.
+	const logFn = IS_DEV ? console.warn : console.error;
+	logFn(
 		`[API Proxy] Failed after ${MAX_RETRIES} retries: ${path} (${duration}ms)`,
 		lastError?.message
 	);
