@@ -203,6 +203,11 @@
 
 		{#if isMarketingPage}
 			<MarketingFooter />
+		{:else if isDashboardArea}
+			<!-- Dashboard needs dark+marketing-shell token scope for the footer -->
+			<div class="dark marketing-shell dashboard-footer-ctx">
+				<MarketingFooter />
+			</div>
 		{/if}
 
 		<!-- Consent UI: Re-enable when consent system is ready -->
@@ -220,5 +225,11 @@
 	.has-admin-toolbar {
 		--admin-toolbar-height: 46px;
 		padding-top: var(--admin-toolbar-height);
+	}
+
+	:global(.dashboard-footer-ctx) {
+		display: block;
+		margin: 0;
+		padding: 0;
 	}
 </style>

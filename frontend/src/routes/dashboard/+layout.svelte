@@ -38,8 +38,6 @@
 	} from '$lib/api/user-memberships';
 	import DashboardSidebar from '$lib/components/dashboard/DashboardSidebar.svelte';
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-
 	import type { Snippet } from 'svelte'; // FIXED: Separate type import for clarity
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -563,12 +561,6 @@
 	</div>
 </div>
 
-<!-- Dashboard Footer — needs dark + marketing-shell context for CSS tokens
-     The wrapper restores the same class context the root layout applies on
-     marketing pages so the footer's CSS custom properties resolve correctly. -->
-<div class="dark marketing-shell dashboard-footer-ctx">
-	<MarketingFooter />
-</div>
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -818,11 +810,4 @@
 		}
 	}
 
-	/* Footer context wrapper — block with no extra spacing, purely provides
-	   dark + marketing-shell class scope for CSS custom property inheritance */
-	:global(.dashboard-footer-ctx) {
-		display: block;
-		margin: 0;
-		padding: 0;
-	}
 </style>
