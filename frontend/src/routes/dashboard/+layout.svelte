@@ -111,7 +111,12 @@
 					...(membershipsData.weeklyWatchlist ?? []),
 					...(membershipsData.premiumReports ?? [])
 				]
-					.filter((m: { status: string }) => m.status === 'active')
+					// active OR expiring: both grant access and BOTH are emitted by the
+					// SSR list. Filtering to active-only here would drop a membership
+					// that the client's enhanceMemberships() flipped to 'expiring'
+					// (<7 days to renewal), making a sidebar row disappear after the
+					// fetch — a measured ~0.01 CLS regression.
+					.filter((m: { status: string }) => m.status === 'active' || m.status === 'expiring')
 					.map((m: { name: string; slug: string; icon?: string; type: MembershipType }) => ({
 						name: m.name,
 						slug: m.slug,

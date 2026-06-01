@@ -9,13 +9,16 @@ const NETWORK_DELAY_MS = Number(process.env.MOCK_DELAY ?? 450); // simulate API 
 const user = { id: 42, email: 'measure@rtp.test', name: 'Measure User', role: 'member' };
 
 // A realistic, multi-section membership payload (drives many dashboard sections).
+// HOSTILE ordering on purpose: types are interleaved (NOT category-grouped) and
+// one membership is `expiring` — this reproduces the two ordering/filtering
+// shift bugs the SSR fix must be robust against.
 const memberships = [
-	{ id: 'day-trading-room', name: 'Day Trading Room', type: 'trading-room', slug: 'day-trading-room', status: 'active', icon: 'bolt' },
-	{ id: 'swing-trading-room', name: 'Swing Trading Room', type: 'trading-room', slug: 'swing-trading-room', status: 'active', icon: 'trending-up' },
 	{ id: 'spx-profit-pulse', name: 'SPX Profit Pulse', type: 'alert-service', slug: 'spx-profit-pulse', status: 'active', icon: 'bell' },
-	{ id: 'explosive-swings', name: 'Explosive Swings', type: 'alert-service', slug: 'explosive-swings', status: 'active', icon: 'rocket' },
+	{ id: 'day-trading-room', name: 'Day Trading Room', type: 'trading-room', slug: 'day-trading-room', status: 'active', icon: 'bolt' },
 	{ id: 'small-account-mentorship', name: 'Small Account Mentorship', type: 'course', slug: 'small-account-mentorship', status: 'active', icon: 'school' },
-	{ id: 'high-octane-scanner', name: 'High Octane Scanner', type: 'indicator', slug: 'high-octane-scanner', status: 'active', icon: 'chart-candle' }
+	{ id: 'explosive-swings', name: 'Explosive Swings', type: 'alert-service', slug: 'explosive-swings', status: 'expiring', icon: 'rocket' },
+	{ id: 'high-octane-scanner', name: 'High Octane Scanner', type: 'indicator', slug: 'high-octane-scanner', status: 'active', icon: 'chart-candle' },
+	{ id: 'swing-trading-room', name: 'Swing Trading Room', type: 'trading-room', slug: 'swing-trading-room', status: 'active', icon: 'trending-up' }
 ];
 
 const watchlist = {
