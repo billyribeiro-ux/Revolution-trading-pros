@@ -4,6 +4,7 @@
 	import { usersApi, AdminApiError } from '$lib/api/admin';
 	import { IconPlus, IconUser, IconEdit, IconTrash, IconShield } from '$lib/icons';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
 
 	let loading = $state(true);
 	interface AdminUser {
@@ -106,9 +107,9 @@
 		</header>
 
 		{#if loading}
-			<div class="loading">
-				<div class="spinner"></div>
-				<p>Loading users...</p>
+			<!-- Skeleton rows reserve the table footprint to avoid CLS -->
+			<div class="users-table">
+				<SkeletonLoader variant="table-row" count={8} />
 			</div>
 		{:else if error}
 			<div class="error-state">
@@ -354,28 +355,11 @@
 		background: rgba(148, 163, 184, 0.2);
 	}
 
-	.loading,
 	.error-state,
 	.empty-state {
 		text-align: center;
 		padding: 4rem 2rem;
 		color: #94a3b8;
-	}
-
-	.loading .spinner {
-		width: 48px;
-		height: 48px;
-		border: 4px solid rgba(148, 163, 184, 0.1);
-		border-top-color: var(--primary-500);
-		border-radius: 50%;
-		animation: spin 1s linear infinite;
-		margin: 0 auto 1rem;
-	}
-
-	@keyframes spin {
-		to {
-			transform: rotate(360deg);
-		}
 	}
 
 	.empty-state {

@@ -3,6 +3,7 @@
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { membersStore, emailStore } from '$lib/stores/members.svelte';
+	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
 	import type { Member, MemberFilters, MemberFullDetails } from '$lib/api/members';
 	// FIX-2026-04-26: alert() calls replaced with existing toastStore import below.
 	import {
@@ -596,10 +597,8 @@
 		<!-- Members Table -->
 		<div class="members-table-container">
 			{#if loading}
-				<div class="loading-state">
-					<div class="loader"></div>
-					<p>Loading members...</p>
-				</div>
+				<!-- Skeleton rows reserve the members-table footprint to avoid CLS -->
+				<SkeletonLoader variant="table-row" count={8} />
 			{:else if members.length === 0}
 				<div class="empty-state">
 					<IconUsers size={64} stroke={1} />
@@ -1023,7 +1022,6 @@
 		backdrop-filter: blur(10px);
 	}
 
-	.loading-state,
 	.empty-state {
 		display: flex;
 		flex-direction: column;
@@ -1031,21 +1029,6 @@
 		justify-content: center;
 		padding: 4rem 2rem;
 		color: var(--text-tertiary);
-	}
-
-	.loader {
-		width: 48px;
-		height: 48px;
-		border: 4px solid rgba(230, 184, 0, 0.2);
-		border-top-color: var(--primary-500);
-		border-radius: 50%;
-		animation: spin 1s linear infinite;
-	}
-
-	@keyframes spin {
-		to {
-			transform: rotate(360deg);
-		}
 	}
 
 	.empty-state h3 {
