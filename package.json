@@ -4,7 +4,9 @@
   "private": true,
   "packageManager": "pnpm@11.1.2",
   "scripts": {
-    "dev:all": "concurrently --names \"api,web\" --prefix-colors \"yellow,cyan\" \"cd api && cargo run\" \"pnpm --filter revolution-svelte dev\"",
+    "dev:all": "docker compose up -d db redis meili && concurrently --names \"api,web\" --prefix-colors \"yellow,cyan\" \"cd api && cargo run\" \"pnpm --filter revolution-svelte dev\"",
+    "dev:docker": "docker compose up -d db redis meili",
+    "dev:docker:stop": "docker compose stop db redis meili",
     "dev": "pnpm --filter revolution-svelte dev",
     "build": "pnpm --filter revolution-svelte build",
     "preview": "pnpm --filter revolution-svelte preview",
