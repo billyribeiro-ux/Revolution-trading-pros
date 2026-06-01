@@ -38,14 +38,63 @@ export const prerender = false;
  * Server load function - receives authenticated user from hooks.server.ts
  * If user is not authenticated, hooks.server.ts already redirected to login
  */
-export const load: LayoutServerLoad = async ({ locals }) => {
+/**
+ * Minimal flat membership shape the sidebar needs to render its dynamic nav.
+ * Kept intentionally small — categorization happens by `type` in the sidebar.
+ */
+interface SidebarMembership {
+	id: string;
+	name: string;
+	type: string;
+	slug: string;
+	status: string;
+	icon?: string;
+}
+
+export const load: LayoutServerLoad = async ({ locals, fetch }) => {
 	// User is guaranteed to exist here because hooks.server.ts
 	// redirects to login if not authenticated
 	// ICT 7 FIX: Also pass accessToken for server-side API calls in child pages
+	const user =
+		(locals as { user?: { id: string; email: string; name?: string; role?: string } }).user ??
+		null;
+
+	// CLS FIX (evidence: measured 0.12 CLS on /dashboard from the sidebar nav
+	// popping in after a client-side fetch): pre-fetch the membership list on the
+	// server so DashboardSidebar renders its trading-room/mentorship/scanner nav
+	// sections on first paint. The client still refreshes via getUserMemberships()
+	// — identical data, so no further layout shift. The internal `fetch` forwards
+	// the auth cookie through the /api proxy.
+	let memberships: SidebarMembership[] = [];
+	if (user) {
+		try {
+			const res = await fetch('/api/user/memberships');
+			if (res.ok) {
+				const body = await res.json();
+				const raw = body?.data?.memberships ?? body?.memberships ?? body?.data ?? [];
+				if (Array.isArray(raw)) {
+					memberships = raw
+						.filter((m) => m && (m.status === 'active' || m.status === 'expiring'))
+						.map((m) => ({
+							id: String(m.id ?? m.slug ?? ''),
+							name: m.name ?? '',
+							type: m.type ?? '',
+							slug: m.slug ?? '',
+							status: m.status ?? 'active',
+							icon: m.icon ?? undefined
+						}));
+				}
+			}
+		} catch {
+			// Non-fatal: the client fetch will populate the sidebar. Worst case is
+			// the pre-fix behaviour (a single late paint), never a broken page.
+			memberships = [];
+		}
+	}
+
 	return {
-		user:
-			(locals as { user?: { id: string; email: string; name?: string; role?: string } }).user ??
-			null,
-		accessToken: (locals as { accessToken?: string | null }).accessToken ?? null
+		user,
+		accessToken: (locals as { accessToken?: string | null }).accessToken ?? null,
+		memberships
 	};
 };
