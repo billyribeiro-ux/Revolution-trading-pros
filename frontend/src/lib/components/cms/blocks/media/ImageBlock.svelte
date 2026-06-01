@@ -399,7 +399,7 @@
 				<img
 					src={sanitizedURL}
 					{srcset}
-					sizes="(max-width: 480px) 100vw, (max-width: 767.98px) 90vw, (max-width: 1199.98px) 80vw, 1200px"
+					sizes="(max-width: 479.98px) 100vw, (max-width: 767.98px) 90vw, (max-width: 1199.98px) 80vw, 1200px"
 					alt={imageAlt}
 					loading="lazy"
 					decoding="async"
@@ -423,7 +423,7 @@
 					<img
 						src={sanitizedURL}
 						{srcset}
-						sizes="(max-width: 480px) 100vw, (max-width: 767.98px) 90vw, (max-width: 1199.98px) 80vw, 1200px"
+						sizes="(max-width: 479.98px) 100vw, (max-width: 767.98px) 90vw, (max-width: 1199.98px) 80vw, 1200px"
 						alt={imageAlt}
 						loading="lazy"
 						decoding="async"

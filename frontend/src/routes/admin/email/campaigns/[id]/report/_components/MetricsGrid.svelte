@@ -269,7 +269,7 @@
 		background: radial-gradient(circle, var(--admin-widget-red-bg) 0%, transparent 70%);
 	}
 
-	@media (max-width: 480px) {
+	@media (max-width: 479.98px) {
 		.metric-value {
 			font-size: 1.5rem;
 		}

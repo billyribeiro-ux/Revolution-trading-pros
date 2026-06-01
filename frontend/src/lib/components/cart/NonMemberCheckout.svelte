@@ -1170,7 +1170,7 @@
 		}
 	}
 
-	@media screen and (max-width: 480px) {
+	@media screen and (max-width: 479.98px) {
 		.checkout-nonmember {
 			padding: 20px 0;
 		}

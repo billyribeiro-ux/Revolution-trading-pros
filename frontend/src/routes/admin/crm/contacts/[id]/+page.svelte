@@ -799,7 +799,7 @@
 		}
 	}
 
-	@media (max-width: 480px) {
+	@media (max-width: 479.98px) {
 		.toast {
 			left: 16px;
 			right: 16px;

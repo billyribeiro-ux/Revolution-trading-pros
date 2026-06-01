@@ -175,7 +175,7 @@
 	}
 
 	/* Responsive */
-	@media (max-width: 480px) {
+	@media (max-width: 479.98px) {
 		.api-error {
 			flex-direction: column;
 			align-items: stretch;

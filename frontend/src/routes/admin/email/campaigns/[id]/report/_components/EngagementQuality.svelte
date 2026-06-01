@@ -199,7 +199,7 @@
 		color: var(--text-tertiary);
 	}
 
-	@media (max-width: 480px) {
+	@media (max-width: 479.98px) {
 		.ctor-value {
 			font-size: 2rem;
 		}

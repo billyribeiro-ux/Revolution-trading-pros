@@ -450,7 +450,7 @@
 		}
 	}
 
-	@media (max-width: 480px) {
+	@media (max-width: 479.98px) {
 		.modal-title-section h3 {
 			font-size: 1rem;
 		}
