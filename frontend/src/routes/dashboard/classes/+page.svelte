@@ -13,6 +13,7 @@
 -->
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import LoadingState from '$lib/components/dashboard/LoadingState.svelte';
 	interface EnrolledCourse {
 		id: number;
 		course_id: string;
@@ -144,11 +145,9 @@
 
 			<!-- Loading State -->
 			{#if loading}
+				<!-- Skeleton mirrors the class-card grid to avoid CLS -->
 				<div class="dashboard__content">
-					<div class="loading-state">
-						<div class="spinner"></div>
-						<p>Loading your classes...</p>
-					</div>
+					<LoadingState variant="card" count={6} columns={3} />
 				</div>
 
 				<!-- Error State -->
@@ -460,36 +459,6 @@
 		border-bottom: 1px solid #e5e7eb;
 	}
 
-	/* Loading State */
-	.loading-state {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		padding: 80px 20px;
-		text-align: center;
-	}
-
-	.spinner {
-		width: 40px;
-		height: 40px;
-		border: 3px solid #e5e7eb;
-		border-top-color: #143e59;
-		border-radius: 50%;
-		animation: spin 1s linear infinite;
-		margin-bottom: 16px;
-	}
-
-	@keyframes spin {
-		to {
-			transform: rotate(360deg);
-		}
-	}
-
-	.loading-state p {
-		color: #6b7280;
-		font-size: 16px;
-	}
 
 	/* Error State */
 	.error-state {

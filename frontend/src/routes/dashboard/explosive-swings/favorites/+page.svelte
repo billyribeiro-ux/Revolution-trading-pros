@@ -9,7 +9,7 @@
 	 */
 	import { onMount } from 'svelte';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
-	import LoadingState from '../components/LoadingState.svelte';
+	import LoadingState from '$lib/components/dashboard/LoadingState.svelte';
 	import { logger } from '$lib/utils/logger';
 
 	const ROOM_SLUG = 'explosive-swings';

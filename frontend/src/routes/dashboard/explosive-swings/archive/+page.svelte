@@ -8,7 +8,7 @@
 	 */
 	import { onMount } from 'svelte';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
-	import LoadingState from '../components/LoadingState.svelte';
+	import LoadingState from '$lib/components/dashboard/LoadingState.svelte';
 	import { ROOM_SLUG } from '../constants';
 
 	interface ArchivedWeek {
