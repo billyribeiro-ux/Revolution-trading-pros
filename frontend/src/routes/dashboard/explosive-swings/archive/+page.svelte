@@ -8,6 +8,7 @@
 	 */
 	import { onMount } from 'svelte';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
+	import LoadingState from '../components/LoadingState.svelte';
 	import { ROOM_SLUG } from '../constants';
 
 	interface ArchivedWeek {
@@ -178,10 +179,8 @@
 
 	<section class="content-section">
 		{#if isLoading}
-			<div class="loading-state">
-				<div class="spinner"></div>
-				<p>Loading archive...</p>
-			</div>
+			<!-- Skeleton mirrors the archive card grid to avoid CLS -->
+			<LoadingState variant="card" count={6} columns={3} />
 		{:else if error}
 			<div class="error-state" role="alert">
 				<svg
@@ -588,8 +587,7 @@
 		color: var(--color-text-primary);
 	}
 
-	/* Loading/Error/Empty States */
-	.loading-state,
+	/* Error/Empty States */
 	.error-state,
 	.empty-state {
 		display: flex;
@@ -603,23 +601,6 @@
 		border: 1px solid var(--color-border-default);
 	}
 
-	.spinner {
-		width: 40px;
-		height: 40px;
-		border: 3px solid var(--color-border-default);
-		border-top-color: var(--color-brand-primary);
-		border-radius: 50%;
-		animation: spin 0.8s linear infinite;
-		margin-bottom: var(--space-4);
-	}
-
-	@keyframes spin {
-		to {
-			transform: rotate(360deg);
-		}
-	}
-
-	.loading-state p,
 	.empty-state p {
 		color: var(--color-text-tertiary);
 		margin: 0;

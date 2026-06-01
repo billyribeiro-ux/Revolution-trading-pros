@@ -9,6 +9,7 @@
 	 */
 	import { onMount } from 'svelte';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
+	import LoadingState from '../components/LoadingState.svelte';
 	import type { TradePlanEntry } from '$lib/types/trading';
 
 	const ROOM_SLUG = 'explosive-swings';
@@ -105,12 +106,9 @@
 		{/if}
 	</div>
 
-	<!-- Loading State -->
+	<!-- Loading State — skeleton grid mirrors the watchlist card layout to avoid CLS -->
 	{#if isLoading}
-		<div class="loading-state">
-			<div class="spinner"></div>
-			<p>Loading watchlist...</p>
-		</div>
+		<LoadingState variant="position" count={6} columns={3} />
 	{:else if error}
 		<!-- Error State -->
 		<div class="error-state">
@@ -248,35 +246,6 @@
 		border-radius: 9999px;
 		font-size: 12px;
 		font-weight: 600;
-	}
-
-	/* Loading State */
-	.loading-state {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		padding: 80px 20px;
-	}
-
-	.spinner {
-		width: 40px;
-		height: 40px;
-		border: 4px solid #e5e7eb;
-		border-top-color: #f69532;
-		border-radius: 50%;
-		animation: spin 1s linear infinite;
-	}
-
-	@keyframes spin {
-		to {
-			transform: rotate(360deg);
-		}
-	}
-
-	.loading-state p {
-		margin-top: 16px;
-		color: #666;
 	}
 
 	/* Error State */
