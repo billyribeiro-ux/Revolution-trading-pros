@@ -178,7 +178,7 @@
 		color: #94a3b8;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.form-row {
 			grid-template-columns: 1fr;
 		}

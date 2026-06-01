@@ -209,7 +209,7 @@
 		margin-bottom: 2rem;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.admin-forms-create {
 			padding: 1rem;
 		}

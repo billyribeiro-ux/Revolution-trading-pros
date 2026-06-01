@@ -986,7 +986,7 @@
 	/* =====================================================
 	   Responsive
 	   ===================================================== */
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.section-header {
 			flex-direction: column;
 			align-items: flex-start;

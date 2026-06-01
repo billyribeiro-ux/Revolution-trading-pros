@@ -37,7 +37,7 @@
 		font-size: 0.875rem;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.page-header h1 {
 			font-size: 1.5rem;
 		}

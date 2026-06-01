@@ -223,7 +223,7 @@
 		border-color: #475569;
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.contact-header {
 			flex-direction: column;
 		}

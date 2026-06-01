@@ -385,7 +385,7 @@
 		font-size: 14px;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.coupons-grid {
 			grid-template-columns: 1fr;
 		}

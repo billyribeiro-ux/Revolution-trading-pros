@@ -1672,7 +1672,7 @@
 		border-color: rgba(239, 68, 68, 0.5);
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.admin-popups-new {
 			padding: 1rem;
 		}

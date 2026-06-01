@@ -917,7 +917,7 @@
 		color: #64748b;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.actions-row {
 			flex-direction: column;
 			gap: 0.75rem;

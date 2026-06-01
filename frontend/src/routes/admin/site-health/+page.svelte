@@ -1892,7 +1892,7 @@
 	   Responsive
 	   ═══════════════════════════════════════════════════════════════════════════════ */
 
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		.score-section {
 			flex-direction: column;
 			text-align: center;
@@ -1908,7 +1908,7 @@
 		}
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.admin-site-health {
 			padding: 1rem;
 		}

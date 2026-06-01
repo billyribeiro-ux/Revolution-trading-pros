@@ -433,7 +433,7 @@
 		}
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.ticker-heatmap {
 			padding: 16px;
 		}

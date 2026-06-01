@@ -880,7 +880,7 @@
 		background: #0d2a3d;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.admin-schedules {
 			padding: 16px;
 		}

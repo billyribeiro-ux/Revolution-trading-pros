@@ -225,7 +225,7 @@
 		}
 
 		/* Responsive */
-		@media (max-width: 768px) {
+		@media (max-width: 767.98px) {
 			.floating-toc-widget {
 				bottom: 16px;
 				right: 16px;

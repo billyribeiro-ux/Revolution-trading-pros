@@ -117,7 +117,7 @@
 	}
 
 	/* Responsive adjustments */
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.breadcrumbs {
 			padding: 8px 16px;
 			font-size: 14px;

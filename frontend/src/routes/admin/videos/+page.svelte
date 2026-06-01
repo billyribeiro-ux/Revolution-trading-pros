@@ -3161,7 +3161,7 @@
 	/* Embed Code Modal */
 	/* .embed-title / .embed-code-box / .embed-hint — moved to _components/EmbedCodeModal.svelte */
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.room-tabs {
 			flex-direction: column;
 		}

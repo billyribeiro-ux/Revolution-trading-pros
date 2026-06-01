@@ -145,7 +145,7 @@
 		font-size: 0.8125rem;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.filters-bar {
 			flex-wrap: wrap;
 		}

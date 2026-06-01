@@ -650,7 +650,7 @@
 		border-color: #fca5a5;
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.repeater-item__field {
 			width: 100%;
 		}

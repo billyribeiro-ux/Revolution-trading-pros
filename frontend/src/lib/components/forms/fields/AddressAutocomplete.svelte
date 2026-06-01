@@ -658,7 +658,7 @@
 		color: #dc2626;
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.field-row {
 			flex-direction: column;
 		}

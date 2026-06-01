@@ -360,7 +360,7 @@
 	}
 
 	/* Responsive */
-	@media (max-width: 1200px) {
+	@media (max-width: 1199.98px) {
 		.grid-item.wide {
 			grid-column: span 12;
 		}
@@ -370,7 +370,7 @@
 		}
 	}
 
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		.grid-item {
 			grid-column: span 12;
 		}
@@ -380,7 +380,7 @@
 		}
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.page-header {
 			padding: 16px;
 		}

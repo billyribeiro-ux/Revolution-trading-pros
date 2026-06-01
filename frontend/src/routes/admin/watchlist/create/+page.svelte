@@ -777,7 +777,7 @@
 	}
 
 	/* Responsive */
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.create-page {
 			padding: 16px;
 		}

@@ -1507,7 +1507,7 @@
 	}
 
 	/* Responsive */
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.scheduling-panel {
 			max-height: 100vh;
 			border-radius: 12px 12px 0 0;

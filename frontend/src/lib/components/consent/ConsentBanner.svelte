@@ -870,7 +870,7 @@
 	}
 
 	/* Responsive */
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.consent-banner__content {
 			flex-direction: column;
 			text-align: center;

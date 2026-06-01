@@ -507,7 +507,7 @@
 		font-size: 0.9rem;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.news-sitemap-page {
 			padding: 1rem;
 		}

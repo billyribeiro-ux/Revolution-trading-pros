@@ -471,7 +471,7 @@
 	}
 
 	/* Mobile */
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.filters-container {
 			padding: 12px;
 		}

@@ -579,7 +579,7 @@
 		color: var(--text-muted, #6b7280);
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.queue-stats,
 		.usage-grid {
 			grid-template-columns: repeat(2, 1fr);

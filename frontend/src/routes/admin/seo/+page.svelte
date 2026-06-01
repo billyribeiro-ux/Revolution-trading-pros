@@ -1071,7 +1071,7 @@
 	   Responsive
 	   ═══════════════════════════════════════════════════════════════════════════════ */
 
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		.dashboard-header {
 			flex-direction: column;
 			gap: 1.5rem;
@@ -1088,7 +1088,7 @@
 		}
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.seo-dashboard {
 			padding: 1rem;
 		}

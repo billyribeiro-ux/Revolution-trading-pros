@@ -1394,13 +1394,13 @@
 		gap: 0.75rem;
 	}
 
-	@media (max-width: 1200px) {
+	@media (max-width: 1199.98px) {
 		.quick-actions-grid {
 			grid-template-columns: repeat(4, 1fr);
 		}
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.quick-actions-grid {
 			grid-template-columns: repeat(3, 1fr);
 		}

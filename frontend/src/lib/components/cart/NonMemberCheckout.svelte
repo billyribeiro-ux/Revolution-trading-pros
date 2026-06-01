@@ -1143,7 +1143,7 @@
 		}
 	}
 
-	@media screen and (max-width: 768px) {
+	@media screen and (max-width: 767.98px) {
 		.checkout-nav ul {
 			flex-direction: column;
 		}

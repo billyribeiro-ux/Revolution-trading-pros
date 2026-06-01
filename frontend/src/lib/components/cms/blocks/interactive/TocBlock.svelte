@@ -537,7 +537,7 @@
 		padding-left: 3rem;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.toc-block {
 			position: relative;
 		}

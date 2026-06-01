@@ -232,7 +232,7 @@
 		margin: 0;
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.nps-scale {
 			flex-direction: column;
 			align-items: flex-start;

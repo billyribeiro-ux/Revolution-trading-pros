@@ -488,7 +488,7 @@
 	}
 
 	/* Responsive */
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.history-page {
 			padding: 16px;
 		}
@@ -510,7 +510,7 @@
 		}
 	}
 
-	@media (max-width: 576px) {
+	@media (max-width: 575.98px) {
 		.downloads-table {
 			font-size: 13px;
 		}

@@ -476,7 +476,7 @@
 		border-bottom: 1px solid #e2e8f0;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.form-row {
 			flex-direction: column;
 		}

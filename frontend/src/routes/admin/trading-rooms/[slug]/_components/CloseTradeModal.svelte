@@ -327,7 +327,7 @@
 		color: #991b1b;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.form-row {
 			flex-direction: column;
 		}

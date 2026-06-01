@@ -174,7 +174,7 @@
 	}
 
 	/* Mobile */
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.batch-operations {
 			flex-direction: column;
 			align-items: stretch;

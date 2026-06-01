@@ -1234,7 +1234,7 @@
 		gap: 0.75rem;
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.action-type-grid {
 			grid-template-columns: 1fr;
 		}
@@ -1421,7 +1421,7 @@
 	}
 
 	/* Responsive */
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.edit-automation-page {
 			padding: 16px;
 		}

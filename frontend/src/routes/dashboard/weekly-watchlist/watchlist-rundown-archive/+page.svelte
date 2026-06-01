@@ -395,7 +395,7 @@
 	}
 
 	/* Responsive */
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.dashboard__header,
 		.dashboard__content-section {
 			padding: 15px 20px;

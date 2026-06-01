@@ -353,7 +353,7 @@
 		}
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.setup-breakdown {
 			padding: 16px;
 		}

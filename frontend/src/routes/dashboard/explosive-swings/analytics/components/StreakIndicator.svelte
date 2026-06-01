@@ -445,7 +445,7 @@
 		}
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.streak-indicator {
 			padding: 16px;
 		}

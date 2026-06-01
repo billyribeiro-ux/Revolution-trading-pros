@@ -362,7 +362,7 @@
 		background: #e5e7eb;
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.video-info {
 			padding: 20px;
 		}

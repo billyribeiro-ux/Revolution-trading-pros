@@ -198,7 +198,7 @@
 	}
 
 	/* Mobile */
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.alert-card {
 			padding: 12px 16px;
 		}

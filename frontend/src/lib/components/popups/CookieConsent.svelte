@@ -713,7 +713,7 @@
 	}
 
 	/* Mobile responsive */
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.cookie-consent {
 			max-width: 100%;
 			width: 100%;

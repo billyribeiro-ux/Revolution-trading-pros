@@ -805,7 +805,7 @@
 		color: #374151;
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.format-options,
 		.source-options {
 			grid-template-columns: 1fr;

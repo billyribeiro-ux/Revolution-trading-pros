@@ -1574,7 +1574,7 @@
 	   Mobile Responsive
 	   ======================================================================== */
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.gallery-grid {
 			grid-template-columns: repeat(min(var(--gallery-columns, 3), 2), 1fr);
 		}

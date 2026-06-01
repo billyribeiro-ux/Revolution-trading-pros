@@ -1968,7 +1968,7 @@
 	}
 
 	/* Responsive */
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		.library-modal {
 			max-width: 100%;
 		}
@@ -1978,7 +1978,7 @@
 		}
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.library-sidebar {
 			width: 200px;
 		}

@@ -151,7 +151,7 @@
 		box-shadow: 0 4px 12px rgba(20, 62, 89, 0.3);
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.editor-header {
 			flex-direction: column;
 			gap: 16px;

@@ -792,7 +792,7 @@
 		flex-shrink: 0;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.field-wrapper {
 			width: 100%;
 		}

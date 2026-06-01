@@ -285,13 +285,13 @@
 		color: #999;
 	}
 
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		.page-content {
 			grid-template-columns: 280px 1fr;
 		}
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.page-content {
 			grid-template-columns: 1fr;
 		}

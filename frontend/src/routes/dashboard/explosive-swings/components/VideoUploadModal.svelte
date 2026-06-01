@@ -1399,7 +1399,7 @@
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	/* Tablets and small laptops */
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.modal-container {
 			max-width: 95%;
 		}
@@ -1419,7 +1419,7 @@
 	}
 
 	/* Mobile devices */
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.modal-portal {
 			padding: 0;
 			align-items: flex-end;

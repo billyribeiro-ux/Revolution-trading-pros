@@ -300,7 +300,7 @@
 	}
 
 	/* Responsive: Stack on smaller screens */
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.updates-grid {
 			grid-template-columns: repeat(3, 1fr);
 			gap: 8px;

@@ -587,7 +587,7 @@
 		margin-top: 0.5rem;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.themes-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}

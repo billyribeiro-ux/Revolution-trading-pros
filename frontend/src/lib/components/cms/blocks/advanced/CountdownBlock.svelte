@@ -493,7 +493,7 @@
 	   Responsive Design
 	   ========================================================================= */
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.countdown-block {
 			padding: 2rem 1.25rem;
 		}

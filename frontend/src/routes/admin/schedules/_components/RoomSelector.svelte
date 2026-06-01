@@ -108,7 +108,7 @@
 		color: #64748b;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.room-tabs {
 			overflow-x: auto;
 			flex-wrap: nowrap;

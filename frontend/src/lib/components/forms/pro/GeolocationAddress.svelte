@@ -530,7 +530,7 @@
 	}
 
 	/* Responsive */
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.address-fields {
 			grid-template-columns: 1fr;
 		}

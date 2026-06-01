@@ -1100,7 +1100,7 @@
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	/* Tablet Landscape (< 1024px) */
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		.grid-row {
 			grid-template-columns: 1fr;
 		}
@@ -1113,7 +1113,7 @@
 	}
 
 	/* Mobile Landscape (< 768px) */
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.header-actions {
 			width: 100%;
 			flex-wrap: wrap;
@@ -1129,7 +1129,7 @@
 	}
 
 	/* Mobile Portrait (< 640px) */
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.dashboard-content {
 			padding: 0.75rem;
 		}

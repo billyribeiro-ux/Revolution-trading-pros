@@ -261,7 +261,7 @@
 		margin: 0;
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.filter-tabs {
 			overflow-x: auto;
 			-webkit-overflow-scrolling: touch;

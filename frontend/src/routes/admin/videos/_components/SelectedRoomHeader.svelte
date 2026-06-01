@@ -85,7 +85,7 @@
 		color: var(--text-tertiary);
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.selected-room-header {
 			flex-direction: column;
 			gap: 1rem;

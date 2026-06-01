@@ -233,7 +233,7 @@
 		color: #34d399;
 	}
 
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		.preview-section {
 			position: static;
 			order: -1;

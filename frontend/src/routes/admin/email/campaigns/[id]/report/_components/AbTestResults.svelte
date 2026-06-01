@@ -175,7 +175,7 @@
 		gap: 1.5rem;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.ab-variants {
 			grid-template-columns: 1fr;
 		}

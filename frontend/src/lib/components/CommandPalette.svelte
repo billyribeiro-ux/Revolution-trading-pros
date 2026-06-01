@@ -669,7 +669,7 @@
 		gap: 0.25rem;
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.command-palette-overlay {
 			padding: 1rem;
 			padding-top: 5vh;

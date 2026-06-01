@@ -262,7 +262,7 @@
 		border-radius: 4px;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.page-heading {
 			font-size: 32px;
 			text-align: center;

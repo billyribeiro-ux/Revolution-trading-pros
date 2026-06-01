@@ -538,7 +538,7 @@
 		border-bottom: 1px solid #e9ecef;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.subscription_details td:first-child {
 			width: auto;
 		}

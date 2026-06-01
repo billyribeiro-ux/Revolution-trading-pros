@@ -399,7 +399,7 @@
 				<img
 					src={sanitizedURL}
 					{srcset}
-					sizes="(max-width: 480px) 100vw, (max-width: 768px) 90vw, (max-width: 1200px) 80vw, 1200px"
+					sizes="(max-width: 480px) 100vw, (max-width: 767.98px) 90vw, (max-width: 1199.98px) 80vw, 1200px"
 					alt={imageAlt}
 					loading="lazy"
 					decoding="async"
@@ -423,7 +423,7 @@
 					<img
 						src={sanitizedURL}
 						{srcset}
-						sizes="(max-width: 480px) 100vw, (max-width: 768px) 90vw, (max-width: 1200px) 80vw, 1200px"
+						sizes="(max-width: 480px) 100vw, (max-width: 767.98px) 90vw, (max-width: 1199.98px) 80vw, 1200px"
 						alt={imageAlt}
 						loading="lazy"
 						decoding="async"
@@ -1226,7 +1226,7 @@
 	 * Mobile Responsive
 	 * ========================================================================== */
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.image-block__image {
 			max-height: 50vh;
 		}

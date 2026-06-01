@@ -253,7 +253,7 @@
 		background: rgba(239, 68, 68, 0.1);
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.deal-header {
 			flex-direction: column;
 		}

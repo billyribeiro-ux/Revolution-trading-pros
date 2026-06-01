@@ -110,7 +110,7 @@
 		border-color: #143e59;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.form-grid {
 			grid-template-columns: 1fr;
 		}

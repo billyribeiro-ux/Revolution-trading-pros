@@ -308,7 +308,7 @@
 		font-size: 14px;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.table {
 			display: block;
 			overflow-x: auto;

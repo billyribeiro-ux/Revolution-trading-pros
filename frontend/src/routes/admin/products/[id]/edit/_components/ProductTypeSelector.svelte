@@ -84,7 +84,7 @@
 		font-weight: 500;
 	}
 
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		.type-selector {
 			grid-template-columns: repeat(2, 1fr);
 		}

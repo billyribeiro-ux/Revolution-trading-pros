@@ -69,7 +69,7 @@
 		font-weight: 500;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.stats-bar {
 			gap: 1.5rem;
 			padding: 0.875rem 1rem;

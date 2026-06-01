@@ -305,7 +305,7 @@
 		font-size: 0.9rem;
 	}
 
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		.form-row {
 			grid-template-columns: 1fr;
 		}

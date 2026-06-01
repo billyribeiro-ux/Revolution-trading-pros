@@ -1081,7 +1081,7 @@
 		}
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.stats-grid {
 			grid-template-columns: 1fr;
 		}
@@ -1819,7 +1819,7 @@
 	}
 
 	/* Responsive */
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.admin-crm-deals {
 			padding: 1rem;
 		}

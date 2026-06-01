@@ -233,7 +233,7 @@
 	}
 
 	/* Responsive */
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.dashboard__header {
 			padding: 15px 20px;
 		}

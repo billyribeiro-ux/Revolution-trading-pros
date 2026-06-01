@@ -1149,7 +1149,7 @@
 	}
 
 	/* Responsive */
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.drop-zone {
 			padding: 1.5rem;
 			min-height: 120px;
@@ -1262,7 +1262,7 @@
 		color: #f1f5f9;
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.library-actions {
 			flex-direction: column;
 		}

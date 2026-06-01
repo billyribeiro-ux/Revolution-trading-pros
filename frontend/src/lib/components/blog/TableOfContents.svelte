@@ -730,7 +730,7 @@
 	}
 
 	/* Responsive */
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		.toc-sidebar {
 			position: static;
 			width: 100%;
@@ -743,7 +743,7 @@
 		}
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.toc-floating {
 			left: 16px;
 			right: 16px;

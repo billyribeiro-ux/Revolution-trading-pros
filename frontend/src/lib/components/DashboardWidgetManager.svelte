@@ -790,7 +790,7 @@
 		box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.widget-manager-overlay {
 			padding: 1rem;
 		}

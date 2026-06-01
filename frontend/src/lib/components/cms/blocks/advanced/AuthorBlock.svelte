@@ -847,7 +847,7 @@
 	 * Responsive - Mobile Stacking with Center Alignment
 	 * ========================================================================== */
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.author-block {
 			flex-direction: column;
 			align-items: center;

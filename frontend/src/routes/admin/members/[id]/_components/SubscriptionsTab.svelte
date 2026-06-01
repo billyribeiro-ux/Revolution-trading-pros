@@ -244,7 +244,7 @@
 		border-color: rgba(239, 68, 68, 0.6);
 	}
 
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		.subscription-details {
 			grid-template-columns: repeat(2, 1fr);
 		}

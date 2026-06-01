@@ -133,19 +133,19 @@
 		margin-top: 0.5rem;
 	}
 
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		.stats-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.stats-grid {
 			grid-template-columns: 1fr;
 		}
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.stat-card {
 			padding: 1rem;
 		}

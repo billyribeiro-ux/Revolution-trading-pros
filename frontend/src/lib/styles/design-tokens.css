@@ -234,16 +234,33 @@
 	--z-tooltip: 700;
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-     BREAKPOINTS (reference only - use in media queries)
-     ═══════════════════════════════════════════════════════════════════════════ */
+     BREAKPOINTS — SINGLE SOURCE OF TRUTH (the canonical responsive scale)
+     ═══════════════════════════════════════════════════════════════════════════
+     CSS custom properties CANNOT be used inside @media conditions, so these are
+     authoritative reference values, not consumable tokens. Every media query in
+     the app MUST use one of these values — do not invent component-local
+     breakpoints (480/500/720/900/1100…); pick the nearest rung below.
 
-	/* 
-   * --bp-sm: 640px    Mobile landscape
-   * --bp-md: 768px    Tablet portrait
-   * --bp-lg: 1024px   Tablet landscape / Small desktop
-   * --bp-xl: 1280px   Desktop
-   * --bp-2xl: 1440px  Large desktop
-   * --bp-3xl: 1920px  Ultra-wide
+       sm   640px    Mobile landscape
+       md   768px    Tablet portrait
+       lg  1024px    Tablet landscape / small desktop
+       xl  1280px    Desktop
+       2xl 1440px    Large desktop
+       3xl 1920px    Ultra-wide
+
+     NO-CONFLICT BOUNDARY RULE (mandatory, mirrors Bootstrap 5):
+       A breakpoint value is the START of the larger range. To prevent a value
+       from matching BOTH a max-width and a min-width rule at the exact pixel
+       (an order-dependent double-fire that causes layout shift), the max-width
+       side is always EXCLUSIVE via -0.02px:
+
+         @media (min-width: 768px)     { … }   ← tablet and up (inclusive start)
+         @media (max-width: 767.98px)  { … }   ← phones only  (stops before 768)
+
+       Equivalent modern range syntax — also non-overlapping — is allowed:
+         @media (width >= 768px) { … }   /  @media (width < 768px) { … }
+
+       Never pair (max-width: Npx) with (min-width: Npx) on the same N.
    */
 }
 

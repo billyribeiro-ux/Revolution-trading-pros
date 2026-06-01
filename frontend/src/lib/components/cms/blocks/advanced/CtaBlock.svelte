@@ -538,7 +538,7 @@
 	   Responsive Design
 	   ========================================================================= */
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.cta-block {
 			padding: 3rem 1.5rem;
 		}

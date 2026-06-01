@@ -35,7 +35,7 @@
 		margin: 0.25rem 0 0;
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.page-header {
 			flex-direction: column;
 			align-items: flex-start;

@@ -419,7 +419,7 @@
 		min-width: 0;
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.field-wrapper {
 			width: 100%;
 		}

@@ -237,7 +237,7 @@
 		color: #f1f5f9;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.header-content {
 			flex-direction: column;
 			gap: 1.5rem;

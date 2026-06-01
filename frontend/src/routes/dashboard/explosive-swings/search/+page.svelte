@@ -340,7 +340,7 @@
 	}
 
 	/* Mobile Responsive */
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.search-container {
 			padding: 16px;
 		}

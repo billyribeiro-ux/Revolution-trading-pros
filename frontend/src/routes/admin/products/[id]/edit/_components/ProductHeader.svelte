@@ -100,7 +100,7 @@
 		cursor: not-allowed;
 	}
 
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		.header-content {
 			flex-direction: column;
 			gap: 1rem;

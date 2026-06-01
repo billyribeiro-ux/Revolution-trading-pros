@@ -315,7 +315,7 @@
 		}
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.batch-operations {
 			left: 1rem;
 			right: 1rem;

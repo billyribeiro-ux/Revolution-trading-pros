@@ -802,7 +802,7 @@
 	   The defaults above already work mobile-first; the previous
 	   max-width queries shrunk things further on small phones.
 	   ───────────────────────────────────────────────────────────────── */
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.hero {
 			padding-block: 5rem 3.75rem;
 			padding-inline: 1rem;

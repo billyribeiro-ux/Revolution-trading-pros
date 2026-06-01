@@ -449,7 +449,7 @@
 	}
 
 	/* Tablet breakpoint */
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		.marketing-footer {
 			padding: 3rem 0 1.5rem;
 		}
@@ -470,7 +470,7 @@
 	}
 
 	/* Mobile breakpoint */
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.marketing-footer {
 			padding: 2.5rem 0 1.5rem;
 		}

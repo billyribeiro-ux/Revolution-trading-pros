@@ -395,13 +395,13 @@
 	}
 
 	/* Responsive */
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		.skeleton-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.skeleton-grid {
 			grid-template-columns: 1fr;
 		}

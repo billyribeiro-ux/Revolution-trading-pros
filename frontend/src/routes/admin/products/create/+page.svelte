@@ -326,7 +326,7 @@
 	}
 
 	/* Responsive */
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		.content-grid {
 			grid-template-columns: 1fr;
 		}

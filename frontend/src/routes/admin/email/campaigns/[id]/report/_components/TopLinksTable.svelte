@@ -210,7 +210,7 @@
 		font-weight: 600;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.links-header,
 		.link-row {
 			grid-template-columns: 1.5fr 1fr 1fr;

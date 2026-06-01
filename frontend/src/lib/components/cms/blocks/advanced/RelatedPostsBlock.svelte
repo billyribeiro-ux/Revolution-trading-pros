@@ -562,13 +562,13 @@
 	}
 
 	/* Responsive */
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		.related-posts-container.layout-grid.cols-4 {
 			grid-template-columns: repeat(2, 1fr);
 		}
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.related-posts-container.layout-grid.cols-3,
 		.related-posts-container.layout-grid.cols-4 {
 			grid-template-columns: 1fr;

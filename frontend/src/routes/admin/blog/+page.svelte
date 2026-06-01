@@ -2330,7 +2330,7 @@
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	/* Tablet Landscape (< 1200px) */
-	@media (max-width: 1200px) {
+	@media (max-width: 1199.98px) {
 		.controls-bar {
 			flex-direction: column;
 			align-items: stretch;
@@ -2352,7 +2352,7 @@
 	}
 
 	/* Tablet Portrait (< 1024px) */
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		.posts-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}
@@ -2363,7 +2363,7 @@
 	}
 
 	/* Mobile Landscape / Tablet (< 768px) */
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.posts-grid {
 			grid-template-columns: 1fr;
 		}
@@ -2463,14 +2463,14 @@
 	}
 
 	/* Tablet (< 1024px) - hide extra columns */
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		:where(.hidden-tablet) {
 			display: none;
 		}
 	}
 
 	/* Mobile Portrait (< 640px) */
-	@media (max-width: 640px) {
+	@media (max-width: 639.98px) {
 		.page {
 			padding: 0.75rem;
 		}

@@ -539,7 +539,7 @@
 		}
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767.98px) {
 		.metrics-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}
@@ -618,7 +618,7 @@
 		gap: 1.5rem;
 	}
 
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		.content-grid {
 			grid-template-columns: 1fr;
 		}
@@ -635,7 +635,7 @@
 		grid-column: span 2;
 	}
 
-	@media (max-width: 1024px) {
+	@media (max-width: 1023.98px) {
 		.panel.full-width {
 			grid-column: span 1;
 		}
