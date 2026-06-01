@@ -228,6 +228,7 @@
 	   from --rtp-bg (#0a0a0a) — it visually pairs with the NavBar's slate
 	   identity to bracket the page. Do not unify with --rtp-bg. */
 	.marketing-footer {
+		--footer-grid-line: rgba(99, 102, 241, 0.04);
 		--footer-gradient-top: #1e293b;
 		--footer-gradient-bottom: #0f172a;
 		--footer-indigo-faint: color-mix(in oklab, var(--rtp-indigo) 10%, transparent);
@@ -250,10 +251,27 @@
 		max-width: 100%;
 		min-width: 0;
 		flex-shrink: 0;
-		overflow-x: clip; /* Prevents any horizontal overflow from breaking layout */
+		overflow-x: clip;
+		position: relative;
+	}
+
+	.marketing-footer::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background-image:
+			linear-gradient(var(--footer-grid-line) 1px, transparent 1px),
+			linear-gradient(90deg, var(--footer-grid-line) 1px, transparent 1px);
+		background-size: 60px 60px;
+		mask-image: radial-gradient(ellipse 100% 100% at 50% 0%, black 20%, transparent 80%);
+		-webkit-mask-image: radial-gradient(ellipse 100% 100% at 50% 0%, black 20%, transparent 80%);
+		pointer-events: none;
+		z-index: 0;
 	}
 
 	.footer-container {
+		position: relative;
+		z-index: 1;
 		max-width: 1400px;
 		width: 100%;
 		margin: 0 auto;
