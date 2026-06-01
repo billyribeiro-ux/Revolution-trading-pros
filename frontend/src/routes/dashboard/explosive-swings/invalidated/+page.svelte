@@ -6,6 +6,7 @@
 	 */
 	import { onMount } from 'svelte';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
+	import LoadingState from '$lib/components/dashboard/LoadingState.svelte';
 	import { ROOM_SLUG } from '../constants';
 
 	interface InvalidatedTrade {
@@ -120,10 +121,8 @@
 
 	<section class="content-section">
 		{#if isLoading}
-			<div class="loading-state">
-				<div class="spinner"></div>
-				<p>Loading invalidated trades...</p>
-			</div>
+			<!-- Skeleton mirrors the invalidated-trade card grid to avoid CLS -->
+			<LoadingState variant="position" count={6} columns={3} />
 		{:else if error}
 			<div class="error-state" role="alert">
 				<svg
@@ -252,36 +251,6 @@
 		margin: 0 auto;
 	}
 
-	/* Loading State */
-	.loading-state {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		padding: var(--space-12);
-		text-align: center;
-	}
-
-	.spinner {
-		width: 40px;
-		height: 40px;
-		border: 3px solid var(--color-border-default);
-		border-top-color: var(--color-brand-primary);
-		border-radius: 50%;
-		animation: spin 0.8s linear infinite;
-		margin-bottom: var(--space-4);
-	}
-
-	@keyframes spin {
-		to {
-			transform: rotate(360deg);
-		}
-	}
-
-	.loading-state p {
-		color: var(--color-text-tertiary);
-		font-size: var(--text-sm);
-	}
 
 	/* Error State */
 	.error-state {

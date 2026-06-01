@@ -7,6 +7,7 @@
 	import { goto } from '$app/navigation';
 	import { productsApi, AdminApiError, type Product } from '$lib/api/admin';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
 	import {
 		IconPlus,
 		IconEdit,
@@ -251,10 +252,8 @@
 		{/if}
 
 		{#if loading}
-			<div class="loading">
-				<div class="spinner"></div>
-				<p>Loading products...</p>
-			</div>
+			<!-- Skeleton mirrors the product card grid to avoid CLS -->
+			<SkeletonLoader variant="card" count={6} columns={3} />
 		{:else if filteredProducts.length === 0}
 			<div class="empty-state">
 				<IconShoppingCart size={64} stroke={1} />
@@ -708,7 +707,7 @@
 		}
 	}
 
-	@media (max-width: 480px) {
+	@media (max-width: 479.98px) {
 		.type-filter {
 			flex-direction: column;
 			width: 100%;

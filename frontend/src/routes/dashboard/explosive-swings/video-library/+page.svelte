@@ -9,6 +9,7 @@
 	 */
 	import { onMount } from 'svelte';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
+	import LoadingState from '$lib/components/dashboard/LoadingState.svelte';
 
 	// TYPE DEFINITIONS
 	interface Video {
@@ -312,10 +313,8 @@
 	</div>
 
 	{#if isLoading}
-		<div class="loading-state">
-			<div class="spinner"></div>
-			<p>Loading videos...</p>
-		</div>
+		<!-- Skeleton mirrors the video grid to avoid CLS -->
+		<LoadingState variant="video" count={6} columns={3} />
 	{:else if filteredVideos.length === 0}
 		<div class="empty-state">
 			<p>No videos found in this category.</p>
@@ -536,33 +535,6 @@
 		font-weight: 600;
 	}
 
-	.loading-state {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		padding: 80px 20px;
-	}
-
-	.spinner {
-		width: 40px;
-		height: 40px;
-		border: 4px solid #e5e7eb;
-		border-top-color: #f69532;
-		border-radius: 50%;
-		animation: spin 1s linear infinite;
-	}
-
-	@keyframes spin {
-		to {
-			transform: rotate(360deg);
-		}
-	}
-
-	.loading-state p {
-		margin-top: 16px;
-		color: #666;
-	}
 
 	.empty-state {
 		text-align: center;

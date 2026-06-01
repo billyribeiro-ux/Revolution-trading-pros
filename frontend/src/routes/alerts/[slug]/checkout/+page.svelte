@@ -584,7 +584,7 @@
 	}
 
 	/* Responsive */
-	@media (max-width: 480px) {
+	@media (max-width: 479.98px) {
 		.checkout-header h1 {
 			font-size: 1.5rem;
 		}

@@ -1406,7 +1406,7 @@
 		}
 	}
 
-	@media (max-width: 480px) {
+	@media (max-width: 479.98px) {
 		.quick-actions-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}

@@ -832,7 +832,7 @@
 		}
 	}
 
-	@media (max-width: 480px) {
+	@media (max-width: 479.98px) {
 		.hero {
 			padding-block: 3.75rem 2.5rem;
 			padding-inline: 0.75rem;

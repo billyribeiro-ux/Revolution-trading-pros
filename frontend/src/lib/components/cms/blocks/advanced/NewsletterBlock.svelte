@@ -486,7 +486,7 @@
 	}
 
 	/* Responsive: Stack on mobile */
-	@media (max-width: 480px) {
+	@media (max-width: 479.98px) {
 		.newsletter-block {
 			padding: 1.5rem;
 		}

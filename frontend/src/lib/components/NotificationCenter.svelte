@@ -570,7 +570,7 @@
 		background: rgba(239, 68, 68, 0.2);
 	}
 
-	@media (max-width: 480px) {
+	@media (max-width: 479.98px) {
 		.notification-panel {
 			max-width: 100%;
 		}

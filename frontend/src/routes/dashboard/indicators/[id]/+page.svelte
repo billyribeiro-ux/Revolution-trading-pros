@@ -1031,7 +1031,7 @@
 		}
 	}
 
-	@media (max-width: 480px) {
+	@media (max-width: 479.98px) {
 		.downloads-table td,
 		.downloads-table thead th {
 			display: block;

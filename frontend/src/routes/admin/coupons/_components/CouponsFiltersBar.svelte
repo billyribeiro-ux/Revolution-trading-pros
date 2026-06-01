@@ -141,7 +141,7 @@
 		}
 	}
 
-	@media (max-width: 480px) {
+	@media (max-width: 479.98px) {
 		.filter-tabs {
 			flex-wrap: wrap;
 		}

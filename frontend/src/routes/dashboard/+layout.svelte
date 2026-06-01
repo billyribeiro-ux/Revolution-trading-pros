@@ -53,6 +53,16 @@
 				name?: string;
 				role?: string;
 			} | null;
+			// SSR-prefetched flat membership list (CLS fix) — drives the sidebar nav
+			// on first paint so it doesn't pop in after the client fetch.
+			memberships?: Array<{
+				id: string;
+				name: string;
+				type: string;
+				slug: string;
+				status: string;
+				icon?: string;
+			}>;
 		};
 	}
 
@@ -86,23 +96,34 @@
 		email: data.user?.email ?? $user?.email ?? '',
 		name: data.user?.name ?? $user?.name ?? $user?.email?.split('@')[0] ?? 'Member',
 		avatar: $user?.avatar_url ?? null,
-		// Pass ALL membership types for sidebar to render dynamically
-		memberships: [
-			...(membershipsData?.tradingRooms ?? []),
-			...(membershipsData?.alertServices ?? []),
-			...(membershipsData?.courses ?? []),
-			...(membershipsData?.indicators ?? []),
-			...(membershipsData?.scanners ?? []),
-			...(membershipsData?.weeklyWatchlist ?? []),
-			...(membershipsData?.premiumReports ?? [])
-		]
-			.filter((m: { status: string }) => m.status === 'active')
-			.map((m: { name: string; slug: string; icon?: string; type: MembershipType }) => ({
-				name: m.name,
-				slug: m.slug,
-				icon: m.icon,
-				type: m.type
-			}))
+		// Pass ALL membership types for sidebar to render dynamically.
+		// CLS FIX: until the client fetch resolves (membershipsData === null), use
+		// the SSR-prefetched flat list so the sidebar nav renders on first paint
+		// instead of popping in. After the client refresh the data is identical, so
+		// the DOM is stable (no layout shift, no hydration mismatch).
+		memberships: membershipsData
+			? [
+					...(membershipsData.tradingRooms ?? []),
+					...(membershipsData.alertServices ?? []),
+					...(membershipsData.courses ?? []),
+					...(membershipsData.indicators ?? []),
+					...(membershipsData.scanners ?? []),
+					...(membershipsData.weeklyWatchlist ?? []),
+					...(membershipsData.premiumReports ?? [])
+				]
+					.filter((m: { status: string }) => m.status === 'active')
+					.map((m: { name: string; slug: string; icon?: string; type: MembershipType }) => ({
+						name: m.name,
+						slug: m.slug,
+						icon: m.icon,
+						type: m.type
+					}))
+			: (data.memberships ?? []).map((m) => ({
+					name: m.name,
+					slug: m.slug,
+					icon: m.icon,
+					type: m.type as MembershipType
+				}))
 	});
 
 	// Auth is handled server-side, but we still check client store for logout detection

@@ -263,7 +263,7 @@
 	}
 
 	/* Mobile */
-	@media (max-width: 480px) {
+	@media (max-width: 479.98px) {
 		.toast-container {
 			top: auto;
 			bottom: 1rem;

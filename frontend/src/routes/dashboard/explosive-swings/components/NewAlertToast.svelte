@@ -210,7 +210,7 @@
 	}
 
 	/* Responsive */
-	@media (max-width: 480px) {
+	@media (max-width: 479.98px) {
 		.toast {
 			left: var(--space-4, 16px);
 			right: var(--space-4, 16px);

@@ -417,7 +417,7 @@
 		text-decoration: underline;
 	}
 
-	@media (max-width: 480px) {
+	@media (max-width: 479.98px) {
 		.error-actions {
 			flex-direction: column;
 		}

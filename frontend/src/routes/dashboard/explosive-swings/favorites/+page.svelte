@@ -9,6 +9,7 @@
 	 */
 	import { onMount } from 'svelte';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
+	import LoadingState from '$lib/components/dashboard/LoadingState.svelte';
 	import { logger } from '$lib/utils/logger';
 
 	const ROOM_SLUG = 'explosive-swings';
@@ -92,10 +93,8 @@
 	</div>
 
 	{#if isLoading}
-		<div class="loading-state">
-			<div class="spinner"></div>
-			<p>Loading favorites...</p>
-		</div>
+		<!-- Skeleton mirrors the favorites card layout to avoid CLS -->
+		<LoadingState variant="position" count={4} columns={1} />
 	{:else if error}
 		<div class="error-state">
 			<p>{error}</p>
@@ -198,33 +197,6 @@
 		margin: 0;
 	}
 
-	.loading-state {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		padding: 80px 20px;
-	}
-
-	.spinner {
-		width: 40px;
-		height: 40px;
-		border: 4px solid #e5e7eb;
-		border-top-color: #f69532;
-		border-radius: 50%;
-		animation: spin 1s linear infinite;
-	}
-
-	@keyframes spin {
-		to {
-			transform: rotate(360deg);
-		}
-	}
-
-	.loading-state p {
-		margin-top: 16px;
-		color: #666;
-	}
 
 	.error-state {
 		text-align: center;

@@ -828,7 +828,7 @@
 		}
 	}
 
-	@media (max-width: 480px) {
+	@media (max-width: 479.98px) {
 		.health-panel {
 			max-width: 100%;
 		}
