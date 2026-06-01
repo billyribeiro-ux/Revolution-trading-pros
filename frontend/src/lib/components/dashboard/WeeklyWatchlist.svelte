@@ -105,9 +105,10 @@
 
 			try {
 				const response = await watchlistApi.getLatest(roomSlug);
-				if (response.success && response.data) {
+				if (response && response.success && response.data) {
 					clientData = response.data;
 				}
+				// null = no published items — fallback content renders
 			} catch (err) {
 				// Single retry on 502/503 (backend startup race)
 				const is5xx =
@@ -117,7 +118,7 @@
 					await new Promise((r) => setTimeout(r, 2000));
 					try {
 						const retry = await watchlistApi.getLatest(roomSlug);
-						if (retry.success && retry.data) {
+						if (retry && retry.success && retry.data) {
 							clientData = retry.data;
 							return;
 						}
@@ -152,7 +153,31 @@
 		</div>
 	</div>
 {:else if hasError && !watchlist}
-	<!-- Error state - hide section gracefully -->
+	<!-- Error state: show fallback so section never disappears -->
+	<div class="weekly-watchlist-section {className}">
+		<div class="row">
+			<div class="col-left">
+				<h2 class="section-title-alt section-title-alt--underline">Weekly Watchlist</h2>
+				<h4 class="h5 u--font-weight-bold">{displayTitle}</h4>
+				<div class="u--hide-read-more">
+					<p>Week of {displayWeekOf}.</p>
+				</div>
+				<a href={displayHref} class="btn btn-tiny btn-default">Watch Now</a>
+			</div>
+			<div class="col-right desktop-only">
+				<a href={displayHref}>
+					<img
+						src={displayImage}
+						alt="Weekly Watchlist"
+						class="u--border-radius"
+						loading="eager"
+						width="400"
+						height="225"
+					/>
+				</a>
+			</div>
+		</div>
+	</div>
 {:else}
 	<!-- Main content -->
 	<div class="weekly-watchlist-section {className}">

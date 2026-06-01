@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	// FIX-2026-04-26 (CLAUDE.md): init/cleanup belongs in onMount, not $effect.
 	import { onMount } from 'svelte';
+	import { SvelteSet } from 'svelte/reactivity';
 	import { slide, scale } from 'svelte/transition';
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import {
@@ -90,7 +91,7 @@
 	let categoryFilter = $state('all');
 
 	// New state for improvements
-	let selectedPosts = $state(new Set<number>());
+	let selectedPosts = new SvelteSet<number>();
 	let selectAll = $state(false);
 	let viewMode = $state<'grid' | 'list'>('grid');
 	let sortBy = $state('created_at');
@@ -286,7 +287,8 @@
 	function toggleSelectAll() {
 		selectAll = !selectAll;
 		if (selectAll) {
-			selectedPosts = new Set(posts.map((p) => p.id));
+			selectedPosts.clear();
+			posts.forEach((p) => selectedPosts.add(p.id));
 		} else {
 			selectedPosts.clear();
 		}
@@ -663,7 +665,7 @@
 	const showBulkActions = $derived(selectedPosts.size > 0);
 
 	// Track initial mount to prevent effect from running on first load
-	let isInitialMount = $state(true);
+	let isInitialMount = true;
 	let filterDebounceTimer: ReturnType<typeof setTimeout> | undefined;
 
 	// ICT11+ Fix: Debounced effect to reload posts when filters change

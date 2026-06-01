@@ -16,8 +16,11 @@ export const load: PageServerLoad = async ({ fetch, locals }) => {
 	// ICT 7 FIX: Pass access token from locals (set by hooks.server.ts auth handler)
 	const accessToken = locals.accessToken ?? undefined;
 
-	// Pre-fetch latest watchlist for 0ms render
-	const watchlist = await getLatestWatchlist(undefined, fetch, undefined, accessToken);
+	// Pre-fetch via the internal SvelteKit proxy (/api/watchlist) — SvelteKit's
+	// load-context fetch resolves relative URLs internally without a network hop.
+	// The proxy forwards auth correctly. Direct backend calls (with apiBaseUrl)
+	// bypass the proxy and may fail if accessToken is missing/expired.
+	const watchlist = await getLatestWatchlist(undefined, fetch, '', accessToken);
 
 	return {
 		watchlist

@@ -183,13 +183,13 @@ export const watchlistApi = {
 	/**
 	 * Get the latest/current watchlist item (global or for a specific room)
 	 */
-	getLatest: async (roomId?: string): Promise<SingleWatchlistResponse> => {
+	getLatest: async (roomId?: string): Promise<SingleWatchlistResponse | null> => {
 		const params: WatchlistParams = { per_page: 1, status: 'published' };
 		if (roomId) params.room = roomId;
 
 		const response = await watchlistApi.getAll(params);
-		if (response.data.length === 0) {
-			throw new Error('No watchlist items found');
+		if (!response.data || response.data.length === 0) {
+			return null;
 		}
 		return {
 			success: true,

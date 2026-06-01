@@ -19,7 +19,8 @@
 -->
 
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
+	import { SvelteSet } from 'svelte/reactivity';
 	import { categoriesApi, tagsApi, AdminApiError, type Category, type Tag } from '$lib/api/admin';
 	import { logger } from '$lib/utils/logger';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
@@ -36,8 +37,22 @@
 	// State
 	let categories = $state<Category[]>([]);
 	let tags = $state<Tag[]>([]);
-	let filteredCategories = $state<Category[]>([]);
-	let filteredTags = $state<Tag[]>([]);
+	const filteredCategories = $derived(
+		categories.filter((cat) => {
+			const matchesSearch =
+				cat.name.toLowerCase().includes(categorySearch.toLowerCase()) ||
+				cat.description?.toLowerCase().includes(categorySearch.toLowerCase());
+			const matchesVisibility = showHidden || cat.is_visible;
+			return matchesSearch && matchesVisibility;
+		})
+	);
+	const filteredTags = $derived(
+		tags.filter((tag) => {
+			const matchesSearch = tag.name.toLowerCase().includes(categorySearch.toLowerCase());
+			const matchesVisibility = showHidden || tag.is_visible;
+			return matchesSearch && matchesVisibility;
+		})
+	);
 	let loading = $state(false);
 	let saving = $state(false);
 	let showCategoryModal = $state(false);
@@ -50,8 +65,8 @@
 	let showHidden = $state(false);
 
 	// Selection for bulk operations
-	let selectedCategories = $state(new Set<number>());
-	let selectedTags = $state(new Set<number>());
+	let selectedCategories = new SvelteSet<number>();
+	let selectedTags = new SvelteSet<number>();
 
 	// Forms
 	let categoryForm = $state<CategoryFormData>({
@@ -87,14 +102,24 @@
 	let pendingDeleteTag = $state<Tag | null>(null);
 
 	// FIX-2026-04-26 (P0-4): once a user manually edits the slug, stop
-	// clobbering it on every name keystroke. Tracked per-form.
+	// auto-generating on every name keystroke. Tracked per-form.
 	let categorySlugEdited = $state(false);
 	let tagSlugEdited = $state(false);
 
+	// Auto-generate slug when name changes (only for new items, not when editing)
 	$effect(() => {
-		if (browser) {
-			loadData();
+		if (categoryForm.name && !editingCategory && !categorySlugEdited) {
+			categoryForm.slug = generateSlug(categoryForm.name);
 		}
+	});
+	$effect(() => {
+		if (tagForm.name && !editingTag && !tagSlugEdited) {
+			tagForm.slug = generateSlug(tagForm.name);
+		}
+	});
+
+	onMount(() => {
+		loadData();
 	});
 
 	async function loadData() {
@@ -112,7 +137,6 @@
 		try {
 			const response = await categoriesApi.list({ all: true });
 			categories = (response.data || []) as Category[];
-			applyFilters();
 		} catch (error) {
 			logger.error('Failed to load categories', { error });
 			if (error instanceof AdminApiError) {
@@ -125,7 +149,6 @@
 		try {
 			const response = await tagsApi.list({ all: true });
 			tags = (response.data || []) as Tag[];
-			applyFilters();
 		} catch (error) {
 			logger.error('Failed to load tags', { error });
 			if (error instanceof AdminApiError) {
@@ -134,30 +157,7 @@
 		}
 	}
 
-	function applyFilters() {
-		filteredCategories = categories.filter((cat) => {
-			const matchesSearch =
-				cat.name.toLowerCase().includes(categorySearch.toLowerCase()) ||
-				cat.description?.toLowerCase().includes(categorySearch.toLowerCase());
-			const matchesVisibility = showHidden || cat.is_visible;
-			return matchesSearch && matchesVisibility;
-		});
 
-		filteredTags = tags.filter((tag) => {
-			// Use categorySearch for unified search across both categories and tags
-			const matchesSearch = tag.name.toLowerCase().includes(categorySearch.toLowerCase());
-			const matchesVisibility = showHidden || tag.is_visible;
-			return matchesSearch && matchesVisibility;
-		});
-	}
-
-	// Effect to apply filters when search/filter changes
-	$effect(() => {
-		// Track dependencies — accessing these state values triggers re-run on change
-		categorySearch;
-		showHidden;
-		applyFilters();
-	});
 
 	function openCategoryModal(category: Category | null = null) {
 		if (category) {
@@ -169,13 +169,10 @@
 				color: category.color,
 				is_visible: category.is_visible
 			};
-			// FIX-2026-04-26 (P0-4): editing an existing category — slug is
-			// already user-curated, never auto-overwrite.
 			categorySlugEdited = true;
 		} else {
 			editingCategory = null;
 			categoryForm = { name: '', slug: '', description: '', color: '#3b82f6', is_visible: true };
-			// New category — let auto-slug fire until user types in the slug input.
 			categorySlugEdited = false;
 		}
 		categoryErrors = [];
@@ -191,7 +188,6 @@
 				color: tag.color,
 				is_visible: tag.is_visible
 			};
-			// FIX-2026-04-26 (P0-4): editing — never auto-overwrite slug.
 			tagSlugEdited = true;
 		} else {
 			editingTag = null;
@@ -354,7 +350,7 @@
 			showToastMessage('Categories deleted successfully', 'success');
 			// FIX-2026-04-26 (P2-2): Set mutations are reactive in Svelte 5 — drop
 			// the legacy self-assignment hack and reassign with a fresh Set.
-			selectedCategories = new Set();
+			selectedCategories.clear();
 			await loadCategories();
 		} catch (error) {
 			if (error instanceof AdminApiError) {
@@ -374,7 +370,7 @@
 			await tagsApi.bulkDelete(Array.from(selectedTags));
 			showToastMessage('Tags deleted successfully', 'success');
 			// FIX-2026-04-26 (P2-2): drop legacy self-assignment hack.
-			selectedTags = new Set();
+			selectedTags.clear();
 			await loadTags();
 		} catch (error) {
 			if (error instanceof AdminApiError) {
@@ -434,20 +430,6 @@
 	function handleTagSlugInput() {
 		tagSlugEdited = true;
 	}
-
-	// Auto-generate slug when name changes for categories
-	$effect(() => {
-		if (categoryForm.name && !editingCategory && !categorySlugEdited) {
-			categoryForm.slug = generateSlug(categoryForm.name);
-		}
-	});
-
-	// Auto-generate slug when name changes for tags
-	$effect(() => {
-		if (tagForm.name && !editingTag && !tagSlugEdited) {
-			tagForm.slug = generateSlug(tagForm.name);
-		}
-	});
 </script>
 
 <svelte:head>
