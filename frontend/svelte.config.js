@@ -11,6 +11,22 @@ const isDev = process.env.NODE_ENV === 'development' || process.argv.includes('d
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	preprocess: vitePreprocess(),
+	// Remote functions require BOTH `kit.experimental.remoteFunctions` AND
+	// `compilerOptions.experimental.async` (per the SvelteKit remote-functions
+	// docs). This repo previously enabled only the former, so any *client-side*
+	// remote-query resolution (e.g. `await getAlerts()` in `onMount`) threw
+	// `experimental_async_required` at runtime — silently breaking the dashboard
+	// queries (explosive-swings threw it 29× on load). Server-resolved queries
+	// (awaited in `load`, like memberships/favorites) were unaffected, which is
+	// why the gap went unnoticed by build/typecheck. Enabling async fixes the
+	// runtime with check 0/0 + production build green (verified 2026-06-02).
+	// To revert: remove this `compilerOptions` block (client-side queries break
+	// again; server-resolved ones keep working).
+	compilerOptions: {
+		experimental: {
+			async: true
+		}
+	},
 	// @sveltejs/vite-plugin-svelte v7 (Vite 8): inspector is first-party,
 	// configured here. Disabled — use browser devtools instead.
 	vitePlugin: {

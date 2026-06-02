@@ -6,7 +6,14 @@ import { createServer } from 'node:http';
 const PORT = 8080;
 const NETWORK_DELAY_MS = Number(process.env.MOCK_DELAY ?? 450); // simulate API latency
 
-const user = { id: 42, email: 'measure@rtp.test', name: 'Measure User', role: 'member' };
+// Role is env-gated so the same mock can drive member dashboards (default) and
+// admin pages (MOCK_ROLE=admin|super-admin) for probing admin remote functions.
+const user = {
+	id: 42,
+	email: 'measure@rtp.test',
+	name: 'Measure User',
+	role: process.env.MOCK_ROLE ?? 'member'
+};
 
 // A realistic, multi-section membership payload (drives many dashboard sections).
 // HOSTILE ordering on purpose: types are interleaved (NOT category-grouped) and
@@ -50,6 +57,37 @@ createServer(async (req, res) => {
 	if (url.includes('memberships')) { await delay(NETWORK_DELAY_MS); return send(res, 200, { success: true, data: { memberships } }); }
 	if (url.includes('watchlist')) { await delay(NETWORK_DELAY_MS); return send(res, 200, { success: true, data: watchlist }); }
 	if (url.includes('weekly-video')) { await delay(NETWORK_DELAY_MS); return send(res, 200, { success: true, data: watchlist }); }
+	// Admin orders — detail (/api/admin/orders/:id) before the list match.
+	const orderDetailMatch = url.match(/\/admin\/orders\/(\d+)(?:\?|$)/);
+	if (orderDetailMatch) {
+		await delay(NETWORK_DELAY_MS);
+		return send(res, 200, {
+			data: {
+				status: 'completed', total: 149, currency: 'USD', subtotal: 149, discount: 0,
+				created_at: '2026-05-28T14:32:00Z', completed_at: '2026-05-28T14:35:00Z',
+				billing_name: 'Measure User', billing_email: 'measure@rtp.test',
+				items: [{ name: 'Explosive Swings (monthly)', quantity: 1, unit_price: 149, total: 149 }]
+			}
+		});
+	}
+	// Admin orders — list (+ stats + pagination), echoes the requested page.
+	if (url.includes('/admin/orders')) {
+		await delay(NETWORK_DELAY_MS);
+		const page = Number(new URL(url, 'http://x').searchParams.get('page') ?? '1');
+		const mk = (n) => ({
+			id: n, order_number: `RTP-${1000 + n}`, status: n % 3 === 0 ? 'pending' : 'completed',
+			total: 99 + n, currency: 'USD', user_email: `u${n}@rtp.test`, user_name: `User ${n}`,
+			payment_provider: 'stripe', item_count: 1, created_at: '2026-05-28T14:32:00Z',
+			completed_at: n % 3 === 0 ? null : '2026-05-28T14:35:00Z'
+		});
+		const rows = Array.from({ length: 25 }, (_, i) => mk((page - 1) * 25 + i + 1));
+		return send(res, 200, {
+			data: rows,
+			stats: { total_orders: 73, completed_orders: 60, pending_orders: 10, refunded_orders: 3,
+				total_revenue: 12000, revenue_this_month: 3400, average_order_value: 164 },
+			pagination: { page, per_page: 25, total: 73, total_pages: 3 }
+		});
+	}
 	// Favorites: realistic, DELAYED payload so the client-fetch variant (old code)
 	// paints its skeleton first and then swaps in the list — the shift the remote
 	// query + SSR warm-load is meant to eliminate.
