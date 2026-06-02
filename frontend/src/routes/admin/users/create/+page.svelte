@@ -50,6 +50,7 @@
 -->
 
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { usersApi, AdminApiError } from '$lib/api/admin';
 	import { logger } from '$lib/utils/logger';
@@ -389,7 +390,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Initialize on mount
-	$effect(() => {
+	onMount(() => {
 		loadLookupData();
 		initializeDefaults();
 		setupRealtimeValidation();

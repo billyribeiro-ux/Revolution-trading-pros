@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
 	import { goto } from '$app/navigation';
 	import { slide } from 'svelte/transition';
@@ -195,7 +196,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Svelte 5: Initialize on mount with $effect
-	$effect(() => {
+	onMount(() => {
 		// Initialize with starter module
 		if (course.modules.length === 0) {
 			addModule();
