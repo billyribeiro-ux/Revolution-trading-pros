@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { SvelteSet } from 'svelte/reactivity';
 	/**
 	 * Room Resources Management - Admin Dashboard
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -205,7 +206,7 @@
 	let newFileUrl = $state('');
 
 	// ICT 7: Bulk operations state
-	let selectedResources = $state<Set<number>>(new Set());
+	let selectedResources = $state<Set<number>>(new SvelteSet());
 	let bulkAction = $state<'publish' | 'unpublish' | 'feature' | 'unfeature' | 'access' | 'delete'>(
 		'publish'
 	);

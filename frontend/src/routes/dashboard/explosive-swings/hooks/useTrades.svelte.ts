@@ -1,3 +1,4 @@
+import { SvelteMap } from 'svelte/reactivity';
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
  * Explosive Swings - useTrades Hook
@@ -171,7 +172,7 @@ export function useTrades(options: UseTradesOptions = {}): UseTradesReturn {
 
 	// Price feed service for real-time price updates
 	const priceFeed = enableRealTimePrices ? getPriceFeed() : null;
-	let realTimePrices = $state<Map<string, PriceData>>(new Map());
+	let realTimePrices = $state<Map<string, PriceData>>(new SvelteMap());
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// REACTIVE STATE

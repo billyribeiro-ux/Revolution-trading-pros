@@ -22,6 +22,7 @@
 -->
 
 <script lang="ts">
+	import { SvelteSet } from 'svelte/reactivity';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import {
@@ -77,8 +78,8 @@
 	});
 
 	// Track selected items for include/exclude
-	let selectedProducts = $state<Set<number>>(new Set());
-	let selectedPlans = $state<Set<number>>(new Set());
+	let selectedProducts = $state<Set<number>>(new SvelteSet());
+	let selectedPlans = $state<Set<number>>(new SvelteSet());
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Computed Values
@@ -172,13 +173,13 @@
 				return;
 			}
 			case 'select-all-products':
-				selectedProducts = new Set(availableProducts.map((p) => p.id));
+				selectedProducts = new SvelteSet(availableProducts.map((p) => p.id));
 				return;
 			case 'clear-products':
 				selectedProducts.clear();
 				return;
 			case 'select-all-plans':
-				selectedPlans = new Set(availablePlans.map((p) => p.id));
+				selectedPlans = new SvelteSet(availablePlans.map((p) => p.id));
 				return;
 			case 'clear-plans':
 				selectedPlans.clear();

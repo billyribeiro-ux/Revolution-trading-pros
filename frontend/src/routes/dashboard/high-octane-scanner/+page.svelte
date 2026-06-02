@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { SvelteSet } from 'svelte/reactivity';
 	/**
 	 * High Octane Scanner - ULTIMATE Dashboard v1
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -264,10 +265,10 @@
 	const alerts = $derived<Alert[]>(fallbackAlerts);
 
 	// Track which alert notes are expanded
-	let expandedNotes = $state<Set<number>>(new Set());
+	let expandedNotes = $state<Set<number>>(new SvelteSet());
 
 	// Track which trade plan notes are expanded
-	let expandedTradeNotes = $state<Set<string>>(new Set());
+	let expandedTradeNotes = $state<Set<string>>(new SvelteSet());
 
 	function toggleTradeNotes(ticker: string) {
 		if (expandedTradeNotes.has(ticker)) {

@@ -10,6 +10,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
+	import { SvelteSet } from 'svelte/reactivity';
 	import { IconChevronRight } from '$lib/icons';
 	import {  } from 'svelte';
 	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
@@ -24,7 +25,7 @@
 	let data = $derived(props.data);
 
 	// Accordion state management - Svelte 5 runes
-	let openAccordions = $state<Set<number>>(new Set());
+	let openAccordions = $state<Set<number>>(new SvelteSet());
 
 	// Toggle accordion with Set reassignment for reactivity
 	function toggleAccordion(index: number): void {

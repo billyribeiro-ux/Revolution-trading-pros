@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { SvelteSet } from 'svelte/reactivity';
 	/**
 	 * ═══════════════════════════════════════════════════════════════════════════════
 	 * TradesTable Component - Responsive Table/Card Hybrid with Accessibility
@@ -24,7 +25,7 @@
 	import {  } from 'svelte';
 
 	// Track expanded notes
-	let expandedNotes = $state<Set<number>>(new Set());
+	let expandedNotes = $state<Set<number>>(new SvelteSet());
 
 	function toggleNotes(tradeId: number) {
 		if (expandedNotes.has(tradeId)) {

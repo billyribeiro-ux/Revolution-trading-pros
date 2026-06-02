@@ -12,6 +12,7 @@
 -->
 
 <script lang="ts">
+	import { SvelteSet } from 'svelte/reactivity';
 	import { goto } from '$app/navigation';
 	import IconWebhook from '@tabler/icons-svelte-runes/icons/webhook';
 	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
@@ -39,7 +40,7 @@
 	let url = $state('');
 	let secret = $state('');
 	let isActive = $state(true);
-	let selectedEvents = $state<Set<WebhookEvent>>(new Set());
+	let selectedEvents = $state<Set<WebhookEvent>>(new SvelteSet());
 	let customHeaders = $state<Array<{ key: string; value: string }>>([]);
 
 	let availableEvents = $state<Record<string, string>>({});
@@ -175,7 +176,7 @@
 	}
 
 	function selectAllEvents() {
-		selectedEvents = new Set(Object.keys(availableEvents) as WebhookEvent[]);
+		selectedEvents = new SvelteSet(Object.keys(availableEvents) as WebhookEvent[]);
 	}
 
 	function clearAllEvents() {

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { SvelteSet } from 'svelte/reactivity';
 	import { onMount } from 'svelte';
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import { adminFetch } from '$lib/utils/adminFetch';
@@ -22,7 +23,7 @@
 	let searchQuery = $state('');
 	let statusFilter = $state('all');
 	let selectedTags = $state<string[]>([]);
-	let selectedSubscribers = $state(new Set<string>());
+	let selectedSubscribers = $state(new SvelteSet<string>());
 
 	// Modal states
 	let showAddModal = $state(false);
@@ -217,14 +218,13 @@
 		} else {
 			selectedSubscribers.add(id);
 		}
-		selectedSubscribers = selectedSubscribers;
 	}
 
 	function toggleAllSubscribers() {
 		if (selectedSubscribers.size === subscribers.length) {
 			selectedSubscribers.clear();
 		} else {
-			selectedSubscribers = new Set(subscribers.map((s) => s.id));
+			selectedSubscribers = new SvelteSet(subscribers.map((s) => s.id));
 		}
 	}
 

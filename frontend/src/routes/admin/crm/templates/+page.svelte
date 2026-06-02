@@ -15,6 +15,7 @@
 -->
 
 <script lang="ts">
+	import { SvelteSet } from 'svelte/reactivity';
 	/* eslint svelte/no-at-html-tags: "off" -- every {@html} in this file renders sanitizer-cleaned HTML (sanitizeHtml/sanitizeBlogContent/etc.) or serialized JSON-LD; audited 2026-05-30 */
 	import { onMount } from 'svelte';
 	import IconTemplate from '@tabler/icons-svelte-runes/icons/template';
@@ -51,7 +52,7 @@
 	let searchQuery = $state('');
 	let debouncedSearch = $state('');
 	let selectedCategory = $state('');
-	let selectedTemplates = $state<Set<string>>(new Set());
+	let selectedTemplates = $state<Set<string>>(new SvelteSet());
 	let isInitialLoad = $state(true);
 
 	// Pagination state
@@ -297,7 +298,7 @@
 		if (allSelected) {
 			selectedTemplates.clear();
 		} else {
-			selectedTemplates = new Set(templates.map((t) => t.id));
+			selectedTemplates = new SvelteSet(templates.map((t) => t.id));
 		}
 	}
 
