@@ -40,9 +40,7 @@
 
 	// DERIVED STATE
 
-	// User display name
-	const userName = $derived($user?.name ?? $user?.email?.split('@')[0] ?? 'Member');
-
+	// ═══════════════════════════════════════════════════════════════════════════
 	// DYNAMIC MEMBERSHIP RENDERING
 	// Render cards from actual API data instead of hardcoded slugs
 
@@ -498,25 +496,7 @@
 		<WeeklyWatchlist
 			data={(data as { watchlist?: ComponentProps<typeof WeeklyWatchlist>['data'] }).watchlist}
 		/>
-		<!-- Divider -->
-		<div class="section-divider">
-			<div class="section-divider__line"></div>
-		</div>
 	</section>
-
-	<!-- Empty State - No Memberships -->
-	{#if membershipCards.length === 0 && mentorshipCards.length === 0}
-		<section class="dashboard__content-section">
-			<div class="empty-state">
-				<h2 class="empty-state__title">Welcome, {userName}!</h2>
-				<p class="empty-state__text">
-					You don't have any active memberships yet. Explore our trading rooms and courses to get
-					started.
-				</p>
-				<a href="/courses" class="btn btn-orange">Browse Courses</a>
-			</div>
-		</section>
-	{/if}
 {/if}
 
 <style>

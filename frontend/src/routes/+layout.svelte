@@ -197,7 +197,7 @@
 
 		<NavBar />
 
-		<main id="main-content" class="flex-1 min-w-0 overflow-x-clip">
+		<main id="main-content" class="flex-1 min-w-0 overflow-x-clip flex flex-col">
 			{@render props.children()}
 		</main>
 

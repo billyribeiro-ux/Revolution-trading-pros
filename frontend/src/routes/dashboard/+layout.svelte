@@ -647,6 +647,15 @@
 		isolation: isolate; /* Create stacking context */
 	}
 
+	/* dashboard-layout must fill all remaining vertical space so the dark
+	   footer wrapper has nothing to bleed through above it. The root layout
+	   wraps everything in flex-col flex-1; this class makes the dashboard
+	   div participate correctly in that column. */
+	.dashboard-layout {
+		flex: 1 1 auto;
+		align-self: stretch;
+	}
+
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Main Content Area
 	 * Container query support for component-level responsiveness

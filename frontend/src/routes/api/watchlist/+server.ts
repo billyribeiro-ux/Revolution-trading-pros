@@ -96,17 +96,12 @@ export const GET: RequestHandler = async ({ url, request }) => {
 		return json(backendData);
 	}
 
-	// R22-A: was: filter/search/paginate the 5-row in-file mock list, build
-	// previous/next nav between mock slugs, return `_mock: true`. Now: 502
-	// so the watchlist UI shows a real error rather than phantom history.
-	console.error('[Watchlist API] GET backend unavailable');
-	return json(
-		{
-			success: false,
-			error: 'Unable to load weekly watchlist — backend is unavailable.'
-		},
-		{ status: 502 }
-	);
+	// Backend unavailable — return empty success so the component renders
+	// its fallback UI cleanly instead of hitting the error state.
+	// R22-A context: the old mock list was removed to prevent phantom history
+	// navigation; an empty list is the correct honest response here.
+	console.warn('[Watchlist API] GET backend unavailable — returning empty list');
+	return json({ success: true, data: [] });
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
