@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { Card, Button, Badge, Table } from '$lib/components/ui';
 	import { addToast } from '$lib/utils/toast';
@@ -21,7 +22,7 @@
 	let pendingDeleteResolvedOnly = $state(true);
 
 	// Svelte 5: Initialize on mount
-	$effect(() => {
+	onMount(() => {
 		if (!browser) return;
 
 		const init = async () => {

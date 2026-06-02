@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { logger } from '$lib/utils/logger';
 	import {
@@ -66,7 +67,7 @@
 	let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 
 	// Svelte 5: Initialize on mount with cleanup
-	$effect(() => {
+	onMount(() => {
 		if (!browser) return;
 
 		const init = async () => {

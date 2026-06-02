@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	/**
 	 * Email Templates - Apple ICT7 Principal Engineer Grade
 	 * ═══════════════════════════════════════════════════════════════════════════════
@@ -51,7 +52,7 @@
 	// Lifecycle - Svelte 5 $effect
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	$effect(() => {
+	onMount(() => {
 		loadTemplates();
 	});
 

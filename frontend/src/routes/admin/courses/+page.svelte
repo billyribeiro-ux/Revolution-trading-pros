@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	/**
 	 * Admin Courses List Page
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
@@ -290,7 +291,7 @@
 	};
 
 	// Svelte 5: Initialize on mount
-	$effect(() => {
+	onMount(() => {
 		if (browser) fetchCourses();
 	});
 </script>

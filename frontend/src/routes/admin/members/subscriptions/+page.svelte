@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	/**
 	 * Member Subscriptions - Apple ICT7 Principal Engineer Grade
 	 * ═══════════════════════════════════════════════════════════════════════════════
@@ -103,7 +104,7 @@
 	// Lifecycle - Svelte 5 $effect
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	$effect(() => {
+	onMount(() => {
 		loadSubscriptions();
 	});
 

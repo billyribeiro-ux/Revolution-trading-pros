@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	/**
 	 * Bandwidth Savings Dashboard - Apple ICT 7 Grade Analytics
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -96,7 +97,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Initialize on mount using $effect
-	$effect(() => {
+	onMount(() => {
 		if (!browser) return;
 		loadData();
 	});

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
 	/**
 	 * Media Library - Apple ICT 7 Grade Enterprise Dashboard
@@ -122,7 +123,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Initialize on mount using $effect
-	$effect(() => {
+	onMount(() => {
 		if (!browser) return;
 
 		// Load initial data

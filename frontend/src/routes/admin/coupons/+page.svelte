@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	/**
 	 * Admin coupons list page.
 	 *
@@ -74,7 +75,7 @@
 	// Lifecycle - Svelte 5 $effect
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	$effect(() => {
+	onMount(() => {
 		loadCoupons();
 	});
 
