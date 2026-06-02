@@ -89,6 +89,25 @@ createServer(async (req, res) => {
 		]);
 		return send(res, 200, []);
 	}
+	// Admin media (bandwidth) analytics — raw object/arrays.
+	if (url.includes('/media/analytics/')) {
+		await delay(NETWORK_DELAY_MS);
+		if (url.includes('/overview')) return send(res, 200, {
+			totalOriginal: 5_000_000_000, totalOptimized: 2_100_000_000, totalSavings: 2_900_000_000,
+			savingsPercent: 58, totalImages: 12400, optimizedImages: 11900,
+			avgCompressionRatio: 2.4, estimatedCostSavings: 320, co2Saved: 18
+		});
+		if (url.includes('/bandwidth')) return send(res, 200, [
+			{ date: '2026-05-01', original: 800_000_000, optimized: 340_000_000, savings: 460_000_000, requests: 9000 },
+			{ date: '2026-05-15', original: 900_000_000, optimized: 380_000_000, savings: 520_000_000, requests: 9800 },
+			{ date: '2026-05-31', original: 950_000_000, optimized: 400_000_000, savings: 550_000_000, requests: 10200 }
+		]);
+		if (url.includes('/formats')) return send(res, 200, [
+			{ format: 'webp', count: 7200, originalSize: 3_000_000_000, optimizedSize: 1_200_000_000, savings: 1_800_000_000 },
+			{ format: 'avif', count: 4700, originalSize: 2_000_000_000, optimizedSize: 900_000_000, savings: 1_100_000_000 }
+		]);
+		return send(res, 200, []);
+	}
 	// Admin orders — detail (/api/admin/orders/:id) before the list match.
 	const orderDetailMatch = url.match(/\/admin\/orders\/(\d+)(?:\?|$)/);
 	if (orderDetailMatch) {
