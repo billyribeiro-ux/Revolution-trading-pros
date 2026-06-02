@@ -49,9 +49,53 @@ function send(res, status, body) {
 	res.end(json);
 }
 
+async function readBody(req) {
+	const chunks = [];
+	for await (const c of req) chunks.push(c);
+	if (!chunks.length) return null;
+	try {
+		return JSON.parse(Buffer.concat(chunks).toString());
+	} catch {
+		return null;
+	}
+}
+
+// Stateful 404-log store so single-flight mutations are observable (delete
+// shrinks the list, ignore flips status) across a probe run.
+let seo404 = [
+	{ id: 1, url: '/old-landing', hits: 42, last_hit_at: '2026-05-30T10:00:00Z', referer: 'google.com', is_resolved: false, is_ignored: false },
+	{ id: 2, url: '/discontinued', hits: 12, last_hit_at: '2026-05-29T10:00:00Z', referer: null, is_resolved: false, is_ignored: false },
+	{ id: 3, url: '/typo-url', hits: 5, last_hit_at: '2026-05-28T10:00:00Z', referer: 'twitter.com', is_resolved: false, is_ignored: false }
+];
+const seo404Stats = () => ({
+	total: seo404.length,
+	unresolved: seo404.filter((l) => !l.is_resolved && !l.is_ignored).length,
+	resolved: seo404.filter((l) => l.is_resolved).length,
+	total_hits: seo404.reduce((s, l) => s + l.hits, 0)
+});
+
 createServer(async (req, res) => {
 	const url = req.url || '';
 	const delay = (ms) => new Promise((r) => setTimeout(r, ms));
+
+	// 404 monitor (stateful) — order matters: stats + sub-paths before the list.
+	if (url.includes('/seo/404-logs')) {
+		await delay(NETWORK_DELAY_MS);
+		if (url.includes('/stats')) return send(res, 200, seo404Stats());
+		if (url.includes('/bulk-delete')) {
+			const body = await readBody(req);
+			const ids = Array.isArray(body?.ids) ? body.ids : [];
+			seo404 = seo404.filter((l) => !ids.includes(l.id));
+			return send(res, 200, { success: true });
+		}
+		const ignoreMatch = url.match(/\/404-logs\/(\d+)\/ignore/);
+		if (ignoreMatch) {
+			const id = Number(ignoreMatch[1]);
+			seo404 = seo404.map((l) => (l.id === id ? { ...l, is_ignored: true } : l));
+			return send(res, 200, { success: true });
+		}
+		return send(res, 200, { data: seo404 });
+	}
 
 	if (url.includes('/auth/me')) return send(res, 200, { success: true, data: user });
 	if (url.includes('memberships')) { await delay(NETWORK_DELAY_MS); return send(res, 200, { success: true, data: { memberships } }); }
