@@ -6,8 +6,6 @@
 	Apple ICT 11+ Principal Engineer Implementation
 	Based on NewStartHere reference - Svelte 5
 
-	@version 1.0.0
-	@author Revolution Trading Pros
 -->
 <script lang="ts">
 	import { SvelteSet } from 'svelte/reactivity';
@@ -674,7 +672,6 @@
 <style>
 	/* ===============================================================================
 	 * START HERE PAGE - 2026 Mobile-First Responsive Design
-	 * ===============================================================================
 	 * Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
 	 * Touch Targets: 44x44px minimum
 	 * Safe Areas: env(safe-area-inset-*) for notched devices

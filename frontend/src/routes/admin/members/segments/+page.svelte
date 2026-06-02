@@ -1,7 +1,6 @@
 <script lang="ts">
 	/**
 	 * Member Segments - Apple ICT7 Principal Engineer Grade
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * Svelte 5 runes implementation with:
 	 * - $state for reactive state management
@@ -9,7 +8,6 @@
 	 * - $derived for computed values
 	 * - Full TypeScript type safety
 	 *
-	 * @version 2.0.0 - Svelte 5 Migration (Dec 2025)
 	 */
 
 	import { onMount } from 'svelte';
@@ -39,9 +37,7 @@
 	import SegmentDetailDrawer from '$lib/components/admin/SegmentDetailDrawer.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// State - Svelte 5 Runes
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	let loading = $state(true);
 	let activeTab = $state<'segments' | 'tags' | 'saved'>('segments');
@@ -171,9 +167,7 @@
 		'#3b82f6'
 	];
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// Lifecycle - Svelte 5 $effect
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	// FIX-2026-04-26 (audit 02 §P2-9 / CLAUDE.md commit 34a0bd070):
 	// initialization should run once on mount, not in a `$effect`.
@@ -181,9 +175,7 @@
 		loadData();
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// Data Loading - Real API Integration
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	async function loadData() {
 		loading = true;

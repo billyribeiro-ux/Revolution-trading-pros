@@ -32,15 +32,12 @@
 		validateWebhookUrl
 	} from '$lib/utils/webhookSecurity';
 
-	// =====================================================
 	// STATE MANAGEMENT - Svelte 5 Runes
-	// =====================================================
 
 	let name = $state('');
 	let url = $state('');
 	let secret = $state('');
 	let isActive = $state(true);
-	// $state intentional: this collection is reassigned (select-all/clear); SvelteSet/Map makes mutations reactive, $state keeps reassignment reactive.
 	let selectedEvents = $state<Set<WebhookEvent>>(new SvelteSet());
 	let customHeaders = $state<Array<{ key: string; value: string }>>([]);
 
@@ -55,9 +52,7 @@
 		[]
 	);
 
-	// =====================================================
 	// DERIVED STATE
-	// =====================================================
 
 	let isFormValid = $derived(
 		name.trim().length > 0 &&
@@ -69,9 +64,7 @@
 	let selectedCount = $derived(selectedEvents.size);
 	let totalEvents = $derived(Object.keys(availableEvents).length);
 
-	// =====================================================
 	// API FUNCTIONS
-	// =====================================================
 
 	async function loadEvents() {
 		isLoadingEvents = true;
@@ -157,9 +150,7 @@
 		}
 	}
 
-	// =====================================================
 	// HELPER FUNCTIONS
-	// =====================================================
 
 	function generateSecret() {
 		// Cryptographically secure secret — uses crypto.getRandomValues under the hood.
@@ -204,9 +195,7 @@
 		return event.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 	}
 
-	// =====================================================
 	// TOAST NOTIFICATIONS
-	// =====================================================
 
 	function showToast(type: 'success' | 'error' | 'info', message: string) {
 		const id = crypto.randomUUID();
@@ -220,9 +209,7 @@
 		toasts = toasts.filter((t) => t.id !== id);
 	}
 
-	// =====================================================
 	// LIFECYCLE
-	// =====================================================
 
 	onMount(() => {
 		loadEvents();

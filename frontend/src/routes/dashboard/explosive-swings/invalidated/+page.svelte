@@ -1,7 +1,6 @@
 <script lang="ts">
 	/**
 	 * Invalidated Trades Archive
-	 * @version 1.0.0
 	 * @standards Apple ICT 7+ | Svelte 5 January 2026 | WCAG 2.1 AA
 	 */
 	import { onMount } from 'svelte';

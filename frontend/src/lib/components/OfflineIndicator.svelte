@@ -1,11 +1,9 @@
 <script lang="ts">
 	/**
 	 * Offline Indicator - Apple ICT9+ Design
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * Shows offline status and pending sync actions.
 	 *
-	 * @version 1.0.0
 	 */
 
 	import { fade, fly } from 'svelte/transition';

@@ -42,9 +42,7 @@
 	import { crmAPI } from '$lib/api/crm';
 	import type { AutomationFunnel, FunnelFilters, FunnelStatus, TriggerType } from '$lib/crm/types';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let funnels = $state<AutomationFunnel[]>([]);
 	let isLoading = $state(true);
@@ -130,9 +128,7 @@
 		custom_event: 'Custom Event'
 	};
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// API FUNCTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function loadFunnels() {
 		isLoading = true;
@@ -315,9 +311,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// MODAL FUNCTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function openImportModal() {
 		importForm = {
@@ -395,9 +389,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// HELPERS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function showSuccess(message: string) {
 		successMessage = message;
@@ -445,9 +437,7 @@
 		return colorMap[trigger] || 'bg-slate-500/20 text-slate-400';
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let filteredFunnels = $derived(
 		funnels.filter((funnel) => {
@@ -467,9 +457,7 @@
 
 	let hasActiveModal = $derived(showImportModal || showAddContactsModal);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// EFFECTS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Auto-refresh when filters change (after initial load)
 	$effect(() => {
@@ -497,9 +485,7 @@
 		return () => clearTimeout(timeout);
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// LIFECYCLE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Audit P2 #10: was a `$effect` with browser guard. Migrated to
 	// `onMount` so the lifecycle init isn't on the reactive graph.

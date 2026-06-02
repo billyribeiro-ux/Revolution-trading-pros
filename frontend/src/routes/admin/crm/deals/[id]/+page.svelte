@@ -42,9 +42,7 @@
 	import Toast from './_components/Toast.svelte';
 	import type { DealNote, ToastMessage } from './_components/helpers';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE (Svelte 5 Runes)
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let deal = $state<Deal | null>(null);
 	let pipeline = $state<Pipeline | null>(null);
@@ -69,9 +67,7 @@
 	let showDeleteModal = $state(false);
 	let toastMessage = $state<ToastMessage | null>(null);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let dealId = $derived(page.params.id as string);
 	let currentStage = $derived(pipeline?.stages?.find((s) => s.id === deal?.stage_id) || null);
@@ -79,9 +75,7 @@
 	let isLost = $derived(deal?.status === 'lost');
 	let isOpen = $derived(deal?.status === 'open');
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// API FUNCTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function loadDeal() {
 		loading = true;

@@ -1,7 +1,6 @@
 <!--
 /**
  * User Create Component - Google L7+ Enterprise Implementation
- * ═══════════════════════════════════════════════════════════════════════════
  * 
  * ENTERPRISE FEATURES:
  * 
@@ -44,7 +43,6 @@
  *    - Team notifications
  *    - Calendar integration
  * 
- * @version 3.0.0 (Google L7+ Enterprise)
  * @component
  */
 -->
@@ -67,9 +65,7 @@
 		IconCheckupList
 	} from '$lib/icons';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Type Definitions
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	interface UserFormData {
 		// Identity
@@ -204,9 +200,7 @@
 		duration?: number;
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Role Definitions
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	const ROLE_DEFINITIONS: RoleDefinition[] = [
 		{
@@ -276,9 +270,7 @@
 		}
 	];
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// State Management (Svelte 5 Runes)
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let saving = $state(false);
 	let validating = $state(false);
@@ -385,9 +377,7 @@
 	let currentStepIndex = $derived(getStepIndex(activeStep));
 	let canProceed = $derived(validateCurrentStep());
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Lifecycle (Svelte 5 $effect)
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Initialize on mount
 	onMount(() => {
@@ -396,9 +386,7 @@
 		setupRealtimeValidation();
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Data Loading
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function loadLookupData() {
 		try {
@@ -482,9 +470,7 @@
 		formData.employee_id = generateEmployeeId();
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Form Navigation
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	const STEPS = [
 		{ key: 'identity', label: 'Identity', icon: IconUser },
@@ -518,9 +504,7 @@
 		return STEPS.findIndex((s) => s.key === step);
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Form Submission
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function handleSubmit() {
 		const validationErrors = await validateForm();
@@ -562,9 +546,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Validation
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function validateForm(): Promise<ValidationError[]> {
 		const errors: ValidationError[] = [];
@@ -695,9 +677,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Real-time Validation
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function setupRealtimeValidation() {
 		// Real-time validation setup would go here
@@ -824,9 +804,7 @@
 		return times[Math.min(score, times.length - 1)];
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Role & Permission Management
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function selectRole(role: 'admin' | 'trader' | 'member') {
 		formData.role = role;
@@ -888,9 +866,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// File Upload
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function handlePhotoUpload(event: Event) {
 		const input = event.target as HTMLInputElement;
@@ -925,9 +901,7 @@
 		return 'https://example.com/photo.jpg';
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Helper Functions
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function calculateCompletion(): number {
 		let completed = 0;

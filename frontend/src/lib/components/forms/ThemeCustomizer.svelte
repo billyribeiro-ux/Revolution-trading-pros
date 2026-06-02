@@ -12,7 +12,6 @@
 
 	// Writable $derived — `selectTheme` / `applyCustomTheme` can override
 	// locally; a prop change re-syncs both. Replaces the previous $state +
-	// $effect shadow pattern.
 	let selectedTheme = $derived<FormTheme>(props.selectedTheme ?? themes[0]);
 	let customTheme = $derived<FormTheme>({ ...(props.selectedTheme ?? themes[0]) });
 

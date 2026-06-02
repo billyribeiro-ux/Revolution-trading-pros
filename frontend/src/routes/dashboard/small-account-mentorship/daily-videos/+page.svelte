@@ -11,7 +11,6 @@
 	- $state() rune for local state
 	- Type imports from server load function
 	
-	@version 1.0.0 - January 2026
 -->
 <script lang="ts">
 	import type { DailyVideo, PageData } from './+page.server';

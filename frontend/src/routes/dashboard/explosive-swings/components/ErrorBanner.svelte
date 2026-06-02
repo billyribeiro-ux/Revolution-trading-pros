@@ -1,11 +1,8 @@
 <script lang="ts">
 	/**
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 * ErrorBanner Component - Error State Display
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * @description Displays error messages with optional retry functionality
-	 * @version 1.0.0 - Nuclear Refactor
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA
 	 */
 

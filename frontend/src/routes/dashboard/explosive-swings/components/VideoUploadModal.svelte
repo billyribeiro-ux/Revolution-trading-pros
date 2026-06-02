@@ -5,8 +5,6 @@
 	
 	@description Professional video upload modal for weekly watchlist videos with
 	             Bunny.net integration, drag-drop upload, and thumbnail selection.
-	@version 5.0.0 - ICT 7+ Grade: Fixed z-index stacking, upload timeout, responsive layout
-	@requires Svelte 5.0+ (January 2026 syntax)
 	@standards Apple Principal Engineer ICT 7+ Standards
 	
 	@changelog 5.0.0

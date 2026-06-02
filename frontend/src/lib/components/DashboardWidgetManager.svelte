@@ -1,7 +1,6 @@
 <script lang="ts">
 	/**
 	 * Dashboard Widget Manager - Apple ICT9+ Design
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * Modal for customizing dashboard widgets with:
 	 * - Drag and drop reordering
@@ -9,7 +8,6 @@
 	 * - Size configuration
 	 * - Category filtering
 	 *
-	 * @version 1.0.0
 	 */
 
 	import { fade, scale } from 'svelte/transition';

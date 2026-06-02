@@ -1,12 +1,9 @@
 <script lang="ts">
 	/**
 	 * Revision History - Enterprise-Grade Version Control
-	 * ====================================================
 	 * Complete revision management with diff view, restore,
 	 * compare, and auto-save tracking.
 	 *
-	 * @version 1.0.0
-	 * @author Revolution Trading Pros
 	 */
 
 	import type { Revision, Block } from './types';

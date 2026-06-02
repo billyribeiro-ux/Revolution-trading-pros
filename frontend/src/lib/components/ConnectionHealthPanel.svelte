@@ -1,7 +1,6 @@
 <script lang="ts">
 	/**
 	 * Connection Health Panel - Apple ICT9+ Design
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * Comprehensive API connection health monitoring with:
 	 * - Real-time status indicators
@@ -9,7 +8,6 @@
 	 * - Error rate monitoring
 	 * - Reconnection capabilities
 	 *
-	 * @version 1.0.0
 	 */
 
 	import { fade, fly } from 'svelte/transition';

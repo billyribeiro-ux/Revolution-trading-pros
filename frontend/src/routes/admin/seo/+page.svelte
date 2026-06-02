@@ -1,7 +1,6 @@
 <script lang="ts">
 	/**
 	 * SEO Dashboard - Apple ICT9+ Enterprise Grade
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * Enterprise SEO command center with:
 	 * - Real-time connection status monitoring
@@ -9,7 +8,6 @@
 	 * - Only shows real data from connected services
 	 * - Graceful degradation when services unavailable
 	 *
-	 * @version 2.0.0 - Enterprise Edition
 	 */
 
 	import { browser } from '$app/environment';
@@ -45,9 +43,7 @@
 	} from '$lib/icons';
 	import { connections, getIsSeoConnected, SERVICE_KEYS } from '$lib/stores/connections.svelte';
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// State
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	let isLoading = $state(true);
 	let seoData = $state<SeoMetrics | null>(null);
@@ -250,9 +246,7 @@
 		}
 	];
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// Lifecycle
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	// Svelte 5: Initialize on mount
 	$effect(() => {
@@ -270,9 +264,7 @@
 		}, 100);
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// Data Loading
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	async function loadSeoData() {
 		// This would fetch from connected SEO services

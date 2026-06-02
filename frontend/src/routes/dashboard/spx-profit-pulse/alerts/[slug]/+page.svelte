@@ -1,12 +1,10 @@
 <script lang="ts">
 	/**
 	 * SPX Profit Pulse Alert Detail Page
-	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * Apple ICT Level 7 Principal Engineer Implementation
 	 * Individual video/alert detail with related content
 	 *
-	 * @version 1.0.0 - January 2026
 	 */
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';

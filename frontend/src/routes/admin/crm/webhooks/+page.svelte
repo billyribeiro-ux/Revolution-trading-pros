@@ -34,9 +34,7 @@
 	import type { Webhook } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
-	// =====================================================
 	// STATE MANAGEMENT - Svelte 5 Runes
-	// =====================================================
 
 	let webhooks = $state<Webhook[]>([]);
 	let isLoading = $state(true);
@@ -55,9 +53,7 @@
 		[]
 	);
 
-	// =====================================================
 	// DERIVED STATE
-	// =====================================================
 
 	let stats = $derived({
 		total: webhooks.length,
@@ -83,9 +79,7 @@
 		})
 	);
 
-	// =====================================================
 	// API FUNCTIONS
-	// =====================================================
 
 	async function loadWebhooks() {
 		isLoading = true;
@@ -158,9 +152,7 @@
 		}
 	}
 
-	// =====================================================
 	// TOAST NOTIFICATIONS
-	// =====================================================
 
 	function showToast(type: 'success' | 'error' | 'info', message: string) {
 		const id = crypto.randomUUID();
@@ -174,9 +166,7 @@
 		toasts = toasts.filter((t) => t.id !== id);
 	}
 
-	// =====================================================
 	// UTILITY FUNCTIONS
-	// =====================================================
 
 	function formatDate(dateString: string): string {
 		return new Date(dateString).toLocaleDateString('en-US', {
@@ -192,9 +182,7 @@
 		return num.toLocaleString();
 	}
 
-	// =====================================================
 	// LIFECYCLE
-	// =====================================================
 
 	onMount(() => {
 		loadWebhooks();

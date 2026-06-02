@@ -1,8 +1,6 @@
 <script lang="ts">
 	/**
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 * EmptyState Component - No Data Display
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * Displays empty state messages for various data sections:
 	 * - No alerts
@@ -11,7 +9,6 @@
 	 * - No videos
 	 * - Generic empty states
 	 *
-	 * @version 1.0.0
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA
 	 */
 

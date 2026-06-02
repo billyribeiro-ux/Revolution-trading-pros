@@ -49,9 +49,7 @@
 	import PageHeader from './_components/PageHeader.svelte';
 	import FormBanners from './_components/FormBanners.svelte';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Type Definitions & Interfaces
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	interface Module {
 		id: string;
@@ -95,9 +93,7 @@
 		score: number;
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Complete State Management
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let course = $state({
 		// Basic Information
@@ -191,9 +187,7 @@
 	let autoSaveTimer: ReturnType<typeof setInterval>;
 	let expandedModules = new SvelteSet<string>();
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Lifecycle Hooks & Initialization
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Svelte 5: Initialize on mount with $effect
 	onMount(() => {
@@ -221,9 +215,7 @@
 		};
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Complete Module & Lesson Management
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function addModule() {
 		const newModule: Module = {
@@ -365,9 +357,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Advanced Drag and Drop System
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function handleDragStart(event: DragEvent, item: Module | Lesson, type: 'module' | 'lesson') {
 		isDragging = true;
@@ -440,9 +430,7 @@
 		handleDragEnd();
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Complete AI Features System
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function generateWithAI(field: string) {
 		generating = true;
@@ -858,9 +846,7 @@
 		}, 2000);
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Complete File Upload System
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let formError = $state('');
 	let successMessage = $state('');
@@ -1058,9 +1044,7 @@
 		hasUnsavedChanges = true;
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Complete Validation System
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function validateAll() {
 		let totalScore = 0;
@@ -1266,9 +1250,7 @@
 		overallScore = Math.round((totalScore / maxScore) * 100);
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Complete Save & Load System
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function generateSlug() {
 		if (!course.slug && course.name) {
@@ -1498,9 +1480,7 @@
 		showPublishWarning = false;
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Utility Functions
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function generateId(): string {
 		return `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;

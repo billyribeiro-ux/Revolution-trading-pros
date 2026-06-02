@@ -1,7 +1,6 @@
 <script lang="ts">
 	/**
 	 * InvalidatePositionModal - Mark trade as invalidated with reason
-	 * @version 1.0.0
 	 *
 	 * For trades that didn't trigger or moved away before entry
 	 */

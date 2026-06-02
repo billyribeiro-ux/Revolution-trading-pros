@@ -1,7 +1,6 @@
 <script lang="ts">
 	/**
 	 * Weekly Archive - Browse Past Weeks
-	 * @version 1.0.0
 	 * @standards Apple ICT 7+ | Svelte 5 January 2026 | WCAG 2.1 AA
 	 *
 	 * Layout matches watchlist card design for consistency

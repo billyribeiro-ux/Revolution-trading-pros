@@ -1,7 +1,6 @@
 <script lang="ts">
 	/**
 	 * Notification Center - Apple ICT9+ Design
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * Centralized notification center with:
 	 * - Real-time notification display
@@ -10,7 +9,6 @@
 	 * - Action buttons
 	 * - Mark all as read
 	 *
-	 * @version 1.0.0
 	 */
 
 	import { fade, fly, scale } from 'svelte/transition';

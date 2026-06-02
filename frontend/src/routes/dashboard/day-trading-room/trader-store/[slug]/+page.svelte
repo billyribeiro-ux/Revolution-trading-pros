@@ -5,8 +5,6 @@
 	═══════════════════════════════════════════════════════════════════════════
 	Matches WordPress trader-store-john-carter implementation exactly.
 
-	@version 2.0.0
-	@author Revolution Trading Pros
 -->
 <script lang="ts">
 	import { page } from '$app/state';

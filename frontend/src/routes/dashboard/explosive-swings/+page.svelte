@@ -2,7 +2,6 @@
 	import { SvelteSet } from 'svelte/reactivity';
 	/**
 	 * Explosive Swings - Member Dashboard
-	 * @version 6.0.0 - WebSocket Real-Time Alerts (Phase 3)
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA
 	 */
 	import { onMount, onDestroy } from 'svelte';

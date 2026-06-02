@@ -13,12 +13,10 @@
 <script lang="ts">
 	/**
 	 * Dynamic Segments - FluentCRM Pro Style
-	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * Create dynamic contact segments based on conditions.
 	 * Contacts are automatically added/removed based on matching criteria.
 	 *
-	 * @version 1.0.0 (December 2025)
 	 */
 
 	import { onMount } from 'svelte';
@@ -40,9 +38,7 @@
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	interface DynamicSegment {
 		id: string;
@@ -63,9 +59,7 @@
 		value: unknown;
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let segments = $state<DynamicSegment[]>([]);
 	let isLoading = $state(true);
@@ -83,9 +77,7 @@
 		totalContacts: 0
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// API FUNCTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function loadSegments() {
 		isLoading = true;
@@ -154,9 +146,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// HELPERS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function formatNumber(num: number): string {
 		return num.toLocaleString();
@@ -178,9 +168,7 @@
 		return `${count} condition${count > 1 ? 's' : ''} (${matchType === 'all' ? 'AND' : 'OR'})`;
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let filteredSegments = $derived(
 		segments.filter((segment) => {
@@ -193,9 +181,7 @@
 		})
 	);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// LIFECYCLE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	onMount(() => {
 		loadSegments();

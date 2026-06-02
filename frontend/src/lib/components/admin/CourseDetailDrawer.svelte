@@ -90,7 +90,6 @@
 	let isProcessingAction = $state(false);
 
 	// Expanded modules
-	// $state intentional: this collection is reassigned (select-all/clear); SvelteSet/Map makes mutations reactive, $state keeps reassignment reactive.
 	let expandedModules = $state<Set<number>>(new SvelteSet());
 
 	// FIX-2026-04-26: analytics for the Analytics tab. Loaded alongside course

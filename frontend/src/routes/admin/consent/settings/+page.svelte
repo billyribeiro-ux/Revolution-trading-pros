@@ -13,7 +13,6 @@
 	 * - Geolocation-based rules
 	 * - Proof of consent settings
 	 *
-	 * @version 2.0.0 - December 2025
 	 */
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';

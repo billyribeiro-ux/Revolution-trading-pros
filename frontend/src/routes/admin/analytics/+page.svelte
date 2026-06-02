@@ -1,7 +1,6 @@
 <script lang="ts">
 	/**
 	 * Analytics Dashboard - Apple ICT9+ Enterprise Grade
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * Premium analytics dashboard with:
 	 * - Connection status awareness

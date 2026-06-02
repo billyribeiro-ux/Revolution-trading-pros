@@ -1,7 +1,6 @@
 <script lang="ts">
 	/**
 	 * Service Connection Status - Apple Principal Engineer ICT11+ Grade
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * Premium connection status component that displays real-time service connectivity
 	 * with Apple-level polish, beautiful animations, and seamless UX.

@@ -1,11 +1,8 @@
 <script lang="ts">
 	/**
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 * StreakIndicator Component - Win/Loss Streak Display
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * @description Displays current and historical trading streak information
-	 * @version 1.0.0
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA | Svelte 5
 	 */
 	import type { StreakAnalysis } from '../analytics.state.svelte';

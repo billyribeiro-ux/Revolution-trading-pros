@@ -1,7 +1,6 @@
 <!--
 /**
  * Video Block Component
- * ============================================================================
  * Production-ready video player with YouTube, Vimeo, and native video support.
  * Features auto-detection of video platforms, responsive 16:9 embed container,
  * editable captions, and comprehensive dark mode support.
@@ -14,15 +13,11 @@
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 
-	// ==========================================================================
 	// Type Definitions
-	// ==========================================================================
 
 	type VideoType = 'youtube' | 'vimeo' | 'native';
 
-	// ==========================================================================
 	// Props
-	// ==========================================================================
 
 	interface Props {
 		block: Block;
@@ -35,9 +30,7 @@
 
 	let props: Props = $props();
 
-	// ==========================================================================
 	// Local State
-	// ==========================================================================
 
 	// Writable $derived — the URL input below can override locally while the
 	// user types; a prop change (e.g., the block being externally updated)
@@ -47,9 +40,7 @@
 	let hasError = $state(false);
 	let errorMessage = $state('');
 
-	// ==========================================================================
 	// Derived State with $derived.by()
-	// ==========================================================================
 
 	const mediaUrl = $derived(props.block.content.mediaUrl || '');
 	const mediaCaption = $derived(props.block.content.mediaCaption || '');
@@ -130,9 +121,7 @@
 
 	const hasVideo = $derived(!!embedUrl);
 
-	// ==========================================================================
 	// Content Update Handlers
-	// ==========================================================================
 
 	function updateContent(updates: Partial<BlockContent>): void {
 		props.onUpdate({
@@ -227,9 +216,7 @@
 		updateContent({ mediaUrl: '', mediaCaption: '' });
 	}
 
-	// ==========================================================================
 	// Reset loading state when URL changes
-	// ==========================================================================
 
 	$effect(() => {
 		if (mediaUrl) {

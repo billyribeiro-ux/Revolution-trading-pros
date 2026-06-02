@@ -1,7 +1,6 @@
 <!--
 /**
  * Toggle Block Component
- * ═══════════════════════════════════════════════════════════════════════════
  * Collapsible content section with toggle header
  */
 -->

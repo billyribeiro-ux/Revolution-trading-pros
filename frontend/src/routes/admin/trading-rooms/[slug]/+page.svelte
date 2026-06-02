@@ -8,7 +8,6 @@
 	- Alerts (entry/exit/update with expandable notes)
 	- Weekly Video (featured video with auto-archive)
 	
-	@version 1.0.0
 -->
 <script lang="ts">
 	import { page } from '$app/state';
@@ -60,28 +59,20 @@
 	import CloseTradeModal from './_components/CloseTradeModal.svelte';
 	import AlertModal from './_components/AlertModal.svelte';
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// TYPES
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	type Tab = 'trade-plan' | 'alerts' | 'weekly-video' | 'trades' | 'video-library';
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// PAGE DATA FROM LOAD FUNCTION (SSR)
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	const { data }: { data: PageData } = $props();
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// ROUTE DERIVED STATE
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	const slug = $derived(data.slug ?? page.params.slug ?? '');
 	const room = $derived(getRoomById(slug));
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// UI STATE
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	let activeTab = $state<Tab>('trade-plan');
 	let successMessage = $state('');
@@ -97,9 +88,7 @@
 	let pendingDeleteTrade = $state<RoomTrade | null>(null);
 	let pendingDeleteVideoId = $state<number | null>(null);
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// TRADE PLAN STATE
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	// FIX-2026-04-26-audit (P0-7): seed local state from SSR `data.initialData` ONCE
 	// at construction. The previous `$effect` shadow pattern (banned by CLAUDE.md)
@@ -126,9 +115,7 @@
 		notes: ''
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// ALERTS STATE
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	// FIX-2026-04-26-audit (P0-7): seed from SSR data.initialData via untrack.
 	let alerts = $state<RoomAlert[]>(untrack(() => data.initialData?.alerts ?? []));
@@ -162,9 +149,7 @@
 	// Alert type filter for Market Updates
 	let alertTypeFilter = $state<'all' | 'ENTRY' | 'EXIT' | 'UPDATE' | 'MARKET_UPDATE'>('all');
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// WEEKLY VIDEO STATE
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	// FIX-2026-04-26-audit (P0-7): seed currentVideo from SSR via untrack.
 	let currentVideo = $state<WeeklyVideo | null>(
@@ -186,17 +171,13 @@
 		description: ''
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// ROOM STATS STATE
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	// FIX-2026-04-26-audit (P0-7): seed roomStats from SSR via untrack.
 	let roomStats = $state<RoomStats | null>(untrack(() => data.initialData?.roomStats ?? null));
 	let isLoadingStats = $state(false);
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// TRADE TRACKER STATE
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	// FIX-2026-04-26-audit (P0-7): seed trades from SSR via untrack.
 	let trades = $state<RoomTrade[]>(untrack(() => data.initialData?.trades ?? []));
@@ -212,9 +193,7 @@
 		notes: ''
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// VIDEO LIBRARY STATE
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	// FIX-2026-04-26-audit (P0-7): seed videoResources from SSR via untrack.
 	let videoResources = $state<RoomResource[]>(
@@ -225,9 +204,7 @@
 
 	// Video resource management removed - functionality not implemented
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// DERIVED COMPUTED VALUES
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	/** Sorted alerts with pinned items first, then by published date descending */
 	const sortedAlerts = $derived(
@@ -312,17 +289,13 @@
 		closeTradeForm.exit_price.trim() !== '' && !isNaN(parseFloat(closeTradeForm.exit_price))
 	);
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// NOTE: Shadow-state $effect blocks removed 2026-04-26-audit (P0-7).
 	// Each state variable is seeded from SSR data via `untrack()` in its declaration.
 	// Re-syncing through $effects would clobber optimistic local mutations whenever
 	// SvelteKit re-runs the load function. To reload from the server after a mutation,
 	// call the individual load*() functions explicitly.
-	// ═══════════════════════════════════════════════════════════════════════════════
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// DATA FETCHING
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	// SSR data is already loaded from +page.server.ts
 	// Only refresh on client when slug changes (navigation)
@@ -437,9 +410,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// TRADE PLAN HANDLERS
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	function openAddTradePlan() {
 		editingTradePlan = null;
@@ -527,9 +498,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// ALERTS HANDLERS
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	function openAddAlert() {
 		editingAlert = null;
@@ -653,9 +622,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// WEEKLY VIDEO HANDLERS
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	function openAddVideo() {
 		const today = new Date();
@@ -699,9 +666,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// TRADE TRACKER HANDLERS
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	function openCloseTrade(trade: RoomTrade) {
 		closingTrade = trade;

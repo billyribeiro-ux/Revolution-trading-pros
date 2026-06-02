@@ -1,7 +1,6 @@
 <script lang="ts">
 	/**
 	 * AdminToolbar Component - Google L7+ Enterprise Implementation
-	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * ENTERPRISE ENHANCEMENTS:
 	 *
@@ -34,7 +33,6 @@
 	 *    - Retry mechanisms
 	 *    - User feedback
 	 *
-	 * @version 2.0.0 (Google L7+ Enterprise)
 	 * @license MIT
 	 */
 
@@ -68,9 +66,7 @@
 	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
 	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
 
-	// ─────────────────────────────────────────────────────────────────────────────
 	// Type Definitions (Enterprise Grade)
-	// ─────────────────────────────────────────────────────────────────────────────
 
 	interface AdminUser extends User {
 		roles?: string[];
@@ -99,9 +95,7 @@
 
 	type NavigationTarget = 'internal' | 'external' | 'download';
 
-	// ─────────────────────────────────────────────────────────────────────────────
 	// Constants
-	// ─────────────────────────────────────────────────────────────────────────────
 
 	const CONSTANTS = Object.freeze({
 		DEBOUNCE_DELAY: 150,
@@ -122,9 +116,7 @@
 		TAB: 'Tab'
 	});
 
-	// ─────────────────────────────────────────────────────────────────────────────
 	// State Management
-	// ─────────────────────────────────────────────────────────────────────────────
 
 	let showDropdown = $state(false);
 	let showQuickMenu = $state(false);
@@ -151,9 +143,7 @@
 	const abortController = new AbortController();
 	const { signal } = abortController;
 
-	// ─────────────────────────────────────────────────────────────────────────────
 	// Menu Configuration
-	// ─────────────────────────────────────────────────────────────────────────────
 
 	const quickMenuItems: MenuItem[] = [
 		{
@@ -193,9 +183,7 @@
 		}
 	];
 
-	// ─────────────────────────────────────────────────────────────────────────────
 	// Computed State (Reactive) - Using Centralized Role System
-	// ─────────────────────────────────────────────────────────────────────────────
 
 	const currentUser = $derived(user.current as AdminUser | null);
 
@@ -244,9 +232,7 @@
 		})
 	);
 
-	// ─────────────────────────────────────────────────────────────────────────────
 	// Session Management
-	// ─────────────────────────────────────────────────────────────────────────────
 
 	async function checkSession(): Promise<void> {
 		if (!browser || !isAuthenticated.current) return;
@@ -270,9 +256,7 @@
 		await goto('/login?redirect=/admin', { replaceState: true });
 	}
 
-	// ─────────────────────────────────────────────────────────────────────────────
 	// Event Handlers with Error Handling
-	// ─────────────────────────────────────────────────────────────────────────────
 
 	async function handleLogout(): Promise<void> {
 		if (isLoading) return;
@@ -360,9 +344,7 @@
 		currentFocusIndex = 0;
 	}
 
-	// ─────────────────────────────────────────────────────────────────────────────
 	// Keyboard Navigation
-	// ─────────────────────────────────────────────────────────────────────────────
 
 	function handleKeyDown(event: KeyboardEvent, menuType: 'quick' | 'user'): void {
 		const isQuickMenu = menuType === 'quick';
@@ -426,9 +408,7 @@
 		});
 	}
 
-	// ─────────────────────────────────────────────────────────────────────────────
 	// Toggle Functions with Animation Lock
-	// ─────────────────────────────────────────────────────────────────────────────
 
 	let isAnimating = $state(false);
 
@@ -473,9 +453,7 @@
 		}, CONSTANTS.ANIMATION_DURATION);
 	}
 
-	// ─────────────────────────────────────────────────────────────────────────────
 	// Error Recovery
-	// ─────────────────────────────────────────────────────────────────────────────
 
 	async function retryUserLoad(): Promise<void> {
 		if (errorState.retryCount >= CONSTANTS.RETRY_LIMIT) {
@@ -510,9 +488,7 @@
 		}
 	}
 
-	// ─────────────────────────────────────────────────────────────────────────────
 	// Utility Functions
-	// ─────────────────────────────────────────────────────────────────────────────
 
 	function announceToScreenReader(message: string): void {
 		if (!browser) return;
@@ -568,9 +544,7 @@
 		}
 	}
 
-	// ─────────────────────────────────────────────────────────────────────────────
 	// Lifecycle Hooks
-	// ─────────────────────────────────────────────────────────────────────────────
 
 	onMount(async () => {
 		if (!browser) return;

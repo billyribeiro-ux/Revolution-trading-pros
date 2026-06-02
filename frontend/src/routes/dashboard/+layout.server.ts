@@ -1,6 +1,5 @@
 /**
  * Dashboard Layout Server - ICT 11+ Server-Side Auth Pattern
- * ═══════════════════════════════════════════════════════════════════════════
  * Apple ICT 11+ Principal Engineer Implementation
  * Svelte 5 (2025) Best Practice: Server-Side Route Protection
  *
@@ -16,8 +15,6 @@
  * - More secure than client-side guards
  * - Proper redirects with return URLs
  *
- * @version 4.0.0 - ICT 11+ Server-Side Auth Pattern
- * @author Revolution Trading Pros
  */
 
 import type { LayoutServerLoad } from './$types';

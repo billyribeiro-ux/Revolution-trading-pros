@@ -6,7 +6,6 @@
 	import { onMount } from 'svelte';
 	/**
 	 * API Settings & Integrations - Apple ICT9+ Principal Engineer Grade
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * Premium settings dashboard with real API connections, live status monitoring,
 	 * and beautiful Apple-inspired UI with glass morphism effects.

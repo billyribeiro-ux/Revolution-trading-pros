@@ -1,12 +1,9 @@
 <!--
 /**
  * Countdown Block Component
- * ═══════════════════════════════════════════════════════════════════════════
  * Countdown timer to target date with celebration state
  * Features purple gradient background and responsive design
  *
- * @version 2.0.0
- * @author Revolution Trading Pros
  */
 -->
 
@@ -20,9 +17,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import type { Block, BlockContent } from '../types';
 
-	// =========================================================================
 	// Types
-	// =========================================================================
 
 	interface Props {
 		block: Block;
@@ -33,9 +28,7 @@
 		onError?: (error: Error) => void;
 	}
 
-	// =========================================================================
 	// Props & State
-	// =========================================================================
 
 	let props: Props = $props();
 	const stateManager = getBlockStateManager();
@@ -48,9 +41,7 @@
 	let isExpired = $state(false);
 	let intervalId: ReturnType<typeof setInterval> | null = null;
 
-	// =========================================================================
 	// Derived Values
-	// =========================================================================
 
 	// State manager syncs countdown state globally - accessed via stateManager methods
 	let _countdownState = $derived<CountdownState>(stateManager.getCountdownState(props.blockId));
@@ -60,9 +51,7 @@
 		props.block.content.countdownExpiredMessage || 'Time is up! Celebration time!'
 	);
 
-	// =========================================================================
 	// Handlers
-	// =========================================================================
 
 	function updateContent(updates: Partial<BlockContent>): void {
 		props.onUpdate({ content: { ...props.block.content, ...updates } });
@@ -123,9 +112,7 @@
 		return n.toString().padStart(2, '0');
 	}
 
-	// =========================================================================
 	// Lifecycle
-	// =========================================================================
 
 	onMount(() => {
 		// Initial calculation

@@ -9,7 +9,6 @@
 	- Certificate status
 	- Svelte 5 $state and $derived runes
 
-	@version 2.0.0 - February 2026
 -->
 <script lang="ts">
 	import { onMount } from 'svelte';

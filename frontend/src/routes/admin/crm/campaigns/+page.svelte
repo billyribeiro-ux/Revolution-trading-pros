@@ -13,11 +13,9 @@
 <script lang="ts">
 	/**
 	 * Email Campaigns - FluentCRM Pro Style
-	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * One-time email campaigns and broadcasts.
 	 *
-	 * @version 1.0.0 (December 2025)
 	 */
 
 	import { onMount, type Component } from 'svelte';
@@ -39,9 +37,7 @@
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	interface Campaign {
 		id: string;
@@ -60,9 +56,7 @@
 		updated_at: string;
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let campaigns = $state<Campaign[]>([]);
 	let isLoading = $state(true);
@@ -91,9 +85,7 @@
 		{ value: 'failed', label: 'Failed' }
 	];
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// API FUNCTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function loadCampaigns() {
 		isLoading = true;
@@ -161,9 +153,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// HELPERS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function formatNumber(num: number): string {
 		return num.toLocaleString();
@@ -209,9 +199,7 @@
 		return icons[status] || IconMail;
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let filteredCampaigns = $derived(
 		campaigns.filter((campaign) => {
@@ -224,9 +212,7 @@
 		})
 	);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// LIFECYCLE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	onMount(() => {
 		loadCampaigns();

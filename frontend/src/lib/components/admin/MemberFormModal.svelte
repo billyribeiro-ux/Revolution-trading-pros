@@ -50,44 +50,34 @@
 		onSaved?.(member, tempPassword);
 	};
 
-	// ============================================
 	// FORM STATE - Core Fields
-	// ============================================
 	let name = $state('');
 	let email = $state('');
 	let password = $state('');
 	let role = $state('user');
 	let sendWelcomeEmail = $state(true);
 
-	// ============================================
 	// FORM STATE - Extended Profile
-	// ============================================
 	let phone = $state('');
 	let company = $state('');
 	let jobTitle = $state('');
 	let bio = $state('');
 	let timezone = $state('America/New_York');
 
-	// ============================================
 	// FORM STATE - Membership & Access
-	// ============================================
 	let subscriptionTier = $state('free');
 	let accountStatus = $state('active');
 	let expirationDate = $state('');
 	let tags = $state<string[]>([]);
 	let tagInput = $state('');
 
-	// ============================================
 	// FORM STATE - Preferences & Security
-	// ============================================
 	let enableTwoFactor = $state(false);
 	let emailNotifications = $state(true);
 	let smsNotifications = $state(false);
 	let marketingEmails = $state(false);
 
-	// ============================================
 	// FORM STATE - Notes (Admin Only)
-	// ============================================
 	let adminNotes = $state('');
 
 	// UI state

@@ -1,7 +1,6 @@
 <script lang="ts">
 	/**
 	 * Toast Notification Component - Apple ICT9+ Level
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * Premium toast notifications with:
 	 * - Smooth spring animations

@@ -8,7 +8,6 @@
   - List skeleton for table views
   - Upload skeleton for upload progress
 
-  @version 2.0.0
 -->
 <script lang="ts">
 	import Icon from '$lib/components/Icon.svelte';

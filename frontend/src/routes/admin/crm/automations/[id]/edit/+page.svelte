@@ -35,9 +35,7 @@
 	import type { AutomationFunnel, FunnelAction, ActionType, FunnelStatus } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let funnel = $state<AutomationFunnel | null>(null);
 	let actions = $state<FunnelAction[]>([]);
@@ -146,9 +144,7 @@
 		}
 	] as const;
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// API FUNCTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function loadFunnel() {
 		isLoading = true;
@@ -258,9 +254,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// MODAL FUNCTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function openAddActionModal() {
 		editingAction = null;
@@ -325,9 +319,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// HELPERS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function showSuccess(message: string) {
 		successMessage = message;
@@ -389,15 +381,11 @@
 		return colors[status];
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let canSaveAction = $derived(actionForm.action_type !== '' && !isSaving);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// LIFECYCLE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Audit P2 #10: was a bare `$effect(() => loadFunnel())`. Migrated to
 	// `onMount` to keep one-shot init off the reactive graph.

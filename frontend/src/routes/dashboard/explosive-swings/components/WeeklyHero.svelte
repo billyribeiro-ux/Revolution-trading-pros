@@ -1,13 +1,9 @@
 <script lang="ts">
 	import { SvelteSet } from 'svelte/reactivity';
 	/**
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 * WeeklyHero Component - Apple Principal Engineer ICT Level 7
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * @description Hero section with video breakdown and trade plan tabs
-	 * @version 5.1.0 - ICT 7 compliance: focus states, reduced-motion, a11y improvements
-	 * @requires Svelte 5.0+ (January 2026 syntax)
 	 * @standards Apple Principal Engineer ICT 7+ Standards
 	 *
 	 * Layout: 50/50 split on desktop, stacked on mobile

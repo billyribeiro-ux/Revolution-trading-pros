@@ -1,7 +1,6 @@
 <!--
 /**
  * AI Translation Block Component
- * ═══════════════════════════════════════════════════════════════════════════
  * Language translation with side-by-side or stacked view
  */
 -->

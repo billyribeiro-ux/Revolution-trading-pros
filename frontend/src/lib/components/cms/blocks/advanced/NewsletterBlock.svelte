@@ -1,7 +1,6 @@
 <!--
 /**
  * Newsletter Block Component
- * ═══════════════════════════════════════════════════════════════════════════
  * Email signup form with validation, loading states, and customizable styling.
  * Uses BlockStateManager for centralized state management.
  */

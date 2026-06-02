@@ -1,7 +1,6 @@
 <!--
 /**
  * Revolution Trading Pros - Enterprise Block Editor
- * ═══════════════════════════════════════════════════════════════════════════
  * World-class blog editor surpassing WordPress Elementor Pro
  *
  * FEATURES:
@@ -15,8 +14,6 @@
  * - Full accessibility (ARIA)
  * - Collaboration comments
  *
- * @version 4.0.0 Enterprise
- * @author Revolution Trading Pros
  */
 -->
 
@@ -72,9 +69,7 @@
 	import SaveStatusIndicator from './block-editor/SaveStatusIndicator.svelte';
 	import BlockLayersPanel from './block-editor/BlockLayersPanel.svelte';
 
-	// ==========================================================================
 	// Props
-	// ==========================================================================
 
 	interface Props {
 		blocks?: Block[];
@@ -104,9 +99,7 @@
 	const autosaveInterval = $derived(props.autosaveInterval ?? 30000);
 	const readOnly = $derived(props.readOnly ?? false);
 
-	// ==========================================================================
 	// State
-	// ==========================================================================
 
 	let editorState = $state<EditorState>({
 		blocks: [],
@@ -148,9 +141,7 @@
 		editorState.history.present = [...blocks];
 	});
 
-	// ==========================================================================
 	// Enhanced Drag-Drop State (Apple Principal Engineer Grade)
-	// ==========================================================================
 
 	// Touch drag state
 	let touchDragState = $state<{
@@ -221,9 +212,7 @@
 	let editorContainer: HTMLDivElement;
 	let autosaveTimer: ReturnType<typeof setInterval>;
 
-	// ==========================================================================
 	// Computed
-	// ==========================================================================
 
 	let canUndo = $derived(editorState.history.past.length > 0);
 	let canRedo = $derived(editorState.history.future.length > 0);
@@ -236,9 +225,7 @@
 	let readTime = $derived(Math.ceil(wordCount / 200));
 	let blockCount = $derived(editorState.blocks.length);
 
-	// ==========================================================================
 	// Lifecycle
-	// ==========================================================================
 
 	onMount(() => {
 		// Start autosave
@@ -274,9 +261,7 @@
 		}
 	});
 
-	// ==========================================================================
 	// Block Operations
-	// ==========================================================================
 
 	function generateBlockId(): string {
 		return `block_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -394,9 +379,7 @@
 		}
 	}
 
-	// ==========================================================================
 	// Enhanced Drag and Drop (Apple Principal Engineer Grade)
-	// ==========================================================================
 
 	// Screen reader announcement helper
 	function announce(message: string, _priority: 'polite' | 'assertive' = 'polite') {
@@ -849,9 +832,7 @@
 		}
 	}
 
-	// ==========================================================================
 	// History (Undo/Redo)
-	// ==========================================================================
 
 	function pushToHistory() {
 		const currentState = JSON.parse(JSON.stringify(editorState.blocks));
@@ -902,9 +883,7 @@
 		}
 	}
 
-	// ==========================================================================
 	// Clipboard
-	// ==========================================================================
 
 	function copyBlock(blockId: string) {
 		const block = editorState.blocks.find((b) => b.id === blockId);
@@ -944,9 +923,7 @@
 		editorState.selectedBlockId = pastedBlock.id;
 	}
 
-	// ==========================================================================
 	// Keyboard Shortcuts
-	// ==========================================================================
 
 	function handleGlobalKeydown(e: KeyboardEvent) {
 		const isMeta = e.metaKey || e.ctrlKey;
@@ -1075,9 +1052,7 @@
 		}
 	}
 
-	// ==========================================================================
 	// Save/Autosave
-	// ==========================================================================
 
 	async function handleSave() {
 		isSaving = true;
@@ -1113,9 +1088,7 @@
 		}
 	}
 
-	// ==========================================================================
 	// View Controls
-	// ==========================================================================
 
 	function toggleFullscreen() {
 		if (!document.fullscreenElement) {
@@ -1131,9 +1104,7 @@
 		editorState.devicePreview = device;
 	}
 
-	// ==========================================================================
 	// Block Inserter
-	// ==========================================================================
 
 	function openBlockInserter(index: number, e?: MouseEvent) {
 		inserterIndex = index;
@@ -1150,9 +1121,7 @@
 		addBlock(type, inserterIndex);
 	}
 
-	// ==========================================================================
 	// SEO Analysis
-	// ==========================================================================
 
 	function runSEOAnalysis() {
 		// Basic SEO analysis
@@ -1303,9 +1272,7 @@
 		};
 	}
 
-	// ==========================================================================
 	// Helpers
-	// ==========================================================================
 
 	function calculateWordCount(blocks: Block[]): number {
 		return blocks.reduce((count, block) => {

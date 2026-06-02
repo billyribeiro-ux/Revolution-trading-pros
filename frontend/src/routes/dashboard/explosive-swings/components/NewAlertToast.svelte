@@ -1,11 +1,8 @@
 <script lang="ts">
 	/**
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 * NewAlertToast Component - Toast Notification for New Alerts
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * @description Displays a toast notification when new trading alerts arrive
-	 * @version 1.0.0 - Initial Implementation
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA
 	 */
 	import { fly } from 'svelte/transition';

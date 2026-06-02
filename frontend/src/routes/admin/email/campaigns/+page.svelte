@@ -1,7 +1,6 @@
 <script lang="ts">
 	/**
 	 * Email Campaigns - Apple ICT7 Principal Engineer Grade
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * Svelte 5 runes implementation with:
 	 * - $state for reactive state management
@@ -10,7 +9,6 @@
 	 * - Full TypeScript type safety
 	 * - Dynamic segments loading from API
 	 *
-	 * @version 2.0.0 - Svelte 5 Migration (Dec 2025)
 	 */
 
 	// FIX-2026-04-26: onMount imported for $effect-cascade fix below.
@@ -53,9 +51,7 @@
 		type CampaignStats
 	} from '$lib/api/campaigns';
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// Types
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	interface Segment {
 		id: number;
@@ -63,9 +59,7 @@
 		count: number;
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// State - Svelte 5 Runes
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	// Connection-aware state
 	let connectionLoading = $state(true);
@@ -98,9 +92,7 @@
 	// Templates (loaded from API)
 	let templates = $state<{ id: number; name: string }[]>([]);
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// Derived State
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	let filteredCampaigns = $derived.by(() => {
 		if (activeTab === 'all') return campaigns;
@@ -114,9 +106,7 @@
 	let sentCount = $derived(campaigns.filter((c) => c.status === 'sent').length);
 	let draftCount = $derived(campaigns.filter((c) => c.status === 'draft').length);
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// Lifecycle - onMount (NOT $effect)
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// FIX-2026-04-26: converted from $effect to onMount.
 	// `initializeData()` calls `connections.load()` which mutates `connectionsState`
 	// AND reads it back via `getIsEmailConnected()`. Inside an $effect that's the
@@ -127,9 +117,6 @@
 	// See https://svelte.dev/docs/svelte/$effect#When-not-to-use-$effect.
 	//
 	// Old code (kept for one revision per FIX-2026-04-26 marker — delete in follow-up):
-	// $effect(() => {
-	// 	initializeData();
-	// });
 	onMount(() => {
 		initializeData();
 	});
@@ -183,9 +170,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// Load Segments from API
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	async function loadSegments() {
 		try {
@@ -219,9 +204,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// View Report Handler
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	function viewCampaignReport(campaign: APICampaign) {
 		goto(`/admin/email/campaigns/${campaign.id}/report`);

@@ -14,9 +14,7 @@
 <script lang="ts">
 	/**
 	 * Admin Weekly Watchlist - Edit Page
-	 * ═══════════════════════════════════════════════════════════════════════════
 	 * Edit existing watchlist items with room targeting
-	 * @version 2.0.0 (January 2026) - Added ICT7 header
 	 */
 
 	import { page } from '$app/state';

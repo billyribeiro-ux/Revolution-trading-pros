@@ -1,7 +1,6 @@
 <script lang="ts">
 	/**
 	 * Admin Subscription Plans Management
-	 * ═══════════════════════════════════════════════════════════════════════════
 	 * Apple ICT 7+ Principal Engineer Grade - January 2026
 	 *
 	 * Full CRUD for membership plans with Stripe Price ID management.

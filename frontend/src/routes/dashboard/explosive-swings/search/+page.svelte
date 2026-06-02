@@ -1,11 +1,8 @@
 <script lang="ts">
 	/**
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 * Explosive Swings - Search Page
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * @description Full-text search interface for alerts, trades, and trade plans
-	 * @version 1.0.0
 	 * @standards Svelte 5 January 2026 | Apple Principal Engineer ICT 7+ | WCAG 2.1 AA
 	 */
 	import { onMount } from 'svelte';

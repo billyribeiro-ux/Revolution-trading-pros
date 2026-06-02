@@ -9,7 +9,6 @@
 	- Sortable table with drag reorder
 	- Bulk import/export
 	
-	@version 1.0.0
 -->
 <script lang="ts">
 	import { untrack } from 'svelte';
@@ -26,9 +25,7 @@
 	import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// PROPS
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	interface Props {
 		roomSlug: string;
@@ -38,9 +35,7 @@
 
 	const { roomSlug, onSuccess, onError }: Props = $props();
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// STATE
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	let entries = $state<TradePlanEntry[]>([]);
 	let isLoading = $state(true);
@@ -76,17 +71,13 @@
 		stop: ''
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// DERIVED
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	const isFormValid = $derived(form.ticker.trim() !== '');
 	const isQuickFormValid = $derived(quickForm.ticker.trim() !== '');
 	const sortedEntries = $derived([...entries].sort((a, b) => a.sort_order - b.sort_order));
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// API FUNCTIONS
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	async function loadEntries() {
 		isLoading = true;
@@ -217,9 +208,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// UI HANDLERS
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	function openAddModal() {
 		editingEntry = null;
@@ -262,9 +251,7 @@
 		editingEntry = null;
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// LIFECYCLE
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	$effect(() => {
 		if (roomSlug) {

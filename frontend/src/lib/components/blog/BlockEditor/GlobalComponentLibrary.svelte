@@ -1,7 +1,6 @@
 <!--
 /**
  * Global Component Library - Component Browser
- * ===============================================================================
  * Modal/sidebar browser for managing global components (headers, footers, CTAs, etc.)
  * Enables managing repeated elements from one centralized place.
  *
@@ -14,7 +13,6 @@
  * - Sync/detach functionality
  * - Version history
  *
- * @version 1.0.0 - February 2026
  */
 -->
 
@@ -51,9 +49,7 @@
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import { logger } from '$lib/utils/logger';
 
-	// ==========================================================================
 	// Types
-	// ==========================================================================
 
 	type ComponentCategory =
 		| 'header'
@@ -113,9 +109,7 @@
 		count: number;
 	}
 
-	// ==========================================================================
 	// Props
-	// ==========================================================================
 
 	interface Props {
 		isOpen: boolean;
@@ -130,9 +124,7 @@
 	const oninsert = $derived(props.oninsert);
 	const onclose = $derived(props.onclose);
 
-	// ==========================================================================
 	// State
-	// ==========================================================================
 
 	let components = $state<GlobalComponent[]>([]);
 	let categories = $state<CategoryCount[]>([]);
@@ -165,9 +157,7 @@
 	let showDeleteComponentModal = $state(false);
 	let pendingDeleteComponent = $state<GlobalComponent | null>(null);
 
-	// ==========================================================================
 	// Category Config
-	// ==========================================================================
 
 	const categoryConfig: Record<
 		ComponentCategory,
@@ -185,9 +175,7 @@
 		section: { label: 'Sections', icon: IconLayoutDashboard, color: '#64748b' }
 	};
 
-	// ==========================================================================
 	// Derived
-	// ==========================================================================
 
 	let filteredComponents = $derived.by(() => {
 		let result = components;
@@ -209,9 +197,7 @@
 		return result;
 	});
 
-	// ==========================================================================
 	// API Helpers
-	// ==========================================================================
 
 	function getAuthHeaders(): HeadersInit {
 		const token = getAuthToken();
@@ -221,9 +207,7 @@
 		};
 	}
 
-	// ==========================================================================
 	// Data Loading
-	// ==========================================================================
 
 	async function loadComponents(): Promise<void> {
 		isLoading = true;
@@ -306,9 +290,7 @@
 		}
 	}
 
-	// ==========================================================================
 	// Actions
-	// ==========================================================================
 
 	async function handleInsert(component: GlobalComponent): Promise<void> {
 		if (!contentId) {
@@ -527,9 +509,7 @@
 		});
 	}
 
-	// ==========================================================================
 	// Effects
-	// ==========================================================================
 
 	$effect(() => {
 		if (isOpen) {

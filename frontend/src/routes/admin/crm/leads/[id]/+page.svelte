@@ -14,7 +14,6 @@
 <script lang="ts">
 	/**
 	 * Lead Detail Page - Apple ICT 7 Principal Engineer Grade
-	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * Comprehensive lead profile with:
 	 * - Profile information and scoring
@@ -23,7 +22,6 @@
 	 * - Task tracking
 	 * - Quick actions
 	 *
-	 * @version 1.0.0 (January 2026)
 	 */
 
 	import { onMount } from 'svelte';
@@ -59,9 +57,7 @@
 	import { api } from '$lib/api/config';
 	import { logger } from '$lib/utils/logger';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	interface Lead {
 		id: string;
@@ -115,9 +111,7 @@
 		created_by: { name: string };
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE - Svelte 5 Runes
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let lead = $state<Lead | null>(null);
 	let timeline = $state<TimelineEvent[]>([]);
@@ -138,9 +132,7 @@
 
 	let leadId = $derived(page.params.id as string);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// API FUNCTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function loadLead() {
 		loading = true;
@@ -259,9 +251,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// HELPERS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function showToast(type: 'success' | 'error', text: string) {
 		toastMessage = { type, text };
@@ -335,9 +325,7 @@
 		goto('/admin/crm/leads');
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// LIFECYCLE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	onMount(async () => {
 		await loadLead();

@@ -1,7 +1,6 @@
 <!--
 /**
  * SchedulingPanel - Content Scheduling
- * =====================================================
  * Enterprise-grade content scheduling with timezone support,
  * release bundles, and calendar visualization.
  *
@@ -12,8 +11,6 @@
  * - Timezone-aware scheduling
  * - Schedule history and audit log
  *
- * @version 1.0.0
- * @author Revolution Trading Pros
  */
 -->
 

@@ -6,8 +6,6 @@
 	Apple ICT 11+ Principal Engineer Implementation
 	Based on NewStartHere reference - Svelte 5
 
-	@version 2.0.0
-	@author Revolution Trading Pros
 -->
 <script lang="ts">
 	import { SvelteSet } from 'svelte/reactivity';

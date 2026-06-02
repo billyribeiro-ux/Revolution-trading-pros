@@ -1,7 +1,6 @@
 <!--
 /**
  * Tabs Block Component
- * ═══════════════════════════════════════════════════════════════════════════
  * Horizontal/vertical tabs with keyboard navigation and fade animations
  */
 -->

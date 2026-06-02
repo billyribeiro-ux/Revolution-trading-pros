@@ -1,7 +1,6 @@
 <script lang="ts">
 	/**
 	 * Site Health Dashboard - Apple ICT9+ Enterprise Grade
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * Comprehensive site health monitoring with:
 	 * - Real-time system status checks
@@ -11,7 +10,6 @@
 	 * - API connection health
 	 * - Apple-level polish and animations
 	 *
-	 * @version 1.0.0 - Enterprise Edition
 	 */
 
 	import { browser } from '$app/environment';
@@ -54,9 +52,7 @@
 	} from '$lib/stores/connections.svelte';
 	import { toastStore } from '$lib/stores/toast.svelte';
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// Types
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	interface HealthCheck {
 		id: string;
@@ -102,9 +98,7 @@
 		};
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// State
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	let isLoading = $state(true);
 	let isRefreshing = $state(false);
@@ -123,9 +117,7 @@
 	// Animated score display
 	const scoreDisplay = tweened(0, { duration: 1500, easing: cubicOut });
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// Lifecycle
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	// Svelte 5: Initialize on mount with cleanup
 	$effect(() => {
@@ -145,9 +137,7 @@
 		};
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// Data Loading
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	async function loadHealthData() {
 		try {
@@ -281,9 +271,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// Helpers
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	function getScoreColor(score: number): string {
 		if (score >= 90) return '#10b981';

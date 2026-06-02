@@ -1,7 +1,6 @@
 <!--
 /**
  * Audio Block Component
- * ═══════════════════════════════════════════════════════════════════════════
  * Full-featured audio player with controls, file upload, and URL input
  * Apple Principal Engineer ICT 7 Standard - Svelte 5 Runes
  */
@@ -22,9 +21,7 @@
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 
-	// ==========================================================================
 	// Props
-	// ==========================================================================
 
 	interface Props {
 		block: Block;
@@ -37,16 +34,12 @@
 
 	let props: Props = $props();
 
-	// ==========================================================================
 	// Local State
-	// ==========================================================================
 
 	let audioElement: HTMLAudioElement | null = $state(null);
 	let urlInputValue = $state('');
 
-	// ==========================================================================
 	// Media Controls Hook
-	// ==========================================================================
 
 	const controls = useMediaControls({
 		get blockId() {
@@ -67,9 +60,7 @@
 		}
 	});
 
-	// ==========================================================================
 	// Time Formatting
-	// ==========================================================================
 
 	function formatTime(seconds: number): string {
 		if (!seconds || isNaN(seconds) || !isFinite(seconds)) {
@@ -83,9 +74,7 @@
 		return `${mins}:${secs.toString().padStart(2, '0')}`;
 	}
 
-	// ==========================================================================
 	// Content Updates
-	// ==========================================================================
 
 	function updateContent(updates: Partial<BlockContent>): void {
 		props.onUpdate({
@@ -145,9 +134,7 @@
 		updateContent({ mediaUrl: url });
 	}
 
-	// ==========================================================================
 	// Progress Bar Handlers
-	// ==========================================================================
 
 	function handleProgressClick(e: MouseEvent): void {
 		const container = e.currentTarget as HTMLElement;
@@ -166,18 +153,14 @@
 		}
 	}
 
-	// ==========================================================================
 	// Volume Handlers
-	// ==========================================================================
 
 	function handleVolumeChange(e: Event): void {
 		const value = parseFloat((e.target as HTMLInputElement).value);
 		controls.setVolume(value);
 	}
 
-	// ==========================================================================
 	// Derived State
-	// ==========================================================================
 
 	const hasAudio = $derived(!!props.block.content.mediaUrl);
 	const sanitizedURL = $derived(

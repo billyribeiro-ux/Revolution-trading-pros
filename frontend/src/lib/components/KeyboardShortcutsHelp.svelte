@@ -1,11 +1,9 @@
 <script lang="ts">
 	/**
 	 * Keyboard Shortcuts Help Modal - Apple ICT9+ Design
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * Displays all available keyboard shortcuts in a beautiful modal.
 	 *
-	 * @version 1.0.0
 	 */
 
 	import { fade, scale } from 'svelte/transition';

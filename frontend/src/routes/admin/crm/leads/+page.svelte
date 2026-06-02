@@ -15,7 +15,6 @@
 	import { SvelteSet } from 'svelte/reactivity';
 	/**
 	 * CRM Leads Management - Apple ICT 7 Principal Engineer Grade
-	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * Comprehensive lead management system with:
 	 * - Pipeline view with drag-and-drop stages
@@ -24,7 +23,6 @@
 	 * - Source tracking and attribution
 	 * - Full API integration
 	 *
-	 * @version 1.0.0 (January 2026)
 	 */
 
 	import { browser } from '$app/environment';
@@ -59,9 +57,7 @@
 	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	interface Lead {
 		id: string;
@@ -102,9 +98,7 @@
 		conversion_rate: number;
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE - Svelte 5 Runes
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let leads = $state<Lead[]>([]);
 	let stats = $state<LeadStats>({
@@ -128,7 +122,6 @@
 	let selectedSource = $state<string>('all');
 	let sortBy = $state<string>('created_at');
 	let sortOrder = $state<'asc' | 'desc'>('desc');
-	// $state intentional: this collection is reassigned (select-all/clear); SvelteSet/Map makes mutations reactive, $state keeps reassignment reactive.
 	let selectedLeads = $state<Set<string>>(new SvelteSet());
 	let showFilters = $state(false);
 	let _viewMode = $state<'list' | 'kanban'>('list');
@@ -171,9 +164,7 @@
 	let totalPages = $state(1);
 	let perPage = $state(25);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// CONSTANTS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	const statusOptions = [
 		{ value: 'all', label: 'All Leads' },
@@ -206,9 +197,7 @@
 		{ value: 'full_name', label: 'Name' }
 	];
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE - Svelte 5 $derived
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let filteredLeads = $derived.by(() => {
 		let result = [...leads];
@@ -266,9 +255,7 @@
 		paginatedLeads.length > 0 && paginatedLeads.every((lead) => selectedLeads.has(lead.id))
 	);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// EFFECTS - Svelte 5 $effect
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	$effect(() => {
 		// Reset page when filters change
@@ -285,9 +272,7 @@
 		}
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// API FUNCTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function loadData() {
 		isLoading = true;
@@ -497,9 +482,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// HELPERS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function resetForm() {
 		formData = {
@@ -595,9 +578,7 @@
 		return 'text-red-400';
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// LIFECYCLE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Svelte 5: Initialize on mount.
 	// Was previously a `$effect` that read `getIsCrmConnected()` after writing

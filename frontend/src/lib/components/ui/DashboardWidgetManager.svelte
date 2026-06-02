@@ -3,8 +3,6 @@
 	 * DashboardWidgetManager Component
 	 * Manages draggable dashboard widgets
 	 *
-	 * @version 1.0.0
-	 * @author Revolution Trading Pros
 	 */
 	import type { Snippet } from 'svelte';
 

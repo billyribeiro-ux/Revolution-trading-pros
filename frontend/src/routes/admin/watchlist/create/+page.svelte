@@ -15,12 +15,10 @@
 <script lang="ts">
 	/**
 	 * Admin Weekly Watchlist - Create Entry
-	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * Automated, easy-to-use system for creating watchlist entries.
 	 * Uses centralized watchlistApi for all operations.
 	 *
-	 * @version 2.0.0 (January 2026) - Fixed Svelte 5 runes, API integration
 	 */
 
 	import { goto } from '$app/navigation';
@@ -37,9 +35,7 @@
 	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
 	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Form state
 	let trader = $state('');
@@ -61,9 +57,7 @@
 	let error = $state('');
 	let success = $state(false);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE (Svelte 5 correct syntax)
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Auto-generate slug from trader and weekOf
 	const slug = $derived.by(() => {
@@ -105,9 +99,7 @@
 		);
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// EVENT HANDLERS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function addDateVersion() {
 		if (!newDate || !newDateSpreadsheet) {

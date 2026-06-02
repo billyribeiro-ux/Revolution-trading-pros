@@ -1,7 +1,6 @@
 <!--
 /**
  * AssetManager - Digital Asset Manager
- * =====================================================
  * Enterprise-grade DAM with:
  * - Grid/List view modes
  * - Search by filename, tags, metadata
@@ -12,8 +11,6 @@
  * - Image editing integration (crop, resize)
  * - Bulk operations (select, delete, move, tag)
  *
- * @version 1.0.0 - February 2026
- * @author Revolution Trading Pros
  */
 -->
 
@@ -34,9 +31,7 @@
 	import DropZone from './asset-manager/DropZone.svelte';
 	import FoldersSidebar from './asset-manager/FoldersSidebar.svelte';
 
-	// ============================================================================
 	// Types
-	// ============================================================================
 
 	interface Asset {
 		id: string;
@@ -103,9 +98,7 @@
 	);
 	const initialFolder = $derived(props.initialFolder ?? null);
 
-	// ============================================================================
 	// State
-	// ============================================================================
 
 	// View state
 	let viewMode = $state<'grid' | 'list'>('grid');
@@ -182,9 +175,7 @@
 	// Debounce timer
 	let searchTimeout: ReturnType<typeof setTimeout> | null = null;
 
-	// ============================================================================
 	// API Functions
-	// ============================================================================
 
 	async function fetchAssets(reset = false) {
 		if (reset) {
@@ -423,9 +414,7 @@
 	// 	}
 	// }
 
-	// ============================================================================
 	// Upload Functions
-	// ============================================================================
 
 	async function uploadFile(item: UploadItem) {
 		const idx = uploadQueue.findIndex((u) => u.id === item.id);
@@ -543,9 +532,7 @@
 		});
 	}
 
-	// ============================================================================
 	// Event Handlers
-	// ============================================================================
 
 	function handleDragEnter(e: DragEvent) {
 		e.preventDefault();
@@ -703,9 +690,7 @@
 		}
 	}
 
-	// ============================================================================
 	// Helpers
-	// ============================================================================
 
 	function formatFileSize(bytes: number): string {
 		if (bytes < 1024) return `${bytes} B`;

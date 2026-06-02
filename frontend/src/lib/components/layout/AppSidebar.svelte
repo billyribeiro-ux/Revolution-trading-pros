@@ -3,8 +3,6 @@
 	 * AppSidebar Component
 	 * Main application sidebar navigation
 	 *
-	 * @version 1.0.0
-	 * @author Revolution Trading Pros
 	 */
 	import type { Snippet } from 'svelte';
 

@@ -1,11 +1,8 @@
 <script lang="ts">
 	/**
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 * AlertsFeed Component - Live Alerts Feed with Filter Tabs
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * @description Container for live alerts with filtering and pagination
-	 * @version 4.1.0 - Visual Polish Pass
 	 * @standards Apple Principal Engineer ICT 7+ Standards
 	 */
 	import type { Alert, AlertFilterType } from '../types';

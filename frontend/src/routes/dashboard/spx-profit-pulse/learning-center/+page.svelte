@@ -9,8 +9,6 @@
 	Educational resources and training materials for SPX Profit Pulse members.
 	Fetches data with server-side rendering.
 
-	@version 1.0.0 - January 2026
-	@author Revolution Trading Pros
 -->
 <script lang="ts">
 	import { goto } from '$app/navigation';

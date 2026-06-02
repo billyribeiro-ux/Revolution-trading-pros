@@ -9,7 +9,6 @@
 	 * - Manual override option
 	 * - International support
 	 *
-	 * @version 2.0.0
 	 */
 
 	import { onMount } from 'svelte';

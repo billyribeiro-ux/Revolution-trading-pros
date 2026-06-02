@@ -1,7 +1,6 @@
 <!--
 /**
  * Table of Contents Block Component
- * ═══════════════════════════════════════════════════════════════════════════
  * Auto-generates TOC from document headings with smooth scroll
  */
 -->

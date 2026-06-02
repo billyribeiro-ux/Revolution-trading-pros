@@ -1,11 +1,9 @@
 <script lang="ts">
 	/**
 	 * Batch Operations Component - Apple ICT9+ Design
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * Floating action bar for bulk operations on selected items.
 	 *
-	 * @version 1.0.0
 	 */
 
 	import { fade, fly } from 'svelte/transition';
