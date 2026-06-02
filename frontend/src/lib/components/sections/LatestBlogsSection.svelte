@@ -23,7 +23,7 @@
 	// --- Animation Logic ---
 	let containerRef: HTMLElement;
 	// ICT11+ Fix: Start false, set true via IntersectionObserver to trigger in: transitions
-	let isVisible = $state(false);
+	let isVisible = $state(true); // CLS FIX: SSR-render content (reserve space, no pop-in); in:reveal still plays on client nav
 	let mouse = $state({ x: 0, y: 0 });
 
 	const handleMouseMove = (e: MouseEvent) => {
