@@ -148,7 +148,7 @@
 	   RESPONSIVE - Mobile (< sm: 640px)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	@media (max-width: calc(var(--breakpoint-sm) - 1px)) {
+	@media (max-width: 639px) {
 		.stat-card {
 			padding: var(--space-4);
 		}
