@@ -4,10 +4,10 @@
 	"description": "A SvelteKit project for Revolution.",
 	"private": true,
 	"type": "module",
-	"packageManager": "pnpm@11.1.2",
+	"packageManager": "pnpm@11.5.0",
 	"engines": {
-		"node": ">=24.0.0",
-		"pnpm": ">=11.0.0"
+		"node": ">=24.16.0",
+		"pnpm": ">=11.5.0"
 	},
 	"scripts": {
 		"dev": "vite dev",
