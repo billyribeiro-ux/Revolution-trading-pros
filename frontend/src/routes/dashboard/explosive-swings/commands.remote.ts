@@ -1,13 +1,20 @@
 /**
- * ═══════════════════════════════════════════════════════════════════════════
  * Explosive Swings — Remote Functions (Commands)
- * ═══════════════════════════════════════════════════════════════════════════
  *
- * Server-side command functions for mutations requiring auth.
- * These run on the server and are called from client components.
+ * Server-side `command` mutations requiring auth. Called from the client via
+ * `await command(args)` directly (kit ≥ 2.61; `.run()` was removed in 2.61).
  *
- * @version 1.0.0
- * @boundary Remote Functions (command)
+ * REFRESH MODEL: the consumer (page.state.svelte.ts) reads data imperatively
+ * (`await query()` → assign to local `$state`), not reactively via `query.current`.
+ * It re-fetches after every mutation (fetchAlerts/fetchAllTrades/fetchStats/
+ * fetchTradePlan), which is the complete and correct refresh path for this
+ * architecture. Server-side `query.refresh()` only has an effect with a REACTIVE
+ * consumer, so it was removed here (the previous `getAlerts({page:1,limit:10})
+ * .refresh()` was also the wrong instance — the client paginates with
+ * `currentPage`). To adopt June-2026 single-flight mutations (one round-trip),
+ * migrate the consumer to reactive `query.current` then use the client
+ * `command(args).updates(getAlerts(...))` + server `requested(getAlerts, n)`
+ * APIs (requested gained its `(fn, limit) → { arg, query }` form in 2.58).
  */
 
 import * as v from 'valibot';
@@ -23,7 +30,6 @@ import {
 	UpdateTradePlanEntryInputSchema,
 	DeleteTradePlanEntryInputSchema
 } from '$lib/shared/schemas/trades';
-import { getAlerts, getTradePlan, getStats, getTrades } from './data.remote';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Auth Guard
@@ -67,8 +73,6 @@ export const saveAlert = command(
 			await axumAlerts.createAlert(roomSlug, alertData);
 		}
 
-		// Invalidate alerts query
-		getAlerts({ roomSlug, page: 1, limit: 10 }).refresh();
 	}
 );
 
@@ -85,8 +89,6 @@ export const deleteAlertCommand = command(
 
 		await axumAlerts.deleteAlert(roomSlug, alertId);
 
-		// Invalidate alerts query
-		getAlerts({ roomSlug, page: 1, limit: 10 }).refresh();
 	}
 );
 
@@ -102,10 +104,6 @@ export const createTrade = command(CreateTradeInputSchema, async ({ roomSlug, ..
 
 	const trade = await axumTrades.createTrade(roomSlug, payload);
 
-	// Invalidate related queries
-	getTrades({ roomSlug }).refresh();
-	getStats({ roomSlug }).refresh();
-
 	return trade;
 });
 
@@ -118,10 +116,6 @@ export const closeTrade = command(
 		await requireAuth();
 
 		const trade = await axumTrades.closeTrade(roomSlug, tradeId, payload);
-
-		// Invalidate related queries
-		getTrades({ roomSlug }).refresh();
-		getStats({ roomSlug }).refresh();
 
 		return trade;
 	}
@@ -136,9 +130,6 @@ export const updateTrade = command(
 		await requireAuth();
 
 		const trade = await axumTrades.updateTrade(roomSlug, tradeId, payload);
-
-		// Invalidate related queries
-		getTrades({ roomSlug }).refresh();
 
 		return trade;
 	}
@@ -170,9 +161,6 @@ export const createTradePlanEntry = command(
 
 		const entry = await axumTradePlans.createTradePlanEntry(roomSlug, payload);
 
-		// Invalidate trade plan query
-		getTradePlan({ roomSlug }).refresh();
-
 		return entry;
 	}
 );
@@ -186,9 +174,6 @@ export const updateTradePlanEntry = command(
 		await requireAuth();
 
 		const entry = await axumTradePlans.updateTradePlanEntry(roomSlug, entryId, payload);
-
-		// Invalidate trade plan query
-		getTradePlan({ roomSlug }).refresh();
 
 		return entry;
 	}
@@ -204,7 +189,5 @@ export const deleteTradePlanEntry = command(
 
 		await axumTradePlans.deleteTradePlanEntry(roomSlug, entryId);
 
-		// Invalidate trade plan query
-		getTradePlan({ roomSlug }).refresh();
 	}
 );
