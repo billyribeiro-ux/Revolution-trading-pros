@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import {
 		IconArrowLeft,
@@ -14,144 +13,32 @@
 		IconCalendar,
 		IconSettings
 	} from '$lib/icons';
+	import { getMemberAnalytics } from './analytics.remote';
+	import { EMPTY_METRICS, type DateRange } from './analytics.types';
 
-	// Analytics data
-	let loading = $state(true);
-	let dateRange = $state('30d');
+	let dateRange = $state<DateRange>('30d');
 
-	// Connection status - NO MOCK DATA
-	let _isConnected = false;
-	let connectionError: string | null = $state(null);
-	let hasData = $state(false);
+	// One reactive query drives the whole dashboard: changing `dateRange`
+	// re-fetches (and dedupes identical ranges); with experimental.async on, the
+	// result is server-resolved on first paint. The same-named `$derived` views
+	// below keep every chart's markup unchanged.
+	const analyticsQuery = $derived(getMemberAnalytics(dateRange));
+	const data = $derived(analyticsQuery.current);
 
-	// Metrics - Start with null values, no fake data
-	let metrics = $state({
-		totalMembers: null as number | null,
-		memberGrowth: null as number | null,
-		mrr: null as number | null,
-		mrrGrowth: null as number | null,
-		churnRate: null as number | null,
-		churnChange: null as number | null,
-		avgLtv: null as number | null,
-		ltvGrowth: null as number | null
-	});
+	const loading = $derived(analyticsQuery.loading);
+	const hasData = $derived(data?.hasData ?? false);
+	const connectionError = $derived(
+		analyticsQuery.error
+			? 'Failed to connect to analytics service. Please check your connection settings.'
+			: null
+	);
 
-	// Chart data - Empty arrays, no fake data
-	let growthData: { month: string; members: number; new: number; churned: number }[] = $state([]);
-	let cohortData: {
-		cohort: string;
-		m0: number;
-		m1: number;
-		m2: number;
-		m3: number;
-		m4: number;
-		m5: number;
-	}[] = $state([]);
-	let revenueData: {
-		month: string;
-		mrr: number;
-		expansion: number;
-		contraction: number;
-		churn: number;
-	}[] = $state([]);
-	let churnReasons: { reason: string; count: number; percentage: number }[] = $state([]);
-	let segmentData: { segment: string; count: number; revenue: number; churnRate: number }[] =
-		$state([]);
-
-	onMount(async () => {
-		await loadAnalytics();
-	});
-
-	async function loadAnalytics() {
-		loading = true;
-		connectionError = null;
-
-		try {
-			// Call REAL API - no mock data fallback
-			const [metricsRes, growthRes, cohortRes, revenueRes, churnRes, segmentRes] =
-				await Promise.allSettled([
-					fetch(`/api/admin/members/analytics/metrics?range=${dateRange}`),
-					fetch(`/api/admin/members/analytics/growth?range=${dateRange}`),
-					fetch(`/api/admin/members/analytics/cohorts?range=${dateRange}`),
-					fetch(`/api/admin/members/analytics/revenue?range=${dateRange}`),
-					fetch(`/api/admin/members/analytics/churn-reasons?range=${dateRange}`),
-					fetch(`/api/admin/members/analytics/segments?range=${dateRange}`)
-				]);
-
-			let dataReceived = false;
-
-			// Process metrics
-			if (metricsRes.status === 'fulfilled' && metricsRes.value.ok) {
-				const data = await metricsRes.value.json();
-				if (data && typeof data.totalMembers === 'number') {
-					metrics = data;
-					dataReceived = true;
-				}
-			}
-
-			// Process growth data
-			if (growthRes.status === 'fulfilled' && growthRes.value.ok) {
-				const data = await growthRes.value.json();
-				if (Array.isArray(data) && data.length > 0) {
-					growthData = data;
-					dataReceived = true;
-				}
-			}
-
-			// Process cohort data
-			if (cohortRes.status === 'fulfilled' && cohortRes.value.ok) {
-				const data = await cohortRes.value.json();
-				if (Array.isArray(data) && data.length > 0) {
-					cohortData = data;
-					dataReceived = true;
-				}
-			}
-
-			// Process revenue data
-			if (revenueRes.status === 'fulfilled' && revenueRes.value.ok) {
-				const data = await revenueRes.value.json();
-				if (Array.isArray(data) && data.length > 0) {
-					revenueData = data;
-					dataReceived = true;
-				}
-			}
-
-			// Process churn reasons
-			if (churnRes.status === 'fulfilled' && churnRes.value.ok) {
-				const data = await churnRes.value.json();
-				if (Array.isArray(data) && data.length > 0) {
-					churnReasons = data;
-					dataReceived = true;
-				}
-			}
-
-			// Process segment data
-			if (segmentRes.status === 'fulfilled' && segmentRes.value.ok) {
-				const data = await segmentRes.value.json();
-				if (Array.isArray(data) && data.length > 0) {
-					segmentData = data;
-					dataReceived = true;
-				}
-			}
-
-			_isConnected = dataReceived;
-			hasData = dataReceived;
-
-			if (!dataReceived) {
-				connectionError =
-					'Member analytics data is not available. Ensure your analytics service is connected and configured.';
-			}
-		} catch (err) {
-			console.error('Failed to load member analytics:', err);
-			_isConnected = false;
-			hasData = false;
-			connectionError =
-				'Failed to connect to analytics service. Please check your connection settings.';
-			// NO MOCK DATA - Show connection error instead
-		} finally {
-			loading = false;
-		}
-	}
+	const metrics = $derived(data?.metrics ?? EMPTY_METRICS);
+	const growthData = $derived(data?.growth ?? []);
+	const cohortData = $derived(data?.cohorts ?? []);
+	const revenueData = $derived(data?.revenue ?? []);
+	const churnReasons = $derived(data?.churn ?? []);
+	const segmentData = $derived(data?.segments ?? []);
 
 	function formatCurrency(amount: number): string {
 		return new Intl.NumberFormat('en-US', {
@@ -206,14 +93,14 @@
 			<div class="header-actions">
 				<div class="date-filter">
 					<IconCalendar size={18} />
-					<select bind:value={dateRange} onchange={loadAnalytics}>
+					<select bind:value={dateRange}>
 						<option value="7d">Last 7 days</option>
 						<option value="30d">Last 30 days</option>
 						<option value="90d">Last 90 days</option>
 						<option value="12m">Last 12 months</option>
 					</select>
 				</div>
-				<button class="btn-secondary" onclick={loadAnalytics}>
+				<button class="btn-secondary" onclick={() => analyticsQuery.refresh()}>
 					<IconRefresh size={18} />
 					Refresh
 				</button>
@@ -249,7 +136,7 @@
 						<IconSettings size={18} />
 						Connect Analytics
 					</a>
-					<button class="btn-retry" onclick={loadAnalytics}>
+					<button class="btn-retry" onclick={() => analyticsQuery.refresh()}>
 						<IconRefresh size={18} />
 						Retry
 					</button>

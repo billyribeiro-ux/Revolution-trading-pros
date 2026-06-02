@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	/**
 	 * Bandwidth Savings Dashboard - Apple ICT 7 Grade Analytics
 	 *
@@ -15,10 +14,11 @@
 	 *
 	 * @since January 2026
 	 */
-	import { browser } from '$app/environment';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 	import { fly, scale } from 'svelte/transition';
+	import { getMediaAnalytics } from './media-analytics.remote';
+	import type { BandwidthData, TimeRange } from './media-analytics.types';
 
 	// FIX-2026-04-26: Tabler icons replace 17 raw inline <svg> blocks.
 	import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left';
@@ -38,132 +38,41 @@
 	import IconCircleCheckFilled from '@tabler/icons-svelte-runes/icons/circle-check-filled';
 	import IconInfoCircle from '@tabler/icons-svelte-runes/icons/info-circle';
 
-	// Types
+	let timeRange = $state<TimeRange>('30d');
 
-	interface BandwidthData {
-		date: string;
-		original: number;
-		optimized: number;
-		savings: number;
-		requests: number;
-	}
+	// One reactive query drives the whole dashboard: changing `timeRange`
+	// re-fetches (and dedupes identical ranges); with experimental.async on, the
+	// result is server-resolved on first paint. Same-named `$derived` views keep
+	// every chart's markup unchanged.
+	const analyticsQuery = $derived(getMediaAnalytics(timeRange));
+	const data = $derived(analyticsQuery.current);
 
-	interface FormatStats {
-		format: string;
-		count: number;
-		originalSize: number;
-		optimizedSize: number;
-		savings: number;
-	}
-
-	interface SavingsOverview {
-		totalOriginal: number;
-		totalOptimized: number;
-		totalSavings: number;
-		savingsPercent: number;
-		totalImages: number;
-		optimizedImages: number;
-		avgCompressionRatio: number;
-		estimatedCostSavings: number;
-		co2Saved: number;
-	}
-
-	// State
-
-	let overview = $state<SavingsOverview | null>(null);
-	let bandwidthData = $state<BandwidthData[]>([]);
-	let formatStats = $state<FormatStats[]>([]);
-	let isLoading = $state(true);
-	let timeRange = $state<'7d' | '30d' | '90d' | '1y'>('30d');
-
-	// Connection status - NO MOCK DATA
-	let isConnected = $state(false);
-	let connectionError = $state<string | null>(null);
+	const overview = $derived(data?.overview ?? null);
+	const bandwidthData = $derived(data?.bandwidth ?? []);
+	const formatStats = $derived(data?.formats ?? []);
+	const isLoading = $derived(analyticsQuery.loading);
+	const isConnected = $derived(data?.hasData ?? false);
+	const connectionError = $derived(
+		analyticsQuery.error
+			? 'Failed to connect to media analytics service. Please check your connection settings.'
+			: null
+	);
 
 	// Animated values
 	const savingsPercent = tweened(0, { duration: 1500, easing: cubicOut });
 	const totalSavings = tweened(0, { duration: 1500, easing: cubicOut });
 	const co2Saved = tweened(0, { duration: 1500, easing: cubicOut });
 
-	// Lifecycle - Svelte 5 $effect rune
-
-	// Initialize on mount using $effect
-	onMount(() => {
-		if (!browser) return;
-		loadData();
-	});
-
-	// Data Loading
-
-	async function loadData() {
-		isLoading = true;
-		connectionError = null;
-
-		try {
-			// FIX-2026-04-26-audit (P1-8): same-origin admin proxy at
-			// /api/admin/media/analytics/<rest>. The previous calls hit a
-			// non-existent /api/media/analytics/* route and silently 404'd,
-			// leaving the dashboard in its "Connection error" state forever.
-			const [overviewRes, bandwidthRes, formatsRes] = await Promise.allSettled([
-				fetch('/api/admin/media/analytics/overview'),
-				fetch(`/api/admin/media/analytics/bandwidth?range=${timeRange}`),
-				fetch('/api/admin/media/analytics/formats')
-			]);
-
-			// Check if any request succeeded - that means we're connected
-			let hasData = false;
-
-			if (overviewRes.status === 'fulfilled' && overviewRes.value.ok) {
-				const data = await overviewRes.value.json();
-				if (data && typeof data.totalOriginal === 'number') {
-					overview = data;
-					hasData = true;
-					if (overview) {
-						savingsPercent.set(overview.savingsPercent);
-						totalSavings.set(overview.totalSavings);
-						co2Saved.set(overview.co2Saved);
-					}
-				}
-			}
-
-			if (bandwidthRes.status === 'fulfilled' && bandwidthRes.value.ok) {
-				const data = await bandwidthRes.value.json();
-				if (Array.isArray(data) && data.length > 0) {
-					bandwidthData = data;
-					hasData = true;
-				}
-			}
-
-			if (formatsRes.status === 'fulfilled' && formatsRes.value.ok) {
-				const data = await formatsRes.value.json();
-				if (Array.isArray(data) && data.length > 0) {
-					formatStats = data;
-					hasData = true;
-				}
-			}
-
-			// Only mark as connected if we received valid data
-			isConnected = hasData;
-
-			if (!hasData) {
-				connectionError =
-					'Media optimization service is not connected. Connect your image optimization service to view real analytics.';
-			}
-		} catch (e) {
-			console.error('Failed to load analytics:', e);
-			isConnected = false;
-			connectionError =
-				'Failed to connect to media analytics service. Please check your connection settings.';
-			// NO MOCK DATA - Show connection error instead
-		} finally {
-			isLoading = false;
+	// Drive the tweened headline numbers off the (derived) overview. This is a
+	// genuine side-effect — syncing imperative motion stores to reactive data —
+	// not state mirroring, so `$effect` is the right tool.
+	$effect(() => {
+		if (overview) {
+			savingsPercent.set(overview.savingsPercent);
+			totalSavings.set(overview.totalSavings);
+			co2Saved.set(overview.co2Saved);
 		}
-	}
-
-	function handleTimeRangeChange(range: typeof timeRange) {
-		timeRange = range;
-		loadData();
-	}
+	});
 
 	// Helpers
 
@@ -243,7 +152,7 @@
 				{#each ['7d', '30d', '90d', '1y'] as range (range)}
 					<button
 						class:active={timeRange === range}
-						onclick={() => handleTimeRangeChange(range as '7d' | '30d' | '90d' | '1y')}
+						onclick={() => (timeRange = range as TimeRange)}
 					>
 						{range === '7d'
 							? '7 Days'
@@ -288,7 +197,7 @@
 						<IconSettings size={16} aria-hidden="true" />
 						Connect Service
 					</a>
-					<button class="btn-secondary" onclick={loadData}>
+					<button class="btn-secondary" onclick={() => analyticsQuery.refresh()}>
 						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: refresh (retry) -->
 						<IconRefresh size={16} aria-hidden="true" />
 						Retry

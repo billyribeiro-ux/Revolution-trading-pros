@@ -1,57 +1,33 @@
 <script lang="ts">
 	/**
 	 * Favorites Page - Explosive Swings
-	 * Displays user's bookmarked alerts and videos with real persistence
-	 *
+	 * Bookmarked alerts and videos. Data is server-prefetched in +page.server.ts
+	 * (via the `getFavorites` remote query) and rendered on first paint — no
+	 * client fetch, no loading skeleton, no layout shift. Removal uses the
+	 * `removeFavorite` remote command with an optimistic update.
 	 */
-	import { onMount } from 'svelte';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
-	import LoadingState from '$lib/components/dashboard/LoadingState.svelte';
+	import { SvelteSet } from 'svelte/reactivity';
+	import { removeFavorite } from '../../favorites.remote';
 	import { logger } from '$lib/utils/logger';
+	import type { PageData } from './$types';
 
 	const ROOM_SLUG = 'explosive-swings';
 
-	interface Favorite {
-		id: number;
-		item_type: string;
-		item_id: number;
-		title: string | null;
-		excerpt: string | null;
-		href: string | null;
-		thumbnail_url: string | null;
-		created_at: string;
-	}
+	let { data }: { data: PageData } = $props();
 
-	let favorites = $state<Favorite[]>([]);
-	let isLoading = $state(true);
-	let error = $state<string | null>(null);
+	// Optimistically-removed ids: genuine local UI state (a Set is not deep-
+	// reactive under `$state`, hence `SvelteSet`). Filtering the SSR'd list keeps
+	// the data source single (props) — no prop-into-$state mirroring.
+	const removed = new SvelteSet<number>();
+	const favorites = $derived(data.favorites.filter((f) => !removed.has(f.id)));
 
-	async function fetchFavorites() {
-		isLoading = true;
-		error = null;
+	async function handleRemove(id: number) {
+		removed.add(id); // optimistic
 		try {
-			const res = await fetch(`/api/favorites?room_slug=${ROOM_SLUG}`);
-			if (res.ok) {
-				const data = await res.json();
-				favorites = data.data || [];
-			} else {
-				error = 'Failed to load favorites';
-			}
+			await removeFavorite({ id, roomSlug: ROOM_SLUG });
 		} catch (err) {
-			logger.error('Failed to fetch favorites:', err);
-			error = 'Failed to load favorites';
-		} finally {
-			isLoading = false;
-		}
-	}
-
-	async function removeFavorite(id: number) {
-		try {
-			const res = await fetch(`/api/favorites/${id}`, { method: 'DELETE' });
-			if (res.ok) {
-				favorites = favorites.filter((f) => f.id !== id);
-			}
-		} catch (err) {
+			removed.delete(id); // rollback on failure
 			logger.error('Failed to remove favorite:', err);
 		}
 	}
@@ -67,10 +43,6 @@
 			return dateStr;
 		}
 	}
-
-	onMount(() => {
-		fetchFavorites();
-	});
 </script>
 
 <svelte:head>
@@ -89,15 +61,7 @@
 		<p>Bookmarked alerts and videos for quick access</p>
 	</div>
 
-	{#if isLoading}
-		<!-- Skeleton mirrors the favorites card layout to avoid CLS -->
-		<LoadingState variant="position" count={4} columns={1} />
-	{:else if error}
-		<div class="error-state">
-			<p>{error}</p>
-			<button onclick={() => fetchFavorites()}>Retry</button>
-		</div>
-	{:else if favorites.length === 0}
+	{#if favorites.length === 0}
 		<div class="empty-state">
 			<svg
 				viewBox="0 0 24 24"
@@ -138,7 +102,7 @@
 						onclick={(e) => {
 							e.preventDefault();
 							e.stopPropagation();
-							removeFavorite(item.id);
+							handleRemove(item.id);
 						}}
 					>
 						Remove
@@ -192,31 +156,6 @@
 		font-size: 16px;
 		color: #666;
 		margin: 0;
-	}
-
-
-	.error-state {
-		text-align: center;
-		padding: 60px 20px;
-		background: #fef2f2;
-		border-radius: 12px;
-		max-width: 500px;
-		margin: 0 auto;
-	}
-
-	.error-state p {
-		color: #991b1b;
-		margin: 0 0 16px 0;
-	}
-
-	.error-state button {
-		padding: 10px 24px;
-		background: #ef4444;
-		color: white;
-		border: none;
-		border-radius: 8px;
-		font-weight: 600;
-		cursor: pointer;
 	}
 
 	.empty-state {

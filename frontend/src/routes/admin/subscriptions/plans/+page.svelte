@@ -26,32 +26,14 @@
 	import IconCircleCheck from '@tabler/icons-svelte-runes/icons/circle-check';
 	import IconCreditCard from '@tabler/icons-svelte-runes/icons/credit-card';
 	import IconClipboard from '@tabler/icons-svelte-runes/icons/clipboard';
-
-	// Types
-	interface SubscriptionPlan {
-		id: number;
-		name: string;
-		slug: string;
-		display_name?: string;
-		description?: string;
-		price: number;
-		billing_cycle: string;
-		interval_count?: number;
-		is_active: boolean;
-		stripe_price_id?: string;
-		stripe_product_id?: string;
-		features?: string[];
-		trial_days?: number;
-		trial_period_days?: number | null;
-		trial_requires_payment_method?: boolean;
-		room_id?: number;
-		room_name?: string;
-		savings_percent?: number;
-		is_popular?: boolean;
-		sort_order?: number;
-		created_at: string;
-		updated_at: string;
-	}
+	import {
+		getPlans,
+		getPriceHistory,
+		changePlanPrice,
+		updatePlan,
+		setPlanActive
+	} from './plans.remote';
+	import type { ApplyTo, PriceHistoryEntry, SubscriptionPlan } from './plans.types';
 
 	// State
 	let plans = $state<SubscriptionPlan[]>([]);
@@ -65,7 +47,6 @@
 	let saving = $state(false);
 
 	// Price-change modal state (Stripe-syncing, no dashboard required)
-	type ApplyTo = 'new_only' | 'next_renewal' | 'immediate_proration';
 	let showPriceModal = $state(false);
 	let priceTargetPlan = $state<SubscriptionPlan | null>(null);
 	let priceAmount = $state(0); // dollars in the input; converted to cents at submit
@@ -75,20 +56,6 @@
 	let showPriceConfirm = $state(false);
 	let priceHistory = $state<PriceHistoryEntry[]>([]);
 	let priceHistoryLoading = $state(false);
-
-	interface PriceHistoryEntry {
-		id: number;
-		old_stripe_price_id: string | null;
-		new_stripe_price_id: string;
-		old_amount_cents: number | null;
-		new_amount_cents: number;
-		currency: string;
-		billing_interval: string;
-		apply_to: ApplyTo;
-		subscriptions_migrated: number;
-		subscriptions_failed: number;
-		changed_at: string;
-	}
 
 	// Filter state
 	let filterActive = $state<'all' | 'active' | 'inactive'>('all');
@@ -129,21 +96,12 @@
 		error = '';
 
 		try {
-			// FIX-2026-04-26 (audit 02 §P3-6): the SvelteKit proxy reads the
-			// `rtp_access_token` cookie (commit e2356fa46), so the manual Bearer
-			// header was redundant with `credentials: 'include'`. Dropping it
-			// keeps the wire shape consistent with the rest of the codebase.
-			const response = await fetch('/api/admin/subscriptions/plans?per_page=100', {
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include'
-			});
-
-			if (!response.ok) {
-				throw new Error(`Failed to load plans: ${response.status}`);
-			}
-
-			const data = await response.json();
-			plans = data.data || [];
+			// `.refresh()` (not a bare `await`): `getPlans()` is argument-less, so
+			// it's cached under one key — after a mutation, a plain re-read would
+			// return the stale list. refresh() forces a fresh fetch.
+			const q = getPlans();
+			await q.refresh();
+			plans = q.current ?? [];
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load plans';
 			console.error('[Plans] Load error:', err);
@@ -198,18 +156,11 @@
 	async function loadPriceHistory(planId: number) {
 		priceHistoryLoading = true;
 		try {
-			// FIX-2026-04-26 (audit 02 §P3-6): cookie-authed proxy — drop the
-			// redundant Bearer header.
-			const response = await fetch(`/api/admin/subscriptions/plans/${planId}/price-history`, {
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include'
-			});
-			if (response.ok) {
-				const data = await response.json();
-				priceHistory = (data.data || []) as PriceHistoryEntry[];
-			} else {
-				priceHistory = [];
-			}
+			// refresh() so reopening a plan's modal after a price change shows the
+			// new entry rather than the cached history.
+			const q = getPriceHistory(planId);
+			await q.refresh();
+			priceHistory = q.current ?? [];
 		} catch (err) {
 			console.error('[Plans] Failed to load price history', err);
 			priceHistory = [];
@@ -228,26 +179,15 @@
 		priceSubmitting = true;
 		error = '';
 		try {
-			// FIX-2026-04-26 (audit 02 §P3-6): cookie-authed proxy.
 			const amountCents = Math.round(priceAmount * 100);
-			const response = await fetch(`/api/admin/subscriptions/plans/${priceTargetPlan.id}/price`, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include',
-				body: JSON.stringify({
-					amount_cents: amountCents,
-					currency: 'usd',
-					billing_interval: priceInterval,
-					apply_to: priceApplyTo
-				})
+			const data = await changePlanPrice({
+				planId: priceTargetPlan.id,
+				amount_cents: amountCents,
+				currency: 'usd',
+				billing_interval: priceInterval,
+				apply_to: priceApplyTo
 			});
 
-			if (!response.ok) {
-				const errData = await response.json().catch(() => ({}));
-				throw new Error(errData.error || `Failed to change price: ${response.status}`);
-			}
-
-			const data = await response.json();
 			const planName = priceTargetPlan.name;
 			let detail = '';
 			if (priceApplyTo === 'new_only') {
@@ -289,11 +229,9 @@
 			// cent. This mirrors the single normalizer chokepoint in
 			// `subscriptionPlansApi` (admin.ts::normalizePlanPayload) so there
 			// is no second un-normalized path.
-			const response = await fetch(`/api/admin/subscriptions/plans/${editingPlan.id}`, {
-				method: 'PUT',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include',
-				body: JSON.stringify({
+			await updatePlan({
+				planId: editingPlan.id,
+				payload: {
 					name: editingPlan.name,
 					description: editingPlan.description,
 					price_cents: Math.round(Number(editingPlan.price) * 100),
@@ -303,13 +241,8 @@
 					trial_days: editingPlan.trial_days,
 					trial_period_days: editingPlan.trial_period_days ?? null,
 					trial_requires_payment_method: editingPlan.trial_requires_payment_method ?? true
-				})
+				}
 			});
-
-			if (!response.ok) {
-				const errData = await response.json().catch(() => ({}));
-				throw new Error(errData.error || `Failed to save: ${response.status}`);
-			}
 
 			successMessage = `Plan "${editingPlan.name}" updated successfully!`;
 			closeEditModal();
@@ -326,16 +259,7 @@
 
 	async function togglePlanActive(plan: SubscriptionPlan) {
 		try {
-			// FIX-2026-04-26 (audit 02 §P3-6): cookie-authed proxy.
-			const response = await fetch(`/api/admin/subscriptions/plans/${plan.id}`, {
-				method: 'PUT',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include',
-				body: JSON.stringify({ is_active: !plan.is_active })
-			});
-
-			if (!response.ok) throw new Error('Failed to toggle status');
-
+			await setPlanActive({ planId: plan.id, is_active: !plan.is_active });
 			await loadPlans();
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to update plan';

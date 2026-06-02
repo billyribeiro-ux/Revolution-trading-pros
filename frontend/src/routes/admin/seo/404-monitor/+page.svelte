@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import {
 		IconSearch,
 		IconArrowForward,
@@ -10,27 +9,9 @@
 	import CreateRedirectModal from '$lib/components/seo/CreateRedirectModal.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import { logger } from '$lib/utils/logger';
+	import { getLogs, getStats, ignoreLog, bulkDeleteLogs } from './monitor.remote';
+	import type { Seo404Log, Seo404Sort } from './monitor.types';
 
-	interface Seo404Log {
-		id: number;
-		url: string;
-		hits: number;
-		last_hit_at: string;
-		referer?: string | null;
-		is_resolved?: boolean;
-		is_ignored?: boolean;
-	}
-
-	interface Seo404Stats {
-		total: number;
-		unresolved: number;
-		resolved: number;
-		total_hits?: number;
-	}
-
-	let logs: Seo404Log[] = $state([]);
-	let stats: Seo404Stats | null = $state(null);
-	let loading = $state(false);
 	let searchQuery = $state('');
 	let selectedIds: number[] = $state([]);
 	let showCreateRedirect = $state(false);
@@ -45,34 +26,15 @@
 		{ value: 'latest', label: 'Latest' },
 		{ value: 'oldest', label: 'Oldest' }
 	];
-	let sortBy = $state('hits');
+	let sortBy = $state<Seo404Sort>('hits');
 
-	onMount(() => {
-		loadLogs();
-		loadStats();
-	});
-
-	async function loadLogs() {
-		loading = true;
-		try {
-			const response = await fetch(`/api/seo/404-logs?sort=${sortBy}`);
-			const data = await response.json();
-			logs = data.data || [];
-		} catch (error) {
-			logger.error('Failed to load 404 logs:', error);
-		} finally {
-			loading = false;
-		}
-	}
-
-	async function loadStats() {
-		try {
-			const response = await fetch('/api/seo/404-logs/stats');
-			stats = await response.json();
-		} catch (error) {
-			logger.error('Failed to load stats:', error);
-		}
-	}
+	// Reactive queries: `getLogs` re-runs when the sort changes; `getStats` is a
+	// single no-arg instance. Mutations below single-flight-refresh both.
+	const logsQuery = $derived(getLogs(sortBy));
+	const statsQuery = getStats();
+	const logs = $derived(logsQuery.current ?? []);
+	const stats = $derived(statsQuery.current ?? null);
+	const loading = $derived(logsQuery.loading);
 
 	function createRedirect(log: Seo404Log) {
 		selected404 = log;
@@ -81,9 +43,9 @@
 
 	async function ignore(id: number) {
 		try {
-			await fetch(`/api/seo/404-logs/${id}/ignore`, { method: 'POST' });
-			loadLogs();
-			loadStats();
+			// Single-flight: the command refreshes getLogs(sortBy) + getStats() on
+			// the server, so the list/stats update on this response.
+			await ignoreLog({ id, sort: sortBy });
 		} catch (error) {
 			logger.error('Failed to ignore log:', error);
 		}
@@ -101,14 +63,8 @@
 		pendingDeleteIds = [];
 
 		try {
-			await fetch('/api/seo/404-logs/bulk-delete', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ ids })
-			});
+			await bulkDeleteLogs({ ids, sort: sortBy });
 			selectedIds = [];
-			loadLogs();
-			loadStats();
 		} catch (error) {
 			logger.error('Failed to delete logs:', error);
 		}
@@ -125,15 +81,11 @@
 	function handleRedirectCreated() {
 		showCreateRedirect = false;
 		selected404 = null;
-		loadLogs();
-		loadStats();
+		// The redirect was created by the modal (not one of our commands), so
+		// refresh the list + stats imperatively.
+		logsQuery.refresh();
+		statsQuery.refresh();
 	}
-
-	$effect(() => {
-		if (sortBy) {
-			loadLogs();
-		}
-	});
 
 	let filteredLogs = $derived(
 		logs.filter(

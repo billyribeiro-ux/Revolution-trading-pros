@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import {
 		IconPlus,
 		IconSearch,
@@ -11,28 +10,15 @@
 	import RedirectEditor from '$lib/components/seo/RedirectEditor.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import { logger } from '$lib/utils/logger';
+	import {
+		getRedirects,
+		getRedirectStats,
+		removeRedirect,
+		toggleRedirectActive,
+		bulkRemoveRedirects
+	} from './redirects.remote';
+	import type { Redirect } from './redirects.types';
 
-	interface Redirect {
-		id: number;
-		source_url: string;
-		destination_url: string;
-		redirect_type: string;
-		is_regex?: boolean;
-		is_active?: boolean;
-		hits?: number;
-		notes?: string;
-	}
-
-	interface RedirectStats {
-		total: number;
-		active: number;
-		inactive: number;
-		total_hits?: number;
-	}
-
-	let redirects: Redirect[] = $state([]);
-	let stats: RedirectStats | null = $state(null);
-	let loading = $state(false);
 	let searchQuery = $state('');
 	let showEditor = $state(false);
 	let editingRedirect: Redirect | null = $state(null);
@@ -46,32 +32,12 @@
 	let pendingDeleteRedirectId = $state<number | null>(null);
 	let showBulkDeleteRedirectsModal = $state(false);
 
-	onMount(() => {
-		loadRedirects();
-		loadStats();
-	});
-
-	async function loadRedirects() {
-		loading = true;
-		try {
-			const response = await fetch('/api/seo/redirects');
-			const data = await response.json();
-			redirects = data.data || [];
-		} catch (error) {
-			logger.error('Failed to load redirects:', error);
-		} finally {
-			loading = false;
-		}
-	}
-
-	async function loadStats() {
-		try {
-			const response = await fetch('/api/seo/redirects/stats');
-			stats = await response.json();
-		} catch (error) {
-			logger.error('Failed to load stats:', error);
-		}
-	}
+	// Reactive no-arg queries; the commands below single-flight-refresh both.
+	const redirectsQuery = getRedirects();
+	const statsQuery = getRedirectStats();
+	const redirects = $derived(redirectsQuery.current ?? []);
+	const stats = $derived(statsQuery.current ?? null);
+	const loading = $derived(redirectsQuery.loading);
 
 	function createRedirect() {
 		editingRedirect = null;
@@ -94,9 +60,7 @@
 		showDeleteRedirectModal = false;
 		pendingDeleteRedirectId = null;
 		try {
-			await fetch(`/api/seo/redirects/${id}`, { method: 'DELETE' });
-			loadRedirects();
-			loadStats();
+			await removeRedirect(id); // single-flight refreshes list + stats
 		} catch (error) {
 			logger.error('Failed to delete redirect:', error);
 		}
@@ -109,9 +73,7 @@
 
 	async function toggleRedirect(redirect: Redirect) {
 		try {
-			await fetch(`/api/seo/redirects/${redirect.id}/toggle`, { method: 'POST' });
-			redirect.is_active = !redirect.is_active;
-			redirects = [...redirects];
+			await toggleRedirectActive(redirect.id); // single-flight refreshes list + stats
 		} catch (error) {
 			logger.error('Failed to toggle redirect:', error);
 		}
@@ -133,14 +95,8 @@
 	async function confirmBulkDeleteRedirects() {
 		showBulkDeleteRedirectsModal = false;
 		try {
-			await fetch('/api/seo/redirects/bulk-delete', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ ids: selectedIds })
-			});
+			await bulkRemoveRedirects(selectedIds);
 			selectedIds = [];
-			loadRedirects();
-			loadStats();
 		} catch (error) {
 			logger.error('Failed to delete redirects:', error);
 		}
@@ -152,8 +108,9 @@
 
 	function handleSaved() {
 		showEditor = false;
-		loadRedirects();
-		loadStats();
+		// Editor is a child modal (not one of our commands) — refresh imperatively.
+		redirectsQuery.refresh();
+		statsQuery.refresh();
 	}
 
 	let filteredRedirects = $derived(

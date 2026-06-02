@@ -1,17 +1,24 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	/**
 	 * Admin Orders Management Page
-	 * ICT 7 Fix: Complete admin orders dashboard
-	 * Apple Principal Engineer Grade - February 2026
+	 * Coordinator over the _components/ leaves. Data comes from the
+	 * `orders.remote.ts` queries, consumed imperatively: `loadOrders()` awaits
+	 * the typed `getOrders` query and assigns the result to local state, and the
+	 * detail is awaited on demand when the modal opens.
 	 *
-	 * R13-C (2026-05-20): Extracted 7 leaf components into _components/
-	 * to reduce parent surface from ~1260 LOC to a coordinator file.
+	 * Why imperative (not reactive `$derived(getOrders(...)).current`): that form
+	 * needs `compilerOptions.experimental.async`, which is off in this repo — it
+	 * throws `experimental_async_required` at runtime. Awaiting the query inside
+	 * an async handler is the async-off-safe idiom and preserves type safety +
+	 * server-side validation over the old raw `fetch`.
+	 *
+	 * R13-C (2026-05-20): Extracted 7 leaf components into _components/.
 	 */
 
-	import type { ComponentProps } from 'svelte';
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { toastStore } from '$lib/stores/toast.svelte';
+	import { getOrders, getOrderDetail } from './orders.remote';
+	import type { Order, OrderStats, Pagination, OrderDetail } from './orders.types';
 
 	import ErrorBanner from './_components/ErrorBanner.svelte';
 	import PageHeader from './_components/PageHeader.svelte';
@@ -21,110 +28,66 @@
 	import OrdersTable from './_components/OrdersTable.svelte';
 	import OrderDetailModal from './_components/OrderDetailModal.svelte';
 
-	// Types
-	interface Order {
-		id: number;
-		order_number: string;
-		status: string;
-		total: number;
-		currency: string;
-		user_email: string;
-		user_name: string | null;
-		payment_provider: string | null;
-		item_count: number;
-		created_at: string;
-		completed_at: string | null;
-	}
-
-	interface OrderStats {
-		total_orders: number;
-		completed_orders: number;
-		pending_orders: number;
-		refunded_orders: number;
-		total_revenue: number;
-		revenue_this_month: number;
-		average_order_value: number;
-	}
-
-	interface Pagination {
-		page: number;
-		per_page: number;
-		total: number;
-		total_pages: number;
-	}
-
-	// State
+	// List state (populated by loadOrders).
 	let orders = $state<Order[]>([]);
 	let stats = $state<OrderStats | null>(null);
 	let pagination = $state<Pagination | null>(null);
 	let loading = $state(true);
+	let errorMessage = $state('');
+
+	// Filter / pagination inputs.
 	let searchQuery = $state('');
 	let statusFilter = $state('');
 	let showFilters = $state(false);
+
+	// Order detail — loaded on demand when the modal opens.
 	let selectedOrder = $state<Order | null>(null);
 	let showDetailModal = $state(false);
-	let orderDetail = $state<ComponentProps<typeof OrderDetailModal>['orderDetail']>(null);
+	let orderDetail = $state<OrderDetail | null>(null);
 	let loadingDetail = $state(false);
-	let error = $state('');
 
-	// Fetch orders from API
 	async function loadOrders(page = 1) {
 		loading = true;
-		error = '';
+		errorMessage = '';
 		try {
-			const params = new URLSearchParams();
-			params.set('page', page.toString());
-			params.set('per_page', '25');
-			if (statusFilter) params.set('status', statusFilter);
-			if (searchQuery) params.set('search', searchQuery);
-
-			const response = await fetch(`/api/admin/orders?${params}`);
-			if (!response.ok) {
-				throw new Error('Failed to load orders');
-			}
-			const data = await response.json();
-			orders = data.data || [];
-			stats = data.stats || null;
-			pagination = data.pagination || null;
+			const result = await getOrders({
+				page,
+				perPage: 25,
+				status: statusFilter,
+				search: searchQuery
+			});
+			orders = result.data;
+			stats = result.stats;
+			pagination = result.pagination;
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to load orders';
+			errorMessage = 'Failed to load orders';
 			console.error('Error loading orders:', err);
 		} finally {
 			loading = false;
 		}
 	}
 
-	// Fetch order details
-	async function loadOrderDetail(orderId: number) {
-		loadingDetail = true;
-		try {
-			const response = await fetch(`/api/admin/orders/${orderId}`);
-			if (!response.ok) throw new Error('Failed to load order details');
-			const data = await response.json();
-			orderDetail = data.data;
-		} catch (_err) {
-			toastStore.error('Failed to load order details');
-		} finally {
-			loadingDetail = false;
-		}
-	}
-
-	// Handle search
 	function handleSearch() {
 		loadOrders(1);
 	}
 
-	// Handle filter change
 	function handleStatusFilter(status: string) {
 		statusFilter = status;
 		loadOrders(1);
 	}
 
-	// Open order detail
-	function openOrderDetail(order: Order) {
+	async function openOrderDetail(order: Order) {
 		selectedOrder = order;
 		showDetailModal = true;
-		loadOrderDetail(order.id);
+		orderDetail = null;
+		loadingDetail = true;
+		try {
+			orderDetail = await getOrderDetail(order.id);
+		} catch {
+			toastStore.error('Failed to load order details');
+		} finally {
+			loadingDetail = false;
+		}
 	}
 
 	// Format currency
@@ -196,9 +159,8 @@
 		loadOrders(1);
 	}
 
-	// Svelte 5: Initialize on mount
 	onMount(() => {
-		if (browser) loadOrders();
+		loadOrders();
 	});
 </script>
 
@@ -214,8 +176,8 @@
 	</div>
 
 	<div class="admin-page-container">
-		{#if error}
-			<ErrorBanner {error} onretry={() => loadOrders()} />
+		{#if errorMessage}
+			<ErrorBanner error={errorMessage} onretry={() => loadOrders()} />
 		{/if}
 
 		<PageHeader onrefresh={() => loadOrders()} onexport={handleExport} />
