@@ -808,7 +808,7 @@
 						<textarea
 							id="custom-body"
 							rows="8"
-							placeholder="Enter email body... Use {{ name }} for personalization"
+							placeholder="Enter email body... Use {'{{ name }}'} for personalization"
 							bind:value={customBody}
 						></textarea>
 					</div>

@@ -589,7 +589,7 @@
 						id="email-body"
 						bind:value={emailBody}
 						rows="12"
-						placeholder="Email body... Use {{ name }} for personalization"
+						placeholder="Email body... Use {'{{ name }}'} for personalization"
 					></textarea>
 					<p class="form-hint">
 						Available variables: {'{{name}}'}, {'{{first_name}}'}, {'{{email}}'}
