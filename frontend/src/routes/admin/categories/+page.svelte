@@ -13,6 +13,7 @@
 -->
 
 <script lang="ts">
+	import { SvelteSet } from 'svelte/reactivity';
 	import { browser } from '$app/environment';
 	// FIX-2026-04-26 (CLAUDE.md / P3-13): init belongs in onMount, not $effect.
 	import { onMount } from 'svelte';
@@ -55,7 +56,7 @@
 	let editingCategory = $state<Category | null>(null);
 
 	// Selection for bulk operations
-	let selectedIds = $state<Set<number>>(new Set());
+	let selectedIds = $state<Set<number>>(new SvelteSet());
 
 	// Form data
 	let categoryForm = $state({
@@ -391,7 +392,7 @@
 		else if (!/^[a-z0-9-]+$/.test(categoryForm.slug)) {
 			// FIX-2026-04-26 (P2-3): include offending characters in the error.
 			const bad = categoryForm.slug.replace(/[a-z0-9-]/g, '');
-			const detail = bad ? ` (invalid: "${[...new Set(bad.split(''))].join('')}")` : '';
+			const detail = bad ? ` (invalid: "${[...new SvelteSet(bad.split(''))].join('')}")` : '';
 			formErrors.push(`Slug can only contain lowercase letters, numbers, and hyphens${detail}`);
 		}
 		return formErrors.length === 0;
@@ -428,7 +429,7 @@
 		if (allSelected) {
 			selectedIds.clear();
 		} else {
-			selectedIds = new Set(filteredCategories.map((c) => c.id));
+			selectedIds = new SvelteSet(filteredCategories.map((c) => c.id));
 		}
 	}
 

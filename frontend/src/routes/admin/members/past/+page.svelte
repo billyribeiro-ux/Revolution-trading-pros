@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { SvelteSet } from 'svelte/reactivity';
 	/**
 	 * Past Members Dashboard - Svelte 5 / SvelteKit Implementation
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -67,7 +68,7 @@
 	let selectedPeriod = $state<TimePeriod>('30d');
 	let members = $state<PastMember[]>([]);
 	let searchQuery = $state('');
-	let selectedMembers = $state<Set<number>>(new Set());
+	let selectedMembers = $state<Set<number>>(new SvelteSet());
 
 	// Loading states
 	let isLoading = $state(true);
@@ -230,14 +231,14 @@
 		} else {
 			selectedMembers.add(id);
 		}
-		selectedMembers = new Set();
+		selectedMembers = new SvelteSet();
 	}
 
 	function selectAllMembers(): void {
 		if (allSelected) {
 			selectedMembers.clear();
 		} else {
-			selectedMembers = new Set(members.map((m) => m.id));
+			selectedMembers = new SvelteSet(members.map((m) => m.id));
 		}
 	}
 

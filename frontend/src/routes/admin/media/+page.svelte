@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { SvelteSet } from 'svelte/reactivity';
 	/**
 	 * Media Library - Apple ICT 7 Grade Enterprise Dashboard
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -62,7 +63,7 @@
 
 	// Data
 	let items = $state<MediaItem[]>([]);
-	let selectedIds = $state(new Set<string>());
+	let selectedIds = $state(new SvelteSet<string>());
 	let focusedId = $state<string | null>(null);
 
 	// Delete confirmation modal state
@@ -477,7 +478,7 @@
 		if (selectedIds.size === items.length) {
 			selectedIds.clear();
 		} else {
-			selectedIds = new Set(items.map((i) => i.id));
+			selectedIds = new SvelteSet(items.map((i) => i.id));
 		}
 	}
 

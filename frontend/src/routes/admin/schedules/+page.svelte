@@ -18,6 +18,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
+	import { SvelteSet } from 'svelte/reactivity';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { ROOMS } from '$lib/config/rooms';
@@ -57,7 +58,7 @@
 	let formData = $state<ScheduleForm>(getDefaultFormData());
 
 	// Bulk selection
-	let selectedIds = $state<Set<number>>(new Set());
+	let selectedIds = $state<Set<number>>(new SvelteSet());
 	// Pure projection of selection size (selectedIds is reassigned on every
 	// mutation, so $derived tracks it correctly) — was a state+$effect.
 	let showBulkActions = $derived(selectedIds.size > 0);

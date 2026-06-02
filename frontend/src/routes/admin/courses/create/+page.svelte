@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { SvelteSet } from 'svelte/reactivity';
 	import { goto } from '$app/navigation';
 	import { slide } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
@@ -187,7 +188,7 @@
 	let hasUnsavedChanges = $state(false);
 	let lastSaved = $state<Date | null>(null);
 	let autoSaveTimer: ReturnType<typeof setInterval>;
-	let expandedModules = $state(new Set<string>());
+	let expandedModules = $state(new SvelteSet<string>());
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Lifecycle Hooks & Initialization
@@ -361,7 +362,6 @@
 		} else {
 			expandedModules.add(moduleId);
 		}
-		expandedModules = expandedModules;
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════

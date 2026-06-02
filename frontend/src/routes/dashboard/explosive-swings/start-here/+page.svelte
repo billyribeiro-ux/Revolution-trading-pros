@@ -10,11 +10,12 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
+	import { SvelteSet } from 'svelte/reactivity';
 	import { IconPlus, IconMinus } from '$lib/icons';
 	import {  } from 'svelte';
 
 	// Accordion state management - Svelte 5 runes
-	let openAccordions = $state<Set<number>>(new Set());
+	let openAccordions = $state<Set<number>>(new SvelteSet());
 
 	function toggleAccordion(index: number) {
 		if (openAccordions.has(index)) {

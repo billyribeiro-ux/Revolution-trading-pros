@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { SvelteSet } from 'svelte/reactivity';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
@@ -37,7 +38,7 @@
 	// Local state
 	let searchQuery = $state('');
 	let statusFilter = $state('');
-	let selectedMembers = $state<Set<number>>(new Set());
+	let selectedMembers = $state<Set<number>>(new SvelteSet());
 	let showEmailModal = $state(false);
 	let emailSubject = $state('');
 	let emailBody = $state('');
@@ -65,7 +66,6 @@
 		} else {
 			selectedMembers.add(id);
 		}
-		selectedMembers = selectedMembers;
 	}
 
 	function selectAllMembers() {
@@ -74,7 +74,6 @@
 		} else {
 			members.forEach((m) => selectedMembers.add(m.id));
 		}
-		selectedMembers = selectedMembers;
 	}
 
 	async function handleBulkEmail() {
@@ -92,7 +91,6 @@
 			toastStore.success(result.message);
 			showEmailModal = false;
 			selectedMembers.clear();
-			selectedMembers = selectedMembers;
 		} catch {
 			// FIX-2026-04-26: replaced native alert() with toastStore.error.
 			// Old: alert('Failed to send emails');
@@ -317,7 +315,6 @@
 										onclick={() => {
 											selectedMembers.clear();
 											selectedMembers.add(member.id);
-											selectedMembers = selectedMembers;
 											showEmailModal = true;
 										}}
 									>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { SvelteSet } from 'svelte/reactivity';
 	/**
 	 * ═══════════════════════════════════════════════════════════════════════════════
 	 * WeeklyHero Component - Apple Principal Engineer ICT Level 7
@@ -74,7 +75,7 @@
 	// Component state (Svelte 5 $state rune)
 	let heroTab = $state<'video' | 'entries'>('video');
 	let isCollapsed = $state(false);
-	let expandedTradeNotes = $state(new Set<string>());
+	let expandedTradeNotes = $state(new SvelteSet<string>());
 
 	// Video player state
 	let isVideoPlaying = $state(false);

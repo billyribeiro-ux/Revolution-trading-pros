@@ -12,6 +12,7 @@
 -->
 
 <script lang="ts">
+	import { SvelteSet } from 'svelte/reactivity';
 	/**
 	 * CRM Leads Management - Apple ICT 7 Principal Engineer Grade
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -127,7 +128,7 @@
 	let selectedSource = $state<string>('all');
 	let sortBy = $state<string>('created_at');
 	let sortOrder = $state<'asc' | 'desc'>('desc');
-	let selectedLeads = $state<Set<string>>(new Set());
+	let selectedLeads = $state<Set<string>>(new SvelteSet());
 	let showFilters = $state(false);
 	let _viewMode = $state<'list' | 'kanban'>('list');
 
@@ -544,7 +545,7 @@
 		if (isAllSelected) {
 			selectedLeads.clear();
 		} else {
-			selectedLeads = new Set(paginatedLeads.map((l) => l.id));
+			selectedLeads = new SvelteSet(paginatedLeads.map((l) => l.id));
 		}
 	}
 

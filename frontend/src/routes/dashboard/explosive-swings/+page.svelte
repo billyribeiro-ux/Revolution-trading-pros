@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { SvelteSet } from 'svelte/reactivity';
 	/**
 	 * Explosive Swings - Member Dashboard
 	 * @version 6.0.0 - WebSocket Real-Time Alerts (Phase 3)
@@ -111,7 +112,7 @@
 	let alertModalOpen = $state(false);
 
 	// Expanded notes tracking (local UI state)
-	let expandedNotes = $state(new Set<number>());
+	let expandedNotes = $state(new SvelteSet<number>());
 
 	// Sync modal state from state module
 	$effect(() => {
