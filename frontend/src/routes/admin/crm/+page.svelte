@@ -1127,13 +1127,13 @@
 	/* =====================================================
 	   Responsive
 	   ===================================================== */
-	@media (max-width: calc(var(--breakpoint-xl) - 80px)) {
+	@media (max-width: 1200px) {
 		.stats-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}
 	}
 
-	@media (max-width: calc(var(--breakpoint-md) - 1px)) {
+	@media (max-width: 767px) {
 		.page {
 			padding: 1rem;
 		}

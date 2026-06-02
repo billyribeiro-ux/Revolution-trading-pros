@@ -202,20 +202,20 @@
 	}
 
 	/* Responsive */
-	@media (max-width: calc(var(--breakpoint-lg) - 1px)) {
+	@media (max-width: 1023px) {
 		.header-actions {
 			flex-wrap: wrap;
 			gap: 0.5rem;
 		}
 	}
 
-	@media (max-width: calc(var(--breakpoint-md) - 1px)) {
+	@media (max-width: 767px) {
 		.header-actions {
 			flex-wrap: wrap;
 		}
 	}
 
-	@media (max-width: calc(var(--breakpoint-sm) - 260px)) {
+	@media (max-width: 380px) {
 		.page-header {
 			flex-direction: column;
 			align-items: flex-start;

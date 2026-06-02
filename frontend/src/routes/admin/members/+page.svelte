@@ -1232,14 +1232,14 @@
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	/* Tablet Landscape (< 1200px) */
-	@media (max-width: calc(var(--breakpoint-xl) - 80px)) {
+	@media (max-width: 1200px) {
 		.stats-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}
 	}
 
 	/* Tablet Portrait (< 1024px) */
-	@media (max-width: calc(var(--breakpoint-lg) - 1px)) {
+	@media (max-width: 1023px) {
 		.stats-grid {
 			grid-template-columns: repeat(2, 1fr);
 			gap: 0.75rem;
@@ -1252,7 +1252,7 @@
 	}
 
 	/* Mobile Landscape (< 768px) */
-	@media (max-width: calc(var(--breakpoint-md) - 1px)) {
+	@media (max-width: 767px) {
 		.admin-page-container {
 			padding: 1rem;
 		}
@@ -1289,7 +1289,7 @@
 	}
 
 	/* Mobile Portrait (< 640px) */
-	@media (max-width: calc(var(--breakpoint-sm) - 1px)) {
+	@media (max-width: 639px) {
 		.admin-page-container {
 			padding: 0.75rem;
 		}
@@ -1314,7 +1314,7 @@
 	}
 
 	/* Extra Small Mobile (< 380px) - iPhone SE, Galaxy Fold */
-	@media (max-width: calc(var(--breakpoint-sm) - 260px)) {
+	@media (max-width: 380px) {
 		.admin-page-container {
 			padding: 0.5rem;
 		}

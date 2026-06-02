@@ -612,7 +612,7 @@
 	   RESPONSIVE - Tablet (< lg: 1024px)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	@media (max-width: calc(var(--breakpoint-lg) - 1px)) {
+	@media (max-width: 1023px) {
 		.admin-main {
 			margin-left: 0;
 		}
@@ -630,7 +630,7 @@
 	   RESPONSIVE - Mobile Landscape (< md: 768px)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	@media (max-width: calc(var(--breakpoint-md) - 1px)) {
+	@media (max-width: 767px) {
 		:where(.desktop-only) {
 			display: none;
 		}
@@ -655,7 +655,7 @@
 	   RESPONSIVE - Mobile Portrait (< sm: 640px)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	@media (max-width: calc(var(--breakpoint-sm) - 1px)) {
+	@media (max-width: 639px) {
 		.admin-header {
 			padding: 0 var(--space-4);
 			height: 60px;
