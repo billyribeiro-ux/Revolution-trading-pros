@@ -4,7 +4,6 @@
 	 * Progressive image loading with BlurHash placeholder
 	 * Includes automatic responsive srcset generation
 	 *
-	 * @version 2.0.0 - December 2024
 	 * Uses Svelte 5 runes ($state, $derived, $effect)
 	 */
 

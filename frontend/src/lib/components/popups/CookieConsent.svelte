@@ -1,7 +1,6 @@
 <script lang="ts">
 	/**
 	 * CookieConsent - GDPR/CCPA Compliant Cookie Consent Banner
-	 * ==========================================================
 	 * Apple ICT 7+ Principal Engineer Grade - February 2026
 	 *
 	 * Features:

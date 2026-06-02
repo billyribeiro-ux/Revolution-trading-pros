@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	/**
 	 * Admin Courses List Page
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
@@ -234,12 +235,10 @@
 				courses = [...courses];
 			} else {
 				// FIX-2026-04-26 (P3-7): surface error when publish fails non-throwing.
-				// Old: silent no-op left users wondering why nothing happened.
 				toastStore.error(data?.error || data?.message || 'Failed to update course status');
 			}
 		} catch {
 			// FIX-2026-04-26: replaced native alert() with toastStore.error.
-			// Old: alert('Failed to update course status');
 			toastStore.error('Failed to update course status');
 		}
 	};
@@ -290,7 +289,7 @@
 	};
 
 	// Svelte 5: Initialize on mount
-	$effect(() => {
+	onMount(() => {
 		if (browser) fetchCourses();
 	});
 </script>

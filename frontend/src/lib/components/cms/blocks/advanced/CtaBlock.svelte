@@ -1,12 +1,9 @@
 <!--
 /**
  * CTA Block Component (Advanced)
- * ═══════════════════════════════════════════════════════════════════════════
  * Call-to-action section with heading, description, and dual button support
  * Features primary and optional secondary buttons with customizable styling
  *
- * @version 1.0.0
- * @author Revolution Trading Pros
  */
 -->
 
@@ -15,9 +12,7 @@
 	import type { Block, BlockContent, BlockSettings } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 
-	// =========================================================================
 	// Types
-	// =========================================================================
 
 	type Alignment = 'left' | 'center' | 'right';
 
@@ -35,15 +30,11 @@
 		onError?: (error: Error) => void;
 	}
 
-	// =========================================================================
 	// Props & State
-	// =========================================================================
 
 	let props: Props = $props();
 
-	// =========================================================================
 	// Derived Values
-	// =========================================================================
 
 	let ctaHeading = $derived(props.block.content.ctaHeading || 'Ready to Transform Your Trading?');
 	let ctaDescription = $derived(
@@ -68,9 +59,7 @@
 	let containerStyle = $derived(`background-color: ${backgroundColor};`);
 	let textAlignClass = $derived(`align-${alignment}`);
 
-	// =========================================================================
 	// Handlers
-	// =========================================================================
 
 	function updateContent(updates: Partial<BlockContent>): void {
 		props.onUpdate({ content: { ...props.block.content, ...updates } });

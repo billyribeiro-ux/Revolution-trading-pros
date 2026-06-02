@@ -1,7 +1,6 @@
 <script lang="ts">
 	/**
 	 * User Subscription Management Page
-	 * =========================================================================
 	 * Apple ICT 7+ Principal Engineer Grade - February 2026
 	 *
 	 * Allows users to view and manage their subscriptions:

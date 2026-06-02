@@ -1,7 +1,6 @@
 <!--
 /**
  * Image Block Component
- * ═══════════════════════════════════════════════════════════════════════════
  * Production-ready responsive image block with lightbox support
  * Features: srcset generation, loading states, file validation, lightbox
  */
@@ -14,9 +13,7 @@
 	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
 	import type { Block, BlockContent } from '../types';
 
-	// ==========================================================================
 	// Props
-	// ==========================================================================
 
 	interface Props {
 		block: Block;
@@ -29,15 +26,11 @@
 
 	let props: Props = $props();
 
-	// ==========================================================================
 	// State Manager
-	// ==========================================================================
 
 	const stateManager = getBlockStateManager();
 
-	// ==========================================================================
 	// Local State
-	// ==========================================================================
 
 	let imageLoaded = $state(false);
 	let imageError = $state(false);
@@ -47,9 +40,7 @@
 	let urlInputValue = $state('');
 	let fileInputRef = $state<HTMLInputElement | null>(null);
 
-	// ==========================================================================
 	// Derived Values
-	// ==========================================================================
 
 	const imageUrl = $derived(props.block.content.mediaUrl || '');
 	const imageAlt = $derived(props.block.content.mediaAlt || '');
@@ -78,9 +69,7 @@
 	const captionId = $derived(`image-caption-${props.blockId}`);
 	const descriptionId = $derived(`image-desc-${props.blockId}`);
 
-	// ==========================================================================
 	// Constants
-	// ==========================================================================
 
 	const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 	const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
@@ -89,9 +78,7 @@
 		{ value: 'contain', label: 'Contain' }
 	];
 
-	// ==========================================================================
 	// Content Updates
-	// ==========================================================================
 
 	function updateContent(updates: Partial<BlockContent>): void {
 		props.onUpdate({
@@ -105,9 +92,7 @@
 		});
 	}
 
-	// ==========================================================================
 	// Image Loading Handlers
-	// ==========================================================================
 
 	function handleImageLoad(): void {
 		imageLoaded = true;
@@ -128,9 +113,7 @@
 		}
 	});
 
-	// ==========================================================================
 	// File Upload Handlers
-	// ==========================================================================
 
 	function handleFileSelect(e: Event): void {
 		const input = e.target as HTMLInputElement;
@@ -195,9 +178,7 @@
 		}
 	}
 
-	// ==========================================================================
 	// URL Input Handlers
-	// ==========================================================================
 
 	function handleURLSubmit(): void {
 		const trimmedUrl = urlInputValue.trim();
@@ -220,9 +201,7 @@
 		}
 	}
 
-	// ==========================================================================
 	// Edit Mode Handlers
-	// ==========================================================================
 
 	function handleAltInput(e: Event): void {
 		const target = e.target as HTMLInputElement;
@@ -245,9 +224,7 @@
 		showObjectFitControls = false;
 	}
 
-	// ==========================================================================
 	// Lightbox Handlers
-	// ==========================================================================
 
 	function openLightbox(): void {
 		if (!props.isEditing && hasImage && !imageError) {
@@ -277,9 +254,7 @@
 		}
 	}
 
-	// ==========================================================================
 	// Image Actions
-	// ==========================================================================
 
 	function removeImage(): void {
 		updateContent({

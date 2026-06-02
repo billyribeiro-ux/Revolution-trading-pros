@@ -12,7 +12,6 @@
 	 * - Trend charts
 	 * - Export capabilities
 	 *
-	 * @version 2.0.0
 	 */
 
 	import type { Form } from '$lib/api/forms';

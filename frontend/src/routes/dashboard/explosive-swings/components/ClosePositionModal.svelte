@@ -6,7 +6,6 @@
 	Modal for closing active positions with exit price, calculates P&L automatically.
 	Dark theme matching dashboard (var(--color-brand-primary)).
 	
-	@version 1.0.0
 -->
 <script lang="ts">
 	import type { ActivePosition } from '../types';

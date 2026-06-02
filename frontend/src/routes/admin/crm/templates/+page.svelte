@@ -41,9 +41,7 @@
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import { sanitizeHtml } from '$lib/utils/sanitize';
 
-	// =====================================================
 	// STATE MANAGEMENT - Svelte 5 Runes
-	// =====================================================
 
 	let templates = $state<EmailTemplate[]>([]);
 	let categories = $state<TemplateCategory[]>([]);
@@ -108,9 +106,7 @@
 		total: totalTemplates
 	});
 
-	// =====================================================
 	// DEBOUNCED SEARCH - $effect with cleanup
-	// =====================================================
 
 	let searchTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -132,9 +128,7 @@
 		};
 	});
 
-	// =====================================================
 	// REACTIVE DATA LOADING - $effect
-	// =====================================================
 
 	// Audit P2 #11: previously two effects interacted — one called
 	// `loadTemplates()` on (debouncedSearch | selectedCategory | currentPage |
@@ -165,9 +159,7 @@
 		loadTemplates();
 	});
 
-	// =====================================================
 	// API FUNCTIONS
-	// =====================================================
 
 	async function loadTemplates() {
 		isLoading = true;
@@ -290,9 +282,7 @@
 		previewTemplate = null;
 	}
 
-	// =====================================================
 	// SELECTION FUNCTIONS
-	// =====================================================
 
 	function toggleSelectAll() {
 		if (allSelected) {
@@ -310,9 +300,7 @@
 		}
 	}
 
-	// =====================================================
 	// PAGINATION FUNCTIONS
-	// =====================================================
 
 	function goToPage(page: number) {
 		if (page >= 1 && page <= totalPages) {
@@ -325,9 +313,7 @@
 		currentPage = 1;
 	}
 
-	// =====================================================
 	// TOAST NOTIFICATIONS
-	// =====================================================
 
 	function showToast(type: 'success' | 'error' | 'info', message: string) {
 		const id = crypto.randomUUID();
@@ -342,9 +328,7 @@
 		toasts = toasts.filter((t) => t.id !== id);
 	}
 
-	// =====================================================
 	// UTILITY FUNCTIONS
-	// =====================================================
 
 	function formatDate(dateString: string): string {
 		return new Date(dateString).toLocaleDateString('en-US', {
@@ -360,9 +344,7 @@
 		}
 	}
 
-	// =====================================================
 	// LIFECYCLE
-	// =====================================================
 
 	onMount(() => {
 		loadTemplates();

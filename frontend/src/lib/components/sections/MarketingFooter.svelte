@@ -1,7 +1,6 @@
 <script lang="ts">
 	/**
 	 * MarketingFooter - Apple Principal Engineer ICT Grade
-	 * ═══════════════════════════════════════════════════════════════════════════
 	 * Svelte 5 / SvelteKit 2.x Best Practices (November/December 2025)
 	 *
 	 * PATTERNS IMPLEMENTED:
@@ -13,8 +12,6 @@
 	 * ✅ Proper cleanup with observer.disconnect()
 	 * ✅ SSR-safe browser check
 	 *
-	 * @version 2.0.0 - Svelte 5 Runes + MentorshipSection Pattern
-	 * ═══════════════════════════════════════════════════════════════════════════
 	 */
 	import { onMount } from 'svelte';
 	import { cubicOut } from 'svelte/easing';

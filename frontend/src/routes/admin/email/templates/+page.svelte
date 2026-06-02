@@ -1,7 +1,7 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	/**
 	 * Email Templates - Apple ICT7 Principal Engineer Grade
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * Svelte 5 runes implementation with:
 	 * - $state for reactive state management
@@ -9,7 +9,6 @@
 	 * - Proper TypeScript types
 	 * - Enhanced error handling
 	 *
-	 * @version 2.0.0 - Svelte 5 Migration (Dec 2025)
 	 */
 
 	import { emailTemplatesApi, AdminApiError, type EmailTemplate } from '$lib/api/admin';
@@ -18,9 +17,7 @@
 	import { IconEdit, IconTrash, IconEye, IconPlus, IconRefresh } from '$lib/icons';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// State - Svelte 5 Runes
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	let templates = $state<EmailTemplate[]>([]);
 	let loading = $state(true);
@@ -31,9 +28,7 @@
 	let showDeleteTemplateModal = $state(false);
 	let pendingDeleteTemplateId = $state<number | null>(null);
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// Derived State
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	let filteredTemplates = $derived(
 		templates.filter((tmpl) => {
@@ -47,17 +42,13 @@
 		})
 	);
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// Lifecycle - Svelte 5 $effect
-	// ═══════════════════════════════════════════════════════════════════════════════
 
-	$effect(() => {
+	onMount(() => {
 		loadTemplates();
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// Data Loading
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	async function loadTemplates() {
 		loading = true;
@@ -98,9 +89,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// Actions
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	function deleteTemplate(id: number) {
 		pendingDeleteTemplateId = id;

@@ -10,8 +10,6 @@
 	- Accessibility features (ARIA, semantic HTML)
 	- Responsive behavior (desktop/mobile)
 	
-	@version 1.0.0
-	@author Revolution Trading Pros
 -->
 <script lang="ts">
 	import { page } from '$app/state';

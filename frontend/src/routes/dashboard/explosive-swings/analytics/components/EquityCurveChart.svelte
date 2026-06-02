@@ -1,11 +1,8 @@
 <script lang="ts">
 	/**
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 * EquityCurveChart Component - Cumulative P&L Line Chart
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * @description Displays cumulative P&L over time as a line chart using D3
-	 * @version 1.0.0
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA | Svelte 5
 	 */
 	import { onMount, onDestroy } from 'svelte';

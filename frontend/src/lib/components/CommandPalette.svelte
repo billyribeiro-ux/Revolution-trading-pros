@@ -1,7 +1,6 @@
 <script lang="ts">
 	/**
 	 * Command Palette - Apple ICT9+ Design
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * Global search and navigation with:
 	 * - Cmd/Ctrl+K activation
@@ -10,7 +9,6 @@
 	 * - Recent searches
 	 * - Action shortcuts
 	 *
-	 * @version 1.0.0
 	 */
 
 	import { onMount } from 'svelte';
@@ -195,7 +193,6 @@
 			// scope the clear to non-auth cache keys only (preserve rtp_*, authStore*, auth_*),
 			// also clear sessionStorage (no auth state lives there), and toast on success
 			// instead of a full page reload so the operator stays in-app and signed in.
-			// Old:
 			//   action: () => {
 			//   	localStorage.clear();
 			//   	window.location.reload();
@@ -348,19 +345,6 @@
 	// The separate onDestroy only cleaned up on component destroy, not between re-runs.
 	// Replaced with onMount + cleanup return so the listener is registered once and torn
 	// down correctly when the component is destroyed.
-	// $effect(() => {
-	// 	if (browser) {
-	// 		window.addEventListener('keydown', handleGlobalKeydown);
-	// 	}
-	// });
-	//
-	// FIX-2026-04-26: comment-out, verify, delete in follow-up.
-	// Superseded by the cleanup return inside onMount below.
-	// onDestroy(() => {
-	// 	if (browser) {
-	// 		window.removeEventListener('keydown', handleGlobalKeydown);
-	// 	}
-	// });
 
 	onMount(() => {
 		// onMount only runs in the browser; no `browser` guard needed.

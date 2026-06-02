@@ -1,7 +1,6 @@
 <script lang="ts">
 	/**
 	 * Skeleton Loader Component - Apple ICT9+ Design
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * Provides beautiful skeleton loading states for various UI patterns.
 	 * Uses shimmer animation for Apple-level polish.

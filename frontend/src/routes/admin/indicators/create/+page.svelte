@@ -26,9 +26,7 @@
 	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
 	import IconCircleCheck from '@tabler/icons-svelte-runes/icons/circle-check';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	interface Platform {
 		id: string;
@@ -80,9 +78,7 @@
 		doc_type: string;
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// AVAILABLE PLATFORMS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	const PLATFORMS: Platform[] = [
 		{
@@ -128,9 +124,7 @@
 		{ id: 'faq', name: 'FAQ', icon: 'faq' }
 	];
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let indicator = $state<IndicatorForm>({
 		name: '',
@@ -167,7 +161,6 @@
 	let formError = $state('');
 	let successMessage = $state('');
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// REACTIVE SLUG GENERATION - Instant as you type, but stops once user edits.
 	//
 	// FIX-2026-04-26-audit (P2-8): the previous unconditional $effect rewrote
@@ -175,7 +168,6 @@
 	// the admin had typed manually into the slug field. Track an `slugEdited` flag
 	// — once the user touches the slug, we stop auto-syncing. Resetting the slug
 	// to empty re-enables auto-sync.
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let slugEdited = $state(false);
 
@@ -204,9 +196,7 @@
 	// tracked for a follow-up — not wired here to keep this PR scoped).
 	void onSlugInput;
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// PLATFORM SELECTION
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function togglePlatform(platformId: string) {
 		const index = indicator.platforms.indexOf(platformId);
@@ -232,9 +222,7 @@
 		return PLATFORMS.find((p) => p.id === id);
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// TAG MANAGEMENT
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function addTag() {
 		const tag = tagInput.trim().toLowerCase();
@@ -255,9 +243,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// FILE UPLOAD - Bunny Storage Integration
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function uploadToBunny(file: File, folder: string): Promise<UploadedFile> {
 		const formData = new FormData();
@@ -335,9 +321,7 @@
 		});
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// THUMBNAIL DRAG & DROP
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function handleThumbnailDragOver(e: DragEvent) {
 		e.preventDefault();
@@ -396,9 +380,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// PLATFORM FILE UPLOAD
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let platformFileUploading = $state<Record<string, boolean>>({});
 	let platformFileErrors = $state<Record<string, string>>({});
@@ -456,9 +438,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// DOCUMENTATION UPLOAD
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let docUploading = $state<Record<number, boolean>>({});
 	let docErrors = $state<Record<number, string>>({});
@@ -528,9 +508,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// FORM SUBMISSION
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function formatFileSize(bytes: number): string {
 		if (bytes < 1024) return bytes + ' B';

@@ -1,7 +1,7 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	/**
 	 * Bandwidth Savings Dashboard - Apple ICT 7 Grade Analytics
-	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * Principal Engineer Grade implementation featuring:
 	 * - Real-time bandwidth savings visualization
@@ -13,8 +13,6 @@
 	 *
 	 * Svelte 5 Runes: $state, $derived, $effect
 	 *
-	 * @version 2.0.0
-	 * @author Revolution Trading Pros
 	 * @since January 2026
 	 */
 	import { browser } from '$app/environment';
@@ -40,9 +38,7 @@
 	import IconCircleCheckFilled from '@tabler/icons-svelte-runes/icons/circle-check-filled';
 	import IconInfoCircle from '@tabler/icons-svelte-runes/icons/info-circle';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Types
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	interface BandwidthData {
 		date: string;
@@ -72,9 +68,7 @@
 		co2Saved: number;
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// State
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let overview = $state<SavingsOverview | null>(null);
 	let bandwidthData = $state<BandwidthData[]>([]);
@@ -91,19 +85,15 @@
 	const totalSavings = tweened(0, { duration: 1500, easing: cubicOut });
 	const co2Saved = tweened(0, { duration: 1500, easing: cubicOut });
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Lifecycle - Svelte 5 $effect rune
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Initialize on mount using $effect
-	$effect(() => {
+	onMount(() => {
 		if (!browser) return;
 		loadData();
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Data Loading
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function loadData() {
 		isLoading = true;
@@ -175,9 +165,7 @@
 		loadData();
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Helpers
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function formatBytes(bytes: number): string {
 		if (bytes < 1024) return bytes.toFixed(0) + ' B';

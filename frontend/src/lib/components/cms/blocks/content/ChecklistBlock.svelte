@@ -1,13 +1,10 @@
 <!--
 /**
  * Checklist Block Component
- * ═══════════════════════════════════════════════════════════════════════════
  * Interactive checklist with full keyboard navigation, progress tracking,
  * and customizable styling. Supports adding, removing, and toggling items
  * with complete ARIA accessibility.
  *
- * @version 1.0.0
- * @author Revolution Trading Pros
  */
 -->
 
@@ -16,9 +13,7 @@
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 
-	// =========================================================================
 	// Types
-	// =========================================================================
 
 	interface ChecklistItem {
 		id: string;
@@ -42,9 +37,7 @@
 		onError?: (error: Error) => void;
 	}
 
-	// =========================================================================
 	// Props & State
-	// =========================================================================
 
 	let props: Props = $props();
 
@@ -70,9 +63,7 @@
 	// Track which item is being focused for keyboard navigation
 	let focusedItemIndex = $state<number | null>(null);
 
-	// =========================================================================
 	// Content Update Handlers
-	// =========================================================================
 
 	/**
 	 * Updates block content with partial changes
@@ -180,9 +171,7 @@
 		updateContent({ strikethrough: !strikethrough });
 	}
 
-	// =========================================================================
 	// Event Handlers
-	// =========================================================================
 
 	/**
 	 * Handles input changes for item text

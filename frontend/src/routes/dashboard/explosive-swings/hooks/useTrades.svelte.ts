@@ -1,11 +1,7 @@
-import { SvelteMap } from 'svelte/reactivity';
 /**
- * ═══════════════════════════════════════════════════════════════════════════════
  * Explosive Swings - useTrades Hook
- * ═══════════════════════════════════════════════════════════════════════════════
  *
  * @description Svelte 5 hook for managing trades (open and closed positions)
- * @version 1.0.0
  * @standards Svelte 5 January 2026 Syntax
  *
  * Features:
@@ -31,9 +27,7 @@ interface PriceData {
 	marketOpen: boolean;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
 // TYPES
-// ═══════════════════════════════════════════════════════════════════════════════
 
 export interface UseTradesOptions {
 	/** Enable auto-refresh (default: false) */
@@ -94,9 +88,7 @@ export interface NewTradeData {
 	notes?: string;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
 // EXTENDED TYPES FOR INTERNAL USE
-// ═══════════════════════════════════════════════════════════════════════════════
 
 /** Extended ApiTrade with optional fields that may come from backend */
 interface ApiTradeExtended extends ApiTrade {
@@ -108,9 +100,7 @@ interface ApiTradeExtended extends ApiTrade {
 	updated_at?: string;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
 // HELPER FUNCTIONS
-// ═══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Builds an array of position targets from trade data.
@@ -154,9 +144,7 @@ function buildTargetsArray(
 	return targets;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
 // HOOK IMPLEMENTATION
-// ═══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Creates a reactive trades state manager for the Explosive Swings dashboard.
@@ -172,19 +160,19 @@ export function useTrades(options: UseTradesOptions = {}): UseTradesReturn {
 
 	// Price feed service for real-time price updates
 	const priceFeed = enableRealTimePrices ? getPriceFeed() : null;
-	let realTimePrices = $state<Map<string, PriceData>>(new SvelteMap());
+	// Reassign-only (replaced wholesale by the price-feed callback, never mutated
+	// in place), so plain Map in $state is correct — $state makes the reassignment
+	// reactive. (svelte-autofixer's "use SvelteMap" is a false positive here: that
+	// applies to in-place .set/.delete mutations, which this never does.)
+	let realTimePrices = $state<Map<string, PriceData>>(new Map());
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// REACTIVE STATE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let allTrades = $state<ApiTrade[]>([]);
 	let isLoading = $state(false);
 	let error = $state<string | null>(null);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	const openTrades = $derived(allTrades.filter((t) => t.status === 'open'));
 	const closedTrades = $derived(allTrades.filter((t) => t.status === 'closed'));
@@ -253,15 +241,11 @@ export function useTrades(options: UseTradesOptions = {}): UseTradesReturn {
 		}))
 	);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// API CLIENT
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	const client = getEnterpriseClient();
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// ACTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function fetchTrades(): Promise<void> {
 		isLoading = true;
@@ -438,9 +422,7 @@ export function useTrades(options: UseTradesOptions = {}): UseTradesReturn {
 		await fetchTrades();
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// EFFECTS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Auto-refresh effect
 	$effect(() => {
@@ -475,9 +457,7 @@ export function useTrades(options: UseTradesOptions = {}): UseTradesReturn {
 		};
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// RETURN PUBLIC API
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	return {
 		// State (read-only via getters)

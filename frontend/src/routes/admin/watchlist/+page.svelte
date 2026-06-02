@@ -14,12 +14,10 @@
 <script lang="ts">
 	/**
 	 * Admin Weekly Watchlist - Content Management
-	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * Admin interface for managing weekly watchlist items.
 	 * Allows creating, editing, and managing watchlist videos.
 	 *
-	 * @version 2.0.0 (January 2026) - Added ICT7 header
 	 */
 
 	import { onMount } from 'svelte';
@@ -40,9 +38,7 @@
 	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let searchQuery = $state('');
 	let selectedStatus = $state<string>('');
@@ -71,9 +67,7 @@
 		rooms: [...ALL_ROOM_IDS] as string[]
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// DATA FETCHING
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// FIX-2026-04-26 (P2): Was `$effect(() => { if (!browser) return; loadWatchlistItems() })`.
 	// Replaced with onMount to match the migration in commit 34a0bd070 and avoid the
@@ -97,9 +91,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED DATA
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Filter items
 	let filteredItems = $derived.by(() => {
@@ -134,9 +126,7 @@
 		};
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// EVENT HANDLERS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function handleDeleteClick(item: WatchlistItem) {
 		itemToDelete = item;

@@ -1,7 +1,6 @@
 <!--
 /**
  * Author Block Component
- * ═══════════════════════════════════════════════════════════════════════════
  * Author bio box with photo, title, bio, and social links
  * Features: Photo upload with validation, social link management, responsive design
  */
@@ -13,9 +12,7 @@
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 
-	// ==========================================================================
 	// Props
-	// ==========================================================================
 
 	interface Props {
 		block: Block;
@@ -28,9 +25,7 @@
 
 	let props: Props = $props();
 
-	// ==========================================================================
 	// Local State
-	// ==========================================================================
 
 	let isUploading = $state(false);
 	let uploadError = $state<string | null>(null);
@@ -38,9 +33,7 @@
 	let urlInputValue = $state('');
 	let showUrlInput = $state(false);
 
-	// ==========================================================================
 	// Constants
-	// ==========================================================================
 
 	const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB for profile photos
 	const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
@@ -54,9 +47,7 @@
 		{ value: 'website', label: 'Website' }
 	];
 
-	// ==========================================================================
 	// Derived Values
-	// ==========================================================================
 
 	const name = $derived(props.block.content.authorName || 'Author Name');
 	const title = $derived(props.block.content.authorTitle || '');
@@ -70,9 +61,7 @@
 	);
 	const sanitizedPhotoURL = $derived(photo ? sanitizeURL(photo) : '');
 
-	// ==========================================================================
 	// Content Updates
-	// ==========================================================================
 
 	function updateContent(updates: Partial<BlockContent>): void {
 		props.onUpdate({ content: { ...props.block.content, ...updates } });
@@ -84,9 +73,7 @@
 		document.execCommand('insertText', false, text.slice(0, 2000));
 	}
 
-	// ==========================================================================
 	// Photo Upload Handlers
-	// ==========================================================================
 
 	function handleFileSelect(e: Event): void {
 		const input = e.target as HTMLInputElement;
@@ -175,9 +162,7 @@
 		uploadError = null;
 	}
 
-	// ==========================================================================
 	// Social Links Handlers
-	// ==========================================================================
 
 	function addSocial(): void {
 		const newSocials = [...socials, { platform: 'twitter', url: '' }];

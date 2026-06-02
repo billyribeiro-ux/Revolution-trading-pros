@@ -1,8 +1,8 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
 	/**
 	 * Media Library - Apple ICT 7 Grade Enterprise Dashboard
-	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * Principal Engineer Grade implementation featuring:
 	 * - AI-powered image analysis and alt text generation
@@ -17,8 +17,6 @@
 	 *
 	 * Svelte 5 Runes: $state, $derived, $effect
 	 *
-	 * @version 3.0.0
-	 * @author Revolution Trading Pros
 	 * @since January 2026
 	 */
 	import { browser } from '$app/environment';
@@ -57,9 +55,7 @@
 	import IconDownload from '@tabler/icons-svelte-runes/icons/download';
 	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// State
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Data
 	let items = $state<MediaItem[]>([]);
@@ -116,12 +112,10 @@
 	// Animations
 	const statsProgress = tweened(0, { duration: 1000, easing: cubicOut });
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Lifecycle - Svelte 5 $effect rune
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Initialize on mount using $effect
-	$effect(() => {
+	onMount(() => {
 		if (!browser) return;
 
 		// Load initial data
@@ -138,9 +132,7 @@
 		};
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Data Loading
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function loadMedia() {
 		isLoading = true;
@@ -184,9 +176,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Upload Handling
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function handleFilesSelected(files: File[]) {
 		if (files.length === 0) return;
@@ -282,9 +272,7 @@
 		showUploadPanel = false;
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Item Actions
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function handleItemClick(item: MediaItem, event: MouseEvent) {
 		if (event.shiftKey && focusedId) {
@@ -470,9 +458,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Bulk Actions
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function selectAll() {
 		if (selectedIds.size === items.length) {
@@ -541,9 +527,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Keyboard Navigation
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
@@ -662,9 +646,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Context Menu dispatcher (post-R10-C extraction)
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function handleContextAction(action: ContextAction) {
 		if (!contextMenu) return;
@@ -692,9 +674,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Toast Notifications
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let toasts = $state<Array<{ id: string; message: string; type: 'success' | 'error' | 'info' }>>(
 		[]
@@ -708,9 +688,7 @@
 		}, 4000);
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Helpers
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function formatBytes(bytes: number): string {
 		if (bytes < 1024) return bytes + ' B';

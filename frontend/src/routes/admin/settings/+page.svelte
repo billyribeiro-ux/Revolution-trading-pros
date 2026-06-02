@@ -3,9 +3,9 @@
 -->
 
 <script lang="ts">
+	import { onMount } from 'svelte';
 	/**
 	 * API Settings & Integrations - Apple ICT9+ Principal Engineer Grade
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * Premium settings dashboard with real API connections, live status monitoring,
 	 * and beautiful Apple-inspired UI with glass morphism effects.
@@ -742,7 +742,7 @@
 	}
 
 	// Svelte 5: Initialize on mount with cleanup
-	$effect(() => {
+	onMount(() => {
 		if (!browser) return;
 
 		fetchServices();

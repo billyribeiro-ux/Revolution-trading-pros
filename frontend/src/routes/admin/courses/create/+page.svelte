@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
 	import { goto } from '$app/navigation';
 	import { slide } from 'svelte/transition';
@@ -48,9 +49,7 @@
 	import PageHeader from './_components/PageHeader.svelte';
 	import FormBanners from './_components/FormBanners.svelte';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Type Definitions & Interfaces
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	interface Module {
 		id: string;
@@ -94,9 +93,7 @@
 		score: number;
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Complete State Management
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let course = $state({
 		// Basic Information
@@ -188,14 +185,12 @@
 	let hasUnsavedChanges = $state(false);
 	let lastSaved = $state<Date | null>(null);
 	let autoSaveTimer: ReturnType<typeof setInterval>;
-	let expandedModules = $state(new SvelteSet<string>());
+	let expandedModules = new SvelteSet<string>();
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Lifecycle Hooks & Initialization
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Svelte 5: Initialize on mount with $effect
-	$effect(() => {
+	onMount(() => {
 		// Initialize with starter module
 		if (course.modules.length === 0) {
 			addModule();
@@ -220,9 +215,7 @@
 		};
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Complete Module & Lesson Management
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function addModule() {
 		const newModule: Module = {
@@ -364,9 +357,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Advanced Drag and Drop System
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function handleDragStart(event: DragEvent, item: Module | Lesson, type: 'module' | 'lesson') {
 		isDragging = true;
@@ -439,9 +430,7 @@
 		handleDragEnd();
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Complete AI Features System
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function generateWithAI(field: string) {
 		generating = true;
@@ -857,9 +846,7 @@
 		}, 2000);
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Complete File Upload System
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let formError = $state('');
 	let successMessage = $state('');
@@ -1057,9 +1044,7 @@
 		hasUnsavedChanges = true;
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Complete Validation System
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function validateAll() {
 		let totalScore = 0;
@@ -1265,9 +1250,7 @@
 		overallScore = Math.round((totalScore / maxScore) * 100);
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Complete Save & Load System
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function generateSlug() {
 		if (!course.slug && course.name) {
@@ -1497,9 +1480,7 @@
 		showPublishWarning = false;
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Utility Functions
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function generateId(): string {
 		return `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;

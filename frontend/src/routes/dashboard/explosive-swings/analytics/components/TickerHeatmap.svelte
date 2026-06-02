@@ -1,11 +1,8 @@
 <script lang="ts">
 	/**
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 * TickerHeatmap Component - Performance Heatmap by Ticker
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * @description Displays trading performance by ticker with color-coded heatmap
-	 * @version 1.0.0
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA | Svelte 5
 	 */
 	import type { TickerPerformance } from '../analytics.state.svelte';

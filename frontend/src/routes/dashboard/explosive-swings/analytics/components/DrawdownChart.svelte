@@ -1,11 +1,8 @@
 <script lang="ts">
 	/**
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 * DrawdownChart Component - Drawdown Visualization
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * @description Displays drawdown over time as an area chart
-	 * @version 1.0.0
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA | Svelte 5
 	 */
 	import { onMount, onDestroy } from 'svelte';

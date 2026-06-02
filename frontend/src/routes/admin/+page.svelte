@@ -174,7 +174,6 @@
 	//     skeletons during initial fetch.
 	//   - `isUserRefreshing`: drives the Refresh button's spin; starts false,
 	//     flips true ONLY when the user clicks Refresh or a period pill.
-	// Old: let isLoading = $state(true);
 	let isLoading = $state(true);
 	let isUserRefreshing = $state(false);
 	let lastUpdated = $state<Date | null>(null);

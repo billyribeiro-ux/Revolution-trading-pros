@@ -15,8 +15,6 @@
 	- $derived() for computed values from auth store
 	- $effect() for reactive side effects
 
-	@version 3.1.0 - RtpIcon Integration
-	@author Revolution Trading Pros
 -->
 <script lang="ts">
 	import { onMount, type ComponentProps } from 'svelte';
@@ -30,9 +28,7 @@
 	let props = $props();
 	let data = $derived(props.data);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Dropdown state
 	let isDropdownOpen = $state(false);
@@ -42,14 +38,11 @@
 	let isLoading = $state(true);
 	let hasLoaded = $state(false);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DYNAMIC MEMBERSHIP RENDERING
 	// Render cards from actual API data instead of hardcoded slugs
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Trading rooms for the dropdown button. Hrefs match the dashboard route
 	// slugs (frontend/src/routes/dashboard/<slug>/+page.svelte).
@@ -210,12 +203,9 @@
 		return variantMap[slug] ?? 'options';
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// DATA LOADING - Use onMount to prevent infinite loops
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// ICT 11+ Fix: Use onMount instead of $effect to prevent infinite loop
-	// $effect that calls async functions mutating state causes re-runs
 	onMount(async () => {
 		// Wait for auth to initialize
 		while ($isInitializing) {
@@ -254,9 +244,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// DROPDOWN HANDLERS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function toggleDropdown(event: Event): void {
 		event.stopPropagation();

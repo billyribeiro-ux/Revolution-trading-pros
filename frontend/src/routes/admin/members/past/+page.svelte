@@ -2,7 +2,6 @@
 	import { SvelteSet } from 'svelte/reactivity';
 	/**
 	 * Past Members Dashboard - Svelte 5 / SvelteKit Implementation
-	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * Enterprise-grade admin dashboard with:
 	 * - Svelte 5 runes ($state, $derived, $effect)
@@ -11,7 +10,6 @@
 	 * - Optimistic UI updates
 	 * - Skeleton loading states
 	 *
-	 * @version 3.0.0 (Svelte 5 / December 2025)
 	 */
 
 	import { page } from '$app/state';
@@ -52,15 +50,11 @@
 	import { logger } from '$lib/utils/logger';
 	import type { PastMembersPageData } from './+page';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// PAGE DATA
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	const data = $derived(page.data as PastMembersPageData);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE (Svelte 5 Runes)
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Dashboard state
 	let overview = $state<DashboardOverview | null>(null);
@@ -97,9 +91,7 @@
 	let showSurveyModal = $state(false);
 	let surveyIncentive = $state('');
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	const periodStats = $derived(overview?.periods[selectedPeriod] as PeriodStats | undefined);
 	const hasMembers = $derived(members.length > 0);
@@ -107,9 +99,7 @@
 	const allSelected = $derived(selectedMembers.size === members.length && members.length > 0);
 	const periodLabel = $derived(TIME_PERIOD_LABELS[selectedPeriod]);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// EFFECTS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Initialize from load function data
 	$effect(() => {
@@ -134,9 +124,7 @@
 		}
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// FUNCTIONS - Data Loading
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function loadDashboard(): Promise<void> {
 		isLoading = true;
@@ -211,9 +199,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// FUNCTIONS - User Actions
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function handlePeriodChange(period: TimePeriod): Promise<void> {
 		selectedPeriod = period;
@@ -292,9 +278,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// FUNCTIONS - Utilities
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function formatCurrency(amount: number): string {
 		return new Intl.NumberFormat('en-US', {
@@ -807,7 +791,7 @@
 						<textarea
 							id="custom-body"
 							rows="8"
-							placeholder="Enter email body... Use {{ name }} for personalization"
+							placeholder="Enter email body... Use {'{{ name }}'} for personalization"
 							bind:value={customBody}
 						></textarea>
 					</div>

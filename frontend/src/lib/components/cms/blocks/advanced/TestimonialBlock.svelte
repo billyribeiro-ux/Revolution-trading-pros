@@ -1,7 +1,6 @@
 <!--
 /**
  * Testimonial Block Component
- * ═══════════════════════════════════════════════════════════════════════════
  * Quote with star rating, author name, title, company, and photo
  * Features: 1-5 star rating, photo upload with validation, centered layout
  */
@@ -13,9 +12,7 @@
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 
-	// ==========================================================================
 	// Props
-	// ==========================================================================
 
 	interface Props {
 		block: Block;
@@ -28,9 +25,7 @@
 
 	let props: Props = $props();
 
-	// ==========================================================================
 	// Local State
-	// ==========================================================================
 
 	let isUploading = $state(false);
 	let uploadError = $state<string | null>(null);
@@ -38,9 +33,7 @@
 	let urlInputValue = $state('');
 	let hoverRating = $state(0);
 
-	// ==========================================================================
 	// Derived Values
-	// ==========================================================================
 
 	const quote = $derived(
 		props.block.content.testimonialQuote || 'This is an amazing product that changed my life!'
@@ -53,18 +46,14 @@
 	const showPhoto = $derived(props.block.settings?.showPhoto !== false);
 	const sanitizedPhotoURL = $derived(authorPhoto ? sanitizeURL(authorPhoto) : '');
 
-	// ==========================================================================
 	// Constants
-	// ==========================================================================
 
 	const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 	const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 	const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp'];
 	const MAX_RATING = 5;
 
-	// ==========================================================================
 	// Content Updates
-	// ==========================================================================
 
 	function updateContent(updates: Partial<BlockContent>): void {
 		props.onUpdate({
@@ -78,9 +67,7 @@
 		});
 	}
 
-	// ==========================================================================
 	// Event Handlers
-	// ==========================================================================
 
 	function handlePaste(e: ClipboardEvent): void {
 		e.preventDefault();
@@ -108,9 +95,7 @@
 		updateContent({ testimonialCompany: target.textContent || '' });
 	}
 
-	// ==========================================================================
 	// Star Rating Handlers
-	// ==========================================================================
 
 	function handleStarClick(starValue: number): void {
 		if (props.isEditing) {
@@ -135,9 +120,7 @@
 		}
 	}
 
-	// ==========================================================================
 	// Photo Upload Handlers
-	// ==========================================================================
 
 	function handleFileSelect(e: Event): void {
 		const input = e.target as HTMLInputElement;

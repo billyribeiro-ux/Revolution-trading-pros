@@ -2,7 +2,6 @@
 	import { SvelteSet } from 'svelte/reactivity';
 	/**
 	 * Room Resources Management - Admin Dashboard
-	 * ═══════════════════════════════════════════════════════════════════════════
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
 	 *
 	 * Unified resource management for trading rooms:
@@ -18,7 +17,6 @@
 	 * - Featured/pinned controls
 	 * - Drag & drop upload
 	 *
-	 * @version 1.0.0
 	 */
 
 	import { browser } from '$app/environment';
@@ -65,9 +63,7 @@
 	import BulkOperationsModal from './_components/BulkOperationsModal.svelte';
 	import ResourceFormModal from './_components/ResourceFormModal.svelte';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES & CONSTANTS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	const RESOURCE_TYPES: {
 		id: ResourceType;
@@ -170,9 +166,7 @@
 		{ id: 'vip', name: 'VIP', color: '#a855f7' }
 	];
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Rooms and selection
 	let rooms = $state<TradingRoom[]>([]);
@@ -206,7 +200,7 @@
 	let newFileUrl = $state('');
 
 	// ICT 7: Bulk operations state
-	let selectedResources = $state<Set<number>>(new SvelteSet());
+	let selectedResources = new SvelteSet<number>();
 	let bulkAction = $state<'publish' | 'unpublish' | 'feature' | 'unfeature' | 'access' | 'delete'>(
 		'publish'
 	);
@@ -233,9 +227,7 @@
 		access_level: 'premium' // ICT 7: Default to premium access
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// COMPUTED
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	const filteredResources = $derived(
 		resources.filter((resource) => {
@@ -287,9 +279,7 @@
 		featured: resources.filter((r) => r.is_featured).length
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// API FUNCTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// ICT 7: All 6 trading rooms in correct order.
 	// TODO(2026-04-26-audit P2-11): retained for offline-dev; not used by the
@@ -500,9 +490,7 @@
 		setTimeout(() => (successMessage = ''), 3000);
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// ACTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function selectRoom(room: TradingRoom) {
 		selectedRoom = room;
@@ -770,14 +758,9 @@
 		}
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// LIFECYCLE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// FIX-2026-04-26 (CLAUDE.md / P1-7): init in onMount and remove the trailing
-	// $effect that re-fired loadResources whenever selectedRoom changed —
-	// selectRoom() already calls loadResources() explicitly. The previous
-	// double-effect dance produced two in-flight requests per click.
 	onMount(() => {
 		if (!browser) return;
 		void (async () => {

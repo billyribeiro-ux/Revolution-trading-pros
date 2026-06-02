@@ -1,7 +1,7 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	/**
 	 * Member Subscriptions - Apple ICT7 Principal Engineer Grade
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * Svelte 5 runes implementation with:
 	 * - $state for reactive state management
@@ -10,7 +10,6 @@
 	 * - Proper TypeScript types
 	 * - Enhanced error handling
 	 *
-	 * @version 2.0.0 - Svelte 5 Migration (Dec 2025)
 	 */
 
 	import { goto } from '$app/navigation';
@@ -41,9 +40,7 @@
 	} from '$lib/stores/subscriptions.svelte';
 	import { logger } from '$lib/utils/logger';
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// State - Svelte 5 Runes
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	let subscriptions = $state<EnhancedSubscription[]>([]);
 	let loading = $state(true);
@@ -60,9 +57,7 @@
 	let showCancelModal = $state(false);
 	let pendingCancelSub = $state<EnhancedSubscription | null>(null);
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// Derived State
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	let filteredSubscriptions = $derived(
 		subscriptions.filter((sub) => {
@@ -99,17 +94,13 @@
 		cancelled: subscriptions.filter((s) => s.status === 'cancelled').length
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// Lifecycle - Svelte 5 $effect
-	// ═══════════════════════════════════════════════════════════════════════════════
 
-	$effect(() => {
+	onMount(() => {
 		loadSubscriptions();
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// Data Loading
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	async function loadSubscriptions() {
 		loading = true;
@@ -139,9 +130,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// Actions
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	function handlePause(sub: EnhancedSubscription) {
 		pendingPauseSub = sub;
@@ -222,9 +211,7 @@
 		intervalFilter = '';
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// Formatters
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	function formatCurrency(amount: number, currency = 'USD'): string {
 		return new Intl.NumberFormat('en-US', {

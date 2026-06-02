@@ -3,8 +3,6 @@
 	 * BatchOperations Component
 	 * Toolbar for batch operations on selected items
 	 *
-	 * @version 1.0.0
-	 * @author Revolution Trading Pros
 	 */
 
 	interface Action {

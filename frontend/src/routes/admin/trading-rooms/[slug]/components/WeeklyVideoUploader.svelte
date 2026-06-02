@@ -10,7 +10,6 @@
 	- Auto-archive previous video
 	- Thumbnail generation
 	
-	@version 1.0.0
 -->
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
@@ -29,9 +28,7 @@
 	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
 	import IconArchive from '@tabler/icons-svelte-runes/icons/archive';
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// PROPS
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	interface Props {
 		roomSlug: string;
@@ -41,9 +38,7 @@
 
 	const { roomSlug, onSuccess, onError }: Props = $props();
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// STATE
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	let currentVideo = $state<WeeklyVideo | null>(null);
 	let archivedVideos = $state<WeeklyVideo[]>([]);
@@ -71,9 +66,7 @@
 	// File upload
 	let uploadFile = $state<File | null>(null);
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// HELPERS
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	function getNextMonday(): string {
 		const today = new Date();
@@ -111,9 +104,7 @@
 		return url;
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// DERIVED
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	const isFormValid = $derived(
 		form.video_url.trim() !== '' && form.video_title.trim() !== '' && form.week_of !== ''
@@ -123,9 +114,7 @@
 		form.video_url ? generateEmbedUrl(form.video_url, form.video_platform) : ''
 	);
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// API FUNCTIONS
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	async function loadVideos() {
 		// FIX-2026-04-26-audit (P1-9): cancel any prior in-flight load so a fast
@@ -262,9 +251,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// UI HANDLERS
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	function openUploadModal() {
 		form = {
@@ -325,9 +312,7 @@
 		form.video_platform = detectPlatform(form.video_url);
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// LIFECYCLE
-	// ═══════════════════════════════════════════════════════════════════════════════
 	//
 	// FIX-2026-04-26-audit (P1-9): the previous `$effect` on `roomSlug` had no
 	// cleanup path and used `untrack(loadVideos)`, leaving an in-flight fetch

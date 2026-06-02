@@ -1,10 +1,7 @@
 <script lang="ts">
 	/**
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 * DateRangePicker Component - Period Selection for Analytics
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
-	 * @version 1.0.0 - Phase 4: Analytics Dashboard
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA | Svelte 5 January 2026
 	 */
 	import type { TimePeriod } from '../analytics.state.svelte';

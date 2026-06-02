@@ -1,12 +1,9 @@
 <!--
 /**
  * Related Posts Block Component
- * ═══════════════════════════════════════════════════════════════════════════
  * Grid of 2-4 related post cards with image, category, title, excerpt, and link
  * Production-ready with accessibility, dark mode, and responsive design
  *
- * @version 1.0.0
- * @author Revolution Trading Pros
  */
 -->
 
@@ -16,9 +13,7 @@
 	import type { Block, BlockContent, BlockSettings } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 
-	// =========================================================================
 	// Types
-	// =========================================================================
 
 	interface RelatedPost {
 		id: string;
@@ -40,15 +35,11 @@
 		onError?: (error: Error) => void;
 	}
 
-	// =========================================================================
 	// Props
-	// =========================================================================
 
 	let props: Props = $props();
 
-	// =========================================================================
 	// Mock Data (API integration placeholder)
-	// =========================================================================
 
 	const MOCK_POSTS: RelatedPost[] = [
 		{
@@ -89,9 +80,7 @@
 		}
 	];
 
-	// =========================================================================
 	// Derived Values
-	// =========================================================================
 
 	let title = $derived(props.block.content.relatedPostsTitle || 'Related Articles');
 	let layout = $derived((props.block.content.relatedPostsLayout as LayoutMode) || 'grid');
@@ -101,9 +90,7 @@
 
 	let displayPosts = $derived(MOCK_POSTS.slice(0, Math.min(Math.max(postCount, 2), 4)));
 
-	// =========================================================================
 	// Handlers
-	// =========================================================================
 
 	function updateContent(updates: Partial<BlockContent>): void {
 		props.onUpdate({ content: { ...props.block.content, ...updates } });

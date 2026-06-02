@@ -39,9 +39,7 @@
 		EmailTemplateOption
 	} from './_components/types';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let contact = $state<Contact | null>(null);
 	let timeline = $state<TimelineEvent[]>([]);
@@ -76,9 +74,7 @@
 
 	let contactId = $derived(page.params.id as string);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// API FUNCTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function loadContact() {
 		loading = true;
@@ -211,9 +207,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// SEND EMAIL FUNCTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function loadEmailTemplates(): Promise<void> {
 		if (availableEmailTemplates.length > 0) return; // Cache check
@@ -335,9 +329,7 @@
 		goto('/admin/crm');
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// LIFECYCLE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	onMount(async () => {
 		await Promise.all([loadContact(), loadAvailableTagsAndLists()]);

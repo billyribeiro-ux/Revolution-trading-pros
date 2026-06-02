@@ -38,7 +38,7 @@
 	// Local state
 	let searchQuery = $state('');
 	let statusFilter = $state('');
-	let selectedMembers = $state<Set<number>>(new SvelteSet());
+	let selectedMembers = new SvelteSet<number>();
 	let showEmailModal = $state(false);
 	let emailSubject = $state('');
 	let emailBody = $state('');
@@ -87,13 +87,11 @@
 				personalize: true
 			});
 			// FIX-2026-04-26: replaced native alert() with toastStore.success.
-			// Old: alert(result.message);
 			toastStore.success(result.message);
 			showEmailModal = false;
 			selectedMembers.clear();
 		} catch {
 			// FIX-2026-04-26: replaced native alert() with toastStore.error.
-			// Old: alert('Failed to send emails');
 			toastStore.error('Failed to send emails');
 		}
 	}

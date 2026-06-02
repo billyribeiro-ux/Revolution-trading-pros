@@ -1,11 +1,8 @@
 <script lang="ts">
 	/**
 	 * Favorites Page - Explosive Swings
-	 * ═══════════════════════════════════════════════════════════════════════════
 	 * Displays user's bookmarked alerts and videos with real persistence
 	 *
-	 * @version 2.0.0 - ICT 11 Principal Engineer Grade
-	 * @requires Svelte 5.0+ / SvelteKit 2.0+
 	 */
 	import { onMount } from 'svelte';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';

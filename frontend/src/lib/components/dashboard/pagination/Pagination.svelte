@@ -15,13 +15,10 @@
 	- ARIA labels for screen readers
 	- Mobile responsive
 	
-	@version 1.0.0
 	@since January 2026
 -->
 <script lang="ts">
-	// ═══════════════════════════════════════════════════════════════════════════
 	// PROPS - Svelte 5 $props() pattern
-	// ═══════════════════════════════════════════════════════════════════════════
 	interface Props {
 		currentPage: number;
 		totalPages: number;
@@ -43,15 +40,11 @@
 	let onPageChange = $derived(props.onPageChange);
 	let itemLabel = $derived(props.itemLabel ?? 'items');
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE
-	// ═══════════════════════════════════════════════════════════════════════════
 	const showingFrom = $derived(totalItems > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0);
 	const showingTo = $derived(Math.min(currentPage * itemsPerPage, totalItems));
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// PAGE NUMBER LOGIC
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	/**
 	 * Generate visible page numbers with ellipsis for pagination UI
@@ -87,9 +80,7 @@
 
 	const visiblePages = $derived(getVisiblePages(currentPage, totalPages));
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// HANDLERS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function goToPage(page: number) {
 		if (page < 1 || page > totalPages || page === currentPage) return;

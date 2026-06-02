@@ -92,13 +92,11 @@
 				personalize: true
 			});
 			// FIX-2026-04-26: replaced native alert() with toastStore.success.
-			// Old: alert(result.message);
 			toastStore.success(result.message);
 			showEmailModal = false;
 			selectedMembers.clear();
 		} catch {
 			// FIX-2026-04-26: replaced native alert() with toastStore.error.
-			// Old: alert('Failed to send emails');
 			toastStore.error('Failed to send emails');
 		}
 	}
@@ -588,7 +586,7 @@
 						id="email-body"
 						bind:value={emailBody}
 						rows="12"
-						placeholder="Email body... Use {{ name }} for personalization"
+						placeholder="Email body... Use {'{{ name }}'} for personalization"
 					></textarea>
 					<p class="form-hint">
 						Available variables: {'{{name}}'}, {'{{first_name}}'}, {'{{email}}'}

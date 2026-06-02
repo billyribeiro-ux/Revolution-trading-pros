@@ -1,8 +1,6 @@
 <script lang="ts">
 	/**
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 * ApiErrorDisplay Component - API Error State Display
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * Displays API errors with:
 	 * - User-friendly messages
@@ -10,7 +8,6 @@
 	 * - Retry functionality
 	 * - Compact and full variants
 	 *
-	 * @version 1.0.0
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA
 	 */
 

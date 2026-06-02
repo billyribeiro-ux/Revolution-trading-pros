@@ -10,8 +10,6 @@
 	- Pagination matching WordPress
 	- Responsive design
 	
-	@version 2.0.0
-	@author Revolution Trading Pros
 -->
 <script lang="ts">
 	// Svelte 5 $props destructuring

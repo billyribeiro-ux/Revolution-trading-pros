@@ -2,7 +2,6 @@
 	import { SvelteSet } from 'svelte/reactivity';
 	/**
 	 * Trading Room Video Management - Admin Dashboard
-	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * Professional video management with room selector tabs and category tagging.
 	 * Upload videos to specific trading rooms or alert services with topic tags.
@@ -15,7 +14,6 @@
 	 * - PUT /api/admin/trading-rooms/videos/{id} - Update video
 	 * - DELETE /api/admin/trading-rooms/videos/{id} - Delete video
 	 *
-	 * @version 4.0.0 - December 2025 - Real API Integration
 	 */
 
 	import { onMount, onDestroy } from 'svelte';
@@ -66,9 +64,7 @@
 	import PageHeader from './_components/PageHeader.svelte';
 	import AnalyticsPanel from './_components/AnalyticsPanel.svelte';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// LOCAL TYPES (extending API types)
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	interface VideoCategory {
 		id: string;
@@ -81,9 +77,7 @@
 		categories: string[]; // Mapped from backend 'tags' field
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// PREDEFINED CATEGORIES
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	const availableCategories: VideoCategory[] = [
 		{ id: 'risk-management', name: 'Risk Management', color: '#ef4444' },
@@ -111,9 +105,7 @@
 		return availableCategories.find((c) => c.id === id);
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Rooms and selection
 	let rooms = $state<TradingRoom[]>([]);
@@ -190,9 +182,7 @@
 	let showEmbedModal = $state(false);
 	let embedCodeData = $state<{ video_id: number; title: string; embed_html: string } | null>(null);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// CATEGORY SELECTION
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function toggleCategory(categoryId: string) {
 		const index = formData.categories.indexOf(categoryId);
@@ -207,9 +197,7 @@
 		return formData.categories.includes(categoryId);
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// API FUNCTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	/**
 	 * Load trading rooms and traders from API
@@ -287,9 +275,7 @@
 		}, 3000);
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// ACTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function selectRoom(room: TradingRoom) {
 		selectedRoom = room;
@@ -467,9 +453,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// BUNNY.NET DIRECT UPLOAD
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function openBunnyUploadModal() {
 		bunnyUploadFiles = [];
@@ -718,9 +702,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// VIDEO ANALYTICS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function loadAnalytics() {
 		isLoadingAnalytics = true;
@@ -771,9 +753,7 @@
 		}
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// ICT 7 ADDITION: BULK OPERATIONS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function toggleVideoSelection(videoId: number) {
 		if (selectedVideoIds.has(videoId)) {
@@ -982,9 +962,7 @@
 		selectedVideoIds = newSelection;
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// HELPERS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function formatDuration(seconds?: number): string {
 		if (!seconds) return '';
@@ -1029,9 +1007,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	const tradingRooms = $derived(rooms.filter((r) => r.type === 'trading_room'));
 	const alertServices = $derived(rooms.filter((r) => r.type === 'alert_service'));
@@ -1074,9 +1050,7 @@
 			.filter(Boolean) as VideoCategory[];
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// LIFECYCLE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// FIX-2026-04-26-audit (P0-6): Consolidate to a single onMount call.
 	// The previous two $effect blocks caused triple-fire on initial render:

@@ -6,7 +6,6 @@
 	Full trade creation modal with all fields matching ActivePositionCard display.
 	Dark theme matching dashboard (var(--color-brand-primary)).
 	
-	@version 1.0.0
 -->
 <script lang="ts">
 	import type { TradeType, OptionType, ContractType, TradeSetup } from '$lib/types/trading';

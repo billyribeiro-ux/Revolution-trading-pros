@@ -1,11 +1,8 @@
 <script lang="ts">
 	/**
 	 * Video Detail Page - Explosive Swings
-	 * ═══════════════════════════════════════════════════════════════════════════
 	 * Dynamic video player page for weekly breakdowns and trade updates
 	 *
-	 * @version 2.0.0 - ICT 11 Principal Engineer Grade
-	 * @requires Svelte 5.0+ / SvelteKit 2.0+
 	 */
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';

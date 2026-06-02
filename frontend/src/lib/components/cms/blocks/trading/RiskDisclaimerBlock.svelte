@@ -1,12 +1,9 @@
 <!--
 /**
  * Risk Disclaimer Block Component
- * ═══════════════════════════════════════════════════════════════════════════
  * Prominent risk warning display for trading content
  * Supports multiple styles, preset disclaimers, and acknowledgment flow
  *
- * @version 1.0.0
- * @author Revolution Trading Pros
  */
 -->
 
@@ -26,9 +23,7 @@
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 	import { onMount } from 'svelte';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Props Interface
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	interface Props {
 		block: Block;
@@ -41,9 +36,7 @@
 
 	let props: Props = $props();
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Content Interfaces
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	interface RiskDisclaimerContent {
 		text: string;
@@ -53,9 +46,7 @@
 		requireAcknowledgment?: boolean;
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Preset Disclaimers
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	const PRESET_DISCLAIMERS: Record<
 		string,
@@ -81,17 +72,13 @@
 		}
 	};
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// State Management
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let isExpanded = $state(false);
 	let isAcknowledged = $state(false);
 	let animateCheckbox = $state(false);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Derived State
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let style = $derived<RiskDisclaimerContent['style']>(
 		(props.block.content.disclaimerStyle as RiskDisclaimerContent['style']) || 'warning'
@@ -170,9 +157,7 @@
 	let contentId = $derived(`disclaimer-content-${props.blockId}`);
 	let expandedId = $derived(`disclaimer-expanded-${props.blockId}`);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Lifecycle
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	onMount(() => {
 		// Check if acknowledgment was previously stored (e.g., in sessionStorage)
@@ -183,9 +168,7 @@
 		}
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Update Functions
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function updateContent(updates: Partial<BlockContent>): void {
 		props.onUpdate({ content: { ...props.block.content, ...updates } });
@@ -236,9 +219,7 @@
 		updateContent({ disclaimerRequireAck: checkbox.checked });
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Interaction Handlers
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function toggleExpanded(): void {
 		isExpanded = !isExpanded;

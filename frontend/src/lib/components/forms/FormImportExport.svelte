@@ -9,7 +9,6 @@
 	 * - Import from various sources
 	 * - Template save/load
 	 *
-	 * @version 1.0.0
 	 */
 
 	import { getAuthToken } from '$lib/stores/auth.svelte';

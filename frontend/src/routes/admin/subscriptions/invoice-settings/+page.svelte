@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	/* eslint svelte/no-at-html-tags: "off" -- every {@html} in this file renders sanitizer-cleaned HTML (sanitizeHtml/sanitizeBlogContent/etc.) or serialized JSON-LD; audited 2026-05-30 */
 	import { fade, slide } from 'svelte/transition';
 	import { browser } from '$app/environment';
@@ -66,7 +67,7 @@
 	// Reset confirmation modal state
 	let showResetModal = $state(false);
 
-	$effect(() => {
+	onMount(() => {
 		if (browser) {
 			loadSettings();
 		}

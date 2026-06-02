@@ -43,9 +43,7 @@
 	import KeyboardShortcutsHelper from './_components/KeyboardShortcutsHelper.svelte';
 	import StatsGrid from './_components/StatsGrid.svelte';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// State Management
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Admin list-view post shape: the persisted post plus admin-only analytics
 	// (seo_score/engagement_rate) and the row-selection flag. Index signature
@@ -135,9 +133,7 @@
 		return predefinedCategories.find((cat) => cat.id === id);
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Lifecycle
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// FIX-2026-04-26 (CLAUDE.md / P1-8 / P2-7): init in onMount, not $effect.
 	// Adds visibility gate so polling doesn't hammer expired sessions in
@@ -167,9 +163,7 @@
 		};
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Data Loading
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function loadPosts() {
 		loading = true;
@@ -216,9 +210,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// WebSocket & Real-time Updates
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function setupWebSocket() {
 		// ICT 11+ FIX: Only attempt WebSocket if VITE_WS_URL is explicitly configured
@@ -280,9 +272,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Bulk Operations
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function toggleSelectAll() {
 		selectAll = !selectAll;
@@ -366,9 +356,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Individual Post Actions
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function deletePost(id: number) {
 		pendingDeleteId = id;
@@ -435,9 +423,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Export & Import
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function exportPosts() {
 		try {
@@ -487,9 +473,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Analytics & SEO
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function calculateSeoScore(post: AdminBlogPost): number {
 		let score = 0;
@@ -544,9 +528,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Keyboard Shortcuts
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function setupKeyboardShortcuts() {
 		document.addEventListener('keydown', handleKeyboard);
@@ -605,9 +587,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Utility Functions
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function formatDate(dateString: string) {
 		return new Date(dateString).toLocaleDateString('en-US', {
@@ -657,9 +637,7 @@
 		activeActionMenu = activeActionMenu === postId ? null : postId;
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Reactive Statements (Svelte 5 Runes)
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Derived state for bulk actions visibility
 	const showBulkActions = $derived(selectedPosts.size > 0);

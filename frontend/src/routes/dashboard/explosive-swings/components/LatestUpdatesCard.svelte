@@ -1,12 +1,8 @@
 <script lang="ts">
 	/**
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 * LatestUpdatesCard Component - Compact Video Updates Grid
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * @description Compact 3-item grid of recent video updates for sidebar
-	 * @version 4.1.0 - Visual Polish Pass
-	 * @requires Svelte 5.0+ (January 2026 syntax)
 	 * @standards Apple Principal Engineer ICT 7+ Standards
 	 *
 	 * DESIGN DECISION: Max 3 items to prevent sidebar bloat

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	/**
 	 * Admin Orders Management Page
 	 * ICT 7 Fix: Complete admin orders dashboard
@@ -196,7 +197,7 @@
 	}
 
 	// Svelte 5: Initialize on mount
-	$effect(() => {
+	onMount(() => {
 		if (browser) loadOrders();
 	});
 </script>

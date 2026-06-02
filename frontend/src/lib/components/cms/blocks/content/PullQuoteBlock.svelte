@@ -1,13 +1,10 @@
 <!--
 /**
  * Pull Quote Block Component
- * ═══════════════════════════════════════════════════════════════════════════
  * Large decorative quote with customizable styling and attribution.
  * Features decorative quotation marks, multiple alignment options,
  * border styles, and accent color customization.
  *
- * @version 1.0.0
- * @author Revolution Trading Pros
  */
 -->
 
@@ -16,9 +13,7 @@
 	import type { Block } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 
-	// =========================================================================
 	// Types
-	// =========================================================================
 
 	interface PullQuoteContent {
 		text?: string;
@@ -38,9 +33,7 @@
 		onError?: (error: Error) => void;
 	}
 
-	// =========================================================================
 	// Props & State
-	// =========================================================================
 
 	let props: Props = $props();
 
@@ -74,9 +67,7 @@
 		'#059669' // Emerald
 	];
 
-	// =========================================================================
 	// Content Update Handlers
-	// =========================================================================
 
 	/**
 	 * Updates block content with partial changes
@@ -136,9 +127,7 @@
 		}
 	}
 
-	// =========================================================================
 	// Style Option Handlers
-	// =========================================================================
 
 	/**
 	 * Changes the quote alignment

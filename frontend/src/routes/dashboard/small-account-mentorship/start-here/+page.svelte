@@ -6,8 +6,6 @@
 	Apple ICT 11+ Principal Engineer Implementation
 	Based on NewStartHere reference - Svelte 5
 
-	@version 2.0.0
-	@author Revolution Trading Pros
 -->
 <script lang="ts">
 	import { SvelteSet } from 'svelte/reactivity';
@@ -25,7 +23,7 @@
 	let data = $derived(props.data);
 
 	// Accordion state management - Svelte 5 runes
-	let openAccordions = $state<Set<number>>(new SvelteSet());
+	let openAccordions = new SvelteSet<number>();
 
 	// Toggle accordion with Set reassignment for reactivity
 	function toggleAccordion(index: number): void {

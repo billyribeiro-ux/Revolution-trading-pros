@@ -1,7 +1,6 @@
 <!--
 /**
  * ImageUploader - Drag & Drop Image Upload Component
- * =============================================================================
  * Enterprise-grade image uploader with R2 CDN integration, image processing,
  * blurhash placeholders, progress tracking, and Asset Manager integration
  *
@@ -17,8 +16,6 @@
  * - Choose from Asset Manager library
  * - Recent assets quick access
  *
- * @version 2.0.0 - February 2026
- * @author Revolution Trading Pros
  */
 -->
 
@@ -42,9 +39,7 @@
 	import AssetManager from './AssetManager.svelte';
 	import Icon from '$lib/components/Icon.svelte';
 
-	// ==========================================================================
 	// Props
-	// ==========================================================================
 
 	interface Props {
 		/** Callback when upload completes successfully */
@@ -81,9 +76,7 @@
 	const showLibrary = $derived(props.showLibrary ?? true);
 	const showRecent = $derived(props.showRecent ?? true);
 
-	// ==========================================================================
 	// State
-	// ==========================================================================
 
 	interface UploadItem {
 		id: string;
@@ -136,9 +129,7 @@
 		return Math.round(sum / uploadQueue.length);
 	});
 
-	// ==========================================================================
 	// Lifecycle
-	// ==========================================================================
 
 	onMount(() => {
 		// Add paste event listener
@@ -163,9 +154,7 @@
 		});
 	});
 
-	// ==========================================================================
 	// Asset Manager Integration
-	// ==========================================================================
 
 	async function loadRecentAssets() {
 		if (!showRecent) return;
@@ -259,9 +248,7 @@
 		}
 	}
 
-	// ==========================================================================
 	// Event Handlers
-	// ==========================================================================
 
 	function handleDragEnter(e: DragEvent) {
 		e.preventDefault();
@@ -337,9 +324,7 @@
 		}
 	}
 
-	// ==========================================================================
 	// File Processing
-	// ==========================================================================
 
 	function processFiles(files: File[]) {
 		const validFiles = files.filter((file) => {
@@ -493,9 +478,7 @@
 		uploadQueue = uploadQueue.filter((item) => item.id !== itemId);
 	}
 
-	// ==========================================================================
 	// Blurhash Rendering
-	// ==========================================================================
 
 	function renderBlurhashToDataUrl(hash: string, width: number = 32, height: number = 32): string {
 		// Simplified blurhash decoder - returns a gradient approximation

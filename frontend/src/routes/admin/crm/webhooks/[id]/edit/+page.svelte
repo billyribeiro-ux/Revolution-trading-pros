@@ -33,9 +33,7 @@
 		validateWebhookUrl
 	} from '$lib/utils/webhookSecurity';
 
-	// =====================================================
 	// STATE MANAGEMENT - Svelte 5 Runes
-	// =====================================================
 
 	let webhookId = $derived(page.params.id ?? '');
 	let originalWebhook = $state<Webhook | null>(null);
@@ -59,9 +57,7 @@
 		[]
 	);
 
-	// =====================================================
 	// DERIVED STATE
-	// =====================================================
 
 	let isFormValid = $derived(
 		name.trim().length > 0 &&
@@ -100,9 +96,7 @@
 	let selectedCount = $derived(selectedEvents.size);
 	let totalEvents = $derived(Object.keys(availableEvents).length);
 
-	// =====================================================
 	// API FUNCTIONS
-	// =====================================================
 
 	async function loadWebhook() {
 		isLoading = true;
@@ -195,9 +189,7 @@
 		}
 	}
 
-	// =====================================================
 	// HELPER FUNCTIONS
-	// =====================================================
 
 	function generateSecret() {
 		// Cryptographically secure secret — uses crypto.getRandomValues under the hood.
@@ -242,9 +234,7 @@
 		return event.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 	}
 
-	// =====================================================
 	// TOAST NOTIFICATIONS
-	// =====================================================
 
 	function showToast(type: 'success' | 'error' | 'info', message: string) {
 		const id = crypto.randomUUID();
@@ -258,9 +248,7 @@
 		toasts = toasts.filter((t) => t.id !== id);
 	}
 
-	// =====================================================
 	// LIFECYCLE
-	// =====================================================
 
 	onMount(() => {
 		loadWebhook();

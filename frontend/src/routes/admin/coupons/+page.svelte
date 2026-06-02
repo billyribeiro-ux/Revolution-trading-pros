@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	/**
 	 * Admin coupons list page.
 	 *
@@ -28,9 +29,7 @@
 	import CouponsStatsBar from './_components/CouponsStatsBar.svelte';
 	import type { Coupon, FilterStatus } from './_components/types';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// State Management - Svelte 5 Runes
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let loading = $state(true);
 	let deleting = $state<number | null>(null);
@@ -41,9 +40,7 @@
 	let showDeleteConfirm = $state(false);
 	let pendingDeleteId = $state<number | null>(null);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Derived State - Svelte 5 Runes
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let filteredCoupons = $derived.by(() => {
 		let result = coupons;
@@ -70,17 +67,13 @@
 	let activeCouponsCount = $derived(coupons.filter((c) => c.is_active).length);
 	let totalCouponsCount = $derived(coupons.length);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Lifecycle - Svelte 5 $effect
-	// ═══════════════════════════════════════════════════════════════════════════
 
-	$effect(() => {
+	onMount(() => {
 		loadCoupons();
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// API Functions
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function loadCoupons() {
 		loading = true;

@@ -1,11 +1,8 @@
 <script lang="ts">
 	/**
 	 * Watchlist - Explosive Swings
-	 * ═══════════════════════════════════════════════════════════════════════════
 	 * Displays weekly trade plan entries fetched from backend API
 	 *
-	 * @version 2.0.0 - ICT 11 Principal Engineer Grade
-	 * @requires Svelte 5.0+ / SvelteKit 2.0+
 	 */
 	import { onMount } from 'svelte';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
@@ -14,9 +11,7 @@
 
 	const ROOM_SLUG = 'explosive-swings';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE - Svelte 5 $state runes
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let tradePlanEntries = $state<TradePlanEntry[]>([]);
 	let isLoading = $state(true);
@@ -24,9 +19,7 @@
 	let weekOf = $state<string | null>(null);
 	let dataSource = $state<'backend' | 'mock' | null>(null);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// API FETCH
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function fetchTradePlan() {
 		isLoading = true;
@@ -53,9 +46,7 @@
 		fetchTradePlan();
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// HELPERS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function formatDate(dateStr: string | null | undefined): string {
 		if (!dateStr) return '';

@@ -1,10 +1,7 @@
 <script lang="ts">
 	/**
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 * PerformanceCard Component - COMPACT 30-Day Track Record
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
-	 * @version 6.0.0 - High Density Refactor: 100px height
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA
 	 */
 	import type { ThirtyDayPerformance } from '../types';

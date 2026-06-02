@@ -1,15 +1,12 @@
 <script lang="ts">
 	import { SvelteSet } from 'svelte/reactivity';
 	/**
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 * TradesTable Component - Responsive Table/Card Hybrid with Accessibility
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * Uses native <table> elements for proper screen reader navigation on desktop.
 	 * Transforms to stacked card layout on mobile for optimal touch experience.
 	 * Supports expandable notes rows and admin actions.
 	 *
-	 * @version 2.0.0 - 2026 Responsive Rewrite
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA
 	 */
 	import type { Trade } from '../types';
@@ -25,7 +22,7 @@
 	import {  } from 'svelte';
 
 	// Track expanded notes
-	let expandedNotes = $state<Set<number>>(new SvelteSet());
+	let expandedNotes = new SvelteSet<number>();
 
 	function toggleNotes(tradeId: number) {
 		if (expandedNotes.has(tradeId)) {

@@ -12,13 +12,11 @@
 	- Export functionality
 
 	R22-C extracted 8 read-only display components into _components/.
-	@version 1.1.0 - May 2026
 -->
 
 <script lang="ts">
 	/**
 	 * Email Campaign Report - Svelte 5 Runes Implementation
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 */
 
 	import type { PageData } from './$types';
@@ -37,9 +35,7 @@
 	import GeoDistribution from './_components/GeoDistribution.svelte';
 	import AbTestResults from './_components/AbTestResults.svelte';
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// Props (Svelte 5 - no destructuring)
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	interface Props {
 		data: PageData;
@@ -47,9 +43,7 @@
 	let props: Props = $props();
 	let data = $derived(props.data);
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// Types
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	interface CampaignReport {
 		id: number;
@@ -133,18 +127,14 @@
 		};
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// State - Svelte 5 Runes
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	let loading = $state(true);
 	let error = $state<string | null>(null);
 	let report = $state<CampaignReport | null>(null);
 	let _isExporting = $state(false);
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// Derived State
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	let campaignId = $derived(data.campaignId);
 
@@ -214,9 +204,7 @@
 		return d.desktop + d.mobile + d.tablet + d.unknown || 1;
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// Lifecycle - Svelte 5 $effect
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	$effect(() => {
 		if (campaignId) {
@@ -224,9 +212,7 @@
 		}
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// API Functions
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	async function loadReport() {
 		loading = true;
@@ -315,9 +301,7 @@
 		};
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// Helper Functions
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	function formatNumber(num: number): string {
 		if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';

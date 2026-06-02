@@ -9,7 +9,6 @@
 	 * - Metadata entry
 	 * - Category selection
 	 *
-	 * @version 1.0.0 - December 2025
 	 */
 
 	import { onMount } from 'svelte';

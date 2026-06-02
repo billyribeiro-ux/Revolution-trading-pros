@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import {
 		IconPlus,
@@ -39,7 +40,7 @@
 	let pendingDeleteId = $state<number | null>(null);
 
 	// Svelte 5: Initialize on mount
-	$effect(() => {
+	onMount(() => {
 		if (browser) {
 			loadKeywords();
 			loadStats();

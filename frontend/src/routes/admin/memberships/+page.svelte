@@ -14,7 +14,6 @@
 <script lang="ts">
 	/**
 	 * Membership Plans Management - Apple ICT 7 Principal Engineer Grade
-	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * Comprehensive membership plan management with:
 	 * - Plan listing with stats and status
@@ -23,7 +22,6 @@
 	 * - Pricing and billing configuration
 	 * - Subscriber analytics
 	 *
-	 * @version 1.0.0 (January 2026)
 	 */
 
 	import { onMount } from 'svelte';
@@ -52,9 +50,7 @@
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import { logger } from '$lib/utils/logger';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	interface MembershipFeature {
 		feature_code: string;
@@ -85,9 +81,7 @@
 		top_plan?: string;
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE - Svelte 5 Runes
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let plans = $state<MembershipPlan[]>([]);
 	// FIX-2026-04-26 (audit 02 §P1-6): `stats` was a $state recomputed inside a
@@ -149,9 +143,7 @@
 	let formLoading = $state(false);
 	let formError = $state('');
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// CONSTANTS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	const statusOptions = [
 		{ value: 'all', label: 'All Plans' },
@@ -173,9 +165,7 @@
 		{ value: 'subscriber_count', label: 'Subscribers' }
 	];
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE - Svelte 5 $derived
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let filteredPlans = $derived.by(() => {
 		let result = [...plans];
@@ -225,18 +215,14 @@
 		return result;
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// EFFECTS - Svelte 5 $effect
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// FIX-2026-04-26 (audit 02 §P1-6): the previous $effect that wrote `stats`
 	// from `plans` is now a `$derived.by` block at the top of the script — see
 	// the `let stats: PlanStats = $derived.by(...)` declaration above. The
 	// effect block was removed to eliminate the write-while-read cascade.
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// API FUNCTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function loadData() {
 		isLoading = true;
@@ -338,9 +324,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// HELPERS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function resetForm() {
 		formData = {
@@ -436,9 +420,7 @@
 		);
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// LIFECYCLE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// FIX-2026-04-26 (audit 02 §P2-9 / CLAUDE.md commit 34a0bd070):
 	// Initialization should run once on mount, not in a `$effect`. The effect

@@ -41,9 +41,7 @@
 	import type { EmailSequence, SequenceFilters, SequenceStatus } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let sequences = $state<EmailSequence[]>([]);
 	let isLoading = $state(true);
@@ -84,9 +82,7 @@
 		{ value: 'completed', label: 'Completed' }
 	] as const;
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// API FUNCTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function loadSequences() {
 		isLoading = true;
@@ -200,9 +196,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// MODAL FUNCTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function openSendEmailModal(sequence: EmailSequence) {
 		selectedSequence = sequence;
@@ -238,9 +232,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// HELPERS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function formatNumber(num: number): string {
 		return num.toLocaleString();
@@ -275,9 +267,7 @@
 		return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let filteredSequences = $derived(
 		sequences.filter((seq) => {
@@ -294,9 +284,7 @@
 			!sendEmailForm.isLoading
 	);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// EFFECTS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Audit P1 #5: the previous filter `$effect` declared no reactive reads
 	// (only a comment said so), so it ran once when `isInitialized` flipped
@@ -327,9 +315,7 @@
 		};
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// LIFECYCLE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Svelte 5: Initialize on mount.
 	// Was previously a `$effect` — migrated to `onMount` per audit P2 #10

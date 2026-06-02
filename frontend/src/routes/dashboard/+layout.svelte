@@ -17,8 +17,6 @@
 	- $effect() for side effects
 	- Snippet for children rendering
 
-	@version 4.1.0 - ICT 11+ Server-Side Auth (Aligned to Admin Layout)
-	@author Revolution Trading Pros
 -->
 <script lang="ts">
 	// Dashboard Design System - Only loaded in dashboard area, not globally
@@ -40,9 +38,7 @@
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
 	import type { Snippet } from 'svelte'; // FIXED: Separate type import for clarity
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// PROPS - Svelte 5 Pattern
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	interface Props {
 		children: Snippet;
@@ -70,9 +66,7 @@
 	let children = $derived(props.children);
 	let data = $derived(props.data);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Loading state for memberships data
 	let isLoadingData = $state(false);
@@ -86,9 +80,7 @@
 	// Track if initial data load is complete
 	let isInitialized = $state(false);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE - Svelte 5 Pattern
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// User data for sidebar - prefer server data, fall back to client store
 	const userData = $derived({
@@ -134,10 +126,8 @@
 	// Auth is handled server-side, but we still check client store for logout detection
 	const isUserAuthenticated = $derived(!!data.user || $isAuthenticated);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// MEMBERSHIP ROUTES CONFIGURATION
 	// Routes that should auto-collapse the main sidebar and show secondary nav
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	const membershipRoutes: Record<
 		string,
@@ -439,9 +429,7 @@
 		}
 	};
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED: Route-based computations
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Get current membership route data (if on a membership page)
 	let currentMembershipData = $derived.by(() => {
@@ -469,9 +457,7 @@
 		isDashboardHome ? false : userToggledSidebar !== null ? userToggledSidebar : isOnMembershipRoute
 	);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// EFFECTS - Svelte 5 Pattern (Aligned with Admin Layout)
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Auth sync — runs once on mount. Not an `$effect`: this code reads
 	// `data.user` / `$isAuthenticated` and then synchronously writes
@@ -523,9 +509,7 @@
 		}
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// FUNCTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function loadMembershipsData(): Promise<void> {
 		if (!isUserAuthenticated) return;
@@ -590,7 +574,6 @@
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * APPLE ICT 11+ RESPONSIVE DESIGN SYSTEM
 	 * Modern CSS Best Practices (Nov/Dec 2025)
-	 * ═══════════════════════════════════════════════════════════════════════════
 	 * 
 	 * BREAKPOINT STRATEGY (Industry Standard - Jan 2026):
 	 * - CSS Custom Properties for maintainability
@@ -611,7 +594,6 @@
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Collapsed Sidebar Hover Effect - WordPress Evidence-Based Implementation
-	 * ═══════════════════════════════════════════════════════════════════════════
 	 * 
 	 * SOURCE EVIDENCE: dashboard.8f78208b.css
 	 * 

@@ -38,9 +38,7 @@
 	import { categoriesApi, AdminApiError, type Category } from '$lib/api/admin';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE - Svelte 5 Runes
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let categories = $state<Category[]>([]);
 	let isLoading = $state(true);
@@ -86,9 +84,7 @@
 	// Stats — pure projection of `categories`, so a single $derived (declared
 	// in the DERIVED section below). No $state + sync-$effect indirection.
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE - Svelte 5 $derived
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let filteredCategories = $derived(
 		categories.filter((cat) => {
@@ -112,9 +108,7 @@
 
 	let mergeTargetOptions = $derived(categories.filter((cat) => !selectedIds.has(cat.id)));
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// EFFECTS - Svelte 5 $effect
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// FIX-2026-04-26 (P0-4): track manual slug edits so the auto-generator
 	// stops clobbering user-typed slugs.
@@ -131,10 +125,6 @@
 	});
 
 	// FIX-2026-04-26 (P3-13) completed (audit 2026-05-16): previously a
-	// $derived `computedStats` was copied into a `$state` `stats` via a
-	// sync-$effect — the exact write-while-reading "shadow-state" cascade
-	// the P3-13 comment claimed to remove. Now a single $derived; the
-	// template reads `stats.*` unchanged.
 	let stats = $derived({
 		total: categories.length,
 		visible: categories.filter((c) => c.is_visible).length,
@@ -142,9 +132,7 @@
 		withPosts: categories.filter((c) => c.post_count > 0).length
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// API FUNCTIONS - Complete CRUD
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function loadCategories() {
 		isLoading = true;
@@ -342,9 +330,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// HELPER FUNCTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function openCategoryModal(category: Category | null = null) {
 		if (category) {
@@ -446,12 +432,9 @@
 		});
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// LIFECYCLE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// FIX-2026-04-26 (CLAUDE.md): init belongs in onMount, not $effect.
-	// Old: $effect(() => { if (browser) loadCategories(); });
 	onMount(() => {
 		if (browser) loadCategories();
 	});

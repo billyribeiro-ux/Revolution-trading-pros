@@ -2,20 +2,15 @@
 	import { SvelteSet } from 'svelte/reactivity';
 	/**
 	 * High Octane Scanner - ULTIMATE Dashboard v1
-	 * ═══════════════════════════════════════════════════════════════════════════
 	 * Member-first design - What do traders need?
 	 * 1. This week's video breakdown
 	 * 2. The exact trade plan (entries, targets, stops, options)
 	 *
-	 * @version 1.0.0
-	 * @requires Svelte 5.0+ / SvelteKit 2.0+
 	 */
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 	import {  } from 'svelte';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPE DEFINITIONS - Principal Engineer ICT 11 Standards
-	// ═══════════════════════════════════════════════════════════════════════════
 	interface WeeklyContent {
 		title: string;
 		videoTitle: string;
@@ -71,9 +66,7 @@
 	type HeroTab = 'video' | 'entries';
 	type AlertFilter = 'all' | 'entry' | 'exit' | 'update';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// COMPONENT PROPS - Server data with types
-	// ═══════════════════════════════════════════════════════════════════════════
 	import type { WatchlistResponse } from '$lib/types/watchlist';
 	import type { RoomResource } from '$lib/api/room-resources';
 
@@ -91,15 +84,11 @@
 	let props: { data: PageData } = $props();
 	let data = $derived(props.data);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// REACTIVE STATE - Svelte 5 $state runes
-	// ═══════════════════════════════════════════════════════════════════════════
 	let heroTab = $state<HeroTab>('video');
 	let selectedFilter = $state<AlertFilter>('all');
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// DATA - This Week's Content (fetched from API with fallback)
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Fallback data constants - ICT 7 Standards: No video state
 	// When no video exists in database, show clear admin prompt instead of broken player
@@ -265,10 +254,10 @@
 	const alerts = $derived<Alert[]>(fallbackAlerts);
 
 	// Track which alert notes are expanded
-	let expandedNotes = $state<Set<number>>(new SvelteSet());
+	let expandedNotes = new SvelteSet<number>();
 
 	// Track which trade plan notes are expanded
-	let expandedTradeNotes = $state<Set<string>>(new SvelteSet());
+	let expandedTradeNotes = new SvelteSet<string>();
 
 	function toggleTradeNotes(ticker: string) {
 		if (expandedTradeNotes.has(ticker)) {

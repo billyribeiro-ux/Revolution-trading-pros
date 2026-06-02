@@ -1,7 +1,6 @@
 <!--
 /**
  * Gallery Block Component
- * ═══════════════════════════════════════════════════════════════════════════
  * Multi-image gallery with lightbox, keyboard navigation, and responsive grid
  *
  * Features:
@@ -39,9 +38,7 @@
 	} from '$lib/stores/blockState.svelte';
 	import type { Block, BlockContent } from '../types';
 
-	// ============================================================================
 	// Types
-	// ============================================================================
 
 	interface GalleryImage {
 		id: string;
@@ -61,9 +58,7 @@
 		onError?: (error: Error) => void;
 	}
 
-	// ============================================================================
 	// Props and State
-	// ============================================================================
 
 	let props: Props = $props();
 	const stateManager = getBlockStateManager();
@@ -81,9 +76,7 @@
 	// Carousel state
 	let carouselIndex = $state(0);
 
-	// ============================================================================
 	// Derived Values
-	// ============================================================================
 
 	let images = $derived<GalleryImage[]>(
 		props.block.content.galleryImages?.map((img, idx) => ({
@@ -117,9 +110,7 @@
 	// Grid style computed from columns and gap
 	let gridStyle = $derived(`--gallery-columns: ${columns}; --gallery-gap: ${gap};`);
 
-	// ============================================================================
 	// Content Update Helpers
-	// ============================================================================
 
 	function updateContent(updates: Partial<BlockContent>): void {
 		props.onUpdate({ content: { ...props.block.content, ...updates } });
@@ -129,9 +120,7 @@
 		props.onUpdate({ settings: { ...props.block.settings, ...updates } });
 	}
 
-	// ============================================================================
 	// Image Management
-	// ============================================================================
 
 	function addImage(): void {
 		if (!newImageUrl.trim()) return;
@@ -206,9 +195,7 @@
 		updateContent({ galleryImages: updatedImages });
 	}
 
-	// ============================================================================
 	// Drag and Drop Reordering
-	// ============================================================================
 
 	function handleDragStart(event: DragEvent, index: number): void {
 		draggedIndex = index;
@@ -260,9 +247,7 @@
 		dragOverIndex = null;
 	}
 
-	// ============================================================================
 	// Layout Management
-	// ============================================================================
 
 	function updateLayout(newLayout: GalleryLayout): void {
 		updateSettings({ galleryLayout: newLayout });
@@ -281,9 +266,7 @@
 		}
 	}
 
-	// ============================================================================
 	// Lightbox Controls
-	// ============================================================================
 
 	function openLightbox(index: number): void {
 		if (props.isEditing) return;
@@ -306,9 +289,7 @@
 		stateManager.navigateLightbox('prev');
 	}
 
-	// ============================================================================
 	// Keyboard Navigation
-	// ============================================================================
 
 	function handleKeyDown(event: KeyboardEvent): void {
 		if (!isLightboxOpen) return;
@@ -329,9 +310,7 @@
 		}
 	}
 
-	// ============================================================================
 	// Effects
-	// ============================================================================
 
 	$effect(() => {
 		if (isLightboxOpen) {
@@ -347,9 +326,7 @@
 		};
 	});
 
-	// ============================================================================
 	// Event Handlers
-	// ============================================================================
 
 	function handleImageClick(index: number): void {
 		if (!props.isEditing) {

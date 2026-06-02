@@ -1,7 +1,6 @@
 <!--
 /**
  * Accordion Block Component
- * ═══════════════════════════════════════════════════════════════════════════
  * ICT Level 7 - Collapsible accordion with keyboard navigation
  * 
  * Features:

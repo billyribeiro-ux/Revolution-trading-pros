@@ -13,7 +13,6 @@
 <script lang="ts">
 	/**
 	 * Create Membership Plan - Apple ICT 7 Principal Engineer Grade
-	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * Premium membership plan creation with:
 	 * - Live preview card
@@ -22,16 +21,13 @@
 	 * - Billing cycle configuration
 	 * - Form validation
 	 *
-	 * @version 1.0.0 (January 2026)
 	 */
 
 	import { goto } from '$app/navigation';
 	import { IconCrown, IconPlus, IconX, IconCheck, IconArrowLeft, IconTarget } from '$lib/icons';
 	import { adminFetch } from '$lib/utils/adminFetch';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	interface MembershipFeature {
 		feature_code: string;
@@ -49,9 +45,7 @@
 		features: MembershipFeature[];
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE - Svelte 5 Runes
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let membership = $state<MembershipFormData>({
 		name: '',
@@ -67,9 +61,7 @@
 	let error = $state('');
 	let slugManuallyEdited = $state(false);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE - Svelte 5 $derived
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let validFeatures = $derived(membership.features.filter((f) => f.feature_name.trim()));
 
@@ -99,9 +91,7 @@
 		}[membership.billing_cycle] || '/month'
 	);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// EFFECTS - Svelte 5 $effect
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// FIX-2026-04-26 (audit 02 §P1-6): the previous $effect read
 	// `membership.name` + `slugManuallyEdited` and wrote `membership.slug` —
@@ -120,9 +110,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// FUNCTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function handleSlugInput() {
 		slugManuallyEdited = true;

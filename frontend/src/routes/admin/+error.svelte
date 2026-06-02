@@ -8,7 +8,6 @@
 	 * - Debug information for developers
 	 * - Role-based error recovery
 	 *
-	 * @version 1.0.0 - L8 Principal Engineer
 	 */
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';

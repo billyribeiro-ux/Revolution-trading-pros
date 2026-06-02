@@ -1,14 +1,12 @@
 <script lang="ts">
 	/**
 	 * NonMemberCheckout Component - Revolution Trading Custom Cart System
-	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * Custom cart system for non-member checkout with pixel-perfect styling
 	 * (no WooCommerce dependency)
 	 *
 	 * Reference: Custom RTP Cart System
 	 *
-	 * @version 3.0.0 (Custom RTP Cart System / January 2026)
 	 */
 
 	import { goto } from '$app/navigation';
@@ -18,9 +16,7 @@
 	import IconTicket from '@tabler/icons-svelte-runes/icons/ticket';
 	import IconShoppingCart from '@tabler/icons-svelte-runes/icons/shopping-cart';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let showRegisterForm = $state(false);
 	let isSubmitting = $state(false);
@@ -42,15 +38,11 @@
 	let couponCode = $state('');
 	let couponFormVisible = $state(false);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let hasSubscriptions = $derived(cartStore.items.some((i) => i.interval));
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// FUNCTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function getIntervalLabel(interval?: string): string {
 		switch (interval) {

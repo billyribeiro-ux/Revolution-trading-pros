@@ -6,7 +6,6 @@
 	Full CRUD modal for trade plan entries with dark theme matching dashboard.
 	Supports Create, Edit, and Delete operations.
 	
-	@version 2.0.0 - Complete CRUD with dark theme
 -->
 <script lang="ts">
 	import { tradePlanApi, type Bias, type TradePlanEntry } from '$lib/api/room-content';

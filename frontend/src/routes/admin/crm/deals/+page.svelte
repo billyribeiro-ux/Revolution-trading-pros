@@ -14,7 +14,6 @@
 <script lang="ts">
 	/**
 	 * CRM Deals - FluentCRM Pro Pipeline Management
-	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * Full deal pipeline with:
 	 * - Kanban board view
@@ -23,7 +22,6 @@
 	 * - Win/Loss actions
 	 * - Revenue forecasting
 	 *
-	 * @version 1.0.0 (January 2026)
 	 */
 
 	import { onMount } from 'svelte';
@@ -53,9 +51,7 @@
 	import type { Deal, Pipeline, Stage } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE (Svelte 5 Runes)
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let deals = $state<Deal[]>([]);
 	let pipelines = $state<Pipeline[]>([]);
@@ -94,9 +90,7 @@
 	let showDeleteModal = $state(false);
 	let pendingDeleteDeal = $state<Deal | null>(null);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE (Svelte 5 $derived)
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let stages = $derived(selectedPipeline?.stages || []);
 
@@ -128,9 +122,7 @@
 		dealsCount: filteredDeals.length
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// API FUNCTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function loadData() {
 		isLoading = true;
@@ -243,9 +235,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// DRAG AND DROP HANDLERS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function handleDragStart(event: DragEvent, deal: Deal) {
 		draggingDeal = deal;
@@ -282,9 +272,7 @@
 		dragOverStage = null;
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// HELPERS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function formatCurrency(amount: number): string {
 		return new Intl.NumberFormat('en-US', {
@@ -337,9 +325,7 @@
 		showLoseModal = true;
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// LIFECYCLE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let isInitialized = $state(false);
 

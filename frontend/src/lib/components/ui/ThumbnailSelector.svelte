@@ -6,7 +6,6 @@
 	Thumbnail selection grid for video uploads.
 	Displays multiple thumbnail options with selection indicator.
 	
-	@version 1.0.0
 -->
 <script lang="ts">
 	import Icon from '$lib/components/Icon.svelte';

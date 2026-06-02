@@ -4,8 +4,6 @@
 	Standardized class header section for all class pages.
 	This is the Single Source of Truth (SSOT) for class header sections.
 	
-	@version 1.0.0 - ICT 7 Standards (Nov 2025)
-	@author Revolution Trading Pros
 -->
 <script lang="ts">
 	// Svelte 5 January 2026 best practice - no destructuring

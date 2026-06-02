@@ -1,7 +1,6 @@
 <!--
 /**
  * Block Error Boundary - Enterprise Error Isolation
- * =============================================================================
  *
  * Wraps individual blocks to catch and handle errors gracefully without
  * crashing the entire editor. Features:
@@ -14,8 +13,6 @@
  * - Block data preservation for recovery
  * - Nested error boundary support for columns/groups
  *
- * @version 1.0.0
- * @author Revolution Trading Pros
  * @since January 2026
  */
 -->
@@ -42,9 +39,7 @@
 		type BlockErrorContext
 	} from './error-handling';
 
-	// ==========================================================================
 	// Props
-	// ==========================================================================
 
 	interface Props {
 		/** The block being wrapped */
@@ -77,9 +72,7 @@
 	const errorContext = $derived(props.errorContext ?? {});
 	const fallback = $derived(props.fallback);
 
-	// ==========================================================================
 	// State
-	// ==========================================================================
 
 	/** Whether an error has occurred */
 	let hasError = $state(false);
@@ -102,9 +95,7 @@
 	/** Animation key for error state */
 	let animationKey = $state(0);
 
-	// ==========================================================================
 	// Derived State
-	// ==========================================================================
 
 	/** Block definition for display info */
 	const blockDefinition = $derived(BLOCK_DEFINITIONS[block.type]);
@@ -129,9 +120,7 @@
 	/** Show technical details in dev mode */
 	const showDetails = $derived(import.meta.env.DEV);
 
-	// ==========================================================================
 	// Error Handling
-	// ==========================================================================
 
 	/**
 	 * Handle error caught by svelte:boundary
@@ -154,9 +143,7 @@
 		console.error(`[BlockErrorBoundary] Error in ${block.type} block:`, err);
 	}
 
-	// ==========================================================================
 	// Actions
-	// ==========================================================================
 
 	/**
 	 * Retry rendering the block
@@ -243,9 +230,7 @@
 		showDeleteConfirm = false;
 	}
 
-	// ==========================================================================
 	// Keyboard Handling
-	// ==========================================================================
 
 	function handleKeydown(e: KeyboardEvent) {
 		if (e.key === 'Escape' && showDeleteConfirm) {

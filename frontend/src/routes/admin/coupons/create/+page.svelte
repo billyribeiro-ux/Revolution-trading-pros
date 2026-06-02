@@ -1,7 +1,6 @@
 <!--
 /**
  * Coupon Create Page — R25-C refactor
- * ═══════════════════════════════════════════════════════════════════════════
  *
  * 2026-05-20: shell parent — wires data-loading, validation, and submission
  * to the form sections in ./_components/. Visual layout / DOM structure
@@ -17,7 +16,6 @@
  *   - CouponFormActions       — sticky save/cancel bar
  *   - types.ts                — CouponFormData / discount types
  *
- * @version 3.0.0
  */
 -->
 
@@ -43,9 +41,7 @@
 	import CouponFormActions from './_components/CouponFormActions.svelte';
 	import type { CouponFormData, RestrictionTab } from './_components/types';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// State
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let saving = $state(false);
 	let generating = $state(false);
@@ -81,9 +77,7 @@
 	let selectedProducts = $state<Set<number>>(new SvelteSet());
 	let selectedPlans = $state<Set<number>>(new SvelteSet());
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Computed Values
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let discountPreview = $derived.by(() => {
 		if (!formData.discount_value) return '';
@@ -97,9 +91,7 @@
 		return selectedProducts.size > 0 || selectedPlans.size > 0;
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Helpers
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function formatDateForInput(date: Date): string {
 		return date.toISOString().slice(0, 16);
@@ -122,9 +114,7 @@
 		setTimeout(() => (generating = false), 300);
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Data Loading
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function loadProductsAndPlans(): Promise<void> {
 		loadingData = true;
@@ -151,9 +141,7 @@
 		loadProductsAndPlans();
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Restriction action handler (R8-C discriminated callback)
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function handleRestrictionAction(action: CouponRestrictionAction): void {
 		switch (action.kind) {
@@ -187,9 +175,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Validation
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function validateForm(): string[] {
 		const errs: string[] = [];
@@ -233,9 +219,7 @@
 		return errs;
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// Submit
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function handleSubmit(e: Event): Promise<void> {
 		e.preventDefault();

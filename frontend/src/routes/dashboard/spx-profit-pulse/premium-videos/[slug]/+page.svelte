@@ -7,8 +7,6 @@
 	
 	Displays individual video with HTML5 player, navigation, and metadata.
 	
-	@version 1.0.0 - January 2026
-	@author Revolution Trading Pros
 -->
 <script lang="ts">
 	import type { PageData } from './$types';

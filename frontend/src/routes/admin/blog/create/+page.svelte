@@ -60,9 +60,7 @@
 		tags: [] as number[]
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// CATEGORY SELECTION FUNCTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function toggleCategorySelection(categoryId: string) {
 		const index = post.categories.indexOf(categoryId);

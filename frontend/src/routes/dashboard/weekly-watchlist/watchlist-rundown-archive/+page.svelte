@@ -2,7 +2,6 @@
 	Watchlist Rundown Archive - Pixel-Perfect WordPress Match
 	═══════════════════════════════════════════════════════════════════════════
 	Matches: frontend/Implementation/wwl-Rundown-Archive
-	@version 2.0.0 - January 2026
 -->
 <script lang="ts">
 	// 9 cards matching WordPress exactly

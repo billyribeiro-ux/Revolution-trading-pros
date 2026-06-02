@@ -1,12 +1,8 @@
 <script lang="ts">
 	/**
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 * Trade Tracker - Explosive Swings
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 * Complete trade history with admin controls for closing trades
 	 *
-	 * @version 3.0.0 - Nuclear Refactor (ICT 7+ Standards)
-	 * @requires Svelte 5.0+ / SvelteKit 2.0+
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA
 	 */
 	import { onMount } from 'svelte';
@@ -26,9 +22,7 @@
 	import TableSkeleton from './components/TableSkeleton.svelte';
 	import ExportMenu from '../components/ExportMenu.svelte';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let filterStatus = $state<FilterStatus>('all');
 	let trades = $state<Trade[]>([]);
@@ -44,9 +38,7 @@
 	// Toast state
 	let successMessage = $state<string | null>(null);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	const filteredTrades = $derived(
 		filterStatus === 'all'
@@ -82,9 +74,7 @@
 		};
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// ACTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function loadData() {
 		isLoading = true;
@@ -132,9 +122,7 @@
 		return () => clearTimeout(timeout);
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// LIFECYCLE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	onMount(async () => {
 		isAdmin = await checkAdminStatus();

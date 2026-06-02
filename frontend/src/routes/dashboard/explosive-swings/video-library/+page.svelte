@@ -1,11 +1,8 @@
 <script lang="ts">
 	/**
 	 * Video Library - Explosive Swings
-	 * ═══════════════════════════════════════════════════════════════════════════
 	 * Displays all videos for the room - fetched from API with fallback to mock
 	 *
-	 * @version 2.0.0 - ICT 11 Principal Engineer Grade
-	 * @requires Svelte 5.0+ / SvelteKit 2.0+
 	 */
 	import { onMount } from 'svelte';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';

@@ -14,8 +14,6 @@
 	R21-C (2026-05-20): extracted 9 leaf components into _components/.
 	Page LOC fell from 2005 → ~600. Behaviour preserved verbatim.
 
-	@version 2.1.0
-	@author Revolution Trading Pros
 -->
 <script lang="ts">
 	import { SvelteSet } from 'svelte/reactivity';
@@ -35,9 +33,7 @@
 	import ScheduleFormModal from './_components/ScheduleFormModal.svelte';
 	import type { ScheduleEvent, ScheduleForm } from './_components/types';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE - Svelte 5 Runes
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Room selection state
 	let selectedRoomId = $state<string>(ROOMS[0]?.id || '');
@@ -58,7 +54,7 @@
 	let formData = $state<ScheduleForm>(getDefaultFormData());
 
 	// Bulk selection
-	let selectedIds = $state<Set<number>>(new SvelteSet());
+	let selectedIds = new SvelteSet<number>();
 	// Pure projection of selection size (selectedIds is reassigned on every
 	// mutation, so $derived tracks it correctly) — was a state+$effect.
 	let showBulkActions = $derived(selectedIds.size > 0);
@@ -72,9 +68,7 @@
 	let filterActive = $state<'all' | 'active' | 'inactive'>('all');
 	let filterDay = $state<number | null>(null);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// CONSTANTS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -92,9 +86,7 @@
 		{ value: 'hybrid' as const, label: 'Hybrid' }
 	];
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE - Svelte 5 $derived
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	/**
 	 * Currently selected room from ROOMS config
@@ -265,9 +257,7 @@
 		return conflictPairs;
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// EFFECTS - Svelte 5 runes
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// FIX-2026-04-26 (P2): one-shot data load. Was `$effect` keyed on selectedRoomId
 	// which fires write-while-reading cascades on first paint (see commit 34a0bd070).
@@ -301,9 +291,7 @@
 		selectedIds.clear();
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// HELPER FUNCTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function getStartOfWeek(date: Date): Date {
 		const d = new Date(date);
@@ -342,9 +330,7 @@
 		return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// API FUNCTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function loadSchedules() {
 		loading = true;
@@ -575,9 +561,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// UI FUNCTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function selectRoom(roomId: string) {
 		selectedRoomId = roomId;

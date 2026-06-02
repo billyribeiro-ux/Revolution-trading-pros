@@ -1,12 +1,10 @@
 <script lang="ts">
 	/**
 	 * Alert Services Index Page
-	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * Lists all available alert services with comparison.
 	 * Matches Revolution Trading's product listing style.
 	 *
-	 * @version 1.0.0 (December 2025)
 	 */
 
 	import { onMount } from 'svelte';

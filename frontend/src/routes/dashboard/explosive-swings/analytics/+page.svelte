@@ -1,11 +1,8 @@
 <script lang="ts">
 	/**
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 * Explosive Swings - Analytics Dashboard
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * @description Comprehensive trading performance analytics with charts and metrics
-	 * @version 2.0.0 - Phase 4 Analytics Dashboard Update
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA | Svelte 5 January 2026
 	 */
 	import { onMount } from 'svelte';

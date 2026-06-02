@@ -1,8 +1,6 @@
 <script lang="ts">
 	/**
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 * LoadingState Component - Skeleton Loaders
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * Provides skeleton loading states for all data sections:
 	 * - Stats cards
@@ -11,7 +9,6 @@
 	 * - Video cards
 	 * - Tables
 	 *
-	 * @version 1.0.0
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA
 	 */
 

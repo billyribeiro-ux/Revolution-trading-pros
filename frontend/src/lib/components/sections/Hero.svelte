@@ -1,7 +1,6 @@
 <script lang="ts">
 	/**
 	 * HeroSection - Netflix L11+ Enhanced Slider Hero
-	 * ══════════════════════════════════════════════════════════════════════════════
 	 * ORIGINAL SLIDER STRUCTURE with cinematic enhancements:
 	 * - 4 rotating slides with unique GSAP animations per slide
 	 * - Enhanced chart background with volumetric glow
@@ -9,17 +8,14 @@
 	 * - Slide indicator dots with progress animation
 	 * - Ambient depth layers and grid background
 	 * - Premium button interactions
-	 * ══════════════════════════════════════════════════════════════════════════════
 	 */
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { browser } from '$app/environment';
 	import type { CandlestickData, IChartApi, ISeriesApi, UTCTimestamp } from 'lightweight-charts';
 	import type gsap from 'gsap';
 
-	// ============================================================================
 	// MODULE-LEVEL PRE-COMPUTATION
 	// Deterministic seeded PRNG prevents SSR/client hydration mismatch
-	// ============================================================================
 
 	// Mulberry32: fast, deterministic 32-bit PRNG (returns 0–1 like Math.random)
 	function mulberry32(seed: number): () => number {
@@ -115,9 +111,7 @@
 		}
 	]);
 
-	// ============================================================================
 	// STATE
-	// ============================================================================
 	let chart: IChartApi | null = null;
 	let series: ISeriesApi<'Candlestick'> | null = null;
 	let replayInterval: ReturnType<typeof setInterval> | null = null;
@@ -143,9 +137,7 @@
 	let slideProgress = $state(0);
 	let progressInterval: ReturnType<typeof setInterval> | null = null;
 
-	// ============================================================================
 	// CHART INITIALIZATION
-	// ============================================================================
 	async function initChart(): Promise<void> {
 		if (!browser || !chartContainer || !heroSection || chartReady) return;
 
@@ -221,9 +213,7 @@
 		startReplay(initialCount);
 	}
 
-	// ============================================================================
 	// REPLAY ANIMATION
-	// ============================================================================
 	function startReplay(startIndex: number = 10): void {
 		if (!browser || !series || !chart || !heroSection) return;
 
@@ -287,9 +277,7 @@
 			.to(chartContainer, { opacity: 0.4, scale: 1, duration: 0.6, ease: 'power2.out' });
 	}
 
-	// ============================================================================
 	// SLIDE ANIMATIONS - ULTRA CINEMATIC TRANSITIONS (Netflix/Apple Level)
-	// ============================================================================
 
 	// Pulse the ambient glow during transitions
 	function pulseAmbientGlow(): void {
@@ -649,9 +637,7 @@
 		}
 	}
 
-	// ============================================================================
 	// PROGRESS ANIMATION
-	// ============================================================================
 	function startProgressTimer(): void {
 		if (progressInterval) clearInterval(progressInterval);
 		slideProgress = 0;
@@ -664,9 +650,7 @@
 		}, 100);
 	}
 
-	// ============================================================================
 	// RESIZE & VISIBILITY
-	// ============================================================================
 	function handleResize(): void {
 		if (!browser || !chart || !heroSection) return;
 
@@ -689,9 +673,7 @@
 		visibilityObserver.observe(heroSection);
 	}
 
-	// ============================================================================
 	// LIFECYCLE
-	// ============================================================================
 	// PE7 SVELTE 5 PATTERN: Synchronous onMount with async setup inside
 	// This ensures proper cleanup function return and SSR safety
 	onMount(() => {

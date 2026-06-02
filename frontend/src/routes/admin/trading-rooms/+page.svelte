@@ -9,7 +9,6 @@
 	- Weekly Videos
 	- Stats
 	
-	@version 1.0.0
 -->
 <script lang="ts">
 	import { goto } from '$app/navigation';
@@ -25,9 +24,7 @@
 	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
 	import IconSchool from '@tabler/icons-svelte-runes/icons/school';
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE - Svelte 5 Runes
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	/**
 	 * All trading rooms and alert services
@@ -39,9 +36,7 @@
 	 */
 	const managedRooms: Room[] = ROOMS;
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// HANDLERS
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	function navigateToRoom(room: Room): void {
 		goto(`/admin/trading-rooms/${room.slug}`);

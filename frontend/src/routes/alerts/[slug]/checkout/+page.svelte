@@ -1,7 +1,6 @@
 <script lang="ts">
 	/**
 	 * Dynamic Room Checkout Page
-	 * ═══════════════════════════════════════════════════════════════════════════
 	 * Apple ICT 7+ Principal Engineer Grade - January 2026
 	 *
 	 * Fetches subscription plans for a trading room and allows selection of

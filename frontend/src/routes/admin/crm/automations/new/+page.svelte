@@ -35,9 +35,7 @@
 	import { crmAPI } from '$lib/api/crm';
 	import type { TriggerType, FunnelStatus, SegmentCondition } from '$lib/crm/types';
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let currentStep = $state(1);
 	let isSubmitting = $state(false);
@@ -166,9 +164,7 @@
 		{ number: 4, title: 'Review', description: 'Confirm and save' }
 	];
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// API FUNCTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function loadDependencies() {
 		try {
@@ -214,9 +210,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// NAVIGATION
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function nextStep() {
 		if (validateCurrentStep()) {
@@ -235,9 +229,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// VALIDATION
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function validateCurrentStep(): boolean {
 		switch (currentStep) {
@@ -272,9 +264,7 @@
 		return true;
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// HELPERS
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	function selectTrigger(value: TriggerType) {
 		formData.trigger_type = value;
@@ -304,9 +294,7 @@
 		return colorMap[color] || colorMap.gray;
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	let canProceed = $derived(
 		currentStep === 1
@@ -326,9 +314,7 @@
 		)
 	);
 
-	// ═══════════════════════════════════════════════════════════════════════════
 	// LIFECYCLE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Audit P2 #10: was a bare `$effect(() => loadDependencies())`. Migrated
 	// to `onMount` to keep one-shot init off the reactive graph.

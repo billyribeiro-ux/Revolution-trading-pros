@@ -4,7 +4,6 @@
 	Trader-specific chart setups content. Uses shared layout.
 	Matches John Carter reference implementation exactly.
 	
-	@version 2.0.0
 -->
 <script lang="ts">
 	import { page } from '$app/state';

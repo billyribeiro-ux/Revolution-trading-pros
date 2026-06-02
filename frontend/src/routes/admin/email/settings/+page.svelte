@@ -1,7 +1,6 @@
 <script lang="ts">
 	/**
 	 * Email Settings - Apple ICT7 Principal Engineer Grade
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * Svelte 5 runes implementation with:
 	 * - $state for reactive state management
@@ -9,7 +8,6 @@
 	 * - Proper TypeScript types
 	 * - Enhanced error handling
 	 *
-	 * @version 2.0.0 - Svelte 5 Migration (Dec 2025)
 	 */
 
 	import { onMount } from 'svelte';
@@ -17,9 +15,7 @@
 	import { connections, getIsEmailConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// State - Svelte 5 Runes
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	let connectionLoading = $state(true);
 	let settings = $state({
@@ -46,9 +42,7 @@
 	let messageType: 'success' | 'error' = $state('success');
 	let testing = $state(false);
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// Lifecycle
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	onMount(async () => {
 		// Load connection status
@@ -57,9 +51,7 @@
 		await loadSettings();
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// Data Loading
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	interface EmailSettingsResponse {
 		provider?: string;
@@ -94,9 +86,7 @@
 		}
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════════
 	// Actions
-	// ═══════════════════════════════════════════════════════════════════════════════
 
 	async function saveSettings() {
 		loading = true;
