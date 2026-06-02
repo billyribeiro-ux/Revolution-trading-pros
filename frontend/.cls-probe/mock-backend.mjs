@@ -67,6 +67,13 @@ let seo404 = [
 	{ id: 2, url: '/discontinued', hits: 12, last_hit_at: '2026-05-29T10:00:00Z', referer: null, is_resolved: false, is_ignored: false },
 	{ id: 3, url: '/typo-url', hits: 5, last_hit_at: '2026-05-28T10:00:00Z', referer: 'twitter.com', is_resolved: false, is_ignored: false }
 ];
+// Stateful subscription-plans store for admin/subscriptions/plans.
+let plansStore = [
+	{ id: 1, name: 'Monthly Pro', slug: 'monthly-pro', price: 149, billing_cycle: 'monthly', is_active: true, stripe_price_id: 'price_abc', stripe_product_id: 'prod_abc', features: [], created_at: '2026-01-01T00:00:00Z', updated_at: '2026-05-01T00:00:00Z' },
+	{ id: 2, name: 'Annual Pro', slug: 'annual-pro', price: 1490, billing_cycle: 'annual', is_active: true, stripe_price_id: 'price_def', stripe_product_id: 'prod_def', features: [], created_at: '2026-01-01T00:00:00Z', updated_at: '2026-05-01T00:00:00Z' },
+	{ id: 3, name: 'Legacy', slug: 'legacy', price: 99, billing_cycle: 'monthly', is_active: false, stripe_price_id: null, stripe_product_id: null, features: [], created_at: '2026-01-01T00:00:00Z', updated_at: '2026-05-01T00:00:00Z' }
+];
+
 // Stateful schedules store (keyed by room_id), for the admin/schedules CRUD.
 let schedulesStore = [
 	{ id: 1, room_id: 'day-trading-room', title: 'Morning Session', description: null, trader_name: 'Billy Ribeiro', day_of_week: 1, start_time: '09:30', end_time: '11:00', timezone: 'America/New_York', is_active: true, room_type: 'live', recurrence: 'weekly', exceptions: [], created_at: '2026-05-01T00:00:00Z', updated_at: '2026-05-01T00:00:00Z' },
@@ -106,6 +113,34 @@ createServer(async (req, res) => {
 	const url = req.url || '';
 	const delay = (ms) => new Promise((r) => setTimeout(r, ms));
 
+	// Admin subscription plans (stateful) — list, price-history, price-change
+	// (returns migration counts), PUT (price_cents → price / is_active).
+	if (url.includes('/admin/subscriptions/plans')) {
+		await delay(NETWORK_DELAY_MS);
+		if (url.includes('/price-history')) return send(res, 200, { data: [] });
+		const priceMatch = url.match(/\/plans\/(\d+)\/price(?:\?|$)/);
+		if (priceMatch && req.method === 'POST') {
+			const id = Number(priceMatch[1]);
+			const body = (await readBody(req)) || {};
+			plansStore = plansStore.map((p) =>
+				p.id === id ? { ...p, price: (Number(body.amount_cents) || 0) / 100 } : p
+			);
+			return send(res, 200, { subscriptions_migrated: 5, subscriptions_failed: 0 });
+		}
+		const idMatch = url.match(/\/plans\/(\d+)(?:\?|$)/);
+		if (idMatch && req.method === 'PUT') {
+			const id = Number(idMatch[1]);
+			const patch = (await readBody(req)) || {};
+			plansStore = plansStore.map((p) => {
+				if (p.id !== id) return p;
+				const next = { ...p, ...patch };
+				if (typeof patch.price_cents === 'number') next.price = patch.price_cents / 100;
+				return next;
+			});
+			return send(res, 200, { success: true });
+		}
+		return send(res, 200, { data: plansStore });
+	}
 	// Admin schedules (stateful, keyed by room_id) — full CRUD + bulk.
 	if (url.includes('/admin/schedules')) {
 		await delay(NETWORK_DELAY_MS);
