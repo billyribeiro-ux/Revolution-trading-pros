@@ -11,9 +11,8 @@ const isDev = process.env.NODE_ENV === 'development' || process.argv.includes('d
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	preprocess: vitePreprocess(),
-	// FIX-2026-05-20 vite-8-upgrade: inspector is now first-party inside
-	// @sveltejs/vite-plugin-svelte v7 and configured here instead of via the
-	// removed @sveltejs/vite-plugin-svelte-inspector standalone import.
+	// @sveltejs/vite-plugin-svelte v7 (Vite 8): inspector is first-party,
+	// configured here. Disabled — use browser devtools instead.
 	vitePlugin: {
 		inspector: false
 	},

@@ -3,18 +3,13 @@ import { defineConfig } from 'vitest/config';
 import devtoolsJson from 'vite-plugin-devtools-json';
 import tailwindcss from '@tailwindcss/vite';
 
-// FIX-2026-04-26: converted to callback form so `mode` is available; dev-only
-// plugins are now gated on mode === 'development' (Phase 1.3).
-// FIX-2026-05-20 vite-8-upgrade: @sveltejs/vite-plugin-svelte 7 integrated the
-// inspector. Configure via svelte.config.js -> vitePlugin.inspector instead of
-// importing @sveltejs/vite-plugin-svelte-inspector here (that package is now
-// deprecated and was removed from devDependencies).
+// Callback form so `mode` is available; dev-only plugins gated on
+// mode === 'development'. Using @sveltejs/vite-plugin-svelte v7 (Vite 8).
+// Inspector configured via svelte.config.js -> vitePlugin.inspector.
 export default defineConfig(({ mode }) => ({
 	plugins: [
 		tailwindcss(),
 		sveltekit(),
-		// FIX-2026-04-26: was unconditional — moved inside dev guard below
-		// devtoolsJson(),
 		...(mode === 'development' ? [devtoolsJson()] : [])
 	],
 	resolve: {
@@ -57,21 +52,11 @@ export default defineConfig(({ mode }) => ({
 	build: {
 		target: 'es2022',
 		chunkSizeWarningLimit: 500,
-		// FIX-2026-05-20 vite-8-upgrade: Vite 8 changed the default CSS minifier
-		// from esbuild to lightningcss. Lightning CSS is stricter and rejects
-		// `@media (max-width: calc(var(--breakpoint-lg) - 1px))` (legitimate CSS
-		// emitted by component <style> blocks) along with some Tailwind-generated
-		// pseudo-class outputs. Keep esbuild for parity with the v7 baseline
-		// until the component CSS is audited; revisit once Lightning CSS support
-		// for calc-in-media-query lands or sources are migrated.
+		// Vite 8 default CSS minifier is Lightning CSS (via Rolldown). Keep
+		// esbuild until component <style> blocks are audited for Lightning CSS
+		// compatibility — calc() inside media queries (e.g. Tailwind breakpoint
+		// helpers) currently fails Lightning CSS strict parsing.
+		// Revisit when Lightning CSS calc-in-media-query support lands.
 		cssMinify: 'esbuild'
-	},
-	// FIX-2026-05-20 vite-8-upgrade: Vite 8 resolves build options per
-	// environment. The server environment (SSR) defaults cssMinify to
-	// 'lightningcss' independently of the top-level build.cssMinify in some
-	// merge paths, so set it explicitly on each environment as well.
-	environments: {
-		client: { build: { cssMinify: 'esbuild' } },
-		ssr: { build: { cssMinify: 'esbuild' } }
 	}
 }));
