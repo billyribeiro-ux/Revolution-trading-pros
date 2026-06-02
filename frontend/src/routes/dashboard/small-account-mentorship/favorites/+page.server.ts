@@ -1,5 +1,5 @@
 /**
- * Explosive Swings Favorites — server load.
+ * Small Account Mentorship Favorites — server load.
  * ─────────────────────────────────────────────────────────────────────────────
  * Server-prefetches the favorites via the `getFavorites` remote query so the
  * list is server-rendered on first paint (no client fetch, no loading
@@ -11,5 +11,5 @@ import type { PageServerLoad } from './$types';
 import { getFavorites } from '../../favorites.remote';
 
 export const load: PageServerLoad = async () => {
-	return { favorites: await getFavorites('explosive-swings') };
+	return { favorites: await getFavorites('small-account-mentorship') };
 };

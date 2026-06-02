@@ -23,7 +23,7 @@
 -->
 <script lang="ts">
 	import { page } from '$app/state';
-	import {  } from 'svelte/reactivity';
+	import { SvelteSet } from 'svelte/reactivity';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
 	import Tooltip from '$lib/components/ui/Tooltip.svelte';
 	import type { MembershipType } from '$lib/api/user-memberships';
@@ -81,8 +81,11 @@
 	let secondaryNavItems = $derived(props.secondaryNavItems ?? []);
 	let secondarySidebarTitle = $derived(props.secondarySidebarTitle ?? '');
 
-	// State for expanded submenus in secondary nav
-	let expandedSubmenus = new Set<string>();
+	// State for expanded submenus in secondary nav. Must be a SvelteSet (not a
+	// plain Set): it's read reactively in the template (`class:is-expanded`,
+	// `aria-expanded`, and the `{#if expandedSubmenus.has(...)}` that mounts the
+	// submenu), and toggled on hover — plain-Set mutations don't trigger updates.
+	let expandedSubmenus = new SvelteSet<string>();
 
 	// Check if secondary nav should be shown
 	// WordPress: Secondary nav shows based on route/content, not collapse state
@@ -455,7 +458,12 @@
 	{#if showSecondaryNav}
 		<nav class="dashboard__nav-secondary" aria-label="{secondarySidebarTitle} navigation">
 			<ul>
-				{#each secondaryNavItems as item (item.href)}
+				<!-- Key by `text`, not `href`: hover-submenu parents use `href: '#'`
+				     as a non-navigable placeholder, so a room with ≥2 of them (e.g.
+				     "Meet the Traders" + "Trader Store") produced duplicate `'#'`
+				     keys → an `each_key_duplicate` crash that blanked the whole route.
+				     Labels are unique within a room's nav, so they're a stable key. -->
+				{#each secondaryNavItems as item (item.text)}
 					<li
 						class:has-submenu={item.submenu && item.submenu.length > 0}
 						onmouseenter={() =>
