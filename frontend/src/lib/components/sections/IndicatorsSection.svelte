@@ -88,7 +88,7 @@
 	let sectionRef = $state<HTMLElement | null>(null);
 	let chartRef = $state<HTMLElement | null>(null);
 	// ICT11+ Fix: Start false, set true in onMount to trigger in: transitions
-	let isVisible = $state(false);
+	let isVisible = $state(true); // CLS FIX: SSR-render content (reserve space, no pop-in); in:reveal still plays on client nav
 	let activeIndicator = $state(0);
 	// `ScrollTriggerType` is the *class* (used statically — `.getAll()`,
 	// `.refresh()`); instances returned by `.getAll()` are `ScrollTriggerType`

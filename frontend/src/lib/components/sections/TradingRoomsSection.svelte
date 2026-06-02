@@ -55,7 +55,7 @@
 	];
 
 	// ICT11+ Fix: IntersectionObserver triggers animations when section scrolls into view
-	let isVisible = $state(false);
+	let isVisible = $state(true); // CLS FIX: SSR-render content (reserve space, no pop-in); in:reveal still plays on client nav
 	let containerRef = $state<HTMLElement | null>(null);
 
 	// Header: slides in from the left like a data feed initialising

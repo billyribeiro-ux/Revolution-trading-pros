@@ -54,7 +54,7 @@
 	let containerRef = $state<HTMLElement | null>(null);
 	let mouse = $state({ x: 0, y: 0 });
 	// ICT11+ Fix: Start false, set true in onMount to trigger in: transitions
-	let isVisible = $state(false);
+	let isVisible = $state(true); // CLS FIX: SSR-render content (reserve space, no pop-in); in:reveal still plays on client nav
 
 	const handleMouseMove = (e: MouseEvent) => {
 		if (!containerRef) return;

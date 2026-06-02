@@ -23,7 +23,10 @@
 	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
 	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
 
-	let isVisible = $state(false);
+	// CLS FIX (measured 0.40 on /about): SSR-render the gated sections (present at
+	// first paint, no pop-in). The in:heavySlide reveal (opacity/transform) still
+	// plays on client navigation.
+	let isVisible = $state(true);
 	let openFaqIndex = $state(-1);
 	let openAnswerHeight = $state(0);
 	const spacerHeight = $derived(Math.max(0, 140 - openAnswerHeight));
@@ -43,7 +46,6 @@
 	onMount(() => {
 		if (!browser) return;
 		initGSAP();
-		isVisible = true;
 		return () => {
 			gsapContext?.revert();
 		};
