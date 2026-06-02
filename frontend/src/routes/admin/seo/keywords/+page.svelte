@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
 	import {
 		IconPlus,
 		IconSearch,
@@ -12,62 +10,18 @@
 	} from '$lib/icons';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import { logger } from '$lib/utils/logger';
+	import { getKeywords, getKeywordStats, removeKeyword } from './keywords.remote';
 
-	interface Keyword {
-		id: number;
-		keyword: string;
-		current_rank?: number;
-		rank_change?: number | null;
-		search_volume?: number;
-		competition?: number | null;
-		target_url?: string;
-	}
-
-	interface KeywordStats {
-		total?: number;
-		top_3?: number;
-		top_10?: number;
-		avg_position?: number;
-		top_keywords?: Keyword[];
-		opportunity_keywords?: Keyword[];
-	}
-
-	let keywords: Keyword[] = $state([]);
-	let stats: KeywordStats | null = $state(null);
-	let loading = $state(false);
 	let searchQuery = $state('');
 	let showDeleteModal = $state(false);
 	let pendingDeleteId = $state<number | null>(null);
 
-	// Svelte 5: Initialize on mount
-	onMount(() => {
-		if (browser) {
-			loadKeywords();
-			loadStats();
-		}
-	});
-
-	async function loadKeywords() {
-		loading = true;
-		try {
-			const response = await fetch('/api/seo/keywords');
-			const data = await response.json();
-			keywords = data.data || [];
-		} catch (error) {
-			logger.error('Failed to load keywords:', error);
-		} finally {
-			loading = false;
-		}
-	}
-
-	async function loadStats() {
-		try {
-			const response = await fetch('/api/seo/keywords/stats');
-			stats = await response.json();
-		} catch (error) {
-			logger.error('Failed to load stats:', error);
-		}
-	}
+	// Reactive no-arg queries; `removeKeyword` single-flight-refreshes both.
+	const keywordsQuery = getKeywords();
+	const statsQuery = getKeywordStats();
+	const keywords = $derived(keywordsQuery.current ?? []);
+	const stats = $derived(statsQuery.current ?? null);
+	const loading = $derived(keywordsQuery.loading);
 
 	function deleteKeyword(id: number) {
 		pendingDeleteId = id;
@@ -80,9 +34,7 @@
 		const id = pendingDeleteId;
 		pendingDeleteId = null;
 		try {
-			await fetch(`/api/seo/keywords/${id}`, { method: 'DELETE' });
-			loadKeywords();
-			loadStats();
+			await removeKeyword(id); // single-flight refreshes list + stats
 		} catch (error) {
 			logger.error('Failed to delete keyword:', error);
 		}
@@ -162,7 +114,13 @@
 			/>
 		</div>
 
-		<button class="btn-secondary" onclick={loadKeywords}>
+		<button
+			class="btn-secondary"
+			onclick={() => {
+				keywordsQuery.refresh();
+				statsQuery.refresh();
+			}}
+		>
 			<IconRefresh size={18} />
 			Refresh
 		</button>

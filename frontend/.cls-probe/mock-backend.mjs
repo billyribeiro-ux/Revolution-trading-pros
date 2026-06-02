@@ -67,6 +67,20 @@ let seo404 = [
 	{ id: 2, url: '/discontinued', hits: 12, last_hit_at: '2026-05-29T10:00:00Z', referer: null, is_resolved: false, is_ignored: false },
 	{ id: 3, url: '/typo-url', hits: 5, last_hit_at: '2026-05-28T10:00:00Z', referer: 'twitter.com', is_resolved: false, is_ignored: false }
 ];
+let seoKeywords = [
+	{ id: 1, keyword: 'options trading', current_rank: 2, rank_change: 1, search_volume: 40000, competition: 0.8, target_url: '/' },
+	{ id: 2, keyword: 'swing trades', current_rank: 7, rank_change: -1, search_volume: 12000, competition: 0.5, target_url: '/swings' },
+	{ id: 3, keyword: 'day trading room', current_rank: 14, rank_change: 0, search_volume: 8000, competition: 0.4, target_url: '/rooms' }
+];
+const seoKeywordStats = () => ({
+	total: seoKeywords.length,
+	top_3: seoKeywords.filter((k) => (k.current_rank ?? 99) <= 3).length,
+	top_10: seoKeywords.filter((k) => (k.current_rank ?? 99) <= 10).length,
+	avg_position: seoKeywords.length
+		? seoKeywords.reduce((s, k) => s + (k.current_rank ?? 0), 0) / seoKeywords.length
+		: 0
+});
+
 let seoRedirects = [
 	{ id: 1, source_url: '/old-a', destination_url: '/new-a', redirect_type: '301', is_regex: false, is_active: true, hits: 120, notes: '' },
 	{ id: 2, source_url: '/old-b', destination_url: '/new-b', redirect_type: '302', is_regex: false, is_active: true, hits: 40, notes: '' },
@@ -84,6 +98,18 @@ createServer(async (req, res) => {
 	const url = req.url || '';
 	const delay = (ms) => new Promise((r) => setTimeout(r, ms));
 
+	// Keywords (stateful) — delete removes; stats computed live.
+	if (url.includes('/seo/keywords')) {
+		await delay(NETWORK_DELAY_MS);
+		if (url.includes('/stats')) return send(res, 200, seoKeywordStats());
+		const idMatch = url.match(/\/keywords\/(\d+)(?:\?|$)/);
+		if (idMatch && req.method === 'DELETE') {
+			const id = Number(idMatch[1]);
+			seoKeywords = seoKeywords.filter((k) => k.id !== id);
+			return send(res, 200, { success: true });
+		}
+		return send(res, 200, { data: seoKeywords });
+	}
 	// Redirects (stateful) — toggle flips is_active, delete/bulk-delete remove.
 	if (url.includes('/seo/redirects')) {
 		await delay(NETWORK_DELAY_MS);
