@@ -18,7 +18,6 @@
 <script lang="ts">
 	import { SvelteSet } from 'svelte/reactivity';
 	import { onMount } from 'svelte';
-	import { goto } from '$app/navigation';
 	import { ROOMS } from '$lib/config/rooms';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
@@ -32,6 +31,14 @@
 	import WeekendSection from './_components/WeekendSection.svelte';
 	import ScheduleFormModal from './_components/ScheduleFormModal.svelte';
 	import type { ScheduleEvent, ScheduleForm } from './_components/types';
+	import {
+		getSchedules,
+		postSchedule,
+		putSchedule,
+		deleteScheduleById,
+		bulkDeleteSchedules,
+		bulkUpdateSchedules
+	} from './schedules.remote';
 
 	// STATE - Svelte 5 Runes
 
@@ -337,20 +344,14 @@
 		error = null;
 
 		try {
-			const response = await fetch(`/api/admin/schedules?room_id=${selectedRoomId}`, {
-				credentials: 'include'
-			});
-
-			if (!response.ok) {
-				if (response.status === 401) {
-					goto('/login');
-					return;
-				}
-				throw new Error('Failed to load schedules');
-			}
-
-			const data = await response.json();
-			schedules = data.data || data.schedules || [];
+			// Auth (incl. 401 → /login) is enforced server-side by
+			// admin/+layout.server.ts + hooks.server.ts before this page renders.
+			// `.refresh()` (not a bare `await`) because remote queries are cached by
+			// argument: after a mutation, re-reading `getSchedules(sameRoomId)` would
+			// otherwise return the stale cached list. refresh() forces a fresh fetch.
+			const q = getSchedules(selectedRoomId);
+			await q.refresh();
+			schedules = q.current ?? [];
 		} catch (e) {
 			console.error('Failed to load schedules:', e);
 			error = e instanceof Error ? e.message : 'Failed to load schedules';
@@ -388,20 +389,7 @@
 		error = null;
 
 		try {
-			const response = await fetch('/api/admin/schedules', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include',
-				body: JSON.stringify({
-					...formData,
-					room_id: selectedRoomId
-				})
-			});
-
-			if (!response.ok) {
-				const data = await response.json();
-				throw new Error(data.error || data.message || 'Failed to create schedule');
-			}
+			await postSchedule({ ...formData, room_id: selectedRoomId });
 
 			success = 'Schedule created successfully';
 			closeModal();
@@ -424,17 +412,7 @@
 		error = null;
 
 		try {
-			const response = await fetch(`/api/admin/schedules/${editingSchedule.id}`, {
-				method: 'PUT',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include',
-				body: JSON.stringify(formData)
-			});
-
-			if (!response.ok) {
-				const data = await response.json();
-				throw new Error(data.error || data.message || 'Failed to update schedule');
-			}
+			await putSchedule({ id: editingSchedule.id, data: { ...formData } });
 
 			success = 'Schedule updated successfully';
 			closeModal();
@@ -457,12 +435,7 @@
 		const id = pendingDeleteId;
 		pendingDeleteId = null;
 		try {
-			const response = await fetch(`/api/admin/schedules/${id}`, {
-				method: 'DELETE',
-				credentials: 'include'
-			});
-
-			if (!response.ok) throw new Error('Failed to delete schedule');
+			await deleteScheduleById(id);
 
 			success = 'Schedule deleted successfully';
 			selectedIds.delete(id);
@@ -475,14 +448,7 @@
 
 	async function toggleScheduleActive(schedule: ScheduleEvent) {
 		try {
-			const response = await fetch(`/api/admin/schedules/${schedule.id}`, {
-				method: 'PUT',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include',
-				body: JSON.stringify({ is_active: !schedule.is_active })
-			});
-
-			if (!response.ok) throw new Error('Failed to update schedule');
+			await putSchedule({ id: schedule.id, data: { is_active: !schedule.is_active } });
 
 			success = `Schedule ${schedule.is_active ? 'deactivated' : 'activated'}`;
 			await loadSchedules();
@@ -493,20 +459,13 @@
 
 	async function duplicateSchedule(schedule: ScheduleEvent) {
 		try {
-			const response = await fetch('/api/admin/schedules', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include',
-				body: JSON.stringify({
-					...schedule,
-					id: undefined,
-					title: `${schedule.title} (Copy)`,
-					created_at: undefined,
-					updated_at: undefined
-				})
+			await postSchedule({
+				...schedule,
+				id: undefined,
+				title: `${schedule.title} (Copy)`,
+				created_at: undefined,
+				updated_at: undefined
 			});
-
-			if (!response.ok) throw new Error('Failed to duplicate schedule');
 
 			success = 'Schedule duplicated successfully';
 			await loadSchedules();
@@ -522,14 +481,7 @@
 	async function confirmBulkDelete() {
 		showBulkDeleteModal = false;
 		try {
-			const response = await fetch('/api/admin/schedules/bulk-delete', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include',
-				body: JSON.stringify({ ids: Array.from(selectedIds) })
-			});
-
-			if (!response.ok) throw new Error('Failed to delete schedules');
+			await bulkDeleteSchedules(Array.from(selectedIds));
 
 			success = `${selectedIds.size} schedules deleted`;
 			selectedIds.clear();
@@ -541,17 +493,7 @@
 
 	async function bulkToggleActive(active: boolean) {
 		try {
-			const response = await fetch('/api/admin/schedules/bulk-update', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include',
-				body: JSON.stringify({
-					ids: Array.from(selectedIds),
-					data: { is_active: active }
-				})
-			});
-
-			if (!response.ok) throw new Error('Failed to update schedules');
+			await bulkUpdateSchedules({ ids: Array.from(selectedIds), data: { is_active: active } });
 
 			success = `${selectedIds.size} schedules ${active ? 'activated' : 'deactivated'}`;
 			selectedIds.clear();

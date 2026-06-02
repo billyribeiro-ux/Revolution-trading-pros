@@ -67,6 +67,14 @@ let seo404 = [
 	{ id: 2, url: '/discontinued', hits: 12, last_hit_at: '2026-05-29T10:00:00Z', referer: null, is_resolved: false, is_ignored: false },
 	{ id: 3, url: '/typo-url', hits: 5, last_hit_at: '2026-05-28T10:00:00Z', referer: 'twitter.com', is_resolved: false, is_ignored: false }
 ];
+// Stateful schedules store (keyed by room_id), for the admin/schedules CRUD.
+let schedulesStore = [
+	{ id: 1, room_id: 'day-trading-room', title: 'Morning Session', description: null, trader_name: 'Billy Ribeiro', day_of_week: 1, start_time: '09:30', end_time: '11:00', timezone: 'America/New_York', is_active: true, room_type: 'live', recurrence: 'weekly', exceptions: [], created_at: '2026-05-01T00:00:00Z', updated_at: '2026-05-01T00:00:00Z' },
+	{ id: 2, room_id: 'day-trading-room', title: 'Midday Review', description: null, trader_name: 'Freddie Ferber', day_of_week: 3, start_time: '12:00', end_time: '13:00', timezone: 'America/New_York', is_active: true, room_type: 'live', recurrence: 'weekly', exceptions: [], created_at: '2026-05-01T00:00:00Z', updated_at: '2026-05-01T00:00:00Z' },
+	{ id: 3, room_id: 'day-trading-room', title: 'Power Hour', description: null, trader_name: 'Shao Wan', day_of_week: 5, start_time: '15:00', end_time: '16:00', timezone: 'America/New_York', is_active: false, room_type: 'hybrid', recurrence: 'weekly', exceptions: [], created_at: '2026-05-01T00:00:00Z', updated_at: '2026-05-01T00:00:00Z' }
+];
+let nextScheduleId = 4;
+
 let seoKeywords = [
 	{ id: 1, keyword: 'options trading', current_rank: 2, rank_change: 1, search_volume: 40000, competition: 0.8, target_url: '/' },
 	{ id: 2, keyword: 'swing trades', current_rank: 7, rank_change: -1, search_volume: 12000, competition: 0.5, target_url: '/swings' },
@@ -98,6 +106,45 @@ createServer(async (req, res) => {
 	const url = req.url || '';
 	const delay = (ms) => new Promise((r) => setTimeout(r, ms));
 
+	// Admin schedules (stateful, keyed by room_id) — full CRUD + bulk.
+	if (url.includes('/admin/schedules')) {
+		await delay(NETWORK_DELAY_MS);
+		if (url.includes('/bulk-delete')) {
+			const body = await readBody(req);
+			const ids = Array.isArray(body?.ids) ? body.ids : [];
+			schedulesStore = schedulesStore.filter((s) => !ids.includes(s.id));
+			return send(res, 200, { success: true });
+		}
+		if (url.includes('/bulk-update')) {
+			const body = await readBody(req);
+			const ids = Array.isArray(body?.ids) ? body.ids : [];
+			const patch = body?.data && typeof body.data === 'object' ? body.data : {};
+			schedulesStore = schedulesStore.map((s) => (ids.includes(s.id) ? { ...s, ...patch } : s));
+			return send(res, 200, { success: true });
+		}
+		const idMatch = url.match(/\/admin\/schedules\/(\d+)(?:\?|$)/);
+		if (idMatch && req.method === 'DELETE') {
+			const id = Number(idMatch[1]);
+			schedulesStore = schedulesStore.filter((s) => s.id !== id);
+			return send(res, 200, { success: true });
+		}
+		if (idMatch && req.method === 'PUT') {
+			const id = Number(idMatch[1]);
+			const patch = (await readBody(req)) || {};
+			schedulesStore = schedulesStore.map((s) => (s.id === id ? { ...s, ...patch } : s));
+			return send(res, 200, { success: true });
+		}
+		if (req.method === 'POST') {
+			const body = (await readBody(req)) || {};
+			const created = { ...body, id: nextScheduleId++, exceptions: [], created_at: new Date().toISOString(), updated_at: new Date().toISOString() };
+			schedulesStore.push(created);
+			return send(res, 200, { data: created });
+		}
+		// GET list, optionally filtered by room_id.
+		const roomId = new URL(url, 'http://x').searchParams.get('room_id');
+		const rows = roomId ? schedulesStore.filter((s) => s.room_id === roomId) : schedulesStore;
+		return send(res, 200, { data: rows });
+	}
 	// Keywords (stateful) — delete removes; stats computed live.
 	if (url.includes('/seo/keywords')) {
 		await delay(NETWORK_DELAY_MS);
