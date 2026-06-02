@@ -4,6 +4,7 @@
 	import { goto } from '$app/navigation';
 	import { membersStore, emailStore } from '$lib/stores/members.svelte';
 	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
+	import { SvelteSet } from 'svelte/reactivity';
 	import type { Member, MemberFilters, MemberFullDetails } from '$lib/api/members';
 	// FIX-2026-04-26: alert() calls replaced with existing toastStore import below.
 	import {
@@ -50,7 +51,7 @@
 	let serviceFilter = $state<number | ''>('');
 	let spendingFilter = $state('');
 	let showFilters = $state(false);
-	let selectedMembers = $state<Set<number>>(new Set());
+	let selectedMembers = new SvelteSet<number>();
 	let showEmailModal = $state(false);
 	let emailSubject = $state('');
 	let emailBody = $state('');
@@ -148,7 +149,6 @@
 		} else {
 			selectedMembers.add(id);
 		}
-		selectedMembers = selectedMembers;
 	}
 
 	function selectAllMembers() {
@@ -157,7 +157,6 @@
 		} else {
 			members.forEach((m) => selectedMembers.add(m.id));
 		}
-		selectedMembers = selectedMembers;
 	}
 
 	async function handleBulkEmail() {
@@ -175,7 +174,6 @@
 			toastStore.success(result.message);
 			showEmailModal = false;
 			selectedMembers.clear();
-			selectedMembers = selectedMembers;
 		} catch {
 			// FIX-2026-04-26: replaced native alert() with toastStore.error.
 			// Old: alert('Failed to send emails');
@@ -377,7 +375,6 @@
 			case 'email':
 				selectedMembers.clear();
 				selectedMembers.add(member.id);
-				selectedMembers = selectedMembers;
 				showEmailModal = true;
 				break;
 			case 'delete':
@@ -733,7 +730,6 @@
 		onEmail={(member) => {
 			selectedMembers.clear();
 			selectedMembers.add(member.id);
-			selectedMembers = selectedMembers;
 			showDetailDrawer = false;
 			showEmailModal = true;
 		}}

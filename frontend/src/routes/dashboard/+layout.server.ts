@@ -73,6 +73,22 @@ export const load: LayoutServerLoad = async ({ locals, fetch }) => {
 				const body = await res.json();
 				const raw = body?.data?.memberships ?? body?.memberships ?? body?.data ?? [];
 				if (Array.isArray(raw)) {
+					// Sort into the SAME category order the client derives
+					// (tradingRooms → alertServices → courses → indicators → scanners
+					// → weeklyWatchlist → premiumReports). Without this, a backend that
+					// returns memberships in a different/interleaved order would make the
+					// sidebar nav links re-order once the client fetch resolves —
+					// measured as a ~0.01 CLS regression. A stable sort preserves the
+					// backend's within-category order, matching categorizeMemberships().
+					const TYPE_ORDER: Record<string, number> = {
+						'trading-room': 0,
+						'alert-service': 1,
+						course: 2,
+						indicator: 3,
+						scanner: 4,
+						'weekly-watchlist': 5,
+						'premium-report': 6
+					};
 					memberships = raw
 						.filter((m) => m && (m.status === 'active' || m.status === 'expiring'))
 						.map((m) => ({
@@ -82,7 +98,13 @@ export const load: LayoutServerLoad = async ({ locals, fetch }) => {
 							slug: m.slug ?? '',
 							status: m.status ?? 'active',
 							icon: m.icon ?? undefined
-						}));
+						}))
+						.map((m, i) => ({ m, i })) // index for stable tiebreak
+						.sort((a, b) => {
+							const d = (TYPE_ORDER[a.m.type] ?? 99) - (TYPE_ORDER[b.m.type] ?? 99);
+							return d !== 0 ? d : a.i - b.i;
+						})
+						.map(({ m }) => m);
 				}
 			}
 		} catch {
