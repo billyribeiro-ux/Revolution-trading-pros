@@ -221,12 +221,13 @@
 
 		<div class="filter-tabs">
 			{#each filterTypes as type (type)}
+				{@const label = type === 'all' ? 'All' : type}
 				<button
 					class="filter-tab"
 					class:active={activeFilter === type}
 					onclick={() => (activeFilter = type)}
 				>
-					{type === 'all' ? 'All' : type}
+					{label}
 				</button>
 			{/each}
 		</div>
