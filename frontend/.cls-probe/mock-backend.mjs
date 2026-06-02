@@ -67,6 +67,12 @@ let seo404 = [
 	{ id: 2, url: '/discontinued', hits: 12, last_hit_at: '2026-05-29T10:00:00Z', referer: null, is_resolved: false, is_ignored: false },
 	{ id: 3, url: '/typo-url', hits: 5, last_hit_at: '2026-05-28T10:00:00Z', referer: 'twitter.com', is_resolved: false, is_ignored: false }
 ];
+let seoRedirects = [
+	{ id: 1, source_url: '/old-a', destination_url: '/new-a', redirect_type: '301', is_regex: false, is_active: true, hits: 120, notes: '' },
+	{ id: 2, source_url: '/old-b', destination_url: '/new-b', redirect_type: '302', is_regex: false, is_active: true, hits: 40, notes: '' },
+	{ id: 3, source_url: '/old-c', destination_url: '/new-c', redirect_type: '301', is_regex: false, is_active: false, hits: 8, notes: '' },
+	{ id: 4, source_url: '/gone', destination_url: '/', redirect_type: '410', is_regex: false, is_active: true, hits: 2, notes: '' }
+];
 const seo404Stats = () => ({
 	total: seo404.length,
 	unresolved: seo404.filter((l) => !l.is_resolved && !l.is_ignored).length,
@@ -78,6 +84,35 @@ createServer(async (req, res) => {
 	const url = req.url || '';
 	const delay = (ms) => new Promise((r) => setTimeout(r, ms));
 
+	// Redirects (stateful) — toggle flips is_active, delete/bulk-delete remove.
+	if (url.includes('/seo/redirects')) {
+		await delay(NETWORK_DELAY_MS);
+		if (url.includes('/stats')) return send(res, 200, {
+			total: seoRedirects.length,
+			active: seoRedirects.filter((r) => r.is_active).length,
+			inactive: seoRedirects.filter((r) => !r.is_active).length,
+			total_hits: seoRedirects.reduce((s, r) => s + (r.hits || 0), 0)
+		});
+		if (url.includes('/bulk-delete')) {
+			const body = await readBody(req);
+			const ids = Array.isArray(body?.ids) ? body.ids : [];
+			seoRedirects = seoRedirects.filter((r) => !ids.includes(r.id));
+			return send(res, 200, { success: true });
+		}
+		const toggleMatch = url.match(/\/redirects\/(\d+)\/toggle/);
+		if (toggleMatch) {
+			const id = Number(toggleMatch[1]);
+			seoRedirects = seoRedirects.map((r) => (r.id === id ? { ...r, is_active: !r.is_active } : r));
+			return send(res, 200, { success: true });
+		}
+		const idMatch = url.match(/\/redirects\/(\d+)(?:\?|$)/);
+		if (idMatch && req.method === 'DELETE') {
+			const id = Number(idMatch[1]);
+			seoRedirects = seoRedirects.filter((r) => r.id !== id);
+			return send(res, 200, { success: true });
+		}
+		return send(res, 200, { data: seoRedirects });
+	}
 	// 404 monitor (stateful) — order matters: stats + sub-paths before the list.
 	if (url.includes('/seo/404-logs')) {
 		await delay(NETWORK_DELAY_MS);
