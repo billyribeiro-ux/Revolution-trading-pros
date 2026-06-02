@@ -15,11 +15,7 @@ const config = {
 	// @sveltejs/vite-plugin-svelte v7 and configured here instead of via the
 	// removed @sveltejs/vite-plugin-svelte-inspector standalone import.
 	vitePlugin: {
-		inspector: {
-			toggleKeyCombo: 'meta-shift',
-			showToggleButton: 'always',
-			toggleButtonPos: 'bottom-right'
-		}
+		inspector: false
 	},
 	dynamicCompileOptions({ filename }) {
 		if (filename.includes('node_modules')) {
