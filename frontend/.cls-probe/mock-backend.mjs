@@ -57,6 +57,38 @@ createServer(async (req, res) => {
 	if (url.includes('memberships')) { await delay(NETWORK_DELAY_MS); return send(res, 200, { success: true, data: { memberships } }); }
 	if (url.includes('watchlist')) { await delay(NETWORK_DELAY_MS); return send(res, 200, { success: true, data: watchlist }); }
 	if (url.includes('weekly-video')) { await delay(NETWORK_DELAY_MS); return send(res, 200, { success: true, data: watchlist }); }
+	// Admin member analytics — raw arrays/objects (NOT {success,data}-wrapped),
+	// matching the backend shape the page reads directly.
+	if (url.includes('/members/analytics/')) {
+		await delay(NETWORK_DELAY_MS);
+		if (url.includes('/metrics')) return send(res, 200, {
+			totalMembers: 1240, memberGrowth: 8, mrr: 48200, mrrGrowth: 12,
+			churnRate: 3, churnChange: -1, avgLtv: 1840, ltvGrowth: 6
+		});
+		if (url.includes('/growth')) return send(res, 200, [
+			{ month: 'Mar', members: 1100, new: 120, churned: 30 },
+			{ month: 'Apr', members: 1180, new: 110, churned: 30 },
+			{ month: 'May', members: 1240, new: 95, churned: 35 }
+		]);
+		if (url.includes('/cohorts')) return send(res, 200, [
+			{ cohort: 'Mar', m0: 100, m1: 92, m2: 85, m3: 80, m4: 76, m5: 74 },
+			{ cohort: 'Apr', m0: 100, m1: 90, m2: 84, m3: 79, m4: 75, m5: 0 }
+		]);
+		if (url.includes('/revenue')) return send(res, 200, [
+			{ month: 'Apr', mrr: 44000, expansion: 3000, contraction: 800, churn: 1200 },
+			{ month: 'May', mrr: 48200, expansion: 3400, contraction: 700, churn: 1100 }
+		]);
+		if (url.includes('/churn-reasons')) return send(res, 200, [
+			{ reason: 'Price', count: 18, percentage: 45 },
+			{ reason: 'Switched tools', count: 12, percentage: 30 },
+			{ reason: 'Other', count: 10, percentage: 25 }
+		]);
+		if (url.includes('/segments')) return send(res, 200, [
+			{ segment: 'Pro', count: 420, revenue: 28000, churnRate: 2 },
+			{ segment: 'Starter', count: 820, revenue: 20200, churnRate: 4 }
+		]);
+		return send(res, 200, []);
+	}
 	// Admin orders — detail (/api/admin/orders/:id) before the list match.
 	const orderDetailMatch = url.match(/\/admin\/orders\/(\d+)(?:\?|$)/);
 	if (orderDetailMatch) {
