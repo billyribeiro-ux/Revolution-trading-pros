@@ -38,6 +38,7 @@
 	let pagination = $state({ current_page: 1, last_page: 1, per_page: 20, total: 0 });
 	let searchQuery = $state('');
 	let statusFilter = $state<CartStatus | ''>('');
+	// $state intentional: this collection is reassigned (select-all/clear); SvelteSet/Map makes mutations reactive, $state keeps reassignment reactive.
 	let selectedCarts = $state<Set<number>>(new SvelteSet());
 
 	// Modal state

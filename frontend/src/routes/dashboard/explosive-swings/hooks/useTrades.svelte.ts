@@ -1,4 +1,3 @@
-import { SvelteMap } from 'svelte/reactivity';
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
  * Explosive Swings - useTrades Hook
@@ -172,7 +171,11 @@ export function useTrades(options: UseTradesOptions = {}): UseTradesReturn {
 
 	// Price feed service for real-time price updates
 	const priceFeed = enableRealTimePrices ? getPriceFeed() : null;
-	let realTimePrices = $state<Map<string, PriceData>>(new SvelteMap());
+	// Reassign-only (replaced wholesale by the price-feed callback, never mutated
+	// in place), so plain Map in $state is correct — $state makes the reassignment
+	// reactive. (svelte-autofixer's "use SvelteMap" is a false positive here: that
+	// applies to in-place .set/.delete mutations, which this never does.)
+	let realTimePrices = $state<Map<string, PriceData>>(new Map());
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// REACTIVE STATE

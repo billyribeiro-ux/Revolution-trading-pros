@@ -25,7 +25,7 @@
 	import {  } from 'svelte';
 
 	// Track expanded notes
-	let expandedNotes = $state<Set<number>>(new SvelteSet());
+	let expandedNotes = new SvelteSet<number>();
 
 	function toggleNotes(tradeId: number) {
 		if (expandedNotes.has(tradeId)) {

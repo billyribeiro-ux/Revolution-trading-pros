@@ -265,10 +265,10 @@
 	const alerts = $derived<Alert[]>(fallbackAlerts);
 
 	// Track which alert notes are expanded
-	let expandedNotes = $state<Set<number>>(new SvelteSet());
+	let expandedNotes = new SvelteSet<number>();
 
 	// Track which trade plan notes are expanded
-	let expandedTradeNotes = $state<Set<string>>(new SvelteSet());
+	let expandedTradeNotes = new SvelteSet<string>();
 
 	function toggleTradeNotes(ticker: string) {
 		if (expandedTradeNotes.has(ticker)) {

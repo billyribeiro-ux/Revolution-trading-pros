@@ -112,7 +112,7 @@
 	let alertModalOpen = $state(false);
 
 	// Expanded notes tracking (local UI state)
-	let expandedNotes = $state(new SvelteSet<number>());
+	let expandedNotes = new SvelteSet<number>();
 
 	// Sync modal state from state module
 	$effect(() => {

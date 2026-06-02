@@ -63,6 +63,7 @@
 
 	// Data
 	let items = $state<MediaItem[]>([]);
+	// $state intentional: this collection is reassigned (select-all/clear); SvelteSet/Map makes mutations reactive, $state keeps reassignment reactive.
 	let selectedIds = $state(new SvelteSet<string>());
 	let focusedId = $state<string | null>(null);
 

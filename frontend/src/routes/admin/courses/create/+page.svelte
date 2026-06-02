@@ -188,7 +188,7 @@
 	let hasUnsavedChanges = $state(false);
 	let lastSaved = $state<Date | null>(null);
 	let autoSaveTimer: ReturnType<typeof setInterval>;
-	let expandedModules = $state(new SvelteSet<string>());
+	let expandedModules = new SvelteSet<string>();
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Lifecycle Hooks & Initialization

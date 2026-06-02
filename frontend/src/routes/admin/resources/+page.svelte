@@ -206,7 +206,7 @@
 	let newFileUrl = $state('');
 
 	// ICT 7: Bulk operations state
-	let selectedResources = $state<Set<number>>(new SvelteSet());
+	let selectedResources = new SvelteSet<number>();
 	let bulkAction = $state<'publish' | 'unpublish' | 'feature' | 'unfeature' | 'access' | 'delete'>(
 		'publish'
 	);

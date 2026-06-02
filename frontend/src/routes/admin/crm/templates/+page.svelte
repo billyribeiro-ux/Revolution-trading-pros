@@ -52,6 +52,7 @@
 	let searchQuery = $state('');
 	let debouncedSearch = $state('');
 	let selectedCategory = $state('');
+	// $state intentional: this collection is reassigned (select-all/clear); SvelteSet/Map makes mutations reactive, $state keeps reassignment reactive.
 	let selectedTemplates = $state<Set<string>>(new SvelteSet());
 	let isInitialLoad = $state(true);
 

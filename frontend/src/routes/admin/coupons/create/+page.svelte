@@ -78,7 +78,9 @@
 	});
 
 	// Track selected items for include/exclude
+	// $state intentional: this collection is reassigned (select-all/clear); SvelteSet/Map makes mutations reactive, $state keeps reassignment reactive.
 	let selectedProducts = $state<Set<number>>(new SvelteSet());
+	// $state intentional: this collection is reassigned (select-all/clear); SvelteSet/Map makes mutations reactive, $state keeps reassignment reactive.
 	let selectedPlans = $state<Set<number>>(new SvelteSet());
 
 	// ═══════════════════════════════════════════════════════════════════════════

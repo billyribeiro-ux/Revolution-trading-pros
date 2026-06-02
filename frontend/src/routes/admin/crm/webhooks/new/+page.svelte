@@ -40,6 +40,7 @@
 	let url = $state('');
 	let secret = $state('');
 	let isActive = $state(true);
+	// $state intentional: this collection is reassigned (select-all/clear); SvelteSet/Map makes mutations reactive, $state keeps reassignment reactive.
 	let selectedEvents = $state<Set<WebhookEvent>>(new SvelteSet());
 	let customHeaders = $state<Array<{ key: string; value: string }>>([]);
 

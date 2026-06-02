@@ -128,6 +128,7 @@
 	let selectedSource = $state<string>('all');
 	let sortBy = $state<string>('created_at');
 	let sortOrder = $state<'asc' | 'desc'>('desc');
+	// $state intentional: this collection is reassigned (select-all/clear); SvelteSet/Map makes mutations reactive, $state keeps reassignment reactive.
 	let selectedLeads = $state<Set<string>>(new SvelteSet());
 	let showFilters = $state(false);
 	let _viewMode = $state<'list' | 'kanban'>('list');

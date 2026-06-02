@@ -182,6 +182,7 @@
 	let analyticsPeriod = $state<'7d' | '30d' | '90d'>('30d');
 
 	// ICT 7 ADDITION: Bulk Operations State
+	// $state intentional: this collection is reassigned (select-all/clear); SvelteSet/Map makes mutations reactive, $state keeps reassignment reactive.
 	let selectedVideoIds = $state<Set<number>>(new SvelteSet());
 	let isBulkActionLoading = $state(false);
 	let showBulkTagsModal = $state(false);

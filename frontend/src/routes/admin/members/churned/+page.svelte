@@ -37,6 +37,7 @@
 	let searchQuery = $state('');
 	let winbackPotential = $state('');
 	let churnedWithinDays = $state('');
+	// $state intentional: this collection is reassigned (select-all/clear); SvelteSet/Map makes mutations reactive, $state keeps reassignment reactive.
 	let selectedMembers = $state<Set<number>>(new SvelteSet());
 	let showEmailModal = $state(false);
 	let emailSubject = $state('');

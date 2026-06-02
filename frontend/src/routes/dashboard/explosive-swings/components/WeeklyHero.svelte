@@ -75,7 +75,7 @@
 	// Component state (Svelte 5 $state rune)
 	let heroTab = $state<'video' | 'entries'>('video');
 	let isCollapsed = $state(false);
-	let expandedTradeNotes = $state(new SvelteSet<string>());
+	let expandedTradeNotes = new SvelteSet<string>();
 
 	// Video player state
 	let isVideoPlaying = $state(false);

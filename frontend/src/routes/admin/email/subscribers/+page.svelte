@@ -23,6 +23,7 @@
 	let searchQuery = $state('');
 	let statusFilter = $state('all');
 	let selectedTags = $state<string[]>([]);
+	// $state intentional: this collection is reassigned (select-all/clear); SvelteSet/Map makes mutations reactive, $state keeps reassignment reactive.
 	let selectedSubscribers = $state(new SvelteSet<string>());
 
 	// Modal states

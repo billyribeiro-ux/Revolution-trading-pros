@@ -38,7 +38,7 @@
 	// Local state
 	let searchQuery = $state('');
 	let statusFilter = $state('');
-	let selectedMembers = $state<Set<number>>(new SvelteSet());
+	let selectedMembers = new SvelteSet<number>();
 	let showEmailModal = $state(false);
 	let emailSubject = $state('');
 	let emailBody = $state('');

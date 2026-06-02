@@ -24,7 +24,7 @@
 	let { data }: Props = $props();
 
 	// Accordion state management - Svelte 5 runes
-	let openAccordions = $state<Set<number>>(new SvelteSet());
+	let openAccordions = new SvelteSet<number>();
 
 	// Toggle accordion with Set reassignment for reactivity
 	function toggleAccordion(index: number): void {

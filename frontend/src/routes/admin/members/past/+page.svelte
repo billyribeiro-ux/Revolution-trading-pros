@@ -68,6 +68,7 @@
 	let selectedPeriod = $state<TimePeriod>('30d');
 	let members = $state<PastMember[]>([]);
 	let searchQuery = $state('');
+	// $state intentional: this collection is reassigned (select-all/clear); SvelteSet/Map makes mutations reactive, $state keeps reassignment reactive.
 	let selectedMembers = $state<Set<number>>(new SvelteSet());
 
 	// Loading states

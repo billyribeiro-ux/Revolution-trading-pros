@@ -58,7 +58,7 @@
 	let formData = $state<ScheduleForm>(getDefaultFormData());
 
 	// Bulk selection
-	let selectedIds = $state<Set<number>>(new SvelteSet());
+	let selectedIds = new SvelteSet<number>();
 	// Pure projection of selection size (selectedIds is reassigned on every
 	// mutation, so $derived tracks it correctly) — was a state+$effect.
 	let showBulkActions = $derived(selectedIds.size > 0);

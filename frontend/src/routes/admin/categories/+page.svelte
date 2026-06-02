@@ -56,6 +56,7 @@
 	let editingCategory = $state<Category | null>(null);
 
 	// Selection for bulk operations
+	// $state intentional: this collection is reassigned (select-all/clear); SvelteSet/Map makes mutations reactive, $state keeps reassignment reactive.
 	let selectedIds = $state<Set<number>>(new SvelteSet());
 
 	// Form data
