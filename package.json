@@ -20,7 +20,7 @@
     "api:lint:clippy": "cd api && cargo clippy --locked --all-targets -- -D warnings"
   },
   "engines": {
-    "node": ">=24.15.0",
+    "node": ">=24.16.0",
     "pnpm": ">=11.5.1"
   },
   "devDependencies": {

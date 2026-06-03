@@ -53,8 +53,9 @@
 	let showMergeModal = $state(false);
 	let editingCategory = $state<Category | null>(null);
 
-	// Selection for bulk operations
-	let selectedIds = new SvelteSet<number>();
+	// Selection for bulk operations. Bare SvelteSet (reactive on mutation);
+	// mutated in place everywhere (incl. select-all) so it's never reassigned.
+	const selectedIds = new SvelteSet<number>();
 
 	// Form data
 	let categoryForm = $state({
@@ -415,7 +416,8 @@
 		if (allSelected) {
 			selectedIds.clear();
 		} else {
-			selectedIds = new SvelteSet(filteredCategories.map((c) => c.id));
+			selectedIds.clear();
+			for (const c of filteredCategories) selectedIds.add(c.id);
 		}
 	}
 

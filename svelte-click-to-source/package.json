@@ -34,7 +34,7 @@
     "vite": "^5.0.0 || ^6.0.0 || ^8.0.0"
   },
   "devDependencies": {
-    "@types/node": "^24.12.4",
+    "@types/node": "^25.9.1",
     "svelte": "^5.56.1",
     "tsup": "^8.5.1",
     "typescript": "^6.0.3",

@@ -4,6 +4,43 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-06-02 — Dependency upgrade: full toolchain + package refresh to latest (Node LTS pinned), breaking-change migrations, zod→valibot consolidation
+
+Every library, package, and dependency bumped to its latest version as of 2026-06-02 (verified against npm / docs.rs / crates.io — no assumptions), **except Node**, which is pinned to the latest LTS. All major-version bumps were migrated through their breaking changes; the backend quality gate is green throughout (`cargo check --all-targets`, `cargo clippy --all-targets -D warnings`, `cargo fmt`, and the no-DB tests `utils_test` 18/18 + `stripe_test` 19/19).
+
+### Toolchain & runtimes
+
+- **Node** → **24.16.0** (latest LTS "Krypton", released 2026-05-21); `.nvmrc`, both `package.json#engines`, and the CI `NODE_VERSION` env updated. **pnpm** stays the sole package manager, pinned `11.5.1` (`packageManager` field is the single source of truth; CI/deploy comments corrected from the stale `11.1.2`).
+- **Rust** → **1.96.0** (current stable); `rust-toolchain.toml` channel and CI `RUST_VERSION` updated. Local rustup hygiene: removed 5 stale toolchains and reinstalled `nightly` cleanly, resolving the `clippy-preview … bin/cargo-clippy` install conflict and the failed `nightly` update.
+
+### Frontend — notable package bumps (`frontend/package.json`)
+
+- Build/test core: **vite 6→8**, **vitest 3→4** (+ `@vitest/browser-playwright`, `@vitest/coverage-v8` 4), **typescript 5→6**, **eslint 9→10** (+ `eslint-config-prettier`, `eslint-plugin-svelte`, `typescript-eslint`), **@eslint/js 10.0.1** (note: `@eslint/js` latest is 10.0.1 while `eslint` is 10.4.1 — separate release lines), **svelte 5.56.1**, **@sveltejs/kit 2.62.0**, **@sveltejs/vite-plugin-svelte 6→7**, **@sveltejs/adapter-cloudflare 7.2.8**, **wrangler 4.97.0**, **prettier 3.8.3**, **prettier-plugin-svelte 3→4**, **playwright 1.60.0**.
+- App deps: **zod removed** (see below), **valibot 1.4.1**, **@stripe/stripe-js 7→9.7.0**, **@anthropic-ai/sdk 0.100.1**, **three 0.184** (+ `@types/three`), **gsap 3.15.0**, **web-vitals 4→5.3.0**, **typed.js 2→3**, **isomorphic-dompurify 2→3.15.0**, **dompurify 3.4.7**, **bits-ui 2.18.1**, **tailwind-variants 1→3.2.2**, **tailwind-merge 3.6.0**, **@types/node 25.9.1**.
+- Internal `svelte-click-to-source` package bumped in lockstep (vite 8, typescript 6, tsup 8.5.1, svelte 5.56.1) and its `vite` peer range widened to `^8`.
+
+### Backend — Rust crate bumps + breaking-change migrations (`api/Cargo.toml`)
+
+- **sqlx 0.8 → 0.9** — the big one. 0.9 makes dynamic SQL a compile error: `query`/`query_as`/`query_scalar`/`query_*_with`/`raw_sql` now require `&'static str` or an explicit `AssertSqlSafe` wrapper. **118 call sites** across ~40 route/service files were audited (every one interpolates only whitelisted sort columns/directions or enum-mapped identifiers, with all user values bound as `$N`) and wrapped with `sqlx::AssertSqlSafe`. No dynamic user input reaches a query string.
+- **rand 0.8 → 0.10** — `thread_rng()` → `rng()`, `.gen()/.gen_range()` → `.random()/.random_range()`, the `Rng` trait → `RngExt`, and `rand::distributions` → `rand::distr`. Fixed across 6 files (`utils/mod.rs`, `services/mfa.rs`, oauth/connections crypto, admin member crud).
+- **reqwest 0.12 → 0.13** — the `rustls-tls` feature is now `rustls`, and `form`/`query` moved behind their own features; feature list updated accordingly.
+- **jsonwebtoken 9 → 10** — verified compatible with the existing JWT helpers (the no-DB JWT test suite, incl. alg-none rejection / expiry / type segregation, passes).
+- **axum-extra 0.10 → 0.12.6**, **axum pinned 0.8.9** — axum 0.8 dropped the blanket `Option<T>: FromRequestParts`; `ConnectInfo` only implements `FromRequestParts`, so `Option<ConnectInfo<SocketAddr>>` no longer compiles as a handler arg. Added a small infallible **`ClientAddr`** extractor (`routes/auth/helpers.rs`) that reads the `ConnectInfo`/`MockConnectInfo` extension and yields `Option<SocketAddr>`, preserving the exact prod/test rate-limit semantics; migrated the 4 auth handlers (register, login, forgot/reset-password).
+- Other bumps: **tokio 1.52.3**, **tower-http 0.6.11**, **redis 0.29 → 1.2.2**, **rust_decimal 1.42**, **uuid 1.23**, **regex 1.12**, **thiserror 1 → 2**, **bcrypt 0.18 → 0.19**, **aws-sdk-s3 1.135 / aws-config 1.8**, **meilisearch-sdk 0.28 → 0.33**, **csv 1.4**, **axum-test 14 → 20** (dev), **subtle 2.6**, **lazy_static 1.5**.
+- Lint: clippy 1.96 newly fires `manual_async_fn` on the hand-written `FromRequest(Parts)` impls (User/OptionalUser/AdminUser/SuperAdminUser/ValidatedJson) whose explicit `-> impl Future + Send` bound is intentional; suppressed with a targeted `#[allow(clippy::manual_async_fn)]` on each rather than reflowing the bodies.
+
+### Tailwind v4 utility renames
+
+Updated **63 deprecated class usages across 22 files** to the v4 names the linter flags: `bg-gradient-to-*` → `bg-linear-to-*`, `bg-[size:X]` → `bg-size-[X]`, `[mask-image:X]` → `mask-[X]`.
+
+### Validation library consolidation — zod removed, valibot standardized
+
+The repo had **both** `zod` and `valibot` installed. Audit: **valibot** is the real validation layer (13 active files — every `*.remote.ts` remote function + `lib/shared/schemas/`), while **zod** appeared in only **2 files** (`lib/components/blog/BlockEditor/validation.ts`, `lib/options-calculator/data/schemas.ts`). Both were **fully migrated to valibot** (zod `z.*` → valibot `v.*`: `z.object`→`v.object`, `.max()`→`v.pipe(…, v.maxLength())`, `.optional()`→`v.optional()`, `z.enum`→`v.picklist`, `.refine`→`v.check`, `z.lazy`→`v.lazy`, `.safeParse`→`v.safeParse`, `z.infer`→`v.InferOutput`, `.passthrough()`→`v.looseObject`, etc.), and `zod` was removed from `frontend/package.json` (now only a transitive dep of `@anthropic-ai/sdk`). `svelte-check` passes with **0 errors**.
+
+### Build — Cloudflare deploy unblocked
+
+Two fixes for the failing Cloudflare Pages build: (1) **`pnpm-lock.yaml` regenerated** so it matches the updated manifests — the build failed with `ERR_PNPM_OUTDATED_LOCKFILE` because the lockfile hadn't been re-synced after the package bumps; `pnpm install --frozen-lockfile` (the exact CI command) now passes. (2) **Node version corrected to a real release** — the original `.nvmrc` pointed at `24.17.0`, which **does not exist** (latest 24.x LTS is `24.16.0`, released 2026-05-21), so Cloudflare's nvm silently fell back to its default Node 22.16.0 and emitted an engine warning. Set `.nvmrc` + a new `.node-version` (Cloudflare reads either) to `24.16.0`.
+
 ## [Unreleased] — 2026-06-02 — Svelte audit & optimization: measured CLS fixes, breakpoint conflicts, Svelte 5 idioms, remote functions, Cloudflare build fix
 
 Branch: `claude/svelte-audit-optimization-gJmnH`. A multi-pass audit of every member/admin (and marketing) Svelte page driven by the Svelte MCP tool, with **evidence-based** CLS work measured via a purpose-built probe (browser Layout Instability API — the same metric Google's CLS uses) rather than assumptions. All quality gates green throughout: `pnpm check` **0 errors / 0 warnings** (4,858 files at the end); production `vite build` green; `svelte-autofixer` `issues: 0` on every modified component.

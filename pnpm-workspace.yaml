@@ -23,3 +23,8 @@ allowBuilds:
   esbuild: true
   sharp: true
   workerd: true
+minimumReleaseAgeExclude:
+  - '@sveltejs/kit@2.62.0'
+  - concurrently@10.0.3
+  - miniflare@4.20260601.0
+  - wrangler@4.97.0

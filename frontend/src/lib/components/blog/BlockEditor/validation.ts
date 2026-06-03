@@ -1,14 +1,14 @@
 /**
  * Revolution Trading Pros - Block Editor Validation System
  * ═══════════════════════════════════════════════════════════════════════════
- * Comprehensive JSON Schema validation using Zod for 30+ block types
+ * Comprehensive JSON Schema validation using Valibot for 30+ block types
  * Includes XSS protection, URL security, and content sanitization
  *
  * @version 4.0.0 Enterprise
  * @author Revolution Trading Pros
  */
 
-import { z } from 'zod';
+import * as v from 'valibot';
 import type { Block, BlockType, BlockContent, BlockItem } from './types';
 
 // =============================================================================
@@ -149,112 +149,111 @@ export function sanitizeUrl(url: string): string {
 }
 
 // =============================================================================
-// Custom Zod Refinements
+// Custom Valibot Refinements
 // =============================================================================
 
-const secureUrlSchema = z
-	.string()
-	.max(MAX_LENGTHS.URL)
-	.refine((url) => !url || isSecureUrl(url), {
-		message: 'URL contains potentially dangerous protocol'
-	});
+const secureUrlSchema = v.pipe(
+	v.string(),
+	v.maxLength(MAX_LENGTHS.URL),
+	v.check((url) => !url || isSecureUrl(url), 'URL contains potentially dangerous protocol')
+);
 
-const safeHtmlSchema = z
-	.string()
-	.max(MAX_LENGTHS.HTML_CONTENT)
-	.refine((html) => !html || !containsXSS(html), {
-		message: 'HTML content contains potentially dangerous XSS patterns'
-	});
+const safeHtmlSchema = v.pipe(
+	v.string(),
+	v.maxLength(MAX_LENGTHS.HTML_CONTENT),
+	v.check((html) => !html || !containsXSS(html), 'HTML content contains potentially dangerous XSS patterns')
+);
 
-const cssValueSchema = z.string().max(MAX_LENGTHS.CSS_VALUE).optional();
+const cssValueSchema = v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.CSS_VALUE)));
 
 // =============================================================================
 // Base Schema Components
 // =============================================================================
 
 // Block ID Schema
-const blockIdSchema = z.string().min(1).max(MAX_LENGTHS.ID);
+const blockIdSchema = v.pipe(v.string(), v.minLength(1), v.maxLength(MAX_LENGTHS.ID));
 
 // Animation Settings Schema
-const animationSettingsSchema = z
-	.object({
-		type: z.enum(['none', 'fade', 'slide', 'zoom', 'bounce', 'flip', 'rotate']),
-		direction: z.enum(['up', 'down', 'left', 'right']).optional(),
-		duration: z.number().min(0).max(10000).optional(),
-		delay: z.number().min(0).max(10000).optional(),
-		easing: z.string().max(64).optional(),
-		triggerOnScroll: z.boolean().optional(),
-		repeat: z.boolean().optional()
+const animationSettingsSchema = v.optional(
+	v.object({
+		type: v.picklist(['none', 'fade', 'slide', 'zoom', 'bounce', 'flip', 'rotate']),
+		direction: v.optional(v.picklist(['up', 'down', 'left', 'right'])),
+		duration: v.optional(v.pipe(v.number(), v.minValue(0), v.maxValue(10000))),
+		delay: v.optional(v.pipe(v.number(), v.minValue(0), v.maxValue(10000))),
+		easing: v.optional(v.pipe(v.string(), v.maxLength(64))),
+		triggerOnScroll: v.optional(v.boolean()),
+		repeat: v.optional(v.boolean())
 	})
-	.optional();
+);
 
 // Block Comment Schema - using a simpler approach for recursion
-const baseBlockCommentSchema = z.object({
+const baseBlockCommentSchema = v.object({
 	id: blockIdSchema,
-	userId: z.string().max(MAX_LENGTHS.ID),
-	userName: z.string().max(MAX_LENGTHS.TEXT_SHORT),
-	userAvatar: secureUrlSchema.optional(),
-	content: z.string().max(MAX_LENGTHS.TEXT_LONG),
-	createdAt: z.string().max(64),
-	resolved: z.boolean().optional()
+	userId: v.pipe(v.string(), v.maxLength(MAX_LENGTHS.ID)),
+	userName: v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_SHORT)),
+	userAvatar: v.optional(secureUrlSchema),
+	content: v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_LONG)),
+	createdAt: v.pipe(v.string(), v.maxLength(64)),
+	resolved: v.optional(v.boolean())
 });
 
 // For nested replies, we use a simpler flat structure to avoid deep recursion
-const blockCommentSchema = baseBlockCommentSchema.extend({
-	replies: z.array(baseBlockCommentSchema).max(50).optional()
+const blockCommentSchema = v.object({
+	...baseBlockCommentSchema.entries,
+	replies: v.optional(v.pipe(v.array(baseBlockCommentSchema), v.maxLength(50)))
 });
 
 // Block Metadata Schema
-const blockMetadataSchema = z.object({
-	createdAt: z.string().datetime({ offset: true }).or(z.string().max(64)),
-	updatedAt: z.string().datetime({ offset: true }).or(z.string().max(64)),
-	createdBy: z.string().max(MAX_LENGTHS.ID).optional(),
-	version: z.number().int().min(0),
-	locked: z.boolean().optional(),
-	lockedBy: z.string().max(MAX_LENGTHS.ID).optional(),
-	comments: z.array(blockCommentSchema).max(100).optional(),
-	aiGenerated: z.boolean().optional()
+const blockMetadataSchema = v.object({
+	createdAt: v.union([v.pipe(v.string(), v.isoTimestamp()), v.pipe(v.string(), v.maxLength(64))]),
+	updatedAt: v.union([v.pipe(v.string(), v.isoTimestamp()), v.pipe(v.string(), v.maxLength(64))]),
+	createdBy: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.ID))),
+	version: v.pipe(v.number(), v.integer(), v.minValue(0)),
+	locked: v.optional(v.boolean()),
+	lockedBy: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.ID))),
+	comments: v.optional(v.pipe(v.array(blockCommentSchema), v.maxLength(100))),
+	aiGenerated: v.optional(v.boolean())
 });
 
 // Block Item Schema (for lists, accordions, tabs, etc.)
-const blockItemSchema: z.ZodType<BlockItem> = z.lazy(() =>
-	z.object({
+const blockItemSchema: v.GenericSchema<BlockItem> = v.lazy(() =>
+	v.object({
 		id: blockIdSchema,
-		content: z.string().max(MAX_LENGTHS.TEXT_LONG),
-		checked: z.boolean().optional(),
-		collapsed: z.boolean().optional(),
-		children: z.array(blockItemSchema).max(MAX_LENGTHS.LIST_ITEMS).optional()
+		content: v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_LONG)),
+		checked: v.optional(v.boolean()),
+		collapsed: v.optional(v.boolean()),
+		children: v.optional(v.pipe(v.array(blockItemSchema), v.maxLength(MAX_LENGTHS.LIST_ITEMS)))
 	})
 );
 
 // Focal Point Schema
-const focalPointSchema = z
-	.object({
-		x: z.number().min(0).max(1),
-		y: z.number().min(0).max(1)
+const focalPointSchema = v.optional(
+	v.object({
+		x: v.pipe(v.number(), v.minValue(0), v.maxValue(1)),
+		y: v.pipe(v.number(), v.minValue(0), v.maxValue(1))
 	})
-	.optional();
+);
 
 // =============================================================================
 // Block Settings Schema
 // =============================================================================
 
-const blockSettingsSchema = z.object({
+const blockSettingsSchema = v.object({
 	// Typography
-	textAlign: z.enum(['left', 'center', 'right', 'justify']).optional(),
+	textAlign: v.optional(v.picklist(['left', 'center', 'right', 'justify'])),
 	fontSize: cssValueSchema,
 	fontWeight: cssValueSchema,
-	fontFamily: z.string().max(256).optional(),
+	fontFamily: v.optional(v.pipe(v.string(), v.maxLength(256))),
 	lineHeight: cssValueSchema,
 	letterSpacing: cssValueSchema,
 	textColor: cssValueSchema,
-	textTransform: z.enum(['none', 'uppercase', 'lowercase', 'capitalize']).optional(),
+	textTransform: v.optional(v.picklist(['none', 'uppercase', 'lowercase', 'capitalize'])),
 
 	// Heading specific
-	level: z
-		.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(5), z.literal(6)])
-		.optional(),
-	anchor: z.string().max(MAX_LENGTHS.ANCHOR).optional(),
+	level: v.optional(
+		v.union([v.literal(1), v.literal(2), v.literal(3), v.literal(4), v.literal(5), v.literal(6)])
+	),
+	anchor: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.ANCHOR))),
 
 	// Spacing - shorthand
 	padding: cssValueSchema,
@@ -272,18 +271,18 @@ const blockSettingsSchema = z.object({
 
 	// Background
 	backgroundColor: cssValueSchema,
-	backgroundImage: secureUrlSchema.optional(),
-	backgroundGradient: z.string().max(512).optional(),
+	backgroundImage: v.optional(secureUrlSchema),
+	backgroundGradient: v.optional(v.pipe(v.string(), v.maxLength(512))),
 	backgroundOverlay: cssValueSchema,
 
 	// Border
 	borderWidth: cssValueSchema,
 	borderColor: cssValueSchema,
-	borderStyle: z.enum(['solid', 'dashed', 'dotted', 'none']).optional(),
+	borderStyle: v.optional(v.picklist(['solid', 'dashed', 'dotted', 'none'])),
 	borderRadius: cssValueSchema,
 
 	// Shadow
-	boxShadow: z.string().max(256).optional(),
+	boxShadow: v.optional(v.pipe(v.string(), v.maxLength(256))),
 
 	// Animation
 	animation: animationSettingsSchema,
@@ -299,9 +298,9 @@ const blockSettingsSchema = z.object({
 	skewY: cssValueSchema,
 
 	// Visual Effects
-	opacity: z.number().min(0).max(1).optional(),
-	blendMode: z
-		.enum([
+	opacity: v.optional(v.pipe(v.number(), v.minValue(0), v.maxValue(1))),
+	blendMode: v.optional(
+		v.picklist([
 			'normal',
 			'multiply',
 			'screen',
@@ -319,7 +318,7 @@ const blockSettingsSchema = z.object({
 			'color',
 			'luminosity'
 		])
-		.optional(),
+	),
 
 	// Filters
 	filterBlur: cssValueSchema,
@@ -332,37 +331,37 @@ const blockSettingsSchema = z.object({
 	width: cssValueSchema,
 	maxWidth: cssValueSchema,
 	height: cssValueSchema,
-	display: z.enum(['block', 'flex', 'grid', 'inline', 'none']).optional(),
-	flexDirection: z.enum(['row', 'column']).optional(),
+	display: v.optional(v.picklist(['block', 'flex', 'grid', 'inline', 'none'])),
+	flexDirection: v.optional(v.picklist(['row', 'column'])),
 	justifyContent: cssValueSchema,
 	alignItems: cssValueSchema,
 	gap: cssValueSchema,
-	columnCount: z.number().int().min(1).max(12).optional(),
-	columnLayout: z.string().max(64).optional(),
+	columnCount: v.optional(v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(12))),
+	columnLayout: v.optional(v.pipe(v.string(), v.maxLength(64))),
 
 	// Image specific
-	imageSize: z.enum(['thumbnail', 'medium', 'large', 'full', 'custom']).optional(),
-	imageWidth: z.number().int().min(1).max(10000).optional(),
-	imageHeight: z.number().int().min(1).max(10000).optional(),
-	objectFit: z.enum(['cover', 'contain', 'fill', 'none']).optional(),
+	imageSize: v.optional(v.picklist(['thumbnail', 'medium', 'large', 'full', 'custom'])),
+	imageWidth: v.optional(v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(10000))),
+	imageHeight: v.optional(v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(10000))),
+	objectFit: v.optional(v.picklist(['cover', 'contain', 'fill', 'none'])),
 	focalPoint: focalPointSchema,
-	imageFilter: z.string().max(256).optional(),
+	imageFilter: v.optional(v.pipe(v.string(), v.maxLength(256))),
 
 	// Link
-	linkUrl: secureUrlSchema.optional(),
-	linkTarget: z.enum(['_blank', '_self']).optional(),
-	linkRel: z.string().max(64).optional(),
+	linkUrl: v.optional(secureUrlSchema),
+	linkTarget: v.optional(v.picklist(['_blank', '_self'])),
+	linkRel: v.optional(v.pipe(v.string(), v.maxLength(64))),
 
 	// Button specific
-	buttonStyle: z.enum(['primary', 'secondary', 'outline', 'ghost', 'link']).optional(),
-	buttonSize: z.enum(['small', 'medium', 'large']).optional(),
-	buttonIcon: z.string().max(64).optional(),
-	buttonIconPosition: z.enum(['left', 'right']).optional(),
+	buttonStyle: v.optional(v.picklist(['primary', 'secondary', 'outline', 'ghost', 'link'])),
+	buttonSize: v.optional(v.picklist(['small', 'medium', 'large'])),
+	buttonIcon: v.optional(v.pipe(v.string(), v.maxLength(64))),
+	buttonIconPosition: v.optional(v.picklist(['left', 'right'])),
 
 	// Responsive visibility
-	hideOnDesktop: z.boolean().optional(),
-	hideOnTablet: z.boolean().optional(),
-	hideOnMobile: z.boolean().optional(),
+	hideOnDesktop: v.optional(v.boolean()),
+	hideOnTablet: v.optional(v.boolean()),
+	hideOnMobile: v.optional(v.boolean()),
 
 	// Responsive typography
 	tabletFontSize: cssValueSchema,
@@ -373,12 +372,12 @@ const blockSettingsSchema = z.object({
 	mobilePadding: cssValueSchema,
 
 	// Advanced
-	customCSS: z.string().max(MAX_LENGTHS.CUSTOM_CSS).optional(),
-	customId: z.string().max(MAX_LENGTHS.ID).optional(),
-	customClass: z.string().max(MAX_LENGTHS.CLASS_NAME).optional(),
-	ariaLabel: z.string().max(MAX_LENGTHS.TEXT_SHORT).optional(),
-	position: z.enum(['static', 'relative', 'absolute', 'fixed', 'sticky']).optional(),
-	zIndex: z.number().int().min(-9999).max(9999).optional(),
+	customCSS: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.CUSTOM_CSS))),
+	customId: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.ID))),
+	customClass: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.CLASS_NAME))),
+	ariaLabel: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_SHORT))),
+	position: v.optional(v.picklist(['static', 'relative', 'absolute', 'fixed', 'sticky'])),
+	zIndex: v.optional(v.pipe(v.number(), v.integer(), v.minValue(-9999), v.maxValue(9999))),
 	positionTop: cssValueSchema,
 	positionRight: cssValueSchema,
 	positionBottom: cssValueSchema,
@@ -447,19 +446,19 @@ export const ALL_BLOCK_TYPES = [
 	'reusable'
 ] as const;
 
-export const blockTypeSchema = z.enum(ALL_BLOCK_TYPES);
+export const blockTypeSchema = v.picklist(ALL_BLOCK_TYPES);
 
 // =============================================================================
 // Block Content Schemas - Type-Specific
 // =============================================================================
 
 // Forward declaration for recursive block schema
-type BlockSchema = z.ZodType<Block>;
+type BlockSchema = v.GenericSchema<Block>;
 
 // Create a lazy block schema for nested blocks
 const createBlockSchema = (): BlockSchema =>
-	z.lazy(() =>
-		z.object({
+	v.lazy(() =>
+		v.object({
 			id: blockIdSchema,
 			type: blockTypeSchema,
 			content: blockContentSchema,
@@ -469,370 +468,384 @@ const createBlockSchema = (): BlockSchema =>
 	) as BlockSchema;
 
 // Paragraph Block Content
-const paragraphContentSchema = z.object({
-	text: z.string().max(MAX_LENGTHS.TEXT_CONTENT).optional(),
-	html: safeHtmlSchema.optional()
+const paragraphContentSchema = v.object({
+	text: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_CONTENT))),
+	html: v.optional(safeHtmlSchema)
 });
 
 // Heading Block Content
-const headingContentSchema = z.object({
-	text: z.string().max(MAX_LENGTHS.TEXT_MEDIUM).optional(),
-	html: safeHtmlSchema.optional()
+const headingContentSchema = v.object({
+	text: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_MEDIUM))),
+	html: v.optional(safeHtmlSchema)
 });
 
 // Quote Block Content
-const quoteContentSchema = z.object({
-	text: z.string().max(MAX_LENGTHS.TEXT_LONG).optional(),
-	html: safeHtmlSchema.optional()
+const quoteContentSchema = v.object({
+	text: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_LONG))),
+	html: v.optional(safeHtmlSchema)
 });
 
 // Pullquote Block Content
-const pullquoteContentSchema = z.object({
-	text: z.string().max(MAX_LENGTHS.TEXT_LONG).optional(),
-	html: safeHtmlSchema.optional()
+const pullquoteContentSchema = v.object({
+	text: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_LONG))),
+	html: v.optional(safeHtmlSchema)
 });
 
 // Code Block Content
-const codeContentSchema = z.object({
-	code: z.string().max(MAX_LENGTHS.CODE_CONTENT).optional(),
-	language: z.string().max(MAX_LENGTHS.LANGUAGE_CODE).optional()
+const codeContentSchema = v.object({
+	code: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.CODE_CONTENT))),
+	language: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.LANGUAGE_CODE)))
 });
 
 // Preformatted Block Content
-const preformattedContentSchema = z.object({
-	text: z.string().max(MAX_LENGTHS.CODE_CONTENT).optional()
+const preformattedContentSchema = v.object({
+	text: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.CODE_CONTENT)))
 });
 
 // List Block Content
-const listContentSchema = z.object({
-	listType: z.enum(['bullet', 'number', 'check']).optional(),
-	listItems: z.array(z.string().max(MAX_LENGTHS.TEXT_LONG)).max(MAX_LENGTHS.LIST_ITEMS).optional(),
-	items: z.array(blockItemSchema).max(MAX_LENGTHS.LIST_ITEMS).optional()
+const listContentSchema = v.object({
+	listType: v.optional(v.picklist(['bullet', 'number', 'check'])),
+	listItems: v.optional(
+		v.pipe(v.array(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_LONG))), v.maxLength(MAX_LENGTHS.LIST_ITEMS))
+	),
+	items: v.optional(v.pipe(v.array(blockItemSchema), v.maxLength(MAX_LENGTHS.LIST_ITEMS)))
 });
 
 // Checklist Block Content
-const checklistContentSchema = z.object({
-	items: z.array(blockItemSchema).max(MAX_LENGTHS.LIST_ITEMS).optional()
+const checklistContentSchema = v.object({
+	items: v.optional(v.pipe(v.array(blockItemSchema), v.maxLength(MAX_LENGTHS.LIST_ITEMS)))
 });
 
 // Image Block Content
-const imageContentSchema = z.object({
-	mediaId: z.number().int().positive().optional(),
-	mediaUrl: secureUrlSchema.optional(),
-	mediaAlt: z.string().max(MAX_LENGTHS.TEXT_SHORT).optional(),
-	mediaCaption: z.string().max(MAX_LENGTHS.TEXT_MEDIUM).optional()
+const imageContentSchema = v.object({
+	mediaId: v.optional(v.pipe(v.number(), v.integer(), v.gtValue(0))),
+	mediaUrl: v.optional(secureUrlSchema),
+	mediaAlt: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_SHORT))),
+	mediaCaption: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_MEDIUM)))
 });
 
 // Gallery Block Content
-const galleryContentSchema = z.object({
-	items: z
-		.array(
-			z.object({
-				id: blockIdSchema,
-				content: z.string().max(MAX_LENGTHS.TEXT_MEDIUM),
-				mediaId: z.number().int().positive().optional(),
-				mediaUrl: secureUrlSchema.optional(),
-				mediaAlt: z.string().max(MAX_LENGTHS.TEXT_SHORT).optional()
-			})
+const galleryContentSchema = v.object({
+	items: v.optional(
+		v.pipe(
+			v.array(
+				v.object({
+					id: blockIdSchema,
+					content: v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_MEDIUM)),
+					mediaId: v.optional(v.pipe(v.number(), v.integer(), v.gtValue(0))),
+					mediaUrl: v.optional(secureUrlSchema),
+					mediaAlt: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_SHORT)))
+				})
+			),
+			v.maxLength(MAX_LENGTHS.GALLERY_ITEMS)
 		)
-		.max(MAX_LENGTHS.GALLERY_ITEMS)
-		.optional()
+	)
 });
 
 // Video Block Content
-const videoContentSchema = z.object({
-	mediaId: z.number().int().positive().optional(),
-	mediaUrl: secureUrlSchema.optional(),
-	mediaCaption: z.string().max(MAX_LENGTHS.TEXT_MEDIUM).optional(),
-	embedUrl: secureUrlSchema.optional(),
-	embedType: z.enum(ALLOWED_EMBED_TYPES).optional()
+const videoContentSchema = v.object({
+	mediaId: v.optional(v.pipe(v.number(), v.integer(), v.gtValue(0))),
+	mediaUrl: v.optional(secureUrlSchema),
+	mediaCaption: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_MEDIUM))),
+	embedUrl: v.optional(secureUrlSchema),
+	embedType: v.optional(v.picklist(ALLOWED_EMBED_TYPES))
 });
 
 // Audio Block Content
-const audioContentSchema = z.object({
-	mediaId: z.number().int().positive().optional(),
-	mediaUrl: secureUrlSchema.optional(),
-	mediaCaption: z.string().max(MAX_LENGTHS.TEXT_MEDIUM).optional()
+const audioContentSchema = v.object({
+	mediaId: v.optional(v.pipe(v.number(), v.integer(), v.gtValue(0))),
+	mediaUrl: v.optional(secureUrlSchema),
+	mediaCaption: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_MEDIUM)))
 });
 
 // File Block Content
-const fileContentSchema = z.object({
-	mediaId: z.number().int().positive().optional(),
-	mediaUrl: secureUrlSchema.optional(),
-	text: z.string().max(MAX_LENGTHS.TEXT_SHORT).optional() // filename display
+const fileContentSchema = v.object({
+	mediaId: v.optional(v.pipe(v.number(), v.integer(), v.gtValue(0))),
+	mediaUrl: v.optional(secureUrlSchema),
+	text: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_SHORT))) // filename display
 });
 
 // Embed Block Content
-const embedContentSchema = z.object({
-	embedUrl: secureUrlSchema.optional(),
-	embedType: z.enum(ALLOWED_EMBED_TYPES).optional(),
-	html: safeHtmlSchema.optional()
+const embedContentSchema = v.object({
+	embedUrl: v.optional(secureUrlSchema),
+	embedType: v.optional(v.picklist(ALLOWED_EMBED_TYPES)),
+	html: v.optional(safeHtmlSchema)
 });
 
 // GIF Block Content
-const gifContentSchema = z.object({
-	mediaUrl: secureUrlSchema.optional(),
-	mediaAlt: z.string().max(MAX_LENGTHS.TEXT_SHORT).optional()
+const gifContentSchema = v.object({
+	mediaUrl: v.optional(secureUrlSchema),
+	mediaAlt: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_SHORT)))
 });
 
 // Columns Block Content
-const columnsContentSchema = z.object({
-	columnCount: z.number().int().min(1).max(12).optional(),
-	columnLayout: z.string().max(64).optional(),
-	children: z.array(createBlockSchema()).max(MAX_LENGTHS.CHILDREN_BLOCKS).optional()
+const columnsContentSchema = v.object({
+	columnCount: v.optional(v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(12))),
+	columnLayout: v.optional(v.pipe(v.string(), v.maxLength(64))),
+	children: v.optional(v.pipe(v.array(createBlockSchema()), v.maxLength(MAX_LENGTHS.CHILDREN_BLOCKS)))
 });
 
 // Group Block Content
-const groupContentSchema = z.object({
-	children: z.array(createBlockSchema()).max(MAX_LENGTHS.CHILDREN_BLOCKS).optional()
+const groupContentSchema = v.object({
+	children: v.optional(v.pipe(v.array(createBlockSchema()), v.maxLength(MAX_LENGTHS.CHILDREN_BLOCKS)))
 });
 
 // Separator Block Content
-const separatorContentSchema = z.object({});
+const separatorContentSchema = v.object({});
 
 // Spacer Block Content
-const spacerContentSchema = z.object({});
+const spacerContentSchema = v.object({});
 
 // Row Block Content
-const rowContentSchema = z.object({
-	children: z.array(createBlockSchema()).max(MAX_LENGTHS.CHILDREN_BLOCKS).optional()
+const rowContentSchema = v.object({
+	children: v.optional(v.pipe(v.array(createBlockSchema()), v.maxLength(MAX_LENGTHS.CHILDREN_BLOCKS)))
 });
 
 // Button Block Content
-const buttonContentSchema = z.object({
-	text: z.string().max(MAX_LENGTHS.TEXT_SHORT).optional(),
-	html: safeHtmlSchema.optional()
+const buttonContentSchema = v.object({
+	text: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_SHORT))),
+	html: v.optional(safeHtmlSchema)
 });
 
 // Buttons Block Content
-const buttonsContentSchema = z.object({
-	children: z.array(createBlockSchema()).max(20).optional()
+const buttonsContentSchema = v.object({
+	children: v.optional(v.pipe(v.array(createBlockSchema()), v.maxLength(20)))
 });
 
 // Accordion Block Content
-const accordionContentSchema = z.object({
-	items: z.array(blockItemSchema).max(50).optional(),
-	children: z.array(createBlockSchema()).max(MAX_LENGTHS.CHILDREN_BLOCKS).optional()
+const accordionContentSchema = v.object({
+	items: v.optional(v.pipe(v.array(blockItemSchema), v.maxLength(50))),
+	children: v.optional(v.pipe(v.array(createBlockSchema()), v.maxLength(MAX_LENGTHS.CHILDREN_BLOCKS)))
 });
 
 // Tabs Block Content
-const tabsContentSchema = z.object({
-	items: z.array(blockItemSchema).max(20).optional(),
-	children: z.array(createBlockSchema()).max(MAX_LENGTHS.CHILDREN_BLOCKS).optional()
+const tabsContentSchema = v.object({
+	items: v.optional(v.pipe(v.array(blockItemSchema), v.maxLength(20))),
+	children: v.optional(v.pipe(v.array(createBlockSchema()), v.maxLength(MAX_LENGTHS.CHILDREN_BLOCKS)))
 });
 
 // Toggle Block Content
-const toggleContentSchema = z.object({
-	text: z.string().max(MAX_LENGTHS.TEXT_SHORT).optional(),
-	children: z.array(createBlockSchema()).max(MAX_LENGTHS.CHILDREN_BLOCKS).optional()
+const toggleContentSchema = v.object({
+	text: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_SHORT))),
+	children: v.optional(v.pipe(v.array(createBlockSchema()), v.maxLength(MAX_LENGTHS.CHILDREN_BLOCKS)))
 });
 
 // Table of Contents Block Content
-const tocContentSchema = z.object({});
+const tocContentSchema = v.object({});
 
 // Ticker Block Content
-const tickerContentSchema = z.object({
-	ticker: z
-		.string()
-		.max(MAX_LENGTHS.TICKER_SYMBOL)
-		.regex(/^[A-Z0-9.^=-]+$/i, 'Invalid ticker symbol format')
-		.optional()
+const tickerContentSchema = v.object({
+	ticker: v.optional(
+		v.pipe(
+			v.string(),
+			v.maxLength(MAX_LENGTHS.TICKER_SYMBOL),
+			v.regex(/^[A-Z0-9.^=-]+$/i, 'Invalid ticker symbol format')
+		)
+	)
 });
 
 // Chart Block Content
-const chartContentSchema = z.object({
-	ticker: z
-		.string()
-		.max(MAX_LENGTHS.TICKER_SYMBOL)
-		.regex(/^[A-Z0-9.^=-]+$/i, 'Invalid ticker symbol format')
-		.optional(),
-	chartType: z.enum(['line', 'candle', 'bar']).optional()
+const chartContentSchema = v.object({
+	ticker: v.optional(
+		v.pipe(
+			v.string(),
+			v.maxLength(MAX_LENGTHS.TICKER_SYMBOL),
+			v.regex(/^[A-Z0-9.^=-]+$/i, 'Invalid ticker symbol format')
+		)
+	),
+	chartType: v.optional(v.picklist(['line', 'candle', 'bar']))
 });
 
 // Price Alert Block Content
-const priceAlertContentSchema = z.object({
-	ticker: z
-		.string()
-		.max(MAX_LENGTHS.TICKER_SYMBOL)
-		.regex(/^[A-Z0-9.^=-]+$/i, 'Invalid ticker symbol format')
-		.optional(),
-	priceTarget: z.number().positive().optional(),
-	text: z.string().max(MAX_LENGTHS.TEXT_MEDIUM).optional()
+const priceAlertContentSchema = v.object({
+	ticker: v.optional(
+		v.pipe(
+			v.string(),
+			v.maxLength(MAX_LENGTHS.TICKER_SYMBOL),
+			v.regex(/^[A-Z0-9.^=-]+$/i, 'Invalid ticker symbol format')
+		)
+	),
+	priceTarget: v.optional(v.pipe(v.number(), v.gtValue(0))),
+	text: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_MEDIUM)))
 });
 
 // Trading Idea Block Content
-const tradingIdeaContentSchema = z.object({
-	ticker: z.string().max(MAX_LENGTHS.TICKER_SYMBOL).optional(),
-	text: z.string().max(MAX_LENGTHS.TEXT_LONG).optional(),
-	html: safeHtmlSchema.optional(),
-	priceTarget: z.number().optional(),
-	chartType: z.enum(['line', 'candle', 'bar']).optional()
+const tradingIdeaContentSchema = v.object({
+	ticker: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TICKER_SYMBOL))),
+	text: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_LONG))),
+	html: v.optional(safeHtmlSchema),
+	priceTarget: v.optional(v.number()),
+	chartType: v.optional(v.picklist(['line', 'candle', 'bar']))
 });
 
 // Risk Disclaimer Block Content
-const riskDisclaimerContentSchema = z.object({
-	text: z.string().max(MAX_LENGTHS.TEXT_LONG).optional(),
-	html: safeHtmlSchema.optional()
+const riskDisclaimerContentSchema = v.object({
+	text: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_LONG))),
+	html: v.optional(safeHtmlSchema)
 });
 
 // Callout Block Content
-const calloutContentSchema = z.object({
-	text: z.string().max(MAX_LENGTHS.TEXT_LONG).optional(),
-	html: safeHtmlSchema.optional()
+const calloutContentSchema = v.object({
+	text: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_LONG))),
+	html: v.optional(safeHtmlSchema)
 });
 
 // Card Block Content
-const cardContentSchema = z.object({
-	text: z.string().max(MAX_LENGTHS.TEXT_LONG).optional(),
-	html: safeHtmlSchema.optional(),
-	mediaId: z.number().int().positive().optional(),
-	mediaUrl: secureUrlSchema.optional(),
-	mediaAlt: z.string().max(MAX_LENGTHS.TEXT_SHORT).optional(),
-	children: z.array(createBlockSchema()).max(MAX_LENGTHS.CHILDREN_BLOCKS).optional()
+const cardContentSchema = v.object({
+	text: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_LONG))),
+	html: v.optional(safeHtmlSchema),
+	mediaId: v.optional(v.pipe(v.number(), v.integer(), v.gtValue(0))),
+	mediaUrl: v.optional(secureUrlSchema),
+	mediaAlt: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_SHORT))),
+	children: v.optional(v.pipe(v.array(createBlockSchema()), v.maxLength(MAX_LENGTHS.CHILDREN_BLOCKS)))
 });
 
 // Testimonial Block Content
-const testimonialContentSchema = z.object({
-	text: z.string().max(MAX_LENGTHS.TEXT_LONG).optional(),
-	html: safeHtmlSchema.optional(),
-	mediaUrl: secureUrlSchema.optional() // avatar
+const testimonialContentSchema = v.object({
+	text: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_LONG))),
+	html: v.optional(safeHtmlSchema),
+	mediaUrl: v.optional(secureUrlSchema) // avatar
 });
 
 // CTA Block Content
-const ctaContentSchema = z.object({
-	text: z.string().max(MAX_LENGTHS.TEXT_LONG).optional(),
-	html: safeHtmlSchema.optional(),
-	children: z.array(createBlockSchema()).max(MAX_LENGTHS.CHILDREN_BLOCKS).optional()
+const ctaContentSchema = v.object({
+	text: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_LONG))),
+	html: v.optional(safeHtmlSchema),
+	children: v.optional(v.pipe(v.array(createBlockSchema()), v.maxLength(MAX_LENGTHS.CHILDREN_BLOCKS)))
 });
 
 // Countdown Block Content
-const countdownContentSchema = z.object({
-	text: z.string().max(MAX_LENGTHS.TEXT_SHORT).optional() // target date
+const countdownContentSchema = v.object({
+	text: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_SHORT))) // target date
 });
 
 // Social Share Block Content
-const socialShareContentSchema = z.object({});
+const socialShareContentSchema = v.object({});
 
 // Author Block Content
-const authorContentSchema = z.object({
-	text: z.string().max(MAX_LENGTHS.TEXT_LONG).optional(), // bio
-	html: safeHtmlSchema.optional(),
-	mediaUrl: secureUrlSchema.optional() // avatar
+const authorContentSchema = v.object({
+	text: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_LONG))), // bio
+	html: v.optional(safeHtmlSchema),
+	mediaUrl: v.optional(secureUrlSchema) // avatar
 });
 
 // Related Posts Block Content
-const relatedPostsContentSchema = z.object({
-	items: z
-		.array(
-			z.object({
-				id: blockIdSchema,
-				content: z.string().max(MAX_LENGTHS.TEXT_MEDIUM)
-			})
+const relatedPostsContentSchema = v.object({
+	items: v.optional(
+		v.pipe(
+			v.array(
+				v.object({
+					id: blockIdSchema,
+					content: v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_MEDIUM))
+				})
+			),
+			v.maxLength(20)
 		)
-		.max(20)
-		.optional()
+	)
 });
 
 // Newsletter Block Content
-const newsletterContentSchema = z.object({
-	text: z.string().max(MAX_LENGTHS.TEXT_MEDIUM).optional(),
-	html: safeHtmlSchema.optional()
+const newsletterContentSchema = v.object({
+	text: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_MEDIUM))),
+	html: v.optional(safeHtmlSchema)
 });
 
 // AI Generated Block Content
-const aiGeneratedContentSchema = z.object({
-	aiPrompt: z.string().max(MAX_LENGTHS.AI_PROMPT).optional(),
-	aiModel: z.string().max(64).optional(),
-	aiOutput: z.string().max(MAX_LENGTHS.AI_OUTPUT).optional(),
-	text: z.string().max(MAX_LENGTHS.TEXT_CONTENT).optional(),
-	html: safeHtmlSchema.optional()
+const aiGeneratedContentSchema = v.object({
+	aiPrompt: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.AI_PROMPT))),
+	aiModel: v.optional(v.pipe(v.string(), v.maxLength(64))),
+	aiOutput: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.AI_OUTPUT))),
+	text: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_CONTENT))),
+	html: v.optional(safeHtmlSchema)
 });
 
 // AI Summary Block Content
-const aiSummaryContentSchema = z.object({
-	aiPrompt: z.string().max(MAX_LENGTHS.AI_PROMPT).optional(),
-	aiModel: z.string().max(64).optional(),
-	aiOutput: z.string().max(MAX_LENGTHS.TEXT_LONG).optional(),
-	text: z.string().max(MAX_LENGTHS.TEXT_LONG).optional()
+const aiSummaryContentSchema = v.object({
+	aiPrompt: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.AI_PROMPT))),
+	aiModel: v.optional(v.pipe(v.string(), v.maxLength(64))),
+	aiOutput: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_LONG))),
+	text: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_LONG)))
 });
 
 // AI Translation Block Content
-const aiTranslationContentSchema = z.object({
-	aiPrompt: z.string().max(MAX_LENGTHS.AI_PROMPT).optional(),
-	aiModel: z.string().max(64).optional(),
-	aiOutput: z.string().max(MAX_LENGTHS.AI_OUTPUT).optional(),
-	text: z.string().max(MAX_LENGTHS.TEXT_CONTENT).optional(),
-	language: z.string().max(MAX_LENGTHS.LANGUAGE_CODE).optional()
+const aiTranslationContentSchema = v.object({
+	aiPrompt: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.AI_PROMPT))),
+	aiModel: v.optional(v.pipe(v.string(), v.maxLength(64))),
+	aiOutput: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.AI_OUTPUT))),
+	text: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_CONTENT))),
+	language: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.LANGUAGE_CODE)))
 });
 
 // Shortcode Block Content
-const shortcodeContentSchema = z.object({
-	text: z.string().max(MAX_LENGTHS.TEXT_MEDIUM).optional(),
-	code: z.string().max(MAX_LENGTHS.TEXT_MEDIUM).optional()
+const shortcodeContentSchema = v.object({
+	text: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_MEDIUM))),
+	code: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_MEDIUM)))
 });
 
 // HTML Block Content - with strict XSS validation
-const htmlBlockContentSchema = z.object({
-	html: safeHtmlSchema.optional()
+const htmlBlockContentSchema = v.object({
+	html: v.optional(safeHtmlSchema)
 });
 
 // Reusable Block Content
-const reusableContentSchema = z.object({
-	text: z.string().max(MAX_LENGTHS.ID).optional(), // reference ID
-	children: z.array(createBlockSchema()).max(MAX_LENGTHS.CHILDREN_BLOCKS).optional()
+const reusableContentSchema = v.object({
+	text: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.ID))), // reference ID
+	children: v.optional(v.pipe(v.array(createBlockSchema()), v.maxLength(MAX_LENGTHS.CHILDREN_BLOCKS)))
 });
 
 // =============================================================================
 // Combined Block Content Schema
 // =============================================================================
 
-const blockContentSchema = z.object({
+const blockContentSchema = v.object({
 	// Text content
-	text: z.string().max(MAX_LENGTHS.TEXT_CONTENT).optional(),
-	html: safeHtmlSchema.optional(),
+	text: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_CONTENT))),
+	html: v.optional(safeHtmlSchema),
 
 	// Media content
-	mediaId: z.number().int().positive().optional(),
-	mediaUrl: secureUrlSchema.optional(),
-	mediaAlt: z.string().max(MAX_LENGTHS.TEXT_SHORT).optional(),
-	mediaCaption: z.string().max(MAX_LENGTHS.TEXT_MEDIUM).optional(),
+	mediaId: v.optional(v.pipe(v.number(), v.integer(), v.gtValue(0))),
+	mediaUrl: v.optional(secureUrlSchema),
+	mediaAlt: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_SHORT))),
+	mediaCaption: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_MEDIUM))),
 
 	// Nested content
-	children: z.array(createBlockSchema()).max(MAX_LENGTHS.CHILDREN_BLOCKS).optional(),
-	items: z.array(blockItemSchema).max(MAX_LENGTHS.LIST_ITEMS).optional(),
+	children: v.optional(v.pipe(v.array(createBlockSchema()), v.maxLength(MAX_LENGTHS.CHILDREN_BLOCKS))),
+	items: v.optional(v.pipe(v.array(blockItemSchema), v.maxLength(MAX_LENGTHS.LIST_ITEMS))),
 
 	// Special content
-	embedUrl: secureUrlSchema.optional(),
-	embedType: z.enum(ALLOWED_EMBED_TYPES).optional(),
+	embedUrl: v.optional(secureUrlSchema),
+	embedType: v.optional(v.picklist(ALLOWED_EMBED_TYPES)),
 
 	// Code content
-	code: z.string().max(MAX_LENGTHS.CODE_CONTENT).optional(),
-	language: z.string().max(MAX_LENGTHS.LANGUAGE_CODE).optional(),
+	code: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.CODE_CONTENT))),
+	language: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.LANGUAGE_CODE))),
 
 	// List content
-	listType: z.enum(['bullet', 'number', 'check']).optional(),
-	listItems: z.array(z.string().max(MAX_LENGTHS.TEXT_LONG)).max(MAX_LENGTHS.LIST_ITEMS).optional(),
+	listType: v.optional(v.picklist(['bullet', 'number', 'check'])),
+	listItems: v.optional(
+		v.pipe(v.array(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_LONG))), v.maxLength(MAX_LENGTHS.LIST_ITEMS))
+	),
 
 	// Columns/Layout
-	columnCount: z.number().int().min(1).max(12).optional(),
-	columnLayout: z.string().max(64).optional(),
+	columnCount: v.optional(v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(12))),
+	columnLayout: v.optional(v.pipe(v.string(), v.maxLength(64))),
 
 	// Trading-specific
-	ticker: z.string().max(MAX_LENGTHS.TICKER_SYMBOL).optional(),
-	chartType: z.enum(['line', 'candle', 'bar']).optional(),
-	priceTarget: z.number().optional(),
+	ticker: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TICKER_SYMBOL))),
+	chartType: v.optional(v.picklist(['line', 'candle', 'bar'])),
+	priceTarget: v.optional(v.number()),
 
 	// AI content
-	aiPrompt: z.string().max(MAX_LENGTHS.AI_PROMPT).optional(),
-	aiModel: z.string().max(64).optional(),
-	aiOutput: z.string().max(MAX_LENGTHS.AI_OUTPUT).optional()
+	aiPrompt: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.AI_PROMPT))),
+	aiModel: v.optional(v.pipe(v.string(), v.maxLength(64))),
+	aiOutput: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.AI_OUTPUT)))
 });
 
 // =============================================================================
 // Complete Block Schema
 // =============================================================================
 
-export const blockSchema = z.object({
+export const blockSchema = v.object({
 	id: blockIdSchema,
 	type: blockTypeSchema,
 	content: blockContentSchema,
@@ -844,10 +857,10 @@ export const blockSchema = z.object({
 // Type-Specific Block Schemas with Content Validation
 // =============================================================================
 
-const createTypeSpecificBlockSchema = <T extends z.ZodType>(type: BlockType, contentSchema: T) => {
-	return z.object({
+const createTypeSpecificBlockSchema = <T extends v.GenericSchema>(type: BlockType, contentSchema: T) => {
+	return v.object({
 		id: blockIdSchema,
-		type: z.literal(type),
+		type: v.literal(type),
 		content: contentSchema,
 		settings: blockSettingsSchema,
 		metadata: blockMetadataSchema
@@ -943,6 +956,16 @@ export interface ValidationResults {
 	totalErrors: number;
 }
 
+// Map a valibot issue to the local ValidationError shape (parity with the
+// previous zod-based output: path as plain keys, message, and a `code`).
+function toValidationError(issue: v.BaseIssue<unknown>): ValidationError {
+	return {
+		path: (issue.path ?? []).map((p) => (p as { key: PropertyKey }).key),
+		message: issue.message,
+		code: issue.type
+	};
+}
+
 // =============================================================================
 // Validation Functions
 // =============================================================================
@@ -952,33 +975,25 @@ export interface ValidationResults {
  */
 export function validateBlock(block: unknown): ValidationResult {
 	// First, validate basic block structure
-	const basicResult = blockSchema.safeParse(block);
+	const basicResult = v.safeParse(blockSchema, block);
 
 	if (!basicResult.success) {
 		return {
 			success: false,
-			errors: basicResult.error.issues.map((e) => ({
-				path: e.path,
-				message: e.message,
-				code: e.code
-			}))
+			errors: basicResult.issues.map(toValidationError)
 		};
 	}
 
 	// Then validate type-specific content
-	const blockData = basicResult.data;
+	const blockData = basicResult.output;
 	const typeSchema = blockSchemas[blockData.type as keyof typeof blockSchemas];
 
 	if (typeSchema) {
-		const typeResult = typeSchema.safeParse(blockData);
+		const typeResult = v.safeParse(typeSchema, blockData);
 		if (!typeResult.success) {
 			return {
 				success: false,
-				errors: typeResult.error.issues.map((e) => ({
-					path: e.path,
-					message: e.message,
-					code: e.code
-				}))
+				errors: typeResult.issues.map(toValidationError)
 			};
 		}
 	}
@@ -1202,61 +1217,61 @@ export const schemas = {
 // TypeScript Type Inference from Schemas
 // =============================================================================
 
-export type ValidatedBlock = z.infer<typeof blockSchema>;
-export type ValidatedBlockContent = z.infer<typeof blockContentSchema>;
-export type ValidatedBlockSettings = z.infer<typeof blockSettingsSchema>;
-export type ValidatedBlockMetadata = z.infer<typeof blockMetadataSchema>;
-export type ValidatedBlockItem = z.infer<typeof blockItemSchema>;
-export type ValidatedBlockType = z.infer<typeof blockTypeSchema>;
-export type ValidatedAnimationSettings = z.infer<typeof animationSettingsSchema>;
+export type ValidatedBlock = v.InferOutput<typeof blockSchema>;
+export type ValidatedBlockContent = v.InferOutput<typeof blockContentSchema>;
+export type ValidatedBlockSettings = v.InferOutput<typeof blockSettingsSchema>;
+export type ValidatedBlockMetadata = v.InferOutput<typeof blockMetadataSchema>;
+export type ValidatedBlockItem = v.InferOutput<typeof blockItemSchema>;
+export type ValidatedBlockType = v.InferOutput<typeof blockTypeSchema>;
+export type ValidatedAnimationSettings = v.InferOutput<typeof animationSettingsSchema>;
 
 // Type-specific block types
-export type ValidatedParagraphBlock = z.infer<typeof blockSchemas.paragraph>;
-export type ValidatedHeadingBlock = z.infer<typeof blockSchemas.heading>;
-export type ValidatedQuoteBlock = z.infer<typeof blockSchemas.quote>;
-export type ValidatedPullquoteBlock = z.infer<typeof blockSchemas.pullquote>;
-export type ValidatedCodeBlock = z.infer<typeof blockSchemas.code>;
-export type ValidatedPreformattedBlock = z.infer<typeof blockSchemas.preformatted>;
-export type ValidatedListBlock = z.infer<typeof blockSchemas.list>;
-export type ValidatedChecklistBlock = z.infer<typeof blockSchemas.checklist>;
-export type ValidatedImageBlock = z.infer<typeof blockSchemas.image>;
-export type ValidatedGalleryBlock = z.infer<typeof blockSchemas.gallery>;
-export type ValidatedVideoBlock = z.infer<typeof blockSchemas.video>;
-export type ValidatedAudioBlock = z.infer<typeof blockSchemas.audio>;
-export type ValidatedFileBlock = z.infer<typeof blockSchemas.file>;
-export type ValidatedEmbedBlock = z.infer<typeof blockSchemas.embed>;
-export type ValidatedGifBlock = z.infer<typeof blockSchemas.gif>;
-export type ValidatedColumnsBlock = z.infer<typeof blockSchemas.columns>;
-export type ValidatedGroupBlock = z.infer<typeof blockSchemas.group>;
-export type ValidatedSeparatorBlock = z.infer<typeof blockSchemas.separator>;
-export type ValidatedSpacerBlock = z.infer<typeof blockSchemas.spacer>;
-export type ValidatedRowBlock = z.infer<typeof blockSchemas.row>;
-export type ValidatedButtonBlock = z.infer<typeof blockSchemas.button>;
-export type ValidatedButtonsBlock = z.infer<typeof blockSchemas.buttons>;
-export type ValidatedAccordionBlock = z.infer<typeof blockSchemas.accordion>;
-export type ValidatedTabsBlock = z.infer<typeof blockSchemas.tabs>;
-export type ValidatedToggleBlock = z.infer<typeof blockSchemas.toggle>;
-export type ValidatedTocBlock = z.infer<typeof blockSchemas.toc>;
-export type ValidatedTickerBlock = z.infer<typeof blockSchemas.ticker>;
-export type ValidatedChartBlock = z.infer<typeof blockSchemas.chart>;
-export type ValidatedPriceAlertBlock = z.infer<typeof blockSchemas.priceAlert>;
-export type ValidatedTradingIdeaBlock = z.infer<typeof blockSchemas.tradingIdea>;
-export type ValidatedRiskDisclaimerBlock = z.infer<typeof blockSchemas.riskDisclaimer>;
-export type ValidatedCalloutBlock = z.infer<typeof blockSchemas.callout>;
-export type ValidatedCardBlock = z.infer<typeof blockSchemas.card>;
-export type ValidatedTestimonialBlock = z.infer<typeof blockSchemas.testimonial>;
-export type ValidatedCtaBlock = z.infer<typeof blockSchemas.cta>;
-export type ValidatedCountdownBlock = z.infer<typeof blockSchemas.countdown>;
-export type ValidatedSocialShareBlock = z.infer<typeof blockSchemas.socialShare>;
-export type ValidatedAuthorBlock = z.infer<typeof blockSchemas.author>;
-export type ValidatedRelatedPostsBlock = z.infer<typeof blockSchemas.relatedPosts>;
-export type ValidatedNewsletterBlock = z.infer<typeof blockSchemas.newsletter>;
-export type ValidatedAiGeneratedBlock = z.infer<typeof blockSchemas.aiGenerated>;
-export type ValidatedAiSummaryBlock = z.infer<typeof blockSchemas.aiSummary>;
-export type ValidatedAiTranslationBlock = z.infer<typeof blockSchemas.aiTranslation>;
-export type ValidatedShortcodeBlock = z.infer<typeof blockSchemas.shortcode>;
-export type ValidatedHtmlBlock = z.infer<typeof blockSchemas.html>;
-export type ValidatedReusableBlock = z.infer<typeof blockSchemas.reusable>;
+export type ValidatedParagraphBlock = v.InferOutput<typeof blockSchemas.paragraph>;
+export type ValidatedHeadingBlock = v.InferOutput<typeof blockSchemas.heading>;
+export type ValidatedQuoteBlock = v.InferOutput<typeof blockSchemas.quote>;
+export type ValidatedPullquoteBlock = v.InferOutput<typeof blockSchemas.pullquote>;
+export type ValidatedCodeBlock = v.InferOutput<typeof blockSchemas.code>;
+export type ValidatedPreformattedBlock = v.InferOutput<typeof blockSchemas.preformatted>;
+export type ValidatedListBlock = v.InferOutput<typeof blockSchemas.list>;
+export type ValidatedChecklistBlock = v.InferOutput<typeof blockSchemas.checklist>;
+export type ValidatedImageBlock = v.InferOutput<typeof blockSchemas.image>;
+export type ValidatedGalleryBlock = v.InferOutput<typeof blockSchemas.gallery>;
+export type ValidatedVideoBlock = v.InferOutput<typeof blockSchemas.video>;
+export type ValidatedAudioBlock = v.InferOutput<typeof blockSchemas.audio>;
+export type ValidatedFileBlock = v.InferOutput<typeof blockSchemas.file>;
+export type ValidatedEmbedBlock = v.InferOutput<typeof blockSchemas.embed>;
+export type ValidatedGifBlock = v.InferOutput<typeof blockSchemas.gif>;
+export type ValidatedColumnsBlock = v.InferOutput<typeof blockSchemas.columns>;
+export type ValidatedGroupBlock = v.InferOutput<typeof blockSchemas.group>;
+export type ValidatedSeparatorBlock = v.InferOutput<typeof blockSchemas.separator>;
+export type ValidatedSpacerBlock = v.InferOutput<typeof blockSchemas.spacer>;
+export type ValidatedRowBlock = v.InferOutput<typeof blockSchemas.row>;
+export type ValidatedButtonBlock = v.InferOutput<typeof blockSchemas.button>;
+export type ValidatedButtonsBlock = v.InferOutput<typeof blockSchemas.buttons>;
+export type ValidatedAccordionBlock = v.InferOutput<typeof blockSchemas.accordion>;
+export type ValidatedTabsBlock = v.InferOutput<typeof blockSchemas.tabs>;
+export type ValidatedToggleBlock = v.InferOutput<typeof blockSchemas.toggle>;
+export type ValidatedTocBlock = v.InferOutput<typeof blockSchemas.toc>;
+export type ValidatedTickerBlock = v.InferOutput<typeof blockSchemas.ticker>;
+export type ValidatedChartBlock = v.InferOutput<typeof blockSchemas.chart>;
+export type ValidatedPriceAlertBlock = v.InferOutput<typeof blockSchemas.priceAlert>;
+export type ValidatedTradingIdeaBlock = v.InferOutput<typeof blockSchemas.tradingIdea>;
+export type ValidatedRiskDisclaimerBlock = v.InferOutput<typeof blockSchemas.riskDisclaimer>;
+export type ValidatedCalloutBlock = v.InferOutput<typeof blockSchemas.callout>;
+export type ValidatedCardBlock = v.InferOutput<typeof blockSchemas.card>;
+export type ValidatedTestimonialBlock = v.InferOutput<typeof blockSchemas.testimonial>;
+export type ValidatedCtaBlock = v.InferOutput<typeof blockSchemas.cta>;
+export type ValidatedCountdownBlock = v.InferOutput<typeof blockSchemas.countdown>;
+export type ValidatedSocialShareBlock = v.InferOutput<typeof blockSchemas.socialShare>;
+export type ValidatedAuthorBlock = v.InferOutput<typeof blockSchemas.author>;
+export type ValidatedRelatedPostsBlock = v.InferOutput<typeof blockSchemas.relatedPosts>;
+export type ValidatedNewsletterBlock = v.InferOutput<typeof blockSchemas.newsletter>;
+export type ValidatedAiGeneratedBlock = v.InferOutput<typeof blockSchemas.aiGenerated>;
+export type ValidatedAiSummaryBlock = v.InferOutput<typeof blockSchemas.aiSummary>;
+export type ValidatedAiTranslationBlock = v.InferOutput<typeof blockSchemas.aiTranslation>;
+export type ValidatedShortcodeBlock = v.InferOutput<typeof blockSchemas.shortcode>;
+export type ValidatedHtmlBlock = v.InferOutput<typeof blockSchemas.html>;
+export type ValidatedReusableBlock = v.InferOutput<typeof blockSchemas.reusable>;
 
 // =============================================================================
 // Utility Types
@@ -1269,7 +1284,7 @@ export type BlockSchemaKey = keyof BlockSchemaMap;
  * Helper to get the content type for a specific block type
  */
 export type BlockContentFor<T extends BlockType> = T extends keyof BlockSchemaMap
-	? z.infer<BlockSchemaMap[T]>['content']
+	? v.InferOutput<BlockSchemaMap[T]>['content']
 	: BlockContent;
 
 // =============================================================================
