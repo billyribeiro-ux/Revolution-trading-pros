@@ -152,7 +152,7 @@ pub async fn get_audit_logs(pool: &PgPool, query: &AuditLogQuery) -> Result<Vec<
     bind_count += 1;
     sql.push_str(&format!(" OFFSET ${bind_count}"));
 
-    let mut query_builder = sqlx::query_as::<_, CmsAuditLog>(&sql);
+    let mut query_builder = sqlx::query_as::<_, CmsAuditLog>(sqlx::AssertSqlSafe(sql.as_str()));
 
     if let Some(ref entity_type) = query.entity_type {
         query_builder = query_builder.bind(entity_type);
@@ -215,7 +215,7 @@ pub async fn get_audit_log_count(pool: &PgPool, query: &AuditLogQuery) -> Result
         sql.push_str(&format!(" AND created_at <= ${bind_count}"));
     }
 
-    let mut query_builder = sqlx::query_scalar::<_, i64>(&sql);
+    let mut query_builder = sqlx::query_scalar::<_, i64>(sqlx::AssertSqlSafe(sql.as_str()));
 
     if let Some(ref entity_type) = query.entity_type {
         query_builder = query_builder.bind(entity_type);

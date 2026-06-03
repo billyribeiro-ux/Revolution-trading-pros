@@ -295,7 +295,7 @@ pub(super) async fn admin_update_schedule(
     );
 
     // Execute with dynamic bindings
-    let mut query_builder = sqlx::query_as::<_, ScheduleRow>(&query);
+    let mut query_builder = sqlx::query_as::<_, ScheduleRow>(sqlx::AssertSqlSafe(query.as_str()));
 
     if let Some(ref title) = input.title {
         query_builder = query_builder.bind(title);

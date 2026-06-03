@@ -6,7 +6,7 @@
 use axum::http::StatusCode;
 use base32::Alphabet;
 use chrono::{DateTime, Utc};
-use rand::Rng;
+use rand::RngExt;
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 
@@ -51,19 +51,19 @@ pub struct MfaVerifyResult {
 
 /// Generate a random TOTP secret (20 bytes = 160 bits)
 pub fn generate_totp_secret() -> String {
-    let mut rng = rand::thread_rng();
-    let secret: Vec<u8> = (0..20).map(|_| rng.gen()).collect();
+    let mut rng = rand::rng();
+    let secret: Vec<u8> = (0..20).map(|_| rng.random()).collect();
     base32::encode(Alphabet::Rfc4648 { padding: false }, &secret)
 }
 
 /// Generate backup codes
 pub fn generate_backup_codes() -> Vec<String> {
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
     (0..BACKUP_CODE_COUNT)
         .map(|_| {
             let code: String = (0..BACKUP_CODE_LENGTH)
                 .map(|_| {
-                    let idx = rng.gen_range(0..36);
+                    let idx = rng.random_range(0..36);
                     if idx < 10 {
                         (b'0' + idx) as char
                     } else {

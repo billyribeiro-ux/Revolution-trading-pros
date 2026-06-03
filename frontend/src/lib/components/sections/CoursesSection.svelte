@@ -284,7 +284,7 @@
 		></div>
 
 		<div
-			class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_80%)]"
+			class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-size-[60px_60px] mask-[radial-gradient(ellipse_at_center,black_40%,transparent_80%)]"
 		></div>
 	</div>
 
@@ -373,7 +373,7 @@
 					></div>
 
 					<div
-						class="absolute inset-0 bg-gradient-to-br {course.bgGradient} opacity-50 group-hover:opacity-60 transition-opacity duration-500"
+						class="absolute inset-0 bg-linear-to-br {course.bgGradient} opacity-50 group-hover:opacity-60 transition-opacity duration-500"
 					></div>
 
 					<div class="relative p-6 sm:p-8 lg:p-10 h-full flex flex-col">
@@ -485,10 +485,10 @@
 			<div class="text-center mt-20" in:slideUp={{ delay: 400, duration: 800 }}>
 				<a
 					href="/courses"
-					class="group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-semibold shadow-lg shadow-violet-500/25 hover:shadow-violet-500/50 active:scale-[0.98] hover:-translate-y-1 transition-all duration-300 relative overflow-hidden"
+					class="group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-linear-to-r from-violet-600 to-indigo-600 text-white font-semibold shadow-lg shadow-violet-500/25 hover:shadow-violet-500/50 active:scale-[0.98] hover:-translate-y-1 transition-all duration-300 relative overflow-hidden"
 				>
 					<span
-						class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"
+						class="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"
 					></span>
 					<span class="text-base relative z-10">View Full Curriculum</span>
 					<IconArrowRight

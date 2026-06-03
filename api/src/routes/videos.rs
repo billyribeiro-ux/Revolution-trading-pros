@@ -265,7 +265,7 @@ async fn list_videos(
     rebuild_count_args(&mut count_args, &query)?;
     let count_sql = format!("SELECT COUNT(*) FROM unified_videos v WHERE {where_sql}");
 
-    let videos: Vec<UnifiedVideoRow> = sqlx::query_as_with(&sql, args)
+    let videos: Vec<UnifiedVideoRow> = sqlx::query_as_with(sqlx::AssertSqlSafe(sql.as_str()), args)
         .fetch_all(&state.db.pool)
         .await
         .map_err(|e| {
@@ -275,7 +275,7 @@ async fn list_videos(
             )
         })?;
 
-    let total: (i64,) = sqlx::query_as_with(&count_sql, count_args)
+    let total: (i64,) = sqlx::query_as_with(sqlx::AssertSqlSafe(count_sql.as_str()), count_args)
         .fetch_one(&state.db.pool)
         .await
         .unwrap_or((0,));

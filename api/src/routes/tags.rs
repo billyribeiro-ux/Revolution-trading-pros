@@ -88,7 +88,7 @@ pub async fn index(
             let query = format!(
                 "SELECT id, name, slug FROM tags WHERE (name ILIKE $1 OR slug ILIKE $1) ORDER BY {sort_column} {sort_direction} LIMIT $2 OFFSET $3"
             );
-            sqlx::query_as(&query)
+            sqlx::query_as(sqlx::AssertSqlSafe(query.as_str()))
                 .bind(pattern)
                 .bind(per_page)
                 .bind(offset)
@@ -99,7 +99,7 @@ pub async fn index(
             let query = format!(
                 "SELECT id, name, slug FROM tags WHERE (name ILIKE $1 OR slug ILIKE $1) ORDER BY {sort_column} {sort_direction}"
             );
-            sqlx::query_as(&query)
+            sqlx::query_as(sqlx::AssertSqlSafe(query.as_str()))
                 .bind(pattern)
                 .fetch_all(state.db.pool())
                 .await
@@ -108,7 +108,7 @@ pub async fn index(
             let query = format!(
                 "SELECT id, name, slug FROM tags ORDER BY {sort_column} {sort_direction} LIMIT $1 OFFSET $2"
             );
-            sqlx::query_as(&query)
+            sqlx::query_as(sqlx::AssertSqlSafe(query.as_str()))
                 .bind(per_page)
                 .bind(offset)
                 .fetch_all(state.db.pool())
@@ -118,7 +118,7 @@ pub async fn index(
             let query = format!(
                 "SELECT id, name, slug FROM tags ORDER BY {sort_column} {sort_direction}"
             );
-            sqlx::query_as(&query)
+            sqlx::query_as(sqlx::AssertSqlSafe(query.as_str()))
                 .fetch_all(state.db.pool())
                 .await
         }
@@ -252,7 +252,7 @@ pub async fn update(
         param_count
     );
 
-    let mut query = sqlx::query_as::<_, Tag>(&query_str);
+    let mut query = sqlx::query_as::<_, Tag>(sqlx::AssertSqlSafe(query_str.as_str()));
 
     if let Some(name) = payload.name {
         query = query.bind(name);

@@ -56,7 +56,7 @@ pub(super) async fn list_published_courses(
         "
     );
 
-    let courses: Vec<CourseListItem> = sqlx::query_as(&query)
+    let courses: Vec<CourseListItem> = sqlx::query_as(sqlx::AssertSqlSafe(query.as_str()))
         .bind(params.level.as_deref())
         .bind(params.search.as_deref())
         .bind(params.is_free)

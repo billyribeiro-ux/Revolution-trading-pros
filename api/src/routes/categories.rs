@@ -126,76 +126,92 @@ pub async fn index(
         fetch_all,
     ) {
         (Some(pattern), Some(vis), Some(pid), false) => {
-            sqlx::query_as(&format!("{base_query} LIMIT $4 OFFSET $5"))
-                .bind(pattern)
-                .bind(vis)
-                .bind(pid)
-                .bind(per_page)
-                .bind(offset)
-                .fetch_all(state.db.pool())
-                .await
+            sqlx::query_as(sqlx::AssertSqlSafe(format!(
+                "{base_query} LIMIT $4 OFFSET $5"
+            )))
+            .bind(pattern)
+            .bind(vis)
+            .bind(pid)
+            .bind(per_page)
+            .bind(offset)
+            .fetch_all(state.db.pool())
+            .await
         }
         (Some(pattern), Some(vis), None, false) => {
-            sqlx::query_as(&format!("{base_query} LIMIT $3 OFFSET $4"))
-                .bind(pattern)
-                .bind(vis)
-                .bind(per_page)
-                .bind(offset)
-                .fetch_all(state.db.pool())
-                .await
+            sqlx::query_as(sqlx::AssertSqlSafe(format!(
+                "{base_query} LIMIT $3 OFFSET $4"
+            )))
+            .bind(pattern)
+            .bind(vis)
+            .bind(per_page)
+            .bind(offset)
+            .fetch_all(state.db.pool())
+            .await
         }
         (Some(pattern), None, Some(pid), false) => {
-            sqlx::query_as(&format!("{base_query} LIMIT $3 OFFSET $4"))
-                .bind(pattern)
-                .bind(pid)
-                .bind(per_page)
-                .bind(offset)
-                .fetch_all(state.db.pool())
-                .await
+            sqlx::query_as(sqlx::AssertSqlSafe(format!(
+                "{base_query} LIMIT $3 OFFSET $4"
+            )))
+            .bind(pattern)
+            .bind(pid)
+            .bind(per_page)
+            .bind(offset)
+            .fetch_all(state.db.pool())
+            .await
         }
         (Some(pattern), None, None, false) => {
-            sqlx::query_as(&format!("{base_query} LIMIT $2 OFFSET $3"))
-                .bind(pattern)
-                .bind(per_page)
-                .bind(offset)
-                .fetch_all(state.db.pool())
-                .await
+            sqlx::query_as(sqlx::AssertSqlSafe(format!(
+                "{base_query} LIMIT $2 OFFSET $3"
+            )))
+            .bind(pattern)
+            .bind(per_page)
+            .bind(offset)
+            .fetch_all(state.db.pool())
+            .await
         }
         (None, Some(vis), Some(pid), false) => {
-            sqlx::query_as(&format!("{base_query} LIMIT $3 OFFSET $4"))
-                .bind(vis)
-                .bind(pid)
-                .bind(per_page)
-                .bind(offset)
-                .fetch_all(state.db.pool())
-                .await
+            sqlx::query_as(sqlx::AssertSqlSafe(format!(
+                "{base_query} LIMIT $3 OFFSET $4"
+            )))
+            .bind(vis)
+            .bind(pid)
+            .bind(per_page)
+            .bind(offset)
+            .fetch_all(state.db.pool())
+            .await
         }
         (None, Some(vis), None, false) => {
-            sqlx::query_as(&format!("{base_query} LIMIT $2 OFFSET $3"))
-                .bind(vis)
-                .bind(per_page)
-                .bind(offset)
-                .fetch_all(state.db.pool())
-                .await
+            sqlx::query_as(sqlx::AssertSqlSafe(format!(
+                "{base_query} LIMIT $2 OFFSET $3"
+            )))
+            .bind(vis)
+            .bind(per_page)
+            .bind(offset)
+            .fetch_all(state.db.pool())
+            .await
         }
         (None, None, Some(pid), false) => {
-            sqlx::query_as(&format!("{base_query} LIMIT $2 OFFSET $3"))
-                .bind(pid)
-                .bind(per_page)
-                .bind(offset)
-                .fetch_all(state.db.pool())
-                .await
+            sqlx::query_as(sqlx::AssertSqlSafe(format!(
+                "{base_query} LIMIT $2 OFFSET $3"
+            )))
+            .bind(pid)
+            .bind(per_page)
+            .bind(offset)
+            .fetch_all(state.db.pool())
+            .await
         }
         (None, None, None, false) => {
-            sqlx::query_as(&format!("{base_query} LIMIT $1 OFFSET $2"))
-                .bind(per_page)
-                .bind(offset)
-                .fetch_all(state.db.pool())
-                .await
+            sqlx::query_as(sqlx::AssertSqlSafe(format!(
+                "{base_query} LIMIT $1 OFFSET $2"
+            )))
+            .bind(per_page)
+            .bind(offset)
+            .fetch_all(state.db.pool())
+            .await
         }
         // All=true variants (no pagination)
         (Some(pattern), Some(vis), Some(pid), true) => {
-            sqlx::query_as(&base_query)
+            sqlx::query_as(sqlx::AssertSqlSafe(base_query.as_str()))
                 .bind(pattern)
                 .bind(vis)
                 .bind(pid)
@@ -203,45 +219,49 @@ pub async fn index(
                 .await
         }
         (Some(pattern), Some(vis), None, true) => {
-            sqlx::query_as(&base_query)
+            sqlx::query_as(sqlx::AssertSqlSafe(base_query.as_str()))
                 .bind(pattern)
                 .bind(vis)
                 .fetch_all(state.db.pool())
                 .await
         }
         (Some(pattern), None, Some(pid), true) => {
-            sqlx::query_as(&base_query)
+            sqlx::query_as(sqlx::AssertSqlSafe(base_query.as_str()))
                 .bind(pattern)
                 .bind(pid)
                 .fetch_all(state.db.pool())
                 .await
         }
         (Some(pattern), None, None, true) => {
-            sqlx::query_as(&base_query)
+            sqlx::query_as(sqlx::AssertSqlSafe(base_query.as_str()))
                 .bind(pattern)
                 .fetch_all(state.db.pool())
                 .await
         }
         (None, Some(vis), Some(pid), true) => {
-            sqlx::query_as(&base_query)
+            sqlx::query_as(sqlx::AssertSqlSafe(base_query.as_str()))
                 .bind(vis)
                 .bind(pid)
                 .fetch_all(state.db.pool())
                 .await
         }
         (None, Some(vis), None, true) => {
-            sqlx::query_as(&base_query)
+            sqlx::query_as(sqlx::AssertSqlSafe(base_query.as_str()))
                 .bind(vis)
                 .fetch_all(state.db.pool())
                 .await
         }
         (None, None, Some(pid), true) => {
-            sqlx::query_as(&base_query)
+            sqlx::query_as(sqlx::AssertSqlSafe(base_query.as_str()))
                 .bind(pid)
                 .fetch_all(state.db.pool())
                 .await
         }
-        (None, None, None, true) => sqlx::query_as(&base_query).fetch_all(state.db.pool()).await,
+        (None, None, None, true) => {
+            sqlx::query_as(sqlx::AssertSqlSafe(base_query.as_str()))
+                .fetch_all(state.db.pool())
+                .await
+        }
     }
     .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
@@ -441,7 +461,7 @@ pub async fn update(
         param_count + 1
     );
 
-    let mut query = sqlx::query_as::<_, Category>(&query_str);
+    let mut query = sqlx::query_as::<_, Category>(sqlx::AssertSqlSafe(query_str.as_str()));
 
     if let Some(name) = payload.name {
         query = query.bind(name);

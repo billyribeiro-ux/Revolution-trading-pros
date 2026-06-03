@@ -354,9 +354,9 @@ pub fn verify_jwt(token: &str, secret: &str, expected_type: &str) -> Result<Clai
 /// Generate a unique session ID (256-bit entropy)
 /// ICT L11+ Security: Cryptographically secure session identifier
 pub fn generate_session_id() -> String {
-    use rand::Rng;
-    let mut rng = rand::thread_rng();
-    let bytes: [u8; 32] = rng.gen();
+    use rand::RngExt;
+    let mut rng = rand::rng();
+    let bytes: [u8; 32] = rng.random();
     hex::encode(bytes)
 }
 
@@ -372,20 +372,19 @@ pub fn constant_time_compare(a: &str, b: &str) -> bool {
 
 /// Generate a random token (for password reset, etc.)
 pub fn generate_token() -> String {
-    use rand::Rng;
-    let mut rng = rand::thread_rng();
-    (0..32)
-        .map(|_| rng.sample(rand::distributions::Alphanumeric) as char)
-        .collect()
+    use rand::distr::Alphanumeric;
+    use rand::RngExt;
+    let mut rng = rand::rng();
+    (0..32).map(|_| rng.sample(Alphanumeric) as char).collect()
 }
 
 /// Generate a secure password reset token (URL-safe, 64 chars)
 pub fn generate_password_reset_token() -> String {
-    use rand::Rng;
-    let mut rng = rand::thread_rng();
+    use rand::RngExt;
+    let mut rng = rand::rng();
     (0..64)
         .map(|_| {
-            let idx = rng.gen_range(0..62);
+            let idx = rng.random_range(0..62);
             match idx {
                 0..=9 => (b'0' + idx) as char,
                 10..=35 => (b'a' + idx - 10) as char,
@@ -400,12 +399,12 @@ pub fn generate_password_reset_token() -> String {
 /// Returns (raw_token, hashed_token)
 /// The raw token is sent to the user, the hashed token is stored in the database
 pub fn generate_verification_token() -> (String, String) {
-    use rand::Rng;
+    use rand::RngExt;
 
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
     let raw_token: String = (0..64)
         .map(|_| {
-            let idx = rng.gen_range(0..62);
+            let idx = rng.random_range(0..62);
             match idx {
                 0..=9 => (b'0' + idx) as char,
                 10..=35 => (b'a' + idx - 10) as char,

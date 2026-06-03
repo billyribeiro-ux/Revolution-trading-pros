@@ -73,7 +73,7 @@ pub(super) async fn list_datasources(
     let total = count_result.0;
 
     // Fetch datasources
-    let datasources: Vec<CmsDatasourceSummary> = sqlx::query_as(&format!(
+    let datasources: Vec<CmsDatasourceSummary> = sqlx::query_as(sqlx::AssertSqlSafe(format!(
         r"
         SELECT id, name, slug, description, icon, color, entry_count,
                is_system, is_locked, created_at, updated_at
@@ -84,7 +84,7 @@ pub(super) async fn list_datasources(
         ORDER BY is_system DESC, {sort_column} {sort_order}
         LIMIT $3 OFFSET $4
         "
-    ))
+    )))
     .bind(&search_pattern)
     .bind(query.is_system)
     .bind(limit)

@@ -133,7 +133,7 @@
 
 		<!-- Overlay badges -->
 		<div
-			class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+			class="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
 		></div>
 
 		<!-- Type badge -->

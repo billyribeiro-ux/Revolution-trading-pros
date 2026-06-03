@@ -2,16 +2,14 @@
 //!
 //! Extracted from `auth.rs` during R12-B as a pure structural move.
 
-use std::net::SocketAddr;
-
 use axum::{
-    extract::{ConnectInfo, State},
+    extract::State,
     http::{HeaderMap, StatusCode},
     Json,
 };
 use serde_json::json;
 
-use super::helpers::{client_ip, enforce_ip_rate_limit_strict};
+use super::helpers::{client_ip, enforce_ip_rate_limit_strict, ClientAddr};
 use crate::{
     // FIX-2026-04-26 (Priority 2): pull in ValidatedJson extractor for hot-path handlers.
     middleware::validated_json::ValidatedJson,
@@ -26,17 +24,13 @@ use crate::{
 // Original signature: async fn forgot_password(State(state): State<AppState>, Json(input): Json<ForgotPasswordRequest>)
 pub(super) async fn forgot_password(
     State(state): State<AppState>,
-    peer: Option<ConnectInfo<SocketAddr>>,
+    peer: ClientAddr,
     headers: HeaderMap,
     Json(input): Json<ForgotPasswordRequest>,
 ) -> Result<Json<MessageResponse>, (StatusCode, Json<serde_json::Value>)> {
     // FIX-2026-04-26 (Priority 4): per-IP rate limit (3/hour) — fail-closed.
     // P1-3 (2026-05-17): IP is now spoof-resistant (trusted-proxy aware).
-    let ip = client_ip(
-        peer.map(|ci| ci.0),
-        &headers,
-        &state.config.trusted_proxy_cidrs,
-    );
+    let ip = client_ip(peer.0, &headers, &state.config.trusted_proxy_cidrs);
     enforce_ip_rate_limit_strict(&state, &ip, "forgot_password", 3, 3600).await?;
 
     // Find user (but don't reveal if they exist)
@@ -148,17 +142,13 @@ pub(super) async fn forgot_password(
 // Original signature: async fn reset_password(State(state): State<AppState>, Json(input): Json<ResetPasswordRequest>)
 pub(super) async fn reset_password(
     State(state): State<AppState>,
-    peer: Option<ConnectInfo<SocketAddr>>,
+    peer: ClientAddr,
     headers: HeaderMap,
     ValidatedJson(input): ValidatedJson<ResetPasswordRequest>,
 ) -> Result<Json<MessageResponse>, (StatusCode, Json<serde_json::Value>)> {
     // FIX-2026-04-26 (Priority 4): per-IP rate limit (5/hour) — fail-closed.
     // P1-3 (2026-05-17): IP is now spoof-resistant (trusted-proxy aware).
-    let ip = client_ip(
-        peer.map(|ci| ci.0),
-        &headers,
-        &state.config.trusted_proxy_cidrs,
-    );
+    let ip = client_ip(peer.0, &headers, &state.config.trusted_proxy_cidrs);
     enforce_ip_rate_limit_strict(&state, &ip, "reset_password", 5, 3600).await?;
 
     // Validate passwords match

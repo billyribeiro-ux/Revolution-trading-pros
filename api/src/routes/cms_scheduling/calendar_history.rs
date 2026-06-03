@@ -106,7 +106,8 @@ pub(super) async fn get_history(
     ));
 
     // Build query with all bindings
-    let mut query_builder = sqlx::query_as::<_, CmsScheduleHistory>(&sql);
+    let mut query_builder =
+        sqlx::query_as::<_, CmsScheduleHistory>(sqlx::AssertSqlSafe(sql.as_str()));
     for (_, val) in &conditions {
         query_builder = query_builder.bind(val);
     }
@@ -129,7 +130,7 @@ pub(super) async fn get_history(
         count_sql.push_str(&format!(" AND release_id = ${count_param_idx}"));
     }
 
-    let mut count_query = sqlx::query_as::<_, (i64,)>(&count_sql);
+    let mut count_query = sqlx::query_as::<_, (i64,)>(sqlx::AssertSqlSafe(count_sql.as_str()));
     if let Some(schedule_id) = query.schedule_id {
         count_query = count_query.bind(schedule_id.to_string());
     }

@@ -264,7 +264,9 @@ pub(super) async fn bulk_update_status(
         placeholders.join(", ")
     );
 
-    let mut q = sqlx::query(&query).bind(&input.status).bind(form_id);
+    let mut q = sqlx::query(sqlx::AssertSqlSafe(query.as_str()))
+        .bind(&input.status)
+        .bind(form_id);
 
     for id in &input.submission_ids {
         q = q.bind(id);
@@ -319,7 +321,7 @@ pub(super) async fn bulk_delete_submissions(
         placeholders.join(", ")
     );
 
-    let mut q = sqlx::query(&query).bind(form_id);
+    let mut q = sqlx::query(sqlx::AssertSqlSafe(query.as_str())).bind(form_id);
 
     for id in &input.submission_ids {
         q = q.bind(id);

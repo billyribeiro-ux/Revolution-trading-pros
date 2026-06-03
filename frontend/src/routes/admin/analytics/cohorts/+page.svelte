@@ -181,13 +181,13 @@
 	<title>Cohort Analysis | Analytics</title>
 </svelte:head>
 
-<div class="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+<div class="bg-linear-to-br from-slate-950 via-slate-900 to-slate-950">
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 		<!-- Apple ICT7 Grade Header -->
 		<header class="flex items-center justify-between mb-8">
 			<div class="flex items-center gap-4">
 				<div
-					class="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-2xl shadow-lg shadow-purple-500/20"
+					class="w-12 h-12 rounded-2xl bg-linear-to-br from-purple-500 to-pink-600 flex items-center justify-center text-2xl shadow-lg shadow-purple-500/20"
 				>
 					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: users -->
 					<IconUsers size={24} aria-hidden="true" />
@@ -211,7 +211,7 @@
 					</select>
 					<button
 						onclick={() => (showCreateModal = true)}
-						class="px-5 py-2.5 bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-xl hover:from-purple-400 hover:to-pink-500 text-sm font-semibold transition-all shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40"
+						class="px-5 py-2.5 bg-linear-to-r from-purple-500 to-pink-600 text-white rounded-xl hover:from-purple-400 hover:to-pink-500 text-sm font-semibold transition-all shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40"
 					>
 						Create Cohort
 					</button>
@@ -270,7 +270,7 @@
 				<p class="text-slate-400 mb-6">Create your first cohort to analyze user retention</p>
 				<button
 					onclick={() => (showCreateModal = true)}
-					class="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-xl hover:from-purple-400 hover:to-pink-500 font-semibold shadow-lg shadow-purple-500/25 transition-all"
+					class="px-6 py-3 bg-linear-to-r from-purple-500 to-pink-600 text-white rounded-xl hover:from-purple-400 hover:to-pink-500 font-semibold shadow-lg shadow-purple-500/25 transition-all"
 				>
 					Create Your First Cohort
 				</button>
@@ -283,7 +283,7 @@
 						onclick={() => (selectedCohort = cohort)}
 						class="px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all
 							{selectedCohort?.key === cohort.key
-							? 'bg-gradient-to-r from-purple-500 to-pink-600 text-white shadow-lg shadow-purple-500/25'
+							? 'bg-linear-to-r from-purple-500 to-pink-600 text-white shadow-lg shadow-purple-500/25'
 							: 'bg-white/5 border border-white/10 text-slate-400 hover:bg-white/10 hover:text-white'}"
 					>
 						{cohort.name}
@@ -498,7 +498,7 @@
 				<button
 					onclick={createCohort}
 					disabled={!newCohort.name}
-					class="px-5 py-2.5 bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-xl hover:from-purple-400 hover:to-pink-500 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-purple-500/25"
+					class="px-5 py-2.5 bg-linear-to-r from-purple-500 to-pink-600 text-white rounded-xl hover:from-purple-400 hover:to-pink-500 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-purple-500/25"
 				>
 					Create Cohort
 				</button>

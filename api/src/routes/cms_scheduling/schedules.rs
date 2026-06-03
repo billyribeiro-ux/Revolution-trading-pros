@@ -167,7 +167,8 @@ pub(super) async fn list_schedules(
     ));
 
     // Build and execute parameterized query
-    let mut query_builder = sqlx::query_as::<_, CmsScheduleExtended>(&sql);
+    let mut query_builder =
+        sqlx::query_as::<_, CmsScheduleExtended>(sqlx::AssertSqlSafe(sql.as_str()));
     for val in &bind_values {
         query_builder = query_builder.bind(val);
     }
@@ -193,7 +194,7 @@ pub(super) async fn list_schedules(
         count_bind_values.push(content_id.to_string());
     }
 
-    let mut count_query = sqlx::query_as::<_, (i64,)>(&count_sql);
+    let mut count_query = sqlx::query_as::<_, (i64,)>(sqlx::AssertSqlSafe(count_sql.as_str()));
     for val in &count_bind_values {
         count_query = count_query.bind(val);
     }

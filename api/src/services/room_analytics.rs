@@ -229,7 +229,8 @@ impl RoomAnalyticsService {
             "
         );
 
-        let mut query_builder = sqlx::query_as::<_, SummaryRow>(&query).bind(room_slug);
+        let mut query_builder =
+            sqlx::query_as::<_, SummaryRow>(sqlx::AssertSqlSafe(query.as_str())).bind(room_slug);
 
         if let Some(from_date) = from {
             query_builder = query_builder.bind(from_date);
@@ -361,7 +362,8 @@ impl RoomAnalyticsService {
             "
         );
 
-        let mut query_builder = sqlx::query_scalar::<_, f64>(&query).bind(room_slug);
+        let mut query_builder =
+            sqlx::query_scalar::<_, f64>(sqlx::AssertSqlSafe(query.as_str())).bind(room_slug);
 
         if let Some(from_date) = from {
             query_builder = query_builder.bind(from_date);
@@ -406,7 +408,9 @@ impl RoomAnalyticsService {
             "
         );
 
-        let mut query_builder = sqlx::query_as::<_, TickerPerformance>(&query).bind(room_slug);
+        let mut query_builder =
+            sqlx::query_as::<_, TickerPerformance>(sqlx::AssertSqlSafe(query.as_str()))
+                .bind(room_slug);
 
         if let Some(from_date) = from {
             query_builder = query_builder.bind(from_date);
@@ -450,7 +454,9 @@ impl RoomAnalyticsService {
             "
         );
 
-        let mut query_builder = sqlx::query_as::<_, SetupPerformance>(&query).bind(room_slug);
+        let mut query_builder =
+            sqlx::query_as::<_, SetupPerformance>(sqlx::AssertSqlSafe(query.as_str()))
+                .bind(room_slug);
 
         if let Some(from_date) = from {
             query_builder = query_builder.bind(from_date);
@@ -488,7 +494,8 @@ impl RoomAnalyticsService {
             "
         );
 
-        let mut query_builder = sqlx::query_as::<_, MonthlyRow>(&query).bind(room_slug);
+        let mut query_builder =
+            sqlx::query_as::<_, MonthlyRow>(sqlx::AssertSqlSafe(query.as_str())).bind(room_slug);
 
         if let Some(from_date) = from {
             query_builder = query_builder.bind(from_date);
@@ -545,7 +552,9 @@ impl RoomAnalyticsService {
             "
         );
 
-        let mut query_builder = sqlx::query_as::<_, EquityCurveRow>(&query).bind(room_slug);
+        let mut query_builder =
+            sqlx::query_as::<_, EquityCurveRow>(sqlx::AssertSqlSafe(query.as_str()))
+                .bind(room_slug);
 
         if let Some(from_date) = from {
             query_builder = query_builder.bind(from_date);
@@ -645,7 +654,8 @@ impl RoomAnalyticsService {
             recovery_days: i32,
         }
 
-        let mut query_builder = sqlx::query_as::<_, DrawdownRow>(&query).bind(room_slug);
+        let mut query_builder =
+            sqlx::query_as::<_, DrawdownRow>(sqlx::AssertSqlSafe(query.as_str())).bind(room_slug);
 
         if let Some(from_date) = from {
             query_builder = query_builder.bind(from_date);

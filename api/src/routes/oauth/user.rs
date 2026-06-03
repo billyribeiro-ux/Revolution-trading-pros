@@ -45,10 +45,10 @@ pub(super) async fn create_or_get_oauth_user(
         OAuthProvider::Apple => "apple_id",
     };
 
-    let existing_oauth_user: Option<User> = sqlx::query_as(&format!(
+    let existing_oauth_user: Option<User> = sqlx::query_as(sqlx::AssertSqlSafe(format!(
         "SELECT id, email, password_hash, name, role, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at
          FROM users WHERE {provider_column} = $1"
-    ))
+    )))
     .bind(provider_id)
     .fetch_optional(&state.db.pool)
     .await
@@ -97,7 +97,7 @@ pub(super) async fn create_or_get_oauth_user(
             "UPDATE users SET {provider_column} = $1, oauth_linked_at = COALESCE(oauth_linked_at, NOW()), updated_at = NOW() WHERE id = $2"
         );
 
-        sqlx::query(&update_query)
+        sqlx::query(sqlx::AssertSqlSafe(update_query.as_str()))
             .bind(provider_id)
             .bind(user.id)
             .execute(&state.db.pool)
@@ -173,7 +173,7 @@ pub(super) async fn create_or_get_oauth_user(
         "
     );
 
-    let new_user: User = sqlx::query_as(&insert_query)
+    let new_user: User = sqlx::query_as(sqlx::AssertSqlSafe(insert_query.as_str()))
         .bind(email)
         .bind(&password_hash)
         .bind(&user_name)

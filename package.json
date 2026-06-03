@@ -2,7 +2,7 @@
   "name": "revolution-trading-pros-monorepo",
   "version": "2.0.0",
   "private": true,
-  "packageManager": "pnpm@11.10.0+sha512.1ee6ddb42fc0fbeed1237b6e452680f46a89ebf1893cad98958c1bc6e00aa8ad13667dd0b289a1ae271ad80b9d3e2a7e40e7f69c70523dc73dd3c2889227843c",
+  "packageManager": "pnpm@11.5.1",
   "scripts": {
     "dev:all": "docker compose up -d db redis meili && concurrently --names \"api,web\" --prefix-colors \"yellow,cyan\" \"cd api && cargo run\" \"pnpm --filter revolution-svelte dev\"",
     "dev:docker": "docker compose up -d db redis meili",
@@ -20,10 +20,10 @@
     "api:lint:clippy": "cd api && cargo clippy --locked --all-targets -- -D warnings"
   },
   "engines": {
-    "node": ">=24.17.0",
-    "pnpm": ">=11.10.0"
+    "node": ">=24.15.0",
+    "pnpm": ">=11.5.1"
   },
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^10.0.3"
   }
 }

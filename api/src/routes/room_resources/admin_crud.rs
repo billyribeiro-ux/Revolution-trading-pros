@@ -83,7 +83,7 @@ pub(super) async fn admin_list_resources(
         format!("SELECT COUNT(*) FROM room_resources WHERE deleted_at IS NULL{where_clause}");
 
     // Bind parameters for the main query
-    let mut q = sqlx::query_as::<_, RoomResource>(&sql);
+    let mut q = sqlx::query_as::<_, RoomResource>(sqlx::AssertSqlSafe(sql.as_str()));
     if let Some(room_id) = query.room_id {
         q = q.bind(room_id);
     }
@@ -114,7 +114,7 @@ pub(super) async fn admin_list_resources(
     })?;
 
     // Bind parameters for the count query (same filters, no LIMIT/OFFSET)
-    let mut cq = sqlx::query_as::<_, (i64,)>(&count_sql);
+    let mut cq = sqlx::query_as::<_, (i64,)>(sqlx::AssertSqlSafe(count_sql.as_str()));
     if let Some(room_id) = query.room_id {
         cq = cq.bind(room_id);
     }
@@ -341,7 +341,7 @@ pub(super) async fn update_resource(
         param_idx
     );
 
-    let mut query = sqlx::query_as::<_, RoomResource>(&query_str);
+    let mut query = sqlx::query_as::<_, RoomResource>(sqlx::AssertSqlSafe(query_str.as_str()));
 
     // Bind parameters in order
     if let Some(ref v) = input.title {
@@ -763,7 +763,8 @@ pub(super) async fn get_resource_analytics(
     let totals_sql = format!(
         "SELECT COUNT(*), COALESCE(SUM(views_count), 0), COALESCE(SUM(downloads_count), 0) FROM room_resources WHERE deleted_at IS NULL{room_filter}"
     );
-    let mut totals_q = sqlx::query_as::<_, (i64, i64, i64)>(&totals_sql);
+    let mut totals_q =
+        sqlx::query_as::<_, (i64, i64, i64)>(sqlx::AssertSqlSafe(totals_sql.as_str()));
     if let Some(rid) = room_id {
         totals_q = totals_q.bind(rid);
     }
@@ -781,7 +782,7 @@ pub(super) async fn get_resource_analytics(
     let by_type_sql = format!(
         "SELECT resource_type, COUNT(*) as count, COALESCE(SUM(views_count), 0) as total_views, COALESCE(SUM(downloads_count), 0) as total_downloads FROM room_resources WHERE deleted_at IS NULL{room_filter} GROUP BY resource_type ORDER BY count DESC"
     );
-    let mut by_type_q = sqlx::query_as::<_, TypeStats>(&by_type_sql);
+    let mut by_type_q = sqlx::query_as::<_, TypeStats>(sqlx::AssertSqlSafe(by_type_sql.as_str()));
     if let Some(rid) = room_id {
         by_type_q = by_type_q.bind(rid);
     }
@@ -794,7 +795,8 @@ pub(super) async fn get_resource_analytics(
     let by_access_sql = format!(
         "SELECT COALESCE(access_level, 'premium') as access_level, COUNT(*) as count FROM room_resources WHERE deleted_at IS NULL{room_filter} GROUP BY access_level ORDER BY count DESC"
     );
-    let mut by_access_q = sqlx::query_as::<_, AccessStats>(&by_access_sql);
+    let mut by_access_q =
+        sqlx::query_as::<_, AccessStats>(sqlx::AssertSqlSafe(by_access_sql.as_str()));
     if let Some(rid) = room_id {
         by_access_q = by_access_q.bind(rid);
     }
@@ -807,7 +809,8 @@ pub(super) async fn get_resource_analytics(
     let top_viewed_sql = format!(
         "SELECT id, title, resource_type, views_count, downloads_count, created_at FROM room_resources WHERE deleted_at IS NULL{room_filter} ORDER BY views_count DESC LIMIT 10"
     );
-    let mut top_viewed_q = sqlx::query_as::<_, ResourceStats>(&top_viewed_sql);
+    let mut top_viewed_q =
+        sqlx::query_as::<_, ResourceStats>(sqlx::AssertSqlSafe(top_viewed_sql.as_str()));
     if let Some(rid) = room_id {
         top_viewed_q = top_viewed_q.bind(rid);
     }
@@ -820,7 +823,8 @@ pub(super) async fn get_resource_analytics(
     let top_downloaded_sql = format!(
         "SELECT id, title, resource_type, views_count, downloads_count, created_at FROM room_resources WHERE deleted_at IS NULL{room_filter} ORDER BY downloads_count DESC LIMIT 10"
     );
-    let mut top_downloaded_q = sqlx::query_as::<_, ResourceStats>(&top_downloaded_sql);
+    let mut top_downloaded_q =
+        sqlx::query_as::<_, ResourceStats>(sqlx::AssertSqlSafe(top_downloaded_sql.as_str()));
     if let Some(rid) = room_id {
         top_downloaded_q = top_downloaded_q.bind(rid);
     }
@@ -833,7 +837,8 @@ pub(super) async fn get_resource_analytics(
     let recent_uploads_sql = format!(
         "SELECT id, title, resource_type, views_count, downloads_count, created_at FROM room_resources WHERE deleted_at IS NULL{room_filter} ORDER BY created_at DESC LIMIT 10"
     );
-    let mut recent_uploads_q = sqlx::query_as::<_, ResourceStats>(&recent_uploads_sql);
+    let mut recent_uploads_q =
+        sqlx::query_as::<_, ResourceStats>(sqlx::AssertSqlSafe(recent_uploads_sql.as_str()));
     if let Some(rid) = room_id {
         recent_uploads_q = recent_uploads_q.bind(rid);
     }

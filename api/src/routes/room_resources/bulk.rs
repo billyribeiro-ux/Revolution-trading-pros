@@ -190,7 +190,7 @@ pub(super) async fn bulk_update_resources(
         ids_placeholder
     );
 
-    let mut query = sqlx::query(&query_str);
+    let mut query = sqlx::query(sqlx::AssertSqlSafe(query_str.as_str()));
 
     if let Some(v) = input.updates.is_published {
         query = query.bind(v);
@@ -253,7 +253,7 @@ pub(super) async fn bulk_delete_resources(
         "UPDATE room_resources SET deleted_at = NOW() WHERE id IN ({placeholders}) AND deleted_at IS NULL"
     );
 
-    let mut query = sqlx::query(&query_str);
+    let mut query = sqlx::query(sqlx::AssertSqlSafe(query_str.as_str()));
     for id in &ids {
         query = query.bind(*id);
     }

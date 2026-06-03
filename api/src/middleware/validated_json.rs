@@ -33,7 +33,6 @@
 //! Remaining 213 handlers should be migrated incrementally in follow-up sweeps.
 
 use axum::{
-    async_trait,
     extract::{rejection::JsonRejection, FromRequest, Request},
     http::StatusCode,
     response::{IntoResponse, Response},
@@ -49,7 +48,6 @@ use validator::Validate;
 #[derive(Debug, Clone, Copy, Default)]
 pub struct ValidatedJson<T>(pub T);
 
-#[async_trait]
 impl<S, T> FromRequest<S> for ValidatedJson<T>
 where
     S: Send + Sync,
@@ -58,18 +56,24 @@ where
 {
     type Rejection = ValidatedJsonRejection;
 
-    async fn from_request(req: Request, state: &S) -> Result<Self, Self::Rejection> {
-        // Step 1: standard JSON deserialization (delegates to axum::Json).
-        let Json(value) = Json::<T>::from_request(req, state)
-            .await
-            .map_err(ValidatedJsonRejection::Json)?;
+    #[allow(clippy::manual_async_fn)]
+    fn from_request(
+        req: Request,
+        state: &S,
+    ) -> impl std::future::Future<Output = Result<Self, Self::Rejection>> + Send {
+        async move {
+            // Step 1: standard JSON deserialization (delegates to axum::Json).
+            let Json(value) = Json::<T>::from_request(req, state)
+                .await
+                .map_err(ValidatedJsonRejection::Json)?;
 
-        // Step 2: invoke validator-derived validate().
-        value
-            .validate()
-            .map_err(ValidatedJsonRejection::Validation)?;
+            // Step 2: invoke validator-derived validate().
+            value
+                .validate()
+                .map_err(ValidatedJsonRejection::Validation)?;
 
-        Ok(ValidatedJson(value))
+            Ok(ValidatedJson(value))
+        }
     }
 }
 

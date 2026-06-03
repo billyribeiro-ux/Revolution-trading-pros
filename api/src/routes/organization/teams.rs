@@ -55,7 +55,7 @@ pub(super) async fn list_teams(
 
     sql.push_str(" ORDER BY t.name ASC");
 
-    let mut query_builder = sqlx::query_as::<_, Team>(&sql);
+    let mut query_builder = sqlx::query_as::<_, Team>(sqlx::AssertSqlSafe(sql.as_str()));
 
     if let Some(ref search) = query.search {
         query_builder = query_builder.bind(search);

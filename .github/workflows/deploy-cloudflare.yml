@@ -28,12 +28,11 @@ on:
       - "pnpm-lock.yaml"
 
 # pnpm version is intentionally NOT pinned here — pnpm/action-setup@v4
-# reads it from package.json#packageManager (pnpm@11.1.2), so this
+# reads it from package.json#packageManager (pnpm@11.5.1), so this
 # workflow, ci.yml, and local always use the exact same pnpm. One
-# source of truth, no drift. (The old hardcoded 10.33.2 violated the
-# repo's `pnpm: ">=11.0.0"` engine and the pnpm-11 lockfile.)
+# source of truth, no drift.
 env:
-  NODE_VERSION: "24"
+  NODE_VERSION: "24.15.0"
   CLOUDFLARE_PROJECT_NAME: revolution-trading-pros
 
 jobs:

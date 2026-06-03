@@ -101,7 +101,7 @@ async fn list_popups(
     let count_sql = format!("SELECT COUNT(*) FROM popups WHERE 1=1{where_clause}");
 
     // Bind parameters for the main query
-    let mut q = sqlx::query_as::<_, crate::models::popup::Popup>(&sql);
+    let mut q = sqlx::query_as::<_, crate::models::popup::Popup>(sqlx::AssertSqlSafe(sql.as_str()));
     if let Some(ref status) = query.status {
         q = q.bind(status);
     }
@@ -136,7 +136,7 @@ async fn list_popups(
     };
 
     // Bind parameters for the count query
-    let mut cq = sqlx::query_as::<_, (i64,)>(&count_sql);
+    let mut cq = sqlx::query_as::<_, (i64,)>(sqlx::AssertSqlSafe(count_sql.as_str()));
     if let Some(ref status) = query.status {
         cq = cq.bind(status);
     }

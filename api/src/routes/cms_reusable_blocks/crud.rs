@@ -84,7 +84,7 @@ pub(super) async fn list_reusable_blocks(
 
     // Fetch blocks using parameterized query with safe sort columns
     // Note: sort_column and sort_order are validated against whitelists above
-    let blocks: Vec<CmsReusableBlockSummary> = sqlx::query_as(&format!(
+    let blocks: Vec<CmsReusableBlockSummary> = sqlx::query_as(sqlx::AssertSqlSafe(format!(
         r"
         SELECT id, name, slug, description, category, tags, thumbnail_url,
                usage_count, is_global, is_locked, version, created_at, updated_at
@@ -96,7 +96,7 @@ pub(super) async fn list_reusable_blocks(
         ORDER BY {sort_column} {sort_order}
         LIMIT $5 OFFSET $6
         "
-    ))
+    )))
     .bind(include_deleted)
     .bind(&query.category)
     .bind(&search_pattern)

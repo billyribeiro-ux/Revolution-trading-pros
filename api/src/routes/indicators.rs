@@ -109,7 +109,7 @@ async fn list_indicators(
         "#,
         cols = INDICATOR_SELECT_COLS
     );
-    let indicators: Vec<IndicatorRow> = sqlx::query_as(&list_sql)
+    let indicators: Vec<IndicatorRow> = sqlx::query_as(sqlx::AssertSqlSafe(list_sql.as_str()))
     .bind(is_active)
     .bind(&platform)
     .bind(per_page)
@@ -151,7 +151,7 @@ async fn get_indicator(
         "SELECT {cols} FROM indicators WHERE slug = $1",
         cols = INDICATOR_SELECT_COLS
     );
-    let indicator: IndicatorRow = sqlx::query_as(&by_slug_sql)
+    let indicator: IndicatorRow = sqlx::query_as(sqlx::AssertSqlSafe(by_slug_sql.as_str()))
         .bind(&slug)
         .fetch_optional(&state.db.pool)
         .await
@@ -193,7 +193,7 @@ async fn create_indicator(
         "#,
         cols = INDICATOR_SELECT_COLS
     );
-    let indicator: IndicatorRow = sqlx::query_as(&insert_sql)
+    let indicator: IndicatorRow = sqlx::query_as(sqlx::AssertSqlSafe(insert_sql.as_str()))
     .bind(&input.name)
     .bind(&slug)
     .bind(&input.description)
@@ -235,7 +235,7 @@ async fn get_user_indicators(
         "#,
         cols = INDICATOR_SELECT_COLS
     );
-    let indicators: Vec<IndicatorRow> = sqlx::query_as(&user_indicators_sql)
+    let indicators: Vec<IndicatorRow> = sqlx::query_as(sqlx::AssertSqlSafe(user_indicators_sql.as_str()))
     .bind(user.id)
     .fetch_all(&state.db.pool)
     .await
@@ -269,7 +269,7 @@ async fn download_indicator(
         "SELECT {cols} FROM indicators WHERE id = $1",
         cols = INDICATOR_SELECT_COLS
     );
-    let indicator: IndicatorRow = sqlx::query_as(&by_id_sql)
+    let indicator: IndicatorRow = sqlx::query_as(sqlx::AssertSqlSafe(by_id_sql.as_str()))
         .bind(id)
         .fetch_one(&state.db.pool)
         .await

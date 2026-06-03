@@ -191,7 +191,7 @@
 	<title>Reports | Analytics</title>
 </svelte:head>
 
-<div class="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+<div class="bg-linear-to-br from-slate-950 via-slate-900 to-slate-950">
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 		<!-- Header -->
 		<div class="flex items-center justify-between mb-8">
@@ -202,7 +202,7 @@
 			{#if isAnalyticsConnected}
 				<button
 					onclick={() => (showCreateModal = true)}
-					class="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white rounded-lg text-sm font-medium transition-all shadow-lg"
+					class="px-4 py-2 bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white rounded-lg text-sm font-medium transition-all shadow-lg"
 				>
 					Create Report
 				</button>

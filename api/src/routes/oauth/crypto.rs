@@ -5,13 +5,13 @@
 //! sibling oauth submodules only.
 
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
-use rand::Rng;
+use rand::RngExt;
 use sha2::{Digest, Sha256};
 
 /// Generate cryptographically secure random string
 pub(super) fn generate_random_string(length: usize) -> String {
-    let mut rng = rand::thread_rng();
-    let bytes: Vec<u8> = (0..length).map(|_| rng.gen()).collect();
+    let mut rng = rand::rng();
+    let bytes: Vec<u8> = (0..length).map(|_| rng.random()).collect();
     URL_SAFE_NO_PAD.encode(&bytes)
 }
 

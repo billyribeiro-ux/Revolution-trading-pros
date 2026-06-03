@@ -425,7 +425,7 @@ async fn handle_socket(socket: WebSocket, state: AppState, params: WsParams) {
     };
 
     if let Ok(json) = serde_json::to_string(&connected_msg) {
-        let _ = sender.send(Message::Text(json)).await;
+        let _ = sender.send(Message::Text(json.into())).await;
     }
 
     // Subscribe to initial rooms
@@ -452,7 +452,7 @@ async fn handle_socket(socket: WebSocket, state: AppState, params: WsParams) {
 
         // Confirm subscription
         if let Ok(json) = serde_json::to_string(&WsMessage::Subscribed { room: room.clone() }) {
-            let _ = sender.send(Message::Text(json)).await;
+            let _ = sender.send(Message::Text(json.into())).await;
         }
     }
 
@@ -478,7 +478,7 @@ async fn handle_socket(socket: WebSocket, state: AppState, params: WsParams) {
     let send_handle = tokio::spawn(async move {
         while let Some(msg) = rx.recv().await {
             if let Ok(json) = serde_json::to_string(&msg) {
-                if sender.send(Message::Text(json)).await.is_err() {
+                if sender.send(Message::Text(json.into())).await.is_err() {
                     break;
                 }
             }

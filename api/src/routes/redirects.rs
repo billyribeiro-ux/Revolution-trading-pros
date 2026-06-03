@@ -281,7 +281,7 @@ pub async fn update(
         param_count + 1
     );
 
-    let mut query = sqlx::query_as::<_, Redirect>(&query_str);
+    let mut query = sqlx::query_as::<_, Redirect>(sqlx::AssertSqlSafe(query_str.as_str()));
 
     if let Some(from_path) = payload.from_path {
         query = query.bind(from_path);

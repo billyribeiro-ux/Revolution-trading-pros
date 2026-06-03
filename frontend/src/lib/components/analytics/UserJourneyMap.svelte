@@ -226,7 +226,7 @@
 	}
 
 	.connector-line {
-		@apply w-0.5 h-8 bg-gradient-to-b from-gray-600 to-gray-700;
+		@apply w-0.5 h-8 bg-linear-to-b from-gray-600 to-gray-700;
 	}
 
 	.connector-stats {

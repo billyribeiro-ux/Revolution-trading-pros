@@ -50,7 +50,7 @@ async fn schema_sql_plus_seed_makes_embedded_migrator_a_noop() {
         .expect("reset public schema");
 
     // Step 1: load the reconstructed baseline schema.
-    sqlx::raw_sql(&schema_sql)
+    sqlx::raw_sql(sqlx::AssertSqlSafe(schema_sql.as_str()))
         .execute(&pool)
         .await
         .expect("schema.sql must load with zero errors on an empty DB");

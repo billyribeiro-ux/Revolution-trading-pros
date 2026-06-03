@@ -113,7 +113,7 @@ pub async fn index(
 
     // Build dynamic query with parameterized bindings
     // Using a single query with COALESCE/NULL checks for optional filters
-    let members: Vec<Member> = sqlx::query_as(&format!(
+    let members: Vec<Member> = sqlx::query_as(sqlx::AssertSqlSafe(format!(
         r"
             SELECT id, name, email, created_at, updated_at
             FROM users
@@ -124,7 +124,7 @@ pub async fn index(
             ORDER BY {sort_column} {sort_direction}
             LIMIT $4 OFFSET $5
             "
-    ))
+    )))
     .bind(&search_pattern)
     .bind(&date_from)
     .bind(&date_to)

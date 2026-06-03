@@ -114,7 +114,7 @@ pub(super) async fn list_resources(
 
     // Helper macro-like closure to bind params to a query
     // Bind parameters for the main query
-    let mut q = sqlx::query_as::<_, RoomResource>(&sql);
+    let mut q = sqlx::query_as::<_, RoomResource>(sqlx::AssertSqlSafe(sql.as_str()));
     if let Some(room_id) = query.room_id {
         q = q.bind(room_id);
     }
@@ -161,7 +161,7 @@ pub(super) async fn list_resources(
     })?;
 
     // Bind parameters for the count query (same filters, no LIMIT/OFFSET)
-    let mut cq = sqlx::query_as::<_, (i64,)>(&count_sql);
+    let mut cq = sqlx::query_as::<_, (i64,)>(sqlx::AssertSqlSafe(count_sql.as_str()));
     if let Some(room_id) = query.room_id {
         cq = cq.bind(room_id);
     }
@@ -370,7 +370,7 @@ pub(super) async fn list_stock_lists(
     let count_sql = format!("SELECT COUNT(*) FROM stock_lists WHERE 1=1{where_clause}");
 
     // Bind parameters for the main query
-    let mut q = sqlx::query_as::<_, StockList>(&sql);
+    let mut q = sqlx::query_as::<_, StockList>(sqlx::AssertSqlSafe(sql.as_str()));
     if let Some(room_id) = query.room_id {
         q = q.bind(room_id);
     }
@@ -399,7 +399,7 @@ pub(super) async fn list_stock_lists(
     })?;
 
     // Bind parameters for the count query
-    let mut cq = sqlx::query_as::<_, (i64,)>(&count_sql);
+    let mut cq = sqlx::query_as::<_, (i64,)>(sqlx::AssertSqlSafe(count_sql.as_str()));
     if let Some(room_id) = query.room_id {
         cq = cq.bind(room_id);
     }

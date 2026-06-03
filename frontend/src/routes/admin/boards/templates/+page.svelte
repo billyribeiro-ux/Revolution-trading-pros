@@ -361,7 +361,7 @@
 						class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow"
 					>
 						<!-- Preview Header -->
-						<div class="h-32 bg-gradient-to-br from-[#E6B800] to-[#B38F00] p-4 flex items-end">
+						<div class="h-32 bg-linear-to-br from-[#E6B800] to-[#B38F00] p-4 flex items-end">
 							<div class="flex gap-2">
 								{#each template.stages.slice(0, 4) as stage, i (i)}
 									<div

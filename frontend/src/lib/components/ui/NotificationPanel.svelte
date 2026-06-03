@@ -278,7 +278,7 @@
 							<!-- Priority indicator for urgent -->
 							{#if notification.priority === 'urgent'}
 								<div
-									class="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-red-500 to-orange-500"
+									class="absolute inset-x-0 bottom-0 h-0.5 bg-linear-to-r from-red-500 to-orange-500"
 								></div>
 							{/if}
 						</div>

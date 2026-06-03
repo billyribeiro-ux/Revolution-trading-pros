@@ -120,7 +120,7 @@
 >
 	<div class="absolute inset-0 pointer-events-none">
 		<div
-			class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"
+			class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-size-[4rem_4rem] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"
 		></div>
 	</div>
 
@@ -263,11 +263,11 @@
 			<!-- Premium CTA -->
 			<div class="relative inline-block">
 				<div
-					class="absolute -inset-1 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-2xl blur-xl opacity-60 group-hover:opacity-100 transition-opacity duration-500"
+					class="absolute -inset-1 bg-linear-to-r from-emerald-400 to-teal-400 rounded-2xl blur-xl opacity-60 group-hover:opacity-100 transition-opacity duration-500"
 				></div>
 				<a
 					href="/mentorship"
-					class="relative block px-12 py-6 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-lg font-heading font-bold rounded-2xl hover:shadow-2xl hover:shadow-emerald-500/50 transform hover:scale-105 hover:-translate-y-1 transition-all duration-300 overflow-hidden group"
+					class="relative block px-12 py-6 bg-linear-to-r from-emerald-500 to-teal-500 text-white text-lg font-heading font-bold rounded-2xl hover:shadow-2xl hover:shadow-emerald-500/50 transform hover:scale-105 hover:-translate-y-1 transition-all duration-300 overflow-hidden group"
 				>
 					<span class="relative z-10 flex items-center gap-3">
 						<IconSparkles size={24} class="animate-sparkle" />

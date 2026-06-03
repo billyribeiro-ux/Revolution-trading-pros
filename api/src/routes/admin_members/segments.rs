@@ -222,7 +222,8 @@ pub(super) async fn update_segment(
         set_clauses.join(", ")
     );
 
-    let mut query_builder = sqlx::query_as::<_, MemberSegment>(&sql).bind(id);
+    let mut query_builder =
+        sqlx::query_as::<_, MemberSegment>(sqlx::AssertSqlSafe(sql.as_str())).bind(id);
 
     if let Some(ref name) = input.name {
         query_builder = query_builder.bind(name);

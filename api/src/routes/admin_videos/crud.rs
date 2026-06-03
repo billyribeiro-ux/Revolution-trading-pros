@@ -101,7 +101,7 @@ pub(super) async fn list_videos(
         format!("SELECT COUNT(*) FROM unified_videos WHERE deleted_at IS NULL{where_clause}");
 
     // Bind parameters for the main query
-    let mut q = sqlx::query_as::<_, UnifiedVideoRow>(&sql);
+    let mut q = sqlx::query_as::<_, UnifiedVideoRow>(sqlx::AssertSqlSafe(sql.as_str()));
     if let Some(ref content_type) = query.content_type {
         q = q.bind(content_type);
     }
@@ -133,7 +133,7 @@ pub(super) async fn list_videos(
     })?;
 
     // Bind parameters for the count query (same filters, no LIMIT/OFFSET)
-    let mut cq = sqlx::query_as::<_, (i64,)>(&count_sql);
+    let mut cq = sqlx::query_as::<_, (i64,)>(sqlx::AssertSqlSafe(count_sql.as_str()));
     if let Some(ref content_type) = query.content_type {
         cq = cq.bind(content_type);
     }
@@ -394,7 +394,7 @@ pub(super) async fn update_video(
         bind_count
     );
 
-    let mut query = sqlx::query_as::<_, UnifiedVideoRow>(&sql);
+    let mut query = sqlx::query_as::<_, UnifiedVideoRow>(sqlx::AssertSqlSafe(sql.as_str()));
 
     if let Some(ref title) = input.title {
         query = query.bind(title);

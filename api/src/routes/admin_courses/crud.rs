@@ -69,7 +69,7 @@ pub(super) async fn list_courses(
         Option<String>,
         Option<String>,
         NaiveDateTime,
-    )> = sqlx::query_as(&query)
+    )> = sqlx::query_as(sqlx::AssertSqlSafe(query.as_str()))
         .bind(params.level.as_deref())
         .bind(params.search.as_deref())
         .bind(per_page)
@@ -410,7 +410,7 @@ pub(super) async fn update_course(
         param_count
     );
 
-    let mut q = sqlx::query_as::<_, Course>(&query);
+    let mut q = sqlx::query_as::<_, Course>(sqlx::AssertSqlSafe(query.as_str()));
 
     if let Some(ref v) = input.title {
         q = q.bind(v);

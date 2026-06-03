@@ -208,7 +208,8 @@ pub(super) async fn update_member_filter(
         set_clauses.join(", ")
     );
 
-    let mut query_builder = sqlx::query_as::<_, MemberFilter>(&sql).bind(id);
+    let mut query_builder =
+        sqlx::query_as::<_, MemberFilter>(sqlx::AssertSqlSafe(sql.as_str())).bind(id);
 
     if let Some(ref name) = input.name {
         query_builder = query_builder.bind(name);

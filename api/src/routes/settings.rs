@@ -223,7 +223,7 @@ pub async fn index(
 
     sql.push_str(" ORDER BY \"group\" NULLS LAST, key");
 
-    let mut query_builder = sqlx::query_as::<_, Setting>(&sql);
+    let mut query_builder = sqlx::query_as::<_, Setting>(sqlx::AssertSqlSafe(sql.as_str()));
 
     if let Some(ref group) = query.group {
         query_builder = query_builder.bind(group);

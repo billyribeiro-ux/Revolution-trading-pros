@@ -175,7 +175,7 @@
 	</div>
 
 	<div
-		class="absolute inset-0 pointer-events-none bg-gradient-to-b from-[#020202] via-transparent to-[#020202]"
+		class="absolute inset-0 pointer-events-none bg-linear-to-b from-[#020202] via-transparent to-[#020202]"
 	></div>
 	<div
 		class="absolute inset-0 pointer-events-none opacity-40 transition-opacity duration-300"

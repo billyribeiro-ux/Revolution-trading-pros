@@ -78,21 +78,21 @@ pub async fn admin_index(
     let orders: Vec<AdminOrderRow> = match (&query.status, &query.search) {
         (Some(status), Some(search)) if !status.is_empty() && !search.is_empty() => {
             let search_pattern = format!("%{search}%");
-            sqlx::query_as::<_, AdminOrderRow>(&sql)
+            sqlx::query_as::<_, AdminOrderRow>(sqlx::AssertSqlSafe(sql.as_str()))
                 .bind(status)
                 .bind(&search_pattern)
                 .fetch_all(&state.db.pool)
                 .await
         }
         (Some(status), _) if !status.is_empty() => {
-            sqlx::query_as::<_, AdminOrderRow>(&sql)
+            sqlx::query_as::<_, AdminOrderRow>(sqlx::AssertSqlSafe(sql.as_str()))
                 .bind(status)
                 .fetch_all(&state.db.pool)
                 .await
         }
         (_, Some(search)) if !search.is_empty() => {
             let search_pattern = format!("%{search}%");
-            sqlx::query_as::<_, AdminOrderRow>(&sql)
+            sqlx::query_as::<_, AdminOrderRow>(sqlx::AssertSqlSafe(sql.as_str()))
                 .bind(&search_pattern)
                 .fetch_all(&state.db.pool)
                 .await
@@ -155,21 +155,21 @@ pub async fn admin_index(
     let total_count: i64 = match (&query.status, &query.search) {
         (Some(status), Some(search)) if !status.is_empty() && !search.is_empty() => {
             let search_pattern = format!("%{search}%");
-            sqlx::query_scalar(&count_sql)
+            sqlx::query_scalar(sqlx::AssertSqlSafe(count_sql.as_str()))
                 .bind(status)
                 .bind(&search_pattern)
                 .fetch_one(&state.db.pool)
                 .await
         }
         (Some(status), _) if !status.is_empty() => {
-            sqlx::query_scalar(&count_sql)
+            sqlx::query_scalar(sqlx::AssertSqlSafe(count_sql.as_str()))
                 .bind(status)
                 .fetch_one(&state.db.pool)
                 .await
         }
         (_, Some(search)) if !search.is_empty() => {
             let search_pattern = format!("%{search}%");
-            sqlx::query_scalar(&count_sql)
+            sqlx::query_scalar(sqlx::AssertSqlSafe(count_sql.as_str()))
                 .bind(&search_pattern)
                 .fetch_one(&state.db.pool)
                 .await

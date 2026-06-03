@@ -350,7 +350,8 @@ pub(super) async fn update_user_membership(
         set_clauses.join(", ")
     );
 
-    let mut query_builder = sqlx::query_as::<_, AdminUserMembershipRow>(&sql).bind(id);
+    let mut query_builder =
+        sqlx::query_as::<_, AdminUserMembershipRow>(sqlx::AssertSqlSafe(sql.as_str())).bind(id);
 
     if let Some(expires_at) = input.expires_at {
         query_builder = query_builder.bind(expires_at);

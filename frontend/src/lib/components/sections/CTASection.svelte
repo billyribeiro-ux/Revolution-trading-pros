@@ -157,7 +157,7 @@
 					class="relative max-w-xl mx-auto group perspective-1000"
 				>
 					<div
-						class="absolute -inset-1 bg-gradient-to-r from-amber-600/20 to-emerald-600/20 rounded opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-700"
+						class="absolute -inset-1 bg-linear-to-r from-amber-600/20 to-emerald-600/20 rounded opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-700"
 					></div>
 
 					<div class="relative bg-[#050505] border border-white/10 p-1 shadow-2xl">

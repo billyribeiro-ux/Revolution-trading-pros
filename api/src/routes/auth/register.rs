@@ -2,16 +2,14 @@
 //!
 //! Extracted from `auth.rs` during R12-B as a pure structural move.
 
-use std::net::SocketAddr;
-
 use axum::{
-    extract::{ConnectInfo, State},
+    extract::State,
     http::{HeaderMap, StatusCode},
     Json,
 };
 use serde_json::json;
 
-use super::helpers::{client_ip, enforce_ip_rate_limit_strict};
+use super::helpers::{client_ip, enforce_ip_rate_limit_strict, ClientAddr};
 use crate::{
     // FIX-2026-04-26 (Priority 2): pull in ValidatedJson extractor for hot-path handlers.
     middleware::validated_json::ValidatedJson,
@@ -35,18 +33,14 @@ pub(super) struct RegisterResponse {
 // Original signature: async fn register(State(state): State<AppState>, Json(input): Json<CreateUser>)
 pub(super) async fn register(
     State(state): State<AppState>,
-    peer: Option<ConnectInfo<SocketAddr>>,
+    peer: ClientAddr,
     headers: HeaderMap,
     ValidatedJson(input): ValidatedJson<CreateUser>,
 ) -> Result<Json<RegisterResponse>, (StatusCode, Json<serde_json::Value>)> {
     // FIX-2026-04-26 (Priority 4): per-IP rate limit BEFORE Argon2 hashing
     // (otherwise an attacker can DOS by burning CPU on hash attempts).
     // P1-3 (2026-05-17): IP is now spoof-resistant (trusted-proxy aware).
-    let ip = client_ip(
-        peer.map(|ci| ci.0),
-        &headers,
-        &state.config.trusted_proxy_cidrs,
-    );
+    let ip = client_ip(peer.0, &headers, &state.config.trusted_proxy_cidrs);
     enforce_ip_rate_limit_strict(&state, &ip, "register", 5, 900).await?;
 
     // Validate email format

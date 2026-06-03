@@ -245,16 +245,17 @@ impl ContentRepository for PgContentRepository {
         let cms_type: Option<CmsContentType> = query.content_type;
         let cms_status: Option<CmsContentStatus> = query.status;
 
-        let items = sqlx::query_as::<_, CmsContentSummary>(&base_query)
-            .bind(&cms_type)
-            .bind(&cms_status)
-            .bind(query.author_id)
-            .bind(&query.locale)
-            .bind(&query.search)
-            .bind(limit)
-            .bind(offset)
-            .fetch_all(&self.pool)
-            .await?;
+        let items =
+            sqlx::query_as::<_, CmsContentSummary>(sqlx::AssertSqlSafe(base_query.as_str()))
+                .bind(&cms_type)
+                .bind(&cms_status)
+                .bind(query.author_id)
+                .bind(&query.locale)
+                .bind(&query.search)
+                .bind(limit)
+                .bind(offset)
+                .fetch_all(&self.pool)
+                .await?;
 
         let total: (i64,) = sqlx::query_as(count_query)
             .bind(&cms_type)

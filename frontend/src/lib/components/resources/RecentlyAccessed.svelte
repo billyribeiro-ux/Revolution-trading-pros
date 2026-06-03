@@ -147,7 +147,7 @@
 							/>
 						{:else}
 							<div
-								class="flex h-full w-full items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800"
+								class="flex h-full w-full items-center justify-center bg-linear-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800"
 							>
 								{#if item.resource_type === 'video'}
 									<Icon name="IconVideo" size={32} class="text-gray-400" />

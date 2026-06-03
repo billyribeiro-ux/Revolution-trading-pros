@@ -131,12 +131,12 @@ pub(super) async fn get_indicator(
     let by_id_sql = format!("SELECT {select_cols} FROM indicators WHERE id = $1");
     let by_slug_sql = format!("SELECT {select_cols} FROM indicators WHERE slug = $1");
     let indicator: IndicatorRow = if let Ok(numeric_id) = id.parse::<i64>() {
-        sqlx::query_as(&by_id_sql)
+        sqlx::query_as(sqlx::AssertSqlSafe(by_id_sql.as_str()))
             .bind(numeric_id)
             .fetch_optional(&state.db.pool)
             .await
     } else {
-        sqlx::query_as(&by_slug_sql)
+        sqlx::query_as(sqlx::AssertSqlSafe(by_slug_sql.as_str()))
             .bind(&id)
             .fetch_optional(&state.db.pool)
             .await

@@ -128,7 +128,7 @@ pub(super) async fn index(
     // Get total count with parameterized query
     let count_query = format!("SELECT COUNT(*) FROM media WHERE 1=1{where_clause}");
 
-    let mut count_q = sqlx::query_scalar::<_, i64>(&count_query);
+    let mut count_q = sqlx::query_scalar::<_, i64>(sqlx::AssertSqlSafe(count_query.as_str()));
     for val in &bind_values {
         count_q = count_q.bind(val);
     }
@@ -156,7 +156,7 @@ pub(super) async fn index(
         bind_values.len() + 2,
     );
 
-    let mut main_q = sqlx::query_as::<_, Media>(&query);
+    let mut main_q = sqlx::query_as::<_, Media>(sqlx::AssertSqlSafe(query.as_str()));
     for val in &bind_values {
         main_q = main_q.bind(val);
     }
@@ -266,7 +266,7 @@ pub(super) async fn update(
         param_count
     );
 
-    let mut query = sqlx::query_as::<_, Media>(&query_str);
+    let mut query = sqlx::query_as::<_, Media>(sqlx::AssertSqlSafe(query_str.as_str()));
 
     if let Some(title) = payload.title {
         query = query.bind(title);

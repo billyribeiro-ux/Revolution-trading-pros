@@ -7,13 +7,13 @@ on:
     branches: [main, develop]
 
 # pnpm version is intentionally NOT pinned here — pnpm/action-setup@v4
-# reads it from package.json#packageManager (pnpm@11.1.2), so CI and
+# reads it from package.json#packageManager (pnpm@11.5.1), so CI and
 # local always use the exact same pnpm. One source of truth, no drift.
 env:
-  NODE_VERSION: "24"
+  NODE_VERSION: "24.15.0"
   # Pinned (NOT "stable") for a reproducible backend gate — see the
   # rust-toolchain step note + rust-toolchain.toml.
-  RUST_VERSION: "1.93.0"
+  RUST_VERSION: "1.96.0"
 
 jobs:
   # ───────────────────────────────────────────────────────────────────────

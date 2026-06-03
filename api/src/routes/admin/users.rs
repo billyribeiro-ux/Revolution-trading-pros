@@ -271,7 +271,8 @@ pub(super) async fn update_user(
         set_clauses.join(", ")
     );
 
-    let mut query_builder = sqlx::query_as::<_, AdminUserRow>(&sql).bind(id);
+    let mut query_builder =
+        sqlx::query_as::<_, AdminUserRow>(sqlx::AssertSqlSafe(sql.as_str())).bind(id);
 
     if let Some(ref name) = input.name {
         query_builder = query_builder.bind(name);

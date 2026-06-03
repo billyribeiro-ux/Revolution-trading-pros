@@ -158,9 +158,7 @@ pub(super) async fn start_quiz(
     // `shuffle_questions` boolean column from the DB — no user input
     // reaches this format string. `quiz_id` is bound below as `$1`.
     let order_clause = if quiz.4 { "RANDOM()" } else { "sort_order" };
-    let questions: Vec<serde_json::Value> = sqlx::query_as::<_, (i64, String, String, i32)>(
-        &format!("SELECT id, question_type, question_text, points FROM quiz_questions WHERE quiz_id = $1 ORDER BY {order_clause}")
-    )
+    let questions: Vec<serde_json::Value> = sqlx::query_as::<_, (i64, String, String, i32)>(sqlx::AssertSqlSafe(format!("SELECT id, question_type, question_text, points FROM quiz_questions WHERE quiz_id = $1 ORDER BY {order_clause}")))
     .bind(quiz_id)
     .fetch_all(&state.db.pool)
     .await
@@ -181,9 +179,9 @@ pub(super) async fn start_quiz(
         // `shuffle_answers` boolean column from the DB — no user input
         // reaches this format string. `question_id` is bound below as `$1`.
         let answer_order = if quiz.5 { "RANDOM()" } else { "sort_order" };
-        let answers: Vec<serde_json::Value> = sqlx::query_as::<_, (i64, String)>(&format!(
+        let answers: Vec<serde_json::Value> = sqlx::query_as::<_, (i64, String)>(sqlx::AssertSqlSafe(format!(
             "SELECT id, answer_text FROM quiz_answers WHERE question_id = $1 ORDER BY {answer_order}"
-        ))
+        )))
         .bind(question_id)
         .fetch_all(&state.db.pool)
         .await

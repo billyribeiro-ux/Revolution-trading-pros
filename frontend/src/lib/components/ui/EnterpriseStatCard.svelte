@@ -172,7 +172,7 @@
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <div
 	bind:this={cardRef}
-	class="enterprise-stat-card relative p-6 rounded-2xl border bg-gradient-to-br {colors.bg} {colors.border}
+	class="enterprise-stat-card relative p-6 rounded-2xl border bg-linear-to-br {colors.bg} {colors.border}
 		backdrop-blur-xl transition-all duration-500
 		{!hasAnimated ? 'esc-enter' : ''} {hasAnimated ? 'esc-enter-active' : ''}
 		{clickable ? 'cursor-pointer hover:scale-[1.02] hover:shadow-xl' : ''}
@@ -242,7 +242,7 @@
 				</div>
 				<div class="h-2 bg-slate-700/50 rounded-full overflow-hidden">
 					<div
-						class="progress-fill h-full rounded-full bg-gradient-to-r {colors.gradient}"
+						class="progress-fill h-full rounded-full bg-linear-to-r {colors.gradient}"
 						style={`width: ${hasAnimated ? progressPercent : 0}%; transition: width 900ms ease; transition-delay: ${delay + 0.5}s;`}
 					></div>
 				</div>

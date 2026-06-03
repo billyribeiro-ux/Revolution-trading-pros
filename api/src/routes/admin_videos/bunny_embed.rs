@@ -77,7 +77,7 @@ pub(super) async fn bunny_webhook(
 
         query.push_str(&format!(" WHERE bunny_video_guid = ${param_idx}"));
 
-        let mut sqlx_query = sqlx::query(&query).bind(encoding_status);
+        let mut sqlx_query = sqlx::query(sqlx::AssertSqlSafe(query.as_str())).bind(encoding_status);
 
         if let Some(dur) = duration {
             sqlx_query = sqlx_query.bind(dur);

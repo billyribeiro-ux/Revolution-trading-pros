@@ -90,7 +90,7 @@ pub(super) async fn list_presets(
     let total = count_result.0;
 
     // Fetch presets using parameterized query with safe sort columns
-    let presets: Vec<CmsPresetSummary> = sqlx::query_as(&format!(
+    let presets: Vec<CmsPresetSummary> = sqlx::query_as(sqlx::AssertSqlSafe(format!(
         r"
         SELECT id, block_type, name, slug, description, thumbnail_url, thumbnail_blurhash,
                category::text as category, tags, is_default, is_locked, is_global,
@@ -105,7 +105,7 @@ pub(super) async fn list_presets(
         ORDER BY is_default DESC, {sort_column} {sort_order}
         LIMIT $6 OFFSET $7
         "
-    ))
+    )))
     .bind(&query.block_type)
     .bind(&query.category)
     .bind(&search_pattern)

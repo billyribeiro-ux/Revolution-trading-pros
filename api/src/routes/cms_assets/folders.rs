@@ -156,7 +156,7 @@ pub(super) async fn update_folder(
     );
 
     let cms_user_id = get_cms_user_id(state.db.pool(), &admin).await;
-    let mut q = sqlx::query_as::<_, AssetFolder>(&query);
+    let mut q = sqlx::query_as::<_, AssetFolder>(sqlx::AssertSqlSafe(query.as_str()));
 
     if let Some(ref name) = payload.name {
         q = q.bind(name);

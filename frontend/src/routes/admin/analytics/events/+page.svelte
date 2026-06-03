@@ -127,13 +127,13 @@
 	<title>Event Explorer | Analytics</title>
 </svelte:head>
 
-<div class="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+<div class="bg-linear-to-br from-slate-950 via-slate-900 to-slate-950">
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 		<!-- Apple ICT7 Grade Header -->
 		<header class="mb-8">
 			<div class="flex items-center gap-4 mb-2">
 				<div
-					class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-2xl shadow-lg shadow-amber-500/20"
+					class="w-12 h-12 rounded-2xl bg-linear-to-br from-amber-500 to-orange-600 flex items-center justify-center text-2xl shadow-lg shadow-amber-500/20"
 				>
 					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: bolt (events) -->
 					<IconBolt size={24} aria-hidden="true" />
@@ -196,7 +196,7 @@
 
 					<button
 						onclick={handleSearch}
-						class="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-xl hover:from-amber-400 hover:to-orange-500 text-sm font-semibold transition-all shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40"
+						class="px-5 py-2.5 bg-linear-to-r from-amber-500 to-orange-600 text-white rounded-xl hover:from-amber-400 hover:to-orange-500 text-sm font-semibold transition-all shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40"
 					>
 						Search
 					</button>
@@ -216,7 +216,7 @@
 								}}
 								class="px-4 py-2 rounded-xl text-sm font-medium transition-all border
 									{selectedEventType === type.name
-									? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white border-transparent shadow-lg shadow-amber-500/25'
+									? 'bg-linear-to-r from-amber-500 to-orange-600 text-white border-transparent shadow-lg shadow-amber-500/25'
 									: eventColors[type.name] ||
 										'bg-slate-700/50 text-slate-300 border-slate-600/50 hover:bg-slate-700'}"
 							>

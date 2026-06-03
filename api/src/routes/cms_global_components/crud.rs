@@ -85,7 +85,7 @@ pub(super) async fn list_global_components(
     let total = count_result.0;
 
     // Fetch components with safe sort columns
-    let components: Vec<GlobalComponentSummary> = sqlx::query_as(&format!(
+    let components: Vec<GlobalComponentSummary> = sqlx::query_as(sqlx::AssertSqlSafe(format!(
         r"
         SELECT id, name, slug, description, category::text, tags, thumbnail_url,
                usage_count, is_global, is_locked, version, created_at, updated_at
@@ -97,7 +97,7 @@ pub(super) async fn list_global_components(
         ORDER BY {sort_column} {sort_order}
         LIMIT $5 OFFSET $6
         "
-    ))
+    )))
     .bind(include_deleted)
     .bind(&query.category)
     .bind(&search_pattern)

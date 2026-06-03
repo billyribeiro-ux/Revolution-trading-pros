@@ -3,15 +3,51 @@
 //! `auth.rs` during R12-B as a pure structural move; every byte of logic
 //! (including comments, log targets, and event names) is preserved.
 
+use std::convert::Infallible;
 use std::net::{IpAddr, SocketAddr};
 
 use axum::{
-    http::{HeaderMap, StatusCode},
+    extract::{connect_info::MockConnectInfo, ConnectInfo, FromRequestParts},
+    http::{request::Parts, HeaderMap, StatusCode},
     Json,
 };
 use serde_json::json;
 
 use crate::{config::IpCidr, AppState};
+
+/// Infallible client-address extractor.
+///
+/// axum 0.8 removed the blanket `FromRequestParts for Option<T>`; `ConnectInfo`
+/// now only implements `FromRequestParts` (not `OptionalFromRequestParts`), so
+/// `Option<ConnectInfo<SocketAddr>>` no longer works as a handler argument.
+///
+/// This wrapper reproduces the previous semantics exactly: it reads the
+/// `ConnectInfo<SocketAddr>` extension installed by
+/// `into_make_service_with_connect_info` (production) or `MockConnectInfo`
+/// (tests), and yields `None` when neither is present (e.g. the tower
+/// `oneshot` test harness). It never rejects.
+pub(super) struct ClientAddr(pub Option<SocketAddr>);
+
+impl<S> FromRequestParts<S> for ClientAddr
+where
+    S: Send + Sync,
+{
+    type Rejection = Infallible;
+
+    async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Infallible> {
+        let addr = parts
+            .extensions
+            .get::<ConnectInfo<SocketAddr>>()
+            .map(|ci| ci.0)
+            .or_else(|| {
+                parts
+                    .extensions
+                    .get::<MockConnectInfo<SocketAddr>>()
+                    .map(|m| m.0)
+            });
+        Ok(ClientAddr(addr))
+    }
+}
 
 /// P1-3 (FULL_REPO_AUDIT_2026-05-17): spoof-resistant client-IP resolver.
 ///

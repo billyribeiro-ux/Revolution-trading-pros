@@ -121,13 +121,13 @@
 	<title>Click Heatmaps | Analytics</title>
 </svelte:head>
 
-<div class="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+<div class="bg-linear-to-br from-slate-950 via-slate-900 to-slate-950">
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 		<!-- Apple ICT7 Grade Header -->
 		<header class="flex items-center justify-between mb-8">
 			<div class="flex items-center gap-4">
 				<div
-					class="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center text-2xl shadow-lg shadow-rose-500/20"
+					class="w-12 h-12 rounded-2xl bg-linear-to-br from-rose-500 to-pink-600 flex items-center justify-center text-2xl shadow-lg shadow-rose-500/20"
 				>
 					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: pointer/cursor (heatmap) -->
 					<IconPointer size={24} aria-hidden="true" />
@@ -237,7 +237,7 @@
 					</p>
 					<a
 						href="/admin/settings/tracking"
-						class="inline-block px-6 py-3 bg-gradient-to-r from-rose-500 to-pink-600 text-white rounded-xl hover:from-rose-400 hover:to-pink-500 font-semibold shadow-lg shadow-rose-500/25 transition-all"
+						class="inline-block px-6 py-3 bg-linear-to-r from-rose-500 to-pink-600 text-white rounded-xl hover:from-rose-400 hover:to-pink-500 font-semibold shadow-lg shadow-rose-500/25 transition-all"
 					>
 						Setup Tracking
 					</a>
@@ -319,7 +319,7 @@
 												<span class="text-xs text-slate-400 w-12">{scroll.depth}</span>
 												<div class="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
 													<div
-														class="h-full bg-gradient-to-r from-rose-500 to-pink-500 rounded-full"
+														class="h-full bg-linear-to-r from-rose-500 to-pink-500 rounded-full"
 														style="width: {scroll.percentage}%"
 													></div>
 												</div>

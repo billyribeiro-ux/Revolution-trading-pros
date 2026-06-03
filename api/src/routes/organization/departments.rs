@@ -55,7 +55,7 @@ pub(super) async fn list_departments(
 
     sql.push_str(" ORDER BY d.parent_id NULLS FIRST, d.name ASC");
 
-    let mut query_builder = sqlx::query_as::<_, Department>(&sql);
+    let mut query_builder = sqlx::query_as::<_, Department>(sqlx::AssertSqlSafe(sql.as_str()));
 
     if let Some(ref search) = query.search {
         query_builder = query_builder.bind(search);

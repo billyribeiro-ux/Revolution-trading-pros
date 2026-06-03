@@ -326,11 +326,10 @@ pub(super) async fn create_member(
     // Generate password hash
     let password_was_generated = input.password.is_none();
     let password = input.password.unwrap_or_else(|| {
-        use rand::Rng;
-        let mut rng = rand::thread_rng();
-        (0..16)
-            .map(|_| rng.sample(rand::distributions::Alphanumeric) as char)
-            .collect()
+        use rand::distr::Alphanumeric;
+        use rand::RngExt;
+        let mut rng = rand::rng();
+        (0..16).map(|_| rng.sample(Alphanumeric) as char).collect()
     });
 
     // FIX-2026-04-26 (Priority 7): use Argon2id (crate::utils::hash_password) instead of
@@ -499,7 +498,7 @@ pub(super) async fn update_member(
         updates.join(", ")
     );
 
-    let mut query = sqlx::query_as::<_, MemberDetail>(&sql).bind(id);
+    let mut query = sqlx::query_as::<_, MemberDetail>(sqlx::AssertSqlSafe(sql.as_str())).bind(id);
 
     if let Some(ref name) = input.name {
         query = query.bind(name);

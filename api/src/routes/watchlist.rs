@@ -386,7 +386,7 @@ async fn update_watchlist(
     );
 
     // Build query with bindings
-    let mut query = sqlx::query_as::<_, WatchlistEntry>(&query_str);
+    let mut query = sqlx::query_as::<_, WatchlistEntry>(sqlx::AssertSqlSafe(query_str.as_str()));
 
     if let Some(title) = &body.title {
         query = query.bind(title);

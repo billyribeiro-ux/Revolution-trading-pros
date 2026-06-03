@@ -126,7 +126,7 @@ pub(super) async fn bulk_update(
 
         let query = format!("UPDATE media SET {} WHERE id = $1", updates.join(", "));
 
-        let mut q = sqlx::query(&query).bind(id);
+        let mut q = sqlx::query(sqlx::AssertSqlSafe(query.as_str())).bind(id);
 
         if let Some(ref collection) = payload.collection {
             q = q.bind(collection);

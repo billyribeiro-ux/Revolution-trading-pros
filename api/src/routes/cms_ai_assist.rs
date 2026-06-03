@@ -906,7 +906,7 @@ async fn get_ai_history(
     // Execute query with dynamic binding
     let records: Vec<AiAssistHistoryRecord> =
         if let (Some(action), Some(content_id)) = (&query.action, query.content_id) {
-            sqlx::query_as(&sql)
+            sqlx::query_as(sqlx::AssertSqlSafe(sql.as_str()))
                 .bind(user.id)
                 .bind(action)
                 .bind(content_id)
@@ -915,7 +915,7 @@ async fn get_ai_history(
                 .fetch_all(&state.db.pool)
                 .await
         } else if let Some(action) = &query.action {
-            sqlx::query_as(&sql)
+            sqlx::query_as(sqlx::AssertSqlSafe(sql.as_str()))
                 .bind(user.id)
                 .bind(action)
                 .bind(limit)
@@ -923,7 +923,7 @@ async fn get_ai_history(
                 .fetch_all(&state.db.pool)
                 .await
         } else if let Some(content_id) = query.content_id {
-            sqlx::query_as(&sql)
+            sqlx::query_as(sqlx::AssertSqlSafe(sql.as_str()))
                 .bind(user.id)
                 .bind(content_id)
                 .bind(limit)

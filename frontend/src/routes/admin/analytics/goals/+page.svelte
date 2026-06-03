@@ -186,13 +186,13 @@
 	<title>Conversion Goals | Analytics</title>
 </svelte:head>
 
-<div class="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+<div class="bg-linear-to-br from-slate-950 via-slate-900 to-slate-950">
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 		<!-- Apple ICT7 Grade Header -->
 		<header class="flex items-center justify-between mb-8">
 			<div class="flex items-center gap-4">
 				<div
-					class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-2xl shadow-lg shadow-emerald-500/20"
+					class="w-12 h-12 rounded-2xl bg-linear-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-2xl shadow-lg shadow-emerald-500/20"
 				>
 					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-check (goal) -->
 					<IconCircleCheck size={24} aria-hidden="true" />
@@ -207,7 +207,7 @@
 					<PeriodSelector value={selectedPeriod} onchange={handlePeriodChange} />
 					<button
 						onclick={() => (showCreateModal = true)}
-						class="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl hover:from-emerald-400 hover:to-teal-500 text-sm font-semibold transition-all shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40"
+						class="px-5 py-2.5 bg-linear-to-r from-emerald-500 to-teal-600 text-white rounded-xl hover:from-emerald-400 hover:to-teal-500 text-sm font-semibold transition-all shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40"
 					>
 						Create Goal
 					</button>
@@ -306,7 +306,7 @@
 					<p class="text-slate-400 mb-6">Set up conversion goals to track important user actions</p>
 					<button
 						onclick={() => (showCreateModal = true)}
-						class="px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl hover:from-emerald-400 hover:to-teal-500 font-semibold shadow-lg shadow-emerald-500/25 transition-all"
+						class="px-6 py-3 bg-linear-to-r from-emerald-500 to-teal-600 text-white rounded-xl hover:from-emerald-400 hover:to-teal-500 font-semibold shadow-lg shadow-emerald-500/25 transition-all"
 					>
 						Create Your First Goal
 					</button>
@@ -370,7 +370,7 @@
 								</div>
 								<div class="h-2 bg-slate-700 rounded-full overflow-hidden">
 									<div
-										class="h-full bg-gradient-to-r {getProgressColor(
+										class="h-full bg-linear-to-r {getProgressColor(
 											goal.conversion_rate
 										)} rounded-full transition-all duration-500"
 										style="width: {Math.min(100, goal.conversion_rate)}%"
@@ -529,7 +529,7 @@
 				<button
 					onclick={createGoal}
 					disabled={!newGoal.name}
-					class="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl hover:from-emerald-400 hover:to-teal-500 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-emerald-500/25"
+					class="px-5 py-2.5 bg-linear-to-r from-emerald-500 to-teal-600 text-white rounded-xl hover:from-emerald-400 hover:to-teal-500 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-emerald-500/25"
 				>
 					Create Goal
 				</button>

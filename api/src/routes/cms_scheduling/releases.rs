@@ -131,7 +131,7 @@ pub(super) async fn list_releases(
     }
 
     let releases: Vec<CmsRelease> = if let Some(ref status) = query.status {
-        sqlx::query_as(&sql)
+        sqlx::query_as(sqlx::AssertSqlSafe(sql.as_str()))
             .bind(status)
             .bind(limit)
             .bind(query.offset)
@@ -139,7 +139,7 @@ pub(super) async fn list_releases(
             .await
             .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?
     } else {
-        sqlx::query_as(&sql)
+        sqlx::query_as(sqlx::AssertSqlSafe(sql.as_str()))
             .bind(limit)
             .bind(query.offset)
             .fetch_all(&state.db.pool)

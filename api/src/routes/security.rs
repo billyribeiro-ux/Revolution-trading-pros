@@ -120,8 +120,8 @@ async fn get_security_events(
     );
 
     // Build query with parameters
-    let mut query_builder = sqlx::query_as::<_, SecurityEvent>(&sql);
-    let mut count_builder = sqlx::query_as::<_, (i64,)>(&count_sql);
+    let mut query_builder = sqlx::query_as::<_, SecurityEvent>(sqlx::AssertSqlSafe(sql.as_str()));
+    let mut count_builder = sqlx::query_as::<_, (i64,)>(sqlx::AssertSqlSafe(count_sql.as_str()));
 
     if let Some(ref event_type) = query.event_type {
         query_builder = query_builder.bind(event_type);

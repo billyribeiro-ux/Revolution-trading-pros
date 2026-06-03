@@ -361,10 +361,11 @@ impl RoomSearchService {
         );
 
         // Build and execute query with dynamic bindings
-        let mut query_builder = sqlx::query_as::<_, AlertSearchResult>(&query)
-            .bind(room_slug)
-            .bind(ts_query)
-            .bind(pagination.limit);
+        let mut query_builder =
+            sqlx::query_as::<_, AlertSearchResult>(sqlx::AssertSqlSafe(query.as_str()))
+                .bind(room_slug)
+                .bind(ts_query)
+                .bind(pagination.limit);
 
         if let Some(from_date) = filters.from_date {
             query_builder = query_builder.bind(from_date);
@@ -447,10 +448,11 @@ impl RoomSearchService {
             "
         );
 
-        let mut query_builder = sqlx::query_as::<_, TradeSearchResult>(&query)
-            .bind(room_slug)
-            .bind(ts_query)
-            .bind(pagination.limit);
+        let mut query_builder =
+            sqlx::query_as::<_, TradeSearchResult>(sqlx::AssertSqlSafe(query.as_str()))
+                .bind(room_slug)
+                .bind(ts_query)
+                .bind(pagination.limit);
 
         if let Some(from_date) = filters.from_date {
             query_builder = query_builder.bind(from_date);
@@ -531,10 +533,11 @@ impl RoomSearchService {
             "
         );
 
-        let mut query_builder = sqlx::query_as::<_, TradePlanSearchResult>(&query)
-            .bind(room_slug)
-            .bind(ts_query)
-            .bind(pagination.limit);
+        let mut query_builder =
+            sqlx::query_as::<_, TradePlanSearchResult>(sqlx::AssertSqlSafe(query.as_str()))
+                .bind(room_slug)
+                .bind(ts_query)
+                .bind(pagination.limit);
 
         if let Some(from_date) = filters.from_date {
             query_builder = query_builder.bind(from_date);

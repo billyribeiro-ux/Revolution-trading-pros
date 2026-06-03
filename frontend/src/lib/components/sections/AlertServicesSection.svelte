@@ -128,7 +128,7 @@
 >
 	<div class="absolute inset-0 pointer-events-none">
 		<div
-			class="absolute inset-0 bg-[linear-gradient(to_right,#18181b_1px,transparent_1px),linear-gradient(to_bottom,#18181b_1px,transparent_1px)] bg-[size:3rem_3rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-30"
+			class="absolute inset-0 bg-[linear-gradient(to_right,#18181b_1px,transparent_1px),linear-gradient(to_bottom,#18181b_1px,transparent_1px)] bg-size-[3rem_3rem] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-30"
 		></div>
 	</div>
 
@@ -179,7 +179,7 @@
 						<div
 							class="relative h-48 w-full bg-zinc-900/30 border-b border-zinc-800 overflow-hidden"
 						>
-							<div class="absolute inset-0 bg-[size:20px_20px] bg-grid-zinc-800/50"></div>
+							<div class="absolute inset-0 bg-size-[20px_20px] bg-grid-zinc-800/50"></div>
 
 							<div class="absolute inset-0 flex items-center justify-center p-8">
 								{#if item.type === 'intraday'}

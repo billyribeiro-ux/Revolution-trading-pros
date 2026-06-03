@@ -58,7 +58,8 @@ pub(super) async fn get_connections_status(
 
     sql.push_str(" ORDER BY category, name");
 
-    let mut query_builder = sqlx::query_as::<_, ServiceConnection>(&sql);
+    let mut query_builder =
+        sqlx::query_as::<_, ServiceConnection>(sqlx::AssertSqlSafe(sql.as_str()));
 
     if let Some(ref category) = query.category {
         query_builder = query_builder.bind(category);

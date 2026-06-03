@@ -2,16 +2,14 @@
 //!
 //! Extracted from `auth.rs` during R12-B as a pure structural move.
 
-use std::net::SocketAddr;
-
 use axum::{
-    extract::{ConnectInfo, State},
+    extract::State,
     http::{HeaderMap, StatusCode},
     Json,
 };
 use serde_json::json;
 
-use super::helpers::{client_ip, current_token_version, enforce_ip_rate_limit_strict};
+use super::helpers::{client_ip, current_token_version, enforce_ip_rate_limit_strict, ClientAddr};
 use crate::{
     // FIX-2026-04-26 (Priority 2): pull in ValidatedJson extractor for hot-path handlers.
     middleware::validated_json::ValidatedJson,
@@ -34,7 +32,7 @@ use crate::{
 // Original signature: async fn login(State(state): State<AppState>, Json(input): Json<LoginUser>)
 pub(super) async fn login(
     State(state): State<AppState>,
-    peer: Option<ConnectInfo<SocketAddr>>,
+    peer: ClientAddr,
     headers: HeaderMap,
     ValidatedJson(input): ValidatedJson<LoginUser>,
 ) -> Result<Json<AuthResponse>, (StatusCode, Json<serde_json::Value>)> {
@@ -49,11 +47,7 @@ pub(super) async fn login(
     // A Redis outage must not become a free pass for brute-force attacks.
     // P1-3 (2026-05-17): IP is now spoof-resistant (trusted-proxy aware), so
     // the per-IP bucket can no longer be sidestepped by rotating XFF.
-    let ip = client_ip(
-        peer.map(|ci| ci.0),
-        &headers,
-        &state.config.trusted_proxy_cidrs,
-    );
+    let ip = client_ip(peer.0, &headers, &state.config.trusted_proxy_cidrs);
     enforce_ip_rate_limit_strict(&state, &ip, "login_ip", 10, 900).await?;
 
     let Some(ref redis) = state.services.redis else {

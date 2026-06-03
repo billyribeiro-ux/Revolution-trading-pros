@@ -179,13 +179,13 @@
 	<title>User Segments | Analytics</title>
 </svelte:head>
 
-<div class="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+<div class="bg-linear-to-br from-slate-950 via-slate-900 to-slate-950">
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 		<!-- Apple ICT7 Grade Header -->
 		<header class="flex items-center justify-between mb-8">
 			<div class="flex items-center gap-4">
 				<div
-					class="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-2xl shadow-lg shadow-cyan-500/20"
+					class="w-12 h-12 rounded-2xl bg-linear-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-2xl shadow-lg shadow-cyan-500/20"
 				>
 					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: users -->
 					<IconUsers size={24} aria-hidden="true" />
@@ -221,7 +221,7 @@
 					</div>
 					<button
 						onclick={() => (showCreateModal = true)}
-						class="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-400 hover:to-blue-500 text-sm font-semibold transition-all shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40"
+						class="px-5 py-2.5 bg-linear-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-400 hover:to-blue-500 text-sm font-semibold transition-all shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40"
 					>
 						Create Segment
 					</button>
@@ -305,7 +305,7 @@
 					<p class="text-slate-400 mb-6">Create your first segment to organize your users</p>
 					<button
 						onclick={() => (showCreateModal = true)}
-						class="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-400 hover:to-blue-500 font-semibold shadow-lg shadow-cyan-500/25 transition-all"
+						class="px-6 py-3 bg-linear-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-400 hover:to-blue-500 font-semibold shadow-lg shadow-cyan-500/25 transition-all"
 					>
 						Create Your First Segment
 					</button>
@@ -324,7 +324,7 @@
 						>
 							<div class="flex items-start justify-between mb-4">
 								<div
-									class="w-10 h-10 rounded-xl bg-gradient-to-br {segmentColors[segment.type] ||
+									class="w-10 h-10 rounded-xl bg-linear-to-br {segmentColors[segment.type] ||
 										'from-gray-500 to-gray-600'} flex items-center justify-center"
 								>
 									<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: users (grid card) -->
@@ -362,7 +362,7 @@
 							{#if segment.percentage}
 								<div class="mt-3 h-1.5 bg-slate-700 rounded-full overflow-hidden">
 									<div
-										class="h-full bg-gradient-to-r {segmentColors[segment.type] ||
+										class="h-full bg-linear-to-r {segmentColors[segment.type] ||
 											'from-gray-500 to-gray-600'} rounded-full"
 										style="width: {Math.min(100, segment.percentage)}%"
 									></div>
@@ -410,7 +410,7 @@
 									<td class="py-4 px-5">
 										<div class="flex items-center gap-3">
 											<div
-												class="w-8 h-8 rounded-lg bg-gradient-to-br {segmentColors[segment.type] ||
+												class="w-8 h-8 rounded-lg bg-linear-to-br {segmentColors[segment.type] ||
 													'from-gray-500 to-gray-600'} flex items-center justify-center"
 											>
 												<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: users (list row) -->
@@ -609,7 +609,7 @@
 				<button
 					onclick={createSegment}
 					disabled={!newSegment.name}
-					class="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-400 hover:to-blue-500 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-cyan-500/25"
+					class="px-5 py-2.5 bg-linear-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-400 hover:to-blue-500 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-cyan-500/25"
 				>
 					Create Segment
 				</button>
