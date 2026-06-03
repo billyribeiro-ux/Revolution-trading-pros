@@ -45,8 +45,8 @@
 	// --- Interaction Logic ---
 	let containerRef = $state<HTMLElement | null>(null);
 	let mouse = $state({ x: 0, y: 0 });
-	// ICT11+ Fix: Start false, set true in onMount to trigger in: transitions
-	let isVisible = $state(true); // CLS FIX: SSR-render content (reserve space, no pop-in); in:reveal still plays on client nav
+	// ICT11+ Fix: SSR renders true (CLS fix), {#key} triggers transitions
+	let isVisible = $state(true);
 
 	const handleMouseMove = (e: MouseEvent) => {
 		if (!containerRef) return;
@@ -88,6 +88,9 @@
 			return;
 		}
 
+		// Force state change to trigger {#key} transitions per Svelte 5 docs
+		isVisible = false;
+
 		queueMicrotask(() => {
 			if (!containerRef) {
 				isVisible = true;
@@ -126,6 +129,7 @@
 
 	<div class="relative max-w-[1600px] mx-auto z-10">
 		<div class="max-w-3xl mb-24">
+			{#key isVisible}
 			{#if isVisible}
 				<div
 					in:wipeLeft={{ delay: 0, duration: 900 }}
@@ -155,12 +159,14 @@
 					execution frameworks with institutional data tools.
 				</p>
 			{/if}
+			{/key}
 		</div>
 
 		<div class="group/grid grid md:grid-cols-3 gap-8" style="--x: {mouse.x}px; --y: {mouse.y}px;">
 			{#each features as feature, i (feature.id)}
 				{@const IconComponent = feature.icon}
-				{#if isVisible}
+				{#key isVisible}
+			{#if isVisible}
 					<div
 						in:dropIn={{ delay: 250 + i * 130, duration: 650 }}
 						class="relative group/card bg-[#080808] border border-white/10 p-10 overflow-hidden hover:border-amber-900/50 transition-colors duration-500"
@@ -257,6 +263,7 @@
 						</div>
 					</div>
 				{/if}
+				{/key}
 			{/each}
 		</div>
 		<div class="mt-16 text-center" data-gsap>

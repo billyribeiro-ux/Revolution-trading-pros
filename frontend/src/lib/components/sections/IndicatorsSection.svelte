@@ -87,8 +87,8 @@
 	// ============================================================================
 	let sectionRef = $state<HTMLElement | null>(null);
 	let chartRef = $state<HTMLElement | null>(null);
-	// ICT11+ Fix: Start false, set true in onMount to trigger in: transitions
-	let isVisible = $state(true); // CLS FIX: SSR-render content (reserve space, no pop-in); in:reveal still plays on client nav
+	// ICT11+ Fix: SSR renders true (CLS fix), {#key} triggers transitions
+	let isVisible = $state(true);
 	let activeIndicator = $state(0);
 	// `ScrollTriggerType` is the *class* (used statically — `.getAll()`,
 	// `.refresh()`); instances returned by `.getAll()` are `ScrollTriggerType`
@@ -231,6 +231,9 @@
 	onMount(() => {
 		// Check for reduced motion preference
 		prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+		// Force state change to trigger {#key} transitions per Svelte 5 docs
+		isVisible = false;
 
 		// Trigger entrance animations when section scrolls into viewport
 		queueMicrotask(() => {
@@ -453,7 +456,8 @@
 
 	<div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 		<!-- Section Header -->
-		{#if isVisible}
+		{#key isVisible}
+			{#if isVisible}
 			<div
 				class="max-w-4xl mx-auto text-center mb-24"
 				in:slideUp={{ delay: 0, duration: prefersReducedMotion ? 0 : 800 }}
@@ -474,11 +478,13 @@
 					by quantitative funds and professional trading desks.
 				</p>
 			</div>
-		{/if}
+			{/if}
+		{/key}
 
 		<!-- Main Content Grid - Stack on mobile -->
 		<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
 			<!-- Chart Visualization - Order 2 on mobile, 1 on desktop -->
+			{#key isVisible}
 			{#if isVisible}
 				<div
 					in:scaleIn={{
@@ -538,8 +544,10 @@
 					</div>
 				</div>
 			{/if}
+			{/key}
 
 			<!-- Indicator Cards - Order 1 on mobile, 2 on desktop -->
+			{#key isVisible}
 			{#if isVisible}
 				<div
 					class="space-y-3 sm:space-y-4 order-1 lg:order-2"
@@ -615,6 +623,7 @@
 					</div>
 				</div>
 			{/if}
+			{/key}
 		</div>
 	</div>
 </section>

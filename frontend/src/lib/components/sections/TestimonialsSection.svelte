@@ -83,8 +83,8 @@
 	// --- Animation Logic ---
 	let containerRef = $state<HTMLElement | null>(null);
 	let mouse = $state({ x: 0, y: 0 });
-	// ICT11+ Fix: Start false, set true in onMount to trigger in: transitions
-	let isVisible = $state(true); // CLS FIX: SSR-render content (reserve space, no pop-in); in:reveal still plays on client nav
+	// ICT11+ Fix: SSR renders true (CLS fix), {#key} triggers transitions
+	let isVisible = $state(true);
 
 	const handleMouseMove = (e: MouseEvent) => {
 		if (!containerRef) return;
@@ -110,6 +110,9 @@
 			isVisible = true;
 			return;
 		}
+
+		// Force state change to trigger {#key} transitions per Svelte 5 docs
+		isVisible = false;
 
 		queueMicrotask(() => {
 			if (!containerRef) {
@@ -184,6 +187,7 @@
 
 	<div class="relative max-w-[1600px] mx-auto z-10">
 		<div class="max-w-4xl mx-auto text-center mb-24">
+			{#key isVisible}
 			{#if isVisible}
 				<div
 					in:heavySlide={{ delay: 0, duration: 1000 }}
@@ -208,11 +212,13 @@
 					funded traders, prop managers, and institutional clients.
 				</p>
 			{/if}
+			{/key}
 		</div>
 
 		<div class="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
 			{#each reviews as review, i (review.id)}
-				{#if isVisible}
+				{#key isVisible}
+			{#if isVisible}
 					<div
 						in:heavySlide={{ delay: 300 + i * 100 }}
 						class="break-inside-avoid relative group bg-[#050505] border border-white/10 p-8 hover:bg-[#080808] hover:border-emerald-500/30 transition-all duration-500"
@@ -249,7 +255,7 @@
 						</div>
 
 						<div
-							class="flex items-center justify-between bg-white/[0.02] -mx-8 -mb-8 px-8 py-4 border-t border-white/5 group-hover:bg-emerald-950/[0.05] transition-colors duration-500"
+							class="flex items-center justify-between bg-white/2 -mx-8 -mb-8 px-8 py-4 border-t border-white/5 group-hover:bg-emerald-950/5 transition-colors duration-500"
 						>
 							<div class="flex flex-col">
 								<span class="text-[10px] font-mono uppercase text-slate-500 tracking-widest mb-1">
@@ -282,10 +288,12 @@
 						</div>
 					</div>
 				{/if}
+				{/key}
 			{/each}
 		</div>
 
-		{#if isVisible}
+		{#key isVisible}
+			{#if isVisible}
 			<div
 				in:heavySlide={{ delay: 600 }}
 				class="mt-20 pt-10 border-t border-white/5 flex flex-wrap justify-center gap-12 lg:gap-24 opacity-50 grayscale hover:grayscale-0 transition-all duration-500"
@@ -303,7 +311,8 @@
 					<span class="text-xs font-mono uppercase tracking-widest">Institutional Data Feed</span>
 				</div>
 			</div>
-		{/if}
+			{/if}
+		{/key}
 	</div>
 </section>
 

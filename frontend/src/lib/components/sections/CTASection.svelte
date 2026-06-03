@@ -11,8 +11,8 @@
 	// --- Interaction Logic ---
 	let containerRef = $state<HTMLElement | null>(null);
 	let mouse = $state({ x: 0, y: 0 });
-	// ICT11+ Fix: Start false, set true in onMount to trigger in: transitions
-	let isVisible = $state(true); // CLS FIX: SSR-render content (reserve space, no pop-in); in:reveal still plays on client nav
+	// ICT11+ Fix: SSR renders true (CLS fix), {#key} triggers transitions
+	let isVisible = $state(true);
 
 	// Mouse tracking for subtle lighting effects
 	const handleMouseMove = (e: MouseEvent) => {
@@ -54,6 +54,9 @@
 			isVisible = true;
 			return;
 		}
+
+		// Force state change to trigger {#key} transitions per Svelte 5 docs
+		isVisible = false;
 
 		queueMicrotask(() => {
 			if (!containerRef) {
@@ -120,6 +123,7 @@
 
 	<div class="relative max-w-4xl mx-auto z-10">
 		<div class="text-center">
+			{#key isVisible}
 			{#if isVisible}
 				<div
 					in:terminalBoot={{ delay: 0, duration: 900 }}
@@ -270,6 +274,7 @@
 					</div>
 				</div>
 			{/if}
+			{/key}
 		</div>
 	</div>
 </section>

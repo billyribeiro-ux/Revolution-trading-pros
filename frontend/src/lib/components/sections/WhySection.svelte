@@ -41,8 +41,8 @@
 	// --- Interaction Logic ---
 	let containerRef = $state<HTMLElement | null>(null);
 	let mouse = $state({ x: 0, y: 0 });
-	// ICT11+ Fix: Start false, set true in onMount to trigger in: transitions
-	let isVisible = $state(true); // CLS FIX: SSR-render content (reserve space, no pop-in); in:reveal still plays on client nav
+	// ICT11+ Fix: SSR renders true (CLS fix), {#key} triggers transitions
+	let isVisible = $state(true);
 
 	const handleMouseMove = (e: MouseEvent) => {
 		if (!containerRef) return;
@@ -84,6 +84,9 @@
 			return;
 		}
 
+		// Force state change to trigger {#key} transitions per Svelte 5 docs
+		isVisible = false;
+
 		queueMicrotask(() => {
 			if (!containerRef) {
 				isVisible = true;
@@ -124,38 +127,41 @@
 	<div class="relative max-w-7xl mx-auto z-10">
 		<!-- Header -->
 		<div class="max-w-4xl mx-auto text-center mb-24">
-			{#if isVisible}
-				<div
-					in:slideFromRight={{ delay: 0, duration: 900 }}
-					class="inline-flex items-center gap-3 px-4 py-1.5 border border-zinc-800/30 bg-zinc-900/10 text-zinc-400 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm"
-				>
-					<IconBuilding size={14} />
-					System Design
-				</div>
+			{#key isVisible}
+				{#if isVisible}
+					<div
+						in:slideFromRight={{ delay: 0, duration: 900 }}
+						class="inline-flex items-center gap-3 px-4 py-1.5 border border-zinc-800/30 bg-zinc-900/10 text-zinc-400 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm"
+					>
+						<IconBuilding size={14} />
+						System Design
+					</div>
 
-				<h2
-					in:slideFromRight={{ delay: 80, duration: 950 }}
-					class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight"
-				>
-					Trading <span class="text-slate-700">Framework.</span>
-				</h2>
+					<h2
+						in:slideFromRight={{ delay: 80, duration: 950 }}
+						class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight"
+					>
+						Trading <span class="text-slate-700">Framework.</span>
+					</h2>
 
-				<p
-					in:slideFromRight={{ delay: 160, duration: 950 }}
-					class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto"
-				>
-					We don't build retail platforms. We engineer institutional trading systems. Verified by
-					quantitative funds and proprietary trading desks.
-				</p>
-			{/if}
+					<p
+						in:slideFromRight={{ delay: 160, duration: 950 }}
+						class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto"
+					>
+						We don't build retail platforms. We engineer institutional trading systems. Verified by
+						quantitative funds and proprietary trading desks.
+					</p>
+				{/if}
+			{/key}
 		</div>
 
 		<!-- 3-Column Grid -->
 		<div class="group/grid grid md:grid-cols-3 gap-8" style="--x: {mouse.x}px; --y: {mouse.y}px;">
 			{#each features as feature, i (feature.title)}
 				{@const IconComponent = feature.icon}
-				{#if isVisible}
-					<div
+				{#key isVisible}
+					{#if isVisible}
+						<div
 						in:bounceUp={{ delay: 250 + i * 120, duration: 700 }}
 						class="relative group/card bg-zinc-950/50 border border-zinc-800 rounded-xl p-8 hover:bg-zinc-900/30 transition-all duration-500 overflow-hidden"
 					>
@@ -211,7 +217,7 @@
 									<path d="M50 20 V10 M50 90 V80 M20 50 H10 M90 50 H80" />
 									<rect x="35" y="35" width="30" height="30" />
 								</svg>
-							{/if}
+								{/if}
 						</div>
 
 						<!-- Icon Container -->
@@ -279,6 +285,7 @@
 						</div>
 					</div>
 				{/if}
+				{/key}
 			{/each}
 		</div>
 	</div>

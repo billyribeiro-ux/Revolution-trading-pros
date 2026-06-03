@@ -22,8 +22,8 @@
 
 	// --- Animation Logic ---
 	let containerRef: HTMLElement;
-	// ICT11+ Fix: Start false, set true via IntersectionObserver to trigger in: transitions
-	let isVisible = $state(true); // CLS FIX: SSR-render content (reserve space, no pop-in); in:reveal still plays on client nav
+	// ICT11+ Fix: SSR renders true (CLS fix), {#key} triggers transitions
+	let isVisible = $state(true);
 	let mouse = $state({ x: 0, y: 0 });
 
 	const handleMouseMove = (e: MouseEvent) => {
@@ -35,6 +35,9 @@
 
 	onMount(() => {
 		// Use queueMicrotask to ensure binding is complete
+		// Force state change to trigger {#key} transitions per Svelte 5 docs
+		isVisible = false;
+
 		queueMicrotask(() => {
 			if (!containerRef) {
 				isVisible = true; // Fallback: show content
@@ -115,6 +118,7 @@
 
 	<div class="relative max-w-[1600px] mx-auto z-10">
 		<div class="max-w-4xl mx-auto text-center mb-24">
+			{#key isVisible}
 			{#if isVisible}
 				<div
 					in:slideFromRight={{ delay: 0, duration: 900 }}
@@ -139,13 +143,15 @@
 					Verified by quantitative analysts and professional trading desks worldwide.
 				</p>
 			{/if}
+			{/key}
 		</div>
 
 		{#if posts.length > 0}
 			<div class="grid lg:grid-cols-12 gap-12">
 				{#if leadPost}
 					<div class="lg:col-span-8 h-full">
-						{#if isVisible}
+						{#key isVisible}
+							{#if isVisible}
 							<a
 								href="/blog/{leadPost.slug}"
 								in:flyUp={{ delay: 200, duration: 900 }}
@@ -161,7 +167,7 @@
 										<div
 											class="absolute inset-0 bg-linear-to-br from-slate-900 via-black to-slate-900 opacity-60"
 										></div>
-									{/if}
+								{/if}
 									<div
 										class="absolute inset-0 bg-linear-to-t from-[#050505] via-[#050505]/50 to-transparent"
 									></div>
@@ -210,11 +216,13 @@
 									</div>
 								</div>
 							</a>
-						{/if}
+							{/if}
+						{/key}
 					</div>
 				{/if}
 
 				<div class="lg:col-span-4 flex flex-col h-full border-l border-white/5 lg:pl-12">
+					{#key isVisible}
 					{#if isVisible}
 						<div
 							in:flyUp={{ delay: 350, duration: 800 }}
@@ -262,6 +270,7 @@
 							{/each}
 						</div>
 					{/if}
+				{/key}
 				</div>
 			</div>
 		{:else}

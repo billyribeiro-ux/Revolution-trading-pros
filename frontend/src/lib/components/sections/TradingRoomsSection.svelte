@@ -91,7 +91,10 @@
 			return;
 		}
 
-		// Use queueMicrotask to ensure bind:this has completed
+		// Force state change to trigger {#key} transitions per Svelte 5 docs
+		// https://svelte.dev/docs/svelte/key
+		isVisible = false;
+
 		queueMicrotask(() => {
 			if (!containerRef) {
 				isVisible = true;
@@ -127,6 +130,7 @@
 
 	<div class="relative max-w-7xl mx-auto z-10">
 		<div class="max-w-3xl mx-auto text-center mb-20">
+			{#key isVisible}
 			{#if isVisible}
 				<div
 					in:slideFromLeft={{ delay: 0, duration: 900 }}
@@ -141,7 +145,7 @@
 					<span class="text-xs font-mono uppercase tracking-widest text-emerald-500/80"
 						>Market Access Open</span
 					>
-				</div>
+					</div>
 
 				<h2
 					in:slideFromLeft={{ delay: 80, duration: 1000 }}
@@ -158,6 +162,7 @@
 					<span class="text-zinc-400">Hover over a desk to preview data feeds.</span>
 				</p>
 			{/if}
+			{/key}
 		</div>
 
 		<div
@@ -165,6 +170,7 @@
 		>
 			{#each products as item, i (item.id)}
 				{@const IconComponent = item.icon}
+				{#key isVisible}
 				{#if isVisible}
 					<div
 						in:riseUp={{ delay: 200 + i * 120, duration: 800 }}
@@ -377,6 +383,7 @@
 						</div>
 					</div>
 				{/if}
+			{/key}
 			{/each}
 		</div>
 	</div>

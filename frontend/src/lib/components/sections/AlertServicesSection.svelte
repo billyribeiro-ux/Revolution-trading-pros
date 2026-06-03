@@ -53,8 +53,8 @@
 	// --- Interaction Logic ---
 	let containerRef = $state<HTMLElement | null>(null);
 	let mouse = $state({ x: 0, y: 0 });
-	// ICT11+ Fix: Start false, set true in onMount to trigger in: transitions
-	let isVisible = $state(true); // CLS FIX: SSR-render content (reserve space, no pop-in); in:reveal still plays on client nav
+	// ICT11+ Fix: SSR renders true (CLS fix), {#key} triggers transitions
+	let isVisible = $state(true);
 
 	const handleMouseMove = (e: MouseEvent) => {
 		if (!containerRef) return;
@@ -96,6 +96,9 @@
 			return;
 		}
 
+		// Force state change to trigger {#key} transitions per Svelte 5 docs
+		isVisible = false;
+
 		queueMicrotask(() => {
 			if (!containerRef) {
 				isVisible = true;
@@ -134,6 +137,7 @@
 
 	<div class="relative max-w-7xl mx-auto z-10">
 		<div class="max-w-4xl mx-auto text-center mb-24">
+			{#key isVisible}
 			{#if isVisible}
 				<div
 					in:clipReveal={{ delay: 0, duration: 700 }}
@@ -158,6 +162,7 @@
 					by quantitative analysts and professional traders worldwide.
 				</p>
 			{/if}
+			{/key}
 		</div>
 
 		<div
@@ -166,7 +171,8 @@
 		>
 			{#each signals as item, i (item.id)}
 				{@const IconComponent = item.icon}
-				{#if isVisible}
+				{#key isVisible}
+			{#if isVisible}
 					<div
 						in:scalePop={{ delay: 200 + i * 150, duration: 600 }}
 						class="relative group/card bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden hover:border-zinc-700 transition-colors duration-500"
@@ -271,8 +277,8 @@
 											opacity="0.5">BREAKOUT LEVEL</text
 										>
 									</svg>
-								{/if}
-							</div>
+						{/if}
+						</div>
 						</div>
 
 						<div class="relative z-10 p-8">
@@ -349,10 +355,12 @@
 						</div>
 					</div>
 				{/if}
+				{/key}
 			{/each}
 		</div>
 
-		{#if isVisible}
+		{#key isVisible}
+			{#if isVisible}
 			<div in:clipReveal={{ delay: 500, duration: 700 }} class="mt-12 text-center border-t border-zinc-900 pt-8">
 				<div class="inline-flex items-center gap-6 text-xs text-zinc-500 font-mono">
 					<span class="flex items-center gap-2">
@@ -371,7 +379,8 @@
 					</span>
 				</div>
 			</div>
-		{/if}
+			{/if}
+		{/key}
 	</div>
 </section>
 

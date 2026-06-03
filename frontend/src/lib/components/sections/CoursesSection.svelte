@@ -122,8 +122,8 @@
 	// ============================================================================
 	let sectionRef = $state<HTMLElement | null>(null);
 	let cardsRef = $state<HTMLElement | null>(null);
-	// ICT11+ Fix: Start false, set true in onMount to trigger in: transitions
-	let isVisible = $state(true); // CLS FIX: SSR-render content (reserve space, no pop-in); in:reveal still plays on client nav
+	// ICT11+ Fix: SSR renders true (CLS fix), {#key} triggers transitions
+	let isVisible = $state(true);
 	interface ScrollTriggerLike {
 		trigger?: Element;
 		kill(): void;
@@ -146,6 +146,9 @@
 
 		// Check for reduced motion preference
 		prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+		// Force state change to trigger {#key} transitions per Svelte 5 docs
+		isVisible = false;
 
 		// Trigger entrance animations when section scrolls into viewport
 		queueMicrotask(() => {
@@ -289,7 +292,8 @@
 	</div>
 
 	<div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
-		{#if isVisible}
+		{#key isVisible}
+			{#if isVisible}
 			<div class="max-w-4xl mx-auto text-center mb-24" in:slideUp={{ delay: 0, duration: 1000 }}>
 				<div
 					class="inline-flex items-center gap-3 px-4 py-1.5 border border-violet-900/30 bg-violet-950/10 text-violet-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm"
@@ -353,7 +357,8 @@
 					</div>
 				</div>
 			</div>
-		{/if}
+			{/if}
+		{/key}
 
 		<div bind:this={cardsRef} class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 relative">
 			<!-- FIX-2026-04-26: cursor-follow spotlight removed per user request — disabled to fix UX bug. -->
@@ -365,7 +370,7 @@
 			{#each courses as course (course.id)}
 				<a
 					href={course.href}
-					class="course-card group relative rounded-[2rem] overflow-hidden bg-zinc-900/40 border border-white/5 hover:border-white/10 transition-all duration-500 hover:shadow-2xl hover:shadow-violet-900/20 active:scale-[0.99] z-10 isolate"
+					class="course-card group relative rounded-4xl overflow-hidden bg-zinc-900/40 border border-white/5 hover:border-white/10 transition-all duration-500 hover:shadow-2xl hover:shadow-violet-900/20 active:scale-[0.99] z-10 isolate"
 				>
 					<div
 						class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out"
@@ -387,7 +392,7 @@
 										<IconComponent
 											class="w-7 h-7 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]"
 										/>
-									{/if}
+{/if}
 								</div>
 								<div>
 									<span
@@ -397,7 +402,7 @@
 											<IconFlame size={12} class="animate-pulse" />
 										{:else if course.level === 'Intermediate'}
 											<IconActivity size={12} />
-										{/if}
+{/if}
 										{course.level}
 									</span>
 									<h3
@@ -424,14 +429,14 @@
 						<div class="flex gap-2 mb-8 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-hide snap-x">
 							{#each course.features as feature (feature)}
 								<span
-									class="snap-start flex-shrink-0 px-3 py-1.5 text-xs font-medium rounded-lg bg-white/5 text-zinc-300 border border-white/5 whitespace-nowrap group-hover:border-white/20 transition-colors"
+									class="snap-start shrink-0 px-3 py-1.5 text-xs font-medium rounded-lg bg-white/5 text-zinc-300 border border-white/5 whitespace-nowrap group-hover:border-white/20 transition-colors"
 								>
 									{feature}
 								</span>
 							{/each}
 						</div>
 
-						<div class="flex-grow"></div>
+						<div class="grow"></div>
 
 						<div
 							class="pt-6 border-t border-white/5 flex flex-col sm:flex-row sm:items-end justify-between gap-4"
@@ -481,14 +486,15 @@
 			{/each}
 		</div>
 
-		{#if isVisible}
+		{#key isVisible}
+			{#if isVisible}
 			<div class="text-center mt-20" in:slideUp={{ delay: 400, duration: 800 }}>
 				<a
 					href="/courses"
 					class="group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-linear-to-r from-violet-600 to-indigo-600 text-white font-semibold shadow-lg shadow-violet-500/25 hover:shadow-violet-500/50 active:scale-[0.98] hover:-translate-y-1 transition-all duration-300 relative overflow-hidden"
 				>
 					<span
-						class="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"
+						class="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"
 					></span>
 					<span class="text-base relative z-10">View Full Curriculum</span>
 					<IconArrowRight
@@ -503,7 +509,8 @@
 					Official certification included with all pathways
 				</p>
 			</div>
-		{/if}
+			{/if}
+		{/key}
 	</div>
 </section>
 
