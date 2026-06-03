@@ -23,7 +23,7 @@
 	let searchQuery = $state('');
 	let statusFilter = $state('all');
 	let selectedTags = $state<string[]>([]);
-	let selectedSubscribers = $state(new SvelteSet<string>());
+	let selectedSubscribers = new SvelteSet<string>();
 
 	// Modal states
 	let showAddModal = $state(false);

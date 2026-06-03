@@ -50,7 +50,7 @@
 	let searchQuery = $state('');
 	let debouncedSearch = $state('');
 	let selectedCategory = $state('');
-	let selectedTemplates = $state<Set<string>>(new SvelteSet());
+	let selectedTemplates = new SvelteSet<string>();
 	let isInitialLoad = $state(true);
 
 	// Pagination state

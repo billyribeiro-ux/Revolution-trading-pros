@@ -59,7 +59,7 @@
 
 	// Data
 	let items = $state<MediaItem[]>([]);
-	let selectedIds = $state(new SvelteSet<string>());
+	let selectedIds = new SvelteSet<string>();
 	let focusedId = $state<string | null>(null);
 
 	// Delete confirmation modal state

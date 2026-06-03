@@ -74,8 +74,8 @@
 	});
 
 	// Track selected items for include/exclude
-	let selectedProducts = $state<Set<number>>(new SvelteSet());
-	let selectedPlans = $state<Set<number>>(new SvelteSet());
+	let selectedProducts = new SvelteSet<number>();
+	let selectedPlans = new SvelteSet<number>();
 
 	// Computed Values
 

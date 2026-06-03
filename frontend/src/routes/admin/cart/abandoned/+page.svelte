@@ -38,7 +38,7 @@
 	let pagination = $state({ current_page: 1, last_page: 1, per_page: 20, total: 0 });
 	let searchQuery = $state('');
 	let statusFilter = $state<CartStatus | ''>('');
-	let selectedCarts = $state<Set<number>>(new SvelteSet());
+	let selectedCarts = new SvelteSet<number>();
 
 	// Modal state
 	let showRecoveryModal = $state(false);

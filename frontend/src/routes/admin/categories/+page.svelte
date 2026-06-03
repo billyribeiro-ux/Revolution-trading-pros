@@ -54,7 +54,7 @@
 	let editingCategory = $state<Category | null>(null);
 
 	// Selection for bulk operations
-	let selectedIds = $state<Set<number>>(new SvelteSet());
+	let selectedIds = new SvelteSet<number>();
 
 	// Form data
 	let categoryForm = $state({

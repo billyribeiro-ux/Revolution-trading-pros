@@ -122,7 +122,7 @@
 	let selectedSource = $state<string>('all');
 	let sortBy = $state<string>('created_at');
 	let sortOrder = $state<'asc' | 'desc'>('desc');
-	let selectedLeads = $state<Set<string>>(new SvelteSet());
+	let selectedLeads = new SvelteSet<string>();
 	let showFilters = $state(false);
 	let _viewMode = $state<'list' | 'kanban'>('list');
 

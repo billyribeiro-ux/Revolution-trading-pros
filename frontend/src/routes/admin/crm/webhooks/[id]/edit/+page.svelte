@@ -42,7 +42,7 @@
 	let url = $state('');
 	let secret = $state('');
 	let isActive = $state(true);
-	let selectedEvents = $state<Set<WebhookEvent>>(new SvelteSet());
+	let selectedEvents = new SvelteSet<WebhookEvent>();
 	let customHeaders = $state<Array<{ key: string; value: string }>>([]);
 
 	let availableEvents = $state<Record<string, string>>({});

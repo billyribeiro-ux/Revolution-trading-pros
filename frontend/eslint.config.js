@@ -238,6 +238,6 @@ export default [
 		//   'test-icons-import.ts',
 		//   'playwright.config.ts'
 		// ]
-		ignores: ['.svelte-kit/**', 'build/**', 'dist/**', 'node_modules/**', 'retired/**']
+		ignores: ['.svelte-kit/**', 'build/**', 'dist/**', 'node_modules/**', 'retired/**', '.cls-probe/**']
 	}
 ];

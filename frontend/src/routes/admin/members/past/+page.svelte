@@ -62,7 +62,7 @@
 	let selectedPeriod = $state<TimePeriod>('30d');
 	let members = $state<PastMember[]>([]);
 	let searchQuery = $state('');
-	let selectedMembers = $state<Set<number>>(new SvelteSet());
+	let selectedMembers = new SvelteSet<number>();
 
 	// Loading states
 	let isLoading = $state(true);
