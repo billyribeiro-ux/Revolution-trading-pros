@@ -5,6 +5,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
+	import { SvelteSet } from 'svelte/reactivity';
+	import type { Attachment } from 'svelte/attachments';
 
 	// Icons (only those used directly in template)
 	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
@@ -23,9 +25,10 @@
 
 	// --- State Management (Svelte 5 Runes) ---
 	let heroVisible = $state(false);
-	let cardsVisible = $state<boolean[]>(new Array(indicators.length).fill(false));
+	let visibleCards = new SvelteSet<string>();
 	let selectedCategory = $state('All');
 	let openFaq = $state<number | null>(null);
+	let pageRef = $state<HTMLElement | null>(null);
 
 	let filteredIndicators = $derived(
 		selectedCategory === 'All'
@@ -48,16 +51,56 @@
 		target.style.setProperty('--mouse-y', `${y}px`);
 	}
 
+	const capturePage: Attachment<HTMLDivElement> = (node) => {
+		pageRef = node;
+
+		return () => {
+			if (pageRef === node) {
+				pageRef = null;
+			}
+		};
+	};
+
+	function revealIndicatorCard(indicatorId: string): Attachment<HTMLElement> {
+		return (node) => {
+			if (!browser) return;
+
+			const observer = new IntersectionObserver(
+				(entries) => {
+					if (entries[0]?.isIntersecting) {
+						visibleCards.add(indicatorId);
+						observer.disconnect();
+					}
+				},
+				{ threshold: 0.1 }
+			);
+
+			observer.observe(node);
+
+			return () => {
+				observer.disconnect();
+			};
+		};
+	}
+
 	onMount(() => {
-		let heroObserver: IntersectionObserver;
-		let cardObserver: IntersectionObserver;
+		let heroObserver: IntersectionObserver | null = null;
 		let gsapContext: ReturnType<typeof import('gsap').gsap.context> | null = null;
+		let cancelled = false;
 
 		// Use IIFE for async operations
 		(async () => {
+			const root = pageRef;
+			if (!root) return;
+
+			const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+			if (prefersReducedMotion) return;
+
 			// Dynamically import GSAP to avoid SSR issues
 			const { gsap } = await import('gsap');
 			const ScrollTrigger = (await import('gsap/ScrollTrigger')).default;
+			if (cancelled || !pageRef) return;
+
 			gsap.registerPlugin(ScrollTrigger);
 
 			// Use gsap.context() for scoped cleanup - prevents global ScrollTrigger destruction
@@ -65,20 +108,24 @@
 				// --- Cinematic GSAP Animations ---
 
 				// 1. Hero Parallax & Reveal
-				const tlHero = gsap.timeline();
-				tlHero.to('.hero-title span', {
-					backgroundPosition: '200% center',
-					duration: 2,
-					ease: 'none',
-					repeat: -1
-				});
+				const heroTitleAccent = root.querySelector('.hero-title span');
+				if (heroTitleAccent) {
+					const tlHero = gsap.timeline();
+					tlHero.to(heroTitleAccent, {
+						backgroundPosition: '200% center',
+						duration: 2,
+						ease: 'none',
+						repeat: -1
+					});
+				}
 
 				// 2. Truth Section - Animated Chart Drawing
-				const chartPath = document.querySelector('.mockup-price-path');
-				const indicatorPath = document.querySelector('.mockup-indicator-path');
-				const annotation = document.querySelector('.mockup-annotation');
+				const truthSection = root.querySelector('.truth-section');
+				const chartPath = root.querySelector('.mockup-price-path');
+				const indicatorPath = root.querySelector('.mockup-indicator-path');
+				const annotation = root.querySelector('.mockup-annotation');
 
-				if (chartPath && indicatorPath) {
+				if (truthSection && chartPath && indicatorPath) {
 					const chartLength = (chartPath as SVGPathElement).getTotalLength();
 					const indLength = (indicatorPath as SVGPathElement).getTotalLength();
 
@@ -87,7 +134,7 @@
 					gsap.set(annotation, { opacity: 0, scale: 0.8, y: 10 });
 
 					ScrollTrigger.create({
-						trigger: '.truth-section',
+						trigger: truthSection,
 						start: 'top 60%',
 						onEnter: () => {
 							gsap.to(chartPath, { strokeDashoffset: 0, duration: 2, ease: 'power2.out' });
@@ -110,17 +157,18 @@
 				}
 
 				// 3. Confluence Flow Animation
-				const connectors = document.querySelectorAll('.confluence-connector');
-				const steps = document.querySelectorAll('.confluence-step');
+				const confluenceSection = root.querySelector('.confluence-section');
+				const connectors = root.querySelectorAll('.confluence-connector');
+				const steps = root.querySelectorAll('.confluence-step');
 
-				const tlConfluence = gsap.timeline({
-					scrollTrigger: {
-						trigger: '.confluence-section',
-						start: 'top 70%'
-					}
-				});
+				if (confluenceSection && steps.length >= 3 && connectors.length >= 2) {
+					const tlConfluence = gsap.timeline({
+						scrollTrigger: {
+							trigger: confluenceSection,
+							start: 'top 70%'
+						}
+					});
 
-				if (steps.length > 0) {
 					tlConfluence
 						.from(steps[0], { y: 30, opacity: 0, duration: 0.5 })
 						.from(connectors[0], { scale: 0, opacity: 0, duration: 0.3 }, '-=0.1')
@@ -130,19 +178,22 @@
 				}
 
 				// 4. Setup Section Animation
-				const setupItems = document.querySelectorAll('.setup-item');
-				gsap.from(setupItems, {
-					scrollTrigger: {
-						trigger: '.setup-grid',
-						start: 'top 80%'
-					},
-					y: 20,
-					opacity: 0,
-					duration: 0.4,
-					stagger: 0.1,
-					ease: 'power2.out'
-				});
-			}); // Close gsap.context()
+				const setupGrid = root.querySelector('.setup-grid');
+				const setupItems = root.querySelectorAll('.setup-item');
+				if (setupGrid && setupItems.length > 0) {
+					gsap.from(setupItems, {
+						scrollTrigger: {
+							trigger: setupGrid,
+							start: 'top 80%'
+						},
+						y: 20,
+						opacity: 0,
+						duration: 0.4,
+						stagger: 0.1,
+						ease: 'power2.out'
+					});
+				}
+			}, root); // Close gsap.context()
 		})();
 
 		// --- Original Observer Logic (Preserved for compatibility) ---
@@ -157,35 +208,18 @@
 			{ threshold: 0.2 }
 		);
 
-		cardObserver = new IntersectionObserver(
-			(entries) => {
-				entries.forEach((entry) => {
-					if (entry.isIntersecting) {
-						const index = parseInt(entry.target.getAttribute('data-index') || '0');
-						const newCardsVisible = [...cardsVisible];
-						newCardsVisible[index] = true;
-						cardsVisible = newCardsVisible;
-					}
-				});
-			},
-			{ threshold: 0.1 }
-		);
-
-		const heroElement = document.querySelector('.hero-section');
+		const heroElement = pageRef?.querySelector('.hero-section');
 		if (heroElement) heroObserver.observe(heroElement);
 
-		const cardElements = document.querySelectorAll('.indicator-card');
-		cardElements.forEach((card) => cardObserver.observe(card));
-
 		return () => {
-			heroObserver.disconnect();
-			cardObserver.disconnect();
+			cancelled = true;
+			heroObserver?.disconnect();
 			if (gsapContext) gsapContext.revert();
 		};
 	});
 </script>
 
-<div class="indicators-page">
+<div class="indicators-page" {@attach capturePage}>
 	<div
 		class="indicators-page__grain"
 		aria-hidden="true"
@@ -239,14 +273,14 @@
 			</p>
 
 			<div class="hero-cta-group">
-				<button class="cta-button primary">
+				<a class="cta-button primary" href="/live-trading-rooms/day-trading">
 					<span class="cta-button__label">
 						Join the Live Room
 						<IconArrowRight size={20} class="cta-button__arrow" />
 					</span>
 					<div class="cta-button__fill" aria-hidden="true"></div>
-				</button>
-				<button class="cta-button secondary">Explore Indicators</button>
+				</a>
+				<a class="cta-button secondary" href="#indicators-list">Explore Indicators</a>
 			</div>
 
 			<div class="hero-stats">
@@ -417,8 +451,8 @@
 				{#each filteredIndicators as indicator, index (indicator.id)}
 					{@const Icon = indicator.icon}
 					<article
-						class={['indicator-card', { visible: cardsVisible[index] }]}
-						data-index={index}
+						{@attach revealIndicatorCard(indicator.id)}
+						class={['indicator-card', { visible: visibleCards.has(indicator.id) }]}
 						onmousemove={handleMouseMove}
 						style="--delay: {index * 0.1}s; --card-color: {indicator.color};"
 					>
@@ -527,7 +561,7 @@
 
 			<div class="confluence-cta">
 				<p class="confluence-cta__lede">Want to see this confluence strategy in action?</p>
-				<a href="/trading-room" class="text-link">
+				<a href="/live-trading-rooms/day-trading" class="text-link">
 					Watch us trade this setup live tomorrow morning
 					<IconArrowRight size={18} class="text-link__arrow" />
 				</a>
@@ -568,7 +602,7 @@
 				You have the tools. Now get the guidance. Join a community of traders who genuinely care
 				about your success.
 			</p>
-			<button class="cta-button primary large">Join Revolution Trading Pros</button>
+			<a class="cta-button primary large" href="/signup">Join Revolution Trading Pros</a>
 			<p class="cta-subtext">No spam. No fake alerts. Just real trading.</p>
 		</div>
 	</section>

@@ -134,6 +134,7 @@
 	}
 	let scrollTriggerInstance: ScrollTriggerStatic | null = null;
 	let prefersReducedMotion = $state(false);
+	let visibilityObserver: IntersectionObserver | null = null;
 
 	// FIX-2026-04-26: cursor-follow spotlight removed per user request — disabled to fix UX bug.
 	// mouseX / mouseY state and handleMouseMove have been removed entirely.
@@ -153,15 +154,16 @@
 		// Trigger entrance animations when section scrolls into viewport
 		queueMicrotask(() => {
 			if (sectionRef) {
-				const visibilityObserver = new IntersectionObserver(
+				const observer = new IntersectionObserver(
 					(entries) => {
 						if (entries[0]?.isIntersecting) {
 							isVisible = true;
-							visibilityObserver.disconnect();
+							observer.disconnect();
 						}
 					},
 					{ threshold: 0.1, rootMargin: '50px' }
 				);
+				visibilityObserver = observer;
 				visibilityObserver.observe(sectionRef);
 			} else {
 				isVisible = true;
@@ -174,6 +176,7 @@
 		}
 
 		return () => {
+			visibilityObserver?.disconnect();
 			// ICT11+ Fix: Kill only ScrollTriggers scoped to this component
 			// Previously used killAll() which destroyed ALL ScrollTriggers globally,
 			// causing layout breaks when scrolling to bottom of page
@@ -294,69 +297,69 @@
 	<div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
 		{#key isVisible}
 			{#if isVisible}
-			<div class="max-w-4xl mx-auto text-center mb-24" in:slideUp={{ delay: 0, duration: 1000 }}>
-				<div
-					class="inline-flex items-center gap-3 px-4 py-1.5 border border-violet-900/30 bg-violet-950/10 text-violet-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm"
-				>
-					<IconSchool class="w-4 h-4" />
-					Professional Education
+				<div class="max-w-4xl mx-auto text-center mb-24" in:slideUp={{ delay: 0, duration: 1000 }}>
+					<div
+						class="inline-flex items-center gap-3 px-4 py-1.5 border border-violet-900/30 bg-violet-950/10 text-violet-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm"
+					>
+						<IconSchool class="w-4 h-4" />
+						Professional Education
+					</div>
+
+					<h2 class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight">
+						Trading <span class="text-slate-700">Curriculum.</span>
+					</h2>
+
+					<p class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto">
+						We don't sell courses. We provide institutional-grade trading education. Verified by
+						funded traders and prop firm graduates worldwide.
+					</p>
+
+					<div
+						class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto mt-12 pt-8 border-t border-white/5"
+						in:slideUp={{ delay: 200, duration: 800 }}
+					>
+						<div class="text-center group cursor-default">
+							<div
+								class="text-3xl font-bold text-white tabular-nums group-hover:scale-110 transition-transform duration-300"
+							>
+								12k+
+							</div>
+							<div class="text-xs font-medium text-zinc-500 uppercase tracking-wider mt-1">
+								Students
+							</div>
+						</div>
+						<div class="text-center group cursor-default">
+							<div
+								class="text-3xl font-bold text-white tabular-nums group-hover:scale-110 transition-transform duration-300"
+							>
+								4.9
+							</div>
+							<div class="text-xs font-medium text-zinc-500 uppercase tracking-wider mt-1">
+								Rating
+							</div>
+						</div>
+						<div class="text-center group cursor-default">
+							<div
+								class="text-3xl font-bold text-white tabular-nums group-hover:scale-110 transition-transform duration-300"
+							>
+								89%
+							</div>
+							<div class="text-xs font-medium text-zinc-500 uppercase tracking-wider mt-1">
+								Completion
+							</div>
+						</div>
+						<div class="text-center group cursor-default">
+							<div
+								class="text-3xl font-bold text-white tabular-nums group-hover:scale-110 transition-transform duration-300"
+							>
+								24/7
+							</div>
+							<div class="text-xs font-medium text-zinc-500 uppercase tracking-wider mt-1">
+								Support
+							</div>
+						</div>
+					</div>
 				</div>
-
-				<h2 class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight">
-					Trading <span class="text-slate-700">Curriculum.</span>
-				</h2>
-
-				<p class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto">
-					We don't sell courses. We provide institutional-grade trading education. Verified by
-					funded traders and prop firm graduates worldwide.
-				</p>
-
-				<div
-					class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto mt-12 pt-8 border-t border-white/5"
-					in:slideUp={{ delay: 200, duration: 800 }}
-				>
-					<div class="text-center group cursor-default">
-						<div
-							class="text-3xl font-bold text-white tabular-nums group-hover:scale-110 transition-transform duration-300"
-						>
-							12k+
-						</div>
-						<div class="text-xs font-medium text-zinc-500 uppercase tracking-wider mt-1">
-							Students
-						</div>
-					</div>
-					<div class="text-center group cursor-default">
-						<div
-							class="text-3xl font-bold text-white tabular-nums group-hover:scale-110 transition-transform duration-300"
-						>
-							4.9
-						</div>
-						<div class="text-xs font-medium text-zinc-500 uppercase tracking-wider mt-1">
-							Rating
-						</div>
-					</div>
-					<div class="text-center group cursor-default">
-						<div
-							class="text-3xl font-bold text-white tabular-nums group-hover:scale-110 transition-transform duration-300"
-						>
-							89%
-						</div>
-						<div class="text-xs font-medium text-zinc-500 uppercase tracking-wider mt-1">
-							Completion
-						</div>
-					</div>
-					<div class="text-center group cursor-default">
-						<div
-							class="text-3xl font-bold text-white tabular-nums group-hover:scale-110 transition-transform duration-300"
-						>
-							24/7
-						</div>
-						<div class="text-xs font-medium text-zinc-500 uppercase tracking-wider mt-1">
-							Support
-						</div>
-					</div>
-				</div>
-			</div>
 			{/if}
 		{/key}
 
@@ -392,7 +395,7 @@
 										<IconComponent
 											class="w-7 h-7 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]"
 										/>
-{/if}
+									{/if}
 								</div>
 								<div>
 									<span
@@ -402,7 +405,7 @@
 											<IconFlame size={12} class="animate-pulse" />
 										{:else if course.level === 'Intermediate'}
 											<IconActivity size={12} />
-{/if}
+										{/if}
 										{course.level}
 									</span>
 									<h3
@@ -488,27 +491,27 @@
 
 		{#key isVisible}
 			{#if isVisible}
-			<div class="text-center mt-20" in:slideUp={{ delay: 400, duration: 800 }}>
-				<a
-					href="/courses"
-					class="group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-linear-to-r from-violet-600 to-indigo-600 text-white font-semibold shadow-lg shadow-violet-500/25 hover:shadow-violet-500/50 active:scale-[0.98] hover:-translate-y-1 transition-all duration-300 relative overflow-hidden"
-				>
-					<span
-						class="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"
-					></span>
-					<span class="text-base relative z-10">View Full Curriculum</span>
-					<IconArrowRight
-						class="w-5 h-5 group-hover:translate-x-1 transition-transform relative z-10"
-					/>
-				</a>
+				<div class="text-center mt-20" in:slideUp={{ delay: 400, duration: 800 }}>
+					<a
+						href="/courses"
+						class="group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-linear-to-r from-violet-600 to-indigo-600 text-white font-semibold shadow-lg shadow-violet-500/25 hover:shadow-violet-500/50 active:scale-[0.98] hover:-translate-y-1 transition-all duration-300 relative overflow-hidden"
+					>
+						<span
+							class="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"
+						></span>
+						<span class="text-base relative z-10">View Full Curriculum</span>
+						<IconArrowRight
+							class="w-5 h-5 group-hover:translate-x-1 transition-transform relative z-10"
+						/>
+					</a>
 
-				<p
-					class="mt-6 text-sm text-zinc-500 flex items-center justify-center gap-2 opacity-60 hover:opacity-100 transition-opacity"
-				>
-					<IconCertificate class="w-4 h-4 text-violet-500" />
-					Official certification included with all pathways
-				</p>
-			</div>
+					<p
+						class="mt-6 text-sm text-zinc-500 flex items-center justify-center gap-2 opacity-60 hover:opacity-100 transition-opacity"
+					>
+						<IconCertificate class="w-4 h-4 text-violet-500" />
+						Official certification included with all pathways
+					</p>
+				</div>
 			{/if}
 		{/key}
 	</div>

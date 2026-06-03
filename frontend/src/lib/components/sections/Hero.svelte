@@ -106,7 +106,7 @@
 			description:
 				'Volume profiles, internals, momentum systems, and tooling built for repeatable institutional logic.',
 			primaryCTA: { text: 'View Indicators', href: '/indicators' },
-			secondaryCTA: { text: 'See All Tools', href: '/store' },
+			secondaryCTA: { text: 'See Scanners', href: '/store/scanners' },
 			accentColor: 'rgba(139, 92, 246, 0.5)'
 		}
 	]);
