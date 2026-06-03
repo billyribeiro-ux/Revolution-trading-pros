@@ -62,7 +62,7 @@
 	let selectedPeriod = $state<TimePeriod>('30d');
 	let members = $state<PastMember[]>([]);
 	let searchQuery = $state('');
-	let selectedMembers = new SvelteSet<number>();
+	let selectedMembers = $state(new SvelteSet<number>()); // eslint-disable-line svelte/no-unnecessary-state-wrap
 
 	// Loading states
 	let isLoading = $state(true);

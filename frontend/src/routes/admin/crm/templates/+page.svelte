@@ -50,7 +50,7 @@
 	let searchQuery = $state('');
 	let debouncedSearch = $state('');
 	let selectedCategory = $state('');
-	let selectedTemplates = new SvelteSet<string>();
+	let selectedTemplates = $state(new SvelteSet<string>()); // eslint-disable-line svelte/no-unnecessary-state-wrap
 	let isInitialLoad = $state(true);
 
 	// Pagination state

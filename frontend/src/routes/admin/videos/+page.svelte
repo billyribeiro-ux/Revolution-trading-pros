@@ -174,7 +174,7 @@
 	let analyticsPeriod = $state<'7d' | '30d' | '90d'>('30d');
 
 	// ICT 7 ADDITION: Bulk Operations State
-	let selectedVideoIds = new SvelteSet<number>();
+	let selectedVideoIds = $state(new SvelteSet<number>()); // eslint-disable-line svelte/no-unnecessary-state-wrap
 	let isBulkActionLoading = $state(false);
 	let showBulkTagsModal = $state(false);
 	let bulkTagsToAdd = $state<string[]>([]);

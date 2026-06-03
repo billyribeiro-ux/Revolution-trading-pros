@@ -42,7 +42,7 @@
 	let url = $state('');
 	let secret = $state('');
 	let isActive = $state(true);
-	let selectedEvents = new SvelteSet<WebhookEvent>();
+	let selectedEvents = $state(new SvelteSet<WebhookEvent>()); // eslint-disable-line svelte/no-unnecessary-state-wrap
 	let customHeaders = $state<Array<{ key: string; value: string }>>([]);
 
 	let availableEvents = $state<Record<string, string>>({});

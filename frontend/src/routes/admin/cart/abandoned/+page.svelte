@@ -38,7 +38,7 @@
 	let pagination = $state({ current_page: 1, last_page: 1, per_page: 20, total: 0 });
 	let searchQuery = $state('');
 	let statusFilter = $state<CartStatus | ''>('');
-	let selectedCarts = new SvelteSet<number>();
+	let selectedCarts = $state(new SvelteSet<number>()); // eslint-disable-line svelte/no-unnecessary-state-wrap
 
 	// Modal state
 	let showRecoveryModal = $state(false);

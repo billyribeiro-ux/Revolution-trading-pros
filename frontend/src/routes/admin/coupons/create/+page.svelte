@@ -74,8 +74,8 @@
 	});
 
 	// Track selected items for include/exclude
-	let selectedProducts = new SvelteSet<number>();
-	let selectedPlans = new SvelteSet<number>();
+	let selectedProducts = $state(new SvelteSet<number>()); // eslint-disable-line svelte/no-unnecessary-state-wrap
+	let selectedPlans = $state(new SvelteSet<number>()); // eslint-disable-line svelte/no-unnecessary-state-wrap
 
 	// Computed Values
 

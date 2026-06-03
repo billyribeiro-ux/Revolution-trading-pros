@@ -37,7 +37,7 @@
 	let searchQuery = $state('');
 	let winbackPotential = $state('');
 	let churnedWithinDays = $state('');
-	let selectedMembers = new SvelteSet<number>();
+	let selectedMembers = $state(new SvelteSet<number>()); // eslint-disable-line svelte/no-unnecessary-state-wrap
 	let showEmailModal = $state(false);
 	let emailSubject = $state('');
 	let emailBody = $state('');

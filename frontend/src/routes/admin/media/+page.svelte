@@ -59,7 +59,7 @@
 
 	// Data
 	let items = $state<MediaItem[]>([]);
-	let selectedIds = new SvelteSet<string>();
+	let selectedIds = $state(new SvelteSet<string>()); // eslint-disable-line svelte/no-unnecessary-state-wrap
 	let focusedId = $state<string | null>(null);
 
 	// Delete confirmation modal state

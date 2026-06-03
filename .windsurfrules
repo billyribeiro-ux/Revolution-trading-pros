@@ -1,0 +1,158 @@
+# Windsurf Rules - MCP Tool Configuration
+
+> **ALWAYS USE THE SVELTE AND RUST-ANALYZER MCP TOOLS FOR ALL SVELTE/RUST TASKS**
+
+---
+
+## Svelte MCP Server (Official)
+
+This project uses the official Svelte MCP server for all Svelte/SvelteKit development.
+
+### Available Tools
+
+#### 1. list-sections
+- **Use FIRST** to discover all available documentation sections
+- Returns structured list with titles, use_cases, and paths
+- When asked about Svelte or SvelteKit topics, **ALWAYS use this tool at the start of the chat**
+
+#### 2. get-documentation
+- Retrieves full documentation content for specific sections
+- Accepts single or multiple sections
+- After calling `list-sections`, **MUST analyze the use_cases field** and fetch ALL relevant documentation sections
+
+#### 3. svelte-autofixer
+- **MUST use this tool whenever writing Svelte code before sending to the user**
+- Analyzes Svelte code and returns issues/suggestions
+- Keep calling until no issues or suggestions are returned
+
+#### 4. playground-link
+- Generates a Svelte Playground link with provided code
+- Only call after user confirmation
+- **NEVER use if code was written to files in the project**
+
+### Tool Usage Rules
+
+**When working with Svelte/SvelteKit code:**
+
+1. Start with `list-sections` to find relevant documentation
+2. Call `get-documentation` for ALL sections matching the use case
+3. Use `svelte-autofixer` on any generated code before presenting to user
+4. Offer `playground-link` only for code not written to project files
+
+### Documentation Categories
+
+| Category | Use Cases |
+|----------|-----------|
+| **CLI** (`cli/*`) | Project setup, adding features, migration, testing setup |
+| **Svelte** (`svelte/*`) | Core reactivity, components, runes, transitions |
+| **SvelteKit** (`kit/*`) | Routing, data loading, form actions, adapters, deployment |
+| **AI** (`ai/*`) | MCP server setup, skills, subagents |
+| **Legacy** (`svelte/legacy-*`) | Migration from Svelte 3/4 to 5 |
+
+### Key Runes (Svelte 5)
+
+| Rune | Purpose |
+|------|---------|
+| `$state` | Declare reactive state |
+| `$derived` | Compute derived values |
+| `$effect` | Run side effects |
+| `$props` | Component props declaration |
+| `$bindable` | Two-way binding |
+| `$inspect` | Debug reactive values |
+
+### Critical Patterns
+
+**Always use `svelte-autofixer` for:**
+- New `.svelte` files
+- Modified `.svelte` files
+- Component props/interfaces
+- Event handlers
+- Runes usage
+- Snippet/render patterns
+
+---
+
+## Rust-Analyzer MCP Server
+
+This project uses the rust-analyzer MCP server for all Rust development in the `api/` directory.
+
+### Available Tools
+
+| Tool | Purpose |
+|------|---------|
+| `set_workspace` | Set workspace root directory |
+| `diagnostics` | Get compiler diagnostics for a file |
+| `workspace_diagnostics` | Get all diagnostics across workspace |
+| `completion` | Code completion suggestions |
+| `hover` | Hover information for symbols |
+| `definition` | Go to definition |
+| `references` | Find all references |
+| `symbols` | Document symbols (functions, structs, etc.) |
+| `code_actions` | Available code actions for range |
+| `format` | Format a Rust file |
+
+### Tool Usage Rules
+
+**When working with Rust code:**
+
+1. **Always run `diagnostics`** after editing a `.rs` file
+2. **Always run `format`** before completing Rust changes
+3. Use `workspace_diagnostics` for broader validation
+4. Use `definition`/`references` for code navigation
+
+### Workflow
+
+```
+Edit .rs file → Run diagnostics → Fix issues → Run format → Complete
+```
+
+### Cargo Commands (Backend)
+
+```bash
+# Check (offline mode for SQLx)
+SQLX_OFFLINE=true cargo check --manifest-path api/Cargo.toml --all-targets --all-features
+
+# Test
+SQLX_OFFLINE=true cargo test --manifest-path api/Cargo.toml
+
+# Format check
+cargo fmt --manifest-path api/Cargo.toml --all --check
+```
+
+---
+
+## Project Structure Context
+
+### Frontend (SvelteKit)
+- Location: `/frontend/`
+- Framework: SvelteKit 2.x with Svelte 5 (runes mode)
+- Icons: `phosphor-svelte` (NOT lucide)
+- Styling: Tailwind v4 (migrating to PE7 CSS)
+- Key packages: `sveltekit-superforms`, `formsnap`, `@tanstack/svelte-query`
+
+### Backend (Rust/Axum)
+- Location: `/api/`
+- Framework: Axum 0.8
+- Database: SQLx with SQLite
+- Migrations: `/api/migrations/`
+
+---
+
+## Migration Notes (From Memory)
+
+- **Icons**: `phosphor-svelte` replaces `@lucide/svelte` (completed)
+- **Backend**: Axum 0.7→0.8, removed `#[async_trait]` (completed)
+- **Tailwind**: Migrating to PE7 CSS system (in progress)
+- **Lucide→Phosphor mapping documented in project memory**
+
+---
+
+## Compliance Checklist
+
+Before marking any task complete:
+
+- [ ] Svelte MCP tools used for all Svelte work
+- [ ] `svelte-autofixer` run on all new/modified `.svelte` files
+- [ ] Rust-analyzer tools used for all Rust work
+- [ ] `diagnostics` and `format` run on modified `.rs` files
+- [ ] No compiler errors or warnings remain

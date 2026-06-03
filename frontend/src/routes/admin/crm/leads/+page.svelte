@@ -122,7 +122,7 @@
 	let selectedSource = $state<string>('all');
 	let sortBy = $state<string>('created_at');
 	let sortOrder = $state<'asc' | 'desc'>('desc');
-	let selectedLeads = new SvelteSet<string>();
+	let selectedLeads = $state(new SvelteSet<string>()); // eslint-disable-line svelte/no-unnecessary-state-wrap
 	let showFilters = $state(false);
 	let _viewMode = $state<'list' | 'kanban'>('list');
 

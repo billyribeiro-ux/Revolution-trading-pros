@@ -90,7 +90,7 @@
 	let isProcessingAction = $state(false);
 
 	// Expanded modules
-	let expandedModules = new SvelteSet<number>();
+	let expandedModules = $state(new SvelteSet<number>()); // eslint-disable-line svelte/no-unnecessary-state-wrap
 
 	// FIX-2026-04-26: analytics for the Analytics tab. Loaded alongside course
 	// data; safe to render `null` (we fall back to em-dash while loading).
