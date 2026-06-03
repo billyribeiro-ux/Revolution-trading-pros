@@ -22,6 +22,7 @@ Every library, package, and dependency bumped to its latest version as of 2026-0
 ### Backend — Rust crate bumps + breaking-change migrations (`api/Cargo.toml`)
 
 - **sqlx 0.8 → 0.9** — the big one. 0.9 makes dynamic SQL a compile error: `query`/`query_as`/`query_scalar`/`query_*_with`/`raw_sql` now require `&'static str` or an explicit `AssertSqlSafe` wrapper. **118 call sites** across ~40 route/service files were audited (every one interpolates only whitelisted sort columns/directions or enum-mapped identifiers, with all user values bound as `$N`) and wrapped with `sqlx::AssertSqlSafe`. No dynamic user input reaches a query string.
+- **PE7 Resilient Connection Retry** — `Database::new()` and `RedisService::new()` now implement exponential backoff retry (10 attempts, 500ms→8s backoff for DB; 8 attempts, 300ms→5s for Redis). This prevents the brittle "pool timed out while waiting for an open connection" crash when docker-compose services race during startup. Structured tracing events (`db_connect_initial_failed`, `db_connect_retry`, `db_connected_after_retry`, `redis_*` equivalents) provide observability. Connection verified with `SELECT 1` (DB) and `PING` (Redis) before returning.
 - **rand 0.8 → 0.10** — `thread_rng()` → `rng()`, `.gen()/.gen_range()` → `.random()/.random_range()`, the `Rng` trait → `RngExt`, and `rand::distributions` → `rand::distr`. Fixed across 6 files (`utils/mod.rs`, `services/mfa.rs`, oauth/connections crypto, admin member crud).
 - **reqwest 0.12 → 0.13** — the `rustls-tls` feature is now `rustls`, and `form`/`query` moved behind their own features; feature list updated accordingly.
 - **jsonwebtoken 9 → 10** — verified compatible with the existing JWT helpers (the no-DB JWT test suite, incl. alg-none rejection / expiry / type segregation, passes).
@@ -40,6 +41,10 @@ The repo had **both** `zod` and `valibot` installed. Audit: **valibot** is the r
 ### Build — Cloudflare deploy unblocked
 
 Two fixes for the failing Cloudflare Pages build: (1) **`pnpm-lock.yaml` regenerated** so it matches the updated manifests — the build failed with `ERR_PNPM_OUTDATED_LOCKFILE` because the lockfile hadn't been re-synced after the package bumps; `pnpm install --frozen-lockfile` (the exact CI command) now passes. (2) **Node version corrected to a real release** — the original `.nvmrc` pointed at `24.17.0`, which **does not exist** (latest 24.x LTS is `24.16.0`, released 2026-05-21), so Cloudflare's nvm silently fell back to its default Node 22.16.0 and emitted an engine warning. Set `.nvmrc` + a new `.node-version` (Cloudflare reads either) to `24.16.0`.
+
+### Dev tooling — `pnpm dev:reset` for major version bumps
+
+Added `dev:reset` script to `package.json` (`pnpm dev:reset`). When Docker images upgrade across major versions (Postgres 16→17, Meilisearch 1.7→1.14), the **on-disk data format** becomes incompatible and containers enter a crash loop (`FATAL: database files are incompatible`, `database version (X) is incompatible with your current engine version (Y)`). This script automates the recovery: stops services, wipes the named volumes (`postgres_data`, `meili_data`), restarts fresh containers, and prints confirmation. Use whenever `pnpm dev:all` fails with version-mismatch errors after a dependency upgrade.
 
 ## [Unreleased] — 2026-06-02 — Svelte audit & optimization: measured CLS fixes, breakpoint conflicts, Svelte 5 idioms, remote functions, Cloudflare build fix
 

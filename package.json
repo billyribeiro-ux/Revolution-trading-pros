@@ -5,6 +5,7 @@
   "packageManager": "pnpm@11.5.1",
   "scripts": {
     "dev:all": "docker compose up -d db redis meili && concurrently --names \"api,web\" --prefix-colors \"yellow,cyan\" \"cd api && cargo run\" \"pnpm --filter revolution-svelte dev\"",
+    "dev:reset": "docker compose down -v && docker volume rm revolution-trading-pros_postgres_data revolution-trading-pros_meili_data 2>/dev/null || true && docker compose up -d db redis meili && echo '✅ Volumes wiped. Run pnpm dev:all to start fresh.'",
     "dev:docker": "docker compose up -d db redis meili",
     "dev:docker:stop": "docker compose stop db redis meili",
     "dev": "pnpm --filter revolution-svelte dev",

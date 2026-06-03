@@ -1,9 +1,18 @@
 //! Redis service - Upstash connection
 //! ICT L11+ Security: Session management, rate limiting, account lockout
+//! PE7: Resilient connection with exponential backoff retry
 
 use anyhow::Result;
 use redis::{aio::ConnectionManager, AsyncCommands};
 use serde::{Deserialize, Serialize};
+use std::time::Duration;
+
+/// Maximum retry attempts for Redis connection (PE7: resilience over brittleness)
+const MAX_RETRY_ATTEMPTS: u32 = 8;
+/// Initial backoff duration between retries
+const INITIAL_BACKOFF_MS: u64 = 300;
+/// Maximum backoff duration (prevents runaway waits)
+const MAX_BACKOFF_MS: u64 = 5000;
 
 /// Session data stored in Redis
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -73,10 +82,89 @@ pub struct RedisService {
 }
 
 impl RedisService {
+    /// Create a new Redis service with exponential backoff retry (PE7 Grade)
+    ///
+    /// Implements resilient startup for containerized environments where
+    /// Redis may still be initializing when the API boots.
+    ///
+    /// Retry strategy:
+    /// - 8 attempts max
+    /// - Exponential backoff: 300ms, 600ms, 1.2s, 2.4s, 4.8s, 5s, 5s, 5s (capped)
+    /// - Total max wait: ~25 seconds
     pub async fn new(redis_url: &str) -> Result<Self> {
+        let mut attempt = 0;
+        let mut backoff_ms = INITIAL_BACKOFF_MS;
+        let mut last_error = None;
+
+        while attempt < MAX_RETRY_ATTEMPTS {
+            attempt += 1;
+
+            match Self::try_connect(redis_url).await {
+                Ok(conn) => {
+                    if attempt > 1 {
+                        tracing::info!(
+                            target: "startup",
+                            event = "redis_connected_after_retry",
+                            attempts = attempt,
+                            "Redis connected after {} retry attempts",
+                            attempt - 1
+                        );
+                    }
+                    return Ok(Self { conn });
+                }
+                Err(e) => {
+                    let error_msg = e.to_string();
+                    last_error = Some(e);
+
+                    if attempt == 1 {
+                        tracing::info!(
+                            target: "startup",
+                            event = "redis_connect_initial_failed",
+                            error = %error_msg,
+                            "Initial Redis connection failed, starting retry loop..."
+                        );
+                    } else if attempt < MAX_RETRY_ATTEMPTS {
+                        tracing::debug!(
+                            target: "startup",
+                            event = "redis_connect_retry",
+                            attempt = attempt,
+                            backoff_ms = backoff_ms,
+                            error = %error_msg,
+                            "Redis connection attempt {} failed, retrying in {}ms...",
+                            attempt,
+                            backoff_ms
+                        );
+                    }
+
+                    if attempt < MAX_RETRY_ATTEMPTS {
+                        tokio::time::sleep(Duration::from_millis(backoff_ms)).await;
+                        backoff_ms = (backoff_ms * 2).min(MAX_BACKOFF_MS);
+                    }
+                }
+            }
+        }
+
+        // All retries exhausted
+        let final_error = last_error.expect("last_error must be set if we exhausted retries");
+        tracing::error!(
+            target: "startup",
+            event = "redis_connect_failed_fatal",
+            max_attempts = MAX_RETRY_ATTEMPTS,
+            error = %final_error,
+            "FATAL: Redis connection failed after {} attempts. Redis may be unavailable.",
+            MAX_RETRY_ATTEMPTS
+        );
+        Err(final_error)
+    }
+
+    /// Single connection attempt (extracted for retry logic clarity)
+    async fn try_connect(redis_url: &str) -> Result<ConnectionManager> {
         let client = redis::Client::open(redis_url)?;
         let conn = ConnectionManager::new(client).await?;
-        Ok(Self { conn })
+        // Verify connection with a PING
+        let mut test_conn = conn.clone();
+        let _: String = redis::cmd("PING").query_async(&mut test_conn).await?;
+        Ok(conn)
     }
 
     /// Get a value from cache
