@@ -9,26 +9,26 @@ publish = false
 
 [dependencies]
 # Web Framework
-axum = { version = "0.7", features = ["macros", "multipart", "ws"] }
-axum-extra = { version = "0.9", features = ["typed-header", "cookie"] }
-tower = "0.4"
-tower-http = { version = "0.5", features = ["cors", "trace", "compression-gzip", "limit", "set-header"] }
+axum = { version = "0.8", features = ["macros", "multipart", "ws"] }
+axum-extra = { version = "0.11", features = ["typed-header", "cookie"] }
+tower = "0.5"
+tower-http = { version = "0.6", features = ["cors", "trace", "compression-gzip", "limit", "set-header"] }
 lazy_static = "1.4"
 html-escape = "0.2"
 
 # Async Runtime
-tokio = { version = "1.35", features = ["full"] }
+tokio = { version = "1.45", features = ["full"] }
 
 # Database (Fly.io PostgreSQL) - use native-tls to avoid rustls crypto provider issues
 sqlx = { version = "0.8", features = ["runtime-tokio", "tls-native-tls", "postgres", "uuid", "chrono", "json", "rust_decimal"] }
 rust_decimal = { version = "1.33", features = ["serde", "serde-with-str"] }
 
 # Redis (Upstash) - use native-tls for simpler TLS handling
-redis = { version = "0.27", features = ["tokio-comp", "connection-manager", "tls-native-tls", "tokio-native-tls-comp"] }
+redis = { version = "0.29", features = ["tokio-comp", "connection-manager", "tls-native-tls", "tokio-native-tls-comp"] }
 
 # S3/R2 Storage (December 2025 versions)
-aws-sdk-s3 = "1.65"
-aws-config = "1.5"
+aws-sdk-s3 = "1.75"
+aws-config = "1.6"
 
 # Serialization
 serde = { version = "1.0", features = ["derive"] }
@@ -72,14 +72,14 @@ async-trait = "0.1"
 # HTTP Client (for external APIs)
 # NOTE: this repo calls Stripe directly via reqwest (see services/stripe.rs);
 # the `async-stripe` crate is intentionally NOT a dep.
-reqwest = { version = "0.11", features = ["json", "rustls-tls", "stream"], default-features = false }
+reqwest = { version = "0.12", features = ["json", "rustls-tls", "stream"], default-features = false }
 
 # Search (Meilisearch) - Use updated SDK to avoid unmaintained dependencies
-meilisearch-sdk = "0.26"
+meilisearch-sdk = "0.28"
 
 # OpenAPI Documentation
-utoipa = { version = "4", features = ["axum_extras", "uuid", "chrono"] }
-utoipa-swagger-ui = { version = "7", features = ["axum"] }
+utoipa = { version = "5", features = ["axum_extras", "uuid", "chrono"] }
+utoipa-swagger-ui = { version = "9", features = ["axum"] }
 validator = { version = "0.20.0", features = ["derive"] }
 
 [dev-dependencies]

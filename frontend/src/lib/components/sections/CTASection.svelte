@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { cubicOut, elasticOut } from 'svelte/easing';
+	import { cubicOut } from 'svelte/easing';
 	import IconLockSquare from '@tabler/icons-svelte-runes/icons/lock-square';
 	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
 	import IconServer from '@tabler/icons-svelte-runes/icons/server';

@@ -18,8 +18,8 @@
 	let tooltipEl: HTMLDivElement | undefined = $state();
 	let width = $state(600);
 	let height = $state(350);
-	let tooltipData = $state<{ underlyingPrice: number; profit: number } | null>(null);
-	let tooltipPosition = $state<{ x: number; y: number }>({ x: 0, y: 0 });
+	let _tooltipData = $state<{ underlyingPrice: number; profit: number } | null>(null);
+	let _tooltipPosition = $state<{ x: number; y: number }>({ x: 0, y: 0 });
 
 	const margin = { top: 20, right: 30, bottom: 40, left: 60 };
 
@@ -262,11 +262,11 @@
 				crosshairLineH.attr('y1', cy).attr('y2', cy);
 				crosshairDot.attr('cx', cx).attr('cy', cy);
 
-				tooltipData = {
+				_tooltipData = {
 					underlyingPrice: d.underlyingPrice,
 					profit: d.profit
 				};
-				tooltipPosition = { x: cx + margin.left + 12, y: cy + margin.top - 20 };
+				_tooltipPosition = { x: cx + margin.left + 12, y: cy + margin.top - 20 };
 			});
 	});
 </script>

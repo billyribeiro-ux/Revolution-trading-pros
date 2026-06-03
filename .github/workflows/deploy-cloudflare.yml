@@ -33,7 +33,7 @@ on:
 # source of truth, no drift. (The old hardcoded 10.33.2 violated the
 # repo's `pnpm: ">=11.0.0"` engine and the pnpm-11 lockfile.)
 env:
-  NODE_VERSION: "22"
+  NODE_VERSION: "24"
   CLOUDFLARE_PROJECT_NAME: revolution-trading-pros
 
 jobs:

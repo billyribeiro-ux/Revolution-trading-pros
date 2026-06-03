@@ -18,13 +18,13 @@
 	let tooltipEl: HTMLDivElement | undefined = $state();
 	let width = $state(600);
 	let height = $state(350);
-	let tooltipData = $state<{
+	let _tooltipData = $state<{
 		strike: number;
 		expiry: number;
 		value: number;
 		greekName: string;
 	} | null>(null);
-	let tooltipPosition = $state<{ x: number; y: number }>({ x: 0, y: 0 });
+	let _tooltipPosition = $state<{ x: number; y: number }>({ x: 0, y: 0 });
 
 	const margin = { top: 30, right: 80, bottom: 50, left: 70 };
 
@@ -121,17 +121,17 @@
 					select(event.currentTarget as SVGRectElement)
 						.attr('stroke', 'var(--calc-text)')
 						.attr('stroke-width', 2);
-					tooltipData = {
+					_tooltipData = {
 						strike: cell.strike,
 						expiry: cell.expiry,
 						value: cell.value,
 						greekName
 					};
-					tooltipPosition = { x: event.offsetX + 12, y: event.offsetY - 40 };
+					_tooltipPosition = { x: event.offsetX + 12, y: event.offsetY - 40 };
 				})
 				.on('mouseleave', (event: MouseEvent) => {
 					select(event.currentTarget as SVGRectElement).attr('stroke', 'none');
-					tooltipData = null;
+					_tooltipData = null;
 				});
 		}
 
