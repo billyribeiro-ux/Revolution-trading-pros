@@ -273,6 +273,7 @@
 	let statsPlayed = false;
 	let raf = 0;
 	let sceneRaf = 0;
+	let statsRaf = 0;
 
 	let chartData = $state<Record<ChartKey, CandlestickData[]>>({
 		main: [],
@@ -315,6 +316,7 @@
 		return () => {
 			cancelAnimationFrame(raf);
 			cancelAnimationFrame(sceneRaf);
+			cancelAnimationFrame(statsRaf);
 			cleanupReveal?.();
 			cleanupIntervals();
 			cleanupPointer();
@@ -824,6 +826,7 @@
 	function playStats() {
 		if (statsPlayed) return;
 		statsPlayed = true;
+		cancelAnimationFrame(statsRaf);
 
 		const targets = { traders: 50000, scanners: 12847, latency: 15, uptime: 99.99 };
 		const duration = reducedMotion ? 1 : 1500;
@@ -838,10 +841,14 @@
 			stats.latency = Math.round(targets.latency * eased);
 			stats.uptime = Number((targets.uptime * eased).toFixed(2));
 
-			if (progress < 1) requestAnimationFrame(frame);
+			if (progress < 1) {
+				statsRaf = requestAnimationFrame(frame);
+			} else {
+				statsRaf = 0;
+			}
 		}
 
-		requestAnimationFrame(frame);
+		statsRaf = requestAnimationFrame(frame);
 	}
 
 	async function handleNotifyMe() {
