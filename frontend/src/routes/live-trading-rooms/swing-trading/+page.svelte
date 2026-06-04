@@ -16,70 +16,80 @@
 	onMount(() => {
 		if (!browser) return;
 
+		let isComponentMounted = true;
 		let ctx: ReturnType<typeof import('gsap').gsap.context> | null = null;
 
-		(async () => {
-			const { gsap } = await import('gsap');
-			const { ScrollTrigger } = await import('gsap/ScrollTrigger');
-			gsap.registerPlugin(ScrollTrigger);
+		void (async () => {
+			try {
+				const { gsap } = await import('gsap');
+				const { ScrollTrigger } = await import('gsap/ScrollTrigger');
+				if (!isComponentMounted) return;
 
-			const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+				gsap.registerPlugin(ScrollTrigger);
 
-			if (prefersReducedMotion) {
-				gsap.set('[data-gsap]', { opacity: 1, y: 0 });
-				return;
-			}
+				const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-			// Use gsap.context() for scoped cleanup - prevents global ScrollTrigger destruction
-			ctx = gsap.context(() => {
-				const all = Array.from(document.querySelectorAll('[data-gsap]'));
-				gsap.set(all, { opacity: 0, y: 30 });
+				if (prefersReducedMotion) {
+					gsap.set('[data-gsap]', { opacity: 1, y: 0 });
+					return;
+				}
 
-				// Elements visible in viewport on mount get an immediate
-				// staggered entrance — ScrollTrigger.batch's onEnter does not
-				// fire for elements already past the trigger position at
-				// registration time, which would otherwise leave hero
-				// elements stuck invisible.
-				const visible: Element[] = [];
-				const hidden: Element[] = [];
-				all.forEach((el) => {
-					const r = el.getBoundingClientRect();
-					if (r.top < window.innerHeight && r.bottom > 0) visible.push(el);
-					else hidden.push(el);
+				// Use gsap.context() for scoped cleanup - prevents global ScrollTrigger destruction
+				ctx = gsap.context(() => {
+					const all = Array.from(document.querySelectorAll('[data-gsap]'));
+					gsap.set(all, { opacity: 0, y: 30 });
+
+					// Elements visible in viewport on mount get an immediate
+					// staggered entrance — ScrollTrigger.batch's onEnter does not
+					// fire for elements already past the trigger position at
+					// registration time, which would otherwise leave hero
+					// elements stuck invisible.
+					const visible: Element[] = [];
+					const hidden: Element[] = [];
+					all.forEach((el) => {
+						const r = el.getBoundingClientRect();
+						if (r.top < window.innerHeight && r.bottom > 0) visible.push(el);
+						else hidden.push(el);
+					});
+
+					if (visible.length > 0) {
+						gsap.to(visible, {
+							opacity: 1,
+							y: 0,
+							duration: 0.9,
+							ease: 'power3.out',
+							stagger: 0.1
+						});
+					}
+
+					if (hidden.length > 0) {
+						ScrollTrigger.batch(hidden, {
+							onEnter: (batch) => {
+								gsap.to(batch, {
+									opacity: 1,
+									y: 0,
+									duration: 0.8,
+									ease: 'power3.out',
+									stagger: 0.1,
+									overwrite: true
+								});
+							},
+							start: 'top 85%',
+							once: true
+						});
+					}
+
+					ScrollTrigger.refresh();
 				});
-
-				if (visible.length > 0) {
-					gsap.to(visible, {
-						opacity: 1,
-						y: 0,
-						duration: 0.9,
-						ease: 'power3.out',
-						stagger: 0.1
-					});
-				}
-
-				if (hidden.length > 0) {
-					ScrollTrigger.batch(hidden, {
-						onEnter: (batch) => {
-							gsap.to(batch, {
-								opacity: 1,
-								y: 0,
-								duration: 0.8,
-								ease: 'power3.out',
-								stagger: 0.1,
-								overwrite: true
-							});
-						},
-						start: 'top 85%',
-						once: true
-					});
-				}
-
-				ScrollTrigger.refresh();
-			});
+			} catch (error) {
+				console.error('[SwingTrading] GSAP initialization failed:', error);
+			}
 		})();
 
-		return () => ctx?.revert();
+		return () => {
+			isComponentMounted = false;
+			if (ctx) ctx.revert();
+		};
 	});
 
 	// --- DATA SOURCE: FAQs (Single Source of Truth) ---
