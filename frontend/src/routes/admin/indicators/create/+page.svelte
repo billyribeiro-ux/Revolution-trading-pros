@@ -161,15 +161,16 @@
 	let formError = $state('');
 	let successMessage = $state('');
 
-	// REACTIVE SLUG GENERATION - Instant as you type, but stops once user edits.
+	// SLUG GENERATION - Instant as you type, but stops once user edits.
 	//
 	// FIX-2026-04-26-audit (P2-8): the previous unconditional $effect rewrote
 	// indicator.slug on every keystroke into the name field, clobbering any value
 	// the admin had typed manually into the slug field. Track an `slugEdited` flag
-	// — once the user touches the slug, we stop auto-syncing. Resetting the slug
-	// to empty re-enables auto-sync.
+	// — once the user touches the slug, `effectiveSlug` stops deriving from name.
+	// Resetting the slug to empty re-enables auto-sync.
 
 	let slugEdited = $state(false);
+	const effectiveSlug = $derived(slugEdited ? indicator.slug : autoSlug(indicator.name));
 
 	function autoSlug(name: string): string {
 		return name
@@ -178,12 +179,6 @@
 			.replace(/^-+|-+$/g, '')
 			.substring(0, 100);
 	}
-
-	$effect(() => {
-		if (indicator.name && !slugEdited) {
-			indicator.slug = autoSlug(indicator.name);
-		}
-	});
 
 	/** Wire this to the slug input's `oninput` once a slug field is added.
 	 *  Empty slug re-enables auto-sync from the name field. */
@@ -534,7 +529,7 @@
 		try {
 			const payload = {
 				name: indicator.name,
-				slug: indicator.slug || undefined,
+				slug: effectiveSlug || undefined,
 				subtitle: indicator.subtitle || undefined,
 				short_description: indicator.short_description || undefined,
 				description: indicator.description || undefined,
@@ -662,10 +657,10 @@
 							placeholder="e.g., Volume Max Indicator"
 							class="input-lg"
 						/>
-						{#if indicator.slug}
+						{#if effectiveSlug}
 							<div class="slug-preview">
 								<span class="slug-label">URL:</span>
-								<span class="slug-value">/indicators/{indicator.slug}</span>
+								<span class="slug-value">/indicators/{effectiveSlug}</span>
 							</div>
 						{/if}
 					</div>

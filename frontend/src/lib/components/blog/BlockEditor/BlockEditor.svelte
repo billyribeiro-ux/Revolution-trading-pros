@@ -102,7 +102,7 @@
 	// State
 
 	let editorState = $state<EditorState>({
-		blocks: [],
+		blocks: [...blocks],
 		selectedBlockId: null,
 		selectedBlockIds: [], // Multi-selection
 		hoveredBlockId: null,
@@ -111,7 +111,7 @@
 		clipboardMulti: [], // Multi-block clipboard
 		history: {
 			past: [],
-			present: [],
+			present: [...blocks],
 			future: [],
 			maxSize: 100
 		},
@@ -133,12 +133,6 @@
 		// Enhanced drag-drop state
 		dragPreviewOffset: null,
 		lastDropAction: null
-	});
-
-	// Sync blocks from props when they change
-	$effect(() => {
-		editorState.blocks = blocks;
-		editorState.history.present = [...blocks];
 	});
 
 	// Enhanced Drag-Drop State (Apple Principal Engineer Grade)
@@ -202,15 +196,12 @@
 	let isSaving = $state(false);
 	let saveError = $state<string | null>(null);
 
-	// SEO State
-	let seoAnalysis = $state<SEOAnalysis | null>(null);
-
 	// Revisions State
 	let revisions = $state<Revision[]>([]);
 
 	// Refs
-	let editorContainer: HTMLDivElement;
-	let autosaveTimer: ReturnType<typeof setInterval>;
+	let editorContainer: HTMLDivElement | null = null;
+	let autosaveTimer: ReturnType<typeof setInterval> | null = null;
 
 	// Computed
 
@@ -224,6 +215,7 @@
 	let wordCount = $derived(calculateWordCount(editorState.blocks));
 	let readTime = $derived(Math.ceil(wordCount / 200));
 	let blockCount = $derived(editorState.blocks.length);
+	let seoAnalysis = $derived(analyzeSEO(editorState.blocks));
 
 	// Lifecycle
 
@@ -235,9 +227,6 @@
 
 		// Add keyboard listeners
 		window.addEventListener('keydown', handleGlobalKeydown);
-
-		// Initial SEO analysis
-		runSEOAnalysis();
 	});
 
 	onDestroy(() => {
@@ -251,17 +240,30 @@
 		stopAutoScroll();
 	});
 
-	// Watch for block changes
-	$effect(() => {
-		if (JSON.stringify(editorState.blocks) !== JSON.stringify(blocks)) {
-			blocks = [...editorState.blocks];
-			editorState.hasUnsavedChanges = true;
-			onchange?.(blocks);
-			runSEOAnalysis();
-		}
-	});
-
 	// Block Operations
+
+	function captureEditorContainer(node: HTMLDivElement) {
+		editorContainer = node;
+
+		return () => {
+			if (editorContainer === node) editorContainer = null;
+		};
+	}
+
+	function commitBlocks(nextBlocks: Block[], options: { dirty?: boolean; notify?: boolean } = {}) {
+		const { dirty = true, notify = true } = options;
+		const committedBlocks = [...nextBlocks];
+		editorState.blocks = committedBlocks;
+		blocks = committedBlocks;
+
+		if (dirty) {
+			editorState.hasUnsavedChanges = true;
+		}
+
+		if (notify) {
+			onchange?.(committedBlocks);
+		}
+	}
 
 	function generateBlockId(): string {
 		return `block_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -290,7 +292,7 @@
 
 		const newBlocks = [...editorState.blocks];
 		newBlocks.splice(insertIndex, 0, newBlock);
-		editorState.blocks = newBlocks;
+		commitBlocks(newBlocks);
 		editorState.selectedBlockId = newBlock.id;
 
 		showBlockInserter = false;
@@ -307,18 +309,20 @@
 	function updateBlock(blockId: string, updates: Partial<Block>) {
 		pushToHistory();
 
-		editorState.blocks = editorState.blocks.map((block) =>
-			block.id === blockId
-				? {
-						...block,
-						...updates,
-						metadata: {
-							...block.metadata,
-							updatedAt: new Date().toISOString(),
-							version: block.metadata.version + 1
+		commitBlocks(
+			editorState.blocks.map((block) =>
+				block.id === blockId
+					? {
+							...block,
+							...updates,
+							metadata: {
+								...block.metadata,
+								updatedAt: new Date().toISOString(),
+								version: block.metadata.version + 1
+							}
 						}
-					}
-				: block
+					: block
+			)
 		);
 	}
 
@@ -326,7 +330,7 @@
 		pushToHistory();
 
 		const index = editorState.blocks.findIndex((b) => b.id === blockId);
-		editorState.blocks = editorState.blocks.filter((b) => b.id !== blockId);
+		commitBlocks(editorState.blocks.filter((b) => b.id !== blockId));
 
 		// Select adjacent block
 		if (editorState.blocks.length > 0) {
@@ -357,7 +361,7 @@
 		const index = editorState.blocks.findIndex((b) => b.id === blockId);
 		const newBlocks = [...editorState.blocks];
 		newBlocks.splice(index + 1, 0, duplicated);
-		editorState.blocks = newBlocks;
+		commitBlocks(newBlocks);
 		editorState.selectedBlockId = duplicated.id;
 	}
 
@@ -375,7 +379,7 @@
 		const blockB = newBlocks[newIndex];
 		if (blockA && blockB) {
 			[newBlocks[index], newBlocks[newIndex]] = [blockB, blockA];
-			editorState.blocks = newBlocks;
+			commitBlocks(newBlocks);
 		}
 	}
 
@@ -649,7 +653,7 @@
 
 					// Insert at new position
 					newBlocks.splice(insertAt, 0, ...blocksToMove);
-					editorState.blocks = newBlocks;
+					commitBlocks(newBlocks);
 
 					// Announce completion
 					const blockName =
@@ -818,7 +822,7 @@
 		const blockB = newBlocks[newIndex];
 		if (blockA && blockB) {
 			[newBlocks[index], newBlocks[newIndex]] = [blockB, blockA];
-			editorState.blocks = newBlocks;
+			commitBlocks(newBlocks);
 
 			// Announce for screen readers
 			const blockName = BLOCK_DEFINITIONS[blockA.type]?.name || blockA.type;
@@ -861,7 +865,7 @@
 				future: [editorState.history.present, ...editorState.history.future]
 			};
 
-			editorState.blocks = [...previous];
+			commitBlocks(previous);
 		}
 	}
 
@@ -879,7 +883,7 @@
 				future: newFuture
 			};
 
-			editorState.blocks = [...next];
+			commitBlocks(next);
 		}
 	}
 
@@ -919,7 +923,7 @@
 
 		const newBlocks = [...editorState.blocks];
 		newBlocks.splice(index, 0, pastedBlock);
-		editorState.blocks = newBlocks;
+		commitBlocks(newBlocks);
 		editorState.selectedBlockId = pastedBlock.id;
 	}
 
@@ -1123,9 +1127,9 @@
 
 	// SEO Analysis
 
-	function runSEOAnalysis() {
+	function analyzeSEO(blocksToAnalyze: Block[]): SEOAnalysis {
 		// Basic SEO analysis
-		const content = getPlainTextContent(editorState.blocks);
+		const content = getPlainTextContent(blocksToAnalyze);
 		const words = content.split(/\s+/).filter((w) => w.length > 0);
 		const sentences = content.split(/[.!?]+/).filter((s) => s.trim().length > 0);
 
@@ -1185,7 +1189,7 @@
 		}
 
 		// Heading structure
-		const headings = editorState.blocks.filter((b) => b.type === 'heading');
+		const headings = blocksToAnalyze.filter((b) => b.type === 'heading');
 		if (headings.length === 0) {
 			issues.push({
 				type: 'warning',
@@ -1196,7 +1200,7 @@
 		}
 
 		// Images without alt
-		const imagesWithoutAlt = editorState.blocks.filter(
+		const imagesWithoutAlt = blocksToAnalyze.filter(
 			(b) => b.type === 'image' && !b.content.mediaAlt
 		).length;
 		if (imagesWithoutAlt > 0) {
@@ -1255,7 +1259,7 @@
 		else if (score < 80) grade = 'C';
 		else if (score < 90) grade = 'B';
 
-		seoAnalysis = {
+		return {
 			score,
 			grade,
 			issues,
@@ -1315,7 +1319,7 @@
 </script>
 
 <div
-	bind:this={editorContainer}
+	{@attach captureEditorContainer}
 	class="block-editor"
 	class:fullscreen={editorState.isFullscreen}
 	class:preview-mode={editorState.viewMode === 'preview'}
@@ -1541,7 +1545,7 @@
 								} else {
 									const newBlock = createBlock('paragraph');
 									newBlock.content.text = content;
-									editorState.blocks = [...editorState.blocks, newBlock];
+									commitBlocks([...editorState.blocks, newBlock]);
 								}
 							}}
 						/>
@@ -1778,7 +1782,7 @@
 		{revisions}
 		onRestore={(revision) => {
 			pushToHistory();
-			editorState.blocks = revision.blocks;
+			commitBlocks(revision.blocks);
 			showRevisions = false;
 		}}
 	/>
