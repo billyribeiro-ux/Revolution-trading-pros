@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { Attachment } from 'svelte/attachments';
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { onMount } from 'svelte';
@@ -8,7 +9,18 @@
 
 	// --- FAQ State ---
 	let openFaq: number | null = $state(null);
+	let pageRef = $state<HTMLElement | null>(null);
 	const toggleFaq = (index: number) => (openFaq = openFaq === index ? null : index);
+
+	const capturePage: Attachment<HTMLElement> = (node) => {
+		pageRef = node;
+
+		return () => {
+			if (pageRef === node) {
+				pageRef = null;
+			}
+		};
+	};
 
 	// --- Icon SVG ---
 
@@ -20,53 +32,76 @@
 		if (!browser) return;
 
 		let ctx: ReturnType<typeof import('gsap').gsap.context> | null = null;
+		let cancelled = false;
 
-		(async () => {
-			const { gsap } = await import('gsap');
-			const { ScrollTrigger } = await import('gsap/ScrollTrigger');
-			gsap.registerPlugin(ScrollTrigger);
+		void (async () => {
+			const root = pageRef;
+			if (!root) return;
 
-			// Respect reduced motion preference
-			const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+			try {
+				const { gsap } = await import('gsap');
+				const { ScrollTrigger } = await import('gsap/ScrollTrigger');
+				if (cancelled || pageRef !== root) return;
 
-			if (prefersReducedMotion) {
-				gsap.set('[data-gsap]', { opacity: 1, y: 0 });
-				return;
+				gsap.registerPlugin(ScrollTrigger);
+
+				// Respect reduced motion preference
+				const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+				if (prefersReducedMotion) {
+					gsap.set(root.querySelectorAll('[data-gsap]'), { opacity: 1, y: 0 });
+					return;
+				}
+
+				// Use gsap.context() for scoped cleanup - prevents global ScrollTrigger destruction
+				ctx = gsap.context(() => {
+					// Only set initial hidden state for elements NOT yet in viewport
+					const elements = root.querySelectorAll('[data-gsap]');
+					elements.forEach((el) => {
+						const rect = el.getBoundingClientRect();
+						const isInViewport = rect.top < window.innerHeight * 0.85;
+						if (!isInViewport) {
+							gsap.set(el, { opacity: 0, y: 30 });
+						}
+					});
+
+					// Create ScrollTrigger batch for optimal performance
+					ScrollTrigger.batch('[data-gsap]', {
+						onEnter: (batch) => {
+							if (cancelled) return;
+
+							gsap.to(batch, {
+								opacity: 1,
+								y: 0,
+								duration: 0.8,
+								ease: 'power3.out',
+								stagger: 0.1,
+								overwrite: true
+							});
+						},
+						start: 'top 85%',
+						once: true
+					});
+
+					ScrollTrigger.refresh();
+				}, root);
+
+				if (cancelled) {
+					ctx.revert();
+					ctx = null;
+				}
+			} catch (error) {
+				if (!cancelled) {
+					console.error('[ExplosiveSwings] GSAP initialization failed:', error);
+				}
 			}
-
-			// Use gsap.context() for scoped cleanup - prevents global ScrollTrigger destruction
-			ctx = gsap.context(() => {
-				// Only set initial hidden state for elements NOT yet in viewport
-				const elements = document.querySelectorAll('[data-gsap]');
-				elements.forEach((el) => {
-					const rect = el.getBoundingClientRect();
-					const isInViewport = rect.top < window.innerHeight * 0.85;
-					if (!isInViewport) {
-						gsap.set(el, { opacity: 0, y: 30 });
-					}
-				});
-
-				// Create ScrollTrigger batch for optimal performance
-				ScrollTrigger.batch('[data-gsap]', {
-					onEnter: (batch) => {
-						gsap.to(batch, {
-							opacity: 1,
-							y: 0,
-							duration: 0.8,
-							ease: 'power3.out',
-							stagger: 0.1,
-							overwrite: true
-						});
-					},
-					start: 'top 85%',
-					once: true
-				});
-
-				ScrollTrigger.refresh();
-			});
 		})();
 
-		return () => ctx?.revert();
+		return () => {
+			cancelled = true;
+			ctx?.revert();
+			ctx = null;
+		};
 	});
 
 	// FAQ data extracted to ./faq-data so +page.ts can share it.
@@ -91,7 +126,7 @@
 	];
 </script>
 
-<div class="es">
+<div class="es" {@attach capturePage}>
 	<!-- ─────────────────────────────────────────────────────────────
 	     Hero
 	     ───────────────────────────────────────────────────────────── -->
