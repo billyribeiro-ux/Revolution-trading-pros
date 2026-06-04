@@ -131,6 +131,10 @@
 	let toastMessage = $state('');
 	let toastType = $state<'success' | 'error'>('success');
 	let showToast = $state(false);
+	let isComponentMounted = false;
+	let datasourcesAbortController: AbortController | null = null;
+	let entriesAbortController: AbortController | null = null;
+	let toastTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
 	// Derived
 	let filteredDatasources = $derived(
@@ -157,8 +161,39 @@
 	// the rtp_access_token cookie as Bearer to the same backend route.
 	const API_BASE = '/api/admin/cms/datasources';
 
+	function isAbortError(error: unknown): boolean {
+		return error instanceof DOMException && error.name === 'AbortError';
+	}
+
+	function abortDatasourcesRequest() {
+		datasourcesAbortController?.abort();
+		datasourcesAbortController = null;
+	}
+
+	function abortEntriesRequest() {
+		entriesAbortController?.abort();
+		entriesAbortController = null;
+	}
+
+	function clearToastTimer() {
+		if (toastTimeoutId) {
+			clearTimeout(toastTimeoutId);
+			toastTimeoutId = null;
+		}
+	}
+
+	function dismissToast() {
+		clearToastTimer();
+		showToast = false;
+	}
+
 	// API Functions
 	async function fetchDatasources() {
+		if (!isComponentMounted) return;
+
+		abortDatasourcesRequest();
+		const controller = new AbortController();
+		datasourcesAbortController = controller;
 		isLoading = true;
 		error = '';
 
@@ -166,29 +201,43 @@
 			const response = await fetch(
 				`${API_BASE}?limit=${pagination.limit}&offset=${pagination.offset}`,
 				{
+					signal: controller.signal,
 					credentials: 'include',
 					headers: {
 						'Content-Type': 'application/json'
 					}
 				}
 			);
+			if (!isComponentMounted || controller.signal.aborted) return;
 
 			if (!response.ok) throw new Error('Failed to fetch datasources');
 
 			const data = await response.json();
+			if (!isComponentMounted || controller.signal.aborted) return;
 			datasources = data.data || [];
 			pagination = data.meta || pagination;
 		} catch (err) {
+			if (isAbortError(err)) return;
 			error = err instanceof Error ? err.message : 'Failed to load datasources';
 			showToastMessage(error, 'error');
 		} finally {
-			isLoading = false;
+			if (datasourcesAbortController === controller) {
+				datasourcesAbortController = null;
+			}
+			if (isComponentMounted && !controller.signal.aborted) {
+				isLoading = false;
+			}
 		}
 	}
 
 	async function fetchEntries() {
 		if (!selectedDatasource) return;
+		if (!isComponentMounted) return;
 
+		abortEntriesRequest();
+		const controller = new AbortController();
+		entriesAbortController = controller;
+		const datasourceId = selectedDatasource.id;
 		isLoading = true;
 		try {
 			// FIX-2026-04-26 (P3-4): build query with URLSearchParams so the
@@ -203,20 +252,41 @@
 			const url = `${API_BASE}/${selectedDatasource.id}/entries?${params.toString()}`;
 
 			const response = await fetch(url, {
+				signal: controller.signal,
 				credentials: 'include',
 				headers: { 'Content-Type': 'application/json' }
 			});
+			if (
+				!isComponentMounted ||
+				controller.signal.aborted ||
+				selectedDatasource?.id !== datasourceId
+			) {
+				return;
+			}
 
 			if (!response.ok) throw new Error('Failed to fetch entries');
 
 			const data = await response.json();
+			if (
+				!isComponentMounted ||
+				controller.signal.aborted ||
+				selectedDatasource?.id !== datasourceId
+			) {
+				return;
+			}
 			entries = data.data || [];
 			entriesPagination = data.meta || entriesPagination;
 			dimensions = data.dimensions || ['default'];
-		} catch (_err) {
+		} catch (err) {
+			if (isAbortError(err)) return;
 			showToastMessage('Failed to load entries', 'error');
 		} finally {
-			isLoading = false;
+			if (entriesAbortController === controller) {
+				entriesAbortController = null;
+			}
+			if (isComponentMounted && !controller.signal.aborted) {
+				isLoading = false;
+			}
 		}
 	}
 
@@ -248,12 +318,16 @@
 				editingDatasource ? 'Datasource updated successfully' : 'Datasource created successfully',
 				'success'
 			);
+			if (!isComponentMounted) return;
 			closeDatasourceModal();
 			await fetchDatasources();
 		} catch (err) {
+			if (!isComponentMounted) return;
 			showToastMessage(err instanceof Error ? err.message : 'Failed to save datasource', 'error');
 		} finally {
-			isSaving = false;
+			if (isComponentMounted) {
+				isSaving = false;
+			}
 		}
 	}
 
@@ -283,9 +357,11 @@
 
 			if (!response.ok) throw new Error('Failed to delete datasource');
 
+			if (!isComponentMounted) return;
 			showToastMessage('Datasource deleted successfully', 'success');
 			await fetchDatasources();
 		} catch (_err) {
+			if (!isComponentMounted) return;
 			showToastMessage('Failed to delete datasource', 'error');
 		}
 	}
@@ -299,15 +375,18 @@
 
 			if (!response.ok) throw new Error('Failed to duplicate datasource');
 
+			if (!isComponentMounted) return;
 			showToastMessage('Datasource duplicated successfully', 'success');
 			await fetchDatasources();
 		} catch (_err) {
+			if (!isComponentMounted) return;
 			showToastMessage('Failed to duplicate datasource', 'error');
 		}
 	}
 
 	async function saveEntry() {
 		if (!selectedDatasource) return;
+		const datasourceId = selectedDatasource.id;
 
 		isSaving = true;
 		try {
@@ -336,12 +415,16 @@
 				editingEntry ? 'Entry updated successfully' : 'Entry created successfully',
 				'success'
 			);
+			if (!isComponentMounted || selectedDatasource?.id !== datasourceId) return;
 			closeEntryModal();
 			await fetchEntries();
 		} catch (err) {
+			if (!isComponentMounted) return;
 			showToastMessage(err instanceof Error ? err.message : 'Failed to save entry', 'error');
 		} finally {
-			isSaving = false;
+			if (isComponentMounted) {
+				isSaving = false;
+			}
 		}
 	}
 
@@ -366,15 +449,18 @@
 
 			if (!response.ok) throw new Error('Failed to delete entry');
 
+			if (!isComponentMounted) return;
 			showToastMessage('Entry deleted successfully', 'success');
 			await fetchEntries();
 		} catch (_err) {
+			if (!isComponentMounted) return;
 			showToastMessage('Failed to delete entry', 'error');
 		}
 	}
 
 	async function reorderEntries(newOrder: string[]) {
 		if (!selectedDatasource) return;
+		const datasourceId = selectedDatasource.id;
 
 		// FIX-2026-04-26 (P2-8): optimistic update so the dragged row visually lands
 		// in its new slot immediately. Snapshot the current order so we can roll back
@@ -395,6 +481,7 @@
 
 			if (!response.ok) throw new Error('Failed to reorder entries');
 		} catch (_err) {
+			if (!isComponentMounted || selectedDatasource?.id !== datasourceId) return;
 			// Roll back to pre-drop order, then fetch authoritative state.
 			entries = snapshot;
 			showToastMessage('Failed to reorder entries', 'error');
@@ -413,23 +500,29 @@
 			if (!response.ok) throw new Error('Failed to export');
 
 			const blob = await response.blob();
+			if (!isComponentMounted) return;
 			const url = URL.createObjectURL(blob);
-			const a = document.createElement('a');
-			a.href = url;
-			a.download = `${selectedDatasource.slug}-entries.csv`;
-			document.body.appendChild(a);
-			a.click();
-			document.body.removeChild(a);
-			URL.revokeObjectURL(url);
+			try {
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = `${selectedDatasource.slug}-entries.csv`;
+				document.body.appendChild(a);
+				a.click();
+				document.body.removeChild(a);
+			} finally {
+				URL.revokeObjectURL(url);
+			}
 
 			showToastMessage('CSV exported successfully', 'success');
 		} catch (_err) {
+			if (!isComponentMounted) return;
 			showToastMessage('Failed to export CSV', 'error');
 		}
 	}
 
 	async function importCsv() {
 		if (!selectedDatasource || !importFile) return;
+		const datasourceId = selectedDatasource.id;
 
 		isSaving = true;
 		try {
@@ -445,6 +538,7 @@
 			if (!response.ok) throw new Error('Failed to import');
 
 			const result = await response.json();
+			if (!isComponentMounted || selectedDatasource?.id !== datasourceId) return;
 			showToastMessage(
 				`Import completed: ${result.created} created, ${result.skipped} skipped`,
 				'success'
@@ -453,9 +547,12 @@
 			importFile = null;
 			await fetchEntries();
 		} catch (_err) {
+			if (!isComponentMounted) return;
 			showToastMessage('Failed to import CSV', 'error');
 		} finally {
-			isSaving = false;
+			if (isComponentMounted) {
+				isSaving = false;
+			}
 		}
 	}
 
@@ -518,10 +615,11 @@
 		selectedDatasource = datasource;
 		selectedDimension = 'default';
 		entriesPagination = { ...entriesPagination, offset: 0 };
-		fetchEntries();
+		void fetchEntries();
 	}
 
 	function backToList() {
+		abortEntriesRequest();
 		selectedDatasource = null;
 		entries = [];
 	}
@@ -560,11 +658,14 @@
 	}
 
 	function showToastMessage(message: string, type: 'success' | 'error') {
+		if (!isComponentMounted) return;
+		clearToastTimer();
 		toastMessage = message;
 		toastType = type;
 		showToast = true;
-		setTimeout(() => {
+		toastTimeoutId = setTimeout(() => {
 			showToast = false;
+			toastTimeoutId = null;
 		}, 5000);
 	}
 
@@ -613,13 +714,21 @@
 		currentOrder.splice(draggedIndex, 1);
 		currentOrder.splice(targetIndex, 0, draggedEntryId);
 
-		reorderEntries(currentOrder);
+		void reorderEntries(currentOrder);
 		draggedEntryId = null;
 	}
 
 	// Lifecycle
 	onMount(() => {
-		fetchDatasources();
+		isComponentMounted = true;
+		void fetchDatasources();
+
+		return () => {
+			isComponentMounted = false;
+			abortDatasourcesRequest();
+			abortEntriesRequest();
+			clearToastTimer();
+		};
 	});
 </script>
 
@@ -636,7 +745,7 @@
 			<IconAlertCircle size={20} />
 		{/if}
 		<span>{toastMessage}</span>
-		<button onclick={() => (showToast = false)} class="toast-close">
+		<button onclick={dismissToast} class="toast-close">
 			<IconX size={16} />
 		</button>
 	</div>
