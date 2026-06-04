@@ -174,7 +174,7 @@
 	let analyticsPeriod = $state<'7d' | '30d' | '90d'>('30d');
 
 	// ICT 7 ADDITION: Bulk Operations State
-	let selectedVideoIds = $state(new SvelteSet<number>()); // eslint-disable-line svelte/no-unnecessary-state-wrap
+	const selectedVideoIds = new SvelteSet<number>();
 	let isBulkActionLoading = $state(false);
 	let showBulkTagsModal = $state(false);
 	let bulkTagsToAdd = $state<string[]>([]);
@@ -256,6 +256,7 @@
 				}));
 				totalPages = response.data.last_page;
 				totalVideos = response.data.total;
+				pruneSelectedVideoIds();
 			}
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load videos';
@@ -280,7 +281,9 @@
 	function selectRoom(room: TradingRoom) {
 		selectedRoom = room;
 		currentPage = 1;
-		loadVideos();
+		void loadVideos().then(() => {
+			if (showAnalyticsPanel) void loadAnalytics();
+		});
 	}
 
 	function openUploadModal() {
@@ -726,12 +729,15 @@
 	}
 
 	function toggleAnalyticsPanel() {
-		// FIX-2026-04-26-audit (P2-1): the open-handler used to call loadAnalytics()
-		// directly AND a separate $effect on (showAnalyticsPanel, analyticsPeriod)
-		// fired the same call, producing a duplicate fetch on first open. The effect
-		// below is now the single fetch path, triggered both on open and on period
-		// change. Toggling closed simply hides the panel.
-		showAnalyticsPanel = !showAnalyticsPanel;
+		const willOpen = !showAnalyticsPanel;
+		showAnalyticsPanel = willOpen;
+		if (willOpen) void loadAnalytics();
+	}
+
+	function setAnalyticsPeriod(period: '7d' | '30d' | '90d') {
+		if (analyticsPeriod === period) return;
+		analyticsPeriod = period;
+		if (showAnalyticsPanel) void loadAnalytics();
 	}
 
 	async function fetchVideoDuration(videoId: number) {
@@ -745,13 +751,6 @@
 			error = err instanceof Error ? err.message : 'Failed to fetch duration';
 		}
 	}
-
-	// Reload analytics when period changes
-	$effect(() => {
-		if (showAnalyticsPanel && analyticsPeriod) {
-			loadAnalytics();
-		}
-	});
 
 	// ICT 7 ADDITION: BULK OPERATIONS
 
@@ -767,12 +766,19 @@
 		if (selectedVideoIds.size === filteredVideos.length) {
 			selectedVideoIds.clear();
 		} else {
-			selectedVideoIds = new SvelteSet(filteredVideos.map((v) => v.id));
+			replaceSelectedVideoIds(filteredVideos.map((v) => v.id));
 		}
 	}
 
 	function clearSelection() {
 		selectedVideoIds.clear();
+	}
+
+	function replaceSelectedVideoIds(ids: Iterable<number>) {
+		selectedVideoIds.clear();
+		for (const id of ids) {
+			selectedVideoIds.add(id);
+		}
 	}
 
 	async function bulkPublish(publish: boolean) {
@@ -938,13 +944,7 @@
 		}
 	}
 
-	// FIX-2026-04-26-audit (P2-2, P2-10):
-	//   P2-10: run unconditionally so the last-video-deleted case prunes stale
-	//          selection IDs (the previous `if (videos.length)` guard left
-	//          stale IDs in selectedVideoIds when videos.length === 0).
-	//   P2-2:  short-circuit when nothing actually needs pruning so we don't
-	//          allocate a fresh Set on every video reload.
-	$effect(() => {
+	function pruneSelectedVideoIds() {
 		if (selectedVideoIds.size === 0) return;
 		const validIds = new SvelteSet(videos.map((v) => v.id));
 		let allValid = true;
@@ -955,12 +955,12 @@
 			}
 		}
 		if (allValid) return;
-		const newSelection = new SvelteSet<number>();
+		const nextSelection: number[] = [];
 		for (const id of selectedVideoIds) {
-			if (validIds.has(id)) newSelection.add(id);
+			if (validIds.has(id)) nextSelection.push(id);
 		}
-		selectedVideoIds = newSelection;
-	});
+		replaceSelectedVideoIds(nextSelection);
+	}
 
 	// HELPERS
 
@@ -1179,10 +1179,11 @@
 		<AnalyticsPanel
 			open={showAnalyticsPanel}
 			{analyticsData}
-			bind:analyticsPeriod
+			{analyticsPeriod}
 			{isLoadingAnalytics}
 			{usedCategories}
 			{formatViews}
+			onAnalyticsPeriodChange={setAnalyticsPeriod}
 			onClose={() => (showAnalyticsPanel = false)}
 		/>
 

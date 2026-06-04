@@ -159,6 +159,7 @@
 		return () => {
 			if (ws) ws.close();
 			if (refreshInterval) clearInterval(refreshInterval);
+			clearTimeout(filterDebounceTimer);
 			document.removeEventListener('keydown', handleKeyboard);
 		};
 	});
@@ -287,8 +288,7 @@
 
 	function togglePostSelection(postId: number) {
 		// FIX-2026-04-26 (P2-2): drop self-assignment hacks; Set/array mutations
-		// are reactive in Svelte 5 runes. Reassigning the Set with new Set keeps
-		// downstream `$derived` consumers consistent.
+		// are reactive in Svelte 5 runes.
 		if (selectedPosts.has(postId)) {
 			selectedPosts.delete(postId);
 		} else {
@@ -642,31 +642,49 @@
 	// Derived state for bulk actions visibility
 	const showBulkActions = $derived(selectedPosts.size > 0);
 
-	// Track initial mount to prevent effect from running on first load
-	let isInitialMount = true;
 	let filterDebounceTimer: ReturnType<typeof setTimeout> | undefined;
 
-	// ICT11+ Fix: Debounced effect to reload posts when filters change
-	$effect(() => {
-		// Track all filter dependencies (void to suppress unused warnings)
-		void dateRange.start;
-		void dateRange.end;
-
-		if (isInitialMount) {
-			isInitialMount = false;
-			return;
-		}
-
-		// Debounce filter changes to prevent rapid API calls
+	function scheduleFilteredPostsLoad() {
 		clearTimeout(filterDebounceTimer);
 		filterDebounceTimer = setTimeout(() => {
-			loadPosts();
+			void loadPosts();
 		}, 300);
+	}
 
-		return () => {
-			clearTimeout(filterDebounceTimer);
-		};
-	});
+	function setSearchQuery(value: string) {
+		searchQuery = value;
+		scheduleFilteredPostsLoad();
+	}
+
+	function setDateRangeStart(value: string) {
+		dateRange = { ...dateRange, start: value };
+		scheduleFilteredPostsLoad();
+	}
+
+	function setDateRangeEnd(value: string) {
+		dateRange = { ...dateRange, end: value };
+		scheduleFilteredPostsLoad();
+	}
+
+	function setStatusFilter(value: string) {
+		statusFilter = value;
+		scheduleFilteredPostsLoad();
+	}
+
+	function setCategoryFilter(value: string) {
+		categoryFilter = value;
+		scheduleFilteredPostsLoad();
+	}
+
+	function setSortBy(value: string) {
+		sortBy = value;
+		scheduleFilteredPostsLoad();
+	}
+
+	function toggleSortOrder() {
+		sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+		scheduleFilteredPostsLoad();
+	}
 </script>
 
 <svelte:head>
@@ -747,7 +765,8 @@
 							id="blog-search"
 							name="blog-search"
 							type="text"
-							bind:value={searchQuery}
+							value={searchQuery}
+							oninput={(event) => setSearchQuery((event.currentTarget as HTMLInputElement).value)}
 							placeholder="Search posts... (Ctrl+F)"
 						/>
 					</div>
@@ -761,7 +780,8 @@
 						id="blog-date-start"
 						name="blog-date-start"
 						type="date"
-						bind:value={dateRange.start}
+						value={dateRange.start}
+						onchange={(event) => setDateRangeStart((event.currentTarget as HTMLInputElement).value)}
 						class="date-input"
 					/>
 					<span>to</span>
@@ -769,19 +789,28 @@
 						id="blog-date-end"
 						name="blog-date-end"
 						type="date"
-						bind:value={dateRange.end}
+						value={dateRange.end}
+						onchange={(event) => setDateRangeEnd((event.currentTarget as HTMLInputElement).value)}
 						class="date-input"
 					/>
 				</div>
 
 				<!-- Filters -->
-				<select class="filter-select" bind:value={statusFilter}>
+				<select
+					class="filter-select"
+					value={statusFilter}
+					onchange={(event) => setStatusFilter((event.currentTarget as HTMLSelectElement).value)}
+				>
 					{#each statusOptions as option (option.value)}
 						<option value={option.value}>{option.label}</option>
 					{/each}
 				</select>
 
-				<select class="filter-select" bind:value={categoryFilter}>
+				<select
+					class="filter-select"
+					value={categoryFilter}
+					onchange={(event) => setCategoryFilter((event.currentTarget as HTMLSelectElement).value)}
+				>
 					<option value="all">All Categories</option>
 					{#each predefinedCategories as category (category.id)}
 						<option value={category.id}>{category.name}</option>
@@ -790,15 +819,16 @@
 
 				<!-- Sort -->
 				<div class="sort-controls">
-					<select class="filter-select" bind:value={sortBy}>
+					<select
+						class="filter-select"
+						value={sortBy}
+						onchange={(event) => setSortBy((event.currentTarget as HTMLSelectElement).value)}
+					>
 						{#each sortOptions as option (option.value)}
 							<option value={option.value}>{option.label}</option>
 						{/each}
 					</select>
-					<button
-						class="btn-icon"
-						onclick={() => (sortOrder = sortOrder === 'asc' ? 'desc' : 'asc')}
-					>
+					<button class="btn-icon" onclick={toggleSortOrder}>
 						{#if sortOrder === 'asc'}
 							<IconSortAscending size={18} />
 						{:else}

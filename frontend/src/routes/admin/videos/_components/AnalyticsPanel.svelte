@@ -15,18 +15,26 @@
 		isLoadingAnalytics: boolean;
 		usedCategories: UsedCategory[];
 		formatViews: (views: number) => string;
+		onAnalyticsPeriodChange: (period: '7d' | '30d' | '90d') => void;
 		onClose: () => void;
 	}
 
 	let {
 		open,
 		analyticsData,
-		analyticsPeriod = $bindable(),
+		analyticsPeriod,
 		isLoadingAnalytics,
 		usedCategories,
 		formatViews,
+		onAnalyticsPeriodChange,
 		onClose
 	}: Props = $props();
+
+	function handlePeriodChange(event: Event) {
+		onAnalyticsPeriodChange(
+			(event.currentTarget as HTMLSelectElement).value as '7d' | '30d' | '90d'
+		);
+	}
 </script>
 
 {#if open}
@@ -35,7 +43,12 @@
 			<h3><IconChartBar size={20} /> Video Analytics</h3>
 			<div class="analytics-controls">
 				<label for="analytics-period" class="sr-only">Analytics period</label>
-				<select id="analytics-period" class="filter-select" bind:value={analyticsPeriod}>
+				<select
+					id="analytics-period"
+					class="filter-select"
+					value={analyticsPeriod}
+					onchange={handlePeriodChange}
+				>
 					<option value="7d">Last 7 days</option>
 					<option value="30d">Last 30 days</option>
 					<option value="90d">Last 90 days</option>

@@ -177,8 +177,9 @@
 	let saving = $state(false);
 	let generating = $state(false);
 	let analyzing = $state(false);
-	let overallScore = $state(0);
-	let validationResults = $state<ValidationResult[]>([]);
+	const validationState = $derived(getValidationState());
+	const overallScore = $derived(validationState.score);
+	const validationResults = $derived(validationState.results);
 	let isDragging = $state(false);
 	let draggedModule = $state<Module | null>(null);
 	let draggedLesson = $state<Lesson | null>(null);
@@ -189,7 +190,7 @@
 
 	// Lifecycle Hooks & Initialization
 
-	// Svelte 5: Initialize on mount with $effect
+	// Svelte 5: client-only initialization and autosave setup.
 	onMount(() => {
 		// Initialize with starter module
 		if (course.modules.length === 0) {
@@ -205,9 +206,6 @@
 				saveDraft();
 			}
 		}, 30000);
-
-		// Initialize validation
-		validateAll();
 
 		// Cleanup on unmount
 		return () => {
@@ -297,7 +295,6 @@
 		};
 
 		module.lessons = [...module.lessons, newLesson];
-		course.modules = course.modules;
 		hasUnsavedChanges = true;
 	}
 
@@ -307,7 +304,6 @@
 
 		module.lessons = module.lessons.filter((l) => l.id !== lessonId);
 		updateModuleDuration(module);
-		course.modules = course.modules;
 		hasUnsavedChanges = true;
 	}
 
@@ -327,7 +323,6 @@
 
 		module.lessons = [...module.lessons, duplicate];
 		updateModuleDuration(module);
-		course.modules = course.modules;
 		hasUnsavedChanges = true;
 	}
 
@@ -421,7 +416,6 @@
 					newLessons.splice(targetIndex, 0, dragged);
 					module.lessons = newLessons;
 					reorderLessons(module);
-					course.modules = course.modules;
 					hasUnsavedChanges = true;
 				}
 			}
@@ -803,7 +797,6 @@
 
 			generating = false;
 			hasUnsavedChanges = true;
-			validateAll();
 		}, 1500);
 	}
 
@@ -964,7 +957,6 @@
 				}
 
 				hasUnsavedChanges = true;
-				validateAll();
 			} else {
 				throw new Error(response.message || 'Upload failed - no URL returned');
 			}
@@ -1046,16 +1038,16 @@
 
 	// Complete Validation System
 
-	function validateAll() {
+	function getValidationState(): { score: number; results: ValidationResult[] } {
 		let totalScore = 0;
 		let maxScore = 0;
-		validationResults = [];
+		const results: ValidationResult[] = [];
 
 		// Title validation (20 points)
 		maxScore += 20;
 		if (course.name.length >= 50) {
 			totalScore += 20;
-			validationResults.push({
+			results.push({
 				field: 'title',
 				status: 'good',
 				message: 'Excellent title length!',
@@ -1063,7 +1055,7 @@
 			});
 		} else if (course.name.length >= 20) {
 			totalScore += 15;
-			validationResults.push({
+			results.push({
 				field: 'title',
 				status: 'warning',
 				message: 'Good title, consider making it more descriptive',
@@ -1071,14 +1063,14 @@
 			});
 		} else if (course.name.length > 0) {
 			totalScore += 5;
-			validationResults.push({
+			results.push({
 				field: 'title',
 				status: 'error',
 				message: 'Title is too short',
 				score: 5
 			});
 		} else {
-			validationResults.push({
+			results.push({
 				field: 'title',
 				status: 'error',
 				message: 'Title is required',
@@ -1091,7 +1083,7 @@
 		const wordCount = course.description.split(/\s+/).filter((w) => w.length > 0).length;
 		if (wordCount >= 200) {
 			totalScore += 20;
-			validationResults.push({
+			results.push({
 				field: 'description',
 				status: 'good',
 				message: 'Comprehensive description!',
@@ -1099,7 +1091,7 @@
 			});
 		} else if (wordCount >= 100) {
 			totalScore += 15;
-			validationResults.push({
+			results.push({
 				field: 'description',
 				status: 'warning',
 				message: `${wordCount} words - add more detail`,
@@ -1107,14 +1099,14 @@
 			});
 		} else if (wordCount > 0) {
 			totalScore += 5;
-			validationResults.push({
+			results.push({
 				field: 'description',
 				status: 'error',
 				message: `Only ${wordCount} words - needs more content`,
 				score: 5
 			});
 		} else {
-			validationResults.push({
+			results.push({
 				field: 'description',
 				status: 'error',
 				message: 'Description is required',
@@ -1126,7 +1118,7 @@
 		maxScore += 15;
 		if (course.pricing_model === 'free') {
 			totalScore += 15;
-			validationResults.push({
+			results.push({
 				field: 'price',
 				status: 'good',
 				message: 'Free course configured',
@@ -1134,7 +1126,7 @@
 			});
 		} else if (course.price >= 97) {
 			totalScore += 15;
-			validationResults.push({
+			results.push({
 				field: 'price',
 				status: 'good',
 				message: 'Good pricing strategy',
@@ -1142,14 +1134,14 @@
 			});
 		} else if (course.price > 0) {
 			totalScore += 10;
-			validationResults.push({
+			results.push({
 				field: 'price',
 				status: 'warning',
 				message: 'Consider higher pricing for premium content',
 				score: 10
 			});
 		} else {
-			validationResults.push({
+			results.push({
 				field: 'price',
 				status: 'error',
 				message: 'Set a price for your course',
@@ -1162,7 +1154,7 @@
 		const totalLessons = course.modules.reduce((sum, m) => sum + m.lessons.length, 0);
 		if (course.modules.length >= 5 && totalLessons >= 20) {
 			totalScore += 25;
-			validationResults.push({
+			results.push({
 				field: 'curriculum',
 				status: 'good',
 				message: `Excellent! ${course.modules.length} modules, ${totalLessons} lessons`,
@@ -1170,7 +1162,7 @@
 			});
 		} else if (course.modules.length >= 3 && totalLessons >= 10) {
 			totalScore += 20;
-			validationResults.push({
+			results.push({
 				field: 'curriculum',
 				status: 'warning',
 				message: `Good structure: ${course.modules.length} modules, ${totalLessons} lessons`,
@@ -1178,14 +1170,14 @@
 			});
 		} else if (course.modules.length > 0) {
 			totalScore += 10;
-			validationResults.push({
+			results.push({
 				field: 'curriculum',
 				status: 'error',
 				message: 'Add more modules and lessons',
 				score: 10
 			});
 		} else {
-			validationResults.push({
+			results.push({
 				field: 'curriculum',
 				status: 'error',
 				message: 'No curriculum added',
@@ -1197,7 +1189,7 @@
 		maxScore += 10;
 		if (course.thumbnail && course.promo_video) {
 			totalScore += 10;
-			validationResults.push({
+			results.push({
 				field: 'media',
 				status: 'good',
 				message: 'All media uploaded',
@@ -1205,14 +1197,14 @@
 			});
 		} else if (course.thumbnail) {
 			totalScore += 7;
-			validationResults.push({
+			results.push({
 				field: 'media',
 				status: 'warning',
 				message: 'Add a promotional video',
 				score: 7
 			});
 		} else {
-			validationResults.push({
+			results.push({
 				field: 'media',
 				status: 'error',
 				message: 'Upload course thumbnail',
@@ -1224,7 +1216,7 @@
 		maxScore += 10;
 		if (course.meta_title && course.meta_description && course.keywords.length >= 5) {
 			totalScore += 10;
-			validationResults.push({
+			results.push({
 				field: 'seo',
 				status: 'good',
 				message: 'SEO optimized',
@@ -1232,14 +1224,14 @@
 			});
 		} else if (course.meta_title || course.meta_description) {
 			totalScore += 5;
-			validationResults.push({
+			results.push({
 				field: 'seo',
 				status: 'warning',
 				message: 'Complete SEO settings',
 				score: 5
 			});
 		} else {
-			validationResults.push({
+			results.push({
 				field: 'seo',
 				status: 'warning',
 				message: 'Add SEO metadata',
@@ -1247,7 +1239,10 @@
 			});
 		}
 
-		overallScore = Math.round((totalScore / maxScore) * 100);
+		return {
+			score: Math.round((totalScore / maxScore) * 100),
+			results
+		};
 	}
 
 	// Complete Save & Load System
@@ -1312,7 +1307,7 @@
 		showLoadDraftModal = false;
 		course = pendingDraft.course;
 		pendingDraft = null;
-		validateAll();
+		updateCourseDuration();
 	}
 
 	async function saveCourse() {
@@ -1347,7 +1342,6 @@
 		}
 
 		saving = true;
-		validateAll();
 
 		// Simulate API call
 		try {
@@ -1587,16 +1581,6 @@
 
 	// Reactive statements
 	let completionStatus = $derived(getCompletionStatus());
-	// TODO(2026-04-26-audit P3-13): updateCourseDuration() and validateAll()
-	// both write to runes that the effect also depends on (write-while-read).
-	// Refactor to $derived after the validation rune layout is stabilized;
-	// converting now risks regressing form validation in the four-tab wizard.
-	$effect(() => {
-		if (course.modules) updateCourseDuration();
-	});
-	$effect(() => {
-		validateAll();
-	});
 	let totalValue = $derived(getTotalValue());
 </script>
 
