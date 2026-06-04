@@ -89,116 +89,124 @@
 		let cancelled = false;
 
 		// Use IIFE for async operations
-		(async () => {
+		void (async () => {
 			const root = pageRef;
 			if (!root) return;
 
 			const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 			if (prefersReducedMotion) return;
 
-			// Dynamically import GSAP to avoid SSR issues
-			const { gsap } = await import('gsap');
-			const ScrollTrigger = (await import('gsap/ScrollTrigger')).default;
-			if (cancelled || !pageRef) return;
+			try {
+				// Dynamically import GSAP to avoid SSR issues
+				const { gsap } = await import('gsap');
+				const ScrollTrigger = (await import('gsap/ScrollTrigger')).default;
+				if (cancelled || pageRef !== root) return;
 
-			gsap.registerPlugin(ScrollTrigger);
+				gsap.registerPlugin(ScrollTrigger);
 
-			// Use gsap.context() for scoped cleanup - prevents global ScrollTrigger destruction
-			gsapContext = gsap.context(() => {
-				// --- Cinematic GSAP Animations ---
+				// Use gsap.context() for scoped cleanup - prevents global ScrollTrigger destruction
+				gsapContext = gsap.context(() => {
+					// --- Cinematic GSAP Animations ---
 
-				// 1. Hero Parallax & Reveal
-				const heroTitleAccent = root.querySelector('.hero-title span');
-				if (heroTitleAccent) {
-					const tlHero = gsap.timeline();
-					tlHero.to(heroTitleAccent, {
-						backgroundPosition: '200% center',
-						duration: 2,
-						ease: 'none',
-						repeat: -1
-					});
+					// 1. Hero Parallax & Reveal
+					const heroTitleAccent = root.querySelector('.hero-title span');
+					if (heroTitleAccent) {
+						const tlHero = gsap.timeline();
+						tlHero.to(heroTitleAccent, {
+							backgroundPosition: '200% center',
+							duration: 2,
+							ease: 'none',
+							repeat: -1
+						});
+					}
+
+					// 2. Truth Section - Animated Chart Drawing
+					const truthSection = root.querySelector('.truth-section');
+					const chartPath = root.querySelector('.mockup-price-path');
+					const indicatorPath = root.querySelector('.mockup-indicator-path');
+					const annotation = root.querySelector('.mockup-annotation');
+
+					if (truthSection && chartPath && indicatorPath) {
+						const chartLength = (chartPath as SVGPathElement).getTotalLength();
+						const indLength = (indicatorPath as SVGPathElement).getTotalLength();
+
+						gsap.set(chartPath, { strokeDasharray: chartLength, strokeDashoffset: chartLength });
+						gsap.set(indicatorPath, { strokeDasharray: indLength, strokeDashoffset: indLength });
+						gsap.set(annotation, { opacity: 0, scale: 0.8, y: 10 });
+
+						ScrollTrigger.create({
+							trigger: truthSection,
+							start: 'top 60%',
+							onEnter: () => {
+								gsap.to(chartPath, { strokeDashoffset: 0, duration: 2, ease: 'power2.out' });
+								gsap.to(indicatorPath, {
+									strokeDashoffset: 0,
+									duration: 2,
+									delay: 0.2,
+									ease: 'power2.out'
+								});
+								gsap.to(annotation, {
+									opacity: 1,
+									scale: 1,
+									y: 0,
+									duration: 0.5,
+									delay: 1.8,
+									ease: 'back.out(1.7)'
+								});
+							}
+						});
+					}
+
+					// 3. Confluence Flow Animation
+					const confluenceSection = root.querySelector('.confluence-section');
+					const connectors = root.querySelectorAll('.confluence-connector');
+					const steps = root.querySelectorAll('.confluence-step');
+
+					if (confluenceSection && steps.length >= 3 && connectors.length >= 2) {
+						const tlConfluence = gsap.timeline({
+							scrollTrigger: {
+								trigger: confluenceSection,
+								start: 'top 70%'
+							}
+						});
+
+						tlConfluence
+							.from(steps[0], { y: 30, opacity: 0, duration: 0.5 })
+							.from(connectors[0], { scale: 0, opacity: 0, duration: 0.3 }, '-=0.1')
+							.from(steps[1], { y: 30, opacity: 0, duration: 0.5 }, '-=0.1')
+							.from(connectors[1], { scale: 0, opacity: 0, duration: 0.3 }, '-=0.1')
+							.from(steps[2], { y: 30, opacity: 0, duration: 0.5 }, '-=0.1');
+					}
+
+					// 4. Setup Section Animation
+					const setupGrid = root.querySelector('.setup-grid');
+					const setupItems = root.querySelectorAll('.setup-item');
+					if (setupGrid && setupItems.length > 0) {
+						gsap.from(setupItems, {
+							scrollTrigger: {
+								trigger: setupGrid,
+								start: 'top 80%'
+							},
+							y: 20,
+							opacity: 0,
+							duration: 0.4,
+							stagger: 0.1,
+							ease: 'power2.out'
+						});
+					}
+				}, root); // Close gsap.context()
+			} catch (error) {
+				if (!cancelled) {
+					console.error('Failed to load indicators page animations', error);
 				}
-
-				// 2. Truth Section - Animated Chart Drawing
-				const truthSection = root.querySelector('.truth-section');
-				const chartPath = root.querySelector('.mockup-price-path');
-				const indicatorPath = root.querySelector('.mockup-indicator-path');
-				const annotation = root.querySelector('.mockup-annotation');
-
-				if (truthSection && chartPath && indicatorPath) {
-					const chartLength = (chartPath as SVGPathElement).getTotalLength();
-					const indLength = (indicatorPath as SVGPathElement).getTotalLength();
-
-					gsap.set(chartPath, { strokeDasharray: chartLength, strokeDashoffset: chartLength });
-					gsap.set(indicatorPath, { strokeDasharray: indLength, strokeDashoffset: indLength });
-					gsap.set(annotation, { opacity: 0, scale: 0.8, y: 10 });
-
-					ScrollTrigger.create({
-						trigger: truthSection,
-						start: 'top 60%',
-						onEnter: () => {
-							gsap.to(chartPath, { strokeDashoffset: 0, duration: 2, ease: 'power2.out' });
-							gsap.to(indicatorPath, {
-								strokeDashoffset: 0,
-								duration: 2,
-								delay: 0.2,
-								ease: 'power2.out'
-							});
-							gsap.to(annotation, {
-								opacity: 1,
-								scale: 1,
-								y: 0,
-								duration: 0.5,
-								delay: 1.8,
-								ease: 'back.out(1.7)'
-							});
-						}
-					});
-				}
-
-				// 3. Confluence Flow Animation
-				const confluenceSection = root.querySelector('.confluence-section');
-				const connectors = root.querySelectorAll('.confluence-connector');
-				const steps = root.querySelectorAll('.confluence-step');
-
-				if (confluenceSection && steps.length >= 3 && connectors.length >= 2) {
-					const tlConfluence = gsap.timeline({
-						scrollTrigger: {
-							trigger: confluenceSection,
-							start: 'top 70%'
-						}
-					});
-
-					tlConfluence
-						.from(steps[0], { y: 30, opacity: 0, duration: 0.5 })
-						.from(connectors[0], { scale: 0, opacity: 0, duration: 0.3 }, '-=0.1')
-						.from(steps[1], { y: 30, opacity: 0, duration: 0.5 }, '-=0.1')
-						.from(connectors[1], { scale: 0, opacity: 0, duration: 0.3 }, '-=0.1')
-						.from(steps[2], { y: 30, opacity: 0, duration: 0.5 }, '-=0.1');
-				}
-
-				// 4. Setup Section Animation
-				const setupGrid = root.querySelector('.setup-grid');
-				const setupItems = root.querySelectorAll('.setup-item');
-				if (setupGrid && setupItems.length > 0) {
-					gsap.from(setupItems, {
-						scrollTrigger: {
-							trigger: setupGrid,
-							start: 'top 80%'
-						},
-						y: 20,
-						opacity: 0,
-						duration: 0.4,
-						stagger: 0.1,
-						ease: 'power2.out'
-					});
-				}
-			}, root); // Close gsap.context()
+			}
 		})();
 
 		// --- Original Observer Logic (Preserved for compatibility) ---
 		heroObserver = new IntersectionObserver(
 			(entries) => {
+				if (cancelled) return;
+
 				entries.forEach((entry) => {
 					if (entry.isIntersecting) {
 						heroVisible = true;
