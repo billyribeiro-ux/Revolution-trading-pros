@@ -98,6 +98,7 @@
 	let showImportModal = $state(false);
 	let editingDatasource = $state<Datasource | null>(null);
 	let editingEntry = $state<DatasourceEntry | null>(null);
+	let datasourceSlugEdited = $state(false);
 
 	// Delete confirmation modal state
 	let showDeleteDatasourceModal = $state(false);
@@ -462,6 +463,7 @@
 	function openDatasourceModal(datasource: Datasource | null = null) {
 		if (datasource) {
 			editingDatasource = datasource;
+			datasourceSlugEdited = true;
 			datasourceForm = {
 				name: datasource.name,
 				slug: datasource.slug,
@@ -471,6 +473,7 @@
 			};
 		} else {
 			editingDatasource = null;
+			datasourceSlugEdited = false;
 			datasourceForm = {
 				name: '',
 				slug: '',
@@ -514,7 +517,7 @@
 	function selectDatasource(datasource: Datasource) {
 		selectedDatasource = datasource;
 		selectedDimension = 'default';
-		entriesPagination.offset = 0;
+		entriesPagination = { ...entriesPagination, offset: 0 };
 		fetchEntries();
 	}
 
@@ -530,6 +533,30 @@
 			.replace(/[^\w\s-]/g, '')
 			.replace(/[\s_-]+/g, '-')
 			.replace(/^-+|-+$/g, '');
+	}
+
+	function handleDatasourceNameInput(event: Event) {
+		const value = (event.currentTarget as HTMLInputElement).value;
+		datasourceForm.name = value;
+
+		if (!editingDatasource && !datasourceSlugEdited) {
+			datasourceForm.slug = generateSlug(value);
+		}
+	}
+
+	function handleDatasourceSlugInput(event: Event) {
+		const value = (event.currentTarget as HTMLInputElement).value;
+		datasourceSlugEdited = value.trim().length > 0;
+		datasourceForm.slug =
+			datasourceSlugEdited || !datasourceForm.name
+				? generateSlug(value)
+				: generateSlug(datasourceForm.name);
+	}
+
+	function handleDimensionChange(event: Event) {
+		selectedDimension = (event.currentTarget as HTMLSelectElement).value;
+		entriesPagination = { ...entriesPagination, offset: 0 };
+		void fetchEntries();
 	}
 
 	function showToastMessage(message: string, type: 'success' | 'error') {
@@ -589,21 +616,6 @@
 		reorderEntries(currentOrder);
 		draggedEntryId = null;
 	}
-
-	// Auto-generate slug when name changes
-	$effect(() => {
-		if (datasourceForm.name && !editingDatasource) {
-			datasourceForm.slug = generateSlug(datasourceForm.name);
-		}
-	});
-
-	// Fetch entries when dimension changes
-	$effect(() => {
-		if (selectedDatasource && selectedDimension) {
-			entriesPagination.offset = 0;
-			fetchEntries();
-		}
-	});
 
 	// Lifecycle
 	onMount(() => {
@@ -851,7 +863,11 @@
 					/>
 				</div>
 				{#if dimensions.length > 1}
-					<select class="dimension-select" bind:value={selectedDimension}>
+					<select
+						class="dimension-select"
+						value={selectedDimension}
+						onchange={handleDimensionChange}
+					>
 						{#each dimensions as dim (dim)}
 							<option value={dim}>{dim === 'default' ? 'Default' : dim}</option>
 						{/each}
@@ -972,7 +988,8 @@
 							id="ds-name"
 							name="ds-name"
 							type="text"
-							bind:value={datasourceForm.name}
+							value={datasourceForm.name}
+							oninput={handleDatasourceNameInput}
 							placeholder="e.g., US States"
 							required
 						/>
@@ -984,7 +1001,8 @@
 							id="ds-slug"
 							name="ds-slug"
 							type="text"
-							bind:value={datasourceForm.slug}
+							value={datasourceForm.slug}
+							oninput={handleDatasourceSlugInput}
 							placeholder="us-states"
 							required
 						/>
