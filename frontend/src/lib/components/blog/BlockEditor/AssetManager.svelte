@@ -170,6 +170,28 @@
 
 	// Debounce timer
 	let searchTimeout: ReturnType<typeof setTimeout> | null = null;
+	let uploadCompleteTimeout: ReturnType<typeof setTimeout> | null = null;
+
+	function clearUploadCompleteTimeout() {
+		if (uploadCompleteTimeout === null) return;
+		clearTimeout(uploadCompleteTimeout);
+		uploadCompleteTimeout = null;
+	}
+
+	function releaseUploadPreview(item: UploadItem) {
+		if (!item.previewUrl) return;
+		URL.revokeObjectURL(item.previewUrl);
+	}
+
+	function releaseUploadQueuePreviews(items = uploadQueue) {
+		items.forEach(releaseUploadPreview);
+	}
+
+	function clearUploadQueue() {
+		clearUploadCompleteTimeout();
+		releaseUploadQueuePreviews();
+		uploadQueue = [];
+	}
 
 	// API Functions
 
@@ -511,9 +533,10 @@
 		// Switch to library if all complete
 		const allComplete = uploadQueue.every((item) => item.status === 'complete');
 		if (allComplete) {
-			setTimeout(() => {
+			clearUploadCompleteTimeout();
+			uploadCompleteTimeout = setTimeout(() => {
 				activeTab = 'library';
-				uploadQueue = [];
+				clearUploadQueue();
 			}, 1000);
 		}
 	}
@@ -521,14 +544,16 @@
 	function getImageDimensions(file: File): Promise<{ width: number; height: number }> {
 		return new Promise((resolve) => {
 			const img = new Image();
+			const objectUrl = URL.createObjectURL(file);
 			img.onload = () => {
 				resolve({ width: img.naturalWidth, height: img.naturalHeight });
-				URL.revokeObjectURL(img.src);
+				URL.revokeObjectURL(objectUrl);
 			};
 			img.onerror = () => {
+				URL.revokeObjectURL(objectUrl);
 				resolve({ width: 0, height: 0 });
 			};
-			img.src = URL.createObjectURL(file);
+			img.src = objectUrl;
 		});
 	}
 
@@ -596,10 +621,9 @@
 
 	function removeFromQueue(id: string) {
 		const item = uploadQueue.find((u) => u.id === id);
-		if (item?.previewUrl) {
-			URL.revokeObjectURL(item.previewUrl);
-		}
+		if (item) releaseUploadPreview(item);
 		uploadQueue = uploadQueue.filter((u) => u.id !== id);
+		if (uploadQueue.length === 0) clearUploadCompleteTimeout();
 	}
 
 	function toggleAssetSelection(asset: Asset) {
@@ -732,9 +756,8 @@
 	// Cleanup
 	onDestroy(() => {
 		if (searchTimeout) clearTimeout(searchTimeout);
-		uploadQueue.forEach((item) => {
-			if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
-		});
+		clearUploadCompleteTimeout();
+		releaseUploadQueuePreviews();
 	});
 
 	// Get child folders for current location
@@ -1261,8 +1284,7 @@
 								<div class="queue-header">
 									<h4>Upload Queue ({uploadQueue.length})</h4>
 									{#if !isUploading}
-										<button class="clear-queue" onclick={() => (uploadQueue = [])}>Clear All</button
-										>
+										<button class="clear-queue" onclick={clearUploadQueue}>Clear All</button>
 									{/if}
 								</div>
 								<ul class="queue-list">
