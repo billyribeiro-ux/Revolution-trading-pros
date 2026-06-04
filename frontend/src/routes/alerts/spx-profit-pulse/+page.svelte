@@ -82,11 +82,16 @@
 	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
 	import IconLock from '@tabler/icons-svelte-runes/icons/lock';
 	let gsapContext: ReturnType<typeof import('gsap').gsap.context> | null = null;
+	let isComponentMounted = false;
+	let scrollRefreshRaf = 0;
 
 	onMount(() => {
 		if (!browser) return;
+		isComponentMounted = true;
 		initGSAP();
 		return () => {
+			isComponentMounted = false;
+			cancelAnimationFrame(scrollRefreshRaf);
 			if (gsapContext) gsapContext.revert();
 		};
 	});
@@ -95,6 +100,8 @@
 		try {
 			const { gsap } = await import('gsap');
 			const { ScrollTrigger } = await import('gsap/ScrollTrigger');
+			if (!isComponentMounted) return;
+
 			gsap.registerPlugin(ScrollTrigger);
 
 			const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -150,7 +157,11 @@
 
 			const refreshTrigger = document.fonts?.ready ?? Promise.resolve();
 			refreshTrigger.then(() => {
-				requestAnimationFrame(() => ScrollTrigger.refresh());
+				if (!isComponentMounted) return;
+				scrollRefreshRaf = requestAnimationFrame(() => {
+					scrollRefreshRaf = 0;
+					ScrollTrigger.refresh();
+				});
 			});
 		} catch (error) {
 			console.error('[SPX] GSAP initialization failed:', error);
