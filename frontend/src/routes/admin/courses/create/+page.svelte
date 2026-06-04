@@ -195,6 +195,7 @@
 	function scheduleTimeout(callback: () => void, delay: number) {
 		const timeout = setTimeout(() => {
 			scheduledTimeouts.delete(timeout);
+			if (!isComponentMounted) return;
 			callback();
 		}, delay);
 
@@ -262,6 +263,10 @@
 	function abortUploadRequest() {
 		uploadAbortController?.abort();
 		uploadAbortController = null;
+	}
+
+	function markUnsaved() {
+		hasUnsavedChanges = true;
 	}
 
 	// Lifecycle Hooks & Initialization
@@ -508,7 +513,7 @@
 
 	// Complete AI Features System
 
-	async function generateWithAI(field: string) {
+	function generateWithAI(field: string) {
 		generating = true;
 
 		scheduleTimeout(() => {
@@ -882,7 +887,7 @@
 		}, 1500);
 	}
 
-	async function suggestPricing() {
+	function suggestPricing() {
 		analyzing = true;
 
 		scheduleTimeout(() => {
@@ -1152,6 +1157,24 @@
 			releaseLocalPreviewUrl(url);
 		}
 		course.gallery = course.gallery.filter((_, i) => i !== index);
+		hasUnsavedChanges = true;
+	}
+
+	function removeThumbnail() {
+		releaseLocalPreviewUrl(course.thumbnail);
+		course.thumbnail = '';
+		hasUnsavedChanges = true;
+	}
+
+	function removePromoVideo() {
+		releaseLocalPreviewUrl(course.promo_video);
+		course.promo_video = '';
+		hasUnsavedChanges = true;
+	}
+
+	function removeOgImage() {
+		releaseLocalPreviewUrl(course.og_image);
+		course.og_image = '';
 		hasUnsavedChanges = true;
 	}
 
@@ -1554,6 +1577,8 @@
 			// Clear draft after successful save
 			localStorage.removeItem('course-draft');
 			localStorage.removeItem('course-draft-date');
+			hasUnsavedChanges = false;
+			lastSaved = new Date();
 
 			// Show success and redirect
 			successMessage = 'Course created successfully! Redirecting...';
@@ -1728,7 +1753,7 @@
 <!-- Modals and Notifications -->
 <PublishWarningModal
 	open={showPublishWarning}
-	onConfirm={confirmPublish}
+	onConfirm={() => void confirmPublish()}
 	onCancel={cancelPublish}
 />
 
@@ -1738,7 +1763,7 @@
 	onClose={() => (pricingAnalysis = null)}
 />
 
-<div class="create-page">
+<div class="create-page" oninput={markUnsaved} onchange={markUnsaved}>
 	<!-- Form Messages -->
 	<FormBanners error={formError} success={successMessage} onDismissError={() => (formError = '')} />
 	<!-- Centered Page Header -->
@@ -1778,7 +1803,7 @@
 
 		<button
 			class="btn-primary"
-			onclick={publishCourse}
+			onclick={() => void publishCourse()}
 			disabled={saving || completionStatus.percentage < 30}
 			title={completionStatus.percentage < 30
 				? 'Complete at least 30% to publish'
@@ -2683,13 +2708,7 @@
 										height="400"
 										loading="lazy"
 									/>
-									<button
-										class="remove-btn"
-										onclick={() => {
-											course.thumbnail = '';
-											hasUnsavedChanges = true;
-										}}
-									>
+									<button class="remove-btn" onclick={removeThumbnail}>
 										<IconX size={20} />
 										Remove
 									</button>
@@ -2705,7 +2724,7 @@
 									name="page-file"
 									type="file"
 									accept="image/*"
-									onchange={(e: Event) => handleImageUpload(e, 'thumbnail')}
+									onchange={(e: Event) => void handleImageUpload(e, 'thumbnail')}
 									disabled={uploading}
 								/>
 							</label>
@@ -2726,13 +2745,7 @@
 											<track kind="captions" />
 										</video>
 									{/if}
-									<button
-										class="remove-btn"
-										onclick={() => {
-											course.promo_video = '';
-											hasUnsavedChanges = true;
-										}}
-									>
+									<button class="remove-btn" onclick={removePromoVideo}>
 										<IconX size={20} />
 										Remove
 									</button>
@@ -2748,7 +2761,7 @@
 											name="page-file"
 											type="file"
 											accept="video/*"
-											onchange={handleVideoUpload}
+											onchange={(event) => void handleVideoUpload(event)}
 											disabled={uploading}
 										/>
 									</label>
@@ -2794,7 +2807,7 @@
 									name="page-file"
 									type="file"
 									accept="image/*"
-									onchange={(e: Event) => handleImageUpload(e, 'gallery')}
+									onchange={(e: Event) => void handleImageUpload(e, 'gallery')}
 									disabled={uploading || course.gallery.length >= 10}
 								/>
 							</label>
@@ -2880,13 +2893,7 @@
 										height="630"
 										loading="lazy"
 									/>
-									<button
-										class="remove-btn"
-										onclick={() => {
-											course.og_image = '';
-											hasUnsavedChanges = true;
-										}}
-									>
+									<button class="remove-btn" onclick={removeOgImage}>
 										<IconX size={16} />
 									</button>
 								</div>
@@ -2899,7 +2906,7 @@
 									name="page-file"
 									type="file"
 									accept="image/*"
-									onchange={(e: Event) => handleImageUpload(e, 'og')}
+									onchange={(e: Event) => void handleImageUpload(e, 'og')}
 									disabled={uploading}
 								/>
 							</label>
