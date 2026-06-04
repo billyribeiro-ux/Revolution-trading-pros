@@ -21,6 +21,7 @@
 		IconCopy,
 		IconCheck
 	} from '$lib/icons';
+	import { untrack } from 'svelte';
 
 	interface Props {
 		isOpen: boolean;
@@ -50,9 +51,19 @@
 		onSaved?.(member, tempPassword);
 	};
 
+	// Form state — seeded once at mount.
+	//
+	// Parent `routes/admin/members/+page.svelte` gates create/edit modals with
+	// `{#if showCreateModal}` and `{#if showEditModal && selectedMemberForEdit}`,
+	// so every open gets a fresh component instance. Seeding once preserves the
+	// prior "reset on open, do not wipe edits while open" behavior without
+	// synchronizing state inside an effect.
+	const seedIsEdit = untrack(() => mode === 'edit' && !!member);
+	const seedMember = untrack(() => member);
+
 	// FORM STATE - Core Fields
-	let name = $state('');
-	let email = $state('');
+	let name = $state(seedIsEdit ? seedMember?.name || '' : '');
+	let email = $state(seedIsEdit ? seedMember?.email || '' : '');
 	let password = $state('');
 	let role = $state('user');
 	let sendWelcomeEmail = $state(true);
@@ -133,11 +144,12 @@
 		{ id: 'notes', label: 'Admin Notes', icon: '📝' }
 	] as const;
 
-	// Initialize form when member changes
-	// FIX P2-2 (audits/admin-2026-04-26/01-shell-and-dashboard.md):
-	// Gate the reset on a real false → true transition of `isOpen`. The
-	// previous effect re-ran whenever `member`'s reference changed,
-	// blowing away half-typed input.
+	// FIX P2-2 (audits/admin-2026-04-26/01-shell-and-dashboard.md): this file
+	// previously gated a reset $effect on a real false → true transition of
+	// `isOpen` to avoid blowing away half-typed input when `member`'s reference
+	// changed. The parent now gates this modal behind `{#if ...}`, so the
+	// init-once seed above gives the same behavior without state writes in an
+	// effect.
 	//
 	// FIX P2-3: 14 of these fields (phone, company, jobTitle, bio,
 	// timezone, subscriptionTier, accountStatus, expirationDate, tags,
@@ -149,58 +161,6 @@
 	// can either wire them through or remove from the template.
 	// TODO(2026-04-26-audit): wire ghost profile fields into the API
 	// payload OR remove their inputs from the template.
-	let wasOpen = false;
-	$effect(() => {
-		const opening = isOpen && !wasOpen;
-		wasOpen = isOpen;
-		if (!opening) return;
-
-		if (mode === 'edit' && member) {
-			name = member.name || '';
-			email = member.email || '';
-			role = 'user';
-			password = '';
-			// Extended fields would be populated from member data
-			phone = '';
-			company = '';
-			jobTitle = '';
-			bio = '';
-			timezone = 'America/New_York';
-			subscriptionTier = 'free';
-			accountStatus = 'active';
-			expirationDate = '';
-			tags = [];
-			enableTwoFactor = false;
-			emailNotifications = true;
-			smsNotifications = false;
-			marketingEmails = false;
-			adminNotes = '';
-		} else if (mode === 'create') {
-			name = '';
-			email = '';
-			password = '';
-			role = 'user';
-			sendWelcomeEmail = true;
-			phone = '';
-			company = '';
-			jobTitle = '';
-			bio = '';
-			timezone = 'America/New_York';
-			subscriptionTier = 'free';
-			accountStatus = 'active';
-			expirationDate = '';
-			tags = [];
-			tagInput = '';
-			enableTwoFactor = false;
-			emailNotifications = true;
-			smsNotifications = false;
-			marketingEmails = false;
-			adminNotes = '';
-		}
-		temporaryPassword = null;
-		error = '';
-		activeSection = 'basic';
-	});
 
 	$effect(() => {
 		if (isOpen) {
