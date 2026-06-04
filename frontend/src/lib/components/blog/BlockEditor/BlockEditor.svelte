@@ -19,6 +19,7 @@
 
 <script lang="ts">
 	import { onMount, onDestroy, tick } from 'svelte';
+	import { SvelteSet } from 'svelte/reactivity';
 	import { flip } from 'svelte/animate';
 	import { fade } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
@@ -202,6 +203,7 @@
 	// Refs
 	let editorContainer: HTMLDivElement | null = null;
 	let autosaveTimer: ReturnType<typeof setInterval> | null = null;
+	const transientTimers = new SvelteSet<ReturnType<typeof setTimeout>>();
 
 	// Computed
 
@@ -231,6 +233,7 @@
 
 	onDestroy(() => {
 		if (autosaveTimer) clearInterval(autosaveTimer);
+		clearTransientTimers();
 		window.removeEventListener('keydown', handleGlobalKeydown);
 		// Clean up touch drag timer
 		if (touchDragState.longPressTimer) {
@@ -389,9 +392,18 @@
 	function announce(message: string, _priority: 'polite' | 'assertive' = 'polite') {
 		announcements = [...announcements, message];
 		// Clear old announcements after they've been read
-		setTimeout(() => {
+		const timeout = setTimeout(() => {
+			transientTimers.delete(timeout);
 			announcements = announcements.slice(1);
 		}, 1000);
+		transientTimers.add(timeout);
+	}
+
+	function clearTransientTimers() {
+		for (const timeout of transientTimers) {
+			clearTimeout(timeout);
+		}
+		transientTimers.clear();
 	}
 
 	// Multi-selection helpers
@@ -682,7 +694,11 @@
 		const canvas = document.querySelector('.canvas-wrapper');
 		if (canvas) {
 			canvas.classList.add('drop-feedback');
-			setTimeout(() => canvas.classList.remove('drop-feedback'), 300);
+			const timeout = setTimeout(() => {
+				transientTimers.delete(timeout);
+				canvas.classList.remove('drop-feedback');
+			}, 300);
+			transientTimers.add(timeout);
 		}
 	}
 
@@ -704,6 +720,9 @@
 		touchDragState.currentY = touch.clientY;
 		touchDragState.touchStartTime = Date.now();
 		touchDragState.isDragging = false;
+		if (touchDragState.longPressTimer) {
+			clearTimeout(touchDragState.longPressTimer);
+		}
 
 		// Long-press to initiate drag (300ms)
 		touchDragState.longPressTimer = setTimeout(() => {
