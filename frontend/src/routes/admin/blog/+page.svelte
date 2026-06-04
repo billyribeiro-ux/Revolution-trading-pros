@@ -3,7 +3,7 @@
 	import { goto } from '$app/navigation';
 	// FIX-2026-04-26 (CLAUDE.md): init/cleanup belongs in onMount, not $effect.
 	import { onMount } from 'svelte';
-	import { SvelteSet } from 'svelte/reactivity';
+	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 	import { slide, scale } from 'svelte/transition';
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import {
@@ -105,6 +105,7 @@
 	let analyticsPost = $state<import('svelte').ComponentProps<typeof AnalyticsModal>['post']>(null);
 	let refreshInterval = $state<ReturnType<typeof setInterval> | undefined>(undefined);
 	let notifications = $state<AppNotification[]>([]);
+	const notificationTimers = new SvelteMap<string, ReturnType<typeof setTimeout>>();
 
 	// Delete confirmation modal state
 	let showDeleteModal = $state(false);
@@ -160,6 +161,7 @@
 			if (ws) ws.close();
 			if (refreshInterval) clearInterval(refreshInterval);
 			clearTimeout(filterDebounceTimer);
+			clearNotificationTimers();
 			document.removeEventListener('keydown', handleKeyboard);
 		};
 	});
@@ -439,9 +441,14 @@
 			const blob = await response.blob();
 
 			const a = document.createElement('a');
-			a.href = URL.createObjectURL(blob);
-			a.download = `posts-export-${new Date().toISOString().split('T')[0]}.${exportFormat}`;
-			a.click();
+			const url = URL.createObjectURL(blob);
+			try {
+				a.href = url;
+				a.download = `posts-export-${new Date().toISOString().split('T')[0]}.${exportFormat}`;
+				a.click();
+			} finally {
+				URL.revokeObjectURL(url);
+			}
 
 			showExportModal = false;
 			showNotification('success', 'Posts exported successfully');
@@ -628,9 +635,18 @@
 				: `${Date.now()}-${Math.random()}`;
 		notifications = [...notifications, { id, type, message }];
 
-		setTimeout(() => {
+		const timeout = setTimeout(() => {
+			notificationTimers.delete(id);
 			notifications = notifications.filter((n) => n.id !== id);
 		}, 5000);
+		notificationTimers.set(id, timeout);
+	}
+
+	function clearNotificationTimers() {
+		for (const timeout of notificationTimers.values()) {
+			clearTimeout(timeout);
+		}
+		notificationTimers.clear();
 	}
 
 	function toggleActionMenu(postId: number) {
