@@ -187,6 +187,43 @@
 	let lastSaved = $state<Date | null>(null);
 	let autoSaveTimer: ReturnType<typeof setInterval>;
 	let expandedModules = new SvelteSet<string>();
+	const scheduledTimeouts = new SvelteSet<ReturnType<typeof setTimeout>>();
+	const localPreviewUrls = new SvelteSet<string>();
+
+	function scheduleTimeout(callback: () => void, delay: number) {
+		const timeout = setTimeout(() => {
+			scheduledTimeouts.delete(timeout);
+			callback();
+		}, delay);
+
+		scheduledTimeouts.add(timeout);
+		return timeout;
+	}
+
+	function clearScheduledTimeouts() {
+		for (const timeout of scheduledTimeouts) {
+			clearTimeout(timeout);
+		}
+		scheduledTimeouts.clear();
+	}
+
+	function releaseLocalPreviewUrl(url: string) {
+		if (!localPreviewUrls.delete(url)) return;
+		URL.revokeObjectURL(url);
+	}
+
+	function createLocalPreviewUrl(file: File) {
+		const url = URL.createObjectURL(file);
+		localPreviewUrls.add(url);
+		return url;
+	}
+
+	function releaseLocalPreviewUrls() {
+		for (const url of localPreviewUrls) {
+			URL.revokeObjectURL(url);
+		}
+		localPreviewUrls.clear();
+	}
 
 	// Lifecycle Hooks & Initialization
 
@@ -210,6 +247,8 @@
 		// Cleanup on unmount
 		return () => {
 			if (autoSaveTimer) clearInterval(autoSaveTimer);
+			clearScheduledTimeouts();
+			releaseLocalPreviewUrls();
 		};
 	});
 
@@ -231,7 +270,7 @@
 		hasUnsavedChanges = true;
 
 		// Auto-add first lesson
-		setTimeout(() => addLesson(newModule.id), 100);
+		scheduleTimeout(() => addLesson(newModule.id), 100);
 	}
 
 	// Delete confirmation modal state
@@ -429,7 +468,7 @@
 	async function generateWithAI(field: string) {
 		generating = true;
 
-		setTimeout(() => {
+		scheduleTimeout(() => {
 			switch (field) {
 				case 'title':
 					course.name = 'Master Technical Analysis: Professional Trading Strategies';
@@ -803,7 +842,7 @@
 	async function suggestPricing() {
 		analyzing = true;
 
-		setTimeout(() => {
+		scheduleTimeout(() => {
 			const analysis = {
 				marketAverage: 297,
 				yourContent: course.duration_hours,
@@ -865,8 +904,10 @@
 			const img = new Image();
 			const canvas = document.createElement('canvas');
 			const ctx = canvas.getContext('2d');
+			const objectUrl = URL.createObjectURL(file);
 
 			img.onload = () => {
+				URL.revokeObjectURL(objectUrl);
 				let { width, height } = img;
 
 				// Calculate new dimensions maintaining aspect ratio
@@ -901,8 +942,11 @@
 				}
 			};
 
-			img.onerror = () => reject(new Error('Failed to load image'));
-			img.src = URL.createObjectURL(file);
+			img.onerror = () => {
+				URL.revokeObjectURL(objectUrl);
+				reject(new Error('Failed to load image'));
+			};
+			img.src = objectUrl;
 		});
 	}
 
@@ -946,12 +990,14 @@
 
 				switch (type) {
 					case 'thumbnail':
+						releaseLocalPreviewUrl(course.thumbnail);
 						course.thumbnail = url;
 						break;
 					case 'gallery':
 						course.gallery = [...course.gallery, url];
 						break;
 					case 'og':
+						releaseLocalPreviewUrl(course.og_image);
 						course.og_image = url;
 						break;
 				}
@@ -966,15 +1012,17 @@
 			formError = err.message || 'Failed to upload image. Please try again.';
 
 			// Fallback: Use local preview if server upload fails
-			const url = URL.createObjectURL(file);
+			const url = createLocalPreviewUrl(file);
 			switch (type) {
 				case 'thumbnail':
+					releaseLocalPreviewUrl(course.thumbnail);
 					course.thumbnail = url;
 					break;
 				case 'gallery':
 					course.gallery = [...course.gallery, url];
 					break;
 				case 'og':
+					releaseLocalPreviewUrl(course.og_image);
 					course.og_image = url;
 					break;
 			}
@@ -1013,6 +1061,7 @@
 
 			// The response contains an array of uploaded files
 			if (response.success && response.data && response.data.length > 0) {
+				releaseLocalPreviewUrl(course.promo_video);
 				course.promo_video = response.data[0].url;
 				hasUnsavedChanges = true;
 			} else {
@@ -1024,7 +1073,8 @@
 			formError = err.message || 'Failed to upload video. Please try again.';
 
 			// Fallback: Use local preview if server upload fails
-			course.promo_video = URL.createObjectURL(file);
+			releaseLocalPreviewUrl(course.promo_video);
+			course.promo_video = createLocalPreviewUrl(file);
 			hasUnsavedChanges = true;
 		} finally {
 			uploading = false;
@@ -1032,6 +1082,10 @@
 	}
 
 	function removeFromGallery(index: number) {
+		const url = course.gallery[index];
+		if (url) {
+			releaseLocalPreviewUrl(url);
+		}
 		course.gallery = course.gallery.filter((_, i) => i !== index);
 		hasUnsavedChanges = true;
 	}
@@ -1425,7 +1479,9 @@
 
 			// Show success and redirect
 			successMessage = 'Course created successfully! Redirecting...';
-			setTimeout(() => goto('/admin/courses'), 1500);
+			scheduleTimeout(() => {
+				void goto('/admin/courses');
+			}, 1500);
 		} catch (error) {
 			if (error instanceof AdminApiError) {
 				if (error.status === 401) {
