@@ -58,6 +58,7 @@
 	import { SvelteSet } from 'svelte/reactivity';
 	import { browser } from '$app/environment';
 	import type VimeoPlayer from '@vimeo/player';
+	import type { ErrorEvent as VimeoErrorEvent, VimeoEvent } from '@vimeo/player';
 
 	// Type alias for instances of the dynamically-imported Vimeo Player class.
 	// `import type` is erased at runtime — the actual `Player` constructor is
@@ -437,8 +438,13 @@
 	// Animations
 
 	// Event handler references for cleanup (prevents memory leaks)
+	let isComponentMounted = false;
+	let mediaEventCleanups: Array<() => void> = [];
+	let vimeoEventCleanups: Array<() => void> = [];
 	let handleEnterPiP: (() => void) | null = null;
 	let handleLeavePiP: (() => void) | null = null;
+	let thumbnailImage: HTMLImageElement | null = null;
+	let restoreYouTubeReadyCallback: (() => void) | null = null;
 
 	// Event dispatching handled via callback props
 
@@ -487,9 +493,14 @@
 
 	onMount(() => {
 		if (!browser) return;
+		isComponentMounted = true;
 
 		// Initialize player based on platform
-		initializePlayer();
+		void initializePlayer().catch((error) => {
+			if (isComponentMounted) {
+				handleError(error);
+			}
+		});
 
 		// Setup event listeners
 		setupEventListeners();
@@ -663,6 +674,8 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function initializePlayer() {
+		if (!isComponentMounted) return;
+
 		switch (platform) {
 			case 'youtube':
 				await loadYouTubeAPI();
@@ -680,27 +693,45 @@
 	}
 
 	async function loadYouTubeAPI() {
+		if (!isComponentMounted) return;
+
 		if (window.YT) {
 			createYouTubePlayer();
 			return;
 		}
 
-		const tag = document.createElement('script');
-		tag.src = 'https://www.youtube.com/iframe_api';
-		const firstScriptTag = document.getElementsByTagName('script')[0];
-		if (firstScriptTag?.parentNode) {
-			firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-		} else {
-			document.head.appendChild(tag);
+		const scriptId = 'youtube-iframe-api-script';
+		if (!document.getElementById(scriptId)) {
+			const tag = document.createElement('script');
+			tag.id = scriptId;
+			tag.src = 'https://www.youtube.com/iframe_api';
+			tag.async = true;
+
+			const firstScriptTag = document.getElementsByTagName('script')[0];
+			if (firstScriptTag?.parentNode) {
+				firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+			} else {
+				document.head.appendChild(tag);
+			}
 		}
 
-		window.onYouTubeIframeAPIReady = () => {
+		const previousReadyCallback = window.onYouTubeIframeAPIReady;
+		const readyCallback = () => {
+			previousReadyCallback?.();
+			if (!isComponentMounted) return;
 			createYouTubePlayer();
+		};
+
+		window.onYouTubeIframeAPIReady = readyCallback;
+		restoreYouTubeReadyCallback = () => {
+			if (window.onYouTubeIframeAPIReady === readyCallback) {
+				window.onYouTubeIframeAPIReady = previousReadyCallback;
+			}
 		};
 	}
 
 	function createYouTubePlayer() {
-		if (!window.YT || !iframeElement) return;
+		if (!isComponentMounted || !window.YT || !iframeElement) return;
 		// `window.YT.Player` is declared as `any` in `app.d.ts`; we cast through
 		// our local `YouTubePlayerCtor` shim to get typed events + instance.
 		const PlayerCtor = window.YT.Player as YouTubePlayerCtor;
@@ -714,18 +745,32 @@
 	}
 
 	async function loadVimeoAPI() {
-		if (!iframeElement) return;
+		if (!isComponentMounted || !iframeElement) return;
 		const PlayerCtor = (await import('@vimeo/player')).default;
+		if (!isComponentMounted || !iframeElement) return;
+
 		const vimeo: VimeoPlayerInstance = new PlayerCtor(iframeElement);
 		playerAPI = vimeo;
 
-		vimeo.on('play', () => handlePlay());
-		vimeo.on('pause', () => handlePause());
-		vimeo.on('ended', () => handleEnded());
-		vimeo.on('timeupdate', (data) => handleTimeUpdate(data.seconds, data.duration));
-		vimeo.on('error', (error) =>
-			handleError({ name: error.name, message: error.message, method: error.method })
-		);
+		const onVimeoPlay = () => handlePlay();
+		const onVimeoPause = () => handlePause();
+		const onVimeoEnded = () => handleEnded();
+		const onVimeoTimeUpdate = (data: VimeoEvent) => handleTimeUpdate(data.seconds, data.duration);
+		const onVimeoError = (error: VimeoErrorEvent) =>
+			handleError({ name: error.name, message: error.message, method: error.method });
+		vimeo.on('play', onVimeoPlay);
+		vimeo.on('pause', onVimeoPause);
+		vimeo.on('ended', onVimeoEnded);
+		vimeo.on('timeupdate', onVimeoTimeUpdate);
+		vimeo.on('error', onVimeoError);
+
+		vimeoEventCleanups = [
+			() => vimeo.off('play', onVimeoPlay),
+			() => vimeo.off('pause', onVimeoPause),
+			() => vimeo.off('ended', onVimeoEnded),
+			() => vimeo.off('timeupdate', onVimeoTimeUpdate),
+			() => vimeo.off('error', onVimeoError)
+		];
 
 		handleReady();
 	}
@@ -733,17 +778,27 @@
 	function initializeHTML5Player() {
 		if (!videoElement) return;
 		const el = videoElement;
+		clearMediaEventListeners();
 
-		el.addEventListener('loadedmetadata', handleLoadedMetadata);
-		el.addEventListener('play', handlePlay);
-		el.addEventListener('pause', handlePause);
-		el.addEventListener('ended', handleEnded);
-		el.addEventListener('timeupdate', () => handleTimeUpdate(el.currentTime, el.duration));
-		el.addEventListener('progress', handleProgress);
-		el.addEventListener('error', (e) => handleError(e));
-		el.addEventListener('volumechange', handleVolumeChange);
-		el.addEventListener('waiting', () => (_isBuffering = true));
-		el.addEventListener('playing', () => (_isBuffering = false));
+		const onTimeUpdate = () => handleTimeUpdate(el.currentTime, el.duration);
+		const onError = (event: Event) => handleError(event);
+		const onWaiting = () => {
+			if (isComponentMounted) _isBuffering = true;
+		};
+		const onPlaying = () => {
+			if (isComponentMounted) _isBuffering = false;
+		};
+
+		addMediaEventListener(el, 'loadedmetadata', handleLoadedMetadata);
+		addMediaEventListener(el, 'play', handlePlay);
+		addMediaEventListener(el, 'pause', handlePause);
+		addMediaEventListener(el, 'ended', handleEnded);
+		addMediaEventListener(el, 'timeupdate', onTimeUpdate);
+		addMediaEventListener(el, 'progress', handleProgress);
+		addMediaEventListener(el, 'error', onError);
+		addMediaEventListener(el, 'volumechange', handleVolumeChange);
+		addMediaEventListener(el, 'waiting', onWaiting);
+		addMediaEventListener(el, 'playing', onPlaying);
 
 		if (startTime > 0) {
 			el.currentTime = startTime;
@@ -757,11 +812,32 @@
 		handleReady();
 	}
 
+	function addMediaEventListener<K extends keyof HTMLMediaElementEventMap>(
+		element: HTMLMediaElement,
+		type: K,
+		listener: (event: HTMLMediaElementEventMap[K]) => void
+	) {
+		element.addEventListener(type, listener);
+		mediaEventCleanups.push(() => element.removeEventListener(type, listener));
+	}
+
+	function clearMediaEventListeners() {
+		mediaEventCleanups.forEach((removeListener) => removeListener());
+		mediaEventCleanups = [];
+	}
+
+	function clearVimeoEventListeners() {
+		vimeoEventCleanups.forEach((removeListener) => removeListener());
+		vimeoEventCleanups = [];
+	}
+
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Event Handlers
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	function handleReady() {
+		if (!isComponentMounted) return;
+
 		isReady = true;
 		if (onReady) onReady();
 		// Event handled via onReady callback prop
@@ -769,6 +845,8 @@
 	}
 
 	function handlePlay() {
+		if (!isComponentMounted) return;
+
 		isPlaying = true;
 		isPaused = false;
 		hasInteracted = true;
@@ -784,6 +862,8 @@
 	}
 
 	function handlePause() {
+		if (!isComponentMounted) return;
+
 		isPlaying = false;
 		isPaused = true;
 
@@ -797,6 +877,8 @@
 	}
 
 	function handleEnded() {
+		if (!isComponentMounted) return;
+
 		isPlaying = false;
 		isEnded = true;
 
@@ -822,6 +904,8 @@
 	}
 
 	function handleTimeUpdate(time: number, dur: number) {
+		if (!isComponentMounted) return;
+
 		currentTime = time;
 		duration = dur;
 
@@ -844,6 +928,8 @@
 	}
 
 	function handleError(error: unknown) {
+		if (!isComponentMounted) return;
+
 		hasError = true;
 		// Narrow to our `VideoErrorPayload` shape. Sources: HTML5 emits a DOM
 		// `Event` (no `.message`); YouTube passes our `{ code, message }`
@@ -861,6 +947,7 @@
 	}
 
 	function handleVolumeChange() {
+		if (!isComponentMounted) return;
 		if (!videoElement) return;
 
 		currentVolume = videoElement.volume;
@@ -870,6 +957,7 @@
 	}
 
 	function handleLoadedMetadata() {
+		if (!isComponentMounted) return;
 		if (!videoElement) return;
 
 		duration = videoElement.duration;
@@ -881,6 +969,7 @@
 	}
 
 	function handleProgress() {
+		if (!isComponentMounted) return;
 		if (!videoElement) return;
 
 		const buffered = videoElement.buffered;
@@ -891,12 +980,15 @@
 
 	// YouTube specific handlers
 	function handleYouTubeReady(event: YouTubePlayerReadyEvent) {
+		if (!isComponentMounted) return;
+
 		playerAPI = event.target;
 		duration = event.target.getDuration();
 		handleReady();
 	}
 
 	function handleYouTubeStateChange(event: YouTubePlayerStateChangeEvent) {
+		if (!isComponentMounted) return;
 		if (!window.YT) return;
 		switch (event.data) {
 			case window.YT.PlayerState.PLAYING:
@@ -917,6 +1009,7 @@
 	}
 
 	function handleYouTubeError(event: YouTubePlayerErrorEvent) {
+		if (!isComponentMounted) return;
 		handleError({ code: event.data, message: 'YouTube player error' });
 	}
 
@@ -1177,9 +1270,24 @@
 
 		const img = new Image();
 		img.onload = () => {
-			thumbnailLoaded = true;
+			if (isComponentMounted && thumbnailImage === img) {
+				thumbnailLoaded = true;
+			}
 		};
+		img.onerror = () => {
+			if (thumbnailImage === img) {
+				thumbnailImage = null;
+			}
+		};
+		thumbnailImage = img;
 		img.src = thumbnailUrl;
+	}
+
+	function clearThumbnailLoader() {
+		if (!thumbnailImage) return;
+		thumbnailImage.onload = null;
+		thumbnailImage.onerror = null;
+		thumbnailImage = null;
 	}
 
 	function shouldShowCTA(): boolean {
@@ -1227,6 +1335,8 @@
 	}
 
 	function handleFullscreenChange() {
+		if (!isComponentMounted) return;
+
 		isFullscreen = !!(
 			document.fullscreenElement || (document as WebkitFullscreenDocument).webkitFullscreenElement
 		);
@@ -1262,13 +1372,13 @@
 				break;
 			case 'f':
 				if (isFullscreen) {
-					exitFullscreen();
+					void exitFullscreen();
 				} else {
-					enterFullscreen();
+					void enterFullscreen();
 				}
 				break;
 			case 'p':
-				togglePictureInPicture();
+				void togglePictureInPicture();
 				break;
 		}
 	}
@@ -1285,6 +1395,7 @@
 
 		if (customControls && isPlaying) {
 			controlsTimer = window.setTimeout(() => {
+				if (!isComponentMounted) return;
 				showControls = false;
 			}, controlsTimeout);
 		}
@@ -1329,10 +1440,21 @@
 	}
 
 	function cleanup() {
+		isComponentMounted = false;
+
+		if (!browser) return;
+
 		// Clear timers
 		if (controlsTimer) {
 			clearTimeout(controlsTimer);
+			controlsTimer = null;
 		}
+
+		clearThumbnailLoader();
+		restoreYouTubeReadyCallback?.();
+		restoreYouTubeReadyCallback = null;
+		clearMediaEventListeners();
+		clearVimeoEventListeners();
 
 		// Remove event listeners
 		document.removeEventListener('fullscreenchange', handleFullscreenChange);
@@ -1361,10 +1483,18 @@
 			case 'youtube':
 				playerAPI?.destroy();
 				break;
-			case 'vimeo':
-				playerAPI?.destroy();
+			case 'vimeo': {
+				const vimeo = vimeoPlayerNarrow();
+				if (vimeo) {
+					void vimeo.destroy().catch((error: unknown) => {
+						logger.error('Failed to destroy Vimeo player:', error);
+					});
+				}
 				break;
+			}
 		}
+
+		playerAPI = null;
 	}
 </script>
 
