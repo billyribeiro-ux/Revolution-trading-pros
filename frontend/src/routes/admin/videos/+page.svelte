@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { SvelteSet } from 'svelte/reactivity';
+	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 	/**
 	 * Trading Room Video Management - Admin Dashboard
 	 *
@@ -16,7 +16,7 @@
 	 *
 	 */
 
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount } from 'svelte';
 	import {
 		IconVideo,
 		IconSearch,
@@ -183,6 +183,13 @@
 	let showEmbedModal = $state(false);
 	let embedCodeData = $state<{ video_id: number; title: string; embed_html: string } | null>(null);
 
+	// Component-owned async resources
+	let isComponentMounted = false;
+	let roomsRequestGeneration = 0;
+	let videosRequestGeneration = 0;
+	let analyticsRequestGeneration = 0;
+	const bunnyUploadRequests = new SvelteMap<number, XMLHttpRequest>();
+
 	// CATEGORY SELECTION
 
 	function toggleCategory(categoryId: string) {
@@ -204,6 +211,9 @@
 	 * Load trading rooms and traders from API
 	 */
 	async function loadRoomsAndTraders() {
+		const requestGeneration = ++roomsRequestGeneration;
+		if (!isComponentMounted) return;
+
 		isLoadingRooms = true;
 		error = '';
 
@@ -213,6 +223,8 @@
 				tradingRoomApi.rooms.list({ with_counts: true }),
 				tradingRoomApi.traders.list({ active_only: true })
 			]);
+
+			if (!isComponentMounted || requestGeneration !== roomsRequestGeneration) return;
 
 			if (roomsResponse.success) {
 				rooms = roomsResponse.data;
@@ -226,10 +238,14 @@
 				traders = tradersResponse.data;
 			}
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to load rooms and traders';
-			logger.error('Error loading rooms/traders', { error: err });
+			if (isComponentMounted && requestGeneration === roomsRequestGeneration) {
+				error = err instanceof Error ? err.message : 'Failed to load rooms and traders';
+				logger.error('Error loading rooms/traders', { error: err });
+			}
 		} finally {
-			isLoadingRooms = false;
+			if (isComponentMounted && requestGeneration === roomsRequestGeneration) {
+				isLoadingRooms = false;
+			}
 		}
 	}
 
@@ -238,16 +254,27 @@
 	 */
 	async function loadVideos() {
 		if (!selectedRoom) return;
+		const requestGeneration = ++videosRequestGeneration;
+		const roomSlug = selectedRoom.slug;
+		if (!isComponentMounted) return;
 
 		isLoading = true;
 		error = '';
 
 		try {
-			const response = await tradingRoomApi.videos.adminListByRoom(selectedRoom.slug, {
+			const response = await tradingRoomApi.videos.adminListByRoom(roomSlug, {
 				published_only: false,
 				per_page: 50,
 				page: currentPage
 			});
+
+			if (
+				!isComponentMounted ||
+				requestGeneration !== videosRequestGeneration ||
+				selectedRoom?.slug !== roomSlug
+			) {
+				return;
+			}
 
 			if (response.success && response.data) {
 				// Map backend 'tags' to frontend 'categories'
@@ -260,10 +287,14 @@
 				pruneSelectedVideoIds();
 			}
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to load videos';
-			logger.error('Error loading videos', { error: err });
+			if (isComponentMounted && requestGeneration === videosRequestGeneration) {
+				error = err instanceof Error ? err.message : 'Failed to load videos';
+				logger.error('Error loading videos', { error: err });
+			}
 		} finally {
-			isLoading = false;
+			if (isComponentMounted && requestGeneration === videosRequestGeneration) {
+				isLoading = false;
+			}
 		}
 	}
 
@@ -271,9 +302,12 @@
 	 * Show success message temporarily
 	 */
 	function showSuccess(message: string) {
+		if (!isComponentMounted) return;
+
 		clearSuccessMessageTimeout();
 		successMessage = message;
 		successMessageTimeout = setTimeout(() => {
+			if (!isComponentMounted) return;
 			successMessage = '';
 			successMessageTimeout = null;
 		}, 3000);
@@ -291,7 +325,9 @@
 		selectedRoom = room;
 		currentPage = 1;
 		void loadVideos().then(() => {
-			if (showAnalyticsPanel) void loadAnalytics();
+			if (isComponentMounted && selectedRoom?.id === room.id && showAnalyticsPanel) {
+				void loadAnalytics();
+			}
 		});
 	}
 
@@ -360,6 +396,7 @@
 				video_url: newVideoUrl,
 				video_platform: detectPlatform(newVideoUrl)
 			});
+			if (!isComponentMounted) return;
 
 			if (response.success) {
 				showSuccess('Video replaced successfully');
@@ -369,10 +406,14 @@
 				await loadVideos();
 			}
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to replace video';
-			logger.error('Error replacing video', { error: err });
+			if (isComponentMounted) {
+				error = err instanceof Error ? err.message : 'Failed to replace video';
+				logger.error('Error replacing video', { error: err });
+			}
 		} finally {
-			isSaving = false;
+			if (isComponentMounted) {
+				isSaving = false;
+			}
 		}
 	}
 
@@ -398,11 +439,13 @@
 
 			if (editingVideo) {
 				const response = await tradingRoomApi.videos.update(editingVideo.id, apiData);
+				if (!isComponentMounted) return;
 				if (response.success) {
 					showSuccess('Video updated successfully');
 				}
 			} else {
 				const response = await tradingRoomApi.videos.create(apiData);
+				if (!isComponentMounted) return;
 				if (response.success) {
 					showSuccess('Video created successfully');
 				}
@@ -413,10 +456,14 @@
 			editingVideo = null;
 			await loadVideos();
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to save video';
-			logger.error('Error saving video', { error: err });
+			if (isComponentMounted) {
+				error = err instanceof Error ? err.message : 'Failed to save video';
+				logger.error('Error saving video', { error: err });
+			}
 		} finally {
-			isSaving = false;
+			if (isComponentMounted) {
+				isSaving = false;
+			}
 		}
 	}
 
@@ -436,15 +483,21 @@
 
 		try {
 			const response = await tradingRoomApi.videos.delete(video.id);
+			if (!isComponentMounted) return;
+
 			if (response.success) {
 				showSuccess('Video deleted successfully');
 				await loadVideos();
 			}
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to delete video';
-			logger.error('Error deleting video', { error: err });
+			if (isComponentMounted) {
+				error = err instanceof Error ? err.message : 'Failed to delete video';
+				logger.error('Error deleting video', { error: err });
+			}
 		} finally {
-			isDeleting = false;
+			if (isComponentMounted) {
+				isDeleting = false;
+			}
 		}
 	}
 
@@ -454,14 +507,17 @@
 			const response = await tradingRoomApi.videos.update(video.id, {
 				is_published: newStatus
 			});
+			if (!isComponentMounted) return;
 
 			if (response.success) {
 				video.is_published = newStatus;
 				showSuccess(`Video ${newStatus ? 'published' : 'unpublished'}`);
 			}
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to update video';
-			logger.error('Error toggling publish status', { error: err });
+			if (isComponentMounted) {
+				error = err instanceof Error ? err.message : 'Failed to update video';
+				logger.error('Error toggling publish status', { error: err });
+			}
 		}
 	}
 
@@ -507,6 +563,8 @@
 
 	async function startBunnyUpload() {
 		if (bunnyUploadFiles.length === 0 || !selectedRoom) return;
+		const files = [...bunnyUploadFiles];
+		const roomId = selectedRoom.id;
 
 		isUploadingToBunny = true;
 		error = '';
@@ -514,7 +572,7 @@
 		try {
 			// Initialize bulk upload with Bunny.net
 			const response = await bulkUploadApi.init({
-				files: bunnyUploadFiles.map((f) => ({
+				files: files.map((f) => ({
 					filename: f.name,
 					file_size_bytes: f.size,
 					content_type: f.type,
@@ -523,11 +581,12 @@
 				default_metadata: {
 					content_type: 'daily_video',
 					video_date: new Date().toISOString().split('T')[0],
-					room_ids: [selectedRoom.id],
+					room_ids: [roomId],
 					is_published: false,
 					tags: []
 				}
 			});
+			if (!isComponentMounted) return;
 
 			if (response.success && response.data) {
 				bunnyUploadBatchId = response.data.batch_id;
@@ -535,13 +594,17 @@
 				// Upload each file to its respective Bunny upload URL
 				for (let i = 0; i < response.data.uploads.length; i++) {
 					const uploadItem = response.data.uploads[i];
-					const file = bunnyUploadFiles[i];
+					const file = files[i];
+					if (!uploadItem || !file) continue;
 
 					try {
 						// Upload to Bunny CDN
 						await uploadFileToBunny(uploadItem.upload_url, file, uploadItem.id);
+						if (!isComponentMounted) return;
 						bunnyUploadProgress = Math.round(((i + 1) / response.data.uploads.length) * 100);
 					} catch (uploadErr) {
+						if (!isComponentMounted || isAbortError(uploadErr)) return;
+
 						logger.error('Failed to upload file to Bunny', {
 							error: uploadErr,
 							fileName: file.name
@@ -555,20 +618,27 @@
 
 				// Poll for batch status
 				await pollBatchStatus(response.data.batch_id);
-				showSuccess(`Successfully uploaded ${bunnyUploadFiles.length} video(s) to Bunny.net`);
+				if (!isComponentMounted) return;
+
+				showSuccess(`Successfully uploaded ${files.length} video(s) to Bunny.net`);
 				await loadVideos();
 			}
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to initialize Bunny upload';
-			logger.error('Bunny upload error', { error: err });
+			if (isComponentMounted && !isAbortError(err)) {
+				error = err instanceof Error ? err.message : 'Failed to initialize Bunny upload';
+				logger.error('Bunny upload error', { error: err });
+			}
 		} finally {
-			isUploadingToBunny = false;
+			if (isComponentMounted) {
+				isUploadingToBunny = false;
+			}
 		}
 	}
 
 	async function uploadFileToBunny(uploadUrl: string, file: File, itemId: number): Promise<void> {
 		return new Promise((resolve, reject) => {
 			const xhr = new XMLHttpRequest();
+			bunnyUploadRequests.set(itemId, xhr);
 
 			// FIX-2026-04-26-audit (P1-4): throttle progress updates to one HTTP call per second.
 			// XHR `progress` fires many times per second; previously every event issued an
@@ -586,7 +656,14 @@
 				trailingProgressTimer = null;
 			};
 
+			const finish = () => {
+				clearTrailingProgressTimer();
+				bunnyUploadRequests.delete(itemId);
+			};
+
 			const sendProgress = (percent: number) => {
+				if (!isComponentMounted) return;
+
 				clearTrailingProgressTimer();
 				lastSentAt = Date.now();
 				lastSentPercent = percent;
@@ -597,6 +674,7 @@
 			};
 
 			xhr.upload.addEventListener('progress', (e) => {
+				if (!isComponentMounted) return;
 				if (!e.lengthComputable) return;
 				const progress = Math.round((e.loaded / e.total) * 100);
 				if (progress === lastSentPercent) return;
@@ -617,25 +695,31 @@
 			});
 
 			xhr.addEventListener('load', async () => {
-				clearTrailingProgressTimer();
 				if (xhr.status >= 200 && xhr.status < 300) {
-					await bulkUploadApi.updateItemStatus(itemId, {
-						status: 'completed',
-						progress_percent: 100
-					});
-					resolve();
+					try {
+						await bulkUploadApi.updateItemStatus(itemId, {
+							status: 'completed',
+							progress_percent: 100
+						});
+						finish();
+						resolve();
+					} catch (e) {
+						finish();
+						reject(e);
+					}
 				} else {
+					finish();
 					reject(new Error(`Upload failed with status ${xhr.status}`));
 				}
 			});
 
 			xhr.addEventListener('error', () => {
-				clearTrailingProgressTimer();
+				finish();
 				reject(new Error('Network error during upload'));
 			});
 			xhr.addEventListener('abort', () => {
-				clearTrailingProgressTimer();
-				reject(new Error('Upload aborted'));
+				finish();
+				reject(new DOMException('Upload aborted', 'AbortError'));
 			});
 
 			// FIX-2026-04-26-audit (P2-6): defense-in-depth — never PUT directly to a
@@ -700,10 +784,10 @@
 
 		try {
 			for (let attempt = 0; attempt < maxAttempts; attempt++) {
-				if (controller.signal.aborted) return;
+				if (controller.signal.aborted || !isComponentMounted) return;
 
 				const response = await bulkUploadApi.getBatchStatus(batchId);
-				if (controller.signal.aborted) return;
+				if (controller.signal.aborted || !isComponentMounted) return;
 
 				if (response.success && response.data) {
 					bunnyUploadStatus = response.data;
@@ -734,6 +818,9 @@
 	// VIDEO ANALYTICS
 
 	async function loadAnalytics() {
+		const requestGeneration = ++analyticsRequestGeneration;
+		if (!isComponentMounted) return;
+
 		isLoadingAnalytics = true;
 		error = '';
 
@@ -743,14 +830,20 @@
 				room_id: selectedRoom?.id
 			});
 
+			if (!isComponentMounted || requestGeneration !== analyticsRequestGeneration) return;
+
 			if (response.success && response.data) {
 				analyticsData = response.data;
 			}
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to load analytics';
-			logger.error('Analytics error', { error: err });
+			if (isComponentMounted && requestGeneration === analyticsRequestGeneration) {
+				error = err instanceof Error ? err.message : 'Failed to load analytics';
+				logger.error('Analytics error', { error: err });
+			}
 		} finally {
-			isLoadingAnalytics = false;
+			if (isComponentMounted && requestGeneration === analyticsRequestGeneration) {
+				isLoadingAnalytics = false;
+			}
 		}
 	}
 
@@ -769,12 +862,16 @@
 	async function fetchVideoDuration(videoId: number) {
 		try {
 			const response = await videoOpsApi.fetchDuration(videoId);
+			if (!isComponentMounted) return;
+
 			if (response.success && response.data) {
 				showSuccess(`Duration fetched: ${response.data.formatted_duration}`);
 				await loadVideos();
 			}
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to fetch duration';
+			if (isComponentMounted) {
+				error = err instanceof Error ? err.message : 'Failed to fetch duration';
+			}
 		}
 	}
 
@@ -814,6 +911,8 @@
 
 		try {
 			const response = await bulkOpsApi.bulkPublish(Array.from(selectedVideoIds), publish);
+			if (!isComponentMounted) return;
+
 			if (response.success) {
 				showSuccess(
 					response.message ||
@@ -825,9 +924,13 @@
 				error = response.error || 'Failed to update videos';
 			}
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Bulk operation failed';
+			if (isComponentMounted) {
+				error = err instanceof Error ? err.message : 'Bulk operation failed';
+			}
 		} finally {
-			isBulkActionLoading = false;
+			if (isComponentMounted) {
+				isBulkActionLoading = false;
+			}
 		}
 	}
 
@@ -838,6 +941,8 @@
 
 		try {
 			const response = await bulkOpsApi.bulkFeature(Array.from(selectedVideoIds), feature);
+			if (!isComponentMounted) return;
+
 			if (response.success) {
 				showSuccess(
 					response.message ||
@@ -849,9 +954,13 @@
 				error = response.error || 'Failed to update videos';
 			}
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Bulk operation failed';
+			if (isComponentMounted) {
+				error = err instanceof Error ? err.message : 'Bulk operation failed';
+			}
 		} finally {
-			isBulkActionLoading = false;
+			if (isComponentMounted) {
+				isBulkActionLoading = false;
+			}
 		}
 	}
 
@@ -867,6 +976,8 @@
 
 		try {
 			const response = await bulkOpsApi.bulkDelete(Array.from(selectedVideoIds), false);
+			if (!isComponentMounted) return;
+
 			if (response.success) {
 				showSuccess(response.message || `${selectedVideoIds.size} videos deleted`);
 				clearSelection();
@@ -875,9 +986,13 @@
 				error = response.error || 'Failed to delete videos';
 			}
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Bulk delete failed';
+			if (isComponentMounted) {
+				error = err instanceof Error ? err.message : 'Bulk delete failed';
+			}
 		} finally {
-			isBulkActionLoading = false;
+			if (isComponentMounted) {
+				isBulkActionLoading = false;
+			}
 		}
 	}
 
@@ -897,6 +1012,7 @@
 				add_tags: bulkTagsToAdd.length > 0 ? bulkTagsToAdd : undefined,
 				remove_tags: bulkTagsToRemove.length > 0 ? bulkTagsToRemove : undefined
 			});
+			if (!isComponentMounted) return;
 
 			if (response.success) {
 				showSuccess(response.message || `Tags updated for ${response.updated_count} videos`);
@@ -907,9 +1023,13 @@
 				error = response.error || 'Failed to update tags';
 			}
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Bulk tag update failed';
+			if (isComponentMounted) {
+				error = err instanceof Error ? err.message : 'Bulk tag update failed';
+			}
 		} finally {
-			isBulkActionLoading = false;
+			if (isComponentMounted) {
+				isBulkActionLoading = false;
+			}
 		}
 	}
 
@@ -948,6 +1068,8 @@
 	async function showEmbedCode(video: Video) {
 		try {
 			const response = await embedApi.getEmbedCode(video.id, { responsive: true });
+			if (!isComponentMounted) return;
+
 			if (response.success && response.data) {
 				embedCodeData = {
 					video_id: video.id,
@@ -959,13 +1081,15 @@
 				error = response.error || 'Failed to get embed code';
 			}
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to get embed code';
+			if (isComponentMounted) {
+				error = err instanceof Error ? err.message : 'Failed to get embed code';
+			}
 		}
 	}
 
 	function copyEmbedCode() {
 		if (embedCodeData?.embed_html) {
-			navigator.clipboard.writeText(embedCodeData.embed_html);
+			void navigator.clipboard.writeText(embedCodeData.embed_html);
 			showSuccess('Embed code copied to clipboard');
 		}
 	}
@@ -986,6 +1110,28 @@
 			if (validIds.has(id)) nextSelection.push(id);
 		}
 		replaceSelectedVideoIds(nextSelection);
+	}
+
+	function isAbortError(error: unknown): boolean {
+		return error instanceof DOMException && error.name === 'AbortError';
+	}
+
+	function abortBunnyUploadRequests() {
+		for (const xhr of bunnyUploadRequests.values()) {
+			xhr.abort();
+		}
+		bunnyUploadRequests.clear();
+	}
+
+	async function initializePage() {
+		await loadRoomsAndTraders();
+		if (!isComponentMounted) return;
+
+		// loadRoomsAndTraders() sets selectedRoom to the first room.
+		// Fetch videos once here; subsequent room changes go through selectRoom().
+		if (selectedRoom) {
+			await loadVideos();
+		}
 	}
 
 	// HELPERS
@@ -1085,20 +1231,19 @@
 	// Plus selectRoom() called loadVideos() directly [fetch #3 on tab click].
 	// Now: onMount fires exactly once; selectRoom() is the only path that re-fetches
 	// on room change (no reactive $effect needed — user initiated).
-	onMount(async () => {
-		await loadRoomsAndTraders();
-		// loadRoomsAndTraders() sets selectedRoom to the first room.
-		// Fetch videos once here; subsequent room changes go through selectRoom().
-		if (selectedRoom) {
-			await loadVideos();
-		}
-	});
+	onMount(() => {
+		isComponentMounted = true;
+		void initializePage();
 
-	// FIX-2026-04-26-audit (P1-3): cancel any in-flight bulk-upload poll on unmount
-	// so we never mutate state on a detached component.
-	onDestroy(() => {
-		clearSuccessMessageTimeout();
-		pollAbortController?.abort();
+		return () => {
+			isComponentMounted = false;
+			roomsRequestGeneration++;
+			videosRequestGeneration++;
+			analyticsRequestGeneration++;
+			clearSuccessMessageTimeout();
+			pollAbortController?.abort();
+			abortBunnyUploadRequests();
+		};
 	});
 </script>
 
@@ -1124,7 +1269,7 @@
 			{isLoading}
 			onAnalytics={toggleAnalyticsPanel}
 			onBunnyUpload={openBunnyUploadModal}
-			onRefresh={() => loadVideos()}
+			onRefresh={() => void loadVideos()}
 			onAddVideo={openUploadModal}
 		/>
 
@@ -1256,7 +1401,7 @@
 		{:else if error}
 			<div class="error-state">
 				<p>{error}</p>
-				<button onclick={() => loadVideos()}>Try Again</button>
+				<button onclick={() => void loadVideos()}>Try Again</button>
 			</div>
 		{:else if filteredVideos.length === 0}
 			<div class="empty-state">
@@ -1287,7 +1432,7 @@
 					<div class="bulk-actions">
 						<button
 							class="btn-bulk"
-							onclick={() => bulkPublish(true)}
+							onclick={() => void bulkPublish(true)}
 							disabled={isBulkActionLoading}
 							title="Publish selected"
 						>
@@ -1296,7 +1441,7 @@
 						</button>
 						<button
 							class="btn-bulk"
-							onclick={() => bulkPublish(false)}
+							onclick={() => void bulkPublish(false)}
 							disabled={isBulkActionLoading}
 							title="Unpublish selected"
 						>
@@ -1305,7 +1450,7 @@
 						</button>
 						<button
 							class="btn-bulk"
-							onclick={() => bulkFeature(true)}
+							onclick={() => void bulkFeature(true)}
 							disabled={isBulkActionLoading}
 							title="Feature selected"
 						>
@@ -1314,7 +1459,7 @@
 						</button>
 						<button
 							class="btn-bulk"
-							onclick={() => bulkFeature(false)}
+							onclick={() => void bulkFeature(false)}
 							disabled={isBulkActionLoading}
 							title="Unfeature selected"
 						>
@@ -1450,7 +1595,7 @@
 									<button
 										class="status-toggle"
 										class:published={video.is_published}
-										onclick={() => togglePublished(video)}
+										onclick={() => void togglePublished(video)}
 									>
 										{#if video.is_published}
 											<IconCheck size={14} />
@@ -1473,7 +1618,7 @@
 										<button
 											class="btn-icon"
 											title="Embed Code"
-											onclick={() => showEmbedCode(video)}
+											onclick={() => void showEmbedCode(video)}
 										>
 											<IconCode size={16} />
 										</button>
@@ -1490,7 +1635,7 @@
 										<button
 											class="btn-icon"
 											title="Fetch Duration"
-											onclick={() => fetchVideoDuration(video.id)}
+											onclick={() => void fetchVideoDuration(video.id)}
 										>
 											<IconRefresh size={16} />
 										</button>
@@ -1731,7 +1876,7 @@
 				>
 				<button
 					class="btn-primary"
-					onclick={saveVideo}
+					onclick={() => void saveVideo()}
 					disabled={isSaving || !formData.title || !formData.video_url}
 				>
 					{#if isSaving}
@@ -1758,7 +1903,7 @@
 		replacingVideo = null;
 		newVideoUrl = '';
 	}}
-	onReplace={replaceVideo}
+	onReplace={() => void replaceVideo()}
 />
 
 <!-- Bunny.net Direct Upload Modal -->
@@ -1896,7 +2041,7 @@
 				>
 				<button
 					class="btn-bunny"
-					onclick={startBunnyUpload}
+					onclick={() => void startBunnyUpload()}
 					disabled={isUploadingToBunny || bunnyUploadFiles.length === 0}
 				>
 					{#if isUploadingToBunny}
@@ -2018,7 +2163,7 @@
 				<button class="btn-secondary" onclick={closeBulkTagsModal} type="button">Cancel</button>
 				<button
 					class="btn-primary"
-					onclick={bulkUpdateTags}
+					onclick={() => void bulkUpdateTags()}
 					disabled={isBulkActionLoading ||
 						(bulkTagsToAdd.length === 0 && bulkTagsToRemove.length === 0)}
 				>
@@ -2054,7 +2199,7 @@
 		: ''}
 	confirmText="Delete"
 	variant="danger"
-	onConfirm={confirmDeleteVideo}
+	onConfirm={() => void confirmDeleteVideo()}
 	onCancel={() => {
 		showDeleteModal = false;
 		pendingDeleteVideo = null;
@@ -2067,7 +2212,7 @@
 	message={`Are you sure you want to delete ${selectedVideoIds.size} video(s)? This cannot be undone.`}
 	confirmText="Delete All"
 	variant="danger"
-	onConfirm={confirmBulkDelete}
+	onConfirm={() => void confirmBulkDelete()}
 	onCancel={() => (showBulkDeleteModal = false)}
 />
 
