@@ -2,7 +2,18 @@ import { browser } from '$app/environment';
 import { redirect } from '@sveltejs/kit';
 import { authStore } from '$lib/stores/auth.svelte';
 import { getUser } from '$lib/api/auth';
+import type { SEOInput } from '$lib/seo/types';
 import type { Load } from '@sveltejs/kit';
+
+const seo: SEOInput = {
+	title: 'Checkout',
+	description: 'Complete your Revolution Trading Pros purchase securely.',
+	canonical: '/checkout',
+	robots: {
+		index: false,
+		follow: false
+	}
+};
 
 /**
  * Protected checkout route loader - Google Enterprise Pattern
@@ -11,7 +22,7 @@ import type { Load } from '@sveltejs/kit';
 export const load: Load = async ({ url }) => {
 	// Server-side: Skip auth check, let client handle it
 	if (!browser) {
-		return { requiresAuth: true };
+		return { requiresAuth: true, seo };
 	}
 
 	// Client-side: Check for token
@@ -26,15 +37,15 @@ export const load: Load = async ({ url }) => {
 
 	// Has session but no token - might need refresh, let client handle
 	if (!token && sessionId) {
-		return { requiresAuth: true, needsRefresh: true };
+		return { requiresAuth: true, needsRefresh: true, seo };
 	}
 
 	try {
 		// Verify token is still valid by fetching user
 		const user = await getUser();
-		return { user, requiresAuth: true };
+		return { user, requiresAuth: true, seo };
 	} catch (_error) {
 		// Token invalid - let client-side handle the redirect
-		return { requiresAuth: true, authError: true };
+		return { requiresAuth: true, authError: true, seo };
 	}
 };

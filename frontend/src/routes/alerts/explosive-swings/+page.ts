@@ -1,6 +1,5 @@
 import type { SEOInput } from '$lib/seo/types';
-import { buildBreadcrumb, buildFAQPage, buildService } from '$lib/seo/schemas';
-import { faqData } from './faq-data';
+import { buildBreadcrumb, buildService } from '$lib/seo/schemas';
 
 const SITE = 'https://revolution-trading-pros.pages.dev';
 
@@ -32,8 +31,7 @@ export const load = () => ({
 				provider: { name: 'Revolution Trading Pros', url: SITE },
 				serviceType: 'Trading Alerts',
 				offers: { price: 97, priceCurrency: 'USD' }
-			}),
-			buildFAQPage(faqData.map((item) => ({ q: item.q, a: item.a })))
+			})
 		]
 	} satisfies SEOInput
 });

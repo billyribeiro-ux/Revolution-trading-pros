@@ -344,28 +344,6 @@ export const load: PageServerLoad = async ({
 					availability: 'https://schema.org/InStock'
 				}
 			},
-			{
-				'@type': 'FAQPage',
-				'@id': 'https://revolution-trading-pros.com/live-trading-rooms#faq',
-				mainEntity: [
-					{
-						'@type': 'Question',
-						name: 'What are live trading rooms?',
-						acceptedAnswer: {
-							'@type': 'Answer',
-							text: 'Live trading rooms are interactive online spaces where professional traders share real-time market analysis, trade alerts, and educational content with members.'
-						}
-					},
-					{
-						'@type': 'Question',
-						name: 'Who teaches the trading strategies?',
-						acceptedAnswer: {
-							'@type': 'Answer',
-							text: 'Our trading rooms are led by institutional traders with 15+ years of experience at major firms and hedge funds, bringing real-world expertise to our members.'
-						}
-					}
-				]
-			}
 		]
 	};
 

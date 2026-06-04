@@ -21,11 +21,13 @@ export interface CartItem {
 	image?: string;
 	thumbnail?: string; // Product thumbnail URL
 	quantity: number;
-	interval?: 'monthly' | 'quarterly' | 'yearly' | 'lifetime'; // For subscriptions
+	interval?: CartInterval; // For subscriptions
 	couponCode?: string; // Applied coupon code
 	discount?: number; // Discount amount
 	productSlug?: string; // Unique product identifier
 }
+
+export type CartInterval = 'monthly' | 'quarterly' | 'yearly' | 'lifetime';
 
 /**
  * Subscription conflict types for user feedback
@@ -85,6 +87,7 @@ interface CartState {
 }
 
 const CART_STORAGE_KEY = 'revolution_cart';
+let hasLoadedPersistedCart = false;
 
 // Load cart from localStorage
 function loadCart(): CartState {
@@ -95,20 +98,70 @@ function loadCart(): CartState {
 	try {
 		const stored = localStorage.getItem(CART_STORAGE_KEY);
 		if (stored) {
-			return JSON.parse(stored);
+			return normalizeCartState(JSON.parse(stored));
 		}
 	} catch (error) {
 		console.error('Error loading cart from localStorage:', error);
+		localStorage.removeItem(CART_STORAGE_KEY);
 	}
 
 	return { items: [] };
+}
+
+function normalizeCartState(value: unknown): CartState {
+	if (!value || typeof value !== 'object') return { items: [] };
+	const items = (value as { items?: unknown }).items;
+	if (!Array.isArray(items)) return { items: [] };
+
+	return {
+		items: items.flatMap((item): CartItem[] => {
+			if (!item || typeof item !== 'object') return [];
+			const candidate = item as Partial<CartItem>;
+			if (
+				typeof candidate.id !== 'string' ||
+				typeof candidate.name !== 'string' ||
+				typeof candidate.price !== 'number' ||
+				!Number.isFinite(candidate.price) ||
+				typeof candidate.type !== 'string'
+			) {
+				return [];
+			}
+
+			const { interval: rawInterval, quantity: _quantity, ...rest } = candidate;
+			void _quantity;
+			const interval = isCartInterval(rawInterval) ? rawInterval : undefined;
+
+			return [
+				{
+					...rest,
+					id: candidate.id,
+					name: candidate.name,
+					type: candidate.type as CartItem['type'],
+					price: candidate.price,
+					...(interval ? { interval } : {}),
+					quantity: 1
+				}
+			];
+		})
+	};
+}
+
+function isCartInterval(value: unknown): value is CartInterval {
+	return value === 'monthly' || value === 'quarterly' || value === 'yearly' || value === 'lifetime';
+}
+
+function ensurePersistedCartLoaded(): void {
+	if (!browser || hasLoadedPersistedCart) return;
+	hasLoadedPersistedCart = true;
+	cartState = loadCart();
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Svelte 5 Runes State
 // ═══════════════════════════════════════════════════════════════════════════
 
-let cartState = $state<CartState>(loadCart());
+let cartState = $state<CartState>({ items: [] });
+let serializedCartState = $derived(JSON.stringify(cartState));
 
 // Save to localStorage whenever cart changes (skip initial run to prevent hydration issues)
 if (browser) {
@@ -116,17 +169,13 @@ if (browser) {
 		let isFirstRun = true;
 		$effect(() => {
 			// Read the state to create dependency
-			const state = cartState;
+			const state = serializedCartState;
 			// Skip initial run to prevent infinite loop during hydration
 			if (isFirstRun) {
 				isFirstRun = false;
 				return;
 			}
-			try {
-				localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(state));
-			} catch (error) {
-				console.error('Error saving cart to localStorage:', error);
-			}
+			localStorage[CART_STORAGE_KEY] = state;
 		});
 	});
 }
@@ -144,11 +193,17 @@ export const cartStore = {
 		return cartState.items;
 	},
 
+	loadPersistedCart(): void {
+		ensurePersistedCartLoaded();
+	},
+
 	/**
 	 * Add item to cart - Limited to quantity of 1 per product/service
 	 * Returns true if item was added, false if already in cart
 	 */
 	addItem(item: Omit<CartItem, 'quantity'>): boolean {
+		ensurePersistedCartLoaded();
+
 		// Check if exact item already exists (same ID and interval)
 		const existingIndex = cartState.items.findIndex(
 			(i) => i.id === item.id && i.interval === item.interval
@@ -167,7 +222,7 @@ export const cartStore = {
 	/**
 	 * Check if an item is already in the cart
 	 */
-	hasItem(itemId: string, interval?: 'monthly' | 'quarterly' | 'yearly'): boolean {
+	hasItem(itemId: string, interval?: CartInterval): boolean {
 		return cartState.items.some((i) => i.id === itemId && i.interval === interval);
 	},
 
@@ -181,7 +236,8 @@ export const cartStore = {
 	/**
 	 * Remove item from cart
 	 */
-	removeItem(itemId: string, interval?: 'monthly' | 'quarterly' | 'yearly' | 'lifetime') {
+	removeItem(itemId: string, interval?: CartInterval) {
+		ensurePersistedCartLoaded();
 		cartState.items = cartState.items.filter(
 			(item) => !(item.id === itemId && item.interval === interval)
 		);
@@ -190,7 +246,8 @@ export const cartStore = {
 	/**
 	 * Update item quantity - Enforces max quantity of 1
 	 */
-	updateQuantity(itemId: string, quantity: number, interval?: 'monthly' | 'quarterly' | 'yearly') {
+	updateQuantity(itemId: string, quantity: number, interval?: CartInterval) {
+		ensurePersistedCartLoaded();
 		const itemIndex = cartState.items.findIndex((i) => i.id === itemId && i.interval === interval);
 
 		if (itemIndex >= 0) {
@@ -212,6 +269,7 @@ export const cartStore = {
 	 * Apply coupon to cart
 	 */
 	applyCoupon(couponCode: string, discount: number) {
+		ensurePersistedCartLoaded();
 		cartState.items = cartState.items.map((item) => ({
 			...item,
 			couponCode,
@@ -223,8 +281,11 @@ export const cartStore = {
 	 * Remove coupon from cart
 	 */
 	removeCoupon() {
+		ensurePersistedCartLoaded();
 		cartState.items = cartState.items.map((item) => {
 			const { couponCode: _couponCode, discount: _discount, ...rest } = item;
+			void _couponCode;
+			void _discount;
 			return rest as CartItem;
 		});
 	},
@@ -233,6 +294,7 @@ export const cartStore = {
 	 * Clear entire cart
 	 */
 	clearCart() {
+		hasLoadedPersistedCart = true;
 		cartState = { items: [] };
 	},
 

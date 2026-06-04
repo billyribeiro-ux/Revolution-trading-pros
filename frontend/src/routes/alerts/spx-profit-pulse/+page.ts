@@ -1,6 +1,6 @@
 import type { Load } from '@sveltejs/kit';
 import type { SEOInput } from '$lib/seo/types';
-import { buildBreadcrumb, buildFAQPage, buildService } from '$lib/seo/schemas';
+import { buildBreadcrumb, buildService } from '$lib/seo/schemas';
 
 const SITE = 'https://revolution-trading-pros.pages.dev';
 
@@ -31,21 +31,7 @@ export const load: Load = async () => {
 				url: `${SITE}/alerts/spx-profit-pulse`,
 				provider: { name: 'Revolution Trading Pros', url: SITE },
 				serviceType: 'Trading Alerts'
-			}),
-			buildFAQPage([
-				{
-					q: 'What is SPX 0DTE?',
-					a: "SPX 0DTE refers to 'Zero Days to Expiration' options on the S&P 500 index. These contracts expire the same day they are traded, offering high potential returns due to rapid gamma exposure."
-				},
-				{
-					q: 'How fast are the alerts?',
-					a: 'Our alerts are sent instantly via SMS text message and Discord webhooks. The average latency is under 5 seconds from the moment our trader executes the trade.'
-				},
-				{
-					q: 'What account size do I need?',
-					a: 'Since we trade SPX options, premiums can range from $2.00 to $10.00 ($200-$1,000 per contract). We recommend a starting account of at least $2,000 to manage risk properly.'
-				}
-			])
+			})
 		]
 	};
 	return { seo };

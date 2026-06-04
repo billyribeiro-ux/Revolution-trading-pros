@@ -29,7 +29,7 @@
  *    - Course schema
  *    - VideoObject schema
  *    - HowTo schema
- *    - Speakable schema (voice search optimization)
+	 *    - Speakable schema metadata
  *
  * 3. SOCIAL OPTIMIZATION:
  *    - Multi-platform cards
@@ -794,11 +794,9 @@
 			if (import.meta.env.DEV && seoWarnings.length > 0 && seoScore < 60) {
 				// DEV-only grouped SEO warning; group/groupEnd aren't allowed
 				// methods but the inner output is intentional.
-				/* eslint-disable-next-line no-console */
 				console.group('🔍 SEO Warnings');
 				console.info(`SEO Score: ${seoScore}/100`);
 				seoWarnings.forEach((warning) => console.warn(warning));
-				/* eslint-disable-next-line no-console */
 				console.groupEnd();
 			}
 

@@ -7,9 +7,11 @@
 	 */
 
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 	import { cartStore, getCartItemCount, getCartTotal } from '$lib/stores/cart.svelte';
-	import { validateCoupon, type CouponType } from '$lib/api/coupons';
-	import { isAuthenticated } from '$lib/stores/auth.svelte';
+	import { validateCoupon } from '$lib/api/coupons';
+	import { isAuthenticated, isInitializing } from '$lib/stores/auth.svelte';
+	import { createAppliedCoupon, type AppliedCoupon } from '$lib/utils/coupon-helpers';
 	import NonMemberCheckout from '$lib/components/cart/NonMemberCheckout.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
@@ -23,12 +25,13 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	let couponCode = $state('');
-	let appliedCoupon = $state<{ code: string; discount: number; type: CouponType } | null>(null);
+	let appliedCoupon = $state<AppliedCoupon | null>(null);
 	let couponError = $state('');
 	let applyingCoupon = $state(false);
 	let showClearCartModal = $state(false);
+	let cartReady = $state(false);
 	// CSRF token for form security (replaces WordPress nonce)
-	let csrfToken = $state(crypto.randomUUID());
+	let csrfToken = $state('');
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED
@@ -37,17 +40,17 @@
 	const cartItemCount = $derived(getCartItemCount());
 	const cartTotal = $derived(getCartTotal());
 
-	let discountAmount = $derived(
-		appliedCoupon
-			? appliedCoupon.type === 'percentage'
-				? (cartTotal * appliedCoupon.discount) / 100
-				: appliedCoupon.discount
-			: 0
-	);
+	let discountAmount = $derived(appliedCoupon?.discountAmount ?? 0);
 
 	let finalTotal = $derived(Math.max(0, cartTotal - discountAmount));
 
 	let hasSubscriptions = $derived(cartStore.items.some((i) => i.interval));
+
+	onMount(() => {
+		cartStore.loadPersistedCart();
+		csrfToken = crypto.randomUUID();
+		cartReady = true;
+	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// FUNCTIONS
@@ -87,15 +90,13 @@
 		couponError = '';
 
 		try {
-			const result = await validateCoupon(couponCode.trim().toUpperCase(), getCartTotal());
+			const normalizedCode = couponCode.trim().toUpperCase();
+			const total = getCartTotal();
+			const result = await validateCoupon(normalizedCode, total);
 
 			if (result.valid) {
-				appliedCoupon = {
-					code: couponCode.trim().toUpperCase(),
-					discount: result.discountAmount || 0,
-					type: result.type || 'percentage'
-				};
-				cartStore.applyCoupon(appliedCoupon.code, appliedCoupon.discount);
+				appliedCoupon = createAppliedCoupon(normalizedCode, result, total);
+				cartStore.applyCoupon(appliedCoupon.code, appliedCoupon.discountAmount);
 				couponCode = '';
 			} else {
 				couponError = result.message || 'Invalid coupon code';
@@ -115,7 +116,7 @@
 	}
 
 	function proceedToCheckout() {
-		if (!$isAuthenticated) {
+		if (!isAuthenticated.current) {
 			goto('/login?redirect=/checkout');
 			return;
 		}
@@ -132,16 +133,17 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Cart | Revolution Trading Pros</title>
-</svelte:head>
-
 <!-- ═══════════════════════════════════════════════════════════════════════════
      TEMPLATE - Simpler Trading Cart Style (EXACT STRUCTURE)
      ═══════════════════════════════════════════════════════════════════════════ -->
 
-<!-- Show NonMemberCheckout for unauthenticated users with items in cart -->
-{#if !$isAuthenticated && cartStore.items.length > 0}
+{#if !cartReady || (cartStore.items.length > 0 && $isInitializing)}
+	<div class="rtp-cart rtp-page">
+		<div class="container">
+			<div class="cart-loading" role="status" aria-live="polite">Loading cart...</div>
+		</div>
+	</div>
+{:else if !$isAuthenticated && cartStore.items.length > 0}
 	<NonMemberCheckout />
 {:else}
 	<div class="rtp-cart rtp-page">
@@ -509,6 +511,17 @@
 		font-size: 16px;
 		margin: 0 0 24px;
 		font-weight: 500;
+	}
+
+	.cart-loading {
+		background: var(--st-card-bg);
+		border-radius: 5px;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+		color: var(--st-text-muted);
+		font-size: 16px;
+		font-weight: 700;
+		padding: 48px;
+		text-align: center;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════

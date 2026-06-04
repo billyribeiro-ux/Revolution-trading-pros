@@ -4,7 +4,7 @@
  *
  * Enhanced for January 2026 Google Updates including:
  * - E-E-A-T Signals (Expertise, Experience, Authoritativeness, Trust)
- * - Speakable property for Google Assistant voice search
+ * - Speakable property for specialized voice surfaces
  * - Entity linking with about/mentions properties
  * - @graph support for combining multiple schemas
  * - CollectionPage for blog index pages
@@ -310,8 +310,9 @@ export interface CourseConfig {
 
 /**
  * @deprecated FAQ rich results were removed from Google Search on May 7, 2026.
- * Markup is retained for AI/voice-search consumers but no longer produces a
- * rich result. See: frontend/src/lib/seo/README.md §May 2026 SEO updates.
+ * Google limits remaining FAQPage eligibility to well-known government and
+ * health sites; do not use this config for Google SEO on marketing pages.
+ * See: frontend/src/lib/seo/README.md §May 2026 SEO updates.
  */
 export interface FAQConfig {
 	type: 'FAQPage';
@@ -1014,9 +1015,10 @@ function generateCourse(config: CourseConfig): BaseStructuredData {
 /**
  * Generate FAQPage schema.
  *
- * @deprecated Google deprecated FAQ rich results May 7, 2026. Markup is still
- * emitted (still parseable by AI/voice search) but no longer produces a Google
- * rich result. See: frontend/src/lib/seo/README.md §May 2026 SEO updates.
+ * @deprecated Google deprecated FAQ rich results May 7, 2026. Google limits
+ * remaining FAQPage eligibility to well-known government and health sites; do
+ * not use this helper for Google SEO on marketing pages.
+ * See: frontend/src/lib/seo/README.md §May 2026 SEO updates.
  *
  * NOTE: The runtime `console.warn` was removed 2026-05-25 — the JSDoc
  * `@deprecated` tag above is sufficient discoverability; firing a warning on
@@ -1373,7 +1375,7 @@ function generateCollectionPage(config: CollectionPageConfig): BaseStructuredDat
 		};
 	}
 
-	// Speakable for voice search
+	// Speakable for specialized voice surfaces
 	if (config.speakable) {
 		data.speakable = {
 			'@type': 'SpeakableSpecification',
@@ -1416,7 +1418,7 @@ function generateCollectionPage(config: CollectionPageConfig): BaseStructuredDat
 }
 
 /**
- * Generate WebPage schema with speakable
+ * Generate WebPage schema with speakable metadata
  */
 function generateWebPage(config: WebPageConfig): BaseStructuredData {
 	const data: BaseStructuredData = {
@@ -1434,7 +1436,7 @@ function generateWebPage(config: WebPageConfig): BaseStructuredData {
 	if (config.primaryImageOfPage) data.primaryImageOfPage = config.primaryImageOfPage;
 	if (config.lastReviewed) data.lastReviewed = config.lastReviewed;
 
-	// Speakable for voice search
+	// Speakable for specialized voice surfaces
 	if (config.speakable) {
 		data.speakable = {
 			'@type': 'SpeakableSpecification',
@@ -1688,7 +1690,7 @@ export function generateBlogPostStructuredData(post: {
 	keywords?: string[];
 	articleSection?: string;
 	wordCount?: number;
-	// For voice search
+	// For specialized voice surfaces
 	speakableSelectors?: string[];
 	// For entity linking
 	aboutTopics?: EntityReference[];

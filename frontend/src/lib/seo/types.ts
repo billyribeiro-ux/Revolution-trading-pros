@@ -180,9 +180,9 @@ export interface JsonLdFAQQuestion {
 /**
  * @deprecated As of Google Search update May 7, 2026, FAQ rich results no longer
  * appear in Google Search. June 2026 the Rich Results Test will drop support, and
- * August 2026 the Search Console API support is removed. The markup is retained
- * for semantic/AI-search consumers (LLMs, voice assistants) — do not author new
- * pages around it for rich-result reasons.
+ * August 2026 the Search Console API support is removed. Google limits the
+ * remaining FAQPage eligibility to well-known government/health sites; do not
+ * add this markup to marketing pages for Google SEO.
  * See: https://developers.google.com/search/docs/appearance/structured-data/faqpage
  */
 export interface JsonLdFAQPage extends JsonLdBase {

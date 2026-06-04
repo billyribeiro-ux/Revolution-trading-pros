@@ -335,8 +335,8 @@ export function generateProductSchema(data: ProductSchema): object {
  *
  * @deprecated Google deprecated FAQ rich results on May 7, 2026 (Rich Results
  * Test loses support June 2026, Search Console API support removed August
- * 2026). The markup is still emitted because it remains useful for AI and
- * voice-search consumers, but it no longer produces a Google rich result.
+ * 2026). Google limits remaining FAQPage eligibility to well-known government
+ * and health sites; do not add it to marketing pages for Google SEO.
  * See: frontend/src/lib/seo/README.md §May 2026 SEO updates.
  */
 export function generateFAQSchema(data: FAQSchema): object {

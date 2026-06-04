@@ -10,11 +10,15 @@
 	 */
 
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 	import { cartStore, getCartTotal } from '$lib/stores/cart.svelte';
 	import { login, register } from '$lib/api/auth';
+	import { validateCoupon } from '$lib/api/coupons';
+	import { createAppliedCoupon, type AppliedCoupon } from '$lib/utils/coupon-helpers';
 	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
 	import IconTicket from '@tabler/icons-svelte-runes/icons/ticket';
 	import IconShoppingCart from '@tabler/icons-svelte-runes/icons/shopping-cart';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
 
 	// STATE
 
@@ -37,12 +41,29 @@
 	// Coupon state
 	let couponCode = $state('');
 	let couponFormVisible = $state(false);
+	let appliedCoupon = $state<AppliedCoupon | null>(null);
+	let couponError = $state('');
+	let applyingCoupon = $state(false);
 
 	// DERIVED
 
 	let hasSubscriptions = $derived(cartStore.items.some((i) => i.interval));
+	let cartTotal = $derived(getCartTotal());
+	let discountAmount = $derived(appliedCoupon?.discountAmount ?? 0);
+	let finalTotal = $derived(Math.max(0, cartTotal - discountAmount));
+
+	onMount(() => {
+		cartStore.loadPersistedCart();
+	});
 
 	// FUNCTIONS
+
+	function formatPrice(price: number): string {
+		return new Intl.NumberFormat('en-US', {
+			style: 'currency',
+			currency: 'USD'
+		}).format(price);
+	}
 
 	function getIntervalLabel(interval?: string): string {
 		switch (interval) {
@@ -117,6 +138,42 @@
 		} finally {
 			isSubmitting = false;
 		}
+	}
+
+	async function applyCouponCode() {
+		if (!couponCode.trim()) {
+			couponError = 'Please enter a coupon code';
+			return;
+		}
+
+		applyingCoupon = true;
+		couponError = '';
+
+		try {
+			const normalizedCode = couponCode.trim().toUpperCase();
+			const total = getCartTotal();
+			const result = await validateCoupon(normalizedCode, total);
+
+			if (result.valid) {
+				appliedCoupon = createAppliedCoupon(normalizedCode, result, total);
+				cartStore.applyCoupon(appliedCoupon.code, appliedCoupon.discountAmount);
+				couponCode = '';
+				couponFormVisible = false;
+			} else {
+				couponError = result.message || 'Invalid coupon code';
+			}
+		} catch {
+			couponError = 'Failed to apply coupon. Please try again.';
+		} finally {
+			applyingCoupon = false;
+		}
+	}
+
+	function removeCouponCode() {
+		appliedCoupon = null;
+		couponCode = '';
+		couponError = '';
+		cartStore.removeCoupon();
 	}
 </script>
 
@@ -375,11 +432,7 @@
 													</div>
 													<div class="product-total">
 														<span class="rtp-price-amount amount">
-															<bdi
-																><span class="rtp-price-currency">$</span>{item.price.toFixed(
-																	2
-																)}</bdi
-															>
+															<bdi>{formatPrice(item.price)}</bdi>
 														</span>
 													</div>
 												</div>
@@ -390,6 +443,26 @@
 										<div class="cart-table-wrapper">
 											<table class="cart-table">
 												<tbody>
+													<tr class="cart-subtotal">
+														<th>Subtotal</th>
+														<td>{formatPrice(cartTotal)}</td>
+													</tr>
+													{#if appliedCoupon && discountAmount > 0}
+														<tr class="cart-discount">
+															<th>
+																Discount ({appliedCoupon.code})
+																<button
+																	type="button"
+																	class="remove-coupon"
+																	onclick={removeCouponCode}
+																	aria-label="Remove coupon"
+																>
+																	<IconX size={14} />
+																</button>
+															</th>
+															<td class="discount">-{formatPrice(discountAmount)}</td>
+														</tr>
+													{/if}
 													<tr class="tax-total">
 														<th>Tax</th>
 														<td>Calculated at checkout</td>
@@ -403,11 +476,10 @@
 											<div>Total</div>
 											<div class="checkout-order-total-price">
 												<span class="rtp-price-amount amount">
-													<bdi
-														><span class="rtp-price-currency">$</span>{getCartTotal().toFixed(
-															2
-														)}</bdi
-													>
+													{#if appliedCoupon && discountAmount > 0}
+														<span class="original-price">{formatPrice(cartTotal)}</span>
+													{/if}
+													<bdi>{formatPrice(finalTotal)}</bdi>
 												</span>
 											</div>
 										</div>
@@ -420,15 +492,11 @@
 														<tr class="rtp-recurring-totals">
 															<th colspan="2">Recurring Totals</th>
 														</tr>
-														{#each cartStore.items.filter((i) => i.interval) as item (item.id)}
+														{#each cartStore.items.filter((i) => i.interval) as item (item.id + (item.interval || ''))}
 															<tr class="rtp-cart-subtotal rtp-recurring-total">
 																<td colspan="2">
 																	<span class="rtp-price-amount amount">
-																		<bdi
-																			><span class="rtp-price-currency">$</span>{item.price.toFixed(
-																				2
-																			)}</bdi
-																		>
+																		<bdi>{formatPrice(item.price)}</bdi>
 																	</span>
 																	{getIntervalLabel(item.interval)}
 																</td>
@@ -442,37 +510,60 @@
 
 									<!-- Coupon Section -->
 									<div class="coupon-section">
-										<div class="rtp-form-coupon-toggle">
-											<div class="rtp-info">
-												<IconTicket size={16} />
+										{#if appliedCoupon}
+											<div class="coupon-applied">
+												<span>Coupon: {appliedCoupon.code}</span>
 												<button
 													type="button"
-													class="showcoupon"
-													onclick={() => (couponFormVisible = !couponFormVisible)}
+													class="remove-coupon"
+													onclick={removeCouponCode}
+													aria-label="Remove coupon"
 												>
-													Have a coupon? Click here to enter your code
+													<IconX size={14} />
 												</button>
 											</div>
-										</div>
-
-										{#if couponFormVisible}
-											<form
-												class="rtp-checkout-coupon rtp-form-coupon"
-												onsubmit={(e: SubmitEvent) => e.preventDefault()}
-											>
-												<p>If you have a coupon code, please apply it below.</p>
-												<div class="coupon-input-row">
-													<input
-														type="text"
-														name="coupon_code"
-														class="input-text"
-														placeholder="Coupon code"
-														aria-label="Coupon code"
-														bind:value={couponCode}
-													/>
-													<button type="submit" class="btn btn-default"> Apply coupon </button>
+										{:else}
+											<div class="rtp-form-coupon-toggle">
+												<div class="rtp-info">
+													<IconTicket size={16} />
+													<button
+														type="button"
+														class="showcoupon"
+														onclick={() => (couponFormVisible = !couponFormVisible)}
+													>
+														Have a coupon? Click here to enter your code
+													</button>
 												</div>
-											</form>
+											</div>
+
+											{#if couponFormVisible}
+												<form
+													class="rtp-checkout-coupon rtp-form-coupon"
+													onsubmit={(e: SubmitEvent) => {
+														e.preventDefault();
+														void applyCouponCode();
+													}}
+												>
+													<p>If you have a coupon code, please apply it below.</p>
+													<div class="coupon-input-row">
+														<input
+															type="text"
+															name="coupon_code"
+															class="input-text"
+															placeholder="Coupon code"
+															aria-label="Coupon code"
+															bind:value={couponCode}
+															disabled={applyingCoupon}
+														/>
+														<button type="submit" class="btn btn-default" disabled={applyingCoupon}>
+															{applyingCoupon ? 'Applying...' : 'Apply coupon'}
+														</button>
+													</div>
+													{#if couponError}
+														<p class="coupon-error" role="alert">{couponError}</p>
+													{/if}
+												</form>
+											{/if}
 										{/if}
 									</div>
 								</div>
@@ -1001,6 +1092,17 @@
 		font-weight: 500;
 	}
 
+	.cart-discount th,
+	.cart-discount td {
+		color: var(--st-success);
+	}
+
+	.cart-discount th {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+	}
+
 	.rtp-recurring-totals th {
 		font-size: 12px;
 		text-transform: uppercase;
@@ -1032,12 +1134,16 @@
 		font-weight: 700;
 	}
 
-	/* RTP Price Styling */
-	.rtp-price-amount {
-		font-weight: 700;
+	.original-price {
+		display: block;
+		color: var(--st-text-muted);
+		font-size: 13px;
+		text-decoration: line-through;
+		text-align: right;
 	}
 
-	.rtp-price-currency {
+	/* RTP Price Styling */
+	.rtp-price-amount {
 		font-weight: 700;
 	}
 
@@ -1086,6 +1192,40 @@
 	.coupon-input-row {
 		display: flex;
 		gap: 8px;
+	}
+
+	.coupon-applied {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 10px;
+		color: var(--st-success);
+		font-size: 13px;
+		font-weight: 700;
+	}
+
+	.remove-coupon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 24px;
+		height: 24px;
+		border: none;
+		border-radius: 50%;
+		background: transparent;
+		color: currentColor;
+		cursor: pointer;
+	}
+
+	.remove-coupon:hover {
+		background: rgba(16, 185, 129, 0.12);
+	}
+
+	.coupon-error {
+		color: var(--st-error);
+		font-size: 13px;
+		font-weight: 600;
+		margin: 10px 0 0;
 	}
 
 	/* Coupon Input - 2026 Mobile-First Responsive */

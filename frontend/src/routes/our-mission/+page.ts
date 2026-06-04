@@ -1,5 +1,5 @@
 import type { SEOInput } from '$lib/seo/types';
-import { buildBreadcrumb, buildFAQPage, buildWebPage } from '$lib/seo/schemas';
+import { buildBreadcrumb, buildWebPage } from '$lib/seo/schemas';
 
 const SITE = 'https://revolution-trading-pros.pages.dev';
 
@@ -23,16 +23,6 @@ export const load = () => {
 				dateModified: '2026-05-25',
 				pageType: 'AboutPage'
 			}),
-			buildFAQPage([
-				{
-					q: "What is the 'Retail Trap' in trading?",
-					a: 'The Retail Trap refers to the statistical probability of failure for non-professional traders (often cited as the 90/90/90 rule). This failure is driven by a lack of risk management, emotional trading, and reliance on lagging indicators.'
-				},
-				{
-					q: 'How is Revolution Trading Pros different from other groups?',
-					a: "We focus on 'Auction Market Theory' and 'Volume Profiling' rather than subjective chart patterns. We treat trading as a business of probability (Expectancy) rather than a game of prediction."
-				}
-			]),
 			{
 				'@context': 'https://schema.org',
 				'@type': 'Course',

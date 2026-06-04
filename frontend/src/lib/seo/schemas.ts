@@ -317,8 +317,10 @@ export function buildSoftwareApplication(input: SoftwareApplicationInput): JsonL
 // ─────────────────────────────────────────────────────────────────────────────
 // FAQPage
 //
-// Google deprecated the FAQ rich result for most domains in May 2026; the
-// schema is retained for LLMs, voice assistants, and other consumers.
+// Google deprecated FAQ rich results in May 2026 and limits the remaining
+// eligibility to well-known government/health sites. Keep this builder only for
+// non-Google consumers or explicitly eligible pages; do not add it to marketing
+// pages for Google SEO.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface FAQItem {

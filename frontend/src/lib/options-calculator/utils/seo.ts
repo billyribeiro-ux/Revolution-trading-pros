@@ -78,9 +78,8 @@ export function generateOGMeta(inputs?: BSInputs): Record<string, string> {
  * Generate FAQ structured data.
  *
  * @deprecated Google removed FAQ rich results from Search on May 7, 2026.
- * The markup is still emitted because it remains useful for AI/voice search
- * surfaces, but it no longer produces a Google rich result. Consider pairing
- * with `speakableSchema()` from `$lib/seo` instead for generative-AI reach.
+ * Google limits remaining FAQPage eligibility to well-known government and
+ * health sites; do not use this helper for Google SEO on marketing/tool pages.
  * See: frontend/src/lib/seo/README.md §May 2026 SEO updates.
  */
 export function generateFAQStructuredData(): object {

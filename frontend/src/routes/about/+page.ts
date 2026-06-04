@@ -1,6 +1,5 @@
 import type { SEOInput } from '$lib/seo/types';
-import { buildBreadcrumb, buildFAQPage, buildWebPage } from '$lib/seo/schemas';
-import { aboutFaqs } from './about-data';
+import { buildBreadcrumb, buildWebPage } from '$lib/seo/schemas';
 
 const SITE = 'https://revolution-trading-pros.pages.dev';
 
@@ -22,8 +21,7 @@ export const load = () => {
 				description: 'Professional trading community and mentorship program — est. 2018.',
 				dateModified: '2026-05-25',
 				pageType: 'AboutPage'
-			}),
-			buildFAQPage(aboutFaqs.map((f) => ({ q: f.q, a: f.a })))
+			})
 		]
 	};
 	return { seo };

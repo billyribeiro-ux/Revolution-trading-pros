@@ -165,10 +165,9 @@ export function articleSchema(opts: {
 
 /**
  * @deprecated Google deprecated FAQ rich results on May 7, 2026. This builder
- * still emits valid `FAQPage` JSON-LD because the markup remains useful for
- * AI/voice search and other consumers, but it will not produce a Google rich
- * result. Prefer `speakableSchema()` (or QAPage for user-submitted Q&A) for
- * generative-AI surfaces. See: frontend/src/lib/seo/README.md §May 2026 SEO.
+ * still emits valid `FAQPage` JSON-LD for non-Google consumers or explicitly
+ * eligible government/health pages, but it will not produce a Google rich result
+ * for this site. See: frontend/src/lib/seo/README.md §May 2026 SEO.
  */
 export function faqSchema(
 	questions: Array<{ question: string; answer: string }>,
@@ -181,7 +180,7 @@ export function faqSchema(
 	if (import.meta.env.DEV) {
 		console.warn(
 			'[SEO] faqSchema() is deprecated: Google dropped FAQ rich results May 7, 2026. ' +
-				'Markup is still emitted (useful for AI/voice search) but no Google rich result will appear.'
+				'Do not add FAQPage markup to marketing pages for Google SEO.'
 		);
 	}
 

@@ -39,7 +39,7 @@
 		{
 			name: 'FAQPage',
 			deprecated: true,
-			note: 'Google removed FAQ rich results on May 7, 2026. Markup is still parsed by AI/voice search but produces no Google rich result.'
+			note: 'Google removed FAQ rich results on May 7, 2026 and limits remaining eligibility to well-known government and health sites.'
 		},
 		{ name: 'Course' },
 		{ name: 'JobPosting' },

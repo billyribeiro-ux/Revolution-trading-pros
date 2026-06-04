@@ -1,5 +1,5 @@
 import type { SEOInput } from '$lib/seo/types';
-import { buildBreadcrumb, buildEvent, buildFAQPage, buildService } from '$lib/seo/schemas';
+import { buildBreadcrumb, buildEvent, buildService } from '$lib/seo/schemas';
 
 const SITE = 'https://revolution-trading-pros.pages.dev';
 
@@ -40,21 +40,7 @@ export const load = () => ({
 				organizer: { name: 'Revolution Trading Pros', url: SITE },
 				isLiveBroadcast: true,
 				location: { name: 'Revolution Trading Pros — Discord', url: SITE }
-			}),
-			buildFAQPage([
-				{
-					q: 'Do I need to be an expert to join?',
-					a: "No. While the trading is fast-paced, we prioritize education. We provide a comprehensive 'New Member' onboarding video series to help you understand our levels, terminology, and platform execution before you take your first trade."
-				},
-				{
-					q: 'What platform is the room hosted on?',
-					a: 'We host our live room on a private, boosted Discord server. This allows for low-latency Voice Channels (sub-200ms) and crisp 1080p Screen Share, accessible from desktop or mobile.'
-				},
-				{
-					q: 'What specific instruments do you trade?',
-					a: 'We specialize in SPX (S&P 500 Index) options, specifically 0DTE (Zero Days to Expiration). We occasionally trade SPY, QQQ, and futures (ES/NQ) when setups present high probability, but SPX is our primary focus due to tax benefits and liquidity.'
-				}
-			])
+			})
 		]
 	} satisfies SEOInput
 });

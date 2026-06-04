@@ -9,8 +9,8 @@
  */
 
 import type { SEOInput } from '$lib/seo/types';
-import { buildBreadcrumb, buildFAQPage, buildItemList } from '$lib/seo/schemas';
-import { indicators, faqs } from './data';
+import { buildBreadcrumb, buildItemList } from '$lib/seo/schemas';
+import { indicators } from './data';
 
 const SITE = 'https://revolution-trading-pros.pages.dev';
 
@@ -38,8 +38,7 @@ export const load = () => ({
 					url: `${SITE}/indicators/${i.slug}`,
 					description: i.description
 				}))
-			),
-			buildFAQPage(faqs.map((f) => ({ q: f.question, a: f.answer })))
+			)
 		]
 	} satisfies SEOInput
 });
