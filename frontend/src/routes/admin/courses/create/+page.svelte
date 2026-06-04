@@ -189,6 +189,8 @@
 	let expandedModules = new SvelteSet<string>();
 	const scheduledTimeouts = new SvelteSet<ReturnType<typeof setTimeout>>();
 	const localPreviewUrls = new SvelteSet<string>();
+	let isComponentMounted = false;
+	let uploadAbortController: AbortController | null = null;
 
 	function scheduleTimeout(callback: () => void, delay: number) {
 		const timeout = setTimeout(() => {
@@ -212,6 +214,38 @@
 		URL.revokeObjectURL(url);
 	}
 
+	function isTransientPreviewUrl(url: string | null | undefined) {
+		return typeof url === 'string' && (url.startsWith('blob:') || localPreviewUrls.has(url));
+	}
+
+	function getPersistableMediaUrl(url: string) {
+		return isTransientPreviewUrl(url) ? '' : url;
+	}
+
+	function getPersistableGalleryUrls(gallery: string[]) {
+		return gallery.filter((url) => !isTransientPreviewUrl(url));
+	}
+
+	function hasTransientMedia() {
+		return (
+			isTransientPreviewUrl(course.thumbnail) ||
+			isTransientPreviewUrl(course.promo_video) ||
+			isTransientPreviewUrl(course.og_image) ||
+			course.gallery.some((url) => isTransientPreviewUrl(url))
+		);
+	}
+
+	function getPersistableCourseSnapshot() {
+		const snapshot = $state.snapshot(course);
+		return {
+			...snapshot,
+			thumbnail: getPersistableMediaUrl(snapshot.thumbnail),
+			gallery: getPersistableGalleryUrls(snapshot.gallery),
+			promo_video: getPersistableMediaUrl(snapshot.promo_video),
+			og_image: getPersistableMediaUrl(snapshot.og_image)
+		};
+	}
+
 	function createLocalPreviewUrl(file: File) {
 		const url = URL.createObjectURL(file);
 		localPreviewUrls.add(url);
@@ -225,10 +259,17 @@
 		localPreviewUrls.clear();
 	}
 
+	function abortUploadRequest() {
+		uploadAbortController?.abort();
+		uploadAbortController = null;
+	}
+
 	// Lifecycle Hooks & Initialization
 
 	// Svelte 5: client-only initialization and autosave setup.
 	onMount(() => {
+		isComponentMounted = true;
+
 		// Initialize with starter module
 		if (course.modules.length === 0) {
 			addModule();
@@ -246,7 +287,9 @@
 
 		// Cleanup on unmount
 		return () => {
+			isComponentMounted = false;
 			if (autoSaveTimer) clearInterval(autoSaveTimer);
+			abortUploadRequest();
 			clearScheduledTimeouts();
 			releaseLocalPreviewUrls();
 		};
@@ -967,11 +1010,16 @@
 			return;
 		}
 
+		abortUploadRequest();
+		const uploadAbort = new AbortController();
+		uploadAbortController = uploadAbort;
 		uploading = true;
 
 		try {
 			// Resize image before upload (max 1200px, converts to JPEG)
 			const resizedBlob = await resizeImage(file, 1200, 1200, 0.85);
+			if (uploadAbort.signal.aborted || !isComponentMounted) return;
+
 			const resizedFile = new File([resizedBlob], file.name.replace(/\.[^.]+$/, '.jpg'), {
 				type: 'image/jpeg'
 			});
@@ -981,8 +1029,10 @@
 
 			const response = await adminFetch('/api/admin/media/upload', {
 				method: 'POST',
-				body: formData
+				body: formData,
+				signal: uploadAbort.signal
 			});
+			if (uploadAbort.signal.aborted || !isComponentMounted) return;
 
 			// The response contains an array of uploaded files
 			if (response.success && response.data && response.data.length > 0) {
@@ -1007,6 +1057,8 @@
 				throw new Error(response.message || 'Upload failed - no URL returned');
 			}
 		} catch (error) {
+			if (uploadAbort.signal.aborted || !isComponentMounted) return;
+
 			logger.error('Failed to upload image', { error });
 			const err = error as { message?: string };
 			formError = err.message || 'Failed to upload image. Please try again.';
@@ -1028,7 +1080,10 @@
 			}
 			hasUnsavedChanges = true;
 		} finally {
-			uploading = false;
+			if (uploadAbortController === uploadAbort) {
+				uploadAbortController = null;
+				if (isComponentMounted) uploading = false;
+			}
 		}
 	}
 
@@ -1048,6 +1103,9 @@
 			return;
 		}
 
+		abortUploadRequest();
+		const uploadAbort = new AbortController();
+		uploadAbortController = uploadAbort;
 		uploading = true;
 
 		try {
@@ -1056,8 +1114,10 @@
 
 			const response = await adminFetch('/api/admin/media/upload', {
 				method: 'POST',
-				body: formData
+				body: formData,
+				signal: uploadAbort.signal
 			});
+			if (uploadAbort.signal.aborted || !isComponentMounted) return;
 
 			// The response contains an array of uploaded files
 			if (response.success && response.data && response.data.length > 0) {
@@ -1068,6 +1128,8 @@
 				throw new Error(response.message || 'Upload failed - no URL returned');
 			}
 		} catch (error) {
+			if (uploadAbort.signal.aborted || !isComponentMounted) return;
+
 			logger.error('Failed to upload video', { error });
 			const err = error as { message?: string };
 			formError = err.message || 'Failed to upload video. Please try again.';
@@ -1077,7 +1139,10 @@
 			course.promo_video = createLocalPreviewUrl(file);
 			hasUnsavedChanges = true;
 		} finally {
-			uploading = false;
+			if (uploadAbortController === uploadAbort) {
+				uploadAbortController = null;
+				if (isComponentMounted) uploading = false;
+			}
 		}
 	}
 
@@ -1313,7 +1378,7 @@
 
 	function saveDraft() {
 		const draft = {
-			course,
+			course: getPersistableCourseSnapshot(),
 			timestamp: new Date().toISOString(),
 			version: '1.0'
 		};
@@ -1395,6 +1460,18 @@
 			generateSlug();
 		}
 
+		if (hasTransientMedia()) {
+			formError =
+				'One or more media files are only local previews because upload failed. Please re-upload them before saving.';
+			activeTab = 'media';
+			return;
+		}
+
+		const thumbnailUrl = getPersistableMediaUrl(course.thumbnail);
+		const galleryUrls = getPersistableGalleryUrls(course.gallery);
+		const promoVideoUrl = getPersistableMediaUrl(course.promo_video);
+		const ogImageUrl = getPersistableMediaUrl(course.og_image);
+
 		saving = true;
 
 		// Simulate API call
@@ -1407,14 +1484,14 @@
 				long_description: course.description,
 				price: course.pricing_model === 'free' ? 0 : course.price,
 				is_active: course.is_active,
-				thumbnail: course.thumbnail || undefined,
+				thumbnail: thumbnailUrl || undefined,
 				meta_title: course.meta_title || undefined,
 				meta_description: course.meta_description || undefined,
 				indexable: true,
 				metadata: {
 					short_description: course.short_description,
-					gallery: course.gallery,
-					promo_video: course.promo_video,
+					gallery: galleryUrls,
+					promo_video: promoVideoUrl,
 					course_type: course.type,
 					format: course.format,
 					level: course.level,
@@ -1436,7 +1513,7 @@
 					},
 					seo: {
 						keywords: course.keywords,
-						og_image: course.og_image,
+						og_image: ogImageUrl,
 						landing_page_enabled: course.landing_page_enabled
 					},
 					marketing: {
@@ -1472,6 +1549,7 @@
 			};
 
 			await productsApi.create(payload);
+			if (!isComponentMounted) return;
 
 			// Clear draft after successful save
 			localStorage.removeItem('course-draft');
@@ -1483,9 +1561,11 @@
 				void goto('/admin/courses');
 			}, 1500);
 		} catch (error) {
+			if (!isComponentMounted) return;
+
 			if (error instanceof AdminApiError) {
 				if (error.status === 401) {
-					goto('/login');
+					void goto('/login');
 					return;
 				}
 
@@ -1506,7 +1586,7 @@
 			}
 			logger.error('Save error', { error });
 		} finally {
-			saving = false;
+			if (isComponentMounted) saving = false;
 		}
 	}
 
