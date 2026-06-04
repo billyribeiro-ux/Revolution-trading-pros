@@ -106,6 +106,13 @@
 	let refreshInterval = $state<ReturnType<typeof setInterval> | undefined>(undefined);
 	let notifications = $state<AppNotification[]>([]);
 	const notificationTimers = new SvelteMap<string, ReturnType<typeof setTimeout>>();
+	let isComponentMounted = false;
+	let postsRequestGeneration = 0;
+	let statsRequestGeneration = 0;
+	let analyticsRequestGeneration = 0;
+	let websocketGeneration = 0;
+	let postsAbortController: AbortController | null = null;
+	let statsAbortController: AbortController | null = null;
 
 	// Delete confirmation modal state
 	let showDeleteModal = $state(false);
@@ -143,6 +150,7 @@
 	onMount(() => {
 		if (!browser) return;
 
+		isComponentMounted = true;
 		loadPosts();
 		loadStats();
 		setupWebSocket();
@@ -158,7 +166,22 @@
 		}, 30000);
 
 		return () => {
-			if (ws) ws.close();
+			isComponentMounted = false;
+			postsRequestGeneration += 1;
+			statsRequestGeneration += 1;
+			analyticsRequestGeneration += 1;
+			websocketGeneration += 1;
+			postsAbortController?.abort();
+			statsAbortController?.abort();
+			postsAbortController = null;
+			statsAbortController = null;
+			if (ws) {
+				ws.onmessage = null;
+				ws.onerror = null;
+				ws.onclose = null;
+				ws.close();
+				ws = null;
+			}
 			if (refreshInterval) clearInterval(refreshInterval);
 			clearTimeout(filterDebounceTimer);
 			clearNotificationTimers();
@@ -169,6 +192,10 @@
 	// Data Loading
 
 	async function loadPosts() {
+		postsAbortController?.abort();
+		const controller = new AbortController();
+		postsAbortController = controller;
+		const requestGeneration = ++postsRequestGeneration;
 		loading = true;
 		try {
 			const params = new URLSearchParams();
@@ -180,7 +207,17 @@
 			if (dateRange.start) params.append('date_from', dateRange.start);
 			if (dateRange.end) params.append('date_to', dateRange.end);
 
-			const data = await adminFetch(`/api/admin/posts?${params}`);
+			const data = await adminFetch(`/api/admin/posts?${params}`, {
+				signal: controller.signal
+			});
+
+			if (
+				!isComponentMounted ||
+				controller.signal.aborted ||
+				requestGeneration !== postsRequestGeneration
+			) {
+				return;
+			}
 
 			// Enhance posts with additional data
 			posts = (data.data || []).map((post: AdminBlogPost) => ({
@@ -190,6 +227,13 @@
 				selected: selectedPosts.has(post.id)
 			}));
 		} catch (error) {
+			if (
+				!isComponentMounted ||
+				controller.signal.aborted ||
+				requestGeneration !== postsRequestGeneration
+			) {
+				return;
+			}
 			const err = error as { status?: number; message?: string };
 			logger.error('Failed to load posts', { error });
 			// FIX-2026-04-26 (P1-8): on 401, stop polling so we don't blast the
@@ -201,15 +245,45 @@
 				showNotification('error', 'Failed to load posts');
 			}
 		} finally {
-			loading = false;
+			if (postsAbortController === controller) {
+				postsAbortController = null;
+			}
+			if (isComponentMounted && requestGeneration === postsRequestGeneration) {
+				loading = false;
+			}
 		}
 	}
 
 	async function loadStats() {
+		statsAbortController?.abort();
+		const controller = new AbortController();
+		statsAbortController = controller;
+		const requestGeneration = ++statsRequestGeneration;
 		try {
-			stats = await adminFetch('/api/admin/posts/stats');
+			const nextStats = await adminFetch('/api/admin/posts/stats', {
+				signal: controller.signal
+			});
+			if (
+				!isComponentMounted ||
+				controller.signal.aborted ||
+				requestGeneration !== statsRequestGeneration
+			) {
+				return;
+			}
+			stats = nextStats;
 		} catch (error) {
+			if (
+				!isComponentMounted ||
+				controller.signal.aborted ||
+				requestGeneration !== statsRequestGeneration
+			) {
+				return;
+			}
 			logger.error('Failed to load stats', { error });
+		} finally {
+			if (statsAbortController === controller) {
+				statsAbortController = null;
+			}
 		}
 	}
 
@@ -226,31 +300,58 @@
 		}
 
 		try {
-			ws = new WebSocket(`${configuredWsUrl}/posts`);
+			const socketGeneration = ++websocketGeneration;
+			const socket = new WebSocket(`${configuredWsUrl}/posts`);
+			ws = socket;
 
-			ws.onmessage = (event) => {
-				const update = JSON.parse(event.data);
+			socket.onmessage = (event) => {
+				if (!isComponentMounted || socketGeneration !== websocketGeneration || ws !== socket) {
+					return;
+				}
 
+				let update: {
+					type?: string;
+					postId?: number;
+					count?: unknown;
+					rate?: unknown;
+					status?: string;
+				};
+				try {
+					update = JSON.parse(event.data);
+				} catch {
+					return;
+				}
 				switch (update.type) {
 					case 'view_count':
-						updatePostMetric(update.postId, 'view_count', update.count);
+						if (typeof update.postId === 'number') {
+							updatePostMetric(update.postId, 'view_count', update.count);
+						}
 						break;
 					case 'engagement':
-						updatePostMetric(update.postId, 'engagement_rate', update.rate);
+						if (typeof update.postId === 'number') {
+							updatePostMetric(update.postId, 'engagement_rate', update.rate);
+						}
 						break;
 					case 'status_change':
-						updatePostStatus(update.postId, update.status);
+						if (typeof update.postId === 'number' && typeof update.status === 'string') {
+							updatePostStatus(update.postId, update.status);
+						}
 						break;
 					case 'new_post':
-						loadPosts();
-						loadStats();
+						void loadPosts();
+						void loadStats();
 						showNotification('info', 'New post created');
 						break;
 				}
 			};
 
-			ws.onerror = () => {
+			socket.onerror = () => {
 				// Silently handle - WebSocket is optional
+			};
+			socket.onclose = () => {
+				if (ws === socket) {
+					ws = null;
+				}
 			};
 		} catch {
 			// Silently handle - WebSocket is optional
@@ -271,7 +372,7 @@
 		const post = posts.find((p) => p.id === postId);
 		if (post) {
 			post.status = status;
-			loadStats();
+			void loadStats();
 		}
 	}
 
@@ -322,8 +423,9 @@
 				method: 'POST',
 				body: JSON.stringify({ ids: [...selectedPosts] })
 			});
-			loadPosts();
-			loadStats();
+			if (!isComponentMounted) return;
+			void loadPosts();
+			void loadStats();
 			selectedPosts.clear();
 			selectAll = false;
 			showNotification('success', `Deleted ${count} posts`);
@@ -347,8 +449,9 @@
 				method: 'POST',
 				body: JSON.stringify({ ids: [...selectedPosts], status: newStatus })
 			});
-			loadPosts();
-			loadStats();
+			if (!isComponentMounted) return;
+			void loadPosts();
+			void loadStats();
 			selectedPosts.clear();
 			selectAll = false;
 			showNotification('success', `Updated ${count} posts to ${newStatus}`);
@@ -372,8 +475,9 @@
 		pendingDeleteId = null;
 		try {
 			await adminFetch(`/api/admin/posts/${id}`, { method: 'DELETE' });
-			loadPosts();
-			loadStats();
+			if (!isComponentMounted) return;
+			void loadPosts();
+			void loadStats();
 			showNotification('success', 'Post deleted');
 		} catch (error) {
 			logger.error('Failed to delete post', { error });
@@ -384,7 +488,8 @@
 	async function duplicatePost(id: number) {
 		try {
 			await adminFetch(`/api/admin/posts/${id}/duplicate`, { method: 'POST' });
-			loadPosts();
+			if (!isComponentMounted) return;
+			void loadPosts();
 			showNotification('success', 'Post duplicated');
 		} catch (error) {
 			logger.error('Failed to duplicate post', { error });
@@ -400,9 +505,10 @@
 				method: 'PATCH',
 				body: JSON.stringify({ status: newStatus })
 			});
+			if (!isComponentMounted) return;
 			// FIX-2026-04-26 (P2-2): drop self-assignment hack.
 			post.status = newStatus;
-			loadStats();
+			void loadStats();
 			showNotification('success', `Post ${newStatus}`);
 		} catch (error) {
 			logger.error('Failed to toggle status', { error });
@@ -416,6 +522,7 @@
 				method: 'PATCH',
 				body: JSON.stringify({ featured: !post.featured })
 			});
+			if (!isComponentMounted) return;
 			// FIX-2026-04-26 (P2-2): drop self-assignment hack.
 			post.featured = !post.featured;
 			showNotification('success', post.featured ? 'Post featured' : 'Post unfeatured');
@@ -450,6 +557,7 @@
 				URL.revokeObjectURL(url);
 			}
 
+			if (!isComponentMounted) return;
 			showExportModal = false;
 			showNotification('success', 'Posts exported successfully');
 		} catch (error) {
@@ -471,8 +579,9 @@
 				method: 'POST',
 				body: formData
 			});
-			loadPosts();
-			loadStats();
+			if (!isComponentMounted) return;
+			void loadPosts();
+			void loadStats();
 			showNotification('success', 'Posts imported successfully');
 		} catch (error) {
 			logger.error('Failed to import posts', { error });
@@ -523,11 +632,13 @@
 	}
 
 	async function loadPostAnalytics(post: AdminBlogPost) {
+		const requestGeneration = ++analyticsRequestGeneration;
 		analyticsPost = post;
 		showAnalyticsModal = true;
 
 		try {
 			const data = await adminFetch(`/api/admin/posts/${post.id}/analytics`);
+			if (!isComponentMounted || requestGeneration !== analyticsRequestGeneration) return;
 			analyticsPost = { ...analyticsPost, analytics: data };
 		} catch (error) {
 			logger.error('Failed to load analytics', { error });
@@ -589,8 +700,8 @@
 			!(e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement)
 		) {
 			e.preventDefault();
-			loadPosts();
-			loadStats();
+			void loadPosts();
+			void loadStats();
 		}
 	}
 
@@ -627,6 +738,8 @@
 	}
 
 	function showNotification(type: 'success' | 'error' | 'warning' | 'info', message: string) {
+		if (!isComponentMounted) return;
+
 		// FIX-2026-04-26 (P3-3): Date.now() collides when two notifications fire
 		// in the same ms. Use crypto.randomUUID() for guaranteed uniqueness.
 		const id =
@@ -637,6 +750,7 @@
 
 		const timeout = setTimeout(() => {
 			notificationTimers.delete(id);
+			if (!isComponentMounted) return;
 			notifications = notifications.filter((n) => n.id !== id);
 		}, 5000);
 		notificationTimers.set(id, timeout);
@@ -663,6 +777,7 @@
 	function scheduleFilteredPostsLoad() {
 		clearTimeout(filterDebounceTimer);
 		filterDebounceTimer = setTimeout(() => {
+			if (!isComponentMounted) return;
 			void loadPosts();
 		}, 300);
 	}
