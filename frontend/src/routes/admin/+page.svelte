@@ -46,6 +46,7 @@
 		IconPlugConnected
 	} from '$lib/icons';
 	import { onMount } from 'svelte';
+	import { SvelteSet } from 'svelte/reactivity';
 	import { dev } from '$app/environment';
 	import {
 		connections,
@@ -238,6 +239,21 @@
 	// Top pages
 	let topPages = $state<{ path: string; views: number; change: number }[]>([]);
 
+	const animationFrames = new SvelteSet<number>();
+
+	function scheduleAnimationFrame(callback: FrameRequestCallback) {
+		const frame = requestAnimationFrame((timestamp) => {
+			animationFrames.delete(frame);
+			callback(timestamp);
+		});
+		animationFrames.add(frame);
+	}
+
+	function cancelTrackedAnimations() {
+		for (const frame of animationFrames) cancelAnimationFrame(frame);
+		animationFrames.clear();
+	}
+
 	// Animated counter
 	function animateValue(
 		start: number,
@@ -247,13 +263,14 @@
 	) {
 		const startTime = performance.now();
 		const animate = (currentTime: number) => {
+			if (!mounted) return;
 			const elapsed = currentTime - startTime;
 			const progress = Math.min(elapsed / duration, 1);
 			const eased = 1 - Math.pow(1 - progress, 3);
 			callback(Math.round(start + (end - start) * eased));
-			if (progress < 1) requestAnimationFrame(animate);
+			if (progress < 1) scheduleAnimationFrame(animate);
 		};
-		requestAnimationFrame(animate);
+		scheduleAnimationFrame(animate);
 	}
 
 	async function fetchDashboardStats({ userInitiated = false } = {}) {
@@ -262,6 +279,7 @@
 		inflightFetchAbort?.abort();
 		const abort = new AbortController();
 		inflightFetchAbort = abort;
+		cancelTrackedAnimations();
 
 		isLoading = true;
 		// FIX-2026-04-26: spinner only fires for user-initiated refreshes.
@@ -490,6 +508,13 @@
 		// Dev-only diagnostic — Vite tree-shakes this branch out of prod bundle.
 		if (dev) console.debug(`[Admin Dashboard] Active connections: ${activeConnectionCount}`);
 		fetchDashboardStats();
+
+		return () => {
+			mounted = false;
+			inflightFetchAbort?.abort();
+			inflightFetchAbort = null;
+			cancelTrackedAnimations();
+		};
 	});
 </script>
 
