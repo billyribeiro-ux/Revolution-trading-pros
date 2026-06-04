@@ -271,6 +271,8 @@
 	let volumeSeries: ISeriesApi<'Histogram'> | null = null;
 	let chartsReady = false;
 	let statsPlayed = false;
+	let chartInitGeneration = 0;
+	let notifyAbortController: AbortController | null = null;
 	let raf = 0;
 	let sceneRaf = 0;
 	let statsRaf = 0;
@@ -314,6 +316,10 @@
 		visible.hero = true;
 
 		return () => {
+			mounted = false;
+			chartInitGeneration += 1;
+			notifyAbortController?.abort();
+			notifyAbortController = null;
 			cancelAnimationFrame(raf);
 			cancelAnimationFrame(sceneRaf);
 			cancelAnimationFrame(statsRaf);
@@ -321,9 +327,7 @@
 			cleanupIntervals();
 			cleanupPointer();
 			cleanupCinema?.();
-			mainChart?.remove();
-			aaplChart?.remove();
-			nvdaChart?.remove();
+			disposeCharts();
 		};
 	});
 
@@ -581,100 +585,149 @@
 		});
 	}
 
+	function disposeCharts() {
+		mainChart?.remove();
+		aaplChart?.remove();
+		nvdaChart?.remove();
+		mainChart = null;
+		aaplChart = null;
+		nvdaChart = null;
+		mainSeries = null;
+		aaplSeries = null;
+		nvdaSeries = null;
+		volumeSeries = null;
+		chartsReady = false;
+	}
+
 	async function initCharts() {
-		if (chartsReady || !browser || !mainChartEl || !aaplChartEl || !nvdaChartEl) return;
+		if (chartsReady || !browser || !mounted || !mainChartEl || !aaplChartEl || !nvdaChartEl) {
+			return;
+		}
 
-		await tick();
-		const { createChart, CandlestickSeries, AreaSeries, HistogramSeries } =
-			await import('lightweight-charts');
+		const initGeneration = ++chartInitGeneration;
 
-		chartData = {
-			main: generateCandles(1487, 5892.33, 76, 0.0045),
-			aapl: generateCandles(412, 232.3, 48, 0.0065),
-			nvda: generateCandles(911, 1475.2, 48, 0.0078)
-		};
-
-		const commonLayout = {
-			background: { color: 'transparent' },
-			textColor: 'rgba(238, 242, 255, 0.68)',
-			fontFamily: 'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
-			fontSize: 11
-		};
-
-		mainChart = createChart(mainChartEl, {
-			autoSize: true,
-			layout: commonLayout,
-			grid: {
-				vertLines: { color: 'rgba(96, 165, 250, 0.08)' },
-				horzLines: { color: 'rgba(255, 255, 255, 0.05)' }
-			},
-			rightPriceScale: {
-				borderColor: 'rgba(255, 255, 255, 0.12)',
-				scaleMargins: { top: 0.08, bottom: 0.18 }
-			},
-			timeScale: {
-				borderColor: 'rgba(255, 255, 255, 0.12)',
-				timeVisible: true,
-				secondsVisible: false
-			},
-			crosshair: {
-				vertLine: { color: 'rgba(20, 184, 166, 0.45)', style: 3 },
-				horzLine: { color: 'rgba(20, 184, 166, 0.45)', style: 3 }
+		try {
+			await tick();
+			if (
+				!mounted ||
+				initGeneration !== chartInitGeneration ||
+				chartsReady ||
+				!mainChartEl ||
+				!aaplChartEl ||
+				!nvdaChartEl
+			) {
+				return;
 			}
-		});
 
-		mainSeries = mainChart.addSeries(CandlestickSeries, {
-			upColor: '#16f2a9',
-			downColor: '#ff5f6d',
-			borderUpColor: '#16f2a9',
-			borderDownColor: '#ff5f6d',
-			wickUpColor: '#16f2a9',
-			wickDownColor: '#ff5f6d'
-		});
+			const { createChart, CandlestickSeries, AreaSeries, HistogramSeries } =
+				await import('lightweight-charts');
 
-		volumeSeries = mainChart.addSeries(HistogramSeries, {
-			priceFormat: { type: 'volume' },
-			priceScaleId: ''
-		});
+			if (
+				!mounted ||
+				initGeneration !== chartInitGeneration ||
+				chartsReady ||
+				!mainChartEl ||
+				!aaplChartEl ||
+				!nvdaChartEl
+			) {
+				return;
+			}
 
-		mainSeries.setData(chartData.main);
-		volumeSeries.priceScale().applyOptions({ scaleMargins: { top: 0.82, bottom: 0 } });
-		volumeSeries.setData(
-			chartData.main.map<HistogramData>((candle, index) => ({
-				time: candle.time,
-				value: 480000 + ((index * 13729) % 620000),
-				color: candle.close >= candle.open ? 'rgba(22, 242, 169, 0.32)' : 'rgba(255, 95, 109, 0.32)'
-			}))
-		);
+			const nextChartData = {
+				main: generateCandles(1487, 5892.33, 76, 0.0045),
+				aapl: generateCandles(412, 232.3, 48, 0.0065),
+				nvda: generateCandles(911, 1475.2, 48, 0.0078)
+			};
 
-		aaplChart = createMiniChart(createChart, aaplChartEl);
-		nvdaChart = createMiniChart(createChart, nvdaChartEl);
+			const commonLayout = {
+				background: { color: 'transparent' },
+				textColor: 'rgba(238, 242, 255, 0.68)',
+				fontFamily:
+					'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+				fontSize: 11
+			};
 
-		aaplSeries = aaplChart.addSeries(AreaSeries, {
-			lineColor: '#8bd3ff',
-			topColor: 'rgba(139, 211, 255, 0.22)',
-			bottomColor: 'rgba(139, 211, 255, 0)',
-			lineWidth: 2
-		});
+			mainChart = createChart(mainChartEl, {
+				autoSize: true,
+				layout: commonLayout,
+				grid: {
+					vertLines: { color: 'rgba(96, 165, 250, 0.08)' },
+					horzLines: { color: 'rgba(255, 255, 255, 0.05)' }
+				},
+				rightPriceScale: {
+					borderColor: 'rgba(255, 255, 255, 0.12)',
+					scaleMargins: { top: 0.08, bottom: 0.18 }
+				},
+				timeScale: {
+					borderColor: 'rgba(255, 255, 255, 0.12)',
+					timeVisible: true,
+					secondsVisible: false
+				},
+				crosshair: {
+					vertLine: { color: 'rgba(20, 184, 166, 0.45)', style: 3 },
+					horzLine: { color: 'rgba(20, 184, 166, 0.45)', style: 3 }
+				}
+			});
 
-		nvdaSeries = nvdaChart.addSeries(AreaSeries, {
-			lineColor: '#f8d477',
-			topColor: 'rgba(248, 212, 119, 0.22)',
-			bottomColor: 'rgba(248, 212, 119, 0)',
-			lineWidth: 2
-		});
+			mainSeries = mainChart.addSeries(CandlestickSeries, {
+				upColor: '#16f2a9',
+				downColor: '#ff5f6d',
+				borderUpColor: '#16f2a9',
+				borderDownColor: '#ff5f6d',
+				wickUpColor: '#16f2a9',
+				wickDownColor: '#ff5f6d'
+			});
 
-		aaplSeries.setData(
-			chartData.aapl.map((candle) => ({ time: candle.time, value: candle.close }))
-		);
-		nvdaSeries.setData(
-			chartData.nvda.map((candle) => ({ time: candle.time, value: candle.close }))
-		);
+			volumeSeries = mainChart.addSeries(HistogramSeries, {
+				priceFormat: { type: 'volume' },
+				priceScaleId: ''
+			});
 
-		mainChart.timeScale().fitContent();
-		aaplChart.timeScale().fitContent();
-		nvdaChart.timeScale().fitContent();
-		chartsReady = true;
+			mainSeries.setData(nextChartData.main);
+			volumeSeries.priceScale().applyOptions({ scaleMargins: { top: 0.82, bottom: 0 } });
+			volumeSeries.setData(
+				nextChartData.main.map<HistogramData>((candle, index) => ({
+					time: candle.time,
+					value: 480000 + ((index * 13729) % 620000),
+					color:
+						candle.close >= candle.open ? 'rgba(22, 242, 169, 0.32)' : 'rgba(255, 95, 109, 0.32)'
+				}))
+			);
+
+			aaplChart = createMiniChart(createChart, aaplChartEl);
+			nvdaChart = createMiniChart(createChart, nvdaChartEl);
+
+			aaplSeries = aaplChart.addSeries(AreaSeries, {
+				lineColor: '#8bd3ff',
+				topColor: 'rgba(139, 211, 255, 0.22)',
+				bottomColor: 'rgba(139, 211, 255, 0)',
+				lineWidth: 2
+			});
+
+			nvdaSeries = nvdaChart.addSeries(AreaSeries, {
+				lineColor: '#f8d477',
+				topColor: 'rgba(248, 212, 119, 0.22)',
+				bottomColor: 'rgba(248, 212, 119, 0)',
+				lineWidth: 2
+			});
+
+			aaplSeries.setData(
+				nextChartData.aapl.map((candle) => ({ time: candle.time, value: candle.close }))
+			);
+			nvdaSeries.setData(
+				nextChartData.nvda.map((candle) => ({ time: candle.time, value: candle.close }))
+			);
+
+			mainChart.timeScale().fitContent();
+			aaplChart.timeScale().fitContent();
+			nvdaChart.timeScale().fitContent();
+			chartData = nextChartData;
+			chartsReady = true;
+		} catch (error) {
+			if (mounted && initGeneration === chartInitGeneration) {
+				console.error('[Maintenance] Failed to initialize charts', error);
+			}
+		}
 	}
 
 	function createMiniChart(
@@ -852,6 +905,8 @@
 	}
 
 	async function handleNotifyMe() {
+		if (isSubmitting) return;
+
 		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 		if (!email || !emailRegex.test(email)) {
 			errorMessage = 'Enter a valid email address.';
@@ -860,20 +915,31 @@
 
 		isSubmitting = true;
 		errorMessage = '';
+		notifyAbortController?.abort();
+		const controller = new AbortController();
+		notifyAbortController = controller;
 
 		try {
 			const response = await fetch('/api/maintenance/notify', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ email })
+				body: JSON.stringify({ email }),
+				signal: controller.signal
 			});
 
 			if (!response.ok) throw new Error('Failed to subscribe');
+			if (!mounted || controller.signal.aborted) return;
 			isSubmitted = true;
-		} catch {
+		} catch (error) {
+			if (!mounted || controller.signal.aborted) return;
 			errorMessage = 'Connection error. Please try again.';
 		} finally {
-			isSubmitting = false;
+			if (notifyAbortController === controller) {
+				notifyAbortController = null;
+			}
+			if (mounted && !controller.signal.aborted) {
+				isSubmitting = false;
+			}
 		}
 	}
 
