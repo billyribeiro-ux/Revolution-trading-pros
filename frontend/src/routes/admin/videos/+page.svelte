@@ -118,6 +118,7 @@
 	let isLoadingRooms = $state(true);
 	let error = $state('');
 	let successMessage = $state('');
+	let successMessageTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	// Pagination
 	let currentPage = $state(1);
@@ -270,10 +271,18 @@
 	 * Show success message temporarily
 	 */
 	function showSuccess(message: string) {
+		clearSuccessMessageTimeout();
 		successMessage = message;
-		setTimeout(() => {
+		successMessageTimeout = setTimeout(() => {
 			successMessage = '';
+			successMessageTimeout = null;
 		}, 3000);
+	}
+
+	function clearSuccessMessageTimeout() {
+		if (successMessageTimeout === null) return;
+		clearTimeout(successMessageTimeout);
+		successMessageTimeout = null;
 	}
 
 	// ACTIONS
@@ -568,9 +577,17 @@
 			let lastSentAt = 0;
 			let lastSentPercent = -1;
 			let pendingPercent: number | null = null;
+			let trailingProgressTimer: ReturnType<typeof setTimeout> | null = null;
 			const MIN_INTERVAL_MS = 1000;
 
+			const clearTrailingProgressTimer = () => {
+				if (trailingProgressTimer === null) return;
+				clearTimeout(trailingProgressTimer);
+				trailingProgressTimer = null;
+			};
+
 			const sendProgress = (percent: number) => {
+				clearTrailingProgressTimer();
 				lastSentAt = Date.now();
 				lastSentPercent = percent;
 				pendingPercent = null;
@@ -591,13 +608,16 @@
 					// the latest percent so the bar still finishes at 100.
 					pendingPercent = progress;
 					const delay = MIN_INTERVAL_MS - (now - lastSentAt);
-					setTimeout(() => {
+					clearTrailingProgressTimer();
+					trailingProgressTimer = setTimeout(() => {
+						trailingProgressTimer = null;
 						if (pendingPercent !== null) sendProgress(pendingPercent);
 					}, delay);
 				}
 			});
 
 			xhr.addEventListener('load', async () => {
+				clearTrailingProgressTimer();
 				if (xhr.status >= 200 && xhr.status < 300) {
 					await bulkUploadApi.updateItemStatus(itemId, {
 						status: 'completed',
@@ -609,8 +629,14 @@
 				}
 			});
 
-			xhr.addEventListener('error', () => reject(new Error('Network error during upload')));
-			xhr.addEventListener('abort', () => reject(new Error('Upload aborted')));
+			xhr.addEventListener('error', () => {
+				clearTrailingProgressTimer();
+				reject(new Error('Network error during upload'));
+			});
+			xhr.addEventListener('abort', () => {
+				clearTrailingProgressTimer();
+				reject(new Error('Upload aborted'));
+			});
 
 			// FIX-2026-04-26-audit (P2-6): defense-in-depth — never PUT directly to a
 			// non-same-origin URL. If the backend ever returns a presigned Bunny URL
@@ -1071,6 +1097,7 @@
 	// FIX-2026-04-26-audit (P1-3): cancel any in-flight bulk-upload poll on unmount
 	// so we never mutate state on a detached component.
 	onDestroy(() => {
+		clearSuccessMessageTimeout();
 		pollAbortController?.abort();
 	});
 </script>
