@@ -16,10 +16,11 @@
 
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
+	import type { Attachment } from 'svelte/attachments';
 	import { fade, fly, slide, scale } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { flip } from 'svelte/animate';
-	import { SvelteSet } from 'svelte/reactivity';
+	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 	import Icon from '$lib/components/Icon.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import { logger } from '$lib/utils/logger';
@@ -171,6 +172,22 @@
 	// Debounce timer
 	let searchTimeout: ReturnType<typeof setTimeout> | null = null;
 	let uploadCompleteTimeout: ReturnType<typeof setTimeout> | null = null;
+	let isComponentMounted = false;
+	let assetsRequestGeneration = 0;
+	let foldersRequestGeneration = 0;
+	let tagsRequestGeneration = 0;
+	let usageRequestGeneration = 0;
+	let assetsAbortController: AbortController | null = null;
+	let foldersAbortController: AbortController | null = null;
+	let tagsAbortController: AbortController | null = null;
+	let usageAbortController: AbortController | null = null;
+	const uploadAbortControllers = new SvelteMap<string, AbortController>();
+
+	function clearSearchTimeout() {
+		if (searchTimeout === null) return;
+		clearTimeout(searchTimeout);
+		searchTimeout = null;
+	}
 
 	function clearUploadCompleteTimeout() {
 		if (uploadCompleteTimeout === null) return;
@@ -189,13 +206,53 @@
 
 	function clearUploadQueue() {
 		clearUploadCompleteTimeout();
+		abortUploadRequests();
 		releaseUploadQueuePreviews();
 		uploadQueue = [];
+	}
+
+	function abortLibraryRequests() {
+		assetsRequestGeneration += 1;
+		foldersRequestGeneration += 1;
+		tagsRequestGeneration += 1;
+		usageRequestGeneration += 1;
+		assetsAbortController?.abort();
+		foldersAbortController?.abort();
+		tagsAbortController?.abort();
+		usageAbortController?.abort();
+		assetsAbortController = null;
+		foldersAbortController = null;
+		tagsAbortController = null;
+		usageAbortController = null;
+		isLoading = false;
+		isLoadingMore = false;
+		isLoadingUsage = false;
+	}
+
+	function abortUploadRequests() {
+		for (const controller of uploadAbortControllers.values()) {
+			controller.abort();
+		}
+		uploadAbortControllers.clear();
+		isUploading = false;
+	}
+
+	function updateUploadItem(itemId: string, update: (item: UploadItem) => void) {
+		const index = uploadQueue.findIndex((item) => item.id === itemId);
+		if (index === -1) return false;
+		update(uploadQueue[index]);
+		uploadQueue = [...uploadQueue];
+		return true;
 	}
 
 	// API Functions
 
 	async function fetchAssets(reset = false) {
+		assetsAbortController?.abort();
+		const controller = new AbortController();
+		assetsAbortController = controller;
+		const requestGeneration = ++assetsRequestGeneration;
+
 		if (reset) {
 			currentPage = 1;
 			assets = [];
@@ -218,12 +275,20 @@
 			if (tagFilter.length > 0) params.append('tags', tagFilter.join(','));
 
 			const response = await fetch(`/api/cms/assets?${params}`, {
-				credentials: 'include'
+				credentials: 'include',
+				signal: controller.signal
 			});
 
 			if (!response.ok) throw new Error('Failed to fetch assets');
 
 			const data = await response.json();
+			if (
+				!isComponentMounted ||
+				controller.signal.aborted ||
+				requestGeneration !== assetsRequestGeneration
+			) {
+				return;
+			}
 
 			if (reset) {
 				assets = data.data;
@@ -235,37 +300,97 @@
 			// totalPages available in data.meta.total_pages if needed for pagination UI
 			hasMore = data.meta.has_more;
 		} catch (error) {
+			if (
+				!isComponentMounted ||
+				controller.signal.aborted ||
+				requestGeneration !== assetsRequestGeneration
+			) {
+				return;
+			}
 			logger.error('[AssetManager] Fetch assets failed', { error });
 		} finally {
-			isLoading = false;
-			isLoadingMore = false;
+			if (assetsAbortController === controller) {
+				assetsAbortController = null;
+			}
+			if (isComponentMounted && requestGeneration === assetsRequestGeneration) {
+				isLoading = false;
+				isLoadingMore = false;
+			}
 		}
 	}
 
 	async function fetchFolders() {
+		foldersAbortController?.abort();
+		const controller = new AbortController();
+		foldersAbortController = controller;
+		const requestGeneration = ++foldersRequestGeneration;
+
 		try {
 			const response = await fetch('/api/cms/assets/folders', {
-				credentials: 'include'
+				credentials: 'include',
+				signal: controller.signal
 			});
+			if (
+				!isComponentMounted ||
+				controller.signal.aborted ||
+				requestGeneration !== foldersRequestGeneration
+			) {
+				return;
+			}
 			if (response.ok) {
 				folders = await response.json();
 			}
 		} catch (error) {
+			if (
+				!isComponentMounted ||
+				controller.signal.aborted ||
+				requestGeneration !== foldersRequestGeneration
+			) {
+				return;
+			}
 			logger.error('[AssetManager] Fetch folders failed', { error });
+		} finally {
+			if (foldersAbortController === controller) {
+				foldersAbortController = null;
+			}
 		}
 	}
 
 	async function fetchTags() {
+		tagsAbortController?.abort();
+		const controller = new AbortController();
+		tagsAbortController = controller;
+		const requestGeneration = ++tagsRequestGeneration;
+
 		try {
 			const response = await fetch('/api/cms/assets/tags', {
-				credentials: 'include'
+				credentials: 'include',
+				signal: controller.signal
 			});
+			if (
+				!isComponentMounted ||
+				controller.signal.aborted ||
+				requestGeneration !== tagsRequestGeneration
+			) {
+				return;
+			}
 			if (response.ok) {
 				// Tags loaded for future tag filtering UI
 				await response.json();
 			}
 		} catch (error) {
+			if (
+				!isComponentMounted ||
+				controller.signal.aborted ||
+				requestGeneration !== tagsRequestGeneration
+			) {
+				return;
+			}
 			logger.error('[AssetManager] Fetch tags failed', { error });
+		} finally {
+			if (tagsAbortController === controller) {
+				tagsAbortController = null;
+			}
 		}
 	}
 
@@ -274,18 +399,43 @@
 	}
 
 	async function fetchAssetUsage(assetId: string) {
+		usageAbortController?.abort();
+		const controller = new AbortController();
+		usageAbortController = controller;
+		const requestGeneration = ++usageRequestGeneration;
 		isLoadingUsage = true;
 		try {
 			const response = await fetch(`/api/cms/assets/${assetId}/usage`, {
-				credentials: 'include'
+				credentials: 'include',
+				signal: controller.signal
 			});
+			if (
+				!isComponentMounted ||
+				controller.signal.aborted ||
+				requestGeneration !== usageRequestGeneration ||
+				selectedAsset?.id !== assetId
+			) {
+				return;
+			}
 			if (response.ok) {
 				assetUsage = await response.json();
 			}
 		} catch (error) {
+			if (
+				!isComponentMounted ||
+				controller.signal.aborted ||
+				requestGeneration !== usageRequestGeneration
+			) {
+				return;
+			}
 			logger.error('[AssetManager] Fetch usage failed', { error });
 		} finally {
-			isLoadingUsage = false;
+			if (usageAbortController === controller) {
+				usageAbortController = null;
+			}
+			if (isComponentMounted && requestGeneration === usageRequestGeneration) {
+				isLoadingUsage = false;
+			}
 		}
 	}
 
@@ -329,6 +479,7 @@
 
 			if (response.ok) {
 				const updated = await response.json();
+				if (!isComponentMounted) return;
 				// Update in list
 				const idx = assets.findIndex((a) => a.id === assetId);
 				if (idx !== -1) {
@@ -363,6 +514,7 @@
 			});
 
 			if (response.ok) {
+				if (!isComponentMounted) return;
 				assets = assets.filter((a) => a.id !== assetId);
 				selectedAssets.delete(assetId);
 				if (selectedAsset?.id === assetId) {
@@ -398,6 +550,7 @@
 			});
 
 			if (response.ok) {
+				if (!isComponentMounted) return;
 				assets = assets.filter((a) => !selectedAssets.has(a.id));
 				selectedAssets.clear();
 				selectedAsset = null;
@@ -439,11 +592,18 @@
 	// Upload Functions
 
 	async function uploadFile(item: UploadItem) {
-		const idx = uploadQueue.findIndex((u) => u.id === item.id);
-		if (idx === -1) return;
+		const controller = new AbortController();
+		uploadAbortControllers.set(item.id, controller);
 
-		uploadQueue[idx].status = 'uploading';
-		uploadQueue = [...uploadQueue];
+		if (
+			!updateUploadItem(item.id, (queuedItem) => {
+				queuedItem.status = 'uploading';
+				queuedItem.error = undefined;
+			})
+		) {
+			uploadAbortControllers.delete(item.id);
+			return;
+		}
 
 		try {
 			// Get presigned URL
@@ -456,11 +616,13 @@
 					content_type: item.file.type,
 					size: item.file.size,
 					collection: currentFolderId ? `folder-${currentFolderId}` : 'uploads'
-				})
+				}),
+				signal: controller.signal
 			});
 
 			if (!presignResponse.ok) throw new Error('Failed to get upload URL');
 			const { data: presignData } = await presignResponse.json();
+			if (!isComponentMounted || controller.signal.aborted) return;
 
 			// Upload to R2
 			const uploadResponse = await fetch(presignData.upload_url, {
@@ -468,10 +630,12 @@
 				body: item.file,
 				headers: {
 					'Content-Type': item.file.type
-				}
+				},
+				signal: controller.signal
 			});
 
 			if (!uploadResponse.ok) throw new Error('Upload failed');
+			if (!isComponentMounted || controller.signal.aborted) return;
 
 			// Get image dimensions if applicable
 			let width: number | undefined;
@@ -482,6 +646,7 @@
 				width = dimensions.width;
 				height = dimensions.height;
 			}
+			if (!isComponentMounted || controller.signal.aborted) return;
 
 			// Confirm upload
 			const confirmResponse = await fetch('/api/cms/assets/upload', {
@@ -496,25 +661,38 @@
 					folder_id: currentFolderId,
 					width,
 					height
-				})
+				}),
+				signal: controller.signal
 			});
 
 			if (!confirmResponse.ok) throw new Error('Failed to confirm upload');
 
 			const asset = await confirmResponse.json();
+			if (!isComponentMounted || controller.signal.aborted) return;
 
-			uploadQueue[idx].status = 'complete';
-			uploadQueue[idx].progress = 100;
-			uploadQueue[idx].asset = asset;
-			uploadQueue = [...uploadQueue];
+			if (
+				!updateUploadItem(item.id, (queuedItem) => {
+					queuedItem.status = 'complete';
+					queuedItem.progress = 100;
+					queuedItem.asset = asset;
+				})
+			) {
+				return;
+			}
 
 			// Add to assets list
 			assets = [asset, ...assets];
 			totalAssets += 1;
 		} catch (error) {
-			uploadQueue[idx].status = 'error';
-			uploadQueue[idx].error = error instanceof Error ? error.message : 'Upload failed';
-			uploadQueue = [...uploadQueue];
+			if (!isComponentMounted || controller.signal.aborted) return;
+			updateUploadItem(item.id, (queuedItem) => {
+				queuedItem.status = 'error';
+				queuedItem.error = error instanceof Error ? error.message : 'Upload failed';
+			});
+		} finally {
+			if (uploadAbortControllers.get(item.id) === controller) {
+				uploadAbortControllers.delete(item.id);
+			}
 		}
 	}
 
@@ -526,6 +704,7 @@
 		const pendingItems = uploadQueue.filter((item) => item.status === 'pending');
 		for (const item of pendingItems) {
 			await uploadFile(item);
+			if (!isComponentMounted) return;
 		}
 
 		isUploading = false;
@@ -535,6 +714,7 @@
 		if (allComplete) {
 			clearUploadCompleteTimeout();
 			uploadCompleteTimeout = setTimeout(() => {
+				if (!isComponentMounted) return;
 				activeTab = 'library';
 				clearUploadQueue();
 			}, 1000);
@@ -622,6 +802,8 @@
 	function removeFromQueue(id: string) {
 		const item = uploadQueue.find((u) => u.id === id);
 		if (item) releaseUploadPreview(item);
+		uploadAbortControllers.get(id)?.abort();
+		uploadAbortControllers.delete(id);
 		uploadQueue = uploadQueue.filter((u) => u.id !== id);
 		if (uploadQueue.length === 0) clearUploadCompleteTimeout();
 	}
@@ -641,8 +823,9 @@
 
 	function openAssetDetails(asset: Asset) {
 		selectedAsset = asset;
+		assetUsage = [];
 		sidebarOpen = true;
-		fetchAssetUsage(asset.id);
+		void fetchAssetUsage(asset.id);
 
 		// Populate metadata form
 		metadataForm = {
@@ -682,7 +865,7 @@
 			currentFolderId = null;
 			folderStack = [];
 		}
-		fetchAssets(true);
+		void fetchAssets(true);
 	}
 
 	// Navigate up - available for future use
@@ -698,9 +881,10 @@
 	// }
 
 	function handleSearch() {
-		if (searchTimeout) clearTimeout(searchTimeout);
+		clearSearchTimeout();
 		searchTimeout = setTimeout(() => {
-			fetchAssets(true);
+			if (!isComponentMounted || !isOpen) return;
+			void fetchAssets(true);
 		}, 300);
 	}
 
@@ -749,13 +933,27 @@
 		});
 	}
 
+	const mountAssetManager: Attachment<HTMLDivElement> = () => {
+		void loadAssetManager();
+
+		return () => {
+			clearSearchTimeout();
+			abortLibraryRequests();
+			isDragging = false;
+			dragCounter = 0;
+		};
+	};
+
 	onMount(() => {
-		if (isOpen) void loadAssetManager();
+		isComponentMounted = true;
 	});
 
 	// Cleanup
 	onDestroy(() => {
-		if (searchTimeout) clearTimeout(searchTimeout);
+		isComponentMounted = false;
+		clearSearchTimeout();
+		abortLibraryRequests();
+		abortUploadRequests();
 		clearUploadCompleteTimeout();
 		releaseUploadQueuePreviews();
 	});
@@ -769,6 +967,7 @@
 {#if isOpen}
 	<div
 		class="dam-overlay"
+		{@attach mountAssetManager}
 		onclick={onClose}
 		onkeydown={(e) => e.key === 'Escape' && onClose()}
 		role="button"
