@@ -100,20 +100,30 @@
 	let maintenanceError = $state<string | null>(null);
 
 	async function fetchSiteSettings() {
+		siteSettingsAbortController?.abort();
+		const controller = new AbortController();
+		siteSettingsAbortController = controller;
+
 		isLoadingSettings = true;
 		maintenanceError = null;
 		try {
-			const data = await adminFetch('/api/admin/site-settings');
+			const data = await adminFetch('/api/admin/site-settings', { signal: controller.signal });
+			if (controller.signal.aborted || !isComponentMounted) return;
+
 			siteSettings = {
 				site_name: data.data?.site_name ?? data.site_name ?? '',
 				maintenance_mode: data.data?.maintenance_mode ?? data.maintenance_mode ?? false,
 				maintenance_message: data.data?.maintenance_message ?? data.maintenance_message ?? null
 			};
 		} catch (e) {
+			if (controller.signal.aborted || !isComponentMounted) return;
 			console.error('Failed to load site settings:', e);
 			maintenanceError = 'Could not load site settings.';
 		} finally {
-			isLoadingSettings = false;
+			if (siteSettingsAbortController === controller) {
+				siteSettingsAbortController = null;
+				if (isComponentMounted) isLoadingSettings = false;
+			}
 		}
 	}
 
@@ -126,6 +136,8 @@
 				method: 'PATCH',
 				body: JSON.stringify({ maintenance_mode: next })
 			});
+			if (!isComponentMounted) return;
+
 			const updated = data.data ?? data;
 			siteSettings.maintenance_mode = updated.maintenance_mode ?? next;
 			toastStore.success(
@@ -134,11 +146,12 @@
 					: 'Maintenance mode disabled — site is live.'
 			);
 		} catch (e) {
+			if (!isComponentMounted) return;
 			console.error('Failed to toggle maintenance mode:', e);
 			maintenanceError = 'Failed to update maintenance mode.';
 			toastStore.error('Failed to update maintenance mode.');
 		} finally {
-			isSavingMaintenance = false;
+			if (isComponentMounted) isSavingMaintenance = false;
 		}
 	}
 
@@ -172,6 +185,16 @@
 	let showDisconnectConfirm = $state(false);
 	let disconnectingService = $state<Service | null>(null);
 	let refreshInterval: ReturnType<typeof setInterval> | null = null;
+	let isComponentMounted = false;
+	let servicesAbortController: AbortController | null = null;
+	let siteSettingsAbortController: AbortController | null = null;
+
+	function abortLoadRequests() {
+		servicesAbortController?.abort();
+		siteSettingsAbortController?.abort();
+		servicesAbortController = null;
+		siteSettingsAbortController = null;
+	}
 
 	// Derived - Svelte 5 $derived.by for complex computed values
 	let filteredServices = $derived.by(() => {
@@ -210,9 +233,15 @@
 
 	// Fetch services data
 	async function fetchServices() {
+		servicesAbortController?.abort();
+		const controller = new AbortController();
+		servicesAbortController = controller;
+
 		try {
 			isLoading = true;
-			const data = await adminFetch('/api/admin/connections');
+			const data = await adminFetch('/api/admin/connections', { signal: controller.signal });
+			if (controller.signal.aborted || !isComponentMounted) return;
+
 			allServices = data.connections || [];
 			categories = data.categories || {};
 			summary = data.summary || {
@@ -223,11 +252,15 @@
 				needs_attention: 0
 			};
 		} catch (error) {
+			if (controller.signal.aborted || !isComponentMounted) return;
 			console.error('Failed to fetch services:', error);
 			// Fallback to static services
 			initializeStaticServices();
 		} finally {
-			isLoading = false;
+			if (servicesAbortController === controller) {
+				servicesAbortController = null;
+				if (isComponentMounted) isLoading = false;
+			}
 		}
 	}
 
@@ -536,6 +569,7 @@
 				})
 			});
 			const latency = Math.round(performance.now() - startTime);
+			if (!isComponentMounted) return;
 
 			if (data.success) {
 				// Update local state
@@ -560,9 +594,10 @@
 				};
 			}
 		} catch (_error) {
+			if (!isComponentMounted) return;
 			testResult = { success: false, error: 'Network error. Please check your connection.' };
 		} finally {
-			isConnecting = false;
+			if (isComponentMounted) isConnecting = false;
 		}
 	}
 
@@ -580,6 +615,7 @@
 				body: JSON.stringify({ credentials: credentialValues })
 			});
 			const latency = Math.round(performance.now() - startTime);
+			if (!isComponentMounted) return;
 
 			testResult = {
 				...data,
@@ -587,9 +623,10 @@
 				message: data.success ? `Connection verified in ${latency}ms` : data.error
 			};
 		} catch (_error) {
+			if (!isComponentMounted) return;
 			testResult = { success: false, error: 'Test failed. Network error.' };
 		} finally {
-			isTesting = false;
+			if (isComponentMounted) isTesting = false;
 		}
 	}
 
@@ -604,6 +641,7 @@
 			const data = await adminFetch(`/api/admin/connections/${service.key}/disconnect`, {
 				method: 'POST'
 			});
+			if (!isComponentMounted) return;
 
 			if (data.success) {
 				// Update local state
@@ -624,9 +662,10 @@
 				toastStore.error(data.error || 'Failed to disconnect');
 			}
 		} catch (_error) {
+			if (!isComponentMounted) return;
 			toastStore.error('Network error. Please try again.');
 		} finally {
-			isDisconnecting = false;
+			if (isComponentMounted) isDisconnecting = false;
 		}
 	}
 
@@ -745,6 +784,7 @@
 	onMount(() => {
 		if (!browser) return;
 
+		isComponentMounted = true;
 		fetchServices();
 		fetchSiteSettings();
 		// Auto-refresh every 30 seconds
@@ -752,7 +792,10 @@
 
 		// Cleanup on destroy
 		return () => {
+			isComponentMounted = false;
 			if (refreshInterval) clearInterval(refreshInterval);
+			refreshInterval = null;
+			abortLoadRequests();
 		};
 	});
 </script>
@@ -1054,7 +1097,11 @@
 							</div>
 
 							<!-- ── Maintenance Mode Toggle ─────────────────────────────────────── -->
-							<div class="setting-row setting-row--maintenance {siteSettings.maintenance_mode ? 'maintenance-active' : ''}">
+							<div
+								class="setting-row setting-row--maintenance {siteSettings.maintenance_mode
+									? 'maintenance-active'
+									: ''}"
+							>
 								<div class="setting-info">
 									<h3>
 										Maintenance Mode
@@ -2052,11 +2099,15 @@
 	}
 
 	@keyframes spin {
-		to { transform: translate(-50%, -50%) rotate(360deg); }
+		to {
+			transform: translate(-50%, -50%) rotate(360deg);
+		}
 	}
 
 	.setting-row--maintenance {
-		transition: background 0.3s ease, border-color 0.3s ease;
+		transition:
+			background 0.3s ease,
+			border-color 0.3s ease;
 	}
 
 	.setting-row--maintenance.maintenance-active {
