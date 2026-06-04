@@ -15,10 +15,11 @@
 -->
 
 <script lang="ts">
-	import { onDestroy } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { fade, fly, slide, scale } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { flip } from 'svelte/animate';
+	import { SvelteSet } from 'svelte/reactivity';
 	import Icon from '$lib/components/Icon.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import { logger } from '$lib/utils/logger';
@@ -106,18 +107,13 @@
 	let sidebarOpen = $state(false);
 
 	// Navigation
-	let currentFolderId = $state<string | null>(null);
+	let currentFolderId: string | null = $derived(initialFolder);
 	let folders = $state<Folder[]>([]);
 	let folderStack = $state<Folder[]>([]);
 
-	// Sync currentFolderId from initialFolder prop when it changes
-	$effect(() => {
-		currentFolderId = initialFolder;
-	});
-
 	// Assets
 	let assets = $state<Asset[]>([]);
-	let selectedAssets = $state<Set<string>>(new Set());
+	let selectedAssets = new SvelteSet<string>();
 	let selectedAsset = $state<Asset | null>(null);
 	let assetUsage = $state<AssetUsage[]>([]);
 
@@ -249,6 +245,10 @@
 		} catch (error) {
 			logger.error('[AssetManager] Fetch tags failed', { error });
 		}
+	}
+
+	async function loadAssetManager() {
+		await Promise.all([fetchAssets(true), fetchFolders(), fetchTags()]);
 	}
 
 	async function fetchAssetUsage(assetId: string) {
@@ -725,16 +725,13 @@
 		});
 	}
 
-	$effect(() => {
-		if (isOpen) {
-			fetchAssets(true);
-			fetchFolders();
-			fetchTags();
-		}
+	onMount(() => {
+		if (isOpen) void loadAssetManager();
 	});
 
 	// Cleanup
 	onDestroy(() => {
+		if (searchTimeout) clearTimeout(searchTimeout);
 		uploadQueue.forEach((item) => {
 			if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
 		});

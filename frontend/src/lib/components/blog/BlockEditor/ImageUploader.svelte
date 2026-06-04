@@ -94,9 +94,7 @@
 	let isDragging = $state(false);
 	let dragCounter = $state(0);
 	let uploadQueue = $state<UploadItem[]>([]);
-	let fileInput = $state<HTMLInputElement | null>(null);
-	// Bound via bind:this in template for future DOM operations
-	let dropZone = $state<HTMLDivElement | null>(null);
+	let fileInput: HTMLInputElement | null = null;
 
 	// Asset Manager state
 	let assetManagerOpen = $state(false);
@@ -177,6 +175,14 @@
 
 	function openAssetManager() {
 		assetManagerOpen = true;
+	}
+
+	function captureFileInput(node: HTMLInputElement) {
+		fileInput = node;
+
+		return () => {
+			if (fileInput === node) fileInput = null;
+		};
 	}
 
 	// Subset of AssetManager's `Asset` shape that handleAssetSelect consumes.
@@ -580,7 +586,6 @@
 
 	<!-- Drop Zone -->
 	<div
-		bind:this={dropZone}
 		class="drop-zone"
 		class:active={isDragging}
 		class:has-items={uploadQueue.length > 0}
@@ -595,7 +600,7 @@
 		aria-label="Drop image here or click to select"
 	>
 		<input
-			bind:this={fileInput}
+			{@attach captureFileInput}
 			type="file"
 			{accept}
 			{multiple}
@@ -742,12 +747,14 @@
 </div>
 
 <!-- Asset Manager Modal -->
-<AssetManager
-	isOpen={assetManagerOpen}
-	onClose={() => (assetManagerOpen = false)}
-	onSelect={handleAssetSelect}
-	acceptTypes={['image']}
-/>
+{#if assetManagerOpen}
+	<AssetManager
+		isOpen={assetManagerOpen}
+		onClose={() => (assetManagerOpen = false)}
+		onSelect={handleAssetSelect}
+		acceptTypes={['image']}
+	/>
+{/if}
 
 <style>
 	.image-uploader {
