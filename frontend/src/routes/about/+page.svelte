@@ -45,16 +45,22 @@
 
 	onMount(() => {
 		if (!browser) return;
-		initGSAP();
+		let cancelled = false;
+		void initGSAP(() => cancelled);
+
 		return () => {
+			cancelled = true;
 			gsapContext?.revert();
+			gsapContext = null;
 		};
 	});
 
-	async function initGSAP(): Promise<void> {
+	async function initGSAP(isCancelled: () => boolean): Promise<void> {
 		try {
 			const { gsap } = await import('gsap');
 			const { ScrollTrigger } = await import('gsap/ScrollTrigger');
+			if (isCancelled()) return;
+
 			gsap.registerPlugin(ScrollTrigger);
 
 			gsapContext = gsap.context(() => {
@@ -70,8 +76,14 @@
 				});
 				ScrollTrigger.refresh();
 			});
+			if (isCancelled()) {
+				gsapContext.revert();
+				gsapContext = null;
+			}
 		} catch (error) {
-			console.error('[About] GSAP initialization failed:', error);
+			if (!isCancelled()) {
+				console.error('[About] GSAP initialization failed:', error);
+			}
 		}
 	}
 
