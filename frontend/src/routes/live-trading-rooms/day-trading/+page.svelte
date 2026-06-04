@@ -83,11 +83,18 @@
 
 	// --- GSAP ScrollTrigger Animations (PE7 Svelte 5 Pattern) ---
 	let gsapContext: ReturnType<typeof import('gsap').gsap.context> | null = null;
+	let isComponentMounted = false;
+	let scrollRefreshRaf = 0;
 
 	onMount(() => {
 		if (!browser) return;
+		isComponentMounted = true;
 		initGSAP();
-		return () => gsapContext?.revert();
+		return () => {
+			isComponentMounted = false;
+			cancelAnimationFrame(scrollRefreshRaf);
+			if (gsapContext) gsapContext.revert();
+		};
 	});
 
 	// PE7: Separate async function for GSAP initialization
@@ -95,6 +102,9 @@
 		try {
 			const { gsap } = await import('gsap');
 			const { ScrollTrigger } = await import('gsap/ScrollTrigger');
+
+			if (!isComponentMounted) return;
+
 			gsap.registerPlugin(ScrollTrigger);
 
 			const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -153,7 +163,11 @@
 			// PE7: Refresh ScrollTrigger after layout settles (fonts, images loaded)
 			const refreshTrigger = document.fonts?.ready ?? Promise.resolve();
 			refreshTrigger.then(() => {
-				requestAnimationFrame(() => ScrollTrigger.refresh());
+				if (!isComponentMounted) return;
+				scrollRefreshRaf = requestAnimationFrame(() => {
+					scrollRefreshRaf = 0;
+					ScrollTrigger.refresh();
+				});
 			});
 		} catch (error) {
 			console.error('[DayTrading] GSAP initialization failed:', error);
