@@ -7,6 +7,7 @@
 -->
 
 <script lang="ts">
+	import { onDestroy } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import { logger } from '$lib/utils/logger';
@@ -160,6 +161,14 @@
 	let saving = $state(false);
 	let formError = $state('');
 	let successMessage = $state('');
+	let redirectTimer: ReturnType<typeof setTimeout> | null = null;
+
+	function clearRedirectTimer() {
+		if (redirectTimer) clearTimeout(redirectTimer);
+		redirectTimer = null;
+	}
+
+	onDestroy(clearRedirectTimer);
 
 	// SLUG GENERATION - Instant as you type, but stops once user edits.
 	//
@@ -286,33 +295,47 @@
 			const img = new Image();
 			const canvas = document.createElement('canvas');
 			const ctx = canvas.getContext('2d');
+			const objectUrl = URL.createObjectURL(file);
+			const revokeObjectUrl = () => URL.revokeObjectURL(objectUrl);
 
 			img.onload = () => {
-				let { width, height } = img;
-				if (width > maxWidth || height > maxHeight) {
-					const ratio = Math.min(maxWidth / width, maxHeight / height);
-					width = Math.round(width * ratio);
-					height = Math.round(height * ratio);
-				}
-				canvas.width = width;
-				canvas.height = height;
+				try {
+					let { width, height } = img;
+					if (width > maxWidth || height > maxHeight) {
+						const ratio = Math.min(maxWidth / width, maxHeight / height);
+						width = Math.round(width * ratio);
+						height = Math.round(height * ratio);
+					}
+					canvas.width = width;
+					canvas.height = height;
 
-				if (ctx) {
-					ctx.imageSmoothingEnabled = true;
-					ctx.imageSmoothingQuality = 'high';
-					ctx.drawImage(img, 0, 0, width, height);
-					canvas.toBlob(
-						(blob) => (blob ? resolve(blob) : reject(new Error('Failed to create blob'))),
-						'image/jpeg',
-						quality
-					);
-				} else {
-					reject(new Error('Could not get canvas context'));
+					if (ctx) {
+						ctx.imageSmoothingEnabled = true;
+						ctx.imageSmoothingQuality = 'high';
+						ctx.drawImage(img, 0, 0, width, height);
+						canvas.toBlob(
+							(blob) => {
+								revokeObjectUrl();
+								blob ? resolve(blob) : reject(new Error('Failed to create blob'));
+							},
+							'image/jpeg',
+							quality
+						);
+					} else {
+						revokeObjectUrl();
+						reject(new Error('Could not get canvas context'));
+					}
+				} catch (error) {
+					revokeObjectUrl();
+					reject(error);
 				}
 			};
 
-			img.onerror = () => reject(new Error('Failed to load image'));
-			img.src = URL.createObjectURL(file);
+			img.onerror = () => {
+				revokeObjectUrl();
+				reject(new Error('Failed to load image'));
+			};
+			img.src = objectUrl;
 		});
 	}
 
@@ -596,7 +619,11 @@
 				}
 
 				successMessage = 'Indicator created successfully! Redirecting...';
-				setTimeout(() => goto('/admin/indicators'), 1500);
+				clearRedirectTimer();
+				redirectTimer = setTimeout(() => {
+					redirectTimer = null;
+					goto('/admin/indicators');
+				}, 1500);
 			} else {
 				formError = response.error || 'Failed to create indicator';
 			}
