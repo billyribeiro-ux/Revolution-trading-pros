@@ -13,11 +13,10 @@
 
 	R21-C (2026-05-20): extracted 9 leaf components into _components/.
 	Page LOC fell from 2005 → ~600. Behaviour preserved verbatim.
-
 -->
 <script lang="ts">
 	import { SvelteSet } from 'svelte/reactivity';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { ROOMS } from '$lib/config/rooms';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
@@ -62,8 +61,7 @@
 
 	// Bulk selection
 	let selectedIds = new SvelteSet<number>();
-	// Pure projection of selection size (selectedIds is reassigned on every
-	// mutation, so $derived tracks it correctly) — was a state+$effect.
+	// Pure projection of selection size; SvelteSet is reactive for size/has/iteration.
 	let showBulkActions = $derived(selectedIds.size > 0);
 
 	// Delete confirmation modal state
@@ -78,6 +76,7 @@
 	// CONSTANTS
 
 	const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+	const DAY_MS = 24 * 60 * 60 * 1000;
 
 	const TIMEZONES = [
 		{ value: 'America/New_York', label: 'Eastern (ET)' },
@@ -163,9 +162,7 @@
 	const weekDates = $derived.by(() => {
 		const dates: Date[] = [];
 		for (let i = 0; i < 7; i++) {
-			const date = new Date(currentWeekStart);
-			date.setDate(date.getDate() + i);
-			dates.push(date);
+			dates.push(new Date(currentWeekStart.getTime() + i * DAY_MS));
 		}
 		return dates;
 	});
@@ -276,37 +273,30 @@
 		}
 	});
 
-	/**
-	 * Clear success message after delay
-	 */
-	$effect(() => {
-		if (!success) return;
+	let successTimeout: ReturnType<typeof setTimeout> | null = null;
 
-		const timeout = setTimeout(() => {
-			success = null;
-		}, 3000);
+	function clearSuccessMessage() {
+		success = null;
+		if (successTimeout) {
+			clearTimeout(successTimeout);
+			successTimeout = null;
+		}
+	}
 
-		return () => clearTimeout(timeout);
-	});
+	function setSuccessMessage(message: string) {
+		if (successTimeout) clearTimeout(successTimeout);
+		success = message;
+		successTimeout = setTimeout(clearSuccessMessage, 3000);
+	}
 
-	// FIX-2026-04-26 (P2-7): clear bulk selection when filters change so the user
-	// can never bulk-delete a schedule that's no longer rendered.
-	$effect(() => {
-		// Track filter inputs so the effect re-runs when they change.
-		void filterActive;
-		void filterDay;
-		selectedIds.clear();
+	onDestroy(() => {
+		if (successTimeout) clearTimeout(successTimeout);
 	});
 
 	// HELPER FUNCTIONS
 
 	function getStartOfWeek(date: Date): Date {
-		const d = new Date(date);
-		const day = d.getDay();
-		const diff = d.getDate() - day;
-		d.setDate(diff);
-		d.setHours(0, 0, 0, 0);
-		return d;
+		return new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay());
 	}
 
 	function getDefaultFormData(): ScheduleForm {
@@ -391,7 +381,7 @@
 		try {
 			await postSchedule({ ...formData, room_id: selectedRoomId });
 
-			success = 'Schedule created successfully';
+			setSuccessMessage('Schedule created successfully');
 			closeModal();
 			await loadSchedules();
 		} catch (e) {
@@ -414,7 +404,7 @@
 		try {
 			await putSchedule({ id: editingSchedule.id, data: { ...formData } });
 
-			success = 'Schedule updated successfully';
+			setSuccessMessage('Schedule updated successfully');
 			closeModal();
 			await loadSchedules();
 		} catch (e) {
@@ -437,7 +427,7 @@
 		try {
 			await deleteScheduleById(id);
 
-			success = 'Schedule deleted successfully';
+			setSuccessMessage('Schedule deleted successfully');
 			selectedIds.delete(id);
 			//  mutations are reactive - no reassignment needed
 			await loadSchedules();
@@ -450,7 +440,7 @@
 		try {
 			await putSchedule({ id: schedule.id, data: { is_active: !schedule.is_active } });
 
-			success = `Schedule ${schedule.is_active ? 'deactivated' : 'activated'}`;
+			setSuccessMessage(`Schedule ${schedule.is_active ? 'deactivated' : 'activated'}`);
 			await loadSchedules();
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Failed to update schedule';
@@ -467,7 +457,7 @@
 				updated_at: undefined
 			});
 
-			success = 'Schedule duplicated successfully';
+			setSuccessMessage('Schedule duplicated successfully');
 			await loadSchedules();
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Failed to duplicate schedule';
@@ -483,7 +473,7 @@
 		try {
 			await bulkDeleteSchedules(Array.from(selectedIds));
 
-			success = `${selectedIds.size} schedules deleted`;
+			setSuccessMessage(`${selectedIds.size} schedules deleted`);
 			selectedIds.clear();
 			await loadSchedules();
 		} catch (e) {
@@ -495,7 +485,7 @@
 		try {
 			await bulkUpdateSchedules({ ids: Array.from(selectedIds), data: { is_active: active } });
 
-			success = `${selectedIds.size} schedules ${active ? 'activated' : 'deactivated'}`;
+			setSuccessMessage(`${selectedIds.size} schedules ${active ? 'activated' : 'deactivated'}`);
 			selectedIds.clear();
 			await loadSchedules();
 		} catch (e) {
@@ -553,13 +543,21 @@
 	}
 
 	function navigateWeek(direction: number) {
-		const newDate = new Date(currentWeekStart);
-		newDate.setDate(newDate.getDate() + direction * 7);
-		currentWeekStart = newDate;
+		currentWeekStart = new Date(currentWeekStart.getTime() + direction * 7 * DAY_MS);
 	}
 
 	function goToCurrentWeek() {
 		currentWeekStart = getStartOfWeek(new Date());
+	}
+
+	function setFilterActive(value: 'all' | 'active' | 'inactive') {
+		filterActive = value;
+		selectedIds.clear();
+	}
+
+	function setFilterDay(value: number | null) {
+		filterDay = value;
+		selectedIds.clear();
 	}
 
 	function toggleSelection(id: number) {
@@ -602,7 +600,7 @@
 		{/if}
 
 		{#if success}
-			<AlertBanner variant="success" message={success} ondismiss={() => (success = null)} />
+			<AlertBanner variant="success" message={success} ondismiss={clearSuccessMessage} />
 		{/if}
 
 		<RoomSelector
@@ -622,8 +620,8 @@
 			onnavigateWeek={navigateWeek}
 			ongoToCurrentWeek={goToCurrentWeek}
 			onrefresh={loadSchedules}
-			onfilterActiveChange={(v) => (filterActive = v)}
-			onfilterDayChange={(v) => (filterDay = v)}
+			onfilterActiveChange={setFilterActive}
+			onfilterDayChange={setFilterDay}
 		/>
 
 		<!-- Bulk Actions Bar -->

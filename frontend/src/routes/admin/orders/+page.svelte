@@ -6,11 +6,11 @@
 	 * the typed `getOrders` query and assigns the result to local state, and the
 	 * detail is awaited on demand when the modal opens.
 	 *
-	 * Why imperative (not reactive `$derived(getOrders(...)).current`): that form
-	 * needs `compilerOptions.experimental.async`, which is off in this repo — it
-	 * throws `experimental_async_required` at runtime. Awaiting the query inside
-	 * an async handler is the async-off-safe idiom and preserves type safety +
-	 * server-side validation over the old raw `fetch`.
+	 * Why imperative (not reactive `$derived(getOrders(...)).current`): the page
+	 * owns explicit loading/error state and reuses the same loader for search,
+	 * filters, and pagination. With SvelteKit 2.61+, awaiting remote queries in
+	 * event handlers is supported and deduped, so this keeps the existing UX while
+	 * preserving type safety + server-side validation over the old raw `fetch`.
 	 *
 	 * R13-C (2026-05-20): Extracted 7 leaf components into _components/.
 	 */

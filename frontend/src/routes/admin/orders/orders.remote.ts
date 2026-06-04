@@ -2,10 +2,10 @@
  * Admin Orders — Remote Functions (queries)
  * ─────────────────────────────────────────────────────────────────────────────
  * Replaces the page's raw `fetch('/api/admin/orders…')` calls with typed,
- * valibot-validated `query` functions. The list query is consumed *reactively*
- * in the page (`$derived(getOrders({ page, status, search }))` → `.current` /
- * `.loading` / `.error`), so paging/filtering re-fetches automatically and
- * identical argument sets dedupe — no imperative `loadOrders()` bookkeeping.
+ * valibot-validated `query` functions. The page consumes them imperatively via
+ * `await getOrders(...)` / `await getOrderDetail(...)`; SvelteKit 2.61+ supports
+ * awaiting remote queries in event handlers and async callbacks with cache
+ * deduping across identical active consumers.
  *
  * Auth: `getRequestEvent().fetch('/api/admin/orders…')` forwards the request
  * cookies to the existing admin proxy, which enforces `requireAdmin` and
@@ -29,8 +29,8 @@ const OrdersArgsSchema = v.object({
 
 /**
  * Paginated, filterable order list (+ stats + pagination). Throws on a non-OK
- * response so the reactive consumer's `.error` drives the page's error banner
- * (matching the previous `throw new Error(...)` behaviour).
+ * response so the page's loader catch block drives the error banner (matching
+ * the previous `throw new Error(...)` behaviour).
  */
 export const getOrders = query(OrdersArgsSchema, async (args): Promise<OrderListResult> => {
 	const { fetch } = getRequestEvent();

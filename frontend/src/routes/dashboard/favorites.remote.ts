@@ -8,14 +8,15 @@
  * sidebar (`memberships.remote.ts`), so the list is server-rendered on first
  * paint (verified: it appears in the SSR HTML) with no loading skeleton.
  *
- * Why prefetch-in-load rather than reactive `query.current` in the component:
- * this repo runs with `compilerOptions.experimental.async` OFF, so `await` in
- * markup / SSR-resolved `query.current` is unavailable — a component-level
- * `query.current` consumer would SSR its loading branch and only fill in after
- * hydration. Awaiting in `load` is the idiomatic way to SSR remote-query data
- * under that constraint. (If `experimental.async` is enabled later, this can
- * move to `{#await getFavorites(slug)}` + a `command().updates(...)` single-
- * flight mutation; the query/command split here is already shaped for it.)
+ * Why prefetch-in-load rather than reactive component consumption:
+ * `compilerOptions.experimental.async` is now enabled, but these favorites
+ * pages already need plain `data.favorites` for optimistic local removal and SSR
+ * first paint. Keeping the query awaited in `load` avoids an extra component
+ * boundary while still using SvelteKit's June-2026 remote-query semantics:
+ * `await getFavorites(slug)` is valid in load/components/event handlers and
+ * dedupes identical calls while active. If the pages later move to a reactive
+ * query instance, the command can use the client-requested
+ * `removeFavorite(...).updates(getFavorites(slug).withOverride(...))` path.
  *
  * Auth: same-origin `event.fetch('/api/favorites…')` forwards the request
  * cookies to the `/api` proxy, which re-signs them for the Axum backend — the
@@ -48,9 +49,9 @@ export const getFavorites = query(RoomSlugSchema, async (roomSlug): Promise<Favo
 /**
  * Remove a favorite. `roomSlug` is validated but not otherwise needed server-
  * side; it's part of the signature so the call site stays explicit and so a
- * future single-flight migration (`getFavorites(roomSlug).refresh()`) is a
- * one-line change. The page applies the removal optimistically, so no server-
- * driven refresh is wired here (an unconsumed `.refresh()` would be dead code).
+ * future reactive migration can target the matching `getFavorites(roomSlug)`
+ * cache key. The page applies the removal optimistically to its `data.favorites`
+ * copy, so no server-driven refresh is wired here.
  */
 export const removeFavorite = command(
 	v.object({

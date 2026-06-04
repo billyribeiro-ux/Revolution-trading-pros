@@ -8,13 +8,13 @@
  * (`await query()` → assign to local `$state`), not reactively via `query.current`.
  * It re-fetches after every mutation (fetchAlerts/fetchAllTrades/fetchStats/
  * fetchTradePlan), which is the complete and correct refresh path for this
- * architecture. Server-side `query.refresh()` only has an effect with a REACTIVE
- * consumer, so it was removed here (the previous `getAlerts({page:1,limit:10})
- * .refresh()` was also the wrong instance — the client paginates with
- * `currentPage`). To adopt June-2026 single-flight mutations (one round-trip),
- * migrate the consumer to reactive `query.current` then use the client
- * `command(args).updates(getAlerts(...))` + server `requested(getAlerts, n)`
- * APIs (requested gained its `(fn, limit) → { arg, query }` form in 2.58).
+ * architecture. Server-side `query.refresh()` only updates a matching active
+ * client query instance/cache key, so it was removed here (the previous
+ * `getAlerts({page:1,limit:10}).refresh()` was also the wrong instance — the
+ * client paginates with `currentPage`). To adopt June-2026 client-requested
+ * single-flight mutations, retain a query instance in the consumer, call
+ * `command(args).updates(getAlerts(...))`, and accept it on the server with
+ * `requested(getAlerts, limit)` which now yields `{ arg, query }` entries.
  */
 
 import * as v from 'valibot';
@@ -72,7 +72,6 @@ export const saveAlert = command(
 		} else {
 			await axumAlerts.createAlert(roomSlug, alertData);
 		}
-
 	}
 );
 
@@ -88,7 +87,6 @@ export const deleteAlertCommand = command(
 		await requireAuth();
 
 		await axumAlerts.deleteAlert(roomSlug, alertId);
-
 	}
 );
 
@@ -188,6 +186,5 @@ export const deleteTradePlanEntry = command(
 		await requireAuth();
 
 		await axumTradePlans.deleteTradePlanEntry(roomSlug, entryId);
-
 	}
 );
