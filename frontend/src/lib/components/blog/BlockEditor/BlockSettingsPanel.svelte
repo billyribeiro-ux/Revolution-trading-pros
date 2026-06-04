@@ -15,7 +15,7 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import { SvelteSet } from 'svelte/reactivity';
+	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 	import type { Block, BlockSettings } from './types';
 	import { API_BASE_URL } from '$lib/api/config';
 	import { getAuthToken } from '$lib/stores/auth.svelte';
@@ -48,58 +48,122 @@
 	let datasourceEntries = $state<Record<string, DatasourceEntry[]>>({});
 	let loadingDatasources = $state(false);
 	let loadingEntries = $state<Record<string, boolean>>({});
+	let isComponentMounted = false;
+	let datasourcesAbortController: AbortController | null = null;
+	const datasourceEntryAbortControllers = new SvelteMap<string, AbortController>();
+
+	function isAbortError(error: unknown): boolean {
+		return error instanceof DOMException && error.name === 'AbortError';
+	}
+
+	function abortDatasourceRequest(): void {
+		datasourcesAbortController?.abort();
+		datasourcesAbortController = null;
+	}
+
+	function abortDatasourceEntryRequest(slug: string): void {
+		datasourceEntryAbortControllers.get(slug)?.abort();
+		datasourceEntryAbortControllers.delete(slug);
+	}
+
+	function abortDatasourceEntryRequests(): void {
+		for (const controller of datasourceEntryAbortControllers.values()) {
+			controller.abort();
+		}
+		datasourceEntryAbortControllers.clear();
+	}
 
 	// Fetch available datasources
 	async function fetchDatasources() {
-		if (datasources.length > 0) return; // Already loaded
+		if (!isComponentMounted || datasources.length > 0 || loadingDatasources) return; // Already loaded
 
+		abortDatasourceRequest();
+		const controller = new AbortController();
+		datasourcesAbortController = controller;
 		loadingDatasources = true;
+
 		try {
 			const token = getAuthToken();
 			const response = await fetch(`${API_BASE_URL}/cms/datasources?limit=100`, {
+				signal: controller.signal,
 				headers: {
 					Authorization: `Bearer ${token}`,
 					'Content-Type': 'application/json'
 				}
 			});
+			if (!isComponentMounted || controller.signal.aborted) return;
 
 			if (response.ok) {
 				const data = await response.json();
+				if (!isComponentMounted || controller.signal.aborted) return;
 				datasources = data.data || [];
 			}
 		} catch (err) {
-			console.error('Failed to fetch datasources:', err);
+			if (!isAbortError(err)) {
+				console.error('Failed to fetch datasources:', err);
+			}
 		} finally {
-			loadingDatasources = false;
+			if (datasourcesAbortController === controller) {
+				datasourcesAbortController = null;
+			}
+			if (isComponentMounted && !controller.signal.aborted) {
+				loadingDatasources = false;
+			}
 		}
 	}
 
 	// Fetch entries for a specific datasource
 	async function fetchDatasourceEntries(slug: string): Promise<DatasourceEntry[]> {
 		if (datasourceEntries[slug]) return datasourceEntries[slug];
+		if (!isComponentMounted || loadingEntries[slug]) return [];
 
+		abortDatasourceEntryRequest(slug);
+		const controller = new AbortController();
+		datasourceEntryAbortControllers.set(slug, controller);
 		loadingEntries = { ...loadingEntries, [slug]: true };
+
 		try {
 			// Use public API endpoint for fetching entries
-			const response = await fetch(`${API_BASE_URL}/cms/datasources/public/${slug}`);
+			const response = await fetch(`${API_BASE_URL}/cms/datasources/public/${slug}`, {
+				signal: controller.signal
+			});
+			if (!isComponentMounted || controller.signal.aborted) return [];
 
 			if (response.ok) {
 				const data = await response.json();
+				if (!isComponentMounted || controller.signal.aborted) return [];
 				const entries = data.entries || [];
 				datasourceEntries = { ...datasourceEntries, [slug]: entries };
 				return entries;
 			}
 		} catch (err) {
-			console.error(`Failed to fetch entries for ${slug}:`, err);
+			if (!isAbortError(err)) {
+				console.error(`Failed to fetch entries for ${slug}:`, err);
+			}
 		} finally {
-			loadingEntries = { ...loadingEntries, [slug]: false };
+			if (datasourceEntryAbortControllers.get(slug) === controller) {
+				datasourceEntryAbortControllers.delete(slug);
+			}
+			if (isComponentMounted && !controller.signal.aborted) {
+				loadingEntries = { ...loadingEntries, [slug]: false };
+			}
 		}
 		return [];
 	}
 
 	// Load datasources when panel mounts
 	onMount(() => {
-		fetchDatasources();
+		isComponentMounted = true;
+		void fetchDatasources();
+		if (block.settings.optionSource === 'datasource' && block.settings.datasourceSlug) {
+			void fetchDatasourceEntries(block.settings.datasourceSlug);
+		}
+
+		return () => {
+			isComponentMounted = false;
+			abortDatasourceRequest();
+			abortDatasourceEntryRequests();
+		};
 	});
 
 	// Wrapper to update settings

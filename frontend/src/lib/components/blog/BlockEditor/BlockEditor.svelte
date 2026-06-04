@@ -1534,10 +1534,12 @@
 				{:else if editorState.sidebarTab === 'settings'}
 					<div id="panel-settings" role="tabpanel" aria-labelledby="tab-settings">
 						{#if selectedBlock}
-							<BlockSettingsPanel
-								block={selectedBlock}
-								onupdate={(updates) => updateBlock(selectedBlock.id, updates)}
-							/>
+							{#key selectedBlock.id}
+								<BlockSettingsPanel
+									block={selectedBlock}
+									onupdate={(updates) => updateBlock(selectedBlock.id, updates)}
+								/>
+							{/key}
 						{:else}
 							<div class="empty-panel">
 								<IconSettings size={48} stroke={1} aria-hidden="true" />
