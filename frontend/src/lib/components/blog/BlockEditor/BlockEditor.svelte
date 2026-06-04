@@ -203,7 +203,10 @@
 	// Refs
 	let editorContainer: HTMLDivElement | null = null;
 	let autosaveTimer: ReturnType<typeof setInterval> | null = null;
+	let isComponentMounted = false;
+	let saveRequestGeneration = 0;
 	const transientTimers = new SvelteSet<ReturnType<typeof setTimeout>>();
+	const transientAnimationFrames = new SvelteSet<number>();
 
 	// Computed
 
@@ -222,9 +225,10 @@
 	// Lifecycle
 
 	onMount(() => {
+		isComponentMounted = true;
 		// Start autosave
 		if (autosaveInterval > 0 && editorState.autosaveEnabled) {
-			autosaveTimer = setInterval(handleAutosave, autosaveInterval);
+			autosaveTimer = setInterval(() => void handleAutosave(), autosaveInterval);
 		}
 
 		// Add keyboard listeners
@@ -232,16 +236,23 @@
 	});
 
 	onDestroy(() => {
-		if (autosaveTimer) clearInterval(autosaveTimer);
+		isComponentMounted = false;
+		saveRequestGeneration += 1;
+		clearAutosaveTimer();
 		clearTransientTimers();
+		clearTransientAnimationFrames();
 		window.removeEventListener('keydown', handleGlobalKeydown);
 		// Clean up touch drag timer
-		if (touchDragState.longPressTimer) {
-			clearTimeout(touchDragState.longPressTimer);
-		}
+		cancelTouchLongPress();
 		// Clean up auto-scroll
 		stopAutoScroll();
 	});
+
+	function clearAutosaveTimer() {
+		if (!autosaveTimer) return;
+		clearInterval(autosaveTimer);
+		autosaveTimer = null;
+	}
 
 	// Block Operations
 
@@ -301,7 +312,8 @@
 		showBlockInserter = false;
 
 		// Focus the new block
-		tick().then(() => {
+		void tick().then(() => {
+			if (!isComponentMounted) return;
 			const blockEl = document.querySelector(`[data-block-id="${newBlock.id}"]`);
 			if (blockEl) {
 				(blockEl as HTMLElement).focus();
@@ -394,6 +406,7 @@
 		// Clear old announcements after they've been read
 		const timeout = setTimeout(() => {
 			transientTimers.delete(timeout);
+			if (!isComponentMounted) return;
 			announcements = announcements.slice(1);
 		}, 1000);
 		transientTimers.add(timeout);
@@ -404,6 +417,13 @@
 			clearTimeout(timeout);
 		}
 		transientTimers.clear();
+	}
+
+	function clearTransientAnimationFrames() {
+		for (const frame of transientAnimationFrames) {
+			cancelAnimationFrame(frame);
+		}
+		transientAnimationFrames.clear();
 	}
 
 	// Multi-selection helpers
@@ -464,11 +484,13 @@
 			if (preview) {
 				e.dataTransfer.setDragImage(preview, 20, 20);
 				// Clean up preview after drag
-				requestAnimationFrame(() => {
+				const frame = requestAnimationFrame(() => {
+					transientAnimationFrames.delete(frame);
 					if (preview.parentNode) {
 						preview.parentNode.removeChild(preview);
 					}
 				});
+				transientAnimationFrames.add(frame);
 			}
 		}
 
@@ -590,7 +612,7 @@
 
 		const scroll = () => {
 			const canvas = document.querySelector('.editor-canvas') as HTMLElement;
-			if (!canvas || !autoScrollState.isScrolling) return;
+			if (!isComponentMounted || !canvas || !autoScrollState.isScrolling) return;
 
 			canvas.scrollTop +=
 				autoScrollState.direction === 'up' ? -autoScrollState.speed : autoScrollState.speed;
@@ -696,6 +718,7 @@
 			canvas.classList.add('drop-feedback');
 			const timeout = setTimeout(() => {
 				transientTimers.delete(timeout);
+				if (!isComponentMounted) return;
 				canvas.classList.remove('drop-feedback');
 			}, 300);
 			transientTimers.add(timeout);
@@ -721,11 +744,13 @@
 		touchDragState.touchStartTime = Date.now();
 		touchDragState.isDragging = false;
 		if (touchDragState.longPressTimer) {
-			clearTimeout(touchDragState.longPressTimer);
+			cancelTouchLongPress();
 		}
 
 		// Long-press to initiate drag (300ms)
 		touchDragState.longPressTimer = setTimeout(() => {
+			touchDragState.longPressTimer = null;
+			if (!isComponentMounted) return;
 			if (touchDragState.isActive) {
 				touchDragState.isDragging = true;
 
@@ -804,13 +829,16 @@
 	}
 
 	function cancelTouchDrag() {
-		if (touchDragState.longPressTimer) {
-			clearTimeout(touchDragState.longPressTimer);
-		}
+		cancelTouchLongPress();
 		touchDragState.isActive = false;
 		touchDragState.isDragging = false;
-		touchDragState.longPressTimer = null;
 		stopAutoScroll();
+	}
+
+	function cancelTouchLongPress() {
+		if (!touchDragState.longPressTimer) return;
+		clearTimeout(touchDragState.longPressTimer);
+		touchDragState.longPressTimer = null;
 	}
 
 	// Keyboard-based reordering
@@ -848,7 +876,8 @@
 			announce(`${blockName} moved ${direction} to position ${newIndex + 1}`, 'polite');
 
 			// Focus the moved block
-			tick().then(() => {
+			void tick().then(() => {
+				if (!isComponentMounted) return;
 				const movedBlock = document.querySelector(`[data-block-id="${blockId}"]`) as HTMLElement;
 				movedBlock?.focus();
 			});
@@ -966,7 +995,7 @@
 		// Save: Ctrl/Cmd + S
 		if (isMeta && e.key === 's') {
 			e.preventDefault();
-			handleSave();
+			void handleSave();
 		}
 
 		// Copy: Ctrl/Cmd + C (when block selected)
@@ -1078,36 +1107,51 @@
 	// Save/Autosave
 
 	async function handleSave() {
+		if (isSaving) return;
+
+		const requestGeneration = ++saveRequestGeneration;
 		isSaving = true;
 		saveError = null;
+		const blocksToSave = [...editorState.blocks];
 
 		try {
-			await onsave?.(editorState.blocks);
+			await onsave?.(blocksToSave);
+			if (!isComponentMounted || requestGeneration !== saveRequestGeneration) return;
 			editorState.lastSaved = new Date().toISOString();
 			editorState.hasUnsavedChanges = false;
 		} catch (err) {
+			if (!isComponentMounted || requestGeneration !== saveRequestGeneration) return;
 			saveError = 'Failed to save. Please try again.';
 			console.error('Save failed:', err);
 		} finally {
-			isSaving = false;
+			if (isComponentMounted && requestGeneration === saveRequestGeneration) {
+				isSaving = false;
+			}
 		}
 	}
 
 	async function handleAutosave() {
-		if (editorState.hasUnsavedChanges && editorState.autosaveEnabled) {
+		if (editorState.hasUnsavedChanges && editorState.autosaveEnabled && !isSaving) {
 			await handleSave();
 		}
 	}
 
 	async function handlePublish() {
+		if (isSaving) return;
+
+		const requestGeneration = ++saveRequestGeneration;
 		isSaving = true;
 		try {
-			await onpublish?.(editorState.blocks);
+			await onpublish?.([...editorState.blocks]);
+			if (!isComponentMounted || requestGeneration !== saveRequestGeneration) return;
 			editorState.hasUnsavedChanges = false;
 		} catch (_err) {
+			if (!isComponentMounted || requestGeneration !== saveRequestGeneration) return;
 			saveError = 'Failed to publish.';
 		} finally {
-			isSaving = false;
+			if (isComponentMounted && requestGeneration === saveRequestGeneration) {
+				isSaving = false;
+			}
 		}
 	}
 
