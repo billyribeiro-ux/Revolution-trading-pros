@@ -4,9 +4,10 @@
 		totalPages: number;
 		perPage: number;
 		totalCount: number;
+		onPageChange: (page: number) => void;
 	}
 
-	let { currentPage = $bindable(), totalPages, perPage, totalCount }: Props = $props();
+	let { currentPage, totalPages, perPage, totalCount, onPageChange }: Props = $props();
 
 	let startIndex = $derived((currentPage - 1) * perPage + 1);
 	let endIndex = $derived(Math.min(currentPage * perPage, totalCount));
@@ -20,7 +21,7 @@
 		<button
 			class="pagination-btn"
 			disabled={currentPage === 1}
-			onclick={() => (currentPage = currentPage - 1)}
+			onclick={() => onPageChange(currentPage - 1)}
 		>
 			Previous
 		</button>
@@ -30,7 +31,7 @@
 		<button
 			class="pagination-btn"
 			disabled={currentPage === totalPages}
-			onclick={() => (currentPage = currentPage + 1)}
+			onclick={() => onPageChange(currentPage + 1)}
 		>
 			Next
 		</button>

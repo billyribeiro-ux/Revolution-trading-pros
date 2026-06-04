@@ -17,7 +17,6 @@
 -->
 <script lang="ts">
 	import { onMount, untrack } from 'svelte';
-	import {  } from 'svelte/reactivity';
 	import BunnyVideoPlayer from '$lib/components/video/BunnyVideoPlayer.svelte';
 	import Icon from '$lib/components/Icon.svelte';
 

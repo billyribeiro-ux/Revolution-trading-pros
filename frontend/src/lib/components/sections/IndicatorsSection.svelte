@@ -20,6 +20,7 @@
 	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
 	import IconSparkles from '@tabler/icons-svelte-runes/icons/sparkles';
 	import type ScrollTriggerType from 'gsap/ScrollTrigger';
+	import type { Attachment } from 'svelte/attachments';
 
 	// Local shape for the synthetic OHLC candles `generateCandleData` emits —
 	// distinct from any persisted candle DTO; lives only inside this section's
@@ -97,8 +98,8 @@
 	// ============================================================================
 	let sectionRef = $state<HTMLElement | null>(null);
 	let chartRef = $state<HTMLElement | null>(null);
-	// ICT11+ Fix: SSR renders true (CLS fix), {#key} triggers transitions
-	let isVisible = $state(true);
+	// January 2026 motion: content is revealed lazily as the section scrolls into view.
+	let isVisible = $state(false);
 	let activeIndicator = $state(0);
 	// `ScrollTriggerType` is the *class* (used statically — `.getAll()`,
 	// `.refresh()`); instances returned by `.getAll()` are `ScrollTriggerType`
@@ -108,6 +109,32 @@
 	let chartCtx: CanvasRenderingContext2D | null = null;
 	let canvasRef = $state<HTMLCanvasElement | null>(null);
 	let prefersReducedMotion = $state(false);
+
+	const captureSection: Attachment<HTMLElement> = (node) => {
+		sectionRef = node;
+
+		return () => {
+			if (sectionRef === node) sectionRef = null;
+		};
+	};
+
+	const captureChart: Attachment<HTMLElement> = (node) => {
+		chartRef = node;
+		queueMicrotask(startCanvasIfReady);
+
+		return () => {
+			if (chartRef === node) chartRef = null;
+		};
+	};
+
+	const captureCanvas: Attachment<HTMLCanvasElement> = (node) => {
+		canvasRef = node;
+		queueMicrotask(startCanvasIfReady);
+
+		return () => {
+			if (canvasRef === node) canvasRef = null;
+		};
+	};
 
 	// Chart animation state
 	let chartProgress = $state(0);
@@ -240,13 +267,17 @@
 	let rotationInterval: ReturnType<typeof setInterval> | null = null;
 	let resizeObserver: ResizeObserver | null = null;
 	let visibilityObserver: IntersectionObserver | null = null;
+	let gsapLoadStarted = false;
+
+	function loadGSAPAfterReveal() {
+		if (prefersReducedMotion || gsapLoadStarted) return;
+		gsapLoadStarted = true;
+		loadGSAP();
+	}
 
 	onMount(() => {
 		// Check for reduced motion preference
 		prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-		// Force state change to trigger {#key} transitions per Svelte 5 docs
-		isVisible = false;
 
 		// Trigger entrance animations when section scrolls into viewport
 		queueMicrotask(() => {
@@ -255,6 +286,8 @@
 					(entries) => {
 						if (entries[0]?.isIntersecting) {
 							isVisible = true;
+							startCanvasIfReady();
+							loadGSAPAfterReveal();
 							observer.disconnect();
 						}
 					},
@@ -264,13 +297,10 @@
 				visibilityObserver.observe(sectionRef);
 			} else {
 				isVisible = true;
+				startCanvasIfReady();
+				loadGSAPAfterReveal();
 			}
 		});
-
-		// Load GSAP asynchronously
-		if (!prefersReducedMotion) {
-			loadGSAP();
-		}
 
 		// Auto-rotate indicators (slower on mobile for better UX)
 		const isMobile = window.innerWidth < 768;
@@ -293,7 +323,7 @@
 	// ============================================================================
 	let canvasInitialized = false;
 
-	$effect(() => {
+	function startCanvasIfReady() {
 		if (!isVisible || !canvasRef || !chartRef || canvasInitialized) return;
 		canvasInitialized = true;
 
@@ -319,7 +349,7 @@
 				animate();
 			});
 		});
-	});
+	}
 
 	function setupCanvas() {
 		if (!canvasRef || !chartRef) return;
@@ -444,7 +474,7 @@
 </script>
 
 <section
-	bind:this={sectionRef}
+	{@attach captureSection}
 	class="relative py-16 sm:py-24 lg:py-32 overflow-hidden bg-linear-to-b from-zinc-950 via-zinc-900 to-zinc-950"
 >
 	<!-- Ambient Background -->
@@ -532,9 +562,9 @@
 							</div>
 
 							<!-- Chart Canvas -->
-							<div bind:this={chartRef} class="relative h-56 sm:h-72 lg:h-80">
+							<div {@attach captureChart} class="relative h-56 sm:h-72 lg:h-80">
 								<canvas
-									bind:this={canvasRef}
+									{@attach captureCanvas}
 									class="absolute inset-0 w-full h-full"
 									style="width: 100%; height: 100%;"
 								></canvas>

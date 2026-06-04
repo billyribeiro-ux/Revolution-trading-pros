@@ -25,8 +25,6 @@
 	 *
 	 */
 
-	import { browser } from '$app/environment';
-	import {  } from 'svelte';
 	import {
 		IconUsers,
 		IconUserPlus,
@@ -122,7 +120,7 @@
 	let selectedSource = $state<string>('all');
 	let sortBy = $state<string>('created_at');
 	let sortOrder = $state<'asc' | 'desc'>('desc');
-	let selectedLeads = $state(new SvelteSet<string>()); // eslint-disable-line svelte/no-unnecessary-state-wrap
+	let selectedLeads = new SvelteSet<string>();
 	let showFilters = $state(false);
 	let _viewMode = $state<'list' | 'kanban'>('list');
 
@@ -160,8 +158,7 @@
 	let formError = $state('');
 
 	// Pagination
-	let currentPage = $state(1);
-	let totalPages = $state(1);
+	let requestedPage = $state(1);
 	let perPage = $state(25);
 
 	// CONSTANTS
@@ -247,6 +244,8 @@
 		return result;
 	});
 
+	let totalPages = $derived(Math.max(1, Math.ceil(filteredLeads.length / perPage)));
+	let currentPage = $derived(Math.min(requestedPage, totalPages));
 	let paginatedLeads = $derived(
 		filteredLeads.slice((currentPage - 1) * perPage, currentPage * perPage)
 	);
@@ -254,23 +253,6 @@
 	let isAllSelected = $derived(
 		paginatedLeads.length > 0 && paginatedLeads.every((lead) => selectedLeads.has(lead.id))
 	);
-
-	// EFFECTS - Svelte 5 $effect
-
-	$effect(() => {
-		// Reset page when filters change
-		if (searchQuery || selectedStatus || selectedSource) {
-			currentPage = 1;
-		}
-	});
-
-	$effect(() => {
-		// Calculate total pages when filtered leads change
-		totalPages = Math.max(1, Math.ceil(filteredLeads.length / perPage));
-		if (currentPage > totalPages) {
-			currentPage = totalPages;
-		}
-	});
 
 	// API FUNCTIONS
 
@@ -529,7 +511,10 @@
 		if (isAllSelected) {
 			selectedLeads.clear();
 		} else {
-			selectedLeads = new SvelteSet(paginatedLeads.map((l) => l.id));
+			selectedLeads.clear();
+			for (const lead of paginatedLeads) {
+				selectedLeads.add(lead.id);
+			}
 		}
 	}
 
@@ -539,6 +524,14 @@
 		} else {
 			selectedLeads.add(leadId);
 		}
+	}
+
+	function resetPagination() {
+		requestedPage = 1;
+	}
+
+	function setCurrentPage(page: number) {
+		requestedPage = Math.max(1, Math.min(page, totalPages));
 	}
 
 	function formatCurrency(amount: number): string {
@@ -586,8 +579,6 @@
 	// that was fixed elsewhere in commit 34a0bd070. Migrating to `onMount`
 	// to keep the lifecycle init off the reactive graph.
 	onMount(() => {
-		if (!browser) return;
-
 		(async () => {
 			await connections.load();
 			connectionLoading = false;
@@ -649,6 +640,7 @@
 							type="text"
 							placeholder="Search leads..."
 							bind:value={searchQuery}
+							oninput={resetPagination}
 						/>
 					</div>
 					<button class="btn-filter" onclick={() => (showFilters = !showFilters)}>
@@ -697,7 +689,7 @@
 				<div class="filters-panel">
 					<div class="filter-group">
 						<label for="filter-status">Status</label>
-						<select id="filter-status" bind:value={selectedStatus}>
+						<select id="filter-status" bind:value={selectedStatus} onchange={resetPagination}>
 							{#each statusOptions as option (option.value)}
 								<option value={option.value}>{option.label}</option>
 							{/each}
@@ -705,7 +697,7 @@
 					</div>
 					<div class="filter-group">
 						<label for="filter-source">Source</label>
-						<select id="filter-source" bind:value={selectedSource}>
+						<select id="filter-source" bind:value={selectedSource} onchange={resetPagination}>
 							{#each sourceOptions as option (option.value)}
 								<option value={option.value}>{option.label}</option>
 							{/each}
@@ -713,7 +705,7 @@
 					</div>
 					<div class="filter-group">
 						<label for="filter-sort">Sort By</label>
-						<select id="filter-sort" bind:value={sortBy}>
+						<select id="filter-sort" bind:value={sortBy} onchange={resetPagination}>
 							{#each sortOptions as option (option.value)}
 								<option value={option.value}>{option.label}</option>
 							{/each}
@@ -721,7 +713,7 @@
 					</div>
 					<div class="filter-group">
 						<label for="filter-order">Order</label>
-						<select id="filter-order" bind:value={sortOrder}>
+						<select id="filter-order" bind:value={sortOrder} onchange={resetPagination}>
 							<option value="desc">Newest First</option>
 							<option value="asc">Oldest First</option>
 						</select>
@@ -734,6 +726,7 @@
 							sortBy = 'created_at';
 							sortOrder = 'desc';
 							searchQuery = '';
+							resetPagination();
 						}}
 					>
 						Clear Filters
@@ -903,10 +896,11 @@
 
 					<!-- Pagination -->
 					<LeadsPagination
-						bind:currentPage
+						{currentPage}
 						{totalPages}
 						{perPage}
 						totalCount={filteredLeads.length}
+						onPageChange={setCurrentPage}
 					/>
 				{/if}
 			</div>

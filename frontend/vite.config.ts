@@ -7,11 +7,7 @@ import tailwindcss from '@tailwindcss/vite';
 // mode === 'development'. Using @sveltejs/vite-plugin-svelte v7 (Vite 8).
 // Inspector configured via svelte.config.js -> vitePlugin.inspector.
 export default defineConfig(({ mode }) => ({
-	plugins: [
-		tailwindcss(),
-		sveltekit(),
-		...(mode === 'development' ? [devtoolsJson()] : [])
-	],
+	plugins: [tailwindcss(), sveltekit(), ...(mode === 'development' ? [devtoolsJson()] : [])],
 	resolve: {
 		// Force Svelte client bundle in tests (default resolves to server bundle
 		// which doesn't have mount/unmount needed by @testing-library/svelte)
@@ -51,7 +47,10 @@ export default defineConfig(({ mode }) => ({
 	},
 	build: {
 		target: 'es2022',
-		chunkSizeWarningLimit: 500,
+		// Surface3D is an intentionally lazy WebGL/Three tab in the options
+		// calculator. Its minified chunk is larger than Vite's generic 500 kB
+		// default, but it is not part of the initial calculator route payload.
+		chunkSizeWarningLimit: 700,
 		// Vite 8 default CSS minifier is Lightning CSS (via Rolldown). Keep
 		// esbuild until component <style> blocks are audited for Lightning CSS
 		// compatibility — calc() inside media queries (e.g. Tailwind breakpoint

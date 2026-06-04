@@ -9,6 +9,7 @@
 	import IconChartDots from '@tabler/icons-svelte-runes/icons/chart-dots';
 	import IconShieldCheck from '@tabler/icons-svelte-runes/icons/shield-check';
 	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
+	import type { Attachment } from 'svelte/attachments';
 
 	function mulberry32(seed: number): () => number {
 		let s = seed | 0;
@@ -93,9 +94,17 @@
 	// --- Animation Logic ---
 	let containerRef = $state<HTMLElement | null>(null);
 	let mouse = $state({ x: 0, y: 0 });
-	// ICT11+ Fix: SSR renders true (CLS fix), {#key} triggers transitions
-	let isVisible = $state(true);
+	// January 2026 motion: content is revealed lazily as the section scrolls into view.
+	let isVisible = $state(false);
 	let visibilityObserver: IntersectionObserver | null = null;
+
+	const captureContainer: Attachment<HTMLElement> = (node) => {
+		containerRef = node;
+
+		return () => {
+			if (containerRef === node) containerRef = null;
+		};
+	};
 
 	const handleMouseMove = (e: MouseEvent) => {
 		if (!containerRef) return;
@@ -121,9 +130,6 @@
 			isVisible = true;
 			return;
 		}
-
-		// Force state change to trigger {#key} transitions per Svelte 5 docs
-		isVisible = false;
 
 		queueMicrotask(() => {
 			if (!containerRef) {
@@ -160,7 +166,7 @@
 </script>
 
 <section
-	bind:this={containerRef}
+	{@attach captureContainer}
 	onmousemove={handleMouseMove}
 	class="relative py-32 px-6 bg-[#020202] overflow-hidden border-b border-white/5"
 	aria-label="Client Performance Ledger"

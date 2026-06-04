@@ -11,7 +11,7 @@
 
 	import { sanitizeHtml } from '$lib/sanitize';
 	import Icon from '$lib/components/Icon.svelte';
-	import {  } from 'svelte';
+	import { SvelteSet } from 'svelte/reactivity';
 
 	interface Section {
 		id: string;
@@ -42,27 +42,38 @@
 		disabled = false
 	}: Props = $props();
 
-	let openSections = $state<Set<string>>(new Set());
-	let activeTab = $state('');
+	let openSections = new SvelteSet<string>();
+	let openSectionsTouched = $state(false);
+	let activeTabOverride = $state<string | null>(null);
 
-	// Initialize with default values on mount
-	$effect(() => {
-		if (defaultOpen && openSections.size === 0) {
-			openSections = new Set([defaultOpen]);
+	let defaultSectionId = $derived(defaultOpen || sections[0]?.id || '');
+	let activeTab = $derived(
+		activeTabOverride && sections.some((section) => section.id === activeTabOverride)
+			? activeTabOverride
+			: defaultSectionId
+	);
+	let effectiveOpenSections = $derived(
+		openSectionsTouched ? openSections : new SvelteSet(defaultOpen ? [defaultOpen] : [])
+	);
+
+	function seedOpenSections() {
+		if (openSectionsTouched) return;
+		openSections.clear();
+		if (defaultOpen) {
+			openSections.add(defaultOpen);
 		}
-		if (!activeTab && (defaultOpen || sections[0]?.id)) {
-			activeTab = defaultOpen || sections[0]?.id || '';
-		}
-	});
+		openSectionsTouched = true;
+	}
 
 	function toggleSection(sectionId: string) {
 		if (disabled) return;
 
 		if (mode === 'tabs') {
-			activeTab = sectionId;
+			activeTabOverride = sectionId;
 			return;
 		}
 
+		seedOpenSections();
 		if (openSections.has(sectionId)) {
 			openSections.delete(sectionId);
 		} else {
@@ -77,7 +88,7 @@
 		if (mode === 'tabs') {
 			return activeTab === sectionId;
 		}
-		return openSections.has(sectionId);
+		return effectiveOpenSections.has(sectionId);
 	}
 </script>
 

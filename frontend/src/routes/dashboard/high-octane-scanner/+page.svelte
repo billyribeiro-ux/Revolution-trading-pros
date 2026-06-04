@@ -8,7 +8,6 @@
 	 *
 	 */
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
-	import {  } from 'svelte';
 
 	// TYPE DEFINITIONS - Principal Engineer ICT 11 Standards
 	interface WeeklyContent {

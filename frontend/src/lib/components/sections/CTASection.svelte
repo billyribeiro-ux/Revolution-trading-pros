@@ -7,6 +7,7 @@
 	import IconServer from '@tabler/icons-svelte-runes/icons/server';
 	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
 	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
+	import type { Attachment } from 'svelte/attachments';
 
 	function mulberry32(seed: number): () => number {
 		let s = seed | 0;
@@ -21,8 +22,16 @@
 	// --- Interaction Logic ---
 	let containerRef = $state<HTMLElement | null>(null);
 	let mouse = $state({ x: 0, y: 0 });
-	// ICT11+ Fix: SSR renders true (CLS fix), {#key} triggers transitions
-	let isVisible = $state(true);
+	// January 2026 motion: content is revealed lazily as the section scrolls into view.
+	let isVisible = $state(false);
+
+	const captureContainer: Attachment<HTMLElement> = (node) => {
+		containerRef = node;
+
+		return () => {
+			if (containerRef === node) containerRef = null;
+		};
+	};
 
 	// Mouse tracking for subtle lighting effects
 	const handleMouseMove = (e: MouseEvent) => {
@@ -32,26 +41,13 @@
 		mouse.y = e.clientY - rect.top;
 	};
 
-	// Header: scale + fade from center — terminal boot sequence
-	function terminalBoot(_node: Element, { delay = 0, duration = 900 }) {
+	function heavySlide(_node: Element, { delay = 0, duration = 1000 }) {
 		return {
 			delay,
 			duration,
 			css: (t: number) => {
 				const eased = cubicOut(t);
-				return `opacity: ${eased}; transform: scale(${0.92 + eased * 0.08});`;
-			}
-		};
-	}
-
-	// CTA block: slides up with slight spring
-	function springUp(_node: Element, { delay = 0, duration = 800 }) {
-		return {
-			delay,
-			duration,
-			css: (t: number) => {
-				const eased = cubicOut(t);
-				return `opacity: ${eased}; transform: translateY(${(1 - eased) * 40}px) scale(${0.97 + eased * 0.03});`;
+				return `opacity: ${eased}; transform: translateY(${(1 - eased) * 20}px);`;
 			}
 		};
 	}
@@ -64,9 +60,6 @@
 			isVisible = true;
 			return;
 		}
-
-		// Force state change to trigger {#key} transitions per Svelte 5 docs
-		isVisible = false;
 
 		queueMicrotask(() => {
 			if (!containerRef) {
@@ -101,7 +94,7 @@
 </script>
 
 <section
-	bind:this={containerRef}
+	{@attach captureContainer}
 	onmousemove={handleMouseMove}
 	class="relative py-32 px-6 bg-[#020202] overflow-hidden border-t border-white/10"
 	aria-label="Account Creation Terminal"
@@ -137,7 +130,7 @@
 			{#key isVisible}
 				{#if isVisible}
 					<div
-						in:terminalBoot={{ delay: 0, duration: 900 }}
+						in:heavySlide={{ delay: 0, duration: 1000 }}
 						class="inline-flex items-center justify-center gap-3 mb-10"
 					>
 						<span class="relative flex h-2 w-2">
@@ -152,7 +145,7 @@
 					</div>
 
 					<h2
-						in:terminalBoot={{ delay: 100, duration: 900 }}
+						in:heavySlide={{ delay: 100, duration: 1000 }}
 						class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight leading-[0.95]"
 					>
 						Professional <br />
@@ -160,7 +153,7 @@
 					</h2>
 
 					<p
-						in:terminalBoot={{ delay: 200, duration: 900 }}
+						in:heavySlide={{ delay: 200, duration: 1000 }}
 						class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto mb-16"
 					>
 						This is not a game. It is a business. Authenticate now to access institutional-grade
@@ -168,7 +161,7 @@
 					</p>
 
 					<div
-						in:springUp={{ delay: 250, duration: 900 }}
+						in:heavySlide={{ delay: 300, duration: 1000 }}
 						class="relative max-w-xl mx-auto group perspective-1000"
 					>
 						<div
@@ -241,7 +234,7 @@
 					</div>
 
 					<div
-						in:springUp={{ delay: 380, duration: 800 }}
+						in:heavySlide={{ delay: 400, duration: 1000 }}
 						class="mt-16 pt-8 border-t border-white/5 grid grid-cols-2 md:grid-cols-4 gap-8"
 					>
 						<div class="text-center md:text-left">

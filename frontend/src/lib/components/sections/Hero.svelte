@@ -13,6 +13,7 @@
 	import { browser } from '$app/environment';
 	import type { CandlestickData, IChartApi, ISeriesApi, UTCTimestamp } from 'lightweight-charts';
 	import type gsap from 'gsap';
+	import type { Attachment } from 'svelte/attachments';
 
 	// MODULE-LEVEL PRE-COMPUTATION
 	// Deterministic seeded PRNG prevents SSR/client hydration mismatch
@@ -136,6 +137,22 @@
 	// Progress for slide indicator
 	let slideProgress = $state(0);
 	let progressInterval: ReturnType<typeof setInterval> | null = null;
+
+	const captureHeroSection: Attachment<HTMLElement> = (node) => {
+		heroSection = node;
+
+		return () => {
+			if (heroSection === node) heroSection = null;
+		};
+	};
+
+	const captureChartContainer: Attachment<HTMLElement> = (node) => {
+		chartContainer = node;
+
+		return () => {
+			if (chartContainer === node) chartContainer = null;
+		};
+	};
 
 	// CHART INITIALIZATION
 	async function initChart(): Promise<void> {
@@ -763,7 +780,12 @@
 	});
 </script>
 
-<section bind:this={heroSection} id="hero" class="hero-section" class:hero-animating={isAnimating}>
+<section
+	{@attach captureHeroSection}
+	id="hero"
+	class="hero-section"
+	class:hero-animating={isAnimating}
+>
 	<!-- Ambient Background Layers -->
 	<div class="hero-ambient" aria-hidden="true">
 		<div class="ambient-gradient"></div>
@@ -775,7 +797,7 @@
 	</div>
 
 	<!-- Chart Background -->
-	<div id="chart-bg" bind:this={chartContainer} class="hero-chart" aria-hidden="true"></div>
+	<div id="chart-bg" {@attach captureChartContainer} class="hero-chart" aria-hidden="true"></div>
 
 	<!-- Vignette Overlay -->
 	<div class="hero-vignette" aria-hidden="true"></div>

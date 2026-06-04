@@ -9,8 +9,8 @@
 	 * @standards Apple Principal Engineer ICT Level 7+
 	 */
 	import type { ComponentInfo, ComponentTree } from './+page.server';
+	import { onMount } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
-	import {} from 'svelte';
 
 	interface Props {
 		tree: ComponentTree;
@@ -30,23 +30,19 @@
 	let favorites = new SvelteSet<string>();
 	let recentComponents = $state<string[]>([]);
 
-	// Load favorites and recent from localStorage
-	$effect(() => {
-		if (typeof window !== 'undefined') {
-			const savedFavorites = localStorage.getItem('workbench-favorites');
-			const savedRecent = localStorage.getItem('workbench-recent');
+	onMount(() => {
+		const savedFavorites = localStorage.getItem('workbench-favorites');
+		const savedRecent = localStorage.getItem('workbench-recent');
 
-			if (savedFavorites) {
-				// Mutate the existing reactive set in place (it's `const` now);
-				//  tracks .add/.clear so the UI still updates.
-				favorites.clear();
-				for (const path of JSON.parse(savedFavorites) as string[]) {
-					favorites.add(path);
-				}
+		if (savedFavorites) {
+			favorites.clear();
+			for (const path of JSON.parse(savedFavorites) as string[]) {
+				favorites.add(path);
 			}
-			if (savedRecent) {
-				recentComponents = JSON.parse(savedRecent);
-			}
+		}
+
+		if (savedRecent) {
+			recentComponents = JSON.parse(savedRecent);
 		}
 	});
 

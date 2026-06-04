@@ -1,7 +1,6 @@
 <script lang="ts">
 	import PayoffDiagram from './charts/PayoffDiagram.svelte';
 	import GreeksHeatmap from './charts/GreeksHeatmap.svelte';
-	import Surface3D from './charts/Surface3D.svelte';
 	import MonteCarloPaths from './charts/MonteCarloPaths.svelte';
 	import VolSmile from './charts/VolSmile.svelte';
 	import ThetaDecay from './charts/ThetaDecay.svelte';
@@ -28,6 +27,10 @@
 		{ id: 'sensitivity', label: 'Sensitivity' },
 		{ id: 'chain', label: 'Options Chain' }
 	];
+
+	const surface3DModule = $derived(
+		calc.activeTab === 'surface' ? import('./charts/Surface3D.svelte') : null
+	);
 </script>
 
 <div class="flex flex-col gap-0">
@@ -57,7 +60,24 @@
 		{:else if calc.activeTab === 'heatmap'}
 			<GreeksHeatmap {calc} />
 		{:else if calc.activeTab === 'surface'}
-			<Surface3D {calc} />
+			{#await surface3DModule}
+				<div
+					class="flex min-h-80 items-center justify-center rounded-xl border text-xs"
+					style="border-color: var(--calc-border); color: var(--calc-text-muted);"
+				>
+					Loading 3D surface...
+				</div>
+			{:then module}
+				{@const Surface3D = module?.default}
+				<Surface3D {calc} />
+			{:catch}
+				<div
+					class="rounded-xl border p-6 text-center text-xs"
+					style="border-color: var(--calc-border); color: var(--calc-text-muted);"
+				>
+					3D surface failed to load.
+				</div>
+			{/await}
 		{:else if calc.activeTab === 'montecarlo'}
 			<MonteCarloPaths {calc} />
 		{:else if calc.activeTab === 'volsmile'}

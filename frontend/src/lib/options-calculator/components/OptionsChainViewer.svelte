@@ -1,7 +1,8 @@
 <script lang="ts">
 	import IconLoader2 from '@tabler/icons-svelte-runes/icons/loader-2';
-	import {  } from 'svelte';
 	import gsap from 'gsap';
+	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
+	import type { Attachment } from 'svelte/attachments';
 	import { price as bsPrice } from '../engine/black-scholes.js';
 	import type { MarketDataService } from '../data/market-data-service.svelte.js';
 	import type { CalculatorState } from '../state/calculator.svelte.js';
@@ -16,34 +17,38 @@
 
 	let { marketData, calc, onSelectContract }: Props = $props();
 
-	let selectedExpiration = $state('');
+	let selectedExpirationOverride = $state<string | null>(null);
 	let isLoadingChain = $state(false);
-	let tableEl: HTMLDivElement | undefined = $state();
 
 	let chain = $derived(marketData.currentChain);
 	let expirations = $derived(marketData.currentExpirations?.expirations ?? []);
 	let ticker = $derived(marketData.activeTicker);
+	let selectedExpiration = $derived(
+		selectedExpirationOverride && expirations.includes(selectedExpirationOverride)
+			? selectedExpirationOverride
+			: (expirations[0] ?? '')
+	);
 
-	$effect(() => {
-		if (expirations.length > 0 && !selectedExpiration) {
-			selectedExpiration = expirations[0];
-		}
-	});
+	function animateRows(currentChain: typeof chain): Attachment<HTMLDivElement> {
+		return (node) => {
+			if (!currentChain) return;
 
-	$effect(() => {
-		if (tableEl && chain) {
-			const rows = tableEl.querySelectorAll('tr');
-			gsap.fromTo(
+			const rows = node.querySelectorAll('tr');
+			if (rows.length === 0) return;
+
+			const tween = gsap.fromTo(
 				rows,
 				{ opacity: 0, y: 4 },
 				{ opacity: 1, y: 0, duration: 0.2, stagger: 0.008, ease: 'power2.out' }
 			);
-		}
-	});
+
+			return () => tween.kill();
+		};
+	}
 
 	async function loadChain(expiration: string) {
 		if (!ticker || !expiration) return;
-		selectedExpiration = expiration;
+		selectedExpirationOverride = expiration;
 		isLoadingChain = true;
 		try {
 			await marketData.fetchOptionsChain(ticker, expiration);
@@ -95,20 +100,20 @@
 
 	let strikes = $derived.by(() => {
 		if (!chain) return [];
-		const strikeSet = new Set<number>();
+		const strikeSet = new SvelteSet<number>();
 		for (const c of chain.calls) strikeSet.add(c.strike);
 		for (const p of chain.puts) strikeSet.add(p.strike);
 		return [...strikeSet].sort((a, b) => a - b);
 	});
 
 	let callsByStrike = $derived.by(() => {
-		const map = new Map<number, OptionQuote>();
+		const map = new SvelteMap<number, OptionQuote>();
 		if (chain) for (const c of chain.calls) map.set(c.strike, c);
 		return map;
 	});
 
 	let putsByStrike = $derived.by(() => {
-		const map = new Map<number, OptionQuote>();
+		const map = new SvelteMap<number, OptionQuote>();
 		if (chain) for (const p of chain.puts) map.set(p.strike, p);
 		return map;
 	});
@@ -194,7 +199,7 @@
 	{:else if chain && strikes.length > 0}
 		<!-- Chain Table -->
 		<div
-			bind:this={tableEl}
+			{@attach animateRows(chain)}
 			class="overflow-x-auto rounded-xl"
 			style="border: 1px solid var(--calc-border);"
 		>

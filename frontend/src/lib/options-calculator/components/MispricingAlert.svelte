@@ -2,8 +2,9 @@
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
 	import IconTrendingDown from '@tabler/icons-svelte-runes/icons/trending-down';
-	import {  } from 'svelte';
 	import gsap from 'gsap';
+	import { SvelteSet } from 'svelte/reactivity';
+	import type { Attachment } from 'svelte/attachments';
 	import { price as bsPrice } from '../engine/black-scholes.js';
 	import type { MarketDataService } from '../data/market-data-service.svelte.js';
 	import type { CalculatorState } from '../state/calculator.svelte.js';
@@ -17,8 +18,7 @@
 
 	let { marketData, calc }: Props = $props();
 
-	let dismissed = $state<Set<string>>(new Set());
-	let alertEl: HTMLDivElement | undefined = $state();
+	let dismissed = new SvelteSet<string>();
 
 	let mispricings = $derived.by<MispricingResult[]>(() => {
 		const chain = marketData.currentChain;
@@ -75,20 +75,22 @@
 		dismissed.add(symbol);
 	}
 
-	$effect(() => {
-		if (alertEl && mispricings.length > 0) {
-			const cards = alertEl.querySelectorAll('.mispricing-card');
+	function animateAlerts(count: number): Attachment<HTMLDivElement> {
+		return (node) => {
+			if (count === 0) return;
+
+			const cards = node.querySelectorAll('.mispricing-card');
 			gsap.fromTo(
 				cards,
 				{ x: 30, opacity: 0 },
 				{ x: 0, opacity: 1, duration: 0.3, stagger: 0.06, ease: 'power2.out' }
 			);
-		}
-	});
+		};
+	}
 </script>
 
 {#if mispricings.length > 0}
-	<div bind:this={alertEl} class="flex flex-col gap-1.5">
+	<div {@attach animateAlerts(mispricings.length)} class="flex flex-col gap-1.5">
 		<span
 			class="text-[10px] font-semibold uppercase tracking-wider"
 			style="color: var(--calc-warning);"

@@ -20,6 +20,7 @@
 	import IconCertificate from '@tabler/icons-svelte-runes/icons/certificate';
 	import IconFlame from '@tabler/icons-svelte-runes/icons/flame';
 	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
+	import type { Attachment } from 'svelte/attachments';
 
 	// ============================================================================
 	// COURSE DATA
@@ -122,8 +123,8 @@
 	// ============================================================================
 	let sectionRef = $state<HTMLElement | null>(null);
 	let cardsRef = $state<HTMLElement | null>(null);
-	// ICT11+ Fix: SSR renders true (CLS fix), {#key} triggers transitions
-	let isVisible = $state(true);
+	// January 2026 motion: content is revealed lazily as the section scrolls into view.
+	let isVisible = $state(false);
 	interface ScrollTriggerLike {
 		trigger?: Element;
 		kill(): void;
@@ -136,6 +137,22 @@
 	let prefersReducedMotion = $state(false);
 	let visibilityObserver: IntersectionObserver | null = null;
 
+	const captureSection: Attachment<HTMLElement> = (node) => {
+		sectionRef = node;
+
+		return () => {
+			if (sectionRef === node) sectionRef = null;
+		};
+	};
+
+	const captureCards: Attachment<HTMLElement> = (node) => {
+		cardsRef = node;
+
+		return () => {
+			if (cardsRef === node) cardsRef = null;
+		};
+	};
+
 	// FIX-2026-04-26: cursor-follow spotlight removed per user request — disabled to fix UX bug.
 	// mouseX / mouseY state and handleMouseMove have been removed entirely.
 
@@ -147,9 +164,6 @@
 
 		// Check for reduced motion preference
 		prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-		// Force state change to trigger {#key} transitions per Svelte 5 docs
-		isVisible = false;
 
 		// Trigger entrance animations when section scrolls into viewport
 		queueMicrotask(() => {
@@ -273,7 +287,7 @@
 <!-- <svelte:window onmousemove={handleMouseMove} /> -->
 
 <section
-	bind:this={sectionRef}
+	{@attach captureSection}
 	class="relative py-20 sm:py-32 overflow-hidden bg-[#050812] selection:bg-violet-500/30 selection:text-violet-200"
 >
 	<div class="absolute inset-0 pointer-events-none">
@@ -315,7 +329,7 @@
 					</p>
 
 					<div
-						class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto mt-12 pt-8 border-t border-white/5"
+						class="courses-stats-grid grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto mt-12 pt-8 border-t border-white/5"
 						in:slideUp={{ delay: 200, duration: 800 }}
 					>
 						<div class="text-center group cursor-default">
@@ -363,7 +377,10 @@
 			{/if}
 		{/key}
 
-		<div bind:this={cardsRef} class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 relative">
+		<div
+			{@attach captureCards}
+			class="courses-grid grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 relative"
+		>
 			<!-- FIX-2026-04-26: cursor-follow spotlight removed per user request — disabled to fix UX bug. -->
 			<!-- <div
 				class="pointer-events-none absolute -inset-px opacity-0 md:opacity-100 transition-opacity duration-300 z-0 rounded-3xl"
@@ -603,12 +620,12 @@
 			padding: 1.25rem;
 		}
 
-		:global(.grid-cols-2) {
+		.courses-stats-grid {
 			grid-template-columns: 1fr;
 		}
 
-		:global(.gap-6),
-		:global(.gap-8) {
+		.courses-stats-grid,
+		.courses-grid {
 			gap: 1rem;
 		}
 
@@ -623,18 +640,18 @@
 	}
 
 	@media (min-width: 640px) and (max-width: 767px) {
-		:global(.grid-cols-2) {
+		.courses-stats-grid {
 			grid-template-columns: 1fr;
 		}
 
-		:global(.gap-6),
-		:global(.gap-8) {
+		.courses-stats-grid,
+		.courses-grid {
 			gap: 1.25rem;
 		}
 	}
 
 	@media (min-width: 768px) and (max-width: 1023px) {
-		:global(.md\\:grid-cols-2) {
+		.courses-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}
 	}

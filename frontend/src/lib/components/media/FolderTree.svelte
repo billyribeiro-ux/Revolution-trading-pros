@@ -6,10 +6,10 @@
 -->
 
 <script lang="ts">
-	import {  } from 'svelte';
 	import { mediaStore as _mediaStore, getCurrentFolders } from '$lib/stores/media.svelte';
 	import type { MediaFolder } from '$lib/api/media';
 	import { IconFolder, IconChevronRight, IconChevronDown, IconPlus } from '$lib/icons';
+	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 
 	interface Props {
 		currentFolderId?: string | null;
@@ -23,7 +23,7 @@
 		onCreateFolder = () => {}
 	}: Props = $props();
 
-	let expandedFolders = $state(new Set<string>());
+	let expandedFolders = new SvelteSet<string>();
 
 	type FolderNode = MediaFolder & { children: FolderNode[] };
 
@@ -33,7 +33,7 @@
 
 	function buildFolderTree(folders: MediaFolder[]): FolderNode[] {
 		const tree: FolderNode[] = [];
-		const map = new Map<string, FolderNode>();
+		const map = new SvelteMap<string, FolderNode>();
 
 		// Create map with children arrays
 		folders.forEach((folder) => {
@@ -63,7 +63,6 @@
 		} else {
 			expandedFolders.add(folderId);
 		}
-		expandedFolders = expandedFolders; // Trigger reactivity
 	}
 
 	function selectFolder(folderId: string | null) {

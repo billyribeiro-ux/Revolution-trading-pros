@@ -15,7 +15,7 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import {  } from 'svelte/reactivity';
+	import { SvelteSet } from 'svelte/reactivity';
 	import type { Block, BlockSettings } from './types';
 	import { API_BASE_URL } from '$lib/api/config';
 	import { getAuthToken } from '$lib/stores/auth.svelte';
@@ -111,7 +111,7 @@
 	let activeTab = $state<'style' | 'advanced' | 'responsive'>('style');
 
 	// Expanded sections
-	let expandedSections = new Set<string>(['typography', 'colors']);
+	let expandedSections = new SvelteSet<string>(['typography', 'colors']);
 
 	// Color picker state
 	let showColorPicker = $state<string | null>(null);

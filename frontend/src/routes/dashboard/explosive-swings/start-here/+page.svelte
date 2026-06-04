@@ -10,7 +10,6 @@
 <script lang="ts">
 	import { SvelteSet } from 'svelte/reactivity';
 	import { IconPlus, IconMinus } from '$lib/icons';
-	import {  } from 'svelte';
 
 	// Accordion state management - Svelte 5 runes
 	let openAccordions = new SvelteSet<number>();

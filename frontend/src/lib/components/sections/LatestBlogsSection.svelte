@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { cubicOut, quintOut } from 'svelte/easing';
+	import { cubicOut } from 'svelte/easing';
 	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
 	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
 	import IconNews from '@tabler/icons-svelte-runes/icons/news';
 	import IconChartCandle from '@tabler/icons-svelte-runes/icons/chart-candle';
 	import type { Post } from '$lib/types/post';
+	import type { Attachment } from 'svelte/attachments';
 
 	// ─────────────────────────────────────────────────────────────────────────
 	// Props & Logic
@@ -21,11 +22,19 @@
 	let wirePosts = $derived(posts.length > 1 ? posts.slice(1, 4) : []);
 
 	// --- Animation Logic ---
-	let containerRef: HTMLElement;
-	// ICT11+ Fix: SSR renders true (CLS fix), {#key} triggers transitions
-	let isVisible = $state(true);
+	let containerRef = $state<HTMLElement | null>(null);
+	// January 2026 motion: content is revealed lazily as the section scrolls into view.
+	let isVisible = $state(false);
 	let mouse = $state({ x: 0, y: 0 });
 	let visibilityObserver: IntersectionObserver | null = null;
+
+	const captureContainer: Attachment<HTMLElement> = (node) => {
+		containerRef = node;
+
+		return () => {
+			if (containerRef === node) containerRef = null;
+		};
+	};
 
 	const handleMouseMove = (e: MouseEvent) => {
 		if (!containerRef) return;
@@ -35,10 +44,6 @@
 	};
 
 	onMount(() => {
-		// Use queueMicrotask to ensure binding is complete
-		// Force state change to trigger {#key} transitions per Svelte 5 docs
-		isVisible = false;
-
 		queueMicrotask(() => {
 			if (!containerRef) {
 				isVisible = true; // Fallback: show content
@@ -69,26 +74,13 @@
 		return () => visibilityObserver?.disconnect();
 	});
 
-	// Header: slides from the right like a wire report printing in
-	function slideFromRight(_node: Element, { delay = 0, duration = 900 }) {
-		return {
-			delay,
-			duration,
-			css: (t: number) => {
-				const eased = quintOut(t);
-				return `opacity: ${eased}; transform: translateX(${(1 - eased) * 60}px);`;
-			}
-		};
-	}
-
-	// Cards: fly up from further below — greater vertical travel
-	function flyUp(_node: Element, { delay = 0, duration = 800 }) {
+	function heavySlide(_node: Element, { delay = 0, duration = 1000 }) {
 		return {
 			delay,
 			duration,
 			css: (t: number) => {
 				const eased = cubicOut(t);
-				return `opacity: ${eased}; transform: translateY(${(1 - eased) * 80}px);`;
+				return `opacity: ${eased}; transform: translateY(${(1 - eased) * 30}px);`;
 			}
 		};
 	}
@@ -105,7 +97,7 @@
 </script>
 
 <section
-	bind:this={containerRef}
+	{@attach captureContainer}
 	onmousemove={handleMouseMove}
 	class="relative py-32 px-6 bg-[#020202] overflow-hidden border-t border-white/10"
 	aria-label="Market Intelligence Wire"
@@ -125,7 +117,7 @@
 			{#key isVisible}
 				{#if isVisible}
 					<div
-						in:slideFromRight={{ delay: 0, duration: 900 }}
+						in:heavySlide={{ delay: 0, duration: 1000 }}
 						class="inline-flex items-center gap-3 px-4 py-1.5 border border-amber-900/30 bg-amber-950/10 text-amber-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm"
 					>
 						<IconNews size={14} />
@@ -133,14 +125,14 @@
 					</div>
 
 					<h2
-						in:slideFromRight={{ delay: 80, duration: 950 }}
+						in:heavySlide={{ delay: 100, duration: 1000 }}
 						class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight"
 					>
 						Market <span class="text-slate-700">Analysis.</span>
 					</h2>
 
 					<p
-						in:slideFromRight={{ delay: 160, duration: 950 }}
+						in:heavySlide={{ delay: 200, duration: 1000 }}
 						class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto"
 					>
 						We don't publish retail content. We deliver institutional-grade market intelligence.
@@ -158,7 +150,7 @@
 							{#if isVisible}
 								<a
 									href="/blog/{leadPost.slug}"
-									in:flyUp={{ delay: 200, duration: 900 }}
+									in:heavySlide={{ delay: 300, duration: 1000 }}
 									class="relative group block h-full bg-[#050505] border border-white/10 overflow-hidden hover:border-amber-600/50 transition-colors duration-500"
 								>
 									<div class="relative h-[400px] overflow-hidden">
@@ -229,7 +221,7 @@
 					{#key isVisible}
 						{#if isVisible}
 							<div
-								in:flyUp={{ delay: 350, duration: 800 }}
+								in:heavySlide={{ delay: 400, duration: 1000 }}
 								class="mb-8 flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-slate-500"
 							>
 								<IconNews size={14} />

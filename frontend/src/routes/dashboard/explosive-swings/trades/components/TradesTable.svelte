@@ -19,8 +19,6 @@
 
 	const { trades, isAdmin = false, onCloseTrade }: Props = $props();
 
-	import {  } from 'svelte';
-
 	// Track expanded notes
 	let expandedNotes = new SvelteSet<number>();
 
@@ -50,7 +48,7 @@
 </script>
 
 <!-- Mobile Card Layout (< 768px) -->
-<div class="mobile-cards md:hidden">
+<div class="mobile-cards trades-mobile md:hidden">
 	{#each trades as trade (trade.id)}
 		{@const hasNotes = trade.notes && trade.notes.trim().length > 0}
 		{@const isExpanded = expandedNotes.has(trade.id)}
@@ -180,20 +178,20 @@
 </div>
 
 <!-- Desktop/Tablet Table Layout (768px+) -->
-<div class="table-container hidden md:block">
+<div class="table-container trades-desktop hidden md:block">
 	<div class="table-scroll-wrapper">
 		<table class="trades-table" aria-label="Trade history">
 			<thead>
 				<tr>
 					<th scope="col">Ticker</th>
 					<th scope="col">Entry</th>
-					<th scope="col" class="lg:table-cell hidden">Exit</th>
-					<th scope="col" class="numeric lg:table-cell hidden">Entry $</th>
-					<th scope="col" class="numeric lg:table-cell hidden">Exit $</th>
+					<th scope="col" class="trades-lg-cell hidden">Exit</th>
+					<th scope="col" class="numeric trades-lg-cell hidden">Entry $</th>
+					<th scope="col" class="numeric trades-lg-cell hidden">Exit $</th>
 					<th scope="col" class="numeric">Profit</th>
 					<th scope="col" class="numeric">%</th>
-					<th scope="col" class="numeric xl:table-cell hidden">Days</th>
-					<th scope="col" class="xl:table-cell hidden">Setup</th>
+					<th scope="col" class="numeric trades-xl-cell hidden">Days</th>
+					<th scope="col" class="trades-xl-cell hidden">Setup</th>
 					<th scope="col">Result</th>
 					{#if isAdmin}
 						<th scope="col">Actions</th>
@@ -234,9 +232,9 @@
 							{/if}
 						</td>
 						<td>{trade.entryDate}</td>
-						<td class="lg:table-cell hidden">{trade.exitDate ?? 'Active'}</td>
-						<td class="numeric lg:table-cell hidden">{formatPrice(trade.entryPrice)}</td>
-						<td class="numeric lg:table-cell hidden">{formatPrice(trade.exitPrice)}</td>
+						<td class="trades-lg-cell hidden">{trade.exitDate ?? 'Active'}</td>
+						<td class="numeric trades-lg-cell hidden">{formatPrice(trade.entryPrice)}</td>
+						<td class="numeric trades-lg-cell hidden">{formatPrice(trade.exitPrice)}</td>
 						<td class="numeric" class:profit={trade.profit > 0} class:loss={trade.profit < 0}>
 							{formatProfit(trade.profit)}
 						</td>
@@ -247,8 +245,8 @@
 						>
 							{formatPercent(trade.profitPercent)}
 						</td>
-						<td class="numeric xl:table-cell hidden">{trade.duration || '—'}</td>
-						<td class="xl:table-cell hidden"><span class="setup-badge">{trade.setup}</span></td>
+						<td class="numeric trades-xl-cell hidden">{trade.duration || '—'}</td>
+						<td class="trades-xl-cell hidden"><span class="setup-badge">{trade.setup}</span></td>
 						<td>
 							<span class="result-badge result--{trade.result.toLowerCase()}">
 								{trade.result}
@@ -503,15 +501,13 @@
 	}
 
 	@media (min-width: 1024px) {
-		th.lg\:table-cell,
-		td.lg\:table-cell {
+		.trades-lg-cell {
 			display: table-cell;
 		}
 	}
 
 	@media (min-width: 1280px) {
-		th.xl\:table-cell,
-		td.xl\:table-cell {
+		.trades-xl-cell {
 			display: table-cell;
 		}
 	}
@@ -716,16 +712,12 @@
 	}
 
 	@media (min-width: 768px) {
-		:where(.md\:hidden) {
+		.trades-mobile {
 			display: none;
 		}
 
-		:where(.md\:block) {
+		.trades-desktop {
 			display: block;
-		}
-
-		:where(.md\:table-cell) {
-			display: table-cell;
 		}
 	}
 </style>

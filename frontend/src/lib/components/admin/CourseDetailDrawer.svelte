@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { SvelteSet } from 'svelte/reactivity';
+	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 	/**
 	 * CourseDetailDrawer - Full Course Profile Drawer
 	 * Revolution Trading Pros - Apple ICT 11+ Principal Engineer Grade
@@ -34,7 +34,6 @@
 		IconFile
 	} from '$lib/icons';
 	import ConfirmationModal from './ConfirmationModal.svelte';
-	import {} from 'svelte';
 
 	// FIX-2026-04-26: Analytics tab now wired to real backend data via
 	// GET /api/admin/courses/:id/analytics. Previously the metric rows below
@@ -78,10 +77,16 @@
 	const onRefresh = $derived(props.onRefresh);
 
 	// State
-	let courseData = $state<CourseWithContent | null>(null);
-	let isLoading = $state(false);
-	let error = $state('');
-	let activeTab = $state<'modules' | 'enrollments' | 'analytics'>('modules');
+	type DrawerTab = 'modules' | 'enrollments' | 'analytics';
+
+	interface CourseDrawerResource {
+		courseData: CourseWithContent;
+		analytics: CourseAnalytics | null;
+	}
+
+	let courseReloadNonce = $state(0);
+	let actionError = $state<{ courseId: string; message: string } | null>(null);
+	let activeTabsByCourse = new SvelteMap<string, DrawerTab>();
 
 	// Action modals
 	let showPublishModal = $state(false);
@@ -90,23 +95,11 @@
 	let isProcessingAction = $state(false);
 
 	// Expanded modules
-	let expandedModules = $state(new SvelteSet<number>()); // eslint-disable-line svelte/no-unnecessary-state-wrap
+	let expandedModulesByCourse = new SvelteMap<string, SvelteSet<number>>();
 
-	// FIX-2026-04-26: analytics for the Analytics tab. Loaded alongside course
-	// data; safe to render `null` (we fall back to em-dash while loading).
-	let analytics = $state<CourseAnalytics | null>(null);
-
-	// Load course data when drawer opens
-	$effect(() => {
-		if (isOpen && courseId) {
-			loadCourseData();
-		} else {
-			courseData = null;
-			activeTab = 'modules';
-			error = '';
-			expandedModules.clear();
-			analytics = null;
-		}
+	let courseResource = $derived.by<Promise<CourseDrawerResource> | null>(() => {
+		if (!isOpen || !courseId) return null;
+		return loadCourseResource(courseId, courseReloadNonce);
 	});
 
 	$effect(() => {
@@ -120,43 +113,33 @@
 		};
 	});
 
-	async function loadCourseData() {
-		if (!courseId) return;
-
-		isLoading = true;
-		error = '';
-
-		try {
-			courseData = await adminCoursesApi.get(courseId);
-			// Auto-expand first module
-			if (courseData.modules.length > 0) {
-				expandedModules = new SvelteSet([courseData.modules[0].id]);
-			}
-			// FIX-2026-04-26: fetch analytics in parallel-ish (after course load so
-			// we have the canonical course id). Failure is non-fatal — drawer keeps
-			// rendering with em-dash placeholders.
-			loadAnalytics(courseData.id);
-		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to load course data';
-		} finally {
-			isLoading = false;
-		}
+	async function loadCourseResource(id: string, _nonce: number): Promise<CourseDrawerResource> {
+		const courseData = await adminCoursesApi.get(id);
+		const analytics = await loadAnalytics(courseData.id);
+		return { courseData, analytics };
 	}
 
-	async function loadAnalytics(id: string) {
+	async function loadAnalytics(id: string): Promise<CourseAnalytics | null> {
 		try {
 			const res = await fetch(`/api/admin/courses/${id}/analytics`);
 			const payload: { success: boolean; data?: CourseAnalytics; error?: string } =
 				await res.json();
 			if (payload.success && payload.data) {
-				analytics = payload.data;
-			} else {
-				analytics = null;
+				return payload.data;
 			}
 		} catch (err) {
 			console.error('[CourseDetailDrawer] analytics fetch failed:', err);
-			analytics = null;
 		}
+		return null;
+	}
+
+	function reloadCourseData() {
+		actionError = null;
+		courseReloadNonce += 1;
+	}
+
+	function getActionError(course: CourseWithContent): string {
+		return actionError?.courseId === course.id ? actionError.message : '';
 	}
 
 	function formatPercent(value: number | undefined | null): string {
@@ -187,44 +170,68 @@
 		return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 	}
 
-	async function handlePublishToggle() {
-		if (!courseData) return;
-
+	async function handlePublishToggle(courseData: CourseWithContent) {
 		isProcessingAction = true;
+		actionError = null;
 		try {
 			if (courseData.is_published) {
 				await adminCoursesApi.unpublish(courseData.id);
 			} else {
 				await adminCoursesApi.publish(courseData.id);
 			}
-			await loadCourseData();
+			reloadCourseData();
 			showPublishModal = false;
 			onRefresh?.();
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to update publish status';
+			actionError = {
+				courseId: courseData.id,
+				message: err instanceof Error ? err.message : 'Failed to update publish status'
+			};
 		} finally {
 			isProcessingAction = false;
 		}
 	}
 
-	async function handleDeleteModule() {
-		if (!courseData || selectedModuleId === null) return;
+	async function handleDeleteModule(courseData: CourseWithContent) {
+		if (selectedModuleId === null) return;
 
 		isProcessingAction = true;
+		actionError = null;
 		try {
 			await adminCoursesApi.deleteModule(courseData.id, selectedModuleId);
-			await loadCourseData();
+			reloadCourseData();
 			showDeleteModuleModal = false;
 			selectedModuleId = null;
 			onRefresh?.();
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to delete module';
+			actionError = {
+				courseId: courseData.id,
+				message: err instanceof Error ? err.message : 'Failed to delete module'
+			};
 		} finally {
 			isProcessingAction = false;
 		}
 	}
 
-	function toggleModuleExpand(moduleId: number) {
+	function getActiveTab(course: CourseWithContent): DrawerTab {
+		return activeTabsByCourse.get(course.id) ?? 'modules';
+	}
+
+	function setActiveTab(course: CourseWithContent, tab: DrawerTab) {
+		activeTabsByCourse.set(course.id, tab);
+	}
+
+	function getExpandedModules(course: CourseWithContent): SvelteSet<number> {
+		let expandedModules = expandedModulesByCourse.get(course.id);
+		if (!expandedModules) {
+			expandedModules = new SvelteSet(course.modules[0] ? [course.modules[0].id] : []);
+			expandedModulesByCourse.set(course.id, expandedModules);
+		}
+		return expandedModules;
+	}
+
+	function toggleModuleExpand(course: CourseWithContent, moduleId: number) {
+		const expandedModules = getExpandedModules(course);
 		if (expandedModules.has(moduleId)) {
 			expandedModules.delete(moduleId);
 		} else {
@@ -291,497 +298,504 @@
 		}}
 	>
 		<aside class="drawer" class:open={isOpen}>
-			{#if isLoading}
-				<div class="loading-state">
-					<div class="spinner-large"></div>
-					<p>Loading course data...</p>
-				</div>
-			{:else if error && !courseData}
-				<div class="error-state">
-					<IconAlertTriangle size={48} />
-					<p>{error}</p>
-					<button type="button" class="btn-retry" onclick={loadCourseData}>Try Again</button>
-				</div>
-			{:else if courseData}
-				<!-- Header -->
-				<header class="drawer-header">
-					<div class="course-thumbnail">
-						{#if courseData.card_image_url}
-							<img
-								src={courseData.card_image_url}
-								alt={courseData.title}
-								width="72"
-								height="48"
-								loading="lazy"
-							/>
-						{:else}
-							<IconBook size={32} />
-						{/if}
+			{#if courseResource}
+				{#await courseResource}
+					<div class="loading-state">
+						<div class="spinner-large"></div>
+						<p>Loading course data...</p>
 					</div>
-					<div class="course-info">
-						<h2 class="course-title">{courseData.title}</h2>
-						<p class="course-slug">/{courseData.slug}</p>
-						<div class="course-badges">
-							<span
-								class="status-badge"
-								style="--badge-color: {getStatusColor(
-									courseData.status || (courseData.is_published ? 'published' : 'draft')
-								)}"
-							>
-								{courseData.status || (courseData.is_published ? 'Published' : 'Draft')}
-							</span>
-							{#if courseData.level}
-								<span class="level-badge">{courseData.level}</span>
-							{/if}
-							{#if courseData.is_free}
-								<span class="free-badge">Free</span>
-							{/if}
-						</div>
-					</div>
-					<button type="button" class="btn-close" onclick={onClose} aria-label="Close">
-						<IconX size={24} />
-					</button>
-				</header>
-
-				{#if error}
-					<div class="error-banner">
-						<IconAlertTriangle size={16} />
-						{error}
-					</div>
-				{/if}
-
-				<!-- Quick Stats -->
-				<div class="quick-stats">
-					<div class="stat-item">
-						<span class="stat-value">{courseData.module_count || courseData.modules.length}</span>
-						<span class="stat-label">Modules</span>
-					</div>
-					<div class="stat-item">
-						<span class="stat-value"
-							>{courseData.lesson_count ||
-								courseData.modules.reduce((sum, m) => sum + (m.lessons?.length || 0), 0)}</span
-						>
-						<span class="stat-label">Lessons</span>
-					</div>
-					<div class="stat-item">
-						<span class="stat-value">{courseData.enrollment_count || 0}</span>
-						<span class="stat-label">Students</span>
-					</div>
-					<div class="stat-item">
-						<span class="stat-value">{formatCurrency(courseData.price_cents)}</span>
-						<span class="stat-label">Price</span>
-					</div>
-				</div>
-
-				<!-- Action Buttons -->
-				<div class="action-buttons">
-					<button
-						type="button"
-						class="btn-action"
-						onclick={() => {
-							if (courseData) onEdit?.(courseData);
-						}}
-					>
-						<IconEdit size={16} />
-						Edit
-					</button>
-					<a href="/admin/page-builder?course={courseData.id}" class="btn-action builder">
-						<IconPlayerPlay size={16} />
-						Builder
-					</a>
-					<button
-						type="button"
-						class="btn-action"
-						class:success={!courseData.is_published}
-						class:warning={courseData.is_published}
-						onclick={() => (showPublishModal = true)}
-					>
-						{#if courseData.is_published}
-							<IconEyeOff size={16} />
-							Unpublish
-						{:else}
-							<IconEye size={16} />
-							Publish
-						{/if}
-					</button>
-				</div>
-
-				<!-- Tabs -->
-				<nav class="drawer-tabs" aria-label="Detail tabs">
-					<button
-						type="button"
-						class="tab"
-						class:active={activeTab === 'modules'}
-						onclick={() => (activeTab = 'modules')}
-					>
-						<IconBook size={16} />
-						Modules
-					</button>
-					<button
-						type="button"
-						class="tab"
-						class:active={activeTab === 'enrollments'}
-						onclick={() => (activeTab = 'enrollments')}
-					>
-						<IconUsers size={16} />
-						Enrollments
-					</button>
-					<button
-						type="button"
-						class="tab"
-						class:active={activeTab === 'analytics'}
-						onclick={() => (activeTab = 'analytics')}
-					>
-						<IconChartBar size={16} />
-						Analytics
-					</button>
-				</nav>
-
-				<!-- Tab Content -->
-				<div class="drawer-content">
-					{#if activeTab === 'modules'}
-						<div class="tab-content">
-							<!-- Add Module Button -->
-							<button
-								type="button"
-								class="btn-add-module"
-								onclick={() => {
-									if (courseData) onAddModule?.(courseData.id);
-								}}
-							>
-								<IconPlus size={18} />
-								Add Module
-							</button>
-
-							{#if courseData.modules.length === 0}
-								<div class="empty-state">
-									<IconBook size={48} />
-									<p>No modules yet</p>
-									<span class="empty-hint">Click "Add Module" to create your first module</span>
-								</div>
+				{:then { courseData, analytics }}
+					{@const activeTab = getActiveTab(courseData)}
+					{@const expandedModules = getExpandedModules(courseData)}
+					{@const currentActionError = getActionError(courseData)}
+					<!-- Header -->
+					<header class="drawer-header">
+						<div class="course-thumbnail">
+							{#if courseData.card_image_url}
+								<img
+									src={courseData.card_image_url}
+									alt={courseData.title}
+									width="72"
+									height="48"
+									loading="lazy"
+								/>
 							{:else}
-								<div class="modules-list">
-									{#each courseData.modules as module, idx (module.id)}
-										<div class="module-card" class:expanded={expandedModules.has(module.id)}>
-											<div
-												class="module-header"
-												role="button"
-												tabindex="0"
-												onclick={() => toggleModuleExpand(module.id)}
-												onkeydown={(e) => {
-													if (e.key === 'Enter' || e.key === ' ') {
-														e.preventDefault();
-														toggleModuleExpand(module.id);
-													}
-												}}
-											>
-												<div class="module-drag">
-													<IconGripVertical size={16} />
-												</div>
-												<div class="module-number">{idx + 1}</div>
-												<div class="module-info">
-													<span class="module-title">{module.title}</span>
-													<span class="module-meta">
-														{module.lessons?.length || 0} lessons
-														{#if module.total_duration_minutes}
-															• {formatDuration(module.total_duration_minutes)}
-														{/if}
-													</span>
-												</div>
-												<div class="module-status">
-													{#if module.is_published}
-														<span class="published-indicator">
-															<IconCheck size={14} />
-														</span>
-													{/if}
-												</div>
-												<div class="module-actions">
-													<button
-														type="button"
-														class="btn-module-action"
-														onclick={() => onEditModule?.(module)}
-														title="Edit module"
-													>
-														<IconEdit size={14} />
-													</button>
-													<button
-														type="button"
-														class="btn-module-action danger"
-														onclick={() => {
-															selectedModuleId = module.id;
-															showDeleteModuleModal = true;
-														}}
-														title="Delete module"
-													>
-														<IconTrash size={14} />
-													</button>
-												</div>
-											</div>
-
-											{#if expandedModules.has(module.id)}
-												<div class="module-lessons">
-													{#if !module.lessons || module.lessons.length === 0}
-														<div class="no-lessons">No lessons in this module</div>
-													{:else}
-														{#each module.lessons as lesson (lesson.id)}
-															<div class="lesson-item">
-																<div class="lesson-icon">
-																	{#if lesson.bunny_video_guid}
-																		<IconVideo size={14} />
-																	{:else}
-																		<IconFile size={14} />
-																	{/if}
-																</div>
-																<div class="lesson-info">
-																	<span class="lesson-title">{lesson.title}</span>
-																	{#if lesson.duration_minutes}
-																		<span class="lesson-duration"
-																			>{lesson.duration_minutes} min</span
-																		>
-																	{/if}
-																</div>
-																<div class="lesson-badges">
-																	{#if lesson.is_free || lesson.is_preview}
-																		<span class="lesson-badge free">Preview</span>
-																	{/if}
-																	{#if lesson.is_published === false}
-																		<span class="lesson-badge draft">Draft</span>
-																	{/if}
-																</div>
-															</div>
-														{/each}
-													{/if}
-												</div>
-											{/if}
-										</div>
-									{/each}
-								</div>
+								<IconBook size={32} />
 							{/if}
 						</div>
-					{:else if activeTab === 'enrollments'}
-						<div class="tab-content">
-							<div class="enrollment-stats">
-								<div class="enroll-stat-card">
-									<div class="enroll-stat-icon">
-										<IconUsers size={20} />
-									</div>
-									<div class="enroll-stat-content">
-										<span class="enroll-stat-value">{courseData.enrollment_count || 0}</span>
-										<span class="enroll-stat-label">Total Enrolled</span>
-									</div>
-								</div>
-								<div class="enroll-stat-card">
-									<div class="enroll-stat-icon success">
-										<IconCheck size={20} />
-									</div>
-									<div class="enroll-stat-content">
-										<span class="enroll-stat-value">{courseData.completion_rate || 0}%</span>
-										<span class="enroll-stat-label">Completion Rate</span>
-									</div>
-								</div>
-								<div class="enroll-stat-card">
-									<div class="enroll-stat-icon accent">
-										<IconChartBar size={20} />
-									</div>
-									<div class="enroll-stat-content">
-										<span class="enroll-stat-value"
-											>{courseData.avg_rating?.toFixed(1) || 'N/A'}</span
-										>
-										<span class="enroll-stat-label">Avg Rating</span>
-									</div>
-								</div>
+						<div class="course-info">
+							<h2 class="course-title">{courseData.title}</h2>
+							<p class="course-slug">/{courseData.slug}</p>
+							<div class="course-badges">
+								<span
+									class="status-badge"
+									style="--badge-color: {getStatusColor(
+										courseData.status || (courseData.is_published ? 'published' : 'draft')
+									)}"
+								>
+									{courseData.status || (courseData.is_published ? 'Published' : 'Draft')}
+								</span>
+								{#if courseData.level}
+									<span class="level-badge">{courseData.level}</span>
+								{/if}
+								{#if courseData.is_free}
+									<span class="free-badge">Free</span>
+								{/if}
 							</div>
+						</div>
+						<button type="button" class="btn-close" onclick={onClose} aria-label="Close">
+							<IconX size={24} />
+						</button>
+					</header>
 
-							<div class="info-section">
-								<h3 class="section-title">Recent Enrollments</h3>
-								<!-- FIX-2026-04-26: was hard-coded "Enrollment data coming soon" empty state.
+					{#if currentActionError}
+						<div class="error-banner">
+							<IconAlertTriangle size={16} />
+							{currentActionError}
+						</div>
+					{/if}
+
+					<!-- Quick Stats -->
+					<div class="quick-stats">
+						<div class="stat-item">
+							<span class="stat-value">{courseData.module_count || courseData.modules.length}</span>
+							<span class="stat-label">Modules</span>
+						</div>
+						<div class="stat-item">
+							<span class="stat-value"
+								>{courseData.lesson_count ||
+									courseData.modules.reduce((sum, m) => sum + (m.lessons?.length || 0), 0)}</span
+							>
+							<span class="stat-label">Lessons</span>
+						</div>
+						<div class="stat-item">
+							<span class="stat-value">{courseData.enrollment_count || 0}</span>
+							<span class="stat-label">Students</span>
+						</div>
+						<div class="stat-item">
+							<span class="stat-value">{formatCurrency(courseData.price_cents)}</span>
+							<span class="stat-label">Price</span>
+						</div>
+					</div>
+
+					<!-- Action Buttons -->
+					<div class="action-buttons">
+						<button
+							type="button"
+							class="btn-action"
+							onclick={() => {
+								if (courseData) onEdit?.(courseData);
+							}}
+						>
+							<IconEdit size={16} />
+							Edit
+						</button>
+						<a href="/admin/page-builder?course={courseData.id}" class="btn-action builder">
+							<IconPlayerPlay size={16} />
+							Builder
+						</a>
+						<button
+							type="button"
+							class="btn-action"
+							class:success={!courseData.is_published}
+							class:warning={courseData.is_published}
+							onclick={() => (showPublishModal = true)}
+						>
+							{#if courseData.is_published}
+								<IconEyeOff size={16} />
+								Unpublish
+							{:else}
+								<IconEye size={16} />
+								Publish
+							{/if}
+						</button>
+					</div>
+
+					<!-- Tabs -->
+					<nav class="drawer-tabs" aria-label="Detail tabs">
+						<button
+							type="button"
+							class="tab"
+							class:active={activeTab === 'modules'}
+							onclick={() => setActiveTab(courseData, 'modules')}
+						>
+							<IconBook size={16} />
+							Modules
+						</button>
+						<button
+							type="button"
+							class="tab"
+							class:active={activeTab === 'enrollments'}
+							onclick={() => setActiveTab(courseData, 'enrollments')}
+						>
+							<IconUsers size={16} />
+							Enrollments
+						</button>
+						<button
+							type="button"
+							class="tab"
+							class:active={activeTab === 'analytics'}
+							onclick={() => setActiveTab(courseData, 'analytics')}
+						>
+							<IconChartBar size={16} />
+							Analytics
+						</button>
+					</nav>
+
+					<!-- Tab Content -->
+					<div class="drawer-content">
+						{#if activeTab === 'modules'}
+							<div class="tab-content">
+								<!-- Add Module Button -->
+								<button
+									type="button"
+									class="btn-add-module"
+									onclick={() => {
+										if (courseData) onAddModule?.(courseData.id);
+									}}
+								>
+									<IconPlus size={18} />
+									Add Module
+								</button>
+
+								{#if courseData.modules.length === 0}
+									<div class="empty-state">
+										<IconBook size={48} />
+										<p>No modules yet</p>
+										<span class="empty-hint">Click "Add Module" to create your first module</span>
+									</div>
+								{:else}
+									<div class="modules-list">
+										{#each courseData.modules as module, idx (module.id)}
+											<div class="module-card" class:expanded={expandedModules.has(module.id)}>
+												<div
+													class="module-header"
+													role="button"
+													tabindex="0"
+													onclick={() => toggleModuleExpand(courseData, module.id)}
+													onkeydown={(e) => {
+														if (e.key === 'Enter' || e.key === ' ') {
+															e.preventDefault();
+															toggleModuleExpand(courseData, module.id);
+														}
+													}}
+												>
+													<div class="module-drag">
+														<IconGripVertical size={16} />
+													</div>
+													<div class="module-number">{idx + 1}</div>
+													<div class="module-info">
+														<span class="module-title">{module.title}</span>
+														<span class="module-meta">
+															{module.lessons?.length || 0} lessons
+															{#if module.total_duration_minutes}
+																• {formatDuration(module.total_duration_minutes)}
+															{/if}
+														</span>
+													</div>
+													<div class="module-status">
+														{#if module.is_published}
+															<span class="published-indicator">
+																<IconCheck size={14} />
+															</span>
+														{/if}
+													</div>
+													<div class="module-actions">
+														<button
+															type="button"
+															class="btn-module-action"
+															onclick={() => onEditModule?.(module)}
+															title="Edit module"
+														>
+															<IconEdit size={14} />
+														</button>
+														<button
+															type="button"
+															class="btn-module-action danger"
+															onclick={() => {
+																selectedModuleId = module.id;
+																showDeleteModuleModal = true;
+															}}
+															title="Delete module"
+														>
+															<IconTrash size={14} />
+														</button>
+													</div>
+												</div>
+
+												{#if expandedModules.has(module.id)}
+													<div class="module-lessons">
+														{#if !module.lessons || module.lessons.length === 0}
+															<div class="no-lessons">No lessons in this module</div>
+														{:else}
+															{#each module.lessons as lesson (lesson.id)}
+																<div class="lesson-item">
+																	<div class="lesson-icon">
+																		{#if lesson.bunny_video_guid}
+																			<IconVideo size={14} />
+																		{:else}
+																			<IconFile size={14} />
+																		{/if}
+																	</div>
+																	<div class="lesson-info">
+																		<span class="lesson-title">{lesson.title}</span>
+																		{#if lesson.duration_minutes}
+																			<span class="lesson-duration"
+																				>{lesson.duration_minutes} min</span
+																			>
+																		{/if}
+																	</div>
+																	<div class="lesson-badges">
+																		{#if lesson.is_free || lesson.is_preview}
+																			<span class="lesson-badge free">Preview</span>
+																		{/if}
+																		{#if lesson.is_published === false}
+																			<span class="lesson-badge draft">Draft</span>
+																		{/if}
+																	</div>
+																</div>
+															{/each}
+														{/if}
+													</div>
+												{/if}
+											</div>
+										{/each}
+									</div>
+								{/if}
+							</div>
+						{:else if activeTab === 'enrollments'}
+							<div class="tab-content">
+								<div class="enrollment-stats">
+									<div class="enroll-stat-card">
+										<div class="enroll-stat-icon">
+											<IconUsers size={20} />
+										</div>
+										<div class="enroll-stat-content">
+											<span class="enroll-stat-value">{courseData.enrollment_count || 0}</span>
+											<span class="enroll-stat-label">Total Enrolled</span>
+										</div>
+									</div>
+									<div class="enroll-stat-card">
+										<div class="enroll-stat-icon success">
+											<IconCheck size={20} />
+										</div>
+										<div class="enroll-stat-content">
+											<span class="enroll-stat-value">{courseData.completion_rate || 0}%</span>
+											<span class="enroll-stat-label">Completion Rate</span>
+										</div>
+									</div>
+									<div class="enroll-stat-card">
+										<div class="enroll-stat-icon accent">
+											<IconChartBar size={20} />
+										</div>
+										<div class="enroll-stat-content">
+											<span class="enroll-stat-value"
+												>{courseData.avg_rating?.toFixed(1) || 'N/A'}</span
+											>
+											<span class="enroll-stat-label">Avg Rating</span>
+										</div>
+									</div>
+								</div>
+
+								<div class="info-section">
+									<h3 class="section-title">Recent Enrollments</h3>
+									<!-- FIX-2026-04-26: was hard-coded "Enrollment data coming soon" empty state.
 								     Now wired to analytics.recent_enrollments (top 5 by enrolled_at DESC).
 								<div class="empty-state small">
 									<IconUsers size={32} />
 									<p>Enrollment data coming soon</p>
 								</div>
 								-->
-								{#if analytics === null}
-									<div class="empty-state small">
-										<IconUsers size={32} />
-										<p>Loading enrollments…</p>
+									{#if analytics === null}
+										<div class="empty-state small">
+											<IconUsers size={32} />
+											<p>Loading enrollments…</p>
+										</div>
+									{:else if analytics.recent_enrollments.length === 0}
+										<div class="empty-state small">
+											<IconUsers size={32} />
+											<p>No enrollments yet</p>
+										</div>
+									{:else}
+										<ul class="recent-enrollments-list">
+											{#each analytics.recent_enrollments as enrollment (enrollment.user_id)}
+												<li class="recent-enrollment-item">
+													<div class="recent-enrollment-avatar">
+														<IconUsers size={14} />
+													</div>
+													<div class="recent-enrollment-info">
+														<span class="recent-enrollment-email"
+															>{enrollment.email ?? `User #${enrollment.user_id}`}</span
+														>
+														<span class="recent-enrollment-date"
+															>{formatEnrolledAt(enrollment.enrolled_at)}</span
+														>
+													</div>
+												</li>
+											{/each}
+										</ul>
+									{/if}
+								</div>
+							</div>
+						{:else if activeTab === 'analytics'}
+							<div class="tab-content">
+								<div class="analytics-grid">
+									<div class="analytics-card">
+										<h4>Course Performance</h4>
+										<div class="analytics-metrics">
+											<div class="metric-row">
+												<span class="metric-label">Total Views</span>
+												<!-- FIX-2026-04-26: was <span class="metric-value">-</span> (literal hyphen placeholder). -->
+												<span class="metric-value">{formatCount(analytics?.total_views)}</span>
+											</div>
+											<div class="metric-row">
+												<span class="metric-label">Unique Visitors</span>
+												<!-- FIX-2026-04-26: was <span class="metric-value">-</span> (literal hyphen placeholder). -->
+												<span class="metric-value">{formatCount(analytics?.unique_visitors)}</span>
+											</div>
+											<div class="metric-row">
+												<span class="metric-label">Conversion Rate</span>
+												<!-- FIX-2026-04-26: was <span class="metric-value">-</span> (literal hyphen placeholder). -->
+												<span class="metric-value">{formatPercent(analytics?.conversion_rate)}</span
+												>
+											</div>
+										</div>
 									</div>
-								{:else if analytics.recent_enrollments.length === 0}
-									<div class="empty-state small">
-										<IconUsers size={32} />
-										<p>No enrollments yet</p>
+
+									<div class="analytics-card">
+										<h4>Engagement</h4>
+										<div class="analytics-metrics">
+											<div class="metric-row">
+												<span class="metric-label">Avg Time on Course</span>
+												<!-- FIX-2026-04-26: was <span class="metric-value">-</span> (literal hyphen placeholder). -->
+												<span class="metric-value"
+													>{formatSeconds(analytics?.avg_time_seconds)}</span
+												>
+											</div>
+											<div class="metric-row">
+												<span class="metric-label">Lesson Completion</span>
+												<span class="metric-value">{courseData.completion_rate || 0}%</span>
+											</div>
+											<div class="metric-row">
+												<span class="metric-label">Drop-off Rate</span>
+												<!-- FIX-2026-04-26: was <span class="metric-value">-</span> (literal hyphen placeholder). -->
+												<span class="metric-value">{formatPercent(analytics?.drop_off_rate)}</span>
+											</div>
+										</div>
 									</div>
-								{:else}
-									<ul class="recent-enrollments-list">
-										{#each analytics.recent_enrollments as enrollment (enrollment.user_id)}
-											<li class="recent-enrollment-item">
-												<div class="recent-enrollment-avatar">
-													<IconUsers size={14} />
+								</div>
+
+								<div class="info-section">
+									<h3 class="section-title">Course Details</h3>
+									<div class="info-grid">
+										<div class="info-item">
+											<IconCalendar size={16} />
+											<div>
+												<span class="info-label">Created</span>
+												<span class="info-value">{formatDate(courseData.created_at)}</span>
+											</div>
+										</div>
+										<div class="info-item">
+											<IconCalendar size={16} />
+											<div>
+												<span class="info-label">Updated</span>
+												<span class="info-value">{formatDate(courseData.updated_at)}</span>
+											</div>
+										</div>
+										<div class="info-item">
+											<IconClock size={16} />
+											<div>
+												<span class="info-label">Total Duration</span>
+												<span class="info-value"
+													>{formatDuration(
+														courseData.total_duration_minutes || courseData.duration_minutes
+													)}</span
+												>
+											</div>
+										</div>
+										<div class="info-item">
+											<IconCurrencyDollar size={16} />
+											<div>
+												<span class="info-label">Revenue</span>
+												<!-- FIX-2026-04-26: was hard-coded "Coming soon".
+											     Now sums completed order_items.total joined to orders. -->
+												<span class="info-value"
+													>{analytics ? formatCurrency(analytics.revenue_cents) : '—'}</span
+												>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								{#if courseData.instructor_name}
+									<div class="info-section">
+										<h3 class="section-title">Instructor</h3>
+										<div class="instructor-card">
+											{#if courseData.instructor_avatar_url}
+												<img
+													src={courseData.instructor_avatar_url}
+													alt={courseData.instructor_name}
+													class="instructor-avatar"
+													width="48"
+													height="48"
+													loading="lazy"
+												/>
+											{:else}
+												<div class="instructor-avatar-placeholder">
+													{courseData.instructor_name[0].toUpperCase()}
 												</div>
-												<div class="recent-enrollment-info">
-													<span class="recent-enrollment-email"
-														>{enrollment.email ?? `User #${enrollment.user_id}`}</span
-													>
-													<span class="recent-enrollment-date"
-														>{formatEnrolledAt(enrollment.enrolled_at)}</span
-													>
-												</div>
-											</li>
-										{/each}
-									</ul>
+											{/if}
+											<div class="instructor-info">
+												<span class="instructor-name">{courseData.instructor_name}</span>
+												{#if courseData.instructor_title}
+													<span class="instructor-title">{courseData.instructor_title}</span>
+												{/if}
+											</div>
+										</div>
+									</div>
 								{/if}
 							</div>
-						</div>
-					{:else if activeTab === 'analytics'}
-						<div class="tab-content">
-							<div class="analytics-grid">
-								<div class="analytics-card">
-									<h4>Course Performance</h4>
-									<div class="analytics-metrics">
-										<div class="metric-row">
-											<span class="metric-label">Total Views</span>
-											<!-- FIX-2026-04-26: was <span class="metric-value">-</span> (literal hyphen placeholder). -->
-											<span class="metric-value">{formatCount(analytics?.total_views)}</span>
-										</div>
-										<div class="metric-row">
-											<span class="metric-label">Unique Visitors</span>
-											<!-- FIX-2026-04-26: was <span class="metric-value">-</span> (literal hyphen placeholder). -->
-											<span class="metric-value">{formatCount(analytics?.unique_visitors)}</span>
-										</div>
-										<div class="metric-row">
-											<span class="metric-label">Conversion Rate</span>
-											<!-- FIX-2026-04-26: was <span class="metric-value">-</span> (literal hyphen placeholder). -->
-											<span class="metric-value">{formatPercent(analytics?.conversion_rate)}</span>
-										</div>
-									</div>
-								</div>
+						{/if}
+					</div>
+					<!-- Publish/Unpublish Modal -->
+					<ConfirmationModal
+						isOpen={showPublishModal}
+						title={courseData.is_published ? 'Unpublish Course' : 'Publish Course'}
+						message={courseData.is_published
+							? 'This will hide the course from students. Existing enrollments will retain access.'
+							: 'This will make the course visible to students. Make sure all content is ready.'}
+						confirmText={courseData.is_published ? 'Unpublish' : 'Publish'}
+						variant={courseData.is_published ? 'warning' : 'success'}
+						isLoading={isProcessingAction}
+						onConfirm={() => handlePublishToggle(courseData)}
+						onCancel={() => (showPublishModal = false)}
+					/>
 
-								<div class="analytics-card">
-									<h4>Engagement</h4>
-									<div class="analytics-metrics">
-										<div class="metric-row">
-											<span class="metric-label">Avg Time on Course</span>
-											<!-- FIX-2026-04-26: was <span class="metric-value">-</span> (literal hyphen placeholder). -->
-											<span class="metric-value">{formatSeconds(analytics?.avg_time_seconds)}</span>
-										</div>
-										<div class="metric-row">
-											<span class="metric-label">Lesson Completion</span>
-											<span class="metric-value">{courseData.completion_rate || 0}%</span>
-										</div>
-										<div class="metric-row">
-											<span class="metric-label">Drop-off Rate</span>
-											<!-- FIX-2026-04-26: was <span class="metric-value">-</span> (literal hyphen placeholder). -->
-											<span class="metric-value">{formatPercent(analytics?.drop_off_rate)}</span>
-										</div>
-									</div>
-								</div>
-							</div>
-
-							<div class="info-section">
-								<h3 class="section-title">Course Details</h3>
-								<div class="info-grid">
-									<div class="info-item">
-										<IconCalendar size={16} />
-										<div>
-											<span class="info-label">Created</span>
-											<span class="info-value">{formatDate(courseData.created_at)}</span>
-										</div>
-									</div>
-									<div class="info-item">
-										<IconCalendar size={16} />
-										<div>
-											<span class="info-label">Updated</span>
-											<span class="info-value">{formatDate(courseData.updated_at)}</span>
-										</div>
-									</div>
-									<div class="info-item">
-										<IconClock size={16} />
-										<div>
-											<span class="info-label">Total Duration</span>
-											<span class="info-value"
-												>{formatDuration(
-													courseData.total_duration_minutes || courseData.duration_minutes
-												)}</span
-											>
-										</div>
-									</div>
-									<div class="info-item">
-										<IconCurrencyDollar size={16} />
-										<div>
-											<span class="info-label">Revenue</span>
-											<!-- FIX-2026-04-26: was hard-coded "Coming soon".
-											     Now sums completed order_items.total joined to orders. -->
-											<span class="info-value"
-												>{analytics ? formatCurrency(analytics.revenue_cents) : '—'}</span
-											>
-										</div>
-									</div>
-								</div>
-							</div>
-
-							{#if courseData.instructor_name}
-								<div class="info-section">
-									<h3 class="section-title">Instructor</h3>
-									<div class="instructor-card">
-										{#if courseData.instructor_avatar_url}
-											<img
-												src={courseData.instructor_avatar_url}
-												alt={courseData.instructor_name}
-												class="instructor-avatar"
-												width="48"
-												height="48"
-												loading="lazy"
-											/>
-										{:else}
-											<div class="instructor-avatar-placeholder">
-												{courseData.instructor_name[0].toUpperCase()}
-											</div>
-										{/if}
-										<div class="instructor-info">
-											<span class="instructor-name">{courseData.instructor_name}</span>
-											{#if courseData.instructor_title}
-												<span class="instructor-title">{courseData.instructor_title}</span>
-											{/if}
-										</div>
-									</div>
-								</div>
-							{/if}
-						</div>
-					{/if}
-				</div>
+					<!-- Delete Module Modal -->
+					<ConfirmationModal
+						isOpen={showDeleteModuleModal}
+						title="Delete Module"
+						message="This will permanently delete this module and all its lessons. This action cannot be undone."
+						confirmText="Delete Module"
+						variant="danger"
+						isLoading={isProcessingAction}
+						onConfirm={() => handleDeleteModule(courseData)}
+						onCancel={() => {
+							showDeleteModuleModal = false;
+							selectedModuleId = null;
+						}}
+					/>
+				{:catch loadError}
+					<div class="error-state">
+						<IconAlertTriangle size={48} />
+						<p>{loadError instanceof Error ? loadError.message : 'Failed to load course data'}</p>
+						<button type="button" class="btn-retry" onclick={reloadCourseData}>Try Again</button>
+					</div>
+				{/await}
 			{/if}
 		</aside>
 	</div>
 {/if}
-
-<!-- Publish/Unpublish Modal -->
-<ConfirmationModal
-	isOpen={showPublishModal}
-	title={courseData?.is_published ? 'Unpublish Course' : 'Publish Course'}
-	message={courseData?.is_published
-		? 'This will hide the course from students. Existing enrollments will retain access.'
-		: 'This will make the course visible to students. Make sure all content is ready.'}
-	confirmText={courseData?.is_published ? 'Unpublish' : 'Publish'}
-	variant={courseData?.is_published ? 'warning' : 'success'}
-	isLoading={isProcessingAction}
-	onConfirm={handlePublishToggle}
-	onCancel={() => (showPublishModal = false)}
-/>
-
-<!-- Delete Module Modal -->
-<ConfirmationModal
-	isOpen={showDeleteModuleModal}
-	title="Delete Module"
-	message="This will permanently delete this module and all its lessons. This action cannot be undone."
-	confirmText="Delete Module"
-	variant="danger"
-	isLoading={isProcessingAction}
-	onConfirm={handleDeleteModule}
-	onCancel={() => {
-		showDeleteModuleModal = false;
-		selectedModuleId = null;
-	}}
-/>
 
 <style>
 	.drawer-backdrop {

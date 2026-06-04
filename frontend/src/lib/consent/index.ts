@@ -511,7 +511,9 @@ import {
 	initConsentAwareBehaviorTracking,
 	cleanupBehaviorIntegration
 } from './behavior-integration';
-import { trackConsentInteraction } from './analytics';
+import { exportAnalyticsData, trackConsentInteraction } from './analytics';
+import { exportAuditLog } from './audit-log';
+import { scanCookies } from './cookie-scanner';
 import { initializeTemplateStore } from './templates';
 import type { ConsentState } from './types';
 
@@ -595,10 +597,6 @@ export function onPageNavigation(): void {
  * Export all consent data for GDPR data subject request.
  */
 export async function exportConsentData(): Promise<string> {
-	const { exportAuditLog } = await import('./audit-log');
-	const { exportAnalyticsData } = await import('./analytics');
-	const { scanCookies } = await import('./cookie-scanner');
-
 	return JSON.stringify(
 		{
 			exportDate: new Date().toISOString(),

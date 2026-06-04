@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { cubicOut, backOut } from 'svelte/easing';
+	import { cubicOut } from 'svelte/easing';
 	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
 	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
 	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
@@ -9,6 +9,7 @@
 	import IconArrowUpRight from '@tabler/icons-svelte-runes/icons/arrow-up-right';
 	import IconAntenna from '@tabler/icons-svelte-runes/icons/antenna';
 	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
+	import type { Attachment } from 'svelte/attachments';
 
 	// --- Data Configuration ---
 	const signals = [
@@ -53,8 +54,16 @@
 	// --- Interaction Logic ---
 	let containerRef = $state<HTMLElement | null>(null);
 	let mouse = $state({ x: 0, y: 0 });
-	// ICT11+ Fix: SSR renders true (CLS fix), {#key} triggers transitions
-	let isVisible = $state(true);
+	// January 2026 motion: content is revealed lazily as the section scrolls into view.
+	let isVisible = $state(false);
+
+	const captureContainer: Attachment<HTMLElement> = (node) => {
+		containerRef = node;
+
+		return () => {
+			if (containerRef === node) containerRef = null;
+		};
+	};
 
 	const handleMouseMove = (e: MouseEvent) => {
 		if (!containerRef) return;
@@ -63,26 +72,13 @@
 		mouse.y = e.clientY - rect.top;
 	};
 
-	// Header: clips in from top like a signal broadcast
-	function clipReveal(_node: Element, { delay = 0, duration = 700 }) {
+	function heavySlide(_node: Element, { delay = 0, duration = 1000 }) {
 		return {
 			delay,
 			duration,
 			css: (t: number) => {
 				const eased = cubicOut(t);
-				return `opacity: ${eased}; clip-path: inset(${(1 - eased) * 100}% 0 0 0);`;
-			}
-		};
-	}
-
-	// Cards: scale up from slightly below — like a card being dealt
-	function scalePop(_node: Element, { delay = 0, duration = 600 }) {
-		return {
-			delay,
-			duration,
-			css: (t: number) => {
-				const eased = backOut(t);
-				return `opacity: ${t}; transform: scale(${0.88 + eased * 0.12}) translateY(${(1 - cubicOut(t)) * 30}px);`;
+				return `opacity: ${eased}; transform: translateY(${(1 - eased) * 20}px);`;
 			}
 		};
 	}
@@ -95,9 +91,6 @@
 			isVisible = true;
 			return;
 		}
-
-		// Force state change to trigger {#key} transitions per Svelte 5 docs
-		isVisible = false;
 
 		queueMicrotask(() => {
 			if (!containerRef) {
@@ -123,7 +116,7 @@
 </script>
 
 <section
-	bind:this={containerRef}
+	{@attach captureContainer}
 	onmousemove={handleMouseMove}
 	role="group"
 	aria-label="Alert Services"
@@ -140,7 +133,7 @@
 			{#key isVisible}
 				{#if isVisible}
 					<div
-						in:clipReveal={{ delay: 0, duration: 700 }}
+						in:heavySlide={{ delay: 0, duration: 1000 }}
 						class="inline-flex items-center gap-3 px-4 py-1.5 border border-amber-900/30 bg-amber-950/10 text-amber-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm"
 					>
 						<IconBolt size={14} />
@@ -148,14 +141,14 @@
 					</div>
 
 					<h2
-						in:clipReveal={{ delay: 80, duration: 750 }}
+						in:heavySlide={{ delay: 100, duration: 1000 }}
 						class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight"
 					>
 						Alert <span class="text-slate-700">Systems.</span>
 					</h2>
 
 					<p
-						in:clipReveal={{ delay: 160, duration: 750 }}
+						in:heavySlide={{ delay: 200, duration: 1000 }}
 						class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto"
 					>
 						We don't send generic alerts. We deliver institutional-grade signal intelligence.
@@ -174,7 +167,7 @@
 				{#key isVisible}
 					{#if isVisible}
 						<div
-							in:scalePop={{ delay: 200 + i * 150, duration: 600 }}
+							in:heavySlide={{ delay: 300 + i * 150, duration: 1000 }}
 							class="relative group/card bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden hover:border-zinc-700 transition-colors duration-500"
 						>
 							<div
@@ -367,7 +360,7 @@
 		{#key isVisible}
 			{#if isVisible}
 				<div
-					in:clipReveal={{ delay: 500, duration: 700 }}
+					in:heavySlide={{ delay: 600, duration: 1000 }}
 					class="mt-12 text-center border-t border-zinc-900 pt-8"
 				>
 					<div class="inline-flex items-center gap-6 text-xs text-zinc-500 font-mono">

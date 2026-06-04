@@ -50,6 +50,7 @@ export interface ComponentTree {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const COMPONENTS_DIR = 'src/lib/components';
+const EXCLUDED_COMPONENTS = new Set(['auth/Scene3D.svelte', 'auth/TradingScene3D.svelte']);
 
 /**
  * Recursively finds all .svelte files in a directory
@@ -71,7 +72,10 @@ async function findSvelteFiles(dir: string, baseDir: string): Promise<string[]> 
 				const subFiles = await findSvelteFiles(fullPath, baseDir);
 				files.push(...subFiles);
 			} else if (entry.name.endsWith('.svelte')) {
-				files.push(fullPath);
+				const relativePath = relative(baseDir, fullPath).replaceAll('\\', '/');
+				if (!EXCLUDED_COMPONENTS.has(relativePath)) {
+					files.push(fullPath);
+				}
 			}
 		}
 	} catch {

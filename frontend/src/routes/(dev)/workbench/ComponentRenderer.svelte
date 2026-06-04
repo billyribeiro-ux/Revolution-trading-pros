@@ -38,69 +38,43 @@
 	// STATE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let LoadedComponent = $state<Component | null>(null);
-	let loadError = $state<string | null>(null);
-	let isLoading = $state(false);
-	let renderError = $state<string | null>(null);
-	let renderTime = $state<number | null>(null);
+	let retryNonce = $state(0);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// COMPONENT LOADING
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Map of all components for dynamic import
-	const componentModules = import.meta.glob('/src/lib/components/**/*.svelte');
+	// Map of preview-safe components for dynamic import.
+	const componentModules = import.meta.glob([
+		'/src/lib/components/**/*.svelte',
+		'!/src/lib/components/auth/Scene3D.svelte',
+		'!/src/lib/components/auth/TradingScene3D.svelte'
+	]);
 
-	$effect(() => {
-		if (!component) {
-			LoadedComponent = null;
-			loadError = null;
-			return;
-		}
+	const componentLoad = $derived.by<Promise<{ component: Component; renderTime: number }> | null>(
+		() => {
+			if (!component) return null;
+			void retryNonce;
 
-		loadComponent(component);
-	});
-
-	async function loadComponent(comp: ComponentInfo) {
-		isLoading = true;
-		loadError = null;
-		renderError = null;
-		LoadedComponent = null;
-
-		try {
 			const startTime = performance.now();
-
-			// Build the import path
-			const importPath = `/src/lib/components/${comp.relativePath}`;
-
-			// Find the matching module
+			const importPath = `/src/lib/components/${component.relativePath}`;
 			const moduleLoader = componentModules[importPath];
 
 			if (!moduleLoader) {
-				throw new Error(`Component not found: ${importPath}`);
+				return Promise.reject(new Error(`Component not found: ${importPath}`));
 			}
 
-			// Load the module
-			const module = (await moduleLoader()) as { default: Component };
-			LoadedComponent = module.default;
-
-			renderTime = Math.round(performance.now() - startTime);
-		} catch (e) {
-			loadError = e instanceof Error ? e.message : 'Failed to load component';
-			logger.error('[Workbench] Load error:', e);
-		} finally {
-			isLoading = false;
+			return moduleLoader()
+				.then((module) => ({
+					component: (module as { default: Component }).default,
+					renderTime: Math.round(performance.now() - startTime)
+				}))
+				.catch((e) => {
+					logger.error('[Workbench] Load error:', e);
+					throw e;
+				});
 		}
-	}
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// ERROR BOUNDARY
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	function _handleRenderError(error: Error) {
-		renderError = error.message;
-		logger.error('[Workbench] Render error:', error);
-	}
+	);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// COMPUTED STYLES
@@ -129,57 +103,51 @@
 			<h3>Select a Component</h3>
 			<p>Choose a component from the sidebar to preview it here</p>
 		</div>
-	{:else if isLoading}
-		<div class="loading-state">
-			<div class="spinner"></div>
-			<p>Loading {component.name}...</p>
-		</div>
-	{:else if loadError}
-		<div class="error-state">
-			<span class="error-icon">❌</span>
-			<h3>Failed to Load</h3>
-			<p class="error-message">{loadError}</p>
-			<button class="retry-btn" onclick={() => component && loadComponent(component)}>
-				↻ Retry
-			</button>
-		</div>
-	{:else if renderError}
-		<div class="error-state">
-			<span class="error-icon">💥</span>
-			<h3>Render Error</h3>
-			<p class="error-message">{renderError}</p>
-			<pre class="error-stack">{renderError}</pre>
-		</div>
-	{:else if LoadedComponent}
-		<div class="preview-wrapper" style={wrapperStyle}>
-			<div class="preview-container" style={containerStyle}>
-				{#key JSON.stringify(propValues)}
-					<LoadedComponent {...propValues} />
-				{/key}
+	{:else if componentLoad}
+		{#await componentLoad}
+			<div class="loading-state">
+				<div class="spinner"></div>
+				<p>Loading {component.name}...</p>
 			</div>
-		</div>
+		{:then loaded}
+			{@const LoadedComponent = loaded.component}
+			<div class="preview-wrapper" style={wrapperStyle}>
+				<div class="preview-container" style={containerStyle}>
+					{#key JSON.stringify(propValues)}
+						<LoadedComponent {...propValues} />
+					{/key}
+				</div>
+			</div>
 
-		<!-- Render info bar -->
-		<div class="render-info">
-			<span class="info-item">
-				<span class="info-label">Component:</span>
-				{component.name}
-			</span>
-			<span class="info-item">
-				<span class="info-label">Viewport:</span>
-				{viewport.width}×{viewport.height ?? 'auto'}
-			</span>
-			<span class="info-item">
-				<span class="info-label">Zoom:</span>
-				{zoom}%
-			</span>
-			{#if renderTime !== null}
+			<!-- Render info bar -->
+			<div class="render-info">
+				<span class="info-item">
+					<span class="info-label">Component:</span>
+					{component.name}
+				</span>
+				<span class="info-item">
+					<span class="info-label">Viewport:</span>
+					{viewport.width}×{viewport.height ?? 'auto'}
+				</span>
+				<span class="info-item">
+					<span class="info-label">Zoom:</span>
+					{zoom}%
+				</span>
 				<span class="info-item">
 					<span class="info-label">Load:</span>
-					{renderTime}ms
+					{loaded.renderTime}ms
 				</span>
-			{/if}
-		</div>
+			</div>
+		{:catch error}
+			<div class="error-state">
+				<span class="error-icon">❌</span>
+				<h3>Failed to Load</h3>
+				<p class="error-message">
+					{error instanceof Error ? error.message : 'Failed to load component'}
+				</p>
+				<button class="retry-btn" onclick={() => (retryNonce += 1)}> ↻ Retry </button>
+			</div>
+		{/await}
 	{/if}
 </div>
 
@@ -249,20 +217,6 @@
 	.error-message {
 		color: #ef4444;
 		margin-bottom: 1rem;
-	}
-
-	.error-stack {
-		margin-top: 1rem;
-		padding: 1rem;
-		background: rgba(239, 68, 68, 0.1);
-		border: 1px solid rgba(239, 68, 68, 0.2);
-		border-radius: 0.5rem;
-		font-family: ui-monospace, monospace;
-		font-size: 0.75rem;
-		color: #fca5a5;
-		max-width: 100%;
-		overflow-x: auto;
-		text-align: left;
 	}
 
 	.retry-btn {

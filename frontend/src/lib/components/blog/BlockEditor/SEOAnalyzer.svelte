@@ -18,8 +18,8 @@
 
 	import { API_BASE_URL } from '$lib/api/config';
 	import { getAuthToken } from '$lib/stores/auth.svelte';
+	import { SvelteSet } from 'svelte/reactivity';
 	import type { SEOAnalysis, HeadingNode } from './types';
-	import {  } from 'svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES
@@ -78,6 +78,22 @@
 		hash: string;
 	}
 
+	interface AnalysisRequest {
+		title: string;
+		content: string;
+		contentBlocks: unknown[];
+		metaDescription: string;
+		focusKeyword: string;
+		slug: string;
+		onAnalysisComplete?: (analysis: SEOAnalysis) => void;
+	}
+
+	interface AnalysisResult {
+		analysis: SEOAnalysis;
+		apiError: string | null;
+		usedFallback: boolean;
+	}
+
 	interface Props {
 		title: string;
 		content: string;
@@ -101,30 +117,35 @@
 	// STATE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	/** Analysis state */
-	let isAnalyzing = $state(false);
-	let analysis = $state<SEOAnalysis | null>(null);
-	let expandedCategories = $state<Set<string>>(
-		new Set(['overall', 'title', 'content'])
-	);
-	let apiError = $state<string | null>(null);
-	let usedFallback = $state(false);
+	let expandedCategories = new SvelteSet<string>(['overall', 'title', 'content']);
 
 	/** Caching - 5 second TTL */
 	const CACHE_TTL_MS = 5000;
-	let cachedResult = $state<CachedResult | null>(null);
+	let cachedResult: CachedResult | null = null;
 
 	/** Debouncing - 500ms delay */
 	const DEBOUNCE_MS = 500;
 	let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+	let resolveDebounce: ((value: AnalysisResult | null) => void) | null = null;
+
+	let analysisRequest = $derived<AnalysisRequest>({
+		title,
+		content,
+		contentBlocks,
+		metaDescription,
+		focusKeyword,
+		slug,
+		onAnalysisComplete
+	});
+	let analysisPromise = $derived(debounceAnalysis(analysisRequest));
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// CACHE HELPERS
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	/** Generate hash for cache key */
-	function generateCacheHash(): string {
-		const data = `${title}|${metaDescription}|${content}|${slug}|${focusKeyword}`;
+	function generateCacheHash(request: AnalysisRequest): string {
+		const data = `${request.title}|${request.metaDescription}|${request.content}|${request.slug}|${request.focusKeyword}`;
 		let hash = 0;
 		for (let i = 0; i < data.length; i++) {
 			const char = data.charCodeAt(i);
@@ -135,20 +156,20 @@
 	}
 
 	/** Check if cache is valid */
-	function isCacheValid(): boolean {
+	function isCacheValid(hash: string): boolean {
 		if (!cachedResult) return false;
 		const now = Date.now();
 		const isExpired = now - cachedResult.timestamp > CACHE_TTL_MS;
-		const hashMatch = cachedResult.hash === generateCacheHash();
+		const hashMatch = cachedResult.hash === hash;
 		return !isExpired && hashMatch;
 	}
 
 	/** Set cache */
-	function setCache(analysisResult: SEOAnalysis): void {
+	function setCache(hash: string, analysisResult: SEOAnalysis): void {
 		cachedResult = {
 			analysis: analysisResult,
 			timestamp: Date.now(),
-			hash: generateCacheHash()
+			hash
 		};
 	}
 
@@ -157,15 +178,18 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	/** Call backend SEO validation API */
-	async function callSeoApi(): Promise<SeoValidationResponse | null> {
+	async function callSeoApi(request: AnalysisRequest): Promise<SeoValidationResponse | null> {
 		const token = getAuthToken();
 
 		const requestBody: SeoValidationRequest = {
-			title,
-			meta_description: metaDescription || null,
-			content_blocks: contentBlocks.length > 0 ? contentBlocks : extractBlocksFromContent(content),
-			slug,
-			focus_keyword: focusKeyword || null
+			title: request.title,
+			meta_description: request.metaDescription || null,
+			content_blocks:
+				request.contentBlocks.length > 0
+					? request.contentBlocks
+					: extractBlocksFromContent(request.content),
+			slug: request.slug,
+			focus_keyword: request.focusKeyword || null
 		};
 
 		try {
@@ -279,64 +303,78 @@
 	// ANALYSIS WITH DEBOUNCE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	/** Debounced effect for analysis */
-	$effect(() => {
-		// Dependencies - these trigger re-analysis
-		[title, content, metaDescription, focusKeyword, slug, contentBlocks];
-
-		// Clear existing timer
+	function debounceAnalysis(request: AnalysisRequest): Promise<AnalysisResult | null> {
 		if (debounceTimer) {
 			clearTimeout(debounceTimer);
 		}
 
-		// Set new debounced analysis
-		debounceTimer = setTimeout(() => {
-			runAnalysis();
-		}, DEBOUNCE_MS);
-
-		return () => {
-			if (debounceTimer) {
-				clearTimeout(debounceTimer);
-			}
-		};
-	});
-
-	/** Run SEO analysis with API + fallback */
-	async function runAnalysis(): Promise<void> {
-		// Check cache first
-		if (isCacheValid() && cachedResult) {
-			analysis = cachedResult.analysis;
-			onAnalysisComplete?.(cachedResult.analysis);
-			return;
+		if (resolveDebounce) {
+			resolveDebounce(null);
 		}
 
-		isAnalyzing = true;
-		apiError = null;
-		usedFallback = false;
+		return new Promise((resolve) => {
+			resolveDebounce = resolve;
+			debounceTimer = setTimeout(async () => {
+				debounceTimer = null;
+				resolveDebounce = null;
+				resolve(await runAnalysis(request));
+			}, DEBOUNCE_MS);
+		});
+	}
+
+	/** Run SEO analysis with API + fallback */
+	async function runAnalysis(request: AnalysisRequest): Promise<AnalysisResult> {
+		const hash = generateCacheHash(request);
+
+		// Check cache first
+		if (isCacheValid(hash) && cachedResult) {
+			request.onAnalysisComplete?.(cachedResult.analysis);
+			return {
+				analysis: cachedResult.analysis,
+				apiError: null,
+				usedFallback: false
+			};
+		}
 
 		try {
 			// Try API first
-			const apiResponse = await callSeoApi();
+			const apiResponse = await callSeoApi(request);
 			if (apiResponse) {
 				const convertedAnalysis = convertApiResponse(apiResponse);
-				analysis = convertedAnalysis;
-				setCache(convertedAnalysis);
-				onAnalysisComplete?.(convertedAnalysis);
-				isAnalyzing = false;
-				return;
+				setCache(hash, convertedAnalysis);
+				request.onAnalysisComplete?.(convertedAnalysis);
+				return {
+					analysis: convertedAnalysis,
+					apiError: null,
+					usedFallback: false
+				};
 			}
 		} catch (err) {
-			apiError = err instanceof Error ? err.message : 'API error';
 			console.warn('[SEOAnalyzer] Falling back to client-side analysis');
+
+			const fallbackAnalysis = await runClientSideAnalysis(request, hash);
+			request.onAnalysisComplete?.(fallbackAnalysis);
+			return {
+				analysis: fallbackAnalysis,
+				apiError: err instanceof Error ? err.message : 'API error',
+				usedFallback: true
+			};
 		}
 
-		// Fallback to client-side analysis
-		usedFallback = true;
-		await runClientSideAnalysis();
+		const fallbackAnalysis = await runClientSideAnalysis(request, hash);
+		request.onAnalysisComplete?.(fallbackAnalysis);
+		return {
+			analysis: fallbackAnalysis,
+			apiError: null,
+			usedFallback: true
+		};
 	}
 
 	/** Client-side analysis fallback */
-	async function runClientSideAnalysis(): Promise<void> {
+	async function runClientSideAnalysis(
+		request: AnalysisRequest,
+		hash: string
+	): Promise<SEOAnalysis> {
 		// Small delay for UX
 		await new Promise((resolve) => setTimeout(resolve, 150));
 
@@ -345,18 +383,29 @@
 		let overallScore: number;
 
 		// Extract plain text from content
-		const plainText = stripHtml(content);
+		const plainText = stripHtml(request.content);
 		const wordCount = countWords(plainText);
 		const sentences = countSentences(plainText);
 
 		// Title Analysis
-		const titleScore = analyzeTitleSEO(title, focusKeyword, issues, suggestions);
+		const titleScore = analyzeTitleSEO(request.title, request.focusKeyword, issues, suggestions);
 
 		// Meta Description Analysis
-		const metaScore = analyzeMetaSEO(metaDescription, focusKeyword, issues, suggestions);
+		const metaScore = analyzeMetaSEO(
+			request.metaDescription,
+			request.focusKeyword,
+			issues,
+			suggestions
+		);
 
 		// Content Analysis
-		const contentScore = analyzeContentSEO(plainText, wordCount, focusKeyword, issues, suggestions);
+		const contentScore = analyzeContentSEO(
+			plainText,
+			wordCount,
+			request.focusKeyword,
+			issues,
+			suggestions
+		);
 
 		// Readability Analysis
 		const readabilityScore = analyzeReadability(
@@ -370,18 +419,18 @@
 		// Keyword Analysis
 		const keywordScore = analyzeKeywords(
 			plainText,
-			title,
-			metaDescription,
-			focusKeyword,
+			request.title,
+			request.metaDescription,
+			request.focusKeyword,
 			issues,
 			suggestions
 		);
 
 		// Slug Analysis
-		analyzeSlug(slug, focusKeyword, issues, suggestions);
+		analyzeSlug(request.slug, request.focusKeyword, issues, suggestions);
 
 		// Structure Analysis
-		analyzeStructure(content, issues, suggestions);
+		analyzeStructure(request.content, issues, suggestions);
 
 		// Calculate overall score
 		overallScore = Math.round(
@@ -404,7 +453,9 @@
 			suggestions,
 			wordCount,
 			readingTime: Math.ceil(wordCount / 200),
-			keywordDensity: focusKeyword ? calculateKeywordDensity(plainText, focusKeyword) : 0,
+			keywordDensity: request.focusKeyword
+				? calculateKeywordDensity(plainText, request.focusKeyword)
+				: 0,
 			readabilityScore: getReadabilityGrade(readabilityScore),
 			titleScore,
 			metaScore,
@@ -412,10 +463,8 @@
 			readabilityGrade: readabilityScore
 		};
 
-		analysis = result;
-		setCache(result);
-		isAnalyzing = false;
-		onAnalysisComplete?.(result);
+		setCache(hash, result);
+		return result;
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -977,8 +1026,8 @@
 	}
 
 	/** Get issues by category */
-	function getIssuesByCategory(category: string): SEOAnalysis['issues'] {
-		return analysis?.issues.filter((i) => i.category === category) || [];
+	function getIssuesByCategory(analysis: SEOAnalysis, category: string): SEOAnalysis['issues'] {
+		return analysis.issues.filter((i) => i.category === category);
 	}
 
 	/** Get icon for issue type */
@@ -999,215 +1048,86 @@
 </script>
 
 <div class="seo-analyzer">
-	{#if isAnalyzing}
+	{#await analysisPromise}
 		<div class="analyzing">
 			<div class="spinner"></div>
-			<span>Analyzing{usedFallback ? ' (client-side)' : ''}...</span>
+			<span>Analyzing...</span>
 		</div>
-	{:else if analysis}
-		<!-- API Error Banner (non-blocking) -->
-		{#if apiError && usedFallback}
-			<div class="api-fallback-notice">
-				<span class="notice-icon">i</span>
-				<span>Using client-side analysis</span>
-			</div>
-		{/if}
+	{:then result}
+		{#if result}
+			{@const analysis = result.analysis}
+			{@const apiError = result.apiError}
+			{@const usedFallback = result.usedFallback}
+			<!-- API Error Banner (non-blocking) -->
+			{#if apiError && usedFallback}
+				<div class="api-fallback-notice">
+					<span class="notice-icon">i</span>
+					<span>Using client-side analysis</span>
+				</div>
+			{/if}
 
-		<!-- Overall Score -->
-		<div class="score-section">
-			<div class="score-circle" style="--score-color: {getScoreColor(analysis.score)}">
-				<svg aria-hidden="true" viewBox="0 0 100 100">
-					<circle class="score-bg" cx="50" cy="50" r="45" />
-					<circle
-						class="score-progress"
-						cx="50"
-						cy="50"
-						r="45"
-						stroke-dasharray="{analysis.score * 2.83} 283"
-						style="stroke: {getScoreColor(analysis.score)}"
-					/>
-				</svg>
-				<div class="score-value">
-					<span class="score-number">{analysis.score}</span>
-					<span class="score-label">SEO Score</span>
-					{#if analysis.grade}
-						<span class="score-grade" style="color: {getScoreColor(analysis.score)}"
-							>{analysis.grade}</span
-						>
+			<!-- Overall Score -->
+			<div class="score-section">
+				<div class="score-circle" style="--score-color: {getScoreColor(analysis.score)}">
+					<svg aria-hidden="true" viewBox="0 0 100 100">
+						<circle class="score-bg" cx="50" cy="50" r="45" />
+						<circle
+							class="score-progress"
+							cx="50"
+							cy="50"
+							r="45"
+							stroke-dasharray="{analysis.score * 2.83} 283"
+							style="stroke: {getScoreColor(analysis.score)}"
+						/>
+					</svg>
+					<div class="score-value">
+						<span class="score-number">{analysis.score}</span>
+						<span class="score-label">SEO Score</span>
+						{#if analysis.grade}
+							<span class="score-grade" style="color: {getScoreColor(analysis.score)}"
+								>{analysis.grade}</span
+							>
+						{/if}
+					</div>
+				</div>
+				<div class="score-summary">
+					<div class="summary-item">
+						<span class="summary-label">Words</span>
+						<span class="summary-value">{analysis.wordCount}</span>
+					</div>
+					<div class="summary-item">
+						<span class="summary-label">Reading Time</span>
+						<span class="summary-value">{analysis.readingTime} min</span>
+					</div>
+					<div class="summary-item">
+						<span class="summary-label">Readability</span>
+						<span class="summary-value">{analysis.readabilityScore}</span>
+					</div>
+					{#if focusKeyword}
+						<div class="summary-item">
+							<span class="summary-label">Keyword Density</span>
+							<span class="summary-value">{analysis.keywordDensity.toFixed(1)}%</span>
+						</div>
 					{/if}
 				</div>
 			</div>
-			<div class="score-summary">
-				<div class="summary-item">
-					<span class="summary-label">Words</span>
-					<span class="summary-value">{analysis.wordCount}</span>
-				</div>
-				<div class="summary-item">
-					<span class="summary-label">Reading Time</span>
-					<span class="summary-value">{analysis.readingTime} min</span>
-				</div>
-				<div class="summary-item">
-					<span class="summary-label">Readability</span>
-					<span class="summary-value">{analysis.readabilityScore}</span>
-				</div>
-				{#if focusKeyword}
-					<div class="summary-item">
-						<span class="summary-label">Keyword Density</span>
-						<span class="summary-value">{analysis.keywordDensity.toFixed(1)}%</span>
-					</div>
-				{/if}
-			</div>
-		</div>
 
-		<!-- Analysis Categories -->
-		<div class="categories">
-			<!-- Title Analysis -->
-			<div class="category">
-				<button class="category-header" onclick={() => toggleCategory('title')}>
-					<div class="category-info">
-						<span class="category-name">Title</span>
-						<span class="category-score" style="color: {getScoreColor(analysis.titleScore || 0)}">
-							{analysis.titleScore || 0}%
-						</span>
-					</div>
-					<span class="chevron" class:expanded={expandedCategories.has('title')}>v</span>
-				</button>
-				{#if expandedCategories.has('title')}
-					<div class="category-content">
-						{#each getIssuesByCategory('title') as issue (issue.message)}
-							<div class="issue {issue.type}">
-								<span class="issue-icon">{getIssueIcon(issue.type)}</span>
-								<span class="issue-message">{issue.message}</span>
-							</div>
-						{/each}
-					</div>
-				{/if}
-			</div>
-
-			<!-- Meta Description Analysis -->
-			<div class="category">
-				<button class="category-header" onclick={() => toggleCategory('meta')}>
-					<div class="category-info">
-						<span class="category-name">Meta Description</span>
-						<span class="category-score" style="color: {getScoreColor(analysis.metaScore || 0)}">
-							{analysis.metaScore || 0}%
-						</span>
-					</div>
-					<span class="chevron" class:expanded={expandedCategories.has('meta')}>v</span>
-				</button>
-				{#if expandedCategories.has('meta')}
-					<div class="category-content">
-						{#each getIssuesByCategory('meta') as issue (issue.message)}
-							<div class="issue {issue.type}">
-								<span class="issue-icon">{getIssueIcon(issue.type)}</span>
-								<span class="issue-message">{issue.message}</span>
-							</div>
-						{/each}
-					</div>
-				{/if}
-			</div>
-
-			<!-- Content Analysis -->
-			<div class="category">
-				<button class="category-header" onclick={() => toggleCategory('content')}>
-					<div class="category-info">
-						<span class="category-name">Content</span>
-						<span class="category-score" style="color: {getScoreColor(analysis.contentScore || 0)}">
-							{analysis.contentScore || 0}%
-						</span>
-					</div>
-					<span class="chevron" class:expanded={expandedCategories.has('content')}>v</span>
-				</button>
-				{#if expandedCategories.has('content')}
-					<div class="category-content">
-						{#each getIssuesByCategory('content') as issue (issue.message)}
-							<div class="issue {issue.type}">
-								<span class="issue-icon">{getIssueIcon(issue.type)}</span>
-								<span class="issue-message">{issue.message}</span>
-							</div>
-						{/each}
-					</div>
-				{/if}
-			</div>
-
-			<!-- Readability Analysis -->
-			<div class="category">
-				<button class="category-header" onclick={() => toggleCategory('readability')}>
-					<div class="category-info">
-						<span class="category-name">Readability</span>
-						<span
-							class="category-score"
-							style="color: {getScoreColor(analysis.readabilityGrade || 0)}"
-						>
-							{analysis.readabilityGrade || 0}%
-						</span>
-					</div>
-					<span class="chevron" class:expanded={expandedCategories.has('readability')}>v</span>
-				</button>
-				{#if expandedCategories.has('readability')}
-					<div class="category-content">
-						{#each getIssuesByCategory('readability') as issue (issue.message)}
-							<div class="issue {issue.type}">
-								<span class="issue-icon">{getIssueIcon(issue.type)}</span>
-								<span class="issue-message">{issue.message}</span>
-							</div>
-						{/each}
-					</div>
-				{/if}
-			</div>
-
-			<!-- Keyword Analysis -->
-			<div class="category">
-				<button class="category-header" onclick={() => toggleCategory('keyword')}>
-					<div class="category-info">
-						<span class="category-name">Keywords</span>
-					</div>
-					<span class="chevron" class:expanded={expandedCategories.has('keyword')}>v</span>
-				</button>
-				{#if expandedCategories.has('keyword')}
-					<div class="category-content">
-						{#each getIssuesByCategory('keyword') as issue (issue.message)}
-							<div class="issue {issue.type}">
-								<span class="issue-icon">{getIssueIcon(issue.type)}</span>
-								<span class="issue-message">{issue.message}</span>
-							</div>
-						{/each}
-					</div>
-				{/if}
-			</div>
-
-			<!-- Structure Analysis -->
-			<div class="category">
-				<button class="category-header" onclick={() => toggleCategory('structure')}>
-					<div class="category-info">
-						<span class="category-name">Structure</span>
-					</div>
-					<span class="chevron" class:expanded={expandedCategories.has('structure')}>v</span>
-				</button>
-				{#if expandedCategories.has('structure')}
-					<div class="category-content">
-						{#each getIssuesByCategory('structure') as issue (issue.message)}
-							<div class="issue {issue.type}">
-								<span class="issue-icon">{getIssueIcon(issue.type)}</span>
-								<span class="issue-message">{issue.message}</span>
-							</div>
-						{/each}
-					</div>
-				{/if}
-			</div>
-
-			<!-- URL Slug Analysis -->
-			{#if slug}
+			<!-- Analysis Categories -->
+			<div class="categories">
+				<!-- Title Analysis -->
 				<div class="category">
-					<button class="category-header" onclick={() => toggleCategory('slug')}>
+					<button class="category-header" onclick={() => toggleCategory('title')}>
 						<div class="category-info">
-							<span class="category-name">URL Slug</span>
+							<span class="category-name">Title</span>
+							<span class="category-score" style="color: {getScoreColor(analysis.titleScore || 0)}">
+								{analysis.titleScore || 0}%
+							</span>
 						</div>
-						<span class="chevron" class:expanded={expandedCategories.has('slug')}>v</span>
+						<span class="chevron" class:expanded={expandedCategories.has('title')}>v</span>
 					</button>
-					{#if expandedCategories.has('slug')}
+					{#if expandedCategories.has('title')}
 						<div class="category-content">
-							{#each getIssuesByCategory('slug') as issue (issue.message)}
+							{#each getIssuesByCategory(analysis, 'title') as issue (issue.message)}
 								<div class="issue {issue.type}">
 									<span class="issue-icon">{getIssueIcon(issue.type)}</span>
 									<span class="issue-message">{issue.message}</span>
@@ -1216,25 +1136,162 @@
 						</div>
 					{/if}
 				</div>
-			{/if}
-		</div>
 
-		<!-- Suggestions -->
-		{#if analysis.suggestions.length > 0}
-			<div class="suggestions">
-				<h4>Improvement Suggestions</h4>
-				<ul>
-					{#each analysis.suggestions as suggestion (suggestion)}
-						<li>{suggestion}</li>
-					{/each}
-				</ul>
+				<!-- Meta Description Analysis -->
+				<div class="category">
+					<button class="category-header" onclick={() => toggleCategory('meta')}>
+						<div class="category-info">
+							<span class="category-name">Meta Description</span>
+							<span class="category-score" style="color: {getScoreColor(analysis.metaScore || 0)}">
+								{analysis.metaScore || 0}%
+							</span>
+						</div>
+						<span class="chevron" class:expanded={expandedCategories.has('meta')}>v</span>
+					</button>
+					{#if expandedCategories.has('meta')}
+						<div class="category-content">
+							{#each getIssuesByCategory(analysis, 'meta') as issue (issue.message)}
+								<div class="issue {issue.type}">
+									<span class="issue-icon">{getIssueIcon(issue.type)}</span>
+									<span class="issue-message">{issue.message}</span>
+								</div>
+							{/each}
+						</div>
+					{/if}
+				</div>
+
+				<!-- Content Analysis -->
+				<div class="category">
+					<button class="category-header" onclick={() => toggleCategory('content')}>
+						<div class="category-info">
+							<span class="category-name">Content</span>
+							<span
+								class="category-score"
+								style="color: {getScoreColor(analysis.contentScore || 0)}"
+							>
+								{analysis.contentScore || 0}%
+							</span>
+						</div>
+						<span class="chevron" class:expanded={expandedCategories.has('content')}>v</span>
+					</button>
+					{#if expandedCategories.has('content')}
+						<div class="category-content">
+							{#each getIssuesByCategory(analysis, 'content') as issue (issue.message)}
+								<div class="issue {issue.type}">
+									<span class="issue-icon">{getIssueIcon(issue.type)}</span>
+									<span class="issue-message">{issue.message}</span>
+								</div>
+							{/each}
+						</div>
+					{/if}
+				</div>
+
+				<!-- Readability Analysis -->
+				<div class="category">
+					<button class="category-header" onclick={() => toggleCategory('readability')}>
+						<div class="category-info">
+							<span class="category-name">Readability</span>
+							<span
+								class="category-score"
+								style="color: {getScoreColor(analysis.readabilityGrade || 0)}"
+							>
+								{analysis.readabilityGrade || 0}%
+							</span>
+						</div>
+						<span class="chevron" class:expanded={expandedCategories.has('readability')}>v</span>
+					</button>
+					{#if expandedCategories.has('readability')}
+						<div class="category-content">
+							{#each getIssuesByCategory(analysis, 'readability') as issue (issue.message)}
+								<div class="issue {issue.type}">
+									<span class="issue-icon">{getIssueIcon(issue.type)}</span>
+									<span class="issue-message">{issue.message}</span>
+								</div>
+							{/each}
+						</div>
+					{/if}
+				</div>
+
+				<!-- Keyword Analysis -->
+				<div class="category">
+					<button class="category-header" onclick={() => toggleCategory('keyword')}>
+						<div class="category-info">
+							<span class="category-name">Keywords</span>
+						</div>
+						<span class="chevron" class:expanded={expandedCategories.has('keyword')}>v</span>
+					</button>
+					{#if expandedCategories.has('keyword')}
+						<div class="category-content">
+							{#each getIssuesByCategory(analysis, 'keyword') as issue (issue.message)}
+								<div class="issue {issue.type}">
+									<span class="issue-icon">{getIssueIcon(issue.type)}</span>
+									<span class="issue-message">{issue.message}</span>
+								</div>
+							{/each}
+						</div>
+					{/if}
+				</div>
+
+				<!-- Structure Analysis -->
+				<div class="category">
+					<button class="category-header" onclick={() => toggleCategory('structure')}>
+						<div class="category-info">
+							<span class="category-name">Structure</span>
+						</div>
+						<span class="chevron" class:expanded={expandedCategories.has('structure')}>v</span>
+					</button>
+					{#if expandedCategories.has('structure')}
+						<div class="category-content">
+							{#each getIssuesByCategory(analysis, 'structure') as issue (issue.message)}
+								<div class="issue {issue.type}">
+									<span class="issue-icon">{getIssueIcon(issue.type)}</span>
+									<span class="issue-message">{issue.message}</span>
+								</div>
+							{/each}
+						</div>
+					{/if}
+				</div>
+
+				<!-- URL Slug Analysis -->
+				{#if slug}
+					<div class="category">
+						<button class="category-header" onclick={() => toggleCategory('slug')}>
+							<div class="category-info">
+								<span class="category-name">URL Slug</span>
+							</div>
+							<span class="chevron" class:expanded={expandedCategories.has('slug')}>v</span>
+						</button>
+						{#if expandedCategories.has('slug')}
+							<div class="category-content">
+								{#each getIssuesByCategory(analysis, 'slug') as issue (issue.message)}
+									<div class="issue {issue.type}">
+										<span class="issue-icon">{getIssueIcon(issue.type)}</span>
+										<span class="issue-message">{issue.message}</span>
+									</div>
+								{/each}
+							</div>
+						{/if}
+					</div>
+				{/if}
+			</div>
+
+			<!-- Suggestions -->
+			{#if analysis.suggestions.length > 0}
+				<div class="suggestions">
+					<h4>Improvement Suggestions</h4>
+					<ul>
+						{#each analysis.suggestions as suggestion (suggestion)}
+							<li>{suggestion}</li>
+						{/each}
+					</ul>
+				</div>
+			{/if}
+		{:else}
+			<div class="empty-state">
+				<p>Start writing to see SEO analysis</p>
 			</div>
 		{/if}
-	{:else}
-		<div class="empty-state">
-			<p>Start writing to see SEO analysis</p>
-		</div>
-	{/if}
+	{/await}
 </div>
 
 <style>

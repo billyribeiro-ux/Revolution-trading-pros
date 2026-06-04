@@ -12,11 +12,17 @@ import { env } from '$env/dynamic/private';
 
 const API_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 
-export const GET = async ({ cookies }: RequestEvent) => {
+function anonymousResponse() {
+	return json({ user: null, authenticated: false }, { status: 200 });
+}
+
+export const GET = async ({ cookies, url }: RequestEvent) => {
 	try {
+		const optionalProbe = url.searchParams.get('optional') === '1';
 		const accessToken = cookies.get('rtp_access_token');
 
 		if (!accessToken) {
+			if (optionalProbe) return anonymousResponse();
 			return json({ user: null, error: 'Not authenticated' }, { status: 401 });
 		}
 
@@ -35,6 +41,7 @@ export const GET = async ({ cookies }: RequestEvent) => {
 			if (response.status === 401) {
 				// Clear invalid cookies
 				cookies.delete('rtp_access_token', { path: '/' });
+				if (optionalProbe) return anonymousResponse();
 				return json({ user: null, error: 'Session expired' }, { status: 401 });
 			}
 			return json({ user: null, error: 'Auth check failed' }, { status: response.status });

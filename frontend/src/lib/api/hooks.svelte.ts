@@ -32,7 +32,7 @@
 import { onDestroy, untrack } from 'svelte';
 import { browser } from '$app/environment';
 import { getApiClient, type RequestOptions } from './client';
-import { type ApiError, isApiError, isRetryableError } from './errors';
+import { type ApiError, isApiError, isRetryableError, UnknownError } from './errors';
 import { getCache, type CacheConfig } from './cache';
 
 // =============================================================================
@@ -346,9 +346,7 @@ export function createQuery<T>(
 			} catch (error) {
 				lastError = isApiError(error)
 					? error
-					: new (await import('./errors')).UnknownError(
-							error instanceof Error ? error.message : 'Unknown error'
-						);
+					: new UnknownError(error instanceof Error ? error.message : 'Unknown error');
 
 				// Don't retry non-retryable errors
 				if (!isRetryableError(lastError) || attempt === retry) {
@@ -535,9 +533,7 @@ export function createMutation<TData, TVariables = void>(
 			// onMutate failed, abort mutation
 			const apiError = isApiError(e)
 				? e
-				: new (await import('./errors')).UnknownError(
-						e instanceof Error ? e.message : 'Mutation setup failed'
-					);
+				: new UnknownError(e instanceof Error ? e.message : 'Mutation setup failed');
 			error = apiError;
 			status = 'error';
 			throw apiError;
@@ -559,9 +555,7 @@ export function createMutation<TData, TVariables = void>(
 			} catch (e) {
 				lastError = isApiError(e)
 					? e
-					: new (await import('./errors')).UnknownError(
-							e instanceof Error ? e.message : 'Mutation failed'
-						);
+					: new UnknownError(e instanceof Error ? e.message : 'Mutation failed');
 
 				// Don't retry non-retryable errors
 				if (!isRetryableError(lastError) || attempt === retry) {
@@ -792,9 +786,7 @@ export function createInfiniteQuery<T, TPageParam = number>(
 			} catch (e) {
 				lastError = isApiError(e)
 					? e
-					: new (await import('./errors')).UnknownError(
-							e instanceof Error ? e.message : 'Unknown error'
-						);
+					: new UnknownError(e instanceof Error ? e.message : 'Unknown error');
 
 				if (!isRetryableError(lastError) || attempt === retry) {
 					break;

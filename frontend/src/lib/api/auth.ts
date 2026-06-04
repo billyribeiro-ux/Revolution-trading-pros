@@ -1437,6 +1437,55 @@ export const verifyMFA = (code: string) => authService.verifyMFA(code);
 export const disableMFA = (password: string) => authService.disableMFA(password);
 export const getSecurityEvents = () => authService.getSecurityEvents();
 
+function isUserLike(value: unknown): value is User {
+	if (!value || typeof value !== 'object') return false;
+	const candidate = value as Partial<User>;
+	return (
+		typeof candidate.id === 'number' &&
+		typeof candidate.email === 'string' &&
+		typeof candidate.name === 'string'
+	);
+}
+
+function extractAuthUser(payload: unknown): User | null {
+	if (isUserLike(payload)) return payload;
+	if (!payload || typeof payload !== 'object') return null;
+
+	const envelope = payload as { data?: unknown; user?: unknown };
+	if (isUserLike(envelope.user)) return envelope.user;
+
+	if (envelope.data && typeof envelope.data === 'object') {
+		const data = envelope.data as { user?: unknown };
+		if (isUserLike(data.user)) return data.user;
+		if (isUserLike(envelope.data)) return envelope.data;
+	}
+
+	return null;
+}
+
+async function probeOptionalSession(): Promise<boolean> {
+	const response = await fetch('/api/auth/me?optional=1', {
+		method: 'GET',
+		credentials: 'include',
+		headers: {
+			Accept: 'application/json'
+		}
+	});
+
+	if (!response.ok) {
+		throw new Error(`Optional auth probe failed: ${response.status}`);
+	}
+
+	const user = extractAuthUser(await response.json());
+	if (!user) {
+		authStore.completeInitialization(false);
+		return false;
+	}
+
+	authStore.setUser(user);
+	return true;
+}
+
 /**
  * Initialize authentication on app startup
  *
@@ -1482,22 +1531,19 @@ export async function initializeAuth(): Promise<boolean> {
 	// The cookie is httpOnly so we can't peek at it from JS; the only way to
 	// know whether a valid cookie is on the wire is to ask the API. So when
 	// there's no localStorage session we still issue a single cookie-bearing
-	// `/api/auth/me` request. If it 200s, hydrate the store and we're done. If
-	// it 401s (anonymous visitor — the common case), we fall through to
-	// `completeInitialization(false)` exactly as before. Net cost for anonymous
-	// users: one cheap `/me` round-trip on first visit; the response is short
-	// and the request is parallelized with the rest of layout init.
+	// `/api/auth/me?optional=1` request. If it finds a user, hydrate the store
+	// and we're done. If it returns anonymous, complete initialization without
+	// making the browser report a failed resource on public pages.
 	//
 	// hooks.server.ts already does the same probe SSR-side for protected
 	// routes — the admin layout has `ssr = false`, so that data never reaches
 	// the client store; this client-side probe is the symmetric fix.
 	if (!sessionId) {
 		try {
-			const user = await Promise.race([authService.getUser(), timeoutPromise]);
-			return !!user;
+			return await Promise.race([probeOptionalSession(), timeoutPromise]);
 		} catch {
-			// 401 / network / timeout — proceed as anonymous, identical to the
-			// previous fast-path behaviour.
+			// Network / timeout — proceed as anonymous, identical to the previous
+			// fast-path behaviour.
 			authStore.completeInitialization(false);
 			return false;
 		}

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
 	/**
 	 * Past Members Dashboard - Svelte 5 / SvelteKit Implementation
@@ -12,10 +13,8 @@
 	 *
 	 */
 
-	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { browser } from '$app/environment';
-	import {} from 'svelte';
+	import { page } from '$app/state';
 	import pastMembersApi, {
 		type TimePeriod,
 		type PastMember,
@@ -62,7 +61,7 @@
 	let selectedPeriod = $state<TimePeriod>('30d');
 	let members = $state<PastMember[]>([]);
 	let searchQuery = $state('');
-	let selectedMembers = $state(new SvelteSet<number>()); // eslint-disable-line svelte/no-unnecessary-state-wrap
+	let selectedMembers = new SvelteSet<number>();
 
 	// Loading states
 	let isLoading = $state(true);
@@ -99,29 +98,22 @@
 	const allSelected = $derived(selectedMembers.size === members.length && members.length > 0);
 	const periodLabel = $derived(TIME_PERIOD_LABELS[selectedPeriod]);
 
-	// EFFECTS
-
-	// Initialize from load function data
-	$effect(() => {
-		if (!browser) return;
-
-		// Handle auth errors
+	onMount(() => {
 		if (data?.authError) {
 			error = 'Session expired or access denied.';
 			isLoading = false;
 			return;
 		}
 
-		// Use data from load function if available
 		if (data?.overview) {
 			overview = data.overview;
 			churnReasons = data.churnReasons ?? [];
 			isLoading = false;
-			loadPeriodMembers();
-		} else {
-			// Fallback to client-side fetch
-			loadDashboard();
+			void loadPeriodMembers();
+			return;
 		}
+
+		void loadDashboard();
 	});
 
 	// FUNCTIONS - Data Loading
@@ -217,14 +209,16 @@
 		} else {
 			selectedMembers.add(id);
 		}
-		selectedMembers = new SvelteSet();
 	}
 
 	function selectAllMembers(): void {
 		if (allSelected) {
 			selectedMembers.clear();
 		} else {
-			selectedMembers = new SvelteSet(members.map((m) => m.id));
+			selectedMembers.clear();
+			for (const member of members) {
+				selectedMembers.add(member.id);
+			}
 		}
 	}
 
