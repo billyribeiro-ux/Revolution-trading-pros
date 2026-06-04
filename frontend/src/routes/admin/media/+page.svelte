@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { SvelteSet } from 'svelte/reactivity';
+	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 	/**
 	 * Media Library - Apple ICT 7 Grade Enterprise Dashboard
 	 *
@@ -112,14 +112,21 @@
 	// Animations
 	const statsProgress = tweened(0, { duration: 1000, easing: cubicOut });
 
-	// Lifecycle - Svelte 5 $effect rune
+	// Component-owned async resources
+	let isComponentMounted = false;
+	let mediaRequestGeneration = 0;
+	let statisticsRequestGeneration = 0;
+	const uploadRequests = new SvelteMap<string, XMLHttpRequest>();
+	const toastTimers = new SvelteMap<string, ReturnType<typeof setTimeout>>();
 
-	// Initialize on mount using $effect
+	// Lifecycle
 	onMount(() => {
 		if (!browser) return;
 
+		isComponentMounted = true;
+
 		// Load initial data
-		Promise.all([loadMedia(), loadStatistics()]);
+		void Promise.all([loadMedia(), loadStatistics()]);
 
 		// Setup keyboard and click listeners
 		document.addEventListener('keydown', handleKeydown);
@@ -127,6 +134,11 @@
 
 		// Cleanup on unmount
 		return () => {
+			isComponentMounted = false;
+			mediaRequestGeneration++;
+			statisticsRequestGeneration++;
+			abortUploads();
+			clearToastTimers();
 			document.removeEventListener('keydown', handleKeydown);
 			document.removeEventListener('click', handleClickOutside);
 		};
@@ -135,6 +147,9 @@
 	// Data Loading
 
 	async function loadMedia() {
+		const requestGeneration = ++mediaRequestGeneration;
+		if (!isComponentMounted) return;
+
 		isLoading = true;
 		try {
 			const response = await mediaApi.list({
@@ -149,20 +164,31 @@
 				sort_dir: sortDir
 			});
 
+			if (!isComponentMounted || requestGeneration !== mediaRequestGeneration) return;
+
 			items = response.data;
 			currentPage = response.meta.current_page;
 			totalPages = response.meta.last_page;
 			totalItems = response.meta.total;
 		} catch {
-			showToast('Failed to load media', 'error');
+			if (isComponentMounted && requestGeneration === mediaRequestGeneration) {
+				showToast('Failed to load media', 'error');
+			}
 		} finally {
-			isLoading = false;
+			if (isComponentMounted && requestGeneration === mediaRequestGeneration) {
+				isLoading = false;
+			}
 		}
 	}
 
 	async function loadStatistics() {
+		const requestGeneration = ++statisticsRequestGeneration;
+		if (!isComponentMounted) return;
+
 		try {
 			const response = await mediaApi.getStatistics();
+			if (!isComponentMounted || requestGeneration !== statisticsRequestGeneration) return;
+
 			statistics = response.data;
 			if (statistics) {
 				const percent =
@@ -172,14 +198,16 @@
 				statsProgress.set(percent);
 			}
 		} catch (e) {
-			console.error('Failed to load statistics', e);
+			if (isComponentMounted && requestGeneration === statisticsRequestGeneration) {
+				console.error('Failed to load statistics', e);
+			}
 		}
 	}
 
 	// Upload Handling
 
 	function handleFilesSelected(files: File[]) {
-		if (files.length === 0) return;
+		if (!isComponentMounted || files.length === 0) return;
 
 		showUploadPanel = true;
 		isUploading = true;
@@ -187,11 +215,13 @@
 		files.forEach((file) => {
 			const id = crypto.randomUUID();
 			uploadQueue = [...uploadQueue, { id, file, progress: 0, status: 'pending' }];
-			uploadFile(id, file);
+			void uploadFile(id, file);
 		});
 	}
 
 	async function uploadFile(id: string, file: File) {
+		if (!isComponentMounted) return;
+
 		const idx = uploadQueue.findIndex((u) => u.id === id);
 		if (idx === -1) return;
 
@@ -207,11 +237,13 @@
 			formData.append('file', file);
 
 			const xhr = new XMLHttpRequest();
+			uploadRequests.set(id, xhr);
 
 			xhr.upload.onprogress = (e) => {
+				if (!isComponentMounted) return;
 				if (e.lengthComputable) {
 					const progress = Math.round((e.loaded / e.total) * 100);
-					const item = uploadQueue[idx];
+					const item = uploadQueue.find((upload) => upload.id === id);
 					if (item) {
 						item.progress = progress;
 					}
@@ -227,6 +259,7 @@
 					}
 				};
 				xhr.onerror = () => reject(new Error('Upload failed'));
+				xhr.onabort = () => reject(new DOMException('Upload aborted', 'AbortError'));
 				// FIX-2026-04-26-audit (P1-7): same-origin proxy. The proxy at
 				// frontend/src/routes/api/admin/media/upload/+server.ts forwards the
 				// multipart body verbatim with the Bearer header attached server-side.
@@ -234,7 +267,9 @@
 				xhr.send(formData);
 			});
 
-			const completedItem = uploadQueue[idx];
+			if (!isComponentMounted) return;
+
+			const completedItem = uploadQueue.find((upload) => upload.id === id);
 			if (completedItem) {
 				completedItem.status = 'complete';
 				completedItem.result = result;
@@ -243,14 +278,20 @@
 			// Add to items list
 			items = [result, ...items];
 			totalItems++;
-			loadStatistics();
+			void loadStatistics();
 		} catch (e) {
-			const errorItem = uploadQueue[idx];
+			if ((e as { name?: string }).name === 'AbortError' || !isComponentMounted) return;
+
+			const errorItem = uploadQueue.find((upload) => upload.id === id);
 			if (errorItem) {
 				errorItem.status = 'error';
 				errorItem.error = (e as { message?: string }).message || 'Upload failed';
 			}
+		} finally {
+			uploadRequests.delete(id);
 		}
+
+		if (!isComponentMounted) return;
 
 		// Check if all uploads complete
 		const allDone = uploadQueue.every((u) => u.status === 'complete' || u.status === 'error');
@@ -268,8 +309,10 @@
 	}
 
 	function clearUploadQueue() {
+		abortUploads();
 		uploadQueue = [];
 		showUploadPanel = false;
+		isUploading = false;
 	}
 
 	// Item Actions
@@ -315,13 +358,17 @@
 	async function handleOptimize(item: MediaItem) {
 		try {
 			const response = await mediaApi.optimize(item.id);
+			if (!isComponentMounted) return;
+
 			const updatedItem = response.data as MediaItem;
 			items = items.map((i) => (i.id === item.id ? updatedItem : i));
 			if (detailItem?.id === item.id) detailItem = updatedItem;
 			showToast('Image optimized', 'success');
-			loadStatistics();
+			void loadStatistics();
 		} catch (e) {
-			showToast((e as { message?: string }).message || 'Optimization failed', 'error');
+			if (isComponentMounted) {
+				showToast((e as { message?: string }).message || 'Optimization failed', 'error');
+			}
 		}
 	}
 
@@ -338,6 +385,8 @@
 
 		try {
 			await mediaApi.delete(item.id);
+			if (!isComponentMounted) return;
+
 			items = items.filter((i) => i.id !== item.id);
 			selectedIds.delete(item.id);
 			totalItems--;
@@ -348,9 +397,11 @@
 			}
 
 			showToast('File deleted', 'success');
-			loadStatistics();
+			void loadStatistics();
 		} catch (e) {
-			showToast((e as { message?: string }).message || 'Delete failed', 'error');
+			if (isComponentMounted) {
+				showToast((e as { message?: string }).message || 'Delete failed', 'error');
+			}
 		}
 	}
 
@@ -366,8 +417,10 @@
 			});
 
 			if (!response.ok) throw new Error('Analysis failed');
+			if (!isComponentMounted) return;
 
 			const result = await response.json();
+			if (!isComponentMounted) return;
 
 			// Update item with AI data
 			const updatedItem = {
@@ -386,9 +439,13 @@
 
 			showToast('AI analysis complete', 'success');
 		} catch (e) {
-			showToast((e as { message?: string }).message || 'AI analysis failed', 'error');
+			if (isComponentMounted) {
+				showToast((e as { message?: string }).message || 'AI analysis failed', 'error');
+			}
 		} finally {
-			isAnalyzing = false;
+			if (isComponentMounted) {
+				isAnalyzing = false;
+			}
 		}
 	}
 
@@ -403,11 +460,15 @@
 			});
 
 			if (!response.ok) throw new Error('Failed to generate alt text');
+			if (!isComponentMounted) return;
 
 			const result = await response.json();
+			if (!isComponentMounted) return;
 
 			// Update item
 			await mediaApi.update(item.id, { alt_text: result.altText });
+			if (!isComponentMounted) return;
+
 			const updatedItem = { ...item, alt_text: result.altText };
 
 			items = items.map((i) => (i.id === item.id ? updatedItem : i));
@@ -415,9 +476,13 @@
 
 			showToast('Alt text generated', 'success');
 		} catch (e) {
-			showToast((e as { message?: string }).message || 'Failed to generate alt text', 'error');
+			if (isComponentMounted) {
+				showToast((e as { message?: string }).message || 'Failed to generate alt text', 'error');
+			}
 		} finally {
-			isAnalyzing = false;
+			if (isComponentMounted) {
+				isAnalyzing = false;
+			}
 		}
 	}
 
@@ -445,16 +510,21 @@
 			});
 
 			if (!response.ok) throw new Error('Failed to save crop');
+			if (!isComponentMounted) return;
 
 			const apiResult = await response.json();
+			if (!isComponentMounted) return;
+
 			items = items.map((i) => (i.id === cropTarget.id ? apiResult.data : i));
 			detailItem = apiResult.data;
 
 			showCropModal = false;
 			showToast('Image cropped and saved', 'success');
-			loadStatistics();
+			void loadStatistics();
 		} catch (e) {
-			showToast((e as { message?: string }).message || 'Failed to save crop', 'error');
+			if (isComponentMounted) {
+				showToast((e as { message?: string }).message || 'Failed to save crop', 'error');
+			}
 		}
 	}
 
@@ -474,6 +544,8 @@
 
 		try {
 			const response = await mediaApi.bulkOptimize(ids as string[]);
+			if (!isComponentMounted) return;
+
 			showToast(`${response.success} images queued for optimization`, 'success');
 
 			items = items.map((i) =>
@@ -483,9 +555,11 @@
 			);
 
 			selectedIds.clear();
-			loadStatistics();
+			void loadStatistics();
 		} catch (e) {
-			showToast((e as { message?: string }).message || 'Bulk optimization failed', 'error');
+			if (isComponentMounted) {
+				showToast((e as { message?: string }).message || 'Bulk optimization failed', 'error');
+			}
 		}
 	}
 
@@ -501,13 +575,17 @@
 
 		try {
 			await mediaApi.bulkDelete(ids as string[]);
+			if (!isComponentMounted) return;
+
 			items = items.filter((i) => !selectedIds.has(i.id));
 			totalItems -= ids.length;
 			selectedIds.clear();
 			showToast(`${ids.length} items deleted`, 'success');
-			loadStatistics();
+			void loadStatistics();
 		} catch (e) {
-			showToast((e as { message?: string }).message || 'Bulk delete failed', 'error');
+			if (isComponentMounted) {
+				showToast((e as { message?: string }).message || 'Bulk delete failed', 'error');
+			}
 		}
 	}
 
@@ -656,16 +734,16 @@
 				handleItemDoubleClick(item);
 				break;
 			case 'optimize':
-				handleOptimize(item);
+				void handleOptimize(item);
 				break;
 			case 'crop':
 				handleCrop(item);
 				break;
 			case 'ai-analyze':
-				handleAIAnalyze(item);
+				void handleAIAnalyze(item);
 				break;
 			case 'copy-url':
-				navigator.clipboard.writeText(item.url);
+				void navigator.clipboard.writeText(item.url);
 				showToast('URL copied', 'success');
 				break;
 			case 'delete':
@@ -681,11 +759,50 @@
 	);
 
 	function showToast(message: string, type: 'success' | 'error' | 'info' = 'info') {
+		if (!isComponentMounted) return;
+
 		const id = crypto.randomUUID();
 		toasts = [...toasts, { id, message, type }];
-		setTimeout(() => {
+		const timer = setTimeout(() => {
+			if (!isComponentMounted) return;
 			toasts = toasts.filter((t) => t.id !== id);
+			toastTimers.delete(id);
 		}, 4000);
+		toastTimers.set(id, timer);
+	}
+
+	function clearToastTimers() {
+		for (const timer of toastTimers.values()) {
+			clearTimeout(timer);
+		}
+		toastTimers.clear();
+	}
+
+	function abortUploads() {
+		for (const xhr of uploadRequests.values()) {
+			xhr.abort();
+		}
+		uploadRequests.clear();
+	}
+
+	async function handleAltTextBlur(event: FocusEvent) {
+		const target = event.target as HTMLTextAreaElement;
+		const current = detailItem;
+		if (!current || target.value === current.alt_text) return;
+
+		try {
+			await mediaApi.update(current.id, { alt_text: target.value });
+			if (!isComponentMounted || detailItem?.id !== current.id) return;
+
+			const updatedItem = { ...current, alt_text: target.value };
+			detailItem = updatedItem;
+			items = items.map((item) => (item.id === current.id ? updatedItem : item));
+			showToast('Alt text saved', 'success');
+		} catch (e) {
+			if (isComponentMounted) {
+				showToast((e as { message?: string }).message || 'Failed to save alt text', 'error');
+			}
+		}
 	}
 
 	// Helpers
@@ -738,7 +855,7 @@
 			bind:searchQuery
 			bind:viewMode
 			bind:showUploadPanel
-			onSearchSubmit={loadMedia}
+			onSearchSubmit={() => void loadMedia()}
 		/>
 
 		<!-- Statistics Panel (extracted to _components/StatsPanel.svelte) -->
@@ -766,21 +883,21 @@
 		<div class="toolbar">
 			<div class="toolbar-left">
 				<!-- Filters -->
-				<select bind:value={filterType} onchange={loadMedia}>
+				<select bind:value={filterType} onchange={() => void loadMedia()}>
 					<option value="all">All Types</option>
 					<option value="image">Images</option>
 					<option value="video">Videos</option>
 					<option value="document">Documents</option>
 				</select>
 
-				<select bind:value={filterStatus} onchange={loadMedia}>
+				<select bind:value={filterStatus} onchange={() => void loadMedia()}>
 					<option value="all">All Status</option>
 					<option value="optimized">Optimized</option>
 					<option value="pending">Needs Optimization</option>
 					<option value="processing">Processing</option>
 				</select>
 
-				<select bind:value={sortBy} onchange={loadMedia}>
+				<select bind:value={sortBy} onchange={() => void loadMedia()}>
 					<option value="created_at">Date Added</option>
 					<option value="filename">Name</option>
 					<option value="size">Size</option>
@@ -790,7 +907,7 @@
 					class="btn-icon"
 					onclick={() => {
 						sortDir = sortDir === 'asc' ? 'desc' : 'asc';
-						loadMedia();
+						void loadMedia();
 					}}
 				>
 					{#if sortDir === 'asc'}
@@ -810,12 +927,12 @@
 						<button class="btn-secondary btn-sm" onclick={selectAll}>
 							{selectedIds.size === items.length ? 'Deselect All' : 'Select All'}
 						</button>
-						<button class="btn-primary btn-sm" onclick={bulkOptimize}>
+						<button class="btn-primary btn-sm" onclick={() => void bulkOptimize()}>
 							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: bolt (optimize) -->
 							<IconBolt size={20} aria-hidden="true" />
 							Optimize
 						</button>
-						<button class="btn-secondary btn-sm" onclick={bulkDownload}>
+						<button class="btn-secondary btn-sm" onclick={() => void bulkDownload()}>
 							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: download -->
 							<IconDownload size={20} aria-hidden="true" />
 							Download
@@ -972,7 +1089,7 @@
 											class="btn-icon-sm"
 											onclick={(e: MouseEvent) => {
 												e.stopPropagation();
-												handleOptimize(item);
+												void handleOptimize(item);
 											}}
 											title="Optimize"
 										>
@@ -998,7 +1115,7 @@
 				{/if}
 
 				<!-- Pagination (extracted to _components/Pagination.svelte) -->
-				<Pagination bind:currentPage {totalPages} onChange={() => loadMedia()} />
+				<Pagination bind:currentPage {totalPages} onChange={() => void loadMedia()} />
 			</main>
 
 			<!-- ═══════════════════════════════════════════════════════════════════════ -->
@@ -1076,7 +1193,9 @@
 							{#if aiEnabled}
 								<button
 									class="btn-text btn-sm"
-									onclick={() => detailItem && handleGenerateAltText(detailItem)}
+									onclick={() => {
+										if (detailItem) void handleGenerateAltText(detailItem);
+									}}
 									disabled={isAnalyzing}
 								>
 									{#if isAnalyzing}
@@ -1093,15 +1212,7 @@
 							class="alt-input"
 							placeholder="Enter alt text for accessibility..."
 							value={detailItem.alt_text || ''}
-							onblur={async (e: FocusEvent) => {
-								const target = e.target as HTMLTextAreaElement;
-								const current = detailItem;
-								if (current && target.value !== current.alt_text) {
-									await mediaApi.update(current.id, { alt_text: target.value });
-									detailItem = { ...current, alt_text: target.value };
-									showToast('Alt text saved', 'success');
-								}
-							}}
+							onblur={(event) => void handleAltTextBlur(event)}
 						></textarea>
 					</div>
 
@@ -1112,7 +1223,9 @@
 								<h3>AI Analysis</h3>
 								<button
 									class="btn-text btn-sm"
-									onclick={() => detailItem && handleAIAnalyze(detailItem)}
+									onclick={() => {
+										if (detailItem) void handleAIAnalyze(detailItem);
+									}}
 									disabled={isAnalyzing}
 								>
 									{#if isAnalyzing}
@@ -1149,7 +1262,12 @@
 								Responsive Preview
 							</button>
 						{/if}
-						<button class="btn-primary" onclick={() => detailItem && handleOptimize(detailItem)}>
+						<button
+							class="btn-primary"
+							onclick={() => {
+								if (detailItem) void handleOptimize(detailItem);
+							}}
+						>
 							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: bolt (optimize) -->
 							<IconBolt size={20} aria-hidden="true" />
 							Optimize
@@ -1179,7 +1297,7 @@
 {#if showCropModal && detailItem}
 	<ImageCropModal
 		src={detailItem.url}
-		oncrop={handleCropSave}
+		oncrop={(cropResult) => void handleCropSave(cropResult)}
 		oncancel={() => (showCropModal = false)}
 	/>
 {/if}
@@ -1196,7 +1314,7 @@
 		: ''}
 	confirmText="Delete"
 	variant="danger"
-	onConfirm={confirmDelete}
+	onConfirm={() => void confirmDelete()}
 	onCancel={() => {
 		showDeleteModal = false;
 		pendingDeleteItem = null;
@@ -1210,7 +1328,7 @@
 	message={`Delete ${selectedIds.size} selected file(s)? This cannot be undone.`}
 	confirmText="Delete All"
 	variant="danger"
-	onConfirm={confirmBulkDelete}
+	onConfirm={() => void confirmBulkDelete()}
 	onCancel={() => (showBulkDeleteModal = false)}
 />
 
