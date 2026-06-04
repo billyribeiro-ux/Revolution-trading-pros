@@ -10,9 +10,9 @@
 	
 -->
 <script lang="ts">
+	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
-	import { browser } from '$app/environment';
-	import { untrack } from 'svelte';
+	import { onDestroy, untrack } from 'svelte';
 	import type { PageData } from './$types';
 	import { getRoomById } from '$lib/config/rooms';
 	import {
@@ -77,6 +77,48 @@
 	let activeTab = $state<Tab>('trade-plan');
 	let successMessage = $state('');
 	let errorMessage = $state('');
+	let successMessageTimeout: ReturnType<typeof setTimeout> | null = null;
+	let errorMessageTimeout: ReturnType<typeof setTimeout> | null = null;
+
+	function clearSuccessTimer() {
+		if (successMessageTimeout === null) return;
+		clearTimeout(successMessageTimeout);
+		successMessageTimeout = null;
+	}
+
+	function clearErrorTimer() {
+		if (errorMessageTimeout === null) return;
+		clearTimeout(errorMessageTimeout);
+		errorMessageTimeout = null;
+	}
+
+	function setSuccessMessage(message: string) {
+		clearSuccessTimer();
+		successMessage = message;
+		successMessageTimeout = setTimeout(() => {
+			successMessage = '';
+			successMessageTimeout = null;
+		}, 3000);
+	}
+
+	function clearErrorMessage() {
+		clearErrorTimer();
+		errorMessage = '';
+	}
+
+	function setErrorMessage(message: string) {
+		clearErrorTimer();
+		errorMessage = message;
+		errorMessageTimeout = setTimeout(() => {
+			errorMessage = '';
+			errorMessageTimeout = null;
+		}, 5000);
+	}
+
+	onDestroy(() => {
+		clearSuccessTimer();
+		clearErrorTimer();
+	});
 
 	// Delete confirmation modal state
 	let showDeleteTradePlanModal = $state(false);
@@ -307,25 +349,27 @@
 	// in a local module variable instead, so we refetch exactly once per
 	// real navigation transition. Seed it with the initial SSR slug (read via
 	// untrack to silence Svelte's state_referenced_locally warning) so the
-	// first effect run is a no-op (SSR already populated all six lists).
-	let lastLoadedSlug: string | null = untrack(() => data.slug ?? null);
+	// first navigation callback is a no-op (SSR already populated all six lists).
+	let lastLoadedSlug: string | null = untrack(() => slug || null);
 
-	$effect(() => {
-		if (!browser) return;
+	afterNavigate(() => {
 		const currentSlug = slug;
-		if (!currentSlug) return;
-		if (currentSlug === lastLoadedSlug) return;
+		if (!currentSlug || currentSlug === lastLoadedSlug) return;
 
 		lastLoadedSlug = currentSlug;
-		untrack(() => {
-			loadTradePlan();
-			loadAlerts();
-			loadWeeklyVideo();
-			loadRoomStats();
-			loadTrades();
-			loadVideoResources();
-		});
+		void refreshRoomContent();
 	});
+
+	async function refreshRoomContent() {
+		await Promise.all([
+			loadTradePlan(),
+			loadAlerts(),
+			loadWeeklyVideo(),
+			loadRoomStats(),
+			loadTrades(),
+			loadVideoResources()
+		]);
+	}
 
 	async function loadTradePlan() {
 		isLoadingTradePlan = true;
@@ -334,7 +378,7 @@
 			tradePlanEntries = response.data || [];
 		} catch (err) {
 			logger.error('Failed to load trade plan', { error: err });
-			errorMessage = 'Failed to load trade plan entries';
+			setErrorMessage('Failed to load trade plan entries');
 		} finally {
 			isLoadingTradePlan = false;
 		}
@@ -347,7 +391,7 @@
 			alerts = response.data || [];
 		} catch (err) {
 			logger.error('Failed to load alerts', { error: err });
-			errorMessage = 'Failed to load alerts';
+			setErrorMessage('Failed to load alerts');
 		} finally {
 			isLoadingAlerts = false;
 		}
@@ -388,7 +432,7 @@
 			trades = response.data || [];
 		} catch (err) {
 			logger.error('Failed to load trades', { error: err });
-			errorMessage = 'Failed to load trades';
+			setErrorMessage('Failed to load trades');
 		} finally {
 			isLoadingTrades = false;
 		}
@@ -450,29 +494,29 @@
 
 	async function saveTradePlan() {
 		if (!isTradePlanFormValid) {
-			errorMessage = 'Ticker and Bias are required';
+			setErrorMessage('Ticker and Bias are required');
 			return;
 		}
 
 		isSavingTradePlan = true;
-		errorMessage = '';
+		clearErrorMessage();
 
 		try {
 			if (editingTradePlan) {
 				await tradePlanApi.update(editingTradePlan.id, slug, tradePlanForm);
-				successMessage = 'Trade plan entry updated';
+				setSuccessMessage('Trade plan entry updated');
 			} else {
 				await tradePlanApi.create({
 					room_slug: slug,
 					...tradePlanForm
 				});
-				successMessage = 'Trade plan entry created';
+				setSuccessMessage('Trade plan entry created');
 			}
 			showTradePlanModal = false;
 			await loadTradePlan();
 		} catch (err) {
 			const error = err as { message?: string };
-			errorMessage = error.message || 'Failed to save trade plan';
+			setErrorMessage(error.message || 'Failed to save trade plan');
 		} finally {
 			isSavingTradePlan = false;
 		}
@@ -490,11 +534,11 @@
 		pendingDeleteTradePlan = null;
 		try {
 			await tradePlanApi.delete(entry.id);
-			successMessage = 'Trade plan entry deleted';
+			setSuccessMessage('Trade plan entry deleted');
 			await loadTradePlan();
 		} catch (err) {
 			const error = err as { message?: string };
-			errorMessage = error.message || 'Failed to delete entry';
+			setErrorMessage(error.message || 'Failed to delete entry');
 		}
 	}
 
@@ -552,29 +596,29 @@
 
 	async function saveAlert() {
 		if (!isAlertFormValid) {
-			errorMessage = 'Ticker, Title, and Message are required';
+			setErrorMessage('Ticker, Title, and Message are required');
 			return;
 		}
 
 		isSavingAlert = true;
-		errorMessage = '';
+		clearErrorMessage();
 
 		try {
 			if (editingAlert) {
 				await alertsApi.update(editingAlert.id, alertForm);
-				successMessage = 'Alert updated';
+				setSuccessMessage('Alert updated');
 			} else {
 				await alertsApi.create({
 					room_slug: slug,
 					...alertForm
 				});
-				successMessage = 'Alert created';
+				setSuccessMessage('Alert created');
 			}
 			showAlertModal = false;
 			await loadAlerts();
 		} catch (err) {
 			const error = err as { message?: string };
-			errorMessage = error.message || 'Failed to save alert';
+			setErrorMessage(error.message || 'Failed to save alert');
 		} finally {
 			isSavingAlert = false;
 		}
@@ -592,33 +636,33 @@
 		pendingDeleteAlert = null;
 		try {
 			await alertsApi.delete(alert.id);
-			successMessage = 'Alert deleted';
+			setSuccessMessage('Alert deleted');
 			await loadAlerts();
 		} catch (err) {
 			const error = err as { message?: string };
-			errorMessage = error.message || 'Failed to delete alert';
+			setErrorMessage(error.message || 'Failed to delete alert');
 		}
 	}
 
 	async function toggleAlertPin(alert: RoomAlert) {
 		try {
 			await alertsApi.update(alert.id, { is_pinned: !alert.is_pinned });
-			successMessage = alert.is_pinned ? 'Alert unpinned' : 'Alert pinned';
+			setSuccessMessage(alert.is_pinned ? 'Alert unpinned' : 'Alert pinned');
 			await loadAlerts();
 		} catch (err) {
 			const error = err as { message?: string };
-			errorMessage = error.message || 'Failed to update alert';
+			setErrorMessage(error.message || 'Failed to update alert');
 		}
 	}
 
 	async function toggleAlertNew(alert: RoomAlert) {
 		try {
 			await alertsApi.update(alert.id, { is_new: !alert.is_new });
-			successMessage = alert.is_new ? 'Alert marked as read' : 'Alert marked as new';
+			setSuccessMessage(alert.is_new ? 'Alert marked as read' : 'Alert marked as new');
 			await loadAlerts();
 		} catch (err) {
 			const error = err as { message?: string };
-			errorMessage = error.message || 'Failed to update alert';
+			setErrorMessage(error.message || 'Failed to update alert');
 		}
 	}
 
@@ -643,24 +687,24 @@
 
 	async function saveVideo() {
 		if (!isVideoFormValid) {
-			errorMessage = 'Video URL and Title are required';
+			setErrorMessage('Video URL and Title are required');
 			return;
 		}
 
 		isSavingVideo = true;
-		errorMessage = '';
+		clearErrorMessage();
 
 		try {
 			await weeklyVideoApi.create({
 				room_slug: slug,
 				...videoForm
 			});
-			successMessage = 'Weekly video published (previous video archived)';
+			setSuccessMessage('Weekly video published (previous video archived)');
 			showVideoModal = false;
 			await loadWeeklyVideo();
 		} catch (err) {
 			const error = err as { message?: string };
-			errorMessage = error.message || 'Failed to save video';
+			setErrorMessage(error.message || 'Failed to save video');
 		} finally {
 			isSavingVideo = false;
 		}
@@ -680,12 +724,12 @@
 
 	async function closeTrade() {
 		if (!closingTrade || !isCloseTradeFormValid) {
-			errorMessage = 'Exit price is required';
+			setErrorMessage('Exit price is required');
 			return;
 		}
 
 		isClosingTrade = true;
-		errorMessage = '';
+		clearErrorMessage();
 
 		try {
 			await tradesApi.close(closingTrade.id, {
@@ -693,14 +737,14 @@
 				exit_date: closeTradeForm.exit_date,
 				notes: closeTradeForm.notes || undefined
 			});
-			successMessage = `Trade ${closingTrade.ticker} closed successfully`;
+			setSuccessMessage(`Trade ${closingTrade.ticker} closed successfully`);
 			showCloseTradeModal = false;
 			closingTrade = null;
 			await loadTrades();
 			await loadRoomStats();
 		} catch (err) {
 			const error = err as { message?: string };
-			errorMessage = error.message || 'Failed to close trade';
+			setErrorMessage(error.message || 'Failed to close trade');
 		} finally {
 			isClosingTrade = false;
 		}
@@ -718,11 +762,11 @@
 		pendingDeleteTrade = null;
 		try {
 			await tradesApi.delete(trade.id);
-			successMessage = 'Trade deleted';
+			setSuccessMessage('Trade deleted');
 			await loadTrades();
 		} catch (err) {
 			const error = err as { message?: string };
-			errorMessage = error.message || 'Failed to delete trade';
+			setErrorMessage(error.message || 'Failed to delete trade');
 		}
 	}
 
@@ -733,11 +777,11 @@
 		pendingDeleteVideoId = null;
 		try {
 			await roomResourcesApi.delete(videoId);
-			successMessage = 'Video deleted';
+			setSuccessMessage('Video deleted');
 			await loadVideoResources();
 		} catch (err) {
 			const error = err as { message?: string };
-			errorMessage = error.message || 'Failed to delete video';
+			setErrorMessage(error.message || 'Failed to delete video');
 		}
 	}
 
@@ -769,23 +813,6 @@
 		const sign = value >= 0 ? '+' : '';
 		return `${sign}${value.toFixed(2)}%`;
 	}
-
-	// Clear messages after delay
-	$effect(() => {
-		if (successMessage) {
-			const timeout = setTimeout(() => (successMessage = ''), 3000);
-			return () => clearTimeout(timeout);
-		}
-		return undefined;
-	});
-
-	$effect(() => {
-		if (errorMessage) {
-			const timeout = setTimeout(() => (errorMessage = ''), 5000);
-			return () => clearTimeout(timeout);
-		}
-		return undefined;
-	});
 
 	// Bias color helper
 	function getBiasColor(bias: string): string {
@@ -825,7 +852,7 @@
 	<PageHeader {room} {roomStats} {isLoadingStats} />
 
 	<!-- Messages -->
-	<MessagesBanner {successMessage} {errorMessage} onDismissError={() => (errorMessage = '')} />
+	<MessagesBanner {successMessage} {errorMessage} onDismissError={clearErrorMessage} />
 
 	<!-- Tabs -->
 	<TabNavigation
