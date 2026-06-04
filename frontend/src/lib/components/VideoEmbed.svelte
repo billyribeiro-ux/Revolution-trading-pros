@@ -55,6 +55,7 @@
 	/* eslint svelte/no-at-html-tags: "off" -- every {@html} in this file renders sanitizer-cleaned HTML (sanitizeHtml/sanitizeBlogContent/etc.) or serialized JSON-LD; audited 2026-05-30 */
 	import { onMount, onDestroy } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
+	import { SvelteSet } from 'svelte/reactivity';
 	import { browser } from '$app/environment';
 	import type VimeoPlayer from '@vimeo/player';
 
@@ -355,20 +356,20 @@
 	// State
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let playerElement: HTMLElement;
-	let videoElement: HTMLVideoElement | null = $state(null);
-	let iframeElement: HTMLIFrameElement | null = $state(null);
+	let playerElement: HTMLElement | null = null;
+	let videoElement: HTMLVideoElement | null = null;
+	let iframeElement: HTMLIFrameElement | null = null;
 	// Holds either a YouTubePlayer (set in `createYouTubePlayer`) or a Vimeo
 	// `Player` instance (set in `loadVimeoAPI` after dynamic import). The two
 	// SDKs are dispatched on `platform`, so each branch below narrows.
 	let playerAPI: YouTubePlayer | VimeoPlayerInstance | null = $state(null);
 
 	// Platform detection
-	let platform: 'youtube' | 'vimeo' | 'wistia' | 'dailymotion' | 'twitch' | 'html5' =
-		$state('html5');
-	let embedUrl: string = $state('');
-	let videoId: string = $state('');
-	let thumbnailUrl: string = $state('');
+	const detectedVideo = $derived(detectPlatform(url));
+	const platform = $derived(detectedVideo.platform);
+	const videoId = $derived(detectedVideo.videoId);
+	const embedUrl = $derived(generateEmbedUrl(url, platform, videoId));
+	const thumbnailUrl = $derived(generateThumbnailUrl(platform, videoId));
 
 	// Player state
 	let isReady: boolean = $state(false);
@@ -378,27 +379,17 @@
 	let _isBuffering: boolean = $state(false);
 	let isFullscreen: boolean = $state(false);
 	let _isPictureInPicture: boolean = $state(false);
-	let isMuted: boolean = $state(false);
+	let isMuted: boolean = $derived(muted);
 	let hasError: boolean = $state(false);
 
-	// Sync muted prop to isMuted state
-	$effect(() => {
-		isMuted = muted;
-	});
 	let errorMessage: string = $state('');
 
 	// Time tracking
 	let currentTime: number = $state(0);
 	let duration: number = $state(0);
 	let bufferedEnd: number = $state(0);
-	let playbackRate: number = $state(1.0);
-	let currentVolume: number = $state(1.0);
-
-	// Sync defaultSpeed and volume props to state
-	$effect(() => {
-		playbackRate = defaultSpeed;
-		currentVolume = volume;
-	});
+	let playbackRate: number = $derived(defaultSpeed);
+	let currentVolume: number = $derived(volume);
 
 	// UI state
 	let showControls: boolean = $state(true);
@@ -407,22 +398,14 @@
 	let _isHovering: boolean = $state(false);
 	let thumbnailLoaded: boolean = $state(false);
 	let hasInteracted: boolean = $state(false);
-	let _showCallToAction: boolean = $state(false);
+	let _showCallToAction: boolean = $derived(Boolean(callToAction && shouldShowCTA()));
 
 	// Quality options
 	let availableQualities: string[] = $state([]);
-	let currentQuality: string = $state('auto');
+	let currentQuality: string = $derived(defaultQuality);
 
-	// Sync defaultQuality prop to currentQuality state
-	$effect(() => {
-		currentQuality = defaultQuality;
-	});
-
-	// Analytics - initialized with defaults
-	let analyticsBase = $state({
-		id: '',
-		url: '',
-		platform: 'html5' as 'youtube' | 'vimeo' | 'wistia' | 'dailymotion' | 'twitch' | 'html5',
+	const generatedAnalyticsId = generateId();
+	let analyticsStats = $state({
 		events: [] as AnalyticsEvent[],
 		watchTime: 0,
 		completionRate: 0,
@@ -431,28 +414,25 @@
 		errors: 0
 	});
 
-	// Sync analyticsId and url props to analyticsBase
-	$effect(() => {
-		analyticsBase.id = analyticsId || generateId();
-		analyticsBase.url = url;
-	});
-
 	// Derive full analytics object with current quality. Currently unread —
 	// the three pre-R24-A consumers (`analytics.interactions++` /
 	// `analytics.quality = ...` / `analytics.events.push(...)`) were
 	// silently-no-op mutations on a `$derived` mirror (see LB-VID-1) and
-	// have been rerouted through `analyticsBase`. The `_` prefix matches the
+	// have been rerouted through `analyticsStats`. The `_` prefix matches the
 	// project lint config's allowed-unused pattern; the derived view is kept
 	// in place so a future `export const getAnalytics = () => analytics`
 	// integration point doesn't need to reconstruct the merge.
 	let _analytics: VideoAnalytics = $derived({
-		...analyticsBase,
+		id: analyticsId || generatedAnalyticsId,
+		url,
+		platform,
+		...analyticsStats,
 		quality: currentQuality
 	});
 
 	let watchStartTime: number = $state(0);
 	let totalWatchTime: number = $state(0);
-	let progressMilestones: Set<number> = $state(new Set());
+	let progressMilestones = new SvelteSet<number>();
 
 	// Animations
 
@@ -462,20 +442,29 @@
 
 	// Event dispatching handled via callback props
 
-	// ═══════════════════════════════════════════════════════════════════════════
-	// Reactive Statements
-	// ═══════════════════════════════════════════════════════════════════════════
+	function capturePlayerElement(node: HTMLElement) {
+		playerElement = node;
 
-	$effect(() => {
-		// Detect platform and generate embed URL
-		const result = detectPlatform(url);
-		platform = result.platform;
-		videoId = result.videoId;
-		embedUrl = generateEmbedUrl(url, platform, videoId);
-		thumbnailUrl = generateThumbnailUrl(platform, videoId);
-		// Update the base state, not the derived analytics object
-		analyticsBase.platform = platform;
-	});
+		return () => {
+			if (playerElement === node) playerElement = null;
+		};
+	}
+
+	function captureVideoElement(node: HTMLVideoElement) {
+		videoElement = node;
+
+		return () => {
+			if (videoElement === node) videoElement = null;
+		};
+	}
+
+	function captureIframeElement(node: HTMLIFrameElement) {
+		iframeElement = node;
+
+		return () => {
+			if (iframeElement === node) iframeElement = null;
+		};
+	}
 
 	let progressPercent = $derived(duration > 0 ? (currentTime / duration) * 100 : 0);
 	let bufferedPercent = $derived(duration > 0 ? (bufferedEnd / duration) * 100 : 0);
@@ -491,12 +480,6 @@
 	let activeOverlays = $derived(
 		overlays.filter((overlay) => currentTime >= overlay.startTime && currentTime <= overlay.endTime)
 	);
-
-	$effect(() => {
-		if (callToAction && shouldShowCTA()) {
-			_showCallToAction = true;
-		}
-	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Lifecycle
@@ -605,7 +588,7 @@
 				params.append('start', startTime.toString());
 				if (endTime) params.append('end', endTime.toString());
 				params.append('enablejsapi', '1');
-				params.append('origin', window.location.origin);
+				if (browser) params.append('origin', window.location.origin);
 				return `https://www.youtube.com/embed/${videoId}?${params.toString()}`;
 
 			case 'vimeo':
@@ -638,7 +621,7 @@
 					'time',
 					`${Math.floor(startTime / 3600)}h${Math.floor((startTime % 3600) / 60)}m${startTime % 60}s`
 				);
-				return `https://player.twitch.tv/?video=v${videoId}&parent=${window.location.hostname}&${params.toString()}`;
+				return `https://player.twitch.tv/?video=v${videoId}&parent=${browser ? window.location.hostname : 'localhost'}&${params.toString()}`;
 
 			default:
 				return url;
@@ -825,7 +808,7 @@
 		trackEvent('complete', { watchTime: totalWatchTime });
 
 		// Update base state, not derived analytics
-		analyticsBase.completionRate = 100;
+		analyticsStats.completionRate = 100;
 
 		// Show CTA if configured for end
 		if (callToAction?.showAt === 'end') {
@@ -857,7 +840,7 @@
 		onProgress?.(progressPercent);
 
 		// Update base state, not derived analytics
-		analyticsBase.completionRate = Math.max(analyticsBase.completionRate, progressPercent);
+		analyticsStats.completionRate = Math.max(analyticsStats.completionRate, progressPercent);
 	}
 
 	function handleError(error: unknown) {
@@ -871,7 +854,7 @@
 				: { message: String(error) };
 		errorMessage = payload.message || 'An error occurred while loading the video';
 		// Update base state, not derived analytics
-		analyticsBase.errors++;
+		analyticsStats.errors++;
 
 		onError?.(payload);
 		trackEvent('error', { error: errorMessage });
@@ -928,7 +911,7 @@
 			case window.YT.PlayerState.BUFFERING:
 				_isBuffering = true;
 				// Update base state, not derived analytics
-				analyticsBase.bufferEvents++;
+				analyticsStats.bufferEvents++;
 				break;
 		}
 	}
@@ -986,7 +969,7 @@
 			play();
 		}
 		// Update base state, not derived analytics
-		analyticsBase.interactions++;
+		analyticsStats.interactions++;
 	}
 
 	export function seek(time: number) {
@@ -1049,7 +1032,7 @@
 		// Mutating it has no effect — the counter was lost on every mute toggle.
 		// Route the increment through the underlying `$state` base, matching
 		// `togglePlay()` and the other interaction sites.
-		analyticsBase.interactions++;
+		analyticsStats.interactions++;
 	}
 
 	export function setPlaybackRate(rate: number) {
@@ -1103,6 +1086,8 @@
 	}
 
 	export async function enterFullscreen() {
+		if (!playerElement) return;
+
 		try {
 			if (playerElement.requestFullscreen) {
 				await playerElement.requestFullscreen();
@@ -1148,7 +1133,7 @@
 				_isPictureInPicture = true;
 			}
 			// LB-VID-1 again: route through base state, not the derived mirror.
-			analyticsBase.interactions++;
+			analyticsStats.interactions++;
 		} catch (error) {
 			logger.error('Picture-in-Picture not supported:', error);
 		}
@@ -1327,7 +1312,7 @@
 		// and consistency with the `interactions++` / `quality` fixes above,
 		// route the mutation through the base. The state proxy will pick up
 		// the change either way.
-		analyticsBase.events.push(analyticsEvent);
+		analyticsStats.events.push(analyticsEvent);
 
 		// Send to analytics service. `window.gtag` is declared in `app.d.ts`
 		// as `(...args: unknown[]) => void`; optional-chain handles absence.
@@ -1369,7 +1354,7 @@
 			totalWatchTime += Date.now() - watchStartTime;
 		}
 		// Update base state, not derived analytics
-		analyticsBase.watchTime = totalWatchTime;
+		analyticsStats.watchTime = totalWatchTime;
 
 		// Cleanup player API
 		switch (platform) {
@@ -1385,7 +1370,7 @@
 
 <!-- Main Container -->
 <div
-	bind:this={playerElement}
+	{@attach capturePlayerElement}
 	class="video-embed-container"
 	class:fullscreen={isFullscreen}
 	class:has-error={hasError}
@@ -1435,7 +1420,7 @@
 		<!-- HTML5 Video -->
 		{#if platform === 'html5' && !hasError}
 			<video
-				bind:this={videoElement}
+				{@attach captureVideoElement}
 				src={embedUrl}
 				poster={poster || thumbnailUrl}
 				{autoplay}
@@ -1461,7 +1446,7 @@
 		<!-- Iframe Embed -->
 		{#if platform !== 'html5' && !hasError}
 			<iframe
-				bind:this={iframeElement}
+				{@attach captureIframeElement}
 				src={embedUrl}
 				{title}
 				frameborder="0"
