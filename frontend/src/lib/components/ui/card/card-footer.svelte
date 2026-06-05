@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { cn, type WithElementRef } from '$lib/utils.js';
+	import type { Attachment } from 'svelte/attachments';
 	import type { HTMLAttributes } from 'svelte/elements';
+	import { type WithElementRef } from '$lib/utils.js';
 
 	let {
 		ref = $bindable(null),
@@ -8,13 +9,30 @@
 		children,
 		...restProps
 	}: WithElementRef<HTMLAttributes<HTMLDivElement>> = $props();
+
+	const captureRef: Attachment<HTMLDivElement> = (node) => {
+		ref = node;
+		return () => {
+			if (ref === node) {
+				ref = null;
+			}
+		};
+	};
 </script>
 
 <div
-	bind:this={ref}
+	{@attach captureRef}
 	data-slot="card-footer"
-	class={cn('flex items-center px-6 [.border-t]:pt-6', className)}
+	class={['ui-card-footer', className]}
 	{...restProps}
 >
 	{@render children?.()}
 </div>
+
+<style>
+	.ui-card-footer {
+		display: flex;
+		align-items: center;
+		padding-inline: 1.5rem;
+	}
+</style>
