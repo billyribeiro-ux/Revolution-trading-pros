@@ -250,7 +250,6 @@
 		margin: 0 auto;
 	}
 
-
 	/* Error State */
 	.error-state {
 		display: flex;

@@ -106,18 +106,6 @@
 	let categorySlugEdited = $state(false);
 	let tagSlugEdited = $state(false);
 
-	// Auto-generate slug when name changes (only for new items, not when editing)
-	$effect(() => {
-		if (categoryForm.name && !editingCategory && !categorySlugEdited) {
-			categoryForm.slug = generateSlug(categoryForm.name);
-		}
-	});
-	$effect(() => {
-		if (tagForm.name && !editingTag && !tagSlugEdited) {
-			tagForm.slug = generateSlug(tagForm.name);
-		}
-	});
-
 	onMount(() => {
 		loadData();
 	});
@@ -156,8 +144,6 @@
 			}
 		}
 	}
-
-
 
 	function openCategoryModal(category: Category | null = null) {
 		if (category) {
@@ -427,8 +413,21 @@
 	function handleCategorySlugInput() {
 		categorySlugEdited = true;
 	}
+
+	function handleCategoryNameInput(name: string) {
+		if (name && !editingCategory && !categorySlugEdited) {
+			categoryForm.slug = generateSlug(name);
+		}
+	}
+
 	function handleTagSlugInput() {
 		tagSlugEdited = true;
+	}
+
+	function handleTagNameInput(name: string) {
+		if (name && !editingTag && !tagSlugEdited) {
+			tagForm.slug = generateSlug(name);
+		}
 	}
 </script>
 
@@ -482,6 +481,7 @@
 	bind:form={categoryForm}
 	errors={categoryErrors}
 	{saving}
+	onNameInput={handleCategoryNameInput}
 	onSlugInput={handleCategorySlugInput}
 	onSave={saveCategory}
 	onClose={() => (showCategoryModal = false)}
@@ -493,6 +493,7 @@
 	bind:form={tagForm}
 	errors={tagErrors}
 	{saving}
+	onNameInput={handleTagNameInput}
 	onSlugInput={handleTagSlugInput}
 	onSave={saveTag}
 	onClose={() => (showTagModal = false)}

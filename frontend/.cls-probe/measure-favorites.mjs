@@ -30,7 +30,11 @@ const initScript = () => {
 					to: s.currentRect ? `${Math.round(s.currentRect.y)}` : '?'
 				};
 			});
-			window.__clsShifts.push({ value: Number(entry.value.toFixed(4)), t: Math.round(entry.startTime), sources });
+			window.__clsShifts.push({
+				value: Number(entry.value.toFixed(4)),
+				t: Math.round(entry.startTime),
+				sources
+			});
 		}
 	});
 	obs.observe({ type: 'layout-shift', buffered: true });
@@ -39,7 +43,12 @@ const initScript = () => {
 const browser = await chromium.launch();
 const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
 await ctx.addCookies([
-	{ name: 'rtp_access_token', value: 'mock-token-for-measurement', domain: 'localhost', path: '/' },
+	{
+		name: 'rtp_access_token',
+		value: 'mock-token-for-measurement',
+		domain: 'localhost',
+		path: '/'
+	},
 	{ name: 'rtp_refresh_token', value: 'mock-refresh', domain: 'localhost', path: '/' }
 ]);
 const page = await ctx.newPage();
@@ -56,16 +65,22 @@ const dom = await page.evaluate(() => ({
 }));
 const cls = await page.evaluate(() => ({ value: window.__clsValue, shifts: window.__clsShifts }));
 
-console.log(JSON.stringify({
-	label: LABEL,
-	path: PATH,
-	status: resp?.status(),
-	finalURL: page.url(),
-	favoriteCards: dom.cards,
-	skeletonNodes: dom.skeletons,
-	totalCLS: Number(cls.value.toFixed(4)),
-	shiftCount: cls.shifts.length,
-	shifts: cls.shifts.sort((a, b) => b.value - a.value).slice(0, 8)
-}, null, 2));
+console.log(
+	JSON.stringify(
+		{
+			label: LABEL,
+			path: PATH,
+			status: resp?.status(),
+			finalURL: page.url(),
+			favoriteCards: dom.cards,
+			skeletonNodes: dom.skeletons,
+			totalCLS: Number(cls.value.toFixed(4)),
+			shiftCount: cls.shifts.length,
+			shifts: cls.shifts.sort((a, b) => b.value - a.value).slice(0, 8)
+		},
+		null,
+		2
+	)
+);
 
 await browser.close();

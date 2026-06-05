@@ -792,12 +792,9 @@
 			// Log SEO warnings in development only if score is below 60
 			// This reduces console noise while still alerting to serious SEO issues
 			if (import.meta.env.DEV && seoWarnings.length > 0 && seoScore < 60) {
-				// DEV-only grouped SEO warning; group/groupEnd aren't allowed
-				// methods but the inner output is intentional.
-				console.group('🔍 SEO Warnings');
+				console.warn('🔍 SEO Warnings');
 				console.info(`SEO Score: ${seoScore}/100`);
 				seoWarnings.forEach((warning) => console.warn(warning));
-				console.groupEnd();
 			}
 
 			// Send SEO metrics to analytics. `window.gtag` is typed globally in

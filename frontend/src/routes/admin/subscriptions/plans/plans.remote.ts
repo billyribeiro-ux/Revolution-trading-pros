@@ -61,7 +61,13 @@ export const changePlanPrice = command(
 		billing_interval: v.picklist(['month', 'year', 'one_time']),
 		apply_to: v.picklist(['new_only', 'next_renewal', 'immediate_proration'])
 	}),
-	async ({ planId, amount_cents, currency, billing_interval, apply_to }): Promise<PriceChangeResult> => {
+	async ({
+		planId,
+		amount_cents,
+		currency,
+		billing_interval,
+		apply_to
+	}): Promise<PriceChangeResult> => {
 		const { fetch } = getRequestEvent();
 		const res = await fetch(`/api/admin/subscriptions/plans/${planId}/price`, {
 			method: 'POST',

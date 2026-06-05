@@ -55,8 +55,7 @@ export const getMemberAnalytics = query(RangeSchema, async (range): Promise<Memb
 	]);
 
 	const hasMetrics =
-		!!metricsRaw &&
-		typeof (metricsRaw as { totalMembers?: unknown }).totalMembers === 'number';
+		!!metricsRaw && typeof (metricsRaw as { totalMembers?: unknown }).totalMembers === 'number';
 	const metrics: Metrics = hasMetrics ? (metricsRaw as Metrics) : EMPTY_METRICS;
 
 	const rows = <T>(x: unknown): T[] => (Array.isArray(x) && x.length > 0 ? (x as T[]) : []);

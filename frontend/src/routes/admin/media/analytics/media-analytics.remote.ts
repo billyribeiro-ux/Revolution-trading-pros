@@ -40,8 +40,7 @@ export const getMediaAnalytics = query(RangeSchema, async (range): Promise<Media
 	]);
 
 	const hasOverview =
-		!!overviewRaw &&
-		typeof (overviewRaw as { totalOriginal?: unknown }).totalOriginal === 'number';
+		!!overviewRaw && typeof (overviewRaw as { totalOriginal?: unknown }).totalOriginal === 'number';
 	const overview: SavingsOverview | null = hasOverview ? (overviewRaw as SavingsOverview) : null;
 
 	const rows = <T>(x: unknown): T[] => (Array.isArray(x) && x.length > 0 ? (x as T[]) : []);

@@ -282,10 +282,15 @@ async function proxyRequest(
 			// Timeout or network error
 			if (lastError.name === 'AbortError') {
 				lastStatus = 504;
-				(IS_DEV ? console.warn : console.error)(`[API Proxy] Timeout after ${timeout}ms for ${path}`);
+				(IS_DEV ? console.warn : console.error)(
+					`[API Proxy] Timeout after ${timeout}ms for ${path}`
+				);
 			} else {
 				lastStatus = 502;
-				(IS_DEV ? console.warn : console.error)(`[API Proxy] Network error for ${path}:`, lastError.message);
+				(IS_DEV ? console.warn : console.error)(
+					`[API Proxy] Network error for ${path}:`,
+					lastError.message
+				);
 			}
 		}
 	}
