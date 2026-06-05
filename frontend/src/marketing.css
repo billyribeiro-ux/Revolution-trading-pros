@@ -237,12 +237,7 @@
    selector to prevent leakage into admin/dashboard routes.
    ═══════════════════════════════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
-	.marketing-shell *,
-	.marketing-shell *::before,
-	.marketing-shell *::after {
-		animation-duration: 0.01ms !important;
-		animation-iteration-count: 1 !important;
-		transition-duration: 0.01ms !important;
+	.marketing-shell {
 		scroll-behavior: auto !important;
 	}
 }

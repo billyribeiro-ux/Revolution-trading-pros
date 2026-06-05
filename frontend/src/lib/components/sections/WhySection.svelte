@@ -120,165 +120,161 @@
 	<div class="relative max-w-7xl mx-auto z-10">
 		<!-- Header -->
 		<div class="max-w-4xl mx-auto text-center mb-24">
-			{#key isVisible}
-				{#if isVisible}
-					<div
-						in:heavySlide={{ delay: 0, duration: 1000 }}
-						class="inline-flex items-center gap-3 px-4 py-1.5 border border-zinc-800/30 bg-zinc-900/10 text-zinc-400 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm"
-					>
-						<IconBuilding size={14} />
-						System Design
-					</div>
+			{#if isVisible}
+				<div
+					in:heavySlide={{ delay: 0, duration: 1000 }}
+					class="inline-flex items-center gap-3 px-4 py-1.5 border border-zinc-800/30 bg-zinc-900/10 text-zinc-400 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm"
+				>
+					<IconBuilding size={14} />
+					System Design
+				</div>
 
-					<h2
-						in:heavySlide={{ delay: 100, duration: 1000 }}
-						class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight"
-					>
-						Trading <span class="text-slate-700">Framework.</span>
-					</h2>
+				<h2
+					in:heavySlide={{ delay: 100, duration: 1000 }}
+					class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight"
+				>
+					Trading <span class="text-slate-700">Framework.</span>
+				</h2>
 
-					<p
-						in:heavySlide={{ delay: 200, duration: 1000 }}
-						class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto"
-					>
-						We don't build retail platforms. We engineer institutional trading systems. Verified by
-						quantitative funds and proprietary trading desks.
-					</p>
-				{/if}
-			{/key}
+				<p
+					in:heavySlide={{ delay: 200, duration: 1000 }}
+					class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto"
+				>
+					We don't build retail platforms. We engineer institutional trading systems. Verified by
+					quantitative funds and proprietary trading desks.
+				</p>
+			{/if}
 		</div>
 
 		<!-- 3-Column Grid -->
 		<div class="group/grid grid md:grid-cols-3 gap-8" style="--x: {mouse.x}px; --y: {mouse.y}px;">
 			{#each features as feature, i (feature.title)}
 				{@const IconComponent = feature.icon}
-				{#key isVisible}
-					{#if isVisible}
+				{#if isVisible}
+					<div
+						in:heavySlide={{ delay: 300 + i * 150, duration: 1000 }}
+						class="relative group/card bg-zinc-950/50 border border-zinc-800 rounded-xl p-8 hover:bg-zinc-900/30 transition-all duration-500 overflow-hidden"
+					>
+						<!-- Spotlight Overlay -->
 						<div
-							in:heavySlide={{ delay: 300 + i * 150, duration: 1000 }}
-							class="relative group/card bg-zinc-950/50 border border-zinc-800 rounded-xl p-8 hover:bg-zinc-900/30 transition-all duration-500 overflow-hidden"
+							class="absolute inset-0 opacity-0 group-hover/grid:opacity-100 transition-opacity duration-500 pointer-events-none"
+							style="background: radial-gradient(600px circle at var(--x) var(--y), rgba(255,255,255,0.03), transparent 40%);"
+						></div>
+
+						<!-- Technical SVG Backgrounds -->
+						<div
+							class="absolute top-0 right-0 w-32 h-32 opacity-[0.03] group-hover/card:opacity-10 transition-opacity duration-500 pointer-events-none {feature.accent ===
+							'cyan'
+								? 'text-cyan-500'
+								: feature.accent === 'emerald'
+									? 'text-emerald-500'
+									: 'text-indigo-500'}"
 						>
-							<!-- Spotlight Overlay -->
-							<div
-								class="absolute inset-0 opacity-0 group-hover/grid:opacity-100 transition-opacity duration-500 pointer-events-none"
-								style="background: radial-gradient(600px circle at var(--x) var(--y), rgba(255,255,255,0.03), transparent 40%);"
-							></div>
-
-							<!-- Technical SVG Backgrounds -->
-							<div
-								class="absolute top-0 right-0 w-32 h-32 opacity-[0.03] group-hover/card:opacity-10 transition-opacity duration-500 pointer-events-none {feature.accent ===
-								'cyan'
-									? 'text-cyan-500'
-									: feature.accent === 'emerald'
-										? 'text-emerald-500'
-										: 'text-indigo-500'}"
-							>
-								{#if feature.type === 'grid'}
-									<svg
-										aria-hidden="true"
-										viewBox="0 0 100 100"
-										fill="none"
-										stroke="currentColor"
-										stroke-width="1"
-									>
-										<path
-											d="M10 10 H90 M10 30 H90 M10 50 H90 M10 70 H90 M10 90 H90 M10 10 V90 M30 10 V90 M50 10 V90 M70 10 V90 M90 10 V90"
-										/>
-									</svg>
-								{:else if feature.type === 'radar'}
-									<svg
-										aria-hidden="true"
-										viewBox="0 0 100 100"
-										fill="none"
-										stroke="currentColor"
-										stroke-width="1"
-									>
-										<circle cx="50" cy="50" r="20" />
-										<circle cx="50" cy="50" r="35" />
-										<circle cx="50" cy="50" r="45" opacity="0.5" />
-										<line x1="50" y1="50" x2="95" y2="50" />
-									</svg>
-								{:else}
-									<svg
-										aria-hidden="true"
-										viewBox="0 0 100 100"
-										fill="none"
-										stroke="currentColor"
-										stroke-width="1"
-									>
-										<rect x="20" y="20" width="60" height="60" rx="4" />
-										<path d="M50 20 V10 M50 90 V80 M20 50 H10 M90 50 H80" />
-										<rect x="35" y="35" width="30" height="30" />
-									</svg>
-								{/if}
-							</div>
-
-							<!-- Icon Container -->
-							<div class="relative z-10 mb-8 inline-block">
-								<div
-									class="p-3 bg-zinc-900 border border-zinc-800 rounded-lg group-hover/card:shadow-[0_0_20px_rgba(0,0,0,0.3)] transition-all duration-300 group-hover/card:-translate-y-1 {feature.accent ===
-									'cyan'
-										? 'text-cyan-500 group-hover/card:border-cyan-500/30'
-										: feature.accent === 'emerald'
-											? 'text-emerald-500 group-hover/card:border-emerald-500/30'
-											: 'text-indigo-500 group-hover/card:border-indigo-500/30'}"
+							{#if feature.type === 'grid'}
+								<svg
+									aria-hidden="true"
+									viewBox="0 0 100 100"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1"
 								>
-									<IconComponent size={28} stroke={1.5} />
-								</div>
-								<!-- Connecting Line -->
-								<div
-									class="absolute left-1/2 bottom-0 w-px h-8 bg-zinc-800 translate-y-full -translate-x-1/2 -z-10 transition-colors {feature.accent ===
-									'cyan'
-										? 'group-hover/card:bg-cyan-500/50'
-										: feature.accent === 'emerald'
-											? 'group-hover/card:bg-emerald-500/50'
-											: 'group-hover/card:bg-indigo-500/50'}"
-								></div>
-							</div>
-
-							<!-- Content -->
-							<div class="relative z-10 mt-4">
-								<div class="flex items-center gap-3 mb-3">
-									<span
-										class="text-[10px] font-mono uppercase tracking-widest text-zinc-500 border border-zinc-800 px-2 py-0.5 rounded"
-									>
-										{feature.subtitle}
-									</span>
-								</div>
-
-								<h3
-									class="text-xl font-medium text-white mb-4 transition-colors {feature.accent ===
-									'cyan'
-										? 'group-hover/card:text-cyan-400'
-										: feature.accent === 'emerald'
-											? 'group-hover/card:text-emerald-400'
-											: 'group-hover/card:text-indigo-400'}"
-								>
-									{feature.title}
-								</h3>
-
-								<p class="text-sm text-zinc-400 leading-relaxed font-light mb-8">
-									{feature.description}
-								</p>
-
-								<!-- Micro Status Indicator -->
-								<div
-									class="flex items-center gap-2 text-[10px] font-mono text-zinc-600 border-t border-zinc-900 pt-4 group-hover/card:text-zinc-500 transition-colors"
-								>
-									<IconCheck
-										size={12}
-										class={feature.accent === 'cyan'
-											? 'text-cyan-500'
-											: feature.accent === 'emerald'
-												? 'text-emerald-500'
-												: 'text-indigo-500'}
+									<path
+										d="M10 10 H90 M10 30 H90 M10 50 H90 M10 70 H90 M10 90 H90 M10 10 V90 M30 10 V90 M50 10 V90 M70 10 V90 M90 10 V90"
 									/>
-									<span>MODULE ACTIVE</span>
-								</div>
+								</svg>
+							{:else if feature.type === 'radar'}
+								<svg
+									aria-hidden="true"
+									viewBox="0 0 100 100"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1"
+								>
+									<circle cx="50" cy="50" r="20" />
+									<circle cx="50" cy="50" r="35" />
+									<circle cx="50" cy="50" r="45" opacity="0.5" />
+									<line x1="50" y1="50" x2="95" y2="50" />
+								</svg>
+							{:else}
+								<svg
+									aria-hidden="true"
+									viewBox="0 0 100 100"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1"
+								>
+									<rect x="20" y="20" width="60" height="60" rx="4" />
+									<path d="M50 20 V10 M50 90 V80 M20 50 H10 M90 50 H80" />
+									<rect x="35" y="35" width="30" height="30" />
+								</svg>
+							{/if}
+						</div>
+
+						<!-- Icon Container -->
+						<div class="relative z-10 mb-8 inline-block">
+							<div
+								class="p-3 bg-zinc-900 border border-zinc-800 rounded-lg group-hover/card:shadow-[0_0_20px_rgba(0,0,0,0.3)] transition-all duration-300 group-hover/card:-translate-y-1 {feature.accent ===
+								'cyan'
+									? 'text-cyan-500 group-hover/card:border-cyan-500/30'
+									: feature.accent === 'emerald'
+										? 'text-emerald-500 group-hover/card:border-emerald-500/30'
+										: 'text-indigo-500 group-hover/card:border-indigo-500/30'}"
+							>
+								<IconComponent size={28} stroke={1.5} />
+							</div>
+							<!-- Connecting Line -->
+							<div
+								class="absolute left-1/2 bottom-0 w-px h-8 bg-zinc-800 translate-y-full -translate-x-1/2 -z-10 transition-colors {feature.accent ===
+								'cyan'
+									? 'group-hover/card:bg-cyan-500/50'
+									: feature.accent === 'emerald'
+										? 'group-hover/card:bg-emerald-500/50'
+										: 'group-hover/card:bg-indigo-500/50'}"
+							></div>
+						</div>
+
+						<!-- Content -->
+						<div class="relative z-10 mt-4">
+							<div class="flex items-center gap-3 mb-3">
+								<span
+									class="text-[10px] font-mono uppercase tracking-widest text-zinc-500 border border-zinc-800 px-2 py-0.5 rounded"
+								>
+									{feature.subtitle}
+								</span>
+							</div>
+
+							<h3
+								class="text-xl font-medium text-white mb-4 transition-colors {feature.accent ===
+								'cyan'
+									? 'group-hover/card:text-cyan-400'
+									: feature.accent === 'emerald'
+										? 'group-hover/card:text-emerald-400'
+										: 'group-hover/card:text-indigo-400'}"
+							>
+								{feature.title}
+							</h3>
+
+							<p class="text-sm text-zinc-400 leading-relaxed font-light mb-8">
+								{feature.description}
+							</p>
+
+							<!-- Micro Status Indicator -->
+							<div
+								class="flex items-center gap-2 text-[10px] font-mono text-zinc-600 border-t border-zinc-900 pt-4 group-hover/card:text-zinc-500 transition-colors"
+							>
+								<IconCheck
+									size={12}
+									class={feature.accent === 'cyan'
+										? 'text-cyan-500'
+										: feature.accent === 'emerald'
+											? 'text-emerald-500'
+											: 'text-indigo-500'}
+								/>
+								<span>MODULE ACTIVE</span>
 							</div>
 						</div>
-					{/if}
-				{/key}
+					</div>
+				{/if}
 			{/each}
 		</div>
 	</div>

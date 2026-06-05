@@ -114,159 +114,153 @@
 
 	<div class="relative max-w-[1600px] mx-auto z-10">
 		<div class="max-w-4xl mx-auto text-center mb-24">
-			{#key isVisible}
-				{#if isVisible}
-					<div
-						in:heavySlide={{ delay: 0, duration: 1000 }}
-						class="inline-flex items-center gap-3 px-4 py-1.5 border border-amber-900/30 bg-amber-950/10 text-amber-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm"
-					>
-						<IconNews size={14} />
-						Intelligence Wire
-					</div>
+			{#if isVisible}
+				<div
+					in:heavySlide={{ delay: 0, duration: 1000 }}
+					class="inline-flex items-center gap-3 px-4 py-1.5 border border-amber-900/30 bg-amber-950/10 text-amber-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm"
+				>
+					<IconNews size={14} />
+					Intelligence Wire
+				</div>
 
-					<h2
-						in:heavySlide={{ delay: 100, duration: 1000 }}
-						class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight"
-					>
-						Market <span class="text-slate-700">Analysis.</span>
-					</h2>
+				<h2
+					in:heavySlide={{ delay: 100, duration: 1000 }}
+					class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight"
+				>
+					Market <span class="text-slate-700">Analysis.</span>
+				</h2>
 
-					<p
-						in:heavySlide={{ delay: 200, duration: 1000 }}
-						class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto"
-					>
-						We don't publish retail content. We deliver institutional-grade market intelligence.
-						Verified by quantitative analysts and professional trading desks worldwide.
-					</p>
-				{/if}
-			{/key}
+				<p
+					in:heavySlide={{ delay: 200, duration: 1000 }}
+					class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto"
+				>
+					We don't publish retail content. We deliver institutional-grade market intelligence.
+					Verified by quantitative analysts and professional trading desks worldwide.
+				</p>
+			{/if}
 		</div>
 
 		{#if posts.length > 0}
 			<div class="grid lg:grid-cols-12 gap-12">
 				{#if leadPost}
 					<div class="lg:col-span-8 h-full">
-						{#key isVisible}
-							{#if isVisible}
-								<a
-									href="/blog/{leadPost.slug}"
-									in:heavySlide={{ delay: 300, duration: 1000 }}
-									class="relative group block h-full bg-[#050505] border border-white/10 overflow-hidden hover:border-amber-600/50 transition-colors duration-500"
-								>
-									<div class="relative h-[400px] overflow-hidden">
-										{#if leadPost.featured_image}
-											<div
-												class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105 opacity-60"
-												style="background-image: url('{leadPost.featured_image}')"
-											></div>
-										{:else}
-											<div
-												class="absolute inset-0 bg-linear-to-br from-slate-900 via-black to-slate-900 opacity-60"
-											></div>
-										{/if}
+						{#if isVisible}
+							<a
+								href="/blog/{leadPost.slug}"
+								in:heavySlide={{ delay: 300, duration: 1000 }}
+								class="relative group block h-full bg-[#050505] border border-white/10 overflow-hidden hover:border-amber-600/50 transition-colors duration-500"
+							>
+								<div class="relative h-[400px] overflow-hidden">
+									{#if leadPost.featured_image}
 										<div
-											class="absolute inset-0 bg-linear-to-t from-[#050505] via-[#050505]/50 to-transparent"
+											class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105 opacity-60"
+											style="background-image: url('{leadPost.featured_image}')"
 										></div>
+									{:else}
+										<div
+											class="absolute inset-0 bg-linear-to-br from-slate-900 via-black to-slate-900 opacity-60"
+										></div>
+									{/if}
+									<div
+										class="absolute inset-0 bg-linear-to-t from-[#050505] via-[#050505]/50 to-transparent"
+									></div>
 
-										<div class="absolute top-6 left-6 flex items-center gap-2">
-											<span
-												class="px-3 py-1 bg-black/80 backdrop-blur border border-white/10 text-[10px] font-mono text-amber-500 uppercase tracking-widest"
-											>
-												Priority Brief
-											</span>
-										</div>
+									<div class="absolute top-6 left-6 flex items-center gap-2">
+										<span
+											class="px-3 py-1 bg-black/80 backdrop-blur border border-white/10 text-[10px] font-mono text-amber-500 uppercase tracking-widest"
+										>
+											Priority Brief
+										</span>
+									</div>
+								</div>
+
+								<div class="relative -mt-32 p-8 md:p-12 z-10">
+									<div
+										class="flex items-center gap-4 text-[10px] font-mono text-slate-400 uppercase tracking-widest mb-4"
+									>
+										<span class="flex items-center gap-2">
+											<IconClock size={12} />
+											{getRelativeTime(leadPost.published_at)}
+										</span>
+										<span class="w-px h-3 bg-white/20"></span>
+										<span>{leadPost.author?.name || 'Desk Analyst'}</span>
 									</div>
 
-									<div class="relative -mt-32 p-8 md:p-12 z-10">
-										<div
-											class="flex items-center gap-4 text-[10px] font-mono text-slate-400 uppercase tracking-widest mb-4"
-										>
-											<span class="flex items-center gap-2">
-												<IconClock size={12} />
-												{getRelativeTime(leadPost.published_at)}
-											</span>
-											<span class="w-px h-3 bg-white/20"></span>
-											<span>{leadPost.author?.name || 'Desk Analyst'}</span>
-										</div>
+									<h3
+										class="text-3xl md:text-5xl font-serif text-white mb-6 leading-tight group-hover:text-amber-500 transition-colors"
+									>
+										{leadPost.title}
+									</h3>
 
-										<h3
-											class="text-3xl md:text-5xl font-serif text-white mb-6 leading-tight group-hover:text-amber-500 transition-colors"
-										>
-											{leadPost.title}
-										</h3>
+									<p
+										class="text-base text-slate-400 font-light leading-relaxed max-w-2xl mb-8 border-l-2 border-white/10 pl-6 group-hover:border-amber-500/50 transition-colors"
+									>
+										{leadPost.excerpt || 'Market analysis briefing. Click to access full report.'}
+									</p>
 
-										<p
-											class="text-base text-slate-400 font-light leading-relaxed max-w-2xl mb-8 border-l-2 border-white/10 pl-6 group-hover:border-amber-500/50 transition-colors"
-										>
-											{leadPost.excerpt || 'Market analysis briefing. Click to access full report.'}
-										</p>
-
-										<div
-											class="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-white"
-										>
-											<span>Read Full Protocol</span>
-											<IconArrowRight
-												size={14}
-												class="group-hover:translate-x-2 transition-transform duration-300 text-amber-500"
-											/>
-										</div>
+									<div
+										class="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-white"
+									>
+										<span>Read Full Protocol</span>
+										<IconArrowRight
+											size={14}
+											class="group-hover:translate-x-2 transition-transform duration-300 text-amber-500"
+										/>
 									</div>
-								</a>
-							{/if}
-						{/key}
+								</div>
+							</a>
+						{/if}
 					</div>
 				{/if}
 
 				<div class="lg:col-span-4 flex flex-col h-full border-l border-white/5 lg:pl-12">
-					{#key isVisible}
-						{#if isVisible}
-							<div
-								in:heavySlide={{ delay: 400, duration: 1000 }}
-								class="mb-8 flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-slate-500"
-							>
-								<IconNews size={14} />
-								<span>Incoming Signals</span>
-							</div>
+					{#if isVisible}
+						<div
+							in:heavySlide={{ delay: 400, duration: 1000 }}
+							class="mb-8 flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-slate-500"
+						>
+							<IconNews size={14} />
+							<span>Incoming Signals</span>
+						</div>
 
-							<div class="space-y-8">
-								{#each wirePosts as post (post.slug)}
-									<a
-										href="/blog/{post.slug}"
-										class="group block border-b border-white/5 pb-8 last:border-0 hover:pl-4 transition-all duration-300"
+						<div class="space-y-8">
+							{#each wirePosts as post (post.slug)}
+								<a
+									href="/blog/{post.slug}"
+									class="group block border-b border-white/5 pb-8 last:border-0 hover:pl-4 transition-all duration-300"
+								>
+									<div class="flex items-center justify-between mb-2">
+										<span class="text-[10px] font-mono text-amber-600 uppercase tracking-widest">
+											{getRelativeTime(post.published_at)}
+										</span>
+										<IconChartCandle
+											size={14}
+											class="text-slate-600 group-hover:text-amber-500 transition-colors"
+										/>
+									</div>
+									<h4
+										class="text-lg font-medium text-slate-300 group-hover:text-white transition-colors mb-2 leading-snug"
 									>
-										<div class="flex items-center justify-between mb-2">
-											<span class="text-[10px] font-mono text-amber-600 uppercase tracking-widest">
-												{getRelativeTime(post.published_at)}
-											</span>
-											<IconChartCandle
-												size={14}
-												class="text-slate-600 group-hover:text-amber-500 transition-colors"
-											/>
-										</div>
-										<h4
-											class="text-lg font-medium text-slate-300 group-hover:text-white transition-colors mb-2 leading-snug"
+										{post.title}
+									</h4>
+									<div class="flex items-center justify-between mt-3">
+										<span class="text-[10px] font-mono text-slate-600 uppercase tracking-widest">
+											{post.author?.name || 'Desk Analyst'}
+										</span>
+										<span
+											class="read-more-link inline-flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-widest text-slate-500 group-hover:text-amber-500 transition-all duration-300"
 										>
-											{post.title}
-										</h4>
-										<div class="flex items-center justify-between mt-3">
-											<span class="text-[10px] font-mono text-slate-600 uppercase tracking-widest">
-												{post.author?.name || 'Desk Analyst'}
-											</span>
-											<span
-												class="read-more-link inline-flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-widest text-slate-500 group-hover:text-amber-500 transition-all duration-300"
-											>
-												<span>Read More</span>
-												<IconArrowRight
-													size={12}
-													class="transform group-hover:translate-x-1 transition-transform duration-300"
-												/>
-											</span>
-										</div>
-									</a>
-								{/each}
-							</div>
-						{/if}
-					{/key}
+											<span>Read More</span>
+											<IconArrowRight
+												size={12}
+												class="transform group-hover:translate-x-1 transition-transform duration-300"
+											/>
+										</span>
+									</div>
+								</a>
+							{/each}
+						</div>
+					{/if}
 				</div>
 			</div>
 		{:else}
