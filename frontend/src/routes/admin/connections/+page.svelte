@@ -8,8 +8,8 @@
 	 * @level L11 Principal Engineer - Premium UX
 	 */
 
-	import { browser } from '$app/environment';
 	import { page } from '$app/state';
+	import { onMount } from 'svelte';
 	import { fade, fly, scale, slide } from 'svelte/transition';
 	import { backOut, cubicOut } from 'svelte/easing';
 	import { toastStore } from '$lib/stores/toast.svelte';
@@ -278,33 +278,27 @@
 		return iconMap[service.key] || service.name.charAt(0).toUpperCase();
 	}
 
-	// Svelte 5: Initialize on mount
-	$effect(() => {
-		if (!browser) return;
+	onMount(async () => {
+		await fetchConnections();
 
-		const init = async () => {
-			await fetchConnections();
-
-			const urlParams = page.url.searchParams;
-			const connectServiceKey = urlParams.get('connect');
-			if (connectServiceKey) {
-				const serviceToConnect = connections.find((s) => s.key === connectServiceKey);
-				if (serviceToConnect) {
-					openConnectModal(serviceToConnect);
-				}
+		const urlParams = page.url.searchParams;
+		const connectServiceKey = urlParams.get('connect');
+		if (connectServiceKey) {
+			const serviceToConnect = connections.find((s) => s.key === connectServiceKey);
+			if (serviceToConnect) {
+				openConnectModal(serviceToConnect);
 			}
+		}
 
-			const categoryParam = urlParams.get('category');
-			if (categoryParam) {
-				const matchingCategory = Object.keys(categories).find(
-					(cat) => cat.toLowerCase() === categoryParam.toLowerCase()
-				);
-				if (matchingCategory) {
-					selectedCategory = matchingCategory;
-				}
+		const categoryParam = urlParams.get('category');
+		if (categoryParam) {
+			const matchingCategory = Object.keys(categories).find(
+				(cat) => cat.toLowerCase() === categoryParam.toLowerCase()
+			);
+			if (matchingCategory) {
+				selectedCategory = matchingCategory;
 			}
-		};
-		init();
+		}
 	});
 </script>
 
@@ -335,14 +329,14 @@
 					<div class="view-toggle">
 						<button
 							onclick={() => (viewMode = 'grid')}
-							class="view-btn {viewMode === 'grid' ? 'active' : ''}"
+							class={{ 'view-btn': true, active: viewMode === 'grid' }}
 							aria-label="Grid view"
 						>
 							<IconLayoutGrid size={16} aria-hidden="true" />
 						</button>
 						<button
 							onclick={() => (viewMode = 'list')}
-							class="view-btn {viewMode === 'list' ? 'active' : ''}"
+							class={{ 'view-btn': true, active: viewMode === 'list' }}
 							aria-label="List view"
 						>
 							<IconList size={16} aria-hidden="true" />
@@ -469,11 +463,14 @@
 										<div class="stat-row">
 											<span class="stat-label">Health</span>
 											<span
-												class="stat-value {service.connection.health_score >= 90
-													? 'health-high'
-													: service.connection.health_score >= 70
-														? 'health-medium'
-														: 'health-low'}"
+												class={{
+													'stat-value': true,
+													'health-high': service.connection.health_score >= 90,
+													'health-medium':
+														service.connection.health_score >= 70 &&
+														service.connection.health_score < 90,
+													'health-low': service.connection.health_score < 70
+												}}
 											>
 												{service.connection.health_score}%
 											</span>
@@ -523,14 +520,14 @@
 					<div class="category-pills">
 						<button
 							onclick={() => (selectedCategory = null)}
-							class="category-pill {selectedCategory === null ? 'active' : ''}"
+							class={{ 'category-pill': true, active: selectedCategory === null }}
 						>
 							All
 						</button>
 						{#each categoryList as [key, category] (key)}
 							<button
 								onclick={() => (selectedCategory = key)}
-								class="category-pill {selectedCategory === key ? 'active' : ''}"
+								class={{ 'category-pill': true, active: selectedCategory === key }}
 							>
 								{category.name}
 							</button>
@@ -624,37 +621,35 @@
 
 <!-- Connect Modal -->
 {#if showConnectModal && selectedService}
-	<div
-		class="fixed inset-0 z-50 flex items-center justify-center p-4"
-		transition:fade={{ duration: 150 }}
-	>
+	<div class="modal-shell" transition:fade={{ duration: 150 }}>
 		<button
 			type="button"
-			class="absolute inset-0 bg-black/80 backdrop-blur-sm"
+			class="modal-backdrop"
 			onclick={() => (showConnectModal = false)}
 			aria-label="Close"
 		></button>
 
 		<div
-			class="relative w-full max-w-md bg-[#141415] border border-white/10 rounded-2xl shadow-2xl overflow-hidden"
+			class="modal-panel connect-panel"
 			transition:scale={{ duration: 200, easing: backOut, start: 0.95 }}
 		>
 			<!-- Header -->
-			<div class="p-6 pb-0">
-				<div class="flex items-start gap-4">
+			<div class="modal-header">
+				<div class="modal-title-row">
 					<div
-						class="w-12 h-12 rounded-xl flex items-center justify-center text-xl"
+						class="modal-service-icon"
 						style="background: {selectedService.color}15; color: {selectedService.color};"
 					>
 						{getServiceIcon(selectedService)}
 					</div>
-					<div class="flex-1">
-						<h2 class="text-lg font-semibold text-white">{selectedService.name}</h2>
-						<p class="text-sm text-gray-500 mt-0.5">{selectedService.description}</p>
+					<div class="modal-copy">
+						<h2 class="modal-title">{selectedService.name}</h2>
+						<p class="modal-description">{selectedService.description}</p>
 					</div>
 					<button
+						type="button"
 						onclick={() => (showConnectModal = false)}
-						class="text-gray-500 hover:text-white transition-colors"
+						class="modal-close"
 						aria-label="Close"
 					>
 						<IconX size={20} aria-hidden="true" />
@@ -663,25 +658,20 @@
 
 				<!-- Quick Links -->
 				{#if selectedService.docs_url || selectedService.signup_url}
-					<div class="flex gap-4 mt-4 pt-4 border-t border-white/5">
+					<div class="modal-links">
 						{#if selectedService.signup_url}
 							<a
 								href={selectedService.signup_url}
 								target="_blank"
 								rel="noopener"
-								class="text-xs text-gray-400 hover:text-white transition-colors flex items-center gap-1"
+								class="modal-link"
 							>
 								<IconUserPlus size={14} aria-hidden="true" />
 								Create account
 							</a>
 						{/if}
 						{#if selectedService.docs_url}
-							<a
-								href={selectedService.docs_url}
-								target="_blank"
-								rel="noopener"
-								class="text-xs text-gray-400 hover:text-white transition-colors flex items-center gap-1"
-							>
+							<a href={selectedService.docs_url} target="_blank" rel="noopener" class="modal-link">
 								<IconFileText size={14} aria-hidden="true" />
 								Documentation
 							</a>
@@ -692,25 +682,21 @@
 
 			<!-- Form -->
 			<form
-				class="p-6 space-y-4"
+				class="modal-form"
 				onsubmit={(e) => {
 					e.preventDefault();
 					connectService();
 				}}
 			>
 				{#if selectedService.environments && selectedService.environments.length > 1}
-					<fieldset>
-						<legend class="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-wide"
-							>Environment</legend
-						>
-						<div class="grid grid-cols-2 gap-2" role="group">
+					<fieldset class="modal-fieldset">
+						<legend class="modal-legend">Environment</legend>
+						<div class="environment-grid" role="group">
 							{#each selectedService.environments as env (env)}
 								<button
 									type="button"
 									onclick={() => (selectedEnvironment = env)}
-									class="px-4 py-2.5 rounded-lg text-sm transition-all {selectedEnvironment === env
-										? 'bg-white text-black font-medium'
-										: 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'}"
+									class={{ 'environment-option': true, active: selectedEnvironment === env }}
 								>
 									{env.charAt(0).toUpperCase() + env.slice(1)}
 								</button>
@@ -720,13 +706,10 @@
 				{/if}
 
 				{#each selectedService.fields as field (field.key)}
-					<div>
-						<label
-							for="field-{field.key}"
-							class="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-wide"
-						>
+					<div class="modal-field">
+						<label for="field-{field.key}" class="modal-label">
 							{field.label}
-							{#if field.required}<span class="text-red-400 ml-1">*</span>{/if}
+							{#if field.required}<span class="required-indicator">*</span>{/if}
 						</label>
 						<input
 							id="field-{field.key}"
@@ -735,32 +718,32 @@
 							placeholder={field.placeholder}
 							bind:value={credentialValues[field.key]}
 							autocomplete={field.type === 'password' ? 'current-password' : 'off'}
-							class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder-gray-600 focus:outline-none focus:border-white/25 transition-colors"
+							class="modal-input"
 						/>
 						{#if field.help}
-							<p class="mt-1.5 text-xs text-gray-600">{field.help}</p>
+							<p class="field-help">{field.help}</p>
 						{/if}
 					</div>
 				{/each}
 
 				{#if testResult}
 					<div
-						class="p-4 rounded-xl {testResult.success
-							? 'bg-emerald-500/10 border border-emerald-500/20'
-							: 'bg-red-500/10 border border-red-500/20'}"
+						class={{
+							'modal-result': true,
+							success: testResult.success,
+							error: !testResult.success
+						}}
 						transition:slide={{ duration: 200 }}
 					>
-						<div class="flex items-center gap-2">
+						<div class="result-content">
 							{#if testResult.success}
 								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: check (test success) -->
 								<IconCheck size={16} aria-hidden="true" />
-								<span class="text-sm text-emerald-400"
-									>{testResult.message || 'Connection successful'}</span
-								>
+								<span>{testResult.message || 'Connection successful'}</span>
 							{:else}
 								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: x (test failure) -->
 								<IconX size={16} aria-hidden="true" />
-								<span class="text-sm text-red-400">{testResult.error || 'Connection failed'}</span>
+								<span>{testResult.error || 'Connection failed'}</span>
 							{/if}
 						</div>
 					</div>
@@ -768,17 +751,16 @@
 			</form>
 
 			<!-- Footer -->
-			<div class="p-6 pt-0 flex gap-3">
+			<div class="modal-footer">
 				<button
+					type="button"
 					onclick={testConnection}
 					disabled={isTesting}
-					class="flex-1 px-4 py-3 bg-white/5 hover:bg-white/10 text-white text-sm font-medium rounded-xl transition-colors disabled:opacity-50"
+					class="modal-button modal-button--secondary"
 				>
 					{#if isTesting}
-						<span class="flex items-center justify-center gap-2">
-							<div
-								class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"
-							></div>
+						<span class="button-loading-label">
+							<span class="button-spinner button-spinner--light"></span>
 							Testing...
 						</span>
 					{:else}
@@ -786,15 +768,14 @@
 					{/if}
 				</button>
 				<button
+					type="button"
 					onclick={connectService}
 					disabled={isConnecting}
-					class="flex-1 px-4 py-3 bg-white text-black text-sm font-medium rounded-xl hover:bg-gray-100 transition-colors disabled:opacity-50"
+					class="modal-button modal-button--primary"
 				>
 					{#if isConnecting}
-						<span class="flex items-center justify-center gap-2">
-							<div
-								class="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin"
-							></div>
+						<span class="button-loading-label">
+							<span class="button-spinner button-spinner--dark"></span>
 							Connecting...
 						</span>
 					{:else}
@@ -808,43 +789,40 @@
 
 <!-- Disconnect Confirmation -->
 {#if showDisconnectConfirm && disconnectingService}
-	<div
-		class="fixed inset-0 z-50 flex items-center justify-center p-4"
-		transition:fade={{ duration: 150 }}
-	>
+	<div class="modal-shell" transition:fade={{ duration: 150 }}>
 		<button
 			type="button"
-			class="absolute inset-0 bg-black/80 backdrop-blur-sm"
+			class="modal-backdrop"
 			onclick={() => (showDisconnectConfirm = false)}
 			aria-label="Close"
 		></button>
 
 		<div
-			class="relative w-full max-w-sm bg-[#141415] border border-white/10 rounded-2xl p-6"
+			class="modal-panel confirm-panel"
 			transition:scale={{ duration: 200, easing: backOut, start: 0.95 }}
 		>
-			<div class="text-center">
-				<div
-					class="w-14 h-14 mx-auto mb-4 bg-red-500/10 rounded-full flex items-center justify-center"
-				>
-					<IconInfoCircle size={28} class="text-red-400" aria-hidden="true" />
+			<div class="confirm-body">
+				<div class="confirm-icon" aria-hidden="true">
+					<IconInfoCircle size={28} class="confirm-icon-svg" />
 				</div>
-				<h3 class="text-lg font-semibold text-white mb-2">
+				<h3 class="confirm-title">
 					Disconnect {disconnectingService.name}?
 				</h3>
-				<p class="text-sm text-gray-500 mb-6">
+				<p class="confirm-copy">
 					This will remove all stored credentials. You can reconnect anytime.
 				</p>
-				<div class="flex gap-3">
+				<div class="confirm-actions">
 					<button
+						type="button"
 						onclick={() => (showDisconnectConfirm = false)}
-						class="flex-1 px-4 py-2.5 bg-white/5 hover:bg-white/10 text-white text-sm font-medium rounded-xl transition-colors"
+						class="modal-button modal-button--secondary"
 					>
 						Cancel
 					</button>
 					<button
+						type="button"
 						onclick={disconnectService}
-						class="flex-1 px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-xl transition-colors"
+						class="modal-button modal-button--danger"
 					>
 						Disconnect
 					</button>
@@ -1311,224 +1289,367 @@
 		background: var(--error-soft, rgba(218, 54, 51, 0.15));
 	}
 
-	/* Service Cards */
-	:global(.service-card) {
-		background: var(--bg-elevated, var(--bg-elevated));
-		border: 1px solid var(--border-default, var(--border-default));
-		border-radius: 0.75rem;
-		padding: 1.25rem;
-		transition: all 0.2s ease;
-	}
-
-	:global(.service-card:hover) {
-		background: var(--bg-surface, var(--bg-surface));
-		border-color: var(--border-emphasis, var(--text-secondary));
-	}
-
-	:global(.service-card.builtin) {
-		background: linear-gradient(135deg, rgba(46, 160, 67, 0.05), transparent);
-		border-color: rgba(46, 160, 67, 0.2);
-	}
-
-	:global(.service-card.builtin:hover) {
-		border-color: rgba(46, 160, 67, 0.4);
-	}
-
-	/* Category Pills */
-	:global(.category-pill) {
-		padding: 0.375rem 0.75rem;
-		font-size: 0.8125rem;
-		border-radius: 0.5rem;
-		border: none;
-		cursor: pointer;
-		white-space: nowrap;
-		transition: all 0.2s ease;
-		background: transparent;
-		color: var(--text-tertiary, var(--text-tertiary));
-	}
-
-	:global(.category-pill:hover) {
-		color: var(--text-primary, var(--text-primary));
-		background: var(--bg-hover, var(--bg-hover));
-	}
-
-	:global(.category-pill.active) {
-		background: var(--primary-500, var(--primary-500));
-		color: var(--bg-base, var(--bg-base));
-		font-weight: 600;
-	}
-
-	/* Connection Status */
-	:global(.status-connected) {
-		color: var(--success-emphasis, #3fb950);
-	}
-
-	:global(.status-pending) {
-		color: var(--text-tertiary, var(--text-tertiary));
-	}
-
-	/* Buttons */
-	:global(.btn-connect) {
-		width: 100%;
-		padding: 0.625rem 1rem;
-		background: var(--bg-surface, var(--bg-surface));
-		border: 1px solid var(--border-default, var(--border-default));
-		border-radius: 0.5rem;
-		color: var(--text-primary, var(--text-primary));
-		font-size: 0.875rem;
-		font-weight: 500;
-		cursor: pointer;
-		transition: all 0.2s ease;
-	}
-
-	:global(.btn-connect:hover) {
-		background: var(--bg-hover, var(--bg-hover));
-		border-color: var(--border-emphasis, var(--text-secondary));
-	}
-
-	:global(.btn-configure) {
-		flex: 1;
-		padding: 0.5rem 0.75rem;
-		background: var(--bg-surface, var(--bg-surface));
-		border: 1px solid var(--border-muted, var(--border-muted));
-		border-radius: 0.5rem;
-		color: var(--text-secondary, var(--text-secondary));
-		font-size: 0.8125rem;
-		cursor: pointer;
-		transition: all 0.2s ease;
-	}
-
-	:global(.btn-configure:hover) {
-		background: var(--bg-hover, var(--bg-hover));
-		color: var(--text-primary, var(--text-primary));
-	}
-
-	:global(.btn-disconnect) {
-		padding: 0.5rem 0.75rem;
-		background: transparent;
-		border: none;
-		border-radius: 0.5rem;
-		color: var(--error-base, #da3633);
-		font-size: 0.8125rem;
-		cursor: pointer;
-		transition: all 0.2s ease;
-	}
-
-	:global(.btn-disconnect:hover) {
-		background: var(--error-soft, rgba(218, 54, 51, 0.15));
-	}
-
 	/* Modal Styles */
-	:global(.modal-backdrop) {
-		background: rgba(0, 0, 0, 0.8);
+	.modal-shell {
+		position: fixed;
+		inset: 0;
+		z-index: 50;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 1rem;
+	}
+
+	.modal-backdrop {
+		position: absolute;
+		inset: 0;
+		border: 0;
+		background: rgb(0 0 0 / 80%);
 		backdrop-filter: blur(4px);
+		cursor: pointer;
 	}
 
-	:global(.modal-content) {
-		background: var(--bg-elevated, var(--bg-elevated));
-		border: 1px solid var(--border-default, var(--border-default));
-		border-radius: 1rem;
-		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-	}
-
-	:global(.modal-input) {
+	.modal-panel {
+		position: relative;
 		width: 100%;
-		padding: 0.75rem 1rem;
-		background: var(--bg-surface, var(--bg-surface));
-		border: 1px solid var(--border-default, var(--border-default));
-		border-radius: 0.5rem;
-		color: var(--text-primary, var(--text-primary));
-		font-size: 0.875rem;
-		transition: border-color 0.2s ease;
+		overflow: hidden;
+		border: 1px solid rgb(255 255 255 / 10%);
+		border-radius: 1rem;
+		background: #141415;
+		box-shadow: 0 20px 60px rgb(0 0 0 / 50%);
+		color: #ffffff;
 	}
 
-	:global(.modal-input::placeholder) {
-		color: var(--text-muted, #484f58);
+	.connect-panel {
+		max-width: 28rem;
 	}
 
-	:global(.modal-input:focus) {
-		outline: none;
-		border-color: var(--primary-500, var(--primary-500));
-		box-shadow: 0 0 0 3px rgba(230, 184, 0, 0.15);
+	.confirm-panel {
+		max-width: 24rem;
+		padding: 1.5rem;
 	}
 
-	:global(.modal-label) {
-		display: block;
-		font-size: 0.6875rem;
+	.modal-header,
+	.modal-form {
+		padding: 1.5rem;
+	}
+
+	.modal-header {
+		padding-bottom: 0;
+	}
+
+	.modal-title-row {
+		display: flex;
+		align-items: flex-start;
+		gap: 1rem;
+	}
+
+	.modal-service-icon,
+	.confirm-icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex: 0 0 auto;
+	}
+
+	.modal-service-icon {
+		width: 3rem;
+		height: 3rem;
+		border-radius: 0.75rem;
+		font-size: 1.25rem;
+	}
+
+	.modal-copy {
+		flex: 1;
+		min-width: 0;
+	}
+
+	.modal-title,
+	.confirm-title {
+		margin: 0;
+		color: #ffffff;
+		font-size: 1.125rem;
 		font-weight: 600;
-		color: var(--text-secondary, var(--text-secondary));
-		text-transform: uppercase;
+		line-height: 1.4;
+	}
+
+	.modal-description,
+	.confirm-copy {
+		margin: 0;
+		color: #6b7280;
+		font-size: 0.875rem;
+		line-height: 1.5;
+	}
+
+	.modal-description {
+		margin-top: 0.125rem;
+	}
+
+	.modal-close {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 1.75rem;
+		height: 1.75rem;
+		border: 0;
+		border-radius: 0.375rem;
+		background: transparent;
+		color: #6b7280;
+		cursor: pointer;
+		transition:
+			background-color 160ms ease,
+			color 160ms ease;
+	}
+
+	.modal-close:hover {
+		background: rgb(255 255 255 / 8%);
+		color: #ffffff;
+	}
+
+	.modal-links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1rem;
+		margin-top: 1rem;
+		border-top: 1px solid rgb(255 255 255 / 5%);
+		padding-top: 1rem;
+	}
+
+	.modal-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.25rem;
+		color: #9ca3af;
+		font-size: 0.75rem;
+		text-decoration: none;
+		transition: color 160ms ease;
+	}
+
+	.modal-link:hover {
+		color: #ffffff;
+	}
+
+	.modal-form {
+		display: grid;
+		gap: 1rem;
+	}
+
+	.modal-fieldset {
+		min-width: 0;
+		border: 0;
+		padding: 0;
+		margin: 0;
+	}
+
+	.modal-legend,
+	.modal-label {
+		display: block;
+		margin-bottom: 0.5rem;
+		color: #9ca3af;
+		font-size: 0.75rem;
+		font-weight: 600;
 		letter-spacing: 0.05em;
+		text-transform: uppercase;
+	}
+
+	.environment-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0.5rem;
+	}
+
+	.environment-option {
+		border: 0;
+		border-radius: 0.5rem;
+		background: rgb(255 255 255 / 5%);
+		padding: 0.625rem 1rem;
+		color: #9ca3af;
+		font: inherit;
+		font-size: 0.875rem;
+		cursor: pointer;
+		transition:
+			background-color 160ms ease,
+			color 160ms ease;
+	}
+
+	.environment-option:hover {
+		background: rgb(255 255 255 / 10%);
+		color: #ffffff;
+	}
+
+	.environment-option.active {
+		background: #ffffff;
+		color: #000000;
+		font-weight: 600;
+	}
+
+	.required-indicator {
+		margin-left: 0.25rem;
+		color: #f87171;
+	}
+
+	.modal-input {
+		width: 100%;
+		border: 1px solid rgb(255 255 255 / 10%);
+		border-radius: 0.75rem;
+		background: rgb(255 255 255 / 5%);
+		padding: 0.75rem 1rem;
+		color: #ffffff;
+		font: inherit;
+		font-size: 0.875rem;
+		transition:
+			border-color 160ms ease,
+			box-shadow 160ms ease;
+	}
+
+	.modal-input::placeholder {
+		color: #4b5563;
+	}
+
+	.modal-input:focus {
+		outline: none;
+		border-color: rgb(255 255 255 / 25%);
+		box-shadow: 0 0 0 3px rgb(255 255 255 / 8%);
+	}
+
+	.field-help {
+		margin: 0.375rem 0 0;
+		color: #4b5563;
+		font-size: 0.75rem;
+	}
+
+	.modal-result {
+		border: 1px solid;
+		border-radius: 0.75rem;
+		padding: 1rem;
+	}
+
+	.modal-result.success {
+		border-color: rgb(16 185 129 / 20%);
+		background: rgb(16 185 129 / 10%);
+		color: #34d399;
+	}
+
+	.modal-result.error {
+		border-color: rgb(239 68 68 / 20%);
+		background: rgb(239 68 68 / 10%);
+		color: #f87171;
+	}
+
+	.result-content,
+	.modal-footer,
+	.button-loading-label,
+	.confirm-actions {
+		display: flex;
+		align-items: center;
+	}
+
+	.result-content,
+	.button-loading-label {
+		gap: 0.5rem;
+	}
+
+	.result-content {
+		font-size: 0.875rem;
+	}
+
+	.modal-footer {
+		gap: 0.75rem;
+		padding: 0 1.5rem 1.5rem;
+	}
+
+	.modal-button {
+		flex: 1;
+		border: 0;
+		border-radius: 0.75rem;
+		padding: 0.75rem 1rem;
+		font: inherit;
+		font-size: 0.875rem;
+		font-weight: 600;
+		cursor: pointer;
+		transition:
+			background-color 160ms ease,
+			color 160ms ease,
+			opacity 160ms ease;
+	}
+
+	.modal-button:disabled {
+		cursor: not-allowed;
+		opacity: 0.5;
+	}
+
+	.modal-button--secondary {
+		background: rgb(255 255 255 / 5%);
+		color: #ffffff;
+	}
+
+	.modal-button--secondary:hover:not(:disabled) {
+		background: rgb(255 255 255 / 10%);
+	}
+
+	.modal-button--primary {
+		background: #ffffff;
+		color: #000000;
+	}
+
+	.modal-button--primary:hover:not(:disabled) {
+		background: #f3f4f6;
+	}
+
+	.modal-button--danger {
+		background: #ef4444;
+		color: #ffffff;
+	}
+
+	.modal-button--danger:hover:not(:disabled) {
+		background: #dc2626;
+	}
+
+	.button-loading-label {
+		justify-content: center;
+	}
+
+	.button-spinner {
+		width: 1rem;
+		height: 1rem;
+		border: 2px solid;
+		border-radius: 999px;
+		animation: spin 800ms linear infinite;
+	}
+
+	.button-spinner--light {
+		border-color: rgb(255 255 255 / 20%);
+		border-top-color: #ffffff;
+	}
+
+	.button-spinner--dark {
+		border-color: rgb(0 0 0 / 20%);
+		border-top-color: #000000;
+	}
+
+	.confirm-body {
+		text-align: center;
+	}
+
+	.confirm-icon {
+		width: 3.5rem;
+		height: 3.5rem;
+		margin: 0 auto 1rem;
+		border-radius: 999px;
+		background: rgb(239 68 68 / 10%);
+		color: #f87171;
+	}
+
+	.confirm-title {
 		margin-bottom: 0.5rem;
 	}
 
-	:global(.btn-primary) {
-		flex: 1;
-		padding: 0.75rem 1rem;
-		background: var(--primary-500, var(--primary-500));
-		border: none;
-		border-radius: 0.5rem;
-		color: var(--bg-base, var(--bg-base));
-		font-size: 0.875rem;
-		font-weight: 600;
-		cursor: pointer;
-		transition: background 0.2s ease;
+	.confirm-copy {
+		margin-bottom: 1.5rem;
 	}
 
-	:global(.btn-primary:hover) {
-		background: var(--primary-400, var(--primary-400));
-	}
-
-	:global(.btn-primary:disabled) {
-		opacity: 0.5;
-		cursor: not-allowed;
-	}
-
-	:global(.btn-secondary) {
-		flex: 1;
-		padding: 0.75rem 1rem;
-		background: var(--bg-surface, var(--bg-surface));
-		border: 1px solid var(--border-default, var(--border-default));
-		border-radius: 0.5rem;
-		color: var(--text-primary, var(--text-primary));
-		font-size: 0.875rem;
-		font-weight: 500;
-		cursor: pointer;
-		transition: all 0.2s ease;
-	}
-
-	:global(.btn-secondary:hover) {
-		background: var(--bg-hover, var(--bg-hover));
-	}
-
-	:global(.btn-danger) {
-		flex: 1;
-		padding: 0.625rem 1rem;
-		background: var(--error-base, #da3633);
-		border: none;
-		border-radius: 0.5rem;
-		color: white;
-		font-size: 0.875rem;
-		font-weight: 600;
-		cursor: pointer;
-		transition: background 0.2s ease;
-	}
-
-	:global(.btn-danger:hover) {
-		background: var(--error-emphasis, #f85149);
-	}
-
-	/* Health Score */
-	:global(.health-high) {
-		color: var(--success-emphasis, #3fb950);
-	}
-
-	:global(.health-medium) {
-		color: var(--warning-emphasis, #d29922);
-	}
-
-	:global(.health-low) {
-		color: var(--error-emphasis, #f85149);
+	.confirm-actions {
+		gap: 0.75rem;
 	}
 
 	/* Utility */
@@ -1538,36 +1659,6 @@
 		line-clamp: 2;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
-	}
-
-	/* Empty State */
-	:global(.empty-state) {
-		text-align: center;
-		padding: 4rem 1rem;
-	}
-
-	:global(.empty-state-icon) {
-		width: 4rem;
-		height: 4rem;
-		margin: 0 auto 1rem;
-		background: var(--bg-surface, var(--bg-surface));
-		border-radius: 1rem;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: var(--text-tertiary, var(--text-tertiary));
-	}
-
-	:global(.empty-state-title) {
-		font-size: 1.125rem;
-		font-weight: 500;
-		color: var(--text-secondary, var(--text-secondary));
-		margin-bottom: 0.25rem;
-	}
-
-	:global(.empty-state-text) {
-		font-size: 0.875rem;
-		color: var(--text-tertiary, var(--text-tertiary));
 	}
 
 	/* Available Header Layout */
