@@ -101,6 +101,17 @@
 	// Template selection
 	let selectedTemplate = $state<string | null>(null);
 
+	const templateChoices = [
+		{ id: 'scratch', icon: '+', name: 'From Scratch' },
+		{ id: 'newsletter', icon: '✉', name: 'Newsletter' },
+		{ id: 'exit_intent', icon: '⛔', name: 'Exit Intent' },
+		{ id: 'promotional', icon: '🎁', name: 'Promotional' },
+		{ id: 'announcement', icon: '📣', name: 'Announcement' },
+		{ id: 'countdown', icon: '⏰', name: 'Countdown' },
+		{ id: 'video', icon: '▶', name: 'Video' },
+		{ id: 'social_proof', icon: '★', name: 'Social Proof' }
+	];
+
 	// Popup templates definitions
 	const templates: Record<string, Partial<Popup>> = {
 		newsletter: {
@@ -445,6 +456,10 @@
 	function handleCancel() {
 		goto('/admin/popups');
 	}
+
+	function isTemplateSelected(templateId: string): boolean {
+		return templateId === 'scratch' ? !selectedTemplate : selectedTemplate === templateId;
+	}
 </script>
 
 <svelte:head>
@@ -452,11 +467,11 @@
 </svelte:head>
 
 <div class="admin-popups-new">
-	<!-- Animated Background -->
-	<div class="bg-effects">
-		<div class="bg-blob bg-blob-1"></div>
-		<div class="bg-blob bg-blob-2"></div>
-		<div class="bg-blob bg-blob-3"></div>
+	<!-- Decorative background hooks retained for layout parity; visuals are page-scoped. -->
+	<div class="decorative-effects" aria-hidden="true">
+		<div class="decorative-blob decorative-blob--one"></div>
+		<div class="decorative-blob decorative-blob--two"></div>
+		<div class="decorative-blob decorative-blob--three"></div>
 	</div>
 
 	<div class="admin-page-container">
@@ -475,83 +490,20 @@
 
 	<!-- Template Selector -->
 	<Card class="template-selector">
-		<h2 class="text-xl font-semibold mb-4">Start from Template</h2>
-		<p class="text-sm text-gray-600 mb-4">
-			Choose a template to get started quickly, or start from scratch.
-		</p>
+		<h2 class="section-heading">Start from Template</h2>
+		<p class="section-copy">Choose a template to get started quickly, or start from scratch.</p>
 
 		<div class="template-grid">
-			<button
-				type="button"
-				onclick={() => applyTemplate('scratch')}
-				class="template-card {!selectedTemplate ? 'selected' : ''}"
-			>
-				<div class="template-icon">+</div>
-				<div class="template-name">From Scratch</div>
-			</button>
-
-			<button
-				type="button"
-				onclick={() => applyTemplate('newsletter')}
-				class="template-card {selectedTemplate === 'newsletter' ? 'selected' : ''}"
-			>
-				<div class="template-icon">&#9993;</div>
-				<div class="template-name">Newsletter</div>
-			</button>
-
-			<button
-				type="button"
-				onclick={() => applyTemplate('exit_intent')}
-				class="template-card {selectedTemplate === 'exit_intent' ? 'selected' : ''}"
-			>
-				<div class="template-icon">&#128682;</div>
-				<div class="template-name">Exit Intent</div>
-			</button>
-
-			<button
-				type="button"
-				onclick={() => applyTemplate('promotional')}
-				class="template-card {selectedTemplate === 'promotional' ? 'selected' : ''}"
-			>
-				<div class="template-icon">&#127873;</div>
-				<div class="template-name">Promotional</div>
-			</button>
-
-			<button
-				type="button"
-				onclick={() => applyTemplate('announcement')}
-				class="template-card {selectedTemplate === 'announcement' ? 'selected' : ''}"
-			>
-				<div class="template-icon">&#128227;</div>
-				<div class="template-name">Announcement</div>
-			</button>
-
-			<button
-				type="button"
-				onclick={() => applyTemplate('countdown')}
-				class="template-card {selectedTemplate === 'countdown' ? 'selected' : ''}"
-			>
-				<div class="template-icon">&#9200;</div>
-				<div class="template-name">Countdown</div>
-			</button>
-
-			<button
-				type="button"
-				onclick={() => applyTemplate('video')}
-				class="template-card {selectedTemplate === 'video' ? 'selected' : ''}"
-			>
-				<div class="template-icon">&#9654;</div>
-				<div class="template-name">Video</div>
-			</button>
-
-			<button
-				type="button"
-				onclick={() => applyTemplate('social_proof')}
-				class="template-card {selectedTemplate === 'social_proof' ? 'selected' : ''}"
-			>
-				<div class="template-icon">&#11088;</div>
-				<div class="template-name">Social Proof</div>
-			</button>
+			{#each templateChoices as template (template.id)}
+				<button
+					type="button"
+					onclick={() => applyTemplate(template.id)}
+					class={{ 'template-card': true, selected: isTemplateSelected(template.id) }}
+				>
+					<div class="template-icon">{template.icon}</div>
+					<div class="template-name">{template.name}</div>
+				</button>
+			{/each}
 		</div>
 	</Card>
 
@@ -608,12 +560,12 @@
 	{/if}
 
 	<form onsubmit={handleSubmit}>
-		<div class="space-y-6">
+		<div class="form-stack">
 			<!-- Basic Information -->
 			<Card>
-				<h2 class="text-xl font-semibold mb-4">Basic Information</h2>
+				<h2 class="section-heading">Basic Information</h2>
 
-				<div class="space-y-4">
+				<div class="field-stack">
 					<div>
 						<Input
 							id="popup-name"
@@ -622,10 +574,10 @@
 							placeholder="e.g., Exit Intent - Newsletter"
 							{...errors['name'] && { error: errors['name'] }}
 						/>
-						<p class="text-xs text-gray-500 mt-1">For your reference only, not shown to users</p>
+						<p class="field-help">For your reference only, not shown to users</p>
 					</div>
 
-					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+					<div class="form-grid form-grid--two">
 						<div>
 							<Select
 								id="popup-type"
@@ -654,16 +606,16 @@
 							min="1"
 							max="100"
 						/>
-						<p class="text-xs text-gray-500 mt-1">Higher priority popups are shown first</p>
+						<p class="field-help">Higher priority popups are shown first</p>
 					</div>
 				</div>
 			</Card>
 
 			<!-- Content -->
 			<Card>
-				<h2 class="text-xl font-semibold mb-4">Content</h2>
+				<h2 class="section-heading">Content</h2>
 
-				<div class="space-y-4">
+				<div class="field-stack">
 					<div>
 						<Input
 							id="popup-title"
@@ -675,27 +627,21 @@
 					</div>
 
 					<div>
-						<label for="popup-content" class="block text-sm font-medium text-gray-700 mb-1">
-							Content *
-						</label>
+						<label for="popup-content" class="field-label"> Content * </label>
 						<textarea
 							id="popup-content"
 							bind:value={formData['content']}
-							class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 {errors[
-								'content'
-							]
-								? ' border-red-500'
-								: ''}"
+							class={{ 'native-control': true, 'has-error': Boolean(errors['content']) }}
 							rows="4"
 							placeholder="Enter your message (HTML allowed)"
 						></textarea>
 						{#if errors['content']}
-							<p class="text-xs text-red-600 mt-1">{errors['content']}</p>
+							<p class="field-error">{errors['content']}</p>
 						{/if}
-						<p class="text-xs text-gray-500 mt-1">HTML is supported for formatting</p>
+						<p class="field-help">HTML is supported for formatting</p>
 					</div>
 
-					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+					<div class="form-grid form-grid--two">
 						<div>
 							<Input
 								id="popup-cta-text"
@@ -715,26 +661,24 @@
 						</div>
 					</div>
 
-					<div class="flex items-center gap-2">
+					<div class="checkbox-row">
 						<input
 							type="checkbox"
 							id="cta_new_tab"
 							name="cta_new_tab"
 							bind:checked={formData.cta_new_tab}
-							class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+							class="checkbox-control"
 						/>
-						<label for="cta_new_tab" class="text-sm text-gray-700">
-							Open CTA link in new tab
-						</label>
+						<label for="cta_new_tab" class="checkbox-label"> Open CTA link in new tab </label>
 					</div>
 				</div>
 			</Card>
 
 			<!-- Trigger Settings -->
 			<Card>
-				<h2 class="text-xl font-semibold mb-4">Trigger Settings</h2>
+				<h2 class="section-heading">Trigger Settings</h2>
 
-				<div class="space-y-4">
+				<div class="field-stack">
 					{#if formData.type === 'timed'}
 						<div>
 							<Input
@@ -745,7 +689,7 @@
 								min="0"
 								step="1000"
 							/>
-							<p class="text-xs text-gray-500 mt-1">
+							<p class="field-help">
 								Show popup after {(timedDelay / 1000).toFixed(0)} seconds
 							</p>
 						</div>
@@ -759,7 +703,7 @@
 								min="0"
 								max="100"
 							/>
-							<p class="text-xs text-gray-500 mt-1">
+							<p class="field-help">
 								Show popup when user scrolls {scrollDepth}% down the page
 							</p>
 						</div>
@@ -771,9 +715,7 @@
 								bind:value={clickSelector}
 								placeholder="[data-popup-trigger]"
 							/>
-							<p class="text-xs text-gray-500 mt-1">
-								Show popup when elements matching this selector are clicked
-							</p>
+							<p class="field-help">Show popup when elements matching this selector are clicked</p>
 						</div>
 					{:else if formData.type === 'inactivity'}
 						<div>
@@ -785,20 +727,20 @@
 								min="5"
 								max="300"
 							/>
-							<p class="text-xs text-gray-500 mt-1">
+							<p class="field-help">
 								Show popup after {inactivityTimeout} seconds of user inactivity
 							</p>
 						</div>
 					{:else if formData.type === 'exit_intent'}
-						<div class="bg-blue-50 border border-blue-200 rounded-md p-4">
-							<p class="text-sm text-blue-800">
+						<div class="info-callout">
+							<p>
 								Exit intent popups trigger when the user's mouse moves toward the browser's top edge
 								(leaving the page).
 							</p>
 						</div>
 					{:else if formData.type === 'newsletter'}
-						<div class="bg-blue-50 border border-blue-200 rounded-md p-4">
-							<p class="text-sm text-blue-800">
+						<div class="info-callout">
+							<p>
 								Newsletter popups display immediately or can be combined with timing/scroll
 								settings.
 							</p>
@@ -809,27 +751,27 @@
 
 			<!-- Secondary CTA -->
 			<Card>
-				<h2 class="text-xl font-semibold mb-4">Secondary Action</h2>
-				<p class="text-sm text-gray-600 mb-4">
+				<h2 class="section-heading">Secondary Action</h2>
+				<p class="section-copy">
 					Add a secondary button for users who want to decline or take an alternative action.
 				</p>
 
-				<div class="space-y-4">
-					<div class="flex items-center gap-2">
+				<div class="field-stack">
+					<div class="checkbox-row">
 						<input
 							type="checkbox"
 							id="has_secondary_cta"
 							name="has_secondary_cta"
 							bind:checked={hasSecondaryCta}
-							class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+							class="checkbox-control"
 						/>
-						<label for="has_secondary_cta" class="text-sm text-gray-700">
+						<label for="has_secondary_cta" class="checkbox-label">
 							Enable secondary CTA button
 						</label>
 					</div>
 
 					{#if hasSecondaryCta}
-						<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+						<div class="form-grid form-grid--two">
 							<div>
 								<Input
 									id="secondary-cta-text"
@@ -839,16 +781,11 @@
 								/>
 							</div>
 							<div>
-								<label
-									for="secondary-cta-action"
-									class="block text-sm font-medium text-gray-700 mb-1"
-								>
-									Action
-								</label>
+								<label for="secondary-cta-action" class="field-label"> Action </label>
 								<select
 									id="secondary-cta-action"
 									bind:value={secondaryCtaAction}
-									class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+									class="native-control"
 								>
 									<option value="close">Close Popup</option>
 									<option value="url">Navigate to URL</option>
@@ -872,19 +809,19 @@
 
 			<!-- Video Embed -->
 			<Card>
-				<h2 class="text-xl font-semibold mb-4">Video Embed</h2>
-				<p class="text-sm text-gray-600 mb-4">Add a video to your popup for higher engagement.</p>
+				<h2 class="section-heading">Video Embed</h2>
+				<p class="section-copy">Add a video to your popup for higher engagement.</p>
 
-				<div class="space-y-4">
-					<div class="flex items-center gap-2">
+				<div class="field-stack">
+					<div class="checkbox-row">
 						<input
 							type="checkbox"
 							id="has_video"
 							name="has_video"
 							bind:checked={hasVideo}
-							class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+							class="checkbox-control"
 						/>
-						<label for="has_video" class="text-sm text-gray-700"> Include video in popup </label>
+						<label for="has_video" class="checkbox-label"> Include video in popup </label>
 					</div>
 
 					{#if hasVideo}
@@ -895,22 +832,18 @@
 								bind:value={videoUrl}
 								placeholder="https://www.youtube.com/watch?v=..."
 							/>
-							<p class="text-xs text-gray-500 mt-1">
-								Supports YouTube, Vimeo, or direct video URLs
-							</p>
+							<p class="field-help">Supports YouTube, Vimeo, or direct video URLs</p>
 						</div>
 
-						<div class="flex items-center gap-2">
+						<div class="checkbox-row">
 							<input
 								type="checkbox"
 								id="video_autoplay"
 								name="video_autoplay"
 								bind:checked={videoAutoplay}
-								class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+								class="checkbox-control"
 							/>
-							<label for="video_autoplay" class="text-sm text-gray-700">
-								Autoplay video (muted)
-							</label>
+							<label for="video_autoplay" class="checkbox-label"> Autoplay video (muted) </label>
 						</div>
 					{/if}
 				</div>
@@ -918,53 +851,45 @@
 
 			<!-- Form Integration -->
 			<Card>
-				<h2 class="text-xl font-semibold mb-4">Form Integration</h2>
-				<p class="text-sm text-gray-600 mb-4">
+				<h2 class="section-heading">Form Integration</h2>
+				<p class="section-copy">
 					Embed an existing form in your popup to collect leads or feedback.
 				</p>
 
-				<div class="space-y-4">
-					<div class="flex items-center gap-2">
+				<div class="field-stack">
+					<div class="checkbox-row">
 						<input
 							type="checkbox"
 							id="has_form"
 							name="has_form"
 							bind:checked={hasForm}
-							class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+							class="checkbox-control"
 						/>
-						<label for="has_form" class="text-sm text-gray-700"> Include form in popup </label>
+						<label for="has_form" class="checkbox-label"> Include form in popup </label>
 					</div>
 
 					{#if hasForm}
 						<div>
-							<label for="form-selector" class="block text-sm font-medium text-gray-700 mb-1">
-								Select Form
-							</label>
+							<label for="form-selector" class="field-label"> Select Form </label>
 							{#if availableForms.length > 0}
-								<select
-									id="form-selector"
-									bind:value={selectedFormId}
-									class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-								>
+								<select id="form-selector" bind:value={selectedFormId} class="native-control">
 									<option value="">-- Select a form --</option>
 									{#each availableForms as form (form.id)}
 										<option value={form.id}>{form.name}</option>
 									{/each}
 								</select>
 							{:else}
-								<div class="bg-yellow-50 border border-yellow-200 rounded-md p-3">
-									<p class="text-sm text-yellow-800">
-										No forms available. <a href="/admin/forms" class="text-yellow-600 underline"
-											>Create a form</a
-										> first.
+								<div class="info-callout info-callout--warning">
+									<p>
+										No forms available. <a href="/admin/forms">Create a form</a> first.
 									</p>
 								</div>
 							{/if}
 						</div>
 
 						{#if selectedFormId}
-							<div class="bg-green-50 border border-green-200 rounded-md p-3">
-								<p class="text-sm text-green-800">
+							<div class="info-callout info-callout--success">
+								<p>
 									Form will be displayed inside the popup. Form submissions will be tracked as
 									conversions.
 								</p>
@@ -976,10 +901,10 @@
 
 			<!-- Display Settings -->
 			<Card>
-				<h2 class="text-xl font-semibold mb-4">Display Settings</h2>
+				<h2 class="section-heading">Display Settings</h2>
 
-				<div class="space-y-4">
-					<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+				<div class="field-stack">
+					<div class="form-grid form-grid--three">
 						<div>
 							<Select
 								id="popup-position"
@@ -1019,29 +944,27 @@
 						/>
 					</div>
 
-					<div class="space-y-2">
-						<div class="flex items-center gap-2">
+					<div class="check-stack">
+						<div class="checkbox-row">
 							<input
 								type="checkbox"
 								id="show_close_button"
 								name="show_close_button"
 								bind:checked={formData.show_close_button}
-								class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+								class="checkbox-control"
 							/>
-							<label for="show_close_button" class="text-sm text-gray-700">
-								Show close button (X)
-							</label>
+							<label for="show_close_button" class="checkbox-label"> Show close button (X) </label>
 						</div>
 
-						<div class="flex items-center gap-2">
+						<div class="checkbox-row">
 							<input
 								type="checkbox"
 								id="close_on_overlay_click"
 								name="close_on_overlay_click"
 								bind:checked={formData.close_on_overlay_click}
-								class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+								class="checkbox-control"
 							/>
-							<label for="close_on_overlay_click" class="text-sm text-gray-700">
+							<label for="close_on_overlay_click" class="checkbox-label">
 								Close when clicking outside popup
 							</label>
 						</div>
@@ -1051,9 +974,9 @@
 
 			<!-- Frequency Rules -->
 			<Card>
-				<h2 class="text-xl font-semibold mb-4">Frequency & Targeting</h2>
+				<h2 class="section-heading">Frequency & Targeting</h2>
 
-				<div class="space-y-4">
+				<div class="field-stack">
 					<div>
 						<Select
 							id="show-frequency"
@@ -1064,40 +987,40 @@
 					</div>
 
 					<div>
-						<span class="block text-sm font-medium text-gray-700 mb-2">Target Devices</span>
-						<div class="flex gap-4">
-							<label class="flex items-center gap-2">
+						<span class="field-label">Target Devices</span>
+						<div class="device-options">
+							<label class="checkbox-row">
 								<input
 									id="device-desktop"
 									name="device-desktop"
 									type="checkbox"
 									value="desktop"
 									bind:group={formData.display_rules.devices}
-									class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+									class="checkbox-control"
 								/>
-								<span class="text-sm text-gray-700">Desktop</span>
+								<span class="checkbox-label">Desktop</span>
 							</label>
-							<label class="flex items-center gap-2">
+							<label class="checkbox-row">
 								<input
 									id="device-tablet"
 									name="device-tablet"
 									type="checkbox"
 									value="tablet"
 									bind:group={formData.display_rules.devices}
-									class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+									class="checkbox-control"
 								/>
-								<span class="text-sm text-gray-700">Tablet</span>
+								<span class="checkbox-label">Tablet</span>
 							</label>
-							<label class="flex items-center gap-2">
+							<label class="checkbox-row">
 								<input
 									id="device-mobile"
 									name="device-mobile"
 									type="checkbox"
 									value="mobile"
 									bind:group={formData.display_rules.devices}
-									class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+									class="checkbox-control"
 								/>
-								<span class="text-sm text-gray-700">Mobile</span>
+								<span class="checkbox-label">Mobile</span>
 							</label>
 						</div>
 					</div>
@@ -1106,54 +1029,48 @@
 
 			<!-- Page Targeting -->
 			<Card>
-				<h2 class="text-xl font-semibold mb-4">Page Targeting</h2>
-				<p class="text-sm text-gray-600 mb-4">
+				<h2 class="section-heading">Page Targeting</h2>
+				<p class="section-copy">
 					Control which pages the popup appears on. Use wildcards (*) for pattern matching.
 				</p>
 
-				<div class="space-y-4">
+				<div class="field-stack">
 					<div>
-						<label for="include-pages" class="block text-sm font-medium text-gray-700 mb-1">
-							Include Pages
-						</label>
+						<label for="include-pages" class="field-label"> Include Pages </label>
 						<textarea
 							id="include-pages"
 							bind:value={includePages}
-							class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+							class="native-control"
 							rows="3"
 							placeholder="/pricing&#10;/products/*&#10;/checkout"
 						></textarea>
-						<p class="text-xs text-gray-500 mt-1">
+						<p class="field-help">
 							One URL pattern per line. Use * as wildcard. Leave empty to show on all pages.
 						</p>
 					</div>
 
 					<div>
-						<label for="exclude-pages" class="block text-sm font-medium text-gray-700 mb-1">
-							Exclude Pages
-						</label>
+						<label for="exclude-pages" class="field-label"> Exclude Pages </label>
 						<textarea
 							id="exclude-pages"
 							bind:value={excludePages}
-							class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+							class="native-control"
 							rows="3"
 							placeholder="/admin/*&#10;/login&#10;/register"
 						></textarea>
-						<p class="text-xs text-gray-500 mt-1">
-							Pages to exclude even if they match include patterns.
-						</p>
+						<p class="field-help">Pages to exclude even if they match include patterns.</p>
 					</div>
 				</div>
 			</Card>
 
 			<!-- Scheduling -->
 			<Card>
-				<h2 class="text-xl font-semibold mb-4">Scheduling</h2>
-				<p class="text-sm text-gray-600 mb-4">
+				<h2 class="section-heading">Scheduling</h2>
+				<p class="section-copy">
 					Set start and end dates to control when this popup is active. Leave empty for always-on.
 				</p>
 
-				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+				<div class="form-grid form-grid--two">
 					<div>
 						<Input
 							id="popup-start-date"
@@ -1161,7 +1078,7 @@
 							type="datetime-local"
 							bind:value={formData.start_date}
 						/>
-						<p class="text-xs text-gray-500 mt-1">When the popup should start showing</p>
+						<p class="field-help">When the popup should start showing</p>
 					</div>
 
 					<div>
@@ -1171,20 +1088,18 @@
 							type="datetime-local"
 							bind:value={formData.end_date}
 						/>
-						<p class="text-xs text-gray-500 mt-1">When the popup should stop showing</p>
+						<p class="field-help">When the popup should stop showing</p>
 					</div>
 				</div>
 			</Card>
 
 			<!-- Overlay Settings -->
 			<Card>
-				<h2 class="text-xl font-semibold mb-4">Overlay Settings</h2>
-				<p class="text-sm text-gray-600 mb-4">
-					Customize the backdrop overlay that appears behind the popup.
-				</p>
+				<h2 class="section-heading">Overlay Settings</h2>
+				<p class="section-copy">Customize the backdrop overlay that appears behind the popup.</p>
 
-				<div class="space-y-4">
-					<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+				<div class="field-stack">
+					<div class="form-grid form-grid--three">
 						<div>
 							<Input
 								id="overlay-color"
@@ -1217,15 +1132,15 @@
 						</div>
 					</div>
 
-					<div class="flex items-center gap-2">
+					<div class="checkbox-row">
 						<input
 							type="checkbox"
 							id="closeOnEscape"
 							name="closeOnEscape"
 							bind:checked={formData.closeOnEscape}
-							class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+							class="checkbox-control"
 						/>
-						<label for="closeOnEscape" class="text-sm text-gray-700">
+						<label for="closeOnEscape" class="checkbox-label">
 							Close popup when pressing Escape key
 						</label>
 					</div>
@@ -1234,13 +1149,13 @@
 
 			<!-- Design Customization -->
 			<Card>
-				<h2 class="text-xl font-semibold mb-4">🎨 Design Customization</h2>
+				<h2 class="section-heading">🎨 Design Customization</h2>
 
-				<div class="space-y-6">
+				<div class="section-stack">
 					<!-- Popup Colors -->
 					<div>
-						<h3 class="text-sm font-semibold text-gray-800 mb-3">Popup Colors</h3>
-						<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+						<h3 class="subsection-heading">Popup Colors</h3>
+						<div class="form-grid form-grid--three">
 							<div>
 								<Input
 									id="bg-color"
@@ -1272,8 +1187,8 @@
 
 					<!-- Button Styling -->
 					<div>
-						<h3 class="text-sm font-semibold text-gray-800 mb-3">Button Styling</h3>
-						<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+						<h3 class="subsection-heading">Button Styling</h3>
+						<div class="form-grid form-grid--three">
 							<div>
 								<Input
 									id="button-color"
@@ -1308,16 +1223,14 @@
 
 					<!-- Advanced Button Effects -->
 					<div>
-						<h3 class="text-sm font-semibold text-gray-800 mb-3">Button Effects</h3>
-						<div class="space-y-3">
+						<h3 class="subsection-heading">Button Effects</h3>
+						<div class="field-stack field-stack--compact">
 							<div>
-								<label for="button-shadow" class="block text-sm font-medium text-gray-700 mb-1">
-									Button Shadow
-								</label>
+								<label for="button-shadow" class="field-label"> Button Shadow </label>
 								<select
 									id="button-shadow"
 									bind:value={formData.design.buttonShadow}
-									class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+									class="native-control"
 								>
 									<option value="">None</option>
 									<option value="0 1px 2px 0 rgba(0, 0, 0, 0.05)">Subtle</option>
@@ -1335,17 +1248,15 @@
 									>
 									<option value="0 25px 50px -12px rgba(0, 0, 0, 0.25)">Extra Large</option>
 								</select>
-								<p class="text-xs text-gray-500 mt-1">Shadow adds depth to the button</p>
+								<p class="field-help">Shadow adds depth to the button</p>
 							</div>
 
 							<div>
-								<label for="button-padding" class="block text-sm font-medium text-gray-700 mb-1">
-									Button Padding
-								</label>
+								<label for="button-padding" class="field-label"> Button Padding </label>
 								<select
 									id="button-padding"
 									bind:value={formData.design.buttonPadding}
-									class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+									class="native-control"
 								>
 									<option value="0.5rem 1rem">Small (0.5rem 1rem)</option>
 									<option value="0.875rem 1.5rem">Default (0.875rem 1.5rem)</option>
@@ -1353,7 +1264,7 @@
 									<option value="1.25rem 2.5rem">Large (1.25rem 2.5rem)</option>
 									<option value="1.5rem 3rem">Extra Large (1.5rem 3rem)</option>
 								</select>
-								<p class="text-xs text-gray-500 mt-1">Adjust button size and spacing</p>
+								<p class="field-help">Adjust button size and spacing</p>
 							</div>
 						</div>
 					</div>
@@ -1378,6 +1289,10 @@
 		max-width: 1400px;
 		margin: 0 auto;
 		padding: 2rem;
+	}
+
+	.decorative-effects {
+		display: none;
 	}
 
 	.page-header {
@@ -1484,6 +1399,174 @@
 		font-size: 0.8125rem;
 		font-weight: 500;
 		color: #e2e8f0;
+	}
+
+	.form-stack,
+	.section-stack {
+		display: grid;
+		gap: 1.5rem;
+	}
+
+	.field-stack {
+		display: grid;
+		gap: 1rem;
+	}
+
+	.field-stack--compact {
+		gap: 0.75rem;
+	}
+
+	.form-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		gap: 1rem;
+	}
+
+	.section-heading {
+		margin: 0 0 1rem;
+		color: #f1f5f9;
+		font-size: 1.25rem;
+		font-weight: 700;
+		line-height: 1.25;
+	}
+
+	.section-copy {
+		margin: 0 0 1rem;
+		color: #94a3b8;
+		font-size: 0.875rem;
+		line-height: 1.6;
+	}
+
+	.subsection-heading {
+		margin: 0 0 0.75rem;
+		color: #e2e8f0;
+		font-size: 0.875rem;
+		font-weight: 700;
+		line-height: 1.4;
+	}
+
+	.field-label {
+		display: block;
+		margin: 0 0 0.375rem;
+		color: #e2e8f0;
+		font-size: 0.875rem;
+		font-weight: 600;
+		line-height: 1.4;
+	}
+
+	.field-help,
+	.field-error {
+		margin: 0.375rem 0 0;
+		font-size: 0.75rem;
+		line-height: 1.5;
+	}
+
+	.field-help {
+		color: #94a3b8;
+	}
+
+	.field-error {
+		color: #f87171;
+	}
+
+	.native-control {
+		width: 100%;
+		min-height: 2.5rem;
+		border: 1px solid rgba(148, 163, 184, 0.2);
+		border-radius: 6px;
+		background: rgba(15, 23, 42, 0.6);
+		color: #f1f5f9;
+		padding: 0.5rem 0.75rem;
+		font: inherit;
+		line-height: 1.5;
+		transition:
+			border-color 0.2s ease,
+			box-shadow 0.2s ease,
+			background-color 0.2s ease;
+	}
+
+	.native-control:focus {
+		border-color: rgba(99, 102, 241, 0.55);
+		box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.14);
+		outline: none;
+	}
+
+	.native-control.has-error {
+		border-color: rgba(239, 68, 68, 0.6);
+	}
+
+	textarea.native-control {
+		min-height: 7rem;
+		resize: vertical;
+	}
+
+	.checkbox-row {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		min-width: 0;
+	}
+
+	.checkbox-control {
+		width: 1rem;
+		height: 1rem;
+		flex: 0 0 auto;
+		accent-color: var(--primary-500);
+	}
+
+	.checkbox-label {
+		color: #cbd5e1;
+		font-size: 0.875rem;
+		line-height: 1.5;
+	}
+
+	.check-stack {
+		display: grid;
+		gap: 0.75rem;
+	}
+
+	.device-options {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem 1.5rem;
+	}
+
+	.info-callout {
+		border: 1px solid rgba(99, 102, 241, 0.3);
+		border-radius: 6px;
+		background: rgba(99, 102, 241, 0.1);
+		padding: 1rem;
+	}
+
+	.info-callout p {
+		margin: 0;
+		color: #a5b4fc;
+		font-size: 0.875rem;
+		line-height: 1.6;
+	}
+
+	.info-callout--warning {
+		border-color: rgba(234, 179, 8, 0.35);
+		background: rgba(234, 179, 8, 0.1);
+	}
+
+	.info-callout--warning p {
+		color: #fde68a;
+	}
+
+	.info-callout--warning a {
+		color: #facc15;
+		text-decoration: underline;
+		text-underline-offset: 0.15em;
+	}
+
+	.info-callout--success {
+		border-color: rgba(34, 197, 94, 0.35);
+		background: rgba(34, 197, 94, 0.1);
+	}
+
+	.info-callout--success p {
+		color: #86efac;
 	}
 
 	/* Live Preview Panel */
@@ -1599,77 +1682,14 @@
 		cursor: not-allowed;
 	}
 
-	/* Dark-theme overrides for shared form/Card primitives. Compound selectors
-	   (`.page .text-…`) are specificity (0,2,0) — wins over single-class
-	   Tailwind utilities (0,1,0). Unlayered component rules also win against
-	   @layer utilities on layer-order. */
-	:global(.page .space-y-6 > div) {
-		background: rgba(30, 41, 59, 0.4);
-		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 8px;
-	}
+	@media (min-width: 768px) {
+		.form-grid--two {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
 
-	:global(.page label),
-	:global(.page .text-sm.font-medium) {
-		color: #e2e8f0;
-	}
-
-	:global(.page .text-gray-700),
-	:global(.page .text-gray-600),
-	:global(.page .text-gray-500) {
-		color: #94a3b8;
-	}
-
-	:global(.page .text-gray-900),
-	:global(.page .text-gray-800) {
-		color: #f1f5f9;
-	}
-
-	:global(.page h2) {
-		color: #f1f5f9;
-	}
-
-	:global(.page h3) {
-		color: #e2e8f0;
-	}
-
-	:global(.page input[type='text']),
-	:global(.page input[type='number']),
-	:global(.page input[type='color']),
-	:global(.page textarea),
-	:global(.page select) {
-		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.2);
-		border-radius: 6px;
-		color: #f1f5f9;
-	}
-
-	:global(.page input:focus),
-	:global(.page textarea:focus),
-	:global(.page select:focus) {
-		border-color: rgba(99, 102, 241, 0.5);
-		outline: none;
-	}
-
-	:global(.page input[type='checkbox']) {
-		accent-color: var(--primary-500);
-	}
-
-	:global(.page .bg-blue-50) {
-		background: rgba(99, 102, 241, 0.1);
-		border-color: rgba(99, 102, 241, 0.3);
-	}
-
-	:global(.page .text-blue-800) {
-		color: #a5b4fc;
-	}
-
-	:global(.page .text-red-600) {
-		color: #f87171;
-	}
-
-	:global(.admin-popups-new .border-red-500) {
-		border-color: rgba(239, 68, 68, 0.5);
+		.form-grid--three {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
 	}
 
 	@media (max-width: 767.98px) {
