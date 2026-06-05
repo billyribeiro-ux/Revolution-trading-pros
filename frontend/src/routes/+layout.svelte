@@ -18,8 +18,7 @@
 	 * @author Revolution Trading Pros
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 */
-	// RESTORED 2026-05-23: Tailwind CSS re-enabled for full site functionality
-	// PE7 migration will happen systematically from this working baseline
+	// Global typography/reset only. Page and component visuals own their scoped CSS.
 	import '../app.css';
 
 	// Marketing CSS — imported at the root so the layout tree topology stays
@@ -183,7 +182,7 @@
 	     marketing-shell class is what flips marketing routes into their dark
 	     canvas; dashboard routes keep their own surfaces from dashboard.css. -->
 	<div
-		class="min-h-screen flex flex-col min-w-0"
+		class="app-shell"
 		class:marketing-shell={isMarketingPage}
 		class:dark={isMarketingPage}
 		class:has-admin-toolbar={showAdminToolbar}
@@ -197,7 +196,7 @@
 
 		<NavBar />
 
-		<main id="main-content" class="flex-1 min-w-0 overflow-x-clip flex flex-col">
+		<main id="main-content" class="app-main">
 			{@render props.children()}
 		</main>
 
@@ -231,5 +230,21 @@
 		display: block;
 		margin: 0;
 		padding: 0;
+	}
+
+	.app-shell {
+		display: flex;
+		flex-direction: column;
+		min-width: 0;
+		min-height: 100vh;
+		min-height: 100dvh;
+	}
+
+	.app-main {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		min-width: 0;
+		overflow-x: clip;
 	}
 </style>
