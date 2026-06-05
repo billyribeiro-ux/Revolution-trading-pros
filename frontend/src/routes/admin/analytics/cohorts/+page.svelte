@@ -165,6 +165,20 @@
 			: null
 	);
 
+	const selectedCohortTotalUsers = $derived(
+		selectedCohort ? selectedCohort.retention_matrix.reduce((sum, row) => sum + row.size, 0) : 0
+	);
+
+	function formatRetentionLabel(periodNumber: number): string {
+		const unit =
+			selectedGranularity === 'weekly'
+				? 'Week'
+				: selectedGranularity === 'monthly'
+					? 'Month'
+					: 'Day';
+		return `${unit} ${periodNumber}`;
+	}
+
 	function calculateAvgRetention(
 		matrix: Array<{ cohort: string; size: number; periods: number[] }>,
 		periodIndex: number
@@ -181,38 +195,36 @@
 	<title>Cohort Analysis | Analytics</title>
 </svelte:head>
 
-<div class="bg-linear-to-br from-slate-950 via-slate-900 to-slate-950">
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="cohorts-page">
+	<div class="cohorts-page__container">
 		<!-- Apple ICT7 Grade Header -->
-		<header class="flex items-center justify-between mb-8">
-			<div class="flex items-center gap-4">
-				<div
-					class="w-12 h-12 rounded-2xl bg-linear-to-br from-purple-500 to-pink-600 flex items-center justify-center text-2xl shadow-lg shadow-purple-500/20"
-				>
+		<header class="cohorts-header">
+			<div class="cohorts-header__title-group">
+				<div class="cohorts-header__icon">
 					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: users -->
 					<IconUsers size={24} aria-hidden="true" />
 				</div>
 				<div>
-					<h1 class="text-2xl font-bold text-white tracking-tight">Cohort Analysis</h1>
-					<p class="text-sm text-slate-400">Analyze user retention patterns over time</p>
+					<h1>Cohort Analysis</h1>
+					<p>Analyze user retention patterns over time</p>
 				</div>
 			</div>
 			{#if isAnalyticsConnected}
-				<div class="flex items-center gap-4">
+				<div class="cohorts-header__actions">
 					<PeriodSelector value={selectedPeriod} onchange={handlePeriodChange} />
-					<select
-						bind:value={selectedGranularity}
-						onchange={handleGranularityChange}
-						class="px-4 py-2.5 bg-slate-800/50 border border-white/10 rounded-xl text-sm text-white focus:ring-2 focus:ring-purple-500/50 outline-none"
-					>
-						<option value="daily">Daily</option>
-						<option value="weekly">Weekly</option>
-						<option value="monthly">Monthly</option>
-					</select>
-					<button
-						onclick={() => (showCreateModal = true)}
-						class="px-5 py-2.5 bg-linear-to-r from-purple-500 to-pink-600 text-white rounded-xl hover:from-purple-400 hover:to-pink-500 text-sm font-semibold transition-all shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40"
-					>
+					<label class="granularity-field" for="cohort-granularity-filter">
+						<span>Granularity</span>
+						<select
+							id="cohort-granularity-filter"
+							bind:value={selectedGranularity}
+							onchange={handleGranularityChange}
+						>
+							<option value="daily">Daily</option>
+							<option value="weekly">Weekly</option>
+							<option value="monthly">Monthly</option>
+						</select>
+					</label>
+					<button type="button" onclick={() => (showCreateModal = true)} class="primary-action">
 						Create Cohort
 					</button>
 				</div>
@@ -221,70 +233,54 @@
 
 		<!-- Connection Check -->
 		{#if connectionLoading}
-			<div class="flex items-center justify-center py-20">
-				<div class="relative">
-					<div class="w-12 h-12 border-4 border-purple-500/20 rounded-full"></div>
-					<div
-						class="absolute top-0 left-0 w-12 h-12 border-4 border-purple-500 rounded-full animate-spin border-t-transparent"
-					></div>
-				</div>
+			<div class="loading-state">
+				<div class="loading-spinner loading-spinner--lg"></div>
 			</div>
 		{:else if !isAnalyticsConnected}
 			<ServiceConnectionStatus feature="analytics" variant="card" showFeatures={true} />
 		{:else if loading}
-			<div class="flex items-center justify-center py-20">
-				<div class="relative">
-					<div class="w-10 h-10 border-4 border-purple-500/20 rounded-full"></div>
-					<div
-						class="absolute top-0 left-0 w-10 h-10 border-4 border-purple-500 rounded-full animate-spin border-t-transparent"
-					></div>
-				</div>
+			<div class="loading-state">
+				<div class="loading-spinner"></div>
 			</div>
 		{:else if error}
-			<div
-				class="bg-red-500/10 backdrop-blur-xl border border-red-500/20 rounded-2xl p-8 text-center"
-			>
-				<div
-					class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-red-500/10 flex items-center justify-center"
-				>
+			<div class="state-card state-card--error">
+				<div class="state-card__icon">
 					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: alert-circle error -->
 					<IconAlertCircle size={32} aria-hidden="true" />
 				</div>
-				<p class="text-red-400 mb-4">{error}</p>
+				<p>{error}</p>
 				<button
+					type="button"
 					onclick={loadCohorts}
-					class="px-5 py-2.5 bg-red-500/20 text-red-400 rounded-xl hover:bg-red-500/30 border border-red-500/30 transition-all"
+					class="state-card__button state-card__button--error"
 				>
 					Retry
 				</button>
 			</div>
 		{:else if cohorts.length === 0}
-			<div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-12 text-center">
-				<div
-					class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-purple-500/10 flex items-center justify-center"
-				>
+			<div class="state-card">
+				<div class="state-card__icon state-card__icon--purple">
 					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: users (no cohorts empty state) -->
 					<IconUsers size={32} aria-hidden="true" />
 				</div>
-				<h3 class="text-lg font-medium text-white mb-2">No Cohorts Yet</h3>
-				<p class="text-slate-400 mb-6">Create your first cohort to analyze user retention</p>
+				<h3>No Cohorts Yet</h3>
+				<p>Create your first cohort to analyze user retention</p>
 				<button
+					type="button"
 					onclick={() => (showCreateModal = true)}
-					class="px-6 py-3 bg-linear-to-r from-purple-500 to-pink-600 text-white rounded-xl hover:from-purple-400 hover:to-pink-500 font-semibold shadow-lg shadow-purple-500/25 transition-all"
+					class="state-card__button state-card__button--primary"
 				>
 					Create Your First Cohort
 				</button>
 			</div>
 		{:else}
 			<!-- Cohort Selector -->
-			<div class="flex gap-2 mb-8 overflow-x-auto pb-2">
+			<div class="cohort-selector" aria-label="Cohorts">
 				{#each cohorts as cohort (cohort.key)}
 					<button
+						type="button"
 						onclick={() => (selectedCohort = cohort)}
-						class="px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all
-							{selectedCohort?.key === cohort.key
-							? 'bg-linear-to-r from-purple-500 to-pink-600 text-white shadow-lg shadow-purple-500/25'
-							: 'bg-white/5 border border-white/10 text-slate-400 hover:bg-white/10 hover:text-white'}"
+						class={{ 'cohort-tab': true, 'is-active': selectedCohort?.key === cohort.key }}
 					>
 						{cohort.name}
 					</button>
@@ -294,40 +290,20 @@
 			{#if selectedCohort}
 				<!-- Retention Summary -->
 				{#if overallMetrics}
-					<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-						<div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-							<div class="text-sm text-slate-400 mb-2">
-								{selectedGranularity === 'weekly'
-									? 'Week 1'
-									: selectedGranularity === 'monthly'
-										? 'Month 1'
-										: 'Day 1'} Retention
-							</div>
-							<div class="text-3xl font-bold text-white">
-								{overallMetrics.avgWeek1.toFixed(1)}%
-							</div>
+					<div class="retention-grid">
+						<div class="retention-card">
+							<div class="retention-card__label">{formatRetentionLabel(1)} Retention</div>
+							<div class="retention-card__value">{overallMetrics.avgWeek1.toFixed(1)}%</div>
 						</div>
-						<div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-							<div class="text-sm text-slate-400 mb-2">
-								{selectedGranularity === 'weekly'
-									? 'Week 4'
-									: selectedGranularity === 'monthly'
-										? 'Month 4'
-										: 'Day 4'} Retention
-							</div>
-							<div class="text-3xl font-bold text-purple-400">
+						<div class="retention-card">
+							<div class="retention-card__label">{formatRetentionLabel(4)} Retention</div>
+							<div class="retention-card__value" data-tone="purple">
 								{overallMetrics.avgWeek4.toFixed(1)}%
 							</div>
 						</div>
-						<div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-							<div class="text-sm text-slate-400 mb-2">
-								{selectedGranularity === 'weekly'
-									? 'Week 8'
-									: selectedGranularity === 'monthly'
-										? 'Month 8'
-										: 'Day 8'} Retention
-							</div>
-							<div class="text-3xl font-bold text-pink-400">
+						<div class="retention-card">
+							<div class="retention-card__label">{formatRetentionLabel(8)} Retention</div>
+							<div class="retention-card__value" data-tone="pink">
 								{overallMetrics.avgWeek8.toFixed(1)}%
 							</div>
 						</div>
@@ -335,43 +311,35 @@
 				{/if}
 
 				<!-- Cohort Matrix -->
-				<div
-					class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden mb-8"
-				>
+				<div class="matrix-panel">
 					<CohortMatrix data={selectedCohort.retention_matrix} title={selectedCohort.name} />
 				</div>
 
 				<!-- Cohort Info -->
-				<div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-					<h3 class="text-lg font-semibold text-white mb-4">Cohort Details</h3>
-					<div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-						<div>
-							<div class="text-xs font-medium text-slate-500 uppercase mb-1">Type</div>
-							<div class="text-sm text-white capitalize">
-								{selectedCohort.type.replace('_', ' ')}
-							</div>
+				<div class="details-panel">
+					<h2>Cohort Details</h2>
+					<div class="details-grid">
+						<div class="detail-item">
+							<div class="detail-item__label">Type</div>
+							<div class="detail-item__value">{selectedCohort.type.replace('_', ' ')}</div>
 						</div>
-						<div>
-							<div class="text-xs font-medium text-slate-500 uppercase mb-1">Granularity</div>
-							<div class="text-sm text-white capitalize">{selectedCohort.granularity}</div>
+						<div class="detail-item">
+							<div class="detail-item__label">Granularity</div>
+							<div class="detail-item__value">{selectedCohort.granularity}</div>
 						</div>
-						<div>
-							<div class="text-xs font-medium text-slate-500 uppercase mb-1">Total Cohorts</div>
-							<div class="text-sm text-white">{selectedCohort.retention_matrix.length}</div>
+						<div class="detail-item">
+							<div class="detail-item__label">Total Cohorts</div>
+							<div class="detail-item__value">{selectedCohort.retention_matrix.length}</div>
 						</div>
-						<div>
-							<div class="text-xs font-medium text-slate-500 uppercase mb-1">Total Users</div>
-							<div class="text-sm text-white">
-								{selectedCohort.retention_matrix
-									.reduce((sum, r) => sum + r.size, 0)
-									.toLocaleString()}
-							</div>
+						<div class="detail-item">
+							<div class="detail-item__label">Total Users</div>
+							<div class="detail-item__value">{selectedCohortTotalUsers.toLocaleString()}</div>
 						</div>
 					</div>
 					{#if selectedCohort.description}
-						<div class="mt-4 pt-4 border-t border-white/10">
-							<div class="text-xs font-medium text-slate-500 uppercase mb-1">Description</div>
-							<p class="text-sm text-slate-300">{selectedCohort.description}</p>
+						<div class="detail-description">
+							<div class="detail-item__label">Description</div>
+							<p>{selectedCohort.description}</p>
 						</div>
 					{/if}
 				</div>
@@ -382,14 +350,15 @@
 
 <!-- Create Cohort Modal -->
 {#if showCreateModal}
-	<div class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-		<div class="bg-slate-900 rounded-2xl w-full max-w-lg border border-white/10 shadow-2xl">
-			<div class="p-6 border-b border-white/10">
-				<div class="flex items-center justify-between">
-					<h2 class="text-xl font-bold text-white">Create Cohort</h2>
+	<div class="cohort-modal-backdrop">
+		<div class="cohort-modal" role="dialog" aria-modal="true" aria-labelledby="cohort-modal-title">
+			<div class="cohort-modal__header">
+				<div class="cohort-modal__title-row">
+					<h2 id="cohort-modal-title">Create Cohort</h2>
 					<button
+						type="button"
 						onclick={() => (showCreateModal = false)}
-						class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+						class="cohort-modal__close"
 						aria-label="Close modal"
 					>
 						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: x (close) -->
@@ -398,57 +367,42 @@
 				</div>
 			</div>
 
-			<div class="p-6 space-y-4">
-				<div>
-					<label for="cohort-name" class="block text-sm font-medium text-slate-300 mb-2">Name</label
-					>
+			<div class="cohort-modal__body">
+				<div class="form-field">
+					<label for="cohort-name">Name</label>
 					<input
 						id="cohort-name"
 						name="cohort-name"
 						type="text"
 						bind:value={newCohort.name}
 						placeholder="e.g., Weekly Signup Retention"
-						class="w-full px-4 py-3 bg-slate-800/50 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-purple-500/50 outline-none"
+						class="form-control"
 					/>
 				</div>
 
-				<div>
-					<label for="cohort-description" class="block text-sm font-medium text-slate-300 mb-2"
-						>Description</label
-					>
+				<div class="form-field">
+					<label for="cohort-description">Description</label>
 					<textarea
 						id="cohort-description"
 						bind:value={newCohort.description}
 						placeholder="Describe this cohort..."
 						rows={2}
-						class="w-full px-4 py-3 bg-slate-800/50 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-purple-500/50 outline-none resize-none"
+						class="form-control form-control--textarea"
 					></textarea>
 				</div>
 
-				<div class="grid grid-cols-2 gap-4">
-					<div>
-						<label for="cohort-type" class="block text-sm font-medium text-slate-300 mb-2"
-							>Type</label
-						>
-						<select
-							id="cohort-type"
-							bind:value={newCohort.type}
-							class="w-full px-4 py-3 bg-slate-800/50 border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-purple-500/50 outline-none"
-						>
+				<div class="form-grid">
+					<div class="form-field">
+						<label for="cohort-type">Type</label>
+						<select id="cohort-type" bind:value={newCohort.type} class="form-control">
 							<option value="signup">Signup Date</option>
 							<option value="first_purchase">First Purchase</option>
 							<option value="custom">Custom Event</option>
 						</select>
 					</div>
-					<div>
-						<label for="cohort-granularity" class="block text-sm font-medium text-slate-300 mb-2"
-							>Granularity</label
-						>
-						<select
-							id="cohort-granularity"
-							bind:value={newCohort.granularity}
-							class="w-full px-4 py-3 bg-slate-800/50 border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-purple-500/50 outline-none"
-						>
+					<div class="form-field">
+						<label for="cohort-granularity">Granularity</label>
+						<select id="cohort-granularity" bind:value={newCohort.granularity} class="form-control">
 							<option value="daily">Daily</option>
 							<option value="weekly">Weekly</option>
 							<option value="monthly">Monthly</option>
@@ -457,48 +411,42 @@
 				</div>
 
 				{#if newCohort.type === 'custom'}
-					<div class="grid grid-cols-2 gap-4">
-						<div>
-							<label for="cohort-start-event" class="block text-sm font-medium text-slate-300 mb-2"
-								>Start Event</label
-							>
+					<div class="form-grid">
+						<div class="form-field">
+							<label for="cohort-start-event">Start Event</label>
 							<input
 								id="cohort-start-event"
 								name="cohort-start-event"
 								type="text"
 								bind:value={newCohort.start_event}
 								placeholder="e.g., signup"
-								class="w-full px-4 py-3 bg-slate-800/50 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-purple-500/50 outline-none"
+								class="form-control"
 							/>
 						</div>
-						<div>
-							<label for="cohort-return-event" class="block text-sm font-medium text-slate-300 mb-2"
-								>Return Event</label
-							>
+						<div class="form-field">
+							<label for="cohort-return-event">Return Event</label>
 							<input
 								id="cohort-return-event"
 								name="cohort-return-event"
 								type="text"
 								bind:value={newCohort.return_event}
 								placeholder="e.g., login"
-								class="w-full px-4 py-3 bg-slate-800/50 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-purple-500/50 outline-none"
+								class="form-control"
 							/>
 						</div>
 					</div>
 				{/if}
 			</div>
 
-			<div class="p-6 border-t border-white/10 flex justify-end gap-3">
-				<button
-					onclick={() => (showCreateModal = false)}
-					class="px-5 py-2.5 text-slate-300 border border-white/10 rounded-xl hover:bg-white/5 transition-colors"
-				>
+			<div class="cohort-modal__footer">
+				<button type="button" onclick={() => (showCreateModal = false)} class="secondary-action">
 					Cancel
 				</button>
 				<button
+					type="button"
 					onclick={createCohort}
 					disabled={!newCohort.name}
-					class="px-5 py-2.5 bg-linear-to-r from-purple-500 to-pink-600 text-white rounded-xl hover:from-purple-400 hover:to-pink-500 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-purple-500/25"
+					class="primary-action"
 				>
 					Create Cohort
 				</button>
@@ -506,3 +454,504 @@
 		</div>
 	</div>
 {/if}
+
+<style>
+	.cohorts-page {
+		min-height: 100vh;
+		background:
+			radial-gradient(circle at top left, rgb(168 85 247 / 0.16), transparent 28rem),
+			linear-gradient(135deg, #020617 0%, #0f172a 48%, #020617 100%);
+		color: white;
+	}
+
+	.cohorts-page__container {
+		width: min(100%, 80rem);
+		margin: 0 auto;
+		padding: 2rem 1rem;
+	}
+
+	.cohorts-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1.5rem;
+		margin-bottom: 2rem;
+	}
+
+	.cohorts-header__title-group,
+	.cohorts-header__actions,
+	.cohort-modal__title-row,
+	.cohort-modal__footer {
+		display: flex;
+		align-items: center;
+	}
+
+	.cohorts-header__title-group {
+		gap: 1rem;
+		min-width: 0;
+	}
+
+	.cohorts-header__icon {
+		display: inline-grid;
+		width: 3rem;
+		height: 3rem;
+		flex: 0 0 auto;
+		place-items: center;
+		border-radius: 1rem;
+		background: linear-gradient(135deg, #a855f7, #db2777);
+		box-shadow: 0 18px 44px rgb(168 85 247 / 0.24);
+	}
+
+	.cohorts-header h1 {
+		margin: 0;
+		font-size: clamp(1.875rem, 4vw, 2.5rem);
+		font-weight: 700;
+		line-height: 1.1;
+	}
+
+	.cohorts-header p {
+		margin: 0.35rem 0 0;
+		color: #94a3b8;
+	}
+
+	.cohorts-header__actions {
+		gap: 1rem;
+		flex-wrap: wrap;
+		justify-content: flex-end;
+	}
+
+	.primary-action,
+	.secondary-action,
+	.state-card__button,
+	.cohort-tab,
+	.cohort-modal__close {
+		border: 0;
+		font: inherit;
+	}
+
+	.primary-action,
+	.secondary-action,
+	.state-card__button,
+	.cohort-tab {
+		display: inline-flex;
+		min-height: 2.75rem;
+		align-items: center;
+		justify-content: center;
+		border-radius: 0.75rem;
+		padding: 0.75rem 1rem;
+		font-size: 0.875rem;
+		font-weight: 600;
+		transition:
+			transform 180ms ease,
+			border-color 180ms ease,
+			background 180ms ease,
+			box-shadow 180ms ease;
+	}
+
+	.primary-action {
+		background: linear-gradient(135deg, #a855f7, #db2777);
+		color: white;
+		box-shadow: 0 16px 36px rgb(168 85 247 / 0.28);
+	}
+
+	.primary-action:hover:not(:disabled),
+	.state-card__button:hover,
+	.cohort-tab:hover {
+		transform: translateY(-1px);
+	}
+
+	.primary-action:disabled {
+		cursor: not-allowed;
+		opacity: 0.5;
+		box-shadow: none;
+	}
+
+	.secondary-action {
+		border: 1px solid rgb(255 255 255 / 0.1);
+		background: rgb(255 255 255 / 0.04);
+		color: #cbd5e1;
+	}
+
+	.secondary-action:hover {
+		border-color: rgb(255 255 255 / 0.16);
+		background: rgb(255 255 255 / 0.08);
+		color: white;
+	}
+
+	.granularity-field,
+	.form-field {
+		display: grid;
+		gap: 0.5rem;
+	}
+
+	.granularity-field span,
+	.form-field label {
+		color: #cbd5e1;
+		font-size: 0.875rem;
+		font-weight: 600;
+	}
+
+	.granularity-field select,
+	.form-control {
+		width: 100%;
+		border: 1px solid rgb(255 255 255 / 0.1);
+		border-radius: 0.75rem;
+		background: rgb(15 23 42 / 0.82);
+		color: white;
+		font: inherit;
+		padding: 0.75rem 1rem;
+		transition:
+			border-color 180ms ease,
+			box-shadow 180ms ease;
+	}
+
+	.granularity-field select:focus,
+	.form-control:focus {
+		border-color: #a855f7;
+		box-shadow: 0 0 0 3px rgb(168 85 247 / 0.16);
+		outline: none;
+	}
+
+	.form-control::placeholder {
+		color: #64748b;
+	}
+
+	.form-control--textarea {
+		min-height: 5rem;
+		resize: vertical;
+	}
+
+	.loading-state {
+		display: grid;
+		min-height: 18rem;
+		place-items: center;
+	}
+
+	.loading-spinner {
+		width: 2rem;
+		height: 2rem;
+		border: 2px solid rgb(168 85 247 / 0.22);
+		border-top-color: #a855f7;
+		border-radius: 999px;
+		animation: cohorts-spin 780ms linear infinite;
+	}
+
+	.loading-spinner--lg {
+		width: 3rem;
+		height: 3rem;
+	}
+
+	.state-card,
+	.retention-card,
+	.matrix-panel,
+	.details-panel,
+	.cohort-modal {
+		border: 1px solid rgb(255 255 255 / 0.1);
+		background: rgb(255 255 255 / 0.05);
+		box-shadow: 0 24px 80px rgb(2 6 23 / 0.24);
+		backdrop-filter: blur(24px);
+	}
+
+	.state-card {
+		display: grid;
+		justify-items: center;
+		gap: 0.75rem;
+		border-radius: 1rem;
+		padding: 4rem 1.5rem;
+		text-align: center;
+	}
+
+	.state-card--error {
+		border-color: rgb(239 68 68 / 0.25);
+		background: rgb(127 29 29 / 0.18);
+	}
+
+	.state-card__icon {
+		display: inline-grid;
+		width: 4rem;
+		height: 4rem;
+		place-items: center;
+		border-radius: 999px;
+		color: #f87171;
+		background: rgb(239 68 68 / 0.12);
+	}
+
+	.state-card__icon--purple {
+		color: #c084fc;
+		background: rgb(168 85 247 / 0.12);
+	}
+
+	.state-card h3 {
+		margin: 0;
+		font-size: 1.25rem;
+	}
+
+	.state-card p {
+		margin: 0;
+		max-width: 34rem;
+		color: #94a3b8;
+	}
+
+	.state-card__button {
+		margin-top: 0.5rem;
+		color: white;
+	}
+
+	.state-card__button--primary {
+		background: linear-gradient(135deg, #a855f7, #db2777);
+		box-shadow: 0 16px 36px rgb(168 85 247 / 0.24);
+	}
+
+	.state-card__button--error {
+		background: linear-gradient(135deg, #dc2626, #f97316);
+		box-shadow: 0 16px 36px rgb(220 38 38 / 0.24);
+	}
+
+	.cohort-selector {
+		display: flex;
+		gap: 0.5rem;
+		overflow-x: auto;
+		margin-bottom: 2rem;
+		padding-bottom: 0.5rem;
+	}
+
+	.cohort-tab {
+		flex: 0 0 auto;
+		border: 1px solid rgb(255 255 255 / 0.1);
+		background: rgb(255 255 255 / 0.05);
+		color: #94a3b8;
+		white-space: nowrap;
+	}
+
+	.cohort-tab.is-active {
+		border-color: transparent;
+		background: linear-gradient(135deg, #a855f7, #db2777);
+		color: white;
+		box-shadow: 0 16px 36px rgb(168 85 247 / 0.24);
+	}
+
+	.retention-grid {
+		display: grid;
+		grid-template-columns: repeat(1, minmax(0, 1fr));
+		gap: 1rem;
+		margin-bottom: 2rem;
+	}
+
+	.retention-card {
+		border-radius: 1rem;
+		padding: 1.5rem;
+	}
+
+	.retention-card__label {
+		margin-bottom: 0.5rem;
+		color: #94a3b8;
+		font-size: 0.875rem;
+	}
+
+	.retention-card__value {
+		color: white;
+		font-size: 1.875rem;
+		font-weight: 700;
+		line-height: 1;
+	}
+
+	.retention-card__value[data-tone='purple'] {
+		color: #c084fc;
+	}
+
+	.retention-card__value[data-tone='pink'] {
+		color: #f472b6;
+	}
+
+	.matrix-panel,
+	.details-panel {
+		overflow: hidden;
+		border-radius: 1rem;
+		margin-bottom: 2rem;
+	}
+
+	.details-panel {
+		padding: 1.5rem;
+	}
+
+	.details-panel h2 {
+		margin: 0 0 1rem;
+		font-size: 1.125rem;
+		font-weight: 700;
+	}
+
+	.details-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 1.5rem;
+	}
+
+	.detail-item__label {
+		margin-bottom: 0.25rem;
+		color: #64748b;
+		font-size: 0.75rem;
+		font-weight: 700;
+		text-transform: uppercase;
+	}
+
+	.detail-item__value {
+		color: white;
+		font-size: 0.875rem;
+		text-transform: capitalize;
+	}
+
+	.detail-description {
+		margin-top: 1rem;
+		border-top: 1px solid rgb(255 255 255 / 0.1);
+		padding-top: 1rem;
+	}
+
+	.detail-description p {
+		margin: 0;
+		color: #cbd5e1;
+		font-size: 0.875rem;
+	}
+
+	.cohort-modal-backdrop {
+		position: fixed;
+		inset: 0;
+		z-index: 50;
+		display: grid;
+		place-items: center;
+		padding: 1rem;
+		background: rgb(2 6 23 / 0.72);
+		backdrop-filter: blur(8px);
+	}
+
+	.cohort-modal {
+		width: min(100%, 32rem);
+		max-height: 90vh;
+		overflow: hidden;
+		border-radius: 1rem;
+	}
+
+	.cohort-modal__header,
+	.cohort-modal__footer {
+		padding: 1.5rem;
+	}
+
+	.cohort-modal__header {
+		border-bottom: 1px solid rgb(255 255 255 / 0.1);
+	}
+
+	.cohort-modal__title-row {
+		justify-content: space-between;
+		gap: 1rem;
+	}
+
+	.cohort-modal h2 {
+		margin: 0;
+		font-size: 1.25rem;
+		font-weight: 700;
+	}
+
+	.cohort-modal__close {
+		display: inline-grid;
+		width: 2.25rem;
+		height: 2.25rem;
+		place-items: center;
+		border-radius: 0.625rem;
+		background: rgb(255 255 255 / 0.05);
+		color: #94a3b8;
+		transition:
+			background 180ms ease,
+			color 180ms ease;
+	}
+
+	.cohort-modal__close:hover {
+		background: rgb(255 255 255 / 0.1);
+		color: white;
+	}
+
+	.cohort-modal__body {
+		display: grid;
+		max-height: calc(90vh - 9rem);
+		gap: 1rem;
+		overflow-y: auto;
+		padding: 1.5rem;
+	}
+
+	.form-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 1rem;
+	}
+
+	.cohort-modal__footer {
+		justify-content: flex-end;
+		gap: 0.75rem;
+		border-top: 1px solid rgb(255 255 255 / 0.1);
+	}
+
+	@media (min-width: 768px) {
+		.cohorts-page__container {
+			padding: 2rem;
+		}
+
+		.retention-grid {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
+
+		.details-grid {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+		}
+	}
+
+	@media (max-width: 760px) {
+		.cohorts-header,
+		.cohorts-header__actions,
+		.cohort-modal__footer {
+			align-items: stretch;
+			flex-direction: column;
+		}
+
+		.cohorts-header {
+			align-items: flex-start;
+		}
+
+		.cohorts-header__actions,
+		.cohorts-header__actions :global(.period-selector),
+		.granularity-field,
+		.primary-action,
+		.secondary-action,
+		.state-card__button {
+			width: 100%;
+		}
+
+		.form-grid,
+		.details-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.loading-spinner {
+			animation: none;
+		}
+
+		.primary-action,
+		.secondary-action,
+		.state-card__button,
+		.cohort-tab,
+		.cohort-modal__close {
+			transition: none;
+		}
+
+		.primary-action:hover:not(:disabled),
+		.state-card__button:hover,
+		.cohort-tab:hover {
+			transform: none;
+		}
+	}
+
+	@keyframes cohorts-spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+</style>

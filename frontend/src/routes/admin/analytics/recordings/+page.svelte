@@ -192,20 +192,18 @@
 	<title>Session Recordings | Analytics</title>
 </svelte:head>
 
-<div class="bg-linear-to-br from-slate-950 via-slate-900 to-slate-950">
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="recordings-page">
+	<div class="recordings-page__container">
 		<!-- Apple ICT7 Grade Header -->
-		<header class="flex items-center justify-between mb-8">
-			<div class="flex items-center gap-4">
-				<div
-					class="w-12 h-12 rounded-2xl bg-linear-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-2xl shadow-lg shadow-indigo-500/20"
-				>
+		<header class="recordings-header">
+			<div class="recordings-header__title-group">
+				<div class="recordings-header__icon">
 					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: player-play -->
 					<IconPlayerPlay size={24} aria-hidden="true" />
 				</div>
 				<div>
-					<h1 class="text-2xl font-bold text-white tracking-tight">Session Recordings</h1>
-					<p class="text-sm text-slate-400">Watch how users interact with your site</p>
+					<h1>Session Recordings</h1>
+					<p>Watch how users interact with your site</p>
 				</div>
 			</div>
 			{#if isAnalyticsConnected}
@@ -215,48 +213,40 @@
 
 		<!-- Connection Check -->
 		{#if connectionLoading}
-			<div class="flex items-center justify-center py-20">
-				<div class="relative">
-					<div class="w-12 h-12 border-4 border-indigo-500/20 rounded-full"></div>
-					<div
-						class="absolute top-0 left-0 w-12 h-12 border-4 border-indigo-500 rounded-full animate-spin border-t-transparent"
-					></div>
-				</div>
+			<div class="loading-state">
+				<div class="loading-spinner loading-spinner--lg"></div>
 			</div>
 		{:else if !isAnalyticsConnected}
 			<ServiceConnectionStatus feature="analytics" variant="card" showFeatures={true} />
 		{:else}
 			<!-- Stats Grid -->
-			<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-				<div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-5">
-					<div class="text-3xl font-bold text-white mb-1">{stats.total}</div>
-					<div class="text-sm text-slate-400">Total Recordings</div>
+			<div class="recordings-stats">
+				<div class="recordings-stat">
+					<div class="recordings-stat__value">{stats.total}</div>
+					<div class="recordings-stat__label">Total Recordings</div>
 				</div>
-				<div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-5">
-					<div class="text-3xl font-bold text-indigo-400 mb-1">
+				<div class="recordings-stat">
+					<div class="recordings-stat__value" data-tone="indigo">
 						{formatDuration(stats.avgDuration)}
 					</div>
-					<div class="text-sm text-slate-400">Avg Duration</div>
+					<div class="recordings-stat__label">Avg Duration</div>
 				</div>
-				<div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-5">
-					<div class="text-3xl font-bold text-red-400 mb-1">{stats.withErrors}</div>
-					<div class="text-sm text-slate-400">With Errors</div>
+				<div class="recordings-stat">
+					<div class="recordings-stat__value" data-tone="red">{stats.withErrors}</div>
+					<div class="recordings-stat__label">With Errors</div>
 				</div>
-				<div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-5">
-					<div class="text-3xl font-bold text-amber-400 mb-1">{stats.rageClicks}</div>
-					<div class="text-sm text-slate-400">Rage Clicks</div>
+				<div class="recordings-stat">
+					<div class="recordings-stat__value" data-tone="amber">{stats.rageClicks}</div>
+					<div class="recordings-stat__label">Rage Clicks</div>
 				</div>
 			</div>
 
 			<!-- Filters -->
-			<div class="flex items-center gap-2 mb-6">
+			<div class="recordings-filters">
 				{#each [{ value: 'all', label: 'All Sessions' }, { value: 'with_errors', label: 'With Errors' }, { value: 'rage_clicks', label: 'Rage Clicks' }, { value: 'long', label: 'Long Sessions' }] as filter (filter.value)}
 					<button
 						onclick={() => handleFilterChange(filter.value as typeof activeFilter)}
-						class="px-4 py-2 rounded-xl text-sm font-medium transition-all
-							{activeFilter === filter.value
-							? 'bg-white text-slate-900'
-							: 'bg-white/5 border border-white/10 text-slate-400 hover:bg-white/10 hover:text-white'}"
+						class={{ 'recordings-filter': true, 'is-active': activeFilter === filter.value }}
 					>
 						{filter.label}
 					</button>
@@ -264,112 +254,68 @@
 			</div>
 
 			{#if loading}
-				<div class="flex items-center justify-center py-20">
-					<div class="relative">
-						<div class="w-10 h-10 border-4 border-indigo-500/20 rounded-full"></div>
-						<div
-							class="absolute top-0 left-0 w-10 h-10 border-4 border-indigo-500 rounded-full animate-spin border-t-transparent"
-						></div>
-					</div>
+				<div class="loading-state">
+					<div class="loading-spinner"></div>
 				</div>
 			{:else if error}
-				<div
-					class="bg-red-500/10 backdrop-blur-xl border border-red-500/20 rounded-2xl p-8 text-center"
-				>
-					<div
-						class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-red-500/10 flex items-center justify-center"
-					>
+				<div class="state-card state-card--error">
+					<div class="state-card__icon">
 						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: alert-circle error -->
 						<IconAlertCircle size={32} aria-hidden="true" />
 					</div>
-					<p class="text-red-400 mb-4">{error}</p>
-					<button
-						onclick={loadRecordings}
-						class="px-5 py-2.5 bg-red-500/20 text-red-400 rounded-xl hover:bg-red-500/30 border border-red-500/30 transition-all"
-					>
+					<p>{error}</p>
+					<button onclick={loadRecordings} class="state-card__button state-card__button--error">
 						Retry
 					</button>
 				</div>
 			{:else if recordings.length === 0}
-				<div
-					class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-12 text-center"
-				>
-					<div
-						class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-indigo-500/10 flex items-center justify-center"
-					>
+				<div class="state-card">
+					<div class="state-card__icon state-card__icon--indigo">
 						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: player-play-circle (no recordings empty state) -->
 						<IconPlayerPlay size={32} aria-hidden="true" />
 					</div>
-					<h3 class="text-lg font-medium text-white mb-2">No Recordings Available</h3>
-					<p class="text-slate-400 mb-6">
-						Session recordings will appear once enabled and visitors interact with your site
-					</p>
-					<a
-						href="/admin/settings/tracking"
-						class="inline-block px-6 py-3 bg-linear-to-r from-indigo-500 to-blue-600 text-white rounded-xl hover:from-indigo-400 hover:to-blue-500 font-semibold shadow-lg shadow-indigo-500/25 transition-all"
-					>
+					<h3>No Recordings Available</h3>
+					<p>Session recordings will appear once enabled and visitors interact with your site</p>
+					<a href="/admin/settings/tracking" class="state-card__button state-card__button--primary">
 						Enable Recordings
 					</a>
 				</div>
 			{:else}
 				<!-- Recordings List -->
-				<div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden">
-					<div class="overflow-x-auto">
-						<table class="w-full text-sm">
-							<thead class="bg-slate-800/50">
+				<div class="recordings-table-card">
+					<div class="recordings-table-scroll">
+						<table class="recordings-table">
+							<thead>
 								<tr>
-									<th
-										class="text-left py-4 px-5 font-medium text-slate-400 uppercase text-xs tracking-wider"
-										>Session</th
-									>
-									<th
-										class="text-left py-4 px-5 font-medium text-slate-400 uppercase text-xs tracking-wider"
-										>User</th
-									>
-									<th
-										class="text-left py-4 px-5 font-medium text-slate-400 uppercase text-xs tracking-wider"
-										>Device</th
-									>
-									<th
-										class="text-left py-4 px-5 font-medium text-slate-400 uppercase text-xs tracking-wider"
-										>Duration</th
-									>
-									<th
-										class="text-left py-4 px-5 font-medium text-slate-400 uppercase text-xs tracking-wider"
-										>Pages</th
-									>
-									<th
-										class="text-left py-4 px-5 font-medium text-slate-400 uppercase text-xs tracking-wider"
-										>Flags</th
-									>
-									<th
-										class="text-right py-4 px-5 font-medium text-slate-400 uppercase text-xs tracking-wider"
-										>Date</th
-									>
-									<th
-										class="text-right py-4 px-5 font-medium text-slate-400 uppercase text-xs tracking-wider"
-									></th>
+									<th>Session</th>
+									<th>User</th>
+									<th>Device</th>
+									<th>Duration</th>
+									<th>Pages</th>
+									<th>Flags</th>
+									<th class="align-right">Date</th>
+									<th class="align-right"></th>
 								</tr>
 							</thead>
-							<tbody class="divide-y divide-white/5">
+							<tbody>
 								{#each recordings as recording (recording.session_id)}
-									<tr class="hover:bg-white/5 transition-colors">
-										<td class="py-4 px-5">
-											<span class="font-mono text-xs text-slate-400">
+									<tr>
+										<td>
+											<span class="recording-session">
 												{recording.session_id.slice(0, 8)}...
 											</span>
 										</td>
-										<td class="py-4 px-5">
+										<td>
 											{#if recording.user_email}
-												<span class="text-white">{recording.user_email}</span>
+												<span class="recording-user">{recording.user_email}</span>
 											{:else}
-												<span class="text-slate-500 italic">Anonymous</span>
+												<span class="recording-anonymous">Anonymous</span>
 											{/if}
 										</td>
-										<td class="py-4 px-5">
-											<div class="flex items-center gap-2">
+										<td>
+											<div class="recording-device">
 												<svg
-													class="w-4 h-4 text-slate-400"
+													class="recording-device__icon"
 													fill="none"
 													stroke="currentColor"
 													viewBox="0 0 24 24"
@@ -381,44 +327,33 @@
 														d={getDeviceIcon(recording.device_type)}
 													/>
 												</svg>
-												<span class="text-slate-400 capitalize">{recording.device_type}</span>
+												<span>{recording.device_type}</span>
 											</div>
 										</td>
-										<td class="py-4 px-5">
-											<span class="text-white font-medium"
-												>{formatDuration(recording.duration)}</span
-											>
+										<td>
+											<span class="recording-value">{formatDuration(recording.duration)}</span>
 										</td>
-										<td class="py-4 px-5">
-											<span class="text-slate-400">{recording.pages_viewed} pages</span>
+										<td>
+											<span class="recording-muted">{recording.pages_viewed} pages</span>
 										</td>
-										<td class="py-4 px-5">
-											<div class="flex items-center gap-2">
+										<td>
+											<div class="recording-flags">
 												{#if recording.has_errors}
-													<span
-														class="px-2 py-1 rounded-lg bg-red-500/20 text-red-400 text-xs font-medium"
-														>Error</span
-													>
+													<span class="flag-badge" data-tone="red">Error</span>
 												{/if}
 												{#if recording.has_rage_clicks}
-													<span
-														class="px-2 py-1 rounded-lg bg-amber-500/20 text-amber-400 text-xs font-medium"
-														>Rage</span
-													>
+													<span class="flag-badge" data-tone="amber">Rage</span>
 												{/if}
 												{#if !recording.has_errors && !recording.has_rage_clicks}
-													<span class="text-slate-500">-</span>
+													<span class="recording-empty-flag">-</span>
 												{/if}
 											</div>
 										</td>
-										<td class="py-4 px-5 text-right text-slate-400 whitespace-nowrap">
+										<td class="align-right recording-date">
 											{formatDate(recording.started_at)}
 										</td>
-										<td class="py-4 px-5 text-right">
-											<button
-												onclick={() => (selectedRecording = recording)}
-												class="px-3 py-1.5 bg-indigo-500/20 text-indigo-400 rounded-lg hover:bg-indigo-500/30 text-xs font-medium transition-all"
-											>
+										<td class="align-right">
+											<button onclick={() => (selectedRecording = recording)} class="play-button">
 												Play
 											</button>
 										</td>
@@ -430,18 +365,18 @@
 
 					<!-- Pagination -->
 					{#if totalPages > 1}
-						<div class="p-5 border-t border-white/10 flex items-center justify-between">
-							<p class="text-sm text-slate-400">
+						<div class="recordings-pagination">
+							<p>
 								Page {page} of {totalPages}
 							</p>
-							<div class="flex items-center gap-2">
+							<div class="recordings-pagination__controls">
 								<button
 									onclick={() => {
 										page = Math.max(1, page - 1);
 										loadRecordings();
 									}}
 									disabled={page === 1}
-									class="px-4 py-2 text-sm border border-white/10 rounded-xl hover:bg-white/5 text-slate-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+									class="pagination-button"
 								>
 									Previous
 								</button>
@@ -451,7 +386,7 @@
 										loadRecordings();
 									}}
 									disabled={page === totalPages}
-									class="px-4 py-2 text-sm border border-white/10 rounded-xl hover:bg-white/5 text-slate-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+									class="pagination-button"
 								>
 									Next
 								</button>
@@ -466,24 +401,27 @@
 
 <!-- Recording Player Modal -->
 {#if selectedRecording}
-	<div class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+	<div class="recording-modal-backdrop">
 		<div
-			class="bg-slate-900 rounded-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden border border-white/10 shadow-2xl"
+			class="recording-modal"
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="recording-modal-title"
 		>
-			<div class="p-5 border-b border-white/10 flex items-center justify-between">
-				<div class="flex items-center gap-4">
-					<div class="w-10 h-10 rounded-xl bg-indigo-500/20 flex items-center justify-center">
+			<div class="recording-modal__header">
+				<div class="recording-modal__title-group">
+					<div class="recording-modal__icon">
 						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: player-play (modal header) -->
 						<IconPlayerPlay size={20} aria-hidden="true" />
 					</div>
 					<div>
-						<h3 class="font-semibold text-white">Session Recording</h3>
-						<p class="text-xs text-slate-400">{selectedRecording.session_id}</p>
+						<h3 id="recording-modal-title">Session Recording</h3>
+						<p>{selectedRecording.session_id}</p>
 					</div>
 				</div>
 				<button
 					onclick={() => (selectedRecording = null)}
-					class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+					class="recording-modal__close"
 					aria-label="Close recording"
 				>
 					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: x (close) -->
@@ -492,38 +430,620 @@
 			</div>
 
 			<!-- Player Area -->
-			<div class="aspect-video bg-slate-800/50 flex items-center justify-center">
-				<div class="text-center">
-					<div
-						class="w-20 h-20 mx-auto mb-4 rounded-2xl bg-indigo-500/10 flex items-center justify-center"
-					>
+			<div class="recording-player">
+				<div class="recording-player__content">
+					<div class="recording-player__icon">
 						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: player-play-circle (player area) -->
 						<IconPlayerPlay size={40} aria-hidden="true" />
 					</div>
-					<p class="text-slate-400">Session recording player</p>
-					<p class="text-slate-500 text-sm mt-1">Requires session replay library integration</p>
+					<p>Session recording player</p>
+					<span>Requires session replay library integration</span>
 				</div>
 			</div>
 
 			<!-- Session Info -->
-			<div class="p-5 border-t border-white/10 grid grid-cols-4 gap-4 text-sm">
+			<div class="recording-modal__meta">
 				<div>
-					<span class="text-slate-500">Duration</span>
-					<p class="text-white font-medium">{formatDuration(selectedRecording.duration)}</p>
+					<span>Duration</span>
+					<p>{formatDuration(selectedRecording.duration)}</p>
 				</div>
 				<div>
-					<span class="text-slate-500">Pages</span>
-					<p class="text-white font-medium">{selectedRecording.pages_viewed} viewed</p>
+					<span>Pages</span>
+					<p>{selectedRecording.pages_viewed} viewed</p>
 				</div>
 				<div>
-					<span class="text-slate-500">Device</span>
-					<p class="text-white font-medium capitalize">{selectedRecording.device_type}</p>
+					<span>Device</span>
+					<p class="recording-modal__device">{selectedRecording.device_type}</p>
 				</div>
 				<div>
-					<span class="text-slate-500">Browser</span>
-					<p class="text-white font-medium">{selectedRecording.browser}</p>
+					<span>Browser</span>
+					<p>{selectedRecording.browser}</p>
 				</div>
 			</div>
 		</div>
 	</div>
 {/if}
+
+<style>
+	.recordings-page {
+		min-height: 100%;
+		background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #020617 100%);
+		color: #ffffff;
+	}
+
+	.recordings-page__container {
+		max-width: 80rem;
+		margin: 0 auto;
+		padding: 2rem 1rem;
+	}
+
+	.recordings-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 2rem;
+	}
+
+	.recordings-header__title-group,
+	.recording-modal__title-group,
+	.recording-device,
+	.recording-flags,
+	.recordings-pagination__controls {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.recordings-header__title-group {
+		gap: 1rem;
+	}
+
+	.recordings-header__icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 3rem;
+		height: 3rem;
+		border-radius: 1rem;
+		background: linear-gradient(135deg, #6366f1 0%, #2563eb 100%);
+		box-shadow: 0 10px 15px -3px rgb(99 102 241 / 0.2);
+	}
+
+	.recordings-header h1 {
+		margin: 0;
+		color: #ffffff;
+		font-size: 1.5rem;
+		font-weight: 700;
+		letter-spacing: 0;
+		line-height: 2rem;
+	}
+
+	.recordings-header p,
+	.recordings-stat__label,
+	.recording-muted,
+	.recording-date,
+	.recording-device,
+	.recording-session,
+	.recordings-pagination p,
+	.recording-modal__header p,
+	.recording-player p,
+	.recording-modal__meta span {
+		margin: 0;
+		color: #94a3b8;
+	}
+
+	.loading-state {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding-block: 5rem;
+	}
+
+	.loading-spinner {
+		width: 2.5rem;
+		height: 2.5rem;
+		border: 4px solid rgb(99 102 241 / 0.2);
+		border-top-color: #6366f1;
+		border-radius: 999px;
+		animation: spin 700ms linear infinite;
+	}
+
+	.loading-spinner--lg {
+		width: 3rem;
+		height: 3rem;
+	}
+
+	.recordings-stats {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1rem;
+		margin-bottom: 2rem;
+	}
+
+	.recordings-stat,
+	.state-card,
+	.recordings-table-card {
+		border: 1px solid rgb(255 255 255 / 0.1);
+		background: rgb(255 255 255 / 0.05);
+		backdrop-filter: blur(24px);
+	}
+
+	.recordings-stat {
+		border-radius: 1rem;
+		padding: 1.25rem;
+	}
+
+	.recordings-stat__value {
+		margin-bottom: 0.25rem;
+		color: #ffffff;
+		font-size: 1.875rem;
+		font-weight: 700;
+		line-height: 2.25rem;
+	}
+
+	.recordings-stat__value[data-tone='indigo'] {
+		color: #818cf8;
+	}
+
+	.recordings-stat__value[data-tone='red'] {
+		color: #f87171;
+	}
+
+	.recordings-stat__value[data-tone='amber'] {
+		color: #fbbf24;
+	}
+
+	.recordings-stat__label,
+	.recordings-pagination p {
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+	}
+
+	.recordings-filters {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.recordings-filter,
+	.pagination-button,
+	.play-button,
+	.state-card__button,
+	.recording-modal__close {
+		border: 0;
+		cursor: pointer;
+		font: inherit;
+		transition:
+			background 150ms ease,
+			border-color 150ms ease,
+			color 150ms ease,
+			opacity 150ms ease;
+	}
+
+	.recordings-filter {
+		border: 1px solid rgb(255 255 255 / 0.1);
+		border-radius: 0.75rem;
+		background: rgb(255 255 255 / 0.05);
+		color: #94a3b8;
+		font-size: 0.875rem;
+		font-weight: 500;
+		line-height: 1.25rem;
+		padding: 0.5rem 1rem;
+	}
+
+	.recordings-filter:hover {
+		background: rgb(255 255 255 / 0.1);
+		color: #ffffff;
+	}
+
+	.recordings-filter.is-active {
+		border-color: #ffffff;
+		background: #ffffff;
+		color: #0f172a;
+	}
+
+	.state-card {
+		border-radius: 1rem;
+		padding: 3rem;
+		text-align: center;
+	}
+
+	.state-card--error {
+		border-color: rgb(239 68 68 / 0.2);
+		background: rgb(239 68 68 / 0.1);
+	}
+
+	.state-card__icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 4rem;
+		height: 4rem;
+		border-radius: 1rem;
+		margin: 0 auto 1rem;
+		background: rgb(239 68 68 / 0.1);
+		color: #f87171;
+	}
+
+	.state-card__icon--indigo {
+		background: rgb(99 102 241 / 0.1);
+		color: #818cf8;
+	}
+
+	.state-card h3 {
+		margin: 0 0 0.5rem;
+		color: #ffffff;
+		font-size: 1.125rem;
+		font-weight: 500;
+		line-height: 1.75rem;
+	}
+
+	.state-card p {
+		margin: 0 0 1.5rem;
+		color: #94a3b8;
+	}
+
+	.state-card--error p {
+		color: #f87171;
+	}
+
+	.state-card__button {
+		display: inline-block;
+		border-radius: 0.75rem;
+		color: #ffffff;
+		font-weight: 600;
+		padding: 0.75rem 1.5rem;
+		text-decoration: none;
+	}
+
+	.state-card__button--primary {
+		background: linear-gradient(90deg, #6366f1 0%, #2563eb 100%);
+		box-shadow: 0 10px 15px -3px rgb(99 102 241 / 0.25);
+	}
+
+	.state-card__button--primary:hover {
+		background: linear-gradient(90deg, #818cf8 0%, #3b82f6 100%);
+	}
+
+	.state-card__button--error {
+		border: 1px solid rgb(239 68 68 / 0.3);
+		background: rgb(239 68 68 / 0.2);
+		color: #f87171;
+		padding: 0.625rem 1.25rem;
+	}
+
+	.state-card__button--error:hover {
+		background: rgb(239 68 68 / 0.3);
+	}
+
+	.recordings-table-card {
+		overflow: hidden;
+		border-radius: 1rem;
+	}
+
+	.recordings-table-scroll {
+		overflow-x: auto;
+	}
+
+	.recordings-table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+	}
+
+	.recordings-table thead {
+		background: rgb(30 41 59 / 0.5);
+	}
+
+	.recordings-table th,
+	.recordings-table td {
+		padding: 1rem 1.25rem;
+		text-align: left;
+		vertical-align: middle;
+	}
+
+	.recordings-table th {
+		color: #94a3b8;
+		font-size: 0.75rem;
+		font-weight: 500;
+		letter-spacing: 0.05em;
+		line-height: 1rem;
+		text-transform: uppercase;
+		white-space: nowrap;
+	}
+
+	.recordings-table tbody tr + tr {
+		border-top: 1px solid rgb(255 255 255 / 0.05);
+	}
+
+	.recordings-table tbody tr {
+		transition: background 150ms ease;
+	}
+
+	.recordings-table tbody tr:hover {
+		background: rgb(255 255 255 / 0.05);
+	}
+
+	.align-right {
+		text-align: right;
+	}
+
+	.recording-session {
+		font-family:
+			ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+		font-size: 0.75rem;
+		line-height: 1rem;
+	}
+
+	.recording-user,
+	.recording-value {
+		color: #ffffff;
+	}
+
+	.recording-value {
+		font-weight: 500;
+	}
+
+	.recording-anonymous {
+		color: #64748b;
+		font-style: italic;
+	}
+
+	.recording-device {
+		gap: 0.5rem;
+		text-transform: capitalize;
+	}
+
+	.recording-device__icon {
+		width: 1rem;
+		height: 1rem;
+		color: #94a3b8;
+	}
+
+	.recording-flags {
+		gap: 0.5rem;
+	}
+
+	.flag-badge {
+		border-radius: 0.5rem;
+		font-size: 0.75rem;
+		font-weight: 500;
+		line-height: 1rem;
+		padding: 0.25rem 0.5rem;
+	}
+
+	.flag-badge[data-tone='red'] {
+		background: rgb(239 68 68 / 0.2);
+		color: #f87171;
+	}
+
+	.flag-badge[data-tone='amber'] {
+		background: rgb(245 158 11 / 0.2);
+		color: #fbbf24;
+	}
+
+	.recording-empty-flag {
+		color: #64748b;
+	}
+
+	.recording-date {
+		white-space: nowrap;
+	}
+
+	.play-button {
+		border-radius: 0.5rem;
+		background: rgb(99 102 241 / 0.2);
+		color: #818cf8;
+		font-size: 0.75rem;
+		font-weight: 500;
+		line-height: 1rem;
+		padding: 0.375rem 0.75rem;
+	}
+
+	.play-button:hover {
+		background: rgb(99 102 241 / 0.3);
+	}
+
+	.recordings-pagination {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		border-top: 1px solid rgb(255 255 255 / 0.1);
+		padding: 1.25rem;
+	}
+
+	.recordings-pagination__controls {
+		gap: 0.5rem;
+	}
+
+	.pagination-button {
+		border: 1px solid rgb(255 255 255 / 0.1);
+		border-radius: 0.75rem;
+		background: transparent;
+		color: #cbd5e1;
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+		padding: 0.5rem 1rem;
+	}
+
+	.pagination-button:hover:not(:disabled) {
+		background: rgb(255 255 255 / 0.05);
+	}
+
+	.pagination-button:disabled {
+		cursor: not-allowed;
+		opacity: 0.5;
+	}
+
+	.recording-modal-backdrop {
+		position: fixed;
+		inset: 0;
+		z-index: 50;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: rgb(0 0 0 / 0.8);
+		backdrop-filter: blur(8px);
+		padding: 1rem;
+	}
+
+	.recording-modal {
+		width: 100%;
+		max-width: 64rem;
+		max-height: 90vh;
+		overflow: hidden;
+		border: 1px solid rgb(255 255 255 / 0.1);
+		border-radius: 1rem;
+		background: #0f172a;
+		box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.6);
+	}
+
+	.recording-modal__header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		border-bottom: 1px solid rgb(255 255 255 / 0.1);
+		padding: 1.25rem;
+	}
+
+	.recording-modal__title-group {
+		gap: 1rem;
+	}
+
+	.recording-modal__icon,
+	.recording-modal__close,
+	.recording-player__icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.recording-modal__icon {
+		width: 2.5rem;
+		height: 2.5rem;
+		border-radius: 0.75rem;
+		background: rgb(99 102 241 / 0.2);
+		color: #818cf8;
+	}
+
+	.recording-modal h3 {
+		margin: 0;
+		color: #ffffff;
+		font-size: 1rem;
+		font-weight: 600;
+		line-height: 1.5rem;
+	}
+
+	.recording-modal__header p {
+		font-size: 0.75rem;
+		line-height: 1rem;
+	}
+
+	.recording-modal__close {
+		width: 2rem;
+		height: 2rem;
+		border-radius: 0.5rem;
+		background: rgb(255 255 255 / 0.05);
+		color: #94a3b8;
+	}
+
+	.recording-modal__close:hover {
+		background: rgb(255 255 255 / 0.1);
+		color: #ffffff;
+	}
+
+	.recording-player {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		aspect-ratio: 16 / 9;
+		background: rgb(30 41 59 / 0.5);
+	}
+
+	.recording-player__content {
+		text-align: center;
+	}
+
+	.recording-player__icon {
+		width: 5rem;
+		height: 5rem;
+		border-radius: 1rem;
+		margin: 0 auto 1rem;
+		background: rgb(99 102 241 / 0.1);
+		color: #818cf8;
+	}
+
+	.recording-player span {
+		display: block;
+		margin-top: 0.25rem;
+		color: #64748b;
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+	}
+
+	.recording-modal__meta {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 1rem;
+		border-top: 1px solid rgb(255 255 255 / 0.1);
+		padding: 1.25rem;
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+	}
+
+	.recording-modal__meta p {
+		margin: 0;
+		color: #ffffff;
+		font-weight: 500;
+	}
+
+	.recording-modal__device {
+		text-transform: capitalize;
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	@media (min-width: 640px) {
+		.recordings-page__container {
+			padding-inline: 1.5rem;
+		}
+	}
+
+	@media (min-width: 768px) {
+		.recordings-stats {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+		}
+
+		.recording-modal__meta {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.recordings-page__container {
+			padding-inline: 2rem;
+		}
+	}
+
+	@media (max-width: 760px) {
+		.recordings-header,
+		.recordings-pagination {
+			align-items: flex-start;
+			flex-direction: column;
+		}
+
+		.recordings-header :global(.period-selector) {
+			width: 100%;
+		}
+	}
+</style>
