@@ -25,7 +25,7 @@
 	}: Props = $props();
 
 	let isDragging = $state(false);
-	let fileInput: HTMLInputElement;
+	let fileInput: HTMLInputElement | undefined;
 
 	// Local derived from getter
 	const uploads = $derived(uploadStore.uploads);
@@ -81,6 +81,16 @@
 		if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
 		return (bytes / 1024 / 1024).toFixed(1) + ' MB';
 	}
+
+	function captureFileInput(node: HTMLInputElement) {
+		fileInput = node;
+
+		return () => {
+			if (fileInput === node) {
+				fileInput = undefined;
+			}
+		};
+	}
 </script>
 
 <div class="upload-container">
@@ -93,8 +103,8 @@
 		ondrop={handleDrop}
 		role="button"
 		tabindex="0"
-		onclick={() => fileInput.click()}
-		onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && fileInput.click()}
+		onclick={() => fileInput?.click()}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && fileInput?.click()}
 	>
 		<IconUpload size={48} class="upload-icon" />
 		<h3 class="upload-title">Drop files here or click to browse</h3>
@@ -102,12 +112,12 @@
 			Supports images, videos, and documents up to {maxSize / 1024 / 1024}MB
 		</p>
 		<input
-			bind:this={fileInput}
 			type="file"
 			{accept}
 			{multiple}
 			onchange={handleFileSelect}
 			class="hidden"
+			{@attach captureFileInput}
 		/>
 	</div>
 
@@ -120,9 +130,9 @@
 					<div class="upload-item-info">
 						<div class="upload-item-icon">
 							{#if upload.status === 'complete'}
-								<IconCheck size={20} class="text-green-400" />
+								<IconCheck size={20} class="upload-status-icon upload-status-icon--success" />
 							{:else if upload.status === 'error'}
-								<IconAlertCircle size={20} class="text-red-400" />
+								<IconAlertCircle size={20} class="upload-status-icon upload-status-icon--error" />
 							{:else}
 								<div class="spinner-small"></div>
 							{/if}
@@ -161,8 +171,7 @@
 	{/if}
 </div>
 
-<style lang="postcss">
-	@reference "../../../app.css";
+<style>
 	.upload-container {
 		display: flex;
 		flex-direction: column;
@@ -170,34 +179,63 @@
 	}
 
 	.dropzone {
-		@apply border-2 border-dashed border-gray-600 rounded-xl p-12;
-		@apply flex flex-col items-center justify-center text-center;
-		@apply cursor-pointer transition-all;
-		@apply hover:border-yellow-500 hover:bg-gray-800/30;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 3rem;
+		border: 2px dashed #4b5563;
+		border-radius: 0.75rem;
+		cursor: pointer;
+		text-align: center;
+		transition:
+			background-color 0.2s ease,
+			border-color 0.2s ease;
+	}
+
+	.dropzone:hover {
+		border-color: #eab308;
+		background: rgba(31, 41, 55, 0.3);
 	}
 
 	.dropzone.dragging {
-		@apply border-yellow-500 bg-yellow-500/10;
+		border-color: #eab308;
+		background: rgba(234, 179, 8, 0.1);
 	}
 
 	.dropzone :global(.upload-icon) {
-		@apply text-gray-400 mb-4;
+		margin-bottom: 1rem;
+		color: #9ca3af;
 	}
 
 	.dropzone.dragging :global(.upload-icon) {
-		@apply text-yellow-400;
+		color: #facc15;
 	}
 
 	.upload-title {
-		@apply text-xl font-semibold text-white mb-2;
+		margin: 0 0 0.5rem;
+		font-size: 1.25rem;
+		line-height: 1.75rem;
+		font-weight: 600;
+		color: #ffffff;
 	}
 
 	.upload-subtitle {
-		@apply text-sm text-gray-400;
+		margin: 0;
+		font-size: 0.875rem;
+		color: #9ca3af;
 	}
 
 	.hidden {
-		@apply sr-only;
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
 	}
 
 	.upload-list {
@@ -208,66 +246,147 @@
 	}
 
 	.upload-list-title {
-		@apply text-sm font-semibold text-white mb-3;
+		margin: 0 0 0.75rem;
+		font-size: 0.875rem;
+		font-weight: 600;
+		color: #ffffff;
 	}
 
 	.upload-item {
-		@apply flex items-center gap-3 py-2 border-b border-gray-700/50 last:border-0;
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding-block: 0.5rem;
+		border-bottom: 1px solid rgba(55, 65, 81, 0.5);
+	}
+
+	.upload-item:last-child {
+		border-bottom: 0;
 	}
 
 	.upload-item-info {
-		@apply flex items-center gap-3 flex-1 min-w-0;
+		display: flex;
+		align-items: center;
+		flex: 1;
+		gap: 0.75rem;
+		min-width: 0;
 	}
 
 	.upload-item-icon {
-		@apply flex-shrink-0;
+		flex-shrink: 0;
+	}
+
+	.upload-item-icon :global(.upload-status-icon--success) {
+		color: #4ade80;
+	}
+
+	.upload-item-icon :global(.upload-status-icon--error) {
+		color: #f87171;
 	}
 
 	.upload-item-details {
-		@apply flex-1 min-w-0;
+		flex: 1;
+		min-width: 0;
 	}
 
 	.upload-item-name {
-		@apply text-sm text-white truncate;
+		overflow: hidden;
+		color: #ffffff;
+		font-size: 0.875rem;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	.upload-item-size {
-		@apply text-xs text-gray-400;
+		font-size: 0.75rem;
+		color: #9ca3af;
 	}
 
 	.upload-item-progress {
-		@apply flex items-center gap-2;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
 	}
 
 	.progress-bar {
-		@apply w-32 h-2 bg-gray-700 rounded-full overflow-hidden;
+		width: 8rem;
+		height: 0.5rem;
+		overflow: hidden;
+		border-radius: 999px;
+		background: #374151;
 	}
 
 	.progress-fill {
-		@apply h-full bg-yellow-500 transition-all duration-300;
+		height: 100%;
+		background: #eab308;
+		transition: width 0.3s ease;
 	}
 
 	.progress-text {
-		@apply text-xs text-gray-400 w-10 text-right;
+		width: 2.5rem;
+		color: #9ca3af;
+		font-size: 0.75rem;
+		text-align: right;
 	}
 
 	.status-text {
-		@apply text-xs font-medium;
+		font-size: 0.75rem;
+		font-weight: 500;
 	}
 
 	.status-text.success {
-		@apply text-green-400;
+		color: #4ade80;
 	}
 
 	.status-text.error {
-		@apply text-red-400;
+		color: #f87171;
 	}
 
 	.remove-btn {
-		@apply p-1 text-gray-400 hover:text-white transition-colors;
+		padding: 0.25rem;
+		border: 0;
+		background: transparent;
+		color: #9ca3af;
+		cursor: pointer;
+		transition: color 0.2s ease;
+	}
+
+	.remove-btn:hover {
+		color: #ffffff;
 	}
 
 	.spinner-small {
-		@apply w-5 h-5 border-2 border-gray-600 border-t-yellow-400 rounded-full animate-spin;
+		width: 1.25rem;
+		height: 1.25rem;
+		border: 2px solid #4b5563;
+		border-top-color: #facc15;
+		border-radius: 999px;
+		animation: upload-spin 1s linear infinite;
+	}
+
+	@media (max-width: 640px) {
+		.dropzone {
+			padding: 2rem 1rem;
+		}
+
+		.upload-item {
+			align-items: flex-start;
+			flex-direction: column;
+		}
+
+		.upload-item-progress {
+			width: 100%;
+		}
+
+		.progress-bar {
+			flex: 1;
+			width: auto;
+		}
+	}
+
+	@keyframes upload-spin {
+		to {
+			transform: rotate(360deg);
+		}
 	}
 </style>

@@ -160,15 +160,14 @@
 			</div>
 		{:else}
 			<div class="empty-state">
-				<IconFilter size={48} class="text-gray-600" />
-				<p class="text-gray-400 mt-3">No events found</p>
+				<IconFilter size={48} class="empty-icon" />
+				<p class="empty-copy">No events found</p>
 			</div>
 		{/if}
 	</div>
 </div>
 
-<style lang="postcss">
-	@reference "../../../app.css";
+<style>
 	.event-explorer {
 		background-color: rgba(30, 41, 59, 0.5);
 		border-radius: 0.75rem;
@@ -177,107 +176,253 @@
 	}
 
 	.explorer-header {
-		@apply flex items-center justify-between mb-6;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 1.5rem;
 	}
 
 	.explorer-title {
-		@apply text-2xl font-bold text-white;
+		margin: 0;
+		font-size: 1.5rem;
+		line-height: 2rem;
+		font-weight: 700;
+		color: #ffffff;
 	}
 
 	.btn-refresh {
-		@apply flex items-center gap-2 px-4 py-2 bg-gray-700 text-white rounded-lg;
-		@apply hover:bg-gray-600 transition-colors;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 1rem;
+		border: 0;
+		border-radius: 0.5rem;
+		background: #374151;
+		color: #ffffff;
+		font: inherit;
+		cursor: pointer;
+		transition: background-color 0.2s ease;
+	}
+
+	.btn-refresh:hover {
+		background: #4b5563;
 	}
 
 	.explorer-filters {
-		@apply flex gap-4 mb-6 flex-wrap;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1rem;
+		margin-bottom: 1.5rem;
 	}
 
 	.search-box {
-		@apply relative flex-1 min-w-[300px];
+		position: relative;
+		flex: 1;
+		min-width: 300px;
 	}
 
 	.search-box :global(.search-icon) {
-		@apply absolute left-3 top-1/2 -translate-y-1/2 text-gray-400;
+		position: absolute;
+		top: 50%;
+		left: 0.75rem;
+		color: #9ca3af;
+		transform: translateY(-50%);
 	}
 
 	.search-input {
-		@apply w-full pl-10 pr-4 py-2 bg-gray-700 text-white rounded-lg border border-gray-600;
-		@apply focus:outline-none focus:ring-2 focus:ring-yellow-500;
+		width: 100%;
+		padding: 0.5rem 1rem 0.5rem 2.5rem;
+		border: 1px solid #4b5563;
+		border-radius: 0.5rem;
+		background: #374151;
+		color: #ffffff;
+		font: inherit;
+	}
+
+	.search-input:focus,
+	.filter-select:focus {
+		outline: 2px solid #eab308;
+		outline-offset: 2px;
 	}
 
 	.filter-select {
-		@apply px-4 py-2 bg-gray-700 text-white rounded-lg border border-gray-600;
-		@apply focus:outline-none focus:ring-2 focus:ring-yellow-500;
+		padding: 0.5rem 1rem;
+		border: 1px solid #4b5563;
+		border-radius: 0.5rem;
+		background: #374151;
+		color: #ffffff;
+		font: inherit;
 	}
 
 	.btn-export {
-		@apply flex items-center gap-2 px-4 py-2 bg-yellow-500 text-gray-900 rounded-lg font-semibold;
-		@apply hover:bg-yellow-400 transition-colors;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 1rem;
+		border: 0;
+		border-radius: 0.5rem;
+		background: #eab308;
+		color: #111827;
+		font: inherit;
+		font-weight: 600;
+		cursor: pointer;
+		transition: background-color 0.2s ease;
+	}
+
+	.btn-export:hover {
+		background: #facc15;
 	}
 
 	.events-table-container {
-		@apply overflow-x-auto;
+		overflow-x: auto;
 	}
 
 	.events-table {
-		@apply w-full text-sm;
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 0.875rem;
 	}
 
 	.events-table thead {
-		@apply bg-gray-900/50;
+		background: rgba(17, 24, 39, 0.5);
 	}
 
 	.events-table th {
-		@apply px-4 py-3 text-left text-gray-400 font-semibold;
+		padding: 0.75rem 1rem;
+		color: #9ca3af;
+		font-weight: 600;
+		text-align: left;
 	}
 
 	.events-table tbody tr {
-		@apply border-b border-gray-700/50 hover:bg-gray-700/30 transition-colors;
+		border-bottom: 1px solid rgba(55, 65, 81, 0.5);
+		transition: background-color 0.2s ease;
+	}
+
+	.events-table tbody tr:hover {
+		background: rgba(55, 65, 81, 0.3);
 	}
 
 	.events-table td {
-		@apply px-4 py-3 text-gray-300;
+		padding: 0.75rem 1rem;
+		color: #d1d5db;
 	}
 
 	.event-name {
-		@apply font-semibold text-white;
+		color: #ffffff;
+		font-weight: 600;
 	}
 
 	.badge {
-		@apply px-2 py-1 bg-blue-500/20 text-blue-400 rounded text-xs font-medium;
+		padding: 0.25rem 0.5rem;
+		border-radius: 0.25rem;
+		background: rgba(59, 130, 246, 0.2);
+		color: #60a5fa;
+		font-size: 0.75rem;
+		font-weight: 500;
+		white-space: nowrap;
 	}
 
 	.page-path {
-		@apply text-xs text-gray-400 max-w-[200px] truncate;
+		max-width: 200px;
+		overflow: hidden;
+		color: #9ca3af;
+		font-size: 0.75rem;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	.timestamp {
-		@apply text-xs text-gray-500;
+		color: #6b7280;
+		font-size: 0.75rem;
+		white-space: nowrap;
 	}
 
 	.pagination {
-		@apply flex items-center justify-center gap-4 mt-6;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 1rem;
+		margin-top: 1.5rem;
 	}
 
 	.page-btn {
-		@apply px-4 py-2 bg-gray-700 text-white rounded-lg;
-		@apply hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+		padding: 0.5rem 1rem;
+		border: 0;
+		border-radius: 0.5rem;
+		background: #374151;
+		color: #ffffff;
+		font: inherit;
+		cursor: pointer;
+		transition:
+			background-color 0.2s ease,
+			opacity 0.2s ease;
+	}
+
+	.page-btn:hover:not(:disabled) {
+		background: #4b5563;
+	}
+
+	.page-btn:disabled {
+		cursor: not-allowed;
+		opacity: 0.5;
 	}
 
 	.page-info {
-		@apply text-gray-400;
+		color: #9ca3af;
 	}
 
 	.loading {
-		@apply flex flex-col items-center justify-center py-12;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding-block: 3rem;
+		color: #9ca3af;
 	}
 
 	.spinner {
-		@apply w-8 h-8 border-4 border-gray-700 border-t-yellow-400 rounded-full animate-spin;
+		width: 2rem;
+		height: 2rem;
+		border: 4px solid #374151;
+		border-top-color: #facc15;
+		border-radius: 999px;
+		animation: event-spin 1s linear infinite;
 	}
 
 	.empty-state {
-		@apply flex flex-col items-center justify-center py-12 text-center;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding-block: 3rem;
+		text-align: center;
+	}
+
+	.empty-state :global(.empty-icon) {
+		color: #4b5563;
+	}
+
+	.empty-copy {
+		margin: 0.75rem 0 0;
+		color: #9ca3af;
+	}
+
+	@media (max-width: 640px) {
+		.explorer-header {
+			align-items: flex-start;
+			flex-direction: column;
+		}
+
+		.search-box {
+			min-width: 100%;
+		}
+	}
+
+	@keyframes event-spin {
+		to {
+			transform: rotate(360deg);
+		}
 	}
 </style>

@@ -6,8 +6,6 @@
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
-
 	interface Cohort {
 		name: string;
 		color: string;
@@ -21,14 +19,7 @@
 
 	let { cohorts = [], height = 300 }: Props = $props();
 
-	let containerEl: HTMLDivElement;
 	let width = $state(600);
-
-	onMount(() => {
-		if (containerEl) {
-			width = containerEl.clientWidth;
-		}
-	});
 
 	const padding = { top: 20, right: 20, bottom: 40, left: 50 };
 	let chartWidth = $derived(width - padding.left - padding.right);
@@ -61,9 +52,24 @@
 		if (day === 90) return 'Month 3';
 		return `Day ${day}`;
 	}
+
+	function measureContainer(node: HTMLDivElement) {
+		const updateWidth = () => {
+			width = node.clientWidth;
+		};
+
+		updateWidth();
+
+		const observer = new ResizeObserver(updateWidth);
+		observer.observe(node);
+
+		return () => {
+			observer.disconnect();
+		};
+	}
 </script>
 
-<div class="retention-curve" bind:this={containerEl}>
+<div class="retention-curve" {@attach measureContainer}>
 	<div class="curve-header">
 		<h3 class="curve-title">Retention Curve</h3>
 		<div class="curve-legend">
@@ -162,8 +168,7 @@
 	</div>
 </div>
 
-<style lang="postcss">
-	@reference "../../../app.css";
+<style>
 	.retention-curve {
 		background-color: rgba(30, 41, 59, 0.5);
 		border-radius: 0.75rem;
@@ -172,70 +177,114 @@
 	}
 
 	.curve-header {
-		@apply flex items-center justify-between mb-6;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 1.5rem;
 	}
 
 	.curve-title {
-		@apply text-xl font-bold text-white;
+		margin: 0;
+		font-size: 1.25rem;
+		line-height: 1.75rem;
+		font-weight: 700;
+		color: #ffffff;
 	}
 
 	.curve-legend {
-		@apply flex items-center gap-4;
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		flex-wrap: wrap;
 	}
 
 	.legend-item {
-		@apply flex items-center gap-2;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
 	}
 
 	.legend-color {
-		@apply w-3 h-3 rounded-full;
+		width: 0.75rem;
+		height: 0.75rem;
+		border-radius: 999px;
 	}
 
 	.legend-label {
-		@apply text-sm text-gray-400;
+		font-size: 0.875rem;
+		color: #9ca3af;
 	}
 
 	.curve-chart {
-		@apply mb-4;
+		margin-bottom: 1rem;
 	}
 
 	.axis-label {
-		@apply text-xs fill-gray-400;
+		fill: #9ca3af;
+		font-size: 0.75rem;
 	}
 
 	.retention-line {
-		@apply transition-all;
+		transition: stroke-width 0.2s ease;
 	}
 
 	.retention-line:hover {
-		@apply stroke-[4];
+		stroke-width: 4;
 	}
 
 	.data-point {
-		@apply cursor-pointer transition-all;
+		cursor: pointer;
+		transition: transform 0.2s ease;
+		transform-origin: center;
 	}
 
 	.data-point:hover {
-		@apply scale-125;
+		transform: scale(1.25);
 	}
 
 	.curve-insights {
-		@apply grid grid-cols-1 md:grid-cols-2 gap-3;
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 0.75rem;
 	}
 
 	.insight-item {
-		@apply bg-gray-900/50 rounded-lg p-3 border border-gray-700/50;
+		padding: 0.75rem;
+		border: 1px solid rgba(55, 65, 81, 0.5);
+		border-radius: 0.5rem;
+		background: rgba(17, 24, 39, 0.5);
 	}
 
 	.insight-cohort {
-		@apply font-semibold text-white mb-2 pl-3 border-l-4;
+		margin-bottom: 0.5rem;
+		padding-left: 0.75rem;
+		border-left: 4px solid;
+		color: #ffffff;
+		font-weight: 600;
 	}
 
 	.insight-metrics {
-		@apply flex gap-4 text-sm text-gray-400;
+		display: flex;
+		gap: 1rem;
+		color: #9ca3af;
+		font-size: 0.875rem;
 	}
 
 	.metric {
-		@apply font-medium;
+		font-weight: 500;
+	}
+
+	@media (min-width: 768px) {
+		.curve-insights {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (max-width: 640px) {
+		.curve-header {
+			align-items: flex-start;
+			flex-direction: column;
+		}
 	}
 </style>
