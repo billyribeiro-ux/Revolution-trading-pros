@@ -53,10 +53,10 @@
 	<!-- Header -->
 	<div class="dashboard-header">
 		<div class="header-title">
-			<IconMail size={32} class="text-yellow-400" />
+			<IconMail size={32} class="email-header-icon" />
 			<div>
-				<h1 class="text-3xl font-bold text-white">Email Marketing</h1>
-				<p class="text-gray-400 mt-1">Campaigns, sequences, and automation</p>
+				<h1 class="email-title">Email Marketing</h1>
+				<p class="email-subtitle">Campaigns, sequences, and automation</p>
 			</div>
 		</div>
 
@@ -76,8 +76,8 @@
 	{#if emailStore.analytics}
 		<div class="stats-grid">
 			<div class="stat-card">
-				<div class="stat-icon bg-blue-500/20">
-					<IconSend size={24} class="text-blue-400" />
+				<div class="stat-icon stat-icon--blue">
+					<IconSend size={24} />
 				</div>
 				<div class="stat-content">
 					<div class="stat-label">Emails Sent</div>
@@ -87,8 +87,8 @@
 			</div>
 
 			<div class="stat-card">
-				<div class="stat-icon bg-green-500/20">
-					<IconChartBar size={24} class="text-green-400" />
+				<div class="stat-icon stat-icon--green">
+					<IconChartBar size={24} />
 				</div>
 				<div class="stat-content">
 					<div class="stat-label">Avg Open Rate</div>
@@ -98,8 +98,8 @@
 			</div>
 
 			<div class="stat-card">
-				<div class="stat-icon bg-purple-500/20">
-					<IconUsers size={24} class="text-purple-400" />
+				<div class="stat-icon stat-icon--purple">
+					<IconUsers size={24} />
 				</div>
 				<div class="stat-content">
 					<div class="stat-label">Avg Click Rate</div>
@@ -109,8 +109,8 @@
 			</div>
 
 			<div class="stat-card">
-				<div class="stat-icon bg-yellow-500/20">
-					<IconRocket size={24} class="text-yellow-400" />
+				<div class="stat-icon stat-icon--yellow">
+					<IconRocket size={24} />
 				</div>
 				<div class="stat-content">
 					<div class="stat-label">Active Campaigns</div>
@@ -170,12 +170,12 @@
 		{#if getIsEmailLoading()}
 			<div class="loading-state">
 				<div class="spinner"></div>
-				<p class="text-gray-400 mt-4">Loading...</p>
+				<p class="state-text state-text--spaced">Loading...</p>
 			</div>
 		{:else if selectedTab === 'campaigns'}
 			<div class="campaigns-list">
 				<div class="list-header">
-					<h2 class="text-xl font-bold text-white">Email Campaigns</h2>
+					<h2 class="section-heading">Email Campaigns</h2>
 					<button class="btn-primary">
 						<IconPlus size={18} />
 						Create Campaign
@@ -223,10 +223,10 @@
 					</div>
 				{:else}
 					<div class="empty-state">
-						<IconMail size={64} class="text-gray-600" />
-						<h3 class="text-xl font-semibold text-gray-400 mt-4">No campaigns yet</h3>
-						<p class="text-gray-500 mt-2">Create your first email campaign to get started</p>
-						<button class="btn-primary mt-4">
+						<IconMail size={64} class="empty-icon" />
+						<h3 class="empty-title">No campaigns yet</h3>
+						<p class="empty-copy">Create your first email campaign to get started</p>
+						<button class="btn-primary empty-action">
 							<IconPlus size={18} />
 							Create Campaign
 						</button>
@@ -236,7 +236,7 @@
 		{:else if selectedTab === 'sequences'}
 			<div class="sequences-list">
 				<div class="list-header">
-					<h2 class="text-xl font-bold text-white">Email Sequences</h2>
+					<h2 class="section-heading">Email Sequences</h2>
 					<button class="btn-primary">
 						<IconPlus size={18} />
 						Create Sequence
@@ -276,10 +276,10 @@
 					</div>
 				{:else}
 					<div class="empty-state">
-						<IconBolt size={64} class="text-gray-600" />
-						<h3 class="text-xl font-semibold text-gray-400 mt-4">No sequences yet</h3>
-						<p class="text-gray-500 mt-2">Create automated email sequences</p>
-						<button class="btn-primary mt-4">
+						<IconBolt size={64} class="empty-icon" />
+						<h3 class="empty-title">No sequences yet</h3>
+						<p class="empty-copy">Create automated email sequences</p>
+						<button class="btn-primary empty-action">
 							<IconPlus size={18} />
 							Create Sequence
 						</button>
@@ -289,7 +289,7 @@
 		{:else if selectedTab === 'templates'}
 			<div class="templates-list">
 				<div class="list-header">
-					<h2 class="text-xl font-bold text-white">Email Templates</h2>
+					<h2 class="section-heading">Email Templates</h2>
 					<button class="btn-primary">
 						<IconPlus size={18} />
 						Create Template
@@ -311,7 +311,7 @@
 									/>
 								{:else}
 									<div class="template-placeholder">
-										<IconFileText size={48} class="text-gray-600" />
+										<IconFileText size={48} class="placeholder-icon" />
 									</div>
 								{/if}
 
@@ -330,10 +330,10 @@
 					</div>
 				{:else}
 					<div class="empty-state">
-						<IconFileText size={64} class="text-gray-600" />
-						<h3 class="text-xl font-semibold text-gray-400 mt-4">No templates yet</h3>
-						<p class="text-gray-500 mt-2">Create reusable email templates</p>
-						<button class="btn-primary mt-4">
+						<IconFileText size={64} class="empty-icon" />
+						<h3 class="empty-title">No templates yet</h3>
+						<p class="empty-copy">Create reusable email templates</p>
+						<button class="btn-primary empty-action">
 							<IconPlus size={18} />
 							Create Template
 						</button>
@@ -342,207 +342,509 @@
 			</div>
 		{:else}
 			<div class="analytics-view">
-				<h2 class="text-xl font-bold text-white mb-6">Email Analytics</h2>
-				<p class="text-gray-400">Detailed analytics coming soon...</p>
+				<h2 class="section-heading analytics-heading">Email Analytics</h2>
+				<p class="analytics-copy">Detailed analytics coming soon...</p>
 			</div>
 		{/if}
 	</div>
 </div>
 
-<style lang="postcss">
-	@reference "../../app.css";
+<style>
 	.email-dashboard {
 		background: linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a);
 		padding: 1.5rem;
+		min-height: 100%;
 	}
 
 	.dashboard-header {
-		@apply flex items-center justify-between mb-8;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 2rem;
 	}
 
 	.header-title {
-		@apply flex items-center gap-4;
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.header-title :global(.email-header-icon) {
+		color: #facc15;
+	}
+
+	.email-title {
+		margin: 0;
+		font-size: 1.875rem;
+		line-height: 2.25rem;
+		font-weight: 700;
+		color: #ffffff;
+	}
+
+	.email-subtitle {
+		margin: 0.25rem 0 0;
+		color: #9ca3af;
 	}
 
 	.header-actions {
-		@apply flex items-center gap-3;
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
 	}
 
 	.btn-primary {
-		@apply flex items-center gap-2 px-6 py-3 bg-yellow-500 text-gray-900 font-semibold rounded-lg;
-		@apply hover:bg-yellow-400 transition-colors;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		padding: 0.75rem 1.5rem;
+		border: 0;
+		border-radius: 0.5rem;
+		background: #eab308;
+		color: #111827;
+		font: inherit;
+		font-weight: 600;
+		cursor: pointer;
+		transition: background-color 0.2s ease;
+	}
+
+	.btn-primary:hover {
+		background: #facc15;
 	}
 
 	.btn-secondary {
-		@apply flex items-center gap-2 px-6 py-3 bg-gray-700 text-white font-semibold rounded-lg;
-		@apply hover:bg-gray-600 transition-colors;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		padding: 0.75rem 1.5rem;
+		border: 0;
+		border-radius: 0.5rem;
+		background: #374151;
+		color: #ffffff;
+		font: inherit;
+		font-weight: 600;
+		cursor: pointer;
+		transition: background-color 0.2s ease;
+	}
+
+	.btn-secondary:hover {
+		background: #4b5563;
 	}
 
 	.stats-grid {
-		@apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8;
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1.5rem;
+		margin-bottom: 2rem;
 	}
 
 	.stat-card {
-		@apply bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 flex items-start gap-4;
+		display: flex;
+		align-items: flex-start;
+		gap: 1rem;
+		padding: 1.5rem;
+		border: 1px solid rgba(55, 65, 81, 0.5);
+		border-radius: 0.75rem;
+		background: rgba(31, 41, 55, 0.5);
 	}
 
 	.stat-icon {
-		@apply w-12 h-12 rounded-lg flex items-center justify-center shrink-0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		width: 3rem;
+		height: 3rem;
+		border-radius: 0.5rem;
+	}
+
+	.stat-icon--blue {
+		background: rgba(59, 130, 246, 0.2);
+		color: #60a5fa;
+	}
+
+	.stat-icon--green {
+		background: rgba(34, 197, 94, 0.2);
+		color: #4ade80;
+	}
+
+	.stat-icon--purple {
+		background: rgba(168, 85, 247, 0.2);
+		color: #c084fc;
+	}
+
+	.stat-icon--yellow {
+		background: rgba(234, 179, 8, 0.2);
+		color: #facc15;
 	}
 
 	.stat-content {
-		@apply flex-1;
+		flex: 1;
 	}
 
 	.stat-label {
-		@apply text-sm text-gray-400;
+		font-size: 0.875rem;
+		color: #9ca3af;
 	}
 
 	.stat-value {
-		@apply text-2xl font-bold text-white mt-1;
+		margin-top: 0.25rem;
+		font-size: 1.5rem;
+		line-height: 2rem;
+		font-weight: 700;
+		color: #ffffff;
 	}
 
 	.stat-change {
-		@apply text-sm mt-1;
+		margin-top: 0.25rem;
+		font-size: 0.875rem;
+		color: #9ca3af;
 	}
 
 	.stat-change.positive {
-		@apply text-green-400;
+		color: #4ade80;
 	}
 
 	.tabs {
-		@apply flex gap-2 mb-6 bg-gray-800/50 p-2 rounded-xl border border-gray-700/50;
+		display: flex;
+		gap: 0.5rem;
+		margin-bottom: 1.5rem;
+		padding: 0.5rem;
+		border: 1px solid rgba(55, 65, 81, 0.5);
+		border-radius: 0.75rem;
+		background: rgba(31, 41, 55, 0.5);
+		overflow-x: auto;
 	}
 
 	.tab {
-		@apply flex items-center gap-2 px-4 py-2 text-gray-400 rounded-lg transition-colors;
-		@apply hover:text-white hover:bg-gray-700/50;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 1rem;
+		border: 0;
+		border-radius: 0.5rem;
+		background: transparent;
+		color: #9ca3af;
+		font: inherit;
+		cursor: pointer;
+		transition:
+			background-color 0.2s ease,
+			color 0.2s ease;
+		white-space: nowrap;
+	}
+
+	.tab:hover {
+		background: rgba(55, 65, 81, 0.5);
+		color: #ffffff;
 	}
 
 	.tab.active {
-		@apply bg-yellow-500 text-gray-900 font-semibold;
+		background: #eab308;
+		color: #111827;
+		font-weight: 600;
 	}
 
 	.tab-content {
-		@apply bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 min-h-[500px];
+		min-height: 500px;
+		padding: 1.5rem;
+		border: 1px solid rgba(55, 65, 81, 0.5);
+		border-radius: 0.75rem;
+		background: rgba(31, 41, 55, 0.5);
 	}
 
 	.list-header {
-		@apply flex items-center justify-between mb-6;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.section-heading {
+		margin: 0;
+		font-size: 1.25rem;
+		line-height: 1.75rem;
+		font-weight: 700;
+		color: #ffffff;
 	}
 
 	.campaigns-grid,
 	.sequences-grid,
 	.templates-grid {
-		@apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1.5rem;
 	}
 
 	.campaign-card,
 	.sequence-card,
 	.template-card {
-		@apply bg-gray-900/50 rounded-lg p-6 border border-gray-700/50;
-		@apply hover:border-yellow-500/50 transition-colors;
+		padding: 1.5rem;
+		border: 1px solid rgba(55, 65, 81, 0.5);
+		border-radius: 0.5rem;
+		background: rgba(17, 24, 39, 0.5);
+		transition: border-color 0.2s ease;
+	}
+
+	.campaign-card:hover,
+	.sequence-card:hover,
+	.template-card:hover {
+		border-color: rgba(234, 179, 8, 0.5);
 	}
 
 	.campaign-header,
 	.sequence-header {
-		@apply flex items-center justify-between mb-4;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 1rem;
 	}
 
 	.campaign-status,
 	.sequence-status {
-		@apply px-3 py-1 bg-gray-700 text-gray-300 rounded-lg text-sm font-medium;
+		padding: 0.25rem 0.75rem;
+		border-radius: 0.5rem;
+		background: #374151;
+		color: #d1d5db;
+		font-size: 0.875rem;
+		font-weight: 500;
 	}
 
 	.campaign-status.active,
 	.sequence-status.active {
-		@apply bg-green-500/20 text-green-400;
+		background: rgba(34, 197, 94, 0.2);
+		color: #4ade80;
 	}
 
 	.campaign-type {
-		@apply text-sm text-gray-500;
+		font-size: 0.875rem;
+		color: #6b7280;
 	}
 
 	.campaign-name,
 	.sequence-name,
 	.template-name {
-		@apply text-lg font-semibold text-white mb-2;
+		margin: 0 0 0.5rem;
+		font-size: 1.125rem;
+		line-height: 1.75rem;
+		font-weight: 600;
+		color: #ffffff;
 	}
 
 	.campaign-subject,
 	.sequence-description {
-		@apply text-sm text-gray-400 mb-4;
+		margin: 0 0 1rem;
+		font-size: 0.875rem;
+		color: #9ca3af;
 	}
 
 	.campaign-stats {
-		@apply grid grid-cols-3 gap-4 mb-4 pb-4 border-b border-gray-700/50;
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 1rem;
+		margin-bottom: 1rem;
+		padding-bottom: 1rem;
+		border-bottom: 1px solid rgba(55, 65, 81, 0.5);
 	}
 
 	.stat-item {
-		@apply flex flex-col;
+		display: flex;
+		flex-direction: column;
 	}
 
 	.stat-item .stat-label {
-		@apply text-xs text-gray-500;
+		font-size: 0.75rem;
+		color: #6b7280;
 	}
 
 	.stat-item .stat-value {
-		@apply text-lg font-semibold text-white;
+		margin-top: 0;
+		font-size: 1.125rem;
+		line-height: 1.75rem;
+		font-weight: 600;
+		color: #ffffff;
 	}
 
 	.sequence-info {
-		@apply flex gap-4 mb-4;
+		display: flex;
+		gap: 1rem;
+		margin-bottom: 1rem;
 	}
 
 	.info-item {
-		@apply flex flex-col;
+		display: flex;
+		flex-direction: column;
 	}
 
 	.info-label {
-		@apply text-xs text-gray-500;
+		font-size: 0.75rem;
+		color: #6b7280;
 	}
 
 	.info-value {
-		@apply text-sm font-semibold text-white;
+		font-size: 0.875rem;
+		font-weight: 600;
+		color: #ffffff;
 	}
 
 	.campaign-actions,
 	.sequence-actions,
 	.template-actions {
-		@apply flex gap-2;
+		display: flex;
+		gap: 0.5rem;
+		flex-wrap: wrap;
 	}
 
 	.action-btn {
-		@apply px-4 py-2 text-sm text-gray-300 bg-gray-700/50 rounded;
-		@apply hover:bg-gray-600 transition-colors;
+		padding: 0.5rem 1rem;
+		border: 0;
+		border-radius: 0.25rem;
+		background: rgba(55, 65, 81, 0.5);
+		color: #d1d5db;
+		font: inherit;
+		font-size: 0.875rem;
+		cursor: pointer;
+		transition: background-color 0.2s ease;
+	}
+
+	.action-btn:hover {
+		background: #4b5563;
 	}
 
 	.template-thumbnail {
-		@apply w-full h-48 object-cover rounded-lg mb-4;
+		width: 100%;
+		height: 12rem;
+		margin-bottom: 1rem;
+		border-radius: 0.5rem;
+		object-fit: cover;
 	}
 
 	.template-placeholder {
-		@apply w-full h-48 bg-gray-900 rounded-lg mb-4 flex items-center justify-center;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		height: 12rem;
+		margin-bottom: 1rem;
+		border-radius: 0.5rem;
+		background: #111827;
+	}
+
+	.template-placeholder :global(.placeholder-icon) {
+		color: #4b5563;
 	}
 
 	.template-info {
-		@apply mb-4;
+		margin-bottom: 1rem;
 	}
 
 	.template-category {
-		@apply text-sm text-gray-500;
+		margin: 0;
+		font-size: 0.875rem;
+		color: #6b7280;
 	}
 
 	.template-usage {
-		@apply text-xs text-gray-600 mt-1;
+		margin-top: 0.25rem;
+		font-size: 0.75rem;
+		color: #4b5563;
 	}
 
 	.empty-state,
 	.loading-state {
-		@apply flex flex-col items-center justify-center py-20 text-center;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding-block: 5rem;
+		text-align: center;
+	}
+
+	.empty-state :global(.empty-icon) {
+		color: #4b5563;
+	}
+
+	.empty-title {
+		margin: 1rem 0 0;
+		font-size: 1.25rem;
+		line-height: 1.75rem;
+		font-weight: 600;
+		color: #9ca3af;
+	}
+
+	.empty-copy,
+	.analytics-copy,
+	.state-text {
+		margin: 0;
+		color: #9ca3af;
+	}
+
+	.empty-copy {
+		margin-top: 0.5rem;
+		color: #6b7280;
+	}
+
+	.empty-action {
+		margin-top: 1rem;
+	}
+
+	.analytics-heading {
+		margin-bottom: 1.5rem;
+	}
+
+	.state-text--spaced {
+		margin-top: 1rem;
 	}
 
 	.spinner {
-		@apply w-12 h-12 border-4 border-gray-700 border-t-yellow-400 rounded-full animate-spin;
+		width: 3rem;
+		height: 3rem;
+		border: 4px solid #374151;
+		border-top-color: #facc15;
+		border-radius: 999px;
+		animation: email-spin 1s linear infinite;
+	}
+
+	@media (min-width: 768px) {
+		.stats-grid,
+		.campaigns-grid,
+		.sequences-grid,
+		.templates-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.stats-grid {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+		}
+
+		.campaigns-grid,
+		.sequences-grid,
+		.templates-grid {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
+	}
+
+	@media (max-width: 767px) {
+		.dashboard-header,
+		.list-header {
+			align-items: flex-start;
+			flex-direction: column;
+		}
+
+		.header-actions {
+			width: 100%;
+			flex-wrap: wrap;
+		}
+	}
+
+	@keyframes email-spin {
+		to {
+			transform: rotate(360deg);
+		}
 	}
 </style>
