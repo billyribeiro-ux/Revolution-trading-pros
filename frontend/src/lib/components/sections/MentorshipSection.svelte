@@ -122,141 +122,137 @@
 
 	<div class="relative max-w-[1600px] mx-auto z-10">
 		<div class="max-w-3xl mb-24">
-			{#key isVisible}
-				{#if isVisible}
-					<div
-						in:heavySlide={{ delay: 0, duration: 1000 }}
-						class="inline-flex items-center gap-3 px-3 py-1 border border-amber-900/30 bg-amber-900/10 text-amber-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8"
-					>
-						<span class="relative flex h-2 w-2">
-							<span
-								class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-500 opacity-75"
-							></span>
-							<span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
-						</span>
-						System Architecture
-					</div>
+			{#if isVisible}
+				<div
+					in:heavySlide={{ delay: 0, duration: 1000 }}
+					class="inline-flex items-center gap-3 px-3 py-1 border border-amber-900/30 bg-amber-900/10 text-amber-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8"
+				>
+					<span class="relative flex h-2 w-2">
+						<span
+							class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-500 opacity-75"
+						></span>
+						<span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+					</span>
+					System Architecture
+				</div>
 
-					<h2
-						in:heavySlide={{ delay: 100, duration: 1000 }}
-						class="text-4xl md:text-6xl font-serif text-white mb-8 tracking-tight"
-					>
-						Core <span class="text-slate-700">Infrastructure.</span>
-					</h2>
+				<h2
+					in:heavySlide={{ delay: 100 }}
+					class="text-4xl md:text-6xl font-serif text-white mb-8 tracking-tight"
+				>
+					Core <span class="text-slate-700">Infrastructure.</span>
+				</h2>
 
-					<p
-						in:heavySlide={{ delay: 200, duration: 1000 }}
-						class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl border-l-2 border-white/10 pl-6"
-					>
-						We replaced marketing hype with financial engineering. Our ecosystem combines structured
-						execution frameworks with institutional data tools.
-					</p>
-				{/if}
-			{/key}
+				<p
+					in:heavySlide={{ delay: 200 }}
+					class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl border-l-2 border-white/10 pl-6"
+				>
+					We replaced marketing hype with financial engineering. Our ecosystem combines structured
+					execution frameworks with institutional data tools.
+				</p>
+			{/if}
 		</div>
 
 		<div class="group/grid grid md:grid-cols-3 gap-8" style="--x: {mouse.x}px; --y: {mouse.y}px;">
 			{#each features as feature, i (feature.id)}
 				{@const IconComponent = feature.icon}
-				{#key isVisible}
-					{#if isVisible}
+				{#if isVisible}
+					<div
+						in:heavySlide={{ delay: 300 + i * 150 }}
+						class="relative group/card bg-[#080808] border border-white/10 p-10 overflow-hidden hover:border-amber-900/50 transition-colors duration-500"
+					>
 						<div
-							in:heavySlide={{ delay: 300 + i * 150, duration: 1000 }}
-							class="relative group/card bg-[#080808] border border-white/10 p-10 overflow-hidden hover:border-amber-900/50 transition-colors duration-500"
+							class="absolute inset-0 opacity-0 group-hover/grid:opacity-100 transition-opacity duration-500 pointer-events-none"
+							style="background: radial-gradient(800px circle at var(--x) var(--y), rgba(255,255,255,0.03), transparent 40%);"
+						></div>
+
+						<div
+							class="absolute top-0 right-0 w-40 h-40 opacity-[0.02] group-hover/card:opacity-10 transition-opacity duration-500 pointer-events-none text-white"
 						>
-							<div
-								class="absolute inset-0 opacity-0 group-hover/grid:opacity-100 transition-opacity duration-500 pointer-events-none"
-								style="background: radial-gradient(800px circle at var(--x) var(--y), rgba(255,255,255,0.03), transparent 40%);"
-							></div>
+							{#if feature.type === 'grid'}
+								<svg
+									aria-hidden="true"
+									viewBox="0 0 100 100"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="0.5"
+								>
+									<path
+										d="M10 10 H90 M10 30 H90 M10 50 H90 M10 70 H90 M10 90 H90 M10 10 V90 M30 10 V90 M50 10 V90 M70 10 V90 M90 10 V90"
+									/>
+								</svg>
+							{:else if feature.type === 'radar'}
+								<svg
+									aria-hidden="true"
+									viewBox="0 0 100 100"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="0.5"
+								>
+									<circle cx="50" cy="50" r="20" />
+									<circle cx="50" cy="50" r="35" />
+									<circle cx="50" cy="50" r="45" opacity="0.5" />
+									<line x1="50" y1="50" x2="95" y2="50" />
+								</svg>
+							{:else}
+								<svg
+									aria-hidden="true"
+									viewBox="0 0 100 100"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="0.5"
+								>
+									<rect x="20" y="20" width="60" height="60" rx="4" />
+									<path d="M50 20 V10 M50 90 V80 M20 50 H10 M90 50 H80" />
+									<rect x="35" y="35" width="30" height="30" />
+								</svg>
+							{/if}
+						</div>
 
+						<div class="flex justify-between items-start mb-12 relative z-10">
 							<div
-								class="absolute top-0 right-0 w-40 h-40 opacity-[0.02] group-hover/card:opacity-10 transition-opacity duration-500 pointer-events-none text-white"
+								class="w-12 h-12 flex items-center justify-center bg-white/5 border border-white/10 text-white group-hover/card:bg-amber-500 group-hover/card:text-black group-hover/card:border-amber-500 transition-all duration-300"
 							>
-								{#if feature.type === 'grid'}
-									<svg
-										aria-hidden="true"
-										viewBox="0 0 100 100"
-										fill="none"
-										stroke="currentColor"
-										stroke-width="0.5"
-									>
-										<path
-											d="M10 10 H90 M10 30 H90 M10 50 H90 M10 70 H90 M10 90 H90 M10 10 V90 M30 10 V90 M50 10 V90 M70 10 V90 M90 10 V90"
-										/>
-									</svg>
-								{:else if feature.type === 'radar'}
-									<svg
-										aria-hidden="true"
-										viewBox="0 0 100 100"
-										fill="none"
-										stroke="currentColor"
-										stroke-width="0.5"
-									>
-										<circle cx="50" cy="50" r="20" />
-										<circle cx="50" cy="50" r="35" />
-										<circle cx="50" cy="50" r="45" opacity="0.5" />
-										<line x1="50" y1="50" x2="95" y2="50" />
-									</svg>
-								{:else}
-									<svg
-										aria-hidden="true"
-										viewBox="0 0 100 100"
-										fill="none"
-										stroke="currentColor"
-										stroke-width="0.5"
-									>
-										<rect x="20" y="20" width="60" height="60" rx="4" />
-										<path d="M50 20 V10 M50 90 V80 M20 50 H10 M90 50 H80" />
-										<rect x="35" y="35" width="30" height="30" />
-									</svg>
-								{/if}
+								<IconComponent size={24} stroke={1.5} />
+							</div>
+							<span class="font-mono text-[10px] text-slate-600 uppercase tracking-widest">
+								{feature.id}
+							</span>
+						</div>
+
+						<div class="relative z-10">
+							<div class="text-[10px] font-mono uppercase tracking-widest text-amber-600 mb-3">
+								{feature.subtitle}
 							</div>
 
-							<div class="flex justify-between items-start mb-12 relative z-10">
+							<h3
+								class="text-2xl font-serif text-white mb-6 group-hover/card:text-white transition-colors"
+							>
+								{feature.title}
+							</h3>
+
+							<p class="text-sm text-slate-400 leading-relaxed font-light mb-12 h-16">
+								{feature.description}
+							</p>
+
+							<div class="flex items-center justify-between border-t border-white/10 pt-6">
+								<div class="flex items-center gap-2">
+									<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+									<span
+										class="text-[10px] font-mono text-slate-500 uppercase tracking-widest group-hover/card:text-white transition-colors"
+									>
+										{feature.status}
+									</span>
+								</div>
 								<div
-									class="w-12 h-12 flex items-center justify-center bg-white/5 border border-white/10 text-white group-hover/card:bg-amber-500 group-hover/card:text-black group-hover/card:border-amber-500 transition-all duration-300"
+									class="opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 -translate-x-2 group-hover/card:translate-x-0"
 								>
-									<IconComponent size={24} stroke={1.5} />
-								</div>
-								<span class="font-mono text-[10px] text-slate-600 uppercase tracking-widest">
-									{feature.id}
-								</span>
-							</div>
-
-							<div class="relative z-10">
-								<div class="text-[10px] font-mono uppercase tracking-widest text-amber-600 mb-3">
-									{feature.subtitle}
-								</div>
-
-								<h3
-									class="text-2xl font-serif text-white mb-6 group-hover/card:text-white transition-colors"
-								>
-									{feature.title}
-								</h3>
-
-								<p class="text-sm text-slate-400 leading-relaxed font-light mb-12 h-16">
-									{feature.description}
-								</p>
-
-								<div class="flex items-center justify-between border-t border-white/10 pt-6">
-									<div class="flex items-center gap-2">
-										<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-										<span
-											class="text-[10px] font-mono text-slate-500 uppercase tracking-widest group-hover/card:text-white transition-colors"
-										>
-											{feature.status}
-										</span>
-									</div>
-									<div
-										class="opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 -translate-x-2 group-hover/card:translate-x-0"
-									>
-										<IconArrowRight size={16} class="text-white" />
-									</div>
+									<IconArrowRight size={16} class="text-white" />
 								</div>
 							</div>
 						</div>
-					{/if}
-				{/key}
+					</div>
+				{/if}
 			{/each}
 		</div>
 		<div class="mt-16 text-center" data-gsap>

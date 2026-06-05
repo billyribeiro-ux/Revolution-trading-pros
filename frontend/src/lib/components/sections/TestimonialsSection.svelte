@@ -208,132 +208,126 @@
 
 	<div class="relative max-w-[1600px] mx-auto z-10">
 		<div class="max-w-4xl mx-auto text-center mb-24">
-			{#key isVisible}
-				{#if isVisible}
-					<div
-						in:heavySlide={{ delay: 0, duration: 1000 }}
-						class="inline-flex items-center gap-3 px-4 py-1.5 border border-emerald-900/30 bg-emerald-950/10 text-emerald-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm"
-					>
-						<IconShieldCheck size={14} />
-						Verified Performance
-					</div>
+			{#if isVisible}
+				<div
+					in:heavySlide={{ delay: 0, duration: 1000 }}
+					class="inline-flex items-center gap-3 px-4 py-1.5 border border-emerald-900/30 bg-emerald-950/10 text-emerald-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm"
+				>
+					<IconShieldCheck size={14} />
+					Verified Performance
+				</div>
 
-					<h2
-						in:heavySlide={{ delay: 100 }}
-						class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight"
-					>
-						Performance <span class="text-slate-700">Attribution.</span>
-					</h2>
+				<h2
+					in:heavySlide={{ delay: 100 }}
+					class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight"
+				>
+					Performance <span class="text-slate-700">Attribution.</span>
+				</h2>
 
-					<p
-						in:heavySlide={{ delay: 200 }}
-						class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto"
-					>
-						We don't rely on marketing claims. We rely on the PnL of our desk. Verified feedback
-						from funded traders, prop managers, and institutional clients.
-					</p>
-				{/if}
-			{/key}
+				<p
+					in:heavySlide={{ delay: 200 }}
+					class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto"
+				>
+					We don't rely on marketing claims. We rely on the PnL of our desk. Verified feedback from
+					funded traders, prop managers, and institutional clients.
+				</p>
+			{/if}
 		</div>
 
 		<div class="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
 			{#each reviews as review, i (review.id)}
-				{#key isVisible}
-					{#if isVisible}
-						<div
-							in:heavySlide={{ delay: 300 + i * 100 }}
-							class="break-inside-avoid relative group bg-[#050505] border border-white/10 p-8 hover:bg-[#080808] hover:border-emerald-500/30 transition-all duration-500"
-						>
-							<div class="flex justify-between items-start mb-6 pb-6 border-b border-white/5">
-								<div class="flex items-center gap-3">
-									<div
-										class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-slate-500"
-									>
-										<IconUserCircle size={20} />
-									</div>
-									<div>
-										<div class="text-sm font-medium text-white">{review.name}</div>
-										<div class="text-[10px] font-mono uppercase text-slate-500 tracking-wide">
-											{review.role}
-										</div>
-									</div>
-								</div>
+				{#if isVisible}
+					<div
+						in:heavySlide={{ delay: 300 + i * 100 }}
+						class="break-inside-avoid relative group bg-[#050505] border border-white/10 p-8 hover:bg-[#080808] hover:border-emerald-500/30 transition-all duration-500"
+					>
+						<div class="flex justify-between items-start mb-6 pb-6 border-b border-white/5">
+							<div class="flex items-center gap-3">
 								<div
-									class="text-[10px] font-mono text-emerald-500/80 border border-emerald-900/30 px-2 py-1 bg-emerald-950/10 rounded"
+									class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-slate-500"
 								>
-									{review.id}
+									<IconUserCircle size={20} />
+								</div>
+								<div>
+									<div class="text-sm font-medium text-white">{review.name}</div>
+									<div class="text-[10px] font-mono uppercase text-slate-500 tracking-wide">
+										{review.role}
+									</div>
 								</div>
 							</div>
-
-							<div class="relative mb-8">
-								<IconQuote
-									size={24}
-									class="absolute -top-2 -left-2 text-white/5 transform -scale-x-100"
-								/>
-								<p class="relative z-10 text-slate-300 font-light leading-relaxed text-sm">
-									"{review.quote}"
-								</p>
-							</div>
-
 							<div
-								class="flex items-center justify-between bg-white/2 -mx-8 -mb-8 px-8 py-4 border-t border-white/5 group-hover:bg-emerald-950/5 transition-colors duration-500"
+								class="text-[10px] font-mono text-emerald-500/80 border border-emerald-900/30 px-2 py-1 bg-emerald-950/10 rounded"
 							>
-								<div class="flex flex-col">
-									<span class="text-[10px] font-mono uppercase text-slate-500 tracking-widest mb-1">
-										{review.metric}
-									</span>
-									<div class="flex items-center gap-2">
-										<IconTrendingUp size={14} class="text-emerald-500" />
-										<span class="text-lg font-serif text-white">{review.value}</span>
-									</div>
-								</div>
-								<div
-									class="opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center gap-1.5 text-[10px] font-bold text-emerald-500 uppercase tracking-widest"
-								>
-									<IconCircleCheckFilled size={14} />
-									Verified
-								</div>
-							</div>
-
-							<div class="absolute top-0 right-0 w-8 h-8 pointer-events-none overflow-hidden">
-								<div
-									class="absolute top-0 right-0 w-2 h-2 bg-emerald-500/0 group-hover:bg-emerald-500/50 transition-colors duration-500"
-								></div>
-								<svg
-									class="absolute top-0 right-0 w-full h-full text-emerald-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-									viewBox="0 0 24 24"
-								>
-									<path d="M24 0 L0 0" stroke="currentColor" stroke-width="1" />
-									<path d="M24 0 L24 24" stroke="currentColor" stroke-width="1" />
-								</svg>
+								{review.id}
 							</div>
 						</div>
-					{/if}
-				{/key}
+
+						<div class="relative mb-8">
+							<IconQuote
+								size={24}
+								class="absolute -top-2 -left-2 text-white/5 transform -scale-x-100"
+							/>
+							<p class="relative z-10 text-slate-300 font-light leading-relaxed text-sm">
+								"{review.quote}"
+							</p>
+						</div>
+
+						<div
+							class="flex items-center justify-between bg-white/2 -mx-8 -mb-8 px-8 py-4 border-t border-white/5 group-hover:bg-emerald-950/5 transition-colors duration-500"
+						>
+							<div class="flex flex-col">
+								<span class="text-[10px] font-mono uppercase text-slate-500 tracking-widest mb-1">
+									{review.metric}
+								</span>
+								<div class="flex items-center gap-2">
+									<IconTrendingUp size={14} class="text-emerald-500" />
+									<span class="text-lg font-serif text-white">{review.value}</span>
+								</div>
+							</div>
+							<div
+								class="opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center gap-1.5 text-[10px] font-bold text-emerald-500 uppercase tracking-widest"
+							>
+								<IconCircleCheckFilled size={14} />
+								Verified
+							</div>
+						</div>
+
+						<div class="absolute top-0 right-0 w-8 h-8 pointer-events-none overflow-hidden">
+							<div
+								class="absolute top-0 right-0 w-2 h-2 bg-emerald-500/0 group-hover:bg-emerald-500/50 transition-colors duration-500"
+							></div>
+							<svg
+								class="absolute top-0 right-0 w-full h-full text-emerald-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+								viewBox="0 0 24 24"
+							>
+								<path d="M24 0 L0 0" stroke="currentColor" stroke-width="1" />
+								<path d="M24 0 L24 24" stroke="currentColor" stroke-width="1" />
+							</svg>
+						</div>
+					</div>
+				{/if}
 			{/each}
 		</div>
 
-		{#key isVisible}
-			{#if isVisible}
-				<div
-					in:heavySlide={{ delay: 600 }}
-					class="mt-20 pt-10 border-t border-white/5 flex flex-wrap justify-center gap-12 lg:gap-24 opacity-50 grayscale hover:grayscale-0 transition-all duration-500"
-				>
-					<div class="flex items-center gap-3 text-white/60">
-						<IconChartDots size={24} />
-						<span class="text-xs font-mono uppercase tracking-widest">Audited by NinjaTrader</span>
-					</div>
-					<div class="flex items-center gap-3 text-white/60">
-						<IconShieldCheck size={24} />
-						<span class="text-xs font-mono uppercase tracking-widest">MyFxBook Verified</span>
-					</div>
-					<div class="flex items-center gap-3 text-white/60">
-						<IconActivity size={24} />
-						<span class="text-xs font-mono uppercase tracking-widest">Institutional Data Feed</span>
-					</div>
+		{#if isVisible}
+			<div
+				in:heavySlide={{ delay: 600 }}
+				class="mt-20 pt-10 border-t border-white/5 flex flex-wrap justify-center gap-12 lg:gap-24 opacity-50 grayscale hover:grayscale-0 transition-all duration-500"
+			>
+				<div class="flex items-center gap-3 text-white/60">
+					<IconChartDots size={24} />
+					<span class="text-xs font-mono uppercase tracking-widest">Audited by NinjaTrader</span>
 				</div>
-			{/if}
-		{/key}
+				<div class="flex items-center gap-3 text-white/60">
+					<IconShieldCheck size={24} />
+					<span class="text-xs font-mono uppercase tracking-widest">MyFxBook Verified</span>
+				</div>
+				<div class="flex items-center gap-3 text-white/60">
+					<IconActivity size={24} />
+					<span class="text-xs font-mono uppercase tracking-widest">Institutional Data Feed</span>
+				</div>
+			</div>
+		{/if}
 	</div>
 </section>
 
