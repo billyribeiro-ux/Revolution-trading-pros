@@ -6,7 +6,6 @@
 	import IconSitemap from '@tabler/icons-svelte-runes/icons/sitemap';
 	import IconShieldLock from '@tabler/icons-svelte-runes/icons/shield-lock';
 	import IconDatabase from '@tabler/icons-svelte-runes/icons/database';
-	import IconSparkles from '@tabler/icons-svelte-runes/icons/sparkles';
 	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
 	import type { Attachment } from 'svelte/attachments';
 
@@ -254,32 +253,6 @@
 					</div>
 				{/if}
 			{/each}
-		</div>
-		<div class="mt-16 text-center" data-gsap>
-			<!-- Premium CTA -->
-			<div class="relative inline-block">
-				<div
-					class="absolute -inset-1 bg-linear-to-r from-emerald-400 to-teal-400 rounded-2xl blur-xl opacity-60 group-hover:opacity-100 transition-opacity duration-500"
-				></div>
-				<a
-					href="/mentorship"
-					class="relative block px-12 py-6 bg-linear-to-r from-emerald-500 to-teal-500 text-white text-lg font-heading font-bold rounded-2xl hover:shadow-2xl hover:shadow-emerald-500/50 transform hover:scale-105 hover:-translate-y-1 transition-all duration-300 overflow-hidden group"
-				>
-					<span class="relative z-10 flex items-center gap-3">
-						<IconSparkles size={24} class="animate-sparkle" />
-						<span>Apply for Mentorship</span>
-						<IconSparkles size={24} class="animate-sparkle-delayed" />
-					</span>
-					<div
-						class="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-left"
-					></div>
-				</a>
-			</div>
-
-			<!-- Exclusivity note -->
-			<p class="mt-8 text-sm text-slate-500 italic">
-				Application required • Personalized review • Investment starting at $2,500/month
-			</p>
 		</div>
 	</div>
 </section>

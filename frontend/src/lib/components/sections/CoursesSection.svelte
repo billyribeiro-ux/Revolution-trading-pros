@@ -153,8 +153,9 @@
 		};
 	};
 
-	// FIX-2026-04-26: cursor-follow spotlight removed per user request — disabled to fix UX bug.
-	// mouseX / mouseY state and handleMouseMove have been removed entirely.
+	// January 2026 effect: card grid spotlight follows the cursor across the course cards.
+	let mouseX = $state(0);
+	let mouseY = $state(0);
 
 	// ============================================================================
 	// LIFECYCLE
@@ -209,14 +210,13 @@
 		};
 	});
 
-	// FIX-2026-04-26: cursor-follow spotlight removed per user request — disabled to fix UX bug.
-	// function handleMouseMove(e: MouseEvent) {
-	// 	if (cardsRef) {
-	// 		const rect = cardsRef.getBoundingClientRect();
-	// 		mouseX = e.clientX - rect.left;
-	// 		mouseY = e.clientY - rect.top;
-	// 	}
-	// }
+	function handleMouseMove(e: MouseEvent) {
+		if (cardsRef) {
+			const rect = cardsRef.getBoundingClientRect();
+			mouseX = e.clientX - rect.left;
+			mouseY = e.clientY - rect.top;
+		}
+	}
 
 	async function loadGSAP() {
 		try {
@@ -283,8 +283,7 @@
 	}
 </script>
 
-<!-- FIX-2026-04-26: cursor-follow spotlight removed per user request — disabled to fix UX bug. -->
-<!-- <svelte:window onmousemove={handleMouseMove} /> -->
+<svelte:window onmousemove={handleMouseMove} />
 
 <section
 	{@attach captureSection}
@@ -378,12 +377,12 @@
 		<div
 			{@attach captureCards}
 			class="courses-grid grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 relative"
+			style="--mouse-x: {mouseX}px; --mouse-y: {mouseY}px;"
 		>
-			<!-- FIX-2026-04-26: cursor-follow spotlight removed per user request — disabled to fix UX bug. -->
-			<!-- <div
+			<div
 				class="pointer-events-none absolute -inset-px opacity-0 md:opacity-100 transition-opacity duration-300 z-0 rounded-3xl"
 				style="background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(139, 92, 246, 0.08), transparent 40%);"
-			></div> -->
+			></div>
 
 			{#each courses as course (course.id)}
 				<a
