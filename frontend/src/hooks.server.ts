@@ -67,8 +67,7 @@ const maintenanceHandler: Handle = async ({ event, resolve }) => {
 	const { pathname } = event.url;
 
 	// Localhost always bypasses maintenance mode
-	const isLocalhost =
-		event.url.hostname === 'localhost' || event.url.hostname === '127.0.0.1';
+	const isLocalhost = event.url.hostname === 'localhost' || event.url.hostname === '127.0.0.1';
 
 	const maintenanceMode = isLocalhost ? false : await isMaintenanceModeEnabled();
 

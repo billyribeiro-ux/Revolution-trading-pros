@@ -48,60 +48,59 @@
 	}
 </script>
 
-<div class="bg-white rounded-xl border border-gray-200">
-	<div class="p-4 border-b border-gray-100">
-		<h3 class="text-lg font-semibold text-gray-900">User Segments</h3>
-		<p class="text-sm text-gray-500 mt-1">{segments.length} segments defined</p>
+<div class="segment-list">
+	<div class="segment-list__header">
+		<h3>User Segments</h3>
+		<p>{segments.length} segments defined</p>
 	</div>
 
-	<div class="divide-y divide-gray-100">
+	<div class="segment-list__items">
 		{#each sortedSegments as segment (segment.key)}
 			<button
-				class="w-full p-4 hover:bg-gray-50 transition-colors text-left flex items-center gap-4
-					{onSelect ? 'cursor-pointer' : ''}"
+				class={{
+					'segment-list__item': true,
+					'segment-list__item--selectable': Boolean(onSelect)
+				}}
 				onclick={() => onSelect?.(segment)}
 				disabled={!onSelect}
 			>
 				<!-- Icon -->
-				<div
-					class="w-10 h-10 rounded-lg flex items-center justify-center text-lg"
-					style="background-color: {segment.color || '#6B7280'}20"
-				>
+				<div class="segment-list__icon" style:background-color={`${segment.color || '#6b7280'}20`}>
 					{iconMap[segment.icon || ''] || '📊'}
 				</div>
 
 				<!-- Info -->
-				<div class="flex-1 min-w-0">
-					<div class="flex items-center gap-2">
-						<span class="font-medium text-gray-900">{segment.name}</span>
+				<div class="segment-list__info">
+					<div class="segment-list__meta">
+						<span class="segment-list__name">{segment.name}</span>
 						{#if segment.is_system}
-							<span class="text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded"> System </span>
+							<span class="segment-list__system-badge">System</span>
 						{/if}
-						<span class="text-xs text-gray-400">
+						<span class="segment-list__type">
 							{typeLabels[segment.type] || segment.type}
 						</span>
 					</div>
 					{#if segment.description}
-						<p class="text-sm text-gray-500 truncate">{segment.description}</p>
+						<p class="segment-list__description">{segment.description}</p>
 					{/if}
 				</div>
 
 				<!-- Stats -->
-				<div class="text-right flex-shrink-0">
-					<div class="font-semibold text-gray-900">
+				<div class="segment-list__stats">
+					<div class="segment-list__count">
 						{formatNumber(segment.user_count)}
 					</div>
-					<div class="text-xs text-gray-500">
+					<div class="segment-list__percentage">
 						{segment.percentage.toFixed(1)}% of users
 					</div>
 				</div>
 
 				<!-- Progress bar -->
-				<div class="w-24 h-2 bg-gray-100 rounded-full overflow-hidden flex-shrink-0">
+				<div class="segment-list__progress">
 					<div
-						class="h-full rounded-full transition-all"
-						style="width: {Math.min(segment.percentage, 100)}%; background-color: {segment.color ||
-							'#6B7280'}"
+						class="segment-list__progress-value"
+						style:width={`${Math.min(segment.percentage, 100)}%`}
+						style:background-color={segment.color || '#6b7280'}
 					></div>
 				</div>
 			</button>
@@ -109,8 +108,184 @@
 	</div>
 
 	{#if segments.length === 0}
-		<div class="p-8 text-center text-gray-500">
+		<div class="segment-list__empty">
 			<p>No segments defined</p>
 		</div>
 	{/if}
 </div>
+
+<style>
+	.segment-list {
+		border: 1px solid #e5e7eb;
+		border-radius: 0.75rem;
+		background: #ffffff;
+	}
+
+	.segment-list__header {
+		border-bottom: 1px solid #f3f4f6;
+		padding: 1rem;
+	}
+
+	.segment-list__header h3 {
+		margin: 0;
+		color: #111827;
+		font-size: 1.125rem;
+		font-weight: 600;
+		line-height: 1.5;
+	}
+
+	.segment-list__header p {
+		margin: 0.25rem 0 0;
+		color: #6b7280;
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+	}
+
+	.segment-list__items {
+		display: grid;
+	}
+
+	.segment-list__item {
+		display: flex;
+		width: 100%;
+		align-items: center;
+		gap: 1rem;
+		border: 0;
+		border-top: 1px solid #f3f4f6;
+		background: transparent;
+		color: inherit;
+		font: inherit;
+		padding: 1rem;
+		text-align: left;
+		transition: background 160ms ease;
+	}
+
+	.segment-list__item:first-child {
+		border-top: 0;
+	}
+
+	.segment-list__item--selectable {
+		cursor: pointer;
+	}
+
+	.segment-list__item--selectable:hover {
+		background: #f9fafb;
+	}
+
+	.segment-list__item:disabled {
+		cursor: default;
+	}
+
+	.segment-list__icon {
+		display: flex;
+		width: 2.5rem;
+		height: 2.5rem;
+		align-items: center;
+		justify-content: center;
+		border-radius: 0.5rem;
+		font-size: 1.125rem;
+		line-height: 1.75rem;
+		flex: 0 0 auto;
+	}
+
+	.segment-list__info {
+		min-width: 0;
+		flex: 1 1 auto;
+	}
+
+	.segment-list__meta {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		min-width: 0;
+	}
+
+	.segment-list__name {
+		overflow: hidden;
+		color: #111827;
+		font-weight: 500;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.segment-list__system-badge {
+		border-radius: 0.25rem;
+		background: #dbeafe;
+		color: #1d4ed8;
+		font-size: 0.75rem;
+		line-height: 1rem;
+		padding: 0.125rem 0.375rem;
+	}
+
+	.segment-list__type {
+		color: #9ca3af;
+		font-size: 0.75rem;
+		line-height: 1rem;
+	}
+
+	.segment-list__description {
+		overflow: hidden;
+		margin: 0;
+		color: #6b7280;
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.segment-list__stats {
+		text-align: right;
+		flex: 0 0 auto;
+	}
+
+	.segment-list__count {
+		color: #111827;
+		font-weight: 600;
+	}
+
+	.segment-list__percentage {
+		color: #6b7280;
+		font-size: 0.75rem;
+		line-height: 1rem;
+	}
+
+	.segment-list__progress {
+		overflow: hidden;
+		width: 6rem;
+		height: 0.5rem;
+		border-radius: 999px;
+		background: #f3f4f6;
+		flex: 0 0 auto;
+	}
+
+	.segment-list__progress-value {
+		height: 100%;
+		border-radius: 999px;
+		transition: width 160ms ease;
+	}
+
+	.segment-list__empty {
+		padding: 2rem;
+		color: #6b7280;
+		text-align: center;
+	}
+
+	.segment-list__empty p {
+		margin: 0;
+	}
+
+	@media (max-width: 640px) {
+		.segment-list__item {
+			align-items: flex-start;
+			flex-wrap: wrap;
+		}
+
+		.segment-list__stats {
+			text-align: left;
+		}
+
+		.segment-list__progress {
+			width: 100%;
+		}
+	}
+</style>

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { Separator as SeparatorPrimitive } from 'bits-ui';
 	import { Separator } from '$lib/components/ui/separator/index.js';
-	import { cn } from '$lib/utils.js';
 
 	let {
 		ref = $bindable(null),
@@ -13,6 +12,16 @@
 <Separator
 	bind:ref
 	data-slot="select-separator"
-	class={cn('bg-border pointer-events-none -mx-1 my-1 h-px', className)}
+	class={['ui-select-separator', className]}
 	{...restProps}
 />
+
+<style>
+	:global(.ui-select-separator) {
+		width: auto;
+		height: 1px;
+		margin: 0.25rem -0.25rem;
+		pointer-events: none;
+		background: var(--border-default, #30363d);
+	}
+</style>

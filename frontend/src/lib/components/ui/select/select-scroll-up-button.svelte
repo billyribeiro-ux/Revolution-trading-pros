@@ -1,7 +1,7 @@
 <script lang="ts">
 	import ChevronUpIcon from '@tabler/icons-svelte-runes/icons/chevron-up';
 	import { Select as SelectPrimitive } from 'bits-ui';
-	import { cn, type WithoutChildrenOrChild } from '$lib/utils.js';
+	import { type WithoutChildrenOrChild } from '$lib/utils.js';
 
 	let {
 		ref = $bindable(null),
@@ -13,8 +13,23 @@
 <SelectPrimitive.ScrollUpButton
 	bind:ref
 	data-slot="select-scroll-up-button"
-	class={cn('flex cursor-default items-center justify-center py-1', className)}
+	class={['ui-select-scroll-button', className]}
 	{...restProps}
 >
-	<ChevronUpIcon class="size-4" />
+	<ChevronUpIcon class="ui-select-scroll-button-icon" />
 </SelectPrimitive.ScrollUpButton>
+
+<style>
+	:global(.ui-select-scroll-button) {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding-block: 0.25rem;
+		cursor: default;
+	}
+
+	:global(.ui-select-scroll-button-icon) {
+		width: 1rem;
+		height: 1rem;
+	}
+</style>

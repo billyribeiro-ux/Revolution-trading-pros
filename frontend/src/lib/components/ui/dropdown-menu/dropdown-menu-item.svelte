@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { cn } from '$lib/utils.js';
 	import { DropdownMenu as DropdownMenuPrimitive } from 'bits-ui';
 
 	type ItemProps = DropdownMenuPrimitive.ItemProps & {
@@ -21,9 +20,68 @@
 	data-slot="dropdown-menu-item"
 	data-inset={inset}
 	data-variant={variant}
-	class={cn(
-		"data-highlighted:bg-accent data-highlighted:text-accent-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:data-highlighted:bg-destructive/10 dark:data-[variant=destructive]:data-highlighted:bg-destructive/20 data-[variant=destructive]:data-highlighted:text-destructive data-[variant=destructive]:*:[svg]:!text-destructive [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[inset]:ps-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-		className
-	)}
+	class={['ui-dropdown-menu-item', className]}
 	{...restProps}
 />
+
+<style>
+	:global(.ui-dropdown-menu-item) {
+		position: relative;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		border-radius: 0.125rem;
+		padding: 0.375rem 0.5rem;
+		color: var(--dropdown-item-foreground, #0f172a);
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+		cursor: default;
+		outline: none;
+		user-select: none;
+	}
+
+	:global(.ui-dropdown-menu-item[data-inset]) {
+		padding-inline-start: 2rem;
+	}
+
+	:global(.ui-dropdown-menu-item[data-highlighted]) {
+		background: var(--dropdown-item-highlight-background, #f1f5f9);
+		color: var(--dropdown-item-highlight-foreground, #0f172a);
+	}
+
+	:global(.ui-dropdown-menu-item[data-variant='destructive']) {
+		color: var(--dropdown-item-destructive, #dc2626);
+	}
+
+	:global(.ui-dropdown-menu-item[data-variant='destructive'][data-highlighted]) {
+		background: var(--dropdown-item-destructive-background, rgba(220, 38, 38, 0.1));
+		color: var(--dropdown-item-destructive, #dc2626);
+	}
+
+	:global(.ui-dropdown-menu-item[data-disabled]) {
+		pointer-events: none;
+		opacity: 0.5;
+	}
+
+	:global(.ui-dropdown-menu-item svg) {
+		pointer-events: none;
+		width: 1rem;
+		height: 1rem;
+		flex-shrink: 0;
+		color: var(--dropdown-item-icon, #64748b);
+	}
+
+	:global(.ui-dropdown-menu-item[data-variant='destructive'] svg) {
+		color: var(--dropdown-item-destructive, #dc2626);
+	}
+
+	@media (prefers-color-scheme: dark) {
+		:global(.ui-dropdown-menu-item) {
+			--dropdown-item-foreground: #f8fafc;
+			--dropdown-item-highlight-background: #1e293b;
+			--dropdown-item-highlight-foreground: #f8fafc;
+			--dropdown-item-icon: #94a3b8;
+			--dropdown-item-destructive-background: rgba(220, 38, 38, 0.2);
+		}
+	}
+</style>

@@ -13,6 +13,7 @@
 		form: TagFormData;
 		errors: string[];
 		saving: boolean;
+		onNameInput: (name: string) => void;
 		onSlugInput: () => void;
 		onSave: () => void;
 		onClose: () => void;
@@ -24,6 +25,7 @@
 		form = $bindable(),
 		errors,
 		saving,
+		onNameInput,
 		onSlugInput,
 		onSave,
 		onClose
@@ -70,6 +72,7 @@
 						name="tag-name"
 						type="text"
 						bind:value={form.name}
+						oninput={(event) => onNameInput(event.currentTarget.value)}
 						placeholder="Tag name"
 						required
 					/>

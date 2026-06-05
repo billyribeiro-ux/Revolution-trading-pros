@@ -42,7 +42,7 @@
 		},
 		{
 			title: 'Remote-First',
-			desc: 'Work from anywhere. We\'re async-friendly and results-focused, not hours-focused.'
+			desc: "Work from anywhere. We're async-friendly and results-focused, not hours-focused."
 		},
 		{
 			title: 'Continuous Growth',
@@ -57,7 +57,10 @@
 
 <svelte:head>
 	<title>Careers | Revolution Trading Pros</title>
-	<meta name="description" content="Join the Revolution Trading Pros team. We're building the best trading education platform in the world — come help us do it." />
+	<meta
+		name="description"
+		content="Join the Revolution Trading Pros team. We're building the best trading education platform in the world — come help us do it."
+	/>
 </svelte:head>
 
 <div class="careers-page">
@@ -67,7 +70,8 @@
 			<p class="careers-hero__eyebrow">We're Hiring</p>
 			<h1 class="careers-hero__title">Build the Future of Trading Education</h1>
 			<p class="careers-hero__subtitle">
-				Join a small, passionate team helping thousands of traders develop real, lasting edge in the markets.
+				Join a small, passionate team helping thousands of traders develop real, lasting edge in the
+				markets.
 			</p>
 		</div>
 	</section>
@@ -116,7 +120,9 @@
 	<section class="general-cta">
 		<div class="general-cta__inner">
 			<h2 class="general-cta__title">Don't see your role?</h2>
-			<p class="general-cta__sub">We always want to hear from exceptional people. Send us your story.</p>
+			<p class="general-cta__sub">
+				We always want to hear from exceptional people. Send us your story.
+			</p>
 			<a href="mailto:careers@revolutiontradingpros.com" class="general-cta__btn">
 				Send a General Application <IconArrowRight size={16} />
 			</a>
@@ -135,10 +141,17 @@
 	.careers-hero {
 		padding: 6rem 1.5rem 4rem;
 		text-align: center;
-		background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(16,185,129,0.1) 0%, transparent 70%);
+		background: radial-gradient(
+			ellipse 80% 50% at 50% 0%,
+			rgba(16, 185, 129, 0.1) 0%,
+			transparent 70%
+		);
 		border-bottom: 1px solid var(--rtp-border-soft);
 	}
-	.careers-hero__inner { max-width: 640px; margin: 0 auto; }
+	.careers-hero__inner {
+		max-width: 640px;
+		margin: 0 auto;
+	}
 	.careers-hero__eyebrow {
 		font-size: 0.8125rem;
 		font-weight: 600;
@@ -203,8 +216,15 @@
 		border-top: 1px solid var(--rtp-border-soft);
 		background: var(--rtp-bg-deeper);
 	}
-	.openings-inner { max-width: 800px; margin: 0 auto; }
-	.openings-list { display: flex; flex-direction: column; gap: 0.75rem; }
+	.openings-inner {
+		max-width: 800px;
+		margin: 0 auto;
+	}
+	.openings-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
 	.opening-card {
 		display: flex;
 		align-items: center;
@@ -215,7 +235,9 @@
 		border: 1px solid var(--rtp-border-soft);
 		border-radius: 0.75rem;
 		text-decoration: none;
-		transition: border-color 0.2s ease, background 0.2s ease;
+		transition:
+			border-color 0.2s ease,
+			background 0.2s ease;
 	}
 	.opening-card:hover {
 		border-color: var(--rtp-emerald);
@@ -232,7 +254,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(16,185,129,0.1);
+		background: rgba(16, 185, 129, 0.1);
 		border-radius: 0.5rem;
 		color: var(--rtp-emerald);
 		flex-shrink: 0;
@@ -260,12 +282,14 @@
 		gap: 0.3rem;
 		font-size: 0.8125rem;
 		color: var(--rtp-text-muted);
-		background: rgba(255,255,255,0.04);
+		background: rgba(255, 255, 255, 0.04);
 		padding: 0.25rem 0.625rem;
 		border-radius: 9999px;
 		border: 1px solid var(--rtp-border-soft);
 	}
-	.opening-card__arrow { color: var(--rtp-text-muted); }
+	.opening-card__arrow {
+		color: var(--rtp-text-muted);
+	}
 
 	/* General CTA */
 	.general-cta {
@@ -273,9 +297,22 @@
 		border-top: 1px solid var(--rtp-border-soft);
 		text-align: center;
 	}
-	.general-cta__inner { max-width: 560px; margin: 0 auto; }
-	.general-cta__title { font-size: 1.75rem; font-weight: 800; color: var(--rtp-text); margin: 0 0 0.75rem; }
-	.general-cta__sub { font-size: 1rem; color: var(--rtp-text-muted); margin: 0 0 2rem; line-height: 1.6; }
+	.general-cta__inner {
+		max-width: 560px;
+		margin: 0 auto;
+	}
+	.general-cta__title {
+		font-size: 1.75rem;
+		font-weight: 800;
+		color: var(--rtp-text);
+		margin: 0 0 0.75rem;
+	}
+	.general-cta__sub {
+		font-size: 1rem;
+		color: var(--rtp-text-muted);
+		margin: 0 0 2rem;
+		line-height: 1.6;
+	}
 	.general-cta__btn {
 		display: inline-flex;
 		align-items: center;
@@ -289,11 +326,20 @@
 		text-decoration: none;
 		transition: background 0.2s ease;
 	}
-	.general-cta__btn:hover { background: #0da870; }
+	.general-cta__btn:hover {
+		background: #0da870;
+	}
 
 	@media (max-width: 640px) {
-		.values-grid { grid-template-columns: 1fr; }
-		.opening-card { flex-direction: column; align-items: flex-start; }
-		.opening-card__meta { flex-wrap: wrap; }
+		.values-grid {
+			grid-template-columns: 1fr;
+		}
+		.opening-card {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+		.opening-card__meta {
+			flex-wrap: wrap;
+		}
 	}
 </style>

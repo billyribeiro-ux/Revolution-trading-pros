@@ -9,6 +9,7 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
+	import type { Attachment } from 'svelte/attachments';
 	import BlurHashImage from '$lib/components/ui/BlurHashImage.svelte';
 	import TableOfContents from '$lib/components/blog/TableOfContents.svelte';
 	import FloatingTocWidget from '$lib/components/blog/FloatingTocWidget.svelte';
@@ -48,40 +49,16 @@
 		featured_image_blurhash?: string | null;
 	}
 
-	// Svelte 5 state runes
-	let post = $state<BlogPost | null>(null);
-	let loading = $state(true);
-	let error = $state('');
-
 	// Derived values from page store
 	let slug = $derived(page.params['slug'] ?? '');
+	let postPromise = $derived(fetchPost(slug));
 
-	// Load post when slug changes. Gate on a tracked slug so the effect
-	// only fires when the param actually changes, not on every reactive
-	// reread (loadPost writes loading/error/post — those don't feed back
-	// into this effect today, but the gate is defensive against future
-	// readers being added inside the effect).
-	let loadedSlug = $state<string | null>(null);
-	$effect(() => {
-		if (slug && slug !== loadedSlug) {
-			loadedSlug = slug;
-			loadPost(slug);
+	async function fetchPost(currentSlug: string): Promise<BlogPost> {
+		if (!currentSlug) {
+			throw new Error('Missing blog post slug');
 		}
-	});
 
-	async function loadPost(currentSlug: string) {
-		try {
-			loading = true;
-			error = '';
-
-			const response = await apiFetch<BlogPost>(API_ENDPOINTS.posts.single(currentSlug));
-			post = response;
-		} catch (err) {
-			error = err instanceof Error ? err.message : 'An error occurred';
-			console.error('Error loading post:', err);
-		} finally {
-			loading = false;
-		}
+		return apiFetch<BlogPost>(API_ENDPOINTS.posts.single(currentSlug));
 	}
 
 	function formatDate(dateString: string): string {
@@ -116,12 +93,14 @@
 		};
 	}
 
-	// Calculate reading time from post content
-	let readingTime = $derived.by(() => {
-		if (!post) return 0;
+	function getErrorMessage(err: unknown): string {
+		return err instanceof Error ? err.message : 'An error occurred';
+	}
+
+	function calculatePostReadingTime(currentPost: BlogPost): number {
 		// Extract text from content blocks
 		const text =
-			post.content_blocks
+			currentPost.content_blocks
 				?.map((block: ContentBlock) => {
 					const d = blockData(block);
 					if (block.type === 'paragraph' || block.type === 'heading') {
@@ -133,39 +112,32 @@
 					return '';
 				})
 				.join(' ') ||
-			post.excerpt ||
+			currentPost.excerpt ||
 			'';
 		return calculateReadingTime(text);
-	});
+	}
 
-	// Initialize reading analytics ONCE per post. Gating on a tracked id
-	// prevents this effect from re-running every time `post` is reassigned
-	// (which was the source of the effect_update_depth_exceeded warning:
-	// the effect kept tearing down and recreating its scroll listeners,
-	// and one of those interactions ended up causing recursive scheduling).
-	let trackedPostId = $state<string | number | null>(null);
-	$effect(() => {
-		if (!browser || !post) return;
-		if (post.id === trackedPostId) return;
-		trackedPostId = post.id;
-		const cleanup = initReadingAnalytics({
-			postId: post.id,
-			slug: post.slug,
-			contentSelector: '.post-body',
-			options: {
-				debug: import.meta.env.DEV,
-				endpoint: '/api/analytics/reading'
-			}
-		});
-		return cleanup;
-	});
+	function readingAnalytics(currentPost: BlogPost): Attachment<HTMLElement> {
+		return () => {
+			if (!browser) return;
+			return initReadingAnalytics({
+				postId: currentPost.id,
+				slug: currentPost.slug,
+				contentSelector: '.post-body',
+				options: {
+					debug: import.meta.env.DEV,
+					endpoint: '/api/analytics/reading'
+				}
+			});
+		};
+	}
 
 	// Track social shares.
 	// STUB (audit 2026-05-17): wired to <ShareButtons onShare> but only
 	// logs — no real analytics event is fired. Logged at info until a
 	// proper share-tracking call lands; tracked in the audit doc.
-	function handleSocialShare(platform: string) {
-		console.info(`Shared on ${platform}:`, post?.slug);
+	function handleSocialShare(platform: string, currentSlug: string) {
+		console.info(`Shared on ${platform}:`, currentSlug);
 	}
 </script>
 
@@ -173,15 +145,277 @@
 <ReadingProgress contentSelector=".post-body" height={4} color="#3b82f6" position="top" />
 
 <div class="blog-post-container">
-	{#if loading}
+	{#await postPromise}
 		<div class="loading" role="status" aria-live="polite" aria-busy="true">
 			<div class="spinner" aria-hidden="true"></div>
 			<p>Loading post...</p>
 		</div>
-	{:else if error}
+	{:then post}
+		{@const readingTime = calculatePostReadingTime(post)}
+		{#key post.id}
+			<article class="blog-post" {@attach readingAnalytics(post)}>
+				<div class="post-header">
+					<button class="btn-back-header" onclick={goBack} aria-label="Go back to blog listing">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="20"
+							height="20"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							aria-hidden="true"
+						>
+							<polyline points="15 18 9 12 15 6"></polyline>
+						</svg>
+						Back to Blog
+					</button>
+
+					{#if post.categories && post.categories.length > 0}
+						<div class="header-categories">
+							{#each post.categories as category (category.id)}
+								<span class="category-badge">{category.name}</span>
+							{/each}
+						</div>
+					{/if}
+
+					<h1 class="post-title">{post.title}</h1>
+
+					{#if post.excerpt}
+						<p class="post-lead">{post.excerpt}</p>
+					{/if}
+
+					<div class="post-meta">
+						<div class="author-info">
+							{#if post.author_image}
+								<img
+									src={post.author_image}
+									alt={post.author?.name ?? 'Author'}
+									class="author-avatar"
+									width="56"
+									height="56"
+									loading="lazy"
+								/>
+							{:else if post.author}
+								<div class="author-avatar-placeholder">
+									{post.author.name.charAt(0).toUpperCase()}
+								</div>
+							{/if}
+							<div class="author-details">
+								{#if post.author}
+									<span class="author-name">{post.author.name}</span>
+								{/if}
+								<div class="meta-row">
+									<span class="date">{formatDate(post.published_at)}</span>
+									<span class="separator">•</span>
+									<span class="reading-time">{formatReadingTime(readingTime)}</span>
+									{#if post.views !== undefined}
+										<span class="separator">•</span>
+										<span class="views">{post.views.toLocaleString()} views</span>
+									{/if}
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				{#if post.featured_image}
+					<div class="featured-image">
+						<BlurHashImage
+							src={post.featured_image}
+							alt={post.title}
+							blurhash={(post.featured_image_blurhash || post.blurhash) ?? null}
+							width="100%"
+							height="100%"
+							loading="eager"
+							decoding="async"
+							sizes="(max-width: 768px) 100vw, 800px"
+						/>
+					</div>
+				{/if}
+
+				<div class="post-body">
+					<!-- Table of Contents -->
+					{#if post.content_blocks && post.content_blocks.length > 0}
+						<TableOfContents
+							contentBlocks={post.content_blocks}
+							title="In This Article"
+							minHeadings={2}
+							maxDepth={4}
+							showNumbers={true}
+							collapsible={true}
+							defaultExpanded={true}
+							sticky={false}
+							showProgress={true}
+							smoothScroll={true}
+							highlightActive={true}
+							position="inline"
+						/>
+					{/if}
+
+					<div class="content">
+						{#if post.content_blocks && post.content_blocks.length > 0}
+							<!-- Structured content blocks (sanitized for XSS protection).
+						     Reads via blockData() so both legacy {data} and editor {content} shapes work. -->
+							{#each post.content_blocks as block, _bi (_bi)}
+								{@const d = blockData(block)}
+								{#if block.type === 'paragraph'}
+									<p>{@html sanitizeBlogContent((d['text'] as string) || '')}</p>
+								{:else if block.type === 'heading'}
+									{#if d['level'] === 1}
+										<h1>{@html sanitizeBlogContent((d['text'] as string) || '')}</h1>
+									{:else if d['level'] === 2}
+										<h2>{@html sanitizeBlogContent((d['text'] as string) || '')}</h2>
+									{:else if d['level'] === 3}
+										<h3>{@html sanitizeBlogContent((d['text'] as string) || '')}</h3>
+									{:else if d['level'] === 4}
+										<h4>{@html sanitizeBlogContent((d['text'] as string) || '')}</h4>
+									{:else}
+										<h5>{@html sanitizeBlogContent((d['text'] as string) || '')}</h5>
+									{/if}
+								{:else if block.type === 'list'}
+									{#if d['style'] === 'ordered'}
+										<ol>
+											{#each (d['items'] as string[]) || [] as item, _ii (_ii)}
+												<li>{@html sanitizeBlogContent(item)}</li>
+											{/each}
+										</ol>
+									{:else}
+										<ul>
+											{#each (d['items'] as string[]) || [] as item, _ii (_ii)}
+												<li>{@html sanitizeBlogContent(item)}</li>
+											{/each}
+										</ul>
+									{/if}
+								{:else if block.type === 'checklist'}
+									<ul class="checklist">
+										{#each (d['checklistItems'] as Array<{ text: string; checked: boolean }>) || [] as item, _ci (_ci)}
+											<li class:checked={item.checked}>
+												<input type="checkbox" checked={item.checked} disabled />
+												{@html sanitizeBlogContent(item.text)}
+											</li>
+										{/each}
+									</ul>
+								{:else if block.type === 'quote' || block.type === 'pullquote'}
+									<blockquote>{@html sanitizeBlogContent((d['text'] as string) || '')}</blockquote>
+								{:else if block.type === 'code' || block.type === 'preformatted'}
+									<pre><code>{(d['code'] as string) || (d['text'] as string) || ''}</code></pre>
+								{:else if block.type === 'image'}
+									<figure aria-label={(d['caption'] as string) || 'Blog image'}>
+										<img
+											src={(d['url'] as string) || ''}
+											alt={(d['alt'] as string) || (d['caption'] as string) || 'Blog post image'}
+											loading="lazy"
+											decoding="async"
+											width={(d['width'] as number) || undefined}
+											height={(d['height'] as number) || undefined}
+										/>
+										{#if d['caption']}
+											<figcaption>{d['caption']}</figcaption>
+										{/if}
+									</figure>
+								{:else if block.type === 'video' || block.type === 'embed'}
+									{#if d['url']}
+										<div class="video-embed">
+											<iframe
+												src={d['url'] as string}
+												title={(d['caption'] as string) || 'Embedded video'}
+												frameborder="0"
+												allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+												allowfullscreen
+											></iframe>
+										</div>
+									{/if}
+								{:else if block.type === 'callout'}
+									<aside class="callout callout--{(d['type'] as string) || 'info'}">
+										{#if d['title']}<strong>{d['title']}</strong>{/if}
+										<div>
+											{@html sanitizeBlogContent(
+												(d['text'] as string) || (d['content'] as string) || ''
+											)}
+										</div>
+									</aside>
+								{:else if block.type === 'html'}
+									<!-- Raw HTML block — sanitized -->
+									<div>{@html sanitizeBlogContent((d['html'] as string) || '')}</div>
+								{:else if block.type === 'separator' || block.type === 'divider'}
+									<hr />
+								{:else if block.type === 'spacer'}
+									<div style:height="{(d['height'] as number) || 24}px"></div>
+								{:else if block.type === 'button'}
+									{#if d['url']}
+										<a class="block-button" href={d['url'] as string}>
+											{(d['text'] as string) || (d['label'] as string) || 'Learn more'}
+										</a>
+									{/if}
+								{/if}
+							{/each}
+						{:else}
+							<!-- Fallback: HTML content -->
+							<p class="no-content">Content coming soon...</p>
+						{/if}
+					</div>
+
+					{#if post.tags && post.tags.length > 0}
+						<div class="tags-section">
+							<h3>Tags</h3>
+							<div class="tags">
+								{#each post.tags as tag (tag.id)}
+									<span class="tag">{tag.name}</span>
+								{/each}
+							</div>
+						</div>
+					{/if}
+
+					<!-- Social Share Section -->
+					<div class="share-section">
+						<SocialShare
+							url={`https://revolution-trading-pros.pages.dev/blog/${post.slug}`}
+							title={post.title}
+							description={post.excerpt || post.meta_description || ''}
+							hashtags="trading,forex,stocks"
+							onShare={(platform) => handleSocialShare(platform, post.slug)}
+							size="medium"
+						/>
+					</div>
+				</div>
+
+				<div class="post-footer">
+					<button class="btn-back-footer" onclick={goBack} aria-label="Go back to blog listing">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="20"
+							height="20"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							aria-hidden="true"
+						>
+							<polyline points="15 18 9 12 15 6"></polyline>
+						</svg>
+						Back to Blog
+					</button>
+				</div>
+			</article>
+
+			<!-- Floating Table of Contents Widget -->
+			{#if post.content_blocks && post.content_blocks.length > 0}
+				<FloatingTocWidget
+					contentBlocks={post.content_blocks}
+					showAfterScroll={400}
+					title="Contents"
+				/>
+			{/if}
+		{/key}
+	{:catch err}
 		<div class="error" role="alert" aria-live="assertive">
 			<h2>Oops!</h2>
-			<p>{error}</p>
+			<p>{getErrorMessage(err)}</p>
 			<button class="btn-back" onclick={goBack} aria-label="Go back to blog listing">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -200,684 +434,421 @@
 				Back to Blog
 			</button>
 		</div>
-	{:else if post}
-		<article class="blog-post">
-			<div class="post-header">
-				<button class="btn-back-header" onclick={goBack} aria-label="Go back to blog listing">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="20"
-						height="20"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						aria-hidden="true"
-					>
-						<polyline points="15 18 9 12 15 6"></polyline>
-					</svg>
-					Back to Blog
-				</button>
-
-				{#if post.categories && post.categories.length > 0}
-					<div class="header-categories">
-						{#each post.categories as category (category.id)}
-							<span class="category-badge">{category.name}</span>
-						{/each}
-					</div>
-				{/if}
-
-				<h1 class="post-title">{post.title}</h1>
-
-				{#if post.excerpt}
-					<p class="post-lead">{post.excerpt}</p>
-				{/if}
-
-				<div class="post-meta">
-					<div class="author-info">
-						{#if post.author_image}
-							<img
-								src={post.author_image}
-								alt={post.author?.name ?? 'Author'}
-								class="author-avatar"
-								width="56"
-								height="56"
-								loading="lazy"
-							/>
-						{:else if post.author}
-							<div class="author-avatar-placeholder">
-								{post.author.name.charAt(0).toUpperCase()}
-							</div>
-						{/if}
-						<div class="author-details">
-							{#if post.author}
-								<span class="author-name">{post.author.name}</span>
-							{/if}
-							<div class="meta-row">
-								<span class="date">{formatDate(post.published_at)}</span>
-								<span class="separator">•</span>
-								<span class="reading-time">{formatReadingTime(readingTime)}</span>
-								{#if post.views !== undefined}
-									<span class="separator">•</span>
-									<span class="views">{post.views.toLocaleString()} views</span>
-								{/if}
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			{#if post.featured_image}
-				<div class="featured-image">
-					<BlurHashImage
-						src={post.featured_image}
-						alt={post.title}
-						blurhash={(post.featured_image_blurhash || post.blurhash) ?? null}
-						width="100%"
-						height="100%"
-						loading="eager"
-						decoding="async"
-						sizes="(max-width: 768px) 100vw, 800px"
-					/>
-				</div>
-			{/if}
-
-			<div class="post-body">
-				<!-- Table of Contents -->
-				{#if post.content_blocks && post.content_blocks.length > 0}
-					<TableOfContents
-						contentBlocks={post.content_blocks}
-						title="In This Article"
-						minHeadings={2}
-						maxDepth={4}
-						showNumbers={true}
-						collapsible={true}
-						defaultExpanded={true}
-						sticky={false}
-						showProgress={true}
-						smoothScroll={true}
-						highlightActive={true}
-						position="inline"
-					/>
-				{/if}
-
-				<div class="content">
-					{#if post.content_blocks && post.content_blocks.length > 0}
-						<!-- Structured content blocks (sanitized for XSS protection).
-						     Reads via blockData() so both legacy {data} and editor {content} shapes work. -->
-						{#each post.content_blocks as block, _bi (_bi)}
-							{@const d = blockData(block)}
-							{#if block.type === 'paragraph'}
-								<p>{@html sanitizeBlogContent((d['text'] as string) || '')}</p>
-							{:else if block.type === 'heading'}
-								{#if d['level'] === 1}
-									<h1>{@html sanitizeBlogContent((d['text'] as string) || '')}</h1>
-								{:else if d['level'] === 2}
-									<h2>{@html sanitizeBlogContent((d['text'] as string) || '')}</h2>
-								{:else if d['level'] === 3}
-									<h3>{@html sanitizeBlogContent((d['text'] as string) || '')}</h3>
-								{:else if d['level'] === 4}
-									<h4>{@html sanitizeBlogContent((d['text'] as string) || '')}</h4>
-								{:else}
-									<h5>{@html sanitizeBlogContent((d['text'] as string) || '')}</h5>
-								{/if}
-							{:else if block.type === 'list'}
-								{#if d['style'] === 'ordered'}
-									<ol>
-										{#each (d['items'] as string[]) || [] as item, _ii (_ii)}
-											<li>{@html sanitizeBlogContent(item)}</li>
-										{/each}
-									</ol>
-								{:else}
-									<ul>
-										{#each (d['items'] as string[]) || [] as item, _ii (_ii)}
-											<li>{@html sanitizeBlogContent(item)}</li>
-										{/each}
-									</ul>
-								{/if}
-							{:else if block.type === 'checklist'}
-								<ul class="checklist">
-									{#each (d['checklistItems'] as Array<{ text: string; checked: boolean }>) || [] as item, _ci (_ci)}
-										<li class:checked={item.checked}>
-											<input type="checkbox" checked={item.checked} disabled />
-											{@html sanitizeBlogContent(item.text)}
-										</li>
-									{/each}
-								</ul>
-							{:else if block.type === 'quote' || block.type === 'pullquote'}
-								<blockquote>{@html sanitizeBlogContent((d['text'] as string) || '')}</blockquote>
-							{:else if block.type === 'code' || block.type === 'preformatted'}
-								<pre><code>{(d['code'] as string) || (d['text'] as string) || ''}</code></pre>
-							{:else if block.type === 'image'}
-								<figure aria-label={(d['caption'] as string) || 'Blog image'}>
-									<img
-										src={(d['url'] as string) || ''}
-										alt={(d['alt'] as string) || (d['caption'] as string) || 'Blog post image'}
-										loading="lazy"
-										decoding="async"
-										width={(d['width'] as number) || undefined}
-										height={(d['height'] as number) || undefined}
-									/>
-									{#if d['caption']}
-										<figcaption>{d['caption']}</figcaption>
-									{/if}
-								</figure>
-							{:else if block.type === 'video' || block.type === 'embed'}
-								{#if d['url']}
-									<div class="video-embed">
-										<iframe
-											src={d['url'] as string}
-											title={(d['caption'] as string) || 'Embedded video'}
-											frameborder="0"
-											allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-											allowfullscreen
-										></iframe>
-									</div>
-								{/if}
-							{:else if block.type === 'callout'}
-								<aside class="callout callout--{(d['type'] as string) || 'info'}">
-									{#if d['title']}<strong>{d['title']}</strong>{/if}
-									<div>
-										{@html sanitizeBlogContent(
-											(d['text'] as string) || (d['content'] as string) || ''
-										)}
-									</div>
-								</aside>
-							{:else if block.type === 'html'}
-								<!-- Raw HTML block — sanitized -->
-								<div>{@html sanitizeBlogContent((d['html'] as string) || '')}</div>
-							{:else if block.type === 'separator' || block.type === 'divider'}
-								<hr />
-							{:else if block.type === 'spacer'}
-								<div style:height="{(d['height'] as number) || 24}px"></div>
-							{:else if block.type === 'button'}
-								{#if d['url']}
-									<a class="block-button" href={d['url'] as string}>
-										{(d['text'] as string) || (d['label'] as string) || 'Learn more'}
-									</a>
-								{/if}
-							{/if}
-						{/each}
-					{:else}
-						<!-- Fallback: HTML content -->
-						<p class="no-content">Content coming soon...</p>
-					{/if}
-				</div>
-
-				{#if post.tags && post.tags.length > 0}
-					<div class="tags-section">
-						<h3>Tags</h3>
-						<div class="tags">
-							{#each post.tags as tag (tag.id)}
-								<span class="tag">{tag.name}</span>
-							{/each}
-						</div>
-					</div>
-				{/if}
-
-				<!-- Social Share Section -->
-				<div class="share-section">
-					<SocialShare
-						url={`https://revolution-trading-pros.pages.dev/blog/${post.slug}`}
-						title={post.title}
-						description={post.excerpt || post.meta_description || ''}
-						hashtags="trading,forex,stocks"
-						onShare={handleSocialShare}
-						size="medium"
-					/>
-				</div>
-			</div>
-
-			<div class="post-footer">
-				<button class="btn-back-footer" onclick={goBack} aria-label="Go back to blog listing">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="20"
-						height="20"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						aria-hidden="true"
-					>
-						<polyline points="15 18 9 12 15 6"></polyline>
-					</svg>
-					Back to Blog
-				</button>
-			</div>
-		</article>
-
-		<!-- Floating Table of Contents Widget -->
-		{#if post.content_blocks && post.content_blocks.length > 0}
-			<FloatingTocWidget
-				contentBlocks={post.content_blocks}
-				showAfterScroll={400}
-				title="Contents"
-			/>
-		{/if}
-	{/if}
+	{/await}
 </div>
 
 <style>
 	/* 2026 CSS Standards: CSS Layers, oklch colors, container queries, color-mix */
-	@layer base, components, utilities;
+	.blog-post-container {
+		/* Modern oklch color palette for dark theme */
+		--post-bg-start: oklch(0.15 0.02 260);
+		--post-bg-end: oklch(0.2 0.02 260);
+		--post-text-primary: oklch(0.95 0.01 260);
+		--post-text-secondary: oklch(0.8 0.01 260);
+		--post-text-muted: oklch(0.65 0.02 260);
+		--post-accent-blue: oklch(0.7 0.15 240);
+		--post-accent-purple: oklch(0.7 0.15 290);
+		--post-card-bg: oklch(0.2 0.02 260 / 0.5);
+		--post-border: oklch(0.65 0.02 260 / 0.1);
 
-	@layer components {
-		.blog-post-container {
-			/* Modern oklch color palette for dark theme */
-			--post-bg-start: oklch(0.15 0.02 260);
-			--post-bg-end: oklch(0.2 0.02 260);
-			--post-text-primary: oklch(0.95 0.01 260);
-			--post-text-secondary: oklch(0.8 0.01 260);
-			--post-text-muted: oklch(0.65 0.02 260);
-			--post-accent-blue: oklch(0.7 0.15 240);
-			--post-accent-purple: oklch(0.7 0.15 290);
-			--post-card-bg: oklch(0.2 0.02 260 / 0.5);
-			--post-border: oklch(0.65 0.02 260 / 0.1);
+		background: linear-gradient(135deg, var(--post-bg-start) 0%, var(--post-bg-end) 100%);
+		padding: 4rem 2rem;
+		container-type: inline-size;
+	}
 
-			background: linear-gradient(135deg, var(--post-bg-start) 0%, var(--post-bg-end) 100%);
-			padding: 4rem 2rem;
-			container-type: inline-size;
-		}
+	.blog-post {
+		max-width: 800px;
+		margin: 0 auto;
+	}
 
-		.blog-post {
-			max-width: 800px;
-			margin: 0 auto;
-		}
+	.post-header {
+		margin-bottom: 3rem;
+	}
 
-		.post-header {
-			margin-bottom: 3rem;
-		}
+	.btn-back-header,
+	.btn-back,
+	.btn-back-footer {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.75rem 1.5rem;
+		background: color-mix(in oklch, var(--post-bg-end) 80%, transparent);
+		backdrop-filter: blur(10px);
+		color: var(--post-text-primary);
+		border: 1px solid color-mix(in oklch, var(--post-text-muted) 20%, transparent);
+		border-radius: 8px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.3s;
+		margin-bottom: 2rem;
+	}
 
-		.btn-back-header,
-		.btn-back,
-		.btn-back-footer {
-			display: inline-flex;
-			align-items: center;
-			gap: 0.5rem;
-			padding: 0.75rem 1.5rem;
-			background: color-mix(in oklch, var(--post-bg-end) 80%, transparent);
-			backdrop-filter: blur(10px);
-			color: var(--post-text-primary);
-			border: 1px solid color-mix(in oklch, var(--post-text-muted) 20%, transparent);
-			border-radius: 8px;
-			font-weight: 600;
-			cursor: pointer;
-			transition: all 0.3s;
-			margin-bottom: 2rem;
-		}
+	.btn-back-header:hover,
+	.btn-back:hover,
+	.btn-back-footer:hover {
+		background: color-mix(in oklch, var(--post-accent-blue) 20%, transparent);
+		border-color: var(--post-accent-blue);
+		transform: translateX(-4px);
+	}
 
-		.btn-back-header:hover,
-		.btn-back:hover,
-		.btn-back-footer:hover {
-			background: color-mix(in oklch, var(--post-accent-blue) 20%, transparent);
-			border-color: var(--post-accent-blue);
-			transform: translateX(-4px);
-		}
+	.btn-back-header:focus-visible,
+	.btn-back:focus-visible,
+	.btn-back-footer:focus-visible {
+		outline: 2px solid var(--post-accent-blue);
+		outline-offset: 2px;
+	}
 
-		.btn-back-header:focus-visible,
-		.btn-back:focus-visible,
-		.btn-back-footer:focus-visible {
-			outline: 2px solid var(--post-accent-blue);
-			outline-offset: 2px;
-		}
+	.header-categories {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		margin-bottom: 1.5rem;
+	}
 
-		.header-categories {
-			display: flex;
-			flex-wrap: wrap;
-			gap: 0.75rem;
-			margin-bottom: 1.5rem;
-		}
+	.category-badge {
+		padding: 0.5rem 1rem;
+		background: linear-gradient(135deg, var(--post-accent-blue), var(--post-accent-purple));
+		color: white;
+		font-size: 0.875rem;
+		font-weight: 600;
+		border-radius: 16px;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
 
-		.category-badge {
-			padding: 0.5rem 1rem;
-			background: linear-gradient(135deg, var(--post-accent-blue), var(--post-accent-purple));
-			color: white;
-			font-size: 0.875rem;
-			font-weight: 600;
-			border-radius: 16px;
-			text-transform: uppercase;
-			letter-spacing: 0.05em;
-		}
+	.post-title {
+		font-size: 3rem;
+		font-weight: 800;
+		color: var(--post-text-primary);
+		line-height: 1.2;
+		margin-bottom: 1rem;
+	}
 
-		.post-title {
-			font-size: 3rem;
-			font-weight: 800;
-			color: var(--post-text-primary);
-			line-height: 1.2;
-			margin-bottom: 1rem;
-		}
+	.post-lead {
+		font-size: 1.25rem;
+		color: var(--post-text-secondary);
+		line-height: 1.6;
+		margin-bottom: 2rem;
+	}
 
-		.post-lead {
-			font-size: 1.25rem;
-			color: var(--post-text-secondary);
-			line-height: 1.6;
-			margin-bottom: 2rem;
-		}
+	.post-meta {
+		padding: 1.5rem;
+		background: var(--post-card-bg);
+		backdrop-filter: blur(10px);
+		border-radius: 12px;
+		border: 1px solid var(--post-border);
+	}
 
-		.post-meta {
-			padding: 1.5rem;
-			background: var(--post-card-bg);
-			backdrop-filter: blur(10px);
-			border-radius: 12px;
-			border: 1px solid var(--post-border);
-		}
+	.author-info {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
 
-		.author-info {
-			display: flex;
-			align-items: center;
-			gap: 1rem;
-		}
+	.author-avatar {
+		width: 56px;
+		height: 56px;
+		border-radius: 50%;
+		object-fit: cover;
+		border: 2px solid var(--post-accent-blue);
+	}
 
-		.author-avatar {
-			width: 56px;
-			height: 56px;
-			border-radius: 50%;
-			object-fit: cover;
-			border: 2px solid var(--post-accent-blue);
-		}
+	.author-avatar-placeholder {
+		width: 56px;
+		height: 56px;
+		border-radius: 50%;
+		background: linear-gradient(135deg, var(--post-accent-blue), var(--post-accent-purple));
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 1.5rem;
+		font-weight: 700;
+		color: white;
+	}
 
-		.author-avatar-placeholder {
-			width: 56px;
-			height: 56px;
-			border-radius: 50%;
-			background: linear-gradient(135deg, var(--post-accent-blue), var(--post-accent-purple));
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			font-size: 1.5rem;
-			font-weight: 700;
-			color: white;
-		}
+	.author-details {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+	}
 
-		.author-details {
-			display: flex;
-			flex-direction: column;
-			gap: 0.25rem;
-		}
+	.author-name {
+		font-size: 1.125rem;
+		font-weight: 700;
+		color: var(--post-text-primary);
+	}
 
-		.author-name {
-			font-size: 1.125rem;
-			font-weight: 700;
-			color: var(--post-text-primary);
-		}
+	.meta-row {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.875rem;
+		color: var(--post-text-muted);
+	}
 
-		.meta-row {
-			display: flex;
-			align-items: center;
-			gap: 0.5rem;
-			font-size: 0.875rem;
-			color: var(--post-text-muted);
-		}
+	.separator {
+		color: color-mix(in oklch, var(--post-text-muted) 50%, transparent);
+	}
 
-		.separator {
-			color: color-mix(in oklch, var(--post-text-muted) 50%, transparent);
-		}
+	.featured-image {
+		width: 100%;
+		height: 400px;
+		border-radius: 16px;
+		overflow: hidden;
+		margin-bottom: 3rem;
+		position: relative;
+	}
 
-		.featured-image {
-			width: 100%;
-			height: 400px;
-			border-radius: 16px;
-			overflow: hidden;
-			margin-bottom: 3rem;
-			position: relative;
-		}
+	.featured-image::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border-radius: 16px;
+		padding: 2px;
+		background: linear-gradient(135deg, var(--post-accent-blue), var(--post-accent-purple));
+		-webkit-mask:
+			linear-gradient(#fff 0 0) content-box,
+			linear-gradient(#fff 0 0);
+		mask:
+			linear-gradient(#fff 0 0) content-box,
+			linear-gradient(#fff 0 0);
+		-webkit-mask-composite: xor;
+		mask-composite: exclude;
+		opacity: 0.3;
+	}
 
-		.featured-image::before {
-			content: '';
-			position: absolute;
-			inset: 0;
-			border-radius: 16px;
-			padding: 2px;
-			background: linear-gradient(135deg, var(--post-accent-blue), var(--post-accent-purple));
-			-webkit-mask:
-				linear-gradient(#fff 0 0) content-box,
-				linear-gradient(#fff 0 0);
-			mask:
-				linear-gradient(#fff 0 0) content-box,
-				linear-gradient(#fff 0 0);
-			-webkit-mask-composite: xor;
-			mask-composite: exclude;
-			opacity: 0.3;
-		}
+	.featured-image :global(img) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
 
-		.featured-image :global(img) {
-			width: 100%;
-			height: 100%;
-			object-fit: cover;
-		}
+	.post-body {
+		background: var(--post-card-bg);
+		backdrop-filter: blur(10px);
+		border-radius: 16px;
+		border: 1px solid var(--post-border);
+		padding: 3rem;
+		margin-bottom: 3rem;
+	}
 
-		.post-body {
-			background: var(--post-card-bg);
-			backdrop-filter: blur(10px);
-			border-radius: 16px;
-			border: 1px solid var(--post-border);
-			padding: 3rem;
-			margin-bottom: 3rem;
-		}
+	.content {
+		color: color-mix(in oklch, var(--post-text-primary) 90%, var(--post-text-secondary));
+		font-size: 1.125rem;
+		line-height: 1.8;
+	}
 
-		.content {
-			color: color-mix(in oklch, var(--post-text-primary) 90%, var(--post-text-secondary));
-			font-size: 1.125rem;
-			line-height: 1.8;
-		}
+	.content :global(h1),
+	.content :global(h2),
+	.content :global(h3),
+	.content :global(h4),
+	.content :global(h5),
+	.content :global(h6) {
+		color: var(--post-text-primary);
+		font-weight: 700;
+		margin-top: 2rem;
+		margin-bottom: 1rem;
+	}
 
-		.content :global(h1),
-		.content :global(h2),
-		.content :global(h3),
-		.content :global(h4),
-		.content :global(h5),
-		.content :global(h6) {
-			color: var(--post-text-primary);
-			font-weight: 700;
-			margin-top: 2rem;
-			margin-bottom: 1rem;
-		}
+	.content :global(h1) {
+		font-size: 2.5rem;
+	}
+	.content :global(h2) {
+		font-size: 2rem;
+	}
+	.content :global(h3) {
+		font-size: 1.75rem;
+	}
+	.content :global(h4) {
+		font-size: 1.5rem;
+	}
 
-		.content :global(h1) {
-			font-size: 2.5rem;
-		}
-		.content :global(h2) {
-			font-size: 2rem;
-		}
-		.content :global(h3) {
-			font-size: 1.75rem;
-		}
-		.content :global(h4) {
-			font-size: 1.5rem;
-		}
+	.content :global(p) {
+		margin-bottom: 1.5rem;
+	}
 
-		.content :global(p) {
-			margin-bottom: 1.5rem;
-		}
+	.content :global(a) {
+		color: var(--post-accent-blue);
+		text-decoration: underline;
+		transition: color 0.3s;
+	}
 
-		.content :global(a) {
-			color: var(--post-accent-blue);
-			text-decoration: underline;
-			transition: color 0.3s;
-		}
+	.content :global(a:hover) {
+		color: color-mix(in oklch, var(--post-accent-blue) 80%, white);
+	}
 
-		.content :global(a:hover) {
-			color: color-mix(in oklch, var(--post-accent-blue) 80%, white);
-		}
+	.content :global(ul),
+	.content :global(ol) {
+		margin: 1.5rem 0;
+		padding-left: 2rem;
+	}
 
-		.content :global(ul),
-		.content :global(ol) {
-			margin: 1.5rem 0;
-			padding-left: 2rem;
-		}
+	.content :global(li) {
+		margin-bottom: 0.75rem;
+	}
 
-		.content :global(li) {
-			margin-bottom: 0.75rem;
-		}
+	.content :global(blockquote) {
+		border-left: 4px solid var(--post-accent-blue);
+		padding-left: 1.5rem;
+		margin: 2rem 0;
+		font-style: italic;
+		color: var(--post-text-secondary);
+	}
 
-		.content :global(blockquote) {
-			border-left: 4px solid var(--post-accent-blue);
-			padding-left: 1.5rem;
-			margin: 2rem 0;
-			font-style: italic;
-			color: var(--post-text-secondary);
-		}
+	.content :global(code) {
+		background: oklch(0.1 0.02 260 / 0.8);
+		padding: 0.25rem 0.5rem;
+		border-radius: 4px;
+		font-family: 'Courier New', monospace;
+		font-size: 0.9em;
+		color: var(--post-accent-purple);
+	}
 
-		.content :global(code) {
-			background: oklch(0.1 0.02 260 / 0.8);
-			padding: 0.25rem 0.5rem;
-			border-radius: 4px;
-			font-family: 'Courier New', monospace;
-			font-size: 0.9em;
-			color: var(--post-accent-purple);
-		}
+	.content :global(pre) {
+		background: oklch(0.1 0.02 260 / 0.8);
+		padding: 1.5rem;
+		border-radius: 8px;
+		overflow-x: auto;
+		margin: 2rem 0;
+	}
 
-		.content :global(pre) {
-			background: oklch(0.1 0.02 260 / 0.8);
-			padding: 1.5rem;
-			border-radius: 8px;
-			overflow-x: auto;
-			margin: 2rem 0;
-		}
+	.content :global(pre code) {
+		background: none;
+		padding: 0;
+	}
 
-		.content :global(pre code) {
-			background: none;
-			padding: 0;
-		}
+	.content :global(img) {
+		max-width: 100%;
+		height: auto;
+		border-radius: 8px;
+		margin: 2rem 0;
+	}
 
-		.content :global(img) {
-			max-width: 100%;
-			height: auto;
-			border-radius: 8px;
-			margin: 2rem 0;
-		}
+	.content :global(figure) {
+		margin: 2rem 0;
+	}
 
-		.content :global(figure) {
-			margin: 2rem 0;
-		}
+	.content :global(figure img) {
+		width: 100%;
+		border-radius: 8px;
+	}
 
-		.content :global(figure img) {
-			width: 100%;
-			border-radius: 8px;
-		}
+	.content :global(figcaption) {
+		text-align: center;
+		font-size: 0.9rem;
+		color: var(--post-text-muted);
+		margin-top: 0.75rem;
+	}
 
-		.content :global(figcaption) {
-			text-align: center;
-			font-size: 0.9rem;
-			color: var(--post-text-muted);
-			margin-top: 0.75rem;
-		}
+	.content :global(table) {
+		width: 100%;
+		border-collapse: collapse;
+		margin: 2rem 0;
+	}
 
-		.content :global(table) {
-			width: 100%;
-			border-collapse: collapse;
-			margin: 2rem 0;
-		}
+	.content :global(th),
+	.content :global(td) {
+		padding: 0.75rem;
+		border: 1px solid color-mix(in oklch, var(--post-text-muted) 20%, transparent);
+	}
 
-		.content :global(th),
-		.content :global(td) {
-			padding: 0.75rem;
-			border: 1px solid color-mix(in oklch, var(--post-text-muted) 20%, transparent);
-		}
+	.content :global(th) {
+		background: color-mix(in oklch, var(--post-accent-blue) 10%, transparent);
+		font-weight: 600;
+	}
 
-		.content :global(th) {
-			background: color-mix(in oklch, var(--post-accent-blue) 10%, transparent);
-			font-weight: 600;
-		}
+	.no-content {
+		text-align: center;
+		color: var(--post-text-muted);
+		font-style: italic;
+		padding: 2rem 0;
+	}
 
-		.no-content {
-			text-align: center;
-			color: var(--post-text-muted);
-			font-style: italic;
-			padding: 2rem 0;
-		}
+	.tags-section {
+		margin-top: 3rem;
+		padding-top: 2rem;
+		border-top: 1px solid var(--post-border);
+	}
 
-		.tags-section {
-			margin-top: 3rem;
-			padding-top: 2rem;
-			border-top: 1px solid var(--post-border);
-		}
+	.tags-section h3 {
+		color: var(--post-text-primary);
+		font-size: 1.25rem;
+		font-weight: 700;
+		margin-bottom: 1rem;
+	}
 
-		.tags-section h3 {
-			color: var(--post-text-primary);
-			font-size: 1.25rem;
-			font-weight: 700;
-			margin-bottom: 1rem;
-		}
+	.tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+	}
 
-		.tags {
-			display: flex;
-			flex-wrap: wrap;
-			gap: 0.75rem;
-		}
+	.tag {
+		padding: 0.5rem 1rem;
+		background: color-mix(in oklch, var(--post-text-muted) 10%, transparent);
+		color: var(--post-text-muted);
+		font-size: 0.875rem;
+		border-radius: 8px;
+		border: 1px solid color-mix(in oklch, var(--post-text-muted) 20%, transparent);
+		transition: all 0.3s;
+	}
 
-		.tag {
-			padding: 0.5rem 1rem;
-			background: color-mix(in oklch, var(--post-text-muted) 10%, transparent);
-			color: var(--post-text-muted);
-			font-size: 0.875rem;
-			border-radius: 8px;
-			border: 1px solid color-mix(in oklch, var(--post-text-muted) 20%, transparent);
-			transition: all 0.3s;
-		}
+	.tag:hover {
+		background: color-mix(in oklch, var(--post-accent-blue) 20%, transparent);
+		border-color: var(--post-accent-blue);
+		color: var(--post-accent-blue);
+	}
 
-		.tag:hover {
-			background: color-mix(in oklch, var(--post-accent-blue) 20%, transparent);
-			border-color: var(--post-accent-blue);
-			color: var(--post-accent-blue);
-		}
+	/* Share Section */
+	.share-section {
+		margin-top: 2rem;
+		padding-top: 2rem;
+		border-top: 1px solid var(--post-border);
+	}
 
-		/* Share Section */
-		.share-section {
-			margin-top: 2rem;
-			padding-top: 2rem;
-			border-top: 1px solid var(--post-border);
-		}
+	/* Reading Time */
+	.reading-time {
+		color: var(--post-accent-blue);
+		font-weight: 500;
+	}
 
-		/* Reading Time */
-		.reading-time {
-			color: var(--post-accent-blue);
-			font-weight: 500;
-		}
+	.post-footer {
+		text-align: center;
+	}
 
-		.post-footer {
-			text-align: center;
-		}
+	.loading,
+	.error {
+		max-width: 600px;
+		margin: 4rem auto;
+		text-align: center;
+	}
 
-		.loading,
-		.error {
-			max-width: 600px;
-			margin: 4rem auto;
-			text-align: center;
-		}
+	.loading {
+		color: var(--post-text-muted);
+	}
 
-		.loading {
-			color: var(--post-text-muted);
-		}
+	.error {
+		--error-color: oklch(0.65 0.2 25);
+		color: var(--error-color);
+	}
 
-		.error {
-			--error-color: oklch(0.65 0.2 25);
-			color: var(--error-color);
-		}
+	.error h2 {
+		font-size: 2rem;
+		margin-bottom: 1rem;
+	}
 
-		.error h2 {
-			font-size: 2rem;
-			margin-bottom: 1rem;
-		}
+	.error button {
+		margin-top: 2rem;
+	}
 
-		.error button {
-			margin-top: 2rem;
-		}
-
-		.spinner {
-			width: 48px;
-			height: 48px;
-			border: 4px solid color-mix(in oklch, var(--post-text-muted) 20%, transparent);
-			border-top-color: var(--post-accent-blue);
-			border-radius: 50%;
-			animation: spin 1s linear infinite;
-			margin: 0 auto 1rem;
-		}
+	.spinner {
+		width: 48px;
+		height: 48px;
+		border: 4px solid color-mix(in oklch, var(--post-text-muted) 20%, transparent);
+		border-top-color: var(--post-accent-blue);
+		border-radius: 50%;
+		animation: spin 1s linear infinite;
+		margin: 0 auto 1rem;
 	}
 
 	@keyframes spin {

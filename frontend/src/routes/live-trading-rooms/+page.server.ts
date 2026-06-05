@@ -343,7 +343,7 @@ export const load: PageServerLoad = async ({
 					priceCurrency: 'USD',
 					availability: 'https://schema.org/InStock'
 				}
-			},
+			}
 		]
 	};
 

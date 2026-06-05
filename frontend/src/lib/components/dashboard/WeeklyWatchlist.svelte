@@ -112,8 +112,7 @@
 			} catch (err) {
 				// Single retry on 502/503 (backend startup race)
 				const is5xx =
-					err instanceof Error &&
-					(err.message.includes('502') || err.message.includes('503'));
+					err instanceof Error && (err.message.includes('502') || err.message.includes('503'));
 				if (is5xx) {
 					await new Promise((r) => setTimeout(r, 2000));
 					try {

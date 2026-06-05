@@ -45,6 +45,16 @@
 	let fileInput = $state<HTMLInputElement | null>(null);
 	let dragCounter = $state(0);
 
+	function captureFileInput(element: HTMLInputElement) {
+		fileInput = element;
+
+		return () => {
+			if (fileInput === element) {
+				fileInput = null;
+			}
+		};
+	}
+
 	// Validate files
 	function validateFiles(files: File[]): { valid: File[]; errors: string[] } {
 		const valid: File[] = [];
@@ -173,7 +183,7 @@
 </script>
 
 <div
-	class="dropzone relative {className}"
+	class={['dropzone', className]}
 	class:dropzone-active={isDragOver}
 	class:dropzone-disabled={disabled}
 	role="button"
@@ -186,21 +196,21 @@
 	ondrop={handleDrop}
 >
 	<input
-		bind:this={fileInput}
 		type="file"
 		{accept}
 		{multiple}
 		{disabled}
 		onchange={handleFileInput}
-		class="hidden"
+		class="dropzone__input"
+		{@attach captureFileInput}
 	/>
 
 	<div class="dropzone-content">
 		{#if isDragOver}
 			<!-- Drop active state -->
 			<div class="drop-indicator">
-				<Icon name="IconCloudUpload" size={64} class="text-blue-500 animate-bounce" />
-				<p class="text-lg font-medium text-blue-600">Drop files here</p>
+				<Icon name="IconCloudUpload" size={64} class="dropzone__upload-icon" />
+				<p class="dropzone__drop-label">Drop files here</p>
 			</div>
 		{:else}
 			<!-- Default state -->
@@ -208,12 +218,10 @@
 				{@render children()}
 			{:else}
 				<div class="default-content">
-					<Icon name="IconPhoto" size={48} class="text-gray-400 mb-4" />
-					<p class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-1">
-						Drag and drop images here
-					</p>
-					<p class="text-sm text-gray-500 dark:text-gray-400 mb-4">or click to browse</p>
-					<div class="text-xs text-gray-400 dark:text-gray-500 space-y-1">
+					<Icon name="IconPhoto" size={48} class="dropzone__photo-icon" />
+					<p class="dropzone__title">Drag and drop images here</p>
+					<p class="dropzone__subtitle">or click to browse</p>
+					<div class="dropzone__requirements">
 						<p>Supported: JPG, PNG, WebP, GIF, AVIF</p>
 						<p>Max size: {formatBytes(maxSize)} per file</p>
 						{#if multiple}
@@ -228,6 +236,7 @@
 
 <style>
 	.dropzone {
+		position: relative;
 		border: 2px dashed #d1d5db;
 		border-radius: 0.75rem;
 		padding: 2rem;
@@ -238,6 +247,10 @@
 		align-items: center;
 		justify-content: center;
 		min-height: 200px;
+	}
+
+	.dropzone__input {
+		display: none;
 	}
 
 	:global(.dark) .dropzone {
@@ -299,5 +312,77 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+	}
+
+	.dropzone :global(.dropzone__upload-icon) {
+		color: #3b82f6;
+		animation: dropzone-bounce 1s infinite;
+	}
+
+	.dropzone :global(.dropzone__photo-icon) {
+		margin-bottom: 1rem;
+		color: #9ca3af;
+	}
+
+	.dropzone__drop-label,
+	.dropzone__title {
+		margin: 0;
+		font-size: 1.125rem;
+		font-weight: 500;
+		line-height: 1.75rem;
+	}
+
+	.dropzone__drop-label {
+		color: #2563eb;
+	}
+
+	.dropzone__title {
+		margin-bottom: 0.25rem;
+		color: #374151;
+	}
+
+	:global(.dark) .dropzone__title {
+		color: #d1d5db;
+	}
+
+	.dropzone__subtitle {
+		margin: 0 0 1rem;
+		color: #6b7280;
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+	}
+
+	:global(.dark) .dropzone__subtitle {
+		color: #9ca3af;
+	}
+
+	.dropzone__requirements {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+		color: #9ca3af;
+		font-size: 0.75rem;
+		line-height: 1rem;
+	}
+
+	.dropzone__requirements p {
+		margin: 0;
+	}
+
+	:global(.dark) .dropzone__requirements {
+		color: #6b7280;
+	}
+
+	@keyframes dropzone-bounce {
+		0%,
+		100% {
+			transform: translateY(-25%);
+			animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+		}
+
+		50% {
+			transform: none;
+			animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+		}
 	}
 </style>

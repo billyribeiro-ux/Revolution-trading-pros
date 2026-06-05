@@ -31,22 +31,16 @@
 
 {#if type === 'grid'}
 	<!-- Grid skeleton for gallery views -->
-	<div class="media-skeleton-grid gap-4 {className}" style="--columns: {columns};">
+	<div class={['media-skeleton-grid', className]} style:--columns={columns}>
 		{#each Array(count) as _, i (i)}
-			<div
-				class="skeleton-card bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden"
-				style="animation-delay: {i * 0.05}s;"
-			>
-				<div
-					class="relative bg-gray-200 dark:bg-gray-700 overflow-hidden"
-					style="aspect-ratio: {aspectRatio};"
-				>
+			<div class="skeleton-card" style:animation-delay={`${i * 0.05}s`}>
+				<div class="skeleton-media" style:aspect-ratio={aspectRatio}>
 					<div class="skeleton-shimmer"></div>
 				</div>
 				{#if showText}
-					<div class="p-3 space-y-2">
-						<div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
-						<div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+					<div class="skeleton-card__body">
+						<div class="skeleton-line skeleton-line--title"></div>
+						<div class="skeleton-line skeleton-line--meta"></div>
 					</div>
 				{/if}
 			</div>
@@ -54,85 +48,71 @@
 	</div>
 {:else if type === 'card'}
 	<!-- Single card skeleton -->
-	<div
-		class="skeleton-card-large bg-gray-100 dark:bg-gray-800 rounded-xl overflow-hidden {className}"
-	>
-		<div
-			class="relative bg-gray-200 dark:bg-gray-700 overflow-hidden"
-			style="aspect-ratio: {aspectRatio};"
-		>
+	<div class={['skeleton-card-large', className]}>
+		<div class="skeleton-media" style:aspect-ratio={aspectRatio}>
 			<div class="skeleton-shimmer"></div>
 		</div>
 		{#if showText}
-			<div class="p-6 space-y-4">
-				<div class="h-6 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
-				<div class="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
-				<div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
-				<div class="flex gap-3 pt-2">
-					<div class="h-10 w-24 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
-					<div class="h-10 w-24 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+			<div class="skeleton-card-large__body">
+				<div class="skeleton-line skeleton-line--headline"></div>
+				<div class="skeleton-line"></div>
+				<div class="skeleton-line skeleton-line--meta"></div>
+				<div class="skeleton-actions">
+					<div class="skeleton-button"></div>
+					<div class="skeleton-button"></div>
 				</div>
 			</div>
 		{/if}
 	</div>
 {:else if type === 'list'}
 	<!-- List/table skeleton -->
-	<div class="space-y-2 {className}">
+	<div class={['skeleton-list', className]}>
 		{#each Array(count) as _, i (i)}
-			<div
-				class="skeleton-row flex items-center gap-4 p-3 bg-gray-100 dark:bg-gray-800 rounded-lg"
-				style="animation-delay: {i * 0.05}s;"
-			>
-				<div class="w-5 h-5 bg-gray-200 dark:bg-gray-700 rounded"></div>
-				<div class="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-lg relative overflow-hidden">
+			<div class="skeleton-row" style:animation-delay={`${i * 0.05}s`}>
+				<div class="skeleton-checkbox"></div>
+				<div class="skeleton-thumbnail">
 					<div class="skeleton-shimmer"></div>
 				</div>
-				<div class="flex-1 space-y-2">
-					<div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-48"></div>
-					<div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
+				<div class="skeleton-row__content">
+					<div class="skeleton-line skeleton-line--name"></div>
+					<div class="skeleton-line skeleton-line--description"></div>
 				</div>
-				<div class="h-4 w-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
-				<div class="h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded"></div>
-				<div class="h-8 w-20 bg-gray-200 dark:bg-gray-700 rounded"></div>
+				<div class="skeleton-line skeleton-line--size"></div>
+				<div class="skeleton-line skeleton-line--date"></div>
+				<div class="skeleton-row__action"></div>
 			</div>
 		{/each}
 	</div>
 {:else if type === 'upload'}
 	<!-- Upload progress skeleton -->
-	<div class="skeleton-upload bg-gray-100 dark:bg-gray-800 rounded-xl overflow-hidden {className}">
-		<div class="p-4 border-b border-gray-200 dark:border-gray-700 space-y-2">
-			<div class="h-5 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
-			<div class="h-1 bg-gray-200 dark:bg-gray-700 rounded-full relative overflow-hidden">
+	<div class={['skeleton-upload', className]}>
+		<div class="skeleton-upload__header">
+			<div class="skeleton-line skeleton-line--upload-title"></div>
+			<div class="skeleton-progress">
 				<div class="skeleton-shimmer"></div>
 			</div>
 		</div>
 		{#each Array(count) as _, i (i)}
-			<div
-				class="skeleton-upload-item flex items-center gap-3 p-4 border-b border-gray-200 dark:border-gray-700 last:border-0"
-				style="animation-delay: {i * 0.1}s;"
-			>
-				<div class="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-lg relative overflow-hidden">
+			<div class="skeleton-upload-item" style:animation-delay={`${i * 0.1}s`}>
+				<div class="skeleton-thumbnail">
 					<div class="skeleton-shimmer"></div>
 				</div>
-				<div class="flex-1 space-y-2">
-					<div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-40"></div>
-					<div class="h-2 bg-gray-200 dark:bg-gray-700 rounded-full relative overflow-hidden">
+				<div class="skeleton-upload-item__content">
+					<div class="skeleton-line skeleton-line--upload-name"></div>
+					<div class="skeleton-progress skeleton-progress--thin">
 						<div class="skeleton-shimmer"></div>
 					</div>
 				</div>
-				<div class="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+				<div class="skeleton-upload-item__status"></div>
 			</div>
 		{/each}
 	</div>
 {:else if type === 'single'}
 	<!-- Single image skeleton -->
-	<div
-		class="skeleton-single relative bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden {className}"
-		style="aspect-ratio: {aspectRatio};"
-	>
+	<div class={['skeleton-single', className]} style:aspect-ratio={aspectRatio}>
 		<div class="skeleton-shimmer"></div>
-		<div class="absolute inset-0 flex items-center justify-center">
-			<Icon name="IconPhoto" size={48} class="text-gray-300 dark:text-gray-600" />
+		<div class="skeleton-single__icon">
+			<Icon name="IconPhoto" size={48} />
 		</div>
 	</div>
 {/if}
@@ -180,35 +160,243 @@
 		}
 	}
 
-	/* Grid layout with CSS variable */
+	.skeleton-card,
+	.skeleton-card-large,
+	.skeleton-row,
+	.skeleton-upload,
+	.skeleton-upload-item,
+	.skeleton-single {
+		background: #f3f4f6;
+		animation: pulse 2s ease-in-out infinite;
+	}
+
+	:global(.dark) .skeleton-card,
+	:global(.dark) .skeleton-card-large,
+	:global(.dark) .skeleton-row,
+	:global(.dark) .skeleton-upload,
+	:global(.dark) .skeleton-upload-item,
+	:global(.dark) .skeleton-single {
+		background: #1f2937;
+	}
+
+	.skeleton-media,
+	.skeleton-line,
+	.skeleton-button,
+	.skeleton-checkbox,
+	.skeleton-thumbnail,
+	.skeleton-row__action,
+	.skeleton-progress,
+	.skeleton-upload-item__status,
+	.skeleton-single {
+		position: relative;
+		overflow: hidden;
+		background: #e5e7eb;
+	}
+
+	:global(.dark) .skeleton-media,
+	:global(.dark) .skeleton-line,
+	:global(.dark) .skeleton-button,
+	:global(.dark) .skeleton-checkbox,
+	:global(.dark) .skeleton-thumbnail,
+	:global(.dark) .skeleton-row__action,
+	:global(.dark) .skeleton-progress,
+	:global(.dark) .skeleton-upload-item__status,
+	:global(.dark) .skeleton-single {
+		background: #374151;
+	}
+
 	.media-skeleton-grid {
 		display: grid;
 		grid-template-columns: repeat(var(--columns), 1fr);
+		gap: 1rem;
 	}
 
-	/* Pulse animations for skeleton elements */
 	.skeleton-card {
-		animation: pulse 2s ease-in-out infinite;
+		overflow: hidden;
+		border-radius: 0.5rem;
 	}
 
 	.skeleton-card-large {
-		animation: pulse 2s ease-in-out infinite;
+		overflow: hidden;
+		border-radius: 0.75rem;
+	}
+
+	.skeleton-card__body {
+		display: grid;
+		gap: 0.5rem;
+		padding: 0.75rem;
+	}
+
+	.skeleton-card-large__body {
+		display: grid;
+		gap: 1rem;
+		padding: 1.5rem;
+	}
+
+	.skeleton-line {
+		width: 100%;
+		height: 1rem;
+		border-radius: 0.25rem;
+	}
+
+	.skeleton-line--title {
+		width: 75%;
+	}
+
+	.skeleton-line--meta {
+		width: 50%;
+		height: 0.75rem;
+	}
+
+	.skeleton-line--headline {
+		width: 66.666%;
+		height: 1.5rem;
+	}
+
+	.skeleton-actions {
+		display: flex;
+		gap: 0.75rem;
+		padding-top: 0.5rem;
+	}
+
+	.skeleton-button {
+		width: 6rem;
+		height: 2.5rem;
+		border-radius: 0.5rem;
+	}
+
+	.skeleton-list {
+		display: grid;
+		gap: 0.5rem;
 	}
 
 	.skeleton-row {
-		animation: pulse 2s ease-in-out infinite;
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		border-radius: 0.5rem;
+		padding: 0.75rem;
+	}
+
+	.skeleton-checkbox {
+		width: 1.25rem;
+		height: 1.25rem;
+		border-radius: 0.25rem;
+		flex: 0 0 auto;
+	}
+
+	.skeleton-thumbnail {
+		width: 3rem;
+		height: 3rem;
+		border-radius: 0.5rem;
+		flex: 0 0 auto;
+	}
+
+	.skeleton-row__content,
+	.skeleton-upload-item__content {
+		display: grid;
+		gap: 0.5rem;
+		flex: 1 1 auto;
+		min-width: 0;
+	}
+
+	.skeleton-line--name {
+		width: 12rem;
+		max-width: 100%;
+	}
+
+	.skeleton-line--description {
+		width: 8rem;
+		max-width: 80%;
+		height: 0.75rem;
+	}
+
+	.skeleton-line--size {
+		width: 4rem;
+	}
+
+	.skeleton-line--date {
+		width: 6rem;
+	}
+
+	.skeleton-row__action {
+		width: 5rem;
+		height: 2rem;
+		border-radius: 0.25rem;
+		flex: 0 0 auto;
 	}
 
 	.skeleton-upload {
-		animation: pulse 2s ease-in-out infinite;
+		overflow: hidden;
+		border-radius: 0.75rem;
+	}
+
+	.skeleton-upload__header {
+		display: grid;
+		gap: 0.5rem;
+		border-bottom: 1px solid #e5e7eb;
+		padding: 1rem;
+	}
+
+	:global(.dark) .skeleton-upload__header,
+	:global(.dark) .skeleton-upload-item {
+		border-color: #374151;
+	}
+
+	.skeleton-line--upload-title {
+		width: 8rem;
+		height: 1.25rem;
+	}
+
+	.skeleton-progress {
+		width: 100%;
+		height: 0.25rem;
+		border-radius: 999px;
+	}
+
+	.skeleton-progress--thin {
+		height: 0.5rem;
 	}
 
 	.skeleton-upload-item {
-		animation: pulse 2s ease-in-out infinite;
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		border-bottom: 1px solid #e5e7eb;
+		padding: 1rem;
+	}
+
+	.skeleton-upload-item:last-child {
+		border-bottom: 0;
+	}
+
+	.skeleton-line--upload-name {
+		width: 10rem;
+		max-width: 100%;
+	}
+
+	.skeleton-upload-item__status {
+		width: 2rem;
+		height: 2rem;
+		border-radius: 999px;
+		flex: 0 0 auto;
 	}
 
 	.skeleton-single {
-		animation: pulse 2s ease-in-out infinite;
+		border-radius: 0.5rem;
+	}
+
+	.skeleton-single__icon {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: #d1d5db;
+	}
+
+	:global(.dark) .skeleton-single__icon {
+		color: #4b5563;
 	}
 
 	/* Responsive grid adjustments */
@@ -221,6 +409,19 @@
 	@media (max-width: 479.98px) {
 		.media-skeleton-grid {
 			grid-template-columns: repeat(1, 1fr);
+		}
+	}
+
+	@media (max-width: 767.98px) {
+		.skeleton-row {
+			align-items: flex-start;
+			flex-wrap: wrap;
+		}
+
+		.skeleton-line--size,
+		.skeleton-line--date,
+		.skeleton-row__action {
+			display: none;
 		}
 	}
 </style>

@@ -36,8 +36,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 	// User is guaranteed to exist here because hooks.server.ts
 	// redirects to login if not authenticated.
 	const user =
-		(locals as { user?: { id: string; email: string; name?: string; role?: string } }).user ??
-		null;
+		(locals as { user?: { id: string; email: string; name?: string; role?: string } }).user ?? null;
 
 	// CLS FIX (measured 0.12 → 0.0016 on /dashboard): pre-fetch the membership list
 	// on the server so DashboardSidebar renders its nav on first paint instead of

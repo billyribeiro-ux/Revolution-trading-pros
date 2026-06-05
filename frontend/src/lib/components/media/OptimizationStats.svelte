@@ -8,11 +8,11 @@
   - Format conversions
   - Processing time
 
-  @version 2.0.0
+ @version 2.0.0
 -->
 <script lang="ts">
 	import { fade, slide } from 'svelte/transition';
-	import { tweened } from 'svelte/motion';
+	import { Tween } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 	import Icon from '$lib/components/Icon.svelte';
 
@@ -41,15 +41,9 @@
 		className?: string;
 	} = $props();
 
-	// Animated savings
-	const animatedSavings = tweened(0, {
-		duration: 1000,
+	const animatedSavings = Tween.of(() => stats.savingsPercent, {
+		duration: () => (animated ? 1000 : 0),
 		easing: cubicOut
-	});
-
-	$effect(() => {
-		const duration = animated ? 1000 : 0;
-		animatedSavings.set(stats.savingsPercent, { duration });
 	});
 
 	// Format bytes
@@ -61,69 +55,49 @@
 		return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
 	}
 
-	// Get savings color
-	function getSavingsColor(percent: number): string {
-		if (percent >= 70) return 'text-green-500';
-		if (percent >= 50) return 'text-green-400';
-		if (percent >= 30) return 'text-yellow-500';
-		return 'text-orange-500';
+	function getSavingsTone(percent: number): 'excellent' | 'strong' | 'moderate' | 'low' {
+		if (percent >= 70) return 'excellent';
+		if (percent >= 50) return 'strong';
+		if (percent >= 30) return 'moderate';
+		return 'low';
 	}
 
-	// Get ring color
-	function getRingColor(percent: number): string {
-		if (percent >= 70) return 'stroke-green-500';
-		if (percent >= 50) return 'stroke-green-400';
-		if (percent >= 30) return 'stroke-yellow-500';
-		return 'stroke-orange-500';
-	}
+	let savingsTone = $derived(getSavingsTone(stats.savingsPercent));
 </script>
 
 {#if compact}
 	<!-- Compact inline version -->
-	<div class="inline-flex items-center gap-2 text-sm {className}" transition:fade>
-		<span class="text-gray-400 line-through">{formatBytes(stats.originalSize)}</span>
-		<Icon name="IconArrowRight" size={16} class="text-gray-400" />
-		<span class="font-medium text-gray-700 dark:text-gray-300"
-			>{formatBytes(stats.optimizedSize)}</span
-		>
-		<span
-			class="px-2 py-0.5 rounded-full text-xs font-semibold bg-green-100 dark:bg-green-900/30 {getSavingsColor(
-				stats.savingsPercent
-			)}"
-		>
-			-{Math.round($animatedSavings)}%
+	<div class={['optimization-stats', 'optimization-stats--compact', className]} transition:fade>
+		<span class="optimization-stats__original">{formatBytes(stats.originalSize)}</span>
+		<span class="optimization-stats__icon">
+			<Icon name="IconArrowRight" size={16} />
+		</span>
+		<span class="optimization-stats__optimized">{formatBytes(stats.optimizedSize)}</span>
+		<span class="optimization-stats__badge" data-tone={savingsTone}>
+			-{Math.round(animatedSavings.current)}%
 		</span>
 	</div>
 {:else}
 	<!-- Full card version -->
-	<div
-		class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl overflow-hidden {className}"
-		transition:slide
-	>
+	<div class={['optimization-card', className]} transition:slide>
 		<!-- Success header -->
-		<div
-			class="flex items-center gap-3 p-4 bg-green-100/50 dark:bg-green-900/30 border-b border-green-200 dark:border-green-800"
-		>
-			<div class="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center">
+		<div class="optimization-card__header">
+			<div class="optimization-card__status-icon">
 				<Icon name="IconCheck" size={24} />
 			</div>
 			<div>
-				<h3 class="text-lg font-semibold text-green-800 dark:text-green-200">
-					Optimized Successfully
-				</h3>
+				<h3>Optimized Successfully</h3>
 				{#if stats.processingTime}
-					<p class="text-sm text-green-600 dark:text-green-400">
-						Processed in {stats.processingTime}ms
-					</p>
+					<p>Processed in {stats.processingTime}ms</p>
 				{/if}
 			</div>
 		</div>
 
 		<!-- Main stats -->
-		<div class="flex items-center justify-around p-6 gap-6">
+		<div class="optimization-card__main">
 			<!-- Circular progress -->
-			<div class="relative flex items-center justify-center">
-				<svg aria-hidden="true" viewBox="0 0 100 100" class="w-24 h-24">
+			<div class="optimization-ring">
+				<svg aria-hidden="true" viewBox="0 0 100 100">
 					<!-- Background ring -->
 					<circle
 						cx="50"
@@ -132,7 +106,7 @@
 						fill="none"
 						stroke="currentColor"
 						stroke-width="8"
-						class="text-gray-200 dark:text-gray-700"
+						class="optimization-ring__track"
 					/>
 					<!-- Progress ring -->
 					<circle
@@ -142,44 +116,43 @@
 						fill="none"
 						stroke-width="8"
 						stroke-linecap="round"
-						class="{getRingColor(stats.savingsPercent)} transition-all duration-1000"
-						stroke-dasharray="{$animatedSavings * 2.51} 251"
+						class="optimization-ring__progress"
+						data-tone={savingsTone}
+						stroke-dasharray="{animatedSavings.current * 2.51} 251"
 						transform="rotate(-90 50 50)"
 					/>
 				</svg>
-				<div class="absolute inset-0 flex flex-col items-center justify-center">
-					<span class="text-2xl font-bold {getSavingsColor(stats.savingsPercent)}">
-						{Math.round($animatedSavings)}%
+				<div class="optimization-ring__label">
+					<span class="optimization-ring__value" data-tone={savingsTone}>
+						{Math.round(animatedSavings.current)}%
 					</span>
-					<span class="text-xs text-gray-500">smaller</span>
+					<span class="optimization-ring__caption">smaller</span>
 				</div>
 			</div>
 
 			<!-- Size comparison -->
-			<div class="flex flex-col items-center gap-2">
-				<div class="flex items-center gap-2">
-					<span class="text-xs text-gray-500 dark:text-gray-400 w-16">Original</span>
-					<span class="text-sm text-gray-500 line-through">{formatBytes(stats.originalSize)}</span>
+			<div class="optimization-comparison">
+				<div class="optimization-comparison__row">
+					<span class="optimization-comparison__label">Original</span>
+					<span class="optimization-comparison__original">{formatBytes(stats.originalSize)}</span>
 					{#if stats.originalFormat}
-						<span
-							class="px-1.5 py-0.5 text-[10px] font-medium rounded bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400"
-							>{stats.originalFormat.toUpperCase()}</span
-						>
+						<span class="optimization-comparison__format">
+							{stats.originalFormat.toUpperCase()}
+						</span>
 					{/if}
 				</div>
-				<div class="py-1">
-					<Icon name="IconArrowDown" size={20} class="text-green-500" />
+				<div class="optimization-comparison__arrow">
+					<Icon name="IconArrowDown" size={20} />
 				</div>
-				<div class="flex items-center gap-2">
-					<span class="text-xs text-gray-500 dark:text-gray-400 w-16">Optimized</span>
-					<span class="text-sm text-green-600 dark:text-green-400 font-semibold"
-						>{formatBytes(stats.optimizedSize)}</span
-					>
+				<div class="optimization-comparison__row">
+					<span class="optimization-comparison__label">Optimized</span>
+					<span class="optimization-comparison__optimized">{formatBytes(stats.optimizedSize)}</span>
 					{#if stats.optimizedFormat}
 						<span
-							class="px-1.5 py-0.5 text-[10px] font-medium rounded bg-green-200 text-green-700 dark:bg-green-800 dark:text-green-300"
-							>{stats.optimizedFormat.toUpperCase()}</span
+							class="optimization-comparison__format optimization-comparison__format--optimized"
 						>
+							{stats.optimizedFormat.toUpperCase()}
+						</span>
 					{/if}
 				</div>
 			</div>
@@ -187,24 +160,315 @@
 
 		<!-- Additional details -->
 		{#if showDetails}
-			<div
-				class="flex items-center justify-center gap-6 px-4 py-3 border-t border-green-200 dark:border-green-800 text-xs text-gray-600 dark:text-gray-400"
-			>
-				<div class="flex items-center gap-1.5">
-					<Icon name="IconShieldCheck" size={16} class="text-gray-400" />
+			<div class="optimization-card__details">
+				<div class="optimization-card__detail">
+					<Icon name="IconShieldCheck" size={16} />
 					<span>Lossless quality</span>
 				</div>
 				{#if stats.variantsCount && stats.variantsCount > 0}
-					<div class="flex items-center gap-1.5">
-						<Icon name="IconLayoutGrid" size={16} class="text-gray-400" />
+					<div class="optimization-card__detail">
+						<Icon name="IconLayoutGrid" size={16} />
 						<span>{stats.variantsCount} responsive sizes</span>
 					</div>
 				{/if}
-				<div class="flex items-center gap-1.5">
-					<Icon name="IconBolt" size={16} class="text-gray-400" />
+				<div class="optimization-card__detail">
+					<Icon name="IconBolt" size={16} />
 					<span>CDN-ready</span>
 				</div>
 			</div>
 		{/if}
 	</div>
 {/if}
+
+<style>
+	.optimization-stats--compact {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		color: #374151;
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+	}
+
+	.optimization-stats__original {
+		color: #9ca3af;
+		text-decoration: line-through;
+	}
+
+	.optimization-stats__icon {
+		display: inline-flex;
+		color: #9ca3af;
+	}
+
+	.optimization-stats__optimized {
+		color: #374151;
+		font-weight: 500;
+	}
+
+	:global(.dark) .optimization-stats__optimized {
+		color: #d1d5db;
+	}
+
+	.optimization-stats__badge {
+		border-radius: 999px;
+		background: #dcfce7;
+		font-size: 0.75rem;
+		font-weight: 600;
+		line-height: 1rem;
+		padding: 0.125rem 0.5rem;
+	}
+
+	:global(.dark) .optimization-stats__badge {
+		background: rgba(20, 83, 45, 0.3);
+	}
+
+	.optimization-card {
+		overflow: hidden;
+		border: 1px solid #bbf7d0;
+		border-radius: 0.75rem;
+		background: #f0fdf4;
+	}
+
+	:global(.dark) .optimization-card {
+		border-color: #166534;
+		background: rgba(20, 83, 45, 0.2);
+	}
+
+	.optimization-card__header {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		border-bottom: 1px solid #bbf7d0;
+		background: rgba(220, 252, 231, 0.5);
+		padding: 1rem;
+	}
+
+	:global(.dark) .optimization-card__header {
+		border-color: #166534;
+		background: rgba(20, 83, 45, 0.3);
+	}
+
+	.optimization-card__status-icon {
+		display: flex;
+		width: 2.5rem;
+		height: 2.5rem;
+		align-items: center;
+		justify-content: center;
+		border-radius: 999px;
+		background: #22c55e;
+		color: #ffffff;
+		flex: 0 0 auto;
+	}
+
+	.optimization-card h3 {
+		margin: 0;
+		color: #166534;
+		font-size: 1.125rem;
+		font-weight: 600;
+		line-height: 1.5;
+	}
+
+	.optimization-card p {
+		margin: 0;
+		color: #16a34a;
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+	}
+
+	:global(.dark) .optimization-card h3 {
+		color: #bbf7d0;
+	}
+
+	:global(.dark) .optimization-card p {
+		color: #4ade80;
+	}
+
+	.optimization-card__main {
+		display: flex;
+		align-items: center;
+		justify-content: space-around;
+		gap: 1.5rem;
+		padding: 1.5rem;
+	}
+
+	.optimization-ring {
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.optimization-ring svg {
+		width: 6rem;
+		height: 6rem;
+	}
+
+	.optimization-ring__track {
+		color: #e5e7eb;
+	}
+
+	:global(.dark) .optimization-ring__track {
+		color: #374151;
+	}
+
+	.optimization-ring__progress {
+		transition: stroke-dasharray 1000ms ease;
+	}
+
+	.optimization-ring__label {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-direction: column;
+	}
+
+	.optimization-ring__value {
+		font-size: 1.5rem;
+		font-weight: 700;
+		line-height: 2rem;
+	}
+
+	.optimization-ring__caption {
+		color: #6b7280;
+		font-size: 0.75rem;
+		line-height: 1rem;
+	}
+
+	.optimization-comparison {
+		display: flex;
+		align-items: center;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.optimization-comparison__row {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.optimization-comparison__label {
+		width: 4rem;
+		color: #6b7280;
+		font-size: 0.75rem;
+		line-height: 1rem;
+	}
+
+	:global(.dark) .optimization-comparison__label {
+		color: #9ca3af;
+	}
+
+	.optimization-comparison__original {
+		color: #6b7280;
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+		text-decoration: line-through;
+	}
+
+	.optimization-comparison__optimized {
+		color: #16a34a;
+		font-size: 0.875rem;
+		font-weight: 600;
+		line-height: 1.25rem;
+	}
+
+	:global(.dark) .optimization-comparison__optimized {
+		color: #4ade80;
+	}
+
+	.optimization-comparison__format {
+		border-radius: 0.25rem;
+		background: #e5e7eb;
+		color: #4b5563;
+		font-size: 0.625rem;
+		font-weight: 500;
+		line-height: 1;
+		padding: 0.125rem 0.375rem;
+	}
+
+	:global(.dark) .optimization-comparison__format {
+		background: #374151;
+		color: #9ca3af;
+	}
+
+	.optimization-comparison__format--optimized {
+		background: #bbf7d0;
+		color: #15803d;
+	}
+
+	:global(.dark) .optimization-comparison__format--optimized {
+		background: #166534;
+		color: #86efac;
+	}
+
+	.optimization-comparison__arrow {
+		display: flex;
+		padding: 0.25rem 0;
+		color: #22c55e;
+	}
+
+	.optimization-card__details {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 1.5rem;
+		border-top: 1px solid #bbf7d0;
+		color: #4b5563;
+		font-size: 0.75rem;
+		line-height: 1rem;
+		padding: 0.75rem 1rem;
+	}
+
+	:global(.dark) .optimization-card__details {
+		border-color: #166534;
+		color: #9ca3af;
+	}
+
+	.optimization-card__detail {
+		display: flex;
+		align-items: center;
+		gap: 0.375rem;
+	}
+
+	.optimization-card__detail :global(svg) {
+		color: #9ca3af;
+	}
+
+	.optimization-stats__badge[data-tone='excellent'],
+	.optimization-ring__progress[data-tone='excellent'],
+	.optimization-ring__value[data-tone='excellent'] {
+		color: #22c55e;
+		stroke: #22c55e;
+	}
+
+	.optimization-stats__badge[data-tone='strong'],
+	.optimization-ring__progress[data-tone='strong'],
+	.optimization-ring__value[data-tone='strong'] {
+		color: #4ade80;
+		stroke: #4ade80;
+	}
+
+	.optimization-stats__badge[data-tone='moderate'],
+	.optimization-ring__progress[data-tone='moderate'],
+	.optimization-ring__value[data-tone='moderate'] {
+		color: #eab308;
+		stroke: #eab308;
+	}
+
+	.optimization-stats__badge[data-tone='low'],
+	.optimization-ring__progress[data-tone='low'],
+	.optimization-ring__value[data-tone='low'] {
+		color: #f97316;
+		stroke: #f97316;
+	}
+
+	@media (max-width: 640px) {
+		.optimization-card__main,
+		.optimization-card__details {
+			align-items: center;
+			flex-direction: column;
+		}
+	}
+</style>

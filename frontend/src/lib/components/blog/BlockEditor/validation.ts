@@ -161,7 +161,10 @@ const secureUrlSchema = v.pipe(
 const safeHtmlSchema = v.pipe(
 	v.string(),
 	v.maxLength(MAX_LENGTHS.HTML_CONTENT),
-	v.check((html) => !html || !containsXSS(html), 'HTML content contains potentially dangerous XSS patterns')
+	v.check(
+		(html) => !html || !containsXSS(html),
+		'HTML content contains potentially dangerous XSS patterns'
+	)
 );
 
 const cssValueSchema = v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.CSS_VALUE)));
@@ -506,7 +509,10 @@ const preformattedContentSchema = v.object({
 const listContentSchema = v.object({
 	listType: v.optional(v.picklist(['bullet', 'number', 'check'])),
 	listItems: v.optional(
-		v.pipe(v.array(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_LONG))), v.maxLength(MAX_LENGTHS.LIST_ITEMS))
+		v.pipe(
+			v.array(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_LONG))),
+			v.maxLength(MAX_LENGTHS.LIST_ITEMS)
+		)
 	),
 	items: v.optional(v.pipe(v.array(blockItemSchema), v.maxLength(MAX_LENGTHS.LIST_ITEMS)))
 });
@@ -582,12 +588,16 @@ const gifContentSchema = v.object({
 const columnsContentSchema = v.object({
 	columnCount: v.optional(v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(12))),
 	columnLayout: v.optional(v.pipe(v.string(), v.maxLength(64))),
-	children: v.optional(v.pipe(v.array(createBlockSchema()), v.maxLength(MAX_LENGTHS.CHILDREN_BLOCKS)))
+	children: v.optional(
+		v.pipe(v.array(createBlockSchema()), v.maxLength(MAX_LENGTHS.CHILDREN_BLOCKS))
+	)
 });
 
 // Group Block Content
 const groupContentSchema = v.object({
-	children: v.optional(v.pipe(v.array(createBlockSchema()), v.maxLength(MAX_LENGTHS.CHILDREN_BLOCKS)))
+	children: v.optional(
+		v.pipe(v.array(createBlockSchema()), v.maxLength(MAX_LENGTHS.CHILDREN_BLOCKS))
+	)
 });
 
 // Separator Block Content
@@ -598,7 +608,9 @@ const spacerContentSchema = v.object({});
 
 // Row Block Content
 const rowContentSchema = v.object({
-	children: v.optional(v.pipe(v.array(createBlockSchema()), v.maxLength(MAX_LENGTHS.CHILDREN_BLOCKS)))
+	children: v.optional(
+		v.pipe(v.array(createBlockSchema()), v.maxLength(MAX_LENGTHS.CHILDREN_BLOCKS))
+	)
 });
 
 // Button Block Content
@@ -615,19 +627,25 @@ const buttonsContentSchema = v.object({
 // Accordion Block Content
 const accordionContentSchema = v.object({
 	items: v.optional(v.pipe(v.array(blockItemSchema), v.maxLength(50))),
-	children: v.optional(v.pipe(v.array(createBlockSchema()), v.maxLength(MAX_LENGTHS.CHILDREN_BLOCKS)))
+	children: v.optional(
+		v.pipe(v.array(createBlockSchema()), v.maxLength(MAX_LENGTHS.CHILDREN_BLOCKS))
+	)
 });
 
 // Tabs Block Content
 const tabsContentSchema = v.object({
 	items: v.optional(v.pipe(v.array(blockItemSchema), v.maxLength(20))),
-	children: v.optional(v.pipe(v.array(createBlockSchema()), v.maxLength(MAX_LENGTHS.CHILDREN_BLOCKS)))
+	children: v.optional(
+		v.pipe(v.array(createBlockSchema()), v.maxLength(MAX_LENGTHS.CHILDREN_BLOCKS))
+	)
 });
 
 // Toggle Block Content
 const toggleContentSchema = v.object({
 	text: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_SHORT))),
-	children: v.optional(v.pipe(v.array(createBlockSchema()), v.maxLength(MAX_LENGTHS.CHILDREN_BLOCKS)))
+	children: v.optional(
+		v.pipe(v.array(createBlockSchema()), v.maxLength(MAX_LENGTHS.CHILDREN_BLOCKS))
+	)
 });
 
 // Table of Contents Block Content
@@ -697,7 +715,9 @@ const cardContentSchema = v.object({
 	mediaId: v.optional(v.pipe(v.number(), v.integer(), v.gtValue(0))),
 	mediaUrl: v.optional(secureUrlSchema),
 	mediaAlt: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_SHORT))),
-	children: v.optional(v.pipe(v.array(createBlockSchema()), v.maxLength(MAX_LENGTHS.CHILDREN_BLOCKS)))
+	children: v.optional(
+		v.pipe(v.array(createBlockSchema()), v.maxLength(MAX_LENGTHS.CHILDREN_BLOCKS))
+	)
 });
 
 // Testimonial Block Content
@@ -711,7 +731,9 @@ const testimonialContentSchema = v.object({
 const ctaContentSchema = v.object({
 	text: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_LONG))),
 	html: v.optional(safeHtmlSchema),
-	children: v.optional(v.pipe(v.array(createBlockSchema()), v.maxLength(MAX_LENGTHS.CHILDREN_BLOCKS)))
+	children: v.optional(
+		v.pipe(v.array(createBlockSchema()), v.maxLength(MAX_LENGTHS.CHILDREN_BLOCKS))
+	)
 });
 
 // Countdown Block Content
@@ -790,7 +812,9 @@ const htmlBlockContentSchema = v.object({
 // Reusable Block Content
 const reusableContentSchema = v.object({
 	text: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.ID))), // reference ID
-	children: v.optional(v.pipe(v.array(createBlockSchema()), v.maxLength(MAX_LENGTHS.CHILDREN_BLOCKS)))
+	children: v.optional(
+		v.pipe(v.array(createBlockSchema()), v.maxLength(MAX_LENGTHS.CHILDREN_BLOCKS))
+	)
 });
 
 // =============================================================================
@@ -809,7 +833,9 @@ const blockContentSchema = v.object({
 	mediaCaption: v.optional(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_MEDIUM))),
 
 	// Nested content
-	children: v.optional(v.pipe(v.array(createBlockSchema()), v.maxLength(MAX_LENGTHS.CHILDREN_BLOCKS))),
+	children: v.optional(
+		v.pipe(v.array(createBlockSchema()), v.maxLength(MAX_LENGTHS.CHILDREN_BLOCKS))
+	),
 	items: v.optional(v.pipe(v.array(blockItemSchema), v.maxLength(MAX_LENGTHS.LIST_ITEMS))),
 
 	// Special content
@@ -823,7 +849,10 @@ const blockContentSchema = v.object({
 	// List content
 	listType: v.optional(v.picklist(['bullet', 'number', 'check'])),
 	listItems: v.optional(
-		v.pipe(v.array(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_LONG))), v.maxLength(MAX_LENGTHS.LIST_ITEMS))
+		v.pipe(
+			v.array(v.pipe(v.string(), v.maxLength(MAX_LENGTHS.TEXT_LONG))),
+			v.maxLength(MAX_LENGTHS.LIST_ITEMS)
+		)
 	),
 
 	// Columns/Layout
@@ -857,7 +886,10 @@ export const blockSchema = v.object({
 // Type-Specific Block Schemas with Content Validation
 // =============================================================================
 
-const createTypeSpecificBlockSchema = <T extends v.GenericSchema>(type: BlockType, contentSchema: T) => {
+const createTypeSpecificBlockSchema = <T extends v.GenericSchema>(
+	type: BlockType,
+	contentSchema: T
+) => {
 	return v.object({
 		id: blockIdSchema,
 		type: v.literal(type),

@@ -74,6 +74,10 @@
 		props.onchange?.(methodId);
 	}
 
+	function isSelected(methodId: string): boolean {
+		return (props.value ?? '') === methodId;
+	}
+
 	function getMethodIcon(iconType: string): string {
 		const icons: Record<string, string> = {
 			card: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z',
@@ -89,32 +93,24 @@
 </script>
 
 <!-- Responsive Payment Method Selector - Mobile-first design -->
-<div
-	class="flex flex-col gap-2 sm:gap-3 w-full max-w-full sm:max-w-lg md:max-w-xl lg:max-w-2xl mx-auto p-3 sm:p-4 md:p-6 pb-[env(safe-area-inset-bottom)]"
->
-	<label
-		class="text-sm sm:text-base font-medium text-gray-700"
-		for="payment-method-{props.field.name}"
-	>
+<div class="payment-selector">
+	<label class="field-label" for="payment-method-{props.field.name}">
 		{props.field.label || 'Payment Method'}
 		{#if props.field.required}
-			<span class="text-red-600 ml-1">*</span>
+			<span class="required-indicator">*</span>
 		{/if}
 	</label>
 
 	{#if props.field.help_text}
-		<p class="text-xs sm:text-sm text-gray-500 m-0">{props.field.help_text}</p>
+		<p class="field-help">{props.field.help_text}</p>
 	{/if}
 
 	<!-- Payment Methods List - Touch-friendly buttons -->
-	<div class="flex flex-col gap-2 sm:gap-3">
+	<div class="methods-list">
 		{#each enabledMethods as method (method.id)}
 			<button
 				type="button"
-				class="flex items-center gap-3 sm:gap-4 w-full min-h-[56px] sm:min-h-[64px] md:min-h-[72px] p-3 sm:p-4 border-2 rounded-lg bg-white cursor-pointer transition-all duration-200 text-left touch-manipulation active:scale-[0.98] hover:border-gray-400 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-				class:border-blue-600={(props.value ?? '') === method.id}
-				class:bg-blue-50={(props.value ?? '') === method.id}
-				class:border-gray-200={(props.value ?? '') !== method.id}
+				class={['method-button', isSelected(method.id) && 'method-button--selected']}
 				onclick={() => handleSelect(method.id)}
 			>
 				<!-- Hidden radio for accessibility -->
@@ -123,29 +119,22 @@
 					type="radio"
 					name={props.field.name}
 					value={method.id}
-					checked={(props.value ?? '') === method.id}
-					class="sr-only"
+					checked={isSelected(method.id)}
+					class="visually-hidden"
 					onchange={() => handleSelect(method.id)}
 				/>
 
 				<!-- Custom radio indicator -->
-				<span
-					class="flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 flex items-center justify-center transition-colors"
-					class:border-blue-600={(props.value ?? '') === method.id}
-					class:bg-blue-600={(props.value ?? '') === method.id}
-					class:border-gray-300={(props.value ?? '') !== method.id}
-				>
-					{#if (props.value ?? '') === method.id}
-						<span class="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-white rounded-full"></span>
+				<span class={['radio-indicator', isSelected(method.id) && 'radio-indicator--selected']}>
+					{#if isSelected(method.id)}
+						<span class="radio-indicator__dot"></span>
 					{/if}
 				</span>
 
 				<!-- Method Icon -->
-				<span
-					class="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-gray-100 rounded-lg"
-				>
+				<span class="method-icon">
 					<svg
-						class="w-5 h-5 sm:w-6 sm:h-6 text-gray-600"
+						class="method-icon__svg"
 						fill="none"
 						stroke="currentColor"
 						viewBox="0 0 24 24"
@@ -156,23 +145,17 @@
 				</span>
 
 				<!-- Method Info -->
-				<div class="flex-1 min-w-0 flex flex-col gap-0.5 sm:gap-1">
-					<span class="text-sm sm:text-base font-medium text-gray-900 truncate">
-						{method.name}
-					</span>
+				<div class="method-info">
+					<span class="method-name">{method.name}</span>
 					{#if method.description}
-						<span class="text-xs sm:text-sm text-gray-500 truncate">
-							{method.description}
-						</span>
+						<span class="method-description">{method.description}</span>
 					{/if}
 				</div>
 
 				<!-- Checkmark for selected -->
-				{#if (props.value ?? '') === method.id}
-					<span
-						class="flex-shrink-0 w-6 h-6 sm:w-7 sm:h-7 bg-blue-600 rounded-full flex items-center justify-center"
-					>
-						<Icon name="IconCheck" size={14} class="text-white" />
+				{#if isSelected(method.id)}
+					<span class="selected-check">
+						<Icon name="IconCheck" size={14} />
 					</span>
 				{/if}
 			</button>
@@ -181,28 +164,30 @@
 
 	<!-- Payment method specific info - Responsive cards -->
 	{#if (props.value ?? '') === 'stripe'}
-		<div class="mt-2 sm:mt-3 p-3 sm:p-4 bg-gray-50 rounded-lg border-l-4 border-indigo-500">
+		<div class="method-details method-details--stripe">
 			<!-- Card Icons - Responsive grid -->
-			<div class="flex flex-wrap gap-2 sm:gap-3 mb-3 sm:mb-4">
+			<div class="brand-list">
 				{#each ['Visa', 'Mastercard', 'Amex', 'Discover'] as cardType (cardType)}
-					<span
-						class="inline-flex items-center gap-1.5 text-xs sm:text-sm text-gray-600 px-2 sm:px-3 py-1 sm:py-1.5 bg-white rounded border border-gray-200"
-					>
+					<span class="brand-badge">
 						<Icon name="IconCreditCard" size={14} />
 						{cardType}
 					</span>
 				{/each}
 			</div>
 			<!-- Security Note -->
-			<p class="flex items-center gap-2 text-xs sm:text-sm text-gray-600 m-0">
-				<Icon name="IconLock" size={16} class="text-emerald-600 flex-shrink-0" />
+			<p class="security-note">
+				<span class="security-note__icon">
+					<Icon name="IconLock" size={16} />
+				</span>
 				<span>Secured by Stripe. Your card details are encrypted.</span>
 			</p>
 		</div>
 	{:else if (props.value ?? '') === 'paypal'}
-		<div class="mt-2 sm:mt-3 p-3 sm:p-4 bg-gray-50 rounded-lg border-l-4 border-amber-500">
-			<p class="flex items-center gap-2 text-xs sm:text-sm text-gray-600 m-0">
-				<Icon name="IconShield" size={16} class="text-emerald-600 flex-shrink-0" />
+		<div class="method-details method-details--paypal">
+			<p class="security-note">
+				<span class="security-note__icon">
+					<Icon name="IconShield" size={16} />
+				</span>
 				<span>You will be redirected to PayPal to complete your payment.</span>
 			</p>
 		</div>
@@ -210,10 +195,338 @@
 
 	<!-- Error Messages -->
 	{#if props.error && props.error.length > 0}
-		<div class="mt-2 p-3 sm:p-4 bg-red-50 border border-red-200 rounded-lg">
+		<div class="error-panel">
 			{#each props.error as err (err)}
-				<p class="text-xs sm:text-sm text-red-600 m-0">{err}</p>
+				<p class="error-message">{err}</p>
 			{/each}
 		</div>
 	{/if}
 </div>
+
+<style>
+	.payment-selector {
+		display: flex;
+		width: 100%;
+		max-width: 100%;
+		flex-direction: column;
+		gap: 0.5rem;
+		margin-inline: auto;
+		padding: 0.75rem;
+		padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+	}
+
+	.field-label {
+		color: #374151;
+		font-size: 0.875rem;
+		font-weight: 500;
+	}
+
+	.required-indicator {
+		margin-left: 0.25rem;
+		color: #dc2626;
+	}
+
+	.field-help {
+		margin: 0;
+		color: #6b7280;
+		font-size: 0.75rem;
+	}
+
+	.methods-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.method-button {
+		display: flex;
+		width: 100%;
+		min-height: 56px;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0.75rem;
+		border: 2px solid #e5e7eb;
+		border-radius: 0.5rem;
+		background: #fff;
+		cursor: pointer;
+		text-align: left;
+		touch-action: manipulation;
+		transition:
+			background-color 0.2s ease,
+			border-color 0.2s ease,
+			box-shadow 0.2s ease,
+			transform 0.2s ease;
+	}
+
+	.method-button:hover {
+		border-color: #9ca3af;
+		background: #f9fafb;
+	}
+
+	.method-button:focus-visible {
+		outline: none;
+		box-shadow:
+			0 0 0 2px #3b82f6,
+			0 0 0 4px #fff;
+	}
+
+	.method-button:active {
+		transform: scale(0.98);
+	}
+
+	.method-button--selected {
+		border-color: #2563eb;
+		background: #eff6ff;
+	}
+
+	.visually-hidden {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		clip-path: inset(50%);
+	}
+
+	.radio-indicator {
+		display: flex;
+		width: 1.25rem;
+		height: 1.25rem;
+		flex: 0 0 auto;
+		align-items: center;
+		justify-content: center;
+		border: 2px solid #d1d5db;
+		border-radius: 999px;
+		transition:
+			background-color 0.2s ease,
+			border-color 0.2s ease;
+	}
+
+	.radio-indicator--selected {
+		border-color: #2563eb;
+		background: #2563eb;
+	}
+
+	.radio-indicator__dot {
+		width: 0.5rem;
+		height: 0.5rem;
+		border-radius: 999px;
+		background: #fff;
+	}
+
+	.method-icon {
+		display: flex;
+		width: 2.5rem;
+		height: 2.5rem;
+		flex: 0 0 auto;
+		align-items: center;
+		justify-content: center;
+		border-radius: 0.5rem;
+		background: #f3f4f6;
+		color: #4b5563;
+	}
+
+	.method-icon__svg {
+		width: 1.25rem;
+		height: 1.25rem;
+	}
+
+	.method-info {
+		display: flex;
+		min-width: 0;
+		flex: 1 1 auto;
+		flex-direction: column;
+		gap: 0.125rem;
+	}
+
+	.method-name,
+	.method-description {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.method-name {
+		color: #111827;
+		font-size: 0.875rem;
+		font-weight: 500;
+	}
+
+	.method-description {
+		color: #6b7280;
+		font-size: 0.75rem;
+	}
+
+	.selected-check {
+		display: flex;
+		width: 1.5rem;
+		height: 1.5rem;
+		flex: 0 0 auto;
+		align-items: center;
+		justify-content: center;
+		border-radius: 999px;
+		background: #2563eb;
+		color: #fff;
+	}
+
+	.method-details {
+		margin-top: 0.5rem;
+		padding: 0.75rem;
+		border-left: 4px solid;
+		border-radius: 0.5rem;
+		background: #f9fafb;
+	}
+
+	.method-details--stripe {
+		border-left-color: #6366f1;
+	}
+
+	.method-details--paypal {
+		border-left-color: #f59e0b;
+	}
+
+	.brand-list {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin-bottom: 0.75rem;
+	}
+
+	.brand-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.375rem;
+		padding: 0.25rem 0.5rem;
+		border: 1px solid #e5e7eb;
+		border-radius: 0.25rem;
+		background: #fff;
+		color: #4b5563;
+		font-size: 0.75rem;
+	}
+
+	.security-note {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin: 0;
+		color: #4b5563;
+		font-size: 0.75rem;
+	}
+
+	.security-note__icon {
+		display: flex;
+		flex: 0 0 auto;
+		color: #059669;
+	}
+
+	.error-panel {
+		margin-top: 0.5rem;
+		padding: 0.75rem;
+		border: 1px solid #fecaca;
+		border-radius: 0.5rem;
+		background: #fef2f2;
+	}
+
+	.error-message {
+		margin: 0;
+		color: #dc2626;
+		font-size: 0.75rem;
+	}
+
+	@media (min-width: 640px) {
+		.payment-selector {
+			max-width: 32rem;
+			gap: 0.75rem;
+			padding: 1rem;
+			padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+		}
+
+		.field-label {
+			font-size: 1rem;
+		}
+
+		.field-help,
+		.method-description,
+		.security-note,
+		.error-message {
+			font-size: 0.875rem;
+		}
+
+		.methods-list {
+			gap: 0.75rem;
+		}
+
+		.method-button {
+			min-height: 64px;
+			gap: 1rem;
+			padding: 1rem;
+		}
+
+		.radio-indicator {
+			width: 1.5rem;
+			height: 1.5rem;
+		}
+
+		.radio-indicator__dot {
+			width: 0.625rem;
+			height: 0.625rem;
+		}
+
+		.method-icon {
+			width: 3rem;
+			height: 3rem;
+		}
+
+		.method-icon__svg {
+			width: 1.5rem;
+			height: 1.5rem;
+		}
+
+		.method-name {
+			font-size: 1rem;
+		}
+
+		.selected-check {
+			width: 1.75rem;
+			height: 1.75rem;
+		}
+
+		.method-details {
+			margin-top: 0.75rem;
+			padding: 1rem;
+		}
+
+		.brand-list {
+			gap: 0.75rem;
+			margin-bottom: 1rem;
+		}
+
+		.brand-badge {
+			padding: 0.375rem 0.75rem;
+			font-size: 0.875rem;
+		}
+
+		.error-panel {
+			padding: 1rem;
+		}
+	}
+
+	@media (min-width: 768px) {
+		.payment-selector {
+			max-width: 36rem;
+			padding: 1.5rem;
+			padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+		}
+
+		.method-button {
+			min-height: 72px;
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.payment-selector {
+			max-width: 42rem;
+		}
+	}
+</style>

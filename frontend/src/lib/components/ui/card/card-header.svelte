@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { cn, type WithElementRef } from '$lib/utils.js';
+	import type { Attachment } from 'svelte/attachments';
 	import type { HTMLAttributes } from 'svelte/elements';
+	import { type WithElementRef } from '$lib/utils.js';
 
 	let {
 		ref = $bindable(null),
@@ -8,16 +9,35 @@
 		children,
 		...restProps
 	}: WithElementRef<HTMLAttributes<HTMLDivElement>> = $props();
+
+	const captureRef: Attachment<HTMLDivElement> = (node) => {
+		ref = node;
+		return () => {
+			if (ref === node) {
+				ref = null;
+			}
+		};
+	};
 </script>
 
 <div
-	bind:this={ref}
+	{@attach captureRef}
 	data-slot="card-header"
-	class={cn(
-		'@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6',
-		className
-	)}
+	class={['ui-card-header', className]}
 	{...restProps}
 >
 	{@render children?.()}
 </div>
+
+<style>
+	.ui-card-header {
+		container: card-header / inline-size;
+		display: grid;
+		grid-auto-rows: min-content;
+		grid-template-columns: 1fr auto;
+		grid-template-rows: auto auto;
+		align-items: start;
+		gap: 0.375rem;
+		padding-inline: 1.5rem;
+	}
+</style>

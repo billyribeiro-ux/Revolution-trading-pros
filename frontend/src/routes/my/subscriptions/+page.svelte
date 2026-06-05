@@ -290,20 +290,20 @@
 	}
 
 	// Helper functions
-	function getStatusColor(status: string): string {
+	function getStatusClass(status: string): string {
 		switch (status) {
 			case 'active':
-				return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+				return 'status-badge--active';
 			case 'trial':
-				return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+				return 'status-badge--trial';
 			case 'cancelled':
-				return 'bg-red-500/20 text-red-400 border-red-500/30';
+				return 'status-badge--cancelled';
 			case 'expired':
-				return 'bg-slate-500/20 text-slate-400 border-slate-500/30';
+				return 'status-badge--expired';
 			case 'past_due':
-				return 'bg-orange-500/20 text-orange-400 border-orange-500/30';
+				return 'status-badge--past-due';
 			default:
-				return 'bg-slate-500/20 text-slate-400 border-slate-500/30';
+				return 'status-badge--expired';
 		}
 	}
 
@@ -338,9 +338,9 @@
 <div class="subscriptions-page">
 	<div class="container">
 		<!-- Background Effects -->
-		<div class="bg-effects">
-			<div class="bg-blob bg-blob-1"></div>
-			<div class="bg-blob bg-blob-2"></div>
+		<div class="ambient-effects">
+			<div class="ambient-blob ambient-blob--primary"></div>
+			<div class="ambient-blob ambient-blob--secondary"></div>
 		</div>
 
 		<!-- Header -->
@@ -352,7 +352,7 @@
 		<!-- Success Message -->
 		{#if successMessage}
 			<div class="success-banner">
-				<svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+				<svg aria-hidden="true" class="banner-icon" fill="currentColor" viewBox="0 0 20 20">
 					<path
 						fill-rule="evenodd"
 						d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -366,7 +366,7 @@
 		<!-- Error Message -->
 		{#if error}
 			<div class="error-banner">
-				<svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+				<svg aria-hidden="true" class="banner-icon" fill="currentColor" viewBox="0 0 20 20">
 					<path
 						fill-rule="evenodd"
 						d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
@@ -374,7 +374,7 @@
 					/>
 				</svg>
 				{error}
-				<button onclick={() => (error = '')} class="ml-auto">x</button>
+				<button onclick={() => (error = '')} class="error-banner__dismiss">x</button>
 			</div>
 		{/if}
 
@@ -387,12 +387,7 @@
 		{:else if subscriptions.length === 0}
 			<!-- Empty State -->
 			<div class="empty-state">
-				<svg
-					class="w-16 h-16 text-slate-500 mb-4"
-					fill="none"
-					stroke="currentColor"
-					viewBox="0 0 24 24"
-				>
+				<svg class="empty-state__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 					<path
 						stroke-linecap="round"
 						stroke-linejoin="round"
@@ -400,20 +395,25 @@
 						d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
 					/>
 				</svg>
-				<h2 class="text-xl font-semibold text-white mb-2">No Active Subscriptions</h2>
-				<p class="text-slate-400 mb-6">You don't have any subscriptions yet.</p>
+				<h2 class="empty-state__title">No Active Subscriptions</h2>
+				<p class="empty-state__copy">You don't have any subscriptions yet.</p>
 				<a href="/pricing" class="btn-primary">View Available Plans</a>
 			</div>
 		{:else}
 			<!-- Subscriptions List -->
-			<div class="subscriptions-grid">
+			<div class="subscription-list">
 				{#each subscriptions as sub (sub.id)}
-					<div class="subscription-card" class:cancelled={sub.status === 'cancelled'}>
+					<div
+						class={[
+							'subscription-card',
+							sub.status === 'cancelled' && 'subscription-card--cancelled'
+						]}
+					>
 						<!-- Card Header -->
 						<div class="card-header">
 							<div class="plan-info">
 								<h2 class="plan-name">{sub.productName}</h2>
-								<span class="status-badge {getStatusColor(sub.status)}">
+								<span class={['status-badge', getStatusClass(sub.status)]}>
 									{getStatusLabel(sub)}
 								</span>
 							</div>
@@ -426,7 +426,7 @@
 						<!-- Trial/Grace Period Alerts -->
 						{#if sub.inTrial}
 							<div class="alert alert-info">
-								<svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+								<svg aria-hidden="true" class="alert-icon" fill="currentColor" viewBox="0 0 20 20">
 									<path
 										fill-rule="evenodd"
 										d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
@@ -439,7 +439,7 @@
 
 						{#if sub.inGracePeriod}
 							<div class="alert alert-warning">
-								<svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+								<svg aria-hidden="true" class="alert-icon" fill="currentColor" viewBox="0 0 20 20">
 									<path
 										fill-rule="evenodd"
 										d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
@@ -452,7 +452,7 @@
 
 						{#if sub.cancelAtPeriodEnd}
 							<div class="alert alert-warning">
-								<svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+								<svg aria-hidden="true" class="alert-icon" fill="currentColor" viewBox="0 0 20 20">
 									<path
 										fill-rule="evenodd"
 										d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
@@ -496,7 +496,7 @@
 										<li>
 											<svg
 												aria-hidden="true"
-												class="w-4 h-4 text-emerald-400"
+												class="feature-check-icon"
 												fill="currentColor"
 												viewBox="0 0 20 20"
 											>
@@ -545,7 +545,7 @@
 					{:else}
 						<svg
 							aria-hidden="true"
-							class="w-4 h-4"
+							class="button-icon"
 							fill="none"
 							stroke="currentColor"
 							viewBox="0 0 24 24"
@@ -563,7 +563,7 @@
 				<a href="/pricing" class="browse-link">
 					<svg
 						aria-hidden="true"
-						class="w-5 h-5"
+						class="browse-link__icon"
 						fill="none"
 						stroke="currentColor"
 						viewBox="0 0 24 24"
@@ -605,27 +605,27 @@
 				<button class="modal-close" onclick={() => (showCancelModal = false)}>x</button>
 			</div>
 			<div class="modal-body">
-				<p class="text-slate-300 mb-4">
+				<p class="modal-description">
 					Are you sure you want to cancel your <strong>{selectedSubscription.productName}</strong> subscription?
 				</p>
 
-				<div class="form-group">
+				<div class="field-group">
 					<label for="cancel-reason">Reason for cancellation</label>
 					<textarea
 						id="cancel-reason"
 						bind:value={cancelReason}
 						rows="3"
 						placeholder="Please let us know why you're cancelling..."
-						class="form-textarea"
+						class="field-textarea"
 					></textarea>
 				</div>
 
-				<div class="form-group">
+				<div class="field-group">
 					<label class="checkbox-label">
 						<input type="checkbox" bind:checked={cancelImmediately} />
 						<span>Cancel immediately (lose access now)</span>
 					</label>
-					<p class="form-hint">
+					<p class="field-hint">
 						If unchecked, you'll keep access until {formatDate(
 							selectedSubscription.currentPeriodEnd
 						)}
@@ -671,16 +671,15 @@
 				<button class="modal-close" onclick={() => (showUpgradeModal = false)}>x</button>
 			</div>
 			<div class="modal-body">
-				<p class="text-slate-300 mb-6">
+				<p class="modal-description modal-description--loose">
 					Current plan: <strong>{selectedSubscription.productName}</strong>
 					({selectedSubscription.total}/{selectedSubscription.interval})
 				</p>
 
-				<div class="plans-grid">
+				<div class="plan-options">
 					{#each availablePlans.filter((p) => p.id !== selectedSubscription?.planId && p.is_active) as plan (plan.id)}
 						<button
-							class="plan-option"
-							class:selected={selectedNewPlanId === plan.id}
+							class={['plan-option', selectedNewPlanId === plan.id && 'plan-option--selected']}
 							onclick={() => previewPlanChange(plan.id)}
 						>
 							<div class="plan-option-header">
@@ -702,9 +701,9 @@
 						<div class="proration-details">
 							<div class="proration-row">
 								<span>Credit from current plan:</span>
-								<span class="text-emerald-400"
-									>-{formatCurrency(prorationPreview.proration.current_plan_credit)}</span
-								>
+								<span class="proration-credit">
+									-{formatCurrency(prorationPreview.proration.current_plan_credit)}
+								</span>
 							</div>
 							<div class="proration-row">
 								<span>New plan cost (prorated):</span>
@@ -712,7 +711,9 @@
 							</div>
 							<div class="proration-row proration-total">
 								<span>Amount due today:</span>
-								<span class:text-emerald-400={prorationPreview.proration.proration_amount < 0}>
+								<span
+									class={[prorationPreview.proration.proration_amount < 0 && 'proration-credit']}
+								>
 									{prorationPreview.proration.proration_amount >= 0 ? '' : '-'}
 									{formatCurrency(Math.abs(prorationPreview.proration.proration_amount))}
 								</span>
@@ -752,21 +753,21 @@
 		z-index: 10;
 	}
 
-	.bg-effects {
+	.ambient-effects {
 		position: fixed;
 		inset: 0;
 		pointer-events: none;
 		overflow: hidden;
 	}
 
-	.bg-blob {
+	.ambient-blob {
 		position: absolute;
 		border-radius: 50%;
 		filter: blur(80px);
 		opacity: 0.12;
 	}
 
-	.bg-blob-1 {
+	.ambient-blob--primary {
 		width: 500px;
 		height: 500px;
 		top: -150px;
@@ -774,7 +775,7 @@
 		background: linear-gradient(135deg, #10b981, #059669);
 	}
 
-	.bg-blob-2 {
+	.ambient-blob--secondary {
 		width: 400px;
 		height: 400px;
 		bottom: -100px;
@@ -825,6 +826,22 @@
 		color: #f87171;
 	}
 
+	.banner-icon,
+	.alert-icon {
+		width: 1.25rem;
+		height: 1.25rem;
+		flex: 0 0 auto;
+	}
+
+	.error-banner__dismiss {
+		margin-left: auto;
+		border: 0;
+		background: transparent;
+		color: currentColor;
+		cursor: pointer;
+		font: inherit;
+	}
+
 	/* Loading & Empty States */
 	.loading-state,
 	.empty-state {
@@ -846,6 +863,25 @@
 		margin-bottom: 1rem;
 	}
 
+	.empty-state__icon {
+		width: 4rem;
+		height: 4rem;
+		margin-bottom: 1rem;
+		color: #64748b;
+	}
+
+	.empty-state__title {
+		margin: 0 0 0.5rem;
+		color: #fff;
+		font-size: 1.25rem;
+		font-weight: 600;
+	}
+
+	.empty-state__copy {
+		margin: 0 0 1.5rem;
+		color: #94a3b8;
+	}
+
 	@keyframes spin {
 		to {
 			transform: rotate(360deg);
@@ -853,7 +889,7 @@
 	}
 
 	/* Subscriptions Grid */
-	.subscriptions-grid {
+	.subscription-list {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
 		gap: 1.5rem;
@@ -867,7 +903,7 @@
 		backdrop-filter: blur(8px);
 	}
 
-	.subscription-card.cancelled {
+	.subscription-card--cancelled {
 		opacity: 0.7;
 	}
 
@@ -891,6 +927,36 @@
 		font-size: 0.75rem;
 		font-weight: 600;
 		border: 1px solid;
+	}
+
+	.status-badge--active {
+		border-color: rgba(16, 185, 129, 0.3);
+		background: rgba(16, 185, 129, 0.2);
+		color: #34d399;
+	}
+
+	.status-badge--trial {
+		border-color: rgba(59, 130, 246, 0.3);
+		background: rgba(59, 130, 246, 0.2);
+		color: #60a5fa;
+	}
+
+	.status-badge--cancelled {
+		border-color: rgba(239, 68, 68, 0.3);
+		background: rgba(239, 68, 68, 0.2);
+		color: #f87171;
+	}
+
+	.status-badge--expired {
+		border-color: rgba(100, 116, 139, 0.3);
+		background: rgba(100, 116, 139, 0.2);
+		color: #94a3b8;
+	}
+
+	.status-badge--past-due {
+		border-color: rgba(249, 115, 22, 0.3);
+		background: rgba(249, 115, 22, 0.2);
+		color: #fb923c;
 	}
 
 	.plan-price {
@@ -981,6 +1047,17 @@
 		padding: 0.25rem 0;
 		font-size: 0.875rem;
 		color: #e2e8f0;
+	}
+
+	.feature-check-icon,
+	.button-icon {
+		width: 1rem;
+		height: 1rem;
+		flex: 0 0 auto;
+	}
+
+	.feature-check-icon {
+		color: #34d399;
 	}
 
 	/* Actions */
@@ -1098,6 +1175,12 @@
 		text-decoration: underline;
 	}
 
+	.browse-link__icon {
+		width: 1.25rem;
+		height: 1.25rem;
+		flex: 0 0 auto;
+	}
+
 	/* Modal */
 	.modal-overlay {
 		position: fixed;
@@ -1159,6 +1242,15 @@
 		padding: 1.5rem;
 	}
 
+	.modal-description {
+		margin: 0 0 1rem;
+		color: #cbd5e1;
+	}
+
+	.modal-description--loose {
+		margin-bottom: 1.5rem;
+	}
+
 	.modal-footer {
 		display: flex;
 		justify-content: flex-end;
@@ -1175,11 +1267,11 @@
 	}
 
 	/* Form elements */
-	.form-group {
+	.field-group {
 		margin-bottom: 1.25rem;
 	}
 
-	.form-group label {
+	.field-group label {
 		display: block;
 		font-size: 0.875rem;
 		font-weight: 500;
@@ -1187,7 +1279,7 @@
 		margin-bottom: 0.5rem;
 	}
 
-	.form-textarea {
+	.field-textarea {
 		width: 100%;
 		padding: 0.75rem 1rem;
 		background: rgba(15, 23, 42, 0.8);
@@ -1198,7 +1290,7 @@
 		resize: vertical;
 	}
 
-	.form-textarea:focus {
+	.field-textarea:focus {
 		outline: none;
 		border-color: #10b981;
 	}
@@ -1216,14 +1308,14 @@
 		accent-color: #10b981;
 	}
 
-	.form-hint {
+	.field-hint {
 		font-size: 0.8rem;
 		color: #64748b;
 		margin-top: 0.5rem;
 	}
 
 	/* Plans grid in modal */
-	.plans-grid {
+	.plan-options {
 		display: grid;
 		gap: 0.75rem;
 		margin-bottom: 1.5rem;
@@ -1244,7 +1336,7 @@
 		border-color: rgba(16, 185, 129, 0.5);
 	}
 
-	.plan-option.selected {
+	.plan-option--selected {
 		border-color: #10b981;
 		background: rgba(16, 185, 129, 0.1);
 	}
@@ -1300,6 +1392,10 @@
 		color: #cbd5e1;
 	}
 
+	.proration-credit {
+		color: #34d399;
+	}
+
 	.proration-total {
 		border-top: 1px solid rgba(51, 65, 85, 0.5);
 		margin-top: 0.5rem;
@@ -1316,7 +1412,7 @@
 
 	/* Responsive */
 	@media (max-width: 767.98px) {
-		.subscriptions-grid {
+		.subscription-list {
 			grid-template-columns: 1fr;
 		}
 

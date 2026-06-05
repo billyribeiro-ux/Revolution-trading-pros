@@ -930,7 +930,7 @@
 			if (!response.ok) throw new Error('Failed to subscribe');
 			if (!mounted || controller.signal.aborted) return;
 			isSubmitted = true;
-		} catch (error) {
+		} catch (_error) {
 			if (!mounted || controller.signal.aborted) return;
 			errorMessage = 'Connection error. Please try again.';
 		} finally {

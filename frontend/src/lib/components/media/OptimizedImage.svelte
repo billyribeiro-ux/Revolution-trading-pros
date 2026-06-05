@@ -61,6 +61,16 @@
 	let isInView = $state(false);
 	let observer: IntersectionObserver | null = null;
 
+	function captureContainer(element: HTMLDivElement) {
+		containerRef = element;
+
+		return () => {
+			if (containerRef === element) {
+				containerRef = null;
+			}
+		};
+	}
+
 	// Computed aspect ratio style - Svelte 5 $derived() pattern
 	let aspectRatioStyle = $derived(
 		aspectRatio
@@ -144,18 +154,21 @@
 </script>
 
 <div
-	bind:this={containerRef}
-	class="optimized-image-container relative overflow-hidden {className}"
+	{@attach captureContainer}
+	class={['optimized-image-container', className]}
 	style={aspectRatioStyle}
 >
 	<!-- BlurHash placeholder canvas -->
 	{#if blurhash && !loaded}
 		<canvas
-			use:renderBlurhash
+			{@attach renderBlurhash}
 			width="32"
 			height="32"
-			class="absolute inset-0 w-full h-full blur-xl scale-110 transition-opacity duration-500"
-			class:opacity-0={loaded}
+			class={[
+				'optimized-image__placeholder',
+				'optimized-image__placeholder--blurhash',
+				loaded && 'optimized-image__placeholder--hidden'
+			]}
 			aria-hidden="true"
 		></canvas>
 	{/if}
@@ -165,8 +178,12 @@
 		<img
 			src={lqip}
 			alt=""
-			class="absolute inset-0 w-full h-full object-{objectFit} blur-lg scale-105 transition-opacity duration-500"
-			class:opacity-0={loaded}
+			class={[
+				'optimized-image__placeholder',
+				'optimized-image__placeholder--lqip',
+				loaded && 'optimized-image__placeholder--hidden'
+			]}
+			style:object-fit={objectFit}
 			aria-hidden="true"
 			width={width ?? undefined}
 			height={height ?? undefined}
@@ -202,37 +219,114 @@
 				fetchpriority={priority ? 'high' : 'auto'}
 				onload={handleLoad}
 				onerror={handleError}
-				class="w-full h-full object-{objectFit} transition-opacity duration-500"
-				class:opacity-0={!loaded}
-				style="color: transparent;"
+				class={['optimized-image__image', !loaded && 'optimized-image__image--hidden']}
+				style:object-fit={objectFit}
 			/>
 		</picture>
 	{/if}
 
 	<!-- Error state -->
 	{#if hasError}
-		<div class="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
-			<div class="text-center text-gray-500 dark:text-gray-400">
-				<Icon name="IconPhoto" size={48} class="mx-auto mb-2" />
-				<p class="text-sm">Failed to load image</p>
+		<div class="optimized-image__error">
+			<div class="optimized-image__error-content">
+				<Icon name="IconPhoto" size={48} class="optimized-image__error-icon" />
+				<p>Failed to load image</p>
 			</div>
 		</div>
 	{/if}
 
 	<!-- Loading skeleton (if no placeholder available) -->
 	{#if !blurhash && !lqip && !loaded && !hasError && isInView}
-		<div class="absolute inset-0 bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
+		<div class="optimized-image__skeleton"></div>
 	{/if}
 </div>
 
 <style>
 	.optimized-image-container {
+		position: relative;
+		overflow: hidden;
 		background-color: transparent;
 	}
 
 	/* Smooth blur-to-sharp transition */
-	canvas {
+	.optimized-image__placeholder--blurhash {
+		filter: blur(24px);
 		image-rendering: pixelated;
 		image-rendering: crisp-edges;
+		transform: scale(1.1);
+	}
+
+	.optimized-image__placeholder--lqip {
+		filter: blur(16px);
+		transform: scale(1.05);
+	}
+
+	.optimized-image__placeholder,
+	.optimized-image__image,
+	.optimized-image__error,
+	.optimized-image__skeleton {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+	}
+
+	.optimized-image__placeholder,
+	.optimized-image__image {
+		transition: opacity 0.5s ease;
+	}
+
+	.optimized-image__placeholder--hidden,
+	.optimized-image__image--hidden {
+		opacity: 0;
+	}
+
+	.optimized-image__image {
+		color: transparent;
+	}
+
+	.optimized-image__error {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: #f3f4f6;
+	}
+
+	:global(.dark) .optimized-image__error {
+		background: #1f2937;
+	}
+
+	.optimized-image__error-content {
+		color: #6b7280;
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+		text-align: center;
+	}
+
+	.optimized-image__error-content p {
+		margin: 0;
+	}
+
+	:global(.dark) .optimized-image__error-content {
+		color: #9ca3af;
+	}
+
+	.optimized-image-container :global(.optimized-image__error-icon) {
+		margin: 0 auto 0.5rem;
+	}
+
+	.optimized-image__skeleton {
+		background: #e5e7eb;
+		animation: optimized-image-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+	}
+
+	:global(.dark) .optimized-image__skeleton {
+		background: #374151;
+	}
+
+	@keyframes optimized-image-pulse {
+		50% {
+			opacity: 0.5;
+		}
 	}
 </style>

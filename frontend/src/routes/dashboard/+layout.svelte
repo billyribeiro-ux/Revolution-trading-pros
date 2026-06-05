@@ -569,7 +569,6 @@
 	</div>
 </div>
 
-
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * APPLE ICT 11+ RESPONSIVE DESIGN SYSTEM
@@ -824,5 +823,4 @@
 			background-color: white;
 		}
 	}
-
 </style>

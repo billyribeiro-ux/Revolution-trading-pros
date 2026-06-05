@@ -52,11 +52,8 @@
 		return defaultItems;
 	});
 
-	// Generate JSON-LD schema for SEO. False-positive no-unused-vars: this is
-	// consumed in the `<svelte:head><script type="application/ld+json">` block
-	// below, which the eslint Svelte parser does not analyse for references.
-	// Removing it breaks breadcrumb structured data (SEO regression).
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	// Generate JSON-LD schema for SEO. Removing it breaks breadcrumb structured
+	// data (SEO regression).
 	const breadcrumbSchema = $derived({
 		'@context': 'https://schema.org',
 		'@type': 'BreadcrumbList',
@@ -68,13 +65,14 @@
 			...(item.href && { item: item.href })
 		}))
 	});
+
+	const breadcrumbJsonLd = $derived(JSON.stringify(breadcrumbSchema).replace(/</g, '\\u003c'));
 </script>
 
 <!-- JSON-LD Schema Markup -->
 <svelte:head>
-	<script type="application/ld+json">
-{JSON.stringify(breadcrumbSchema)}
-	</script>
+	<!-- eslint-disable-next-line svelte/no-at-html-tags -- trusted JSON-LD generated from structured breadcrumb fields and escaped above -->
+	{@html '<script type="application/ld+json">' + breadcrumbJsonLd + '</scr' + 'ipt>'}
 </svelte:head>
 
 <!-- Breadcrumbs Navigation -->

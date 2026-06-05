@@ -532,7 +532,6 @@
 		font-weight: 600;
 	}
 
-
 	.empty-state {
 		text-align: center;
 		padding: 80px 20px;

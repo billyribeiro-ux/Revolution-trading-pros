@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Separator as SeparatorPrimitive } from 'bits-ui';
-	import { cn } from '$lib/utils.js';
 
 	let {
 		ref = $bindable(null),
@@ -13,9 +12,23 @@
 <SeparatorPrimitive.Root
 	bind:ref
 	data-slot={dataSlot}
-	class={cn(
-		'bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:min-h-full data-[orientation=vertical]:w-px',
-		className
-	)}
+	class={['ui-separator', className]}
 	{...restProps}
 />
+
+<style>
+	:global(.ui-separator) {
+		flex-shrink: 0;
+		background: var(--border-default, #30363d);
+	}
+
+	:global(.ui-separator[data-orientation='horizontal']) {
+		width: 100%;
+		height: 1px;
+	}
+
+	:global(.ui-separator[data-orientation='vertical']) {
+		width: 1px;
+		min-height: 100%;
+	}
+</style>

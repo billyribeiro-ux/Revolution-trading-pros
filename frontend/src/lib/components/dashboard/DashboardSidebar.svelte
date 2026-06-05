@@ -285,7 +285,11 @@
 								<span class="dashboard__nav-item-icon">
 									<RtpIcon name={link.icon} size={32} />
 								</span>
-								<span class="dashboard__nav-item-text" class:font-bold={link.bold}>{link.text}</span
+								<span
+									class={[
+										'dashboard__nav-item-text',
+										link.bold && 'dashboard__nav-item-label-emphasized'
+									]}>{link.text}</span
 								>
 							</a>
 						{/if}
@@ -874,7 +878,9 @@
 		transition: color 0.15s ease-in-out;
 	}
 
-	/* font-bold class no longer needed - all items use font-weight: 600 */
+	.dashboard__nav-item-label-emphasized {
+		font-weight: 700;
+	}
 
 	.dash_main_links a:hover .dashboard__nav-item-text {
 		color: #fff;
