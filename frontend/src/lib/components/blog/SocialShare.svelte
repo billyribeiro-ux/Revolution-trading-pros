@@ -211,134 +211,132 @@
 
 <style>
 	/* 2026 CSS Standards: CSS Layers, oklch colors, container queries */
-	@layer components {
+	.social-share {
+		--share-text-muted: oklch(0.65 0.02 260);
+		--share-btn-bg: oklch(0.65 0.02 260 / 0.1);
+		--share-twitter: oklch(0.65 0.15 220);
+		--share-facebook: oklch(0.55 0.18 250);
+		--share-linkedin: oklch(0.5 0.15 240);
+		--share-reddit: oklch(0.6 0.22 30);
+		--share-email: oklch(0.7 0.15 240);
+		--share-copy: oklch(0.65 0.18 290);
+		--share-success: oklch(0.6 0.18 145);
+
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		container-type: inline-size;
+	}
+
+	.social-share.vertical {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.share-label {
+		font-size: 0.875rem;
+		font-weight: 600;
+		color: var(--share-text-muted);
+	}
+
+	.share-buttons {
+		display: flex;
+		gap: 0.5rem;
+		flex-wrap: wrap;
+	}
+
+	.vertical .share-buttons {
+		flex-direction: column;
+	}
+
+	.share-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.25rem;
+		border: none;
+		border-radius: 8px;
+		cursor: pointer;
+		transition: all 0.2s ease;
+		background: var(--share-btn-bg);
+		color: var(--share-text-muted);
+	}
+
+	.share-btn:focus-visible {
+		outline: 2px solid var(--share-email);
+		outline-offset: 2px;
+	}
+
+	/* Size variants */
+	.size-small .share-btn {
+		width: 32px;
+		height: 32px;
+	}
+
+	.size-medium .share-btn {
+		width: 40px;
+		height: 40px;
+	}
+
+	.size-large .share-btn {
+		width: 48px;
+		height: 48px;
+	}
+
+	.share-btn:hover {
+		transform: translateY(-2px);
+	}
+
+	/* Platform colors using oklch */
+	.share-btn.twitter:hover {
+		background: var(--share-twitter);
+		color: white;
+	}
+
+	.share-btn.facebook:hover {
+		background: var(--share-facebook);
+		color: white;
+	}
+
+	.share-btn.linkedin:hover {
+		background: var(--share-linkedin);
+		color: white;
+	}
+
+	.share-btn.reddit:hover {
+		background: var(--share-reddit);
+		color: white;
+	}
+
+	.share-btn.email:hover {
+		background: var(--share-email);
+		color: white;
+	}
+
+	.share-btn.copy:hover {
+		background: var(--share-copy);
+		color: white;
+	}
+
+	.share-btn.copied {
+		background: var(--share-success);
+		color: white;
+	}
+
+	.count {
+		font-size: 0.75rem;
+		font-weight: 600;
+	}
+
+	/* Container query responsive adjustments */
+	@container (max-width: 300px) {
 		.social-share {
-			--share-text-muted: oklch(0.65 0.02 260);
-			--share-btn-bg: oklch(0.65 0.02 260 / 0.1);
-			--share-twitter: oklch(0.65 0.15 220);
-			--share-facebook: oklch(0.55 0.18 250);
-			--share-linkedin: oklch(0.5 0.15 240);
-			--share-reddit: oklch(0.6 0.22 30);
-			--share-email: oklch(0.7 0.15 240);
-			--share-copy: oklch(0.65 0.18 290);
-			--share-success: oklch(0.6 0.18 145);
-
-			display: flex;
-			align-items: center;
-			gap: 0.75rem;
-			container-type: inline-size;
-		}
-
-		.social-share.vertical {
 			flex-direction: column;
 			align-items: flex-start;
 		}
 
-		.share-label {
-			font-size: 0.875rem;
-			font-weight: 600;
-			color: var(--share-text-muted);
-		}
-
 		.share-buttons {
-			display: flex;
-			gap: 0.5rem;
-			flex-wrap: wrap;
-		}
-
-		.vertical .share-buttons {
-			flex-direction: column;
-		}
-
-		.share-btn {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			gap: 0.25rem;
-			border: none;
-			border-radius: 8px;
-			cursor: pointer;
-			transition: all 0.2s ease;
-			background: var(--share-btn-bg);
-			color: var(--share-text-muted);
-		}
-
-		.share-btn:focus-visible {
-			outline: 2px solid var(--share-email);
-			outline-offset: 2px;
-		}
-
-		/* Size variants */
-		.size-small .share-btn {
-			width: 32px;
-			height: 32px;
-		}
-
-		.size-medium .share-btn {
-			width: 40px;
-			height: 40px;
-		}
-
-		.size-large .share-btn {
-			width: 48px;
-			height: 48px;
-		}
-
-		.share-btn:hover {
-			transform: translateY(-2px);
-		}
-
-		/* Platform colors using oklch */
-		.share-btn.twitter:hover {
-			background: var(--share-twitter);
-			color: white;
-		}
-
-		.share-btn.facebook:hover {
-			background: var(--share-facebook);
-			color: white;
-		}
-
-		.share-btn.linkedin:hover {
-			background: var(--share-linkedin);
-			color: white;
-		}
-
-		.share-btn.reddit:hover {
-			background: var(--share-reddit);
-			color: white;
-		}
-
-		.share-btn.email:hover {
-			background: var(--share-email);
-			color: white;
-		}
-
-		.share-btn.copy:hover {
-			background: var(--share-copy);
-			color: white;
-		}
-
-		.share-btn.copied {
-			background: var(--share-success);
-			color: white;
-		}
-
-		.count {
-			font-size: 0.75rem;
-			font-weight: 600;
-		}
-
-		/* Container query responsive adjustments */
-		@container (max-width: 300px) {
-			.social-share {
-				flex-direction: column;
-				align-items: flex-start;
-			}
-
-			.share-buttons {
-				justify-content: flex-start;
-			}
+			justify-content: flex-start;
 		}
 	}
 </style>
