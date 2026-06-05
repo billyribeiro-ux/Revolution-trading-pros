@@ -208,43 +208,37 @@
 	<title>Invoice Settings | Admin</title>
 </svelte:head>
 
-<div class="container mx-auto px-4 py-8 max-w-6xl">
+<div class="invoice-settings-page">
 	<!-- Header -->
-	<div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+	<div class="page-header">
 		<div>
-			<h1 class="text-3xl font-bold text-gray-900 dark:text-white">Invoice Customization</h1>
-			<p class="text-gray-600 dark:text-gray-400 mt-1">
-				Customize your invoice appearance with logo, colors, and content
-			</p>
+			<h1 class="page-title">Invoice Customization</h1>
+			<p class="page-subtitle">Customize your invoice appearance with logo, colors, and content</p>
 		</div>
-		<div class="flex gap-3">
-			<button
-				onclick={loadPreview}
-				class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition flex items-center gap-2"
-			>
+		<div class="page-actions">
+			<button onclick={loadPreview} class="secondary-button">
 				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: eye (preview) -->
 				<IconEye size={20} aria-hidden="true" />
 				Preview
 			</button>
-			<button
-				onclick={downloadPreview}
-				class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition flex items-center gap-2"
-			>
+			<button onclick={downloadPreview} class="secondary-button">
 				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: file-download -->
 				<IconFileDownload size={20} aria-hidden="true" />
 				Download PDF
 			</button>
-			<button
-				onclick={saveSettings}
-				disabled={saving}
-				class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 flex items-center gap-2"
-			>
+			<button onclick={saveSettings} disabled={saving} class="primary-button">
 				{#if saving}
-					<svg aria-hidden="true" class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
-						<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
+					<svg aria-hidden="true" class="button-spinner" fill="none" viewBox="0 0 24 24">
+						<circle
+							class="spinner-track"
+							cx="12"
+							cy="12"
+							r="10"
+							stroke="currentColor"
+							stroke-width="4"
 						></circle>
 						<path
-							class="opacity-75"
+							class="spinner-mark"
 							fill="currentColor"
 							d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
 						></path>
@@ -261,10 +255,7 @@
 
 	<!-- Alerts -->
 	{#if error}
-		<div
-			transition:slide
-			class="mb-6 p-4 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-lg flex items-center gap-3"
-		>
+		<div transition:slide class="alert alert--error">
 			<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-x error -->
 			<IconCircleXFilled size={20} aria-hidden="true" />
 			{error}
@@ -272,10 +263,7 @@
 	{/if}
 
 	{#if success}
-		<div
-			transition:slide
-			class="mb-6 p-4 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-lg flex items-center gap-3"
-		>
+		<div transition:slide class="alert alert--success">
 			<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-check success -->
 			<IconCircleCheckFilled size={20} aria-hidden="true" />
 			{success}
@@ -283,26 +271,22 @@
 	{/if}
 
 	{#if loading}
-		<div class="flex items-center justify-center py-20">
-			<div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+		<div class="loading-state">
+			<div class="page-spinner"></div>
 		</div>
 	{:else}
-		<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+		<div class="settings-layout">
 			<!-- Settings Panel -->
-			<div class="lg:col-span-2">
+			<div class="settings-main">
 				<!-- Tabs -->
-				<div
-					class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
-				>
-					<div class="border-b border-gray-200 dark:border-gray-700">
-						<nav class="flex overflow-x-auto">
+				<div class="settings-card">
+					<div class="tabs-shell">
+						<nav class="tabs">
 							{#each tabs as tab (tab.id)}
 								<button
 									onclick={() => (activeTab = tab.id)}
-									class="px-6 py-4 text-sm font-medium whitespace-nowrap transition-colors
-									{activeTab === tab.id
-										? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50 dark:bg-blue-900/20'
-										: 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'}"
+									class="tab-button"
+									class:active={activeTab === tab.id}
 								>
 									{tab.label}
 								</button>
@@ -310,24 +294,20 @@
 						</nav>
 					</div>
 
-					<div class="p-6">
+					<div class="settings-card-body">
 						<!-- Branding Tab -->
 						{#if activeTab === 'branding'}
-							<div class="space-y-6" transition:fade>
+							<div class="tab-panel" transition:fade>
 								<!-- Logo Upload -->
-								<div>
-									<div class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-										Company Logo
-									</div>
-									<div class="flex items-start gap-6">
-										<div
-											class="w-40 h-24 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center bg-gray-50 dark:bg-gray-900 overflow-hidden"
-										>
+								<div class="form-field">
+									<div class="form-label form-label--spaced">Company Logo</div>
+									<div class="logo-row">
+										<div class="logo-dropzone">
 											{#if logoUrl}
 												<img
 													src={logoUrl}
 													alt="Logo"
-													class="max-w-full max-h-full object-contain"
+													class="logo-preview"
 													width="160"
 													height="96"
 													loading="lazy"
@@ -337,136 +317,104 @@
 												<IconPhoto size={40} aria-hidden="true" />
 											{/if}
 										</div>
-										<div class="flex-1">
-											<div class="flex gap-3">
-												<label
-													class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer transition"
-												>
+										<div class="logo-actions">
+											<div class="button-row">
+												<label class="primary-button file-button">
 													{uploading ? 'Uploading...' : 'Upload Logo'}
 													<input
 														type="file"
-														class="hidden"
+														class="visually-hidden"
 														accept="image/*"
 														onchange={uploadLogo}
 														disabled={uploading}
 													/>
 												</label>
 												{#if logoUrl}
-													<button
-														onclick={removeLogo}
-														class="px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 transition"
-													>
-														Remove
-													</button>
+													<button onclick={removeLogo} class="danger-soft-button"> Remove </button>
 												{/if}
 											</div>
-											<p class="text-sm text-gray-500 mt-2">PNG, JPG, SVG or WebP. Max 2MB.</p>
+											<p class="field-help">PNG, JPG, SVG or WebP. Max 2MB.</p>
 										</div>
 									</div>
 								</div>
 
 								<!-- Show Logo Toggle -->
-								<label for="show-logo-toggle" class="flex items-center gap-3 cursor-pointer">
+								<label for="show-logo-toggle" class="checkbox-row">
 									<input
 										type="checkbox"
 										id="show-logo-toggle"
 										name="show-logo-toggle"
 										bind:checked={settings.show_logo}
-										class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+										class="checkbox-input"
 									/>
-									<span class="text-sm text-gray-700 dark:text-gray-300">Show logo on invoices</span
-									>
+									<span class="checkbox-label">Show logo on invoices</span>
 								</label>
 
 								<!-- Colors -->
-								<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-									<div>
-										<label
-											for="primary-color"
-											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-										>
-											Primary Color
-										</label>
-										<div class="flex items-center gap-3">
+								<div class="form-grid form-grid--three">
+									<div class="form-field">
+										<label for="primary-color" class="form-label"> Primary Color </label>
+										<div class="color-row">
 											<input
 												type="color"
 												id="primary-color"
 												name="primary-color"
 												bind:value={settings.primary_color}
-												class="w-12 h-12 rounded-lg cursor-pointer border-0"
+												class="color-input"
 											/>
 											<input
 												type="text"
 												id="primary-color-text"
 												name="primary-color-text"
 												bind:value={settings.primary_color}
-												class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono text-sm"
+												class="form-control mono-control"
 											/>
 										</div>
 									</div>
-									<div>
-										<label
-											for="secondary-color"
-											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-										>
-											Secondary Color
-										</label>
-										<div class="flex items-center gap-3">
+									<div class="form-field">
+										<label for="secondary-color" class="form-label"> Secondary Color </label>
+										<div class="color-row">
 											<input
 												type="color"
 												id="secondary-color"
 												name="secondary-color"
 												bind:value={settings.secondary_color}
-												class="w-12 h-12 rounded-lg cursor-pointer border-0"
+												class="color-input"
 											/>
 											<input
 												type="text"
 												id="secondary-color-text"
 												name="secondary-color-text"
 												bind:value={settings.secondary_color}
-												class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono text-sm"
+												class="form-control mono-control"
 											/>
 										</div>
 									</div>
-									<div>
-										<label
-											for="accent-color"
-											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-										>
-											Accent Color
-										</label>
-										<div class="flex items-center gap-3">
+									<div class="form-field">
+										<label for="accent-color" class="form-label"> Accent Color </label>
+										<div class="color-row">
 											<input
 												type="color"
 												id="accent-color"
 												name="accent-color"
 												bind:value={settings.accent_color}
-												class="w-12 h-12 rounded-lg cursor-pointer border-0"
+												class="color-input"
 											/>
 											<input
 												type="text"
 												id="accent-color-text"
 												name="accent-color-text"
 												bind:value={settings.accent_color}
-												class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono text-sm"
+												class="form-control mono-control"
 											/>
 										</div>
 									</div>
 								</div>
 
 								<!-- Font Family -->
-								<div>
-									<label
-										for="font-family"
-										class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-									>
-										Font Family
-									</label>
-									<select
-										id="font-family"
-										bind:value={settings.font_family}
-										class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-									>
+								<div class="form-field">
+									<label for="font-family" class="form-label"> Font Family </label>
+									<select id="font-family" bind:value={settings.font_family} class="form-control">
 										{#each fonts as font (font.value)}
 											<option value={font.value}>{font.label}</option>
 										{/each}
@@ -477,149 +425,108 @@
 
 						<!-- Company Info Tab -->
 						{#if activeTab === 'company'}
-							<div class="space-y-6" transition:fade>
-								<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-									<div>
-										<label
-											for="company-name"
-											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-										>
-											Company Name
-										</label>
+							<div class="tab-panel" transition:fade>
+								<div class="form-grid form-grid--two">
+									<div class="form-field">
+										<label for="company-name" class="form-label"> Company Name </label>
 										<input
 											type="text"
 											id="company-name"
 											name="company-name"
 											bind:value={settings.company_name}
-											class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+											class="form-control"
 											placeholder="Your Company Name"
 										/>
 									</div>
-									<div>
-										<label
-											for="company-email"
-											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-										>
-											Email Address
-										</label>
+									<div class="form-field">
+										<label for="company-email" class="form-label"> Email Address </label>
 										<input
 											type="email"
 											id="company-email"
 											name="company-email"
 											autocomplete="email"
 											bind:value={settings.company_email}
-											class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+											class="form-control"
 											placeholder="billing@company.com"
 										/>
 									</div>
 								</div>
 
-								<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-									<div>
-										<label
-											for="company-phone"
-											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-										>
-											Phone Number
-										</label>
+								<div class="form-grid form-grid--two">
+									<div class="form-field">
+										<label for="company-phone" class="form-label"> Phone Number </label>
 										<input
 											type="tel"
 											id="company-phone"
 											name="company-phone"
 											autocomplete="tel"
 											bind:value={settings.company_phone}
-											class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+											class="form-control"
 											placeholder="+1 (555) 123-4567"
 										/>
 									</div>
-									<div>
-										<label
-											for="tax-id"
-											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-										>
-											Tax ID / VAT Number
-										</label>
+									<div class="form-field">
+										<label for="tax-id" class="form-label"> Tax ID / VAT Number </label>
 										<input
 											type="text"
 											id="tax-id"
 											name="tax-id"
 											bind:value={settings.tax_id}
-											class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+											class="form-control"
 											placeholder="US123456789"
 										/>
 									</div>
 								</div>
 
-								<div>
-									<label
-										for="company-address"
-										class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-									>
-										Street Address
-									</label>
+								<div class="form-field">
+									<label for="company-address" class="form-label"> Street Address </label>
 									<input
 										type="text"
 										id="company-address"
 										name="company-address"
 										bind:value={settings.company_address}
-										class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+										class="form-control"
 										placeholder="123 Business Street, Suite 100"
 									/>
 								</div>
 
-								<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-									<div>
-										<label
-											for="company-city"
-											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-											>City</label
-										>
+								<div class="form-grid form-grid--four">
+									<div class="form-field">
+										<label for="company-city" class="form-label">City</label>
 										<input
 											type="text"
 											id="company-city"
 											name="company-city"
 											bind:value={settings.company_city}
-											class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+											class="form-control"
 										/>
 									</div>
-									<div>
-										<label
-											for="company-state"
-											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-											>State</label
-										>
+									<div class="form-field">
+										<label for="company-state" class="form-label">State</label>
 										<input
 											type="text"
 											id="company-state"
 											name="company-state"
 											bind:value={settings.company_state}
-											class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+											class="form-control"
 										/>
 									</div>
-									<div>
-										<label
-											for="company-zip"
-											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-											>ZIP</label
-										>
+									<div class="form-field">
+										<label for="company-zip" class="form-label">ZIP</label>
 										<input
 											type="text"
 											id="company-zip"
 											name="company-zip"
 											bind:value={settings.company_zip}
-											class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+											class="form-control"
 										/>
 									</div>
-									<div>
-										<label
-											for="company-country"
-											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-											>Country</label
-										>
+									<div class="form-field">
+										<label for="company-country" class="form-label">Country</label>
 										<select
 											id="company-country"
 											bind:value={settings.company_country}
-											class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+											class="form-control"
 										>
 											{#each Object.entries(countries) as [code, name] (code)}
 												<option value={code}>{name}</option>
@@ -632,88 +539,65 @@
 
 						<!-- Content Tab -->
 						{#if activeTab === 'content'}
-							<div class="space-y-6" transition:fade>
-								<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-									<div>
-										<label
-											for="header-text"
-											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-										>
-											Header Text
-										</label>
+							<div class="tab-panel" transition:fade>
+								<div class="form-grid form-grid--two">
+									<div class="form-field">
+										<label for="header-text" class="form-label"> Header Text </label>
 										<input
 											type="text"
 											id="header-text"
 											name="header-text"
 											bind:value={settings.header_text}
-											class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+											class="form-control"
 											placeholder="INVOICE"
 										/>
 									</div>
-									<div>
-										<label
-											for="invoice-prefix"
-											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-										>
-											Invoice Prefix
-										</label>
+									<div class="form-field">
+										<label for="invoice-prefix" class="form-label"> Invoice Prefix </label>
 										<input
 											type="text"
 											id="invoice-prefix"
 											name="invoice-prefix"
 											bind:value={settings.invoice_prefix}
-											class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+											class="form-control"
 											placeholder="INV-"
 										/>
 									</div>
 								</div>
 
-								<div>
-									<label
-										for="payment-terms"
-										class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-									>
-										Payment Terms
-									</label>
+								<div class="form-field">
+									<label for="payment-terms" class="form-label"> Payment Terms </label>
 									<input
 										type="text"
 										id="payment-terms"
 										name="payment-terms"
 										bind:value={settings.payment_terms}
-										class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+										class="form-control"
 										placeholder="Due upon receipt"
 									/>
 								</div>
 
-								<div>
-									<label
-										for="footer-text"
-										class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-									>
-										Footer Text
-									</label>
+								<div class="form-field">
+									<label for="footer-text" class="form-label"> Footer Text </label>
 									<input
 										type="text"
 										id="footer-text"
 										name="footer-text"
 										bind:value={settings.footer_text}
-										class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+										class="form-control"
 										placeholder="Thank you for your business!"
 									/>
 								</div>
 
-								<div>
-									<label
-										for="notes-template"
-										class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-									>
+								<div class="form-field">
+									<label for="notes-template" class="form-label">
 										Default Notes (shown on all invoices)
 									</label>
 									<textarea
 										id="notes-template"
 										bind:value={settings.notes_template}
 										rows="4"
-										class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
+										class="form-control text-area"
 										placeholder="Add any terms, conditions, or notes to include on every invoice..."
 									></textarea>
 								</div>
@@ -722,92 +606,64 @@
 
 						<!-- Display Options Tab -->
 						{#if activeTab === 'display'}
-							<div class="space-y-4" transition:fade>
-								<p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
-									Choose which elements to display on your invoices:
-								</p>
+							<div class="option-list" transition:fade>
+								<p class="section-copy">Choose which elements to display on your invoices:</p>
 
-								<label
-									for="display-show-logo"
-									class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-								>
+								<label for="display-show-logo" class="option-card">
 									<input
 										type="checkbox"
 										id="display-show-logo"
 										name="display-show-logo"
 										bind:checked={settings.show_logo}
-										class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+										class="checkbox-input"
 									/>
 									<div>
-										<span class="text-sm font-medium text-gray-700 dark:text-gray-300"
-											>Show Company Logo</span
-										>
-										<p class="text-xs text-gray-500">
-											Display your uploaded logo at the top of invoices
-										</p>
+										<span class="option-title">Show Company Logo</span>
+										<p class="option-copy">Display your uploaded logo at the top of invoices</p>
 									</div>
 								</label>
 
-								<label
-									for="display-show-tax-id"
-									class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-								>
+								<label for="display-show-tax-id" class="option-card">
 									<input
 										type="checkbox"
 										id="display-show-tax-id"
 										name="display-show-tax-id"
 										bind:checked={settings.show_tax_id}
-										class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+										class="checkbox-input"
 									/>
 									<div>
-										<span class="text-sm font-medium text-gray-700 dark:text-gray-300"
-											>Show Tax ID / VAT Number</span
-										>
-										<p class="text-xs text-gray-500">
-											Include your tax identification number in the header
-										</p>
+										<span class="option-title">Show Tax ID / VAT Number</span>
+										<p class="option-copy">Include your tax identification number in the header</p>
 									</div>
 								</label>
 
-								<label
-									for="display-show-payment-method"
-									class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-								>
+								<label for="display-show-payment-method" class="option-card">
 									<input
 										type="checkbox"
 										id="display-show-payment-method"
 										name="display-show-payment-method"
 										bind:checked={settings.show_payment_method}
-										class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+										class="checkbox-input"
 									/>
 									<div>
-										<span class="text-sm font-medium text-gray-700 dark:text-gray-300"
-											>Show Payment Method</span
-										>
-										<p class="text-xs text-gray-500">
+										<span class="option-title">Show Payment Method</span>
+										<p class="option-copy">
 											Display the card type and last 4 digits used for payment
 										</p>
 									</div>
 								</label>
 
-								<label
-									for="display-show-due-date"
-									class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-								>
+								<label for="display-show-due-date" class="option-card">
 									<input
 										type="checkbox"
 										id="display-show-due-date"
 										name="display-show-due-date"
 										bind:checked={settings.show_due_date}
-										class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+										class="checkbox-input"
 									/>
 									<div>
-										<span class="text-sm font-medium text-gray-700 dark:text-gray-300"
-											>Show Due Date</span
-										>
-										<p class="text-xs text-gray-500">
-											Include payment due date in the invoice details
-										</p>
+										<span class="option-title">Show Due Date</span>
+										<p class="option-copy">Include payment due date in the invoice details</p>
 									</div>
 								</label>
 							</div>
@@ -815,36 +671,26 @@
 
 						<!-- Advanced Tab -->
 						{#if activeTab === 'advanced'}
-							<div class="space-y-6" transition:fade>
-								<div>
-									<label
-										for="custom-css"
-										class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-									>
-										Custom CSS
-									</label>
-									<p class="text-sm text-gray-500 mb-3">
+							<div class="tab-panel" transition:fade>
+								<div class="form-field">
+									<label for="custom-css" class="form-label"> Custom CSS </label>
+									<p class="field-help field-help--spaced">
 										Add custom CSS to further customize your invoice appearance. Use CSS variables
-										like <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded"
-											>var(--primary-color)</code
-										>.
+										like <code class="inline-code">var(--primary-color)</code>.
 									</p>
 									<textarea
 										id="custom-css"
 										bind:value={settings.custom_css}
 										rows="10"
-										class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono text-sm resize-none"
+										class="form-control text-area mono-control"
 										placeholder={`.invoice-title { font-size: 36px; }
 .items-table th { border-radius: 0; }
 .footer-text { font-style: italic; }`}
 									></textarea>
 								</div>
 
-								<div class="pt-4 border-t border-gray-200 dark:border-gray-700">
-									<button
-										onclick={resetToDefaults}
-										class="px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 transition"
-									>
+								<div class="danger-zone">
+									<button onclick={resetToDefaults} class="danger-soft-button">
 										Reset to Defaults
 									</button>
 								</div>
@@ -855,110 +701,99 @@
 			</div>
 
 			<!-- Live Preview Panel -->
-			<div class="lg:col-span-1">
-				<div class="sticky top-4">
-					<div
-						class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
-					>
-						<div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-							<h3 class="font-semibold text-gray-900 dark:text-white">Live Preview</h3>
+			<div class="preview-sidebar">
+				<div class="preview-sticky">
+					<div class="preview-card">
+						<div class="preview-card-header">
+							<h3 class="preview-card-title">Live Preview</h3>
 						</div>
-						<div class="p-4">
+						<div class="preview-card-body">
 							<!-- Mini Preview -->
 							<div
-								class="aspect-[8.5/11] bg-white rounded-lg shadow-inner border overflow-hidden"
+								class="mini-invoice"
 								style="font-family: {settings.font_family}; font-size: 6px;"
 							>
-								<div class="p-3">
+								<div class="mini-invoice-inner">
 									<!-- Header -->
-									<div
-										class="flex justify-between items-start border-b-2 pb-2 mb-2"
-										style="border-color: {settings.primary_color};"
-									>
+									<div class="mini-invoice-header" style="border-color: {settings.primary_color};">
 										<div>
 											{#if settings.show_logo && logoUrl}
 												<img
 													src={logoUrl}
 													alt="Logo"
-													class="h-6 object-contain"
+													class="mini-logo"
 													width="96"
 													height="24"
 													loading="lazy"
 												/>
 											{:else}
-												<div class="font-bold text-[8px]" style="color: {settings.primary_color};">
+												<div class="mini-brand" style="color: {settings.primary_color};">
 													{settings.company_name || 'Company'}
 												</div>
 											{/if}
 										</div>
-										<div class="text-right">
-											<div class="font-bold text-[10px]" style="color: {settings.secondary_color};">
+										<div class="mini-invoice-title-wrap">
+											<div class="mini-title" style="color: {settings.secondary_color};">
 												{settings.header_text || 'INVOICE'}
 											</div>
-											<div class="text-gray-500 text-[5px]">#{settings.invoice_prefix}001</div>
+											<div class="mini-muted">#{settings.invoice_prefix}001</div>
 										</div>
 									</div>
 
 									<!-- Addresses -->
-									<div class="flex justify-between mb-2">
+									<div class="mini-addresses">
 										<div>
-											<div class="text-[4px] font-bold" style="color: {settings.primary_color};">
+											<div class="mini-section-label" style="color: {settings.primary_color};">
 												FROM
 											</div>
-											<div class="text-[5px]">{settings.company_name || 'Your Company'}</div>
+											<div class="mini-text">{settings.company_name || 'Your Company'}</div>
 										</div>
-										<div class="text-right">
-											<div class="text-[4px] font-bold" style="color: {settings.primary_color};">
+										<div class="mini-right">
+											<div class="mini-section-label" style="color: {settings.primary_color};">
 												BILL TO
 											</div>
-											<div class="text-[5px]">John Doe</div>
+											<div class="mini-text">John Doe</div>
 										</div>
 									</div>
 
 									<!-- Table -->
-									<table class="w-full text-[4px] mb-2">
+									<table class="mini-table">
 										<thead>
 											<tr style="background: {settings.primary_color}; color: white;">
-												<th class="p-1 text-left">Description</th>
-												<th class="p-1 text-right">Amount</th>
+												<th>Description</th>
+												<th class="mini-right">Amount</th>
 											</tr>
 										</thead>
 										<tbody>
-											<tr class="border-b">
-												<td class="p-1">Professional Plan</td>
-												<td class="p-1 text-right">$99.00</td>
+											<tr>
+												<td>Professional Plan</td>
+												<td class="mini-right">$99.00</td>
 											</tr>
 										</tbody>
 									</table>
 
 									<!-- Total -->
-									<div class="flex justify-end">
+									<div class="mini-total-row">
 										<div
-											class="text-right p-1 rounded"
+											class="mini-total"
 											style="background: {settings.primary_color}; color: white;"
 										>
-											<span class="text-[5px] font-bold">Total: $99.00</span>
+											<span class="mini-total-text">Total: $99.00</span>
 										</div>
 									</div>
 
 									<!-- Footer -->
-									<div class="mt-2 pt-1 border-t text-center text-[4px] text-gray-500">
+									<div class="mini-footer">
 										{settings.footer_text || 'Thank you!'}
 									</div>
 								</div>
 							</div>
 
-							<div class="mt-4 flex gap-2">
-								<button
-									onclick={loadPreview}
-									class="flex-1 px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition"
-								>
+							<div class="preview-actions">
+								<button onclick={loadPreview} class="primary-button compact-button">
 									Full Preview
 								</button>
-								<button
-									onclick={downloadPreview}
-									class="flex-1 px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition"
-								>
+								<button onclick={downloadPreview} class="secondary-button compact-button">
 									Download PDF
 								</button>
 							</div>
@@ -971,28 +806,21 @@
 
 	<!-- Preview Modal -->
 	{#if showPreviewModal}
-		<div
-			class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-			transition:fade
-		>
-			<div
-				class="bg-white dark:bg-gray-800 rounded-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
-			>
-				<div
-					class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between"
-				>
-					<h3 class="text-lg font-semibold text-gray-900 dark:text-white">Invoice Preview</h3>
+		<div class="preview-modal-backdrop" transition:fade>
+			<div class="preview-modal">
+				<div class="preview-modal-header">
+					<h3 class="preview-modal-title">Invoice Preview</h3>
 					<button
 						onclick={() => (showPreviewModal = false)}
-						class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition"
+						class="icon-button"
 						aria-label="Close preview"
 					>
 						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: x (close preview) -->
 						<IconX size={20} aria-hidden="true" />
 					</button>
 				</div>
-				<div class="flex-1 overflow-auto p-6 bg-gray-100 dark:bg-gray-900">
-					<div class="bg-white shadow-lg mx-auto" style="max-width: 800px;">
+				<div class="preview-modal-body">
+					<div class="preview-document" style="max-width: 800px;">
 						<!-- FIX-2026-04-26 (audit 02 §P3-8): DOMPurify sanitization. -->
 						{@html sanitizeHtml(previewHtml, 'rich')}
 					</div>
@@ -1013,3 +841,704 @@
 		showResetModal = false;
 	}}
 />
+
+<style>
+	.invoice-settings-page {
+		width: min(100% - 2rem, 72rem);
+		margin-inline: auto;
+		padding-block: 2rem;
+		color: #111827;
+	}
+
+	:global(.dark) .invoice-settings-page {
+		color: #f9fafb;
+	}
+
+	.page-header,
+	.page-actions,
+	.secondary-button,
+	.primary-button,
+	.alert,
+	.logo-row,
+	.button-row,
+	.checkbox-row,
+	.color-row,
+	.option-card,
+	.mini-invoice-header,
+	.mini-addresses,
+	.mini-total-row,
+	.preview-actions,
+	.preview-modal-header {
+		display: flex;
+		align-items: center;
+	}
+
+	.page-header {
+		justify-content: space-between;
+		gap: 1rem;
+		flex-wrap: wrap;
+		margin-bottom: 2rem;
+	}
+
+	.page-title {
+		margin: 0;
+		font-size: 1.875rem;
+		line-height: 2.25rem;
+		font-weight: 700;
+	}
+
+	.page-subtitle,
+	.section-copy {
+		margin: 0.25rem 0 0;
+		color: #4b5563;
+	}
+
+	:global(.dark) .page-subtitle,
+	:global(.dark) .section-copy {
+		color: #9ca3af;
+	}
+
+	.page-actions,
+	.button-row,
+	.preview-actions {
+		gap: 0.75rem;
+	}
+
+	.secondary-button,
+	.primary-button,
+	.danger-soft-button,
+	.icon-button {
+		border: 0;
+		border-radius: 0.5rem;
+		font: inherit;
+		cursor: pointer;
+		transition:
+			background-color 0.2s ease,
+			opacity 0.2s ease;
+	}
+
+	.secondary-button,
+	.primary-button {
+		gap: 0.5rem;
+		padding: 0.5rem 1rem;
+	}
+
+	.secondary-button {
+		background: #f3f4f6;
+		color: #374151;
+	}
+
+	.secondary-button:hover {
+		background: #e5e7eb;
+	}
+
+	:global(.dark) .secondary-button {
+		background: #374151;
+		color: #d1d5db;
+	}
+
+	:global(.dark) .secondary-button:hover {
+		background: #4b5563;
+	}
+
+	.primary-button {
+		background: #2563eb;
+		color: #ffffff;
+	}
+
+	.primary-button:hover:not(:disabled) {
+		background: #1d4ed8;
+	}
+
+	.primary-button:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	.button-spinner,
+	.page-spinner {
+		animation: invoice-spin 1s linear infinite;
+	}
+
+	.button-spinner {
+		width: 1.25rem;
+		height: 1.25rem;
+	}
+
+	.spinner-track {
+		opacity: 0.25;
+	}
+
+	.spinner-mark {
+		opacity: 0.75;
+	}
+
+	.alert {
+		gap: 0.75rem;
+		margin-bottom: 1.5rem;
+		padding: 1rem;
+		border-radius: 0.5rem;
+	}
+
+	.alert--error {
+		background: #fee2e2;
+		color: #b91c1c;
+	}
+
+	.alert--success {
+		background: #dcfce7;
+		color: #15803d;
+	}
+
+	:global(.dark) .alert--error {
+		background: rgba(127, 29, 29, 0.3);
+		color: #f87171;
+	}
+
+	:global(.dark) .alert--success {
+		background: rgba(20, 83, 45, 0.3);
+		color: #4ade80;
+	}
+
+	.loading-state {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding-block: 5rem;
+	}
+
+	.page-spinner {
+		width: 3rem;
+		height: 3rem;
+		border: 2px solid rgba(37, 99, 235, 0.25);
+		border-bottom-color: #2563eb;
+		border-radius: 999px;
+	}
+
+	.settings-layout {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 2rem;
+	}
+
+	.settings-card,
+	.preview-card,
+	.preview-modal {
+		border: 1px solid #e5e7eb;
+		border-radius: 0.75rem;
+		background: #ffffff;
+		box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+		overflow: hidden;
+	}
+
+	:global(.dark) .settings-card,
+	:global(.dark) .preview-card,
+	:global(.dark) .preview-modal {
+		border-color: #374151;
+		background: #1f2937;
+	}
+
+	.tabs-shell,
+	.preview-card-header,
+	.preview-modal-header,
+	.danger-zone {
+		border-bottom: 1px solid #e5e7eb;
+	}
+
+	:global(.dark) .tabs-shell,
+	:global(.dark) .preview-card-header,
+	:global(.dark) .preview-modal-header,
+	:global(.dark) .danger-zone {
+		border-color: #374151;
+	}
+
+	.tabs {
+		display: flex;
+		overflow-x: auto;
+	}
+
+	.tab-button {
+		padding: 1rem 1.5rem;
+		border: 0;
+		border-bottom: 2px solid transparent;
+		background: transparent;
+		color: #6b7280;
+		font: inherit;
+		font-size: 0.875rem;
+		font-weight: 500;
+		white-space: nowrap;
+		cursor: pointer;
+		transition:
+			background-color 0.2s ease,
+			border-color 0.2s ease,
+			color 0.2s ease;
+	}
+
+	.tab-button:hover {
+		color: #374151;
+	}
+
+	:global(.dark) .tab-button {
+		color: #9ca3af;
+	}
+
+	:global(.dark) .tab-button:hover {
+		color: #d1d5db;
+	}
+
+	.tab-button.active {
+		border-color: #2563eb;
+		background: #eff6ff;
+		color: #2563eb;
+	}
+
+	:global(.dark) .tab-button.active {
+		background: rgba(30, 64, 175, 0.2);
+	}
+
+	.settings-card-body,
+	.preview-card-body {
+		padding: 1.5rem;
+	}
+
+	.tab-panel,
+	.option-list {
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
+	}
+
+	.option-list {
+		gap: 1rem;
+	}
+
+	.form-grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1.5rem;
+	}
+
+	.form-field {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.form-label,
+	.checkbox-label,
+	.option-title {
+		color: #374151;
+		font-size: 0.875rem;
+		font-weight: 500;
+	}
+
+	:global(.dark) .form-label,
+	:global(.dark) .checkbox-label,
+	:global(.dark) .option-title {
+		color: #d1d5db;
+	}
+
+	.form-label--spaced {
+		margin-bottom: 0.25rem;
+	}
+
+	.form-control {
+		width: 100%;
+		padding: 0.75rem 1rem;
+		border: 1px solid #d1d5db;
+		border-radius: 0.5rem;
+		background: #ffffff;
+		color: #111827;
+		font: inherit;
+	}
+
+	:global(.dark) .form-control {
+		border-color: #4b5563;
+		background: #374151;
+		color: #ffffff;
+	}
+
+	.form-control:focus {
+		outline: 2px solid #2563eb;
+		outline-offset: 2px;
+	}
+
+	.text-area {
+		resize: none;
+	}
+
+	.mono-control {
+		font-family: var(--font-mono);
+		font-size: 0.875rem;
+	}
+
+	.logo-row {
+		align-items: flex-start;
+		gap: 1.5rem;
+	}
+
+	.logo-dropzone {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 10rem;
+		height: 6rem;
+		border: 2px dashed #d1d5db;
+		border-radius: 0.5rem;
+		background: #f9fafb;
+		overflow: hidden;
+	}
+
+	:global(.dark) .logo-dropzone {
+		border-color: #4b5563;
+		background: #111827;
+	}
+
+	.logo-preview {
+		max-width: 100%;
+		max-height: 100%;
+		object-fit: contain;
+	}
+
+	.logo-actions {
+		flex: 1;
+		min-width: 0;
+	}
+
+	.file-button {
+		display: inline-flex;
+	}
+
+	.visually-hidden {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
+	}
+
+	.danger-soft-button {
+		padding: 0.5rem 1rem;
+		background: #fee2e2;
+		color: #dc2626;
+	}
+
+	.danger-soft-button:hover {
+		background: #fecaca;
+	}
+
+	:global(.dark) .danger-soft-button {
+		background: rgba(127, 29, 29, 0.3);
+	}
+
+	:global(.dark) .danger-soft-button:hover {
+		background: rgba(127, 29, 29, 0.5);
+	}
+
+	.field-help,
+	.option-copy {
+		margin: 0;
+		color: #6b7280;
+		font-size: 0.875rem;
+	}
+
+	.option-copy {
+		font-size: 0.75rem;
+	}
+
+	.field-help--spaced {
+		margin-bottom: 0.75rem;
+	}
+
+	.color-row {
+		gap: 0.75rem;
+	}
+
+	.color-input {
+		width: 3rem;
+		height: 3rem;
+		border: 0;
+		border-radius: 0.5rem;
+		cursor: pointer;
+	}
+
+	.checkbox-row,
+	.option-card {
+		gap: 0.75rem;
+		cursor: pointer;
+	}
+
+	.checkbox-input {
+		width: 1.25rem;
+		height: 1.25rem;
+		accent-color: #2563eb;
+	}
+
+	.option-card {
+		padding: 1rem;
+		border-radius: 0.5rem;
+		background: #f9fafb;
+		transition: background-color 0.2s ease;
+	}
+
+	.option-card:hover {
+		background: #f3f4f6;
+	}
+
+	:global(.dark) .option-card {
+		background: #111827;
+	}
+
+	:global(.dark) .option-card:hover {
+		background: #1f2937;
+	}
+
+	.inline-code {
+		padding-inline: 0.25rem;
+		border-radius: 0.25rem;
+		background: #f3f4f6;
+	}
+
+	:global(.dark) .inline-code {
+		background: #374151;
+	}
+
+	.danger-zone {
+		padding-top: 1rem;
+		border-bottom: 0;
+		border-top: 1px solid #e5e7eb;
+	}
+
+	.preview-sticky {
+		position: sticky;
+		top: 1rem;
+	}
+
+	.preview-card-header,
+	.preview-modal-header {
+		justify-content: space-between;
+		padding: 0.75rem 1rem;
+	}
+
+	.preview-card-title,
+	.preview-modal-title {
+		margin: 0;
+		font-weight: 600;
+	}
+
+	.preview-card-title {
+		color: #111827;
+	}
+
+	:global(.dark) .preview-card-title,
+	:global(.dark) .preview-modal-title {
+		color: #ffffff;
+	}
+
+	.mini-invoice {
+		aspect-ratio: 8.5 / 11;
+		overflow: hidden;
+		border: 1px solid #e5e7eb;
+		border-radius: 0.5rem;
+		background: #ffffff;
+		box-shadow: inset 0 2px 8px rgba(15, 23, 42, 0.08);
+		color: #111827;
+	}
+
+	.mini-invoice-inner {
+		padding: 0.75rem;
+	}
+
+	.mini-invoice-header {
+		align-items: flex-start;
+		justify-content: space-between;
+		margin-bottom: 0.5rem;
+		padding-bottom: 0.5rem;
+		border-bottom: 2px solid;
+	}
+
+	.mini-logo {
+		height: 1.5rem;
+		object-fit: contain;
+	}
+
+	.mini-invoice-title-wrap,
+	.mini-right {
+		text-align: right;
+	}
+
+	.mini-title {
+		font-size: 10px;
+		font-weight: 700;
+	}
+
+	.mini-brand {
+		font-size: 8px;
+		font-weight: 700;
+	}
+
+	.mini-muted {
+		color: #6b7280;
+		font-size: 5px;
+	}
+
+	.mini-addresses {
+		justify-content: space-between;
+		margin-bottom: 0.5rem;
+	}
+
+	.mini-section-label {
+		font-size: 4px;
+		font-weight: 700;
+	}
+
+	.mini-text,
+	.mini-total-text {
+		font-size: 5px;
+	}
+
+	.mini-total-text {
+		font-weight: 700;
+	}
+
+	.mini-table {
+		width: 100%;
+		margin-bottom: 0.5rem;
+		border-collapse: collapse;
+		font-size: 4px;
+	}
+
+	.mini-table th,
+	.mini-table td {
+		padding: 0.25rem;
+		text-align: left;
+	}
+
+	.mini-table tbody tr {
+		border-bottom: 1px solid #e5e7eb;
+	}
+
+	.mini-total-row {
+		justify-content: flex-end;
+	}
+
+	.mini-total {
+		padding: 0.25rem;
+		border-radius: 0.25rem;
+		text-align: right;
+	}
+
+	.mini-footer {
+		margin-top: 0.5rem;
+		padding-top: 0.25rem;
+		border-top: 1px solid #e5e7eb;
+		color: #6b7280;
+		font-size: 4px;
+		text-align: center;
+	}
+
+	.preview-actions {
+		margin-top: 1rem;
+	}
+
+	.compact-button {
+		flex: 1;
+		justify-content: center;
+		padding: 0.5rem 0.75rem;
+		font-size: 0.875rem;
+	}
+
+	.preview-modal-backdrop {
+		position: fixed;
+		inset: 0;
+		z-index: 50;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 1rem;
+		background: rgba(0, 0, 0, 0.5);
+	}
+
+	.preview-modal {
+		display: flex;
+		flex-direction: column;
+		width: min(100%, 56rem);
+		max-height: 90vh;
+	}
+
+	.preview-modal-body {
+		flex: 1;
+		overflow: auto;
+		padding: 1.5rem;
+		background: #f3f4f6;
+	}
+
+	:global(.dark) .preview-modal-body {
+		background: #111827;
+	}
+
+	.preview-document {
+		margin-inline: auto;
+		background: #ffffff;
+		box-shadow: 0 10px 30px rgba(15, 23, 42, 0.18);
+	}
+
+	.icon-button {
+		padding: 0.5rem;
+		background: transparent;
+	}
+
+	.icon-button:hover {
+		background: #f3f4f6;
+	}
+
+	:global(.dark) .icon-button:hover {
+		background: #374151;
+	}
+
+	@media (min-width: 768px) {
+		.form-grid--two {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.form-grid--three {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
+
+		.form-grid--four {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.settings-layout {
+			grid-template-columns: minmax(0, 2fr) minmax(18rem, 1fr);
+		}
+	}
+
+	@media (max-width: 640px) {
+		.page-actions,
+		.logo-row,
+		.preview-actions {
+			align-items: stretch;
+			flex-direction: column;
+		}
+
+		.secondary-button,
+		.primary-button,
+		.danger-soft-button {
+			justify-content: center;
+			width: 100%;
+		}
+	}
+
+	@keyframes invoice-spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+</style>
