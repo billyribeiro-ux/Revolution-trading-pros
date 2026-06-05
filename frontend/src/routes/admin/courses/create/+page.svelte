@@ -2095,8 +2095,8 @@
 								<div class="list-item">
 									<IconCheck size={16} />
 									<input
-										id="page-course-outcomes-i"
-										name="page-course-outcomes-i"
+										id={`course-outcome-${i}`}
+										name={`course-outcome-${i}`}
 										type="text"
 										bind:value={course.outcomes[i]}
 										placeholder="Students will be able to..."
@@ -2131,8 +2131,8 @@
 								<div class="list-item">
 									<IconAlertCircle size={16} />
 									<input
-										id="page-course-prerequisites-i"
-										name="page-course-prerequisites-i"
+										id={`course-prerequisite-${i}`}
+										name={`course-prerequisite-${i}`}
 										type="text"
 										bind:value={course.prerequisites[i]}
 										placeholder="Required knowledge or skills..."
@@ -2163,8 +2163,8 @@
 								<div class="list-item">
 									<IconUsers size={16} />
 									<input
-										id="page-course-target-audience-i"
-										name="page-course-target-audience-i"
+										id={`course-target-audience-${i}`}
+										name={`course-target-audience-${i}`}
 										type="text"
 										bind:value={course.target_audience[i]}
 										placeholder="Who is this course for?"
@@ -2242,8 +2242,8 @@
 									<IconGripVertical size={20} class="drag-handle" />
 									<span class="module-number">Module {moduleIndex + 1}</span>
 									<input
-										id="page-module-title"
-										name="page-module-title"
+										id={`module-title-${module.id}`}
+										name={`module-title-${module.id}`}
 										type="text"
 										bind:value={module.title}
 										placeholder="Enter module title..."
@@ -2304,16 +2304,16 @@
 														<option value="download">{getLessonIcon('download')} Resource</option>
 													</select>
 													<input
-														id="page-lesson-title"
-														name="page-lesson-title"
+														id={`lesson-title-${lesson.id}`}
+														name={`lesson-title-${lesson.id}`}
 														type="text"
 														bind:value={lesson.title}
 														placeholder="Lesson title..."
 														class="lesson-title"
 													/>
 													<input
-														id="page-lesson-duration-minutes"
-														name="page-lesson-duration-minutes"
+														id={`lesson-duration-${lesson.id}`}
+														name={`lesson-duration-${lesson.id}`}
 														type="number"
 														bind:value={lesson.duration_minutes}
 														onchange={() => updateModuleDuration(module)}
@@ -2323,8 +2323,8 @@
 													/>
 													<label class="preview-toggle" title="Allow free preview">
 														<input
-															id="page-lesson-is-preview"
-															name="page-lesson-is-preview"
+															id={`lesson-preview-${lesson.id}`}
+															name={`lesson-preview-${lesson.id}`}
 															type="checkbox"
 															bind:checked={lesson.is_preview}
 														/>
@@ -2351,8 +2351,8 @@
 										<div class="module-footer">
 											<label class="preview-module">
 												<input
-													id="page-module-is-preview"
-													name="page-module-is-preview"
+													id={`module-preview-${module.id}`}
+													name={`module-preview-${module.id}`}
 													type="checkbox"
 													bind:checked={module.is_preview}
 												/>
@@ -2419,8 +2419,8 @@
 						<div class="pricing-models">
 							<label class="pricing-model" class:selected={course.pricing_model === 'one-time'}>
 								<input
-									id="page-radio"
-									name="page-radio"
+									id="pricing-model-one-time"
+									name="pricing-model"
 									type="radio"
 									bind:group={course.pricing_model}
 									value="one-time"
@@ -2434,8 +2434,8 @@
 
 							<label class="pricing-model" class:selected={course.pricing_model === 'subscription'}>
 								<input
-									id="page-radio"
-									name="page-radio"
+									id="pricing-model-subscription"
+									name="pricing-model"
 									type="radio"
 									bind:group={course.pricing_model}
 									value="subscription"
@@ -2449,8 +2449,8 @@
 
 							<label class="pricing-model" class:selected={course.pricing_model === 'payment-plan'}>
 								<input
-									id="page-radio"
-									name="page-radio"
+									id="pricing-model-payment-plan"
+									name="pricing-model"
 									type="radio"
 									bind:group={course.pricing_model}
 									value="payment-plan"
@@ -2464,8 +2464,8 @@
 
 							<label class="pricing-model" class:selected={course.pricing_model === 'free'}>
 								<input
-									id="page-radio"
-									name="page-radio"
+									id="pricing-model-free"
+									name="pricing-model"
 									type="radio"
 									bind:group={course.pricing_model}
 									value="free"
@@ -2583,7 +2583,7 @@
 						<p class="help-text">Add bonuses to increase perceived value</p>
 
 						<div class="bonus-list">
-							{#each course.bonuses as bonus (bonus.icon)}
+							{#each course.bonuses as bonus (bonus.id)}
 								<div class="bonus-item">
 									<select bind:value={bonus.icon} class="bonus-icon">
 										<option value="📚">📚</option>
@@ -2601,16 +2601,16 @@
 										<option value="consultation">Consultation</option>
 									</select>
 									<input
-										id="page-bonus-title"
-										name="page-bonus-title"
+										id={`bonus-title-${bonus.id}`}
+										name={`bonus-title-${bonus.id}`}
 										type="text"
 										bind:value={bonus.title}
 										placeholder="Bonus title..."
 										class="bonus-title"
 									/>
 									<input
-										id="page-bonus-value"
-										name="page-bonus-value"
+										id={`bonus-value-${bonus.id}`}
+										name={`bonus-value-${bonus.id}`}
 										type="number"
 										bind:value={bonus.value}
 										placeholder="Value"
@@ -2720,8 +2720,8 @@
 								<span>{uploading ? 'Uploading...' : 'Click to upload thumbnail'}</span>
 								<small>JPG, PNG • Max 5MB • 16:9 aspect ratio</small>
 								<input
-									id="page-file"
-									name="page-file"
+									id="course-thumbnail-file"
+									name="course-thumbnail-file"
 									type="file"
 									accept="image/*"
 									onchange={(e: Event) => void handleImageUpload(e, 'thumbnail')}
@@ -2757,8 +2757,8 @@
 										<span>Upload Video File</span>
 										<small>MP4, WebM • Max 100MB</small>
 										<input
-											id="page-file"
-											name="page-file"
+											id="course-promo-video-file"
+											name="course-promo-video-file"
 											type="file"
 											accept="video/*"
 											onchange={(event) => void handleVideoUpload(event)}
@@ -2803,8 +2803,8 @@
 								<IconPlus size={24} />
 								<span>Add Image</span>
 								<input
-									id="page-file"
-									name="page-file"
+									id="course-gallery-file"
+									name="course-gallery-file"
 									type="file"
 									accept="image/*"
 									onchange={(e: Event) => void handleImageUpload(e, 'gallery')}
@@ -2902,8 +2902,8 @@
 								<IconPhoto size={16} />
 								Upload OG Image (1200x630px)
 								<input
-									id="page-file"
-									name="page-file"
+									id="og-image"
+									name="og-image"
 									type="file"
 									accept="image/*"
 									onchange={(e: Event) => void handleImageUpload(e, 'og')}
@@ -3172,8 +3172,8 @@
 								<div class="list-item">
 									<IconSettings size={16} />
 									<input
-										id="page-course-tools-required-i"
-										name="page-course-tools-required-i"
+										id={`course-tool-required-${i}`}
+										name={`course-tool-required-${i}`}
 										type="text"
 										bind:value={course.tools_required[i]}
 										placeholder="Software, tools, or resources needed"
