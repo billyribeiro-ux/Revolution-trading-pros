@@ -130,14 +130,14 @@
 				</div>
 
 				<h2
-					in:heavySlide={{ delay: 100, duration: 1000 }}
+					in:heavySlide={{ delay: 100 }}
 					class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight"
 				>
 					Trading <span class="text-slate-700">Framework.</span>
 				</h2>
 
 				<p
-					in:heavySlide={{ delay: 200, duration: 1000 }}
+					in:heavySlide={{ delay: 200 }}
 					class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto"
 				>
 					We don't build retail platforms. We engineer institutional trading systems. Verified by
@@ -152,7 +152,7 @@
 				{@const IconComponent = feature.icon}
 				{#if isVisible}
 					<div
-						in:heavySlide={{ delay: 300 + i * 150, duration: 1000 }}
+						in:heavySlide={{ delay: 300 + i * 150 }}
 						class="relative group/card bg-zinc-950/50 border border-zinc-800 rounded-xl p-8 hover:bg-zinc-900/30 transition-all duration-500 overflow-hidden"
 					>
 						<!-- Spotlight Overlay -->

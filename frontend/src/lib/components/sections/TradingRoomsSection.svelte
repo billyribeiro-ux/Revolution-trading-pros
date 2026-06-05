@@ -139,14 +139,14 @@
 				</div>
 
 				<h2
-					in:heavySlide={{ delay: 100, duration: 1000 }}
+					in:heavySlide={{ delay: 100 }}
 					class="text-3xl md:text-5xl font-medium tracking-tight text-white mb-6"
 				>
 					Professional Trading Environments
 				</h2>
 
 				<p
-					in:heavySlide={{ delay: 200, duration: 1000 }}
+					in:heavySlide={{ delay: 200 }}
 					class="text-base md:text-lg text-zinc-500 leading-relaxed font-light max-w-2xl mx-auto"
 				>
 					Select an environment tailored to your liquidity requirements.
@@ -162,7 +162,7 @@
 				{@const IconComponent = item.icon}
 				{#if isVisible}
 					<div
-						in:heavySlide={{ delay: 300 + i * 100, duration: 1000 }}
+						in:heavySlide={{ delay: 300 + i * 100 }}
 						class="relative group bg-zinc-950 p-8 lg:p-10 flex flex-col h-[420px] overflow-hidden"
 					>
 						{#if item.type === 'candles'}

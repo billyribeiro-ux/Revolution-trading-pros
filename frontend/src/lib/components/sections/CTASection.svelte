@@ -144,7 +144,7 @@
 				</div>
 
 				<h2
-					in:heavySlide={{ delay: 100, duration: 1000 }}
+					in:heavySlide={{ delay: 100 }}
 					class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight leading-[0.95]"
 				>
 					Professional <br />
@@ -152,7 +152,7 @@
 				</h2>
 
 				<p
-					in:heavySlide={{ delay: 200, duration: 1000 }}
+					in:heavySlide={{ delay: 200 }}
 					class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto mb-16"
 				>
 					This is not a game. It is a business. Authenticate now to access institutional-grade
@@ -160,7 +160,7 @@
 				</p>
 
 				<div
-					in:heavySlide={{ delay: 300, duration: 1000 }}
+					in:heavySlide={{ delay: 300 }}
 					class="relative max-w-xl mx-auto group perspective-1000"
 				>
 					<div
@@ -233,7 +233,7 @@
 				</div>
 
 				<div
-					in:heavySlide={{ delay: 400, duration: 1000 }}
+					in:heavySlide={{ delay: 400 }}
 					class="mt-16 pt-8 border-t border-white/5 grid grid-cols-2 md:grid-cols-4 gap-8"
 				>
 					<div class="text-center md:text-left">

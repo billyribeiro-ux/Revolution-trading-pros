@@ -124,14 +124,14 @@
 				</div>
 
 				<h2
-					in:heavySlide={{ delay: 100, duration: 1000 }}
+					in:heavySlide={{ delay: 100 }}
 					class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight"
 				>
 					Market <span class="text-slate-700">Analysis.</span>
 				</h2>
 
 				<p
-					in:heavySlide={{ delay: 200, duration: 1000 }}
+					in:heavySlide={{ delay: 200 }}
 					class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto"
 				>
 					We don't publish retail content. We deliver institutional-grade market intelligence.
@@ -147,7 +147,7 @@
 						{#if isVisible}
 							<a
 								href="/blog/{leadPost.slug}"
-								in:heavySlide={{ delay: 300, duration: 1000 }}
+								in:heavySlide={{ delay: 300 }}
 								class="relative group block h-full bg-[#050505] border border-white/10 overflow-hidden hover:border-amber-600/50 transition-colors duration-500"
 							>
 								<div class="relative h-[400px] overflow-hidden">
@@ -216,7 +216,7 @@
 				<div class="lg:col-span-4 flex flex-col h-full border-l border-white/5 lg:pl-12">
 					{#if isVisible}
 						<div
-							in:heavySlide={{ delay: 400, duration: 1000 }}
+							in:heavySlide={{ delay: 400 }}
 							class="mb-8 flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-slate-500"
 						>
 							<IconNews size={14} />

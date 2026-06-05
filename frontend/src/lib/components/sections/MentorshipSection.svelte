@@ -137,14 +137,14 @@
 				</div>
 
 				<h2
-					in:heavySlide={{ delay: 100, duration: 1000 }}
+					in:heavySlide={{ delay: 100 }}
 					class="text-4xl md:text-6xl font-serif text-white mb-8 tracking-tight"
 				>
 					Core <span class="text-slate-700">Infrastructure.</span>
 				</h2>
 
 				<p
-					in:heavySlide={{ delay: 200, duration: 1000 }}
+					in:heavySlide={{ delay: 200 }}
 					class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl border-l-2 border-white/10 pl-6"
 				>
 					We replaced marketing hype with financial engineering. Our ecosystem combines structured
@@ -158,7 +158,7 @@
 				{@const IconComponent = feature.icon}
 				{#if isVisible}
 					<div
-						in:heavySlide={{ delay: 300 + i * 150, duration: 1000 }}
+						in:heavySlide={{ delay: 300 + i * 150 }}
 						class="relative group/card bg-[#080808] border border-white/10 p-10 overflow-hidden hover:border-amber-900/50 transition-colors duration-500"
 					>
 						<div

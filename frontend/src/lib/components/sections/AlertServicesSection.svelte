@@ -140,14 +140,14 @@
 				</div>
 
 				<h2
-					in:heavySlide={{ delay: 100, duration: 1000 }}
+					in:heavySlide={{ delay: 100 }}
 					class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight"
 				>
 					Alert <span class="text-slate-700">Systems.</span>
 				</h2>
 
 				<p
-					in:heavySlide={{ delay: 200, duration: 1000 }}
+					in:heavySlide={{ delay: 200 }}
 					class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto"
 				>
 					We don't send generic alerts. We deliver institutional-grade signal intelligence. Verified
@@ -164,7 +164,7 @@
 				{@const IconComponent = item.icon}
 				{#if isVisible}
 					<div
-						in:heavySlide={{ delay: 300 + i * 150, duration: 1000 }}
+						in:heavySlide={{ delay: 300 + i * 150 }}
 						class="relative group/card bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden hover:border-zinc-700 transition-colors duration-500"
 					>
 						<div
@@ -349,10 +349,7 @@
 		</div>
 
 		{#if isVisible}
-			<div
-				in:heavySlide={{ delay: 600, duration: 1000 }}
-				class="mt-12 text-center border-t border-zinc-900 pt-8"
-			>
+			<div in:heavySlide={{ delay: 600 }} class="mt-12 text-center border-t border-zinc-900 pt-8">
 				<div class="inline-flex items-center gap-6 text-xs text-zinc-500 font-mono">
 					<span class="flex items-center gap-2">
 						<IconTarget size={14} />
