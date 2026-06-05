@@ -421,13 +421,13 @@
 
 	function getPriorityColor(priority: string): string {
 		const colors: Record<string, string> = {
-			urgent: 'bg-red-500',
-			high: 'bg-orange-500',
-			medium: 'bg-yellow-500',
-			low: 'bg-blue-500',
-			none: 'bg-gray-400'
+			urgent: 'priority-dot--urgent',
+			high: 'priority-dot--high',
+			medium: 'priority-dot--medium',
+			low: 'priority-dot--low',
+			none: 'priority-dot--none'
 		};
-		return colors[priority] || 'bg-gray-400';
+		return colors[priority] || 'priority-dot--none';
 	}
 
 	function formatDate(dateStr: string): string {
@@ -451,141 +451,116 @@
 	<title>{board?.title || 'Board'} | Project Boards</title>
 </svelte:head>
 
-<div class="bg-gray-100 dark:bg-gray-900 flex flex-col">
+<div class="board-detail">
 	<!-- Header -->
-	<div
-		class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex-shrink-0"
-	>
-		<div class="px-4 py-3">
-			<div class="flex items-center justify-between">
-				<div class="flex items-center gap-4">
-					<a
-						href="/admin/boards"
-						class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-					>
-						<IconArrowLeft class="w-5 h-5" />
+	<div class="board-header">
+		<div class="board-header-inner">
+			<div class="board-header-row">
+				<div class="board-title-area">
+					<a href="/admin/boards" class="icon-button" aria-label="Back to boards">
+						<IconArrowLeft class="toolbar-icon" />
 					</a>
 					{#if board}
-						<div class="flex items-center gap-3">
+						<div class="board-title-group">
 							<div
-								class="w-3 h-8 rounded"
+								class="board-color-strip"
 								style="background-color: {board.background_color || '#E6B800'}"
 							></div>
 							<div>
-								<h1
-									class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2"
-								>
+								<h1 class="board-title">
 									{board.title}
 									<button
 										onclick={async () => {
 											const updated = await boardsAPI.toggleFavorite(boardId);
 											board = updated;
 										}}
-										class={board.is_favorite
-											? 'text-yellow-500'
-											: 'text-gray-400 hover:text-yellow-500'}
+										class="favorite-button"
+										class:active={board.is_favorite}
+										aria-label={board.is_favorite ? 'Remove favorite' : 'Add favorite'}
 									>
 										{#if board.is_favorite}
-											<IconStarFilled class="w-5 h-5" />
+											<IconStarFilled class="toolbar-icon" />
 										{:else}
-											<IconStar class="w-5 h-5" />
+											<IconStar class="toolbar-icon" />
 										{/if}
 									</button>
 								</h1>
 								{#if board.description}
-									<p class="text-sm text-gray-500 dark:text-gray-400">{board.description}</p>
+									<p class="board-subtitle">{board.description}</p>
 								{/if}
 							</div>
 						</div>
 					{/if}
 				</div>
 
-				<div class="flex items-center gap-3">
+				<div class="board-toolbar">
 					<!-- Search -->
-					<div class="relative">
-						<IconSearch class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+					<div class="search-field">
+						<IconSearch class="search-icon" />
 						<input
 							id="page-searchquery"
 							name="page-searchquery"
 							type="text"
 							placeholder="Search tasks..."
 							bind:value={searchQuery}
-							class="pl-9 pr-4 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white w-48 focus:w-64 transition-all focus:ring-2 focus:ring-[#E6B800]"
+							class="search-input"
 						/>
 					</div>
 
 					<!-- Filters -->
 					<button
 						onclick={() => (showFilters = !showFilters)}
-						class="px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex items-center gap-2 {showFilters
-							? 'bg-gray-100 dark:bg-gray-700'
-							: ''}"
+						class="toolbar-button"
+						class:active={showFilters}
 					>
-						<IconFilter class="w-4 h-4" />
+						<IconFilter class="small-icon" />
 						Filters
 					</button>
 
 					<!-- Members -->
-					<div class="flex items-center -space-x-2">
+					<div class="member-stack">
 						{#each members.slice(0, 4) as member, i (i)}
-							<div
-								class="w-8 h-8 rounded-full bg-[#E6B800] flex items-center justify-center text-[#0D1117] text-sm font-medium border-2 border-white dark:border-gray-800"
-								title={member.name}
-							>
+							<div class="member-avatar" title={member.name}>
 								{member.name.charAt(0).toUpperCase()}
 							</div>
 						{/each}
 						{#if members.length > 4}
-							<div
-								class="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-gray-600 dark:text-gray-300 text-xs font-medium border-2 border-white dark:border-gray-800"
-							>
+							<div class="member-avatar member-avatar--more">
 								+{members.length - 4}
 							</div>
 						{/if}
-						<button
-							class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 border-2 border-white dark:border-gray-800 ml-1"
-						>
-							<IconUsers class="w-4 h-4" />
+						<button class="member-add-button" aria-label="Manage members">
+							<IconUsers class="small-icon" />
 						</button>
 					</div>
 
 					<!-- Settings -->
 					<a
 						href="/admin/boards/{boardId}/settings"
-						class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+						class="icon-button"
+						aria-label="Board settings"
 					>
-						<IconSettings class="w-5 h-5" />
+						<IconSettings class="toolbar-icon" />
 					</a>
 				</div>
 			</div>
 
 			<!-- Filter Bar -->
 			{#if showFilters}
-				<div
-					class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 flex items-center gap-4"
-				>
-					<select
-						bind:value={filterAssignee}
-						class="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-					>
+				<div class="filter-bar">
+					<select bind:value={filterAssignee} class="filter-select">
 						<option value={null}>All assignees</option>
 						{#each members as member (member.user_id)}
 							<option value={member.user_id}>{member.name}</option>
 						{/each}
 					</select>
-					<select
-						bind:value={filterLabel}
-						class="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-					>
+					<select bind:value={filterLabel} class="filter-select">
 						<option value={null}>All labels</option>
 						{#each labels as label (label.id)}
 							<option value={label.id}>{label.title}</option>
 						{/each}
 					</select>
-					<select
-						bind:value={filterPriority}
-						class="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-					>
+					<select bind:value={filterPriority} class="filter-select">
 						<option value={null}>All priorities</option>
 						<option value="urgent">Urgent</option>
 						<option value="high">High</option>
@@ -600,7 +575,7 @@
 								filterLabel = null;
 								filterPriority = null;
 							}}
-							class="px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
+							class="clear-filters-button"
 						>
 							Clear filters
 						</button>
@@ -611,38 +586,32 @@
 	</div>
 
 	<!-- Kanban Board -->
-	<div class="flex-1 overflow-x-auto p-4">
+	<div class="kanban-scroll">
 		{#if loading}
-			<div class="flex items-center justify-center h-64">
-				<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#E6B800]"></div>
+			<div class="loading-state">
+				<div class="spinner"></div>
 			</div>
 		{:else}
-			<div class="flex gap-4 h-full min-h-[calc(100vh-180px)]">
+			<div class="kanban-board">
 				{#each stages as stage (stage.id)}
-					<div
-						class="flex-shrink-0 w-72 bg-gray-200/50 dark:bg-gray-800/50 rounded-xl flex flex-col max-h-full"
-					>
+					<div class="stage-column">
 						<!-- Stage Header -->
-						<div class="p-3 flex items-center justify-between flex-shrink-0">
-							<div class="flex items-center gap-2">
-								<div class="w-3 h-3 rounded-full" style="background-color: {stage.color}"></div>
-								<h3 class="font-medium text-gray-900 dark:text-white">{stage.title}</h3>
-								<span
-									class="text-xs bg-gray-300 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-0.5 rounded-full"
-								>
+						<div class="stage-header">
+							<div class="stage-title-group">
+								<div class="stage-color-dot" style="background-color: {stage.color}"></div>
+								<h3 class="stage-title">{stage.title}</h3>
+								<span class="stage-count">
 									{tasksByStage[stage.id]?.length || 0}
 								</span>
 							</div>
-							<button
-								class="p-1 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700 rounded"
-							>
-								<IconDots class="w-4 h-4" />
+							<button class="stage-menu-button" aria-label="Stage actions">
+								<IconDots class="small-icon" />
 							</button>
 						</div>
 
 						<!-- Tasks -->
 						<div
-							class="flex-1 overflow-y-auto p-2 space-y-2"
+							class="task-list"
 							ondragover={(e: DragEvent) =>
 								handleDragOver(e, stage.id, tasksByStage[stage.id]?.length || 0)}
 							ondragleave={handleDragLeave}
@@ -659,12 +628,9 @@
 									ondragover={(e: DragEvent) => handleDragOver(e, stage.id, index)}
 									role="button"
 									tabindex="0"
-									class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 cursor-pointer hover:shadow-md transition-shadow {draggedTask?.id ===
-									task.id
-										? 'opacity-50'
-										: ''} {dragOverStage === stage.id && dragOverPosition === index
-										? 'border-t-2 border-[#E6B800]'
-										: ''}"
+									class="task-card"
+									class:dragging={draggedTask?.id === task.id}
+									class:drop-target={dragOverStage === stage.id && dragOverPosition === index}
 									onclick={() => openTaskModal(task)}
 									onkeydown={(e: KeyboardEvent) => {
 										if (e.key === 'Enter' || e.key === ' ') {
@@ -675,12 +641,9 @@
 								>
 									<!-- Labels -->
 									{#if task.labels && task.labels.length > 0}
-										<div class="flex flex-wrap gap-1 mb-2">
+										<div class="task-labels">
 											{#each task.labels as label (label.id)}
-												<span
-													class="px-2 py-0.5 text-xs rounded text-white"
-													style="background-color: {label.color}"
-												>
+												<span class="task-label" style="background-color: {label.color}">
 													{label.title}
 												</span>
 											{/each}
@@ -688,58 +651,51 @@
 									{/if}
 
 									<!-- Title -->
-									<h4 class="text-sm font-medium text-gray-900 dark:text-white mb-2">
+									<h4 class="task-title">
 										{task.title}
 									</h4>
 
 									<!-- Meta -->
-									<div
-										class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400"
-									>
-										<div class="flex items-center gap-3">
+									<div class="task-meta-row">
+										<div class="task-meta-list">
 											{#if task.due_date}
 												<span
-													class="flex items-center gap-1 {isOverdue(task.due_date) &&
-													task.status !== 'completed'
-														? 'text-red-500'
-														: ''}"
+													class="task-meta-item"
+													class:overdue={isOverdue(task.due_date) && task.status !== 'completed'}
 												>
-													<IconCalendar class="w-3.5 h-3.5" />
+													<IconCalendar class="meta-icon" />
 													{formatDate(task.due_date)}
 												</span>
 											{/if}
 											{#if task.subtask_count}
-												<span class="flex items-center gap-1">
-													<IconChecklist class="w-3.5 h-3.5" />
+												<span class="task-meta-item">
+													<IconChecklist class="meta-icon" />
 													{task.completed_subtask_count || 0}/{task.subtask_count}
 												</span>
 											{/if}
 											{#if task.comment_count}
-												<span class="flex items-center gap-1">
-													<IconMessage class="w-3.5 h-3.5" />
+												<span class="task-meta-item">
+													<IconMessage class="meta-icon" />
 													{task.comment_count}
 												</span>
 											{/if}
 											{#if task.attachment_count}
-												<span class="flex items-center gap-1">
-													<IconPaperclip class="w-3.5 h-3.5" />
+												<span class="task-meta-item">
+													<IconPaperclip class="meta-icon" />
 													{task.attachment_count}
 												</span>
 											{/if}
 										</div>
-										<div class="flex items-center gap-1">
+										<div class="task-end-meta">
 											{#if task.priority && task.priority !== 'none'}
-												<div class="w-2 h-2 rounded-full {getPriorityColor(task.priority)}"></div>
+												<div class="priority-dot {getPriorityColor(task.priority)}"></div>
 											{/if}
 											{#if task.assignees && task.assignees.length > 0}
-												<div class="flex -space-x-1">
+												<div class="mini-avatar-stack">
 													{#each task.assignees.slice(0, 2) as assigneeId (assigneeId)}
 														{@const assignee = members.find((m) => m.user_id === assigneeId)}
 														{#if assignee}
-															<div
-																class="w-6 h-6 rounded-full bg-[#E6B800] flex items-center justify-center text-[#0D1117] text-xs border border-white dark:border-gray-800"
-																title={assignee.name}
-															>
+															<div class="mini-avatar" title={assignee.name}>
 																{assignee.name.charAt(0).toUpperCase()}
 															</div>
 														{/if}
@@ -753,19 +709,17 @@
 
 							<!-- Drop zone indicator -->
 							{#if dragOverStage === stage.id && dragOverPosition === (tasksByStage[stage.id]?.length || 0)}
-								<div class="h-1 bg-[#E6B800] rounded"></div>
+								<div class="drop-indicator"></div>
 							{/if}
 
 							<!-- Add Task Input -->
 							{#if showNewTaskInput === stage.id}
-								<div
-									class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3"
-								>
+								<div class="task-composer">
 									<textarea
 										bind:value={newTaskTitle}
 										placeholder="Enter task title..."
 										rows="2"
-										class="w-full text-sm border-0 p-0 resize-none focus:ring-0 bg-transparent text-gray-900 dark:text-white placeholder-gray-400"
+										class="task-composer-input"
 										onkeydown={(e: KeyboardEvent) => {
 											if (e.key === 'Enter' && !e.shiftKey) {
 												e.preventDefault();
@@ -777,12 +731,12 @@
 											}
 										}}
 									></textarea>
-									<div class="flex items-center justify-between mt-2">
-										<div class="flex items-center gap-2">
+									<div class="composer-actions">
+										<div class="button-row">
 											<button
 												onclick={() => createTask(stage.id)}
 												disabled={!newTaskTitle.trim()}
-												class="px-3 py-1 text-xs bg-[#E6B800] hover:bg-[#B38F00] text-[#0D1117] rounded disabled:opacity-50 disabled:cursor-not-allowed"
+												class="primary-button primary-button--small"
 											>
 												Add
 											</button>
@@ -791,7 +745,7 @@
 													showNewTaskInput = null;
 													newTaskTitle = '';
 												}}
-												class="px-3 py-1 text-xs text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+												class="ghost-button ghost-button--small"
 											>
 												Cancel
 											</button>
@@ -803,12 +757,9 @@
 
 						<!-- Add Task Button -->
 						{#if showNewTaskInput !== stage.id}
-							<div class="p-2 flex-shrink-0">
-								<button
-									onclick={() => (showNewTaskInput = stage.id)}
-									class="w-full px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-300/50 dark:hover:bg-gray-700/50 rounded-lg flex items-center gap-2"
-								>
-									<IconPlus class="w-4 h-4" />
+							<div class="add-task-wrap">
+								<button onclick={() => (showNewTaskInput = stage.id)} class="add-task-button">
+									<IconPlus class="small-icon" />
 									Add task
 								</button>
 							</div>
@@ -817,16 +768,16 @@
 				{/each}
 
 				<!-- Add Stage -->
-				<div class="flex-shrink-0 w-72">
+				<div class="add-stage-column">
 					{#if showNewStageInput}
-						<div class="bg-gray-200/50 dark:bg-gray-800/50 rounded-xl p-3">
+						<div class="stage-composer">
 							<input
 								id="page-newstagetitle"
 								name="page-newstagetitle"
 								type="text"
 								bind:value={newStageTitle}
 								placeholder="Stage title..."
-								class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white mb-2"
+								class="form-control"
 								onkeydown={(e: KeyboardEvent) => {
 									if (e.key === 'Enter') createStage();
 									if (e.key === 'Escape') {
@@ -835,11 +786,11 @@
 									}
 								}}
 							/>
-							<div class="flex items-center gap-2">
+							<div class="button-row">
 								<button
 									onclick={createStage}
 									disabled={!newStageTitle.trim()}
-									class="px-3 py-1.5 text-sm bg-[#E6B800] hover:bg-[#B38F00] text-[#0D1117] rounded-lg disabled:opacity-50"
+									class="primary-button primary-button--small"
 								>
 									Add Stage
 								</button>
@@ -848,18 +799,15 @@
 										showNewStageInput = false;
 										newStageTitle = '';
 									}}
-									class="px-3 py-1.5 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-700 rounded-lg"
+									class="ghost-button ghost-button--small"
 								>
 									Cancel
 								</button>
 							</div>
 						</div>
 					{:else}
-						<button
-							onclick={() => (showNewStageInput = true)}
-							class="w-full px-4 py-3 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-200/50 dark:hover:bg-gray-800/50 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 flex items-center justify-center gap-2"
-						>
-							<IconPlus class="w-4 h-4" />
+						<button onclick={() => (showNewStageInput = true)} class="add-stage-button">
+							<IconPlus class="small-icon" />
 							Add Stage
 						</button>
 					{/if}
@@ -870,15 +818,11 @@
 
 	<!-- Task Detail Modal -->
 	{#if showTaskModal && selectedTask}
-		<div
-			class="fixed inset-0 bg-black/50 flex items-start justify-center z-50 overflow-y-auto py-8"
-		>
-			<div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-3xl mx-4">
+		<div class="modal-backdrop modal-backdrop--top">
+			<div class="task-modal">
 				<!-- Modal Header -->
-				<div
-					class="p-4 border-b border-gray-200 dark:border-gray-700 flex items-start justify-between"
-				>
-					<div class="flex-1">
+				<div class="task-modal-header">
+					<div class="task-modal-title-area">
 						{#if editingTaskTitle}
 							<input
 								id="page-text"
@@ -895,53 +839,45 @@
 										editingTaskTitle = false;
 									}
 								}}
-								class="w-full text-xl font-semibold bg-transparent border-b border-[#E6B800] focus:outline-none text-gray-900 dark:text-white"
+								class="task-title-input"
 							/>
 						{:else}
 							<button
 								type="button"
-								class="text-xl font-semibold text-gray-900 dark:text-white cursor-pointer hover:text-[#E6B800] dark:hover:text-[#FFD11A] text-left w-full bg-transparent border-0 p-0"
+								class="task-title-button"
 								onclick={() => (editingTaskTitle = true)}
 							>
 								{selectedTask?.title}
 							</button>
 						{/if}
-						<p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+						<p class="task-location">
 							in {stages.find((s) => s.id === selectedTask?.stage_id)?.title || 'Unknown'}
 						</p>
 					</div>
-					<div class="flex items-center gap-2">
+					<div class="modal-header-actions">
 						{#if selectedTask?.status === 'completed'}
-							<span
-								class="px-2 py-1 text-xs bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded flex items-center gap-1"
-							>
-								<IconCheck class="w-3.5 h-3.5" />
+							<span class="status-pill status-pill--complete">
+								<IconCheck class="meta-icon" />
 								Completed
 							</span>
 						{:else}
-							<button
-								onclick={completeTask}
-								class="px-3 py-1.5 text-sm bg-green-600 hover:bg-green-700 text-white rounded-lg flex items-center gap-1"
-							>
-								<IconCheck class="w-4 h-4" />
+							<button onclick={completeTask} class="complete-button">
+								<IconCheck class="small-icon" />
 								Complete
 							</button>
 						{/if}
-						<button
-							onclick={closeTaskModal}
-							class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-						>
-							<IconX class="w-5 h-5" />
+						<button onclick={closeTaskModal} class="icon-button" aria-label="Close task modal">
+							<IconX class="toolbar-icon" />
 						</button>
 					</div>
 				</div>
 
-				<div class="flex">
+				<div class="task-modal-layout">
 					<!-- Main Content -->
-					<div class="flex-1 p-6 border-r border-gray-200 dark:border-gray-700">
+					<div class="task-modal-main">
 						<!-- Description -->
-						<div class="mb-6">
-							<h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description</h3>
+						<div class="modal-section">
+							<h3 class="modal-section-title">Description</h3>
 							{#if editingTaskDescription}
 								<textarea
 									value={selectedTask.description || ''}
@@ -950,7 +886,7 @@
 										editingTaskDescription = false;
 									}}
 									rows="4"
-									class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+									class="form-control"
 									placeholder="Add a description..."
 								></textarea>
 							{:else}
@@ -964,7 +900,7 @@
 									}}
 									role="button"
 									tabindex="0"
-									class="text-sm text-gray-600 dark:text-gray-400 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-2 -m-2 min-h-[60px]"
+									class="description-preview"
 								>
 									{selectedTask.description || 'Click to add a description...'}
 								</div>
@@ -972,48 +908,44 @@
 						</div>
 
 						<!-- Subtasks -->
-						<div class="mb-6">
-							<h3
-								class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2"
-							>
-								<IconSubtask class="w-4 h-4" />
+						<div class="modal-section">
+							<h3 class="modal-section-title modal-section-title--icon">
+								<IconSubtask class="small-icon" />
 								Subtasks
 								{#if taskSubtasks.length > 0}
-									<span class="text-xs text-gray-500">
+									<span class="modal-count">
 										{taskSubtasks.filter((s) => s.is_completed).length}/{taskSubtasks.length}
 									</span>
 								{/if}
 							</h3>
-							<div class="space-y-2">
+							<div class="subtask-list">
 								{#each taskSubtasks as subtask (subtask.id)}
-									<div class="flex items-center gap-2 group">
+									<div class="subtask-item">
 										<button
 											onclick={() => toggleSubtask(subtask)}
-											class="w-5 h-5 rounded border {subtask.is_completed
-												? 'bg-green-500 border-green-500 text-white'
-												: 'border-gray-300 dark:border-gray-600'} flex items-center justify-center"
+											class="subtask-check"
+											class:checked={subtask.is_completed}
+											aria-label={subtask.is_completed
+												? 'Mark subtask incomplete'
+												: 'Mark subtask complete'}
 										>
 											{#if subtask.is_completed}
-												<IconCheck class="w-3 h-3" />
+												<IconCheck class="tiny-icon" />
 											{/if}
 										</button>
-										<span
-											class="text-sm {subtask.is_completed
-												? 'line-through text-gray-400'
-												: 'text-gray-700 dark:text-gray-300'}"
-										>
+										<span class="subtask-title" class:complete={subtask.is_completed}>
 											{subtask.title}
 										</span>
 									</div>
 								{/each}
-								<div class="flex items-center gap-2">
+								<div class="inline-form">
 									<input
 										id="page-newsubtasktitle"
 										name="page-newsubtasktitle"
 										type="text"
 										bind:value={newSubtaskTitle}
 										placeholder="Add subtask..."
-										class="flex-1 px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+										class="form-control"
 										onkeydown={(e: KeyboardEvent) => {
 											if (e.key === 'Enter') addSubtask();
 										}}
@@ -1021,7 +953,7 @@
 									<button
 										onclick={addSubtask}
 										disabled={!newSubtaskTitle.trim()}
-										class="px-3 py-1.5 text-sm bg-[#E6B800] hover:bg-[#B38F00] text-[#0D1117] rounded-lg disabled:opacity-50"
+										class="primary-button primary-button--small"
 									>
 										Add
 									</button>
@@ -1031,50 +963,42 @@
 
 						<!-- Comments -->
 						<div>
-							<h3
-								class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2"
-							>
-								<IconMessage class="w-4 h-4" />
+							<h3 class="modal-section-title modal-section-title--icon">
+								<IconMessage class="small-icon" />
 								Comments ({taskComments.length})
 							</h3>
-							<div class="space-y-3">
+							<div class="comment-list">
 								{#each taskComments as comment (comment.id)}
-									<div class="flex gap-3">
-										<div
-											class="w-8 h-8 rounded-full bg-[#E6B800] flex items-center justify-center text-[#0D1117] text-sm flex-shrink-0"
-										>
+									<div class="comment-item">
+										<div class="member-avatar comment-avatar">
 											{comment.author?.name?.charAt(0).toUpperCase() || 'U'}
 										</div>
-										<div class="flex-1">
-											<div class="flex items-center gap-2">
-												<span class="text-sm font-medium text-gray-900 dark:text-white"
-													>{comment.author?.name || 'Unknown'}</span
-												>
-												<span class="text-xs text-gray-500"
+										<div class="comment-body">
+											<div class="comment-header">
+												<span class="comment-author">{comment.author?.name || 'Unknown'}</span>
+												<span class="comment-time"
 													>{new Date(comment.created_at).toLocaleString()}</span
 												>
 											</div>
-											<p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{comment.content}</p>
+											<p class="comment-content">{comment.content}</p>
 										</div>
 									</div>
 								{/each}
-								<div class="flex gap-3">
-									<div
-										class="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-gray-600 dark:text-gray-400 text-sm flex-shrink-0"
-									>
-										<IconUser class="w-4 h-4" />
+								<div class="comment-item">
+									<div class="member-avatar member-avatar--muted comment-avatar">
+										<IconUser class="small-icon" />
 									</div>
-									<div class="flex-1">
+									<div class="comment-body">
 										<textarea
 											bind:value={newComment}
 											placeholder="Write a comment..."
 											rows="2"
-											class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+											class="form-control"
 										></textarea>
 										<button
 											onclick={addComment}
 											disabled={!newComment.trim()}
-											class="mt-2 px-3 py-1.5 text-sm bg-[#E6B800] hover:bg-[#B38F00] text-[#0D1117] rounded-lg disabled:opacity-50"
+											class="primary-button primary-button--small comment-button"
 										>
 											Comment
 										</button>
@@ -1085,69 +1009,55 @@
 					</div>
 
 					<!-- Sidebar -->
-					<div class="w-64 p-4 space-y-4">
+					<div class="task-modal-sidebar">
 						<!-- Timer -->
-						<div>
-							<h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-2">
-								Time Tracking
-							</h4>
-							<div class="flex items-center gap-2">
+						<div class="sidebar-section">
+							<h4 class="sidebar-label">Time Tracking</h4>
+							<div class="sidebar-inline">
 								{#if activeTimer?.taskId === selectedTask.id}
-									<span class="text-lg font-mono text-[#E6B800]">{timerDisplay}</span>
+									<span class="timer-display">{timerDisplay}</span>
 									<button
 										onclick={stopTimer}
-										class="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
+										class="icon-button icon-button--danger"
+										aria-label="Stop timer"
 									>
-										<IconPlayerStop class="w-5 h-5" />
+										<IconPlayerStop class="toolbar-icon" />
 									</button>
 								{:else}
-									<span class="text-sm text-gray-600 dark:text-gray-400"
-										>{selectedTask.logged_minutes || 0}m logged</span
-									>
+									<span class="sidebar-text">{selectedTask.logged_minutes || 0}m logged</span>
 									<button
 										onclick={startTimer}
-										class="p-1.5 text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 rounded"
+										class="icon-button icon-button--success"
+										aria-label="Start timer"
 									>
-										<IconPlayerPlay class="w-5 h-5" />
+										<IconPlayerPlay class="toolbar-icon" />
 									</button>
 								{/if}
 							</div>
 						</div>
 
 						<!-- Assignees -->
-						<div>
-							<h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-2">
-								Assignees
-							</h4>
-							<div class="flex flex-wrap gap-2">
+						<div class="sidebar-section">
+							<h4 class="sidebar-label">Assignees</h4>
+							<div class="chip-list">
 								{#each selectedTask.assignees || [] as assigneeId (assigneeId)}
 									{@const assignee = members.find((m) => m.user_id === assigneeId)}
 									{#if assignee}
-										<div
-											class="flex items-center gap-2 px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-full"
-										>
-											<div
-												class="w-5 h-5 rounded-full bg-[#E6B800] flex items-center justify-center text-[#0D1117] text-xs"
-											>
+										<div class="assignee-chip">
+											<div class="mini-avatar">
 												{assignee.name.charAt(0).toUpperCase()}
 											</div>
-											<span class="text-xs text-gray-700 dark:text-gray-300">{assignee.name}</span>
+											<span>{assignee.name}</span>
 										</div>
 									{/if}
 								{/each}
-								<button
-									class="px-2 py-1 text-xs text-[#E6B800] hover:bg-[#E6B800]/5 dark:hover:bg-[#B38F00]/20 rounded-full"
-								>
-									+ Add
-								</button>
+								<button class="chip-add-button"> + Add </button>
 							</div>
 						</div>
 
 						<!-- Due Date -->
-						<div>
-							<h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-2">
-								Due Date
-							</h4>
+						<div class="sidebar-section">
+							<h4 class="sidebar-label">Due Date</h4>
 							<input
 								id="page-date"
 								name="page-date"
@@ -1155,22 +1065,20 @@
 								value={selectedTask.due_date?.split('T')[0] || ''}
 								onchange={(e: Event) =>
 									updateTask({ due_date: (e.currentTarget as HTMLInputElement).value })}
-								class="w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+								class="form-control"
 							/>
 						</div>
 
 						<!-- Priority -->
-						<div>
-							<h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-2">
-								Priority
-							</h4>
+						<div class="sidebar-section">
+							<h4 class="sidebar-label">Priority</h4>
 							<select
 								value={selectedTask.priority}
 								onchange={(e: Event) =>
 									updateTask({
 										priority: (e.currentTarget as HTMLSelectElement).value as TaskPriority
 									})}
-								class="w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+								class="form-control"
 							>
 								<option value="none">None</option>
 								<option value="low">Low</option>
@@ -1181,59 +1089,41 @@
 						</div>
 
 						<!-- Labels -->
-						<div>
-							<h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-2">
-								Labels
-							</h4>
-							<div class="flex flex-wrap gap-1">
+						<div class="sidebar-section">
+							<h4 class="sidebar-label">Labels</h4>
+							<div class="label-chip-list">
 								{#each selectedTask.labels || [] as label (label.id)}
-									<span
-										class="px-2 py-0.5 text-xs rounded text-white"
-										style="background-color: {label.color}"
-									>
+									<span class="task-label" style="background-color: {label.color}">
 										{label.title}
 									</span>
 								{/each}
-								<button
-									class="px-2 py-0.5 text-xs text-[#E6B800] hover:bg-[#E6B800]/5 dark:hover:bg-[#B38F00]/20 rounded"
-								>
-									+ Add
-								</button>
+								<button class="label-add-button"> + Add </button>
 							</div>
 						</div>
 
 						<!-- Attachments -->
-						<div>
-							<h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-2">
+						<div class="sidebar-section">
+							<h4 class="sidebar-label">
 								Attachments ({taskAttachments.length})
 							</h4>
-							<div class="space-y-1">
+							<div class="attachment-list">
 								{#each taskAttachments as attachment (attachment.id)}
-									<a
-										href={attachment.url}
-										target="_blank"
-										class="flex items-center gap-2 px-2 py-1.5 text-xs text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-									>
-										<IconPaperclip class="w-3.5 h-3.5" />
-										<span class="truncate">{attachment.original_filename}</span>
+									<a href={attachment.url} target="_blank" class="attachment-link">
+										<IconPaperclip class="meta-icon" />
+										<span>{attachment.original_filename}</span>
 									</a>
 								{/each}
-								<button
-									class="w-full px-2 py-1.5 text-xs text-[#E6B800] hover:bg-[#E6B800]/5 dark:hover:bg-[#B38F00]/20 rounded flex items-center gap-2"
-								>
-									<IconPlus class="w-3.5 h-3.5" />
+								<button class="attachment-add-button">
+									<IconPlus class="meta-icon" />
 									Add attachment
 								</button>
 							</div>
 						</div>
 
 						<!-- Actions -->
-						<div class="pt-4 border-t border-gray-200 dark:border-gray-700 space-y-1">
-							<button
-								onclick={deleteTask}
-								class="w-full px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg flex items-center gap-2"
-							>
-								<IconTrash class="w-4 h-4" />
+						<div class="sidebar-section sidebar-section--bordered">
+							<button onclick={deleteTask} class="danger-action-button">
+								<IconTrash class="small-icon" />
 								Delete task
 							</button>
 						</div>
@@ -1255,3 +1145,1184 @@
 		showDeleteTaskModal = false;
 	}}
 />
+
+<style>
+	.board-detail {
+		display: flex;
+		flex-direction: column;
+		min-height: 100%;
+		background: #f3f4f6;
+		color: #111827;
+	}
+
+	:global(.dark) .board-detail {
+		background: #111827;
+		color: #f9fafb;
+	}
+
+	.board-header {
+		flex-shrink: 0;
+		border-bottom: 1px solid #e5e7eb;
+		background: #ffffff;
+	}
+
+	:global(.dark) .board-header {
+		border-color: #374151;
+		background: #1f2937;
+	}
+
+	.board-header-inner {
+		padding: 0.75rem 1rem;
+	}
+
+	.board-header-row,
+	.board-title-area,
+	.board-title-group,
+	.board-title,
+	.board-toolbar,
+	.toolbar-button,
+	.member-stack,
+	.member-avatar,
+	.member-add-button,
+	.filter-bar,
+	.stage-header,
+	.stage-title-group,
+	.task-meta-row,
+	.task-meta-list,
+	.task-meta-item,
+	.task-end-meta,
+	.composer-actions,
+	.button-row,
+	.add-task-button,
+	.add-stage-button,
+	.task-modal-header,
+	.modal-header-actions,
+	.status-pill,
+	.complete-button,
+	.task-modal-layout,
+	.modal-section-title--icon,
+	.subtask-item,
+	.subtask-check,
+	.inline-form,
+	.comment-item,
+	.comment-header,
+	.sidebar-inline,
+	.chip-list,
+	.assignee-chip,
+	.label-chip-list,
+	.attachment-link,
+	.attachment-add-button,
+	.danger-action-button {
+		display: flex;
+		align-items: center;
+	}
+
+	.board-header-row {
+		justify-content: space-between;
+		gap: 1rem;
+	}
+
+	.board-title-area {
+		gap: 1rem;
+		min-width: 0;
+	}
+
+	.board-title-group {
+		gap: 0.75rem;
+		min-width: 0;
+	}
+
+	.board-color-strip {
+		width: 0.75rem;
+		height: 2rem;
+		border-radius: 0.25rem;
+		flex-shrink: 0;
+	}
+
+	.board-title {
+		gap: 0.5rem;
+		margin: 0;
+		font-size: 1.125rem;
+		font-weight: 600;
+		color: #111827;
+	}
+
+	:global(.dark) .board-title {
+		color: #ffffff;
+	}
+
+	.board-subtitle,
+	.task-location,
+	.description-preview,
+	.sidebar-text,
+	.comment-content {
+		color: #6b7280;
+	}
+
+	:global(.dark) .board-subtitle,
+	:global(.dark) .task-location,
+	:global(.dark) .description-preview,
+	:global(.dark) .sidebar-text,
+	:global(.dark) .comment-content {
+		color: #9ca3af;
+	}
+
+	.board-subtitle,
+	.task-location,
+	.description-preview,
+	.comment-content {
+		margin: 0;
+		font-size: 0.875rem;
+	}
+
+	.board-toolbar {
+		gap: 0.75rem;
+		flex-wrap: wrap;
+		justify-content: flex-end;
+	}
+
+	.search-field {
+		position: relative;
+	}
+
+	.search-input,
+	.filter-select,
+	.form-control {
+		border: 1px solid #d1d5db;
+		border-radius: 0.5rem;
+		background: #ffffff;
+		color: #111827;
+		font: inherit;
+		font-size: 0.875rem;
+	}
+
+	.search-input {
+		width: 12rem;
+		padding: 0.375rem 1rem 0.375rem 2.25rem;
+		transition: width 0.2s ease;
+	}
+
+	.search-input:focus {
+		width: 16rem;
+	}
+
+	.filter-select,
+	.form-control {
+		padding: 0.5rem 0.75rem;
+	}
+
+	.form-control {
+		width: 100%;
+	}
+
+	:global(.dark) .search-input,
+	:global(.dark) .filter-select,
+	:global(.dark) .form-control {
+		border-color: #4b5563;
+		background: #374151;
+		color: #ffffff;
+	}
+
+	.search-input:focus,
+	.filter-select:focus,
+	.form-control:focus {
+		outline: 2px solid #e6b800;
+		outline-offset: 2px;
+	}
+
+	.search-field :global(.search-icon) {
+		position: absolute;
+		top: 50%;
+		left: 0.75rem;
+		width: 1rem;
+		height: 1rem;
+		color: #9ca3af;
+		transform: translateY(-50%);
+	}
+
+	.icon-button,
+	.favorite-button,
+	.toolbar-button,
+	.stage-menu-button,
+	.ghost-button,
+	.chip-add-button,
+	.label-add-button,
+	.attachment-add-button {
+		border: 0;
+		background: transparent;
+		color: #6b7280;
+		font: inherit;
+		cursor: pointer;
+		transition:
+			background-color 0.2s ease,
+			color 0.2s ease,
+			opacity 0.2s ease;
+	}
+
+	.icon-button,
+	.toolbar-button,
+	.stage-menu-button {
+		border-radius: 0.5rem;
+	}
+
+	.icon-button {
+		padding: 0.5rem;
+	}
+
+	.toolbar-button {
+		gap: 0.5rem;
+		padding: 0.375rem 0.75rem;
+		color: #374151;
+		font-size: 0.875rem;
+	}
+
+	:global(.dark) .toolbar-button {
+		color: #d1d5db;
+	}
+
+	.icon-button:hover,
+	.toolbar-button:hover,
+	.stage-menu-button:hover,
+	.ghost-button:hover {
+		background: #f3f4f6;
+		color: #374151;
+	}
+
+	:global(.dark) .icon-button:hover,
+	:global(.dark) .toolbar-button:hover,
+	:global(.dark) .stage-menu-button:hover,
+	:global(.dark) .ghost-button:hover {
+		background: #374151;
+		color: #e5e7eb;
+	}
+
+	.toolbar-button.active {
+		background: #f3f4f6;
+	}
+
+	:global(.dark) .toolbar-button.active {
+		background: #374151;
+	}
+
+	.favorite-button {
+		color: #9ca3af;
+	}
+
+	.favorite-button:hover,
+	.favorite-button.active {
+		color: #eab308;
+	}
+
+	.member-stack {
+		margin-left: 0.5rem;
+	}
+
+	.member-avatar,
+	.member-add-button,
+	.mini-avatar {
+		justify-content: center;
+		border-radius: 999px;
+	}
+
+	.member-avatar,
+	.member-add-button {
+		width: 2rem;
+		height: 2rem;
+		border: 2px solid #ffffff;
+		margin-left: -0.5rem;
+	}
+
+	:global(.dark) .member-avatar,
+	:global(.dark) .member-add-button {
+		border-color: #1f2937;
+	}
+
+	.member-avatar {
+		background: #e6b800;
+		color: #0d1117;
+		font-size: 0.875rem;
+		font-weight: 500;
+	}
+
+	.member-avatar--more,
+	.member-avatar--muted,
+	.member-add-button {
+		background: #d1d5db;
+		color: #4b5563;
+	}
+
+	:global(.dark) .member-avatar--more,
+	:global(.dark) .member-avatar--muted,
+	:global(.dark) .member-add-button {
+		background: #4b5563;
+		color: #d1d5db;
+	}
+
+	.member-add-button {
+		margin-left: 0.25rem;
+	}
+
+	.filter-bar {
+		gap: 1rem;
+		flex-wrap: wrap;
+		margin-top: 0.75rem;
+		padding-top: 0.75rem;
+		border-top: 1px solid #e5e7eb;
+	}
+
+	:global(.dark) .filter-bar {
+		border-color: #374151;
+	}
+
+	.clear-filters-button,
+	.danger-action-button {
+		border: 0;
+		border-radius: 0.5rem;
+		background: transparent;
+		color: #dc2626;
+		font: inherit;
+		font-size: 0.875rem;
+		cursor: pointer;
+	}
+
+	.clear-filters-button {
+		padding: 0.375rem 0.75rem;
+	}
+
+	.clear-filters-button:hover,
+	.danger-action-button:hover,
+	.icon-button--danger:hover {
+		background: #fef2f2;
+	}
+
+	:global(.dark) .clear-filters-button:hover,
+	:global(.dark) .danger-action-button:hover,
+	:global(.dark) .icon-button--danger:hover {
+		background: rgba(127, 29, 29, 0.2);
+	}
+
+	.kanban-scroll {
+		flex: 1;
+		overflow-x: auto;
+		padding: 1rem;
+	}
+
+	.loading-state {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 16rem;
+	}
+
+	.spinner {
+		width: 2rem;
+		height: 2rem;
+		border: 2px solid rgba(230, 184, 0, 0.25);
+		border-bottom-color: #e6b800;
+		border-radius: 999px;
+		animation: board-spin 0.8s linear infinite;
+	}
+
+	.kanban-board {
+		display: flex;
+		gap: 1rem;
+		min-height: calc(100vh - 180px);
+	}
+
+	.stage-column,
+	.add-stage-column {
+		width: 18rem;
+		flex-shrink: 0;
+	}
+
+	.stage-column {
+		display: flex;
+		flex-direction: column;
+		max-height: 100%;
+		border-radius: 0.75rem;
+		background: rgba(229, 231, 235, 0.5);
+	}
+
+	:global(.dark) .stage-column {
+		background: rgba(31, 41, 55, 0.5);
+	}
+
+	.stage-header {
+		justify-content: space-between;
+		flex-shrink: 0;
+		padding: 0.75rem;
+	}
+
+	.stage-title-group {
+		gap: 0.5rem;
+	}
+
+	.stage-color-dot,
+	.priority-dot {
+		border-radius: 999px;
+		flex-shrink: 0;
+	}
+
+	.stage-color-dot {
+		width: 0.75rem;
+		height: 0.75rem;
+	}
+
+	.stage-title {
+		margin: 0;
+		color: #111827;
+		font-size: 1rem;
+		font-weight: 500;
+	}
+
+	:global(.dark) .stage-title {
+		color: #ffffff;
+	}
+
+	.stage-count {
+		padding: 0.125rem 0.5rem;
+		border-radius: 999px;
+		background: #d1d5db;
+		color: #4b5563;
+		font-size: 0.75rem;
+	}
+
+	:global(.dark) .stage-count {
+		background: #374151;
+		color: #9ca3af;
+	}
+
+	.stage-menu-button {
+		padding: 0.25rem;
+	}
+
+	.task-list {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		gap: 0.5rem;
+		overflow-y: auto;
+		padding: 0.5rem;
+	}
+
+	.task-card,
+	.task-composer,
+	.task-modal {
+		border: 1px solid #e5e7eb;
+		background: #ffffff;
+	}
+
+	:global(.dark) .task-card,
+	:global(.dark) .task-composer,
+	:global(.dark) .task-modal {
+		border-color: #374151;
+		background: #1f2937;
+	}
+
+	.task-card,
+	.task-composer {
+		padding: 0.75rem;
+		border-radius: 0.5rem;
+		box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+	}
+
+	.task-card {
+		cursor: pointer;
+		transition:
+			box-shadow 0.2s ease,
+			opacity 0.2s ease,
+			border-color 0.2s ease;
+	}
+
+	.task-card:hover {
+		box-shadow: 0 6px 14px rgba(15, 23, 42, 0.12);
+	}
+
+	.task-card.dragging {
+		opacity: 0.5;
+	}
+
+	.task-card.drop-target {
+		border-top: 2px solid #e6b800;
+	}
+
+	.task-labels,
+	.label-chip-list {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.25rem;
+	}
+
+	.task-labels {
+		margin-bottom: 0.5rem;
+	}
+
+	.task-label {
+		padding: 0.125rem 0.5rem;
+		border-radius: 0.25rem;
+		color: #ffffff;
+		font-size: 0.75rem;
+	}
+
+	.task-title {
+		margin: 0 0 0.5rem;
+		color: #111827;
+		font-size: 0.875rem;
+		font-weight: 500;
+	}
+
+	:global(.dark) .task-title {
+		color: #ffffff;
+	}
+
+	.task-meta-row {
+		justify-content: space-between;
+		gap: 0.5rem;
+		color: #6b7280;
+		font-size: 0.75rem;
+	}
+
+	:global(.dark) .task-meta-row {
+		color: #9ca3af;
+	}
+
+	.task-meta-list {
+		gap: 0.75rem;
+		flex-wrap: wrap;
+	}
+
+	.task-meta-item {
+		gap: 0.25rem;
+	}
+
+	.task-meta-item.overdue {
+		color: #ef4444;
+	}
+
+	.task-end-meta {
+		gap: 0.25rem;
+	}
+
+	.priority-dot {
+		width: 0.5rem;
+		height: 0.5rem;
+	}
+
+	.priority-dot--urgent {
+		background: #ef4444;
+	}
+
+	.priority-dot--high {
+		background: #f97316;
+	}
+
+	.priority-dot--medium {
+		background: #eab308;
+	}
+
+	.priority-dot--low {
+		background: #3b82f6;
+	}
+
+	.priority-dot--none {
+		background: #9ca3af;
+	}
+
+	.mini-avatar-stack {
+		display: flex;
+		margin-left: 0.25rem;
+	}
+
+	.mini-avatar {
+		width: 1.5rem;
+		height: 1.5rem;
+		margin-left: -0.25rem;
+		border: 1px solid #ffffff;
+		background: #e6b800;
+		color: #0d1117;
+		font-size: 0.75rem;
+	}
+
+	:global(.dark) .mini-avatar {
+		border-color: #1f2937;
+	}
+
+	.drop-indicator {
+		height: 0.25rem;
+		border-radius: 0.25rem;
+		background: #e6b800;
+	}
+
+	.task-composer-input {
+		width: 100%;
+		padding: 0;
+		border: 0;
+		background: transparent;
+		color: #111827;
+		font: inherit;
+		font-size: 0.875rem;
+		resize: none;
+	}
+
+	:global(.dark) .task-composer-input {
+		color: #ffffff;
+	}
+
+	.task-composer-input:focus {
+		outline: 0;
+	}
+
+	.composer-actions {
+		justify-content: space-between;
+		margin-top: 0.5rem;
+	}
+
+	.button-row {
+		gap: 0.5rem;
+	}
+
+	.primary-button {
+		border: 0;
+		border-radius: 0.5rem;
+		background: #e6b800;
+		color: #0d1117;
+		font: inherit;
+		font-weight: 600;
+		cursor: pointer;
+		transition:
+			background-color 0.2s ease,
+			opacity 0.2s ease;
+	}
+
+	.primary-button:hover:not(:disabled) {
+		background: #b38f00;
+	}
+
+	.primary-button:disabled {
+		cursor: not-allowed;
+		opacity: 0.5;
+	}
+
+	.primary-button--small,
+	.ghost-button--small {
+		padding: 0.375rem 0.75rem;
+		font-size: 0.75rem;
+	}
+
+	.ghost-button {
+		border-radius: 0.375rem;
+	}
+
+	.add-task-wrap {
+		flex-shrink: 0;
+		padding: 0.5rem;
+	}
+
+	.add-task-button,
+	.add-stage-button {
+		width: 100%;
+		gap: 0.5rem;
+		border: 0;
+		border-radius: 0.75rem;
+		background: transparent;
+		color: #4b5563;
+		font: inherit;
+		font-size: 0.875rem;
+		cursor: pointer;
+		transition: background-color 0.2s ease;
+	}
+
+	.add-task-button {
+		justify-content: flex-start;
+		padding: 0.5rem 0.75rem;
+	}
+
+	.add-stage-button {
+		justify-content: center;
+		padding: 0.75rem 1rem;
+		border: 2px dashed #d1d5db;
+	}
+
+	.add-task-button:hover,
+	.add-stage-button:hover {
+		background: rgba(209, 213, 219, 0.5);
+	}
+
+	:global(.dark) .add-task-button,
+	:global(.dark) .add-stage-button {
+		color: #9ca3af;
+	}
+
+	:global(.dark) .add-task-button:hover,
+	:global(.dark) .add-stage-button:hover,
+	:global(.dark) .stage-composer {
+		background: rgba(31, 41, 55, 0.5);
+	}
+
+	:global(.dark) .add-stage-button {
+		border-color: #374151;
+	}
+
+	.stage-composer {
+		padding: 0.75rem;
+		border-radius: 0.75rem;
+		background: rgba(229, 231, 235, 0.5);
+	}
+
+	.stage-composer .form-control {
+		margin-bottom: 0.5rem;
+	}
+
+	.modal-backdrop {
+		position: fixed;
+		inset: 0;
+		z-index: 50;
+		display: flex;
+		justify-content: center;
+		background: rgba(0, 0, 0, 0.5);
+	}
+
+	.modal-backdrop--top {
+		align-items: flex-start;
+		overflow-y: auto;
+		padding-block: 2rem;
+	}
+
+	.task-modal {
+		width: min(100% - 2rem, 48rem);
+		border-radius: 0.75rem;
+		box-shadow: 0 20px 40px rgba(15, 23, 42, 0.25);
+	}
+
+	.task-modal-header {
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 1rem;
+		padding: 1rem;
+		border-bottom: 1px solid #e5e7eb;
+	}
+
+	:global(.dark) .task-modal-header {
+		border-color: #374151;
+	}
+
+	.task-modal-title-area,
+	.task-modal-main,
+	.comment-body {
+		flex: 1;
+		min-width: 0;
+	}
+
+	.task-title-input,
+	.task-title-button {
+		width: 100%;
+		color: #111827;
+		font: inherit;
+		font-size: 1.25rem;
+		font-weight: 600;
+	}
+
+	:global(.dark) .task-title-input,
+	:global(.dark) .task-title-button {
+		color: #ffffff;
+	}
+
+	.task-title-input {
+		border: 0;
+		border-bottom: 1px solid #e6b800;
+		background: transparent;
+	}
+
+	.task-title-input:focus {
+		outline: 0;
+	}
+
+	.task-title-button {
+		padding: 0;
+		border: 0;
+		background: transparent;
+		text-align: left;
+		cursor: pointer;
+	}
+
+	.task-title-button:hover {
+		color: #e6b800;
+	}
+
+	.task-location {
+		margin-top: 0.25rem;
+	}
+
+	.modal-header-actions {
+		align-items: flex-start;
+		gap: 0.5rem;
+	}
+
+	.status-pill {
+		gap: 0.25rem;
+		padding: 0.25rem 0.5rem;
+		border-radius: 0.25rem;
+		font-size: 0.75rem;
+	}
+
+	.status-pill--complete {
+		background: #dcfce7;
+		color: #16a34a;
+	}
+
+	:global(.dark) .status-pill--complete {
+		background: rgba(20, 83, 45, 0.3);
+		color: #4ade80;
+	}
+
+	.complete-button {
+		gap: 0.25rem;
+		padding: 0.375rem 0.75rem;
+		border: 0;
+		border-radius: 0.5rem;
+		background: #16a34a;
+		color: #ffffff;
+		font: inherit;
+		font-size: 0.875rem;
+		cursor: pointer;
+	}
+
+	.complete-button:hover {
+		background: #15803d;
+	}
+
+	.task-modal-layout {
+		align-items: stretch;
+	}
+
+	.task-modal-main {
+		padding: 1.5rem;
+		border-right: 1px solid #e5e7eb;
+	}
+
+	:global(.dark) .task-modal-main {
+		border-color: #374151;
+	}
+
+	.modal-section {
+		margin-bottom: 1.5rem;
+	}
+
+	.modal-section-title {
+		margin: 0 0 0.5rem;
+		color: #374151;
+		font-size: 0.875rem;
+		font-weight: 500;
+	}
+
+	:global(.dark) .modal-section-title {
+		color: #d1d5db;
+	}
+
+	.modal-section-title--icon {
+		gap: 0.5rem;
+	}
+
+	.modal-count,
+	.comment-time,
+	.sidebar-label {
+		color: #6b7280;
+		font-size: 0.75rem;
+	}
+
+	.description-preview {
+		min-height: 60px;
+		margin: -0.5rem;
+		padding: 0.5rem;
+		border-radius: 0.5rem;
+		cursor: pointer;
+	}
+
+	.description-preview:hover {
+		background: #f9fafb;
+	}
+
+	:global(.dark) .description-preview:hover {
+		background: #374151;
+	}
+
+	.subtask-list,
+	.comment-list,
+	.attachment-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.comment-list {
+		gap: 0.75rem;
+	}
+
+	.subtask-item,
+	.inline-form {
+		gap: 0.5rem;
+	}
+
+	.subtask-check {
+		justify-content: center;
+		width: 1.25rem;
+		height: 1.25rem;
+		border: 1px solid #d1d5db;
+		border-radius: 0.25rem;
+		background: transparent;
+		color: #ffffff;
+		cursor: pointer;
+	}
+
+	:global(.dark) .subtask-check {
+		border-color: #4b5563;
+	}
+
+	.subtask-check.checked {
+		border-color: #22c55e;
+		background: #22c55e;
+	}
+
+	.subtask-title {
+		color: #374151;
+		font-size: 0.875rem;
+	}
+
+	:global(.dark) .subtask-title {
+		color: #d1d5db;
+	}
+
+	.subtask-title.complete {
+		color: #9ca3af;
+		text-decoration: line-through;
+	}
+
+	.inline-form .form-control {
+		flex: 1;
+	}
+
+	.comment-item {
+		align-items: flex-start;
+		gap: 0.75rem;
+	}
+
+	.comment-avatar {
+		flex-shrink: 0;
+		margin-left: 0;
+		border: 0;
+	}
+
+	.comment-header {
+		gap: 0.5rem;
+	}
+
+	.comment-author {
+		color: #111827;
+		font-size: 0.875rem;
+		font-weight: 500;
+	}
+
+	:global(.dark) .comment-author {
+		color: #ffffff;
+	}
+
+	.comment-content {
+		margin-top: 0.25rem;
+	}
+
+	.comment-button {
+		margin-top: 0.5rem;
+	}
+
+	.task-modal-sidebar {
+		width: 16rem;
+		padding: 1rem;
+	}
+
+	.sidebar-section {
+		margin-bottom: 1rem;
+	}
+
+	.sidebar-section--bordered {
+		margin-top: 1rem;
+		padding-top: 1rem;
+		border-top: 1px solid #e5e7eb;
+	}
+
+	:global(.dark) .sidebar-section--bordered {
+		border-color: #374151;
+	}
+
+	.sidebar-label {
+		margin: 0 0 0.5rem;
+		font-weight: 500;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+
+	.sidebar-inline {
+		gap: 0.5rem;
+	}
+
+	.timer-display {
+		color: #e6b800;
+		font-family: var(--font-mono);
+		font-size: 1.125rem;
+	}
+
+	.icon-button--success {
+		color: #22c55e;
+	}
+
+	.icon-button--success:hover {
+		background: #f0fdf4;
+	}
+
+	:global(.dark) .icon-button--success:hover {
+		background: rgba(20, 83, 45, 0.2);
+	}
+
+	.chip-list {
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	.assignee-chip {
+		gap: 0.5rem;
+		padding: 0.25rem 0.5rem;
+		border-radius: 999px;
+		background: #f3f4f6;
+		color: #374151;
+		font-size: 0.75rem;
+	}
+
+	:global(.dark) .assignee-chip {
+		background: #374151;
+		color: #d1d5db;
+	}
+
+	.chip-add-button,
+	.label-add-button,
+	.attachment-add-button {
+		color: #e6b800;
+		font-size: 0.75rem;
+	}
+
+	.chip-add-button {
+		padding: 0.25rem 0.5rem;
+		border-radius: 999px;
+	}
+
+	.label-add-button {
+		padding: 0.125rem 0.5rem;
+		border-radius: 0.25rem;
+	}
+
+	.chip-add-button:hover,
+	.label-add-button:hover,
+	.attachment-add-button:hover {
+		background: rgba(230, 184, 0, 0.08);
+	}
+
+	.attachment-list {
+		gap: 0.25rem;
+	}
+
+	.attachment-link,
+	.attachment-add-button,
+	.danger-action-button {
+		gap: 0.5rem;
+		padding: 0.375rem 0.5rem;
+		border-radius: 0.375rem;
+		text-decoration: none;
+	}
+
+	.attachment-link {
+		color: #4b5563;
+		font-size: 0.75rem;
+	}
+
+	:global(.dark) .attachment-link {
+		color: #9ca3af;
+	}
+
+	.attachment-link:hover {
+		background: #f3f4f6;
+	}
+
+	:global(.dark) .attachment-link:hover {
+		background: #374151;
+	}
+
+	.attachment-link span {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.attachment-add-button {
+		width: 100%;
+	}
+
+	.danger-action-button {
+		width: 100%;
+	}
+
+	.board-detail :global(.small-icon) {
+		width: 1rem;
+		height: 1rem;
+		flex-shrink: 0;
+	}
+
+	.board-detail :global(.toolbar-icon) {
+		width: 1.25rem;
+		height: 1.25rem;
+		flex-shrink: 0;
+	}
+
+	.board-detail :global(.meta-icon) {
+		width: 0.875rem;
+		height: 0.875rem;
+		flex-shrink: 0;
+	}
+
+	.board-detail :global(.tiny-icon) {
+		width: 0.75rem;
+		height: 0.75rem;
+	}
+
+	@media (max-width: 900px) {
+		.board-header-row,
+		.board-toolbar,
+		.filter-bar,
+		.task-modal-layout {
+			align-items: stretch;
+			flex-direction: column;
+		}
+
+		.search-input,
+		.search-input:focus {
+			width: 100%;
+		}
+
+		.search-field,
+		.task-modal-sidebar {
+			width: 100%;
+		}
+
+		.task-modal-main {
+			border-right: 0;
+			border-bottom: 1px solid #e5e7eb;
+		}
+
+		:global(.dark) .task-modal-main {
+			border-color: #374151;
+		}
+	}
+
+	@keyframes board-spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+</style>
