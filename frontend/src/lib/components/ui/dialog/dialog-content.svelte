@@ -4,7 +4,7 @@
 	import XIcon from '@tabler/icons-svelte-runes/icons/x';
 	import type { Snippet } from 'svelte';
 	import * as Dialog from './index.js';
-	import { cn, type WithoutChildrenOrChild } from '$lib/utils.js';
+	import { type WithoutChildrenOrChild } from '$lib/utils.js';
 	import type { ComponentProps } from 'svelte';
 
 	type ContentProps = WithoutChildrenOrChild<DialogPrimitive.ContentProps> & {
@@ -28,46 +28,210 @@
 	<DialogPrimitive.Content
 		bind:ref
 		data-slot="dialog-content"
-		class={cn(
-			// Base styles - Mobile first (full screen)
-			'bg-background fixed inset-0 z-50 flex flex-col w-full border-0 rounded-none shadow-lg',
-			// Safe area support
-			'pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]',
-			// Animations
-			'data-[state=open]:animate-in data-[state=closed]:animate-out',
-			'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
-			'data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom',
-			// sm: 640px+ - Centered modal
-			'sm:inset-auto sm:top-[50%] sm:left-[50%] sm:translate-x-[-50%] sm:translate-y-[-50%]',
-			'sm:max-w-lg sm:max-h-[85vh] sm:rounded-lg sm:border sm:p-0',
-			'sm:data-[state=closed]:zoom-out-95 sm:data-[state=open]:zoom-in-95',
-			'sm:data-[state=closed]:slide-out-to-bottom-0 sm:data-[state=open]:slide-in-from-bottom-0',
-			// Duration
-			'duration-200',
-			className
-		)}
+		class={['ui-dialog-content', className]}
 		{...restProps}
 	>
 		<!-- Mobile swipe indicator -->
-		<div
-			class="sm:hidden absolute top-2 left-1/2 -translate-x-1/2 w-9 h-1 bg-muted-foreground/30 rounded-full"
-			aria-hidden="true"
-		></div>
+		<div class="ui-dialog-swipe-indicator" aria-hidden="true"></div>
 
 		<!-- Content wrapper with proper padding -->
-		<div
-			class="flex-1 overflow-y-auto overscroll-contain p-4 pt-6 sm:p-6 -webkit-overflow-scrolling-touch"
-		>
+		<div class="ui-dialog-content-body">
 			{@render children?.()}
 		</div>
 
 		{#if showCloseButton}
-			<DialogPrimitive.Close
-				class="ring-offset-background focus:ring-ring absolute end-3 top-3 sm:end-4 sm:top-4 min-w-[44px] min-h-[44px] w-11 h-11 flex items-center justify-center rounded-md opacity-70 transition-opacity hover:opacity-100 hover:bg-accent focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none touch-manipulation [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5"
-			>
+			<DialogPrimitive.Close class="ui-dialog-close">
 				<XIcon />
-				<span class="sr-only">Close</span>
+				<span class="ui-dialog-close-label">Close</span>
 			</DialogPrimitive.Close>
 		{/if}
 	</DialogPrimitive.Content>
 </DialogPortal>
+
+<style>
+	:global(.ui-dialog-content) {
+		position: fixed;
+		inset: 0;
+		z-index: 50;
+		display: flex;
+		width: 100%;
+		flex-direction: column;
+		border: 0;
+		border-radius: 0;
+		background: var(--dialog-background, #ffffff);
+		color: var(--dialog-foreground, #0f172a);
+		box-shadow:
+			0 20px 25px -5px rgba(15, 23, 42, 0.1),
+			0 8px 10px -6px rgba(15, 23, 42, 0.1);
+		padding-top: env(safe-area-inset-top);
+		padding-bottom: env(safe-area-inset-bottom);
+	}
+
+	:global(.ui-dialog-content[data-state='open']) {
+		animation: ui-dialog-mobile-in 0.2s ease-out;
+	}
+
+	:global(.ui-dialog-content[data-state='closed']) {
+		animation: ui-dialog-mobile-out 0.16s ease-in;
+	}
+
+	.ui-dialog-swipe-indicator {
+		position: absolute;
+		top: 0.5rem;
+		left: 50%;
+		width: 2.25rem;
+		height: 0.25rem;
+		transform: translateX(-50%);
+		border-radius: 999px;
+		background: rgba(100, 116, 139, 0.3);
+	}
+
+	.ui-dialog-content-body {
+		flex: 1;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		-webkit-overflow-scrolling: touch;
+		padding: 1.5rem 1rem 1rem;
+	}
+
+	:global(.ui-dialog-close) {
+		position: absolute;
+		inset-block-start: 0.75rem;
+		inset-inline-end: 0.75rem;
+		display: flex;
+		width: 2.75rem;
+		min-width: 44px;
+		height: 2.75rem;
+		min-height: 44px;
+		align-items: center;
+		justify-content: center;
+		border-radius: 0.375rem;
+		opacity: 0.7;
+		outline: none;
+		touch-action: manipulation;
+		transition:
+			background-color 0.18s ease,
+			box-shadow 0.18s ease,
+			opacity 0.18s ease;
+	}
+
+	:global(.ui-dialog-close:hover) {
+		background: var(--dialog-close-hover-background, #f1f5f9);
+		opacity: 1;
+	}
+
+	:global(.ui-dialog-close:focus-visible) {
+		box-shadow:
+			0 0 0 2px var(--dialog-background, #ffffff),
+			0 0 0 4px var(--dialog-ring, #3b82f6);
+	}
+
+	:global(.ui-dialog-close:disabled) {
+		pointer-events: none;
+	}
+
+	:global(.ui-dialog-close svg) {
+		pointer-events: none;
+		width: 1.25rem;
+		height: 1.25rem;
+		flex-shrink: 0;
+	}
+
+	.ui-dialog-close-label {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		clip-path: inset(50%);
+	}
+
+	@keyframes ui-dialog-mobile-in {
+		from {
+			opacity: 0;
+			transform: translateY(100%);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	@keyframes ui-dialog-mobile-out {
+		from {
+			opacity: 1;
+			transform: translateY(0);
+		}
+		to {
+			opacity: 0;
+			transform: translateY(100%);
+		}
+	}
+
+	@keyframes ui-dialog-modal-in {
+		from {
+			opacity: 0;
+			transform: translate(-50%, -48%) scale(0.95);
+		}
+		to {
+			opacity: 1;
+			transform: translate(-50%, -50%) scale(1);
+		}
+	}
+
+	@keyframes ui-dialog-modal-out {
+		from {
+			opacity: 1;
+			transform: translate(-50%, -50%) scale(1);
+		}
+		to {
+			opacity: 0;
+			transform: translate(-50%, -48%) scale(0.95);
+		}
+	}
+
+	@media (min-width: 640px) {
+		:global(.ui-dialog-content) {
+			inset: auto;
+			top: 50%;
+			left: 50%;
+			max-width: 32rem;
+			max-height: 85vh;
+			transform: translate(-50%, -50%);
+			border: 1px solid var(--dialog-border, #cbd5e1);
+			border-radius: 0.5rem;
+			padding: 0;
+		}
+
+		:global(.ui-dialog-content[data-state='open']) {
+			animation-name: ui-dialog-modal-in;
+		}
+
+		:global(.ui-dialog-content[data-state='closed']) {
+			animation-name: ui-dialog-modal-out;
+		}
+
+		.ui-dialog-swipe-indicator {
+			display: none;
+		}
+
+		.ui-dialog-content-body {
+			padding: 1.5rem;
+		}
+
+		:global(.ui-dialog-close) {
+			inset-block-start: 1rem;
+			inset-inline-end: 1rem;
+		}
+	}
+
+	@media (prefers-color-scheme: dark) {
+		:global(.ui-dialog-content) {
+			--dialog-background: #020617;
+			--dialog-foreground: #f8fafc;
+			--dialog-border: #334155;
+			--dialog-close-hover-background: #1e293b;
+		}
+	}
+</style>

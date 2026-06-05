@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Dialog as DialogPrimitive } from 'bits-ui';
-	import { cn } from '$lib/utils.js';
 
 	let {
 		ref = $bindable(null),
@@ -12,6 +11,14 @@
 <DialogPrimitive.Title
 	bind:ref
 	data-slot="dialog-title"
-	class={cn('text-lg leading-none font-semibold', className)}
+	class={['ui-dialog-title', className]}
 	{...restProps}
 />
+
+<style>
+	:global(.ui-dialog-title) {
+		font-size: 1.125rem;
+		font-weight: 600;
+		line-height: 1;
+	}
+</style>
