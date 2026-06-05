@@ -169,8 +169,7 @@
 	</div>
 </div>
 
-<style lang="postcss">
-	@reference "../../../app.css";
+<style>
 	.folder-tree {
 		background-color: rgba(30, 41, 59, 0.5);
 		border-radius: 0.75rem;
@@ -179,63 +178,129 @@
 	}
 
 	.folder-tree-header {
-		@apply flex items-center justify-between mb-4;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 1rem;
 	}
 
 	.folder-tree-title {
-		@apply text-lg font-semibold text-white;
+		margin: 0;
+		font-size: 1.125rem;
+		line-height: 1.75rem;
+		font-weight: 600;
+		color: #ffffff;
 	}
 
 	.btn-add-folder {
-		@apply p-2 text-gray-400 hover:text-yellow-400 hover:bg-gray-700/50 rounded-lg transition-colors;
+		padding: 0.5rem;
+		border: 0;
+		border-radius: 0.5rem;
+		background: transparent;
+		color: #9ca3af;
+		cursor: pointer;
+		transition:
+			background-color 0.2s ease,
+			color 0.2s ease;
+	}
+
+	.btn-add-folder:hover {
+		background: rgba(55, 65, 81, 0.5);
+		color: #facc15;
 	}
 
 	.folder-list {
-		@apply space-y-1;
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
 	}
 
 	.folder-group {
-		@apply space-y-1;
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
 	}
 
 	.folder-item {
-		@apply w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left;
-		@apply text-gray-300 hover:bg-gray-700/50 transition-colors;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		width: 100%;
+		padding: 0.5rem 0.75rem;
+		border: 0;
+		border-radius: 0.5rem;
+		background: transparent;
+		color: #d1d5db;
+		font: inherit;
+		text-align: left;
+		cursor: pointer;
+		transition:
+			background-color 0.2s ease,
+			color 0.2s ease;
+	}
+
+	.folder-item:hover {
+		background: rgba(55, 65, 81, 0.5);
 	}
 
 	.folder-item.active {
-		@apply bg-yellow-500/20 text-yellow-400;
+		background: rgba(234, 179, 8, 0.2);
+		color: #facc15;
 	}
 
 	.expand-btn {
-		@apply p-0.5 text-gray-400 hover:text-white transition-colors;
+		padding: 0.125rem;
+		border: 0;
+		background: transparent;
+		color: #9ca3af;
+		cursor: pointer;
+		transition: color 0.2s ease;
+	}
+
+	.expand-btn:hover {
+		color: #ffffff;
 	}
 
 	.expand-spacer {
-		@apply w-5;
+		width: 1.25rem;
+		flex-shrink: 0;
 	}
 
 	.folder-item :global(.folder-icon) {
-		@apply shrink-0;
+		flex-shrink: 0;
 	}
 
 	.folder-item.active :global(.folder-icon) {
-		@apply text-yellow-400;
+		color: #facc15;
 	}
 
 	.folder-item-wrapper {
-		@apply flex items-center gap-2;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
 	}
 
 	.folder-name {
-		@apply flex-1 truncate text-sm;
+		flex: 1;
+		min-width: 0;
+		overflow: hidden;
+		font-size: 0.875rem;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	.folder-count {
-		@apply text-xs text-gray-500 bg-gray-700/50 px-2 py-0.5 rounded;
+		padding: 0.125rem 0.5rem;
+		border-radius: 0.25rem;
+		background: rgba(55, 65, 81, 0.5);
+		color: #6b7280;
+		font-size: 0.75rem;
+		white-space: nowrap;
 	}
 
 	.folder-item.active .folder-count {
-		@apply bg-yellow-500/20 text-yellow-400;
+		background: rgba(234, 179, 8, 0.2);
+		color: #facc15;
 	}
 </style>

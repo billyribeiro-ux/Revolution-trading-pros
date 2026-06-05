@@ -53,10 +53,10 @@
 	<div class="dashboard-header">
 		<div class="header-content">
 			<div class="header-title">
-				<IconBrain size={32} class="text-purple-400" />
+				<IconBrain size={32} class="behavior-header-icon" />
 				<div>
-					<h1 class="text-3xl font-bold text-white">Behavior Analytics</h1>
-					<p class="text-gray-400 mt-1">RevolutionBehavior-L8-System</p>
+					<h1 class="behavior-title">Behavior Analytics</h1>
+					<p class="behavior-subtitle">RevolutionBehavior-L8-System</p>
 				</div>
 			</div>
 
@@ -97,14 +97,14 @@
 	{#if loading}
 		<div class="loading-state">
 			<div class="spinner"></div>
-			<p class="text-gray-400 mt-4">Loading behavior data...</p>
+			<p class="state-text state-text--spaced">Loading behavior data...</p>
 		</div>
 	{:else if dashboard}
 		<!-- Overview KPIs -->
 		<div class="kpi-grid">
 			<div class="kpi-card">
-				<div class="kpi-icon bg-blue-500/20">
-					<IconUsers size={24} class="text-blue-400" />
+				<div class="kpi-icon kpi-icon--blue">
+					<IconUsers size={24} />
 				</div>
 				<div class="kpi-content">
 					<div class="kpi-label">Total Sessions</div>
@@ -113,8 +113,8 @@
 			</div>
 
 			<div class="kpi-card">
-				<div class="kpi-icon bg-green-500/20">
-					<IconTrendingUp size={24} class="text-green-400" />
+				<div class="kpi-icon kpi-icon--green">
+					<IconTrendingUp size={24} />
 				</div>
 				<div class="kpi-content">
 					<div class="kpi-label">Avg Engagement</div>
@@ -123,8 +123,8 @@
 			</div>
 
 			<div class="kpi-card">
-				<div class="kpi-icon bg-yellow-500/20">
-					<IconTarget size={24} class="text-yellow-400" />
+				<div class="kpi-icon kpi-icon--yellow">
+					<IconTarget size={24} />
 				</div>
 				<div class="kpi-content">
 					<div class="kpi-label">Avg Intent</div>
@@ -133,8 +133,8 @@
 			</div>
 
 			<div class="kpi-card">
-				<div class="kpi-icon bg-orange-500/20">
-					<IconAlertTriangle size={24} class="text-orange-400" />
+				<div class="kpi-icon kpi-icon--orange">
+					<IconAlertTriangle size={24} />
 				</div>
 				<div class="kpi-content">
 					<div class="kpi-label">Avg Friction</div>
@@ -143,8 +143,8 @@
 			</div>
 
 			<div class="kpi-card critical">
-				<div class="kpi-icon bg-red-500/20">
-					<IconAlertTriangle size={24} class="text-red-400" />
+				<div class="kpi-icon kpi-icon--red">
+					<IconAlertTriangle size={24} />
 				</div>
 				<div class="kpi-content">
 					<div class="kpi-label">High Churn Risk</div>
@@ -168,7 +168,7 @@
 								<div class="friction-url">{item.page_url}</div>
 								<div class="friction-meta">
 									<span class="badge badge-orange">{item.top_friction_type}</span>
-									<span class="text-gray-400">{item.friction_count} issues</span>
+									<span class="friction-count">{item.friction_count} issues</span>
 								</div>
 							</div>
 							<div class="friction-bar">
@@ -214,153 +214,371 @@
 		{/if}
 	{:else}
 		<div class="empty-state">
-			<IconChartBar size={64} class="text-gray-600" />
-			<h3 class="text-xl font-semibold text-gray-400 mt-4">No Behavior Data</h3>
-			<p class="text-gray-500 mt-2">Start tracking user behavior to see insights</p>
+			<IconChartBar size={64} class="empty-icon" />
+			<h3 class="empty-title">No Behavior Data</h3>
+			<p class="empty-copy">Start tracking user behavior to see insights</p>
 		</div>
 	{/if}
 </div>
 
-<style lang="postcss">
-	@reference "../../app.css";
+<style>
 	.behavior-dashboard {
 		background: linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a);
 		padding: 1.5rem;
+		min-height: 100%;
 	}
 
 	.dashboard-header {
-		@apply mb-8;
+		margin-bottom: 2rem;
 	}
 
 	.header-content {
-		@apply flex items-center justify-between flex-wrap gap-4;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 1rem;
 	}
 
 	.header-title {
-		@apply flex items-center gap-4;
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.header-title :global(.behavior-header-icon) {
+		color: #c084fc;
+	}
+
+	.behavior-title {
+		margin: 0;
+		font-size: 1.875rem;
+		line-height: 2.25rem;
+		font-weight: 700;
+		color: #ffffff;
+	}
+
+	.behavior-subtitle {
+		margin: 0.25rem 0 0;
+		color: #9ca3af;
 	}
 
 	.period-selector {
-		@apply flex gap-2;
+		display: flex;
+		gap: 0.5rem;
+		flex-wrap: wrap;
 	}
 
 	.period-btn {
-		@apply px-4 py-2 rounded-lg font-medium transition-all;
-		@apply bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white;
-		@apply border border-gray-700/50;
+		padding: 0.5rem 1rem;
+		border: 1px solid rgba(55, 65, 81, 0.5);
+		border-radius: 0.5rem;
+		background: rgba(31, 41, 55, 0.5);
+		color: #9ca3af;
+		font: inherit;
+		font-weight: 500;
+		cursor: pointer;
+		transition:
+			background-color 0.2s ease,
+			border-color 0.2s ease,
+			color 0.2s ease;
+	}
+
+	.period-btn:hover {
+		background: rgba(55, 65, 81, 0.5);
+		color: #ffffff;
 	}
 
 	.period-btn.active {
-		@apply bg-purple-500/20 text-purple-400 border-purple-500/50;
+		border-color: rgba(168, 85, 247, 0.5);
+		background: rgba(168, 85, 247, 0.2);
+		color: #c084fc;
 	}
 
 	.loading-state {
-		@apply flex flex-col items-center justify-center py-20;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding-block: 5rem;
+	}
+
+	.state-text {
+		margin: 0;
+		color: #9ca3af;
+	}
+
+	.state-text--spaced {
+		margin-top: 1rem;
 	}
 
 	.spinner {
-		@apply w-12 h-12 border-4 border-gray-700 border-t-purple-400 rounded-full animate-spin;
+		width: 3rem;
+		height: 3rem;
+		border: 4px solid #374151;
+		border-top-color: #c084fc;
+		border-radius: 999px;
+		animation: behavior-spin 1s linear infinite;
 	}
 
 	.kpi-grid {
-		@apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8;
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1rem;
+		margin-bottom: 2rem;
 	}
 
 	.kpi-card {
-		@apply bg-gray-800/50 rounded-xl p-6 border border-gray-700/50;
-		@apply flex items-center gap-4;
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		padding: 1.5rem;
+		border: 1px solid rgba(55, 65, 81, 0.5);
+		border-radius: 0.75rem;
+		background: rgba(31, 41, 55, 0.5);
 	}
 
 	.kpi-card.critical {
-		@apply border-red-500/30 bg-red-500/5;
+		border-color: rgba(239, 68, 68, 0.3);
+		background: rgba(239, 68, 68, 0.05);
 	}
 
 	.kpi-icon {
-		@apply w-12 h-12 rounded-lg flex items-center justify-center;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 3rem;
+		height: 3rem;
+		border-radius: 0.5rem;
+		flex-shrink: 0;
+	}
+
+	.kpi-icon--blue {
+		background: rgba(59, 130, 246, 0.2);
+		color: #60a5fa;
+	}
+
+	.kpi-icon--green {
+		background: rgba(34, 197, 94, 0.2);
+		color: #4ade80;
+	}
+
+	.kpi-icon--yellow {
+		background: rgba(234, 179, 8, 0.2);
+		color: #facc15;
+	}
+
+	.kpi-icon--orange {
+		background: rgba(249, 115, 22, 0.2);
+		color: #fb923c;
+	}
+
+	.kpi-icon--red {
+		background: rgba(239, 68, 68, 0.2);
+		color: #f87171;
 	}
 
 	.kpi-content {
-		@apply flex-1;
+		flex: 1;
+		min-width: 0;
 	}
 
 	.kpi-label {
-		@apply text-sm text-gray-400 mb-1;
+		margin-bottom: 0.25rem;
+		font-size: 0.875rem;
+		color: #9ca3af;
 	}
 
 	.kpi-value {
-		@apply text-2xl font-bold text-white;
+		font-size: 1.5rem;
+		line-height: 2rem;
+		font-weight: 700;
+		color: #ffffff;
 	}
 
 	.section {
-		@apply bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 mb-8;
+		margin-bottom: 2rem;
+		padding: 1.5rem;
+		border: 1px solid rgba(55, 65, 81, 0.5);
+		border-radius: 0.75rem;
+		background: rgba(31, 41, 55, 0.5);
 	}
 
 	.section-header {
-		@apply mb-6;
+		margin-bottom: 1.5rem;
 	}
 
 	.section-title {
-		@apply text-2xl font-bold text-white;
+		margin: 0;
+		font-size: 1.5rem;
+		line-height: 2rem;
+		font-weight: 700;
+		color: #ffffff;
 	}
 
 	.section-subtitle {
-		@apply text-sm text-gray-400 mt-1;
+		margin: 0.25rem 0 0;
+		font-size: 0.875rem;
+		color: #9ca3af;
 	}
 
 	.friction-list {
-		@apply space-y-4;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
 	}
 
 	.friction-item {
-		@apply bg-gray-900/50 rounded-lg p-4;
+		padding: 1rem;
+		border-radius: 0.5rem;
+		background: rgba(17, 24, 39, 0.5);
 	}
 
 	.friction-info {
-		@apply flex items-start justify-between mb-3;
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 0.75rem;
 	}
 
 	.friction-url {
-		@apply text-white font-medium truncate flex-1;
+		flex: 1;
+		min-width: 0;
+		overflow: hidden;
+		color: #ffffff;
+		font-weight: 500;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	.friction-meta {
-		@apply flex items-center gap-2 text-sm;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.875rem;
+		white-space: nowrap;
 	}
 
 	.badge {
-		@apply px-2 py-1 rounded text-xs font-semibold;
+		padding: 0.25rem 0.5rem;
+		border-radius: 0.25rem;
+		font-size: 0.75rem;
+		font-weight: 600;
 	}
 
 	.badge-orange {
-		@apply bg-orange-500/20 text-orange-400;
+		background: rgba(249, 115, 22, 0.2);
+		color: #fb923c;
+	}
+
+	.friction-count {
+		color: #9ca3af;
 	}
 
 	.friction-bar {
-		@apply h-2 bg-gray-700 rounded-full overflow-hidden;
+		height: 0.5rem;
+		overflow: hidden;
+		border-radius: 999px;
+		background: #374151;
 	}
 
 	.friction-fill {
-		@apply h-full bg-linear-to-r from-orange-500 to-red-500;
+		height: 100%;
+		background: linear-gradient(to right, #f97316, #ef4444);
 	}
 
 	.timeline-chart {
-		@apply flex items-end gap-2 h-64;
+		display: flex;
+		align-items: flex-end;
+		gap: 0.5rem;
+		height: 16rem;
 	}
 
 	.timeline-bar {
-		@apply flex-1 flex flex-col items-center gap-2;
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.5rem;
+		min-width: 0;
 	}
 
 	.bar-fill {
-		@apply w-full bg-linear-to-t from-purple-500 to-purple-400 rounded-t;
-		@apply transition-all hover:from-purple-400 hover:to-purple-300;
+		width: 100%;
+		min-height: 0.25rem;
+		border-radius: 0.25rem 0.25rem 0 0;
+		background: linear-gradient(to top, #a855f7, #c084fc);
+		transition: background 0.2s ease;
+	}
+
+	.bar-fill:hover {
+		background: linear-gradient(to top, #c084fc, #d8b4fe);
 	}
 
 	.bar-label {
-		@apply text-xs text-gray-400 rotate-45 origin-left;
+		color: #9ca3af;
+		font-size: 0.75rem;
+		transform: rotate(45deg);
+		transform-origin: left;
+		white-space: nowrap;
 	}
 
 	.empty-state {
-		@apply flex flex-col items-center justify-center py-20 text-center;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding-block: 5rem;
+		text-align: center;
+	}
+
+	.empty-state :global(.empty-icon) {
+		color: #4b5563;
+	}
+
+	.empty-title {
+		margin: 1rem 0 0;
+		font-size: 1.25rem;
+		line-height: 1.75rem;
+		font-weight: 600;
+		color: #9ca3af;
+	}
+
+	.empty-copy {
+		margin: 0.5rem 0 0;
+		color: #6b7280;
+	}
+
+	@media (min-width: 768px) {
+		.kpi-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.kpi-grid {
+			grid-template-columns: repeat(5, minmax(0, 1fr));
+		}
+	}
+
+	@media (max-width: 767px) {
+		.friction-info {
+			flex-direction: column;
+		}
+
+		.timeline-chart {
+			overflow-x: auto;
+		}
+
+		.timeline-bar {
+			min-width: 3rem;
+		}
+	}
+
+	@keyframes behavior-spin {
+		to {
+			transform: rotate(360deg);
+		}
 	}
 </style>

@@ -60,7 +60,7 @@
 <div class="insights-panel">
 	<div class="panel-header">
 		<div class="header-title">
-			<IconBrain size={24} class="text-purple-400" />
+			<IconBrain size={24} class="panel-icon" />
 			<h3 class="title">AI Insights</h3>
 		</div>
 		<div class="insights-count">{insights.length} insights</div>
@@ -117,16 +117,15 @@
 			{/each}
 		{:else}
 			<div class="empty-state">
-				<IconBrain size={48} class="text-gray-600" />
-				<p class="text-gray-400 mt-3">No insights available yet</p>
-				<p class="text-sm text-gray-500 mt-1">AI insights will appear as data is analyzed</p>
+				<IconBrain size={48} class="empty-icon" />
+				<p class="empty-title">No insights available yet</p>
+				<p class="empty-copy">AI insights will appear as data is analyzed</p>
 			</div>
 		{/if}
 	</div>
 </div>
 
-<style lang="postcss">
-	@reference "../../../app.css";
+<style>
 	.insights-panel {
 		background-color: rgba(30, 41, 59, 0.5);
 		border-radius: 0.75rem;
@@ -135,121 +134,230 @@
 	}
 
 	.panel-header {
-		@apply flex items-center justify-between mb-6;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 1.5rem;
 	}
 
 	.header-title {
-		@apply flex items-center gap-3;
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+
+	.header-title :global(.panel-icon) {
+		color: #c084fc;
 	}
 
 	.title {
-		@apply text-xl font-bold text-white;
+		margin: 0;
+		font-size: 1.25rem;
+		line-height: 1.75rem;
+		font-weight: 700;
+		color: #ffffff;
 	}
 
 	.insights-count {
-		@apply px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-sm font-semibold;
+		padding: 0.25rem 0.75rem;
+		border-radius: 999px;
+		background: rgba(168, 85, 247, 0.2);
+		color: #c084fc;
+		font-size: 0.875rem;
+		font-weight: 600;
+		white-space: nowrap;
 	}
 
 	.insights-list {
-		@apply space-y-4;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
 	}
 
 	.insight-card {
-		@apply flex gap-4 p-4 rounded-lg border transition-all;
-		@apply bg-gray-900/50 border-gray-700/50 hover:border-gray-600;
+		display: flex;
+		gap: 1rem;
+		padding: 1rem;
+		border: 1px solid rgba(55, 65, 81, 0.5);
+		border-radius: 0.5rem;
+		background: rgba(17, 24, 39, 0.5);
+		transition: border-color 0.2s ease;
+	}
+
+	.insight-card:hover {
+		border-color: #4b5563;
 	}
 
 	.insight-card.severity-critical {
-		@apply border-red-500/50 bg-red-500/5;
+		border-color: rgba(239, 68, 68, 0.5);
+		background: rgba(239, 68, 68, 0.05);
 	}
 
 	.insight-card.severity-warning {
-		@apply border-orange-500/50 bg-orange-500/5;
+		border-color: rgba(249, 115, 22, 0.5);
+		background: rgba(249, 115, 22, 0.05);
 	}
 
 	.insight-card.severity-info {
-		@apply border-blue-500/50 bg-blue-500/5;
+		border-color: rgba(59, 130, 246, 0.5);
+		background: rgba(59, 130, 246, 0.05);
 	}
 
 	.insight-icon {
-		@apply flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center;
-		@apply bg-purple-500/20 text-purple-400;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		width: 2.5rem;
+		height: 2.5rem;
+		border-radius: 0.5rem;
+		background: rgba(168, 85, 247, 0.2);
+		color: #c084fc;
 	}
 
 	.severity-critical .insight-icon {
-		@apply bg-red-500/20 text-red-400;
+		background: rgba(239, 68, 68, 0.2);
+		color: #f87171;
 	}
 
 	.severity-warning .insight-icon {
-		@apply bg-orange-500/20 text-orange-400;
+		background: rgba(249, 115, 22, 0.2);
+		color: #fb923c;
 	}
 
 	.severity-info .insight-icon {
-		@apply bg-blue-500/20 text-blue-400;
+		background: rgba(59, 130, 246, 0.2);
+		color: #60a5fa;
 	}
 
 	.insight-content {
-		@apply flex-1;
+		flex: 1;
+		min-width: 0;
 	}
 
 	.insight-header {
-		@apply flex items-start justify-between gap-2 mb-2;
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 0.5rem;
+		margin-bottom: 0.5rem;
 	}
 
 	.insight-title {
-		@apply text-base font-semibold text-white;
+		margin: 0;
+		font-size: 1rem;
+		line-height: 1.5rem;
+		font-weight: 600;
+		color: #ffffff;
 	}
 
 	.insight-type {
-		@apply px-2 py-1 bg-gray-700/50 text-gray-400 rounded text-xs font-medium uppercase;
+		padding: 0.25rem 0.5rem;
+		border-radius: 0.25rem;
+		background: rgba(55, 65, 81, 0.5);
+		color: #9ca3af;
+		font-size: 0.75rem;
+		font-weight: 500;
+		text-transform: uppercase;
+		white-space: nowrap;
 	}
 
 	.insight-description {
-		@apply text-sm text-gray-300 mb-3;
+		margin: 0 0 0.75rem;
+		font-size: 0.875rem;
+		color: #d1d5db;
 	}
 
 	.insight-metrics {
-		@apply mb-3;
+		margin-bottom: 0.75rem;
 	}
 
 	.metric {
-		@apply flex items-center gap-3 text-sm;
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		font-size: 0.875rem;
 	}
 
 	.metric-label {
-		@apply text-gray-400;
+		color: #9ca3af;
 	}
 
 	.metric-value {
-		@apply text-white font-semibold;
+		color: #ffffff;
+		font-weight: 600;
 	}
 
 	.metric-change {
-		@apply font-semibold;
+		font-weight: 600;
 	}
 
 	.metric-change.positive {
-		@apply text-green-400;
+		color: #4ade80;
 	}
 
 	.metric-change.negative {
-		@apply text-red-400;
+		color: #f87171;
 	}
 
 	.insight-action {
-		@apply px-4 py-2 bg-purple-500/20 text-purple-400 rounded-lg text-sm font-medium;
-		@apply hover:bg-purple-500/30 transition-colors;
+		padding: 0.5rem 1rem;
+		border: 0;
+		border-radius: 0.5rem;
+		background: rgba(168, 85, 247, 0.2);
+		color: #c084fc;
+		font: inherit;
+		font-size: 0.875rem;
+		font-weight: 500;
+		cursor: pointer;
+		transition: background-color 0.2s ease;
+	}
+
+	.insight-action:hover {
+		background: rgba(168, 85, 247, 0.3);
 	}
 
 	.insight-footer {
-		@apply mt-3 pt-3 border-t border-gray-700/50;
+		margin-top: 0.75rem;
+		padding-top: 0.75rem;
+		border-top: 1px solid rgba(55, 65, 81, 0.5);
 	}
 
 	.insight-timestamp {
-		@apply text-xs text-gray-500;
+		font-size: 0.75rem;
+		color: #6b7280;
 	}
 
 	.empty-state {
-		@apply flex flex-col items-center justify-center py-12 text-center;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding-block: 3rem;
+		text-align: center;
+	}
+
+	.empty-state :global(.empty-icon) {
+		color: #4b5563;
+	}
+
+	.empty-title {
+		margin: 0.75rem 0 0;
+		color: #9ca3af;
+	}
+
+	.empty-copy {
+		margin: 0.25rem 0 0;
+		color: #6b7280;
+		font-size: 0.875rem;
+	}
+
+	@media (max-width: 640px) {
+		.panel-header,
+		.insight-header {
+			align-items: flex-start;
+			flex-direction: column;
+		}
 	}
 </style>

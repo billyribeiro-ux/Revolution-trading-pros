@@ -70,10 +70,10 @@
 	<div class="dashboard-header">
 		<div class="header-content">
 			<div class="header-title">
-				<IconChartBar size={32} class="text-yellow-400" />
+				<IconChartBar size={32} class="analytics-header-icon" />
 				<div>
-					<h1 class="text-3xl font-bold text-white">Analytics Dashboard</h1>
-					<p class="text-gray-400 mt-1">Enterprise-grade analytics and insights</p>
+					<h1 class="analytics-title">Analytics Dashboard</h1>
+					<p class="analytics-subtitle">Enterprise-grade analytics and insights</p>
 				</div>
 			</div>
 
@@ -133,7 +133,7 @@
 		<button
 			class="tab"
 			class:active={selectedTab === 'revenue'}
-			onclick={() => selectedTab === 'revenue'}
+			onclick={() => (selectedTab = 'revenue')}
 		>
 			<IconCurrencyDollar size={20} />
 			Revenue
@@ -145,7 +145,7 @@
 		{#if isLoading}
 			<div class="loading-state">
 				<div class="spinner"></div>
-				<p class="text-gray-400 mt-4">Loading analytics data...</p>
+				<p class="state-text state-text--spaced">Loading analytics data...</p>
 			</div>
 		{:else if dashboard}
 			<!-- Overview Tab -->
@@ -164,8 +164,8 @@
 					{#if dashboard.anomalies && (dashboard.anomalies.anomalies_count > 0 || dashboard.anomalies.alerts_triggered > 0)}
 						<div class="section anomaly-section">
 							<div class="section-header">
-								<div class="flex items-center gap-2">
-									<IconAlertTriangle size={24} class="text-orange-400" />
+								<div class="anomaly-heading">
+									<IconAlertTriangle size={24} class="anomaly-icon" />
 									<h2 class="section-title">Anomalies & Alerts</h2>
 								</div>
 							</div>
@@ -249,10 +249,10 @@
 						</div>
 					{:else}
 						<div class="empty-state">
-							<IconTarget size={64} class="text-gray-600" />
-							<h3 class="text-xl font-semibold text-gray-400 mt-4">No Funnels Yet</h3>
-							<p class="text-gray-500 mt-2">Create your first funnel to track conversion paths</p>
-							<button class="btn-primary mt-4">Create Funnel</button>
+							<IconTarget size={64} class="empty-icon" />
+							<h3 class="empty-title">No Funnels Yet</h3>
+							<p class="empty-copy">Create your first funnel to track conversion paths</p>
+							<button class="btn-primary empty-action">Create Funnel</button>
 						</div>
 					{/if}
 				</div>
@@ -292,12 +292,10 @@
 						</div>
 					{:else}
 						<div class="empty-state">
-							<IconUsers size={64} class="text-gray-600" />
-							<h3 class="text-xl font-semibold text-gray-400 mt-4">No Cohorts Yet</h3>
-							<p class="text-gray-500 mt-2">
-								Create cohorts to analyze user retention and behavior
-							</p>
-							<button class="btn-primary mt-4">Create Cohort</button>
+							<IconUsers size={64} class="empty-icon" />
+							<h3 class="empty-title">No Cohorts Yet</h3>
+							<p class="empty-copy">Create cohorts to analyze user retention and behavior</p>
+							<button class="btn-primary empty-action">Create Cohort</button>
 						</div>
 					{/if}
 				</div>
@@ -321,11 +319,9 @@
 						<AttributionChart channels={dashboard.attribution.channels} />
 					{:else}
 						<div class="empty-state">
-							<IconTrendingUp size={64} class="text-gray-600" />
-							<h3 class="text-xl font-semibold text-gray-400 mt-4">No Attribution Data</h3>
-							<p class="text-gray-500 mt-2">
-								Attribution data will appear once conversions are tracked
-							</p>
+							<IconTrendingUp size={64} class="empty-icon" />
+							<h3 class="empty-title">No Attribution Data</h3>
+							<p class="empty-copy">Attribution data will appear once conversions are tracked</p>
 						</div>
 					{/if}
 				</div>
@@ -413,19 +409,19 @@
 			{/if}
 		{:else}
 			<div class="empty-state">
-				<IconBrain size={64} class="text-gray-600" />
-				<h3 class="text-xl font-semibold text-gray-400 mt-4">No Data Available</h3>
-				<p class="text-gray-500 mt-2">Analytics data will appear once events are tracked</p>
+				<IconBrain size={64} class="empty-icon" />
+				<h3 class="empty-title">No Data Available</h3>
+				<p class="empty-copy">Analytics data will appear once events are tracked</p>
 			</div>
 		{/if}
 	</div>
 </div>
 
-<style lang="postcss">
-	@reference "../../app.css";
+<style>
 	.analytics-dashboard {
 		background: linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a);
 		padding: 1.5rem;
+		min-height: 100%;
 	}
 
 	.dashboard-header {
@@ -441,185 +437,417 @@
 	}
 
 	.header-title {
-		@apply flex items-center gap-4;
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.header-title :global(.analytics-header-icon) {
+		color: #facc15;
+	}
+
+	.analytics-title {
+		margin: 0;
+		font-size: 1.875rem;
+		line-height: 2.25rem;
+		font-weight: 700;
+		color: #ffffff;
+	}
+
+	.analytics-subtitle {
+		margin: 0.25rem 0 0;
+		color: #9ca3af;
 	}
 
 	.header-actions {
-		@apply flex items-center gap-3;
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
 	}
 
 	.realtime-section {
-		@apply mb-8;
+		margin-bottom: 2rem;
 	}
 
 	.dashboard-tabs {
-		@apply flex gap-2 mb-8 overflow-x-auto pb-2;
+		display: flex;
+		gap: 0.5rem;
+		margin-bottom: 2rem;
+		overflow-x: auto;
+		padding-bottom: 0.5rem;
 		scrollbar-width: thin;
 	}
 
 	.tab {
-		@apply flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all;
-		@apply bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white;
-		@apply border border-gray-700/50;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.75rem 1.5rem;
+		border: 1px solid rgba(55, 65, 81, 0.5);
+		border-radius: 0.5rem;
+		background: rgba(31, 41, 55, 0.5);
+		color: #9ca3af;
+		font: inherit;
+		font-weight: 500;
+		cursor: pointer;
+		transition:
+			background-color 0.2s ease,
+			border-color 0.2s ease,
+			color 0.2s ease;
 		white-space: nowrap;
 	}
 
+	.tab:hover {
+		background: rgba(55, 65, 81, 0.5);
+		color: #ffffff;
+	}
+
 	.tab.active {
-		@apply bg-yellow-500/20 text-yellow-400 border-yellow-500/50;
+		border-color: rgba(234, 179, 8, 0.5);
+		background: rgba(234, 179, 8, 0.2);
+		color: #facc15;
 	}
 
 	.dashboard-content {
-		@apply min-h-[400px];
+		min-height: 400px;
 	}
 
 	.loading-state {
-		@apply flex flex-col items-center justify-center py-20;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding-block: 5rem;
+	}
+
+	.state-text {
+		margin: 0;
+		color: #9ca3af;
+	}
+
+	.state-text--spaced {
+		margin-top: 1rem;
 	}
 
 	.spinner {
-		@apply w-12 h-12 border-4 border-gray-700 border-t-yellow-400 rounded-full animate-spin;
+		width: 3rem;
+		height: 3rem;
+		border: 4px solid #374151;
+		border-top-color: #facc15;
+		border-radius: 999px;
+		animation: analytics-spin 1s linear infinite;
 	}
 
 	.overview-grid {
-		@apply space-y-8;
+		display: flex;
+		flex-direction: column;
+		gap: 2rem;
 	}
 
 	.section {
-		@apply bg-gray-800/50 rounded-xl p-6 border border-gray-700/50;
+		padding: 1.5rem;
+		border: 1px solid rgba(55, 65, 81, 0.5);
+		border-radius: 0.75rem;
+		background: rgba(31, 41, 55, 0.5);
 	}
 
 	.section-header {
-		@apply flex items-center justify-between mb-6;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 1.5rem;
 	}
 
 	.section-title {
-		@apply text-2xl font-bold text-white;
+		margin: 0;
+		font-size: 1.5rem;
+		line-height: 2rem;
+		font-weight: 700;
+		color: #ffffff;
 	}
 
 	.section-subtitle {
-		@apply text-sm text-gray-400 mt-1;
+		margin: 0.25rem 0 0;
+		font-size: 0.875rem;
+		color: #9ca3af;
 	}
 
 	.view-all-link {
-		@apply text-yellow-400 hover:text-yellow-300 font-medium transition-colors;
+		color: #facc15;
+		font-weight: 500;
+		text-decoration: none;
+		transition: color 0.2s ease;
+	}
+
+	.view-all-link:hover {
+		color: #fde047;
 	}
 
 	.anomaly-section {
-		@apply border-orange-500/30 bg-orange-500/5;
+		border-color: rgba(249, 115, 22, 0.3);
+		background: rgba(249, 115, 22, 0.05);
+	}
+
+	.anomaly-heading {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.anomaly-heading :global(.anomaly-icon) {
+		color: #fb923c;
 	}
 
 	.anomaly-grid {
-		@apply grid grid-cols-1 md:grid-cols-3 gap-4;
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1rem;
 	}
 
 	.anomaly-card {
-		@apply bg-gray-900/50 rounded-lg p-6 text-center border border-orange-500/20;
+		padding: 1.5rem;
+		border: 1px solid rgba(249, 115, 22, 0.2);
+		border-radius: 0.5rem;
+		background: rgba(17, 24, 39, 0.5);
+		text-align: center;
 	}
 
 	.anomaly-card.critical {
-		@apply border-red-500/50 bg-red-500/10;
+		border-color: rgba(239, 68, 68, 0.5);
+		background: rgba(239, 68, 68, 0.1);
 	}
 
 	.anomaly-value {
-		@apply text-4xl font-bold text-orange-400;
+		font-size: 2.25rem;
+		line-height: 2.5rem;
+		font-weight: 700;
+		color: #fb923c;
 	}
 
 	.anomaly-card.critical .anomaly-value {
-		@apply text-red-400;
+		color: #f87171;
 	}
 
 	.anomaly-label {
-		@apply text-sm text-gray-400 mt-2;
+		margin-top: 0.5rem;
+		font-size: 0.875rem;
+		color: #9ca3af;
 	}
 
 	.charts-grid {
-		@apply grid grid-cols-1 lg:grid-cols-2 gap-6;
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1.5rem;
 	}
 
 	.funnels-grid {
-		@apply grid grid-cols-1 lg:grid-cols-2 gap-6;
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1.5rem;
 	}
 
 	.funnels-list,
 	.cohorts-list {
-		@apply space-y-6;
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
 	}
 
 	.empty-state {
-		@apply flex flex-col items-center justify-center py-20 text-center;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding-block: 5rem;
+		text-align: center;
+	}
+
+	.empty-state :global(.empty-icon) {
+		color: #4b5563;
+	}
+
+	.empty-title {
+		margin: 1rem 0 0;
+		font-size: 1.25rem;
+		line-height: 1.75rem;
+		font-weight: 600;
+		color: #9ca3af;
+	}
+
+	.empty-copy {
+		margin: 0.5rem 0 0;
+		color: #6b7280;
+	}
+
+	.empty-action {
+		margin-top: 1rem;
 	}
 
 	.btn-primary {
-		@apply flex items-center gap-2 px-6 py-3 bg-yellow-500 text-gray-900 font-semibold rounded-lg;
-		@apply hover:bg-yellow-400 transition-colors;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		padding: 0.75rem 1.5rem;
+		border: 0;
+		border-radius: 0.5rem;
+		background: #eab308;
+		color: #111827;
+		font: inherit;
+		font-weight: 600;
+		cursor: pointer;
+		transition: background-color 0.2s ease;
+	}
+
+	.btn-primary:hover {
+		background: #facc15;
 	}
 
 	.model-selector {
-		@apply px-4 py-2 bg-gray-700 text-white rounded-lg border border-gray-600;
-		@apply focus:outline-none focus:ring-2 focus:ring-yellow-500;
+		padding: 0.5rem 1rem;
+		border: 1px solid #4b5563;
+		border-radius: 0.5rem;
+		background: #374151;
+		color: #ffffff;
+		font: inherit;
+	}
+
+	.model-selector:focus {
+		outline: 2px solid #eab308;
+		outline-offset: 2px;
 	}
 
 	.behavior-grid {
-		@apply grid grid-cols-1 lg:grid-cols-2 gap-6;
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1.5rem;
 	}
 
 	.behavior-card {
-		@apply bg-gray-900/50 rounded-lg p-6 border border-gray-700/50;
+		padding: 1.5rem;
+		border: 1px solid rgba(55, 65, 81, 0.5);
+		border-radius: 0.5rem;
+		background: rgba(17, 24, 39, 0.5);
 	}
 
 	.card-title {
-		@apply text-lg font-semibold text-white mb-4;
+		margin: 0 0 1rem;
+		font-size: 1.125rem;
+		line-height: 1.75rem;
+		font-weight: 600;
+		color: #ffffff;
 	}
 
 	.page-list,
 	.event-list {
-		@apply space-y-3;
+		display: flex;
+		flex-direction: column;
 	}
 
 	.page-item,
 	.event-item {
-		@apply flex items-center justify-between py-2 border-b border-gray-700/50 last:border-0;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		padding-block: 0.5rem;
+		border-bottom: 1px solid rgba(55, 65, 81, 0.5);
+	}
+
+	.page-item:last-child,
+	.event-item:last-child {
+		border-bottom: 0;
 	}
 
 	.page-path,
 	.event-name {
-		@apply text-gray-300 truncate flex-1;
+		flex: 1;
+		min-width: 0;
+		overflow: hidden;
+		color: #d1d5db;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	.page-views,
 	.event-count {
-		@apply text-yellow-400 font-semibold ml-4;
+		color: #facc15;
+		font-weight: 600;
+		white-space: nowrap;
 	}
 
 	.revenue-grid {
-		@apply space-y-6;
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
 	}
 
 	.revenue-kpis {
-		@apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4;
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1rem;
 	}
 
 	.revenue-kpi-card {
-		@apply bg-gray-900/50 rounded-lg p-6 border border-gray-700/50;
+		padding: 1.5rem;
+		border: 1px solid rgba(55, 65, 81, 0.5);
+		border-radius: 0.5rem;
+		background: rgba(17, 24, 39, 0.5);
 	}
 
 	.kpi-label {
-		@apply text-sm text-gray-400 mb-2;
+		margin-bottom: 0.5rem;
+		font-size: 0.875rem;
+		color: #9ca3af;
 	}
 
 	.kpi-value {
-		@apply text-3xl font-bold text-white mb-2;
+		margin-bottom: 0.5rem;
+		font-size: 1.875rem;
+		line-height: 2.25rem;
+		font-weight: 700;
+		color: #ffffff;
 	}
 
 	.kpi-change {
-		@apply text-sm font-semibold;
+		font-size: 0.875rem;
+		font-weight: 600;
 	}
 
 	.kpi-change.positive {
-		@apply text-green-400;
+		color: #4ade80;
 	}
 
 	.kpi-change.negative {
-		@apply text-red-400;
+		color: #f87171;
+	}
+
+	@media (min-width: 768px) {
+		.anomaly-grid {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
+
+		.revenue-kpis {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.charts-grid,
+		.funnels-grid,
+		.behavior-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.revenue-kpis {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+		}
+	}
+
+	@keyframes analytics-spin {
+		to {
+			transform: rotate(360deg);
+		}
 	}
 </style>

@@ -367,12 +367,11 @@ select,
 	margin-bottom: 1rem;
 }
 
-/* ✅ REMOVED DUPLICATE: Now uses global-spin from app.css (Single Source of Truth)
- * USED BY: Admin Dashboard - Loading spinners
- * PAGES: /admin/* (all admin pages)
- * PURPOSE: 360° rotation for loading indicators
- * REFERENCE: @keyframes global-spin defined in app.css
- */
+@keyframes global-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
 
 .empty-state {
 	display: flex;

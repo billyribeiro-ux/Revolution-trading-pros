@@ -180,117 +180,86 @@
 	<title>Board Settings | Admin</title>
 </svelte:head>
 
-<div class="bg-gray-50 dark:bg-gray-900">
-	<!-- Header -->
-	<div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-		<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-			<div class="flex items-center gap-4">
-				<a
-					href="/admin/boards"
-					class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-				>
-					<IconArrowLeft class="w-5 h-5" />
+<div class="board-settings-page">
+	<header class="settings-header">
+		<div class="settings-container settings-container--header">
+			<div class="header-row">
+				<a href="/admin/boards" class="back-link" aria-label="Back to boards">
+					<IconArrowLeft class="icon-md" />
 				</a>
-				<div class="flex items-center gap-3">
-					<div class="p-2 bg-[#E6B800]/10 dark:bg-[#B38F00]/30 rounded-lg">
-						<IconSettings class="w-6 h-6 text-[#E6B800] dark:text-[#FFD11A]" />
+				<div class="title-row">
+					<div class="title-icon" aria-hidden="true">
+						<IconSettings class="icon-lg" />
 					</div>
 					<div>
-						<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Board Settings</h1>
-						<p class="text-sm text-gray-500 dark:text-gray-400">
-							Configure default settings for project boards
-						</p>
+						<h1>Board Settings</h1>
+						<p>Configure default settings for project boards</p>
 					</div>
 				</div>
 			</div>
 		</div>
-	</div>
+	</header>
 
-	<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+	<main class="settings-container settings-container--main">
 		{#if loading}
-			<div class="flex items-center justify-center py-12">
-				<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#E6B800]"></div>
+			<div class="loading-state" aria-live="polite" aria-label="Loading board settings">
+				<span class="loading-spinner"></span>
 			</div>
 		{:else}
-			<div class="flex gap-8">
-				<!-- Sidebar -->
-				<div class="w-48 flex-shrink-0">
-					<nav class="space-y-1">
+			<div class="settings-layout">
+				<aside class="settings-sidebar" aria-label="Board settings sections">
+					<nav class="settings-nav">
 						<button
+							type="button"
 							onclick={() => (activeTab = 'general')}
-							class="w-full px-3 py-2 text-left rounded-lg flex items-center gap-2 {activeTab ===
-							'general'
-								? 'bg-[#E6B800]/5 dark:bg-[#B38F00]/30 text-[#E6B800] dark:text-[#FFD11A]'
-								: 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
+							class={{ 'settings-tab': true, active: activeTab === 'general' }}
 						>
-							<IconLayoutKanban class="w-4 h-4" />
-							General
+							<IconLayoutKanban class="icon-sm" />
+							<span>General</span>
 						</button>
 						<button
+							type="button"
 							onclick={() => (activeTab = 'stages')}
-							class="w-full px-3 py-2 text-left rounded-lg flex items-center gap-2 {activeTab ===
-							'stages'
-								? 'bg-[#E6B800]/5 dark:bg-[#B38F00]/30 text-[#E6B800] dark:text-[#FFD11A]'
-								: 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
+							class={{ 'settings-tab': true, active: activeTab === 'stages' }}
 						>
-							<IconPalette class="w-4 h-4" />
-							Default Stages
+							<IconPalette class="icon-sm" />
+							<span>Default Stages</span>
 						</button>
 						<button
+							type="button"
 							onclick={() => (activeTab = 'labels')}
-							class="w-full px-3 py-2 text-left rounded-lg flex items-center gap-2 {activeTab ===
-							'labels'
-								? 'bg-[#E6B800]/5 dark:bg-[#B38F00]/30 text-[#E6B800] dark:text-[#FFD11A]'
-								: 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
+							class={{ 'settings-tab': true, active: activeTab === 'labels' }}
 						>
-							<IconPalette class="w-4 h-4" />
-							Default Labels
+							<IconPalette class="icon-sm" />
+							<span>Default Labels</span>
 						</button>
 						<button
+							type="button"
 							onclick={() => (activeTab = 'time')}
-							class="w-full px-3 py-2 text-left rounded-lg flex items-center gap-2 {activeTab ===
-							'time'
-								? 'bg-[#E6B800]/5 dark:bg-[#B38F00]/30 text-[#E6B800] dark:text-[#FFD11A]'
-								: 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
+							class={{ 'settings-tab': true, active: activeTab === 'time' }}
 						>
-							<IconClock class="w-4 h-4" />
-							Time Tracking
+							<IconClock class="icon-sm" />
+							<span>Time Tracking</span>
 						</button>
 						<button
+							type="button"
 							onclick={() => (activeTab = 'storage')}
-							class="w-full px-3 py-2 text-left rounded-lg flex items-center gap-2 {activeTab ===
-							'storage'
-								? 'bg-[#E6B800]/5 dark:bg-[#B38F00]/30 text-[#E6B800] dark:text-[#FFD11A]'
-								: 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
+							class={{ 'settings-tab': true, active: activeTab === 'storage' }}
 						>
-							<IconCloud class="w-4 h-4" />
-							Cloud Storage
+							<IconCloud class="icon-sm" />
+							<span>Cloud Storage</span>
 						</button>
 					</nav>
-				</div>
+				</aside>
 
-				<!-- Content -->
-				<div class="flex-1">
-					<div
-						class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6"
-					>
+				<section class="settings-content">
+					<div class="settings-card">
 						{#if activeTab === 'general'}
-							<h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">
-								General Settings
-							</h2>
-							<div class="space-y-6">
-								<div>
-									<label
-										class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-										for="default-board-type"
-									>
-										Default Board Type
-									</label>
-									<select
-										id="default-board-type"
-										bind:value={settings.default_board_type}
-										class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-									>
+							<h2>General Settings</h2>
+							<div class="form-stack">
+								<div class="field-group">
+									<label for="default-board-type">Default Board Type</label>
+									<select id="default-board-type" bind:value={settings.default_board_type}>
 										<option value="kanban">Kanban Board</option>
 										<option value="list">List View</option>
 										<option value="calendar">Calendar View</option>
@@ -298,213 +267,173 @@
 									</select>
 								</div>
 
-								<div class="flex items-center justify-between">
+								<div class="setting-row">
 									<div>
-										<div class="text-sm font-medium text-gray-700 dark:text-gray-300">
-											Enable Webhooks
-										</div>
-										<div class="text-xs text-gray-500 dark:text-gray-400">
+										<div id="webhooks-toggle-label" class="setting-label">Enable Webhooks</div>
+										<div class="setting-description">
 											Allow boards to send webhook notifications
 										</div>
 									</div>
-									<label class="relative inline-flex items-center cursor-pointer">
+									<label class="toggle-control">
 										<input
 											id="page-settings-webhooks-enabled"
 											name="page-settings-webhooks-enabled"
 											type="checkbox"
 											bind:checked={settings.webhooks_enabled}
-											class="sr-only peer"
+											aria-labelledby="webhooks-toggle-label"
 										/>
-										<div
-											class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#E6B800]/30 dark:peer-focus:ring-[#B38F00]/50 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#E6B800]"
-										></div>
+										<span class="toggle-track"></span>
 									</label>
 								</div>
 							</div>
 						{:else if activeTab === 'stages'}
-							<h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">
-								Default Stages
-							</h2>
-							<p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+							<h2>Default Stages</h2>
+							<p class="section-description">
 								These stages will be created automatically for new boards.
 							</p>
 
-							<div class="space-y-3 mb-6">
+							<div class="item-list">
 								{#each settings.default_stages as stage, index (index)}
-									<div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+									<div class="config-row">
 										<input
-											id="page-stage-color"
-											name="page-stage-color"
 											type="color"
 											bind:value={stage.color}
-											class="w-8 h-8 rounded cursor-pointer"
+											class="color-input"
+											aria-label={`Stage ${index + 1} color`}
 										/>
 										<input
-											id="page-stage-title"
-											name="page-stage-title"
 											type="text"
 											bind:value={stage.title}
-											class="flex-1 px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
+											class="compact-input"
+											aria-label={`Stage ${index + 1} title`}
 										/>
-										<label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-											<input
-												id="page-stage-auto-complete"
-												name="page-stage-auto-complete"
-												type="checkbox"
-												bind:checked={stage.auto_complete}
-												class="rounded"
-											/>
-											Auto-complete
+										<label class="checkbox-option">
+											<input type="checkbox" bind:checked={stage.auto_complete} />
+											<span>Auto-complete</span>
 										</label>
 										<button
+											type="button"
 											onclick={() => removeStage(index)}
-											class="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
+											class="icon-button icon-button--danger"
+											aria-label={`Remove ${stage.title || 'stage'}`}
 										>
-											<IconTrash class="w-4 h-4" />
+											<IconTrash class="icon-sm" />
 										</button>
 									</div>
 								{/each}
 							</div>
 
-							<div
-								class="flex items-center gap-3 p-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg"
-							>
+							<div class="config-row config-row--new">
 								<input
-									id="page-newstage-color"
-									name="page-newstage-color"
 									type="color"
 									bind:value={newStage.color}
-									class="w-8 h-8 rounded cursor-pointer"
+									class="color-input"
+									aria-label="New stage color"
 								/>
 								<input
-									id="page-newstage-title"
-									name="page-newstage-title"
 									type="text"
 									bind:value={newStage.title}
 									placeholder="Stage name..."
-									class="flex-1 px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
+									class="compact-input"
+									aria-label="New stage name"
 								/>
-								<label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-									<input
-										id="page-newstage-auto-complete"
-										name="page-newstage-auto-complete"
-										type="checkbox"
-										bind:checked={newStage.auto_complete}
-										class="rounded"
-									/>
-									Auto-complete
+								<label class="checkbox-option">
+									<input type="checkbox" bind:checked={newStage.auto_complete} />
+									<span>Auto-complete</span>
 								</label>
 								<button
+									type="button"
 									onclick={addStage}
 									disabled={!newStage.title.trim()}
-									class="px-3 py-1.5 bg-[#E6B800] hover:bg-[#B38F00] text-[#0D1117] text-sm rounded-lg disabled:opacity-50"
+									class="icon-button icon-button--primary"
+									aria-label="Add stage"
 								>
-									<IconPlus class="w-4 h-4" />
+									<IconPlus class="icon-sm" />
 								</button>
 							</div>
 						{:else if activeTab === 'labels'}
-							<h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">
-								Default Labels
-							</h2>
-							<p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
-								These labels will be available for new boards.
-							</p>
+							<h2>Default Labels</h2>
+							<p class="section-description">These labels will be available for new boards.</p>
 
-							<div class="space-y-3 mb-6">
+							<div class="item-list">
 								{#each settings.default_labels as label, index (index)}
-									<div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+									<div class="config-row">
 										<input
-											id="page-label-color"
-											name="page-label-color"
 											type="color"
 											bind:value={label.color}
-											class="w-8 h-8 rounded cursor-pointer"
+											class="color-input"
+											aria-label={`Label ${index + 1} color`}
 										/>
 										<input
-											id="page-label-title"
-											name="page-label-title"
 											type="text"
 											bind:value={label.title}
-											class="flex-1 px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
+											class="compact-input"
+											aria-label={`Label ${index + 1} title`}
 										/>
-										<span
-											class="px-3 py-1 text-xs text-white rounded"
-											style="background-color: {label.color}"
-										>
+										<span class="label-preview" style:background-color={label.color}>
 											{label.title}
 										</span>
 										<button
+											type="button"
 											onclick={() => removeLabel(index)}
-											class="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
+											class="icon-button icon-button--danger"
+											aria-label={`Remove ${label.title || 'label'}`}
 										>
-											<IconTrash class="w-4 h-4" />
+											<IconTrash class="icon-sm" />
 										</button>
 									</div>
 								{/each}
 							</div>
 
-							<div
-								class="flex items-center gap-3 p-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg"
-							>
+							<div class="config-row config-row--new">
 								<input
-									id="page-newlabel-color"
-									name="page-newlabel-color"
 									type="color"
 									bind:value={newLabel.color}
-									class="w-8 h-8 rounded cursor-pointer"
+									class="color-input"
+									aria-label="New label color"
 								/>
 								<input
-									id="page-newlabel-title"
-									name="page-newlabel-title"
 									type="text"
 									bind:value={newLabel.title}
 									placeholder="Label name..."
-									class="flex-1 px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
+									class="compact-input"
+									aria-label="New label name"
 								/>
 								<button
+									type="button"
 									onclick={addLabel}
 									disabled={!newLabel.title.trim()}
-									class="px-3 py-1.5 bg-[#E6B800] hover:bg-[#B38F00] text-[#0D1117] text-sm rounded-lg disabled:opacity-50"
+									class="icon-button icon-button--primary"
+									aria-label="Add label"
 								>
-									<IconPlus class="w-4 h-4" />
+									<IconPlus class="icon-sm" />
 								</button>
 							</div>
 						{:else if activeTab === 'time'}
-							<h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">
-								Time Tracking Settings
-							</h2>
+							<h2>Time Tracking Settings</h2>
 
-							<div class="space-y-6">
-								<div class="flex items-center justify-between">
+							<div class="form-stack">
+								<div class="setting-row">
 									<div>
-										<div class="text-sm font-medium text-gray-700 dark:text-gray-300">
+										<div id="time-tracking-toggle-label" class="setting-label">
 											Enable Time Tracking
 										</div>
-										<div class="text-xs text-gray-500 dark:text-gray-400">
-											Allow users to log time on tasks
-										</div>
+										<div class="setting-description">Allow users to log time on tasks</div>
 									</div>
-									<label class="relative inline-flex items-center cursor-pointer">
+									<label class="toggle-control">
 										<input
 											id="page-settings-time-tracking-enabled"
 											name="page-settings-time-tracking-enabled"
 											type="checkbox"
 											bind:checked={settings.time_tracking_enabled}
-											class="sr-only peer"
+											aria-labelledby="time-tracking-toggle-label"
 										/>
-										<div
-											class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#E6B800]/30 dark:peer-focus:ring-[#B38F00]/50 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#E6B800]"
-										></div>
+										<span class="toggle-track"></span>
 									</label>
 								</div>
 
-								<div>
-									<label
-										class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-										for="default-hourly-rate"
-									>
-										Default Hourly Rate ($)
-									</label>
+								<div class="field-group">
+									<label for="default-hourly-rate">Default Hourly Rate ($)</label>
 									<input
 										type="number"
 										id="default-hourly-rate"
@@ -512,18 +441,12 @@
 										bind:value={settings.default_hourly_rate}
 										min="0"
 										step="0.01"
-										class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 									/>
 								</div>
 
-								<div class="grid grid-cols-2 gap-4">
-									<div>
-										<label
-											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-											for="working-hours"
-										>
-											Working Hours/Day
-										</label>
+								<div class="field-grid">
+									<div class="field-group">
+										<label for="working-hours">Working Hours/Day</label>
 										<input
 											type="number"
 											id="working-hours"
@@ -531,16 +454,10 @@
 											bind:value={settings.working_hours_per_day}
 											min="1"
 											max="24"
-											class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 										/>
 									</div>
-									<div>
-										<label
-											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-											for="working-days"
-										>
-											Working Days/Week
-										</label>
+									<div class="field-group">
+										<label for="working-days">Working Days/Week</label>
 										<input
 											type="number"
 											id="working-days"
@@ -548,33 +465,21 @@
 											bind:value={settings.working_days_per_week}
 											min="1"
 											max="7"
-											class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 										/>
 									</div>
 								</div>
 							</div>
 						{:else if activeTab === 'storage'}
-							<h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">
-								Cloud Storage Configuration
-							</h2>
-							<p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+							<h2>Cloud Storage Configuration</h2>
+							<p class="section-description">
 								Configure where attachments are stored. Leave empty to use local storage.
 							</p>
 
-							<div class="space-y-6">
+							<div class="form-stack">
 								{#if storageConfig}
-									<div>
-										<label
-											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-											for="storage-driver"
-										>
-											Storage Driver
-										</label>
-										<select
-											id="storage-driver"
-											bind:value={storageConfig.driver}
-											class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-										>
+									<div class="field-group">
+										<label for="storage-driver">Storage Driver</label>
+										<select id="storage-driver" bind:value={storageConfig.driver}>
 											<option value="local">Local Storage</option>
 											<option value="s3">Amazon S3</option>
 											<option value="r2">Cloudflare R2</option>
@@ -585,65 +490,44 @@
 								{/if}
 
 								{#if storageConfig && storageConfig.driver !== 'local'}
-									<div>
-										<label
-											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-											for="bucket-name"
-										>
-											Bucket Name
-										</label>
+									<div class="field-group">
+										<label for="bucket-name">Bucket Name</label>
 										<input
 											type="text"
 											id="bucket-name"
 											name="bucket-name"
 											bind:value={storageConfig.bucket}
-											class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 										/>
 									</div>
 
-									<div>
-										<label
-											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-											for="region"
-										>
-											Region
-										</label>
+									<div class="field-group">
+										<label for="region">Region</label>
 										<input
 											type="text"
 											id="region"
 											name="region"
 											bind:value={storageConfig.region}
 											placeholder="us-east-1"
-											class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 										/>
 									</div>
 
-									<div>
-										<label
-											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-											for="endpoint"
-										>
-											Endpoint (optional)
-										</label>
+									<div class="field-group">
+										<label for="endpoint">Endpoint (optional)</label>
 										<input
 											type="text"
 											id="endpoint"
 											name="endpoint"
 											bind:value={storageConfig.endpoint}
 											placeholder="https://..."
-											class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 										/>
 									</div>
 
-									<div>
-										<label
-											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-											for="access-key"
-										>
+									<div class="field-group">
+										<label for="access-key">
 											Access Key
 											{#if hasStoredAccessKey}
-												<span class="text-xs text-green-600 dark:text-green-400 ml-2">
-													(stored — leave blank to keep current value)
+												<span class="stored-note">
+													(stored - leave blank to keep current value)
 												</span>
 											{/if}
 										</label>
@@ -654,19 +538,15 @@
 											autocomplete="new-password"
 											bind:value={newAccessKeyBuffer}
 											placeholder={hasStoredAccessKey ? '••••••••' : 'AKIA...'}
-											class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 										/>
 									</div>
 
-									<div>
-										<label
-											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-											for="secret-key"
-										>
+									<div class="field-group">
+										<label for="secret-key">
 											Secret Key
 											{#if hasStoredSecretKey}
-												<span class="text-xs text-green-600 dark:text-green-400 ml-2">
-													(stored — leave blank to keep current value)
+												<span class="stored-note">
+													(stored - leave blank to keep current value)
 												</span>
 											{/if}
 										</label>
@@ -677,43 +557,42 @@
 											autocomplete="new-password"
 											bind:value={newSecretKeyBuffer}
 											placeholder={hasStoredSecretKey ? '••••••••' : 'Enter secret key'}
-											class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 										/>
 									</div>
 
-									<div class="flex items-center gap-4">
+									<div class="storage-actions">
 										<button
+											type="button"
 											onclick={testStorageConnection}
 											disabled={testingStorage}
-											class="px-4 py-2 text-[#E6B800] hover:bg-[#E6B800]/5 dark:hover:bg-[#B38F00]/20 rounded-lg flex items-center gap-2 disabled:opacity-50"
+											class="secondary-button"
 										>
-											{#if testingStorage}
-												<IconRefresh class="w-4 h-4 animate-spin" />
-											{:else}
-												<IconRefresh class="w-4 h-4" />
-											{/if}
-											Test Connection
+											<IconRefresh class={testingStorage ? 'icon-sm spinning' : 'icon-sm'} />
+											<span>Test Connection</span>
 										</button>
 										{#if storageTestResult}
 											<span
-												class="flex items-center gap-2 text-sm {storageTestResult.success
-													? 'text-green-600'
-													: 'text-red-600'}"
+												class={{
+													'test-result': true,
+													success: storageTestResult.success,
+													error: !storageTestResult.success
+												}}
 											>
 												{#if storageTestResult.success}
-													<IconCheck class="w-4 h-4" />
+													<IconCheck class="icon-sm" />
 												{:else}
-													<IconAlertCircle class="w-4 h-4" />
+													<IconAlertCircle class="icon-sm" />
 												{/if}
-												{storageTestResult.message}
+												<span>{storageTestResult.message}</span>
 											</span>
 										{/if}
 									</div>
 
 									<button
+										type="button"
 										onclick={saveStorageConfig}
 										disabled={saving}
-										class="px-4 py-2 bg-[#E6B800] hover:bg-[#B38F00] text-[#0D1117] rounded-lg disabled:opacity-50"
+										class="primary-button"
 									>
 										Save Storage Config
 									</button>
@@ -721,26 +600,675 @@
 							</div>
 						{/if}
 
-						<!-- Save Button -->
 						{#if activeTab !== 'storage'}
-							<div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+							<div class="save-panel">
 								<button
+									type="button"
 									onclick={saveSettings}
 									disabled={saving}
-									class="px-6 py-2 bg-[#E6B800] hover:bg-[#B38F00] text-[#0D1117] rounded-lg disabled:opacity-50 flex items-center gap-2"
+									class="primary-button primary-button--with-icon"
 								>
-									{#if saving}
-										<IconRefresh class="w-4 h-4 animate-spin" />
-									{:else}
-										<IconCheck class="w-4 h-4" />
-									{/if}
-									Save Settings
+									<IconRefresh class={saving ? 'icon-sm spinning' : 'icon-sm hidden'} />
+									<IconCheck class={saving ? 'icon-sm hidden' : 'icon-sm'} />
+									<span>Save Settings</span>
 								</button>
 							</div>
 						{/if}
 					</div>
-				</div>
+				</section>
 			</div>
 		{/if}
-	</div>
+	</main>
 </div>
+
+<style>
+	.board-settings-page {
+		min-height: 100%;
+		background: #f9fafb;
+		color: #111827;
+	}
+
+	:global(.dark) .board-settings-page {
+		background: #111827;
+		color: #f9fafb;
+	}
+
+	.settings-header {
+		border-bottom: 1px solid #e5e7eb;
+		background: #ffffff;
+	}
+
+	:global(.dark) .settings-header {
+		border-color: #374151;
+		background: #1f2937;
+	}
+
+	.settings-container {
+		width: min(100%, 64rem);
+		margin-inline: auto;
+		padding-inline: 1rem;
+	}
+
+	.settings-container--header {
+		padding-block: 1.5rem;
+	}
+
+	.settings-container--main {
+		padding-block: 2rem;
+	}
+
+	.header-row,
+	.title-row,
+	.settings-tab,
+	.setting-row,
+	.config-row,
+	.checkbox-option,
+	.storage-actions,
+	.primary-button,
+	.secondary-button,
+	.test-result {
+		display: flex;
+		align-items: center;
+	}
+
+	.header-row {
+		gap: 1rem;
+	}
+
+	.title-row {
+		gap: 0.75rem;
+		min-width: 0;
+	}
+
+	.title-icon,
+	.back-link,
+	.icon-button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		flex: 0 0 auto;
+	}
+
+	.title-icon {
+		width: 2.5rem;
+		height: 2.5rem;
+		border-radius: 0.5rem;
+		background: rgb(230 184 0 / 10%);
+		color: #e6b800;
+	}
+
+	:global(.dark) .title-icon {
+		background: rgb(179 143 0 / 30%);
+		color: #ffd11a;
+	}
+
+	.back-link {
+		width: 2.25rem;
+		height: 2.25rem;
+		border-radius: 0.5rem;
+		color: #6b7280;
+		transition:
+			background-color 160ms ease,
+			color 160ms ease;
+	}
+
+	.back-link:hover {
+		background: #f3f4f6;
+		color: #374151;
+	}
+
+	:global(.dark) .back-link {
+		color: #9ca3af;
+	}
+
+	:global(.dark) .back-link:hover {
+		background: #374151;
+		color: #e5e7eb;
+	}
+
+	h1 {
+		margin: 0;
+		font-size: 1.5rem;
+		font-weight: 700;
+		line-height: 1.25;
+		color: #111827;
+	}
+
+	h2 {
+		margin: 0 0 1.5rem;
+		font-size: 1.125rem;
+		font-weight: 650;
+		line-height: 1.4;
+		color: #111827;
+	}
+
+	:global(.dark) h1,
+	:global(.dark) h2 {
+		color: #ffffff;
+	}
+
+	.title-row p,
+	.section-description,
+	.setting-description {
+		margin: 0;
+		color: #6b7280;
+	}
+
+	.title-row p,
+	.section-description {
+		font-size: 0.875rem;
+	}
+
+	.section-description {
+		margin-bottom: 1rem;
+	}
+
+	.setting-description {
+		margin-top: 0.125rem;
+		font-size: 0.75rem;
+	}
+
+	:global(.dark) .title-row p,
+	:global(.dark) .section-description,
+	:global(.dark) .setting-description {
+		color: #9ca3af;
+	}
+
+	.loading-state {
+		display: flex;
+		justify-content: center;
+		padding-block: 3rem;
+	}
+
+	.loading-spinner {
+		width: 2rem;
+		height: 2rem;
+		border: 2px solid transparent;
+		border-bottom-color: #e6b800;
+		border-radius: 999px;
+		animation: spin 800ms linear infinite;
+	}
+
+	.settings-layout {
+		display: flex;
+		gap: 2rem;
+		align-items: flex-start;
+	}
+
+	.settings-sidebar {
+		flex: 0 0 12rem;
+	}
+
+	.settings-nav {
+		display: grid;
+		gap: 0.25rem;
+	}
+
+	.settings-tab {
+		width: 100%;
+		gap: 0.5rem;
+		padding: 0.5rem 0.75rem;
+		border: 0;
+		border-radius: 0.5rem;
+		background: transparent;
+		color: #374151;
+		font: inherit;
+		text-align: left;
+		cursor: pointer;
+		transition:
+			background-color 160ms ease,
+			color 160ms ease;
+	}
+
+	.settings-tab:hover {
+		background: #f3f4f6;
+	}
+
+	.settings-tab.active {
+		background: rgb(230 184 0 / 5%);
+		color: #b38f00;
+	}
+
+	:global(.dark) .settings-tab {
+		color: #d1d5db;
+	}
+
+	:global(.dark) .settings-tab:hover {
+		background: #374151;
+	}
+
+	:global(.dark) .settings-tab.active {
+		background: rgb(179 143 0 / 30%);
+		color: #ffd11a;
+	}
+
+	.settings-content {
+		flex: 1 1 auto;
+		min-width: 0;
+	}
+
+	.settings-card {
+		border: 1px solid #e5e7eb;
+		border-radius: 0.75rem;
+		background: #ffffff;
+		padding: 1.5rem;
+	}
+
+	:global(.dark) .settings-card {
+		border-color: #374151;
+		background: #1f2937;
+	}
+
+	.form-stack {
+		display: grid;
+		gap: 1.5rem;
+	}
+
+	.field-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 1rem;
+	}
+
+	.field-group {
+		display: grid;
+		gap: 0.5rem;
+	}
+
+	label,
+	.setting-label {
+		font-size: 0.875rem;
+		font-weight: 500;
+		color: #374151;
+	}
+
+	:global(.dark) label,
+	:global(.dark) .setting-label {
+		color: #d1d5db;
+	}
+
+	input:not([type='checkbox']):not([type='color']),
+	select {
+		width: 100%;
+		min-height: 2.5rem;
+		border: 1px solid #d1d5db;
+		border-radius: 0.5rem;
+		background: #ffffff;
+		padding: 0.5rem 0.75rem;
+		color: #111827;
+		font: inherit;
+	}
+
+	:global(.dark) input:not([type='checkbox']):not([type='color']),
+	:global(.dark) select {
+		border-color: #4b5563;
+		background: #374151;
+		color: #ffffff;
+	}
+
+	input:focus-visible,
+	select:focus-visible,
+	button:focus-visible,
+	a:focus-visible {
+		outline: 3px solid rgb(230 184 0 / 35%);
+		outline-offset: 2px;
+	}
+
+	.setting-row {
+		justify-content: space-between;
+		gap: 1rem;
+	}
+
+	.toggle-control {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		flex: 0 0 auto;
+		width: 2.75rem;
+		height: 1.5rem;
+		cursor: pointer;
+	}
+
+	.toggle-control input {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+		white-space: nowrap;
+		border: 0;
+		padding: 0;
+	}
+
+	.toggle-track {
+		position: absolute;
+		inset: 0;
+		border-radius: 999px;
+		background: #e5e7eb;
+		transition:
+			background-color 160ms ease,
+			box-shadow 160ms ease;
+	}
+
+	.toggle-track::after {
+		position: absolute;
+		top: 0.125rem;
+		left: 0.125rem;
+		width: 1.25rem;
+		height: 1.25rem;
+		border: 1px solid #d1d5db;
+		border-radius: 999px;
+		background: #ffffff;
+		content: '';
+		transition: transform 160ms ease;
+	}
+
+	.toggle-control input:checked + .toggle-track {
+		background: #e6b800;
+	}
+
+	.toggle-control input:checked + .toggle-track::after {
+		transform: translateX(1.25rem);
+		border-color: #ffffff;
+	}
+
+	.toggle-control input:focus-visible + .toggle-track {
+		box-shadow: 0 0 0 4px rgb(230 184 0 / 30%);
+	}
+
+	:global(.dark) .toggle-track {
+		background: #374151;
+	}
+
+	.item-list {
+		display: grid;
+		gap: 0.75rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.config-row {
+		gap: 0.75rem;
+		border-radius: 0.5rem;
+		background: #f9fafb;
+		padding: 0.75rem;
+	}
+
+	.config-row--new {
+		border: 2px dashed #d1d5db;
+		background: transparent;
+	}
+
+	:global(.dark) .config-row {
+		background: #374151;
+	}
+
+	:global(.dark) .config-row--new {
+		border-color: #4b5563;
+		background: transparent;
+	}
+
+	.color-input {
+		width: 2rem;
+		height: 2rem;
+		border: 0;
+		border-radius: 0.375rem;
+		background: transparent;
+		padding: 0;
+		cursor: pointer;
+	}
+
+	.compact-input {
+		flex: 1 1 10rem;
+		min-width: 8rem;
+		min-height: 2.25rem;
+		padding-block: 0.375rem;
+		font-size: 0.875rem;
+	}
+
+	.checkbox-option {
+		gap: 0.5rem;
+		color: #4b5563;
+		white-space: nowrap;
+	}
+
+	.checkbox-option input {
+		width: 1rem;
+		height: 1rem;
+		accent-color: #e6b800;
+	}
+
+	:global(.dark) .checkbox-option {
+		color: #9ca3af;
+	}
+
+	.label-preview {
+		flex: 0 1 auto;
+		max-width: 12rem;
+		overflow: hidden;
+		border-radius: 0.25rem;
+		padding: 0.25rem 0.75rem;
+		color: #ffffff;
+		font-size: 0.75rem;
+		line-height: 1.25;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.icon-button {
+		width: 2rem;
+		height: 2rem;
+		border: 0;
+		border-radius: 0.375rem;
+		background: transparent;
+		cursor: pointer;
+		transition:
+			background-color 160ms ease,
+			color 160ms ease,
+			opacity 160ms ease;
+	}
+
+	.icon-button--danger {
+		color: #ef4444;
+	}
+
+	.icon-button--danger:hover {
+		background: #fef2f2;
+	}
+
+	:global(.dark) .icon-button--danger:hover {
+		background: rgb(127 29 29 / 20%);
+	}
+
+	.icon-button--primary {
+		background: #e6b800;
+		color: #0d1117;
+	}
+
+	.icon-button--primary:hover {
+		background: #b38f00;
+	}
+
+	.icon-button:disabled,
+	.primary-button:disabled,
+	.secondary-button:disabled {
+		cursor: not-allowed;
+		opacity: 0.5;
+	}
+
+	.stored-note {
+		margin-left: 0.5rem;
+		color: #16a34a;
+		font-size: 0.75rem;
+	}
+
+	:global(.dark) .stored-note {
+		color: #4ade80;
+	}
+
+	.storage-actions {
+		flex-wrap: wrap;
+		gap: 1rem;
+	}
+
+	.primary-button,
+	.secondary-button {
+		width: fit-content;
+		gap: 0.5rem;
+		border: 0;
+		border-radius: 0.5rem;
+		padding: 0.5rem 1rem;
+		font: inherit;
+		cursor: pointer;
+		transition:
+			background-color 160ms ease,
+			color 160ms ease,
+			opacity 160ms ease;
+	}
+
+	.primary-button {
+		background: #e6b800;
+		color: #0d1117;
+	}
+
+	.primary-button:hover:not(:disabled) {
+		background: #b38f00;
+	}
+
+	.primary-button--with-icon {
+		padding-inline: 1.5rem;
+	}
+
+	.secondary-button {
+		background: transparent;
+		color: #b38f00;
+	}
+
+	.secondary-button:hover:not(:disabled) {
+		background: rgb(230 184 0 / 5%);
+	}
+
+	:global(.dark) .secondary-button {
+		color: #ffd11a;
+	}
+
+	:global(.dark) .secondary-button:hover:not(:disabled) {
+		background: rgb(179 143 0 / 20%);
+	}
+
+	.test-result {
+		gap: 0.5rem;
+		font-size: 0.875rem;
+	}
+
+	.test-result.success {
+		color: #16a34a;
+	}
+
+	.test-result.error {
+		color: #dc2626;
+	}
+
+	.save-panel {
+		margin-top: 2rem;
+		border-top: 1px solid #e5e7eb;
+		padding-top: 1.5rem;
+	}
+
+	:global(.dark) .save-panel {
+		border-color: #374151;
+	}
+
+	.board-settings-page :global(.icon-sm) {
+		width: 1rem;
+		height: 1rem;
+	}
+
+	.board-settings-page :global(.icon-md) {
+		width: 1.25rem;
+		height: 1.25rem;
+	}
+
+	.board-settings-page :global(.icon-lg) {
+		width: 1.5rem;
+		height: 1.5rem;
+	}
+
+	.board-settings-page :global(.spinning) {
+		animation: spin 800ms linear infinite;
+	}
+
+	.board-settings-page :global(.hidden) {
+		display: none;
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	@media (max-width: 760px) {
+		.settings-layout {
+			display: grid;
+			gap: 1rem;
+		}
+
+		.settings-sidebar {
+			width: 100%;
+			flex-basis: auto;
+		}
+
+		.settings-nav {
+			display: flex;
+			overflow-x: auto;
+			padding-bottom: 0.25rem;
+		}
+
+		.settings-tab {
+			width: auto;
+			flex: 0 0 auto;
+			white-space: nowrap;
+		}
+
+		.settings-card {
+			padding: 1rem;
+		}
+	}
+
+	@media (max-width: 640px) {
+		.settings-container {
+			padding-inline: 0.875rem;
+		}
+
+		.header-row {
+			align-items: flex-start;
+		}
+
+		.title-row {
+			align-items: flex-start;
+		}
+
+		.setting-row,
+		.config-row {
+			align-items: stretch;
+		}
+
+		.setting-row {
+			display: grid;
+			grid-template-columns: 1fr auto;
+		}
+
+		.config-row {
+			flex-wrap: wrap;
+		}
+
+		.compact-input {
+			flex-basis: calc(100% - 2.75rem);
+		}
+
+		.field-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

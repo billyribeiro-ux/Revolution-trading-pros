@@ -101,10 +101,10 @@
 	<!-- Header -->
 	<div class="dashboard-header">
 		<div class="header-title">
-			<IconPhoto size={32} class="text-yellow-400" />
+			<IconPhoto size={32} class="header-icon" />
 			<div>
-				<h1 class="text-3xl font-bold text-white">Media Library</h1>
-				<p class="text-gray-400 mt-1">Manage your files, images, and videos</p>
+				<h1 class="media-title">Media Library</h1>
+				<p class="media-subtitle">Manage your files, images, and videos</p>
 			</div>
 		</div>
 
@@ -214,7 +214,7 @@
 			{#if isLoading}
 				<div class="loading-state">
 					<div class="spinner"></div>
-					<p class="text-gray-400 mt-4">Loading files...</p>
+					<p class="state-text state-text--spaced">Loading files...</p>
 				</div>
 			{:else if currentFiles.length > 0}
 				{#if viewMode === 'grid'}
@@ -242,7 +242,7 @@
 								{:else}
 									{@const FileIcon = getFileIcon(file.file_type)}
 									<div class="file-icon-wrapper">
-										<FileIcon size={48} class="text-gray-400" />
+										<FileIcon size={48} class="file-icon" />
 									</div>
 								{/if}
 
@@ -270,7 +270,7 @@
 						<table class="files-table">
 							<thead>
 								<tr>
-									<th class="w-12"></th>
+									<th class="checkbox-column"></th>
 									<th>Name</th>
 									<th>Type</th>
 									<th>Size</th>
@@ -347,10 +347,10 @@
 				{/if}
 			{:else}
 				<div class="empty-state">
-					<IconPhoto size={64} class="text-gray-600" />
-					<h3 class="text-xl font-semibold text-gray-400 mt-4">No files yet</h3>
-					<p class="text-gray-500 mt-2">Upload your first file to get started</p>
-					<button class="btn-primary mt-4" onclick={() => (showUploadModal = true)}>
+					<IconPhoto size={64} class="empty-icon" />
+					<h3 class="empty-title">No files yet</h3>
+					<p class="empty-copy">Upload your first file to get started</p>
+					<button class="btn-primary empty-action" onclick={() => (showUploadModal = true)}>
 						<IconPhoto size={18} />
 						Upload Files
 					</button>
@@ -386,214 +386,484 @@
 	}}
 />
 
-<style lang="postcss">
-	@reference "../../app.css";
+<style>
 	.media-dashboard {
 		background: linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a);
 		padding: 1.5rem;
+		min-height: 100%;
 	}
 
 	.dashboard-header {
-		@apply flex items-center justify-between mb-8;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 2rem;
+		gap: 1rem;
 	}
 
 	.header-title {
-		@apply flex items-center gap-4;
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.header-title :global(.header-icon) {
+		color: #facc15;
+	}
+
+	.media-title {
+		margin: 0;
+		color: #fff;
+		font-size: 1.875rem;
+		font-weight: 700;
+		line-height: 2.25rem;
+	}
+
+	.media-subtitle {
+		margin: 0.25rem 0 0;
+		color: #9ca3af;
 	}
 
 	.header-actions {
-		@apply flex items-center gap-3;
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
 	}
 
 	.btn-primary {
-		@apply flex items-center gap-2 px-6 py-3 bg-yellow-500 text-gray-900 font-semibold rounded-lg;
-		@apply hover:bg-yellow-400 transition-colors;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.75rem 1.5rem;
+		border: 0;
+		border-radius: 0.5rem;
+		background: #eab308;
+		color: #111827;
+		font-weight: 600;
+		cursor: pointer;
+		transition: background-color 150ms ease;
+	}
+
+	.btn-primary:hover {
+		background: #facc15;
 	}
 
 	.dashboard-content {
-		@apply grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6;
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1.5rem;
 	}
 
 	.sidebar {
-		@apply space-y-4;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
 	}
 
 	.main-area {
-		@apply space-y-6;
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
 	}
 
 	.upload-section {
-		@apply mb-6;
+		margin-bottom: 1.5rem;
 	}
 
 	.toolbar {
-		@apply flex items-center justify-between gap-4 flex-wrap;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
 	}
 
 	.toolbar-left {
-		@apply flex items-center gap-3 flex-1;
+		display: flex;
+		flex: 1;
+		align-items: center;
+		gap: 0.75rem;
+		min-width: min(100%, 20rem);
 	}
 
 	.toolbar-right {
-		@apply flex items-center gap-3;
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
 	}
 
 	.search-box {
-		@apply relative flex-1 max-w-md;
+		position: relative;
+		flex: 1;
+		max-width: 28rem;
 	}
 
 	.search-box :global(.search-icon) {
-		@apply absolute left-3 top-1/2 -translate-y-1/2 text-gray-400;
+		position: absolute;
+		top: 50%;
+		left: 0.75rem;
+		color: #9ca3af;
+		transform: translateY(-50%);
 	}
 
 	.search-input {
-		@apply w-full pl-10 pr-4 py-2 bg-gray-800 text-white rounded-lg border border-gray-700;
-		@apply focus:outline-none focus:ring-2 focus:ring-yellow-500;
+		width: 100%;
+		padding: 0.5rem 1rem 0.5rem 2.5rem;
+		border: 1px solid #374151;
+		border-radius: 0.5rem;
+		background: #1f2937;
+		color: #fff;
+	}
+
+	.search-input:focus,
+	.filter-select:focus {
+		outline: none;
+		box-shadow: 0 0 0 2px #eab308;
 	}
 
 	.filter-select {
-		@apply px-4 py-2 bg-gray-800 text-white rounded-lg border border-gray-700;
-		@apply focus:outline-none focus:ring-2 focus:ring-yellow-500;
+		padding: 0.5rem 1rem;
+		border: 1px solid #374151;
+		border-radius: 0.5rem;
+		background: #1f2937;
+		color: #fff;
 	}
 
 	.view-toggle {
-		@apply flex gap-1 bg-gray-800 rounded-lg p-1 border border-gray-700;
+		display: flex;
+		gap: 0.25rem;
+		padding: 0.25rem;
+		border: 1px solid #374151;
+		border-radius: 0.5rem;
+		background: #1f2937;
 	}
 
 	.view-btn {
-		@apply p-2 text-gray-400 rounded-md transition-colors;
-		@apply hover:text-white hover:bg-gray-700;
+		padding: 0.5rem;
+		border: 0;
+		border-radius: 0.375rem;
+		background: transparent;
+		color: #9ca3af;
+		cursor: pointer;
+		transition:
+			background-color 150ms ease,
+			color 150ms ease;
+	}
+
+	.view-btn:hover {
+		background: #374151;
+		color: #fff;
 	}
 
 	.view-btn.active {
-		@apply bg-yellow-500 text-gray-900;
+		background: #eab308;
+		color: #111827;
 	}
 
 	.bulk-actions {
-		@apply flex items-center gap-2 px-4 py-2 bg-gray-800 rounded-lg border border-gray-700;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 1rem;
+		border: 1px solid #374151;
+		border-radius: 0.5rem;
+		background: #1f2937;
 	}
 
 	.selected-count {
-		@apply text-sm text-gray-400;
+		color: #9ca3af;
+		font-size: 0.875rem;
 	}
 
 	.bulk-btn {
-		@apply flex items-center gap-1 px-3 py-1 text-sm text-white bg-gray-700 rounded;
-		@apply hover:bg-gray-600 transition-colors;
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		padding: 0.25rem 0.75rem;
+		border: 0;
+		border-radius: 0.25rem;
+		background: #374151;
+		color: #fff;
+		font-size: 0.875rem;
+		cursor: pointer;
+		transition: background-color 150ms ease;
+	}
+
+	.bulk-btn:hover {
+		background: #4b5563;
 	}
 
 	.files-grid {
-		@apply grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4;
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 1rem;
 	}
 
 	.file-card {
-		@apply relative bg-gray-800/50 rounded-xl overflow-hidden border-2 border-gray-700/50;
-		@apply cursor-pointer transition-all hover:border-yellow-500/50;
+		position: relative;
+		overflow: hidden;
+		border: 2px solid rgba(55, 65, 81, 0.5);
+		border-radius: 0.75rem;
+		background: rgba(31, 41, 55, 0.5);
+		cursor: pointer;
+		transition:
+			background-color 150ms ease,
+			border-color 150ms ease;
+	}
+
+	.file-card:hover {
+		border-color: rgba(234, 179, 8, 0.5);
 	}
 
 	.file-card.selected {
-		@apply border-yellow-500 bg-yellow-500/10;
+		border-color: #eab308;
+		background: rgba(234, 179, 8, 0.1);
 	}
 
 	.file-thumbnail {
-		@apply aspect-square bg-gray-900 overflow-hidden;
+		aspect-ratio: 1;
+		overflow: hidden;
+		background: #111827;
 	}
 
 	.file-thumbnail img {
-		@apply w-full h-full object-cover;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
 	}
 
 	.file-icon-wrapper {
-		@apply aspect-square flex items-center justify-center bg-gray-900;
+		display: flex;
+		aspect-ratio: 1;
+		align-items: center;
+		justify-content: center;
+		background: #111827;
+	}
+
+	.file-icon-wrapper :global(.file-icon) {
+		color: #9ca3af;
 	}
 
 	.file-info {
-		@apply p-3;
+		padding: 0.75rem;
 	}
 
 	.file-name {
-		@apply text-sm font-medium text-white truncate;
+		overflow: hidden;
+		color: #fff;
+		font-size: 0.875rem;
+		font-weight: 500;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	.file-meta {
-		@apply text-xs text-gray-400 mt-1;
+		margin-top: 0.25rem;
+		color: #9ca3af;
+		font-size: 0.75rem;
 	}
 
 	.file-badge {
-		@apply absolute top-2 right-2 px-2 py-1 text-xs font-semibold rounded;
+		position: absolute;
+		top: 0.5rem;
+		right: 0.5rem;
+		padding: 0.25rem 0.5rem;
+		border-radius: 0.25rem;
+		font-size: 0.75rem;
+		font-weight: 600;
 	}
 
 	.file-badge.webp {
-		@apply bg-green-500/20 text-green-400;
+		background: rgba(34, 197, 94, 0.2);
+		color: #4ade80;
 	}
 
 	.file-badge.ai {
-		@apply bg-purple-500/20 text-purple-400 flex items-center gap-1;
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		background: rgba(168, 85, 247, 0.2);
+		color: #c084fc;
 	}
 
 	.files-list {
-		@apply bg-gray-800/50 rounded-xl border border-gray-700/50 overflow-hidden;
+		overflow: hidden;
+		border: 1px solid rgba(55, 65, 81, 0.5);
+		border-radius: 0.75rem;
+		background: rgba(31, 41, 55, 0.5);
 	}
 
 	.files-table {
-		@apply w-full;
+		width: 100%;
+		border-collapse: collapse;
 	}
 
 	.files-table thead {
-		@apply bg-gray-900/50;
+		background: rgba(17, 24, 39, 0.5);
 	}
 
 	.files-table th {
-		@apply px-4 py-3 text-left text-sm font-semibold text-gray-400;
+		padding: 0.75rem 1rem;
+		color: #9ca3af;
+		font-size: 0.875rem;
+		font-weight: 600;
+		text-align: left;
 	}
 
 	.files-table tbody tr {
-		@apply border-t border-gray-700/50 hover:bg-gray-700/30 transition-colors;
+		border-top: 1px solid rgba(55, 65, 81, 0.5);
+		transition: background-color 150ms ease;
+	}
+
+	.files-table tbody tr:hover {
+		background: rgba(55, 65, 81, 0.3);
 	}
 
 	.files-table tbody tr.selected {
-		@apply bg-yellow-500/10;
+		background: rgba(234, 179, 8, 0.1);
 	}
 
 	.files-table td {
-		@apply px-4 py-3 text-sm text-gray-300;
+		padding: 0.75rem 1rem;
+		color: #d1d5db;
+		font-size: 0.875rem;
+	}
+
+	.checkbox-column {
+		width: 3rem;
 	}
 
 	.file-name-cell {
-		@apply flex items-center gap-3;
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
 	}
 
 	.file-thumb-small {
-		@apply w-10 h-10 object-cover rounded;
+		width: 2.5rem;
+		height: 2.5rem;
+		border-radius: 0.25rem;
+		object-fit: cover;
 	}
 
 	.tags {
-		@apply flex gap-1 flex-wrap;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.25rem;
 	}
 
 	.tag {
-		@apply px-2 py-0.5 bg-gray-700 text-gray-300 rounded text-xs;
+		padding: 0.125rem 0.5rem;
+		border-radius: 0.25rem;
+		background: #374151;
+		color: #d1d5db;
+		font-size: 0.75rem;
 	}
 
 	.pagination {
-		@apply flex items-center justify-center gap-4 mt-6;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 1rem;
+		margin-top: 1.5rem;
 	}
 
 	.page-btn {
-		@apply px-4 py-2 bg-gray-800 text-white rounded-lg border border-gray-700;
-		@apply hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+		padding: 0.5rem 1rem;
+		border: 1px solid #374151;
+		border-radius: 0.5rem;
+		background: #1f2937;
+		color: #fff;
+		cursor: pointer;
+		transition: background-color 150ms ease;
+	}
+
+	.page-btn:hover:not(:disabled) {
+		background: #374151;
+	}
+
+	.page-btn:disabled {
+		cursor: not-allowed;
+		opacity: 0.5;
 	}
 
 	.page-info {
-		@apply text-gray-400;
+		color: #9ca3af;
 	}
 
 	.loading-state,
 	.empty-state {
-		@apply flex flex-col items-center justify-center py-20 text-center;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding-block: 5rem;
+		text-align: center;
+	}
+
+	.state-text {
+		color: #9ca3af;
+	}
+
+	.state-text--spaced {
+		margin-top: 1rem;
+	}
+
+	.empty-state :global(.empty-icon) {
+		color: #4b5563;
+	}
+
+	.empty-title {
+		margin: 1rem 0 0;
+		color: #9ca3af;
+		font-size: 1.25rem;
+		font-weight: 600;
+		line-height: 1.75rem;
+	}
+
+	.empty-copy {
+		margin: 0.5rem 0 0;
+		color: #6b7280;
+	}
+
+	.empty-action {
+		margin-top: 1rem;
 	}
 
 	.spinner {
-		@apply w-12 h-12 border-4 border-gray-700 border-t-yellow-400 rounded-full animate-spin;
+		width: 3rem;
+		height: 3rem;
+		border: 4px solid #374151;
+		border-top-color: #facc15;
+		border-radius: 50%;
+		animation: media-spin 1s linear infinite;
+	}
+
+	@keyframes media-spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	@media (min-width: 768px) {
+		.files-grid {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.dashboard-content {
+			grid-template-columns: 300px 1fr;
+		}
+
+		.files-grid {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+		}
+	}
+
+	@media (min-width: 1280px) {
+		.files-grid {
+			grid-template-columns: repeat(5, minmax(0, 1fr));
+		}
 	}
 </style>

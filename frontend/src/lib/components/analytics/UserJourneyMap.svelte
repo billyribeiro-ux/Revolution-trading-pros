@@ -95,7 +95,7 @@
 					<div class="step-connector">
 						<div class="connector-line"></div>
 						<div class="connector-stats">
-							<IconArrowRight size={20} class="text-gray-400" />
+							<IconArrowRight size={20} class="connector-icon" />
 							<span class="conversion-rate">
 								{journeyData[index + 1]?.conversion_rate?.toFixed(1) ?? '0.0'}%
 							</span>
@@ -109,7 +109,7 @@
 					</div>
 				{:else}
 					<div class="completion-badge">
-						<IconCheck size={24} class="text-green-400" />
+						<IconCheck size={24} class="completion-icon" />
 						<span>Journey Complete</span>
 					</div>
 				{/if}
@@ -118,8 +118,7 @@
 	</div>
 </div>
 
-<style lang="postcss">
-	@reference "../../../app.css";
+<style>
 	.journey-map {
 		background-color: rgba(30, 41, 59, 0.5);
 		border-radius: 0.75rem;
@@ -128,120 +127,218 @@
 	}
 
 	.journey-header {
-		@apply flex items-center justify-between mb-6;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 1.5rem;
 	}
 
 	.journey-title {
-		@apply text-xl font-bold text-white;
+		margin: 0;
+		font-size: 1.25rem;
+		line-height: 1.75rem;
+		font-weight: 700;
+		color: #ffffff;
 	}
 
 	.journey-stats {
-		@apply flex items-center gap-4;
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		flex-wrap: wrap;
 	}
 
 	.stat-item {
-		@apply text-sm text-gray-400;
+		font-size: 0.875rem;
+		color: #9ca3af;
 	}
 
 	.journey-flow {
-		@apply space-y-0;
+		display: flex;
+		flex-direction: column;
 	}
 
 	.journey-step {
-		@apply relative;
+		position: relative;
 	}
 
 	.step-card {
-		@apply bg-gray-900/50 rounded-lg p-4 border border-gray-700/50;
-		@apply hover:border-yellow-500/30 transition-colors;
+		padding: 1rem;
+		border: 1px solid rgba(55, 65, 81, 0.5);
+		border-radius: 0.5rem;
+		background: rgba(17, 24, 39, 0.5);
+		transition: border-color 0.2s ease;
+	}
+
+	.step-card:hover {
+		border-color: rgba(234, 179, 8, 0.3);
 	}
 
 	.step-header {
-		@apply flex items-start gap-3 mb-3;
+		display: flex;
+		align-items: flex-start;
+		gap: 0.75rem;
+		margin-bottom: 0.75rem;
 	}
 
 	.step-number {
-		@apply w-8 h-8 rounded-full bg-yellow-500 text-gray-900 font-bold;
-		@apply flex items-center justify-center flex-shrink-0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		width: 2rem;
+		height: 2rem;
+		border-radius: 999px;
+		background: #eab308;
+		color: #111827;
+		font-weight: 700;
 	}
 
 	.step-info {
-		@apply flex-1;
+		flex: 1;
+		min-width: 0;
 	}
 
 	.step-name {
-		@apply text-white font-semibold mb-1;
+		margin-bottom: 0.25rem;
+		color: #ffffff;
+		font-weight: 600;
 	}
 
 	.step-users {
-		@apply text-sm text-gray-400;
+		font-size: 0.875rem;
+		color: #9ca3af;
 	}
 
 	.step-badge {
-		@apply px-3 py-1 bg-green-500/20 text-green-400 rounded-lg text-sm font-semibold;
+		padding: 0.25rem 0.75rem;
+		border-radius: 0.5rem;
+		background: rgba(34, 197, 94, 0.2);
+		color: #4ade80;
+		font-size: 0.875rem;
+		font-weight: 600;
+		white-space: nowrap;
 	}
 
 	.step-metrics {
-		@apply flex gap-4 mb-3 pb-3 border-b border-gray-700/50;
+		display: flex;
+		gap: 1rem;
+		margin-bottom: 0.75rem;
+		padding-bottom: 0.75rem;
+		border-bottom: 1px solid rgba(55, 65, 81, 0.5);
 	}
 
 	.metric {
-		@apply flex flex-col;
+		display: flex;
+		flex-direction: column;
 	}
 
 	.metric-label {
-		@apply text-xs text-gray-500;
+		font-size: 0.75rem;
+		color: #6b7280;
 	}
 
 	.metric-value {
-		@apply text-sm font-semibold text-white;
+		font-size: 0.875rem;
+		font-weight: 600;
+		color: #ffffff;
 	}
 
 	.metric.drop-off .metric-value {
-		@apply text-red-400;
+		color: #f87171;
 	}
 
 	.step-actions {
-		@apply space-y-2;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
 	}
 
 	.actions-label {
-		@apply text-xs text-gray-500 mb-2;
+		margin-bottom: 0.5rem;
+		font-size: 0.75rem;
+		color: #6b7280;
 	}
 
 	.action-item {
-		@apply flex items-center justify-between text-sm;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		font-size: 0.875rem;
 	}
 
 	.action-name {
-		@apply text-gray-300;
+		color: #d1d5db;
 	}
 
 	.action-count {
-		@apply text-yellow-400 font-semibold;
+		color: #facc15;
+		font-weight: 600;
 	}
 
 	.step-connector {
-		@apply relative py-4 flex flex-col items-center;
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		padding-block: 1rem;
 	}
 
 	.connector-line {
-		@apply w-0.5 h-8 bg-linear-to-b from-gray-600 to-gray-700;
+		width: 0.125rem;
+		height: 2rem;
+		background: linear-gradient(to bottom, #4b5563, #374151);
 	}
 
 	.connector-stats {
-		@apply flex items-center gap-2 my-2;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-block: 0.5rem;
+	}
+
+	.connector-stats :global(.connector-icon) {
+		color: #9ca3af;
 	}
 
 	.conversion-rate {
-		@apply text-sm font-semibold text-green-400;
+		color: #4ade80;
+		font-size: 0.875rem;
+		font-weight: 600;
 	}
 
 	.drop-off-indicator {
-		@apply flex items-center gap-1 px-2 py-1 bg-red-500/10 text-red-400 rounded text-xs;
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		padding: 0.25rem 0.5rem;
+		border-radius: 0.25rem;
+		background: rgba(239, 68, 68, 0.1);
+		color: #f87171;
+		font-size: 0.75rem;
 	}
 
 	.completion-badge {
-		@apply flex items-center justify-center gap-2 py-4 text-green-400 font-semibold;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		padding-block: 1rem;
+		color: #4ade80;
+		font-weight: 600;
+	}
+
+	.completion-badge :global(.completion-icon) {
+		color: #4ade80;
+	}
+
+	@media (max-width: 640px) {
+		.journey-header,
+		.step-header {
+			align-items: flex-start;
+			flex-direction: column;
+		}
 	}
 </style>

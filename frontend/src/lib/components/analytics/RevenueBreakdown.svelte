@@ -64,10 +64,10 @@
 		return IconMinus;
 	}
 
-	function getTrendColor(change: number, inverse: boolean = false) {
-		if (change > 0) return inverse ? 'text-red-400' : 'text-green-400';
-		if (change < 0) return inverse ? 'text-green-400' : 'text-red-400';
-		return 'text-gray-400';
+	function getTrendClass(change: number, inverse: boolean = false) {
+		if (change > 0) return inverse ? 'metric-value--negative' : 'metric-value--positive';
+		if (change < 0) return inverse ? 'metric-value--positive' : 'metric-value--negative';
+		return 'metric-value--neutral';
 	}
 </script>
 
@@ -146,7 +146,7 @@
 		<div class="metric-row">
 			<div class="metric-item">
 				<div class="metric-label">Churn Rate</div>
-				<div class="metric-value small {getTrendColor(safeData.churn_rate, true)}">
+				<div class="metric-value small {getTrendClass(safeData.churn_rate, true)}">
 					{formatPercent(safeData.churn_rate)}
 				</div>
 			</div>
@@ -224,8 +224,7 @@
 	</div>
 </div>
 
-<style lang="postcss">
-	@reference "../../../app.css";
+<style>
 	.revenue-breakdown {
 		background-color: rgba(30, 41, 59, 0.5);
 		border-radius: 0.75rem;
@@ -234,139 +233,255 @@
 	}
 
 	.breakdown-header {
-		@apply flex items-center justify-between mb-6;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 1.5rem;
 	}
 
 	.breakdown-title {
-		@apply text-xl font-bold text-white;
+		margin: 0;
+		font-size: 1.25rem;
+		line-height: 1.75rem;
+		font-weight: 700;
+		color: #ffffff;
 	}
 
 	.period-badge {
-		@apply px-3 py-1 bg-yellow-500/20 text-yellow-400 rounded-lg text-sm font-medium;
+		padding: 0.25rem 0.75rem;
+		border-radius: 0.5rem;
+		background: rgba(234, 179, 8, 0.2);
+		color: #facc15;
+		font-size: 0.875rem;
+		font-weight: 500;
+		white-space: nowrap;
 	}
 
 	.primary-metrics {
-		@apply grid grid-cols-1 md:grid-cols-2 gap-4 mb-6;
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1rem;
+		margin-bottom: 1.5rem;
 	}
 
 	.metric-card {
-		@apply bg-gray-900/50 rounded-lg p-4 border border-gray-700/50;
+		padding: 1rem;
+		border: 1px solid rgba(55, 65, 81, 0.5);
+		border-radius: 0.5rem;
+		background: rgba(17, 24, 39, 0.5);
 	}
 
 	.metric-card.primary {
-		@apply border-yellow-500/30 bg-yellow-500/5;
+		border-color: rgba(234, 179, 8, 0.3);
+		background: rgba(234, 179, 8, 0.05);
 	}
 
 	.metric-label {
-		@apply text-sm text-gray-400 mb-2;
+		margin-bottom: 0.5rem;
+		font-size: 0.875rem;
+		color: #9ca3af;
 	}
 
 	.metric-value {
-		@apply text-3xl font-bold text-white mb-1;
+		margin-bottom: 0.25rem;
+		font-size: 1.875rem;
+		line-height: 2.25rem;
+		font-weight: 700;
+		color: #ffffff;
 	}
 
 	.metric-value.small {
-		@apply text-xl;
+		font-size: 1.25rem;
+		line-height: 1.75rem;
+	}
+
+	.metric-value--positive {
+		color: #4ade80;
+	}
+
+	.metric-value--negative {
+		color: #f87171;
+	}
+
+	.metric-value--neutral {
+		color: #9ca3af;
 	}
 
 	.metric-sublabel {
-		@apply text-xs text-gray-500;
+		font-size: 0.75rem;
+		color: #6b7280;
 	}
 
 	.metric-change {
-		@apply flex items-center gap-1 text-sm font-medium;
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		font-size: 0.875rem;
+		font-weight: 500;
 	}
 
 	.metric-change.positive {
-		@apply text-green-400;
+		color: #4ade80;
 	}
 
 	.metric-change.negative {
-		@apply text-red-400;
+		color: #f87171;
 	}
 
 	.mrr-movement {
-		@apply mb-6;
+		margin-bottom: 1.5rem;
 	}
 
 	.section-title {
-		@apply text-lg font-semibold text-white mb-4;
+		margin: 0 0 1rem;
+		font-size: 1.125rem;
+		line-height: 1.75rem;
+		font-weight: 600;
+		color: #ffffff;
 	}
 
 	.movement-grid {
-		@apply grid grid-cols-2 md:grid-cols-5 gap-3;
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0.75rem;
 	}
 
 	.movement-item {
-		@apply bg-gray-900/50 rounded-lg p-3 border border-gray-700/50;
+		padding: 0.75rem;
+		border: 1px solid rgba(55, 65, 81, 0.5);
+		border-radius: 0.5rem;
+		background: rgba(17, 24, 39, 0.5);
 	}
 
 	.movement-item.positive {
-		@apply border-green-500/30 bg-green-500/5;
+		border-color: rgba(34, 197, 94, 0.3);
+		background: rgba(34, 197, 94, 0.05);
 	}
 
 	.movement-item.negative {
-		@apply border-red-500/30 bg-red-500/5;
+		border-color: rgba(239, 68, 68, 0.3);
+		background: rgba(239, 68, 68, 0.05);
 	}
 
 	.movement-item.net {
-		@apply border-yellow-500/30 bg-yellow-500/5;
+		border-color: rgba(234, 179, 8, 0.3);
+		background: rgba(234, 179, 8, 0.05);
 	}
 
 	.movement-label {
-		@apply text-xs text-gray-400 mb-1;
+		margin-bottom: 0.25rem;
+		font-size: 0.75rem;
+		color: #9ca3af;
 	}
 
 	.movement-value {
-		@apply text-lg font-bold text-white;
+		font-size: 1.125rem;
+		line-height: 1.75rem;
+		font-weight: 700;
+		color: #ffffff;
 	}
 
 	.secondary-metrics {
-		@apply mb-6;
+		margin-bottom: 1.5rem;
 	}
 
 	.metric-row {
-		@apply grid grid-cols-3 gap-4;
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 1rem;
 	}
 
 	.metric-item {
-		@apply bg-gray-900/50 rounded-lg p-3 border border-gray-700/50;
+		padding: 0.75rem;
+		border: 1px solid rgba(55, 65, 81, 0.5);
+		border-radius: 0.5rem;
+		background: rgba(17, 24, 39, 0.5);
 	}
 
 	.waterfall-chart {
-		@apply mt-6;
+		margin-top: 1.5rem;
 	}
 
 	.waterfall-bars {
-		@apply flex items-end justify-between gap-2 h-64 bg-gray-900/30 rounded-lg p-4;
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: 0.5rem;
+		height: 16rem;
+		padding: 1rem;
+		border-radius: 0.5rem;
+		background: rgba(17, 24, 39, 0.3);
 	}
 
 	.waterfall-bar {
-		@apply flex-1 flex flex-col items-center justify-end gap-2;
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		align-items: center;
+		justify-content: flex-end;
+		gap: 0.5rem;
+		min-width: 0;
 	}
 
 	.bar-label {
-		@apply text-xs text-gray-400 text-center;
+		font-size: 0.75rem;
+		color: #9ca3af;
+		text-align: center;
 	}
 
 	.bar {
-		@apply w-full rounded-t relative flex items-start justify-center pt-2;
+		position: relative;
+		display: flex;
+		align-items: flex-start;
+		justify-content: center;
+		width: 100%;
+		min-height: 0.25rem;
+		padding-top: 0.5rem;
+		border-radius: 0.25rem 0.25rem 0 0;
 	}
 
 	.waterfall-bar.start .bar,
 	.waterfall-bar.end .bar {
-		@apply bg-blue-500;
+		background: #3b82f6;
 	}
 
 	.waterfall-bar.positive .bar {
-		@apply bg-green-500;
+		background: #22c55e;
 	}
 
 	.waterfall-bar.negative .bar {
-		@apply bg-red-500;
+		background: #ef4444;
 	}
 
 	.bar-value {
-		@apply text-xs font-semibold text-white;
+		font-size: 0.75rem;
+		font-weight: 600;
+		color: #ffffff;
+		white-space: nowrap;
+	}
+
+	@media (min-width: 768px) {
+		.primary-metrics {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.movement-grid {
+			grid-template-columns: repeat(5, minmax(0, 1fr));
+		}
+	}
+
+	@media (max-width: 640px) {
+		.metric-row {
+			grid-template-columns: 1fr;
+		}
+
+		.waterfall-bars {
+			overflow-x: auto;
+		}
+
+		.waterfall-bar {
+			min-width: 4rem;
+		}
 	}
 </style>

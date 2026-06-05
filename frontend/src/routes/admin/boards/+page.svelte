@@ -238,7 +238,7 @@
 	<title>Project Boards | Admin</title>
 </svelte:head>
 
-<div class="admin-boards bg-gray-50 dark:bg-gray-900">
+<div class="admin-boards">
 	<!-- Animated Background -->
 	<div class="bg-effects">
 		<div class="bg-blob bg-blob-1"></div>
@@ -247,46 +247,34 @@
 	</div>
 
 	<!-- Header -->
-	<div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-			<div class="flex items-center justify-between">
-				<div class="flex items-center gap-3">
-					<div class="p-2 bg-[#E6B800]/10 dark:bg-[#E6B800]/20 rounded-lg">
-						<IconLayoutKanban class="w-6 h-6 text-[#E6B800] dark:text-[#FFD11A]" />
+	<div class="boards-header">
+		<div class="boards-container boards-header-inner">
+			<div class="boards-header-row">
+				<div class="boards-title-group">
+					<div class="boards-title-icon">
+						<IconLayoutKanban class="title-icon" />
 					</div>
 					<div>
-						<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Project Boards</h1>
-						<p class="text-sm text-gray-500 dark:text-gray-400">Manage your projects and tasks</p>
+						<h1 class="boards-title">Project Boards</h1>
+						<p class="boards-subtitle">Manage your projects and tasks</p>
 					</div>
 				</div>
 
-				<div class="flex items-center gap-3">
-					<a
-						href="/admin/boards/time-tracking"
-						class="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex items-center gap-2"
-					>
-						<IconClock class="w-4 h-4" />
+				<div class="boards-actions">
+					<a href="/admin/boards/time-tracking" class="boards-nav-link">
+						<IconClock class="small-icon" />
 						Time Tracking
 					</a>
-					<a
-						href="/admin/boards/reports"
-						class="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex items-center gap-2"
-					>
-						<IconChartBar class="w-4 h-4" />
+					<a href="/admin/boards/reports" class="boards-nav-link">
+						<IconChartBar class="small-icon" />
 						Reports
 					</a>
-					<a
-						href="/admin/boards/settings"
-						class="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex items-center gap-2"
-					>
-						<IconSettings class="w-4 h-4" />
+					<a href="/admin/boards/settings" class="boards-nav-link">
+						<IconSettings class="small-icon" />
 						Settings
 					</a>
-					<button
-						onclick={() => (showCreateModal = true)}
-						class="px-4 py-2 bg-[#E6B800] hover:bg-[#B38F00] text-[#0D1117] rounded-lg flex items-center gap-2"
-					>
-						<IconPlus class="w-4 h-4" />
+					<button onclick={() => (showCreateModal = true)} class="primary-button">
+						<IconPlus class="small-icon" />
 						New Board
 					</button>
 				</div>
@@ -294,125 +282,87 @@
 		</div>
 	</div>
 
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+	<div class="boards-container boards-content">
 		<!-- Stats Cards -->
-		<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8">
-			<div
-				class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700"
-			>
-				<div class="text-2xl font-bold text-gray-900 dark:text-white">{stats.total_boards}</div>
-				<div class="text-sm text-gray-500 dark:text-gray-400">Total Boards</div>
+		<div class="stats-grid">
+			<div class="stat-card">
+				<div class="stat-value">{stats.total_boards}</div>
+				<div class="stat-label">Total Boards</div>
 			</div>
-			<div
-				class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700"
-			>
-				<div class="text-2xl font-bold text-gray-900 dark:text-white">{stats.total_tasks}</div>
-				<div class="text-sm text-gray-500 dark:text-gray-400">Total Tasks</div>
+			<div class="stat-card">
+				<div class="stat-value">{stats.total_tasks}</div>
+				<div class="stat-label">Total Tasks</div>
 			</div>
-			<div
-				class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700"
-			>
-				<div class="text-2xl font-bold text-green-600">{stats.completed_tasks}</div>
-				<div class="text-sm text-gray-500 dark:text-gray-400">Completed</div>
+			<div class="stat-card">
+				<div class="stat-value stat-value--green">{stats.completed_tasks}</div>
+				<div class="stat-label">Completed</div>
 			</div>
-			<div
-				class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700"
-			>
-				<div class="text-2xl font-bold text-red-600">{stats.overdue_tasks}</div>
-				<div class="text-sm text-gray-500 dark:text-gray-400">Overdue</div>
+			<div class="stat-card">
+				<div class="stat-value stat-value--red">{stats.overdue_tasks}</div>
+				<div class="stat-label">Overdue</div>
 			</div>
-			<div
-				class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700"
-			>
-				<div class="text-2xl font-bold text-blue-600">{stats.my_tasks}</div>
-				<div class="text-sm text-gray-500 dark:text-gray-400">My Tasks</div>
+			<div class="stat-card">
+				<div class="stat-value stat-value--blue">{stats.my_tasks}</div>
+				<div class="stat-label">My Tasks</div>
 			</div>
-			<div
-				class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700"
-			>
-				<div class="text-2xl font-bold text-orange-600">{stats.tasks_due_today}</div>
-				<div class="text-sm text-gray-500 dark:text-gray-400">Due Today</div>
+			<div class="stat-card">
+				<div class="stat-value stat-value--orange">{stats.tasks_due_today}</div>
+				<div class="stat-label">Due Today</div>
 			</div>
-			<div
-				class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700"
-			>
-				<div class="text-2xl font-bold text-[#E6B800]">{stats.tasks_due_this_week}</div>
-				<div class="text-sm text-gray-500 dark:text-gray-400">Due This Week</div>
+			<div class="stat-card">
+				<div class="stat-value stat-value--brand">{stats.tasks_due_this_week}</div>
+				<div class="stat-label">Due This Week</div>
 			</div>
 		</div>
 
-		<div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+		<div class="boards-layout">
 			<!-- Sidebar -->
-			<div class="lg:col-span-1 space-y-6">
+			<div class="boards-sidebar">
 				<!-- Quick Actions -->
-				<div
-					class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4"
-				>
-					<h3 class="font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
-					<div class="space-y-2">
-						<button
-							onclick={() => (showCreateModal = true)}
-							class="w-full px-4 py-2 text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex items-center gap-2"
-						>
-							<IconPlus class="w-4 h-4" />
+				<div class="sidebar-card">
+					<h3 class="sidebar-title">Quick Actions</h3>
+					<div class="sidebar-list">
+						<button onclick={() => (showCreateModal = true)} class="sidebar-action">
+							<IconPlus class="small-icon" />
 							Create Board
 						</button>
-						<button
-							onclick={() => (showFolderModal = true)}
-							class="w-full px-4 py-2 text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex items-center gap-2"
-						>
-							<IconFolder class="w-4 h-4" />
+						<button onclick={() => (showFolderModal = true)} class="sidebar-action">
+							<IconFolder class="small-icon" />
 							Create Folder
 						</button>
-						<a
-							href="/admin/boards/import"
-							class="w-full px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex items-center gap-2"
-						>
-							<IconUpload class="w-4 h-4" />
+						<a href="/admin/boards/import" class="sidebar-action">
+							<IconUpload class="small-icon" />
 							Import from Trello/Asana
 						</a>
-						<a
-							href="/admin/boards/templates"
-							class="w-full px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex items-center gap-2"
-						>
-							<IconTemplate class="w-4 h-4" />
+						<a href="/admin/boards/templates" class="sidebar-action">
+							<IconTemplate class="small-icon" />
 							Browse Templates
 						</a>
 					</div>
 				</div>
 
 				<!-- Folders -->
-				<div
-					class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4"
-				>
-					<h3 class="font-semibold text-gray-900 dark:text-white mb-4">Folders</h3>
-					<div class="space-y-1">
+				<div class="sidebar-card">
+					<h3 class="sidebar-title">Folders</h3>
+					<div class="folder-filter-list">
 						<button
 							onclick={() => (selectedFolder = null)}
-							class="w-full px-3 py-2 text-left rounded-lg flex items-center gap-2 {selectedFolder ===
-							null
-								? 'bg-[#E6B800]/10 dark:bg-[#E6B800]/20 text-[#E6B800] dark:text-[#FFD11A]'
-								: 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
+							class="folder-filter"
+							class:active={selectedFolder === null}
 						>
-							<IconLayoutKanban class="w-4 h-4" />
+							<IconLayoutKanban class="small-icon" />
 							All Boards
-							<span class="ml-auto text-xs bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded-full"
-								>{boards.filter((b) => !b.is_archived).length}</span
-							>
+							<span class="count-badge">{boards.filter((b) => !b.is_archived).length}</span>
 						</button>
 						{#each folders as folder (folder.id)}
 							<button
 								onclick={() => (selectedFolder = folder.id)}
-								class="w-full px-3 py-2 text-left rounded-lg flex items-center gap-2 {selectedFolder ===
-								folder.id
-									? 'bg-[#E6B800]/10 dark:bg-[#E6B800]/20 text-[#E6B800] dark:text-[#FFD11A]'
-									: 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
+								class="folder-filter"
+								class:active={selectedFolder === folder.id}
 							>
-								<IconFolder class="w-4 h-4" style="color: {folder.color}" />
+								<IconFolder class="small-icon" style="color: {folder.color}" />
 								{folder.title}
-								<span class="ml-auto text-xs bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded-full"
-									>{folder.board_count || 0}</span
-								>
+								<span class="count-badge">{folder.board_count || 0}</span>
 							</button>
 						{/each}
 					</div>
@@ -420,23 +370,16 @@
 
 				<!-- My Tasks Due Today -->
 				{#if tasksDueToday.length > 0}
-					<div
-						class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4"
-					>
-						<h3 class="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-							<IconCalendar class="w-4 h-4 text-orange-500" />
+					<div class="sidebar-card">
+						<h3 class="sidebar-title sidebar-title--icon">
+							<IconCalendar class="small-icon status-orange" />
 							Due Today
 						</h3>
-						<div class="space-y-2">
+						<div class="sidebar-list">
 							{#each tasksDueToday.slice(0, 5) as task (task.id)}
-								<a
-									href="/admin/boards/{task.board_id}?task={task.id}"
-									class="block p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
-								>
-									<div class="text-sm font-medium text-gray-900 dark:text-white truncate">
-										{task.title}
-									</div>
-									<div class="text-xs text-gray-500 dark:text-gray-400">
+								<a href="/admin/boards/{task.board_id}?task={task.id}" class="task-link">
+									<div class="task-title">{task.title}</div>
+									<div class="task-meta">
 										{task.due_date ? formatDate(task.due_date) : ''}
 									</div>
 								</a>
@@ -447,23 +390,19 @@
 
 				<!-- Overdue Tasks -->
 				{#if overdueTasks.length > 0}
-					<div
-						class="bg-white dark:bg-gray-800 rounded-xl border border-red-200 dark:border-red-900/50 p-4"
-					>
-						<h3 class="font-semibold text-red-600 dark:text-red-400 mb-4 flex items-center gap-2">
-							<IconAlertTriangle class="w-4 h-4" />
+					<div class="sidebar-card sidebar-card--danger">
+						<h3 class="sidebar-title sidebar-title--danger sidebar-title--icon">
+							<IconAlertTriangle class="small-icon" />
 							Overdue Tasks
 						</h3>
-						<div class="space-y-2">
+						<div class="sidebar-list">
 							{#each overdueTasks.slice(0, 5) as task (task.id)}
 								<a
 									href="/admin/boards/{task.board_id}?task={task.id}"
-									class="block p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
+									class="task-link task-link--danger"
 								>
-									<div class="text-sm font-medium text-gray-900 dark:text-white truncate">
-										{task.title}
-									</div>
-									<div class="text-xs text-red-500">
+									<div class="task-title">{task.title}</div>
+									<div class="task-meta task-meta--danger">
 										{task.due_date ? formatDate(task.due_date) : ''}
 									</div>
 								</a>
@@ -474,23 +413,16 @@
 
 				<!-- My Tasks -->
 				{#if myTasks.length > 0}
-					<div
-						class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4"
-					>
-						<h3 class="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-							<IconChecks class="w-4 h-4 text-blue-500" />
+					<div class="sidebar-card">
+						<h3 class="sidebar-title sidebar-title--icon">
+							<IconChecks class="small-icon status-blue" />
 							My Tasks
 						</h3>
-						<div class="space-y-2">
+						<div class="sidebar-list">
 							{#each myTasks.slice(0, 5) as task (task.id)}
-								<a
-									href="/admin/boards/{task.board_id}?task={task.id}"
-									class="block p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
-								>
-									<div class="text-sm font-medium text-gray-900 dark:text-white truncate">
-										{task.title}
-									</div>
-									<div class="text-xs text-gray-500 dark:text-gray-400">
+								<a href="/admin/boards/{task.board_id}?task={task.id}" class="task-link">
+									<div class="task-title">{task.title}</div>
+									<div class="task-meta">
 										{task.due_date ? formatDate(task.due_date) : 'No due date'}
 									</div>
 								</a>
@@ -501,21 +433,19 @@
 
 				<!-- Recent Activity -->
 				{#if recentActivity.length > 0}
-					<div
-						class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4"
-					>
-						<h3 class="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-							<IconClock class="w-4 h-4 text-gray-500" />
+					<div class="sidebar-card">
+						<h3 class="sidebar-title sidebar-title--icon">
+							<IconClock class="small-icon muted-icon" />
 							Recent Activity
 						</h3>
-						<div class="space-y-2">
+						<div class="sidebar-list">
 							{#each recentActivity.slice(0, 5) as activity (activity.id)}
-								<div class="text-xs text-gray-600 dark:text-gray-400">
-									<span class="font-medium">{activity.user?.name || 'Someone'}</span>
+								<div class="activity-item">
+									<span class="activity-user">{activity.user?.name || 'Someone'}</span>
 									{activity.description}
-									<span class="text-gray-500"
-										>{activity.created_at ? formatDate(activity.created_at) : ''}</span
-									>
+									<span class="activity-time">
+										{activity.created_at ? formatDate(activity.created_at) : ''}
+									</span>
 								</div>
 							{/each}
 						</div>
@@ -524,95 +454,87 @@
 			</div>
 
 			<!-- Main Content -->
-			<div class="lg:col-span-3">
+			<div class="boards-main">
 				<!-- Search and Filters -->
-				<div class="flex items-center gap-4 mb-6">
-					<div class="flex-1 relative">
-						<IconSearch class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+				<div class="boards-toolbar">
+					<div class="search-field">
+						<IconSearch class="search-icon" />
 						<input
 							id="boards-searchquery"
 							name="boards-searchquery"
 							type="text"
 							placeholder="Search boards..."
 							bind:value={searchQuery}
-							class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#E6B800]"
+							class="search-input"
 						/>
 					</div>
-					<div class="flex items-center gap-2">
+					<div class="view-toggle">
 						<button
 							onclick={() => (viewMode = 'grid')}
-							class="p-2 rounded-lg {viewMode === 'grid'
-								? 'bg-[#E6B800]/10 dark:bg-[#E6B800]/20 text-[#E6B800]'
-								: 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700'}"
+							class="view-button"
+							class:active={viewMode === 'grid'}
+							aria-label="Grid view"
 						>
-							<IconLayoutGrid class="w-5 h-5" />
+							<IconLayoutGrid class="toolbar-icon" />
 						</button>
 						<button
 							onclick={() => (viewMode = 'list')}
-							class="p-2 rounded-lg {viewMode === 'list'
-								? 'bg-[#E6B800]/10 dark:bg-[#E6B800]/20 text-[#E6B800]'
-								: 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700'}"
+							class="view-button"
+							class:active={viewMode === 'list'}
+							aria-label="List view"
 						>
-							<IconList class="w-5 h-5" />
+							<IconList class="toolbar-icon" />
 						</button>
 					</div>
-					<label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+					<label class="archive-toggle">
 						<input
 							id="boards-showarchived"
 							name="boards-showarchived"
 							type="checkbox"
 							bind:checked={showArchived}
-							class="rounded border-gray-300 dark:border-gray-600"
+							class="archive-checkbox"
 						/>
 						Show archived
 					</label>
-					<button
-						onclick={loadData}
-						class="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-					>
-						<IconRefresh class="w-5 h-5" />
+					<button onclick={loadData} class="refresh-button" aria-label="Refresh boards">
+						<IconRefresh class="toolbar-icon" />
 					</button>
 				</div>
 
 				<!-- Favorite Boards -->
 				{#if favoriteBoards.length > 0}
-					<div class="mb-8">
-						<h3
-							class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2"
-						>
-							<IconStarFilled class="w-4 h-4 text-yellow-500" />
+					<div class="board-section">
+						<h3 class="section-heading section-heading--icon">
+							<IconStarFilled class="small-icon status-brand" />
 							Favorites
 						</h3>
-						<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+						<div class="board-grid">
 							{#each favoriteBoards as board (board.id)}
 								<a
 									href="/admin/boards/{board.id}"
-									class="group bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:shadow-lg hover:border-[#E6B800] dark:hover:border-[#FFD11A] transition-all"
+									class="board-card board-card--favorite"
 									style="border-left: 4px solid {safeColor(board.background_color)}"
 								>
-									<div class="flex items-start justify-between mb-3">
-										<h4
-											class="font-semibold text-gray-900 dark:text-white group-hover:text-[#E6B800] dark:group-hover:text-[#FFD11A]"
-										>
-											{board.title}
-										</h4>
+									<div class="board-card-header">
+										<h4 class="board-card-title">{board.title}</h4>
 										<button
 											onclick={(e: MouseEvent) => {
 												e.preventDefault();
 												e.stopPropagation();
 												toggleFavorite(board);
 											}}
-											class="text-yellow-500 hover:text-yellow-600"
+											class="favorite-button active"
+											aria-label="Remove favorite"
 										>
-											<IconStarFilled class="w-5 h-5" />
+											<IconStarFilled class="toolbar-icon" />
 										</button>
 									</div>
 									{#if board.description}
-										<p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-3">
+										<p class="board-description">
 											{board.description}
 										</p>
 									{/if}
-									<div class="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
+									<div class="board-meta">
 										<span>{board.task_count || 0} tasks</span>
 										<span>{board.member_count || 1} members</span>
 									</div>
@@ -624,53 +546,37 @@
 
 				<!-- All Boards -->
 				<div>
-					<h3
-						class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4"
-					>
+					<h3 class="section-heading">
 						{selectedFolder ? folders.find((f) => f.id === selectedFolder)?.title : 'All Boards'}
 					</h3>
 
 					{#if loading}
-						<div class="flex items-center justify-center py-12">
-							<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#E6B800]"></div>
+						<div class="loading-state">
+							<div class="spinner"></div>
 						</div>
 					{:else if filteredBoards.length === 0}
-						<div
-							class="text-center py-12 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700"
-						>
-							<IconLayoutKanban class="w-12 h-12 text-gray-400 mx-auto mb-4" />
-							<h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No boards yet</h3>
-							<p class="text-gray-500 dark:text-gray-400 mb-4">
-								Create your first board to start managing projects
-							</p>
-							<button
-								onclick={() => (showCreateModal = true)}
-								class="px-4 py-2 bg-[#E6B800] hover:bg-[#B38F00] text-[#0D1117] rounded-lg"
-							>
+						<div class="empty-state">
+							<IconLayoutKanban class="empty-icon" />
+							<h3 class="empty-title">No boards yet</h3>
+							<p class="empty-copy">Create your first board to start managing projects</p>
+							<button onclick={() => (showCreateModal = true)} class="primary-button">
 								Create Board
 							</button>
 						</div>
 					{:else if viewMode === 'grid'}
-						<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+						<div class="board-grid">
 							{#each filteredBoards as board (board.id)}
-								<div
-									class="group bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-lg hover:border-[#E6B800] dark:hover:border-[#FFD11A] transition-all overflow-hidden"
-								>
+								<div class="board-card">
 									<a
 										href="/admin/boards/{board.id}"
-										class="block p-4"
+										class="board-card-link"
 										style="border-left: 4px solid {safeColor(board.background_color)}"
 									>
-										<div class="flex items-start justify-between mb-3">
-											<h4
-												class="font-semibold text-gray-900 dark:text-white group-hover:text-[#E6B800] dark:group-hover:text-[#FFD11A]"
-											>
+										<div class="board-card-header">
+											<h4 class="board-card-title">
 												{board.title}
 												{#if board.is_archived}
-													<span
-														class="ml-2 text-xs bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-0.5 rounded"
-														>Archived</span
-													>
+													<span class="archive-badge">Archived</span>
 												{/if}
 											</h4>
 											<button
@@ -679,163 +585,136 @@
 													e.stopPropagation();
 													toggleFavorite(board);
 												}}
-												class="{board.is_favorite
-													? 'text-yellow-500'
-													: 'text-gray-400 opacity-0 group-hover:opacity-100'} hover:text-yellow-500 transition-all"
+												class="favorite-button"
+												class:active={board.is_favorite}
+												aria-label={board.is_favorite ? 'Remove favorite' : 'Add favorite'}
 											>
 												{#if board.is_favorite}
-													<IconStarFilled class="w-5 h-5" />
+													<IconStarFilled class="toolbar-icon" />
 												{:else}
-													<IconStar class="w-5 h-5" />
+													<IconStar class="toolbar-icon" />
 												{/if}
 											</button>
 										</div>
 										{#if board.description}
-											<p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-3">
+											<p class="board-description">
 												{board.description}
 											</p>
 										{/if}
-										<div class="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
-											<span class="flex items-center gap-1">
-												<IconChecks class="w-3.5 h-3.5" />
+										<div class="board-meta">
+											<span class="board-meta-item">
+												<IconChecks class="meta-icon" />
 												{board.completed_task_count || 0}/{board.task_count || 0}
 											</span>
-											<span class="flex items-center gap-1">
-												<IconUsers class="w-3.5 h-3.5" />
+											<span class="board-meta-item">
+												<IconUsers class="meta-icon" />
 												{board.member_count || 1}
 											</span>
 										</div>
 									</a>
-									<div
-										class="px-4 py-2 bg-gray-50 dark:bg-gray-700/50 border-t border-gray-200 dark:border-gray-700 flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
-									>
+									<div class="board-card-actions">
 										<button
 											onclick={() => goto(`/admin/boards/${board.id}`)}
-											class="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
+											class="icon-button"
 											title="Open"
 										>
-											<IconEye class="w-4 h-4" />
+											<IconEye class="small-icon" />
 										</button>
 										<button
 											onclick={() => duplicateBoard(board)}
-											class="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
+											class="icon-button"
 											title="Duplicate"
 										>
-											<IconCopy class="w-4 h-4" />
+											<IconCopy class="small-icon" />
 										</button>
-										<button
-											onclick={() => archiveBoard(board)}
-											class="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
-											title="Archive"
-										>
-											<IconArchive class="w-4 h-4" />
+										<button onclick={() => archiveBoard(board)} class="icon-button" title="Archive">
+											<IconArchive class="small-icon" />
 										</button>
 										<button
 											onclick={() => deleteBoard(board)}
-											class="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-100 dark:hover:bg-red-900/30 rounded"
+											class="icon-button icon-button--danger"
 											title="Delete"
 										>
-											<IconTrash class="w-4 h-4" />
+											<IconTrash class="small-icon" />
 										</button>
 									</div>
 								</div>
 							{/each}
 						</div>
 					{:else}
-						<div
-							class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden"
-						>
-							<table class="w-full">
-								<thead class="bg-gray-50 dark:bg-gray-700">
+						<div class="board-table-shell">
+							<table class="board-table">
+								<thead>
 									<tr>
-										<th
-											class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase"
-											>Board</th
-										>
-										<th
-											class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase"
-											>Tasks</th
-										>
-										<th
-											class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase"
-											>Members</th
-										>
-										<th
-											class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase"
-											>Updated</th
-										>
-										<th
-											class="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase"
-											>Actions</th
-										>
+										<th>Board</th>
+										<th>Tasks</th>
+										<th>Members</th>
+										<th>Updated</th>
+										<th class="align-right">Actions</th>
 									</tr>
 								</thead>
-								<tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+								<tbody>
 									{#each filteredBoards as board (board.id)}
-										<tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-											<td class="px-4 py-3">
-												<a href="/admin/boards/{board.id}" class="flex items-center gap-3">
+										<tr>
+											<td>
+												<a href="/admin/boards/{board.id}" class="table-board-link">
 													<div
-														class="w-2 h-8 rounded"
+														class="table-color-strip"
 														style="background-color: {safeColor(board.background_color)}"
 													></div>
 													<div>
-														<div
-															class="font-medium text-gray-900 dark:text-white flex items-center gap-2"
-														>
+														<div class="table-board-title">
 															{board.title}
 															{#if board.is_favorite}
-																<IconStarFilled class="w-4 h-4 text-yellow-500" />
+																<IconStarFilled class="small-icon status-brand" />
 															{/if}
 															{#if board.is_archived}
-																<span
-																	class="text-xs bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-0.5 rounded"
-																	>Archived</span
-																>
+																<span class="archive-badge">Archived</span>
 															{/if}
 														</div>
 														{#if board.description}
-															<div
-																class="text-sm text-gray-500 dark:text-gray-400 truncate max-w-xs"
-															>
+															<div class="table-description">
 																{board.description}
 															</div>
 														{/if}
 													</div>
 												</a>
 											</td>
-											<td class="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
+											<td>
 												{board.completed_task_count || 0}/{board.task_count || 0}
 											</td>
-											<td class="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
+											<td>
 												{board.member_count || 1}
 											</td>
-											<td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
+											<td class="muted-cell">
 												{formatDate(board.updated_at)}
 											</td>
-											<td class="px-4 py-3 text-right">
-												<div class="flex items-center justify-end gap-1">
+											<td>
+												<div class="table-actions">
 													<button
 														onclick={() => toggleFavorite(board)}
-														class="p-1.5 text-gray-500 hover:text-yellow-500 rounded"
+														class="icon-button"
+														aria-label={board.is_favorite ? 'Remove favorite' : 'Add favorite'}
 													>
 														{#if board.is_favorite}
-															<IconStarFilled class="w-4 h-4 text-yellow-500" />
+															<IconStarFilled class="small-icon status-brand" />
 														{:else}
-															<IconStar class="w-4 h-4" />
+															<IconStar class="small-icon" />
 														{/if}
 													</button>
 													<button
 														onclick={() => duplicateBoard(board)}
-														class="p-1.5 text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 rounded"
+														class="icon-button"
+														aria-label="Duplicate board"
 													>
-														<IconCopy class="w-4 h-4" />
+														<IconCopy class="small-icon" />
 													</button>
 													<button
 														onclick={() => deleteBoard(board)}
-														class="p-1.5 text-red-500 hover:text-red-700 rounded"
+														class="icon-button icon-button--danger"
+														aria-label="Delete board"
 													>
-														<IconTrash class="w-4 h-4" />
+														<IconTrash class="small-icon" />
 													</button>
 												</div>
 											</td>
@@ -852,49 +731,36 @@
 
 	<!-- Create Board Modal -->
 	{#if showCreateModal}
-		<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-			<div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-md mx-4">
-				<div class="p-6 border-b border-gray-200 dark:border-gray-700">
-					<h2 class="text-xl font-semibold text-gray-900 dark:text-white">Create New Board</h2>
+		<div class="modal-backdrop">
+			<div class="modal-panel">
+				<div class="modal-header">
+					<h2 class="modal-title">Create New Board</h2>
 				</div>
-				<div class="p-6 space-y-4">
-					<div>
-						<label
-							class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-							for="board-title">Board Title</label
-						>
+				<div class="modal-body">
+					<div class="form-field">
+						<label class="form-label" for="board-title">Board Title</label>
 						<input
 							type="text"
 							id="board-title"
 							name="board-title"
 							bind:value={newBoard.title}
 							placeholder="Enter board title..."
-							class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#E6B800]"
+							class="form-control"
 						/>
 					</div>
-					<div>
-						<label
-							class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-							for="board-description">Description (optional)</label
-						>
+					<div class="form-field">
+						<label class="form-label" for="board-description">Description (optional)</label>
 						<textarea
 							id="board-description"
 							bind:value={newBoard.description}
 							placeholder="Enter description..."
 							rows="3"
-							class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#E6B800]"
+							class="form-control"
 						></textarea>
 					</div>
-					<div>
-						<label
-							class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-							for="board-type">Board Type</label
-						>
-						<select
-							id="board-type"
-							bind:value={newBoard.type}
-							class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#E6B800]"
-						>
+					<div class="form-field">
+						<label class="form-label" for="board-type">Board Type</label>
+						<select id="board-type" bind:value={newBoard.type} class="form-control">
 							<option value="kanban">Kanban Board</option>
 							<option value="list">List View</option>
 							<option value="calendar">Calendar View</option>
@@ -902,16 +768,9 @@
 						</select>
 					</div>
 					{#if folders.length > 0}
-						<div>
-							<label
-								class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-								for="board-folder">Folder (optional)</label
-							>
-							<select
-								id="board-folder"
-								bind:value={newBoard.folder_id}
-								class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#E6B800]"
-							>
+						<div class="form-field">
+							<label class="form-label" for="board-folder">Folder (optional)</label>
+							<select id="board-folder" bind:value={newBoard.folder_id} class="form-control">
 								<!-- FIX-2026-04-26 (P3-3): <option value={null}> silently coerces to "" — use explicit empty string. -->
 								<option value="">No folder</option>
 								{#each folders as folder (folder.id)}
@@ -921,18 +780,11 @@
 						</div>
 					{/if}
 				</div>
-				<div class="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
-					<button
-						onclick={() => (showCreateModal = false)}
-						class="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-					>
+				<div class="modal-footer">
+					<button onclick={() => (showCreateModal = false)} class="secondary-button">
 						Cancel
 					</button>
-					<button
-						onclick={createBoard}
-						disabled={!newBoard.title.trim()}
-						class="px-4 py-2 bg-[#E6B800] hover:bg-[#B38F00] text-[#0D1117] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
-					>
+					<button onclick={createBoard} disabled={!newBoard.title.trim()} class="primary-button">
 						Create Board
 					</button>
 				</div>
@@ -942,52 +794,39 @@
 
 	<!-- Create Folder Modal -->
 	{#if showFolderModal}
-		<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-			<div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-md mx-4">
-				<div class="p-6 border-b border-gray-200 dark:border-gray-700">
-					<h2 class="text-xl font-semibold text-gray-900 dark:text-white">Create New Folder</h2>
+		<div class="modal-backdrop">
+			<div class="modal-panel">
+				<div class="modal-header">
+					<h2 class="modal-title">Create New Folder</h2>
 				</div>
-				<div class="p-6 space-y-4">
-					<div>
-						<label
-							class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-							for="folder-name">Folder Name</label
-						>
+				<div class="modal-body">
+					<div class="form-field">
+						<label class="form-label" for="folder-name">Folder Name</label>
 						<input
 							type="text"
 							id="folder-name"
 							name="folder-name"
 							bind:value={newFolder.title}
 							placeholder="Enter folder name..."
-							class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#E6B800]"
+							class="form-control"
 						/>
 					</div>
-					<div>
-						<label
-							class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-							for="folder-color">Color</label
-						>
+					<div class="form-field">
+						<label class="form-label" for="folder-color">Color</label>
 						<input
 							type="color"
 							id="folder-color"
 							name="folder-color"
 							bind:value={newFolder.color}
-							class="w-full h-10 rounded-lg cursor-pointer"
+							class="color-input"
 						/>
 					</div>
 				</div>
-				<div class="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
-					<button
-						onclick={() => (showFolderModal = false)}
-						class="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-					>
+				<div class="modal-footer">
+					<button onclick={() => (showFolderModal = false)} class="secondary-button">
 						Cancel
 					</button>
-					<button
-						onclick={createFolder}
-						disabled={!newFolder.title.trim()}
-						class="px-4 py-2 bg-[#E6B800] hover:bg-[#B38F00] text-[#0D1117] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
-					>
+					<button onclick={createFolder} disabled={!newFolder.title.trim()} class="primary-button">
 						Create Folder
 					</button>
 				</div>
@@ -1021,3 +860,1037 @@
 		pendingBoard = null;
 	}}
 />
+
+<style>
+	.admin-boards {
+		position: relative;
+		min-height: 100%;
+		background: #f9fafb;
+		color: #111827;
+	}
+
+	:global(.dark) .admin-boards {
+		background: #111827;
+		color: #f9fafb;
+	}
+
+	.bg-effects {
+		pointer-events: none;
+		position: fixed;
+		inset: 0;
+		overflow: hidden;
+		z-index: 0;
+	}
+
+	.bg-blob {
+		position: absolute;
+		width: 18rem;
+		height: 18rem;
+		border-radius: 999px;
+		filter: blur(80px);
+		opacity: 0.18;
+	}
+
+	.bg-blob-1 {
+		top: 5rem;
+		left: 8%;
+		background: #e6b800;
+	}
+
+	.bg-blob-2 {
+		top: 18rem;
+		right: 10%;
+		background: #3b82f6;
+	}
+
+	.bg-blob-3 {
+		bottom: 4rem;
+		left: 38%;
+		background: #10b981;
+	}
+
+	.boards-header,
+	.boards-content {
+		position: relative;
+		z-index: 1;
+	}
+
+	.boards-header {
+		border-bottom: 1px solid #e5e7eb;
+		background: #ffffff;
+	}
+
+	:global(.dark) .boards-header {
+		border-color: #374151;
+		background: #1f2937;
+	}
+
+	.boards-container {
+		width: min(100% - 2rem, 80rem);
+		margin-inline: auto;
+	}
+
+	.boards-header-inner {
+		padding-block: 1.5rem;
+	}
+
+	.boards-header-row,
+	.boards-title-group,
+	.boards-actions,
+	.boards-nav-link,
+	.primary-button,
+	.secondary-button,
+	.sidebar-action,
+	.folder-filter,
+	.sidebar-title--icon,
+	.section-heading--icon,
+	.boards-toolbar,
+	.view-toggle,
+	.archive-toggle,
+	.board-card-header,
+	.board-meta,
+	.board-meta-item,
+	.board-card-actions,
+	.table-board-link,
+	.table-board-title,
+	.table-actions,
+	.modal-footer {
+		display: flex;
+		align-items: center;
+	}
+
+	.boards-header-row {
+		justify-content: space-between;
+		gap: 1rem;
+	}
+
+	.boards-title-group {
+		gap: 0.75rem;
+	}
+
+	.boards-title-icon {
+		padding: 0.5rem;
+		border-radius: 0.5rem;
+		background: rgba(230, 184, 0, 0.12);
+		color: #e6b800;
+	}
+
+	:global(.dark) .boards-title-icon {
+		background: rgba(230, 184, 0, 0.2);
+		color: #ffd11a;
+	}
+
+	.boards-title {
+		margin: 0;
+		font-size: 1.5rem;
+		line-height: 2rem;
+		font-weight: 700;
+	}
+
+	.boards-subtitle {
+		margin: 0;
+		color: #6b7280;
+		font-size: 0.875rem;
+	}
+
+	:global(.dark) .boards-subtitle {
+		color: #9ca3af;
+	}
+
+	.boards-actions {
+		gap: 0.75rem;
+		flex-wrap: wrap;
+	}
+
+	.boards-nav-link,
+	.sidebar-action,
+	.folder-filter,
+	.secondary-button {
+		border: 0;
+		border-radius: 0.5rem;
+		background: transparent;
+		color: #374151;
+		font: inherit;
+		text-decoration: none;
+		cursor: pointer;
+		transition:
+			background-color 0.2s ease,
+			color 0.2s ease;
+	}
+
+	.boards-nav-link {
+		gap: 0.5rem;
+		padding: 0.5rem 1rem;
+	}
+
+	.boards-nav-link:hover,
+	.sidebar-action:hover,
+	.folder-filter:hover,
+	.secondary-button:hover,
+	.task-link:hover {
+		background: #f3f4f6;
+	}
+
+	:global(.dark) .boards-nav-link,
+	:global(.dark) .sidebar-action,
+	:global(.dark) .folder-filter,
+	:global(.dark) .secondary-button {
+		color: #d1d5db;
+	}
+
+	:global(.dark) .boards-nav-link:hover,
+	:global(.dark) .sidebar-action:hover,
+	:global(.dark) .folder-filter:hover,
+	:global(.dark) .secondary-button:hover,
+	:global(.dark) .task-link:hover {
+		background: #374151;
+	}
+
+	.primary-button {
+		justify-content: center;
+		gap: 0.5rem;
+		padding: 0.5rem 1rem;
+		border: 0;
+		border-radius: 0.5rem;
+		background: #e6b800;
+		color: #0d1117;
+		font: inherit;
+		font-weight: 600;
+		cursor: pointer;
+		transition:
+			background-color 0.2s ease,
+			opacity 0.2s ease;
+	}
+
+	.primary-button:hover:not(:disabled) {
+		background: #b38f00;
+	}
+
+	.primary-button:disabled {
+		cursor: not-allowed;
+		opacity: 0.5;
+	}
+
+	.secondary-button {
+		padding: 0.5rem 1rem;
+	}
+
+	.boards-content {
+		padding-block: 2rem;
+	}
+
+	.stats-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 1rem;
+		margin-bottom: 2rem;
+	}
+
+	.stat-card,
+	.sidebar-card,
+	.board-card,
+	.board-table-shell,
+	.empty-state,
+	.modal-panel {
+		border: 1px solid #e5e7eb;
+		background: #ffffff;
+	}
+
+	:global(.dark) .stat-card,
+	:global(.dark) .sidebar-card,
+	:global(.dark) .board-card,
+	:global(.dark) .board-table-shell,
+	:global(.dark) .empty-state,
+	:global(.dark) .modal-panel {
+		border-color: #374151;
+		background: #1f2937;
+	}
+
+	.stat-card,
+	.sidebar-card,
+	.board-card,
+	.board-table-shell,
+	.empty-state {
+		border-radius: 0.75rem;
+	}
+
+	.stat-card,
+	.sidebar-card {
+		padding: 1rem;
+	}
+
+	.stat-value {
+		font-size: 1.5rem;
+		line-height: 2rem;
+		font-weight: 700;
+		color: #111827;
+	}
+
+	:global(.dark) .stat-value {
+		color: #ffffff;
+	}
+
+	.stat-value--green {
+		color: #16a34a;
+	}
+
+	.stat-value--red {
+		color: #dc2626;
+	}
+
+	.stat-value--blue {
+		color: #2563eb;
+	}
+
+	.stat-value--orange {
+		color: #ea580c;
+	}
+
+	.stat-value--brand {
+		color: #e6b800;
+	}
+
+	.stat-label,
+	.task-meta,
+	.activity-time,
+	.board-description,
+	.board-meta,
+	.table-description,
+	.empty-copy,
+	.muted-cell {
+		color: #6b7280;
+	}
+
+	:global(.dark) .stat-label,
+	:global(.dark) .task-meta,
+	:global(.dark) .board-description,
+	:global(.dark) .board-meta,
+	:global(.dark) .table-description,
+	:global(.dark) .empty-copy,
+	:global(.dark) .muted-cell {
+		color: #9ca3af;
+	}
+
+	.stat-label,
+	.board-description,
+	.task-title,
+	.task-meta,
+	.table-description {
+		font-size: 0.875rem;
+	}
+
+	.boards-layout {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 2rem;
+	}
+
+	.boards-sidebar {
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
+	}
+
+	.sidebar-card--danger {
+		border-color: #fecaca;
+	}
+
+	:global(.dark) .sidebar-card--danger {
+		border-color: rgba(127, 29, 29, 0.5);
+	}
+
+	.sidebar-title {
+		margin: 0 0 1rem;
+		font-size: 1rem;
+		font-weight: 600;
+		color: #111827;
+	}
+
+	:global(.dark) .sidebar-title {
+		color: #ffffff;
+	}
+
+	.sidebar-title--icon,
+	.section-heading--icon {
+		gap: 0.5rem;
+	}
+
+	.sidebar-title--danger {
+		color: #dc2626;
+	}
+
+	:global(.dark) .sidebar-title--danger {
+		color: #f87171;
+	}
+
+	.sidebar-list,
+	.folder-filter-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.folder-filter-list {
+		gap: 0.25rem;
+	}
+
+	.sidebar-action,
+	.folder-filter {
+		width: 100%;
+		gap: 0.5rem;
+		padding: 0.5rem 0.75rem;
+		text-align: left;
+	}
+
+	.sidebar-action {
+		padding-inline: 1rem;
+	}
+
+	.folder-filter.active {
+		background: rgba(230, 184, 0, 0.12);
+		color: #e6b800;
+	}
+
+	:global(.dark) .folder-filter.active {
+		background: rgba(230, 184, 0, 0.2);
+		color: #ffd11a;
+	}
+
+	.count-badge {
+		margin-left: auto;
+		padding: 0.125rem 0.5rem;
+		border-radius: 999px;
+		background: #e5e7eb;
+		font-size: 0.75rem;
+	}
+
+	:global(.dark) .count-badge {
+		background: #374151;
+	}
+
+	.task-link {
+		display: block;
+		padding: 0.5rem;
+		border-radius: 0.5rem;
+		text-decoration: none;
+		transition: background-color 0.2s ease;
+	}
+
+	.task-link--danger:hover {
+		background: #fef2f2;
+	}
+
+	:global(.dark) .task-link--danger:hover {
+		background: rgba(127, 29, 29, 0.2);
+	}
+
+	.task-title {
+		overflow: hidden;
+		color: #111827;
+		font-weight: 500;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	:global(.dark) .task-title {
+		color: #ffffff;
+	}
+
+	.task-meta,
+	.activity-item,
+	.activity-time {
+		font-size: 0.75rem;
+	}
+
+	.task-meta--danger {
+		color: #ef4444;
+	}
+
+	.activity-item {
+		color: #4b5563;
+	}
+
+	:global(.dark) .activity-item {
+		color: #9ca3af;
+	}
+
+	.activity-user {
+		font-weight: 500;
+	}
+
+	.boards-toolbar {
+		gap: 1rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.search-field {
+		position: relative;
+		flex: 1;
+		min-width: 0;
+	}
+
+	.search-input,
+	.form-control {
+		width: 100%;
+		border: 1px solid #d1d5db;
+		border-radius: 0.5rem;
+		background: #ffffff;
+		color: #111827;
+		font: inherit;
+	}
+
+	.search-input {
+		padding: 0.5rem 1rem 0.5rem 2.5rem;
+	}
+
+	.form-control {
+		padding: 0.5rem 0.75rem;
+	}
+
+	:global(.dark) .search-input,
+	:global(.dark) .form-control {
+		border-color: #4b5563;
+		background: #374151;
+		color: #ffffff;
+	}
+
+	.search-input:focus,
+	.form-control:focus {
+		outline: 2px solid #e6b800;
+		outline-offset: 2px;
+	}
+
+	.search-field :global(.search-icon) {
+		position: absolute;
+		top: 50%;
+		left: 0.75rem;
+		width: 1.25rem;
+		height: 1.25rem;
+		color: #9ca3af;
+		transform: translateY(-50%);
+	}
+
+	.view-toggle {
+		gap: 0.5rem;
+	}
+
+	.view-button,
+	.refresh-button,
+	.favorite-button,
+	.icon-button {
+		border: 0;
+		background: transparent;
+		color: #6b7280;
+		cursor: pointer;
+		transition:
+			background-color 0.2s ease,
+			color 0.2s ease,
+			opacity 0.2s ease;
+	}
+
+	.view-button,
+	.refresh-button {
+		padding: 0.5rem;
+		border-radius: 0.5rem;
+	}
+
+	.view-button:hover,
+	.refresh-button:hover,
+	.icon-button:hover {
+		background: #f3f4f6;
+	}
+
+	:global(.dark) .view-button:hover,
+	:global(.dark) .refresh-button:hover,
+	:global(.dark) .icon-button:hover {
+		background: #374151;
+	}
+
+	.view-button.active,
+	.favorite-button.active {
+		color: #e6b800;
+	}
+
+	.view-button.active {
+		background: rgba(230, 184, 0, 0.12);
+	}
+
+	.archive-toggle {
+		gap: 0.5rem;
+		color: #4b5563;
+		font-size: 0.875rem;
+	}
+
+	:global(.dark) .archive-toggle {
+		color: #9ca3af;
+	}
+
+	.archive-checkbox {
+		width: 1rem;
+		height: 1rem;
+		accent-color: #e6b800;
+	}
+
+	.section-heading {
+		margin: 0 0 1rem;
+		color: #6b7280;
+		font-size: 0.875rem;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+
+	:global(.dark) .section-heading {
+		color: #9ca3af;
+	}
+
+	.board-section {
+		margin-bottom: 2rem;
+	}
+
+	.board-grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1rem;
+	}
+
+	.board-card {
+		overflow: hidden;
+		transition:
+			border-color 0.2s ease,
+			box-shadow 0.2s ease;
+	}
+
+	.board-card--favorite {
+		display: block;
+		padding: 1rem;
+		text-decoration: none;
+	}
+
+	.board-card:hover {
+		border-color: #e6b800;
+		box-shadow: 0 10px 24px rgba(17, 24, 39, 0.08);
+	}
+
+	:global(.dark) .board-card:hover {
+		border-color: #ffd11a;
+	}
+
+	.board-card-link {
+		display: block;
+		padding: 1rem;
+		color: inherit;
+		text-decoration: none;
+	}
+
+	.board-card-header {
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 0.75rem;
+	}
+
+	.board-card-title,
+	.table-board-title {
+		color: #111827;
+		font-weight: 600;
+	}
+
+	:global(.dark) .board-card-title,
+	:global(.dark) .table-board-title {
+		color: #ffffff;
+	}
+
+	.board-card:hover .board-card-title {
+		color: #e6b800;
+	}
+
+	.board-description {
+		display: -webkit-box;
+		overflow: hidden;
+		margin: 0 0 0.75rem;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+	}
+
+	.board-meta {
+		gap: 1rem;
+		font-size: 0.75rem;
+	}
+
+	.board-meta-item {
+		gap: 0.25rem;
+	}
+
+	.favorite-button {
+		opacity: 0;
+	}
+
+	.board-card:hover .favorite-button,
+	.favorite-button.active,
+	.board-card--favorite .favorite-button {
+		opacity: 1;
+	}
+
+	.board-card-actions {
+		justify-content: flex-end;
+		gap: 0.25rem;
+		padding: 0.5rem 1rem;
+		border-top: 1px solid #e5e7eb;
+		background: #f9fafb;
+		opacity: 0;
+		transition: opacity 0.2s ease;
+	}
+
+	:global(.dark) .board-card-actions {
+		border-color: #374151;
+		background: rgba(55, 65, 81, 0.5);
+	}
+
+	.board-card:hover .board-card-actions {
+		opacity: 1;
+	}
+
+	.icon-button {
+		padding: 0.375rem;
+		border-radius: 0.25rem;
+	}
+
+	.icon-button:hover {
+		color: #374151;
+	}
+
+	:global(.dark) .icon-button:hover {
+		color: #e5e7eb;
+	}
+
+	.icon-button--danger {
+		color: #ef4444;
+	}
+
+	.icon-button--danger:hover {
+		background: #fee2e2;
+		color: #b91c1c;
+	}
+
+	:global(.dark) .icon-button--danger:hover {
+		background: rgba(127, 29, 29, 0.3);
+		color: #f87171;
+	}
+
+	.archive-badge {
+		margin-left: 0.5rem;
+		padding: 0.125rem 0.5rem;
+		border-radius: 0.25rem;
+		background: #e5e7eb;
+		color: #4b5563;
+		font-size: 0.75rem;
+		font-weight: 500;
+	}
+
+	:global(.dark) .archive-badge {
+		background: #374151;
+		color: #9ca3af;
+	}
+
+	.loading-state {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding-block: 3rem;
+	}
+
+	.spinner {
+		width: 2rem;
+		height: 2rem;
+		border: 2px solid rgba(230, 184, 0, 0.25);
+		border-bottom-color: #e6b800;
+		border-radius: 999px;
+		animation: boards-spin 0.8s linear infinite;
+	}
+
+	.empty-state {
+		padding: 3rem 1rem;
+		text-align: center;
+	}
+
+	.empty-state :global(.empty-icon) {
+		width: 3rem;
+		height: 3rem;
+		margin-inline: auto;
+		margin-bottom: 1rem;
+		color: #9ca3af;
+	}
+
+	.empty-title {
+		margin: 0 0 0.5rem;
+		font-size: 1.125rem;
+		font-weight: 500;
+	}
+
+	.empty-copy {
+		margin: 0 0 1rem;
+	}
+
+	.board-table-shell {
+		overflow-x: auto;
+	}
+
+	.board-table {
+		width: 100%;
+		border-collapse: collapse;
+	}
+
+	.board-table thead {
+		background: #f9fafb;
+	}
+
+	:global(.dark) .board-table thead {
+		background: #374151;
+	}
+
+	.board-table th,
+	.board-table td {
+		padding: 0.75rem 1rem;
+		text-align: left;
+	}
+
+	.board-table th {
+		color: #6b7280;
+		font-size: 0.75rem;
+		font-weight: 600;
+		text-transform: uppercase;
+	}
+
+	:global(.dark) .board-table th {
+		color: #9ca3af;
+	}
+
+	.board-table td {
+		color: #4b5563;
+		font-size: 0.875rem;
+	}
+
+	:global(.dark) .board-table td {
+		color: #d1d5db;
+	}
+
+	.board-table tbody tr {
+		border-top: 1px solid #e5e7eb;
+	}
+
+	:global(.dark) .board-table tbody tr {
+		border-color: #374151;
+	}
+
+	.board-table tbody tr:hover {
+		background: #f9fafb;
+	}
+
+	:global(.dark) .board-table tbody tr:hover {
+		background: rgba(55, 65, 81, 0.5);
+	}
+
+	.align-right {
+		text-align: right;
+	}
+
+	.table-board-link {
+		gap: 0.75rem;
+		color: inherit;
+		text-decoration: none;
+	}
+
+	.table-color-strip {
+		width: 0.5rem;
+		height: 2rem;
+		border-radius: 0.25rem;
+		flex-shrink: 0;
+	}
+
+	.table-board-title {
+		gap: 0.5rem;
+	}
+
+	.table-description {
+		max-width: 20rem;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.table-actions {
+		justify-content: flex-end;
+		gap: 0.25rem;
+	}
+
+	.modal-backdrop {
+		position: fixed;
+		inset: 0;
+		z-index: 50;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 1rem;
+		background: rgba(0, 0, 0, 0.5);
+	}
+
+	.modal-panel {
+		width: min(100%, 28rem);
+		border-radius: 0.75rem;
+		box-shadow: 0 20px 40px rgba(15, 23, 42, 0.25);
+	}
+
+	.modal-header,
+	.modal-body,
+	.modal-footer {
+		padding: 1.5rem;
+	}
+
+	.modal-header {
+		border-bottom: 1px solid #e5e7eb;
+	}
+
+	.modal-footer {
+		justify-content: flex-end;
+		gap: 0.75rem;
+		border-top: 1px solid #e5e7eb;
+	}
+
+	:global(.dark) .modal-header,
+	:global(.dark) .modal-footer {
+		border-color: #374151;
+	}
+
+	.modal-title {
+		margin: 0;
+		font-size: 1.25rem;
+		font-weight: 600;
+	}
+
+	.modal-body {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+
+	.form-field {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+	}
+
+	.form-label {
+		color: #374151;
+		font-size: 0.875rem;
+		font-weight: 500;
+	}
+
+	:global(.dark) .form-label {
+		color: #d1d5db;
+	}
+
+	.color-input {
+		width: 100%;
+		height: 2.5rem;
+		border: 0;
+		border-radius: 0.5rem;
+		cursor: pointer;
+	}
+
+	.admin-boards :global(.status-brand) {
+		color: #e6b800;
+	}
+
+	.admin-boards :global(.status-orange) {
+		color: #f97316;
+	}
+
+	.admin-boards :global(.status-blue) {
+		color: #3b82f6;
+	}
+
+	.admin-boards :global(.muted-icon) {
+		color: #6b7280;
+	}
+
+	.admin-boards :global(.title-icon) {
+		width: 1.5rem;
+		height: 1.5rem;
+	}
+
+	.admin-boards :global(.small-icon) {
+		width: 1rem;
+		height: 1rem;
+		flex-shrink: 0;
+	}
+
+	.admin-boards :global(.toolbar-icon) {
+		width: 1.25rem;
+		height: 1.25rem;
+	}
+
+	.admin-boards :global(.meta-icon) {
+		width: 0.875rem;
+		height: 0.875rem;
+	}
+
+	@media (min-width: 768px) {
+		.stats-grid {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+		}
+
+		.board-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.stats-grid {
+			grid-template-columns: repeat(7, minmax(0, 1fr));
+		}
+
+		.boards-layout {
+			grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
+		}
+	}
+
+	@media (min-width: 1280px) {
+		.board-grid {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
+	}
+
+	@media (max-width: 767px) {
+		.boards-header-row,
+		.boards-toolbar,
+		.modal-footer {
+			align-items: stretch;
+			flex-direction: column;
+		}
+
+		.boards-actions,
+		.view-toggle {
+			width: 100%;
+		}
+
+		.boards-nav-link,
+		.primary-button,
+		.secondary-button,
+		.refresh-button {
+			width: 100%;
+		}
+
+		.favorite-button,
+		.board-card-actions {
+			opacity: 1;
+		}
+	}
+
+	@keyframes boards-spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+</style>

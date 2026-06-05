@@ -48,7 +48,8 @@
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
+	import { SvelteDate } from 'svelte/reactivity';
 	import { goto } from '$app/navigation';
 	import { usersApi, AdminApiError } from '$lib/api/admin';
 	import { logger } from '$lib/utils/logger';
@@ -290,6 +291,9 @@
 	let showPermissionDetails = $state(false);
 	let profilePhotoFile = $state<File | null>(null);
 	let profilePhotoPreview = $state<string | null>(null);
+	let usernameValidationTimer: ReturnType<typeof setTimeout> | null = null;
+	let emailValidationTimer: ReturnType<typeof setTimeout> | null = null;
+	let passwordStrengthTimer: ReturnType<typeof setTimeout> | null = null;
 
 	// Form Data with defaults (Svelte 5 $state)
 	let formData = $state<UserFormData>({
@@ -386,6 +390,12 @@
 		setupRealtimeValidation();
 	});
 
+	onDestroy(() => {
+		if (usernameValidationTimer) clearTimeout(usernameValidationTimer);
+		if (emailValidationTimer) clearTimeout(emailValidationTimer);
+		if (passwordStrengthTimer) clearTimeout(passwordStrengthTimer);
+	});
+
 	// Data Loading
 
 	async function loadLookupData() {
@@ -457,13 +467,13 @@
 
 	function initializeDefaults() {
 		const nextMonday = getNextMonday();
-		const threeMonthsLater = new Date(nextMonday);
+		const threeMonthsLater = new SvelteDate(nextMonday);
 		threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
 
 		formData.start_date = formatDate(nextMonday);
 		formData.probation_end_date = formatDate(threeMonthsLater);
 
-		const passwordExpiry = new Date();
+		const passwordExpiry = new SvelteDate();
 		passwordExpiry.setDate(passwordExpiry.getDate() + 90);
 		formData.password_expires_at = formatDate(passwordExpiry);
 
@@ -949,7 +959,7 @@
 		if (formData.first_name && formData.last_name) {
 			const base = `${formData.first_name.toLowerCase()}.${formData.last_name.toLowerCase()}`;
 			formData.username = base.replace(/[^a-z0-9._]/g, '');
-			checkUsernameAvailability();
+			scheduleUsernameValidation();
 		}
 	}
 
@@ -958,10 +968,10 @@
 	}
 
 	function getNextMonday(): Date {
-		const date = new Date();
+		const date = new SvelteDate();
 		const day = date.getDay();
 		const diff = date.getDate() - day + (day === 0 ? -6 : 1) + 7;
-		return new Date(date.setDate(diff));
+		return new SvelteDate(date.setDate(diff));
 	}
 
 	function isValidEmail(email: string): boolean {
@@ -1043,71 +1053,74 @@
 		// FIX-2026-04-26: dropped console.log per audit §E. TODO: toast notification.
 	}
 
-	// Reactive statements for real-time validation
-	// Debounced via setTimeout-in-$effect-cleanup pattern (per CLAUDE.md:
-	// "$effect on typed input" landmine — bare effects fire on every keystroke).
-	// 400ms is the default debounce across this codebase.
-	$effect(() => {
-		const username = formData.username; // tracked dep
-		if (!username) return;
-		const t = setTimeout(() => {
+	function scheduleUsernameValidation() {
+		if (usernameValidationTimer) clearTimeout(usernameValidationTimer);
+		if (!formData.username) {
+			usernameAvailable = null;
+			return;
+		}
+		usernameValidationTimer = setTimeout(() => {
 			checkUsernameAvailability();
 		}, 400);
-		return () => clearTimeout(t);
-	});
+	}
 
-	$effect(() => {
-		const email = formData.email; // tracked dep
-		if (!email) return;
-		const t = setTimeout(() => {
+	function scheduleEmailValidation() {
+		if (emailValidationTimer) clearTimeout(emailValidationTimer);
+		if (!formData.email) {
+			emailAvailable = null;
+			return;
+		}
+		emailValidationTimer = setTimeout(() => {
 			checkEmailAvailability();
 		}, 400);
-		return () => clearTimeout(t);
-	});
+	}
 
-	$effect(() => {
-		const password = formData.password; // tracked dep
-		if (!password) return;
-		const t = setTimeout(() => {
-			checkPasswordStrength(password);
+	function schedulePasswordStrengthCheck() {
+		if (passwordStrengthTimer) clearTimeout(passwordStrengthTimer);
+		if (!formData.password) {
+			passwordStrength = null;
+			return;
+		}
+		passwordStrengthTimer = setTimeout(() => {
+			checkPasswordStrength(formData.password);
 		}, 400);
-		return () => clearTimeout(t);
-	});
+	}
 </script>
 
 <svelte:head>
 	<title>Create User | Enterprise Admin</title>
 </svelte:head>
 
-<div class="min-h-screen bg-zinc-950 text-white p-6">
-	<div class="max-w-4xl mx-auto">
-		<h1 class="text-3xl font-bold mb-2">Create User</h1>
-		<p class="text-zinc-400 mb-6">
-			Enterprise user provisioning • {completionPercentage}% complete
-		</p>
+<div class="create-user-page">
+	<div class="create-user-container">
+		<header class="page-header">
+			<h1>Create User</h1>
+			<p>Enterprise user provisioning - {completionPercentage}% complete</p>
+		</header>
 
 		{#if errors.length > 0}
-			<div class="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mb-6">
+			<div class="error-summary">
 				{#each errors as error (error.field)}
-					<p class="text-red-400 text-sm">{error.field}: {error.message}</p>
+					<p>{error.field}: {error.message}</p>
 				{/each}
 			</div>
 		{/if}
 
-		<nav class="flex gap-1 mb-8 overflow-x-auto pb-2">
+		<nav class="step-nav" aria-label="Create user steps">
 			{#each STEPS as step, i (step.key)}
 				{@const StepIcon = step.icon}
 				<button
-					class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm whitespace-nowrap transition-colors {activeStep ===
-					step.key
-						? 'bg-blue-600 text-white'
-						: i <= currentStepIndex
-							? 'bg-zinc-800 text-zinc-300'
-							: 'bg-zinc-900 text-zinc-600'}"
+					type="button"
+					class={{
+						'step-button': true,
+						active: activeStep === step.key,
+						complete: activeStep !== step.key && i <= currentStepIndex,
+						pending: i > currentStepIndex
+					}}
 					onclick={() => goToStep(step.key as typeof activeStep)}
 				>
 					<StepIcon size={16} />
-					{step.label}
+					<span>{step.label}</span>
 				</button>
 			{/each}
 		</nav>
@@ -1117,99 +1130,96 @@
 				e.preventDefault();
 				handleSubmit();
 			}}
-			class="space-y-6"
+			class="user-form"
 		>
 			{#if activeStep === 'identity'}
-				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-					<div>
-						<label class="block text-sm text-zinc-400 mb-1" for="first_name">First Name *</label>
+				<div class="form-grid">
+					<div class="field-group">
+						<label for="first_name">First Name *</label>
 						<input
 							id="first_name"
 							type="text"
 							bind:value={formData.first_name}
 							onblur={generateUsername}
-							class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-white"
+							class="form-control"
 						/>
 					</div>
-					<div>
-						<label class="block text-sm text-zinc-400 mb-1" for="last_name">Last Name *</label>
+					<div class="field-group">
+						<label for="last_name">Last Name *</label>
 						<input
 							id="last_name"
 							type="text"
 							bind:value={formData.last_name}
 							onblur={generateUsername}
-							class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-white"
+							class="form-control"
 						/>
 					</div>
-					<div>
-						<label class="block text-sm text-zinc-400 mb-1" for="username">Username *</label>
-						<div class="relative">
+					<div class="field-group">
+						<label for="username">Username *</label>
+						<div class="field-with-status">
 							<input
 								id="username"
 								type="text"
 								bind:value={formData.username}
-								class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-white"
+								oninput={scheduleUsernameValidation}
+								class="form-control"
 							/>
 							{#if checkingUsername}
-								<span class="absolute right-3 top-3 text-xs text-zinc-500">Checking...</span>
+								<span class="input-status">Checking...</span>
 							{:else if usernameAvailable === true}
-								<span class="absolute right-3 top-3 text-xs text-emerald-400">Available</span>
+								<span class="input-status success">Available</span>
 							{:else if usernameAvailable === false}
-								<span class="absolute right-3 top-3 text-xs text-red-400">Taken</span>
+								<span class="input-status error">Taken</span>
 							{/if}
 						</div>
 					</div>
-					<div>
-						<label class="block text-sm text-zinc-400 mb-1" for="email">Email *</label>
-						<div class="relative">
+					<div class="field-group">
+						<label for="email">Email *</label>
+						<div class="field-with-status">
 							<input
 								id="email"
 								type="email"
 								bind:value={formData.email}
-								class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-white"
+								oninput={scheduleEmailValidation}
+								class="form-control"
 							/>
 							{#if checkingEmail}
-								<span class="absolute right-3 top-3 text-xs text-zinc-500">Checking...</span>
+								<span class="input-status">Checking...</span>
 							{:else if emailAvailable === true}
-								<span class="absolute right-3 top-3 text-xs text-emerald-400">Available</span>
+								<span class="input-status success">Available</span>
 							{:else if emailAvailable === false}
-								<span class="absolute right-3 top-3 text-xs text-red-400">Registered</span>
+								<span class="input-status error">Registered</span>
 							{/if}
 						</div>
 					</div>
-					<div>
-						<label class="block text-sm text-zinc-400 mb-1" for="phone">Phone</label>
-						<input
-							id="phone"
-							type="tel"
-							bind:value={formData.phone}
-							class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-white"
-						/>
+					<div class="field-group">
+						<label for="phone">Phone</label>
+						<input id="phone" type="tel" bind:value={formData.phone} class="form-control" />
 					</div>
-					<div>
-						<label class="block text-sm text-zinc-400 mb-1" for="employee_id">Employee ID</label>
+					<div class="field-group">
+						<label for="employee_id">Employee ID</label>
 						<input
 							id="employee_id"
 							type="text"
 							bind:value={formData.employee_id}
-							class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-white"
+							class="form-control"
 						/>
 					</div>
 				</div>
-				<div>
-					<label class="block text-sm text-zinc-400 mb-1" for="photo">Profile Photo</label>
+				<div class="field-group">
+					<label for="photo">Profile Photo</label>
 					<input
 						id="photo"
 						type="file"
 						accept="image/*"
 						onchange={handlePhotoUpload}
-						class="text-sm text-zinc-400"
+						class="file-control"
 					/>
 					{#if profilePhotoPreview}
 						<img
 							src={profilePhotoPreview}
 							alt="Preview"
-							class="mt-2 w-16 h-16 rounded-full object-cover"
+							class="profile-preview"
 							width="64"
 							height="64"
 							loading="lazy"
@@ -1217,36 +1227,35 @@
 					{/if}
 				</div>
 			{:else if activeStep === 'security'}
-				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-					<div>
-						<label class="block text-sm text-zinc-400 mb-1" for="password">Password *</label>
+				<div class="form-grid">
+					<div class="field-group">
+						<label for="password">Password *</label>
 						<input
 							id="password"
 							type={passwordVisible ? 'text' : 'password'}
 							bind:value={formData.password}
-							class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-white"
+							oninput={schedulePasswordStrengthCheck}
+							class="form-control"
 						/>
 						<button
 							type="button"
-							class="text-xs text-zinc-500 mt-1"
+							class="inline-action"
 							onclick={() => (passwordVisible = !passwordVisible)}
 						>
 							{passwordVisible ? 'Hide' : 'Show'}
 						</button>
 					</div>
-					<div>
-						<label class="block text-sm text-zinc-400 mb-1" for="password_confirm"
-							>Confirm Password *</label
-						>
+					<div class="field-group">
+						<label for="password_confirm">Confirm Password *</label>
 						<input
 							id="password_confirm"
 							type={confirmPasswordVisible ? 'text' : 'password'}
 							bind:value={formData.password_confirmation}
-							class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-white"
+							class="form-control"
 						/>
 						<button
 							type="button"
-							class="text-xs text-zinc-500 mt-1"
+							class="inline-action"
 							onclick={() => (confirmPasswordVisible = !confirmPasswordVisible)}
 						>
 							{confirmPasswordVisible ? 'Hide' : 'Show'}
@@ -1254,109 +1263,97 @@
 					</div>
 				</div>
 				{#if passwordStrength}
-					<div class="bg-zinc-900 rounded-lg p-4">
-						<div class="flex items-center gap-2 mb-2">
-							<div class="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
+					<div class="strength-panel">
+						<div class="strength-row">
+							<div class="strength-track">
 								<div
-									class="h-full rounded-full transition-all {passwordStrength.score >= 4
-										? 'bg-emerald-500'
-										: passwordStrength.score >= 3
-											? 'bg-yellow-500'
-											: 'bg-red-500'}"
+									class={{
+										'strength-fill': true,
+										strong: passwordStrength.score >= 4,
+										medium: passwordStrength.score >= 3 && passwordStrength.score < 4,
+										weak: passwordStrength.score < 3
+									}}
 									style="width: {(passwordStrength.score / 5) * 100}%"
 								></div>
 							</div>
-							<span class="text-xs text-zinc-400">Crack time: {passwordStrength.crackTime}</span>
+							<span class="strength-meta">Crack time: {passwordStrength.crackTime}</span>
 						</div>
 						{#each passwordStrength.suggestions as suggestion (suggestion)}
-							<p class="text-xs text-zinc-500">{suggestion}</p>
+							<p class="field-help">{suggestion}</p>
 						{/each}
 						{#if passwordStrength.isBreached}
-							<p class="text-xs text-red-400 mt-1">This password was found in breach databases</p>
+							<p class="field-help error">This password was found in breach databases</p>
 						{/if}
 					</div>
 				{/if}
-				<div class="space-y-3">
-					<label class="flex items-center gap-2 text-sm">
-						<input type="checkbox" bind:checked={formData.require_2fa} class="rounded" />
-						<span class="text-zinc-300">Require Two-Factor Authentication</span>
+				<div class="checkbox-stack">
+					<label class="checkbox-row">
+						<input type="checkbox" bind:checked={formData.require_2fa} />
+						<span>Require Two-Factor Authentication</span>
 					</label>
-					<label class="flex items-center gap-2 text-sm">
-						<input type="checkbox" bind:checked={formData.temporary_password} class="rounded" />
-						<span class="text-zinc-300">Temporary password (expires)</span>
+					<label class="checkbox-row">
+						<input type="checkbox" bind:checked={formData.temporary_password} />
+						<span>Temporary password (expires)</span>
 					</label>
-					<label class="flex items-center gap-2 text-sm">
-						<input
-							type="checkbox"
-							bind:checked={formData.require_password_change}
-							class="rounded"
-						/>
-						<span class="text-zinc-300">Require password change on first login</span>
+					<label class="checkbox-row">
+						<input type="checkbox" bind:checked={formData.require_password_change} />
+						<span>Require password change on first login</span>
 					</label>
 				</div>
 				<button
 					type="button"
-					class="text-sm text-blue-400"
+					class="link-button"
 					onclick={() => (showAdvancedSecurity = !showAdvancedSecurity)}
 				>
 					{showAdvancedSecurity ? 'Hide' : 'Show'} Advanced Security
 				</button>
 				{#if showAdvancedSecurity}
-					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-						<div>
-							<label class="block text-sm text-zinc-400 mb-1" for="session_timeout"
-								>Session Timeout (min)</label
-							>
+					<div class="form-grid">
+						<div class="field-group">
+							<label for="session_timeout">Session Timeout (min)</label>
 							<input
 								id="session_timeout"
 								type="number"
 								bind:value={formData.session_timeout}
-								class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-white"
+								class="form-control"
 							/>
 						</div>
-						<div>
-							<label class="block text-sm text-zinc-400 mb-1" for="password_expires"
-								>Password Expires</label
-							>
+						<div class="field-group">
+							<label for="password_expires">Password Expires</label>
 							<input
 								id="password_expires"
 								type="date"
 								bind:value={formData.password_expires_at}
-								class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-white"
+								class="form-control"
 							/>
 						</div>
 					</div>
 				{/if}
 			{:else if activeStep === 'role'}
-				<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+				<div class="role-grid">
 					{#each ROLE_DEFINITIONS as role (role.key)}
 						{@const RoleIcon = role.icon}
 						<button
 							type="button"
-							class="text-left p-5 rounded-xl border transition-all {formData.role === role.key
-								? 'border-blue-500 bg-blue-500/10'
-								: 'border-zinc-800 bg-zinc-900 hover:border-zinc-700'}"
+							class={{ 'role-card': true, selected: formData.role === role.key }}
 							onclick={() => selectRole(role.key)}
 						>
-							<div class="flex items-center gap-3 mb-3">
-								<div
-									class="w-10 h-10 rounded-lg flex items-center justify-center"
-									style="background: {role.color}20; color: {role.color}"
-								>
+							<div class="role-header">
+								<div class="role-icon" style="background: {role.color}20; color: {role.color}">
 									<RoleIcon size={20} />
 								</div>
 								<div>
-									<h3 class="font-semibold">{role.name}</h3>
-									<p class="text-xs text-zinc-500">Level {role.accessLevel}</p>
+									<h3>{role.name}</h3>
+									<p>Level {role.accessLevel}</p>
 								</div>
 							</div>
-							<p class="text-sm text-zinc-400 mb-3">{role.description}</p>
-							<div class="space-y-1">
+							<p class="role-description">{role.description}</p>
+							<div class="role-points">
 								{#each role.permissions.slice(0, 3) as perm (perm)}
-									<p class="text-xs text-emerald-400">+ {perm}</p>
+									<p class="positive">+ {perm}</p>
 								{/each}
 								{#each role.restrictions.slice(0, 2) as restriction (restriction)}
-									<p class="text-xs text-red-400">- {restriction}</p>
+									<p class="negative">- {restriction}</p>
 								{/each}
 							</div>
 						</button>
@@ -1364,65 +1361,46 @@
 				</div>
 				<button
 					type="button"
-					class="text-sm text-blue-400"
+					class="link-button"
 					onclick={() => (showPermissionDetails = !showPermissionDetails)}
 				>
 					{showPermissionDetails ? 'Hide' : 'Show'} Permission Details
 				</button>
 				{#if showPermissionDetails}
-					<div class="bg-zinc-900 rounded-lg p-4">
-						<h4 class="text-sm font-medium mb-2">Access Scope</h4>
-						<div class="grid grid-cols-2 gap-2 text-sm">
-							<span class="text-zinc-400">Products:</span><span
-								>{formData.access_scope.products}</span
-							>
-							<span class="text-zinc-400">Orders:</span><span>{formData.access_scope.orders}</span>
-							<span class="text-zinc-400">Customers:</span><span
-								>{formData.access_scope.customers}</span
-							>
-							<span class="text-zinc-400">Reports:</span><span>{formData.access_scope.reports}</span
-							>
-							<span class="text-zinc-400">Settings:</span><span
-								>{formData.access_scope.settings}</span
-							>
+					<div class="info-panel">
+						<h4>Access Scope</h4>
+						<div class="scope-grid">
+							<span>Products:</span><span>{formData.access_scope.products}</span>
+							<span>Orders:</span><span>{formData.access_scope.orders}</span>
+							<span>Customers:</span><span>{formData.access_scope.customers}</span>
+							<span>Reports:</span><span>{formData.access_scope.reports}</span>
+							<span>Settings:</span><span>{formData.access_scope.settings}</span>
 						</div>
 					</div>
 				{/if}
 			{:else if activeStep === 'organization'}
-				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-					<div>
-						<label class="block text-sm text-zinc-400 mb-1" for="department">Department *</label>
-						<select
-							id="department"
-							bind:value={formData.department}
-							class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-white"
-						>
+				<div class="form-grid">
+					<div class="field-group">
+						<label for="department">Department *</label>
+						<select id="department" bind:value={formData.department} class="form-control">
 							<option value="">Select department</option>
 							{#each departments as dept (dept.id)}
 								<option value={dept.id}>{dept.name}</option>
 							{/each}
 						</select>
 					</div>
-					<div>
-						<label class="block text-sm text-zinc-400 mb-1" for="team">Team</label>
-						<select
-							id="team"
-							bind:value={formData.team}
-							class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-white"
-						>
+					<div class="field-group">
+						<label for="team">Team</label>
+						<select id="team" bind:value={formData.team} class="form-control">
 							<option value="">Select team</option>
 							{#each teams as team (team.id)}
 								<option value={team.id}>{team.name}</option>
 							{/each}
 						</select>
 					</div>
-					<div>
-						<label class="block text-sm text-zinc-400 mb-1" for="manager">Manager</label>
-						<select
-							id="manager"
-							bind:value={formData.manager_id}
-							class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-white"
-						>
+					<div class="field-group">
+						<label for="manager">Manager</label>
+						<select id="manager" bind:value={formData.manager_id} class="form-control">
 							<option value="">
 								{loadingManagers ? 'Loading...' : 'Select manager'}
 							</option>
@@ -1431,74 +1409,56 @@
 							{/each}
 						</select>
 					</div>
-					<div>
-						<label class="block text-sm text-zinc-400 mb-1" for="job_title">Job Title</label>
+					<div class="field-group">
+						<label for="job_title">Job Title</label>
 						<input
 							id="job_title"
 							type="text"
 							bind:value={formData.job_title}
-							class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-white"
+							class="form-control"
 						/>
 					</div>
-					<div>
-						<label class="block text-sm text-zinc-400 mb-1" for="location">Location *</label>
-						<select
-							id="location"
-							bind:value={formData.location}
-							class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-white"
-						>
+					<div class="field-group">
+						<label for="location">Location *</label>
+						<select id="location" bind:value={formData.location} class="form-control">
 							<option value="">Select location</option>
 							{#each locations as loc (loc.id)}
 								<option value={loc.id}>{loc.name}</option>
 							{/each}
 						</select>
 					</div>
-					<div>
-						<label class="block text-sm text-zinc-400 mb-1" for="office">Office</label>
-						<input
-							id="office"
-							type="text"
-							bind:value={formData.office}
-							class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-white"
-						/>
+					<div class="field-group">
+						<label for="office">Office</label>
+						<input id="office" type="text" bind:value={formData.office} class="form-control" />
 					</div>
-					<div>
-						<label class="block text-sm text-zinc-400 mb-1" for="cost_center">Cost Center</label>
+					<div class="field-group">
+						<label for="cost_center">Cost Center</label>
 						<input
 							id="cost_center"
 							type="text"
 							bind:value={formData.cost_center}
-							class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-white"
+							class="form-control"
 						/>
 					</div>
-					<div>
-						<label class="block text-sm text-zinc-400 mb-1" for="start_date">Start Date</label>
+					<div class="field-group">
+						<label for="start_date">Start Date</label>
 						<input
 							id="start_date"
 							type="date"
 							bind:value={formData.start_date}
-							class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-white"
+							class="form-control"
 						/>
 					</div>
 				</div>
 			{:else if activeStep === 'preferences'}
-				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-					<div>
-						<label class="block text-sm text-zinc-400 mb-1" for="timezone">Timezone</label>
-						<input
-							id="timezone"
-							type="text"
-							bind:value={formData.timezone}
-							class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-white"
-						/>
+				<div class="form-grid">
+					<div class="field-group">
+						<label for="timezone">Timezone</label>
+						<input id="timezone" type="text" bind:value={formData.timezone} class="form-control" />
 					</div>
-					<div>
-						<label class="block text-sm text-zinc-400 mb-1" for="language">Language</label>
-						<select
-							id="language"
-							bind:value={formData.language}
-							class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-white"
-						>
+					<div class="field-group">
+						<label for="language">Language</label>
+						<select id="language" bind:value={formData.language} class="form-control">
 							<option value="en">English</option>
 							<option value="es">Spanish</option>
 							<option value="pt">Portuguese</option>
@@ -1506,126 +1466,597 @@
 					</div>
 				</div>
 			{:else if activeStep === 'compliance'}
-				<div class="space-y-4">
-					<label class="flex items-center gap-3 p-4 bg-zinc-900 rounded-lg border border-zinc-800">
-						<input type="checkbox" bind:checked={formData.terms_accepted} class="rounded" />
-						<span class="text-sm text-zinc-300">I accept the Terms of Service *</span>
+				<div class="compliance-stack">
+					<label class="check-card">
+						<input type="checkbox" bind:checked={formData.terms_accepted} />
+						<span>I accept the Terms of Service *</span>
 					</label>
-					<label class="flex items-center gap-3 p-4 bg-zinc-900 rounded-lg border border-zinc-800">
-						<input type="checkbox" bind:checked={formData.privacy_accepted} class="rounded" />
-						<span class="text-sm text-zinc-300">I accept the Privacy Policy *</span>
+					<label class="check-card">
+						<input type="checkbox" bind:checked={formData.privacy_accepted} />
+						<span>I accept the Privacy Policy *</span>
 					</label>
-					<label class="flex items-center gap-3 p-4 bg-zinc-900 rounded-lg border border-zinc-800">
-						<input
-							type="checkbox"
-							bind:checked={formData.data_processing_consent}
-							class="rounded"
-						/>
-						<span class="text-sm text-zinc-300">Data Processing Consent</span>
+					<label class="check-card">
+						<input type="checkbox" bind:checked={formData.data_processing_consent} />
+						<span>Data Processing Consent</span>
 					</label>
-					<label class="flex items-center gap-3 p-4 bg-zinc-900 rounded-lg border border-zinc-800">
-						<input type="checkbox" bind:checked={formData.marketing_consent} class="rounded" />
-						<span class="text-sm text-zinc-300">Marketing Communications</span>
+					<label class="check-card">
+						<input type="checkbox" bind:checked={formData.marketing_consent} />
+						<span>Marketing Communications</span>
 					</label>
-					<div>
-						<label class="block text-sm text-zinc-400 mb-1" for="onboarding">Onboarding Plan</label>
-						<select
-							id="onboarding"
-							bind:value={formData.onboarding_plan}
-							class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-white"
-						>
+					<div class="field-group">
+						<label for="onboarding">Onboarding Plan</label>
+						<select id="onboarding" bind:value={formData.onboarding_plan} class="form-control">
 							{#each onboardingPlans as plan (plan.id)}
 								<option value={plan.id}>{plan.name}</option>
 							{/each}
 						</select>
 					</div>
 					<div>
-						<span class="block text-sm text-zinc-400 mb-1">Training Modules</span>
-						<div class="flex flex-wrap gap-2">
+						<span class="field-label">Training Modules</span>
+						<div class="chip-list">
 							{#each trainingModules as mod (mod.id)}
-								<span class="px-3 py-1 bg-zinc-800 rounded-full text-xs text-zinc-300"
-									>{mod.name || mod.id}</span
-								>
+								<span class="training-chip">{mod.name || mod.id}</span>
 							{/each}
 							{#if trainingModules.length === 0}
-								<span class="text-xs text-zinc-500"
-									>Assigned: {formData.training_modules.join(', ')}</span
-								>
+								<span class="field-help">Assigned: {formData.training_modules.join(', ')}</span>
 							{/if}
 						</div>
 					</div>
 				</div>
 			{:else if activeStep === 'review'}
-				<div class="bg-zinc-900 rounded-xl p-6 space-y-4">
-					<h3 class="text-lg font-semibold">Review & Submit</h3>
-					<div class="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
-						<span class="text-zinc-400">Name:</span><span
-							>{formData.first_name} {formData.last_name}</span
-						>
-						<span class="text-zinc-400">Username:</span><span>{formData.username}</span>
-						<span class="text-zinc-400">Email:</span><span>{formData.email}</span>
-						<span class="text-zinc-400">Role:</span><span class="capitalize">{formData.role}</span>
-						<span class="text-zinc-400">Department:</span><span
-							>{formData.department || 'Not set'}</span
-						>
-						<span class="text-zinc-400">Status:</span><span class="capitalize"
-							>{formData.status}</span
-						>
-						<span class="text-zinc-400">Activation:</span><span class="capitalize"
-							>{formData.activation_method}</span
+				<div class="review-panel">
+					<h3>Review & Submit</h3>
+					<div class="review-grid">
+						<span>Name:</span><span>{formData.first_name} {formData.last_name}</span>
+						<span>Username:</span><span>{formData.username}</span>
+						<span>Email:</span><span>{formData.email}</span>
+						<span>Role:</span><span class="text-capitalize">{formData.role}</span>
+						<span>Department:</span><span>{formData.department || 'Not set'}</span>
+						<span>Status:</span><span class="text-capitalize">{formData.status}</span>
+						<span>Activation:</span><span class="text-capitalize">{formData.activation_method}</span
 						>
 					</div>
-					<div class="flex items-center gap-4 pt-4">
-						<label class="flex items-center gap-2 text-sm">
-							<input type="checkbox" bind:checked={formData.send_welcome_email} class="rounded" />
-							<span class="text-zinc-300">Send welcome email</span>
+					<div class="review-options">
+						<label class="checkbox-row">
+							<input type="checkbox" bind:checked={formData.send_welcome_email} />
+							<span>Send welcome email</span>
 						</label>
-						<label class="flex items-center gap-2 text-sm">
-							<input type="checkbox" bind:checked={formData.add_to_directory} class="rounded" />
-							<span class="text-zinc-300">Add to directory</span>
+						<label class="checkbox-row">
+							<input type="checkbox" bind:checked={formData.add_to_directory} />
+							<span>Add to directory</span>
 						</label>
 					</div>
 					{#if formData.notes}
-						<p class="text-sm text-zinc-400">Notes: {formData.notes}</p>
+						<p class="review-notes">Notes: {formData.notes}</p>
 					{/if}
 				</div>
 			{/if}
 
-			<div class="flex items-center justify-between pt-6 border-t border-zinc-800">
+			<div class="form-footer">
 				<button
 					type="button"
-					class="px-6 py-2.5 rounded-lg bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition-colors disabled:opacity-50"
+					class="secondary-button"
 					onclick={previousStep}
 					disabled={currentStepIndex === 0}
 				>
 					Previous
 				</button>
-				<div class="flex items-center gap-2">
+				<div class="form-status">
 					{#if !canProceed}
-						<span class="text-xs text-zinc-500">Complete required fields</span>
+						<span>Complete required fields</span>
 					{/if}
 					{#if validating}
-						<span class="text-xs text-zinc-500">Validating...</span>
+						<span>Validating...</span>
 					{/if}
 				</div>
 				{#if activeStep === 'review'}
-					<button
-						type="submit"
-						class="px-8 py-2.5 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-500 transition-colors disabled:opacity-50"
-						disabled={saving}
-					>
+					<button type="submit" class="primary-button primary-button--wide" disabled={saving}>
 						{saving ? 'Creating...' : 'Create User'}
 					</button>
 				{:else}
-					<button
-						type="button"
-						class="px-6 py-2.5 rounded-lg bg-blue-600 text-white hover:bg-blue-500 transition-colors"
-						onclick={nextStep}
-					>
-						Next
-					</button>
+					<button type="button" class="primary-button" onclick={nextStep}> Next </button>
 				{/if}
 			</div>
 		</form>
 	</div>
 </div>
+
+<style>
+	.create-user-page {
+		min-height: 100%;
+		background: #09090b;
+		color: #ffffff;
+		padding: 1.5rem;
+	}
+
+	.create-user-container {
+		width: min(100%, 56rem);
+		margin-inline: auto;
+	}
+
+	.page-header {
+		margin-bottom: 1.5rem;
+	}
+
+	.page-header h1 {
+		margin: 0 0 0.5rem;
+		font-size: 1.875rem;
+		font-weight: 700;
+		line-height: 1.2;
+	}
+
+	.page-header p {
+		margin: 0;
+		color: #a1a1aa;
+	}
+
+	.error-summary {
+		display: grid;
+		gap: 0.375rem;
+		margin-bottom: 1.5rem;
+		border: 1px solid rgb(239 68 68 / 30%);
+		border-radius: 0.5rem;
+		background: rgb(239 68 68 / 10%);
+		padding: 1rem;
+	}
+
+	.error-summary p {
+		margin: 0;
+		color: #f87171;
+		font-size: 0.875rem;
+	}
+
+	.step-nav {
+		display: flex;
+		gap: 0.25rem;
+		margin-bottom: 2rem;
+		overflow-x: auto;
+		padding-bottom: 0.5rem;
+	}
+
+	.step-button {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		flex: 0 0 auto;
+		border: 0;
+		border-radius: 0.5rem;
+		background: #18181b;
+		padding: 0.5rem 1rem;
+		color: #52525b;
+		font: inherit;
+		font-size: 0.875rem;
+		white-space: nowrap;
+		cursor: pointer;
+		transition:
+			background-color 160ms ease,
+			color 160ms ease;
+	}
+
+	.step-button.active {
+		background: #2563eb;
+		color: #ffffff;
+	}
+
+	.step-button.complete {
+		background: #27272a;
+		color: #d4d4d8;
+	}
+
+	.user-form,
+	.compliance-stack,
+	.checkbox-stack {
+		display: grid;
+		gap: 1.5rem;
+	}
+
+	.form-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 1rem;
+	}
+
+	.field-group {
+		display: grid;
+		gap: 0.25rem;
+	}
+
+	label,
+	.field-label {
+		color: #a1a1aa;
+		font-size: 0.875rem;
+	}
+
+	.form-control {
+		width: 100%;
+		min-height: 2.625rem;
+		border: 1px solid #3f3f46;
+		border-radius: 0.5rem;
+		background: #18181b;
+		padding: 0.625rem 1rem;
+		color: #ffffff;
+		font: inherit;
+	}
+
+	.form-control:focus {
+		outline: none;
+		border-color: #3b82f6;
+		box-shadow: 0 0 0 3px rgb(59 130 246 / 18%);
+	}
+
+	.field-with-status {
+		position: relative;
+	}
+
+	.field-with-status .form-control {
+		padding-right: 6.5rem;
+	}
+
+	.input-status {
+		position: absolute;
+		right: 0.75rem;
+		top: 50%;
+		transform: translateY(-50%);
+		color: #71717a;
+		font-size: 0.75rem;
+	}
+
+	.input-status.success {
+		color: #34d399;
+	}
+
+	.input-status.error,
+	.field-help.error {
+		color: #f87171;
+	}
+
+	.file-control {
+		color: #a1a1aa;
+		font-size: 0.875rem;
+	}
+
+	.profile-preview {
+		width: 4rem;
+		height: 4rem;
+		margin-top: 0.5rem;
+		border-radius: 999px;
+		object-fit: cover;
+	}
+
+	.inline-action,
+	.link-button {
+		width: fit-content;
+		border: 0;
+		background: transparent;
+		padding: 0;
+		font: inherit;
+		cursor: pointer;
+	}
+
+	.inline-action {
+		margin-top: 0.25rem;
+		color: #71717a;
+		font-size: 0.75rem;
+	}
+
+	.link-button {
+		color: #60a5fa;
+		font-size: 0.875rem;
+	}
+
+	.strength-panel,
+	.info-panel,
+	.review-panel {
+		border-radius: 0.75rem;
+		background: #18181b;
+	}
+
+	.strength-panel,
+	.info-panel {
+		padding: 1rem;
+	}
+
+	.strength-row {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-bottom: 0.5rem;
+	}
+
+	.strength-track {
+		flex: 1 1 auto;
+		height: 0.5rem;
+		overflow: hidden;
+		border-radius: 999px;
+		background: #27272a;
+	}
+
+	.strength-fill {
+		height: 100%;
+		border-radius: inherit;
+		transition:
+			width 160ms ease,
+			background-color 160ms ease;
+	}
+
+	.strength-fill.strong {
+		background: #10b981;
+	}
+
+	.strength-fill.medium {
+		background: #eab308;
+	}
+
+	.strength-fill.weak {
+		background: #ef4444;
+	}
+
+	.strength-meta,
+	.field-help,
+	.form-status,
+	.review-notes {
+		color: #71717a;
+		font-size: 0.75rem;
+	}
+
+	.field-help {
+		margin: 0;
+	}
+
+	.checkbox-row,
+	.check-card,
+	.review-options,
+	.form-footer,
+	.form-status,
+	.role-header {
+		display: flex;
+		align-items: center;
+	}
+
+	.checkbox-row {
+		gap: 0.5rem;
+		color: #d4d4d8;
+		font-size: 0.875rem;
+	}
+
+	input[type='checkbox'] {
+		width: 1rem;
+		height: 1rem;
+		accent-color: #2563eb;
+	}
+
+	.role-grid {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 1rem;
+	}
+
+	.role-card {
+		border: 1px solid #27272a;
+		border-radius: 0.75rem;
+		background: #18181b;
+		padding: 1.25rem;
+		color: #ffffff;
+		text-align: left;
+		cursor: pointer;
+		transition:
+			background-color 160ms ease,
+			border-color 160ms ease;
+	}
+
+	.role-card:hover {
+		border-color: #3f3f46;
+	}
+
+	.role-card.selected {
+		border-color: #3b82f6;
+		background: rgb(59 130 246 / 10%);
+	}
+
+	.role-header {
+		gap: 0.75rem;
+		margin-bottom: 0.75rem;
+	}
+
+	.role-icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 2.5rem;
+		height: 2.5rem;
+		border-radius: 0.5rem;
+	}
+
+	.role-header h3,
+	.info-panel h4,
+	.review-panel h3 {
+		margin: 0;
+		font-weight: 600;
+	}
+
+	.role-header p,
+	.role-description,
+	.review-notes {
+		margin: 0;
+	}
+
+	.role-header p {
+		color: #71717a;
+		font-size: 0.75rem;
+	}
+
+	.role-description {
+		margin-bottom: 0.75rem;
+		color: #a1a1aa;
+		font-size: 0.875rem;
+		line-height: 1.5;
+	}
+
+	.role-points {
+		display: grid;
+		gap: 0.25rem;
+	}
+
+	.role-points p {
+		margin: 0;
+		font-size: 0.75rem;
+	}
+
+	.positive {
+		color: #34d399;
+	}
+
+	.negative {
+		color: #f87171;
+	}
+
+	.info-panel h4 {
+		margin-bottom: 0.5rem;
+		font-size: 0.875rem;
+	}
+
+	.scope-grid,
+	.review-grid {
+		display: grid;
+		grid-template-columns: max-content 1fr;
+		gap: 0.5rem 2rem;
+		font-size: 0.875rem;
+	}
+
+	.scope-grid span:nth-child(odd),
+	.review-grid span:nth-child(odd) {
+		color: #a1a1aa;
+	}
+
+	.check-card {
+		gap: 0.75rem;
+		border: 1px solid #27272a;
+		border-radius: 0.5rem;
+		background: #18181b;
+		padding: 1rem;
+		color: #d4d4d8;
+	}
+
+	.chip-list {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin-top: 0.25rem;
+	}
+
+	.training-chip {
+		border-radius: 999px;
+		background: #27272a;
+		padding: 0.25rem 0.75rem;
+		color: #d4d4d8;
+		font-size: 0.75rem;
+	}
+
+	.review-panel {
+		display: grid;
+		gap: 1rem;
+		padding: 1.5rem;
+	}
+
+	.review-panel h3 {
+		font-size: 1.125rem;
+	}
+
+	.text-capitalize {
+		text-transform: capitalize;
+	}
+
+	.review-options {
+		flex-wrap: wrap;
+		gap: 1rem;
+		border-top: 1px solid #27272a;
+		padding-top: 1rem;
+	}
+
+	.form-footer {
+		justify-content: space-between;
+		gap: 1rem;
+		border-top: 1px solid #27272a;
+		padding-top: 1.5rem;
+	}
+
+	.form-status {
+		justify-content: center;
+		gap: 0.5rem;
+		text-align: center;
+	}
+
+	.primary-button,
+	.secondary-button {
+		border: 0;
+		border-radius: 0.5rem;
+		padding: 0.625rem 1.5rem;
+		font: inherit;
+		cursor: pointer;
+		transition:
+			background-color 160ms ease,
+			opacity 160ms ease;
+	}
+
+	.primary-button {
+		background: #2563eb;
+		color: #ffffff;
+	}
+
+	.primary-button:hover:not(:disabled) {
+		background: #3b82f6;
+	}
+
+	.primary-button--wide {
+		padding-inline: 2rem;
+		font-weight: 600;
+	}
+
+	.secondary-button {
+		background: #27272a;
+		color: #d4d4d8;
+	}
+
+	.secondary-button:hover:not(:disabled) {
+		background: #3f3f46;
+	}
+
+	.primary-button:disabled,
+	.secondary-button:disabled {
+		cursor: not-allowed;
+		opacity: 0.5;
+	}
+
+	@media (max-width: 760px) {
+		.create-user-page {
+			padding: 1rem;
+		}
+
+		.form-grid,
+		.role-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.form-footer {
+			align-items: stretch;
+			flex-direction: column;
+		}
+
+		.primary-button,
+		.secondary-button {
+			width: 100%;
+		}
+	}
+
+	@media (max-width: 520px) {
+		.scope-grid,
+		.review-grid {
+			grid-template-columns: 1fr;
+			gap: 0.25rem;
+		}
+
+		.review-grid span:nth-child(even) {
+			margin-bottom: 0.5rem;
+		}
+	}
+</style>
