@@ -5,7 +5,7 @@
 	 * Displays time series data with support for multiple metrics,
 	 * tooltips, and responsive design.
 	 */
-	import { onMount, onDestroy } from 'svelte';
+	import type { Attachment } from 'svelte/attachments';
 
 	interface DataPoint {
 		date: string;
@@ -37,7 +37,7 @@
 		formatDate = (d) => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 	}: Props = $props();
 
-	let containerEl: HTMLDivElement;
+	let containerEl: HTMLDivElement | null = null;
 	let width = $state(600);
 	let hoveredIndex: number | null = $state(null);
 	let tooltipX = $state(0);
@@ -53,7 +53,7 @@
 	// Calculate scales
 	let values = $derived(data.map((d) => d.value));
 	let minValue = $derived(Math.min(...values, 0));
-	let maxValue = $derived(Math.max(...values));
+	let maxValue = $derived(values.length === 0 ? 0 : Math.max(...values, 0));
 	let valueRange = $derived(maxValue - minValue || 1);
 
 	// Scale functions
@@ -78,10 +78,12 @@
 
 	// Generate SVG path for area
 	let areaPath = $derived(
-		linePath +
-			` L ${scaleX(data.length - 1)} ${padding.top + chartHeight}` +
-			` L ${padding.left} ${padding.top + chartHeight}` +
-			` Z`
+		data.length > 1
+			? linePath +
+					` L ${scaleX(data.length - 1)} ${padding.top + chartHeight}` +
+					` L ${padding.left} ${padding.top + chartHeight}` +
+					` Z`
+			: ''
 	);
 
 	// Y-axis ticks
@@ -97,12 +99,23 @@
 		data.filter((_, i) => i % Math.ceil(data.length / 5) === 0 || i === data.length - 1)
 	);
 
-	// Handle resize
-	function handleResize() {
-		if (containerEl) {
-			width = containerEl.clientWidth;
-		}
-	}
+	const captureContainer: Attachment<HTMLDivElement> = (element) => {
+		containerEl = element;
+
+		const resize = () => {
+			width = element.clientWidth || 600;
+		};
+
+		resize();
+
+		const observer = new ResizeObserver(resize);
+		observer.observe(element);
+
+		return () => {
+			observer.disconnect();
+			if (containerEl === element) containerEl = null;
+		};
+	};
 
 	// Handle mouse events
 	function handleMouseMove(event: MouseEvent) {
@@ -122,31 +135,22 @@
 	function handleMouseLeave() {
 		hoveredIndex = null;
 	}
-
-	onMount(() => {
-		handleResize();
-		window.addEventListener('resize', handleResize);
-	});
-
-	onDestroy(() => {
-		window.removeEventListener('resize', handleResize);
-	});
 </script>
 
-<div class="bg-white rounded-xl border border-gray-200 p-4">
+<div class="time-series-chart">
 	{#if title}
-		<h3 class="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
+		<h3>{title}</h3>
 	{/if}
 
 	<div
-		bind:this={containerEl}
-		class="relative"
+		{@attach captureContainer}
+		class="time-series-chart__plot"
 		onmousemove={handleMouseMove}
 		onmouseleave={handleMouseLeave}
 		role="img"
 		aria-label="Time series chart"
 	>
-		<svg aria-hidden="true" {width} {height} class="overflow-visible">
+		<svg aria-hidden="true" {width} {height} class="time-series-chart__svg">
 			<!-- Grid lines -->
 			{#each yTicks as tick (tick.value)}
 				<line
@@ -166,7 +170,7 @@
 					y={tick.y}
 					text-anchor="end"
 					dominant-baseline="middle"
-					class="text-xs fill-gray-500"
+					class="time-series-chart__axis-label"
 				>
 					{formatValue(tick.value)}
 				</text>
@@ -175,7 +179,12 @@
 			<!-- X-axis labels -->
 			{#each xLabels as item (item.date)}
 				{@const index = data.indexOf(item)}
-				<text x={scaleX(index)} y={height - 8} text-anchor="middle" class="text-xs fill-gray-500">
+				<text
+					x={scaleX(index)}
+					y={height - 8}
+					text-anchor="middle"
+					class="time-series-chart__axis-label"
+				>
 					{formatDate(item.date)}
 				</text>
 			{/each}
@@ -231,12 +240,70 @@
 		{#if hoveredIndex !== null}
 			{@const point = data[hoveredIndex]}
 			<div
-				class="absolute pointer-events-none bg-gray-900 text-white px-3 py-2 rounded-lg text-sm shadow-lg z-10 transform -translate-x-1/2"
-				style="left: {tooltipX}px; top: {tooltipY - 50}px"
+				class="time-series-chart__tooltip"
+				style:left={`${tooltipX}px`}
+				style:top={`${tooltipY - 50}px`}
 			>
-				<div class="font-medium">{formatValue(point.value)}</div>
-				<div class="text-gray-400 text-xs">{formatDate(point.date)}</div>
+				<div class="time-series-chart__tooltip-value">{formatValue(point.value)}</div>
+				<div class="time-series-chart__tooltip-date">{formatDate(point.date)}</div>
 			</div>
 		{/if}
 	</div>
 </div>
+
+<style>
+	.time-series-chart {
+		border: 1px solid #e5e7eb;
+		border-radius: 0.75rem;
+		background: #ffffff;
+		padding: 1rem;
+	}
+
+	.time-series-chart h3 {
+		margin: 0 0 1rem;
+		color: #111827;
+		font-size: 1.125rem;
+		font-weight: 600;
+		line-height: 1.5;
+	}
+
+	.time-series-chart__plot {
+		position: relative;
+	}
+
+	.time-series-chart__svg {
+		overflow: visible;
+	}
+
+	.time-series-chart__axis-label {
+		fill: #6b7280;
+		font-size: 0.75rem;
+		line-height: 1rem;
+	}
+
+	.time-series-chart__tooltip {
+		position: absolute;
+		z-index: 10;
+		pointer-events: none;
+		transform: translateX(-50%);
+		border-radius: 0.5rem;
+		background: #111827;
+		box-shadow:
+			0 10px 15px -3px rgba(17, 24, 39, 0.2),
+			0 4px 6px -4px rgba(17, 24, 39, 0.2);
+		color: #ffffff;
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+		padding: 0.5rem 0.75rem;
+	}
+
+	.time-series-chart__tooltip-value {
+		font-weight: 500;
+	}
+
+	.time-series-chart__tooltip-date {
+		color: #9ca3af;
+		font-size: 0.75rem;
+		line-height: 1rem;
+	}
+</style>
