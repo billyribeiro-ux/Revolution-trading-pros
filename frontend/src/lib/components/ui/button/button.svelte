@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { Attachment } from 'svelte/attachments';
-	import { cn } from '$lib/utils.js';
 	import { buttonVariants, type ButtonProps } from './button.types';
 	let {
 		class: className,
@@ -28,7 +27,7 @@
 	<a
 		{@attach captureRef}
 		data-slot="button"
-		class={cn(buttonVariants({ variant, size }), className)}
+		class={[buttonVariants({ variant, size }), className]}
 		href={disabled ? undefined : href}
 		aria-disabled={disabled}
 		role={disabled ? 'link' : undefined}
@@ -41,7 +40,7 @@
 	<button
 		{@attach captureRef}
 		data-slot="button"
-		class={cn(buttonVariants({ variant, size }), className)}
+		class={[buttonVariants({ variant, size }), className]}
 		{type}
 		{disabled}
 		{...restProps}

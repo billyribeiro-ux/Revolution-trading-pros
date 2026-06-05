@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Attachment } from 'svelte/attachments';
 	import type { HTMLAnchorAttributes } from 'svelte/elements';
-	import { cn, type WithElementRef } from '$lib/utils.js';
+	import { type WithElementRef } from '$lib/utils.js';
 	import { badgeVariants, type BadgeVariant } from './badge.types';
 
 	let {
@@ -30,7 +30,7 @@
 	{@attach captureRef}
 	data-slot="badge"
 	{href}
-	class={cn(badgeVariants({ variant }), className)}
+	class={[badgeVariants({ variant }), className]}
 	{...restProps}
 >
 	{@render children?.()}
