@@ -59,67 +59,72 @@
 	}
 </script>
 
-<div class="bg-linear-to-br from-slate-900 to-slate-800 rounded-xl p-4 text-white">
+<div class="real-time-widget">
 	<!-- Header -->
-	<div class="flex items-center justify-between mb-4">
-		<div class="flex items-center gap-2">
-			<div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-			<span class="text-sm font-medium">Real-Time</span>
+	<div class="real-time-widget__header">
+		<div class="real-time-widget__title">
+			<div class="real-time-widget__status-dot"></div>
+			<span>Real-Time</span>
 		</div>
 		{#if lastUpdated}
-			<span class="text-xs text-gray-400">
+			<span class="real-time-widget__timestamp">
 				Updated {formatTime(lastUpdated)}
 			</span>
 		{/if}
 	</div>
 
 	{#if loading}
-		<div class="flex items-center justify-center py-8">
-			<div class="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+		<div class="real-time-widget__loading">
+			<div class="real-time-widget__spinner"></div>
 		</div>
 	{:else if error}
-		<div class="text-center py-4 text-red-400">
+		<div class="real-time-widget__error">
 			<p>{error}</p>
 		</div>
 	{:else if metrics}
 		<!-- Main Metrics -->
-		<div class="grid {compact ? 'grid-cols-2' : 'grid-cols-2 md:grid-cols-4'} gap-4 mb-4">
-			<div class="text-center">
-				<div class="text-2xl font-bold text-green-400">
+		<div
+			class={{
+				'real-time-widget__metrics': true,
+				'real-time-widget__metrics--compact': compact
+			}}
+		>
+			<div class="real-time-widget__metric">
+				<div class="real-time-widget__metric-value real-time-widget__metric-value--active">
 					{formatNumber(metrics.active_users)}
 				</div>
-				<div class="text-xs text-gray-400">Active Users</div>
+				<div class="real-time-widget__metric-label">Active Users</div>
 			</div>
-			<div class="text-center">
-				<div class="text-2xl font-bold text-blue-400">
+			<div class="real-time-widget__metric">
+				<div class="real-time-widget__metric-value real-time-widget__metric-value--views">
 					{formatNumber(metrics.page_views)}
 				</div>
-				<div class="text-xs text-gray-400">Page Views</div>
+				<div class="real-time-widget__metric-label">Page Views</div>
 			</div>
-			<div class="text-center">
-				<div class="text-2xl font-bold text-purple-400">
+			<div class="real-time-widget__metric">
+				<div class="real-time-widget__metric-value real-time-widget__metric-value--conversions">
 					{formatNumber(metrics.conversions)}
 				</div>
-				<div class="text-xs text-gray-400">Conversions</div>
+				<div class="real-time-widget__metric-label">Conversions</div>
 			</div>
-			<div class="text-center">
-				<div class="text-2xl font-bold text-yellow-400">
+			<div class="real-time-widget__metric">
+				<div class="real-time-widget__metric-value real-time-widget__metric-value--revenue">
 					{formatCurrency(metrics.revenue)}
 				</div>
-				<div class="text-xs text-gray-400">Revenue</div>
+				<div class="real-time-widget__metric-label">Revenue</div>
 			</div>
 		</div>
 
 		{#if !compact}
 			<!-- Top Pages -->
 			{#if metrics.top_pages && metrics.top_pages.length > 0}
-				<div class="border-t border-gray-700 pt-4">
-					<h4 class="text-xs font-medium text-gray-400 mb-2">Top Pages (30m)</h4>
-					<div class="space-y-2">
+				<div class="real-time-widget__section">
+					<h4>Top Pages (30m)</h4>
+					<div class="real-time-widget__rows">
 						{#each metrics.top_pages.slice(0, 5) as page (page.page_path)}
-							<div class="flex items-center justify-between text-sm">
-								<span class="text-gray-300 truncate max-w-[200px]">{page.page_path}</span>
-								<span class="text-gray-400">{page.views}</span>
+							<div class="real-time-widget__row">
+								<span class="real-time-widget__path">{page.page_path}</span>
+								<span class="real-time-widget__row-count">{page.views}</span>
 							</div>
 						{/each}
 					</div>
@@ -128,13 +133,13 @@
 
 			<!-- Top Events -->
 			{#if metrics.top_events && metrics.top_events.length > 0}
-				<div class="border-t border-gray-700 pt-4 mt-4">
-					<h4 class="text-xs font-medium text-gray-400 mb-2">Top Events (30m)</h4>
-					<div class="flex flex-wrap gap-2">
+				<div class="real-time-widget__section">
+					<h4>Top Events (30m)</h4>
+					<div class="real-time-widget__events">
 						{#each metrics.top_events.slice(0, 8) as event (event.event_name)}
-							<span class="px-2 py-1 bg-gray-700 rounded text-xs">
+							<span class="real-time-widget__event">
 								{event.event_name}
-								<span class="text-gray-400 ml-1">{event.count}</span>
+								<span>{event.count}</span>
 							</span>
 						{/each}
 					</div>
@@ -143,3 +148,207 @@
 		{/if}
 	{/if}
 </div>
+
+<style>
+	.real-time-widget {
+		border-radius: 0.75rem;
+		background: linear-gradient(135deg, #0f172a, #1e293b);
+		color: #ffffff;
+		padding: 1rem;
+	}
+
+	.real-time-widget__header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 1rem;
+	}
+
+	.real-time-widget__title {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.875rem;
+		font-weight: 500;
+		line-height: 1.25rem;
+	}
+
+	.real-time-widget__status-dot {
+		width: 0.5rem;
+		height: 0.5rem;
+		border-radius: 999px;
+		background: #4ade80;
+		animation: pulse-dot 1.6s ease-in-out infinite;
+	}
+
+	.real-time-widget__timestamp,
+	.real-time-widget__metric-label,
+	.real-time-widget__row-count,
+	.real-time-widget__event span {
+		color: #9ca3af;
+	}
+
+	.real-time-widget__timestamp,
+	.real-time-widget__metric-label,
+	.real-time-widget__event {
+		font-size: 0.75rem;
+		line-height: 1rem;
+	}
+
+	.real-time-widget__loading {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 2rem 0;
+	}
+
+	.real-time-widget__spinner {
+		width: 1.5rem;
+		height: 1.5rem;
+		border: 2px solid rgba(255, 255, 255, 0.2);
+		border-top-color: #ffffff;
+		border-radius: 999px;
+		animation: spin 900ms linear infinite;
+	}
+
+	.real-time-widget__error {
+		color: #f87171;
+		padding: 1rem 0;
+		text-align: center;
+	}
+
+	.real-time-widget__error p {
+		margin: 0;
+	}
+
+	.real-time-widget__metrics {
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 1rem;
+		margin-bottom: 1rem;
+	}
+
+	.real-time-widget__metrics--compact {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.real-time-widget__metric {
+		text-align: center;
+	}
+
+	.real-time-widget__metric-value {
+		font-size: 1.5rem;
+		font-weight: 700;
+		line-height: 2rem;
+	}
+
+	.real-time-widget__metric-value--active {
+		color: #4ade80;
+	}
+
+	.real-time-widget__metric-value--views {
+		color: #60a5fa;
+	}
+
+	.real-time-widget__metric-value--conversions {
+		color: #c084fc;
+	}
+
+	.real-time-widget__metric-value--revenue {
+		color: #facc15;
+	}
+
+	.real-time-widget__section {
+		border-top: 1px solid #374151;
+		padding-top: 1rem;
+	}
+
+	.real-time-widget__section + .real-time-widget__section {
+		margin-top: 1rem;
+	}
+
+	.real-time-widget__section h4 {
+		margin: 0 0 0.5rem;
+		color: #9ca3af;
+		font-size: 0.75rem;
+		font-weight: 500;
+		line-height: 1rem;
+	}
+
+	.real-time-widget__rows {
+		display: grid;
+		gap: 0.5rem;
+	}
+
+	.real-time-widget__row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+	}
+
+	.real-time-widget__path {
+		overflow: hidden;
+		max-width: 12.5rem;
+		color: #d1d5db;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.real-time-widget__events {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	.real-time-widget__event {
+		border-radius: 0.25rem;
+		background: #374151;
+		padding: 0.25rem 0.5rem;
+	}
+
+	.real-time-widget__event span {
+		margin-left: 0.25rem;
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	@keyframes pulse-dot {
+		0%,
+		100% {
+			opacity: 1;
+			transform: scale(1);
+		}
+
+		50% {
+			opacity: 0.55;
+			transform: scale(0.86);
+		}
+	}
+
+	@media (max-width: 768px) {
+		.real-time-widget__metrics {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (max-width: 420px) {
+		.real-time-widget__header,
+		.real-time-widget__row {
+			align-items: flex-start;
+			flex-direction: column;
+			gap: 0.25rem;
+		}
+
+		.real-time-widget__path {
+			max-width: 100%;
+		}
+	}
+</style>
