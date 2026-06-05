@@ -182,282 +182,203 @@
 	<title>User Segments | Analytics</title>
 </svelte:head>
 
-<div class="bg-linear-to-br from-slate-950 via-slate-900 to-slate-950">
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-		<!-- Apple ICT7 Grade Header -->
-		<header class="flex items-center justify-between mb-8">
-			<div class="flex items-center gap-4">
-				<div
-					class="w-12 h-12 rounded-2xl bg-linear-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-2xl shadow-lg shadow-cyan-500/20"
-				>
-					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: users -->
-					<IconUsers size={24} aria-hidden="true" />
+<div class="segments-page">
+	<div class="segments-container">
+		<header class="segments-header">
+			<div class="title-row">
+				<div class="title-icon" aria-hidden="true">
+					<IconUsers size={24} />
 				</div>
 				<div>
-					<h1 class="text-2xl font-bold text-white tracking-tight">User Segments</h1>
-					<p class="text-sm text-slate-400">Create and manage audience segments</p>
+					<h1>User Segments</h1>
+					<p>Create and manage audience segments</p>
 				</div>
 			</div>
 			{#if isAnalyticsConnected}
-				<div class="flex items-center gap-3">
-					<div class="flex items-center bg-slate-800/50 rounded-xl border border-white/10 p-1">
+				<div class="header-actions">
+					<div class="view-toggle">
 						<button
+							type="button"
 							onclick={() => (viewMode = 'grid')}
 							aria-label="Grid view"
-							class="p-2 rounded-lg transition-all {viewMode === 'grid'
-								? 'bg-white/10 text-white'
-								: 'text-slate-400 hover:text-white'}"
+							class={{ 'view-toggle-button': true, active: viewMode === 'grid' }}
 						>
-							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: grid -->
 							<IconLayoutGrid size={16} aria-hidden="true" />
 						</button>
 						<button
+							type="button"
 							onclick={() => (viewMode = 'list')}
 							aria-label="List view"
-							class="p-2 rounded-lg transition-all {viewMode === 'list'
-								? 'bg-white/10 text-white'
-								: 'text-slate-400 hover:text-white'}"
+							class={{ 'view-toggle-button': true, active: viewMode === 'list' }}
 						>
-							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: list -->
 							<IconList size={16} aria-hidden="true" />
 						</button>
 					</div>
-					<button
-						onclick={() => (showCreateModal = true)}
-						class="px-5 py-2.5 bg-linear-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-400 hover:to-blue-500 text-sm font-semibold transition-all shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40"
-					>
+					<button type="button" onclick={() => (showCreateModal = true)} class="primary-button">
 						Create Segment
 					</button>
 				</div>
 			{/if}
 		</header>
 
-		<!-- Connection Check -->
 		{#if connectionLoading}
-			<div class="flex items-center justify-center py-20">
-				<div class="relative">
-					<div class="w-12 h-12 border-4 border-cyan-500/20 rounded-full"></div>
-					<div
-						class="absolute top-0 left-0 w-12 h-12 border-4 border-cyan-500 rounded-full animate-spin border-t-transparent"
-					></div>
-				</div>
+			<div class="loading-state" aria-label="Loading connection status" aria-live="polite">
+				<span class="spinner spinner--large"></span>
 			</div>
 		{:else if !isAnalyticsConnected}
 			<ServiceConnectionStatus feature="analytics" variant="card" showFeatures={true} />
 		{:else}
-			<!-- Stats Grid -->
-			<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-				<div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-5">
-					<div class="text-3xl font-bold text-white mb-1">{stats.total}</div>
-					<div class="text-sm text-slate-400">Total Segments</div>
+			<div class="stats-grid">
+				<div class="stat-card">
+					<div class="stat-value">{stats.total}</div>
+					<div class="stat-label">Total Segments</div>
 				</div>
-				<div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-5">
-					<div class="text-3xl font-bold text-cyan-400 mb-1">{stats.dynamic}</div>
-					<div class="text-sm text-slate-400">Dynamic Segments</div>
+				<div class="stat-card">
+					<div class="stat-value stat-value--cyan">{stats.dynamic}</div>
+					<div class="stat-label">Dynamic Segments</div>
 				</div>
-				<div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-5">
-					<div class="text-3xl font-bold text-purple-400 mb-1">{stats.static}</div>
-					<div class="text-sm text-slate-400">Static Segments</div>
+				<div class="stat-card">
+					<div class="stat-value stat-value--purple">{stats.static}</div>
+					<div class="stat-label">Static Segments</div>
 				</div>
-				<div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-5">
-					<div class="text-3xl font-bold text-emerald-400 mb-1">
+				<div class="stat-card">
+					<div class="stat-value stat-value--emerald">
 						{stats.totalUsers.toLocaleString()}
 					</div>
-					<div class="text-sm text-slate-400">Total Users</div>
+					<div class="stat-label">Total Users</div>
 				</div>
 			</div>
 
 			{#if loading}
-				<div class="flex items-center justify-center py-20">
-					<div class="relative">
-						<div class="w-10 h-10 border-4 border-cyan-500/20 rounded-full"></div>
-						<div
-							class="absolute top-0 left-0 w-10 h-10 border-4 border-cyan-500 rounded-full animate-spin border-t-transparent"
-						></div>
-					</div>
+				<div class="loading-state" aria-label="Loading segments" aria-live="polite">
+					<span class="spinner"></span>
 				</div>
 			{:else if error}
-				<div
-					class="bg-red-500/10 backdrop-blur-xl border border-red-500/20 rounded-2xl p-8 text-center"
-				>
-					<div
-						class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-red-500/10 flex items-center justify-center"
-					>
-						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: alert-circle error -->
-						<IconAlertCircle size={32} aria-hidden="true" />
+				<div class="feedback-card feedback-card--error">
+					<div class="feedback-icon" aria-hidden="true">
+						<IconAlertCircle size={32} />
 					</div>
-					<p class="text-red-400 mb-4">{error}</p>
-					<button
-						onclick={loadSegments}
-						class="px-5 py-2.5 bg-red-500/20 text-red-400 rounded-xl hover:bg-red-500/30 border border-red-500/30 transition-all"
-					>
-						Retry
-					</button>
+					<p>{error}</p>
+					<button type="button" onclick={loadSegments} class="danger-button">Retry</button>
 				</div>
 			{:else if segments.length === 0}
-				<div
-					class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-12 text-center"
-				>
-					<div
-						class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-cyan-500/10 flex items-center justify-center"
-					>
-						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: users (no segments empty state) -->
-						<IconUsers size={32} aria-hidden="true" />
+				<div class="empty-card">
+					<div class="empty-icon" aria-hidden="true">
+						<IconUsers size={32} />
 					</div>
-					<h3 class="text-lg font-medium text-white mb-2">No Segments Yet</h3>
-					<p class="text-slate-400 mb-6">Create your first segment to organize your users</p>
+					<h3>No Segments Yet</h3>
+					<p>Create your first segment to organize your users</p>
 					<button
+						type="button"
 						onclick={() => (showCreateModal = true)}
-						class="px-6 py-3 bg-linear-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-400 hover:to-blue-500 font-semibold shadow-lg shadow-cyan-500/25 transition-all"
+						class="primary-button primary-button--large"
 					>
 						Create Your First Segment
 					</button>
 				</div>
 			{:else if viewMode === 'grid'}
-				<!-- Grid View -->
-				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+				<div class="segment-grid">
 					{#each segments as segment (segment.key)}
 						<div
 							role="button"
 							tabindex="0"
 							onclick={() => (selectedSegment = segment)}
 							onkeydown={(e) => e.key === 'Enter' && (selectedSegment = segment)}
-							class="text-left bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 hover:bg-white/10 hover:border-cyan-500/30 transition-all cursor-pointer
-								{selectedSegment?.key === segment.key ? 'ring-2 ring-cyan-500 border-cyan-500/50' : ''}"
+							class={{
+								'segment-card': true,
+								selected: selectedSegment?.key === segment.key
+							}}
 						>
-							<div class="flex items-start justify-between mb-4">
-								<div
-									class="w-10 h-10 rounded-xl bg-linear-to-br {segmentColors[segment.type] ||
-										'from-gray-500 to-gray-600'} flex items-center justify-center"
-								>
-									<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: users (grid card) -->
+							<div class="segment-card-header">
+								<div class={['segment-icon', getSegmentTypeClass(segment.type)]}>
 									<IconUsers size={20} aria-hidden="true" />
 								</div>
 								{#if segment.is_system}
-									<span
-										class="px-2 py-1 rounded-lg bg-slate-500/20 text-slate-400 text-xs font-medium"
-										>System</span
-									>
+									<span class="system-badge">System</span>
 								{:else}
 									<button
+										type="button"
+										aria-label="Delete segment"
+										class="icon-action"
 										onclick={(e) => {
 											e.stopPropagation();
 											deleteSegment(segment.key);
 										}}
-										aria-label="Delete segment"
-										class="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
 									>
-										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: trash -->
 										<IconTrash size={16} aria-hidden="true" />
 									</button>
 								{/if}
 							</div>
-							<h3 class="font-semibold text-white mb-1">{segment.name}</h3>
+							<h3>{segment.name}</h3>
 							{#if segment.description}
-								<p class="text-sm text-slate-400 mb-4 line-clamp-2">{segment.description}</p>
+								<p class="segment-description">{segment.description}</p>
 							{/if}
-							<div class="flex items-center justify-between text-sm">
-								<span class="text-cyan-400 font-medium"
-									>{segment.user_count.toLocaleString()} users</span
-								>
-								<span class="text-slate-500 capitalize">{segment.type}</span>
+							<div class="segment-meta">
+								<span>{segment.user_count.toLocaleString()} users</span>
+								<span>{segment.type}</span>
 							</div>
 							{#if segment.percentage}
-								<div class="mt-3 h-1.5 bg-slate-700 rounded-full overflow-hidden">
+								<div class="progress-track">
 									<div
-										class="h-full bg-linear-to-r {segmentColors[segment.type] ||
-											'from-gray-500 to-gray-600'} rounded-full"
-										style="width: {Math.min(100, segment.percentage)}%"
+										class={['progress-fill', getSegmentTypeClass(segment.type)]}
+										style:width={`${Math.min(100, segment.percentage)}%`}
 									></div>
 								</div>
-								<p class="text-xs text-slate-500 mt-1">
-									{segment.percentage.toFixed(1)}% of total users
-								</p>
+								<p class="segment-percentage">{segment.percentage.toFixed(1)}% of total users</p>
 							{/if}
 						</div>
 					{/each}
 				</div>
 			{:else}
-				<!-- List View -->
-				<div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden">
-					<table class="w-full text-sm">
-						<thead class="bg-slate-800/50">
+				<div class="segments-table-card">
+					<table>
+						<thead>
 							<tr>
-								<th
-									class="text-left py-4 px-5 font-medium text-slate-400 uppercase text-xs tracking-wider"
-									>Segment</th
-								>
-								<th
-									class="text-left py-4 px-5 font-medium text-slate-400 uppercase text-xs tracking-wider"
-									>Type</th
-								>
-								<th
-									class="text-right py-4 px-5 font-medium text-slate-400 uppercase text-xs tracking-wider"
-									>Users</th
-								>
-								<th
-									class="text-right py-4 px-5 font-medium text-slate-400 uppercase text-xs tracking-wider"
-									>% of Total</th
-								>
-								<th
-									class="text-right py-4 px-5 font-medium text-slate-400 uppercase text-xs tracking-wider"
-								></th>
+								<th>Segment</th>
+								<th>Type</th>
+								<th class="numeric-cell">Users</th>
+								<th class="numeric-cell">% of Total</th>
+								<th class="action-cell"><span class="sr-only">Actions</span></th>
 							</tr>
 						</thead>
-						<tbody class="divide-y divide-white/5">
+						<tbody>
 							{#each segments as segment (segment.key)}
-								<tr
-									class="hover:bg-white/5 cursor-pointer transition-colors"
-									onclick={() => (selectedSegment = segment)}
-								>
-									<td class="py-4 px-5">
-										<div class="flex items-center gap-3">
-											<div
-												class="w-8 h-8 rounded-lg bg-linear-to-br {segmentColors[segment.type] ||
-													'from-gray-500 to-gray-600'} flex items-center justify-center"
-											>
-												<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: users (list row) -->
+								<tr onclick={() => (selectedSegment = segment)}>
+									<td>
+										<div class="table-segment">
+											<div class={['table-segment-icon', getSegmentTypeClass(segment.type)]}>
 												<IconUsers size={16} aria-hidden="true" />
 											</div>
-											<div>
-												<span class="font-medium text-white">{segment.name}</span>
+											<div class="table-segment-copy">
+												<span>{segment.name}</span>
 												{#if segment.description}
-													<p class="text-xs text-slate-500 truncate max-w-[200px]">
-														{segment.description}
-													</p>
+													<p>{segment.description}</p>
 												{/if}
 											</div>
 										</div>
 									</td>
-									<td class="py-4 px-5">
-										<span
-											class="px-2.5 py-1 rounded-lg text-xs font-medium capitalize
-											{segment.type === 'dynamic'
-												? 'bg-blue-500/20 text-blue-400'
-												: segment.type === 'static'
-													? 'bg-purple-500/20 text-purple-400'
-													: 'bg-amber-500/20 text-amber-400'}"
-										>
+									<td>
+										<span class={['type-badge', getSegmentTypeClass(segment.type)]}>
 											{segment.type}
 										</span>
 									</td>
-									<td class="py-4 px-5 text-right text-white font-medium">
+									<td class="numeric-cell strong-cell">
 										{segment.user_count.toLocaleString()}
 									</td>
-									<td class="py-4 px-5 text-right text-slate-400">
+									<td class="numeric-cell muted-cell">
 										{segment.percentage?.toFixed(1) || '-'}%
 									</td>
-									<td class="py-4 px-5 text-right">
+									<td class="action-cell">
 										{#if !segment.is_system}
 											<button
+												type="button"
 												onclick={(e) => {
 													e.stopPropagation();
 													deleteSegment(segment.key);
 												}}
 												aria-label="Delete segment"
-												class="p-2 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+												class="icon-action"
 											>
-												<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: trash (2nd) -->
 												<IconTrash size={16} aria-hidden="true" />
 											</button>
 										{/if}
@@ -474,93 +395,76 @@
 
 <!-- Create Segment Modal -->
 {#if showCreateModal}
-	<div class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-		<div
-			class="bg-slate-900 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-white/10 shadow-2xl"
-		>
-			<div class="p-6 border-b border-white/10">
-				<div class="flex items-center justify-between">
-					<h2 class="text-xl font-bold text-white">Create Segment</h2>
+	<div class="modal-shell">
+		<div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="create-segment-title">
+			<header class="modal-header">
+				<div class="modal-title-row">
+					<h2 id="create-segment-title">Create Segment</h2>
 					<button
+						type="button"
 						onclick={() => (showCreateModal = false)}
 						aria-label="Close modal"
-						class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+						class="modal-close-button"
 					>
-						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: x (close) -->
 						<IconX size={20} aria-hidden="true" />
 					</button>
 				</div>
-			</div>
+			</header>
 
-			<div class="p-6 space-y-6">
-				<!-- Basic Info -->
-				<div class="space-y-4">
-					<div>
-						<label for="segment-name" class="block text-sm font-medium text-slate-300 mb-2"
-							>Name</label
-						>
+			<div class="modal-body">
+				<div class="form-stack">
+					<div class="field-group">
+						<label for="segment-name">Name</label>
 						<input
 							id="segment-name"
 							name="segment-name"
 							type="text"
 							bind:value={newSegment.name}
 							placeholder="e.g., High-Value Customers"
-							class="w-full px-4 py-3 bg-slate-800/50 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 outline-none transition-all"
+							class="form-control"
 						/>
 					</div>
-					<div>
-						<label for="segment-description" class="block text-sm font-medium text-slate-300 mb-2"
-							>Description</label
-						>
+					<div class="field-group">
+						<label for="segment-description">Description</label>
 						<textarea
 							id="segment-description"
 							bind:value={newSegment.description}
 							placeholder="Describe this segment..."
 							rows={2}
-							class="w-full px-4 py-3 bg-slate-800/50 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 outline-none transition-all resize-none"
+							class="form-control textarea-control"
 						></textarea>
 					</div>
 				</div>
 
-				<!-- Segment Type -->
 				<div>
-					<span class="block text-sm font-medium text-slate-300 mb-3">Segment Type</span>
-					<div class="grid grid-cols-3 gap-3">
+					<span class="field-label">Segment Type</span>
+					<div class="type-option-grid">
 						{#each [{ value: 'dynamic', label: 'Dynamic', desc: 'Auto-updates based on rules' }, { value: 'static', label: 'Static', desc: 'Manual user list' }, { value: 'computed', label: 'Computed', desc: 'Based on calculations' }] as type (type.value)}
 							<button
+								type="button"
 								onclick={() => (newSegment.type = type.value as typeof newSegment.type)}
-								class="p-4 rounded-xl border-2 text-left transition-all
-									{newSegment.type === type.value
-									? 'border-cyan-500 bg-cyan-500/10'
-									: 'border-white/10 hover:border-white/20 bg-slate-800/30'}"
+								class={{ 'type-option': true, selected: newSegment.type === type.value }}
 							>
-								<div class="font-medium text-white text-sm mb-1">{type.label}</div>
-								<div class="text-xs text-slate-400">{type.desc}</div>
+								<span>{type.label}</span>
+								<small>{type.desc}</small>
 							</button>
 						{/each}
 					</div>
 				</div>
 
-				<!-- Rules -->
 				<div>
-					<div class="flex items-center justify-between mb-3">
-						<span class="text-sm font-medium text-slate-300">Rules</span>
-						<button
-							onclick={addRule}
-							class="text-sm text-cyan-400 hover:text-cyan-300 font-medium transition-colors"
-						>
-							+ Add Rule
-						</button>
+					<div class="rules-header">
+						<span>Rules</span>
+						<button type="button" onclick={addRule} class="link-button"> + Add Rule </button>
 					</div>
 
-					<div class="space-y-3">
+					<div class="rule-list">
 						{#each newSegment.rules as rule, index (index)}
-							<div
-								class="flex items-center gap-2 p-4 bg-slate-800/30 rounded-xl border border-white/5"
-							>
+							<div class="rule-row">
 								<select
 									bind:value={rule.field}
-									class="flex-1 px-3 py-2.5 bg-slate-800/50 border border-white/10 rounded-lg text-sm text-white focus:ring-2 focus:ring-cyan-500/50 outline-none"
+									class="form-control form-control--compact"
+									aria-label={`Rule ${index + 1} field`}
 								>
 									<option value="">Select field...</option>
 									{#each ruleFields as field (field.value)}
@@ -570,7 +474,8 @@
 
 								<select
 									bind:value={rule.operator}
-									class="px-3 py-2.5 bg-slate-800/50 border border-white/10 rounded-lg text-sm text-white focus:ring-2 focus:ring-cyan-500/50 outline-none"
+									class="form-control form-control--compact operator-control"
+									aria-label={`Rule ${index + 1} operator`}
 								>
 									{#each operators as op (op.value)}
 										<option value={op.value}>{op.label}</option>
@@ -578,21 +483,20 @@
 								</select>
 
 								<input
-									id="page-rule-value"
-									name="page-rule-value"
 									type="text"
 									bind:value={rule.value}
 									placeholder="Value"
-									class="flex-1 px-3 py-2.5 bg-slate-800/50 border border-white/10 rounded-lg text-sm text-white placeholder-slate-500 focus:ring-2 focus:ring-cyan-500/50 outline-none"
+									class="form-control form-control--compact"
+									aria-label={`Rule ${index + 1} value`}
 								/>
 
 								{#if newSegment.rules.length > 1}
 									<button
+										type="button"
 										onclick={() => removeRule(index)}
 										aria-label="Remove rule"
-										class="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors"
+										class="icon-action icon-action--danger"
 									>
-										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: x (close 2nd) -->
 										<IconX size={16} aria-hidden="true" />
 									</button>
 								{/if}
@@ -602,21 +506,19 @@
 				</div>
 			</div>
 
-			<div class="p-6 border-t border-white/10 flex justify-end gap-3">
-				<button
-					onclick={() => (showCreateModal = false)}
-					class="px-5 py-2.5 text-slate-300 border border-white/10 rounded-xl hover:bg-white/5 transition-colors"
-				>
+			<footer class="modal-footer">
+				<button type="button" onclick={() => (showCreateModal = false)} class="secondary-button">
 					Cancel
 				</button>
 				<button
+					type="button"
 					onclick={createSegment}
 					disabled={!newSegment.name}
-					class="px-5 py-2.5 bg-linear-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-400 hover:to-blue-500 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-cyan-500/25"
+					class="primary-button"
 				>
 					Create Segment
 				</button>
-			</div>
+			</footer>
 		</div>
 	</div>
 {/if}
@@ -633,3 +535,819 @@
 		pendingDeleteKey = null;
 	}}
 />
+
+<style>
+	.segments-page {
+		min-height: 100%;
+		background:
+			radial-gradient(circle at 12% 0%, rgb(6 182 212 / 12%), transparent 28rem),
+			radial-gradient(circle at 82% 8%, rgb(124 58 237 / 10%), transparent 30rem),
+			linear-gradient(135deg, #07080d 0%, #101118 52%, #08090f 100%);
+		color: #f8fafc;
+	}
+
+	.segments-container {
+		width: min(100%, 80rem);
+		margin-inline: auto;
+		padding: 2rem 1rem;
+	}
+
+	.segments-header,
+	.title-row,
+	.header-actions,
+	.view-toggle,
+	.segment-card-header,
+	.segment-meta,
+	.table-segment,
+	.rules-header,
+	.modal-title-row,
+	.modal-footer {
+		display: flex;
+		align-items: center;
+	}
+
+	.segments-header {
+		justify-content: space-between;
+		gap: 1.5rem;
+		margin-bottom: 2rem;
+	}
+
+	.title-row {
+		gap: 1rem;
+		min-width: 0;
+	}
+
+	.title-icon,
+	.feedback-icon,
+	.empty-icon,
+	.segment-icon,
+	.table-segment-icon,
+	.modal-close-button,
+	.icon-action {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		flex: 0 0 auto;
+	}
+
+	.title-icon {
+		width: 3rem;
+		height: 3rem;
+		border-radius: 1rem;
+		background: linear-gradient(135deg, #06b6d4, #2563eb);
+		box-shadow: 0 18px 40px rgb(6 182 212 / 20%);
+	}
+
+	h1,
+	h2,
+	h3,
+	p {
+		margin: 0;
+	}
+
+	h1 {
+		font-size: 1.5rem;
+		font-weight: 700;
+		letter-spacing: 0;
+		line-height: 1.2;
+	}
+
+	.title-row p,
+	.stat-label,
+	.empty-card p,
+	.segment-description,
+	.segment-percentage,
+	.table-segment-copy p {
+		color: #94a3b8;
+	}
+
+	.title-row p,
+	.stat-label {
+		font-size: 0.875rem;
+	}
+
+	.header-actions {
+		gap: 0.75rem;
+	}
+
+	.view-toggle {
+		border: 1px solid rgb(255 255 255 / 10%);
+		border-radius: 0.75rem;
+		background: rgb(30 32 40 / 70%);
+		padding: 0.25rem;
+	}
+
+	.view-toggle-button,
+	.modal-close-button,
+	.icon-action {
+		border: 0;
+		background: transparent;
+		color: #94a3b8;
+		cursor: pointer;
+		transition:
+			background-color 160ms ease,
+			border-color 160ms ease,
+			color 160ms ease,
+			box-shadow 160ms ease;
+	}
+
+	.view-toggle-button {
+		width: 2rem;
+		height: 2rem;
+		border-radius: 0.5rem;
+	}
+
+	.view-toggle-button:hover,
+	.view-toggle-button.active {
+		background: rgb(255 255 255 / 10%);
+		color: #ffffff;
+	}
+
+	.primary-button,
+	.secondary-button,
+	.danger-button,
+	.link-button,
+	.type-option {
+		font: inherit;
+		cursor: pointer;
+	}
+
+	.primary-button,
+	.secondary-button,
+	.danger-button {
+		border-radius: 0.75rem;
+		padding: 0.625rem 1.25rem;
+		font-size: 0.875rem;
+		font-weight: 650;
+		transition:
+			background 160ms ease,
+			border-color 160ms ease,
+			box-shadow 160ms ease,
+			opacity 160ms ease;
+	}
+
+	.primary-button {
+		border: 0;
+		background: linear-gradient(90deg, #06b6d4, #2563eb);
+		color: #ffffff;
+		box-shadow: 0 18px 42px rgb(6 182 212 / 22%);
+	}
+
+	.primary-button:hover:not(:disabled) {
+		background: linear-gradient(90deg, #22d3ee, #3b82f6);
+		box-shadow: 0 18px 42px rgb(6 182 212 / 35%);
+	}
+
+	.primary-button--large {
+		padding: 0.75rem 1.5rem;
+	}
+
+	.secondary-button {
+		border: 1px solid rgb(255 255 255 / 10%);
+		background: transparent;
+		color: #cbd5e1;
+	}
+
+	.secondary-button:hover {
+		background: rgb(255 255 255 / 5%);
+	}
+
+	.danger-button {
+		border: 1px solid rgb(239 68 68 / 30%);
+		background: rgb(239 68 68 / 18%);
+		color: #f87171;
+	}
+
+	.danger-button:hover {
+		background: rgb(239 68 68 / 28%);
+	}
+
+	.primary-button:disabled {
+		cursor: not-allowed;
+		opacity: 0.5;
+	}
+
+	.loading-state {
+		display: flex;
+		justify-content: center;
+		padding-block: 5rem;
+	}
+
+	.spinner {
+		width: 2.5rem;
+		height: 2.5rem;
+		border: 4px solid rgb(6 182 212 / 20%);
+		border-top-color: #06b6d4;
+		border-radius: 999px;
+		animation: spin 800ms linear infinite;
+	}
+
+	.spinner--large {
+		width: 3rem;
+		height: 3rem;
+	}
+
+	.stats-grid {
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 1rem;
+		margin-bottom: 2rem;
+	}
+
+	.stat-card,
+	.feedback-card,
+	.empty-card,
+	.segment-card,
+	.segments-table-card,
+	.modal-panel {
+		border: 1px solid rgb(255 255 255 / 10%);
+		background: rgb(255 255 255 / 5%);
+		backdrop-filter: blur(18px);
+	}
+
+	.stat-card {
+		border-radius: 1rem;
+		padding: 1.25rem;
+	}
+
+	.stat-value {
+		margin-bottom: 0.25rem;
+		color: #ffffff;
+		font-size: 1.875rem;
+		font-weight: 750;
+		line-height: 1.1;
+	}
+
+	.stat-value--cyan {
+		color: #22d3ee;
+	}
+
+	.stat-value--purple {
+		color: #c084fc;
+	}
+
+	.stat-value--emerald {
+		color: #34d399;
+	}
+
+	.feedback-card,
+	.empty-card {
+		border-radius: 1rem;
+		padding: 3rem 2rem;
+		text-align: center;
+	}
+
+	.feedback-card--error {
+		border-color: rgb(239 68 68 / 20%);
+		background: rgb(239 68 68 / 10%);
+	}
+
+	.feedback-icon,
+	.empty-icon {
+		width: 4rem;
+		height: 4rem;
+		margin: 0 auto 1rem;
+		border-radius: 1rem;
+	}
+
+	.feedback-icon {
+		background: rgb(239 68 68 / 12%);
+		color: #f87171;
+	}
+
+	.empty-icon {
+		background: rgb(6 182 212 / 10%);
+		color: #22d3ee;
+	}
+
+	.feedback-card p {
+		margin-bottom: 1rem;
+		color: #f87171;
+	}
+
+	.empty-card h3 {
+		margin-bottom: 0.5rem;
+		font-size: 1.125rem;
+		font-weight: 600;
+	}
+
+	.empty-card p {
+		margin-bottom: 1.5rem;
+	}
+
+	.segment-grid {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 1.5rem;
+	}
+
+	.segment-card {
+		border-radius: 1rem;
+		padding: 1.5rem;
+		text-align: left;
+		cursor: pointer;
+		transition:
+			background-color 160ms ease,
+			border-color 160ms ease,
+			box-shadow 160ms ease;
+	}
+
+	.segment-card:hover {
+		border-color: rgb(6 182 212 / 35%);
+		background: rgb(255 255 255 / 10%);
+	}
+
+	.segment-card.selected {
+		border-color: rgb(6 182 212 / 55%);
+		box-shadow: 0 0 0 2px rgb(6 182 212 / 80%);
+	}
+
+	.segment-card-header {
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 1rem;
+	}
+
+	.segment-icon {
+		width: 2.5rem;
+		height: 2.5rem;
+		border-radius: 0.75rem;
+	}
+
+	.segment-type--dynamic {
+		background: linear-gradient(135deg, #3b82f6, #06b6d4);
+		color: #ffffff;
+	}
+
+	.segment-type--static {
+		background: linear-gradient(135deg, #a855f7, #7c3aed);
+		color: #ffffff;
+	}
+
+	.segment-type--computed {
+		background: linear-gradient(135deg, #f59e0b, #f97316);
+		color: #ffffff;
+	}
+
+	.segment-type--fallback {
+		background: linear-gradient(135deg, #6b7280, #4b5563);
+		color: #ffffff;
+	}
+
+	.system-badge,
+	.type-badge {
+		border-radius: 0.5rem;
+		font-size: 0.75rem;
+		font-weight: 650;
+	}
+
+	.system-badge {
+		background: rgb(100 116 139 / 20%);
+		color: #94a3b8;
+		padding: 0.25rem 0.5rem;
+	}
+
+	.icon-action {
+		width: 2rem;
+		height: 2rem;
+		border-radius: 0.5rem;
+	}
+
+	.icon-action:hover,
+	.icon-action--danger:hover {
+		background: rgb(239 68 68 / 10%);
+		color: #f87171;
+	}
+
+	.segment-card h3 {
+		margin-bottom: 0.25rem;
+		color: #ffffff;
+		font-weight: 650;
+	}
+
+	.segment-description {
+		display: -webkit-box;
+		overflow: hidden;
+		margin-bottom: 1rem;
+		font-size: 0.875rem;
+		line-height: 1.5;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+	}
+
+	.segment-meta {
+		justify-content: space-between;
+		gap: 1rem;
+		font-size: 0.875rem;
+	}
+
+	.segment-meta span:first-child {
+		color: #22d3ee;
+		font-weight: 650;
+	}
+
+	.segment-meta span:last-child,
+	.segment-percentage {
+		color: #64748b;
+		text-transform: capitalize;
+	}
+
+	.progress-track {
+		height: 0.375rem;
+		overflow: hidden;
+		margin-top: 0.75rem;
+		border-radius: 999px;
+		background: #334155;
+	}
+
+	.progress-fill {
+		height: 100%;
+		border-radius: inherit;
+	}
+
+	.segment-percentage {
+		margin-top: 0.25rem;
+		font-size: 0.75rem;
+	}
+
+	.segments-table-card {
+		overflow-x: auto;
+		border-radius: 1rem;
+	}
+
+	table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 0.875rem;
+	}
+
+	thead {
+		background: rgb(30 41 59 / 55%);
+	}
+
+	th,
+	td {
+		padding: 1rem 1.25rem;
+	}
+
+	th {
+		color: #94a3b8;
+		font-size: 0.75rem;
+		font-weight: 650;
+		letter-spacing: 0.04em;
+		text-align: left;
+		text-transform: uppercase;
+	}
+
+	tbody tr {
+		border-top: 1px solid rgb(255 255 255 / 5%);
+		cursor: pointer;
+		transition: background-color 160ms ease;
+	}
+
+	tbody tr:hover {
+		background: rgb(255 255 255 / 5%);
+	}
+
+	.numeric-cell,
+	.action-cell {
+		text-align: right;
+	}
+
+	.strong-cell {
+		color: #ffffff;
+		font-weight: 650;
+	}
+
+	.muted-cell {
+		color: #94a3b8;
+	}
+
+	.table-segment {
+		gap: 0.75rem;
+		min-width: 16rem;
+	}
+
+	.table-segment-icon {
+		width: 2rem;
+		height: 2rem;
+		border-radius: 0.5rem;
+	}
+
+	.table-segment-copy {
+		min-width: 0;
+	}
+
+	.table-segment-copy span {
+		color: #ffffff;
+		font-weight: 650;
+	}
+
+	.table-segment-copy p {
+		max-width: 12.5rem;
+		overflow: hidden;
+		margin-top: 0.125rem;
+		font-size: 0.75rem;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.type-badge {
+		display: inline-flex;
+		padding: 0.25rem 0.625rem;
+		text-transform: capitalize;
+	}
+
+	.type-badge.segment-type--dynamic {
+		background: rgb(59 130 246 / 20%);
+		color: #60a5fa;
+	}
+
+	.type-badge.segment-type--static {
+		background: rgb(168 85 247 / 20%);
+		color: #c084fc;
+	}
+
+	.type-badge.segment-type--computed {
+		background: rgb(245 158 11 / 20%);
+		color: #fbbf24;
+	}
+
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
+	}
+
+	.modal-shell {
+		position: fixed;
+		inset: 0;
+		z-index: 50;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: rgb(0 0 0 / 60%);
+		backdrop-filter: blur(4px);
+		padding: 1rem;
+	}
+
+	.modal-panel {
+		width: min(100%, 42rem);
+		max-height: 90vh;
+		overflow-y: auto;
+		border-radius: 1rem;
+		background: #111827;
+		box-shadow: 0 28px 80px rgb(0 0 0 / 50%);
+	}
+
+	.modal-header,
+	.modal-body,
+	.modal-footer {
+		padding: 1.5rem;
+	}
+
+	.modal-header,
+	.modal-footer {
+		border-color: rgb(255 255 255 / 10%);
+	}
+
+	.modal-header {
+		border-bottom: 1px solid rgb(255 255 255 / 10%);
+	}
+
+	.modal-title-row {
+		justify-content: space-between;
+		gap: 1rem;
+	}
+
+	.modal-title-row h2 {
+		font-size: 1.25rem;
+		font-weight: 750;
+	}
+
+	.modal-close-button {
+		width: 2rem;
+		height: 2rem;
+		border-radius: 0.5rem;
+		background: rgb(255 255 255 / 5%);
+	}
+
+	.modal-close-button:hover {
+		background: rgb(255 255 255 / 10%);
+		color: #ffffff;
+	}
+
+	.modal-body {
+		display: grid;
+		gap: 1.5rem;
+	}
+
+	.form-stack {
+		display: grid;
+		gap: 1rem;
+	}
+
+	.field-group {
+		display: grid;
+		gap: 0.5rem;
+	}
+
+	label,
+	.field-label,
+	.rules-header span {
+		color: #cbd5e1;
+		font-size: 0.875rem;
+		font-weight: 650;
+	}
+
+	.field-label {
+		display: block;
+		margin-bottom: 0.75rem;
+	}
+
+	.form-control {
+		width: 100%;
+		border: 1px solid rgb(255 255 255 / 10%);
+		border-radius: 0.75rem;
+		background: rgb(30 41 59 / 55%);
+		padding: 0.75rem 1rem;
+		color: #ffffff;
+		font: inherit;
+		transition:
+			border-color 160ms ease,
+			box-shadow 160ms ease;
+	}
+
+	.form-control::placeholder {
+		color: #64748b;
+	}
+
+	.form-control:focus {
+		outline: none;
+		border-color: rgb(6 182 212 / 55%);
+		box-shadow: 0 0 0 3px rgb(6 182 212 / 18%);
+	}
+
+	.form-control--compact {
+		min-height: 2.625rem;
+		border-radius: 0.5rem;
+		padding: 0.625rem 0.75rem;
+		font-size: 0.875rem;
+	}
+
+	.textarea-control {
+		resize: none;
+	}
+
+	.type-option-grid {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 0.75rem;
+	}
+
+	.type-option {
+		border: 2px solid rgb(255 255 255 / 10%);
+		border-radius: 0.75rem;
+		background: rgb(30 41 59 / 32%);
+		padding: 1rem;
+		color: #ffffff;
+		text-align: left;
+		transition:
+			background-color 160ms ease,
+			border-color 160ms ease;
+	}
+
+	.type-option:hover {
+		border-color: rgb(255 255 255 / 20%);
+	}
+
+	.type-option.selected {
+		border-color: #06b6d4;
+		background: rgb(6 182 212 / 10%);
+	}
+
+	.type-option span,
+	.type-option small {
+		display: block;
+	}
+
+	.type-option span {
+		margin-bottom: 0.25rem;
+		font-size: 0.875rem;
+		font-weight: 650;
+	}
+
+	.type-option small {
+		color: #94a3b8;
+		font-size: 0.75rem;
+		line-height: 1.4;
+	}
+
+	.rules-header {
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 0.75rem;
+	}
+
+	.link-button {
+		border: 0;
+		background: transparent;
+		color: #22d3ee;
+		font-size: 0.875rem;
+		font-weight: 650;
+	}
+
+	.link-button:hover {
+		color: #67e8f9;
+	}
+
+	.rule-list {
+		display: grid;
+		gap: 0.75rem;
+	}
+
+	.rule-row {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(8rem, auto) minmax(0, 1fr) auto;
+		gap: 0.5rem;
+		align-items: center;
+		border: 1px solid rgb(255 255 255 / 5%);
+		border-radius: 0.75rem;
+		background: rgb(30 41 59 / 32%);
+		padding: 1rem;
+	}
+
+	.operator-control {
+		width: auto;
+	}
+
+	.modal-footer {
+		justify-content: flex-end;
+		gap: 0.75rem;
+		border-top: 1px solid rgb(255 255 255 / 10%);
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	@media (max-width: 900px) {
+		.stats-grid,
+		.segment-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.type-option-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.rule-row {
+			grid-template-columns: 1fr;
+		}
+
+		.operator-control {
+			width: 100%;
+		}
+	}
+
+	@media (max-width: 680px) {
+		.segments-container {
+			padding: 1.25rem 0.875rem;
+		}
+
+		.segments-header,
+		.header-actions {
+			align-items: flex-start;
+			flex-direction: column;
+		}
+
+		.header-actions,
+		.primary-button {
+			width: 100%;
+		}
+
+		.stats-grid,
+		.segment-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.modal-footer {
+			align-items: stretch;
+			flex-direction: column-reverse;
+		}
+
+		.secondary-button,
+		.modal-footer .primary-button {
+			width: 100%;
+		}
+	}
+</style>
