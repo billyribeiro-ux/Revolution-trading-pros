@@ -14,8 +14,10 @@
 	 * @version 2.2.0 - Svelte 5 + @stripe/stripe-js + 3D Secure + Responsive Design
 	 */
 
+	import { onMount } from 'svelte';
 	import { loadStripe as loadStripeJS } from '@stripe/stripe-js';
 	import Icon from '$lib/components/Icon.svelte';
+	import type { Attachment } from 'svelte/attachments';
 	import type {
 		Stripe,
 		StripeElements,
@@ -90,20 +92,73 @@
 	let cardComplete = $state(false);
 	let paymentRequestAvailable = $state(false);
 	let mounted = $state(false);
-	// Element refs - Svelte 5 handles bind:this automatically
-	let cardElementRef: HTMLDivElement | undefined = $state();
-	let paymentRequestRef: HTMLDivElement | undefined = $state();
+	let cardElementNode: HTMLDivElement | null = null;
+	let paymentRequestNode: HTMLDivElement | null = null;
+	let autoConfirmedClientSecret = '';
 
-	$effect(() => {
-		if (typeof window !== 'undefined' && !mounted) {
-			initializeStripe();
-		}
+	onMount(() => {
+		void initializeStripe();
+
 		return () => {
 			if (cardElement) {
 				cardElement.destroy();
 			}
+			if (paymentRequestButton) {
+				paymentRequestButton.destroy();
+			}
 		};
 	});
+
+	function mountCardElement() {
+		if (cardElementNode && cardElement && !mounted) {
+			cardElement.mount(cardElementNode);
+			mounted = true;
+		}
+	}
+
+	function mountPaymentRequestButton() {
+		if (paymentRequestNode && paymentRequestButton) {
+			paymentRequestButton.mount(paymentRequestNode);
+		}
+	}
+
+	const attachCardElement: Attachment<HTMLDivElement> = (node) => {
+		cardElementNode = node;
+		mountCardElement();
+
+		return () => {
+			cardElementNode = null;
+		};
+	};
+
+	const attachPaymentRequest: Attachment<HTMLDivElement> = (node) => {
+		paymentRequestNode = node;
+		mountPaymentRequestButton();
+
+		return () => {
+			paymentRequestNode = null;
+		};
+	};
+
+	function attachClientSecretConfirmation(secret: string): Attachment<HTMLDivElement> {
+		return () => {
+			// Track readiness state so the attachment re-runs after Stripe mounts.
+			mounted;
+
+			if (
+				!secret ||
+				!stripe ||
+				!cardElement ||
+				processing ||
+				secret === autoConfirmedClientSecret
+			) {
+				return;
+			}
+
+			autoConfirmedClientSecret = secret;
+			void confirmPaymentIntent(secret);
+		};
+	}
 
 	async function initializeStripe() {
 		try {
@@ -140,14 +195,6 @@
 				cardComplete = event.complete;
 			});
 
-			// Mount card element after component is rendered
-			setTimeout(() => {
-				if (cardElementRef && cardElement) {
-					cardElement.mount(cardElementRef);
-					mounted = true;
-				}
-			}, 0);
-
 			// Setup Payment Request Button (Apple Pay, Google Pay)
 			if (enablePaymentRequest && elements) {
 				const paymentRequest = stripe.paymentRequest({
@@ -167,11 +214,7 @@
 						paymentRequestButton = elements.create('paymentRequestButton', {
 							paymentRequest
 						});
-						setTimeout(() => {
-							if (paymentRequestRef && paymentRequestButton) {
-								paymentRequestButton.mount(paymentRequestRef);
-							}
-						}, 0);
+						mountPaymentRequestButton();
 					}
 				});
 
@@ -203,6 +246,7 @@
 			}
 
 			loading = false;
+			mountCardElement();
 		} catch (_err) {
 			loading = false;
 			cardError = 'Failed to load payment system';
@@ -370,72 +414,61 @@
 	 * If clientSecret is provided, confirms the payment intent
 	 * Otherwise, creates a payment method for checkout
 	 */
-	$effect(() => {
-		if (clientSecret && stripe && cardElement && !processing) {
-			confirmPaymentIntent(clientSecret);
-		}
-	});
 </script>
 
 <!-- Responsive Stripe Payment Component - Mobile-first design -->
 <div
-	class="flex flex-col gap-3 sm:gap-4 w-full max-w-full sm:max-w-lg md:max-w-xl lg:max-w-2xl mx-auto p-3 sm:p-4 md:p-6 pb-[env(safe-area-inset-bottom)]"
-	class:opacity-60={disabled}
-	class:pointer-events-none={disabled}
+	{@attach clientSecret ? attachClientSecretConfirmation(clientSecret) : false}
+	class={['stripe-payment', disabled && 'stripe-payment--disabled']}
 >
 	{#if label}
-		<span class="text-sm sm:text-base font-medium text-gray-700" id="stripe-label">
-			{label}
-		</span>
+		<span class="stripe-label" id="stripe-label">{label}</span>
 	{/if}
 
 	{#if testMode}
-		<div
-			class="p-2 sm:p-3 bg-amber-50 border border-amber-500 rounded-md text-xs sm:text-sm text-amber-800"
-		>
+		<div class="test-banner">
 			<span>Test mode - Use card 4242 4242 4242 4242</span>
 		</div>
 	{/if}
 
 	{#if loading}
-		<div
-			class="flex items-center gap-3 sm:gap-4 p-4 sm:p-5 md:p-6 bg-gray-50 border border-gray-200 rounded-lg text-gray-500 text-sm sm:text-base"
-		>
-			<Icon name="IconLoader2" class="w-5 h-5 sm:w-6 sm:h-6 animate-spin flex-shrink-0" />
+		<div class="loading-panel">
+			<span class="spinner-icon">
+				<Icon name="IconLoader2" />
+			</span>
 			<span>Loading payment form...</span>
 		</div>
 	{:else}
 		{#if paymentRequestAvailable}
 			<!-- Payment Request Button (Apple Pay, Google Pay) - Touch-friendly -->
-			<div bind:this={paymentRequestRef} class="mb-2 sm:mb-3 min-h-[44px] sm:min-h-[48px]"></div>
-			<div class="flex items-center gap-3 sm:gap-4 text-gray-500 text-xs sm:text-sm">
-				<span class="flex-1 h-px bg-gray-200"></span>
+			<div {@attach attachPaymentRequest} class="payment-request-slot"></div>
+			<div class="payment-divider">
+				<span class="payment-divider__line"></span>
 				<span>Or pay with card</span>
-				<span class="flex-1 h-px bg-gray-200"></span>
+				<span class="payment-divider__line"></span>
 			</div>
 		{/if}
 
 		<!-- Card Element Wrapper - Larger touch area on mobile -->
-		<div
-			class="p-3 sm:p-4 border border-gray-300 rounded-lg bg-white transition-all duration-150 min-h-[48px] sm:min-h-[52px] focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10"
-			class:border-red-300={error || cardError}
-		>
-			<div bind:this={cardElementRef} class="min-h-[24px] sm:min-h-[28px]"></div>
+		<div class={['card-element-shell', (error || cardError) && 'card-element-shell--invalid']}>
+			<div {@attach attachCardElement} class="card-element-target"></div>
 		</div>
 
 		{#if cardError}
-			<p class="text-xs sm:text-sm text-red-500 m-0 px-1">{cardError}</p>
+			<p class="payment-error">{cardError}</p>
 		{/if}
 
 		<!-- Pay Button - Full width mobile, touch-friendly 44px+ height -->
 		<button
 			type="button"
-			class="flex items-center justify-center gap-2 sm:gap-3 w-full min-h-[48px] sm:min-h-[52px] md:min-h-[56px] px-4 sm:px-6 py-3 sm:py-4 bg-indigo-600 hover:bg-indigo-700 text-white border-none rounded-lg text-base sm:text-lg font-semibold cursor-pointer transition-colors duration-150 disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.98] touch-manipulation"
 			onclick={handleSubmit}
 			disabled={disabled || processing || !cardComplete}
+			class="pay-button"
 		>
 			{#if processing}
-				<Icon name="IconLoader2" class="w-5 h-5 sm:w-6 sm:h-6 animate-spin flex-shrink-0" />
+				<span class="spinner-icon spinner-icon--button">
+					<Icon name="IconLoader2" />
+				</span>
 				<span>Processing...</span>
 			{:else}
 				<span>Pay {formatAmount(amount, currency)}</span>
@@ -443,15 +476,277 @@
 		</button>
 
 		<!-- Secure Badge -->
-		<div
-			class="flex items-center justify-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-500 py-2"
-		>
-			<Icon name="IconLock" class="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
+		<div class="secure-badge">
+			<span class="secure-badge__icon">
+				<Icon name="IconLock" />
+			</span>
 			<span>Secured by Stripe</span>
 		</div>
 	{/if}
 
 	{#if error}
-		<p class="text-xs sm:text-sm text-red-500 m-0 px-1">{error}</p>
+		<p class="payment-error">{error}</p>
 	{/if}
 </div>
+
+<style>
+	.stripe-payment {
+		display: flex;
+		width: 100%;
+		max-width: 100%;
+		flex-direction: column;
+		gap: 0.75rem;
+		margin-inline: auto;
+		padding: 0.75rem;
+		padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+	}
+
+	.stripe-payment--disabled {
+		opacity: 0.6;
+		pointer-events: none;
+	}
+
+	.stripe-label {
+		color: #374151;
+		font-size: 0.875rem;
+		font-weight: 500;
+	}
+
+	.test-banner {
+		padding: 0.5rem;
+		border: 1px solid #f59e0b;
+		border-radius: 0.375rem;
+		background: #fffbeb;
+		color: #92400e;
+		font-size: 0.75rem;
+	}
+
+	.loading-panel {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 1rem;
+		border: 1px solid #e5e7eb;
+		border-radius: 0.5rem;
+		background: #f9fafb;
+		color: #6b7280;
+		font-size: 0.875rem;
+	}
+
+	.spinner-icon {
+		display: inline-flex;
+		width: 1.25rem;
+		height: 1.25rem;
+		flex: 0 0 auto;
+		animation: stripe-spin 0.8s linear infinite;
+	}
+
+	.payment-request-slot {
+		min-height: 44px;
+		margin-bottom: 0.5rem;
+	}
+
+	.payment-divider {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		color: #6b7280;
+		font-size: 0.75rem;
+	}
+
+	.payment-divider__line {
+		height: 1px;
+		flex: 1 1 auto;
+		background: #e5e7eb;
+	}
+
+	.card-element-shell {
+		min-height: 48px;
+		padding: 0.75rem;
+		border: 1px solid #d1d5db;
+		border-radius: 0.5rem;
+		background: #fff;
+		transition:
+			border-color 0.15s ease,
+			box-shadow 0.15s ease;
+	}
+
+	.card-element-shell:focus-within {
+		border-color: #3b82f6;
+		box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+	}
+
+	.card-element-shell--invalid {
+		border-color: #fca5a5;
+	}
+
+	.card-element-target {
+		min-height: 24px;
+	}
+
+	.payment-error {
+		margin: 0;
+		padding-inline: 0.25rem;
+		color: #ef4444;
+		font-size: 0.75rem;
+	}
+
+	.pay-button {
+		display: flex;
+		width: 100%;
+		min-height: 48px;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		padding: 0.75rem 1rem;
+		border: 0;
+		border-radius: 0.5rem;
+		background: #4f46e5;
+		color: #fff;
+		cursor: pointer;
+		font-size: 1rem;
+		font-weight: 600;
+		touch-action: manipulation;
+		transition:
+			background-color 0.15s ease,
+			opacity 0.15s ease,
+			transform 0.15s ease;
+	}
+
+	.pay-button:hover:not(:disabled) {
+		background: #4338ca;
+	}
+
+	.pay-button:active:not(:disabled) {
+		transform: scale(0.98);
+	}
+
+	.pay-button:disabled {
+		cursor: not-allowed;
+		opacity: 0.6;
+	}
+
+	.spinner-icon--button {
+		width: 1.25rem;
+		height: 1.25rem;
+	}
+
+	.secure-badge {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.375rem;
+		padding-block: 0.5rem;
+		color: #6b7280;
+		font-size: 0.75rem;
+	}
+
+	.secure-badge__icon {
+		display: inline-flex;
+		width: 0.875rem;
+		height: 0.875rem;
+		flex: 0 0 auto;
+	}
+
+	@keyframes stripe-spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	@media (min-width: 640px) {
+		.stripe-payment {
+			max-width: 32rem;
+			gap: 1rem;
+			padding: 1rem;
+			padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+		}
+
+		.stripe-label,
+		.loading-panel {
+			font-size: 1rem;
+		}
+
+		.test-banner,
+		.payment-divider,
+		.payment-error,
+		.secure-badge {
+			font-size: 0.875rem;
+		}
+
+		.test-banner {
+			padding: 0.75rem;
+		}
+
+		.loading-panel {
+			gap: 1rem;
+			padding: 1.25rem;
+		}
+
+		.spinner-icon {
+			width: 1.5rem;
+			height: 1.5rem;
+		}
+
+		.payment-request-slot {
+			min-height: 48px;
+			margin-bottom: 0.75rem;
+		}
+
+		.payment-divider {
+			gap: 1rem;
+		}
+
+		.card-element-shell {
+			min-height: 52px;
+			padding: 1rem;
+		}
+
+		.card-element-target {
+			min-height: 28px;
+		}
+
+		.pay-button {
+			min-height: 52px;
+			gap: 0.75rem;
+			padding: 1rem 1.5rem;
+			font-size: 1.125rem;
+		}
+
+		.spinner-icon--button {
+			width: 1.5rem;
+			height: 1.5rem;
+		}
+
+		.secure-badge {
+			gap: 0.5rem;
+		}
+
+		.secure-badge__icon {
+			width: 1rem;
+			height: 1rem;
+		}
+	}
+
+	@media (min-width: 768px) {
+		.stripe-payment {
+			max-width: 36rem;
+			padding: 1.5rem;
+			padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+		}
+
+		.loading-panel {
+			padding: 1.5rem;
+		}
+
+		.pay-button {
+			min-height: 56px;
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.stripe-payment {
+			max-width: 42rem;
+		}
+	}
+</style>
