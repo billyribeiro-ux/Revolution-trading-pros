@@ -21,7 +21,7 @@
 		IconCopy,
 		IconCheck
 	} from '$lib/icons';
-	import { untrack } from 'svelte';
+	import { onDestroy, untrack } from 'svelte';
 
 	interface Props {
 		isOpen: boolean;
@@ -98,6 +98,9 @@
 	let temporaryPassword = $state<string | null>(null);
 	let activeSection = $state<'basic' | 'profile' | 'membership' | 'preferences' | 'notes'>('basic');
 	let copiedPassword = $state(false);
+	let isComponentMounted = true;
+	let submitGeneration = 0;
+	let copiedPasswordTimer: ReturnType<typeof setTimeout> | null = null;
 
 	const roles = [
 		{ value: 'user', label: 'Member', description: 'Standard member access' },
@@ -167,10 +170,26 @@
 			document.body.style.overflow = 'hidden';
 		} else {
 			document.body.style.overflow = '';
+			submitGeneration += 1;
 		}
 		return () => {
 			document.body.style.overflow = '';
 		};
+	});
+
+	function clearCopiedPasswordTimer() {
+		if (copiedPasswordTimer) clearTimeout(copiedPasswordTimer);
+		copiedPasswordTimer = null;
+	}
+
+	function invalidateAsyncWork() {
+		submitGeneration += 1;
+		clearCopiedPasswordTimer();
+	}
+
+	onDestroy(() => {
+		isComponentMounted = false;
+		invalidateAsyncWork();
 	});
 
 	function validateForm(): boolean {
@@ -205,6 +224,7 @@
 	async function handleSubmit() {
 		if (!validateForm()) return;
 
+		const generation = ++submitGeneration;
 		isLoading = true;
 		error = '';
 
@@ -221,6 +241,7 @@
 				}
 
 				const result = await membersApi.createMember(data);
+				if (!isComponentMounted || generation !== submitGeneration) return;
 				temporaryPassword = result.temporary_password || null;
 
 				if (temporaryPassword) {
@@ -236,13 +257,17 @@
 				if (password) data.password = password;
 
 				const result = await membersApi.updateMember(member.id, data);
+				if (!isComponentMounted || generation !== submitGeneration) return;
 				handleSaved(result.member);
 				onClose();
 			}
 		} catch (err) {
+			if (!isComponentMounted || generation !== submitGeneration) return;
 			error = err instanceof Error ? err.message : 'An error occurred';
 		} finally {
-			isLoading = false;
+			if (isComponentMounted && generation === submitGeneration) {
+				isLoading = false;
+			}
 		}
 	}
 
@@ -269,12 +294,18 @@
 
 	async function copyPassword(text: string) {
 		await navigator.clipboard.writeText(text);
+		if (!isComponentMounted) return;
+		clearCopiedPasswordTimer();
 		copiedPassword = true;
-		setTimeout(() => (copiedPassword = false), 2000);
+		copiedPasswordTimer = setTimeout(() => {
+			copiedPasswordTimer = null;
+			if (isComponentMounted) copiedPassword = false;
+		}, 2000);
 	}
 
 	function closeAndClear() {
 		temporaryPassword = null;
+		invalidateAsyncWork();
 		onClose();
 	}
 
