@@ -233,27 +233,27 @@
 </svelte:head>
 
 {#if initialLoading}
-	<div class="flex items-center justify-center h-96">
-		<div class="text-center">
-			<div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-			<p class="mt-4 text-gray-600">Loading popup...</p>
+	<div class="loading-state">
+		<div class="loading-panel">
+			<div class="loading-spinner"></div>
+			<p class="loading-copy">Loading popup...</p>
 		</div>
 	</div>
 {:else}
-	<div class="max-w-5xl mx-auto">
+	<div class="popup-edit-page">
 		<!-- Header -->
-		<div class="mb-6">
-			<h1 class="text-3xl font-bold text-gray-900">Edit Popup</h1>
-			<p class="text-gray-600 mt-1">Update your popup configuration</p>
+		<div class="page-header">
+			<h1 class="page-title">Edit Popup</h1>
+			<p class="page-subtitle">Update your popup configuration</p>
 		</div>
 
 		<form onsubmit={handleSubmit}>
-			<div class="space-y-6">
+			<div class="form-stack">
 				<!-- Basic Information -->
 				<Card>
-					<h2 class="text-xl font-semibold mb-4">Basic Information</h2>
+					<h2 class="section-heading">Basic Information</h2>
 
-					<div class="space-y-4">
+					<div class="field-stack">
 						<div>
 							<Input
 								id="popup-internal-name-1"
@@ -262,10 +262,10 @@
 								placeholder="e.g., Exit Intent - Newsletter"
 								{...errors['name'] && { error: errors['name'] }}
 							/>
-							<p class="text-xs text-gray-500 mt-1">For your reference only, not shown to users</p>
+							<p class="field-help">For your reference only, not shown to users</p>
 						</div>
 
-						<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+						<div class="form-grid form-grid--two">
 							<div>
 								<Select
 									id="popup-popup-type-2"
@@ -294,16 +294,16 @@
 								min="1"
 								max="100"
 							/>
-							<p class="text-xs text-gray-500 mt-1">Higher priority popups are shown first</p>
+							<p class="field-help">Higher priority popups are shown first</p>
 						</div>
 					</div>
 				</Card>
 
 				<!-- Content -->
 				<Card>
-					<h2 class="text-xl font-semibold mb-4">Content</h2>
+					<h2 class="section-heading">Content</h2>
 
-					<div class="space-y-4">
+					<div class="field-stack">
 						<div>
 							<Input
 								id="popup-title-5"
@@ -315,25 +315,21 @@
 						</div>
 
 						<div>
-							<label for="popup-content-text">Content *</label>
+							<label for="popup-content-text" class="field-label">Content *</label>
 							<textarea
 								id="popup-content-text"
 								bind:value={formData['content']}
-								class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 {errors[
-									'content'
-								]
-									? 'border-red-500'
-									: ''}"
+								class={{ 'native-control': true, 'has-error': Boolean(errors['content']) }}
 								rows="4"
 								placeholder="Enter your message (HTML allowed)"
 							></textarea>
 							{#if errors['content']}
-								<p class="text-xs text-red-600 mt-1">{errors['content']}</p>
+								<p class="field-error">{errors['content']}</p>
 							{/if}
-							<p class="text-xs text-gray-500 mt-1">HTML is supported for formatting</p>
+							<p class="field-help">HTML is supported for formatting</p>
 						</div>
 
-						<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+						<div class="form-grid form-grid--two">
 							<div>
 								<Input
 									id="popup-calltoaction-text-6"
@@ -353,26 +349,24 @@
 							</div>
 						</div>
 
-						<div class="flex items-center gap-2">
+						<div class="checkbox-row">
 							<input
 								type="checkbox"
 								id="cta_new_tab"
 								name="cta_new_tab"
 								bind:checked={formData.cta_new_tab}
-								class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+								class="checkbox-control"
 							/>
-							<label for="cta_new_tab" class="text-sm text-gray-700">
-								Open CTA link in new tab
-							</label>
+							<label for="cta_new_tab" class="checkbox-label"> Open CTA link in new tab </label>
 						</div>
 					</div>
 				</Card>
 
 				<!-- Trigger Settings -->
 				<Card>
-					<h2 class="text-xl font-semibold mb-4">Trigger Settings</h2>
+					<h2 class="section-heading">Trigger Settings</h2>
 
-					<div class="space-y-4">
+					<div class="field-stack">
 						{#if formData.type === 'timed'}
 							<div>
 								<Input
@@ -383,7 +377,7 @@
 									min="0"
 									step="1000"
 								/>
-								<p class="text-xs text-gray-500 mt-1">
+								<p class="field-help">
 									Show popup after {(timedDelay / 1000).toFixed(0)} seconds
 								</p>
 							</div>
@@ -397,7 +391,7 @@
 									min="0"
 									max="100"
 								/>
-								<p class="text-xs text-gray-500 mt-1">
+								<p class="field-help">
 									Show popup when user scrolls {scrollDepth}% down the page
 								</p>
 							</div>
@@ -409,20 +403,20 @@
 									bind:value={clickSelector}
 									placeholder="[data-popup-trigger]"
 								/>
-								<p class="text-xs text-gray-500 mt-1">
+								<p class="field-help">
 									Show popup when elements matching this selector are clicked
 								</p>
 							</div>
 						{:else if formData.type === 'exit_intent'}
-							<div class="bg-blue-50 border border-blue-200 rounded-md p-4">
-								<p class="text-sm text-blue-800">
+							<div class="info-callout">
+								<p>
 									Exit intent popups trigger when the user's mouse moves toward the browser's top
 									edge (leaving the page).
 								</p>
 							</div>
 						{:else if formData.type === 'newsletter'}
-							<div class="bg-blue-50 border border-blue-200 rounded-md p-4">
-								<p class="text-sm text-blue-800">
+							<div class="info-callout">
+								<p>
 									Newsletter popups display immediately or can be combined with timing/scroll
 									settings.
 								</p>
@@ -433,10 +427,10 @@
 
 				<!-- Display Settings -->
 				<Card>
-					<h2 class="text-xl font-semibold mb-4">Display Settings</h2>
+					<h2 class="section-heading">Display Settings</h2>
 
-					<div class="space-y-4">
-						<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+					<div class="field-stack">
+						<div class="form-grid form-grid--three">
 							<div>
 								<Select
 									id="popup-position-11"
@@ -476,29 +470,29 @@
 							/>
 						</div>
 
-						<div class="space-y-2">
-							<div class="flex items-center gap-2">
+						<div class="check-stack">
+							<div class="checkbox-row">
 								<input
 									type="checkbox"
 									id="show_close_button"
 									name="show_close_button"
 									bind:checked={formData.show_close_button}
-									class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+									class="checkbox-control"
 								/>
-								<label for="show_close_button" class="text-sm text-gray-700">
+								<label for="show_close_button" class="checkbox-label">
 									Show close button (X)
 								</label>
 							</div>
 
-							<div class="flex items-center gap-2">
+							<div class="checkbox-row">
 								<input
 									type="checkbox"
 									id="close_on_overlay_click"
 									name="close_on_overlay_click"
 									bind:checked={formData.close_on_overlay_click}
-									class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+									class="checkbox-control"
 								/>
-								<label for="close_on_overlay_click" class="text-sm text-gray-700">
+								<label for="close_on_overlay_click" class="checkbox-label">
 									Close when clicking outside popup
 								</label>
 							</div>
@@ -508,9 +502,9 @@
 
 				<!-- Frequency Rules -->
 				<Card>
-					<h2 class="text-xl font-semibold mb-4">Frequency & Targeting</h2>
+					<h2 class="section-heading">Frequency & Targeting</h2>
 
-					<div class="space-y-4">
+					<div class="field-stack">
 						<div>
 							<Select
 								id="popup-show-frequency-15"
@@ -521,40 +515,40 @@
 						</div>
 
 						<div>
-							<span class="block text-sm font-medium text-gray-700 mb-2">Target Devices</span>
-							<div class="flex gap-4">
-								<label class="flex items-center gap-2">
+							<span class="field-label">Target Devices</span>
+							<div class="device-options">
+								<label class="checkbox-row">
 									<input
-										id="page-checkbox"
-										name="page-checkbox"
+										id="device-desktop"
+										name="device-desktop"
 										type="checkbox"
 										value="desktop"
 										bind:group={formData.display_rules.devices}
-										class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+										class="checkbox-control"
 									/>
-									<span class="text-sm text-gray-700">Desktop</span>
+									<span class="checkbox-label">Desktop</span>
 								</label>
-								<label class="flex items-center gap-2">
+								<label class="checkbox-row">
 									<input
-										id="page-checkbox"
-										name="page-checkbox"
+										id="device-tablet"
+										name="device-tablet"
 										type="checkbox"
 										value="tablet"
 										bind:group={formData.display_rules.devices}
-										class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+										class="checkbox-control"
 									/>
-									<span class="text-sm text-gray-700">Tablet</span>
+									<span class="checkbox-label">Tablet</span>
 								</label>
-								<label class="flex items-center gap-2">
+								<label class="checkbox-row">
 									<input
-										id="page-checkbox"
-										name="page-checkbox"
+										id="device-mobile"
+										name="device-mobile"
 										type="checkbox"
 										value="mobile"
 										bind:group={formData.display_rules.devices}
-										class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+										class="checkbox-control"
 									/>
-									<span class="text-sm text-gray-700">Mobile</span>
+									<span class="checkbox-label">Mobile</span>
 								</label>
 							</div>
 						</div>
@@ -563,13 +557,13 @@
 
 				<!-- Design Customization -->
 				<Card>
-					<h2 class="text-xl font-semibold mb-4">🎨 Design Customization</h2>
+					<h2 class="section-heading">🎨 Design Customization</h2>
 
-					<div class="space-y-6">
+					<div class="section-stack">
 						<!-- Popup Colors -->
 						<div>
-							<h3 class="text-sm font-semibold text-gray-800 mb-3">Popup Colors</h3>
-							<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+							<h3 class="subsection-heading">Popup Colors</h3>
+							<div class="form-grid form-grid--three">
 								<div>
 									<Input
 										id="popup-background-color-16"
@@ -601,8 +595,8 @@
 
 						<!-- Button Styling -->
 						<div>
-							<h3 class="text-sm font-semibold text-gray-800 mb-3">Button Styling</h3>
-							<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+							<h3 class="subsection-heading">Button Styling</h3>
+							<div class="form-grid form-grid--three">
 								<div>
 									<Input
 										id="popup-button-color-19"
@@ -637,19 +631,14 @@
 
 						<!-- Advanced Button Effects -->
 						<div>
-							<h3 class="text-sm font-semibold text-gray-800 mb-3">Button Effects</h3>
-							<div class="space-y-3">
+							<h3 class="subsection-heading">Button Effects</h3>
+							<div class="field-stack field-stack--compact">
 								<div>
-									<label
-										for="button-shadow-edit"
-										class="block text-sm font-medium text-gray-700 mb-1"
-									>
-										Button Shadow
-									</label>
+									<label for="button-shadow-edit" class="field-label"> Button Shadow </label>
 									<select
 										id="button-shadow-edit"
 										bind:value={formData.design.buttonShadow}
-										class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+										class="native-control"
 									>
 										<option value="">None</option>
 										<option value="0 1px 2px 0 rgba(0, 0, 0, 0.05)">Subtle</option>
@@ -667,20 +656,15 @@
 										>
 										<option value="0 25px 50px -12px rgba(0, 0, 0, 0.25)">Extra Large</option>
 									</select>
-									<p class="text-xs text-gray-500 mt-1">Shadow adds depth to the button</p>
+									<p class="field-help">Shadow adds depth to the button</p>
 								</div>
 
 								<div>
-									<label
-										for="button-padding-edit"
-										class="block text-sm font-medium text-gray-700 mb-1"
-									>
-										Button Padding
-									</label>
+									<label for="button-padding-edit" class="field-label"> Button Padding </label>
 									<select
 										id="button-padding-edit"
 										bind:value={formData.design.buttonPadding}
-										class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+										class="native-control"
 									>
 										<option value="0.5rem 1rem">Small (0.5rem 1rem)</option>
 										<option value="0.875rem 1.5rem">Default (0.875rem 1.5rem)</option>
@@ -688,7 +672,7 @@
 										<option value="1.25rem 2.5rem">Large (1.25rem 2.5rem)</option>
 										<option value="1.5rem 3rem">Extra Large (1.5rem 3rem)</option>
 									</select>
-									<p class="text-xs text-gray-500 mt-1">Adjust button size and spacing</p>
+									<p class="field-help">Adjust button size and spacing</p>
 								</div>
 							</div>
 						</div>
@@ -697,12 +681,12 @@
 
 				<!-- Scheduling -->
 				<Card>
-					<h2 class="text-xl font-semibold mb-4">Scheduling</h2>
-					<p class="text-sm text-gray-600 mb-4">
+					<h2 class="section-heading">Scheduling</h2>
+					<p class="section-copy">
 						Set start and end dates to control when this popup is active. Leave empty for always-on.
 					</p>
 
-					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+					<div class="form-grid form-grid--two">
 						<div>
 							<Input
 								id="popup-start-date"
@@ -710,7 +694,7 @@
 								type="datetime-local"
 								bind:value={formData.start_date}
 							/>
-							<p class="text-xs text-gray-500 mt-1">When the popup should start showing</p>
+							<p class="field-help">When the popup should start showing</p>
 						</div>
 
 						<div>
@@ -720,14 +704,14 @@
 								type="datetime-local"
 								bind:value={formData.end_date}
 							/>
-							<p class="text-xs text-gray-500 mt-1">When the popup should stop showing</p>
+							<p class="field-help">When the popup should stop showing</p>
 						</div>
 					</div>
 
 					{#if formData.start_date || formData.end_date}
-						<div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
-							<h4 class="text-sm font-semibold text-blue-800 mb-1">Schedule Preview</h4>
-							<p class="text-sm text-blue-700">
+						<div class="schedule-preview">
+							<h4>Schedule Preview</h4>
+							<p>
 								{#if formData.start_date && formData.end_date}
 									Active from <strong>{new Date(formData.start_date).toLocaleString()}</strong>
 									to <strong>{new Date(formData.end_date).toLocaleString()}</strong>
@@ -745,35 +729,31 @@
 
 				<!-- A/B Testing -->
 				<Card>
-					<h2 class="text-xl font-semibold mb-4">A/B Testing</h2>
-					<p class="text-sm text-gray-600 mb-4">
+					<h2 class="section-heading">A/B Testing</h2>
+					<p class="section-copy">
 						Create variants of this popup to test different content, designs, or CTAs.
 					</p>
 
 					{#if formData.abTestId}
-						<div class="bg-green-50 border border-green-200 rounded-md p-4 mb-4">
-							<div class="flex items-center gap-2 mb-2">
-								<span
-									class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"
-								>
-									A/B Test Active
-								</span>
-								<span class="text-sm text-green-700">Test ID: {formData.abTestId}</span>
+						<div class="active-test-card">
+							<div class="active-test-header">
+								<span class="status-pill status-pill--success">A/B Test Active</span>
+								<span class="active-test-id">Test ID: {formData.abTestId}</span>
 							</div>
 							{#if formData.variantTitle}
-								<p class="text-sm text-green-800">
+								<p class="active-test-copy">
 									This is variant: <strong>{formData.variantTitle}</strong>
 								</p>
 							{/if}
 						</div>
 					{:else}
-						<div class="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center">
-							<div class="text-gray-400 mb-3">
+						<div class="empty-test-card">
+							<div class="empty-test-icon">
 								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chart-bar w-12 h-12 -->
 								<IconChartBar size={48} aria-hidden="true" />
 							</div>
-							<h3 class="text-lg font-medium text-gray-900 mb-2">No A/B Test Running</h3>
-							<p class="text-sm text-gray-500 mb-4">
+							<h3 class="empty-test-title">No A/B Test Running</h3>
+							<p class="empty-test-copy">
 								Create an A/B test to compare different versions of this popup and find what works
 								best.
 							</p>
@@ -783,9 +763,9 @@
 						</div>
 					{/if}
 
-					<div class="mt-4 bg-gray-50 rounded-md p-4">
-						<h4 class="text-sm font-semibold text-gray-800 mb-2">Tips for A/B Testing</h4>
-						<ul class="text-sm text-gray-600 space-y-1">
+					<div class="tips-card">
+						<h4 class="tips-title">Tips for A/B Testing</h4>
+						<ul class="tips-list">
 							<li>Test one element at a time (headline, CTA, image)</li>
 							<li>Run tests for at least 7 days for statistical significance</li>
 							<li>Aim for at least 1000 impressions per variant</li>
@@ -797,32 +777,32 @@
 				<!-- Stats Summary (Read-only) -->
 				{#if formData.total_views !== undefined}
 					<Card>
-						<h2 class="text-xl font-semibold mb-4">Performance</h2>
+						<h2 class="section-heading">Performance</h2>
 
-						<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-							<div>
-								<p class="text-sm text-gray-600">Views</p>
-								<p class="text-2xl font-bold">{formData.total_views?.toLocaleString() || 0}</p>
+						<div class="performance-grid">
+							<div class="metric-card">
+								<p class="metric-label">Views</p>
+								<p class="metric-value">{formData.total_views?.toLocaleString() || 0}</p>
 							</div>
-							<div>
-								<p class="text-sm text-gray-600">Conversions</p>
-								<p class="text-2xl font-bold text-green-600">
+							<div class="metric-card">
+								<p class="metric-label">Conversions</p>
+								<p class="metric-value metric-value--success">
 									{formData.total_conversions?.toLocaleString() || 0}
 								</p>
 							</div>
-							<div>
-								<p class="text-sm text-gray-600">Conversion Rate</p>
-								<p class="text-2xl font-bold text-blue-600">{formData.conversion_rate || 0}%</p>
+							<div class="metric-card">
+								<p class="metric-label">Conversion Rate</p>
+								<p class="metric-value metric-value--accent">{formData.conversion_rate || 0}%</p>
 							</div>
-							<div>
-								<p class="text-sm text-gray-600">Status</p>
-								<p class="text-sm font-semibold text-gray-700 uppercase mt-2">
+							<div class="metric-card">
+								<p class="metric-label">Status</p>
+								<p class="metric-status">
 									{formData.performance_status || 'N/A'}
 								</p>
 							</div>
 						</div>
 
-						<div class="mt-4">
+						<div class="inline-actions">
 							<Button variant="outline" onclick={() => goto(`/admin/popups/${popupId}/analytics`)}>
 								View Full Analytics
 							</Button>
@@ -831,7 +811,7 @@
 				{/if}
 
 				<!-- Actions -->
-				<div class="flex justify-end gap-3">
+				<div class="form-actions">
 					<Button type="button" variant="ghost" onclick={handleCancel} disabled={loading}>
 						Cancel
 					</Button>
@@ -843,3 +823,392 @@
 		</form>
 	</div>
 {/if}
+
+<style>
+	.loading-state {
+		display: grid;
+		min-height: 24rem;
+		place-items: center;
+	}
+
+	.loading-panel {
+		text-align: center;
+	}
+
+	.loading-spinner {
+		width: 3rem;
+		height: 3rem;
+		margin: 0 auto;
+		border: 2px solid rgba(37, 99, 235, 0.2);
+		border-bottom-color: #2563eb;
+		border-radius: 999px;
+		animation: spin 0.8s linear infinite;
+	}
+
+	.loading-copy {
+		margin: 1rem 0 0;
+		color: #4b5563;
+	}
+
+	.popup-edit-page {
+		max-width: 64rem;
+		margin: 0 auto;
+	}
+
+	.page-header {
+		margin-bottom: 1.5rem;
+	}
+
+	.page-title {
+		margin: 0;
+		color: #111827;
+		font-size: 1.875rem;
+		font-weight: 700;
+		line-height: 1.2;
+	}
+
+	.page-subtitle {
+		margin: 0.25rem 0 0;
+		color: #4b5563;
+	}
+
+	.form-stack,
+	.section-stack {
+		display: grid;
+		gap: 1.5rem;
+	}
+
+	.field-stack {
+		display: grid;
+		gap: 1rem;
+	}
+
+	.field-stack--compact {
+		gap: 0.75rem;
+	}
+
+	.form-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		gap: 1rem;
+	}
+
+	.section-heading {
+		margin: 0 0 1rem;
+		color: #111827;
+		font-size: 1.25rem;
+		font-weight: 700;
+		line-height: 1.3;
+	}
+
+	.section-copy {
+		margin: 0 0 1rem;
+		color: #4b5563;
+		font-size: 0.875rem;
+		line-height: 1.6;
+	}
+
+	.subsection-heading {
+		margin: 0 0 0.75rem;
+		color: #1f2937;
+		font-size: 0.875rem;
+		font-weight: 700;
+		line-height: 1.4;
+	}
+
+	.field-label {
+		display: block;
+		margin: 0 0 0.25rem;
+		color: #374151;
+		font-size: 0.875rem;
+		font-weight: 600;
+		line-height: 1.4;
+	}
+
+	.field-help,
+	.field-error {
+		margin: 0.25rem 0 0;
+		font-size: 0.75rem;
+		line-height: 1.5;
+	}
+
+	.field-help {
+		color: #6b7280;
+	}
+
+	.field-error {
+		color: #dc2626;
+	}
+
+	.native-control {
+		width: 100%;
+		min-height: 2.5rem;
+		border: 1px solid #d1d5db;
+		border-radius: 6px;
+		background: #ffffff;
+		color: #111827;
+		padding: 0.5rem 0.75rem;
+		font: inherit;
+		line-height: 1.5;
+		transition:
+			border-color 0.2s ease,
+			box-shadow 0.2s ease;
+	}
+
+	.native-control:focus {
+		border-color: #3b82f6;
+		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
+		outline: none;
+	}
+
+	.native-control.has-error {
+		border-color: #ef4444;
+	}
+
+	textarea.native-control {
+		min-height: 7rem;
+		resize: vertical;
+	}
+
+	.checkbox-row {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		min-width: 0;
+	}
+
+	.checkbox-control {
+		width: 1rem;
+		height: 1rem;
+		flex: 0 0 auto;
+		border-color: #d1d5db;
+		accent-color: #2563eb;
+	}
+
+	.checkbox-label {
+		color: #374151;
+		font-size: 0.875rem;
+		line-height: 1.5;
+	}
+
+	.check-stack {
+		display: grid;
+		gap: 0.5rem;
+	}
+
+	.device-options {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem 1rem;
+	}
+
+	.info-callout,
+	.schedule-preview {
+		border: 1px solid #bfdbfe;
+		border-radius: 6px;
+		background: #eff6ff;
+		padding: 1rem;
+	}
+
+	.info-callout p,
+	.schedule-preview p {
+		margin: 0;
+		color: #1e40af;
+		font-size: 0.875rem;
+		line-height: 1.6;
+	}
+
+	.schedule-preview {
+		margin-top: 1rem;
+		padding: 0.75rem;
+	}
+
+	.schedule-preview h4 {
+		margin: 0 0 0.25rem;
+		color: #1e40af;
+		font-size: 0.875rem;
+		font-weight: 700;
+		line-height: 1.4;
+	}
+
+	.active-test-card {
+		margin-bottom: 1rem;
+		border: 1px solid #bbf7d0;
+		border-radius: 6px;
+		background: #f0fdf4;
+		padding: 1rem;
+	}
+
+	.active-test-header {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.5rem;
+		margin-bottom: 0.5rem;
+	}
+
+	.status-pill {
+		display: inline-flex;
+		align-items: center;
+		border-radius: 999px;
+		padding: 0.125rem 0.625rem;
+		font-size: 0.75rem;
+		font-weight: 600;
+		line-height: 1.5;
+	}
+
+	.status-pill--success {
+		background: #dcfce7;
+		color: #166534;
+	}
+
+	.active-test-id {
+		color: #15803d;
+		font-size: 0.875rem;
+	}
+
+	.active-test-copy {
+		margin: 0;
+		color: #166534;
+		font-size: 0.875rem;
+		line-height: 1.6;
+	}
+
+	.empty-test-card {
+		border: 2px dashed #e5e7eb;
+		border-radius: 8px;
+		padding: 1.5rem;
+		text-align: center;
+	}
+
+	.empty-test-icon {
+		display: grid;
+		margin-bottom: 0.75rem;
+		color: #9ca3af;
+		place-items: center;
+	}
+
+	.empty-test-title {
+		margin: 0 0 0.5rem;
+		color: #111827;
+		font-size: 1.125rem;
+		font-weight: 600;
+		line-height: 1.4;
+	}
+
+	.empty-test-copy {
+		max-width: 36rem;
+		margin: 0 auto 1rem;
+		color: #6b7280;
+		font-size: 0.875rem;
+		line-height: 1.6;
+	}
+
+	.tips-card {
+		margin-top: 1rem;
+		border-radius: 6px;
+		background: #f9fafb;
+		padding: 1rem;
+	}
+
+	.tips-title {
+		margin: 0 0 0.5rem;
+		color: #1f2937;
+		font-size: 0.875rem;
+		font-weight: 700;
+		line-height: 1.4;
+	}
+
+	.tips-list {
+		display: grid;
+		gap: 0.25rem;
+		margin: 0;
+		padding-left: 1.25rem;
+		color: #4b5563;
+		font-size: 0.875rem;
+		line-height: 1.6;
+	}
+
+	.performance-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 1rem;
+	}
+
+	.metric-card {
+		min-width: 0;
+	}
+
+	.metric-label {
+		margin: 0;
+		color: #4b5563;
+		font-size: 0.875rem;
+		line-height: 1.5;
+	}
+
+	.metric-value {
+		margin: 0.125rem 0 0;
+		color: #111827;
+		font-size: 1.5rem;
+		font-weight: 700;
+		line-height: 1.2;
+	}
+
+	.metric-value--success {
+		color: #16a34a;
+	}
+
+	.metric-value--accent {
+		color: #2563eb;
+	}
+
+	.metric-status {
+		margin: 0.5rem 0 0;
+		color: #374151;
+		font-size: 0.875rem;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		line-height: 1.5;
+		text-transform: uppercase;
+	}
+
+	.inline-actions {
+		margin-top: 1rem;
+	}
+
+	.form-actions {
+		display: flex;
+		justify-content: flex-end;
+		gap: 0.75rem;
+	}
+
+	@media (min-width: 768px) {
+		.form-grid--two {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.form-grid--three {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
+
+		.performance-grid {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+		}
+	}
+
+	@media (max-width: 767.98px) {
+		.popup-edit-page {
+			padding-inline: 0.25rem;
+		}
+
+		.form-actions {
+			flex-direction: column-reverse;
+		}
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+</style>
