@@ -255,12 +255,11 @@
 	let prefersReducedMotion = $state(false);
 	let prefersHighContrast = $state(false);
 	let isRTL = $state(false);
+	let liveAnnouncement = $state('');
 
-	// Element references (used in bind:this directives below)
+	// Element references managed by attachments below
 	let mobileCloseRef = $state<HTMLButtonElement | null>(null);
 	let mobilePanelRef = $state<HTMLElement | null>(null);
-	let scrollSentinelRef = $state<HTMLDivElement | null>(null);
-	let announcerRef = $state<HTMLDivElement | null>(null);
 	let previousFocusRef: HTMLElement | null = null;
 
 	// Roving tabindex for dropdown keyboard nav
@@ -307,12 +306,10 @@
 	}
 
 	function announce(message: string): void {
-		if (announcerRef) {
-			announcerRef.textContent = '';
-			// Force reflow for screen reader announcement
-			void announcerRef.offsetHeight;
-			announcerRef.textContent = message;
-		}
+		liveAnnouncement = '';
+		requestAnimationFrame(() => {
+			liveAnnouncement = message;
+		});
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -330,6 +327,44 @@
 
 	function getFocusableElements(container: HTMLElement): HTMLElement[] {
 		return Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR));
+	}
+
+	function mobileCloseAttachment(node: HTMLButtonElement) {
+		mobileCloseRef = node;
+
+		return () => {
+			if (mobileCloseRef === node) mobileCloseRef = null;
+		};
+	}
+
+	function mobilePanelAttachment(node: HTMLElement) {
+		mobilePanelRef = node;
+
+		return () => {
+			if (mobilePanelRef === node) mobilePanelRef = null;
+		};
+	}
+
+	function scrollLockAttachment(node: HTMLElement) {
+		const originalOverflow = node.style.overflow;
+		const originalPaddingRight = node.style.paddingRight;
+
+		$effect(() => {
+			if (!isMobileMenuOpen) {
+				node.style.overflow = originalOverflow;
+				node.style.paddingRight = originalPaddingRight;
+				return;
+			}
+
+			const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+			node.style.overflow = 'hidden';
+			node.style.paddingRight = scrollbarWidth > 0 ? `${scrollbarWidth}px` : originalPaddingRight;
+
+			return () => {
+				node.style.overflow = originalOverflow;
+				node.style.paddingRight = originalPaddingRight;
+			};
+		});
 	}
 
 	function trapFocus(event: KeyboardEvent): void {
@@ -359,16 +394,6 @@
 
 		previousFocusRef = document.activeElement as HTMLElement;
 
-		// ICT11+ Enterprise Fix: Scroll lock with proper compensation
-		// Apply on <html> element for consistent behavior across browsers
-		// Padding compensates for scrollbar removal - prevents layout shift
-		const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-
-		document.documentElement.style.overflow = 'hidden';
-		if (scrollbarWidth > 0) {
-			document.documentElement.style.paddingRight = `${scrollbarWidth}px`;
-		}
-
 		// NOW change state after scroll lock is in place
 		mobileMenuState = 'opening';
 
@@ -395,10 +420,6 @@
 		await new Promise((resolve) => setTimeout(resolve, duration));
 
 		mobileMenuState = 'idle';
-
-		// ICT11+ Enterprise Fix: Clean up scroll lock
-		document.documentElement.style.overflow = '';
-		document.documentElement.style.paddingRight = '';
 
 		// Restore focus
 		requestAnimationFrame(() => {
@@ -546,9 +567,7 @@
 
 	let scrollObserver: IntersectionObserver | null = null;
 
-	function setupScrollObserver(): void {
-		if (!scrollSentinelRef) return;
-
+	function scrollSentinelAttachment(node: HTMLDivElement) {
 		scrollObserver = new IntersectionObserver(
 			(entries) => {
 				// When sentinel is NOT visible, navbar should be scrolled
@@ -560,7 +579,12 @@
 			}
 		);
 
-		scrollObserver.observe(scrollSentinelRef);
+		scrollObserver.observe(node);
+
+		return () => {
+			scrollObserver?.disconnect();
+			scrollObserver = null;
+		};
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -606,34 +630,23 @@
 		document.addEventListener('click', handleClickOutside, { passive: true });
 		document.addEventListener('keydown', handleKeydown);
 
-		// Setup scroll observer
-		setupScrollObserver();
-
 		return () => {
 			motionQuery.removeEventListener('change', handleMotionChange);
 			contrastQuery.removeEventListener('change', handleContrastChange);
 			document.removeEventListener('click', handleClickOutside);
 			document.removeEventListener('keydown', handleKeydown);
-			scrollObserver?.disconnect();
-			// ICT11+ Enterprise Fix: Clean up scroll lock
-			document.documentElement.style.overflow = '';
-			document.documentElement.style.paddingRight = '';
 		};
 	});
 </script>
 
+<svelte:body {@attach scrollLockAttachment} />
+
 <!-- Scroll Sentinel (Intersection Observer target) -->
-<div bind:this={scrollSentinelRef} class="scroll-sentinel" aria-hidden="true"></div>
+<div {@attach scrollSentinelAttachment} class="scroll-sentinel" aria-hidden="true"></div>
 
 <!-- Live Region for Screen Reader Announcements -->
-<div
-	bind:this={announcerRef}
-	class="sr-announcer"
-	role="status"
-	aria-live="polite"
-	aria-atomic="true"
->
-	{announcement}
+<div class="sr-announcer" role="status" aria-live="polite" aria-atomic="true">
+	{liveAnnouncement || announcement}
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
@@ -860,8 +873,8 @@
 
 	<!-- Panel -->
 	<div
-		bind:this={mobilePanelRef}
 		id="mobile-nav"
+		{@attach mobilePanelAttachment}
 		class="mobile-panel"
 		class:closing={mobileMenuState === 'closing'}
 		class:reduced-motion={prefersReducedMotion || disableTransitions}
@@ -874,7 +887,7 @@
 		<div class="mobile-header">
 			<span class="mobile-title" id="mobile-title">Menu</span>
 			<button
-				bind:this={mobileCloseRef}
+				{@attach mobileCloseAttachment}
 				class="mobile-close"
 				onclick={closeMobileMenu}
 				aria-label="Close menu"
@@ -1156,12 +1169,19 @@
 
 	@media (min-width: 1280px) {
 		.logo {
+			width: 160px;
+			height: 40px;
+		}
+	}
+
+	@media (min-width: 1440px) {
+		.logo {
 			width: 180px;
 			height: 45px;
 		}
 	}
 
-	@media (min-width: 1440px) {
+	@media (min-width: 1536px) {
 		.logo {
 			width: 200px;
 			height: 50px;
@@ -1205,12 +1225,19 @@
 
 	@media (min-width: 1280px) {
 		.desktop-nav {
+			gap: 0.5rem;
+			padding-inline: 1rem;
+		}
+	}
+
+	@media (min-width: 1440px) {
+		.desktop-nav {
 			gap: 0.625rem;
 			padding-inline: 1.5rem;
 		}
 	}
 
-	@media (min-width: 1440px) {
+	@media (min-width: 1536px) {
 		.desktop-nav {
 			gap: 0.75rem;
 			padding-inline: 2rem;
@@ -1254,6 +1281,14 @@
 
 	@media (min-width: 1280px) {
 		.nav-link {
+			height: 36px;
+			padding: 0 0.75rem;
+			font-size: 0.8125rem;
+		}
+	}
+
+	@media (min-width: 1440px) {
+		.nav-link {
 			height: 38px;
 			padding: 0 0.875rem;
 			font-size: 0.875rem;
@@ -1262,7 +1297,7 @@
 		}
 	}
 
-	@media (min-width: 1440px) {
+	@media (min-width: 1536px) {
 		.nav-link {
 			height: 40px;
 			padding: 0 1rem;
@@ -1339,6 +1374,14 @@
 
 	@media (min-width: 1280px) {
 		.dropdown-trigger {
+			height: 36px;
+			padding: 0 0.75rem;
+			font-size: 0.8125rem;
+		}
+	}
+
+	@media (min-width: 1440px) {
+		.dropdown-trigger {
 			gap: 0.25rem;
 			height: 38px;
 			padding: 0 0.875rem;
@@ -1347,7 +1390,7 @@
 		}
 	}
 
-	@media (min-width: 1440px) {
+	@media (min-width: 1536px) {
 		.dropdown-trigger {
 			height: 40px;
 			padding: 0 1rem;
@@ -1590,6 +1633,14 @@
 
 	@media (min-width: 1280px) {
 		.login-btn {
+			height: 36px;
+			padding-inline: 1rem;
+			font-size: 0.8125rem;
+		}
+	}
+
+	@media (min-width: 1440px) {
+		.login-btn {
 			height: 38px;
 			padding-inline: 1.125rem;
 			font-size: 0.875rem;
@@ -1597,7 +1648,7 @@
 		}
 	}
 
-	@media (min-width: 1440px) {
+	@media (min-width: 1536px) {
 		.login-btn {
 			height: 40px;
 			padding-inline: 1.25rem;
@@ -1655,6 +1706,14 @@
 
 	@media (min-width: 1280px) {
 		.cta-btn {
+			height: 34px;
+			padding-inline: 0.875rem;
+			font-size: 0.7rem;
+		}
+	}
+
+	@media (min-width: 1440px) {
+		.cta-btn {
 			height: 36px;
 			padding-inline: 1rem;
 			font-size: 0.75rem;
@@ -1662,7 +1721,7 @@
 		}
 	}
 
-	@media (min-width: 1440px) {
+	@media (min-width: 1536px) {
 		.cta-btn {
 			height: 38px;
 			padding-inline: 1.125rem;
@@ -2214,12 +2273,19 @@
 
 	@media (min-width: 1280px) {
 		.navbar {
+			--nav-height: 88px;
+			--nav-padding-inline: 1.25rem;
+		}
+	}
+
+	@media (min-width: 1440px) {
+		.navbar {
 			--nav-height: 94px;
 			--nav-padding-inline: 1.5rem;
 		}
 	}
 
-	@media (min-width: 1440px) {
+	@media (min-width: 1536px) {
 		.navbar {
 			--nav-height: 104px;
 			--nav-padding-inline: 2rem;
