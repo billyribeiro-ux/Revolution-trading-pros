@@ -116,27 +116,26 @@
 	}
 </script>
 
-<div class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 {className}">
+<div class={['responsive-preview', className]}>
 	<!-- Header -->
-	<div class="flex items-center justify-between mb-4">
-		<h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Responsive Variants</h3>
+	<div class="responsive-preview__header">
+		<h3 class="responsive-preview__title">Responsive Variants</h3>
 		{#if originalSize > 0}
-			<span class="text-xs text-gray-500">
+			<span class="responsive-preview__original-size">
 				Original: {formatBytes(originalSize)}
 			</span>
 		{/if}
 	</div>
 
 	<!-- Variants grid -->
-	<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+	<div class="responsive-preview__grid">
 		{#each sortedVariants as variant (variant.sizeName)}
 			<button
-				class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden border-2 transition-all duration-200 {selectedSize ===
-				variant.sizeName
-					? 'border-blue-500 ring-2 ring-blue-200 dark:ring-blue-800'
-					: 'border-transparent'} {interactive
-					? 'cursor-pointer hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-md'
-					: ''}"
+				class={[
+					'responsive-preview__variant',
+					selectedSize === variant.sizeName && 'responsive-preview__variant--selected',
+					interactive && 'responsive-preview__variant--interactive'
+				]}
 				onclick={() => handleSelect(variant.sizeName)}
 				onmouseenter={(e: MouseEvent) => handleMouseEnter(e, variant)}
 				onmousemove={handleMouseMove}
@@ -144,41 +143,39 @@
 				transition:scale={{ duration: 200 }}
 			>
 				<!-- Thumbnail -->
-				<div class="aspect-square bg-gray-100 dark:bg-gray-700 overflow-hidden">
+				<div class="responsive-preview__thumbnail">
 					<img
 						src={variant.url}
 						alt="{variant.sizeName} preview"
 						loading="lazy"
-						class="w-full h-full object-cover"
+						class="responsive-preview__thumbnail-image"
 						width={variant.width}
 						height={variant.height}
 					/>
 				</div>
 
 				<!-- Info -->
-				<div class="p-2 text-center">
-					<div class="text-xs font-medium text-gray-700 dark:text-gray-300">
+				<div class="responsive-preview__variant-info">
+					<div class="responsive-preview__variant-label">
 						{breakpointLabels[variant.sizeName] || variant.sizeName}
 					</div>
-					<div class="text-[10px] text-gray-500 dark:text-gray-400">
+					<div class="responsive-preview__variant-dimensions">
 						{variant.width} x {variant.height}
 					</div>
 					{#if showSizes}
-						<div class="flex items-center justify-center gap-2 mt-1">
-							<span class="text-[10px] text-gray-500">{formatBytes(variant.size)}</span>
+						<div class="responsive-preview__variant-stats">
+							<span>{formatBytes(variant.size)}</span>
 							{#if originalSize > 0}
-								<span class="text-[10px] font-medium text-green-500"
-									>-{getSavings(variant.size)}%</span
-								>
+								<span class="responsive-preview__savings">-{getSavings(variant.size)}%</span>
 							{/if}
 						</div>
 					{/if}
 				</div>
 
 				<!-- Breakpoint indicator -->
-				<div class="h-1 bg-gray-200 dark:bg-gray-700">
+				<div class="responsive-preview__breakpoint-track">
 					<div
-						class="h-full bg-blue-500"
+						class="responsive-preview__breakpoint-fill"
 						style="width: {((breakpointWidths[variant.sizeName] ?? 0) / 1920) * 100}%"
 					></div>
 				</div>
@@ -188,26 +185,26 @@
 
 	<!-- Size comparison chart -->
 	{#if showSizes && sortedVariants.length > 0}
-		<div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-			<div class="mb-2">
-				<span class="text-xs text-gray-500">Size Comparison</span>
+		<div class="responsive-preview__comparison">
+			<div class="responsive-preview__comparison-heading">
+				<span>Size Comparison</span>
 			</div>
-			<div class="flex items-end justify-center gap-2 h-20">
+			<div class="responsive-preview__chart">
 				{#each sortedVariants as variant (variant.sizeName)}
-					<div class="flex flex-col items-center gap-1">
+					<div class="responsive-preview__chart-item">
 						<div
-							class="w-4 bg-blue-500 rounded-t transition-all duration-300"
+							class="responsive-preview__chart-bar responsive-preview__chart-bar--variant"
 							style="height: {(variant.size / originalSize) * 100}%"
 						></div>
-						<span class="text-[10px] text-gray-500">{variant.sizeName}</span>
+						<span>{variant.sizeName}</span>
 					</div>
 				{/each}
-				<div class="flex flex-col items-center gap-1">
+				<div class="responsive-preview__chart-item">
 					<div
-						class="w-4 bg-gray-400 dark:bg-gray-500 rounded-t transition-all duration-300"
+						class="responsive-preview__chart-bar responsive-preview__chart-bar--original"
 						style="height: 100%"
 					></div>
-					<span class="text-[10px] text-gray-500">orig</span>
+					<span>orig</span>
 				</div>
 			</div>
 		</div>
@@ -216,24 +213,289 @@
 	<!-- Hover preview tooltip -->
 	{#if hoveredVariant}
 		<div
-			class="fixed z-50 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden pointer-events-none"
+			class="responsive-preview__tooltip"
 			style="left: {previewPosition.x}px; top: {previewPosition.y}px;"
 			transition:fade={{ duration: 150 }}
 		>
 			<img
 				src={hoveredVariant.url}
 				alt="Preview"
-				class="max-w-[200px] max-h-[150px] object-contain"
+				class="responsive-preview__tooltip-image"
 				width={hoveredVariant.width}
 				height={hoveredVariant.height}
 				loading="lazy"
 			/>
-			<div
-				class="flex items-center justify-between gap-2 px-2 py-1 text-xs bg-gray-50 dark:bg-gray-900"
-			>
-				<span class="font-medium">{hoveredVariant.width}x{hoveredVariant.height}</span>
-				<span class="text-gray-500">{formatBytes(hoveredVariant.size)}</span>
+			<div class="responsive-preview__tooltip-meta">
+				<span class="responsive-preview__tooltip-dimensions"
+					>{hoveredVariant.width}x{hoveredVariant.height}</span
+				>
+				<span class="responsive-preview__tooltip-size">{formatBytes(hoveredVariant.size)}</span>
 			</div>
 		</div>
 	{/if}
 </div>
+
+<style>
+	.responsive-preview {
+		border-radius: 0.75rem;
+		background: #f9fafb;
+		padding: 1rem;
+	}
+
+	:global(.dark) .responsive-preview {
+		background: rgb(31 41 55 / 0.5);
+	}
+
+	.responsive-preview__header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 1rem;
+	}
+
+	.responsive-preview__title {
+		margin: 0;
+		color: #374151;
+		font-size: 0.875rem;
+		font-weight: 600;
+		line-height: 1.25rem;
+	}
+
+	:global(.dark) .responsive-preview__title {
+		color: #d1d5db;
+	}
+
+	.responsive-preview__original-size,
+	.responsive-preview__comparison-heading,
+	.responsive-preview__variant-label,
+	.responsive-preview__variant-dimensions,
+	.responsive-preview__variant-stats,
+	.responsive-preview__chart-item,
+	.responsive-preview__tooltip-meta {
+		font-size: 0.75rem;
+		line-height: 1rem;
+	}
+
+	.responsive-preview__original-size,
+	.responsive-preview__comparison-heading,
+	.responsive-preview__variant-stats,
+	.responsive-preview__chart-item,
+	.responsive-preview__tooltip-size {
+		color: #6b7280;
+	}
+
+	.responsive-preview__grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0.75rem;
+	}
+
+	.responsive-preview__variant {
+		overflow: hidden;
+		border: 2px solid transparent;
+		border-radius: 0.5rem;
+		background: #ffffff;
+		padding: 0;
+		text-align: inherit;
+		transition:
+			border-color 0.2s ease,
+			box-shadow 0.2s ease;
+	}
+
+	:global(.dark) .responsive-preview__variant {
+		background: #1f2937;
+	}
+
+	.responsive-preview__variant--interactive {
+		cursor: pointer;
+	}
+
+	.responsive-preview__variant--interactive:hover {
+		border-color: #93c5fd;
+		box-shadow:
+			0 4px 6px -1px rgb(0 0 0 / 0.1),
+			0 2px 4px -2px rgb(0 0 0 / 0.1);
+	}
+
+	:global(.dark) .responsive-preview__variant--interactive:hover {
+		border-color: #2563eb;
+	}
+
+	.responsive-preview__variant--selected {
+		border-color: #3b82f6;
+		box-shadow: 0 0 0 2px #bfdbfe;
+	}
+
+	:global(.dark) .responsive-preview__variant--selected {
+		box-shadow: 0 0 0 2px #1e40af;
+	}
+
+	.responsive-preview__thumbnail {
+		aspect-ratio: 1;
+		overflow: hidden;
+		background: #f3f4f6;
+	}
+
+	:global(.dark) .responsive-preview__thumbnail {
+		background: #374151;
+	}
+
+	.responsive-preview__thumbnail-image {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.responsive-preview__variant-info {
+		padding: 0.5rem;
+		text-align: center;
+	}
+
+	.responsive-preview__variant-label {
+		color: #374151;
+		font-weight: 500;
+	}
+
+	:global(.dark) .responsive-preview__variant-label {
+		color: #d1d5db;
+	}
+
+	.responsive-preview__variant-dimensions {
+		color: #6b7280;
+		font-size: 0.625rem;
+	}
+
+	:global(.dark) .responsive-preview__variant-dimensions {
+		color: #9ca3af;
+	}
+
+	.responsive-preview__variant-stats {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		margin-top: 0.25rem;
+		font-size: 0.625rem;
+	}
+
+	.responsive-preview__savings {
+		color: #22c55e;
+		font-weight: 500;
+	}
+
+	.responsive-preview__breakpoint-track {
+		height: 0.25rem;
+		background: #e5e7eb;
+	}
+
+	:global(.dark) .responsive-preview__breakpoint-track {
+		background: #374151;
+	}
+
+	.responsive-preview__breakpoint-fill {
+		height: 100%;
+		background: #3b82f6;
+	}
+
+	.responsive-preview__comparison {
+		margin-top: 1rem;
+		padding-top: 1rem;
+		border-top: 1px solid #e5e7eb;
+	}
+
+	:global(.dark) .responsive-preview__comparison {
+		border-top-color: #374151;
+	}
+
+	.responsive-preview__comparison-heading {
+		margin-bottom: 0.5rem;
+	}
+
+	.responsive-preview__chart {
+		display: flex;
+		align-items: end;
+		justify-content: center;
+		gap: 0.5rem;
+		height: 5rem;
+	}
+
+	.responsive-preview__chart-item {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.25rem;
+		font-size: 0.625rem;
+	}
+
+	.responsive-preview__chart-bar {
+		width: 1rem;
+		border-radius: 0.25rem 0.25rem 0 0;
+		transition: height 0.3s ease;
+	}
+
+	.responsive-preview__chart-bar--variant {
+		background: #3b82f6;
+	}
+
+	.responsive-preview__chart-bar--original {
+		background: #9ca3af;
+	}
+
+	:global(.dark) .responsive-preview__chart-bar--original {
+		background: #6b7280;
+	}
+
+	.responsive-preview__tooltip {
+		position: fixed;
+		z-index: 50;
+		overflow: hidden;
+		pointer-events: none;
+		border: 1px solid #e5e7eb;
+		border-radius: 0.5rem;
+		background: #ffffff;
+		box-shadow:
+			0 20px 25px -5px rgb(0 0 0 / 0.1),
+			0 8px 10px -6px rgb(0 0 0 / 0.1);
+	}
+
+	:global(.dark) .responsive-preview__tooltip {
+		border-color: #374151;
+		background: #1f2937;
+	}
+
+	.responsive-preview__tooltip-image {
+		max-width: 200px;
+		max-height: 150px;
+		object-fit: contain;
+	}
+
+	.responsive-preview__tooltip-meta {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.5rem;
+		padding: 0.25rem 0.5rem;
+		background: #f9fafb;
+	}
+
+	:global(.dark) .responsive-preview__tooltip-meta {
+		background: #111827;
+	}
+
+	.responsive-preview__tooltip-dimensions {
+		font-weight: 500;
+	}
+
+	@media (min-width: 640px) {
+		.responsive-preview__grid {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
+	}
+
+	@media (min-width: 768px) {
+		.responsive-preview__grid {
+			grid-template-columns: repeat(6, minmax(0, 1fr));
+		}
+	}
+</style>
