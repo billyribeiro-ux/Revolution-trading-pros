@@ -28,7 +28,7 @@
 			name: 'Trello',
 			description: 'Import boards, lists, and cards from Trello JSON export',
 			icon: IconBrandTrello,
-			color: 'bg-blue-500',
+			tone: 'blue',
 			accept: '.json'
 		},
 		{
@@ -36,7 +36,7 @@
 			name: 'Asana',
 			description: 'Import projects and tasks from Asana CSV export',
 			icon: IconBrandAsana,
-			color: 'bg-orange-500',
+			tone: 'orange',
 			accept: '.csv'
 		},
 		{
@@ -44,7 +44,7 @@
 			name: 'CSV File',
 			description: 'Import tasks from a CSV file with custom mapping',
 			icon: IconFileSpreadsheet,
-			color: 'bg-green-500',
+			tone: 'green',
 			accept: '.csv'
 		}
 	];
@@ -145,17 +145,19 @@
 		error = null;
 	}
 
-	function getStatusColor(status: string): string {
-		switch (status) {
-			case 'completed':
-				return 'text-green-600 bg-green-100 dark:bg-green-900/30';
-			case 'failed':
-				return 'text-red-600 bg-red-100 dark:bg-red-900/30';
-			case 'processing':
-				return 'text-blue-600 bg-blue-100 dark:bg-blue-900/30';
-			default:
-				return 'text-gray-600 bg-gray-100 dark:bg-gray-700';
-		}
+	function getStatusClass(status: string): Record<string, boolean> {
+		return {
+			'status-pill': true,
+			'status-pill--success': status === 'completed',
+			'status-pill--danger': status === 'failed',
+			'status-pill--info': status === 'processing',
+			'status-pill--neutral':
+				status !== 'completed' && status !== 'failed' && status !== 'processing'
+		};
+	}
+
+	function getProgressPercent(job: ImportJob): number {
+		return job.total_items > 0 ? (job.processed_items / job.total_items) * 100 : 0;
 	}
 </script>
 
@@ -163,89 +165,70 @@
 	<title>Import Board | Project Boards</title>
 </svelte:head>
 
-<div class="bg-gray-50 dark:bg-gray-900">
+<div class="import-page">
 	<!-- Header -->
-	<div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-		<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-			<div class="flex items-center gap-4">
-				<a
-					href="/admin/boards"
-					class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-				>
-					<IconArrowLeft class="w-5 h-5" />
+	<div class="page-header">
+		<div class="page-container page-container--header">
+			<div class="header-row">
+				<a href="/admin/boards" class="back-link" aria-label="Back to boards">
+					<IconArrowLeft size={20} aria-hidden="true" />
 				</a>
-				<div class="flex items-center gap-3">
-					<div class="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
-						<IconUpload class="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+				<div class="title-row">
+					<div class="title-icon">
+						<IconUpload size={24} aria-hidden="true" />
 					</div>
 					<div>
-						<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Import Board</h1>
-						<p class="text-sm text-gray-500 dark:text-gray-400">
-							Import from Trello, Asana, or CSV
-						</p>
+						<h1>Import Board</h1>
+						<p>Import from Trello, Asana, or CSV</p>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+	<div class="page-container page-container--body">
 		{#if importJob}
 			<!-- Import Progress -->
-			<div
-				class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6"
-			>
-				<div class="flex items-center justify-between mb-6">
-					<h2 class="text-lg font-semibold text-gray-900 dark:text-white">Import Progress</h2>
-					<span
-						class="px-3 py-1 text-sm rounded-full {getStatusColor(importJob.status)} capitalize"
-					>
+			<div class="panel">
+				<div class="panel-header">
+					<h2>Import Progress</h2>
+					<span class={getStatusClass(importJob.status)}>
 						{importJob.status}
 					</span>
 				</div>
 
 				{#if importJob.status === 'processing'}
-					<div class="mb-6">
-						<div class="flex items-center justify-between mb-2">
-							<span class="text-sm text-gray-600 dark:text-gray-400">Processing...</span>
-							<span class="text-sm text-gray-600 dark:text-gray-400">
+					<div class="progress-section">
+						<div class="progress-header">
+							<span>Processing...</span>
+							<span>
 								{importJob.processed_items} / {importJob.total_items}
 							</span>
 						</div>
-						<div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+						<div class="progress-track">
 							<div
-								class="bg-indigo-600 h-2 rounded-full transition-all"
-								style="width: {(importJob.processed_items / importJob.total_items) * 100}%"
+								class="progress-bar"
+								style:width="{getProgressPercent(importJob).toFixed(1)}%"
 							></div>
 						</div>
 					</div>
 				{/if}
 
 				{#if importJob.status === 'completed'}
-					<div class="text-center py-8">
-						<div
-							class="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4"
-						>
-							<IconCheck class="w-8 h-8 text-green-600" />
+					<div class="result-state">
+						<div class="result-icon result-icon--success">
+							<IconCheck size={32} aria-hidden="true" />
 						</div>
-						<h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Import Complete!</h3>
-						<p class="text-gray-500 dark:text-gray-400 mb-6">
+						<h3>Import Complete!</h3>
+						<p>
 							Successfully imported {importJob.processed_items} items
 							{#if importJob.failed_items > 0}
 								({importJob.failed_items} failed)
 							{/if}
 						</p>
-						<div class="flex items-center justify-center gap-4">
-							<a
-								href="/admin/boards"
-								class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg"
-							>
-								View Boards
-							</a>
-							<button
-								onclick={resetImport}
-								class="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-							>
+						<div class="result-actions">
+							<a href="/admin/boards" class="primary-action"> View Boards </a>
+							<button type="button" onclick={resetImport} class="secondary-action">
 								Import Another
 							</button>
 						</div>
@@ -253,38 +236,29 @@
 				{/if}
 
 				{#if importJob.status === 'failed'}
-					<div class="text-center py-8">
-						<div
-							class="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4"
-						>
-							<IconX class="w-8 h-8 text-red-600" />
+					<div class="result-state">
+						<div class="result-icon result-icon--danger">
+							<IconX size={32} aria-hidden="true" />
 						</div>
-						<h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Import Failed</h3>
-						<p class="text-gray-500 dark:text-gray-400 mb-6">
+						<h3>Import Failed</h3>
+						<p>
 							{importJob.errors?.[0]?.message || 'An error occurred during import'}
 						</p>
-						<button
-							onclick={resetImport}
-							class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg"
-						>
-							Try Again
-						</button>
+						<button type="button" onclick={resetImport} class="primary-action"> Try Again </button>
 					</div>
 				{/if}
 
 				{#if importJob.errors && importJob.errors.length > 0 && importJob.status === 'completed'}
-					<div
-						class="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg"
-					>
-						<h4 class="text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-2">
+					<div class="warning-callout">
+						<h4>
 							{importJob.errors.length} items could not be imported:
 						</h4>
-						<ul class="text-sm text-yellow-700 dark:text-yellow-300 space-y-1">
+						<ul>
 							{#each importJob.errors.slice(0, 5) as err, i (i)}
 								<li>• {err.message}</li>
 							{/each}
 							{#if importJob.errors.length > 5}
-								<li class="text-yellow-600">...and {importJob.errors.length - 5} more</li>
+								<li class="warning-more">...and {importJob.errors.length - 5} more</li>
 							{/if}
 						</ul>
 					</div>
@@ -292,86 +266,81 @@
 			</div>
 		{:else if selectedSource}
 			<!-- File Upload -->
-			<div
-				class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6"
-			>
-				<button
-					onclick={() => (selectedSource = null)}
-					class="text-sm text-indigo-600 hover:text-indigo-700 mb-4 flex items-center gap-1"
-				>
-					<IconArrowLeft class="w-4 h-4" />
+			<div class="panel">
+				<button type="button" onclick={() => (selectedSource = null)} class="inline-back">
+					<IconArrowLeft size={16} aria-hidden="true" />
 					Back to source selection
 				</button>
 
-				<h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+				<h2 class="panel-title">
 					Upload {sources.find((s) => s.id === selectedSource)?.name} File
 				</h2>
-				<p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
+				<p class="panel-copy">
 					{sources.find((s) => s.id === selectedSource)?.description}
 				</p>
 
 				<!-- Drop Zone -->
 				<div
-					role="button"
-					tabindex="0"
-					class="border-2 border-dashed rounded-xl p-8 text-center transition-colors {dragOver
-						? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20'
-						: 'border-gray-300 dark:border-gray-600'}"
+					role="region"
+					aria-label="File drop zone"
+					class={{ 'drop-zone': true, 'drop-zone--active': dragOver }}
 					ondrop={handleDrop}
 					ondragover={handleDragOver}
 					ondragleave={handleDragLeave}
 				>
 					{#if file}
-						<div class="flex items-center justify-center gap-3 mb-4">
-							<IconFileSpreadsheet class="w-10 h-10 text-indigo-600" />
-							<div class="text-left">
-								<div class="font-medium text-gray-900 dark:text-white">{file.name}</div>
-								<div class="text-sm text-gray-500">{(file.size / 1024).toFixed(1)} KB</div>
+						<div class="selected-file">
+							<IconFileSpreadsheet size={40} aria-hidden="true" />
+							<div class="selected-file-details">
+								<div class="selected-file-name">{file.name}</div>
+								<div class="selected-file-size">{(file.size / 1024).toFixed(1)} KB</div>
 							</div>
-							<button onclick={() => (file = null)} class="p-1 text-gray-400 hover:text-gray-600">
-								<IconX class="w-5 h-5" />
+							<button
+								type="button"
+								onclick={() => (file = null)}
+								class="clear-file"
+								aria-label="Remove selected file"
+							>
+								<IconX size={20} aria-hidden="true" />
 							</button>
 						</div>
 					{:else}
-						<IconUpload class="w-10 h-10 text-gray-400 mx-auto mb-4" />
-						<p class="text-gray-600 dark:text-gray-400 mb-2">Drag and drop your file here, or</p>
+						<IconUpload class="drop-icon" size={40} aria-hidden="true" />
+						<p class="drop-copy">Drag and drop your file here, or</p>
 					{/if}
 
-					<label class="inline-block">
-						<span
-							class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg cursor-pointer"
-						>
+					<label class="file-picker">
+						<span>
 							{file ? 'Choose Different File' : 'Browse Files'}
 						</span>
 						<input
 							type="file"
 							accept={sources.find((s) => s.id === selectedSource)?.accept}
 							onchange={handleFileSelect}
-							class="hidden"
+							class="visually-hidden"
 						/>
 					</label>
 				</div>
 
 				{#if error}
-					<div
-						class="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-center gap-3"
-					>
-						<IconAlertCircle class="w-5 h-5 text-red-600" />
-						<span class="text-sm text-red-700 dark:text-red-300">{error}</span>
+					<div class="error-callout">
+						<IconAlertCircle size={20} aria-hidden="true" />
+						<span>{error}</span>
 					</div>
 				{/if}
 
-				<div class="mt-6 flex justify-end">
+				<div class="upload-actions">
 					<button
+						type="button"
 						onclick={startImport}
 						disabled={!file || loading}
-						class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+						class="primary-action primary-action--wide"
 					>
 						{#if loading}
-							<IconLoader class="w-4 h-4 animate-spin" />
+							<IconLoader class="spin-icon" size={16} aria-hidden="true" />
 							Importing...
 						{:else}
-							<IconUpload class="w-4 h-4" />
+							<IconUpload size={16} aria-hidden="true" />
 							Start Import
 						{/if}
 					</button>
@@ -379,35 +348,33 @@
 			</div>
 		{:else}
 			<!-- Source Selection -->
-			<div class="space-y-4">
-				<h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">
-					Choose Import Source
-				</h2>
+			<div class="source-section">
+				<h2>Choose Import Source</h2>
 
 				{#each sources as source (source.id)}
-					<button
-						onclick={() => (selectedSource = source.id)}
-						class="w-full bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 text-left hover:border-indigo-300 dark:hover:border-indigo-700 hover:shadow-md transition-all flex items-center gap-4"
-					>
-						<div class="p-3 {source.color} rounded-xl">
-							<source.icon class="w-8 h-8 text-white" />
+					<button type="button" onclick={() => (selectedSource = source.id)} class="source-card">
+						<div
+							class={{
+								'source-icon': true,
+								'source-icon--blue': source.tone === 'blue',
+								'source-icon--orange': source.tone === 'orange',
+								'source-icon--green': source.tone === 'green'
+							}}
+						>
+							<source.icon size={32} aria-hidden="true" />
 						</div>
 						<div>
-							<h3 class="text-lg font-medium text-gray-900 dark:text-white">{source.name}</h3>
-							<p class="text-sm text-gray-500 dark:text-gray-400">{source.description}</p>
+							<h3>{source.name}</h3>
+							<p>{source.description}</p>
 						</div>
 					</button>
 				{/each}
 			</div>
 
 			<!-- Help Section -->
-			<div
-				class="mt-8 p-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl"
-			>
-				<h3 class="text-sm font-semibold text-blue-800 dark:text-blue-200 mb-2">
-					How to export from other tools:
-				</h3>
-				<ul class="text-sm text-blue-700 dark:text-blue-300 space-y-2">
+			<div class="help-panel">
+				<h3>How to export from other tools:</h3>
+				<ul>
 					<li>
 						<strong>Trello:</strong> Open board menu → More → Print and export → Export to JSON
 					</li>
@@ -420,3 +387,618 @@
 		{/if}
 	</div>
 </div>
+
+<style>
+	.import-page {
+		min-height: 100vh;
+		background: #f9fafb;
+		color: #111827;
+	}
+
+	.page-header {
+		border-bottom: 1px solid #e5e7eb;
+		background: #ffffff;
+	}
+
+	.page-container {
+		max-width: 48rem;
+		margin: 0 auto;
+		padding-inline: 1rem;
+	}
+
+	.page-container--header {
+		padding-block: 1.5rem;
+	}
+
+	.page-container--body {
+		padding-block: 2rem;
+	}
+
+	.header-row,
+	.title-row,
+	.panel-header,
+	.progress-header,
+	.selected-file,
+	.error-callout,
+	.primary-action,
+	.inline-back {
+		display: flex;
+		align-items: center;
+	}
+
+	.header-row {
+		gap: 1rem;
+	}
+
+	.title-row {
+		gap: 0.75rem;
+	}
+
+	.back-link,
+	.title-icon,
+	.result-icon,
+	.source-icon {
+		display: grid;
+		flex: 0 0 auto;
+		place-items: center;
+	}
+
+	.back-link {
+		width: 2.25rem;
+		height: 2.25rem;
+		border-radius: 8px;
+		color: #6b7280;
+		text-decoration: none;
+		transition:
+			background-color 0.2s ease,
+			color 0.2s ease;
+	}
+
+	.back-link:hover {
+		background: #f3f4f6;
+		color: #374151;
+	}
+
+	.title-icon {
+		width: 2.5rem;
+		height: 2.5rem;
+		border-radius: 8px;
+		background: #e0e7ff;
+		color: #4f46e5;
+	}
+
+	h1,
+	h2,
+	h3,
+	h4,
+	p {
+		margin-top: 0;
+	}
+
+	h1 {
+		margin-bottom: 0;
+		font-size: 1.5rem;
+		font-weight: 700;
+		line-height: 1.25;
+	}
+
+	.title-row p,
+	.panel-copy,
+	.result-state p,
+	.drop-copy,
+	.selected-file-size,
+	.source-card p {
+		color: #6b7280;
+		font-size: 0.875rem;
+		line-height: 1.5;
+	}
+
+	.title-row p {
+		margin-bottom: 0;
+	}
+
+	.panel {
+		border: 1px solid #e5e7eb;
+		border-radius: 12px;
+		background: #ffffff;
+		padding: 1.5rem;
+	}
+
+	.panel-header {
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.panel-header h2,
+	.panel-title,
+	.source-section h2 {
+		margin-bottom: 0;
+		color: #111827;
+		font-size: 1.125rem;
+		font-weight: 700;
+		line-height: 1.4;
+	}
+
+	.panel-copy {
+		margin-bottom: 1.5rem;
+	}
+
+	.status-pill {
+		border-radius: 999px;
+		padding: 0.25rem 0.75rem;
+		font-size: 0.875rem;
+		line-height: 1.5;
+		text-transform: capitalize;
+	}
+
+	.status-pill--success {
+		background: #dcfce7;
+		color: #16a34a;
+	}
+
+	.status-pill--danger {
+		background: #fee2e2;
+		color: #dc2626;
+	}
+
+	.status-pill--info {
+		background: #dbeafe;
+		color: #2563eb;
+	}
+
+	.status-pill--neutral {
+		background: #f3f4f6;
+		color: #4b5563;
+	}
+
+	.progress-section {
+		margin-bottom: 1.5rem;
+	}
+
+	.progress-header {
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 0.5rem;
+		color: #4b5563;
+		font-size: 0.875rem;
+		line-height: 1.5;
+	}
+
+	.progress-track {
+		height: 0.5rem;
+		overflow: hidden;
+		border-radius: 999px;
+		background: #e5e7eb;
+	}
+
+	.progress-bar {
+		height: 100%;
+		border-radius: inherit;
+		background: #4f46e5;
+		transition: width 0.2s ease;
+	}
+
+	.result-state {
+		padding-block: 2rem;
+		text-align: center;
+	}
+
+	.result-icon {
+		width: 4rem;
+		height: 4rem;
+		margin: 0 auto 1rem;
+		border-radius: 999px;
+	}
+
+	.result-icon--success {
+		background: #dcfce7;
+		color: #16a34a;
+	}
+
+	.result-icon--danger {
+		background: #fee2e2;
+		color: #dc2626;
+	}
+
+	.result-state h3 {
+		margin-bottom: 0.5rem;
+		color: #111827;
+		font-size: 1.125rem;
+		font-weight: 600;
+		line-height: 1.4;
+	}
+
+	.result-state p {
+		margin-bottom: 1.5rem;
+	}
+
+	.result-actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: center;
+		gap: 1rem;
+	}
+
+	.primary-action,
+	.secondary-action,
+	.file-picker span {
+		border: 0;
+		border-radius: 8px;
+		padding: 0.5rem 1rem;
+		font: inherit;
+		text-decoration: none;
+		cursor: pointer;
+		transition:
+			background-color 0.2s ease,
+			opacity 0.2s ease;
+	}
+
+	.primary-action,
+	.file-picker span {
+		justify-content: center;
+		gap: 0.5rem;
+		background: #4f46e5;
+		color: #ffffff;
+	}
+
+	.primary-action:hover,
+	.file-picker span:hover {
+		background: #4338ca;
+	}
+
+	.primary-action:disabled {
+		cursor: not-allowed;
+		opacity: 0.5;
+	}
+
+	.primary-action--wide {
+		padding-inline: 1.5rem;
+	}
+
+	.secondary-action {
+		background: transparent;
+		color: #374151;
+	}
+
+	.secondary-action:hover {
+		background: #f3f4f6;
+	}
+
+	.warning-callout,
+	.error-callout,
+	.help-panel {
+		border: 1px solid #fde68a;
+		border-radius: 8px;
+		background: #fffbeb;
+		padding: 1rem;
+	}
+
+	.warning-callout {
+		margin-top: 1.5rem;
+	}
+
+	.warning-callout h4,
+	.help-panel h3 {
+		margin-bottom: 0.5rem;
+		color: #854d0e;
+		font-size: 0.875rem;
+		font-weight: 700;
+		line-height: 1.4;
+	}
+
+	.warning-callout ul,
+	.help-panel ul {
+		display: grid;
+		gap: 0.25rem;
+		margin: 0;
+		padding: 0;
+		color: #a16207;
+		font-size: 0.875rem;
+		line-height: 1.6;
+		list-style: none;
+	}
+
+	.warning-more {
+		color: #ca8a04;
+	}
+
+	.inline-back {
+		gap: 0.25rem;
+		margin-bottom: 1rem;
+		border: 0;
+		background: transparent;
+		color: #4f46e5;
+		font: inherit;
+		font-size: 0.875rem;
+		cursor: pointer;
+	}
+
+	.inline-back:hover {
+		color: #4338ca;
+	}
+
+	.drop-zone {
+		border: 2px dashed #d1d5db;
+		border-radius: 12px;
+		padding: 2rem;
+		text-align: center;
+		transition:
+			background-color 0.2s ease,
+			border-color 0.2s ease;
+	}
+
+	.drop-zone--active {
+		border-color: #6366f1;
+		background: #eef2ff;
+	}
+
+	.selected-file {
+		justify-content: center;
+		gap: 0.75rem;
+		margin-bottom: 1rem;
+		color: #4f46e5;
+	}
+
+	.selected-file-details {
+		text-align: left;
+	}
+
+	.selected-file-name {
+		color: #111827;
+		font-weight: 600;
+		line-height: 1.4;
+	}
+
+	.clear-file {
+		display: grid;
+		border: 0;
+		background: transparent;
+		color: #9ca3af;
+		cursor: pointer;
+		place-items: center;
+	}
+
+	.clear-file:hover {
+		color: #4b5563;
+	}
+
+	.drop-icon {
+		margin: 0 auto 1rem;
+		color: #9ca3af;
+	}
+
+	.drop-copy {
+		margin-bottom: 0.5rem;
+	}
+
+	.file-picker {
+		display: inline-block;
+	}
+
+	.file-picker span {
+		display: inline-flex;
+	}
+
+	.visually-hidden {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+		clip-path: inset(50%);
+		white-space: nowrap;
+	}
+
+	.error-callout {
+		gap: 0.75rem;
+		margin-top: 1rem;
+		border-color: #fecaca;
+		background: #fef2f2;
+		color: #b91c1c;
+	}
+
+	.error-callout span {
+		font-size: 0.875rem;
+		line-height: 1.5;
+	}
+
+	.upload-actions {
+		display: flex;
+		justify-content: flex-end;
+		margin-top: 1.5rem;
+	}
+
+	.spin-icon {
+		animation: spin 0.8s linear infinite;
+	}
+
+	.source-section {
+		display: grid;
+		gap: 1rem;
+	}
+
+	.source-section h2 {
+		margin-bottom: 0.5rem;
+	}
+
+	.source-card {
+		display: flex;
+		width: 100%;
+		align-items: center;
+		gap: 1rem;
+		border: 1px solid #e5e7eb;
+		border-radius: 12px;
+		background: #ffffff;
+		padding: 1.5rem;
+		text-align: left;
+		cursor: pointer;
+		transition:
+			border-color 0.2s ease,
+			box-shadow 0.2s ease;
+	}
+
+	.source-card:hover {
+		border-color: #a5b4fc;
+		box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+	}
+
+	.source-icon {
+		width: 3.5rem;
+		height: 3.5rem;
+		border-radius: 12px;
+		color: #ffffff;
+	}
+
+	.source-icon--blue {
+		background: #3b82f6;
+	}
+
+	.source-icon--orange {
+		background: #f97316;
+	}
+
+	.source-icon--green {
+		background: #22c55e;
+	}
+
+	.source-card h3 {
+		margin-bottom: 0.125rem;
+		color: #111827;
+		font-size: 1.125rem;
+		font-weight: 600;
+		line-height: 1.4;
+	}
+
+	.source-card p {
+		margin-bottom: 0;
+	}
+
+	.help-panel {
+		margin-top: 2rem;
+		border-color: #bfdbfe;
+		background: #eff6ff;
+	}
+
+	.help-panel h3,
+	.help-panel ul {
+		color: #1e40af;
+	}
+
+	@media (min-width: 640px) {
+		.page-container {
+			padding-inline: 1.5rem;
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.page-container {
+			padding-inline: 2rem;
+		}
+	}
+
+	@media (prefers-color-scheme: dark) {
+		.import-page {
+			background: #111827;
+			color: #f9fafb;
+		}
+
+		.page-header,
+		.panel,
+		.source-card {
+			border-color: #374151;
+			background: #1f2937;
+		}
+
+		.back-link {
+			color: #9ca3af;
+		}
+
+		.back-link:hover,
+		.secondary-action:hover {
+			background: #374151;
+			color: #e5e7eb;
+		}
+
+		h1,
+		.panel-header h2,
+		.panel-title,
+		.source-section h2,
+		.result-state h3,
+		.selected-file-name,
+		.source-card h3 {
+			color: #ffffff;
+		}
+
+		.title-row p,
+		.panel-copy,
+		.result-state p,
+		.drop-copy,
+		.selected-file-size,
+		.source-card p,
+		.progress-header {
+			color: #9ca3af;
+		}
+
+		.progress-track {
+			background: #374151;
+		}
+
+		.status-pill--success,
+		.result-icon--success {
+			background: rgba(22, 163, 74, 0.2);
+		}
+
+		.status-pill--danger,
+		.result-icon--danger,
+		.error-callout {
+			background: rgba(220, 38, 38, 0.16);
+		}
+
+		.status-pill--info,
+		.title-icon,
+		.drop-zone--active {
+			background: rgba(79, 70, 229, 0.24);
+		}
+
+		.status-pill--neutral {
+			background: #374151;
+			color: #d1d5db;
+		}
+
+		.secondary-action {
+			color: #d1d5db;
+		}
+
+		.warning-callout {
+			border-color: #854d0e;
+			background: rgba(133, 77, 14, 0.18);
+		}
+
+		.warning-callout h4,
+		.warning-callout ul {
+			color: #fde68a;
+		}
+
+		.drop-zone {
+			border-color: #4b5563;
+		}
+
+		.help-panel {
+			border-color: #1e3a8a;
+			background: rgba(30, 58, 138, 0.22);
+		}
+
+		.help-panel h3,
+		.help-panel ul {
+			color: #bfdbfe;
+		}
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+</style>
