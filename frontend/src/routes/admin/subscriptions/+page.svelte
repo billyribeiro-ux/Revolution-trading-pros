@@ -252,25 +252,6 @@
 		}
 	}
 
-	function getStatusColor(status: SubscriptionStatus): string {
-		switch (status) {
-			case 'active':
-				return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
-			case 'pending':
-				return 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20';
-			case 'on-hold':
-				return 'bg-orange-500/10 text-orange-400 border-orange-500/20';
-			case 'cancelled':
-				return 'bg-red-500/10 text-red-400 border-red-500/20';
-			case 'expired':
-				return 'bg-slate-500/10 text-slate-400 border-slate-500/20';
-			case 'pending-cancel':
-				return 'bg-pink-500/10 text-pink-400 border-pink-500/20';
-			default:
-				return 'bg-slate-500/10 text-slate-400 border-slate-500/20';
-		}
-	}
-
 	function formatCurrency(amount: number): string {
 		return new Intl.NumberFormat('en-US', {
 			style: 'currency',
@@ -320,10 +301,10 @@
 <div class="admin-subscriptions">
 	<div class="admin-page-container">
 		<!-- Animated Background -->
-		<div class="bg-effects">
-			<div class="bg-blob bg-blob-1"></div>
-			<div class="bg-blob bg-blob-2"></div>
-			<div class="bg-blob bg-blob-3"></div>
+		<div class="background-effects">
+			<div class="background-blob background-blob--one"></div>
+			<div class="background-blob background-blob--two"></div>
+			<div class="background-blob background-blob--three"></div>
 		</div>
 		<!-- Header - Centered Style -->
 		<header class="page-header">
@@ -357,78 +338,78 @@
 
 			<!-- Stats Overview -->
 			{#if stats}
-				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-					<div class="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6">
-						<div class="flex items-center justify-between mb-2">
-							<h3 class="text-slate-400 text-sm font-medium">Active Subscriptions</h3>
-							<div class="w-10 h-10 bg-emerald-500/10 rounded-lg flex items-center justify-center">
+				<div class="stats-grid">
+					<div class="stat-card">
+						<div class="stat-card__header">
+							<h3>Active Subscriptions</h3>
+							<div class="stat-card__icon" data-tone="emerald">
 								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-check (active subs stat) -->
 								<IconCircleCheck size={20} aria-hidden="true" />
 							</div>
 						</div>
-						<p class="text-3xl font-bold text-white">{stats.totalActive}</p>
-						<p class="text-sm text-emerald-400 mt-2">
+						<p class="stat-card__value">{stats.totalActive}</p>
+						<p class="stat-card__note stat-card__note--positive">
 							{stats.newThisMonth > 0 ? '+' : ''}{stats.newThisMonth} this month
 						</p>
 					</div>
 
-					<div class="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6">
-						<div class="flex items-center justify-between mb-2">
-							<h3 class="text-slate-400 text-sm font-medium">Monthly Revenue</h3>
-							<div class="w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center">
+					<div class="stat-card">
+						<div class="stat-card__header">
+							<h3>Monthly Revenue</h3>
+							<div class="stat-card__icon" data-tone="blue">
 								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: currency-dollar (revenue stat) -->
 								<IconCurrencyDollar size={20} aria-hidden="true" />
 							</div>
 						</div>
-						<p class="text-3xl font-bold text-white">
+						<p class="stat-card__value">
 							{formatCurrency(stats.monthlyRecurringRevenue)}
 						</p>
-						<p class="text-sm text-slate-400 mt-2">MRR</p>
+						<p class="stat-card__note">MRR</p>
 					</div>
 
-					<div class="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6">
-						<div class="flex items-center justify-between mb-2">
-							<h3 class="text-slate-400 text-sm font-medium">Churn Rate</h3>
-							<div class="w-10 h-10 bg-orange-500/10 rounded-lg flex items-center justify-center">
+					<div class="stat-card">
+						<div class="stat-card__header">
+							<h3>Churn Rate</h3>
+							<div class="stat-card__icon" data-tone="orange">
 								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: trending-down (churn stat) -->
 								<IconTrendingDown size={20} aria-hidden="true" />
 							</div>
 						</div>
-						<p class="text-3xl font-bold text-white">{stats.churnRate.toFixed(1)}%</p>
-						<p class="text-sm text-slate-400 mt-2">Last 30 days</p>
+						<p class="stat-card__value">{stats.churnRate.toFixed(1)}%</p>
+						<p class="stat-card__note">Last 30 days</p>
 					</div>
 
-					<div class="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6">
-						<div class="flex items-center justify-between mb-2">
-							<h3 class="text-slate-400 text-sm font-medium">Avg Lifetime Value</h3>
-							<div class="w-10 h-10 bg-purple-500/10 rounded-lg flex items-center justify-center">
+					<div class="stat-card">
+						<div class="stat-card__header">
+							<h3>Avg Lifetime Value</h3>
+							<div class="stat-card__icon" data-tone="purple">
 								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: chart-bar (LTV stat) -->
 								<IconChartBar size={20} aria-hidden="true" />
 							</div>
 						</div>
-						<p class="text-3xl font-bold text-white">
+						<p class="stat-card__value">
 							{formatCurrency(stats.averageLifetimeValue)}
 						</p>
-						<p class="text-sm text-slate-400 mt-2">Per customer</p>
+						<p class="stat-card__note">Per customer</p>
 					</div>
 				</div>
 			{/if}
 
 			<!-- Alerts -->
 			{#if failedPayments.length > 0}
-				<div class="bg-red-500/10 border border-red-500/20 rounded-xl p-6 mb-6">
-					<h3 class="text-red-400 font-semibold mb-3 flex items-center gap-2">
+				<div class="alert-card" data-tone="red">
+					<h3 class="alert-card__title">
 						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-x error -->
 						<IconCircleXFilled size={20} aria-hidden="true" />
 						{failedPayments.length} Failed Payment{failedPayments.length > 1 ? 's' : ''}
 					</h3>
-					<div class="space-y-2">
+					<div class="alert-card__list">
 						{#each failedPayments.slice(0, 3) as payment (payment.id)}
-							<div class="flex items-center justify-between text-sm">
-								<span class="text-slate-300">{payment.id}</span>
+							<div class="alert-card__row">
+								<span>{payment.id}</span>
 								<button
 									onclick={() => handleRetryPayment(payment.id, payment.id)}
-									class="text-emerald-400 hover:text-emerald-300 font-medium"
+									class="link-action link-action--success"
 								>
 									Retry Payment
 								</button>
@@ -439,17 +420,17 @@
 			{/if}
 
 			{#if upcomingRenewals.length > 0}
-				<div class="bg-blue-500/10 border border-blue-500/20 rounded-xl p-6 mb-6">
-					<h3 class="text-blue-400 font-semibold mb-3 flex items-center gap-2">
+				<div class="alert-card" data-tone="blue">
+					<h3 class="alert-card__title">
 						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: clock-hour (pending) -->
 						<IconClockHour3 size={20} aria-hidden="true" />
 						{upcomingRenewals.length} Renewal{upcomingRenewals.length > 1 ? 's' : ''} in Next 7 Days
 					</h3>
-					<div class="space-y-2">
+					<div class="alert-card__list">
 						{#each upcomingRenewals.slice(0, 3) as renewal (renewal.id)}
-							<div class="flex items-center justify-between text-sm">
-								<span class="text-slate-300">{renewal.productName}</span>
-								<span class="text-blue-400">{formatDate(renewal.nextPaymentDate)}</span>
+							<div class="alert-card__row">
+								<span>{renewal.productName}</span>
+								<span class="alert-card__date">{formatDate(renewal.nextPaymentDate)}</span>
 							</div>
 						{/each}
 					</div>
@@ -457,10 +438,10 @@
 			{/if}
 
 			<!-- Filters -->
-			<div class="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 mb-6">
-				<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-					<div>
-						<label for="search" class="block text-sm font-medium text-slate-400 mb-2">Search</label>
+			<div class="filters-panel">
+				<div class="filters-grid">
+					<div class="form-field">
+						<label for="search" class="form-label">Search</label>
 						<input
 							type="text"
 							id="search"
@@ -468,18 +449,13 @@
 							bind:value={searchQuery}
 							oninput={handleSearchInput}
 							placeholder="Search subscriptions..."
-							class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+							class="form-control"
 						/>
 					</div>
 
-					<div>
-						<label for="status" class="block text-sm font-medium text-slate-400 mb-2">Status</label>
-						<select
-							id="status"
-							bind:value={statusFilter}
-							onchange={loadData}
-							class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-emerald-500"
-						>
+					<div class="form-field">
+						<label for="status" class="form-label">Status</label>
+						<select id="status" bind:value={statusFilter} onchange={loadData} class="form-control">
 							<option value="all">All Statuses</option>
 							<option value="active">Active</option>
 							<option value="pending">Pending</option>
@@ -490,15 +466,13 @@
 						</select>
 					</div>
 
-					<div>
-						<label for="interval" class="block text-sm font-medium text-slate-400 mb-2"
-							>Interval</label
-						>
+					<div class="form-field">
+						<label for="interval" class="form-label">Interval</label>
 						<select
 							id="interval"
 							bind:value={intervalFilter}
 							onchange={loadData}
-							class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-emerald-500"
+							class="form-control"
 						>
 							<option value="all">All Intervals</option>
 							<option value="monthly">Monthly</option>
@@ -507,13 +481,9 @@
 						</select>
 					</div>
 
-					<div>
-						<label for="sort" class="block text-sm font-medium text-slate-400 mb-2">Sort By</label>
-						<select
-							id="sort"
-							bind:value={sortBy}
-							class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-emerald-500"
-						>
+					<div class="form-field">
+						<label for="sort" class="form-label">Sort By</label>
+						<select id="sort" bind:value={sortBy} class="form-control">
 							<option value="date">Date</option>
 							<option value="price">Price</option>
 							<option value="status">Status</option>
@@ -523,104 +493,70 @@
 			</div>
 
 			<!-- Subscriptions Table -->
-			<div
-				class="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl overflow-hidden"
-			>
-				<div class="overflow-x-auto">
-					<table class="w-full">
-						<thead class="bg-slate-900/50">
+			<div class="table-card">
+				<div class="table-scroll">
+					<table class="subscriptions-table">
+						<thead>
 							<tr>
-								<th
-									class="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider"
-									>Product</th
-								>
-								<th
-									class="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider"
-									>Customer</th
-								>
-								<th
-									class="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider"
-									>Status</th
-								>
-								<th
-									class="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider"
-									>Interval</th
-								>
-								<th
-									class="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider"
-									>Price</th
-								>
-								<th
-									class="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider"
-									>Next Payment</th
-								>
-								<th
-									class="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider"
-									>Actions</th
-								>
+								<th>Product</th>
+								<th>Customer</th>
+								<th>Status</th>
+								<th>Interval</th>
+								<th>Price</th>
+								<th>Next Payment</th>
+								<th>Actions</th>
 							</tr>
 						</thead>
-						<tbody class="divide-y divide-slate-700">
+						<tbody>
 							{#if loading}
 								<tr>
-									<td colspan="7" class="px-6 py-12 text-center text-slate-400">
-										<div class="flex items-center justify-center gap-3">
-											<div
-												class="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"
-											></div>
+									<td colspan="7" class="table-state">
+										<div class="table-state__content">
+											<div class="table-spinner"></div>
 											Loading subscriptions...
 										</div>
 									</td>
 								</tr>
 							{:else if getFilteredSubscriptions.length === 0}
 								<tr>
-									<td colspan="7" class="px-6 py-12 text-center text-slate-400">
-										No subscriptions found
-									</td>
+									<td colspan="7" class="table-state">No subscriptions found</td>
 								</tr>
 							{:else}
 								{#each getFilteredSubscriptions as subscription (subscription.id)}
-									<tr
-										class="hover:bg-slate-700/30 transition-colors cursor-pointer"
-										onclick={() => openSubscriptionDetail(subscription)}
-									>
-										<td class="px-6 py-4">
-											<div class="text-white font-medium">{subscription.productName}</div>
-											<div class="text-sm text-slate-400">{subscription.id.slice(0, 8)}...</div>
+									<tr class="subscription-row" onclick={() => openSubscriptionDetail(subscription)}>
+										<td>
+											<div class="table-primary">{subscription.productName}</div>
+											<div class="table-muted">{subscription.id.slice(0, 8)}...</div>
 										</td>
-										<td class="px-6 py-4">
-											<div class="text-slate-300">{subscription.userId.slice(0, 8)}...</div>
+										<td>
+											<div class="table-secondary">{subscription.userId.slice(0, 8)}...</div>
 										</td>
-										<td class="px-6 py-4">
-											<span
-												class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border {getStatusColor(
-													subscription.status
-												)}"
-											>
+										<td>
+											<span class="status-badge" data-status={subscription.status}>
 												{subscription.status}
 											</span>
 										</td>
-										<td class="px-6 py-4 text-slate-300">
+										<td class="table-secondary">
 											{getIntervalLabel(subscription.interval)}
 										</td>
-										<td class="px-6 py-4 text-white font-medium">
+										<td class="table-primary">
 											{formatCurrency(subscription.price)}
 										</td>
-										<td class="px-6 py-4 text-slate-300">
+										<td class="table-secondary">
 											{formatDate(subscription.nextPaymentDate)}
 										</td>
-										<td class="px-6 py-4">
+										<td>
 											<!-- FIX-2026-04-26 (audit 02 §P2-3): action buttons used to bubble
 											     into the row's openSubscriptionDetail handler — clicking Cancel
 											     opened both the cancel modal and the detail drawer. Each handler
 											     now stopPropagation()s. -->
-											<div class="flex items-center gap-2">
+											<div class="row-actions">
 												<button
 													onclick={(e) => {
 														e.stopPropagation();
 														openSubscriptionDetail(subscription);
 													}}
-													class="text-blue-400 hover:text-blue-300 text-sm font-medium"
+													class="link-action link-action--info"
 													title="View Details"
 												>
 													View
@@ -631,7 +567,7 @@
 															e.stopPropagation();
 															handlePause(subscription);
 														}}
-														class="text-orange-400 hover:text-orange-300 text-sm font-medium"
+														class="link-action link-action--warning"
 														title="Pause"
 													>
 														Pause
@@ -641,7 +577,7 @@
 															e.stopPropagation();
 															handleCancel(subscription);
 														}}
-														class="text-red-400 hover:text-red-300 text-sm font-medium"
+														class="link-action link-action--danger"
 														title="Cancel"
 													>
 														Cancel
@@ -652,7 +588,7 @@
 															e.stopPropagation();
 															handleResume(subscription);
 														}}
-														class="text-emerald-400 hover:text-emerald-300 text-sm font-medium"
+														class="link-action link-action--success"
 														title="Resume"
 													>
 														Resume
@@ -662,7 +598,7 @@
 															e.stopPropagation();
 															handleCancel(subscription);
 														}}
-														class="text-red-400 hover:text-red-300 text-sm font-medium"
+														class="link-action link-action--danger"
 														title="Cancel"
 													>
 														Cancel
@@ -673,7 +609,7 @@
 															e.stopPropagation();
 															handleReactivate(subscription);
 														}}
-														class="text-emerald-400 hover:text-emerald-300 text-sm font-medium"
+														class="link-action link-action--success"
 														title="Reactivate"
 													>
 														Reactivate
@@ -694,41 +630,41 @@
 
 <!-- Pause Modal -->
 {#if showPauseModal && selectedSubscription}
-	<div class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-		<div class="bg-slate-800 border border-slate-700 rounded-2xl p-8 max-w-md w-full">
-			<h3 class="text-2xl font-bold text-white mb-4">Pause Subscription</h3>
-			<p class="text-slate-400 mb-6">
+	<div class="modal-backdrop">
+		<div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="pause-modal-title">
+			<h3 id="pause-modal-title">Pause Subscription</h3>
+			<p class="modal-copy">
 				Are you sure you want to pause {selectedSubscription.productName}?
 			</p>
 
-			<div class="mb-6">
-				<label for="pauseReason" class="block text-sm font-medium text-slate-400 mb-2">
-					Reason for pausing <span class="text-red-400">*</span>
+			<div class="modal-field">
+				<label for="pauseReason" class="form-label">
+					Reason for pausing <span class="required">*</span>
 				</label>
 				<textarea
 					id="pauseReason"
 					bind:value={pauseReason}
 					rows="3"
 					placeholder="Enter reason..."
-					class="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-orange-500"
+					class="form-control form-control--textarea form-control--warning"
 				></textarea>
 			</div>
 
-			<div class="flex gap-3">
+			<div class="modal-actions">
 				<button
 					onclick={() => {
 						showPauseModal = false;
 						pauseReason = '';
 						selectedSubscription = null;
 					}}
-					class="flex-1 px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-xl transition-colors"
+					class="modal-button modal-button--secondary"
 				>
 					Cancel
 				</button>
 				<button
 					onclick={confirmPause}
 					disabled={!pauseReason.trim()}
-					class="flex-1 px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+					class="modal-button modal-button--warning"
 				>
 					Pause Subscription
 				</button>
@@ -739,42 +675,40 @@
 
 <!-- Cancel Modal -->
 {#if showCancelModal && selectedSubscription}
-	<div class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-		<div class="bg-slate-800 border border-slate-700 rounded-2xl p-8 max-w-md w-full">
-			<h3 class="text-2xl font-bold text-white mb-4">Cancel Subscription</h3>
-			<p class="text-slate-400 mb-6">
+	<div class="modal-backdrop">
+		<div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="cancel-modal-title">
+			<h3 id="cancel-modal-title">Cancel Subscription</h3>
+			<p class="modal-copy">
 				Are you sure you want to cancel {selectedSubscription.productName}?
 			</p>
 
-			<div class="mb-6">
-				<label for="cancelReason" class="block text-sm font-medium text-slate-400 mb-2">
-					Cancellation reason <span class="text-red-400">*</span>
+			<div class="modal-field">
+				<label for="cancelReason" class="form-label">
+					Cancellation reason <span class="required">*</span>
 				</label>
 				<textarea
 					id="cancelReason"
 					bind:value={cancelReason}
 					rows="3"
 					placeholder="Enter reason..."
-					class="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-red-500"
+					class="form-control form-control--textarea form-control--danger"
 				></textarea>
 			</div>
 
-			<div class="mb-6">
-				<label class="flex items-center gap-3 cursor-pointer">
+			<div class="modal-field">
+				<label class="checkbox-field">
 					<input
 						id="page-cancelimmediate"
 						name="page-cancelimmediate"
 						type="checkbox"
 						bind:checked={cancelImmediate}
-						class="w-4 h-4 bg-slate-900 border-slate-600 rounded text-red-500 focus:ring-red-500"
+						class="checkbox-input"
 					/>
-					<span class="text-slate-300 text-sm"
-						>Cancel immediately (don't wait until period end)</span
-					>
+					<span>Cancel immediately (don't wait until period end)</span>
 				</label>
 			</div>
 
-			<div class="flex gap-3">
+			<div class="modal-actions">
 				<button
 					onclick={() => {
 						showCancelModal = false;
@@ -782,14 +716,14 @@
 						cancelImmediate = false;
 						selectedSubscription = null;
 					}}
-					class="flex-1 px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-xl transition-colors"
+					class="modal-button modal-button--secondary"
 				>
 					Go Back
 				</button>
 				<button
 					onclick={confirmCancel}
 					disabled={!cancelReason.trim()}
-					class="flex-1 px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+					class="modal-button modal-button--danger"
 				>
 					Cancel Subscription
 				</button>
@@ -853,21 +787,21 @@
 	}
 
 	/* Background Effects - Animated Blobs */
-	.bg-effects {
+	.background-effects {
 		position: fixed;
 		inset: 0;
 		pointer-events: none;
 		overflow: hidden;
 	}
 
-	.bg-blob {
+	.background-blob {
 		position: absolute;
 		border-radius: 50%;
 		filter: blur(80px);
 		opacity: 0.15;
 	}
 
-	.bg-blob-1 {
+	.background-blob--one {
 		width: 600px;
 		height: 600px;
 		top: -200px;
@@ -876,7 +810,7 @@
 		animation: float 20s ease-in-out infinite;
 	}
 
-	.bg-blob-2 {
+	.background-blob--two {
 		width: 500px;
 		height: 500px;
 		bottom: -150px;
@@ -885,7 +819,7 @@
 		animation: float 25s ease-in-out infinite reverse;
 	}
 
-	.bg-blob-3 {
+	.background-blob--three {
 		width: 400px;
 		height: 400px;
 		top: 50%;
@@ -952,22 +886,535 @@
 		box-shadow: 0 8px 20px rgba(230, 184, 0, 0.3);
 	}
 
+	.stats-grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1.5rem;
+		margin-bottom: 2rem;
+	}
+
+	.stat-card,
+	.filters-panel,
+	.table-card {
+		border: 1px solid rgb(51 65 85);
+		background: rgb(30 41 59 / 0.5);
+		backdrop-filter: blur(8px);
+	}
+
+	.stat-card,
+	.filters-panel {
+		border-radius: 0.75rem;
+		padding: 1.5rem;
+	}
+
+	.stat-card__header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 0.5rem;
+	}
+
+	.stat-card h3 {
+		margin: 0;
+		color: #94a3b8;
+		font-size: 0.875rem;
+		font-weight: 500;
+		line-height: 1.25rem;
+	}
+
+	.stat-card__icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 2.5rem;
+		height: 2.5rem;
+		border-radius: 0.5rem;
+	}
+
+	.stat-card__icon[data-tone='emerald'] {
+		background: rgb(16 185 129 / 0.1);
+		color: #34d399;
+	}
+
+	.stat-card__icon[data-tone='blue'] {
+		background: rgb(59 130 246 / 0.1);
+		color: #60a5fa;
+	}
+
+	.stat-card__icon[data-tone='orange'] {
+		background: rgb(249 115 22 / 0.1);
+		color: #fb923c;
+	}
+
+	.stat-card__icon[data-tone='purple'] {
+		background: rgb(168 85 247 / 0.1);
+		color: #c084fc;
+	}
+
+	.stat-card__value {
+		margin: 0;
+		color: #ffffff;
+		font-size: 1.875rem;
+		font-weight: 700;
+		line-height: 2.25rem;
+	}
+
+	.stat-card__note {
+		margin: 0.5rem 0 0;
+		color: #94a3b8;
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+	}
+
+	.stat-card__note--positive {
+		color: #34d399;
+	}
+
+	.alert-card {
+		border: 1px solid;
+		border-radius: 0.75rem;
+		margin-bottom: 1.5rem;
+		padding: 1.5rem;
+	}
+
+	.alert-card[data-tone='red'] {
+		border-color: rgb(239 68 68 / 0.2);
+		background: rgb(239 68 68 / 0.1);
+		color: #f87171;
+	}
+
+	.alert-card[data-tone='blue'] {
+		border-color: rgb(59 130 246 / 0.2);
+		background: rgb(59 130 246 / 0.1);
+		color: #60a5fa;
+	}
+
+	.alert-card__title {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin: 0 0 0.75rem;
+		color: inherit;
+		font-size: 1rem;
+		font-weight: 600;
+		line-height: 1.5rem;
+	}
+
+	.alert-card__list {
+		display: grid;
+		gap: 0.5rem;
+	}
+
+	.alert-card__row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		color: #cbd5e1;
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+	}
+
+	.alert-card__date {
+		color: #60a5fa;
+	}
+
+	.filters-panel {
+		margin-bottom: 1.5rem;
+	}
+
+	.filters-grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1rem;
+	}
+
+	.form-field,
+	.modal-field {
+		display: grid;
+		gap: 0.5rem;
+	}
+
+	.form-label {
+		color: #94a3b8;
+		font-size: 0.875rem;
+		font-weight: 500;
+		line-height: 1.25rem;
+	}
+
+	.form-control {
+		width: 100%;
+		border: 1px solid #475569;
+		border-radius: 0.5rem;
+		background: #0f172a;
+		color: #ffffff;
+		font: inherit;
+		padding: 0.5rem 1rem;
+	}
+
+	.form-control::placeholder {
+		color: #64748b;
+	}
+
+	.form-control:focus {
+		border-color: #10b981;
+		outline: none;
+	}
+
+	.form-control--textarea {
+		min-height: 7rem;
+		border-radius: 0.75rem;
+		padding-block: 0.75rem;
+		resize: vertical;
+	}
+
+	.form-control--warning:focus {
+		border-color: #f97316;
+	}
+
+	.form-control--danger:focus {
+		border-color: #ef4444;
+	}
+
+	.table-card {
+		overflow: hidden;
+		border-radius: 0.75rem;
+	}
+
+	.table-scroll {
+		overflow-x: auto;
+	}
+
+	.subscriptions-table {
+		width: 100%;
+		border-collapse: collapse;
+	}
+
+	.subscriptions-table thead {
+		background: rgb(15 23 42 / 0.5);
+	}
+
+	.subscriptions-table th {
+		padding: 1rem 1.5rem;
+		color: #94a3b8;
+		font-size: 0.75rem;
+		font-weight: 500;
+		letter-spacing: 0.05em;
+		line-height: 1rem;
+		text-align: left;
+		text-transform: uppercase;
+		white-space: nowrap;
+	}
+
+	.subscriptions-table td {
+		padding: 1rem 1.5rem;
+		vertical-align: middle;
+	}
+
+	.subscriptions-table tbody tr + tr {
+		border-top: 1px solid #334155;
+	}
+
+	.subscription-row {
+		cursor: pointer;
+		transition: background 150ms ease;
+	}
+
+	.subscription-row:hover {
+		background: rgb(51 65 85 / 0.3);
+	}
+
+	.table-state {
+		color: #94a3b8;
+		padding-block: 3rem;
+		text-align: center;
+	}
+
+	.table-state__content {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.75rem;
+	}
+
+	.table-spinner {
+		width: 1.25rem;
+		height: 1.25rem;
+		border: 2px solid #10b981;
+		border-top-color: transparent;
+		border-radius: 999px;
+		animation: spin 700ms linear infinite;
+	}
+
+	.table-primary {
+		color: #ffffff;
+		font-weight: 500;
+	}
+
+	.table-secondary {
+		color: #cbd5e1;
+	}
+
+	.table-muted {
+		color: #94a3b8;
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+	}
+
+	.status-badge {
+		display: inline-flex;
+		align-items: center;
+		border: 1px solid;
+		border-radius: 999px;
+		font-size: 0.75rem;
+		font-weight: 500;
+		line-height: 1rem;
+		padding: 0.25rem 0.75rem;
+	}
+
+	.status-badge[data-status='active'] {
+		border-color: rgb(16 185 129 / 0.2);
+		background: rgb(16 185 129 / 0.1);
+		color: #34d399;
+	}
+
+	.status-badge[data-status='pending'] {
+		border-color: rgb(234 179 8 / 0.2);
+		background: rgb(234 179 8 / 0.1);
+		color: #facc15;
+	}
+
+	.status-badge[data-status='on-hold'] {
+		border-color: rgb(249 115 22 / 0.2);
+		background: rgb(249 115 22 / 0.1);
+		color: #fb923c;
+	}
+
+	.status-badge[data-status='cancelled'] {
+		border-color: rgb(239 68 68 / 0.2);
+		background: rgb(239 68 68 / 0.1);
+		color: #f87171;
+	}
+
+	.status-badge[data-status='expired'] {
+		border-color: rgb(100 116 139 / 0.2);
+		background: rgb(100 116 139 / 0.1);
+		color: #94a3b8;
+	}
+
+	.status-badge[data-status='pending-cancel'] {
+		border-color: rgb(236 72 153 / 0.2);
+		background: rgb(236 72 153 / 0.1);
+		color: #f472b6;
+	}
+
+	.row-actions {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.link-action {
+		border: 0;
+		background: transparent;
+		cursor: pointer;
+		font: inherit;
+		font-size: 0.875rem;
+		font-weight: 500;
+		line-height: 1.25rem;
+		padding: 0;
+		transition: color 150ms ease;
+	}
+
+	.link-action--info {
+		color: #60a5fa;
+	}
+
+	.link-action--info:hover {
+		color: #93c5fd;
+	}
+
+	.link-action--success {
+		color: #34d399;
+	}
+
+	.link-action--success:hover {
+		color: #6ee7b7;
+	}
+
+	.link-action--warning {
+		color: #fb923c;
+	}
+
+	.link-action--warning:hover {
+		color: #fdba74;
+	}
+
+	.link-action--danger {
+		color: #f87171;
+	}
+
+	.link-action--danger:hover {
+		color: #fca5a5;
+	}
+
+	.modal-backdrop {
+		position: fixed;
+		inset: 0;
+		z-index: 50;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: rgb(0 0 0 / 0.8);
+		backdrop-filter: blur(8px);
+		padding: 1rem;
+	}
+
+	.modal-card {
+		width: 100%;
+		max-width: 28rem;
+		border: 1px solid #334155;
+		border-radius: 1rem;
+		background: #1e293b;
+		padding: 2rem;
+	}
+
+	.modal-card h3 {
+		margin: 0 0 1rem;
+		color: #ffffff;
+		font-size: 1.5rem;
+		font-weight: 700;
+		line-height: 2rem;
+	}
+
+	.modal-copy {
+		margin: 0 0 1.5rem;
+		color: #94a3b8;
+	}
+
+	.modal-field {
+		margin-bottom: 1.5rem;
+	}
+
+	.required {
+		color: #f87171;
+	}
+
+	.checkbox-field {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		color: #cbd5e1;
+		cursor: pointer;
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+	}
+
+	.checkbox-input {
+		width: 1rem;
+		height: 1rem;
+		accent-color: #ef4444;
+	}
+
+	.modal-actions {
+		display: flex;
+		gap: 0.75rem;
+	}
+
+	.modal-button {
+		flex: 1 1 0;
+		border: 0;
+		border-radius: 0.75rem;
+		color: #ffffff;
+		cursor: pointer;
+		font: inherit;
+		font-weight: 600;
+		padding: 0.75rem 1.5rem;
+		transition:
+			background 150ms ease,
+			opacity 150ms ease;
+	}
+
+	.modal-button:disabled {
+		cursor: not-allowed;
+		opacity: 0.5;
+	}
+
+	.modal-button--secondary {
+		background: #334155;
+	}
+
+	.modal-button--secondary:hover:not(:disabled) {
+		background: #475569;
+	}
+
+	.modal-button--warning {
+		background: #f97316;
+	}
+
+	.modal-button--warning:hover:not(:disabled) {
+		background: #ea580c;
+	}
+
+	.modal-button--danger {
+		background: #ef4444;
+	}
+
+	.modal-button--danger:hover:not(:disabled) {
+		background: #dc2626;
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
 	/* Custom scrollbar for table */
-	.overflow-x-auto::-webkit-scrollbar {
+	.table-scroll::-webkit-scrollbar {
 		height: 8px;
 	}
 
-	.overflow-x-auto::-webkit-scrollbar-track {
+	.table-scroll::-webkit-scrollbar-track {
 		background: rgb(15 23 42);
 		border-radius: 4px;
 	}
 
-	.overflow-x-auto::-webkit-scrollbar-thumb {
+	.table-scroll::-webkit-scrollbar-thumb {
 		background: rgb(71 85 105);
 		border-radius: 4px;
 	}
 
-	.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+	.table-scroll::-webkit-scrollbar-thumb:hover {
 		background: rgb(100 116 139);
+	}
+
+	@media (min-width: 768px) {
+		.admin-page-container {
+			padding-inline: 2rem;
+		}
+
+		.stats-grid,
+		.filters-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.stats-grid,
+		.filters-grid {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+		}
+	}
+
+	@media (max-width: 640px) {
+		.modal-card {
+			padding: 1.5rem;
+		}
+
+		.modal-actions {
+			flex-direction: column;
+		}
 	}
 </style>
