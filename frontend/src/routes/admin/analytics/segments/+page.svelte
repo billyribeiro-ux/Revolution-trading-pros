@@ -42,12 +42,15 @@
 		rules: [{ field: '', operator: '>', value: '' }]
 	});
 
-	// Segment type colors
-	const segmentColors: Record<string, string> = {
-		dynamic: 'from-blue-500 to-cyan-500',
-		static: 'from-purple-500 to-violet-500',
-		computed: 'from-amber-500 to-orange-500'
+	const segmentTypeClasses: Record<string, string> = {
+		dynamic: 'segment-type--dynamic',
+		static: 'segment-type--static',
+		computed: 'segment-type--computed'
 	};
+
+	function getSegmentTypeClass(type: string) {
+		return segmentTypeClasses[type] ?? 'segment-type--fallback';
+	}
 
 	// Available rule fields
 	const ruleFields = [
