@@ -69,96 +69,69 @@
 	}
 </script>
 
-<div
-	class="reset-password-page flex items-center justify-center px-4 py-12 overflow-hidden relative"
->
+<div class="reset-password-page">
 	<!-- Animated gradient background -->
-	<div class="absolute inset-0 bg-linear-to-br from-slate-950 via-purple-950/30 to-slate-950"></div>
+	<div class="reset-password-background"></div>
 
 	<!-- Floating orbs -->
-	<div
-		class="absolute top-20 right-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-float"
-	></div>
-	<div
-		class="absolute bottom-20 left-10 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl animate-float-delayed"
-	></div>
+	<div class="reset-password-orb reset-password-orb--primary"></div>
+	<div class="reset-password-orb reset-password-orb--secondary"></div>
 
 	<!-- Reset password card -->
-	<div
-		class="reset-password-card relative w-full max-w-md z-10"
-		class:animate-card-reveal={isVisible}
-	>
+	<div class="reset-password-card" class:reset-password-card--visible={isVisible}>
 		<!-- Glow effect -->
-		<div
-			class="absolute -inset-1 bg-linear-to-r from-purple-500 via-pink-500 to-rose-500 rounded-3xl opacity-20 blur-xl"
-		></div>
+		<div class="reset-password-glow"></div>
 
-		<div
-			class="relative bg-slate-900/90 backdrop-blur-xl border border-purple-500/20 rounded-3xl p-10 shadow-2xl"
-		>
+		<div class="reset-password-panel">
 			<!-- Header -->
-			<div class="text-center mb-8">
-				<div
-					class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-linear-to-br from-purple-500 to-pink-500 p-0.5 mb-6"
-				>
-					<div class="w-full h-full bg-slate-900 rounded-2xl flex items-center justify-center">
-						<IconShieldCheck size={40} class="text-purple-400" />
+			<div class="reset-password-header">
+				<div class="reset-password-icon-shell">
+					<div class="reset-password-icon-inner">
+						<IconShieldCheck size={40} class="reset-password-header-icon" />
 					</div>
 				</div>
-				<h1
-					class="text-4xl font-heading font-bold mb-3 bg-linear-to-r from-purple-300 via-pink-300 to-rose-300 bg-clip-text text-transparent"
-				>
-					Reset Password
-				</h1>
-				<p class="text-slate-400">Enter your new password below</p>
+				<h1 class="reset-password-title">Reset Password</h1>
+				<p class="reset-password-subtitle">Enter your new password below</p>
 			</div>
 
 			<!-- Success message -->
 			{#if successMessage}
-				<div
-					class="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-start gap-3 animate-fade-in"
-				>
-					<IconCheck size={20} class="text-emerald-400 shrink-0 mt-0.5" />
-					<div class="text-sm text-emerald-300">
+				<div class="reset-alert reset-alert--success">
+					<IconCheck size={20} class="reset-alert__icon reset-alert__icon--success" />
+					<div class="reset-alert__content reset-alert__content--success">
 						<p>{successMessage}</p>
-						<p class="mt-1 text-emerald-400/70">Redirecting to login...</p>
+						<p class="reset-alert__muted">Redirecting to login...</p>
 					</div>
 				</div>
 			{/if}
 
 			<!-- General error -->
 			{#if generalError}
-				<div
-					class="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-start gap-3 animate-fade-in"
-				>
-					<IconAlertCircle size={20} class="text-red-400 shrink-0 mt-0.5" />
-					<p class="text-sm text-red-300">{generalError}</p>
+				<div class="reset-alert reset-alert--error">
+					<IconAlertCircle size={20} class="reset-alert__icon reset-alert__icon--error" />
+					<p class="reset-alert__content reset-alert__content--error">{generalError}</p>
 				</div>
 			{/if}
 
 			<!-- Reset password form -->
-			<form onsubmit={handleSubmit} class="space-y-5">
+			<form onsubmit={handleSubmit} class="reset-password-form">
 				<!-- Email field (hidden, auto-filled from URL) -->
 				<input type="hidden" name="email" id="email" bind:value={email} />
 				<input type="hidden" name="token" id="token" bind:value={token} />
 
 				<!-- Email display (read-only) -->
-				<div class="form-group">
-					<div class="block text-sm font-semibold text-slate-300 mb-2">Email Address</div>
-					<div
-						class="px-4 py-3.5 bg-slate-800/30 border border-slate-700/50 rounded-xl text-slate-400"
-					>
+				<div class="reset-field">
+					<div class="reset-field-label">Email Address</div>
+					<div class="reset-readonly-field">
 						{email}
 					</div>
 				</div>
 
 				<!-- New password field -->
-				<div class="form-group">
-					<label for="password" class="block text-sm font-semibold text-slate-300 mb-2">
-						New Password
-					</label>
-					<div class="relative">
-						<div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">
+				<div class="reset-field">
+					<label for="password" class="reset-field-label"> New Password </label>
+					<div class="reset-input-wrap">
+						<div class="reset-input-icon">
 							<IconLock size={20} />
 						</div>
 						<input
@@ -169,13 +142,13 @@
 							required
 							minlength="12"
 							autocomplete="new-password"
-							class="w-full pl-12 pr-12 py-3.5 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 focus:outline-none transition-all duration-300"
-							class:border-red-500={errors.password}
+							class="reset-input"
+							class:reset-input--error={errors.password}
 							placeholder="••••••••"
 						/>
 						<button
 							type="button"
-							class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-purple-400 transition-colors"
+							class="reset-password-toggle"
 							onclick={() => (showPassword = !showPassword)}
 							aria-label={showPassword ? 'Hide password' : 'Show password'}
 							tabindex={-1}
@@ -188,24 +161,21 @@
 						</button>
 					</div>
 					{#if errors.password}
-						<p class="mt-2 text-sm text-red-400">{errors.password[0]}</p>
+						<p class="reset-field-message reset-field-message--error">{errors.password[0]}</p>
 					{:else}
-						<p class="mt-2 text-xs text-slate-500">
+						<p class="reset-field-message reset-field-message--hint">
 							Minimum 12 characters with uppercase, lowercase, and number
 						</p>
 					{/if}
 				</div>
 
 				<!-- Confirm password field -->
-				<div class="form-group">
-					<label
-						for="password_confirmation"
-						class="block text-sm font-semibold text-slate-300 mb-2"
-					>
+				<div class="reset-field">
+					<label for="password_confirmation" class="reset-field-label">
 						Confirm New Password
 					</label>
-					<div class="relative">
-						<div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">
+					<div class="reset-input-wrap">
+						<div class="reset-input-icon">
 							<IconLock size={20} />
 						</div>
 						<input
@@ -215,12 +185,12 @@
 							bind:value={password_confirmation}
 							required
 							autocomplete="new-password"
-							class="w-full pl-12 pr-12 py-3.5 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 focus:outline-none transition-all duration-300"
+							class="reset-input"
 							placeholder="••••••••"
 						/>
 						<button
 							type="button"
-							class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-purple-400 transition-colors"
+							class="reset-password-toggle"
 							onclick={() => (showConfirmPassword = !showConfirmPassword)}
 							aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
 							tabindex={-1}
@@ -235,16 +205,10 @@
 				</div>
 
 				<!-- Submit button -->
-				<button
-					type="submit"
-					disabled={isLoading || !!successMessage}
-					class="w-full relative px-6 py-4 bg-linear-to-r from-purple-500 via-pink-500 to-rose-500 text-white font-heading font-bold rounded-xl overflow-hidden group transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/50 disabled:opacity-50 disabled:cursor-not-allowed mt-6"
-				>
-					<span class="relative z-10 flex items-center justify-center gap-2">
+				<button type="submit" disabled={isLoading || !!successMessage} class="reset-submit">
+					<span class="reset-submit__content">
 						{#if isLoading}
-							<div
-								class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"
-							></div>
+							<div class="reset-submit__spinner"></div>
 							<span>Resetting Password...</span>
 						{:else if successMessage}
 							<IconCheck size={20} />
@@ -254,21 +218,16 @@
 							<span>Reset Password</span>
 						{/if}
 					</span>
-					<div
-						class="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"
-					></div>
+					<div class="reset-submit__shine"></div>
 				</button>
 			</form>
 
 			<!-- Back to login link -->
-			<div class="mt-8 text-center">
-				<a
-					href="/login"
-					class="text-purple-400 hover:text-purple-300 font-semibold transition-colors duration-300 flex items-center justify-center gap-2"
-				>
+			<div class="reset-back">
+				<a href="/login" class="reset-back__link">
 					<svg
 						aria-hidden="true"
-						class="w-4 h-4"
+						class="reset-back__icon"
 						fill="none"
 						stroke="currentColor"
 						viewBox="0 0 24 24"
@@ -288,7 +247,358 @@
 </div>
 
 <style>
-	/* Floating animations */
+	.reset-password-page {
+		position: relative;
+		display: flex;
+		min-height: 100vh;
+		align-items: center;
+		justify-content: center;
+		overflow: hidden;
+		padding: 3rem 1rem;
+		background: #020617;
+	}
+
+	.reset-password-background {
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(135deg, #020617 0%, rgba(59, 7, 100, 0.3) 50%, #020617 100%);
+	}
+
+	.reset-password-orb {
+		position: absolute;
+		width: 24rem;
+		height: 24rem;
+		border-radius: 999px;
+		filter: blur(64px);
+		pointer-events: none;
+	}
+
+	.reset-password-orb--primary {
+		top: 5rem;
+		right: 2.5rem;
+		background: rgba(168, 85, 247, 0.1);
+		animation: float 8s ease-in-out infinite;
+	}
+
+	.reset-password-orb--secondary {
+		bottom: 5rem;
+		left: 2.5rem;
+		background: rgba(236, 72, 153, 0.1);
+		animation: float-delayed 10s ease-in-out infinite;
+	}
+
+	.reset-password-card {
+		position: relative;
+		z-index: 10;
+		width: min(100%, 28rem);
+	}
+
+	.reset-password-card--visible {
+		animation: card-reveal 0.6s ease-out forwards;
+		opacity: 0;
+	}
+
+	.reset-password-glow {
+		position: absolute;
+		inset: -0.25rem;
+		border-radius: 1.5rem;
+		background: linear-gradient(90deg, #a855f7, #ec4899, #f43f5e);
+		opacity: 0.2;
+		filter: blur(24px);
+	}
+
+	.reset-password-panel {
+		position: relative;
+		border: 1px solid rgba(168, 85, 247, 0.2);
+		border-radius: 1.5rem;
+		background: rgba(15, 23, 42, 0.9);
+		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45);
+		padding: 2.5rem;
+		backdrop-filter: blur(24px);
+	}
+
+	.reset-password-header {
+		margin-bottom: 2rem;
+		text-align: center;
+	}
+
+	.reset-password-icon-shell {
+		display: inline-flex;
+		width: 5rem;
+		height: 5rem;
+		align-items: center;
+		justify-content: center;
+		margin-bottom: 1.5rem;
+		border-radius: 1rem;
+		background: linear-gradient(135deg, #a855f7, #ec4899);
+		padding: 0.125rem;
+	}
+
+	.reset-password-icon-inner {
+		display: flex;
+		width: 100%;
+		height: 100%;
+		align-items: center;
+		justify-content: center;
+		border-radius: 1rem;
+		background: #0f172a;
+	}
+
+	:global(.reset-password-header-icon) {
+		color: #c084fc;
+	}
+
+	.reset-password-title {
+		margin: 0 0 0.75rem;
+		background: linear-gradient(90deg, #d8b4fe, #f9a8d4, #fda4af);
+		background-clip: text;
+		color: transparent;
+		font-family: var(--font-display, inherit);
+		font-size: 2.25rem;
+		font-weight: 700;
+		line-height: 2.5rem;
+	}
+
+	.reset-password-subtitle {
+		margin: 0;
+		color: #94a3b8;
+	}
+
+	.reset-alert {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.75rem;
+		margin-bottom: 1.5rem;
+		border: 1px solid;
+		border-radius: 0.75rem;
+		padding: 1rem;
+		animation: fade-in 0.3s ease-out;
+	}
+
+	.reset-alert--success {
+		border-color: rgba(16, 185, 129, 0.3);
+		background: rgba(16, 185, 129, 0.1);
+	}
+
+	.reset-alert--error {
+		border-color: rgba(239, 68, 68, 0.3);
+		background: rgba(239, 68, 68, 0.1);
+	}
+
+	:global(.reset-alert__icon) {
+		flex-shrink: 0;
+		margin-top: 0.125rem;
+	}
+
+	:global(.reset-alert__icon--success) {
+		color: #34d399;
+	}
+
+	:global(.reset-alert__icon--error) {
+		color: #f87171;
+	}
+
+	.reset-alert__content {
+		margin: 0;
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+	}
+
+	.reset-alert__content--success {
+		color: #6ee7b7;
+	}
+
+	.reset-alert__content--error {
+		color: #fca5a5;
+	}
+
+	.reset-alert__content p,
+	.reset-alert__muted {
+		margin: 0;
+	}
+
+	.reset-alert__muted {
+		margin-top: 0.25rem;
+		color: rgba(52, 211, 153, 0.7);
+	}
+
+	.reset-password-form {
+		display: grid;
+		gap: 1.25rem;
+	}
+
+	.reset-field-label {
+		display: block;
+		margin-bottom: 0.5rem;
+		color: #cbd5e1;
+		font-size: 0.875rem;
+		font-weight: 600;
+		line-height: 1.25rem;
+	}
+
+	.reset-readonly-field,
+	.reset-input {
+		width: 100%;
+		border: 1px solid;
+		border-radius: 0.75rem;
+		padding: 0.875rem 1rem;
+	}
+
+	.reset-readonly-field {
+		border-color: rgba(51, 65, 85, 0.5);
+		background: rgba(30, 41, 59, 0.3);
+		color: #94a3b8;
+	}
+
+	.reset-input-wrap {
+		position: relative;
+	}
+
+	.reset-input-icon {
+		position: absolute;
+		top: 50%;
+		left: 1rem;
+		color: #64748b;
+		transform: translateY(-50%);
+	}
+
+	.reset-input {
+		border-color: #334155;
+		background: rgba(30, 41, 59, 0.5);
+		color: #ffffff;
+		padding-inline: 3rem;
+		transition:
+			border-color 0.3s ease,
+			box-shadow 0.3s ease,
+			background-color 0.3s ease;
+	}
+
+	.reset-input::placeholder {
+		color: #64748b;
+	}
+
+	.reset-input:focus {
+		border-color: #a855f7;
+		box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.1);
+		outline: none;
+	}
+
+	.reset-input--error {
+		border-color: #ef4444;
+	}
+
+	.reset-password-toggle {
+		position: absolute;
+		top: 50%;
+		right: 1rem;
+		color: #64748b;
+		transform: translateY(-50%);
+		transition: color 0.18s ease;
+	}
+
+	.reset-password-toggle:hover {
+		color: #c084fc;
+	}
+
+	.reset-field-message {
+		margin: 0.5rem 0 0;
+	}
+
+	.reset-field-message--error {
+		color: #f87171;
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+	}
+
+	.reset-field-message--hint {
+		color: #64748b;
+		font-size: 0.75rem;
+		line-height: 1rem;
+	}
+
+	.reset-submit {
+		position: relative;
+		width: 100%;
+		overflow: hidden;
+		margin-top: 1.5rem;
+		border: 0;
+		border-radius: 0.75rem;
+		background: linear-gradient(90deg, #a855f7, #ec4899, #f43f5e);
+		color: #ffffff;
+		padding: 1rem 1.5rem;
+		font-family: var(--font-display, inherit);
+		font-weight: 700;
+		cursor: pointer;
+		transition:
+			box-shadow 0.3s ease,
+			opacity 0.3s ease;
+	}
+
+	.reset-submit:hover:not(:disabled) {
+		box-shadow: 0 10px 24px rgba(168, 85, 247, 0.5);
+	}
+
+	.reset-submit:disabled {
+		cursor: not-allowed;
+		opacity: 0.5;
+	}
+
+	.reset-submit__content {
+		position: relative;
+		z-index: 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+	}
+
+	.reset-submit__spinner {
+		width: 1.25rem;
+		height: 1.25rem;
+		border: 2px solid rgba(255, 255, 255, 0.3);
+		border-top-color: #ffffff;
+		border-radius: 999px;
+		animation: spin 0.8s linear infinite;
+	}
+
+	.reset-submit__shine {
+		position: absolute;
+		inset: 0;
+		background: rgba(255, 255, 255, 0.2);
+		transform: scaleX(0);
+		transform-origin: left;
+		transition: transform 0.5s ease;
+	}
+
+	.reset-submit:hover:not(:disabled) .reset-submit__shine {
+		transform: scaleX(1);
+	}
+
+	.reset-back {
+		margin-top: 2rem;
+		text-align: center;
+	}
+
+	.reset-back__link {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		color: #c084fc;
+		font-weight: 600;
+		text-decoration: none;
+		transition: color 0.3s ease;
+	}
+
+	.reset-back__link:hover {
+		color: #d8b4fe;
+	}
+
+	.reset-back__icon {
+		width: 1rem;
+		height: 1rem;
+	}
+
 	@keyframes float {
 		0%,
 		100% {
@@ -309,15 +619,6 @@
 		}
 	}
 
-	.animate-float {
-		animation: float 8s ease-in-out infinite;
-	}
-
-	.animate-float-delayed {
-		animation: float-delayed 10s ease-in-out infinite;
-	}
-
-	/* Card reveal animation */
 	@keyframes card-reveal {
 		from {
 			opacity: 0;
@@ -329,12 +630,6 @@
 		}
 	}
 
-	.animate-card-reveal {
-		animation: card-reveal 0.6s ease-out forwards;
-		opacity: 0;
-	}
-
-	/* Fade in animation */
 	@keyframes fade-in {
 		from {
 			opacity: 0;
@@ -346,12 +641,20 @@
 		}
 	}
 
-	.animate-fade-in {
-		animation: fade-in 0.3s ease-out;
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
-	/* Input focus glow */
-	input:focus {
-		box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.1);
+	@media (max-width: 520px) {
+		.reset-password-panel {
+			padding: 2rem 1.25rem;
+		}
+
+		.reset-password-title {
+			font-size: 1.875rem;
+			line-height: 2.25rem;
+		}
 	}
 </style>
