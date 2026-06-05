@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { cn, type WithElementRef } from '$lib/utils.js';
+	import type { Attachment } from 'svelte/attachments';
 	import type { HTMLAttributes } from 'svelte/elements';
+	import { type WithElementRef } from '$lib/utils.js';
 
 	let {
 		ref = $bindable(null),
@@ -8,13 +9,34 @@
 		children,
 		...restProps
 	}: WithElementRef<HTMLAttributes<HTMLTableSectionElement>> = $props();
+
+	const captureRef: Attachment<HTMLTableSectionElement> = (node) => {
+		ref = node;
+		return () => {
+			if (ref === node) {
+				ref = null;
+			}
+		};
+	};
 </script>
 
 <thead
-	bind:this={ref}
+	{@attach captureRef}
 	data-slot="table-header"
-	class={cn('[&_tr]:border-b', className)}
+	class={['ui-table-header', className]}
 	{...restProps}
 >
 	{@render children?.()}
 </thead>
+
+<style>
+	.ui-table-header :global(tr) {
+		border-bottom: 1px solid #e2e8f0;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		.ui-table-header :global(tr) {
+			border-bottom-color: #1e293b;
+		}
+	}
+</style>
