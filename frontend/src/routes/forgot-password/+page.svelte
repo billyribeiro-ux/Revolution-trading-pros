@@ -44,82 +44,63 @@
 	}
 </script>
 
-<div
-	class="forgot-password-page flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12 overflow-hidden relative"
->
+<div class="forgot-password-page">
 	<!-- Animated gradient background -->
-	<div class="absolute inset-0 bg-linear-to-br from-slate-950 via-amber-950/30 to-slate-950"></div>
+	<div class="page-background"></div>
 
 	<!-- Floating orbs - hidden on small screens to save space -->
-	<div
-		class="hidden sm:block absolute top-20 left-10 w-64 sm:w-96 h-64 sm:h-96 bg-amber-500/10 rounded-full blur-3xl animate-float"
-	></div>
-	<div
-		class="hidden sm:block absolute bottom-20 right-10 w-64 sm:w-96 h-64 sm:h-96 bg-yellow-500/10 rounded-full blur-3xl animate-float-delayed"
-	></div>
+	<div class="ambient-orb ambient-orb--primary"></div>
+	<div class="ambient-orb ambient-orb--secondary"></div>
 
 	<!-- Forgot password card -->
-	<div
-		class="forgot-password-card relative w-full max-w-md z-10"
-		class:animate-card-reveal={isVisible}
-	>
+	<div class={['forgot-password-card', isVisible && 'forgot-password-card--visible']}>
 		<!-- Glow effect -->
-		<div
-			class="absolute -inset-1 bg-linear-to-r from-amber-500 via-yellow-500 to-orange-500 rounded-3xl opacity-20 blur-xl"
-		></div>
+		<div class="card-glow"></div>
 
-		<div
-			class="relative bg-slate-900/90 backdrop-blur-xl border border-amber-500/20 rounded-2xl sm:rounded-3xl p-6 sm:p-10 shadow-2xl"
-		>
+		<div class="card-panel">
 			<!-- Header -->
-			<div class="text-center mb-6 sm:mb-8">
-				<div
-					class="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl bg-linear-to-br from-amber-500 to-orange-500 p-0.5 mb-4 sm:mb-6"
-				>
-					<div
-						class="w-full h-full bg-slate-900 rounded-xl sm:rounded-2xl flex items-center justify-center"
-					>
-						<IconMail size={32} class="text-amber-400 sm:hidden" />
-						<IconMail size={40} class="text-amber-400 hidden sm:block" />
+			<div class="card-header">
+				<div class="mail-badge">
+					<div class="mail-badge__inner">
+						<span class="mail-icon mail-icon--mobile">
+							<IconMail size={32} />
+						</span>
+						<span class="mail-icon mail-icon--desktop">
+							<IconMail size={40} />
+						</span>
 					</div>
 				</div>
-				<h1
-					class="text-2xl sm:text-4xl font-heading font-bold mb-2 sm:mb-3 bg-linear-to-r from-amber-300 via-yellow-300 to-orange-300 bg-clip-text text-transparent"
-				>
-					Forgot Password?
-				</h1>
-				<p class="text-slate-400">No worries, we'll send you reset instructions</p>
+				<h1 class="page-title">Forgot Password?</h1>
+				<p class="page-copy">No worries, we'll send you reset instructions</p>
 			</div>
 
 			<!-- Success message -->
 			{#if successMessage}
-				<div
-					class="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-start gap-3 animate-fade-in"
-				>
-					<IconCheck size={20} class="text-emerald-400 shrink-0 mt-0.5" />
-					<p class="text-sm text-emerald-300">{successMessage}</p>
+				<div class="status-message status-message--success">
+					<span class="status-message__icon">
+						<IconCheck size={20} />
+					</span>
+					<p class="status-message__copy">{successMessage}</p>
 				</div>
 			{/if}
 
 			<!-- General error -->
 			{#if generalError}
-				<div
-					class="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-start gap-3 animate-fade-in"
-				>
-					<IconAlertCircle size={20} class="text-red-400 shrink-0 mt-0.5" />
-					<p class="text-sm text-red-300">{generalError}</p>
+				<div class="status-message status-message--error">
+					<span class="status-message__icon">
+						<IconAlertCircle size={20} />
+					</span>
+					<p class="status-message__copy">{generalError}</p>
 				</div>
 			{/if}
 
 			<!-- Forgot password form -->
-			<form onsubmit={handleSubmit} class="space-y-6">
+			<form onsubmit={handleSubmit} class="reset-form">
 				<!-- Email field -->
-				<div class="form-group">
-					<label for="email" class="block text-sm font-semibold text-slate-300 mb-2">
-						Email Address
-					</label>
-					<div class="relative">
-						<div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">
+				<div class="field">
+					<label for="email" class="field-label">Email Address</label>
+					<div class="input-shell">
+						<div class="input-icon">
 							<IconMail size={20} />
 						</div>
 						<input
@@ -129,48 +110,36 @@
 							type="email"
 							bind:value={email}
 							required
-							class="w-full pl-12 pr-4 py-3.5 bg-slate-800/50 border border-slate-700 rounded-xl text-white text-base placeholder-slate-500 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all duration-300 min-h-[44px]"
-							class:border-red-500={errors.email}
+							class={['email-input', errors.email && 'email-input--invalid']}
 							placeholder="you@example.com"
 						/>
 					</div>
 					{#if errors.email}
-						<p class="mt-2 text-sm text-red-400">{errors.email[0]}</p>
+						<p class="field-error">{errors.email[0]}</p>
 					{/if}
 				</div>
 
 				<!-- Submit button -->
-				<button
-					type="submit"
-					disabled={isLoading}
-					class="w-full relative px-6 py-4 bg-linear-to-r from-amber-500 via-yellow-500 to-orange-500 text-slate-900 font-heading font-bold rounded-xl overflow-hidden group transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
-				>
-					<span class="relative z-10 flex items-center justify-center gap-2">
+				<button type="submit" disabled={isLoading} class="submit-button">
+					<span class="submit-button__content">
 						{#if isLoading}
-							<div
-								class="w-5 h-5 border-2 border-slate-900/30 border-t-slate-900 rounded-full animate-spin"
-							></div>
+							<div class="submit-spinner"></div>
 							<span>Sending...</span>
 						{:else}
 							<IconSend size={20} />
 							<span>Send Reset Link</span>
 						{/if}
 					</span>
-					<div
-						class="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"
-					></div>
+					<div class="submit-button__sheen"></div>
 				</button>
 			</form>
 
 			<!-- Back to login link -->
-			<div class="mt-6 sm:mt-8 text-center">
-				<a
-					href="/login"
-					class="text-amber-400 hover:text-amber-300 font-semibold transition-colors duration-300 inline-flex items-center justify-center gap-2 min-h-[44px] px-4"
-				>
+			<div class="back-link-row">
+				<a href="/login" class="back-link">
 					<svg
 						aria-hidden="true"
-						class="w-4 h-4"
+						class="back-link__icon"
 						fill="none"
 						stroke="currentColor"
 						viewBox="0 0 24 24"
@@ -190,6 +159,312 @@
 </div>
 
 <style>
+	.forgot-password-page {
+		position: relative;
+		display: flex;
+		min-height: 100vh;
+		align-items: center;
+		justify-content: center;
+		overflow: hidden;
+		padding: 2rem 1rem;
+	}
+
+	.page-background {
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(135deg, #020617 0%, rgba(69, 26, 3, 0.3) 50%, #020617 100%);
+	}
+
+	.ambient-orb {
+		position: absolute;
+		display: none;
+		width: min(24rem, 42vw);
+		aspect-ratio: 1;
+		border-radius: 999px;
+		filter: blur(64px);
+	}
+
+	.ambient-orb--primary {
+		top: 5rem;
+		left: 2.5rem;
+		background: rgba(245, 158, 11, 0.1);
+		animation: float 8s ease-in-out infinite;
+	}
+
+	.ambient-orb--secondary {
+		right: 2.5rem;
+		bottom: 5rem;
+		background: rgba(234, 179, 8, 0.1);
+		animation: float-delayed 10s ease-in-out infinite;
+	}
+
+	.forgot-password-card {
+		position: relative;
+		z-index: 1;
+		width: 100%;
+		max-width: 28rem;
+		opacity: 0;
+	}
+
+	.forgot-password-card--visible {
+		animation: card-reveal 0.6s ease-out forwards;
+	}
+
+	.card-glow {
+		position: absolute;
+		inset: -0.25rem;
+		border-radius: 1.5rem;
+		background: linear-gradient(90deg, #f59e0b 0%, #eab308 50%, #f97316 100%);
+		filter: blur(24px);
+		opacity: 0.2;
+	}
+
+	.card-panel {
+		position: relative;
+		padding: 1.5rem;
+		border: 1px solid rgba(245, 158, 11, 0.2);
+		border-radius: 1rem;
+		background: rgba(15, 23, 42, 0.9);
+		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.55);
+		backdrop-filter: blur(24px);
+	}
+
+	.card-header {
+		margin-bottom: 1.5rem;
+		text-align: center;
+	}
+
+	.mail-badge {
+		display: inline-flex;
+		width: 4rem;
+		height: 4rem;
+		align-items: center;
+		justify-content: center;
+		margin-bottom: 1rem;
+		padding: 2px;
+		border-radius: 0.75rem;
+		background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+	}
+
+	.mail-badge__inner {
+		display: flex;
+		width: 100%;
+		height: 100%;
+		align-items: center;
+		justify-content: center;
+		border-radius: 0.75rem;
+		background: #0f172a;
+		color: #fbbf24;
+	}
+
+	.mail-icon {
+		display: flex;
+		color: #fbbf24;
+	}
+
+	.mail-icon--desktop {
+		display: none;
+	}
+
+	.page-title {
+		margin: 0 0 0.5rem;
+		background: linear-gradient(90deg, #fcd34d 0%, #fde047 50%, #fdba74 100%);
+		background-clip: text;
+		color: transparent;
+		font-family: var(--font-heading, inherit);
+		font-size: 1.5rem;
+		font-weight: 700;
+		line-height: 1.15;
+	}
+
+	.page-copy {
+		margin: 0;
+		color: #94a3b8;
+	}
+
+	.status-message {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.75rem;
+		margin-bottom: 1.5rem;
+		padding: 1rem;
+		border: 1px solid;
+		border-radius: 0.75rem;
+		animation: fade-in 0.3s ease-out;
+	}
+
+	.status-message--success {
+		border-color: rgba(16, 185, 129, 0.3);
+		background: rgba(16, 185, 129, 0.1);
+		color: #6ee7b7;
+	}
+
+	.status-message--error {
+		border-color: rgba(239, 68, 68, 0.3);
+		background: rgba(239, 68, 68, 0.1);
+		color: #f87171;
+	}
+
+	.status-message__icon {
+		display: flex;
+		flex: 0 0 auto;
+		margin-top: 0.125rem;
+	}
+
+	.status-message__copy {
+		margin: 0;
+		color: currentColor;
+		font-size: 0.875rem;
+		line-height: 1.45;
+	}
+
+	.reset-form {
+		display: grid;
+		gap: 1.5rem;
+	}
+
+	.field-label {
+		display: block;
+		margin-bottom: 0.5rem;
+		color: #cbd5e1;
+		font-size: 0.875rem;
+		font-weight: 600;
+	}
+
+	.input-shell {
+		position: relative;
+	}
+
+	.input-icon {
+		position: absolute;
+		top: 50%;
+		left: 1rem;
+		display: flex;
+		color: #64748b;
+		transform: translateY(-50%);
+		pointer-events: none;
+	}
+
+	.email-input {
+		width: 100%;
+		min-height: 44px;
+		padding: 0.875rem 1rem 0.875rem 3rem;
+		border: 1px solid #334155;
+		border-radius: 0.75rem;
+		background: rgba(30, 41, 59, 0.5);
+		color: #fff;
+		font-size: 1rem;
+		transition:
+			border-color 0.3s ease,
+			box-shadow 0.3s ease,
+			background-color 0.3s ease;
+	}
+
+	.email-input::placeholder {
+		color: #64748b;
+	}
+
+	.email-input:focus {
+		border-color: #f59e0b;
+		outline: none;
+		box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.1);
+	}
+
+	.email-input--invalid {
+		border-color: #ef4444;
+	}
+
+	.field-error {
+		margin: 0.5rem 0 0;
+		color: #f87171;
+		font-size: 0.875rem;
+		line-height: 1.4;
+	}
+
+	.submit-button {
+		position: relative;
+		width: 100%;
+		overflow: hidden;
+		padding: 1rem 1.5rem;
+		border: 0;
+		border-radius: 0.75rem;
+		background: linear-gradient(90deg, #f59e0b 0%, #eab308 50%, #f97316 100%);
+		color: #0f172a;
+		cursor: pointer;
+		font-family: var(--font-heading, inherit);
+		font-weight: 700;
+		transition:
+			box-shadow 0.3s ease,
+			opacity 0.3s ease;
+	}
+
+	.submit-button:hover:not(:disabled) {
+		box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.5);
+	}
+
+	.submit-button:disabled {
+		cursor: not-allowed;
+		opacity: 0.5;
+	}
+
+	.submit-button__content {
+		position: relative;
+		z-index: 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+	}
+
+	.submit-button__sheen {
+		position: absolute;
+		inset: 0;
+		background: rgba(255, 255, 255, 0.2);
+		transform: scaleX(0);
+		transform-origin: left;
+		transition: transform 0.5s ease;
+	}
+
+	.submit-button:hover:not(:disabled) .submit-button__sheen {
+		transform: scaleX(1);
+	}
+
+	.submit-spinner {
+		width: 1.25rem;
+		height: 1.25rem;
+		border: 2px solid rgba(15, 23, 42, 0.3);
+		border-top-color: #0f172a;
+		border-radius: 999px;
+		animation: spin 0.8s linear infinite;
+	}
+
+	.back-link-row {
+		margin-top: 1.5rem;
+		text-align: center;
+	}
+
+	.back-link {
+		display: inline-flex;
+		min-height: 44px;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		padding-inline: 1rem;
+		color: #fbbf24;
+		font-weight: 600;
+		text-decoration: none;
+		transition: color 0.3s ease;
+	}
+
+	.back-link:hover {
+		color: #fcd34d;
+	}
+
+	.back-link__icon {
+		width: 1rem;
+		height: 1rem;
+	}
+
 	/* Floating animations */
 	@keyframes float {
 		0%,
@@ -211,14 +486,6 @@
 		}
 	}
 
-	.animate-float {
-		animation: float 8s ease-in-out infinite;
-	}
-
-	.animate-float-delayed {
-		animation: float-delayed 10s ease-in-out infinite;
-	}
-
 	/* Card reveal animation */
 	@keyframes card-reveal {
 		from {
@@ -229,11 +496,6 @@
 			opacity: 1;
 			transform: translateY(0) scale(1);
 		}
-	}
-
-	.animate-card-reveal {
-		animation: card-reveal 0.6s ease-out forwards;
-		opacity: 0;
 	}
 
 	/* Fade in animation */
@@ -248,12 +510,60 @@
 		}
 	}
 
-	.animate-fade-in {
-		animation: fade-in 0.3s ease-out;
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
-	/* Input focus glow */
-	input:focus {
-		box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.1);
+	@media (min-width: 640px) {
+		.forgot-password-page {
+			padding: 3rem 1.5rem;
+		}
+
+		.ambient-orb {
+			display: block;
+		}
+
+		.card-glow,
+		.card-panel {
+			border-radius: 1.5rem;
+		}
+
+		.card-panel {
+			padding: 2.5rem;
+		}
+
+		.card-header {
+			margin-bottom: 2rem;
+		}
+
+		.mail-badge {
+			width: 5rem;
+			height: 5rem;
+			margin-bottom: 1.5rem;
+			border-radius: 1rem;
+		}
+
+		.mail-badge__inner {
+			border-radius: 1rem;
+		}
+
+		.mail-icon--mobile {
+			display: none;
+		}
+
+		.mail-icon--desktop {
+			display: flex;
+		}
+
+		.page-title {
+			margin-bottom: 0.75rem;
+			font-size: 2.25rem;
+		}
+
+		.back-link-row {
+			margin-top: 2rem;
+		}
 	}
 </style>
