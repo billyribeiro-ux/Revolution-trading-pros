@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { DropdownMenu as DropdownMenuPrimitive } from 'bits-ui';
 	import CircleIcon from '@tabler/icons-svelte-runes/icons/circle';
-	import { cn, type WithoutChild } from '$lib/utils.js';
+	import { type WithoutChild } from '$lib/utils.js';
 
 	let {
 		ref = $bindable(null),
@@ -14,18 +14,75 @@
 <DropdownMenuPrimitive.RadioItem
 	bind:ref
 	data-slot="dropdown-menu-radio-item"
-	class={cn(
-		"focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-sm py-1.5 ps-8 pe-2 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-		className
-	)}
+	class={['ui-dropdown-menu-radio-item', className]}
 	{...restProps}
 >
 	{#snippet children({ checked })}
-		<span class="pointer-events-none absolute start-2 flex size-3.5 items-center justify-center">
+		<span class="ui-dropdown-menu-item-indicator">
 			{#if checked}
-				<CircleIcon class="size-2 fill-current" />
+				<CircleIcon class="ui-dropdown-menu-radio-icon" />
 			{/if}
 		</span>
 		{@render childrenProp?.({ checked })}
 	{/snippet}
 </DropdownMenuPrimitive.RadioItem>
+
+<style>
+	:global(.ui-dropdown-menu-radio-item) {
+		position: relative;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		border-radius: 0.125rem;
+		padding: 0.375rem 0.5rem 0.375rem 2rem;
+		color: var(--dropdown-radio-foreground, #0f172a);
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+		cursor: default;
+		outline: none;
+		user-select: none;
+	}
+
+	:global(.ui-dropdown-menu-radio-item:focus),
+	:global(.ui-dropdown-menu-radio-item[data-highlighted]) {
+		background: var(--dropdown-radio-highlight-background, #f1f5f9);
+		color: var(--dropdown-radio-highlight-foreground, #0f172a);
+	}
+
+	:global(.ui-dropdown-menu-radio-item[data-disabled]) {
+		pointer-events: none;
+		opacity: 0.5;
+	}
+
+	:global(.ui-dropdown-menu-radio-item svg) {
+		pointer-events: none;
+		width: 1rem;
+		height: 1rem;
+		flex-shrink: 0;
+	}
+
+	:global(.ui-dropdown-menu-item-indicator) {
+		position: absolute;
+		inset-inline-start: 0.5rem;
+		display: flex;
+		width: 0.875rem;
+		height: 0.875rem;
+		align-items: center;
+		justify-content: center;
+		pointer-events: none;
+	}
+
+	:global(.ui-dropdown-menu-radio-icon) {
+		width: 0.5rem;
+		height: 0.5rem;
+		fill: currentColor;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		:global(.ui-dropdown-menu-radio-item) {
+			--dropdown-radio-foreground: #f8fafc;
+			--dropdown-radio-highlight-background: #1e293b;
+			--dropdown-radio-highlight-foreground: #f8fafc;
+		}
+	}
+</style>
