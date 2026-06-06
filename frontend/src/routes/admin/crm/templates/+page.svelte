@@ -811,7 +811,7 @@
 {#if toasts.length > 0}
 	<div class="toast-container" role="region" aria-label="Notifications">
 		{#each toasts as toast (toast.id)}
-			<div class="toast toast-{toast.type}" role="alert" aria-live="polite">
+			<div class={['toast', `toast-${toast.type}`]} role="alert" aria-live="polite">
 				<div class="toast-icon">
 					{#if toast.type === 'success'}
 						<IconCheck size={18} />
