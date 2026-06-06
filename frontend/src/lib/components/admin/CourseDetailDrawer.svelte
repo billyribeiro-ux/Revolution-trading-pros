@@ -297,7 +297,7 @@
 			if (e.key === 'Escape') handleBackdropClick(e);
 		}}
 	>
-		<aside class="drawer" class:open={isOpen}>
+		<aside class={['drawer', { open: isOpen }]}>
 			{#if courseResource}
 				{#await courseResource}
 					<div class="loading-state">
@@ -329,9 +329,9 @@
 							<div class="course-badges">
 								<span
 									class="status-badge"
-									style="--badge-color: {getStatusColor(
+									style:--badge-color={getStatusColor(
 										courseData.status || (courseData.is_published ? 'published' : 'draft')
-									)}"
+									)}
 								>
 									{courseData.status || (courseData.is_published ? 'Published' : 'Draft')}
 								</span>
@@ -396,9 +396,13 @@
 						</a>
 						<button
 							type="button"
-							class="btn-action"
-							class:success={!courseData.is_published}
-							class:warning={courseData.is_published}
+							class={[
+								'btn-action',
+								{
+									success: !courseData.is_published,
+									warning: courseData.is_published
+								}
+							]}
 							onclick={() => (showPublishModal = true)}
 						>
 							{#if courseData.is_published}
@@ -415,8 +419,7 @@
 					<nav class="drawer-tabs" aria-label="Detail tabs">
 						<button
 							type="button"
-							class="tab"
-							class:active={activeTab === 'modules'}
+							class={['tab', { active: activeTab === 'modules' }]}
 							onclick={() => setActiveTab(courseData, 'modules')}
 						>
 							<IconBook size={16} />
@@ -424,8 +427,7 @@
 						</button>
 						<button
 							type="button"
-							class="tab"
-							class:active={activeTab === 'enrollments'}
+							class={['tab', { active: activeTab === 'enrollments' }]}
 							onclick={() => setActiveTab(courseData, 'enrollments')}
 						>
 							<IconUsers size={16} />
@@ -433,8 +435,7 @@
 						</button>
 						<button
 							type="button"
-							class="tab"
-							class:active={activeTab === 'analytics'}
+							class={['tab', { active: activeTab === 'analytics' }]}
 							onclick={() => setActiveTab(courseData, 'analytics')}
 						>
 							<IconChartBar size={16} />
@@ -467,7 +468,7 @@
 								{:else}
 									<div class="modules-list">
 										{#each courseData.modules as module, idx (module.id)}
-											<div class="module-card" class:expanded={expandedModules.has(module.id)}>
+											<div class={['module-card', { expanded: expandedModules.has(module.id) }]}>
 												<div
 													class="module-header"
 													role="button"
