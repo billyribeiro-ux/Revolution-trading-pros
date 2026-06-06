@@ -751,12 +751,21 @@
 		}
 	}
 
-	// Auto-detect platform when URL changes
-	$effect(() => {
+	function syncVideoPlatformFromUrl() {
 		if (formData.file_url && formData.resource_type === 'video') {
 			formData.video_platform = roomResourcesApi.detectVideoPlatform(formData.file_url);
 		}
-	});
+	}
+
+	function updateResourceType(resourceType: ResourceType) {
+		formData.resource_type = resourceType;
+		syncVideoPlatformFromUrl();
+	}
+
+	function updateFileUrl(fileUrl: string) {
+		formData.file_url = fileUrl;
+		syncVideoPlatformFromUrl();
+	}
 
 	// LIFECYCLE
 
@@ -778,10 +787,10 @@
 
 <div class="admin-resources">
 	<!-- Animated Background -->
-	<div class="bg-effects">
-		<div class="bg-blob bg-blob-1"></div>
-		<div class="bg-blob bg-blob-2"></div>
-		<div class="bg-blob bg-blob-3"></div>
+	<div class="background-effects">
+		<div class="background-blob background-blob-1"></div>
+		<div class="background-blob background-blob-2"></div>
+		<div class="background-blob background-blob-3"></div>
 	</div>
 
 	<div class="admin-page-container">
@@ -861,10 +870,14 @@
 			<div class="resources-grid">
 				{#each filteredResources as resource (resource.id)}
 					<div
-						class="resource-card"
-						class:featured={resource.is_featured}
-						class:pinned={resource.is_pinned}
-						class:unpublished={!resource.is_published}
+						class={[
+							'resource-card',
+							{
+								featured: resource.is_featured,
+								pinned: resource.is_pinned,
+								unpublished: !resource.is_published
+							}
+						]}
 					>
 						<!-- Thumbnail -->
 						<div class="resource-thumbnail">
@@ -885,10 +898,14 @@
 
 							<!-- Type Badge -->
 							<span
-								class="type-badge"
-								class:video={resource.resource_type === 'video'}
-								class:pdf={resource.resource_type === 'pdf'}
-								class:image={resource.resource_type === 'image'}
+								class={[
+									'type-badge',
+									{
+										video: resource.resource_type === 'video',
+										pdf: resource.resource_type === 'pdf',
+										image: resource.resource_type === 'image'
+									}
+								]}
 							>
 								{resource.resource_type.toUpperCase()}
 							</span>
@@ -952,8 +969,7 @@
 								{/if}
 							</button>
 							<button
-								class="btn-icon"
-								class:active={resource.is_published}
+								class={['btn-icon', { active: resource.is_published }]}
 								title={resource.is_published ? 'Unpublish' : 'Publish'}
 								onclick={() => togglePublished(resource)}
 							>
@@ -994,6 +1010,8 @@
 			editingResource = null;
 		}}
 		onSave={saveResource}
+		onResourceTypeChange={updateResourceType}
+		onFileUrlInput={updateFileUrl}
 		onToggleTag={toggleTag}
 	/>
 {/if}

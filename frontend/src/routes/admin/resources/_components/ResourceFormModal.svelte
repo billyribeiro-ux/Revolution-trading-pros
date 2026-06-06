@@ -29,6 +29,8 @@
 		isSaving: boolean;
 		onClose: () => void;
 		onSave: () => void;
+		onResourceTypeChange: (resourceType: ResourceType) => void;
+		onFileUrlInput: (fileUrl: string) => void;
 		onToggleTag: (id: string) => void;
 	};
 
@@ -45,6 +47,8 @@
 		isSaving,
 		onClose,
 		onSave,
+		onResourceTypeChange,
+		onFileUrlInput,
 		onToggleTag
 	}: Props = $props();
 </script>
@@ -95,7 +99,11 @@
 			<div class="form-row">
 				<div class="form-group">
 					<label for="resource-type">Resource Type *</label>
-					<select id="resource-type" bind:value={formData.resource_type}>
+					<select
+						id="resource-type"
+						value={formData.resource_type}
+						onchange={(event) => onResourceTypeChange(event.currentTarget.value as ResourceType)}
+					>
 						{#each resourceTypes as type (type.id)}
 							<option value={type.id}>{type.name}</option>
 						{/each}
@@ -141,7 +149,8 @@
 					type="url"
 					id="file-url"
 					name="file-url"
-					bind:value={formData.file_url}
+					value={formData.file_url}
+					oninput={(event) => onFileUrlInput(event.currentTarget.value)}
 					placeholder="https://..."
 					required
 				/>
@@ -205,8 +214,7 @@
 					{#each categories as category (category.id)}
 						<button
 							type="button"
-							class="tag-btn"
-							class:selected={formData.tags?.includes(category.id)}
+							class={['tag-btn', { selected: formData.tags?.includes(category.id) }]}
 							style:--tag-color={category.color}
 							onclick={() => onToggleTag(category.id)}
 						>
