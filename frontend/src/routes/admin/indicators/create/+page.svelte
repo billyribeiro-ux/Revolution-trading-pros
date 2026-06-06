@@ -643,10 +643,10 @@
 
 <div class="admin-indicators-create">
 	<!-- Animated Background -->
-	<div class="bg-effects">
-		<div class="bg-blob bg-blob-1"></div>
-		<div class="bg-blob bg-blob-2"></div>
-		<div class="bg-blob bg-blob-3"></div>
+	<div class="background-effects">
+		<div class="background-blob background-blob-1"></div>
+		<div class="background-blob background-blob-2"></div>
+		<div class="background-blob background-blob-3"></div>
 	</div>
 
 	<div class="admin-page-container">
@@ -823,10 +823,14 @@
 
 										<!-- Drop Zone -->
 										<div
-											class="drop-zone"
-											class:drag-over={platformFileDragOver[pf.platform_id]}
-											class:has-file={pf.file}
-											class:uploading={platformFileUploading[pf.platform_id]}
+											class={[
+												'drop-zone',
+												{
+													'drag-over': platformFileDragOver[pf.platform_id],
+													'has-file': pf.file,
+													uploading: platformFileUploading[pf.platform_id]
+												}
+											]}
 											ondragover={(e) => handlePlatformFileDragOver(e, pf.platform_id)}
 											ondragleave={(e) => handlePlatformFileDragLeave(e, pf.platform_id)}
 											ondrop={(e) => handlePlatformFileDrop(e, pf.platform_id)}
@@ -936,10 +940,15 @@
 
 									<!-- Drop Zone -->
 									<div
-										class="drop-zone compact"
-										class:drag-over={docDragOver[index]}
-										class:has-file={doc.file}
-										class:uploading={docUploading[index]}
+										class={[
+											'drop-zone',
+											'compact',
+											{
+												'drag-over': docDragOver[index],
+												'has-file': doc.file,
+												uploading: docUploading[index]
+											}
+										]}
 										ondragover={(e) => handleDocDragOver(e, index)}
 										ondragleave={(e) => handleDocDragLeave(e, index)}
 										ondrop={(e) => handleDocDrop(e, index)}
@@ -1112,10 +1121,14 @@
 					</h2>
 
 					<div
-						class="thumbnail-drop-zone"
-						class:drag-over={thumbnailDragOver}
-						class:has-image={indicator.thumbnail_url}
-						class:uploading={thumbnailUploading}
+						class={[
+							'thumbnail-drop-zone',
+							{
+								'drag-over': thumbnailDragOver,
+								'has-image': indicator.thumbnail_url,
+								uploading: thumbnailUploading
+							}
+						]}
 						ondragover={handleThumbnailDragOver}
 						ondragleave={handleThumbnailDragLeave}
 						ondrop={handleThumbnailDrop}
@@ -1289,7 +1302,7 @@
 	}
 
 	/* Background Effects */
-	.bg-effects {
+	.background-effects {
 		position: fixed;
 		inset: 0;
 		pointer-events: none;
@@ -1297,7 +1310,7 @@
 		z-index: -1;
 	}
 
-	.bg-blob {
+	.background-blob {
 		position: absolute;
 		border-radius: 50%;
 		filter: blur(100px);
@@ -1305,7 +1318,7 @@
 		animation: float 20s ease-in-out infinite;
 	}
 
-	.bg-blob-1 {
+	.background-blob-1 {
 		width: 600px;
 		height: 600px;
 		background: var(--primary-500);
@@ -1313,7 +1326,7 @@
 		right: -200px;
 	}
 
-	.bg-blob-2 {
+	.background-blob-2 {
 		width: 400px;
 		height: 400px;
 		background: #143e59;
@@ -1322,7 +1335,7 @@
 		animation-delay: -7s;
 	}
 
-	.bg-blob-3 {
+	.background-blob-3 {
 		width: 300px;
 		height: 300px;
 		background: var(--primary-500);
