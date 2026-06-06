@@ -285,18 +285,6 @@
 		user.current?.name?.[0]?.toUpperCase() || user.current?.email?.[0]?.toUpperCase() || 'U'
 	);
 
-	// CSS custom properties from theme
-	const themeStyles = $derived.by(() => {
-		const styles: string[] = [];
-		if (theme.primaryColor) styles.push(`--nav-primary: ${theme.primaryColor}`);
-		if (theme.primaryColorDark) styles.push(`--nav-primary-dark: ${theme.primaryColorDark}`);
-		if (theme.backgroundColor) styles.push(`--nav-bg: ${theme.backgroundColor}`);
-		if (theme.textColor) styles.push(`--nav-text: ${theme.textColor}`);
-		if (theme.height) styles.push(`--nav-height: ${theme.height}`);
-		if (theme.borderRadius) styles.push(`--nav-radius: ${theme.borderRadius}`);
-		return styles.join(';');
-	});
-
 	// ═══════════════════════════════════════════════════════════════════════════
 	// UTILITY FUNCTIONS
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -653,14 +641,23 @@
      MAIN NAVBAR
      ═══════════════════════════════════════════════════════════════════════════ -->
 <header
-	class="navbar"
-	class:scrolled={isScrolled}
-	class:sticky
-	class:navigating={isNavigating}
-	class:reduced-motion={prefersReducedMotion || disableTransitions}
-	class:high-contrast={prefersHighContrast}
-	class:rtl={isRTL}
-	style={themeStyles}
+	class={[
+		'navbar',
+		{
+			scrolled: isScrolled,
+			sticky,
+			navigating: isNavigating,
+			'reduced-motion': prefersReducedMotion || disableTransitions,
+			'high-contrast': prefersHighContrast,
+			rtl: isRTL
+		}
+	]}
+	style:--nav-primary={theme.primaryColor}
+	style:--nav-primary-dark={theme.primaryColorDark}
+	style:--nav-bg={theme.backgroundColor}
+	style:--nav-text={theme.textColor}
+	style:--nav-height={theme.height}
+	style:--nav-radius={theme.borderRadius}
 >
 	<div class="navbar-container">
 		<!-- ═══════════════════════════════════════════════════════════════════
@@ -690,9 +687,13 @@
 				{#if item.submenu}
 					<div class="dropdown" data-dropdown={item.id}>
 						<button
-							class="dropdown-trigger"
-							class:active={isSubmenuActive(item.submenu)}
-							class:open={activeDropdown === item.id}
+							class={[
+								'dropdown-trigger',
+								{
+									active: isSubmenuActive(item.submenu),
+									open: activeDropdown === item.id
+								}
+							]}
 							onclick={() => toggleDropdown(item.id)}
 							onkeydown={(e: KeyboardEvent) =>
 								item.submenu &&
@@ -718,9 +719,13 @@
 									<li role="none">
 										<a
 											href={sub.href}
-											class="dropdown-item"
-											class:active={currentPath === sub.href}
-											class:focused={focusedDropdownIndex === idx}
+											class={[
+												'dropdown-item',
+												{
+													active: currentPath === sub.href,
+													focused: focusedDropdownIndex === idx
+												}
+											]}
 											role="menuitem"
 											tabindex={focusedDropdownIndex === idx ? 0 : -1}
 											onclick={() => handleNavClick(sub.href, sub.label)}
@@ -735,8 +740,7 @@
 				{:else if item.href}
 					<a
 						href={item.href}
-						class="nav-link"
-						class:active={currentPath === item.href}
+						class={['nav-link', { active: currentPath === item.href }]}
 						aria-current={currentPath === item.href ? 'page' : undefined}
 						onclick={() => {
 							if (item.href) dispatch('nav:click', { href: item.href, label: item.label });
@@ -754,10 +758,13 @@
 			{#if isAuthenticated.current}
 				<div class="dropdown" data-dropdown="dashboard">
 					<button
-						class="dropdown-trigger"
-						class:active={currentPath.startsWith('/dashboard') ||
-							currentPath.startsWith('/account')}
-						class:open={activeDropdown === 'dashboard'}
+						class={[
+							'dropdown-trigger',
+							{
+								active: currentPath.startsWith('/dashboard') || currentPath.startsWith('/account'),
+								open: activeDropdown === 'dashboard'
+							}
+						]}
 						onclick={() => toggleDropdown('dashboard')}
 						onkeydown={(e: KeyboardEvent) =>
 							activeDropdown === 'dashboard' && handleDropdownKeydown(e, dashboardItems)}
@@ -781,9 +788,13 @@
 								<li role="none">
 									<a
 										href={sub.href}
-										class="dropdown-item"
-										class:active={currentPath === sub.href}
-										class:focused={focusedDropdownIndex === idx}
+										class={[
+											'dropdown-item',
+											{
+												active: currentPath === sub.href,
+												focused: focusedDropdownIndex === idx
+											}
+										]}
 										role="menuitem"
 										tabindex={focusedDropdownIndex === idx ? 0 : -1}
 										onclick={() => handleNavClick(sub.href, sub.label)}
@@ -845,10 +856,10 @@
 			type="button"
 		>
 			<!-- ICT11+ Fix: Use CSS transform instead of DOM swap to prevent layout shift -->
-			<span class="hamburger-icon" class:open={isMobileMenuOpen}>
+			<span class={['hamburger-icon', { open: isMobileMenuOpen }]}>
 				<IconMenu2 size={24} aria-hidden="true" />
 			</span>
-			<span class="hamburger-icon hamburger-close" class:open={isMobileMenuOpen}>
+			<span class={['hamburger-icon', 'hamburger-close', { open: isMobileMenuOpen }]}>
 				<IconX size={24} aria-hidden="true" />
 			</span>
 		</button>
@@ -861,9 +872,13 @@
 {#if mobileMenuState !== 'idle'}
 	<!-- Backdrop -->
 	<div
-		class="mobile-backdrop"
-		class:closing={mobileMenuState === 'closing'}
-		class:reduced-motion={prefersReducedMotion || disableTransitions}
+		class={[
+			'mobile-backdrop',
+			{
+				closing: mobileMenuState === 'closing',
+				'reduced-motion': prefersReducedMotion || disableTransitions
+			}
+		]}
 		onclick={closeMobileMenu}
 		onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && closeMobileMenu()}
 		role="button"
@@ -875,10 +890,14 @@
 	<div
 		id="mobile-nav"
 		{@attach mobilePanelAttachment}
-		class="mobile-panel"
-		class:closing={mobileMenuState === 'closing'}
-		class:reduced-motion={prefersReducedMotion || disableTransitions}
-		class:rtl={isRTL}
+		class={[
+			'mobile-panel',
+			{
+				closing: mobileMenuState === 'closing',
+				'reduced-motion': prefersReducedMotion || disableTransitions,
+				rtl: isRTL
+			}
+		]}
 		role="dialog"
 		aria-modal="true"
 		aria-labelledby="mobile-title"
@@ -914,8 +933,7 @@
 				{#if item.submenu}
 					<div class="mobile-nav-group">
 						<button
-							class="mobile-nav-item"
-							class:expanded={mobileExpandedSection === item.id}
+							class={['mobile-nav-item', { expanded: mobileExpandedSection === item.id }]}
 							onclick={() => toggleMobileSection(item.id)}
 							aria-expanded={mobileExpandedSection === item.id}
 							aria-controls="mobile-sub-{item.id}"
@@ -931,8 +949,7 @@
 									<li>
 										<a
 											href={sub.href}
-											class="mobile-submenu-item"
-											class:active={currentPath === sub.href}
+											class={['mobile-submenu-item', { active: currentPath === sub.href }]}
 											aria-current={currentPath === sub.href ? 'page' : undefined}
 											onclick={() => handleNavClick(sub.href, sub.label)}
 										>
@@ -946,8 +963,7 @@
 				{:else if item.href}
 					<a
 						href={item.href}
-						class="mobile-nav-item"
-						class:active={currentPath === item.href}
+						class={['mobile-nav-item', { active: currentPath === item.href }]}
 						aria-current={currentPath === item.href ? 'page' : undefined}
 						onclick={() => handleNavClick(item.href ?? '', item.label)}
 					>
@@ -962,8 +978,7 @@
 
 				<div class="mobile-nav-group">
 					<button
-						class="mobile-nav-item"
-						class:expanded={mobileExpandedSection === 'dashboard'}
+						class={['mobile-nav-item', { expanded: mobileExpandedSection === 'dashboard' }]}
 						onclick={() => toggleMobileSection('dashboard')}
 						aria-expanded={mobileExpandedSection === 'dashboard'}
 						aria-controls="mobile-sub-dashboard"
@@ -979,8 +994,7 @@
 								<li>
 									<a
 										href={sub.href}
-										class="mobile-submenu-item"
-										class:active={currentPath === sub.href}
+										class={['mobile-submenu-item', { active: currentPath === sub.href }]}
 										aria-current={currentPath === sub.href ? 'page' : undefined}
 										onclick={() => handleNavClick(sub.href, sub.label)}
 									>
