@@ -1501,16 +1501,14 @@
 <!-- Main Container -->
 <div
 	{@attach capturePlayerElement}
-	class="video-embed-container"
-	class:fullscreen={isFullscreen}
-	class:has-error={hasError}
-	style="
-		width: {width || '100%'};
-		max-width: {maxWidth};
-		height: {height || 'auto'};
-		border-radius: {borderRadius};
-		{shadow ? 'box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);' : ''}
-	"
+	class={['video-embed-container', { fullscreen: isFullscreen, 'has-error': hasError }]}
+	style:width={width || '100%'}
+	style:max-width={maxWidth}
+	style:height={height || 'auto'}
+	style:border-radius={borderRadius}
+	style:box-shadow={shadow
+		? '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+		: undefined}
 	role="region"
 	aria-label="Video player"
 	onmouseenter={() => (_isHovering = true)}
@@ -1518,7 +1516,7 @@
 	onmousemove={handleMouseMove}
 >
 	<!-- Video Container -->
-	<div class="video-wrapper" style="padding-bottom: {getAspectRatioStyle()};">
+	<div class="video-wrapper" style:padding-bottom={getAspectRatioStyle()}>
 		<!-- Thumbnail Preview -->
 		{#if showThumbnail && thumbnailUrl && !hasInteracted && lazyLoad}
 			<div class="thumbnail-container" transition:fade={{ duration: 300 }}>
@@ -1588,14 +1586,12 @@
 		<!-- Interactive Overlays -->
 		{#each activeOverlays as overlay (overlay.id)}
 			<button
-				class="video-overlay overlay-{overlay.type}"
-				style="
-					top: {overlay.position.top || 'auto'};
-					bottom: {overlay.position.bottom || 'auto'};
-					left: {overlay.position.left || 'auto'};
-					right: {overlay.position.right || 'auto'};
-					{overlay.style || ''}
-				"
+				class={['video-overlay', `overlay-${overlay.type}`]}
+				style={overlay.style || undefined}
+				style:top={overlay.position.top || 'auto'}
+				style:bottom={overlay.position.bottom || 'auto'}
+				style:left={overlay.position.left || 'auto'}
+				style:right={overlay.position.right || 'auto'}
 				onclick={() => overlay.action?.()}
 				aria-label="Video overlay"
 			>
@@ -1621,9 +1617,9 @@
 						aria-valuemax="100"
 						aria-valuenow={progressPercent}
 					>
-						<div class="progress-buffered" style="width: {bufferedPercent}%;"></div>
-						<div class="progress-played" style="width: {progressPercent}%;"></div>
-						<div class="progress-thumb" style="left: {progressPercent}%;"></div>
+						<div class="progress-buffered" style:width={`${bufferedPercent}%`}></div>
+						<div class="progress-played" style:width={`${progressPercent}%`}></div>
+						<div class="progress-thumb" style:left={`${progressPercent}%`}></div>
 					</button>
 				{/if}
 
@@ -1733,8 +1729,7 @@
 								<h4>Quality</h4>
 								{#each availableQualities as quality (quality)}
 									<button
-										class="settings-option"
-										class:active={currentQuality === quality}
+										class={['settings-option', { active: currentQuality === quality }]}
 										onclick={() => {
 											setQuality(quality);
 											showSettings = false;
@@ -1751,8 +1746,7 @@
 								<h4>Speed</h4>
 								{#each [0.5, 0.75, 1, 1.25, 1.5, 2] as speed (speed)}
 									<button
-										class="settings-option"
-										class:active={playbackRate === speed}
+										class={['settings-option', { active: playbackRate === speed }]}
 										onclick={() => {
 											setPlaybackRate(speed);
 											showSettings = false;
