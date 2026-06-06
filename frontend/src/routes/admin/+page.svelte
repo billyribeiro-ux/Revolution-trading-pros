@@ -531,21 +531,20 @@
 			</p>
 			<div class="header-actions">
 				<div class="period-selector">
-					<button class:active={selectedPeriod === '7d'} onclick={() => changePeriod('7d')}
+					<button class={{ active: selectedPeriod === '7d' }} onclick={() => changePeriod('7d')}
 						>7D</button
 					>
-					<button class:active={selectedPeriod === '30d'} onclick={() => changePeriod('30d')}
+					<button class={{ active: selectedPeriod === '30d' }} onclick={() => changePeriod('30d')}
 						>30D</button
 					>
-					<button class:active={selectedPeriod === '90d'} onclick={() => changePeriod('90d')}
+					<button class={{ active: selectedPeriod === '90d' }} onclick={() => changePeriod('90d')}
 						>90D</button
 					>
 				</div>
 				<button
-					class="btn-secondary"
+					class={['btn-secondary', { loading: isUserRefreshing }]}
 					onclick={() => fetchDashboardStats({ userInitiated: true })}
 					disabled={isUserRefreshing}
-					class:loading={isUserRefreshing}
 				>
 					<IconRefresh size={18} />
 					Refresh
@@ -642,9 +641,13 @@
 									</span>
 									{#if metric.value !== null && metric.change !== 0}
 										<div
-											class="metric-trend"
-											class:positive={metric.trend === 'up'}
-											class:negative={metric.trend === 'down'}
+											class={[
+												'metric-trend',
+												{
+													positive: metric.trend === 'up',
+													negative: metric.trend === 'down'
+												}
+											]}
 										>
 											<IconArrowUpRight size={14} />
 											<span>{Math.abs(metric.change).toFixed(1)}%</span>
@@ -732,7 +735,7 @@
 							<div class="seo-metric-bar">
 								<div
 									class="seo-metric-bar-fill"
-									style="width: {seoMetrics.searchTraffic.value !== null ? '75%' : '0%'}"
+									style:width={seoMetrics.searchTraffic.value !== null ? '75%' : '0%'}
 								></div>
 							</div>
 						</div>
@@ -846,9 +849,13 @@
 							</div>
 							{#if seoMetrics.avgPosition.value !== null && seoMetrics.avgPosition.change !== 0}
 								<div
-									class="seo-metric-change"
-									class:positive={seoMetrics.avgPosition.change < 0}
-									class:negative={seoMetrics.avgPosition.change > 0}
+									class={[
+										'seo-metric-change',
+										{
+											positive: seoMetrics.avgPosition.change < 0,
+											negative: seoMetrics.avgPosition.change > 0
+										}
+									]}
 								>
 									<IconArrowUpRight size={12} />
 									{Math.abs(seoMetrics.avgPosition.change).toFixed(1)}
@@ -887,7 +894,7 @@
 									<span>Desktop</span>
 								</div>
 								<div class="device-bar-wrap">
-									<div class="device-bar desktop" style="width: {deviceBreakdown.desktop}%"></div>
+									<div class="device-bar desktop" style:width={`${deviceBreakdown.desktop}%`}></div>
 								</div>
 								<span class="device-percent">{deviceBreakdown.desktop}%</span>
 							</div>
@@ -897,7 +904,7 @@
 									<span>Mobile</span>
 								</div>
 								<div class="device-bar-wrap">
-									<div class="device-bar mobile" style="width: {deviceBreakdown.mobile}%"></div>
+									<div class="device-bar mobile" style:width={`${deviceBreakdown.mobile}%`}></div>
 								</div>
 								<span class="device-percent">{deviceBreakdown.mobile}%</span>
 							</div>
@@ -907,7 +914,7 @@
 									<span>Tablet</span>
 								</div>
 								<div class="device-bar-wrap">
-									<div class="device-bar tablet" style="width: {deviceBreakdown.tablet}%"></div>
+									<div class="device-bar tablet" style:width={`${deviceBreakdown.tablet}%`}></div>
 								</div>
 								<span class="device-percent">{deviceBreakdown.tablet}%</span>
 							</div>
@@ -920,9 +927,10 @@
 						<div class="error-stats">
 							<div class="error-stat">
 								<span
-									class="error-count"
-									class:has-errors={(seoMetrics.error404Count.value ?? 0) > 0}
-									>{seoMetrics.error404Count.value ?? 0}</span
+									class={[
+										'error-count',
+										{ 'has-errors': (seoMetrics.error404Count.value ?? 0) > 0 }
+									]}>{seoMetrics.error404Count.value ?? 0}</span
 								>
 								<span class="error-label">Logged</span>
 							</div>
@@ -1059,7 +1067,7 @@
 							<span class="top-page-path">{page.path}</span>
 							<span class="top-page-views">{formatNumber(page.views)} views</span>
 							{#if page.change !== 0}
-								<span class="top-page-change" class:positive={page.change > 0}>
+								<span class={['top-page-change', { positive: page.change > 0 }]}>
 									{page.change > 0 ? '+' : ''}{page.change}%
 								</span>
 							{/if}
