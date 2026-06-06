@@ -10,12 +10,12 @@
 	- Completion rate tracking
 	- Activate/Pause toggle controls
 	- Add contacts to funnel modal
-	- Auto-refresh on filter changes via $effect
-	- Full Svelte 5 $state/$derived/$effect reactivity
+	- Debounced auto-refresh on filter changes
+	- Full Svelte 5 $state/$derived reactivity
 -->
 
 <script lang="ts">
-	import { untrack, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import { browser } from '$app/environment';
 	import {
@@ -62,6 +62,8 @@
 
 	// Action States
 	let actionInProgress = $state<string | null>(null);
+	let filterRefreshTimeout: ReturnType<typeof setTimeout> | null = null;
+	let successDismissTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	// Modal States
 	let showImportModal = $state(false);
@@ -393,7 +395,10 @@
 
 	function showSuccess(message: string) {
 		successMessage = message;
-		setTimeout(() => {
+		if (successDismissTimeout) clearTimeout(successDismissTimeout);
+
+		successDismissTimeout = setTimeout(() => {
+			successDismissTimeout = null;
 			successMessage = '';
 		}, 3000);
 	}
@@ -402,18 +407,48 @@
 		return num.toLocaleString();
 	}
 
+	function scheduleFilterRefresh() {
+		if (!isInitialized) return;
+		if (filterRefreshTimeout) clearTimeout(filterRefreshTimeout);
+
+		filterRefreshTimeout = setTimeout(() => {
+			filterRefreshTimeout = null;
+			void loadFunnels();
+		}, 150);
+	}
+
+	function handleSearchInput(event: Event) {
+		searchQuery = (event.currentTarget as HTMLInputElement).value;
+		scheduleFilterRefresh();
+	}
+
+	function clearSearch() {
+		searchQuery = '';
+		scheduleFilterRefresh();
+	}
+
+	function handleStatusChange(event: Event) {
+		selectedStatus = (event.currentTarget as HTMLSelectElement).value as FunnelStatus | 'all';
+		scheduleFilterRefresh();
+	}
+
+	function handleTriggerChange(event: Event) {
+		selectedTrigger = (event.currentTarget as HTMLSelectElement).value as TriggerType | 'all';
+		scheduleFilterRefresh();
+	}
+
 	function getCompletionRate(funnel: AutomationFunnel): string {
 		if (funnel.subscribers_count === 0) return '0%';
 		return ((funnel.completed_count / funnel.subscribers_count) * 100).toFixed(1) + '%';
 	}
 
-	function getStatusColor(status: FunnelStatus): string {
-		const colors: Record<FunnelStatus, string> = {
-			draft: 'bg-slate-500/20 text-slate-400',
-			active: 'bg-emerald-500/20 text-emerald-400',
-			paused: 'bg-amber-500/20 text-amber-400'
+	function getStatusClass(status: FunnelStatus): string {
+		const classes: Record<FunnelStatus, string> = {
+			draft: 'status-draft',
+			active: 'status-active',
+			paused: 'status-paused'
 		};
-		return colors[status];
+		return classes[status];
 	}
 
 	function getStatusIcon(status: FunnelStatus) {
@@ -425,16 +460,16 @@
 		return icons[status];
 	}
 
-	function getTriggerColor(trigger: string): string {
-		const colorMap: Record<string, string> = {
-			contact_created: 'bg-blue-500/20 text-blue-400',
-			tag_applied: 'bg-emerald-500/20 text-emerald-400',
-			tag_removed: 'bg-red-500/20 text-red-400',
-			form_submitted: 'bg-purple-500/20 text-purple-400',
-			order_completed: 'bg-amber-500/20 text-amber-400',
-			subscription_started: 'bg-cyan-500/20 text-cyan-400'
+	function getTriggerClass(trigger: string): string {
+		const classes: Record<string, string> = {
+			contact_created: 'trigger-contact-created',
+			tag_applied: 'trigger-tag-applied',
+			tag_removed: 'trigger-tag-removed',
+			form_submitted: 'trigger-form-submitted',
+			order_completed: 'trigger-order-completed',
+			subscription_started: 'trigger-subscription-started'
 		};
-		return colorMap[trigger] || 'bg-slate-500/20 text-slate-400';
+		return classes[trigger] || 'trigger-default';
 	}
 
 	// DERIVED STATE
@@ -457,37 +492,9 @@
 
 	let hasActiveModal = $derived(showImportModal || showAddContactsModal);
 
-	// EFFECTS
-
-	// Auto-refresh when filters change (after initial load)
-	$effect(() => {
-		// Access reactive values to track them
-		searchQuery;
-		selectedStatus;
-		selectedTrigger;
-
-		// Only reload if already initialized (skip the initial load)
-		if (isInitialized) {
-			// Use untrack to prevent infinite loops when loadFunnels updates state
-			untrack(() => {
-				loadFunnels();
-			});
-		}
-	});
-
-	// Auto-dismiss success message - Svelte 5 $effect requires consistent return
-	$effect(() => {
-		if (!successMessage) return;
-
-		const timeout = setTimeout(() => {
-			successMessage = '';
-		}, 3000);
-		return () => clearTimeout(timeout);
-	});
-
 	// LIFECYCLE
 
-	// Audit P2 #10: was a `$effect` with browser guard. Migrated to
+	// Audit P2 #10: was a reactive browser guard. Migrated to
 	// `onMount` so the lifecycle init isn't on the reactive graph.
 	onMount(() => {
 		if (!browser) return;
@@ -496,6 +503,11 @@
 			await loadFunnels();
 			isInitialized = true;
 		})();
+
+		return () => {
+			if (filterRefreshTimeout) clearTimeout(filterRefreshTimeout);
+			if (successDismissTimeout) clearTimeout(successDismissTimeout);
+		};
 	});
 </script>
 
@@ -508,10 +520,10 @@
 
 <div class="admin-crm-automations">
 	<!-- Animated Background -->
-	<div class="bg-effects">
-		<div class="bg-blob bg-blob-1"></div>
-		<div class="bg-blob bg-blob-2"></div>
-		<div class="bg-blob bg-blob-3"></div>
+	<div class="background-effects">
+		<div class="background-blob background-blob-1"></div>
+		<div class="background-blob background-blob-2"></div>
+		<div class="background-blob background-blob-3"></div>
 	</div>
 
 	<div class="admin-page-container">
@@ -606,21 +618,32 @@
 				name="page-searchquery"
 				type="text"
 				placeholder="Search automations..."
-				bind:value={searchQuery}
+				value={searchQuery}
+				oninput={handleSearchInput}
 				aria-label="Search automations"
 			/>
 			{#if searchQuery}
-				<button class="search-clear" onclick={() => (searchQuery = '')} aria-label="Clear search">
+				<button class="search-clear" onclick={clearSearch} aria-label="Clear search">
 					<IconX size={14} />
 				</button>
 			{/if}
 		</div>
-		<select class="filter-select" bind:value={selectedStatus} aria-label="Filter by status">
+		<select
+			class="filter-select"
+			value={selectedStatus}
+			onchange={handleStatusChange}
+			aria-label="Filter by status"
+		>
 			{#each statusOptions as option (option.value)}
 				<option value={option.value}>{option.label}</option>
 			{/each}
 		</select>
-		<select class="filter-select" bind:value={selectedTrigger} aria-label="Filter by trigger">
+		<select
+			class="filter-select"
+			value={selectedTrigger}
+			onchange={handleTriggerChange}
+			aria-label="Filter by trigger"
+		>
 			{#each triggerOptions as option (option.value)}
 				<option value={option.value}>{option.label}</option>
 			{/each}
@@ -644,7 +667,7 @@
 			</a>
 		</div>
 	{:else}
-		<div class="table-container" class:loading={isLoading}>
+		<div class={['table-container', { loading: isLoading }]}>
 			<table class="data-table">
 				<thead>
 					<tr>
@@ -660,7 +683,7 @@
 				<tbody>
 					{#each filteredFunnels as funnel (funnel.id)}
 						{@const StatusIcon = getStatusIcon(funnel.status)}
-						<tr class:action-in-progress={actionInProgress === funnel.id}>
+						<tr class={{ 'action-in-progress': actionInProgress === funnel.id }}>
 							<td>
 								<div class="funnel-cell">
 									<div class="funnel-icon">
@@ -675,13 +698,13 @@
 								</div>
 							</td>
 							<td>
-								<span class="status-badge {getStatusColor(funnel.status)}">
+								<span class={['status-badge', getStatusClass(funnel.status)]}>
 									<StatusIcon size={12} />
 									{funnel.status}
 								</span>
 							</td>
 							<td>
-								<span class="trigger-badge {getTriggerColor(funnel.trigger_type)}">
+								<span class={['trigger-badge', getTriggerClass(funnel.trigger_type)]}>
 									{triggerLabels[funnel.trigger_type] || funnel.trigger_type}
 								</span>
 							</td>
@@ -821,7 +844,7 @@
 							bind:value={importForm.jsonData}
 							disabled={importForm.isLoading}
 							rows="8"
-							class:error={importForm.error}
+							class={{ error: importForm.error }}
 						></textarea>
 						{#if importForm.error}
 							<span class="error-message">{importForm.error}</span>
@@ -904,7 +927,7 @@ contact_789"
 							bind:value={addContactsForm.contactIds}
 							disabled={addContactsForm.isLoading}
 							rows="6"
-							class:error={addContactsForm.error}
+							class={{ error: addContactsForm.error }}
 						></textarea>
 						{#if addContactsForm.error}
 							<span class="error-message">{addContactsForm.error}</span>
@@ -1363,6 +1386,41 @@ contact_789"
 		font-weight: 500;
 	}
 
+	.trigger-contact-created {
+		background: rgba(59, 130, 246, 0.2);
+		color: #60a5fa;
+	}
+
+	.trigger-tag-applied {
+		background: rgba(16, 185, 129, 0.2);
+		color: #34d399;
+	}
+
+	.trigger-tag-removed {
+		background: rgba(239, 68, 68, 0.2);
+		color: #f87171;
+	}
+
+	.trigger-form-submitted {
+		background: rgba(168, 85, 247, 0.2);
+		color: #c084fc;
+	}
+
+	.trigger-order-completed {
+		background: rgba(245, 158, 11, 0.2);
+		color: #fbbf24;
+	}
+
+	.trigger-subscription-started {
+		background: rgba(6, 182, 212, 0.2);
+		color: #22d3ee;
+	}
+
+	.trigger-default {
+		background: rgba(100, 116, 139, 0.2);
+		color: #94a3b8;
+	}
+
 	.status-badge {
 		display: inline-flex;
 		align-items: center;
@@ -1372,6 +1430,21 @@ contact_789"
 		font-size: 0.75rem;
 		font-weight: 600;
 		text-transform: capitalize;
+	}
+
+	.status-draft {
+		background: rgba(100, 116, 139, 0.2);
+		color: #94a3b8;
+	}
+
+	.status-active {
+		background: rgba(16, 185, 129, 0.2);
+		color: #34d399;
+	}
+
+	.status-paused {
+		background: rgba(245, 158, 11, 0.2);
+		color: #fbbf24;
 	}
 
 	.rate-value {
