@@ -91,48 +91,42 @@
 	<!-- Navigation Tabs -->
 	<div class="dashboard-tabs">
 		<button
-			class="tab"
-			class:active={selectedTab === 'overview'}
+			class={['tab', { active: selectedTab === 'overview' }]}
 			onclick={() => (selectedTab = 'overview')}
 		>
 			<IconChartBar size={20} />
 			Overview
 		</button>
 		<button
-			class="tab"
-			class:active={selectedTab === 'funnels'}
+			class={['tab', { active: selectedTab === 'funnels' }]}
 			onclick={() => (selectedTab = 'funnels')}
 		>
 			<IconTarget size={20} />
 			Funnels
 		</button>
 		<button
-			class="tab"
-			class:active={selectedTab === 'cohorts'}
+			class={['tab', { active: selectedTab === 'cohorts' }]}
 			onclick={() => (selectedTab = 'cohorts')}
 		>
 			<IconUsers size={20} />
 			Cohorts
 		</button>
 		<button
-			class="tab"
-			class:active={selectedTab === 'attribution'}
+			class={['tab', { active: selectedTab === 'attribution' }]}
 			onclick={() => (selectedTab = 'attribution')}
 		>
 			<IconTrendingUp size={20} />
 			Attribution
 		</button>
 		<button
-			class="tab"
-			class:active={selectedTab === 'behavior'}
+			class={['tab', { active: selectedTab === 'behavior' }]}
 			onclick={() => (selectedTab = 'behavior')}
 		>
 			<IconBolt size={20} />
 			Behavior
 		</button>
 		<button
-			class="tab"
-			class:active={selectedTab === 'revenue'}
+			class={['tab', { active: selectedTab === 'revenue' }]}
 			onclick={() => (selectedTab = 'revenue')}
 		>
 			<IconCurrencyDollar size={20} />
@@ -383,9 +377,13 @@
 									<div class="kpi-label">{kpi.name}</div>
 									<div class="kpi-value">{kpi.formatted_value}</div>
 									<div
-										class="kpi-change"
-										class:positive={kpi.trend === 'up'}
-										class:negative={kpi.trend === 'down'}
+										class={[
+											'kpi-change',
+											{
+												positive: kpi.trend === 'up',
+												negative: kpi.trend === 'down'
+											}
+										]}
 									>
 										{kpi.change_percentage > 0 ? '+' : ''}{kpi.change_percentage}%
 									</div>
