@@ -371,32 +371,28 @@
 		<!-- Tabs -->
 		<nav class="tabs-nav">
 			<button
-				class="tab-btn"
-				class:active={activeTab === 'overview'}
+				class={['tab-btn', { active: activeTab === 'overview' }]}
 				onclick={() => (activeTab = 'overview')}
 			>
 				<IconUserCircle size={18} />
 				Overview
 			</button>
 			<button
-				class="tab-btn"
-				class:active={activeTab === 'emails'}
+				class={['tab-btn', { active: activeTab === 'emails' }]}
 				onclick={() => (activeTab = 'emails')}
 			>
 				<IconMail size={18} />
 				Emails ({emailHistory.length})
 			</button>
 			<button
-				class="tab-btn"
-				class:active={activeTab === 'notes'}
+				class={['tab-btn', { active: activeTab === 'notes' }]}
 				onclick={() => (activeTab = 'notes')}
 			>
 				<IconNotes size={18} />
 				Notes ({notes.length})
 			</button>
 			<button
-				class="tab-btn"
-				class:active={activeTab === 'activity'}
+				class={['tab-btn', { active: activeTab === 'activity' }]}
 				onclick={() => (activeTab = 'activity')}
 			>
 				<IconActivity size={18} />
@@ -407,8 +403,7 @@
 		<!-- Tab Content - Layout Shift Free Pattern -->
 		<div class="tab-content">
 			<div
-				class="tab-panel"
-				class:active={activeTab === 'overview'}
+				class={['tab-panel', { active: activeTab === 'overview' }]}
 				inert={activeTab !== 'overview' ? true : undefined}
 			>
 				<OverviewPanel
@@ -421,24 +416,21 @@
 			</div>
 
 			<div
-				class="tab-panel"
-				class:active={activeTab === 'emails'}
+				class={['tab-panel', { active: activeTab === 'emails' }]}
 				inert={activeTab !== 'emails' ? true : undefined}
 			>
 				<EmailsPanel emails={emailHistory} />
 			</div>
 
 			<div
-				class="tab-panel"
-				class:active={activeTab === 'notes'}
+				class={['tab-panel', { active: activeTab === 'notes' }]}
 				inert={activeTab !== 'notes' ? true : undefined}
 			>
 				<NotesPanel {notes} onAddNote={() => (showAddNoteModal = true)} />
 			</div>
 
 			<div
-				class="tab-panel"
-				class:active={activeTab === 'activity'}
+				class={['tab-panel', { active: activeTab === 'activity' }]}
 				inert={activeTab !== 'activity' ? true : undefined}
 			>
 				<ActivityPanel {timeline} />
@@ -493,7 +485,7 @@
 
 <!-- Toast Notification -->
 {#if toastMessage}
-	<div class="toast toast-{toastMessage.type}" role="alert" aria-live="polite">
+	<div class={['toast', `toast-${toastMessage.type}`]} role="alert" aria-live="polite">
 		{#if toastMessage.type === 'success'}
 			<IconCheck size={18} />
 		{:else}
