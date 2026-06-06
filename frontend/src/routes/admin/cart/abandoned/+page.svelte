@@ -200,6 +200,12 @@
 		return colorMap[status] || 'status-neutral';
 	}
 
+	function getPipelineWidth(value: number, total: number): string {
+		if (total <= 0) return '0%';
+		const percentage = (value / total) * 100;
+		return `${Math.min(100, Math.max(0, percentage))}%`;
+	}
+
 	function getTemplateInfo(template: string): {
 		name: string;
 		description: string;
@@ -339,7 +345,7 @@
 					<div class="stage-bar">
 						<div
 							class="stage-fill pending"
-							style="--width: {(pendingCount / stats.total_abandoned) * 100}%"
+							style:--width={getPipelineWidth(pendingCount, stats.total_abandoned)}
 						></div>
 					</div>
 				</div>
@@ -359,7 +365,7 @@
 					<div class="stage-bar">
 						<div
 							class="stage-fill sent"
-							style="--width: {(emailSentCount / stats.total_abandoned) * 100}%"
+							style:--width={getPipelineWidth(emailSentCount, stats.total_abandoned)}
 						></div>
 					</div>
 				</div>
@@ -379,7 +385,7 @@
 					<div class="stage-bar">
 						<div
 							class="stage-fill clicked"
-							style="--width: {(clickedCount / stats.total_abandoned) * 100}%"
+							style:--width={getPipelineWidth(clickedCount, stats.total_abandoned)}
 						></div>
 					</div>
 				</div>
@@ -399,7 +405,7 @@
 					<div class="stage-bar">
 						<div
 							class="stage-fill recovered"
-							style="--width: {(stats.recovered_count / stats.total_abandoned) * 100}%"
+							style:--width={getPipelineWidth(stats.recovered_count, stats.total_abandoned)}
 						></div>
 					</div>
 				</div>
@@ -537,7 +543,7 @@
 					</thead>
 					<tbody>
 						{#each carts as cart (cart.id)}
-							<tr class:selected={selectedCarts.has(cart.id)}>
+							<tr class={{ selected: selectedCarts.has(cart.id) }}>
 								<td class="checkbox-col">
 									<input
 										id="page-checkbox"
@@ -565,7 +571,7 @@
 									<span class="item-count">{cart.cart_data?.items?.length || 0} items</span>
 								</td>
 								<td>
-									<span class="status-badge {getStatusClass(cart.status)}">
+									<span class={['status-badge', getStatusClass(cart.status)]}>
 										{STATUS_LABELS[cart.status]}
 									</span>
 								</td>
@@ -676,8 +682,7 @@
 					<span class="selector-label">Choose Email Type</span>
 					<div class="template-grid">
 						<button
-							class="template-option"
-							class:active={recoveryTemplate === 'reminder_1'}
+							class={['template-option', { active: recoveryTemplate === 'reminder_1' }]}
 							onclick={() => (recoveryTemplate = 'reminder_1')}
 						>
 							<IconMail size={24} />
@@ -685,8 +690,7 @@
 							<span class="template-timing">1 hour</span>
 						</button>
 						<button
-							class="template-option"
-							class:active={recoveryTemplate === 'reminder_2'}
+							class={['template-option', { active: recoveryTemplate === 'reminder_2' }]}
 							onclick={() => (recoveryTemplate = 'reminder_2')}
 						>
 							<IconClock size={24} />
@@ -694,8 +698,7 @@
 							<span class="template-timing">24 hours</span>
 						</button>
 						<button
-							class="template-option"
-							class:active={recoveryTemplate === 'final_discount'}
+							class={['template-option', { active: recoveryTemplate === 'final_discount' }]}
 							onclick={() => (recoveryTemplate = 'final_discount')}
 						>
 							<IconGift size={24} />
@@ -703,8 +706,7 @@
 							<span class="template-timing">72 hours</span>
 						</button>
 						<button
-							class="template-option"
-							class:active={recoveryTemplate === 'custom'}
+							class={['template-option', { active: recoveryTemplate === 'custom' }]}
 							onclick={() => (recoveryTemplate = 'custom')}
 						>
 							<IconUsers size={24} />
