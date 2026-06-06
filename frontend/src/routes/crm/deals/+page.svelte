@@ -94,31 +94,23 @@
 	<title>CRM Deals | Revolution Trading Pros</title>
 </svelte:head>
 
-<div class="bg-slate-950/95 text-slate-50">
-	<div class="mx-auto max-w-7xl px-6 py-8">
+<div class="deals-page">
+	<div class="deals-shell">
 		<!-- Header -->
-		<div class="mb-6 flex flex-wrap items-center justify-between gap-4">
-			<div class="flex items-center gap-3">
-				<div
-					class="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-500/20 text-sky-400"
-				>
+		<div class="page-header">
+			<div class="title-group">
+				<div class="title-icon">
 					<IconActivity size={22} />
 				</div>
 				<div>
-					<h1 class="text-2xl font-semibold tracking-tight">Deals Pipeline</h1>
-					<p class="text-sm text-slate-400">
-						RevolutionCRM-L8-System · Forecast-ready sales pipeline
-					</p>
+					<h1 class="page-title">Deals Pipeline</h1>
+					<p class="page-subtitle">RevolutionCRM-L8-System · Forecast-ready sales pipeline</p>
 				</div>
 			</div>
 
-			<div class="flex items-center gap-2 text-xs text-slate-400">
+			<div class="forecast-control">
 				<span>Forecast period:</span>
-				<select
-					class="rounded-lg border border-slate-800 bg-slate-900/80 px-2 py-1 text-xs"
-					bind:value={forecastPeriod}
-					onchange={loadForecast}
-				>
+				<select class="forecast-select" bind:value={forecastPeriod} onchange={loadForecast}>
 					<option value="this_month">This month</option>
 					<option value="next_month">Next month</option>
 					<option value="this_quarter">This quarter</option>
@@ -129,31 +121,31 @@
 
 		<!-- Forecast Summary -->
 		{#if forecast}
-			<div class="mb-6 grid gap-4 md:grid-cols-4">
-				<div class="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 text-xs">
-					<p class="text-[11px] uppercase tracking-wide text-slate-500">Commit</p>
-					<p class="mt-2 flex items-center gap-1 text-lg font-semibold text-emerald-300">
+			<div class="forecast-grid">
+				<div class="forecast-card">
+					<p class="metric-label">Commit</p>
+					<p class="metric-value metric-value--emerald">
 						<IconCurrencyDollar size={18} />
 						{formatCurrency(forecast.commit)}
 					</p>
 				</div>
-				<div class="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 text-xs">
-					<p class="text-[11px] uppercase tracking-wide text-slate-500">Best Case</p>
-					<p class="mt-2 flex items-center gap-1 text-lg font-semibold text-sky-300">
+				<div class="forecast-card">
+					<p class="metric-label">Best Case</p>
+					<p class="metric-value metric-value--sky">
 						<IconCurrencyDollar size={18} />
 						{formatCurrency(forecast.best_case)}
 					</p>
 				</div>
-				<div class="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 text-xs">
-					<p class="text-[11px] uppercase tracking-wide text-slate-500">Pipeline</p>
-					<p class="mt-2 flex items-center gap-1 text-lg font-semibold text-slate-100">
+				<div class="forecast-card">
+					<p class="metric-label">Pipeline</p>
+					<p class="metric-value">
 						<IconCurrencyDollar size={18} />
 						{formatCurrency(forecast.pipeline)}
 					</p>
 				</div>
-				<div class="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 text-xs">
-					<p class="text-[11px] uppercase tracking-wide text-slate-500">Worst Case</p>
-					<p class="mt-2 flex items-center gap-1 text-lg font-semibold text-amber-300">
+				<div class="forecast-card">
+					<p class="metric-label">Worst Case</p>
+					<p class="metric-value metric-value--amber">
 						<IconCurrencyDollar size={18} />
 						{formatCurrency(forecast.worst_case)}
 					</p>
@@ -162,14 +154,14 @@
 		{/if}
 
 		<!-- Pipelines Selector -->
-		<div class="mb-4 flex flex-wrap items-center gap-2 text-xs">
+		<div class="pipeline-tabs">
 			{#each crmStore.pipelines as pipeline (pipeline.id)}
 				<button
-					class={`rounded-full border px-3 py-1 ${
-						crmStore.selectedPipeline && crmStore.selectedPipeline.id === pipeline.id
-							? 'border-sky-500 bg-sky-500/15 text-sky-200'
-							: 'border-slate-800 bg-slate-900/80 text-slate-300 hover:border-slate-700'
-					}`}
+					class={{
+						'pipeline-tab': true,
+						'pipeline-tab--active':
+							crmStore.selectedPipeline && crmStore.selectedPipeline.id === pipeline.id
+					}}
 					onclick={() => selectPipeline(pipeline)}
 				>
 					{pipeline.name}
@@ -179,53 +171,47 @@
 
 		<!-- Error -->
 		{#if crmStore.error}
-			<div
-				class="mb-4 rounded-xl border border-rose-700/60 bg-rose-950/40 px-4 py-3 text-sm text-rose-200"
-			>
+			<div class="error-panel">
 				{crmStore.error}
 			</div>
 		{/if}
 
 		<!-- Kanban Board -->
-		<div class="flex gap-3 overflow-x-auto pb-4">
+		<div class="kanban-board">
 			{#if !crmStore.selectedPipeline}
-				<div class="flex-1 py-16 text-center text-sm text-slate-500">No pipelines configured.</div>
+				<div class="empty-board">No pipelines configured.</div>
 			{:else}
 				{#each crmStore.selectedPipeline.stages as stage (stage.id)}
-					<div
-						class="min-w-[260px] flex-1 rounded-2xl border border-slate-800/80 bg-slate-900/70 p-3"
-					>
-						<div class="mb-3 flex items-center justify-between gap-2 text-xs">
+					<div class="stage-column">
+						<div class="stage-header">
 							<div>
-								<p class="font-medium text-slate-100">{stage.name}</p>
-								<p class="text-[11px] text-slate-500">
+								<p class="stage-title">{stage.name}</p>
+								<p class="stage-meta">
 									{stage.probability}% · {crmStore.dealsByStage[stage.id]?.length ?? 0} deals
 								</p>
 							</div>
-							<span class="rounded-full bg-slate-800/80 px-2 py-1 text-[11px] text-slate-300">
+							<span class="stage-value">
 								{formatCurrency(getStageValue(stage))}
 							</span>
 						</div>
 
-						<div class="space-y-2 text-xs">
+						<div class="deal-list">
 							{#if !crmStore.dealsByStage[stage.id]?.length}
-								<p class="py-4 text-center text-[11px] text-slate-500">No deals in this stage.</p>
+								<p class="empty-stage">No deals in this stage.</p>
 							{:else}
 								{#each crmStore.dealsByStage[stage.id] as deal (deal.id)}
-									<button
-										type="button"
-										class="w-full cursor-pointer rounded-xl border border-slate-800/80 bg-slate-900/90 p-3 text-left hover:border-sky-500/70 focus:outline-none focus:ring-2 focus:ring-sky-500/60"
-										onclick={() => openDeal(deal)}
-									>
-										<p class="text-[13px] font-medium text-slate-100">{deal.name}</p>
-										<p class="mt-0.5 text-[11px] text-slate-400">
+									<button type="button" class="deal-card" onclick={() => openDeal(deal)}>
+										<p class="deal-title">{deal.name}</p>
+										<p class="deal-contact">
 											{deal.contact?.full_name ?? 'Unassigned contact'}
 										</p>
-										<div class="mt-2 flex items-center justify-between text-[11px] text-slate-400">
+										<div class="deal-meta">
 											<span>{formatCurrency(deal.amount)}</span>
-											<span class="flex items-center gap-1">
+											<span class="deal-probability">
 												{deal.probability}%
-												<IconArrowRight size={12} class="text-sky-400" />
+												<span class="deal-arrow">
+													<IconArrowRight size={12} />
+												</span>
 											</span>
 										</div>
 									</button>
@@ -238,3 +224,309 @@
 		</div>
 	</div>
 </div>
+
+<style>
+	.deals-page {
+		min-height: 100%;
+		background: rgba(2, 6, 23, 0.95);
+		color: #f8fafc;
+	}
+
+	.deals-shell {
+		width: min(100%, 80rem);
+		margin: 0 auto;
+		padding: 2rem 1.5rem;
+	}
+
+	.page-header,
+	.title-group,
+	.title-icon,
+	.forecast-control,
+	.metric-value,
+	.pipeline-tabs,
+	.kanban-board,
+	.stage-header,
+	.deal-meta,
+	.deal-probability,
+	.deal-arrow {
+		display: flex;
+	}
+
+	.page-header {
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.title-group {
+		align-items: center;
+		gap: 0.75rem;
+	}
+
+	.title-icon {
+		width: 2.5rem;
+		height: 2.5rem;
+		align-items: center;
+		justify-content: center;
+		border-radius: 0.75rem;
+		background: rgba(14, 165, 233, 0.2);
+		color: #38bdf8;
+	}
+
+	.page-title {
+		margin: 0;
+		font-size: 1.5rem;
+		font-weight: 600;
+		letter-spacing: 0;
+		line-height: 1.2;
+	}
+
+	.page-subtitle {
+		margin: 0.25rem 0 0;
+		color: #94a3b8;
+		font-size: 0.875rem;
+	}
+
+	.forecast-control {
+		align-items: center;
+		gap: 0.5rem;
+		color: #94a3b8;
+		font-size: 0.75rem;
+	}
+
+	.forecast-select {
+		border: 1px solid #1e293b;
+		border-radius: 0.5rem;
+		background: rgba(15, 23, 42, 0.8);
+		color: #e2e8f0;
+		padding: 0.25rem 0.5rem;
+		font: inherit;
+		font-size: 0.75rem;
+	}
+
+	.forecast-grid {
+		display: grid;
+		gap: 1rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.forecast-card,
+	.stage-column {
+		border: 1px solid #1e293b;
+		border-radius: 1rem;
+		background: rgba(15, 23, 42, 0.7);
+	}
+
+	.forecast-card {
+		padding: 1rem;
+		font-size: 0.75rem;
+	}
+
+	.metric-label {
+		margin: 0;
+		color: #64748b;
+		font-size: 0.6875rem;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+	}
+
+	.metric-value {
+		align-items: center;
+		gap: 0.25rem;
+		margin: 0.5rem 0 0;
+		color: #f1f5f9;
+		font-size: 1.125rem;
+		font-weight: 600;
+	}
+
+	.metric-value--emerald {
+		color: #6ee7b7;
+	}
+
+	.metric-value--sky {
+		color: #7dd3fc;
+	}
+
+	.metric-value--amber {
+		color: #fcd34d;
+	}
+
+	.pipeline-tabs {
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.5rem;
+		margin-bottom: 1rem;
+		font-size: 0.75rem;
+	}
+
+	.pipeline-tab {
+		border: 1px solid #1e293b;
+		border-radius: 999px;
+		background: rgba(15, 23, 42, 0.8);
+		color: #cbd5e1;
+		padding: 0.25rem 0.75rem;
+		transition:
+			background 0.2s ease,
+			border-color 0.2s ease,
+			color 0.2s ease;
+	}
+
+	.pipeline-tab:hover,
+	.pipeline-tab:focus-visible {
+		border-color: #334155;
+	}
+
+	.pipeline-tab--active {
+		border-color: #0ea5e9;
+		background: rgba(14, 165, 233, 0.15);
+		color: #bae6fd;
+	}
+
+	.error-panel {
+		margin-bottom: 1rem;
+		border: 1px solid rgba(190, 18, 60, 0.6);
+		border-radius: 0.75rem;
+		background: rgba(76, 5, 25, 0.4);
+		color: #fecdd3;
+		padding: 0.75rem 1rem;
+		font-size: 0.875rem;
+	}
+
+	.kanban-board {
+		gap: 0.75rem;
+		overflow-x: auto;
+		padding-bottom: 1rem;
+	}
+
+	.empty-board {
+		flex: 1;
+		padding: 4rem 0;
+		color: #64748b;
+		font-size: 0.875rem;
+		text-align: center;
+	}
+
+	.stage-column {
+		min-width: 16.25rem;
+		flex: 1;
+		padding: 0.75rem;
+	}
+
+	.stage-header {
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.5rem;
+		margin-bottom: 0.75rem;
+		font-size: 0.75rem;
+	}
+
+	.stage-title {
+		margin: 0;
+		color: #f1f5f9;
+		font-weight: 500;
+	}
+
+	.stage-meta,
+	.empty-stage,
+	.deal-contact,
+	.deal-meta {
+		color: #64748b;
+	}
+
+	.stage-meta {
+		margin: 0.125rem 0 0;
+		font-size: 0.6875rem;
+	}
+
+	.stage-value {
+		border-radius: 999px;
+		background: rgba(30, 41, 59, 0.8);
+		color: #cbd5e1;
+		padding: 0.25rem 0.5rem;
+		font-size: 0.6875rem;
+		white-space: nowrap;
+	}
+
+	.deal-list {
+		display: grid;
+		gap: 0.5rem;
+		font-size: 0.75rem;
+	}
+
+	.empty-stage {
+		margin: 0;
+		padding: 1rem 0;
+		font-size: 0.6875rem;
+		text-align: center;
+	}
+
+	.deal-card {
+		width: 100%;
+		cursor: pointer;
+		border: 1px solid rgba(30, 41, 59, 0.8);
+		border-radius: 0.75rem;
+		background: rgba(15, 23, 42, 0.9);
+		color: inherit;
+		padding: 0.75rem;
+		text-align: left;
+		transition:
+			border-color 0.2s ease,
+			box-shadow 0.2s ease;
+	}
+
+	.deal-card:hover,
+	.deal-card:focus-visible {
+		border-color: rgba(14, 165, 233, 0.7);
+		outline: none;
+		box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.35);
+	}
+
+	.deal-title {
+		margin: 0;
+		color: #f1f5f9;
+		font-size: 0.8125rem;
+		font-weight: 500;
+	}
+
+	.deal-contact {
+		margin: 0.125rem 0 0;
+		font-size: 0.6875rem;
+	}
+
+	.deal-meta {
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.5rem;
+		margin-top: 0.5rem;
+		font-size: 0.6875rem;
+	}
+
+	.deal-probability {
+		align-items: center;
+		gap: 0.25rem;
+	}
+
+	.deal-arrow {
+		color: #38bdf8;
+	}
+
+	@media (min-width: 768px) {
+		.forecast-grid {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+		}
+	}
+
+	@media (max-width: 767px) {
+		.deals-shell {
+			padding-right: 1rem;
+			padding-left: 1rem;
+		}
+
+		.forecast-control,
+		.forecast-select {
+			width: 100%;
+		}
+	}
+</style>
