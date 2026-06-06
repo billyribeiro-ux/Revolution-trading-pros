@@ -181,14 +181,8 @@
 
 				<div data-gsap class="hero__social">
 					<div class="hero__avatars">
-						<div
-							class="hero__avatar hero__avatar--img"
-							style="background-image: url('/avatars/1.svg')"
-						></div>
-						<div
-							class="hero__avatar hero__avatar--img"
-							style="background-image: url('/avatars/2.svg')"
-						></div>
+						<div class="hero__avatar hero__avatar--img hero__avatar--trader-one"></div>
+						<div class="hero__avatar hero__avatar--img hero__avatar--trader-two"></div>
 						<div class="hero__avatar hero__avatar--more">+500</div>
 					</div>
 					<p>Traders currently active</p>
@@ -561,12 +555,7 @@
 					>
 
 					<div
-						class="pricing-toggle__indicator"
-						style="left: {selectedPlan === 'monthly'
-							? '0.375rem'
-							: selectedPlan === 'quarterly'
-								? 'calc(33.33% + 0.2rem)'
-								: 'calc(66.66% + 0.1rem)'}; width: calc(33.33% - 0.4rem);"
+						class={['pricing-toggle__indicator', `pricing-toggle__indicator--${selectedPlan}`]}
 					></div>
 				</div>
 			</div>
@@ -676,7 +665,7 @@
 						<button class="faq__trigger" onclick={() => toggleFaq(i)} aria-expanded={openFaq === i}>
 							<span class="faq__q">{faq.question}</span>
 							<svg
-								class="faq__chevron {openFaq === i ? 'faq__chevron--open' : ''}"
+								class={['faq__chevron', { 'faq__chevron--open': openFaq === i }]}
 								fill="none"
 								stroke="currentColor"
 								viewBox="0 0 24 24"
@@ -995,6 +984,12 @@
 	.hero__avatar--img {
 		background-color: #1f2937;
 		background-size: cover;
+	}
+	.hero__avatar--trader-one {
+		background-image: url('/avatars/1.svg');
+	}
+	.hero__avatar--trader-two {
+		background-image: url('/avatars/2.svg');
 	}
 	.hero__avatar--more {
 		background: var(--rtp-primary);
@@ -1851,10 +1846,20 @@
 		position: absolute;
 		top: 0.375rem;
 		bottom: 0.375rem;
+		width: calc(33.33% - 0.4rem);
 		background: var(--rtp-primary);
 		border-radius: var(--rtp-radius-sm);
 		box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 		transition: all 300ms cubic-bezier(0.25, 0.1, 0.25, 1);
+	}
+	.pricing-toggle__indicator--monthly {
+		left: 0.375rem;
+	}
+	.pricing-toggle__indicator--quarterly {
+		left: calc(33.33% + 0.2rem);
+	}
+	.pricing-toggle__indicator--annual {
+		left: calc(66.66% + 0.1rem);
 	}
 
 	.pricing__grid {
