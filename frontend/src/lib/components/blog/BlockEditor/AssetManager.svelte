@@ -1051,7 +1051,7 @@
 									fetchAssets(true);
 								}}
 								title={sortOrder === 'asc' ? 'Ascending' : 'Descending'}
-								style="transform: {sortOrder === 'asc' ? 'rotate(180deg)' : 'rotate(0)'}"
+								style:transform={sortOrder === 'asc' ? 'rotate(180deg)' : 'rotate(0)'}
 							>
 								<Icon name="IconArrowDown" size={16} />
 							</button>
@@ -1078,14 +1078,14 @@
 							<!-- View Toggle -->
 							<div class="view-toggle">
 								<button
-									class:active={viewMode === 'grid'}
+									class={{ active: viewMode === 'grid' }}
 									onclick={() => (viewMode = 'grid')}
 									title="Grid view"
 								>
 									<Icon name="IconLayoutGrid" size={16} />
 								</button>
 								<button
-									class:active={viewMode === 'list'}
+									class={{ active: viewMode === 'list' }}
 									onclick={() => (viewMode = 'list')}
 									title="List view"
 								>
@@ -1096,7 +1096,7 @@
 					</div>
 
 					<!-- Library Layout -->
-					<div class="library-layout" class:sidebar-open={sidebarOpen}>
+					<div class={['library-layout', { 'sidebar-open': sidebarOpen }]}>
 						<!-- Sidebar - Folders -->
 						<FoldersSidebar {folders} {currentFolderId} onNavigate={navigateToFolder} />
 
@@ -1150,8 +1150,7 @@
 									<div class="asset-grid">
 										{#each assets as asset (asset.id)}
 											<div
-												class="asset-card"
-												class:selected={selectedAssets.has(asset.id)}
+												class={['asset-card', { selected: selectedAssets.has(asset.id) }]}
 												role="button"
 												tabindex="0"
 												onclick={() => toggleAssetSelection(asset)}
@@ -1227,7 +1226,7 @@
 											<tbody>
 												{#each assets as asset (asset.id)}
 													<tr
-														class:selected={selectedAssets.has(asset.id)}
+														class={{ selected: selectedAssets.has(asset.id) }}
 														onclick={() => toggleAssetSelection(asset)}
 														ondblclick={() => handleDoubleClick(asset)}
 													>
@@ -1241,7 +1240,7 @@
 																	loading="lazy"
 																/>
 															{:else}
-																<div class="type-icon {getAssetType(asset.mime_type)}">
+																<div class={['type-icon', getAssetType(asset.mime_type)]}>
 																	{#if getAssetType(asset.mime_type) === 'video'}
 																		<Icon name="IconPlayerPlay" size={20} />
 																	{:else if getAssetType(asset.mime_type) === 'audio'}
@@ -1320,7 +1319,7 @@
 										<!-- svelte-ignore a11y_media_has_caption -->
 										<video src={selectedAsset.cdn_url} controls></video>
 									{:else}
-										<div class="type-preview-large {getAssetType(selectedAsset.mime_type)}">
+										<div class={['type-preview-large', getAssetType(selectedAsset.mime_type)]}>
 											{#if getAssetType(selectedAsset.mime_type) === 'audio'}
 												<Icon name="IconVolume" size={48} stroke={1.5} />
 											{:else}
@@ -1489,9 +1488,13 @@
 								<ul class="queue-list">
 									{#each uploadQueue as item (item.id)}
 										<li
-											class="queue-item"
-											class:complete={item.status === 'complete'}
-											class:error={item.status === 'error'}
+											class={[
+												'queue-item',
+												{
+													complete: item.status === 'complete',
+													error: item.status === 'error'
+												}
+											]}
 										>
 											<div class="item-preview">
 												{#if item.previewUrl}

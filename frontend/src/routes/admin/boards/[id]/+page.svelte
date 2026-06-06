@@ -464,7 +464,7 @@
 						<div class="board-title-group">
 							<div
 								class="board-color-strip"
-								style="background-color: {board.background_color || '#E6B800'}"
+								style:background-color={board.background_color || '#E6B800'}
 							></div>
 							<div>
 								<h1 class="board-title">
@@ -474,8 +474,7 @@
 											const updated = await boardsAPI.toggleFavorite(boardId);
 											board = updated;
 										}}
-										class="favorite-button"
-										class:active={board.is_favorite}
+										class={['favorite-button', { active: board.is_favorite }]}
 										aria-label={board.is_favorite ? 'Remove favorite' : 'Add favorite'}
 									>
 										{#if board.is_favorite}
@@ -510,8 +509,7 @@
 					<!-- Filters -->
 					<button
 						onclick={() => (showFilters = !showFilters)}
-						class="toolbar-button"
-						class:active={showFilters}
+						class={['toolbar-button', { active: showFilters }]}
 					>
 						<IconFilter class="small-icon" />
 						Filters
@@ -598,7 +596,7 @@
 						<!-- Stage Header -->
 						<div class="stage-header">
 							<div class="stage-title-group">
-								<div class="stage-color-dot" style="background-color: {stage.color}"></div>
+								<div class="stage-color-dot" style:background-color={stage.color}></div>
 								<h3 class="stage-title">{stage.title}</h3>
 								<span class="stage-count">
 									{tasksByStage[stage.id]?.length || 0}
@@ -628,9 +626,13 @@
 									ondragover={(e: DragEvent) => handleDragOver(e, stage.id, index)}
 									role="button"
 									tabindex="0"
-									class="task-card"
-									class:dragging={draggedTask?.id === task.id}
-									class:drop-target={dragOverStage === stage.id && dragOverPosition === index}
+									class={[
+										'task-card',
+										{
+											dragging: draggedTask?.id === task.id,
+											'drop-target': dragOverStage === stage.id && dragOverPosition === index
+										}
+									]}
 									onclick={() => openTaskModal(task)}
 									onkeydown={(e: KeyboardEvent) => {
 										if (e.key === 'Enter' || e.key === ' ') {
@@ -643,7 +645,7 @@
 									{#if task.labels && task.labels.length > 0}
 										<div class="task-labels">
 											{#each task.labels as label (label.id)}
-												<span class="task-label" style="background-color: {label.color}">
+												<span class="task-label" style:background-color={label.color}>
 													{label.title}
 												</span>
 											{/each}
@@ -660,8 +662,10 @@
 										<div class="task-meta-list">
 											{#if task.due_date}
 												<span
-													class="task-meta-item"
-													class:overdue={isOverdue(task.due_date) && task.status !== 'completed'}
+													class={[
+														'task-meta-item',
+														{ overdue: isOverdue(task.due_date) && task.status !== 'completed' }
+													]}
 												>
 													<IconCalendar class="meta-icon" />
 													{formatDate(task.due_date)}
@@ -688,7 +692,7 @@
 										</div>
 										<div class="task-end-meta">
 											{#if task.priority && task.priority !== 'none'}
-												<div class="priority-dot {getPriorityColor(task.priority)}"></div>
+												<div class={['priority-dot', getPriorityColor(task.priority)]}></div>
 											{/if}
 											{#if task.assignees && task.assignees.length > 0}
 												<div class="mini-avatar-stack">
@@ -923,8 +927,7 @@
 									<div class="subtask-item">
 										<button
 											onclick={() => toggleSubtask(subtask)}
-											class="subtask-check"
-											class:checked={subtask.is_completed}
+											class={['subtask-check', { checked: subtask.is_completed }]}
 											aria-label={subtask.is_completed
 												? 'Mark subtask incomplete'
 												: 'Mark subtask complete'}
@@ -933,7 +936,7 @@
 												<IconCheck class="tiny-icon" />
 											{/if}
 										</button>
-										<span class="subtask-title" class:complete={subtask.is_completed}>
+										<span class={['subtask-title', { complete: subtask.is_completed }]}>
 											{subtask.title}
 										</span>
 									</div>
@@ -1093,7 +1096,7 @@
 							<h4 class="sidebar-label">Labels</h4>
 							<div class="label-chip-list">
 								{#each selectedTask.labels || [] as label (label.id)}
-									<span class="task-label" style="background-color: {label.color}">
+									<span class="task-label" style:background-color={label.color}>
 										{label.title}
 									</span>
 								{/each}

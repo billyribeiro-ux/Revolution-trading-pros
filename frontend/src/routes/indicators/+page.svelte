@@ -228,11 +228,7 @@
 </script>
 
 <div class="indicators-page" {@attach capturePage}>
-	<div
-		class="indicators-page__grain"
-		aria-hidden="true"
-		style="background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIi8+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiMwMDAiLz4KPC9zdmc+');"
-	></div>
+	<div class="indicators-page__grain" aria-hidden="true"></div>
 
 	<section class={['hero-section', { visible: heroVisible }]}>
 		<div class="hero-background">
@@ -263,7 +259,7 @@
 		</div>
 
 		<div class="hero-content">
-			<div class="hero-badge animate-float">
+			<div class="hero-badge hero-badge--floating">
 				<IconChartLine size={18} stroke={2} />
 				<span class="hero-badge__label">The Professional Toolkit</span>
 			</div>
@@ -462,12 +458,13 @@
 						{@attach revealIndicatorCard(indicator.id)}
 						class={['indicator-card', { visible: visibleCards.has(indicator.id) }]}
 						onmousemove={handleMouseMove}
-						style="--delay: {index * 0.1}s; --card-color: {indicator.color};"
+						style:--delay={`${index * 0.1}s`}
+						style:--card-color={indicator.color}
 					>
 						<div class="spotlight-overlay" aria-hidden="true"></div>
 
-						<div class="card-header" style="background: {indicator.gradient}">
-							<div class="bg-noise" aria-hidden="true"></div>
+						<div class="card-header" style:background={indicator.gradient}>
+							<div class="background-noise" aria-hidden="true"></div>
 
 							<div class="card-icon">
 								<Icon size={48} stroke={1.5} />
@@ -647,6 +644,7 @@
 		opacity: 0.03;
 		z-index: 1;
 		mix-blend-mode: overlay;
+		background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIi8+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiMwMDAiLz4KPC9zdmc+');
 	}
 
 	/* Cinematic Spotlight Effect */
@@ -667,7 +665,7 @@
 		opacity: 1;
 	}
 
-	.bg-noise {
+	.background-noise {
 		position: absolute;
 		inset: 0;
 		opacity: 0.2;
@@ -840,7 +838,7 @@
 		}
 	}
 
-	.animate-float {
+	.hero-badge--floating {
 		animation: float 6s ease-in-out infinite;
 	}
 
@@ -1493,7 +1491,7 @@
 	@media (prefers-reduced-motion: reduce) {
 		.glow-orb,
 		.chart-line-svg,
-		.animate-float,
+		.hero-badge--floating,
 		.indicator-card,
 		.confluence-connector :global(svg) {
 			animation: none;

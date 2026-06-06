@@ -102,6 +102,14 @@
 		}
 	}
 
+	async function selectTab(tab: typeof activeTab) {
+		activeTab = tab;
+
+		if (tab === 'subscribers' && subscribers.length === 0 && !isLoadingSubscribers) {
+			await loadSubscribers();
+		}
+	}
+
 	async function toggleStatus() {
 		if (!funnel) return;
 
@@ -164,24 +172,24 @@
 		});
 	}
 
-	function getStatusColor(status: FunnelStatus): string {
-		const colors: Record<FunnelStatus, string> = {
-			draft: 'bg-slate-500/20 text-slate-400',
-			active: 'bg-emerald-500/20 text-emerald-400',
-			paused: 'bg-amber-500/20 text-amber-400'
+	function getFunnelStatusClass(status: FunnelStatus): string {
+		const classes: Record<FunnelStatus, string> = {
+			draft: 'status-badge--draft',
+			active: 'status-badge--funnel-active',
+			paused: 'status-badge--paused'
 		};
-		return colors[status];
+		return classes[status];
 	}
 
-	function getSubscriberStatusColor(status: string): string {
-		const colors: Record<string, string> = {
-			active: 'bg-blue-500/20 text-blue-400',
-			waiting: 'bg-amber-500/20 text-amber-400',
-			completed: 'bg-emerald-500/20 text-emerald-400',
-			cancelled: 'bg-red-500/20 text-red-400',
-			failed: 'bg-red-500/20 text-red-400'
+	function getSubscriberStatusClass(status: string): string {
+		const classes: Record<string, string> = {
+			active: 'status-badge--subscriber-active',
+			waiting: 'status-badge--waiting',
+			completed: 'status-badge--completed',
+			cancelled: 'status-badge--cancelled',
+			failed: 'status-badge--failed'
 		};
-		return colors[status] || 'bg-slate-500/20 text-slate-400';
+		return classes[status] || 'status-badge--neutral';
 	}
 
 	function getActionIcon(actionType: string) {
@@ -196,17 +204,23 @@
 		return iconMap[actionType] || IconBolt;
 	}
 
-	function getActionColor(actionType: string): string {
-		const colorMap: Record<string, string> = {
-			send_email: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-			wait: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-			add_tag: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
-			remove_tag: 'bg-red-500/20 text-red-400 border-red-500/30',
-			add_to_list: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
-			remove_from_list: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
-			condition: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30'
+	function getActionClass(actionType: string): string {
+		const classMap: Record<string, string> = {
+			send_email: 'workflow-node--send-email',
+			wait: 'workflow-node--wait',
+			add_tag: 'workflow-node--add-tag',
+			remove_tag: 'workflow-node--remove-tag',
+			add_to_list: 'workflow-node--add-to-list',
+			remove_from_list: 'workflow-node--remove-from-list',
+			condition: 'workflow-node--condition'
 		};
-		return colorMap[actionType] || 'bg-slate-500/20 text-slate-400 border-slate-500/30';
+		return classMap[actionType] || 'workflow-node--default';
+	}
+
+	function getProgressWidth(value: number | null | undefined): string {
+		const percentage = Number(value ?? 0);
+		if (!Number.isFinite(percentage)) return '0%';
+		return `${Math.min(100, Math.max(0, percentage))}%`;
 	}
 
 	// DERIVED STATE
@@ -216,14 +230,6 @@
 			? ((stats.completed / stats.total_subscribers) * 100).toFixed(1)
 			: '0'
 	);
-
-	// EFFECTS
-
-	$effect(() => {
-		if (activeTab === 'subscribers' && subscribers.length === 0) {
-			loadSubscribers();
-		}
-	});
 
 	// LIFECYCLE
 
@@ -267,7 +273,7 @@
 							<p class="description">{funnel.description}</p>
 						{/if}
 					</div>
-					<span class="status-badge {getStatusColor(funnel.status)}">
+					<span class={['status-badge', getFunnelStatusClass(funnel.status)]}>
 						{funnel.status}
 					</span>
 				</div>
@@ -360,23 +366,20 @@
 		<!-- Tabs -->
 		<div class="tabs">
 			<button
-				class="tab"
-				class:active={activeTab === 'overview'}
-				onclick={() => (activeTab = 'overview')}
+				class={['tab', { active: activeTab === 'overview' }]}
+				onclick={() => selectTab('overview')}
 			>
 				Overview
 			</button>
 			<button
-				class="tab"
-				class:active={activeTab === 'workflow'}
-				onclick={() => (activeTab = 'workflow')}
+				class={['tab', { active: activeTab === 'workflow' }]}
+				onclick={() => selectTab('workflow')}
 			>
 				Workflow ({actions.length})
 			</button>
 			<button
-				class="tab"
-				class:active={activeTab === 'subscribers'}
-				onclick={() => (activeTab = 'subscribers')}
+				class={['tab', { active: activeTab === 'subscribers' }]}
+				onclick={() => selectTab('subscribers')}
 			>
 				Subscribers ({stats?.total_subscribers || 0})
 			</button>
@@ -386,8 +389,7 @@
 		<div class="tab-content">
 			<!-- Overview Panel -->
 			<div
-				class="tab-panel"
-				class:active={activeTab === 'overview'}
+				class={['tab-panel', { active: activeTab === 'overview' }]}
 				inert={activeTab !== 'overview' ? true : undefined}
 			>
 				<div class="overview-grid">
@@ -436,8 +438,7 @@
 
 			<!-- Workflow Panel -->
 			<div
-				class="tab-panel"
-				class:active={activeTab === 'workflow'}
+				class={['tab-panel', { active: activeTab === 'workflow' }]}
 				inert={activeTab !== 'workflow' ? true : undefined}
 			>
 				{#if actions.length === 0}
@@ -454,7 +455,7 @@
 					<div class="workflow-visual">
 						<!-- Trigger Node -->
 						<div class="workflow-node trigger-node">
-							<div class="node-icon bg-emerald-500/20 text-emerald-400">
+							<div class="node-icon node-icon--trigger">
 								<IconBolt size={20} />
 							</div>
 							<div class="node-content">
@@ -471,7 +472,7 @@
 							<div class="workflow-connector">
 								<IconArrowRight size={16} />
 							</div>
-							<div class="workflow-node action-node {getActionColor(action.action_type)}">
+							<div class={['workflow-node', 'action-node', getActionClass(action.action_type)]}>
 								<div class="node-icon">
 									<ActionIcon size={20} />
 								</div>
@@ -502,8 +503,7 @@
 
 			<!-- Subscribers Panel -->
 			<div
-				class="tab-panel"
-				class:active={activeTab === 'subscribers'}
+				class={['tab-panel', { active: activeTab === 'subscribers' }]}
 				inert={activeTab !== 'subscribers' ? true : undefined}
 			>
 				{#if isLoadingSubscribers}
@@ -543,7 +543,7 @@
 											</div>
 										</td>
 										<td>
-											<span class="status-badge {getSubscriberStatusColor(subscriber.status)}">
+											<span class={['status-badge', getSubscriberStatusClass(subscriber.status)]}>
 												{subscriber.status}
 											</span>
 										</td>
@@ -551,7 +551,7 @@
 											<div class="progress-bar">
 												<div
 													class="progress-fill"
-													style="width: {subscriber.progress_percentage || 0}%"
+													style:width={getProgressWidth(subscriber.progress_percentage)}
 												></div>
 											</div>
 											<span class="progress-text">{subscriber.progress_percentage || 0}%</span>
@@ -689,6 +689,35 @@
 		font-size: 0.8rem;
 		font-weight: 600;
 		text-transform: capitalize;
+	}
+
+	.status-badge--draft,
+	.status-badge--neutral {
+		background: rgba(100, 116, 139, 0.2);
+		color: #94a3b8;
+	}
+
+	.status-badge--funnel-active,
+	.status-badge--completed {
+		background: rgba(16, 185, 129, 0.2);
+		color: #34d399;
+	}
+
+	.status-badge--paused,
+	.status-badge--waiting {
+		background: rgba(245, 158, 11, 0.2);
+		color: #fbbf24;
+	}
+
+	.status-badge--subscriber-active {
+		background: rgba(59, 130, 246, 0.2);
+		color: #60a5fa;
+	}
+
+	.status-badge--cancelled,
+	.status-badge--failed {
+		background: rgba(239, 68, 68, 0.2);
+		color: #f87171;
 	}
 
 	/* Buttons */
@@ -1053,6 +1082,54 @@
 		flex-shrink: 0;
 	}
 
+	.workflow-node--send-email {
+		background: rgba(59, 130, 246, 0.2);
+		border-color: rgba(59, 130, 246, 0.3);
+		color: #60a5fa;
+	}
+
+	.workflow-node--wait {
+		background: rgba(245, 158, 11, 0.2);
+		border-color: rgba(245, 158, 11, 0.3);
+		color: #fbbf24;
+	}
+
+	.workflow-node--add-tag {
+		background: rgba(16, 185, 129, 0.2);
+		border-color: rgba(16, 185, 129, 0.3);
+		color: #34d399;
+	}
+
+	.workflow-node--remove-tag {
+		background: rgba(239, 68, 68, 0.2);
+		border-color: rgba(239, 68, 68, 0.3);
+		color: #f87171;
+	}
+
+	.workflow-node--add-to-list {
+		background: rgba(168, 85, 247, 0.2);
+		border-color: rgba(168, 85, 247, 0.3);
+		color: #c084fc;
+	}
+
+	.workflow-node--remove-from-list {
+		background: rgba(249, 115, 22, 0.2);
+		border-color: rgba(249, 115, 22, 0.3);
+		color: #fb923c;
+	}
+
+	.workflow-node--condition {
+		background: rgba(6, 182, 212, 0.2);
+		border-color: rgba(6, 182, 212, 0.3);
+		color: #22d3ee;
+	}
+
+	.workflow-node--default {
+		background: rgba(100, 116, 139, 0.2);
+		border-color: rgba(100, 116, 139, 0.3);
+		color: #94a3b8;
+	}
+
 	.trigger-node {
 		border-color: rgba(34, 197, 94, 0.3);
 		background: rgba(34, 197, 94, 0.05);
@@ -1066,6 +1143,11 @@
 		align-items: center;
 		justify-content: center;
 		flex-shrink: 0;
+	}
+
+	.node-icon--trigger {
+		background: rgba(16, 185, 129, 0.2);
+		color: #34d399;
 	}
 
 	.node-content {

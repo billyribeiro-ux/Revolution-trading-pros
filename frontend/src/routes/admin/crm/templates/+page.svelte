@@ -8,16 +8,16 @@
 	- Template preview modal with live content
 	- Bulk selection and operations (delete, export)
 	- Pagination with configurable page sizes
-	- Debounced search with $effect reactivity
+	- Event-driven debounced search
 	- Toast notifications for all CRUD operations
-	- Full Svelte 5 $state/$derived/$effect reactivity
+	- Svelte 5 $state/$derived reactivity with explicit data-loading handlers
 	- WCAG 2.1 AA accessibility compliance
 -->
 
 <script lang="ts">
 	import { SvelteSet } from 'svelte/reactivity';
 	/* eslint svelte/no-at-html-tags: "off" -- every {@html} in this file renders sanitizer-cleaned HTML (sanitizeHtml/sanitizeBlogContent/etc.) or serialized JSON-LD; audited 2026-05-30 */
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import IconTemplate from '@tabler/icons-svelte-runes/icons/template';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
@@ -48,10 +48,8 @@
 	let isLoading = $state(true);
 	let error = $state('');
 	let searchQuery = $state('');
-	let debouncedSearch = $state('');
 	let selectedCategory = $state('');
 	let selectedTemplates = $state(new SvelteSet<string>()); // eslint-disable-line svelte/no-unnecessary-state-wrap
-	let isInitialLoad = $state(true);
 
 	// Pagination state
 	let currentPage = $state(1);
@@ -106,58 +104,45 @@
 		total: totalTemplates
 	});
 
-	// DEBOUNCED SEARCH - $effect with cleanup
+	// Debounced search scheduling is event-driven so data loading doesn't rely on state-mutating effects.
 
 	let searchTimeout: ReturnType<typeof setTimeout> | null = null;
 
-	$effect(() => {
-		const query = searchQuery;
-
+	function clearSearchTimeout() {
 		if (searchTimeout) {
 			clearTimeout(searchTimeout);
+			searchTimeout = null;
 		}
+	}
 
+	function scheduleTemplatesLoad() {
+		clearSearchTimeout();
 		searchTimeout = setTimeout(() => {
-			debouncedSearch = query;
+			searchTimeout = null;
+			void loadTemplates();
 		}, 300);
+	}
 
-		return () => {
-			if (searchTimeout) {
-				clearTimeout(searchTimeout);
-			}
-		};
-	});
+	function updateSearchQuery(query: string) {
+		searchQuery = query;
+		currentPage = 1;
+		scheduleTemplatesLoad();
+	}
 
-	// REACTIVE DATA LOADING - $effect
+	function updateSelectedCategory(category: string) {
+		selectedCategory = category;
+		currentPage = 1;
+		clearSearchTimeout();
+		void loadTemplates();
+	}
 
-	// Audit P2 #11: previously two effects interacted — one called
-	// `loadTemplates()` on (debouncedSearch | selectedCategory | currentPage |
-	// perPage) and a second wrote `currentPage = 1` whenever the filters
-	// changed, which then re-triggered the first effect. Two backend calls
-	// per filter change. We now reset `currentPage` synchronously on the
-	// search/category change inside this single effect (using `untrack` for
-	// the write so we don't self-trigger), then issue exactly one
-	// `loadTemplates()` call.
-	let prevSearchKey = $state('');
-	$effect(() => {
-		const filterKey = `${debouncedSearch}|${selectedCategory}`;
-		// Read pagination deps so the effect also re-fires on page changes.
-		currentPage;
-		perPage;
-
-		if (isInitialLoad) return;
-
-		if (filterKey !== prevSearchKey) {
-			prevSearchKey = filterKey;
-			// Reset to page 1 without re-triggering this effect.
-			if (currentPage !== 1) {
-				currentPage = 1;
-				return; // The page change will retrigger and we'll fetch then.
-			}
-		}
-
-		loadTemplates();
-	});
+	function clearFilters() {
+		searchQuery = '';
+		selectedCategory = '';
+		currentPage = 1;
+		clearSearchTimeout();
+		void loadTemplates();
+	}
 
 	// API FUNCTIONS
 
@@ -168,7 +153,7 @@
 		try {
 			const [templatesResponse, categoriesResponse] = await Promise.all([
 				crmAPI.getEmailTemplates({
-					search: debouncedSearch || undefined,
+					search: searchQuery || undefined,
 					category: selectedCategory || undefined,
 					per_page: perPage
 				}),
@@ -187,7 +172,6 @@
 			showToast('error', error);
 		} finally {
 			isLoading = false;
-			isInitialLoad = false;
 		}
 	}
 
@@ -305,12 +289,16 @@
 	function goToPage(page: number) {
 		if (page >= 1 && page <= totalPages) {
 			currentPage = page;
+			clearSearchTimeout();
+			void loadTemplates();
 		}
 	}
 
 	function changePerPage(newPerPage: number) {
 		perPage = newPerPage;
 		currentPage = 1;
+		clearSearchTimeout();
+		void loadTemplates();
 	}
 
 	// TOAST NOTIFICATIONS
@@ -349,6 +337,8 @@
 	onMount(() => {
 		loadTemplates();
 	});
+
+	onDestroy(clearSearchTimeout);
 </script>
 
 <svelte:head>
@@ -359,10 +349,10 @@
 
 <div class="admin-crm-templates" role="main" aria-label="Email Templates">
 	<!-- Animated Background -->
-	<div class="bg-effects">
-		<div class="bg-blob bg-blob-1"></div>
-		<div class="bg-blob bg-blob-2"></div>
-		<div class="bg-blob bg-blob-3"></div>
+	<div class="background-effects">
+		<div class="background-blob background-blob-1"></div>
+		<div class="background-blob background-blob-2"></div>
+		<div class="background-blob background-blob-3"></div>
 	</div>
 
 	<div class="admin-page-container">
@@ -442,16 +432,26 @@
 					name="page-searchquery"
 					type="text"
 					placeholder="Search templates..."
-					bind:value={searchQuery}
+					value={searchQuery}
+					oninput={(event) => updateSearchQuery(event.currentTarget.value)}
 					aria-label="Search templates"
 				/>
 				{#if searchQuery}
-					<button class="search-clear" onclick={() => (searchQuery = '')} aria-label="Clear search">
+					<button
+						class="search-clear"
+						onclick={() => updateSearchQuery('')}
+						aria-label="Clear search"
+					>
 						<IconX size={16} />
 					</button>
 				{/if}
 			</div>
-			<select bind:value={selectedCategory} class="filter-select" aria-label="Filter by category">
+			<select
+				value={selectedCategory}
+				onchange={(event) => updateSelectedCategory(event.currentTarget.value)}
+				class="filter-select"
+				aria-label="Filter by category"
+			>
 				<option value="">All Categories</option>
 				{#each categories as category (category.slug)}
 					<option value={category.slug}>{category.name} ({category.templates_count})</option>
@@ -538,8 +538,7 @@
 						<button
 							class="btn-secondary"
 							onclick={() => {
-								searchQuery = '';
-								selectedCategory = '';
+								clearFilters();
 							}}
 						>
 							<IconX size={18} />
@@ -580,8 +579,7 @@
 			<div class="templates-grid" role="list" aria-label="Templates list">
 				{#each templates as template (template.id)}
 					<article
-						class="template-card"
-						class:selected={selectedTemplates.has(template.id)}
+						class={['template-card', { selected: selectedTemplates.has(template.id) }]}
 						role="listitem"
 						aria-label={template.title}
 					>
@@ -642,7 +640,7 @@
 								<p class="template-subject" title={template.subject}>{template.subject}</p>
 							{/if}
 							<div class="template-meta">
-								<span class="template-type" class:visual={template.design_template === 'visual'}>
+								<span class={['template-type', { visual: template.design_template === 'visual' }]}>
 									{template.design_template === 'visual' ? 'Visual' : 'Raw HTML'}
 								</span>
 								{#if template.category}
@@ -696,8 +694,7 @@
 						{#each Array.from({ length: totalPages }, (_, i) => i + 1) as page (page)}
 							{#if page === 1 || page === totalPages || (page >= currentPage - 1 && page <= currentPage + 1)}
 								<button
-									class="pagination-page"
-									class:active={page === currentPage}
+									class={['pagination-page', { active: page === currentPage }]}
 									onclick={() => goToPage(page)}
 									aria-label={`Page ${page}`}
 									aria-current={page === currentPage ? 'page' : undefined}
@@ -768,8 +765,7 @@
 							<label for="type">Type:</label>
 							<span
 								id="type"
-								class="template-type"
-								class:visual={previewTemplate.design_template === 'visual'}
+								class={['template-type', { visual: previewTemplate.design_template === 'visual' }]}
 							>
 								{previewTemplate.design_template === 'visual' ? 'Visual Editor' : 'Raw HTML'}
 							</span>

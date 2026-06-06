@@ -1383,9 +1383,13 @@
 
 <div
 	{@attach captureEditorContainer}
-	class="block-editor"
-	class:fullscreen={editorState.isFullscreen}
-	class:preview-mode={editorState.viewMode === 'preview'}
+	class={[
+		'block-editor',
+		{
+			fullscreen: editorState.isFullscreen,
+			'preview-mode': editorState.viewMode === 'preview'
+		}
+	]}
 >
 	<!-- Top Toolbar -->
 	<header class="editor-header">
@@ -1414,7 +1418,9 @@
 			/>
 			{#if seoAnalysis && seoAnalysis.grade}
 				<div class="seo-score" title="SEO Score: {seoAnalysis.score}/100">
-					<span class="grade grade-{seoAnalysis.grade.toLowerCase()}">{seoAnalysis.grade}</span>
+					<span class={['grade', `grade-${seoAnalysis.grade.toLowerCase()}`]}>
+						{seoAnalysis.grade}
+					</span>
 				</div>
 			{/if}
 
@@ -1493,8 +1499,7 @@
 			<div class="sidebar-tabs" role="tablist" aria-label="Editor panels">
 				<button
 					type="button"
-					class="tab-btn"
-					class:active={editorState.sidebarTab === 'blocks'}
+					class={['tab-btn', { active: editorState.sidebarTab === 'blocks' }]}
 					onclick={() => (editorState.sidebarTab = 'blocks')}
 					title="Add Blocks"
 					role="tab"
@@ -1506,8 +1511,7 @@
 				</button>
 				<button
 					type="button"
-					class="tab-btn"
-					class:active={editorState.sidebarTab === 'settings'}
+					class={['tab-btn', { active: editorState.sidebarTab === 'settings' }]}
 					onclick={() => (editorState.sidebarTab = 'settings')}
 					title="Block Settings"
 					role="tab"
@@ -1519,8 +1523,7 @@
 				</button>
 				<button
 					type="button"
-					class="tab-btn"
-					class:active={editorState.sidebarTab === 'layers'}
+					class={['tab-btn', { active: editorState.sidebarTab === 'layers' }]}
 					onclick={() => (editorState.sidebarTab = 'layers')}
 					title="Block Layers"
 					role="tab"
@@ -1532,8 +1535,7 @@
 				</button>
 				<button
 					type="button"
-					class="tab-btn"
-					class:active={editorState.sidebarTab === 'ai'}
+					class={['tab-btn', { active: editorState.sidebarTab === 'ai' }]}
 					onclick={() => (editorState.sidebarTab = 'ai')}
 					title="AI Assistant"
 					role="tab"
@@ -1545,8 +1547,7 @@
 				</button>
 				<button
 					type="button"
-					class="tab-btn"
-					class:active={editorState.sidebarTab === 'seo'}
+					class={['tab-btn', { active: editorState.sidebarTab === 'seo' }]}
 					onclick={() => (editorState.sidebarTab = 'seo')}
 					title="SEO Analysis"
 					role="tab"
@@ -1642,8 +1643,7 @@
 				{:else}
 					<!-- Block List -->
 					<div
-						class="blocks-container"
-						class:drag-active={editorState.isDragging}
+						class={['blocks-container', { 'drag-active': editorState.isDragging }]}
 						role="listbox"
 						aria-label="Content blocks"
 						aria-describedby="drag-instructions"
@@ -1662,14 +1662,18 @@
 							{@const isDropAfter =
 								index === editorState.dropTargetIndex && editorState.dropPosition === 'after'}
 							<div
-								class="block-wrapper"
-								class:selected={block.id === editorState.selectedBlockId}
-								class:multi-selected={isMultiSelected && editorState.selectedBlockIds.length > 1}
-								class:hovered={block.id === editorState.hoveredBlockId}
-								class:dragging={isDragTarget}
-								class:drop-target={index === editorState.dropTargetIndex}
-								class:drop-before={isDropBefore && editorState.isDragging}
-								class:drop-after={isDropAfter && editorState.isDragging}
+								class={[
+									'block-wrapper',
+									{
+										selected: block.id === editorState.selectedBlockId,
+										'multi-selected': isMultiSelected && editorState.selectedBlockIds.length > 1,
+										hovered: block.id === editorState.hoveredBlockId,
+										dragging: isDragTarget,
+										'drop-target': index === editorState.dropTargetIndex,
+										'drop-before': isDropBefore && editorState.isDragging,
+										'drop-after': isDropAfter && editorState.isDragging
+									}
+								]}
 								data-block-id={block.id}
 								data-block-index={index}
 								draggable={!readOnly && editorState.viewMode === 'edit'}

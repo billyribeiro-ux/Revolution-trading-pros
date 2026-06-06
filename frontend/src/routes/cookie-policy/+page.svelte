@@ -84,12 +84,12 @@
 		setLanguage(select.value as SupportedLanguage);
 	}
 
-	const categoryColors: Record<string, string> = {
-		necessary: 'bg-green-500/20 text-green-400 border-green-500/30',
-		analytics: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-		marketing: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
-		preferences: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-		unknown: 'bg-gray-500/20 text-gray-400 border-gray-500/30'
+	const categoryClasses: Record<string, string> = {
+		necessary: 'category-badge--necessary',
+		analytics: 'category-badge--analytics',
+		marketing: 'category-badge--marketing',
+		preferences: 'category-badge--preferences',
+		unknown: 'category-badge--unknown'
 	};
 </script>
 
@@ -176,25 +176,25 @@
 			<section class="section">
 				<h2>Your Current Consent</h2>
 				<div class="consent-status">
-					<div class="status-item" class:enabled={$consentStore.necessary}>
+					<div class={['status-item', { enabled: $consentStore.necessary }]}>
 						<span class="status-label">{$t.necessary}</span>
 						<span class="status-badge enabled">{$t.required}</span>
 					</div>
-					<div class="status-item" class:enabled={$consentStore.analytics}>
+					<div class={['status-item', { enabled: $consentStore.analytics }]}>
 						<span class="status-label">{$t.analytics}</span>
-						<span class="status-badge" class:enabled={$consentStore.analytics}>
+						<span class={['status-badge', { enabled: $consentStore.analytics }]}>
 							{$consentStore.analytics ? $t.enabled : $t.disabled}
 						</span>
 					</div>
-					<div class="status-item" class:enabled={$consentStore.marketing}>
+					<div class={['status-item', { enabled: $consentStore.marketing }]}>
 						<span class="status-label">{$t.marketing}</span>
-						<span class="status-badge" class:enabled={$consentStore.marketing}>
+						<span class={['status-badge', { enabled: $consentStore.marketing }]}>
 							{$consentStore.marketing ? $t.enabled : $t.disabled}
 						</span>
 					</div>
-					<div class="status-item" class:enabled={$consentStore.preferences}>
+					<div class={['status-item', { enabled: $consentStore.preferences }]}>
 						<span class="status-label">{$t.preferences}</span>
-						<span class="status-badge" class:enabled={$consentStore.preferences}>
+						<span class={['status-badge', { enabled: $consentStore.preferences }]}>
 							{$consentStore.preferences ? $t.enabled : $t.disabled}
 						</span>
 					</div>
@@ -277,7 +277,7 @@
 						<div class="cookie-category-section">
 							<h3 class="category-title">
 								<span
-									class="category-badge {categoryColors[category] || categoryColors['unknown']}"
+									class={['category-badge', categoryClasses[category] || categoryClasses.unknown]}
 								>
 									{category}
 								</span>
@@ -301,8 +301,7 @@
 												<td>{cookie.duration || 'Session'}</td>
 												<td>
 													<span
-														class="type-badge"
-														class:first-party={cookie.type === 'first-party'}
+														class={['type-badge', { 'first-party': cookie.type === 'first-party' }]}
 													>
 														{cookie.type || 'Unknown'}
 													</span>
@@ -644,6 +643,36 @@
 		font-size: 0.875rem;
 		text-transform: capitalize;
 		border: 1px solid;
+	}
+
+	.category-badge--necessary {
+		background: rgba(34, 197, 94, 0.2);
+		color: #4ade80;
+		border-color: rgba(34, 197, 94, 0.3);
+	}
+
+	.category-badge--analytics {
+		background: rgba(59, 130, 246, 0.2);
+		color: #60a5fa;
+		border-color: rgba(59, 130, 246, 0.3);
+	}
+
+	.category-badge--marketing {
+		background: rgba(168, 85, 247, 0.2);
+		color: #c084fc;
+		border-color: rgba(168, 85, 247, 0.3);
+	}
+
+	.category-badge--preferences {
+		background: rgba(245, 158, 11, 0.2);
+		color: #fbbf24;
+		border-color: rgba(245, 158, 11, 0.3);
+	}
+
+	.category-badge--unknown {
+		background: rgba(107, 114, 128, 0.2);
+		color: #9ca3af;
+		border-color: rgba(107, 114, 128, 0.3);
 	}
 
 	.cookie-table-wrapper {

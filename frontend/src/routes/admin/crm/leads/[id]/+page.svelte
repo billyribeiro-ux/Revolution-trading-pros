@@ -357,7 +357,7 @@
 		<!-- Header Section -->
 		<header class="lead-header">
 			<div class="lead-avatar-section">
-				<div class="avatar-large" class:hot={lead.is_hot}>
+				<div class={['avatar-large', { hot: lead.is_hot }]}>
 					{lead.full_name?.charAt(0).toUpperCase() || '?'}
 					{#if lead.is_hot}
 						<span class="hot-badge"><IconFlame size={14} /></span>
@@ -366,7 +366,7 @@
 				<div class="lead-identity">
 					<div class="name-row">
 						<h1>{lead.full_name}</h1>
-						<button class="btn-star" class:starred={lead.is_starred} onclick={toggleStarred}>
+						<button class={['btn-star', { starred: lead.is_starred }]} onclick={toggleStarred}>
 							{#if lead.is_starred}
 								<IconStarFilled size={20} />
 							{:else}
@@ -431,7 +431,7 @@
 					{lead.lead_score}
 				</div>
 				<div class="score-bar">
-					<div class="score-fill" style="width: {lead.lead_score}%"></div>
+					<div class="score-fill" style:width={`${lead.lead_score}%`}></div>
 				</div>
 			</div>
 			<div class="score-card">
@@ -474,24 +474,21 @@
 		<!-- Tabs -->
 		<nav class="tabs-nav">
 			<button
-				class="tab-btn"
-				class:active={activeTab === 'overview'}
+				class={['tab-btn', { active: activeTab === 'overview' }]}
 				onclick={() => (activeTab = 'overview')}
 			>
 				<IconUserCircle size={18} />
 				Overview
 			</button>
 			<button
-				class="tab-btn"
-				class:active={activeTab === 'activity'}
+				class={['tab-btn', { active: activeTab === 'activity' }]}
 				onclick={() => (activeTab = 'activity')}
 			>
 				<IconActivity size={18} />
 				Activity ({timeline.length})
 			</button>
 			<button
-				class="tab-btn"
-				class:active={activeTab === 'notes'}
+				class={['tab-btn', { active: activeTab === 'notes' }]}
 				onclick={() => (activeTab = 'notes')}
 			>
 				<IconNote size={18} />
@@ -503,8 +500,7 @@
 		<div class="tab-content">
 			<!-- Overview Panel -->
 			<div
-				class="tab-panel"
-				class:active={activeTab === 'overview'}
+				class={['tab-panel', { active: activeTab === 'overview' }]}
 				inert={activeTab !== 'overview' ? true : undefined}
 			>
 				<div class="overview-grid">
@@ -633,8 +629,8 @@
 								{#each lead.tags as tag (tag.id)}
 									<span
 										class="tag-pill"
-										style="background-color: {tag.color || '#f97316'}20; color: {tag.color ||
-											'#f97316'}"
+										style:background-color={`${tag.color || '#f97316'}20`}
+										style:color={tag.color || '#f97316'}
 									>
 										{tag.name}
 									</span>
@@ -665,8 +661,7 @@
 
 			<!-- Activity Panel -->
 			<div
-				class="tab-panel"
-				class:active={activeTab === 'activity'}
+				class={['tab-panel', { active: activeTab === 'activity' }]}
 				inert={activeTab !== 'activity' ? true : undefined}
 			>
 				<div class="activity-section">
@@ -706,8 +701,7 @@
 
 			<!-- Notes Panel -->
 			<div
-				class="tab-panel"
-				class:active={activeTab === 'notes'}
+				class={['tab-panel', { active: activeTab === 'notes' }]}
 				inert={activeTab !== 'notes' ? true : undefined}
 			>
 				<div class="notes-section">

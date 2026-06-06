@@ -285,8 +285,7 @@
 							{#each tabs as tab (tab.id)}
 								<button
 									onclick={() => (activeTab = tab.id)}
-									class="tab-button"
-									class:active={activeTab === tab.id}
+									class={['tab-button', { active: activeTab === tab.id }]}
 								>
 									{tab.label}
 								</button>
@@ -597,7 +596,7 @@
 										id="notes-template"
 										bind:value={settings.notes_template}
 										rows="4"
-										class="form-control text-area"
+										class="form-control textarea-control"
 										placeholder="Add any terms, conditions, or notes to include on every invoice..."
 									></textarea>
 								</div>
@@ -682,7 +681,7 @@
 										id="custom-css"
 										bind:value={settings.custom_css}
 										rows="10"
-										class="form-control text-area mono-control"
+										class="form-control textarea-control mono-control"
 										placeholder={`.invoice-title { font-size: 36px; }
 .items-table th { border-radius: 0; }
 .footer-text { font-style: italic; }`}
@@ -709,13 +708,10 @@
 						</div>
 						<div class="preview-card-body">
 							<!-- Mini Preview -->
-							<div
-								class="mini-invoice"
-								style="font-family: {settings.font_family}; font-size: 6px;"
-							>
+							<div class="mini-invoice" style:font-family={settings.font_family}>
 								<div class="mini-invoice-inner">
 									<!-- Header -->
-									<div class="mini-invoice-header" style="border-color: {settings.primary_color};">
+									<div class="mini-invoice-header" style:border-color={settings.primary_color}>
 										<div>
 											{#if settings.show_logo && logoUrl}
 												<img
@@ -727,13 +723,13 @@
 													loading="lazy"
 												/>
 											{:else}
-												<div class="mini-brand" style="color: {settings.primary_color};">
+												<div class="mini-brand" style:color={settings.primary_color}>
 													{settings.company_name || 'Company'}
 												</div>
 											{/if}
 										</div>
 										<div class="mini-invoice-title-wrap">
-											<div class="mini-title" style="color: {settings.secondary_color};">
+											<div class="mini-title" style:color={settings.secondary_color}>
 												{settings.header_text || 'INVOICE'}
 											</div>
 											<div class="mini-muted">#{settings.invoice_prefix}001</div>
@@ -743,13 +739,13 @@
 									<!-- Addresses -->
 									<div class="mini-addresses">
 										<div>
-											<div class="mini-section-label" style="color: {settings.primary_color};">
+											<div class="mini-section-label" style:color={settings.primary_color}>
 												FROM
 											</div>
 											<div class="mini-text">{settings.company_name || 'Your Company'}</div>
 										</div>
 										<div class="mini-right">
-											<div class="mini-section-label" style="color: {settings.primary_color};">
+											<div class="mini-section-label" style:color={settings.primary_color}>
 												BILL TO
 											</div>
 											<div class="mini-text">John Doe</div>
@@ -759,7 +755,7 @@
 									<!-- Table -->
 									<table class="mini-table">
 										<thead>
-											<tr style="background: {settings.primary_color}; color: white;">
+											<tr style:background={settings.primary_color} style:color="white">
 												<th>Description</th>
 												<th class="mini-right">Amount</th>
 											</tr>
@@ -776,7 +772,8 @@
 									<div class="mini-total-row">
 										<div
 											class="mini-total"
-											style="background: {settings.primary_color}; color: white;"
+											style:background={settings.primary_color}
+											style:color="white"
 										>
 											<span class="mini-total-text">Total: $99.00</span>
 										</div>
@@ -820,7 +817,7 @@
 					</button>
 				</div>
 				<div class="preview-modal-body">
-					<div class="preview-document" style="max-width: 800px;">
+					<div class="preview-document">
 						<!-- FIX-2026-04-26 (audit 02 §P3-8): DOMPurify sanitization. -->
 						{@html sanitizeHtml(previewHtml, 'rich')}
 					</div>
@@ -1163,7 +1160,7 @@
 		outline-offset: 2px;
 	}
 
-	.text-area {
+	.textarea-control {
 		resize: none;
 	}
 
@@ -1347,6 +1344,7 @@
 		background: #ffffff;
 		box-shadow: inset 0 2px 8px rgba(15, 23, 42, 0.08);
 		color: #111827;
+		font-size: 6px;
 	}
 
 	.mini-invoice-inner {
@@ -1482,6 +1480,7 @@
 	}
 
 	.preview-document {
+		max-width: 800px;
 		margin-inline: auto;
 		background: #ffffff;
 		box-shadow: 0 10px 30px rgba(15, 23, 42, 0.18);

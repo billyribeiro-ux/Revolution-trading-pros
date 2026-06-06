@@ -313,6 +313,16 @@
 		return '#ef4444';
 	}
 
+	function getProbabilityWidth(probability: number): string {
+		if (!Number.isFinite(probability)) return '0%';
+		return `${Math.min(100, Math.max(0, probability))}%`;
+	}
+
+	async function handleStatusChange(event: Event) {
+		selectedStatus = (event.currentTarget as HTMLSelectElement).value as typeof selectedStatus;
+		await loadData();
+	}
+
 	function openWinModal(deal: Deal) {
 		selectedDeal = deal;
 		winDetails = '';
@@ -327,27 +337,8 @@
 
 	// LIFECYCLE
 
-	let isInitialized = $state(false);
-
 	onMount(() => {
-		(async () => {
-			await loadData();
-			isInitialized = true;
-		})();
-	});
-
-	// Audit P1 #6: previously `selectedStatus` was passed to the backend on
-	// initial fetch but never re-fired — switching `open` → `won` left
-	// already-fetched-but-not-shown deals invisible. Now the effect tracks
-	// `selectedStatus` and re-runs `loadData()` for any backend-side filter
-	// change. `isInitialized` gate prevents a duplicate first-mount fetch.
-	$effect(() => {
-		// Reactive read:
-		selectedStatus;
-
-		if (isInitialized) {
-			loadData();
-		}
+		void loadData();
 	});
 </script>
 
@@ -357,10 +348,10 @@
 
 <div class="admin-crm-deals">
 	<!-- Animated Background -->
-	<div class="bg-effects">
-		<div class="bg-blob bg-blob-1"></div>
-		<div class="bg-blob bg-blob-2"></div>
-		<div class="bg-blob bg-blob-3"></div>
+	<div class="background-effects">
+		<div class="background-blob background-blob-1"></div>
+		<div class="background-blob background-blob-2"></div>
+		<div class="background-blob background-blob-3"></div>
 	</div>
 
 	<div class="admin-page-container">
@@ -374,15 +365,13 @@
 			<div class="header-actions">
 				<div class="view-toggle">
 					<button
-						class="toggle-btn"
-						class:active={viewMode === 'kanban'}
+						class={['toggle-btn', { active: viewMode === 'kanban' }]}
 						onclick={() => (viewMode = 'kanban')}
 					>
 						<IconLayoutKanban size={18} />
 					</button>
 					<button
-						class="toggle-btn"
-						class:active={viewMode === 'list'}
+						class={['toggle-btn', { active: viewMode === 'list' }]}
 						onclick={() => (viewMode = 'list')}
 					>
 						<IconList size={18} />
@@ -477,7 +466,7 @@
 				</select>
 			{/if}
 
-			<select class="filter-select" bind:value={selectedStatus}>
+			<select class="filter-select" value={selectedStatus} onchange={handleStatusChange}>
 				<option value="all">All Status</option>
 				<option value="open">Open</option>
 				<option value="won">Won</option>
@@ -516,13 +505,12 @@
 					{@const stageValue = stageDeals.reduce((sum, d) => sum + d.amount, 0)}
 					<!-- svelte-ignore a11y_no_static_element_interactions -->
 					<div
-						class="kanban-column"
-						class:drag-over={dragOverStage === stage.id}
+						class={['kanban-column', { 'drag-over': dragOverStage === stage.id }]}
 						ondragover={(e) => handleDragOver(e, stage.id)}
 						ondragleave={handleDragLeave}
 						ondrop={(e) => handleDrop(e, stage.id)}
 					>
-						<div class="column-header" style="border-color: {getStageColor(stage)}">
+						<div class="column-header" style:border-color={getStageColor(stage)}>
 							<div class="column-title">
 								<span class="stage-name">{stage.name}</span>
 								<span class="stage-count">{stageDeals.length}</span>
@@ -536,9 +524,8 @@
 						<div class="column-cards">
 							{#each stageDeals as deal (deal.id)}
 								<div
-									class="deal-card"
+									class={['deal-card', { dragging: draggingDeal?.id === deal.id }]}
 									draggable="true"
-									class:dragging={draggingDeal?.id === deal.id}
 									ondragstart={(e) => handleDragStart(e, deal)}
 									ondragend={handleDragEnd}
 									role="listitem"
@@ -564,7 +551,7 @@
 										{/if}
 
 										<div class="deal-meta">
-											<span class="meta-item" style="color: {getDaysColor(deal.days_in_stage)}">
+											<span class="meta-item" style:color={getDaysColor(deal.days_in_stage)}>
 												<IconClock size={12} />
 												{deal.days_in_stage}d in stage
 											</span>
@@ -694,7 +681,10 @@
 									</td>
 									<td>
 										<div class="probability-bar">
-											<div class="bar-fill" style="width: {deal.probability}%"></div>
+											<div
+												class="bar-fill"
+												style:width={getProbabilityWidth(deal.probability)}
+											></div>
 											<span class="bar-text">{deal.probability}%</span>
 										</div>
 									</td>
@@ -702,7 +692,7 @@
 										{formatDate(deal.expected_close_date)}
 									</td>
 									<td>
-										<span style="color: {getDaysColor(deal.days_in_stage)}">
+										<span style:color={getDaysColor(deal.days_in_stage)}>
 											{deal.days_in_stage} days
 										</span>
 									</td>

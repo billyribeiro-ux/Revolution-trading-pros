@@ -19,6 +19,12 @@
 
 	let selectedPlan = $state<'monthly' | 'quarterly' | 'annual'>('quarterly');
 
+	function getPricingPillLeft(plan: typeof selectedPlan) {
+		if (plan === 'monthly') return '0.375rem';
+		if (plan === 'quarterly') return 'calc(33.33% + 0.2rem)';
+		return 'calc(66.66% + 0.1rem)';
+	}
+
 	const plans: Plan[] = [
 		{
 			id: 'monthly',
@@ -407,7 +413,7 @@
 
 			<div class="features__grid">
 				{#each featureCards as card (card.title)}
-					<div data-gsap class="feature-card feature-card--{card.variant}">
+					<div data-gsap class={['feature-card', `feature-card--${card.variant}`]}>
 						<div class="feature-card__icon">
 							{#if card.variant === 'primary'}
 								<svg aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"
@@ -635,32 +641,32 @@
 					<button
 						type="button"
 						onclick={() => (selectedPlan = 'monthly')}
-						class="pricing__toggle-btn {selectedPlan === 'monthly'
-							? 'pricing__toggle-btn--active'
-							: ''}">Monthly</button
+						class={[
+							'pricing__toggle-btn',
+							{ 'pricing__toggle-btn--active': selectedPlan === 'monthly' }
+						]}>Monthly</button
 					>
 					<button
 						type="button"
 						onclick={() => (selectedPlan = 'quarterly')}
-						class="pricing__toggle-btn {selectedPlan === 'quarterly'
-							? 'pricing__toggle-btn--active'
-							: ''}">Quarterly</button
+						class={[
+							'pricing__toggle-btn',
+							{ 'pricing__toggle-btn--active': selectedPlan === 'quarterly' }
+						]}>Quarterly</button
 					>
 					<button
 						type="button"
 						onclick={() => (selectedPlan = 'annual')}
-						class="pricing__toggle-btn {selectedPlan === 'annual'
-							? 'pricing__toggle-btn--active'
-							: ''}">Annual</button
+						class={[
+							'pricing__toggle-btn',
+							{ 'pricing__toggle-btn--active': selectedPlan === 'annual' }
+						]}>Annual</button
 					>
 
 					<div
 						class="pricing__toggle-pill"
-						style="left: {selectedPlan === 'monthly'
-							? '0.375rem'
-							: selectedPlan === 'quarterly'
-								? 'calc(33.33% + 0.2rem)'
-								: 'calc(66.66% + 0.1rem)'}; width: calc(33.33% - 0.4rem);"
+						style:left={getPricingPillLeft(selectedPlan)}
+						style:width="calc(33.33% - 0.4rem)"
 					></div>
 				</div>
 			</div>
@@ -669,7 +675,11 @@
 				{#each plans as plan (plan.id)}
 					{#if plan.variant === 'simple'}
 						<div
-							class="plan plan--simple {selectedPlan === plan.id ? 'plan--active' : 'plan--dim'}"
+							class={[
+								'plan',
+								'plan--simple',
+								selectedPlan === plan.id ? 'plan--active' : 'plan--dim'
+							]}
 						>
 							<h3 class="plan__label">{plan.label}</h3>
 							<div class="plan__price-row">
@@ -688,7 +698,11 @@
 						</div>
 					{:else if plan.variant === 'featured'}
 						<div
-							class="plan plan--featured {selectedPlan === plan.id ? 'plan--active' : 'plan--dim'}"
+							class={[
+								'plan',
+								'plan--featured',
+								selectedPlan === plan.id ? 'plan--active' : 'plan--dim'
+							]}
 						>
 							<div class="plan__ribbon">Most Popular</div>
 							<h3 class="plan__label plan__label--large">{plan.label}</h3>
@@ -711,7 +725,11 @@
 						</div>
 					{:else if plan.variant === 'highlight'}
 						<div
-							class="plan plan--highlight {selectedPlan === plan.id ? 'plan--active' : 'plan--dim'}"
+							class={[
+								'plan',
+								'plan--highlight',
+								selectedPlan === plan.id ? 'plan--active' : 'plan--dim'
+							]}
 						>
 							<div class="plan__ribbon plan__ribbon--emerald">Best Deal</div>
 							<h3 class="plan__label">{plan.label}</h3>
@@ -762,7 +780,7 @@
 						>
 							{faq.question}
 							<svg
-								class="faq__chevron {openFaq === i ? 'faq__chevron--open' : ''}"
+								class={['faq__chevron', { 'faq__chevron--open': openFaq === i }]}
 								aria-hidden="true"
 								fill="none"
 								stroke="currentColor"
