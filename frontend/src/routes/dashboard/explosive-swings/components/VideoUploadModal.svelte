@@ -22,6 +22,7 @@
 	/>
 -->
 <script lang="ts">
+	import { SvelteDate } from 'svelte/reactivity';
 	import { weeklyVideoApi } from '$lib/api/room-content';
 	import DatePicker from '$lib/components/ui/DatePicker.svelte';
 	import FileDropZone from '$lib/components/ui/FileDropZone.svelte';
@@ -83,9 +84,6 @@
 	let activeXhr = $state<XMLHttpRequest | null>(null);
 	let processingAborted = $state(false);
 
-	// A11y status announcements
-	let statusAnnouncement = $state('');
-
 	let form = $state({
 		week_of: getNextMonday(),
 		week_title: '',
@@ -96,6 +94,19 @@
 		thumbnail_url: '',
 		duration: '',
 		description: ''
+	});
+
+	const statusAnnouncement = $derived.by(() => {
+		switch (uploadStatus) {
+			case 'uploading':
+				return `Uploading: ${uploadProgress}%`;
+			case 'processing':
+				return 'Processing video on server...';
+			case 'complete':
+				return 'Upload complete!';
+			default:
+				return '';
+		}
 	});
 
 	// Lock body scroll when modal is open
@@ -110,24 +121,11 @@
 		};
 	});
 
-	// A11y: Announce upload status changes
-	$effect(() => {
-		if (uploadStatus === 'uploading') {
-			statusAnnouncement = `Uploading: ${uploadProgress}%`;
-		} else if (uploadStatus === 'processing') {
-			statusAnnouncement = 'Processing video on server...';
-		} else if (uploadStatus === 'complete') {
-			statusAnnouncement = 'Upload complete!';
-		} else {
-			statusAnnouncement = '';
-		}
-	});
-
 	function getNextMonday(): string {
-		const today = new Date();
+		const today = new SvelteDate();
 		const dayOfWeek = today.getDay();
 		const daysUntilMonday = dayOfWeek === 0 ? 1 : (8 - dayOfWeek) % 7 || 7;
-		const nextMonday = new Date(today);
+		const nextMonday = new SvelteDate(today);
 		nextMonday.setDate(today.getDate() + daysUntilMonday);
 		return nextMonday.toISOString().split('T')[0];
 	}
@@ -556,8 +554,7 @@
 				<div class="mode-tabs">
 					<button
 						type="button"
-						class="mode-tab"
-						class:active={uploadMode === 'file'}
+						class={['mode-tab', { active: uploadMode === 'file' }]}
 						onclick={() => (uploadMode = 'file')}
 					>
 						<svg
@@ -574,8 +571,7 @@
 					</button>
 					<button
 						type="button"
-						class="mode-tab"
-						class:active={uploadMode === 'url'}
+						class={['mode-tab', { active: uploadMode === 'url' }]}
 						onclick={() => (uploadMode = 'url')}
 					>
 						<svg
