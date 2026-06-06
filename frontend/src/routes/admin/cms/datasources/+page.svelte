@@ -677,6 +677,10 @@
 		});
 	}
 
+	function getDatasourceColor(color: string | null | undefined): string {
+		return color || '#6366f1';
+	}
+
 	function handleFileSelect(event: Event) {
 		const input = event.target as HTMLInputElement;
 		if (input.files && input.files[0]) {
@@ -738,7 +742,7 @@
 
 <!-- Toast Notification -->
 {#if showToast}
-	<div class="toast toast-{toastType}" transition:fade>
+	<div class={['toast', `toast-${toastType}`]} transition:fade>
 		{#if toastType === 'success'}
 			<IconCheck size={20} />
 		{:else}
@@ -753,10 +757,10 @@
 
 <div class="admin-datasources">
 	<!-- Animated Background -->
-	<div class="bg-effects">
-		<div class="bg-blob bg-blob-1"></div>
-		<div class="bg-blob bg-blob-2"></div>
-		<div class="bg-blob bg-blob-3"></div>
+	<div class="background-effects">
+		<div class="background-blob background-blob-1"></div>
+		<div class="background-blob background-blob-2"></div>
+		<div class="background-blob background-blob-3"></div>
 	</div>
 
 	<div class="admin-page-container">
@@ -818,13 +822,16 @@
 					</div>
 				{:else}
 					{#each filteredDatasources as datasource (datasource.id)}
-						<div class="datasource-card" class:system={datasource.is_system} transition:fade>
+						<div class={['datasource-card', { system: datasource.is_system }]} transition:fade>
 							<div class="card-header">
-								<div class="card-icon" style="background-color: {datasource.color || '#6366f1'}20">
+								<div
+									class="card-icon"
+									style:--datasource-color={getDatasourceColor(datasource.color)}
+								>
 									{#if datasource.is_system}
-										<IconWorld size={24} style="color: {datasource.color || '#6366f1'}" />
+										<IconWorld size={24} />
 									{:else}
-										<IconDatabase size={24} style="color: {datasource.color || '#6366f1'}" />
+										<IconDatabase size={24} />
 									{/if}
 								</div>
 								<div class="card-badges">
@@ -934,9 +941,9 @@
 				<h1>
 					<div
 						class="header-icon"
-						style="background-color: {selectedDatasource.color || '#6366f1'}20"
+						style:--datasource-color={getDatasourceColor(selectedDatasource.color)}
 					>
-						<IconDatabase size={24} style="color: {selectedDatasource.color || '#6366f1'}" />
+						<IconDatabase size={24} />
 					</div>
 					{selectedDatasource.name}
 				</h1>
@@ -1020,7 +1027,7 @@
 										ondragstart={(e) => handleDragStart(e, entry.id)}
 										ondragover={handleDragOver}
 										ondrop={(e) => handleDrop(e, entry.id)}
-										class:dragging={draggedEntryId === entry.id}
+										class={{ dragging: draggedEntryId === entry.id }}
 									>
 										<td class="drag-handle">
 											<IconGripVertical size={16} />
@@ -1340,7 +1347,7 @@
 	}
 
 	/* Background Effects */
-	.bg-effects {
+	.background-effects {
 		position: fixed;
 		top: 0;
 		left: 0;
@@ -1351,14 +1358,14 @@
 		overflow: hidden;
 	}
 
-	.bg-blob {
+	.background-blob {
 		position: absolute;
 		border-radius: 50%;
 		filter: blur(100px);
 		opacity: 0.3;
 	}
 
-	.bg-blob-1 {
+	.background-blob-1 {
 		width: 600px;
 		height: 600px;
 		background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
@@ -1366,7 +1373,7 @@
 		right: -200px;
 	}
 
-	.bg-blob-2 {
+	.background-blob-2 {
 		width: 400px;
 		height: 400px;
 		background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
@@ -1374,7 +1381,7 @@
 		left: -100px;
 	}
 
-	.bg-blob-3 {
+	.background-blob-3 {
 		width: 300px;
 		height: 300px;
 		background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
@@ -1410,6 +1417,8 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		background: color-mix(in srgb, var(--datasource-color, #6366f1) 12%, transparent);
+		color: var(--datasource-color, #6366f1);
 	}
 
 	.subtitle {
@@ -1620,6 +1629,8 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		background: color-mix(in srgb, var(--datasource-color, #6366f1) 12%, transparent);
+		color: var(--datasource-color, #6366f1);
 	}
 
 	.card-badges {
