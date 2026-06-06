@@ -1740,6 +1740,46 @@
 		return basePrice + bonusValue;
 	}
 
+	function getNavItemClass(tab: string): Record<string, boolean> {
+		return {
+			'nav-item': true,
+			active: activeTab === tab
+		};
+	}
+
+	function getTabPanelClass(tab: string): Record<string, boolean> {
+		return {
+			'tab-panel': true,
+			active: activeTab === tab
+		};
+	}
+
+	function getModuleCardClass(module: Module): Record<string, boolean> {
+		return {
+			'module-card': true,
+			expanded: expandedModules.has(module.id),
+			dragging: isDragging && draggedModule?.id === module.id
+		};
+	}
+
+	function getPricingModelClass(model: typeof course.pricing_model): Record<string, boolean> {
+		return {
+			'pricing-model': true,
+			selected: course.pricing_model === model
+		};
+	}
+
+	function getUploadZoneClass(): Record<string, boolean> {
+		return {
+			'upload-zone': true,
+			uploading
+		};
+	}
+
+	function getModuleChevronStyle(moduleId: string): string {
+		return `transform: rotate(${expandedModules.has(moduleId) ? 0 : -90}deg); transition: transform 0.2s`;
+	}
+
 	// Reactive statements
 	let completionStatus = $derived(getCompletionStatus());
 	let totalValue = $derived(getTotalValue());
@@ -1833,11 +1873,7 @@
 		<!-- Sidebar Navigation -->
 		<aside class="sidebar">
 			<nav class="sidebar-nav">
-				<button
-					class="nav-item"
-					class:active={activeTab === 'basic'}
-					onclick={() => (activeTab = 'basic')}
-				>
+				<button class={getNavItemClass('basic')} onclick={() => (activeTab = 'basic')}>
 					<IconBook size={20} />
 					<span>Basic Info</span>
 					{#if completionStatus.checks['Title & Description']}
@@ -1845,11 +1881,7 @@
 					{/if}
 				</button>
 
-				<button
-					class="nav-item"
-					class:active={activeTab === 'curriculum'}
-					onclick={() => (activeTab = 'curriculum')}
-				>
+				<button class={getNavItemClass('curriculum')} onclick={() => (activeTab = 'curriculum')}>
 					<IconFileText size={20} />
 					<span>Curriculum</span>
 					{#if completionStatus.checks['Curriculum'] && completionStatus.checks['Lessons']}
@@ -1857,11 +1889,7 @@
 					{/if}
 				</button>
 
-				<button
-					class="nav-item"
-					class:active={activeTab === 'pricing'}
-					onclick={() => (activeTab = 'pricing')}
-				>
+				<button class={getNavItemClass('pricing')} onclick={() => (activeTab = 'pricing')}>
 					<IconCurrencyDollar size={20} />
 					<span>Pricing</span>
 					{#if completionStatus.checks['Pricing']}
@@ -1869,11 +1897,7 @@
 					{/if}
 				</button>
 
-				<button
-					class="nav-item"
-					class:active={activeTab === 'media'}
-					onclick={() => (activeTab = 'media')}
-				>
+				<button class={getNavItemClass('media')} onclick={() => (activeTab = 'media')}>
 					<IconPhoto size={20} />
 					<span>Media</span>
 					{#if completionStatus.checks['Thumbnail']}
@@ -1881,11 +1905,7 @@
 					{/if}
 				</button>
 
-				<button
-					class="nav-item"
-					class:active={activeTab === 'seo'}
-					onclick={() => (activeTab = 'seo')}
-				>
+				<button class={getNavItemClass('seo')} onclick={() => (activeTab = 'seo')}>
 					<IconTarget size={20} />
 					<span>SEO & Marketing</span>
 					{#if completionStatus.checks['SEO']}
@@ -1893,11 +1913,7 @@
 					{/if}
 				</button>
 
-				<button
-					class="nav-item"
-					class:active={activeTab === 'advanced'}
-					onclick={() => (activeTab = 'advanced')}
-				>
+				<button class={getNavItemClass('advanced')} onclick={() => (activeTab = 'advanced')}>
 					<IconSettings size={20} />
 					<span>Advanced</span>
 				</button>
@@ -1940,11 +1956,7 @@
 		<!-- Main Form Content Area - Layout Shift Free Pattern -->
 		<main class="main-content">
 			<!-- Basic Info Panel -->
-			<div
-				class="tab-panel"
-				class:active={activeTab === 'basic'}
-				inert={activeTab !== 'basic' ? true : undefined}
-			>
+			<div class={getTabPanelClass('basic')} inert={activeTab !== 'basic' ? true : undefined}>
 				<div class="tab-content">
 					<div class="form-card">
 						<h2>Course Information</h2>
@@ -2193,8 +2205,7 @@
 
 			<!-- Curriculum Panel -->
 			<div
-				class="tab-panel"
-				class:active={activeTab === 'curriculum'}
+				class={getTabPanelClass('curriculum')}
 				inert={activeTab !== 'curriculum' ? true : undefined}
 			>
 				<div class="tab-content">
@@ -2227,8 +2238,7 @@
 					<div class="curriculum-builder">
 						{#each course.modules as module, moduleIndex (module.id)}
 							<div
-								class="module-card"
-								class:expanded={expandedModules.has(module.id)}
+								class={getModuleCardClass(module)}
 								animate:flip={{ duration: 300 }}
 								draggable="true"
 								role="listitem"
@@ -2236,7 +2246,6 @@
 								ondragover={handleDragOver}
 								ondrop={(e: DragEvent) => handleModuleDrop(e, moduleIndex)}
 								ondragend={handleDragEnd}
-								class:dragging={isDragging && draggedModule?.id === module.id}
 							>
 								<div class="module-header">
 									<IconGripVertical size={20} class="drag-handle" />
@@ -2254,12 +2263,7 @@
 									</span>
 									<div class="module-actions">
 										<button class="expand-btn" onclick={() => toggleModuleExpansion(module.id)}>
-											<IconChevronDown
-												size={18}
-												style="transform: rotate({expandedModules.has(module.id)
-													? 0
-													: -90}deg); transition: transform 0.2s"
-											/>
+											<IconChevronDown size={18} style={getModuleChevronStyle(module.id)} />
 										</button>
 										<button onclick={() => duplicateModule(module.id)} title="Duplicate">
 											<IconCopy size={16} />
@@ -2401,11 +2405,7 @@
 			</div>
 
 			<!-- Pricing Panel -->
-			<div
-				class="tab-panel"
-				class:active={activeTab === 'pricing'}
-				inert={activeTab !== 'pricing' ? true : undefined}
-			>
+			<div class={getTabPanelClass('pricing')} inert={activeTab !== 'pricing' ? true : undefined}>
 				<div class="tab-content">
 					<div class="form-card">
 						<h2>
@@ -2417,7 +2417,7 @@
 						</h2>
 
 						<div class="pricing-models">
-							<label class="pricing-model" class:selected={course.pricing_model === 'one-time'}>
+							<label class={getPricingModelClass('one-time')}>
 								<input
 									id="pricing-model-one-time"
 									name="pricing-model"
@@ -2432,7 +2432,7 @@
 								</div>
 							</label>
 
-							<label class="pricing-model" class:selected={course.pricing_model === 'subscription'}>
+							<label class={getPricingModelClass('subscription')}>
 								<input
 									id="pricing-model-subscription"
 									name="pricing-model"
@@ -2447,7 +2447,7 @@
 								</div>
 							</label>
 
-							<label class="pricing-model" class:selected={course.pricing_model === 'payment-plan'}>
+							<label class={getPricingModelClass('payment-plan')}>
 								<input
 									id="pricing-model-payment-plan"
 									name="pricing-model"
@@ -2462,7 +2462,7 @@
 								</div>
 							</label>
 
-							<label class="pricing-model" class:selected={course.pricing_model === 'free'}>
+							<label class={getPricingModelClass('free')}>
 								<input
 									id="pricing-model-free"
 									name="pricing-model"
@@ -2686,11 +2686,7 @@
 			</div>
 
 			<!-- Media Panel -->
-			<div
-				class="tab-panel"
-				class:active={activeTab === 'media'}
-				inert={activeTab !== 'media' ? true : undefined}
-			>
+			<div class={getTabPanelClass('media')} inert={activeTab !== 'media' ? true : undefined}>
 				<div class="tab-content">
 					<div class="form-card">
 						<h2>Course Thumbnail *</h2>
@@ -2715,7 +2711,7 @@
 								</div>
 							{/if}
 
-							<label class="upload-zone" class:uploading>
+							<label class={getUploadZoneClass()}>
 								<IconPhoto size={32} />
 								<span>{uploading ? 'Uploading...' : 'Click to upload thumbnail'}</span>
 								<small>JPG, PNG • Max 5MB • 16:9 aspect ratio</small>
@@ -2752,7 +2748,7 @@
 								</div>
 							{:else}
 								<div class="video-options">
-									<label class="upload-zone" class:uploading>
+									<label class={getUploadZoneClass()}>
 										<IconVideo size={32} />
 										<span>Upload Video File</span>
 										<small>MP4, WebM • Max 100MB</small>
@@ -2820,11 +2816,7 @@
 			</div>
 
 			<!-- SEO & Marketing Panel -->
-			<div
-				class="tab-panel"
-				class:active={activeTab === 'seo'}
-				inert={activeTab !== 'seo' ? true : undefined}
-			>
+			<div class={getTabPanelClass('seo')} inert={activeTab !== 'seo' ? true : undefined}>
 				<div class="tab-content">
 					<div class="form-card">
 						<h2>
@@ -3012,11 +3004,7 @@
 			</div>
 
 			<!-- Advanced Settings Panel -->
-			<div
-				class="tab-panel"
-				class:active={activeTab === 'advanced'}
-				inert={activeTab !== 'advanced' ? true : undefined}
-			>
+			<div class={getTabPanelClass('advanced')} inert={activeTab !== 'advanced' ? true : undefined}>
 				<div class="tab-content">
 					<div class="form-card">
 						<h2>Access Settings</h2>

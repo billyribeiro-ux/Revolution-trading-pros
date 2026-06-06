@@ -1254,10 +1254,10 @@
 <div class="admin-videos">
 	<div class="admin-page-container">
 		<!-- Animated Background -->
-		<div class="bg-effects">
-			<div class="bg-blob bg-blob-1"></div>
-			<div class="bg-blob bg-blob-2"></div>
-			<div class="bg-blob bg-blob-3"></div>
+		<div class="background-effects">
+			<div class="background-blob background-blob-1"></div>
+			<div class="background-blob background-blob-2"></div>
+			<div class="background-blob background-blob-3"></div>
 		</div>
 
 		<!-- Success/Error Messages -->
@@ -1295,8 +1295,7 @@
 					<div class="room-tabs">
 						{#each tradingRooms as room (room.id)}
 							<button
-								class="room-tab"
-								class:active={selectedRoom?.id === room.id}
+								class={['room-tab', { active: selectedRoom?.id === room.id }]}
 								style:--room-color={room.color || '#E6B800'}
 								onclick={() => selectRoom(room)}
 							>
@@ -1319,8 +1318,7 @@
 					<div class="room-tabs">
 						{#each alertServices as service (service.id)}
 							<button
-								class="room-tab"
-								class:active={selectedRoom?.id === service.id}
+								class={['room-tab', { active: selectedRoom?.id === service.id }]}
 								style:--room-color={service.color || '#B38F00'}
 								onclick={() => selectRoom(service)}
 							>
@@ -1523,7 +1521,7 @@
 					</thead>
 					<tbody>
 						{#each filteredVideos as video (video.id)}
-							<tr class:selected={selectedVideoIds.has(video.id)}>
+							<tr class={{ selected: selectedVideoIds.has(video.id) }}>
 								<td class="checkbox-col">
 									<button
 										class="select-row-btn"
@@ -1593,8 +1591,7 @@
 								<td>{formatViews(video.views_count)}</td>
 								<td>
 									<button
-										class="status-toggle"
-										class:published={video.is_published}
+										class={['status-toggle', { published: video.is_published }]}
 										onclick={() => void togglePublished(video)}
 									>
 										{#if video.is_published}
@@ -1770,18 +1767,14 @@
 				<!-- Categories Section -->
 				<div class="form-group">
 					<label>
-						<IconTags
-							size={16}
-							style="display: inline; vertical-align: middle; margin-right: 4px;"
-						/>
+						<span class="field-label-icon"><IconTags size={16} /></span>
 						Categories (select all that apply)
 					</label>
 					<div class="categories-grid">
 						{#each availableCategories as category (category.id)}
 							<button
 								type="button"
-								class="category-btn"
-								class:selected={isCategorySelected(category.id)}
+								class={['category-btn', { selected: isCategorySelected(category.id) }]}
 								style:--tag-color={category.color}
 								onclick={() => toggleCategory(category.id)}
 							>
@@ -1959,8 +1952,7 @@
 
 				<!-- Drop Zone -->
 				<div
-					class="bunny-dropzone"
-					class:has-files={bunnyUploadFiles.length > 0}
+					class={['bunny-dropzone', { 'has-files': bunnyUploadFiles.length > 0 }]}
 					ondragover={(e: DragEvent) => e.preventDefault()}
 					ondrop={handleBunnyFileDrop}
 					role="button"
@@ -2010,7 +2002,7 @@
 				{#if isUploadingToBunny}
 					<div class="upload-progress">
 						<div class="progress-bar">
-							<div class="progress-fill" style:width="{bunnyUploadProgress}%"></div>
+							<div class="progress-fill" style:width={`${bunnyUploadProgress}%`}></div>
 						</div>
 						<p class="progress-text">Uploading... {bunnyUploadProgress}%</p>
 
@@ -2091,18 +2083,14 @@
 				<!-- Tags to Add -->
 				<div class="form-group">
 					<label>
-						<IconPlus
-							size={16}
-							style="display:inline;vertical-align:middle;color:#22c55e;margin-right:4px;"
-						/>
+						<span class="field-label-icon add"><IconPlus size={16} /></span>
 						Tags to Add
 					</label>
 					<div class="bulk-tags-grid">
 						{#each availableCategories as category (category.id)}
 							<button
 								type="button"
-								class="bulk-tag-btn add"
-								class:selected={bulkTagsToAdd.includes(category.id)}
+								class={['bulk-tag-btn', 'add', { selected: bulkTagsToAdd.includes(category.id) }]}
 								style:--tag-color={category.color}
 								onclick={() => toggleBulkTagToAdd(category.id)}
 							>
@@ -2118,18 +2106,18 @@
 				<!-- Tags to Remove -->
 				<div class="form-group">
 					<label>
-						<IconX
-							size={16}
-							style="display:inline;vertical-align:middle;color:#ef4444;margin-right:4px;"
-						/>
+						<span class="field-label-icon remove"><IconX size={16} /></span>
 						Tags to Remove
 					</label>
 					<div class="bulk-tags-grid">
 						{#each availableCategories as category (category.id)}
 							<button
 								type="button"
-								class="bulk-tag-btn remove"
-								class:selected={bulkTagsToRemove.includes(category.id)}
+								class={[
+									'bulk-tag-btn',
+									'remove',
+									{ selected: bulkTagsToRemove.includes(category.id) }
+								]}
 								style:--tag-color={category.color}
 								onclick={() => toggleBulkTagToRemove(category.id)}
 							>
@@ -2771,6 +2759,20 @@
 		font-weight: 500;
 		color: var(--text-secondary);
 		margin-bottom: 0.5rem;
+	}
+
+	.field-label-icon {
+		display: inline-flex;
+		vertical-align: middle;
+		margin-right: 4px;
+	}
+
+	.field-label-icon.add {
+		color: #22c55e;
+	}
+
+	.field-label-icon.remove {
+		color: #ef4444;
 	}
 
 	.form-group input,

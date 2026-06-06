@@ -30,16 +30,16 @@
 	let totalPages = $state(1);
 	let totalEvents = $state(0);
 
-	// Event type colors - Apple-inspired palette
-	const eventColors: Record<string, string> = {
-		page_view: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-		click: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
-		form_submit: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
-		purchase: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-		signup: 'bg-pink-500/20 text-pink-400 border-pink-500/30',
-		login: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
-		error: 'bg-red-500/20 text-red-400 border-red-500/30',
-		custom: 'bg-slate-500/20 text-slate-400 border-slate-500/30'
+	// Event type tones - Apple-inspired palette.
+	const eventToneClasses: Record<string, string> = {
+		page_view: 'event-chip--blue',
+		click: 'event-chip--emerald',
+		form_submit: 'event-chip--purple',
+		purchase: 'event-chip--amber',
+		signup: 'event-chip--pink',
+		login: 'event-chip--cyan',
+		error: 'event-chip--red',
+		custom: 'event-chip--slate'
 	};
 
 	async function loadEvents() {
@@ -96,6 +96,10 @@
 		return json.slice(0, 100) + (json.length > 100 ? '...' : '');
 	}
 
+	function getEventToneClass(eventType: string) {
+		return eventToneClasses[eventType] ?? 'event-chip--slate';
+	}
+
 	// FIX-2026-04-26 (P1-3): $derived restores reactivity past helper's `untrack`.
 	let isAnalyticsConnected = $derived(getIsAnalyticsConnected());
 
@@ -127,46 +131,40 @@
 	<title>Event Explorer | Analytics</title>
 </svelte:head>
 
-<div class="bg-linear-to-br from-slate-950 via-slate-900 to-slate-950">
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="events-page">
+	<div class="events-container">
 		<!-- Apple ICT7 Grade Header -->
-		<header class="mb-8">
-			<div class="flex items-center gap-4 mb-2">
-				<div
-					class="w-12 h-12 rounded-2xl bg-linear-to-br from-amber-500 to-orange-600 flex items-center justify-center text-2xl shadow-lg shadow-amber-500/20"
-				>
+		<header class="events-header">
+			<div class="header-title-group">
+				<div class="header-icon">
 					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: bolt (events) -->
 					<IconBolt size={24} aria-hidden="true" />
 				</div>
 				<div>
-					<h1 class="text-2xl font-bold text-white tracking-tight">Event Explorer</h1>
-					<p class="text-sm text-slate-400">Browse and analyze tracked events in real-time</p>
+					<h1 class="page-title">Event Explorer</h1>
+					<p class="page-subtitle">Browse and analyze tracked events in real-time</p>
 				</div>
 			</div>
 		</header>
 
 		<!-- Connection Check -->
 		{#if connectionLoading}
-			<div class="flex items-center justify-center py-20">
-				<div class="relative">
-					<div class="w-12 h-12 border-4 border-amber-500/20 rounded-full"></div>
-					<div
-						class="absolute top-0 left-0 w-12 h-12 border-4 border-amber-500 rounded-full animate-spin border-t-transparent"
-					></div>
-				</div>
+			<div class="loading-state">
+				<div class="spinner spinner--large"></div>
 			</div>
 		{:else if !isAnalyticsConnected}
 			<ServiceConnectionStatus feature="analytics" variant="card" showFeatures={true} />
 		{:else}
 			<!-- Filters - Glass morphism card -->
-			<div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-5 mb-6">
-				<div class="flex flex-wrap items-center gap-4">
+			<div class="filters-panel">
+				<div class="filters-row">
 					<PeriodSelector value={selectedPeriod} onchange={handlePeriodChange} />
 
 					<select
 						bind:value={selectedEventType}
 						onchange={handleEventTypeChange}
-						class="px-4 py-2.5 bg-slate-800/50 border border-white/10 rounded-xl text-sm text-white focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 outline-none transition-all"
+						class="event-select"
+						aria-label="Event type"
 					>
 						<option value="">All Event Types</option>
 						{#each eventTypes as type (type.name)}
@@ -174,8 +172,8 @@
 						{/each}
 					</select>
 
-					<div class="flex-1 min-w-[200px]">
-						<div class="relative">
+					<div class="search-column">
+						<div class="search-field">
 							<input
 								id="page-searchquery"
 								name="page-searchquery"
@@ -183,45 +181,39 @@
 								bind:value={searchQuery}
 								onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && handleSearch()}
 								placeholder="Search events..."
-								class="w-full px-4 py-2.5 pl-11 bg-slate-800/50 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 outline-none transition-all"
+								class="search-input"
 							/>
 							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: search (search input) -->
-							<IconSearch
-								size={16}
-								class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"
-								aria-hidden="true"
-							/>
+							<span class="search-icon">
+								<IconSearch size={16} aria-hidden="true" />
+							</span>
 						</div>
 					</div>
 
-					<button
-						onclick={handleSearch}
-						class="px-5 py-2.5 bg-linear-to-r from-amber-500 to-orange-600 text-white rounded-xl hover:from-amber-400 hover:to-orange-500 text-sm font-semibold transition-all shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40"
-					>
-						Search
-					</button>
+					<button onclick={handleSearch} class="search-button"> Search </button>
 				</div>
 			</div>
 
 			<!-- Event Type Distribution -->
 			{#if eventTypes.length > 0}
-				<div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 mb-6">
-					<h3 class="text-lg font-semibold text-white mb-4">Event Distribution</h3>
-					<div class="flex flex-wrap gap-2">
+				<div class="distribution-panel">
+					<h3 class="panel-title">Event Distribution</h3>
+					<div class="event-chip-list">
 						{#each eventTypes.slice(0, 12) as type (type.name)}
 							<button
 								onclick={() => {
 									selectedEventType = type.name;
 									handleEventTypeChange();
 								}}
-								class="px-4 py-2 rounded-xl text-sm font-medium transition-all border
-									{selectedEventType === type.name
-									? 'bg-linear-to-r from-amber-500 to-orange-600 text-white border-transparent shadow-lg shadow-amber-500/25'
-									: eventColors[type.name] ||
-										'bg-slate-700/50 text-slate-300 border-slate-600/50 hover:bg-slate-700'}"
+								class={[
+									'event-filter-chip',
+									selectedEventType === type.name
+										? 'event-filter-chip--active'
+										: getEventToneClass(type.name)
+								]}
 							>
 								{type.name}
-								<span class="ml-2 opacity-75">{type.count.toLocaleString()}</span>
+								<span class="event-chip-count">{type.count.toLocaleString()}</span>
 							</button>
 						{/each}
 					</div>
@@ -229,119 +221,79 @@
 			{/if}
 
 			<!-- Events Table -->
-			<div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden">
-				<div class="p-5 border-b border-white/10 flex items-center justify-between">
-					<h3 class="font-semibold text-white">
+			<div class="events-panel">
+				<div class="events-panel-header">
+					<h3 class="events-title">
 						Events
-						<span class="text-sm font-normal text-slate-400 ml-2">
+						<span class="events-count">
 							({totalEvents.toLocaleString()} total)
 						</span>
 					</h3>
-					<button
-						class="px-4 py-2 text-sm text-slate-300 hover:text-white border border-white/10 rounded-xl hover:bg-white/5 transition-all"
-					>
-						Export CSV
-					</button>
+					<button class="export-button"> Export CSV </button>
 				</div>
 
 				{#if loading}
-					<div class="flex items-center justify-center py-20">
-						<div class="relative">
-							<div class="w-10 h-10 border-4 border-amber-500/20 rounded-full"></div>
-							<div
-								class="absolute top-0 left-0 w-10 h-10 border-4 border-amber-500 rounded-full animate-spin border-t-transparent"
-							></div>
-						</div>
+					<div class="loading-state">
+						<div class="spinner"></div>
 					</div>
 				{:else if error}
-					<div class="p-8 text-center">
-						<div
-							class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-red-500/10 flex items-center justify-center"
-						>
+					<div class="state-panel">
+						<div class="state-icon state-icon--error">
 							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: alert-circle (error state) -->
 							<IconAlertCircle size={32} aria-hidden="true" />
 						</div>
-						<p class="text-red-400 mb-4">{error}</p>
-						<button
-							onclick={loadEvents}
-							class="px-5 py-2.5 bg-red-500/20 text-red-400 rounded-xl hover:bg-red-500/30 border border-red-500/30 transition-all"
-						>
-							Retry
-						</button>
+						<p class="error-message">{error}</p>
+						<button onclick={loadEvents} class="retry-button"> Retry </button>
 					</div>
 				{:else if events.length === 0}
-					<div class="p-12 text-center">
-						<div
-							class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-amber-500/10 flex items-center justify-center"
-						>
+					<div class="state-panel state-panel--empty">
+						<div class="state-icon state-icon--amber">
 							<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: bolt (no events empty state) -->
 							<IconBolt size={32} aria-hidden="true" />
 						</div>
-						<h3 class="text-lg font-medium text-white mb-2">No Events Found</h3>
-						<p class="text-slate-400">Try adjusting your filters or time range</p>
+						<h3 class="state-title">No Events Found</h3>
+						<p class="state-copy">Try adjusting your filters or time range</p>
 					</div>
 				{:else}
-					<div class="overflow-x-auto">
-						<table class="w-full text-sm">
-							<thead class="bg-slate-800/50">
+					<div class="table-scroll">
+						<table class="events-table">
+							<thead>
 								<tr>
-									<th
-										class="text-left py-4 px-5 font-medium text-slate-400 uppercase text-xs tracking-wider"
-										>Event</th
-									>
-									<th
-										class="text-left py-4 px-5 font-medium text-slate-400 uppercase text-xs tracking-wider"
-										>User</th
-									>
-									<th
-										class="text-left py-4 px-5 font-medium text-slate-400 uppercase text-xs tracking-wider"
-										>Page</th
-									>
-									<th
-										class="text-left py-4 px-5 font-medium text-slate-400 uppercase text-xs tracking-wider"
-										>Properties</th
-									>
-									<th
-										class="text-left py-4 px-5 font-medium text-slate-400 uppercase text-xs tracking-wider"
-										>Source</th
-									>
-									<th
-										class="text-right py-4 px-5 font-medium text-slate-400 uppercase text-xs tracking-wider"
-										>Time</th
-									>
+									<th>Event</th>
+									<th>User</th>
+									<th>Page</th>
+									<th>Properties</th>
+									<th>Source</th>
+									<th class="align-right">Time</th>
 								</tr>
 							</thead>
-							<tbody class="divide-y divide-white/5">
+							<tbody>
 								{#each events as event (event.id)}
-									<tr class="hover:bg-white/5 cursor-pointer transition-colors">
-										<td class="py-4 px-5">
-											<span
-												class="px-3 py-1.5 rounded-lg text-xs font-medium border {eventColors[
-													event.event_type
-												] || 'bg-slate-700/50 text-slate-300 border-slate-600/50'}"
-											>
+									<tr class="event-row">
+										<td>
+											<span class={['event-badge', getEventToneClass(event.event_type)]}>
 												{event.event_name}
 											</span>
 										</td>
-										<td class="py-4 px-5">
+										<td>
 											{#if event.user_id}
-												<span class="text-white">{event.user_id}</span>
+												<span class="user-id">{event.user_id}</span>
 											{:else}
-												<span class="text-slate-500 italic">Anonymous</span>
+												<span class="anonymous-user">Anonymous</span>
 											{/if}
 										</td>
-										<td class="py-4 px-5 max-w-[200px] truncate text-slate-400">
+										<td class="path-cell">
 											{event.page_path || '-'}
 										</td>
-										<td class="py-4 px-5 max-w-[200px] truncate text-slate-500 font-mono text-xs">
+										<td class="properties-cell">
 											{formatProperties(event.properties || {})}
 										</td>
-										<td class="py-4 px-5">
-											<span class="text-xs text-slate-500 capitalize">
+										<td>
+											<span class="source-cell">
 												{event.channel || '-'}
 											</span>
 										</td>
-										<td class="py-4 px-5 text-right text-slate-400 whitespace-nowrap">
+										<td class="time-cell">
 											{formatDate(event.created_at)}
 										</td>
 									</tr>
@@ -352,18 +304,18 @@
 
 					<!-- Pagination -->
 					{#if totalPages > 1}
-						<div class="p-5 border-t border-white/10 flex items-center justify-between">
-							<p class="text-sm text-slate-400">
+						<div class="pagination">
+							<p class="pagination-label">
 								Page {page} of {totalPages}
 							</p>
-							<div class="flex items-center gap-2">
+							<div class="pagination-actions">
 								<button
 									onclick={() => {
 										page = Math.max(1, page - 1);
 										loadEvents();
 									}}
 									disabled={page === 1}
-									class="px-4 py-2 text-sm border border-white/10 rounded-xl hover:bg-white/5 text-slate-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+									class="pagination-button"
 								>
 									Previous
 								</button>
@@ -373,7 +325,7 @@
 										loadEvents();
 									}}
 									disabled={page === totalPages}
-									class="px-4 py-2 text-sm border border-white/10 rounded-xl hover:bg-white/5 text-slate-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+									class="pagination-button"
 								>
 									Next
 								</button>
@@ -385,3 +337,541 @@
 		{/if}
 	</div>
 </div>
+
+<style>
+	.events-page {
+		min-height: 100%;
+		background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #020617 100%);
+		color: #f8fafc;
+	}
+
+	.events-container {
+		width: min(100%, 80rem);
+		margin: 0 auto;
+		padding: 2rem 1rem;
+	}
+
+	.header-title-group,
+	.header-icon,
+	.loading-state,
+	.filters-row,
+	.search-field,
+	.event-chip-list,
+	.events-panel-header,
+	.state-icon,
+	.pagination,
+	.pagination-actions {
+		display: flex;
+	}
+
+	.events-header {
+		margin-bottom: 2rem;
+	}
+
+	.header-title-group {
+		align-items: center;
+		gap: 1rem;
+		margin-bottom: 0.5rem;
+	}
+
+	.header-icon {
+		width: 3rem;
+		height: 3rem;
+		align-items: center;
+		justify-content: center;
+		border-radius: 1rem;
+		background: linear-gradient(135deg, #f59e0b, #ea580c);
+		box-shadow: 0 12px 26px rgba(245, 158, 11, 0.2);
+		color: #ffffff;
+	}
+
+	.page-title {
+		margin: 0;
+		color: #ffffff;
+		font-size: 1.5rem;
+		font-weight: 700;
+		letter-spacing: 0;
+		line-height: 1.2;
+	}
+
+	.page-subtitle {
+		margin: 0;
+		color: #94a3b8;
+		font-size: 0.875rem;
+	}
+
+	.loading-state {
+		align-items: center;
+		justify-content: center;
+		padding: 5rem 0;
+	}
+
+	.spinner {
+		width: 2.5rem;
+		height: 2.5rem;
+		border: 4px solid rgba(245, 158, 11, 0.2);
+		border-top-color: transparent;
+		border-right-color: #f59e0b;
+		border-radius: 999px;
+		animation: spin 0.8s linear infinite;
+	}
+
+	.spinner--large {
+		width: 3rem;
+		height: 3rem;
+	}
+
+	.filters-panel,
+	.distribution-panel,
+	.events-panel {
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		background: rgba(255, 255, 255, 0.05);
+		backdrop-filter: blur(24px);
+		-webkit-backdrop-filter: blur(24px);
+	}
+
+	.filters-panel,
+	.distribution-panel {
+		margin-bottom: 1.5rem;
+		border-radius: 1rem;
+	}
+
+	.filters-panel {
+		padding: 1.25rem;
+	}
+
+	.filters-row {
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.event-select,
+	.search-input {
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		border-radius: 0.75rem;
+		background: rgba(30, 41, 59, 0.5);
+		color: #ffffff;
+		font: inherit;
+		font-size: 0.875rem;
+		outline: none;
+		transition:
+			border-color 0.2s ease,
+			box-shadow 0.2s ease;
+	}
+
+	.event-select {
+		padding: 0.625rem 1rem;
+	}
+
+	.event-select:focus,
+	.search-input:focus {
+		border-color: rgba(245, 158, 11, 0.5);
+		box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25);
+	}
+
+	.search-column {
+		min-width: min(100%, 12.5rem);
+		flex: 1;
+	}
+
+	.search-field {
+		position: relative;
+	}
+
+	.search-input {
+		width: 100%;
+		padding: 0.625rem 1rem 0.625rem 2.75rem;
+	}
+
+	.search-input::placeholder {
+		color: #64748b;
+	}
+
+	.search-icon {
+		position: absolute;
+		top: 50%;
+		left: 1rem;
+		display: inline-flex;
+		color: #64748b;
+		transform: translateY(-50%);
+	}
+
+	.search-button,
+	.event-filter-chip--active {
+		border-color: transparent;
+		background: linear-gradient(90deg, #f59e0b, #ea580c);
+		box-shadow: 0 12px 26px rgba(245, 158, 11, 0.25);
+		color: #ffffff;
+	}
+
+	.search-button {
+		border: 0;
+		border-radius: 0.75rem;
+		padding: 0.625rem 1.25rem;
+		font-size: 0.875rem;
+		font-weight: 600;
+		transition:
+			background 0.2s ease,
+			box-shadow 0.2s ease;
+	}
+
+	.search-button:hover,
+	.search-button:focus-visible {
+		background: linear-gradient(90deg, #fbbf24, #f97316);
+		box-shadow: 0 14px 30px rgba(245, 158, 11, 0.4);
+	}
+
+	.distribution-panel {
+		padding: 1.5rem;
+	}
+
+	.panel-title {
+		margin: 0 0 1rem;
+		color: #ffffff;
+		font-size: 1.125rem;
+		font-weight: 600;
+	}
+
+	.event-chip-list {
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	.event-filter-chip,
+	.event-badge {
+		border: 1px solid;
+		font-weight: 500;
+		transition:
+			background 0.2s ease,
+			border-color 0.2s ease,
+			box-shadow 0.2s ease,
+			color 0.2s ease;
+	}
+
+	.event-filter-chip {
+		border-radius: 0.75rem;
+		padding: 0.5rem 1rem;
+		font-size: 0.875rem;
+	}
+
+	.event-filter-chip:not(.event-filter-chip--active):hover,
+	.event-filter-chip:not(.event-filter-chip--active):focus-visible {
+		background: rgba(51, 65, 85, 0.9);
+	}
+
+	.event-chip-count {
+		margin-left: 0.5rem;
+		opacity: 0.75;
+	}
+
+	.event-chip--blue {
+		border-color: rgba(59, 130, 246, 0.3);
+		background: rgba(59, 130, 246, 0.2);
+		color: #60a5fa;
+	}
+
+	.event-chip--emerald {
+		border-color: rgba(16, 185, 129, 0.3);
+		background: rgba(16, 185, 129, 0.2);
+		color: #34d399;
+	}
+
+	.event-chip--purple {
+		border-color: rgba(168, 85, 247, 0.3);
+		background: rgba(168, 85, 247, 0.2);
+		color: #c084fc;
+	}
+
+	.event-chip--amber {
+		border-color: rgba(245, 158, 11, 0.3);
+		background: rgba(245, 158, 11, 0.2);
+		color: #fbbf24;
+	}
+
+	.event-chip--pink {
+		border-color: rgba(236, 72, 153, 0.3);
+		background: rgba(236, 72, 153, 0.2);
+		color: #f472b6;
+	}
+
+	.event-chip--cyan {
+		border-color: rgba(6, 182, 212, 0.3);
+		background: rgba(6, 182, 212, 0.2);
+		color: #22d3ee;
+	}
+
+	.event-chip--red {
+		border-color: rgba(239, 68, 68, 0.3);
+		background: rgba(239, 68, 68, 0.2);
+		color: #f87171;
+	}
+
+	.event-chip--slate {
+		border-color: rgba(71, 85, 105, 0.5);
+		background: rgba(51, 65, 85, 0.5);
+		color: #cbd5e1;
+	}
+
+	.events-panel {
+		overflow: hidden;
+		border-radius: 1rem;
+	}
+
+	.events-panel-header {
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+		padding: 1.25rem;
+	}
+
+	.events-title {
+		margin: 0;
+		color: #ffffff;
+		font-weight: 600;
+	}
+
+	.events-count {
+		margin-left: 0.5rem;
+		color: #94a3b8;
+		font-size: 0.875rem;
+		font-weight: 400;
+	}
+
+	.export-button,
+	.pagination-button {
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		border-radius: 0.75rem;
+		background: transparent;
+		color: #cbd5e1;
+		padding: 0.5rem 1rem;
+		font-size: 0.875rem;
+		transition:
+			background 0.2s ease,
+			color 0.2s ease,
+			opacity 0.2s ease;
+	}
+
+	.export-button:hover,
+	.export-button:focus-visible,
+	.pagination-button:hover,
+	.pagination-button:focus-visible {
+		background: rgba(255, 255, 255, 0.05);
+		color: #ffffff;
+	}
+
+	.state-panel {
+		padding: 2rem;
+		text-align: center;
+	}
+
+	.state-panel--empty {
+		padding: 3rem 1.5rem;
+	}
+
+	.state-icon {
+		width: 4rem;
+		height: 4rem;
+		align-items: center;
+		justify-content: center;
+		margin: 0 auto 1rem;
+		border-radius: 1rem;
+	}
+
+	.state-icon--error {
+		background: rgba(239, 68, 68, 0.1);
+		color: #f87171;
+	}
+
+	.state-icon--amber {
+		background: rgba(245, 158, 11, 0.1);
+		color: #fbbf24;
+	}
+
+	.error-message {
+		margin: 0 0 1rem;
+		color: #f87171;
+	}
+
+	.retry-button {
+		border: 1px solid rgba(239, 68, 68, 0.3);
+		border-radius: 0.75rem;
+		background: rgba(239, 68, 68, 0.2);
+		color: #f87171;
+		padding: 0.625rem 1.25rem;
+		transition: background 0.2s ease;
+	}
+
+	.retry-button:hover,
+	.retry-button:focus-visible {
+		background: rgba(239, 68, 68, 0.3);
+	}
+
+	.state-title {
+		margin: 0 0 0.5rem;
+		color: #ffffff;
+		font-size: 1.125rem;
+		font-weight: 500;
+	}
+
+	.state-copy {
+		margin: 0;
+		color: #94a3b8;
+	}
+
+	.table-scroll {
+		overflow-x: auto;
+	}
+
+	.events-table {
+		width: 100%;
+		min-width: 60rem;
+		border-collapse: collapse;
+		font-size: 0.875rem;
+	}
+
+	.events-table thead {
+		background: rgba(30, 41, 59, 0.5);
+	}
+
+	.events-table th,
+	.events-table td {
+		padding: 1rem 1.25rem;
+	}
+
+	.events-table th {
+		color: #94a3b8;
+		font-size: 0.75rem;
+		font-weight: 500;
+		letter-spacing: 0.04em;
+		text-align: left;
+		text-transform: uppercase;
+	}
+
+	.events-table tbody tr + tr {
+		border-top: 1px solid rgba(255, 255, 255, 0.05);
+	}
+
+	.event-row {
+		cursor: pointer;
+		transition: background 0.2s ease;
+	}
+
+	.event-row:hover {
+		background: rgba(255, 255, 255, 0.05);
+	}
+
+	.event-badge {
+		display: inline-flex;
+		border-radius: 0.5rem;
+		padding: 0.375rem 0.75rem;
+		font-size: 0.75rem;
+	}
+
+	.user-id {
+		color: #ffffff;
+	}
+
+	.anonymous-user {
+		color: #64748b;
+		font-style: italic;
+	}
+
+	.path-cell,
+	.properties-cell {
+		max-width: 12.5rem;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.path-cell,
+	.time-cell {
+		color: #94a3b8;
+	}
+
+	.properties-cell {
+		color: #64748b;
+		font-family:
+			ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+			monospace;
+		font-size: 0.75rem;
+	}
+
+	.source-cell {
+		color: #64748b;
+		font-size: 0.75rem;
+		text-transform: capitalize;
+	}
+
+	.time-cell,
+	.align-right {
+		text-align: right;
+	}
+
+	.time-cell {
+		white-space: nowrap;
+	}
+
+	.pagination {
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		border-top: 1px solid rgba(255, 255, 255, 0.1);
+		padding: 1.25rem;
+	}
+
+	.pagination-label {
+		margin: 0;
+		color: #94a3b8;
+		font-size: 0.875rem;
+	}
+
+	.pagination-actions {
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.pagination-button:disabled {
+		cursor: not-allowed;
+		opacity: 0.5;
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	@media (min-width: 640px) {
+		.events-container {
+			padding-right: 1.5rem;
+			padding-left: 1.5rem;
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.events-container {
+			padding-right: 2rem;
+			padding-left: 2rem;
+		}
+	}
+
+	@media (max-width: 767px) {
+		.events-panel-header,
+		.pagination {
+			align-items: flex-start;
+			flex-direction: column;
+		}
+
+		.event-select,
+		.search-column,
+		.search-button,
+		.export-button,
+		.pagination-actions,
+		.pagination-button {
+			width: 100%;
+		}
+	}
+</style>

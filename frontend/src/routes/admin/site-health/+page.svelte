@@ -12,10 +12,10 @@
 	 *
 	 */
 
-	import { browser } from '$app/environment';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import IconHeartbeat from '@tabler/icons-svelte-runes/icons/heartbeat';
@@ -119,20 +119,28 @@
 
 	// Lifecycle
 
-	// Svelte 5: Initialize on mount with cleanup
-	$effect(() => {
-		if (!browser) return;
+	onMount(() => {
+		let cancelled = false;
 
 		const init = async () => {
-			await connections.load();
-			connections.startAutoRefresh();
-			await loadHealthData();
-			isLoading = false;
+			try {
+				await connections.load();
+				connections.startAutoRefresh();
+				await loadHealthData();
+			} catch (error) {
+				console.error('Failed to initialize site health dashboard:', error);
+				toastStore.error('Failed to initialize site health dashboard');
+			} finally {
+				if (!cancelled) {
+					isLoading = false;
+				}
+			}
 		};
-		init();
 
-		// Cleanup on destroy
+		void init();
+
 		return () => {
+			cancelled = true;
 			connections.stopAutoRefresh();
 		};
 	});
@@ -325,6 +333,78 @@
 		{ id: 'database', label: 'Database', icon: IconDatabase },
 		{ id: 'server', label: 'Server', icon: IconServer }
 	] as const;
+
+	function getConnectionIndicatorClass(healthy: boolean): Record<string, boolean> {
+		return {
+			'connection-indicator': true,
+			healthy
+		};
+	}
+
+	function getIconWrapperClass(spinning: boolean): Record<string, boolean> {
+		return {
+			'icon-wrapper': true,
+			spinning
+		};
+	}
+
+	function getTabClass(tabId: (typeof tabs)[number]['id']): Record<string, boolean> {
+		return {
+			tab: true,
+			active: activeTab === tabId
+		};
+	}
+
+	function getMetricValueClass(options: {
+		good?: boolean;
+		bad?: boolean;
+		large?: boolean;
+	}): Record<string, boolean> {
+		return {
+			'metric-value': true,
+			large: options.large ?? false,
+			good: options.good ?? false,
+			bad: options.bad ?? false
+		};
+	}
+
+	function getApiHealthCardClass(hasErrors: boolean): Record<string, boolean> {
+		return {
+			'api-health-card': true,
+			'has-errors': hasErrors
+		};
+	}
+
+	function getCheckItemClass(status: HealthCheck['status']): Record<string, boolean> {
+		return {
+			'check-item': true,
+			good: status === 'good',
+			warning: status === 'warning',
+			critical: status === 'critical'
+		};
+	}
+
+	function getMetricCardClass(modifiers: Record<string, boolean> = {}): Record<string, boolean> {
+		return {
+			'metric-card': true,
+			...modifiers
+		};
+	}
+
+	function getEmptyStateClass(error: boolean): Record<string, boolean> {
+		return {
+			'empty-state': true,
+			error
+		};
+	}
+
+	function getPercentWidth(value: number | null | undefined): string {
+		return `${Math.max(0, Math.min(100, value ?? 0))}%`;
+	}
+
+	function getScoreDashOffset(score: number): number {
+		return 339.3 - (339.3 * Math.max(0, Math.min(100, score))) / 100;
+	}
 </script>
 
 <svelte:head>
@@ -348,7 +428,7 @@
 			<div class="header-actions">
 				<!-- API Connections Status -->
 				<div class="connections-status">
-					<div class="connection-indicator" class:healthy={connectedCount > 0}>
+					<div class={getConnectionIndicatorClass(connectedCount > 0)}>
 						{#if connectedCount > 0}
 							<IconPlugConnected size={14} />
 						{:else}
@@ -365,14 +445,14 @@
 				</div>
 
 				<button class="btn-primary" onclick={runHealthTests} disabled={isRunningTests}>
-					<span class="icon-wrapper" class:spinning={isRunningTests}>
+					<span class={getIconWrapperClass(isRunningTests)}>
 						<IconPlayerPlay size={18} />
 					</span>
 					<span>{isRunningTests ? 'Running...' : 'Run Tests'}</span>
 				</button>
 
 				<button class="btn-secondary" onclick={handleRefresh} disabled={isRefreshing}>
-					<span class="icon-wrapper" class:spinning={isRefreshing}>
+					<span class={getIconWrapperClass(isRefreshing)}>
 						<IconRefresh size={18} />
 					</span>
 					<span>Refresh</span>
@@ -390,7 +470,7 @@
 			<!-- Health Score Card -->
 			<div class="score-section" in:scale={{ duration: 500, start: 0.9, delay: 100 }}>
 				<div class="score-card">
-					<div class="score-ring" style="--score-color: {getScoreColor($scoreDisplay)}">
+					<div class="score-ring" style:--score-color={getScoreColor($scoreDisplay)}>
 						<svg aria-hidden="true" viewBox="0 0 120 120">
 							<circle class="ring-bg" cx="60" cy="60" r="54" />
 							<circle
@@ -398,7 +478,7 @@
 								cx="60"
 								cy="60"
 								r="54"
-								style="stroke-dashoffset: {339.3 - (339.3 * $scoreDisplay) / 100}"
+								style:stroke-dashoffset={getScoreDashOffset($scoreDisplay)}
 							/>
 						</svg>
 						<div class="score-value">
@@ -407,7 +487,7 @@
 						</div>
 					</div>
 					<div class="score-info">
-						<h2 class="score-label" style="color: {getScoreColor($scoreDisplay)}">
+						<h2 class="score-label" style:color={getScoreColor($scoreDisplay)}>
 							{getScoreLabel(Math.round($scoreDisplay))}
 						</h2>
 						<p class="score-description">
@@ -465,11 +545,7 @@
 				<div class="tabs">
 					{#each tabs as tab (tab.id)}
 						{@const TabIcon = tab.icon}
-						<button
-							class="tab"
-							class:active={activeTab === tab.id}
-							onclick={() => (activeTab = tab.id)}
-						>
+						<button class={getTabClass(tab.id)} onclick={() => (activeTab = tab.id)}>
 							<TabIcon size={18} />
 							<span>{tab.label}</span>
 						</button>
@@ -534,9 +610,10 @@
 									<div class="metric">
 										<span class="metric-label">SSL Certificate</span>
 										<span
-											class="metric-value"
-											class:good={healthData?.security.sslValid}
-											class:bad={!healthData?.security.sslValid}
+											class={getMetricValueClass({
+												good: healthData?.security.sslValid === true,
+												bad: healthData?.security.sslValid === false
+											})}
 										>
 											{healthData?.security.sslValid ? 'Valid' : 'Invalid'}
 										</span>
@@ -546,9 +623,10 @@
 									<div class="metric">
 										<span class="metric-label">Vulnerabilities</span>
 										<span
-											class="metric-value"
-											class:good={healthData.security.vulnerabilities === 0}
-											class:bad={healthData.security.vulnerabilities > 0}
+											class={getMetricValueClass({
+												good: healthData.security.vulnerabilities === 0,
+												bad: healthData.security.vulnerabilities > 0
+											})}
 										>
 											{healthData.security.vulnerabilities}
 										</span>
@@ -580,9 +658,10 @@
 									<div class="metric">
 										<span class="metric-label">Status</span>
 										<span
-											class="metric-value"
-											class:good={healthData.database.connected}
-											class:bad={!healthData.database.connected}
+											class={getMetricValueClass({
+												good: healthData.database.connected,
+												bad: !healthData.database.connected
+											})}
 										>
 											{healthData.database.connected ? 'Connected' : 'Disconnected'}
 										</span>
@@ -653,7 +732,7 @@
 									Manage Connections
 								</button>
 							</div>
-							<div class="api-health-card" class:has-errors={servicesWithErrors.length > 0}>
+							<div class={getApiHealthCardClass(servicesWithErrors.length > 0)}>
 								<div class="api-health-header">
 									<IconAlertTriangle size={20} />
 									<span>Connection Issues</span>
@@ -679,7 +758,8 @@
 								<div class="api-health-bar">
 									<div
 										class="api-health-progress"
-										style="width: {overallHealth}%; background: {getScoreColor(overallHealth)}"
+										style:width={getPercentWidth(overallHealth)}
+										style:background={getScoreColor(overallHealth)}
 									></div>
 								</div>
 							</div>
@@ -694,13 +774,10 @@
 								{#each healthData.checks as check, i (check.id)}
 									{@const StatusIcon = getStatusIcon(check.status)}
 									<div
-										class="check-item"
-										class:good={check.status === 'good'}
-										class:warning={check.status === 'warning'}
-										class:critical={check.status === 'critical'}
+										class={getCheckItemClass(check.status)}
 										in:fly={{ y: 10, duration: 300, delay: 50 * i }}
 									>
-										<div class="check-icon" style="color: {getStatusColor(check.status)}">
+										<div class="check-icon" style:color={getStatusColor(check.status)}>
 											<StatusIcon size={20} />
 										</div>
 										<div class="check-info">
@@ -756,7 +833,7 @@
 											<div class="metric-bar">
 												<div
 													class="metric-progress"
-													style="width: {healthData?.performance.memoryUsage ?? 0}%"
+													style:width={getPercentWidth(healthData?.performance.memoryUsage)}
 												></div>
 											</div>
 										</div>
@@ -775,7 +852,7 @@
 											<div class="metric-bar">
 												<div
 													class="metric-progress"
-													style="width: {healthData?.performance.cpuUsage ?? 0}%"
+													style:width={getPercentWidth(healthData?.performance.cpuUsage)}
 												></div>
 											</div>
 										</div>
@@ -794,7 +871,7 @@
 											<div class="metric-bar">
 												<div
 													class="metric-progress"
-													style="width: {healthData?.performance.diskUsage ?? 0}%"
+													style:width={getPercentWidth(healthData?.performance.diskUsage)}
 												></div>
 											</div>
 										</div>
@@ -820,9 +897,11 @@
 						{#if healthData?.security.sslValid !== null}
 							<div class="metrics-grid">
 								<div
-									class="metric-card ssl"
-									class:valid={healthData?.security.sslValid}
-									class:invalid={!healthData?.security.sslValid}
+									class={getMetricCardClass({
+										ssl: true,
+										valid: healthData?.security.sslValid === true,
+										invalid: healthData?.security.sslValid === false
+									})}
 								>
 									<div class="metric-icon">
 										<IconCertificate size={24} />
@@ -859,18 +938,17 @@
 											<div class="metric-bar">
 												<div
 													class="metric-progress"
-													style="width: {healthData?.security.headersScore ??
-														0}%; background: {getScoreColor(
-														healthData?.security.headersScore ?? 0
-													)}"
+													style:width={getPercentWidth(healthData?.security.headersScore)}
+													style:background={getScoreColor(healthData?.security.headersScore ?? 0)}
 												></div>
 											</div>
 										</div>
 									</div>
 								{/if}
 								<div
-									class="metric-card"
-									class:critical={(healthData?.security.vulnerabilities ?? 0) > 0}
+									class={getMetricCardClass({
+										critical: (healthData?.security.vulnerabilities ?? 0) > 0
+									})}
 								>
 									<div class="metric-icon">
 										<IconBug size={24} />
@@ -878,9 +956,10 @@
 									<div class="metric-content">
 										<span class="metric-label">Vulnerabilities</span>
 										<span
-											class="metric-value large"
-											class:good={(healthData?.security.vulnerabilities ?? 0) === 0}
-											>{healthData?.security.vulnerabilities ?? 0}</span
+											class={getMetricValueClass({
+												large: true,
+												good: (healthData?.security.vulnerabilities ?? 0) === 0
+											})}>{healthData?.security.vulnerabilities ?? 0}</span
 										>
 									</div>
 									{#if (healthData?.security.vulnerabilities ?? 0) === 0}
@@ -908,7 +987,12 @@
 						<h3>Database Health</h3>
 						{#if healthData?.database.connected}
 							<div class="metrics-grid">
-								<div class="metric-card connection" class:connected={healthData.database.connected}>
+								<div
+									class={getMetricCardClass({
+										connection: true,
+										connected: healthData.database.connected
+									})}
+								>
 									<div class="metric-icon">
 										<IconDatabase size={24} />
 									</div>
@@ -957,7 +1041,7 @@
 								{/if}
 							</div>
 						{:else}
-							<div class="empty-state" class:error={healthData?.database.connected === false}>
+							<div class={getEmptyStateClass(healthData?.database.connected === false)}>
 								<IconDatabase size={48} />
 								<h4>
 									{healthData?.database.connected === false

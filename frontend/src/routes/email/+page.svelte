@@ -124,40 +124,35 @@
 	<!-- Tabs -->
 	<div class="tabs">
 		<button
-			class="tab"
-			class:active={selectedTab === 'campaigns'}
+			class={['tab', { active: selectedTab === 'campaigns' }]}
 			onclick={() => (selectedTab = 'campaigns')}
 		>
 			<IconMail size={20} />
 			Campaigns
 		</button>
 		<button
-			class="tab"
-			class:active={selectedTab === 'sequences'}
+			class={['tab', { active: selectedTab === 'sequences' }]}
 			onclick={() => (selectedTab = 'sequences')}
 		>
 			<IconBolt size={20} />
 			Sequences
 		</button>
 		<button
-			class="tab"
-			class:active={selectedTab === 'automations'}
+			class={['tab', { active: selectedTab === 'automations' }]}
 			onclick={() => (selectedTab = 'automations')}
 		>
 			<IconRocket size={20} />
 			Automations
 		</button>
 		<button
-			class="tab"
-			class:active={selectedTab === 'templates'}
+			class={['tab', { active: selectedTab === 'templates' }]}
 			onclick={() => (selectedTab = 'templates')}
 		>
 			<IconFileText size={20} />
 			Templates
 		</button>
 		<button
-			class="tab"
-			class:active={selectedTab === 'analytics'}
+			class={['tab', { active: selectedTab === 'analytics' }]}
 			onclick={() => (selectedTab = 'analytics')}
 		>
 			<IconChartBar size={20} />
@@ -187,7 +182,7 @@
 						{#each emailStore.campaigns as campaign (campaign.id)}
 							<div class="campaign-card">
 								<div class="campaign-header">
-									<div class="campaign-status" class:active={campaign.status === 'sending'}>
+									<div class={['campaign-status', { active: campaign.status === 'sending' }]}>
 										{campaign.status}
 									</div>
 									<div class="campaign-type">{campaign.type}</div>
@@ -249,7 +244,7 @@
 							<div class="sequence-card">
 								<div class="sequence-header">
 									<h3 class="sequence-name">{sequence.name}</h3>
-									<div class="sequence-status" class:active={sequence.status === 'active'}>
+									<div class={['sequence-status', { active: sequence.status === 'active' }]}>
 										{sequence.status}
 									</div>
 								</div>

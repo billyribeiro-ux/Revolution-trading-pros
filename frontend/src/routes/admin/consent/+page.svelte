@@ -108,10 +108,10 @@
 <div class="admin-consent">
 	<div class="admin-page-container">
 		<!-- Animated Background -->
-		<div class="bg-effects">
-			<div class="bg-blob bg-blob-1"></div>
-			<div class="bg-blob bg-blob-2"></div>
-			<div class="bg-blob bg-blob-3"></div>
+		<div class="background-effects">
+			<div class="background-blob background-blob-1"></div>
+			<div class="background-blob background-blob-2"></div>
+			<div class="background-blob background-blob-3"></div>
 		</div>
 
 		<header class="header">
@@ -150,29 +150,25 @@
 		<!-- Tabs -->
 		<nav class="tabs">
 			<button
-				class="tab"
-				class:active={activeTab === 'overview'}
+				class={['tab', { active: activeTab === 'overview' }]}
 				onclick={() => (activeTab = 'overview')}
 			>
 				Overview
 			</button>
 			<button
-				class="tab"
-				class:active={activeTab === 'audit'}
+				class={['tab', { active: activeTab === 'audit' }]}
 				onclick={() => (activeTab = 'audit')}
 			>
 				Audit Log
 			</button>
 			<button
-				class="tab"
-				class:active={activeTab === 'cookies'}
+				class={['tab', { active: activeTab === 'cookies' }]}
 				onclick={() => (activeTab = 'cookies')}
 			>
 				Cookies
 			</button>
 			<button
-				class="tab"
-				class:active={activeTab === 'ab-tests'}
+				class={['tab', { active: activeTab === 'ab-tests' }]}
 				onclick={() => (activeTab = 'ab-tests')}
 			>
 				A/B Tests
@@ -226,11 +222,15 @@
 									</div>
 									<div class="category-bar-track">
 										<div
-											class="category-bar-fill"
+											class={[
+												'category-bar-fill',
+												{
+													low: rate < 0.3,
+													medium: rate >= 0.3 && rate < 0.6,
+													high: rate >= 0.6
+												}
+											]}
 											style:width={`${rate * 100}%`}
-											class:low={rate < 0.3}
-											class:medium={rate >= 0.3 && rate < 0.6}
-											class:high={rate >= 0.6}
 										></div>
 									</div>
 								</div>
@@ -311,10 +311,14 @@
 											<td>{formatDate(entry.timestamp)}</td>
 											<td>
 												<span
-													class="action-badge"
-													class:given={entry.action === 'consent_given'}
-													class:updated={entry.action === 'consent_updated'}
-													class:revoked={entry.action === 'consent_revoked'}
+													class={[
+														'action-badge',
+														{
+															given: entry.action === 'consent_given',
+															updated: entry.action === 'consent_updated',
+															revoked: entry.action === 'consent_revoked'
+														}
+													]}
 												>
 													{entry.action.replace('consent_', '')}
 												</span>

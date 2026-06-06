@@ -119,8 +119,18 @@
 		return `${x},${y}`;
 	}).join(' ');
 
-	// ctaRef is read by GSAP ScrollTrigger; other sections animate via [data-gsap] attribute selectors.
-	let ctaRef: HTMLElement | undefined;
+	// ctaElement is read by GSAP ScrollTrigger; other sections animate via [data-gsap] attribute selectors.
+	let ctaElement: HTMLElement | undefined;
+
+	function attachCtaElement(element: HTMLElement) {
+		ctaElement = element;
+
+		return () => {
+			if (ctaElement === element) {
+				ctaElement = undefined;
+			}
+		};
+	}
 
 	/**
 	 * GSAP Animation Controller - Svelte 5 / Dec 2025 Pattern
@@ -290,14 +300,14 @@
 					});
 
 					// ===== CTA SECTION SCROLL ANIMATION =====
-					if (ctaRef) {
-						const ctaElement = ctaRef;
+					if (ctaElement) {
+						const triggerElement = ctaElement;
 						ScrollTrigger.create({
-							trigger: ctaElement,
+							trigger: triggerElement,
 							start: 'top 85%',
 							onEnter: () => {
 								gsap.fromTo(
-									ctaElement,
+									triggerElement,
 									{ scale: 0.95, opacity: 0, y: 30 },
 									{
 										scale: 1,
@@ -488,7 +498,7 @@
 		<section class="hero perspective-hero">
 			<div class="hero-grid-plane hero__grid-plane" aria-hidden="true">
 				<div class="hero__grid-fade"></div>
-				<div class="hero__grid-lines grid-lines"></div>
+				<div class="hero__plane-lines"></div>
 			</div>
 
 			<div class="hero-chart hero__chart-wrap" aria-hidden="true">
@@ -611,7 +621,7 @@
 			</div>
 			<div class="benefits__grid">
 				{#each benefits as item (item.title)}
-					<div class="benefits__card group">
+					<div class="benefits__card">
 						<div class="benefits__icon">
 							{#if item.iconType === 'analysis'}
 								<svg
@@ -621,20 +631,9 @@
 									stroke="currentColor"
 									stroke-width="1.5"
 								>
-									<circle
-										cx="12"
-										cy="12"
-										r="10"
-										stroke-dasharray="4 4"
-										class="group-hover:animate-spin-slow"
-									/>
-									<path d="M12 2v20M2 12h20" class="opacity-30" />
-									<circle
-										cx="12"
-										cy="12"
-										r="3"
-										class="group-hover:scale-125 transition-transform"
-									/>
+									<circle cx="12" cy="12" r="10" stroke-dasharray="4 4" class="svg-spin-track" />
+									<path d="M12 2v20M2 12h20" class="svg-muted" />
+									<circle cx="12" cy="12" r="3" class="svg-scale-target" />
 								</svg>
 							{:else if item.iconType === 'radar'}
 								<svg
@@ -645,7 +644,7 @@
 									stroke-width="1.5"
 								>
 									<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-									<path class="group-hover:animate-pulse" d="M12 8v4l3 3" stroke-linecap="round" />
+									<path class="svg-pulse-target" d="M12 8v4l3 3" stroke-linecap="round" />
 								</svg>
 							{:else if item.iconType === 'strategy'}
 								<svg
@@ -658,7 +657,7 @@
 									<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
 									<path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
 									<path
-										class="group-hover:animate-draw-line"
+										class="svg-draw-line"
 										stroke-dasharray="10"
 										stroke-dashoffset="10"
 										d="M9 8h6M9 12h4"
@@ -673,20 +672,10 @@
 									stroke="currentColor"
 									stroke-width="1.5"
 								>
-									<circle cx="12" cy="5" r="2" class="group-hover:fill-current" />
-									<circle
-										cx="5"
-										cy="19"
-										r="2"
-										class="group-hover:fill-current transition-colors delay-100"
-									/>
-									<circle
-										cx="19"
-										cy="19"
-										r="2"
-										class="group-hover:fill-current transition-colors delay-200"
-									/>
-									<path d="M12 7l-7 12M12 7l7 12M5 19h14" class="opacity-50" />
+									<circle cx="12" cy="5" r="2" class="svg-fill-target" />
+									<circle cx="5" cy="19" r="2" class="svg-fill-target svg-fill-delay-short" />
+									<circle cx="19" cy="19" r="2" class="svg-fill-target svg-fill-delay-long" />
+									<path d="M12 7l-7 12M12 7l7 12M5 19h14" class="svg-soft" />
 								</svg>
 							{/if}
 						</div>
@@ -697,7 +686,7 @@
 			</div>
 		</section>
 
-		<section bind:this={ctaRef} class="cta">
+		<section {@attach attachCtaElement} class="cta">
 			<div class="cta__bg-pattern" aria-hidden="true"></div>
 			<div class="cta__inner">
 				<h2 class="cta__title">Ready to Level Up?</h2>
@@ -878,8 +867,7 @@
 		background: linear-gradient(to bottom, var(--ltr-bg) 0%, transparent 50%, var(--ltr-bg) 100%);
 		z-index: 10;
 	}
-	.grid-lines,
-	.hero__grid-lines {
+	.hero__plane-lines {
 		width: 100%;
 		height: 100%;
 		background-size: 60px 60px;
@@ -1314,13 +1302,40 @@
 		line-height: 1.625;
 	}
 
-	/* SVG group-hover animations — keep :global so SVG inner shapes can opt in */
+	.svg-muted {
+		opacity: 0.3;
+	}
+	.svg-soft {
+		opacity: 0.5;
+	}
+	.svg-scale-target {
+		transform-box: fill-box;
+		transform-origin: center;
+		transition: transform var(--rtp-dur-base) var(--rtp-ease-out);
+	}
+	.benefits__card:hover .svg-scale-target {
+		transform: scale(1.25);
+	}
+	.svg-fill-target {
+		fill: transparent;
+		transition: fill var(--rtp-dur-base) var(--rtp-ease-out);
+	}
+	.svg-fill-delay-short {
+		transition-delay: 100ms;
+	}
+	.svg-fill-delay-long {
+		transition-delay: 200ms;
+	}
+	.benefits__card:hover .svg-fill-target {
+		fill: currentColor;
+	}
+
 	@keyframes draw-line {
 		to {
 			stroke-dashoffset: 0;
 		}
 	}
-	:global(.animate-draw-line) {
+	.benefits__card:hover .svg-draw-line {
 		animation: draw-line 1s ease-out forwards;
 	}
 
@@ -1330,8 +1345,17 @@
 			transform-origin: center;
 		}
 	}
-	:global(.animate-spin-slow) {
+	.benefits__card:hover .svg-spin-track {
 		animation: spin-slow 8s linear infinite;
+	}
+
+	@keyframes icon-pulse {
+		50% {
+			opacity: 0.5;
+		}
+	}
+	.benefits__card:hover .svg-pulse-target {
+		animation: icon-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 	}
 
 	/* ─────────────────────────────────────────────────────────────────

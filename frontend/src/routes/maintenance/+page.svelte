@@ -957,8 +957,7 @@
 </svelte:head>
 
 <div
-	class="maintenance-experience"
-	class:mounted
+	class={{ 'maintenance-experience': true, mounted }}
 	style:--scroll-progress={scrollProgress}
 	style:--glare-x={`${glareX}%`}
 	style:--glare-y={`${glareY}%`}
@@ -975,9 +974,11 @@
 		<div class="tape-track" aria-hidden="true">
 			{#each [...liveTickers, ...liveTickers, ...liveTickers] as ticker, index (ticker.symbol + '-' + index)}
 				<div
-					class="ticker-pill"
-					class:up={ticker.direction === 'up'}
-					class:down={ticker.direction === 'down'}
+					class={{
+						'ticker-pill': true,
+						up: ticker.direction === 'up',
+						down: ticker.direction === 'down'
+					}}
 				>
 					<span class="ticker-symbol">{ticker.symbol}</span>
 					<span>${ticker.price.toFixed(2)}</span>
@@ -991,7 +992,7 @@
 	<div class="grid-field" aria-hidden="true"></div>
 
 	<main class="page-shell">
-		<section id="hero" class="hero reveal" class:visible={visible.hero}>
+		<section id="hero" class={{ hero: true, reveal: true, visible: visible.hero }}>
 			<div class="hero-copy">
 				<p class="eyebrow">
 					<span></span>
@@ -1022,7 +1023,7 @@
 				</div>
 				<div class="deploy-steps">
 					{#each stageLines as line, index (line)}
-						<div class="deploy-step" class:complete={index < 3}>
+						<div class={{ 'deploy-step': true, complete: index < 3 }}>
 							<span>{String(index + 1).padStart(2, '0')}</span>
 							<p>{line}</p>
 						</div>
@@ -1031,7 +1032,10 @@
 			</div>
 		</section>
 
-		<section id="operations" class="ops-section reveal" class:visible={visible.operations}>
+		<section
+			id="operations"
+			class={{ 'ops-section': true, reveal: true, visible: visible.operations }}
+		>
 			<div class="section-heading ops-heading">
 				<p class="section-kicker">Trading operations center</p>
 				<h2>A market-native buildout for faster decisions, cleaner risk, and sharper education.</h2>
@@ -1077,7 +1081,7 @@
 			</div>
 		</section>
 
-		<section id="charts" class="charts-section reveal" class:visible={visible.charts}>
+		<section id="charts" class={{ 'charts-section': true, reveal: true, visible: visible.charts }}>
 			<div class="section-heading">
 				<p class="section-kicker">Market data lab</p>
 				<h2>Charts, liquidity, and scanner data stay connected while the page moves.</h2>
@@ -1087,7 +1091,7 @@
 				<div class="chart-toolbar">
 					<div>
 						<span class="market-label">SPX upgrade feed</span>
-						<strong class:up={mainDirection === 'up'} class:down={mainDirection === 'down'}>
+						<strong class={{ up: mainDirection === 'up', down: mainDirection === 'down' }}>
 							{latestMainPrice.toFixed(2)}
 						</strong>
 					</div>
@@ -1095,7 +1099,7 @@
 						{#each timeframes as timeframe (timeframe)}
 							<button
 								type="button"
-								class:active={activeTimeframe === timeframe}
+								class={{ active: activeTimeframe === timeframe }}
 								aria-pressed={activeTimeframe === timeframe}
 								onclick={() => (activeTimeframe = timeframe)}
 							>
@@ -1142,7 +1146,10 @@
 			</div>
 		</section>
 
-		<section id="signals" class="signals-section reveal" class:visible={visible.signals}>
+		<section
+			id="signals"
+			class={{ 'signals-section': true, reveal: true, visible: visible.signals }}
+		>
 			<div class="section-heading">
 				<p class="section-kicker">Scanner engine</p>
 				<h2>Built for traders who need signal clarity under pressure.</h2>
@@ -1174,7 +1181,7 @@
 						<span>{averageConfidence}% avg confidence</span>
 					</div>
 					{#each scannerSignals as signal (signal.id)}
-						<article class="signal-row" class:cooling={signal.status === 'cooling'}>
+						<article class={{ 'signal-row': true, cooling: signal.status === 'cooling' }}>
 							<div>
 								<strong>{signal.symbol}</strong>
 								<span>{signal.type}</span>
@@ -1193,7 +1200,10 @@
 			</div>
 		</section>
 
-		<section id="academy" class="academy-section reveal" class:visible={visible.academy}>
+		<section
+			id="academy"
+			class={{ 'academy-section': true, reveal: true, visible: visible.academy }}
+		>
 			<div class="section-heading">
 				<p class="section-kicker">Trading university</p>
 				<h2>
@@ -1208,7 +1218,7 @@
 							type="button"
 							role="tab"
 							aria-selected={activeAcademyTrack === track.id}
-							class:active={activeAcademyTrack === track.id}
+							class={{ active: activeAcademyTrack === track.id }}
 							style:--track-accent={track.accent}
 							onclick={() => (activeAcademyTrack = track.id)}
 						>
@@ -1275,8 +1285,7 @@
 
 		<section
 			id="infrastructure"
-			class="infra-section reveal"
-			class:visible={visible.infrastructure}
+			class={{ 'infra-section': true, reveal: true, visible: visible.infrastructure }}
 		>
 			<div class="section-heading">
 				<p class="section-kicker">Infrastructure</p>
@@ -1286,7 +1295,7 @@
 			<div class="infra-grid">
 				<div class="node-list">
 					{#each nodes as node (node.id)}
-						<article class="node-row" class:migrating={node.status === 'migrating'}>
+						<article class={{ 'node-row': true, migrating: node.status === 'migrating' }}>
 							<div>
 								<strong>{node.id}</strong>
 								<span>{node.region}</span>
@@ -1320,7 +1329,7 @@
 			</div>
 		</section>
 
-		<section id="access" class="access-section reveal" class:visible={visible.access}>
+		<section id="access" class={{ 'access-section': true, reveal: true, visible: visible.access }}>
 			{#if isSubmitted}
 				<div class="success-panel" role="status">
 					<div class="success-mark" aria-hidden="true">

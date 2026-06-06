@@ -841,6 +841,59 @@
 				return '#64748b';
 		}
 	}
+
+	function getPillClass(active: boolean): Record<string, boolean> {
+		return {
+			pill: true,
+			active
+		};
+	}
+
+	function getIconButtonClass(
+		options: { active?: boolean; danger?: boolean } = {}
+	): Record<string, boolean> {
+		return {
+			'icon-btn': true,
+			active: options.active ?? false,
+			danger: options.danger ?? false
+		};
+	}
+
+	function getAlertCardClass(alert: RoomAlert): Record<string, boolean> {
+		return {
+			'alert-card': true,
+			'is-new': alert.is_new,
+			'is-pinned': alert.is_pinned
+		};
+	}
+
+	function getTradeRowClass(trade: RoomTrade): Record<string, boolean> {
+		return {
+			'is-open': trade.status === 'open'
+		};
+	}
+
+	function getDirectionBadgeClass(direction: string): Record<string, boolean> {
+		return {
+			'direction-badge': true,
+			long: direction === 'long',
+			short: direction === 'short'
+		};
+	}
+
+	function getStatusBadgeClass(trade: RoomTrade): Record<string, boolean> {
+		return {
+			'status-badge': true,
+			open: trade.status === 'open',
+			closed: trade.status === 'closed',
+			win: trade.result === 'WIN',
+			loss: trade.result === 'LOSS'
+		};
+	}
+
+	function getVideoThumbnailBackground(thumbnailUrl: string | null | undefined): string {
+		return `url('${thumbnailUrl || '/placeholder-video.jpg'}')`;
+	}
 </script>
 
 <svelte:head>
@@ -914,7 +967,7 @@
 								<tr>
 									<td class="ticker-cell"><strong>{entry.ticker}</strong></td>
 									<td>
-										<span class="bias-badge" style="background: {getBiasColor(entry.bias)}"
+										<span class="bias-badge" style:background={getBiasColor(entry.bias)}
 											>{entry.bias}</span
 										>
 									</td>
@@ -963,29 +1016,25 @@
 				<div class="header-actions">
 					<div class="filter-pills">
 						<button
-							class="pill"
-							class:active={alertTypeFilter === 'all'}
+							class={getPillClass(alertTypeFilter === 'all')}
 							onclick={() => (alertTypeFilter = 'all')}
 						>
 							All
 						</button>
 						<button
-							class="pill"
-							class:active={alertTypeFilter === 'ENTRY'}
+							class={getPillClass(alertTypeFilter === 'ENTRY')}
 							onclick={() => (alertTypeFilter = 'ENTRY')}
 						>
 							Entry
 						</button>
 						<button
-							class="pill"
-							class:active={alertTypeFilter === 'EXIT'}
+							class={getPillClass(alertTypeFilter === 'EXIT')}
 							onclick={() => (alertTypeFilter = 'EXIT')}
 						>
 							Exit
 						</button>
 						<button
-							class="pill"
-							class:active={alertTypeFilter === 'UPDATE'}
+							class={getPillClass(alertTypeFilter === 'UPDATE')}
 							onclick={() => (alertTypeFilter = 'UPDATE')}
 						>
 							Update
@@ -1019,10 +1068,10 @@
 			{:else}
 				<div class="alerts-list">
 					{#each filteredAlerts as alert (alert.id)}
-						<div class="alert-card" class:is-new={alert.is_new} class:is-pinned={alert.is_pinned}>
+						<div class={getAlertCardClass(alert)}>
 							<div class="alert-header">
 								<div class="alert-meta">
-									<span class="alert-type" style="background: {getAlertTypeColor(alert.alert_type)}"
+									<span class="alert-type" style:background={getAlertTypeColor(alert.alert_type)}
 										>{alert.alert_type}</span
 									>
 									<span class="alert-ticker">{alert.ticker}</span>
@@ -1035,8 +1084,7 @@
 								</div>
 								<div class="alert-actions">
 									<button
-										class="icon-btn"
-										class:active={alert.is_pinned}
+										class={getIconButtonClass({ active: alert.is_pinned })}
 										onclick={() => toggleAlertPin(alert)}
 										title={alert.is_pinned ? 'Unpin' : 'Pin'}
 									>
@@ -1047,8 +1095,7 @@
 										{/if}
 									</button>
 									<button
-										class="icon-btn"
-										class:active={alert.is_new}
+										class={getIconButtonClass({ active: alert.is_new })}
 										onclick={() => toggleAlertNew(alert)}
 										title={alert.is_new ? 'Mark as read' : 'Mark as new'}
 									>
@@ -1107,23 +1154,17 @@
 			<div class="section-header">
 				<h2>Trade Tracker</h2>
 				<div class="filter-pills">
-					<button
-						class="pill"
-						class:active={tradeFilter === 'all'}
-						onclick={() => (tradeFilter = 'all')}
-					>
+					<button class={getPillClass(tradeFilter === 'all')} onclick={() => (tradeFilter = 'all')}>
 						All ({tradesCount})
 					</button>
 					<button
-						class="pill"
-						class:active={tradeFilter === 'open'}
+						class={getPillClass(tradeFilter === 'open')}
 						onclick={() => (tradeFilter = 'open')}
 					>
 						Active ({activeTradesCount})
 					</button>
 					<button
-						class="pill"
-						class:active={tradeFilter === 'closed'}
+						class={getPillClass(tradeFilter === 'closed')}
 						onclick={() => (tradeFilter = 'closed')}
 					>
 						Closed ({tradesCount - activeTradesCount})
@@ -1157,17 +1198,13 @@
 						</thead>
 						<tbody>
 							{#each filteredTrades as trade (trade.id)}
-								<tr class:is-open={trade.status === 'open'}>
+								<tr class={getTradeRowClass(trade)}>
 									<td class="ticker-cell"><strong>{trade.ticker}</strong></td>
 									<td>
 										<span class="type-badge">{trade.trade_type}</span>
 									</td>
 									<td>
-										<span
-											class="direction-badge"
-											class:long={trade.direction === 'long'}
-											class:short={trade.direction === 'short'}
-										>
+										<span class={getDirectionBadgeClass(trade.direction)}>
 											{trade.direction.toUpperCase()}
 										</span>
 									</td>
@@ -1182,7 +1219,7 @@
 									</td>
 									<td>
 										{#if trade.pnl !== null}
-											<span class="pnl-value" style="color: {getTradeResultColor(trade.result)}">
+											<span class="pnl-value" style:color={getTradeResultColor(trade.result)}>
 												{formatCurrency(trade.pnl)}
 												<small>({formatPercent(trade.pnl_percent)})</small>
 											</span>
@@ -1191,13 +1228,7 @@
 										{/if}
 									</td>
 									<td>
-										<span
-											class="status-badge"
-											class:open={trade.status === 'open'}
-											class:closed={trade.status === 'closed'}
-											class:win={trade.result === 'WIN'}
-											class:loss={trade.result === 'LOSS'}
-										>
+										<span class={getStatusBadgeClass(trade)}>
 											{#if trade.status === 'closed'}
 												{trade.result || 'CLOSED'}
 											{:else}
@@ -1247,37 +1278,29 @@
 			<div class="section-header">
 				<h2>Video Library</h2>
 				<div class="filter-pills">
-					<button
-						class="pill"
-						class:active={videoFilter === 'all'}
-						onclick={() => (videoFilter = 'all')}
-					>
+					<button class={getPillClass(videoFilter === 'all')} onclick={() => (videoFilter = 'all')}>
 						All
 					</button>
 					<button
-						class="pill"
-						class:active={videoFilter === 'weekly'}
+						class={getPillClass(videoFilter === 'weekly')}
 						onclick={() => (videoFilter = 'weekly')}
 					>
 						Weekly
 					</button>
 					<button
-						class="pill"
-						class:active={videoFilter === 'entry'}
+						class={getPillClass(videoFilter === 'entry')}
 						onclick={() => (videoFilter = 'entry')}
 					>
 						Entry
 					</button>
 					<button
-						class="pill"
-						class:active={videoFilter === 'exit'}
+						class={getPillClass(videoFilter === 'exit')}
 						onclick={() => (videoFilter = 'exit')}
 					>
 						Exit
 					</button>
 					<button
-						class="pill"
-						class:active={videoFilter === 'education'}
+						class={getPillClass(videoFilter === 'education')}
 						onclick={() => (videoFilter = 'education')}
 					>
 						Education
@@ -1300,7 +1323,7 @@
 						<div class="video-card">
 							<div
 								class="video-card-thumbnail"
-								style="background-image: url('{video.thumbnail_url || '/placeholder-video.jpg'}')"
+								style:background-image={getVideoThumbnailBackground(video.thumbnail_url)}
 							>
 								{#if video.formatted_duration}
 									<span class="duration">{video.formatted_duration}</span>

@@ -29,9 +29,9 @@
 
 	// Generate pagination URL
 	function getPageUrl(page: number): string {
-		const url = new URL(window.location.href);
-		url.searchParams.set('page', page.toString());
-		return url.toString();
+		const params = new URLSearchParams();
+		params.set('page', page.toString());
+		return `?${params.toString()}`;
 	}
 
 	// Scroll to section

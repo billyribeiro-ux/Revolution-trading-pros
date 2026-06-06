@@ -17,10 +17,10 @@
 			content: {
 				type: 'html',
 				data: `
-          <p style="font-size: 1.125rem; margin-bottom: 1.5rem; line-height: 1.6;">
-            Get <strong style="color: #6366f1;">20% OFF</strong> your first month when you sign up today!
+          <p>
+            Get <strong>20% OFF</strong> your first month when you sign up today!
           </p>
-          <ul style="text-align: left; margin-bottom: 1.5rem; line-height: 1.8;">
+          <ul>
             <li>✓ Live trading sessions daily</li>
             <li>✓ Real-time alerts & analysis</li>
             <li>✓ Community support</li>
@@ -33,7 +33,7 @@
 					link: '/live-trading-rooms/day-trading',
 					action: 'custom',
 					style: 'primary',
-					gradient: 'bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500'
+					gradient: 'linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899)'
 				},
 				{
 					text: 'Maybe Later',
@@ -90,10 +90,10 @@
 			content: {
 				type: 'html',
 				data: `
-          <p style="font-size: 1.25rem; margin-bottom: 1rem;">
-            Before you go, grab this <span style="color: #ef4444; font-weight: 700;">exclusive offer</span>!
+          <p>
+            Before you go, grab this <strong>exclusive offer</strong>!
           </p>
-          <p style="margin-bottom: 1.5rem; color: #94a3b8;">
+          <p>
             Join thousands of successful traders who trust our alerts and strategies.
           </p>
         `
@@ -104,7 +104,7 @@
 					link: '/alerts/explosive-swings',
 					action: 'custom',
 					style: 'primary',
-					gradient: 'bg-linear-to-r from-red-500 to-orange-500'
+					gradient: 'linear-gradient(90deg, #ef4444, #f97316)'
 				},
 				{
 					text: 'No Thanks',
@@ -160,7 +160,7 @@
 			content: {
 				type: 'html',
 				data: `
-          <p style="margin-bottom: 1.5rem; font-size: 1.125rem;">
+          <p>
             Get weekly trading insights, market analysis, and exclusive tips delivered to your inbox.
           </p>
         `
@@ -185,7 +185,7 @@
 					text: 'Subscribe Now',
 					action: 'submit',
 					style: 'primary',
-					gradient: 'bg-linear-to-r from-emerald-500 to-teal-500'
+					gradient: 'linear-gradient(90deg, #10b981, #14b8a6)'
 				}
 			],
 			closeButton: true,
@@ -236,10 +236,10 @@
 			content: {
 				type: 'html',
 				data: `
-          <div style="text-align: center;">
-            <div style="font-size: 3rem; margin-bottom: 0.5rem;">🔥</div>
-            <p style="font-weight: 700; font-size: 1.125rem; margin-bottom: 0.5rem;">Flash Sale!</p>
-            <p style="color: #94a3b8; font-size: 0.875rem;">Limited time: 30% off all plans</p>
+          <div>
+            <p>🔥</p>
+            <p><strong>Flash Sale!</strong></p>
+            <p>Limited time: 30% off all plans</p>
           </div>
         `
 			},
@@ -299,27 +299,19 @@
 			content: {
 				type: 'html',
 				data: `
-          <div style="text-align: center;">
-            <p style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; background: linear-gradient(to right, #f59e0b, #f97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-              3-DAY LIVE TRADING BOOTCAMP
-            </p>
-            <p style="font-size: 1.125rem; margin-bottom: 2rem; color: #94a3b8;">
+          <div>
+            <h3>3-DAY LIVE TRADING BOOTCAMP</h3>
+            <p>
               Learn advanced strategies from professional traders
             </p>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem;">
-              <div>
-                <div style="font-size: 2.5rem; font-weight: 700; color: #6366f1;">Day 1</div>
-                <div style="font-size: 0.875rem; color: #94a3b8;">Market Analysis</div>
-              </div>
-              <div>
-                <div style="font-size: 2.5rem; font-weight: 700; color: #8b5cf6;">Day 2</div>
-                <div style="font-size: 0.875rem; color: #94a3b8;">Live Trading</div>
-              </div>
-              <div>
-                <div style="font-size: 2.5rem; font-weight: 700; color: #ec4899;">Day 3</div>
-                <div style="font-size: 0.875rem; color: #94a3b8;">Q&A Session</div>
-              </div>
-            </div>
+            <dl>
+              <dt>Day 1</dt>
+              <dd>Market Analysis</dd>
+              <dt>Day 2</dt>
+              <dd>Live Trading</dd>
+              <dt>Day 3</dt>
+              <dd>Q&A Session</dd>
+            </dl>
           </div>
         `
 			},
@@ -329,7 +321,7 @@
 					link: '/live-trading-rooms/day-trading',
 					action: 'custom',
 					style: 'primary',
-					gradient: 'bg-linear-to-r from-orange-500 via-red-500 to-pink-500'
+					gradient: 'linear-gradient(90deg, #f97316, #ef4444, #ec4899)'
 				},
 				{
 					text: 'Learn More',

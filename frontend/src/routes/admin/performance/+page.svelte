@@ -124,10 +124,10 @@
 <div class="admin-performance">
 	<div class="admin-page-container">
 		<!-- Animated Background -->
-		<div class="bg-effects">
-			<div class="bg-blob bg-blob-1"></div>
-			<div class="bg-blob bg-blob-2"></div>
-			<div class="bg-blob bg-blob-3"></div>
+		<div class="background-effects">
+			<div class="background-blob background-blob-1"></div>
+			<div class="background-blob background-blob-2"></div>
+			<div class="background-blob background-blob-3"></div>
 		</div>
 
 		<!-- Header -->
@@ -251,10 +251,14 @@
 							<span>CPU Usage</span>
 							<div class="metric-bar-container">
 								<div
-									class="metric-bar"
-									class:warning={(dashboard?.server?.cpu_usage || 0) > 70}
-									class:danger={(dashboard?.server?.cpu_usage || 0) > 90}
-									style="width: {dashboard?.server?.cpu_usage || 0}%"
+									class={[
+										'metric-bar',
+										{
+											warning: (dashboard?.server?.cpu_usage || 0) > 70,
+											danger: (dashboard?.server?.cpu_usage || 0) > 90
+										}
+									]}
+									style:width={`${dashboard?.server?.cpu_usage || 0}%`}
 								></div>
 							</div>
 							<span class="metric-value">{formatPercent(dashboard?.server?.cpu_usage)}</span>
@@ -263,10 +267,14 @@
 							<span>Memory</span>
 							<div class="metric-bar-container">
 								<div
-									class="metric-bar"
-									class:warning={(dashboard?.server?.memory_usage || 0) > 70}
-									class:danger={(dashboard?.server?.memory_usage || 0) > 90}
-									style="width: {dashboard?.server?.memory_usage || 0}%"
+									class={[
+										'metric-bar',
+										{
+											warning: (dashboard?.server?.memory_usage || 0) > 70,
+											danger: (dashboard?.server?.memory_usage || 0) > 90
+										}
+									]}
+									style:width={`${dashboard?.server?.memory_usage || 0}%`}
 								></div>
 							</div>
 							<span class="metric-value">{formatPercent(dashboard?.server?.memory_usage)}</span>
@@ -275,10 +283,14 @@
 							<span>Disk</span>
 							<div class="metric-bar-container">
 								<div
-									class="metric-bar"
-									class:warning={(dashboard?.server?.disk_usage || 0) > 70}
-									class:danger={(dashboard?.server?.disk_usage || 0) > 90}
-									style="width: {dashboard?.server?.disk_usage || 0}%"
+									class={[
+										'metric-bar',
+										{
+											warning: (dashboard?.server?.disk_usage || 0) > 70,
+											danger: (dashboard?.server?.disk_usage || 0) > 90
+										}
+									]}
+									style:width={`${dashboard?.server?.disk_usage || 0}%`}
 								></div>
 							</div>
 							<span class="metric-value">{formatPercent(dashboard?.server?.disk_usage)}</span>
@@ -332,7 +344,7 @@
 							<div class="metric-bar-container">
 								<div
 									class="metric-bar success"
-									style="width: {dashboard?.cache?.hit_rate || 0}%"
+									style:width={`${dashboard?.cache?.hit_rate || 0}%`}
 								></div>
 							</div>
 							<span class="metric-value">{formatPercent(dashboard?.cache?.hit_rate)}</span>

@@ -95,12 +95,12 @@
 	<title>Form Entries | Revolution Admin</title>
 </svelte:head>
 
-<div>
+<div class="form-entries-page">
 	<!-- Header -->
-	<div class="flex items-center justify-between mb-6">
+	<div class="page-header">
 		<div>
-			<h1 class="text-3xl font-bold text-gray-900">Form Entries</h1>
-			<p class="text-gray-600 mt-1">View and manage form submissions</p>
+			<h1>Form Entries</h1>
+			<p>View and manage form submissions</p>
 		</div>
 		<Button onclick={handleExport} disabled={!selectedFormId || entries.length === 0}>
 			<IconDownload size={20} />
@@ -109,7 +109,7 @@
 	</div>
 
 	<!-- Form Selector -->
-	<div class="mb-6 max-w-md">
+	<div class="form-selector">
 		<Select
 			label="Select Form"
 			options={formOptions}
@@ -122,21 +122,21 @@
 	<!-- Entries List -->
 	{#if loading}
 		<Card>
-			<div class="text-center py-12">
-				<div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-				<p class="mt-4 text-gray-600">Loading entries...</p>
+			<div class="empty-state">
+				<div class="loading-spinner"></div>
+				<p>Loading entries...</p>
 			</div>
 		</Card>
 	{:else if !selectedFormId}
 		<Card>
-			<div class="text-center py-12">
-				<p class="text-gray-500">Please select a form to view entries</p>
+			<div class="empty-state">
+				<p>Please select a form to view entries</p>
 			</div>
 		</Card>
 	{:else if entries.length === 0}
 		<Card>
-			<div class="text-center py-12">
-				<p class="text-gray-500">No entries found for this form</p>
+			<div class="empty-state">
+				<p>No entries found for this form</p>
 			</div>
 		</Card>
 	{:else}
@@ -144,25 +144,24 @@
 			<Table headers={['ID', 'Status', 'Submitted', 'Preview', 'Actions']}>
 				{#each entries as entry (entry.id)}
 					<tr>
-						<td class="font-mono">#{entry.id}</td>
+						<td class="entry-id">#{entry.id}</td>
 						<td>
 							<Badge variant={entry.status === 'complete' ? 'success' : 'warning'}>
 								{entry.status}
 							</Badge>
 						</td>
 						<td>{new Date(entry.created_at).toLocaleString()}</td>
-						<td class="max-w-xs truncate text-gray-600">
+						<td class="entry-preview">
 							{JSON.stringify(entry.data).substring(0, 100)}...
 						</td>
 						<td>
-							<button
-								class="p-2 text-blue-600 hover:bg-blue-50 rounded transition-colors"
+							<a
+								class="entry-action"
+								href="/admin/forms/{selectedFormId}/entries/{entry.id}"
 								title="View Entry"
 							>
-								<a href="/admin/forms/{selectedFormId}/entries/{entry.id}">
-									<IconEye size={18} />
-								</a>
-							</button>
+								<IconEye size={18} />
+							</a>
 						</td>
 					</tr>
 				{/each}
@@ -170,3 +169,108 @@
 		</Card>
 	{/if}
 </div>
+
+<style>
+	.form-entries-page {
+		color: #111827;
+	}
+
+	.page-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.page-header h1 {
+		margin: 0;
+		color: #111827;
+		font-size: 1.875rem;
+		font-weight: 700;
+		line-height: 1.2;
+	}
+
+	.page-header p {
+		margin: 0.25rem 0 0;
+		color: #4b5563;
+	}
+
+	.form-selector {
+		max-width: 28rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.empty-state {
+		padding: 3rem 1rem;
+		text-align: center;
+		color: #6b7280;
+	}
+
+	.empty-state p {
+		margin: 0;
+	}
+
+	.empty-state .loading-spinner + p {
+		margin-top: 1rem;
+		color: #4b5563;
+	}
+
+	.loading-spinner {
+		width: 3rem;
+		height: 3rem;
+		margin: 0 auto;
+		border: 2px solid transparent;
+		border-bottom-color: #2563eb;
+		border-radius: 999px;
+		animation: spin 0.8s linear infinite;
+	}
+
+	.entry-id {
+		font-family:
+			ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+			monospace;
+	}
+
+	.entry-preview {
+		max-width: 20rem;
+		overflow: hidden;
+		color: #4b5563;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.entry-action {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.5rem;
+		border-radius: 0.25rem;
+		color: #2563eb;
+		transition:
+			background-color 0.2s ease,
+			color 0.2s ease;
+	}
+
+	.entry-action:hover {
+		background: #eff6ff;
+	}
+
+	.entry-action:focus-visible {
+		outline: 2px solid #2563eb;
+		outline-offset: 2px;
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	@media (max-width: 640px) {
+		.page-header {
+			align-items: flex-start;
+			flex-direction: column;
+		}
+	}
+</style>

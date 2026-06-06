@@ -99,7 +99,7 @@
 	let favoriteBoards = $derived.by(() => boards.filter((b) => b.is_favorite && !b.is_archived));
 
 	// FIX-2026-04-26 (P3-7): defense-in-depth — `background_color` is user-controlled
-	// and rendered into a `style="border-left: ... {color}"` template. If the backend
+	// and rendered into dynamic style values. If the backend
 	// ever skips validation, an admin could inject CSS via something like
 	// `red; }/* … */`. Validate as a strict 6-digit hex on read; fall back to brand
 	// color otherwise.
@@ -240,10 +240,10 @@
 
 <div class="admin-boards">
 	<!-- Animated Background -->
-	<div class="bg-effects">
-		<div class="bg-blob bg-blob-1"></div>
-		<div class="bg-blob bg-blob-2"></div>
-		<div class="bg-blob bg-blob-3"></div>
+	<div class="background-effects">
+		<div class="background-blob background-blob-1"></div>
+		<div class="background-blob background-blob-2"></div>
+		<div class="background-blob background-blob-3"></div>
 	</div>
 
 	<!-- Header -->
@@ -347,8 +347,7 @@
 					<div class="folder-filter-list">
 						<button
 							onclick={() => (selectedFolder = null)}
-							class="folder-filter"
-							class:active={selectedFolder === null}
+							class={['folder-filter', { active: selectedFolder === null }]}
 						>
 							<IconLayoutKanban class="small-icon" />
 							All Boards
@@ -357,10 +356,11 @@
 						{#each folders as folder (folder.id)}
 							<button
 								onclick={() => (selectedFolder = folder.id)}
-								class="folder-filter"
-								class:active={selectedFolder === folder.id}
+								class={['folder-filter', { active: selectedFolder === folder.id }]}
 							>
-								<IconFolder class="small-icon" style="color: {folder.color}" />
+								<span class="folder-color-icon" style:--folder-color={safeColor(folder.color)}>
+									<IconFolder class="small-icon" />
+								</span>
 								{folder.title}
 								<span class="count-badge">{folder.board_count || 0}</span>
 							</button>
@@ -471,16 +471,14 @@
 					<div class="view-toggle">
 						<button
 							onclick={() => (viewMode = 'grid')}
-							class="view-button"
-							class:active={viewMode === 'grid'}
+							class={['view-button', { active: viewMode === 'grid' }]}
 							aria-label="Grid view"
 						>
 							<IconLayoutGrid class="toolbar-icon" />
 						</button>
 						<button
 							onclick={() => (viewMode = 'list')}
-							class="view-button"
-							class:active={viewMode === 'list'}
+							class={['view-button', { active: viewMode === 'list' }]}
 							aria-label="List view"
 						>
 							<IconList class="toolbar-icon" />
@@ -513,7 +511,7 @@
 								<a
 									href="/admin/boards/{board.id}"
 									class="board-card board-card--favorite"
-									style="border-left: 4px solid {safeColor(board.background_color)}"
+									style:border-left={`4px solid ${safeColor(board.background_color)}`}
 								>
 									<div class="board-card-header">
 										<h4 class="board-card-title">{board.title}</h4>
@@ -570,7 +568,7 @@
 									<a
 										href="/admin/boards/{board.id}"
 										class="board-card-link"
-										style="border-left: 4px solid {safeColor(board.background_color)}"
+										style:border-left={`4px solid ${safeColor(board.background_color)}`}
 									>
 										<div class="board-card-header">
 											<h4 class="board-card-title">
@@ -585,8 +583,7 @@
 													e.stopPropagation();
 													toggleFavorite(board);
 												}}
-												class="favorite-button"
-												class:active={board.is_favorite}
+												class={['favorite-button', { active: board.is_favorite }]}
 												aria-label={board.is_favorite ? 'Remove favorite' : 'Add favorite'}
 											>
 												{#if board.is_favorite}
@@ -660,7 +657,7 @@
 												<a href="/admin/boards/{board.id}" class="table-board-link">
 													<div
 														class="table-color-strip"
-														style="background-color: {safeColor(board.background_color)}"
+														style:background-color={safeColor(board.background_color)}
 													></div>
 													<div>
 														<div class="table-board-title">
@@ -874,7 +871,7 @@
 		color: #f9fafb;
 	}
 
-	.bg-effects {
+	.background-effects {
 		pointer-events: none;
 		position: fixed;
 		inset: 0;
@@ -882,7 +879,7 @@
 		z-index: 0;
 	}
 
-	.bg-blob {
+	.background-blob {
 		position: absolute;
 		width: 18rem;
 		height: 18rem;
@@ -891,19 +888,19 @@
 		opacity: 0.18;
 	}
 
-	.bg-blob-1 {
+	.background-blob-1 {
 		top: 5rem;
 		left: 8%;
 		background: #e6b800;
 	}
 
-	.bg-blob-2 {
+	.background-blob-2 {
 		top: 18rem;
 		right: 10%;
 		background: #3b82f6;
 	}
 
-	.bg-blob-3 {
+	.background-blob-3 {
 		bottom: 4rem;
 		left: 38%;
 		background: #10b981;
@@ -1240,6 +1237,11 @@
 		gap: 0.5rem;
 		padding: 0.5rem 0.75rem;
 		text-align: left;
+	}
+
+	.folder-color-icon {
+		display: inline-flex;
+		color: var(--folder-color);
 	}
 
 	.sidebar-action {

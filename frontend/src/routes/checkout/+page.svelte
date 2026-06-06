@@ -283,8 +283,10 @@
 					</li>
 					<li
 						id="nav-checkout-billing"
-						class:active={currentStep === 'billing'}
-						class:completed={currentStep === 'payment'}
+						class={{
+							active: currentStep === 'billing',
+							completed: currentStep === 'payment'
+						}}
 					>
 						<span class="step-number">
 							{#if currentStep === 'payment'}
@@ -297,8 +299,10 @@
 					</li>
 					<li
 						id="nav-checkout-payment"
-						class:active={currentStep === 'payment'}
-						class:disabled={currentStep === 'billing'}
+						class={{
+							active: currentStep === 'payment',
+							disabled: currentStep === 'billing'
+						}}
 					>
 						<span class="step-number">3</span>
 						<span class="step-label">Payment</span>
@@ -317,8 +321,7 @@
 						<!-- Step 1: Billing -->
 						<div
 							id="checkout-billing"
-							class="checkout-step"
-							class:active={currentStep === 'billing'}
+							class={['checkout-step', { active: currentStep === 'billing' }]}
 						>
 							<div class="card">
 								<div class="card-body">
@@ -343,8 +346,7 @@
 												id="billing_first_name"
 												name="billing_first_name"
 												bind:value={billing.firstName}
-												class="input-text"
-												class:error={billingErrors.firstName}
+												class={['input-text', { error: billingErrors.firstName }]}
 											/>
 											{#if billingErrors.firstName}
 												<span class="field-error">{billingErrors.firstName}</span>
@@ -360,8 +362,7 @@
 												id="billing_last_name"
 												name="billing_last_name"
 												bind:value={billing.lastName}
-												class="input-text"
-												class:error={billingErrors.lastName}
+												class={['input-text', { error: billingErrors.lastName }]}
 											/>
 											{#if billingErrors.lastName}
 												<span class="field-error">{billingErrors.lastName}</span>
@@ -378,8 +379,7 @@
 												name="billing_email"
 												autocomplete="email"
 												bind:value={billing.email}
-												class="input-text"
-												class:error={billingErrors.email}
+												class={['input-text', { error: billingErrors.email }]}
 											/>
 											{#if billingErrors.email}
 												<span class="field-error">{billingErrors.email}</span>
@@ -410,8 +410,7 @@
 												name="billing_address_1"
 												bind:value={billing.address1}
 												placeholder="House number and street name"
-												class="input-text"
-												class:error={billingErrors.address1}
+												class={['input-text', { error: billingErrors.address1 }]}
 											/>
 											{#if billingErrors.address1}
 												<span class="field-error">{billingErrors.address1}</span>
@@ -439,8 +438,7 @@
 												id="billing_city"
 												name="billing_city"
 												bind:value={billing.city}
-												class="input-text"
-												class:error={billingErrors.city}
+												class={['input-text', { error: billingErrors.city }]}
 											/>
 											{#if billingErrors.city}
 												<span class="field-error">{billingErrors.city}</span>
@@ -454,8 +452,7 @@
 												id="billing_state"
 												name="billing_state"
 												bind:value={billing.state}
-												class="input-text"
-												class:error={billingErrors.state}
+												class={['input-text', { error: billingErrors.state }]}
 											/>
 											{#if billingErrors.state}
 												<span class="field-error">{billingErrors.state}</span>
@@ -469,8 +466,7 @@
 												id="billing_postcode"
 												name="billing_postcode"
 												bind:value={billing.postcode}
-												class="input-text"
-												class:error={billingErrors.postcode}
+												class={['input-text', { error: billingErrors.postcode }]}
 											/>
 											{#if billingErrors.postcode}
 												<span class="field-error">{billingErrors.postcode}</span>
@@ -501,8 +497,7 @@
 						<!-- Step 2: Payment -->
 						<div
 							id="checkout-payment"
-							class="checkout-step"
-							class:active={currentStep === 'payment'}
+							class={['checkout-step', { active: currentStep === 'payment' }]}
 						>
 							<div class="card">
 								<div class="card-body">
@@ -525,8 +520,7 @@
 									<div class="payment-methods">
 										<!-- Credit Card (Stripe) -->
 										<div
-											class="payment-method"
-											class:selected={paymentMethod === 'stripe'}
+											class={['payment-method', { selected: paymentMethod === 'stripe' }]}
 											onclick={() => (paymentMethod = 'stripe')}
 											onkeydown={(e: KeyboardEvent) => {
 												if (e.key === 'Enter' || e.key === ' ') {

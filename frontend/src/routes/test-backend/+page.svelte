@@ -214,9 +214,13 @@
 
 					{#if newsletterMessage}
 						<div
-							class="message"
-							class:success={newsletterStatus === 'success'}
-							class:error={newsletterStatus === 'error'}
+							class={[
+								'message',
+								{
+									success: newsletterStatus === 'success',
+									error: newsletterStatus === 'error'
+								}
+							]}
 						>
 							{newsletterMessage}
 						</div>
@@ -246,8 +250,7 @@
 								placeholder="Your name"
 								required
 								disabled={formStatus === 'submitting'}
-								class="input-field"
-								class:error={formErrors.name}
+								class={['input-field', { error: Boolean(formErrors.name) }]}
 							/>
 							{#if formErrors.name}
 								<span class="error-text">{formErrors.name[0]}</span>
@@ -268,8 +271,7 @@
 								placeholder="your@email.com"
 								required
 								disabled={formStatus === 'submitting'}
-								class="input-field"
-								class:error={formErrors.email}
+								class={['input-field', { error: Boolean(formErrors.email) }]}
 							/>
 							{#if formErrors.email}
 								<span class="error-text">{formErrors.email[0]}</span>
@@ -285,8 +287,7 @@
 							placeholder="Your message..."
 							required
 							disabled={formStatus === 'submitting'}
-							class="input-field"
-							class:error={formErrors.message}
+							class={['input-field', { error: Boolean(formErrors.message) }]}
 							rows="5"
 						></textarea>
 						{#if formErrors.message}
@@ -296,9 +297,13 @@
 
 					{#if formMessage}
 						<div
-							class="message"
-							class:success={formStatus === 'success'}
-							class:error={formStatus === 'error'}
+							class={[
+								'message',
+								{
+									success: formStatus === 'success',
+									error: formStatus === 'error'
+								}
+							]}
 						>
 							{formMessage}
 						</div>
@@ -394,9 +399,13 @@
 
 				{#if popupMessage}
 					<div
-						class="popup-message"
-						class:success={popupStatus === 'success'}
-						class:error={popupStatus === 'error'}
+						class={[
+							'popup-message',
+							{
+								success: popupStatus === 'success',
+								error: popupStatus === 'error'
+							}
+						]}
 					>
 						{popupMessage}
 					</div>

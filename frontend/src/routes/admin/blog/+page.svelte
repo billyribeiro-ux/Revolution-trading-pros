@@ -824,10 +824,10 @@
 
 <div class="admin-blog">
 	<!-- Animated Background -->
-	<div class="bg-effects">
-		<div class="bg-blob bg-blob-1"></div>
-		<div class="bg-blob bg-blob-2"></div>
-		<div class="bg-blob bg-blob-3"></div>
+	<div class="background-effects">
+		<div class="background-blob background-blob--primary"></div>
+		<div class="background-blob background-blob--secondary"></div>
+		<div class="background-blob background-blob--tertiary"></div>
 	</div>
 
 	<div class="admin-page-container">
@@ -971,14 +971,14 @@
 				<!-- View Toggle -->
 				<div class="view-toggle">
 					<button
-						class:active={viewMode === 'grid'}
+						class={{ active: viewMode === 'grid' }}
 						onclick={() => (viewMode = 'grid')}
 						title="Grid View"
 					>
 						<IconLayoutGrid size={18} />
 					</button>
 					<button
-						class:active={viewMode === 'list'}
+						class={{ active: viewMode === 'list' }}
 						onclick={() => (viewMode = 'list')}
 						title="List View"
 					>
@@ -1046,7 +1046,7 @@
 					{#each posts as post (post.id)}
 						<!-- FIX-2026-04-26 (P3-10): drop per-card transition:scale; running 50+
 						     scale animations on every filter change is a perf hit. -->
-						<div class="post-card" class:selected={selectedPosts.has(post.id)}>
+						<div class={{ 'post-card': true, selected: selectedPosts.has(post.id) }}>
 							<!-- Selection Checkbox -->
 							<div class="post-select">
 								<input
@@ -1060,8 +1060,7 @@
 
 							<!-- Featured Star -->
 							<button
-								class="featured-toggle"
-								class:active={post.featured}
+								class={{ 'featured-toggle': true, active: post.featured }}
 								onclick={() => toggleFeatured(post)}
 							>
 								{#if post.featured}
@@ -1073,7 +1072,7 @@
 
 							<!-- Post Image -->
 							{#if post.featured_image}
-								<div class="post-image" style="background-image: url({post.featured_image})">
+								<div class="post-image" style:--post-image={`url(${post.featured_image})`}>
 									{#if post.status === 'scheduled'}
 										<div class="scheduled-overlay">
 											<IconClock size={20} />
@@ -1097,9 +1096,8 @@
 										{#if post.seo_score}
 											<span
 												class="seo-badge"
-												style="background: {getSeoScoreColor(
-													post.seo_score
-												)}20; color: {getSeoScoreColor(post.seo_score)}"
+												style:--seo-background={`${getSeoScoreColor(post.seo_score)}20`}
+												style:--seo-color={getSeoScoreColor(post.seo_score)}
 											>
 												SEO: {post.seo_score}
 											</span>
@@ -1258,18 +1256,19 @@
 									/>
 								</th>
 								<th class="th-title">Title</th>
-								<th class="th-author hidden-mobile">Author</th>
+								<th class="th-author table-mobile-optional">Author</th>
 								<th class="th-status">Status</th>
-								<th class="th-categories hidden-mobile hidden-tablet">Categories</th>
-								<th class="th-views hidden-mobile">Views</th>
-								<th class="th-seo hidden-mobile hidden-tablet">SEO</th>
-								<th class="th-published hidden-mobile">Published</th>
+								<th class="th-categories table-mobile-optional table-tablet-optional">Categories</th
+								>
+								<th class="th-views table-mobile-optional">Views</th>
+								<th class="th-seo table-mobile-optional table-tablet-optional">SEO</th>
+								<th class="th-published table-mobile-optional">Published</th>
 								<th class="th-actions">Actions</th>
 							</tr>
 						</thead>
 						<tbody>
 							{#each posts as post (post.id)}
-								<tr class:selected={selectedPosts.has(post.id)}>
+								<tr class={{ selected: selectedPosts.has(post.id) }}>
 									<td class="td-checkbox">
 										<input
 											id="post-select-list-{post.id}"
@@ -1291,13 +1290,13 @@
 											{post.status}
 										</span>
 									</td>
-									<td class="hidden-mobile">{post.author?.name || '-'}</td>
+									<td class="table-mobile-optional">{post.author?.name || '-'}</td>
 									<td class="td-status">
 										<span class="status-badge status-{post.status}">
 											{post.status}
 										</span>
 									</td>
-									<td class="hidden-mobile hidden-tablet">
+									<td class="table-mobile-optional table-tablet-optional">
 										{#if (post.categories?.length ?? 0) > 0}
 											<div class="table-category-tags">
 												{#each (post.categories || []).slice(0, 2) as categoryId, i (i)}
@@ -1320,13 +1319,13 @@
 											-
 										{/if}
 									</td>
-									<td class="hidden-mobile">{formatNumber(post.view_count || 0)}</td>
-									<td class="hidden-mobile hidden-tablet">
-										<div class="seo-score-bar" style="--score: {post.seo_score}%">
+									<td class="table-mobile-optional">{formatNumber(post.view_count || 0)}</td>
+									<td class="table-mobile-optional table-tablet-optional">
+										<div class="seo-score-bar" style:--score={`${post.seo_score}%`}>
 											{post.seo_score}
 										</div>
 									</td>
-									<td class="hidden-mobile"
+									<td class="table-mobile-optional"
 										>{post.published_at ? formatDate(post.published_at) : '-'}</td
 									>
 									<td class="td-actions">
@@ -1339,14 +1338,14 @@
 												<IconEdit size={16} />
 											</button>
 											<button
-												class="action-icon hidden-mobile"
+												class="action-icon table-mobile-optional"
 												onclick={() => (previewPost = post)}
 												title="Preview"
 											>
 												<IconEye size={16} />
 											</button>
 											<button
-												class="action-icon hidden-mobile hidden-tablet"
+												class="action-icon table-mobile-optional table-tablet-optional"
 												onclick={() => duplicatePost(post.id)}
 												title="Duplicate"
 											>
@@ -1843,6 +1842,7 @@
 	.post-image {
 		width: 100%;
 		height: 200px;
+		background-image: var(--post-image);
 		background-size: cover;
 		background-position: center;
 		background-color: rgba(148, 163, 184, 0.1);
@@ -1922,6 +1922,8 @@
 	}
 
 	.seo-badge {
+		background: var(--seo-background);
+		color: var(--seo-color);
 		padding: 0.25rem 0.75rem;
 		border-radius: 12px;
 		font-size: 0.75rem;
@@ -2130,12 +2132,12 @@
 		margin-top: 0.5rem;
 	}
 
-	/* Responsive visibility classes */
-	.hidden-mobile {
+	/* Responsive table column visibility */
+	.table-mobile-optional {
 		display: table-cell;
 	}
 
-	.hidden-tablet {
+	.table-tablet-optional {
 		display: table-cell;
 	}
 
@@ -2516,7 +2518,7 @@
 		}
 
 		/* Table responsive - hide non-essential columns */
-		:where(.hidden-mobile) {
+		:where(.table-mobile-optional) {
 			display: none;
 		}
 
@@ -2603,7 +2605,7 @@
 
 	/* Tablet (< 1024px) - hide extra columns */
 	@media (max-width: 1023.98px) {
-		:where(.hidden-tablet) {
+		:where(.table-tablet-optional) {
 			display: none;
 		}
 	}
