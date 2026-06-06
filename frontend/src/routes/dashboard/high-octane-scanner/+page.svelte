@@ -465,7 +465,9 @@
 											<strong>{trade.ticker}</strong>
 										</td>
 										<td>
-											<span class="bias bias--{trade.bias.toLowerCase()}">{trade.bias}</span>
+											<span class={['bias', `bias--${trade.bias.toLowerCase()}`]}>
+												{trade.bias}
+											</span>
 										</td>
 										<td class="entry-cell">{trade.entry}</td>
 										<td class="target-cell">{trade.target1}</td>
@@ -605,7 +607,9 @@
 						<!-- Alert Header Row with Inline Chevron -->
 						<div class="alert-row">
 							<div class="alert-info">
-								<span class="alert-type alert-type--{alert.type.toLowerCase()}">{alert.type}</span>
+								<span class={['alert-type', `alert-type--${alert.type.toLowerCase()}`]}>
+									{alert.type}
+								</span>
 								<span class="alert-ticker">{alert.ticker}</span>
 								<span class="alert-time">{alert.time}</span>
 							</div>
