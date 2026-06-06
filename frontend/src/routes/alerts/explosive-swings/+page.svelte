@@ -233,7 +233,7 @@
 				</div>
 			</div>
 
-			<div class="hero__preview" style="contain: layout style paint;">
+			<div class="hero__preview">
 				<div class="hero__preview-halo" aria-hidden="true"></div>
 
 				<div class="hero__preview-card">
@@ -462,7 +462,7 @@
 
 			<div class="methodology__grid">
 				{#each methodologySteps as step (step.title)}
-					<article data-gsap class="method-card method-card--{step.variant}">
+					<article data-gsap class={['method-card', `method-card--${step.variant}`]}>
 						<div class="method-card__icon">
 							{#if step.variant === 'emerald'}
 								<svg aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"
@@ -671,7 +671,7 @@
 						>
 							<span class="faq__q">{item.q}</span>
 							<svg
-								class="faq__chevron {openFaq === i ? 'faq__chevron--open' : ''}"
+								class={['faq__chevron', { 'faq__chevron--open': openFaq === i }]}
 								aria-hidden="true"
 								fill="none"
 								stroke="currentColor"
@@ -1033,6 +1033,7 @@
 		display: none;
 		position: relative;
 		perspective: 1000px;
+		contain: layout style paint;
 	}
 	@media (min-width: 1024px) {
 		.hero__preview {
