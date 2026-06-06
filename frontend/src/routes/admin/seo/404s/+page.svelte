@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
 	import { Card, Button, Badge, Table } from '$lib/components/ui';
 	import { addToast } from '$lib/utils/toast';
 	import { seoApi, type Error404 } from '$lib/api/seo';
@@ -23,13 +22,11 @@
 
 	// Svelte 5: Initialize on mount
 	onMount(() => {
-		if (!browser) return;
-
 		const init = async () => {
 			await loadErrors();
 			await loadStats();
 		};
-		init();
+		void init();
 	});
 
 	async function loadErrors() {
@@ -82,12 +79,12 @@
 	<title>404 Errors | Revolution Admin</title>
 </svelte:head>
 
-<div>
+<div class="errors-page">
 	<!-- Header -->
-	<div class="flex items-center justify-between mb-6">
+	<div class="page-header">
 		<div>
-			<h1 class="text-3xl font-bold text-gray-900">404 Error Monitor</h1>
-			<p class="text-gray-600 mt-1">Track and fix broken links on your site</p>
+			<h1 class="page-title">404 Error Monitor</h1>
+			<p class="page-subtitle">Track and fix broken links on your site</p>
 		</div>
 		<Button variant="danger" onclick={() => handleBulkDelete(true)}>
 			<IconTrash size={20} />
@@ -96,38 +93,40 @@
 	</div>
 
 	<!-- Stats -->
-	<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+	<div class="stats-grid">
 		<Card>
-			<p class="text-sm text-gray-600">Total 404s</p>
-			<p class="text-2xl font-bold mt-1">{stats.total}</p>
+			<p class="stat-label">Total 404s</p>
+			<p class="stat-value">{stats.total}</p>
 		</Card>
 		<Card>
-			<p class="text-sm text-gray-600">Unresolved</p>
-			<p class="text-2xl font-bold mt-1 text-red-600">{stats.unresolved}</p>
+			<p class="stat-label">Unresolved</p>
+			<p class="stat-value stat-value--danger">{stats.unresolved}</p>
 		</Card>
 		<Card>
-			<p class="text-sm text-gray-600">Resolved</p>
-			<p class="text-2xl font-bold mt-1 text-green-600">{stats.resolved}</p>
+			<p class="stat-label">Resolved</p>
+			<p class="stat-value stat-value--success">{stats.resolved}</p>
 		</Card>
 		<Card>
-			<p class="text-sm text-gray-600">Total Hits</p>
-			<p class="text-2xl font-bold mt-1">{stats.total_hits}</p>
+			<p class="stat-label">Total Hits</p>
+			<p class="stat-value">{stats.total_hits}</p>
 		</Card>
 	</div>
 
 	<!-- Errors List -->
 	{#if loading}
 		<Card>
-			<div class="text-center py-12">
-				<div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-				<p class="mt-4 text-gray-600">Loading 404 errors...</p>
+			<div class="state-card">
+				<div class="spinner" aria-label="Loading 404 errors"></div>
+				<p class="state-text">Loading 404 errors...</p>
 			</div>
 		</Card>
 	{:else if errors.length === 0}
 		<Card>
-			<div class="text-center py-12">
-				<IconAlertCircle size={48} class="mx-auto text-green-500 mb-4" />
-				<p class="text-gray-500">No 404 errors found. Great job!</p>
+			<div class="state-card">
+				<span class="state-icon state-icon--success">
+					<IconAlertCircle size={48} />
+				</span>
+				<p class="empty-text">No 404 errors found. Great job!</p>
 			</div>
 		</Card>
 	{:else}
@@ -135,7 +134,7 @@
 			<Table headers={['URL', 'Hit Count', 'Status', 'First Seen', 'Last Seen']}>
 				{#each errors as error (error.id)}
 					<tr>
-						<td class="font-mono text-sm max-w-md truncate">{error.url}</td>
+						<td class="url-cell">{error.url}</td>
 						<td>
 							<Badge variant={error.hit_count > 10 ? 'danger' : 'warning'}>
 								{error.hit_count} hits
@@ -146,10 +145,10 @@
 								{error.is_resolved ? 'Resolved' : 'Active'}
 							</Badge>
 						</td>
-						<td class="text-gray-600 text-sm">
+						<td class="date-cell">
 							{new Date(error.first_seen_at).toLocaleDateString()}
 						</td>
-						<td class="text-gray-600 text-sm">
+						<td class="date-cell">
 							{new Date(error.last_seen_at).toLocaleDateString()}
 						</td>
 					</tr>
@@ -158,23 +157,25 @@
 		</Card>
 
 		<!-- Suggested Actions -->
-		<Card class="mt-6">
-			<h3 class="text-lg font-bold text-gray-900 mb-4">Recommended Actions</h3>
-			<ul class="space-y-2 text-gray-700">
-				<li class="flex items-start gap-2">
-					<span class="text-blue-600 mt-1">→</span>
-					<span>Review high-traffic 404s and create redirects to relevant content</span>
-				</li>
-				<li class="flex items-start gap-2">
-					<span class="text-blue-600 mt-1">→</span>
-					<span>Check internal links that may be pointing to these broken URLs</span>
-				</li>
-				<li class="flex items-start gap-2">
-					<span class="text-blue-600 mt-1">→</span>
-					<span>Consider creating content for frequently accessed missing pages</span>
-				</li>
-			</ul>
-		</Card>
+		<div class="actions-card">
+			<Card>
+				<h3 class="section-title">Recommended Actions</h3>
+				<ul class="action-list">
+					<li class="action-item">
+						<span class="action-marker">→</span>
+						<span>Review high-traffic 404s and create redirects to relevant content</span>
+					</li>
+					<li class="action-item">
+						<span class="action-marker">→</span>
+						<span>Check internal links that may be pointing to these broken URLs</span>
+					</li>
+					<li class="action-item">
+						<span class="action-marker">→</span>
+						<span>Consider creating content for frequently accessed missing pages</span>
+					</li>
+				</ul>
+			</Card>
+		</div>
 	{/if}
 </div>
 
@@ -191,3 +192,161 @@
 		showDeleteModal = false;
 	}}
 />
+
+<style>
+	.errors-page {
+		color: #111827;
+	}
+
+	.page-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.page-title {
+		margin: 0;
+		color: #111827;
+		font-size: 1.875rem;
+		font-weight: 700;
+		line-height: 2.25rem;
+	}
+
+	.page-subtitle {
+		margin: 0.25rem 0 0;
+		color: #4b5563;
+	}
+
+	.stats-grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.stat-label {
+		margin: 0;
+		color: #4b5563;
+		font-size: 0.875rem;
+	}
+
+	.stat-value {
+		margin: 0.25rem 0 0;
+		color: #111827;
+		font-size: 1.5rem;
+		font-weight: 700;
+		line-height: 2rem;
+	}
+
+	.stat-value--danger {
+		color: #dc2626;
+	}
+
+	.stat-value--success {
+		color: #16a34a;
+	}
+
+	.state-card {
+		padding-block: 3rem;
+		text-align: center;
+	}
+
+	.spinner {
+		width: 3rem;
+		height: 3rem;
+		margin: 0 auto;
+		border: 2px solid rgba(37, 99, 235, 0.18);
+		border-bottom-color: #2563eb;
+		border-radius: 999px;
+		animation: spin 800ms linear infinite;
+	}
+
+	.state-text {
+		margin: 1rem 0 0;
+		color: #4b5563;
+	}
+
+	.state-icon {
+		display: block;
+		margin: 0 auto 1rem;
+	}
+
+	.state-icon--success {
+		color: #22c55e;
+	}
+
+	.empty-text {
+		margin: 0;
+		color: #6b7280;
+	}
+
+	.url-cell {
+		max-width: 28rem;
+		overflow: hidden;
+		color: #111827;
+		font-family:
+			ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+			monospace;
+		font-size: 0.875rem;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.date-cell {
+		color: #4b5563;
+		font-size: 0.875rem;
+	}
+
+	.actions-card {
+		margin-top: 1.5rem;
+	}
+
+	.section-title {
+		margin: 0 0 1rem;
+		color: #111827;
+		font-size: 1.125rem;
+		font-weight: 700;
+		line-height: 1.75rem;
+	}
+
+	.action-list {
+		display: grid;
+		gap: 0.5rem;
+		margin: 0;
+		padding: 0;
+		color: #374151;
+		list-style: none;
+	}
+
+	.action-item {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.5rem;
+	}
+
+	.action-marker {
+		margin-top: 0.125rem;
+		color: #2563eb;
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	@media (min-width: 768px) {
+		.stats-grid {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+		}
+	}
+
+	@media (max-width: 640px) {
+		.page-header {
+			align-items: stretch;
+			flex-direction: column;
+		}
+	}
+</style>
