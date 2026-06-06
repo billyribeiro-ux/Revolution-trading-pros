@@ -1056,6 +1056,7 @@
 	{:then result}
 		{#if result}
 			{@const analysis = result.analysis}
+			{@const scoreColor = getScoreColor(analysis.score)}
 			{@const apiError = result.apiError}
 			{@const usedFallback = result.usedFallback}
 			<!-- API Error Banner (non-blocking) -->
@@ -1068,7 +1069,7 @@
 
 			<!-- Overall Score -->
 			<div class="score-section">
-				<div class="score-circle" style="--score-color: {getScoreColor(analysis.score)}">
+				<div class="score-circle" style:--score-color={scoreColor}>
 					<svg aria-hidden="true" viewBox="0 0 100 100">
 						<circle class="score-bg" cx="50" cy="50" r="45" />
 						<circle
@@ -1077,16 +1078,14 @@
 							cy="50"
 							r="45"
 							stroke-dasharray="{analysis.score * 2.83} 283"
-							style="stroke: {getScoreColor(analysis.score)}"
+							style:stroke={scoreColor}
 						/>
 					</svg>
 					<div class="score-value">
 						<span class="score-number">{analysis.score}</span>
 						<span class="score-label">SEO Score</span>
 						{#if analysis.grade}
-							<span class="score-grade" style="color: {getScoreColor(analysis.score)}"
-								>{analysis.grade}</span
-							>
+							<span class="score-grade" style:color={scoreColor}>{analysis.grade}</span>
 						{/if}
 					</div>
 				</div>
@@ -1119,16 +1118,16 @@
 					<button class="category-header" onclick={() => toggleCategory('title')}>
 						<div class="category-info">
 							<span class="category-name">Title</span>
-							<span class="category-score" style="color: {getScoreColor(analysis.titleScore || 0)}">
+							<span class="category-score" style:color={getScoreColor(analysis.titleScore || 0)}>
 								{analysis.titleScore || 0}%
 							</span>
 						</div>
-						<span class="chevron" class:expanded={expandedCategories.has('title')}>v</span>
+						<span class={['chevron', { expanded: expandedCategories.has('title') }]}>v</span>
 					</button>
 					{#if expandedCategories.has('title')}
 						<div class="category-content">
 							{#each getIssuesByCategory(analysis, 'title') as issue (issue.message)}
-								<div class="issue {issue.type}">
+								<div class={['issue', issue.type]}>
 									<span class="issue-icon">{getIssueIcon(issue.type)}</span>
 									<span class="issue-message">{issue.message}</span>
 								</div>
@@ -1142,16 +1141,16 @@
 					<button class="category-header" onclick={() => toggleCategory('meta')}>
 						<div class="category-info">
 							<span class="category-name">Meta Description</span>
-							<span class="category-score" style="color: {getScoreColor(analysis.metaScore || 0)}">
+							<span class="category-score" style:color={getScoreColor(analysis.metaScore || 0)}>
 								{analysis.metaScore || 0}%
 							</span>
 						</div>
-						<span class="chevron" class:expanded={expandedCategories.has('meta')}>v</span>
+						<span class={['chevron', { expanded: expandedCategories.has('meta') }]}>v</span>
 					</button>
 					{#if expandedCategories.has('meta')}
 						<div class="category-content">
 							{#each getIssuesByCategory(analysis, 'meta') as issue (issue.message)}
-								<div class="issue {issue.type}">
+								<div class={['issue', issue.type]}>
 									<span class="issue-icon">{getIssueIcon(issue.type)}</span>
 									<span class="issue-message">{issue.message}</span>
 								</div>
@@ -1165,19 +1164,16 @@
 					<button class="category-header" onclick={() => toggleCategory('content')}>
 						<div class="category-info">
 							<span class="category-name">Content</span>
-							<span
-								class="category-score"
-								style="color: {getScoreColor(analysis.contentScore || 0)}"
-							>
+							<span class="category-score" style:color={getScoreColor(analysis.contentScore || 0)}>
 								{analysis.contentScore || 0}%
 							</span>
 						</div>
-						<span class="chevron" class:expanded={expandedCategories.has('content')}>v</span>
+						<span class={['chevron', { expanded: expandedCategories.has('content') }]}>v</span>
 					</button>
 					{#if expandedCategories.has('content')}
 						<div class="category-content">
 							{#each getIssuesByCategory(analysis, 'content') as issue (issue.message)}
-								<div class="issue {issue.type}">
+								<div class={['issue', issue.type]}>
 									<span class="issue-icon">{getIssueIcon(issue.type)}</span>
 									<span class="issue-message">{issue.message}</span>
 								</div>
@@ -1193,17 +1189,17 @@
 							<span class="category-name">Readability</span>
 							<span
 								class="category-score"
-								style="color: {getScoreColor(analysis.readabilityGrade || 0)}"
+								style:color={getScoreColor(analysis.readabilityGrade || 0)}
 							>
 								{analysis.readabilityGrade || 0}%
 							</span>
 						</div>
-						<span class="chevron" class:expanded={expandedCategories.has('readability')}>v</span>
+						<span class={['chevron', { expanded: expandedCategories.has('readability') }]}>v</span>
 					</button>
 					{#if expandedCategories.has('readability')}
 						<div class="category-content">
 							{#each getIssuesByCategory(analysis, 'readability') as issue (issue.message)}
-								<div class="issue {issue.type}">
+								<div class={['issue', issue.type]}>
 									<span class="issue-icon">{getIssueIcon(issue.type)}</span>
 									<span class="issue-message">{issue.message}</span>
 								</div>
@@ -1218,12 +1214,12 @@
 						<div class="category-info">
 							<span class="category-name">Keywords</span>
 						</div>
-						<span class="chevron" class:expanded={expandedCategories.has('keyword')}>v</span>
+						<span class={['chevron', { expanded: expandedCategories.has('keyword') }]}>v</span>
 					</button>
 					{#if expandedCategories.has('keyword')}
 						<div class="category-content">
 							{#each getIssuesByCategory(analysis, 'keyword') as issue (issue.message)}
-								<div class="issue {issue.type}">
+								<div class={['issue', issue.type]}>
 									<span class="issue-icon">{getIssueIcon(issue.type)}</span>
 									<span class="issue-message">{issue.message}</span>
 								</div>
@@ -1238,12 +1234,12 @@
 						<div class="category-info">
 							<span class="category-name">Structure</span>
 						</div>
-						<span class="chevron" class:expanded={expandedCategories.has('structure')}>v</span>
+						<span class={['chevron', { expanded: expandedCategories.has('structure') }]}>v</span>
 					</button>
 					{#if expandedCategories.has('structure')}
 						<div class="category-content">
 							{#each getIssuesByCategory(analysis, 'structure') as issue (issue.message)}
-								<div class="issue {issue.type}">
+								<div class={['issue', issue.type]}>
 									<span class="issue-icon">{getIssueIcon(issue.type)}</span>
 									<span class="issue-message">{issue.message}</span>
 								</div>
@@ -1259,12 +1255,12 @@
 							<div class="category-info">
 								<span class="category-name">URL Slug</span>
 							</div>
-							<span class="chevron" class:expanded={expandedCategories.has('slug')}>v</span>
+							<span class={['chevron', { expanded: expandedCategories.has('slug') }]}>v</span>
 						</button>
 						{#if expandedCategories.has('slug')}
 							<div class="category-content">
 								{#each getIssuesByCategory(analysis, 'slug') as issue (issue.message)}
-									<div class="issue {issue.type}">
+									<div class={['issue', issue.type]}>
 										<span class="issue-icon">{getIssueIcon(issue.type)}</span>
 										<span class="issue-message">{issue.message}</span>
 									</div>
