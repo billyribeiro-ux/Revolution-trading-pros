@@ -505,7 +505,9 @@
 									<span class="faq__chev">
 										<IconChevronDown
 											size={20}
-											class="faq__chev-icon {openFaqIndex === i ? 'faq__chev-icon--open' : ''}"
+											class={openFaqIndex === i
+												? 'faq__chev-icon faq__chev-icon--open'
+												: 'faq__chev-icon'}
 										/>
 									</span>
 								</button>
