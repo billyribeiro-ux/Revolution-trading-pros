@@ -42,58 +42,53 @@
 	<title>{deal ? `${deal.name} | CRM Deal` : 'Deal | CRM'}</title>
 </svelte:head>
 
-<div class="bg-slate-950/95 text-slate-50">
-	<div class="mx-auto max-w-5xl px-6 py-6">
-		<button
-			class="mb-4 inline-flex items-center gap-2 text-xs text-slate-400 hover:text-slate-200"
-			onclick={goBack}
-		>
+<div class="deal-detail-page">
+	<div class="deal-detail-shell">
+		<button class="back-button" onclick={goBack}>
 			<IconArrowLeft size={16} />
 			Back to deals
 		</button>
 
 		{#if loading && !deal}
-			<div class="flex h-64 items-center justify-center text-slate-400">Loading deal…</div>
+			<div class="center-state">Loading deal…</div>
 		{:else if error}
-			<div
-				class="rounded-xl border border-rose-700/60 bg-rose-950/40 px-4 py-3 text-sm text-rose-200"
-			>
+			<div class="error-panel">
 				{error}
 			</div>
 		{:else if deal}
-			<div class="space-y-4">
-				<div class="rounded-2xl border border-slate-800/80 bg-slate-900/70 p-5">
-					<div class="flex items-start justify-between gap-4">
+			<div class="deal-stack">
+				<div class="panel">
+					<div class="deal-header">
 						<div>
-							<h1 class="text-xl font-semibold leading-tight">{deal.name}</h1>
-							<p class="mt-1 text-xs text-slate-400">
+							<h1 class="deal-title">{deal.name}</h1>
+							<p class="deal-subtitle">
 								{deal.pipeline?.name} · {deal.stage?.name}
 							</p>
 						</div>
-						<div class="rounded-xl bg-slate-800/80 px-3 py-2 text-right text-xs">
-							<p class="flex items-center justify-end gap-1 text-slate-200">
+						<div class="amount-card">
+							<p class="amount-value">
 								<IconCurrencyDollar size={16} />
 								{deal.amount.toLocaleString('en-US', {
 									style: 'currency',
 									currency: deal.currency
 								})}
 							</p>
-							<p class="mt-1 text-[11px] text-slate-400">Probability: {deal.probability}%</p>
+							<p class="amount-meta">Probability: {deal.probability}%</p>
 						</div>
 					</div>
 
-					<div class="mt-4 grid gap-3 text-xs text-slate-300 md:grid-cols-3">
-						<div>
-							<p class="text-[11px] uppercase tracking-wide text-slate-500">Contact</p>
-							<p class="mt-1 text-slate-100">{deal.contact?.full_name ?? 'Unassigned'}</p>
+					<div class="detail-grid">
+						<div class="detail-block">
+							<p class="metric-label">Contact</p>
+							<p class="detail-value">{deal.contact?.full_name ?? 'Unassigned'}</p>
 						</div>
-						<div>
-							<p class="text-[11px] uppercase tracking-wide text-slate-500">Owner</p>
-							<p class="mt-1 text-slate-100">{deal.owner?.name ?? 'Unassigned'}</p>
+						<div class="detail-block">
+							<p class="metric-label">Owner</p>
+							<p class="detail-value">{deal.owner?.name ?? 'Unassigned'}</p>
 						</div>
-						<div>
-							<p class="text-[11px] uppercase tracking-wide text-slate-500">Expected Close</p>
-							<p class="mt-1 text-slate-100">
+						<div class="detail-block">
+							<p class="metric-label">Expected Close</p>
+							<p class="detail-value">
 								{deal.expected_close_date
 									? new Date(deal.expected_close_date).toLocaleDateString()
 									: '—'}
@@ -102,29 +97,208 @@
 					</div>
 				</div>
 
-				<div class="rounded-2xl border border-slate-800/80 bg-slate-900/70 p-5 text-xs">
-					<div class="mb-3 flex items-center gap-2 text-sm font-medium text-slate-100">
-						<IconActivity size={18} class="text-sky-400" />
+				<div class="panel">
+					<div class="section-heading">
+						<span class="section-icon">
+							<IconActivity size={18} />
+						</span>
 						Deal Metrics
 					</div>
-					<div class="grid gap-3 md:grid-cols-3">
-						<div>
-							<p class="text-[11px] uppercase tracking-wide text-slate-500">Days in Stage</p>
-							<p class="mt-1 text-lg font-semibold text-slate-50">{deal.days_in_stage}</p>
+					<div class="detail-grid">
+						<div class="detail-block">
+							<p class="metric-label">Days in Stage</p>
+							<p class="metric-value">{deal.days_in_stage}</p>
 						</div>
-						<div>
-							<p class="text-[11px] uppercase tracking-wide text-slate-500">Days in Pipeline</p>
-							<p class="mt-1 text-lg font-semibold text-slate-50">{deal.days_in_pipeline}</p>
+						<div class="detail-block">
+							<p class="metric-label">Days in Pipeline</p>
+							<p class="metric-value">{deal.days_in_pipeline}</p>
 						</div>
-						<div>
-							<p class="text-[11px] uppercase tracking-wide text-slate-500">Stage Changes</p>
-							<p class="mt-1 text-lg font-semibold text-slate-50">{deal.stage_changes_count}</p>
+						<div class="detail-block">
+							<p class="metric-label">Stage Changes</p>
+							<p class="metric-value">{deal.stage_changes_count}</p>
 						</div>
 					</div>
 				</div>
 			</div>
 		{:else}
-			<div class="flex h-64 items-center justify-center text-slate-400">Deal not found.</div>
+			<div class="center-state">Deal not found.</div>
 		{/if}
 	</div>
 </div>
+
+<style>
+	.deal-detail-page {
+		min-height: 100%;
+		background: rgba(2, 6, 23, 0.95);
+		color: #f8fafc;
+	}
+
+	.deal-detail-shell {
+		width: min(100%, 64rem);
+		margin: 0 auto;
+		padding: 1.5rem;
+	}
+
+	.back-button,
+	.center-state,
+	.deal-header,
+	.amount-value,
+	.section-heading,
+	.section-icon {
+		display: flex;
+	}
+
+	.back-button {
+		align-items: center;
+		gap: 0.5rem;
+		margin-bottom: 1rem;
+		border: 0;
+		background: transparent;
+		color: #94a3b8;
+		padding: 0;
+		font-size: 0.75rem;
+		transition: color 0.2s ease;
+	}
+
+	.back-button:hover,
+	.back-button:focus-visible {
+		color: #e2e8f0;
+	}
+
+	.center-state {
+		height: 16rem;
+		align-items: center;
+		justify-content: center;
+		color: #94a3b8;
+	}
+
+	.error-panel {
+		border: 1px solid rgba(190, 18, 60, 0.6);
+		border-radius: 0.75rem;
+		background: rgba(76, 5, 25, 0.4);
+		color: #fecdd3;
+		padding: 0.75rem 1rem;
+		font-size: 0.875rem;
+	}
+
+	.deal-stack {
+		display: grid;
+		gap: 1rem;
+	}
+
+	.panel {
+		border: 1px solid rgba(30, 41, 59, 0.8);
+		border-radius: 1rem;
+		background: rgba(15, 23, 42, 0.7);
+		padding: 1.25rem;
+	}
+
+	.deal-header {
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+
+	.deal-title {
+		margin: 0;
+		font-size: 1.25rem;
+		font-weight: 600;
+		letter-spacing: 0;
+		line-height: 1.2;
+	}
+
+	.deal-subtitle {
+		margin: 0.25rem 0 0;
+		color: #94a3b8;
+		font-size: 0.75rem;
+	}
+
+	.amount-card {
+		border-radius: 0.75rem;
+		background: rgba(30, 41, 59, 0.8);
+		padding: 0.5rem 0.75rem;
+		font-size: 0.75rem;
+		text-align: right;
+	}
+
+	.amount-value {
+		align-items: center;
+		justify-content: flex-end;
+		gap: 0.25rem;
+		margin: 0;
+		color: #e2e8f0;
+	}
+
+	.amount-meta {
+		margin: 0.25rem 0 0;
+		color: #94a3b8;
+		font-size: 0.6875rem;
+	}
+
+	.detail-grid {
+		display: grid;
+		gap: 0.75rem;
+		margin-top: 1rem;
+		color: #cbd5e1;
+		font-size: 0.75rem;
+	}
+
+	.metric-label {
+		margin: 0;
+		color: #64748b;
+		font-size: 0.6875rem;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+	}
+
+	.detail-value,
+	.metric-value {
+		margin: 0.25rem 0 0;
+		color: #f1f5f9;
+	}
+
+	.metric-value {
+		font-size: 1.125rem;
+		font-weight: 600;
+		line-height: 1.2;
+	}
+
+	.section-heading {
+		align-items: center;
+		gap: 0.5rem;
+		margin-bottom: 0.75rem;
+		color: #f1f5f9;
+		font-size: 0.875rem;
+		font-weight: 500;
+	}
+
+	.section-icon {
+		color: #38bdf8;
+	}
+
+	@media (min-width: 768px) {
+		.detail-grid {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
+	}
+
+	@media (max-width: 640px) {
+		.deal-detail-shell {
+			padding-right: 1rem;
+			padding-left: 1rem;
+		}
+
+		.deal-header {
+			flex-direction: column;
+		}
+
+		.amount-card {
+			width: 100%;
+			text-align: left;
+		}
+
+		.amount-value {
+			justify-content: flex-start;
+		}
+	}
+</style>
