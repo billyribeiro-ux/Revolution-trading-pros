@@ -402,8 +402,7 @@
 			{#each Object.entries(TIME_PERIOD_LABELS) as [period, label] (period)}
 				{@const stats = overview?.periods[period as TimePeriod]}
 				<button
-					class="period-card"
-					class:active={selectedPeriod === period}
+					class={['period-card', { active: selectedPeriod === period }]}
 					onclick={() => handlePeriodChange(period as TimePeriod)}
 				>
 					<div class="period-label">{label}</div>
@@ -475,7 +474,7 @@
 				<div class="reasons-grid">
 					{#each churnReasons.slice(0, 5) as reason, i (reason.reason)}
 						<div class="reason-card">
-							<div class="reason-bar" style="--width: {reason.percentage}%"></div>
+							<div class="reason-bar" style:--width={`${reason.percentage}%`}></div>
 							<div class="reason-content">
 								<span class="reason-rank">#{i + 1}</span>
 								<span class="reason-text">{reason.reason || 'Unknown'}</span>
@@ -572,7 +571,7 @@
 					</thead>
 					<tbody>
 						{#each members as member (member.id)}
-							<tr class:selected={selectedMembers.has(member.id)}>
+							<tr class={{ selected: selectedMembers.has(member.id) }}>
 								<td class="checkbox-col">
 									<input
 										id="page-checkbox"
@@ -692,8 +691,7 @@
 					<span class="selector-label">Choose Template</span>
 					<div class="template-grid">
 						<button
-							class="template-option"
-							class:active={emailTemplate === '30_free'}
+							class={['template-option', { active: emailTemplate === '30_free' }]}
 							onclick={() => (emailTemplate = '30_free')}
 						>
 							<IconGift size={24} />
@@ -701,8 +699,7 @@
 							<span class="template-desc">Free trial offer</span>
 						</button>
 						<button
-							class="template-option"
-							class:active={emailTemplate === 'discount'}
+							class={['template-option', { active: emailTemplate === 'discount' }]}
 							onclick={() => (emailTemplate = 'discount')}
 						>
 							<IconCurrencyDollar size={24} />
@@ -710,8 +707,7 @@
 							<span class="template-desc">Percentage off</span>
 						</button>
 						<button
-							class="template-option"
-							class:active={emailTemplate === 'missed'}
+							class={['template-option', { active: emailTemplate === 'missed' }]}
 							onclick={() => (emailTemplate = 'missed')}
 						>
 							<IconMail size={24} />
@@ -719,8 +715,7 @@
 							<span class="template-desc">Personal touch</span>
 						</button>
 						<button
-							class="template-option"
-							class:active={emailTemplate === 'custom'}
+							class={['template-option', { active: emailTemplate === 'custom' }]}
 							onclick={() => (emailTemplate = 'custom')}
 						>
 							<IconSparkles size={24} />
