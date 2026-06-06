@@ -513,30 +513,22 @@
 			<h3 class="preview-title">Live Preview</h3>
 			<div
 				class="preview-container"
-				style="
-					background-color: {formData.design?.overlayColor || '#000000'};
-					opacity: {(formData.design?.overlayOpacity || 50) / 100};
-				"
+				style:background-color={formData.design?.overlayColor || '#000000'}
+				style:opacity={(formData.design?.overlayOpacity || 50) / 100}
 			>
 				<div
 					class="preview-popup"
-					style="
-						background-color: {formData.design?.backgroundColor || '#ffffff'};
-						border-radius: 12px;
-					"
+					style:background-color={formData.design?.backgroundColor || '#ffffff'}
 				>
 					{#if formData.title}
-						<h4
-							class="preview-popup-title"
-							style="color: {formData.design?.titleColor || '#1f2937'}"
-						>
+						<h4 class="preview-popup-title" style:color={formData.design?.titleColor || '#1f2937'}>
 							{formData.title}
 						</h4>
 					{/if}
 					{#if formData.content}
 						<div
 							class="preview-popup-content"
-							style="color: {formData.design?.textColor || '#4b5563'}"
+							style:color={formData.design?.textColor || '#4b5563'}
 						>
 							{@html sanitizeHtml(formData.content, 'rich')}
 						</div>
@@ -545,11 +537,9 @@
 						<button
 							type="button"
 							class="preview-popup-cta"
-							style="
-								background-color: {formData.design?.buttonColor || '#3b82f6'};
-								color: {formData.design?.buttonTextColor || '#ffffff'};
-								border-radius: {formData.design?.buttonBorderRadius || 8}px;
-							"
+							style:background-color={formData.design?.buttonColor || '#3b82f6'}
+							style:color={formData.design?.buttonTextColor || '#ffffff'}
+							style:border-radius={`${formData.design?.buttonBorderRadius || 8}px`}
 						>
 							{formData.cta_text}
 						</button>
@@ -1599,6 +1589,7 @@
 		max-width: 400px;
 		width: 100%;
 		padding: 1.5rem;
+		border-radius: 12px;
 		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 	}
 
