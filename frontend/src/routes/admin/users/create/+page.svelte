@@ -1273,7 +1273,7 @@
 										medium: passwordStrength.score >= 3 && passwordStrength.score < 4,
 										weak: passwordStrength.score < 3
 									}}
-									style="width: {(passwordStrength.score / 5) * 100}%"
+									style:width={`${(passwordStrength.score / 5) * 100}%`}
 								></div>
 							</div>
 							<span class="strength-meta">Crack time: {passwordStrength.crackTime}</span>
@@ -1339,7 +1339,11 @@
 							onclick={() => selectRole(role.key)}
 						>
 							<div class="role-header">
-								<div class="role-icon" style="background: {role.color}20; color: {role.color}">
+								<div
+									class="role-icon"
+									style:background={`${role.color}20`}
+									style:color={role.color}
+								>
 									<RoleIcon size={20} />
 								</div>
 								<div>
