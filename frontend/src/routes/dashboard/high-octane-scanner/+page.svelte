@@ -347,6 +347,10 @@
 			duration: '7:45'
 		}
 	];
+
+	function cssBackgroundImage(url: string): string {
+		return `url("${url.replace(/["\\\n\r\f]/g, '\\$&')}")`;
+	}
 </script>
 
 <svelte:head>
@@ -367,8 +371,7 @@
 			<h1>{weeklyContent.title}</h1>
 			<div class="hero-tabs">
 				<button
-					class="hero-tab"
-					class:active={heroTab === 'video'}
+					class={['hero-tab', { active: heroTab === 'video' }]}
 					onclick={() => (heroTab = 'video')}
 				>
 					<svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
@@ -377,8 +380,7 @@
 					Video Breakdown
 				</button>
 				<button
-					class="hero-tab"
-					class:active={heroTab === 'entries'}
+					class={['hero-tab', { active: heroTab === 'entries' }]}
 					onclick={() => (heroTab = 'entries')}
 				>
 					<svg
@@ -401,7 +403,10 @@
 			{#if heroTab === 'video'}
 				<!-- VIDEO TAB -->
 				<div class="video-container">
-					<div class="video-player" style="background-image: url('{weeklyContent.thumbnail}')">
+					<div
+						class="video-player"
+						style:background-image={cssBackgroundImage(weeklyContent.thumbnail)}
+					>
 						<div class="video-overlay">
 							<button class="play-btn" aria-label="Play video">
 								<svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor">
@@ -455,7 +460,7 @@
 							</thead>
 							<tbody>
 								{#each tradePlan as trade (trade.ticker)}
-									<tr class:has-notes-open={expandedTradeNotes.has(trade.ticker)}>
+									<tr class={{ 'has-notes-open': expandedTradeNotes.has(trade.ticker) }}>
 										<td class="ticker-cell">
 											<strong>{trade.ticker}</strong>
 										</td>
@@ -472,8 +477,10 @@
 										<td class="exp-cell">{trade.optionsExp}</td>
 										<td class="notes-toggle-cell">
 											<button
-												class="table-notes-btn"
-												class:expanded={expandedTradeNotes.has(trade.ticker)}
+												class={[
+													'table-notes-btn',
+													{ expanded: expandedTradeNotes.has(trade.ticker) }
+												]}
 												onclick={() => toggleTradeNotes(trade.ticker)}
 												aria-label="Toggle notes for {trade.ticker}"
 											>
@@ -562,23 +569,19 @@
 				<h2>Live Alerts</h2>
 				<div class="filter-pills">
 					<button
-						class="pill"
-						class:active={selectedFilter === 'all'}
+						class={['pill', { active: selectedFilter === 'all' }]}
 						onclick={() => (selectedFilter = 'all')}>All</button
 					>
 					<button
-						class="pill"
-						class:active={selectedFilter === 'entry'}
+						class={['pill', { active: selectedFilter === 'entry' }]}
 						onclick={() => (selectedFilter = 'entry')}>Entries</button
 					>
 					<button
-						class="pill"
-						class:active={selectedFilter === 'exit'}
+						class={['pill', { active: selectedFilter === 'exit' }]}
 						onclick={() => (selectedFilter = 'exit')}>Exits</button
 					>
 					<button
-						class="pill"
-						class:active={selectedFilter === 'update'}
+						class={['pill', { active: selectedFilter === 'update' }]}
 						onclick={() => (selectedFilter = 'update')}>Updates</button
 					>
 				</div>
@@ -587,9 +590,13 @@
 			<div class="alerts-list">
 				{#each filteredAlerts as alert (alert.id)}
 					<div
-						class="alert-card"
-						class:is-new={alert.isNew}
-						class:has-notes-open={expandedNotes.has(alert.id)}
+						class={[
+							'alert-card',
+							{
+								'is-new': alert.isNew,
+								'has-notes-open': expandedNotes.has(alert.id)
+							}
+						]}
 					>
 						{#if alert.isNew}
 							<span class="new-badge">NEW</span>
@@ -603,8 +610,7 @@
 								<span class="alert-time">{alert.time}</span>
 							</div>
 							<button
-								class="notes-chevron"
-								class:expanded={expandedNotes.has(alert.id)}
+								class={['notes-chevron', { expanded: expandedNotes.has(alert.id) }]}
 								onclick={() => toggleNotes(alert.id)}
 								aria-label="Toggle trade notes"
 							>
@@ -654,8 +660,8 @@
 					<svg aria-hidden="true" viewBox="0 0 200 100" class="mini-chart">
 						<defs>
 							<linearGradient id="chartGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-								<stop offset="0%" style="stop-color:#22c55e;stop-opacity:0.3" />
-								<stop offset="100%" style="stop-color:#22c55e;stop-opacity:0" />
+								<stop offset="0%" stop-color="#22c55e" stop-opacity="0.3" />
+								<stop offset="100%" stop-color="#22c55e" stop-opacity="0" />
 							</linearGradient>
 						</defs>
 						<path
@@ -711,7 +717,7 @@
 		<div class="updates-grid">
 			{#each latestUpdates as update (update.id)}
 				<a href={update.href} class="update-card">
-					<div class="update-thumbnail" style="background-image: url('{update.image}')">
+					<div class="update-thumbnail" style:background-image={cssBackgroundImage(update.image)}>
 						<div class="play-overlay">
 							<svg
 								aria-hidden="true"
