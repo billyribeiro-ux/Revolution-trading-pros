@@ -376,6 +376,10 @@
 		}
 	}
 
+	function getStatusBadgeClass(status: string | undefined) {
+		return status ? `status-${status}` : undefined;
+	}
+
 	// Bulk Operations
 
 	function toggleSelectAll() {
@@ -1090,7 +1094,7 @@
 								<div class="post-header">
 									<h3>{post.title}</h3>
 									<div class="post-badges">
-										<span class="status-badge status-{post.status}">
+										<span class={['status-badge', getStatusBadgeClass(post.status)]}>
 											{post.status}
 										</span>
 										{#if post.seo_score}
@@ -1286,13 +1290,19 @@
 											<a href="/admin/blog/edit/{post.id}">{post.title}</a>
 										</div>
 										<!-- Mobile-only status badge inline -->
-										<span class="mobile-status-badge status-badge status-{post.status}">
+										<span
+											class={[
+												'mobile-status-badge',
+												'status-badge',
+												getStatusBadgeClass(post.status)
+											]}
+										>
 											{post.status}
 										</span>
 									</td>
 									<td class="table-mobile-optional">{post.author?.name || '-'}</td>
 									<td class="td-status">
-										<span class="status-badge status-{post.status}">
+										<span class={['status-badge', getStatusBadgeClass(post.status)]}>
 											{post.status}
 										</span>
 									</td>
