@@ -602,12 +602,11 @@
 			{:else}
 				<div class="plans-grid">
 					{#each filteredPlans as plan (plan.id)}
-						<div class="plan-card" class:inactive={!plan.is_active}>
+						<div class={['plan-card', { inactive: !plan.is_active }]}>
 							<div class="plan-header">
 								<div class="plan-status">
 									<button
-										class="status-toggle"
-										class:active={plan.is_active}
+										class={['status-toggle', { active: plan.is_active }]}
 										onclick={() => togglePlanStatus(plan)}
 										title={plan.is_active ? 'Deactivate plan' : 'Activate plan'}
 									>
@@ -617,7 +616,7 @@
 											<IconToggleLeft size={24} />
 										{/if}
 									</button>
-									<span class="status-label" class:active={plan.is_active}>
+									<span class={['status-label', { active: plan.is_active }]}>
 										{plan.is_active ? 'Active' : 'Inactive'}
 									</span>
 								</div>
