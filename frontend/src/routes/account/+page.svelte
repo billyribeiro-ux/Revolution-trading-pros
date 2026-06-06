@@ -2,7 +2,6 @@
 	import { authStore, isAuthenticated } from '$lib/stores/auth.svelte';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
 	import apiClient, { type Membership, type Product } from '$lib/api/client.svelte';
 
 	let memberships = $state<Membership[]>([]);
@@ -12,7 +11,7 @@
 
 	onMount(async () => {
 		// Auth guard - redirect if not authenticated (user interaction: page load)
-		if (browser && !$isAuthenticated && !$authStore.isLoading && !$authStore.isInitializing) {
+		if (!$isAuthenticated && !$authStore.isLoading && !$authStore.isInitializing) {
 			goto('/login?redirect=/account', { replaceState: true });
 			return;
 		}
@@ -52,60 +51,51 @@
      Show loading state until auth is initialized, then show content or redirect. -->
 {#if $authStore.isInitializing || $authStore.isLoading}
 	<!-- Loading skeleton for consistent SSR/CSR output -->
-	<div class="bg-rtp-bg py-12 px-4">
-		<div class="max-w-7xl mx-auto">
-			<div
-				class="bg-rtp-surface rounded-2xl shadow-lg p-8 border border-rtp-border mb-8 animate-pulse"
-			>
-				<div class="h-8 bg-gray-200 rounded w-48 mb-4"></div>
-				<div class="h-4 bg-gray-200 rounded w-32"></div>
+	<div class="account-page">
+		<div class="account-container">
+			<div class="account-card account-card--loading">
+				<div class="skeleton skeleton--title"></div>
+				<div class="skeleton skeleton--text"></div>
 			</div>
 		</div>
 	</div>
 {:else if $authStore.user}
-	<!-- ICT11+ Fix: Removed min-h-[calc(100vh-120px)] - let parent flex container handle height -->
-	<div class="bg-rtp-bg py-12 px-4">
-		<div class="max-w-7xl mx-auto">
+	<!-- ICT11+ Fix: removed fixed viewport minimum height; parent flex container handles height. -->
+	<div class="account-page">
+		<div class="account-container">
 			<!-- Header -->
-			<div class="bg-rtp-surface rounded-2xl shadow-lg p-8 border border-rtp-border mb-8">
-				<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+			<div class="account-card account-header-card">
+				<div class="account-header">
 					<div>
-						<h1 class="text-3xl font-heading font-bold text-rtp-text mb-2">My Account</h1>
-						<p class="text-rtp-muted">Welcome back, {$authStore.user?.name || 'User'}!</p>
+						<h1 class="account-title">My Account</h1>
+						<p class="account-subtitle">Welcome back, {$authStore.user?.name || 'User'}!</p>
 					</div>
-					<button
-						onclick={handleLogout}
-						class="px-6 py-2 border-2 border-rtp-primary text-rtp-primary rounded-lg font-semibold hover:bg-rtp-primary hover:text-white transition-all"
-					>
-						Sign Out
-					</button>
+					<button onclick={handleLogout} class="outline-button"> Sign Out </button>
 				</div>
 			</div>
 
-			<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+			<div class="account-layout">
 				<!-- Left Column: Profile Info -->
-				<div class="lg:col-span-1 space-y-6">
+				<div class="account-sidebar">
 					<!-- Profile Card -->
-					<div class="bg-rtp-surface rounded-2xl shadow-lg p-6 border border-rtp-border">
-						<h2 class="text-xl font-heading font-bold text-rtp-text mb-4">Profile Information</h2>
-						<div class="space-y-4">
-							<div>
-								<span class="text-sm font-semibold text-rtp-muted">Full Name</span>
-								<p class="text-rtp-text mt-1">{$authStore.user?.name || ''}</p>
+					<div class="account-card">
+						<h2 class="section-title">Profile Information</h2>
+						<div class="detail-list">
+							<div class="detail-item">
+								<span class="detail-label">Full Name</span>
+								<p class="detail-value">{$authStore.user?.name || ''}</p>
 							</div>
-							<div>
-								<span class="text-sm font-semibold text-rtp-muted">Email Address</span>
-								<p class="text-rtp-text mt-1">{$authStore.user?.email || ''}</p>
+							<div class="detail-item">
+								<span class="detail-label">Email Address</span>
+								<p class="detail-value">{$authStore.user?.email || ''}</p>
 							</div>
-							<div>
-								<span class="text-sm font-semibold text-rtp-muted">Account Status</span>
-								<p class="mt-1">
-									<span
-										class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800"
-									>
+							<div class="detail-item">
+								<span class="detail-label">Account Status</span>
+								<p class="detail-value">
+									<span class="status-badge">
 										<svg
 											aria-hidden="true"
-											class="w-4 h-4 mr-1"
+											class="status-icon"
 											fill="currentColor"
 											viewBox="0 0 20 20"
 										>
@@ -125,9 +115,9 @@
 									</span>
 								</p>
 							</div>
-							<div>
-								<span class="text-sm font-semibold text-rtp-muted">Member Since</span>
-								<p class="text-rtp-text mt-1">
+							<div class="detail-item">
+								<span class="detail-label">Member Since</span>
+								<p class="detail-value">
 									{new Date($authStore.user?.created_at || Date.now()).toLocaleDateString('en-US', {
 										month: 'long',
 										year: 'numeric'
@@ -135,24 +125,17 @@
 								</p>
 							</div>
 						</div>
-						<button
-							class="mt-6 w-full px-4 py-2 border border-rtp-border rounded-lg font-semibold text-rtp-text hover:bg-rtp-bg transition-all"
-						>
-							Edit Profile
-						</button>
+						<button class="secondary-button"> Edit Profile </button>
 					</div>
 
 					<!-- Quick Actions -->
-					<div class="bg-rtp-surface rounded-2xl shadow-lg p-6 border border-rtp-border">
-						<h3 class="text-lg font-heading font-bold text-rtp-text mb-4">Quick Actions</h3>
-						<div class="space-y-2">
-							<a
-								href="/live-trading-rooms/day-trading"
-								class="block px-4 py-3 rounded-lg hover:bg-rtp-bg transition-all text-rtp-text"
-							>
-								<div class="flex items-center">
+					<div class="account-card">
+						<h3 class="section-title section-title--small">Quick Actions</h3>
+						<div class="quick-actions">
+							<a href="/live-trading-rooms/day-trading" class="quick-action">
+								<div class="quick-action-content">
 									<svg
-										class="w-5 h-5 mr-3 text-rtp-primary"
+										class="quick-action-icon"
 										fill="none"
 										stroke="currentColor"
 										viewBox="0 0 24 24"
@@ -167,13 +150,10 @@
 									Join Live Room
 								</div>
 							</a>
-							<a
-								href="/indicators"
-								class="block px-4 py-3 rounded-lg hover:bg-rtp-bg transition-all text-rtp-text"
-							>
-								<div class="flex items-center">
+							<a href="/indicators" class="quick-action">
+								<div class="quick-action-content">
 									<svg
-										class="w-5 h-5 mr-3 text-rtp-primary"
+										class="quick-action-icon"
 										fill="none"
 										stroke="currentColor"
 										viewBox="0 0 24 24"
@@ -188,13 +168,10 @@
 									Browse Indicators
 								</div>
 							</a>
-							<a
-								href="/courses"
-								class="block px-4 py-3 rounded-lg hover:bg-rtp-bg transition-all text-rtp-text"
-							>
-								<div class="flex items-center">
+							<a href="/courses" class="quick-action">
+								<div class="quick-action-content">
 									<svg
-										class="w-5 h-5 mr-3 text-rtp-primary"
+										class="quick-action-icon"
 										fill="none"
 										stroke="currentColor"
 										viewBox="0 0 24 24"
@@ -214,20 +191,20 @@
 				</div>
 
 				<!-- Right Column: Memberships & Products -->
-				<div class="lg:col-span-2 space-y-6">
+				<div class="account-main">
 					<!-- Active Memberships -->
-					<div class="bg-rtp-surface rounded-2xl shadow-lg p-6 border border-rtp-border">
-						<h2 class="text-xl font-heading font-bold text-rtp-text mb-4">Active Memberships</h2>
+					<div class="account-card">
+						<h2 class="section-title">Active Memberships</h2>
 						{#if loadingMemberships}
-							<div class="flex justify-center py-8">
+							<div class="loading-panel">
 								<svg
-									class="animate-spin h-8 w-8 text-rtp-primary"
+									class="loading-spinner"
 									xmlns="http://www.w3.org/2000/svg"
 									fill="none"
 									viewBox="0 0 24 24"
 								>
 									<circle
-										class="opacity-25"
+										class="spinner-track"
 										cx="12"
 										cy="12"
 										r="10"
@@ -235,20 +212,15 @@
 										stroke-width="4"
 									></circle>
 									<path
-										class="opacity-75"
+										class="spinner-head"
 										fill="currentColor"
 										d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
 									></path>
 								</svg>
 							</div>
 						{:else if memberships.length === 0}
-							<div class="text-center py-12">
-								<svg
-									class="w-16 h-16 mx-auto text-rtp-muted mb-4"
-									fill="none"
-									stroke="currentColor"
-									viewBox="0 0 24 24"
-								>
+							<div class="empty-state">
+								<svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path
 										stroke-linecap="round"
 										stroke-linejoin="round"
@@ -256,34 +228,29 @@
 										d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
 									/>
 								</svg>
-								<h3 class="text-lg font-semibold text-rtp-text mb-2">No Active Memberships</h3>
-								<p class="text-rtp-muted mb-4">Unlock premium features with a membership plan</p>
-								<a
-									href="/live-trading-rooms/day-trading"
-									class="inline-block px-6 py-3 bg-linear-to-r from-rtp-primary to-rtp-blue text-white font-bold rounded-lg hover:shadow-lg transition-all"
-								>
+								<h3 class="empty-title">No Active Memberships</h3>
+								<p class="empty-copy">Unlock premium features with a membership plan</p>
+								<a href="/live-trading-rooms/day-trading" class="primary-button">
 									View Membership Plans
 								</a>
 							</div>
 						{:else}
-							<div class="space-y-4">
+							<div class="membership-list">
 								{#each memberships as membership (membership.id)}
-									<div class="border border-rtp-border rounded-lg p-4">
-										<div class="flex justify-between items-start">
+									<div class="membership-card">
+										<div class="membership-row">
 											<div>
-												<h3 class="text-lg font-bold text-rtp-text">{membership.plan.name}</h3>
-												<p class="text-sm text-rtp-muted mt-1">
+												<h3 class="item-title">{membership.plan.name}</h3>
+												<p class="item-meta">
 													Started: {new Date(membership.starts_at).toLocaleDateString()}
 												</p>
 												{#if membership.expires_at}
-													<p class="text-sm text-rtp-muted">
+													<p class="item-meta">
 														Expires: {new Date(membership.expires_at).toLocaleDateString()}
 													</p>
 												{/if}
 											</div>
-											<span
-												class="px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800"
-											>
+											<span class="status-badge">
 												{membership.status}
 											</span>
 										</div>
@@ -294,18 +261,18 @@
 					</div>
 
 					<!-- My Products -->
-					<div class="bg-rtp-surface rounded-2xl shadow-lg p-6 border border-rtp-border">
-						<h2 class="text-xl font-heading font-bold text-rtp-text mb-4">My Products</h2>
+					<div class="account-card">
+						<h2 class="section-title">My Products</h2>
 						{#if loadingProducts}
-							<div class="flex justify-center py-8">
+							<div class="loading-panel">
 								<svg
-									class="animate-spin h-8 w-8 text-rtp-primary"
+									class="loading-spinner"
 									xmlns="http://www.w3.org/2000/svg"
 									fill="none"
 									viewBox="0 0 24 24"
 								>
 									<circle
-										class="opacity-25"
+										class="spinner-track"
 										cx="12"
 										cy="12"
 										r="10"
@@ -313,20 +280,15 @@
 										stroke-width="4"
 									></circle>
 									<path
-										class="opacity-75"
+										class="spinner-head"
 										fill="currentColor"
 										d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
 									></path>
 								</svg>
 							</div>
 						{:else if products.length === 0}
-							<div class="text-center py-12">
-								<svg
-									class="w-16 h-16 mx-auto text-rtp-muted mb-4"
-									fill="none"
-									stroke="currentColor"
-									viewBox="0 0 24 24"
-								>
+							<div class="empty-state">
+								<svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path
 										stroke-linecap="round"
 										stroke-linejoin="round"
@@ -334,43 +296,31 @@
 										d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
 									/>
 								</svg>
-								<h3 class="text-lg font-semibold text-rtp-text mb-2">No Products Yet</h3>
-								<p class="text-rtp-muted mb-4">Browse our courses and indicators to get started</p>
-								<div class="flex gap-4 justify-center">
-									<a
-										href="/courses"
-										class="px-6 py-3 bg-linear-to-r from-rtp-primary to-rtp-blue text-white font-bold rounded-lg hover:shadow-lg transition-all"
-									>
-										Browse Courses
-									</a>
-									<a
-										href="/indicators"
-										class="px-6 py-3 border-2 border-rtp-primary text-rtp-primary font-bold rounded-lg hover:bg-rtp-primary hover:text-white transition-all"
-									>
+								<h3 class="empty-title">No Products Yet</h3>
+								<p class="empty-copy">Browse our courses and indicators to get started</p>
+								<div class="empty-actions">
+									<a href="/courses" class="primary-button"> Browse Courses </a>
+									<a href="/indicators" class="outline-button outline-button--strong">
 										View Indicators
 									</a>
 								</div>
 							</div>
 						{:else}
-							<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+							<div class="product-grid">
 								{#each products as product (product.id)}
-									<div
-										class="border border-rtp-border rounded-lg p-4 hover:shadow-lg transition-all"
-									>
-										<div class="flex items-start justify-between mb-2">
-											<h3 class="text-lg font-bold text-rtp-text">{product.name}</h3>
-											<span
-												class="px-2 py-1 rounded text-xs font-semibold bg-rtp-primarySoft text-rtp-primary capitalize"
-											>
+									<div class="product-card">
+										<div class="product-header">
+											<h3 class="item-title">{product.name}</h3>
+											<span class="product-type">
 												{product.type}
 											</span>
 										</div>
-										<p class="text-sm text-rtp-muted mb-4">{product.description}</p>
+										<p class="product-description">{product.description}</p>
 										<a
 											href={product.type === 'indicator'
 												? `/indicators/${product.slug}`
 												: `/courses/${product.slug}`}
-											class="inline-block px-4 py-2 bg-rtp-primary text-white font-semibold rounded-lg hover:bg-rtp-blue transition-all text-sm"
+											class="product-link"
 										>
 											View Details
 										</a>
@@ -384,3 +334,393 @@
 		</div>
 	</div>
 {/if}
+
+<style>
+	.account-page {
+		background: var(--rtp-bg, #05070d);
+		padding: 3rem 1rem;
+	}
+
+	.account-container {
+		width: min(100%, 80rem);
+		margin: 0 auto;
+	}
+
+	.account-card {
+		border: 1px solid var(--rtp-border, rgba(255, 255, 255, 0.12));
+		border-radius: 1rem;
+		background: var(--rtp-surface, #101826);
+		padding: 1.5rem;
+		box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22);
+	}
+
+	.account-card--loading {
+		margin-bottom: 2rem;
+		padding: 2rem;
+		animation: pulse 1.6s ease-in-out infinite;
+	}
+
+	.account-header-card {
+		margin-bottom: 2rem;
+		padding: 2rem;
+	}
+
+	.account-header {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+
+	.account-title,
+	.section-title,
+	.empty-title,
+	.item-title {
+		color: var(--rtp-text, #f8fafc);
+		font-family: var(--font-heading, inherit);
+		font-weight: 700;
+	}
+
+	.account-title {
+		margin: 0 0 0.5rem;
+		font-size: 1.875rem;
+		line-height: 2.25rem;
+	}
+
+	.account-subtitle,
+	.detail-label,
+	.item-meta,
+	.empty-copy,
+	.product-description {
+		color: var(--rtp-muted, #94a3b8);
+	}
+
+	.account-layout {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 2rem;
+	}
+
+	.account-sidebar,
+	.account-main {
+		display: grid;
+		align-content: start;
+		gap: 1.5rem;
+	}
+
+	.section-title {
+		margin: 0 0 1rem;
+		font-size: 1.25rem;
+		line-height: 1.75rem;
+	}
+
+	.section-title--small {
+		font-size: 1.125rem;
+		line-height: 1.75rem;
+	}
+
+	.detail-list {
+		display: grid;
+		gap: 1rem;
+	}
+
+	.detail-label {
+		font-size: 0.875rem;
+		font-weight: 600;
+	}
+
+	.detail-value {
+		margin: 0.25rem 0 0;
+		color: var(--rtp-text, #f8fafc);
+	}
+
+	.status-badge {
+		display: inline-flex;
+		align-items: center;
+		border-radius: 999px;
+		background: #dcfce7;
+		color: #166534;
+		padding: 0.25rem 0.75rem;
+		font-size: 0.75rem;
+		font-weight: 600;
+		text-transform: capitalize;
+	}
+
+	.status-icon {
+		width: 1rem;
+		height: 1rem;
+		margin-right: 0.25rem;
+	}
+
+	.outline-button,
+	.secondary-button,
+	.primary-button,
+	.product-link {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 0.5rem;
+		font-weight: 600;
+		text-decoration: none;
+		transition:
+			background-color 160ms ease,
+			border-color 160ms ease,
+			box-shadow 160ms ease,
+			color 160ms ease,
+			transform 160ms ease;
+	}
+
+	.outline-button {
+		border: 2px solid var(--rtp-primary, #e6b800);
+		background: transparent;
+		color: var(--rtp-primary, #e6b800);
+		padding: 0.5rem 1.5rem;
+	}
+
+	.outline-button:hover,
+	.outline-button:focus-visible {
+		background: var(--rtp-primary, #e6b800);
+		color: #ffffff;
+	}
+
+	.outline-button--strong {
+		padding: 0.75rem 1.5rem;
+		font-weight: 700;
+	}
+
+	.secondary-button {
+		width: 100%;
+		margin-top: 1.5rem;
+		border: 1px solid var(--rtp-border, rgba(255, 255, 255, 0.12));
+		background: transparent;
+		color: var(--rtp-text, #f8fafc);
+		padding: 0.5rem 1rem;
+	}
+
+	.secondary-button:hover,
+	.secondary-button:focus-visible,
+	.quick-action:hover,
+	.quick-action:focus-visible {
+		background: var(--rtp-bg, #05070d);
+	}
+
+	.quick-actions,
+	.membership-list {
+		display: grid;
+		gap: 0.5rem;
+	}
+
+	.membership-list {
+		gap: 1rem;
+	}
+
+	.quick-action {
+		display: block;
+		border-radius: 0.5rem;
+		color: var(--rtp-text, #f8fafc);
+		padding: 0.75rem 1rem;
+		text-decoration: none;
+		transition: background-color 160ms ease;
+	}
+
+	.quick-action-content {
+		display: flex;
+		align-items: center;
+	}
+
+	.quick-action-icon {
+		width: 1.25rem;
+		height: 1.25rem;
+		margin-right: 0.75rem;
+		color: var(--rtp-primary, #e6b800);
+	}
+
+	.loading-panel {
+		display: flex;
+		justify-content: center;
+		padding: 2rem 0;
+	}
+
+	.loading-spinner {
+		width: 2rem;
+		height: 2rem;
+		color: var(--rtp-primary, #e6b800);
+		animation: spin 800ms linear infinite;
+	}
+
+	.spinner-track {
+		opacity: 0.25;
+	}
+
+	.spinner-head {
+		opacity: 0.75;
+	}
+
+	.empty-state {
+		padding: 3rem 0;
+		text-align: center;
+	}
+
+	.empty-icon {
+		width: 4rem;
+		height: 4rem;
+		margin: 0 auto 1rem;
+		color: var(--rtp-muted, #94a3b8);
+	}
+
+	.empty-title {
+		margin: 0 0 0.5rem;
+		font-size: 1.125rem;
+		line-height: 1.75rem;
+	}
+
+	.empty-copy,
+	.product-description {
+		margin: 0 0 1rem;
+	}
+
+	.empty-actions {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 1rem;
+	}
+
+	.primary-button {
+		border: 0;
+		background: linear-gradient(90deg, var(--rtp-primary, #e6b800), var(--rtp-blue, #2563eb));
+		color: #ffffff;
+		padding: 0.75rem 1.5rem;
+		font-weight: 700;
+	}
+
+	.primary-button:hover,
+	.primary-button:focus-visible {
+		box-shadow: 0 14px 28px rgba(37, 99, 235, 0.22);
+		transform: translateY(-1px);
+	}
+
+	.membership-card,
+	.product-card {
+		border: 1px solid var(--rtp-border, rgba(255, 255, 255, 0.12));
+		border-radius: 0.5rem;
+		padding: 1rem;
+	}
+
+	.membership-row {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+
+	.item-title {
+		margin: 0;
+		font-size: 1.125rem;
+		line-height: 1.75rem;
+	}
+
+	.item-meta {
+		margin: 0.25rem 0 0;
+		font-size: 0.875rem;
+	}
+
+	.product-grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1rem;
+	}
+
+	.product-card {
+		transition:
+			box-shadow 160ms ease,
+			transform 160ms ease;
+	}
+
+	.product-card:hover {
+		box-shadow: 0 14px 30px rgba(0, 0, 0, 0.2);
+		transform: translateY(-1px);
+	}
+
+	.product-header {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 0.5rem;
+	}
+
+	.product-type {
+		border-radius: 0.25rem;
+		background: var(--rtp-primarySoft, rgba(230, 184, 0, 0.16));
+		color: var(--rtp-primary, #e6b800);
+		padding: 0.25rem 0.5rem;
+		font-size: 0.75rem;
+		font-weight: 600;
+		text-transform: capitalize;
+	}
+
+	.product-description {
+		font-size: 0.875rem;
+	}
+
+	.product-link {
+		background: var(--rtp-primary, #e6b800);
+		color: #ffffff;
+		padding: 0.5rem 1rem;
+		font-size: 0.875rem;
+	}
+
+	.product-link:hover,
+	.product-link:focus-visible {
+		background: var(--rtp-blue, #2563eb);
+	}
+
+	.skeleton {
+		border-radius: 0.25rem;
+		background: #e5e7eb;
+	}
+
+	.skeleton--title {
+		width: 12rem;
+		height: 2rem;
+		margin-bottom: 1rem;
+	}
+
+	.skeleton--text {
+		width: 8rem;
+		height: 1rem;
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	@keyframes pulse {
+		50% {
+			opacity: 0.6;
+		}
+	}
+
+	@media (min-width: 640px) {
+		.product-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (min-width: 768px) {
+		.account-header {
+			flex-direction: row;
+			align-items: center;
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.account-layout {
+			grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+		}
+	}
+</style>
