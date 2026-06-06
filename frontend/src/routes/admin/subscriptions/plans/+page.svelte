@@ -295,17 +295,17 @@
 		}
 	}
 
-	function getBillingCycleColor(cycle: string): string {
+	function getBillingCycleClass(cycle: string): string {
 		switch (cycle) {
 			case 'monthly':
-				return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
+				return 'billing-monthly';
 			case 'quarterly':
-				return 'bg-purple-500/10 text-purple-400 border-purple-500/20';
+				return 'billing-quarterly';
 			case 'annual':
 			case 'yearly':
-				return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
+				return 'billing-annual';
 			default:
-				return 'bg-slate-500/10 text-slate-400 border-slate-500/20';
+				return 'billing-default';
 		}
 	}
 </script>
@@ -317,9 +317,9 @@
 <div class="admin-plans">
 	<div class="admin-page-container">
 		<!-- Background Effects -->
-		<div class="bg-effects">
-			<div class="bg-blob bg-blob-1"></div>
-			<div class="bg-blob bg-blob-2"></div>
+		<div class="background-effects">
+			<div class="background-blob background-blob-1"></div>
+			<div class="background-blob background-blob-2"></div>
 		</div>
 
 		<!-- Header -->
@@ -352,7 +352,8 @@
 				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-x error -->
 				<IconCircleXFilled size={20} aria-hidden="true" />
 				{error}
-				<button onclick={() => (error = '')} class="ml-auto text-red-300 hover:text-white">×</button
+				<button onclick={() => (error = '')} class="banner-close" aria-label="Dismiss error"
+					>×</button
 				>
 			</div>
 		{/if}
@@ -360,7 +361,7 @@
 		<!-- Stats Cards -->
 		<div class="stats-grid">
 			<div class="stat-card">
-				<div class="stat-icon bg-blue-500/10">
+				<div class="stat-icon stat-icon-total">
 					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: layers (archive) -->
 					<IconLayers size={24} aria-hidden="true" />
 				</div>
@@ -371,7 +372,7 @@
 			</div>
 
 			<div class="stat-card">
-				<div class="stat-icon bg-emerald-500/10">
+				<div class="stat-icon stat-icon-active">
 					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-check (active plans stat) -->
 					<IconCircleCheck size={24} aria-hidden="true" />
 				</div>
@@ -382,7 +383,7 @@
 			</div>
 
 			<div class="stat-card">
-				<div class="stat-icon bg-purple-500/10">
+				<div class="stat-icon stat-icon-stripe">
 					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: credit-card (stripe stat) -->
 					<IconCreditCard size={24} aria-hidden="true" />
 				</div>
@@ -392,8 +393,8 @@
 				</div>
 			</div>
 
-			<div class="stat-card" class:warning={planStats.missingStripeId > 0}>
-				<div class="stat-icon bg-orange-500/10">
+			<div class={['stat-card', { warning: planStats.missingStripeId > 0 }]}>
+				<div class="stat-icon stat-icon-warning">
 					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: alert-triangle (missing stripe stat) -->
 					<IconAlertTriangle size={24} aria-hidden="true" />
 				</div>
@@ -467,7 +468,7 @@
 					</thead>
 					<tbody>
 						{#each filteredPlans as plan (plan.id)}
-							<tr class:inactive={!plan.is_active}>
+							<tr class={{ inactive: !plan.is_active }}>
 								<td>
 									<div class="plan-info">
 										<span class="plan-name">{plan.name}</span>
@@ -476,7 +477,7 @@
 								</td>
 								<td class="price-cell">{formatPrice(plan.price)}</td>
 								<td>
-									<span class="billing-badge {getBillingCycleColor(plan.billing_cycle)}">
+									<span class={['billing-badge', getBillingCycleClass(plan.billing_cycle)]}>
 										{getBillingCycleLabel(plan.billing_cycle)}
 									</span>
 								</td>
@@ -493,8 +494,7 @@
 								</td>
 								<td>
 									<button
-										class="status-toggle"
-										class:active={plan.is_active}
+										class={['status-toggle', { active: plan.is_active }]}
 										onclick={() => togglePlanActive(plan)}
 										title={plan.is_active ? 'Click to deactivate' : 'Click to activate'}
 									>
@@ -607,7 +607,7 @@
 						name="edit-stripe"
 						bind:value={editingPlan.stripe_price_id}
 						placeholder="price_1ABC123..."
-						class="form-input font-mono"
+						class="form-input stripe-price-input"
 					/>
 					<p class="form-hint">
 						Get this from <a
@@ -636,8 +636,7 @@
 						name="edit-trial"
 						bind:value={editingPlan.trial_days}
 						min="0"
-						class="form-input"
-						style="max-width: 120px"
+						class="form-input trial-days-input"
 					/>
 				</div>
 
@@ -646,8 +645,7 @@
 					<select
 						id="edit-trial-period"
 						bind:value={editingPlan.trial_period_days}
-						class="form-input"
-						style="max-width: 160px"
+						class="form-input trial-period-select"
 					>
 						<option value={null}>None</option>
 						<option value={7}>7 days</option>
@@ -667,7 +665,7 @@
 							/>
 							<span>Require payment method to start trial</span>
 						</label>
-						<small style="color: var(--color-text-muted, #888); display:block; margin-top:4px">
+						<small class="trial-note">
 							Uncheck to allow card-free trials (card collected only if trial converts)
 						</small>
 					</div>
@@ -752,7 +750,7 @@
 					<fieldset class="apply-to-group">
 						<legend>Who does this new price apply to?</legend>
 
-						<label class="apply-option" class:selected={priceApplyTo === 'new_only'}>
+						<label class={['apply-option', { selected: priceApplyTo === 'new_only' }]}>
 							<input type="radio" name="apply-to" value="new_only" bind:group={priceApplyTo} />
 							<span class="apply-content">
 								<strong>New members only</strong>
@@ -763,7 +761,7 @@
 							</span>
 						</label>
 
-						<label class="apply-option" class:selected={priceApplyTo === 'next_renewal'}>
+						<label class={['apply-option', { selected: priceApplyTo === 'next_renewal' }]}>
 							<input type="radio" name="apply-to" value="next_renewal" bind:group={priceApplyTo} />
 							<span class="apply-content">
 								<strong>Everyone, on next renewal</strong>
@@ -774,7 +772,7 @@
 							</span>
 						</label>
 
-						<label class="apply-option" class:selected={priceApplyTo === 'immediate_proration'}>
+						<label class={['apply-option', { selected: priceApplyTo === 'immediate_proration' }]}>
 							<input
 								type="radio"
 								name="apply-to"
@@ -811,7 +809,7 @@
 									{#each priceHistory.slice(0, 5) as h (h.id)}
 										<tr>
 											<td>{new Date(h.changed_at).toLocaleString()}</td>
-											<td class="font-mono">
+											<td class="price-history-amount">
 												{h.old_amount_cents !== null
 													? `${(h.old_amount_cents / 100).toFixed(2)}`
 													: '—'}
@@ -881,8 +879,7 @@
 						Back
 					</button>
 					<button
-						class="btn-save"
-						class:btn-destructive={priceApplyTo === 'immediate_proration'}
+						class={['btn-save', { 'btn-destructive': priceApplyTo === 'immediate_proration' }]}
 						onclick={submitPriceChange}
 						disabled={priceSubmitting}
 					>
@@ -913,21 +910,21 @@
 		padding: 2rem 1rem;
 	}
 
-	.bg-effects {
+	.background-effects {
 		position: fixed;
 		inset: 0;
 		pointer-events: none;
 		overflow: hidden;
 	}
 
-	.bg-blob {
+	.background-blob {
 		position: absolute;
 		border-radius: 50%;
 		filter: blur(80px);
 		opacity: 0.12;
 	}
 
-	.bg-blob-1 {
+	.background-blob-1 {
 		width: 500px;
 		height: 500px;
 		top: -150px;
@@ -935,7 +932,7 @@
 		background: linear-gradient(135deg, #6366f1, #8b5cf6);
 	}
 
-	.bg-blob-2 {
+	.background-blob-2 {
 		width: 400px;
 		height: 400px;
 		bottom: -100px;
@@ -1013,6 +1010,22 @@
 		color: #f87171;
 	}
 
+	.banner-close {
+		margin-left: auto;
+		border: 0;
+		background: transparent;
+		color: #fca5a5;
+		font-size: 1.25rem;
+		line-height: 1;
+		cursor: pointer;
+		transition: color 0.2s;
+	}
+
+	.banner-close:hover,
+	.banner-close:focus-visible {
+		color: #fff;
+	}
+
 	/* Stats Grid */
 	.stats-grid {
 		display: grid;
@@ -1043,6 +1056,26 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+	}
+
+	.stat-icon-total {
+		background: rgba(59, 130, 246, 0.1);
+		color: #60a5fa;
+	}
+
+	.stat-icon-active {
+		background: rgba(16, 185, 129, 0.1);
+		color: #34d399;
+	}
+
+	.stat-icon-stripe {
+		background: rgba(168, 85, 247, 0.1);
+		color: #c084fc;
+	}
+
+	.stat-icon-warning {
+		background: rgba(249, 115, 22, 0.1);
+		color: #fb923c;
 	}
 
 	.stat-label {
@@ -1178,6 +1211,30 @@
 		font-size: 0.75rem;
 		font-weight: 600;
 		border: 1px solid;
+	}
+
+	.billing-monthly {
+		background: rgba(59, 130, 246, 0.1);
+		border-color: rgba(59, 130, 246, 0.2);
+		color: #60a5fa;
+	}
+
+	.billing-quarterly {
+		background: rgba(168, 85, 247, 0.1);
+		border-color: rgba(168, 85, 247, 0.2);
+		color: #c084fc;
+	}
+
+	.billing-annual {
+		background: rgba(16, 185, 129, 0.1);
+		border-color: rgba(16, 185, 129, 0.2);
+		color: #34d399;
+	}
+
+	.billing-default {
+		background: rgba(100, 116, 139, 0.1);
+		border-color: rgba(100, 116, 139, 0.2);
+		color: #94a3b8;
 	}
 
 	.stripe-cell {
@@ -1563,8 +1620,23 @@
 		border-color: #6366f1;
 	}
 
-	.form-input.font-mono {
+	.form-input.stripe-price-input,
+	.price-history-amount {
 		font-family: monospace;
+	}
+
+	.trial-days-input {
+		max-width: 120px;
+	}
+
+	.trial-period-select {
+		max-width: 160px;
+	}
+
+	.trial-note {
+		display: block;
+		margin-top: 4px;
+		color: var(--color-text-muted, #888);
 	}
 
 	.form-hint {
