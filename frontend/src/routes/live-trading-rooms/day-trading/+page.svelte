@@ -9,6 +9,12 @@
 	// --- Pricing State (Svelte 5 Runes) ---
 	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = $state('quarterly');
 
+	function getPricingIndicatorLeft(plan: typeof selectedPlan) {
+		if (plan === 'monthly') return '0.375rem';
+		if (plan === 'quarterly') return 'calc(33.33% + 0.2rem)';
+		return 'calc(66.66% + 0.1rem)';
+	}
+
 	// SSOT: Single source of truth for all pricing data
 	interface Plan {
 		id: 'monthly' | 'quarterly' | 'annual';
@@ -644,11 +650,8 @@
 
 					<div
 						class="pricing-toggle__indicator"
-						style="left: {selectedPlan === 'monthly'
-							? '0.375rem'
-							: selectedPlan === 'quarterly'
-								? 'calc(33.33% + 0.2rem)'
-								: 'calc(66.66% + 0.1rem)'}; width: calc(33.33% - 0.4rem);"
+						style:left={getPricingIndicatorLeft(selectedPlan)}
+						style:width="calc(33.33% - 0.4rem)"
 					></div>
 				</div>
 			</div>
@@ -738,7 +741,7 @@
 						<button class="faq__trigger" onclick={() => toggleFaq(i)} aria-expanded={openFaq === i}>
 							<span class="faq__q">{faq.question}</span>
 							<svg
-								class="faq__chevron {openFaq === i ? 'faq__chevron--open' : ''}"
+								class={['faq__chevron', { 'faq__chevron--open': openFaq === i }]}
 								fill="none"
 								stroke="currentColor"
 								viewBox="0 0 24 24"
