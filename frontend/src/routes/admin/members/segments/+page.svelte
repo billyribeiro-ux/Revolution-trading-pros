@@ -554,10 +554,10 @@
 <div class="admin-segments">
 	<div class="admin-page-container">
 		<!-- Animated Background -->
-		<div class="bg-effects">
-			<div class="bg-blob bg-blob-1"></div>
-			<div class="bg-blob bg-blob-2"></div>
-			<div class="bg-blob bg-blob-3"></div>
+		<div class="background-effects">
+			<div class="background-blob background-blob-1"></div>
+			<div class="background-blob background-blob-2"></div>
+			<div class="background-blob background-blob-3"></div>
 		</div>
 
 		<!-- Header -->
@@ -585,15 +585,18 @@
 		<!-- Tabs -->
 		<div class="tabs-container">
 			<div class="tabs">
-				<button class:active={activeTab === 'segments'} onclick={() => (activeTab = 'segments')}>
+				<button
+					class={{ active: activeTab === 'segments' }}
+					onclick={() => (activeTab = 'segments')}
+				>
 					<IconFilter size={18} />
 					Smart Segments ({segments.length})
 				</button>
-				<button class:active={activeTab === 'tags'} onclick={() => (activeTab = 'tags')}>
+				<button class={{ active: activeTab === 'tags' }} onclick={() => (activeTab = 'tags')}>
 					<IconTag size={18} />
 					Tags ({tags.length})
 				</button>
-				<button class:active={activeTab === 'saved'} onclick={() => (activeTab = 'saved')}>
+				<button class={{ active: activeTab === 'saved' }} onclick={() => (activeTab = 'saved')}>
 					<IconSearch size={18} />
 					Saved Filters ({savedFilters.length})
 				</button>
@@ -626,8 +629,7 @@
 				<div class="segments-grid">
 					{#each segments as segment (segment.id)}
 						<div
-							class="segment-card"
-							class:system={segment.isSystem}
+							class={['segment-card', { system: segment.isSystem }]}
 							role="button"
 							tabindex="0"
 							onclick={() => openSegmentDrawer(segment)}
@@ -753,7 +755,7 @@
 					{#each tags as tag (tag.id)}
 						<div class="tag-card">
 							<div class="tag-header">
-								<div class="tag-name" style="--tag-color: {tag.color}">
+								<div class="tag-name" style:--tag-color={tag.color}>
 									<span class="tag-dot"></span>
 									{tag.name}
 								</div>
@@ -984,9 +986,8 @@
 					<div class="color-picker">
 						{#each tagColors as color (color)}
 							<button
-								class="color-option"
-								class:selected={newTag.color === color}
-								style="background-color: {color}"
+								class={['color-option', { selected: newTag.color === color }]}
+								style:background-color={color}
 								onclick={() => (newTag.color = color)}
 								aria-label="Select color {color}"
 							></button>
@@ -998,7 +999,9 @@
 					<span class="preview-label">Preview:</span>
 					<span
 						class="tag-badge"
-						style="background-color: {newTag.color}20; color: {newTag.color}; border-color: {newTag.color}40"
+						style:background-color={`${newTag.color}20`}
+						style:color={newTag.color}
+						style:border-color={`${newTag.color}40`}
 					>
 						{newTag.name || 'Tag Name'}
 					</span>
@@ -1097,7 +1100,7 @@
 	}
 
 	/* Animated Background Blobs */
-	.bg-effects {
+	.background-effects {
 		position: absolute;
 		inset: 0;
 		overflow: hidden;
@@ -1105,14 +1108,14 @@
 		z-index: 0;
 	}
 
-	.bg-blob {
+	.background-blob {
 		position: absolute;
 		border-radius: 50%;
 		filter: blur(100px);
 		opacity: 0.15;
 	}
 
-	.bg-blob-1 {
+	.background-blob-1 {
 		width: 600px;
 		height: 600px;
 		top: -200px;
@@ -1121,7 +1124,7 @@
 		animation: float 20s ease-in-out infinite;
 	}
 
-	.bg-blob-2 {
+	.background-blob-2 {
 		width: 500px;
 		height: 500px;
 		bottom: -150px;
@@ -1130,7 +1133,7 @@
 		animation: float 25s ease-in-out infinite reverse;
 	}
 
-	.bg-blob-3 {
+	.background-blob-3 {
 		width: 400px;
 		height: 400px;
 		top: 50%;
