@@ -715,50 +715,20 @@
 		return icons[category] || '📦';
 	}
 
-	function getStatusConfig(status: string): {
-		bg: string;
-		text: string;
-		label: string;
-		dot: string;
-	} {
+	function getStatusConfig(status: string): { label: string } {
 		switch (status) {
 			case 'connected':
-				return {
-					bg: 'bg-emerald-500/15',
-					text: 'text-emerald-400',
-					label: 'Connected',
-					dot: 'bg-emerald-400'
-				};
+				return { label: 'Connected' };
 			case 'error':
-				return { bg: 'bg-red-500/15', text: 'text-red-400', label: 'Error', dot: 'bg-red-400' };
+				return { label: 'Error' };
 			case 'expired':
-				return {
-					bg: 'bg-amber-500/15',
-					text: 'text-amber-400',
-					label: 'Expired',
-					dot: 'bg-amber-400'
-				};
+				return { label: 'Expired' };
 			case 'pending':
-				return {
-					bg: 'bg-amber-500/15',
-					text: 'text-amber-400',
-					label: 'Pending',
-					dot: 'bg-amber-400'
-				};
+				return { label: 'Pending' };
 			case 'connecting':
-				return {
-					bg: 'bg-amber-500/15',
-					text: 'text-amber-400',
-					label: 'Connecting...',
-					dot: 'bg-amber-400'
-				};
+				return { label: 'Connecting...' };
 			default:
-				return {
-					bg: 'bg-slate-500/15',
-					text: 'text-slate-400',
-					label: 'Not Connected',
-					dot: 'bg-slate-400'
-				};
+				return { label: 'Not Connected' };
 		}
 	}
 
@@ -774,10 +744,10 @@
 	}
 
 	function getHealthColor(score: number): string {
-		if (score >= 90) return 'text-emerald-400';
-		if (score >= 70) return 'text-amber-400';
-		if (score >= 50) return 'text-orange-400';
-		return 'text-red-400';
+		if (score >= 90) return 'health-score--excellent';
+		if (score >= 70) return 'health-score--good';
+		if (score >= 50) return 'health-score--warning';
+		return 'health-score--critical';
 	}
 
 	// Svelte 5: Initialize on mount with cleanup
@@ -897,12 +867,7 @@
 						>
 							<div class="service-card-header">
 								<div class="service-info">
-									<div
-										class="service-icon"
-										style="background: {service.color}20; color: {service.color};"
-									>
-										G
-									</div>
+									<div class="service-icon" style:--service-color={service.color}>G</div>
 									<div>
 										<h3 class="service-name">{service.name}</h3>
 										<p class="service-category">{service.category}</p>
@@ -950,16 +915,14 @@
 				<div class="category-filter">
 					<button
 						onclick={() => (selectedCategory = null)}
-						class="filter-btn"
-						class:active={selectedCategory === null}
+						class={{ 'filter-btn': true, active: selectedCategory === null }}
 					>
 						All
 					</button>
 					{#each categoryList as [key, category] (key)}
 						<button
 							onclick={() => (selectedCategory = key)}
-							class="filter-btn"
-							class:active={selectedCategory === key}
+							class={{ 'filter-btn': true, active: selectedCategory === key }}
 						>
 							<span>{category.icon}</span>
 							{category.name}
@@ -984,10 +947,7 @@
 						>
 							<div class="service-card-header">
 								<div class="service-info">
-									<div
-										class="service-icon"
-										style="background: {service.color}20; color: {service.color};"
-									>
+									<div class="service-icon" style:--service-color={service.color}>
 										{service.name.charAt(0)}
 									</div>
 									<div>
@@ -1000,7 +960,12 @@
 							<!-- Status Badge -->
 							<div class="service-status-row">
 								<span class="status-badge status-{service.status}">
-									<span class="status-dot" class:pulse={service.status === 'connected'}></span>
+									<span
+										class={{
+											'status-dot': true,
+											pulse: service.status === 'connected'
+										}}
+									></span>
 									{getStatusConfig(service.status).label}
 								</span>
 								{#if service.connection?.health_score}
@@ -1145,39 +1110,27 @@
 
 <!-- Connect Modal -->
 {#if showConnectModal && selectedService}
-	<div
-		class="fixed inset-0 z-50 flex items-center justify-center p-4"
-		transition:fade={{ duration: 200 }}
-	>
+	<div class="modal-layer" transition:fade={{ duration: 200 }}>
 		<!-- Backdrop -->
 		<button
 			type="button"
-			class="absolute inset-0 bg-black/80 backdrop-blur-sm cursor-default"
+			class="modal-backdrop"
 			onclick={() => (showConnectModal = false)}
 			aria-label="Close modal"
 		></button>
 
 		<!-- Modal -->
-		<div
-			class="relative w-full max-w-lg bg-slate-900 border border-white/10 rounded-3xl shadow-2xl overflow-hidden"
-			transition:scale={{ duration: 300, easing: backOut }}
-		>
+		<div class="connection-modal" transition:scale={{ duration: 300, easing: backOut }}>
 			<!-- Header -->
-			<div class="relative p-6 border-b border-white/10">
-				<div
-					class="absolute inset-0 bg-linear-to-r opacity-50"
-					style="background: linear-gradient(135deg, {selectedService.color}15, transparent);"
-				></div>
-				<div class="relative flex items-center gap-4">
-					<div
-						class="w-14 h-14 rounded-xl flex items-center justify-center text-2xl font-bold shadow-lg"
-						style="background: {selectedService.color}20; color: {selectedService.color};"
-					>
+			<div class="modal-header">
+				<div class="modal-header-accent" style:--service-color={selectedService.color}></div>
+				<div class="modal-service-heading">
+					<div class="modal-service-icon" style:--service-color={selectedService.color}>
 						{selectedService.name.charAt(0)}
 					</div>
 					<div>
-						<h2 class="text-xl font-bold text-white">Connect {selectedService.name}</h2>
-						<p class="text-sm text-slate-400">{selectedService.description}</p>
+						<h2 class="modal-title">Connect {selectedService.name}</h2>
+						<p class="modal-description">{selectedService.description}</p>
 					</div>
 				</div>
 				<button
@@ -1185,7 +1138,7 @@
 					onclick={() => (showConnectModal = false)}
 					aria-label="Close connection modal"
 					title="Close"
-					class="absolute top-6 right-6 text-slate-400 hover:text-white transition-colors"
+					class="modal-close-button"
 				>
 					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: x (close) -->
 					<IconX size={24} aria-hidden="true" />
@@ -1193,22 +1146,20 @@
 			</div>
 
 			<!-- Form -->
-			<div class="p-6 space-y-5 max-h-[60vh] overflow-y-auto">
+			<div class="modal-body">
 				<!-- Environment Selector -->
 				{#if selectedService.environments && selectedService.environments.length > 1}
-					<div>
-						<span id="environment-label" class="block text-sm font-medium text-slate-300 mb-2"
-							>Environment</span
-						>
-						<div class="flex gap-2" role="group" aria-labelledby="environment-label">
+					<div class="modal-field">
+						<span id="environment-label" class="modal-label">Environment</span>
+						<div class="environment-options" role="group" aria-labelledby="environment-label">
 							{#each selectedService.environments as env (env)}
 								<button
 									onclick={() => (selectedEnvironment = env)}
 									aria-pressed={selectedEnvironment === env}
-									class="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium transition-all {selectedEnvironment ===
-									env
-										? 'bg-white text-slate-900'
-										: 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white border border-white/10'}"
+									class={{
+										'environment-option': true,
+										'environment-option--selected': selectedEnvironment === env
+									}}
 								>
 									{env.charAt(0).toUpperCase() + env.slice(1)}
 								</button>
@@ -1219,10 +1170,10 @@
 
 				<!-- Credential Fields -->
 				{#each selectedService.fields as field (field.key)}
-					<div>
-						<label for="field-{field.key}" class="block text-sm font-medium text-slate-300 mb-2">
+					<div class="modal-field">
+						<label for="field-{field.key}" class="modal-label">
 							{field.label}
-							{#if field.required}<span class="text-red-400">*</span>{/if}
+							{#if field.required}<span class="required-marker">*</span>{/if}
 						</label>
 						<input
 							id="field-{field.key}"
@@ -1231,7 +1182,7 @@
 							placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
 							bind:value={credentialValues[field.key]}
 							autocomplete={field.type === 'password' ? 'current-password' : 'off'}
-							class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all"
+							class="modal-input"
 						/>
 					</div>
 				{/each}
@@ -1239,45 +1190,45 @@
 				<!-- Test Result -->
 				{#if testResult}
 					<div
-						class="p-4 rounded-xl {testResult.success
-							? 'bg-emerald-500/10 border border-emerald-500/20'
-							: 'bg-red-500/10 border border-red-500/20'}"
+						class={{
+							'test-result': true,
+							'test-result--success': testResult.success,
+							'test-result--error': !testResult.success
+						}}
 						transition:slide
 					>
-						<div class="flex items-center gap-2">
+						<div class="test-result-row">
 							{#if testResult.success}
 								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: check (test success) -->
 								<IconCheck size={20} aria-hidden="true" />
-								<span class="text-emerald-400 font-medium"
-									>{testResult.message || 'Connection successful!'}</span
-								>
+								<span class="test-result-message test-result-message--success">
+									{testResult.message || 'Connection successful!'}
+								</span>
 							{:else}
 								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: x (test failure) -->
 								<IconX size={20} aria-hidden="true" />
-								<span class="text-red-400 font-medium"
-									>{testResult.error || 'Connection failed'}</span
-								>
+								<span class="test-result-message test-result-message--error">
+									{testResult.error || 'Connection failed'}
+								</span>
 							{/if}
 						</div>
 						{#if testResult.latency}
-							<p class="text-xs text-slate-400 mt-1">Response time: {testResult.latency}ms</p>
+							<p class="test-result-latency">Response time: {testResult.latency}ms</p>
 						{/if}
 					</div>
 				{/if}
 			</div>
 
 			<!-- Footer -->
-			<div class="p-6 border-t border-white/10 bg-black/20 flex gap-3">
+			<div class="modal-footer">
 				<button
 					onclick={testConnection}
 					disabled={isTesting}
-					class="flex-1 px-4 py-3 bg-white/5 hover:bg-white/10 text-white rounded-xl font-medium transition-all disabled:opacity-50"
+					class="modal-action modal-action--secondary"
 				>
 					{#if isTesting}
-						<span class="flex items-center justify-center gap-2">
-							<div
-								class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"
-							></div>
+						<span class="modal-action-content">
+							<span class="mini-spinner"></span>
 							Testing...
 						</span>
 					{:else}
@@ -1287,13 +1238,11 @@
 				<button
 					onclick={connectService}
 					disabled={isConnecting}
-					class="flex-1 px-4 py-3 bg-linear-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white rounded-xl font-medium transition-all shadow-lg shadow-amber-500/20 disabled:opacity-50"
+					class="modal-action modal-action--primary"
 				>
 					{#if isConnecting}
-						<span class="flex items-center justify-center gap-2">
-							<div
-								class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"
-							></div>
+						<span class="modal-action-content">
+							<span class="mini-spinner"></span>
 							Connecting...
 						</span>
 					{:else}
@@ -1307,50 +1256,40 @@
 
 <!-- Disconnect Confirmation Modal -->
 {#if showDisconnectConfirm && disconnectingService}
-	<div
-		class="fixed inset-0 z-50 flex items-center justify-center p-4"
-		transition:fade={{ duration: 200 }}
-	>
+	<div class="modal-layer" transition:fade={{ duration: 200 }}>
 		<button
 			type="button"
-			class="absolute inset-0 bg-black/80 backdrop-blur-sm cursor-default"
+			class="modal-backdrop"
 			onclick={() => (showDisconnectConfirm = false)}
 			aria-label="Close"
 		></button>
 
-		<div
-			class="relative w-full max-w-md bg-slate-900 border border-white/10 rounded-3xl shadow-2xl p-6"
-			transition:scale={{ duration: 300, easing: backOut }}
-		>
-			<div class="text-center">
-				<div
-					class="w-16 h-16 mx-auto mb-4 bg-red-500/10 rounded-full flex items-center justify-center"
-				>
+		<div class="disconnect-modal" transition:scale={{ duration: 300, easing: backOut }}>
+			<div class="disconnect-content">
+				<div class="disconnect-icon">
 					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: alert-triangle (error) -->
 					<IconAlertTriangle size={32} aria-hidden="true" />
 				</div>
-				<h3 class="text-xl font-bold text-white mb-2">Disconnect {disconnectingService.name}?</h3>
-				<p class="text-slate-400 mb-6">
+				<h3 class="disconnect-title">Disconnect {disconnectingService.name}?</h3>
+				<p class="disconnect-copy">
 					This will remove all stored credentials and disable the integration. Dashboard metrics
 					using this service will show "Not Connected".
 				</p>
-				<div class="flex gap-3">
+				<div class="modal-footer modal-footer--compact">
 					<button
 						onclick={() => (showDisconnectConfirm = false)}
-						class="flex-1 px-4 py-3 bg-white/5 hover:bg-white/10 text-white rounded-xl font-medium transition-all"
+						class="modal-action modal-action--secondary"
 					>
 						Cancel
 					</button>
 					<button
 						onclick={disconnectService}
 						disabled={isDisconnecting}
-						class="flex-1 px-4 py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl font-medium transition-all disabled:opacity-50"
+						class="modal-action modal-action--danger"
 					>
 						{#if isDisconnecting}
-							<span class="flex items-center justify-center gap-2">
-								<div
-									class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"
-								></div>
+							<span class="modal-action-content">
+								<span class="mini-spinner"></span>
 								Disconnecting...
 							</span>
 						{:else}
@@ -1629,6 +1568,8 @@
 		justify-content: center;
 		font-size: 1.25rem;
 		font-weight: 700;
+		background: color-mix(in srgb, var(--service-color, var(--primary-500)) 12%, transparent);
+		color: var(--service-color, var(--primary-500));
 	}
 
 	.service-name {
@@ -1735,6 +1676,22 @@
 
 	.health-score {
 		font-size: 0.75rem;
+	}
+
+	.health-score--excellent {
+		color: #34d399;
+	}
+
+	.health-score--good {
+		color: #fbbf24;
+	}
+
+	.health-score--warning {
+		color: #fb923c;
+	}
+
+	.health-score--critical {
+		color: #f87171;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -2095,10 +2052,10 @@
 		border: 2px solid rgba(255, 255, 255, 0.3);
 		border-top-color: #f1f5f9;
 		border-radius: 50%;
-		animation: spin 0.6s linear infinite;
+		animation: toggleSpin 0.6s linear infinite;
 	}
 
-	@keyframes spin {
+	@keyframes toggleSpin {
 		to {
 			transform: translate(-50%, -50%) rotate(360deg);
 		}
@@ -2138,6 +2095,334 @@
 
 	.settings-actions {
 		padding-top: 1rem;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * MODALS
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	.modal-layer {
+		position: fixed;
+		inset: 0;
+		z-index: 50;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 1rem;
+	}
+
+	.modal-backdrop {
+		position: absolute;
+		inset: 0;
+		border: 0;
+		background: rgba(0, 0, 0, 0.8);
+		backdrop-filter: blur(4px);
+		-webkit-backdrop-filter: blur(4px);
+		cursor: default;
+	}
+
+	.connection-modal,
+	.disconnect-modal {
+		position: relative;
+		width: 100%;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		border-radius: 1.5rem;
+		background: #0f172a;
+		box-shadow: 0 25px 50px rgba(0, 0, 0, 0.45);
+	}
+
+	.connection-modal {
+		max-width: 32rem;
+		overflow: hidden;
+	}
+
+	.disconnect-modal {
+		max-width: 28rem;
+		padding: 1.5rem;
+	}
+
+	.modal-header {
+		position: relative;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+		padding: 1.5rem;
+	}
+
+	.modal-header-accent {
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(
+			135deg,
+			color-mix(in srgb, var(--service-color, var(--primary-500)) 10%, transparent),
+			transparent
+		);
+		opacity: 0.5;
+	}
+
+	.modal-service-heading {
+		position: relative;
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		padding-right: 3rem;
+	}
+
+	.modal-service-icon {
+		display: flex;
+		width: 3.5rem;
+		height: 3.5rem;
+		flex: 0 0 auto;
+		align-items: center;
+		justify-content: center;
+		border-radius: 0.75rem;
+		background: color-mix(in srgb, var(--service-color, var(--primary-500)) 12%, transparent);
+		color: var(--service-color, var(--primary-500));
+		font-size: 1.5rem;
+		font-weight: 700;
+		box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+	}
+
+	.modal-title,
+	.disconnect-title {
+		margin: 0;
+		color: #ffffff;
+		font-size: 1.25rem;
+		font-weight: 700;
+	}
+
+	.modal-description,
+	.disconnect-copy {
+		color: #94a3b8;
+	}
+
+	.modal-description {
+		margin: 0.25rem 0 0;
+		font-size: 0.875rem;
+	}
+
+	.modal-close-button {
+		position: absolute;
+		top: 1.5rem;
+		right: 1.5rem;
+		z-index: 1;
+		border: 0;
+		background: transparent;
+		color: #94a3b8;
+		cursor: pointer;
+		transition: color 0.2s ease;
+	}
+
+	.modal-close-button:hover,
+	.modal-close-button:focus-visible {
+		color: #ffffff;
+	}
+
+	.modal-body {
+		display: grid;
+		max-height: 60vh;
+		gap: 1.25rem;
+		overflow-y: auto;
+		padding: 1.5rem;
+	}
+
+	.modal-field {
+		display: grid;
+		gap: 0.5rem;
+	}
+
+	.modal-label {
+		color: #cbd5e1;
+		font-size: 0.875rem;
+		font-weight: 500;
+	}
+
+	.required-marker {
+		color: #f87171;
+	}
+
+	.environment-options {
+		display: flex;
+		gap: 0.5rem;
+	}
+
+	.environment-option,
+	.modal-action,
+	.modal-input {
+		border-radius: 0.75rem;
+		font: inherit;
+		transition:
+			background 0.2s ease,
+			border-color 0.2s ease,
+			box-shadow 0.2s ease,
+			color 0.2s ease,
+			opacity 0.2s ease;
+	}
+
+	.environment-option {
+		flex: 1;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		background: rgba(255, 255, 255, 0.05);
+		color: #94a3b8;
+		padding: 0.625rem 1rem;
+		font-size: 0.875rem;
+		font-weight: 500;
+	}
+
+	.environment-option:hover,
+	.environment-option:focus-visible {
+		background: rgba(255, 255, 255, 0.1);
+		color: #ffffff;
+	}
+
+	.environment-option--selected {
+		border-color: transparent;
+		background: #ffffff;
+		color: #0f172a;
+	}
+
+	.modal-input {
+		width: 100%;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		background: rgba(255, 255, 255, 0.05);
+		color: #ffffff;
+		padding: 0.75rem 1rem;
+	}
+
+	.modal-input::placeholder {
+		color: #64748b;
+	}
+
+	.modal-input:focus {
+		border-color: rgba(245, 158, 11, 0.5);
+		box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18);
+		outline: none;
+	}
+
+	.test-result {
+		border-radius: 0.75rem;
+		padding: 1rem;
+	}
+
+	.test-result--success {
+		border: 1px solid rgba(16, 185, 129, 0.2);
+		background: rgba(16, 185, 129, 0.1);
+	}
+
+	.test-result--error {
+		border: 1px solid rgba(239, 68, 68, 0.2);
+		background: rgba(239, 68, 68, 0.1);
+	}
+
+	.test-result-row,
+	.modal-action-content {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+	}
+
+	.test-result-message {
+		font-weight: 500;
+	}
+
+	.test-result-message--success {
+		color: #34d399;
+	}
+
+	.test-result-message--error {
+		color: #f87171;
+	}
+
+	.test-result-latency {
+		margin: 0.25rem 0 0;
+		color: #94a3b8;
+		font-size: 0.75rem;
+	}
+
+	.modal-footer {
+		display: flex;
+		gap: 0.75rem;
+		border-top: 1px solid rgba(255, 255, 255, 0.1);
+		background: rgba(0, 0, 0, 0.2);
+		padding: 1.5rem;
+	}
+
+	.modal-footer--compact {
+		border-top: 0;
+		background: transparent;
+		padding: 0;
+	}
+
+	.modal-action {
+		flex: 1;
+		border: 0;
+		color: #ffffff;
+		padding: 0.75rem 1rem;
+		font-weight: 500;
+	}
+
+	.modal-action--secondary {
+		background: rgba(255, 255, 255, 0.05);
+	}
+
+	.modal-action--secondary:hover,
+	.modal-action--secondary:focus-visible {
+		background: rgba(255, 255, 255, 0.1);
+	}
+
+	.modal-action--primary {
+		background: linear-gradient(90deg, #f59e0b, #d97706);
+		box-shadow: 0 10px 24px rgba(245, 158, 11, 0.2);
+	}
+
+	.modal-action--primary:hover,
+	.modal-action--primary:focus-visible {
+		background: linear-gradient(90deg, #fbbf24, #f59e0b);
+	}
+
+	.modal-action--danger {
+		background: #dc2626;
+	}
+
+	.modal-action--danger:hover,
+	.modal-action--danger:focus-visible {
+		background: #ef4444;
+	}
+
+	.modal-action:disabled {
+		opacity: 0.5;
+	}
+
+	.mini-spinner {
+		width: 1rem;
+		height: 1rem;
+		border: 2px solid rgba(255, 255, 255, 0.2);
+		border-top-color: #ffffff;
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
+	}
+
+	.disconnect-content {
+		text-align: center;
+	}
+
+	.disconnect-icon {
+		display: flex;
+		width: 4rem;
+		height: 4rem;
+		align-items: center;
+		justify-content: center;
+		margin: 0 auto 1rem;
+		border-radius: 999px;
+		background: rgba(239, 68, 68, 0.1);
+		color: #f87171;
+	}
+
+	.disconnect-title {
+		margin-bottom: 0.5rem;
+	}
+
+	.disconnect-copy {
+		margin: 0 0 1.5rem;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
