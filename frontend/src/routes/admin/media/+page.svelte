@@ -840,7 +840,7 @@
 	<title>Media Library | Admin | Revolution Trading Pros</title>
 </svelte:head>
 
-<div class="admin-media" class:details-open={showDetailsPanel}>
+<div class={['admin-media', { 'details-open': showDetailsPanel }]}>
 	<div class="admin-page-container">
 		<!-- Animated Background -->
 		<div class="bg-effects">
@@ -965,12 +965,13 @@
 						</button>
 					</div>
 				{:else}
-					<div class="media-{viewMode}">
+					<div class={`media-${viewMode}`}>
 						{#each items as item (item.id)}
 							<div
-								class="media-item"
-								class:selected={selectedIds.has(item.id)}
-								class:focused={focusedId === item.id}
+								class={[
+									'media-item',
+									{ selected: selectedIds.has(item.id), focused: focusedId === item.id }
+								]}
 								onclick={(e: MouseEvent) => handleItemClick(item, e)}
 								ondblclick={() => handleItemDoubleClick(item)}
 								oncontextmenu={(e: MouseEvent) => handleContextMenu(e, item)}
@@ -1010,8 +1011,10 @@
 
 										<!-- Selection checkbox -->
 										<div
-											class="item-checkbox"
-											class:visible={selectedIds.size > 0 || selectedIds.has(item.id)}
+											class={[
+												'item-checkbox',
+												{ visible: selectedIds.size > 0 || selectedIds.has(item.id) }
+											]}
 										>
 											<input
 												id="page-checkbox"
