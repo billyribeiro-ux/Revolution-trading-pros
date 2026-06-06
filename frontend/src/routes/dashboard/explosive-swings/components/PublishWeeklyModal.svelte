@@ -27,6 +27,8 @@
 	/>
 -->
 <script lang="ts">
+	import { SvelteDate } from 'svelte/reactivity';
+	import type { Attachment } from 'svelte/attachments';
 	import {
 		weeklyVideoApi,
 		tradePlanApi,
@@ -69,6 +71,15 @@
 
 	// Modal refs
 	let modalRef = $state<HTMLDivElement | null>(null);
+
+	const captureModalRef: Attachment<HTMLDivElement> = (node) => {
+		modalRef = node;
+		requestAnimationFrame(() => node.focus());
+
+		return () => {
+			if (modalRef === node) modalRef = null;
+		};
+	};
 
 	// Current step (for mobile accordion)
 	let _activeSection = $state<'video' | 'trades' | 'review'>('video');
@@ -121,10 +132,10 @@
 	// ═══════════════════════════════════════════════════════════════════════════════════
 
 	function getNextMonday(): string {
-		const today = new Date();
+		const today = new SvelteDate();
 		const dayOfWeek = today.getDay();
 		const daysUntilMonday = dayOfWeek === 0 ? 1 : (8 - dayOfWeek) % 7 || 7;
-		const nextMonday = new Date(today);
+		const nextMonday = new SvelteDate(today);
 		nextMonday.setDate(today.getDate() + daysUntilMonday);
 		return nextMonday.toISOString().split('T')[0];
 	}
@@ -370,8 +381,6 @@
 		const previousOverflow = document.body.style.overflow;
 		document.body.style.overflow = 'hidden';
 
-		requestAnimationFrame(() => modalRef?.focus());
-
 		return () => {
 			document.body.style.overflow = previousOverflow;
 		};
@@ -397,7 +406,7 @@
 		onkeydown={handleKeydown}
 	>
 		<!-- Modal Container -->
-		<div class="modal-container" bind:this={modalRef} tabindex="-1">
+		<div class="modal-container" {@attach captureModalRef} tabindex="-1">
 			<!-- Modal Header -->
 			<header class="modal-header">
 				<h2 id="publish-modal-title">Publish Weekly Breakdown</h2>
@@ -475,7 +484,7 @@
 								id="video_url"
 								bind:value={videoForm.video_url}
 								placeholder="https://iframe.mediadelivery.net/embed/..."
-								class:invalid={videoForm.video_url && !isValidBunnyUrl(videoForm.video_url)}
+								class={{ invalid: videoForm.video_url && !isValidBunnyUrl(videoForm.video_url) }}
 								required
 							/>
 							{#if videoForm.video_url && !isValidBunnyUrl(videoForm.video_url)}
@@ -602,7 +611,7 @@
 								</thead>
 								<tbody>
 									{#each tradePlanRows as row (row.id)}
-										<tr class:has-notes-open={row.isExpanded}>
+										<tr class={{ 'has-notes-open': row.isExpanded }}>
 											<td class="ticker-cell">
 												<input
 													type="text"
@@ -611,15 +620,22 @@
 														updateRow(row.id, 'ticker', e.currentTarget.value.toUpperCase())}
 													placeholder="NVDA"
 													maxlength="5"
-													class="cell-input cell-input--ticker"
-													class:invalid={row.ticker && !isValidTicker(row.ticker)}
+													class={[
+														'cell-input',
+														'cell-input--ticker',
+														{ invalid: row.ticker && !isValidTicker(row.ticker) }
+													]}
 												/>
 											</td>
 											<td>
 												<select
 													value={row.bias}
 													onchange={(e) => updateRow(row.id, 'bias', e.currentTarget.value as Bias)}
-													class="cell-select bias-select bias-select--{row.bias.toLowerCase()}"
+													class={[
+														'cell-select',
+														'bias-select',
+														`bias-select--${row.bias.toLowerCase()}`
+													]}
 												>
 													<option value="BULLISH">Bullish</option>
 													<option value="BEARISH">Bearish</option>
@@ -701,8 +717,7 @@
 											<td class="notes-toggle-cell">
 												<button
 													type="button"
-													class="table-notes-btn"
-													class:expanded={row.isExpanded}
+													class={['table-notes-btn', { expanded: row.isExpanded }]}
 													onclick={() => toggleRowNotes(row.id)}
 													aria-label="Toggle notes"
 												>
