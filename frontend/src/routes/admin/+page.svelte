@@ -616,10 +616,10 @@
 					{#each [{ label: 'Sessions', value: analytics.sessions.value, change: analytics.sessions.change, trend: analytics.sessions.trend, icon: IconEye, color: 'blue' }, { label: 'Pageviews', value: analytics.pageviews.value, change: analytics.pageviews.change, trend: analytics.pageviews.trend, icon: IconClick, color: 'purple' }, { label: 'Avg. Duration', value: analytics.avgSessionDuration.value, change: analytics.avgSessionDuration.change, trend: analytics.avgSessionDuration.trend, icon: IconClock, color: 'cyan', isText: true }, { label: 'Total Users', value: analytics.totalUsers.value, change: analytics.totalUsers.change, trend: analytics.totalUsers.trend, icon: IconUsers, color: 'green' }, { label: 'Bounce Rate', value: analytics.bounceRate.value, change: analytics.bounceRate.change, trend: analytics.bounceRate.trend, icon: IconActivity, color: 'orange', suffix: '%', invertTrend: true }, { label: 'New Users', value: analytics.newUsers.value, change: analytics.newUsers.change, trend: analytics.newUsers.trend, icon: IconUserCircle, color: 'pink' }] as metric, i (i)}
 						{@const MetricIcon = metric.icon}
 						<div
-							class="metric-card {metric.color}"
+							class={['metric-card', metric.color]}
 							in:scale={{ duration: 400, delay: 150 + i * 50, easing: cubicOut }}
 						>
-							<div class="metric-icon-wrap {metric.color}">
+							<div class={['metric-icon-wrap', metric.color]}>
 								<MetricIcon size={20} />
 							</div>
 							<div class="metric-body">
@@ -655,7 +655,7 @@
 									{/if}
 								</div>
 							</div>
-							<div class="metric-glow {metric.color}"></div>
+							<div class={['metric-glow', metric.color]}></div>
 						</div>
 					{/each}
 				</div>
@@ -980,10 +980,10 @@
 					{@const BusinessIcon = item.icon}
 					<a
 						href={item.href}
-						class="business-card {item.color}"
+						class={['business-card', item.color]}
 						in:scale={{ duration: 400, delay: 350 + i * 50, easing: cubicOut }}
 					>
-						<div class="business-card-icon {item.color}">
+						<div class={['business-card-icon', item.color]}>
 							<BusinessIcon size={28} />
 						</div>
 						<div class="business-card-content">
@@ -1029,10 +1029,10 @@
 					{@const ActionIcon = action.icon}
 					<a
 						href={action.href}
-						class="quick-action-card {action.color}"
+						class={['quick-action-card', action.color]}
 						in:scale={{ duration: 300, delay: 450 + i * 30, easing: elasticOut }}
 					>
-						<div class="quick-action-icon {action.color}">
+						<div class={['quick-action-icon', action.color]}>
 							<ActionIcon size={20} />
 						</div>
 						<span class="quick-action-label">{action.label}</span>
