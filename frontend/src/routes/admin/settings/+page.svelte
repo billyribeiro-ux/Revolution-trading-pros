@@ -777,10 +777,10 @@
 <!-- Apple-grade Settings Dashboard -->
 <div class="admin-settings">
 	<!-- Animated Background -->
-	<div class="bg-effects">
-		<div class="bg-blob bg-blob-1"></div>
-		<div class="bg-blob bg-blob-2"></div>
-		<div class="bg-blob bg-blob-3"></div>
+	<div class="background-effects">
+		<div class="background-blob background-blob-1"></div>
+		<div class="background-blob background-blob-2"></div>
+		<div class="background-blob background-blob-3"></div>
 	</div>
 
 	<div class="admin-page-container">
@@ -798,7 +798,7 @@
 							e.stopPropagation();
 							activeTab = 'integrations';
 						}}
-						class="tab-btn {activeTab === 'integrations' ? 'active' : ''}"
+						class={['tab-btn', { active: activeTab === 'integrations' }]}
 					>
 						API Integrations
 					</button>
@@ -809,7 +809,7 @@
 							e.stopPropagation();
 							activeTab = 'general';
 						}}
-						class="tab-btn {activeTab === 'general' ? 'active' : ''}"
+						class={['tab-btn', { active: activeTab === 'general' }]}
 					>
 						General Settings
 					</button>
@@ -873,7 +873,7 @@
 										<p class="service-category">{service.category}</p>
 									</div>
 								</div>
-								<span class="status-badge status-{service.status}">
+								<span class={['status-badge', `status-${service.status}`]}>
 									<span class="status-dot"></span>
 									{getStatusConfig(service.status).label}
 								</span>
@@ -959,7 +959,7 @@
 
 							<!-- Status Badge -->
 							<div class="service-status-row">
-								<span class="status-badge status-{service.status}">
+								<span class={['status-badge', `status-${service.status}`]}>
 									<span
 										class={{
 											'status-dot': true,
@@ -969,7 +969,7 @@
 									{getStatusConfig(service.status).label}
 								</span>
 								{#if service.connection?.health_score}
-									<span class="health-score {getHealthColor(service.connection.health_score)}">
+									<span class={['health-score', getHealthColor(service.connection.health_score)]}>
 										{service.connection.health_score}% health
 									</span>
 								{/if}
@@ -1088,7 +1088,7 @@
 									aria-label="Toggle maintenance mode"
 									aria-pressed={siteSettings.maintenance_mode}
 									title="Toggle maintenance mode"
-									class="toggle-switch {siteSettings.maintenance_mode ? 'toggle-on' : ''}"
+									class={['toggle-switch', { 'toggle-on': siteSettings.maintenance_mode }]}
 									disabled={isSavingMaintenance}
 									onclick={toggleMaintenanceMode}
 								>
@@ -1317,21 +1317,21 @@
 	}
 
 	/* Background Effects - fixed position for parallax */
-	.bg-effects {
+	.background-effects {
 		position: fixed;
 		inset: 0;
 		pointer-events: none;
 		overflow: hidden;
 	}
 
-	.bg-blob {
+	.background-blob {
 		position: absolute;
 		border-radius: 50%;
 		filter: blur(80px);
 		opacity: 0.15;
 	}
 
-	.bg-blob-1 {
+	.background-blob-1 {
 		width: 600px;
 		height: 600px;
 		top: -200px;
@@ -1340,7 +1340,7 @@
 		animation: float 20s ease-in-out infinite;
 	}
 
-	.bg-blob-2 {
+	.background-blob-2 {
 		width: 500px;
 		height: 500px;
 		bottom: -150px;
@@ -1349,7 +1349,7 @@
 		animation: float 25s ease-in-out infinite reverse;
 	}
 
-	.bg-blob-3 {
+	.background-blob-3 {
 		width: 400px;
 		height: 400px;
 		top: 50%;
@@ -2561,10 +2561,10 @@
 
 	/* Reduced Motion */
 	@media (prefers-reduced-motion: reduce) {
-		.bg-blob,
-		.bg-blob-1,
-		.bg-blob-2,
-		.bg-blob-3,
+		.background-blob,
+		.background-blob-1,
+		.background-blob-2,
+		.background-blob-3,
 		.service-card,
 		.stat-card,
 		.btn-connect,
