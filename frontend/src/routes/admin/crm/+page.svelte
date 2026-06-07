@@ -507,6 +507,7 @@
 						</thead>
 						<tbody>
 							{#each filteredContacts as contact (contact.id || contact.email)}
+								{@const contactStatus = contact.status || 'subscribed'}
 								<tr>
 									<td>
 										<input
@@ -532,7 +533,7 @@
 										</a>
 									</td>
 									<td>
-										<span class="status-badge {contact.status || 'subscribed'}">
+										<span class={['status-badge', contactStatus]}>
 											{contact.status || 'Subscribed'}
 										</span>
 									</td>
