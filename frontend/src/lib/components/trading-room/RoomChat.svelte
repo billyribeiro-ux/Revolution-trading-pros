@@ -65,7 +65,7 @@
 	let isConnected = $state(false);
 	let isConnecting = $state(true);
 	let error = $state<string | null>(null);
-	let chatContainer = $state<HTMLElement | null>(null);
+	let chatContainer: HTMLElement | null = null;
 	let ws: WebSocket | null = null;
 
 	// User info
@@ -180,6 +180,15 @@
 		collapsed = !collapsed;
 	}
 
+	function captureChatContainer(element: HTMLElement): () => void {
+		chatContainer = element;
+		return () => {
+			if (chatContainer === element) {
+				chatContainer = null;
+			}
+		};
+	}
+
 	// ===============================================================================
 	// DISCORD EMBED URL
 	// ===============================================================================
@@ -217,7 +226,7 @@
 	});
 </script>
 
-<div class="room-chat" class:room-chat--collapsed={collapsed}>
+<div class={{ 'room-chat': true, 'room-chat--collapsed': collapsed }}>
 	{#if showHeader}
 		<header class="chat-header">
 			<div class="chat-header-content">
@@ -295,14 +304,14 @@
 						<button class="btn btn-retry" onclick={connectWebSocket}>Retry</button>
 					</div>
 				{:else}
-					<div class="chat-messages" bind:this={chatContainer}>
+					<div class="chat-messages" {@attach captureChatContainer}>
 						{#if messages.length === 0}
 							<div class="chat-empty">
 								<p>No messages yet. Be the first to say hello!</p>
 							</div>
 						{:else}
 							{#each messages as message (message.id)}
-								<div class="chat-message" class:chat-message--own={message.isOwn}>
+								<div class={{ 'chat-message': true, 'chat-message--own': message.isOwn }}>
 									<div class="message-header">
 										<span class="message-author">{message.userName}</span>
 										<span class="message-time">{formatTime(message.timestamp)}</span>
