@@ -281,9 +281,13 @@
 	</div>
 {:else if nextEvent}
 	<div
-		class="room-notification"
-		class:room-notification--live={isRoomLive}
-		class:room-notification--soon={!isRoomLive && countdown}
+		class={[
+			'room-notification',
+			{
+				'room-notification--live': isRoomLive,
+				'room-notification--soon': !isRoomLive && Boolean(countdown)
+			}
+		]}
 	>
 		{#if isRoomLive}
 			<div class="notification-badge live-badge">
