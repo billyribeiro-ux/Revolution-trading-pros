@@ -36,14 +36,35 @@
 	// user types; a prop change (e.g., the block being externally updated)
 	// re-syncs the field. Replaces the previous $state + $effect shadow.
 	let urlInputValue = $derived<string>(props.block.content.mediaUrl || '');
-	let isLoading = $state(false);
-	let hasError = $state(false);
-	let errorMessage = $state('');
+	let loadedMediaUrl = $state('');
+	let failedMediaUrl = $state('');
+	let inputErrorMessage = $state('');
+	let loadErrorMessage = $state('');
 
 	// Derived State with $derived.by()
 
 	const mediaUrl = $derived(props.block.content.mediaUrl || '');
 	const mediaCaption = $derived(props.block.content.mediaCaption || '');
+	const isLoading = $derived(
+		Boolean(mediaUrl && loadedMediaUrl !== mediaUrl && failedMediaUrl !== mediaUrl)
+	);
+	const hasInputError = $derived(inputErrorMessage.length > 0);
+	const hasLoadError = $derived(Boolean(mediaUrl && failedMediaUrl === mediaUrl));
+	const hasError = $derived(hasInputError || hasLoadError);
+	const errorMessage = $derived(hasInputError ? inputErrorMessage : loadErrorMessage);
+	const isVideoHidden = $derived(isLoading || hasError);
+	const videoBlockClass = $derived({
+		'video-block': true,
+		'video-block--selected': props.isSelected,
+		'video-block--editing': props.isEditing
+	});
+	const videoPlayerClass = $derived({
+		'video-hidden': isVideoHidden
+	});
+	const videoCaptionClass = $derived({
+		'video-caption': true,
+		'video-caption--placeholder': !mediaCaption && props.isEditing
+	});
 
 	/**
 	 * Auto-detect video type from URL
@@ -140,9 +161,9 @@
 
 		const sanitized = sanitizeURL(trimmed);
 		if (!sanitized) {
-			hasError = true;
-			errorMessage = 'Invalid URL format. Please enter a valid video URL.';
-			props.onError?.(new Error(errorMessage));
+			const message = 'Invalid URL format. Please enter a valid video URL.';
+			inputErrorMessage = message;
+			props.onError?.(new Error(message));
 			return;
 		}
 
@@ -153,16 +174,16 @@
 		const isNative = /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url) || url.includes('video/');
 
 		if (!isYouTube && !isVimeo && !isNative) {
-			hasError = true;
-			errorMessage =
+			const message =
 				'Unable to recognize video URL. Please use YouTube, Vimeo, or a direct video link.';
-			props.onError?.(new Error(errorMessage));
+			inputErrorMessage = message;
+			props.onError?.(new Error(message));
 			return;
 		}
 
-		hasError = false;
-		errorMessage = '';
-		isLoading = true;
+		inputErrorMessage = '';
+		if (failedMediaUrl === sanitized) failedMediaUrl = '';
+		if (loadedMediaUrl === sanitized) loadedMediaUrl = '';
 		updateContent({ mediaUrl: sanitized });
 	}
 
@@ -185,55 +206,44 @@
 	}
 
 	function handleIframeLoad(): void {
-		isLoading = false;
-		hasError = false;
+		loadedMediaUrl = mediaUrl;
+		failedMediaUrl = '';
+		loadErrorMessage = '';
 	}
 
 	function handleIframeError(): void {
-		isLoading = false;
-		hasError = true;
-		errorMessage = 'Failed to load video. Please check the URL and try again.';
-		props.onError?.(new Error(errorMessage));
+		const message = 'Failed to load video. Please check the URL and try again.';
+		failedMediaUrl = mediaUrl;
+		loadedMediaUrl = '';
+		loadErrorMessage = message;
+		props.onError?.(new Error(message));
 	}
 
 	function handleNativeVideoLoad(): void {
-		isLoading = false;
-		hasError = false;
+		loadedMediaUrl = mediaUrl;
+		failedMediaUrl = '';
+		loadErrorMessage = '';
 	}
 
 	function handleNativeVideoError(): void {
-		isLoading = false;
-		hasError = true;
-		errorMessage = 'Failed to load video file. The format may not be supported.';
-		props.onError?.(new Error(errorMessage));
+		const message = 'Failed to load video file. The format may not be supported.';
+		failedMediaUrl = mediaUrl;
+		loadedMediaUrl = '';
+		loadErrorMessage = message;
+		props.onError?.(new Error(message));
 	}
 
 	function clearVideo(): void {
 		urlInputValue = '';
-		hasError = false;
-		errorMessage = '';
-		isLoading = false;
+		loadedMediaUrl = '';
+		failedMediaUrl = '';
+		inputErrorMessage = '';
+		loadErrorMessage = '';
 		updateContent({ mediaUrl: '', mediaCaption: '' });
 	}
-
-	// Reset loading state when URL changes
-
-	$effect(() => {
-		if (mediaUrl) {
-			isLoading = true;
-			hasError = false;
-		}
-	});
 </script>
 
-<div
-	class="video-block"
-	class:video-block--selected={props.isSelected}
-	class:video-block--editing={props.isEditing}
-	role="region"
-	aria-label="Video player"
-	data-block-id={props.blockId}
->
+<div class={videoBlockClass} role="region" aria-label="Video player" data-block-id={props.blockId}>
 	{#if hasVideo && embedUrl}
 		<!-- Video Container with 16:9 Aspect Ratio -->
 		<div class="video-container">
@@ -257,8 +267,7 @@
 			{#if videoType === 'native'}
 				<video
 					src={embedUrl}
-					class="video-native"
-					class:video-hidden={isLoading || hasError}
+					class={['video-native', videoPlayerClass]}
 					controls
 					preload="metadata"
 					onloadeddata={handleNativeVideoLoad}
@@ -273,8 +282,7 @@
 				<iframe
 					src={embedUrl}
 					title={mediaCaption || `${videoType === 'youtube' ? 'YouTube' : 'Vimeo'} video player`}
-					class="video-iframe"
-					class:video-hidden={isLoading || hasError}
+					class={['video-iframe', videoPlayerClass]}
 					frameborder="0"
 					allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
 					allowfullscreen
@@ -302,8 +310,7 @@
 			<!-- svelte-ignore a11y_figcaption_parent -->
 			<figcaption
 				contenteditable={props.isEditing}
-				class="video-caption"
-				class:video-caption--placeholder={!mediaCaption && props.isEditing}
+				class={videoCaptionClass}
 				oninput={handleCaptionInput}
 				onpaste={handlePaste}
 				data-placeholder="Add a caption..."
