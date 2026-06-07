@@ -107,16 +107,8 @@
 		setStats: ps.setStats
 	});
 
-	// Local modal state (bind: requires local variables)
-	let alertModalOpen = $state(false);
-
 	// Expanded notes tracking (local UI state)
 	let expandedNotes = new SvelteSet<number>();
-
-	// Sync modal state from state module
-	$effect(() => {
-		alertModalOpen = ps.isAlertModalOpen;
-	});
 
 	function toggleNotes(alertId: number) {
 		if (expandedNotes.has(alertId)) {
@@ -124,6 +116,14 @@
 		} else {
 			expandedNotes.add(alertId);
 		}
+	}
+
+	function getConnectionStatusClasses() {
+		return [
+			'connection-status',
+			realtime.isConnected && 'connected',
+			realtime.isReconnecting && 'reconnecting'
+		];
 	}
 
 	/**
@@ -146,7 +146,6 @@
 			await ps.fetchAlerts();
 
 			// Close modal on success
-			alertModalOpen = false;
 			ps.closeAlertModal();
 		} catch (err) {
 			const message = err instanceof Error ? err.message : 'An unexpected error occurred';
@@ -235,11 +234,7 @@
 				<div class="header-left">
 					<h2>Live Alerts</h2>
 					<!-- ICT 7+ Phase 3: Real-time connection status -->
-					<div
-						class="connection-status"
-						class:connected={realtime.isConnected}
-						class:reconnecting={realtime.isReconnecting}
-					>
+					<div class={getConnectionStatusClasses()}>
 						<span class="status-dot"></span>
 						<span class="status-text">
 							{#if realtime.isConnected}
@@ -379,14 +374,13 @@
      session. The child seeds fields once at mount (via untrack) from
      editAlert instead of a prop→state sync $effect, so it MUST remount per
      open. No exit transition → unmount-on-close is visually identical. -->
-{#if alertModalOpen}
+{#if ps.isAlertModalOpen}
 	<TradeAlertModal
-		isOpen={alertModalOpen}
+		isOpen={ps.isAlertModalOpen}
 		roomSlug={ps.ROOM_SLUG}
 		editAlert={ps.editingAlert}
 		entryAlerts={ps.alerts.filter((a) => a.type === 'ENTRY') as unknown as RoomAlert[]}
 		onClose={() => {
-			alertModalOpen = false;
 			ps.closeAlertModal();
 			saveAlertError = null;
 		}}
