@@ -136,6 +136,22 @@
 			addRoomIds = addRoomIds.filter((r) => r !== id);
 		}
 	}
+
+	function tagActionClass(action: 'add' | 'remove', active: boolean) {
+		return {
+			'btn-tag-action': true,
+			[action]: true,
+			active
+		};
+	}
+
+	function roomActionClass(action: 'add' | 'remove', active: boolean) {
+		return {
+			'btn-room-action': true,
+			[action]: true,
+			active
+		};
+	}
 </script>
 
 <div class="bulk-edit-modal">
@@ -251,12 +267,11 @@
 				<div class="tags-grid">
 					{#each tags as tag (tag.slug)}
 						<div class="tag-item">
-							<span class="tag-name" style="--tag-color: {tag.color}">{tag.name}</span>
+							<span class="tag-name" style:--tag-color={tag.color}>{tag.name}</span>
 							<div class="tag-actions">
 								<button
 									type="button"
-									class="btn-tag-action add"
-									class:active={addTags.includes(tag.slug)}
+									class={tagActionClass('add', addTags.includes(tag.slug))}
 									onclick={() => toggleAddTag(tag.slug)}
 									title="Add tag"
 									aria-label="Add tag"
@@ -265,8 +280,7 @@
 								</button>
 								<button
 									type="button"
-									class="btn-tag-action remove"
-									class:active={removeTags.includes(tag.slug)}
+									class={tagActionClass('remove', removeTags.includes(tag.slug))}
 									onclick={() => toggleRemoveTag(tag.slug)}
 									title="Remove tag"
 									aria-label="Remove tag"
@@ -291,8 +305,7 @@
 							<div class="room-actions">
 								<button
 									type="button"
-									class="btn-room-action add"
-									class:active={addRoomIds.includes(room.id)}
+									class={roomActionClass('add', addRoomIds.includes(room.id))}
 									onclick={() => toggleAddRoom(room.id)}
 									title="Add to room"
 									aria-label="Add to room"
@@ -301,8 +314,7 @@
 								</button>
 								<button
 									type="button"
-									class="btn-room-action remove"
-									class:active={removeRoomIds.includes(room.id)}
+									class={roomActionClass('remove', removeRoomIds.includes(room.id))}
 									onclick={() => toggleRemoveRoom(room.id)}
 									title="Remove from room"
 									aria-label="Remove from room"
