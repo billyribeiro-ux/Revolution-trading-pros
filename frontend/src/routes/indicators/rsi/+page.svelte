@@ -54,11 +54,22 @@
 			sectionObserver.disconnect();
 		};
 	});
+
+	function heroSectionClass() {
+		return {
+			'hero-section': true,
+			visible: heroVisible
+		};
+	}
+
+	function animatedSectionClass(visible: boolean, extraClass?: string) {
+		return ['animated-section', extraClass, { visible }];
+	}
 </script>
 
 <div class="indicator-page">
 	<!-- Hero Section -->
-	<section class="hero-section" class:visible={heroVisible}>
+	<section class={heroSectionClass()}>
 		<div class="hero-background">
 			<div class="glow-orb"></div>
 			<div class="oscillator-line"></div>
@@ -108,7 +119,7 @@
 	</section>
 
 	<!-- How It Works -->
-	<section class="animated-section" class:visible={sectionsVisible[0]} data-section="0">
+	<section class={animatedSectionClass(sectionsVisible[0])} data-section="0">
 		<div class="section-container">
 			<h2 class="section-title">How RSI Works</h2>
 
@@ -143,11 +154,7 @@
 	</section>
 
 	<!-- Key Levels -->
-	<section
-		class="levels-section animated-section"
-		class:visible={sectionsVisible[1]}
-		data-section="1"
-	>
+	<section class={animatedSectionClass(sectionsVisible[1], 'levels-section')} data-section="1">
 		<div class="section-container">
 			<h2 class="section-title">RSI Key Levels</h2>
 
@@ -182,11 +189,7 @@
 	</section>
 
 	<!-- Trading Strategies -->
-	<section
-		class="strategies-section animated-section"
-		class:visible={sectionsVisible[2]}
-		data-section="2"
-	>
+	<section class={animatedSectionClass(sectionsVisible[2], 'strategies-section')} data-section="2">
 		<div class="section-container">
 			<h2 class="section-title">RSI Trading Strategies</h2>
 
