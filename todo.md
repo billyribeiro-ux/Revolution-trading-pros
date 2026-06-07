@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 501 Svelte files remaining.
+- Broad dynamic class/style migration scan: 500 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -78,6 +78,7 @@ Current evidence:
 - [x] `e2d09c9d7` Modernize dashboard page bindings.
 - [x] `9ce0b653c` Modernize login form attachments.
 - [x] `dfbc97d2f` Modernize blog create page bindings.
+- [x] `2065a5c3d` Modernize CRM sequences page bindings.
 
 ## Current Priority Queue
 
@@ -100,7 +101,7 @@ Current evidence:
 - [x] `frontend/src/routes/dashboard/+page.svelte`
 - [x] `frontend/src/lib/components/auth/LoginForm.svelte`
 - [x] `frontend/src/routes/admin/blog/create/+page.svelte`
-- [ ] `frontend/src/routes/admin/crm/sequences/+page.svelte`
+- [x] `frontend/src/routes/admin/crm/sequences/+page.svelte`
 - [ ] `frontend/src/lib/components/blog/BlockEditor/AIAssistant.svelte`
 - [ ] `frontend/src/lib/components/AdminToolbar.svelte`
 - [ ] `frontend/src/lib/components/forms/FormFieldRenderer.svelte`
