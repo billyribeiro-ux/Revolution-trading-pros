@@ -384,7 +384,7 @@
 				</thead>
 				<tbody>
 					{#each members as member (member.id)}
-						<tr class:selected={selectedMembers.has(member.id)}>
+						<tr class={{ selected: selectedMembers.has(member.id) }}>
 							<td class="checkbox-col">
 								<!-- FIX-2026-04-26 (audit 02 §P2-11): per-row unique id. -->
 								<input
@@ -408,7 +408,7 @@
 								</div>
 							</td>
 							<td>
-								<span class="potential-badge {getPotentialColor(member.total_spent)}">
+								<span class={['potential-badge', getPotentialColor(member.total_spent)]}>
 									{getPotentialLabel(member.total_spent)}
 								</span>
 							</td>
@@ -416,7 +416,7 @@
 								<span class="product-name">{member.last_product || '-'}</span>
 							</td>
 							<td>
-								<span class="spending {getPotentialColor(member.total_spent)}"
+								<span class={['spending', getPotentialColor(member.total_spent)]}
 									>{formatCurrency(member.total_spent)}</span
 								>
 							</td>
@@ -534,7 +534,7 @@
 					<span class="selector-label">Campaign Type</span>
 					<div class="campaign-type-buttons">
 						<button
-							class:active={campaignType === 'free_trial'}
+							class={{ active: campaignType === 'free_trial' }}
 							onclick={() => {
 								campaignType = 'free_trial';
 								const t = presetTemplates.find((t) => t.id === 'winback_30_free');
@@ -545,7 +545,7 @@
 							30 Days Free
 						</button>
 						<button
-							class:active={campaignType === 'promo'}
+							class={{ active: campaignType === 'promo' }}
 							onclick={() => {
 								campaignType = 'promo';
 								const t = presetTemplates.find((t) => t.id === 'winback_discount');
@@ -556,7 +556,7 @@
 							50% Off
 						</button>
 						<button
-							class:active={campaignType === 'winback'}
+							class={{ active: campaignType === 'winback' }}
 							onclick={() => {
 								campaignType = 'winback';
 								const t = presetTemplates.find((t) => t.id === 'winback_missed');
