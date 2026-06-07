@@ -175,16 +175,8 @@
 		return ((metric / sent) * 100).toFixed(1) + '%';
 	}
 
-	function getStatusColor(status: string): string {
-		const colors: Record<string, string> = {
-			draft: 'bg-slate-500/20 text-slate-400',
-			scheduled: 'bg-blue-500/20 text-blue-400',
-			sending: 'bg-amber-500/20 text-amber-400',
-			sent: 'bg-emerald-500/20 text-emerald-400',
-			paused: 'bg-orange-500/20 text-orange-400',
-			failed: 'bg-red-500/20 text-red-400'
-		};
-		return colors[status] || colors.draft;
+	function getStatusClass(status: Campaign['status']): string {
+		return `status-${status}`;
 	}
 
 	function getStatusIcon(status: string) {
@@ -354,7 +346,7 @@
 								</div>
 							</td>
 							<td>
-								<span class="status-badge {getStatusColor(campaign.status)}">
+								<span class={['status-badge', getStatusClass(campaign.status)]}>
 									<CampaignStatusIcon size={12} />
 									{campaign.status}
 								</span>
@@ -702,6 +694,36 @@
 		font-size: 0.75rem;
 		font-weight: 600;
 		text-transform: capitalize;
+	}
+
+	.status-badge.status-draft {
+		background: rgba(100, 116, 139, 0.2);
+		color: #94a3b8;
+	}
+
+	.status-badge.status-scheduled {
+		background: rgba(59, 130, 246, 0.2);
+		color: #60a5fa;
+	}
+
+	.status-badge.status-sending {
+		background: rgba(245, 158, 11, 0.2);
+		color: #fbbf24;
+	}
+
+	.status-badge.status-sent {
+		background: rgba(16, 185, 129, 0.2);
+		color: #34d399;
+	}
+
+	.status-badge.status-paused {
+		background: rgba(249, 115, 22, 0.2);
+		color: #fb923c;
+	}
+
+	.status-badge.status-failed {
+		background: rgba(239, 68, 68, 0.2);
+		color: #f87171;
 	}
 
 	.rate-value {
