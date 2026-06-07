@@ -20,6 +20,7 @@
 	/* eslint svelte/no-at-html-tags: "off" -- every {@html} in this file renders sanitizer-cleaned HTML (sanitizeHtml/sanitizeBlogContent/etc.) or serialized JSON-LD; audited 2026-05-30 */
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
+	import type { Attachment } from 'svelte/attachments';
 	import { sanitizeHtml } from '$lib/sanitize';
 	import Icon from '$lib/components/Icon.svelte';
 
@@ -57,8 +58,6 @@
 	let searchQuery = $state('');
 	let isLoading = $state(false);
 	let error = $state<string | null>(null);
-	let _activeLineElement = $state<HTMLElement | null>(null);
-	let containerElement = $state<HTMLElement | null>(null);
 	let copied = $state(false);
 
 	// ═══════════════════════════════════════════════════════════════════════
@@ -84,6 +83,14 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════
 
+	function scrollCueIntoView(cueId: string): Attachment<HTMLButtonElement> {
+		return (node) => {
+			if (cueId === activeCueId && !searchQuery) {
+				node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+			}
+		};
+	}
+
 	onMount(async () => {
 		if (!browser) return;
 
@@ -91,17 +98,6 @@
 			transcriptCues = propCues;
 		} else if (vttUrl) {
 			await loadVTT();
-		}
-	});
-
-	// Auto-scroll to active line
-	$effect(() => {
-		const activeId = activeCueId;
-		if (activeId && containerElement && !searchQuery) {
-			const element = containerElement.querySelector(`[data-cue-id="${activeId}"]`);
-			if (element) {
-				element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-			}
 		}
 	});
 
@@ -230,7 +226,7 @@
 	}
 </script>
 
-<div class="transcript {className}" bind:this={containerElement}>
+<div class={['transcript', className]}>
 	<!-- Header with search and copy -->
 	<div class="transcript__header">
 		<h3 class="transcript__title">Transcript</h3>
@@ -278,21 +274,26 @@
 				{/if}
 			</div>
 		{:else}
-			<div class="transcript__list">
-				{#each filteredCues as cue (cue.id)}
-					<button
-						class="transcript__cue"
-						class:transcript__cue--active={activeCueId === cue.id}
-						data-cue-id={cue.id}
-						onclick={() => handleCueClick(cue)}
-					>
-						<span class="transcript__timestamp">{formatTimestamp(cue.startTime)}</span>
-						<span class="transcript__text">
-							{@html sanitizeHtml(highlightSearch(cue.text))}
-						</span>
-					</button>
-				{/each}
-			</div>
+			{#key activeCueId}
+				<div class="transcript__list">
+					{#each filteredCues as cue (cue.id)}
+						<button
+							{@attach scrollCueIntoView(cue.id)}
+							class={{
+								transcript__cue: true,
+								'transcript__cue--active': activeCueId === cue.id
+							}}
+							data-cue-id={cue.id}
+							onclick={() => handleCueClick(cue)}
+						>
+							<span class="transcript__timestamp">{formatTimestamp(cue.startTime)}</span>
+							<span class="transcript__text">
+								{@html sanitizeHtml(highlightSearch(cue.text))}
+							</span>
+						</button>
+					{/each}
+				</div>
+			{/key}
 		{/if}
 	</div>
 </div>
