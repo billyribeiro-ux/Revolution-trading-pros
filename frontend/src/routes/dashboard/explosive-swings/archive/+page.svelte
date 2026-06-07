@@ -44,13 +44,13 @@
 	const currentYear = new Date().getFullYear();
 	const availableYears = [currentYear, currentYear - 1];
 
-	async function fetchArchivedWeeks() {
+	async function fetchArchivedWeeks(year = selectedYear) {
 		isLoading = true;
 		error = null;
 
 		try {
 			const response = await fetch(
-				`/api/room-content/weekly-video/${ROOM_SLUG}/archive?year=${selectedYear}`,
+				`/api/room-content/weekly-video/${ROOM_SLUG}/archive?year=${year}`,
 				{ credentials: 'include' }
 			);
 
@@ -85,14 +85,14 @@
 		}
 	}
 
-	onMount(() => {
-		fetchArchivedWeeks();
-	});
+	function selectYear(year: number) {
+		if (selectedYear === year) return;
+		selectedYear = year;
+		void fetchArchivedWeeks(year);
+	}
 
-	// Refetch when year changes
-	$effect(() => {
-		selectedYear; // track dependency
-		fetchArchivedWeeks();
+	onMount(() => {
+		void fetchArchivedWeeks();
 	});
 
 	function formatWeekDate(dateStr: string): string {
@@ -166,9 +166,8 @@
 			{#each availableYears as year (year)}
 				<button
 					type="button"
-					class="year-btn"
-					class:active={selectedYear === year}
-					onclick={() => (selectedYear = year)}
+					class={{ 'year-btn': true, active: selectedYear === year }}
+					onclick={() => selectYear(year)}
 				>
 					{year}
 				</button>
@@ -195,7 +194,9 @@
 				</svg>
 				<h3>Unable to load archive</h3>
 				<p>{error}</p>
-				<button type="button" class="retry-btn" onclick={fetchArchivedWeeks}> Try Again </button>
+				<button type="button" class="retry-btn" onclick={() => fetchArchivedWeeks()}>
+					Try Again
+				</button>
 			</div>
 		{:else if weeks.length === 0}
 			<div class="empty-state">
