@@ -106,7 +106,7 @@ pub async fn index(
             let idx = 1 + params.search.is_some() as usize + params.is_visible.is_some() as usize;
             format!("AND parent_id = ${idx}")
         } else {
-            "".to_string()
+            String::new()
         },
         sort_column,
         sort_direction

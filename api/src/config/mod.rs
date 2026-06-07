@@ -343,7 +343,7 @@ impl Config {
                 .unwrap_or_else(|_| "8080".to_string())
                 .parse()
                 .context("Invalid PORT")?,
-            environment: environment.clone(),
+            environment,
 
             database_url: std::env::var("DATABASE_URL").context("DATABASE_URL required")?,
             redis_url: std::env::var("REDIS_URL")

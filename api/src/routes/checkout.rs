@@ -261,7 +261,7 @@ async fn create_checkout(
 
         applied_coupon_id = Some(c.id);
         server_applied_discount = Some(crate::services::stripe::DiscountSpec {
-            coupon: c.stripe_coupon_id.clone(),
+            coupon: c.stripe_coupon_id,
             promotion_code: None,
         });
     }

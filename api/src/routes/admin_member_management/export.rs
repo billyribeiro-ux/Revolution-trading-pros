@@ -215,7 +215,7 @@ fn generate_pdf(
         "Revolution Trading Pros - Members Export".to_string(),
         format!("Generated: {}", Utc::now().format("%Y-%m-%d %H:%M:%S")),
         format!("Total Members: {}", members.len()),
-        "".to_string(),
+        String::new(),
         "ID | Name | Email | Role | Created At".to_string(),
         "-".repeat(80),
     ];

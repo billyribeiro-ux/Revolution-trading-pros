@@ -10,7 +10,7 @@ use sqlx::FromRow;
 use validator::Validate;
 
 /// Post status enumeration
-#[derive(Debug, Clone, Serialize, Deserialize, sqlx::Type, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, sqlx::Type, PartialEq, Eq)]
 #[sqlx(type_name = "text", rename_all = "snake_case")]
 #[serde(rename_all = "snake_case")]
 pub enum PostStatus {

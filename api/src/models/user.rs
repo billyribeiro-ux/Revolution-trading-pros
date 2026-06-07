@@ -168,7 +168,7 @@ impl From<User> for UserResponse {
             first_name,
             last_name,
             role: role.clone(),
-            roles: vec![role.clone()],
+            roles: vec![role],
             permissions: if is_admin {
                 vec![
                     "admin.access".to_string(),

@@ -40,7 +40,7 @@ struct PostmarkEmail {
 
 /// Send an email via Postmark API
 async fn send_email_via_postmark(to: &str, subject: &str, body: &str) -> Result<()> {
-    let postmark_token = std::env::var("POSTMARK_API_KEY").unwrap_or_else(|_| "".to_string());
+    let postmark_token = std::env::var("POSTMARK_API_KEY").unwrap_or_default();
     let from_email = std::env::var("FROM_EMAIL")
         .unwrap_or_else(|_| "noreply@revolution-trading-pros.pages.dev".to_string());
 

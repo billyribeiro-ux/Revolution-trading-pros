@@ -19,7 +19,7 @@ use uuid::Uuid;
 // TYPES
 // ═══════════════════════════════════════════════════════════════════════════════════════
 
-#[derive(Debug, Serialize, Deserialize, sqlx::Type, Clone, Copy, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, sqlx::Type, Clone, Copy, PartialEq, Eq)]
 #[sqlx(type_name = "cms_workflow_stage", rename_all = "lowercase")]
 pub enum WorkflowStage {
     Draft,

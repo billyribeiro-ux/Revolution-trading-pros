@@ -54,7 +54,7 @@ async fn health_check(
     Json(HealthResponse {
         status: "healthy".to_string(),
         version: env!("CARGO_PKG_VERSION").to_string(),
-        environment: state.config.environment.clone(),
+        environment: state.config.environment,
     })
 }
 

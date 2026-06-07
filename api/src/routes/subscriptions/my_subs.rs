@@ -124,7 +124,7 @@ pub(super) async fn get_my_subscriptions(
             // Plan details (monetary in integer cents per arch standard)
             "productName": sub.plan_name.clone().unwrap_or_else(|| "Unknown Plan".to_string()),
             "priceCents": price_cents,
-            "interval": billing_cycle.clone(),
+            "interval": billing_cycle,
             "features": sub.plan_features.clone().unwrap_or(json!([])),
 
             // Items array for frontend compatibility
