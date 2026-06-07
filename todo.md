@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 396 Svelte files remaining.
+- Broad dynamic class/style migration scan: 395 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -183,6 +183,7 @@ Current evidence:
 - [x] `feb0e8655` Modernize list block bindings.
 - [x] `d7d334b39` Modernize bulk edit modal bindings.
 - [x] `371744a3b` Modernize audio block bindings.
+- [x] `81d53f4df` Modernize consent preferences modal bindings.
 
 ## Current Priority Queue
 
@@ -310,6 +311,7 @@ Current evidence:
 - [x] `frontend/src/lib/components/cms/blocks/content/ListBlock.svelte`
 - [x] `frontend/src/lib/components/admin/BulkEditModal.svelte`
 - [x] `frontend/src/lib/components/cms/blocks/media/AudioBlock.svelte`
+- [x] `frontend/src/lib/consent/components/ConsentPreferencesModal.svelte`
 
 ## Per-File Completion Checklist
 
