@@ -132,10 +132,7 @@
 				if (stored) {
 					consents = JSON.parse(stored);
 				} else {
-					// Initialize with defaults
-					categories.forEach((cat) => {
-						consents[cat.id] = cat.required || cat.default;
-					});
+					initDefaultConsents();
 				}
 			} else {
 				categories = defaultCategories;
@@ -148,9 +145,7 @@
 	}
 
 	function initDefaultConsents(): void {
-		categories.forEach((cat) => {
-			consents[cat.id] = cat.required || cat.default;
-		});
+		consents = Object.fromEntries(categories.map((cat) => [cat.id, cat.required || cat.default]));
 	}
 
 	// Save consent preferences
@@ -198,18 +193,14 @@
 
 	// Accept all cookies
 	function acceptAll(): void {
-		categories.forEach((cat) => {
-			consents[cat.id] = true;
-		});
-		saveConsents();
+		consents = Object.fromEntries(categories.map((cat) => [cat.id, true]));
+		void saveConsents();
 	}
 
 	// Reject all optional cookies
 	function rejectAll(): void {
-		categories.forEach((cat) => {
-			consents[cat.id] = cat.required;
-		});
-		saveConsents();
+		consents = Object.fromEntries(categories.map((cat) => [cat.id, cat.required]));
+		void saveConsents();
 	}
 
 	// Apply consent changes to third-party scripts
@@ -284,7 +275,7 @@
 	function toggleCategory(categoryId: string): void {
 		const category = categories.find((c) => c.id === categoryId);
 		if (category && !category.required) {
-			consents[categoryId] = !consents[categoryId];
+			consents = { ...consents, [categoryId]: !consents[categoryId] };
 		}
 	}
 
@@ -299,7 +290,11 @@
 	}
 
 	// Initialize on mount
-	onMount(async () => {
+	onMount(() => {
+		void initializeConsent();
+	});
+
+	async function initializeConsent(): Promise<void> {
 		if (!browser) return;
 
 		consentId = getConsentId();
@@ -315,16 +310,27 @@
 		}
 
 		isLoading = false;
-	});
+	}
 
 	// Derived classes
-	let bannerClasses = $derived(
-		`consent-banner consent-banner--${position} consent-banner--${theme} ${showBanner ? 'consent-banner--visible' : ''}`
-	);
+	const bannerClasses = $derived([
+		'consent-banner',
+		`consent-banner--${position}`,
+		`consent-banner--${theme}`,
+		showBanner && 'consent-banner--visible'
+	]);
 
-	let overlayClasses = $derived(
-		`consent-overlay ${showBanner && blurBackground ? 'consent-overlay--visible' : ''}`
-	);
+	const overlayClasses = $derived([
+		'consent-overlay',
+		showBanner && blurBackground && 'consent-overlay--visible'
+	]);
+
+	const modalClasses = $derived(['consent-modal', `consent-modal--${theme}`]);
+
+	const floatingButtonClasses = $derived([
+		'consent-floating-btn',
+		`consent-floating-btn--${theme}`
+	]);
 </script>
 
 {#if !isLoading}
@@ -381,7 +387,7 @@
 			aria-label="Close preferences"
 		>
 			<div
-				class="consent-modal consent-modal--{theme}"
+				class={modalClasses}
 				role="dialog"
 				aria-labelledby="preferences-title"
 				aria-modal="true"
@@ -449,7 +455,7 @@
 	{#if !showBanner && showPreferencesLink}
 		<button
 			type="button"
-			class="consent-floating-btn consent-floating-btn--{theme}"
+			class={floatingButtonClasses}
 			onclick={() => {
 				showBanner = true;
 				showPreferences = true;
