@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 512 Svelte files remaining.
+- Broad dynamic class/style migration scan: 511 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -67,6 +67,7 @@ Current evidence:
 - [x] `5b206ad7b` Modernize consent settings bindings.
 - [x] `8bd9e9f6b` Modernize weekly hero bindings.
 - [x] `2468a2977` Modernize admin members page bindings.
+- [x] `2514262c4` Modernize email campaigns page bindings.
 
 ## Current Priority Queue
 
@@ -78,7 +79,7 @@ Current evidence:
 - [x] `frontend/src/routes/admin/consent/settings/+page.svelte`
 - [x] `frontend/src/routes/dashboard/explosive-swings/components/WeeklyHero.svelte`
 - [x] `frontend/src/routes/admin/members/+page.svelte`
-- [ ] `frontend/src/routes/admin/email/campaigns/+page.svelte`
+- [x] `frontend/src/routes/admin/email/campaigns/+page.svelte`
 - [ ] `frontend/src/routes/admin/crm/automations/[id]/edit/+page.svelte`
 - [ ] `frontend/src/routes/admin/members/churned/+page.svelte`
 - [ ] `frontend/src/lib/components/cms/blocks/media/ImageBlock.svelte`
