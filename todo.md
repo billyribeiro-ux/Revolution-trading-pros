@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 468 Svelte files remaining.
+- Broad dynamic class/style migration scan: 467 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -111,6 +111,7 @@ Current evidence:
 - [x] `8315a5fb7` Modernize subscription form modal bindings.
 - [x] `15b87f343` Modernize admin SEO dashboard bindings.
 - [x] `87e1f65b7` Modernize template editor tab bindings.
+- [x] `34db914e1` Modernize small account start page bindings.
 
 ## Current Priority Queue
 
@@ -166,7 +167,7 @@ Current evidence:
 - [x] `frontend/src/lib/components/admin/SubscriptionFormModal.svelte`
 - [x] `frontend/src/routes/admin/seo/+page.svelte`
 - [x] `frontend/src/lib/consent/templates/TemplateEditor.svelte`
-- [ ] `frontend/src/routes/dashboard/small-account-mentorship/start-here/+page.svelte`
+- [x] `frontend/src/routes/dashboard/small-account-mentorship/start-here/+page.svelte`
 - [ ] `frontend/src/routes/dashboard/day-trading-room/learning-center/+page.svelte`
 - [ ] `frontend/src/routes/admin/members/subscriptions/+page.svelte`
 - [ ] `frontend/src/routes/admin/trading-rooms/[slug]/components/TradeEntryManager.svelte`
