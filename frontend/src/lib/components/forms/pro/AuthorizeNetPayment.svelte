@@ -5,6 +5,8 @@
 	 * Authorize.net payment gateway integration for secure payment processing.
 	 * Supports Accept.js for PCI-compliant tokenization.
 	 */
+	import { onMount } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	interface Props {
 		name: string;
@@ -60,8 +62,6 @@
 		onError
 	}: Props = $props();
 
-	import Icon from '$lib/components/Icon.svelte';
-
 	let cardNumber = $state('');
 	let expirationMonth = $state('');
 	let expirationYear = $state('');
@@ -73,27 +73,36 @@
 	let scriptLoaded = $state(false);
 
 	// Load Accept.js script
-	$effect(() => {
-		if (typeof window !== 'undefined' && !scriptLoaded) {
-			const existingScript = document.querySelector('script[src*="Accept.js"]');
-			if (existingScript) {
-				scriptLoaded = true;
-				return;
-			}
-
-			const script = document.createElement('script');
-			script.src = testMode
-				? 'https://jstest.authorize.net/v1/Accept.js'
-				: 'https://js.authorize.net/v1/Accept.js';
-			script.async = true;
-			script.onload = () => {
-				scriptLoaded = true;
+	onMount(() => {
+		let isMounted = true;
+		const existingScript = document.querySelector('script[src*="Accept.js"]');
+		if (existingScript) {
+			scriptLoaded = true;
+			return () => {
+				isMounted = false;
 			};
-			script.onerror = () => {
-				validationError = 'Failed to load payment gateway. Please refresh and try again.';
-			};
-			document.head.appendChild(script);
 		}
+
+		const script = document.createElement('script');
+		script.src = testMode
+			? 'https://jstest.authorize.net/v1/Accept.js'
+			: 'https://js.authorize.net/v1/Accept.js';
+		script.async = true;
+		script.onload = () => {
+			if (isMounted) {
+				scriptLoaded = true;
+			}
+		};
+		script.onerror = () => {
+			if (isMounted) {
+				validationError = 'Failed to load payment gateway. Please refresh and try again.';
+			}
+		};
+		document.head.appendChild(script);
+
+		return () => {
+			isMounted = false;
+		};
 	});
 
 	function formatCardNumber(value: string): string {
@@ -263,6 +272,21 @@
 		}).format(value);
 	}
 
+	function paymentContainerClass() {
+		return {
+			'authorize-net-payment': true,
+			disabled,
+			'has-error': Boolean(error || validationError)
+		};
+	}
+
+	function cardTypeBadgeClass() {
+		return {
+			'card-type-badge': true,
+			visible: cardType !== 'Unknown'
+		};
+	}
+
 	const cardType = $derived(getCardType(cardNumber));
 	const isFormValid = $derived(
 		cardNumber.replace(/\s/g, '').length >= 13 &&
@@ -272,7 +296,7 @@
 	);
 </script>
 
-<div class="authorize-net-payment" class:disabled class:has-error={error || validationError}>
+<div class={paymentContainerClass()}>
 	<div class="payment-header">
 		<h3 class="payment-label">{label}</h3>
 		{#if description}
@@ -331,7 +355,7 @@
 						inputmode="numeric"
 						{disabled}
 					/>
-					<span class="card-type-badge" class:visible={cardType !== 'Unknown'}>
+					<span class={cardTypeBadgeClass()}>
 						{cardType}
 					</span>
 				</div>
