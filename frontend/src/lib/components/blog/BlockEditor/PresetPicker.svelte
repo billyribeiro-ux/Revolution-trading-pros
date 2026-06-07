@@ -122,16 +122,6 @@
 	let savePresetName = $state('');
 	let savePresetDescription = $state('');
 	let savePresetCategory = $state('custom');
-	// Programmatic focus replaces the deprecated `autofocus` attribute on the
-	// preset-name input — `autofocus` is an a11y anti-pattern. The $effect
-	// fires whenever `showSaveModal` flips true, focusing the input once the
-	// modal renders.
-	let presetNameInput = $state<HTMLInputElement | null>(null);
-	$effect(() => {
-		if (showSaveModal) {
-			presetNameInput?.focus();
-		}
-	});
 
 	// ==========================================================================
 	// Category Configuration
@@ -326,6 +316,10 @@
 		}
 	}
 
+	function focusPresetNameInput(node: HTMLInputElement) {
+		node.focus();
+	}
+
 	// ==========================================================================
 	// Lifecycle
 	// ==========================================================================
@@ -336,6 +330,8 @@
 
 	// Reload when block type changes
 	$effect(() => {
+		// Svelte MCP flags direct function calls generically here, but this is an
+		// intentional fetch side effect keyed by `blockType`, not derived state mirroring.
 		if (blockType) {
 			loadPresets();
 		}
@@ -353,8 +349,7 @@
 		transition:fade={{ duration: 150 }}
 	>
 		<div
-			class="preset-modal"
-			class:positioned={position}
+			class={['preset-modal', { positioned: position }]}
 			style:left={position ? `${position.x}px` : 'auto'}
 			style:top={position ? `${position.y}px` : 'auto'}
 			onclick={(e: MouseEvent) => e.stopPropagation()}
@@ -404,8 +399,7 @@
 				<div class="category-tabs">
 					<button
 						type="button"
-						class="category-tab"
-						class:active={selectedCategory === null}
+						class={['category-tab', { active: selectedCategory === null }]}
 						onclick={() => (selectedCategory = null)}
 					>
 						All
@@ -415,8 +409,7 @@
 						{@const Icon = config.icon}
 						<button
 							type="button"
-							class="category-tab"
-							class:active={selectedCategory === cat}
+							class={['category-tab', { active: selectedCategory === cat }]}
 							style:--tab-color={config.color}
 							onclick={() => (selectedCategory = cat)}
 						>
@@ -473,8 +466,7 @@
 								{#each category.presets as preset (preset.id)}
 									<button
 										type="button"
-										class="preset-card"
-										class:is-default={preset.is_default}
+										class={['preset-card', { 'is-default': preset.is_default }]}
 										onclick={() => handlePresetClick(preset)}
 										onmouseenter={() => handlePresetHover(preset)}
 										onmouseleave={handlePresetLeave}
@@ -611,7 +603,7 @@
 				<div class="form-field">
 					<label for="preset-name">Preset Name *</label>
 					<input
-						bind:this={presetNameInput}
+						{@attach focusPresetNameInput}
 						id="preset-name"
 						type="text"
 						bind:value={savePresetName}
