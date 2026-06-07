@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 456 Svelte files remaining.
+- Broad dynamic class/style migration scan: 455 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -123,6 +123,7 @@ Current evidence:
 - [x] `a5507f58d` Modernize account sessions bindings.
 - [x] `37b3ff37f` Modernize chart block bindings.
 - [x] `34368c15a` Modernize webhook creation bindings.
+- [x] `64d634ee2` Modernize service members page bindings.
 
 ## Current Priority Queue
 
@@ -190,6 +191,7 @@ Current evidence:
 - [x] `frontend/src/routes/account/sessions/+page.svelte`
 - [x] `frontend/src/lib/components/cms/blocks/trading/ChartBlock.svelte`
 - [x] `frontend/src/routes/admin/crm/webhooks/new/+page.svelte`
+- [x] `frontend/src/routes/admin/members/service/[id]/+page.svelte`
 
 ## Per-File Completion Checklist
 
