@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 420 Svelte files remaining.
+- Broad dynamic class/style migration scan: 419 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -159,6 +159,7 @@ Current evidence:
 - [x] `e45a9b79d` Modernize alerts page service card classes.
 - [x] `4153f51a3` Modernize connection health panel bindings.
 - [x] `778bab38a` Modernize dashboard layout class binding.
+- [x] `97c26b3b6` Modernize pull quote block class bindings.
 
 ## Current Priority Queue
 
@@ -262,6 +263,7 @@ Current evidence:
 - [x] `frontend/src/routes/alerts/+page.svelte`
 - [x] `frontend/src/lib/components/ConnectionHealthPanel.svelte`
 - [x] `frontend/src/routes/dashboard/+layout.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/content/PullQuoteBlock.svelte`
 
 ## Per-File Completion Checklist
 
