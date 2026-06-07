@@ -17,8 +17,9 @@ use axum::{
     Json,
 };
 use chrono::{Duration, Utc};
+use hmac::{Hmac, Mac};
 use serde_json::json;
-use sha2::{Digest, Sha256};
+use sha2::Sha256;
 
 use crate::models::indicator::IndicatorFile;
 use crate::models::User;
@@ -92,16 +93,19 @@ pub(super) async fn generate_download_url(
         )
     })?;
 
-    // Generate secure download token (WordPress-compatible hash)
-    let secret = std::env::var("MEMBER_INDICATOR_SECRET").unwrap_or_default();
+    // Generate secure download token. RUST_DEEP_AUDIT_2026-06-07 (P0-2): keyed
+    // HMAC-SHA256 over (user_id, file_id, expiry) using the boot-validated
+    // MEMBER_INDICATOR_SECRET — was an unkeyed SHA256 over public inputs signed
+    // with a possibly-empty secret, which made tokens forgeable offline. The
+    // token stays deterministic so the `ON CONFLICT DO NOTHING` insert dedupes.
     let expires_at = Utc::now() + Duration::hours(24);
     let expiry_timestamp = expires_at.timestamp();
-
-    // Hash format: SHA256(user_id + file_id + expiry + secret)
-    let hash_input = format!("{user_id}{file_id}{expiry_timestamp}{secret}");
-    let mut hasher = Sha256::new();
-    hasher.update(hash_input.as_bytes());
-    let token = format!("{:x}", hasher.finalize());
+    let token = sign_download_token(
+        &state.config.member_indicator_secret,
+        user_id,
+        file_id,
+        expiry_timestamp,
+    );
 
     // ICT 7 FIX: Store download record with i64 indicator_id
     // Note: indicator_downloads table may not exist; this is optional tracking
@@ -184,6 +188,18 @@ pub(super) async fn download_file(
         )
     })?;
 
+    // RUST_DEEP_AUDIT_2026-06-07 (P0-1, IDOR): the token is a capability bound to
+    // the specific file it was minted for (`download.1`). The path `file_id` must
+    // match it — otherwise a valid token for one owned file could be replayed
+    // against any other file_id to bypass the ownership check in
+    // `generate_download_url`.
+    if file_id != download.1 {
+        return Err((
+            StatusCode::FORBIDDEN,
+            Json(json!({"error": "Download token is not valid for this file"})),
+        ));
+    }
+
     // Check download limit
     let count = download.2.unwrap_or(0);
     let max = download.3.unwrap_or(5);
@@ -261,6 +277,16 @@ pub(super) async fn download_file(
         })?;
 
     Ok(response)
+}
+
+/// Sign a download capability token: HMAC-SHA256 over `user_id:file_id:expiry`
+/// keyed by `MEMBER_INDICATOR_SECRET`. Deterministic (so re-minting the same
+/// link dedupes via `ON CONFLICT`) but unforgeable without the secret.
+fn sign_download_token(secret: &str, user_id: i64, file_id: i32, expiry: i64) -> String {
+    let mut mac = <Hmac<Sha256> as Mac>::new_from_slice(secret.as_bytes())
+        .expect("HMAC-SHA256 accepts a key of any length");
+    mac.update(format!("{user_id}:{file_id}:{expiry}").as_bytes());
+    hex::encode(mac.finalize().into_bytes())
 }
 
 /// Sanitize a filename for inclusion in a `Content-Disposition: attachment;

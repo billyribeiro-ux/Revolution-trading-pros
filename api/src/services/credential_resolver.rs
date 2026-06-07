@@ -314,6 +314,8 @@ mod tests {
             apple_team_id: None,
             apple_key_id: None,
             apple_private_key: None,
+            member_indicator_secret: String::new(),
+            member_license_secret: String::new(),
         }
     }
 
