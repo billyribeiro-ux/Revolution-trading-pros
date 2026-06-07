@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 488 Svelte files remaining.
+- Broad dynamic class/style migration scan: 487 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -91,6 +91,7 @@ Current evidence:
 - [x] `7e02c02f9` Modernize mentorship page accordion bindings.
 - [x] `baf73647e` Modernize admin watchlist dynamic bindings.
 - [x] `de5fd0261` Modernize checkout thank-you status binding.
+- [x] `120236fe1` Modernize stock indexes FAQ binding.
 
 ## Current Priority Queue
 
@@ -126,7 +127,7 @@ Current evidence:
 - [x] `frontend/src/routes/mentorship/+page.svelte`
 - [x] `frontend/src/routes/admin/watchlist/+page.svelte`
 - [x] `frontend/src/routes/checkout/thank-you/+page.svelte`
-- [ ] `frontend/src/routes/resources/stock-indexes-list/+page.svelte`
+- [x] `frontend/src/routes/resources/stock-indexes-list/+page.svelte`
 - [ ] `frontend/src/routes/register/+page.svelte`
 - [ ] `frontend/src/lib/components/admin/CourseFormModal.svelte`
 - [ ] `frontend/src/routes/admin/crm/webhooks/[id]/edit/+page.svelte`
