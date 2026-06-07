@@ -43,7 +43,7 @@
 
 	let dateRange = $state<string[]>([]);
 
-	async function loadCarts() {
+	async function loadCarts(): Promise<void> {
 		isLoading = true;
 		error = '';
 
@@ -67,12 +67,12 @@
 		}
 	}
 
-	function deleteCart(id: string) {
+	function deleteCart(id: string): void {
 		pendingDeleteId = id;
 		showDeleteModal = true;
 	}
 
-	async function confirmDeleteCart() {
+	async function confirmDeleteCart(): Promise<void> {
 		if (!pendingDeleteId) return;
 		showDeleteModal = false;
 		const id = pendingDeleteId;
@@ -85,12 +85,12 @@
 		}
 	}
 
-	function bulkDelete() {
+	function bulkDelete(): void {
 		if (selectedCarts.length === 0) return;
 		showBulkDeleteModal = true;
 	}
 
-	async function confirmBulkDelete() {
+	async function confirmBulkDelete(): Promise<void> {
 		showBulkDeleteModal = false;
 		try {
 			await crmAPI.bulkDeleteAbandonedCarts(selectedCarts);
@@ -101,7 +101,7 @@
 		}
 	}
 
-	function toggleCartSelection(id: string) {
+	function toggleCartSelection(id: string): void {
 		if (selectedCarts.includes(id)) {
 			selectedCarts = selectedCarts.filter((c) => c !== id);
 		} else {
@@ -109,12 +109,25 @@
 		}
 	}
 
-	function toggleAllSelection() {
-		if (selectedCarts.length === carts.length) {
-			selectedCarts = [];
-		} else {
-			selectedCarts = carts.map((c) => c.id);
+	function toggleAllSelection(): void {
+		const visibleCartIds = filteredCarts.map((cart) => cart.id);
+
+		if (allVisibleCartsSelected) {
+			selectedCarts = selectedCarts.filter((id) => !visibleCartIds.includes(id));
+			return;
 		}
+
+		selectedCarts = Array.from(new Set([...selectedCarts, ...visibleCartIds]));
+	}
+
+	function handleSearchInput(event: Event): void {
+		searchQuery = (event.currentTarget as HTMLInputElement).value;
+		void loadCarts();
+	}
+
+	function handleStatusFilterChange(event: Event): void {
+		statusFilter = (event.currentTarget as HTMLSelectElement).value as AbandonedCartStatus | '';
+		void loadCarts();
 	}
 
 	function formatCurrency(amount: number, currency: string = 'USD'): string {
@@ -145,6 +158,10 @@
 		return colors[status] || 'gray';
 	}
 
+	function getStatusBadgeClasses(status: AbandonedCartStatus): string[] {
+		return ['status-badge', `status-badge--${getStatusColor(status)}`];
+	}
+
 	function getStatusLabel(status: AbandonedCartStatus): string {
 		const labels: Record<AbandonedCartStatus, string> = {
 			draft: 'Draft',
@@ -170,25 +187,12 @@
 		})
 	);
 
-	let isInitialized = $state(false);
+	const allVisibleCartsSelected = $derived(
+		filteredCarts.length > 0 && filteredCarts.every((cart) => selectedCarts.includes(cart.id))
+	);
 
 	onMount(() => {
-		(async () => {
-			await loadCarts();
-			isInitialized = true;
-		})();
-	});
-
-	// Audit P1 #6: backend filters (status, search, date range) only fired
-	// on the initial mount fetch. Now we explicitly track the filters and
-	// re-run `loadCarts()` whenever they change.
-	$effect(() => {
-		statusFilter;
-		searchQuery;
-		dateRange;
-		if (isInitialized) {
-			loadCarts();
-		}
+		void loadCarts();
 	});
 </script>
 
@@ -204,7 +208,7 @@
 			<p class="page-description">Track and recover abandoned shopping carts</p>
 		</div>
 		<div class="header-actions">
-			<button class="btn-refresh" onclick={() => loadCarts()} disabled={isLoading}>
+			<button class="btn-refresh" onclick={() => void loadCarts()} disabled={isLoading}>
 				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
 			</button>
 			<a href="/admin/crm/abandoned-carts/settings" class="btn-secondary">
@@ -281,10 +285,11 @@
 				id="search-abandoned-carts"
 				name="search"
 				placeholder="Search by email or name..."
-				bind:value={searchQuery}
+				value={searchQuery}
+				oninput={handleSearchInput}
 			/>
 		</div>
-		<select bind:value={statusFilter} class="filter-select">
+		<select value={statusFilter} class="filter-select" onchange={handleStatusFilterChange}>
 			<option value="">All Statuses</option>
 			<option value="draft">Draft</option>
 			<option value="processing">Processing</option>
@@ -309,7 +314,7 @@
 	{:else if error}
 		<div class="error-state">
 			<p>{error}</p>
-			<button onclick={() => loadCarts()}>Try Again</button>
+			<button onclick={() => void loadCarts()}>Try Again</button>
 		</div>
 	{:else if filteredCarts.length === 0}
 		<div class="empty-state">
@@ -324,10 +329,10 @@
 					<tr>
 						<th class="checkbox-col">
 							<input
-								id="page-checkbox"
-								name="page-checkbox"
+								id="select-all-abandoned-carts"
+								name="select-all-abandoned-carts"
 								type="checkbox"
-								checked={selectedCarts.length === carts.length}
+								checked={allVisibleCartsSelected}
 								onchange={toggleAllSelection}
 							/>
 						</th>
@@ -344,8 +349,8 @@
 						<tr>
 							<td class="checkbox-col">
 								<input
-									id="page-checkbox"
-									name="page-checkbox"
+									id={`select-cart-${cart.id}`}
+									name={`select-cart-${cart.id}`}
 									type="checkbox"
 									checked={selectedCarts.includes(cart.id)}
 									onchange={() => toggleCartSelection(cart.id)}
@@ -382,7 +387,7 @@
 								</span>
 							</td>
 							<td>
-								<span class="status-badge {getStatusColor(cart.status)}">
+								<span class={getStatusBadgeClasses(cart.status)}>
 									{getStatusLabel(cart.status)}
 								</span>
 							</td>
@@ -783,23 +788,23 @@
 		text-transform: capitalize;
 	}
 
-	.status-badge.green {
+	.status-badge--green {
 		background: rgba(34, 197, 94, 0.15);
 		color: #4ade80;
 	}
-	.status-badge.blue {
+	.status-badge--blue {
 		background: rgba(59, 130, 246, 0.15);
 		color: #60a5fa;
 	}
-	.status-badge.red {
+	.status-badge--red {
 		background: rgba(239, 68, 68, 0.15);
 		color: #f87171;
 	}
-	.status-badge.orange {
+	.status-badge--orange {
 		background: rgba(251, 191, 36, 0.15);
 		color: #fbbf24;
 	}
-	.status-badge.gray {
+	.status-badge--gray {
 		background: rgba(100, 116, 139, 0.15);
 		color: #94a3b8;
 	}
