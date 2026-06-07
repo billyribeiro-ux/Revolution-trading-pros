@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 473 Svelte files remaining.
+- Broad dynamic class/style migration scan: 472 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -106,6 +106,7 @@ Current evidence:
 - [x] `bec3d83dd` Modernize image crop modal bindings.
 - [x] `96b8acea7` Modernize segment detail drawer bindings.
 - [x] `d655efd6c` Modernize virtual block list bindings.
+- [x] `f63c74f36` Modernize Bing SEO status class.
 
 ## Current Priority Queue
 
@@ -156,7 +157,7 @@ Current evidence:
 - [x] `frontend/src/lib/components/media/ImageCropModal.svelte`
 - [x] `frontend/src/lib/components/admin/SegmentDetailDrawer.svelte`
 - [x] `frontend/src/lib/components/blog/BlockEditor/VirtualBlockList.svelte`
-- [ ] `frontend/src/routes/admin/seo/bing/+page.svelte`
+- [x] `frontend/src/routes/admin/seo/bing/+page.svelte`
 - [ ] `frontend/src/routes/admin/members/analytics/+page.svelte`
 - [ ] `frontend/src/lib/components/admin/SubscriptionFormModal.svelte`
 - [ ] `frontend/src/routes/admin/seo/+page.svelte`
